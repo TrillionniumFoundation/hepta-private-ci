@@ -1,0 +1,43 @@
+name: tmp-world-object-write-probe
+
+on:
+  push:
+    branches:
+      - ops/world-object-probe-20260906
+    paths:
+      - .github/workflows/tmp-world-object-write-probe.yml
+
+permissions:
+  contents: read
+
+concurrency:
+  group: tmp-world-object-write-probe
+  cancel-in-progress: true
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      WORLD_TOKEN: ${{ secrets.WORLD_REPOSITORY_TOKEN }}
+    steps:
+      - name: Test one fixed unreferenced World blob write
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "${WORLD_TOKEN:-}" || { echo 'WORLD_OBJECT_WRITE_PROBE=NO_CONFIGURED_TOKEN'; exit 1; }
+          payload='trnm-world-cross-repository-object-write-probe-v3'
+          encoded="$(printf '%s\n' "$payload" | base64 -w0)"
+          expected_sha="$(printf '%s\n' "$payload" | git hash-object --stdin)"
+          response="${RUNNER_TEMP}/world-object-probe.json"
+          code="$(curl --silent --show-error --output "$response" --write-out '%{http_code}' \
+            --request POST \
+            --header "Authorization: Bearer ${WORLD_TOKEN}" \
+            --header 'Accept: application/vnd.github+json' \
+            --header 'X-GitHub-Api-Version: 2022-11-28' \
+            https://api.github.com/repos/TrillionniumFoundation/Trillionnium-World/git/blobs \
+            --data "{\"content\":\"${encoded}\",\"encoding\":\"base64\"}")"
+          test "$code" = 201 || { echo "WORLD_OBJECT_WRITE_PROBE=HTTP_${code}"; exit 1; }
+          actual_sha="$(jq -r '.sha // empty' "$response")"
+          test "$actual_sha" = "$expected_sha" || { echo 'WORLD_OBJECT_WRITE_PROBE=HASH_MISMATCH'; exit 1; }
+          printf 'WORLD_OBJECT_WRITE_PROBE=PASS blob=%s\n' "$actual_sha"
