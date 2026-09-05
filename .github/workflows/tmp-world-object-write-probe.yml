@@ -16,7 +16,7 @@ concurrency:
 
 jobs:
   probe:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04-arm
     timeout-minutes: 5
     env:
       WORLD_TOKEN: ${{ secrets.WORLD_REPOSITORY_TOKEN }}
