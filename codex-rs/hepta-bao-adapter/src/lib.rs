@@ -1,7 +1,9 @@
-//! Opaque HeptaBao secret-reference adapter.
+//! Opaque HeptaBao secret-reference boundary.
 //!
-//! Raw secret bytes never enter this API. The adapter verifies a scoped lease
-//! and returns only a deterministic opaque handle digest.
+//! The boundary exposes no raw-secret payload field: V1 accepts only bounded
+//! reference identifiers, digests and permission observations. It cannot
+//! dispatch because this tree has no owner-issued `VerifiedUseToken` or
+//! enrolled provider port.
 
 #![forbid(unsafe_code)]
 
@@ -11,6 +13,26 @@ use std::fmt;
 use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
+
+mod secret_boundary_v1;
+
+pub use secret_boundary_v1::AUTHBUS_POLICY_PRODUCER_ID;
+pub use secret_boundary_v1::HEPTABAO_BACKEND_ID;
+pub use secret_boundary_v1::HEPTABAO_DESTINATION_ID;
+pub use secret_boundary_v1::KERNEL_AUTHORITY_PRODUCER_ID;
+pub use secret_boundary_v1::MAX_SECRET_METADATA_BYTES;
+pub use secret_boundary_v1::MAX_SECRET_REFERENCE_COMPONENT_BYTES;
+pub use secret_boundary_v1::PROVIDER_DISPATCH_ENABLED;
+pub use secret_boundary_v1::ParsedSecretReferenceV1;
+pub use secret_boundary_v1::SECRET_BOUNDARY_SCHEMA_VERSION_V1;
+pub use secret_boundary_v1::SecretBoundaryDecisionV1;
+pub use secret_boundary_v1::SecretBoundaryDispositionV1;
+pub use secret_boundary_v1::SecretBoundaryErrorV1;
+pub use secret_boundary_v1::SecretBoundaryRequestV1;
+pub use secret_boundary_v1::SecretPermissionObservationV1;
+pub use secret_boundary_v1::SecretPermissionStatusV1;
+pub use secret_boundary_v1::assess_secret_boundary_v1;
+pub use secret_boundary_v1::secret_boundary_request_digest_v1;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct SecretReference {
@@ -68,6 +90,8 @@ impl fmt::Display for Error {
 
 impl StdError for Error {}
 
+/// Legacy V1 helper: this only binds caller-provided metadata into a digest.
+/// It is not a permission, provider observation or external lease proof.
 pub fn resolve(
     now_ms: u64,
     request: SecretRequest,
