@@ -192,7 +192,13 @@ impl FleetRegistry {
         source_program: &Path,
         args: Vec<String>,
     ) -> Result<RegisteredRelease, FleetRegistryError> {
-        self.install_release_bundle(release_id, source_program, args, None, Vec::new())
+        self.install_release_bundle(
+            release_id,
+            source_program,
+            args,
+            /*source_matrixd*/ None,
+            /*matrixd_args*/ Vec::new(),
+        )
     }
 
     /// Installs one closed-world release containing the required agentd and,
@@ -233,7 +239,7 @@ impl FleetRegistry {
             std::fs::create_dir(&bin_root)?;
             let agentd_program = staging.join(AGENTD_RELEASE_PROGRAM);
             std::fs::copy(&source_agentd, &agentd_program)?;
-            set_mode(&agentd_program, 0o555)?;
+            set_mode(&agentd_program, /*mode*/ 0o555)?;
             File::open(&agentd_program)?.sync_all()?;
             let matrixd = source_matrixd
                 .as_ref()
@@ -241,7 +247,7 @@ impl FleetRegistry {
                     |source| -> Result<ReleaseProgramMetadata, FleetRegistryError> {
                         let matrixd_program = staging.join(MATRIXD_RELEASE_PROGRAM);
                         std::fs::copy(source, &matrixd_program)?;
-                        set_mode(&matrixd_program, 0o555)?;
+                        set_mode(&matrixd_program, /*mode*/ 0o555)?;
                         File::open(&matrixd_program)?.sync_all()?;
                         Ok(ReleaseProgramMetadata {
                             program_relative_path: PathBuf::from(MATRIXD_RELEASE_PROGRAM),
@@ -265,11 +271,11 @@ impl FleetRegistry {
             };
             let manifest = staging.join(RELEASE_MANIFEST_FILE);
             write_new_json(&manifest, &metadata)?;
-            set_mode(&manifest, 0o444)?;
-            set_mode(&bin_root, 0o555)?;
+            set_mode(&manifest, /*mode*/ 0o444)?;
+            set_mode(&bin_root, /*mode*/ 0o555)?;
             sync_directory(&bin_root)?;
             sync_directory(&staging)?;
-            set_mode(&staging, 0o555)?;
+            set_mode(&staging, /*mode*/ 0o555)?;
             std::fs::rename(&staging, &final_root)?;
             sync_directory(self.layout().releases_root())?;
             Ok(())
@@ -316,7 +322,7 @@ impl FleetRegistry {
             )));
         }
         write_new_json(&path, &allowance)?;
-        set_mode(&path, 0o444)?;
+        set_mode(&path, /*mode*/ 0o444)?;
         sync_directory(record.layout.releases_root())
     }
 
@@ -488,11 +494,11 @@ fn resolve_catalog_release(
     catalog_root: &Path,
     release_id: &ReleaseId,
 ) -> Result<RegisteredRelease, FleetRegistryError> {
-    validate_physical_directory(catalog_root, false)?;
+    validate_physical_directory(catalog_root, /*immutable*/ false)?;
     let release_root = catalog_root.join(release_id.as_str());
     let bin_root = release_root.join("bin");
-    validate_physical_directory(&release_root, true)?;
-    validate_physical_directory(&bin_root, true)?;
+    validate_physical_directory(&release_root, /*immutable*/ true)?;
+    validate_physical_directory(&bin_root, /*immutable*/ true)?;
     let actual_root_entries = directory_names(&release_root)?;
     if actual_root_entries != BTreeSet::from(["bin".to_string(), RELEASE_MANIFEST_FILE.to_string()])
     {
@@ -501,7 +507,7 @@ fn resolve_catalog_release(
         )));
     }
     let manifest_path = release_root.join(RELEASE_MANIFEST_FILE);
-    validate_immutable_regular_file(&manifest_path, false)?;
+    validate_immutable_regular_file(&manifest_path, /*executable*/ false)?;
     let metadata: CatalogReleaseMetadata =
         read_bounded_json(&manifest_path, MAX_RELEASE_MANIFEST_BYTES)?;
     let (release_id_from_manifest, agentd, matrixd) = match metadata {
@@ -554,7 +560,7 @@ fn resolve_program(
     release_id: &ReleaseId,
 ) -> Result<PathBuf, FleetRegistryError> {
     let program = release_root.join(&metadata.program_relative_path);
-    validate_immutable_regular_file(&program, true)?;
+    validate_immutable_regular_file(&program, /*executable*/ true)?;
     if std::fs::metadata(&program)?.len() != metadata.program_size_bytes
         || sha256_file(&program)? != metadata.program_sha256
     {
@@ -856,11 +862,11 @@ fn set_mode(path: &Path, mode: u32) -> Result<(), FleetRegistryError> {
 
 fn make_tree_removable(path: &Path) {
     if path.exists() {
-        let _ = set_mode(path, 0o755);
-        let _ = set_mode(&path.join("bin"), 0o755);
-        let _ = set_mode(&path.join(AGENTD_RELEASE_PROGRAM), 0o755);
-        let _ = set_mode(&path.join(MATRIXD_RELEASE_PROGRAM), 0o755);
-        let _ = set_mode(&path.join(RELEASE_MANIFEST_FILE), 0o644);
+        let _ = set_mode(path, /*mode*/ 0o755);
+        let _ = set_mode(&path.join("bin"), /*mode*/ 0o755);
+        let _ = set_mode(&path.join(AGENTD_RELEASE_PROGRAM), /*mode*/ 0o755);
+        let _ = set_mode(&path.join(MATRIXD_RELEASE_PROGRAM), /*mode*/ 0o755);
+        let _ = set_mode(&path.join(RELEASE_MANIFEST_FILE), /*mode*/ 0o644);
     }
 }
 
@@ -1040,8 +1046,8 @@ mod tests {
         };
         let manifest = release_root.join(RELEASE_MANIFEST_FILE);
         write_new_json(&manifest, &metadata)?;
-        set_mode(&manifest, 0o444)?;
-        set_mode(&bin_root, 0o555)?;
+        set_mode(&manifest, /*mode*/ 0o444)?;
+        set_mode(&bin_root, /*mode*/ 0o555)?;
         set_mode(&release_root, 0o555)?;
 
         let manifest_sha256 = sha256_file(&manifest)?;

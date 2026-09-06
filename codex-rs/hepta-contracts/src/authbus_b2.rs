@@ -42,7 +42,7 @@ fn validate_schema(schema_version: u32, kind: &str) -> Result<(), AuthBusContrac
 }
 
 fn validate_id(value: &str, label: &str) -> Result<(), AuthBusContractError> {
-    validate_text(value, label, 512)
+    validate_text(value, label, /*max_bytes*/ 512)
 }
 
 fn validate_authority(authority: bool) -> Result<(), AuthBusContractError> {
@@ -162,7 +162,7 @@ impl AdmissionDecision {
         validate_subject_generation(&self.subject, self.generation)?;
         validate_digest(&self.resource_sha256, "decision resource")?;
         validate_digest(&self.policy_sha256, "decision policy")?;
-        validate_text(&self.reason_code, "decision reason code", 128)?;
+        validate_text(&self.reason_code, "decision reason code", /*max_bytes*/ 128)?;
         validate_epochs(
             self.authority_epoch,
             self.owner_epoch,
@@ -435,12 +435,12 @@ impl ProviderStatus {
     pub fn validate(&self) -> Result<(), AuthBusContractError> {
         validate_schema(self.schema_version, "ProviderStatus")?;
         validate_id(&self.status_id, "provider status id")?;
-        validate_text(&self.provider_id, "provider id", 512)?;
+        validate_text(&self.provider_id, "provider id", /*max_bytes*/ 512)?;
         if let Some(resource) = &self.resource_sha256 {
             validate_digest(resource, "provider status resource")?;
         }
         if let Some(reason) = &self.reason_code {
-            validate_text(reason, "provider status reason code", 128)?;
+            validate_text(reason, "provider status reason code", /*max_bytes*/ 128)?;
         }
         if self.observed_at_unix_seconds == 0 {
             return Err(error(
@@ -523,7 +523,7 @@ impl OperationRef {
     pub fn validate(&self) -> Result<(), AuthBusContractError> {
         validate_schema(self.schema_version, "OperationRef")?;
         validate_id(&self.operation_id, "operation id")?;
-        validate_text(&self.operation_kind, "operation kind", 128)?;
+        validate_text(&self.operation_kind, "operation kind", /*max_bytes*/ 128)?;
         validate_digest(&self.request_sha256, "operation request")?;
         if let Some(decision) = &self.decision_sha256 {
             validate_digest(decision, "operation decision")?;
@@ -577,11 +577,11 @@ impl CapabilityAttenuation {
         validate_id(&self.attenuation_id, "attenuation id")?;
         validate_digest(&self.parent_capability_sha256, "parent capability")?;
         validate_subject_generation(&self.subject, self.generation)?;
-        validate_text(&self.operation, "attenuated operation", 128)?;
+        validate_text(&self.operation, "attenuated operation", /*max_bytes*/ 128)?;
         validate_digest(&self.resource_sha256, "attenuated resource")?;
         validate_digest(&self.scope_sha256, "attenuated scope")?;
         validate_digest(&self.policy_sha256, "attenuated policy")?;
-        validate_text(&self.audience, "attenuated audience", 512)?;
+        validate_text(&self.audience, "attenuated audience", /*max_bytes*/ 512)?;
         if self.max_usage == 0 {
             return Err(error("attenuated max usage must be non-zero"));
         }
@@ -637,7 +637,7 @@ impl PeerSession {
     pub fn validate(&self) -> Result<(), AuthBusContractError> {
         validate_schema(self.schema_version, "PeerSession")?;
         validate_id(&self.session_id, "peer session id")?;
-        validate_text(self.peer.as_str(), "peer principal", 512)?;
+        validate_text(self.peer.as_str(), "peer principal", /*max_bytes*/ 512)?;
         validate_subject_generation(&self.subject, self.generation)?;
         validate_digest(&self.peer_identity_sha256, "peer identity")?;
         validate_digest(&self.session_nonce_sha256, "session nonce")?;
@@ -749,13 +749,13 @@ impl ResourceAdvertisement {
         validate_schema(self.schema_version, "ResourceAdvertisement")?;
         validate_id(&self.advertisement_id, "advertisement id")?;
         validate_id(&self.resource_id, "advertised resource id")?;
-        validate_text(self.owner.as_str(), "advertisement owner", 512)?;
+        validate_text(self.owner.as_str(), "advertisement owner", /*max_bytes*/ 512)?;
         if let Some(subject) = &self.subject {
             validate_subject_generation(subject, self.generation)?;
         }
-        validate_text(&self.provider_id, "advertised provider", 512)?;
+        validate_text(&self.provider_id, "advertised provider", /*max_bytes*/ 512)?;
         if let Some(model) = &self.model {
-            validate_text(model, "advertised model", 512)?;
+            validate_text(model, "advertised model", /*max_bytes*/ 512)?;
         }
         validate_digest(&self.resource_sha256, "advertised resource")?;
         validate_digest(&self.quota_sha256, "advertised quota")?;

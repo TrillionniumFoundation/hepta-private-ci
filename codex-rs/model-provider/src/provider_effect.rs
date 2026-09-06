@@ -434,7 +434,7 @@ impl ProviderEffectAdapter for HttpProviderEffectAdapter {
         &'a self,
         key: &'a ProviderEffectKey,
     ) -> ProviderEffectFuture<'a, ProviderEffectLookup> {
-        Box::pin(async move { self.lookup_http(key, None).await })
+        Box::pin(async move { self.lookup_http(key, /*payload_sha256*/ None).await })
     }
 
     fn lookup_for_intent<'a>(

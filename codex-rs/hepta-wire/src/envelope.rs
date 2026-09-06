@@ -85,19 +85,19 @@ impl WireEnvelope {
         if encoded[..4] != MAGIC {
             return Err(WireError::Magic);
         }
-        let version = read_u16(encoded, 4)?;
+        let version = read_u16(encoded, /*start*/ 4)?;
         if version != WIRE_VERSION {
             return Err(WireError::Version(version));
         }
-        let schema_length = usize::from(read_u16(encoded, 6)?);
-        let producer_length = usize::from(read_u16(encoded, 8)?);
+        let schema_length = usize::from(read_u16(encoded, /*start*/ 6)?);
+        let producer_length = usize::from(read_u16(encoded, /*start*/ 8)?);
         if !(1..=MAX_ID_BYTES).contains(&schema_length)
             || !(1..=MAX_ID_BYTES).contains(&producer_length)
         {
             return Err(WireError::IdentityLength);
         }
         let generation =
-            Generation::new(read_u64(encoded, 10)?).map_err(|_| WireError::Generation)?;
+            Generation::new(read_u64(encoded, /*start*/ 10)?).map_err(|_| WireError::Generation)?;
         let digest_start = 18;
         let digest_end = digest_start + 32;
         let mut digest = [0; 32];

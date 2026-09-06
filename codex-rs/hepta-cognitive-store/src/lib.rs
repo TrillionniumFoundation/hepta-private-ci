@@ -65,7 +65,7 @@ impl CognitiveStore {
         if maximum_records == 0 {
             return Err(Error::ZeroCapacity);
         }
-        let Ok(sequence) = LogicalSequence::new(1) else {
+        let Ok(sequence) = LogicalSequence::new(/*value*/ 1) else {
             return Err(Error::SequenceOverflow);
         };
         Ok(Self {

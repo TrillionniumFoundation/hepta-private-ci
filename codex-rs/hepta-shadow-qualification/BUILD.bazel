@@ -53,6 +53,7 @@ rust_test(
         "//codex-rs/hepta-learning-artifacts",
         "//codex-rs/hepta-learning-ledger",
         "//codex-rs/hepta-types",
+        "@crates//:pretty_assertions",
         "@crates//:tempfile",
     ],
 )
