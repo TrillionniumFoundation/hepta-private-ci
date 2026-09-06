@@ -23,6 +23,7 @@ LEARNING_README = "docs/learning/README.md"
 MODULES_PATH = "docs/modules/MODULES.json"
 CONTRACTS_PATH = "docs/contracts/CONTRACTS.json"
 PROTOCOLS_PATH = "docs/contracts/PROTOCOL_SCHEMAS.json"
+PROTOCOL_AUTHORITY_PATHS = (CONTRACTS_PATH, PROTOCOLS_PATH)
 DATA_PATH = "docs/data/DATA_AUTHORITY.json"
 WORK_PATH = "docs/delivery/WORK_PACKAGES.json"
 DAG_PATHS = [
@@ -360,6 +361,16 @@ def sha256_text(text: str) -> str:
 
 def word_count(text: str) -> int:
     return len(re.findall(r"\b[\w.-]+\b", text))
+
+
+def protocol_authority_boundary(text: str) -> bool:
+    remaining = text
+    for path in PROTOCOL_AUTHORITY_PATHS:
+        token = f"`{path}`"
+        if token not in remaining:
+            return False
+        remaining = remaining.replace(token, "")
+    return not any(Path(path).name in remaining for path in PROTOCOL_AUTHORITY_PATHS)
 
 
 def false_authority(value: Any, label: str) -> None:
@@ -888,8 +899,7 @@ def verify() -> int:
             doc_id + " implementation marker",
         )
         need(
-            "docs/contracts/CONTRACTS.json" in text
-            and "docs/contracts/PROTOCOL_SCHEMAS.json" in text,
+            protocol_authority_boundary(text),
             doc_id + " protocol authority boundary",
         )
         for module in row["modules"]:
@@ -1089,6 +1099,49 @@ def verify() -> int:
 def self_test() -> int:
     need(len(AUTHORITY_KEYS) == 17, "authority fixture")
     need(len(HEADINGS) == 13, "heading fixture")
+    authority_fixture = (
+        "Canonical production protocols remain owned by "
+        f"`{CONTRACTS_PATH}` and `{PROTOCOLS_PATH}`."
+    )
+    need(
+        protocol_authority_boundary(authority_fixture),
+        "canonical protocol authority fixture",
+    )
+    hostile_authority_cases: list[str] = []
+
+    def rejected_authority(name: str, candidate: str) -> None:
+        need(
+            not protocol_authority_boundary(candidate),
+            "hostile protocol authority fixture accepted: " + name,
+        )
+        hostile_authority_cases.append(name)
+
+    rejected_authority(
+        "abbreviated_protocol_schema",
+        authority_fixture.replace(PROTOCOLS_PATH, Path(PROTOCOLS_PATH).name),
+    )
+    rejected_authority(
+        "abbreviated_contract_registry",
+        authority_fixture.replace(CONTRACTS_PATH, Path(CONTRACTS_PATH).name),
+    )
+    rejected_authority(
+        "wrong_protocol_directory",
+        authority_fixture.replace(
+            PROTOCOLS_PATH, "docs/learning/PROTOCOL_SCHEMAS.json"
+        ),
+    )
+    rejected_authority(
+        "unquoted_canonical_protocol_path",
+        authority_fixture.replace(f"`{PROTOCOLS_PATH}`", PROTOCOLS_PATH),
+    )
+    rejected_authority(
+        "canonical_pair_plus_abbreviated_reference",
+        authority_fixture + " Alias `PROTOCOL_SCHEMAS.json` is forbidden.",
+    )
+    need(
+        len(hostile_authority_cases) == 5,
+        "hostile protocol authority fixture count",
+    )
     try:
         json.loads('{"x":1,"x":2}', object_pairs_hook=pairs)
         raise AssertionError("duplicate key accepted")
@@ -1175,8 +1228,9 @@ def self_test() -> int:
     print(
         json.dumps(
             {
-                "status": "PASS_HEPTA_ALGORITHM_DOCS_SELF_TEST_V3",
+                "status": "PASS_HEPTA_ALGORITHM_DOCS_SELF_TEST_V4",
                 "hostilePaperSourceCases": hostile_cases,
+                "hostileProtocolAuthorityCases": hostile_authority_cases,
                 "authorityGranted": False,
             },
             sort_keys=True,
