@@ -17,6 +17,7 @@ EXPECTED_HEAD = "7e1e611e7299391cf3d4edc1ded322da0d023cc6"
 EXPECTED_MAIN = "968968046d69d000f1f9fe03683e92aa7903cf99"
 EXPECTED_PROBE_RUNS = [34022297088, 34022298108]
 REASON_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:/-]{0,127}$")
+TRAVERSAL_SEGMENT_RE = re.compile(r"(?:^|/)\.\.(?:/|$)")
 ROOT = Path(__file__).resolve().parents[3]
 REQUEST_ROOT = ROOT / ".g1" / "requests" / "trillionnium-os"
 BUNDLE_NAMES = (
@@ -49,6 +50,13 @@ class VerificationError(ValueError):
 def require(condition: bool, message: str) -> None:
     if not condition:
         raise VerificationError(message)
+
+
+def valid_reason(value: str) -> bool:
+    return (
+        REASON_RE.fullmatch(value) is not None
+        and TRAVERSAL_SEGMENT_RE.search(value) is None
+    )
 
 
 def reject_pairs(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
@@ -131,22 +139,31 @@ def verify_workflows(root: Path) -> None:
     require("\n  push:" not in desktop and "\n  push:" not in fleet,
             "availability probe is push-triggered")
 
+    length_guard = 'test "${#PROBE_REASON}" -le 128'
     grammar = '[[ "$PROBE_REASON" =~ ^[A-Za-z0-9][A-Za-z0-9._:/-]{0,127}$ ]]'
+    traversal_guard = '[[ ! "/$PROBE_REASON/" =~ /\\.\\./ ]]'
     for name, text, count in (("desktop", desktop, 1), ("fleet", fleet, 3)):
         expression_lines = [line for line in text.splitlines() if "${{ inputs.reason }}" in line]
         require(len(expression_lines) == count, f"{name} reason expression count drifted")
         require(all("PROBE_REASON:" in line for line in expression_lines),
                 f"{name} interpolates reason into shell source")
+        require(text.count(length_guard) == count, f"{name} reason length guard drifted")
         require(text.count(grammar) == count, f"{name} reason grammar drifted")
+        require(text.count(traversal_guard) == count,
+                f"{name} traversal-segment guard drifted")
         require(text.count('"$PROBE_REASON"') >= count, f"{name} reason is not quoted")
 
-    positives = ("operator-check", "trillionnium-os-promoted-main-968968", "manual:TICKET/ABC-123")
+    positives = (
+        "operator-check", "trillionnium-os-promoted-main-968968",
+        "manual:TICKET/ABC-123", "operator/a..b",
+    )
     negatives = (
         "", "has space", "x';touch/tmp/pwn", "$(touch/tmp/pwn)", "`touch/tmp/pwn`",
         "a\nb", "a\rb", "a;id", "${{github.token}}", 'x"y', "../escape",
+        "a/../b", "a/..", "a/../../b",
     )
-    require(all(REASON_RE.fullmatch(value) for value in positives), "safe reason rejected")
-    require(not any(REASON_RE.fullmatch(value) for value in negatives), "hostile reason accepted")
+    require(all(valid_reason(value) for value in positives), "safe reason rejected")
+    require(not any(valid_reason(value) for value in negatives), "hostile reason accepted")
 
 
 def verify_bundle() -> None:
