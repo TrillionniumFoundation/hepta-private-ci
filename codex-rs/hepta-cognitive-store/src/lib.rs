@@ -9,8 +9,12 @@ use std::collections::BTreeMap;
 use std::error::Error as StdError;
 use std::fmt;
 
-use codex_hepta_cognitive_types::{MemoryRecord, RecordState};
-use codex_hepta_types::{AuthorityPosture, Digest32, LogicalSequence, StableId};
+use codex_hepta_cognitive_types::MemoryRecord;
+use codex_hepta_cognitive_types::RecordState;
+use codex_hepta_types::AuthorityPosture;
+use codex_hepta_types::Digest32;
+use codex_hepta_types::LogicalSequence;
+use codex_hepta_types::StableId;
 
 const MAX_RECORDS: usize = 16_384;
 
@@ -23,6 +27,7 @@ pub enum AppendDisposition {
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct StoreReceipt {
     pub record_id: StableId,
+    /// Original commit sequence of this revision, including on identical retry.
     pub sequence: LogicalSequence,
     pub record_digest: Digest32,
     pub disposition: AppendDisposition,
@@ -50,8 +55,14 @@ impl fmt::Display for Error {
 impl StdError for Error {}
 
 #[derive(Clone, Debug, Eq, PartialEq)]
+struct StoredRecord {
+    record: MemoryRecord,
+    sequence: LogicalSequence,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub struct CognitiveStore {
-    records: BTreeMap<StableId, MemoryRecord>,
+    records: BTreeMap<StableId, StoredRecord>,
     sequence: LogicalSequence,
     maximum_records: usize,
 }
@@ -82,9 +93,16 @@ impl CognitiveStore {
         let digest = record.record_digest();
 
         if let Some(existing) = self.records.get(&record.record_id) {
+            let committed_sequence = existing.sequence;
+            let existing = &existing.record;
             let existing_digest = existing.record_digest();
             if existing_digest == digest {
-                return Ok(self.receipt(record.record_id, digest, AppendDisposition::Unchanged));
+                return Ok(Self::receipt(
+                    record.record_id,
+                    digest,
+                    committed_sequence,
+                    AppendDisposition::Unchanged,
+                ));
             }
             if existing.state == RecordState::Tombstone {
                 return Err(Error::ResurrectionDenied);
@@ -94,7 +112,7 @@ impl CognitiveStore {
             {
                 return Err(Error::StalePredecessor);
             }
-            if record.revision.get() != existing.revision.get().saturating_add(1) {
+            if existing.revision.next().ok() != Some(record.revision) {
                 return Err(Error::RevisionNotAdvanced);
             }
         } else {
@@ -109,31 +127,48 @@ impl CognitiveStore {
             }
         }
 
+        // Preflight every fallible transition before publishing the record.
+        // In particular, exhaustion must not leave an unacknowledged mutation.
+        let next_sequence = self.sequence.next().map_err(|_| Error::SequenceOverflow)?;
         let record_id = record.record_id.clone();
-        self.records.insert(record_id.clone(), record);
-        self.sequence = self.sequence.next().map_err(|_| Error::SequenceOverflow)?;
-        Ok(self.receipt(record_id, digest, AppendDisposition::Inserted))
+        self.records.insert(
+            record_id.clone(),
+            StoredRecord {
+                record,
+                sequence: next_sequence,
+            },
+        );
+        self.sequence = next_sequence;
+        Ok(Self::receipt(
+            record_id,
+            digest,
+            next_sequence,
+            AppendDisposition::Inserted,
+        ))
     }
 
     #[must_use]
     pub fn get(&self, record_id: &StableId) -> Option<&MemoryRecord> {
-        self.records.get(record_id)
+        self.records.get(record_id).map(|stored| &stored.record)
     }
 
     #[must_use]
     pub fn snapshot_records(&self) -> Vec<MemoryRecord> {
-        self.records.values().cloned().collect()
+        self.records
+            .values()
+            .map(|stored| stored.record.clone())
+            .collect()
     }
 
     fn receipt(
-        &self,
         record_id: StableId,
         record_digest: Digest32,
+        sequence: LogicalSequence,
         disposition: AppendDisposition,
     ) -> StoreReceipt {
         StoreReceipt {
             record_id,
-            sequence: self.sequence,
+            sequence,
             record_digest,
             disposition,
             authority: AuthorityPosture::DENY_ALL,
