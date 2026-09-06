@@ -2,6 +2,8 @@
 
 #![forbid(unsafe_code)]
 
+mod v2;
+
 use std::collections::BTreeMap;
 use std::collections::BTreeSet;
 use std::error::Error as StdError;
@@ -13,6 +15,11 @@ use codex_hepta_cognitive_types::MemoryRecord;
 use codex_hepta_cognitive_types::RecordState;
 use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
+pub use v2::MAX_ENCODED_READ_RESULT_BYTES_V2;
+pub use v2::ReadRequestV2;
+pub use v2::ReadResultV2;
+pub use v2::ReadV2Error;
+pub use v2::read_v2;
 
 const MAX_RESULTS: usize = 1_024;
 
