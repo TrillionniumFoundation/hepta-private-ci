@@ -195,7 +195,7 @@ impl SecretRef {
     }
 
     pub fn validate(&self) -> Result<(), AuthBusContractError> {
-        validate_text(&self.backend, "secret backend", 128)?;
+        validate_text(&self.backend, "secret backend", /*max_bytes*/ 128)?;
         validate_text(&self.reference, "secret reference", MAX_TEXT_BYTES)?;
         Ok(())
     }
@@ -1122,8 +1122,16 @@ impl AuthBusSourceManifest {
         ] {
             validate_text(value, label, MAX_TEXT_BYTES)?;
         }
-        validate_lowercase_hex(&self.candidate.commit, "candidate commit", 40)?;
-        validate_lowercase_hex(&self.candidate.tree, "candidate tree", 40)?;
+        validate_lowercase_hex(
+            &self.candidate.commit,
+            "candidate commit",
+            /*expected_len*/ 40,
+        )?;
+        validate_lowercase_hex(
+            &self.candidate.tree,
+            "candidate tree",
+            /*expected_len*/ 40,
+        )?;
         for (label, value) in [
             ("upstream ref", self.refs.upstream.as_str()),
             ("base ref", self.refs.base.as_str()),
@@ -1187,8 +1195,16 @@ impl AuthBusSourceManifest {
         expected_tree: &str,
     ) -> Result<(), AuthBusContractError> {
         self.validate()?;
-        validate_lowercase_hex(expected_commit, "expected candidate commit", 40)?;
-        validate_lowercase_hex(expected_tree, "expected candidate tree", 40)?;
+        validate_lowercase_hex(
+            expected_commit,
+            "expected candidate commit",
+            /*expected_len*/ 40,
+        )?;
+        validate_lowercase_hex(
+            expected_tree,
+            "expected candidate tree",
+            /*expected_len*/ 40,
+        )?;
         if self.candidate.commit != expected_commit {
             return Err(AuthBusContractError::new(
                 "source manifest candidate commit does not match observed checkout",

@@ -45,8 +45,8 @@ impl ParsedSecretReferenceV1 {
             reference_id,
             MAX_SECRET_REFERENCE_COMPONENT_BYTES,
         )?;
-        ensure_bound("version", version, 20)?;
-        ensure_bound("secret digest", secret_digest, 64)?;
+        ensure_bound("version", version, /*maximum*/ 20)?;
+        ensure_bound("secret digest", secret_digest, /*maximum*/ 64)?;
         if backend_id != HEPTABAO_BACKEND_ID {
             return Err(SecretBoundaryErrorV1::UnsupportedBackend);
         }

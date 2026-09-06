@@ -68,25 +68,31 @@ impl ObjectiveSourceEnvelopeV1 {
     /// success does not admit a source to the existing scalar compiler. No
     /// cross-array conflict, unsupported operator or trust label is rewritten.
     pub fn validate_structure(&self) -> Result<(), ObjectiveStructureError> {
-        text_bytes(&self.request_id, "requestId", 128)?;
-        text_bytes(&self.locale, "locale", 32)?;
-        text_bytes(&self.observed_at, "observedAt", 64)?;
+        text_bytes(&self.request_id, "requestId", /*maximum*/ 128)?;
+        text_bytes(&self.locale, "locale", /*maximum*/ 32)?;
+        text_bytes(&self.observed_at, "observedAt", /*maximum*/ 64)?;
         if let Some(deadline) = &self.deadline {
-            text_bytes(deadline, "deadline", 64)?;
+            text_bytes(deadline, "deadline", /*maximum*/ 64)?;
         }
         let intent = &self.structured_intent;
         for (predicates, field) in [
             (&intent.success_predicates, "successPredicates"),
             (&intent.terminal_conditions, "terminalConditions"),
         ] {
-            collection(predicates, field, 1, 128, |value| &value.predicate_id)?;
+            collection(
+                predicates,
+                field,
+                /*minimum*/ 1,
+                /*maximum*/ 128,
+                |value| &value.predicate_id,
+            )?;
             for predicate in predicates {
-                text_bytes(&predicate.predicate_id, "predicateId", 128)?;
-                text_bytes(&predicate.unit, "predicate.unit", 64)?;
+                text_bytes(&predicate.predicate_id, "predicateId", /*maximum*/ 128)?;
+                text_bytes(&predicate.unit, "predicate.unit", /*maximum*/ 64)?;
                 text_bytes(
                     &predicate.evidence_source_id,
                     "predicate.evidenceSourceId",
-                    256,
+                    /*maximum*/ 256,
                 )?;
             }
         }
@@ -103,46 +109,72 @@ impl ObjectiveSourceEnvelopeV1 {
                 0,
             ),
         ] {
-            collection(actions, field, minimum, 128, String::as_str)?;
+            collection(
+                actions,
+                field,
+                minimum,
+                /*maximum*/ 128,
+                String::as_str,
+            )?;
             for action in actions {
-                text_bytes(action, field, 128)?;
+                text_bytes(action, field, /*maximum*/ 128)?;
             }
         }
-        collection(&intent.constraints, "constraints", 1, 256, |value| {
-            &value.constraint_id
-        })?;
+        collection(
+            &intent.constraints,
+            "constraints",
+            /*minimum*/ 1,
+            /*maximum*/ 256,
+            |value| &value.constraint_id,
+        )?;
         for constraint in &intent.constraints {
-            text_bytes(&constraint.constraint_id, "constraintId", 128)?;
-            text_bytes(&constraint.unit, "constraint.unit", 64)?;
+            text_bytes(
+                &constraint.constraint_id,
+                "constraintId",
+                /*maximum*/ 128,
+            )?;
+            text_bytes(&constraint.unit, "constraint.unit", /*maximum*/ 64)?;
             text_bytes(
                 &constraint.evidence_source_id,
                 "constraint.evidenceSourceId",
-                256,
+                /*maximum*/ 256,
             )?;
         }
-        collection(&intent.soft_dimensions, "softDimensions", 0, 64, |value| {
-            &value.dimension_id
-        })?;
+        collection(
+            &intent.soft_dimensions,
+            "softDimensions",
+            /*minimum*/ 0,
+            /*maximum*/ 64,
+            |value| &value.dimension_id,
+        )?;
         for dimension in &intent.soft_dimensions {
-            text_bytes(&dimension.dimension_id, "dimensionId", 128)?;
-            text_bytes(&dimension.unit, "dimension.unit", 64)?;
+            text_bytes(&dimension.dimension_id, "dimensionId", /*maximum*/ 128)?;
+            text_bytes(&dimension.unit, "dimension.unit", /*maximum*/ 64)?;
         }
         collection(
             &intent.evidence_requirements,
             "evidenceRequirements",
-            1,
-            128,
+            /*minimum*/ 1,
+            /*maximum*/ 128,
             |value| &value.requirement_id,
         )?;
         for requirement in &intent.evidence_requirements {
-            text_bytes(&requirement.requirement_id, "requirementId", 128)?;
+            text_bytes(
+                &requirement.requirement_id,
+                "requirementId",
+                /*maximum*/ 128,
+            )?;
             text_bytes(
                 &requirement.evidence_source_id,
                 "requirement.evidenceSourceId",
-                256,
+                /*maximum*/ 256,
             )?;
         }
-        text_bytes(&intent.risk.abstention_rule, "risk.abstentionRule", 512)
+        text_bytes(
+            &intent.risk.abstention_rule,
+            "risk.abstentionRule",
+            /*maximum*/ 512,
+        )
     }
 }
 
@@ -181,7 +213,7 @@ fn collection<T>(
         let key = key(value);
         // Every semantic key in this grammar has a 128-byte ceiling. Check it
         // before ordered comparisons so invalid large keys do not expand work.
-        text_bytes(key, field, 128)?;
+        text_bytes(key, field, /*maximum*/ 128)?;
         if !keys.insert(key) {
             return Err(ObjectiveStructureError::DuplicateSemanticKey { field, index });
         }
