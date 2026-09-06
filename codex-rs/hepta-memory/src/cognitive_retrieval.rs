@@ -24,6 +24,14 @@ use crate::StableMemoryId;
 use crate::cognitive_store::decode_scope;
 use crate::cognitive_store::unavailable;
 
+#[path = "cognitive_retrieval_observation.rs"]
+mod observation;
+use observation::ChannelOutput;
+pub use observation::ObservedRetrievalCandidate;
+pub use observation::RetrievalChannelObservation;
+pub use observation::RetrievalLimitObservation;
+pub use observation::RetrievalObservation;
+
 pub const MAX_RETRIEVAL_QUERY_BYTES: usize = 2 * 1024;
 pub const MAX_RETRIEVAL_CHANNEL_CANDIDATES: usize = 32;
 pub const MAX_RETRIEVAL_RESULTS: usize = 4;
@@ -284,15 +292,7 @@ impl CognitiveStore {
         access: &CognitiveAccess,
         request: &RetrievalRequest,
     ) -> Result<RetrievalBatch, CognitiveStoreError> {
-        self.authorize(access, &CognitiveScope::AgentPrivate)?;
-        if request.query.trim().is_empty() || request.query.len() > MAX_RETRIEVAL_QUERY_BYTES {
-            return Err(CognitiveStoreError::Invalid(format!(
-                "retrieval query must contain 1..={MAX_RETRIEVAL_QUERY_BYTES} bytes"
-            )));
-        }
-        let fts_query = bounded_fts_query(&request.query).ok_or_else(|| {
-            CognitiveStoreError::Invalid("retrieval query contains no searchable terms".to_string())
-        })?;
+        let fts_query = self.validate_retrieval_request(access, request)?;
         let mut transaction = self.pool.begin().await.map_err(unavailable)?;
         let batch = self
             .retrieve_memory_candidates_tx(&mut transaction, access, request, &fts_query)
@@ -308,58 +308,18 @@ impl CognitiveStore {
         request: &RetrievalRequest,
         fts_query: &str,
     ) -> Result<RetrievalBatch, CognitiveStoreError> {
-        let workspace = access.workspace_sha256().map(Sha256Digest::as_str);
-        let memory_fts = self
-            .memory_fts_channel_tx(transaction, access, fts_query, request.now_unix_seconds)
+        let generated = self
+            .generate_retrieval_tx(transaction, access, request, fts_query)
             .await?;
-        let entity_seeds = self
-            .entity_fts_channel_tx(transaction, access, fts_query, request.now_unix_seconds)
+        let candidates = self
+            .resolve_retrieval_tx(
+                transaction,
+                access,
+                request,
+                generated.ranked,
+                MAX_RETRIEVAL_RESULTS,
+            )
             .await?;
-        let entity = entity_seeds
-            .iter()
-            .map(|seed| seed.memory.clone())
-            .collect::<Vec<_>>();
-        let graph = self
-            .graph_channel_tx(transaction, &entity_seeds, request.now_unix_seconds)
-            .await?;
-        let recency = self
-            .recency_channel_tx(transaction, workspace, request.now_unix_seconds)
-            .await?;
-        let mut ranked = BTreeMap::new();
-        add_rrf_channel(&mut ranked, &memory_fts, RetrievalChannel::MemoryFts);
-        add_rrf_channel(&mut ranked, &entity, RetrievalChannel::EntityFts);
-        add_rrf_channel(&mut ranked, &graph, RetrievalChannel::GraphOneHop);
-        add_rrf_channel(&mut ranked, &recency, RetrievalChannel::Recency);
-        let mut ranked = ranked.into_iter().collect::<Vec<_>>();
-        ranked.sort_by(|left, right| {
-            right
-                .1
-                .score
-                .cmp(&left.1.score)
-                .then_with(|| left.0.cmp(&right.0))
-        });
-        let mut candidates = Vec::with_capacity(MAX_RETRIEVAL_RESULTS);
-        for (key, rank) in ranked {
-            if candidates.len() == MAX_RETRIEVAL_RESULTS {
-                break;
-            }
-            let memory_id =
-                StableMemoryId::parse(key.memory_id).map_err(CognitiveStoreError::Corrupt)?;
-            let explanation = self
-                .explain_memory_head_tx(transaction, access, &memory_id)
-                .await?;
-            if explanation.memory.id.revision != key.revision
-                || !eligible(&explanation.memory, request.now_unix_seconds)
-            {
-                continue;
-            }
-            candidates.push(RetrievalCandidate {
-                memory: explanation.memory.clone(),
-                reciprocal_rank_score: rank.score,
-                channels: rank.channels.into_iter().collect(),
-                revalidation: binding_from_explanation(&explanation),
-            });
-        }
         Ok(RetrievalBatch {
             query_sha256: Sha256Digest::for_bytes(request.query.as_bytes()),
             candidates,
@@ -555,7 +515,7 @@ impl CognitiveStore {
         access: &CognitiveAccess,
         fts_query: &str,
         now: i64,
-    ) -> Result<Vec<MemoryKey>, CognitiveStoreError> {
+    ) -> Result<ChannelOutput<MemoryKey>, CognitiveStoreError> {
         let rows = sqlx::query(
             "SELECT f.memory_id, f.revision FROM memory_fts f
              JOIN memory_heads h ON h.memory_id = f.memory_id AND h.revision = f.revision
@@ -577,7 +537,12 @@ impl CognitiveStore {
         .fetch_all(&mut **transaction)
         .await
         .map_err(unavailable)?;
-        decode_memory_keys(rows)
+        let limit =
+            RetrievalLimitObservation::for_rows(rows.len(), MAX_RETRIEVAL_CHANNEL_CANDIDATES);
+        Ok(ChannelOutput {
+            values: decode_memory_keys(rows)?,
+            limit,
+        })
     }
 
     async fn entity_fts_channel_tx(
@@ -586,7 +551,7 @@ impl CognitiveStore {
         access: &CognitiveAccess,
         fts_query: &str,
         now: i64,
-    ) -> Result<Vec<EntitySeed>, CognitiveStoreError> {
+    ) -> Result<ChannelOutput<EntitySeed>, CognitiveStoreError> {
         let workspace_scope = access
             .workspace_sha256()
             .map(|workspace_sha256| CognitiveScope::WorkspacePrivate {
@@ -631,8 +596,11 @@ impl CognitiveStore {
         .fetch_all(&mut **transaction)
         .await
         .map_err(unavailable)?;
+        let limit =
+            RetrievalLimitObservation::for_rows(rows.len(), MAX_RETRIEVAL_CHANNEL_CANDIDATES);
         let mut seen = BTreeSet::new();
-        rows.into_iter()
+        let values = rows
+            .into_iter()
             .filter_map(|row| {
                 let result = (|| {
                     let memory = decode_memory_key(&row, "memory_id", "memory_revision")?;
@@ -658,7 +626,8 @@ impl CognitiveStore {
                 })();
                 result.transpose()
             })
-            .collect()
+            .collect::<Result<Vec<_>, _>>()?;
+        Ok(ChannelOutput { values, limit })
     }
 
     async fn graph_channel_tx(
@@ -666,12 +635,14 @@ impl CognitiveStore {
         transaction: &mut Transaction<'_, Sqlite>,
         seeds: &[EntitySeed],
         now: i64,
-    ) -> Result<Vec<MemoryKey>, CognitiveStoreError> {
+    ) -> Result<ChannelOutput<MemoryKey>, CognitiveStoreError> {
         let mut queried_canonical_entities = BTreeSet::new();
         let mut seen = BTreeSet::new();
         let mut result = Vec::new();
+        let mut limit = RetrievalLimitObservation::Exhausted;
         'seeds: for seed in seeds {
             if result.len() >= MAX_RETRIEVAL_CHANNEL_CANDIDATES {
+                limit = RetrievalLimitObservation::LimitReached;
                 break;
             }
             if !queried_canonical_entities.insert((
@@ -741,6 +712,9 @@ impl CognitiveStore {
             .fetch_all(&mut **transaction)
             .await
             .map_err(unavailable)?;
+            if rows.len() >= remaining {
+                limit = RetrievalLimitObservation::LimitReached;
+            }
             for row in rows {
                 for key in [
                     decode_memory_key(&row, "edge_memory_id", "edge_memory_revision")?,
@@ -750,12 +724,16 @@ impl CognitiveStore {
                         result.push(key);
                     }
                     if result.len() >= MAX_RETRIEVAL_CHANNEL_CANDIDATES {
+                        limit = RetrievalLimitObservation::LimitReached;
                         break 'seeds;
                     }
                 }
             }
         }
-        Ok(result)
+        Ok(ChannelOutput {
+            values: result,
+            limit,
+        })
     }
 
     #[cfg(test)]
@@ -788,7 +766,8 @@ impl CognitiveStore {
         let mut transaction = self.pool.begin().await.map_err(unavailable)?;
         let keys = self.graph_channel_tx(&mut transaction, &seeds, now).await?;
         transaction.commit().await.map_err(unavailable)?;
-        keys.into_iter()
+        keys.values
+            .into_iter()
             .map(|key| {
                 Ok(MemoryRevisionId {
                     memory_id: StableMemoryId::parse(key.memory_id)
@@ -804,7 +783,7 @@ impl CognitiveStore {
         transaction: &mut Transaction<'_, Sqlite>,
         workspace: Option<&str>,
         now: i64,
-    ) -> Result<Vec<MemoryKey>, CognitiveStoreError> {
+    ) -> Result<ChannelOutput<MemoryKey>, CognitiveStoreError> {
         let rows = sqlx::query(
             "SELECT r.memory_id, r.revision FROM memory_heads h
              JOIN memory_revisions r ON r.memory_id = h.memory_id AND r.revision = h.revision
@@ -824,7 +803,12 @@ impl CognitiveStore {
         .fetch_all(&mut **transaction)
         .await
         .map_err(unavailable)?;
-        decode_memory_keys(rows)
+        let limit =
+            RetrievalLimitObservation::for_rows(rows.len(), MAX_RETRIEVAL_CHANNEL_CANDIDATES);
+        Ok(ChannelOutput {
+            values: decode_memory_keys(rows)?,
+            limit,
+        })
     }
 }
 
