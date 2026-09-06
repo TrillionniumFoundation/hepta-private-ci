@@ -32,16 +32,10 @@ jobs:
 
           source = Path('/tmp/helper.yml')
           text = source.read_text(encoding='utf-8')
-          old = '''              occurrences = text.count(old)
-              if count is not None and occurrences != count:
-                  raise SystemExit(
-                      f"{path}: expected {count} occurrences of {old!r}, found {occurrences}"
-                  )
-'''
-          if old not in text:
-              raise SystemExit('helper cardinality block not found')
+          start = text.index("              occurrences = text.count(old)\n")
+          end = text.index("              target.write_text", start)
           Path('.github/workflows/hepta-gap-closure.yml').write_text(
-              text.replace(old, '', 1), encoding='utf-8'
+              text[:start] + text[end:], encoding='utf-8'
           )
           extra = Path('.github/workflows/hepta-blocker-helper-repair.yml')
           if extra.exists():
