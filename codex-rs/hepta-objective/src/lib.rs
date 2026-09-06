@@ -8,10 +8,25 @@
 
 mod compiler;
 mod error;
+mod feasibility;
+mod feasibility_model;
 mod model;
+mod scalar_adapter;
 
 pub use compiler::compile;
 pub use error::ObjectiveError;
+pub use feasibility::check_feasibility_v1;
+pub use feasibility_model::AtomPrecedenceV1;
+pub use feasibility_model::AtomPredicateV1;
+pub use feasibility_model::ConstraintAtomV1;
+pub use feasibility_model::FeasibilityOutcomeV1;
+pub use feasibility_model::FeasibilityReceiptV1;
+pub use feasibility_model::FeasibleAssignmentV1;
+pub use feasibility_model::IdentityValueV1;
+pub use feasibility_model::OracleBudgetV1;
+pub use feasibility_model::RegisteredAxisV1;
+pub use feasibility_model::RegisteredDomainV1;
+pub use feasibility_model::RegisteredGrammarV1;
 pub use model::ActionClass;
 pub use model::CompileDisposition;
 pub use model::ConfirmationPolicy;

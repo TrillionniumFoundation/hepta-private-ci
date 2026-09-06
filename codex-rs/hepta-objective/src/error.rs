@@ -14,6 +14,8 @@ pub enum ObjectiveError {
     EmptyDigest(&'static str),
     InvalidSoftWeight(String),
     UntrustedAuthorityEscalation,
+    UnsupportedConstraintLanguage,
+    FeasibilityBudgetExhausted,
     Arithmetic,
 }
 
@@ -28,6 +30,8 @@ impl ObjectiveError {
             Self::EmptyPrincipalScope => "OBJ-E003",
             Self::EmptyDigest(_) => "OBJ-E004",
             Self::UntrustedAuthorityEscalation => "OBJ-E009",
+            Self::UnsupportedConstraintLanguage => "OBJ-E002",
+            Self::FeasibilityBudgetExhausted => "OBJ-E007",
         }
     }
 }
@@ -51,6 +55,12 @@ impl fmt::Display for ObjectiveError {
                 "untrusted evidence cannot create privileged constraints or legal actions",
             ),
             Self::Arithmetic => formatter.write_str("objective fixed-point arithmetic failed"),
+            Self::UnsupportedConstraintLanguage => {
+                formatter.write_str("objective constraint language is unsupported")
+            }
+            Self::FeasibilityBudgetExhausted => formatter.write_str(
+                "objective feasibility budget exhausted; original constraints remain unchanged",
+            ),
         }
     }
 }

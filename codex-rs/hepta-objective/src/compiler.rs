@@ -1,4 +1,3 @@
-use std::collections::BTreeMap;
 use std::collections::BTreeSet;
 
 use codex_hepta_types::Digest32;
@@ -9,7 +8,6 @@ use crate::ActionClass;
 use crate::CompileDisposition;
 use crate::ConfirmationPolicy;
 use crate::Constraint;
-use crate::ConstraintRelation;
 use crate::ObjectiveCompileReceipt;
 use crate::ObjectiveConflictReceipt;
 use crate::ObjectiveError;
@@ -26,19 +24,6 @@ const OBJECTIVE_DIGEST_DOMAIN: &[u8] = b"hepta.objective.v1";
 const CONFLICT_DIGEST_DOMAIN: &[u8] = b"hepta.objective.conflict.v1";
 const CONSTRAINT_DIGEST_DOMAIN: &[u8] = b"hepta.objective.constraints.v1";
 
-#[derive(Clone, Debug)]
-struct IntervalBound {
-    value: FixedQ32,
-    id: StableId,
-}
-
-#[derive(Default)]
-struct Interval {
-    lower: Option<IntervalBound>,
-    upper: Option<IntervalBound>,
-    equal: Option<IntervalBound>,
-}
-
 /// Compiles a typed source envelope into an immutable objective or an explicit
 /// minimal conflict receipt.
 pub fn compile(
@@ -53,7 +38,7 @@ pub fn compile(
     source.forbidden_actions.dedup();
     source.soft_preferences.sort_by(preference_order);
 
-    if let Some(conflicting_ids) = find_constraint_conflict(&source.constraints) {
+    if let Some(conflicting_ids) = crate::scalar_adapter::scalar_conflict(&source)? {
         return Ok(Err(conflict_receipt(&source, conflicting_ids)));
     }
 
@@ -75,15 +60,19 @@ pub fn compile(
     }
 
     let abstain = StableId::new("abstain").map_err(|_| ObjectiveError::Arithmetic)?;
-    if !legal_actions.iter().any(|action| action.id == abstain) {
+    if !forbidden.contains(&abstain) && !legal_actions.iter().any(|action| action.id == abstain) {
         legal_actions.push(ActionClass {
-            id: abstain,
+            id: abstain.clone(),
             confirmation: ConfirmationPolicy::NotRequired,
         });
         legal_actions.sort_by(action_order);
     }
+    if legal_actions.is_empty() {
+        return Ok(Err(conflict_receipt(&source, vec![abstain])));
+    }
+    validate_count("compiled legal actions", legal_actions.len(), MAX_ACTIONS)?;
 
-    let disposition = if legal_actions.len() == 1 {
+    let disposition = if legal_actions.len() == 1 && legal_actions[0].id == abstain {
         CompileDisposition::ExplicitAbstain
     } else {
         CompileDisposition::Compiled
@@ -210,70 +199,6 @@ fn validate_soft_preferences(source: &ObjectiveSourceEnvelope) -> Result<(), Obj
         }
     }
     Ok(())
-}
-
-fn find_constraint_conflict(constraints: &[Constraint]) -> Option<Vec<StableId>> {
-    let mut intervals: BTreeMap<StableId, Interval> = BTreeMap::new();
-    for constraint in constraints {
-        let interval = intervals.entry(constraint.axis.clone()).or_default();
-        let candidate = IntervalBound {
-            value: constraint.bound,
-            id: constraint.id.clone(),
-        };
-        match constraint.relation {
-            ConstraintRelation::AtLeast => {
-                if interval
-                    .lower
-                    .as_ref()
-                    .is_none_or(|current| candidate.value > current.value)
-                {
-                    interval.lower = Some(candidate);
-                }
-            }
-            ConstraintRelation::AtMost => {
-                if interval
-                    .upper
-                    .as_ref()
-                    .is_none_or(|current| candidate.value < current.value)
-                {
-                    interval.upper = Some(candidate);
-                }
-            }
-            ConstraintRelation::Equal => {
-                if let Some(current) = &interval.equal
-                    && current.value != candidate.value
-                {
-                    return Some(sorted_pair(&current.id, &candidate.id));
-                }
-                interval.equal = Some(candidate);
-            }
-        }
-
-        if let (Some(lower), Some(upper)) = (&interval.lower, &interval.upper)
-            && lower.value > upper.value
-        {
-            return Some(sorted_pair(&lower.id, &upper.id));
-        }
-        if let Some(equal) = &interval.equal {
-            if let Some(lower) = &interval.lower
-                && equal.value < lower.value
-            {
-                return Some(sorted_pair(&equal.id, &lower.id));
-            }
-            if let Some(upper) = &interval.upper
-                && equal.value > upper.value
-            {
-                return Some(sorted_pair(&equal.id, &upper.id));
-            }
-        }
-    }
-    None
-}
-
-fn sorted_pair(left: &StableId, right: &StableId) -> Vec<StableId> {
-    let mut values = vec![left.clone(), right.clone()];
-    values.sort();
-    values
 }
 
 fn conflict_receipt(
