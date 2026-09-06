@@ -57,9 +57,19 @@
   ],
   "observations": {
     "automatic_redispatch_count": 0,
+    "availability_probe_dispatch_count": 2,
+    "availability_probe_dispatch_workflow_run_ids": [
+      34022297088,
+      34022298108
+    ],
+    "candidate_controlled_dispatcher_retired": true,
+    "candidate_controlled_dispatcher_run_id": 34018916537,
+    "candidate_controlled_self_hosted_inventory_cancelled_before_allocation": true,
+    "candidate_controlled_self_hosted_inventory_run_id": 34022826520,
     "exact_head_checks_passed": true,
     "github_prospective_merge": "d830eb3a0d4e1f68feda78eb953d3affe76f0c19",
     "independent_non_author_approval": true,
+    "probe_dispatch_was_evidence_capture": false,
     "protected_integration_method": "squash",
     "protected_integration_observed": true,
     "protected_main_commit": "968968046d69d000f1f9fe03683e92aa7903cf99",
@@ -74,9 +84,12 @@
     "source_workflow_run_id": 34014361107,
     "synthetic_merge_checks_passed": true,
     "synthetic_merge_commit": "906aa352f9b714940504c4071e8d15f7937f3411",
-    "synthetic_merge_workflow_run_id": 34017552361
+    "synthetic_merge_workflow_run_id": 34017552361,
+    "target_authorization_nonce_consumed_count": 0,
+    "target_evidence_capture_dispatch_count": 0,
+    "target_evidence_package_count": 0
   },
-  "package_id": "sha256:5969ce9801f672299a3e02dec41bdc23488d148598b0e3d688fcd7d3ca01caf9",
+  "package_id": "sha256:03369d6115e587b0baf207c3d361689913853814465a8e881a2f617d98a62e39",
   "program_revision": "2026-08-31-g1",
   "public_release": false,
   "retention_days": 30,
