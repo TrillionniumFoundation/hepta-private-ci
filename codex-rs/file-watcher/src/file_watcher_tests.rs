@@ -20,7 +20,7 @@ fn notify_event(kind: EventKind, paths: Vec<PathBuf>) -> Event {
     event
 }
 
-#[tokio::test]
+#[tokio::test(start_paused = true)]
 async fn throttled_receiver_coalesces_within_interval() {
     let (tx, rx) = watch_channel();
     let mut throttled = ThrottledWatchReceiver::new(rx, TEST_THROTTLE_INTERVAL);
@@ -36,10 +36,11 @@ async fn throttled_receiver_coalesces_within_interval() {
         })
     );
 
-    tx.add_changed_paths(&[path("b"), path("c")]).await;
+    tx.add_changed_paths(&[path("b")]).await;
     let blocked = timeout(TEST_THROTTLE_INTERVAL / 2, throttled.recv()).await;
     assert_eq!(blocked.is_err(), true);
 
+    tx.add_changed_paths(&[path("c")]).await;
     let second = timeout(TEST_THROTTLE_INTERVAL * 2, throttled.recv())
         .await
         .expect("second emit timeout");
@@ -86,7 +87,7 @@ async fn throttled_receiver_flushes_pending_on_shutdown() {
     assert_eq!(closed, None);
 }
 
-#[tokio::test]
+#[tokio::test(start_paused = true)]
 async fn debounced_receiver_coalesces_each_event_batch() {
     let (tx, rx) = watch_channel();
     let mut debounced = DebouncedWatchReceiver::new(rx, TEST_THROTTLE_INTERVAL);
