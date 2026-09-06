@@ -21,7 +21,10 @@ concurrency:
 jobs:
   verify-handoff:
     name: Verify unsigned handoff and trusted probe boundaries
-    runs-on: ubuntu-24.04
+    # The verifier is architecture-neutral and never executes target code.
+    # Use the GitHub-hosted ARM pool so a saturated x64 queue cannot block the
+    # security decision or accidentally route this job to self-hosted runners.
+    runs-on: ubuntu-24.04-arm
     timeout-minutes: 10
     env:
       BASE_SHA: ${{ github.event.pull_request.base.sha }}
