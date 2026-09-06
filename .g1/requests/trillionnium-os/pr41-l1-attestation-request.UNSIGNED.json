@@ -1,0 +1,76 @@
+{
+  "automatic_redispatch": false,
+  "expected_receipt": {
+    "authority": null,
+    "evidence_ids": [
+      "pull-request-review-5124508101",
+      "workflow-run-34014361107-attempt-3",
+      "workflow-run-34017552361-attempt-1",
+      "protected-main-968968046d69d000f1f9fe03683e92aa7903cf99"
+    ],
+    "expires_at_exactly": "2026-10-06T05:38:25Z",
+    "independent_verification": null,
+    "package_ids": [
+      "sha256:5969ce9801f672299a3e02dec41bdc23488d148598b0e3d688fcd7d3ca01caf9"
+    ],
+    "schema": "org.trillionnium.g1.evidence-attestation.v2",
+    "signature_algorithm": "rsa-sha256",
+    "source_commit": "7e1e611e7299391cf3d4edc1ded322da0d023cc6",
+    "subject": {
+      "base": {
+        "commit": "bb0f85e63b251b99a6fb490dfe6406a992d95f45",
+        "ref": "main",
+        "repository": "TrillionniumFoundation/trillionnium-os",
+        "tree": "e4fe8fd1dc4a19d19868ecefbb731099b4772407"
+      },
+      "head": {
+        "commit": "7e1e611e7299391cf3d4edc1ded322da0d023cc6",
+        "ref": "codex/g1-all-gap-closure-20260904",
+        "repository": "TrillionniumFoundation/trillionnium-os",
+        "tree": "04ba2fab66dfc41680784e1288e14c2fc54c58d9"
+      },
+      "merge": {
+        "commit": "906aa352f9b714940504c4071e8d15f7937f3411",
+        "kind": "deterministic_synthetic",
+        "parents": [
+          "bb0f85e63b251b99a6fb490dfe6406a992d95f45",
+          "7e1e611e7299391cf3d4edc1ded322da0d023cc6"
+        ],
+        "tree": "04ba2fab66dfc41680784e1288e14c2fc54c58d9"
+      }
+    },
+    "trust_root": "g1-attestation-root-20260902",
+    "verification_method": null,
+    "verified_at": null,
+    "version": "2"
+  },
+  "forbidden_shortcuts": [
+    "source-author-generated trust key",
+    "repository-workflow self-attestation",
+    "manually editing gap status",
+    "treating this request or package as a detached signature",
+    "promoting any L2-L6 claim"
+  ],
+  "package": {
+    "bytes": 6264,
+    "package_id": "sha256:5969ce9801f672299a3e02dec41bdc23488d148598b0e3d688fcd7d3ca01caf9",
+    "path": "pr41-l1-source-qualification.json",
+    "sha256": "2e3fb115ec9494a1b907d4bdf6c536e2717fdb9f5b2ae233cc06029c7c0e62b3"
+  },
+  "promotion_authorized": false,
+  "public_release": false,
+  "repository": "TrillionniumFoundation/trillionnium-os",
+  "requested_at": "2026-09-06T07:31:53Z",
+  "required_external_actions": [
+    "Independently re-download every declared GitHub Actions artifact and verify byte count and SHA-256.",
+    "Re-read PR #41 review 5124508101 and verify it remains APPROVED on exact head 7e1e611e7299391cf3d4edc1ded322da0d023cc6.",
+    "Verify protected main commit 968968046d69d000f1f9fe03683e92aa7903cf99 is signature-valid and has tree 04ba2fab66dfc41680784e1288e14c2fc54c58d9.",
+    "Create the strict v2 attestation receipt with independent_verification=true only after those checks.",
+    "Sign the exact raw receipt bytes with the independently administered g1-attestation-root-20260902 RSA key.",
+    "Return receipt JSON, detached signature, public key, and pinned public-key SHA-256.",
+    "Run tools/verify-g1-evidence-live.py before any gap transition."
+  ],
+  "schema": "org.trillionnium.g1.evidence-attestation-request.v1",
+  "status": "UNSIGNED_NOT_PROMOTABLE",
+  "version": "1"
+}
