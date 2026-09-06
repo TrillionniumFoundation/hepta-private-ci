@@ -5,8 +5,22 @@
 
 #![forbid(unsafe_code)]
 
+#[path = "embodiment/cart.rs"]
+mod cart;
 mod organ_graph;
+#[path = "embodiment/timing.rs"]
+mod timing;
 
+pub use cart::CART_Q24_SCALE;
+pub use cart::CartCommandV1;
+pub use cart::CartControlMode;
+pub use cart::CartControllerV1;
+pub use cart::CartError;
+pub use cart::CartSensorProfileV1;
+pub use cart::CartSimulatorV1;
+pub use cart::CartStateV1;
+pub use cart::SyntheticCartObservationV1;
+pub use cart::SyntheticCartPlant;
 pub use organ_graph::DataflowTiming;
 pub use organ_graph::FailureDomainV1;
 pub use organ_graph::FallbackTerminal;
@@ -20,6 +34,9 @@ pub use organ_graph::OrganRole;
 pub use organ_graph::OutputPort;
 pub use organ_graph::RuntimeLinkV1;
 pub use organ_graph::ValidatedOrganGraphsV1;
+pub use timing::FixedPriorityTaskV1;
+pub use timing::TimingError;
+pub use timing::fixed_priority_response_times;
 
 use std::error::Error as StdError;
 use std::fmt;
