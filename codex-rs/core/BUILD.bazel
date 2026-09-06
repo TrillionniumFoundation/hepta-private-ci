@@ -56,3 +56,12 @@ codex_rust_crate(
     }),
     unit_test_timeout = "long",
 )
+
+# Caller evidence inspected by the Hepta contracts tests.
+exports_files(
+    [
+        "src/thread_manager.rs",
+        "src/thread_manager_tests.rs",
+    ],
+    visibility = ["//codex-rs/hepta-contracts:__pkg__"],
+)

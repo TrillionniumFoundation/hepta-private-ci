@@ -4,3 +4,16 @@ codex_rust_crate(
     name = "hepta-matrixd",
     crate_name = "codex_hepta_matrixd",
 )
+
+# Caller evidence inspected by the Hepta contracts tests.
+exports_files(
+    [
+        "src/control.rs",
+        "src/lib.rs",
+        "src/main.rs",
+        "src/runtime.rs",
+        "src/tests.rs",
+        "tests/real_synapse_e2e.rs",
+    ],
+    visibility = ["//codex-rs/hepta-contracts:__pkg__"],
+)

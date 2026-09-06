@@ -4,3 +4,12 @@ codex_rust_crate(
     name = "queue",
     crate_name = "codex_queue_extension",
 )
+
+# Caller evidence inspected by the Hepta contracts tests.
+exports_files(
+    [
+        "src/service.rs",
+        "tests/queue_service.rs",
+    ],
+    visibility = ["//codex-rs/hepta-contracts:__pkg__"],
+)

@@ -5,3 +5,11 @@ codex_rust_crate(
     compile_data = glob(["migrations/**"]),
     crate_name = "codex_hepta_memory",
 )
+
+# Caller evidence inspected by the Hepta contracts tests.
+exports_files(
+    [
+        "src/cognitive_federation_tests.rs",
+    ],
+    visibility = ["//codex-rs/hepta-contracts:__pkg__"],
+)

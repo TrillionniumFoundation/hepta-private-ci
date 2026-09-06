@@ -1,4 +1,5 @@
 use super::*;
+use codex_hepta_types::AuthorityPosture;
 use pretty_assertions::assert_eq;
 
 fn id(value: &str) -> StableId {

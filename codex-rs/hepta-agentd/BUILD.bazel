@@ -5,3 +5,16 @@ codex_rust_crate(
     crate_name = "codex_hepta_agentd",
     integration_test_timeout = "long",
 )
+
+# Caller evidence inspected by the Hepta contracts tests.
+exports_files(
+    [
+        "src/config.rs",
+        "src/config_tests.rs",
+        "src/runtime_tests.rs",
+        "tests/cognitive_product_e2e.rs",
+        "tests/five_agent_rolling_upgrade.rs",
+        "tests/supervisord_product_e2e.rs",
+    ],
+    visibility = ["//codex-rs/hepta-contracts:__pkg__"],
+)
