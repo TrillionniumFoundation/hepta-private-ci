@@ -1,0 +1,135 @@
+name: Hepta base format and shear diagnostic
+
+on:
+  push:
+    branches: [ops/hepta-base-format-shear-diagnostic-20260906]
+    paths: [.github/workflows/hepta-base-format-shear-diagnostic.yml]
+
+permissions:
+  contents: read
+
+jobs:
+  render:
+    name: Render exact base formatter and cargo-shear patch
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 30
+    steps:
+      - name: Check out exact integration base
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: b35b55f7767a3610481551c6260929904798b33c
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Bind immutable subject
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$GITHUB_REPOSITORY" = TrillionniumFoundation/hepta-private-ci
+          test "$(git --no-replace-objects rev-parse HEAD)" = b35b55f7767a3610481551c6260929904798b33c
+          test "$(git --no-replace-objects status --porcelain=v1 --untracked-files=all)" = ""
+          mkdir -m 0700 "$RUNNER_TEMP/hepta-base-repair"
+          git --no-replace-objects rev-parse HEAD > "$RUNNER_TEMP/hepta-base-repair/base.txt"
+          git --no-replace-objects rev-parse HEAD^{tree} > "$RUNNER_TEMP/hepta-base-repair/base-tree.txt"
+
+      - uses: ./.github/actions/setup-ci
+
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: "3.13"
+
+      - name: Install exact uv
+        uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b
+        with:
+          version: "0.11.3"
+
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          components: rustfmt
+
+      - name: Install exact cargo-shear
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: cargo-shear@1.11.2
+
+      - name: Record deterministic pre-fix diagnostics
+        shell: bash
+        run: |
+          set -euo pipefail
+          rustc -Vv | tee "$RUNNER_TEMP/hepta-base-repair/toolchain.txt"
+          cargo -V | tee -a "$RUNNER_TEMP/hepta-base-repair/toolchain.txt"
+          uv --version | tee -a "$RUNNER_TEMP/hepta-base-repair/toolchain.txt"
+          just --version | tee -a "$RUNNER_TEMP/hepta-base-repair/toolchain.txt"
+          cargo shear --version | tee -a "$RUNNER_TEMP/hepta-base-repair/toolchain.txt"
+          set +e
+          python3 scripts/format.py --check > "$RUNNER_TEMP/hepta-base-repair/format-before.log" 2>&1
+          printf '%s\n' "$?" > "$RUNNER_TEMP/hepta-base-repair/format-before.exit"
+          (cd codex-rs && cargo shear --format=json) > "$RUNNER_TEMP/hepta-base-repair/shear-before.json" 2> "$RUNNER_TEMP/hepta-base-repair/shear-before.stderr"
+          printf '%s\n' "$?" > "$RUNNER_TEMP/hepta-base-repair/shear-before.exit"
+          set -e
+
+      - name: Apply repository-owned deterministic formatters
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/format.py 2>&1 | tee "$RUNNER_TEMP/hepta-base-repair/format-fix.log"
+          python3 scripts/format.py --check 2>&1 | tee "$RUNNER_TEMP/hepta-base-repair/format-after.log"
+
+      - name: Apply cargo-shear fixes and require strict convergence
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd codex-rs
+          set +e
+          cargo shear --fix > "$RUNNER_TEMP/hepta-base-repair/shear-fix.log" 2>&1
+          code=$?
+          set -e
+          cat "$RUNNER_TEMP/hepta-base-repair/shear-fix.log"
+          test "$code" = 0 -o "$code" = 1
+          cargo shear --deny-warnings --format=json > "$RUNNER_TEMP/hepta-base-repair/shear-after.json"
+
+      - name: Capture bounded repair surface without publishing source
+        shell: bash
+        run: |
+          set -euo pipefail
+          git diff --check
+          git status --porcelain=v1 --untracked-files=all | sed -E 's/^.. //; s/.* -> //' | LC_ALL=C sort > "$RUNNER_TEMP/hepta-base-repair/changed-paths.txt"
+          path_count="$(wc -l < "$RUNNER_TEMP/hepta-base-repair/changed-paths.txt")"
+          test "$path_count" -gt 0
+          test "$path_count" -le 500
+          git diff --stat > "$RUNNER_TEMP/hepta-base-repair/diff-stat.txt"
+          git diff --numstat > "$RUNNER_TEMP/hepta-base-repair/diff-numstat.tsv"
+          git diff --binary --full-index > "$RUNNER_TEMP/hepta-base-repair/repair.patch"
+          sha256sum "$RUNNER_TEMP/hepta-base-repair/repair.patch" > "$RUNNER_TEMP/hepta-base-repair/repair.patch.sha256"
+          sha256sum "$RUNNER_TEMP/hepta-base-repair/changed-paths.txt" > "$RUNNER_TEMP/hepta-base-repair/changed-paths.sha256"
+          python3 -I - <<'PY'
+          import json, os, subprocess
+          from pathlib import Path
+          root = Path(os.environ['RUNNER_TEMP']) / 'hepta-base-repair'
+          paths = root.joinpath('changed-paths.txt').read_text().splitlines()
+          value = {
+              'schema': 'org.trillionnium.hepta.base-format-shear-diagnostic.v1',
+              'repository': os.environ['GITHUB_REPOSITORY'],
+              'base': subprocess.check_output(['git','rev-parse','HEAD'], text=True).strip(),
+              'base_tree': subprocess.check_output(['git','rev-parse','HEAD^{tree}'], text=True).strip(),
+              'changed_path_count': len(paths),
+              'changed_paths': paths,
+              'candidate_tree': subprocess.check_output(['git','add','-A'], text=True) if False else None,
+              'source_published': False,
+              'authority_granted': False,
+              'target_contacted': False,
+              'evidence_promoted': False,
+              'public_release': False,
+          }
+          root.joinpath('summary.json').write_text(json.dumps(value, indent=2, sort_keys=True) + '\n')
+          PY
+          cat "$RUNNER_TEMP/hepta-base-repair/diff-stat.txt"
+
+      - name: Upload diagnostic patch and complete logs
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-base-format-shear-diagnostic-${{ github.run_id }}
+          path: ${{ runner.temp }}/hepta-base-repair
+          if-no-files-found: error
+          retention-days: 7
