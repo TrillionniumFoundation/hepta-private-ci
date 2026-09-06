@@ -401,3 +401,7 @@ fn integrity(reason: IntegrityMismatch) -> LocalShadowError {
 fn arithmetic(reason: ArithmeticInvariant) -> LocalShadowError {
     LocalShadowError::ArithmeticInvariant(reason)
 }
+
+#[cfg(test)]
+#[path = "local_shadow_tests.rs"]
+mod tests;
