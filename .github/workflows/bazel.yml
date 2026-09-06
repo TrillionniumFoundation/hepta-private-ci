@@ -171,6 +171,11 @@ jobs:
           # the PR-blocking critical path after the useful test work is done.
           cache-scope: bazel-test
 
+      - name: Smoke test the native MSVC header parser
+        if: matrix.shard == 1
+        shell: pwsh
+        run: python .github/scripts/llvm_header_parser_smoke.py --bazel-msvc
+
       - name: bazel test shard
         env:
           BAZEL_TEST_SHARD: ${{ matrix.shard }}

@@ -169,6 +169,14 @@ selects an explicitly MSVC-scoped native C toolchain for host macros, preserving
 GNU target compilation and compiler hardening. Actual Windows linking remains
 a separate gate from lock reconciliation.
 
+At `94f906ab0ba0802135f41aac6daf4691278f07df`, all seven Windows
+build jobs stopped at the LLVM header parser's POSIX-only `unistd.h` include;
+the four test shards executed no tests. A scoped LLVM patch adds MSVC file and
+process APIs with explicit argument quoting and compiler exit-status propagation.
+The real patched helper passed six Linux behavior tests. The Windows CI smoke
+builds the actual helper for the MSVC platform and runs those same tests before
+shard one; its native result and the downstream sandbox tests remain required.
+
 The sandbox source candidate propagates required ACL setup errors and closes
 the token before aborting launch. Legacy workspace tokens restrict writes to
 their actual root capabilities; private desktops grant those same restricted
@@ -224,6 +232,12 @@ The native Windows compiler extension at
 run `34052012269`, artifact `9994840015`, three zero exit codes and a candidate
 lock byte-identical to the repository. This does not establish Windows linker
 or sandbox runtime success.
+
+The Objective structural decoder dependencies at
+`bc851d2778e3ac5a753b5dce88b16865a56a3dd5` have a fourth exact-head
+diagnostic: run `34054268307`, artifact `9995493305`, three zero exit codes
+and an unchanged candidate lock. This receipt does not cover the later LLVM
+helper patch or establish canonical Objective admission.
 
 `hepta-audit-remediation.yml` separately tests the immutable source head and a
 synthetic merge with explicit parents. It uses read-only repository permission,

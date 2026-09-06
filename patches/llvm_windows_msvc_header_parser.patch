@@ -1,0 +1,84 @@
+# What: compile the LLVM header-parser helper with native MSVC.
+# Why: MSVC has no unistd.h; its process API also needs explicit argv quoting
+# and synchronous status propagation to preserve the compiler invocation.
+# Non-MSVC toolchains retain the existing POSIX path.
+
+--- a/tools/internal/header_parser.c
++++ b/tools/internal/header_parser.c
+@@ -5,0 +6,6 @@
++#if defined(_MSC_VER)
++#include <io.h>
++#include <process.h>
++#include <stdint.h>
++#include <sys/stat.h>
++#else
+@@ -6,0 +13 @@
++#endif
+@@ -14,0 +22,3 @@
++#if defined(_MSC_VER)
++  int fd = _open(path, _O_WRONLY | _O_CREAT, _S_IREAD | _S_IWRITE);
++#else
+@@ -15,0 +26 @@
++#endif
+@@ -21 +32,6 @@
+-  if (close(fd) != 0) {
++#if defined(_MSC_VER)
++  int close_status = _close(fd);
++#else
++  int close_status = close(fd);
++#endif
++  if (close_status != 0) {
+@@ -33,0 +50,51 @@
++#if defined(_MSC_VER)
++  // The Windows CRT concatenates spawn arguments without quoting them. Preserve
++  // empty arguments, whitespace, quotes, and runs of backslashes for clang's CRT.
++  char **quoted_argv = calloc((size_t)argc + 1, sizeof(*quoted_argv));
++  if (quoted_argv == NULL) {
++    fprintf(stderr, "header_parser: argument allocation failed\n");
++    return 2;
++  }
++  for (int i = 0; i < argc; ++i) {
++    const char *input = argv[i];
++    size_t length = strlen(input);
++    if (length <= (SIZE_MAX - 3) / 2) {
++      quoted_argv[i] = malloc(length * 2 + 3);
++    }
++    if (quoted_argv[i] == NULL) {
++      for (int j = 0; j < i; ++j) free(quoted_argv[j]);
++      free(quoted_argv);
++      fprintf(stderr, "header_parser: argument allocation failed\n");
++      return 2;
++    }
++    char *output = quoted_argv[i];
++    *output++ = '"';
++    for (;;) {
++      size_t backslashes = 0;
++      while (*input == '\\') {
++        ++backslashes;
++        ++input;
++      }
++      size_t escaped = (*input == '"' || *input == '\0')
++                           ? backslashes * 2 : backslashes;
++      while (escaped > 0) {
++        *output++ = '\\';
++        --escaped;
++      }
++      if (*input == '\0') break;
++      if (*input == '"') *output++ = '\\';
++      *output++ = *input++;
++    }
++    *output++ = '"';
++    *output = '\0';
++  }
++  // Wait for clang and propagate its result; a Windows overlay could let the
++  // parent observe this helper's exit before the compiler has finished.
++  intptr_t status = _spawnv(_P_WAIT, clang_path,
++                            (const char *const *)quoted_argv);
++  int spawn_errno = errno;
++  for (int i = 0; i < argc; ++i) free(quoted_argv[i]);
++  free(quoted_argv);
++  if (status != -1) return (int)status;
++  fprintf(stderr, "header_parser: _spawnv failed: %s\n", strerror(spawn_errno));
++#else
+@@ -35,0 +103 @@
++#endif
