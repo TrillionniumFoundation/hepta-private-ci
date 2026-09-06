@@ -255,8 +255,9 @@ impl MatrixSdkClient {
         }
     }
 
-    /// Commit one complete processed response before recovery can expose inbox
-    /// work. An error fences this SDK instance: its internal cursor may already
+    /// Obtain a fresh owner result for one complete processed response before
+    /// recovery can expose inbox work. Unchanged observations do not journal a
+    /// commit. An error fences this SDK instance: its internal cursor may already
     /// have advanced, so retry requires rebuilding the client from Hepta's cursor.
     pub async fn sync_durable_once(
         &self,

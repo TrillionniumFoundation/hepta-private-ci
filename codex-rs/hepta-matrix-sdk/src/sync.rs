@@ -18,6 +18,8 @@ use codex_hepta_matrix_protocol::MatrixSyncResultV2;
 use codex_hepta_matrix_protocol::MatrixUserId;
 use codex_hepta_matrix_store::MatrixDurableStore;
 use codex_hepta_matrix_store::MatrixSyncCheckpoint;
+use codex_hepta_matrix_store::MatrixSyncUnchangedRequestV1;
+use codex_hepta_matrix_store::MatrixSyncUnchangedResultV1;
 use matrix_sdk::ruma::RoomId;
 use matrix_sdk::ruma::events::AnyRedactionEvent;
 use matrix_sdk::ruma::events::AnySyncMessageLikeEvent;
@@ -86,6 +88,38 @@ impl MatrixSyncComposer<'_> {
             mutations,
         };
         batch.validate().map_err(|_| MatrixSdkError::Sync)?;
+        if batch.mutations.is_empty()
+            && batch.expected_next_batch.as_deref() == Some(batch.next_batch.as_str())
+        {
+            // Empty observations still require a fresh owner transaction and
+            // every ordinary journal capacity check. They are not V2 commits
+            // and reserve no operation identity for reconciliation.
+            return match self
+                .store
+                .verify_unchanged_sync_v1(&MatrixSyncUnchangedRequestV1 {
+                    owner_agent_id: self.config.binding.agent_id.clone(),
+                    checkpoint_revision: batch.checkpoint_revision,
+                    checkpoint_generation: batch.checkpoint_generation,
+                    expected_next_batch: batch.next_batch.clone(),
+                    observed_next_batch: batch.next_batch,
+                })
+                .await
+                .map_err(|_| MatrixSdkError::Store)?
+            {
+                MatrixSyncUnchangedResultV1::Verified { checkpoint }
+                    if checkpoint.owner_agent_id == self.config.binding.agent_id
+                        && checkpoint.binding_revision == batch.checkpoint_revision
+                        && checkpoint.generation == batch.checkpoint_generation
+                        && Some(checkpoint.next_batch.as_str()) == expected =>
+                {
+                    Ok(())
+                }
+                MatrixSyncUnchangedResultV1::Verified { .. } => Err(MatrixSdkError::Store),
+                MatrixSyncUnchangedResultV1::CapacityExhausted => {
+                    Err(MatrixSdkError::CapacityExhausted)
+                }
+            };
+        }
         let decision = MatrixSyncDecisionV2::Commit { batch };
         let result = self
             .store

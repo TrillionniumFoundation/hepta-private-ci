@@ -367,16 +367,14 @@ async fn message_policy_and_repeated_page_keep_exact_ingress_counts() -> TestRes
             |_| Some(RoomVersionRules::V11),
         )
         .await?;
-    // Even an unchanged cursor must return a fresh committed decision before
-    // startup readiness; idle polls cannot bypass journal saturation checks.
-    let mut expected_checkpoint = checkpoint.expect("committed checkpoint");
-    expected_checkpoint.updated_at_ms = 31;
+    // The owner validates an unchanged observation without spending a journal
+    // entry or modifying the previous commit's timestamp.
     assert_eq!(
         fixture
             .store
             .sync_checkpoint(/*binding_revision*/ 1, /*generation*/ 1)
             .await?,
-        Some(expected_checkpoint)
+        checkpoint
     );
     assert_eq!(
         fixture.ingress.metrics(),
@@ -389,6 +387,161 @@ async fn message_policy_and_repeated_page_keep_exact_ingress_counts() -> TestRes
         }
     );
     assert_eq!(fixture.store.pending_inbox(/*limit*/ 10).await?.len(), 1);
+    fixture.store.close().await;
+    Ok(())
+}
+
+#[tokio::test]
+async fn unchanged_observation_requires_full_normalization_and_current_durable_checkpoint()
+-> TestResult {
+    let fixture = Fixture::new().await?;
+    let mut idle = response(Vec::new())?;
+    let invented = MatrixSyncCheckpoint {
+        owner_agent_id: fixture.store.owner_agent_id().clone(),
+        binding_revision: 1,
+        generation: 1,
+        next_batch: "s1".to_string(),
+        updated_at_ms: 1,
+    };
+    assert_eq!(
+        fixture
+            .composer()
+            .commit_response(
+                &idle,
+                Some(&invented),
+                /*observed_at_ms*/ 10,
+                |_| Some(RoomVersionRules::V11)
+            )
+            .await,
+        Err(MatrixSdkError::Store)
+    );
+    assert_eq!(
+        fixture
+            .store
+            .sync_checkpoint(/*binding_revision*/ 1, /*generation*/ 1)
+            .await?,
+        None
+    );
+    // A missing checkpoint takes the normal committed bootstrap path.
+    fixture
+        .composer()
+        .commit_response(
+            &idle,
+            /*checkpoint*/ None,
+            /*observed_at_ms*/ 20,
+            |_| Some(RoomVersionRules::V11),
+        )
+        .await?;
+    let checkpoint = fixture
+        .store
+        .sync_checkpoint(/*binding_revision*/ 1, /*generation*/ 1)
+        .await?;
+    idle.rooms
+        .joined
+        .get_mut(ROOM)
+        .expect("room")
+        .timeline
+        .limited = true;
+    assert_eq!(
+        fixture
+            .composer()
+            .commit_response(
+                &idle,
+                checkpoint.as_ref(),
+                /*observed_at_ms*/ 21,
+                |_| Some(RoomVersionRules::V11)
+            )
+            .await,
+        Err(MatrixSdkError::Sync)
+    );
+    assert_eq!(
+        fixture
+            .store
+            .sync_checkpoint(/*binding_revision*/ 1, /*generation*/ 1)
+            .await?,
+        checkpoint
+    );
+    // Same-token observations carrying a mutation must commit it normally.
+    fixture
+        .composer()
+        .commit_response(
+            &response(vec![message("$same-token", "persist")])?,
+            checkpoint.as_ref(),
+            /*observed_at_ms*/ 30,
+            |_| Some(RoomVersionRules::V11),
+        )
+        .await?;
+    let mut expected = checkpoint.expect("bootstrap checkpoint");
+    expected.updated_at_ms = 30;
+    assert_eq!(
+        fixture
+            .store
+            .sync_checkpoint(/*binding_revision*/ 1, /*generation*/ 1)
+            .await?,
+        Some(expected.clone())
+    );
+    assert_eq!(fixture.store.pending_inbox(/*limit*/ 10).await?.len(), 1);
+    assert_eq!(fixture.ingress.metrics().accepted, 1);
+
+    let checkpoint = expected.clone();
+    let advancing = SyncResponse {
+        next_batch: "s2".to_string(),
+        ..Default::default()
+    };
+    fixture
+        .composer()
+        .commit_response(
+            &advancing,
+            Some(&checkpoint),
+            /*observed_at_ms*/ 40,
+            |_| Some(RoomVersionRules::V11),
+        )
+        .await?;
+    expected.next_batch = "s2".to_string();
+    expected.updated_at_ms = 40;
+    assert_eq!(
+        fixture
+            .store
+            .sync_checkpoint(/*binding_revision*/ 1, /*generation*/ 1)
+            .await?,
+        Some(expected.clone())
+    );
+    let before = fixture
+        .store
+        .snapshot(/*now_ms*/ 100, /*limit*/ 100)
+        .await?;
+    idle.rooms
+        .joined
+        .get_mut(ROOM)
+        .expect("room")
+        .timeline
+        .limited = false;
+    assert_eq!(
+        fixture
+            .composer()
+            .commit_response(
+                &idle,
+                Some(&checkpoint),
+                /*observed_at_ms*/ 41,
+                |_| Some(RoomVersionRules::V11)
+            )
+            .await,
+        Err(MatrixSdkError::Store)
+    );
+    assert_eq!(
+        fixture
+            .store
+            .snapshot(/*now_ms*/ 100, /*limit*/ 100)
+            .await?,
+        before
+    );
+    assert_eq!(
+        fixture
+            .store
+            .sync_checkpoint(/*binding_revision*/ 1, /*generation*/ 1)
+            .await?,
+        Some(expected)
+    );
     fixture.store.close().await;
     Ok(())
 }
