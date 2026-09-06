@@ -11,7 +11,6 @@ use codex_hepta_matrix_store::InboxDisposition;
 use codex_hepta_matrix_store::InboxDraft;
 use codex_hepta_matrix_store::MatrixDurableError;
 use codex_hepta_matrix_store::MatrixDurableStore;
-use codex_hepta_matrix_store::MatrixSyncCommit;
 
 use crate::MatrixSidecarConfig;
 
@@ -70,8 +69,8 @@ pub struct IngressMetrics {
 
 #[derive(Clone)]
 pub struct MatrixIngress {
-    config: MatrixSidecarConfig,
-    store: MatrixDurableStore,
+    pub(crate) config: MatrixSidecarConfig,
+    pub(crate) store: MatrixDurableStore,
     accepted: Arc<AtomicU64>,
     duplicate: Arc<AtomicU64>,
     ignored: Arc<AtomicU64>,
@@ -193,9 +192,9 @@ impl MatrixIngress {
         })
     }
 
-    pub(crate) fn record_sync_commit(&self, commit: &MatrixSyncCommit) {
-        let accepted = u64::try_from(commit.accepted).unwrap_or(u64::MAX);
-        let duplicates = u64::try_from(commit.duplicates).unwrap_or(u64::MAX);
+    pub(crate) fn record_sync_commit(&self, accepted: usize, duplicates: usize) {
+        let accepted = u64::try_from(accepted).unwrap_or(u64::MAX);
+        let duplicates = u64::try_from(duplicates).unwrap_or(u64::MAX);
         self.accepted.fetch_add(accepted, Ordering::Relaxed);
         self.duplicate.fetch_add(duplicates, Ordering::Relaxed);
     }

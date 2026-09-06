@@ -435,6 +435,8 @@ pub enum MatrixSdkError {
     Sync,
     #[error("Matrix durable sync checkpoint failed")]
     Store,
+    #[error("Matrix durable sync journal capacity is exhausted")]
+    CapacityExhausted,
 }
 
 impl From<MatrixSidecarConfigError> for MatrixSdkError {
