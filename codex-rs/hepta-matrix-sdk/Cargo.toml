@@ -5,6 +5,10 @@ name = "codex-hepta-matrix-sdk"
 version.workspace = true
 publish = false
 
+[features]
+default = []
+qualification-failpoints = []
+
 [lib]
 name = "codex_hepta_matrix_sdk"
 path = "src/lib.rs"

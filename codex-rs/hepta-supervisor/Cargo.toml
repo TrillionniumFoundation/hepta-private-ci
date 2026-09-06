@@ -10,6 +10,12 @@ name = "codex_hepta_supervisor"
 path = "src/lib.rs"
 doctest = false
 
+[features]
+default = []
+# Explicit build opt-in for externally authorized mutation; default daemons
+# remain lifecycle-only and keep signed mutation admission fail-closed.
+production-authority = []
+
 [[bin]]
 name = "hepta-supervisord"
 path = "src/main.rs"

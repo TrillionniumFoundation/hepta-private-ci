@@ -10,6 +10,11 @@ name = "codex_hepta_agentd"
 path = "src/lib.rs"
 doctest = false
 
+[features]
+default = []
+# Qualification-only host profile. Default binaries keep the writer disabled.
+qualification-cognitive-write = []
+
 [[bin]]
 name = "codex-hepta-agentd"
 path = "src/main.rs"
