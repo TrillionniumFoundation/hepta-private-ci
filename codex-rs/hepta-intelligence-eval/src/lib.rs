@@ -10,6 +10,7 @@ use codex_hepta_types::FixedQ32;
 use codex_hepta_types::StableId;
 
 mod ope;
+mod sequential;
 mod temporal_evaluation;
 mod temporal_fold;
 
@@ -25,6 +26,20 @@ pub use ope::OpePlan;
 pub use ope::OpeRow;
 pub use ope::estimate_cluster_intervals;
 pub use ope::estimate_ope;
+pub use sequential::DepthSupport;
+pub use sequential::FiniteHorizonEstimand;
+pub use sequential::SequentialError;
+pub use sequential::SequentialEstimate;
+pub use sequential::SequentialEvidenceGap;
+pub use sequential::SequentialPlan;
+pub use sequential::TerminalRewardConvention;
+pub use sequential::Trajectory;
+pub use sequential::TrajectoryAction;
+pub use sequential::TrajectoryBoundary;
+pub use sequential::TrajectoryClaimScope;
+pub use sequential::TrajectoryEstimate;
+pub use sequential::TrajectoryStep;
+pub use sequential::estimate_sequential;
 pub use temporal_evaluation::TemporalEvaluationError;
 pub use temporal_evaluation::TemporalEvaluationPlan;
 pub use temporal_evaluation::TemporalEvaluationReceipt;

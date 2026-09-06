@@ -290,7 +290,7 @@ fn fixed(raw: i128) -> Result<FixedQ32, OpeError> {
 // Compute a nonnegative rational in Q32 without overflowing a Q96 numerator.
 // Keep squared weights in Q64: rounding every square to Q32 loses tiny weights
 // and can turn a supported policy into a false zero-ESS rejection.
-fn scaled_ratio(numerator: i128, denominator: i128) -> Result<i128, OpeError> {
+pub(super) fn scaled_ratio(numerator: i128, denominator: i128) -> Result<i128, OpeError> {
     if numerator < 0 || denominator <= 0 {
         return Err(OpeError::Arithmetic);
     }
@@ -316,7 +316,7 @@ fn scaled_ratio(numerator: i128, denominator: i128) -> Result<i128, OpeError> {
     }
 }
 
-fn round_ratio(numerator: i128, denominator: i128) -> Result<i128, OpeError> {
+pub(super) fn round_ratio(numerator: i128, denominator: i128) -> Result<i128, OpeError> {
     if denominator <= 0 {
         return Err(OpeError::Arithmetic);
     }
