@@ -1,15 +1,19 @@
-//! Create-only snapshots and candidate payloads over host-authorized files.
-//! The host authenticates files, receipts, current revocations and selection.
+//! Create-only snapshots and candidate payloads over host-authorized targets.
+//! The host authenticates target paths, receipts, current revocations and selection.
 
 use std::error::Error;
 use std::fmt;
 use std::fs::File;
+use std::fs::OpenOptions;
 use std::fs::TryLockError;
 use std::io;
 use std::io::Read;
 use std::io::Seek;
 use std::io::SeekFrom;
 use std::io::Write;
+#[cfg(unix)]
+use std::os::unix::fs::OpenOptionsExt;
+use std::path::Path;
 
 use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
@@ -26,6 +30,36 @@ const MAX_SNAPSHOT: usize = 8 * 1024 * 1024;
 const MAX_PAYLOAD: usize = 64 * 1024 * 1024;
 const MAX_RECORDS: usize = 4096;
 const MAGIC: &str = "HEPTAR01";
+
+/// A file proven to have been atomically created by this module.
+///
+/// Safe callers cannot construct this capability from an arbitrary `File` or
+/// extract/clone its handle. Creation fails when the final path component already
+/// exists, including when it is empty, truncated, or a symbolic link. Trusted
+/// parent traversal and containing-directory durability remain host obligations.
+pub struct CreateOnlyArtifactFile(File);
+
+impl fmt::Debug for CreateOnlyArtifactFile {
+    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
+        formatter.write_str("CreateOnlyArtifactFile(<opaque>)")
+    }
+}
+
+impl CreateOnlyArtifactFile {
+    pub fn create(path: impl AsRef<Path>) -> Result<Self, ArtifactStorageError> {
+        let mut options = OpenOptions::new();
+        options.read(true).write(true).create_new(true);
+        #[cfg(unix)]
+        options.mode(0o600);
+        match options.open(path) {
+            Ok(file) => Ok(Self(file)),
+            Err(error) if error.kind() == io::ErrorKind::AlreadyExists => {
+                Err(ArtifactStorageError::AlreadyExists)
+            }
+            Err(error) => Err(error.into()),
+        }
+    }
+}
 
 /// Exact bytes and history witness. This is not a signature or acceptance.
 /// Retain and authenticate it outside the suspect file; never derive an expected
@@ -70,7 +104,7 @@ impl From<io::Error> for ArtifactStorageError {
 /// Write a new immutable snapshot; an existing file is never overwritten.
 /// Directory durability, witness publication, retention and selection are host work.
 pub fn write_registry_snapshot(
-    file: File,
+    file: CreateOnlyArtifactFile,
     registry: &ArtifactRegistry,
     binding: Digest32,
 ) -> Result<RegistrySnapshotReceipt, ArtifactStorageError> {
@@ -140,7 +174,7 @@ pub fn read_registry_snapshot(
 
 /// Persist exactly the bytes of a currently eligible candidate, never select it.
 pub fn write_candidate_payload(
-    file: File,
+    file: CreateOnlyArtifactFile,
     registry: &ArtifactRegistry,
     artifact: &StableId,
     bytes: &[u8],
@@ -220,10 +254,12 @@ fn lock(file: File, kind: LockKind) -> Result<LockedFile, ArtifactStorageError> 
     }
 }
 
-fn write_new(file: File, bytes: &[u8]) -> Result<(), ArtifactStorageError> {
-    let mut guard = lock(file, LockKind::Exclusive)?;
+fn write_new(file: CreateOnlyArtifactFile, bytes: &[u8]) -> Result<(), ArtifactStorageError> {
+    let mut guard = lock(file.0, LockKind::Exclusive)?;
     if guard.0.metadata()?.len() != 0 {
-        return Err(ArtifactStorageError::AlreadyExists);
+        // Atomic creation already proved the target did not exist. Bytes appearing
+        // before the guarded write are interference, so completion is unknown.
+        return Err(ArtifactStorageError::Indeterminate);
     }
     guard.0.seek(SeekFrom::Start(0))?;
     guard

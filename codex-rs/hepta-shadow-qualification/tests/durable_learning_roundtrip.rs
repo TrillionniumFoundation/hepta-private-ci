@@ -11,6 +11,7 @@ use codex_hepta_learning_artifacts::ArtifactKind;
 use codex_hepta_learning_artifacts::ArtifactManifest;
 use codex_hepta_learning_artifacts::ArtifactRegistry;
 use codex_hepta_learning_artifacts::ArtifactStorageError;
+use codex_hepta_learning_artifacts::CreateOnlyArtifactFile;
 use codex_hepta_learning_artifacts::StateChange;
 use codex_hepta_learning_artifacts::read_candidate_payload;
 use codex_hepta_learning_artifacts::read_registry_snapshot;
@@ -50,6 +51,13 @@ fn create(path: &Path) -> File {
         .open(path)
     else {
         panic!("new fixture file must be created");
+    };
+    file
+}
+
+fn create_artifact(path: &Path) -> CreateOnlyArtifactFile {
+    let Ok(file) = CreateOnlyArtifactFile::create(path) else {
+        panic!("new artifact fixture file must be created");
     };
     file
 }
@@ -257,16 +265,22 @@ fn durable_experience_candidate_reopen_next_snapshot_and_revocation_safe_rollbac
         Digest32::of_bytes(b"baseline-support"),
     );
     register(&mut registry, "candidate", Some("baseline"), &learned, head);
-    write_candidate_payload(create(&baseline_path), &registry, &id("baseline"), baseline).unwrap();
     write_candidate_payload(
-        create(&candidate_path),
+        create_artifact(&baseline_path),
+        &registry,
+        &id("baseline"),
+        baseline,
+    )
+    .unwrap();
+    write_candidate_payload(
+        create_artifact(&candidate_path),
         &registry,
         &id("candidate"),
         &learned,
     )
     .unwrap();
     let registry_receipt =
-        write_registry_snapshot(create(&registry_path), &registry, binding).unwrap();
+        write_registry_snapshot(create_artifact(&registry_path), &registry, binding).unwrap();
     let expected_registry = registry.snapshot();
     drop(registry);
     let mut registry =
@@ -340,7 +354,7 @@ fn durable_experience_candidate_reopen_next_snapshot_and_revocation_safe_rollbac
         }))
         .unwrap();
     let current_receipt =
-        write_registry_snapshot(create(&revoked_path), &registry, binding).unwrap();
+        write_registry_snapshot(create_artifact(&revoked_path), &registry, binding).unwrap();
     drop(registry);
     let mut stale = candidate_request;
     stale.set_witness(current_receipt);
@@ -383,7 +397,7 @@ fn durable_experience_candidate_reopen_next_snapshot_and_revocation_safe_rollbac
     );
     let final_registry = directory.path().join("registry-generation-3");
     let final_receipt =
-        write_registry_snapshot(create(&final_registry), &current, binding).unwrap();
+        write_registry_snapshot(create_artifact(&final_registry), &current, binding).unwrap();
     current_baseline.registry = final_registry;
     current_baseline.set_witness(final_receipt);
     process::assert_rejected(
