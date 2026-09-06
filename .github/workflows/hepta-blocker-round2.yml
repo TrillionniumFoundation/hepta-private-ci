@@ -68,19 +68,22 @@ jobs:
               + '          fi\n'
           )
           patched = text[:start] + replacement + text[stage_offset:]
+          matrix_expression = '$' + '{{ matrix.bazel_config }}'
+          expected_config_line = '              "--config=' + matrix_expression + '"'
           if patched.count('run_v8_release_pair_build()') != 1:
               raise SystemExit('unexpected retry helper cardinality')
           if patched.count('Bazel reported internal exit 37 on macOS arm64 sandbox') != 1:
               raise SystemExit('unexpected retry guard cardinality')
-          if '            "--config=${{ matrix.bazel_config }}"' not in patched:
+          if expected_config_line not in patched:
               raise SystemExit('matrix Bazel config expression was not preserved')
+          if '            ./.github/scripts/run_bazel_with_buildbuddy.py \\\n' not in patched:
+              raise SystemExit('nested BuildBuddy invocation indentation is invalid')
           workflow.write_text(patched, encoding='utf-8')
           PY
 
           git diff --check
           test "$(git diff --name-only | tr -d '\r')" = ".github/workflows/v8-canary.yml"
           grep -F '            ./.github/scripts/run_bazel_with_buildbuddy.py \' .github/workflows/v8-canary.yml
-          grep -F '            "--config=${{ matrix.bazel_config }}"' .github/workflows/v8-canary.yml
           grep -F 'Bazel reported internal exit 37 on macOS arm64 sandbox' .github/workflows/v8-canary.yml
 
           artifact_root="${RUNNER_TEMP}/hepta-blocker-round2"
