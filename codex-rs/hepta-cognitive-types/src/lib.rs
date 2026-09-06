@@ -9,7 +9,11 @@ use std::collections::BTreeSet;
 use std::error::Error as StdError;
 use std::fmt;
 
-use codex_hepta_types::{AuthorityPosture, Digest32, Generation, Revision, StableId};
+use codex_hepta_types::AuthorityPosture;
+use codex_hepta_types::Digest32;
+use codex_hepta_types::Generation;
+use codex_hepta_types::Revision;
+use codex_hepta_types::StableId;
 
 const MAX_CITATIONS: usize = 64;
 const MAX_RECORDS: usize = 16_384;

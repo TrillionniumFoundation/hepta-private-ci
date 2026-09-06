@@ -159,20 +159,28 @@ def verify_retained_commit(binding: dict[str, Any]) -> str:
     retain the independently pinned commit through a provenance merge; merely
     fetching an unrelated object or creating a similarly named ref is insufficient.
     """
-    need(binding.get("retentionPolicy") == {"kind": "main_history_ancestor"},
-         "evidence retention policy")
+    need(
+        binding.get("retentionPolicy") == {"kind": "main_history_ancestor"},
+        "evidence retention policy",
+    )
     need("evidenceBranch" not in binding, "obsolete mutable evidence branch")
     policy = binding.get("verificationPolicy", {})
-    need(policy.get("pinnedEvidenceMustBeAncestorOfSource") is True,
-         "evidence ancestry policy")
+    need(
+        policy.get("pinnedEvidenceMustBeAncestorOfSource") is True,
+        "evidence ancestry policy",
+    )
     commit = binding["evidenceCommit"]
-    need(isinstance(commit, str) and re.fullmatch(r"[0-9a-f]{40}", commit) is not None,
-         "full evidence commit identity")
+    need(
+        isinstance(commit, str) and re.fullmatch(r"[0-9a-f]{40}", commit) is not None,
+        "full evidence commit identity",
+    )
     need(git_text("rev-parse", commit + "^{commit}") == commit, "evidence commit")
     parents = git_text("rev-list", "--parents", "-n", "1", commit).split()[1:]
     need(parents == [binding["evidenceParentCommit"]], "evidence direct parent")
-    need(git_text("rev-parse", commit + "^{tree}") == binding["evidenceTree"],
-         "evidence tree")
+    need(
+        git_text("rev-parse", commit + "^{tree}") == binding["evidenceTree"],
+        "evidence tree",
+    )
     git_text("merge-base", "--is-ancestor", commit, "HEAD")
     return commit
 

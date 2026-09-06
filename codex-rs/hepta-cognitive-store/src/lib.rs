@@ -9,8 +9,12 @@ use std::collections::BTreeMap;
 use std::error::Error as StdError;
 use std::fmt;
 
-use codex_hepta_cognitive_types::{MemoryRecord, RecordState};
-use codex_hepta_types::{AuthorityPosture, Digest32, LogicalSequence, StableId};
+use codex_hepta_cognitive_types::MemoryRecord;
+use codex_hepta_cognitive_types::RecordState;
+use codex_hepta_types::AuthorityPosture;
+use codex_hepta_types::Digest32;
+use codex_hepta_types::LogicalSequence;
+use codex_hepta_types::StableId;
 
 const MAX_RECORDS: usize = 16_384;
 
