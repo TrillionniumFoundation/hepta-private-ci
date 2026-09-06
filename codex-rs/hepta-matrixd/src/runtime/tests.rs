@@ -2,6 +2,7 @@ use std::collections::BTreeMap;
 use std::fs;
 use std::sync::Arc;
 use std::sync::Mutex as StdMutex;
+use std::time::Duration;
 
 use codex_app_server_protocol::AgentMessageDeltaNotification;
 use codex_app_server_protocol::ItemCompletedNotification;
@@ -12,10 +13,18 @@ use codex_app_server_protocol::TurnCompletedNotification;
 use codex_app_server_protocol::TurnItemsView;
 use codex_app_server_protocol::TurnStatus;
 use codex_hepta_contracts::AgentId;
+use codex_hepta_matrix_protocol::MATRIX_BINDING_SCHEMA_VERSION;
+use codex_hepta_matrix_protocol::MatrixBindingV1;
+use codex_hepta_matrix_protocol::MatrixDeviceId;
 use codex_hepta_matrix_protocol::MatrixEventId;
+use codex_hepta_matrix_protocol::MatrixHomeserverUrl;
 use codex_hepta_matrix_protocol::MatrixRoomId;
 use codex_hepta_matrix_protocol::MatrixUserId;
 use codex_hepta_matrix_protocol::client_user_message_id;
+use codex_hepta_matrix_sdk::IngressDisposition;
+use codex_hepta_matrix_sdk::MatrixIngress;
+use codex_hepta_matrix_sdk::MatrixSidecarConfig;
+use codex_hepta_matrix_sdk::MatrixTimelineEvent;
 use codex_hepta_matrix_store::ChangeKind;
 use codex_hepta_matrix_store::InboxDisposition;
 use codex_hepta_matrix_store::InboxDraft;
@@ -26,6 +35,7 @@ use codex_hepta_matrix_store::OutboxKind;
 use codex_hepta_matrix_store::RoomBindingDraft;
 use codex_hepta_paths::HeptaAgentLayout;
 use codex_hepta_paths::HeptaFleetRoot;
+use matrix_sdk::ruma::events::room::message::RoomMessageEventContent;
 use pretty_assertions::assert_eq;
 use tempfile::TempDir;
 
@@ -43,6 +53,7 @@ struct FakeRuntimeBridge {
 struct FakeBridgeState {
     queued: BTreeMap<String, String>,
     turns: BTreeMap<String, String>,
+    inputs: Vec<Vec<UserInput>>,
     admissions: usize,
     unbound_resolutions: usize,
 }
@@ -128,7 +139,7 @@ impl MatrixRuntimeBridge for FakeRuntimeBridge {
         &'a self,
         room_id: &'a MatrixRoomId,
         event_id: &'a MatrixEventId,
-        _input: Vec<UserInput>,
+        input: Vec<UserInput>,
         binding: &'a RoomThreadBinding,
         admission_mode: MatrixAdmissionMode,
     ) -> MatrixRuntimeFuture<'a, MatrixSubmission> {
@@ -153,6 +164,7 @@ impl MatrixRuntimeBridge for FakeRuntimeBridge {
                 }
             } else if admission_mode == MatrixAdmissionMode::AllowIfAbsent {
                 state.admissions += 1;
+                state.inputs.push(input);
                 let queued_submission_id = format!("queue-{}", state.admissions);
                 state
                     .queued
@@ -465,6 +477,80 @@ async fn crash_restart_and_duplicate_event_admit_core_exactly_once() -> anyhow::
 }
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn sdk_mentioned_text_reaches_core_exactly_once() -> anyhow::Result<()> {
+    let temp = TempDir::new()?;
+    let agent_id = agent_id();
+    let layout = layout(&temp, &agent_id);
+    let store = open_bound_store(&layout).await?;
+    let agent_mxid = MatrixUserId::parse("@agent:example.test")?;
+    let owner_mxid = MatrixUserId::parse("@owner:example.test")?;
+    let ingress = MatrixIngress::new(
+        MatrixSidecarConfig {
+            binding: MatrixBindingV1 {
+                schema_version: MATRIX_BINDING_SCHEMA_VERSION,
+                agent_id: agent_id.clone(),
+                revision: 1,
+                homeserver: MatrixHomeserverUrl::parse("https://example.test")?,
+                expected_mxid: agent_mxid.clone(),
+                expected_device_id: MatrixDeviceId::parse("DEVICE")?,
+                allowed_rooms: vec![room_id()],
+                allowed_senders: vec![owner_mxid.clone()],
+                require_explicit_mention: true,
+            },
+            matrix_generation: 1,
+            sync_timeline_limit: 32,
+            sync_timeout: Duration::from_secs(1),
+        },
+        store.clone(),
+    );
+    let content: RoomMessageEventContent = serde_json::from_value(serde_json::json!({
+        "msgtype": "m.text",
+        "body": "hello from Matrix",
+        "m.mentions": { "user_ids": [agent_mxid.as_str()], "room": true }
+    }))?;
+    let event_id = event_id("$sdk-mention");
+    let event = MatrixTimelineEvent {
+        event_id: event_id.clone(),
+        room_id: room_id(),
+        sender: owner_mxid,
+        event_type: "m.room.message".to_string(),
+        // Match the SDK adapter's serialization of RoomMessageEventContent.
+        payload: serde_json::to_vec(&serde_json::to_value(content)?)?,
+        mentioned_user_ids: vec![agent_mxid],
+        origin_server_ts_ms: 10,
+        received_at_ms: 11,
+    };
+    assert_eq!(
+        ingress.ingest(event.clone()).await?,
+        IngressDisposition::Accepted
+    );
+    let fake = FakeRuntimeBridge::new(agent_id);
+    let runtime = MatrixRuntime::new(store, fake.clone());
+    assert!(matches!(
+        runtime.process_event(&event_id, /*now_ms*/ 20).await?,
+        MatrixDispatchOutcome::Queued { .. }
+    ));
+    assert_eq!(ingress.ingest(event).await?, IngressDisposition::Duplicate);
+    assert!(matches!(
+        runtime.process_event(&event_id, /*now_ms*/ 30).await?,
+        MatrixDispatchOutcome::Queued { .. }
+    ));
+    assert_eq!(fake.admissions(), 1);
+    assert_eq!(
+        fake.state
+            .lock()
+            .unwrap_or_else(std::sync::PoisonError::into_inner)
+            .inputs,
+        vec![vec![UserInput::Text {
+            text: "hello from Matrix".to_string(),
+            text_elements: Vec::new(),
+        }]]
+    );
+    runtime.store().close().await;
+    Ok(())
+}
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn unsupported_room_messages_fail_closed_without_core_admission() -> anyhow::Result<()> {
     let temp = TempDir::new()?;
     let agent_id = agent_id();
@@ -476,6 +562,9 @@ async fn unsupported_room_messages_fail_closed_without_core_admission() -> anyho
     for (index, payload) in [
         br#"{"msgtype":"m.notice","body":"do not dispatch"}"#.as_slice(),
         br#"{"msgtype":"m.text","body":"hidden","formatted_body":"<b>hidden</b>"}"#.as_slice(),
+        br#"{"msgtype":"m.text","body":"hidden","m.mentions":{"user_ids":["@agent:example.test"],"critical":true}}"#.as_slice(),
+        br#"{"msgtype":"m.text","body":"hidden","m.mentions":{"user_ids":["invalid"]}}"#.as_slice(),
+        br#"{"msgtype":"m.text","body":"hidden","m.mentions":{"room":"true"}}"#.as_slice(),
         b"not-json".as_slice(),
     ]
     .into_iter()

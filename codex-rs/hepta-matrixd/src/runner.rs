@@ -284,10 +284,8 @@ fn current_room_thread_ids(
                 && room_thread.binding_revision == binding_revision
                 && room_thread.generation == generation
         });
-        if is_current_binding {
-            if let Some(thread_id) = room_thread.thread_id.as_deref() {
-                thread_ids.insert(thread_id.to_string());
-            }
+        if is_current_binding && let Some(thread_id) = room_thread.thread_id.as_deref() {
+            thread_ids.insert(thread_id.to_string());
         }
     }
     thread_ids.into_iter().collect()
