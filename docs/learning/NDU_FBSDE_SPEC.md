@@ -106,7 +106,7 @@ Start with deterministic/scalar or tabular baselines. Add stochastic or neural c
 
 ## 6. Data, protocol and lineage schema
 
-Canonical production protocols remain owned by `docs/contracts/CONTRACTS.json` and `PROTOCOL_SCHEMAS.json`. This correction adds no unregistered field to an existing wire version.
+Canonical production protocols remain owned by `docs/contracts/CONTRACTS.json` and `docs/contracts/PROTOCOL_SCHEMAS.json`. This correction adds no unregistered field to an existing wire version.
 
 `NduCoefficientManifestV1` binds artifact, subject/objective class, dimensions, fixed-point scales, bounds, normalization, runtime, predecessor, expiry and rollback. The integration package must register a versioned coefficient-profile reference for the covariance/conditioning convention before admitting a stochastic implementation that needs it. An incompatible existing consumer returns unavailable; it cannot silently assume identity covariance.
 
