@@ -76,6 +76,17 @@ Consumers compare `request_binding_digest` with the binding of their expected
 input. This is an owner-local integrity API, not an admitted external protocol,
 source authentication or proof of completeness beyond the supplied candidates.
 
+The actual cognitive owner now exposes `CognitiveStore::observe_memory_retrieval`.
+It generates and revalidates at most 128 candidates in one SQLite read
+transaction, preserving the legacy retrieval API and top-four ranking. Its
+candidate observation records bind source revisions and scores without raw
+memory or citation bodies. The final top-four omission count is exact for the
+observed candidates. Per-channel `Exhausted` or `LimitReached` records distinguish
+an exhausted bounded generator from a reached query/output cap; they do not
+count unseen rows or prove global coverage, including beyond graph seed limits.
+This owner observation does not bind a complete C1 objective/profile or establish
+delivery-time freshness.
+
 Matrix runtime accepts the typed `m.mentions` metadata serialized by the SDK
 after ingress applies its explicit-mention policy. Only the message body is
 submitted as user input. Unknown content or mention fields, invalid Matrix
@@ -83,18 +94,38 @@ user identifiers and malformed mention types remain rejected. The native
 regression traverses SDK serialization, ingress persistence and runtime queue
 admission, including duplicate delivery; its bridge is an isolated fixture.
 
+The product SDK sync path now normalizes the processed response into one V2
+durable decision. It handles joined and left rooms, state-before/state-after
+ordering, redactions including nested redaction evidence, own leave/ban and
+tombstones. Mutations and the authoritative checkpoint commit atomically. A
+failed or dropped attempt keeps that SDK instance fenced because the SDK's
+internal cursor may already have advanced. Startup completes the first durable
+sync, takes the recovery snapshot, resumes current threads and recovers pending
+work before starting runtime tasks. These are source integration changes;
+real-Synapse and independent qualification remain separate.
+
 ## Remaining integration requirements
 
 The C1 contract in
 `qualification/module-execution-dossiers/C1_EXECUTION.md` still requires a named
-product-host composition, delivery-time revocation checks, independent outcome
-observation, durable learning lineage, selected new-process load and rollback.
-Standalone module tests and the reference round-trip do not establish these
-product observations. Matrix's product SDK sync caller still uses the V1 batch
-interface; the V2 durable sync-decision implementation needs a separate product
-binding for redactions, tombstones and timeline-completeness handling. These
-requirements remain open, as do evaluator-history enforcement of holdout reuse,
-retention/unlearning qualification and independently observed future windows.
+product-host composition with structured objective/profile binding, the actual
+tokenizer/template/payload, delivery-time revocation checks, durable
+provider-attempt correlation, independent task outcomes, learning-ledger
+integration, selected new-process load and rollback. The owner retrieval
+observation, standalone module tests and reference round-trip do not establish
+these product observations.
+
+Matrix still needs automatic timeline gap fill with persisted coverage anchors
+and a bound on raw HTTP receive bytes. The current 512-event and 16 MiB limits
+apply after SDK processing, not to transport reception or decoding. Incomplete
+timelines fail closed. Conflicts with active dispatch stop processing; they do
+not grant cancellation authority over an admitted effect. Every successful poll,
+including an unchanged-token empty response, requires a V2 committed receipt;
+idle polls therefore consume the finite decision journal. Retention/compaction
+or an explicitly owner-validated no-op design, and recovery after rejoining,
+remain required. Evaluator-history
+enforcement of holdout reuse, retention/unlearning qualification and independently
+observed future windows also remain open.
 
 ## Safety and authority boundary
 
