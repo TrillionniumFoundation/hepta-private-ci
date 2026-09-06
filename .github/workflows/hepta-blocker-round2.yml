@@ -6,7 +6,7 @@ on:
       - "codex/hepta-blocker-round2-20260907"
 
 permissions:
-  contents: write
+  contents: read
 
 concurrency:
   group: hepta-blocker-round2-${{ github.ref }}
@@ -20,13 +20,10 @@ jobs:
       - name: Check out exact helper candidate
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
-          persist-credentials: true
+          persist-credentials: false
           fetch-depth: 0
 
-      - name: Set up repository CI toolchain
-        uses: ./.github/actions/setup-ci
-
-      - name: Format source and prepare guarded V8 canary retry
+      - name: Verify formatter output and prepare guarded V8 canary retry
         shell: bash
         run: |
           set -euo pipefail
@@ -34,6 +31,7 @@ jobs:
             cd codex-rs
             cargo fmt --all
           )
+          git diff --exit-code -- codex-rs
 
           python3 - <<'PY'
           from pathlib import Path
@@ -49,50 +47,46 @@ jobs:
           block = text[start:stage_offset]
           if block.count('run_bazel_with_buildbuddy.py') != 1:
               raise SystemExit('V8 release-pair invocation block is not closed-world')
-
-          replacement = '''          run_v8_release_pair_build() {
-            ./.github/scripts/run_bazel_with_buildbuddy.py \\
-              --noexperimental_remote_repo_contents_cache \\
-              "${bazel_args[@]}" \\
-              "--config=${{ matrix.bazel_config }}"
-          }
-
-          set +e
-          run_v8_release_pair_build
-          build_status=$?
-          set -e
-          if [[ "${build_status}" -eq 37 && "${TARGET}" == "aarch64-apple-darwin" && "${SANDBOX}" == "true" ]]; then
-            echo "Bazel reported internal exit 37 on macOS arm64 sandbox; restarting the server and retrying this exact target once." >&2
-            ./bazel shutdown || true
-            run_v8_release_pair_build
-          elif [[ "${build_status}" -ne 0 ]]; then
-            exit "${build_status}"
-          fi
-          '''
-          workflow.write_text(text[:start] + replacement + text[stage_offset:], encoding='utf-8')
+          nested_block = ''.join(
+              ('  ' + line) if line.strip() else line
+              for line in block.splitlines(keepends=True)
+          )
+          replacement = (
+              '          run_v8_release_pair_build() {\n'
+              + nested_block
+              + '          }\n\n'
+              + '          set +e\n'
+              + '          run_v8_release_pair_build\n'
+              + '          build_status=$?\n'
+              + '          set -e\n'
+              + '          if [[ "${build_status}" -eq 37 && "${TARGET}" == "aarch64-apple-darwin" && "${SANDBOX}" == "true" ]]; then\n'
+              + '            echo "Bazel reported internal exit 37 on macOS arm64 sandbox; restarting the server and retrying this exact target once." >&2\n'
+              + '            ./bazel shutdown || true\n'
+              + '            run_v8_release_pair_build\n'
+              + '          elif [[ "${build_status}" -ne 0 ]]; then\n'
+              + '            exit "${build_status}"\n'
+              + '          fi\n'
+          )
+          patched = text[:start] + replacement + text[stage_offset:]
+          if patched.count('run_v8_release_pair_build()') != 1:
+              raise SystemExit('unexpected retry helper cardinality')
+          if patched.count('Bazel reported internal exit 37 on macOS arm64 sandbox') != 1:
+              raise SystemExit('unexpected retry guard cardinality')
+          if '            "--config=${{ matrix.bazel_config }}"' not in patched:
+              raise SystemExit('matrix Bazel config expression was not preserved')
+          workflow.write_text(patched, encoding='utf-8')
           PY
 
           git diff --check
-          changed_rust="$(git diff --name-only -- codex-rs)"
-          unexpected="$(
-            printf '%s\n' "${changed_rust}" \
-              | grep -Ev '^(codex-rs/hepta-contracts/src/authbus.rs|codex-rs/hepta-contracts/src/authbus_b2.rs|codex-rs/model-provider/src/provider_effect.rs)$' \
-              || true
-          )"
-          if [[ -n "${unexpected}" ]]; then
-            echo "Unexpected rustfmt output:" >&2
-            printf '%s\n' "${unexpected}" >&2
-            exit 1
-          fi
-          test -n "${changed_rust}"
+          test "$(git diff --name-only | tr -d '\r')" = ".github/workflows/v8-canary.yml"
+          grep -F '            ./.github/scripts/run_bazel_with_buildbuddy.py \' .github/workflows/v8-canary.yml
+          grep -F '            "--config=${{ matrix.bazel_config }}"' .github/workflows/v8-canary.yml
           grep -F 'Bazel reported internal exit 37 on macOS arm64 sandbox' .github/workflows/v8-canary.yml
 
           artifact_root="${RUNNER_TEMP}/hepta-blocker-round2"
           rm -rf "${artifact_root}"
           mkdir -p "${artifact_root}"
           cp .github/workflows/v8-canary.yml "${artifact_root}/v8-canary.yml"
-          git checkout -- .github/workflows/v8-canary.yml
-          git diff --check
 
       - name: Upload patched V8 canary workflow
         uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
@@ -101,21 +95,3 @@ jobs:
           path: ${{ runner.temp }}/hepta-blocker-round2/v8-canary.yml
           if-no-files-found: error
           retention-days: 1
-
-      - name: Commit formatter output only
-        shell: bash
-        run: |
-          set -euo pipefail
-          git add \
-            codex-rs/hepta-contracts/src/authbus.rs \
-            codex-rs/hepta-contracts/src/authbus_b2.rs \
-            codex-rs/model-provider/src/provider_effect.rs
-          git diff --cached --check
-          if git diff --cached --quiet; then
-            echo "Formatter output already materialized."
-            exit 0
-          fi
-          git config user.name "hepta-ci-bot"
-          git config user.email "hepta-ci-bot@users.noreply.github.com"
-          git commit -m "style: normalize blocker repair formatting"
-          git push origin "HEAD:${GITHUB_REF_NAME}"
