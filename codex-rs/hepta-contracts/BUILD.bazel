@@ -1,4 +1,6 @@
-load("//:defs.bzl", "codex_rust_crate")
+load("@crates//:defs.bzl", "all_crate_deps")
+load("@rules_rust//rust:defs.bzl", "rust_library", "rust_test")
+load("//:defs.bzl", "WINDOWS_RUSTC_LINK_FLAGS", "codex_rust_crate", "workspace_root_test")
 
 codex_rust_crate(
     name = "hepta-contracts",
@@ -42,4 +44,64 @@ codex_rust_crate(
         "//codex-rs/state:src/runtime/queued_items_tests.rs",
         "//codex-rs/thread-store:src/store.rs",
     ],
+)
+
+# Local AuthBus models stay isolated from the product library's feature set.
+# Integration fixtures do not compile the caller-manifest unit tests or need
+# their product-source runfiles.
+rust_library(
+    name = "hepta-contracts-authbus-qualification-lib",
+    testonly = True,
+    srcs = glob(["src/**/*.rs"]),
+    compile_data = ["fixtures/AUTHBUS_SOURCE_MANIFEST.v1.json"],
+    crate_features = ["authbus-local-qualification"],
+    crate_name = "codex_hepta_contracts",
+    crate_root = "src/lib.rs",
+    edition = "2024",
+    visibility = ["//visibility:private"],
+    deps = all_crate_deps(),
+)
+
+rust_test(
+    name = "hepta-contracts-authbus-local-qualification-test-bin",
+    srcs = ["tests/authbus_local_qualification.rs"],
+    crate_features = ["authbus-local-qualification"],
+    crate_name = "authbus_local_qualification",
+    crate_root = "tests/authbus_local_qualification.rs",
+    edition = "2024",
+    rustc_flags = WINDOWS_RUSTC_LINK_FLAGS,
+    tags = ["manual"],
+    visibility = ["//visibility:private"],
+    deps = [":hepta-contracts-authbus-qualification-lib"] + all_crate_deps(
+        normal = True,
+        normal_dev = True,
+    ),
+)
+
+workspace_root_test(
+    name = "hepta-contracts-authbus-local-qualification-test",
+    test_bin = ":hepta-contracts-authbus-local-qualification-test-bin",
+    workspace_root_marker = "//codex-rs/utils/cargo-bin:repo_root.marker",
+)
+
+rust_test(
+    name = "hepta-contracts-authbus-b3-adapter-qualification-test-bin",
+    srcs = ["tests/authbus_b3_adapter_qualification.rs"],
+    crate_features = ["authbus-local-qualification"],
+    crate_name = "authbus_b3_adapter_qualification",
+    crate_root = "tests/authbus_b3_adapter_qualification.rs",
+    edition = "2024",
+    rustc_flags = WINDOWS_RUSTC_LINK_FLAGS,
+    tags = ["manual"],
+    visibility = ["//visibility:private"],
+    deps = [":hepta-contracts-authbus-qualification-lib"] + all_crate_deps(
+        normal = True,
+        normal_dev = True,
+    ),
+)
+
+workspace_root_test(
+    name = "hepta-contracts-authbus-b3-adapter-qualification-test",
+    test_bin = ":hepta-contracts-authbus-b3-adapter-qualification-test-bin",
+    workspace_root_marker = "//codex-rs/utils/cargo-bin:repo_root.marker",
 )

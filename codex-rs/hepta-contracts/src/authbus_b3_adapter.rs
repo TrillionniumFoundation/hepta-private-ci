@@ -472,7 +472,7 @@ where
     P: SecretRefProvider,
 {
     pub fn new(backend: B, provider: P) -> Self {
-        Self::with_retry_budget(backend, provider, 1)
+        Self::with_retry_budget(backend, provider, /*retry_budget*/ 1)
     }
 
     pub fn with_retry_budget(backend: B, provider: P, retry_budget: u32) -> Self {

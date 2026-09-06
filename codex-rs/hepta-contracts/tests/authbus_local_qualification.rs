@@ -67,7 +67,10 @@ fn scheduler_request(
         owner_epoch: resource.owner_epoch,
         generation,
         fencing_token_sha256: resource.fencing_token_sha256.clone(),
-        estimate: QuotaVector::new(1, 1, 1, 1, 1),
+        estimate: QuotaVector::new(
+            /*rpm*/ 1, /*tpm*/ 1, /*concurrency*/ 1, /*day_budget*/ 1,
+            /*context*/ 1,
+        ),
         safety_margin: QuotaVector::default(),
         enqueued_at_ms: 1,
         deadline_ms: 100,
@@ -105,7 +108,7 @@ fn delivery(label: &str) -> B5OutboxDelivery {
         idempotency_key: format!("delivery:{label}"),
         payload_sha256: digest(&format!("delivery-payload:{label}")),
         delivery_seq: 1,
-        fence: fence(11),
+        fence: fence(/*generation*/ 11),
     }
 }
 
@@ -125,19 +128,24 @@ enum DispatchAttemptMarker {
 #[test]
 fn b4_unknown_quota_and_duplicate_request_fail_closed() {
     let unknown_resource = scheduler_resource(QuotaLimits::unknown_rpm(QuotaVector::new(
-        10, 10, 2, 10, 10,
+        /*rpm*/ 10, /*tpm*/ 10, /*concurrency*/ 2, /*day_budget*/ 10,
+        /*context*/ 10,
     )));
     let mut unknown_scheduler = LocalScheduler::new(unknown_resource.clone()).expect("scheduler");
-    let unknown_request = scheduler_request(&unknown_resource, "unknown-quota", 1);
+    let unknown_request =
+        scheduler_request(&unknown_resource, "unknown-quota", /*generation*/ 1);
     assert_eq!(
         unknown_scheduler.enqueue(unknown_request),
         Err(SchedulerError::UnknownQuota)
     );
     assert_eq!(unknown_scheduler.queued_request_count(), 0);
 
-    let resource = scheduler_resource(QuotaLimits::known(QuotaVector::new(10, 10, 2, 10, 10)));
+    let resource = scheduler_resource(QuotaLimits::known(QuotaVector::new(
+        /*rpm*/ 10, /*tpm*/ 10, /*concurrency*/ 2, /*day_budget*/ 10,
+        /*context*/ 10,
+    )));
     let mut scheduler = LocalScheduler::new(resource.clone()).expect("scheduler");
-    let request = scheduler_request(&resource, "duplicate", 1);
+    let request = scheduler_request(&resource, "duplicate", /*generation*/ 1);
     scheduler.enqueue(request.clone()).expect("first enqueue");
     let mut duplicate = request;
     duplicate.expected_revision = scheduler.revision();
@@ -150,12 +158,22 @@ fn b4_unknown_quota_and_duplicate_request_fail_closed() {
 
 #[test]
 fn b4_stale_permit_callback_does_not_mutate_accounting() {
-    let resource = scheduler_resource(QuotaLimits::known(QuotaVector::new(10, 10, 2, 10, 10)));
+    let resource = scheduler_resource(QuotaLimits::known(QuotaVector::new(
+        /*rpm*/ 10, /*tpm*/ 10, /*concurrency*/ 2, /*day_budget*/ 10,
+        /*context*/ 10,
+    )));
     let mut scheduler = LocalScheduler::new(resource.clone()).expect("scheduler");
     scheduler
-        .enqueue(scheduler_request(&resource, "stale-permit", 1))
+        .enqueue(scheduler_request(
+            &resource,
+            "stale-permit",
+            /*generation*/ 1,
+        ))
         .expect("enqueue");
-    let permit = scheduler.grant_next(2).expect("grant").expect("permit");
+    let permit = scheduler
+        .grant_next(/*now_ms*/ 2)
+        .expect("grant")
+        .expect("permit");
     let held_before = scheduler.held();
     let used_before = scheduler.used();
     let active_before = scheduler.active_permit_count();
@@ -173,14 +191,18 @@ fn b4_stale_permit_callback_does_not_mutate_accounting() {
 
 #[test]
 fn b5_crash_after_call_recovers_lookup_only_without_a_second_call() {
-    let original = intent("crash", 11);
+    let original = intent("crash", /*generation*/ 11);
     let mut wal = LocalB5Wal::new();
     assert_eq!(
         wal.append_intent(original.clone()),
         Ok(B5AppendDisposition::Inserted)
     );
-    wal.crash_after_call(&original.effect_key, 1, original.fence.clone())
-        .expect("crash boundary");
+    wal.crash_after_call(
+        &original.effect_key,
+        /*attempt*/ 1,
+        original.fence.clone(),
+    )
+    .expect("crash boundary");
 
     let reopened = LocalB5Wal::reopen_snapshot(&wal.durable_snapshot()).expect("reopen");
     assert_eq!(
@@ -198,7 +220,7 @@ fn b5_unknown_intent_is_a_safe_stop_without_dispatch() {
     let unknown = effect_key("unknown-intent");
     let mut wal = LocalB5Wal::new();
     assert_eq!(
-        wal.begin_dispatch(&unknown, 1, fence(11)),
+        wal.begin_dispatch(&unknown, /*attempt*/ 1, fence(/*generation*/ 11)),
         Err(B5Error::UnknownIntent)
     );
     assert_eq!(wal.durable_record_count(), 0);
@@ -207,11 +229,15 @@ fn b5_unknown_intent_is_a_safe_stop_without_dispatch() {
     // Also exercise the serialized recovery path.  The marker is deliberately
     // re-hashed with the same field order as the private B5 record enum so the
     // semantic UnknownIntent check is reached after chain validation.
-    let original = intent("unknown-recovery", 11);
+    let original = intent("unknown-recovery", /*generation*/ 11);
     let mut wal = LocalB5Wal::new();
     wal.append_intent(original.clone()).expect("intent");
-    wal.crash_after_call(&original.effect_key, 1, original.fence.clone())
-        .expect("crash boundary");
+    wal.crash_after_call(
+        &original.effect_key,
+        /*attempt*/ 1,
+        original.fence.clone(),
+    )
+    .expect("crash boundary");
     let mut snapshot: serde_json::Value =
         serde_json::from_slice(&wal.durable_snapshot()).expect("snapshot json");
     let previous = Sha256Digest::parse(
@@ -262,7 +288,7 @@ fn b5_payload_conflict_and_stale_fence_do_not_append_records() {
 
     let mut stale = first;
     stale.outbox_id = "outbox:stale".to_string();
-    stale.fence = fence(12);
+    stale.fence = fence(/*generation*/ 12);
     assert_eq!(wal.enqueue_outbox(stale), Err(B5Error::StaleFence));
     assert_eq!(wal.durable_record_count(), count);
 }

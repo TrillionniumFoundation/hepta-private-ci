@@ -218,6 +218,17 @@ the other qualification suites and independent governance review remain open.
 The signer and real-Synapse test stay opt-in and are not activated by source
 qualification.
 
+Contracts also has two explicit targets in `//codex-rs/hepta-contracts`:
+`hepta-contracts-authbus-local-qualification-test` and
+`hepta-contracts-authbus-b3-adapter-qualification-test`. Their private test-only
+library enables only the local AuthBus qualification feature. The six B4/B5
+and seven B3 adapter tests use in-memory models and scripted providers; their
+recovery snapshots and secret-backend errors do not exercise real process
+crashes, fsync, OpenBao or provider transport. The product library and existing
+caller-manifest unit tests remain unchanged. These targets require actual
+exact-source execution; they do not retire the Cargo migration exceptions or
+satisfy independent acceptance and production integration gates.
+
 The original `hepta-gap-closure.yml` workflow includes source normalization and
 lockfile reconciliation. A result from a mutated checkout must not substitute
 for exact-source qualification.
