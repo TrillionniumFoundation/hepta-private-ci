@@ -54,11 +54,47 @@ probability distributions. Tests include `OPE-GV-001`, nonzero outcome-model
 correction and tiny-weight ESS preservation. These in-process core types are
 not a new external wire protocol or an acceptance interface.
 
-Point estimates do not implement cross-fitting, clustered confidence intervals,
-multiplicity correction, authenticated evaluator independence, production
-selection or future-time retention. Those remain requirements of
-`LEARNING_EVALUATION_EXECUTION.md`; this implementation does not close the whole
-`LRN-2-CAUSAL-EVALUATION` package or advance longitudinal capability claims.
+The point estimator is separate from the existing conservative single-holdout
+cluster intervals and preregistered temporal validation. These bounded analyses
+do not establish general cross-fitting, authenticated evaluator independence,
+production selection or future-time retention. The remaining requirements of
+`LEARNING_EVALUATION_EXECUTION.md` keep the whole `LRN-2-CAUSAL-EVALUATION`
+package and longitudinal capability claims open.
+
+The OPE point estimator enforces the preregistered importance-weight ceiling
+on the exact probability ratio before fixed-point rounding. A ratio above the
+ceiling is rejected even when rounding would produce the ceiling itself.
+
+Local memory retrieval rejects tombstone candidates before scoring or top-k
+truncation. A deleted candidate invalidates the request; it cannot be returned
+as evidence or concealed as an ordinary omitted result. The additive native
+`retrieve_v2` API binds the query, snapshot, result limit and complete supplied
+candidate set in canonical order, including the identities, record digests and
+scores of omitted candidates. Its separate receipt digest also covers the
+omission count. The existing V1 result digest keeps its original byte scope.
+Consumers compare `request_binding_digest` with the binding of their expected
+input. This is an owner-local integrity API, not an admitted external protocol,
+source authentication or proof of completeness beyond the supplied candidates.
+
+Matrix runtime accepts the typed `m.mentions` metadata serialized by the SDK
+after ingress applies its explicit-mention policy. Only the message body is
+submitted as user input. Unknown content or mention fields, invalid Matrix
+user identifiers and malformed mention types remain rejected. The native
+regression traverses SDK serialization, ingress persistence and runtime queue
+admission, including duplicate delivery; its bridge is an isolated fixture.
+
+## Remaining integration requirements
+
+The C1 contract in
+`qualification/module-execution-dossiers/C1_EXECUTION.md` still requires a named
+product-host composition, delivery-time revocation checks, independent outcome
+observation, durable learning lineage, selected new-process load and rollback.
+Standalone module tests and the reference round-trip do not establish these
+product observations. Matrix's product SDK sync caller still uses the V1 batch
+interface; the V2 durable sync-decision implementation needs a separate product
+binding for redactions, tombstones and timeline-completeness handling. These
+requirements remain open, as do evaluator-history enforcement of holdout reuse,
+retention/unlearning qualification and independently observed future windows.
 
 ## Safety and authority boundary
 
@@ -70,6 +106,18 @@ activation, longitudinal efficacy and physical-safety evidence remain separate
 governed states and may not be inferred from fixture success.
 
 ## Verification
+
+The inherited feature-removal migration left qualification-only Rust code,
+required-feature test targets and CI commands without their manifest entries.
+The bounded migration exception in the workspace manifest verifier preserves
+only the exact legacy feature mappings for Contracts, TaskFlow, Agentd, Matrix
+SDK/daemon and the Supervisor signer. Every default feature set remains empty.
+Unknown features, altered forwarding, optional dependencies and unregistered
+internal feature activation remain rejected. This temporary declaration bridge
+does not make Bazel run the feature-gated integration tests; their extraction
+into explicit qualification targets and independent governance review remain
+open. The signer and real-Synapse test stay opt-in and are not activated by
+source qualification.
 
 The original `hepta-gap-closure.yml` workflow includes source normalization and
 lockfile reconciliation. A result from a mutated checkout must not substitute
