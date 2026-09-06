@@ -1,4 +1,4 @@
-name: Hepta module registry shape discovery
+name: Hepta registry shape discovery
 
 on:
   push:
@@ -11,8 +11,8 @@ permissions:
   contents: read
 
 jobs:
-  compute-shape:
-    name: Compute canonical module-registry recursive shape
+  compute-shapes:
+    name: Compute canonical registry recursive shapes
     runs-on: ubuntu-24.04
     timeout-minutes: 5
     steps:
@@ -21,7 +21,7 @@ jobs:
         with:
           persist-credentials: false
           fetch-depth: 1
-      - name: Compute current and registered shape digests
+      - name: Compute every registered shape digest
         shell: bash
         run: |
           set -euo pipefail
@@ -32,6 +32,7 @@ jobs:
 
           import hashlib
           import json
+          import os
           from pathlib import Path
 
           def reject_duplicate_keys(pairs):
@@ -61,25 +62,32 @@ jobs:
                   result.add(path + ":" + type(value).__name__)
               return result
 
-          modules = load("docs/modules/MODULES.json")
+          def shape_sha(value) -> str:
+              return hashlib.sha256(
+                  "\n".join(sorted(shape_paths(value))).encode("utf-8")
+              ).hexdigest()
+
           system = load("docs/governance/DOCUMENT_SYSTEM.json")
-          calculated = hashlib.sha256(
-              "\n".join(sorted(shape_paths(modules))).encode("utf-8")
-          ).hexdigest()
-          registered = next(
-              row["recursiveShapeSha256"]
-              for row in system["registryShapeClosures"]
-              if row["path"] == "docs/modules/MODULES.json"
-          )
+          results = []
+          for row in system["registryShapeClosures"]:
+              path = row["path"]
+              registered = row["recursiveShapeSha256"]
+              calculated = shape_sha(load(path))
+              results.append({
+                  "path": path,
+                  "registered_recursive_shape_sha256": registered,
+                  "calculated_recursive_shape_sha256": calculated,
+                  "matches": registered == calculated,
+              })
+          mismatches = [row for row in results if not row["matches"]]
           print(json.dumps({
-              "schema": "hepta.module-shape-discovery.v1",
-              "source_commit": __import__("os").environ["GITHUB_SHA"],
-              "path": "docs/modules/MODULES.json",
-              "registered_recursive_shape_sha256": registered,
-              "calculated_recursive_shape_sha256": calculated,
-              "matches": registered == calculated,
+              "schema": "hepta.registry-shape-discovery.v1",
+              "source_commit": os.environ["GITHUB_SHA"],
+              "registry_count": len(results),
+              "mismatch_count": len(mismatches),
+              "mismatches": mismatches,
               "authority_granted": False,
           }, sort_keys=True))
-          if registered == calculated:
+          if not mismatches:
               raise SystemExit("discovery unexpectedly found no drift")
           PY
