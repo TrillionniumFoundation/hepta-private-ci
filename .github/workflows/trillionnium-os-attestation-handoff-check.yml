@@ -1,0 +1,58 @@
+name: Trillionnium OS attestation handoff safety
+
+on:
+  pull_request:
+    types: [opened, reopened, synchronize, ready_for_review]
+    branches:
+      - integration/vnext-main-20260811
+    paths:
+      - .g1/requests/trillionnium-os/**
+      - .github/workflows/self-hosted-desktop-availability.yml
+      - .github/workflows/self-hosted-fleet-availability.yml
+      - .github/workflows/trillionnium-os-attestation-handoff-check.yml
+
+permissions:
+  contents: read
+
+concurrency:
+  group: trillionnium-os-attestation-handoff-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  verify-handoff:
+    name: Verify unsigned handoff and trusted probe boundaries
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    env:
+      BASE_SHA: ${{ github.event.pull_request.base.sha }}
+      HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+      PYTHONDONTWRITEBYTECODE: "1"
+    steps:
+      - name: Check out exact pull-request head without credentials
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          fetch-depth: 0
+          ref: ${{ env.HEAD_SHA }}
+          persist-credentials: false
+      - name: Assert immutable clean checkout
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git --no-replace-objects rev-parse HEAD)" = "$HEAD_SHA"
+          test -z "$(git --no-replace-objects status --porcelain=v1 --untracked-files=all)"
+      - name: Run strict package and hostile-input verification
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP"
+          unset PYTHONPATH PYTHONHOME
+          python3 -I \
+            "$GITHUB_WORKSPACE/.g1/requests/trillionnium-os/verify_pr41_handoff.py" \
+            --root "$GITHUB_WORKSPACE" \
+            --base "$BASE_SHA" \
+            --head "$HEAD_SHA"
+      - name: Prove verification did not mutate the checkout
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -z "$(git --no-replace-objects status --porcelain=v1 --untracked-files=all)"
