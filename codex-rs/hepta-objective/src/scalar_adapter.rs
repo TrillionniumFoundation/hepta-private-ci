@@ -64,10 +64,14 @@ pub(crate) fn scalar_conflict(
         axes,
         evidence_sources,
     };
-    // Compatibility availability ceiling, not a measured latency qualification.
+    // The legacy `compile` API is specified as a deterministic pure function.
+    // Bound it by the exact n + 1 oracle-call ceiling, but do not let host
+    // scheduling or wall-clock load change a valid objective into Exhausted.
+    // Callers of the explicit feasibility API may still supply a real-time
+    // availability budget of their own.
     let budget = OracleBudgetV1 {
         max_calls: 257,
-        wall_time: Duration::from_secs(1),
+        wall_time: Duration::MAX,
     };
     match check_feasibility_v1(&registry, atoms, budget).outcome {
         FeasibilityOutcomeV1::Feasible(_) => Ok(None),
