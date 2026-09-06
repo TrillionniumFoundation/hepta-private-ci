@@ -58,10 +58,15 @@ use crate::RoomThreadBindingDraft;
 use crate::model::MAX_PAGE_ITEMS;
 use crate::model::MAX_PAYLOAD_BYTES;
 
+#[path = "sync_observation.rs"]
+mod sync_observation;
 #[path = "sync_v2.rs"]
 mod sync_v2;
 #[path = "sync_v2_tombstone.rs"]
 mod sync_v2_tombstone;
+
+pub use sync_observation::MatrixSyncUnchangedRequestV1;
+pub use sync_observation::MatrixSyncUnchangedResultV1;
 
 const MATRIX_SCHEMA_VERSION: u32 = 1;
 const MATRIX_DB_FILENAME: &str = "matrix_1.sqlite3";

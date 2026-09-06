@@ -267,7 +267,7 @@ impl MatrixDurableStore {
             batch.checkpoint_generation,
             batch.expected_next_batch.as_deref(),
         )?;
-        if !has_commit_capacity_tx(&mut transaction, batch).await? {
+        if !has_commit_capacity_tx(&mut transaction, &batch.mutations).await? {
             return Ok(MatrixSyncResultV2::CapacityExhausted {
                 schema_version: MATRIX_SYNC_MUTATION_SCHEMA_VERSION_V2,
                 operation_id: batch.operation_id.clone(),
@@ -535,7 +535,7 @@ async fn insert_mutation_ledger_tx(
     Ok(())
 }
 
-async fn checkpoint_tx(
+pub(super) async fn checkpoint_tx(
     transaction: &mut Transaction<'_, Sqlite>,
 ) -> Result<Option<MatrixSyncCheckpoint>, MatrixDurableError> {
     // The V1 table names predate multi-room V2. V2 treats these two values as
@@ -564,7 +564,7 @@ async fn checkpoint_tx(
     .transpose()
 }
 
-fn verify_checkpoint(
+pub(super) fn verify_checkpoint(
     checkpoint: Option<&MatrixSyncCheckpoint>,
     owner: &AgentId,
     checkpoint_revision: u64,

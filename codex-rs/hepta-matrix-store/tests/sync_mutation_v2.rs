@@ -28,12 +28,10 @@ use codex_hepta_matrix_store::RoomBindingDraft;
 use codex_hepta_matrix_store::RoomThreadBindingDraft;
 use codex_hepta_paths::HeptaAgentLayout;
 use codex_hepta_paths::HeptaFleetRoot;
+use codex_state::SqliteConfig;
+use codex_utils_absolute_path::AbsolutePathBuf;
 use pretty_assertions::assert_eq;
 use sqlx::SqlitePool;
-use sqlx::sqlite::SqliteConnectOptions;
-use sqlx::sqlite::SqliteJournalMode;
-use sqlx::sqlite::SqlitePoolOptions;
-use sqlx::sqlite::SqliteSynchronous;
 use tempfile::TempDir;
 
 type TestResult<T = ()> = Result<T, Box<dyn Error>>;
@@ -85,15 +83,13 @@ async fn open_hostile_fixture_pool(path: &Path) -> TestResult<SqlitePool> {
     // These tests own the temporary database and deliberately inject hostile
     // rows/schema after closing its owner. This is not a recovery backend;
     // production path-based SQLite recovery must continue to fail closed.
-    let options = SqliteConnectOptions::new()
-        .filename(path)
-        .create_if_missing(false)
-        .journal_mode(SqliteJournalMode::Wal)
-        .synchronous(SqliteSynchronous::Full)
-        .foreign_keys(true);
-    Ok(SqlitePoolOptions::new()
-        .max_connections(1)
-        .connect_with(options)
+    assert!(fs::symlink_metadata(path)?.file_type().is_file());
+    let parent = path
+        .parent()
+        .ok_or_else(|| std::io::Error::other("fixture parent missing"))?;
+    let parent = AbsolutePathBuf::try_from(parent.to_path_buf())?;
+    Ok(SqliteConfig::new_for_testing(parent)
+        .open_durable_evidence_pool(path)
         .await?)
 }
 
@@ -1907,21 +1903,24 @@ async fn startup_rejects_same_name_counterfeit_v2_schema_objects() -> TestResult
     let pool = open_hostile_fixture_pool(&database_path).await?;
     // Restore the exact migration SQL: Rust line continuations strip leading
     // spaces, which would change this store's intentionally exact fingerprint.
+    // Pin each schema replacement to one connection and commit it atomically.
+    let mut transaction = pool.begin_with("BEGIN IMMEDIATE").await?;
     let original_index_sql: String = sqlx::query_scalar(
         "SELECT sql FROM sqlite_schema
          WHERE type = 'index' AND name = 'matrix_sync_mutations_v2_by_tombstone'",
     )
-    .fetch_one(&pool)
+    .fetch_one(&mut *transaction)
     .await?;
     sqlx::query("DROP INDEX matrix_sync_mutations_v2_by_tombstone")
-        .execute(&pool)
+        .execute(&mut *transaction)
         .await?;
     sqlx::query(
         "CREATE INDEX matrix_sync_mutations_v2_by_tombstone
          ON matrix_sync_mutations_v2(source_event_id)",
     )
-    .execute(&pool)
+    .execute(&mut *transaction)
     .await?;
+    transaction.commit().await?;
     pool.close().await;
 
     assert!(matches!(
@@ -1930,27 +1929,31 @@ async fn startup_rejects_same_name_counterfeit_v2_schema_objects() -> TestResult
     ));
 
     let pool = open_hostile_fixture_pool(&database_path).await?;
+    let mut transaction = pool.begin_with("BEGIN IMMEDIATE").await?;
     sqlx::query("DROP INDEX matrix_sync_mutations_v2_by_tombstone")
-        .execute(&pool)
+        .execute(&mut *transaction)
         .await?;
     // Captured from the fresh, verified owner schema before any hostile write.
     sqlx::query(sqlx::AssertSqlSafe(original_index_sql))
-        .execute(&pool)
+        .execute(&mut *transaction)
         .await?;
+    transaction.commit().await?;
     pool.close().await;
     let store = MatrixDurableStore::open(&store_layout, MatrixDurableConfig::default()).await?;
     store.close().await;
 
     let pool = open_hostile_fixture_pool(&database_path).await?;
+    let mut transaction = pool.begin_with("BEGIN IMMEDIATE").await?;
     sqlx::query("DROP TRIGGER matrix_sync_mutations_v2_no_update")
-        .execute(&pool)
+        .execute(&mut *transaction)
         .await?;
     sqlx::query(
         "CREATE TRIGGER matrix_sync_mutations_v2_no_update
          BEFORE UPDATE ON matrix_sync_mutations_v2 BEGIN SELECT 1; END",
     )
-    .execute(&pool)
+    .execute(&mut *transaction)
     .await?;
+    transaction.commit().await?;
     pool.close().await;
     assert!(matches!(
         MatrixDurableStore::open(&store_layout, MatrixDurableConfig::default()).await,

@@ -160,7 +160,7 @@ pub(crate) fn tombstone_fields(
 /// condition instead of an ambiguous transient storage failure.
 pub(crate) async fn has_commit_capacity_tx(
     transaction: &mut Transaction<'_, Sqlite>,
-    batch: &MatrixSyncBatchV2,
+    mutations: &[MatrixSyncMutationV2],
 ) -> Result<bool, MatrixDurableError> {
     let row = sqlx::query(
         "SELECT
@@ -183,9 +183,8 @@ pub(crate) async fn has_commit_capacity_tx(
     {
         return Err(MatrixDurableError::Corrupt);
     }
-    let destructive_only = !batch.mutations.is_empty()
-        && batch
-            .mutations
+    let destructive_only = !mutations.is_empty()
+        && mutations
             .iter()
             .all(|mutation| !matches!(&mutation.body, MatrixSyncMutationBodyV2::Timeline { .. }));
     let mutation_limit = if destructive_only {
@@ -204,7 +203,7 @@ pub(crate) async fn has_commit_capacity_tx(
         OUTCOME_JOURNAL_CAPACITY - DELETION_OUTCOME_RESERVE
     };
     let mut new_mutations = 0_i64;
-    for mutation in &batch.mutations {
+    for mutation in mutations {
         let exists: i64 = sqlx::query_scalar(
             "SELECT EXISTS(
                 SELECT 1 FROM matrix_sync_mutations_v2 WHERE source_event_id = ?
@@ -227,7 +226,7 @@ pub(crate) async fn has_commit_capacity_tx(
             .checked_add(1)
             .is_none_or(|next| next > decision_limit)
         || outcome_seq
-            .checked_add(batch.mutations.len() as i64)
+            .checked_add(mutations.len() as i64)
             .is_none_or(|next| next > outcome_limit)
     {
         return Ok(false);
@@ -602,7 +601,7 @@ fn parse_disposition(value: &str) -> Result<MatrixSyncMutationDispositionV2, Mat
     }
 }
 
-fn valid_sync_token(value: &str) -> bool {
+pub(super) fn valid_sync_token(value: &str) -> bool {
     (1..=4_096).contains(&value.len()) && value.bytes().all(|byte| (b' '..=b'~').contains(&byte))
 }
 
