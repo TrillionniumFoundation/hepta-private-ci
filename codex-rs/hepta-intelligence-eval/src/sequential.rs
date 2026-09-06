@@ -134,12 +134,12 @@ pub fn estimate_sequential(
             return insufficient(SequentialEvidenceGap::DepthSupport);
         }
         let ess = scaled_ratio(sum * sum, squares).map_err(|_| SequentialError::Arithmetic)?;
-        if ess < floor {
+        if ess.floor < floor {
             return insufficient(SequentialEvidenceGap::DepthSupport);
         }
         depth_support.push(DepthSupport {
             depth: depth as u16,
-            effective_sample_size: fixed(ess)?,
+            effective_sample_size: fixed(ess.rounded)?,
             maximum_cumulative_weight: fixed(weights.iter().copied().max().unwrap_or(0))?,
             positive_weight_trajectories: weights.iter().filter(|weight| **weight > 0).count(),
         });

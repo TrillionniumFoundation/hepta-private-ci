@@ -299,6 +299,58 @@ fn deep_ess_and_joint_scope_cannot_inherit_a_weaker_local_floor() {
 }
 
 #[test]
+fn exact_depth_ess_floor_cannot_be_weakened_by_q32_rounding()
+-> Result<(), Box<dyn std::error::Error>> {
+    let mut p = plan();
+    p.minimum_depth_ess = FixedQ32::from_raw(400 << 32);
+    let mut rows = Vec::new();
+    for index in 0..400 {
+        rows.push(trajectory(&format!("ess-boundary-{index}")));
+    }
+    let exact = estimate_sequential(&p, &rows)?;
+    assert!(
+        exact
+            .depth_support
+            .iter()
+            .all(|depth| { depth.effective_sample_size == p.minimum_depth_ess })
+    );
+
+    // Every entry-depth weight stays 1/2. At depth one, one cumulative weight
+    // falls from 1 to 1 - 32768/2^32: true ESS < 400, nearest Q32 ESS == 400.
+    rows[0].steps[1].actions[0].evaluation_probability =
+        ProbabilityQ32::from_raw((1 << 31) - 16_384)?;
+    rows[0].steps[1].actions[1].evaluation_probability =
+        ProbabilityQ32::from_raw((1 << 31) + 16_384)?;
+    assert_eq!(
+        estimate_sequential(&p, &rows),
+        Err(SequentialError::InsufficientEvidence(
+            SequentialEvidenceGap::DepthSupport
+        ))
+    );
+
+    p.minimum_depth_ess = FixedQ32::from_raw((400 << 32) - 1);
+    let supported = estimate_sequential(&p, &rows)?;
+    assert_eq!(supported.depth_support, exact.depth_support);
+
+    p.estimand.scope = TrajectoryClaimScope::SystemLongitudinal;
+    assert_eq!(
+        estimate_sequential(&p, &rows),
+        Err(SequentialError::InsufficientEvidence(
+            SequentialEvidenceGap::DepthSupport
+        ))
+    );
+    rows.push(trajectory("ess-boundary-extra"));
+    let supported = estimate_sequential(&p, &rows)?;
+    assert!(
+        supported
+            .depth_support
+            .iter()
+            .all(|depth| { depth.effective_sample_size == FixedQ32::from_raw(401 << 32) })
+    );
+    Ok(())
+}
+
+#[test]
 fn tiny_cumulative_weights_keep_q64_ess_and_underflow_is_explicit() {
     let mut p = plan();
     p.estimand.horizon = 1;

@@ -164,7 +164,8 @@ pub fn estimate_ope(plan: &OpePlan, rows: &[OpeRow]) -> Result<OpeEstimate, OpeE
             .ok_or(OpeError::Arithmetic)?,
         weight_square_sum,
     )?;
-    if ess < i128::from(plan.minimum_ess.raw()) {
+    // A rounded report must not admit an exact ratio below the support floor.
+    if ess.floor < i128::from(plan.minimum_ess.raw()) {
         return Err(OpeError::InsufficientSupport);
     }
     let count = i128::try_from(rows.len()).map_err(|_| OpeError::Arithmetic)?;
@@ -176,7 +177,7 @@ pub fn estimate_ope(plan: &OpePlan, rows: &[OpeRow]) -> Result<OpeEstimate, OpeE
         weight_sum,
     )?)?;
     let doubly_robust = fixed(round_ratio(dr_sum, count)?)?;
-    let effective_sample_size = fixed(ess)?;
+    let effective_sample_size = fixed(ess.rounded)?;
     let maximum_observed_weight = fixed(max_weight)?;
     for value in [
         ips,
@@ -291,10 +292,17 @@ fn fixed(raw: i128) -> Result<FixedQ32, OpeError> {
         .map_err(|_| OpeError::Arithmetic)
 }
 
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub(super) struct ScaledRatio {
+    pub(super) floor: i128,
+    pub(super) rounded: i128,
+}
+
 // Compute a nonnegative rational in Q32 without overflowing a Q96 numerator.
 // Keep squared weights in Q64: rounding every square to Q32 loses tiny weights
-// and can turn a supported policy into a false zero-ESS rejection.
-pub(super) fn scaled_ratio(numerator: i128, denominator: i128) -> Result<i128, OpeError> {
+// and can turn a supported policy into a false zero-ESS rejection. Admission
+// compares the floor with an integer Q32 threshold; reports retain ties-even.
+pub(super) fn scaled_ratio(numerator: i128, denominator: i128) -> Result<ScaledRatio, OpeError> {
     if numerator < 0 || denominator <= 0 {
         return Err(OpeError::Arithmetic);
     }
@@ -304,20 +312,27 @@ pub(super) fn scaled_ratio(numerator: i128, denominator: i128) -> Result<i128, O
     let mut remainder = numerator % denominator;
     let mut fraction = 0_i128;
     for _ in 0..32 {
-        remainder = remainder.checked_mul(2).ok_or(OpeError::Arithmetic)?;
         fraction = fraction.checked_mul(2).ok_or(OpeError::Arithmetic)?;
-        if remainder >= denominator {
-            remainder -= denominator;
+        // Compare before doubling so even a full-width denominator is exact.
+        let complement = denominator - remainder;
+        if remainder >= complement {
+            remainder -= complement;
             fraction += 1;
+        } else {
+            remainder = remainder.checked_mul(2).ok_or(OpeError::Arithmetic)?;
         }
     }
     result = checked_add(result, fraction)?;
-    let twice = remainder.checked_mul(2).ok_or(OpeError::Arithmetic)?;
-    if twice > denominator || (twice == denominator && result % 2 != 0) {
-        checked_add(result, /*right*/ 1)
+    let complement = denominator - remainder;
+    let rounded = if remainder > complement || (remainder == complement && result % 2 != 0) {
+        checked_add(result, /*right*/ 1)?
     } else {
-        Ok(result)
-    }
+        result
+    };
+    Ok(ScaledRatio {
+        floor: result,
+        rounded,
+    })
 }
 
 pub(super) fn round_ratio(numerator: i128, denominator: i128) -> Result<i128, OpeError> {

@@ -200,6 +200,74 @@ fn effective_sample_size_cannot_be_replaced_by_raw_row_count() {
 }
 
 #[test]
+fn exact_ess_floor_cannot_be_weakened_by_q32_rounding() {
+    let (mut plan, template) = fixture();
+    plan.minimum_rows = 400;
+    plan.minimum_ess = FixedQ32::from_raw(400 << 32);
+    let mut rows = Vec::new();
+    for index in 0..400 {
+        let mut row = template[0].clone();
+        row.decision_id = id(&format!("ess-boundary-{index}"));
+        for action in &mut row.actions {
+            action.behavior_probability = probability(/*quarters*/ 2);
+            action.evaluation_probability = probability(/*quarters*/ 2);
+        }
+        rows.push(row);
+    }
+    let exact = must(estimate_ope(&plan, &rows));
+    assert_eq!(exact.effective_sample_size, plan.minimum_ess);
+
+    // Weights are 399 copies of 1 and one copy of 1 - 32768/2^32.
+    // ESS is strictly below 400 by about 0.249375 raw Q32 units, so the
+    // required nearest-even report remains 400 while that floor must reject.
+    rows[0].actions[0].evaluation_probability = must(ProbabilityQ32::from_raw((1 << 31) - 16_384));
+    rows[0].actions[1].evaluation_probability = must(ProbabilityQ32::from_raw((1 << 31) + 16_384));
+    assert_eq!(
+        estimate_ope(&plan, &rows),
+        Err(OpeError::InsufficientSupport)
+    );
+
+    plan.minimum_ess = FixedQ32::from_raw((400 << 32) - 1);
+    let supported = must(estimate_ope(&plan, &rows));
+    assert_eq!(supported.effective_sample_size, exact.effective_sample_size);
+
+    plan.minimum_ess = FixedQ32::from_raw(400 << 32);
+    let mut extra = rows[1].clone();
+    extra.decision_id = id("ess-boundary-extra");
+    rows.push(extra);
+    assert_eq!(
+        must(estimate_ope(&plan, &rows)).effective_sample_size.raw(),
+        401 << 32
+    );
+}
+
+#[test]
+fn scaled_ratio_preserves_exact_floor_and_ties_even_at_wide_bounds() {
+    let cases = [
+        (0, i128::MAX, 0, 0),
+        (1, 2, SCALE / 2, SCALE / 2),
+        (3, 2 * SCALE, 1, 2),
+        (5, 2 * SCALE, 2, 2),
+        (1 << 126, 1 << 125, 2 * SCALE, 2 * SCALE),
+        (i128::MAX, i128::MAX, SCALE, SCALE),
+        (i128::MAX - 1, i128::MAX, SCALE - 1, SCALE),
+        (i128::MAX, i128::MAX - 1, SCALE, SCALE),
+    ];
+    for (numerator, denominator, floor, rounded) in cases {
+        assert_eq!(
+            must(scaled_ratio(numerator, denominator)),
+            ScaledRatio { floor, rounded }
+        );
+    }
+    for (numerator, denominator) in [(0, 0), (1, -1), (-1, 1), (i128::MAX, 1)] {
+        assert_eq!(
+            scaled_ratio(numerator, denominator),
+            Err(OpeError::Arithmetic)
+        );
+    }
+}
+
+#[test]
 fn missing_evidence_and_out_of_range_outcomes_are_rejected() {
     let (plan, mut rows) = fixture();
     rows[0].outcome_evidence = Digest32::ZERO;
