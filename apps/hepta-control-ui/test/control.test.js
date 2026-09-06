@@ -319,7 +319,7 @@ test("both local entrypoints enforce closed fields and canonical encoding", () =
       /canonical JSON form/,
     );
     assert.throws(
-      () => call(canonicalJson(value).replace('"schema"', '"schem\\u0061"')),
+      () => call(canonicalJson(value).replace('"schema"', '"\\u0073chema"')),
       /canonical JSON form/,
     );
   }
