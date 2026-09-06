@@ -206,10 +206,17 @@ only the exact legacy feature mappings for Contracts, TaskFlow, Agentd, Matrix
 SDK/daemon and the Supervisor signer. Every default feature set remains empty.
 Unknown features, altered forwarding, optional dependencies and unregistered
 internal feature activation remain rejected. This temporary declaration bridge
-does not make Bazel run the feature-gated integration tests; their extraction
-into explicit qualification targets and independent governance review remain
-open. The signer and real-Synapse test stay opt-in and are not activated by
-source qualification.
+does not itself make Bazel run the feature-gated integration tests. TaskFlow now
+has two explicit Bazel targets in `//codex-rs/hepta-automation`:
+`hepta-automation-taskflow-kernel-qualification-test` and
+`hepta-automation-taskflow-step-qualification-test`. They enable the structural
+feature only in a private test-only library and the two existing fixture
+binaries, using the shared native test launcher. The product library remains
+unchanged. Exact-source execution of their four kernel and three step tests is
+required; target declaration alone is not execution evidence. Extraction of
+the other qualification suites and independent governance review remain open.
+The signer and real-Synapse test stay opt-in and are not activated by source
+qualification.
 
 The original `hepta-gap-closure.yml` workflow includes source normalization and
 lockfile reconciliation. A result from a mutated checkout must not substitute

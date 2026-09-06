@@ -57,7 +57,7 @@ impl Fixture {
 fn definition() -> TaskFlowDefinition {
     TaskFlowDefinition::new(
         "step-outbox",
-        1,
+        /*version*/ 1,
         "work",
         vec![
             TaskFlowNodeSpec::new("work", TaskFlowNodeKind::Activity),
@@ -78,7 +78,7 @@ fn fence(generation: u64) -> TaskFlowFence {
     TaskFlowFence::new(
         AgentId::parse(AGENT_ID).expect("agent id"),
         "step-owner",
-        1,
+        /*owner_epoch*/ 1,
         generation,
         format!("step-fence-{generation}"),
     )
@@ -91,10 +91,10 @@ async fn prepared_store(
     let store = AutomationStore::open(&fixture.layout)
         .await
         .expect("open store");
-    let owner = fence(1);
+    let owner = fence(/*generation*/ 1);
     let definition = definition();
     store
-        .register_taskflow_definition(&definition, &owner, 10)
+        .register_taskflow_definition(&definition, &owner, /*registered_at_ms*/ 10)
         .await
         .expect("register");
     store
@@ -104,12 +104,14 @@ async fn prepared_store(
             definition.version,
             definition.definition_digest(),
             "thread-step",
-            10,
+            /*created_at_ms*/ 10,
         )
         .await
         .expect("create");
     store
-        .claim_taskflow_run("step-run", &owner, 20, 1_000)
+        .claim_taskflow_run(
+            "step-run", &owner, /*now_ms*/ 20, /*lease_duration_ms*/ 1_000,
+        )
         .await
         .expect("claim run");
     (
@@ -128,12 +130,12 @@ async fn step_outbox_lifecycle_is_durable_fenced_and_idempotent() {
         .prepare_taskflow_step(
             "step-run",
             "work",
-            1,
+            /*attempt*/ 1,
             &owner,
             &intent,
             &payload,
             "step-prepare",
-            21,
+            /*now_ms*/ 21,
         )
         .await
         .expect("prepare");
@@ -143,12 +145,12 @@ async fn step_outbox_lifecycle_is_durable_fenced_and_idempotent() {
         .prepare_taskflow_step(
             "step-run",
             "work",
-            1,
+            /*attempt*/ 1,
             &owner,
             &intent,
             &payload,
             "step-prepare",
-            21,
+            /*now_ms*/ 21,
         )
         .await
         .expect("prepare replay");
@@ -161,12 +163,12 @@ async fn step_outbox_lifecycle_is_durable_fenced_and_idempotent() {
         .claim_taskflow_step(
             "step-run",
             "work",
-            1,
+            /*attempt*/ 1,
             &owner,
             &intent,
             &payload,
             "step-claim",
-            22,
+            /*now_ms*/ 22,
         )
         .await
         .expect("step claim");
@@ -175,14 +177,14 @@ async fn step_outbox_lifecycle_is_durable_fenced_and_idempotent() {
         .record_taskflow_step(
             "step-run",
             "work",
-            1,
+            /*attempt*/ 1,
             &owner,
             &intent,
             &payload,
             "step-record",
             &Sha256Digest::for_bytes(b"unknown-receipt"),
             TaskFlowStepObservation::Indeterminate,
-            23,
+            /*now_ms*/ 23,
         )
         .await
         .expect("record");
@@ -195,14 +197,14 @@ async fn step_outbox_lifecycle_is_durable_fenced_and_idempotent() {
         .reconcile_taskflow_step(
             "step-run",
             "work",
-            1,
+            /*attempt*/ 1,
             &owner,
             &intent,
             &payload,
             "step-reconcile",
             &Sha256Digest::for_bytes(b"final-receipt"),
             TaskFlowReconcileOutcome::Succeeded,
-            24,
+            /*now_ms*/ 24,
         )
         .await
         .expect("reconcile");
@@ -212,7 +214,7 @@ async fn step_outbox_lifecycle_is_durable_fenced_and_idempotent() {
         Some(TaskFlowReconcileOutcome::Succeeded)
     );
     let read = store
-        .read_taskflow_step("step-run", "work", 1, &owner)
+        .read_taskflow_step("step-run", "work", /*attempt*/ 1, &owner)
         .await
         .expect("read")
         .expect("step exists");
@@ -220,10 +222,10 @@ async fn step_outbox_lifecycle_is_durable_fenced_and_idempotent() {
     assert_eq!(read.intent_digest, intent);
     assert_eq!(read.payload_digest, payload);
 
-    let stale = fence(2);
+    let stale = fence(/*generation*/ 2);
     assert!(matches!(
         store
-            .read_taskflow_step("step-run", "work", 1, &stale)
+            .read_taskflow_step("step-run", "work", /*attempt*/ 1, &stale)
             .await,
         Err(codex_hepta_automation::TaskFlowError::StaleFence)
     ));
@@ -233,7 +235,7 @@ async fn step_outbox_lifecycle_is_durable_fenced_and_idempotent() {
         .await
         .expect("reopen store");
     let reopened_read = reopened
-        .read_taskflow_step("step-run", "work", 1, &owner)
+        .read_taskflow_step("step-run", "work", /*attempt*/ 1, &owner)
         .await
         .expect("read after reopen")
         .expect("step after reopen");
@@ -251,14 +253,14 @@ async fn step_outbox_rejects_wrong_order_and_append_only_tamper() {
             .record_taskflow_step(
                 "step-run",
                 "work",
-                1,
+                /*attempt*/ 1,
                 &owner,
                 &intent,
                 &payload,
                 "record-before-claim",
                 &receipt,
                 TaskFlowStepObservation::Succeeded,
-                21,
+                /*now_ms*/ 21,
             )
             .await,
         Err(codex_hepta_automation::TaskFlowError::Conflict(_))
@@ -266,7 +268,8 @@ async fn step_outbox_rejects_wrong_order_and_append_only_tamper() {
     ));
     store
         .prepare_taskflow_step(
-            "step-run", "work", 1, &owner, &intent, &payload, "prepare", 22,
+            "step-run", "work", /*attempt*/ 1, &owner, &intent, &payload, "prepare",
+            /*now_ms*/ 22,
         )
         .await
         .expect("prepare");
@@ -304,12 +307,12 @@ async fn step_outbox_failed_commands_leave_no_partial_event_and_expiry_is_fenced
         .prepare_taskflow_step(
             "step-run",
             "work",
-            1,
+            /*attempt*/ 1,
             &owner,
             &intent,
             &payload,
             "atomic-prepare",
-            21,
+            /*now_ms*/ 21,
         )
         .await
         .expect("prepare");
@@ -323,18 +326,18 @@ async fn step_outbox_failed_commands_leave_no_partial_event_and_expiry_is_fenced
             .claim_taskflow_step(
                 "step-run",
                 "work",
-                1,
+                /*attempt*/ 1,
                 &owner,
                 &intent,
                 &wrong_payload,
                 "atomic-claim-wrong",
-                22,
+                /*now_ms*/ 22,
             )
             .await,
         Err(codex_hepta_automation::TaskFlowError::Conflict(_))
     ));
     let unchanged = store
-        .read_taskflow_step("step-run", "work", 1, &owner)
+        .read_taskflow_step("step-run", "work", /*attempt*/ 1, &owner)
         .await
         .expect("read unchanged")
         .expect("prepared event remains");
@@ -343,24 +346,24 @@ async fn step_outbox_failed_commands_leave_no_partial_event_and_expiry_is_fenced
 
     // The exact owner tuple is required even when the lease has expired; a
     // newer generation cannot claim or append to the old intent.
-    let expired_owner = fence(2);
+    let expired_owner = fence(/*generation*/ 2);
     assert!(matches!(
         store
             .claim_taskflow_step(
                 "step-run",
                 "work",
-                1,
+                /*attempt*/ 1,
                 &expired_owner,
                 &intent,
                 &payload,
                 "atomic-claim-stale",
-                1_000,
+                /*now_ms*/ 1_000,
             )
             .await,
         Err(codex_hepta_automation::TaskFlowError::StaleFence)
     ));
     let still_unchanged = store
-        .read_taskflow_step("step-run", "work", 1, &owner)
+        .read_taskflow_step("step-run", "work", /*attempt*/ 1, &owner)
         .await
         .expect("read after stale claim")
         .expect("prepared event remains");
