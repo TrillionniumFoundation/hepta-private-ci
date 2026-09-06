@@ -9,6 +9,8 @@ on:
         default: operator-check
         type: string
 
+# `permissions: {}` is stricter than `contents: read`; no checkout is invoked,
+# so `persist-credentials: false` is not an applicable action input.
 permissions: {}
 
 jobs:
