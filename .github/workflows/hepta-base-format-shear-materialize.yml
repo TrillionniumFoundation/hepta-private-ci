@@ -1,0 +1,238 @@
+name: Hepta base format and shear repair materialization
+
+on:
+  push:
+    branches: [ops/hepta-base-format-shear-diagnostic-20260906]
+    paths: [.github/workflows/hepta-base-format-shear-materialize.yml]
+
+permissions: {}
+
+env:
+  BASE: b35b55f7767a3610481551c6260929904798b33c
+  TARGET_BRANCH: ops/hepta-base-format-shear-fix-20260906
+  DIAGNOSTIC_ARTIFACT_ID: "9992141046"
+  EXPECTED_PATCH_SHA256: 61c86d76973930eff80fb88624e7bfc13c387fc23c89597764b5939c57bb1ae8
+  EXPECTED_PATHS_SHA256: 06f4cf942e3b5629fc3df36533930eb74ae248f77d2ed3e5993024c85b8ab1c3
+  PYTHONDONTWRITEBYTECODE: "1"
+
+jobs:
+  validate:
+    name: Validate deterministic base repair
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 50
+    permissions:
+      actions: read
+      contents: read
+    outputs:
+      tree: ${{ steps.bind.outputs.tree }}
+      patch_sha256: ${{ steps.bind.outputs.patch_sha256 }}
+      paths_sha256: ${{ steps.bind.outputs.paths_sha256 }}
+      path_count: ${{ steps.bind.outputs.path_count }}
+    steps:
+      - name: Download fixed diagnostic artifact
+        uses: actions/download-artifact@634f93cb2916e3fdff6788551b99b062d0335ce0
+        with:
+          artifact-ids: ${{ env.DIAGNOSTIC_ARTIFACT_ID }}
+          repository: ${{ github.repository }}
+          github-token: ${{ github.token }}
+          path: ${{ runner.temp }}/diagnostic
+          merge-multiple: true
+
+      - name: Check out exact integration base
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.BASE }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Verify artifact, subject and repair surface
+        shell: bash
+        run: |
+          set -euo pipefail
+          patch="$RUNNER_TEMP/diagnostic/repair.patch"
+          paths="$RUNNER_TEMP/diagnostic/changed-paths.txt"
+          test -f "$patch"
+          test -f "$paths"
+          test "$(sha256sum "$patch" | awk '{print $1}')" = "$EXPECTED_PATCH_SHA256"
+          test "$(sha256sum "$paths" | awk '{print $1}')" = "$EXPECTED_PATHS_SHA256"
+          test "$(git --no-replace-objects rev-parse HEAD)" = "$BASE"
+          test "$(git --no-replace-objects status --porcelain=v1 --untracked-files=all)" = ""
+          test "$(wc -l < "$paths")" = 50
+          if grep -Ev '^(codex-rs/|scripts/hepta-paper-evidence\.py$|scripts/test_hepta_cleanup_consumers\.py$|scripts/test_hepta_paper_evidence\.py$)' "$paths"; then
+            echo 'repair path escaped the audited base-repair surface' >&2
+            exit 1
+          fi
+          git apply --check "$patch"
+          git apply "$patch"
+          git diff --check
+          git status --porcelain=v1 --untracked-files=all | sed -E 's/^.. //; s/.* -> //' | LC_ALL=C sort > "$RUNNER_TEMP/actual-paths.txt"
+          diff -u "$paths" "$RUNNER_TEMP/actual-paths.txt"
+
+      - uses: ./.github/actions/setup-ci
+
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: "3.13"
+
+      - name: Install exact uv
+        uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b
+        with:
+          version: "0.11.3"
+
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          components: rustfmt
+
+      - name: Install exact cargo-shear
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: cargo-shear@1.11.2
+
+      - name: Require formatter and dependency convergence
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/format.py --check
+          cd codex-rs
+          cargo shear --deny-warnings --format=json | tee "$RUNNER_TEMP/shear-converged.json"
+          cargo metadata --locked --no-deps --format-version 1 > "$RUNNER_TEMP/cargo-metadata.json"
+          cargo check --workspace --all-targets --locked
+
+      - name: Run retained source and documentation gates
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m py_compile \
+            scripts/hepta-paper-evidence.py \
+            scripts/test_hepta_cleanup_consumers.py \
+            scripts/test_hepta_paper_evidence.py
+          python3 -m unittest \
+            scripts.test_hepta_cleanup_consumers \
+            scripts.test_hepta_paper_evidence -v
+          python3 scripts/hepta-docs.py verify
+          python3 scripts/hepta-module-docs.py verify
+          python3 scripts/hepta-algorithm-docs.py verify
+          python3 scripts/hepta-readiness.py verify
+          python3 scripts/hepta-gap-closure.py verify
+          python3 scripts/hepta_source_registry_closure.py verify
+          python3 scripts/hepta-repository-integrity.py self-test
+          git diff --check
+
+      - name: Bind exact validated tree
+        id: bind
+        shell: bash
+        run: |
+          set -euo pipefail
+          patch="$RUNNER_TEMP/diagnostic/repair.patch"
+          paths="$RUNNER_TEMP/diagnostic/changed-paths.txt"
+          git status --porcelain=v1 --untracked-files=all | sed -E 's/^.. //; s/.* -> //' | LC_ALL=C sort > "$RUNNER_TEMP/final-paths.txt"
+          diff -u "$paths" "$RUNNER_TEMP/final-paths.txt"
+          git diff --binary --full-index > "$RUNNER_TEMP/final.patch"
+          test "$(sha256sum "$RUNNER_TEMP/final.patch" | awk '{print $1}')" = "$EXPECTED_PATCH_SHA256"
+          git add -A -- .
+          test -z "$(git diff --name-only)"
+          tree="$(git --no-replace-objects write-tree)"
+          {
+            echo "tree=$tree"
+            echo "patch_sha256=$EXPECTED_PATCH_SHA256"
+            echo "paths_sha256=$EXPECTED_PATHS_SHA256"
+            echo "path_count=50"
+          } >> "$GITHUB_OUTPUT"
+          printf '{"schema":"org.trillionnium.hepta.base-repair-validation.v1","base":"%s","tree":"%s","path_count":50,"patch_sha256":"%s","paths_sha256":"%s","cargo_check":true,"format_check":true,"cargo_shear_errors":0,"cargo_shear_warnings":0,"source_published":false,"authority_granted":false}\n' \
+            "$BASE" "$tree" "$EXPECTED_PATCH_SHA256" "$EXPECTED_PATHS_SHA256" \
+            > "$RUNNER_TEMP/base-repair-validation.json"
+
+      - name: Upload validation receipt
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-base-repair-validation-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/base-repair-validation.json
+            ${{ runner.temp }}/shear-converged.json
+            ${{ runner.temp }}/cargo-metadata.json
+          if-no-files-found: error
+          retention-days: 14
+
+  publish:
+    name: Reconstruct and publish exact validated repair
+    needs: validate
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 10
+    permissions:
+      actions: read
+      contents: write
+    steps:
+      - name: Download fixed diagnostic artifact
+        uses: actions/download-artifact@634f93cb2916e3fdff6788551b99b062d0335ce0
+        with:
+          artifact-ids: ${{ env.DIAGNOSTIC_ARTIFACT_ID }}
+          repository: ${{ github.repository }}
+          github-token: ${{ github.token }}
+          path: ${{ runner.temp }}/diagnostic
+          merge-multiple: true
+
+      - name: Check out exact base without persisted credentials
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.BASE }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Reconstruct the validated tree without executing candidate code
+        id: commit
+        shell: bash
+        env:
+          EXPECTED_TREE: ${{ needs.validate.outputs.tree }}
+        run: |
+          set -euo pipefail
+          patch="$RUNNER_TEMP/diagnostic/repair.patch"
+          paths="$RUNNER_TEMP/diagnostic/changed-paths.txt"
+          test "$(sha256sum "$patch" | awk '{print $1}')" = "$EXPECTED_PATCH_SHA256"
+          test "$(sha256sum "$paths" | awk '{print $1}')" = "$EXPECTED_PATHS_SHA256"
+          test "$(git --no-replace-objects rev-parse HEAD)" = "$BASE"
+          git apply --check "$patch"
+          git apply "$patch"
+          git diff --check
+          git status --porcelain=v1 --untracked-files=all | sed -E 's/^.. //; s/.* -> //' | LC_ALL=C sort > "$RUNNER_TEMP/publish-paths.txt"
+          diff -u "$paths" "$RUNNER_TEMP/publish-paths.txt"
+          git diff --binary --full-index > "$RUNNER_TEMP/publish.patch"
+          test "$(sha256sum "$RUNNER_TEMP/publish.patch" | awk '{print $1}')" = "$EXPECTED_PATCH_SHA256"
+          git add -A -- .
+          test "$(git --no-replace-objects write-tree)" = "$EXPECTED_TREE"
+          git config user.name 'OpenAI Codex'
+          git config user.email 'noreply@openai.com'
+          git commit \
+            -m 'style(ci): restore canonical formatting and dependency closure' \
+            -m 'Apply the repository-owned Just, Rust and Python formatters to the inherited integration base. Remove 24 unused pretty_assertions declarations, one unused cognitive-types edge and two unused workspace dependencies using cargo-shear 1.11.2; refresh Cargo.lock. The exact 50-path patch passed formatter convergence, strict cargo-shear, locked workspace metadata, all-target cargo check, focused Python tests and retained documentation/integrity gates in the preceding read-only job.' \
+            -m 'This is a mechanical base repair. It grants no attestation, target execution, evidence promotion, release, or gap transition authority.' \
+            -m 'Signed-off-by: OpenAI Codex <noreply@openai.com>'
+          result="$(git --no-replace-objects rev-parse HEAD)"
+          test "$(git --no-replace-objects rev-parse HEAD^)" = "$BASE"
+          test "$(git --no-replace-objects rev-parse HEAD^{tree})" = "$EXPECTED_TREE"
+          echo "commit=$result" >> "$GITHUB_OUTPUT"
+          printf '{"schema":"org.trillionnium.hepta.base-repair-materialization.v1","base":"%s","commit":"%s","tree":"%s","patch_sha256":"%s","paths_sha256":"%s","path_count":50,"publish_job_executed_candidate":false,"target_contacted":false,"evidence_promoted":false,"public_release":false}\n' \
+            "$BASE" "$result" "$EXPECTED_TREE" "$EXPECTED_PATCH_SHA256" "$EXPECTED_PATHS_SHA256" \
+            > "$RUNNER_TEMP/base-repair-materialization.json"
+
+      - name: Publish to isolated repair branch with exact lease
+        shell: bash
+        env:
+          RESULT: ${{ steps.commit.outputs.commit }}
+          TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          auth="$(printf 'x-access-token:%s' "$TOKEN" | base64 -w0)"
+          observed="$(git -c "http.extraheader=AUTHORIZATION: basic ${auth}" ls-remote origin "refs/heads/${TARGET_BRANCH}" | awk 'NR==1 {print $1}')"
+          test "$observed" = "$BASE"
+          git -c "http.extraheader=AUTHORIZATION: basic ${auth}" push \
+            "--force-with-lease=refs/heads/${TARGET_BRANCH}:${BASE}" \
+            origin "${RESULT}:refs/heads/${TARGET_BRANCH}"
+          unset TOKEN auth
+
+      - name: Upload materialization receipt
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-base-repair-materialization-${{ steps.commit.outputs.commit }}
+          path: ${{ runner.temp }}/base-repair-materialization.json
+          if-no-files-found: error
+          retention-days: 14
