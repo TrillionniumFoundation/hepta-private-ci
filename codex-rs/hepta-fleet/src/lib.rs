@@ -47,3 +47,7 @@ pub use release::RegisteredRelease;
 pub use release::ReleaseId;
 pub use release::ReleaseMetadata;
 pub use release::ReleaseProgramMetadata;
+
+#[cfg(test)]
+#[path = "allocation_tests.rs"]
+mod allocation_tests;
