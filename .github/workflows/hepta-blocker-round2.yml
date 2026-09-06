@@ -1,0 +1,138 @@
+name: Hepta blocker round 2 materializer (temporary)
+
+on:
+  push:
+    branches:
+      - "codex/hepta-blocker-round2-20260907"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: hepta-blocker-round2-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  materialize:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - name: Check out exact helper candidate
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: true
+          fetch-depth: 0
+
+      - name: Set up repository CI toolchain
+        uses: ./.github/actions/setup-ci
+
+      - name: Format source and prepare guarded V8 canary retry
+        shell: bash
+        run: |
+          set -euo pipefail
+          (
+            cd codex-rs
+            cargo fmt --all
+          )
+
+          python3 - <<'PY'
+          from pathlib import Path
+
+          workflow = Path('.github/workflows/v8-canary.yml')
+          text = workflow.read_text(encoding='utf-8')
+          invocation_anchor = (
+              '          python3 .github/scripts/run_bazel_with_buildbuddy.py \\\n'
+          )
+          archive_anchor = (
+              '          archive_path="${V8_BUILD_TARGET#//third_party/v8:}"\n'
+          )
+          archive_offset = text.index(archive_anchor)
+          start = text.rfind(invocation_anchor, 0, archive_offset)
+          if start < 0:
+              raise SystemExit('V8 canary BuildBuddy invocation anchor not found')
+          block = text[start:archive_offset]
+          if block.count('run_bazel_with_buildbuddy.py') != 1:
+              raise SystemExit('V8 canary invocation block is not closed-world')
+
+          replacement = '''          run_v8_canary_build() {
+            local build_invocation_id="$1"
+            local -a build_args=("${bazel_args[@]}")
+            local index
+            for index in "${!build_args[@]}"; do
+              if [[ "${build_args[$index]}" == --invocation_id=* ]]; then
+                build_args[$index]="--invocation_id=${build_invocation_id}"
+              fi
+            done
+            python3 .github/scripts/run_bazel_with_buildbuddy.py \\
+              --run-id "${GITHUB_RUN_ID}" \\
+              --invocation-id "${build_invocation_id}" \\
+              --remote-backend grpcs://remote.buildbuddy.io \\
+              --stream-logs-to "${GITHUB_STEP_SUMMARY}" \\
+              -- \\
+              ./bazel \\
+              "${build_args[@]}"
+          }
+
+          set +e
+          run_v8_canary_build "${invocation_id}"
+          build_status=$?
+          set -e
+          if [[ "${build_status}" -eq 37 && "${RUNNER_OS}" == "macOS" && "${V8_TARGET_CPU}" == "arm64" ]]; then
+            echo "Bazel reported internal exit 37 on macOS arm64; restarting the server and retrying this exact target once." >&2
+            ./bazel shutdown || true
+            retry_invocation_id="$(python -c 'import uuid; print(uuid.uuid4())')"
+            run_v8_canary_build "${retry_invocation_id}"
+          elif [[ "${build_status}" -ne 0 ]]; then
+            exit "${build_status}"
+          fi
+'''
+          workflow.write_text(text[:start] + replacement + text[archive_offset:], encoding='utf-8')
+          PY
+
+          git diff --check
+          changed_rust="$(git diff --name-only -- codex-rs)"
+          unexpected="$(
+            printf '%s\n' "${changed_rust}" \
+              | grep -Ev '^(codex-rs/hepta-contracts/src/authbus.rs|codex-rs/hepta-contracts/src/authbus_b2.rs|codex-rs/model-provider/src/provider_effect.rs)$' \
+              || true
+          )"
+          if [[ -n "${unexpected}" ]]; then
+            echo "Unexpected rustfmt output:" >&2
+            printf '%s\n' "${unexpected}" >&2
+            exit 1
+          fi
+          test -n "${changed_rust}"
+          grep -F 'Bazel reported internal exit 37 on macOS arm64' .github/workflows/v8-canary.yml
+
+          artifact_root="${RUNNER_TEMP}/hepta-blocker-round2"
+          rm -rf "${artifact_root}"
+          mkdir -p "${artifact_root}"
+          cp .github/workflows/v8-canary.yml "${artifact_root}/v8-canary.yml"
+          git checkout -- .github/workflows/v8-canary.yml
+          git diff --check
+
+      - name: Upload patched V8 canary workflow
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        with:
+          name: hepta-blocker-round2-${{ github.sha }}
+          path: ${{ runner.temp }}/hepta-blocker-round2/v8-canary.yml
+          if-no-files-found: error
+          retention-days: 1
+
+      - name: Commit formatter output only
+        shell: bash
+        run: |
+          set -euo pipefail
+          git add \
+            codex-rs/hepta-contracts/src/authbus.rs \
+            codex-rs/hepta-contracts/src/authbus_b2.rs \
+            codex-rs/model-provider/src/provider_effect.rs
+          git diff --cached --check
+          if git diff --cached --quiet; then
+            echo "Formatter output already materialized."
+            exit 0
+          fi
+          git config user.name "hepta-ci-bot"
+          git config user.email "hepta-ci-bot@users.noreply.github.com"
+          git commit -m "style: normalize blocker repair formatting"
+          git push origin "HEAD:${GITHUB_REF_NAME}"
