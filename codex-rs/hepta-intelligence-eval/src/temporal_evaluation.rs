@@ -34,6 +34,7 @@ const MAX_ACTION_CELLS: usize = 262_144;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct TemporalEvaluationPlan {
+    pub plan_digest: Digest32,
     pub evaluation_id: StableId,
     pub objective_digest: Digest32,
     pub fold: TemporalFoldPlan,
@@ -44,6 +45,7 @@ pub struct TemporalEvaluationPlan {
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct TemporalEvaluationReceipt {
     pub evaluation_id: StableId,
+    pub plan_digest: Digest32,
     pub model_digest: Digest32,
     pub predictions_digest: Digest32,
     pub estimate: ClusterOpeEstimate,
@@ -55,7 +57,9 @@ pub struct TemporalEvaluationReceipt {
 pub enum TemporalEvaluationError {
     InvalidTimeline,
     MissingObjective,
+    PlanDigestMismatch,
     ResourceLimit,
+    Arithmetic,
     CohortMismatch,
     ActionMismatch,
     OutcomeBeforeDecision,
@@ -83,6 +87,38 @@ impl From<ClusterConfidenceError> for TemporalEvaluationError {
     }
 }
 
+impl TemporalEvaluationPlan {
+    /// Compute the canonical digest for this complete evaluation plan.
+    ///
+    /// The digest excludes `plan_digest` itself. It binds every semantic field
+    /// of each independently identified fold, OPE and confidence subplan.
+    pub fn canonical_digest(&self) -> Result<Digest32, TemporalEvaluationError> {
+        let mut bytes = b"hepta.ope.temporal-evaluation-plan.v1".to_vec();
+        push_id(&mut bytes, &self.evaluation_id);
+        bytes.extend_from_slice(self.objective_digest.as_array());
+
+        bytes.extend_from_slice(self.fold.plan_digest.as_array());
+        push_id(&mut bytes, &self.fold.fold_id);
+        bytes.extend_from_slice(&self.fold.training_watermark.to_be_bytes());
+        bytes.extend_from_slice(&self.fold.evaluation_start.to_be_bytes());
+        push_usize(&mut bytes, self.fold.minimum_per_action)?;
+
+        bytes.extend_from_slice(self.ope.plan_digest.as_array());
+        bytes.extend_from_slice(&self.ope.outcome_watermark.to_be_bytes());
+        push_usize(&mut bytes, self.ope.minimum_rows)?;
+        bytes.extend_from_slice(&self.ope.minimum_ess.raw().to_be_bytes());
+        bytes.extend_from_slice(&self.ope.maximum_weight.raw().to_be_bytes());
+
+        bytes.extend_from_slice(self.confidence.plan_digest.as_array());
+        bytes.extend_from_slice(self.confidence.assumptions_digest.as_array());
+        bytes.extend_from_slice(&self.confidence.family_alpha_ppm.to_be_bytes());
+        bytes.extend_from_slice(&self.confidence.simultaneous_comparisons.to_be_bytes());
+        push_usize(&mut bytes, self.confidence.minimum_clusters)?;
+
+        Ok(Digest32::of_bytes(&bytes))
+    }
+}
+
 /// Compose the actual fitted model with the supported, observed OPE cohort.
 ///
 /// `observations` supplies outcomes and action propensities. Its prediction
@@ -98,6 +134,9 @@ pub fn evaluate_temporal_holdout(
 ) -> Result<TemporalEvaluationReceipt, TemporalEvaluationError> {
     if plan.objective_digest.is_zero() {
         return Err(TemporalEvaluationError::MissingObjective);
+    }
+    if plan.plan_digest.is_zero() || plan.plan_digest != plan.canonical_digest()? {
+        return Err(TemporalEvaluationError::PlanDigestMismatch);
     }
     if plan.ope.outcome_watermark < plan.fold.evaluation_start {
         return Err(TemporalEvaluationError::InvalidTimeline);
@@ -179,20 +218,28 @@ pub fn evaluate_temporal_holdout(
     }
     let estimate =
         estimate_cluster_intervals(&plan.ope, &plan.confidence, &bound_rows, assignments)?;
-    let mut bytes = b"hepta.ope.temporal-holdout-pipeline.v1".to_vec();
+    let mut bytes = b"hepta.ope.temporal-holdout-pipeline.v2".to_vec();
     push_id(&mut bytes, &plan.evaluation_id);
+    bytes.extend_from_slice(plan.plan_digest.as_array());
     bytes.extend_from_slice(plan.objective_digest.as_array());
     bytes.extend_from_slice(fitted.model_digest.as_array());
     bytes.extend_from_slice(fitted.predictions_digest.as_array());
     bytes.extend_from_slice(estimate.evidence_digest.as_array());
     Ok(TemporalEvaluationReceipt {
         evaluation_id: plan.evaluation_id.clone(),
+        plan_digest: plan.plan_digest,
         model_digest: fitted.model_digest,
         predictions_digest: fitted.predictions_digest,
         estimate,
         evidence_digest: Digest32::of_bytes(&bytes),
         authority: AuthorityPosture::DENY_ALL,
     })
+}
+
+fn push_usize(bytes: &mut Vec<u8>, value: usize) -> Result<(), TemporalEvaluationError> {
+    let value = u64::try_from(value).map_err(|_| TemporalEvaluationError::Arithmetic)?;
+    bytes.extend_from_slice(&value.to_be_bytes());
+    Ok(())
 }
 
 fn bind_cluster<'a>(
