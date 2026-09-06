@@ -4,6 +4,8 @@ use std::fs;
 use codex_hepta_contracts::AgentId;
 use codex_hepta_matrix_store::ChangeKind;
 use codex_hepta_matrix_store::InboxDraft;
+use codex_hepta_matrix_store::InboxQueuedDraft;
+use codex_hepta_matrix_store::InboxState;
 use codex_hepta_matrix_store::MatrixDurableConfig;
 use codex_hepta_matrix_store::MatrixDurableError;
 use codex_hepta_matrix_store::MatrixDurableStore;
@@ -14,15 +16,19 @@ use codex_hepta_matrix_store::OutboxDraft;
 use codex_hepta_matrix_store::OutboxDisposition;
 use codex_hepta_matrix_store::OutboxKind;
 use codex_hepta_matrix_store::RoomBindingDraft;
+use codex_hepta_matrix_store::RoomThreadBindingDraft;
 use codex_hepta_matrix_protocol::MatrixSyncBatchV2;
 use codex_hepta_matrix_protocol::MatrixSyncDecisionV2;
 use codex_hepta_matrix_protocol::MatrixSyncMutationBodyV2;
 use codex_hepta_matrix_protocol::MatrixSyncMutationDispositionV2;
 use codex_hepta_matrix_protocol::MatrixSyncMutationV2;
 use codex_hepta_matrix_protocol::MatrixSyncResultV2;
+use codex_hepta_matrix_protocol::room_project_idempotency_key;
 use codex_hepta_matrix_protocol::transaction_id;
 use codex_hepta_paths::HeptaAgentLayout;
 use codex_hepta_paths::HeptaFleetRoot;
+use codex_state::SqliteConfig;
+use codex_utils_absolute_path::AbsolutePathBuf;
 use pretty_assertions::assert_eq;
 use tempfile::TempDir;
 
@@ -1351,6 +1357,636 @@ async fn failed_mutation_rolls_back_prior_mutations_and_cursor() -> TestResult {
                 .await?,
         )?,
         vec![MatrixSyncMutationDispositionV2::Applied]
+    );
+    Ok(())
+}
+
+#[tokio::test]
+async fn tombstone_refuses_to_orphan_an_active_dispatch() -> TestResult {
+    let temp = TempDir::new()?;
+    let agent_id = agent()?;
+    let room_id = room("!active-dispatch:example.test")?;
+    let store = store_and_room(&temp, &room_id).await?;
+    store
+        .bind_room_thread(&RoomThreadBindingDraft {
+            room_id: room_id.clone(),
+            binding_revision: 1,
+            generation: 1,
+            project_id: room_project_idempotency_key(&agent_id, &room_id),
+            thread_id: Some("thread-active".to_string()),
+            changed_at_ms: 2,
+        })
+        .await?;
+    let target = event("$active-target")?;
+    let timeline = mutation(
+        target.clone(),
+        room_id.clone(),
+        MatrixSyncMutationBodyV2::Timeline {
+            event_type: "m.room.message".to_string(),
+            payload: b"active".to_vec(),
+        },
+        /*at_ms*/ 10,
+    )?;
+    store
+        .apply_sync_decision_v2(&commit(
+            /*expected*/ None,
+            "s1",
+            /*observed_at_ms*/ 11,
+            vec![timeline],
+        ))
+        .await?;
+    store
+        .begin_inbox_dispatch(&target, /*begun_at_ms*/ 12)
+        .await?;
+    let redaction_source = event("$active-redaction")?;
+    let redaction = mutation(
+        redaction_source.clone(),
+        room_id.clone(),
+        MatrixSyncMutationBodyV2::Redaction {
+            target_event_id: target.clone(),
+        },
+        /*at_ms*/ 13,
+    )?;
+    assert_eq!(
+        store
+            .apply_sync_decision_v2(&commit(
+                Some("s1"),
+                "s2",
+                /*observed_at_ms*/ 14,
+                vec![redaction],
+            ))
+            .await,
+        Err(MatrixDurableError::Conflict)
+    );
+    assert_eq!(
+        store.inbox(&target).await?.ok_or("inbox")?.state,
+        InboxState::Pending
+    );
+    assert_eq!(
+        store
+            .sync_checkpoint(/*binding_revision*/ 1, /*generation*/ 1)
+            .await?
+            .ok_or("checkpoint")?
+            .next_batch,
+        "s1"
+    );
+    store
+        .ingest_inbox(&inbox_draft(
+            redaction_source,
+            room_id,
+            b"failed decision left no ledger",
+            /*at_ms*/ 15,
+        )?)
+        .await?;
+    Ok(())
+}
+
+#[tokio::test]
+async fn redaction_ignores_another_rooms_active_dispatch() -> TestResult {
+    let temp = TempDir::new()?;
+    let agent_id = agent()?;
+    let active_room = room("!active-other-room:example.test")?;
+    let redaction_room = room("!redaction-room:example.test")?;
+    let store = store_and_room(&temp, &active_room).await?;
+    store
+        .bind_room(&RoomBindingDraft {
+            room_id: redaction_room.clone(),
+            agent_user_id: user(AGENT_USER_ID)?,
+            expected_revision: None,
+            generation: 1,
+            changed_at_ms: 2,
+        })
+        .await?;
+    store
+        .bind_room_thread(&RoomThreadBindingDraft {
+            room_id: active_room.clone(),
+            binding_revision: 1,
+            generation: 1,
+            project_id: room_project_idempotency_key(&agent_id, &active_room),
+            thread_id: Some("thread-other-room".to_string()),
+            changed_at_ms: 3,
+        })
+        .await?;
+    let target = event("$active-in-other-room")?;
+    store
+        .apply_sync_decision_v2(&commit(
+            /*expected*/ None,
+            "s1",
+            /*observed_at_ms*/ 11,
+            vec![mutation(
+                target.clone(),
+                active_room,
+                MatrixSyncMutationBodyV2::Timeline {
+                    event_type: "m.room.message".to_string(),
+                    payload: b"unrelated active dispatch".to_vec(),
+                },
+                /*at_ms*/ 10,
+            )?],
+        ))
+        .await?;
+    store
+        .begin_inbox_dispatch(&target, /*begun_at_ms*/ 12)
+        .await?;
+
+    let redaction = mutation(
+        event("$redaction-in-other-room")?,
+        redaction_room,
+        MatrixSyncMutationBodyV2::Redaction {
+            target_event_id: target,
+        },
+        /*at_ms*/ 20,
+    )?;
+    assert_eq!(
+        dispositions(
+            store
+                .apply_sync_decision_v2(&commit(
+                    Some("s1"),
+                    "s2",
+                    /*observed_at_ms*/ 21,
+                    vec![redaction],
+                ))
+                .await?,
+        )?,
+        vec![MatrixSyncMutationDispositionV2::Missing]
+    );
+    assert_eq!(store.pending_dispatches(/*limit*/ 10).await?.len(), 1);
+    Ok(())
+}
+
+#[tokio::test]
+async fn redaction_ignores_a_hidden_dispatch_from_an_old_room_fence() -> TestResult {
+    let temp = TempDir::new()?;
+    let agent_id = agent()?;
+    let room_id = room("!active-before-rebind:example.test")?;
+    let store = store_and_room(&temp, &room_id).await?;
+    store
+        .bind_room_thread(&RoomThreadBindingDraft {
+            room_id: room_id.clone(),
+            binding_revision: 1,
+            generation: 1,
+            project_id: room_project_idempotency_key(&agent_id, &room_id),
+            thread_id: Some("thread-old-fence".to_string()),
+            changed_at_ms: 2,
+        })
+        .await?;
+    let target = event("$active-before-rebind")?;
+    store
+        .apply_sync_decision_v2(&commit(
+            /*expected*/ None,
+            "s1",
+            /*observed_at_ms*/ 11,
+            vec![mutation(
+                target.clone(),
+                room_id.clone(),
+                MatrixSyncMutationBodyV2::Timeline {
+                    event_type: "m.room.message".to_string(),
+                    payload: b"old active dispatch".to_vec(),
+                },
+                /*at_ms*/ 10,
+            )?],
+        ))
+        .await?;
+    store
+        .begin_inbox_dispatch(&target, /*begun_at_ms*/ 12)
+        .await?;
+    let leave = mutation(
+        event("$leave-before-redaction")?,
+        room_id.clone(),
+        MatrixSyncMutationBodyV2::RoomLeave {
+            departed_user_id: user(AGENT_USER_ID)?,
+        },
+        /*at_ms*/ 20,
+    )?;
+    store
+        .apply_sync_decision_v2(&commit(
+            Some("s1"),
+            "s2",
+            /*observed_at_ms*/ 21,
+            vec![leave],
+        ))
+        .await?;
+    store
+        .bind_room(&RoomBindingDraft {
+            room_id: room_id.clone(),
+            agent_user_id: user(AGENT_USER_ID)?,
+            expected_revision: Some(1),
+            generation: 2,
+            changed_at_ms: 30,
+        })
+        .await?;
+
+    let mut redaction = mutation(
+        event("$redaction-after-rebind")?,
+        room_id,
+        MatrixSyncMutationBodyV2::Redaction {
+            target_event_id: target,
+        },
+        /*at_ms*/ 40,
+    )?;
+    redaction.binding_revision = 2;
+    redaction.generation = 2;
+    assert_eq!(
+        dispositions(
+            store
+                .apply_sync_decision_v2(&commit_with_fence(
+                    Some("s2"),
+                    "s3",
+                    /*observed_at_ms*/ 41,
+                    /*checkpoint_revision*/ 1,
+                    /*checkpoint_generation*/ 1,
+                    vec![redaction],
+                ))
+                .await?,
+        )?,
+        vec![MatrixSyncMutationDispositionV2::Applied]
+    );
+    assert!(store.pending_dispatches(/*limit*/ 10).await?.is_empty());
+    assert_eq!(
+        store
+            .sync_checkpoint(/*binding_revision*/ 1, /*generation*/ 1)
+            .await?
+            .ok_or("checkpoint")?
+            .next_batch,
+        "s3"
+    );
+    Ok(())
+}
+
+#[tokio::test]
+async fn room_leave_fences_an_active_dispatch_without_blocking_the_cursor() -> TestResult {
+    let temp = TempDir::new()?;
+    let agent_id = agent()?;
+    let room_id = room("!active-room-leave:example.test")?;
+    let store = store_and_room(&temp, &room_id).await?;
+    let project_id = room_project_idempotency_key(&agent_id, &room_id);
+    store
+        .bind_room_thread(&RoomThreadBindingDraft {
+            room_id: room_id.clone(),
+            binding_revision: 1,
+            generation: 1,
+            project_id: project_id.clone(),
+            thread_id: Some("thread-before-leave".to_string()),
+            changed_at_ms: 2,
+        })
+        .await?;
+    let event_id = event("$dispatch-before-leave")?;
+    store
+        .apply_sync_decision_v2(&commit(
+            /*expected*/ None,
+            "s1",
+            /*observed_at_ms*/ 11,
+            vec![mutation(
+                event_id.clone(),
+                room_id.clone(),
+                MatrixSyncMutationBodyV2::Timeline {
+                    event_type: "m.room.message".to_string(),
+                    payload: b"must stop dispatching".to_vec(),
+                },
+                /*at_ms*/ 10,
+            )?],
+        ))
+        .await?;
+    let begun = store
+        .begin_inbox_dispatch(&event_id, /*begun_at_ms*/ 12)
+        .await?;
+    let mut leave = mutation(
+        event("$leave-with-active-dispatch")?,
+        room_id,
+        MatrixSyncMutationBodyV2::RoomLeave {
+            departed_user_id: user(AGENT_USER_ID)?,
+        },
+        /*at_ms*/ 20,
+    )?;
+    leave.sender = user(AGENT_USER_ID)?;
+    assert_eq!(
+        dispositions(
+            store
+                .apply_sync_decision_v2(&commit(
+                    Some("s1"),
+                    "s2",
+                    /*observed_at_ms*/ 21,
+                    vec![leave],
+                ))
+                .await?,
+        )?,
+        vec![MatrixSyncMutationDispositionV2::Applied]
+    );
+    assert!(store.pending_dispatches(/*limit*/ 10).await?.is_empty());
+    assert_eq!(
+        store
+            .record_inbox_queued(&InboxQueuedDraft {
+                event_id,
+                client_user_message_id: begun.client_user_message_id,
+                project_id,
+                thread_id: "thread-before-leave".to_string(),
+                queued_submission_id: "queued-after-leave".to_string(),
+                queued_at_ms: 22,
+            })
+            .await,
+        Err(MatrixDurableError::AccessDenied)
+    );
+    assert_eq!(
+        store
+            .sync_checkpoint(/*binding_revision*/ 1, /*generation*/ 1)
+            .await?
+            .ok_or("missing checkpoint")?
+            .next_batch,
+        "s2"
+    );
+    Ok(())
+}
+
+#[tokio::test]
+async fn room_tombstone_is_a_logical_fence_above_the_physical_scrub_bound() -> TestResult {
+    let temp = TempDir::new()?;
+    let agent_id = agent()?;
+    let store_layout = layout(&temp, &agent_id)?;
+    let store = MatrixDurableStore::open(
+        &store_layout,
+        MatrixDurableConfig {
+            delta_coalesce_window_ms: 150,
+            max_delta_batch_bytes: 16 * 1024,
+            event_capacity: 2,
+        },
+    )
+    .await?;
+    let room_id = room("!bounded-scrub:example.test")?;
+    store
+        .bind_room(&RoomBindingDraft {
+            room_id: room_id.clone(),
+            agent_user_id: user(AGENT_USER_ID)?,
+            expected_revision: None,
+            generation: 1,
+            changed_at_ms: 1,
+        })
+        .await?;
+    for index in 0..3_u64 {
+        store
+            .ingest_inbox(&inbox_draft(
+                event(&format!("$bounded-{index}"))?,
+                room_id.clone(),
+                b"bounded payload",
+                /*at_ms*/ 10 + index,
+            )?)
+            .await?;
+    }
+    let leave = mutation(
+        event("$bounded-leave")?,
+        room_id.clone(),
+        MatrixSyncMutationBodyV2::RoomLeave {
+            departed_user_id: user(AGENT_USER_ID)?,
+        },
+        /*at_ms*/ 20,
+    )?;
+    assert_eq!(
+        dispositions(
+            store
+                .apply_sync_decision_v2(&commit(
+                    /*expected*/ None,
+                    "s1",
+                    /*observed_at_ms*/ 21,
+                    vec![leave],
+                ))
+                .await?,
+        )?,
+        vec![MatrixSyncMutationDispositionV2::Applied]
+    );
+    assert!(store.pending_inbox(/*limit*/ 10).await?.is_empty());
+    assert_eq!(
+        store
+            .sync_checkpoint(/*binding_revision*/ 1, /*generation*/ 1)
+            .await?
+            .ok_or("missing checkpoint")?
+            .next_batch,
+        "s1"
+    );
+    assert_eq!(
+        store
+            .ingest_inbox(&inbox_draft(
+                event("$bounded-after-leave")?,
+                room_id,
+                b"must remain hidden",
+                /*at_ms*/ 30,
+            )?)
+            .await,
+        Err(MatrixDurableError::AccessDenied)
+    );
+    Ok(())
+}
+
+#[tokio::test]
+async fn journal_saturation_is_terminal_but_preserves_the_deletion_reserve() -> TestResult {
+    let temp = TempDir::new()?;
+    let agent_id = agent()?;
+    let store_layout = layout(&temp, &agent_id)?;
+    let room_id = room("!journal-capacity:example.test")?;
+    let store = MatrixDurableStore::open(&store_layout, MatrixDurableConfig::default()).await?;
+    store
+        .bind_room(&RoomBindingDraft {
+            room_id: room_id.clone(),
+            agent_user_id: user(AGENT_USER_ID)?,
+            expected_revision: None,
+            generation: 1,
+            changed_at_ms: 1,
+        })
+        .await?;
+    store.close().await;
+
+    let database_path = store_layout.matrix_root().join("matrix_1.sqlite3");
+    let sqlite_home = AbsolutePathBuf::try_from(store_layout.matrix_root().to_path_buf())?;
+    let pool = SqliteConfig::from_sqlite_home(sqlite_home)
+        .open_existing_durable_evidence_pool(&database_path)
+        .await?;
+    sqlx::query(
+        "INSERT INTO matrix_sync_decisions_v2 (
+            decision_seq, operation_id, decision_kind, decision_sha256, schema_version,
+            checkpoint_revision, checkpoint_generation, expected_next_batch, next_batch,
+            retained_next_batch, outcome_count
+         ) VALUES (61440, 'capacity-sentinel', 'cancel', ?, 2, 1, 1,
+                   NULL, NULL, NULL, 0)",
+    )
+    .bind("0000000000000000000000000000000000000000000000000000000000000000")
+    .execute(&pool)
+    .await?;
+    pool.close().await;
+
+    let store = MatrixDurableStore::open(&store_layout, MatrixDurableConfig::default()).await?;
+    let timeline = mutation(
+        event("$capacity-timeline")?,
+        room_id.clone(),
+        MatrixSyncMutationBodyV2::Timeline {
+            event_type: "m.room.message".to_string(),
+            payload: b"must not persist".to_vec(),
+        },
+        /*at_ms*/ 10,
+    )?;
+    assert_eq!(
+        store
+            .apply_sync_decision_v2(&commit(
+                /*expected*/ None,
+                "s1",
+                /*observed_at_ms*/ 11,
+                vec![timeline],
+            ))
+            .await?,
+        MatrixSyncResultV2::CapacityExhausted {
+            schema_version: 2,
+            operation_id: "commit-11-s1".to_string(),
+            checkpoint_revision: 1,
+            checkpoint_generation: 1,
+        }
+    );
+    assert!(
+        store
+            .lookup_sync_decision_v2("commit-11-s1")
+            .await?
+            .is_none()
+    );
+    assert!(
+        store
+            .sync_checkpoint(/*binding_revision*/ 1, /*generation*/ 1)
+            .await?
+            .is_none()
+    );
+    let redaction = mutation(
+        event("$capacity-redaction")?,
+        room_id,
+        MatrixSyncMutationBodyV2::Redaction {
+            target_event_id: event("$capacity-missing")?,
+        },
+        /*at_ms*/ 20,
+    )?;
+    assert_eq!(
+        dispositions(
+            store
+                .apply_sync_decision_v2(&commit(
+                    /*expected*/ None,
+                    "s1",
+                    /*observed_at_ms*/ 21,
+                    vec![redaction],
+                ))
+                .await?,
+        )?,
+        vec![MatrixSyncMutationDispositionV2::Missing]
+    );
+    store.close().await;
+    let sqlite_home = AbsolutePathBuf::try_from(store_layout.matrix_root().to_path_buf())?;
+    let pool = SqliteConfig::from_sqlite_home(sqlite_home)
+        .open_existing_durable_evidence_pool(&database_path)
+        .await?;
+    assert!(
+        sqlx::query(
+            "INSERT INTO matrix_sync_decision_outcomes_v2 (
+                decision_seq, outcome_index, source_event_id, disposition
+             ) VALUES (61440, 0, '$capacity-redaction', 'missing')",
+        )
+        .execute(&pool)
+        .await
+        .is_err()
+    );
+    pool.close().await;
+    Ok(())
+}
+
+#[tokio::test]
+async fn startup_rejects_same_name_counterfeit_v2_schema_objects() -> TestResult {
+    let temp = TempDir::new()?;
+    let agent_id = agent()?;
+    let store_layout = layout(&temp, &agent_id)?;
+    let store = MatrixDurableStore::open(&store_layout, MatrixDurableConfig::default()).await?;
+    store.close().await;
+
+    let database_path = store_layout.matrix_root().join("matrix_1.sqlite3");
+    let sqlite_home = AbsolutePathBuf::try_from(store_layout.matrix_root().to_path_buf())?;
+    let pool = SqliteConfig::from_sqlite_home(sqlite_home)
+        .open_existing_durable_evidence_pool(&database_path)
+        .await?;
+    sqlx::query("DROP INDEX matrix_sync_mutations_v2_by_tombstone")
+        .execute(&pool)
+        .await?;
+    sqlx::query(
+        "CREATE INDEX matrix_sync_mutations_v2_by_tombstone
+         ON matrix_sync_mutations_v2(source_event_id)",
+    )
+    .execute(&pool)
+    .await?;
+    pool.close().await;
+
+    assert!(matches!(
+        MatrixDurableStore::open(&store_layout, MatrixDurableConfig::default()).await,
+        Err(MatrixDurableError::Corrupt)
+    ));
+
+    let sqlite_home = AbsolutePathBuf::try_from(store_layout.matrix_root().to_path_buf())?;
+    let pool = SqliteConfig::from_sqlite_home(sqlite_home)
+        .open_existing_durable_evidence_pool(&database_path)
+        .await?;
+    sqlx::query("DROP INDEX matrix_sync_mutations_v2_by_tombstone")
+        .execute(&pool)
+        .await?;
+    sqlx::query(
+        "CREATE INDEX matrix_sync_mutations_v2_by_tombstone\n\
+ON matrix_sync_mutations_v2(\n\
+    tombstone_scope_kind, tombstone_scope_id, received_at_ms, source_event_id\n\
+)",
+    )
+    .execute(&pool)
+    .await?;
+    pool.close().await;
+    let store = MatrixDurableStore::open(&store_layout, MatrixDurableConfig::default()).await?;
+    store.close().await;
+
+    let sqlite_home = AbsolutePathBuf::try_from(store_layout.matrix_root().to_path_buf())?;
+    let pool = SqliteConfig::from_sqlite_home(sqlite_home)
+        .open_existing_durable_evidence_pool(&database_path)
+        .await?;
+    sqlx::query("DROP TRIGGER matrix_sync_mutations_v2_no_update")
+        .execute(&pool)
+        .await?;
+    sqlx::query(
+        "CREATE TRIGGER matrix_sync_mutations_v2_no_update
+         BEFORE UPDATE ON matrix_sync_mutations_v2 BEGIN SELECT 1; END",
+    )
+    .execute(&pool)
+    .await?;
+    pool.close().await;
+    assert!(matches!(
+        MatrixDurableStore::open(&store_layout, MatrixDurableConfig::default()).await,
+        Err(MatrixDurableError::Corrupt)
+    ));
+    Ok(())
+}
+
+#[test]
+fn v2_validation_rejects_wrong_schema() -> TestResult {
+    let room_id = room("!wire:example.test")?;
+    let timeline = mutation(
+        event("$wire")?,
+        room_id,
+        MatrixSyncMutationBodyV2::Timeline {
+            event_type: "m.room.message".to_string(),
+            payload: b"SECRET-WIRE-PAYLOAD".to_vec(),
+        },
+        /*at_ms*/ 10,
+    )?;
+    assert!(commit(
+        /*expected*/ None,
+        "s1",
+        /*observed_at_ms*/ 11,
+        vec![timeline],
+    )
+    .validate()
+    .is_ok());
+    assert!(
+        MatrixSyncDecisionV2::Cancel {
+            schema_version: 1,
+            operation_id: "invalid-version".to_string(),
+            checkpoint_revision: 1,
+            checkpoint_generation: 1,
+            expected_next_batch: None,
+        }
+        .validate()
+        .is_err()
     );
     Ok(())
 }
