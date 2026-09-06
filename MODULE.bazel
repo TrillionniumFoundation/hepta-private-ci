@@ -175,6 +175,9 @@ rules_rust.patch(
         # Skip transient native-Windows linker outputs while consolidating
         # dependency search paths.
         "//patches:rules_rust_windows_process_wrapper_skip_temp_outputs.patch",
+        # Spill the wrapper's build-script flags separately from rustc flags
+        # so native Windows actions stay below CreateProcessW's argv limit.
+        "//patches:rules_rust_process_wrapper_response_file.patch",
     ],
     strip = 1,
 )
