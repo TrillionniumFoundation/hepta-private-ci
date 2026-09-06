@@ -101,6 +101,11 @@ impl CognitiveSnapshot {
 }
 
 impl MemoryRecord {
+    /// Checks the record's bounded structural invariants.
+    ///
+    /// Success establishes only local consistency of caller-supplied fields. It
+    /// does not authenticate a source or prove external freshness, completeness,
+    /// access, or revocation state.
     pub fn validate(&self) -> Result<(), Error> {
         if self.content_digest.is_zero() {
             return Err(Error::EmptyDigest("content"));
@@ -122,14 +127,20 @@ impl MemoryRecord {
             if citation.source_digest.is_zero() {
                 return Err(Error::EmptyDigest("citation"));
             }
-            let key = (citation.source_id.clone(), citation.source_digest);
-            if !seen.insert(key) {
+            // One stable source identity cannot denote two different payloads
+            // inside the same record. A changed source digest requires a new
+            // source identity or a separately governed source revision type.
+            if !seen.insert(citation.source_id.clone()) {
                 return Err(Error::DuplicateCitation(citation.source_id.to_string()));
             }
         }
         Ok(())
     }
 
+    /// Computes the canonical V1 digest without implicitly validating the record.
+    ///
+    /// Call [`Self::validate`] before treating the digest as an integrity binding.
+    /// The digest is not source authentication or freshness evidence.
     #[must_use]
     pub fn record_digest(&self) -> Digest32 {
         let mut citations = self.citations.clone();
@@ -156,6 +167,11 @@ impl MemoryRecord {
     }
 }
 
+/// Validates and canonicalizes exactly the bounded records supplied by the caller.
+///
+/// The resulting digest proves internal consistency of that supplied set only;
+/// it does not prove that the set is externally complete, current, authorized,
+/// or checked against a revocation frontier.
 pub fn build_snapshot(
     generation: Generation,
     mut records: Vec<MemoryRecord>,
