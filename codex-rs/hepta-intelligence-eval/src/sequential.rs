@@ -260,3 +260,7 @@ fn estimate_trajectory<'a>(
         Digest32::of_bytes(&bytes),
     ))
 }
+
+#[cfg(test)]
+#[path = "sequential_tests.rs"]
+mod tests;
