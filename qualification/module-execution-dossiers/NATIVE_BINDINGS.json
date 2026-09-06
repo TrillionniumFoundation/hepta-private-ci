@@ -3,22 +3,25 @@
   "schemaVersion": 1,
   "planId": "HEPTA-GLOBAL-MODULAR-DEVELOPMENT-PLAN",
   "planVersion": "8.0.0",
-  "sourceSnapshot": "22f463f551ec79fab95954e5a34729ed58b4af39",
+  "sourceSnapshot": "cef3807fb9eff095099fbba73c75f8e6158f9afd",
   "evidenceClass": "source_observation_only",
   "productExecutionProved": false,
   "observations": [
     {
       "module": "utility.ndu",
       "path": "codex-rs/hepta-ndu/src/lib.rs",
-      "blobSha": "532b519fc2ec73fb89c9bfe9c77ca7e9a1ac41d3",
+      "blobSha": "5e6815113214f15487ab8dd7803a4800afa74e37",
       "exports": [
         "evaluate_candidates",
         "solve_preference_target",
         "validate_staged_updates",
         "evaluate_recursive_utility",
-        "mul_q32_ties_even"
+        "mul_q32_ties_even",
+        "admit_covariance_profile",
+        "estimate_conditional_moments",
+        "solve_backward_regression"
       ],
-      "interpretation": "Existing deterministic exports; no stochastic solver or production caller is inferred."
+      "interpretation": "Deterministic exports plus bounded native shadow conditional moments and covariance regression; production conditioning, independent mathematical admission and real consumers are not inferred."
     },
     {
       "module": "learning.ledger",
@@ -36,14 +39,14 @@
     {
       "module": "cognitive.store",
       "path": "codex-rs/hepta-cognitive-store/src/lib.rs",
-      "blobSha": "5cb5a717526e51696c1e2cbd3af4f0cd45966e25",
+      "blobSha": "05ead1659c7cca8f78d9d45a36bf393fc8ae3d46",
       "exports": [
         "CognitiveStore",
         "append",
         "snapshot_records",
         "BTreeMap"
       ],
-      "interpretation": "This observed implementation is in-memory. The proposed SQL adapter is not an existing native durable backend. Check counter-overflow failure atomicity before admission."
+      "interpretation": "This pinned owner remains in-memory, with checked failure atomicity and original retry receipts. The separate hepta-memory owner provides SQLite durability and opt-in exact current-cut recovery; independent current witness authority and production admission are not inferred."
     },
     {
       "module": "neuron.runtime",
