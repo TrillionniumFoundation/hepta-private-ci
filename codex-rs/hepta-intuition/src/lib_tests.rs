@@ -1,3 +1,6 @@
+use pretty_assertions::assert_eq;
+use pretty_assertions::assert_ne;
+
 use super::*;
 
 fn id(value: &str) -> StableId {
