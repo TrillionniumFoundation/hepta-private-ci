@@ -284,3 +284,465 @@ fn v2_write_and_read_dispatch_are_exact() {
         ProposalDigestVerification::VerifiedV2
     );
 }
+
+#[test]
+fn v2_binds_every_required_digest() {
+    let mutations: [fn(&mut ParameterProposalRequestV2); 9] = [
+        |request| request.selected_artifact_digest = Digest32::ZERO,
+        |request| request.window.window_digest = Digest32::ZERO,
+        |request| request.dataset_digest = Digest32::ZERO,
+        |request| request.update_rule_digest = Digest32::ZERO,
+        |request| request.modulator_digest = Digest32::ZERO,
+        |request| request.modulator_broadcast_digest = Digest32::ZERO,
+        |request| request.eligibility_digest = Digest32::ZERO,
+        |request| request.evaluation_digest = Digest32::ZERO,
+        |request| request.rollback_predecessor_digest = Digest32::ZERO,
+    ];
+    for mutate in mutations {
+        let mut request = v2_request();
+        mutate(&mut request);
+        assert!(matches!(propose_v2(request), Err(Error::EmptyDigest(_))));
+    }
+}
+
+#[test]
+fn v2_requires_distinct_role_ids_exact_successor_and_rollback() {
+    let mut request = v2_request();
+    request.evaluator_id = request.proposer_id.clone();
+    assert_eq!(propose_v2(request), Err(Error::SelfEvaluation));
+
+    let mut request = v2_request();
+    request.candidate_generation = generation(9);
+    assert_eq!(
+        propose_v2(request),
+        Err(Error::GenerationNotExactSuccessor)
+    );
+
+    let mut request = v2_request();
+    request.baseline_generation = generation(u64::MAX);
+    assert_eq!(
+        propose_v2(request),
+        Err(Error::GenerationNotExactSuccessor)
+    );
+
+    let mut request = v2_request();
+    request.rollback_predecessor_digest = digest(b"other-artifact");
+    assert_eq!(
+        propose_v2(request),
+        Err(Error::RollbackPredecessorMismatch)
+    );
+}
+
+#[test]
+fn v2_distinct_ids_and_supplied_candidates_remain_non_authoritative() {
+    let mut request = v2_request();
+    request.evaluator_id = id("caller-asserted-evaluator");
+    request
+        .candidates
+        .retain(|candidate| candidate.kind == ParameterCandidateKindV2::NoChange);
+    request.dataset_digest = digest(b"caller-asserted-dataset");
+    request.evaluation_digest = digest(b"caller-asserted-evaluation");
+
+    let proposal = must(propose_v2(request));
+
+    assert_eq!(proposal.candidates.len(), 1);
+    assert_eq!(
+        proposal.status,
+        ProposalStatus::RequiresIndependentAcceptance
+    );
+    assert!(!proposal.authority.grants_any());
+}
+
+#[test]
+fn v2_digest_rejects_nonzero_header_binding_tampering() {
+    let mutations: [fn(&mut ParameterProposalV2); 12] = [
+        |proposal| proposal.proposal_id = id("proposal:tampered"),
+        |proposal| proposal.proposer_id = id("proposer:tampered"),
+        |proposal| proposal.evaluator_id = id("evaluator:tampered"),
+        |proposal| proposal.window.window_id = id("window:tampered"),
+        |proposal| proposal.window.window_digest = digest(b"tampered-window"),
+        |proposal| {
+            proposal.baseline_generation = generation(8);
+            proposal.candidate_generation = generation(9);
+        },
+        |proposal| proposal.dataset_digest = digest(b"tampered-dataset"),
+        |proposal| proposal.update_rule_digest = digest(b"tampered-update"),
+        |proposal| proposal.modulator_digest = digest(b"tampered-modulator"),
+        |proposal| proposal.modulator_broadcast_digest = digest(b"tampered-broadcast"),
+        |proposal| proposal.eligibility_digest = digest(b"tampered-eligibility"),
+        |proposal| proposal.evaluation_digest = digest(b"tampered-evaluation"),
+    ];
+    for mutate in mutations {
+        let mut proposal = must(propose_v2(v2_request()));
+        mutate(&mut proposal);
+        assert_eq!(
+            verify_parameter_proposal_v2(&proposal),
+            Err(Error::ProposalDigestMismatch)
+        );
+    }
+}
+
+#[test]
+fn candidate_set_is_bounded_and_has_exactly_one_no_change() {
+    let mut request = v2_request();
+    request.candidates.clear();
+    assert_eq!(propose_v2(request), Err(Error::CandidateCountOutOfRange));
+
+    let mut request = v2_request();
+    request.candidates[0].parameter_deltas =
+        vec![parameter_delta("layer:a", "parameter:a", 1, b"delta"); 4_097];
+    assert_eq!(propose_v2(request), Err(Error::ParameterLimitExceeded));
+
+    let mut request = v2_request();
+    request.candidates = (0..33)
+        .map(|index| ParameterCandidateRequestV2 {
+            candidate_id: id(&format!("candidate:no-change-{index}")),
+            kind: ParameterCandidateKindV2::NoChange,
+            parameter_deltas: Vec::new(),
+        })
+        .collect();
+    assert_eq!(propose_v2(request), Err(Error::CandidateCountOutOfRange));
+
+    let mut request = v2_request();
+    request
+        .candidates
+        .retain(|candidate| candidate.kind == ParameterCandidateKindV2::Update);
+    assert_eq!(
+        propose_v2(request),
+        Err(Error::MissingNoChangeCandidate)
+    );
+
+    let mut request = v2_request();
+    request.candidates.push(ParameterCandidateRequestV2 {
+        candidate_id: id("candidate:no-change-2"),
+        kind: ParameterCandidateKindV2::NoChange,
+        parameter_deltas: Vec::new(),
+    });
+    assert_eq!(
+        propose_v2(request),
+        Err(Error::MultipleNoChangeCandidates)
+    );
+
+    let mut request = v2_request();
+    let duplicate_candidate = request.candidates[1].clone();
+    request.candidates.push(duplicate_candidate);
+    assert_eq!(
+        propose_v2(request),
+        Err(Error::DuplicateCandidate(
+            "candidate:no-change".to_string()
+        ))
+    );
+
+    let mut request = v2_request();
+    request.candidates[1].parameter_deltas.push(parameter_delta(
+        "layer:a",
+        "parameter:extra",
+        1,
+        b"extra",
+    ));
+    assert_eq!(
+        propose_v2(request),
+        Err(Error::NoChangeHasDeltas(
+            "candidate:no-change".to_string()
+        ))
+    );
+}
+
+#[test]
+fn update_candidates_reject_empty_zero_duplicate_and_unprofiled_deltas() {
+    let mut request = v2_request();
+    request.candidates[0].parameter_deltas.clear();
+    assert_eq!(
+        propose_v2(request),
+        Err(Error::UpdateHasNoDeltas("candidate:update".to_string()))
+    );
+
+    let mut request = v2_request();
+    request.candidates[0].parameter_deltas[0].delta = FixedQ32::ZERO;
+    assert_eq!(
+        propose_v2(request),
+        Err(Error::ZeroParameterDelta("parameter:b".to_string()))
+    );
+
+    let mut request = v2_request();
+    let mut duplicate = request.candidates[0].parameter_deltas[0].clone();
+    duplicate.layer_id = id("layer:a");
+    request.candidates[0].parameter_deltas.push(duplicate);
+    assert_eq!(
+        propose_v2(request),
+        Err(Error::DuplicateParameter("parameter:b".to_string()))
+    );
+
+    let mut request = v2_request();
+    request.candidates[0].parameter_deltas[0].layer_id = id("layer:missing");
+    assert_eq!(
+        propose_v2(request),
+        Err(Error::MissingNormLayer("layer:missing".to_string()))
+    );
+}
+
+#[test]
+fn update_candidates_reject_bad_bounds_and_missing_evidence() {
+    let mut request = v2_request();
+    request.candidates[0].parameter_deltas[0].lower_bound = FixedQ32::from_raw(5);
+    request.candidates[0].parameter_deltas[0].upper_bound = FixedQ32::from_raw(-5);
+    assert_eq!(
+        propose_v2(request),
+        Err(Error::InvertedBounds("parameter:b".to_string()))
+    );
+
+    let mut request = v2_request();
+    request.candidates[0].parameter_deltas[0].upper_bound = FixedQ32::from_raw(-4);
+    assert_eq!(
+        propose_v2(request),
+        Err(Error::DeltaOutsideBounds("parameter:b".to_string()))
+    );
+
+    let mut request = v2_request();
+    request.candidates[0].parameter_deltas[0].evidence_digest = Digest32::ZERO;
+    assert_eq!(
+        propose_v2(request),
+        Err(Error::EmptyDigest("parameter evidence"))
+    );
+}
+
+#[test]
+fn norm_profile_rejects_duplicate_zero_and_overflow_denominators() {
+    let mut request = v2_request();
+    request.norm_layers.clear();
+    assert_eq!(propose_v2(request), Err(Error::NormLayerCountOutOfRange));
+
+    let mut request = v2_request();
+    request.norm_layers = vec![
+        LayerNormDenominatorV2 {
+            layer_id: id("layer:repeated"),
+            baseline_squared_l2_raw_q64: 1,
+        };
+        257
+    ];
+    assert_eq!(propose_v2(request), Err(Error::NormLayerCountOutOfRange));
+
+    let mut request = v2_request();
+    let duplicate_layer = request.norm_layers[1].layer_id.clone();
+    request.norm_layers[0].layer_id = duplicate_layer;
+    assert_eq!(
+        propose_v2(request),
+        Err(Error::DuplicateNormLayer("layer:a".to_string()))
+    );
+
+    let mut request = v2_request();
+    request.norm_layers[0].baseline_squared_l2_raw_q64 = 0;
+    assert_eq!(
+        propose_v2(request),
+        Err(Error::ZeroNormDenominator("layer:b".to_string()))
+    );
+
+    let mut request = v2_request();
+    request.norm_layers[0].baseline_squared_l2_raw_q64 = u128::MAX;
+    assert_eq!(propose_v2(request), Err(Error::Arithmetic));
+}
+
+#[test]
+fn per_layer_gate_is_not_implied_by_global_gate() {
+    assert_eq!(
+        parameter_v2::within_relative_limit(100, 1_000_001_000_000, 2_500),
+        Ok(true)
+    );
+    assert_eq!(
+        parameter_v2::within_relative_limit(100, 1_000_000, 5_000),
+        Ok(false)
+    );
+    let mut request = v2_request();
+    request.norm_layers = vec![
+        LayerNormDenominatorV2 {
+            layer_id: id("layer:a"),
+            baseline_squared_l2_raw_q64: 1_000_000,
+        },
+        LayerNormDenominatorV2 {
+            layer_id: id("layer:b"),
+            baseline_squared_l2_raw_q64: 1_000_000_000_000,
+        },
+    ];
+    request.candidates[0].parameter_deltas = vec![parameter_delta(
+        "layer:a",
+        "parameter:a",
+        10,
+        b"delta-a",
+    )];
+    assert_eq!(
+        propose_v2(request),
+        Err(Error::PerLayerTrustRegionExceeded(
+            "candidate:update:layer:a".to_string()
+        ))
+    );
+}
+
+#[test]
+fn squared_relative_limit_accepts_the_boundary_and_fails_on_overflow() {
+    assert_eq!(
+        parameter_v2::within_relative_limit(25, 1_000_000, 5_000),
+        Ok(true)
+    );
+    assert_eq!(
+        parameter_v2::within_relative_limit(26, 1_000_000, 5_000),
+        Ok(false)
+    );
+    assert_eq!(
+        parameter_v2::within_relative_limit(u128::MAX, u128::MAX, 5_000),
+        Err(Error::Arithmetic)
+    );
+}
+
+#[test]
+fn global_gate_is_not_replaced_by_per_layer_gates() {
+    assert_eq!(
+        parameter_v2::within_relative_limit(16, 1_000_000, 5_000),
+        Ok(true)
+    );
+    assert_eq!(
+        parameter_v2::within_relative_limit(32, 2_000_000, 2_500),
+        Ok(false)
+    );
+    let mut request = v2_request();
+    request.norm_layers = vec![
+        LayerNormDenominatorV2 {
+            layer_id: id("layer:a"),
+            baseline_squared_l2_raw_q64: 1_000_000,
+        },
+        LayerNormDenominatorV2 {
+            layer_id: id("layer:b"),
+            baseline_squared_l2_raw_q64: 1_000_000,
+        },
+    ];
+    request.candidates[0].parameter_deltas = vec![
+        parameter_delta("layer:a", "parameter:a", 4, b"delta-a"),
+        parameter_delta("layer:b", "parameter:b", 4, b"delta-b"),
+    ];
+    assert_eq!(
+        propose_v2(request),
+        Err(Error::GlobalTrustRegionExceeded(
+            "candidate:update".to_string()
+        ))
+    );
+}
+
+#[test]
+fn canonical_order_is_independent_of_input_order() {
+    let left = must(propose_v2(v2_request()));
+    let mut request = v2_request();
+    request.norm_layers.reverse();
+    request.candidates.reverse();
+    for candidate in &mut request.candidates {
+        candidate.parameter_deltas.reverse();
+    }
+    assert_eq!(must(propose_v2(request)), left);
+}
+
+#[test]
+fn read_validation_rejects_tampered_metrics_digest_profile_and_authority() {
+    let proposal = must(propose_v2(v2_request()));
+
+    let mut tampered = proposal.clone();
+    tampered.candidates[1].norm_metrics.layers[0].delta_squared_l2_raw_q64 += 1;
+    assert_eq!(
+        verify_parameter_proposal_v2(&tampered),
+        Err(Error::NormMetricsMismatch("candidate set".to_string()))
+    );
+
+    let mut tampered = proposal.clone();
+    tampered.proposal_digest = digest(b"tampered");
+    assert_eq!(
+        verify_parameter_proposal_v2(&tampered),
+        Err(Error::ProposalDigestMismatch)
+    );
+
+    let mut tampered = proposal.clone();
+    tampered.norm_profile.profile_digest = digest(b"tampered-profile");
+    assert_eq!(
+        verify_parameter_proposal_v2(&tampered),
+        Err(Error::NormProfileMismatch)
+    );
+
+    let mut tampered = proposal;
+    tampered.authority.runtime = true;
+    assert_eq!(
+        verify_parameter_proposal_v2(&tampered),
+        Err(Error::AuthorityGranted)
+    );
+}
+
+#[test]
+fn registry_is_unique_by_artifact_window_and_idempotent() {
+    let proposal = must(propose_v2(v2_request()));
+    let mut registry = ProposalRegistry::new(4);
+    assert_eq!(
+        registry.append_v2(proposal.clone()),
+        Ok(AppendDisposition::Inserted)
+    );
+    assert_eq!(
+        registry.append_v2(proposal.clone()),
+        Ok(AppendDisposition::Unchanged)
+    );
+    assert_eq!(registry.record_count(), 1);
+    assert_eq!(
+        registry.get_v2(proposal.selected_artifact_digest, &proposal.window.window_id),
+        Some(&proposal)
+    );
+    assert_eq!(
+        registry.get_v2_by_proposal_id(&proposal.proposal_id),
+        Some(&proposal)
+    );
+
+    let mut drifted_request = v2_request();
+    drifted_request.proposal_id = id("proposal:drifted-window");
+    drifted_request.window.window_digest = digest(b"drifted-window");
+    let drifted = must(propose_v2(drifted_request));
+    assert!(matches!(
+        registry.append_v2(drifted),
+        Err(Error::RegistrySlotConflict(_))
+    ));
+
+    let mut reused_id_request = v2_request();
+    reused_id_request.window.window_id = id("window:2");
+    reused_id_request.window.window_digest = digest(b"window-2");
+    let reused_id = must(propose_v2(reused_id_request));
+    assert_eq!(
+        registry.append_v2(reused_id),
+        Err(Error::ProposalConflict(proposal.proposal_id.to_string()))
+    );
+}
+
+#[test]
+fn registry_enforces_proposal_identity_capacity_and_legacy_read_only_state() {
+    let legacy = legacy_proposal();
+    let mut registry = must(ProposalRegistry::with_legacy_v1_history(
+        2,
+        vec![legacy.clone()],
+    ));
+    assert_eq!(registry.get(&legacy.proposal_id), Some(&legacy));
+    assert_eq!(
+        registry.append(legacy.clone()),
+        Err(Error::LegacyWriteDisabled)
+    );
+
+    let mut request = v2_request();
+    request.proposal_id = legacy.proposal_id.clone();
+    assert_eq!(
+        registry.append_v2(must(propose_v2(request))),
+        Err(Error::ProposalConflict(legacy.proposal_id.to_string()))
+    );
+
+    let proposal = must(propose_v2(v2_request()));
+    assert_eq!(
+        registry.append_v2(proposal),
+        Ok(AppendDisposition::Inserted)
+    );
+    let mut request = v2_request();
+    request.proposal_id = id("proposal:3");
+    request.window.window_id = id("window:2");
+    request.window.window_digest = digest(b"window-2");
+    assert_eq!(
+        registry.append_v2(must(propose_v2(request))),
+        Err(Error::RegistryCapacityExceeded)
+    );
+}
