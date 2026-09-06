@@ -83,7 +83,7 @@ jobs:
           elif [[ "${build_status}" -ne 0 ]]; then
             exit "${build_status}"
           fi
-'''
+          '''
           workflow.write_text(text[:start] + replacement + text[archive_offset:], encoding='utf-8')
           PY
 
