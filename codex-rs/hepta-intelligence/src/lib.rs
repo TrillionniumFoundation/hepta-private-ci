@@ -14,7 +14,7 @@ use codex_hepta_types::Digest32;
 use codex_hepta_types::FixedQ32;
 use codex_hepta_types::StableId;
 
-const MAX_CANDIDATES: usize = 4_096;
+const MAX_CANDIDATES: usize = 128;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct PlanCandidate {
