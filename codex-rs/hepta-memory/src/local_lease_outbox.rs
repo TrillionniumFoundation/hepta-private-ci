@@ -340,7 +340,15 @@ impl LocalLeaseOutbox {
         generation: u64,
         fencing_token: impl Into<String>,
     ) -> Result<LocalLeaseAcquire, LocalLeaseOutboxError> {
-        Self::acquire_with_binding(store, lease_id, generation, fencing_token, None, false).await
+        Self::acquire_with_binding(
+            store,
+            lease_id,
+            generation,
+            fencing_token,
+            /*binding*/ None,
+            /*enforce_host_epoch_cas*/ false,
+        )
+        .await
     }
 
     /// Acquire or replay a lease with an explicit authority/owner epoch and
@@ -359,7 +367,7 @@ impl LocalLeaseOutbox {
             generation,
             fencing_token,
             Some(binding),
-            false,
+            /*enforce_host_epoch_cas*/ false,
         )
         .await
     }
@@ -382,7 +390,7 @@ impl LocalLeaseOutbox {
             generation,
             fencing_token,
             Some(binding),
-            true,
+            /*enforce_host_epoch_cas*/ true,
         )
         .await
     }
@@ -397,13 +405,13 @@ impl LocalLeaseOutbox {
     ) -> Result<LocalLeaseAcquire, LocalLeaseOutboxError> {
         let lease_id = lease_id.into();
         let fencing_token = fencing_token.into();
-        validate_text(&lease_id, "lease id", 512)?;
+        validate_text(&lease_id, "lease id", /*max_bytes*/ 512)?;
         validate_generation(generation)?;
-        validate_text(&fencing_token, "fencing token", 256)?;
+        validate_text(&fencing_token, "fencing token", /*max_bytes*/ 256)?;
         if let Some(binding) = binding.as_ref() {
             validate_lease_binding(binding)?;
             if enforce_host_epoch_cas {
-                binding.validate_host_successor(None)?;
+                binding.validate_host_successor(/*previous*/ None)?;
             }
         } else if enforce_host_epoch_cas {
             return Err(LocalLeaseOutboxError::Invalid(
@@ -431,7 +439,7 @@ impl LocalLeaseOutbox {
                     generation,
                     &fencing_token,
                     LocalLeaseState::Active,
-                    None,
+                    /*previous*/ None,
                     binding.as_ref(),
                 )
                 .await?;
@@ -571,8 +579,8 @@ impl LocalLeaseOutbox {
         }
         let lease_id = lease_id.into();
         let fencing_token = fencing_token.into();
-        validate_text(&lease_id, "lease id", 512)?;
-        validate_text(&fencing_token, "fencing token", 256)?;
+        validate_text(&lease_id, "lease id", /*max_bytes*/ 512)?;
+        validate_text(&fencing_token, "fencing token", /*max_bytes*/ 256)?;
         let _ = store;
         Err(LocalLeaseOutboxError::CasConflict(
             "exact lease head required; use acquire_local_lease_after_head".to_string(),
@@ -600,8 +608,8 @@ impl LocalLeaseOutbox {
             expected_head,
             generation,
             fencing_token,
-            None,
-            false,
+            /*binding*/ None,
+            /*enforce_host_epoch_cas*/ false,
         )
         .await
     }
@@ -621,7 +629,7 @@ impl LocalLeaseOutbox {
             generation,
             fencing_token,
             Some(binding),
-            false,
+            /*enforce_host_epoch_cas*/ false,
         )
         .await
     }
@@ -645,7 +653,7 @@ impl LocalLeaseOutbox {
             generation,
             fencing_token,
             Some(binding),
-            true,
+            /*enforce_host_epoch_cas*/ true,
         )
         .await
     }
@@ -661,13 +669,13 @@ impl LocalLeaseOutbox {
     ) -> Result<LocalLeaseAcquire, LocalLeaseOutboxError> {
         let lease_id = lease_id.into();
         let fencing_token = fencing_token.into();
-        validate_text(&lease_id, "lease id", 512)?;
+        validate_text(&lease_id, "lease id", /*max_bytes*/ 512)?;
         validate_generation(generation)?;
-        validate_text(&fencing_token, "fencing token", 256)?;
+        validate_text(&fencing_token, "fencing token", /*max_bytes*/ 256)?;
         if let Some(binding) = binding.as_ref() {
             validate_lease_binding(binding)?;
             if enforce_host_epoch_cas {
-                binding.validate_host_successor(None)?;
+                binding.validate_host_successor(/*previous*/ None)?;
             }
         } else if enforce_host_epoch_cas {
             return Err(LocalLeaseOutboxError::Invalid(
@@ -933,9 +941,9 @@ impl LocalLeaseOutbox {
     ) -> Result<Self, LocalLeaseOutboxError> {
         let lease_id = lease_id.into();
         let fencing_token = fencing_token.into();
-        validate_text(&lease_id, "lease id", 512)?;
+        validate_text(&lease_id, "lease id", /*max_bytes*/ 512)?;
         validate_generation(generation)?;
-        validate_text(&fencing_token, "fencing token", 256)?;
+        validate_text(&fencing_token, "fencing token", /*max_bytes*/ 256)?;
         let mut transaction = store
             .pool
             .begin()
@@ -1071,7 +1079,7 @@ impl LocalLeaseOutbox {
     /// `BEGIN IMMEDIATE` transaction as the terminal append.  No takeover,
     /// renewal, reconciliation, scheduler, or external effect is performed.
     pub async fn expire_lease(&self) -> Result<LocalLease, LocalLeaseOutboxError> {
-        self.expire_lease_inner(None).await
+        self.expire_lease_inner(/*now_override*/ None).await
     }
 
     #[cfg(test)]
@@ -1249,7 +1257,7 @@ impl LocalLeaseOutbox {
             occurrence_key.into(),
             topic.into(),
             payload_json.into(),
-            None,
+            /*fault*/ None,
         )
         .await
     }
@@ -1279,9 +1287,9 @@ impl LocalLeaseOutbox {
         payload_json: String,
         fault: Option<LocalAdmissionFault>,
     ) -> Result<LocalAdmission, LocalLeaseOutboxError> {
-        validate_text(&occurrence_key, "occurrence key", 512)?;
-        validate_text(&topic, "outbox topic", 256)?;
-        validate_text(&payload_json, "event payload", 65_536)?;
+        validate_text(&occurrence_key, "occurrence key", /*max_bytes*/ 512)?;
+        validate_text(&topic, "outbox topic", /*max_bytes*/ 256)?;
+        validate_text(&payload_json, "event payload", /*max_bytes*/ 65_536)?;
         let payload_sha256 = Sha256Digest::for_bytes(payload_json.as_bytes());
         let mut transaction = self
             .store
@@ -1498,7 +1506,7 @@ impl LocalLeaseOutbox {
             format!("dispatch_started_pending_ack:{}", operation_digest.as_str()),
             &[LocalOutcomeState::Queued],
             LocalOutcomeState::Indeterminate,
-            false,
+            /*allow_exact_replay*/ false,
         )
         .await
     }
@@ -1631,7 +1639,7 @@ impl LocalLeaseOutbox {
         occurrence_key: impl Into<String>,
     ) -> Result<Option<LocalOutcomeState>, LocalLeaseOutboxError> {
         let occurrence_key = occurrence_key.into();
-        validate_text(&occurrence_key, "occurrence key", 512)?;
+        validate_text(&occurrence_key, "occurrence key", /*max_bytes*/ 512)?;
         let mut transaction = self
             .store
             .pool
@@ -1745,7 +1753,7 @@ impl LocalLeaseOutbox {
             payload,
             allowed,
             resulting_state,
-            true,
+            /*allow_exact_replay*/ true,
         )
         .await
     }
@@ -1759,8 +1767,8 @@ impl LocalLeaseOutbox {
         resulting_state: LocalOutcomeState,
         allow_exact_replay: bool,
     ) -> Result<LocalOutcomeReceipt, LocalLeaseOutboxError> {
-        validate_text(&occurrence_key, "occurrence key", 512)?;
-        validate_text(&payload, "outcome payload", 65_536)?;
+        validate_text(&occurrence_key, "occurrence key", /*max_bytes*/ 512)?;
+        validate_text(&payload, "outcome payload", /*max_bytes*/ 65_536)?;
         let payload_sha256 = Sha256Digest::for_bytes(payload.as_bytes());
         let mut transaction = self
             .store
@@ -1923,7 +1931,7 @@ impl LocalLeaseOutbox {
         occurrence_key: impl Into<String>,
     ) -> Result<LocalOutcomeState, LocalLeaseOutboxError> {
         let occurrence_key = occurrence_key.into();
-        validate_text(&occurrence_key, "occurrence key", 512)?;
+        validate_text(&occurrence_key, "occurrence key", /*max_bytes*/ 512)?;
         let mut transaction = self
             .store
             .pool
@@ -1992,11 +2000,11 @@ impl LocalLeaseOutbox {
         payload_json: &str,
         payload_sha256: &Sha256Digest,
     ) -> Result<(), LocalLeaseOutboxError> {
-        validate_text(occurrence_key, "occurrence key", 512)?;
-        validate_text(event_id, "event id", 512)?;
-        validate_text(outbox_id, "outbox id", 512)?;
-        validate_text(topic, "outbox topic", 256)?;
-        validate_text(payload_json, "event payload", 65_536)?;
+        validate_text(occurrence_key, "occurrence key", /*max_bytes*/ 512)?;
+        validate_text(event_id, "event id", /*max_bytes*/ 512)?;
+        validate_text(outbox_id, "outbox id", /*max_bytes*/ 512)?;
+        validate_text(topic, "outbox topic", /*max_bytes*/ 256)?;
+        validate_text(payload_json, "event payload", /*max_bytes*/ 65_536)?;
         if Sha256Digest::for_bytes(payload_json.as_bytes()) != *payload_sha256 {
             return Err(LocalLeaseOutboxError::StaleFence(
                 "queued receipt payload digest does not match its payload".to_string(),
@@ -2084,7 +2092,7 @@ impl LocalLeaseOutbox {
         occurrence_key: impl Into<String>,
     ) -> Result<LocalReplayFinalization, LocalLeaseOutboxError> {
         let occurrence_key = occurrence_key.into();
-        validate_text(&occurrence_key, "occurrence key", 512)?;
+        validate_text(&occurrence_key, "occurrence key", /*max_bytes*/ 512)?;
         let mut transaction = self
             .store
             .pool
@@ -2276,7 +2284,7 @@ impl CognitiveStore {
         lease_id: impl Into<String>,
     ) -> Result<LocalLeaseHeadInspection, LocalLeaseOutboxError> {
         let lease_id = lease_id.into();
-        validate_text(&lease_id, "lease id", 512)?;
+        validate_text(&lease_id, "lease id", /*max_bytes*/ 512)?;
         let mut transaction = self
             .pool
             .begin()
@@ -2671,7 +2679,7 @@ pub(crate) async fn load_lease_chain(
         let fencing_token: String = row
             .try_get("fencing_token")
             .map_err(crate::cognitive_store::unavailable)?;
-        validate_text(&fencing_token, "fencing token", 256)?;
+        validate_text(&fencing_token, "fencing token", /*max_bytes*/ 256)?;
         let state = LocalLeaseState::parse(
             row.try_get::<String, _>("state")
                 .map_err(crate::cognitive_store::unavailable)?
@@ -2805,7 +2813,7 @@ async fn active_lease_fences(
         let fencing_token: String = row
             .try_get("fencing_token")
             .map_err(crate::cognitive_store::unavailable)?;
-        validate_text(&fencing_token, "fencing token", 256)?;
+        validate_text(&fencing_token, "fencing token", /*max_bytes*/ 256)?;
         fences.insert((generation, fencing_token));
     }
     Ok(fences)
@@ -2927,7 +2935,11 @@ async fn verify_event_chain(
         let fencing_token: String = row
             .try_get("fencing_token")
             .map_err(crate::cognitive_store::unavailable)?;
-        validate_text(&fencing_token, "event fencing token", 256)?;
+        validate_text(
+            &fencing_token,
+            "event fencing token",
+            /*max_bytes*/ 256,
+        )?;
         if !lease_fences.contains(&(generation, fencing_token.clone())) {
             return Err(corrupt(
                 "event row references a generation/fencing token never active in the lease history",
@@ -3076,7 +3088,12 @@ fn ensure_no_unresolved_outcomes(
     generation: u64,
     fencing_token: &str,
 ) -> Result<(), LocalLeaseOutboxError> {
-    ensure_no_unresolved_outcomes_except(events, generation, fencing_token, None)
+    ensure_no_unresolved_outcomes_except(
+        events,
+        generation,
+        fencing_token,
+        /*excluded_occurrence*/ None,
+    )
 }
 
 /// Variant of [`ensure_no_unresolved_outcomes`] used while finalizing one
@@ -3175,7 +3192,11 @@ async fn verify_outbox_chain(
         let fencing_token: String = row
             .try_get("fencing_token")
             .map_err(crate::cognitive_store::unavailable)?;
-        validate_text(&fencing_token, "outbox fencing token", 256)?;
+        validate_text(
+            &fencing_token,
+            "outbox fencing token",
+            /*max_bytes*/ 256,
+        )?;
         if !lease_fences.contains(&(generation, fencing_token.clone())) {
             return Err(corrupt(
                 "outbox row references a generation/fencing token never active in the lease history",

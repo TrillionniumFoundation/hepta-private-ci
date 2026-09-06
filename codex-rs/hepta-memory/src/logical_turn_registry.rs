@@ -164,7 +164,7 @@ impl LogicalTurnAttemptRequest {
         validate_text(&self.journal_id, "journal id")?;
         validate_text(&self.trajectory_id, "trajectory id")?;
         validate_text(&self.occurrence_key, "occurrence key")?;
-        validate_text_max(&self.fencing_token, "fencing token", 256)?;
+        validate_text_max(&self.fencing_token, "fencing token", /*max_bytes*/ 256)?;
         if self.authority_epoch == 0 || self.owner_epoch == 0 {
             return Err(invalid("authority and owner epochs must be non-zero"));
         }
@@ -438,7 +438,7 @@ impl CognitiveStore {
                     &mut transaction,
                     self,
                     &persisted_attempt,
-                    false,
+                    /*allow_expired*/ false,
                 )
                 .await?;
                 if lease.is_none() {
@@ -639,7 +639,7 @@ impl CognitiveStore {
                 head.registry_sequence + 2,
                 head.attempt_no + 1,
                 LogicalTurnAttemptTransition::Active,
-                None,
+                /*superseded_by_attempt_id*/ None,
                 &superseded.attempt_sha256,
                 now_unix_i64()?,
             )
@@ -682,10 +682,10 @@ impl CognitiveStore {
             self.owner_agent_id(),
             &request,
             &attempt,
-            1,
-            1,
+            /*registry_sequence*/ 1,
+            /*attempt_no*/ 1,
             LogicalTurnAttemptTransition::Active,
-            None,
+            /*superseded_by_attempt_id*/ None,
             &genesis_attempt_digest(),
             now_unix_i64()?,
         )
@@ -1024,7 +1024,7 @@ async fn ensure_requested_lease(
         request.generation,
         &request.fencing_token,
         LocalLeaseState::Active,
-        None,
+        /*previous*/ None,
         Some(&binding),
     )
     .await?)

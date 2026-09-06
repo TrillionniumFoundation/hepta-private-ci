@@ -51,7 +51,7 @@ impl CompactFence {
             return Err(invalid("compact fence epochs must be non-zero"));
         }
         let fencing_token = fencing_token.into();
-        validate_text(&fencing_token, "fencing token", 256)?;
+        validate_text(&fencing_token, "fencing token", /*max_bytes*/ 256)?;
         Ok(Self {
             authority_epoch,
             owner_epoch,
@@ -85,7 +85,7 @@ impl CompactParentSnapshot {
             return Err(invalid("compact parent event range is inverted"));
         }
         let context_id = context_id.into();
-        validate_text(&context_id, "context id", 512)?;
+        validate_text(&context_id, "context id", /*max_bytes*/ 512)?;
         Ok(Self {
             context_id,
             parent_event_start,
@@ -183,8 +183,8 @@ impl CompactProtectedRef {
     ) -> Result<Self, CognitiveCompactError> {
         let ref_id = ref_id.into();
         let kind = kind.into();
-        validate_text(&ref_id, "protected reference id", 512)?;
-        validate_text(&kind, "protected reference kind", 128)?;
+        validate_text(&ref_id, "protected reference id", /*max_bytes*/ 512)?;
+        validate_text(&kind, "protected reference kind", /*max_bytes*/ 128)?;
         Ok(Self {
             ref_id,
             kind,
@@ -242,10 +242,14 @@ impl CompactLossReport {
             return Err(invalid("semantic loss score must be <= 1_000_000 ppm"));
         }
         for event_id in &omitted_event_ids {
-            validate_text(event_id, "omitted event id", 512)?;
+            validate_text(event_id, "omitted event id", /*max_bytes*/ 512)?;
         }
         for ref_id in &protected_refs_lost {
-            validate_text(ref_id, "lost protected reference id", 512)?;
+            validate_text(
+                ref_id,
+                "lost protected reference id",
+                /*max_bytes*/ 512,
+            )?;
         }
         omitted_event_ids.sort();
         omitted_event_ids.dedup();
@@ -292,7 +296,7 @@ impl CompactCheckpoint {
         checkpoint_revision: u64,
     ) -> Result<Self, CognitiveCompactError> {
         let checkpoint_id = checkpoint_id.into();
-        validate_text(&checkpoint_id, "checkpoint id", 512)?;
+        validate_text(&checkpoint_id, "checkpoint id", /*max_bytes*/ 512)?;
         if summary.fact_admission() {
             return Err(CognitiveCompactError::SummaryFactAdmission);
         }

@@ -153,7 +153,11 @@ impl CompactPersistenceJournal {
         if fence.generation == 0 || fence.authority_epoch == 0 || fence.owner_epoch == 0 {
             return Err(invalid("fence epochs must be non-zero"));
         }
-        validate_text(&fence.fencing_token, "fencing token", 256)?;
+        validate_text(
+            &fence.fencing_token,
+            "fencing token",
+            /*max_bytes*/ 256,
+        )?;
         Ok(Self {
             fence,
             entries: Vec::new(),
@@ -213,7 +217,7 @@ impl CompactPersistenceJournal {
         current: &CompactParentSnapshot,
     ) -> Result<CompactPersistenceAppend, CompactPersistenceError> {
         let operation_id = operation_id.into();
-        validate_text(&operation_id, "operation id", 512)?;
+        validate_text(&operation_id, "operation id", /*max_bytes*/ 512)?;
         if current.fence != self.fence {
             return Err(CompactPersistenceError::StaleFence);
         }
@@ -321,7 +325,7 @@ impl CompactPersistenceJournal {
     ) -> Result<CompactPersistenceAppend, CompactPersistenceError> {
         let _ = self.binding(operation_id)?;
         let reason_code = reason_code.into();
-        validate_text(&reason_code, "reason code", 256)?;
+        validate_text(&reason_code, "reason code", /*max_bytes*/ 256)?;
         match self.states.get(operation_id).copied() {
             Some(CompactPersistenceState::Pending)
             | Some(CompactPersistenceState::Indeterminate) => {}
@@ -484,7 +488,7 @@ impl CompactPersistenceJournal {
                 if self.bindings.contains_key(&entry.operation_id) {
                     return Err(corrupt("duplicate intent"));
                 }
-                validate_text(checkpoint_id, "checkpoint id", 512)
+                validate_text(checkpoint_id, "checkpoint id", /*max_bytes*/ 512)
                     .map_err(|e| corrupt(e.to_string()))?;
                 self.bindings.insert(
                     entry.operation_id.clone(),
@@ -514,7 +518,7 @@ impl CompactPersistenceJournal {
             }
             CompactPersistenceEventKind::Indeterminate { reason_code } => {
                 let _ = self.binding(&entry.operation_id)?;
-                validate_text(reason_code, "reason code", 256)
+                validate_text(reason_code, "reason code", /*max_bytes*/ 256)
                     .map_err(|e| corrupt(e.to_string()))?;
                 if !matches!(
                     self.states.get(&entry.operation_id),

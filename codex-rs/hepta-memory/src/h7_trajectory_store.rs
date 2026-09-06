@@ -175,20 +175,20 @@ impl H7TrajectoryRecord {
     ) -> Result<Self, H7TrajectoryStoreError> {
         Self::new(
             trajectory_id,
-            1,
+            /*event_seq*/ 1,
             event_id,
             H7TrajectoryEventKind::TurnStart,
             turn_id,
             occurrence_key,
-            None,
-            None,
+            /*causal_parent_seq*/ None,
+            /*causal_parent_sha256*/ None,
             state_digest,
             policy_digest,
             model_receipt_digest,
             receipt_sha256,
             "turn_started",
-            0,
-            true,
+            /*reward_bps*/ 0,
+            /*safety_ok*/ true,
             metadata_json,
             "not_applicable",
         )
@@ -224,8 +224,8 @@ impl H7TrajectoryRecord {
             model_receipt_digest,
             receipt_sha256,
             outcome,
-            0,
-            true,
+            /*reward_bps*/ 0,
+            /*safety_ok*/ true,
             metadata_json,
             reason,
         )
@@ -573,8 +573,13 @@ impl CognitiveStore {
             .begin()
             .await
             .map_err(crate::cognitive_store::unavailable)?;
-        let result =
-            read_h7_trajectory_in_transaction(&mut transaction, self, &trajectory_id, None).await?;
+        let result = read_h7_trajectory_in_transaction(
+            &mut transaction,
+            self,
+            &trajectory_id,
+            /*expected_binding*/ None,
+        )
+        .await?;
         transaction
             .commit()
             .await

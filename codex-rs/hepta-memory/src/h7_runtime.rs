@@ -71,8 +71,8 @@ impl H7TrajectoryEvent {
     }
 
     pub fn validate(&self) -> Result<(), H7RuntimeError> {
-        validate_text(&self.trajectory_id, "trajectory id", 256)?;
-        validate_text(&self.outcome, "trajectory outcome", 512)?;
+        validate_text(&self.trajectory_id, "trajectory id", /*max_bytes*/ 256)?;
+        validate_text(&self.outcome, "trajectory outcome", /*max_bytes*/ 512)?;
         if self.event_seq == 0
             || self.authority_epoch == 0
             || self.owner_epoch == 0
@@ -100,7 +100,7 @@ pub struct H7Trajectory {
 impl H7Trajectory {
     pub fn new(trajectory_id: impl Into<String>) -> Result<Self, H7RuntimeError> {
         let trajectory_id = trajectory_id.into();
-        validate_text(&trajectory_id, "trajectory id", 256)?;
+        validate_text(&trajectory_id, "trajectory id", /*max_bytes*/ 256)?;
         Ok(Self {
             trajectory_id,
             events: Vec::new(),
@@ -313,7 +313,7 @@ impl H7Approval {
         approver_id: impl Into<String>,
     ) -> Result<Self, H7RuntimeError> {
         let approver_id = approver_id.into();
-        validate_text(&approver_id, "approver id", 256)?;
+        validate_text(&approver_id, "approver id", /*max_bytes*/ 256)?;
         let mut approval = Self {
             artifact_id: artifact.artifact_id.clone(),
             body_sha256: artifact.body_sha256.clone(),
@@ -343,7 +343,7 @@ impl H7Approval {
         {
             return Err(H7RuntimeError::ApprovalMismatch);
         }
-        validate_text(&self.approver_id, "approver id", 256)?;
+        validate_text(&self.approver_id, "approver id", /*max_bytes*/ 256)?;
         let expected = digest_serialized(&(
             &self.artifact_id,
             &self.body_sha256,
@@ -367,7 +367,7 @@ impl H7Artifact {
         generation: u64,
     ) -> Result<Self, H7RuntimeError> {
         let artifact_id = artifact_id.into();
-        validate_text(&artifact_id, "artifact id", 256)?;
+        validate_text(&artifact_id, "artifact id", /*max_bytes*/ 256)?;
         if generation == 0 {
             return Err(H7RuntimeError::Invalid(
                 "artifact generation must be non-zero".to_string(),
