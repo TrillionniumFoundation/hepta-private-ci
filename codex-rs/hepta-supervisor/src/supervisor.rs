@@ -538,12 +538,16 @@ impl<D: ProcessDriver> Supervisor<D> {
             if let Err(error) =
                 supervisor.upgrade_slot(agent_id, slot, target, now, explicit_rollback)
             {
-                let recovery = intent.with_status(SignedIntentStatus::RecoveryRequired);
+                let recovery = intent
+                    .with_status(SignedIntentStatus::RecoveryRequired)
+                    .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
                 let _ = write_intent(record.layout.run_root(), &recovery);
                 slot.signed_intent = Some(recovery);
                 return Err(error);
             }
-            let queued = intent.with_status(SignedIntentStatus::Queued);
+            let queued = intent
+                .with_status(SignedIntentStatus::Queued)
+                .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
             write_intent(record.layout.run_root(), &queued)
                 .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
             slot.signed_intent = Some(queued);
@@ -574,7 +578,9 @@ impl<D: ProcessDriver> Supervisor<D> {
         if active.identity() != intent.target_release {
             return Ok(());
         }
-        let committed = intent.with_status(SignedIntentStatus::Committed);
+        let committed = intent
+            .with_status(SignedIntentStatus::Committed)
+            .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
         let record = self.record(agent_id)?;
         write_intent(record.layout.run_root(), &committed)
             .map_err(|error| SupervisorError::Invalid(error.to_string()))?;

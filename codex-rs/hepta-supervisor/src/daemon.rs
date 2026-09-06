@@ -1,15 +1,24 @@
+#[cfg(unix)]
 use std::fs::File;
+#[cfg(unix)]
 use std::fs::OpenOptions;
 use std::io::ErrorKind;
+#[cfg(unix)]
 use std::io::Seek;
+#[cfg(unix)]
 use std::io::SeekFrom;
+#[cfg(unix)]
 use std::io::Write;
+#[cfg(unix)]
 use std::os::fd::AsRawFd;
+#[cfg(unix)]
 use std::path::Path;
+#[cfg(unix)]
 use std::path::PathBuf;
 use std::sync::Arc;
 use std::sync::atomic::AtomicU64;
 use std::sync::atomic::Ordering;
+#[cfg(unix)]
 use std::time::Duration;
 use std::time::Instant;
 
@@ -19,19 +28,28 @@ use codex_hepta_fleet::FleetRegistry;
 use codex_hepta_fleet::FleetRegistryError;
 use codex_hepta_fleet::ReleaseId;
 use codex_hepta_paths::HeptaFleetRoot;
+#[cfg(unix)]
 use codex_uds::UnixListener;
+#[cfg(unix)]
 use codex_uds::UnixStream;
 use constant_time_eq::constant_time_eq_32;
 use serde::Serialize;
 use sha2::Digest;
 use sha2::Sha256;
+#[cfg(unix)]
 use tokio::io::AsyncBufReadExt;
+#[cfg(unix)]
 use tokio::io::AsyncReadExt;
+#[cfg(unix)]
 use tokio::io::AsyncWriteExt;
+#[cfg(unix)]
 use tokio::io::BufReader;
 use tokio::sync::Mutex;
+#[cfg(unix)]
 use tokio::sync::Semaphore;
+#[cfg(unix)]
 use tokio::time::MissedTickBehavior;
+#[cfg(unix)]
 use tokio::time::timeout;
 use tokio_util::sync::CancellationToken;
 
@@ -42,10 +60,13 @@ use crate::H7H89ProductionGrantVerifier;
 use crate::H7H89ProductionTransition;
 use crate::ProcessDriver;
 use crate::Supervisor;
+#[cfg(unix)]
 use crate::SupervisorConfig;
 use crate::SupervisorError;
+#[cfg(unix)]
 use crate::UnixProcessDriver;
 use crate::daemon_protocol::ControlStateDigest;
+#[cfg(unix)]
 use crate::daemon_protocol::MAX_SUPERVISORD_CONTROL_FRAME_BYTES;
 use crate::daemon_protocol::MAX_SUPERVISORD_ROSTER;
 use crate::daemon_protocol::SUPERVISORD_CONTROL_SCHEMA_VERSION;
@@ -57,13 +78,18 @@ use crate::daemon_protocol::SupervisordMatrixStatus;
 use crate::daemon_protocol::SupervisordMethod;
 use crate::daemon_protocol::SupervisordMutation;
 use crate::daemon_protocol::SupervisordPayload;
+#[cfg(unix)]
 use crate::daemon_protocol::SupervisordRequest;
+#[cfg(unix)]
 use crate::daemon_protocol::SupervisordRequestValidationError;
 use crate::daemon_protocol::SupervisordResponse;
 use crate::signed_authority::authority_epoch_for_supervisor_epoch;
 
+#[cfg(unix)]
 const CONNECTION_CAPACITY: usize = 64;
+#[cfg(unix)]
 const IO_TIMEOUT: Duration = Duration::from_secs(2);
+#[cfg(unix)]
 const TICK_INTERVAL: Duration = Duration::from_millis(25);
 const CONTROL_STATE_DIGEST_DOMAIN: &[u8] = b"hepta.supervisord.control-state.v2\0";
 const CONTROL_FENCE_IDENTITY_DOMAIN: &[u8] = b"hepta.supervisord.control-fence-identity.v2\0";
@@ -75,7 +101,7 @@ const CONTROL_FENCE_IDENTITY_DOMAIN: &[u8] = b"hepta.supervisord.control-fence-i
 pub const PRODUCTION_AUTHORITY_FEATURE_ENABLED: bool =
     cfg!(feature = "production-authority") || cfg!(test);
 
-struct DaemonState<D: ProcessDriver = UnixProcessDriver> {
+struct DaemonState<D: ProcessDriver> {
     registry: FleetRegistry,
     supervisor: Mutex<Supervisor<D>>,
     supervisor_epoch: SupervisorEpoch,
@@ -88,6 +114,8 @@ struct DaemonState<D: ProcessDriver = UnixProcessDriver> {
 /// This service owns no chat ingress, model provider, token stream, tool
 /// dispatcher, or execution queue. Every mutation is a bounded per-Agent
 /// lifecycle operation.
+/// Returns an unsupported-platform I/O error before accessing fleet state on
+/// non-Unix hosts, where no concrete process driver is implemented.
 pub async fn run_supervisord(
     fleet_root: HeptaFleetRoot,
     cancellation: CancellationToken,
@@ -99,6 +127,8 @@ pub async fn run_supervisord(
 /// external authority/configuration ceremony.  The verifier is intentionally
 /// a parameter: the daemon never reads a public key from a mutation request
 /// and the legacy entry point keeps signed mutations disabled.
+/// After the feature gate, non-Unix hosts return an unsupported-platform I/O
+/// error before accessing fleet state.
 pub async fn run_supervisord_with_grant_verifier(
     fleet_root: HeptaFleetRoot,
     cancellation: CancellationToken,
@@ -110,6 +140,7 @@ pub async fn run_supervisord_with_grant_verifier(
     run_supervisord_inner(fleet_root, cancellation, Some(verifier)).await
 }
 
+#[cfg(unix)]
 async fn run_supervisord_inner(
     fleet_root: HeptaFleetRoot,
     cancellation: CancellationToken,
@@ -167,18 +198,33 @@ async fn run_supervisord_inner(
     result
 }
 
+#[cfg(not(unix))]
+async fn run_supervisord_inner(
+    _fleet_root: HeptaFleetRoot,
+    _cancellation: CancellationToken,
+    _production_grant_verifier: Option<H7H89ProductionGrantVerifier>,
+) -> Result<(), SupervisorError> {
+    Err(std::io::Error::new(
+        ErrorKind::Unsupported,
+        "supervisord process hosting is supported only on Unix hosts",
+    )
+    .into())
+}
+
+#[cfg(unix)]
 struct SupervisordServer {
     listener: UnixListener,
     socket_path: PathBuf,
-    state: Arc<DaemonState>,
+    state: Arc<DaemonState<UnixProcessDriver>>,
     cancellation: CancellationToken,
     connections: Arc<Semaphore>,
 }
 
+#[cfg(unix)]
 impl SupervisordServer {
     async fn bind(
         socket_path: PathBuf,
-        state: Arc<DaemonState>,
+        state: Arc<DaemonState<UnixProcessDriver>>,
         cancellation: CancellationToken,
     ) -> Result<Self, SupervisorError> {
         prepare_socket(&socket_path).await?;
@@ -212,6 +258,7 @@ impl SupervisordServer {
     }
 }
 
+#[cfg(unix)]
 impl Drop for SupervisordServer {
     fn drop(&mut self) {
         if let Err(error) = std::fs::remove_file(&self.socket_path)
@@ -225,9 +272,10 @@ impl Drop for SupervisordServer {
     }
 }
 
+#[cfg(unix)]
 async fn serve_connection(
     stream: UnixStream,
-    state: Arc<DaemonState>,
+    state: Arc<DaemonState<UnixProcessDriver>>,
 ) -> Result<(), SupervisorError> {
     codex_uds::ensure_current_user_peer(&stream)?;
     let (reader, mut writer) = tokio::io::split(stream);
@@ -275,6 +323,7 @@ async fn serve_connection(
     write_response(&mut writer, response).await
 }
 
+#[cfg(unix)]
 async fn write_response(
     writer: &mut tokio::io::WriteHalf<UnixStream>,
     response: SupervisordResponse,
@@ -972,6 +1021,7 @@ fn error_response(
     }
 }
 
+#[cfg(unix)]
 async fn prepare_socket(socket_path: &Path) -> Result<(), SupervisorError> {
     let parent = socket_path.parent().ok_or_else(|| {
         SupervisorError::Invalid("supervisord socket has no parent directory".to_string())
@@ -1013,15 +1063,12 @@ async fn set_owner_only(path: &Path) -> Result<(), SupervisorError> {
     Ok(())
 }
 
-#[cfg(not(unix))]
-async fn set_owner_only(_path: &Path) -> Result<(), SupervisorError> {
-    Ok(())
-}
-
+#[cfg(unix)]
 struct SingleInstanceLock {
     file: File,
 }
 
+#[cfg(unix)]
 impl SingleInstanceLock {
     fn acquire(path: &Path) -> Result<Self, SupervisorError> {
         let mut file = OpenOptions::new()
@@ -1047,6 +1094,7 @@ impl SingleInstanceLock {
     }
 }
 
+#[cfg(unix)]
 impl Drop for SingleInstanceLock {
     fn drop(&mut self) {
         // SAFETY: unlocks the same live File descriptor acquired above.
@@ -1325,6 +1373,7 @@ mod tests {
         }
     }
 
+    #[cfg(unix)]
     #[tokio::test(flavor = "current_thread")]
     async fn unresolved_signed_intent_blocks_daemon_startup_before_socket_bind() {
         let temp = tempfile::tempdir().expect("create temporary fleet");
@@ -1391,10 +1440,6 @@ mod tests {
     }
 }
 
-#[cfg(not(unix))]
-fn set_lock_owner_only(path: &Path) -> Result<(), SupervisorError> {
-    let mut permissions = std::fs::metadata(path)?.permissions();
-    permissions.set_readonly(false);
-    std::fs::set_permissions(path, permissions)?;
-    Ok(())
-}
+#[cfg(all(test, not(unix)))]
+#[path = "daemon_platform_tests.rs"]
+mod platform_tests;
