@@ -1440,16 +1440,15 @@ impl ThreadHistoryBuilder {
                 request_fingerprint_sha256: None,
                 replay: None,
             });
-        match payload.state {
-            TurnRecoveryCandidateState::Ready
-                if payload.generation == state.generation && binding.is_some() =>
+        match (payload.state, binding) {
+            (TurnRecoveryCandidateState::Ready, Some((fingerprint, replay)))
+                if payload.generation == state.generation =>
             {
                 state.state = TurnRecoveryCandidateState::Ready;
-                let (fingerprint, replay) = binding.expect("binding checked above");
                 state.request_fingerprint_sha256 = Some(fingerprint);
                 state.replay = Some(replay);
             }
-            TurnRecoveryCandidateState::Unready
+            (TurnRecoveryCandidateState::Unready, _)
                 if payload.generation == state.generation
                     || payload.generation == state.generation.saturating_add(1) =>
             {
@@ -1459,14 +1458,13 @@ impl ThreadHistoryBuilder {
                 state.replay = None;
                 self.recovery_request_bindings.remove(&payload.turn_id);
             }
-            TurnRecoveryCandidateState::InterruptedConfirmed
+            (TurnRecoveryCandidateState::InterruptedConfirmed, Some((fingerprint, replay)))
                 if existing.is_some_and(|existing| {
                     existing.generation == payload.generation
                         && existing.state == TurnRecoveryCandidateState::Unready
-                }) && binding.is_some() =>
+                }) =>
             {
                 state.state = TurnRecoveryCandidateState::InterruptedConfirmed;
-                let (fingerprint, replay) = binding.expect("binding checked above");
                 state.request_fingerprint_sha256 = Some(fingerprint);
                 state.replay = Some(replay);
             }
@@ -1534,11 +1532,7 @@ impl ThreadHistoryBuilder {
                     TurnStatus::Interrupted | TurnStatus::InProgress
                 )
         });
-        if reopen_logical_tail {
-            let turn = self
-                .turns
-                .pop()
-                .expect("logical tail must exist after strict last-turn check");
+        if reopen_logical_tail && let Some(turn) = self.turns.pop() {
             let turn = PendingTurn::reopen(turn, payload.started_at, self.current_rollout_index);
             self.record_changed_pending_turn(&turn);
             self.current_turn = Some(turn);
