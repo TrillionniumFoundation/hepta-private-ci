@@ -48,8 +48,8 @@ jobs:
 
           artifact_root="${RUNNER_TEMP}/hepta-blocker-artifact"
           rm -rf "${artifact_root}"
-          mkdir -p "${artifact_root}/.github/workflows"
-          cp .github/workflows/bazel.yml "${artifact_root}/.github/workflows/bazel.yml"
+          mkdir -p "${artifact_root}"
+          cp .github/workflows/bazel.yml "${artifact_root}/bazel.yml"
 
           while IFS= read -r path; do
             [[ -z "${path}" ]] && continue
@@ -68,6 +68,6 @@ jobs:
         uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
         with:
           name: hepta-patched-bazel-${{ github.sha }}
-          path: ${{ runner.temp }}/hepta-blocker-artifact
+          path: ${{ runner.temp }}/hepta-blocker-artifact/bazel.yml
           if-no-files-found: error
           retention-days: 1
