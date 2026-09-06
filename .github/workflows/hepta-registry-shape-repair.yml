@@ -1,0 +1,127 @@
+name: One-shot canonical registry shape repair
+
+on:
+  push:
+    branches:
+      - fix/hepta-registry-shape-closure-20260906
+    paths:
+      - .github/workflows/hepta-registry-shape-repair.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: hepta-registry-shape-repair-20260906
+  cancel-in-progress: false
+
+jobs:
+  repair:
+    name: Recompute stale shape closures and retire this workflow
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Check out the exact one-shot source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: true
+      - name: Recompute every registry shape from canonical bytes
+        shell: bash
+        env:
+          EXPECTED_REPOSITORY: TrillionniumFoundation/hepta-private-ci
+          EXPECTED_REF: refs/heads/fix/hepta-registry-shape-closure-20260906
+        run: |
+          set -euo pipefail
+          test "$GITHUB_REPOSITORY" = "$EXPECTED_REPOSITORY"
+          test "$GITHUB_REF" = "$EXPECTED_REF"
+          test "$GITHUB_ACTOR" = ProfHepta
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test -z "$(git status --porcelain=v1 --untracked-files=all)"
+          python3 - <<'PY'
+          from __future__ import annotations
+
+          import hashlib
+          import json
+          from pathlib import Path
+
+          system_path = Path("docs/governance/DOCUMENT_SYSTEM.json")
+
+          def reject_duplicate_keys(pairs):
+              result = {}
+              for key, value in pairs:
+                  if key in result:
+                      raise ValueError(f"duplicate JSON key: {key}")
+                  result[key] = value
+              return result
+
+          def load(path: Path):
+              return json.loads(
+                  path.read_text(encoding="utf-8"),
+                  object_pairs_hook=reject_duplicate_keys,
+              )
+
+          def shape_paths(value, path="$"):
+              result = {path}
+              if isinstance(value, dict):
+                  for key, child in value.items():
+                      result |= shape_paths(child, f"{path}.{key}")
+              elif isinstance(value, list):
+                  result.add(path + "[]")
+                  for child in value:
+                      result |= shape_paths(child, path + "[]")
+              else:
+                  result.add(path + ":" + type(value).__name__)
+              return result
+
+          def shape_sha(value):
+              return hashlib.sha256(
+                  "\n".join(sorted(shape_paths(value))).encode("utf-8")
+              ).hexdigest()
+
+          system = load(system_path)
+          changes = []
+          for row in system["registryShapeClosures"]:
+              registry = Path(row["path"])
+              calculated = shape_sha(load(registry))
+              registered = row["recursiveShapeSha256"]
+              if registered != calculated:
+                  changes.append({
+                      "path": row["path"],
+                      "old": registered,
+                      "new": calculated,
+                  })
+                  row["recursiveShapeSha256"] = calculated
+
+          if not changes:
+              raise SystemExit("no stale registry shape closure was found")
+          system_path.write_text(
+              json.dumps(system, ensure_ascii=True, indent=2) + "\n",
+              encoding="utf-8",
+          )
+          print(json.dumps({
+              "schema": "hepta.registry-shape-repair.v1",
+              "changes": changes,
+              "authorityGranted": False,
+          }, sort_keys=True))
+          PY
+          python3 scripts/hepta-docs.py self-test
+          python3 scripts/hepta-module-docs.py verify
+          python3 scripts/hepta-algorithm-docs.py verify
+          python3 scripts/hepta-readiness.py verify
+          python3 scripts/hepta-cns.py verify
+          python3 scripts/hepta-hnmf.py verify
+          python3 scripts/hepta-docs.py verify
+          git diff --check
+          test "$(git diff --name-only | sort)" = docs/governance/DOCUMENT_SYSTEM.json
+      - name: Commit the bounded repair and delete this one-shot workflow
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -- .github/workflows/hepta-registry-shape-repair.yml
+          test "$(git status --porcelain=v1 | awk '{print $2}' | sort)" = $'.github/workflows/hepta-registry-shape-repair.yml\ndocs/governance/DOCUMENT_SYSTEM.json'
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add -- .github/workflows/hepta-registry-shape-repair.yml docs/governance/DOCUMENT_SYSTEM.json
+          git commit -m "fix(docs): refresh canonical registry shape closures"
+          git push origin HEAD:refs/heads/fix/hepta-registry-shape-closure-20260906
