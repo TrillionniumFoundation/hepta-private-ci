@@ -1,5 +1,6 @@
 use super::*;
 use crate::runtime::test_support::unique_temp_dir;
+use anyhow::Context;
 use codex_utils_absolute_path::test_support::PathExt;
 use pretty_assertions::assert_eq;
 use std::collections::BTreeMap;
@@ -16,22 +17,22 @@ struct RecoveryFixture {
 }
 
 impl RecoveryFixture {
-    fn with_complete_file_set() -> Self {
+    fn with_complete_file_set() -> anyhow::Result<Self> {
         let home = unique_temp_dir();
-        std::fs::create_dir(&home).expect("create recovery home");
+        std::fs::create_dir(&home).context("create recovery home")?;
         std::fs::set_permissions(&home, std::fs::Permissions::from_mode(0o700))
-            .expect("protect recovery home");
+            .context("protect recovery home")?;
         let database = home.join("recovery.sqlite3");
-        write_private(&database, b"database bytes");
-        write_private(&sidecar_path(&database, "-wal"), b"wal bytes");
-        write_private(&sidecar_path(&database, "-shm"), b"shm bytes");
-        write_private(&sidecar_path(&database, "-journal"), b"journal bytes");
+        write_private(&database, b"database bytes")?;
+        write_private(&sidecar_path(&database, "-wal"), b"wal bytes")?;
+        write_private(&sidecar_path(&database, "-shm"), b"shm bytes")?;
+        write_private(&sidecar_path(&database, "-journal"), b"journal bytes")?;
         let sqlite = SqliteConfig::new_for_testing(home.as_path().abs());
-        Self {
+        Ok(Self {
             home,
             database,
             sqlite,
-        }
+        })
     }
 }
 
@@ -99,19 +100,19 @@ enum IdentityAttack {
 }
 
 #[tokio::test]
-async fn validated_file_set_is_unavailable_without_mutation_or_reconnect() {
-    let fixture = RecoveryFixture::with_complete_file_set();
-    let before = capture_tree(&fixture.home);
+async fn validated_file_set_is_unavailable_without_mutation_or_reconnect() -> anyhow::Result<()> {
+    let fixture = RecoveryFixture::with_complete_file_set()?;
+    let before = capture_tree(&fixture.home)?;
     let guard = fixture
         .sqlite
         .bind_existing_recovery_database(&fixture.database)
         .expect("retain a valid identity bundle");
-    assert_eq!(capture_tree(&fixture.home), before);
+    assert_eq!(capture_tree(&fixture.home)?, before);
     guard
         .verify_inspection_unchanged()
         .expect("read-only binding is unchanged");
 
-    let retained_descriptor_count = matching_open_descriptor_count(&fixture.database);
+    let retained_descriptor_count = matching_open_descriptor_count(&fixture.database)?;
     assert_eq!(retained_descriptor_count, 1);
     let legacy_error = match fixture
         .sqlite
@@ -127,10 +128,10 @@ async fn validated_file_set_is_unavailable_without_mutation_or_reconnect() {
             .contains("path-based SQLite recovery is disabled")
     );
     assert_eq!(
-        matching_open_descriptor_count(&fixture.database),
+        matching_open_descriptor_count(&fixture.database)?,
         retained_descriptor_count
     );
-    assert_eq!(capture_tree(&fixture.home), before);
+    assert_eq!(capture_tree(&fixture.home)?, before);
     for _ in 0..32 {
         let inspection_error = match fixture.sqlite.open_immutable_recovery_pool(&guard).await {
             Ok(_) => panic!("fail-closed inspection unexpectedly returned a pool"),
@@ -152,16 +153,17 @@ async fn validated_file_set_is_unavailable_without_mutation_or_reconnect() {
             )
         );
         assert_eq!(
-            matching_open_descriptor_count(&fixture.database),
+            matching_open_descriptor_count(&fixture.database)?,
             retained_descriptor_count
         );
-        assert_eq!(capture_tree(&fixture.home), before);
+        assert_eq!(capture_tree(&fixture.home)?, before);
     }
+    Ok(())
 }
 
 #[tokio::test]
-async fn rename_replacement_is_indeterminate_without_mutation_or_reconnect() {
-    let fixture = RecoveryFixture::with_complete_file_set();
+async fn rename_replacement_is_indeterminate_without_mutation_or_reconnect() -> anyhow::Result<()> {
+    let fixture = RecoveryFixture::with_complete_file_set()?;
     let guard = fixture
         .sqlite
         .bind_existing_recovery_database(&fixture.database)
@@ -171,8 +173,8 @@ async fn rename_replacement_is_indeterminate_without_mutation_or_reconnect() {
     std::fs::copy(&moved, &fixture.database).expect("install byte-identical replacement");
     std::fs::set_permissions(&fixture.database, std::fs::Permissions::from_mode(0o600))
         .expect("protect replacement");
-    let attacked = capture_tree(&fixture.home);
-    let retained_descriptor_count = matching_open_descriptor_count(&moved);
+    let attacked = capture_tree(&fixture.home)?;
+    let retained_descriptor_count = matching_open_descriptor_count(&moved)?;
     assert_eq!(retained_descriptor_count, 1);
 
     let inspection_error = match fixture.sqlite.open_immutable_recovery_pool(&guard).await {
@@ -200,14 +202,15 @@ async fn rename_replacement_is_indeterminate_without_mutation_or_reconnect() {
         )
     );
     assert_eq!(
-        matching_open_descriptor_count(&moved),
+        matching_open_descriptor_count(&moved)?,
         retained_descriptor_count
     );
-    assert_eq!(capture_tree(&fixture.home), attacked);
+    assert_eq!(capture_tree(&fixture.home)?, attacked);
+    Ok(())
 }
 
 #[test]
-fn symlink_hardlink_and_mode_inputs_are_indeterminate_and_unchanged() {
+fn symlink_hardlink_and_mode_inputs_are_indeterminate_and_unchanged() -> anyhow::Result<()> {
     let roles = [
         FileRole::Database,
         FileRole::Wal,
@@ -222,9 +225,9 @@ fn symlink_hardlink_and_mode_inputs_are_indeterminate_and_unchanged() {
 
     for role in roles {
         for attack in attacks {
-            let fixture = RecoveryFixture::with_complete_file_set();
-            install_identity_attack(&fixture, role, attack);
-            let attacked = capture_tree(&fixture.home);
+            let fixture = RecoveryFixture::with_complete_file_set()?;
+            install_identity_attack(&fixture, role, attack)?;
+            let attacked = capture_tree(&fixture.home)?;
             let error = match fixture
                 .sqlite
                 .bind_existing_recovery_database(&fixture.database)
@@ -234,17 +237,18 @@ fn symlink_hardlink_and_mode_inputs_are_indeterminate_and_unchanged() {
             };
             assert_eq!(error, SqliteRecoveryError::Indeterminate);
             assert_eq!(
-                matching_open_descriptor_count(&role.path(&fixture.database)),
+                matching_open_descriptor_count(&role.path(&fixture.database))?,
                 0
             );
-            assert_eq!(capture_tree(&fixture.home), attacked);
+            assert_eq!(capture_tree(&fixture.home)?, attacked);
         }
     }
+    Ok(())
 }
 
 #[tokio::test]
-async fn sidecar_appearance_after_binding_is_indeterminate_and_unchanged() {
-    let fixture = RecoveryFixture::with_complete_file_set();
+async fn sidecar_appearance_after_binding_is_indeterminate_and_unchanged() -> anyhow::Result<()> {
+    let fixture = RecoveryFixture::with_complete_file_set()?;
     std::fs::remove_file(sidecar_path(&fixture.database, "-journal"))
         .expect("remove journal before binding");
     let guard = fixture
@@ -252,9 +256,9 @@ async fn sidecar_appearance_after_binding_is_indeterminate_and_unchanged() {
         .bind_existing_recovery_database(&fixture.database)
         .expect("retain absent journal identity");
     let journal = sidecar_path(&fixture.database, "-journal");
-    write_private(&journal, b"late journal");
-    let attacked = capture_tree(&fixture.home);
-    let descriptor_count = matching_open_descriptor_count(&fixture.database);
+    write_private(&journal, b"late journal")?;
+    let attacked = capture_tree(&fixture.home)?;
+    let descriptor_count = matching_open_descriptor_count(&fixture.database)?;
     assert_eq!(descriptor_count, 1);
 
     let error = match fixture.sqlite.open_immutable_recovery_pool(&guard).await {
@@ -263,36 +267,43 @@ async fn sidecar_appearance_after_binding_is_indeterminate_and_unchanged() {
     };
     assert_eq!(error, SqliteRecoveryError::Indeterminate);
     assert_eq!(
-        matching_open_descriptor_count(&fixture.database),
+        matching_open_descriptor_count(&fixture.database)?,
         descriptor_count
     );
-    assert_eq!(capture_tree(&fixture.home), attacked);
+    assert_eq!(capture_tree(&fixture.home)?, attacked);
+    Ok(())
 }
 
-fn install_identity_attack(fixture: &RecoveryFixture, role: FileRole, attack: IdentityAttack) {
+fn install_identity_attack(
+    fixture: &RecoveryFixture,
+    role: FileRole,
+    attack: IdentityAttack,
+) -> anyhow::Result<()> {
     let path = role.path(&fixture.database);
     match attack {
         IdentityAttack::Symlink => {
             let retained = path.with_extension("retained");
-            std::fs::rename(&path, &retained).expect("retain symlink target");
-            symlink(retained.file_name().expect("retained file name"), &path)
-                .expect("install symlink");
+            std::fs::rename(&path, &retained).context("retain symlink target")?;
+            symlink(retained.file_name().context("retained file name")?, &path)
+                .context("install symlink")?;
         }
         IdentityAttack::Hardlink => {
             let second_link = path.with_extension("hardlink");
-            std::fs::hard_link(&path, second_link).expect("install hard link");
+            std::fs::hard_link(&path, second_link).context("install hard link")?;
         }
         IdentityAttack::Mode => {
             std::fs::set_permissions(&path, std::fs::Permissions::from_mode(0o640))
-                .expect("widen file mode");
+                .context("widen file mode")?;
         }
     }
+    Ok(())
 }
 
-fn write_private(path: &Path, bytes: &[u8]) {
-    std::fs::write(path, bytes).expect("write fixture file");
+fn write_private(path: &Path, bytes: &[u8]) -> anyhow::Result<()> {
+    std::fs::write(path, bytes).context("write fixture file")?;
     std::fs::set_permissions(path, std::fs::Permissions::from_mode(0o600))
-        .expect("protect fixture file");
+        .context("protect fixture file")?;
+    Ok(())
 }
 
 fn sidecar_path(database: &Path, suffix: &str) -> PathBuf {
@@ -301,17 +312,17 @@ fn sidecar_path(database: &Path, suffix: &str) -> PathBuf {
     PathBuf::from(path)
 }
 
-fn capture_tree(home: &Path) -> TreeImage {
-    let directory = MetadataImage::capture(&std::fs::symlink_metadata(home).expect("stat home"));
+fn capture_tree(home: &Path) -> anyhow::Result<TreeImage> {
+    let directory = MetadataImage::capture(&std::fs::symlink_metadata(home).context("stat home")?);
     let mut entries = BTreeMap::new();
-    for entry in std::fs::read_dir(home).expect("read recovery home") {
-        let entry = entry.expect("read recovery entry");
+    for entry in std::fs::read_dir(home).context("read recovery home")? {
+        let entry = entry.context("read recovery entry")?;
         let path = entry.path();
-        let metadata = std::fs::symlink_metadata(&path).expect("stat recovery entry");
+        let metadata = std::fs::symlink_metadata(&path).context("stat recovery entry")?;
         let payload = if metadata.file_type().is_symlink() {
-            EntryPayload::Symlink(std::fs::read_link(&path).expect("read symlink target"))
+            EntryPayload::Symlink(std::fs::read_link(&path).context("read symlink target")?)
         } else {
-            EntryPayload::Bytes(std::fs::read(&path).expect("read recovery bytes"))
+            EntryPayload::Bytes(std::fs::read(&path).context("read recovery bytes")?)
         };
         entries.insert(
             entry.file_name(),
@@ -321,7 +332,7 @@ fn capture_tree(home: &Path) -> TreeImage {
             },
         );
     }
-    TreeImage { directory, entries }
+    Ok(TreeImage { directory, entries })
 }
 
 impl MetadataImage {
@@ -340,9 +351,9 @@ impl MetadataImage {
     }
 }
 
-fn matching_open_descriptor_count(path: &Path) -> usize {
-    let metadata = std::fs::metadata(path).expect("stat descriptor target");
-    (0..4096)
+fn matching_open_descriptor_count(path: &Path) -> anyhow::Result<usize> {
+    let metadata = std::fs::metadata(path).context("stat descriptor target")?;
+    Ok((0..4096)
         .filter(|descriptor| {
             // SAFETY: `status` points to writable storage for `fstat`; probing
             // an invalid descriptor safely returns an error.
@@ -354,5 +365,5 @@ fn matching_open_descriptor_count(path: &Path) -> usize {
                 && i128::from(status.st_dev) == i128::from(metadata.dev())
                 && i128::from(status.st_ino) == i128::from(metadata.ino())
         })
-        .count()
+        .count())
 }
