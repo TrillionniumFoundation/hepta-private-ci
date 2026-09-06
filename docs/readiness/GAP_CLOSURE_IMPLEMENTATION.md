@@ -64,6 +64,13 @@ package and longitudinal capability claims open.
 The OPE point estimator enforces the preregistered importance-weight ceiling
 on the exact probability ratio before fixed-point rounding. A ratio above the
 ceiling is rejected even when rounding would produce the ceiling itself.
+ESS support admission now also compares the exact ratio of the accumulated
+Q32 weights against its registered lower bound, using its floor in raw Q32
+units. The report retains nearest/ties-even rounding. A ratio just below 400
+cannot be admitted merely because the displayed ESS rounds to 400. The same
+rule applies independently at every sequential depth, including the stricter
+system-longitudinal floor. This arithmetic correction does not establish
+holdout independence, retention or production acceptance.
 
 Local memory retrieval rejects tombstone candidates before scoring or top-k
 truncation. A deleted candidate invalidates the request; it cannot be returned
@@ -201,6 +208,13 @@ startup. Subsequent poisoned-mutex failures are secondary. `WRITE_RESTRICTED`
 does not cover the file deletion rights; the capability-only SID change is
 therefore insufficient to close the deletion gap. These failures remain open
 and must not be replaced by portable-test or compiler success claims.
+The explicit carveout helper also had a separate partial-mask defect: a deny
+for only DELETE or FILE_READ_EA could suppress installation of the complete
+requested write or read denial. Its candidate now requires full mapped-mask
+coverage in a leading explicit deny with the constructor's effective recursive
+inheritance scope. Otherwise it installs the existing complete deny mask. This
+adds no allow rights and requires native regression execution; it does not
+repair the outside-delete limitation of `WRITE_RESTRICTED`.
 
 Native CI also exposed an overlong `process_wrapper.exe` command before rustc
 started. The wrapper candidate transports its own arguments through a separate
@@ -252,8 +266,16 @@ qualification target passed at `5ec6d0db2ef24bf545a18eeba1814dfa6e449ff2`.
 Run `34056311823`, job `101548741807`, also reports that target and the
 Contracts B3 adapter qualification target passed at
 `e16208a8d490e72006f60eb002a220eb5cb174dc`. These are observed target-level
-results; the logs do not include successful inner case counts. Both shards
-failed overall on other targets, so these receipts do not establish green CI.
+results; the logs do not include successful inner case counts. The same run's
+job `101548741855` also reports the TaskFlow kernel and Contracts local
+qualification targets passed at that exact source. Both TaskFlow targets and
+both Contracts targets therefore have Windows target-level pass evidence.
+The enclosing shards failed or were cancelled, so these receipts do not
+establish green CI. The macOS ARM Clippy job at this source failed on three
+guarded `expect` calls in thread-history recovery; the source candidate replaces
+them with binding patterns while retaining generation, provenance and tail
+checks. The earlier State helper repair still lacks its own observed native
+Clippy action.
 
 The Matrix SDK marker helper has an isolated Bazel target,
 `//codex-rs/hepta-matrix-sdk:hepta-matrix-sdk-qualification-marker-test`.
@@ -290,6 +312,21 @@ ignored cases remained excluded. This is a failed qualification attempt.
 Separate local UDS tests report socket creation denied by the environment,
 but that observation alone does not prove the cause of every process timeout.
 Successful native execution and diagnosis of any remaining timeout are required.
+Inspection of all fourteen timed-out startup attempts found durable
+`Stopped -> Starting -> Failed` transitions within 85-301 milliseconds. The
+harness now reports terminal inactive failure after a completed supervisor tick,
+preserves pending rollout/restart handling, and includes exit, health and bounded
+decoded output diagnostics. A real-child regression passed. A subsequent single
+remember/recall/correct/forget case failed in 0.126 seconds with child exit code
+one and captured `Operation not permitted (os error 1)` stderr. The health request
+also returned EPERM. This observes that startup failure directly; it does not
+identify its exact syscall or prove every prior timeout had the same cause.
+The process qualification remains failed and no test guard or timeout was relaxed.
+The subsequent local checks passed all 54 thread-history tests, all 66 evaluator
+tests and the one startup-diagnostic regression. The Windows package's twelve
+portable tests also passed; they do not compile or execute the new native ACL
+tests. These counts describe separate scoped checks, not a green workspace or
+native process qualification.
 
 Contracts also has two explicit targets in `//codex-rs/hepta-contracts`:
 `hepta-contracts-authbus-local-qualification-test` and
@@ -338,6 +375,14 @@ incorrect native patch placement pass. The source-anchored correction at
 artifact `9995791034`. Both diagnostics contain three zero exit codes and
 byte-identical candidate locks. Native smoke success for the correction is
 distinct from production recovery or sandbox qualification.
+
+The wrapper response-file patch at
+`5f713342973e42573eb0366c294f94880706f304` has a seventh verified
+exact-head lock diagnostic: run `34060044027`, artifact `9997334170`,
+before/update/after exits zero and an unchanged candidate lock. It includes
+the preceding Windows operator dependency edge, but not the later Agentd
+binary-resolver edge. That later edge and native wrapper execution still
+require their own results.
 
 `hepta-audit-remediation.yml` separately tests the immutable source head and a
 synthetic merge with explicit parents. It uses read-only repository permission,
