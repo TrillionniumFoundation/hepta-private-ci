@@ -31,6 +31,24 @@ This directory closes the registered pre-coding documentation requirements for t
 
 ## Validation
 
+`PROTOCOLS.json` uses a closed, recursively validated field-schema grammar. Every
+enum declares its complete allowed-value set; every bounded array declares item
+schema, count limits and uniqueness semantics; fixed-point vectors bind Q24 or Q32
+numeric representation plus a protocol-specific variable-length bound (utility at
+most 8 elements, risk, resource and uncertainty at most 32 and neuron features at
+most 512), rather than a fixed cardinality. Every bounded object declares its
+ordered properties, required-property count and an explicit
+`additionalProperties: false` policy. The registry has 46 recursively declared
+bounded-object schema nodes; `self-test` uses one separate positive fixture and
+two hostile variants for a missing or permissive additional-properties policy.
+Nested schemas use the same grammar. Missing or permissive additional-property
+policies, unknown schema keys, duplicate names or values, invalid bounds and a
+nested byte limit wider than its parent are rejected. Enum choices remain under
+the closed `values` key.
+
+These schemas define admission bytes only; they do not activate a caller or grant
+runtime, external-effect or release authority.
+
 ```bash
 python3 scripts/hepta-readiness.py self-test
 python3 scripts/hepta-readiness.py generate-status --check
