@@ -129,6 +129,18 @@ Canonical encoding and aggregate encoded bounds, NFC, identifier/time syntax,
 digest/profile verification and the actual compiler adapter remain separate
 prerequisites. The existing scalar compiler API and digest scope are preserved.
 
+The separate `decode_source_envelope_json_v1` input decoder now checks the
+specified JSON field grammar through private DTOs. Nested structs must be
+objects, enums must be strings, and duplicate decoded keys, unknown or missing
+required fields, explicit nulls, wrong integer widths and malformed digest
+strings fail closed. Optional deadline omission is allowed; a present deadline
+must be a string. The raw JSON ingress guard is 262144 bytes including whitespace
+and escapes, separately from canonical or nested aggregate encoded bounds.
+Errors expose only safe structural details. The decoder preserves source
+spelling and supplied trust/digest values; it does not publish canonical bytes,
+verify profiles, normalize identities, admit authority or connect the compiler
+to the product host. The owner-local models gain no public serde wire surface.
+
 The private Matrix gap-page accumulator is qualification-only. It binds an
 explicit room/session/filter plan and opaque token interval, enforces cumulative
 page/event/byte bounds, and requires exact target-token continuity. Empty pages

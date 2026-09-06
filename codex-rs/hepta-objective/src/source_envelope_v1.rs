@@ -1,9 +1,10 @@
 //! Owner-local representation of the `ObjectiveSourceEnvelopeV1` field grammar
 //! in `docs/readiness/PROTOCOLS.json`. This is not its admitted wire type.
 //!
-//! No encoder, decoder, canonical digest, trust conversion or compiler adapter
-//! is provided. Strings preserve source spelling: identifier/timestamp syntax,
-//! NFC, canonical ordering and registered profiles require later admission.
+//! The separate `decode_source_envelope_json_v1` entrypoint checks JSON shape;
+//! no canonical encoder/digest, trust conversion or compiler adapter is provided.
+//! Strings preserve source spelling: identifier/timestamp syntax, NFC, canonical
+//! ordering and registered profiles require later admission.
 
 use codex_hepta_types::Digest32;
 
