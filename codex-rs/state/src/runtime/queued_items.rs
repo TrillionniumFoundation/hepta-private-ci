@@ -331,7 +331,12 @@ impl SqliteQueueStore {
             payload_json,
         )
         .await?;
-        enforce_capacity(transaction.as_mut(), &thread_id_string, None).await?;
+        enforce_capacity(
+            transaction.as_mut(),
+            &thread_id_string,
+            /*runtime_capacity*/ None,
+        )
+        .await?;
         let record = insert_queued_record(
             transaction.as_mut(),
             thread_id,

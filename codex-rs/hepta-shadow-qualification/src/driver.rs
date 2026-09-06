@@ -147,7 +147,7 @@ where
         self.send_control(
             AppStage::NeedInitialize,
             AppStage::NeedInitialized,
-            1,
+            /*sequence*/ 1,
             &wire,
         )
         .await
@@ -158,7 +158,7 @@ where
         self.send_control(
             AppStage::NeedInitialized,
             AppStage::NeedThreadStart,
-            2,
+            /*sequence*/ 2,
             &wire,
         )
         .await
@@ -177,8 +177,13 @@ where
                 "sandbox": "workspace-write",
             },
         }))?;
-        self.send_control(AppStage::NeedThreadStart, AppStage::NeedTurn(1), 3, &wire)
-            .await
+        self.send_control(
+            AppStage::NeedThreadStart,
+            AppStage::NeedTurn(1),
+            /*sequence*/ 3,
+            &wire,
+        )
+        .await
     }
 
     pub async fn start_turn(
@@ -284,7 +289,7 @@ where
         self.send_control(
             McpStage::NeedInitialize,
             McpStage::NeedInitialized,
-            1,
+            /*sequence*/ 1,
             &wire,
         )
         .await
@@ -295,17 +300,28 @@ where
             "jsonrpc": "2.0",
             "method": "notifications/initialized",
         }))?;
-        self.send_control(McpStage::NeedInitialized, McpStage::NeedFirstCall, 2, &wire)
-            .await
+        self.send_control(
+            McpStage::NeedInitialized,
+            McpStage::NeedFirstCall,
+            /*sequence*/ 2,
+            &wire,
+        )
+        .await
     }
 
     pub async fn start_thread(&mut self) -> Result<DurablePreSendToken, QualificationError> {
         if self.stage != McpStage::NeedFirstCall {
             return Err(state("first MCP tools/call request is out of order"));
         }
-        let wire = mcp_sample_request(1, &self.expected_work_directory, None)?;
+        let wire = mcp_sample_request(
+            /*ordinal*/ 1,
+            &self.expected_work_directory,
+            /*thread_id*/ None,
+        )?;
         let token = self.observer.record_mcp(&wire)?;
-        if let Err(error) = persist_outbound(self.observer, Surface::Mcp, 3, &wire) {
+        if let Err(error) =
+            persist_outbound(self.observer, Surface::Mcp, /*sequence*/ 3, &wire)
+        {
             self.fail();
             return Err(error);
         }
@@ -324,9 +340,15 @@ where
         if self.stage != McpStage::NeedSecondCall {
             return Err(state("second MCP tools/call request is out of order"));
         }
-        let wire = mcp_sample_request(2, &self.expected_work_directory, Some(thread_id))?;
+        let wire = mcp_sample_request(
+            /*ordinal*/ 2,
+            &self.expected_work_directory,
+            Some(thread_id),
+        )?;
         let token = self.observer.record_mcp(&wire)?;
-        if let Err(error) = persist_outbound(self.observer, Surface::Mcp, 4, &wire) {
+        if let Err(error) =
+            persist_outbound(self.observer, Surface::Mcp, /*sequence*/ 4, &wire)
+        {
             self.fail();
             return Err(error);
         }

@@ -215,8 +215,8 @@ impl MatrixDurableStore {
                     &mut transaction,
                     ChangeKind::RoomBound,
                     Some(&draft.room_id),
-                    None,
-                    None,
+                    /*event_id*/ None,
+                    /*txn_id*/ None,
                     draft.changed_at_ms,
                 )
                 .await?;
@@ -296,8 +296,8 @@ impl MatrixDurableStore {
                     &mut transaction,
                     ChangeKind::RoomBound,
                     Some(&draft.room_id),
-                    None,
-                    None,
+                    /*event_id*/ None,
+                    /*txn_id*/ None,
                     draft.changed_at_ms,
                 )
                 .await?;
@@ -435,8 +435,8 @@ impl MatrixDurableStore {
             &mut transaction,
             ChangeKind::RoomThreadBound,
             Some(&draft.room_id),
-            None,
-            None,
+            /*event_id*/ None,
+            /*txn_id*/ None,
             draft.changed_at_ms,
         )
         .await?;
@@ -710,7 +710,7 @@ impl MatrixDurableStore {
             ChangeKind::InboxAccepted,
             Some(&draft.room_id),
             Some(&draft.event_id),
-            None,
+            /*txn_id*/ None,
             draft.received_at_ms,
         )
         .await?;
@@ -764,7 +764,7 @@ impl MatrixDurableStore {
             ChangeKind::InboxProcessed,
             Some(&existing.room_id),
             Some(event_id),
-            None,
+            /*txn_id*/ None,
             processed_at_ms,
         )
         .await?;
@@ -853,7 +853,7 @@ impl MatrixDurableStore {
             ChangeKind::InboxDispatchBegun,
             Some(&inbox.room_id),
             Some(event_id),
-            None,
+            /*txn_id*/ None,
             begun_at_ms,
         )
         .await?;
@@ -940,7 +940,7 @@ impl MatrixDurableStore {
             ChangeKind::InboxDispatchQueued,
             Some(&existing.room_id),
             Some(&draft.event_id),
-            None,
+            /*txn_id*/ None,
             draft.queued_at_ms,
         )
         .await?;
@@ -1047,7 +1047,7 @@ impl MatrixDurableStore {
             ChangeKind::InboxDispatchAdmitted,
             Some(&existing.room_id),
             Some(&draft.event_id),
-            None,
+            /*txn_id*/ None,
             draft.admitted_at_ms,
         )
         .await?;
@@ -1126,7 +1126,7 @@ impl MatrixDurableStore {
             ChangeKind::InboxProcessed,
             Some(&existing.room_id),
             Some(&draft.event_id),
-            None,
+            /*txn_id*/ None,
             completed_at_ms,
         )
         .await?;
@@ -1299,7 +1299,7 @@ impl MatrixDurableStore {
                 &mut transaction,
                 ChangeKind::OutboxCoalesced,
                 Some(&draft.room_id),
-                None,
+                /*event_id*/ None,
                 Some(&draft.txn_id),
                 draft.created_at_ms,
             )
@@ -1340,7 +1340,7 @@ impl MatrixDurableStore {
                 &mut transaction,
                 ChangeKind::OutboxCoalesced,
                 Some(&draft.room_id),
-                None,
+                /*event_id*/ None,
                 Some(&draft.txn_id),
                 draft.created_at_ms,
             )
@@ -1419,7 +1419,7 @@ impl MatrixDurableStore {
             &mut transaction,
             ChangeKind::OutboxEnqueued,
             Some(&draft.room_id),
-            None,
+            /*event_id*/ None,
             Some(&draft.txn_id),
             draft.created_at_ms,
         )
@@ -1664,7 +1664,7 @@ impl MatrixDurableStore {
                         &mut transaction,
                         ChangeKind::OutboxFailed,
                         Some(&record.room_id),
-                        None,
+                        /*event_id*/ None,
                         Some(&record.stable_txn_id),
                         now_ms,
                     )
@@ -1697,7 +1697,7 @@ impl MatrixDurableStore {
                 &mut transaction,
                 ChangeKind::OutboxClaimed,
                 Some(&record.room_id),
-                None,
+                /*event_id*/ None,
                 Some(&record.stable_txn_id),
                 now_ms,
             )
@@ -2658,7 +2658,7 @@ impl MatrixDurableStore {
             next_cursor: 1,
             latest_cursor: 1,
         }
-        .validate_after(0)
+        .validate_after(/*after_cursor*/ 0)
         .map_err(|_| MatrixDurableError::Invalid)?;
         let event_json = serde_json::to_string(&kind).map_err(|_| MatrixDurableError::Invalid)?;
         if event_json.len() > 8_192 {

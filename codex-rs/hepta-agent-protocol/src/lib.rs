@@ -428,8 +428,8 @@ impl HostTurnAuthorityBinding {
         if self.schema_version != HOST_TURN_AUTHORITY_BINDING_SCHEMA_VERSION {
             return Err("unsupported host turn authority binding schema".to_string());
         }
-        validate_protocol_text(&self.lease_id, "lease id", 512)?;
-        validate_protocol_text(&self.fencing_token, "fencing token", 256)?;
+        validate_protocol_text(&self.lease_id, "lease id", /*max_bytes*/ 512)?;
+        validate_protocol_text(&self.fencing_token, "fencing token", /*max_bytes*/ 256)?;
         if self.authority_epoch == 0 {
             return Err("authority epoch must be non-zero".to_string());
         }

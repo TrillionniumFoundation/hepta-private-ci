@@ -262,8 +262,8 @@ pub fn consume_local_rehydration_runtime_plan(
     // convenience predicate, while H15 requires cryptographic validation.
     plan.validate()?;
     validate_runtime_plan_digests(plan)?;
-    validate_text(turn_id, "turn id", 256)?;
-    validate_text(lease_id, "lease id", 512)?;
+    validate_text(turn_id, "turn id", /*max_bytes*/ 256)?;
+    validate_text(lease_id, "lease id", /*max_bytes*/ 512)?;
     validate_fence(fence)?;
 
     let expected_turn = identity_digest(H13_BINDING_DOMAIN, b"turn", turn_id);
@@ -454,7 +454,11 @@ fn validate_fence(fence: &CompactFence) -> Result<(), LocalRehydrationReplayErro
             "fence epochs and generation must be non-zero".to_string(),
         ));
     }
-    validate_text(&fence.fencing_token, "fencing token", 256)
+    validate_text(
+        &fence.fencing_token,
+        "fencing token",
+        /*max_bytes*/ 256,
+    )
 }
 
 fn validate_text(
