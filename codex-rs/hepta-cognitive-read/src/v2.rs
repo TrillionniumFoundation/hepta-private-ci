@@ -589,3 +589,7 @@ impl<'a> Decoder<'a> {
         self.remaining() == 0
     }
 }
+
+#[cfg(test)]
+#[path = "v2_tests.rs"]
+mod tests;

@@ -72,6 +72,24 @@ fn read_is_snapshot_bound_and_authority_free() {
 }
 
 #[test]
+fn v1_receipt_digest_domain_remains_stable() {
+    let snapshot = snapshot();
+    let request = ReadRequest {
+        snapshot_digest: snapshot.snapshot_digest,
+        allowed_kinds: vec![MemoryKind::Fact],
+        maximum_results: 8,
+        include_tombstones: false,
+    };
+    let Ok(receipt) = read(&snapshot, request) else {
+        panic!("bounded read must succeed");
+    };
+    assert_eq!(
+        receipt.receipt_digest.to_string(),
+        "dec1d1d4e4feed22aeca11dec113c3ed9e6753fdd7df6bd3cd1a176290fdc8ae"
+    );
+}
+
+#[test]
 fn stale_snapshot_is_rejected() {
     let snapshot = snapshot();
     let request = ReadRequest {
