@@ -37,6 +37,11 @@ use crate::cognitive_model::SourceEventId;
 use crate::cognitive_model::SourceRevisionId;
 use crate::framing::frame_part;
 
+#[path = "cognitive_store_recovery.rs"]
+mod recovery;
+pub use recovery::CognitiveRecoveryAnchor;
+pub use recovery::CognitiveRecoveryRequirement;
+
 const COGNITIVE_DB_FILENAME: &str = "cognitive_1.sqlite3";
 static MIGRATOR: sqlx::migrate::Migrator = sqlx::migrate!("./migrations");
 
@@ -188,6 +193,10 @@ impl CognitiveStore {
         }
     }
 
+    /// Initialize or migrate the legacy store and verify its internal integrity.
+    /// This entry point has no independent current-cut witness and cannot detect
+    /// rollback to an internally valid old backup. Hosts requiring that guarantee
+    /// must use `open_with_recovery` and never fall back here on recovery failure.
     pub async fn open(layout: &HeptaAgentLayout) -> Result<Self, CognitiveStoreError> {
         let root = layout.cognitive_root();
         create_private_directory(root)?;

@@ -104,6 +104,8 @@ pub use cognitive_retrieval::SourceCitationRecord;
 pub use cognitive_retrieval::SourceRevalidationBinding;
 pub use cognitive_runtime::CognitiveRuntime;
 pub use cognitive_runtime::CognitiveUnavailableReason;
+pub use cognitive_store::CognitiveRecoveryAnchor;
+pub use cognitive_store::CognitiveRecoveryRequirement;
 pub use cognitive_store::CognitiveStore;
 pub use cognitive_store::CognitiveStoreError;
 pub use compact_persistence::COMPACT_PERSISTENCE_EXTERNAL_EFFECTS;
