@@ -1,0 +1,85 @@
+name: Hepta module registry shape discovery
+
+on:
+  push:
+    branches:
+      - ops/hepta-module-shape-discovery-20260906
+    paths:
+      - .github/workflows/hepta-module-shape-discovery.yml
+
+permissions:
+  contents: read
+
+jobs:
+  compute-shape:
+    name: Compute canonical module-registry recursive shape
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Check out exact discovery source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+          fetch-depth: 1
+      - name: Compute current and registered shape digests
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$GITHUB_REPOSITORY" = TrillionniumFoundation/hepta-private-ci
+          test "$GITHUB_REF" = refs/heads/ops/hepta-module-shape-discovery-20260906
+          python3 - <<'PY'
+          from __future__ import annotations
+
+          import hashlib
+          import json
+          from pathlib import Path
+
+          def reject_duplicate_keys(pairs):
+              value = {}
+              for key, item in pairs:
+                  if key in value:
+                      raise ValueError(f"duplicate JSON key: {key}")
+                  value[key] = item
+              return value
+
+          def load(path: str):
+              return json.loads(
+                  Path(path).read_text(encoding="utf-8"),
+                  object_pairs_hook=reject_duplicate_keys,
+              )
+
+          def shape_paths(value, path: str = "$") -> set[str]:
+              result = {path}
+              if isinstance(value, dict):
+                  for key, child in value.items():
+                      result |= shape_paths(child, f"{path}.{key}")
+              elif isinstance(value, list):
+                  result.add(path + "[]")
+                  for child in value:
+                      result |= shape_paths(child, path + "[]")
+              else:
+                  result.add(path + ":" + type(value).__name__)
+              return result
+
+          modules = load("docs/modules/MODULES.json")
+          system = load("docs/governance/DOCUMENT_SYSTEM.json")
+          calculated = hashlib.sha256(
+              "\n".join(sorted(shape_paths(modules))).encode("utf-8")
+          ).hexdigest()
+          registered = next(
+              row["recursiveShapeSha256"]
+              for row in system["registryShapeClosures"]
+              if row["path"] == "docs/modules/MODULES.json"
+          )
+          print(json.dumps({
+              "schema": "hepta.module-shape-discovery.v1",
+              "source_commit": __import__("os").environ["GITHUB_SHA"],
+              "path": "docs/modules/MODULES.json",
+              "registered_recursive_shape_sha256": registered,
+              "calculated_recursive_shape_sha256": calculated,
+              "matches": registered == calculated,
+              "authority_granted": False,
+          }, sort_keys=True))
+          if registered == calculated:
+              raise SystemExit("discovery unexpectedly found no drift")
+          PY
