@@ -473,14 +473,19 @@ pub async fn set_thread_memory_mode(sess: &Arc<Session>, sub_id: String, mode: T
 }
 
 pub(super) async fn shutdown_session_runtime(sess: &Arc<Session>) {
-    shutdown_session_runtime_excluding(sess, None).await;
+    shutdown_session_runtime_excluding(sess, /*excluded_terminalization*/ None).await;
 }
 
 pub(super) async fn shutdown_session_runtime_excluding(
     sess: &Arc<Session>,
     excluded_terminalization: Option<&std::sync::Arc<()>>,
 ) {
-    shutdown_session_runtime_excluding_with_suspension(sess, excluded_terminalization, None).await;
+    shutdown_session_runtime_excluding_with_suspension(
+        sess,
+        excluded_terminalization,
+        /*excluded_suspension*/ None,
+    )
+    .await;
 }
 
 pub(super) async fn shutdown_session_runtime_excluding_with_suspension(

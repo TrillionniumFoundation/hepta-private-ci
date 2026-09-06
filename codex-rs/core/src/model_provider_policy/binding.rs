@@ -284,7 +284,11 @@ pub(crate) fn prepare_model_provider_policy<L: Serialize, W: Serialize>(
         previous_response_id,
         generate,
     )?
-    .finalize(logical_request, wire_semantic, None)
+    .finalize(
+        logical_request,
+        wire_semantic,
+        /*ephemeral_input*/ None,
+    )
 }
 
 /// Freezes retry-stable identity before attempt-local input is resolved.

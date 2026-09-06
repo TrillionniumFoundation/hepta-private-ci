@@ -1021,7 +1021,7 @@ impl Session {
     }
 
     pub(crate) fn has_pending_start_transition(&self) -> bool {
-        self.has_pending_start_transition_except(None)
+        self.has_pending_start_transition_except(/*ignored_identity*/ None)
     }
 
     pub(crate) fn has_pending_start_transition_except(
@@ -1043,7 +1043,7 @@ impl Session {
     /// cannot admit history mutation or a replacement in the clear→publish
     /// window.
     pub(crate) fn has_pending_task_terminalization(&self) -> bool {
-        self.has_pending_task_terminalization_except(None)
+        self.has_pending_task_terminalization_except(/*ignored_identity*/ None)
     }
 
     pub(crate) fn has_pending_task_terminalization_except(
@@ -1064,7 +1064,7 @@ impl Session {
     /// transition drain, while all normal starts also respect task
     /// terminalizers that have already cleared the active slot.
     pub(crate) fn has_pending_admission_fence(&self) -> bool {
-        self.has_pending_admission_fence_except(None)
+        self.has_pending_admission_fence_except(/*ignored_terminalization*/ None)
     }
 
     pub(crate) fn has_pending_admission_fence_except(
@@ -1549,8 +1549,8 @@ impl Session {
                 attach_epoch,
                 TaskTerminalizationKind::Suspend,
                 Some(Arc::clone(&handoff_slot)),
-                None,
-                None,
+                /*abort_handoff*/ None,
+                /*finish_handoff*/ None,
             )?;
         let task = Self::take_task_for_terminalization_locked(
             active_turn,
@@ -2074,9 +2074,9 @@ impl Session {
             input,
             task,
             mailbox_parent_provenance,
-            None,
-            None,
-            None,
+            /*recovery_history*/ None,
+            /*start_reservation*/ None,
+            /*terminalization_owner*/ None,
         )
         .await;
     }
@@ -2095,8 +2095,8 @@ impl Session {
             task,
             mailbox_parent_provenance,
             recovery_history,
-            None,
-            None,
+            /*start_reservation*/ None,
+            /*terminalization_owner*/ None,
         )
         .await;
     }
@@ -2114,9 +2114,9 @@ impl Session {
             input,
             task,
             mailbox_parent_provenance,
-            None,
+            /*recovery_history*/ None,
             Some(start_reservation),
-            None,
+            /*terminalization_owner*/ None,
         )
         .await
     }
@@ -2137,7 +2137,7 @@ impl Session {
             mailbox_parent_provenance,
             recovery_history,
             Some(start_reservation),
-            None,
+            /*terminalization_owner*/ None,
         )
         .await
     }
@@ -2357,7 +2357,7 @@ impl Session {
             let Some(turn) = active.as_ref() else {
                 drop(active);
                 self.restore_recovery_history_if_current(
-                    None,
+                    /*turn_state*/ None,
                     &start_transition_identity,
                     &mut recovery_history_restore,
                 )
@@ -2368,7 +2368,7 @@ impl Session {
             if turn.task.is_some() || turn.task_terminalization.is_some() {
                 drop(active);
                 self.restore_recovery_history_if_current(
-                    None,
+                    /*turn_state*/ None,
                     &start_transition_identity,
                     &mut recovery_history_restore,
                 )
@@ -2379,7 +2379,7 @@ impl Session {
             let Some(transition) = turn.start_transition.as_ref() else {
                 drop(active);
                 self.restore_recovery_history_if_current(
-                    None,
+                    /*turn_state*/ None,
                     &start_transition_identity,
                     &mut recovery_history_restore,
                 )
@@ -2390,7 +2390,7 @@ impl Session {
             if !Arc::ptr_eq(&transition.identity, &start_transition_identity) {
                 drop(active);
                 self.restore_recovery_history_if_current(
-                    None,
+                    /*turn_state*/ None,
                     &start_transition_identity,
                     &mut recovery_history_restore,
                 )
@@ -2415,7 +2415,7 @@ impl Session {
         let Some(turn) = active.as_mut() else {
             drop(active);
             self.restore_recovery_history_if_current(
-                None,
+                /*turn_state*/ None,
                 &start_transition_identity,
                 &mut recovery_history_restore,
             )
@@ -2426,7 +2426,7 @@ impl Session {
         if turn.task.is_some() || turn.task_terminalization.is_some() {
             drop(active);
             self.restore_recovery_history_if_current(
-                None,
+                /*turn_state*/ None,
                 &start_transition_identity,
                 &mut recovery_history_restore,
             )
@@ -2438,7 +2438,7 @@ impl Session {
             let Some(transition) = turn.start_transition.as_ref() else {
                 drop(active);
                 self.restore_recovery_history_if_current(
-                    None,
+                    /*turn_state*/ None,
                     &start_transition_identity,
                     &mut recovery_history_restore,
                 )
@@ -2449,7 +2449,7 @@ impl Session {
             if !Arc::ptr_eq(&transition.identity, &start_transition_identity) {
                 drop(active);
                 self.restore_recovery_history_if_current(
-                    None,
+                    /*turn_state*/ None,
                     &start_transition_identity,
                     &mut recovery_history_restore,
                 )
@@ -2640,7 +2640,7 @@ impl Session {
             session
                 .maybe_start_turn_for_pending_work_with_sub_id_and_owner(
                     uuid::Uuid::new_v4().to_string(),
-                    None,
+                    /*terminalization_owner*/ None,
                 )
                 .await;
         })
@@ -2670,8 +2670,10 @@ impl Session {
         self: &Arc<Self>,
         sub_id: String,
     ) {
-        self.maybe_start_turn_for_pending_work_with_sub_id_and_owner(sub_id, None)
-            .await;
+        self.maybe_start_turn_for_pending_work_with_sub_id_and_owner(
+            sub_id, /*terminalization_owner*/ None,
+        )
+        .await;
     }
 
     async fn maybe_start_turn_for_pending_work_with_sub_id_and_owner(
@@ -2726,7 +2728,7 @@ impl Session {
                 Vec::new(),
                 RegularTask::new(TurnRunOrigin::NewTurn),
                 MailboxParentProvenance::Attribute,
-                None,
+                /*recovery_history*/ None,
                 Some(start_reservation_owner.handle().clone()),
                 terminalization_owner,
             )
@@ -3095,8 +3097,8 @@ impl Session {
                 &task_context,
                 attach_epoch,
                 TaskTerminalizationKind::Finish,
-                None,
-                None,
+                /*suspension_handoff*/ None,
+                /*abort_handoff*/ None,
                 Some(Arc::clone(&slot)),
             )
             .expect("task terminalization claim should be unique");
@@ -3816,9 +3818,9 @@ impl Session {
                 &task_context,
                 attach_epoch,
                 TaskTerminalizationKind::Abort,
-                None,
+                /*suspension_handoff*/ None,
                 Some(Arc::clone(&slot)),
-                None,
+                /*finish_handoff*/ None,
             )
             .expect("task terminalization claim should be unique");
         let task = Self::take_task_for_terminalization_locked(
@@ -3910,7 +3912,12 @@ impl Session {
             _timer: None,
         };
         let abort_outcome = self
-            .handle_task_abort(&mut placeholder, reason.clone(), None, None)
+            .handle_task_abort(
+                &mut placeholder,
+                reason.clone(),
+                /*recovery_seed*/ None,
+                /*recovery_authority*/ None,
+            )
             .await;
         self.emit_turn_abort_lifecycle(reason.clone(), turn_context.extension_data.as_ref())
             .await;
