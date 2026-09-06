@@ -5,7 +5,6 @@ from __future__ import annotations
 
 import json
 import re
-import subprocess
 from collections import Counter
 from pathlib import Path
 from typing import Any
@@ -115,8 +114,23 @@ def _declared_roots(module: dict[str, Any]) -> tuple[str, ...]:
     return tuple(roots)
 
 
-def _write_json(path: Path, document: dict[str, Any]) -> bool:
-    rendered = json.dumps(document, indent=2, ensure_ascii=False) + "\n"
+def _write_json(
+    path: Path,
+    document: dict[str, Any],
+    *,
+    compact: bool = False,
+) -> bool:
+    if compact:
+        rendered = (
+            json.dumps(
+                document,
+                ensure_ascii=False,
+                separators=(",", ":"),
+            )
+            + "\n"
+        )
+    else:
+        rendered = json.dumps(document, indent=2, ensure_ascii=False) + "\n"
     current = path.read_text(encoding="utf-8") if path.exists() else ""
     if current == rendered:
         return False
@@ -258,7 +272,7 @@ def _build_audit(
         "schemaVersion": 1,
         "planId": "HEPTA-GLOBAL-MODULAR-DEVELOPMENT-PLAN",
         "planVersion": "8.0.0",
-        "candidateBranch": "codex/hepta-v8-gap-closure-20260905",
+        "candidateIdentity": "resolved_by_external_exact_candidate_receipt",
         "implementedModuleCount": len(SOURCE_ROOTS),
         "implementedModules": [
             {
@@ -406,18 +420,13 @@ def normalize() -> bool:
         readiness_gaps,
         bootstrap_packages,
     )
-    if _write_json(AUDIT_PATH, audit):
+    if _write_json(AUDIT_PATH, audit, compact=True):
         changed_paths.append(AUDIT_PATH)
 
     for path in technical_paths:
         if path not in changed_paths:
             changed_paths.append(path)
 
-    if changed_paths:
-        subprocess.run(
-            ["git", "-C", str(ROOT), "add", "--", *map(str, changed_paths)],
-            check=True,
-        )
     return bool(changed_paths)
 
 
