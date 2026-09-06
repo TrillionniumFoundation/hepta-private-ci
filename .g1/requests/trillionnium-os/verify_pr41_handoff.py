@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""Verify the PR #41 unsigned handoff and trusted availability-probe boundaries."""
-
+"""Verify the PR #41 unsigned handoff and trusted probe boundaries."""
 from __future__ import annotations
 
 import argparse
@@ -13,13 +12,6 @@ import subprocess
 import sys
 from typing import Any
 
-PACKAGE_KEYS = {
-    "schema", "version", "package_id", "program_revision", "level",
-    "evidence_class", "status", "source", "subject", "lineage", "gaps",
-    "artifacts", "observations", "roles", "authorization", "created_at",
-    "expires_at", "retention_days", "claim_ceiling", "negative_claims",
-    "automatic_redispatch", "public_release", "holds",
-}
 EXPECTED_PACKAGE_ID = "sha256:03369d6115e587b0baf207c3d361689913853814465a8e881a2f617d98a62e39"
 EXPECTED_HEAD = "7e1e611e7299391cf3d4edc1ded322da0d023cc6"
 EXPECTED_MAIN = "968968046d69d000f1f9fe03683e92aa7903cf99"
@@ -35,10 +27,18 @@ BUNDLE_NAMES = (
 )
 ALLOWED_CHANGED_PATHS = {
     *(f".g1/requests/trillionnium-os/{name}" for name in BUNDLE_NAMES),
+    ".g1/requests/trillionnium-os/pr41-l1-attestation-request.manifest.json",
     ".g1/requests/trillionnium-os/verify_pr41_handoff.py",
     ".github/workflows/self-hosted-desktop-availability.yml",
     ".github/workflows/self-hosted-fleet-availability.yml",
     ".github/workflows/trillionnium-os-attestation-handoff-check.yml",
+}
+PACKAGE_KEYS = {
+    "schema", "version", "package_id", "program_revision", "level",
+    "evidence_class", "status", "source", "subject", "lineage", "gaps",
+    "artifacts", "observations", "roles", "authorization", "created_at",
+    "expires_at", "retention_days", "claim_ceiling", "negative_claims",
+    "automatic_redispatch", "public_release", "holds",
 }
 
 
@@ -70,8 +70,8 @@ def load_json(path: Path) -> tuple[Any, bytes]:
         value = json.loads(
             raw,
             object_pairs_hook=reject_pairs,
-            parse_constant=lambda value: (_ for _ in ()).throw(
-                VerificationError(f"non-finite JSON value: {value}")
+            parse_constant=lambda item: (_ for _ in ()).throw(
+                VerificationError(f"non-finite JSON value: {item}")
             ),
         )
     except (UnicodeError, json.JSONDecodeError) as error:
@@ -81,10 +81,7 @@ def load_json(path: Path) -> tuple[Any, bytes]:
 
 def canonical(value: Any) -> bytes:
     return json.dumps(
-        value,
-        ensure_ascii=True,
-        allow_nan=False,
-        sort_keys=True,
+        value, ensure_ascii=True, allow_nan=False, sort_keys=True,
         separators=(",", ":"),
     ).encode("utf-8")
 
@@ -93,55 +90,55 @@ def digest(raw: bytes) -> str:
     return hashlib.sha256(raw).hexdigest()
 
 
+def git(root: Path, *args: str) -> str:
+    completed = subprocess.run(
+        ["git", "--no-replace-objects", "-C", str(root), *args],
+        check=True, capture_output=True, text=True, timeout=30,
+        env={"PATH": "/usr/local/bin:/usr/bin:/bin", "LC_ALL": "C", "LANG": "C"},
+    )
+    return completed.stdout
+
+
 def verify_changed_paths(root: Path, base: str, head: str) -> None:
     require(re.fullmatch(r"[0-9a-f]{40}", base) is not None, "invalid base SHA")
     require(re.fullmatch(r"[0-9a-f]{40}", head) is not None, "invalid head SHA")
-    actual_head = subprocess.run(
-        ["git", "--no-replace-objects", "-C", str(root), "rev-parse", "HEAD"],
-        check=True, capture_output=True, text=True, timeout=30,
-    ).stdout.strip()
-    require(actual_head == head, "checkout is not the exact PR head")
-    changed = subprocess.run(
-        [
-            "git", "--no-replace-objects", "-C", str(root), "diff",
-            "--name-only", "--diff-filter=ACDMRTUXB", f"{base}...{head}",
-        ],
-        check=True, capture_output=True, text=True, timeout=30,
-    ).stdout.splitlines()
-    require(set(changed) == ALLOWED_CHANGED_PATHS, f"changed-path set drifted: {sorted(changed)}")
-    status = subprocess.run(
-        ["git", "--no-replace-objects", "-C", str(root), "status", "--porcelain=v1"],
-        check=True, capture_output=True, text=True, timeout=30,
-    ).stdout
-    require(status == "", "verification checkout is not clean")
+    require(git(root, "rev-parse", "HEAD").strip() == head, "checkout is not exact head")
+    changed = git(
+        root, "diff", "--name-only", "--diff-filter=ACDMRTUXB", f"{base}...{head}"
+    ).splitlines()
+    require(set(changed) == ALLOWED_CHANGED_PATHS, f"changed paths drifted: {sorted(changed)}")
+    require(len(changed) == len(set(changed)), "changed paths contain duplicates")
+    require(git(root, "status", "--porcelain=v1", "--untracked-files=all") == "",
+            "checkout is not clean")
 
 
-def verify_workflow_text(root: Path) -> None:
+def verify_workflows(root: Path) -> None:
     dispatcher = root / ".github/workflows/trillionnium-os-runner-probe-dispatch.yml"
     inventory = root / ".github/workflows/trillionnium-os-r5-capability-inventory-v30.yml"
-    require(not dispatcher.exists(), "candidate-controlled dispatcher still exists")
-    require(not inventory.exists(), "candidate-controlled self-hosted inventory still exists")
+    require(not dispatcher.exists(), "candidate dispatcher still exists")
+    require(not inventory.exists(), "candidate self-hosted inventory still exists")
 
     desktop = (root / ".github/workflows/self-hosted-desktop-availability.yml").read_text()
     fleet = (root / ".github/workflows/self-hosted-fleet-availability.yml").read_text()
     check = (root / ".github/workflows/trillionnium-os-attestation-handoff-check.yml").read_text()
-    workflows = {"desktop": desktop, "fleet": fleet, "handoff-check": check}
-    for name, text in workflows.items():
+    for name, text in {"desktop": desktop, "fleet": fleet, "check": check}.items():
         require("actions: write" not in text, f"{name} grants actions:write")
-        require("/dispatches" not in text, f"{name} can dispatch another workflow")
+        require("/dispatches" not in text, f"{name} dispatches workflows")
         require("curl --request POST" not in text, f"{name} contains a write request")
-    require("group: trillionnium-android-gpu" in desktop, "desktop is not pre-bound to its runner group")
+    require("group: trillionnium-android-gpu" in desktop,
+            "desktop is not pre-bound to its runner group")
     require("runs-on: [self-hosted" not in check, "candidate check targets self-hosted")
-    require("\n  push:" not in desktop and "\n  push:" not in fleet, "availability probe is push-triggered")
+    require("\n  push:" not in desktop and "\n  push:" not in fleet,
+            "availability probe is push-triggered")
 
+    grammar = '[[ "$PROBE_REASON" =~ ^[A-Za-z0-9][A-Za-z0-9._:/-]{0,127}$ ]]'
     for name, text, count in (("desktop", desktop, 1), ("fleet", fleet, 3)):
-        occurrences = [line for line in text.splitlines() if "${{ inputs.reason }}" in line]
-        require(len(occurrences) == count, f"{name} reason expression count drifted")
-        require(all("PROBE_REASON:" in line for line in occurrences),
+        expression_lines = [line for line in text.splitlines() if "${{ inputs.reason }}" in line]
+        require(len(expression_lines) == count, f"{name} reason expression count drifted")
+        require(all("PROBE_REASON:" in line for line in expression_lines),
                 f"{name} interpolates reason into shell source")
-        require(text.count('[[ "$PROBE_REASON" =~ ^[A-Za-z0-9][A-Za-z0-9._:/-]{0,127}$ ]]') == count,
-                f"{name} closed reason grammar drifted")
-        require(text.count('"$PROBE_REASON"') >= count, f"{name} does not quote runtime reason")
+        require(text.count(grammar) == count, f"{name} reason grammar drifted")
+        require(text.count('"$PROBE_REASON"') >= count, f"{name} reason is not quoted")
 
     positives = ("operator-check", "trillionnium-os-promoted-main-968968", "manual:TICKET/ABC-123")
     negatives = (
@@ -160,29 +157,31 @@ def verify_bundle() -> None:
 
     require(isinstance(package, dict) and set(package) == PACKAGE_KEYS, "package keys drifted")
     require(package["schema"] == "org.trillionnium.g1.evidence-package.v2", "package schema drifted")
-    require(package["status"] == "COMPLETE" and package["level"] == "L1", "package status/level drifted")
+    require(package["status"] == "COMPLETE" and package["level"] == "L1",
+            "package status or level drifted")
     require(package["source"]["commit"] == EXPECTED_HEAD, "package source head drifted")
-    require(package["observations"]["protected_main_commit"] == EXPECTED_MAIN, "protected main drifted")
+    require(package["observations"]["protected_main_commit"] == EXPECTED_MAIN,
+            "protected main drifted")
     require(package["automatic_redispatch"] is False, "automatic redispatch widened")
     require(package["public_release"] is False, "public release widened")
     preimage = dict(package)
     preimage["package_id"] = ""
-    calculated_id = f"sha256:{digest(canonical(preimage))}"
-    require(calculated_id == package["package_id"] == EXPECTED_PACKAGE_ID, "package ID mismatch")
+    require(f"sha256:{digest(canonical(preimage))}" == package["package_id"] == EXPECTED_PACKAGE_ID,
+            "package ID mismatch")
 
     observations = package["observations"]
-    require(observations["availability_probe_dispatch_count"] == 2, "probe count not recorded")
+    require(observations["availability_probe_dispatch_count"] == 2, "probe count drifted")
     require(observations["availability_probe_dispatch_workflow_run_ids"] == EXPECTED_PROBE_RUNS,
             "probe run identities drifted")
     require(observations["candidate_controlled_dispatcher_retired"] is True,
             "candidate dispatcher is not retired")
     require(observations["candidate_controlled_self_hosted_inventory_cancelled_before_allocation"] is True,
-            "candidate target inventory cancellation is not bound")
+            "candidate inventory cancellation is not bound")
     for field in (
         "automatic_redispatch_count", "target_evidence_capture_dispatch_count",
         "target_evidence_package_count", "target_authorization_nonce_consumed_count",
     ):
-        require(observations[field] == 0 and not isinstance(observations[field], bool),
+        require(type(observations[field]) is int and observations[field] == 0,
                 f"{field} is not integer zero")
     require(observations["probe_dispatch_was_evidence_capture"] is False,
             "availability probe was promoted to evidence")
@@ -201,21 +200,23 @@ def verify_bundle() -> None:
             "cancelled inventory identity missing")
 
     require(validation["package_id"] == package["package_id"], "validation package ID mismatch")
-    require(validation["package_file_sha256"] == digest(package_raw), "validation package digest mismatch")
-    require(validation["request_file_sha256"] == digest(request_raw), "validation request digest mismatch")
+    require(validation["package_file_sha256"] == digest(package_raw),
+            "validation package digest mismatch")
+    require(validation["request_file_sha256"] == digest(request_raw),
+            "validation request digest mismatch")
     require(validation["promotable"] is False, "validation promotes unsigned request")
 
     files = manifest["files"]
     require(set(files) == set(BUNDLE_NAMES), "manifest file set drifted")
-    actual_raw = {
+    actual = {
         "PR41_L1_ATTESTATION_REQUEST_README.md":
             (REQUEST_ROOT / "PR41_L1_ATTESTATION_REQUEST_README.md").read_bytes(),
         "pr41-l1-attestation-request.UNSIGNED.json": request_raw,
         "pr41-l1-attestation-request.validation.json": validation_raw,
         "pr41-l1-source-qualification.json": package_raw,
     }
-    for name, raw in actual_raw.items():
-        require(files[name]["bytes"] == len(raw), f"manifest byte count mismatch: {name}")
+    for name, raw in actual.items():
+        require(files[name]["bytes"] == len(raw), f"manifest size mismatch: {name}")
         require(files[name]["sha256"] == digest(raw), f"manifest digest mismatch: {name}")
     require(manifest["status"] == "UNSIGNED_NOT_PROMOTABLE", "manifest status widened")
     require(manifest["promotion_authorized"] is False and manifest["public_release"] is False,
@@ -231,7 +232,7 @@ def main(argv: list[str]) -> int:
     try:
         root = args.root.resolve()
         verify_changed_paths(root, args.base, args.head)
-        verify_workflow_text(root)
+        verify_workflows(root)
         verify_bundle()
         print(json.dumps({
             "result": "PASS_UNSIGNED_HANDOFF_AND_PROBE_BOUNDARIES",
