@@ -1,5 +1,6 @@
 use std::error::Error;
 use std::fs;
+use std::path::Path;
 
 use codex_hepta_contracts::AgentId;
 use codex_hepta_matrix_protocol::MatrixSyncBatchV2;
@@ -27,9 +28,12 @@ use codex_hepta_matrix_store::RoomBindingDraft;
 use codex_hepta_matrix_store::RoomThreadBindingDraft;
 use codex_hepta_paths::HeptaAgentLayout;
 use codex_hepta_paths::HeptaFleetRoot;
-use codex_state::SqliteConfig;
-use codex_utils_absolute_path::AbsolutePathBuf;
 use pretty_assertions::assert_eq;
+use sqlx::SqlitePool;
+use sqlx::sqlite::SqliteConnectOptions;
+use sqlx::sqlite::SqliteJournalMode;
+use sqlx::sqlite::SqlitePoolOptions;
+use sqlx::sqlite::SqliteSynchronous;
 use tempfile::TempDir;
 
 type TestResult<T = ()> = Result<T, Box<dyn Error>>;
@@ -75,6 +79,22 @@ async fn store_and_room(temp: &TempDir, room_id: &MatrixRoomId) -> TestResult<Ma
         })
         .await?;
     Ok(store)
+}
+
+async fn open_hostile_fixture_pool(path: &Path) -> TestResult<SqlitePool> {
+    // These tests own the temporary database and deliberately inject hostile
+    // rows/schema after closing its owner. This is not a recovery backend;
+    // production path-based SQLite recovery must continue to fail closed.
+    let options = SqliteConnectOptions::new()
+        .filename(path)
+        .create_if_missing(false)
+        .journal_mode(SqliteJournalMode::Wal)
+        .synchronous(SqliteSynchronous::Full)
+        .foreign_keys(true);
+    Ok(SqlitePoolOptions::new()
+        .max_connections(1)
+        .connect_with(options)
+        .await?)
 }
 
 fn mutation(
@@ -1786,10 +1806,7 @@ async fn journal_saturation_is_terminal_but_preserves_the_deletion_reserve() -> 
     store.close().await;
 
     let database_path = store_layout.matrix_root().join("matrix_1.sqlite3");
-    let sqlite_home = AbsolutePathBuf::try_from(store_layout.matrix_root().to_path_buf())?;
-    let pool = SqliteConfig::from_sqlite_home(sqlite_home)
-        .open_existing_durable_evidence_pool(&database_path)
-        .await?;
+    let pool = open_hostile_fixture_pool(&database_path).await?;
     sqlx::query(
         "INSERT INTO matrix_sync_decisions_v2 (
             decision_seq, operation_id, decision_kind, decision_sha256, schema_version,
@@ -1863,10 +1880,7 @@ async fn journal_saturation_is_terminal_but_preserves_the_deletion_reserve() -> 
         vec![MatrixSyncMutationDispositionV2::Missing]
     );
     store.close().await;
-    let sqlite_home = AbsolutePathBuf::try_from(store_layout.matrix_root().to_path_buf())?;
-    let pool = SqliteConfig::from_sqlite_home(sqlite_home)
-        .open_existing_durable_evidence_pool(&database_path)
-        .await?;
+    let pool = open_hostile_fixture_pool(&database_path).await?;
     assert!(
         sqlx::query(
             "INSERT INTO matrix_sync_decision_outcomes_v2 (
@@ -1890,10 +1904,15 @@ async fn startup_rejects_same_name_counterfeit_v2_schema_objects() -> TestResult
     store.close().await;
 
     let database_path = store_layout.matrix_root().join("matrix_1.sqlite3");
-    let sqlite_home = AbsolutePathBuf::try_from(store_layout.matrix_root().to_path_buf())?;
-    let pool = SqliteConfig::from_sqlite_home(sqlite_home)
-        .open_existing_durable_evidence_pool(&database_path)
-        .await?;
+    let pool = open_hostile_fixture_pool(&database_path).await?;
+    // Restore the exact migration SQL: Rust line continuations strip leading
+    // spaces, which would change this store's intentionally exact fingerprint.
+    let original_index_sql: String = sqlx::query_scalar(
+        "SELECT sql FROM sqlite_schema
+         WHERE type = 'index' AND name = 'matrix_sync_mutations_v2_by_tombstone'",
+    )
+    .fetch_one(&pool)
+    .await?;
     sqlx::query("DROP INDEX matrix_sync_mutations_v2_by_tombstone")
         .execute(&pool)
         .await?;
@@ -1910,29 +1929,19 @@ async fn startup_rejects_same_name_counterfeit_v2_schema_objects() -> TestResult
         Err(MatrixDurableError::Corrupt)
     ));
 
-    let sqlite_home = AbsolutePathBuf::try_from(store_layout.matrix_root().to_path_buf())?;
-    let pool = SqliteConfig::from_sqlite_home(sqlite_home)
-        .open_existing_durable_evidence_pool(&database_path)
-        .await?;
+    let pool = open_hostile_fixture_pool(&database_path).await?;
     sqlx::query("DROP INDEX matrix_sync_mutations_v2_by_tombstone")
         .execute(&pool)
         .await?;
-    sqlx::query(
-        "CREATE INDEX matrix_sync_mutations_v2_by_tombstone\n\
-ON matrix_sync_mutations_v2(\n\
-    tombstone_scope_kind, tombstone_scope_id, received_at_ms, source_event_id\n\
-)",
-    )
-    .execute(&pool)
-    .await?;
+    // Captured from the fresh, verified owner schema before any hostile write.
+    sqlx::query(sqlx::AssertSqlSafe(original_index_sql))
+        .execute(&pool)
+        .await?;
     pool.close().await;
     let store = MatrixDurableStore::open(&store_layout, MatrixDurableConfig::default()).await?;
     store.close().await;
 
-    let sqlite_home = AbsolutePathBuf::try_from(store_layout.matrix_root().to_path_buf())?;
-    let pool = SqliteConfig::from_sqlite_home(sqlite_home)
-        .open_existing_durable_evidence_pool(&database_path)
-        .await?;
+    let pool = open_hostile_fixture_pool(&database_path).await?;
     sqlx::query("DROP TRIGGER matrix_sync_mutations_v2_no_update")
         .execute(&pool)
         .await?;
