@@ -50,7 +50,10 @@ pub(super) fn validate_input_structure(input: &LocalShadowInput) -> Result<u32, 
         (input.objective_digest, "objective"),
         (input.state_digest, "state"),
         (input.registry_snapshot_digest, "registry snapshot"),
-        (input.no_intervention.registry_digest, "no-intervention registry"),
+        (
+            input.no_intervention.registry_digest,
+            "no-intervention registry",
+        ),
     ] {
         if digest.is_zero() {
             return Err(invalid(InvalidInput::EmptyDigest(label)));

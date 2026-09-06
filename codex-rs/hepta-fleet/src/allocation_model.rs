@@ -112,13 +112,13 @@ impl LocalAllocationClaimBoundaryV1 {
     pub const fn denies(self, claim: LocalAllocationClaimV1) -> bool {
         match claim {
             LocalAllocationClaimV1::CompleteFleetView
-                | LocalAllocationClaimV1::FreshFleetView
-                | LocalAllocationClaimV1::AuthenticatedFleetView
-                | LocalAllocationClaimV1::CanonicalAllocationGrant
-                | LocalAllocationClaimV1::Scheduling
-                | LocalAllocationClaimV1::AgentStart
-                | LocalAllocationClaimV1::DirectAgentStoreWrite
-                | LocalAllocationClaimV1::ExternalEffect => true,
+            | LocalAllocationClaimV1::FreshFleetView
+            | LocalAllocationClaimV1::AuthenticatedFleetView
+            | LocalAllocationClaimV1::CanonicalAllocationGrant
+            | LocalAllocationClaimV1::Scheduling
+            | LocalAllocationClaimV1::AgentStart
+            | LocalAllocationClaimV1::DirectAgentStoreWrite
+            | LocalAllocationClaimV1::ExternalEffect => true,
         }
     }
 

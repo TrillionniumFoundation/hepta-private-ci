@@ -121,20 +121,18 @@ async fn validated_file_set_is_unavailable_without_mutation_or_reconnect() {
         Ok(_) => panic!("legacy path recovery unexpectedly returned a pool"),
         Err(error) => error,
     };
-    assert!(legacy_error
-        .to_string()
-        .contains("path-based SQLite recovery is disabled"));
+    assert!(
+        legacy_error
+            .to_string()
+            .contains("path-based SQLite recovery is disabled")
+    );
     assert_eq!(
         matching_open_descriptor_count(&fixture.database),
         retained_descriptor_count
     );
     assert_eq!(capture_tree(&fixture.home), before);
     for _ in 0..32 {
-        let inspection_error = match fixture
-            .sqlite
-            .open_immutable_recovery_pool(&guard)
-            .await
-        {
+        let inspection_error = match fixture.sqlite.open_immutable_recovery_pool(&guard).await {
             Ok(_) => panic!("fail-closed inspection unexpectedly returned a pool"),
             Err(error) => error,
         };
@@ -171,20 +169,13 @@ async fn rename_replacement_is_indeterminate_without_mutation_or_reconnect() {
     let moved = fixture.home.join("original.sqlite3");
     std::fs::rename(&fixture.database, &moved).expect("move retained database");
     std::fs::copy(&moved, &fixture.database).expect("install byte-identical replacement");
-    std::fs::set_permissions(
-        &fixture.database,
-        std::fs::Permissions::from_mode(0o600),
-    )
-    .expect("protect replacement");
+    std::fs::set_permissions(&fixture.database, std::fs::Permissions::from_mode(0o600))
+        .expect("protect replacement");
     let attacked = capture_tree(&fixture.home);
     let retained_descriptor_count = matching_open_descriptor_count(&moved);
     assert_eq!(retained_descriptor_count, 1);
 
-    let inspection_error = match fixture
-        .sqlite
-        .open_immutable_recovery_pool(&guard)
-        .await
-    {
+    let inspection_error = match fixture.sqlite.open_immutable_recovery_pool(&guard).await {
         Ok(_) => panic!("rename replacement unexpectedly returned an inspection pool"),
         Err(error) => error,
     };
@@ -242,7 +233,10 @@ fn symlink_hardlink_and_mode_inputs_are_indeterminate_and_unchanged() {
                 Err(error) => error,
             };
             assert_eq!(error, SqliteRecoveryError::Indeterminate);
-            assert_eq!(matching_open_descriptor_count(&role.path(&fixture.database)), 0);
+            assert_eq!(
+                matching_open_descriptor_count(&role.path(&fixture.database)),
+                0
+            );
             assert_eq!(capture_tree(&fixture.home), attacked);
         }
     }
@@ -263,11 +257,7 @@ async fn sidecar_appearance_after_binding_is_indeterminate_and_unchanged() {
     let descriptor_count = matching_open_descriptor_count(&fixture.database);
     assert_eq!(descriptor_count, 1);
 
-    let error = match fixture
-        .sqlite
-        .open_immutable_recovery_pool(&guard)
-        .await
-    {
+    let error = match fixture.sqlite.open_immutable_recovery_pool(&guard).await {
         Ok(_) => panic!("late journal unexpectedly returned a pool"),
         Err(error) => error,
     };
@@ -279,21 +269,14 @@ async fn sidecar_appearance_after_binding_is_indeterminate_and_unchanged() {
     assert_eq!(capture_tree(&fixture.home), attacked);
 }
 
-fn install_identity_attack(
-    fixture: &RecoveryFixture,
-    role: FileRole,
-    attack: IdentityAttack,
-) {
+fn install_identity_attack(fixture: &RecoveryFixture, role: FileRole, attack: IdentityAttack) {
     let path = role.path(&fixture.database);
     match attack {
         IdentityAttack::Symlink => {
             let retained = path.with_extension("retained");
             std::fs::rename(&path, &retained).expect("retain symlink target");
-            symlink(
-                retained.file_name().expect("retained file name"),
-                &path,
-            )
-            .expect("install symlink");
+            symlink(retained.file_name().expect("retained file name"), &path)
+                .expect("install symlink");
         }
         IdentityAttack::Hardlink => {
             let second_link = path.with_extension("hardlink");

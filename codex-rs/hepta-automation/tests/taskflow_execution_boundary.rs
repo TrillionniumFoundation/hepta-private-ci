@@ -86,10 +86,7 @@ fn valid_effect_request_is_deterministically_unavailable_and_deny_all() {
         TaskFlowBoundaryUnavailableReason::RegisteredEffectOwnerUnavailable
     );
     assert_ne!(first.request_digest().as_str(), "0".repeat(/*n*/ 64));
-    assert_ne!(
-        first.assessment_digest().as_str(),
-        "0".repeat(/*n*/ 64)
-    );
+    assert_ne!(first.assessment_digest().as_str(), "0".repeat(/*n*/ 64));
 }
 
 #[test]
@@ -219,9 +216,11 @@ fn json_shape_version_and_enums_are_exact() {
     );
 
     let duplicate = serde_json::to_vec(&value).expect("request JSON");
-    let duplicate = String::from_utf8(duplicate)
-        .expect("UTF-8 JSON")
-        .replacen("{", "{\"schema_version\":1,", /*count*/ 1);
+    let duplicate = String::from_utf8(duplicate).expect("UTF-8 JSON").replacen(
+        "{",
+        "{\"schema_version\":1,",
+        /*count*/ 1,
+    );
     assert_eq!(
         assess_local_taskflow_boundary_json(duplicate.as_bytes()),
         Err(TaskFlowBoundaryError::MalformedInput)
@@ -316,8 +315,7 @@ fn every_digest_is_nonzero_lowercase_and_bound() {
         *zero.pointer_mut(pointer).expect("digest field") = original;
     }
 
-    *zero.pointer_mut("/definition_digest").expect("digest") =
-        json!("A".repeat(/*n*/ 64));
+    *zero.pointer_mut("/definition_digest").expect("digest") = json!("A".repeat(/*n*/ 64));
     assert_eq!(
         assess_local_taskflow_boundary_json(&serde_json::to_vec(&zero).expect("uppercase JSON")),
         Err(TaskFlowBoundaryError::InvalidField("definition_digest"))
@@ -419,9 +417,7 @@ fn predecessor_count_identity_and_order_are_strictly_bounded() {
     assert!(assess_local_taskflow_boundary(&maximum).is_ok());
 
     let mut too_many = maximum;
-    too_many
-        .predecessor_references
-        .push(predecessor("p127"));
+    too_many.predecessor_references.push(predecessor("p127"));
     assert_eq!(
         assess_local_taskflow_boundary(&too_many),
         Err(TaskFlowBoundaryError::ResourceLimit {
@@ -465,10 +461,7 @@ fn validation_errors_do_not_reflect_untrusted_values() {
     unsupported_version.schema_version = u32::MAX;
     let unsupported = assess_local_taskflow_boundary(&unsupported_version)
         .expect_err("unsupported version must be rejected");
-    assert_eq!(
-        unsupported,
-        TaskFlowBoundaryError::UnsupportedSchemaVersion
-    );
+    assert_eq!(unsupported, TaskFlowBoundaryError::UnsupportedSchemaVersion);
     assert!(!unsupported.to_string().contains(&u32::MAX.to_string()));
 
     let attacker_step_id = "attacker-controlled-step";
@@ -537,9 +530,7 @@ fn numeric_and_identifier_bounds_fail_closed() {
     request.predecessor_references[0].step_id = "bad predecessor".to_string();
     assert_eq!(
         assess_local_taskflow_boundary(&request),
-        Err(TaskFlowBoundaryError::InvalidField(
-            "predecessor.step_id"
-        ))
+        Err(TaskFlowBoundaryError::InvalidField("predecessor.step_id"))
     );
 
     let mut invalid_agent = serde_json::to_value(external_request()).expect("request JSON");
@@ -583,10 +574,9 @@ fn canonical_digest_has_independent_golden_values() {
         "b24257e5fbafb44aa83806840be09cb2f7d8a95067c799099cf8938ef644f4c4"
     );
 
-    let terminal = assess_local_taskflow_boundary(&terminal_request(
-        LocalTaskFlowTerminalStateV1::Succeeded,
-    ))
-    .expect("terminal");
+    let terminal =
+        assess_local_taskflow_boundary(&terminal_request(LocalTaskFlowTerminalStateV1::Succeeded))
+            .expect("terminal");
     assert_eq!(
         terminal.request_digest().as_str(),
         "6b1325c47865f95076d7e3aa17d3778dbaf0e0d80b0fb4c3749379e524c3601b"

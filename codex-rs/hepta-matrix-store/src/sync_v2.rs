@@ -119,14 +119,15 @@ impl MatrixDurableStore {
                 checkpoint_revision,
                 checkpoint_generation,
                 expected_next_batch,
-            } => self
-                .cancel_sync_v2(
+            } => {
+                self.cancel_sync_v2(
                     operation_id,
                     *checkpoint_revision,
                     *checkpoint_generation,
                     expected_next_batch.as_deref(),
                 )
-                .await,
+                .await
+            }
         }
     }
 
@@ -274,12 +275,8 @@ impl MatrixDurableStore {
                 checkpoint_generation: batch.checkpoint_generation,
             });
         }
-        let decision_seq = insert_commit_decision_tx(
-            &mut transaction,
-            batch,
-            &decision_digest,
-        )
-        .await?;
+        let decision_seq =
+            insert_commit_decision_tx(&mut transaction, batch, &decision_digest).await?;
 
         let mut outcomes = Vec::with_capacity(batch.mutations.len());
         let mut remaining_scrub_budget = self.config.event_capacity;
@@ -510,8 +507,7 @@ async fn insert_mutation_ledger_tx(
     mutation: &MatrixSyncMutationV2,
     semantic_digest: &Sha256Digest,
 ) -> Result<(), MatrixDurableError> {
-    let (scope_kind, scope_id, reason_kind, replacement_room_id) =
-        tombstone_fields(mutation);
+    let (scope_kind, scope_id, reason_kind, replacement_room_id) = tombstone_fields(mutation);
     sqlx::query(
         "INSERT INTO matrix_sync_mutations_v2 (
             source_event_id, room_id, sender_user_id, mutation_kind, mutation_sha256,
@@ -675,15 +671,11 @@ fn mutation_kind(body: &MatrixSyncMutationBodyV2) -> &'static str {
     }
 }
 
-fn semantic_mutation_identity(
-    mutation: &MatrixSyncMutationV2,
-) -> MatrixSyncMutationIdentityV2<'_> {
+fn semantic_mutation_identity(mutation: &MatrixSyncMutationV2) -> MatrixSyncMutationIdentityV2<'_> {
     mutation_identity(mutation, /*received_at_ms*/ None)
 }
 
-fn decision_mutation_identity(
-    mutation: &MatrixSyncMutationV2,
-) -> MatrixSyncMutationIdentityV2<'_> {
+fn decision_mutation_identity(mutation: &MatrixSyncMutationV2) -> MatrixSyncMutationIdentityV2<'_> {
     mutation_identity(mutation, Some(mutation.received_at_ms))
 }
 
@@ -703,9 +695,7 @@ fn mutation_identity(
     }
 }
 
-fn mutation_body_identity(
-    body: &MatrixSyncMutationBodyV2,
-) -> MatrixSyncMutationBodyIdentityV2<'_> {
+fn mutation_body_identity(body: &MatrixSyncMutationBodyV2) -> MatrixSyncMutationBodyIdentityV2<'_> {
     match body {
         MatrixSyncMutationBodyV2::Timeline {
             event_type,

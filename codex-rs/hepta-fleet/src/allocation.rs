@@ -187,41 +187,45 @@ fn allocate_axis(
             tied.push(index);
         }
     }
-    let remainder = target
-        .checked_sub(distributed)
-        .ok_or(LocalAllocationError::ArithmeticInvariant("threshold distribution"))?;
+    let remainder =
+        target
+            .checked_sub(distributed)
+            .ok_or(LocalAllocationError::ArithmeticInvariant(
+                "threshold distribution",
+            ))?;
     let leftover = usize::try_from(remainder)
         .map_err(|_| LocalAllocationError::ArithmeticInvariant("weighted remainder"))?;
     if leftover > tied.len() {
-        return Err(LocalAllocationError::ArithmeticInvariant("threshold tie count"));
+        return Err(LocalAllocationError::ArithmeticInvariant(
+            "threshold tie count",
+        ));
     }
     // The host slice is already in request-ID order, so ties are stable here.
     for index in tied.into_iter().take(leftover) {
-        let value = axis
-            .read(resources[index])
-            .checked_add(1)
-            .ok_or(LocalAllocationError::ArithmeticInvariant("resource remainder"))?;
+        let value = axis.read(resources[index]).checked_add(1).ok_or(
+            LocalAllocationError::ArithmeticInvariant("resource remainder"),
+        )?;
         axis.write(&mut resources[index], value);
     }
     Ok(())
 }
 
-fn discretionary_need(
-    candidate: &LocalAllocationCandidateV1,
-    axis: LocalResourceAxisV1,
-) -> u64 {
-    axis.read(candidate.caller_supplied_desired)
-        - axis.read(candidate.caller_supplied_minimum)
+fn discretionary_need(candidate: &LocalAllocationCandidateV1, axis: LocalResourceAxisV1) -> u64 {
+    axis.read(candidate.caller_supplied_desired) - axis.read(candidate.caller_supplied_minimum)
 }
 
 fn event_key(unit_index: u64, weight: u32) -> Result<u128, LocalAllocationError> {
     if weight == 0 {
-        return Err(LocalAllocationError::ArithmeticInvariant("zero fairness weight"));
+        return Err(LocalAllocationError::ArithmeticInvariant(
+            "zero fairness weight",
+        ));
     }
     u128::from(unit_index)
         .checked_mul(DISCRETE_FAIRNESS_SCALE)
         .map(|scaled| scaled / u128::from(weight))
-        .ok_or(LocalAllocationError::ArithmeticInvariant("fairness event key"))
+        .ok_or(LocalAllocationError::ArithmeticInvariant(
+            "fairness event key",
+        ))
 }
 
 fn events_at_or_below(
@@ -235,11 +239,16 @@ fn events_at_or_below(
     let strict_upper = threshold
         .checked_add(1)
         .and_then(|value| value.checked_mul(u128::from(weight)))
-        .ok_or(LocalAllocationError::ArithmeticInvariant("fairness threshold"))?;
-    let positive_events = strict_upper
-        .checked_sub(1)
-        .ok_or(LocalAllocationError::ArithmeticInvariant("fairness threshold"))?
-        / DISCRETE_FAIRNESS_SCALE;
+        .ok_or(LocalAllocationError::ArithmeticInvariant(
+            "fairness threshold",
+        ))?;
+    let positive_events =
+        strict_upper
+            .checked_sub(1)
+            .ok_or(LocalAllocationError::ArithmeticInvariant(
+                "fairness threshold",
+            ))?
+            / DISCRETE_FAIRNESS_SCALE;
     Ok(1 + positive_events.min(u128::from(need - 1)))
 }
 
@@ -255,6 +264,8 @@ fn count_events(
             threshold,
         )?;
         sum.checked_add(count)
-            .ok_or(LocalAllocationError::ArithmeticInvariant("fairness event count"))
+            .ok_or(LocalAllocationError::ArithmeticInvariant(
+                "fairness event count",
+            ))
     })
 }

@@ -2,6 +2,14 @@ use std::error::Error;
 use std::fs;
 
 use codex_hepta_contracts::AgentId;
+use codex_hepta_matrix_protocol::MatrixSyncBatchV2;
+use codex_hepta_matrix_protocol::MatrixSyncDecisionV2;
+use codex_hepta_matrix_protocol::MatrixSyncMutationBodyV2;
+use codex_hepta_matrix_protocol::MatrixSyncMutationDispositionV2;
+use codex_hepta_matrix_protocol::MatrixSyncMutationV2;
+use codex_hepta_matrix_protocol::MatrixSyncResultV2;
+use codex_hepta_matrix_protocol::room_project_idempotency_key;
+use codex_hepta_matrix_protocol::transaction_id;
 use codex_hepta_matrix_store::ChangeKind;
 use codex_hepta_matrix_store::InboxDraft;
 use codex_hepta_matrix_store::InboxQueuedDraft;
@@ -12,19 +20,11 @@ use codex_hepta_matrix_store::MatrixDurableStore;
 use codex_hepta_matrix_store::MatrixEventId;
 use codex_hepta_matrix_store::MatrixRoomId;
 use codex_hepta_matrix_store::MatrixUserId;
-use codex_hepta_matrix_store::OutboxDraft;
 use codex_hepta_matrix_store::OutboxDisposition;
+use codex_hepta_matrix_store::OutboxDraft;
 use codex_hepta_matrix_store::OutboxKind;
 use codex_hepta_matrix_store::RoomBindingDraft;
 use codex_hepta_matrix_store::RoomThreadBindingDraft;
-use codex_hepta_matrix_protocol::MatrixSyncBatchV2;
-use codex_hepta_matrix_protocol::MatrixSyncDecisionV2;
-use codex_hepta_matrix_protocol::MatrixSyncMutationBodyV2;
-use codex_hepta_matrix_protocol::MatrixSyncMutationDispositionV2;
-use codex_hepta_matrix_protocol::MatrixSyncMutationV2;
-use codex_hepta_matrix_protocol::MatrixSyncResultV2;
-use codex_hepta_matrix_protocol::room_project_idempotency_key;
-use codex_hepta_matrix_protocol::transaction_id;
 use codex_hepta_paths::HeptaAgentLayout;
 use codex_hepta_paths::HeptaFleetRoot;
 use codex_state::SqliteConfig;
@@ -61,13 +61,10 @@ fn layout(temp: &TempDir, agent_id: &AgentId) -> TestResult<HeptaAgentLayout> {
         .agent(agent_id))
 }
 
-async fn store_and_room(
-    temp: &TempDir,
-    room_id: &MatrixRoomId,
-) -> TestResult<MatrixDurableStore> {
+async fn store_and_room(temp: &TempDir, room_id: &MatrixRoomId) -> TestResult<MatrixDurableStore> {
     let agent_id = agent()?;
-    let store = MatrixDurableStore::open(&layout(temp, &agent_id)?, MatrixDurableConfig::default())
-        .await?;
+    let store =
+        MatrixDurableStore::open(&layout(temp, &agent_id)?, MatrixDurableConfig::default()).await?;
     store
         .bind_room(&RoomBindingDraft {
             room_id: room_id.clone(),
@@ -157,9 +154,10 @@ fn commit_with_fence(
 
 fn dispositions(result: MatrixSyncResultV2) -> TestResult<Vec<MatrixSyncMutationDispositionV2>> {
     match result {
-        MatrixSyncResultV2::Committed { outcomes, .. } => {
-            Ok(outcomes.into_iter().map(|outcome| outcome.disposition).collect())
-        }
+        MatrixSyncResultV2::Committed { outcomes, .. } => Ok(outcomes
+            .into_iter()
+            .map(|outcome| outcome.disposition)
+            .collect()),
         MatrixSyncResultV2::Cancelled { .. } => Err("commit returned cancellation".into()),
         MatrixSyncResultV2::CapacityExhausted { .. } => {
             Err("commit exhausted its bounded journal".into())
@@ -309,11 +307,9 @@ async fn redaction_missing_target_and_cancellation_remain_distinct() -> TestResu
         vec![MatrixSyncMutationDispositionV2::Missing]
     );
     store.close().await;
-    let store = MatrixDurableStore::open(
-        &layout(&temp, &agent()?)?,
-        MatrixDurableConfig::default(),
-    )
-    .await?;
+    let store =
+        MatrixDurableStore::open(&layout(&temp, &agent()?)?, MatrixDurableConfig::default())
+            .await?;
     assert_eq!(
         dispositions(
             store
@@ -403,12 +399,7 @@ async fn redaction_missing_target_and_cancellation_remain_distinct() -> TestResu
             retained_next_batch: Some("s4".to_string()),
         }
     );
-    let mut cross_kind_reuse = commit(
-        Some("s4"),
-        "s5",
-        /*observed_at_ms*/ 44,
-        Vec::new(),
-    );
+    let mut cross_kind_reuse = commit(Some("s4"), "s5", /*observed_at_ms*/ 44, Vec::new());
     let MatrixSyncDecisionV2::Commit { batch } = &mut cross_kind_reuse else {
         return Err("commit helper returned cancellation".into());
     };
@@ -976,7 +967,9 @@ async fn caller_persisted_outbox_attempt_survives_a_later_room_leave() -> TestRe
     );
     assert!(
         store
-            .claim_outbox(/*now_ms*/ 200, /*lease_ms*/ 100, /*limit*/ 10)
+            .claim_outbox(
+                /*now_ms*/ 200, /*lease_ms*/ 100, /*limit*/ 10
+            )
             .await?
             .is_empty(),
         "an expired pre-leave lease must not be reclaimed"
@@ -1969,14 +1962,16 @@ fn v2_validation_rejects_wrong_schema() -> TestResult {
         },
         /*at_ms*/ 10,
     )?;
-    assert!(commit(
-        /*expected*/ None,
-        "s1",
-        /*observed_at_ms*/ 11,
-        vec![timeline],
-    )
-    .validate()
-    .is_ok());
+    assert!(
+        commit(
+            /*expected*/ None,
+            "s1",
+            /*observed_at_ms*/ 11,
+            vec![timeline],
+        )
+        .validate()
+        .is_ok()
+    );
     assert!(
         MatrixSyncDecisionV2::Cancel {
             schema_version: 1,

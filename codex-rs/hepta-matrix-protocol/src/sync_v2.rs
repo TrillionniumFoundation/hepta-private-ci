@@ -91,7 +91,9 @@ impl MatrixSyncBatchV2 {
 /// Cancellation is not success and must leave the durable cursor unchanged.
 #[derive(Clone, Eq, PartialEq)]
 pub enum MatrixSyncDecisionV2 {
-    Commit { batch: MatrixSyncBatchV2 },
+    Commit {
+        batch: MatrixSyncBatchV2,
+    },
     Cancel {
         schema_version: u32,
         operation_id: String,

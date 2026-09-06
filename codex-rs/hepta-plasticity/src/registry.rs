@@ -67,10 +67,7 @@ impl ProposalRegistry {
     /// Retain a verified V2 record in its artifact/window slot.
     ///
     /// Registry insertion is not independent evaluation, selection or activation.
-    pub fn append_v2(
-        &mut self,
-        proposal: ParameterProposalV2,
-    ) -> Result<AppendDisposition, Error> {
+    pub fn append_v2(&mut self, proposal: ParameterProposalV2) -> Result<AppendDisposition, Error> {
         verify_parameter_proposal_v2(&proposal)?;
         let slot = ProposalRegistrySlotV2 {
             selected_artifact_digest: proposal.selected_artifact_digest,
@@ -115,10 +112,7 @@ impl ProposalRegistry {
         })
     }
 
-    pub fn get_v2_by_proposal_id(
-        &self,
-        proposal_id: &StableId,
-    ) -> Option<&ParameterProposalV2> {
+    pub fn get_v2_by_proposal_id(&self, proposal_id: &StableId) -> Option<&ParameterProposalV2> {
         let slot = self.parameter_v2_ids.get(proposal_id)?;
         self.parameter_v2.get(slot)
     }

@@ -97,9 +97,7 @@ pub(crate) async fn active_dispatch_exists_tx(
     mutation: &MatrixSyncMutationV2,
 ) -> Result<bool, MatrixDurableError> {
     let target_event_id = match &mutation.body {
-        MatrixSyncMutationBodyV2::Redaction { target_event_id } => {
-            target_event_id
-        }
+        MatrixSyncMutationBodyV2::Redaction { target_event_id } => target_event_id,
         MatrixSyncMutationBodyV2::Timeline { .. }
         | MatrixSyncMutationBodyV2::RoomLeave { .. }
         | MatrixSyncMutationBodyV2::RoomTombstone { .. } => return Ok(false),
@@ -124,12 +122,20 @@ pub(crate) async fn active_dispatch_exists_tx(
 
 pub(crate) fn tombstone_fields(
     mutation: &MatrixSyncMutationV2,
-) -> (Option<&'static str>, Option<&str>, Option<&'static str>, Option<&str>) {
+) -> (
+    Option<&'static str>,
+    Option<&str>,
+    Option<&'static str>,
+    Option<&str>,
+) {
     match &mutation.body {
         MatrixSyncMutationBodyV2::Timeline { .. } => (None, None, None, None),
-        MatrixSyncMutationBodyV2::Redaction { target_event_id } => {
-            (Some("event"), Some(target_event_id.as_str()), Some("redaction"), None)
-        }
+        MatrixSyncMutationBodyV2::Redaction { target_event_id } => (
+            Some("event"),
+            Some(target_event_id.as_str()),
+            Some("redaction"),
+            None,
+        ),
         MatrixSyncMutationBodyV2::RoomLeave { .. } => (
             Some("room"),
             Some(mutation.room_id.as_str()),
@@ -181,9 +187,7 @@ pub(crate) async fn has_commit_capacity_tx(
         && batch
             .mutations
             .iter()
-            .all(|mutation| {
-                !matches!(&mutation.body, MatrixSyncMutationBodyV2::Timeline { .. })
-            });
+            .all(|mutation| !matches!(&mutation.body, MatrixSyncMutationBodyV2::Timeline { .. }));
     let mutation_limit = if destructive_only {
         MUTATION_JOURNAL_CAPACITY
     } else {
@@ -234,12 +238,11 @@ pub(crate) async fn has_commit_capacity_tx(
 pub(crate) async fn has_cancel_capacity_tx(
     transaction: &mut Transaction<'_, Sqlite>,
 ) -> Result<bool, MatrixDurableError> {
-    let decision_seq: i64 = sqlx::query_scalar(
-        "SELECT COALESCE(MAX(decision_seq), 0) FROM matrix_sync_decisions_v2",
-    )
-    .fetch_one(&mut **transaction)
-    .await
-    .map_err(unavailable)?;
+    let decision_seq: i64 =
+        sqlx::query_scalar("SELECT COALESCE(MAX(decision_seq), 0) FROM matrix_sync_decisions_v2")
+            .fetch_one(&mut **transaction)
+            .await
+            .map_err(unavailable)?;
     if !(0..=DECISION_JOURNAL_CAPACITY).contains(&decision_seq) {
         return Err(MatrixDurableError::Corrupt);
     }
@@ -311,8 +314,7 @@ async fn read_decision_tx(
     let decision_seq: i64 = row.try_get("decision_seq").map_err(unavailable)?;
     let schema_version = to_u32(row.try_get("schema_version").map_err(unavailable)?)?;
     let checkpoint_revision = to_u64(row.try_get("checkpoint_revision").map_err(unavailable)?)?;
-    let checkpoint_generation =
-        to_u64(row.try_get("checkpoint_generation").map_err(unavailable)?)?;
+    let checkpoint_generation = to_u64(row.try_get("checkpoint_generation").map_err(unavailable)?)?;
     let next_batch: Option<String> = row.try_get("next_batch").map_err(unavailable)?;
     let retained_next_batch: Option<String> =
         row.try_get("retained_next_batch").map_err(unavailable)?;
@@ -331,8 +333,7 @@ async fn read_decision_tx(
                 .filter(|value| valid_sync_token(value.as_str()))
                 .ok_or(MatrixDurableError::Corrupt)?;
             if retained_next_batch.is_some()
-                || expected_mutations
-                    .is_some_and(|mutations| mutations.len() != outcome_count)
+                || expected_mutations.is_some_and(|mutations| mutations.len() != outcome_count)
             {
                 return Err(MatrixDurableError::Corrupt);
             }
@@ -386,7 +387,8 @@ async fn read_decision_tx(
             }))
         }
         "cancel" => {
-            if expected_mutations.is_some() || next_batch.is_some()
+            if expected_mutations.is_some()
+                || next_batch.is_some()
                 || outcome_count != 0
                 || retained_next_batch
                     .as_deref()
@@ -488,14 +490,13 @@ pub(crate) async fn inbox_exists_tx(
     room_id: &MatrixRoomId,
     event_id: &MatrixEventId,
 ) -> Result<bool, MatrixDurableError> {
-    let count: i64 = sqlx::query_scalar(
-        "SELECT COUNT(*) FROM inbox_events WHERE room_id = ? AND event_id = ?",
-    )
-    .bind(room_id.as_str())
-    .bind(event_id.as_str())
-    .fetch_one(&mut **transaction)
-    .await
-    .map_err(unavailable)?;
+    let count: i64 =
+        sqlx::query_scalar("SELECT COUNT(*) FROM inbox_events WHERE room_id = ? AND event_id = ?")
+            .bind(room_id.as_str())
+            .bind(event_id.as_str())
+            .fetch_one(&mut **transaction)
+            .await
+            .map_err(unavailable)?;
     Ok(count == 1)
 }
 
@@ -591,9 +592,7 @@ fn disposition_str(disposition: MatrixSyncMutationDispositionV2) -> &'static str
     }
 }
 
-fn parse_disposition(
-    value: &str,
-) -> Result<MatrixSyncMutationDispositionV2, MatrixDurableError> {
+fn parse_disposition(value: &str) -> Result<MatrixSyncMutationDispositionV2, MatrixDurableError> {
     match value {
         "applied" => Ok(MatrixSyncMutationDispositionV2::Applied),
         "duplicate" => Ok(MatrixSyncMutationDispositionV2::Duplicate),
@@ -604,8 +603,7 @@ fn parse_disposition(
 }
 
 fn valid_sync_token(value: &str) -> bool {
-    (1..=4_096).contains(&value.len())
-        && value.bytes().all(|byte| (b' '..=b'~').contains(&byte))
+    (1..=4_096).contains(&value.len()) && value.bytes().all(|byte| (b' '..=b'~').contains(&byte))
 }
 
 fn to_i64(value: u64) -> Result<i64, MatrixDurableError> {

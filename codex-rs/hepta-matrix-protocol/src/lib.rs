@@ -21,12 +21,25 @@ mod sync_v2;
 // separate crate inside the same `channel.matrix` ownership boundary. These
 // hidden exports are not an admitted inter-module protocol surface.
 #[doc(hidden)]
-pub use sync_v2::{
-    MATRIX_SYNC_MUTATION_SCHEMA_VERSION_V2, MAX_MATRIX_SYNC_BATCH_PAYLOAD_BYTES_V2,
-    MAX_MATRIX_SYNC_MUTATIONS_V2, MatrixSyncBatchV2, MatrixSyncDecisionV2,
-    MatrixSyncMutationBodyV2, MatrixSyncMutationDispositionV2, MatrixSyncMutationOutcomeV2,
-    MatrixSyncMutationV2, MatrixSyncResultV2,
-};
+pub use sync_v2::MATRIX_SYNC_MUTATION_SCHEMA_VERSION_V2;
+#[doc(hidden)]
+pub use sync_v2::MAX_MATRIX_SYNC_BATCH_PAYLOAD_BYTES_V2;
+#[doc(hidden)]
+pub use sync_v2::MAX_MATRIX_SYNC_MUTATIONS_V2;
+#[doc(hidden)]
+pub use sync_v2::MatrixSyncBatchV2;
+#[doc(hidden)]
+pub use sync_v2::MatrixSyncDecisionV2;
+#[doc(hidden)]
+pub use sync_v2::MatrixSyncMutationBodyV2;
+#[doc(hidden)]
+pub use sync_v2::MatrixSyncMutationDispositionV2;
+#[doc(hidden)]
+pub use sync_v2::MatrixSyncMutationOutcomeV2;
+#[doc(hidden)]
+pub use sync_v2::MatrixSyncMutationV2;
+#[doc(hidden)]
+pub use sync_v2::MatrixSyncResultV2;
 
 pub const MATRIX_BINDING_SCHEMA_VERSION: u32 = 1;
 pub const MATRIXD_CONTROL_SCHEMA_VERSION: u32 = 2;

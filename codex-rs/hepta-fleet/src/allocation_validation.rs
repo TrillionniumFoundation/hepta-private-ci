@@ -10,10 +10,7 @@ use crate::MAX_LOCAL_HOST_CANDIDATES;
 
 const MAX_LOCAL_IDENTIFIER_BYTES: usize = 128;
 
-pub(super) fn validate_counts(
-    hosts: usize,
-    candidates: usize,
-) -> Result<(), LocalAllocationError> {
+pub(super) fn validate_counts(hosts: usize, candidates: usize) -> Result<(), LocalAllocationError> {
     if hosts == 0 {
         return Err(LocalAllocationError::EmptyHosts);
     }

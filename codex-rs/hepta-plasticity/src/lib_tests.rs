@@ -116,12 +116,7 @@ fn legacy_proposal() -> PlasticityProposal {
     }
 }
 
-fn parameter_delta(
-    layer: &str,
-    parameter: &str,
-    value: i64,
-    evidence: &[u8],
-) -> ParameterDeltaV2 {
+fn parameter_delta(layer: &str, parameter: &str, value: i64, evidence: &[u8]) -> ParameterDeltaV2 {
     ParameterDeltaV2 {
         layer_id: id(layer),
         parameter_id: id(parameter),
@@ -258,9 +253,7 @@ fn v2_matches_canonical_golden_vectors_and_grants_no_authority() {
         13
     );
     assert_eq!(
-        proposal
-            .norm_profile
-            .global_baseline_squared_l2_raw_q64,
+        proposal.norm_profile.global_baseline_squared_l2_raw_q64,
         5_000_000
     );
 }
@@ -269,9 +262,9 @@ fn v2_matches_canonical_golden_vectors_and_grants_no_authority() {
 fn v2_write_and_read_dispatch_are_exact() {
     assert_eq!(ProposalVersion::LegacyV1.as_u16(), 1);
     assert_eq!(ProposalVersion::ParameterV2.as_u16(), 2);
-    let record = must(propose_versioned(ProposalWriteRequest::ParameterV2(Box::new(
-        v2_request(),
-    ))));
+    let record = must(propose_versioned(ProposalWriteRequest::ParameterV2(
+        Box::new(v2_request()),
+    )));
     assert_eq!(record.version(), ProposalVersion::ParameterV2);
     assert_eq!(
         read_versioned_proposal(1, record.clone()),
@@ -313,24 +306,15 @@ fn v2_requires_distinct_role_ids_exact_successor_and_rollback() {
 
     let mut request = v2_request();
     request.candidate_generation = generation(9);
-    assert_eq!(
-        propose_v2(request),
-        Err(Error::GenerationNotExactSuccessor)
-    );
+    assert_eq!(propose_v2(request), Err(Error::GenerationNotExactSuccessor));
 
     let mut request = v2_request();
     request.baseline_generation = generation(u64::MAX);
-    assert_eq!(
-        propose_v2(request),
-        Err(Error::GenerationNotExactSuccessor)
-    );
+    assert_eq!(propose_v2(request), Err(Error::GenerationNotExactSuccessor));
 
     let mut request = v2_request();
     request.rollback_predecessor_digest = digest(b"other-artifact");
-    assert_eq!(
-        propose_v2(request),
-        Err(Error::RollbackPredecessorMismatch)
-    );
+    assert_eq!(propose_v2(request), Err(Error::RollbackPredecessorMismatch));
 }
 
 #[test]
@@ -407,10 +391,7 @@ fn candidate_set_is_bounded_and_has_exactly_one_no_change() {
     request
         .candidates
         .retain(|candidate| candidate.kind == ParameterCandidateKindV2::Update);
-    assert_eq!(
-        propose_v2(request),
-        Err(Error::MissingNoChangeCandidate)
-    );
+    assert_eq!(propose_v2(request), Err(Error::MissingNoChangeCandidate));
 
     let mut request = v2_request();
     request.candidates.push(ParameterCandidateRequestV2 {
@@ -418,19 +399,14 @@ fn candidate_set_is_bounded_and_has_exactly_one_no_change() {
         kind: ParameterCandidateKindV2::NoChange,
         parameter_deltas: Vec::new(),
     });
-    assert_eq!(
-        propose_v2(request),
-        Err(Error::MultipleNoChangeCandidates)
-    );
+    assert_eq!(propose_v2(request), Err(Error::MultipleNoChangeCandidates));
 
     let mut request = v2_request();
     let duplicate_candidate = request.candidates[1].clone();
     request.candidates.push(duplicate_candidate);
     assert_eq!(
         propose_v2(request),
-        Err(Error::DuplicateCandidate(
-            "candidate:no-change".to_string()
-        ))
+        Err(Error::DuplicateCandidate("candidate:no-change".to_string()))
     );
 
     let mut request = v2_request();
@@ -442,9 +418,7 @@ fn candidate_set_is_bounded_and_has_exactly_one_no_change() {
     ));
     assert_eq!(
         propose_v2(request),
-        Err(Error::NoChangeHasDeltas(
-            "candidate:no-change".to_string()
-        ))
+        Err(Error::NoChangeHasDeltas("candidate:no-change".to_string()))
     );
 }
 
@@ -563,12 +537,8 @@ fn per_layer_gate_is_not_implied_by_global_gate() {
             baseline_squared_l2_raw_q64: 1_000_000_000_000,
         },
     ];
-    request.candidates[0].parameter_deltas = vec![parameter_delta(
-        "layer:a",
-        "parameter:a",
-        10,
-        b"delta-a",
-    )];
+    request.candidates[0].parameter_deltas =
+        vec![parameter_delta("layer:a", "parameter:a", 10, b"delta-a")];
     assert_eq!(
         propose_v2(request),
         Err(Error::PerLayerTrustRegionExceeded(
@@ -685,7 +655,10 @@ fn registry_is_unique_by_artifact_window_and_idempotent() {
     );
     assert_eq!(registry.record_count(), 1);
     assert_eq!(
-        registry.get_v2(proposal.selected_artifact_digest, &proposal.window.window_id),
+        registry.get_v2(
+            proposal.selected_artifact_digest,
+            &proposal.window.window_id
+        ),
         Some(&proposal)
     );
     assert_eq!(

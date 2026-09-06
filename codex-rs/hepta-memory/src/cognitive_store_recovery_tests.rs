@@ -373,11 +373,8 @@ fn install_identity_attack(database: &Path, attack: IdentityAttack) {
         IdentityAttack::Symlink => {
             let retained = database.with_extension("retained");
             std::fs::rename(database, &retained).expect("retain symlink target");
-            symlink(
-                retained.file_name().expect("retained file name"),
-                database,
-            )
-            .expect("install database symlink");
+            symlink(retained.file_name().expect("retained file name"), database)
+                .expect("install database symlink");
         }
         IdentityAttack::Hardlink => {
             std::fs::hard_link(database, database.with_extension("hardlink"))

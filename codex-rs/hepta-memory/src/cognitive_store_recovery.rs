@@ -135,9 +135,7 @@ impl CognitiveStore {
 
 fn recovery_error(error: SqliteRecoveryError) -> CognitiveRecoveryError {
     match error {
-        SqliteRecoveryError::Unavailable => {
-            CognitiveRecoveryError::Unavailable(error.to_string())
-        }
+        SqliteRecoveryError::Unavailable => CognitiveRecoveryError::Unavailable(error.to_string()),
         SqliteRecoveryError::Indeterminate => {
             CognitiveRecoveryError::Indeterminate(error.to_string())
         }

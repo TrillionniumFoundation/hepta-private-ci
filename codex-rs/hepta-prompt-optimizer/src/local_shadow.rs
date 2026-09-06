@@ -265,11 +265,8 @@ pub fn calculate_local_shadow(
             {
                 continue;
             }
-            let marginal = marginal_gain(
-                candidate,
-                &selected_candidate_ids,
-                &input.interaction_edges,
-            )?;
+            let marginal =
+                marginal_gain(candidate, &selected_candidate_ids, &input.interaction_edges)?;
             if marginal <= FixedQ32::ZERO {
                 continue;
             }
@@ -380,8 +377,7 @@ fn hard_constraints_allow(
             prerequisite_candidate_id,
             ..
         } => {
-            candidate_id != constrained_candidate_id
-                || selected.contains(prerequisite_candidate_id)
+            candidate_id != constrained_candidate_id || selected.contains(prerequisite_candidate_id)
         }
     })
 }

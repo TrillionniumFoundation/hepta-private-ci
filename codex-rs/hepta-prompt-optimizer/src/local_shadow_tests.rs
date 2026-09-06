@@ -86,7 +86,9 @@ fn assert_error(input: LocalShadowInput, expected: LocalShadowError) {
 
 #[test]
 fn legacy_v1_surface_keeps_its_original_selection_limit() {
-    let candidates = (0..17).map(|index| factor(index, /*gain*/ 1, /*cost*/ 1)).collect();
+    let candidates = (0..17)
+        .map(|index| factor(index, /*gain*/ 1, /*cost*/ 1))
+        .collect();
     let legacy = OptimizationRequest {
         decision_id: id("decision:legacy"),
         objective_digest: test_digest(b"objective"),
@@ -121,7 +123,9 @@ fn total_candidate_limit_includes_the_local_baseline() {
 
 #[test]
 fn local_baseline_cannot_impersonate_canonical_abstain() {
-    let mut input = local_input(vec![factor(/*index*/ 0, /*gain*/ 1, /*cost*/ 1)]);
+    let mut input = local_input(vec![factor(
+        /*index*/ 0, /*gain*/ 1, /*cost*/ 1,
+    )]);
     input.no_intervention.arm_id = id("abstain");
     assert_error(
         input,
@@ -172,13 +176,18 @@ fn result_discloses_local_scope_heuristic_status_and_no_authority() {
             factor_id: id("factor:actual-binding"),
         }]
     );
-    assert_eq!(proposal.total_caller_supplied_gain, FixedQ32::from_raw(/*raw*/ 7));
+    assert_eq!(
+        proposal.total_caller_supplied_gain,
+        FixedQ32::from_raw(/*raw*/ 7)
+    );
     assert!(!proposal.authority().grants_any());
 }
 
 #[test]
 fn invalid_input_has_its_own_error_class() {
-    let mut input = local_input(vec![factor(/*index*/ 0, /*gain*/ 1, /*cost*/ 1)]);
+    let mut input = local_input(vec![factor(
+        /*index*/ 0, /*gain*/ 1, /*cost*/ 1,
+    )]);
     input.maximum_selected_factors = MAX_SELECTED_FACTORS + 1;
     assert_error(
         input,
@@ -257,7 +266,9 @@ fn explicit_zero_edges_make_a_multi_factor_pair_complete() {
 
 #[test]
 fn pair_completeness_fails_closed_before_sparse_graph_is_treated_as_zero() {
-    let factors = (0..33).map(|index| factor(index, /*gain*/ 1, /*cost*/ 1)).collect();
+    let factors = (0..33)
+        .map(|index| factor(index, /*gain*/ 1, /*cost*/ 1))
+        .collect();
     let mut input = local_input(factors);
     input.maximum_selected_factors = 2;
     input.interaction_edges = interaction_edges(
@@ -275,12 +286,16 @@ fn pair_completeness_fails_closed_before_sparse_graph_is_treated_as_zero() {
 
 #[test]
 fn interaction_ceiling_is_not_a_token_budget() {
-    let mut input = local_input(vec![factor(/*index*/ 0, /*gain*/ 1, /*cost*/ 513)]);
+    let mut input = local_input(vec![factor(
+        /*index*/ 0, /*gain*/ 1, /*cost*/ 513,
+    )]);
     input.token_budget = 513;
     let proposal = calculate(input);
     assert_eq!(proposal.total_token_cost, 513);
 
-    let factors = (0..33).map(|index| factor(index, /*gain*/ 1, /*cost*/ 1)).collect();
+    let factors = (0..33)
+        .map(|index| factor(index, /*gain*/ 1, /*cost*/ 1))
+        .collect();
     let mut input = local_input(factors);
     input.maximum_selected_factors = 0;
     input.interaction_edges = interaction_edges(
@@ -289,7 +304,9 @@ fn interaction_ceiling_is_not_a_token_budget() {
     );
     assert!(calculate_local_shadow(input).is_ok());
 
-    let factors = (0..33).map(|index| factor(index, /*gain*/ 1, /*cost*/ 1)).collect();
+    let factors = (0..33)
+        .map(|index| factor(index, /*gain*/ 1, /*cost*/ 1))
+        .collect();
     let mut input = local_input(factors);
     input.interaction_edges = interaction_edges(
         &input.factor_candidates,
@@ -401,7 +418,9 @@ fn unavailable_prerequisite_blocks_high_gain_dependent_factor() {
 
 #[test]
 fn unknown_prerequisite_is_rejected_instead_of_ignored() {
-    let mut input = local_input(vec![factor(/*index*/ 0, /*gain*/ 100, /*cost*/ 1)]);
+    let mut input = local_input(vec![factor(
+        /*index*/ 0, /*gain*/ 100, /*cost*/ 1,
+    )]);
     input.hard_constraints.push(LocalHardConstraint::Requires {
         candidate_id: id("candidate:000"),
         prerequisite_candidate_id: id("candidate:missing"),
@@ -526,9 +545,7 @@ fn factor_and_realization_aliases_are_rejected() {
     duplicate_factor.factor_id = first.factor_id.clone();
     assert_error(
         local_input(vec![first, duplicate_factor]),
-        LocalShadowError::InvalidInput(InvalidInput::DuplicateFactor(
-            "factor:000".to_string(),
-        )),
+        LocalShadowError::InvalidInput(InvalidInput::DuplicateFactor("factor:000".to_string())),
     );
 
     let first = factor(/*index*/ 0, /*gain*/ 1, /*cost*/ 1);
@@ -548,22 +565,20 @@ fn unadmitted_illegal_and_zero_cost_factors_fail_closed() {
     unadmitted.admitted = false;
     assert_error(
         local_input(vec![unadmitted]),
-        LocalShadowError::InvalidInput(InvalidInput::UnadmittedFactor(
-            "candidate:000".to_string(),
-        )),
+        LocalShadowError::InvalidInput(InvalidInput::UnadmittedFactor("candidate:000".to_string())),
     );
 
     let mut illegal = factor(/*index*/ 0, /*gain*/ 1, /*cost*/ 1);
     illegal.legal = false;
     assert_error(
         local_input(vec![illegal]),
-        LocalShadowError::InvalidInput(InvalidInput::IllegalFactor(
-            "candidate:000".to_string(),
-        )),
+        LocalShadowError::InvalidInput(InvalidInput::IllegalFactor("candidate:000".to_string())),
     );
 
     assert_error(
-        local_input(vec![factor(/*index*/ 0, /*gain*/ 1, /*cost*/ 0)]),
+        local_input(vec![factor(
+            /*index*/ 0, /*gain*/ 1, /*cost*/ 0,
+        )]),
         LocalShadowError::InvalidInput(InvalidInput::InvalidFactorCost(
             "candidate:000".to_string(),
         )),
@@ -598,7 +613,9 @@ fn empty_support_references_fail_as_insufficient_evidence() {
 
 #[test]
 fn local_shadow_digest_domains_are_stable() {
-    let proposal = calculate(local_input(vec![factor(/*index*/ 0, /*gain*/ 7, /*cost*/ 2)]));
+    let proposal = calculate(local_input(vec![factor(
+        /*index*/ 0, /*gain*/ 7, /*cost*/ 2,
+    )]));
     assert_eq!(
         (
             proposal.candidate_input_digest.to_string(),

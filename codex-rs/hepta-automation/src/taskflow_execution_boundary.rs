@@ -30,8 +30,7 @@ pub const MAX_TASKFLOW_BOUNDARY_ENCODED_BYTES: usize = 64 * 1024;
 const MAX_STABLE_ID_BYTES: usize = 128;
 const MAX_ATTEMPT: u32 = 1_000_000;
 const MAX_RUN_REVISION: u64 = 9_223_372_036_854_775_807;
-const ZERO_DIGEST: &str =
-    "0000000000000000000000000000000000000000000000000000000000000000";
+const ZERO_DIGEST: &str = "0000000000000000000000000000000000000000000000000000000000000000";
 const REQUEST_DIGEST_DOMAIN: &[u8] =
     b"hepta.automation.taskflow.local-execution-boundary.request.v1\0";
 const ASSESSMENT_DIGEST_DOMAIN: &[u8] =
@@ -176,10 +175,7 @@ pub enum TaskFlowBoundaryError {
     #[error("invalid TaskFlow boundary field: {0}")]
     InvalidField(&'static str),
     #[error("TaskFlow boundary resource limit exceeded for {field}: maximum {maximum}")]
-    ResourceLimit {
-        field: &'static str,
-        maximum: usize,
-    },
+    ResourceLimit { field: &'static str, maximum: usize },
     #[error("TaskFlow predecessor references must be strictly ordered by step id")]
     NonCanonicalPredecessors,
     #[error("TaskFlow predecessor references contain the current step")]
@@ -198,8 +194,8 @@ pub fn assess_local_taskflow_boundary_json(
             max_bytes: MAX_TASKFLOW_BOUNDARY_ENCODED_BYTES,
         });
     }
-    let request = serde_json::from_slice(encoded)
-        .map_err(|_| TaskFlowBoundaryError::MalformedInput)?;
+    let request =
+        serde_json::from_slice(encoded).map_err(|_| TaskFlowBoundaryError::MalformedInput)?;
     assess_local_taskflow_boundary(&request)
 }
 
@@ -294,9 +290,9 @@ fn validate(request: &LocalTaskFlowBoundaryRequestV1) -> Result<(), TaskFlowBoun
 fn validate_id(value: &str, field: &'static str) -> Result<(), TaskFlowBoundaryError> {
     if value.is_empty()
         || value.len() > MAX_STABLE_ID_BYTES
-        || !value.bytes().all(|byte| {
-            byte.is_ascii_alphanumeric() || matches!(byte, b'.' | b'_' | b'-' | b':')
-        })
+        || !value
+            .bytes()
+            .all(|byte| byte.is_ascii_alphanumeric() || matches!(byte, b'.' | b'_' | b'-' | b':'))
     {
         return Err(TaskFlowBoundaryError::InvalidField(field));
     }
@@ -387,11 +383,7 @@ fn digest_assessment(
 }
 
 fn push_text(bytes: &mut Vec<u8>, value: &str) {
-    bytes.extend_from_slice(
-        &u32::try_from(value.len())
-            .unwrap_or(u32::MAX)
-            .to_be_bytes(),
-    );
+    bytes.extend_from_slice(&u32::try_from(value.len()).unwrap_or(u32::MAX).to_be_bytes());
     bytes.extend_from_slice(value.as_bytes());
 }
 

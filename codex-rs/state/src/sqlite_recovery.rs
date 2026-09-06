@@ -138,8 +138,7 @@ impl ExistingSqliteRecoveryGuard {
         let database_name = database_path
             .file_name()
             .ok_or(SqliteRecoveryError::Indeterminate)?;
-        let database =
-            RetainedObject::bind_file(&parent.descriptor, database_path, database_name)?;
+        let database = RetainedObject::bind_file(&parent.descriptor, database_path, database_name)?;
         let sidecars = [
             RetainedOptionalObject::bind(
                 &parent.descriptor,
@@ -225,9 +224,7 @@ impl RetainedObject {
         let snapshot = FileSnapshot::validated(&before, ObjectKind::PrivateDirectory)?;
         let descriptor = OpenOptions::new()
             .read(true)
-            .custom_flags(
-                libc::O_CLOEXEC | libc::O_DIRECTORY | libc::O_NOFOLLOW | libc::O_NONBLOCK,
-            )
+            .custom_flags(libc::O_CLOEXEC | libc::O_DIRECTORY | libc::O_NOFOLLOW | libc::O_NONBLOCK)
             .open(path)
             .map_err(indeterminate)?;
         let opened = FileSnapshot::validated(
@@ -296,9 +293,7 @@ impl RetainedOptionalObject {
     fn bind(parent: &File, path: PathBuf) -> Result<Self, SqliteRecoveryError> {
         match std::fs::symlink_metadata(&path) {
             Ok(_) => {
-                let file_name = path
-                    .file_name()
-                    .ok_or(SqliteRecoveryError::Indeterminate)?;
+                let file_name = path.file_name().ok_or(SqliteRecoveryError::Indeterminate)?;
                 RetainedObject::bind_file(parent, &path, file_name).map(Self::Present)
             }
             Err(error) if error.kind() == std::io::ErrorKind::NotFound => Ok(Self::Absent(path)),

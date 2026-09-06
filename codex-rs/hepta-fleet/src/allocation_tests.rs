@@ -77,10 +77,7 @@ fn assert_invalid(
     assert_eq!(calculate_local_allocation_v1(hosts, candidates), Err(error));
 }
 
-fn turn_allocations(
-    capacity: u64,
-    candidates: &[LocalAllocationCandidateV1],
-) -> Vec<u64> {
+fn turn_allocations(capacity: u64, candidates: &[LocalAllocationCandidateV1]) -> Vec<u64> {
     calculate(&[turn_host("host-a", capacity)], candidates)
         .shares()
         .iter()
@@ -92,8 +89,22 @@ fn turn_allocations(
 fn weighted_allocation_reserves_minimums_and_conserves_capacity() {
     let hosts = vec![turn_host("host-a", /*capacity*/ 12)];
     let candidates = vec![
-        request("request-a", /*i*/ 1, "host-a", /*w*/ 1, /*min*/ 2, /*want*/ 12),
-        request("request-b", /*i*/ 2, "host-a", /*w*/ 3, /*min*/ 2, /*want*/ 12),
+        request(
+            "request-a",
+            /*i*/ 1,
+            "host-a",
+            /*w*/ 1,
+            /*min*/ 2,
+            /*want*/ 12,
+        ),
+        request(
+            "request-b",
+            /*i*/ 2,
+            "host-a",
+            /*w*/ 3,
+            /*min*/ 2,
+            /*want*/ 12,
+        ),
     ];
 
     let calculation = calculate(&hosts, &candidates);
@@ -141,9 +152,30 @@ fn input_permutations_produce_the_same_order_and_digests() {
         turn_host("host-a", /*capacity*/ 5),
     ];
     let mut candidates = vec![
-        request("request-c", /*i*/ 3, "host-b", /*w*/ 1, /*min*/ 0, /*want*/ 7),
-        request("request-b", /*i*/ 2, "host-a", /*w*/ 1, /*min*/ 0, /*want*/ 5),
-        request("request-a", /*i*/ 1, "host-a", /*w*/ 1, /*min*/ 0, /*want*/ 5),
+        request(
+            "request-c",
+            /*i*/ 3,
+            "host-b",
+            /*w*/ 1,
+            /*min*/ 0,
+            /*want*/ 7,
+        ),
+        request(
+            "request-b",
+            /*i*/ 2,
+            "host-a",
+            /*w*/ 1,
+            /*min*/ 0,
+            /*want*/ 5,
+        ),
+        request(
+            "request-a",
+            /*i*/ 1,
+            "host-a",
+            /*w*/ 1,
+            /*min*/ 0,
+            /*want*/ 5,
+        ),
     ];
     let expected = calculate(&hosts, &candidates);
 
@@ -155,19 +187,34 @@ fn input_permutations_produce_the_same_order_and_digests() {
 #[test]
 fn discrete_fairness_is_capacity_monotone_and_uses_minimum_normalized_share() {
     let candidates = vec![
-        request("request-a", /*i*/ 1, "host-a", /*w*/ 1, /*min*/ 0, /*want*/ 4),
-        request("request-b", /*i*/ 2, "host-a", /*w*/ 3, /*min*/ 0, /*want*/ 4),
-        request("request-c", /*i*/ 3, "host-a", /*w*/ 3, /*min*/ 0, /*want*/ 4),
+        request(
+            "request-a",
+            /*i*/ 1,
+            "host-a",
+            /*w*/ 1,
+            /*min*/ 0,
+            /*want*/ 4,
+        ),
+        request(
+            "request-b",
+            /*i*/ 2,
+            "host-a",
+            /*w*/ 3,
+            /*min*/ 0,
+            /*want*/ 4,
+        ),
+        request(
+            "request-c",
+            /*i*/ 3,
+            "host-a",
+            /*w*/ 3,
+            /*min*/ 0,
+            /*want*/ 4,
+        ),
     ];
     let weights = [1_u128, 3, 3];
-    assert_eq!(
-        turn_allocations(/*capacity*/ 3, &candidates),
-        vec![1, 1, 1]
-    );
-    assert_eq!(
-        turn_allocations(/*capacity*/ 4, &candidates),
-        vec![1, 2, 1]
-    );
+    assert_eq!(turn_allocations(/*capacity*/ 3, &candidates), vec![1, 1, 1]);
+    assert_eq!(turn_allocations(/*capacity*/ 4, &candidates), vec![1, 2, 1]);
 
     for capacity in 0..12 {
         let before = turn_allocations(capacity, &candidates);
@@ -198,8 +245,22 @@ fn discrete_fairness_is_capacity_monotone_and_uses_minimum_normalized_share() {
 fn impossible_minimums_fail_atomically() {
     let hosts = vec![turn_host("host-a", /*capacity*/ 3)];
     let candidates = vec![
-        request("request-a", /*i*/ 1, "host-a", /*w*/ 1, /*min*/ 2, /*want*/ 4),
-        request("request-b", /*i*/ 2, "host-a", /*w*/ 1, /*min*/ 2, /*want*/ 4),
+        request(
+            "request-a",
+            /*i*/ 1,
+            "host-a",
+            /*w*/ 1,
+            /*min*/ 2,
+            /*want*/ 4,
+        ),
+        request(
+            "request-b",
+            /*i*/ 2,
+            "host-a",
+            /*w*/ 1,
+            /*min*/ 2,
+            /*want*/ 4,
+        ),
     ];
     let unchanged_hosts = hosts.clone();
     let unchanged_candidates = candidates.clone();
@@ -218,7 +279,14 @@ fn impossible_minimums_fail_atomically() {
 #[test]
 fn hostile_identity_binding_and_resource_inputs_are_rejected() {
     let hosts = vec![turn_host("host-a", /*capacity*/ 10)];
-    let valid = request("request-a", /*i*/ 1, "host-a", /*w*/ 1, /*min*/ 0, /*want*/ 5);
+    let valid = request(
+        "request-a",
+        /*i*/ 1,
+        "host-a",
+        /*w*/ 1,
+        /*min*/ 0,
+        /*want*/ 5,
+    );
 
     assert_invalid(&[], &[], LocalAllocationError::EmptyHosts);
     assert_invalid(&hosts, &[], LocalAllocationError::EmptyCandidates);
@@ -309,15 +377,28 @@ fn pilot_host_and_request_cardinality_limits_fail_closed() {
         .map(|index| turn_host(&format!("host-{index:03}"), /*capacity*/ 1))
         .collect();
     let one_candidate = vec![request(
-        "request-a", /*i*/ 1, "host-000", /*w*/ 1, /*min*/ 0, /*want*/ 1,
+        "request-a",
+        /*i*/ 1,
+        "host-000",
+        /*w*/ 1,
+        /*min*/ 0,
+        /*want*/ 1,
     )];
-    assert_invalid(&hosts, &one_candidate, LocalAllocationError::HostLimitExceeded);
+    assert_invalid(
+        &hosts,
+        &one_candidate,
+        LocalAllocationError::HostLimitExceeded,
+    );
 
     let hosts = vec![turn_host("host-a", u64::MAX)];
     let candidates: Vec<_> = (0..=MAX_LOCAL_ALLOCATION_CANDIDATES)
         .map(|index| {
             request(
-                &format!("request-{index:04}"), index, "host-a", /*w*/ 1, /*min*/ 0,
+                &format!("request-{index:04}"),
+                index,
+                "host-a",
+                /*w*/ 1,
+                /*min*/ 0,
                 /*want*/ 1,
             )
         })
@@ -365,7 +446,9 @@ fn content_digest_has_independent_golden_and_binds_input_semantics() {
     );
 
     let mut changed_capacity = hosts.clone();
-    changed_capacity[0].caller_supplied_allocatable.concurrent_turns = 11;
+    changed_capacity[0]
+        .caller_supplied_allocatable
+        .concurrent_turns = 11;
     let capacity_result = calculate(&changed_capacity, &candidates);
     assert_eq!(capacity_result.shares(), baseline.shares());
     assert_ne!(
@@ -393,10 +476,20 @@ fn maximum_u64_capacity_is_allocated_without_overflow() {
     let hosts = vec![turn_host("host-a", u64::MAX)];
     let candidates = vec![
         request(
-            "request-a", /*i*/ 1, "host-a", /*w*/ 1, /*min*/ 1, u64::MAX,
+            "request-a",
+            /*i*/ 1,
+            "host-a",
+            /*w*/ 1,
+            /*min*/ 1,
+            u64::MAX,
         ),
         request(
-            "request-b", /*i*/ 2, "host-a", MAX_LOCAL_ALLOCATION_WEIGHT, /*min*/ 1, u64::MAX,
+            "request-b",
+            /*i*/ 2,
+            "host-a",
+            MAX_LOCAL_ALLOCATION_WEIGHT,
+            /*min*/ 1,
+            u64::MAX,
         ),
     ];
     let calculation = calculate(&hosts, &candidates);
@@ -413,7 +506,12 @@ fn result_is_explicitly_local_unverified_and_deny_all() {
     let result = calculate(
         &[turn_host("host-a", /*capacity*/ 1)],
         &[request(
-            "request-a", /*i*/ 1, "host-a", /*w*/ 1, /*min*/ 0, /*want*/ 1,
+            "request-a",
+            /*i*/ 1,
+            "host-a",
+            /*w*/ 1,
+            /*min*/ 0,
+            /*want*/ 1,
         )],
     );
 

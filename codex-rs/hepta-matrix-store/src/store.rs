@@ -221,9 +221,7 @@ impl MatrixDurableStore {
                 if existing.owner_agent_id != self.owner_agent_id {
                     return Err(MatrixDurableError::AccessDenied);
                 }
-                if sync_v2_tombstone::is_room_replaced_tx(&mut transaction, &draft.room_id)
-                    .await?
-                {
+                if sync_v2_tombstone::is_room_replaced_tx(&mut transaction, &draft.room_id).await? {
                     return Err(MatrixDurableError::AccessDenied);
                 }
                 if existing.agent_user_id == draft.agent_user_id
@@ -2748,14 +2746,7 @@ async fn require_current_binding(
     {
         return Err(MatrixDurableError::AccessDenied);
     }
-    if sync_v2_tombstone::is_room_tombstoned_tx(
-        transaction,
-        room_id,
-        revision,
-        generation,
-    )
-    .await?
-    {
+    if sync_v2_tombstone::is_room_tombstoned_tx(transaction, room_id, revision, generation).await? {
         return Err(MatrixDurableError::AccessDenied);
     }
     Ok(())
