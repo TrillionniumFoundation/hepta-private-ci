@@ -1,11 +1,20 @@
 use super::*;
+use crate::acl::add_deny_write_ace;
 use crate::acl::ensure_allow_mask_aces;
 use crate::acl::ensure_allow_write_aces;
+use crate::acl::fetch_dacl_handle;
 use pretty_assertions::assert_eq;
+use windows_sys::Win32::Security::Authorization::DENY_ACCESS;
+use windows_sys::Win32::Security::Authorization::SE_FILE_OBJECT;
+use windows_sys::Win32::Security::Authorization::SetNamedSecurityInfoW;
+use windows_sys::Win32::Security::CONTAINER_INHERIT_ACE;
+use windows_sys::Win32::Security::DACL_SECURITY_INFORMATION;
 use windows_sys::Win32::Security::EqualSid;
 use windows_sys::Win32::Security::ImpersonateLoggedOnUser;
+use windows_sys::Win32::Security::OBJECT_INHERIT_ACE;
 use windows_sys::Win32::Security::RevertToSelf;
 use windows_sys::Win32::Security::TokenRestrictedSids;
+use windows_sys::Win32::Storage::FileSystem::DELETE;
 use windows_sys::Win32::Storage::FileSystem::FILE_ALL_ACCESS;
 
 struct OwnedToken(HANDLE);
@@ -104,6 +113,109 @@ fn elevated_token_includes_network_proxy_restricting_sid() -> Result<()> {
     }
 
     assert!(has_network_proxy_sid?);
+    Ok(())
+}
+
+#[test]
+fn partial_delete_deny_is_repaired_before_native_workspace_writes() -> Result<()> {
+    let fixture = tempfile::tempdir()?;
+    let capability = LocalSid::from_string("S-1-5-21-171-272-373-474")?;
+    let everyone = LocalSid::from_string("S-1-1-0")?;
+    // SAFETY: the existing fixture and validated SIDs remain live for both grants.
+    unsafe {
+        ensure_allow_mask_aces(fixture.path(), &[everyone.as_ptr()], FILE_ALL_ACCESS)?;
+        ensure_allow_write_aces(fixture.path(), &[capability.as_ptr()])?;
+    }
+    let existing = fixture.path().join("existing.txt");
+    let created = fixture.path().join("created.txt");
+    std::fs::write(&existing, "original")?;
+    let entry = EXPLICIT_ACCESS_W {
+        grfAccessPermissions: DELETE,
+        grfAccessMode: DENY_ACCESS,
+        grfInheritance: OBJECT_INHERIT_ACE | CONTAINER_INHERIT_ACE,
+        Trustee: TRUSTEE_W {
+            pMultipleTrustee: std::ptr::null_mut(),
+            MultipleTrusteeOperation: 0,
+            TrusteeForm: TRUSTEE_IS_SID,
+            TrusteeType: TRUSTEE_IS_UNKNOWN,
+            ptstrName: capability.as_ptr().cast(),
+        },
+    };
+    // SAFETY: the fixture exists and all SID/ACL allocations live through their
+    // calls. Both returned allocations are freed after the named setter copies.
+    let code = unsafe {
+        let (dacl, descriptor) = fetch_dacl_handle(fixture.path())?;
+        let mut partial_dacl = std::ptr::null_mut();
+        let code = SetEntriesInAclW(
+            /*ccountofexplicitentries*/ 1,
+            &entry,
+            dacl,
+            &mut partial_dacl,
+        );
+        let code = if code == ERROR_SUCCESS {
+            SetNamedSecurityInfoW(
+                to_wide(fixture.path()).as_ptr() as *mut u16,
+                SE_FILE_OBJECT,
+                DACL_SECURITY_INFORMATION,
+                std::ptr::null_mut(),
+                std::ptr::null_mut(),
+                partial_dacl,
+                std::ptr::null_mut(),
+            )
+        } else {
+            code
+        };
+        if !partial_dacl.is_null() {
+            LocalFree(partial_dacl as HLOCAL);
+        }
+        LocalFree(descriptor as HLOCAL);
+        code
+    };
+    anyhow::ensure!(code == ERROR_SUCCESS, "seed partial delete deny: {code}");
+    // SAFETY: the base token stays owned until restricted-token creation completes.
+    let base = OwnedToken(unsafe { get_current_token_for_restriction()? });
+    // SAFETY: the owned base token and validated capability SID are live; the
+    // resulting token is immediately owned and closed after both impersonations.
+    let token = OwnedToken(unsafe {
+        create_workspace_write_token_with_caps_from(base.0, &[capability.as_ptr()])?
+    });
+    {
+        // SAFETY: token remains owned throughout this impersonation scope.
+        let _impersonation = unsafe { Impersonation::enter(token.0)? };
+        std::fs::write(&existing, "before repair")?;
+    }
+    // SAFETY: the fixture and validated capability SID are live for the repair.
+    let repaired = unsafe { add_deny_write_ace(fixture.path(), capability.as_ptr())? };
+    // SAFETY: the same objects remain live. Check native directory and file
+    // storage retains the constructor's complete mask and inheritance scope.
+    let repeated_repairs = unsafe {
+        (
+            add_deny_write_ace(fixture.path(), capability.as_ptr())?,
+            add_deny_write_ace(&existing, capability.as_ptr())?,
+            add_deny_write_ace(&existing, capability.as_ptr())?,
+        )
+    };
+    let (read, denied) = {
+        // SAFETY: token remains owned throughout this impersonation scope.
+        let _impersonation = unsafe { Impersonation::enter(token.0)? };
+        let read = std::fs::read_to_string(&existing)?;
+        let denied = [
+            std::fs::write(&existing, "after repair"),
+            std::fs::write(&created, "created"),
+        ]
+        .map(|result| result.err().map(|error| error.kind()));
+        (read, denied)
+    };
+    assert_eq!(
+        (repaired, denied),
+        (true, [Some(std::io::ErrorKind::PermissionDenied); 2]),
+    );
+    assert_eq!(repeated_repairs, (false, true, false));
+    assert_eq!(read, "before repair");
+    assert_eq!(
+        (std::fs::read_to_string(&existing)?, created.exists()),
+        ("before repair".to_owned(), false),
+    );
     Ok(())
 }
 
