@@ -3,7 +3,7 @@
   "schemaVersion": 1,
   "planId": "HEPTA-GLOBAL-MODULAR-DEVELOPMENT-PLAN",
   "planVersion": "8.0.0",
-  "sourceSnapshot": "cef3807fb9eff095099fbba73c75f8e6158f9afd",
+  "sourceSnapshot": "a663afbaa087bbbd4b837882a87f40ec6341cbe3",
   "evidenceClass": "source_observation_only",
   "productExecutionProved": false,
   "observations": [
@@ -46,7 +46,7 @@
         "snapshot_records",
         "BTreeMap"
       ],
-      "interpretation": "This pinned owner remains in-memory, with checked failure atomicity and original retry receipts. The separate hepta-memory owner provides SQLite durability and opt-in exact current-cut recovery; independent current witness authority and production admission are not inferred."
+      "interpretation": "This pinned owner remains in-memory, with checked failure atomicity and original retry receipts. The separate hepta-memory owner provides SQLite storage and exact current-cut witness capture; recovery admission remains fail-closed without opening SQLite until a descriptor-safe backend and current writer fencing are available. Independent current witness authority and production admission are not inferred."
     },
     {
       "module": "neuron.runtime",
@@ -64,16 +64,17 @@
     {
       "module": "learning.artifacts",
       "path": "codex-rs/hepta-learning-artifacts/src/lib.rs",
-      "blobSha": "46ab265223a43845247e4a6012ccbda14c9e98f1",
+      "blobSha": "7bf21a7d83154ec3046a0b3966ab99d6301d99b8",
       "exports": [
         "ArtifactRegistry",
+        "CreateOnlyArtifactFile",
         "write_candidate_payload",
         "read_candidate_payload",
         "write_registry_snapshot",
         "read_registry_snapshot",
         "prepare_dataset_revocation"
       ],
-      "interpretation": "Existing artifact storage and eligibility exports do not prove selection, new-process loading or release."
+      "interpretation": "Artifact storage writers consume an opaque atomically created CreateOnlyArtifactFile; shared-lock readers and lineage eligibility remain separate from host-authenticated current witnesses, selection, production new-process loading and release."
     }
   ]
 }
