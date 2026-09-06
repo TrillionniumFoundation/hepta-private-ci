@@ -40,9 +40,7 @@ jobs:
 
           workflow = Path('.github/workflows/v8-canary.yml')
           text = workflow.read_text(encoding='utf-8')
-          invocation_anchor = (
-              '          python3 .github/scripts/run_bazel_with_buildbuddy.py \\\n'
-          )
+          invocation_anchor = '          python3 .github/scripts/run_bazel_with_buildbuddy.py '
           archive_anchor = (
               '          archive_path="${V8_BUILD_TARGET#//third_party/v8:}"\n'
           )
