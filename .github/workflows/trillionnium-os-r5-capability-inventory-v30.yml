@@ -1,4 +1,4 @@
-name: Trillionnium OS G1 target capability inventory v30
+name: Trillionnium OS G1 candidate inventory cancellation sentinel v30
 
 on:
   push:
@@ -9,113 +9,30 @@ on:
 
 permissions: {}
 
+# This exact group supersedes and cancels the earlier queued self-hosted
+# inventory. Candidate-controlled workflow source must never execute on a
+# persistent target runner, even for read-only discovery.
 concurrency:
   group: trillionnium-os-g1-capability-inventory-v30
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
-  desktop:
-    name: Read-only desktop G1 capability inventory
-    runs-on: [self-hosted, linux, x64]
-    timeout-minutes: 10
+  cancel-and-record:
+    name: Cancel superseded candidate-controlled target inventory
+    runs-on: ubuntu-24.04
+    timeout-minutes: 2
     steps:
-      - name: Inspect fixed paths and local capabilities without checkout
-        shell: bash
-        run: &linux_inventory |
-          set -euo pipefail
-          umask 077
-          test "$GITHUB_REPOSITORY" = TrillionniumFoundation/hepta-private-ci
-          test "$GITHUB_REF" = refs/heads/ops/trillionnium-os-runner-probe-20260906
-          printf 'inventory_schema=org.trillionnium.g1-target-capability-inventory.v1\n'
-          printf 'qualification=DISCOVERY_ONLY_NO_EVIDENCE_OR_EXECUTION_AUTHORITY\n'
-          printf 'runner_name=%s\nrunner_os=%s\nrunner_arch=%s\n' "$RUNNER_NAME" "$RUNNER_OS" "$RUNNER_ARCH"
-          printf 'candidate_checkout_performed=false\nexternal_harness_executed=false\ndevice_contacted=false\nauthorization_consumed=false\n'
-          uname -a || true
-          printf 'pid1='; cat /proc/1/comm 2>/dev/null || printf 'unavailable\n'
-          printf '%s\n' 'self_cgroup_begin'
-          cat /proc/self/cgroup 2>/dev/null || true
-          printf '%s\n' 'self_cgroup_end'
-          printf 'cgroup_controllers='; cat /sys/fs/cgroup/cgroup.controllers 2>/dev/null || printf 'unavailable\n'
-          for tool in python3 openssl git cargo rustc adb java ninja codex; do
-            if command -v "$tool" >/dev/null 2>&1; then
-              printf 'tool_%s=present:%s\n' "$tool" "$(command -v "$tool")"
-            else
-              printf 'tool_%s=absent\n' "$tool"
-            fi
-          done
-          for kind in \
-            installed_root_linux_process_matrix \
-            installed_codex_same_turn \
-            clean_android_target_files \
-            physical_android_adb \
-            destructive_fault_matrix \
-            signed_public_release
-          do
-            harness="/opt/owner-open-r5/harnesses/${kind}"
-            attestation="/etc/owner-open-r5/attestations/${kind}.json"
-            for role in harness attestation; do
-              eval "path=\${$role}"
-              if [ -L "$path" ]; then
-                printf '%s_%s=symlink_rejected\n' "$kind" "$role"
-              elif [ -f "$path" ]; then
-                mode=$(stat -c '%a' "$path" 2>/dev/null || printf unknown)
-                uid=$(stat -c '%u' "$path" 2>/dev/null || printf unknown)
-                gid=$(stat -c '%g' "$path" 2>/dev/null || printf unknown)
-                links=$(stat -c '%h' "$path" 2>/dev/null || printf unknown)
-                bytes=$(stat -c '%s' "$path" 2>/dev/null || printf unknown)
-                printf '%s_%s=regular mode=%s uid=%s gid=%s links=%s bytes=%s\n' \
-                  "$kind" "$role" "$mode" "$uid" "$gid" "$links" "$bytes"
-              elif [ -e "$path" ]; then
-                printf '%s_%s=non_regular\n' "$kind" "$role"
-              else
-                printf '%s_%s=absent\n' "$kind" "$role"
-              fi
-            done
-          done
-          printf 'inventory_result=COMPLETE_DISCOVERY_ONLY\n'
-
-  rog:
-    name: Read-only ROG G1 capability inventory
-    runs-on: [self-hosted, linux, x64, rog]
-    timeout-minutes: 10
-    steps:
-      - name: Inspect fixed paths and local capabilities without checkout
-        shell: bash
-        run: *linux_inventory
-
-  pocket4:
-    name: Read-only Pocket4 G1 capability inventory
-    runs-on: [self-hosted, linux, x64, pocket4]
-    timeout-minutes: 10
-    steps:
-      - name: Inspect fixed paths and local capabilities without checkout
-        shell: bash
-        run: *linux_inventory
-
-  macbook:
-    name: Read-only MacBook G1 capability inventory
-    runs-on: [self-hosted, macOS, ARM64, macbook]
-    timeout-minutes: 10
-    steps:
-      - name: Inspect platform capabilities without checkout
+      - name: Retain the fail-closed boundary
         shell: bash
         run: |
           set -euo pipefail
-          umask 077
           test "$GITHUB_REPOSITORY" = TrillionniumFoundation/hepta-private-ci
           test "$GITHUB_REF" = refs/heads/ops/trillionnium-os-runner-probe-20260906
-          printf 'inventory_schema=org.trillionnium.g1-target-capability-inventory.v1\n'
-          printf 'qualification=DISCOVERY_ONLY_NO_EVIDENCE_OR_EXECUTION_AUTHORITY\n'
-          printf 'runner_name=%s\nrunner_os=%s\nrunner_arch=%s\n' "$RUNNER_NAME" "$RUNNER_OS" "$RUNNER_ARCH"
-          printf 'candidate_checkout_performed=false\nexternal_harness_executed=false\ndevice_contacted=false\nauthorization_consumed=false\n'
-          sw_vers || true
-          uname -a || true
-          for tool in python3 openssl git cargo rustc adb java ninja codex; do
-            if command -v "$tool" >/dev/null 2>&1; then
-              printf 'tool_%s=present:%s\n' "$tool" "$(command -v "$tool")"
-            else
-              printf 'tool_%s=absent\n' "$tool"
-            fi
-          done
-          printf 'fixed_linux_harness_inventory=not_applicable_on_macos\n'
-          printf 'inventory_result=COMPLETE_DISCOVERY_ONLY\n'
+          printf '%s\n' \
+            'result=CANDIDATE_SELF_HOSTED_INVENTORY_CANCELLED' \
+            'candidate_checkout_performed=false' \
+            'candidate_code_executed_on_target=false' \
+            'target_runner_allocation_authorized=false' \
+            'evidence_claimed=false' \
+            'promotion_authorized=false' \
+            'public_release=false'
