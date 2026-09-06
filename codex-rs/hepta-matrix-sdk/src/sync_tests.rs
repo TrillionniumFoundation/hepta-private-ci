@@ -13,6 +13,7 @@ use codex_hepta_paths::HeptaAgentLayout;
 use codex_hepta_paths::HeptaFleetRoot;
 use matrix_sdk::deserialized_responses::TimelineEvent;
 use matrix_sdk::sync::JoinedRoomUpdate;
+use matrix_sdk::sync::LeftRoomUpdate;
 use matrix_sdk::sync::Timeline;
 use pretty_assertions::assert_eq;
 use serde_json::json;
@@ -189,5 +190,346 @@ async fn v1_redaction_commits_before_replay_and_survives_reopen() -> TestResult 
         Some("s1".to_string())
     );
     reopened.close().await;
+    Ok(())
+}
+
+#[tokio::test]
+async fn nested_redaction_and_missing_target_never_reenter_ingress() -> TestResult {
+    let fixture = Fixture::new().await?;
+    let mut nested = redaction("$nested", "$deleted");
+    nested["content"] = json!({}); // unsigned redactions need no redacts field.
+    let deleted = json!({"event_id":"$deleted","sender":OWNER,"origin_server_ts":10,
+        "type":"m.room.message","content":{},"unsigned":{"redacted_because":nested}});
+    fixture
+        .composer()
+        .commit_response(
+            &response(vec![deleted, redaction("$nested", "$deleted")])?,
+            /*checkpoint*/ None,
+            /*observed_at_ms*/ 20,
+            |_| Some(RoomVersionRules::V11),
+        )
+        .await?;
+    let checkpoint = fixture
+        .store
+        .sync_checkpoint(/*binding_revision*/ 1, /*generation*/ 1)
+        .await?;
+    let mut replay = response(vec![message("$deleted", "must remain deleted")])?;
+    replay.next_batch = "s2".to_string();
+    fixture
+        .composer()
+        .commit_response(
+            &replay,
+            checkpoint.as_ref(),
+            /*observed_at_ms*/ 30,
+            |_| Some(RoomVersionRules::V11),
+        )
+        .await?;
+    assert!(fixture.store.pending_inbox(/*limit*/ 10).await?.is_empty());
+    assert_eq!(fixture.ingress.metrics().accepted, 0);
+    fixture.store.close().await;
+    Ok(())
+}
+
+#[tokio::test]
+async fn incomplete_or_conflicting_response_leaves_all_rooms_and_cursor_unchanged() -> TestResult {
+    let fixture = Fixture::new().await?;
+    let before = fixture.store.snapshot(/*now_ms*/ 100, /*limit*/ 10).await?;
+    let mut limited = response(vec![message("$valid", "must rollback")])?;
+    limited.rooms.joined.insert(
+        SECOND_ROOM.try_into()?,
+        JoinedRoomUpdate {
+            timeline: Timeline {
+                limited: true,
+                ..Default::default()
+            },
+            ..Default::default()
+        },
+    );
+    let mut missing_leave = response(vec![message("$valid", "must rollback")])?;
+    missing_leave
+        .rooms
+        .left
+        .insert(SECOND_ROOM.try_into()?, LeftRoomUpdate::default());
+    let mut mixed_room = response(vec![message("$valid", "must rollback")])?;
+    mixed_room
+        .rooms
+        .left
+        .insert(ROOM.try_into()?, LeftRoomUpdate::default());
+    let mut outside_scope = response(Vec::new())?;
+    outside_scope.rooms.joined.insert(
+        "!outside:example.test".try_into()?,
+        JoinedRoomUpdate::default(),
+    );
+    let mut invited = response(Vec::new())?;
+    invited
+        .rooms
+        .invited
+        .insert(ROOM.try_into()?, Default::default());
+    let mut knocked = response(Vec::new())?;
+    knocked
+        .rooms
+        .knocked
+        .insert(ROOM.try_into()?, Default::default());
+    let mut cross_room = message("$cross-room", "wrong container");
+    cross_room["room_id"] = json!(SECOND_ROOM);
+    let mut wrong_nested_target = redaction("$nested", "$other-target");
+    let mut wrong_nested_room = redaction("$nested", "$deleted");
+    wrong_nested_room["room_id"] = json!(SECOND_ROOM);
+    let conflicting_nested = [&mut wrong_nested_target, &mut wrong_nested_room]
+        .into_iter()
+        .map(|deletion| {
+            response(vec![
+                json!({"event_id":"$deleted","sender":OWNER,"origin_server_ts":10,
+            "type":"m.room.message","content":{},"unsigned":{"redacted_because":deletion}}),
+            ])
+        })
+        .collect::<TestResult<Vec<_>>>()?;
+    for rejected in [
+        limited, missing_leave, mixed_room, outside_scope, invited, knocked,
+        response(vec![cross_room])?,
+        response(vec![message("$same", "one"), message("$same", "two")])?,
+        response(vec![message("$valid", "must rollback"), json!({"type":"m.room.redaction","content":{}})])?,
+        response(vec![json!({"event_id":"$encrypted","sender":OWNER,"origin_server_ts":10,
+            "type":"m.room.encrypted","content":{"algorithm":"m.megolm.v1.aes-sha2",
+                "ciphertext":"ciphertext","sender_key":"key","session_id":"session","device_id":"DEVICE"}})])?,
+        response(vec![json!({"event_id":"$deleted","sender":OWNER,"origin_server_ts":10,
+            "type":"m.room.message","content":{},"unsigned":{"redacted_because":{}}})])?,
+        response(vec![message("$oversized", &"x".repeat(MAX_RAW_EVENT_BYTES))])?,
+        response((0..=MAX_MATRIX_SYNC_MUTATIONS_V2).map(|i| message(&format!("$bound-{i}"), "x")).collect())?,
+        response((0..17).map(|i| message(&format!("$bytes-{i}"), &"x".repeat(1_000_000))).collect())?,
+    ].into_iter().chain(conflicting_nested) {
+        assert_eq!(fixture.composer().commit_response(&rejected, /*checkpoint*/ None,
+            /*observed_at_ms*/ 20, |_| Some(RoomVersionRules::V11)).await, Err(MatrixSdkError::Sync));
+        assert_eq!(fixture.store.snapshot(/*now_ms*/ 100, /*limit*/ 10).await?, before);
+        assert_eq!(fixture.store.sync_checkpoint(/*binding_revision*/ 1, /*generation*/ 1).await?, None);
+    }
+    fixture.store.close().await;
+    Ok(())
+}
+
+#[tokio::test]
+async fn message_policy_and_repeated_page_keep_exact_ingress_counts() -> TestResult {
+    let fixture = Fixture::new().await?;
+    let valid = message("$valid", "admit once");
+    let mut notice = message("$notice", "ignore notice");
+    notice["content"]["msgtype"] = json!("m.notice");
+    let mut missing_mention = message("$missing", "ignore missing mention");
+    missing_mention["content"]
+        .as_object_mut()
+        .expect("content")
+        .remove("m.mentions");
+    let mut wrong_sender = message("$sender", "ignore sender");
+    wrong_sender["sender"] = json!("@intruder:example.test");
+    fixture
+        .composer()
+        .commit_response(
+            &response(vec![
+                json!({"type":"m.room.message","content":{}}),
+                notice,
+                missing_mention,
+                wrong_sender,
+                valid.clone(),
+            ])?,
+            /*checkpoint*/ None,
+            /*observed_at_ms*/ 20,
+            |_| Some(RoomVersionRules::V11),
+        )
+        .await?;
+    let checkpoint = fixture
+        .store
+        .sync_checkpoint(/*binding_revision*/ 1, /*generation*/ 1)
+        .await?;
+    let mut repeated = response(vec![valid])?;
+    repeated.next_batch = "s2".to_string();
+    fixture
+        .composer()
+        .commit_response(
+            &repeated,
+            checkpoint.as_ref(),
+            /*observed_at_ms*/ 30,
+            |_| Some(RoomVersionRules::V11),
+        )
+        .await?;
+    let checkpoint = fixture
+        .store
+        .sync_checkpoint(/*binding_revision*/ 1, /*generation*/ 1)
+        .await?;
+    let unchanged = SyncResponse {
+        next_batch: "s2".to_string(),
+        ..Default::default()
+    };
+    fixture
+        .composer()
+        .commit_response(
+            &unchanged,
+            checkpoint.as_ref(),
+            /*observed_at_ms*/ 31,
+            |_| Some(RoomVersionRules::V11),
+        )
+        .await?;
+    // Even an unchanged cursor must return a fresh committed decision before
+    // startup readiness; idle polls cannot bypass journal saturation checks.
+    let mut expected_checkpoint = checkpoint.expect("committed checkpoint");
+    expected_checkpoint.updated_at_ms = 31;
+    assert_eq!(
+        fixture
+            .store
+            .sync_checkpoint(/*binding_revision*/ 1, /*generation*/ 1)
+            .await?,
+        Some(expected_checkpoint)
+    );
+    assert_eq!(
+        fixture.ingress.metrics(),
+        crate::IngressMetrics {
+            accepted: 1,
+            duplicate: 1,
+            ignored: 4,
+            malformed: 1,
+            failed: 0,
+        }
+    );
+    assert_eq!(fixture.store.pending_inbox(/*limit*/ 10).await?.len(), 1);
+    fixture.store.close().await;
+    Ok(())
+}
+
+#[tokio::test]
+async fn membership_and_tombstone_state_fence_without_enrolling_replacements() -> TestResult {
+    for before_state in [true, false] {
+        let fixture = Fixture::new().await?;
+        let tombstone = json!({"event_id":"$tombstone","sender":"@moderator:example.test",
+            "origin_server_ts":12,"type":"m.room.tombstone","state_key":"",
+            "content":{"body":"upgraded","replacement_room":"!replacement:example.test"}});
+        let mut response = response(vec![message("$message", "obsolete"), tombstone.clone()])?;
+        let state_events = vec![serde_json::from_value(tombstone.clone())?];
+        response
+            .rooms
+            .joined
+            .get_mut(ROOM)
+            .expect("joined fixture")
+            .state = if before_state {
+            State::Before(state_events)
+        } else {
+            State::After(state_events)
+        };
+        fixture
+            .composer()
+            .commit_response(
+                &response,
+                /*checkpoint*/ None,
+                /*observed_at_ms*/ 20,
+                |_| Some(RoomVersionRules::V11),
+            )
+            .await?;
+        assert!(fixture.store.pending_inbox(/*limit*/ 10).await?.is_empty());
+        assert!(
+            fixture
+                .store
+                .room_binding(&MatrixRoomId::parse("!replacement:example.test")?)
+                .await?
+                .is_none()
+        );
+        fixture.store.close().await;
+    }
+    let fixture = Fixture::new().await?;
+    let member = json!({"event_id":"$kick","sender":"@moderator:example.test",
+        "origin_server_ts":12,"type":"m.room.member","state_key":AGENT,
+        "content":{"membership":"ban"}});
+    let mut response = response(Vec::new())?;
+    response.rooms.joined.clear();
+    response.rooms.left.insert(
+        ROOM.try_into()?,
+        LeftRoomUpdate {
+            timeline: timeline(vec![message("$old", "old"), member.clone()])?,
+            state: State::After(vec![serde_json::from_value(member)?]),
+            ..Default::default()
+        },
+    );
+    fixture
+        .composer()
+        .commit_response(
+            &response,
+            /*checkpoint*/ None,
+            /*observed_at_ms*/ 20,
+            |_| Some(RoomVersionRules::V11),
+        )
+        .await?;
+    assert!(fixture.store.pending_inbox(/*limit*/ 10).await?.is_empty());
+    fixture.store.close().await;
+    Ok(())
+}
+
+#[tokio::test]
+async fn redaction_room_version_and_decision_payload_identity_are_enforced() -> TestResult {
+    let fixture = Fixture::new().await?;
+    let mut deletion = redaction("$redact", "$new");
+    deletion["redacts"] = json!("$old");
+    let response = response(vec![deletion])?;
+    for (rules, target) in [
+        (RoomVersionRules::V10, "$old"),
+        (RoomVersionRules::V11, "$new"),
+    ] {
+        let mutations = fixture.composer().normalize(
+            &response,
+            /*observed_at_ms*/ 20,
+            |_| Some(rules.clone()),
+        )?;
+        assert!(
+            matches!(&mutations[0].body, MatrixSyncMutationBodyV2::Redaction { target_event_id }
+            if target_event_id.as_str() == target)
+        );
+    }
+    assert!(
+        fixture
+            .composer()
+            .normalize(&response, /*observed_at_ms*/ 20, |_| None)
+            .is_err()
+    );
+    let original = self::response(vec![message("$content", "original")])?;
+    fixture
+        .composer()
+        .commit_response(
+            &original,
+            /*checkpoint*/ None,
+            /*observed_at_ms*/ 20,
+            |_| Some(RoomVersionRules::V11),
+        )
+        .await?;
+    let before = fixture.store.snapshot(/*now_ms*/ 100, /*limit*/ 10).await?;
+    let changed = self::response(vec![message("$content", "changed")])?;
+    assert_eq!(
+        fixture
+            .composer()
+            .commit_response(
+                &changed,
+                /*checkpoint*/ None,
+                /*observed_at_ms*/ 20,
+                |_| Some(RoomVersionRules::V11)
+            )
+            .await,
+        Err(MatrixSdkError::Store)
+    );
+    assert_eq!(
+        fixture.store.snapshot(/*now_ms*/ 100, /*limit*/ 10).await?,
+        before
+    );
+    let mut changed_config = fixture.config.clone();
+    changed_config.binding.require_explicit_mention = false;
+    assert_eq!(
+        MatrixSyncComposer {
+            config: &changed_config,
+            ingress: &fixture.ingress,
+            store: &fixture.store
+        }
+        .commit_response(
+            &original,
+            /*checkpoint*/ None,
+            /*observed_at_ms*/ 20,
+            |_| Some(RoomVersionRules::V11)
+        )
+        .await,
+        Err(MatrixSdkError::Configuration)
+    );
+    fixture.store.close().await;
     Ok(())
 }
