@@ -58,8 +58,15 @@ use crate::RoomThreadBindingDraft;
 use crate::model::MAX_PAGE_ITEMS;
 use crate::model::MAX_PAYLOAD_BYTES;
 
+#[path = "sync_v2.rs"]
+mod sync_v2;
+#[path = "sync_v2_tombstone.rs"]
+mod sync_v2_tombstone;
+
 const MATRIX_SCHEMA_VERSION: u32 = 1;
 const MATRIX_DB_FILENAME: &str = "matrix_1.sqlite3";
+const MATRIX_V2_SCHEMA_FINGERPRINT: &str =
+    "53a59efa865437f08e2bc84b6b44c133b53dc7f40f485ec1dc6200876d221fd1";
 static MIGRATOR: sqlx::migrate::Migrator = sqlx::migrate!("./migrations");
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq, thiserror::Error)]
@@ -81,7 +88,7 @@ pub struct MatrixDurableStore {
     pool: SqlitePool,
     owner_agent_id: AgentId,
     path: PathBuf,
-    config: MatrixDurableConfig,
+    pub(crate) config: MatrixDurableConfig,
 }
 
 impl MatrixDurableStore {
@@ -142,6 +149,10 @@ impl MatrixDurableStore {
 
     pub fn path(&self) -> &Path {
         &self.path
+    }
+
+    pub(crate) fn sqlite_pool(&self) -> &SqlitePool {
+        &self.pool
     }
 
     pub async fn close(&self) {
@@ -210,6 +221,11 @@ impl MatrixDurableStore {
                 if existing.owner_agent_id != self.owner_agent_id {
                     return Err(MatrixDurableError::AccessDenied);
                 }
+                if sync_v2_tombstone::is_room_replaced_tx(&mut transaction, &draft.room_id)
+                    .await?
+                {
+                    return Err(MatrixDurableError::AccessDenied);
+                }
                 if existing.agent_user_id == draft.agent_user_id
                     && existing.generation == draft.generation
                     && (draft.expected_revision.is_none()
@@ -225,11 +241,12 @@ impl MatrixDurableStore {
                 }
                 let active_records: i64 = sqlx::query_scalar(
                     "SELECT
-                        (SELECT COUNT(*) FROM inbox_events
-                         WHERE room_id = ? AND state = 'pending')
-                      + (SELECT COUNT(*) FROM inbox_dispatches
+                        (SELECT COUNT(*) FROM matrix_visible_inbox_events_v2
+                         WHERE room_id = ? AND state = 'pending'
+                           AND (length(payload) > 0 OR state != 'processed'))
+                      + (SELECT COUNT(*) FROM matrix_actionable_inbox_dispatches_v2
                          WHERE room_id = ? AND state IN ('begun', 'queued', 'admitted'))
-                      + (SELECT COUNT(*) FROM outbox_messages
+                      + (SELECT COUNT(*) FROM matrix_sendable_outbox_v2
                          WHERE room_id = ?
                            AND state IN ('pending', 'in_flight', 'retry_scheduled'))",
                 )
@@ -601,7 +618,7 @@ impl MatrixDurableStore {
         })
     }
 
-    async fn ingest_inbox_tx(
+    pub(crate) async fn ingest_inbox_tx(
         &self,
         transaction: &mut Transaction<'_, Sqlite>,
         draft: &InboxDraft,
@@ -611,7 +628,45 @@ impl MatrixDurableStore {
         if draft.binding_revision == 0 || draft.generation == 0 {
             return Err(MatrixDurableError::Invalid);
         }
-        if let Some(existing) = inbox_by_event_tx(transaction, &draft.event_id).await? {
+        let v2_kind = sqlx::query_scalar::<_, String>(
+            "SELECT mutation_kind FROM matrix_sync_mutations_v2 WHERE source_event_id = ?",
+        )
+        .bind(draft.event_id.as_str())
+        .fetch_optional(&mut **transaction)
+        .await
+        .map_err(unavailable)?;
+        if let Some(kind) = v2_kind {
+            if kind != "timeline" {
+                return Err(MatrixDurableError::Conflict);
+            }
+            // A V2 timeline ledger row is only compatible with V1 when its
+            // atomically persisted inbox identity still exists and matches.
+            // In particular, a tombstoned V2 timeline has no inbox row and
+            // must not let V1 reuse the globally unique event ID elsewhere.
+            return match inbox_by_event_tx(transaction, &draft.event_id).await? {
+                Some(existing) if inbox_matches_draft(&existing, draft) => {
+                    Ok(InboxDisposition::Duplicate(existing))
+                }
+                Some(_) | None => Err(MatrixDurableError::Conflict),
+            };
+        }
+        if sync_v2_tombstone::is_tombstoned_tx(
+            transaction,
+            &draft.room_id,
+            &draft.event_id,
+            draft.binding_revision,
+            draft.generation,
+        )
+        .await?
+        {
+            return Err(MatrixDurableError::AccessDenied);
+        }
+        // Duplicate classification must consult the raw identity table, not
+        // the tombstone-filtered read view. A V1 row hidden by a prior leave
+        // or redaction still owns its globally unique event ID. Otherwise a
+        // later fence or room could reach INSERT, turn the UNIQUE violation
+        // into Unavailable, and make a permanent collision look retryable.
+        if let Some(existing) = raw_inbox_by_event_tx(transaction, &draft.event_id).await? {
             if inbox_matches_draft(&existing, draft) {
                 return Ok(InboxDisposition::Duplicate(existing));
             }
@@ -845,6 +900,14 @@ impl MatrixDurableStore {
             }
             return Err(MatrixDurableError::Conflict);
         }
+        require_current_binding(
+            &mut transaction,
+            &self.owner_agent_id,
+            &existing.room_id,
+            existing.binding_revision,
+            existing.generation,
+        )
+        .await?;
         ensure_dispatch_thread_tx(
             &mut transaction,
             &existing,
@@ -934,6 +997,14 @@ impl MatrixDurableStore {
         if draft.admitted_at_ms < existing.updated_at_ms {
             return Err(MatrixDurableError::Conflict);
         }
+        require_current_binding(
+            &mut transaction,
+            &self.owner_agent_id,
+            &existing.room_id,
+            existing.binding_revision,
+            existing.generation,
+        )
+        .await?;
         ensure_dispatch_thread_tx(
             &mut transaction,
             &existing,
@@ -1111,7 +1182,8 @@ impl MatrixDurableStore {
                     project_id, state, thread_id, queued_submission_id, turn_id,
                     begun_at_ms, updated_at_ms,
                     completed_at_ms
-             FROM inbox_dispatches WHERE state IN ('begun', 'queued', 'admitted')
+             FROM matrix_actionable_inbox_dispatches_v2
+             WHERE state IN ('begun', 'queued', 'admitted')
              ORDER BY begun_at_ms, event_id LIMIT ?",
         )
         .bind(to_i64(limit as u64)?)
@@ -1131,7 +1203,7 @@ impl MatrixDurableStore {
                     payload, payload_sha256,
                     binding_revision, generation, origin_server_ts_ms, received_at_ms,
                     state, processed_at_ms
-             FROM inbox_events WHERE state = 'pending'
+             FROM matrix_visible_inbox_events_v2 WHERE state = 'pending'
              ORDER BY inbox_cursor LIMIT ?",
         )
         .bind(to_i64(limit as u64)?)
@@ -1173,6 +1245,16 @@ impl MatrixDurableStore {
                 return Ok(OutboxDisposition::Duplicate(existing));
             }
             return Err(MatrixDurableError::Conflict);
+        }
+        if sync_v2_tombstone::is_room_tombstoned_tx(
+            &mut transaction,
+            &draft.room_id,
+            draft.binding_revision,
+            draft.generation,
+        )
+        .await?
+        {
+            return Err(MatrixDurableError::AccessDenied);
         }
         require_current_binding(
             &mut transaction,
@@ -1405,6 +1487,7 @@ impl MatrixDurableStore {
     ) -> Result<Option<u64>, MatrixDurableError> {
         validate_local_identity(logical_outbox_id)?;
         validate_payload(payload)?;
+        let mut transaction = self.pool.begin().await.map_err(unavailable)?;
         let rows = sqlx::query(
             "SELECT revision, room_id, fragment, fragment_sha256,
                     binding_revision, generation
@@ -1414,13 +1497,9 @@ impl MatrixDurableStore {
         )
         .bind(logical_outbox_id)
         .bind(kind.as_str())
-        .fetch_all(&self.pool)
+        .fetch_all(&mut *transaction)
         .await
         .map_err(unavailable)?;
-        if rows.is_empty() {
-            return Ok(None);
-        }
-
         let mut exact_revision = None;
         for row in rows {
             let fragment: Vec<u8> = row.try_get("fragment").map_err(unavailable)?;
@@ -1446,7 +1525,22 @@ impl MatrixDurableStore {
                 exact_revision = Some(to_u64(row.try_get("revision").map_err(unavailable)?)?);
             }
         }
-        Ok(exact_revision)
+        if exact_revision.is_some() {
+            transaction.commit().await.map_err(unavailable)?;
+            return Ok(exact_revision);
+        }
+        if sync_v2_tombstone::is_room_tombstoned_tx(
+            &mut transaction,
+            room_id,
+            binding_revision,
+            generation,
+        )
+        .await?
+        {
+            return Err(MatrixDurableError::AccessDenied);
+        }
+        transaction.commit().await.map_err(unavailable)?;
+        Ok(None)
     }
 
     async fn coalesce_candidate(
@@ -1472,7 +1566,7 @@ impl MatrixDurableStore {
                     outbox_messages.next_attempt_at_ms, outbox_messages.lease_until_ms,
                     outbox_messages.created_at_ms, outbox_messages.updated_at_ms,
                     outbox_messages.sent_event_id
-             FROM outbox_messages
+             FROM matrix_sendable_outbox_v2 AS outbox_messages
              WHERE outbox_messages.logical_outbox_id = ?
                AND outbox_messages.room_id = ?
                AND outbox_messages.kind = 'text_delta'
@@ -1524,7 +1618,7 @@ impl MatrixDurableStore {
                     payload, payload_sha256, logical_txn_count,
                     binding_revision, generation, state, attempts, next_attempt_at_ms,
                     lease_until_ms, created_at_ms, updated_at_ms, sent_event_id
-             FROM outbox_messages
+             FROM matrix_sendable_outbox_v2
              WHERE (
                     state IN ('pending', 'retry_scheduled') AND next_attempt_at_ms <= ?
                    ) OR (
@@ -1690,6 +1784,8 @@ impl MatrixDurableStore {
         let (existing, _) = outbox_by_logical_txn_tx(&mut transaction, txn_id)
             .await?
             .ok_or(MatrixDurableError::Conflict)?;
+        // Exact terminal/retry replay is a lost-ack recovery read. A later
+        // room tombstone must not erase the already-durable outcome.
         if let Some(idempotent) = transition.idempotent_result(&existing) {
             transaction.commit().await.map_err(unavailable)?;
             return idempotent;
@@ -1697,6 +1793,9 @@ impl MatrixDurableStore {
         if existing.state != OutboxState::InFlight || existing.attempts != expected_attempt {
             return Err(MatrixDurableError::Conflict);
         }
+        // A room fence prevents new claims, but the holder of the exact
+        // already-issued attempt may still record its observed result. This
+        // transition cannot initiate another Matrix send.
         let (state, next_attempt_at_ms, sent_event_id, change_kind) = match &transition {
             OutboxTransition::Retry { next_attempt_at_ms } => (
                 OutboxState::RetryScheduled,
@@ -1766,7 +1865,7 @@ impl MatrixDurableStore {
                     payload, payload_sha256, logical_txn_count,
                     binding_revision, generation, state, attempts, next_attempt_at_ms,
                     lease_until_ms, created_at_ms, updated_at_ms, sent_event_id
-             FROM outbox_messages
+             FROM matrix_sendable_outbox_v2
              WHERE state IN ('pending', 'in_flight', 'retry_scheduled')
              ORDER BY outbox_id LIMIT ?",
         )
@@ -1785,6 +1884,18 @@ impl MatrixDurableStore {
         let record = outbox_by_logical_txn_tx(&mut transaction, txn_id)
             .await?
             .map(|(record, _)| record);
+        if let Some(record) = &record
+            && sync_v2_tombstone::is_room_tombstoned_tx(
+                &mut transaction,
+                &record.room_id,
+                record.binding_revision,
+                record.generation,
+            )
+            .await?
+        {
+            transaction.commit().await.map_err(unavailable)?;
+            return Ok(None);
+        }
         transaction.commit().await.map_err(unavailable)?;
         Ok(record)
     }
@@ -2426,7 +2537,7 @@ impl MatrixDurableStore {
                     payload, payload_sha256,
                     binding_revision, generation, origin_server_ts_ms, received_at_ms,
                     state, processed_at_ms
-             FROM inbox_events WHERE state = 'pending'
+             FROM matrix_visible_inbox_events_v2 WHERE state = 'pending'
              ORDER BY inbox_cursor LIMIT ?",
         )
         .bind(to_i64(fetch_limit as u64)?)
@@ -2444,7 +2555,8 @@ impl MatrixDurableStore {
                     project_id, state, thread_id, queued_submission_id, turn_id,
                     begun_at_ms, updated_at_ms,
                     completed_at_ms
-             FROM inbox_dispatches WHERE state IN ('begun', 'queued', 'admitted')
+             FROM matrix_actionable_inbox_dispatches_v2
+             WHERE state IN ('begun', 'queued', 'admitted')
              ORDER BY begun_at_ms, event_id LIMIT ?",
         )
         .bind(to_i64(fetch_limit as u64)?)
@@ -2462,7 +2574,7 @@ impl MatrixDurableStore {
                     payload, payload_sha256, logical_txn_count,
                     binding_revision, generation, state, attempts, next_attempt_at_ms,
                     lease_until_ms, created_at_ms, updated_at_ms, sent_event_id
-             FROM outbox_messages
+             FROM matrix_sendable_outbox_v2
              WHERE state IN ('pending', 'in_flight', 'retry_scheduled')
              ORDER BY outbox_id LIMIT ?",
         )
@@ -2493,7 +2605,7 @@ impl MatrixDurableStore {
         })
     }
 
-    async fn append_change(
+    pub(crate) async fn append_change(
         &self,
         transaction: &mut Transaction<'_, Sqlite>,
         kind: ChangeKind,
@@ -2636,10 +2748,39 @@ async fn require_current_binding(
     {
         return Err(MatrixDurableError::AccessDenied);
     }
+    if sync_v2_tombstone::is_room_tombstoned_tx(
+        transaction,
+        room_id,
+        revision,
+        generation,
+    )
+    .await?
+    {
+        return Err(MatrixDurableError::AccessDenied);
+    }
     Ok(())
 }
 
 async fn inbox_by_event_tx(
+    transaction: &mut Transaction<'_, Sqlite>,
+    event_id: &MatrixEventId,
+) -> Result<Option<InboxRecord>, MatrixDurableError> {
+    sqlx::query(
+        "SELECT inbox_cursor, event_id, room_id, sender_user_id, event_type,
+                payload, payload_sha256,
+                binding_revision, generation, origin_server_ts_ms, received_at_ms,
+                state, processed_at_ms
+         FROM matrix_visible_inbox_events_v2 WHERE event_id = ?",
+    )
+    .bind(event_id.as_str())
+    .fetch_optional(&mut **transaction)
+    .await
+    .map_err(unavailable)?
+    .map(|row| inbox_from_row(&row))
+    .transpose()
+}
+
+async fn raw_inbox_by_event_tx(
     transaction: &mut Transaction<'_, Sqlite>,
     event_id: &MatrixEventId,
 ) -> Result<Option<InboxRecord>, MatrixDurableError> {
@@ -3087,21 +3228,23 @@ async fn queue_metrics_tx(
 ) -> Result<MatrixQueueMetrics, MatrixDurableError> {
     let inbox = sqlx::query(
         "SELECT COUNT(*) AS depth, MIN(received_at_ms) AS oldest
-         FROM inbox_events WHERE state = 'pending'",
+         FROM matrix_visible_inbox_events_v2 WHERE state = 'pending'",
     )
     .fetch_one(&mut **transaction)
     .await
     .map_err(unavailable)?;
     let dispatch = sqlx::query(
         "SELECT COUNT(*) AS depth, MIN(begun_at_ms) AS oldest
-         FROM inbox_dispatches WHERE state IN ('begun', 'queued', 'admitted')",
+         FROM matrix_actionable_inbox_dispatches_v2
+         WHERE state IN ('begun', 'queued', 'admitted')",
     )
     .fetch_one(&mut **transaction)
     .await
     .map_err(unavailable)?;
     let outbox = sqlx::query(
         "SELECT COUNT(*) AS depth, MIN(created_at_ms) AS oldest
-         FROM outbox_messages WHERE state IN ('pending', 'in_flight', 'retry_scheduled')",
+         FROM matrix_sendable_outbox_v2
+         WHERE state IN ('pending', 'in_flight', 'retry_scheduled')",
     )
     .fetch_one(&mut **transaction)
     .await
@@ -3386,6 +3529,87 @@ fn change_from_row(row: &SqliteRow) -> Result<ChangeEvent, MatrixDurableError> {
     })
 }
 
+async fn verify_matrix_v2_schema(pool: &SqlitePool) -> Result<(), MatrixDurableError> {
+    let rows = sqlx::query(
+        "SELECT name, type, sql FROM sqlite_schema
+         WHERE name IN (
+            'inbox_dispatches_by_room_active',
+            'inbox_events_by_room_actionable',
+            'matrix_actionable_inbox_dispatches_v2',
+            'matrix_sendable_outbox_v2',
+            'outbox_messages_by_room_active',
+            'matrix_sync_decision_outcomes_v2',
+            'matrix_sync_decision_outcomes_v2_guard_insert',
+            'matrix_sync_decision_outcomes_v2_no_delete',
+            'matrix_sync_decision_outcomes_v2_no_update',
+            'matrix_sync_decisions_v2',
+            'matrix_sync_decisions_v2_no_delete',
+            'matrix_sync_decisions_v2_no_update',
+            'matrix_sync_mutations_v2',
+            'matrix_sync_mutations_v2_by_tombstone',
+            'matrix_sync_mutations_v2_no_delete',
+            'matrix_sync_mutations_v2_no_update',
+            'matrix_visible_inbox_events_v2'
+         ) ORDER BY name",
+    )
+    .fetch_all(pool)
+    .await
+    .map_err(unavailable)?;
+    if rows.len() != 17 {
+        return Err(MatrixDurableError::Corrupt);
+    }
+    let mut identity = Vec::new();
+    for row in rows {
+        let name: String = row.try_get("name").map_err(unavailable)?;
+        let object_type: String = row.try_get("type").map_err(unavailable)?;
+        let sql: String = row.try_get("sql").map_err(unavailable)?;
+        // SQLite preserves the migration file's checkout line endings in
+        // sqlite_schema.sql. Canonicalize only line endings so an equivalent
+        // CRLF checkout cannot make a database created by this binary fail
+        // its own schema fingerprint on restart.
+        let normalized_sql = sql.replace("\r\n", "\n").replace('\r', "\n");
+        for component in [
+            name.as_bytes(),
+            object_type.as_bytes(),
+            normalized_sql.as_bytes(),
+        ] {
+            identity.extend_from_slice(component);
+            identity.push(0);
+        }
+    }
+    if Sha256Digest::for_bytes(&identity).as_str() != MATRIX_V2_SCHEMA_FINGERPRINT {
+        return Err(MatrixDurableError::Corrupt);
+    }
+    let invalid_decisions: i64 = sqlx::query_scalar(
+        "SELECT COUNT(*) FROM matrix_sync_decisions_v2 AS decision
+         WHERE (decision.decision_kind = 'cancel' AND EXISTS (
+                   SELECT 1 FROM matrix_sync_decision_outcomes_v2 AS outcome
+                   WHERE outcome.decision_seq = decision.decision_seq
+               ))
+            OR (decision.decision_kind = 'commit' AND (
+                   (SELECT COUNT(*) FROM matrix_sync_decision_outcomes_v2 AS outcome
+                    WHERE outcome.decision_seq = decision.decision_seq)
+                       != decision.outcome_count
+                   OR (decision.outcome_count > 0 AND (
+                       (SELECT MIN(outcome_index)
+                        FROM matrix_sync_decision_outcomes_v2 AS outcome
+                        WHERE outcome.decision_seq = decision.decision_seq) != 0
+                       OR (SELECT MAX(outcome_index)
+                           FROM matrix_sync_decision_outcomes_v2 AS outcome
+                           WHERE outcome.decision_seq = decision.decision_seq)
+                              != decision.outcome_count - 1
+                   ))
+               ))",
+    )
+    .fetch_one(pool)
+    .await
+    .map_err(unavailable)?;
+    if invalid_decisions != 0 {
+        return Err(MatrixDurableError::Corrupt);
+    }
+    Ok(())
+}
+
 async fn verify_store(
     pool: &SqlitePool,
     owner_agent_id: &AgentId,
@@ -3406,20 +3630,42 @@ async fn verify_store(
         return Err(MatrixDurableError::Corrupt);
     }
     let required_objects: i64 = sqlx::query_scalar(
-        "SELECT COUNT(*) FROM sqlite_schema WHERE name IN (
-            'matrix_meta_no_update', 'matrix_meta_no_delete', 'room_bindings',
-            'room_threads', 'inbox_events', 'inbox_dispatches',
-            'outbox_messages', 'outbox_txns', 'change_log',
-            'matrix_sync_checkpoint', 'matrix_sync_checkpoint_no_delete',
-            'pending_approvals', 'matrix_control_state', 'matrix_control_events'
-         )",
+        "WITH required(name, type) AS (VALUES
+            ('matrix_meta_no_update', 'trigger'), ('matrix_meta_no_delete', 'trigger'),
+            ('room_bindings', 'table'), ('room_threads', 'table'),
+            ('inbox_events', 'table'), ('inbox_dispatches', 'table'),
+            ('outbox_messages', 'table'), ('outbox_txns', 'table'), ('change_log', 'table'),
+            ('matrix_sync_checkpoint', 'table'),
+            ('matrix_sync_checkpoint_no_delete', 'trigger'),
+            ('pending_approvals', 'table'), ('matrix_control_state', 'table'),
+            ('matrix_control_events', 'table'), ('matrix_sync_mutations_v2', 'table'),
+            ('matrix_sync_mutations_v2_by_tombstone', 'index'),
+            ('matrix_sync_mutations_v2_no_update', 'trigger'),
+            ('matrix_sync_mutations_v2_no_delete', 'trigger'),
+            ('matrix_sync_decisions_v2', 'table'),
+            ('matrix_sync_decisions_v2_no_update', 'trigger'),
+            ('matrix_sync_decisions_v2_no_delete', 'trigger'),
+            ('matrix_sync_decision_outcomes_v2', 'table'),
+            ('matrix_sync_decision_outcomes_v2_no_update', 'trigger'),
+            ('matrix_sync_decision_outcomes_v2_no_delete', 'trigger'),
+            ('matrix_sync_decision_outcomes_v2_guard_insert', 'trigger'),
+            ('inbox_events_by_room_actionable', 'index'),
+            ('inbox_dispatches_by_room_active', 'index'),
+            ('outbox_messages_by_room_active', 'index'),
+            ('matrix_visible_inbox_events_v2', 'view'),
+            ('matrix_actionable_inbox_dispatches_v2', 'view'),
+            ('matrix_sendable_outbox_v2', 'view')
+         )
+         SELECT COUNT(*) FROM required
+         JOIN sqlite_schema USING (name) WHERE sqlite_schema.type = required.type",
     )
     .fetch_one(pool)
     .await
     .map_err(unavailable)?;
-    if required_objects != 14 {
+    if required_objects != 31 {
         return Err(MatrixDurableError::Corrupt);
     }
+    verify_matrix_v2_schema(pool).await?;
     let row =
         sqlx::query("SELECT schema_version, owner_agent_id FROM matrix_meta WHERE singleton = 1")
             .fetch_one(pool)
