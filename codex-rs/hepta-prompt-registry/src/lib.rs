@@ -127,8 +127,9 @@ impl PromptRegistry {
             return Err(Error::FactorConflict(factor.factor_id.to_string()));
         }
         self.ensure_capacity(1)?;
+        self.revision = self.revision.next().map_err(|_| Error::RevisionOverflow)?;
         self.factors.insert(factor.factor_id.clone(), factor);
-        self.advance(MutationDisposition::Inserted)
+        Ok(self.receipt(MutationDisposition::Inserted))
     }
 
     pub fn admit_factor(
@@ -153,9 +154,10 @@ impl PromptRegistry {
             if factor.lifecycle != Lifecycle::Draft {
                 return Err(Error::InvalidTransition);
             }
+            self.revision = self.revision.next().map_err(|_| Error::RevisionOverflow)?;
             factor.lifecycle = Lifecycle::Admitted;
         }
-        self.advance(MutationDisposition::Transitioned)
+        Ok(self.receipt(MutationDisposition::Transitioned))
     }
 
     pub fn register_realization(
@@ -189,9 +191,10 @@ impl PromptRegistry {
             ));
         }
         self.ensure_capacity(1)?;
+        self.revision = self.revision.next().map_err(|_| Error::RevisionOverflow)?;
         self.realizations
             .insert(realization.realization_id.clone(), realization);
-        self.advance(MutationDisposition::Inserted)
+        Ok(self.receipt(MutationDisposition::Inserted))
     }
 
     pub fn retire_factor(&mut self, factor_id: &StableId) -> Result<RegistryReceipt, Error> {
@@ -202,10 +205,11 @@ impl PromptRegistry {
             if factor.lifecycle != Lifecycle::Admitted {
                 return Err(Error::InvalidTransition);
             }
+            self.revision = self.revision.next().map_err(|_| Error::RevisionOverflow)?;
             factor.lifecycle = Lifecycle::Retired;
         }
         self.disable_realizations(factor_id);
-        self.advance(MutationDisposition::Transitioned)
+        Ok(self.receipt(MutationDisposition::Transitioned))
     }
 
     pub fn revoke_factor(&mut self, factor_id: &StableId) -> Result<RegistryReceipt, Error> {
@@ -216,10 +220,11 @@ impl PromptRegistry {
             if factor.lifecycle == Lifecycle::Revoked {
                 return Err(Error::InvalidTransition);
             }
+            self.revision = self.revision.next().map_err(|_| Error::RevisionOverflow)?;
             factor.lifecycle = Lifecycle::Revoked;
         }
         self.disable_realizations(factor_id);
-        self.advance(MutationDisposition::Transitioned)
+        Ok(self.receipt(MutationDisposition::Transitioned))
     }
 
     pub fn factor(&self, factor_id: &StableId) -> Option<&PromptFactor> {
@@ -270,11 +275,6 @@ impl PromptRegistry {
             return Err(Error::CapacityExceeded);
         }
         Ok(())
-    }
-
-    fn advance(&mut self, disposition: MutationDisposition) -> Result<RegistryReceipt, Error> {
-        self.revision = self.revision.next().map_err(|_| Error::RevisionOverflow)?;
-        Ok(self.receipt(disposition))
     }
 
     fn receipt(&self, disposition: MutationDisposition) -> RegistryReceipt {
