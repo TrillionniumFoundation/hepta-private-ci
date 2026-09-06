@@ -11,6 +11,8 @@ on:
 
 # This probe does not check out repository code. It only proves that the
 # selected trusted manual lane can acquire the desktop runner.
+# `permissions: {}` is stricter than `contents: read`; no checkout is invoked,
+# so `persist-credentials: false` is not an applicable action input.
 permissions: {}
 
 jobs:
