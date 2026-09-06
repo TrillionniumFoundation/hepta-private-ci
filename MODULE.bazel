@@ -143,6 +143,12 @@ single_version_override(
     ],
 )
 
+# Expose the installed MSVC compiler only for the ABI-scoped local Windows
+# fallback toolchain. The wrapper enables detection for that invocation;
+# hermetic builds retain BAZEL_DO_NOT_DETECT_CPP_TOOLCHAIN=1.
+cc_configure = use_extension("@rules_cc//cc:extensions.bzl", "cc_configure_extension")
+use_repo(cc_configure, "local_config_cc")
+
 bazel_dep(name = "rules_platform", version = "0.1.0")
 bazel_dep(name = "aws-lc", version = "5.1.0.bcr.1")
 bazel_dep(name = "rules_rs", version = "0.0.96")

@@ -30,6 +30,8 @@ class WindowsLocalFallbackTest(unittest.TestCase):
                         "--platforms=//:windows_x86_64_gnullvm",
                         "--extra_execution_platforms=//:windows_x86_64_msvc",
                         "--extra_toolchains=//:windows_gnullvm_tests_on_msvc_host_toolchain",
+                        "--extra_toolchains=//:local_windows_msvc_cc_toolchain",
+                        "--repo_env=BAZEL_DO_NOT_DETECT_CPP_TOOLCHAIN=0",
                         "--",
                         "target",
                     ],
@@ -67,6 +69,8 @@ class WindowsLocalFallbackTest(unittest.TestCase):
                 "--platforms=//:windows_x86_64_gnullvm",
                 "--extra_execution_platforms=//:windows_x86_64_msvc",
                 "--extra_toolchains=//:windows_gnullvm_tests_on_msvc_host_toolchain",
+                "--extra_toolchains=//:local_windows_msvc_cc_toolchain",
+                "--repo_env=BAZEL_DO_NOT_DETECT_CPP_TOOLCHAIN=0",
                 "--config=clippy",
                 "//...",
             ],
@@ -92,6 +96,8 @@ class WindowsLocalFallbackTest(unittest.TestCase):
                 "--platforms=//:windows_x86_64_gnullvm",
                 "--extra_execution_platforms=//:windows_x86_64_msvc",
                 "--extra_toolchains=//:windows_gnullvm_tests_on_msvc_host_toolchain",
+                "--extra_toolchains=//:local_windows_msvc_cc_toolchain",
+                "--repo_env=BAZEL_DO_NOT_DETECT_CPP_TOOLCHAIN=0",
                 *args[3:],
             ],
         )
@@ -112,6 +118,8 @@ class WindowsLocalFallbackTest(unittest.TestCase):
                         "--config=ci-windows",
                         "--extra_execution_platforms=//:windows_x86_64_msvc",
                         "--extra_toolchains=//:windows_gnullvm_tests_on_msvc_host_toolchain",
+                        "--extra_toolchains=//:local_windows_msvc_cc_toolchain",
+                        "--repo_env=BAZEL_DO_NOT_DETECT_CPP_TOOLCHAIN=0",
                         *platforms,
                         "//...",
                     ],
@@ -121,6 +129,8 @@ class WindowsLocalFallbackTest(unittest.TestCase):
         support = [
             "--extra_execution_platforms=//:custom,//:windows_x86_64_msvc",
             "--extra_toolchains=//:windows_gnullvm_tests_on_msvc_host_toolchain",
+            "--extra_toolchains=//:local_windows_msvc_cc_toolchain",
+            "--repo_env=BAZEL_DO_NOT_DETECT_CPP_TOOLCHAIN=0",
         ]
         self.assertEqual(
             wrapper.bazel_args_with_remote_config(
@@ -136,6 +146,39 @@ class WindowsLocalFallbackTest(unittest.TestCase):
                 "//...",
             ],
         )
+
+    def test_explicit_compiler_and_detection_setting_take_precedence(self) -> None:
+        for options in (
+            [
+                "--extra_toolchains=//:custom-msvc-compiler",
+                "--repo_env=BAZEL_DO_NOT_DETECT_CPP_TOOLCHAIN=1",
+            ],
+            [
+                "--extra_toolchains",
+                "//:custom-msvc-compiler",
+                "--repo_env",
+                "BAZEL_DO_NOT_DETECT_CPP_TOOLCHAIN=1",
+            ],
+        ):
+            with self.subTest(options=options):
+                self.assertEqual(
+                    wrapper.bazel_args_with_remote_config(
+                        ["build", "--config=ci-windows-cross", *options, "//..."],
+                        {"RUNNER_OS": "Windows"},
+                    ),
+                    [
+                        "build",
+                        "--config=ci-windows",
+                        "--host_platform=//:local_windows_msvc",
+                        "--platforms=//:windows_x86_64_gnullvm",
+                        "--extra_execution_platforms=//:windows_x86_64_msvc",
+                        "--extra_toolchains=//:windows_gnullvm_tests_on_msvc_host_toolchain",
+                        "--extra_toolchains=//:local_windows_msvc_cc_toolchain",
+                        "--repo_env=BAZEL_DO_NOT_DETECT_CPP_TOOLCHAIN=0",
+                        *options,
+                        "//...",
+                    ],
+                )
 
     def test_explicit_msvc_host_is_not_silently_reinterpreted(self) -> None:
         self.assertEqual(
@@ -161,6 +204,8 @@ class WindowsLocalFallbackTest(unittest.TestCase):
                 "--platforms=//:windows_x86_64_gnullvm",
                 "--extra_execution_platforms=//:windows_x86_64_msvc",
                 "--extra_toolchains=//:windows_gnullvm_tests_on_msvc_host_toolchain",
+                "--extra_toolchains=//:local_windows_msvc_cc_toolchain",
+                "--repo_env=BAZEL_DO_NOT_DETECT_CPP_TOOLCHAIN=0",
                 "--config=ci-windows",
                 "//...",
             ],
@@ -184,7 +229,13 @@ class WindowsLocalFallbackTest(unittest.TestCase):
                 )
 
     def test_arguments_after_separator_are_neither_interpreted_nor_removed(self) -> None:
-        payload = ["--config=ci-windows-cross", "--platforms=//:payload", "spaced value"]
+        payload = [
+            "--config=ci-windows-cross",
+            "--platforms=//:payload",
+            "--extra_toolchains=//:local_windows_msvc_cc_toolchain",
+            "--repo_env=BAZEL_DO_NOT_DETECT_CPP_TOOLCHAIN=0",
+            "spaced value",
+        ]
         args = ["run", "--config=ci-windows-cross", "//:tool", "--", *payload]
         self.assertEqual(
             wrapper.bazel_args_with_remote_config(args, {"RUNNER_OS": "Windows"}),
@@ -195,6 +246,8 @@ class WindowsLocalFallbackTest(unittest.TestCase):
                 "--platforms=//:windows_x86_64_gnullvm",
                 "--extra_execution_platforms=//:windows_x86_64_msvc",
                 "--extra_toolchains=//:windows_gnullvm_tests_on_msvc_host_toolchain",
+                "--extra_toolchains=//:local_windows_msvc_cc_toolchain",
+                "--repo_env=BAZEL_DO_NOT_DETECT_CPP_TOOLCHAIN=0",
                 "//:tool",
                 "--",
                 *payload,
@@ -207,6 +260,15 @@ class WindowsLocalFallbackTest(unittest.TestCase):
             wrapper.bazel_args_with_remote_config(args, {"RUNNER_OS": "Linux"}),
             ["build", "--", "//..."],
         )
+
+    def test_non_windows_cross_request_does_not_enable_local_msvc(self) -> None:
+        args = ["build", "--config=ci-windows-cross", "--", "//..."]
+        for runner_os in ("Linux", "macOS"):
+            with self.subTest(runner_os=runner_os):
+                self.assertEqual(
+                    wrapper.bazel_args_with_remote_config(args, {"RUNNER_OS": runner_os}),
+                    ["build", "--", "//..."],
+                )
 
     def test_authenticated_cross_request_remains_rbe(self) -> None:
         args = ["build", "--config=ci-windows-cross", "//codex-rs/cli:codex"]
