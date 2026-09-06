@@ -219,6 +219,7 @@ fn solve(
     let mut required = BTreeSet::new();
     let mut forbidden = BTreeSet::new();
     let mut edges: BTreeMap<&StableId, Vec<&StableId>> = BTreeMap::new();
+    let mut reverse_edges: BTreeMap<&StableId, Vec<&StableId>> = BTreeMap::new();
     for atom in atoms {
         let axis = domains.get_mut(&atom.axis)?;
         match (&mut axis.domain, &atom.predicate) {
@@ -263,6 +264,7 @@ fn solve(
             }
             (RegisteredDomainV1::Action, AtomPredicateV1::Implies(target)) => {
                 edges.entry(&atom.axis).or_default().push(target);
+                reverse_edges.entry(target).or_default().push(&atom.axis);
             }
             _ => return None, // Validation runs once before any oracle call.
         }
@@ -280,9 +282,32 @@ fn solve(
             }
         }
     }
+    // In a Horn implication `source -> target`, forbidding the target also
+    // rules out the source. Walk the reverse graph to its fixed point.
+    let mut effectively_forbidden = forbidden.clone();
+    let mut pending: VecDeque<_> = forbidden.iter().cloned().collect();
+    while let Some(action) = pending.pop_front() {
+        if let Some(sources) = reverse_edges.get(&action) {
+            for source in sources {
+                if effectively_forbidden.insert((*source).clone()) {
+                    pending.push_back((*source).clone());
+                }
+            }
+        }
+    }
+    if required
+        .iter()
+        .any(|action| effectively_forbidden.contains(action))
+    {
+        return None;
+    }
     let unforced_actions = domains
         .iter()
-        .filter(|(id, axis)| axis.domain == RegisteredDomainV1::Action && !required.contains(*id))
+        .filter(|(id, axis)| {
+            axis.domain == RegisteredDomainV1::Action
+                && !required.contains(*id)
+                && !effectively_forbidden.contains(*id)
+        })
         .map(|(id, _)| id.clone())
         .collect();
     Some(FeasibleAssignmentV1 {

@@ -433,3 +433,72 @@ fn positive_closure_enables_only_forced_actions_and_terminates_cycles() {
         })
     );
 }
+
+#[test]
+fn forbidden_actions_and_transitive_antecedents_are_not_unforced() {
+    let registered = registry(vec![
+        ("a", RegisteredDomainV1::Action),
+        ("b", RegisteredDomainV1::Action),
+        ("denied", RegisteredDomainV1::Action),
+        ("safe", RegisteredDomainV1::Action),
+    ]);
+    let atoms = vec![
+        atom("forbid-denied", "denied", AtomPredicateV1::ForbidAction),
+        atom("b-denied", "b", AtomPredicateV1::Implies(id("denied"))),
+        atom("a-b", "a", AtomPredicateV1::Implies(id("b"))),
+    ];
+    assert_eq!(
+        check_feasibility_v1(&registered, atoms, budget()).outcome,
+        FeasibilityOutcomeV1::Feasible(FeasibleAssignmentV1 {
+            domains: registered.axes,
+            required_actions: BTreeSet::new(),
+            unforced_actions: BTreeSet::from([id("safe")])
+        })
+    );
+}
+
+#[test]
+fn requiring_a_transitive_antecedent_of_a_forbidden_action_is_infeasible() {
+    let registered = registry(vec![
+        ("a", RegisteredDomainV1::Action),
+        ("b", RegisteredDomainV1::Action),
+        ("denied", RegisteredDomainV1::Action),
+    ]);
+    let atoms = vec![
+        atom("require-a", "a", AtomPredicateV1::RequireAction),
+        atom("a-b", "a", AtomPredicateV1::Implies(id("b"))),
+        atom("b-denied", "b", AtomPredicateV1::Implies(id("denied"))),
+        atom("forbid-denied", "denied", AtomPredicateV1::ForbidAction),
+    ];
+    assert!(matches!(
+        check_feasibility_v1(&registered, atoms, budget()).outcome,
+        FeasibilityOutcomeV1::Infeasible { .. }
+    ));
+}
+
+#[test]
+fn negative_closure_terminates_cycles_and_is_order_invariant() {
+    let registered = registry(vec![
+        ("a", RegisteredDomainV1::Action),
+        ("b", RegisteredDomainV1::Action),
+        ("denied", RegisteredDomainV1::Action),
+        ("safe", RegisteredDomainV1::Action),
+    ]);
+    let atoms = [
+        atom("a-b", "a", AtomPredicateV1::Implies(id("b"))),
+        atom("b-a", "b", AtomPredicateV1::Implies(id("a"))),
+        atom("b-denied", "b", AtomPredicateV1::Implies(id("denied"))),
+        atom("forbid-denied", "denied", AtomPredicateV1::ForbidAction),
+    ];
+    for order in [[0, 1, 2, 3], [3, 2, 1, 0], [1, 3, 0, 2], [2, 0, 3, 1]] {
+        let input = order.map(|index| atoms[index].clone()).to_vec();
+        assert_eq!(
+            check_feasibility_v1(&registered, input, budget()).outcome,
+            FeasibilityOutcomeV1::Feasible(FeasibleAssignmentV1 {
+                domains: registered.axes.clone(),
+                required_actions: BTreeSet::new(),
+                unforced_actions: BTreeSet::from([id("safe")])
+            })
+        );
+    }
+}
