@@ -19,7 +19,7 @@ env:
 jobs:
   validate:
     name: Validate deterministic base repair
-    runs-on: ubuntu-24.04-arm
+    runs-on: ubuntu-24.04
     timeout-minutes: 50
     permissions:
       actions: read
@@ -158,7 +158,7 @@ jobs:
   publish:
     name: Reconstruct and publish exact validated repair
     needs: validate
-    runs-on: ubuntu-24.04-arm
+    runs-on: ubuntu-24.04
     timeout-minutes: 10
     permissions:
       actions: read
