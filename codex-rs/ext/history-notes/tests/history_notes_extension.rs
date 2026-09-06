@@ -89,6 +89,7 @@ async fn installed_extension_exposes_and_invokes_history_notes_tools() -> TestRe
             .on_thread_start(ThreadStartInput {
                 config: &config,
                 session_source: &session_source,
+                installation_id: "history-notes-test-installation",
                 persistent_thread_state_available: true,
                 environments: &[],
                 mcp_resource_client: None,
@@ -200,6 +201,7 @@ async fn history_notes_require_an_openai_provider_and_codex_backend_auth() -> Te
                 .on_thread_start(ThreadStartInput {
                     config: &config,
                     session_source: &SessionSource::Cli,
+                    installation_id: "history-notes-test-installation",
                     persistent_thread_state_available: true,
                     environments: &[],
                     mcp_resource_client: None,
