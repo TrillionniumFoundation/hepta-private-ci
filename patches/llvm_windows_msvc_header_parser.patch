@@ -3,24 +3,29 @@
 # and synchronous status propagation to preserve the compiler invocation.
 # Non-MSVC toolchains retain the existing POSIX path.
 
+# Use nonzero source anchors: Bazel and GNU patch place zero-context inserts differently.
+
 --- a/tools/internal/header_parser.c
 +++ b/tools/internal/header_parser.c
-@@ -5,0 +6,6 @@
+@@ -5,2 +5,9 @@
+ #include <string.h>
 +#if defined(_MSC_VER)
 +#include <io.h>
 +#include <process.h>
 +#include <stdint.h>
 +#include <sys/stat.h>
 +#else
-@@ -6,0 +13 @@
+ #include <unistd.h>
 +#endif
-@@ -14,0 +22,3 @@
+@@ -15,2 +22,6 @@
 +#if defined(_MSC_VER)
 +  int fd = _open(path, _O_WRONLY | _O_CREAT, _S_IREAD | _S_IWRITE);
 +#else
-@@ -15,0 +26 @@
+   int fd = open(path, O_WRONLY | O_CREAT, 0666);
 +#endif
-@@ -21 +32,6 @@
+   if (fd < 0) {
+@@ -20,3 +31,8 @@
+   }
 -  if (close(fd) != 0) {
 +#if defined(_MSC_VER)
 +  int close_status = _close(fd);
@@ -28,7 +33,9 @@
 +  int close_status = close(fd);
 +#endif
 +  if (close_status != 0) {
-@@ -33,0 +50,51 @@
+     fprintf(stderr, "header_parser: failed to close =%s: %s\n",
+@@ -33,4 +49,56 @@
+   argv[0] = (char *)clang_path;
 +#if defined(_MSC_VER)
 +  // The Windows CRT concatenates spawn arguments without quoting them. Preserve
 +  // empty arguments, whitespace, quotes, and runs of backslashes for clang's CRT.
@@ -80,5 +87,7 @@
 +  if (status != -1) return (int)status;
 +  fprintf(stderr, "header_parser: _spawnv failed: %s\n", strerror(spawn_errno));
 +#else
-@@ -35,0 +103 @@
+   execv(clang_path, argv);
+   fprintf(stderr, "header_parser: execv failed: %s\n", strerror(errno));
 +#endif
+   return 2;
