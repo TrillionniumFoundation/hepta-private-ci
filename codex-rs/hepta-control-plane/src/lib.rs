@@ -8,7 +8,10 @@
 use std::error::Error as StdError;
 use std::fmt;
 
-use codex_hepta_types::{AuthorityPosture, Digest32, Revision, StableId};
+use codex_hepta_types::AuthorityPosture;
+use codex_hepta_types::Digest32;
+use codex_hepta_types::Revision;
+use codex_hepta_types::StableId;
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum ControlMode {

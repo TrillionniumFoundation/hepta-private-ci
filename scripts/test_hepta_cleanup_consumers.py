@@ -58,9 +58,7 @@ class CleanupConsumerTests(unittest.TestCase):
             git("add", "--all")
             git("commit", "-q", "-m", "fixture cleanup")
             with patch.object(VERIFIER, "ROOT", root):
-                receipt = VERIFIER.verify_cleanup_base(
-                    {"knownLegacyDeletion": policy}
-                )
+                receipt = VERIFIER.verify_cleanup_base({"knownLegacyDeletion": policy})
             self.assertEqual(receipt["head"], git("rev-parse", "HEAD"))
             self.assertEqual(receipt["tree"], git("rev-parse", "HEAD^{tree}"))
             self.assertEqual(receipt["observedDeletionCount"], 2)
@@ -86,7 +84,9 @@ class CleanupConsumerTests(unittest.TestCase):
         for separator in ["/", "\\"]:
             with self.subTest(separator=separator):
                 with self.assertRaisesRegex(SystemExit, "deleted JSON consumer"):
-                    self.check_history('value = "other' + separator + FIXTURE_NAME + '"')
+                    self.check_history(
+                        'value = "other' + separator + FIXTURE_NAME + '"'
+                    )
 
     def test_explicit_old_path_is_still_rejected(self):
         with self.assertRaisesRegex(SystemExit, "deleted JSON consumer"):

@@ -9,7 +9,10 @@ use std::collections::BTreeSet;
 use std::error::Error as StdError;
 use std::fmt;
 
-use codex_hepta_types::{AuthorityPosture, Digest32, FixedQ32, StableId};
+use codex_hepta_types::AuthorityPosture;
+use codex_hepta_types::Digest32;
+use codex_hepta_types::FixedQ32;
+use codex_hepta_types::StableId;
 
 const MAX_CANDIDATES: usize = 4_096;
 

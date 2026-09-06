@@ -310,7 +310,7 @@ fn scaled_ratio(numerator: i128, denominator: i128) -> Result<i128, OpeError> {
     result = checked_add(result, fraction)?;
     let twice = remainder.checked_mul(2).ok_or(OpeError::Arithmetic)?;
     if twice > denominator || (twice == denominator && result % 2 != 0) {
-        checked_add(result, 1)
+        checked_add(result, /*right*/ 1)
     } else {
         Ok(result)
     }

@@ -1,6 +1,9 @@
 use super::*;
-use codex_hepta_cognitive_types::{MemoryRecord, build_snapshot};
-use codex_hepta_types::{Generation, Revision, StableId};
+use codex_hepta_cognitive_types::MemoryRecord;
+use codex_hepta_cognitive_types::build_snapshot;
+use codex_hepta_types::Generation;
+use codex_hepta_types::Revision;
+use codex_hepta_types::StableId;
 
 fn id(value: &str) -> StableId {
     let Ok(value) = StableId::new(value) else {

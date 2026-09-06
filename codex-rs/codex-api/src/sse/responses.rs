@@ -350,7 +350,7 @@ impl ResponsesEventError {
 pub fn process_responses_event(
     event: ResponsesStreamEvent,
 ) -> std::result::Result<Option<ResponseEvent>, ResponsesEventError> {
-    process_responses_event_with_diagnostics(event, false)
+    process_responses_event_with_diagnostics(event, /*redact_provider_diagnostics*/ false)
 }
 
 fn process_responses_event_with_diagnostics(

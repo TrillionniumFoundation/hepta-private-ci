@@ -221,11 +221,11 @@ pub(crate) struct SidecarLock {
 }
 
 pub(crate) fn lock_sidecar(root: &Path) -> Result<SidecarLock, AcceptanceError> {
-    open_sidecar_lock(root, true)
+    open_sidecar_lock(root, /*create*/ true)
 }
 
 pub(crate) fn lock_existing_sidecar(root: &Path) -> Result<SidecarLock, AcceptanceError> {
-    open_sidecar_lock(root, false)
+    open_sidecar_lock(root, /*create*/ false)
 }
 
 fn open_sidecar_lock(root: &Path, create: bool) -> Result<SidecarLock, AcceptanceError> {

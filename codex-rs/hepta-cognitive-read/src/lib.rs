@@ -6,8 +6,12 @@ use std::collections::BTreeSet;
 use std::error::Error as StdError;
 use std::fmt;
 
-use codex_hepta_cognitive_types::{CognitiveSnapshot, MemoryKind, MemoryRecord, RecordState};
-use codex_hepta_types::{AuthorityPosture, Digest32};
+use codex_hepta_cognitive_types::CognitiveSnapshot;
+use codex_hepta_cognitive_types::MemoryKind;
+use codex_hepta_cognitive_types::MemoryRecord;
+use codex_hepta_cognitive_types::RecordState;
+use codex_hepta_types::AuthorityPosture;
+use codex_hepta_types::Digest32;
 
 const MAX_RESULTS: usize = 1_024;
 
