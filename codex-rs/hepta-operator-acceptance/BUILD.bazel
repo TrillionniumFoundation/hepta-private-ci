@@ -16,7 +16,10 @@ rust_library(
         "@crates//:serde_json",
         "@crates//:sha2",
         "@crates//:thiserror",
-    ],
+    ] + select({
+        "@platforms//os:windows": ["@crates//:winapi-util"],
+        "//conditions:default": [],
+    }),
 )
 
 rust_test(
