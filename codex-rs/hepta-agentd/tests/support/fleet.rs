@@ -12,6 +12,7 @@ use codex_app_server_client::RemoteAppServerEndpoint;
 use codex_hepta_agentd::AgentdClient;
 use codex_hepta_agentd::HealthSnapshot;
 use codex_hepta_contracts::AgentId;
+use codex_hepta_fleet::AgentLifecycle;
 use codex_hepta_fleet::AgentManifest;
 use codex_hepta_fleet::FleetRegistry;
 use codex_hepta_fleet::ResourceBudget;
@@ -20,12 +21,16 @@ use codex_hepta_paths::HeptaAgentLayout;
 use codex_hepta_paths::HeptaFleetRoot;
 use codex_hepta_supervisor::AgentCommand;
 use codex_hepta_supervisor::AgentRelease;
+use codex_hepta_supervisor::AgentSupervisorSnapshot;
+use codex_hepta_supervisor::ProcessStream;
 use codex_hepta_supervisor::Supervisor;
 use codex_hepta_supervisor::SupervisorConfig;
+use codex_hepta_supervisor::SupervisorEventKind;
 use codex_hepta_supervisor::UnixProcessDriver;
 use codex_utils_absolute_path::AbsolutePathBuf;
 
 const READY_TIMEOUT: Duration = Duration::from_secs(60);
+const MAX_DIAGNOSTIC_STREAM_BYTES: usize = 4_096;
 
 pub(crate) struct AgentFixture {
     pub(crate) agent_id: AgentId,
@@ -187,18 +192,80 @@ impl FleetHarness {
                 "supervisor faults while waiting for {agent_id}: {:?}",
                 report.faults
             );
-            if let Ok(health) = control.health().await
+            let snapshot = self.supervisor.snapshot(agent_id);
+            let health = control.health().await;
+            let last_health = match &health {
+                Ok(health) => format!("{health:?}"),
+                Err(error) => format!("{error:#}"),
+            };
+            // Inspect the completed tick: queued restarts may replace an exited
+            // process in that same tick, and pending rollouts can still recover.
+            if let Some(snapshot) = snapshot.as_ref()
+                && !snapshot.active
+                && !snapshot.release_change_pending
+                && self
+                    .registry
+                    .load()?
+                    .agent(agent_id)
+                    .is_some_and(|agent| agent.lifecycle.lifecycle == AgentLifecycle::Failed)
+            {
+                let diagnostics = readiness_diagnostics(Some(snapshot), &last_health);
+                bail!("agent {agent_id} failed before readiness; {diagnostics}");
+            }
+            if let Ok(health) = health
                 && health.ready
             {
                 return Ok(health);
             }
             if Instant::now() >= deadline {
-                let snapshot = self.supervisor.snapshot(agent_id);
-                bail!("timed out waiting for agent {agent_id} readiness; snapshot={snapshot:?}");
+                let diagnostics = readiness_diagnostics(snapshot.as_ref(), &last_health);
+                bail!("timed out waiting for agent {agent_id} readiness; {diagnostics}");
             }
             tokio::time::sleep(Duration::from_millis(25)).await;
         }
     }
+}
+
+fn readiness_diagnostics(snapshot: Option<&AgentSupervisorSnapshot>, last_health: &str) -> String {
+    let Some(snapshot) = snapshot else {
+        return format!("supervisor snapshot missing; last_health={last_health}");
+    };
+    let last_exit = snapshot.events.iter().rev().find_map(|event| {
+        if let SupervisorEventKind::Exited(exit) = &event.kind {
+            Some(exit)
+        } else {
+            None
+        }
+    });
+    let [stdout, stderr] = [ProcessStream::Stdout, ProcessStream::Stderr].map(|stream| {
+        let mut bytes = snapshot
+            .logs
+            .iter()
+            .filter(|log| log.stream == stream)
+            .flat_map(|log| log.bytes.iter().copied())
+            .rev()
+            .take(MAX_DIAGNOSTIC_STREAM_BYTES)
+            .collect::<Vec<_>>();
+        bytes.reverse();
+        let decoded = String::from_utf8_lossy(&bytes);
+        // Lossy UTF-8 decoding can expand invalid bytes. Bound the decoded tail
+        // too, without splitting a replacement character or a valid code point.
+        let mut start = decoded.len().saturating_sub(MAX_DIAGNOSTIC_STREAM_BYTES);
+        while !decoded.is_char_boundary(start) {
+            start += 1;
+        }
+        decoded[start..].to_string()
+    });
+    format!(
+        "active={}; healthy={}; runtime_generation={:?}; release_change_pending={}; \
+         last_exit={last_exit:?}; last_health={last_health}; \
+         stdout (tail, max {MAX_DIAGNOSTIC_STREAM_BYTES} bytes):\n{stdout}\n\
+         stderr (tail, max {MAX_DIAGNOSTIC_STREAM_BYTES} bytes):\n{stderr}",
+        snapshot.active,
+        snapshot.healthy,
+        snapshot.runtime_generation,
+        snapshot.release_change_pending,
+    )
 }
 
 pub(crate) fn agentd_binary() -> Result<PathBuf> {
