@@ -67,7 +67,7 @@ impl AgentdAutomationQueue {
         if !self
             .state
             .automation_is_available()
-            .map_err(|error| QueueFailure::BeforeAdmission(error))?
+            .map_err(QueueFailure::BeforeAdmission)?
         {
             return Err(QueueFailure::BeforeAdmission(
                 AutomationError::Unavailable.into(),
@@ -76,7 +76,7 @@ impl AgentdAutomationQueue {
         if !self
             .state
             .automation_admission_ready()
-            .map_err(|error| QueueFailure::BeforeAdmission(error))?
+            .map_err(QueueFailure::BeforeAdmission)?
         {
             return Err(QueueFailure::BeforeAdmission(AgentdError::Protocol(
                 "automation admission is unavailable until this Agent generation is ready"

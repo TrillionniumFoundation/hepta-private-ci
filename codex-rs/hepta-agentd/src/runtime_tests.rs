@@ -220,7 +220,11 @@ async fn qualification_host_binds_one_local_turn_and_replays_exactly_once() {
     let fixture = runtime_fixture();
     fixture
         .registry
-        .compare_and_transition(&fixture.identity.agent_id, 1, AgentLifecycle::Running)
+        .compare_and_transition(
+            &fixture.identity.agent_id,
+            /*expected_generation*/ 1,
+            AgentLifecycle::Running,
+        )
         .expect("running generation");
     fixture.state.refresh_generation().expect("refresh running");
     fixture
@@ -339,6 +343,17 @@ async fn qualification_host_binds_one_local_turn_and_replays_exactly_once() {
         .expect("local counts");
     assert_eq!(counts.event_rows, 1);
     assert_eq!(counts.outbox_rows, 1);
+    // This fixture exercises admission replay without executing the turn
+    // lifecycle contributor. Withdraw its queued intent before closing the
+    // lease; admission alone supplies no completed-turn observation.
+    replayed_input
+        .lease
+        .rollback_occurrence(
+            replayed_input.occurrence_key.clone(),
+            "qualification fixture ended before turn execution",
+        )
+        .await
+        .expect("withdraw unexecuted local intent");
     replayed_input
         .lease
         .release()
@@ -352,7 +367,11 @@ async fn qualification_prepare_takes_over_expired_registry_head_without_evidence
     let fixture = runtime_fixture();
     fixture
         .registry
-        .compare_and_transition(&fixture.identity.agent_id, 1, AgentLifecycle::Running)
+        .compare_and_transition(
+            &fixture.identity.agent_id,
+            /*expected_generation*/ 1,
+            AgentLifecycle::Running,
+        )
         .expect("running generation");
     fixture.state.refresh_generation().expect("refresh running");
     fixture
@@ -383,11 +402,11 @@ async fn qualification_prepare_takes_over_expired_registry_head_without_evidence
         "seed-expired-journal",
         "seed-expired-trajectory",
         "seed-expired-occurrence",
-        1,
+        /*authority_epoch*/ 1,
         fleet_generation,
-        1,
+        /*generation*/ 1,
         "seed-expired-fence",
-        1,
+        /*lease_expires_at_unix_seconds*/ 1,
     )
     .expect("expired attempt request");
     store
@@ -424,7 +443,11 @@ async fn qualification_prepare_quarantines_expired_registry_attempt_with_h7_evid
     let fixture = runtime_fixture();
     fixture
         .registry
-        .compare_and_transition(&fixture.identity.agent_id, 1, AgentLifecycle::Running)
+        .compare_and_transition(
+            &fixture.identity.agent_id,
+            /*expected_generation*/ 1,
+            AgentLifecycle::Running,
+        )
         .expect("running generation");
     fixture.state.refresh_generation().expect("refresh running");
     fixture
@@ -460,9 +483,9 @@ async fn qualification_prepare_quarantines_expired_registry_attempt_with_h7_evid
         "seed-terminal-journal",
         "seed-terminal-trajectory",
         "seed-terminal-occurrence",
-        1,
+        /*authority_epoch*/ 1,
         fleet_generation,
-        1,
+        /*generation*/ 1,
         "seed-terminal-fence",
         expires_at,
     )
@@ -517,20 +540,20 @@ async fn qualification_prepare_quarantines_expired_registry_attempt_with_h7_evid
     let trajectory_id = attempt.trajectory_id.clone();
     let start = H7TrajectoryRecord::new(
         trajectory_id.clone(),
-        1,
+        /*event_seq*/ 1,
         format!("{trajectory_id}:event:turn-start"),
         H7TrajectoryEventKind::TurnStart,
         turn_id,
         attempt.occurrence_key.clone(),
-        None,
-        None,
+        /*causal_parent_seq*/ None,
+        /*causal_parent_sha256*/ None,
         Sha256Digest::for_bytes(payload.as_bytes()),
         Sha256Digest::for_bytes(b"qualification:observation-only-policy:v1"),
         Sha256Digest::for_bytes(b"qualification:model-receipt:not-applicable:v1"),
         h7_trajectory_local_receipt_digest(&receipt),
         "turn_started",
-        0,
-        true,
+        /*reward_bps*/ 0,
+        /*safety_ok*/ true,
         r#"{"source":"qualification_turn_writer"}"#,
         "not_applicable",
     )
@@ -546,11 +569,11 @@ async fn qualification_prepare_quarantines_expired_registry_attempt_with_h7_evid
     };
     let terminal = H7TrajectoryRecord::terminal(
         trajectory_id.clone(),
-        2,
+        /*event_seq*/ 2,
         format!("{trajectory_id}:event:terminal:stop"),
         turn_id,
         format!("{}:terminal", attempt.occurrence_key),
-        1,
+        /*causal_parent_seq*/ 1,
         parent,
         Sha256Digest::for_bytes(b"terminal-state"),
         Sha256Digest::for_bytes(b"qualification:observation-only-policy:v1"),

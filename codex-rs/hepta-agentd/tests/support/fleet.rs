@@ -123,7 +123,7 @@ impl FleetHarness {
 
     #[allow(dead_code)]
     pub(crate) fn start(&mut self, agent: &AgentFixture) -> Result<()> {
-        let binary = agentd_binary();
+        let binary = agentd_binary()?;
         let command = AgentCommand::new(binary, Vec::new())?;
         self.supervisor
             .start(&agent.agent_id, command, Instant::now())?;
@@ -201,8 +201,8 @@ impl FleetHarness {
     }
 }
 
-pub(crate) fn agentd_binary() -> PathBuf {
-    PathBuf::from(env!("CARGO_BIN_EXE_codex-hepta-agentd"))
+pub(crate) fn agentd_binary() -> Result<PathBuf> {
+    Ok(codex_utils_cargo_bin::cargo_bin("codex-hepta-agentd")?)
 }
 
 impl Drop for FleetHarness {
