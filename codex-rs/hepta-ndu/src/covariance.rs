@@ -232,3 +232,7 @@ fn factor_solve(factor: &[Vec<f64>], mut rhs: Vec<f64>) -> Result<Vec<f64>, Cova
     }
     Ok(rhs)
 }
+
+#[cfg(test)]
+#[path = "covariance_tests.rs"]
+mod tests;
