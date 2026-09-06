@@ -151,6 +151,23 @@ and recovery after rejoining remains required. Evaluator-history
 enforcement of holdout reuse, retention/unlearning qualification and independently
 observed future windows also remain open.
 
+Windows CI exposed both an MSVC/GNU native-library ABI mismatch and a real
+legacy sandbox outside-delete regression. The local Windows build fallback now
+selects an explicitly MSVC-scoped native C toolchain for host macros, preserving
+GNU target compilation and compiler hardening. Actual Windows linking remains
+a separate gate from lock reconciliation.
+
+The sandbox source candidate propagates required ACL setup errors and closes
+the token before aborting launch. Legacy workspace tokens restrict writes to
+their actual root capabilities; private desktops grant those same restricted
+SIDs without changing the shared station or default desktop ACL. Such tokens
+now require a private desktop. Readonly and elevated token policies remain
+unchanged. Native regressions cover failed ACL installation, broad parent ACLs,
+outside deletion and private desktop isolation. The local Linux package run
+passed its twelve portable tests; it does not compile or execute these new
+Windows-only paths. Native Windows isolation, process startup, PowerShell and
+ConPTY compatibility remain required before this repair is qualified.
+
 ## Safety and authority boundary
 
 The implementation deliberately does not grant runtime, production-writer,
@@ -189,6 +206,12 @@ The later SDK serde dev-dependency at
 `ef723ae657196d60bb33246f65ac03c52e30903d` has its own matching result:
 run `34049248997`, artifact `9994052918`, three zero exit codes and an unchanged
 candidate lock. The earlier cleanup receipt was not substituted for this edge.
+
+The native Windows compiler extension at
+`b19625495ead1445854489923db6ae227ffe1874` also has its own verified diagnostic:
+run `34052012269`, artifact `9994840015`, three zero exit codes and a candidate
+lock byte-identical to the repository. This does not establish Windows linker
+or sandbox runtime success.
 
 `hepta-audit-remediation.yml` separately tests the immutable source head and a
 synthetic merge with explicit parents. It uses read-only repository permission,
