@@ -167,7 +167,10 @@ Windows CI exposed both an MSVC/GNU native-library ABI mismatch and a real
 legacy sandbox outside-delete regression. The local Windows build fallback now
 selects an explicitly MSVC-scoped native C toolchain for host macros, preserving
 GNU target compilation and compiler hardening. Actual Windows linking remains
-a separate gate from lock reconciliation.
+a separate gate from lock reconciliation. At
+`c9df068321d698e61fd026b263542329aa0eb122`, Windows shard two compiled
+host MSVC `sqlx-macros` and the State library that invokes those macros. This
+resolves that observed compiler blocker, not all native runtime qualification.
 
 At `94f906ab0ba0802135f41aac6daf4691278f07df`, all seven Windows
 build jobs stopped at the LLVM header parser's POSIX-only `unistd.h` include;
@@ -175,7 +178,11 @@ the four test shards executed no tests. A scoped LLVM patch adds MSVC file and
 process APIs with explicit argument quoting and compiler exit-status propagation.
 The real patched helper passed six Linux behavior tests. The Windows CI smoke
 builds the actual helper for the MSVC platform and runs those same tests before
-shard one; its native result and the downstream sandbox tests remain required.
+shard one. A zero-context patch variant misplaced the conditional under Bazel;
+the source-anchored correction produces the intended C bytes under both patch
+implementations. Its native MSVC smoke step passed at
+`c9df068321d698e61fd026b263542329aa0eb122`. Downstream linker and sandbox
+runtime results, and each later source head's required checks, remain separate.
 
 The sandbox source candidate propagates required ACL setup errors and closes
 the token before aborting launch. Legacy workspace tokens restrict writes to
@@ -187,6 +194,29 @@ outside deletion and private desktop isolation. The local Linux package run
 passed its twelve portable tests; it does not compile or execute these new
 Windows-only paths. Native Windows isolation, process startup, PowerShell and
 ConPTY compatibility remain required before this repair is qualified.
+The later native run at `c9df068321d698e61fd026b263542329aa0eb122`
+executed the sandbox library and failed: two delete operations escaped the
+restricted-token boundary, and an ACL-denial fixture did not reject capture
+startup. Subsequent poisoned-mutex failures are secondary. `WRITE_RESTRICTED`
+does not cover the file deletion rights; the capability-only SID change is
+therefore insufficient to close the deletion gap. These failures remain open
+and must not be replaced by portable-test or compiler success claims.
+
+Native CI also exposed an overlong `process_wrapper.exe` command before rustc
+started. The wrapper candidate transports its own arguments through a separate
+multiline response file without expanding the child's argument files. Its full
+upstream harness passed 18 local tests, including five new regressions; the
+actual Bazel-applied sources match that harness byte for byte. Native Windows
+execution and an exact-head lock diagnostic remain required.
+
+Other native repairs retain their platform boundaries: concrete Supervisord
+process hosting rejects non-Unix before fleet access, and unsupported UDS peer
+identity remains an error even where raw socket transport works. Operator file
+verification now has a Windows handle-based hardlink/reparse candidate, while
+the original hardlink rejection test stays enabled. The shadow oracle's exact
+LF checkout rule preserves its existing byte pin. Parent-directory durability
+on Windows remains unresolved; no successful fsync receipt is inferred from a
+no-op or from flushing only the file.
 
 ## Safety and authority boundary
 
@@ -217,6 +247,49 @@ required; target declaration alone is not execution evidence. Extraction of
 the other qualification suites and independent governance review remain open.
 The signer and real-Synapse test stay opt-in and are not activated by source
 qualification.
+Windows run `34055640287`, job `101546918698`, reports the TaskFlow step
+qualification target passed at `5ec6d0db2ef24bf545a18eeba1814dfa6e449ff2`.
+Run `34056311823`, job `101548741807`, also reports that target and the
+Contracts B3 adapter qualification target passed at
+`e16208a8d490e72006f60eb002a220eb5cb174dc`. These are observed target-level
+results; the logs do not include successful inner case counts. Both shards
+failed overall on other targets, so these receipts do not establish green CI.
+
+The Matrix SDK marker helper has an isolated Bazel target,
+`//codex-rs/hepta-matrix-sdk:hepta-matrix-sdk-qualification-marker-test`.
+It compiles the existing helper source directly and exercises one temporary
+directory test for exact payload binding, one-time consumption and receipt
+creation. The SDK product library keeps its transport failpoint disabled.
+This local file test does not prove a real Synapse response was lost or that
+the production retry path reuses its transaction ID.
+
+The isolated Agentd target
+`//codex-rs/hepta-agentd:hepta-agentd-cognitive-write-qualification-test`
+uses the `runtime::tests::qualification_` filter for four existing local host
+tests: unavailable-store rejection, exact replay, expired attempt takeover
+without evidence, and quarantine when H7 evidence exists. These tests use
+temporary registry and SQLite state; they do not start Agentd, an App Server
+or a provider. The product feature remains disabled. This local qualification
+does not replace the process-level cognitive E2E suite or production authority
+evidence. Actual execution of these new Bazel targets remains required.
+The admission-replay fixture explicitly withdraws its queued, unexecuted
+occurrence before releasing the lease. Admission is not a completed-turn
+observation, and unresolved occurrences must continue to block lease release.
+
+Agentd also has the explicit Unix process-suite target
+`//codex-rs/hepta-agentd:hepta-agentd-cognitive-product-qualification-test`.
+Its dedicated binary uses the isolated qualification library; the test wrapper
+resolves that binary through runfiles and runs the existing suite serially.
+The eight active cases use local processes, temporary stores and mock services.
+The four ignored comparisons/provider cases retain their existing guards.
+This wiring does not activate the default writer, supply a real provider
+receipt or establish production new-process recovery qualification.
+The local process-suite attempt compiled and ran all eight active cases:
+unavailable-store rejection passed and seven process cases timed out; four
+ignored cases remained excluded. This is a failed qualification attempt.
+Separate local UDS tests report socket creation denied by the environment,
+but that observation alone does not prove the cause of every process timeout.
+Successful native execution and diagnosis of any remaining timeout are required.
 
 Contracts also has two explicit targets in `//codex-rs/hepta-contracts`:
 `hepta-contracts-authbus-local-qualification-test` and
@@ -256,6 +329,15 @@ The Objective structural decoder dependencies at
 diagnostic: run `34054268307`, artifact `9995493305`, three zero exit codes
 and an unchanged candidate lock. This receipt does not cover the later LLVM
 helper patch or establish canonical Objective admission.
+
+The initial LLVM helper patch at
+`aa4013f2ff7bdcc3ca6f10b198460c4c460c0466` has a matching unchanged-lock
+receipt from run `34054858120`, artifact `9995658610`; this did not make its
+incorrect native patch placement pass. The source-anchored correction at
+`c9df068321d698e61fd026b263542329aa0eb122` has its own run `34055332229`,
+artifact `9995791034`. Both diagnostics contain three zero exit codes and
+byte-identical candidate locks. Native smoke success for the correction is
+distinct from production recovery or sandbox qualification.
 
 `hepta-audit-remediation.yml` separately tests the immutable source head and a
 synthetic merge with explicit parents. It uses read-only repository permission,
