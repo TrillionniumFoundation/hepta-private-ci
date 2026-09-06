@@ -5,10 +5,29 @@
 
 #![forbid(unsafe_code)]
 
+mod organ_graph;
+
+pub use organ_graph::DataflowTiming;
+pub use organ_graph::FailureDomainV1;
+pub use organ_graph::FallbackTerminal;
+pub use organ_graph::FeedbackProfileV1;
+pub use organ_graph::InputPort;
+pub use organ_graph::OrganEdge;
+pub use organ_graph::OrganGraphError;
+pub use organ_graph::OrganGraphsV1;
+pub use organ_graph::OrganNodeV1;
+pub use organ_graph::OrganRole;
+pub use organ_graph::OutputPort;
+pub use organ_graph::RuntimeLinkV1;
+pub use organ_graph::ValidatedOrganGraphsV1;
+
 use std::error::Error as StdError;
 use std::fmt;
 
-use codex_hepta_types::{AuthorityPosture, Digest32, Revision, StableId};
+use codex_hepta_types::AuthorityPosture;
+use codex_hepta_types::Digest32;
+use codex_hepta_types::Revision;
+use codex_hepta_types::StableId;
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum ControlMode {
