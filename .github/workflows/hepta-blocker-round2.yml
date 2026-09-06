@@ -40,51 +40,36 @@ jobs:
 
           workflow = Path('.github/workflows/v8-canary.yml')
           text = workflow.read_text(encoding='utf-8')
-          invocation_anchor = '          python3 .github/scripts/run_bazel_with_buildbuddy.py '
-          archive_anchor = (
-              '          archive_path="${V8_BUILD_TARGET#//third_party/v8:}"\n'
-          )
-          archive_offset = text.index(archive_anchor)
-          start = text.rfind(invocation_anchor, 0, archive_offset)
+          invocation_anchor = '          ./.github/scripts/run_bazel_with_buildbuddy.py '
+          stage_anchor = '\n      - name: Stage release pair\n'
+          stage_offset = text.index(stage_anchor)
+          start = text.rfind(invocation_anchor, 0, stage_offset)
           if start < 0:
-              raise SystemExit('V8 canary BuildBuddy invocation anchor not found')
-          block = text[start:archive_offset]
+              raise SystemExit('V8 release-pair invocation anchor not found')
+          block = text[start:stage_offset]
           if block.count('run_bazel_with_buildbuddy.py') != 1:
-              raise SystemExit('V8 canary invocation block is not closed-world')
+              raise SystemExit('V8 release-pair invocation block is not closed-world')
 
-          replacement = '''          run_v8_canary_build() {
-            local build_invocation_id="$1"
-            local -a build_args=("${bazel_args[@]}")
-            local index
-            for index in "${!build_args[@]}"; do
-              if [[ "${build_args[$index]}" == --invocation_id=* ]]; then
-                build_args[$index]="--invocation_id=${build_invocation_id}"
-              fi
-            done
-            python3 .github/scripts/run_bazel_with_buildbuddy.py \\
-              --run-id "${GITHUB_RUN_ID}" \\
-              --invocation-id "${build_invocation_id}" \\
-              --remote-backend grpcs://remote.buildbuddy.io \\
-              --stream-logs-to "${GITHUB_STEP_SUMMARY}" \\
-              -- \\
-              ./bazel \\
-              "${build_args[@]}"
+          replacement = '''          run_v8_release_pair_build() {
+            ./.github/scripts/run_bazel_with_buildbuddy.py \\
+              --noexperimental_remote_repo_contents_cache \\
+              "${bazel_args[@]}" \\
+              "--config=${{ matrix.bazel_config }}"
           }
 
           set +e
-          run_v8_canary_build "${invocation_id}"
+          run_v8_release_pair_build
           build_status=$?
           set -e
-          if [[ "${build_status}" -eq 37 && "${RUNNER_OS}" == "macOS" && "${V8_TARGET_CPU}" == "arm64" ]]; then
-            echo "Bazel reported internal exit 37 on macOS arm64; restarting the server and retrying this exact target once." >&2
+          if [[ "${build_status}" -eq 37 && "${TARGET}" == "aarch64-apple-darwin" && "${SANDBOX}" == "true" ]]; then
+            echo "Bazel reported internal exit 37 on macOS arm64 sandbox; restarting the server and retrying this exact target once." >&2
             ./bazel shutdown || true
-            retry_invocation_id="$(python -c 'import uuid; print(uuid.uuid4())')"
-            run_v8_canary_build "${retry_invocation_id}"
+            run_v8_release_pair_build
           elif [[ "${build_status}" -ne 0 ]]; then
             exit "${build_status}"
           fi
           '''
-          workflow.write_text(text[:start] + replacement + text[archive_offset:], encoding='utf-8')
+          workflow.write_text(text[:start] + replacement + text[stage_offset:], encoding='utf-8')
           PY
 
           git diff --check
@@ -100,7 +85,7 @@ jobs:
             exit 1
           fi
           test -n "${changed_rust}"
-          grep -F 'Bazel reported internal exit 37 on macOS arm64' .github/workflows/v8-canary.yml
+          grep -F 'Bazel reported internal exit 37 on macOS arm64 sandbox' .github/workflows/v8-canary.yml
 
           artifact_root="${RUNNER_TEMP}/hepta-blocker-round2"
           rm -rf "${artifact_root}"
