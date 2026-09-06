@@ -3897,7 +3897,8 @@
       "deputy": "durability-kernel",
       "sourceMutationAllowed": true,
       "allowedWritePaths": [
-        "codex-rs/hepta-learning-artifacts/**"
+        "codex-rs/hepta-learning-artifacts/**",
+        "codex-rs/hepta-shadow-qualification/tests/durable_learning_roundtrip.rs"
       ],
       "coOwnerModules": [],
       "consumesContracts": [
@@ -5157,7 +5158,8 @@
         "qa/fault-matrix/**",
         "codex-rs/state/src/lib.rs",
         "codex-rs/state/src/sqlite.rs",
-        "codex-rs/state/src/sqlite_recovery.rs"
+        "codex-rs/state/src/sqlite_recovery.rs",
+        "codex-rs/state/src/sqlite_recovery_tests.rs"
       ],
       "coOwnerModules": [],
       "consumesContracts": [
@@ -8611,6 +8613,8 @@
       "allowedWritePaths": [
         "codex-rs/hepta-matrix-sdk/**",
         "codex-rs/hepta-matrixd/**",
+        "codex-rs/hepta-matrix-store/**",
+        "codex-rs/hepta-matrix-protocol/**",
         ".github/workflows/hepta-taskflow-matrix-qualification.yml"
       ],
       "coOwnerModules": [],
