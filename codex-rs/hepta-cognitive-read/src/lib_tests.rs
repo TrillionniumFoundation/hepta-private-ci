@@ -1,6 +1,10 @@
 use super::*;
-use codex_hepta_cognitive_types::{MemoryRecord, build_snapshot};
-use codex_hepta_types::{Generation, Revision, StableId};
+use codex_hepta_cognitive_types::MemoryRecord;
+use codex_hepta_cognitive_types::build_snapshot;
+use codex_hepta_types::Generation;
+use codex_hepta_types::Revision;
+use codex_hepta_types::StableId;
+use pretty_assertions::assert_eq;
 
 fn id(value: &str) -> StableId {
     let Ok(value) = StableId::new(value) else {
@@ -93,4 +97,120 @@ fn bounded_result_count_is_explicit() {
     };
     assert_eq!(receipt.records.len(), 1);
     assert_eq!(receipt.omitted_count, 2);
+}
+
+#[test]
+fn altered_snapshot_fields_are_rejected_before_filtering() {
+    let original = snapshot();
+    let request = ReadRequest {
+        snapshot_digest: original.snapshot_digest,
+        allowed_kinds: vec![MemoryKind::Fact],
+        maximum_results: 1,
+        include_tombstones: false,
+    };
+    let mut altered = Vec::new();
+    let mut value = original.clone();
+    // The altered record is outside the requested kind/result window. The
+    // complete frozen source still has to be checked before reading a subset.
+    value.records[1].content_digest = Digest32::of_bytes(b"substituted");
+    altered.push(value);
+    let mut value = original.clone();
+    value.records[2].state = RecordState::Live;
+    altered.push(value);
+    let mut value = original.clone();
+    value.generation = generation(2);
+    altered.push(value);
+    let mut value = original.clone();
+    value.records[0]
+        .citations
+        .push(codex_hepta_cognitive_types::Citation {
+            source_id: id("source:injected"),
+            source_digest: Digest32::of_bytes(b"unbound citation"),
+        });
+    altered.push(value);
+    let mut value = original.clone();
+    value.records[0].revision = revision(2);
+    altered.push(value);
+    let mut value = original.clone();
+    value.authority.runtime = true;
+    altered.push(value);
+    for value in altered {
+        assert_eq!(read(&value, request.clone()), Err(Error::SnapshotMismatch));
+    }
+    assert!(read(&original, request).is_ok());
+}
+
+#[test]
+fn reordered_valid_snapshot_keeps_canonical_read_receipt() {
+    let original = snapshot();
+    let request = ReadRequest {
+        snapshot_digest: original.snapshot_digest,
+        allowed_kinds: Vec::new(),
+        maximum_results: 8,
+        include_tombstones: true,
+    };
+    let mut reordered = original.clone();
+    reordered.records.reverse();
+    assert_eq!(read(&reordered, request.clone()), read(&original, request));
+}
+
+#[test]
+fn forged_oversize_and_duplicate_snapshot_records_are_rejected() {
+    let mut value = snapshot();
+    let request = ReadRequest {
+        snapshot_digest: value.snapshot_digest,
+        allowed_kinds: Vec::new(),
+        maximum_results: 8,
+        include_tombstones: true,
+    };
+    value.records.push(value.records[0].clone());
+    assert_eq!(read(&value, request.clone()), Err(Error::SnapshotMismatch));
+    value.records.resize(16_385, value.records[0].clone());
+    assert_eq!(read(&value, request), Err(Error::SnapshotMismatch));
+}
+
+#[test]
+fn current_revision_is_resolved_before_kind_and_tombstone_filtering() {
+    let original = record("memory:history", MemoryKind::Fact, RecordState::Live);
+    for (kind, state) in [
+        (MemoryKind::Fact, RecordState::Tombstone),
+        (MemoryKind::Episode, RecordState::Live),
+        (MemoryKind::Fact, RecordState::Live),
+    ] {
+        let mut successor = original.clone();
+        successor.revision = revision(2);
+        successor.predecessor_digest = Some(original.record_digest());
+        successor.kind = kind;
+        successor.state = state;
+        let Ok(value) = build_snapshot(generation(1), vec![successor.clone(), original.clone()])
+        else {
+            panic!("revision history must form a valid snapshot");
+        };
+        let request = ReadRequest {
+            snapshot_digest: value.snapshot_digest,
+            allowed_kinds: vec![MemoryKind::Fact],
+            maximum_results: 8,
+            include_tombstones: false,
+        };
+        let Ok(receipt) = read(&value, request.clone()) else {
+            panic!("valid current projection must be readable");
+        };
+        let expected = if kind == MemoryKind::Fact && state == RecordState::Live {
+            vec![successor.clone()]
+        } else {
+            Vec::new()
+        };
+        assert_eq!(receipt.records, expected);
+        let Ok(including_tombstones) = read(
+            &value,
+            ReadRequest {
+                allowed_kinds: Vec::new(),
+                include_tombstones: true,
+                ..request
+            },
+        ) else {
+            panic!("current tombstone must remain inspectable");
+        };
+        assert_eq!(including_tombstones.records, vec![successor]);
+    }
 }

@@ -2,12 +2,17 @@
 
 #![forbid(unsafe_code)]
 
+use std::collections::BTreeMap;
 use std::collections::BTreeSet;
 use std::error::Error as StdError;
 use std::fmt;
 
-use codex_hepta_cognitive_types::{CognitiveSnapshot, MemoryKind, MemoryRecord, RecordState};
-use codex_hepta_types::{AuthorityPosture, Digest32};
+use codex_hepta_cognitive_types::CognitiveSnapshot;
+use codex_hepta_cognitive_types::MemoryKind;
+use codex_hepta_cognitive_types::MemoryRecord;
+use codex_hepta_cognitive_types::RecordState;
+use codex_hepta_types::AuthorityPosture;
+use codex_hepta_types::Digest32;
 
 const MAX_RESULTS: usize = 1_024;
 
@@ -50,6 +55,9 @@ pub fn read(snapshot: &CognitiveSnapshot, request: ReadRequest) -> Result<ReadRe
     if request.maximum_results == 0 || request.maximum_results > MAX_RESULTS {
         return Err(Error::InvalidMaximumResults);
     }
+    snapshot
+        .validate_integrity()
+        .map_err(|_| Error::SnapshotMismatch)?;
     let mut allowed = BTreeSet::new();
     for kind in request.allowed_kinds {
         if !allowed.insert(kind) {
@@ -57,9 +65,17 @@ pub fn read(snapshot: &CognitiveSnapshot, request: ReadRequest) -> Result<ReadRe
         }
     }
 
-    let mut eligible = snapshot
-        .records
-        .iter()
+    // Project the current revision before filtering. A tombstone or kind
+    // change must not make an older matching revision visible again.
+    let mut current = BTreeMap::new();
+    for record in &snapshot.records {
+        let latest = current.entry(&record.record_id).or_insert(record);
+        if record.revision > latest.revision {
+            *latest = record;
+        }
+    }
+    let mut eligible = current
+        .into_values()
         .filter(|record| {
             (allowed.is_empty() || allowed.contains(&record.kind))
                 && (request.include_tombstones || record.state == RecordState::Live)
