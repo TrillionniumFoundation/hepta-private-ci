@@ -67,6 +67,9 @@ pub struct MetricComparison {
     pub candidate: FixedQ32,
     pub baseline: FixedQ32,
     pub minimum_delta: FixedQ32,
+    /// Classification retained in the immutable evidence receipt. Every
+    /// registered threshold is eligibility-gating; this flag does not erase a
+    /// non-hard threshold or silently strengthen its preregistered value.
     pub hard: bool,
     pub support_digest: Digest32,
 }
@@ -144,7 +147,7 @@ pub fn evaluate(mut request: EvaluationRequest) -> Result<EvaluationReceipt, Err
             Direction::Maximize => subtract(metric.candidate, metric.baseline)?,
             Direction::Minimize => subtract(metric.baseline, metric.candidate)?,
         };
-        if metric.hard && delta.raw() < metric.minimum_delta.raw() {
+        if delta.raw() < metric.minimum_delta.raw() {
             failed_metrics.push(metric.metric_id.clone());
         }
     }
