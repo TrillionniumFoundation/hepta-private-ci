@@ -9,7 +9,15 @@ use std::collections::BTreeSet;
 use std::error::Error as StdError;
 use std::fmt;
 
-use codex_hepta_types::{AuthorityPosture, Digest32, StableId};
+use codex_hepta_types::AuthorityPosture;
+use codex_hepta_types::Digest32;
+use codex_hepta_types::StableId;
+
+mod requirements;
+
+pub use requirements::CompilationRequirementsV1;
+pub use requirements::MandatoryContextGroup;
+pub use requirements::compile_with_requirements;
 
 const MAX_ITEMS: usize = 4_096;
 const MAX_TOKENS: u64 = 1_000_000;
@@ -58,6 +66,18 @@ pub enum Error {
     DuplicateItem(String),
     ZeroTokenItem(String),
     SecretRejected(String),
+    InsufficientContext {
+        required_tokens: u128,
+        token_budget: u64,
+    },
+    RequirementLimitExceeded,
+    RequirementSnapshotMismatch,
+    RequirementObjectiveMismatch,
+    EmptyRequirementGroup(String),
+    DuplicateRequirementGroup(String),
+    DuplicateRequirementItem(String),
+    UnknownRequiredItem(String),
+    RequiredItemMismatch(String),
     Arithmetic,
 }
 
@@ -69,7 +89,21 @@ impl fmt::Display for Error {
 
 impl StdError for Error {}
 
-pub fn compile(mut request: CompilationRequest) -> Result<ContextCompilationReceipt, Error> {
+/// Compile with all trusted instructions treated as non-tradable context floors.
+/// Explicit provenance/contradiction groups use `compile_with_requirements`.
+pub fn compile(request: CompilationRequest) -> Result<ContextCompilationReceipt, Error> {
+    compile_internal(request, Requirements::InstructionsOnly)
+}
+
+enum Requirements {
+    InstructionsOnly,
+    Explicit(CompilationRequirementsV1),
+}
+
+fn compile_internal(
+    mut request: CompilationRequest,
+    requirements: Requirements,
+) -> Result<ContextCompilationReceipt, Error> {
     if request.items.len() > MAX_ITEMS {
         return Err(Error::ItemLimitExceeded);
     }
@@ -88,13 +122,7 @@ pub fn compile(mut request: CompilationRequest) -> Result<ContextCompilationRece
             .then_with(|| left.item_id.cmp(&right.item_id))
     });
     let mut seen = BTreeSet::new();
-    let mut trusted = Vec::new();
-    let mut evidence = Vec::new();
-    let mut omitted = Vec::new();
-    let mut used_tokens = 0_u64;
-    let mut included = Vec::new();
-
-    for item in request.items {
+    for item in &request.items {
         if !seen.insert(item.item_id.clone()) {
             return Err(Error::DuplicateItem(item.item_id.to_string()));
         }
@@ -107,14 +135,49 @@ pub fn compile(mut request: CompilationRequest) -> Result<ContextCompilationRece
         if item.contains_secret {
             return Err(Error::SecretRejected(item.item_id.to_string()));
         }
-        let Some(next_total) = used_tokens.checked_add(item.token_count) else {
-            return Err(Error::Arithmetic);
-        };
-        if next_total > request.token_budget {
+    }
+    let (mut mandatory_ids, requirements_digest) = match requirements {
+        Requirements::InstructionsOnly => (BTreeSet::new(), None),
+        Requirements::Explicit(requirements) => {
+            let (ids, digest) = requirements::validate_and_digest(&request, requirements)?;
+            (ids, Some(digest))
+        }
+    };
+    mandatory_ids.extend(
+        request
+            .items
+            .iter()
+            .filter(|item| item.role == ContextRole::TrustedInstruction)
+            .map(|item| item.item_id.clone()),
+    );
+    let required_tokens = request
+        .items
+        .iter()
+        .filter(|item| mandatory_ids.contains(&item.item_id))
+        .map(|item| u128::from(item.token_count))
+        .sum::<u128>(); // At most 4096 u64 costs; the exact sum fits u128.
+    if required_tokens > u128::from(request.token_budget) {
+        return Err(Error::InsufficientContext {
+            required_tokens,
+            token_budget: request.token_budget,
+        });
+    }
+    let mut optional_budget =
+        request.token_budget - u64::try_from(required_tokens).map_err(|_| Error::Arithmetic)?;
+    let mut trusted = Vec::new();
+    let mut evidence = Vec::new();
+    let mut omitted = Vec::new();
+    let mut used_tokens = 0_u64;
+    let mut included = Vec::new();
+    for item in request.items {
+        if !mandatory_ids.contains(&item.item_id) && item.token_count > optional_budget {
             omitted.push(item.item_id);
             continue;
         }
-        used_tokens = next_total;
+        if !mandatory_ids.contains(&item.item_id) {
+            optional_budget -= item.token_count;
+        }
+        used_tokens += item.token_count;
         match item.role {
             ContextRole::TrustedInstruction => trusted.push(item.item_id.clone()),
             ContextRole::UntrustedEvidence => evidence.push(item.item_id.clone()),
@@ -123,7 +186,12 @@ pub fn compile(mut request: CompilationRequest) -> Result<ContextCompilationRece
     }
 
     let mut bytes = Vec::new();
-    bytes.extend_from_slice(b"hepta.context.compilation.v1");
+    if let Some(digest) = requirements_digest {
+        bytes.extend_from_slice(b"hepta.context.compilation.with-requirements.v1");
+        bytes.extend_from_slice(digest.as_array());
+    } else {
+        bytes.extend_from_slice(b"hepta.context.compilation.v1");
+    }
     push_id(&mut bytes, &request.compilation_id);
     bytes.extend_from_slice(request.run_snapshot_digest.as_array());
     bytes.extend_from_slice(request.objective_digest.as_array());
