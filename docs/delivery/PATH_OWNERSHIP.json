@@ -1,6 +1,6 @@
 {
-  "schema": "hepta.path-ownership.v2",
-  "schemaVersion": 2,
+  "schema": "hepta.path-ownership.v3",
+  "schemaVersion": 3,
   "documentClass": "canonical_registry",
   "authorityScope": "source_namespace_and_concurrent_write_conflict_source",
   "planId": "HEPTA-GLOBAL-MODULAR-DEVELOPMENT-PLAN",
@@ -38,6 +38,18 @@
       "rootBindings": [
         {
           "path": "codex-rs/hepta-operations",
+          "mode": "exclusive"
+        },
+        {
+          "path": "codex-rs/state/src/lib.rs",
+          "mode": "exclusive"
+        },
+        {
+          "path": "codex-rs/state/src/sqlite.rs",
+          "mode": "exclusive"
+        },
+        {
+          "path": "codex-rs/state/src/sqlite_recovery.rs",
           "mode": "exclusive"
         }
       ]
@@ -226,6 +238,26 @@
         {
           "path": "codex-rs/hepta-cognitive-store",
           "mode": "exclusive"
+        },
+        {
+          "path": "codex-rs/hepta-memory/src/cognitive_store.rs",
+          "mode": "exclusive"
+        },
+        {
+          "path": "codex-rs/hepta-memory/src/cognitive_store_recovery.rs",
+          "mode": "exclusive"
+        },
+        {
+          "path": "codex-rs/hepta-memory/src/cognitive_store_recovery_tests.rs",
+          "mode": "exclusive"
+        },
+        {
+          "path": "codex-rs/hepta-memory/src/cognitive_store_tests.rs",
+          "mode": "exclusive"
+        },
+        {
+          "path": "codex-rs/hepta-memory/src/lib.rs",
+          "mode": "exclusive"
         }
       ]
     },
@@ -399,7 +431,15 @@
       "scripts/hepta-docs.py",
       ".github/workflows/hepta-development-docs.yml",
       "scripts/hepta-algorithm-docs.py",
-      ".github/workflows/hepta-algorithm-docs.yml"
+      ".github/workflows/hepta-algorithm-docs.yml",
+      "scripts/hepta-gap-closure.py",
+      "qualification/gap-closure/**",
+      ".github/workflows/hepta-gap-closure.yml",
+      "qualification/module-execution-dossiers/**",
+      "scripts/hepta-implementation-dossiers.py",
+      "scripts/hepta-technical-closure.py",
+      "scripts/hepta_source_registry_closure.py",
+      "scripts/test_hepta_gap_closure.py"
     ]
   },
   "rules": {
@@ -408,7 +448,43 @@
     "overlapRequiresDagOrderingOrLease": true,
     "unboundedRepositoryScopeAllowed": false
   },
-  "activeLeases": [],
+  "activeLeases": [
+    {
+      "leaseId": "LEASE-TASKFLOW-MATRIX-QUALIFICATION-001",
+      "packageA": "MATRIX-1-CHANNEL-BOUNDARY",
+      "packageB": "TASKFLOW-1-EXECUTION-BOUNDARY",
+      "normalizedExactPaths": [
+        ".github/workflows/hepta-taskflow-matrix-qualification.yml"
+      ],
+      "pathSetSha256": "d43d47405d16e4440723ee11a55f285d54cb624c01e1d90263283b247f85af57",
+      "purpose": "shared_taskflow_matrix_qualification",
+      "status": "requires_external_attestation",
+      "reviewBinding": {
+        "identitySource": "github_pull_request_review",
+        "repositorySource": "github.event.repository.id",
+        "pullRequestSource": "github.event.pull_request.number",
+        "baseSource": "github.event.pull_request.base.sha",
+        "headSource": "github.event.pull_request.head.sha",
+        "reviewCommitSource": "github.event.review.commit_id",
+        "reviewerIdSource": "github.event.review.user.id",
+        "authorIdSource": "github.event.pull_request.user.id",
+        "requiredState": "approved",
+        "reviewCommitMustEqualHead": true,
+        "reviewerMustDifferFromAuthor": true,
+        "invalidateOnHeadChange": true,
+        "reusable": false,
+        "maximumAttestationAgeSeconds": 86400
+      },
+      "lifecycle": {
+        "activation": "trusted_external_attestation_after_exact_changed_path_match",
+        "changeSetBinding": "exact_normalized_lease_path_set",
+        "expiresOn": "head_change_review_dismissal_or_ttl",
+        "retention": "manifest_only_no_authority"
+      },
+      "authorityGranted": false,
+      "authorityDelta": "none"
+    }
+  ],
   "authorityFlags": {
     "runtimeAuthority": false,
     "productionCaller": false,
