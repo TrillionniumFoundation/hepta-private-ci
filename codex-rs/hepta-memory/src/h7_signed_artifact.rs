@@ -467,7 +467,8 @@ impl H7SignedArtifactEnvelope {
             }
             None => frame_part(&mut hasher, &[0]),
         }
-        for value in [self.signer_id.as_bytes()] {
+        {
+            let value = self.signer_id.as_bytes();
             frame_part(&mut hasher, value);
         }
         frame_part(&mut hasher, &self.signer_epoch.to_be_bytes());
@@ -644,7 +645,7 @@ mod tests {
                 actual: 0,
             })
         );
-        let mut tampered = envelope.clone();
+        let mut tampered = envelope;
         tampered.signature_domain = "wrong-domain".to_string();
         assert!(matches!(
             verifier.verify(&tampered, &artifact, None, 150, 0, None),
@@ -809,7 +810,7 @@ mod tests {
                 None,
                 H7SignedArtifactTransition::Rollback,
                 2,
-                Some(artifact_v2.body_sha256.clone()),
+                Some(artifact_v2.body_sha256),
                 100,
                 500,
             )

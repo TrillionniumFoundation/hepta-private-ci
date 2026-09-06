@@ -257,12 +257,11 @@ impl CognitiveRuntime {
                             format!("compact:{}", checkpoint_sha256.as_str()),
                         )
                         .await;
-                    if let Err(error) = applied {
-                        if hook.lease.inspect_occurrence(occurrence_key).await?
+                    if let Err(error) = applied
+                        && hook.lease.inspect_occurrence(occurrence_key).await?
                             != Some(LocalOutcomeState::Committed)
-                        {
-                            return Err(error.into());
-                        }
+                    {
+                        return Err(error.into());
                     }
                 }
                 Ok(LocalCompactHookReceipt {

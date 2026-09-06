@@ -763,10 +763,10 @@ impl H7FeedbackOracle {
         {
             return Err(H7FeedbackError::TooManyRecords(H7_FEEDBACK_MAX_RECORDS));
         }
-        if let Some(scope) = &self.scope {
-            if scope != &record.action.binding.scope {
-                return Err(H7FeedbackError::BindingMismatch("attempt/lease scope"));
-            }
+        if let Some(scope) = &self.scope
+            && scope != &record.action.binding.scope
+        {
+            return Err(H7FeedbackError::BindingMismatch("attempt/lease scope"));
         }
         let key = record.key();
         if let Some(existing) = self.records.get(&key) {

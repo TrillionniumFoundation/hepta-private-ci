@@ -103,7 +103,7 @@ impl LocalTurnLifecycleBinding {
         })?;
         let compact_binding = executor
             .lease_binding()
-            .ok_or_else(|| LocalTurnLifecycleBindingError::ExecutorUnbound)?;
+            .ok_or(LocalTurnLifecycleBindingError::ExecutorUnbound)?;
         if compact_binding.lease_id != lease.lease_id()
             || compact_binding.authority_epoch != lease_binding.authority_epoch
             || compact_binding.owner_epoch != lease_binding.owner_epoch

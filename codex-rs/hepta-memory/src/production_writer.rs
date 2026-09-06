@@ -147,7 +147,10 @@ impl fmt::Debug for ProductionAuthorityLease {
             )
             .field(
                 "token",
-                &self.token.as_ref().map(|token| token.fencing_digest()),
+                &self
+                    .token
+                    .as_ref()
+                    .map(ProductionAuthorityToken::fencing_digest),
             )
             .finish()
     }

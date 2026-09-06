@@ -2075,7 +2075,7 @@ impl H4CrashReopenReceipt {
         if self.schema_version != H4_PROBE_SCHEMA_VERSION || self.namespace != H4_PROBE_NAMESPACE {
             return Err("unsupported H4 receipt schema or namespace".to_string());
         }
-        if self.journal_mode.to_ascii_lowercase() != "wal" || self.synchronous != 2 {
+        if !self.journal_mode.eq_ignore_ascii_case("wal") || self.synchronous != 2 {
             return Err(format!(
                 "H4 receipt did not observe WAL/FULL (journal_mode={}, synchronous={})",
                 self.journal_mode, self.synchronous
@@ -2290,7 +2290,7 @@ impl H4ProbeChild {
                     .wait()
                     .expect("wait timed-out H4 probe child");
                 self.child.take();
-                panic!("H4 probe child timed out after {:?}: {status}", timeout);
+                panic!("H4 probe child timed out after {timeout:?}: {status}");
             }
             thread::sleep(Duration::from_millis(5));
         }

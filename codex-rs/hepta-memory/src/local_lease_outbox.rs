@@ -159,15 +159,14 @@ impl LocalLeaseBinding {
         previous: Option<&LocalLeaseBinding>,
     ) -> Result<(), LocalLeaseOutboxError> {
         validate_lease_binding(self)?;
-        if let Some(previous) = previous {
-            if (self.authority_epoch, self.owner_epoch)
+        if let Some(previous) = previous
+            && (self.authority_epoch, self.owner_epoch)
                 <= (previous.authority_epoch, previous.owner_epoch)
-            {
-                return Err(LocalLeaseOutboxError::CasConflict(format!(
-                    "host lease epoch must advance from ({}, {}) to a lexicographically newer pair",
-                    previous.authority_epoch, previous.owner_epoch
-                )));
-            }
+        {
+            return Err(LocalLeaseOutboxError::CasConflict(format!(
+                "host lease epoch must advance from ({}, {}) to a lexicographically newer pair",
+                previous.authority_epoch, previous.owner_epoch
+            )));
         }
         Ok(())
     }
@@ -3112,7 +3111,7 @@ fn ensure_no_unresolved_outcomes_except(
     let unresolved = states
         .iter()
         .filter_map(|(occurrence_key, state)| {
-            if excluded_occurrence.map_or(false, |excluded| excluded == occurrence_key) {
+            if excluded_occurrence.is_some_and(|excluded| excluded == occurrence_key) {
                 return None;
             }
             matches!(

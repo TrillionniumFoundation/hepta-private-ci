@@ -692,7 +692,7 @@ mod tests {
     fn authority_and_fence_fail_closed() {
         let snapshot =
             RunStartSnapshot::qualification(snapshot_input("authority")).expect("snapshot");
-        let mut authority = snapshot.clone();
+        let mut authority = snapshot;
         authority.runtime_authority = true;
         assert_eq!(
             authority.validate(),
