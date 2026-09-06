@@ -261,13 +261,17 @@ fn estimate_row(plan: &OpePlan, row: &OpeRow) -> Result<(i128, i128, i128, Diges
     if behavior == 0 {
         return Err(OpeError::UnsupportedAction);
     }
-    let weight = round_ratio(
-        i128::from(chosen.evaluation_probability.raw()) * SCALE,
-        behavior,
-    )?;
-    if weight > i128::from(plan.maximum_weight.raw()) {
+    let weighted_evaluation = i128::from(chosen.evaluation_probability.raw())
+        .checked_mul(SCALE)
+        .ok_or(OpeError::Arithmetic)?;
+    let weight_limit = behavior
+        .checked_mul(i128::from(plan.maximum_weight.raw()))
+        .ok_or(OpeError::Arithmetic)?;
+    // Compare the exact ratio before Q32 rounding can hide a ceiling breach.
+    if weighted_evaluation > weight_limit {
         return Err(OpeError::WeightLimit);
     }
+    let weight = round_ratio(weighted_evaluation, behavior)?;
     let weighted_outcome = round_ratio(weight * i128::from(outcome.raw()), SCALE)?;
     let residual = i128::from(outcome.raw()) - i128::from(chosen.predicted_outcome.raw());
     let dr = checked_add(

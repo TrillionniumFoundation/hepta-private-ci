@@ -1,4 +1,5 @@
 use super::*;
+use pretty_assertions::assert_eq;
 use std::fmt::Debug;
 
 fn must<T, E: Debug>(result: Result<T, E>) -> T {
@@ -158,6 +159,34 @@ fn distribution_and_weight_gates_are_enforced() {
     let (_, rows) = fixture();
     plan.maximum_weight = FixedQ32::ONE;
     assert_eq!(estimate_ope(&plan, &rows), Err(OpeError::WeightLimit));
+}
+
+#[test]
+fn exact_weight_ceiling_cannot_be_weakened_by_q32_rounding() {
+    let (mut plan, mut rows) = fixture();
+    plan.maximum_weight = FixedQ32::from_raw(5 << 30);
+    for offset in [0_u64, 1] {
+        // At offset zero the chosen ratio is exactly 5/4. At offset one it
+        // exceeds 5/4 by 1/(3*2^32-4), less than half one raw Q32 unit.
+        let behavior = (3 << 30) - offset;
+        let evaluation = (15 << 28) - offset;
+        for row in &mut rows {
+            row.actions[0].behavior_probability = must(ProbabilityQ32::from_raw(behavior));
+            row.actions[0].evaluation_probability = must(ProbabilityQ32::from_raw(evaluation));
+            row.actions[1].behavior_probability = must(ProbabilityQ32::from_raw(
+                ProbabilityQ32::ONE.raw() - behavior,
+            ));
+            row.actions[1].evaluation_probability = must(ProbabilityQ32::from_raw(
+                ProbabilityQ32::ONE.raw() - evaluation,
+            ));
+        }
+        if offset == 0 {
+            let estimate = must(estimate_ope(&plan, &rows));
+            assert_eq!(estimate.maximum_observed_weight, plan.maximum_weight);
+        } else {
+            assert_eq!(estimate_ope(&plan, &rows), Err(OpeError::WeightLimit));
+        }
+    }
 }
 
 #[test]
