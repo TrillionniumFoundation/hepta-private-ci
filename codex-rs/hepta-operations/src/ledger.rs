@@ -63,11 +63,11 @@ impl OperationLedger {
         if !witness.validates(&record.key, now_unix_ms) {
             return Err(OperationError::AuthorityRejected);
         }
+        advance(record)?;
         record.state = OperationState::Authorized {
             witness_digest: witness.witness_digest,
             authority_generation: witness.authority_generation,
         };
-        advance(record)?;
         Ok(record)
     }
 
@@ -86,8 +86,8 @@ impl OperationLedger {
         if !matches!(&record.state, OperationState::Authorized { .. }) {
             return invalid(&record.state, "dispatched");
         }
-        record.state = OperationState::Dispatched { dispatch_digest };
         advance(record)?;
+        record.state = OperationState::Dispatched { dispatch_digest };
         Ok(record)
     }
 
@@ -103,8 +103,8 @@ impl OperationLedger {
         if !matches!(&record.state, OperationState::Dispatched { .. }) {
             return invalid(&record.state, "indeterminate");
         }
-        record.state = OperationState::Indeterminate { reason_digest };
         advance(record)?;
+        record.state = OperationState::Indeterminate { reason_digest };
         Ok(record)
     }
 
@@ -128,6 +128,7 @@ impl OperationLedger {
         ) {
             return invalid(&record.state, "terminal_observation");
         }
+        advance(record)?;
         record.state = match outcome {
             ReconciliationOutcome::Applied => OperationState::Applied { outcome_digest },
             ReconciliationOutcome::NotApplied => OperationState::NotApplied { outcome_digest },
@@ -135,7 +136,6 @@ impl OperationLedger {
                 reason_digest: outcome_digest,
             },
         };
-        advance(record)?;
         Ok(record)
     }
 
