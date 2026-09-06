@@ -13,8 +13,12 @@ use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
 
+mod candidate_bound;
 mod requirements;
 
+pub use candidate_bound::CandidateBoundContextCompilationReceipt;
+pub use candidate_bound::compile_candidate_bound;
+pub use candidate_bound::compile_candidate_bound_with_requirements;
 pub use requirements::CompilationRequirementsV1;
 pub use requirements::MandatoryContextGroup;
 pub use requirements::compile_with_requirements;

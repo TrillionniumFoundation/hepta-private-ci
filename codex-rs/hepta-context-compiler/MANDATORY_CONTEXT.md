@@ -38,10 +38,21 @@ model/template/tool-schema tuple, independently current revocations or actual
 Codex payload delivery. Product attachment must bind those values and revalidate
 at the delivery boundary. Compilation grants no provider or effect authority.
 
-Native acceptance cases are in `src/lib_tests.rs` and
-`src/requirements_tests.rs`: trusted-instruction overflow, mandatory provenance
-at a tight budget, refusal rather than partial groups, shared provenance,
-permutation invariance, exact binding drift, invalid identities, scope/objective
+The additive owner-local, crate-native `compile_candidate_bound` and
+`compile_candidate_bound_with_requirements` entrypoints preserve the existing
+V1 request, receipt and digest semantics. Their wrapper binds the complete
+bounded set supplied by the caller, including omitted item identities, content,
+source, role, cost and secret marker. It deliberately calls this a
+`caller_candidate_set_digest`: it cannot prove that the caller supplied every
+eligible item and is not a registered cross-module port or wire V2, source
+credential, freshness or revocation witness, delivery receipt, selection
+decision, or authority grant.
+
+Native acceptance cases are in `src/lib_tests.rs`,
+`src/requirements_tests.rs` and `src/candidate_bound_tests.rs`:
+trusted-instruction overflow, mandatory provenance at a tight budget, refusal
+rather than partial groups, shared provenance, permutation invariance, omitted
+candidate binding, exact binding drift, invalid identities, scope/objective
 drift, requirement digest changes and reference saturation.
 
 Run with `just test --locked -p codex-hepta-context-compiler`. These are native
