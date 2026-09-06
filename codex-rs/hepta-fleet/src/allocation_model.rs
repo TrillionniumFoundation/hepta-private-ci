@@ -26,6 +26,33 @@ pub enum LocalResourceAxisV1 {
     TurnQueueSlots,
 }
 
+impl LocalResourceAxisV1 {
+    pub(crate) const ALL: [Self; 4] = [
+        Self::ConcurrentTurns,
+        Self::MemoryMib,
+        Self::ToolProcesses,
+        Self::TurnQueueSlots,
+    ];
+
+    pub(crate) const fn read(self, vector: LocalResourceVectorV1) -> u64 {
+        match self {
+            Self::ConcurrentTurns => vector.concurrent_turns,
+            Self::MemoryMib => vector.memory_mib,
+            Self::ToolProcesses => vector.tool_processes,
+            Self::TurnQueueSlots => vector.turn_queue_slots,
+        }
+    }
+
+    pub(crate) fn write(self, vector: &mut LocalResourceVectorV1, value: u64) {
+        match self {
+            Self::ConcurrentTurns => vector.concurrent_turns = value,
+            Self::MemoryMib => vector.memory_mib = value,
+            Self::ToolProcesses => vector.tool_processes = value,
+            Self::TurnQueueSlots => vector.turn_queue_slots = value,
+        }
+    }
+}
+
 /// Four fixed-width resource quantities. The algorithm never loops per unit.
 #[derive(Clone, Copy, Debug, Default, Eq, Ord, PartialEq, PartialOrd)]
 pub struct LocalResourceVectorV1 {
@@ -122,6 +149,19 @@ pub struct LocalAllocationCalculationV1 {
 }
 
 impl LocalAllocationCalculationV1 {
+    pub(crate) fn new(
+        calculation_content_sha256: Sha256Digest,
+        shares: Vec<LocalAllocationShareV1>,
+    ) -> Self {
+        Self {
+            calculator_version: LOCAL_ALLOCATION_CALCULATOR_VERSION,
+            input_scope: LocalAllocationInputScopeV1::CallerSuppliedCandidatesAndCapacityOnly,
+            calculation_content_sha256,
+            shares,
+            claim_boundary: LocalAllocationClaimBoundaryV1::DENY_ALL,
+        }
+    }
+
     pub const fn calculator_version(&self) -> u32 {
         self.calculator_version
     }

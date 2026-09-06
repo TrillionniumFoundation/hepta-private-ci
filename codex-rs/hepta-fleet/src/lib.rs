@@ -4,12 +4,16 @@
 
 #![forbid(unsafe_code)]
 
+mod allocation;
+mod allocation_digest;
 mod allocation_model;
+mod allocation_validation;
 mod error;
 mod model;
 mod registry;
 mod release;
 
+pub use allocation::calculate_local_allocation_v1;
 pub use allocation_model::LOCAL_ALLOCATION_CALCULATOR_VERSION;
 pub use allocation_model::LocalAllocationCalculationV1;
 pub use allocation_model::LocalAllocationCandidateV1;
