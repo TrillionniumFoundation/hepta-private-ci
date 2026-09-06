@@ -291,3 +291,7 @@ fn solve(
         unforced_actions,
     })
 }
+
+#[cfg(test)]
+#[path = "feasibility_tests.rs"]
+mod tests;

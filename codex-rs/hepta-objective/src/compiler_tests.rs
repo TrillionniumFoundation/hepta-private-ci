@@ -192,3 +192,36 @@ fn untrusted_evidence_cannot_create_privileged_authority() {
     assert_eq!(error, ObjectiveError::UntrustedAuthorityEscalation);
     assert_eq!(error.code(), "OBJ-E009");
 }
+
+#[test]
+fn forbidden_abstain_is_not_implicitly_legalized_or_misreported() {
+    let mut source = envelope();
+    source.forbidden_actions.push(id("abstain"));
+    let receipt = must(must(compile(source.clone())));
+    assert_eq!(receipt.objective.legal_actions, source.allowed_actions);
+    assert_eq!(receipt.disposition, CompileDisposition::Compiled);
+    source.allowed_actions.clear();
+    assert_eq!(
+        must_err(must(compile(source))).conflicting_ids,
+        vec![id("abstain")]
+    );
+}
+
+#[test]
+fn implicit_abstain_cannot_exceed_the_legal_action_bound() {
+    let mut source = envelope();
+    source.allowed_actions = (0..128)
+        .map(|i| ActionClass {
+            id: id(&format!("action-{i:03}")),
+            confirmation: ConfirmationPolicy::Required,
+        })
+        .collect();
+    assert_eq!(
+        must_err(compile(source)),
+        ObjectiveError::InvalidBound {
+            kind: "compiled legal actions",
+            maximum: 128,
+            actual: 129
+        }
+    );
+}
