@@ -10,6 +10,7 @@ mod model;
 mod scheduler;
 mod store;
 mod taskflow;
+mod taskflow_execution_boundary;
 #[cfg(feature = "taskflow-structural-qualification")]
 mod taskflow_kernel;
 #[cfg(feature = "taskflow-structural-qualification")]
@@ -49,6 +50,20 @@ pub use taskflow::TaskFlowReconcileOutcome;
 pub use taskflow::TaskFlowRun;
 pub use taskflow::TaskFlowRunState;
 pub use taskflow::TaskFlowTransition;
+pub use taskflow_execution_boundary::MAX_TASKFLOW_BOUNDARY_ENCODED_BYTES;
+pub use taskflow_execution_boundary::MAX_TASKFLOW_BOUNDARY_PREDECESSORS;
+pub use taskflow_execution_boundary::TASKFLOW_EXECUTION_BOUNDARY_SCHEMA_VERSION;
+pub use taskflow_execution_boundary::LocalTaskFlowBoundaryActionV1;
+pub use taskflow_execution_boundary::LocalTaskFlowBoundaryRequestV1;
+pub use taskflow_execution_boundary::LocalTaskFlowPredecessorReferenceV1;
+pub use taskflow_execution_boundary::LocalTaskFlowTerminalStateV1;
+pub use taskflow_execution_boundary::TaskFlowBoundaryError;
+pub use taskflow_execution_boundary::TaskFlowBoundaryAuthority;
+pub use taskflow_execution_boundary::TaskFlowBoundaryScope;
+pub use taskflow_execution_boundary::TaskFlowBoundaryUnavailableReason;
+pub use taskflow_execution_boundary::TaskFlowExecutionUnavailableV1;
+pub use taskflow_execution_boundary::assess_local_taskflow_boundary;
+pub use taskflow_execution_boundary::assess_local_taskflow_boundary_json;
 #[cfg(feature = "taskflow-structural-qualification")]
 pub use taskflow_kernel::TASKFLOW_STRUCTURAL_EFFECTS;
 #[cfg(feature = "taskflow-structural-qualification")]
