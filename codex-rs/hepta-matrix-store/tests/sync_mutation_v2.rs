@@ -11,6 +11,7 @@ use codex_hepta_matrix_store::MatrixEventId;
 use codex_hepta_matrix_store::MatrixRoomId;
 use codex_hepta_matrix_store::MatrixUserId;
 use codex_hepta_matrix_store::OutboxDraft;
+use codex_hepta_matrix_store::OutboxDisposition;
 use codex_hepta_matrix_store::OutboxKind;
 use codex_hepta_matrix_store::RoomBindingDraft;
 use codex_hepta_matrix_protocol::MatrixSyncBatchV2;
@@ -675,6 +676,681 @@ async fn room_leave_and_replacement_tombstones_prevent_replay() -> TestResult {
             })
             .await,
         Err(MatrixDurableError::AccessDenied)
+    );
+    Ok(())
+}
+
+#[tokio::test]
+async fn kicked_room_rebind_preserves_the_account_cursor_and_resumes_sync() -> TestResult {
+    let temp = TempDir::new()?;
+    let room_id = room("!kick-rebind:example.test")?;
+    let store = store_and_room(&temp, &room_id).await?;
+    let before_leave = mutation(
+        event("$kick-before")?,
+        room_id.clone(),
+        MatrixSyncMutationBodyV2::Timeline {
+            event_type: "m.room.message".to_string(),
+            payload: b"old generation".to_vec(),
+        },
+        /*at_ms*/ 10,
+    )?;
+    store
+        .apply_sync_decision_v2(&commit(
+            /*expected*/ None,
+            "s1",
+            /*observed_at_ms*/ 11,
+            vec![before_leave],
+        ))
+        .await?;
+
+    // A moderator, not the local user, may send the membership event that
+    // removes the bound user. The departed membership is the local invariant.
+    let mut kicked = mutation(
+        event("$moderator-kick")?,
+        room_id.clone(),
+        MatrixSyncMutationBodyV2::RoomLeave {
+            departed_user_id: user(AGENT_USER_ID)?,
+        },
+        /*at_ms*/ 20,
+    )?;
+    kicked.sender = user("@moderator:example.test")?;
+    assert_eq!(
+        dispositions(
+            store
+                .apply_sync_decision_v2(&commit(
+                    Some("s1"),
+                    "s2",
+                    /*observed_at_ms*/ 21,
+                    vec![kicked],
+                ))
+                .await?,
+        )?,
+        vec![MatrixSyncMutationDispositionV2::Applied]
+    );
+
+    let rebound = store
+        .bind_room(&RoomBindingDraft {
+            room_id: room_id.clone(),
+            agent_user_id: user(AGENT_USER_ID)?,
+            expected_revision: Some(1),
+            generation: 2,
+            changed_at_ms: 30,
+        })
+        .await?;
+    assert_eq!(rebound.revision, 2);
+    assert_eq!(rebound.generation, 2);
+    assert_eq!(
+        store
+            .sync_checkpoint(/*binding_revision*/ 1, /*generation*/ 1)
+            .await?
+            .ok_or("account checkpoint changed during room rebind")?
+            .next_batch,
+        "s2"
+    );
+
+    let mut after_rebind = mutation(
+        event("$after-rebind")?,
+        room_id.clone(),
+        MatrixSyncMutationBodyV2::Timeline {
+            event_type: "m.room.message".to_string(),
+            payload: b"new generation".to_vec(),
+        },
+        /*at_ms*/ 40,
+    )?;
+    after_rebind.binding_revision = 2;
+    after_rebind.generation = 2;
+    assert_eq!(
+        dispositions(
+            store
+                .apply_sync_decision_v2(&commit_with_fence(
+                    Some("s2"),
+                    "s3",
+                    /*observed_at_ms*/ 41,
+                    /*checkpoint_revision*/ 1,
+                    /*checkpoint_generation*/ 1,
+                    vec![after_rebind],
+                ))
+                .await?,
+        )?,
+        vec![MatrixSyncMutationDispositionV2::Applied]
+    );
+    assert_eq!(store.pending_inbox(/*limit*/ 10).await?.len(), 1);
+    Ok(())
+}
+
+#[tokio::test]
+async fn one_room_rebind_does_not_fence_another_room_or_the_account_cursor() -> TestResult {
+    let temp = TempDir::new()?;
+    let room_a = room("!multi-a:example.test")?;
+    let room_b = room("!multi-b:example.test")?;
+    let store = store_and_room(&temp, &room_a).await?;
+    store
+        .bind_room(&RoomBindingDraft {
+            room_id: room_b.clone(),
+            agent_user_id: user(AGENT_USER_ID)?,
+            expected_revision: None,
+            generation: 1,
+            changed_at_ms: 2,
+        })
+        .await?;
+    let initial_a = mutation(
+        event("$multi-a-initial")?,
+        room_a.clone(),
+        MatrixSyncMutationBodyV2::Timeline {
+            event_type: "m.room.message".to_string(),
+            payload: b"a1".to_vec(),
+        },
+        /*at_ms*/ 10,
+    )?;
+    let initial_b = mutation(
+        event("$multi-b-initial")?,
+        room_b.clone(),
+        MatrixSyncMutationBodyV2::Timeline {
+            event_type: "m.room.message".to_string(),
+            payload: b"b1".to_vec(),
+        },
+        /*at_ms*/ 10,
+    )?;
+    store
+        .apply_sync_decision_v2(&commit(
+            /*expected*/ None,
+            "s1",
+            /*observed_at_ms*/ 11,
+            vec![initial_a, initial_b],
+        ))
+        .await?;
+
+    let mut leave_a = mutation(
+        event("$multi-a-leave")?,
+        room_a.clone(),
+        MatrixSyncMutationBodyV2::RoomLeave {
+            departed_user_id: user(AGENT_USER_ID)?,
+        },
+        /*at_ms*/ 20,
+    )?;
+    leave_a.sender = user(AGENT_USER_ID)?;
+    store
+        .apply_sync_decision_v2(&commit(
+            Some("s1"),
+            "s2",
+            /*observed_at_ms*/ 21,
+            vec![leave_a],
+        ))
+        .await?;
+    store
+        .bind_room(&RoomBindingDraft {
+            room_id: room_a.clone(),
+            agent_user_id: user(AGENT_USER_ID)?,
+            expected_revision: Some(1),
+            generation: 2,
+            changed_at_ms: 30,
+        })
+        .await?;
+
+    let mut next_a = mutation(
+        event("$multi-a-next")?,
+        room_a,
+        MatrixSyncMutationBodyV2::Timeline {
+            event_type: "m.room.message".to_string(),
+            payload: b"a2".to_vec(),
+        },
+        /*at_ms*/ 40,
+    )?;
+    next_a.binding_revision = 2;
+    next_a.generation = 2;
+    let next_b = mutation(
+        event("$multi-b-next")?,
+        room_b,
+        MatrixSyncMutationBodyV2::Timeline {
+            event_type: "m.room.message".to_string(),
+            payload: b"b2".to_vec(),
+        },
+        /*at_ms*/ 40,
+    )?;
+    assert_eq!(
+        dispositions(
+            store
+                .apply_sync_decision_v2(&commit(
+                    Some("s2"),
+                    "s3",
+                    /*observed_at_ms*/ 41,
+                    vec![next_a, next_b],
+                ))
+                .await?,
+        )?,
+        vec![
+            MatrixSyncMutationDispositionV2::Applied,
+            MatrixSyncMutationDispositionV2::Applied,
+        ]
+    );
+    assert_eq!(
+        store
+            .sync_checkpoint(/*binding_revision*/ 1, /*generation*/ 1)
+            .await?
+            .ok_or("missing account checkpoint")?
+            .next_batch,
+        "s3"
+    );
+    Ok(())
+}
+
+#[tokio::test]
+async fn caller_persisted_outbox_attempt_survives_a_later_room_leave() -> TestResult {
+    let temp = TempDir::new()?;
+    let agent_id = agent()?;
+    let store_layout = layout(&temp, &agent_id)?;
+    let room_id = room("!outbox-lost-ack:example.test")?;
+    let store = MatrixDurableStore::open(&store_layout, MatrixDurableConfig::default()).await?;
+    store
+        .bind_room(&RoomBindingDraft {
+            room_id: room_id.clone(),
+            agent_user_id: user(AGENT_USER_ID)?,
+            expected_revision: None,
+            generation: 1,
+            changed_at_ms: 1,
+        })
+        .await?;
+    let logical_outbox_id = "terminal-before-leave";
+    let txn_id = transaction_id(logical_outbox_id, /*revision*/ 1)?;
+    let draft = OutboxDraft {
+        logical_outbox_id: logical_outbox_id.to_string(),
+        revision: 1,
+        txn_id: txn_id.clone(),
+        room_id: room_id.clone(),
+        kind: OutboxKind::Terminal,
+        payload: b"already sent".to_vec(),
+        binding_revision: 1,
+        generation: 1,
+        created_at_ms: 10,
+    };
+    store.enqueue_outbox(&draft).await?;
+    let claimed = store
+        .claim_outbox(/*now_ms*/ 11, /*lease_ms*/ 100, /*limit*/ 1)
+        .await?;
+    assert_eq!(claimed.len(), 1);
+    let sent_event_id = event("$sent-before-leave")?;
+
+    let mut leave = mutation(
+        event("$leave-after-send")?,
+        room_id,
+        MatrixSyncMutationBodyV2::RoomLeave {
+            departed_user_id: user(AGENT_USER_ID)?,
+        },
+        /*at_ms*/ 20,
+    )?;
+    leave.sender = user(AGENT_USER_ID)?;
+    store
+        .apply_sync_decision_v2(&commit(
+            /*expected*/ None,
+            "s1",
+            /*observed_at_ms*/ 21,
+            vec![leave],
+        ))
+        .await?;
+    assert!(store.pending_outbox(/*limit*/ 10).await?.is_empty());
+    store.close().await;
+
+    let store = MatrixDurableStore::open(&store_layout, MatrixDurableConfig::default()).await?;
+    assert!(matches!(
+        store.enqueue_outbox(&draft).await?,
+        OutboxDisposition::Duplicate(_)
+    ));
+    assert_eq!(
+        store
+            .exact_outbox_revision(
+                logical_outbox_id,
+                &draft.room_id,
+                draft.kind,
+                &draft.payload,
+                draft.binding_revision,
+                draft.generation,
+            )
+            .await?,
+        Some(1)
+    );
+    assert!(
+        store
+            .claim_outbox(/*now_ms*/ 200, /*lease_ms*/ 100, /*limit*/ 10)
+            .await?
+            .is_empty(),
+        "an expired pre-leave lease must not be reclaimed"
+    );
+    let sent = store
+        .mark_outbox_sent(
+            &txn_id,
+            claimed[0].attempts,
+            &sent_event_id,
+            /*now_ms*/ 201,
+        )
+        .await?;
+
+    assert_eq!(
+        store
+            .mark_outbox_sent(
+                &txn_id,
+                claimed[0].attempts,
+                &sent_event_id,
+                /*now_ms*/ 202,
+            )
+            .await?,
+        sent
+    );
+    assert_eq!(
+        store
+            .mark_outbox_sent(
+                &txn_id,
+                claimed[0].attempts,
+                &event("$different-send-result")?,
+                /*now_ms*/ 203,
+            )
+            .await,
+        Err(MatrixDurableError::Conflict)
+    );
+    Ok(())
+}
+
+#[tokio::test]
+async fn v1_source_hidden_by_leave_cannot_be_reused_after_rebind() -> TestResult {
+    let temp = TempDir::new()?;
+    let room_id = room("!v1-leave-rebind:example.test")?;
+    let store = store_and_room(&temp, &room_id).await?;
+    let source = event("$v1-before-leave")?;
+    store
+        .ingest_inbox(&inbox_draft(
+            source.clone(),
+            room_id.clone(),
+            b"old fence meaning",
+            /*at_ms*/ 10,
+        )?)
+        .await?;
+
+    let leave = mutation(
+        event("$leave-before-reuse")?,
+        room_id.clone(),
+        MatrixSyncMutationBodyV2::RoomLeave {
+            departed_user_id: user(AGENT_USER_ID)?,
+        },
+        /*at_ms*/ 20,
+    )?;
+    store
+        .apply_sync_decision_v2(&commit(
+            /*expected*/ None,
+            "s1",
+            /*observed_at_ms*/ 21,
+            vec![leave],
+        ))
+        .await?;
+    store
+        .bind_room(&RoomBindingDraft {
+            room_id: room_id.clone(),
+            agent_user_id: user(AGENT_USER_ID)?,
+            expected_revision: Some(1),
+            generation: 2,
+            changed_at_ms: 30,
+        })
+        .await?;
+
+    let mut reused = mutation(
+        source,
+        room_id,
+        MatrixSyncMutationBodyV2::Timeline {
+            event_type: "m.room.message".to_string(),
+            payload: b"new fence meaning".to_vec(),
+        },
+        /*at_ms*/ 40,
+    )?;
+    reused.binding_revision = 2;
+    reused.generation = 2;
+    assert_eq!(
+        store
+            .apply_sync_decision_v2(&commit_with_fence(
+                Some("s1"),
+                "s2",
+                /*observed_at_ms*/ 41,
+                /*checkpoint_revision*/ 1,
+                /*checkpoint_generation*/ 1,
+                vec![reused],
+            ))
+            .await,
+        Err(MatrixDurableError::Conflict)
+    );
+    assert_eq!(
+        store
+            .sync_checkpoint(/*binding_revision*/ 1, /*generation*/ 1)
+            .await?
+            .ok_or("checkpoint")?
+            .next_batch,
+        "s1"
+    );
+    Ok(())
+}
+
+#[tokio::test]
+async fn redacted_v1_source_cannot_be_reused_in_another_room() -> TestResult {
+    let temp = TempDir::new()?;
+    let source_room = room("!v1-source-room:example.test")?;
+    let other_room = room("!v1-other-room:example.test")?;
+    let store = store_and_room(&temp, &source_room).await?;
+    store
+        .bind_room(&RoomBindingDraft {
+            room_id: other_room.clone(),
+            agent_user_id: user(AGENT_USER_ID)?,
+            expected_revision: None,
+            generation: 1,
+            changed_at_ms: 2,
+        })
+        .await?;
+    let source = event("$v1-cross-room-redacted")?;
+    store
+        .ingest_inbox(&inbox_draft(
+            source.clone(),
+            source_room.clone(),
+            b"source room meaning",
+            /*at_ms*/ 10,
+        )?)
+        .await?;
+    let redaction = mutation(
+        event("$redact-before-cross-room-reuse")?,
+        source_room,
+        MatrixSyncMutationBodyV2::Redaction {
+            target_event_id: source.clone(),
+        },
+        /*at_ms*/ 20,
+    )?;
+    store
+        .apply_sync_decision_v2(&commit(
+            /*expected*/ None,
+            "s1",
+            /*observed_at_ms*/ 21,
+            vec![redaction],
+        ))
+        .await?;
+
+    let reused = mutation(
+        source,
+        other_room,
+        MatrixSyncMutationBodyV2::Timeline {
+            event_type: "m.room.message".to_string(),
+            payload: b"other room meaning".to_vec(),
+        },
+        /*at_ms*/ 30,
+    )?;
+    assert_eq!(
+        store
+            .apply_sync_decision_v2(&commit(
+                Some("s1"),
+                "s2",
+                /*observed_at_ms*/ 31,
+                vec![reused],
+            ))
+            .await,
+        Err(MatrixDurableError::Conflict)
+    );
+    assert_eq!(
+        store
+            .sync_checkpoint(/*binding_revision*/ 1, /*generation*/ 1)
+            .await?
+            .ok_or("checkpoint")?
+            .next_batch,
+        "s1"
+    );
+    Ok(())
+}
+
+#[tokio::test]
+async fn tombstoned_v1_source_cannot_gain_a_new_v2_meaning() -> TestResult {
+    let temp = TempDir::new()?;
+    let room_id = room("!v1-redacted:example.test")?;
+    let store = store_and_room(&temp, &room_id).await?;
+    let source = event("$v1-redacted-source")?;
+    store
+        .ingest_inbox(&inbox_draft(
+            source.clone(),
+            room_id.clone(),
+            b"V1 original meaning",
+            /*at_ms*/ 10,
+        )?)
+        .await?;
+    let redaction = mutation(
+        event("$v1-redaction")?,
+        room_id.clone(),
+        MatrixSyncMutationBodyV2::Redaction {
+            target_event_id: source.clone(),
+        },
+        /*at_ms*/ 20,
+    )?;
+    store
+        .apply_sync_decision_v2(&commit(
+            /*expected*/ None,
+            "s1",
+            /*observed_at_ms*/ 21,
+            vec![redaction],
+        ))
+        .await?;
+
+    let conflicting_timeline = mutation(
+        source,
+        room_id,
+        MatrixSyncMutationBodyV2::Timeline {
+            event_type: "m.room.message".to_string(),
+            payload: b"different V2 meaning".to_vec(),
+        },
+        /*at_ms*/ 30,
+    )?;
+    assert_eq!(
+        store
+            .apply_sync_decision_v2(&commit(
+                Some("s1"),
+                "s2",
+                /*observed_at_ms*/ 31,
+                vec![conflicting_timeline],
+            ))
+            .await,
+        Err(MatrixDurableError::Conflict)
+    );
+    assert_eq!(
+        store
+            .sync_checkpoint(/*binding_revision*/ 1, /*generation*/ 1)
+            .await?
+            .ok_or("checkpoint")?
+            .next_batch,
+        "s1"
+    );
+    Ok(())
+}
+
+#[tokio::test]
+async fn v1_and_v2_timeline_identity_matches_exact_semantics_only() -> TestResult {
+    let temp = TempDir::new()?;
+    let room_id = room("!v1-v2-exact:example.test")?;
+    let store = store_and_room(&temp, &room_id).await?;
+    let source = event("$v1-v2-exact")?;
+    store
+        .ingest_inbox(&inbox_draft(
+            source.clone(),
+            room_id.clone(),
+            b"same semantic payload",
+            /*at_ms*/ 10,
+        )?)
+        .await?;
+    let mut exact = mutation(
+        source.clone(),
+        room_id,
+        MatrixSyncMutationBodyV2::Timeline {
+            event_type: "m.room.message".to_string(),
+            payload: b"same semantic payload".to_vec(),
+        },
+        /*at_ms*/ 10,
+    )?;
+    exact.received_at_ms = 20;
+    assert_eq!(
+        dispositions(
+            store
+                .apply_sync_decision_v2(&commit(
+                    /*expected*/ None,
+                    "s1",
+                    /*observed_at_ms*/ 20,
+                    vec![exact],
+                ))
+                .await?,
+        )?,
+        vec![MatrixSyncMutationDispositionV2::Duplicate]
+    );
+    Ok(())
+}
+
+#[tokio::test]
+async fn failed_mutation_rolls_back_prior_mutations_and_cursor() -> TestResult {
+    let temp = TempDir::new()?;
+    let room_id = room("!atomic:example.test")?;
+    let store = store_and_room(&temp, &room_id).await?;
+    store
+        .apply_sync_decision_v2(&commit(
+            /*expected*/ None,
+            "s1",
+            /*observed_at_ms*/ 1,
+            Vec::new(),
+        ))
+        .await?;
+    let v1_source = event("$v1-source")?;
+    store
+        .ingest_inbox(&inbox_draft(
+            v1_source.clone(),
+            room_id.clone(),
+            b"V1 source identity",
+            /*at_ms*/ 2,
+        )?)
+        .await?;
+    let split_identity = mutation(
+        v1_source,
+        room_id.clone(),
+        MatrixSyncMutationBodyV2::Redaction {
+            target_event_id: event("$unrelated-target")?,
+        },
+        /*at_ms*/ 4,
+    )?;
+    assert_eq!(
+        store
+            .apply_sync_decision_v2(&commit(
+                Some("s1"),
+                "s2",
+                /*observed_at_ms*/ 5,
+                vec![split_identity],
+            ))
+            .await,
+        Err(MatrixDurableError::Conflict)
+    );
+    let valid_event = event("$rolled-back")?;
+    let valid = mutation(
+        valid_event.clone(),
+        room_id,
+        MatrixSyncMutationBodyV2::Timeline {
+            event_type: "m.room.message".to_string(),
+            payload: b"rollback".to_vec(),
+        },
+        /*at_ms*/ 10,
+    )?;
+    let retry = valid.clone();
+    let foreign = mutation(
+        event("$foreign-redaction")?,
+        room("!foreign:example.test")?,
+        MatrixSyncMutationBodyV2::Redaction {
+            target_event_id: event("$foreign-target")?,
+        },
+        /*at_ms*/ 11,
+    )?;
+    assert_eq!(
+        store
+            .apply_sync_decision_v2(&commit(
+                Some("s1"),
+                "s2",
+                /*observed_at_ms*/ 12,
+                vec![valid, foreign],
+            ))
+            .await,
+        Err(MatrixDurableError::AccessDenied)
+    );
+    assert!(store.inbox(&valid_event).await?.is_none());
+    assert_eq!(
+        store
+            .sync_checkpoint(/*binding_revision*/ 1, /*generation*/ 1)
+            .await?
+            .ok_or("checkpoint")?
+            .next_batch,
+        "s1"
+    );
+    assert_eq!(
+        dispositions(
+            store
+                .apply_sync_decision_v2(&commit(
+                    Some("s1"),
+                    "s2",
+                    /*observed_at_ms*/ 13,
+                    vec![retry],
+                ))
+                .await?,
+        )?,
+        vec![MatrixSyncMutationDispositionV2::Applied]
     );
     Ok(())
 }
