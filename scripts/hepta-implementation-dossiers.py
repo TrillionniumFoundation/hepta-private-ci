@@ -274,7 +274,10 @@ def verify() -> int:
     need([row["id"] for row in canonical_external] == EXTERNAL_IDS, "external order")
     need(dossier.get("externalGateIds") == EXTERNAL_IDS, "external projection")
     need(
-        all(row["repositoryDocumentationMaySelfCertify"] is False for row in canonical_external),
+        all(
+            row["repositoryDocumentationMaySelfCertify"] is False
+            for row in canonical_external
+        ),
         "self-certifiable external gate",
     )
 
@@ -285,13 +288,17 @@ def verify() -> int:
         need(isinstance(values, list) and len(values) == len(PROFILE_FIELDS), module_id)
         row = dict(zip(PROFILE_FIELDS, values, strict=True))
         for key in ["runtimeClass", "stateClass", "nduParticipation"]:
-            need(isinstance(row[key], str) and len(row[key]) >= 6, module_id + " " + key)
+            need(
+                isinstance(row[key], str) and len(row[key]) >= 6, module_id + " " + key
+            )
         need(row["faultProfile"] in FAULT_IDS, module_id + " fault profile")
         need(
             row["performanceProfile"] in PERFORMANCE_IDS,
             module_id + " performance profile",
         )
-        need(isinstance(row["assimilationComponents"], list), module_id + " assimilation")
+        need(
+            isinstance(row["assimilationComponents"], list), module_id + " assimilation"
+        )
         need(
             isinstance(row["externalGateIds"], list)
             and row["externalGateIds"]
@@ -317,7 +324,10 @@ def verify() -> int:
             row["id"] + " closure",
         )
         for evidence_path in row["evidence"]:
-            need((ROOT / evidence_path).is_file(), row["id"] + " evidence " + evidence_path)
+            need(
+                (ROOT / evidence_path).is_file(),
+                row["id"] + " evidence " + evidence_path,
+            )
 
     parallel = (ROOT / PARALLEL_PATH).read_text(encoding="utf-8")
     handoff = (ROOT / HANDOFF_PATH).read_text(encoding="utf-8")
@@ -325,7 +335,9 @@ def verify() -> int:
     dossier_readme = (ROOT / README_PATH).read_text(encoding="utf-8")
     technical = (ROOT / TECHNICAL_PATH).read_text(encoding="utf-8")
     workflow = (ROOT / WORKFLOW_PATH).read_text(encoding="utf-8")
-    combined = "\n".join([parallel, handoff, readiness_readme, dossier_readme, technical])
+    combined = "\n".join(
+        [parallel, handoff, readiness_readme, dossier_readme, technical]
+    )
     need(
         DOSSIER_PATH in parallel
         and DOSSIER_PATH in handoff
@@ -410,7 +422,9 @@ def generate_status(check: bool) -> int:
     text = status_text(load(DOSSIER_PATH), load(READINESS_PATH), load(CNS_PATH))
     path = ROOT / STATUS_PATH
     if check:
-        need(path.is_file() and path.read_text(encoding="utf-8") == text, "status stale")
+        need(
+            path.is_file() and path.read_text(encoding="utf-8") == text, "status stale"
+        )
         print("PASS_HEPTA_MODULE_EXECUTION_DOSSIER_STATUS")
     else:
         path.parent.mkdir(parents=True, exist_ok=True)
