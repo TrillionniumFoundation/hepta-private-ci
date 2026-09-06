@@ -1,0 +1,159 @@
+{
+  "artifacts": [
+    {
+      "bytes": 3732,
+      "kind": "github_actions_artifact",
+      "name": "g1-exact-head-7e1e611e7299391cf3d4edc1ded322da0d023cc6",
+      "retention_expires_at": "2026-10-06T06:55:14Z",
+      "sha256": "cf1f445e9ff65154a41d9082846340b3cdfc8278457d7c3d1653b8c2a35afca8",
+      "uri": "github-actions://TrillionniumFoundation/trillionnium-os/runs/34014361107/artifacts/9984445835"
+    },
+    {
+      "bytes": 111427,
+      "kind": "github_actions_artifact",
+      "name": "g1-locked-source-graph-7e1e611e7299391cf3d4edc1ded322da0d023cc6",
+      "retention_expires_at": "2026-10-06T05:38:25Z",
+      "sha256": "0db1594d3b4ad96da11cdd3fe15ee0e6eb1b2a3135ba7d17d006f3ad69a09a04",
+      "uri": "github-actions://TrillionniumFoundation/trillionnium-os/runs/34014361107/artifacts/9983469843"
+    },
+    {
+      "bytes": 3038,
+      "kind": "github_actions_artifact",
+      "name": "g1-synthetic-merge-906aa352f9b714940504c4071e8d15f7937f3411",
+      "retention_expires_at": "2026-10-06T06:54:21Z",
+      "sha256": "46d243a2da996d20447a8e2951afb591e9b600663c5b63d954f2c0ce095ce497",
+      "uri": "github-actions://TrillionniumFoundation/trillionnium-os/runs/34017552361/artifacts/9984433810"
+    }
+  ],
+  "authorization": {
+    "authority": "github_pull_request_review",
+    "evidence_id": "pull-request-review-5124508101",
+    "expires_at": "2026-10-06T05:38:25Z",
+    "revoked": false,
+    "scope": "PR-41 source=7e1e611e7299391cf3d4edc1ded322da0d023cc6 synthetic_merge=906aa352f9b714940504c4071e8d15f7937f3411 github_prospective_merge=d830eb3a0d4e1f68feda78eb953d3affe76f0c19 protected_main=968968046d69d000f1f9fe03683e92aa7903cf99 reviewed_tree=04ba2fab66dfc41680784e1288e14c2fc54c58d9 L1-only",
+    "status": "APPROVED"
+  },
+  "automatic_redispatch": false,
+  "claim_ceiling": "EXACT_SOURCE_AND_SYNTHETIC_MERGE_QUALIFIED_NOT_INSTALLED_TARGET",
+  "created_at": "2026-09-06T07:31:53Z",
+  "evidence_class": "source_qualification",
+  "expires_at": "2026-10-06T05:38:25Z",
+  "gaps": [
+    "GAP-DOC-SINGLE-TRUTH-001",
+    "GAP-GOVERNANCE-001"
+  ],
+  "holds": [],
+  "level": "L1",
+  "lineage": {
+    "parent_package_ids": [],
+    "predecessor_source_commit": "4b9af095813df1a83b65d029d061d889b882d5e7"
+  },
+  "negative_claims": [
+    "installed_target_not_observed",
+    "android_image_not_observed",
+    "physical_device_not_observed",
+    "destructive_faults_not_observed",
+    "public_release_not_authorized"
+  ],
+  "observations": {
+    "automatic_redispatch_count": 0,
+    "exact_head_checks_passed": true,
+    "github_prospective_merge": "d830eb3a0d4e1f68feda78eb953d3affe76f0c19",
+    "independent_non_author_approval": true,
+    "protected_integration_method": "squash",
+    "protected_integration_observed": true,
+    "protected_main_commit": "968968046d69d000f1f9fe03683e92aa7903cf99",
+    "protected_main_parent": "bb0f85e63b251b99a6fb490dfe6406a992d95f45",
+    "protected_main_signature_verified": true,
+    "protected_main_tree": "04ba2fab66dfc41680784e1288e14c2fc54c58d9",
+    "review_commit": "7e1e611e7299391cf3d4edc1ded322da0d023cc6",
+    "review_id": 5124508101,
+    "review_state": "APPROVED",
+    "source_merge_identity_bound": true,
+    "source_workflow_attempt": 3,
+    "source_workflow_run_id": 34014361107,
+    "synthetic_merge_checks_passed": true,
+    "synthetic_merge_commit": "906aa352f9b714940504c4071e8d15f7937f3411",
+    "synthetic_merge_workflow_run_id": 34017552361
+  },
+  "package_id": "sha256:5969ce9801f672299a3e02dec41bdc23488d148598b0e3d688fcd7d3ca01caf9",
+  "program_revision": "2026-08-31-g1",
+  "public_release": false,
+  "retention_days": 30,
+  "roles": {
+    "authorizer": {
+      "evidence_id": "pull-request-review-5124508101",
+      "identity_provider": "github.com",
+      "principal": "Franksudoman"
+    },
+    "operator": {
+      "evidence_id": "workflow-runs-34014361107-34017552361",
+      "identity_provider": "github.com",
+      "principal": "github-actions[bot]"
+    },
+    "producer": {
+      "evidence_id": "pull-request-41-author",
+      "identity_provider": "github.com",
+      "principal": "ProfHepta"
+    },
+    "reviewer": {
+      "evidence_id": "pull-request-review-5124508101",
+      "identity_provider": "github.com",
+      "principal": "Franksudoman"
+    }
+  },
+  "schema": "org.trillionnium.g1.evidence-package.v2",
+  "source": {
+    "branch": "codex/g1-all-gap-closure-20260904",
+    "cargo_lock_sha256": "f89204bac622ef09ffb04a0482d02ef720b3ce83bc7c64e057c5cb798988f107",
+    "commit": "7e1e611e7299391cf3d4edc1ded322da0d023cc6",
+    "pull_request": 41,
+    "repository": "TrillionniumFoundation/trillionnium-os",
+    "tree": "04ba2fab66dfc41680784e1288e14c2fc54c58d9",
+    "workflow_runs": [
+      {
+        "artifact_id": 9984445835,
+        "artifact_name": "g1-exact-head-7e1e611e7299391cf3d4edc1ded322da0d023cc6",
+        "artifact_sha256": "cf1f445e9ff65154a41d9082846340b3cdfc8278457d7c3d1653b8c2a35afca8",
+        "attempt": 3,
+        "name": "G1 exact-head source qualification",
+        "result": "success",
+        "run_id": 34014361107
+      },
+      {
+        "artifact_id": 9984433810,
+        "artifact_name": "g1-synthetic-merge-906aa352f9b714940504c4071e8d15f7937f3411",
+        "artifact_sha256": "46d243a2da996d20447a8e2951afb591e9b600663c5b63d954f2c0ce095ce497",
+        "attempt": 1,
+        "name": "G1 synthetic-merge qualification",
+        "result": "success",
+        "run_id": 34017552361
+      }
+    ]
+  },
+  "status": "COMPLETE",
+  "subject": {
+    "base": {
+      "commit": "bb0f85e63b251b99a6fb490dfe6406a992d95f45",
+      "ref": "main",
+      "repository": "TrillionniumFoundation/trillionnium-os",
+      "tree": "e4fe8fd1dc4a19d19868ecefbb731099b4772407"
+    },
+    "head": {
+      "commit": "7e1e611e7299391cf3d4edc1ded322da0d023cc6",
+      "ref": "codex/g1-all-gap-closure-20260904",
+      "repository": "TrillionniumFoundation/trillionnium-os",
+      "tree": "04ba2fab66dfc41680784e1288e14c2fc54c58d9"
+    },
+    "merge": {
+      "commit": "906aa352f9b714940504c4071e8d15f7937f3411",
+      "kind": "deterministic_synthetic",
+      "parents": [
+        "bb0f85e63b251b99a6fb490dfe6406a992d95f45",
+        "7e1e611e7299391cf3d4edc1ded322da0d023cc6"
+      ],
+      "tree": "04ba2fab66dfc41680784e1288e14c2fc54c58d9"
+    }
+  },
+  "version": "2"
+}
