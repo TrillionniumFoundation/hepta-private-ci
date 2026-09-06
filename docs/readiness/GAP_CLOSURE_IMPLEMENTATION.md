@@ -115,15 +115,39 @@ integration, selected new-process load and rollback. The owner retrieval
 observation, standalone module tests and reference round-trip do not establish
 these product observations.
 
+Canonical objective admission also needs an explicit native adapter and
+registered baseline/classification profile. The canonical envelope cannot by
+itself recover native constraint class/axis, principal scope or a selected soft
+weight; resource, risk and evidence requirements must retain their semantics.
+Plain turn text and attribution metadata cannot supply this missing binding.
+
+The owner-local `ObjectiveSourceEnvelopeV1` representation now preserves every
+canonical input field and integer/enum alternative. Its `validate_structure`
+checks raw UTF-8 field sizes, collection counts and within-array semantic keys.
+It neither admits a wire message nor converts a trust label into authority.
+Canonical encoding and aggregate encoded bounds, NFC, identifier/time syntax,
+digest/profile verification and the actual compiler adapter remain separate
+prerequisites. The existing scalar compiler API and digest scope are preserved.
+
+The private Matrix gap-page accumulator is qualification-only. It binds an
+explicit room/session/filter plan and opaque token interval, enforces cumulative
+page/event/byte bounds, and requires exact target-token continuity. Empty pages
+with a continuation are not exhaustion; a visibility boundary before the target
+does not establish coverage. It does not issue HTTP requests, clear `limited`,
+write a coverage anchor or advance a cursor. Its transcript is owner-local
+integrity evidence, not authenticated server completeness.
+
 Matrix still needs automatic timeline gap fill with persisted coverage anchors
 and a bound on raw HTTP receive bytes. The current 512-event and 16 MiB limits
 apply after SDK processing, not to transport reception or decoding. Incomplete
 timelines fail closed. Conflicts with active dispatch stop processing; they do
-not grant cancellation authority over an admitted effect. Every successful poll,
-including an unchanged-token empty response, requires a V2 committed receipt;
-idle polls therefore consume the finite decision journal. Retention/compaction
-or an explicitly owner-validated no-op design, and recovery after rejoining,
-remain required. Evaluator-history
+not grant cancellation authority over an admitted effect. An unchanged-token
+empty response now requires a distinct fresh owner checkpoint/capacity
+observation under the writer transaction. It leaves journal and checkpoint
+timestamps unchanged, still rejects exhausted capacity, and is not a durable
+V2 commit or operation-replay receipt. New-token or nonempty responses continue
+to commit V2 decisions. Their finite journal still requires retention/compaction,
+and recovery after rejoining remains required. Evaluator-history
 enforcement of holdout reuse, retention/unlearning qualification and independently
 observed future windows also remain open.
 
@@ -153,6 +177,18 @@ source qualification.
 The original `hepta-gap-closure.yml` workflow includes source normalization and
 lockfile reconciliation. A result from a mutated checkout must not substitute
 for exact-source qualification.
+
+The dependency cleanup at `9e339cebaf0be6ee99c880251e809b9524b7b9d2`
+has a verified Bazel lock diagnostic from workflow run `34045950601`, artifact
+`9993629303`: before-check, update and after-check all exited zero. The candidate
+lock has no diff and matches the retained `MODULE.bazel.lock` byte for byte.
+This resolves that dependency change's lock reconciliation; it does not replace
+the required source/merge checks or qualify later dependency changes.
+
+The later SDK serde dev-dependency at
+`ef723ae657196d60bb33246f65ac03c52e30903d` has its own matching result:
+run `34049248997`, artifact `9994052918`, three zero exit codes and an unchanged
+candidate lock. The earlier cleanup receipt was not substituted for this edge.
 
 `hepta-audit-remediation.yml` separately tests the immutable source head and a
 synthetic merge with explicit parents. It uses read-only repository permission,
