@@ -10,6 +10,7 @@ permissions: {}
 env:
   BASE: b35b55f7767a3610481551c6260929904798b33c
   TARGET_BRANCH: ops/hepta-base-format-shear-fix-20260906
+  DIAGNOSTIC_RUN_ID: "34042568433"
   DIAGNOSTIC_ARTIFACT_ID: "9992141046"
   EXPECTED_PATCH_SHA256: 61c86d76973930eff80fb88624e7bfc13c387fc23c89597764b5939c57bb1ae8
   EXPECTED_PATHS_SHA256: 06f4cf942e3b5629fc3df36533930eb74ae248f77d2ed3e5993024c85b8ab1c3
@@ -33,6 +34,7 @@ jobs:
         uses: actions/download-artifact@634f93cb2916e3fdff6788551b99b062d0335ce0
         with:
           artifact-ids: ${{ env.DIAGNOSTIC_ARTIFACT_ID }}
+          run-id: ${{ env.DIAGNOSTIC_RUN_ID }}
           repository: ${{ github.repository }}
           github-token: ${{ github.token }}
           path: ${{ runner.temp }}/diagnostic
@@ -166,6 +168,7 @@ jobs:
         uses: actions/download-artifact@634f93cb2916e3fdff6788551b99b062d0335ce0
         with:
           artifact-ids: ${{ env.DIAGNOSTIC_ARTIFACT_ID }}
+          run-id: ${{ env.DIAGNOSTIC_RUN_ID }}
           repository: ${{ github.repository }}
           github-token: ${{ github.token }}
           path: ${{ runner.temp }}/diagnostic
