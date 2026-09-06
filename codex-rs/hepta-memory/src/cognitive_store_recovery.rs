@@ -1,4 +1,4 @@
-//! Exact current-cut recovery for the existing owner database.
+//! Exact current-cut witness construction and fail-closed recovery admission.
 //!
 //! This is not a minimum-prefix journal anchor. Any subsequent owner mutation
 //! needs a fresh, independently retained host witness. Capturing a witness from
@@ -12,6 +12,7 @@ use codex_hepta_contracts::AgentId;
 use codex_hepta_contracts::Sha256Digest;
 use codex_hepta_paths::HeptaAgentLayout;
 use codex_state::SqliteConfig;
+use codex_state::SqliteRecoveryError;
 use codex_utils_absolute_path::AbsolutePathBuf;
 use serde::Deserialize;
 use serde::Serialize;
@@ -50,11 +51,29 @@ pub struct CognitiveRecoveryAnchor {
 }
 
 /// Current recovery disposition supplied by the trusted host. Revocation wins
-/// before any database access. It does not implement ongoing grant checks after
-/// opening; the host remains responsible for current authorization on each use.
+/// before any filesystem access. An exact witness is an integrity input, not a
+/// grant, and cannot enable opening until the descriptor-safe backend exists.
 pub enum CognitiveRecoveryRequirement<'a> {
     ExactCurrentCut(&'a CognitiveRecoveryAnchor),
     Revoked,
+}
+
+/// Fail-closed recovery admission outcome.
+///
+/// This separate type preserves an indeterminate filesystem identity instead
+/// of laundering it into ordinary storage unavailability. No variant carries
+/// a recovered store or grants authority.
+#[non_exhaustive]
+#[derive(Debug, thiserror::Error)]
+pub enum CognitiveRecoveryError {
+    #[error("invalid cognitive recovery request: {0}")]
+    Invalid(String),
+    #[error("cognitive recovery access denied: {0}")]
+    AccessDenied(String),
+    #[error("cognitive recovery state is indeterminate: {0}")]
+    Indeterminate(String),
+    #[error("cognitive recovery is unavailable: {0}")]
+    Unavailable(String),
 }
 
 impl CognitiveStore {
@@ -71,73 +90,58 @@ impl CognitiveStore {
         Ok(anchor)
     }
 
-    /// Open an existing, exact current-cut database without initialization,
-    /// migration or repair. Missing/older/newer state and revoked access fail
-    /// closed. An acknowledgement-lost successor needs host reconciliation and
-    /// a fresh witness; it is never silently accepted as a minimum-prefix match.
+    /// Validate an existing database's filesystem identity, then fail closed.
+    ///
+    /// The current state backend has no descriptor-backed SQLite VFS, current
+    /// writer-fence input, or non-reconnecting connection. Consequently even
+    /// an exact current-cut witness cannot enable recovery. This function never
+    /// opens SQLite, begins a transaction, queries state, or mutates sidecars.
     pub async fn open_with_recovery(
         layout: &HeptaAgentLayout,
         requirement: CognitiveRecoveryRequirement<'_>,
-    ) -> Result<Self, CognitiveStoreError> {
+    ) -> Result<Self, CognitiveRecoveryError> {
         let expected = match requirement {
             CognitiveRecoveryRequirement::Revoked => {
-                return Err(CognitiveStoreError::AccessDenied(
+                return Err(CognitiveRecoveryError::AccessDenied(
                     "cognitive recovery is revoked".to_string(),
                 ));
             }
             CognitiveRecoveryRequirement::ExactCurrentCut(anchor) => anchor,
         };
         if expected.owner_agent_id != *layout.agent_id() {
-            return Err(CognitiveStoreError::AccessDenied(
+            return Err(CognitiveRecoveryError::AccessDenied(
                 "cognitive recovery owner mismatch".to_string(),
             ));
         }
         if expected.profile != PROFILE
             || expected.schema_digest.as_str() != REQUIRED_SCHEMA_ORACLE_SHA256
         {
-            return Err(CognitiveStoreError::Invalid(
+            return Err(CognitiveRecoveryError::Invalid(
                 "unsupported cognitive recovery profile or schema".to_string(),
             ));
         }
         let path = layout.cognitive_root().join(COGNITIVE_DB_FILENAME);
-        if !std::fs::symlink_metadata(&path)
-            .map_err(unavailable)?
-            .file_type()
-            .is_file()
-        {
-            return Err(CognitiveStoreError::Invalid(
-                "cognitive recovery requires an existing regular database".to_string(),
-            ));
-        }
         let sqlite_home = AbsolutePathBuf::try_from(layout.cognitive_root().to_path_buf())
-            .map_err(unavailable)?;
-        let pool = SqliteConfig::from_sqlite_home(sqlite_home)
-            .open_existing_durable_evidence_pool(&path)
-            .await
-            .map_err(unavailable)?;
-        let verification = async {
-            let mut transaction = pool
-                .begin_with("BEGIN IMMEDIATE")
-                .await
-                .map_err(unavailable)?;
-            let actual = capture(&mut transaction, layout.agent_id()).await?;
-            if actual != *expected {
-                return Err(CognitiveStoreError::Corrupt(
-                    "cognitive recovery current-cut mismatch".to_string(),
-                ));
-            }
-            transaction.commit().await.map_err(unavailable)
+            .map_err(|error| CognitiveRecoveryError::Invalid(error.to_string()))?;
+        let guard = SqliteConfig::from_sqlite_home(sqlite_home)
+            .bind_existing_recovery_database(&path)
+            .map_err(recovery_error)?;
+        guard
+            .verify_inspection_unchanged()
+            .map_err(recovery_error)?;
+        Err(recovery_error(SqliteRecoveryError::Unavailable))
+    }
+}
+
+fn recovery_error(error: SqliteRecoveryError) -> CognitiveRecoveryError {
+    match error {
+        SqliteRecoveryError::Unavailable => {
+            CognitiveRecoveryError::Unavailable(error.to_string())
         }
-        .await;
-        if let Err(error) = verification {
-            pool.close().await;
-            return Err(error);
+        SqliteRecoveryError::Indeterminate => {
+            CognitiveRecoveryError::Indeterminate(error.to_string())
         }
-        Ok(Self {
-            pool,
-            owner_agent_id: layout.agent_id().clone(),
-            path,
-        })
+        _ => CognitiveRecoveryError::Indeterminate(error.to_string()),
     }
 }
 

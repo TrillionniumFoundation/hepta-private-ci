@@ -40,6 +40,7 @@ use crate::framing::frame_part;
 #[path = "cognitive_store_recovery.rs"]
 mod recovery;
 pub use recovery::CognitiveRecoveryAnchor;
+pub use recovery::CognitiveRecoveryError;
 pub use recovery::CognitiveRecoveryRequirement;
 
 const COGNITIVE_DB_FILENAME: &str = "cognitive_1.sqlite3";

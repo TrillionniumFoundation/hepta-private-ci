@@ -113,6 +113,22 @@ async fn validated_file_set_is_unavailable_without_mutation_or_reconnect() {
 
     let retained_descriptor_count = matching_open_descriptor_count(&fixture.database);
     assert_eq!(retained_descriptor_count, 1);
+    let legacy_error = match fixture
+        .sqlite
+        .open_existing_durable_evidence_pool(&fixture.database)
+        .await
+    {
+        Ok(_) => panic!("legacy path recovery unexpectedly returned a pool"),
+        Err(error) => error,
+    };
+    assert!(legacy_error
+        .to_string()
+        .contains("path-based SQLite recovery is disabled"));
+    assert_eq!(
+        matching_open_descriptor_count(&fixture.database),
+        retained_descriptor_count
+    );
+    assert_eq!(capture_tree(&fixture.home), before);
     for _ in 0..32 {
         let inspection_error = match fixture
             .sqlite
