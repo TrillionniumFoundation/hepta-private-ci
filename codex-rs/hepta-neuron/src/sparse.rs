@@ -56,6 +56,9 @@ pub struct SparseCheckpoint {
     config: Digest32,
     scope: Digest32,
     objective: Digest32,
+    // Private replay context. The persisted tick and `input` digest already bind
+    // these bytes, so retaining them here does not change journal wire encoding.
+    body: Digest32,
     sequence: u64,
     monotonic_micros: u64,
     predecessor: Digest32,
@@ -256,7 +259,10 @@ pub fn sparse_tick(
         if prior.config != config_digest {
             return Err(SparseError::ConfigDrift);
         }
-        if prior.scope != input.scope_digest || prior.objective != input.objective_digest {
+        if prior.scope != input.scope_digest
+            || prior.objective != input.objective_digest
+            || prior.body != input.body_digest
+        {
             return Err(SparseError::ScopeDrift);
         }
         if prior.sequence.checked_add(1) != Some(input.sequence) {
@@ -274,6 +280,7 @@ pub fn sparse_tick(
         config: config_digest,
         scope: input.scope_digest,
         objective: input.objective_digest,
+        body: input.body_digest,
         sequence: input.sequence,
         monotonic_micros: input.monotonic_micros,
         predecessor: before,
@@ -375,3 +382,7 @@ fn mul(a: i64, b: i64) -> i64 {
 #[cfg(test)]
 #[path = "sparse_tests.rs"]
 mod tests;
+
+#[cfg(test)]
+#[path = "sparse_body_scope_tests.rs"]
+mod body_scope_tests;
