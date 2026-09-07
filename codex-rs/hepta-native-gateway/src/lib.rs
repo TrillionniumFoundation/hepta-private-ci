@@ -257,10 +257,17 @@ fn route_request(request: &[u8], runtime: &HeptaRuntime) -> Result<Vec<u8>> {
             "application/json; charset=utf-8",
             br#"{"product":"hepta","status":"ok"}"#,
         )),
-        "/api/hepta/runtime" => {
-            let body = serde_json::to_vec(&runtime.status()).context("encode runtime status")?;
-            Ok(response("200 OK", "application/json; charset=utf-8", &body))
-        }
+        "/api/hepta/runtime" => match runtime.status_json() {
+            Ok(body) => Ok(response("200 OK", "application/json; charset=utf-8", &body)),
+            Err(error) => {
+                eprintln!("Hepta status organ unavailable: {error:#}");
+                Ok(response(
+                    "503 Service Unavailable",
+                    "application/json; charset=utf-8",
+                    br#"{"error":"runtime status unavailable"}"#,
+                ))
+            }
+        },
         "/" => Ok(response(
             "200 OK",
             "text/html; charset=utf-8",
@@ -297,6 +304,10 @@ const CONTROL_SHELL: &str = r#"<!doctype html>
 <script>fetch('/api/hepta/runtime').then(r=>r.json()).then(v=>status.textContent=JSON.stringify(v,null,2)).catch(e=>status.textContent=String(e))</script>
 </html>
 "#;
+
+#[cfg(test)]
+#[path = "organ_request_tests.rs"]
+mod organ_request_tests;
 
 #[cfg(test)]
 mod tests {
