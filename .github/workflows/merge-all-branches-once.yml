@@ -1,0 +1,208 @@
+name: Merge all branches into a verified staging candidate
+
+on:
+  push:
+    branches:
+      - ops/merge-all-branches-20260907
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  stage:
+    name: Build auditable all-branch staging history
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    env:
+      EXPECTED_MAIN: e31df34dd30d046c78057eaa7af775b3210aa9b1
+      CONTROL_BRANCH: ops/merge-all-branches-20260907
+      CANONICAL_FIRST: codex/hepta-gap-closure-full-ci-20260907
+    steps:
+      - name: Check out target repository with complete history
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: main
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Merge every branch head into a staging candidate
+        id: merge
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          git config user.name "all-branches-integrator"
+          git config user.email "all-branches-integrator@invalid"
+          git config rerere.enabled true
+          git fetch --prune origin '+refs/heads/*:refs/remotes/origin/*'
+
+          main_sha=$(git rev-parse origin/main)
+          if [[ "$main_sha" != "$EXPECTED_MAIN" ]]; then
+            echo "::error::main moved: expected $EXPECTED_MAIN, observed $main_sha"
+            exit 1
+          fi
+
+          short=${main_sha:0:12}
+          backup_branch="backup/main-before-all-branches-${GITHUB_RUN_ID}-${short}"
+          staging_branch="integration/all-branches-staging-${GITHUB_RUN_ID}"
+          report="$RUNNER_TEMP/all-branches-report.tsv"
+          heads_before="$RUNNER_TEMP/branch-heads-before.tsv"
+          unresolved="$RUNNER_TEMP/unresolved.tsv"
+          : > "$report"
+          : > "$unresolved"
+
+          printf 'branch\tsha\n' > "$heads_before"
+          while IFS=$'\t' read -r branch sha; do
+            printf '%s\t%s\n' "$branch" "$sha" >> "$heads_before"
+          done < <(
+            git for-each-ref --sort=refname \
+              --format='%(refname:strip=3)%09%(objectname)' refs/remotes/origin \
+              | grep -v '^HEAD' \
+              | grep -v '^main'
+          )
+
+          git push origin "$main_sha:refs/heads/$backup_branch"
+          git checkout -B "$staging_branch" "$main_sha"
+
+          declare -a branches=()
+          if git show-ref --verify --quiet "refs/remotes/origin/$CANONICAL_FIRST"; then
+            branches+=("$CANONICAL_FIRST")
+          fi
+          while IFS= read -r branch; do
+            [[ -n "$branch" ]] || continue
+            [[ "$branch" == "$CANONICAL_FIRST" ]] && continue
+            [[ "$branch" == "$CONTROL_BRANCH" ]] && continue
+            [[ "$branch" == "$backup_branch" ]] && continue
+            [[ "$branch" == "$staging_branch" ]] && continue
+            branches+=("$branch")
+          done < <(
+            git for-each-ref --sort=committerdate \
+              --format='%(refname:strip=3)' refs/remotes/origin \
+              | grep -v '^HEAD$' \
+              | grep -v '^main$'
+          )
+
+          merge_branch() {
+            local branch=$1
+            local ref="refs/remotes/origin/$branch"
+            local sha base patch before conflict_files
+            sha=$(git rev-parse "$ref")
+
+            if git merge-base --is-ancestor "$sha" HEAD; then
+              printf '%s\t%s\talready-contained\t-\n' "$branch" "$sha" >> "$report"
+              return 0
+            fi
+
+            case "$branch" in
+              backup/*|ops/*|integration/all-branches-staging-*|codex/hepta-final-materializer-*|codex/hepta-blocker-autofix-*|codex/hepta-blocker-round2-*|codex/hepta-private-ci-format-baseline-*)
+                git merge -s ours --no-ff --no-edit \
+                  -m "merge(all-branches): record administrative branch $branch" "$ref"
+                printf '%s\t%s\thistory-only-administrative\t-\n' "$branch" "$sha" >> "$report"
+                return 0
+                ;;
+            esac
+
+            base=$(git merge-base HEAD "$ref")
+            patch="$RUNNER_TEMP/branch-${sha}.patch"
+            git diff --binary "$base" "$ref" > "$patch"
+            if [[ ! -s "$patch" ]] || git apply --reverse --check --whitespace=nowarn "$patch" >/dev/null 2>&1; then
+              git merge -s ours --no-ff --no-edit \
+                -m "merge(all-branches): record already-integrated branch $branch" "$ref"
+              printf '%s\t%s\thistory-only-equivalent\t-\n' "$branch" "$sha" >> "$report"
+              return 0
+            fi
+
+            before=$(git rev-parse HEAD)
+            if git merge --no-ff --no-edit \
+              -m "merge(all-branches): integrate $branch" "$ref"; then
+              printf '%s\t%s\tcontent-merged\t-\n' "$branch" "$sha" >> "$report"
+              return 0
+            fi
+
+            conflict_files=$(git diff --name-only --diff-filter=U | paste -sd, -)
+            git merge --abort >/dev/null 2>&1 || git reset --hard "$before"
+            printf '%s\t%s\tunresolved\t%s\n' "$branch" "$sha" "${conflict_files:--}" >> "$report"
+            printf '%s\t%s\t%s\n' "$branch" "$sha" "${conflict_files:--}" >> "$unresolved"
+            return 1
+          }
+
+          declare -a deferred=()
+          for branch in "${branches[@]}"; do
+            if ! merge_branch "$branch"; then
+              deferred+=("$branch")
+            fi
+          done
+
+          # Retry real conflicts after all clean/equivalent branches have landed.
+          if ((${#deferred[@]})); then
+            cp "$unresolved" "$RUNNER_TEMP/unresolved-first-pass.tsv"
+            : > "$unresolved"
+            declare -a still_deferred=()
+            for branch in "${deferred[@]}"; do
+              if ! merge_branch "$branch"; then
+                still_deferred+=("$branch")
+              fi
+            done
+            deferred=("${still_deferred[@]}")
+          fi
+
+          git fsck --no-dangling
+          git push --force origin "HEAD:refs/heads/$staging_branch"
+
+          git fetch --prune origin '+refs/heads/*:refs/remotes/origin/*'
+          drift=0
+          while IFS=$'\t' read -r branch expected; do
+            [[ "$branch" == "branch" ]] && continue
+            if ! git show-ref --verify --quiet "refs/remotes/origin/$branch"; then
+              printf '%s\t%s\tdeleted-during-run\n' "$branch" "$expected" >> "$RUNNER_TEMP/branch-drift.tsv"
+              drift=1
+              continue
+            fi
+            observed=$(git rev-parse "refs/remotes/origin/$branch")
+            if [[ "$observed" != "$expected" ]]; then
+              printf '%s\t%s\t%s\n' "$branch" "$expected" "$observed" >> "$RUNNER_TEMP/branch-drift.tsv"
+              drift=1
+            fi
+          done < "$heads_before"
+
+          {
+            echo "## All-branch staging result"
+            echo
+            echo "- base main: \`$main_sha\`"
+            echo "- rollback branch: \`$backup_branch\`"
+            echo "- staging branch: \`$staging_branch\`"
+            echo "- staged head: \`$(git rev-parse HEAD)\`"
+            echo "- branch snapshot count: \`$(($(wc -l < "$heads_before") - 1))\`"
+            echo "- unresolved real branches: \`${#deferred[@]}\`"
+            echo "- branch drift detected: \`$drift\`"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+          echo "staging_branch=$staging_branch" >> "$GITHUB_OUTPUT"
+          echo "staging_sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+          echo "backup_branch=$backup_branch" >> "$GITHUB_OUTPUT"
+          echo "unresolved_count=${#deferred[@]}" >> "$GITHUB_OUTPUT"
+          echo "drift=$drift" >> "$GITHUB_OUTPUT"
+
+          if ((${#deferred[@]})); then
+            echo "::error::${#deferred[@]} real branch(es) still conflict; inspect the report artifact"
+            exit 2
+          fi
+          if ((drift)); then
+            echo "::error::branch heads moved during integration; rerun against a fresh immutable snapshot"
+            exit 3
+          fi
+
+      - name: Retain immutable integration report
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: all-branches-integration-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/all-branches-report.tsv
+            ${{ runner.temp }}/branch-heads-before.tsv
+            ${{ runner.temp }}/unresolved.tsv
+            ${{ runner.temp }}/unresolved-first-pass.tsv
+            ${{ runner.temp }}/branch-drift.tsv
+          if-no-files-found: ignore
+          retention-days: 7
