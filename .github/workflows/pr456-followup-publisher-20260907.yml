@@ -1,4 +1,4 @@
-name: PR 456 publisher startup probe
+name: PR 456 exact-head follow-up publisher
 
 on:
   push:
@@ -6,17 +6,30 @@ on:
       - ops/pr456-followup-publisher-20260907-r1
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
-  probe:
-    name: Confirm hosted workflow startup
+  publish:
+    name: Verify and publish one sealed-base follow-up
     runs-on: ubuntu-24.04
-    timeout-minutes: 2
+    timeout-minutes: 10
     steps:
-      - name: Record immutable probe
+      - name: Check out immutable publisher
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: 77c699ebc3303301a84eddc7d347152cfa22eb66
+          path: ops
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Check out exact reviewed predecessor
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: a04ba23781879c67d4545a4480ce94468c07337c
+          path: target
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Verify, test, construct, and publish
         shell: bash
-        run: |
-          set -euo pipefail
-          echo "head=${GITHUB_SHA}"
-          echo "This probe performs no checkout, write, target contact, evidence transition, or release action."
+        run: bash "$GITHUB_WORKSPACE/ops/.g1/ops/pr456-followup-publisher.sh" "$GITHUB_WORKSPACE/target"
