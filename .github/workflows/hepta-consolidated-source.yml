@@ -1,15 +1,26 @@
 name: Hepta consolidated source qualification (read-only)
 
+# This is a promotion/integration qualification lane, not a general PR gate.
+# Ordinary pull requests are covered by blocking-ci.yml.
 on:
   push:
     branches: [main]
-  pull_request:
+  workflow_dispatch:
+    inputs:
+      source_sha:
+        description: Source commit to qualify; defaults to dispatch SHA
+        required: false
+        type: string
+      base_sha:
+        description: Base commit for merge-candidate qualification
+        required: false
+        type: string
 
 permissions:
   contents: read
 
 concurrency:
-  group: hepta-consolidated-source-${{ github.event.pull_request.number || github.ref }}
+  group: hepta-consolidated-source-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -21,8 +32,8 @@ jobs:
       matrix:
         lane: [source-head, base-merge]
     env:
-      SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
-      BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+      SOURCE_SHA: ${{ inputs.source_sha || github.sha }}
+      BASE_SHA: ${{ inputs.base_sha || github.event.before }}
       PYTHONDONTWRITEBYTECODE: "1"
       PACKAGES: >-
         codex-hepta-authbus codex-hepta-authbus-p1-3-qualification
@@ -38,12 +49,13 @@ jobs:
           ref: ${{ env.SOURCE_SHA }}
           fetch-depth: 0
           persist-credentials: false
-      - name: Bind exact source and base-merge identities
+      - name: Bind source and optional base-merge identities
         shell: bash
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
           if [ '${{ matrix.lane }}' = base-merge ]; then
+            test -n "$BASE_SHA"
             git cat-file -e "$BASE_SHA^{commit}"
             TREE=$(git merge-tree --write-tree "$BASE_SHA" "$SOURCE_SHA")
             export GIT_AUTHOR_NAME=hepta-qualification GIT_COMMITTER_NAME=hepta-qualification
@@ -53,7 +65,7 @@ jobs:
             git checkout --detach "$MERGE"
           fi
           git rev-parse HEAD HEAD^{tree}
-      - name: Retain original document and source-owner gates
+      - name: Retain document and source-owner qualification
         shell: bash
         run: |
           set -euo pipefail
@@ -67,7 +79,7 @@ jobs:
       - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
         with:
           tool: just@1.51.0,nextest@0.9.103
-      - name: Compile and test actual imported packages
+      - name: Compile and test imported packages
         working-directory: codex-rs
         shell: bash
         run: |
