@@ -50,3 +50,7 @@ owner verifies the envelope/grant with the pinned public keys and exact CAS
 fences. A successful local verification does not transfer trust-root
 ownership. Never copy the private key into the repository, daemon, Mac,
 small-host filesystem, or Dropbox.
+
+## Separate final-use grant signer
+
+The independently invoked `hepta-final-use-signer` implements the distinct [final-use signing protocol](../hepta-contracts/FINAL_USE.md#independent-signer-operations) for an exact Bao operation binding. It shares the `production-authority` build feature but does not change this H7 upgrade/rollback protocol or reuse H7 grants as secret-use permissions. The linked design specifies private seed ownership, canonical signing bytes, lifetime bounds, verifier trust, durable nonce/revocation state and verification evidence.

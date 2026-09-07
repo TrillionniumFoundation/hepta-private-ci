@@ -289,3 +289,7 @@ implementation is an oracle and evidence source, not a merge target.
   does not inspect Git or cryptographically bind the artifact to that checkout,
   so this is declared build metadata, not verified exact-SHA provenance.
   Readback, Nix, hosted, signing, and promotion receipts remain acceptance work.
+
+## Signed final-use implementation
+
+[Final-use authority and independent issuer](FINAL_USE.md) specifies the host-pinned Ed25519 verifier, durable nonce/revocation store, private verified token, final callback fence and separate supervisor signing command used by the Bao consumer. It documents the concrete API and local Unix storage limits independently of the migration baselines above.

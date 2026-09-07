@@ -14,6 +14,7 @@ mod authbus_tests;
 #[cfg(test)]
 mod callers_manifest_tests;
 mod canonical;
+mod final_use;
 mod identity;
 mod memory;
 mod provider;
@@ -21,6 +22,14 @@ mod provider_effect;
 mod qualification_receipt;
 mod receipt;
 mod stable_id;
+
+pub use final_use::FinalUseAuthority;
+pub use final_use::FinalUseBinding;
+pub use final_use::FinalUseError;
+pub use final_use::FinalUseGrant;
+pub use final_use::FinalUseRevocations;
+pub use final_use::SignedFinalUseGrant;
+pub use final_use::VerifiedUseToken;
 
 pub use agent_id::AgentId;
 pub use agent_id::AgentIdParseError;

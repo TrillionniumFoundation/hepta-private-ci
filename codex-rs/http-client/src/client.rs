@@ -25,6 +25,7 @@ pub type HttpResponse = reqwest::Response;
 pub struct HttpClient {
     inner: reqwest::Client,
     request_logging: RequestLogging,
+    trace_propagation: TracePropagation,
 }
 
 impl HttpClient {
@@ -44,7 +45,13 @@ impl HttpClient {
         Self {
             inner,
             request_logging,
+            trace_propagation: TracePropagation::Enabled,
         }
+    }
+
+    pub(crate) fn without_trace_propagation(mut self) -> Self {
+        self.trace_propagation = TracePropagation::Disabled;
+        self
     }
 
     pub fn get<U>(&self, url: U) -> RequestBuilder
@@ -85,6 +92,7 @@ impl HttpClient {
             method,
             url_str,
             self.request_logging,
+            self.trace_propagation,
         )
     }
 
@@ -111,7 +119,9 @@ impl HttpClient {
         &self,
         mut request: reqwest::Request,
     ) -> Result<reqwest::Response, reqwest::Error> {
-        request.headers_mut().extend(trace_headers());
+        if self.trace_propagation == TracePropagation::Enabled {
+            request.headers_mut().extend(trace_headers());
+        }
         self.inner.execute(request).await
     }
 
@@ -164,6 +174,12 @@ pub(crate) enum RequestLogging {
     Disabled,
 }
 
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+enum TracePropagation {
+    Enabled,
+    Disabled,
+}
+
 #[must_use = "requests are not sent unless `send` is awaited"]
 #[derive(Debug)]
 pub struct RequestBuilder {
@@ -171,6 +187,7 @@ pub struct RequestBuilder {
     method: Method,
     url: String,
     request_logging: RequestLogging,
+    trace_propagation: TracePropagation,
 }
 
 impl RequestBuilder {
@@ -179,12 +196,14 @@ impl RequestBuilder {
         method: Method,
         url: String,
         request_logging: RequestLogging,
+        trace_propagation: TracePropagation,
     ) -> Self {
         Self {
             builder,
             method,
             url,
             request_logging,
+            trace_propagation,
         }
     }
 
@@ -194,6 +213,7 @@ impl RequestBuilder {
             method: self.method,
             url: self.url,
             request_logging: self.request_logging,
+            trace_propagation: self.trace_propagation,
         }
     }
 
@@ -244,9 +264,12 @@ impl RequestBuilder {
     }
 
     pub async fn send(self) -> Result<HttpResponse, HttpError> {
-        let headers = trace_headers();
+        let builder = match self.trace_propagation {
+            TracePropagation::Enabled => self.builder.headers(trace_headers()),
+            TracePropagation::Disabled => self.builder,
+        };
 
-        match self.builder.headers(headers).send().await {
+        match builder.send().await {
             Ok(response) => {
                 if self.request_logging == RequestLogging::Enabled {
                     tracing::debug!(

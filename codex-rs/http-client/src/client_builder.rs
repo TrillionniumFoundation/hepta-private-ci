@@ -16,6 +16,7 @@ use crate::BuildRouteAwareHttpClientError;
 use crate::ClientRouteClass;
 use crate::HttpClient;
 use crate::HttpClientFactory;
+use crate::HttpError;
 use crate::OutboundProxyRoute;
 use crate::chatgpt_cloudflare_cookies::ChatGptCookieStore;
 use crate::client::RequestLogging;
@@ -187,6 +188,36 @@ impl HttpClientBuilder {
         self.build_with_proxy_routing(ProxyRouting::Direct)
     }
 
+    /// Builds an isolated HTTPS client for an explicitly enrolled secret endpoint.
+    ///
+    /// The supplied PEM is the sole CA trust source: system roots, environment CA files,
+    /// proxy discovery, redirects, retries, and TLS fallback are disabled. Request diagnostics
+    /// and ambient trace/baggage header injection are also disabled. The timeout includes
+    /// connection establishment and response-body reads; callers must separately bound bytes
+    /// read and redact transport errors. Construction errors never fall back to other trust.
+    ///
+    /// This narrow direct-routing exception requires host enrollment of the endpoint and CA.
+    /// Ordinary product traffic must use [`HttpClientFactory::build_client`].
+    pub fn build_pinned_https_direct(
+        ca_pem: &[u8],
+        timeout: Duration,
+    ) -> Result<HttpClient, HttpError> {
+        ensure_rustls_crypto_provider();
+        let certificate = reqwest::Certificate::from_pem(ca_pem)?;
+        let inner = reqwest::Client::builder()
+            .use_rustls_tls()
+            .https_only(/*enabled*/ true)
+            .tls_built_in_root_certs(false)
+            .add_root_certificate(certificate)
+            .redirect(reqwest::redirect::Policy::none())
+            .retry(reqwest::retry::never())
+            .no_proxy()
+            .timeout(timeout)
+            .connect_timeout(timeout)
+            .build()?;
+        Ok(HttpClient::from_parts(inner, RequestLogging::Disabled).without_trace_propagation())
+    }
+
     /// Builds a transport-default client while preserving the legacy custom-CA fallback.
     ///
     /// # Legacy compatibility only
@@ -321,3 +352,7 @@ enum ProxyRouting {
 #[cfg(test)]
 #[path = "client_builder_tests.rs"]
 mod tests;
+
+#[cfg(test)]
+#[path = "pinned_https_tests.rs"]
+mod pinned_https_tests;

@@ -1,6 +1,20 @@
+load("@crates//:defs.bzl", "all_crate_deps")
+load("@rules_rust//rust:defs.bzl", "rust_binary")
 load("//:defs.bzl", "codex_rust_crate")
 
 codex_rust_crate(
     name = "hepta-bao-adapter",
     crate_name = "codex_hepta_bao_adapter",
+)
+
+rust_binary(
+    name = "consume-secret-example",
+    testonly = True,
+    srcs = ["examples/consume_secret.rs"],
+    crate_name = "consume_secret",
+    edition = "2024",
+    deps = [":hepta-bao-adapter"] + all_crate_deps(
+        normal = True,
+        normal_dev = True,
+    ),
 )

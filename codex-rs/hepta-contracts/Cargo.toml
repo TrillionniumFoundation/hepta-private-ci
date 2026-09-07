@@ -18,6 +18,8 @@ authbus-local-qualification = []
 workspace = true
 
 [dependencies]
+ed25519-dalek = { workspace = true }
+rustix = { workspace = true, features = ["fs", "process"] }
 serde = { workspace = true, features = ["derive"] }
 serde_json = { workspace = true }
 sha2 = { workspace = true }
@@ -25,6 +27,7 @@ zeroize = { workspace = true }
 
 [dev-dependencies]
 pretty_assertions = { workspace = true }
+tempfile = { workspace = true }
 serde_json = { workspace = true }
 toml = { workspace = true }
 tokio = { workspace = true, features = ["macros", "rt"] }

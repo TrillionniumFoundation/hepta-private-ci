@@ -27,6 +27,12 @@ path = "src/bin/hepta-authority-signer.rs"
 test = false
 required-features = ["production-authority"]
 
+[[bin]]
+name = "hepta-final-use-signer"
+path = "src/bin/hepta-final-use-signer.rs"
+test = false
+required-features = ["production-authority"]
+
 [lints]
 workspace = true
 
@@ -43,6 +49,7 @@ codex-uds = { workspace = true }
 constant_time_eq = { workspace = true }
 ed25519-dalek = { workspace = true }
 libc = { workspace = true }
+rustix = { workspace = true, features = ["process"] }
 serde = { workspace = true, features = ["derive"] }
 serde_json = { workspace = true }
 sha2 = { workspace = true }
