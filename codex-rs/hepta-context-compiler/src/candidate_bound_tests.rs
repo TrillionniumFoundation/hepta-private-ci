@@ -2,7 +2,6 @@ use super::*;
 use crate::ContextRole;
 use crate::MandatoryContextGroup;
 use codex_hepta_types::StableId;
-use pretty_assertions::assert_eq;
 
 fn id(value: &str) -> StableId {
     StableId::new(value).expect("fixture identifier is valid")

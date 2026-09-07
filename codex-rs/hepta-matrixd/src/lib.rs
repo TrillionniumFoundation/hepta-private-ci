@@ -335,7 +335,8 @@ where
         let _operation = self.operation.acquire().await.map_err(|_| {
             MatrixBridgeError::Protocol("Matrix bridge operation gate closed".to_string())
         })?;
-        self.ensure_room_thread_locked(room_id, None).await
+        self.ensure_room_thread_locked(room_id, /*expected_thread_id*/ None)
+            .await
     }
 
     /// Recover an already-durable room/thread identity without creating a
@@ -372,7 +373,9 @@ where
         let _operation = self.operation.acquire().await.map_err(|_| {
             MatrixBridgeError::Protocol("Matrix bridge operation gate closed".to_string())
         })?;
-        let binding = self.ensure_room_thread_locked(room_id, None).await?;
+        let binding = self
+            .ensure_room_thread_locked(room_id, /*expected_thread_id*/ None)
+            .await?;
         self.submit_matrix_event_on_binding_locked(
             room_id,
             event_id,

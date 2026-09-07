@@ -2414,6 +2414,7 @@ impl CognitiveStore {
         .await
     }
 
+    #[allow(clippy::too_many_arguments)]
     pub async fn acquire_local_lease_after_head_bound(
         &self,
         lease_id: impl Into<String>,
@@ -2439,6 +2440,7 @@ impl CognitiveStore {
 
     /// Host-bound qualification-only successor acquisition after an exact
     /// append-only head CAS.  Epoch regressions and stale heads fail closed.
+    #[allow(clippy::too_many_arguments)]
     pub async fn acquire_host_bound_lease_after_head(
         &self,
         lease_id: impl Into<String>,
@@ -2488,6 +2490,7 @@ impl CognitiveStore {
 }
 
 #[derive(Clone, Debug)]
+#[allow(dead_code)]
 struct EventRow {
     sequence: u64,
     event_id: String,
@@ -2503,6 +2506,7 @@ struct EventRow {
 }
 
 #[derive(Clone, Debug)]
+#[allow(dead_code)]
 struct OutboxRow {
     sequence: u64,
     outbox_id: String,
@@ -2549,6 +2553,7 @@ struct OutboxInsert<'a> {
     outbox_sha256: &'a Sha256Digest,
 }
 
+#[allow(clippy::too_many_arguments)]
 pub(crate) async fn append_lease(
     transaction: &mut Transaction<'_, Sqlite>,
     lease_id: &str,
@@ -2723,7 +2728,9 @@ pub(crate) async fn load_lease_chain(
             return Err(corrupt("lease digest mismatch"));
         }
         if index > 0 {
-            let prior = latest.as_ref().expect("lease prior row");
+            let Some(prior) = latest.as_ref() else {
+                return Err(corrupt("lease journal prior row is missing"));
+            };
             if generation < prior.generation {
                 return Err(corrupt("lease generation regressed"));
             }
@@ -3579,6 +3586,7 @@ fn validate_lease_binding(binding: &LocalLeaseBinding) -> Result<(), LocalLeaseO
     .map(|_| ())
 }
 
+#[allow(clippy::too_many_arguments)]
 fn lease_digest(
     lease_id: &str,
     sequence: u64,
@@ -3622,6 +3630,7 @@ fn lease_digest(
     )
 }
 
+#[allow(clippy::too_many_arguments)]
 fn event_digest(
     lease_id: &str,
     sequence: u64,
@@ -3651,6 +3660,7 @@ fn event_digest(
     )
 }
 
+#[allow(clippy::too_many_arguments)]
 fn outbox_digest(
     lease_id: &str,
     sequence: u64,
