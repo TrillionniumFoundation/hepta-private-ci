@@ -83,7 +83,7 @@ pub async fn run(config: MatrixdConfig) -> Result<(), MatrixdRunError> {
         .map_err(|error| MatrixdRunError::Invalid(error.to_string()))?;
     let connected = connect_via_agentd(&config).await?;
     let connections = Arc::new(MatrixdConnectionState::default());
-    connections.set_agentd_connected(true);
+    connections.set_agentd_connected(/*connected*/ true);
     let transport = connected.transport;
     let events = connected.events;
     let bridge = MatrixAppServerBridge::new(
@@ -122,7 +122,7 @@ pub async fn run(config: MatrixdConfig) -> Result<(), MatrixdRunError> {
         },
     )
     .await?;
-    connections.set_matrix_sync_connected(true);
+    connections.set_matrix_sync_connected(/*connected*/ true);
 
     let cancel = CancellationToken::new();
     let control_state = Arc::new(MatrixdControlState::new(
@@ -163,7 +163,7 @@ pub async fn run(config: MatrixdConfig) -> Result<(), MatrixdRunError> {
             let result = sidecar
                 .sync_durable_until_cancelled(&store, &ingress, &cancel)
                 .await;
-            connections.set_matrix_sync_connected(false);
+            connections.set_matrix_sync_connected(/*connected*/ false);
             match result? {
                 MatrixSyncExit::Cancelled if cancel.is_cancelled() => Ok(()),
                 MatrixSyncExit::Cancelled => Err(MatrixdRunError::TaskExited("matrix sync")),
@@ -510,7 +510,7 @@ where
                 _ => {}
             },
             AppServerEvent::Disconnected { .. } => {
-                connections.set_agentd_connected(false);
+                connections.set_agentd_connected(/*connected*/ false);
                 return Err(MatrixdRunError::AppServerDisconnected);
             }
             AppServerEvent::Lagged { .. } => {}
@@ -578,7 +578,7 @@ async fn project_server_request(
                 &params.thread_id,
                 &params.turn_id,
                 &params.item_id,
-                None,
+                /*approval_id*/ None,
             )?;
             (
                 Some(PendingApprovalDraft {
@@ -614,7 +614,7 @@ async fn project_server_request(
         transport
             .reject_server_request(
                 request.id().clone(),
-                -32_601,
+                /*code*/ -32_601,
                 "server request is unsupported by owner-local Matrix control".to_string(),
             )
             .await?;
@@ -653,7 +653,7 @@ fn command_approval_summary(
             params
                 .command
                 .as_deref()
-                .map(|command| sanitize_summary_component(command, 480))
+                .map(|command| sanitize_summary_component(command, /*max_bytes*/ 480))
                 .filter(|command| !command.is_empty())
         });
     let mut components = Vec::new();
@@ -663,13 +663,13 @@ fn command_approval_summary(
         components.push("action: unavailable".to_string());
     }
     if let Some(cwd) = params.cwd.as_ref() {
-        let cwd = sanitize_summary_component(cwd.as_str(), 256);
+        let cwd = sanitize_summary_component(cwd.as_str(), /*max_bytes*/ 256);
         if !cwd.is_empty() {
             components.push(format!("cwd: {cwd}"));
         }
     }
     if let Some(reason) = params.reason.as_deref() {
-        let reason = sanitize_summary_component(reason, 256);
+        let reason = sanitize_summary_component(reason, /*max_bytes*/ 256);
         if !reason.is_empty() {
             components.push(format!("reason: {reason}"));
         }
@@ -709,12 +709,12 @@ fn file_change_approval_summary(
     let grant_root = params
         .grant_root
         .as_ref()
-        .map(|path| sanitize_summary_component(&path.to_string_lossy(), 512))
+        .map(|path| sanitize_summary_component(&path.to_string_lossy(), /*max_bytes*/ 512))
         .filter(|path| !path.is_empty());
     let reason = params
         .reason
         .as_deref()
-        .map(|reason| sanitize_summary_component(reason, 320))
+        .map(|reason| sanitize_summary_component(reason, /*max_bytes*/ 320))
         .filter(|reason| !reason.is_empty());
     let mut components = Vec::new();
     if let Some(root) = grant_root.as_deref() {
@@ -740,27 +740,36 @@ fn typed_action_preview(actions: &[CommandAction]) -> Option<String> {
         .filter_map(|action| match action {
             CommandAction::Read { name, path, .. } => Some(format!(
                 "read {} at {}",
-                sanitize_summary_component(name, 96),
-                sanitize_summary_component(path.as_str(), 256)
+                sanitize_summary_component(name, /*max_bytes*/ 96),
+                sanitize_summary_component(path.as_str(), /*max_bytes*/ 256)
             )),
             CommandAction::ListFiles { path, .. } => Some(format!(
                 "list files{}",
                 path.as_deref()
-                    .map(|path| format!(" at {}", sanitize_summary_component(path, 256)))
+                    .map(|path| format!(
+                        " at {}",
+                        sanitize_summary_component(path, /*max_bytes*/ 256)
+                    ))
                     .unwrap_or_default()
             )),
             CommandAction::Search { query, path, .. } => Some(format!(
                 "search{}{}",
                 query
                     .as_deref()
-                    .map(|query| format!(" for {}", sanitize_summary_component(query, 160)))
+                    .map(|query| format!(
+                        " for {}",
+                        sanitize_summary_component(query, /*max_bytes*/ 160)
+                    ))
                     .unwrap_or_default(),
                 path.as_deref()
-                    .map(|path| format!(" at {}", sanitize_summary_component(path, 256)))
+                    .map(|path| format!(
+                        " at {}",
+                        sanitize_summary_component(path, /*max_bytes*/ 256)
+                    ))
                     .unwrap_or_default()
             )),
             CommandAction::Unknown { command } => {
-                let command = sanitize_summary_component(command, 360);
+                let command = sanitize_summary_component(command, /*max_bytes*/ 360);
                 (!command.is_empty()).then_some(command)
             }
         })
@@ -873,18 +882,18 @@ async fn run_agentd_health_monitor(
                 let health = match client.health().await {
                     Ok(health) => health,
                     Err(error) => {
-                        connections.set_agentd_connected(false);
+                        connections.set_agentd_connected(/*connected*/ false);
                         return Err(error.into());
                     }
                 };
                 if !health.ready || health.fenced {
-                    connections.set_agentd_connected(false);
+                    connections.set_agentd_connected(/*connected*/ false);
                     if health.fenced {
                         connections.set_fenced();
                     }
                     return Err(MatrixdRunError::AgentdFenced);
                 }
-                connections.set_agentd_connected(true);
+                connections.set_agentd_connected(/*connected*/ true);
             }
         }
     }

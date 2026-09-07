@@ -172,7 +172,7 @@ impl MatrixdConfig {
         let password = process_secret(
             HEPTA_MATRIX_PASSWORD_ENV,
             record.layout.matrix_secrets_root().join(PASSWORD_FILE),
-            true,
+            /*required*/ true,
         )?
         .ok_or_else(|| {
             MatrixdConfigError::Invalid("Matrix password secret is missing".to_string())
@@ -185,7 +185,7 @@ impl MatrixdConfig {
                     .layout
                     .matrix_secrets_root()
                     .join(STORE_PASSPHRASE_FILE),
-                false,
+                /*required*/ false,
             )?,
         )?;
         let sync_timeline_limit = parse_optional(
@@ -363,7 +363,7 @@ fn process_binding(
             allowed_senders: parse_json_values(HEPTA_MATRIX_ALLOWED_SENDERS_ENV)?,
             require_explicit_mention: parse_optional_bool(
                 HEPTA_MATRIX_REQUIRE_EXPLICIT_MENTION_ENV,
-                false,
+                /*default*/ false,
             )?,
         }
     } else {
