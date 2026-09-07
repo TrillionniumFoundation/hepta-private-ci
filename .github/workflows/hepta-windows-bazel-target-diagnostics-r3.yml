@@ -19,10 +19,29 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        group:
-          - shard-2
-          - shard-3
-          - shard-4
+        include:
+          - group: shard-2
+            targets: |
+              //codex-rs/hepta-memory:hepta-memory-unit-tests
+              //codex-rs/windows-sandbox-rs:windows-sandbox-rs-unit-tests
+              //codex-rs/exec-server:exec-server-file_system_windows-test-windows-cross
+              //codex-rs/app-server:app-server-unit-tests
+              //codex-rs/hepta-agentd:hepta-agentd-cognitive-write-qualification-test
+              //codex-rs/cli:cli-sandbox_cloud_config-test-windows-cross
+              //codex-rs/cli:hepta-bin-unit-tests
+          - group: shard-3
+            targets: |
+              //codex-rs/utils/home-dir:home-dir-unit-tests
+              //codex-rs/hepta-neuron:hepta-neuron-unit-tests
+              //codex-rs/hepta-evidence:hepta-evidence-unit-tests
+              //codex-rs/hepta-matrixd:hepta-matrixd-unit-tests
+              //codex-rs/tui:tui-unit-tests
+          - group: shard-4
+            targets: |
+              //codex-rs/hepta-operator-acceptance:hepta-operator-acceptance-tests
+              //codex-rs/hepta-shadow-qualification:hepta-shadow-qualification-tests
+              //codex-rs/hepta-supervisor:hepta-supervisor-unit-tests
+              //codex-rs/hepta-supervisor:hepta-supervisor-robrix_control_projection-test-windows-cross
     runs-on: windows-latest
     name: Diagnose Windows Bazel failures (${{ matrix.group }})
     environment:
@@ -46,55 +65,20 @@ jobs:
         env:
           BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_API_KEY }}
           DIAG_GROUP: ${{ matrix.group }}
+          TARGETS: ${{ matrix.targets }}
         shell: bash
         run: |
           set -euo pipefail
-
-          case "${DIAG_GROUP}" in
-            shard-2)
-              targets=(
-                //labs/hepta-swarm/test:test_benchmark_harness_communication
-                //testing/python:0_test_hermeticity__hermeticity_test__no_external_imports
-                //hepta_ingress_core:tests/test_conduit_termination.py
-                //hepta_agentd:integration_tests
-                //testing/taskflows/python:test_taskflow_eval_realdata
-                //testing/taskflows/python:comprehensive_test
-                //testing/taskflows/python-alt:workflow_scenarios_test
-              )
-              ;;
-            shard-3)
-              targets=(
-                //testing/taskflows/python-alt:subtask_test
-                //bindings/matrix-conduit-nosql:lib_test
-                //tools/recovery:contract_tests
-                //hepta_agentd:server_test
-                //apps/tui:tui_test
-              )
-              ;;
-            shard-4)
-              targets=(
-                //bindings/matrix-sdk-crypto-ffi:matrix_sdk_crypto_ffi_uniffi_tests
-                //tools/recovery/windows_delete_verifier:delete_probe_wrapper_test
-                //bindings/matrix-sdk-ffi:headers_test
-                //bindings/matrix-sdk-ffi:matrix_sdk_ffi_uniffi_tests
-              )
-              ;;
-            *)
-              echo "Unknown diagnostic group: ${DIAG_GROUP}" >&2
-              exit 2
-              ;;
-          esac
-
           runner_temp_unix="$(cygpath -u "${RUNNER_TEMP}")"
           diag_root="${runner_temp_unix}/hepta-target-diagnostics/${DIAG_GROUP}"
           mkdir -p "${diag_root}/commands"
           printf 'target\texit_code\n' > "${diag_root}/results.tsv"
+          mapfile -t targets < <(printf '%s\n' "${TARGETS}" | sed '/^[[:space:]]*$/d')
 
           failed=0
           for target in "${targets[@]}"; do
             safe_name="$(printf '%s' "${target}" | sed -E 's#^//##; s#[/:]#_#g; s#[^A-Za-z0-9_.-]#_#g')"
             log_file="${diag_root}/commands/${safe_name}.log"
-
             echo "::group::${target}"
             set +e
             ./.github/scripts/run-bazel-ci.sh \
@@ -116,78 +100,16 @@ jobs:
             rc=${PIPESTATUS[0]}
             set -e
             echo "::endgroup::"
-
             printf '%s\t%s\n' "${target}" "${rc}" >> "${diag_root}/results.tsv"
             git status --porcelain=v1 --untracked-files=all > "${diag_root}/commands/${safe_name}.git-status.txt"
             git diff --stat HEAD > "${diag_root}/commands/${safe_name}.git-diff-stat.txt"
             git diff --binary HEAD > "${diag_root}/commands/${safe_name}.git-diff.patch"
-
-            if [[ ${rc} -ne 0 ]]; then
-              failed=1
-            fi
+            if [[ ${rc} -ne 0 ]]; then failed=1; fi
           done
 
-          testlogs_root="$(bazel info bazel-testlogs)"
-          printf '%s\n' "${testlogs_root}" > "${diag_root}/bazel-testlogs-root.txt"
-          python - "${testlogs_root}" "${diag_root}" <<'PY'
-          from __future__ import annotations
-
-          import pathlib
-          import shutil
-          import subprocess
-          import sys
-
-          testlogs_root = pathlib.Path(sys.argv[1])
-          diag_root = pathlib.Path(sys.argv[2])
-          out_root = diag_root / "bazel-testlogs"
-          max_file_bytes = 20 * 1024 * 1024
-
-          if testlogs_root.is_dir():
-              for source in testlogs_root.rglob("*"):
-                  if not source.is_file():
-                      continue
-                  if source.name != "test.xml" and source.suffix.lower() not in {".log", ".txt"}:
-                      continue
-                  try:
-                      size = source.stat().st_size
-                  except OSError:
-                      continue
-                  if size > max_file_bytes:
-                      continue
-                  destination = out_root / source.relative_to(testlogs_root)
-                  destination.parent.mkdir(parents=True, exist_ok=True)
-                  shutil.copy2(source, destination)
-
-          status = subprocess.run(
-              ["git", "status", "--porcelain=v1", "--untracked-files=all"],
-              check=True,
-              capture_output=True,
-              text=True,
-          ).stdout
-          (diag_root / "final-git-status.txt").write_text(status, encoding="utf-8")
-          untracked_root = diag_root / "untracked-worktree-files"
-          for line in status.splitlines():
-              if not line.startswith("?? "):
-                  continue
-              relative = pathlib.Path(line[3:])
-              source = pathlib.Path.cwd() / relative
-              if not source.is_file():
-                  continue
-              try:
-                  size = source.stat().st_size
-              except OSError:
-                  continue
-              if size > max_file_bytes:
-                  continue
-              destination = untracked_root / relative
-              destination.parent.mkdir(parents=True, exist_ok=True)
-              shutil.copy2(source, destination)
-          PY
-
+          git status --porcelain=v1 --untracked-files=all > "${diag_root}/final-git-status.txt"
           git diff --binary HEAD > "${diag_root}/final-worktree.diff"
-          if [[ ${failed} -ne 0 ]]; then
-            exit 1
-          fi
+          exit "${failed}"
 
       - name: Upload target diagnostics
         if: always() && !cancelled()
