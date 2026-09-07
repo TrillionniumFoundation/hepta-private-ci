@@ -15,66 +15,97 @@ jobs:
     timeout-minutes: 10
     env:
       BASE_SHA: b35b55f7767a3610481551c6260929904798b33c
-      SOURCE_SHA: d4870c4243d60919aa861033bda5a1a0c6b3065b
-      CANDIDATE_BRANCH: codex/hepta-final-candidate-v2-20260907
+      SOURCE_SHA: c4d942c2d245e935575be4fe29107b76032fed17
+      CANDIDATE_BRANCH: codex/hepta-final-candidate-v3-20260907
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           fetch-depth: 0
           persist-credentials: true
 
-      - name: Generate bounded final blocker patch
+      - name: Build isolated one-parent candidate
         shell: bash
         run: |
           set -euo pipefail
-          python3 .github/scripts/hepta_final_materializer.py
-
-      - name: Upload exact patched files and manifest
-        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
-        with:
-          name: hepta-final-patch
-          path: hepta-final-patch
-          if-no-files-found: error
-          include-hidden-files: true
-          retention-days: 7
-
-      - name: Build and publish isolated one-parent candidate
-        id: candidate
-        shell: bash
-        run: |
-          set -euo pipefail
-
-          cp .github/scripts/hepta_final_materializer.py "${RUNNER_TEMP}/hepta_final_materializer.py"
-          git reset --hard HEAD
-          git clean -fdx
           git checkout --detach "${SOURCE_SHA}"
-          python3 "${RUNNER_TEMP}/hepta_final_materializer.py"
-          rm -rf hepta-final-patch
 
-          git rm -f \
-            .github/workflows/hepta-blocker-round2.yml \
-            .hepta-blocker-round2-trigger
-          git add -A
-          git diff --cached --check
+          python3 <<'PY'
+          from pathlib import Path
 
-          expected_files="${RUNNER_TEMP}/expected-files.txt"
-          actual_files="${RUNNER_TEMP}/actual-files.txt"
-          git diff --name-only "${BASE_SHA}" "${SOURCE_SHA}" \
-            | grep -v -E '^(\.github/workflows/hepta-blocker-round2\.yml|\.hepta-blocker-round2-trigger)$' \
-            > "${expected_files}"
-          cat >> "${expected_files}" <<'FILES'
-          .github/workflows/bazel.yml
-          .github/workflows/v8-canary.yml
-          codex-rs/hepta-fleet/src/registry.rs
-          codex-rs/hepta-fleet/src/registry_tests.rs
-          codex-rs/hepta-operator-acceptance/src/durable.rs
-          codex-rs/hepta-operator-acceptance/src/g5_trust.rs
-          codex-rs/hepta-shadow-qualification/BUILD.bazel
-          codex-rs/utils/home-dir/src/lib.rs
-          FILES
-          sed -i 's/^[[:space:]]*//' "${expected_files}"
-          sort -u -o "${expected_files}" "${expected_files}"
+          bazel_path = Path('.github/workflows/bazel.yml')
+          bazel = bazel_path.read_text(encoding='utf-8')
+          old = '''          bazel_wrapper_args=()
+          if [[ "${RUNNER_OS}" == "Windows" ]]; then
+            # Release-mode compile coverage must use one coherent native ABI
+            # for target crates, proc macros, SQLite, and cryptographic code.
+            bazel_wrapper_args+=(--windows-msvc-host-platform)
+          fi
 
+          bazel_build_args=(
+            --compilation_mode=fastbuild
+            --platforms=//:windows_x86_64_msvc
+            --@rules_rust//rust/settings:extra_rustc_flag=-Cdebug-assertions=no
+            --@rules_rust//rust/settings:extra_exec_rustc_flag=-Cdebug-assertions=no
+            --build_metadata=COMMIT_SHA=${GITHUB_SHA}
+            --build_metadata=TAG_job=verify-release-build
+            --build_metadata=TAG_rust_debug_assertions=off
+          )
+'''
+          new = '''          bazel_wrapper_args=()
+          bazel_build_args=(
+            --compilation_mode=fastbuild
+            --@rules_rust//rust/settings:extra_rustc_flag=-Cdebug-assertions=no
+            --@rules_rust//rust/settings:extra_exec_rustc_flag=-Cdebug-assertions=no
+            --build_metadata=COMMIT_SHA=${GITHUB_SHA}
+            --build_metadata=TAG_job=verify-release-build
+            --build_metadata=TAG_rust_debug_assertions=off
+          )
+          if [[ "${RUNNER_OS}" == "Windows" ]]; then
+            # Release-mode compile coverage must use one coherent native ABI
+            # for target crates, proc macros, SQLite, and cryptographic code.
+            bazel_wrapper_args+=(--windows-msvc-host-platform)
+            bazel_build_args+=(--platforms=//:windows_x86_64_msvc)
+          fi
+'''
+          if bazel.count(old) != 1:
+              raise SystemExit(f'expected one release block, found {bazel.count(old)}')
+          bazel = bazel.replace(old, new)
+          if bazel.count('--platforms=//:windows_x86_64_msvc') != 4:
+              raise SystemExit('unexpected native MSVC platform selector count')
+          bazel_path.write_text(bazel, encoding='utf-8')
+
+          durable_path = Path('codex-rs/hepta-operator-acceptance/src/durable.rs')
+          durable = durable_path.read_text(encoding='utf-8')
+          old = '''#[cfg(not(unix))]
+fn verify_private_mode(
+    _metadata: &std::fs::Metadata,
+    _label: &str,
+) -> Result<(), AcceptanceError> {
+    Ok(())
+}
+'''
+          new = '''#[cfg(not(unix))]
+fn verify_private_mode(_metadata: &std::fs::Metadata, _label: &str) -> Result<(), AcceptanceError> {
+    Ok(())
+}
+'''
+          if durable.count(old) != 1:
+              raise SystemExit(f'expected one rustfmt block, found {durable.count(old)}')
+          durable_path.write_text(durable.replace(old, new), encoding='utf-8')
+          PY
+
+          git diff --check
+          mapfile -t changed_files < <(git diff --name-only | LC_ALL=C sort)
+          expected_files=(
+            .github/workflows/bazel.yml
+            codex-rs/hepta-operator-acceptance/src/durable.rs
+          )
+          if [[ "${changed_files[*]}" != "${expected_files[*]}" ]]; then
+            printf 'Unexpected changed files:\n%s\n' "${changed_files[*]}" >&2
+            exit 1
+          fi
+
+          git add -- "${expected_files[@]}"
           tree_sha="$(git write-tree)"
           git config user.name "Hepta CI Finalizer"
           git config user.email "actions@users.noreply.github.com"
@@ -82,50 +113,22 @@ jobs:
             printf '%s\n' \
               'chore: repair inherited formatting and Rust dependency baseline' \
               '' \
-              'Close deterministic Bazel dependency, Windows ABI, platform lint, and V8 canary blockers.' \
+              'Close deterministic Bazel dependency, native Windows ABI, platform lint, release matrix, and V8 canary blockers.' \
               | git commit-tree "${tree_sha}" -p "${BASE_SHA}"
           )"
 
-          if [[ "$(git show -s --format=%P "${candidate_commit}")" != "${BASE_SHA}" ]]; then
-            echo "Final candidate is not a single-parent commit on the required base." >&2
+          [[ "$(git show -s --format=%P "${candidate_commit}")" == "${BASE_SHA}" ]]
+          git diff --check "${BASE_SHA}" "${candidate_commit}"
+          if git cat-file -e "${candidate_commit}:.github/workflows/hepta-final-materializer.yml" 2>/dev/null; then
+            echo 'Candidate retained final materializer workflow.' >&2
             exit 1
           fi
-          git diff --check "${BASE_SHA}" "${candidate_commit}"
-          git diff --name-only "${BASE_SHA}" "${candidate_commit}" | sort -u > "${actual_files}"
-          diff -u "${expected_files}" "${actual_files}"
+          if git cat-file -e "${candidate_commit}:.github/scripts/hepta_final_materializer.py" 2>/dev/null; then
+            echo 'Candidate retained final materializer script.' >&2
+            exit 1
+          fi
 
-          for forbidden in \
-            .github/workflows/hepta-blocker-round2.yml \
-            .hepta-blocker-round2-trigger \
-            .github/workflows/hepta-final-materializer.yml \
-            .github/scripts/hepta_final_materializer.py; do
-            if git cat-file -e "${candidate_commit}:${forbidden}" 2>/dev/null; then
-              echo "Final candidate retains forbidden helper: ${forbidden}" >&2
-              exit 1
-            fi
-          done
-
-          mkdir -p hepta-final-candidate
-          python3 - "${candidate_commit}" "${tree_sha}" "${BASE_SHA}" > hepta-final-candidate/manifest.json <<'PY'
-          import json
-          import sys
-          print(json.dumps({
-              "schema": "hepta_final_candidate_v1",
-              "commit_sha": sys.argv[1],
-              "tree_sha": sys.argv[2],
-              "parent_sha": sys.argv[3],
-          }, indent=2, sort_keys=True))
-          PY
-
+          echo "CANDIDATE_COMMIT=${candidate_commit}"
+          echo "CANDIDATE_TREE=${tree_sha}"
+          git show --stat --oneline "${candidate_commit}"
           git push --force origin "${candidate_commit}:refs/heads/${CANDIDATE_BRANCH}"
-          echo "commit_sha=${candidate_commit}" >> "${GITHUB_OUTPUT}"
-          echo "tree_sha=${tree_sha}" >> "${GITHUB_OUTPUT}"
-          git show --stat --oneline --decorate "${candidate_commit}"
-
-      - name: Upload candidate identity
-        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
-        with:
-          name: hepta-final-candidate
-          path: hepta-final-candidate/manifest.json
-          if-no-files-found: error
-          retention-days: 7
