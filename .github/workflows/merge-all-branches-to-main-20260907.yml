@@ -1,0 +1,286 @@
+name: Merge all branches into main (one-shot 2026-09-07)
+
+on:
+  push:
+    branches:
+      - integration/vnext-main-20260811
+    paths:
+      - .github/workflows/merge-all-branches-to-main-20260907.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: merge-all-branches-to-main-20260907
+  cancel-in-progress: false
+
+jobs:
+  merge:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 360
+
+    steps:
+      - name: Check out workflow source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Merge every remote branch into main
+        id: merge
+        shell: bash
+        env:
+          TARGET_BRANCH: main
+          DEFAULT_BRANCH: integration/vnext-main-20260811
+          WORKFLOW_PATH: .github/workflows/merge-all-branches-to-main-20260907.yml
+          REPORT_PATH: ${{ runner.temp }}/merge-all-branches-report.tsv
+          MERGE_LOG_PATH: ${{ runner.temp }}/merge-all-branches.log
+        run: |
+          set -Eeuo pipefail
+
+          exec > >(tee -a "${MERGE_LOG_PATH}") 2>&1
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config core.hooksPath /dev/null
+          git config merge.conflictStyle zdiff3
+          git config rerere.enabled false
+
+          printf 'pass\tbranch\tsha\tresult\tconflict_paths\n' > "${REPORT_PATH}"
+
+          fetch_all_branches() {
+            git fetch --prune --no-tags origin \
+              '+refs/heads/*:refs/remotes/origin/*'
+          }
+
+          list_remote_branches() {
+            git for-each-ref \
+              --sort=refname \
+              --sort=committerdate \
+              --format='%(committerdate:unix)%09%(refname)' \
+              refs/remotes/origin \
+              | while IFS=$'\t' read -r commit_time ref; do
+                  branch="${ref#refs/remotes/origin/}"
+                  case "${branch}" in
+                    HEAD|"${TARGET_BRANCH}")
+                      continue
+                      ;;
+                  esac
+                  printf '%s\t%s\t%s\n' \
+                    "${commit_time}" \
+                    "${branch}" \
+                    "${ref}"
+                done
+          }
+
+          RESOLVED_CONFLICT_COUNT=0
+
+          resolve_incoming_conflicts() {
+            local branch="$1"
+            local conflict_count=0
+            local path
+
+            if ! git rev-parse -q --verify MERGE_HEAD >/dev/null; then
+              echo "Merge failed for ${branch} without an active merge state." >&2
+              return 1
+            fi
+
+            while IFS= read -r -d '' path; do
+              conflict_count=$((conflict_count + 1))
+              if git ls-files -u -- "${path}" \
+                   | awk '$3 == 3 { found = 1 } END { exit(found ? 0 : 1) }'; then
+                git checkout --theirs -- "${path}"
+                git add -- "${path}"
+              else
+                git rm -f --ignore-unmatch -- "${path}"
+              fi
+            done < <(git diff --name-only --diff-filter=U -z)
+
+            if git diff --name-only --diff-filter=U | grep -q .; then
+              echo "Unresolved paths remain after incoming-side resolution for ${branch}." >&2
+              git status --short >&2
+              return 1
+            fi
+
+            git add -A
+            git commit --signoff \
+              -m "merge(branch): absorb ${branch} into main [skip ci]" \
+              -m "Automatic conflict policy: branches are processed from older to newer commit dates; unresolved paths take the incoming branch version."
+
+            RESOLVED_CONFLICT_COUNT="${conflict_count}"
+          }
+
+          merge_one_branch() {
+            local pass="$1"
+            local branch="$2"
+            local ref="$3"
+            local sha
+
+            sha="$(git rev-parse "${ref}")"
+
+            if git merge-base --is-ancestor "${sha}" HEAD; then
+              printf '%s\t%s\t%s\talready-contained\t0\n' \
+                "${pass}" "${branch}" "${sha}" >> "${REPORT_PATH}"
+              return 0
+            fi
+
+            echo "::group::Merging ${branch} (${sha})"
+            if git -c core.hooksPath=/dev/null merge \
+              --no-ff \
+              --no-edit \
+              --signoff \
+              --allow-unrelated-histories \
+              -X theirs \
+              -m "merge(branch): absorb ${branch} into main [skip ci]" \
+              "${sha}"; then
+              printf '%s\t%s\t%s\tmerged\t0\n' \
+                "${pass}" "${branch}" "${sha}" >> "${REPORT_PATH}"
+            else
+              echo "Automatic merge reported conflicts for ${branch}; resolving every unresolved path in favor of the incoming branch."
+              RESOLVED_CONFLICT_COUNT=0
+              resolve_incoming_conflicts "${branch}"
+              printf '%s\t%s\t%s\tmerged-with-incoming-conflict-resolution\t%s\n' \
+                "${pass}" "${branch}" "${sha}" "${RESOLVED_CONFLICT_COUNT}" >> "${REPORT_PATH}"
+            fi
+            echo "::endgroup::"
+          }
+
+          fetch_all_branches
+          main_before="$(git rev-parse "refs/remotes/origin/${TARGET_BRANCH}")"
+          backup_branch="backup/main-before-all-branches-${GITHUB_RUN_ID}-${main_before:0:12}"
+
+          echo "Main before merge: ${main_before}"
+          echo "Creating runtime backup: ${backup_branch}"
+          git push origin "${main_before}:refs/heads/${backup_branch}"
+
+          git switch --detach "${main_before}"
+          git switch -c "automation/merge-all-branches-${GITHUB_RUN_ID}"
+
+          stable=0
+          for pass in 1 2 3; do
+            echo "Starting merge pass ${pass}."
+            fetch_all_branches
+            merged_this_pass=0
+
+            while IFS=$'\t' read -r _commit_time branch ref; do
+              before="$(git rev-parse HEAD)"
+              merge_one_branch "${pass}" "${branch}" "${ref}"
+              after="$(git rev-parse HEAD)"
+              if [[ "${before}" != "${after}" ]]; then
+                merged_this_pass=$((merged_this_pass + 1))
+              fi
+            done < <(list_remote_branches)
+
+            fetch_all_branches
+            pending=0
+            while IFS=$'\t' read -r _commit_time branch ref; do
+              sha="$(git rev-parse "${ref}")"
+              if ! git merge-base --is-ancestor "${sha}" HEAD; then
+                echo "Branch moved or remains unmerged after pass ${pass}: ${branch} (${sha})"
+                pending=$((pending + 1))
+              fi
+            done < <(list_remote_branches)
+
+            echo "Pass ${pass}: merge commits added=${merged_this_pass}, pending branches=${pending}."
+            if [[ "${pending}" -eq 0 ]]; then
+              stable=1
+              break
+            fi
+          done
+
+          if [[ "${stable}" -ne 1 ]]; then
+            echo "Remote branches did not stabilize within three merge passes." >&2
+            exit 1
+          fi
+
+          if [[ -e "${WORKFLOW_PATH}" ]]; then
+            git rm -f -- "${WORKFLOW_PATH}"
+            git commit --signoff \
+              -m "chore: retire one-shot all-branch merger [skip ci]"
+          fi
+
+          git fsck --no-dangling
+          if git diff --name-only --diff-filter=U | grep -q .; then
+            echo "Unresolved merge paths remain." >&2
+            exit 1
+          fi
+
+          final_head="$(git rev-parse HEAD)"
+          final_tree="$(git rev-parse HEAD^{tree})"
+          echo "Final candidate head: ${final_head}"
+          echo "Final candidate tree: ${final_tree}"
+
+          echo "Atomically publishing the consolidated head to ${TARGET_BRANCH} and ${DEFAULT_BRANCH}."
+          git push --atomic origin \
+            "HEAD:refs/heads/${TARGET_BRANCH}" \
+            "HEAD:refs/heads/${DEFAULT_BRANCH}"
+
+          fetch_all_branches
+          remote_main="$(git rev-parse "refs/remotes/origin/${TARGET_BRANCH}")"
+          remote_default="$(git rev-parse "refs/remotes/origin/${DEFAULT_BRANCH}")"
+
+          if [[ "${remote_main}" != "${final_head}" ]]; then
+            echo "Remote main mismatch: expected ${final_head}, observed ${remote_main}." >&2
+            exit 1
+          fi
+          if [[ "${remote_default}" != "${final_head}" ]]; then
+            echo "Remote default mismatch: expected ${final_head}, observed ${remote_default}." >&2
+            exit 1
+          fi
+
+          verification_failures=0
+          while IFS=$'\t' read -r _commit_time branch ref; do
+            sha="$(git rev-parse "${ref}")"
+            if ! git merge-base --is-ancestor "${sha}" "${final_head}"; then
+              printf 'verify\t%s\t%s\tnot-contained\t0\n' \
+                "${branch}" "${sha}" >> "${REPORT_PATH}"
+              verification_failures=$((verification_failures + 1))
+            fi
+          done < <(list_remote_branches)
+
+          if [[ "${verification_failures}" -ne 0 ]]; then
+            echo "${verification_failures} remote branch tips are not ancestors of final main." >&2
+            exit 1
+          fi
+
+          {
+            echo "main_before=${main_before}"
+            echo "backup_branch=${backup_branch}"
+            echo "final_head=${final_head}"
+            echo "final_tree=${final_tree}"
+            echo "branch_rows=$(( $(wc -l < "${REPORT_PATH}") - 1 ))"
+          } >> "${GITHUB_OUTPUT}"
+
+      - name: Upload merge report
+        if: always()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        with:
+          name: merge-all-branches-to-main-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/merge-all-branches-report.tsv
+            ${{ runner.temp }}/merge-all-branches.log
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Publish summary
+        if: always()
+        shell: bash
+        env:
+          REPORT_PATH: ${{ runner.temp }}/merge-all-branches-report.tsv
+        run: |
+          {
+            echo "## Merge all branches into main"
+            echo
+            echo "- Main before: \`${{ steps.merge.outputs.main_before }}\`"
+            echo "- Backup: \`${{ steps.merge.outputs.backup_branch }}\`"
+            echo "- Final head: \`${{ steps.merge.outputs.final_head }}\`"
+            echo "- Final tree: \`${{ steps.merge.outputs.final_tree }}\`"
+            echo "- Branch rows: \`${{ steps.merge.outputs.branch_rows }}\`"
+            echo
+            if [[ -f "${REPORT_PATH}" ]]; then
+              echo '```tsv'
+              tail -n 40 "${REPORT_PATH}"
+              echo '```'
+            fi
+          } >> "${GITHUB_STEP_SUMMARY}"
