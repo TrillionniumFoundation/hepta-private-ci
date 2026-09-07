@@ -10,6 +10,7 @@
   "allowed_subjects": [{"source_commit":"968968046d69d000f1f9fe03683e92aa7903cf99","source_tree":"04ba2fab66dfc41680784e1288e14c2fc54c58d9","promotion_pr_number":41,"promotion_pr_head":"7e1e611e7299391cf3d4edc1ded322da0d023cc6"}],
   "max_bundle_files": 4096,
   "max_bundle_bytes": 268435456,
+  "bundle_inspection_timeout_seconds": 30,
   "evidence_kinds": {
     "installed_root_linux_process_matrix": {"level":"L2","lane":"owner-open-r5-l2","authorization_class":"TARGET_CAPTURE","required_roles":["producer","target_operator","admission_issuer"],"custodian_role":"target_operator","environment_class":"installed_root_linux","timeout_seconds":1800,"stdout_max_bytes":4194304,"stderr_max_bytes":4194304},
     "installed_codex_same_turn": {"level":"L2","lane":"owner-open-r5-l2","authorization_class":"TARGET_CAPTURE","required_roles":["producer","target_operator","admission_issuer"],"custodian_role":"target_operator","environment_class":"installed_root_linux","timeout_seconds":1800,"stdout_max_bytes":4194304,"stderr_max_bytes":4194304},

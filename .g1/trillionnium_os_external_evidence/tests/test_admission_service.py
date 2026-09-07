@@ -7,6 +7,7 @@ import os
 from pathlib import Path
 import shutil
 import subprocess
+import sys
 import tempfile
 import unittest
 
@@ -67,6 +68,10 @@ class AdmissionServiceTest(unittest.TestCase):
     def stamp(value: datetime) -> str:
         return value.isoformat().replace("+00:00", "Z")
 
+    @staticmethod
+    def fd_count() -> int:
+        return len(list(Path("/proc/self/fd").iterdir()))
+
     def write(self, path: Path, data: bytes) -> None:
         path.write_bytes(data)
         os.chmod(path, 0o600)
@@ -116,11 +121,11 @@ class AdmissionServiceTest(unittest.TestCase):
             "evidence_kinds": {
                 "installed_root_linux_process_matrix": {
                     "level": "L2", "lane": "owner-open-r5-l2", "authorization_class": "TARGET_CAPTURE",
-                    "required_roles": ["producer", "target_operator", "admission_issuer"],
+                    "required_roles": ["producer", "target_operator", "admission_issuer"], "minimum_independent_approvals": 1,
                 },
                 "destructive_fault_matrix": {
                     "level": "L5", "lane": "owner-open-r5-l5", "authorization_class": "DESTRUCTIVE_CAPTURE",
-                    "required_roles": ["producer", "fault_operator", "destructive_authorizer", "admission_issuer"],
+                    "required_roles": ["producer", "fault_operator", "destructive_authorizer", "admission_issuer"], "minimum_independent_approvals": 2,
                 },
             },
         }
@@ -211,6 +216,60 @@ class AdmissionServiceTest(unittest.TestCase):
         self.request_path.symlink_to(real.name)
         with self.assertRaisesRegex(AdmissionError, "cannot open"):
             admit(self.request_path, self.grant_path, self.signature_path, config=self.config, now=NOW)
+
+    def test_fifo_input_is_rejected_without_blocking(self) -> None:
+        self.prepare(); self.request_path.unlink(); os.mkfifo(self.request_path, 0o600)
+        service_root=Path(__file__).resolve().parents[1]
+        child=f"""import sys
+from datetime import datetime,timezone
+from pathlib import Path
+sys.path.insert(0,{str(service_root)!r})
+from admission_service import AdmissionError,Config,admit
+try: admit(Path({str(self.request_path)!r}),Path({str(self.grant_path)!r}),Path({str(self.signature_path)!r}),config=Config(Path({str(self.policy_path)!r}),Path({str(self.pub)!r}),Path({str(self.state)!r}),{os.getuid()}),now=datetime(2026,9,7,12,0,tzinfo=timezone.utc))
+except AdmissionError: raise SystemExit(0)
+raise SystemExit(3)
+"""
+        done=subprocess.run([sys.executable,"-I","-c",child],timeout=2,check=False)
+        self.assertEqual(done.returncode,0)
+
+    def test_rejects_invalid_grant_intervals(self) -> None:
+        cases=[
+            (NOW+timedelta(minutes=4),NOW+timedelta(minutes=1)),
+            (NOW+timedelta(minutes=1),NOW+timedelta(minutes=1)),
+            (NOW-timedelta(minutes=1),NOW+timedelta(minutes=60,seconds=1)),
+        ]
+        for issued,expires in cases:
+            with self.subTest(issued=issued,expires=expires):
+                self.prepare(mutate_grant=lambda g,i=issued,e=expires:g.update(issued_at=self.stamp(i),expires_at=self.stamp(e)))
+                with self.assertRaisesRegex(AdmissionError,"time bounds"):
+                    admit(self.request_path,self.grant_path,self.signature_path,config=self.config,now=NOW)
+                self.tearDown(); self.setUp()
+
+    def test_approvals_are_casefold_unique_and_role_disjoint(self) -> None:
+        for approvals in (["capture-producer"],["external-admission"],["TARGET-OPERATOR"],["reviewer","Reviewer"]):
+            with self.subTest(approvals=approvals):
+                request=self.request(); request["independent_approvals"]=approvals; self.prepare(request=request)
+                with self.assertRaisesRegex(AdmissionError,"approval"):
+                    admit(self.request_path,self.grant_path,self.signature_path,config=self.config,now=NOW)
+                self.tearDown(); self.setUp()
+
+    def test_destructive_lane_requires_two_approvals(self) -> None:
+        request=self.request("destructive_fault_matrix"); self.prepare(request=request)
+        with self.assertRaisesRegex(AdmissionError,"approval"):
+            admit(self.request_path,self.grant_path,self.signature_path,config=self.config,now=NOW)
+        self.tearDown(); self.setUp(); request=self.request("destructive_fault_matrix")
+        request["independent_approvals"]=["reviewer-one","reviewer-two"]; self.prepare(request=request)
+        self.assertEqual(admit(self.request_path,self.grant_path,self.signature_path,config=self.config,now=NOW)["evidence_level"],"L5")
+
+    def test_partial_acquisition_and_invalid_policy_do_not_leak_fds(self) -> None:
+        self.prepare(); self.grant_path.unlink(); before=self.fd_count()
+        for _ in range(12):
+            with self.assertRaises(AdmissionError): admit(self.request_path,self.grant_path,self.signature_path,config=self.config,now=NOW)
+        self.assertEqual(self.fd_count(),before)
+        self.tearDown(); self.setUp(); self.prepare(); self.write(self.policy_path,b'{"schema":'); before=self.fd_count()
+        for _ in range(12):
+            with self.assertRaises(AdmissionError): admit(self.request_path,self.grant_path,self.signature_path,config=self.config,now=NOW)
+        self.assertEqual(self.fd_count(),before)
 
 
 if __name__ == "__main__":

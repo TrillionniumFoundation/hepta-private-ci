@@ -75,7 +75,7 @@ def snapshot(path:Path,root:Path,uid:int,limit:int):
     if not rel.parts or any(p in {"",".",".."} for p in rel.parts): raise AdmissionError(f"unsafe path: {path}")
     cur=root
     for part in rel.parts[:-1]: cur/=part; secure_dir(cur,uid)
-    try: fd=os.open(path,os.O_RDONLY|os.O_CLOEXEC|getattr(os,"O_NOFOLLOW",0))
+    try: fd=os.open(path,os.O_RDONLY|os.O_NONBLOCK|os.O_CLOEXEC|getattr(os,"O_NOFOLLOW",0))
     except OSError as e: raise AdmissionError(f"cannot open {path}: {e}") from e
     try:
         before=os.fstat(fd)
@@ -94,22 +94,28 @@ def snapshot(path:Path,root:Path,uid:int,limit:int):
     except Exception: os.close(fd); raise
 
 def read_policy(cfg:Config):
-    snap=snapshot(cfg.policy,cfg.policy.parent,cfg.owner_uid,262144); p=load_json(snap.data,"policy",262144)
-    exact(p,{"schema","version","status","repository","required_uid","grant_public_key_sha256","issuer_allowlist","allowed_subjects","max_request_future_seconds","max_grant_lifetime_seconds","max_clock_skew_seconds","evidence_kinds"},"policy")
-    if (p["schema"],p["version"],p["status"],p["required_uid"])!=(POLICY_SCHEMA,"1","ACTIVE",cfg.owner_uid): raise AdmissionError("policy is not active for this owner")
-    d=p["grant_public_key_sha256"]
-    if not isinstance(d,str) or not HEX64.fullmatch(d) or set(d)=={"0"}: raise AdmissionError("grant key is unprovisioned")
-    if not all(isinstance(p[k],list) and p[k] for k in ("issuer_allowlist","allowed_subjects")) or not isinstance(p["evidence_kinds"],dict): raise AdmissionError("policy allowlists are empty")
-    for k in ("max_request_future_seconds","max_grant_lifetime_seconds","max_clock_skew_seconds"):
-        if type(p[k]) is not int or not 0<p[k]<=2**31: raise AdmissionError(f"bad policy bound: {k}")
-    return p,snap
+    snap=snapshot(cfg.policy,cfg.policy.parent,cfg.owner_uid,262144)
+    try:
+        p=load_json(snap.data,"policy",262144)
+        exact(p,{"schema","version","status","repository","required_uid","grant_public_key_sha256","issuer_allowlist","allowed_subjects","max_request_future_seconds","max_grant_lifetime_seconds","max_clock_skew_seconds","evidence_kinds"},"policy")
+        if (p["schema"],p["version"],p["status"],p["required_uid"])!=(POLICY_SCHEMA,"1","ACTIVE",cfg.owner_uid): raise AdmissionError("policy is not active for this owner")
+        d=p["grant_public_key_sha256"]
+        if not isinstance(d,str) or not HEX64.fullmatch(d) or set(d)=={"0"}: raise AdmissionError("grant key is unprovisioned")
+        if not all(isinstance(p[k],list) and p[k] for k in ("issuer_allowlist","allowed_subjects")) or not isinstance(p["evidence_kinds"],dict): raise AdmissionError("policy allowlists are empty")
+        for k in ("max_request_future_seconds","max_grant_lifetime_seconds","max_clock_skew_seconds"):
+            if type(p[k]) is not int or not 0<p[k]<=2**31: raise AdmissionError(f"bad policy bound: {k}")
+        for name,kind in p["evidence_kinds"].items():
+            exact(kind,{"level","lane","authorization_class","required_roles","minimum_independent_approvals"},f"evidence policy {name}")
+            if type(kind["minimum_independent_approvals"]) is not int or not 1<=kind["minimum_independent_approvals"]<=16: raise AdmissionError(f"bad approval minimum: {name}")
+        return p,snap
+    except Exception:
+        snap.close(); raise
 
 def check_request(r,p,now):
     exact(r,REQ_FIELDS,"request")
     if r["schema"]!=REQ_SCHEMA or r["status"]!="ROUTE_ONLY_PENDING_EXTERNAL_ADMISSION" or r["repository"]!=p["repository"]: raise AdmissionError("unsupported route request")
     kp=p["evidence_kinds"].get(r["evidence_kind"])
     if not isinstance(kp,dict): raise AdmissionError("unknown evidence kind")
-    exact(kp,{"level","lane","authorization_class","required_roles"},"evidence policy")
     if (r["evidence_level"],r["external_lane"])!=(kp["level"],kp["lane"]): raise AdmissionError("request route mismatch")
     for k in ("source_commit","source_tree","protected_main_tip_observed","promotion_pr_head"):
         if not isinstance(r[k],str) or not HEX40.fullmatch(r[k]): raise AdmissionError(f"bad {k}")
@@ -117,9 +123,10 @@ def check_request(r,p,now):
     subject={k:r[k] for k in ("source_commit","source_tree","promotion_pr_number","promotion_pr_head")}
     if subject not in p["allowed_subjects"]: raise AdmissionError("subject is not admitted")
     approvals=r["independent_approvals"]
-    if not isinstance(approvals,list) or not approvals: raise AdmissionError("missing independent approval")
+    if not isinstance(approvals,list) or len(approvals)<kp["minimum_independent_approvals"]: raise AdmissionError("missing independent approval")
     checked=[identity(x,"approval") for x in approvals]
-    if len(set(checked))!=len(checked) or any(x.lower().endswith("[bot]") for x in checked): raise AdmissionError("bad approval set")
+    folded=[x.casefold() for x in checked]
+    if len(set(folded))!=len(folded) or any(x.endswith("[bot]") for x in folded): raise AdmissionError("bad approval set")
     if not isinstance(r["authorization_nonce"],str) or not NONCE.fullmatch(r["authorization_nonce"]): raise AdmissionError("bad nonce")
     ticket=r["authorization_ticket"]
     if not isinstance(ticket,str) or not TICKET.fullmatch(ticket): raise AdmissionError("bad ticket")
@@ -128,7 +135,7 @@ def check_request(r,p,now):
     identity(r["requested_by"],"requester")
     if not 0<(utc(r["authorization_expires_at"],"route expiry")-now).total_seconds()<=p["max_request_future_seconds"]: raise AdmissionError("route expiry is invalid")
     for k in ("candidate_checkout_performed","candidate_code_executed","external_runner_allocated","capture_scheduled","synthetic","automatic_redispatch","promotion_authorized","public_release"): false(r,k,"request")
-    return kp
+    return kp,checked,utc(r["authorization_expires_at"],"route expiry")
 
 def verify_signature(grant:Snap,sig:Snap,key:Snap,p,cfg):
     if key.digest!=p["grant_public_key_sha256"]: raise AdmissionError("public key digest mismatch")
@@ -154,7 +161,7 @@ def verify_signature(grant:Snap,sig:Snap,key:Snap,p,cfg):
             try: os.close(fd)
             except OSError: pass
 
-def check_grant(g,r,request_digest,p,kp,now):
+def check_grant(g,r,request_digest,p,kp,approvals,route_expiry,now):
     exact(g,GRANT_FIELDS,"grant")
     if (g["schema"],g["version"],g["status"])!=(GRANT_SCHEMA,"1","AUTHORIZED") or not isinstance(g["grant_id"],str) or not NONCE.fullmatch(g["grant_id"]): raise AdmissionError("unsupported grant")
     if g["request_sha256"]!=request_digest: raise AdmissionError("grant does not bind request bytes")
@@ -166,12 +173,16 @@ def check_grant(g,r,request_digest,p,kp,now):
     roles=g["roles"]
     if not isinstance(roles,dict) or set(roles)!=set(kp["required_roles"]): raise AdmissionError("role set mismatch")
     roles={k:identity(v,f"role {k}") for k,v in roles.items()}
-    if roles.get("admission_issuer")!=issuer or roles.get("producer")!=r["requested_by"] or len(set(roles.values()))!=len(roles): raise AdmissionError("external roles are not separated")
+    folded_roles=[v.casefold() for v in roles.values()]
+    if roles.get("admission_issuer")!=issuer or roles.get("producer")!=r["requested_by"] or len(set(folded_roles))!=len(folded_roles): raise AdmissionError("external roles are not separated")
+    excluded={r["requested_by"].casefold(),issuer.casefold(),*folded_roles}
+    if any(value.casefold() in excluded for value in approvals): raise AdmissionError("independent approval overlaps an operational role")
     if g["authorization_class"]!=kp["authorization_class"]: raise AdmissionError("authorization class mismatch")
     for k in ("harness_sha256","target_attestation_sha256"):
         if not isinstance(g[k],str) or not HEX64.fullmatch(g[k]): raise AdmissionError(f"bad digest: {k}")
     issued=utc(g["issued_at"],"issued_at"); expires=utc(g["expires_at"],"expires_at")
-    if issued>now+timedelta(seconds=p["max_clock_skew_seconds"]) or expires<=now or expires>utc(r["authorization_expires_at"],"route expiry") or expires-issued>timedelta(seconds=p["max_grant_lifetime_seconds"]): raise AdmissionError("grant time bounds are invalid")
+    lifetime=expires-issued
+    if issued>now+timedelta(seconds=p["max_clock_skew_seconds"]) or expires<=now or expires>route_expiry or lifetime<=timedelta(0) or lifetime>timedelta(seconds=p["max_grant_lifetime_seconds"]): raise AdmissionError("grant time bounds are invalid")
     for k in ("automatic_redispatch","promotion_authorized","public_release"): false(g,k,"grant")
 
 def admitted_dir(root:Path,uid:int):
@@ -197,10 +208,14 @@ def write_once(directory:Path,nonce:str,value):
 
 def admit(request_path:Path,grant_path:Path,signature_path:Path,*,config:Config,now=None):
     if sys.platform!="linux": raise AdmissionError("Linux is required")
-    now=(now or datetime.now(timezone.utc)).astimezone(timezone.utc); p,ps=read_policy(config); snaps=[ps]
+    now=(now or datetime.now(timezone.utc)).astimezone(timezone.utc); snaps=[]
     try:
-        rs=snapshot(request_path,request_path.parent,config.owner_uid,65536); gs=snapshot(grant_path,grant_path.parent,config.owner_uid,65536); ss=snapshot(signature_path,signature_path.parent,config.owner_uid,16384); ks=snapshot(config.public_key,config.public_key.parent,config.owner_uid,16384); snaps += [rs,gs,ss,ks]
-        r=load_json(rs.data,"request",65536); g=load_json(gs.data,"grant",65536); kp=check_request(r,p,now); verify_signature(gs,ss,ks,p,config); check_grant(g,r,rs.digest,p,kp,now)
+        p,ps=read_policy(config); snaps.append(ps)
+        rs=snapshot(request_path,request_path.parent,config.owner_uid,65536); snaps.append(rs)
+        gs=snapshot(grant_path,grant_path.parent,config.owner_uid,65536); snaps.append(gs)
+        ss=snapshot(signature_path,signature_path.parent,config.owner_uid,16384); snaps.append(ss)
+        ks=snapshot(config.public_key,config.public_key.parent,config.owner_uid,16384); snaps.append(ks)
+        r=load_json(rs.data,"request",65536); g=load_json(gs.data,"grant",65536); kp,approvals,route_expiry=check_request(r,p,now); verify_signature(gs,ss,ks,p,config); check_grant(g,r,rs.digest,p,kp,approvals,route_expiry,now)
         admission={"schema":ADMISSION_SCHEMA,"version":"1","status":"ADMITTED_PENDING_FIXED_TARGET_EXECUTION","repository":r["repository"],"source_commit":r["source_commit"],"source_tree":r["source_tree"],"promotion_pr_number":r["promotion_pr_number"],"promotion_pr_head":r["promotion_pr_head"],"evidence_kind":r["evidence_kind"],"evidence_level":r["evidence_level"],"external_lane":r["external_lane"],"authorization_nonce":r["authorization_nonce"],"authorization_ticket":r["authorization_ticket"],"authorization_expires_at":r["authorization_expires_at"],"requester":r["requested_by"],"roles":g["roles"],"grant_id":g["grant_id"],"issuer":g["issuer"],"key_id":g["key_id"],"request_sha256":rs.digest,"grant_sha256":gs.digest,"grant_signature_sha256":ss.digest,"grant_public_key_sha256":ks.digest,"admission_policy_sha256":ps.digest,"authorization_class":g["authorization_class"],"grant_issued_at":g["issued_at"],"grant_expires_at":g["expires_at"],"harness_sha256":g["harness_sha256"],"target_attestation_sha256":g["target_attestation_sha256"],"admitted_at":now.isoformat().replace("+00:00","Z"),"target_contact_performed":False,"candidate_code_executed":False,"capture_scheduled":False,"automatic_redispatch":False,"promotion_authorized":False,"public_release":False}
         write_once(admitted_dir(config.state,config.owner_uid),r["authorization_nonce"],admission); return admission
     finally:

@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 """One-shot fixed-harness executor for admitted Trillionnium OS evidence capture."""
 from __future__ import annotations
-import argparse, hashlib, json, os, re, selectors, signal, stat, subprocess, sys, time
+import argparse, fcntl, hashlib, json, multiprocessing, os, re, selectors, signal, stat, subprocess, sys, time
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Mapping
+from typing import Any, Callable, Mapping
 
 ADMISSION_SCHEMA="org.trillionnium.external-evidence-admission.v1"
 POLICY_SCHEMA="org.trillionnium.external-evidence-execution-policy.v1"
@@ -21,6 +21,7 @@ HEX40=re.compile(r"[0-9a-f]{40}"); HEX64=re.compile(r"[0-9a-f]{64}")
 NONCE=re.compile(r"[0-9a-f]{32,64}"); IDENT=re.compile(r"[A-Za-z0-9][A-Za-z0-9._:@/-]{0,127}")
 ADMISSION_FIELDS={"schema","version","status","repository","source_commit","source_tree","promotion_pr_number","promotion_pr_head","evidence_kind","evidence_level","external_lane","authorization_nonce","authorization_ticket","authorization_expires_at","requester","roles","grant_id","issuer","key_id","request_sha256","grant_sha256","grant_signature_sha256","grant_public_key_sha256","admission_policy_sha256","authorization_class","grant_issued_at","grant_expires_at","harness_sha256","target_attestation_sha256","admitted_at","target_contact_performed","candidate_code_executed","capture_scheduled","automatic_redispatch","promotion_authorized","public_release"}
 ATTEST_FIELDS={"schema","version","status","repository","source_commit","source_tree","evidence_kind","evidence_level","external_lane","authorization_nonce","target_id","environment_class","custodian","harness_sha256","issued_at","expires_at","automatic_redispatch","promotion_authorized","public_release"}
+BUNDLE_FIELDS={"schema","repository","source_commit","source_tree","evidence_kind","evidence_level","authorization_nonce","target_id","synthetic","automatic_redispatch","promotion_authorized","public_release"}
 
 class ExecutionError(RuntimeError): pass
 class ReplayError(ExecutionError): pass
@@ -76,7 +77,7 @@ def snapshot(path:Path,root:Path,uid:int,limit:int,executable=False):
     if not rel.parts or any(x in {"",".",".."} for x in rel.parts): raise ExecutionError(f"unsafe path: {path}")
     cur=root
     for part in rel.parts[:-1]: cur/=part; secure_dir(cur,uid)
-    try: fd=os.open(path,os.O_RDONLY|os.O_CLOEXEC|getattr(os,"O_NOFOLLOW",0))
+    try: fd=os.open(path,os.O_RDONLY|os.O_NONBLOCK|os.O_CLOEXEC|getattr(os,"O_NOFOLLOW",0))
     except OSError as e: raise ExecutionError(f"cannot open {path}: {e}") from e
     try:
         before=os.fstat(fd)
@@ -95,17 +96,23 @@ def snapshot(path:Path,root:Path,uid:int,limit:int,executable=False):
     except Exception: os.close(fd); raise
 
 def read_policy(cfg):
-    s=snapshot(cfg.policy,cfg.policy.parent,cfg.owner_uid,262144); p=load_json(s.data,"execution policy",262144)
-    fields={"schema","version","status","repository","required_uid","admission_policy_sha256_allowlist","grant_public_key_sha256_allowlist","issuer_allowlist","allowed_subjects","max_bundle_files","max_bundle_bytes","evidence_kinds"}; exact(p,fields,"execution policy")
-    if (p["schema"],p["version"],p["status"],p["required_uid"])!=(POLICY_SCHEMA,"1","ACTIVE",cfg.owner_uid): raise ExecutionError("execution policy is not active")
-    for k in ("admission_policy_sha256_allowlist","grant_public_key_sha256_allowlist","issuer_allowlist","allowed_subjects"):
-        if not isinstance(p[k],list) or not p[k]: raise ExecutionError(f"empty policy allowlist: {k}")
-    for k in ("admission_policy_sha256_allowlist","grant_public_key_sha256_allowlist"):
-        if any(not isinstance(v,str) or not HEX64.fullmatch(v) for v in p[k]): raise ExecutionError(f"bad digest allowlist: {k}")
-    for k in ("max_bundle_files","max_bundle_bytes"):
-        if type(p[k]) is not int or not 0<p[k]<=2**31: raise ExecutionError(f"bad policy bound: {k}")
-    if not isinstance(p["evidence_kinds"],dict): raise ExecutionError("missing evidence policy")
-    return p,s
+    s=snapshot(cfg.policy,cfg.policy.parent,cfg.owner_uid,262144)
+    try:
+        p=load_json(s.data,"execution policy",262144)
+        fields={"schema","version","status","repository","required_uid","admission_policy_sha256_allowlist","grant_public_key_sha256_allowlist","issuer_allowlist","allowed_subjects","max_bundle_files","max_bundle_bytes","bundle_inspection_timeout_seconds","evidence_kinds"}; exact(p,fields,"execution policy")
+        if (p["schema"],p["version"],p["status"],p["required_uid"])!=(POLICY_SCHEMA,"1","ACTIVE",cfg.owner_uid): raise ExecutionError("execution policy is not active")
+        for k in ("admission_policy_sha256_allowlist","grant_public_key_sha256_allowlist","issuer_allowlist","allowed_subjects"):
+            if not isinstance(p[k],list) or not p[k]: raise ExecutionError(f"empty policy allowlist: {k}")
+        for k in ("admission_policy_sha256_allowlist","grant_public_key_sha256_allowlist"):
+            if any(not isinstance(v,str) or not HEX64.fullmatch(v) for v in p[k]): raise ExecutionError(f"bad digest allowlist: {k}")
+        for k in ("max_bundle_files","max_bundle_bytes"):
+            if type(p[k]) is not int or not 0<p[k]<=2**31: raise ExecutionError(f"bad policy bound: {k}")
+        timeout=p["bundle_inspection_timeout_seconds"]
+        if isinstance(timeout,bool) or not isinstance(timeout,(int,float)) or not 0<timeout<=2**31: raise ExecutionError("bad policy bound: bundle_inspection_timeout_seconds")
+        if not isinstance(p["evidence_kinds"],dict): raise ExecutionError("missing evidence policy")
+        return p,s
+    except Exception:
+        s.close(); raise
 
 def check_admission(a,p,now):
     exact(a,ADMISSION_FIELDS,"admission")
@@ -128,12 +135,13 @@ def check_admission(a,p,now):
     identity(a["requester"],"requester"); identity(a["issuer"],"issuer"); identity(a["key_id"],"key id")
     if not isinstance(a["grant_id"],str) or not NONCE.fullmatch(a["grant_id"]): raise ExecutionError("bad grant id")
     roles={role:identity(value,f"role {role}") for role,value in a["roles"].items()}
-    if roles.get("producer")!=a["requester"] or roles.get("admission_issuer")!=a["issuer"] or len(set(roles.values()))!=len(roles): raise ExecutionError("admission roles are not separated")
+    if roles.get("producer")!=a["requester"] or roles.get("admission_issuer")!=a["issuer"] or len({value.casefold() for value in roles.values()})!=len(roles): raise ExecutionError("admission roles are not separated")
     for k in ("request_sha256","grant_sha256","grant_signature_sha256","grant_public_key_sha256","admission_policy_sha256","harness_sha256","target_attestation_sha256"):
         if not isinstance(a[k],str) or not HEX64.fullmatch(a[k]): raise ExecutionError(f"bad digest: {k}")
-    if utc(a["admitted_at"],"admitted_at")>now or utc(a["grant_expires_at"],"grant expiry")<=now or utc(a["authorization_expires_at"],"route expiry")<=now: raise ExecutionError("admission time bounds are invalid")
+    issued=utc(a["grant_issued_at"],"grant issued_at"); grant_expiry=utc(a["grant_expires_at"],"grant expiry"); route_expiry=utc(a["authorization_expires_at"],"route expiry")
+    if utc(a["admitted_at"],"admitted_at")>now or issued>=grant_expiry or grant_expiry<=now or route_expiry<=now or grant_expiry>route_expiry: raise ExecutionError("admission time bounds are invalid")
     for k in ("target_contact_performed","candidate_code_executed","capture_scheduled","automatic_redispatch","promotion_authorized","public_release"): false(a,k,"admission")
-    return kind
+    return kind,min(grant_expiry,route_expiry)
 
 def check_attestation(t,a,kind,harness_digest,now):
     exact(t,ATTEST_FIELDS,"target attestation")
@@ -143,9 +151,26 @@ def check_attestation(t,a,kind,harness_digest,now):
     if t["harness_sha256"]!=harness_digest or a["harness_sha256"]!=harness_digest: raise ExecutionError("harness digest mismatch")
     if t["environment_class"]!=kind["environment_class"] or t["custodian"]!=a["roles"][kind["custodian_role"]]: raise ExecutionError("target environment or custodian mismatch")
     target=identity(t["target_id"],"target id")
-    if utc(t["issued_at"],"attestation issued_at")>now or utc(t["expires_at"],"attestation expiry")<=now or utc(t["expires_at"],"attestation expiry")>utc(a["grant_expires_at"],"grant expiry"): raise ExecutionError("target attestation time bounds are invalid")
+    issued=utc(t["issued_at"],"attestation issued_at"); expires=utc(t["expires_at"],"attestation expiry")
+    if issued>now or issued>=expires or expires<=now or expires>utc(a["grant_expires_at"],"grant expiry"): raise ExecutionError("target attestation time bounds are invalid")
     for k in ("automatic_redispatch","promotion_authorized","public_release"): false(t,k,"target attestation")
-    return target
+    return target,expires
+
+def sealed_harness(data,digest):
+    if not hasattr(os,"memfd_create") or not Path("/proc/self/fd").is_dir(): raise ExecutionError("sealed Linux memfds are required")
+    fd=os.memfd_create("owner-open-r5-harness",getattr(os,"MFD_CLOEXEC",1)|getattr(os,"MFD_ALLOW_SEALING",2))
+    try:
+        off=0
+        while off<len(data):
+            n=os.write(fd,data[off:])
+            if n<=0: raise ExecutionError("sealed harness write stalled")
+            off+=n
+        os.fchmod(fd,0o500); os.lseek(fd,0,os.SEEK_SET)
+        seals=sum(getattr(fcntl,n,d) for n,d in (("F_SEAL_SEAL",1),("F_SEAL_SHRINK",2),("F_SEAL_GROW",4),("F_SEAL_WRITE",8)))
+        fcntl.fcntl(fd,getattr(fcntl,"F_ADD_SEALS",1033),seals)
+        snap=Snap(fd,data,digest); fd=-1; return snap
+    finally:
+        if fd>=0: os.close(fd)
 
 def fsync_dir(path):
     fd=os.open(path,os.O_RDONLY|os.O_DIRECTORY|os.O_CLOEXEC); os.fsync(fd); os.close(fd)
@@ -218,7 +243,8 @@ def retire(proc):
     except subprocess.TimeoutExpired: reaped=False
     return reaped,reaped and clean1 and clean2
 
-def run_harness(harness,cwd,env,kind):
+def run_harness(harness,cwd,env,kind,clock:Callable[[],datetime],authority_expiry):
+    if clock()>=authority_expiry: return {"exit_code":-1,"stdout":b"","stderr":b"","failure":"authorization_expired_before_target_contact","leader_reaped":True,"cleanup_confirmed":True,"target_contact_performed":False}
     cmd=f"/proc/self/fd/{harness.fd}"; proc=subprocess.Popen([cmd],executable=cmd,stdin=subprocess.DEVNULL,stdout=subprocess.PIPE,stderr=subprocess.PIPE,cwd=cwd,env=env,close_fds=True,pass_fds=(harness.fd,),start_new_session=True)
     assert proc.stdout and proc.stderr
     for pipe in (proc.stdout,proc.stderr): os.set_blocking(pipe.fileno(),False)
@@ -226,6 +252,7 @@ def run_harness(harness,cwd,env,kind):
     try:
         while sel.get_map():
             now=time.monotonic()
+            if clock()>=authority_expiry: error="authorization_expired_during_execution"; break
             if now>=deadline: error="execution_timeout"; break
             if exited(proc.pid):
                 drain=drain or min(deadline,now+1)
@@ -244,7 +271,7 @@ def run_harness(harness,cwd,env,kind):
     finally:
         reaped,clean=retire(proc); sel.close(); proc.stdout.close(); proc.stderr.close()
     if not clean and not error: error="process_group_cleanup_unconfirmed"
-    return {"exit_code":proc.returncode if proc.returncode is not None else -9,"stdout":bytes(data["stdout"]),"stderr":bytes(data["stderr"]),"failure":error,"leader_reaped":reaped,"cleanup_confirmed":clean}
+    return {"exit_code":proc.returncode if proc.returncode is not None else -9,"stdout":bytes(data["stdout"]),"stderr":bytes(data["stderr"]),"failure":error,"leader_reaped":reaped,"cleanup_confirmed":clean,"target_contact_performed":True}
 
 def inspect_bundle(bundle,uid,p,a,target):
     secure_dir(bundle,uid); entries=[]; total=0; manifest_raw=None
@@ -261,29 +288,73 @@ def inspect_bundle(bundle,uid,p,a,target):
     manifest=next((x for x in entries if x["path"]=="manifest.json"),None)
     if not manifest or manifest_raw is None: raise ExecutionError("bundle manifest is missing")
     m=load_json(manifest_raw,"bundle manifest",1048576)
+    exact(m,BUNDLE_FIELDS,"bundle manifest")
     required={"schema":BUNDLE_SCHEMA,"repository":a["repository"],"source_commit":a["source_commit"],"source_tree":a["source_tree"],"evidence_kind":a["evidence_kind"],"evidence_level":a["evidence_level"],"authorization_nonce":a["authorization_nonce"],"target_id":target,"synthetic":False,"automatic_redispatch":False,"promotion_authorized":False,"public_release":False}
     for k,v in required.items():
-        if m.get(k)!=v: raise ExecutionError(f"bundle manifest mismatch at {k}")
+        if m[k]!=v or type(m[k]) is not type(v): raise ExecutionError(f"bundle manifest mismatch at {k}")
     entries.sort(key=lambda x:x["path"]); tree=hashlib.sha256(json.dumps(entries,sort_keys=True,separators=(",",":")).encode()).hexdigest()
     return {"manifest_sha256":manifest["sha256"],"bundle_tree_sha256":tree,"bundle_file_count":len(entries),"bundle_total_bytes":total}
 
-def execute(nonce,*,config:Config,now=None):
-    if sys.platform!="linux" or not NONCE.fullmatch(nonce): raise ExecutionError("Linux and a valid nonce are required")
-    now=(now or datetime.now(timezone.utc)).astimezone(timezone.utc); p,ps=read_policy(config); snaps=[ps]; started=False; a=None; state=None
+def _inspect_worker(sender,bundle,uid,p,a,target):
     try:
-        ads=snapshot(config.admissions/f"{nonce}.json",config.admissions,config.owner_uid,131072); snaps.append(ads); a=load_json(ads.data,"admission",131072); kind=check_admission(a,p,now)
-        hs=snapshot(config.harnesses/a["evidence_kind"],config.harnesses,config.owner_uid,16*1024*1024,True); ts=snapshot(config.attestations/f"{a['evidence_kind']}.json",config.attestations,config.owner_uid,65536); snaps += [hs,ts]
+        try: payload={"ok":True,"info":inspect_bundle(bundle,uid,p,a,target)}
+        except BaseException as e: payload={"ok":False,"error":str(e)}
+        raw=json.dumps(payload,sort_keys=True,separators=(",",":")).encode()
+        sender.send_bytes(raw if len(raw)<=65536 else b'{"ok":false,"error":"inspection response too large"}')
+    finally: sender.close()
+
+def _stop_worker(proc):
+    if proc.is_alive(): proc.kill()
+    proc.join(timeout=1)
+    if proc.is_alive(): raise ExecutionError("bundle inspection worker could not be retired")
+
+def inspect_bundle_bounded(bundle,uid,p,a,target,clock,authority_expiry):
+    ctx=multiprocessing.get_context("spawn"); receiver,sender=ctx.Pipe(duplex=False)
+    proc=ctx.Process(target=_inspect_worker,args=(sender,bundle,uid,p,a,target),daemon=True); deadline=time.monotonic()+p["bundle_inspection_timeout_seconds"]; proc.start(); sender.close()
+    try:
+        while True:
+            if clock()>=authority_expiry: _stop_worker(proc); raise ExecutionError("authorization_expired_during_bundle_inspection")
+            remaining=deadline-time.monotonic()
+            if remaining<=0: _stop_worker(proc); raise ExecutionError("bundle_inspection_timeout")
+            if receiver.poll(min(.05,remaining)):
+                try: raw=receiver.recv_bytes(65536)
+                except EOFError as e: raise ExecutionError("bundle inspection worker returned no result") from e
+                break
+            if not proc.is_alive(): proc.join(timeout=1); raise ExecutionError("bundle inspection worker exited without a result")
+        proc.join(timeout=max(0,deadline-time.monotonic()))
+        if proc.is_alive(): _stop_worker(proc); raise ExecutionError("bundle_inspection_timeout")
+        if proc.exitcode!=0: raise ExecutionError("bundle inspection worker failed")
+        response=load_json(raw,"bundle inspection response",65536)
+        if set(response)=={"ok","info"} and response["ok"] is True and isinstance(response["info"],dict): return response["info"]
+        if set(response)=={"ok","error"} and response["ok"] is False: raise ExecutionError(str(response["error"]))
+        raise ExecutionError("invalid bundle inspection response")
+    finally:
+        receiver.close()
+        if proc.is_alive(): _stop_worker(proc)
+
+def execute(nonce,*,config:Config,now=None,clock:Callable[[],datetime]|None=None):
+    if sys.platform!="linux" or not NONCE.fullmatch(nonce): raise ExecutionError("Linux and a valid nonce are required")
+    fixed_now=now is not None; now=(now or datetime.now(timezone.utc)).astimezone(timezone.utc); clock=clock or ((lambda: now) if fixed_now else (lambda: datetime.now(timezone.utc))); snaps=[]; started=False; a=None; state=None
+    try:
+        p,ps=read_policy(config); snaps.append(ps)
+        ads=snapshot(config.admissions/f"{nonce}.json",config.admissions,config.owner_uid,131072); snaps.append(ads); a=load_json(ads.data,"admission",131072)
+        if a.get("authorization_nonce")!=nonce: raise ExecutionError("admission filename nonce mismatch")
+        kind,authority_expiry=check_admission(a,p,now)
+        hs=snapshot(config.harnesses/a["evidence_kind"],config.harnesses,config.owner_uid,16*1024*1024,True); snaps.append(hs)
+        ts=snapshot(config.attestations/f"{a['evidence_kind']}.json",config.attestations,config.owner_uid,65536); snaps.append(ts)
         if hs.digest!=a["harness_sha256"] or ts.digest!=a["target_attestation_sha256"]: raise ExecutionError("fixed target bytes do not match admission")
-        target=check_attestation(load_json(ts.data,"target attestation",65536),a,kind,hs.digest,now); state=ensure_state(config.state,config.owner_uid)
+        target,attestation_expiry=check_attestation(load_json(ts.data,"target attestation",65536),a,kind,hs.digest,now); authority_expiry=min(authority_expiry,attestation_expiry)
+        executable=sealed_harness(hs.data,hs.digest); snaps.append(executable); state=ensure_state(config.state,config.owner_uid)
         start={"schema":"org.trillionnium.external-evidence-execution-start.v1","status":"STARTED_NO_AUTOMATIC_RETRY","authorization_nonce":nonce,"admission_sha256":ads.digest,"harness_sha256":hs.digest,"target_attestation_sha256":ts.digest,"started_at":now.isoformat().replace("+00:00","Z"),"automatic_redispatch":False,"promotion_authorized":False,"public_release":False}; write_once(state["started"],f"{nonce}.json",start); started=True
         work=state["work"]/nonce; os.mkdir(work,0o700); fsync_dir(state["work"]); cwd=work/"cwd"; bundle=work/"bundle"; os.mkdir(cwd,0o700); os.mkdir(bundle,0o700); fsync_dir(work); admission_copy=write_raw_once(work,"admission.json",ads.data)
         attestation_copy=write_raw_once(work,"target-attestation.json",ts.data)
         env={"PATH":"/usr/sbin:/usr/bin:/sbin:/bin","LANG":"C.UTF-8","LC_ALL":"C.UTF-8","HOME":"/nonexistent","TMPDIR":str(cwd),"OWNER_OPEN_R5_ADMISSION":str(admission_copy),"OWNER_OPEN_R5_TARGET_ATTESTATION":str(attestation_copy),"OWNER_OPEN_R5_OUTPUT_DIR":str(bundle),"OWNER_OPEN_R5_EVIDENCE_KIND":a["evidence_kind"]}
-        run=run_harness(hs,cwd,env,kind); failure=run["failure"] or (f"harness_exit_{run['exit_code']}" if run["exit_code"] else None); info=None
+        run=run_harness(executable,cwd,env,kind,clock,authority_expiry); failure=run["failure"] or (f"harness_exit_{run['exit_code']}" if run["exit_code"] else None); info=None
         if not failure:
-            try: info=inspect_bundle(bundle,config.owner_uid,p,a,target)
+            try: info=inspect_bundle_bounded(bundle,config.owner_uid,p,a,target,clock,authority_expiry)
             except ExecutionError as e: failure=f"bundle_invalid:{e}"
-        result={"schema":RESULT_SCHEMA,"version":"1","status":"CAPTURE_COMPLETE_PENDING_INDEPENDENT_REVIEW" if not failure else "CAPTURE_FAILED_NO_RETRY","repository":a["repository"],"source_commit":a["source_commit"],"source_tree":a["source_tree"],"evidence_kind":a["evidence_kind"],"evidence_level":a["evidence_level"],"authorization_nonce":nonce,"target_id":target,"admission_sha256":ads.digest,"harness_sha256":hs.digest,"target_attestation_sha256":ts.digest,"exit_code":run["exit_code"],"stdout_sha256":hashlib.sha256(run["stdout"]).hexdigest(),"stdout_bytes":len(run["stdout"]),"stderr_sha256":hashlib.sha256(run["stderr"]).hexdigest(),"stderr_bytes":len(run["stderr"]),"failure":failure,"leader_reaped":run["leader_reaped"],"cleanup_scope":"original_process_group_only","cleanup_confirmed":run["cleanup_confirmed"],"escaped_descendants_absence_proven":False,"target_contact_performed":True,"candidate_code_executed":False,"capture_performed":True,"evidence_reviewed":False,"gap_transition_authorized":False,"finished_at":datetime.now(timezone.utc).isoformat().replace("+00:00","Z"),"automatic_redispatch":False,"promotion_authorized":False,"public_release":False}
+        if not failure and clock()>=authority_expiry: failure="authorization_expired_before_result_acceptance"
+        result={"schema":RESULT_SCHEMA,"version":"1","status":"CAPTURE_COMPLETE_PENDING_INDEPENDENT_REVIEW" if not failure else "CAPTURE_FAILED_NO_RETRY","repository":a["repository"],"source_commit":a["source_commit"],"source_tree":a["source_tree"],"evidence_kind":a["evidence_kind"],"evidence_level":a["evidence_level"],"authorization_nonce":nonce,"target_id":target,"admission_sha256":ads.digest,"harness_sha256":hs.digest,"target_attestation_sha256":ts.digest,"exit_code":run["exit_code"],"stdout_sha256":hashlib.sha256(run["stdout"]).hexdigest(),"stdout_bytes":len(run["stdout"]),"stderr_sha256":hashlib.sha256(run["stderr"]).hexdigest(),"stderr_bytes":len(run["stderr"]),"failure":failure,"leader_reaped":run["leader_reaped"],"cleanup_scope":"original_process_group_only","cleanup_confirmed":run["cleanup_confirmed"],"escaped_descendants_absence_proven":False,"target_contact_performed":run["target_contact_performed"],"candidate_code_executed":False,"capture_performed":run["target_contact_performed"],"evidence_reviewed":False,"gap_transition_authorized":False,"finished_at":clock().isoformat().replace("+00:00","Z"),"automatic_redispatch":False,"promotion_authorized":False,"public_release":False}
         if info: result.update(info)
         write_once(state["results"],f"{nonce}.json",result)
         if failure: raise ExecutionError(failure)

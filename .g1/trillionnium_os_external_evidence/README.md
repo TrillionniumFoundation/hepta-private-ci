@@ -2,12 +2,17 @@
 
 Status: **source candidate only; unprovisioned; no target, promotion, or release authority**.
 
-`admission_service.py` implements the independent boundary missing between the
-repository route request and a target-owned harness. It snapshots root-owned
-inputs, rejects duplicate/non-finite JSON, verifies exact request/grant binding,
-checks role separation and bounded UTC authorization, verifies RSA-SHA256 over
-the retained grant bytes through sealed Linux memfds, and atomically writes one
-nonce-consumption record before any target contact.
+`admission_service.py` implements the independent boundary between the
+repository route request and a target-owned harness. It opens root-owned inputs
+nonblocking, rejects special files before reading, and closes each descriptor on
+every partial-acquisition or malformed-policy failure. It rejects
+duplicate/non-finite JSON, verifies exact request/grant binding, requires a
+strictly positive bounded grant lifetime, and compares approvals and operational
+roles case-insensitively. L5/L6 policy requires two independent approvals.
+
+RSA-SHA256 verification runs over the retained grant bytes through sealed Linux
+memfds. A successful admission atomically writes one nonce-consumption record
+before any target contact.
 
 The checked-in policy is deliberately `UNPROVISIONED_TEMPLATE`: its key digest
 is zero and issuer allowlist empty. An external custodian must install an
