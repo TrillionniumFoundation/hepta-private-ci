@@ -81,6 +81,7 @@ pub fn adapt(
     push_id(&mut bytes, &intent.thread_id);
     push_id(&mut bytes, &intent.method_id);
     bytes.extend_from_slice(intent.payload_digest.as_array());
+    bytes.extend_from_slice(&intent.deadline_ms.to_be_bytes());
     let request_digest = Digest32::of_bytes(&bytes);
     let (status, response_digest) = match observation {
         None => (AdapterStatus::Indeterminate, None),
@@ -112,3 +113,7 @@ fn push_id(bytes: &mut Vec<u8>, value: &StableId) {
 #[cfg(test)]
 #[path = "lib_tests.rs"]
 mod tests;
+
+#[cfg(test)]
+#[path = "deadline_digest_tests.rs"]
+mod deadline_digest_tests;
