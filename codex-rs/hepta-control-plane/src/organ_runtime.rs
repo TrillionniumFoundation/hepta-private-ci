@@ -404,3 +404,6 @@ impl Drop for OrganHostV1 {
     }
 }
 
+#[cfg(test)]
+#[path = "organ_runtime_tests.rs"]
+mod tests;
