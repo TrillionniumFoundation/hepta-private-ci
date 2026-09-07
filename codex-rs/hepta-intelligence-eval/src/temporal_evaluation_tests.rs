@@ -1,7 +1,6 @@
 use super::*;
 use codex_hepta_types::FixedQ32;
 use codex_hepta_types::ProbabilityQ32;
-use pretty_assertions::assert_eq;
 use std::fmt::Debug;
 
 use crate::OpeAction;

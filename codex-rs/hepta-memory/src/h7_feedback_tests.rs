@@ -37,6 +37,7 @@ fn action(attempt_id: &str) -> H7PolicyAction {
     H7PolicyAction::new("action-1", binding).unwrap()
 }
 
+#[allow(clippy::too_many_arguments)]
 fn record(
     seq: u32,
     event_id: &str,
@@ -280,10 +281,12 @@ fn authority_flags_and_digest_tampering_are_rejected() {
     oracle.append(record).unwrap();
     oracle.production_caller = true;
     assert_eq!(oracle.validate(), Err(H7FeedbackError::ProductionCaller));
-    assert!(!H7_FEEDBACK_EXTERNAL_EFFECTS);
-    assert!(!H7_FEEDBACK_KG_WRITE_AUTHORITY);
-    assert!(!H7_FEEDBACK_PRODUCTION_CALLER);
-    assert!(H7_FEEDBACK_REPLAY_ONLY);
+    const {
+        assert!(!H7_FEEDBACK_EXTERNAL_EFFECTS);
+        assert!(!H7_FEEDBACK_KG_WRITE_AUTHORITY);
+        assert!(!H7_FEEDBACK_PRODUCTION_CALLER);
+        assert!(H7_FEEDBACK_REPLAY_ONLY);
+    }
 }
 
 #[test]
