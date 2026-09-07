@@ -8,6 +8,7 @@
 #[path = "embodiment/cart.rs"]
 mod cart;
 mod organ_graph;
+mod organ_runtime;
 #[path = "embodiment/timing.rs"]
 mod timing;
 
@@ -34,6 +35,15 @@ pub use organ_graph::OrganRole;
 pub use organ_graph::OutputPort;
 pub use organ_graph::RuntimeLinkV1;
 pub use organ_graph::ValidatedOrganGraphsV1;
+pub use organ_runtime::HostedOrganStateV1;
+pub use organ_runtime::HostedOrganStatusV1;
+pub use organ_runtime::MAX_ORGAN_MESSAGE_BYTES;
+pub use organ_runtime::OrganDeliveryV1;
+pub use organ_runtime::OrganFaultRecordV1;
+pub use organ_runtime::OrganHandlerFaultV1;
+pub use organ_runtime::OrganHostV1;
+pub use organ_runtime::OrganRuntimeError;
+pub use organ_runtime::TrustedReadOnlyOrganV1;
 pub use timing::FixedPriorityTaskV1;
 pub use timing::TimingError;
 pub use timing::fixed_priority_response_times;
