@@ -24,6 +24,7 @@ jobs:
       SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
       BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
       PYTHONDONTWRITEBYTECODE: "1"
+      PYTHONPYCACHEPREFIX: ${{ runner.temp }}/hepta-python-cache
       PACKAGES: >-
         codex-hepta-authbus codex-hepta-authbus-p1-3-qualification
         codex-hepta-bao-adapter codex-hepta-codex-adapter
