@@ -1,0 +1,82 @@
+[
+  {
+    "id": 5134085269,
+    "node_id": "PRR_kwDOTrgxoM8AAAABMgPslQ",
+    "user": {
+      "login": "Franksudoman",
+      "id": 273670192,
+      "node_id": "U_kgDOEE_gMA",
+      "avatar_url": "https://avatars.githubusercontent.com/u/273670192?u=1b4156c9b8cf79ee95abdf7e1e00518ee0b59f20&v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/Franksudoman",
+      "html_url": "https://github.com/Franksudoman",
+      "followers_url": "https://api.github.com/users/Franksudoman/followers",
+      "following_url": "https://api.github.com/users/Franksudoman/following{/other_user}",
+      "gists_url": "https://api.github.com/users/Franksudoman/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/Franksudoman/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/Franksudoman/subscriptions",
+      "organizations_url": "https://api.github.com/users/Franksudoman/orgs",
+      "repos_url": "https://api.github.com/users/Franksudoman/repos",
+      "events_url": "https://api.github.com/users/Franksudoman/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/Franksudoman/received_events",
+      "type": "User",
+      "user_view_type": "public",
+      "site_admin": false
+    },
+    "body": "## Current-head restoration review — REQUEST_CHANGES\n\nBound to base `e31df34dd30d046c78057eaa7af775b3210aa9b1`, head `185dcaff7d610dfd5a6e3ece96c75699e8cdcb49`, declared tree `5dec7e2f400fa53929e2a620f04d3fbd5821284b`, observed prospective merge `d7b72acd7a2f9698a7eb53275585b9c838936e64`. I inspected the complete changed-path inventory and the current executor control-flow slice. This is not full acceptance of all 11 paths.\n\n### [P1] Restoration selects the pre-follow-up executor, reintroducing the closed-output authorization-expiry gap\n\nThe current `trusted_executor.py` blob is `32733f66e606770c99c354eadc6d4d42fcb2acde`, not the terminal-lifecycle follow-up blob `5ecf37bcbf61f9bd8bb0f76ea24dc97fe2d1204a` present in #458 at `b4f02458b63e9ef54c630c2e441a151b304025d7`. I fetched both immutable sources. At current line 269, after both output pipes reach EOF, `run_harness` waits for the leader using only the runtime deadline and `exited(proc.pid)`; it no longer consults the absolute authorization expiry.\n\nActual isolated reproduction on this review container: I copied the four complete, unchanged functions `group_members`, `exited`, `retire`, and `run_harness` from current lines 214–275 into an importable excerpt. A sealed-memfd dummy shell closes stdout/stderr, sleeps 0.8 seconds, and writes only a disposable local marker. With authority expiring after 0.25 seconds and runtime timeout 3 seconds, the marker is written; `run_harness` returns exit 0 and failure=None after 0.8289 seconds. The otherwise identical open-pipe control is retired with `authorization_expired_during_execution` after 0.3438 seconds, without writing the marker. A within-authority closed-pipe control succeeds normally. Excerpt-file SHA-256: `634565a0901b4e5a577a9b1348e6ffa16ad7846169ac98299aaa64ccf5cd43cf`.\n\nThis is an executed subprocess regression using the actual function bodies, not a full-repository or full-executor run, a real grant, target contact, device operation, or production exploit. The later result-acceptance expiry check cannot undo an external action already performed after authorization ended. Checked-in UNPROVISIONED_TEMPLATE policy still prevents an unprovisioned deployment from authorizing execution; the defect concerns the promised behavior once correctly provisioned.\n\nRestore/reconcile the reviewed terminal-lifecycle follow-up implementation, tests and contract rather than certifying the older #456 bytes as the latest repair. At minimum every leader-wait path must check the absolute authorization expiry and initiate the existing bounded retirement; retain the open-pipe negative and within-authority positive, add the closed-pipe late-marker negative, and preserve sealed executable bytes and no automatic retry. #458's exact source visibly contains this missing check. The restoration should also explicitly reconcile its accompanying terminal-failure and traversal changes, not assume older blob identity is proof that the follow-up was retained.\n\nCurrent PR-triggered source workflow `34144370761` is successful, but `blocking-ci` `34144371128` and development-documents `34144370725` were still in progress at inspection. Neither existing-suite success nor the pycache-location fix addresses the reproduced control flow. Repair the actual source, restamp the final tuple and obtain fresh source/merge qualification and eligible review. No approval, merge, unchanged-job rerun, default-ref update, protection change, target provisioning or release is performed.",
+    "state": "CHANGES_REQUESTED",
+    "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/459#pullrequestreview-5134085269",
+    "pull_request_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/pulls/459",
+    "author_association": "CONTRIBUTOR",
+    "_links": {
+      "html": {
+        "href": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/459#pullrequestreview-5134085269"
+      },
+      "pull_request": {
+        "href": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/pulls/459"
+      }
+    },
+    "submitted_at": "2026-09-07T16:46:49Z",
+    "commit_id": "185dcaff7d610dfd5a6e3ece96c75699e8cdcb49"
+  },
+  {
+    "id": 5134108226,
+    "node_id": "PRR_kwDOTrgxoM8AAAABMgRGQg",
+    "user": {
+      "login": "Tomasrgbsf",
+      "id": 273673612,
+      "node_id": "U_kgDOEE_tjA",
+      "avatar_url": "https://avatars.githubusercontent.com/u/273673612?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/Tomasrgbsf",
+      "html_url": "https://github.com/Tomasrgbsf",
+      "followers_url": "https://api.github.com/users/Tomasrgbsf/followers",
+      "following_url": "https://api.github.com/users/Tomasrgbsf/following{/other_user}",
+      "gists_url": "https://api.github.com/users/Tomasrgbsf/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/Tomasrgbsf/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/Tomasrgbsf/subscriptions",
+      "organizations_url": "https://api.github.com/users/Tomasrgbsf/orgs",
+      "repos_url": "https://api.github.com/users/Tomasrgbsf/repos",
+      "events_url": "https://api.github.com/users/Tomasrgbsf/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/Tomasrgbsf/received_events",
+      "type": "User",
+      "user_view_type": "public",
+      "site_admin": false
+    },
+    "body": "## External current-head review — REQUEST_CHANGES\n\nBound to base `e31df34dd30d046c78057eaa7af775b3210aa9b1`, head `185dcaff7d610dfd5a6e3ece96c75699e8cdcb49`, prospective merge `d7b72acd7a2f9698a7eb53275585b9c838936e64`.\n\nTwo independent blockers prevent source admission:\n\n1. **[P1] The restoration brings back the pre-follow-up executor.** In this head, `run_harness` checks `authority_expiry` only while the selector still has registered output pipes. Once both stdout/stderr reach EOF, that loop terminates and the subsequent live-leader wait is governed only by the runtime deadline. A harness that closes both pipes can therefore remain alive and perform a target action after authorization expires. Reconcile the terminal-lifecycle implementation, tests, and contract from the hardened follow-up represented by PR #458; retain a closed-pipe late-action negative test as well as the open-pipe and within-authority controls.\n\n2. **The exact-head development-documents gate fails deterministically.** Run `34144370725`, job `101813061068`, terminates with `FAIL_HEPTA_DEVELOPMENT_DOCS_V8: source receipt direct parent`. The head is a two-commit chain whose direct parent is `64602c2f...`; an unchanged rerun cannot repair the receipt/topology mismatch. Fix the receipt logic or publish a topology that satisfies the declared gate, then regenerate the exact-object packet.\n\nThe dedicated external-evidence workflow succeeding does not override either blocker, and `blocking-ci` was not terminal-success at review time. Push a corrected exact object and obtain fresh source and prospective-merge qualification. No merge, workflow rerun, protection change, target provisioning, or release action is authorized by this review.",
+    "state": "CHANGES_REQUESTED",
+    "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/459#pullrequestreview-5134108226",
+    "pull_request_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/pulls/459",
+    "author_association": "CONTRIBUTOR",
+    "_links": {
+      "html": {
+        "href": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/459#pullrequestreview-5134108226"
+      },
+      "pull_request": {
+        "href": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/pulls/459"
+      }
+    },
+    "submitted_at": "2026-09-07T16:51:12Z",
+    "commit_id": "185dcaff7d610dfd5a6e3ece96c75699e8cdcb49"
+  }
+]

@@ -1,0 +1,362 @@
+[
+  {
+    "id": 5127702116,
+    "node_id": "PRR_kwDOUFzoVc8AAAABMaKGZA",
+    "user": {
+      "login": "Tomasrgbsf",
+      "id": 273673612,
+      "node_id": "U_kgDOEE_tjA",
+      "avatar_url": "https://avatars.githubusercontent.com/u/273673612?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/Tomasrgbsf",
+      "html_url": "https://github.com/Tomasrgbsf",
+      "followers_url": "https://api.github.com/users/Tomasrgbsf/followers",
+      "following_url": "https://api.github.com/users/Tomasrgbsf/following{/other_user}",
+      "gists_url": "https://api.github.com/users/Tomasrgbsf/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/Tomasrgbsf/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/Tomasrgbsf/subscriptions",
+      "organizations_url": "https://api.github.com/users/Tomasrgbsf/orgs",
+      "repos_url": "https://api.github.com/users/Tomasrgbsf/repos",
+      "events_url": "https://api.github.com/users/Tomasrgbsf/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/Tomasrgbsf/received_events",
+      "type": "User",
+      "user_view_type": "public",
+      "site_admin": false
+    },
+    "body": "Independent external review by `Tomasrgbsf`, limited to the assigned `runtime-and-protocol` slice and bound to exact head `10f7eca1cc588e03e06fd6b29bdd7f60c579b7ee`.\n\nI reviewed all 12 paths assigned by `governance/pr41-review-index.v1.json`. The change is documentation-only for these components: it does not modify Rust runtime code, Cargo membership, dependency edges, feature defaults, wire/state schemas, or effect behavior. The active/sealed split is internally consistent with the generated 24-member inventory: legacy UDS, stdio proxy, monolith, SQLite audit store, D-Bus, old types/registry/policy/protocol/shell/tool-runtime and privilege-broker surfaces remain explicit-only and non-authorizing. The documents consistently preserve provider-only semantic authority, forbid substitute backends and fabricated terminal success, retain `automatic_redispatch=false`, and state that compilation/source tests do not activate a component or grant installed/device/release authority.\n\n**APPROVE — runtime-and-protocol slice only.** This is not approval of the CI/evidence, documentation/tooling, repository/retirement, integration, deployment or release slices. At submission time the exact-head source qualification and synthetic-merge workflows are still nonterminal; ordinary integration remains conditioned on their terminal success, the other assigned independent review slices, and unchanged base/head identities. Any change to an assigned runtime/protocol path requires fresh review.",
+    "state": "APPROVED",
+    "html_url": "https://github.com/TrillionniumFoundation/trillionnium-os/pull/47#pullrequestreview-5127702116",
+    "pull_request_url": "https://api.github.com/repos/TrillionniumFoundation/trillionnium-os/pulls/47",
+    "author_association": "CONTRIBUTOR",
+    "_links": {
+      "html": {
+        "href": "https://github.com/TrillionniumFoundation/trillionnium-os/pull/47#pullrequestreview-5127702116"
+      },
+      "pull_request": {
+        "href": "https://api.github.com/repos/TrillionniumFoundation/trillionnium-os/pulls/47"
+      }
+    },
+    "submitted_at": "2026-09-07T03:00:15Z",
+    "commit_id": "10f7eca1cc588e03e06fd6b29bdd7f60c579b7ee"
+  },
+  {
+    "id": 5128115520,
+    "node_id": "PRR_kwDOUFzoVc8AAAABMajVQA",
+    "user": {
+      "login": "Tomasrgbsf",
+      "id": 273673612,
+      "node_id": "U_kgDOEE_tjA",
+      "avatar_url": "https://avatars.githubusercontent.com/u/273673612?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/Tomasrgbsf",
+      "html_url": "https://github.com/Tomasrgbsf",
+      "followers_url": "https://api.github.com/users/Tomasrgbsf/followers",
+      "following_url": "https://api.github.com/users/Tomasrgbsf/following{/other_user}",
+      "gists_url": "https://api.github.com/users/Tomasrgbsf/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/Tomasrgbsf/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/Tomasrgbsf/subscriptions",
+      "organizations_url": "https://api.github.com/users/Tomasrgbsf/orgs",
+      "repos_url": "https://api.github.com/users/Tomasrgbsf/repos",
+      "events_url": "https://api.github.com/users/Tomasrgbsf/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/Tomasrgbsf/received_events",
+      "type": "User",
+      "user_view_type": "public",
+      "site_admin": false
+    },
+    "body": "## 外部 exact-head 审查 — REQUEST_CHANGES\n\n本决定绑定 base `main@968968046d69d000f1f9fe03683e92aa7903cf99` 与 head `10f7eca1cc588e03e06fd6b29bdd7f60c579b7ee`，覆盖 `documentation-and-contracts`、`repository-and-retirement`、`source-tooling-and-verification` 与 `ci-evidence-and-authority` 切片。\n\n当前 9 个 exact-head 工作流均成功，`runtime-and-protocol` 切片也已有独立批准；但新 fail-closed 门禁仍存在一个可复现的规范逃逸，暂不能批准或合并：\n\n1. `docs/COMPONENT_DEVELOPMENT_STANDARD.md` 将组件 README 中的精确本地命令 `cargo test --locked -p <package-name> --all-targets` 设为规范要求，且 active default 组件还必须链接对应 `docs/modules/MOD-*.md` 合同。\n2. `tools/docs/verify_component_documentation.py` 对 README 内容只检查 256 B–1 MiB、UTF-8 及“包含 package name”；它没有检查精确测试命令，也没有检查 active 组件的模块合同链接或规范列出的其他必要声明。\n3. 这不是理论风险：`test_complete_minimal_fixture_passes` 生成的 README 只有包名和泛化说明，完全没有上述命令/合同链接，却被 `VERIFY.verify(root)` 接受。因此当前绿色 CI 可以在违反本 PR 新增 NORMATIVE 标准时继续报告“complete component documentation”。生成视图自行合成测试命令也不能证明本地 README 真正包含该命令。\n\n请把规范中本次宣称已闭合的内容要求编码进 verifier，至少按 Cargo package name 精确验证本地测试命令，并对 active 默认成员验证模块合同链接；同时把现有“应通过”的 fixture 改成规范合规，并增加移除命令/合同链接时必须 fail-closed 的负向测试。\n\n此外，本 PR 把 duplicate JSON member、路径穿越与 symlink 拒绝作为 load-bearing fail-closed 能力，但新增六项回归测试没有直接覆盖这些分支。请至少补 duplicate-key JSON、`..`/绝对路径及 symlink traversal 的负向回归，避免未来重构静默削弱这些安全边界。\n\n在新 head 上获得完整 exact-head 与 synthetic-merge 绿灯及相应独立复审前，不批准、不合并、不使用管理员绕过。现有运行是成功而非瞬态失败，因此无 CI 可重跑。",
+    "state": "CHANGES_REQUESTED",
+    "html_url": "https://github.com/TrillionniumFoundation/trillionnium-os/pull/47#pullrequestreview-5128115520",
+    "pull_request_url": "https://api.github.com/repos/TrillionniumFoundation/trillionnium-os/pulls/47",
+    "author_association": "CONTRIBUTOR",
+    "_links": {
+      "html": {
+        "href": "https://github.com/TrillionniumFoundation/trillionnium-os/pull/47#pullrequestreview-5128115520"
+      },
+      "pull_request": {
+        "href": "https://api.github.com/repos/TrillionniumFoundation/trillionnium-os/pulls/47"
+      }
+    },
+    "submitted_at": "2026-09-07T04:41:49Z",
+    "commit_id": "10f7eca1cc588e03e06fd6b29bdd7f60c579b7ee"
+  },
+  {
+    "id": 5129087059,
+    "node_id": "PRR_kwDOUFzoVc8AAAABMbeoUw",
+    "user": {
+      "login": "Tomasrgbsf",
+      "id": 273673612,
+      "node_id": "U_kgDOEE_tjA",
+      "avatar_url": "https://avatars.githubusercontent.com/u/273673612?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/Tomasrgbsf",
+      "html_url": "https://github.com/Tomasrgbsf",
+      "followers_url": "https://api.github.com/users/Tomasrgbsf/followers",
+      "following_url": "https://api.github.com/users/Tomasrgbsf/following{/other_user}",
+      "gists_url": "https://api.github.com/users/Tomasrgbsf/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/Tomasrgbsf/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/Tomasrgbsf/subscriptions",
+      "organizations_url": "https://api.github.com/users/Tomasrgbsf/orgs",
+      "repos_url": "https://api.github.com/users/Tomasrgbsf/repos",
+      "events_url": "https://api.github.com/users/Tomasrgbsf/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/Tomasrgbsf/received_events",
+      "type": "User",
+      "user_view_type": "public",
+      "site_admin": false
+    },
+    "body": "Blocking exact-head contract failure. The permanent source qualification on this exact head fails `test_checked_in_workspace_has_complete_component_documentation` with:\n\n`VerificationError: active workspace member has no module contract mapping: crates/trillionnium-owner-open-call-registry`\n\nThat directly contradicts the PR's claimed complete active-component/module-contract coverage and prevents the complete Python source matrix and exact-source aggregate from running to completion. Add the authoritative module mapping for this active workspace member, ensure its component README links every required detailed module contract, regenerate the registered status/document sets, and extend the focused fixture so this omission cannot recur. Reclassify the component only if repository lifecycle truth independently justifies that change; do not weaken the verifier or hide the active member.\n\nThe synthetic-merge qualification is also not yet terminal. This is a deterministic source failure, so do not rerun the unchanged head or use administrator bypass. Publish a new exact head and regenerate source, synthetic-merge, review-index and prospective-merge evidence. This review grants no L2-L6, installed-target, signing, deployment, OTA or public-release authority.",
+    "state": "CHANGES_REQUESTED",
+    "html_url": "https://github.com/TrillionniumFoundation/trillionnium-os/pull/47#pullrequestreview-5129087059",
+    "pull_request_url": "https://api.github.com/repos/TrillionniumFoundation/trillionnium-os/pulls/47",
+    "author_association": "CONTRIBUTOR",
+    "_links": {
+      "html": {
+        "href": "https://github.com/TrillionniumFoundation/trillionnium-os/pull/47#pullrequestreview-5129087059"
+      },
+      "pull_request": {
+        "href": "https://api.github.com/repos/TrillionniumFoundation/trillionnium-os/pulls/47"
+      }
+    },
+    "submitted_at": "2026-09-07T07:17:48Z",
+    "commit_id": "4d699b1d0d0a1067d612a10dd43718fe681521f6"
+  },
+  {
+    "id": 5129204280,
+    "node_id": "PRR_kwDOUFzoVc8AAAABMblyOA",
+    "user": {
+      "login": "Tomasrgbsf",
+      "id": 273673612,
+      "node_id": "U_kgDOEE_tjA",
+      "avatar_url": "https://avatars.githubusercontent.com/u/273673612?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/Tomasrgbsf",
+      "html_url": "https://github.com/Tomasrgbsf",
+      "followers_url": "https://api.github.com/users/Tomasrgbsf/followers",
+      "following_url": "https://api.github.com/users/Tomasrgbsf/following{/other_user}",
+      "gists_url": "https://api.github.com/users/Tomasrgbsf/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/Tomasrgbsf/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/Tomasrgbsf/subscriptions",
+      "organizations_url": "https://api.github.com/users/Tomasrgbsf/orgs",
+      "repos_url": "https://api.github.com/users/Tomasrgbsf/repos",
+      "events_url": "https://api.github.com/users/Tomasrgbsf/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/Tomasrgbsf/received_events",
+      "type": "User",
+      "user_view_type": "public",
+      "site_admin": false
+    },
+    "body": "## External exact-head review — REQUEST_CHANGES\n\nThis decision is bound to base `main@968968046d69d000f1f9fe03683e92aa7903cf99` and live head `d5675aba3fc7b4d10bef9025b8c150784d38c129`.\n\nThe current exact-head qualification is deterministically failing. Job `101658053365` in run `34095472942` fails `test_checked_in_workspace_has_complete_component_documentation` because `crates/trillionnium-agent-direct-tools/README.md` does not contain the exact required command:\n\n`cargo test --locked -p trillionnium-agent-direct-tools --all-targets`\n\nThe new verifier applies this requirement to every workspace member, so adding the gate without bringing the checked-in workspace into compliance makes the PR's claimed complete 24-component documentation closure false and prevents the complete source matrix and exact-source aggregate from succeeding. The synthetic-merge qualification also fails its complete source/planned matrix.\n\nPlease add the exact package-local locked test command to that component README, check every remaining workspace member against the same newly enforced invariant, and publish a new head with terminal-success exact-head and synthetic-merge evidence. Do not weaken or skip the verifier.\n\nThe PR description is also stale: it declares final head `4d699b1d0d0a1067d612a10dd43718fe681521f6` and prospective merge `2b18dab2f7556f8fc2604e022c00bd82d1a44351`, while the live objects are now head `d5675aba3fc7b4d10bef9025b8c150784d38c129` and GitHub prospective merge `47724e1ff2af89db405b64c5b0db508f14439a37`. Refresh the exact-subject packet after the source repair.\n\nThis is a source defect, not a transient runner failure, so I am not rerunning the unchanged workflow and will not approve, merge, or use administrator bypass on this head.",
+    "state": "CHANGES_REQUESTED",
+    "html_url": "https://github.com/TrillionniumFoundation/trillionnium-os/pull/47#pullrequestreview-5129204280",
+    "pull_request_url": "https://api.github.com/repos/TrillionniumFoundation/trillionnium-os/pulls/47",
+    "author_association": "CONTRIBUTOR",
+    "_links": {
+      "html": {
+        "href": "https://github.com/TrillionniumFoundation/trillionnium-os/pull/47#pullrequestreview-5129204280"
+      },
+      "pull_request": {
+        "href": "https://api.github.com/repos/TrillionniumFoundation/trillionnium-os/pulls/47"
+      }
+    },
+    "submitted_at": "2026-09-07T07:30:28Z",
+    "commit_id": "d5675aba3fc7b4d10bef9025b8c150784d38c129"
+  },
+  {
+    "id": 5129210527,
+    "node_id": "PRR_kwDOUFzoVc8AAAABMbmKnw",
+    "user": {
+      "login": "Franksudoman",
+      "id": 273670192,
+      "node_id": "U_kgDOEE_gMA",
+      "avatar_url": "https://avatars.githubusercontent.com/u/273670192?u=1b4156c9b8cf79ee95abdf7e1e00518ee0b59f20&v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/Franksudoman",
+      "html_url": "https://github.com/Franksudoman",
+      "followers_url": "https://api.github.com/users/Franksudoman/followers",
+      "following_url": "https://api.github.com/users/Franksudoman/following{/other_user}",
+      "gists_url": "https://api.github.com/users/Franksudoman/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/Franksudoman/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/Franksudoman/subscriptions",
+      "organizations_url": "https://api.github.com/users/Franksudoman/orgs",
+      "repos_url": "https://api.github.com/users/Franksudoman/repos",
+      "events_url": "https://api.github.com/users/Franksudoman/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/Franksudoman/received_events",
+      "type": "User",
+      "user_view_type": "public",
+      "site_admin": false
+    },
+    "body": "本次审查绑定 head `d5675aba3fc7b4d10bef9025b8c150784d38c129`、base `968968046d69d000f1f9fe03683e92aa7903cf99`、观察到的 prospective merge `47724e1ff2af89db405b64c5b0db508f14439a37`。审查范围为新增组件文档校验器、相关文档变更及实际 CI 失败，不构成全部运行时或 L2–L6 验收。\n\n[P1] 新门禁与实际工作区文档没有一起闭合。`tools/docs/verify_component_documentation.py:275-280` 对所有 workspace member 要求精确命令 `cargo test --locked -p <package> --all-targets`，但现有 `crates/trillionnium-agent-direct-tools/README.md` 未满足该条件。精确 head 的 run `34095472942` / job `101658053365` 在真实执行的 164 项 broker/文档测试中出现 1 个 error：`test_checked_in_workspace_has_complete_component_documentation`，明确报告缺少 `cargo test --locked -p trillionnium-agent-direct-tools --all-targets`。后面的全量 Python matrix 与 aggregate 被跳过/阻断；synthetic-merge run `34095472994` 也为 failure。这不是 runner 分配或瞬态下载失败，原样重跑不能修复。\n\n请一次性枚举全部 24 个成员并补齐新标准要求，不要只修第一个报错后宣称全工作区完成。应保留 live-repository 正例与独立最小夹具正例，执行完整 workspace verifier，再运行 exact-head 与 prospective-merge 矩阵。若新增 README 修改扩大 changed-path 集合，应同步生成 review index，不能沿用旧 24-path 准入范围。\n\n[P2] 模块“链接”检查仍只是原始 Markdown 字符串匹配。`MODULE_LINK.finditer(prose)` 会把 HTML 注释、代码示例、错误相对路径或以 `.md` 开头的其他目标当作真实文档链接；命令检查同样接受隐藏注释里的命令。这样移除实际导航后留下 `<!-- docs/modules/MOD-...md -->` 仍可满足覆盖条件。请复用/实现识别可见 Markdown 链接并解析实际目标的检查，排除隐藏注释，保留真实 shell 代码块中的执行命令；加入错误相对目录、注释替代、代码示例替代链接及后缀伪装的负例。该项来自完整新增校验路径的静态分析，不声称本地执行了仓库全套测试。\n\n此外，读取时正文仍冻结 `4d699b1d...`，实际已是六提交的 `d5675aba...`；请在修复后一次性更新当前身份包。保持 Draft，不 approve/merge，不放宽门禁，不撤销实质审查意见，也不发放生产或目标设备权限。",
+    "state": "CHANGES_REQUESTED",
+    "html_url": "https://github.com/TrillionniumFoundation/trillionnium-os/pull/47#pullrequestreview-5129210527",
+    "pull_request_url": "https://api.github.com/repos/TrillionniumFoundation/trillionnium-os/pulls/47",
+    "author_association": "NONE",
+    "_links": {
+      "html": {
+        "href": "https://github.com/TrillionniumFoundation/trillionnium-os/pull/47#pullrequestreview-5129210527"
+      },
+      "pull_request": {
+        "href": "https://api.github.com/repos/TrillionniumFoundation/trillionnium-os/pulls/47"
+      }
+    },
+    "submitted_at": "2026-09-07T07:31:09Z",
+    "commit_id": "d5675aba3fc7b4d10bef9025b8c150784d38c129"
+  },
+  {
+    "id": 5129865151,
+    "node_id": "PRR_kwDOUFzoVc8AAAABMcOHvw",
+    "user": {
+      "login": "Franksudoman",
+      "id": 273670192,
+      "node_id": "U_kgDOEE_gMA",
+      "avatar_url": "https://avatars.githubusercontent.com/u/273670192?u=1b4156c9b8cf79ee95abdf7e1e00518ee0b59f20&v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/Franksudoman",
+      "html_url": "https://github.com/Franksudoman",
+      "followers_url": "https://api.github.com/users/Franksudoman/followers",
+      "following_url": "https://api.github.com/users/Franksudoman/following{/other_user}",
+      "gists_url": "https://api.github.com/users/Franksudoman/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/Franksudoman/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/Franksudoman/subscriptions",
+      "organizations_url": "https://api.github.com/users/Franksudoman/orgs",
+      "repos_url": "https://api.github.com/users/Franksudoman/repos",
+      "events_url": "https://api.github.com/users/Franksudoman/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/Franksudoman/received_events",
+      "type": "User",
+      "user_view_type": "public",
+      "site_admin": false
+    },
+    "body": "Review-side operational correction on exact head `7953e8521bd30d298919917094501e01e012df14`, base `968968046d69d000f1f9fe03683e92aa7903cf99`, tree `10beb7c5dba0675236329ffe499e38c83d5b23be`, prospective merge `cc326ab40977a037fdabfcd8ff13b8fc13922ebd`.\n\nThe original topology run `34100589385` / job `101673883755` failed solely at live PR prose binding: the scanner interpreted the note saying that the retired materializer was absent as a required present workflow. I inspected `tools/verify_g1_pr_subject.py`, the current workflow directory, and all 25 changed filenames. Restoring the write-capable materializer would be the wrong fix.\n\nI corrected PR metadata only: preserve the removal statement with its basename and immutable historical bootstrap commit, and use the scanner's canonical `head commit` / `head tree` keys so those identities are actually validated. No source, workflow definition, required context, branch, existing review or authority flag was changed. I then reran only the failed read-only hosted job.\n\nThe replacement job `101677943232` in the same run has now completed successfully. All reported steps are nonempty successful steps, including live PR/event/checkout binding, closed-world cumulative review-index observation, clean-source postflight and artifact retention. The preceding failure remains historical evidence; the successful rerun is not a source repair or a waiver.\n\nThis resolves that specific operational obstruction, not the entire cumulative source review, reviewer eligibility, protected-main adoption or L2–L6 target evidence. The present comment does not replace any outstanding decisive review or authorize merge, installation, device effects, signing, deployment or release. Keep Draft pending the remaining applicable review/admission requirements.",
+    "state": "COMMENTED",
+    "html_url": "https://github.com/TrillionniumFoundation/trillionnium-os/pull/47#pullrequestreview-5129865151",
+    "pull_request_url": "https://api.github.com/repos/TrillionniumFoundation/trillionnium-os/pulls/47",
+    "author_association": "NONE",
+    "_links": {
+      "html": {
+        "href": "https://github.com/TrillionniumFoundation/trillionnium-os/pull/47#pullrequestreview-5129865151"
+      },
+      "pull_request": {
+        "href": "https://api.github.com/repos/TrillionniumFoundation/trillionnium-os/pulls/47"
+      }
+    },
+    "submitted_at": "2026-09-07T08:46:31Z",
+    "commit_id": "7953e8521bd30d298919917094501e01e012df14"
+  },
+  {
+    "id": 5130471649,
+    "node_id": "PRR_kwDOUFzoVc8AAAABMczI4Q",
+    "user": {
+      "login": "Tomasrgbsf",
+      "id": 273673612,
+      "node_id": "U_kgDOEE_tjA",
+      "avatar_url": "https://avatars.githubusercontent.com/u/273673612?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/Tomasrgbsf",
+      "html_url": "https://github.com/Tomasrgbsf",
+      "followers_url": "https://api.github.com/users/Tomasrgbsf/followers",
+      "following_url": "https://api.github.com/users/Tomasrgbsf/following{/other_user}",
+      "gists_url": "https://api.github.com/users/Tomasrgbsf/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/Tomasrgbsf/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/Tomasrgbsf/subscriptions",
+      "organizations_url": "https://api.github.com/users/Tomasrgbsf/orgs",
+      "repos_url": "https://api.github.com/users/Tomasrgbsf/repos",
+      "events_url": "https://api.github.com/users/Tomasrgbsf/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/Tomasrgbsf/received_events",
+      "type": "User",
+      "user_view_type": "public",
+      "site_admin": false
+    },
+    "body": "External exact-head runtime/protocol-slice review — APPROVE SOURCE-ONLY / DO NOT MERGE.\n\nDecision is bound only to base `main@968968046d69d000f1f9fe03683e92aa7903cf99`, head `7953e8521bd30d298919917094501e01e012df14`, tree `10beb7c5dba0675236329ffe499e38c83d5b23be`, and prospective merge `cc326ab40977a037fdabfcd8ff13b8fc13922ebd`.\n\nI reviewed the complete 25-path surface for the assigned runtime-and-protocol slice. It changes no production runtime source, Cargo graph, public API, wire/durable-state schema, ordering rule, resource budget, or effect behavior. The only runtime-owned path, `crates/trillionnium-agent-direct-tools/README.md`, adds the exact visible command `cargo test --locked -p trillionnium-agent-direct-tools --all-targets`; it matches the declared package and does not expand runtime or release authority.\n\nThe metadata-only correction was properly re-executed on the unchanged exact source object: rerun attempt 2 of `G1 exact-head source qualification` (run 34100585860) completed successfully, and the current exact head has no failed workflow run. The final tree contains no one-shot write-enabled materializer.\n\nThis approval is limited to the assigned source/runtime-protocol slice. The CI/documentation/repository/tooling slices remain subject to their designated reviewer, and all protected-main, authenticated administration, installed target, Root Linux/Codex, Android image/device, destructive-fault, signing, deployment, OTA and public-release gates remain independent. No merge, auto-merge, review dismissal, administrator bypass, target qualification, or authority transition is authorized. Any base/head/tree/workflow/prospective-merge movement invalidates this decision.",
+    "state": "APPROVED",
+    "html_url": "https://github.com/TrillionniumFoundation/trillionnium-os/pull/47#pullrequestreview-5130471649",
+    "pull_request_url": "https://api.github.com/repos/TrillionniumFoundation/trillionnium-os/pulls/47",
+    "author_association": "CONTRIBUTOR",
+    "_links": {
+      "html": {
+        "href": "https://github.com/TrillionniumFoundation/trillionnium-os/pull/47#pullrequestreview-5130471649"
+      },
+      "pull_request": {
+        "href": "https://api.github.com/repos/TrillionniumFoundation/trillionnium-os/pulls/47"
+      }
+    },
+    "submitted_at": "2026-09-07T09:45:16Z",
+    "commit_id": "7953e8521bd30d298919917094501e01e012df14"
+  },
+  {
+    "id": 5131344702,
+    "node_id": "PRR_kwDOUFzoVc8AAAABMdobPg",
+    "user": {
+      "login": "Franksudoman",
+      "id": 273670192,
+      "node_id": "U_kgDOEE_gMA",
+      "avatar_url": "https://avatars.githubusercontent.com/u/273670192?u=1b4156c9b8cf79ee95abdf7e1e00518ee0b59f20&v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/Franksudoman",
+      "html_url": "https://github.com/Franksudoman",
+      "followers_url": "https://api.github.com/users/Franksudoman/followers",
+      "following_url": "https://api.github.com/users/Franksudoman/following{/other_user}",
+      "gists_url": "https://api.github.com/users/Franksudoman/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/Franksudoman/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/Franksudoman/subscriptions",
+      "organizations_url": "https://api.github.com/users/Franksudoman/orgs",
+      "repos_url": "https://api.github.com/users/Franksudoman/repos",
+      "events_url": "https://api.github.com/users/Franksudoman/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/Franksudoman/received_events",
+      "type": "User",
+      "user_view_type": "public",
+      "site_admin": false
+    },
+    "body": "Exact-head source-tooling follow-up on base `968968046d69d000f1f9fe03683e92aa7903cf99`, head `7953e8521bd30d298919917094501e01e012df14`, tree `10beb7c5dba0675236329ffe499e38c83d5b23be`, observed prospective merge `cc326ab40977a037fdabfcd8ff13b8fc13922ebd`.\n\nThe prior direct-tools command omission, simple HTML-comment/link substitution and stale-prose operational failure are repaired. I inspected all 25 changed filenames, the complete current component verifier and its 25-test module. The previously failed topology run `34100589385` has a successful replacement job `101677943232`; there is no reason to rerun that now-successful job. I am not carrying the older missing-command finding forward as an unfixed defect.\n\n[P2 / blocks the advertised fail-closed documentation closure] The replacement Markdown scanner still grants documentation credit to constructs that do not render as the required navigation/shell fence. These are locally reproduced against the complete, unmodified verifier copied from this head: recomputed Git blob SHA-1 is exactly `bf2c6f34a18cb1212a8d4ff014390b8ee112da34` (19,708 bytes).\n\n1. Multiline inline-code escape. In the existing minimal fixture, replace the sole visible contract link with the following three lines (the first and third lines contain one literal backtick):\n\n```text\nExample: `\n[MOD-FIXTURE](../docs/modules/MOD-FIXTURE.md)\n`\n```\n\n`VERIFY.verify(root)` accepts. CommonMark rendering contains one code span, no contract anchor. `markdown_surfaces` calls `strip_inline_code` separately for each line, so it forgets the open backtick span before examining the link on the next line. The current tests cover a fenced code example and single-line/indented cases, not this cross-line span.\n\n2. Tab-indented pseudo-fence escape. Replace the active fixture's shell block with three lines, each prefixed by one literal TAB: `TAB + ```sh`, `TAB + cargo test --locked -p active-package --all-targets`, `TAB + ```` (the final fence itself is three backticks). The verifier accepts and records the command in `shell_lines`. CommonMark produces an indented code block containing literal fence text, not a shell fenced block. `FENCE_OPEN` permits up to three space-or-TAB characters and runs before the indentation rejection; column width is therefore confused with character count.\n\nI executed six disposable-fixture cases: the unchanged valid fixture passes; missing-link, comment-link and single-line-code controls correctly reject; the two cases above incorrectly pass. I independently compared the output with markdown-it's CommonMark renderer and retained Markdown/HTML and JSON outcomes. This is not a claim to have run the full repository, its checked-in-workspace test or any Rust suite locally. CommonMark's relevant contracts are code spans across line endings and four-column tab stops: https://spec.commonmark.org/0.31.2/#code-spans and https://spec.commonmark.org/0.31.2/#tabs .\n\nPlease make block and inline parsing agree with the documented accepted Markdown subset. Preserve cross-line code-span state and correct delimiter-run matching (or consume a reviewed parser/token stream); evaluate indentation using Markdown columns, not a count of whitespace characters. Add both negative fixtures while preserving ordinary visible-link and valid shell-fence positives. Keep exact path resolution, symlink rejection, aggregate component diagnostics and all existing gates. A new final verifier/review-index object requires fresh exact-head and merge qualification.\n\nDisposition: REQUEST_CHANGES for the source-tooling/documentation slice. This does not invalidate Tomasrgbsf's separately bounded runtime/protocol observations, invent a production-runtime vulnerability, or grant L2–L6, target, signing, deployment, OTA or release acceptance. No approval, merge, review dismissal or protection bypass is issued.",
+    "state": "CHANGES_REQUESTED",
+    "html_url": "https://github.com/TrillionniumFoundation/trillionnium-os/pull/47#pullrequestreview-5131344702",
+    "pull_request_url": "https://api.github.com/repos/TrillionniumFoundation/trillionnium-os/pulls/47",
+    "author_association": "NONE",
+    "_links": {
+      "html": {
+        "href": "https://github.com/TrillionniumFoundation/trillionnium-os/pull/47#pullrequestreview-5131344702"
+      },
+      "pull_request": {
+        "href": "https://api.github.com/repos/TrillionniumFoundation/trillionnium-os/pulls/47"
+      }
+    },
+    "submitted_at": "2026-09-07T11:16:40Z",
+    "commit_id": "7953e8521bd30d298919917094501e01e012df14"
+  },
+  {
+    "id": 5131802854,
+    "node_id": "PRR_kwDOUFzoVc8AAAABMeEY5g",
+    "user": {
+      "login": "Tomasrgbsf",
+      "id": 273673612,
+      "node_id": "U_kgDOEE_tjA",
+      "avatar_url": "https://avatars.githubusercontent.com/u/273673612?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/Tomasrgbsf",
+      "html_url": "https://github.com/Tomasrgbsf",
+      "followers_url": "https://api.github.com/users/Tomasrgbsf/followers",
+      "following_url": "https://api.github.com/users/Tomasrgbsf/following{/other_user}",
+      "gists_url": "https://api.github.com/users/Tomasrgbsf/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/Tomasrgbsf/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/Tomasrgbsf/subscriptions",
+      "organizations_url": "https://api.github.com/users/Tomasrgbsf/orgs",
+      "repos_url": "https://api.github.com/users/Tomasrgbsf/repos",
+      "events_url": "https://api.github.com/users/Tomasrgbsf/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/Tomasrgbsf/received_events",
+      "type": "User",
+      "user_view_type": "public",
+      "site_admin": false
+    },
+    "body": "External exact-head review bound to base `968968046d69d000f1f9fe03683e92aa7903cf99`, head `7953e8521bd30d298919917094501e01e012df14`, tree `10beb7c5dba0675236329ffe499e38c83d5b23be`, and prospective merge `cc326ab40977a037fdabfcd8ff13b8fc13922ebd`.\n\nAll currently reported head workflow runs are terminal-success, so there is no failed/transient CI to rerun. Nevertheless, the source-tooling contract remains defective:\n\n- `markdown_surfaces()` calls `strip_inline_code()` independently per line, so an inline code span opened on one line and closed on a later line loses parser state; a module link inside that span can receive visible navigation credit although it renders as code.\n- `FENCE_OPEN` and the closing-fence logic count TAB characters as one indentation character. Under CommonMark tab expansion, a tab-indented pseudo-fence is an indented code block, but the verifier can treat it as a shell fence and grant command credit.\n\nThese are exact-source parser discrepancies in the load-bearing fail-closed verifier. Add negative fixtures for multiline code spans and tab-indented pseudo-fences, make delimiter/indentation handling conform to the documented Markdown subset (prefer a reviewed token stream or an explicitly complete state machine), regenerate the review index, and qualify the new head and synthetic merge.\n\nDisposition: REQUEST_CHANGES for documentation/source-tooling. The runtime-only approval may remain scoped as submitted; no merge, review dismissal, CI rerun, or administrator bypass is appropriate on this unchanged head.",
+    "state": "CHANGES_REQUESTED",
+    "html_url": "https://github.com/TrillionniumFoundation/trillionnium-os/pull/47#pullrequestreview-5131802854",
+    "pull_request_url": "https://api.github.com/repos/TrillionniumFoundation/trillionnium-os/pulls/47",
+    "author_association": "CONTRIBUTOR",
+    "_links": {
+      "html": {
+        "href": "https://github.com/TrillionniumFoundation/trillionnium-os/pull/47#pullrequestreview-5131802854"
+      },
+      "pull_request": {
+        "href": "https://api.github.com/repos/TrillionniumFoundation/trillionnium-os/pulls/47"
+      }
+    },
+    "submitted_at": "2026-09-07T12:07:36Z",
+    "commit_id": "7953e8521bd30d298919917094501e01e012df14"
+  }
+]

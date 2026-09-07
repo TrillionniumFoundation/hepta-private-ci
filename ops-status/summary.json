@@ -1,0 +1,1130 @@
+{
+  "captured_at": "2026-09-07T16:51:40Z",
+  "pr47": {
+    "state": "open",
+    "merged": false,
+    "merged_at": null,
+    "merge_commit_sha": "42fbad54b89a628ee860565f9fffb2d42219575d",
+    "draft": false,
+    "mergeable": true,
+    "mergeable_state": "blocked",
+    "head": "b8e875d8d01893d894ae0666db9e4efdcc106d59",
+    "base": "968968046d69d000f1f9fe03683e92aa7903cf99",
+    "requested_reviewers": [
+      "Franksudoman",
+      "Tomasrgbsf"
+    ],
+    "reviews": [
+      {
+        "user": "Tomasrgbsf",
+        "state": "APPROVED",
+        "commit_id": "10f7eca1cc588e03e06fd6b29bdd7f60c579b7ee",
+        "submitted_at": "2026-09-07T03:00:15Z"
+      },
+      {
+        "user": "Tomasrgbsf",
+        "state": "CHANGES_REQUESTED",
+        "commit_id": "10f7eca1cc588e03e06fd6b29bdd7f60c579b7ee",
+        "submitted_at": "2026-09-07T04:41:49Z"
+      },
+      {
+        "user": "Tomasrgbsf",
+        "state": "CHANGES_REQUESTED",
+        "commit_id": "4d699b1d0d0a1067d612a10dd43718fe681521f6",
+        "submitted_at": "2026-09-07T07:17:48Z"
+      },
+      {
+        "user": "Tomasrgbsf",
+        "state": "CHANGES_REQUESTED",
+        "commit_id": "d5675aba3fc7b4d10bef9025b8c150784d38c129",
+        "submitted_at": "2026-09-07T07:30:28Z"
+      },
+      {
+        "user": "Franksudoman",
+        "state": "CHANGES_REQUESTED",
+        "commit_id": "d5675aba3fc7b4d10bef9025b8c150784d38c129",
+        "submitted_at": "2026-09-07T07:31:09Z"
+      },
+      {
+        "user": "Franksudoman",
+        "state": "COMMENTED",
+        "commit_id": "7953e8521bd30d298919917094501e01e012df14",
+        "submitted_at": "2026-09-07T08:46:31Z"
+      },
+      {
+        "user": "Tomasrgbsf",
+        "state": "APPROVED",
+        "commit_id": "7953e8521bd30d298919917094501e01e012df14",
+        "submitted_at": "2026-09-07T09:45:16Z"
+      },
+      {
+        "user": "Franksudoman",
+        "state": "CHANGES_REQUESTED",
+        "commit_id": "7953e8521bd30d298919917094501e01e012df14",
+        "submitted_at": "2026-09-07T11:16:40Z"
+      },
+      {
+        "user": "Tomasrgbsf",
+        "state": "CHANGES_REQUESTED",
+        "commit_id": "7953e8521bd30d298919917094501e01e012df14",
+        "submitted_at": "2026-09-07T12:07:36Z"
+      }
+    ],
+    "runs": [
+      {
+        "id": 34144423496,
+        "name": "G1 exact-head and synthetic-merge review-index receipts",
+        "status": "completed",
+        "conclusion": "success",
+        "head_sha": "b8e875d8d01893d894ae0666db9e4efdcc106d59",
+        "created_at": "2026-09-07T16:41:29Z",
+        "updated_at": "2026-09-07T16:41:46Z"
+      },
+      {
+        "id": 34144423860,
+        "name": "G1 evidence intake qualification",
+        "status": "completed",
+        "conclusion": "success",
+        "head_sha": "b8e875d8d01893d894ae0666db9e4efdcc106d59",
+        "created_at": "2026-09-07T16:41:29Z",
+        "updated_at": "2026-09-07T16:41:47Z"
+      },
+      {
+        "id": 34144423474,
+        "name": "Owner-open R5 compatibility source routing",
+        "status": "completed",
+        "conclusion": "success",
+        "head_sha": "b8e875d8d01893d894ae0666db9e4efdcc106d59",
+        "created_at": "2026-09-07T16:41:29Z",
+        "updated_at": "2026-09-07T16:41:55Z"
+      },
+      {
+        "id": 34144423541,
+        "name": "G1 repository topology and exact-subject closure",
+        "status": "completed",
+        "conclusion": "success",
+        "head_sha": "b8e875d8d01893d894ae0666db9e4efdcc106d59",
+        "created_at": "2026-09-07T16:41:29Z",
+        "updated_at": "2026-09-07T16:41:44Z"
+      },
+      {
+        "id": 34144423586,
+        "name": "G1 Android privileged-lane evaluated matrix",
+        "status": "completed",
+        "conclusion": "success",
+        "head_sha": "b8e875d8d01893d894ae0666db9e4efdcc106d59",
+        "created_at": "2026-09-07T16:41:29Z",
+        "updated_at": "2026-09-07T16:41:42Z"
+      },
+      {
+        "id": 34144423546,
+        "name": "G1 complete gap-to-evidence routing",
+        "status": "completed",
+        "conclusion": "success",
+        "head_sha": "b8e875d8d01893d894ae0666db9e4efdcc106d59",
+        "created_at": "2026-09-07T16:41:29Z",
+        "updated_at": "2026-09-07T16:41:42Z"
+      },
+      {
+        "id": 34144423491,
+        "name": "Owner-open R5 governance readiness observation",
+        "status": "completed",
+        "conclusion": "success",
+        "head_sha": "b8e875d8d01893d894ae0666db9e4efdcc106d59",
+        "created_at": "2026-09-07T16:41:29Z",
+        "updated_at": "2026-09-07T16:42:16Z"
+      },
+      {
+        "id": 34144423492,
+        "name": "G1 synthetic-merge qualification",
+        "status": "completed",
+        "conclusion": "success",
+        "head_sha": "b8e875d8d01893d894ae0666db9e4efdcc106d59",
+        "created_at": "2026-09-07T16:41:29Z",
+        "updated_at": "2026-09-07T16:45:44Z"
+      },
+      {
+        "id": 34144423514,
+        "name": "G1 exact-head source qualification",
+        "status": "completed",
+        "conclusion": "success",
+        "head_sha": "b8e875d8d01893d894ae0666db9e4efdcc106d59",
+        "created_at": "2026-09-07T16:41:29Z",
+        "updated_at": "2026-09-07T16:46:00Z"
+      },
+      {
+        "id": 34144421004,
+        "name": "PR #47",
+        "status": "completed",
+        "conclusion": "success",
+        "head_sha": "b8e875d8d01893d894ae0666db9e4efdcc106d59",
+        "created_at": "2026-09-07T16:41:27Z",
+        "updated_at": "2026-09-07T16:49:07Z"
+      },
+      {
+        "id": 34144420142,
+        "name": "Owner-open R5 compatibility source routing",
+        "status": "completed",
+        "conclusion": "success",
+        "head_sha": "b8e875d8d01893d894ae0666db9e4efdcc106d59",
+        "created_at": "2026-09-07T16:41:26Z",
+        "updated_at": "2026-09-07T16:41:35Z"
+      },
+      {
+        "id": 34144420091,
+        "name": "G1 complete gap-to-evidence routing",
+        "status": "completed",
+        "conclusion": "success",
+        "head_sha": "b8e875d8d01893d894ae0666db9e4efdcc106d59",
+        "created_at": "2026-09-07T16:41:26Z",
+        "updated_at": "2026-09-07T16:41:36Z"
+      },
+      {
+        "id": 34144420191,
+        "name": "G1 repository topology and exact-subject closure",
+        "status": "completed",
+        "conclusion": "success",
+        "head_sha": "b8e875d8d01893d894ae0666db9e4efdcc106d59",
+        "created_at": "2026-09-07T16:41:26Z",
+        "updated_at": "2026-09-07T16:41:37Z"
+      },
+      {
+        "id": 34144420235,
+        "name": "G1 source snapshot bootstrap",
+        "status": "completed",
+        "conclusion": "success",
+        "head_sha": "b8e875d8d01893d894ae0666db9e4efdcc106d59",
+        "created_at": "2026-09-07T16:41:26Z",
+        "updated_at": "2026-09-07T16:41:38Z"
+      },
+      {
+        "id": 34144420113,
+        "name": "G1 exact-head source qualification",
+        "status": "completed",
+        "conclusion": "success",
+        "head_sha": "b8e875d8d01893d894ae0666db9e4efdcc106d59",
+        "created_at": "2026-09-07T16:41:26Z",
+        "updated_at": "2026-09-07T16:44:52Z"
+      }
+    ],
+    "checks": [
+      {
+        "id": 101813948674,
+        "name": "L1 exact-source-head aggregate candidate",
+        "status": "completed",
+        "conclusion": "success",
+        "head_sha": "b8e875d8d01893d894ae0666db9e4efdcc106d59",
+        "started_at": "2026-09-07T16:44:47Z",
+        "completed_at": "2026-09-07T16:44:51Z"
+      },
+      {
+        "id": 101813925726,
+        "name": "L1 exact-source-head aggregate candidate",
+        "status": "completed",
+        "conclusion": "success",
+        "head_sha": "b8e875d8d01893d894ae0666db9e4efdcc106d59",
+        "started_at": "2026-09-07T16:44:41Z",
+        "completed_at": "2026-09-07T16:45:59Z"
+      },
+      {
+        "id": 101813405860,
+        "name": "CodeQL",
+        "status": "completed",
+        "conclusion": "success",
+        "head_sha": "b8e875d8d01893d894ae0666db9e4efdcc106d59",
+        "started_at": "2026-09-07T16:42:19Z",
+        "completed_at": "2026-09-07T16:42:21Z"
+      },
+      {
+        "id": 101813274558,
+        "name": "L1 exact two-parent merge source qualification",
+        "status": "completed",
+        "conclusion": "success",
+        "head_sha": "b8e875d8d01893d894ae0666db9e4efdcc106d59",
+        "started_at": "2026-09-07T16:41:47Z",
+        "completed_at": "2026-09-07T16:45:44Z"
+      },
+      {
+        "id": 101813222331,
+        "name": "L1 strict evidence intake on ordered synthetic merge",
+        "status": "completed",
+        "conclusion": "success",
+        "head_sha": "b8e875d8d01893d894ae0666db9e4efdcc106d59",
+        "started_at": "2026-09-07T16:41:32Z",
+        "completed_at": "2026-09-07T16:41:43Z"
+      },
+      {
+        "id": 101813222170,
+        "name": "L1 strict evidence intake on exact source head",
+        "status": "completed",
+        "conclusion": "success",
+        "head_sha": "b8e875d8d01893d894ae0666db9e4efdcc106d59",
+        "started_at": "2026-09-07T16:41:32Z",
+        "completed_at": "2026-09-07T16:41:46Z"
+      },
+      {
+        "id": 101813221460,
+        "name": "L1 planned control, telemetry and baseline source checks",
+        "status": "completed",
+        "conclusion": "success",
+        "head_sha": "b8e875d8d01893d894ae0666db9e4efdcc106d59",
+        "started_at": "2026-09-07T16:41:32Z",
+        "completed_at": "2026-09-07T16:41:59Z"
+      },
+      {
+        "id": 101813221397,
+        "name": "L1 graph, documentation, broker and MCP source closure",
+        "status": "completed",
+        "conclusion": "success",
+        "head_sha": "b8e875d8d01893d894ae0666db9e4efdcc106d59",
+        "started_at": "2026-09-07T16:41:32Z",
+        "completed_at": "2026-09-07T16:44:39Z"
+      },
+      {
+        "id": 101813221382,
+        "name": "L1 Rust 1.93 selected Host, job, flow and recovery closure",
+        "status": "completed",
+        "conclusion": "success",
+        "head_sha": "b8e875d8d01893d894ae0666db9e4efdcc106d59",
+        "started_at": "2026-09-07T16:41:32Z",
+        "completed_at": "2026-09-07T16:42:18Z"
+      },
+      {
+        "id": 101813221334,
+        "name": "L1 Android adbroot source-head evaluated matrix",
+        "status": "completed",
+        "conclusion": "success",
+        "head_sha": "b8e875d8d01893d894ae0666db9e4efdcc106d59",
+        "started_at": "2026-09-07T16:41:32Z",
+        "completed_at": "2026-09-07T16:41:39Z"
+      },
+      {
+        "id": 101813221331,
+        "name": "L1 Android and packaging source-contract closure",
+        "status": "completed",
+        "conclusion": "success",
+        "head_sha": "b8e875d8d01893d894ae0666db9e4efdcc106d59",
+        "started_at": "2026-09-07T16:41:32Z",
+        "completed_at": "2026-09-07T16:41:59Z"
+      },
+      {
+        "id": 101813221204,
+        "name": "L1 real workspace, workflow and PR-subject closure",
+        "status": "completed",
+        "conclusion": "success",
+        "head_sha": "b8e875d8d01893d894ae0666db9e4efdcc106d59",
+        "started_at": "2026-09-07T16:41:32Z",
+        "completed_at": "2026-09-07T16:41:43Z"
+      },
+      {
+        "id": 101813221131,
+        "name": "L1 protected-main and exact-head independent-review readiness",
+        "status": "completed",
+        "conclusion": "success",
+        "head_sha": "b8e875d8d01893d894ae0666db9e4efdcc106d59",
+        "started_at": "2026-09-07T16:41:32Z",
+        "completed_at": "2026-09-07T16:41:40Z"
+      },
+      {
+        "id": 101813221112,
+        "name": "L1 exact-head and synthetic-merge closed-world receipt binding",
+        "status": "completed",
+        "conclusion": "success",
+        "head_sha": "b8e875d8d01893d894ae0666db9e4efdcc106d59",
+        "started_at": "2026-09-07T16:41:33Z",
+        "completed_at": "2026-09-07T16:41:45Z"
+      },
+      {
+        "id": 101813221096,
+        "name": "L1 route every canonical gap to a level-correct independent lane",
+        "status": "completed",
+        "conclusion": "success",
+        "head_sha": "b8e875d8d01893d894ae0666db9e4efdcc106d59",
+        "started_at": "2026-09-07T16:41:32Z",
+        "completed_at": "2026-09-07T16:41:42Z"
+      },
+      {
+        "id": 101813221006,
+        "name": "L1 Android adbroot synthetic-merge evaluated matrix",
+        "status": "completed",
+        "conclusion": "success",
+        "head_sha": "b8e875d8d01893d894ae0666db9e4efdcc106d59",
+        "started_at": "2026-09-07T16:41:32Z",
+        "completed_at": "2026-09-07T16:41:41Z"
+      },
+      {
+        "id": 101813220809,
+        "name": "R5 alias to canonical G1 source checks",
+        "status": "completed",
+        "conclusion": "success",
+        "head_sha": "b8e875d8d01893d894ae0666db9e4efdcc106d59",
+        "started_at": "2026-09-07T16:41:44Z",
+        "completed_at": "2026-09-07T16:41:54Z"
+      },
+      {
+        "id": 101813220729,
+        "name": "Observe exact-head governance facts without authorizing integration",
+        "status": "completed",
+        "conclusion": "success",
+        "head_sha": "b8e875d8d01893d894ae0666db9e4efdcc106d59",
+        "started_at": "2026-09-07T16:42:07Z",
+        "completed_at": "2026-09-07T16:42:15Z"
+      },
+      {
+        "id": 101813215721,
+        "name": "Analyze (java-kotlin)",
+        "status": "completed",
+        "conclusion": "success",
+        "head_sha": "b8e875d8d01893d894ae0666db9e4efdcc106d59",
+        "started_at": "2026-09-07T16:41:31Z",
+        "completed_at": "2026-09-07T16:42:38Z"
+      },
+      {
+        "id": 101813215683,
+        "name": "Analyze (python)",
+        "status": "completed",
+        "conclusion": "success",
+        "head_sha": "b8e875d8d01893d894ae0666db9e4efdcc106d59",
+        "started_at": "2026-09-07T16:41:30Z",
+        "completed_at": "2026-09-07T16:42:29Z"
+      },
+      {
+        "id": 101813215660,
+        "name": "Analyze (c-cpp)",
+        "status": "completed",
+        "conclusion": "success",
+        "head_sha": "b8e875d8d01893d894ae0666db9e4efdcc106d59",
+        "started_at": "2026-09-07T16:41:30Z",
+        "completed_at": "2026-09-07T16:42:29Z"
+      },
+      {
+        "id": 101813215483,
+        "name": "Analyze (rust)",
+        "status": "completed",
+        "conclusion": "success",
+        "head_sha": "b8e875d8d01893d894ae0666db9e4efdcc106d59",
+        "started_at": "2026-09-07T16:41:31Z",
+        "completed_at": "2026-09-07T16:49:06Z"
+      },
+      {
+        "id": 101813210114,
+        "name": "Build exact-head source snapshot",
+        "status": "completed",
+        "conclusion": "success",
+        "head_sha": "b8e875d8d01893d894ae0666db9e4efdcc106d59",
+        "started_at": "2026-09-07T16:41:29Z",
+        "completed_at": "2026-09-07T16:41:37Z"
+      },
+      {
+        "id": 101813210036,
+        "name": "L1 protected-main and exact-head independent-review readiness",
+        "status": "completed",
+        "conclusion": "success",
+        "head_sha": "b8e875d8d01893d894ae0666db9e4efdcc106d59",
+        "started_at": "2026-09-07T16:41:29Z",
+        "completed_at": "2026-09-07T16:41:37Z"
+      },
+      {
+        "id": 101813209980,
+        "name": "R5 alias to canonical G1 source checks",
+        "status": "completed",
+        "conclusion": "success",
+        "head_sha": "b8e875d8d01893d894ae0666db9e4efdcc106d59",
+        "started_at": "2026-09-07T16:41:28Z",
+        "completed_at": "2026-09-07T16:41:35Z"
+      },
+      {
+        "id": 101813209922,
+        "name": "L1 graph, documentation, broker and MCP source closure",
+        "status": "completed",
+        "conclusion": "success",
+        "head_sha": "b8e875d8d01893d894ae0666db9e4efdcc106d59",
+        "started_at": "2026-09-07T16:41:29Z",
+        "completed_at": "2026-09-07T16:44:45Z"
+      },
+      {
+        "id": 101813209919,
+        "name": "L1 Rust 1.93 selected Host, job, flow and recovery closure",
+        "status": "completed",
+        "conclusion": "success",
+        "head_sha": "b8e875d8d01893d894ae0666db9e4efdcc106d59",
+        "started_at": "2026-09-07T16:41:28Z",
+        "completed_at": "2026-09-07T16:42:21Z"
+      },
+      {
+        "id": 101813209884,
+        "name": "L1 Android and packaging source-contract closure",
+        "status": "completed",
+        "conclusion": "success",
+        "head_sha": "b8e875d8d01893d894ae0666db9e4efdcc106d59",
+        "started_at": "2026-09-07T16:41:29Z",
+        "completed_at": "2026-09-07T16:42:00Z"
+      },
+      {
+        "id": 101813209792,
+        "name": "L1 planned control, telemetry and baseline source checks",
+        "status": "completed",
+        "conclusion": "success",
+        "head_sha": "b8e875d8d01893d894ae0666db9e4efdcc106d59",
+        "started_at": "2026-09-07T16:41:28Z",
+        "completed_at": "2026-09-07T16:41:53Z"
+      },
+      {
+        "id": 101813209778,
+        "name": "L1 real workspace, workflow and PR-subject closure",
+        "status": "completed",
+        "conclusion": "success",
+        "head_sha": "b8e875d8d01893d894ae0666db9e4efdcc106d59",
+        "started_at": "2026-09-07T16:41:28Z",
+        "completed_at": "2026-09-07T16:41:36Z"
+      },
+      {
+        "id": 101813209250,
+        "name": "L1 route every canonical gap to a level-correct independent lane",
+        "status": "completed",
+        "conclusion": "success",
+        "head_sha": "b8e875d8d01893d894ae0666db9e4efdcc106d59",
+        "started_at": "2026-09-07T16:41:28Z",
+        "completed_at": "2026-09-07T16:41:36Z"
+      }
+    ]
+  },
+  "pr459": {
+    "state": "open",
+    "merged": false,
+    "merged_at": null,
+    "merge_commit_sha": "d7b72acd7a2f9698a7eb53275585b9c838936e64",
+    "draft": false,
+    "mergeable": true,
+    "mergeable_state": "unstable",
+    "head": "185dcaff7d610dfd5a6e3ece96c75699e8cdcb49",
+    "base": "e31df34dd30d046c78057eaa7af775b3210aa9b1",
+    "requested_reviewers": [],
+    "reviews": [
+      {
+        "user": "Franksudoman",
+        "state": "CHANGES_REQUESTED",
+        "commit_id": "185dcaff7d610dfd5a6e3ece96c75699e8cdcb49",
+        "submitted_at": "2026-09-07T16:46:49Z"
+      },
+      {
+        "user": "Tomasrgbsf",
+        "state": "CHANGES_REQUESTED",
+        "commit_id": "185dcaff7d610dfd5a6e3ece96c75699e8cdcb49",
+        "submitted_at": "2026-09-07T16:51:12Z"
+      }
+    ],
+    "runs": [
+      {
+        "id": 34144370761,
+        "name": "Trillionnium OS external evidence source",
+        "status": "completed",
+        "conclusion": "success",
+        "head_sha": "185dcaff7d610dfd5a6e3ece96c75699e8cdcb49",
+        "created_at": "2026-09-07T16:40:47Z",
+        "updated_at": "2026-09-07T16:41:01Z"
+      },
+      {
+        "id": 34144370891,
+        "name": "Hepta repository integrity",
+        "status": "completed",
+        "conclusion": "success",
+        "head_sha": "185dcaff7d610dfd5a6e3ece96c75699e8cdcb49",
+        "created_at": "2026-09-07T16:40:47Z",
+        "updated_at": "2026-09-07T16:41:14Z"
+      },
+      {
+        "id": 34144370818,
+        "name": "v8-canary",
+        "status": "completed",
+        "conclusion": "success",
+        "head_sha": "185dcaff7d610dfd5a6e3ece96c75699e8cdcb49",
+        "created_at": "2026-09-07T16:40:47Z",
+        "updated_at": "2026-09-07T16:41:12Z"
+      },
+      {
+        "id": 34144371128,
+        "name": "blocking-ci",
+        "status": "in_progress",
+        "conclusion": null,
+        "head_sha": "185dcaff7d610dfd5a6e3ece96c75699e8cdcb49",
+        "created_at": "2026-09-07T16:40:47Z",
+        "updated_at": "2026-09-07T16:42:40Z"
+      },
+      {
+        "id": 34144370760,
+        "name": "Hepta pre-coding implementation readiness",
+        "status": "completed",
+        "conclusion": "success",
+        "head_sha": "185dcaff7d610dfd5a6e3ece96c75699e8cdcb49",
+        "created_at": "2026-09-07T16:40:47Z",
+        "updated_at": "2026-09-07T16:42:28Z"
+      },
+      {
+        "id": 34144370794,
+        "name": "Hepta adaptive algorithm documents",
+        "status": "completed",
+        "conclusion": "success",
+        "head_sha": "185dcaff7d610dfd5a6e3ece96c75699e8cdcb49",
+        "created_at": "2026-09-07T16:40:47Z",
+        "updated_at": "2026-09-07T16:42:08Z"
+      },
+      {
+        "id": 34144370775,
+        "name": "Hepta diagnostic source export",
+        "status": "completed",
+        "conclusion": "success",
+        "head_sha": "185dcaff7d610dfd5a6e3ece96c75699e8cdcb49",
+        "created_at": "2026-09-07T16:40:47Z",
+        "updated_at": "2026-09-07T16:42:33Z"
+      },
+      {
+        "id": 34144370725,
+        "name": "Hepta development documents",
+        "status": "completed",
+        "conclusion": "failure",
+        "head_sha": "185dcaff7d610dfd5a6e3ece96c75699e8cdcb49",
+        "created_at": "2026-09-07T16:40:47Z",
+        "updated_at": "2026-09-07T16:46:23Z"
+      },
+      {
+        "id": 34144369658,
+        "name": "CLA Assistant",
+        "status": "completed",
+        "conclusion": "skipped",
+        "head_sha": "185dcaff7d610dfd5a6e3ece96c75699e8cdcb49",
+        "created_at": "2026-09-07T16:40:46Z",
+        "updated_at": "2026-09-07T16:40:47Z"
+      },
+      {
+        "id": 34144368704,
+        "name": "PR #459",
+        "status": "in_progress",
+        "conclusion": null,
+        "head_sha": "185dcaff7d610dfd5a6e3ece96c75699e8cdcb49",
+        "created_at": "2026-09-07T16:40:45Z",
+        "updated_at": "2026-09-07T16:40:49Z"
+      },
+      {
+        "id": 34144369080,
+        "name": "Hepta repository integrity",
+        "status": "completed",
+        "conclusion": "success",
+        "head_sha": "185dcaff7d610dfd5a6e3ece96c75699e8cdcb49",
+        "created_at": "2026-09-07T16:40:45Z",
+        "updated_at": "2026-09-07T16:41:13Z"
+      },
+      {
+        "id": 34144368140,
+        "name": ".github/workflows/hepta-consolidated-source.yml",
+        "status": "completed",
+        "conclusion": "failure",
+        "head_sha": "185dcaff7d610dfd5a6e3ece96c75699e8cdcb49",
+        "created_at": "2026-09-07T16:40:44Z",
+        "updated_at": "2026-09-07T16:40:44Z"
+      }
+    ],
+    "checks": [
+      {
+        "id": 101813448953,
+        "name": "rust-ci / Argument comment lint - Windows",
+        "status": "in_progress",
+        "conclusion": null,
+        "head_sha": "185dcaff7d610dfd5a6e3ece96c75699e8cdcb49",
+        "started_at": "2026-09-07T16:42:33Z",
+        "completed_at": null
+      },
+      {
+        "id": 101813448938,
+        "name": "rust-ci / Format / etc",
+        "status": "completed",
+        "conclusion": "success",
+        "head_sha": "185dcaff7d610dfd5a6e3ece96c75699e8cdcb49",
+        "started_at": "2026-09-07T16:42:33Z",
+        "completed_at": "2026-09-07T16:43:52Z"
+      },
+      {
+        "id": 101813448904,
+        "name": "rust-ci / Argument comment lint - Linux",
+        "status": "in_progress",
+        "conclusion": null,
+        "head_sha": "185dcaff7d610dfd5a6e3ece96c75699e8cdcb49",
+        "started_at": "2026-09-07T16:42:33Z",
+        "completed_at": null
+      },
+      {
+        "id": 101813448890,
+        "name": "rust-ci / cargo shear",
+        "status": "completed",
+        "conclusion": "failure",
+        "head_sha": "185dcaff7d610dfd5a6e3ece96c75699e8cdcb49",
+        "started_at": "2026-09-07T16:42:32Z",
+        "completed_at": "2026-09-07T16:43:18Z"
+      },
+      {
+        "id": 101813448884,
+        "name": "rust-ci / Argument comment lint - macOS",
+        "status": "in_progress",
+        "conclusion": null,
+        "head_sha": "185dcaff7d610dfd5a6e3ece96c75699e8cdcb49",
+        "started_at": "2026-09-07T16:42:39Z",
+        "completed_at": null
+      },
+      {
+        "id": 101813448857,
+        "name": "rust-ci / Argument comment lint package",
+        "status": "completed",
+        "conclusion": "success",
+        "head_sha": "185dcaff7d610dfd5a6e3ece96c75699e8cdcb49",
+        "started_at": "2026-09-07T16:42:32Z",
+        "completed_at": "2026-09-07T16:45:27Z"
+      },
+      {
+        "id": 101813344815,
+        "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc (native main)",
+        "status": "completed",
+        "conclusion": "skipped",
+        "head_sha": "185dcaff7d610dfd5a6e3ece96c75699e8cdcb49",
+        "started_at": "2026-09-07T16:42:04Z",
+        "completed_at": "2026-09-07T16:42:03Z"
+      },
+      {
+        "id": 101813343850,
+        "name": "Blob size policy / Blob size policy",
+        "status": "completed",
+        "conclusion": "success",
+        "head_sha": "185dcaff7d610dfd5a6e3ece96c75699e8cdcb49",
+        "started_at": "2026-09-07T16:42:07Z",
+        "completed_at": "2026-09-07T16:43:00Z"
+      },
+      {
+        "id": 101813343798,
+        "name": "Bazel / Bazel clippy on macos-15 for aarch64-apple-darwin",
+        "status": "in_progress",
+        "conclusion": null,
+        "head_sha": "185dcaff7d610dfd5a6e3ece96c75699e8cdcb49",
+        "started_at": "2026-09-07T16:42:11Z",
+        "completed_at": null
+      },
+      {
+        "id": 101813343680,
+        "name": "Bazel / Bazel test on macos-15 for aarch64-apple-darwin",
+        "status": "in_progress",
+        "conclusion": null,
+        "head_sha": "185dcaff7d610dfd5a6e3ece96c75699e8cdcb49",
+        "started_at": "2026-09-07T16:42:12Z",
+        "completed_at": null
+      },
+      {
+        "id": 101813343624,
+        "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 3/4",
+        "status": "in_progress",
+        "conclusion": null,
+        "head_sha": "185dcaff7d610dfd5a6e3ece96c75699e8cdcb49",
+        "started_at": "2026-09-07T16:42:07Z",
+        "completed_at": null
+      },
+      {
+        "id": 101813343597,
+        "name": "Bazel / Bazel test on macos-15-intel for x86_64-apple-darwin",
+        "status": "in_progress",
+        "conclusion": null,
+        "head_sha": "185dcaff7d610dfd5a6e3ece96c75699e8cdcb49",
+        "started_at": "2026-09-07T16:42:06Z",
+        "completed_at": null
+      },
+      {
+        "id": 101813343591,
+        "name": "Bazel / Bazel test on ubuntu-24.04 for x86_64-unknown-linux-gnu",
+        "status": "in_progress",
+        "conclusion": null,
+        "head_sha": "185dcaff7d610dfd5a6e3ece96c75699e8cdcb49",
+        "started_at": "2026-09-07T16:42:06Z",
+        "completed_at": null
+      },
+      {
+        "id": 101813343580,
+        "name": "sdk / python-sdk",
+        "status": "completed",
+        "conclusion": "success",
+        "head_sha": "185dcaff7d610dfd5a6e3ece96c75699e8cdcb49",
+        "started_at": "2026-09-07T16:42:06Z",
+        "completed_at": "2026-09-07T16:43:18Z"
+      },
+      {
+        "id": 101813343578,
+        "name": "Bazel / Bazel clippy on windows-latest for x86_64-pc-windows-msvc",
+        "status": "in_progress",
+        "conclusion": null,
+        "head_sha": "185dcaff7d610dfd5a6e3ece96c75699e8cdcb49",
+        "started_at": "2026-09-07T16:42:06Z",
+        "completed_at": null
+      },
+      {
+        "id": 101813343570,
+        "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 1/4",
+        "status": "in_progress",
+        "conclusion": null,
+        "head_sha": "185dcaff7d610dfd5a6e3ece96c75699e8cdcb49",
+        "started_at": "2026-09-07T16:42:09Z",
+        "completed_at": null
+      },
+      {
+        "id": 101813343567,
+        "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 2/4",
+        "status": "in_progress",
+        "conclusion": null,
+        "head_sha": "185dcaff7d610dfd5a6e3ece96c75699e8cdcb49",
+        "started_at": "2026-09-07T16:42:39Z",
+        "completed_at": null
+      },
+      {
+        "id": 101813343544,
+        "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 4/4",
+        "status": "in_progress",
+        "conclusion": null,
+        "head_sha": "185dcaff7d610dfd5a6e3ece96c75699e8cdcb49",
+        "started_at": "2026-09-07T16:42:06Z",
+        "completed_at": null
+      },
+      {
+        "id": 101813343518,
+        "name": "Bazel / Verify release build on ubuntu-24.04 for x86_64-unknown-linux-gnu",
+        "status": "in_progress",
+        "conclusion": null,
+        "head_sha": "185dcaff7d610dfd5a6e3ece96c75699e8cdcb49",
+        "started_at": "2026-09-07T16:42:06Z",
+        "completed_at": null
+      },
+      {
+        "id": 101813343511,
+        "name": "sdk / sdks",
+        "status": "in_progress",
+        "conclusion": null,
+        "head_sha": "185dcaff7d610dfd5a6e3ece96c75699e8cdcb49",
+        "started_at": "2026-09-07T16:42:06Z",
+        "completed_at": null
+      },
+      {
+        "id": 101813343464,
+        "name": "Codespell / Check for spelling errors",
+        "status": "completed",
+        "conclusion": "success",
+        "head_sha": "185dcaff7d610dfd5a6e3ece96c75699e8cdcb49",
+        "started_at": "2026-09-07T16:42:06Z",
+        "completed_at": "2026-09-07T16:42:42Z"
+      },
+      {
+        "id": 101813343455,
+        "name": "Bazel / Verify release build on macos-15 for aarch64-apple-darwin",
+        "status": "in_progress",
+        "conclusion": null,
+        "head_sha": "185dcaff7d610dfd5a6e3ece96c75699e8cdcb49",
+        "started_at": "2026-09-07T16:42:11Z",
+        "completed_at": null
+      },
+      {
+        "id": 101813343453,
+        "name": "repo-checks / Native Hepta paths on macos-15",
+        "status": "completed",
+        "conclusion": "success",
+        "head_sha": "185dcaff7d610dfd5a6e3ece96c75699e8cdcb49",
+        "started_at": "2026-09-07T16:42:11Z",
+        "completed_at": "2026-09-07T16:43:41Z"
+      },
+      {
+        "id": 101813343444,
+        "name": "repo-checks / Native Hepta paths on windows-latest",
+        "status": "completed",
+        "conclusion": "success",
+        "head_sha": "185dcaff7d610dfd5a6e3ece96c75699e8cdcb49",
+        "started_at": "2026-09-07T16:42:06Z",
+        "completed_at": "2026-09-07T16:45:04Z"
+      },
+      {
+        "id": 101813343433,
+        "name": "Bazel / Verify release build on windows-latest for x86_64-pc-windows-msvc",
+        "status": "in_progress",
+        "conclusion": null,
+        "head_sha": "185dcaff7d610dfd5a6e3ece96c75699e8cdcb49",
+        "started_at": "2026-09-07T16:42:06Z",
+        "completed_at": null
+      },
+      {
+        "id": 101813343411,
+        "name": "repo-checks / build-test",
+        "status": "completed",
+        "conclusion": "success",
+        "head_sha": "185dcaff7d610dfd5a6e3ece96c75699e8cdcb49",
+        "started_at": "2026-09-07T16:42:06Z",
+        "completed_at": "2026-09-07T16:43:12Z"
+      },
+      {
+        "id": 101813343400,
+        "name": "Bazel / Bazel clippy on ubuntu-24.04 for x86_64-unknown-linux-gnu",
+        "status": "in_progress",
+        "conclusion": null,
+        "head_sha": "185dcaff7d610dfd5a6e3ece96c75699e8cdcb49",
+        "started_at": "2026-09-07T16:42:06Z",
+        "completed_at": null
+      },
+      {
+        "id": 101813343396,
+        "name": "repo-checks / Native Hepta paths on ubuntu-24.04",
+        "status": "completed",
+        "conclusion": "success",
+        "head_sha": "185dcaff7d610dfd5a6e3ece96c75699e8cdcb49",
+        "started_at": "2026-09-07T16:42:05Z",
+        "completed_at": "2026-09-07T16:42:53Z"
+      },
+      {
+        "id": 101813343343,
+        "name": "cargo-deny / cargo-deny",
+        "status": "completed",
+        "conclusion": "success",
+        "head_sha": "185dcaff7d610dfd5a6e3ece96c75699e8cdcb49",
+        "started_at": "2026-09-07T16:42:06Z",
+        "completed_at": "2026-09-07T16:43:29Z"
+      },
+      {
+        "id": 101813343307,
+        "name": "Bazel / Bazel test on ubuntu-24.04 for x86_64-unknown-linux-musl",
+        "status": "in_progress",
+        "conclusion": null,
+        "head_sha": "185dcaff7d610dfd5a6e3ece96c75699e8cdcb49",
+        "started_at": "2026-09-07T16:42:07Z",
+        "completed_at": null
+      },
+      {
+        "id": 101813343107,
+        "name": "rust-ci / Detect changed areas",
+        "status": "completed",
+        "conclusion": "success",
+        "head_sha": "185dcaff7d610dfd5a6e3ece96c75699e8cdcb49",
+        "started_at": "2026-09-07T16:42:06Z",
+        "completed_at": "2026-09-07T16:42:30Z"
+      },
+      {
+        "id": 101813241987,
+        "name": "CodeQL",
+        "status": "completed",
+        "conclusion": "neutral",
+        "head_sha": "185dcaff7d610dfd5a6e3ece96c75699e8cdcb49",
+        "started_at": "2026-09-07T16:41:36Z",
+        "completed_at": "2026-09-07T16:41:38Z"
+      },
+      {
+        "id": 101813155179,
+        "name": "Build ${{ matrix.variant }} ${{ matrix.target }}",
+        "status": "completed",
+        "conclusion": "skipped",
+        "head_sha": "185dcaff7d610dfd5a6e3ece96c75699e8cdcb49",
+        "started_at": "2026-09-07T16:41:12Z",
+        "completed_at": "2026-09-07T16:41:12Z"
+      },
+      {
+        "id": 101813154720,
+        "name": "Build ptrcomp-sandbox ${{ matrix.target }} from source",
+        "status": "completed",
+        "conclusion": "skipped",
+        "head_sha": "185dcaff7d610dfd5a6e3ece96c75699e8cdcb49",
+        "started_at": "2026-09-07T16:41:12Z",
+        "completed_at": "2026-09-07T16:41:12Z"
+      },
+      {
+        "id": 101813061591,
+        "name": "Verify exact adaptive-document merge candidate",
+        "status": "completed",
+        "conclusion": "success",
+        "head_sha": "185dcaff7d610dfd5a6e3ece96c75699e8cdcb49",
+        "started_at": "2026-09-07T16:40:50Z",
+        "completed_at": "2026-09-07T16:42:07Z"
+      },
+      {
+        "id": 101813061519,
+        "name": "Verify ordinary read-only candidate source",
+        "status": "completed",
+        "conclusion": "success",
+        "head_sha": "185dcaff7d610dfd5a6e3ece96c75699e8cdcb49",
+        "started_at": "2026-09-07T16:40:49Z",
+        "completed_at": "2026-09-07T16:41:14Z"
+      },
+      {
+        "id": 101813061435,
+        "name": "Verify exact adaptive-document source",
+        "status": "completed",
+        "conclusion": "success",
+        "head_sha": "185dcaff7d610dfd5a6e3ece96c75699e8cdcb49",
+        "started_at": "2026-09-07T16:40:49Z",
+        "completed_at": "2026-09-07T16:42:07Z"
+      },
+      {
+        "id": 101813061383,
+        "name": "export-exact-source",
+        "status": "completed",
+        "conclusion": "success",
+        "head_sha": "185dcaff7d610dfd5a6e3ece96c75699e8cdcb49",
+        "started_at": "2026-09-07T16:40:49Z",
+        "completed_at": "2026-09-07T16:41:17Z"
+      },
+      {
+        "id": 101813061350,
+        "name": "python-sdk-diagnostics",
+        "status": "completed",
+        "conclusion": "success",
+        "head_sha": "185dcaff7d610dfd5a6e3ece96c75699e8cdcb49",
+        "started_at": "2026-09-07T16:40:50Z",
+        "completed_at": "2026-09-07T16:42:33Z"
+      },
+      {
+        "id": 101813061321,
+        "name": "python-format-candidate",
+        "status": "completed",
+        "conclusion": "success",
+        "head_sha": "185dcaff7d610dfd5a6e3ece96c75699e8cdcb49",
+        "started_at": "2026-09-07T16:40:49Z",
+        "completed_at": "2026-09-07T16:41:16Z"
+      },
+      {
+        "id": 101813061318,
+        "name": "rust-policy-diagnostics",
+        "status": "completed",
+        "conclusion": "success",
+        "head_sha": "185dcaff7d610dfd5a6e3ece96c75699e8cdcb49",
+        "started_at": "2026-09-07T16:40:49Z",
+        "completed_at": "2026-09-07T16:41:59Z"
+      },
+      {
+        "id": 101813061220,
+        "name": "External evidence source contract",
+        "status": "completed",
+        "conclusion": "success",
+        "head_sha": "185dcaff7d610dfd5a6e3ece96c75699e8cdcb49",
+        "started_at": "2026-09-07T16:40:49Z",
+        "completed_at": "2026-09-07T16:41:00Z"
+      },
+      {
+        "id": 101813061144,
+        "name": "Verify exact readiness merge candidate",
+        "status": "completed",
+        "conclusion": "success",
+        "head_sha": "185dcaff7d610dfd5a6e3ece96c75699e8cdcb49",
+        "started_at": "2026-09-07T16:40:49Z",
+        "completed_at": "2026-09-07T16:42:19Z"
+      },
+      {
+        "id": 101813061119,
+        "name": "bazel-lock-diagnostics",
+        "status": "completed",
+        "conclusion": "success",
+        "head_sha": "185dcaff7d610dfd5a6e3ece96c75699e8cdcb49",
+        "started_at": "2026-09-07T16:40:49Z",
+        "completed_at": "2026-09-07T16:42:05Z"
+      },
+      {
+        "id": 101813061079,
+        "name": "metadata",
+        "status": "completed",
+        "conclusion": "success",
+        "head_sha": "185dcaff7d610dfd5a6e3ece96c75699e8cdcb49",
+        "started_at": "2026-09-07T16:40:49Z",
+        "completed_at": "2026-09-07T16:41:12Z"
+      },
+      {
+        "id": 101813061068,
+        "name": "Verify exact source head",
+        "status": "completed",
+        "conclusion": "failure",
+        "head_sha": "185dcaff7d610dfd5a6e3ece96c75699e8cdcb49",
+        "started_at": "2026-09-07T16:40:49Z",
+        "completed_at": "2026-09-07T16:43:10Z"
+      },
+      {
+        "id": 101813061065,
+        "name": "Verify exact readiness source",
+        "status": "completed",
+        "conclusion": "success",
+        "head_sha": "185dcaff7d610dfd5a6e3ece96c75699e8cdcb49",
+        "started_at": "2026-09-07T16:40:49Z",
+        "completed_at": "2026-09-07T16:42:27Z"
+      },
+      {
+        "id": 101813060970,
+        "name": "Verify exact merge candidate",
+        "status": "completed",
+        "conclusion": "success",
+        "head_sha": "185dcaff7d610dfd5a6e3ece96c75699e8cdcb49",
+        "started_at": "2026-09-07T16:40:49Z",
+        "completed_at": "2026-09-07T16:46:22Z"
+      },
+      {
+        "id": 101813058667,
+        "name": "cla",
+        "status": "completed",
+        "conclusion": "skipped",
+        "head_sha": "185dcaff7d610dfd5a6e3ece96c75699e8cdcb49",
+        "started_at": "2026-09-07T16:40:47Z",
+        "completed_at": "2026-09-07T16:40:46Z"
+      },
+      {
+        "id": 101813057510,
+        "name": "Analyze (actions)",
+        "status": "completed",
+        "conclusion": "success",
+        "head_sha": "185dcaff7d610dfd5a6e3ece96c75699e8cdcb49",
+        "started_at": "2026-09-07T16:40:49Z",
+        "completed_at": "2026-09-07T16:41:46Z"
+      },
+      {
+        "id": 101813057492,
+        "name": "Analyze (javascript-typescript)",
+        "status": "completed",
+        "conclusion": "success",
+        "head_sha": "185dcaff7d610dfd5a6e3ece96c75699e8cdcb49",
+        "started_at": "2026-09-07T16:40:48Z",
+        "completed_at": "2026-09-07T16:41:49Z"
+      },
+      {
+        "id": 101813057413,
+        "name": "Analyze (rust)",
+        "status": "in_progress",
+        "conclusion": null,
+        "head_sha": "185dcaff7d610dfd5a6e3ece96c75699e8cdcb49",
+        "started_at": "2026-09-07T16:40:48Z",
+        "completed_at": null
+      },
+      {
+        "id": 101813057410,
+        "name": "Analyze (python)",
+        "status": "completed",
+        "conclusion": "success",
+        "head_sha": "185dcaff7d610dfd5a6e3ece96c75699e8cdcb49",
+        "started_at": "2026-09-07T16:40:49Z",
+        "completed_at": "2026-09-07T16:42:11Z"
+      },
+      {
+        "id": 101813057349,
+        "name": "Analyze (c-cpp)",
+        "status": "completed",
+        "conclusion": "success",
+        "head_sha": "185dcaff7d610dfd5a6e3ece96c75699e8cdcb49",
+        "started_at": "2026-09-07T16:40:48Z",
+        "completed_at": "2026-09-07T16:41:49Z"
+      },
+      {
+        "id": 101813055911,
+        "name": "Verify ordinary read-only candidate source",
+        "status": "completed",
+        "conclusion": "success",
+        "head_sha": "185dcaff7d610dfd5a6e3ece96c75699e8cdcb49",
+        "started_at": "2026-09-07T16:40:48Z",
+        "completed_at": "2026-09-07T16:41:12Z"
+      }
+    ]
+  },
+  "issue22": {
+    "state": "open",
+    "updated_at": "2026-09-07T09:59:45Z",
+    "comments": 20
+  }
+}
