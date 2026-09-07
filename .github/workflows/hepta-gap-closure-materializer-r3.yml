@@ -1,0 +1,243 @@
+name: hepta-gap-closure-materializer-r3
+
+on:
+  push:
+    branches:
+      - ops/hepta-gap-closure-materializer-20260907-r3
+
+permissions:
+  contents: write
+
+concurrency:
+  group: hepta-gap-closure-materializer-r3
+  cancel-in-progress: false
+
+jobs:
+  materialize:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Check out exact candidate
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: codex/hepta-gap-closure-full-ci-20260907
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Verify exact inputs
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "81f86b89971e6815900a02bebee6545a4ed2e42e"
+          git fetch --no-tags origin main
+          test "$(git rev-parse origin/main)" = "e31df34dd30d046c78057eaa7af775b3210aa9b1"
+
+      - name: Install pinned rustfmt
+        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0
+        with:
+          components: rustfmt
+
+      - name: Apply deterministic argument-comment closure
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat > /tmp/patch_arg_comments.py <<'PY'
+          from __future__ import annotations
+          import re
+          from pathlib import Path
+
+          ROOT = Path('.')
+          FILE_MAPS = {
+              'codex-rs/hepta-supervisor/src/daemon.rs': {
+                  'safe_rejection': {1: 'actual', 2: 'mutation_started'},
+                  'error_payload': {2: 'actual'},
+                  'handle_mutation': {3: 'target'},
+              },
+              'codex-rs/hepta-supervisor/src/robrix_projection.rs': {
+                  'RobrixSupervisordRequest::new': {0: 'request_id'},
+                  'SupervisordRequest::new': {0: 'request_id'},
+                  'expectation': {0: 'admin', 1: 'decode', 2: 'validate'},
+                  'matrix_snapshot': {0: 'maximum'},
+                  'matrix_response': {1: 'request_id'},
+                  'pending_approval': {0: 'index', 1: 'maximum'},
+              },
+              'codex-rs/hepta-supervisor/src/supervisor.rs': {
+                  'upgrade_slot': {4: 'explicit_rollback'},
+              },
+              'codex-rs/hepta-matrixd/src/config.rs': {
+                  'process_secret': {2: 'required'},
+                  'parse_optional_bool': {1: 'default'},
+              },
+              'codex-rs/hepta-matrixd/src/runner.rs': {
+                  'set_agentd_connected': {0: 'connected'},
+                  'set_matrix_sync_connected': {0: 'connected'},
+                  'stable_approval_key': {5: 'approval_id'},
+                  'reject_server_request': {1: 'code'},
+                  'sanitize_summary_component': {1: 'max_bytes'},
+              },
+              'codex-rs/hepta-matrixd/src/lib.rs': {
+                  'ensure_room_thread_locked': {1: 'expected_thread_id'},
+              },
+          }
+
+          LITERAL_RE = re.compile(r'(?:None|true|false|-?[0-9][0-9_]*(?:[iu](?:8|16|32|64|128|size))?)\Z')
+
+          def skip_quoted(s: str, i: int) -> int:
+              quote = s[i]
+              i += 1
+              while i < len(s):
+                  if s[i] == '\\':
+                      i += 2
+                      continue
+                  if s[i] == quote:
+                      return i + 1
+                  i += 1
+              return i
+
+          def skip_raw_string(s: str, i: int) -> int | None:
+              if s.startswith('br', i) or s.startswith('rb', i):
+                  i += 2
+              elif s.startswith('r', i):
+                  i += 1
+              else:
+                  return None
+              hashes = 0
+              while i < len(s) and s[i] == '#':
+                  hashes += 1
+                  i += 1
+              if i >= len(s) or s[i] != '"':
+                  return None
+              end = '"' + ('#' * hashes)
+              j = s.find(end, i + 1)
+              return len(s) if j < 0 else j + len(end)
+
+          def parse_call_args(s: str, open_pos: int) -> tuple[list[tuple[int, int]], int] | None:
+              args: list[tuple[int, int]] = []
+              arg_start = open_pos + 1
+              stack: list[str] = []
+              i = open_pos + 1
+              while i < len(s):
+                  if s.startswith('//', i):
+                      j = s.find('\n', i + 2)
+                      i = len(s) if j < 0 else j + 1
+                      continue
+                  if s.startswith('/*', i):
+                      depth = 1
+                      i += 2
+                      while i < len(s) and depth:
+                          if s.startswith('/*', i):
+                              depth += 1
+                              i += 2
+                          elif s.startswith('*/', i):
+                              depth -= 1
+                              i += 2
+                          else:
+                              i += 1
+                      continue
+                  raw_end = skip_raw_string(s, i)
+                  if raw_end is not None:
+                      i = raw_end
+                      continue
+                  if s[i] in ('"', "'"):
+                      if s[i] == "'" and i + 1 < len(s) and (s[i + 1].isalpha() or s[i + 1] == '_'):
+                          close = s.find("'", i + 2, min(len(s), i + 8))
+                          if close < 0:
+                              i += 1
+                              continue
+                      i = skip_quoted(s, i)
+                      continue
+                  ch = s[i]
+                  if ch in '([{':
+                      stack.append(ch)
+                      i += 1
+                      continue
+                  if ch in ')]}':
+                      if ch == ')' and not stack:
+                          args.append((arg_start, i))
+                          return args, i
+                      if stack:
+                          stack.pop()
+                      i += 1
+                      continue
+                  if ch == ',' and not stack:
+                      args.append((arg_start, i))
+                      arg_start = i + 1
+                  i += 1
+              return None
+
+          def is_bare_literal(arg: str) -> bool:
+              return bool(LITERAL_RE.fullmatch(arg.strip()))
+
+          def line_no(s: str, pos: int) -> int:
+              return s.count('\n', 0, pos) + 1
+
+          def patch_file(path: Path, mapping: dict[str, dict[int, str]]) -> list[str]:
+              source = path.read_text()
+              insertions: list[tuple[int, str]] = []
+              report: list[str] = []
+              occupied: set[tuple[int, str]] = set()
+              for callee in sorted(mapping, key=len, reverse=True):
+                  pattern = re.compile(r'(?<![A-Za-z0-9_])' + re.escape(callee) + r'\s*\(')
+                  for match in pattern.finditer(source):
+                      open_pos = source.find('(', match.start(), match.end())
+                      parsed = parse_call_args(source, open_pos)
+                      if parsed is None:
+                          raise RuntimeError(f'Unclosed call {callee} at {path}:{line_no(source, match.start())}')
+                      args, _ = parsed
+                      for index, parameter in mapping[callee].items():
+                          if index >= len(args):
+                              continue
+                          start, end = args[index]
+                          argument = source[start:end]
+                          if not is_bare_literal(argument):
+                              continue
+                          non_ws = start
+                          while non_ws < end and source[non_ws].isspace():
+                              non_ws += 1
+                          if source[non_ws:end].startswith(f'/*{parameter}*/'):
+                              continue
+                          key = (non_ws, parameter)
+                          if key in occupied:
+                              continue
+                          occupied.add(key)
+                          insertions.append((non_ws, f'/*{parameter}*/ '))
+                          report.append(f'{path}:{line_no(source, non_ws)} {callee}[{index}] -> {parameter}')
+              for position, text in sorted(insertions, reverse=True):
+                  source = source[:position] + text + source[position:]
+              if insertions:
+                  path.write_text(source)
+              return report
+
+          reports: list[str] = []
+          for relative_path, mapping in FILE_MAPS.items():
+              reports += patch_file(ROOT / relative_path, mapping)
+          print('\n'.join(reports))
+          print(f'PATCHED={len(reports)}')
+          if len(reports) != 140:
+              raise SystemExit(f'expected exactly 140 deterministic edits, got {len(reports)}')
+          PY
+          python /tmp/patch_arg_comments.py
+          git diff --check
+          (cd codex-rs && cargo fmt -- --config imports_granularity=Item)
+          git diff --check
+          git status --short
+
+      - name: Materialize one-parent candidate
+        shell: bash
+        env:
+          OUTPUT_BRANCH: codex/hepta-gap-closure-materialized-r3-20260907
+          BASE_SHA: e31df34dd30d046c78057eaa7af775b3210aa9b1
+        run: |
+          set -euo pipefail
+          git config user.name "Hepta Gap Closure Bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add -A
+          tree="$(git write-tree)"
+          commit="$(printf '%s\n\n%s\n' \
+            'fix(ci): close argument-comment lint blockers' \
+            'Apply exact parameter-name comments to every remaining literal-like call argument and normalize the touched Rust sources with the pinned formatter.' \
+            | git commit-tree "$tree" -p "$BASE_SHA")"
+          test "$(git rev-list --parents -n 1 "$commit" | wc -w)" -eq 2
+          test "$(git rev-parse "$commit^")" = "$BASE_SHA"
+          git push --force origin "$commit:refs/heads/$OUTPUT_BRANCH"
+          echo "materialized_commit=$commit"
+          echo "materialized_tree=$tree"
