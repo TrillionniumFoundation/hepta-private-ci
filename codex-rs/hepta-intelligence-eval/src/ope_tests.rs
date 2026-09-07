@@ -1,5 +1,4 @@
 use super::*;
-use pretty_assertions::assert_eq;
 use std::fmt::Debug;
 
 fn must<T, E: Debug>(result: Result<T, E>) -> T {

@@ -1,5 +1,4 @@
 use super::*;
-use pretty_assertions::assert_eq;
 
 #[test]
 fn blocking_and_higher_priority_interference_are_included() {

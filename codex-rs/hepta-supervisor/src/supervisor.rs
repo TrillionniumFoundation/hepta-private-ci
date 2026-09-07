@@ -442,7 +442,9 @@ impl<D: ProcessDriver> Supervisor<D> {
         now: Instant,
     ) -> Result<(), SupervisorError> {
         self.with_slot(agent_id, |supervisor, slot| {
-            supervisor.upgrade_slot(agent_id, slot, target, now, false)
+            supervisor.upgrade_slot(
+                agent_id, slot, target, now, /*explicit_rollback*/ false,
+            )
         })
     }
 
@@ -452,7 +454,7 @@ impl<D: ProcessDriver> Supervisor<D> {
                 .previous_release
                 .clone()
                 .ok_or_else(|| SupervisorError::NoPreviousRelease(agent_id.clone()))?;
-            supervisor.upgrade_slot(agent_id, slot, target, now, true)
+            supervisor.upgrade_slot(agent_id, slot, target, now, /*explicit_rollback*/ true)
         })
     }
 
