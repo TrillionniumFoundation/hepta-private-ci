@@ -369,8 +369,7 @@ impl H7FeedbackKey {
 // stable wire form for snapshots.
 impl From<H7FeedbackKey> for String {
     fn from(key: H7FeedbackKey) -> Self {
-        serde_json::to_string(&(key.trajectory_id, key.event_seq, key.event_id))
-            .expect("feedback key tuple is serializable")
+        serde_json::json!([key.trajectory_id, key.event_seq, key.event_id]).to_string()
     }
 }
 

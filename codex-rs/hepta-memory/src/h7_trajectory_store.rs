@@ -162,6 +162,7 @@ impl H7TrajectoryRecord {
         record.validate().map(|()| record)
     }
 
+    #[allow(clippy::too_many_arguments)]
     pub fn turn_start(
         trajectory_id: impl Into<String>,
         event_id: impl Into<String>,
@@ -194,6 +195,7 @@ impl H7TrajectoryRecord {
         )
     }
 
+    #[allow(clippy::too_many_arguments)]
     pub fn terminal(
         trajectory_id: impl Into<String>,
         event_seq: u32,
@@ -1311,6 +1313,7 @@ async fn read_h7_trajectory_in_transaction(
     }))
 }
 
+#[allow(clippy::too_many_arguments)]
 async fn verify_historical_lease(
     transaction: &mut Transaction<'_, Sqlite>,
     store: &CognitiveStore,
@@ -1349,6 +1352,7 @@ async fn verify_historical_lease(
     Ok(())
 }
 
+#[allow(clippy::too_many_arguments)]
 async fn insert_row(
     transaction: &mut Transaction<'_, Sqlite>,
     store: &CognitiveStore,

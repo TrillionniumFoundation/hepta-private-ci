@@ -774,6 +774,7 @@ fn compact_event_binding_digest(
 /// just the current active row): a compact witness remains auditable after a
 /// host explicitly releases or rolls back its lease.  A digest that was never
 /// granted by this owner/fence is an orphan/foreign binding and fails closed.
+#[allow(clippy::too_many_arguments)]
 async fn historical_compact_lease_expiry(
     transaction: &mut Transaction<'_, Sqlite>,
     owner: &AgentId,
@@ -834,6 +835,7 @@ async fn historical_compact_lease_expiry(
     Ok(expiry)
 }
 
+#[allow(clippy::too_many_arguments)]
 async fn verify_historical_compact_lease_binding(
     transaction: &mut Transaction<'_, Sqlite>,
     owner: &AgentId,
