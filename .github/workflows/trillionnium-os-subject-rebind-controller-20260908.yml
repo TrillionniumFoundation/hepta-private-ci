@@ -1,0 +1,189 @@
+name: Trillionnium OS final-main subject rebind controller
+
+on:
+  push:
+    branches:
+      - ops/trillionnium-os-subject-rebind-controller-20260908
+    paths:
+      - .github/workflows/trillionnium-os-subject-rebind-controller-20260908.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+  actions: read
+
+jobs:
+  rebind:
+    name: Rebind external-evidence source only after both reviewed merges
+    runs-on: ubuntu-24.04
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: integration/vnext-main-20260811
+          fetch-depth: 0
+          persist-credentials: true
+      - name: Wait for exact ordinary merges
+        id: wait
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          api() {
+            curl --fail --silent --show-error --location \
+              -H "Accept: application/vnd.github+json" \
+              -H "Authorization: Bearer ${GH_TOKEN}" \
+              -H "X-GitHub-Api-Version: 2022-11-28" "$@"
+          }
+          for attempt in $(seq 1 30); do
+            api https://api.github.com/repos/TrillionniumFoundation/trillionnium-os/pulls/47 >pr47.json
+            api https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/pulls/459 >pr459.json
+            if [[ "$(jq -r .merged pr47.json)" == true && "$(jq -r .merged pr459.json)" == true ]]; then
+              test "$(jq -r .head.sha pr47.json)" = b8e875d8d01893d894ae0666db9e4efdcc106d59
+              test "$(jq -r .head.sha pr459.json)" = 185dcaff7d610dfd5a6e3ece96c75699e8cdcb49
+              break
+            fi
+            if [[ "$attempt" == 30 ]]; then
+              echo 'Both exact reviewed PRs are not merged; no rebind performed.' >&2
+              exit 1
+            fi
+            sleep 30
+          done
+          main_commit=$(jq -r .merge_commit_sha pr47.json)
+          api "https://api.github.com/repos/TrillionniumFoundation/trillionnium-os/git/commits/${main_commit}" >main-git-commit.json
+          main_tree=$(jq -r .tree.sha main-git-commit.json)
+          live_main=$(api https://api.github.com/repos/TrillionniumFoundation/trillionnium-os/git/ref/heads/main | jq -r .object.sha)
+          test "$live_main" = "$main_commit"
+          integration_tip=$(git ls-remote origin refs/heads/integration/vnext-main-20260811 | cut -f1)
+          test "$integration_tip" = "$(jq -r .merge_commit_sha pr459.json)"
+          printf 'main_commit=%s\nmain_tree=%s\nintegration_tip=%s\n' "$main_commit" "$main_tree" "$integration_tip" >>"$GITHUB_OUTPUT"
+      - name: Patch only exact subject bindings
+        env:
+          NEW_MAIN_COMMIT: ${{ steps.wait.outputs.main_commit }}
+          NEW_MAIN_TREE: ${{ steps.wait.outputs.main_tree }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch origin integration/vnext-main-20260811
+          git checkout --detach origin/integration/vnext-main-20260811
+          old_commit=968968046d69d000f1f9fe03683e92aa7903cf99
+          old_tree=04ba2fab66dfc41680784e1288e14c2fc54c58d9
+          old_head=7e1e611e7299391cf3d4edc1ded322da0d023cc6
+          files=(
+            .g1/trillionnium_os_external_evidence/policy.template.json
+            .g1/trillionnium_os_external_evidence/execution-policy.template.json
+            .g1/trillionnium_os_external_evidence/tests/test_admission_service.py
+            .g1/trillionnium_os_external_evidence/tests/test_trusted_executor.py
+          )
+          for path in "${files[@]}"; do test -f "$path"; done
+          python3 - "$NEW_MAIN_COMMIT" "$NEW_MAIN_TREE" <<'PY'
+          import json
+          from pathlib import Path
+          import sys
+          new_commit, new_tree = sys.argv[1:]
+          root = Path('.g1/trillionnium_os_external_evidence')
+          for name in ('policy.template.json', 'execution-policy.template.json'):
+              path = root / name
+              data = json.loads(path.read_text(encoding='utf-8'))
+              subjects = data.get('allowed_subjects')
+              if not isinstance(subjects, list) or len(subjects) != 1:
+                  raise SystemExit(f'{path}: expected exactly one subject')
+              subject = subjects[0]
+              expected = {
+                  'source_commit': '968968046d69d000f1f9fe03683e92aa7903cf99',
+                  'source_tree': '04ba2fab66dfc41680784e1288e14c2fc54c58d9',
+                  'promotion_pr_number': 41,
+                  'promotion_pr_head': '7e1e611e7299391cf3d4edc1ded322da0d023cc6',
+              }
+              if subject != expected:
+                  raise SystemExit(f'{path}: stale/unexpected source subject')
+              subject.update({
+                  'source_commit': new_commit,
+                  'source_tree': new_tree,
+                  'promotion_pr_number': 47,
+                  'promotion_pr_head': 'b8e875d8d01893d894ae0666db9e4efdcc106d59',
+              })
+              path.write_text(json.dumps(data, indent=2, sort_keys=False) + '\n', encoding='utf-8')
+          replacements = {
+              '968968046d69d000f1f9fe03683e92aa7903cf99': new_commit,
+              '04ba2fab66dfc41680784e1288e14c2fc54c58d9': new_tree,
+              '7e1e611e7299391cf3d4edc1ded322da0d023cc6': 'b8e875d8d01893d894ae0666db9e4efdcc106d59',
+          }
+          for name in ('test_admission_service.py', 'test_trusted_executor.py'):
+              path = root / 'tests' / name
+              text = path.read_text(encoding='utf-8')
+              for old, new in replacements.items():
+                  count = text.count(old)
+                  if count != 1:
+                      raise SystemExit(f'{path}: expected one {old}, found {count}')
+                  text = text.replace(old, new)
+              if name == 'test_admission_service.py':
+                  old, new = '"promotion_pr_number": 41', '"promotion_pr_number": 47'
+              else:
+                  old, new = '"promotion_pr_number":41', '"promotion_pr_number":47'
+              if text.count(old) != 1:
+                  raise SystemExit(f'{path}: expected one promotion PR literal')
+              path.write_text(text.replace(old, new), encoding='utf-8')
+          PY
+          mapfile -t changed < <(git diff --name-only | sort)
+          test "${#changed[@]}" -eq 4
+          printf '%s\n' "${changed[@]}"
+      - name: Run complete external-evidence regression
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd .g1/trillionnium_os_external_evidence
+          python3 -m py_compile admission_service.py trusted_executor.py tests/*.py
+          python3 -m unittest discover -s tests -v
+          cd ../..
+          git diff --check
+      - name: Publish bounded rebind branch and PR
+        env:
+          GH_TOKEN: ${{ github.token }}
+          NEW_MAIN_COMMIT: ${{ steps.wait.outputs.main_commit }}
+          NEW_MAIN_TREE: ${{ steps.wait.outputs.main_tree }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          branch=codex/trillionnium-os-final-main-subject-rebind-20260908
+          if git ls-remote --exit-code origin "refs/heads/${branch}" >/dev/null 2>&1; then
+            echo "Refusing to overwrite existing ${branch}" >&2
+            exit 1
+          fi
+          git switch -c "$branch"
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add .g1/trillionnium_os_external_evidence
+          git commit -m "fix(g1): rebind external evidence to protected PR47 main"
+          git push origin "HEAD:refs/heads/${branch}"
+          body=$(cat <<EOF
+          ## Exact final-main subject rebind
+
+          This four-file change updates only the unprovisioned policy templates and their tests from protected PR #41 subject to the ordinary protected PR #47 result:
+
+          - protected main commit: `${NEW_MAIN_COMMIT}`
+          - protected main tree: `${NEW_MAIN_TREE}`
+          - promotion PR: `#47`
+          - reviewed promotion head: `b8e875d8d01893d894ae0666db9e4efdcc106d59`
+
+          The complete external-evidence regression passed before publication. No trust root, ticket, nonce, target, device, destructive authorization, signing key, evidence, gap transition or public-release authority is created. Templates remain `UNPROVISIONED_TEMPLATE`.
+          EOF
+          )
+          payload=$(jq -n --arg title 'fix(g1): rebind external evidence to final protected main' --arg head "$branch" --arg base integration/vnext-main-20260811 --arg body "$body" '{title:$title,head:$head,base:$base,body:$body,draft:false,maintainer_can_modify:true}')
+          curl --fail --silent --show-error --location \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer ${GH_TOKEN}" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            --request POST --data "$payload" \
+            https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/pulls >created-pr.json
+          number=$(jq -r .number created-pr.json)
+          reviewers='{"reviewers":["Franksudoman","Tomasrgbsf"]}'
+          curl --fail --silent --show-error --location \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer ${GH_TOKEN}" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            --request POST --data "$reviewers" \
+            "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/pulls/${number}/requested_reviewers" >/dev/null
+          echo "Created PR ${number}"
