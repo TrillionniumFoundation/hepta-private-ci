@@ -38,6 +38,15 @@ jobs:
         run: |
           set -euo pipefail
           cp .github/hepta-final-gap-closure-r2.py "$RUNNER_TEMP/apply-final-gap.py"
+          python3 - "$RUNNER_TEMP/apply-final-gap.py" <<'PY'
+          from pathlib import Path
+          import sys
+          path=Path(sys.argv[1])
+          text=path.read_text()
+          needle="    '''        if bundle_fifo:"
+          assert text.count(needle)==2, text.count(needle)
+          path.write_text(text.replace(needle,"    r'''        if bundle_fifo:",2))
+          PY
           git fetch --no-tags origin \
             "+refs/heads/main:refs/remotes/origin/main" \
             "+refs/heads/$SOURCE_BRANCH:refs/remotes/origin/$SOURCE_BRANCH"
