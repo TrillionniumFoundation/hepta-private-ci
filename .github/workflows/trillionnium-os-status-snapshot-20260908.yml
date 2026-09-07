@@ -1,0 +1,88 @@
+name: Trillionnium OS status snapshot
+
+on:
+  push:
+    branches:
+      - ops/trillionnium-os-status-snapshot-20260908
+
+permissions:
+  contents: read
+  pull-requests: read
+  actions: read
+  issues: read
+
+jobs:
+  snapshot:
+    name: Capture exact current status without mutation
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Fetch exact public and connected status
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p status
+          fetch() {
+            local name="$1"
+            local url="$2"
+            curl --fail --silent --show-error --location \
+              -H "Accept: application/vnd.github+json" \
+              -H "Authorization: Bearer ${GH_TOKEN}" \
+              -H "X-GitHub-Api-Version: 2022-11-28" \
+              "$url" >"status/${name}.json"
+          }
+          fetch pr47 https://api.github.com/repos/TrillionniumFoundation/trillionnium-os/pulls/47
+          fetch pr47-reviews 'https://api.github.com/repos/TrillionniumFoundation/trillionnium-os/pulls/47/reviews?per_page=100'
+          fetch pr47-runs 'https://api.github.com/repos/TrillionniumFoundation/trillionnium-os/actions/runs?head_sha=b8e875d8d01893d894ae0666db9e4efdcc106d59&per_page=100'
+          fetch pr47-checks 'https://api.github.com/repos/TrillionniumFoundation/trillionnium-os/commits/b8e875d8d01893d894ae0666db9e4efdcc106d59/check-runs?per_page=100'
+          fetch pr459 https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/pulls/459
+          fetch pr459-reviews 'https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/pulls/459/reviews?per_page=100'
+          fetch pr459-runs 'https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs?head_sha=185dcaff7d610dfd5a6e3ece96c75699e8cdcb49&per_page=100'
+          fetch pr459-checks 'https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/commits/185dcaff7d610dfd5a6e3ece96c75699e8cdcb49/check-runs?per_page=100'
+          fetch issue22 https://api.github.com/repos/TrillionniumFoundation/trillionnium-os/issues/22
+          jq -n \
+            --slurpfile pr47 status/pr47.json \
+            --slurpfile pr47_reviews status/pr47-reviews.json \
+            --slurpfile pr47_runs status/pr47-runs.json \
+            --slurpfile pr47_checks status/pr47-checks.json \
+            --slurpfile pr459 status/pr459.json \
+            --slurpfile pr459_reviews status/pr459-reviews.json \
+            --slurpfile pr459_runs status/pr459-runs.json \
+            --slurpfile pr459_checks status/pr459-checks.json \
+            --slurpfile issue22 status/issue22.json \
+            '{
+              captured_at: (now | todateiso8601),
+              pr47: {
+                state: $pr47[0].state,
+                draft: $pr47[0].draft,
+                mergeable: $pr47[0].mergeable,
+                mergeable_state: $pr47[0].mergeable_state,
+                head: $pr47[0].head.sha,
+                base: $pr47[0].base.sha,
+                reviews: ($pr47_reviews[0] | map({user:.user.login,state,commit_id,submitted_at})),
+                runs: ($pr47_runs[0].workflow_runs | map({id,name,status,conclusion,head_sha,created_at,updated_at})),
+                checks: ($pr47_checks[0].check_runs | map({id,name,status,conclusion,head_sha,started_at,completed_at}))
+              },
+              pr459: {
+                state: $pr459[0].state,
+                draft: $pr459[0].draft,
+                mergeable: $pr459[0].mergeable,
+                mergeable_state: $pr459[0].mergeable_state,
+                head: $pr459[0].head.sha,
+                base: $pr459[0].base.sha,
+                reviews: ($pr459_reviews[0] | map({user:.user.login,state,commit_id,submitted_at})),
+                runs: ($pr459_runs[0].workflow_runs | map({id,name,status,conclusion,head_sha,created_at,updated_at})),
+                checks: ($pr459_checks[0].check_runs | map({id,name,status,conclusion,head_sha,started_at,completed_at}))
+              },
+              issue22: {state:$issue22[0].state,updated_at:$issue22[0].updated_at,comments:$issue22[0].comments}
+            }' >status/summary.json
+          jq . status/summary.json
+      - name: Upload immutable status snapshot
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        with:
+          name: trillionnium-os-status-snapshot-20260908
+          path: status
+          if-no-files-found: error
+          retention-days: 1
