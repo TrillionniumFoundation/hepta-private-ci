@@ -1,0 +1,196 @@
+name: Hepta authoritative PR exact-head fixer R6
+
+on:
+  push:
+    branches:
+      - codex/hepta-v8-windows-bazel-diagnostics-r3-20260907
+
+permissions:
+  contents: write
+  actions: read
+  pull-requests: write
+
+concurrency:
+  group: hepta-authoritative-pr-fixer-r6
+  cancel-in-progress: false
+
+jobs:
+  fix-authoritative-pr:
+    if: ${{ !contains(github.event.head_commit.message, '[hepta-r6-cleanup]') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    env:
+      GH_TOKEN: ${{ github.token }}
+      TARGET_PR: "449"
+      DIAGNOSTIC_RUN: "34069442891"
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Resolve and check out the live authoritative PR head
+        id: pr
+        shell: bash
+        run: |
+          set -euo pipefail
+          state="$(gh pr view "${TARGET_PR}" --json state --jq .state)"
+          if [[ "${state}" != "OPEN" ]]; then
+            echo "active=false" >> "${GITHUB_OUTPUT}"
+            echo "PR #${TARGET_PR} is ${state}; no mutation will be attempted."
+            exit 0
+          fi
+          head_repo="$(gh pr view "${TARGET_PR}" --json headRepository --jq .headRepository.nameWithOwner)"
+          if [[ "${head_repo}" != "${GITHUB_REPOSITORY}" ]]; then
+            echo "Refusing to push to a fork-owned PR head: ${head_repo}" >&2
+            exit 1
+          fi
+          head_branch="$(gh pr view "${TARGET_PR}" --json headRefName --jq .headRefName)"
+          head_sha="$(gh pr view "${TARGET_PR}" --json headRefOid --jq .headRefOid)"
+          base_branch="$(gh pr view "${TARGET_PR}" --json baseRefName --jq .baseRefName)"
+          printf 'active=true\nhead_branch=%s\nhead_sha=%s\nbase_branch=%s\n' \
+            "${head_branch}" "${head_sha}" "${base_branch}" >> "${GITHUB_OUTPUT}"
+          git config user.name "hepta-authoritative-fixer"
+          git config user.email "hepta-authoritative-fixer@users.noreply.github.com"
+          git fetch origin "${head_branch}" "${base_branch}" --no-tags
+          git checkout -B "${head_branch}" "${head_sha}"
+          test "$(git rev-parse HEAD)" = "${head_sha}"
+
+      - name: Import previously reviewed blocker corrections
+        if: ${{ steps.pr.outputs.active == 'true' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          import_commit() {
+            local commit="$1"
+            git fetch origin "${commit}" --no-tags
+            if git merge-base --is-ancestor "${commit}" HEAD; then
+              echo "Already present: ${commit}"
+              return 0
+            fi
+            if git cherry-pick "${commit}"; then
+              echo "Imported ${commit}"
+              return 0
+            fi
+            git cherry-pick --abort
+            echo "Commit ${commit} conflicts with the current authoritative head" >&2
+            return 1
+          }
+
+          import_commit 07ead9f7c3b3f1fc7682355dfd315def810df44b
+
+          for pr in 445 446; do
+            mapfile -t commits < <(gh pr view "${pr}" --json commits --jq '.commits[].oid')
+            for commit in "${commits[@]}"; do
+              if git merge-base --is-ancestor "${commit}" HEAD; then
+                continue
+              fi
+              git fetch origin "${commit}" --no-tags
+              patch_state="$(git cherry HEAD "${commit}^..${commit}" 2>/dev/null | awk '{print $1}' | head -n1 || true)"
+              if [[ "${patch_state}" == "-" ]]; then
+                echo "Patch-equivalent change already present: ${commit}"
+                continue
+              fi
+              import_commit "${commit}"
+            done
+          done
+
+      - name: Apply safe source deltas emitted by exact-target diagnostics
+        if: ${{ steps.pr.outputs.active == 'true' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf .hepta-authoritative-diagnostics
+          mkdir -p .hepta-authoritative-diagnostics
+          gh run download "${DIAGNOSTIC_RUN}" --dir .hepta-authoritative-diagnostics || true
+          python - <<'PY'
+          from __future__ import annotations
+
+          import pathlib
+          import subprocess
+
+          root = pathlib.Path('.hepta-authoritative-diagnostics')
+          patches = sorted(root.rglob('final-worktree.diff')) or sorted(root.rglob('*.git-diff.patch'))
+          forbidden_prefixes = ('.github/', '.git/', 'third_party/', 'vendor/')
+          forbidden_exact = {'Cargo.lock', 'MODULE.bazel.lock', 'pnpm-lock.yaml'}
+          seen: set[bytes] = set()
+          for patch in patches:
+              data = patch.read_bytes()
+              if not data.strip() or data in seen:
+                  continue
+              seen.add(data)
+              if subprocess.run(['git', 'apply', '--check', '--whitespace=error-all', str(patch)]).returncode:
+                  continue
+              raw = subprocess.run(
+                  ['git', 'apply', '--numstat', str(patch)], check=True,
+                  capture_output=True, text=True,
+              ).stdout.splitlines()
+              paths = [line.split('\t', 2)[2] for line in raw if len(line.split('\t', 2)) == 3]
+              if not paths:
+                  continue
+              if any(path in forbidden_exact or path.startswith(forbidden_prefixes) for path in paths):
+                  raise SystemExit(f'Unsafe diagnostic patch rejected: {patch}: {paths}')
+              subprocess.run(['git', 'apply', '--index', '--whitespace=error-all', str(patch)], check=True)
+              print(f'Applied {patch}: {paths}')
+          PY
+          rm -rf .hepta-authoritative-diagnostics
+
+      - name: Run machine-safe format, Clippy and argument-comment fixes
+        if: ${{ steps.pr.outputs.active == 'true' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ -f codex-rs/Cargo.toml ]]; then
+            cargo fmt --manifest-path codex-rs/Cargo.toml --all
+            (
+              cd codex-rs
+              cargo clippy --fix \
+                --workspace --all-targets --all-features \
+                --allow-dirty --allow-staged --ignore-rust-version \
+                -- -D warnings
+            ) || echo "Host Clippy stopped after retaining machine-emitted fixes" >&2
+            cargo fmt --manifest-path codex-rs/Cargo.toml --all
+          fi
+          if [[ -f tools/argument-comment-lint/run-prebuilt-linter.py ]]; then
+            help_text="$(python tools/argument-comment-lint/run-prebuilt-linter.py --help 2>&1 || true)"
+            if grep -q -- '--fix' <<<"${help_text}"; then
+              python tools/argument-comment-lint/run-prebuilt-linter.py --fix
+            fi
+          fi
+
+      - name: Validate, commit and push only strict source corrections
+        if: ${{ steps.pr.outputs.active == 'true' }}
+        env:
+          HEAD_BRANCH: ${{ steps.pr.outputs.head_branch }}
+          ORIGINAL_HEAD: ${{ steps.pr.outputs.head_sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          git add -A
+          git diff --cached --check
+          changed="$(git diff --cached --name-only)"
+          if grep -Eq '(^|/)(CODEOWNERS|branch-protection|ruleset)|^\.github/workflows/bazel\.yml$' <<<"${changed}"; then
+            echo "Refusing policy or canonical matrix change" >&2
+            exit 1
+          fi
+          if git diff --cached | grep -Eq -- 'test_tag_filters=.*-[^ ]+|^[+].*(allow\(warnings\)|-A warnings)'; then
+            echo "Refusing test exclusion or warning downgrade" >&2
+            exit 1
+          fi
+
+          if ! git diff --cached --quiet; then
+            git commit -m "fix: close exact-head CI blockers [hepta-r6]"
+          fi
+          if [[ "$(git rev-parse HEAD)" == "${ORIGINAL_HEAD}" ]]; then
+            echo "No new correction was produced; preserving authoritative head."
+          else
+            git push origin "HEAD:${HEAD_BRANCH}"
+          fi
+
+      - name: Arm protected auto-merge on the live PR
+        if: ${{ steps.pr.outputs.active == 'true' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          gh pr merge "${TARGET_PR}" --auto --squash --delete-branch
+          gh pr view "${TARGET_PR}" --json number,state,headRefOid,mergeStateStatus,autoMergeRequest,url
