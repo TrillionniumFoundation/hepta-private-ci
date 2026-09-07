@@ -1,0 +1,33 @@
+name: hepta-final-materializer
+
+on:
+  push:
+    branches:
+      - codex/hepta-final-materializer-v2-20260907
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  materialize:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+
+      - name: Generate bounded final blocker patch
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 .github/scripts/hepta_final_materializer.py
+
+      - name: Upload exact patched files and manifest
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        with:
+          name: hepta-final-patch
+          path: hepta-final-patch
+          if-no-files-found: error
+          retention-days: 7
