@@ -19,7 +19,7 @@ jobs:
     timeout-minutes: 15
     env:
       EXACT_SOURCE: 4506b0076e51211976eeb6d2df8ca1a4287f1cd1
-      RESULT_BRANCH: ops/pr456-gapfix-result-20260907-r1
+      RESULT_BRANCH: ops/pr456-gapfix-result-20260907-r2
       PATCH_B64_SHA256: befcbc3e0f941f596ff469ea5d6aa98ef268c4919a038e3e531621e15520314a
       PATCH_GZ_SHA256: b9bf6c0d71fe1ef79ba87806418fe599dad6e9f341226b9677660e3eae3c6f44
       PATCH_SHA256: aa095097fca56092b333dcc37262778152a198fda774064713cb9eabb0ec8450
@@ -113,6 +113,24 @@ jobs:
             echo "result branch already exists" >&2
             exit 1
           fi
+          # The GitHub Actions token cannot create or update workflow files.
+          # The already-verified workflow blob is attached later by the trusted
+          # connector while recreating one final direct-child commit.
+          git restore --source=HEAD --staged --worktree .github/workflows/rust-ci-full.yml
+          actual="$(git diff --cached --name-only | LC_ALL=C sort)"
+          expected="$(cat <<'EOF'
+          .g1/trillionnium_os_external_evidence/EXECUTOR.md
+          .g1/trillionnium_os_external_evidence/README.md
+          .g1/trillionnium_os_external_evidence/admission_service.py
+          .g1/trillionnium_os_external_evidence/execution-policy.template.json
+          .g1/trillionnium_os_external_evidence/policy.template.json
+          .g1/trillionnium_os_external_evidence/tests/test_admission_service.py
+          .g1/trillionnium_os_external_evidence/tests/test_trusted_executor.py
+          .g1/trillionnium_os_external_evidence/trusted_executor.py
+          EOF
+          )"
+          test "$actual" = "$expected"
+          git diff --cached --check
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git commit -m "fix(g1): harden external admission and exact-target execution"
