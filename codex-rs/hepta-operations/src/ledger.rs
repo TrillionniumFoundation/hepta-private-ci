@@ -162,7 +162,7 @@ impl OperationLedger {
 }
 
 fn first_revision() -> Revision {
-    match Revision::new(1) {
+    match Revision::new(/*value*/ 1) {
         Ok(revision) => revision,
         Err(error) => unreachable!("constant first revision is invalid: {error}"),
     }

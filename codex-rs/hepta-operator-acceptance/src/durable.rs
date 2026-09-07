@@ -217,15 +217,15 @@ pub(crate) fn write_private_atomic_replace(
 }
 
 pub(crate) struct SidecarLock {
-    file: File,
+    _file: File,
 }
 
 pub(crate) fn lock_sidecar(root: &Path) -> Result<SidecarLock, AcceptanceError> {
-    open_sidecar_lock(root, true)
+    open_sidecar_lock(root, /*create*/ true)
 }
 
 pub(crate) fn lock_existing_sidecar(root: &Path) -> Result<SidecarLock, AcceptanceError> {
-    open_sidecar_lock(root, false)
+    open_sidecar_lock(root, /*create*/ false)
 }
 
 fn open_sidecar_lock(root: &Path, create: bool) -> Result<SidecarLock, AcceptanceError> {
@@ -268,7 +268,7 @@ fn open_sidecar_lock(root: &Path, create: bool) -> Result<SidecarLock, Acceptanc
             ));
         }
     }
-    Ok(SidecarLock { file })
+    Ok(SidecarLock { _file: file })
 }
 
 impl Drop for SidecarLock {
@@ -278,7 +278,7 @@ impl Drop for SidecarLock {
             use std::os::fd::AsRawFd;
             // SAFETY: `flock` receives the still-live descriptor owned by this
             // guard and does not dereference application memory.
-            let _ = unsafe { libc::flock(self.file.as_raw_fd(), libc::LOCK_UN) };
+            let _ = unsafe { libc::flock(self._file.as_raw_fd(), libc::LOCK_UN) };
         }
     }
 }
@@ -317,25 +317,29 @@ fn verify_regular_metadata(
     verify_private_mode(metadata, label)
 }
 
+#[cfg(unix)]
 fn verify_private_mode(metadata: &std::fs::Metadata, label: &str) -> Result<(), AcceptanceError> {
-    #[cfg(unix)]
-    {
-        use std::os::unix::fs::MetadataExt;
-        use std::os::unix::fs::PermissionsExt;
-        if metadata.permissions().mode() & 0o077 != 0 {
-            return Err(invalid(format!(
-                "{label} must not grant group or other access"
-            )));
-        }
-        // SAFETY: `geteuid` takes no arguments, has no preconditions, and does
-        // not expose or mutate memory.
-        let effective_uid = unsafe { libc::geteuid() };
-        if metadata.uid() != effective_uid {
-            return Err(invalid(format!(
-                "{label} must be owned by the effective user"
-            )));
-        }
+    use std::os::unix::fs::MetadataExt;
+    use std::os::unix::fs::PermissionsExt;
+
+    if metadata.permissions().mode() & 0o077 != 0 {
+        return Err(invalid(format!(
+            "{label} must not grant group or other access"
+        )));
     }
+    // SAFETY: `geteuid` takes no arguments, has no preconditions, and does
+    // not expose or mutate memory.
+    let effective_uid = unsafe { libc::geteuid() };
+    if metadata.uid() != effective_uid {
+        return Err(invalid(format!(
+            "{label} must be owned by the effective user"
+        )));
+    }
+    Ok(())
+}
+
+#[cfg(not(unix))]
+fn verify_private_mode(_metadata: &std::fs::Metadata, _label: &str) -> Result<(), AcceptanceError> {
     Ok(())
 }
 

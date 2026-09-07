@@ -8,7 +8,9 @@
 use std::error::Error as StdError;
 use std::fmt;
 
-use codex_hepta_types::{AuthorityPosture, Digest32, StableId};
+use codex_hepta_types::AuthorityPosture;
+use codex_hepta_types::Digest32;
+use codex_hepta_types::StableId;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct SecretReference {

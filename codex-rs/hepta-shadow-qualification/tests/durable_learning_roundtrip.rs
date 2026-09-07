@@ -32,10 +32,18 @@ use codex_hepta_types::ProbabilityQ32;
 use codex_hepta_types::StableId;
 use pretty_assertions::assert_eq;
 
+#[expect(
+    clippy::unwrap_used,
+    reason = "fixture identifiers are deterministic literals and should fail at their construction site"
+)]
 fn id(value: &str) -> StableId {
     StableId::new(value).unwrap()
 }
 
+#[expect(
+    clippy::unwrap_used,
+    reason = "fixture files are required preconditions and collisions must fail the test immediately"
+)]
 fn create(path: &Path) -> File {
     OpenOptions::new()
         .read(true)
@@ -45,12 +53,20 @@ fn create(path: &Path) -> File {
         .unwrap()
 }
 
+#[expect(
+    clippy::unwrap_used,
+    reason = "fixture files were created earlier in the same test and missing files must fail immediately"
+)]
 fn open_readonly(path: &Path) -> File {
     File::open(path).unwrap()
 }
 
 /// A bounded fixture learner using ONLY reopened training records. This is not
 /// OPE, NDU training or a general cross-fit/statistical acceptance algorithm.
+#[expect(
+    clippy::unwrap_used,
+    reason = "the fixture asserts complete decisions and a non-empty balanced score set before selection"
+)]
 fn fit_binary_fixture(ledger: &LearningLedger) -> Vec<u8> {
     let records = ledger.active_records();
     let mut decisions = BTreeMap::new();
@@ -91,12 +107,20 @@ fn fit_binary_fixture(ledger: &LearningLedger) -> Vec<u8> {
 /// generator-provided outcome enters this oracle; identity authentication is not
 /// tested by a local fixture and real efficacy is not inferred from this score.
 fn held_out_oracle(policy: &[u8]) -> u64 {
-    [b"fresh".as_slice(), b"fresh".as_slice(), b"fresh".as_slice()]
-        .iter()
-        .map(|expected| u64::from(*expected == policy))
-        .sum()
+    [
+        b"fresh".as_slice(),
+        b"fresh".as_slice(),
+        b"fresh".as_slice(),
+    ]
+    .iter()
+    .map(|expected| u64::from(*expected == policy))
+    .sum()
 }
 
+#[expect(
+    clippy::unwrap_used,
+    reason = "fixture generation and registration are deterministic setup and must fail at the first invalid invariant"
+)]
 fn register(
     registry: &mut ArtifactRegistry,
     name: &str,
@@ -220,7 +244,8 @@ fn durable_experience_candidate_reopen_next_snapshot_and_revocation_safe_rollbac
     let existing_run =
         read_candidate_payload(open_readonly(&baseline_path), &registry, &id("baseline")).unwrap();
     let next_run =
-        read_candidate_payload(open_readonly(&candidate_path), &registry, &id("candidate")).unwrap();
+        read_candidate_payload(open_readonly(&candidate_path), &registry, &id("candidate"))
+            .unwrap();
     assert_eq!(existing_run, b"stale");
     assert_eq!(next_run, b"fresh");
     assert_eq!(existing_run, baseline); // Current run is unchanged.

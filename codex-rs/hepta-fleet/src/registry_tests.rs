@@ -1,6 +1,8 @@
 use std::fs;
 use std::path::Path;
+#[cfg(unix)]
 use std::sync::Arc;
+#[cfg(unix)]
 use std::sync::Barrier;
 
 use codex_hepta_contracts::AgentId;

@@ -102,7 +102,7 @@ impl PromptRegistry {
         if maximum_records == 0 {
             return Err(Error::ZeroCapacity);
         }
-        let Ok(revision) = Revision::new(1) else {
+        let Ok(revision) = Revision::new(/*value*/ 1) else {
             return Err(Error::RevisionOverflow);
         };
         Ok(Self {
@@ -126,7 +126,7 @@ impl PromptRegistry {
             }
             return Err(Error::FactorConflict(factor.factor_id.to_string()));
         }
-        self.ensure_capacity(1)?;
+        self.ensure_capacity(/*additional*/ 1)?;
         self.factors.insert(factor.factor_id.clone(), factor);
         self.advance(MutationDisposition::Inserted)
     }
@@ -188,7 +188,7 @@ impl PromptRegistry {
                 realization.realization_id.to_string(),
             ));
         }
-        self.ensure_capacity(1)?;
+        self.ensure_capacity(/*additional*/ 1)?;
         self.realizations
             .insert(realization.realization_id.clone(), realization);
         self.advance(MutationDisposition::Inserted)
