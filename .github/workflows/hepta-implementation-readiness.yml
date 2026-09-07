@@ -7,6 +7,8 @@ on:
       - main
       - integration/vnext-main-20260811
       - "codex/hepta-v8-readiness-*"
+      - "codex/hepta-v8-technical-*"
+      - "codex/hepta-v8-implementation-*"
   workflow_dispatch:
 
 permissions:
@@ -39,6 +41,13 @@ jobs:
           python3 scripts/hepta-readiness.py self-test
           python3 scripts/hepta-readiness.py generate-status --check
           python3 scripts/hepta-readiness.py verify
+          python3 scripts/hepta-implementation-dossiers.py self-test
+          python3 scripts/hepta-implementation-dossiers.py generate-status --check
+          python3 scripts/hepta-implementation-dossiers.py verify
+          python3 scripts/hepta-technical-closure.py self-test
+          python3 scripts/hepta-technical-closure.py verify
+          python3 qualification/module-execution-dossiers/implementation_contracts.py self-test
+          python3 qualification/module-execution-dossiers/implementation_contracts.py verify-repository
           python3 scripts/hepta-module-docs.py self-test
           python3 scripts/hepta-module-docs.py verify
           python3 scripts/hepta-algorithm-docs.py self-test
@@ -112,6 +121,13 @@ jobs:
           python3 scripts/hepta-readiness.py self-test
           python3 scripts/hepta-readiness.py generate-status --check
           python3 scripts/hepta-readiness.py verify
+          python3 scripts/hepta-implementation-dossiers.py self-test
+          python3 scripts/hepta-implementation-dossiers.py generate-status --check
+          python3 scripts/hepta-implementation-dossiers.py verify
+          python3 scripts/hepta-technical-closure.py self-test
+          python3 scripts/hepta-technical-closure.py verify
+          python3 qualification/module-execution-dossiers/implementation_contracts.py self-test
+          python3 qualification/module-execution-dossiers/implementation_contracts.py verify-repository
           python3 scripts/hepta-module-docs.py verify
           python3 scripts/hepta-algorithm-docs.py verify-sources
           python3 scripts/hepta-algorithm-docs.py generate-status --check

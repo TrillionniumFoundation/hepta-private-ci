@@ -231,10 +231,29 @@ jobs:
             bazel_args+=(--config=v8-release-compat)
           fi
 
+          run_v8_bazel() {
+            ./.github/scripts/run_bazel_with_buildbuddy.py \
+              --noexperimental_remote_repo_contents_cache \
+              "${bazel_args[@]}" \
+              "--config=${{ matrix.bazel_config }}"
+          }
+
+          set +e
+          run_v8_bazel
+          bazel_status=$?
+          set -e
+          if [[ ${bazel_status} -eq 0 ]]; then
+            exit 0
+          fi
+          if [[ ${bazel_status} -ne 37 || "${RUNNER_OS}" != "macOS" || "${TARGET}" != "aarch64-apple-darwin" ]]; then
+            exit "${bazel_status}"
+          fi
+
+          echo "Bazel exited 37 on macOS ARM; shutting down and retrying the identical V8 build once." >&2
           ./.github/scripts/run_bazel_with_buildbuddy.py \
             --noexperimental_remote_repo_contents_cache \
-            "${bazel_args[@]}" \
-            "--config=${{ matrix.bazel_config }}"
+            shutdown || true
+          run_v8_bazel
 
       - name: Stage release pair
         env:

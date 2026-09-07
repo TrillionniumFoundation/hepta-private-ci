@@ -20,6 +20,9 @@ jobs:
       - name: Verify codex-rs Cargo manifests inherit workspace settings
         run: python3 .github/scripts/verify_cargo_workspace_manifests.py
 
+      - name: Test Cargo manifest migration boundaries
+        run: python3 -m unittest discover -s .github/scripts -p 'test_verify_cargo_workspace_manifests.py'
+
       - name: Verify Hepta privileged caller closed set
         run: |
           python3 scripts/verify_hepta_callers.py self-test
