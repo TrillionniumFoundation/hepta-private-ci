@@ -1,4 +1,5 @@
 use std::collections::BTreeMap;
+#[cfg(unix)]
 use std::fs::File;
 use std::fs::OpenOptions;
 use std::io::ErrorKind;

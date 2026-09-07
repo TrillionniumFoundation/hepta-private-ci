@@ -237,6 +237,13 @@ mod platform {
         }
     }
 
+    pub(super) async fn is_stale_socket_path(socket_path: &Path) -> IoResult<bool> {
+        Ok(fs::symlink_metadata(socket_path)
+            .await?
+            .file_type()
+            .is_socket())
+    }
+
     #[cfg(test)]
     mod tests {
         use std::io::ErrorKind;
@@ -257,13 +264,6 @@ mod platform {
                 .expect_err("a different UID must fail closed before reading the request");
             assert_eq!(error.kind(), ErrorKind::PermissionDenied);
         }
-    }
-
-    pub(super) async fn is_stale_socket_path(socket_path: &Path) -> IoResult<bool> {
-        Ok(fs::symlink_metadata(socket_path)
-            .await?
-            .file_type()
-            .is_socket())
     }
 }
 

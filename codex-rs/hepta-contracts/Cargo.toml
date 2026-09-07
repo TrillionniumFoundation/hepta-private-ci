@@ -9,6 +9,11 @@ name = "codex_hepta_contracts"
 path = "src/lib.rs"
 doctest = false
 
+[features]
+default = []
+# Local qualification models remain opt-in and grant no production authority.
+authbus-local-qualification = []
+
 [lints]
 workspace = true
 

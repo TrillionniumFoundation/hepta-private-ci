@@ -57,7 +57,7 @@ impl Fixture {
 fn definition() -> TaskFlowDefinition {
     TaskFlowDefinition::new(
         "structural-review",
-        1,
+        /*version*/ 1,
         "work",
         vec![
             TaskFlowNodeSpec::new("failure", TaskFlowNodeKind::TerminalFailure),
@@ -81,7 +81,7 @@ fn fence(generation: u64) -> TaskFlowFence {
     TaskFlowFence::new(
         AgentId::parse(AGENT_ID).expect("agent id"),
         "structural-owner",
-        1,
+        /*owner_epoch*/ 1,
         generation,
         format!("structural-fence-{generation}"),
     )
@@ -127,10 +127,10 @@ async fn durable_replay_reconstructs_current_node_and_frontier() {
     let store = AutomationStore::open(&fixture.layout)
         .await
         .expect("open store");
-    let owner = fence(1);
+    let owner = fence(/*generation*/ 1);
     let definition = definition();
     store
-        .register_taskflow_definition(&definition, &owner, 10)
+        .register_taskflow_definition(&definition, &owner, /*registered_at_ms*/ 10)
         .await
         .expect("register definition");
     store
@@ -140,12 +140,17 @@ async fn durable_replay_reconstructs_current_node_and_frontier() {
             definition.version,
             definition.definition_digest(),
             "thread-structural",
-            10,
+            /*created_at_ms*/ 10,
         )
         .await
         .expect("create run");
     let claimed = store
-        .claim_taskflow_run("structural-run", &owner, 20, 1_000)
+        .claim_taskflow_run(
+            "structural-run",
+            &owner,
+            /*now_ms*/ 20,
+            /*lease_duration_ms*/ 1_000,
+        )
         .await
         .expect("claim run");
     let started = store
@@ -156,7 +161,7 @@ async fn durable_replay_reconstructs_current_node_and_frontier() {
                 owner.clone(),
                 claimed.revision,
                 TaskFlowTransition::Start,
-                21,
+                /*now_ms*/ 21,
             )
             .expect("start command"),
         )
@@ -173,7 +178,7 @@ async fn durable_replay_reconstructs_current_node_and_frontier() {
                     token: "resume-review".to_string(),
                     resume_node: Some("review".to_string()),
                 },
-                22,
+                /*now_ms*/ 22,
             )
             .expect("wait command"),
         )
@@ -205,7 +210,7 @@ async fn durable_replay_reconstructs_current_node_and_frontier() {
                 TaskFlowTransition::Resume {
                     token: "resume-review".to_string(),
                 },
-                23,
+                /*now_ms*/ 23,
             )
             .expect("resume command"),
         )
@@ -231,7 +236,7 @@ async fn durable_replay_reconstructs_current_node_and_frontier() {
                 TaskFlowTransition::Succeed {
                     output_digest: Sha256Digest::for_bytes(b"read-only-result"),
                 },
-                24,
+                /*now_ms*/ 24,
             )
             .expect("success command"),
         )
@@ -254,10 +259,10 @@ async fn command_writer_rejects_a_non_structural_resume_target_before_append() {
     let store = AutomationStore::open(&fixture.layout)
         .await
         .expect("open store");
-    let owner = fence(1);
+    let owner = fence(/*generation*/ 1);
     let definition = definition();
     store
-        .register_taskflow_definition(&definition, &owner, 10)
+        .register_taskflow_definition(&definition, &owner, /*registered_at_ms*/ 10)
         .await
         .expect("register definition");
     store
@@ -267,12 +272,17 @@ async fn command_writer_rejects_a_non_structural_resume_target_before_append() {
             definition.version,
             definition.definition_digest(),
             "thread-structural",
-            10,
+            /*created_at_ms*/ 10,
         )
         .await
         .expect("create run");
     let claimed = store
-        .claim_taskflow_run("invalid-structural-run", &owner, 20, 1_000)
+        .claim_taskflow_run(
+            "invalid-structural-run",
+            &owner,
+            /*now_ms*/ 20,
+            /*lease_duration_ms*/ 1_000,
+        )
         .await
         .expect("claim run");
     let started = store
@@ -283,7 +293,7 @@ async fn command_writer_rejects_a_non_structural_resume_target_before_append() {
                 owner.clone(),
                 claimed.revision,
                 TaskFlowTransition::Start,
-                21,
+                /*now_ms*/ 21,
             )
             .expect("start command"),
         )
@@ -298,7 +308,7 @@ async fn command_writer_rejects_a_non_structural_resume_target_before_append() {
             token: "invalid-target".to_string(),
             resume_node: Some("success".to_string()),
         },
-        22,
+        /*now_ms*/ 22,
     )
     .expect("wait command");
     assert!(matches!(
@@ -321,10 +331,10 @@ async fn structural_replay_rejects_hash_valid_taskflow_event_fence_tamper() {
     let store = AutomationStore::open(&fixture.layout)
         .await
         .expect("open store");
-    let owner = fence(1);
+    let owner = fence(/*generation*/ 1);
     let definition = definition();
     store
-        .register_taskflow_definition(&definition, &owner, 10)
+        .register_taskflow_definition(&definition, &owner, /*registered_at_ms*/ 10)
         .await
         .expect("register definition");
     store
@@ -334,12 +344,17 @@ async fn structural_replay_rejects_hash_valid_taskflow_event_fence_tamper() {
             definition.version,
             definition.definition_digest(),
             "thread-structural",
-            10,
+            /*created_at_ms*/ 10,
         )
         .await
         .expect("create run");
     store
-        .claim_taskflow_run("structural-fence-tamper", &owner, 20, 1_000)
+        .claim_taskflow_run(
+            "structural-fence-tamper",
+            &owner,
+            /*now_ms*/ 20,
+            /*lease_duration_ms*/ 1_000,
+        )
         .await
         .expect("claim run");
 

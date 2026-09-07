@@ -90,7 +90,7 @@ impl SignedSupervisorIntent {
             status,
             intent_sha256: Sha256Digest::for_bytes(b"pending"),
         };
-        intent.intent_sha256 = intent.compute_digest();
+        intent.intent_sha256 = intent.compute_digest()?;
         intent.validate()?;
         Ok(intent)
     }
@@ -116,22 +116,25 @@ impl SignedSupervisorIntent {
                 "signed intent digest is malformed".to_string(),
             ));
         }
-        if self.intent_sha256 != self.compute_digest() {
+        if self.intent_sha256 != self.compute_digest()? {
             return Err(SignedIntentError::DigestMismatch);
         }
         Ok(())
     }
 
-    pub(crate) fn with_status(&self, status: SignedIntentStatus) -> Self {
+    pub(crate) fn with_status(
+        &self,
+        status: SignedIntentStatus,
+    ) -> Result<Self, SignedIntentError> {
         let mut next = Self {
             status,
             ..self.clone()
         };
-        next.intent_sha256 = next.compute_digest();
-        next
+        next.intent_sha256 = next.compute_digest()?;
+        Ok(next)
     }
 
-    fn compute_digest(&self) -> Sha256Digest {
+    fn compute_digest(&self) -> Result<Sha256Digest, SignedIntentError> {
         let payload = serde_json::to_vec(&(
             self.schema_version,
             &self.grant_sha256,
@@ -143,11 +146,10 @@ impl SignedSupervisorIntent {
             self.expected_lifecycle_generation,
             self.authority_epoch,
             self.status,
-        ))
-        .expect("intent tuple is serializable");
-        Sha256Digest::from_sha256_output(Sha256::digest(
+        ))?;
+        Ok(Sha256Digest::from_sha256_output(Sha256::digest(
             [INTENT_DOMAIN, payload.as_slice()].concat(),
-        ))
+        )))
     }
 }
 
@@ -170,18 +172,18 @@ pub fn write_intent(
     intent: &SignedSupervisorIntent,
 ) -> Result<(), SignedIntentError> {
     intent.validate()?;
-    if let Some(existing) = read_intent(run_root)? {
-        if matches!(
+    if let Some(existing) = read_intent(run_root)?
+        && matches!(
             existing.status,
             SignedIntentStatus::Prepared
                 | SignedIntentStatus::Queued
                 | SignedIntentStatus::RecoveryRequired
-        ) && existing.grant_sha256 != intent.grant_sha256
-        {
-            return Err(SignedIntentError::Invalid(
-                "another signed supervisor intent is unresolved".to_string(),
-            ));
-        }
+        )
+        && existing.grant_sha256 != intent.grant_sha256
+    {
+        return Err(SignedIntentError::Invalid(
+            "another signed supervisor intent is unresolved".to_string(),
+        ));
     }
     std::fs::create_dir_all(run_root)?;
     let sequence = TEMP_SEQUENCE.fetch_add(1, Ordering::Relaxed);
@@ -209,11 +211,11 @@ mod tests {
     use super::*;
 
     #[test]
-    fn intent_round_trips_and_rejects_unresolved_overwrite() {
+    fn intent_round_trips_and_rejects_unresolved_overwrite() -> Result<(), SignedIntentError> {
         let dir = tempfile::tempdir().expect("temp");
         let grant = Sha256Digest::for_bytes(b"grant");
         let first = SignedSupervisorIntent::new(
-            grant.clone(),
+            grant,
             "agent",
             H7H89ProductionTransition::Upgrade,
             "v1",
@@ -247,7 +249,8 @@ mod tests {
             ..first
         };
         let mut committed = committed;
-        committed.intent_sha256 = committed.compute_digest();
+        committed.intent_sha256 = committed.compute_digest()?;
         write_intent(dir.path(), &committed).expect("terminal replacement");
+        Ok(())
     }
 }

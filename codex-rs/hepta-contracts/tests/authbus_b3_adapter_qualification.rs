@@ -50,7 +50,7 @@ fn secret_ref(key: &str, bytes: &[u8]) -> OpaqueSecretRef {
         "qualification-backend",
         "oauth",
         key,
-        1,
+        /*version*/ 1,
         Sha256Digest::for_bytes(bytes),
     )
     .unwrap_or_else(|error| panic!("valid opaque reference: {error:?}"))
@@ -73,14 +73,14 @@ fn refresh_request(
         profile,
         token_family_id,
         idempotency_key,
-        1,
+        /*expected_secret_revision*/ 1,
         &scope_digest,
         &purpose_digest,
         &payload_digest,
         &policy_digest,
-        2,
-        3,
-        4,
+        /*authority_epoch*/ 2,
+        /*owner_epoch*/ 3,
+        /*generation*/ 4,
         &fencing_token,
     );
     let operation_id =

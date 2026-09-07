@@ -175,20 +175,20 @@ impl H7TrajectoryRecord {
     ) -> Result<Self, H7TrajectoryStoreError> {
         Self::new(
             trajectory_id,
-            1,
+            /*event_seq*/ 1,
             event_id,
             H7TrajectoryEventKind::TurnStart,
             turn_id,
             occurrence_key,
-            None,
-            None,
+            /*causal_parent_seq*/ None,
+            /*causal_parent_sha256*/ None,
             state_digest,
             policy_digest,
             model_receipt_digest,
             receipt_sha256,
             "turn_started",
-            0,
-            true,
+            /*reward_bps*/ 0,
+            /*safety_ok*/ true,
             metadata_json,
             "not_applicable",
         )
@@ -224,8 +224,8 @@ impl H7TrajectoryRecord {
             model_receipt_digest,
             receipt_sha256,
             outcome,
-            0,
-            true,
+            /*reward_bps*/ 0,
+            /*safety_ok*/ true,
             metadata_json,
             reason,
         )
@@ -439,7 +439,7 @@ pub async fn append_h7_trajectory_event_bound(
     let binding_tuple = binding_tuple(binding);
     if existing
         .iter()
-        .any(|row| &row.binding_tuple() != &binding_tuple)
+        .any(|row| row.binding_tuple() != binding_tuple)
     {
         return Err(corrupt(
             "trajectory binding does not match the current lifecycle binding",
@@ -450,35 +450,35 @@ pub async fn append_h7_trajectory_event_bound(
         return Err(invalid("trajectory payload exceeds the bounded size"));
     }
     let payload_sha256 = Sha256Digest::for_bytes(payload_json.as_bytes());
-    if let Some(previous) = existing.last() {
-        if previous.record.event_seq == record.event_seq {
-            let expected = event_digest(
-                store.owner_agent_id().as_str(),
-                &record.trajectory_id,
-                record,
-                &payload_sha256,
-                &previous.previous_sha256,
-                &binding_tuple,
-            );
-            if previous.record == *record
-                && previous.payload_sha256 == payload_sha256
-                && previous.event_sha256 == expected
-                && previous.lease_id == binding.lease_id
-                && previous.lease_head_sha256 == binding.lease_head_sha256
-            {
-                transaction
-                    .commit()
-                    .await
-                    .map_err(crate::cognitive_store::unavailable)?;
-                return Ok(H7TrajectoryAppend::Replay {
-                    event_seq: record.event_seq,
-                    event_sha256: previous.event_sha256.clone(),
-                });
-            }
-            return Err(H7TrajectoryStoreError::CasConflict(
-                "trajectory event replay changed its payload or binding".to_string(),
-            ));
+    if let Some(previous) = existing.last()
+        && previous.record.event_seq == record.event_seq
+    {
+        let expected = event_digest(
+            store.owner_agent_id().as_str(),
+            &record.trajectory_id,
+            record,
+            &payload_sha256,
+            &previous.previous_sha256,
+            &binding_tuple,
+        );
+        if previous.record == *record
+            && previous.payload_sha256 == payload_sha256
+            && previous.event_sha256 == expected
+            && previous.lease_id == binding.lease_id
+            && previous.lease_head_sha256 == binding.lease_head_sha256
+        {
+            transaction
+                .commit()
+                .await
+                .map_err(crate::cognitive_store::unavailable)?;
+            return Ok(H7TrajectoryAppend::Replay {
+                event_seq: record.event_seq,
+                event_sha256: previous.event_sha256.clone(),
+            });
         }
+        return Err(H7TrajectoryStoreError::CasConflict(
+            "trajectory event replay changed its payload or binding".to_string(),
+        ));
     }
     let expected_seq = existing
         .last()
@@ -573,8 +573,13 @@ impl CognitiveStore {
             .begin()
             .await
             .map_err(crate::cognitive_store::unavailable)?;
-        let result =
-            read_h7_trajectory_in_transaction(&mut transaction, self, &trajectory_id, None).await?;
+        let result = read_h7_trajectory_in_transaction(
+            &mut transaction,
+            self,
+            &trajectory_id,
+            /*expected_binding*/ None,
+        )
+        .await?;
         transaction
             .commit()
             .await

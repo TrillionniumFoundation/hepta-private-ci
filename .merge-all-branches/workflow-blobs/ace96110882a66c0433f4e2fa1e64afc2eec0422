@@ -1,0 +1,74 @@
+name: Hepta repository integrity
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+      - integration/vnext-main-20260811
+      - "codex/**"
+      - "docs/**"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-repository-integrity-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  source-integrity:
+    name: Verify ordinary read-only candidate source
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Check out exact candidate
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Resolve comparison base
+        id: identity
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          PR_BASE: ${{ github.event.pull_request.base.sha }}
+          PUSH_BEFORE: ${{ github.event.before }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$HEAD_SHA"
+          if [ "$EVENT_NAME" = "pull_request" ]; then
+            BASE_SHA="$PR_BASE"
+          elif [ -n "$PUSH_BEFORE" ] && ! printf '%s' "$PUSH_BEFORE" | grep -Eq '^0+$'; then
+            BASE_SHA="$PUSH_BEFORE"
+          else
+            BASE_SHA="$(git rev-parse HEAD^)"
+          fi
+          git cat-file -e "$BASE_SHA^{commit}"
+          printf 'base=%s\n' "$BASE_SHA" >> "$GITHUB_OUTPUT"
+          printf 'head=%s\n' "$HEAD_SHA" >> "$GITHUB_OUTPUT"
+
+      - name: Verify repository integrity policy
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta-repository-integrity.py self-test
+          python3 scripts/hepta-repository-integrity.py verify \
+            --base "${{ steps.identity.outputs.base }}" \
+            --head "${{ steps.identity.outputs.head }}" \
+            --output .hepta-evidence/repository-integrity.json
+          git diff --check
+          test -z "$(git status --porcelain --untracked-files=no)"
+
+      - name: Retain integrity receipt
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-repository-integrity-${{ steps.identity.outputs.head }}
+          path: .hepta-evidence/repository-integrity.json
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 30

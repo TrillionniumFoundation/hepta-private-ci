@@ -334,7 +334,7 @@ impl ProcessSoakChild {
                     .wait()
                     .expect("wait timed-out process soak child");
                 self.child.take();
-                panic!("process soak child timed out after {:?}: {status}", timeout);
+                panic!("process soak child timed out after {timeout:?}: {status}");
             }
             thread::sleep(Duration::from_millis(5));
         }

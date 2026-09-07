@@ -3482,6 +3482,7 @@ dependencies = [
  "codex-state",
  "codex-uds",
  "codex-utils-absolute-path",
+ "codex-utils-cargo-bin",
  "codex-utils-cli",
  "codex-utils-home-dir",
  "core_test_support",
@@ -3500,7 +3501,6 @@ name = "codex-hepta-authbus"
 version = "0.0.0"
 dependencies = [
  "codex-hepta-types",
- "pretty_assertions",
 ]
 
 [[package]]
@@ -3509,7 +3509,6 @@ version = "0.0.0"
 dependencies = [
  "codex-hepta-authbus",
  "codex-hepta-types",
- "pretty_assertions",
 ]
 
 [[package]]
@@ -3537,7 +3536,6 @@ name = "codex-hepta-bao-adapter"
 version = "0.0.0"
 dependencies = [
  "codex-hepta-types",
- "pretty_assertions",
 ]
 
 [[package]]
@@ -3545,7 +3543,6 @@ name = "codex-hepta-bellman-operator"
 version = "0.0.0"
 dependencies = [
  "codex-hepta-types",
- "pretty_assertions",
 ]
 
 [[package]]
@@ -3553,7 +3550,6 @@ name = "codex-hepta-codex-adapter"
 version = "0.0.0"
 dependencies = [
  "codex-hepta-types",
- "pretty_assertions",
 ]
 
 [[package]]
@@ -3562,7 +3558,6 @@ version = "0.0.0"
 dependencies = [
  "codex-hepta-cognitive-types",
  "codex-hepta-types",
- "pretty_assertions",
 ]
 
 [[package]]
@@ -3571,7 +3566,6 @@ version = "0.0.0"
 dependencies = [
  "codex-hepta-cognitive-types",
  "codex-hepta-types",
- "pretty_assertions",
 ]
 
 [[package]]
@@ -3579,7 +3573,6 @@ name = "codex-hepta-cognitive-types"
 version = "0.0.0"
 dependencies = [
  "codex-hepta-types",
- "pretty_assertions",
 ]
 
 [[package]]
@@ -3588,7 +3581,6 @@ version = "0.0.0"
 dependencies = [
  "codex-hepta-cognitive-types",
  "codex-hepta-types",
- "pretty_assertions",
 ]
 
 [[package]]
@@ -3596,7 +3588,6 @@ name = "codex-hepta-context-compiler"
 version = "0.0.0"
 dependencies = [
  "codex-hepta-types",
- "pretty_assertions",
 ]
 
 [[package]]
@@ -3617,7 +3608,6 @@ name = "codex-hepta-control-plane"
 version = "0.0.0"
 dependencies = [
  "codex-hepta-types",
- "pretty_assertions",
 ]
 
 [[package]]
@@ -3670,7 +3660,6 @@ name = "codex-hepta-infer-core"
 version = "0.0.0"
 dependencies = [
  "codex-hepta-types",
- "pretty_assertions",
 ]
 
 [[package]]
@@ -3678,7 +3667,6 @@ name = "codex-hepta-infer-worker-host"
 version = "0.0.0"
 dependencies = [
  "codex-hepta-types",
- "pretty_assertions",
 ]
 
 [[package]]
@@ -3686,7 +3674,6 @@ name = "codex-hepta-inferd"
 version = "0.0.0"
 dependencies = [
  "codex-hepta-types",
- "pretty_assertions",
 ]
 
 [[package]]
@@ -3694,7 +3681,6 @@ name = "codex-hepta-intelligence"
 version = "0.0.0"
 dependencies = [
  "codex-hepta-types",
- "pretty_assertions",
 ]
 
 [[package]]
@@ -3702,7 +3688,6 @@ name = "codex-hepta-intelligence-eval"
 version = "0.0.0"
 dependencies = [
  "codex-hepta-types",
- "pretty_assertions",
 ]
 
 [[package]]
@@ -3710,16 +3695,13 @@ name = "codex-hepta-intuition"
 version = "0.0.0"
 dependencies = [
  "codex-hepta-types",
- "pretty_assertions",
 ]
 
 [[package]]
 name = "codex-hepta-kg"
 version = "0.0.0"
 dependencies = [
- "codex-hepta-cognitive-types",
  "codex-hepta-types",
- "pretty_assertions",
 ]
 
 [[package]]
@@ -3759,6 +3741,7 @@ dependencies = [
  "codex-hepta-paths",
  "matrix-sdk",
  "pretty_assertions",
+ "serde",
  "serde_json",
  "tempfile",
  "thiserror 2.0.18",
@@ -3866,7 +3849,6 @@ name = "codex-hepta-memory-federation"
 version = "0.0.0"
 dependencies = [
  "codex-hepta-types",
- "pretty_assertions",
 ]
 
 [[package]]
@@ -3875,7 +3857,6 @@ version = "0.0.0"
 dependencies = [
  "codex-hepta-cognitive-types",
  "codex-hepta-types",
- "pretty_assertions",
 ]
 
 [[package]]
@@ -3912,6 +3893,8 @@ version = "0.0.0"
 dependencies = [
  "codex-hepta-types",
  "pretty_assertions",
+ "serde",
+ "serde_json",
 ]
 
 [[package]]
@@ -3935,6 +3918,7 @@ dependencies = [
  "sha2 0.10.9",
  "tempfile",
  "thiserror 2.0.18",
+ "winapi-util",
 ]
 
 [[package]]
@@ -3951,7 +3935,6 @@ name = "codex-hepta-plasticity"
 version = "0.0.0"
 dependencies = [
  "codex-hepta-types",
- "pretty_assertions",
 ]
 
 [[package]]
@@ -3959,7 +3942,6 @@ name = "codex-hepta-prompt-optimizer"
 version = "0.0.0"
 dependencies = [
  "codex-hepta-types",
- "pretty_assertions",
 ]
 
 [[package]]
@@ -3967,7 +3949,6 @@ name = "codex-hepta-prompt-registry"
 version = "0.0.0"
 dependencies = [
  "codex-hepta-types",
- "pretty_assertions",
 ]
 
 [[package]]

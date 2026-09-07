@@ -24,7 +24,7 @@ fn run(arguments: Vec<String>) -> Result<(), String> {
     let command = arguments.get(1).ok_or_else(|| USAGE.to_string())?;
     match command.as_str() {
         "prepare-g5" if arguments.len() == 17 => {
-            let parsed = parse_common(&arguments, 2)?;
+            let parsed = parse_common(&arguments, /*start*/ 2)?;
             let lifetime = parse_u64(&arguments[16], "lifetime-seconds")?;
             let candidate = parsed.candidate.clone();
             let evidence = parsed.evidence.clone();
@@ -44,7 +44,7 @@ fn run(arguments: Vec<String>) -> Result<(), String> {
             Ok(())
         }
         "assess-g5" if arguments.len() == 17 || arguments.len() == 18 => {
-            let parsed = parse_common(&arguments, 2)?;
+            let parsed = parse_common(&arguments, /*start*/ 2)?;
             let expected_candidate = parsed.candidate.clone();
             let expected_evidence = parsed.evidence.clone();
             let assessment_path = if arguments[16] == "-" {

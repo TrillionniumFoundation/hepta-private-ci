@@ -1750,7 +1750,7 @@ fn assert_thread_read_contains_cited_answer(
             } => Some((text, memory_citation.as_ref())),
             _ => None,
         })
-        .last()
+        .next_back()
         .context("thread/read omitted the completed assistant message")?;
     ensure!(
         agent_message.0 == "done",
@@ -1803,7 +1803,7 @@ fn assert_external_read_only_turn(
             ThreadItem::AgentMessage { text, .. } => Some(text.as_str()),
             _ => None,
         })
-        .last()
+        .next_back()
         .context("external-provider turn omitted an assistant message")?;
     ensure!(
         assistant_text.trim() == expected_text,
@@ -2012,7 +2012,10 @@ fn attached_memory(request: &ResponsesRequest, memory_id: &str) -> Result<Value>
         "expected one attached occurrence of memory {memory_id}, found {}",
         matching.len()
     );
-    Ok(matching.into_iter().next().expect("length checked"))
+    matching
+        .into_iter()
+        .next()
+        .context("length-checked cognitive attachment missing")
 }
 
 fn assert_memory_absent(request: &ResponsesRequest, memory_id: &str) -> Result<()> {

@@ -79,7 +79,7 @@ fn error(message: impl Into<String>) -> AuthBusContractError {
 }
 
 fn validate_id(value: &str, label: &str) -> Result<(), AuthBusContractError> {
-    validate_text(value, label, 512)
+    validate_text(value, label, /*max_bytes*/ 512)
 }
 
 fn validate_nonzero(value: u64, label: &str) -> Result<(), AuthBusContractError> {

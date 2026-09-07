@@ -1,10 +1,14 @@
-//! Deterministic NDU feasibility, Pareto and bounded preference primitives.
+//! Deterministic NDU feasibility, Pareto and bounded preference primitives,
+//! with a separately versioned native shadow covariance regression profile.
 //!
 //! This crate is authority-free: an advisory recommendation is never an
 //! operation, selection, promotion, release or external effect.
 
 #![forbid(unsafe_code)]
 
+mod conditional_moments;
+mod covariance;
+mod covariance_profile;
 mod error;
 mod evaluation_digest;
 mod evaluator;
@@ -14,6 +18,16 @@ mod preference;
 mod recursive;
 mod scoring;
 
+pub use conditional_moments::ConditionalMomentSampleV1;
+pub use conditional_moments::ConditionalMomentsV1;
+pub use conditional_moments::estimate_conditional_moments;
+pub use covariance::ZEstimateV1;
+pub use covariance::solve_backward_regression;
+pub use covariance_profile::AdmittedCovarianceProfileV1;
+pub use covariance_profile::CovarianceConventionV1;
+pub use covariance_profile::CovarianceError;
+pub use covariance_profile::NduCovarianceProfileV1;
+pub use covariance_profile::admit_covariance_profile;
 pub use error::NduError;
 pub use evaluator::canonical_scalarization_digest;
 pub use evaluator::evaluate_candidates;

@@ -1,6 +1,5 @@
 use super::*;
 use std::fs::File;
-use std::fs::OpenOptions;
 use std::path::PathBuf;
 use std::sync::atomic::AtomicU64;
 use std::sync::atomic::Ordering;
@@ -11,6 +10,7 @@ use pretty_assertions::assert_eq;
 use crate::ArtifactKind;
 use crate::ArtifactManifest;
 use crate::ArtifactStorageError;
+use crate::CreateOnlyArtifactFile;
 use crate::read_candidate_payload;
 use crate::read_registry_snapshot;
 use crate::write_candidate_payload;
@@ -292,13 +292,8 @@ impl Files {
         Self(path)
     }
 
-    fn create(&self, name: &str) -> File {
-        OpenOptions::new()
-            .read(true)
-            .write(true)
-            .create_new(true)
-            .open(self.0.join(name))
-            .unwrap()
+    fn create(&self, name: &str) -> CreateOnlyArtifactFile {
+        CreateOnlyArtifactFile::create(self.0.join(name)).unwrap()
     }
 
     fn read(&self, name: &str) -> File {

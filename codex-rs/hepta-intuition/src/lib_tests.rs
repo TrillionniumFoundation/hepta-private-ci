@@ -1,3 +1,6 @@
+use pretty_assertions::assert_eq;
+use pretty_assertions::assert_ne;
+
 use super::*;
 
 fn id(value: &str) -> StableId {
@@ -84,4 +87,71 @@ fn duplicate_candidates_are_rejected() {
         decide(request(vec![value.clone(), value])),
         Err(Error::DuplicateCandidate("action:a".to_string()))
     );
+}
+
+#[test]
+fn candidate_ceiling_is_enforced_at_128() {
+    let at_limit = (0..128)
+        .map(|index| candidate(&format!("action:{index}"), index, 1))
+        .collect();
+    let receipt = decide(request(at_limit))
+        .unwrap_or_else(|error| panic!("128 candidates must be accepted: {error:?}"));
+    assert_eq!(receipt.propensities.len(), 128);
+
+    let over_limit = (0..129)
+        .map(|index| candidate(&format!("action:{index}"), index, 1))
+        .collect();
+    assert_eq!(
+        decide(request(over_limit)),
+        Err(Error::CandidateLimitExceeded)
+    );
+}
+
+#[test]
+fn maximum_candidate_receipt_is_canonical_and_digest_complete() {
+    let mut candidates = (0..128)
+        .map(|index| {
+            candidate(
+                &format!("action:{index:03}"),
+                index,
+                ProbabilityQ32::ONE.raw(),
+            )
+        })
+        .collect::<Vec<_>>();
+    candidates[0].utility = FixedQ32::from_raw(i64::MIN);
+    candidates[127].utility = FixedQ32::from_raw(i64::MAX);
+
+    let receipt = decide(request(candidates.clone()))
+        .unwrap_or_else(|error| panic!("maximum candidate set must be decided: {error:?}"));
+    assert_eq!(receipt.decision, Decision::Selected(id("action:127")));
+    let probability_total = receipt
+        .propensities
+        .iter()
+        .map(|propensity| u128::from(propensity.probability.raw()))
+        .sum::<u128>()
+        + u128::from(receipt.abstain_probability.raw());
+    assert_eq!(probability_total, u128::from(ProbabilityQ32::ONE.raw()));
+
+    let mut reversed = candidates.clone();
+    reversed.reverse();
+    assert_eq!(
+        decide(request(reversed)).unwrap_or_else(|error| {
+            panic!("permuted candidate set must be decided: {error:?}")
+        }),
+        receipt
+    );
+
+    candidates[127].support_digest = digest(b"changed-final-support");
+    let changed = decide(request(candidates.clone()))
+        .unwrap_or_else(|error| panic!("changed candidate set must be decided: {error:?}"));
+    assert_eq!(changed.decision, receipt.decision);
+    assert_eq!(changed.propensities, receipt.propensities);
+    assert_eq!(changed.abstain_probability, receipt.abstain_probability);
+    assert_ne!(changed.receipt_digest, receipt.receipt_digest);
+
+    let mut rebound = request(candidates);
+    rebound.candidate_set_digest = digest(b"different-candidate-set");
+    let rebound = decide(rebound)
+        .unwrap_or_else(|error| panic!("rebound candidate set must be decided: {error:?}"));
+    assert_ne!(rebound.receipt_digest, changed.receipt_digest);
 }

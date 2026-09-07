@@ -1,14 +1,18 @@
-//! Opaque HeptaBao secret-reference adapter.
+//! Opaque HeptaBao secret-reference boundary.
 //!
-//! Raw secret bytes never enter this API. The adapter verifies a scoped lease
-//! and returns only a deterministic opaque handle digest.
+//! The boundary exposes no raw-secret payload field: V1 accepts only bounded
+//! reference identifiers, digests and permission observations. It cannot
+//! dispatch because this tree has no owner-issued `VerifiedUseToken` or
+//! enrolled provider port.
 
 #![forbid(unsafe_code)]
 
 use std::error::Error as StdError;
 use std::fmt;
 
-use codex_hepta_types::{AuthorityPosture, Digest32, StableId};
+use codex_hepta_types::AuthorityPosture;
+use codex_hepta_types::Digest32;
+use codex_hepta_types::StableId;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct SecretReference {
@@ -66,6 +70,8 @@ impl fmt::Display for Error {
 
 impl StdError for Error {}
 
+/// Legacy V1 helper: this only binds caller-provided metadata into a digest.
+/// It is not a permission, provider observation or external lease proof.
 pub fn resolve(
     now_ms: u64,
     request: SecretRequest,

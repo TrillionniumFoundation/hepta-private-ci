@@ -14,6 +14,10 @@ use sha2::Sha256;
 
 use crate::AcceptanceError;
 
+#[cfg(windows)]
+#[path = "durable_windows.rs"]
+mod windows;
+
 pub(crate) const MAX_SMALL_FILE_BYTES: usize = 1024 * 1024;
 pub(crate) const MAX_ARTIFACT_BYTES: u64 = 2 * 1024 * 1024 * 1024;
 
@@ -57,6 +61,8 @@ pub(crate) fn secure_canonical_file_path(
     }
     let metadata = std::fs::symlink_metadata(&canonical)?;
     verify_regular_metadata(&metadata, label)?;
+    #[cfg(windows)]
+    windows::verify_path(&canonical, label)?;
     Ok(canonical)
 }
 
@@ -76,9 +82,13 @@ pub(crate) fn secure_read(path: &Path, max_bytes: usize) -> Result<Vec<u8>, Acce
         use std::os::unix::fs::OpenOptionsExt;
         options.custom_flags(libc::O_CLOEXEC | libc::O_NOFOLLOW);
     }
+    #[cfg(windows)]
+    windows::configure_open(&mut options);
     let mut file = options.open(path)?;
     let before = file.metadata()?;
     verify_regular_metadata(&before, "input artifact")?;
+    #[cfg(windows)]
+    let windows_before = windows::FileSnapshot::capture(&file, "input artifact")?;
     if before.len() > max_bytes as u64 {
         return Err(invalid("input artifact exceeds its read bound"));
     }
@@ -89,6 +99,8 @@ pub(crate) fn secure_read(path: &Path, max_bytes: usize) -> Result<Vec<u8>, Acce
     if bytes.len() > max_bytes {
         return Err(invalid("input artifact exceeds its read bound"));
     }
+    #[cfg(windows)]
+    windows::verify_unchanged(&file, path, &windows_before, "input artifact")?;
     let after_fd = file.metadata()?;
     let after_path = std::fs::metadata(path)?;
     let after_link = std::fs::symlink_metadata(path)?;
@@ -109,9 +121,13 @@ pub(crate) fn secure_hash(path: &Path) -> Result<(String, u64), AcceptanceError>
         use std::os::unix::fs::OpenOptionsExt;
         options.custom_flags(libc::O_CLOEXEC | libc::O_NOFOLLOW);
     }
+    #[cfg(windows)]
+    windows::configure_open(&mut options);
     let mut file = options.open(path)?;
     let before = file.metadata()?;
     verify_regular_metadata(&before, "manifest artifact")?;
+    #[cfg(windows)]
+    let windows_before = windows::FileSnapshot::capture(&file, "manifest artifact")?;
     if before.len() > MAX_ARTIFACT_BYTES {
         return Err(invalid("manifest artifact exceeds the 2 GiB bound"));
     }
@@ -124,6 +140,8 @@ pub(crate) fn secure_hash(path: &Path) -> Result<(String, u64), AcceptanceError>
         }
         hasher.update(&buffer[..count]);
     }
+    #[cfg(windows)]
+    windows::verify_unchanged(&file, path, &windows_before, "manifest artifact")?;
     let after_fd = file.metadata()?;
     let after_path = std::fs::metadata(path)?;
     let after_link = std::fs::symlink_metadata(path)?;
@@ -151,10 +169,14 @@ pub(crate) fn write_private_new(path: &Path, bytes: &[u8]) -> Result<(), Accepta
             .mode(0o600)
             .custom_flags(libc::O_CLOEXEC | libc::O_NOFOLLOW);
     }
+    #[cfg(windows)]
+    windows::configure_open(&mut options);
     let mut file = options.open(path)?;
     file.write_all(bytes)?;
     file.sync_all()?;
     let fd_after = file.metadata()?;
+    #[cfg(windows)]
+    let windows_after = windows::FileSnapshot::capture(&file, "sidecar artifact")?;
     let path_after = std::fs::metadata(path)?;
     let link_after = std::fs::symlink_metadata(path)?;
     verify_regular_metadata(&link_after, "sidecar artifact")?;
@@ -166,6 +188,8 @@ pub(crate) fn write_private_new(path: &Path, bytes: &[u8]) -> Result<(), Accepta
             "sidecar artifact path changed during durable write",
         ));
     }
+    #[cfg(windows)]
+    windows::verify_unchanged(&file, path, &windows_after, "sidecar artifact")?;
     file.seek(SeekFrom::Start(0))?;
     let mut fd_bytes = Vec::with_capacity(bytes.len());
     file.read_to_end(&mut fd_bytes)?;
@@ -196,6 +220,8 @@ pub(crate) fn write_private_atomic_replace(
     verify_secure_directory(parent, "sidecar directory")?;
     if let Ok(metadata) = std::fs::symlink_metadata(path) {
         verify_regular_metadata(&metadata, "replaced sidecar artifact")?;
+        #[cfg(windows)]
+        windows::verify_path(path, "replaced sidecar artifact")?;
     }
     write_private_new(temporary_path, bytes)?;
     let parent_before = std::fs::symlink_metadata(parent)?;
@@ -217,15 +243,15 @@ pub(crate) fn write_private_atomic_replace(
 }
 
 pub(crate) struct SidecarLock {
-    file: File,
+    _file: File,
 }
 
 pub(crate) fn lock_sidecar(root: &Path) -> Result<SidecarLock, AcceptanceError> {
-    open_sidecar_lock(root, true)
+    open_sidecar_lock(root, /*create*/ true)
 }
 
 pub(crate) fn lock_existing_sidecar(root: &Path) -> Result<SidecarLock, AcceptanceError> {
-    open_sidecar_lock(root, false)
+    open_sidecar_lock(root, /*create*/ false)
 }
 
 fn open_sidecar_lock(root: &Path, create: bool) -> Result<SidecarLock, AcceptanceError> {
@@ -240,6 +266,8 @@ fn open_sidecar_lock(root: &Path, create: bool) -> Result<SidecarLock, Acceptanc
             .mode(0o600)
             .custom_flags(libc::O_CLOEXEC | libc::O_NOFOLLOW);
     }
+    #[cfg(windows)]
+    windows::configure_open(&mut options);
     let file = options.open(&path).map_err(|error| {
         if !create && error.kind() == std::io::ErrorKind::NotFound {
             invalid("read-only receipt verification requires the existing sidecar lock")
@@ -248,6 +276,8 @@ fn open_sidecar_lock(root: &Path, create: bool) -> Result<SidecarLock, Acceptanc
         }
     })?;
     let fd_metadata = file.metadata()?;
+    #[cfg(windows)]
+    let windows_before = windows::FileSnapshot::capture(&file, "sidecar lock")?;
     let path_metadata = std::fs::metadata(&path)?;
     let link_metadata = std::fs::symlink_metadata(&path)?;
     verify_regular_metadata(&fd_metadata, "sidecar lock")?;
@@ -257,6 +287,8 @@ fn open_sidecar_lock(root: &Path, create: bool) -> Result<SidecarLock, Acceptanc
     {
         return Err(invalid("sidecar lock path changed while it was opened"));
     }
+    #[cfg(windows)]
+    windows::verify_unchanged(&file, &path, &windows_before, "sidecar lock")?;
     #[cfg(unix)]
     {
         use std::os::fd::AsRawFd;
@@ -268,7 +300,7 @@ fn open_sidecar_lock(root: &Path, create: bool) -> Result<SidecarLock, Acceptanc
             ));
         }
     }
-    Ok(SidecarLock { file })
+    Ok(SidecarLock { _file: file })
 }
 
 impl Drop for SidecarLock {
@@ -278,7 +310,7 @@ impl Drop for SidecarLock {
             use std::os::fd::AsRawFd;
             // SAFETY: `flock` receives the still-live descriptor owned by this
             // guard and does not dereference application memory.
-            let _ = unsafe { libc::flock(self.file.as_raw_fd(), libc::LOCK_UN) };
+            let _ = unsafe { libc::flock(self._file.as_raw_fd(), libc::LOCK_UN) };
         }
     }
 }
@@ -317,25 +349,29 @@ fn verify_regular_metadata(
     verify_private_mode(metadata, label)
 }
 
+#[cfg(unix)]
 fn verify_private_mode(metadata: &std::fs::Metadata, label: &str) -> Result<(), AcceptanceError> {
-    #[cfg(unix)]
-    {
-        use std::os::unix::fs::MetadataExt;
-        use std::os::unix::fs::PermissionsExt;
-        if metadata.permissions().mode() & 0o077 != 0 {
-            return Err(invalid(format!(
-                "{label} must not grant group or other access"
-            )));
-        }
-        // SAFETY: `geteuid` takes no arguments, has no preconditions, and does
-        // not expose or mutate memory.
-        let effective_uid = unsafe { libc::geteuid() };
-        if metadata.uid() != effective_uid {
-            return Err(invalid(format!(
-                "{label} must be owned by the effective user"
-            )));
-        }
+    use std::os::unix::fs::MetadataExt;
+    use std::os::unix::fs::PermissionsExt;
+
+    if metadata.permissions().mode() & 0o077 != 0 {
+        return Err(invalid(format!(
+            "{label} must not grant group or other access"
+        )));
     }
+    // SAFETY: `geteuid` takes no arguments, has no preconditions, and does
+    // not expose or mutate memory.
+    let effective_uid = unsafe { libc::geteuid() };
+    if metadata.uid() != effective_uid {
+        return Err(invalid(format!(
+            "{label} must be owned by the effective user"
+        )));
+    }
+    Ok(())
+}
+
+#[cfg(not(unix))]
+fn verify_private_mode(_metadata: &std::fs::Metadata, _label: &str) -> Result<(), AcceptanceError> {
     Ok(())
 }
 

@@ -227,7 +227,7 @@ impl H7H89ProductionGrantVerifier {
             ));
         }
         let h7_verifier =
-            H7ArtifactVerifier::new(signer_id.clone(), signer_epoch, verifying_key.clone())
+            H7ArtifactVerifier::new(signer_id.clone(), signer_epoch, verifying_key)
                 .map_err(|error| ProductionAuthorityError::H7Binding(error.to_string()))?;
         Self::new_with_h7_verifier(signer_id, signer_epoch, verifying_key, h7_verifier)
     }
@@ -738,7 +738,7 @@ mod tests {
                 actual: 8,
             })
         );
-        let mut tampered = grant.clone();
+        let mut tampered = grant;
         tampered.target_release = "release-v4".to_string();
         assert_eq!(
             verifier.verify(

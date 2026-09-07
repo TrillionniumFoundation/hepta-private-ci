@@ -253,7 +253,7 @@ fn unsupported_and_zero_behavior_fail_closed() {
 #[test]
 fn authority_flags_and_digest_tampering_are_rejected() {
     let action = action("attempt-1");
-    let mut effectful = action.clone();
+    let mut effectful = action;
     effectful.external_effect_executed = true;
     assert_eq!(effectful.validate(), Err(H7FeedbackError::ExternalEffect));
 
@@ -390,7 +390,7 @@ fn feedback_sequence_gaps_fail_closed_and_leave_oracle_unchanged() {
         1_000_000,
         true,
     );
-    oracle.append(first.clone()).unwrap();
+    oracle.append(first).unwrap();
     let before = oracle.clone();
     let gap = record(
         4,

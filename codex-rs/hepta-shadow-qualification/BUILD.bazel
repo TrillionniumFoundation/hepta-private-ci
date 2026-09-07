@@ -26,6 +26,11 @@ rust_test(
     compile_data = ["fixtures/live_product_oracle_v2_2f704.json"],
     crate = ":hepta-shadow-qualification-lib",
     deps = [
+        "//codex-rs/hepta-learning-artifacts",
+        "//codex-rs/hepta-learning-ledger",
+        "//codex-rs/hepta-ndu",
+        "//codex-rs/hepta-objective",
+        "//codex-rs/hepta-types",
         "@crates//:pretty_assertions",
         "@crates//:tempfile",
     ],
@@ -46,13 +51,17 @@ rust_binary(
 
 rust_test(
     name = "durable-learning-roundtrip",
-    srcs = ["tests/durable_learning_roundtrip.rs"],
+    srcs = [
+        "tests/durable_learning_roundtrip.rs",
+        "tests/support/durable_process.rs",
+    ],
     crate_root = "tests/durable_learning_roundtrip.rs",
     edition = "2024",
     deps = [
         "//codex-rs/hepta-learning-artifacts",
         "//codex-rs/hepta-learning-ledger",
         "//codex-rs/hepta-types",
+        "@crates//:pretty_assertions",
         "@crates//:tempfile",
     ],
 )

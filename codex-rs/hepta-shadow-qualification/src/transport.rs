@@ -336,10 +336,10 @@ fn verify_protocol(
             Surface::Mcp => (MCP_INBOUND_COUNT, MCP_OUTBOUND_COUNT),
         };
         for sequence in 1..=inbound {
-            verify_protocol_pair(artifacts, surface, "inbound", sequence, 6)?;
+            verify_protocol_pair(artifacts, surface, "inbound", sequence, /*width*/ 6)?;
         }
         for sequence in 1..=outbound {
-            verify_protocol_pair(artifacts, surface, "outbound", sequence, 3)?;
+            verify_protocol_pair(artifacts, surface, "outbound", sequence, /*width*/ 3)?;
         }
     }
     Ok(())

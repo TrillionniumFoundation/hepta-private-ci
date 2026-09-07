@@ -1536,7 +1536,11 @@ fn run_auto_compact<'a>(
         RemoteCompactionSupport::V2 if remote_compaction_v2_enabled => async move {
             let turn_context = Arc::clone(&step_context.turn);
             let _profile_guard = turn_context.turn_timing_state.begin_compaction();
-            emit_compact_metric(&sess.services.session_telemetry, "remote_v2", false);
+            emit_compact_metric(
+                &sess.services.session_telemetry,
+                "remote_v2",
+                /*manual*/ false,
+            );
             run_inline_remote_auto_compact_task_v2(
                 Arc::clone(sess),
                 step_context,
@@ -1553,7 +1557,11 @@ fn run_auto_compact<'a>(
         RemoteCompactionSupport::V2 => async move {
             let turn_context = Arc::clone(&step_context.turn);
             let _profile_guard = turn_context.turn_timing_state.begin_compaction();
-            emit_compact_metric(&sess.services.session_telemetry, "remote", false);
+            emit_compact_metric(
+                &sess.services.session_telemetry,
+                "remote",
+                /*manual*/ false,
+            );
             run_inline_remote_auto_compact_task(
                 Arc::clone(sess),
                 step_context,
@@ -1570,7 +1578,11 @@ fn run_auto_compact<'a>(
         RemoteCompactionSupport::Unsupported => async move {
             let turn_context = Arc::clone(&step_context.turn);
             let _profile_guard = turn_context.turn_timing_state.begin_compaction();
-            emit_compact_metric(&sess.services.session_telemetry, "local", false);
+            emit_compact_metric(
+                &sess.services.session_telemetry,
+                "local",
+                /*manual*/ false,
+            );
             run_inline_auto_compact_task(
                 Arc::clone(sess),
                 turn_context,

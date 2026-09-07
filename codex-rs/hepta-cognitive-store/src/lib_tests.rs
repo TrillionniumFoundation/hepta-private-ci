@@ -1,6 +1,8 @@
 use super::*;
-use codex_hepta_cognitive_types::{MemoryKind, RecordState};
+use codex_hepta_cognitive_types::MemoryKind;
+use codex_hepta_cognitive_types::RecordState;
 use codex_hepta_types::Revision;
+use pretty_assertions::assert_eq;
 
 fn id(value: &str) -> StableId {
     let Ok(value) = StableId::new(value) else {
@@ -37,6 +39,13 @@ fn store() -> CognitiveStore {
         panic!("test store must initialize");
     };
     value
+}
+
+fn must<T, E: std::fmt::Debug>(result: Result<T, E>) -> T {
+    match result {
+        Ok(value) => value,
+        Err(error) => panic!("test operation failed: {error:?}"),
+    }
 }
 
 #[test]
@@ -95,4 +104,88 @@ fn identical_append_is_idempotent() {
         value.append(first, None).map(|receipt| receipt.disposition),
         Ok(AppendDisposition::Unchanged)
     );
+}
+
+#[test]
+fn sequence_exhaustion_rejects_insert_without_mutating_store() {
+    let mut value = store();
+    value.sequence = must(LogicalSequence::new(u64::MAX));
+    let before = value.clone();
+
+    assert_eq!(
+        value.append(record(1, None, RecordState::Live), None),
+        Err(Error::SequenceOverflow)
+    );
+    assert_eq!(value, before);
+}
+
+#[test]
+fn sequence_exhaustion_rejects_correction_without_mutating_store() {
+    let mut value = store();
+    let first = record(1, None, RecordState::Live);
+    let predecessor = first.record_digest();
+    must(value.append(first, None));
+    value.sequence = must(LogicalSequence::new(u64::MAX));
+    let before = value.clone();
+
+    assert_eq!(
+        value.append(
+            record(2, Some(predecessor), RecordState::Tombstone),
+            Some(predecessor)
+        ),
+        Err(Error::SequenceOverflow)
+    );
+    assert_eq!(value, before);
+}
+
+#[test]
+fn exhausted_revision_cannot_be_reused_for_changed_content() {
+    let mut value = store();
+    let first = record(u64::MAX, Some(digest(b"predecessor")), RecordState::Live);
+    let predecessor = first.record_digest();
+    value.records.insert(
+        first.record_id.clone(),
+        StoredRecord {
+            record: first,
+            sequence: value.sequence,
+        },
+    );
+    let before = value.clone();
+
+    assert_eq!(
+        value.append(
+            record(u64::MAX, Some(predecessor), RecordState::Tombstone),
+            Some(predecessor)
+        ),
+        Err(Error::RevisionNotAdvanced)
+    );
+    assert_eq!(value, before);
+}
+
+#[test]
+fn identical_retry_still_succeeds_at_sequence_exhaustion() {
+    let mut value = store();
+    let first = record(1, None, RecordState::Live);
+    must(value.append(first.clone(), None));
+    value.sequence = must(LogicalSequence::new(u64::MAX));
+    let before = value.clone();
+
+    assert_eq!(
+        value.append(first, None).map(|receipt| receipt.disposition),
+        Ok(AppendDisposition::Unchanged)
+    );
+    assert_eq!(value, before);
+}
+
+#[test]
+fn retry_after_unrelated_append_preserves_original_commit_sequence() {
+    let mut value = store();
+    let first = record(1, None, RecordState::Live);
+    let mut expected = must(value.append(first.clone(), None));
+    let mut unrelated = first.clone();
+    unrelated.record_id = id("memory:2");
+    must(value.append(unrelated, None));
+    expected.disposition = AppendDisposition::Unchanged;
+
+    assert_eq!(value.append(first, None), Ok(expected));
 }

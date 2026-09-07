@@ -164,7 +164,7 @@ impl LogicalTurnAttemptRequest {
         validate_text(&self.journal_id, "journal id")?;
         validate_text(&self.trajectory_id, "trajectory id")?;
         validate_text(&self.occurrence_key, "occurrence key")?;
-        validate_text_max(&self.fencing_token, "fencing token", 256)?;
+        validate_text_max(&self.fencing_token, "fencing token", /*max_bytes*/ 256)?;
         if self.authority_epoch == 0 || self.owner_epoch == 0 {
             return Err(invalid("authority and owner epochs must be non-zero"));
         }
@@ -406,13 +406,13 @@ impl CognitiveStore {
         )
         .await?;
         if identity_disposition == IdentityDisposition::Conflict {
-            return Ok(commit_reservation(
+            return commit_reservation(
                 transaction,
                 LogicalTurnReservation::Conflict {
                     reason: "logical identity differs from the durable registry row".to_string(),
                 },
             )
-            .await?);
+            .await;
         }
         let rows = load_attempt_chain(
             &mut transaction,
@@ -438,36 +438,36 @@ impl CognitiveStore {
                     &mut transaction,
                     self,
                     &persisted_attempt,
-                    false,
+                    /*allow_expired*/ false,
                 )
                 .await?;
                 if lease.is_none() {
-                    return Ok(commit_reservation(
+                    return commit_reservation(
                         transaction,
                         LogicalTurnReservation::Conflict {
                             reason: "exact logical attempt is missing its local lease witness"
                                 .to_string(),
                         },
                     )
-                    .await?);
+                    .await;
                 }
-                return Ok(commit_reservation(
+                return commit_reservation(
                     transaction,
                     LogicalTurnReservation::Replayed {
                         attempt: head.clone(),
                     },
                 )
-                .await?);
+                .await;
             }
 
             if head.logical_binding_sha256 != request.logical_binding_sha256 {
-                return Ok(commit_reservation(
+                return commit_reservation(
                     transaction,
                     LogicalTurnReservation::Conflict {
                         reason: "logical binding differs from the durable identity".to_string(),
                     },
                 )
-                .await?);
+                .await;
             }
 
             // The physical lease may have reached a terminal state after the
@@ -482,72 +482,72 @@ impl CognitiveStore {
                 return Err(corrupt("logical attempt lease journal is missing"));
             };
             if latest_lease.state != LocalLeaseState::Active {
-                return Ok(commit_reservation(
+                return commit_reservation(
                     transaction,
                     LogicalTurnReservation::Conflict {
                         reason: "logical turn already has a terminal physical lease".to_string(),
                     },
                 )
-                .await?);
+                .await;
             }
 
             if !head.is_expired_at(now) {
-                return Ok(commit_reservation(
+                return commit_reservation(
                     transaction,
                     LogicalTurnReservation::ExistingInFlight {
                         attempt: head.clone(),
                     },
                 )
-                .await?);
+                .await;
             }
 
             verify_attempt_lease_witness(&mut transaction, head).await?;
 
             let evidence = evidence_for_attempt(&mut transaction, head).await?;
             if !evidence.is_empty() {
-                return Ok(commit_reservation(
+                return commit_reservation(
                     transaction,
                     LogicalTurnReservation::BlockedByEvidence {
                         attempt: head.clone(),
                         evidence,
                     },
                 )
-                .await?);
+                .await;
             }
             if attempt.lease_id == head.lease_id {
-                return Ok(commit_reservation(
+                return commit_reservation(
                     transaction,
                     LogicalTurnReservation::Conflict {
                         reason: "takeover must present a distinct attempt-scoped lease".to_string(),
                     },
                 )
-                .await?);
+                .await;
             }
             if attempt.attempt_id == head.attempt_id
                 || attempt.journal_id == head.journal_id
                 || attempt.trajectory_id == head.trajectory_id
                 || attempt.occurrence_key == head.occurrence_key
             {
-                return Ok(commit_reservation(
+                return commit_reservation(
                     transaction,
                     LogicalTurnReservation::Conflict {
                         reason: "takeover must present fresh attempt-scoped journal, trajectory, and occurrence identities".to_string(),
                     },
                 )
-                .await?);
+                .await;
             }
             if attempt.generation != 1 {
-                return Ok(commit_reservation(
+                return commit_reservation(
                     transaction,
                     LogicalTurnReservation::Conflict {
                         reason: "a takeover attempt must start a fresh lease generation one"
                             .to_string(),
                     },
                 )
-                .await?);
+                .await;
             }
             if attempt.authority_epoch != head.authority_epoch {
-                return Ok(commit_reservation(
+                return commit_reservation(
                     transaction,
                     LogicalTurnReservation::Conflict {
                         reason:
@@ -555,17 +555,17 @@ impl CognitiveStore {
                                 .to_string(),
                     },
                 )
-                .await?);
+                .await;
             }
             if attempt.owner_epoch < head.owner_epoch {
-                return Ok(commit_reservation(
+                return commit_reservation(
                     transaction,
                     LogicalTurnReservation::Conflict {
                         reason: "takeover owner epoch must not regress below the expired attempt"
                             .to_string(),
                     },
                 )
-                .await?);
+                .await;
             }
             // Equality is intentional: a same-generation retry may have no
             // stronger lifecycle epoch to present.  It is safe only because
@@ -573,23 +573,23 @@ impl CognitiveStore {
             // evidence, and a fresh physical identity; lower epochs remain
             // fenced as stale callers.
             if attempt.lease_expires_at_unix_seconds <= now {
-                return Ok(commit_reservation(
+                return commit_reservation(
                     transaction,
                     LogicalTurnReservation::Conflict {
                         reason: "takeover lease must have a future expiry".to_string(),
                     },
                 )
-                .await?);
+                .await;
             }
             if physical_identity_is_reused(&mut transaction, &attempt).await? {
-                return Ok(commit_reservation(
+                return commit_reservation(
                     transaction,
                     LogicalTurnReservation::Conflict {
                         reason: "takeover attempt-scoped identity is already bound elsewhere"
                             .to_string(),
                     },
                 )
-                .await?);
+                .await;
             }
             let _lease = ensure_requested_lease(&mut transaction, self, &attempt).await?;
             let superseded = append_attempt(
@@ -639,19 +639,19 @@ impl CognitiveStore {
                 head.registry_sequence + 2,
                 head.attempt_no + 1,
                 LogicalTurnAttemptTransition::Active,
-                None,
+                /*superseded_by_attempt_id*/ None,
                 &superseded.attempt_sha256,
                 now_unix_i64()?,
             )
             .await?;
-            return Ok(commit_reservation(
+            return commit_reservation(
                 transaction,
                 LogicalTurnReservation::Takeover {
                     superseded,
                     attempt: active,
                 },
             )
-            .await?);
+            .await;
         }
 
         if physical_identity_is_reused(&mut transaction, &attempt).await? {
@@ -668,13 +668,13 @@ impl CognitiveStore {
                 )
                 .await;
             }
-            return Ok(commit_reservation(
+            return commit_reservation(
                 transaction,
                 LogicalTurnReservation::Conflict {
                     reason: "attempt-scoped identity is already bound elsewhere".to_string(),
                 },
             )
-            .await?);
+            .await;
         }
         let _lease = ensure_requested_lease(&mut transaction, self, &attempt).await?;
         let active = append_attempt(
@@ -682,19 +682,19 @@ impl CognitiveStore {
             self.owner_agent_id(),
             &request,
             &attempt,
-            1,
-            1,
+            /*registry_sequence*/ 1,
+            /*attempt_no*/ 1,
             LogicalTurnAttemptTransition::Active,
-            None,
+            /*superseded_by_attempt_id*/ None,
             &genesis_attempt_digest(),
             now_unix_i64()?,
         )
         .await?;
-        Ok(commit_reservation(
+        commit_reservation(
             transaction,
             LogicalTurnReservation::Acquired { attempt: active },
         )
-        .await?)
+        .await
     }
 
     /// Inspect one stable logical turn without inserting or changing any
@@ -1024,7 +1024,7 @@ async fn ensure_requested_lease(
         request.generation,
         &request.fencing_token,
         LocalLeaseState::Active,
-        None,
+        /*previous*/ None,
         Some(&binding),
     )
     .await?)

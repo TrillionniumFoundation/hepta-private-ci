@@ -1,0 +1,183 @@
+# Scope: rules_rust process-wrapper argv transport; rustc/linker arguments are unchanged.
+# Upstream: hermeticbuild/rules_rust f19661ba71f77c993ce1eb082053692610fe4313.
+diff --git a/rust/private/rustc.bzl b/rust/private/rustc.bzl
+index 9622cdd..8ab9269 100644
+--- a/rust/private/rustc.bzl
++++ b/rust/private/rustc.bzl
+@@ -1125,1 +1125,6 @@
++    # Build-script paths and substitutions can exceed Windows' process limit
++    # even when rustc_flags already use a response file. Keep the child command
++    # and its response files separate from the wrapper's multiline arguments.
++    process_wrapper_flags.set_param_file_format("multiline")
++    process_wrapper_flags.use_param_file("--wrapper-args=%s", use_always = False)
+     for build_env_file in build_env_files:
+diff --git a/util/process_wrapper/options.rs b/util/process_wrapper/options.rs
+index c3e5a67..49a2b8f 100644
+--- a/util/process_wrapper/options.rs
++++ b/util/process_wrapper/options.rs
+@@ -133,3 +133,5 @@
+     let mut child_args = match flags
+-        .parse(env::args().collect())
++        .parse(expand_wrapper_args(env::args().collect(), |path| {
++            std::fs::read_to_string(path)
++        })?)
+         .map_err(OptionError::FlagError)?
+@@ -303,1 +305,36 @@
++/// Expand only Bazel's leading wrapper-flags response file. The child command,
++/// including its own `@params` files, stays under the existing rustc parser.
++fn expand_wrapper_args(
++    mut argv: Vec<String>,
++    read_file: impl FnOnce(&str) -> io::Result<String>,
++) -> Result<Vec<String>, OptionError> {
++    let Some(path) = argv
++        .get(1)
++        .and_then(|arg| arg.strip_prefix("--wrapper-args="))
++    else {
++        return Ok(argv);
++    };
++    let contents = read_file(path).map_err(|err| {
++        OptionError::Generic(format!(
++            "failed to read wrapper arguments from {path:?}: {err}"
++        ))
++    })?;
++    // Bazel's multiline format writes each argument verbatim. In particular,
++    // do not apply shell quoting or the build-script reader's backslash escapes.
++    let wrapper_args: Vec<String> = contents.lines().map(str::to_owned).collect();
++    if wrapper_args.iter().any(|arg| arg == "--") {
++        return Err(OptionError::Generic(
++            "wrapper arguments file must not contain the child-command separator".to_owned(),
++        ));
++    }
++    // One level only: a value beginning with @ or --wrapper-args= is literal.
++    // The normal flag parser still validates all expanded wrapper options.
++    argv.splice(1..2, wrapper_args);
++    Ok(argv)
++}
++
++#[cfg(test)]
++#[path = "options_response_file_tests.rs"]
++mod response_file_tests;
++
+ fn args_from_file(paths: Vec<String>) -> Result<Vec<String>, OptionError> {
+diff --git a/util/process_wrapper/options_response_file_tests.rs b/util/process_wrapper/options_response_file_tests.rs
+new file mode 100644
+index 0000000..b5edc21
+--- /dev/null
++++ b/util/process_wrapper/options_response_file_tests.rs
+@@ -0,0 +1,116 @@
++use super::{expand_wrapper_args, OptionError};
++use crate::flags::{Flags, ParseOutcome};
++use std::io;
++
++fn strings(args: &[&str]) -> Vec<String> {
++    args.iter().map(|arg| (*arg).to_owned()).collect()
++}
++
++#[test]
++fn large_wrapper_prefix_preserves_all_arguments_and_child_response_files() {
++    let mut wrapper = Vec::new();
++    // Mirror the failure's growing build-script search paths and substitutions,
++    // including Windows paths with spaces, Unicode, and trailing backslashes.
++    for index in 0..300 {
++        let path = format!(r"D:\build output\依存\crate-{index}\_bs.out_dir\");
++        wrapper.extend(strings(&["--arg-file", &format!("{path}linksearchpaths")]));
++        wrapper.extend(strings(&["--subst", &format!("{path}={path}")]));
++    }
++    assert!(wrapper.join(" ").encode_utf16().count() > 32767);
++    let child = strings(&[
++        "--",
++        r"C:\Program Files\Rust 工具\rustc.exe",
++        r"@D:\build output\rustc.params",
++        "--wrapper-args=child-literal",
++        "--codegen=link-arg=/LIBPATH:C:\\native libs\\",
++    ]);
++    let mut actual_argv = strings(&[
++        "process_wrapper.exe",
++        "--wrapper-args=D:\\build output\\包装.params",
++    ]);
++    actual_argv.extend(child.clone());
++    let actual = expand_wrapper_args(actual_argv, |path| {
++        assert_eq!(path, r"D:\build output\包装.params");
++        Ok(format!("{}\n", wrapper.join("\n")))
++    })
++    .unwrap();
++    let mut expected = strings(&["process_wrapper.exe"]);
++    expected.extend(wrapper);
++    expected.extend(child);
++    assert_eq!(actual, expected);
++}
++
++#[test]
++fn multiline_values_remain_literal_through_the_normal_flag_parser() {
++    let values = strings(&[
++        "--env-file",
++        "",
++        "--arg-file",
++        r"@C:\a path\nested.params",
++        "--subst",
++        r#"out=C:\quoted "路径"\"#,
++        "--subst",
++        "literal=--wrapper-args=not-a-file",
++    ]);
++    let argv = strings(&[
++        "wrapper",
++        "--wrapper-args=wrapper.params",
++        "--",
++        "rustc",
++        "@child.params",
++    ]);
++    let argv = expand_wrapper_args(argv, |_| Ok(format!("{}\r\n", values.join("\r\n")))).unwrap();
++    let mut env_file = None;
++    let mut arg_files = None;
++    let mut substitutions = None;
++    let mut flags = Flags::new();
++    flags.define_flag("--env-file", "", &mut env_file);
++    flags.define_repeated_flag("--arg-file", "", &mut arg_files);
++    flags.define_repeated_flag("--subst", "", &mut substitutions);
++    let ParseOutcome::Parsed(child) = flags.parse(argv).unwrap() else {
++        panic!("expected parsed wrapper options");
++    };
++    assert_eq!(env_file, Some(String::new()));
++    assert_eq!(arg_files, Some(strings(&[&values[3]])));
++    assert_eq!(substitutions, Some(strings(&[&values[5], &values[7]])));
++    assert_eq!(child, strings(&["rustc", "@child.params"]));
++}
++
++#[test]
++fn ordinary_wrapper_and_child_arguments_do_not_read_response_files() {
++    let argv = strings(&[
++        "wrapper",
++        "--arg-file",
++        "@build-script-flags",
++        "--",
++        "rustc",
++        "@child.params",
++        "--wrapper-args=child-literal",
++    ]);
++    let actual =
++        expand_wrapper_args(argv.clone(), |_| panic!("unexpected response-file read")).unwrap();
++    assert_eq!(actual, argv);
++}
++
++#[test]
++fn wrapper_response_files_cannot_change_the_child_boundary_or_recurse() {
++    let argv = strings(&["wrapper", "--wrapper-args=wrapper.params", "--", "rustc"]);
++    let error =
++        expand_wrapper_args(argv.clone(), |_| Ok("--\nunexpected-child\n".to_owned())).unwrap_err();
++    assert!(error.to_string().contains("child-command separator"));
++
++    let expanded =
++        expand_wrapper_args(argv, |_| Ok("--wrapper-args=nested.params\n".to_owned())).unwrap();
++    assert!(Flags::new().parse(expanded).is_err());
++}
++
++#[test]
++fn unreadable_wrapper_response_file_fails_before_running_the_child() {
++    let argv = strings(&["wrapper", "--wrapper-args=missing.params", "--", "rustc"]);
++    let error =
++        expand_wrapper_args(argv, |_| Err(io::Error::from(io::ErrorKind::NotFound))).unwrap_err();
++    let OptionError::Generic(message) = error else {
++        panic!("expected wrapper response-file error");
++    };
++    assert!(message.contains("missing.params"));
++}

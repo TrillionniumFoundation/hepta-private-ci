@@ -15,6 +15,32 @@ use codex_hepta_contracts::Sha256Digest;
 use serde::Deserialize;
 use serde::Serialize;
 
+mod sync_v2;
+
+// Cross-crate visibility is required only because the Matrix store is a
+// separate crate inside the same `channel.matrix` ownership boundary. These
+// hidden exports are not an admitted inter-module protocol surface.
+#[doc(hidden)]
+pub use sync_v2::MATRIX_SYNC_MUTATION_SCHEMA_VERSION_V2;
+#[doc(hidden)]
+pub use sync_v2::MAX_MATRIX_SYNC_BATCH_PAYLOAD_BYTES_V2;
+#[doc(hidden)]
+pub use sync_v2::MAX_MATRIX_SYNC_MUTATIONS_V2;
+#[doc(hidden)]
+pub use sync_v2::MatrixSyncBatchV2;
+#[doc(hidden)]
+pub use sync_v2::MatrixSyncDecisionV2;
+#[doc(hidden)]
+pub use sync_v2::MatrixSyncMutationBodyV2;
+#[doc(hidden)]
+pub use sync_v2::MatrixSyncMutationDispositionV2;
+#[doc(hidden)]
+pub use sync_v2::MatrixSyncMutationOutcomeV2;
+#[doc(hidden)]
+pub use sync_v2::MatrixSyncMutationV2;
+#[doc(hidden)]
+pub use sync_v2::MatrixSyncResultV2;
+
 pub const MATRIX_BINDING_SCHEMA_VERSION: u32 = 1;
 pub const MATRIXD_CONTROL_SCHEMA_VERSION: u32 = 2;
 /// One bounded owner-local control frame.

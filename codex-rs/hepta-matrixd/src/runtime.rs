@@ -9,6 +9,7 @@ use codex_app_server_protocol::UserInput;
 use codex_hepta_matrix_protocol::MatrixEventId;
 use codex_hepta_matrix_protocol::MatrixProtocolError;
 use codex_hepta_matrix_protocol::MatrixRoomId;
+use codex_hepta_matrix_protocol::MatrixUserId;
 use codex_hepta_matrix_protocol::outbox_id;
 use codex_hepta_matrix_protocol::room_project_idempotency_key;
 use codex_hepta_matrix_protocol::transaction_id;
@@ -466,6 +467,19 @@ where
 struct TextMessageContent {
     msgtype: String,
     body: String,
+    // Ingress already checked the configured mention gate. Preserve the SDK's
+    // typed metadata here without forwarding it as agent input or authority.
+    #[serde(default, rename = "m.mentions")]
+    _mentions: TextMessageMentions,
+}
+
+#[derive(Default, Deserialize)]
+#[serde(deny_unknown_fields)]
+struct TextMessageMentions {
+    #[serde(default, rename = "user_ids")]
+    _user_ids: Vec<MatrixUserId>,
+    #[serde(default, rename = "room")]
+    _room: bool,
 }
 
 fn supported_text_input(inbox: &InboxRecord) -> Option<Vec<UserInput>> {

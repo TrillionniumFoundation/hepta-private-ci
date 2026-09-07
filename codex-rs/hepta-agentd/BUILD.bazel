@@ -1,7 +1,123 @@
-load("//:defs.bzl", "codex_rust_crate")
+load("@crates//:defs.bzl", "all_crate_deps")
+load("@rules_rust//rust:defs.bzl", "rust_binary", "rust_library", "rust_test")
+load("//:defs.bzl", "WINDOWS_RUSTC_LINK_FLAGS", "codex_rust_crate", "workspace_root_test")
 
 codex_rust_crate(
     name = "hepta-agentd",
     crate_name = "codex_hepta_agentd",
     integration_test_timeout = "long",
+)
+
+# Compile the local writer qualification separately from the default product
+# library. These unit fixtures need only temporary registry and SQLite state;
+# they do not start Agentd, an App Server, or a provider process.
+rust_library(
+    name = "hepta-agentd-cognitive-write-qualification-lib",
+    testonly = True,
+    srcs = glob(["src/**/*.rs"]),
+    crate_features = ["qualification-cognitive-write"],
+    crate_name = "codex_hepta_agentd",
+    crate_root = "src/lib.rs",
+    edition = "2024",
+    visibility = ["//visibility:private"],
+    deps = all_crate_deps(),
+)
+
+rust_test(
+    name = "hepta-agentd-cognitive-write-qualification-test-bin",
+    crate = ":hepta-agentd-cognitive-write-qualification-lib",
+    crate_features = ["qualification-cognitive-write"],
+    rustc_flags = WINDOWS_RUSTC_LINK_FLAGS + [
+        "--remap-path-prefix=../codex-rs=",
+        "--remap-path-prefix=codex-rs=",
+    ],
+    tags = ["manual"],
+    visibility = ["//visibility:private"],
+    deps = all_crate_deps(
+        normal = True,
+        normal_dev = True,
+    ),
+)
+
+workspace_root_test(
+    name = "hepta-agentd-cognitive-write-qualification-test",
+    args = ["runtime::tests::qualification_"],
+    test_bin = ":hepta-agentd-cognitive-write-qualification-test-bin",
+    workspace_root_marker = "//codex-rs/utils/cargo-bin:repo_root.marker",
+)
+
+# The process suite uses UnixProcessDriver and Unix sockets. Compile both the
+# spawned Agentd and its test harness with the explicit qualification profile.
+_COGNITIVE_E2E_COMPATIBILITY = select({
+    "@platforms//os:linux": [],
+    "@platforms//os:macos": [],
+    "//conditions:default": ["@platforms//:incompatible"],
+})
+
+rust_binary(
+    name = "hepta-agentd-cognitive-product-qualification-bin",
+    testonly = True,
+    srcs = glob(["src/**/*.rs"]),
+    crate_features = ["qualification-cognitive-write"],
+    crate_name = "codex_hepta_agentd",
+    crate_root = "src/main.rs",
+    edition = "2024",
+    rustc_env = {
+        "CARGO_BIN_NAME": "codex-hepta-agentd",
+    },
+    rustc_flags = WINDOWS_RUSTC_LINK_FLAGS + [
+        "--remap-path-prefix=../codex-rs=",
+        "--remap-path-prefix=codex-rs=",
+    ],
+    tags = ["manual"],
+    target_compatible_with = _COGNITIVE_E2E_COMPATIBILITY,
+    visibility = ["//visibility:private"],
+    deps = [":hepta-agentd-cognitive-write-qualification-lib"] + all_crate_deps(),
+)
+
+rust_test(
+    name = "hepta-agentd-cognitive-product-qualification-test-bin",
+    srcs = ["tests/cognitive_product_e2e.rs"] + glob(["tests/support/**/*.rs"]),
+    crate_features = ["qualification-cognitive-write"],
+    crate_name = "cognitive_product_e2e",
+    crate_root = "tests/cognitive_product_e2e.rs",
+    data = glob(["tests/support/**"]),
+    edition = "2024",
+    rustc_flags = WINDOWS_RUSTC_LINK_FLAGS + [
+        "--remap-path-prefix=../codex-rs=",
+        "--remap-path-prefix=codex-rs=",
+    ],
+    tags = ["manual"],
+    target_compatible_with = _COGNITIVE_E2E_COMPATIBILITY,
+    visibility = ["//visibility:private"],
+    deps = [":hepta-agentd-cognitive-write-qualification-lib"] + all_crate_deps(
+        normal = True,
+        normal_dev = True,
+    ),
+)
+
+workspace_root_test(
+    name = "hepta-agentd-cognitive-product-qualification-test",
+    timeout = "long",
+    runfile_env = {
+        ":hepta-agentd-cognitive-product-qualification-bin": "CARGO_BIN_EXE_codex-hepta-agentd",
+    },
+    target_compatible_with = _COGNITIVE_E2E_COMPATIBILITY,
+    test_bin = ":hepta-agentd-cognitive-product-qualification-test-bin",
+    test_threads = 1,
+    visibility = ["//visibility:public"],
+    workspace_root_marker = "//codex-rs/utils/cargo-bin:repo_root.marker",
+)
+
+# Caller evidence inspected by the Hepta contracts tests.
+exports_files(
+    [
+        "src/config.rs",
+        "src/config_tests.rs",
+        "src/runtime_tests.rs",
+        "tests/cognitive_product_e2e.rs",
+        "tests/five_agent_rolling_upgrade.rs",
+        "tests/supervisord_product_e2e.rs",
+    ],
+    visibility = ["//codex-rs/hepta-contracts:__pkg__"],
 )

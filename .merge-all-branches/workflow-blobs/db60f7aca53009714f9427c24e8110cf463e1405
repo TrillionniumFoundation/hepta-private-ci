@@ -1,0 +1,88 @@
+name: hepta-wave1-install
+
+on:
+  push:
+    branches:
+      - "codex/hepta-v8-implementation-wave1-20260904"
+    paths:
+      - "qualification/value-learning/bootstrap/**"
+      - ".github/workflows/hepta-wave1-install.yml"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: hepta-wave1-install-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  materialize:
+    if: ${{ !contains(github.event.head_commit.message, '[wave1-materialized]') }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Check out exact staging commit
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Reassemble and authenticate payload
+        run: |
+          find qualification/value-learning/bootstrap -type f -name 'part*' -print0 \
+            | sort -z \
+            | xargs -0 cat \
+            | base64 --decode > /tmp/hepta-wave1.tar.gz
+          echo "83413b684fd9ec7c2648f28fa442f2b7dc5110059740ce8a674b33d0c23d60ac  /tmp/hepta-wave1.tar.gz" \
+            | sha256sum --check --strict
+
+      - name: Reject unsafe archive entries
+        run: |
+          python3 - <<'PY'
+          import pathlib
+          import tarfile
+
+          root = pathlib.Path.cwd().resolve()
+          with tarfile.open('/tmp/hepta-wave1.tar.gz', 'r:gz') as archive:
+              for member in archive.getmembers():
+                  if member.issym() or member.islnk():
+                      raise SystemExit(f'link entry is forbidden: {member.name}')
+                  target = (root / member.name).resolve()
+                  if target != root and root not in target.parents:
+                      raise SystemExit(f'path traversal is forbidden: {member.name}')
+          PY
+
+      - name: Materialize source candidate
+        run: |
+          tar --extract --gzip --file /tmp/hepta-wave1.tar.gz --directory .
+          rm -rf qualification/value-learning/bootstrap
+          # The job token intentionally lacks workflow-write authority. The
+          # authenticated source payload is committed first; workflow files are
+          # installed separately by the reviewed GitHub connector.
+          rm -f .github/workflows/hepta-value-learning-core.yml
+          rm -f .github/workflows/hepta-wave1-bootstrap.yml
+          python3 - <<'PY'
+          from pathlib import Path
+
+          manifest = Path('codex-rs/Cargo.toml')
+          text = manifest.read_text(encoding='utf-8')
+          members = (
+              '    "hepta-learning-artifacts",\n'
+              '    "hepta-learning-ledger",\n'
+              '    "hepta-ndu",\n'
+              '    "hepta-objective",\n'
+          )
+          if '    "hepta-objective",\n' not in text:
+              anchor = '    "hepta-evidence",\n'
+              if anchor not in text:
+                  raise SystemExit('workspace member insertion anchor missing')
+              text = text.replace(anchor, anchor + members, 1)
+              manifest.write_text(text, encoding='utf-8')
+          PY
+          python3 scripts/hepta-value-learning.py verify
+          python3 .github/scripts/verify_cargo_workspace_manifests.py
+
+      - name: Commit materialized source candidate
+        run: |
+          git config user.name "hepta-ci-bot"
+          git config user.email "hepta-ci-bot@users.noreply.github.com"
+          git add -A
+          git commit -m "feat(hepta): materialize value-learning core [wave1-materialized]"
+          git push origin "HEAD:${GITHUB_REF_NAME}"

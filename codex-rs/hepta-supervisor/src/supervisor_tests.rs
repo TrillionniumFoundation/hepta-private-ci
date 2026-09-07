@@ -74,6 +74,19 @@ impl TestFleet {
             second,
         })
     }
+
+    fn write_release_source(&self) -> Result<PathBuf, SupervisorError> {
+        let source = self._temp.path().join("release-source");
+        // FakeDriver models execution; release admission still needs a regular
+        // source file, independent of host shell paths that may be symlinks.
+        std::fs::write(&source, b"#!/bin/sh\nexit 0\n")?;
+        #[cfg(unix)]
+        {
+            use std::os::unix::fs::PermissionsExt;
+            std::fs::set_permissions(&source, std::fs::Permissions::from_mode(/*mode*/ 0o700))?;
+        }
+        Ok(source)
+    }
 }
 
 fn register_agent(
@@ -853,11 +866,12 @@ fn paired_companions_stop_before_agent_restart_and_fail_independently()
 -> Result<(), SupervisorError> {
     let fleet = TestFleet::new()?;
     let release_id = ReleaseId::parse("paired-v1")?;
+    let source = fleet.write_release_source()?;
     fleet.registry.install_release_bundle(
         release_id.clone(),
-        Path::new("/bin/sh"),
+        &source,
         Vec::new(),
-        Some(Path::new("/bin/sh")),
+        Some(&source),
         Vec::new(),
     )?;
     for agent_id in [&fleet.first, &fleet.second] {
@@ -952,11 +966,12 @@ fn ready_paired_supervisor(
 ) -> Result<(TestFleet, FakeControl, Supervisor<FakeDriver>, Instant), SupervisorError> {
     let fleet = TestFleet::new()?;
     let release_id = ReleaseId::parse(release_name)?;
+    let source = fleet.write_release_source()?;
     fleet.registry.install_release_bundle(
         release_id.clone(),
-        Path::new("/bin/sh"),
+        &source,
         Vec::new(),
-        Some(Path::new("/bin/sh")),
+        Some(&source),
         Vec::new(),
     )?;
     for agent_id in [&fleet.first, &fleet.second] {
@@ -1117,11 +1132,12 @@ fn live_but_unhealthy_matrix_is_bounded_and_restarted_without_peer_churn()
 -> Result<(), SupervisorError> {
     let fleet = TestFleet::new()?;
     let release_id = ReleaseId::parse("paired-unhealthy-v1")?;
+    let source = fleet.write_release_source()?;
     fleet.registry.install_release_bundle(
         release_id.clone(),
-        Path::new("/bin/sh"),
+        &source,
         Vec::new(),
-        Some(Path::new("/bin/sh")),
+        Some(&source),
         Vec::new(),
     )?;
     for agent_id in [&fleet.first, &fleet.second] {
@@ -1191,10 +1207,11 @@ fn recovery_does_not_infer_signed_commit_from_matching_target_only() -> Result<(
     let fleet = TestFleet::new()?;
     let source = ReleaseId::parse("signed-source")?;
     let target = ReleaseId::parse("signed-target")?;
+    let source_program = fleet.write_release_source()?;
     for release_id in [&source, &target] {
         fleet
             .registry
-            .install_release(release_id.clone(), Path::new("/bin/sh"), Vec::new())?;
+            .install_release(release_id.clone(), &source_program, Vec::new())?;
         fleet.registry.allow_release(&fleet.first, release_id)?;
     }
 

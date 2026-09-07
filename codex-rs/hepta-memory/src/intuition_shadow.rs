@@ -396,7 +396,8 @@ fn deterministic_decision(input: &IntuitionShadowInput) -> IntuitionDecision {
             .cmp(&left.score_bps)
             .then_with(|| left.candidate_id.cmp(&right.candidate_id))
     });
-    let decision = match eligible.first() {
+
+    match eligible.first() {
         None => IntuitionDecision::Abstained {
             reason: IntuitionAbstainReason::NoEligibleCandidates,
         },
@@ -409,8 +410,7 @@ fn deterministic_decision(input: &IntuitionShadowInput) -> IntuitionDecision {
             candidate_id: candidate.candidate_id.clone(),
             confidence_bps: candidate.score_bps,
         },
-    };
-    decision
+    }
 }
 
 fn receipt_digest(receipt: &IntuitionShadowReceipt) -> Sha256Digest {
@@ -565,7 +565,7 @@ mod tests {
             receipt.validate_against(&input),
             Err(IntuitionShadowError::DigestMismatch) | Err(IntuitionShadowError::BindingMismatch)
         ));
-        let mut bad_schema = input.clone();
+        let mut bad_schema = input;
         bad_schema.schema_digest = Sha256Digest::for_bytes(b"future-schema");
         assert_eq!(
             shadow_intuition_decide(&bad_schema),

@@ -1,0 +1,46 @@
+name: Exact 52c246a source export
+
+on:
+  push:
+    branches:
+      - ops/hepta-exact-source-export-4f08144e-20260906
+    paths:
+      - .github/workflows/hepta-exact-source-export-52c246a.yml
+
+permissions:
+  contents: read
+
+jobs:
+  export:
+    name: Export immutable 52c246a source
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 10
+    env:
+      TARGET_SHA: 52c246a935578dffed009c35efeb7a05727ef4e6
+    steps:
+      - name: Check out exact target without credentials
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ env.TARGET_SHA }}
+          fetch-depth: 1
+          persist-credentials: false
+      - name: Export and bind exact source
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$GITHUB_REPOSITORY" = TrillionniumFoundation/hepta-private-ci
+          test "$(git rev-parse HEAD)" = "$TARGET_SHA"
+          test -z "$(git status --porcelain=v1 --untracked-files=all)"
+          git archive --format=tar --prefix=hepta-private-ci-52c246a/ "$TARGET_SHA" \
+            | gzip -n > "$RUNNER_TEMP/hepta-private-ci-52c246a.tar.gz"
+          sha256sum "$RUNNER_TEMP/hepta-private-ci-52c246a.tar.gz" \
+            > "$RUNNER_TEMP/hepta-private-ci-52c246a.tar.gz.sha256"
+      - name: Upload immutable export
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: hepta-private-ci-source-52c246a
+          path: |
+            ${{ runner.temp }}/hepta-private-ci-52c246a.tar.gz
+            ${{ runner.temp }}/hepta-private-ci-52c246a.tar.gz.sha256
+          if-no-files-found: error
+          retention-days: 1

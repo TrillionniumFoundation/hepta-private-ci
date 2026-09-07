@@ -881,55 +881,58 @@ async fn v1_store_migrates_atomically_to_dispatch_outcome_schema() {
         .open_durable_evidence_pool(&database_path)
         .await
         .expect("open legacy pool");
+    // Keep the schema rewind on one connection so each DDL statement sees
+    // the preceding change, and publish the complete v1 fixture atomically.
+    let mut rewind = pool.begin().await.expect("begin legacy schema rewind");
     sqlx::query("DROP INDEX automation_dispatch_outcome_state_idx")
-        .execute(&pool)
+        .execute(&mut *rewind)
         .await
         .expect("drop v2 index");
     sqlx::query("DROP TABLE automation_dispatch_outcomes")
-        .execute(&pool)
+        .execute(&mut *rewind)
         .await
         .expect("drop v2 table");
     // The current opener also applies the qualification-only TaskFlow
     // migration. Remove that schema and rewind its migration ledger so this
     // test still exercises a genuine v1 -> latest upgrade path.
     sqlx::query("DROP TRIGGER taskflow_events_no_update")
-        .execute(&pool)
+        .execute(&mut *rewind)
         .await
         .expect("drop TaskFlow event update trigger");
     sqlx::query("DROP TRIGGER taskflow_events_no_delete")
-        .execute(&pool)
+        .execute(&mut *rewind)
         .await
         .expect("drop TaskFlow event delete trigger");
     sqlx::query("DROP TRIGGER taskflow_definitions_no_update")
-        .execute(&pool)
+        .execute(&mut *rewind)
         .await
         .expect("drop TaskFlow definition update trigger");
     sqlx::query("DROP TRIGGER taskflow_definitions_no_delete")
-        .execute(&pool)
+        .execute(&mut *rewind)
         .await
         .expect("drop TaskFlow definition delete trigger");
     sqlx::query("DROP TABLE taskflow_events")
-        .execute(&pool)
+        .execute(&mut *rewind)
         .await
         .expect("drop TaskFlow events");
     sqlx::query("DROP TABLE taskflow_runs")
-        .execute(&pool)
+        .execute(&mut *rewind)
         .await
         .expect("drop TaskFlow runs");
     sqlx::query("DROP TABLE taskflow_definitions")
-        .execute(&pool)
+        .execute(&mut *rewind)
         .await
         .expect("drop TaskFlow definitions");
     sqlx::query("DELETE FROM _sqlx_migrations WHERE version >= 2")
-        .execute(&pool)
+        .execute(&mut *rewind)
         .await
         .expect("rewind migration ledger");
     sqlx::query("DROP TRIGGER automation_meta_no_update")
-        .execute(&pool)
+        .execute(&mut *rewind)
         .await
         .expect("drop immutable trigger for rewind");
     sqlx::query("UPDATE automation_meta SET schema_version = 1 WHERE singleton = 1")
-        .execute(&pool)
+        .execute(&mut *rewind)
         .await
         .expect("rewind metadata version");
     sqlx::query(
@@ -939,9 +942,10 @@ async fn v1_store_migrates_atomically_to_dispatch_outcome_schema() {
              SELECT RAISE(ABORT, 'automation owner metadata is immutable');
          END",
     )
-    .execute(&pool)
+    .execute(&mut *rewind)
     .await
     .expect("restore immutable trigger");
+    rewind.commit().await.expect("commit legacy schema rewind");
     pool.close().await;
 
     let migrated = AutomationStore::open(layout)

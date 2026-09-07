@@ -29,3 +29,14 @@ codex_rust_crate(
         "//conditions:default": 0,
     }),
 )
+
+# Caller evidence inspected by the Hepta contracts tests.
+exports_files(
+    [
+        "src/request_processors/thread_delete.rs",
+        "src/request_processors/thread_queue_processor.rs",
+        "tests/suite/v2/thread_delete.rs",
+        "tests/suite/v2/thread_queue.rs",
+    ],
+    visibility = ["//codex-rs/hepta-contracts:__pkg__"],
+)

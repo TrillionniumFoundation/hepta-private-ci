@@ -1,7 +1,78 @@
-load("//:defs.bzl", "codex_rust_crate")
+load("@crates//:defs.bzl", "all_crate_deps")
+load("@rules_rust//rust:defs.bzl", "rust_library", "rust_test")
+load("//:defs.bzl", "WINDOWS_RUSTC_LINK_FLAGS", "codex_rust_crate", "workspace_root_test")
 
 codex_rust_crate(
     name = "hepta-automation",
     compile_data = glob(["migrations/**"]),
     crate_name = "codex_hepta_automation",
+)
+
+# Keep structural qualification out of the product library's feature set.
+# These test-only targets execute the same opt-in fixtures as Cargo.
+rust_library(
+    name = "hepta-automation-taskflow-qualification-lib",
+    testonly = True,
+    srcs = glob(["src/**/*.rs"]),
+    compile_data = glob(["migrations/**"]),
+    crate_features = ["taskflow-structural-qualification"],
+    crate_name = "codex_hepta_automation",
+    crate_root = "src/lib.rs",
+    edition = "2024",
+    visibility = ["//visibility:private"],
+    deps = all_crate_deps(),
+)
+
+rust_test(
+    name = "hepta-automation-taskflow-kernel-qualification-test-bin",
+    srcs = ["tests/taskflow_kernel.rs"],
+    crate_features = ["taskflow-structural-qualification"],
+    crate_name = "taskflow_kernel_qualification",
+    crate_root = "tests/taskflow_kernel.rs",
+    edition = "2024",
+    rustc_flags = WINDOWS_RUSTC_LINK_FLAGS,
+    tags = ["manual"],
+    visibility = ["//visibility:private"],
+    deps = [":hepta-automation-taskflow-qualification-lib"] + all_crate_deps(
+        normal = True,
+        normal_dev = True,
+    ),
+)
+
+workspace_root_test(
+    name = "hepta-automation-taskflow-kernel-qualification-test",
+    test_bin = ":hepta-automation-taskflow-kernel-qualification-test-bin",
+    workspace_root_marker = "//codex-rs/utils/cargo-bin:repo_root.marker",
+)
+
+rust_test(
+    name = "hepta-automation-taskflow-step-qualification-test-bin",
+    srcs = ["tests/taskflow_step.rs"],
+    crate_features = ["taskflow-structural-qualification"],
+    crate_name = "taskflow_step_qualification",
+    crate_root = "tests/taskflow_step.rs",
+    edition = "2024",
+    rustc_flags = WINDOWS_RUSTC_LINK_FLAGS,
+    tags = ["manual"],
+    visibility = ["//visibility:private"],
+    deps = [":hepta-automation-taskflow-qualification-lib"] + all_crate_deps(
+        normal = True,
+        normal_dev = True,
+    ),
+)
+
+workspace_root_test(
+    name = "hepta-automation-taskflow-step-qualification-test",
+    test_bin = ":hepta-automation-taskflow-step-qualification-test-bin",
+    workspace_root_marker = "//codex-rs/utils/cargo-bin:repo_root.marker",
+)
+
+# Caller evidence inspected by the Hepta contracts tests.
+exports_files(
+    [
+        "src/scheduler.rs",
+        "src/store.rs",
+        "tests/automation.rs",
+    ],
+    visibility = ["//codex-rs/hepta-contracts:__pkg__"],
 )

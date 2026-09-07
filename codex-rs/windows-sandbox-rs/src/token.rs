@@ -366,11 +366,16 @@ pub unsafe fn create_readonly_token_with_cap_from(
     base_token: HANDLE,
     psid_capability: *mut c_void,
 ) -> Result<(HANDLE, *mut c_void)> {
-    let new_token = create_token_with_caps_from(base_token, &[psid_capability], &[])?;
+    let new_token = create_token_with_caps_from(
+        base_token,
+        &[psid_capability],
+        &[],
+        RestrictingIdentity::Include,
+    )?;
     Ok((new_token, psid_capability))
 }
 
-/// Create a restricted token that includes all provided capability SIDs.
+/// Restrict legacy workspace writes to the provided capability SIDs alone.
 ///
 /// # Safety
 /// Caller must close the returned token handle; base_token must be a valid primary token.
@@ -378,7 +383,12 @@ pub unsafe fn create_workspace_write_token_with_caps_from(
     base_token: HANDLE,
     psid_capabilities: &[*mut c_void],
 ) -> Result<HANDLE> {
-    create_token_with_caps_from(base_token, psid_capabilities, &[])
+    create_token_with_caps_from(
+        base_token,
+        psid_capabilities,
+        &[],
+        RestrictingIdentity::Exclude,
+    )
 }
 
 /// Create a restricted token that includes all provided capability SIDs, the token user SID, and
@@ -409,7 +419,12 @@ pub unsafe fn create_readonly_token_with_caps_from(
     base_token: HANDLE,
     psid_capabilities: &[*mut c_void],
 ) -> Result<HANDLE> {
-    create_token_with_caps_from(base_token, psid_capabilities, &[])
+    create_token_with_caps_from(
+        base_token,
+        psid_capabilities,
+        &[],
+        RestrictingIdentity::Include,
+    )
 }
 
 /// Create a restricted token that includes all provided capability SIDs, the token user SID, and
@@ -442,13 +457,24 @@ unsafe fn create_token_with_caps_user_and_additional_restrictions_from(
     let mut extra_restricting_sids = Vec::with_capacity(additional_restricting_sids.len() + 1);
     extra_restricting_sids.push(psid_user);
     extra_restricting_sids.extend_from_slice(additional_restricting_sids);
-    create_token_with_caps_from(base_token, psid_capabilities, &extra_restricting_sids)
+    create_token_with_caps_from(
+        base_token,
+        psid_capabilities,
+        &extra_restricting_sids,
+        RestrictingIdentity::Include,
+    )
+}
+
+enum RestrictingIdentity {
+    Include,
+    Exclude,
 }
 
 unsafe fn create_token_with_caps_from(
     base_token: HANDLE,
     psid_capabilities: &[*mut c_void],
     extra_restricting_sids: &[*mut c_void],
+    restricting_identity: RestrictingIdentity,
 ) -> Result<HANDLE> {
     if psid_capabilities.is_empty() {
         return Err(anyhow!("no capability SIDs provided"));
@@ -458,23 +484,27 @@ unsafe fn create_token_with_caps_from(
     let mut everyone = world_sid()?;
     let psid_everyone = everyone.as_mut_ptr() as *mut c_void;
 
-    // Exact order: Capabilities..., ExtraRestricting..., Logon, Everyone
-    let mut entries: Vec<SID_AND_ATTRIBUTES> =
-        vec![std::mem::zeroed(); psid_capabilities.len() + extra_restricting_sids.len() + 2];
-    for (i, psid) in psid_capabilities.iter().enumerate() {
-        entries[i].Sid = *psid;
-        entries[i].Attributes = 0;
+    let mut entries: Vec<SID_AND_ATTRIBUTES> = psid_capabilities
+        .iter()
+        .chain(extra_restricting_sids)
+        .map(|sid| SID_AND_ATTRIBUTES {
+            Sid: *sid,
+            Attributes: 0,
+        })
+        .collect();
+    // A restricting SID is an alternative ACE match, not an additional requirement.
+    // Legacy workspace writes must not pass via a broad parent Logon/Everyone ACE.
+    // Readonly and dedicated elevated-account tokens retain their existing policy.
+    if matches!(restricting_identity, RestrictingIdentity::Include) {
+        entries.push(SID_AND_ATTRIBUTES {
+            Sid: psid_logon,
+            Attributes: 0,
+        });
+        entries.push(SID_AND_ATTRIBUTES {
+            Sid: psid_everyone,
+            Attributes: 0,
+        });
     }
-    let extras_idx = psid_capabilities.len();
-    for (i, psid) in extra_restricting_sids.iter().enumerate() {
-        entries[extras_idx + i].Sid = *psid;
-        entries[extras_idx + i].Attributes = 0;
-    }
-    let logon_idx = extras_idx + extra_restricting_sids.len();
-    entries[logon_idx].Sid = psid_logon;
-    entries[logon_idx].Attributes = 0;
-    entries[logon_idx + 1].Sid = psid_everyone;
-    entries[logon_idx + 1].Attributes = 0;
 
     let mut new_token: HANDLE = 0;
     let flags = DISABLE_MAX_PRIVILEGE | LUA_TOKEN | WRITE_RESTRICTED;
@@ -499,9 +529,13 @@ unsafe fn create_token_with_caps_from(
     dacl_sids.push(psid_logon);
     dacl_sids.push(psid_everyone);
     dacl_sids.extend_from_slice(psid_capabilities);
-    set_default_dacl(new_token, &dacl_sids)?;
-
-    enable_single_privilege(new_token, "SeChangeNotifyPrivilege")?;
+    // Keep normal identity AND capability grants for child-created IPC objects.
+    if let Err(err) = set_default_dacl(new_token, &dacl_sids)
+        .and_then(|()| enable_single_privilege(new_token, "SeChangeNotifyPrivilege"))
+    {
+        CloseHandle(new_token);
+        return Err(err);
+    }
     Ok(new_token)
 }
 

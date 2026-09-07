@@ -147,6 +147,43 @@ TopologyProposalV1 {
 }
 ```
 
+### Internal plasticity proposal compatibility profile
+
+The Rust `hepta-plasticity` records described here are internal deterministic records, not replacements for the canonical JSON `PlasticityProposalV1` or `TopologyProposalV1` protocols above. The legacy internal record uses domain `hepta.plasticity.proposal.v1`. It remains available only through explicit version-1 read dispatch. Its historical digest cannot be fully recomputed from the stored record because the old preimage included `maximum_absolute_delta` but the stored record omitted that field. Consequently, a V1 read may validate bounds, ordering, lineage, nonzero digests and deny-all authority, but it treats the historical digest as opaque. New V1 creation and append fail closed, and V1 is never silently converted or relabeled as V2.
+
+The only new-write profile is the parameter-only `ParameterProposalV2`. It contains no topology operation and uses domain `hepta.plasticity.parameter-proposal.v2`. The exact SHA-256 preimage is:
+
+| Ordinal | Source | Canonical bytes |
+| ---: | --- | --- |
+| 0 | domain | literal UTF-8, unframed |
+| 1 | version | `u16_be(2)` |
+| 2-4 | proposal, proposer and evaluator IDs | each `u32_be(UTF-8 length) || UTF-8` |
+| 5 | selected artifact digest | raw 32 bytes |
+| 6-7 | window ID and window digest | framed ID, then raw 32 bytes |
+| 8-9 | baseline and candidate generations | each `u64_be`; candidate is the exact successor |
+| 10-16 | dataset, update-rule, modulator, modulator-broadcast, eligibility, evaluation and rollback-predecessor digests | each raw 32 bytes in the stated order |
+| 17 | norm-profile digest | raw 32 bytes |
+| 18 | candidate count | `u32_be`, in `[1,32]` |
+| 19 | candidates | canonical candidate sequence described below |
+| 20 | status | `u8(0)` for `requires_independent_acceptance` |
+| 21 | authority mask | `u8(0)`; every authority bit is false |
+
+Caller-supplied candidates are sorted by candidate ID and exactly one is `no_change`. A candidate encodes framed candidate ID, kind code (`0=no_change`, `1=update`), `u32_be` delta count, sorted deltas, `u32_be` layer-metric count, sorted layer metrics, global delta squared norm and global baseline squared norm. A delta encodes framed layer ID, framed globally unique parameter ID, signed Q32 delta/lower/upper raw values as `i64_be`, then its raw 32-byte evidence digest. A layer metric encodes framed layer ID, delta squared L2 norm and baseline squared L2 denominator as unsigned `u128_be`. Global squared norms are also `u128_be`. `no_change` has no deltas and zero delta norms; every update candidate has at least one nonzero delta. The envelope contains one bounded supplied candidate set, not several selected or final proposals, and contains no selection field. At most 4,096 deltas may occur across that supplied set, and a norm profile contains `1..256` layers.
+
+The norm profile uses domain `hepta.plasticity.parameter-norm-profile.v1` and encodes selected artifact digest, `u32_be(5000)` per-layer maximum relative norm in ppm, `u32_be(2500)` global maximum relative norm in ppm, `u32_be` sorted layer count, each framed layer ID plus nonzero baseline squared L2 Q64 denominator as `u128_be`, and the checked sum of those denominators as global baseline squared L2. For every candidate and layer,
+
+\[
+\frac{\lVert\Delta_l\rVert_2}{\lVert W_l\rVert_2}\le 0.005,
+\qquad
+\frac{\sqrt{\sum_l\lVert\Delta_l\rVert_2^2}}{\sqrt{\sum_l\lVert W_l\rVert_2^2}}\le 0.0025.
+\]
+
+Checks compare squared integer ratios and fail on overflow. The global denominator is the sum over the complete declared layer profile, so a small layer can pass the global aggregate while failing its own layer gate; the `0.5%` layer constraint is not rendered redundant by the `0.25%` aggregate constraint. The profile digest binds denominators to the selected artifact identity, but does not prove that a caller supplied a complete or truthful artifact profile. Likewise, structural checks over the supplied candidate sequence do not prove generator-relative candidate completeness; unequal proposer/evaluator ID strings do not authenticate independent identities; and nonzero artifact, window, dataset, update, modulator, eligibility, evaluation or per-delta evidence digests do not authenticate their provenance, freshness or completeness. Independent consumers must verify those external facts before any selection or acceptance. This internal record alone cannot support either decision.
+
+Registry identity is `(selected_artifact_digest, window_id)`. Re-appending byte-identical V2 semantics is idempotent; any other record for the occupied slot conflicts, including a changed window digest. Proposal IDs are unique independently of slot identity. Capacity is caller-configured and capped at 4,096; it counts distinct retained V1 records plus inserted V2 slots. Rejected conflicts and idempotent retries consume no capacity.
+
+Golden migration vector `PLASTICITY-V1-GV-001` has a 307-byte legacy preimage and digest `a143a54a94d60d2734237612f1c2e0af4b4d986ea52efa6099765b83442dedb4`. It is read-only and cannot be upgraded. Golden vector `PLASTICITY-V2-GV-001` uses proposal `proposal:2`, proposer `proposer:1`, evaluator `evaluator:1`, selected-artifact seed `selected-artifact`, window `window:1` with digest seed `window`, generations `7 -> 8`, digest seeds `dataset`, `update-rule`, `modulator`, `broadcast`, `eligibility`, `evaluation`, rollback equal to the selected artifact, layer denominators `layer:a=1000000` and `layer:b=4000000`, and two candidates. `candidate:no-change` has no deltas; `candidate:update` has `(layer:a, parameter:a, 2, -10, 10, SHA-256("delta-a"))` and `(layer:b, parameter:b, -3, -10, 10, SHA-256("delta-b"))`. The norm-profile preimage is 156 bytes with digest `d31bd6f69d36817557272d747e5209d431e3ef3058e6f415dc57da4f8f98fb97`; the complete V2 proposal preimage is 898 bytes with digest `e2ecdc9e0fd3278865665a2b0b168a3048919e86e8979e2e90bc6e5db9ab357c`. These are independently encoded fixed oracles, not values captured from the Rust implementation.
+
 Checkpoints are append-only and generation-specific. A compact checkpoint may summarize eligibility but must preserve replay-equivalent recovery within tolerance. Artifact lineage includes encoder, tokenizer, preprocessor, quantization, license/SBOM, device/runtime, dataset, training code and real consumer evidence.
 
 ## 7. Numerical stability, complexity and resource bounds

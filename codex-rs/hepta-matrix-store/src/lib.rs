@@ -45,3 +45,8 @@ pub use model::RoomThreadBinding;
 pub use model::RoomThreadBindingDraft;
 pub use store::MatrixDurableError;
 pub use store::MatrixDurableStore;
+// Native channel.matrix owner-local observations, not an inter-module wire API.
+#[doc(hidden)]
+pub use store::MatrixSyncUnchangedRequestV1;
+#[doc(hidden)]
+pub use store::MatrixSyncUnchangedResultV1;

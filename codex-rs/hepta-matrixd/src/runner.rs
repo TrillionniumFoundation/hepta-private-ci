@@ -2,6 +2,7 @@ use std::collections::BTreeSet;
 use std::fs;
 use std::fs::File;
 use std::fs::OpenOptions;
+use std::future::Future;
 use std::sync::Arc;
 use std::time::Duration;
 use std::time::SystemTime;
@@ -108,34 +109,20 @@ pub async fn run(config: MatrixdConfig) -> Result<(), MatrixdRunError> {
     let sidecar = Arc::new(sidecar);
     let ingress = MatrixIngress::new(sidecar_config, store.clone());
 
-    // App Server thread subscriptions belong to the individual transport
-    // connection.  Reattach every exact current Matrix room thread before
-    // recovering durable inbox work; otherwise recovery can admit and finish
-    // a turn while the new connection has no listener for its notifications.
-    let snapshot = store
-        .snapshot(system_time_ms()?, INBOX_RECOVERY_LIMIT)
-        .await?;
-    for thread_id in current_room_thread_ids(
-        &snapshot,
-        &config.binding.allowed_rooms,
-        config.binding.revision,
-        matrix_plane_generation(config.spawn_generation),
-    ) {
-        let resumed = transport.resume_thread(&thread_id).await?;
-        if resumed.thread.id != thread_id {
-            return Err(MatrixdRunError::Invalid(format!(
-                "App Server resumed Matrix thread {} instead of {thread_id}",
-                resumed.thread.id
-            )));
-        }
-    }
-
-    // Reconcile durable work before accepting a new sync cycle.  Failure is
-    // fatal: advancing the Matrix cursor while local admission is corrupt
-    // would silently lose a user message.
-    runtime
-        .recover_pending(INBOX_RECOVERY_LIMIT, system_time_ms()?)
-        .await?;
+    recover_startup_after_sync(
+        runtime.as_ref(),
+        sidecar.config(),
+        async {
+            sidecar.sync_durable_once(&store, &ingress).await?;
+            Ok(())
+        },
+        |thread_id| {
+            let transport = &transport;
+            async move { Ok(transport.resume_thread(&thread_id).await?.thread.id) }
+        },
+    )
+    .await?;
+    connections.set_matrix_sync_connected(true);
 
     let cancel = CancellationToken::new();
     let control_state = Arc::new(MatrixdControlState::new(
@@ -173,7 +160,6 @@ pub async fn run(config: MatrixdConfig) -> Result<(), MatrixdRunError> {
         let cancel = cancel.clone();
         let connections = Arc::clone(&connections);
         tasks.spawn(async move {
-            connections.set_matrix_sync_connected(true);
             let result = sidecar
                 .sync_durable_until_cancelled(&store, &ingress, &cancel)
                 .await;
@@ -265,6 +251,49 @@ pub async fn run(config: MatrixdConfig) -> Result<(), MatrixdRunError> {
     first_result
 }
 
+// Keep the startup sequence together: a complete durable Matrix batch must
+// precede both the recovery snapshot and every App Server admission. Otherwise
+// a message deleted while matrixd was offline could be recovered before its
+// deletion reaches the local store. No runtime tasks or readiness are exposed
+// until this sequence succeeds.
+async fn recover_startup_after_sync<B, S, R, F>(
+    runtime: &MatrixRuntime<B>,
+    config: &MatrixSidecarConfig,
+    initial_sync: S,
+    mut resume_thread: R,
+) -> Result<(), MatrixdRunError>
+where
+    B: crate::MatrixRuntimeBridge,
+    S: Future<Output = Result<(), MatrixdRunError>>,
+    R: FnMut(String) -> F,
+    F: Future<Output = Result<String, MatrixdRunError>>,
+{
+    initial_sync.await?;
+    // Subscriptions belong to this transport connection. Resume every exact
+    // current thread before recovery can admit a turn and emit notifications.
+    let snapshot = runtime
+        .store()
+        .snapshot(system_time_ms()?, INBOX_RECOVERY_LIMIT)
+        .await?;
+    for thread_id in current_room_thread_ids(
+        &snapshot,
+        &config.binding.allowed_rooms,
+        config.binding.revision,
+        config.matrix_generation,
+    ) {
+        let resumed_id = resume_thread(thread_id.clone()).await?;
+        if resumed_id != thread_id {
+            return Err(MatrixdRunError::Invalid(format!(
+                "App Server resumed Matrix thread {resumed_id} instead of {thread_id}"
+            )));
+        }
+    }
+    runtime
+        .recover_pending(INBOX_RECOVERY_LIMIT, system_time_ms()?)
+        .await?;
+    Ok(())
+}
+
 fn current_room_thread_ids(
     snapshot: &MatrixSnapshot,
     allowed_rooms: &[MatrixRoomId],
@@ -284,10 +313,8 @@ fn current_room_thread_ids(
                 && room_thread.binding_revision == binding_revision
                 && room_thread.generation == generation
         });
-        if is_current_binding {
-            if let Some(thread_id) = room_thread.thread_id.as_deref() {
-                thread_ids.insert(thread_id.to_string());
-            }
+        if is_current_binding && let Some(thread_id) = room_thread.thread_id.as_deref() {
+            thread_ids.insert(thread_id.to_string());
         }
     }
     thread_ids.into_iter().collect()
@@ -928,6 +955,10 @@ pub enum MatrixdRunError {
     #[error(transparent)]
     Outbox(#[from] codex_hepta_matrix_sdk::OutboxDispatchError),
 }
+
+#[cfg(test)]
+#[path = "runner_startup_tests.rs"]
+mod startup_tests;
 
 #[cfg(test)]
 mod tests {

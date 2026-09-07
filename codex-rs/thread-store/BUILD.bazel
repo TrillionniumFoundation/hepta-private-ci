@@ -4,3 +4,11 @@ codex_rust_crate(
     name = "thread-store",
     crate_name = "codex_thread_store",
 )
+
+# Caller evidence inspected by the Hepta contracts tests.
+exports_files(
+    [
+        "src/store.rs",
+    ],
+    visibility = ["//codex-rs/hepta-contracts:__pkg__"],
+)

@@ -103,7 +103,7 @@ impl LocalTurnLifecycleBinding {
         })?;
         let compact_binding = executor
             .lease_binding()
-            .ok_or_else(|| LocalTurnLifecycleBindingError::ExecutorUnbound)?;
+            .ok_or(LocalTurnLifecycleBindingError::ExecutorUnbound)?;
         if compact_binding.lease_id != lease.lease_id()
             || compact_binding.authority_epoch != lease_binding.authority_epoch
             || compact_binding.owner_epoch != lease_binding.owner_epoch
@@ -170,7 +170,7 @@ impl LocalTurnLifecycleBinding {
             ));
         }
         validate_digest(&self.turn_id_sha256, "turn identity")?;
-        validate_text(&self.lease_id, "lease id", 512)?;
+        validate_text(&self.lease_id, "lease id", /*max_bytes*/ 512)?;
         if self.lease_id_sha256 != identity_digest(b"lease", &self.lease_id) {
             return Err(LocalTurnLifecycleBindingError::Invalid(
                 "lease identity digest does not match lease id".to_string(),
@@ -178,7 +178,11 @@ impl LocalTurnLifecycleBinding {
         }
         validate_digest(&self.lease_head_sha256, "lease head")?;
         validate_digest(&self.fencing_token_sha256, "fencing token identity")?;
-        validate_text(&self.fence.fencing_token, "fencing token", 256)?;
+        validate_text(
+            &self.fence.fencing_token,
+            "fencing token",
+            /*max_bytes*/ 256,
+        )?;
         if self.fencing_token_sha256 != identity_digest(b"fencing-token", &self.fence.fencing_token)
         {
             return Err(LocalTurnLifecycleBindingError::FenceMismatch(
@@ -230,7 +234,7 @@ impl LocalTurnLifecycleBinding {
 }
 
 fn validate_turn_id(value: &str) -> Result<(), LocalTurnLifecycleBindingError> {
-    validate_text(value, "turn id", 256)?;
+    validate_text(value, "turn id", /*max_bytes*/ 256)?;
     if value.starts_with("auto-compact-") {
         return Err(LocalTurnLifecycleBindingError::Invalid(
             "process-local auto-compaction ids are not durable turn identities".to_string(),

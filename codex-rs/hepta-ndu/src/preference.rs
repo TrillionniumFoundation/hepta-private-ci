@@ -226,7 +226,7 @@ impl PreferenceState {
         mut values: Vec<AxisValue>,
     ) -> Result<Self, NduError> {
         normalize_values(&mut values)?;
-        let revision = Revision::new(1).map_err(|_| NduError::Arithmetic)?;
+        let revision = Revision::new(/*value*/ 1).map_err(|_| NduError::Arithmetic)?;
         let state_digest = digest_state(
             &subject_id,
             subject_class,

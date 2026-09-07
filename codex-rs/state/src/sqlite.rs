@@ -310,6 +310,21 @@ impl SqliteConfig {
             .await
     }
 
+    /// Retained only so pre-release callers fail closed instead of reopening a
+    /// lexical path with a reconnect-capable writer pool.
+    ///
+    /// Recovery must use [`Self::bind_existing_recovery_database`] and remains
+    /// unavailable until a qualified descriptor-backed VFS exists.
+    pub async fn open_existing_durable_evidence_pool(
+        &self,
+        path: &Path,
+    ) -> Result<SqlitePool, Error> {
+        let _ = (self, path);
+        Err(Error::Protocol(
+            "path-based SQLite recovery is disabled".to_string(),
+        ))
+    }
+
     /// Open an existing Codex SQLite database without creating or modifying it.
     pub async fn open_read_only_pool(&self, path: &Path) -> Result<SqlitePool, Error> {
         let options = SqliteConnectOptions::new()

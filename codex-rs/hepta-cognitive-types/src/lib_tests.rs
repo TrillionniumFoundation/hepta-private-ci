@@ -1,3 +1,5 @@
+use pretty_assertions::assert_eq;
+
 use super::*;
 
 fn id(value: &str) -> StableId {
@@ -66,6 +68,39 @@ fn duplicate_citation_is_rejected() {
         value.validate(),
         Err(Error::DuplicateCitation("source:1".to_string()))
     );
+}
+
+#[test]
+fn one_source_identity_cannot_bind_conflicting_digests() {
+    let mut value = record("record:1");
+    value.citations.push(Citation {
+        source_id: id("source:1"),
+        source_digest: digest(b"conflicting source bytes"),
+    });
+    assert_eq!(
+        value.validate(),
+        Err(Error::DuplicateCitation("source:1".to_string()))
+    );
+
+    value.citations[1].source_id = id("source:2");
+    assert_eq!(value.validate(), Ok(()));
+}
+
+#[test]
+fn valid_v1_record_and_snapshot_digests_remain_stable() {
+    let value = record("record:1");
+    assert_eq!(
+        value.record_digest().to_string(),
+        "a63e977e68eb04a2a8d75217349dafc43d2fe4ad51b1364d6b059ae36551d7d4"
+    );
+    let Ok(snapshot) = build_snapshot(generation(1), vec![value]) else {
+        panic!("valid snapshot must build");
+    };
+    assert_eq!(
+        snapshot.snapshot_digest.to_string(),
+        "f2023bd15e4a3e09328e6dd5e82b3b76ba5f622c3a84b83950a89a02077035dc"
+    );
+    assert_eq!(snapshot.authority, AuthorityPosture::DENY_ALL);
 }
 
 #[test]

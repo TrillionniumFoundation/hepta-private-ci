@@ -10,6 +10,11 @@ name = "codex_hepta_agentd"
 path = "src/lib.rs"
 doctest = false
 
+[features]
+default = []
+# Qualification-only host profile. Default binaries keep the writer disabled.
+qualification-cognitive-write = []
+
 [[bin]]
 name = "codex-hepta-agentd"
 path = "src/main.rs"
@@ -56,6 +61,7 @@ serde = { workspace = true, features = ["derive"] }
 app_test_support = { workspace = true }
 codex-hepta-supervisor = { workspace = true }
 codex-state = { workspace = true }
+codex-utils-cargo-bin = { workspace = true }
 core_test_support = { workspace = true }
 sqlx = { workspace = true }
 tempfile = { workspace = true }

@@ -91,9 +91,6 @@ async fn stream_round_trips_data_between_listener_and_client() {
 
     let server_task = tokio::spawn(async move {
         let mut server_stream = listener.accept().await.expect("connection should accept");
-        server_stream
-            .ensure_current_user_peer()
-            .expect("same-user client must pass kernel peer identity check");
         let mut request = [0; 7];
         server_stream
             .read_exact(&mut request)
@@ -121,4 +118,53 @@ async fn stream_round_trips_data_between_listener_and_client() {
     assert_eq!(&response, b"response");
 
     server_task.await.expect("server task should join");
+}
+
+async fn connected_streams() -> std::io::Result<(tempfile::TempDir, UnixStream, UnixStream)> {
+    let temp_dir = tempfile::TempDir::new()?;
+    let socket_path = temp_dir.path().join("socket");
+    let mut listener = UnixListener::bind(&socket_path).await?;
+    let (server_stream, client_stream) =
+        tokio::try_join!(listener.accept(), UnixStream::connect(&socket_path))?;
+    Ok((temp_dir, server_stream, client_stream))
+}
+
+#[cfg(any(
+    target_os = "linux",
+    target_os = "android",
+    target_os = "macos",
+    target_os = "ios",
+    target_os = "freebsd",
+    target_os = "openbsd",
+    target_os = "netbsd",
+    target_os = "dragonfly"
+))]
+#[tokio::test]
+async fn peer_identity_gate_accepts_same_user_on_supported_platforms() -> std::io::Result<()> {
+    let (_temp_dir, server_stream, client_stream) = connected_streams().await?;
+    server_stream.ensure_current_user_peer()?;
+    ensure_current_user_peer(&client_stream)?;
+    Ok(())
+}
+
+#[cfg(not(any(
+    target_os = "linux",
+    target_os = "android",
+    target_os = "macos",
+    target_os = "ios",
+    target_os = "freebsd",
+    target_os = "openbsd",
+    target_os = "netbsd",
+    target_os = "dragonfly"
+)))]
+#[tokio::test]
+async fn peer_identity_gate_rejects_on_unsupported_platforms() -> std::io::Result<()> {
+    let (_temp_dir, server_stream, client_stream) = connected_streams().await?;
+    for result in [
+        server_stream.ensure_current_user_peer(),
+        ensure_current_user_peer(&client_stream),
+    ] {
+        assert!(matches!(result, Err(error) if error.kind() == ErrorKind::Unsupported));
+    }
+    Ok(())
 }

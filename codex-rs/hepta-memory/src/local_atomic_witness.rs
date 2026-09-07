@@ -123,8 +123,8 @@ impl LocalRehydrationWitnessReceipt {
                 "witness receipt contains an invalid identity or sequence".to_string(),
             ));
         }
-        validate_text(&self.journal_id, "journal id", 512)?;
-        validate_text(&self.operation_id, "operation id", 512)?;
+        validate_text(&self.journal_id, "journal id", /*max_bytes*/ 512)?;
+        validate_text(&self.operation_id, "operation id", /*max_bytes*/ 512)?;
         for (label, digest) in [
             ("checkpoint digest", &self.checkpoint_sha256),
             ("lease identity digest", &self.lease_id_sha256),
@@ -175,7 +175,7 @@ pub async fn write_local_rehydration_witness(
         operation_id.into(),
         checkpoint,
         expected_revision,
-        None,
+        /*fault*/ None,
     )
     .await
 }
@@ -210,7 +210,7 @@ async fn write_local_rehydration_witness_inner(
     expected_revision: u64,
     fault: Option<LocalAtomicWitnessFault>,
 ) -> Result<LocalRehydrationWitnessWrite, LocalAtomicWitnessError> {
-    validate_text(&operation_id, "operation id", 512)?;
+    validate_text(&operation_id, "operation id", /*max_bytes*/ 512)?;
     checkpoint
         .rehydration_plan(expected_revision)
         .map_err(|error| LocalAtomicWitnessError::Invalid(error.to_string()))?;

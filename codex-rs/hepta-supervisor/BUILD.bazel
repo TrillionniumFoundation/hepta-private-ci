@@ -4,3 +4,15 @@ codex_rust_crate(
     name = "hepta-supervisor",
     crate_name = "codex_hepta_supervisor",
 )
+
+# Caller evidence inspected by the Hepta contracts tests.
+exports_files(
+    [
+        "examples/write_robrix_control_projection.rs",
+        "src/matrix.rs",
+        "src/supervisor_tests.rs",
+        "src/unix.rs",
+        "tests/robrix_control_projection.rs",
+    ],
+    visibility = ["//codex-rs/hepta-contracts:__pkg__"],
+)

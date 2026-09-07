@@ -245,4 +245,4 @@ The bootstrap source-location obligation for `secrets.heptabao` is implemented b
 - `external/HeptaBao`
 - `codex-rs/hepta-bao-adapter`
 
-The source candidate is checked by `.github/workflows/hepta-gap-closure.yml`, including closed-world inventory, package tests, all-target compilation, strict Clippy and clean tracked state. This receipt is source implementation evidence only. It grants no runtime, production-writer, model-provider, external-effect, independent-acceptance, selection, promotion, merge or release authority.
+The source candidate is checked by `.github/workflows/hepta-consolidated-source.yml`, including closed-world inventory, package tests, all-target compilation, strict Clippy and clean tracked state. `.github/workflows/hepta-gap-closure.yml` still verifies the repository-wide gap inventory, but its selected Rust package set is not the `secrets.heptabao` compilation receipt. These receipts are source implementation evidence only. They grant no runtime, production-writer, model-provider, external-effect, independent-acceptance, selection, promotion, merge or release authority.

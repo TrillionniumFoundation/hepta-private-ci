@@ -1,13 +1,10 @@
 #!/usr/bin/env python3
 """Closed-world verifier for Hepta V8 pre-coding implementation readiness."""
 
-from __future__ import annotations
-
 import argparse
 import hashlib
 import json
 import re
-import sys
 from collections import defaultdict, deque
 from pathlib import Path
 from typing import Any
@@ -121,19 +118,27 @@ ASSIMILATION_IDS = [
     "organ.federation",
 ]
 
-VARIABLE_FIELD_TYPES = {
+BYTE_BOUNDED_SCALAR_TYPES = {
     "utf8",
-    "bounded_array",
-    "bounded_object",
-    "bounded_fixed_point_vector",
-    "bounded_vector",
-    "bounded_probability_vector",
-    "enum",
     "git_oid",
     "id128",
     "sha256",
     "timestamp_utc",
 }
+
+FIXED_SCALAR_TYPES = {"bool", "i64", "u32", "u64"}
+ARRAY_TYPES = {"bounded_array"}
+FIXED_POINT_VECTOR_TYPES = {"bounded_fixed_point_vector"}
+OBJECT_TYPES = {"bounded_object"}
+FIELD_TYPES = (
+    BYTE_BOUNDED_SCALAR_TYPES
+    | FIXED_SCALAR_TYPES
+    | ARRAY_TYPES
+    | FIXED_POINT_VECTOR_TYPES
+    | OBJECT_TYPES
+    | {"enum"}
+)
+FIELD_NAME = re.compile(r"^[A-Za-z][A-Za-z0-9]*$")
 
 
 class DuplicateKey(ValueError):
@@ -173,6 +178,176 @@ def false_authority(value: Any, label: str) -> None:
         label + " authority key closure/order",
     )
     need(not any(bool(x) for x in value.values()), label + " positive authority")
+
+
+def validate_schema_node(
+    node: Any,
+    maximum_encoded_bytes: int,
+    label: str,
+    *,
+    named: bool,
+    depth: int = 0,
+) -> None:
+    """Validate one closed, finite readiness-protocol field schema."""
+    need(isinstance(node, dict), label + " schema object")
+    need(depth <= 4, label + " schema nesting")
+    prefix = ["name", "type", "required"] if named else ["type"]
+    if named:
+        need(
+            isinstance(node.get("name"), str) and FIELD_NAME.fullmatch(node["name"]),
+            label + " field name",
+        )
+        need(isinstance(node.get("required"), bool), label + " required")
+    field_type = node.get("type")
+    need(field_type in FIELD_TYPES, label + " unknown type")
+
+    if field_type in FIXED_SCALAR_TYPES:
+        need(list(node) == prefix, label + " scalar key closure/order")
+        return
+
+    need(
+        isinstance(node.get("maxBytes"), int)
+        and not isinstance(node.get("maxBytes"), bool)
+        and 0 < node["maxBytes"] <= maximum_encoded_bytes,
+        label + " maxBytes",
+    )
+    if field_type in BYTE_BOUNDED_SCALAR_TYPES:
+        need(list(node) == prefix + ["maxBytes"], label + " scalar key closure/order")
+        return
+
+    if field_type == "enum":
+        need(
+            list(node) == prefix + ["maxBytes", "values"],
+            label + " enum key closure/order",
+        )
+        values = node.get("values")
+        need(
+            isinstance(values, list)
+            and values
+            and all(isinstance(value, str) and value for value in values)
+            and len(values) == len(set(values)),
+            label + " enum values",
+        )
+        need(
+            all(
+                len(json.dumps(value, ensure_ascii=False).encode("utf-8"))
+                <= node["maxBytes"]
+                for value in values
+            ),
+            label + " enum value bytes",
+        )
+        return
+
+    if field_type in ARRAY_TYPES:
+        need(
+            list(node)
+            == prefix + ["maxBytes", "minItems", "maxItems", "uniqueItems", "items"],
+            label + " array key closure/order",
+        )
+        need(
+            isinstance(node.get("minItems"), int)
+            and not isinstance(node.get("minItems"), bool)
+            and isinstance(node.get("maxItems"), int)
+            and not isinstance(node.get("maxItems"), bool)
+            and 0 <= node["minItems"] <= node["maxItems"]
+            and 0 < node["maxItems"] <= node["maxBytes"],
+            label + " array count bounds",
+        )
+        need(isinstance(node.get("uniqueItems"), bool), label + " uniqueItems")
+        if node["uniqueItems"] and isinstance(node.get("items"), dict):
+            item_values = node["items"].get("values")
+            if node["items"].get("type") == "enum" and isinstance(item_values, list):
+                need(
+                    node["maxItems"] <= len(item_values),
+                    label + " unique enum item bound",
+                )
+        validate_schema_node(
+            node.get("items"),
+            node["maxBytes"],
+            label + "[]",
+            named=False,
+            depth=depth + 1,
+        )
+        return
+
+    if field_type in FIXED_POINT_VECTOR_TYPES:
+        need(
+            list(node)
+            == prefix + ["maxBytes", "scale", "minItems", "maxItems", "items"],
+            label + " fixed-point vector key closure/order",
+        )
+        need(node.get("scale") in ("Q24", "Q32"), label + " fixed-point scale")
+        need(
+            isinstance(node.get("minItems"), int)
+            and not isinstance(node.get("minItems"), bool)
+            and isinstance(node.get("maxItems"), int)
+            and not isinstance(node.get("maxItems"), bool)
+            and 0 < node["minItems"] <= node["maxItems"] <= 512,
+            label + " fixed-point vector count bounds",
+        )
+        need(node.get("items") == {"type": "i64"}, label + " fixed-point items")
+        return
+
+    need(field_type in OBJECT_TYPES, label + " object type")
+    need(
+        "additionalProperties" in node,
+        label + " additionalProperties missing",
+    )
+    need(
+        node["additionalProperties"] is False,
+        label + " additionalProperties must be false",
+    )
+    need(
+        list(node)
+        == prefix
+        + [
+            "maxBytes",
+            "minProperties",
+            "maxProperties",
+            "additionalProperties",
+            "properties",
+        ],
+        label + " object key closure/order",
+    )
+    properties = node.get("properties")
+    need(isinstance(properties, list) and properties, label + " object properties")
+    need(
+        isinstance(node.get("minProperties"), int)
+        and not isinstance(node.get("minProperties"), bool)
+        and isinstance(node.get("maxProperties"), int)
+        and not isinstance(node.get("maxProperties"), bool)
+        and 0 <= node["minProperties"] <= node["maxProperties"] == len(properties),
+        label + " object property bounds",
+    )
+    property_names = [prop.get("name") for prop in properties if isinstance(prop, dict)]
+    need(
+        len(property_names) == len(properties)
+        and len(property_names) == len(set(property_names)),
+        label + " duplicate object property",
+    )
+    for prop in properties:
+        validate_schema_node(
+            prop,
+            node["maxBytes"],
+            label + "." + str(prop.get("name", "?")),
+            named=True,
+            depth=depth + 1,
+        )
+    need(
+        node["minProperties"] == sum(bool(prop["required"]) for prop in properties),
+        label + " required property count",
+    )
+
+
+def count_schema_nodes(node: Any, field_type: str) -> int:
+    """Count recursively declared nodes of one field-schema type."""
+    if isinstance(node, dict):
+        return int(node.get("type") == field_type) + sum(
+            count_schema_nodes(value, field_type) for value in node.values()
+        )
+    if isinstance(node, list):
+        return sum(count_schema_nodes(value, field_type) for value in node)
+    return 0
 
 
 def acyclic(
@@ -368,6 +543,7 @@ def verify() -> int:
     )
     owner_projection: dict[str, list[str]] = {mid: [] for mid in module_ids}
     consumer_projection: dict[str, list[str]] = {mid: [] for mid in module_ids}
+    registry_bounded_object_schemas = 0
     for row in protocol_rows:
         pid = row["id"]
         need(
@@ -405,24 +581,15 @@ def verify() -> int:
             pid + " fields",
         )
         for field in fields:
-            need(
-                list(field)
-                in (
-                    ["name", "type", "required"],
-                    ["name", "type", "required", "maxBytes"],
-                ),
-                pid + "." + field.get("name", "?") + " field key closure/order",
+            registry_bounded_object_schemas += count_schema_nodes(
+                field, "bounded_object"
             )
-            need(
-                isinstance(field["required"], bool),
-                pid + "." + field["name"] + " required",
+            validate_schema_node(
+                field,
+                row["maximumEncodedBytes"],
+                pid + "." + str(field.get("name", "?")),
+                named=True,
             )
-            if field["type"] in VARIABLE_FIELD_TYPES:
-                need(
-                    isinstance(field.get("maxBytes"), int)
-                    and 0 < field["maxBytes"] <= row["maximumEncodedBytes"],
-                    pid + "." + field["name"] + " unbounded",
-                )
         need(
             "semantic_digest_stable" in row["invariants"]
             and "authority_delta_none" in row["invariants"],
@@ -431,6 +598,10 @@ def verify() -> int:
         owner_projection[row["owner"]].append(pid)
         for consumer in row["consumers"]:
             consumer_projection[consumer].append(pid)
+    need(
+        registry_bounded_object_schemas == 46,
+        "protocol bounded-object schema count",
+    )
 
     gap_rows = gaps.get("gaps", [])
     gap_ids = [row["id"] for row in gap_rows]
@@ -795,6 +966,7 @@ def verify() -> int:
                 "overlayVersion": OVERLAY_VERSION,
                 "specifications": len(document_rows),
                 "protocols": len(protocol_rows),
+                "registryBoundedObjectSchemas": registry_bounded_object_schemas,
                 "documentationGaps": len(gap_rows),
                 "moduleBindings": len(binding_rows),
                 "implementationLanes": len(lane_rows),
@@ -845,13 +1017,173 @@ def self_test() -> int:
         die("duplicate accepted")
     except DuplicateKey:
         pass
+
+    valid_enum = {
+        "name": "mode",
+        "type": "enum",
+        "required": True,
+        "maxBytes": 16,
+        "values": ["safe", "stop"],
+    }
+    valid_array = {
+        "name": "entries",
+        "type": "bounded_array",
+        "required": True,
+        "maxBytes": 1024,
+        "minItems": 1,
+        "maxItems": 8,
+        "uniqueItems": True,
+        "items": {"type": "sha256", "maxBytes": 64},
+    }
+    valid_vector = {
+        "name": "features",
+        "type": "bounded_fixed_point_vector",
+        "required": True,
+        "maxBytes": 1024,
+        "scale": "Q24",
+        "minItems": 1,
+        "maxItems": 32,
+        "items": {"type": "i64"},
+    }
+    valid_object = {
+        "name": "window",
+        "type": "bounded_object",
+        "required": True,
+        "maxBytes": 1024,
+        "minProperties": 1,
+        "maxProperties": 2,
+        "additionalProperties": False,
+        "properties": [
+            {"name": "windowId", "type": "id128", "required": True, "maxBytes": 128},
+            {
+                "name": "notAfter",
+                "type": "timestamp_utc",
+                "required": False,
+                "maxBytes": 64,
+            },
+        ],
+    }
+    for fixture in [valid_enum, valid_array, valid_vector, valid_object]:
+        validate_schema_node(fixture, 1024, "fixture", named=True)
+
+    invalid_schemas = [
+        (
+            {
+                "name": "mode",
+                "type": "enum",
+                "required": True,
+                "values": ["safe", "stop"],
+                "maxBytes": 16,
+            },
+            "enum key closure/order",
+        ),
+        (
+            {
+                **valid_enum,
+                "values": ["safe", "safe"],
+            },
+            "enum values",
+        ),
+        (
+            {
+                **valid_array,
+                "minItems": 9,
+            },
+            "array count bounds",
+        ),
+        (
+            {
+                **valid_array,
+                "items": {
+                    "type": "enum",
+                    "maxBytes": 16,
+                    "values": ["safe", "stop"],
+                },
+            },
+            "unique enum item bound",
+        ),
+        (
+            {
+                **valid_vector,
+                "items": {"type": "u32"},
+            },
+            "fixed-point items",
+        ),
+        (
+            {
+                **valid_object,
+                "additionalProperties": True,
+            },
+            "additionalProperties must be false",
+        ),
+        (
+            {
+                key: value
+                for key, value in valid_object.items()
+                if key != "additionalProperties"
+            },
+            "additionalProperties missing",
+        ),
+        (
+            {
+                **valid_object,
+                "properties": [
+                    {"name": "same", "type": "u32", "required": True},
+                    {"name": "same", "type": "u32", "required": False},
+                ],
+            },
+            "duplicate object property",
+        ),
+        (
+            {
+                **valid_object,
+                "minProperties": 2,
+            },
+            "required property count",
+        ),
+        (
+            {
+                **valid_array,
+                "items": {"type": "utf8", "maxBytes": 2048},
+            },
+            "maxBytes",
+        ),
+    ]
+    for fixture, expected in invalid_schemas:
+        try:
+            validate_schema_node(fixture, 1024, "fixture", named=True)
+            die("invalid field schema accepted")
+        except SystemExit as exc:
+            if expected not in str(exc):
+                raise
     need(is_under("a/b/c", "a/b") and not is_under("a/bc", "a/b"), "path fixture")
     print(
         json.dumps(
             {
                 "status": "PASS_HEPTA_READINESS_SELF_TEST",
-                "cases": ["acyclic", "cycle", "duplicate_key", "path_ownership"],
+                "cases": [
+                    "acyclic",
+                    "cycle",
+                    "duplicate_key",
+                    "path_ownership",
+                    "valid_recursive_field_schemas",
+                    "schema_key_order",
+                    "duplicate_enum_value",
+                    "invalid_array_bounds",
+                    "invalid_unique_enum_bound",
+                    "invalid_fixed_point_items",
+                    "duplicate_object_property",
+                    "invalid_required_property_count",
+                    "nested_byte_bound_escape",
+                    "missing_additional_properties_policy",
+                    "positive_additional_properties_policy",
+                ],
                 "authorityGranted": False,
+                "boundedObjectFixtures": {
+                    "positive": 1,
+                    "missingAdditionalProperties": 1,
+                    "permissiveAdditionalProperties": 1,
+                },
             },
             sort_keys=True,
         )

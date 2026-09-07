@@ -156,6 +156,7 @@ fn resolve_home_env(env_name: &str, value: &str) -> std::io::Result<AbsolutePath
 mod tests {
     use super::find_codex_home_from_env;
     use super::find_hepta_home_from_env;
+    #[cfg(unix)]
     use super::parse_env_value;
     use codex_utils_absolute_path::AbsolutePathBuf;
     use dirs::home_dir;

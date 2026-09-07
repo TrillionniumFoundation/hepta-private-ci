@@ -2,12 +2,17 @@
 
 #![forbid(unsafe_code)]
 
+mod v2;
+
 use std::collections::BTreeSet;
 use std::error::Error as StdError;
 use std::fmt;
 
 use codex_hepta_cognitive_types::MemoryRecord;
-use codex_hepta_types::{AuthorityPosture, Digest32, FixedQ32, StableId};
+use codex_hepta_types::AuthorityPosture;
+use codex_hepta_types::Digest32;
+use codex_hepta_types::FixedQ32;
+use codex_hepta_types::StableId;
 
 const MAX_CANDIDATES: usize = 16_384;
 const MAX_RESULTS: usize = 256;
@@ -58,6 +63,7 @@ pub enum Error {
     SnapshotMismatch(String),
     DuplicateRecord(String),
     InvalidRecord(String),
+    TombstoneRecord(String),
     Arithmetic,
 }
 
@@ -70,6 +76,10 @@ impl fmt::Display for Error {
 impl StdError for Error {}
 
 pub fn retrieve(request: RetrievalRequest) -> Result<RetrievalReceipt, Error> {
+    retrieve_request(&request)
+}
+
+fn retrieve_request(request: &RetrievalRequest) -> Result<RetrievalReceipt, Error> {
     if request.query_digest.is_zero() {
         return Err(Error::EmptyDigest("query"));
     }
@@ -85,7 +95,7 @@ pub fn retrieve(request: RetrievalRequest) -> Result<RetrievalReceipt, Error> {
 
     let mut seen = BTreeSet::new();
     let mut results = Vec::with_capacity(request.candidates.len());
-    for candidate in request.candidates {
+    for candidate in &request.candidates {
         if candidate.snapshot_digest != request.snapshot_digest {
             return Err(Error::SnapshotMismatch(
                 candidate.record.record_id.to_string(),
@@ -95,6 +105,14 @@ pub fn retrieve(request: RetrievalRequest) -> Result<RetrievalReceipt, Error> {
             .record
             .validate()
             .map_err(|error| Error::InvalidRecord(error.to_string()))?;
+        // Retrieval candidates must already be current, live records. Reject
+        // the entire request rather than silently changing its candidate set
+        // or counting deleted records as ordinary top-k omissions.
+        if candidate.record.state == RecordState::Tombstone {
+            return Err(Error::TombstoneRecord(
+                candidate.record.record_id.to_string(),
+            ));
+        }
         if !seen.insert(candidate.record.record_id.clone()) {
             return Err(Error::DuplicateRecord(
                 candidate.record.record_id.to_string(),
@@ -107,7 +125,7 @@ pub fn retrieve(request: RetrievalRequest) -> Result<RetrievalReceipt, Error> {
             .map_err(|_| Error::Arithmetic)?;
         let record_digest = candidate.record.record_digest();
         results.push(RetrievalResult {
-            record_id: candidate.record.record_id,
+            record_id: candidate.record.record_id.clone(),
             record_digest,
             total_score: score,
             lexical_score: candidate.lexical_score,
@@ -139,7 +157,7 @@ pub fn retrieve(request: RetrievalRequest) -> Result<RetrievalReceipt, Error> {
     }
 
     Ok(RetrievalReceipt {
-        query_id: request.query_id,
+        query_id: request.query_id.clone(),
         snapshot_digest: request.snapshot_digest,
         results,
         omitted_count,

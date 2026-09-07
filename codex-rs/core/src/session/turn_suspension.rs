@@ -27,7 +27,7 @@ pub(super) async fn suspend_turn_and_shutdown(
     session: &Arc<Session>,
     submission_id: String,
 ) -> CodexResult<SuspendTurnOutcome> {
-    suspend_turn_and_shutdown_inner(session, submission_id, true).await
+    suspend_turn_and_shutdown_inner(session, submission_id, /*check_descendants*/ true).await
 }
 
 #[cfg(test)]

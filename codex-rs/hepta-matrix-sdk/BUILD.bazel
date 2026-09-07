@@ -1,6 +1,34 @@
-load("//:defs.bzl", "codex_rust_crate")
+load("@rules_rust//rust:defs.bzl", "rust_test")
+load("//:defs.bzl", "WINDOWS_RUSTC_LINK_FLAGS", "codex_rust_crate", "workspace_root_test")
 
 codex_rust_crate(
     name = "hepta-matrix-sdk",
     crate_name = "codex_hepta_matrix_sdk",
+)
+
+# Exercise the existing marker helper directly without enabling the SDK's
+# destructive transport hook or compiling a real-Synapse test target.
+rust_test(
+    name = "hepta-matrix-sdk-qualification-marker-test-bin",
+    srcs = ["src/qualification.rs"],
+    crate_name = "matrix_qualification_marker",
+    crate_root = "src/qualification.rs",
+    edition = "2024",
+    rustc_flags = WINDOWS_RUSTC_LINK_FLAGS,
+    tags = ["manual"],
+    visibility = ["//visibility:private"],
+    deps = [
+        "//codex-rs/hepta-contracts",
+        "//codex-rs/hepta-matrix-protocol",
+        "//codex-rs/hepta-matrix-store",
+        "//codex-rs/hepta-paths",
+        "@crates//:serde_json",
+        "@crates//:tempfile",
+    ],
+)
+
+workspace_root_test(
+    name = "hepta-matrix-sdk-qualification-marker-test",
+    test_bin = ":hepta-matrix-sdk-qualification-marker-test-bin",
+    workspace_root_marker = "//codex-rs/utils/cargo-bin:repo_root.marker",
 )
