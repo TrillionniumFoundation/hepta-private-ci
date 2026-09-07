@@ -1,0 +1,146 @@
+name: Hepta final gap closure r2 materializer
+
+on:
+  push:
+    branches:
+      - ops/hepta-final-gap-closure-r2-controller-20260908
+    paths:
+      - .github/workflows/hepta-final-gap-closure-r2-controller-20260908.yml
+      - .github/hepta-final-gap-closure-r2.py
+
+permissions:
+  contents: write
+
+concurrency:
+  group: hepta-final-gap-closure-r2
+  cancel-in-progress: false
+
+jobs:
+  materialize-single-parent-candidate:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      EXPECTED_MAIN: b97b856b0a23625ea98eccd97e701134aa967e2f
+      EXPECTED_SOURCE: b4f02458b63e9ef54c630c2e441a151b304025d7
+      SOURCE_BRANCH: integration/final-main-tree-followup-20260907-r1
+      FINAL_BRANCH: codex/hepta-final-gap-closure-r2-20260908
+    steps:
+      - name: Checkout exact controller
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Freeze source and materialize exact patch
+        shell: bash
+        run: |
+          set -euo pipefail
+          cp .github/hepta-final-gap-closure-r2.py "$RUNNER_TEMP/apply-final-gap.py"
+          git fetch --no-tags origin \
+            "+refs/heads/main:refs/remotes/origin/main" \
+            "+refs/heads/$SOURCE_BRANCH:refs/remotes/origin/$SOURCE_BRANCH"
+          test "$(git rev-parse refs/remotes/origin/main)" = "$EXPECTED_MAIN"
+          test "$(git rev-parse refs/remotes/origin/$SOURCE_BRANCH)" = "$EXPECTED_SOURCE"
+          git checkout --detach "$EXPECTED_SOURCE"
+          test -z "$(git status --porcelain=v1 --untracked-files=all)"
+          python3 "$RUNNER_TEMP/apply-final-gap.py"
+          cat >"$RUNNER_TEMP/expected-paths" <<'EOF'
+          .g1/trillionnium_os_external_evidence/EXECUTOR.md
+          .g1/trillionnium_os_external_evidence/tests/test_trusted_executor.py
+          .g1/trillionnium_os_external_evidence/trusted_executor.py
+          EOF
+          git diff --name-only | sort >"$RUNNER_TEMP/actual-paths"
+          diff -u "$RUNNER_TEMP/expected-paths" "$RUNNER_TEMP/actual-paths"
+          git diff --check
+
+      - name: Run hostile executor qualification
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd .g1/trillionnium_os_external_evidence
+          python3 -m py_compile admission_service.py trusted_executor.py tests/*.py
+          python3 -m unittest discover -s tests -v
+          for i in $(seq 1 12); do
+            python3 -m unittest -q tests.test_trusted_executor.TrustedExecutorTest.test_double_fork_setsid_descendant_is_contained_and_terminalized
+            printf 'hostile-repeat-%02d ok\n' "$i"
+          done
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          admission=json.loads(Path('policy.template.json').read_text())
+          execution=json.loads(Path('execution-policy.template.json').read_text())
+          assert admission['status']=='UNPROVISIONED_TEMPLATE'
+          assert set(admission['grant_public_key_sha256'])=={'0'}
+          assert admission['issuer_allowlist']==[]
+          assert execution['status']=='UNPROVISIONED_TEMPLATE'
+          for key in ('admission_policy_sha256_allowlist','grant_public_key_sha256_allowlist','issuer_allowlist'):
+              assert execution[key]==[]
+          PY
+
+      - name: Re-run canonical document and architecture verifiers
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta-docs.py verify
+          python3 scripts/hepta-module-docs.py verify
+          python3 scripts/hepta-algorithm-docs.py verify
+          python3 scripts/hepta-readiness.py verify
+          python3 scripts/hepta-cns.py verify
+          python3 scripts/hepta-hnmf.py verify
+          git diff --check
+
+      - name: Create and publish one direct child of current main
+        id: publish
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'Hepta Gap Closure'
+          git config user.email 'hepta-gap-closure@users.noreply.github.com'
+          git add \
+            .g1/trillionnium_os_external_evidence/EXECUTOR.md \
+            .g1/trillionnium_os_external_evidence/tests/test_trusted_executor.py \
+            .g1/trillionnium_os_external_evidence/trusted_executor.py
+          tree="$(git write-tree)"
+          message="$RUNNER_TEMP/commit-message"
+          cat >"$message" <<'EOF'
+          fix(executor): contain complete daemonized descendant tree
+
+          Close the remaining exact-head P1 by replacing process-group-only
+          cleanup with Linux child-subreaper, pidfd identity signaling and
+          bounded procfs descendant observation. Latch any descendant that
+          outlives the harness leader as a terminal failure even when cleanup
+          succeeds, and prove the complete spawned tree absent before success.
+
+          Add a double-fork + setsid + SIGTERM-resistant hostile regression,
+          retain durable one-shot and deny-all authority semantics, and keep
+          external evidence, review, promotion and release gates unchanged.
+
+          The tree also carries the already qualified b4f02458 full-gap source
+          as one direct child of the current main, avoiding a multi-commit
+          source-receipt topology.
+
+          Signed-off-by: Hepta Gap Closure <hepta-gap-closure@users.noreply.github.com>
+          EOF
+          candidate="$(git commit-tree "$tree" -p "$EXPECTED_MAIN" <"$message")"
+          test "$(git rev-parse "$candidate^")" = "$EXPECTED_MAIN"
+          test "$(git rev-parse "$candidate^{tree}")" = "$tree"
+          existing="$(git ls-remote --heads origin "refs/heads/$FINAL_BRANCH" | awk '{print $1}')"
+          if [[ -n "$existing" && "$existing" != "$candidate" ]]; then
+            echo "final branch already exists at unexpected SHA: $existing" >&2
+            exit 1
+          fi
+          if [[ -z "$existing" ]]; then
+            git push --porcelain origin "$candidate:refs/heads/$FINAL_BRANCH"
+          fi
+          echo "candidate=$candidate" >>"$GITHUB_OUTPUT"
+          {
+            echo '### Materialized final candidate'
+            echo
+            echo "- branch: \`$FINAL_BRANCH\`"
+            echo "- commit: \`$candidate\`"
+            echo "- parent: \`$EXPECTED_MAIN\`"
+            echo "- tree: \`$tree\`"
+            echo '- hostile executor tests: 27/27 plus 12 repeated daemon escapes'
+          } >>"$GITHUB_STEP_SUMMARY"
