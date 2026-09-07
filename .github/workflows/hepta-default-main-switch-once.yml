@@ -1,9 +1,7 @@
 name: Hepta switch identical default ref to main once
 
 on:
-  push:
-    branches:
-      - ops/hepta-default-main-switch-20260907
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -12,44 +10,11 @@ jobs:
   switch:
     runs-on: ubuntu-24.04
     timeout-minutes: 5
-    env:
-      EXPECTED_OLD_DEFAULT: integration/vnext-main-20260811
-      EXPECTED_BASE_SHA: e31df34dd30d046c78057eaa7af775b3210aa9b1
     steps:
-      - name: Verify identical refs and switch repository default
-        env:
-          GH_TOKEN: ${{ github.token }}
+      - name: Record unavailable administration channel
         shell: bash
         run: |
           set -euo pipefail
-          repo="${GITHUB_REPOSITORY}"
-          current_default="$(gh api "repos/${repo}" --jq .default_branch)"
-          main_sha="$(gh api "repos/${repo}/git/ref/heads/main" --jq .object.sha)"
-          default_sha="$(gh api "repos/${repo}/git/ref/heads/${current_default}" --jq .object.sha)"
-
-          [[ "${main_sha}" == "${EXPECTED_BASE_SHA}" ]] || {
-            echo "::error::main moved: expected ${EXPECTED_BASE_SHA}, observed ${main_sha}"
-            exit 1
-          }
-          [[ "${default_sha}" == "${main_sha}" ]] || {
-            echo "::error::default branch and main are not identical"
-            exit 1
-          }
-
-          if [[ "${current_default}" == "main" ]]; then
-            echo "Default branch is already main." >> "${GITHUB_STEP_SUMMARY}"
-            exit 0
-          fi
-          [[ "${current_default}" == "${EXPECTED_OLD_DEFAULT}" ]] || {
-            echo "::error::unexpected default branch: ${current_default}"
-            exit 1
-          }
-
-          gh api --method PATCH "repos/${repo}" -f default_branch=main >/dev/null
-          observed="$(gh api "repos/${repo}" --jq .default_branch)"
-          [[ "${observed}" == "main" ]] || {
-            echo "::error::default branch switch did not persist: ${observed}"
-            exit 1
-          }
-          printf 'Default branch switched from `%s` to `main`; both refs were `%s`.\n' \
-            "${current_default}" "${main_sha}" >> "${GITHUB_STEP_SUMMARY}"
+          echo "Repository administration is not available to the managed GitHub integration." >&2
+          echo "The prior exact-ref probe failed with HTTP 403 before changing repository metadata." >&2
+          exit 1
