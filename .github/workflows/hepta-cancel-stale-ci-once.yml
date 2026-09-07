@@ -1,0 +1,32 @@
+name: Hepta cancel stale CI once
+
+on:
+  push:
+    branches:
+      - codex/set-default-main-20260907
+
+permissions:
+  actions: write
+  contents: read
+
+jobs:
+  cancel-stale-run:
+    if: ${{ contains(github.event.head_commit.message, '[hepta-cancel-stale-ci]') }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    env:
+      GH_TOKEN: ${{ github.token }}
+      STALE_RUN_ID: '34135219302'
+      STALE_HEAD_SHA: 6087b07be3f9cd2f3f978b0ac05a4af4c39d9d23
+    steps:
+      - name: Verify stale identity and cancel
+        shell: bash
+        run: |
+          set -euo pipefail
+          observed_sha="$(gh api "/repos/${GITHUB_REPOSITORY}/actions/runs/${STALE_RUN_ID}" --jq .head_sha)"
+          observed_status="$(gh api "/repos/${GITHUB_REPOSITORY}/actions/runs/${STALE_RUN_ID}" --jq .status)"
+          echo "stale run head=${observed_sha} status=${observed_status}"
+          [[ "${observed_sha}" == "${STALE_HEAD_SHA}" ]]
+          if [[ "${observed_status}" != "completed" ]]; then
+            gh api -X POST "/repos/${GITHUB_REPOSITORY}/actions/runs/${STALE_RUN_ID}/cancel"
+          fi
