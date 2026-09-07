@@ -7,16 +7,21 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   materialize:
     runs-on: ubuntu-24.04
     timeout-minutes: 10
+    env:
+      BASE_SHA: b35b55f7767a3610481551c6260929904798b33c
+      SOURCE_SHA: d4870c4243d60919aa861033bda5a1a0c6b3065b
+      CANDIDATE_BRANCH: codex/hepta-final-candidate-v2-20260907
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
-          persist-credentials: false
+          fetch-depth: 0
+          persist-credentials: true
 
       - name: Generate bounded final blocker patch
         shell: bash
@@ -31,4 +36,95 @@ jobs:
           path: hepta-final-patch
           if-no-files-found: error
           include-hidden-files: true
+          retention-days: 7
+
+      - name: Build and publish isolated one-parent candidate
+        id: candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          cp .github/scripts/hepta_final_materializer.py "${RUNNER_TEMP}/hepta_final_materializer.py"
+          rm -rf hepta-final-patch
+          git checkout --detach "${SOURCE_SHA}"
+          python3 "${RUNNER_TEMP}/hepta_final_materializer.py"
+          rm -rf hepta-final-patch
+
+          git rm -f \
+            .github/workflows/hepta-blocker-round2.yml \
+            .hepta-blocker-round2-trigger
+          git add -A
+          git diff --cached --check
+
+          expected_files="${RUNNER_TEMP}/expected-files.txt"
+          actual_files="${RUNNER_TEMP}/actual-files.txt"
+          git diff --name-only "${BASE_SHA}" "${SOURCE_SHA}" \
+            | grep -v -E '^(\.github/workflows/hepta-blocker-round2\.yml|\.hepta-blocker-round2-trigger)$' \
+            > "${expected_files}"
+          cat >> "${expected_files}" <<'FILES'
+          .github/workflows/bazel.yml
+          .github/workflows/v8-canary.yml
+          codex-rs/hepta-fleet/src/registry.rs
+          codex-rs/hepta-fleet/src/registry_tests.rs
+          codex-rs/hepta-operator-acceptance/src/durable.rs
+          codex-rs/hepta-operator-acceptance/src/g5_trust.rs
+          codex-rs/hepta-shadow-qualification/BUILD.bazel
+          codex-rs/utils/home-dir/src/lib.rs
+          FILES
+          sed -i 's/^[[:space:]]*//' "${expected_files}"
+          sort -u -o "${expected_files}" "${expected_files}"
+
+          tree_sha="$(git write-tree)"
+          git config user.name "Hepta CI Finalizer"
+          git config user.email "actions@users.noreply.github.com"
+          candidate_commit="$(
+            printf '%s\n' \
+              'chore: repair inherited formatting and Rust dependency baseline' \
+              '' \
+              'Close deterministic Bazel dependency, Windows ABI, platform lint, and V8 canary blockers.' \
+              | git commit-tree "${tree_sha}" -p "${BASE_SHA}"
+          )"
+
+          if [[ "$(git show -s --format=%P "${candidate_commit}")" != "${BASE_SHA}" ]]; then
+            echo "Final candidate is not a single-parent commit on the required base." >&2
+            exit 1
+          fi
+          git diff --check "${BASE_SHA}" "${candidate_commit}"
+          git diff --name-only "${BASE_SHA}" "${candidate_commit}" | sort -u > "${actual_files}"
+          diff -u "${expected_files}" "${actual_files}"
+
+          for forbidden in \
+            .github/workflows/hepta-blocker-round2.yml \
+            .hepta-blocker-round2-trigger \
+            .github/workflows/hepta-final-materializer.yml \
+            .github/scripts/hepta_final_materializer.py; do
+            if git cat-file -e "${candidate_commit}:${forbidden}" 2>/dev/null; then
+              echo "Final candidate retains forbidden helper: ${forbidden}" >&2
+              exit 1
+            fi
+          done
+
+          mkdir -p hepta-final-candidate
+          python3 - "${candidate_commit}" "${tree_sha}" "${BASE_SHA}" > hepta-final-candidate/manifest.json <<'PY'
+          import json
+          import sys
+          print(json.dumps({
+              "schema": "hepta_final_candidate_v1",
+              "commit_sha": sys.argv[1],
+              "tree_sha": sys.argv[2],
+              "parent_sha": sys.argv[3],
+          }, indent=2, sort_keys=True))
+          PY
+
+          git push --force origin "${candidate_commit}:refs/heads/${CANDIDATE_BRANCH}"
+          echo "commit_sha=${candidate_commit}" >> "${GITHUB_OUTPUT}"
+          echo "tree_sha=${tree_sha}" >> "${GITHUB_OUTPUT}"
+          git show --stat --oneline --decorate "${candidate_commit}"
+
+      - name: Upload candidate identity
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        with:
+          name: hepta-final-candidate
+          path: hepta-final-candidate/manifest.json
+          if-no-files-found: error
           retention-days: 7
