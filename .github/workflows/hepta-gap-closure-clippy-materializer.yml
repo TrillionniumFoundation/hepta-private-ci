@@ -31,7 +31,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          test "$(git rev-parse HEAD^)" = "838b5d274adac33dced20c3846a5415ef6e5a387"
+          test "$(git rev-parse HEAD^)" = "710b1a27758296c73abd6cf3acc3fd3682a723d5"
           test "$(git diff --name-only HEAD^ HEAD)" = ".github/workflows/hepta-gap-closure-clippy-materializer.yml"
 
       - name: Apply targeted source repairs
@@ -75,6 +75,16 @@ jobs:
                   "verify_memory_candidate",
                   "tombstone_memory_candidate",
               ],
+              root / "local_compact_executor_tests.rs": [
+                  "process_soak_child_command",
+              ],
+              root / "local_lease_outbox_tests.rs": [
+                  "insert_test_transition",
+                  "test_event_digest",
+              ],
+              root / "h7_feedback_tests.rs": [
+                  "record",
+              ],
           }
 
           def insert_function_allow(path: Path, name: str) -> None:
@@ -91,6 +101,13 @@ jobs:
               if index == 0 or lines[index - 1] != attribute:
                   lines.insert(index, attribute)
               path.write_text("".join(lines), encoding="utf-8")
+
+          def replace_once(path: Path, old: str, new: str, label: str) -> None:
+              text = path.read_text(encoding="utf-8")
+              count = text.count(old)
+              if count != 1:
+                  raise SystemExit(f"unexpected {label} source in {path}: {count} matches")
+              path.write_text(text.replace(old, new), encoding="utf-8")
 
           for path, names in functions.items():
               for name in names:
@@ -120,7 +137,6 @@ jobs:
           if text.count(old) != 1:
               raise SystemExit("unexpected lease prior-row source")
           text = text.replace(old, new)
-
           for struct_name in ("EventRow", "OutboxRow"):
               marker = f"struct {struct_name} {{"
               replacement = f"#[allow(dead_code)]\n{marker}"
@@ -136,6 +152,134 @@ jobs:
           if text.count(marker) != 1:
               raise SystemExit("unexpected LogicalTurnReservation declaration")
           registry.write_text(text.replace(marker, replacement), encoding="utf-8")
+
+          replace_once(
+              root / "local_atomic_witness_tests.rs",
+              """    assert!(!LOCAL_ATOMIC_WITNESS_EXTERNAL_EFFECTS);
+              assert!(!LOCAL_ATOMIC_WITNESS_KG_WRITE_AUTHORITY);
+              assert!(!LOCAL_ATOMIC_WITNESS_LIFECYCLE_REGISTERED);
+              assert!(LOCAL_ATOMIC_WITNESS_LEASE_EPOCH_BOUND);
+              assert!(LOCAL_ATOMIC_WITNESS_LEASE_EXPIRY_BOUND);
+          """,
+              """    const {
+                  assert!(!LOCAL_ATOMIC_WITNESS_EXTERNAL_EFFECTS);
+                  assert!(!LOCAL_ATOMIC_WITNESS_KG_WRITE_AUTHORITY);
+                  assert!(!LOCAL_ATOMIC_WITNESS_LIFECYCLE_REGISTERED);
+                  assert!(LOCAL_ATOMIC_WITNESS_LEASE_EPOCH_BOUND);
+                  assert!(LOCAL_ATOMIC_WITNESS_LEASE_EXPIRY_BOUND);
+              }
+          """,
+              "local atomic witness authority assertions",
+          )
+          replace_once(
+              root / "compact_persistence_tests.rs",
+              """    assert!(!COMPACT_PERSISTENCE_EXTERNAL_EFFECTS);
+              assert!(!COMPACT_PERSISTENCE_KG_WRITE_AUTHORITY);
+          """,
+              """    const {
+                  assert!(!COMPACT_PERSISTENCE_EXTERNAL_EFFECTS);
+                  assert!(!COMPACT_PERSISTENCE_KG_WRITE_AUTHORITY);
+              }
+          """,
+              "compact persistence authority assertions",
+          )
+          replace_once(
+              root / "local_compact_executor_tests.rs",
+              """    assert!(!LOCAL_COMPACT_EXECUTOR_EXTERNAL_EFFECTS);
+              assert!(!LOCAL_COMPACT_EXECUTOR_KG_WRITE_AUTHORITY);
+          """,
+              """    const {
+                  assert!(!LOCAL_COMPACT_EXECUTOR_EXTERNAL_EFFECTS);
+                  assert!(!LOCAL_COMPACT_EXECUTOR_KG_WRITE_AUTHORITY);
+              }
+          """,
+              "local compact executor authority assertions",
+          )
+          replace_once(
+              root / "local_lease_outbox_tests.rs",
+              """    assert!(!LOCAL_LEASE_OUTBOX_EXTERNAL_EFFECTS);
+              assert!(!LOCAL_LEASE_OUTBOX_KG_WRITE_AUTHORITY);
+              assert!(!LOCAL_LEASE_OUTBOX_PRODUCTION_CALLER);
+          """,
+              """    const {
+                  assert!(!LOCAL_LEASE_OUTBOX_EXTERNAL_EFFECTS);
+                  assert!(!LOCAL_LEASE_OUTBOX_KG_WRITE_AUTHORITY);
+                  assert!(!LOCAL_LEASE_OUTBOX_PRODUCTION_CALLER);
+              }
+          """,
+              "local lease outbox authority assertions",
+          )
+          replace_once(
+              root / "logical_turn_registry_tests.rs",
+              """    assert!(!crate::LOGICAL_TURN_REGISTRY_EXTERNAL_EFFECTS);
+              assert!(!crate::LOGICAL_TURN_REGISTRY_KG_WRITE_AUTHORITY);
+              assert!(!crate::LOGICAL_TURN_REGISTRY_PRODUCTION_CALLER);
+          """,
+              """    const {
+                  assert!(!crate::LOGICAL_TURN_REGISTRY_EXTERNAL_EFFECTS);
+                  assert!(!crate::LOGICAL_TURN_REGISTRY_KG_WRITE_AUTHORITY);
+                  assert!(!crate::LOGICAL_TURN_REGISTRY_PRODUCTION_CALLER);
+              }
+          """,
+              "logical turn registry authority assertions",
+          )
+          replace_once(
+              root / "h7_feedback_tests.rs",
+              """    assert!(!H7_FEEDBACK_EXTERNAL_EFFECTS);
+              assert!(!H7_FEEDBACK_KG_WRITE_AUTHORITY);
+              assert!(!H7_FEEDBACK_PRODUCTION_CALLER);
+              assert!(H7_FEEDBACK_REPLAY_ONLY);
+          """,
+              """    const {
+                  assert!(!H7_FEEDBACK_EXTERNAL_EFFECTS);
+                  assert!(!H7_FEEDBACK_KG_WRITE_AUTHORITY);
+                  assert!(!H7_FEEDBACK_PRODUCTION_CALLER);
+                  assert!(H7_FEEDBACK_REPLAY_ONLY);
+              }
+          """,
+              "H7 feedback authority assertions",
+          )
+
+          compact_tests = root / "local_compact_executor_tests.rs"
+          replace_once(
+              compact_tests,
+              """    for operation_index in 0..OPERATIONS {
+                  let operation_id = format!(\"op:seeded:{operation_index:04}\");
+                  assert_eq!(
+                      reopened.state(&operation_id),
+                      Some(CompactPersistenceState::Committed)
+                  );
+                  assert_eq!(
+                      reopened
+                          .rehydration(&operation_id)
+                          .expect(\"final rehydration witness\")
+                          .sequence,
+                      witness_sequences[operation_index]
+                  );
+              }
+          """,
+              """    for (operation_index, witness_sequence) in witness_sequences
+                  .iter()
+                  .copied()
+                  .enumerate()
+                  .take(OPERATIONS)
+              {
+                  let operation_id = format!(\"op:seeded:{operation_index:04}\");
+                  assert_eq!(
+                      reopened.state(&operation_id),
+                      Some(CompactPersistenceState::Committed)
+                  );
+                  assert_eq!(
+                      reopened
+                          .rehydration(&operation_id)
+                          .expect(\"final rehydration witness\")
+                          .sequence,
+                      witness_sequence
+                  );
+              }
+          """,
+              "final compact witness iteration",
+          )
           PY
 
       - name: Install Rust toolchain and Linux dependencies
@@ -166,8 +310,35 @@ jobs:
           git rm .github/workflows/hepta-gap-closure-clippy-materializer.yml
           git add codex-rs/hepta-memory/src
           git diff --cached --check
-          test "$(git diff --cached --name-only | grep -c '^codex-rs/hepta-memory/src/')" -eq 7
-          test "$(git diff --cached --name-only | wc -l)" -eq 8
+          python3 - <<'PY'
+          import subprocess
+
+          expected = {
+              ".github/workflows/hepta-gap-closure-clippy-materializer.yml",
+              "codex-rs/hepta-memory/src/compact_persistence_tests.rs",
+              "codex-rs/hepta-memory/src/h7_feedback.rs",
+              "codex-rs/hepta-memory/src/h7_feedback_tests.rs",
+              "codex-rs/hepta-memory/src/h7_trajectory_store.rs",
+              "codex-rs/hepta-memory/src/local_atomic_witness_tests.rs",
+              "codex-rs/hepta-memory/src/local_compact_executor.rs",
+              "codex-rs/hepta-memory/src/local_compact_executor_tests.rs",
+              "codex-rs/hepta-memory/src/local_lease_outbox.rs",
+              "codex-rs/hepta-memory/src/local_lease_outbox_tests.rs",
+              "codex-rs/hepta-memory/src/local_memory_saga.rs",
+              "codex-rs/hepta-memory/src/logical_turn_registry.rs",
+              "codex-rs/hepta-memory/src/logical_turn_registry_tests.rs",
+              "codex-rs/hepta-memory/src/memory_admission.rs",
+          }
+          actual = set(
+              subprocess.check_output(["git", "diff", "--cached", "--name-only"], text=True).splitlines()
+          )
+          if actual != expected:
+              raise SystemExit(
+                  "unexpected staged path set:\n"
+                  + "missing=" + repr(sorted(expected - actual)) + "\n"
+                  + "extra=" + repr(sorted(actual - expected))
+              )
+          PY
 
       - name: Commit and push verified result
         shell: bash
