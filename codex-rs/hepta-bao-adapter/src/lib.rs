@@ -14,6 +14,26 @@ use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
 
+mod secret_boundary_v1;
+
+pub use secret_boundary_v1::AUTHBUS_POLICY_PRODUCER_ID;
+pub use secret_boundary_v1::HEPTABAO_BACKEND_ID;
+pub use secret_boundary_v1::HEPTABAO_DESTINATION_ID;
+pub use secret_boundary_v1::KERNEL_AUTHORITY_PRODUCER_ID;
+pub use secret_boundary_v1::MAX_SECRET_METADATA_BYTES;
+pub use secret_boundary_v1::MAX_SECRET_REFERENCE_COMPONENT_BYTES;
+pub use secret_boundary_v1::PROVIDER_DISPATCH_ENABLED;
+pub use secret_boundary_v1::ParsedSecretReferenceV1;
+pub use secret_boundary_v1::SECRET_BOUNDARY_SCHEMA_VERSION_V1;
+pub use secret_boundary_v1::SecretBoundaryDecisionV1;
+pub use secret_boundary_v1::SecretBoundaryDispositionV1;
+pub use secret_boundary_v1::SecretBoundaryErrorV1;
+pub use secret_boundary_v1::SecretBoundaryRequestV1;
+pub use secret_boundary_v1::SecretPermissionObservationV1;
+pub use secret_boundary_v1::SecretPermissionStatusV1;
+pub use secret_boundary_v1::assess_secret_boundary_v1;
+pub use secret_boundary_v1::secret_boundary_request_digest_v1;
+
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct SecretReference {
     pub secret_id: StableId,

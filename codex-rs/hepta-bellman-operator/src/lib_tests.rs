@@ -4,7 +4,6 @@ use codex_hepta_types::Digest32;
 use codex_hepta_types::FixedQ32;
 use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
-use pretty_assertions::assert_eq;
 
 use super::*;
 
