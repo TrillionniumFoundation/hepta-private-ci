@@ -1,0 +1,123 @@
+name: Apply PR 456 reviewed gap fix
+
+on:
+  push:
+    branches:
+      - ops/exact-source-export-20260907
+
+permissions:
+  contents: write
+
+concurrency:
+  group: apply-pr456-reviewed-gap-fix
+  cancel-in-progress: false
+
+jobs:
+  apply:
+    name: Verify exact patch and publish isolated result branch
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      EXACT_SOURCE: 4506b0076e51211976eeb6d2df8ca1a4287f1cd1
+      RESULT_BRANCH: ops/pr456-gapfix-result-20260907-r1
+      PATCH_B64_SHA256: befcbc3e0f941f596ff469ea5d6aa98ef268c4919a038e3e531621e15520314a
+      PATCH_GZ_SHA256: b9bf6c0d71fe1ef79ba87806418fe599dad6e9f341226b9677660e3eae3c6f44
+      PATCH_SHA256: aa095097fca56092b333dcc37262778152a198fda774064713cb9eabb0ec8450
+      PYTHONDONTWRITEBYTECODE: "1"
+    steps:
+      - name: Check out bounded control material
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          path: control
+          persist-credentials: false
+          fetch-depth: 1
+
+      - name: Check out exact PR source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          path: target
+          ref: ${{ env.EXACT_SOURCE }}
+          persist-credentials: true
+          fetch-depth: 1
+
+      - name: Reconstruct and verify exact reviewed patch
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git -C control rev-parse HEAD)" = "$GITHUB_SHA"
+          cat control/.ops/pr456-gapfix/part-00 \
+              control/.ops/pr456-gapfix/part-01 \
+              control/.ops/pr456-gapfix/part-02 \
+              control/.ops/pr456-gapfix/part-03 \
+              > "${RUNNER_TEMP}/gapfix.patch.gz.b64"
+          printf '%s  %s\n' "$PATCH_B64_SHA256" "${RUNNER_TEMP}/gapfix.patch.gz.b64" | sha256sum -c -
+          base64 --decode "${RUNNER_TEMP}/gapfix.patch.gz.b64" > "${RUNNER_TEMP}/gapfix.patch.gz"
+          printf '%s  %s\n' "$PATCH_GZ_SHA256" "${RUNNER_TEMP}/gapfix.patch.gz" | sha256sum -c -
+          gzip -dc "${RUNNER_TEMP}/gapfix.patch.gz" > "${RUNNER_TEMP}/gapfix.patch"
+          printf '%s  %s\n' "$PATCH_SHA256" "${RUNNER_TEMP}/gapfix.patch" | sha256sum -c -
+
+          cd target
+          test "$(git rev-parse HEAD)" = "$EXACT_SOURCE"
+          git apply --check "${RUNNER_TEMP}/gapfix.patch"
+          git apply --index "${RUNNER_TEMP}/gapfix.patch"
+
+          actual="$(git diff --cached --name-only | LC_ALL=C sort)"
+          expected="$(cat <<'EOF'
+          .g1/trillionnium_os_external_evidence/EXECUTOR.md
+          .g1/trillionnium_os_external_evidence/README.md
+          .g1/trillionnium_os_external_evidence/admission_service.py
+          .g1/trillionnium_os_external_evidence/execution-policy.template.json
+          .g1/trillionnium_os_external_evidence/policy.template.json
+          .g1/trillionnium_os_external_evidence/tests/test_admission_service.py
+          .g1/trillionnium_os_external_evidence/tests/test_trusted_executor.py
+          .g1/trillionnium_os_external_evidence/trusted_executor.py
+          .github/workflows/rust-ci-full.yml
+          EOF
+          )"
+          test "$actual" = "$expected"
+          git diff --cached --check
+
+      - name: Run admission, executor, policy and workflow verification
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd target
+          python3 -B -m py_compile \
+            .g1/trillionnium_os_external_evidence/admission_service.py \
+            .g1/trillionnium_os_external_evidence/trusted_executor.py \
+            .g1/trillionnium_os_external_evidence/tests/test_admission_service.py \
+            .g1/trillionnium_os_external_evidence/tests/test_trusted_executor.py
+          (
+            cd .g1/trillionnium_os_external_evidence
+            python3 -B -m unittest discover -s tests -v
+          )
+          python3 -B - <<'PY'
+          import json
+          from pathlib import Path
+          root = Path('.g1/trillionnium_os_external_evidence')
+          for name in ('policy.template.json', 'execution-policy.template.json'):
+              value = json.loads((root / name).read_text(encoding='utf-8'))
+              assert value['status'] == 'UNPROVISIONED_TEMPLATE'
+          PY
+          ruby -e 'require "yaml"; YAML.safe_load(File.read(ARGV.fetch(0)), aliases: true)' \
+            .github/workflows/rust-ci-full.yml
+          test -z "$(git status --porcelain=v1 --untracked-files=all | sed -n 's/^?? //p')"
+          git diff --cached --check
+
+      - name: Commit only to an isolated result branch
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd target
+          if git ls-remote --exit-code --heads origin "refs/heads/${RESULT_BRANCH}" >/dev/null 2>&1; then
+            echo "result branch already exists" >&2
+            exit 1
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "fix(g1): harden external admission and exact-target execution"
+          result_commit="$(git rev-parse HEAD)"
+          test "$(git rev-parse HEAD^)" = "$EXACT_SOURCE"
+          git push origin "${result_commit}:refs/heads/${RESULT_BRANCH}"
+          printf 'result_commit=%s\n' "$result_commit" >> "$GITHUB_STEP_SUMMARY"
+          printf 'result_branch=%s\n' "$RESULT_BRANCH" >> "$GITHUB_STEP_SUMMARY"
