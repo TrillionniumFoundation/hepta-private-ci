@@ -1,0 +1,183 @@
+name: Hepta exact-head blocker autofix R4
+
+on:
+  push:
+    branches:
+      - codex/hepta-v8-windows-bazel-diagnostics-r3-20260907
+
+permissions:
+  contents: write
+  actions: read
+
+concurrency:
+  group: hepta-exact-head-blocker-autofix-r4-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  autofix:
+    if: ${{ !contains(github.event.head_commit.message, '[hepta-autofix-r4]') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Configure authenticated exact-branch writes
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "hepta-ci-autofix"
+          git config user.email "hepta-ci-autofix@users.noreply.github.com"
+          test "$(git branch --show-current)" = "codex/hepta-v8-windows-bazel-diagnostics-r3-20260907"
+
+      - name: Import prior verified R2 fix when not already present
+        shell: bash
+        run: |
+          set -euo pipefail
+          r2=07ead9f7c3b3f1fc7682355dfd315def810df44b
+          git fetch origin "${r2}" --no-tags
+          if git merge-base --is-ancestor "${r2}" HEAD; then
+            echo "R2 is already present"
+          elif git cherry-pick "${r2}"; then
+            echo "Imported R2 as a real commit"
+          else
+            git cherry-pick --abort
+            echo "R2 did not apply cleanly; continuing with deterministic file-level fixers" >&2
+          fi
+
+      - name: Download exact target diagnostics
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf .hepta-diagnostics-r4
+          mkdir -p .hepta-diagnostics-r4
+          gh run download 34069442891 --dir .hepta-diagnostics-r4 || true
+          find .hepta-diagnostics-r4 -type f -maxdepth 8 -print | sort || true
+
+      - name: Apply safe worktree fixes emitted by failing tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from __future__ import annotations
+
+          import pathlib
+          import subprocess
+
+          root = pathlib.Path('.hepta-diagnostics-r4')
+          candidates = sorted(root.rglob('final-worktree.diff'))
+          if not candidates:
+              candidates = sorted(root.rglob('*.git-diff.patch'))
+
+          forbidden_prefixes = (
+              '.github/', '.git/', 'third_party/', 'vendor/',
+          )
+          forbidden_exact = {
+              'MODULE.bazel.lock', 'pnpm-lock.yaml', 'Cargo.lock',
+          }
+          applied = []
+          rejected = []
+          for patch in candidates:
+              if patch.stat().st_size == 0:
+                  continue
+              check = subprocess.run(
+                  ['git', 'apply', '--check', '--whitespace=error-all', str(patch)],
+                  text=True,
+                  capture_output=True,
+              )
+              if check.returncode != 0:
+                  rejected.append((str(patch), 'does not apply cleanly'))
+                  continue
+              names = subprocess.run(
+                  ['git', 'apply', '--numstat', str(patch)],
+                  check=True,
+                  text=True,
+                  capture_output=True,
+              ).stdout.splitlines()
+              paths = []
+              for line in names:
+                  parts = line.split('\t', 2)
+                  if len(parts) == 3:
+                      paths.append(parts[2])
+              if not paths:
+                  rejected.append((str(patch), 'contains no tracked file changes'))
+                  continue
+              if any(p in forbidden_exact or p.startswith(forbidden_prefixes) for p in paths):
+                  rejected.append((str(patch), 'touches policy, dependency lock, or vendored files'))
+                  continue
+              subprocess.run(
+                  ['git', 'apply', '--index', '--whitespace=error-all', str(patch)],
+                  check=True,
+              )
+              applied.append((str(patch), paths))
+
+          print('Applied diagnostic patches:')
+          for patch, paths in applied:
+              print(f'  {patch}: {paths}')
+          print('Rejected diagnostic patches:')
+          for patch, reason in rejected:
+              print(f'  {patch}: {reason}')
+          PY
+
+      - name: Run deterministic format and lint autofixes
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf .hepta-diagnostics-r4
+
+          if [[ -f codex-rs/Cargo.toml ]]; then
+            cargo fmt --manifest-path codex-rs/Cargo.toml --all
+            (
+              cd codex-rs
+              cargo clippy --fix \
+                --workspace \
+                --all-targets \
+                --all-features \
+                --allow-dirty \
+                --allow-staged \
+                --ignore-rust-version \
+                -- \
+                -D warnings
+            ) || {
+              echo "Clippy fix did not complete on the Linux host; retained only fixes it actually emitted." >&2
+            }
+            cargo fmt --manifest-path codex-rs/Cargo.toml --all
+          fi
+
+          if [[ -f tools/argument-comment-lint/run-prebuilt-linter.py ]]; then
+            help_text="$(python tools/argument-comment-lint/run-prebuilt-linter.py --help 2>&1 || true)"
+            if grep -q -- '--fix' <<<"${help_text}"; then
+              python tools/argument-comment-lint/run-prebuilt-linter.py --fix || true
+            fi
+          fi
+
+      - name: Reject policy weakening and commit only real fixes
+        shell: bash
+        run: |
+          set -euo pipefail
+          git add -A
+          git reset -- .hepta-diagnostics-r4 2>/dev/null || true
+
+          if git diff --cached --quiet; then
+            echo "No deterministic source change was produced"
+            exit 0
+          fi
+
+          changed="$(git diff --cached --name-only)"
+          printf '%s\n' "${changed}"
+          if grep -Eq '(^|/)(CODEOWNERS|branch-protection|ruleset)|^\.github/workflows/bazel\.yml$' <<<"${changed}"; then
+            echo "Refusing to auto-commit a policy or canonical test-matrix change" >&2
+            exit 1
+          fi
+          if git diff --cached | grep -Eq -- '(-D warnings|-Dwarnings).*([+].*(allow|warn))|test_tag_filters=.*-[^ ]+'; then
+            echo "Refusing to weaken lint or exclude tests" >&2
+            exit 1
+          fi
+
+          git diff --cached --check
+          git commit -m "fix: apply exact-head blocker corrections [hepta-autofix-r4]"
+          git push origin HEAD:codex/hepta-v8-windows-bazel-diagnostics-r3-20260907
