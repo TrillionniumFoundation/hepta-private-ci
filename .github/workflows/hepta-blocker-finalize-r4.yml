@@ -1,0 +1,62 @@
+name: Hepta protected exact-head finalizer R4
+
+on:
+  push:
+    branches:
+      - codex/hepta-v8-windows-bazel-diagnostics-r3-20260907
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: hepta-protected-exact-head-finalizer-r4-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  finalize:
+    if: ${{ contains(github.event.head_commit.message, '[hepta-cleanup-r4]') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Produce a clean source-only head
+        env:
+          BASE_BRANCH: ${{ github.event.repository.default_branch }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "hepta-ci-finalizer"
+          git config user.email "hepta-ci-finalizer@users.noreply.github.com"
+          git fetch origin "${BASE_BRANCH}"
+          git rm -f .github/workflows/hepta-blocker-finalize-r4.yml
+          git commit -m "chore: finalize source-only blocker closure [hepta-finalize-r4]"
+          git push origin HEAD:codex/hepta-v8-windows-bazel-diagnostics-r3-20260907
+
+          if git diff --quiet "origin/${BASE_BRANCH}...HEAD"; then
+            echo "No source delta remains after cleanup; no PR required."
+            exit 0
+          fi
+
+      - name: Create or reuse closure PR and enable protected auto-merge
+        env:
+          GH_TOKEN: ${{ github.token }}
+          BASE_BRANCH: ${{ github.event.repository.default_branch }}
+          HEAD_BRANCH: codex/hepta-v8-windows-bazel-diagnostics-r3-20260907
+        shell: bash
+        run: |
+          set -euo pipefail
+          pr_url="$(gh pr list --state open --head "${HEAD_BRANCH}" --json url --jq '.[0].url // empty')"
+          if [[ -z "${pr_url}" ]]; then
+            pr_url="$(gh pr create \
+              --base "${BASE_BRANCH}" \
+              --head "${HEAD_BRANCH}" \
+              --title "fix: close remaining exact-head CI blockers" \
+              --body $'## Scope\n\nDeterministic source fixes derived from per-target Windows diagnostics, existing argument-comment autofix machinery, rustfmt, and Clippy machine fixes.\n\n## Safety invariants\n\n- no required check is skipped or weakened\n- no branch protection is bypassed\n- no failing target is excluded\n- merge is exact-head and protected by the repository required checks\n- one-shot diagnostic workflows are absent from the final diff\n')"
+          fi
+          echo "Closure PR: ${pr_url}"
+          gh pr merge "${pr_url}" --auto --squash --delete-branch
