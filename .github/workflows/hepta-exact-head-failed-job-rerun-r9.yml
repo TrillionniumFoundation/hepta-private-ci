@@ -1,0 +1,93 @@
+name: Hepta exact-head failed-job rerun R9
+
+on:
+  push:
+    branches:
+      - codex/hepta-v8-windows-bazel-diagnostics-r3-20260907
+
+permissions:
+  actions: write
+  contents: read
+  pull-requests: read
+
+concurrency:
+  group: hepta-exact-head-failed-job-rerun-r9
+  cancel-in-progress: false
+
+jobs:
+  rerun-once:
+    runs-on: ubuntu-latest
+    timeout-minutes: 150
+    env:
+      GH_TOKEN: ${{ github.token }}
+      TARGET_PR: "449"
+    steps:
+      - name: Resolve live exact head
+        id: pr
+        shell: bash
+        run: |
+          set -euo pipefail
+          state="$(gh pr view "${TARGET_PR}" --repo "${GITHUB_REPOSITORY}" --json state --jq .state)"
+          [[ "${state}" == "OPEN" ]] || { echo 'active=false' >> "${GITHUB_OUTPUT}"; exit 0; }
+          sha="$(gh pr view "${TARGET_PR}" --repo "${GITHUB_REPOSITORY}" --json headRefOid --jq .headRefOid)"
+          echo "active=true" >> "${GITHUB_OUTPUT}"
+          echo "sha=${sha}" >> "${GITHUB_OUTPUT}"
+
+      - name: Wait for the first exact-head pass to settle
+        if: ${{ steps.pr.outputs.active == 'true' }}
+        env:
+          HEAD_SHA: ${{ steps.pr.outputs.sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          deadline=$((SECONDS + 7200))
+          while (( SECONDS < deadline )); do
+            mapfile -t states < <(gh run list --repo "${GITHUB_REPOSITORY}" --commit "${HEAD_SHA}" --limit 100 --json status --jq '.[].status')
+            if ((${#states[@]} == 0)); then
+              sleep 20
+              continue
+            fi
+            active=0
+            for state in "${states[@]}"; do
+              [[ "${state}" == "completed" ]] || active=1
+            done
+            (( active == 0 )) && exit 0
+            sleep 30
+          done
+          echo "Timed out waiting for first pass" >&2
+          exit 1
+
+      - name: Rerun each failed workflow once on the identical SHA
+        if: ${{ steps.pr.outputs.active == 'true' }}
+        env:
+          HEAD_SHA: ${{ steps.pr.outputs.sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          mapfile -t failed_runs < <(
+            gh run list --repo "${GITHUB_REPOSITORY}" --commit "${HEAD_SHA}" --limit 100 \
+              --json databaseId,status,conclusion,event \
+              --jq '.[] | select(.status == "completed" and .conclusion == "failure" and .event != "workflow_dispatch") | .databaseId'
+          )
+          if ((${#failed_runs[@]} == 0)); then
+            echo "No failed workflow requires a same-SHA rerun."
+            exit 0
+          fi
+          for run_id in "${failed_runs[@]}"; do
+            echo "Rerunning failed jobs in ${run_id}"
+            gh run rerun "${run_id}" --failed --repo "${GITHUB_REPOSITORY}"
+          done
+
+      - name: Verify reruns remain tied to the authoritative head
+        if: ${{ steps.pr.outputs.active == 'true' }}
+        env:
+          HEAD_SHA: ${{ steps.pr.outputs.sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          current="$(gh pr view "${TARGET_PR}" --repo "${GITHUB_REPOSITORY}" --json headRefOid --jq .headRefOid)"
+          [[ "${current}" == "${HEAD_SHA}" ]] || {
+            echo "PR head advanced; rerun results are not authoritative for the new head." >&2
+            exit 0
+          }
+          echo "Reruns were requested only for ${HEAD_SHA}"
