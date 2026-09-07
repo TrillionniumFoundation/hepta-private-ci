@@ -1,0 +1,90 @@
+name: PR 456 exact review follow-up publisher
+
+on:
+  push:
+    branches:
+      - ops/pr456-review-fix-r4-20260907
+
+permissions:
+  contents: write
+
+concurrency:
+  group: pr456-review-fix-r4
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Check out the bounded repair branch
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Prove the exact publication lease
+        id: lease
+        shell: bash
+        run: |
+          set -euo pipefail
+          target='integration/final-main-tree-20260907'
+          expected='a04ba23781879c67d4545a4480ce94468c07337c'
+          git fetch --no-tags origin "+refs/heads/${target}:refs/remotes/origin/${target}"
+          observed="$(git rev-parse "refs/remotes/origin/${target}")"
+          test "$observed" = "$expected"
+          echo "target=${target}" >> "$GITHUB_OUTPUT"
+          echo "expected=${expected}" >> "$GITHUB_OUTPUT"
+
+      - name: Apply the deterministic review repair
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 .github/patch_pr456_r4.py
+
+      - name: Verify the exact source and hostile regressions
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd .g1/trillionnium_os_external_evidence
+          python3 -m py_compile admission_service.py trusted_executor.py tests/*.py
+          python3 -m unittest discover -s tests -v
+          python3 -m json.tool policy.template.json >/dev/null
+          python3 -m json.tool execution-policy.template.json >/dev/null
+          cd ../..
+          git diff --check
+
+      - name: Remove repository-controlled publication helpers
+        shell: bash
+        run: |
+          set -euo pipefail
+          git rm -f \
+            .github/patch_pr456_r4.py \
+            .github/workflows/pr456-review-fix-r4.yml
+
+      - name: Build a direct-child commit and publish without force
+        env:
+          TARGET: ${{ steps.lease.outputs.target }}
+          EXPECTED: ${{ steps.lease.outputs.expected }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add --all
+          git diff --cached --check
+          actual="$(git diff --cached --name-only "$EXPECTED" | LC_ALL=C sort)"
+          expected_paths="$(printf '%s\n' \
+            '.g1/trillionnium_os_external_evidence/EXECUTOR.md' \
+            '.g1/trillionnium_os_external_evidence/trusted_executor.py' \
+            '.g1/trillionnium_os_external_evidence/tests/test_trusted_executor_review_regressions.py' \
+            | LC_ALL=C sort)"
+          test "$actual" = "$expected_paths"
+          tree="$(git write-tree)"
+          commit="$(printf '%s\n\n%s\n' \
+            'fix(g1): close final external-evidence review blockers' \
+            'Enforce authorization expiry after output pipes close, fail closed on bundle traversal errors, and persist one validated no-retry terminal result for every post-STARTED failure. No target, promotion, signing, deployment, destructive-action, device-mutation, or public-release authority is granted.' \
+            | git commit-tree "$tree" -p "$EXPECTED")"
+          git push origin "$commit:refs/heads/${TARGET}"
+          echo "published_commit=${commit}" >> "$GITHUB_STEP_SUMMARY"
+          echo "published_tree=${tree}" >> "$GITHUB_STEP_SUMMARY"
