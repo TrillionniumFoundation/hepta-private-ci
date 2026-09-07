@@ -1,0 +1,170 @@
+name: Hepta verified one-tree branch retirement v2
+
+on:
+  push:
+    branches:
+      - ops/hepta-default-main-switch-20260907
+
+permissions:
+  contents: write
+
+concurrency:
+  group: hepta-verified-one-tree-retirement-v2
+  cancel-in-progress: false
+
+env:
+  EXPECTED_FINAL_TREE: ca7d65318c5535cd9e59f82be793dd00caca2950
+
+jobs:
+  retire:
+    if: ${{ contains(github.event.head_commit.message, '[hepta-retirement-arm-v2]') }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - name: Check out exact live main with complete history
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: main
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Prove final main, controller ancestry, and one-tree default alias
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch --prune --no-tags origin '+refs/heads/*:refs/remotes/origin/*'
+          main_sha="$(git rev-parse refs/remotes/origin/main)"
+          main_tree="$(git rev-parse "${main_sha}^{tree}")"
+          [[ "${main_tree}" == "${EXPECTED_FINAL_TREE}" ]] || {
+            echo "::error::main tree mismatch: ${main_tree}"
+            exit 1
+          }
+          git merge-base --is-ancestor "${GITHUB_SHA}" "${main_sha}" || {
+            echo "::error::retirement controller is not retained by main"
+            exit 1
+          }
+          default_branch="$(git ls-remote --symref origin HEAD | sed -n 's#^ref: refs/heads/\([^[:space:]]*\)[[:space:]]HEAD$#\1#p')"
+          [[ -n "${default_branch}" ]] || {
+            echo "::error::cannot resolve live default branch"
+            exit 1
+          }
+          default_sha="$(git ls-remote --heads origin "refs/heads/${default_branch}" | awk '{print $1}')"
+          [[ "${default_sha}" == "${main_sha}" ]] || {
+            echo "::error::live default ref is not the exact main commit: ${default_branch}@${default_sha}"
+            exit 1
+          }
+          echo "MAIN_SHA=${main_sha}" >> "${GITHUB_ENV}"
+          echo "DEFAULT_BRANCH=${default_branch}" >> "${GITHUB_ENV}"
+
+      - name: Freeze refs and create verified recovery bundle
+        id: plan
+        shell: bash
+        run: |
+          set -euo pipefail
+          output="${RUNNER_TEMP}/hepta-branch-retirement-v2"
+          python3 tools/branch-consolidation/hepta_branch_consolidation.py \
+            plan --root . --output "${output}"
+          python3 - "${output}/plan.json" <<'PY'
+          import json
+          import sys
+
+          plan = json.load(open(sys.argv[1], encoding="utf-8"))
+          if not plan.get("backupVerified"):
+              raise SystemExit("recovery bundle was not verified")
+          missing = [row["branch"] for row in plan["branches"] if not row["ancestorOfMain"]]
+          if missing:
+              raise SystemExit("heads not retained by main: " + ", ".join(missing))
+          print(f"verified {len(plan['branches'])} frozen branch heads")
+          PY
+          digest="$(sha256sum "${output}/plan.json" | awk '{print $1}')"
+          echo "output=${output}" >> "${GITHUB_OUTPUT}"
+          echo "digest=${digest}" >> "${GITHUB_OUTPUT}"
+
+      - name: Retain immutable pre-deletion recovery packet
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        with:
+          name: hepta-branch-retirement-v2-plan-${{ github.run_id }}
+          path: ${{ steps.plan.outputs.output }}
+          if-no-files-found: error
+          retention-days: 90
+
+      - name: Reject any ref or default drift after backup
+        shell: bash
+        env:
+          PLAN_PATH: ${{ steps.plan.outputs.output }}/plan.json
+        run: |
+          set -euo pipefail
+          git fetch --prune --no-tags origin '+refs/heads/*:refs/remotes/origin/*'
+          python3 - "${PLAN_PATH}" <<'PY'
+          import json
+          import subprocess
+          import sys
+
+          plan = json.load(open(sys.argv[1], encoding="utf-8"))
+          frozen = {row["branch"]: row["sha"] for row in plan["branches"]}
+          live = {}
+          raw = subprocess.check_output(["git", "ls-remote", "--heads", "origin"], text=True)
+          for line in raw.splitlines():
+              sha, ref = line.split("\t", 1)
+              live[ref.removeprefix("refs/heads/")] = sha
+          if live != frozen:
+              removed = sorted(set(frozen) - set(live))
+              added = sorted(set(live) - set(frozen))
+              moved = sorted(name for name in set(live) & set(frozen) if live[name] != frozen[name])
+              raise SystemExit(f"ref drift: removed={removed}, added={added}, moved={moved}")
+          default = subprocess.check_output(
+              ["git", "ls-remote", "--symref", "origin", "HEAD"], text=True
+          )
+          marker = f"ref: refs/heads/{plan['defaultBranch']}\tHEAD"
+          if marker not in default.splitlines():
+              raise SystemExit("default branch drift")
+          PY
+
+      - name: Atomically retire every SHA-leased merged branch
+        shell: bash
+        env:
+          OUTPUT: ${{ steps.plan.outputs.output }}
+          PLAN_DIGEST: ${{ steps.plan.outputs.digest }}
+        run: |
+          set -euo pipefail
+          python3 tools/branch-consolidation/hepta_branch_consolidation.py \
+            apply --root . --output "${OUTPUT}" \
+            --expected-plan-sha256 "${PLAN_DIGEST}"
+
+      - name: Verify only main and the identical live-default alias remain
+        shell: bash
+        run: |
+          set -euo pipefail
+          default_branch="$(git ls-remote --symref origin HEAD | sed -n 's#^ref: refs/heads/\([^[:space:]]*\)[[:space:]]HEAD$#\1#p')"
+          mapfile -t remaining < <(git ls-remote --heads origin | awk '{sub("refs/heads/", "", $2); print $2}' | LC_ALL=C sort)
+          allowed=(main)
+          [[ "${default_branch}" == main ]] || allowed+=("${default_branch}")
+          mapfile -t allowed < <(printf '%s\n' "${allowed[@]}" | LC_ALL=C sort -u)
+          [[ "${remaining[*]}" == "${allowed[*]}" ]] || {
+            printf '::error::unexpected remaining refs: %s\n' "${remaining[*]}"
+            exit 1
+          }
+          for branch in "${remaining[@]}"; do
+            sha="$(git ls-remote --heads origin "refs/heads/${branch}" | awk '{print $1}')"
+            [[ "${sha}" == "${MAIN_SHA}" ]] || {
+              echo "::error::remaining ref is not the exact main commit: ${branch}@${sha}"
+              exit 1
+            }
+          done
+          {
+            echo "## Branch retirement result"
+            echo
+            echo "- final main: \`${MAIN_SHA}\`"
+            echo "- final content tree: \`${EXPECTED_FINAL_TREE}\`"
+            echo "- live default metadata: \`${default_branch}\`"
+            echo "- remaining refs, all identical: \`${remaining[*]}\`"
+          } >> "${GITHUB_STEP_SUMMARY}"
+
+      - name: Retain post-deletion receipt
+        if: always()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        with:
+          name: hepta-branch-retirement-v2-receipt-${{ github.run_id }}
+          path: ${{ steps.plan.outputs.output }}/receipt.json
+          if-no-files-found: ignore
+          retention-days: 90
