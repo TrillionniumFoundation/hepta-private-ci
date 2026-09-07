@@ -408,8 +408,10 @@ impl HeptaEvidenceStore {
         ack: &ProviderEffectAck,
         source: ProviderEffectAckSource,
     ) -> Result<AppendDisposition, EvidenceError> {
-        self.append_provider_effect_ack_with_boundary_claim(ack, source, None)
-            .await
+        self.append_provider_effect_ack_with_boundary_claim(
+            ack, source, /*boundary_claim*/ None,
+        )
+        .await
     }
 
     /// Appends a provider-owned status observation as a durable qualification
@@ -510,9 +512,13 @@ impl HeptaEvidenceStore {
                     .to_string(),
             ));
         }
-        self.append_provider_effect_uncertainty(key, reason_code, false)
-            .await
-            .map(|(disposition, _)| disposition)
+        self.append_provider_effect_uncertainty(
+            key,
+            reason_code,
+            /*allow_reserved_reason*/ false,
+        )
+        .await
+        .map(|(disposition, _)| disposition)
     }
 
     /// Mints the one local witness that permits the dispatch facade's own
@@ -527,7 +533,7 @@ impl HeptaEvidenceStore {
             .append_provider_effect_uncertainty(
                 key,
                 PROVIDER_EFFECT_DISPATCH_BOUNDARY_PENDING_REASON.to_string(),
-                true,
+                /*allow_reserved_reason*/ true,
             )
             .await?;
         Ok(

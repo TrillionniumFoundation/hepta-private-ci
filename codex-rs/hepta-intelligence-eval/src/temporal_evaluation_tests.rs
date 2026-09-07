@@ -1,6 +1,7 @@
 use super::*;
 use codex_hepta_types::FixedQ32;
 use codex_hepta_types::ProbabilityQ32;
+use pretty_assertions::assert_eq;
 use std::fmt::Debug;
 
 use crate::OpeAction;
@@ -17,6 +18,11 @@ fn id(value: &str) -> StableId {
     must(StableId::new(value))
 }
 
+fn seal_plan(plan: &mut TemporalEvaluationPlan) {
+    let digest = must(plan.canonical_digest());
+    plan.plan_digest = digest;
+}
+
 struct Fixture {
     plan: TemporalEvaluationPlan,
     training: Vec<OutcomeTrainingSample>,
@@ -26,7 +32,8 @@ struct Fixture {
 }
 
 fn fixture() -> Fixture {
-    let plan = TemporalEvaluationPlan {
+    let mut plan = TemporalEvaluationPlan {
+        plan_digest: Digest32::ZERO,
         evaluation_id: id("evaluation"),
         objective_digest: Digest32::of_bytes(b"immutable-objective"),
         fold: TemporalFoldPlan {
@@ -51,6 +58,7 @@ fn fixture() -> Fixture {
             minimum_clusters: 2,
         },
     };
+    seal_plan(&mut plan);
     let mut training = Vec::new();
     for action in ["a", "b"] {
         for (index, outcome) in [FixedQ32::ZERO, FixedQ32::ONE].into_iter().enumerate() {
@@ -119,6 +127,73 @@ fn run(fixture: &Fixture) -> Result<TemporalEvaluationReceipt, TemporalEvaluatio
         &fixture.rows,
         &fixture.assignments,
     )
+}
+
+fn assert_stale_plan_rejected(mutate: impl FnOnce(&mut TemporalEvaluationPlan)) {
+    let mut fixture = fixture();
+    mutate(&mut fixture.plan);
+    assert_eq!(
+        run(&fixture),
+        Err(TemporalEvaluationError::PlanDigestMismatch)
+    );
+}
+
+#[test]
+fn composite_digest_matches_canonical_golden_vector() {
+    assert_eq!(
+        must(fixture().plan.canonical_digest()).to_string(),
+        "dba5b45f87d6a8ef08dccfc9b2108a1456d94b226c3315777c3de2f15f4219b3"
+    );
+}
+
+#[test]
+fn composite_digest_binds_every_plan_scope() {
+    assert_stale_plan_rejected(|plan| plan.plan_digest = Digest32::ZERO);
+    assert_stale_plan_rejected(|plan| plan.evaluation_id = id("changed-evaluation"));
+    assert_stale_plan_rejected(|plan| {
+        plan.objective_digest = Digest32::of_bytes(b"changed-objective");
+    });
+    assert_stale_plan_rejected(|plan| {
+        plan.fold.plan_digest = Digest32::of_bytes(b"changed-fold-plan");
+    });
+    assert_stale_plan_rejected(|plan| plan.fold.fold_id = id("changed-fold"));
+    assert_stale_plan_rejected(|plan| plan.fold.training_watermark += 1);
+    assert_stale_plan_rejected(|plan| plan.fold.evaluation_start += 1);
+    assert_stale_plan_rejected(|plan| plan.fold.minimum_per_action += 1);
+    assert_stale_plan_rejected(|plan| {
+        plan.ope.plan_digest = Digest32::of_bytes(b"changed-ope-plan");
+    });
+    assert_stale_plan_rejected(|plan| plan.ope.outcome_watermark += 1);
+    assert_stale_plan_rejected(|plan| plan.ope.minimum_rows += 1);
+    assert_stale_plan_rejected(|plan| {
+        plan.ope.minimum_ess = FixedQ32::from_raw(plan.ope.minimum_ess.raw() + 1);
+    });
+    assert_stale_plan_rejected(|plan| {
+        plan.ope.maximum_weight = FixedQ32::from_raw(plan.ope.maximum_weight.raw() + 1);
+    });
+    assert_stale_plan_rejected(|plan| {
+        plan.confidence.plan_digest = Digest32::of_bytes(b"changed-confidence-plan");
+    });
+    assert_stale_plan_rejected(|plan| {
+        plan.confidence.assumptions_digest = Digest32::of_bytes(b"changed-assumptions");
+    });
+    assert_stale_plan_rejected(|plan| plan.confidence.family_alpha_ppm += 1);
+    assert_stale_plan_rejected(|plan| plan.confidence.simultaneous_comparisons += 1);
+    assert_stale_plan_rejected(|plan| plan.confidence.minimum_clusters += 1);
+}
+
+#[test]
+fn independently_revised_subplan_can_be_resealed_without_aliasing_other_digests() {
+    let mut fixture = fixture();
+    let ope_digest = fixture.plan.ope.plan_digest;
+    let confidence_digest = fixture.plan.confidence.plan_digest;
+    fixture.plan.fold.plan_digest = Digest32::of_bytes(b"revised-fold-plan");
+    seal_plan(&mut fixture.plan);
+
+    let receipt = must(run(&fixture));
+    assert_eq!(fixture.plan.ope.plan_digest, ope_digest);
+    assert_eq!(fixture.plan.confidence.plan_digest, confidence_digest);
+    assert_eq!(receipt.plan_digest, fixture.plan.plan_digest);
 }
 
 #[test]

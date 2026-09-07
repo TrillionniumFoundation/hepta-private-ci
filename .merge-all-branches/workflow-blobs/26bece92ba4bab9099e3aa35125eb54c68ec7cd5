@@ -1,0 +1,88 @@
+name: hnmf-qualification
+
+on:
+  pull_request:
+    paths:
+      - "docs/hnmf/**"
+      - "qualification/hnmf-reference/**"
+      - "qualification/hnmf-contract-reference/**"
+      - "qualification/hnmf-adversarial-reference/**"
+      - "scripts/hepta-hnmf.py"
+      - ".github/workflows/hnmf-qualification.yml"
+      - "README.md"
+  push:
+    branches:
+      - "codex/hnmf-*"
+    paths:
+      - "docs/hnmf/**"
+      - "qualification/hnmf-reference/**"
+      - "qualification/hnmf-contract-reference/**"
+      - "qualification/hnmf-adversarial-reference/**"
+      - "scripts/hepta-hnmf.py"
+      - ".github/workflows/hnmf-qualification.yml"
+      - "README.md"
+
+permissions:
+  contents: read
+
+jobs:
+  reference-closure:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: Check out exact candidate
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+
+      - name: Verify HNMF closed-world registry
+        run: |
+          python3 scripts/hepta-hnmf.py self-test
+          python3 scripts/hepta-hnmf.py verify
+
+      - name: Show Rust toolchain identity
+        run: |
+          rustc --version --verbose
+          cargo --version --verbose
+          cargo clippy --version
+
+      - name: Check multimodal contract reference formatting
+        run: cargo fmt --manifest-path qualification/hnmf-contract-reference/Cargo.toml -- --check
+
+      - name: Check multimodal contract reference targets
+        run: cargo check --manifest-path qualification/hnmf-contract-reference/Cargo.toml --all-targets --locked
+
+      - name: Lint multimodal contract reference
+        run: cargo clippy --manifest-path qualification/hnmf-contract-reference/Cargo.toml --all-targets --locked -- -D warnings
+
+      - name: Test multimodal contract reference
+        run: cargo test --manifest-path qualification/hnmf-contract-reference/Cargo.toml --locked
+
+      - name: Check adversarial runtime reference formatting
+        run: cargo fmt --manifest-path qualification/hnmf-adversarial-reference/Cargo.toml -- --check
+
+      - name: Check adversarial runtime reference targets
+        run: cargo check --manifest-path qualification/hnmf-adversarial-reference/Cargo.toml --all-targets --locked
+
+      - name: Lint adversarial runtime reference
+        run: cargo clippy --manifest-path qualification/hnmf-adversarial-reference/Cargo.toml --all-targets --locked -- -D warnings
+
+      - name: Test adversarial runtime reference
+        run: cargo test --manifest-path qualification/hnmf-adversarial-reference/Cargo.toml --locked
+
+      - name: Check deterministic runtime reference formatting
+        run: cargo fmt --manifest-path qualification/hnmf-reference/Cargo.toml -- --check
+
+      - name: Check deterministic runtime reference targets
+        run: cargo check --manifest-path qualification/hnmf-reference/Cargo.toml --all-targets --locked
+
+      - name: Lint deterministic runtime reference with frozen legacy exemptions
+        run: >-
+          cargo clippy --manifest-path qualification/hnmf-reference/Cargo.toml
+          --all-targets --locked -- -D warnings
+          -A clippy::if_same_then_else
+          -A clippy::field_reassign_with_default
+          -A clippy::assertions_on_constants
+
+      - name: Test deterministic runtime reference
+        run: cargo test --manifest-path qualification/hnmf-reference/Cargo.toml --locked

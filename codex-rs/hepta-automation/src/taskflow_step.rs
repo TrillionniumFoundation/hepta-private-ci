@@ -241,9 +241,9 @@ impl AutomationStore {
             intent_digest.as_str(),
             payload_digest.as_str(),
             fence,
-            None,
-            None,
-            None,
+            /*receipt_digest*/ None,
+            /*observation*/ None,
+            /*final_outcome*/ None,
             now_ms,
         )?;
         if let Some(existing) = existing_command(&events, command_id, command_digest.as_str())? {
@@ -277,9 +277,9 @@ impl AutomationStore {
             command_digest.as_str(),
             intent_digest.as_str(),
             payload_digest.as_str(),
-            None,
-            None,
-            None,
+            /*receipt_digest*/ None,
+            /*observation*/ None,
+            /*final_outcome*/ None,
             fence,
             now_ms,
         )
@@ -320,8 +320,8 @@ impl AutomationStore {
             intent_digest,
             payload_digest,
             command_id,
-            None,
-            None,
+            /*receipt_digest*/ None,
+            /*observation*/ None,
             now_ms,
         )
         .await

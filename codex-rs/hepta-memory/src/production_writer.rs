@@ -147,7 +147,10 @@ impl fmt::Debug for ProductionAuthorityLease {
             )
             .field(
                 "token",
-                &self.token.as_ref().map(|token| token.fencing_digest()),
+                &self
+                    .token
+                    .as_ref()
+                    .map(ProductionAuthorityToken::fencing_digest),
             )
             .finish()
     }
@@ -349,7 +352,7 @@ impl ProductionDurableWriter {
         V: ProductionAuthorityVerifier + ?Sized,
     {
         let lease_id = lease_id.into();
-        validate_text(&lease_id, "production lease id", 512)?;
+        validate_text(&lease_id, "production lease id", /*max_bytes*/ 512)?;
         verifier
             .verify(&authority, store.owner_agent_id())
             .map_err(ProductionWriterError::AuthorityRejected)?;

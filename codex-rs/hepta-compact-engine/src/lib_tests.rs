@@ -1,6 +1,8 @@
 use super::*;
-use codex_hepta_cognitive_types::{MemoryKind, RecordState};
+use codex_hepta_cognitive_types::MemoryKind;
+use codex_hepta_cognitive_types::RecordState;
 use codex_hepta_types::Revision;
+use pretty_assertions::assert_eq;
 
 fn id(value: &str) -> StableId {
     let Ok(value) = StableId::new(value) else {

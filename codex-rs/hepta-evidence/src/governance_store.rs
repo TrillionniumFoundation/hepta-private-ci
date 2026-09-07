@@ -22,9 +22,15 @@ pub(crate) async fn ensure_decision(
     let payload_json = String::from_utf8(payload.clone())
         .map_err(|error| EvidenceError::Serialization(error.to_string()))?;
     let digest = Sha256Digest::for_bytes(&payload);
-    verify_decision(transaction, record, &payload_json, digest.as_str(), false)
-        .await
-        .map(|_| ())
+    verify_decision(
+        transaction,
+        record,
+        &payload_json,
+        digest.as_str(),
+        /*inserted*/ false,
+    )
+    .await
+    .map(|_| ())
 }
 
 pub(crate) async fn verify_decision(

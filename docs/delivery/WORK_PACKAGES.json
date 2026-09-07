@@ -2813,7 +2813,12 @@
       "deputy": "durability-kernel",
       "sourceMutationAllowed": true,
       "allowedWritePaths": [
-        "codex-rs/hepta-cognitive-store/**"
+        "codex-rs/hepta-cognitive-store/**",
+        "codex-rs/hepta-memory/src/cognitive_store.rs",
+        "codex-rs/hepta-memory/src/cognitive_store_recovery.rs",
+        "codex-rs/hepta-memory/src/cognitive_store_recovery_tests.rs",
+        "codex-rs/hepta-memory/src/cognitive_store_tests.rs",
+        "codex-rs/hepta-memory/src/lib.rs"
       ],
       "coOwnerModules": [],
       "consumesContracts": [
@@ -3892,7 +3897,8 @@
       "deputy": "durability-kernel",
       "sourceMutationAllowed": true,
       "allowedWritePaths": [
-        "codex-rs/hepta-learning-artifacts/**"
+        "codex-rs/hepta-learning-artifacts/**",
+        "codex-rs/hepta-shadow-qualification/tests/durable_learning_roundtrip.rs"
       ],
       "coOwnerModules": [],
       "consumesContracts": [
@@ -5149,7 +5155,11 @@
       "sourceMutationAllowed": true,
       "allowedWritePaths": [
         "codex-rs/hepta-operations/**",
-        "qa/fault-matrix/**"
+        "qa/fault-matrix/**",
+        "codex-rs/state/src/lib.rs",
+        "codex-rs/state/src/sqlite.rs",
+        "codex-rs/state/src/sqlite_recovery.rs",
+        "codex-rs/state/src/sqlite_recovery_tests.rs"
       ],
       "coOwnerModules": [],
       "consumesContracts": [
@@ -8505,7 +8515,8 @@
       "deputy": "agent-runtime",
       "sourceMutationAllowed": true,
       "allowedWritePaths": [
-        "codex-rs/hepta-automation/**"
+        "codex-rs/hepta-automation/**",
+        ".github/workflows/hepta-taskflow-matrix-qualification.yml"
       ],
       "coOwnerModules": [],
       "consumesContracts": [
@@ -8600,7 +8611,11 @@
       "deputy": "security-authority",
       "sourceMutationAllowed": true,
       "allowedWritePaths": [
-        "codex-rs/hepta-matrix-sdk/**"
+        "codex-rs/hepta-matrix-sdk/**",
+        "codex-rs/hepta-matrixd/**",
+        "codex-rs/hepta-matrix-store/**",
+        "codex-rs/hepta-matrix-protocol/**",
+        ".github/workflows/hepta-taskflow-matrix-qualification.yml"
       ],
       "coOwnerModules": [],
       "consumesContracts": [
@@ -8986,7 +9001,12 @@
         "docs/modules/MODULES.json",
         "docs/modules/SOURCE_BINDINGS.json",
         "docs/delivery/**",
-        "docs/governance/DOCUMENT_SYSTEM.json"
+        "docs/governance/DOCUMENT_SYSTEM.json",
+        "scripts/hepta-gap-closure.py",
+        "qualification/gap-closure/**",
+        ".github/workflows/hepta-gap-closure.yml",
+        "scripts/hepta_source_registry_closure.py",
+        "scripts/test_hepta_gap_closure.py"
       ],
       "coOwnerModules": [],
       "consumesContracts": [
@@ -9276,7 +9296,10 @@
         "scripts/hepta-docs.py",
         "scripts/hepta-readiness.py",
         ".github/workflows/hepta-development-docs.yml",
-        ".github/workflows/hepta-implementation-readiness.yml"
+        ".github/workflows/hepta-implementation-readiness.yml",
+        "qualification/module-execution-dossiers/**",
+        "scripts/hepta-implementation-dossiers.py",
+        "scripts/hepta-technical-closure.py"
       ],
       "coOwnerModules": [],
       "consumesContracts": [

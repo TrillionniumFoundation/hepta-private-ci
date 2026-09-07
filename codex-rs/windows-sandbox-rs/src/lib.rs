@@ -561,7 +561,7 @@ mod windows_impl {
             capability_roots,
         )?;
         allow_null_device_for_workspace_write(uses_write_capabilities);
-        apply_legacy_session_acl_rules(
+        if let Err(err) = apply_legacy_session_acl_rules(
             &permissions,
             codex_home,
             &current_dir,
@@ -573,7 +573,12 @@ mod windows_impl {
                 readonly_sid_str: security.readonly_sid_str.as_deref(),
                 write_root_sids: &security.write_root_sids,
             },
-        )?;
+        ) {
+            unsafe {
+                CloseHandle(security.h_token);
+            }
+            return Err(err);
+        }
         let (stdin_pair, stdout_pair, stderr_pair) = unsafe { setup_stdio_pipes()? };
         let ((in_r, in_w), (out_r, out_w), (err_r, err_w)) = (stdin_pair, stdout_pair, stderr_pair);
         let spawn_res = unsafe {

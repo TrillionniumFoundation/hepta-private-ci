@@ -1,6 +1,8 @@
 use super::*;
-use codex_hepta_cognitive_types::{MemoryKind, RecordState};
+use codex_hepta_cognitive_types::MemoryKind;
+use codex_hepta_cognitive_types::RecordState;
 use codex_hepta_types::Revision;
+use pretty_assertions::assert_eq;
 
 fn id(value: &str) -> StableId {
     let Ok(value) = StableId::new(value) else {
@@ -89,4 +91,32 @@ fn result_count_is_bounded() {
     };
     assert_eq!(receipt.results.len(), 1);
     assert_eq!(receipt.omitted_count, 1);
+}
+
+#[test]
+fn tombstone_candidates_are_rejected_before_result_truncation() {
+    let snapshot = Digest32::of_bytes(b"snapshot");
+    let mut tombstone = candidate("memory:deleted", snapshot, /*score*/ 10);
+    tombstone.record.state = RecordState::Tombstone;
+    let live = candidate("memory:live", snapshot, /*score*/ 20);
+
+    // A low-ranked deletion must still invalidate the input when it would
+    // fall outside the requested top-k. No partial receipt may hide it.
+    for candidates in [
+        vec![tombstone.clone()],
+        vec![tombstone.clone(), live.clone()],
+        vec![live, tombstone],
+    ] {
+        let request = RetrievalRequest {
+            query_id: id("query:1"),
+            query_digest: Digest32::of_bytes(b"query"),
+            snapshot_digest: snapshot,
+            maximum_results: 1,
+            candidates,
+        };
+        assert_eq!(
+            retrieve(request),
+            Err(Error::TombstoneRecord("memory:deleted".to_string()))
+        );
+    }
 }

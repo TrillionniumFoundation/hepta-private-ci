@@ -101,7 +101,10 @@ impl LocalCompactExecutor {
         journal_id: impl Into<String>,
         fence: CompactFence,
     ) -> Result<Self, LocalCompactExecutorError> {
-        Self::open_with_binding(store, journal_id, fence, None, None).await
+        Self::open_with_binding(
+            store, journal_id, fence, /*lease_binding*/ None, /*bound_lease*/ None,
+        )
+        .await
     }
 
     pub(crate) async fn open_bound(
@@ -159,7 +162,7 @@ impl LocalCompactExecutor {
         bound_lease: Option<LocalLeaseOutbox>,
     ) -> Result<Self, LocalCompactExecutorError> {
         let journal_id = journal_id.into();
-        validate_text(&journal_id, "journal id", 512)?;
+        validate_text(&journal_id, "journal id", /*max_bytes*/ 512)?;
         validate_fence(&fence)?;
         let executor = Self {
             store: store.clone(),
@@ -289,7 +292,7 @@ impl LocalCompactExecutor {
         &self,
         operation_id: &str,
     ) -> Result<Option<CompactPersistenceState>, LocalCompactExecutorError> {
-        validate_text(operation_id, "operation id", 512)?;
+        validate_text(operation_id, "operation id", /*max_bytes*/ 512)?;
         let snapshot = self.snapshot().await?;
         let journal = CompactPersistenceJournal::reopen(snapshot)?;
         Ok(journal.state(operation_id))
@@ -310,7 +313,7 @@ impl LocalCompactExecutor {
         checkpoint: &CompactCheckpoint,
         expected_revision: u64,
     ) -> Result<LocalRehydrationRead, LocalCompactExecutorError> {
-        validate_text(operation_id, "operation id", 512)?;
+        validate_text(operation_id, "operation id", /*max_bytes*/ 512)?;
         let plan = checkpoint
             .rehydration_plan(expected_revision)
             .map_err(|error| LocalCompactExecutorError::Invalid(error.to_string()))?;
@@ -390,7 +393,7 @@ impl LocalCompactExecutor {
         &self,
         operation_id: &str,
     ) -> Result<Option<CompactRehydrationRecord>, LocalCompactExecutorError> {
-        validate_text(operation_id, "operation id", 512)?;
+        validate_text(operation_id, "operation id", /*max_bytes*/ 512)?;
         let snapshot = self.snapshot().await?;
         let journal = CompactPersistenceJournal::reopen(snapshot)?;
         Ok(journal.rehydration(operation_id).cloned())
@@ -886,7 +889,7 @@ async fn compact_journal_descriptor(
     let owner_agent_id: String = row
         .try_get("owner_agent_id")
         .map_err(crate::cognitive_store::unavailable)?;
-    validate_text(&owner_agent_id, "owner agent id", 128)?;
+    validate_text(&owner_agent_id, "owner agent id", /*max_bytes*/ 128)?;
     let authority_epoch: i64 = row
         .try_get("authority_epoch")
         .map_err(crate::cognitive_store::unavailable)?;
@@ -923,7 +926,7 @@ async fn compact_journal_descriptor(
     let fencing_token: String = row
         .try_get("fencing_token")
         .map_err(crate::cognitive_store::unavailable)?;
-    validate_text(&fencing_token, "fencing token", 256)?;
+    validate_text(&fencing_token, "fencing token", /*max_bytes*/ 256)?;
     let fence = CompactFence::new(
         authority_epoch,
         owner_epoch,
@@ -952,7 +955,7 @@ async fn compact_journal_descriptor(
     ) {
         (None, None, None, None) => None,
         (Some(lease_id), Some(lease_head_sha256), Some(compact_previous_sha256), Some(binding)) => {
-            validate_text(&lease_id, "lease id", 512)?;
+            validate_text(&lease_id, "lease id", /*max_bytes*/ 512)?;
             let lease_head_sha256 = codex_hepta_contracts::Sha256Digest::parse(lease_head_sha256)
                 .map_err(|_| {
                 LocalCompactExecutorError::Corrupt(
@@ -1024,7 +1027,7 @@ pub(crate) async fn verify_local_compact_events(
     let audit_store =
         CognitiveStore::from_read_only_pool(pool.clone(), owner.clone(), PathBuf::new());
     for journal_id in journal_ids {
-        validate_text(&journal_id, "journal id", 512)
+        validate_text(&journal_id, "journal id", /*max_bytes*/ 512)
             .map_err(|error| CognitiveStoreError::Corrupt(error.to_string()))?;
         let (fence, lease_binding) =
             compact_journal_descriptor(&mut transaction, &journal_id, owner)
@@ -1076,7 +1079,7 @@ pub(crate) async fn verify_local_compact_journals_for_lease_in_transaction(
     transaction: &mut Transaction<'_, Sqlite>,
     lease_id: &str,
 ) -> Result<(), LocalCompactExecutorError> {
-    validate_text(lease_id, "lease id", 512)?;
+    validate_text(lease_id, "lease id", /*max_bytes*/ 512)?;
     let owner = store.owner_agent_id();
     let journal_ids: Vec<String> = sqlx::query_scalar(
         "SELECT DISTINCT journal_id
@@ -1097,7 +1100,7 @@ pub(crate) async fn verify_local_compact_journals_for_lease_in_transaction(
     .map_err(crate::cognitive_store::unavailable)?;
 
     for journal_id in journal_ids {
-        validate_text(&journal_id, "journal id", 512)?;
+        validate_text(&journal_id, "journal id", /*max_bytes*/ 512)?;
 
         // A row selected by a target lease id or historical lease-head digest
         // makes the whole journal part of this lifecycle decision.  A
@@ -1162,7 +1165,11 @@ fn validate_fence(fence: &CompactFence) -> Result<(), LocalCompactExecutorError>
             "compact fence epochs must be non-zero".to_string(),
         ));
     }
-    validate_text(&fence.fencing_token, "fencing token", 256)
+    validate_text(
+        &fence.fencing_token,
+        "fencing token",
+        /*max_bytes*/ 256,
+    )
 }
 
 fn validate_text(

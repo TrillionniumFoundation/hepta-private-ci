@@ -1,4 +1,5 @@
 use super::*;
+use pretty_assertions::assert_eq;
 
 fn id(value: &str) -> StableId {
     let Ok(value) = StableId::new(value) else {
@@ -52,15 +53,43 @@ fn secret_bearing_item_is_rejected() {
 }
 
 #[test]
-fn token_budget_omission_is_explicit() {
+fn optional_evidence_omission_is_explicit() {
     let Ok(receipt) = compile(request(vec![
-        item("instruction:a", ContextRole::TrustedInstruction, 8),
-        item("instruction:b", ContextRole::TrustedInstruction, 8),
+        item("evidence:a", ContextRole::UntrustedEvidence, 8),
+        item("evidence:b", ContextRole::UntrustedEvidence, 8),
     ])) else {
         panic!("compilation must succeed");
     };
     assert_eq!(receipt.used_tokens, 8);
-    assert_eq!(receipt.omitted_ids, vec![id("instruction:b")]);
+    assert_eq!(receipt.omitted_ids, vec![id("evidence:b")]);
+}
+
+#[test]
+fn legacy_compile_cannot_omit_trusted_instructions() {
+    assert_eq!(
+        compile(request(vec![
+            item("instruction:a", ContextRole::TrustedInstruction, 8),
+            item("instruction:b", ContextRole::TrustedInstruction, 8),
+        ])),
+        Err(Error::InsufficientContext {
+            required_tokens: 16,
+            token_budget: 10
+        }),
+    );
+}
+
+#[test]
+fn oversized_required_cost_reports_the_exact_insufficient_floor() {
+    assert_eq!(
+        compile(request(vec![
+            item("instruction:a", ContextRole::TrustedInstruction, u64::MAX),
+            item("instruction:b", ContextRole::TrustedInstruction, u64::MAX),
+        ])),
+        Err(Error::InsufficientContext {
+            required_tokens: 2 * u128::from(u64::MAX),
+            token_budget: 10,
+        }),
+    );
 }
 
 #[test]

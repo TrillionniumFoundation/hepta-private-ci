@@ -10,6 +10,7 @@ use codex_hepta_types::FixedQ32;
 use codex_hepta_types::StableId;
 
 mod ope;
+mod sequential;
 mod temporal_evaluation;
 mod temporal_fold;
 
@@ -25,6 +26,20 @@ pub use ope::OpePlan;
 pub use ope::OpeRow;
 pub use ope::estimate_cluster_intervals;
 pub use ope::estimate_ope;
+pub use sequential::DepthSupport;
+pub use sequential::FiniteHorizonEstimand;
+pub use sequential::SequentialError;
+pub use sequential::SequentialEstimate;
+pub use sequential::SequentialEvidenceGap;
+pub use sequential::SequentialPlan;
+pub use sequential::TerminalRewardConvention;
+pub use sequential::Trajectory;
+pub use sequential::TrajectoryAction;
+pub use sequential::TrajectoryBoundary;
+pub use sequential::TrajectoryClaimScope;
+pub use sequential::TrajectoryEstimate;
+pub use sequential::TrajectoryStep;
+pub use sequential::estimate_sequential;
 pub use temporal_evaluation::TemporalEvaluationError;
 pub use temporal_evaluation::TemporalEvaluationPlan;
 pub use temporal_evaluation::TemporalEvaluationReceipt;
@@ -52,6 +67,9 @@ pub struct MetricComparison {
     pub candidate: FixedQ32,
     pub baseline: FixedQ32,
     pub minimum_delta: FixedQ32,
+    /// Classification retained in the immutable evidence receipt. Every
+    /// registered threshold is eligibility-gating; this flag does not erase a
+    /// non-hard threshold or silently strengthen its preregistered value.
     pub hard: bool,
     pub support_digest: Digest32,
 }
@@ -129,7 +147,7 @@ pub fn evaluate(mut request: EvaluationRequest) -> Result<EvaluationReceipt, Err
             Direction::Maximize => subtract(metric.candidate, metric.baseline)?,
             Direction::Minimize => subtract(metric.baseline, metric.candidate)?,
         };
-        if metric.hard && delta.raw() < metric.minimum_delta.raw() {
+        if delta.raw() < metric.minimum_delta.raw() {
             failed_metrics.push(metric.metric_id.clone());
         }
     }

@@ -323,11 +323,13 @@ impl LocalLeaseOutbox {
                         Some(admission.revision),
                         LocalMemoryAdmissionState::Applied,
                         Some(admission),
-                        None,
+                        /*rejection_reason*/ None,
                     )),
                     Err(error) => {
-                        self.recover_apply_race(access, &identity, memory_id, None, error)
-                            .await
+                        self.recover_apply_race(
+                            access, &identity, memory_id, /*revision*/ None, error,
+                        )
+                        .await
                     }
                 }
             }
@@ -380,10 +382,10 @@ impl LocalLeaseOutbox {
                         .await?;
                 Ok(self.receipt(
                     identity,
-                    None,
+                    /*revision*/ None,
                     LocalMemoryAdmissionState::Revoked,
-                    None,
-                    None,
+                    /*admission*/ None,
+                    /*rejection_reason*/ None,
                 ))
             }
             LocalOutcomeState::Committed => Err(LocalMemoryAdmissionError::Invalid(
@@ -392,10 +394,10 @@ impl LocalLeaseOutbox {
             )),
             LocalOutcomeState::Rejected | LocalOutcomeState::RolledBack => Ok(self.receipt(
                 identity,
-                None,
+                /*revision*/ None,
                 LocalMemoryAdmissionState::from_local(state)?,
-                None,
-                None,
+                /*admission*/ None,
+                /*rejection_reason*/ None,
             )),
         }
     }
@@ -425,16 +427,16 @@ impl LocalLeaseOutbox {
                     identity,
                     Some(current.id.revision),
                     LocalMemoryAdmissionState::Applied,
-                    None,
-                    None,
+                    /*admission*/ None,
+                    /*rejection_reason*/ None,
                 ))
             }
             LocalOutcomeState::Rejected | LocalOutcomeState::RolledBack => Ok(self.receipt(
                 identity,
-                None,
+                /*revision*/ None,
                 LocalMemoryAdmissionState::from_local(state)?,
-                None,
-                None,
+                /*admission*/ None,
+                /*rejection_reason*/ None,
             )),
             LocalOutcomeState::Indeterminate => Err(LocalMemoryAdmissionError::Indeterminate),
         }
@@ -472,8 +474,8 @@ impl LocalLeaseOutbox {
                     identity,
                     Some(current.id.revision),
                     LocalMemoryAdmissionState::Applied,
-                    None,
-                    None,
+                    /*admission*/ None,
+                    /*rejection_reason*/ None,
                 ))
             }
             LocalOutcomeState::Queued => Err(LocalMemoryAdmissionError::Invalid(
@@ -482,10 +484,10 @@ impl LocalLeaseOutbox {
             )),
             LocalOutcomeState::Rejected | LocalOutcomeState::RolledBack => Ok(self.receipt(
                 identity,
-                None,
+                /*revision*/ None,
                 LocalMemoryAdmissionState::from_local(state)?,
-                None,
-                None,
+                /*admission*/ None,
+                /*rejection_reason*/ None,
             )),
             LocalOutcomeState::Indeterminate => Err(LocalMemoryAdmissionError::Indeterminate),
         }
@@ -518,8 +520,8 @@ impl LocalLeaseOutbox {
                 identity.clone(),
                 Some(revision),
                 LocalMemoryAdmissionState::Applied,
-                None,
-                None,
+                /*admission*/ None,
+                /*rejection_reason*/ None,
             ));
         }
         Err(error.into())
@@ -536,8 +538,8 @@ impl LocalLeaseOutbox {
                 identity.clone(),
                 Some(revision),
                 LocalMemoryAdmissionState::Applied,
-                None,
-                None,
+                /*admission*/ None,
+                /*rejection_reason*/ None,
             )),
             Err(error) => {
                 if self
@@ -549,8 +551,8 @@ impl LocalLeaseOutbox {
                         identity.clone(),
                         Some(revision),
                         LocalMemoryAdmissionState::Applied,
-                        None,
-                        None,
+                        /*admission*/ None,
+                        /*rejection_reason*/ None,
                     ))
                 } else {
                     Err(error.into())
@@ -673,9 +675,9 @@ impl LocalLeaseOutbox {
         self.reject_inner(&identity.occurrence_key, &reason).await?;
         Ok(self.receipt(
             identity,
-            None,
+            /*revision*/ None,
             LocalMemoryAdmissionState::Rejected,
-            None,
+            /*admission*/ None,
             Some(reason),
         ))
     }

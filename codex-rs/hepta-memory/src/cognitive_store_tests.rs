@@ -1,3 +1,4 @@
+use pretty_assertions::assert_eq;
 use tempfile::TempDir;
 
 use codex_hepta_contracts::Sha256Digest;
@@ -14,6 +15,7 @@ use crate::MemoryDraft;
 use crate::MemoryLifecycleState;
 use crate::MemoryRevisionDraft;
 use crate::MemoryVerification;
+use crate::StableMemoryId;
 use crate::cognitive_test_support::agent_id;
 use crate::cognitive_test_support::layout;
 use crate::cognitive_test_support::source;
@@ -80,6 +82,250 @@ async fn stores_are_per_agent_append_only_and_scope_fail_closed() {
             .to_string()
             .contains("source ledger is immutable")
     );
+}
+
+#[tokio::test]
+async fn concurrent_source_identity_conflict_commits_exactly_one_payload() {
+    let temp = TempDir::new().expect("temp dir");
+    let owner = agent_id(81);
+    let owner_layout = layout(&temp, &owner);
+    let first = CognitiveStore::open(&owner_layout)
+        .await
+        .expect("first writer");
+    let second = CognitiveStore::open(&owner_layout)
+        .await
+        .expect("second writer");
+    let access = CognitiveAccess::agent_private(owner);
+    let first_draft = source(
+        CognitiveScope::AgentPrivate,
+        "shared-operation",
+        "first payload",
+    );
+    let second_draft = source(
+        CognitiveScope::AgentPrivate,
+        "shared-operation",
+        "second payload",
+    );
+
+    let (first_result, second_result) = tokio::join!(
+        first.append_source(&access, &first_draft),
+        second.append_source(&access, &second_draft),
+    );
+    let (committed, expected_content) = match (first_result, second_result) {
+        (Ok(receipt), Err(CognitiveStoreError::Conflict(_))) => (receipt, first_draft.content),
+        (Err(CognitiveStoreError::Conflict(_)), Ok(receipt)) => (receipt, second_draft.content),
+        outcomes => panic!("expected one committed identity and one conflict: {outcomes:?}"),
+    };
+    let rows: Vec<(String, i64, Vec<u8>)> =
+        sqlx::query_as("SELECT source_id, source_revision, content FROM source_ledger")
+            .fetch_all(&first.pool)
+            .await
+            .expect("committed source rows");
+    assert_eq!(
+        rows,
+        vec![(
+            committed.source_id.as_str().to_string(),
+            1,
+            expected_content
+        )]
+    );
+}
+
+#[tokio::test]
+async fn source_acknowledgement_retry_survives_wal_reader_and_reopen() {
+    let temp = TempDir::new().expect("temp dir");
+    let owner = agent_id(82);
+    let owner_layout = layout(&temp, &owner);
+    let writer = CognitiveStore::open(&owner_layout).await.expect("writer");
+    let access = CognitiveAccess::agent_private(owner);
+    let draft = source(
+        CognitiveScope::AgentPrivate,
+        "retry-operation",
+        "durable payload",
+    );
+    let committed = writer.append_source(&access, &draft).await.expect("commit");
+    let wal_path = writer.path().with_extension("sqlite3-wal");
+    assert!(std::fs::metadata(wal_path).expect("live WAL").len() > 0);
+
+    // Keep the first pool alive so this handle must honor the committed WAL.
+    let reader = CognitiveStore::open(&owner_layout)
+        .await
+        .expect("WAL reopen");
+    assert_eq!(
+        reader
+            .append_source(&access, &draft)
+            .await
+            .expect("lost-ack retry"),
+        committed
+    );
+    writer.pool.close().await;
+    reader.pool.close().await;
+    let reopened = CognitiveStore::open(&owner_layout)
+        .await
+        .expect("closed-store reopen");
+    assert_eq!(
+        reopened
+            .append_source(&access, &draft)
+            .await
+            .expect("reopen retry"),
+        committed
+    );
+    let rows: Vec<Vec<u8>> = sqlx::query_scalar("SELECT content FROM source_ledger")
+        .fetch_all(&reopened.pool)
+        .await
+        .expect("source rows after retries");
+    assert_eq!(rows, vec![draft.content]);
+}
+
+#[tokio::test]
+async fn competing_memory_corrections_rollback_the_losing_source() {
+    let temp = TempDir::new().expect("temp dir");
+    let owner = agent_id(83);
+    let first = seeded_projection_store(&temp, &owner).await;
+    let second = CognitiveStore::open(&layout(&temp, &owner))
+        .await
+        .expect("second writer");
+    let access = CognitiveAccess::agent_private(owner);
+    let memory_id = StableMemoryId::for_key(
+        first.owner_agent_id(),
+        &CognitiveScope::AgentPrivate,
+        "projection-integrity-memory",
+    );
+    let first_source = source(
+        CognitiveScope::AgentPrivate,
+        "correction-a",
+        "first correction",
+    );
+    let second_source = source(
+        CognitiveScope::AgentPrivate,
+        "correction-b",
+        "second correction",
+    );
+    let first_revision = MemoryRevisionDraft {
+        scope: CognitiveScope::AgentPrivate,
+        content: "first correction".to_string(),
+        verification: MemoryVerification::Verified,
+        lifecycle: MemoryLifecycleState::Active,
+        valid_from_unix_seconds: 200,
+        valid_to_unix_seconds: None,
+        citations: Vec::new(),
+    };
+    let mut second_revision = first_revision.clone();
+    second_revision.content = "second correction".to_string();
+    let facts = KgFactSetDraft::default();
+    let (first_result, second_result) = tokio::join!(
+        first.correct_with_kg(
+            &access,
+            &memory_id,
+            1,
+            &first_source,
+            &first_revision,
+            &facts
+        ),
+        second.correct_with_kg(
+            &access,
+            &memory_id,
+            1,
+            &second_source,
+            &second_revision,
+            &facts
+        ),
+    );
+    let winner = match (first_result, second_result) {
+        (Ok(receipt), Err(CognitiveStoreError::Conflict(_)))
+        | (Err(CognitiveStoreError::Conflict(_)), Ok(receipt)) => receipt,
+        outcomes => panic!("expected one committed correction and one conflict: {outcomes:?}"),
+    };
+    assert_eq!(
+        first
+            .latest_memory(&access, &memory_id)
+            .await
+            .expect("current head"),
+        winner.memory
+    );
+    let counts: (i64, i64, i64) = sqlx::query_as(
+        "SELECT (SELECT COUNT(*) FROM source_ledger),
+                (SELECT COUNT(*) FROM memory_revisions),
+                (SELECT COUNT(*) FROM kg_projection_generation_receipts)",
+    )
+    .fetch_one(&first.pool)
+    .await
+    .expect("committed row counts");
+    assert_eq!(counts, (2, 2, 2));
+}
+
+#[tokio::test]
+async fn projection_failure_rolls_back_source_memory_and_facts_before_reopen() {
+    let temp = TempDir::new().expect("temp dir");
+    let owner = agent_id(84);
+    let owner_layout = layout(&temp, &owner);
+    let store = seeded_projection_store(&temp, &owner).await;
+    let access = CognitiveAccess::agent_private(owner);
+    let count_query = "SELECT (SELECT COUNT(*) FROM source_ledger),
+                             (SELECT COUNT(*) FROM memory_revisions),
+                             (SELECT COUNT(*) FROM memory_citations),
+                             (SELECT COUNT(*) FROM memory_heads),
+                             (SELECT COUNT(*) FROM memory_fts),
+                             (SELECT COUNT(*) FROM kg_revision_fact_sets),
+                             (SELECT COUNT(*) FROM kg_projection_generation_receipts)";
+    let before: (i64, i64, i64, i64, i64, i64, i64) = sqlx::query_as(count_query)
+        .fetch_one(&store.pool)
+        .await
+        .expect("predecessor counts");
+    // Fail after source, revision, citations, FTS and fact insertion, while the
+    // same owner transaction still contains all of the tentative changes.
+    sqlx::query(
+        "CREATE TRIGGER test_abort_projection BEFORE INSERT ON kg_projection_generation_receipts
+         BEGIN SELECT RAISE(ABORT, 'injected publication failure'); END",
+    )
+    .execute(&store.pool)
+    .await
+    .expect("install fault");
+    let failed = store
+        .remember_with_kg(
+            &access,
+            &source(
+                CognitiveScope::AgentPrivate,
+                "failed-publication",
+                "uncommitted fact",
+            ),
+            &MemoryDraft {
+                stable_key: "failed-publication".to_string(),
+                revision: MemoryRevisionDraft {
+                    scope: CognitiveScope::AgentPrivate,
+                    content: "uncommitted fact".to_string(),
+                    verification: MemoryVerification::Verified,
+                    lifecycle: MemoryLifecycleState::Active,
+                    valid_from_unix_seconds: 200,
+                    valid_to_unix_seconds: None,
+                    citations: Vec::new(),
+                },
+            },
+            &KgFactSetDraft::default(),
+        )
+        .await
+        .expect_err("injected publication failure");
+    assert!(
+        matches!(failed, CognitiveStoreError::Unavailable(message) if message.contains("injected publication failure"))
+    );
+    sqlx::query("DROP TRIGGER test_abort_projection")
+        .execute(&store.pool)
+        .await
+        .expect("remove fault");
+    let after: (i64, i64, i64, i64, i64, i64, i64) = sqlx::query_as(count_query)
+        .fetch_one(&store.pool)
+        .await
+        .expect("post-failure counts");
+    assert_eq!(after, before);
+    store.pool.close().await;
+    let reopened = CognitiveStore::open(&owner_layout)
+        .await
+        .expect("reopen predecessor");
+    let recovered: (i64, i64, i64, i64, i64, i64, i64) = sqlx::query_as(count_query)
+        .fetch_one(&reopened.pool)
+        .await
+        .expect("recovered counts");
+    assert_eq!(recovered, before);
 }
 
 #[tokio::test]

@@ -1,0 +1,40 @@
+name: Hepta pinned upstream snapshot (read-only)
+
+on:
+  push:
+    branches:
+      - "codex/hepta-audit-remediation-20260905"
+    paths:
+      - ".github/workflows/hepta-upstream-snapshot.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  snapshot:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Check out pinned upstream without credentials
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: "7e6391d0567150da6a97e857dcb692010a583d38"
+          persist-credentials: false
+          fetch-depth: 1
+      - name: Export exact source and identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "7e6391d0567150da6a97e857dcb692010a583d38"
+          mkdir -p "$RUNNER_TEMP/upstream-snapshot"
+          git archive --format=tar.gz HEAD > "$RUNNER_TEMP/upstream-snapshot/source.tar.gz"
+          git rev-parse HEAD HEAD^{tree} > "$RUNNER_TEMP/upstream-snapshot/identity.txt"
+          (cd "$RUNNER_TEMP/upstream-snapshot" && sha256sum source.tar.gz > SHA256SUMS)
+          git diff --exit-code
+      - name: Retain source bytes, not acceptance
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-upstream-7e6391d0567150da6a97e857dcb692010a583d38
+          path: ${{ runner.temp }}/upstream-snapshot/
+          if-no-files-found: error
+          retention-days: 7

@@ -33,7 +33,15 @@
           "name": "branchClass",
           "type": "enum",
           "required": true,
-          "maxBytes": 64
+          "maxBytes": 64,
+          "values": [
+            "canonical_candidate",
+            "implementation_package",
+            "integration",
+            "diagnostic",
+            "evidence",
+            "archive"
+          ]
         },
         {
           "name": "baseCommit",
@@ -57,7 +65,14 @@
           "name": "allowedPathGlobs",
           "type": "bounded_array",
           "required": true,
-          "maxBytes": 32768
+          "maxBytes": 32768,
+          "minItems": 1,
+          "maxItems": 256,
+          "uniqueItems": true,
+          "items": {
+            "type": "utf8",
+            "maxBytes": 1024
+          }
         },
         {
           "name": "expiry",
@@ -69,7 +84,10 @@
           "name": "authorityDelta",
           "type": "enum",
           "required": true,
-          "maxBytes": 32
+          "maxBytes": 32,
+          "values": [
+            "none"
+          ]
         }
       ],
       "invariants": [
@@ -160,7 +178,11 @@
           "name": "decision",
           "type": "enum",
           "required": true,
-          "maxBytes": 32
+          "maxBytes": 32,
+          "values": [
+            "accepted",
+            "rejected"
+          ]
         }
       ],
       "invariants": [
@@ -209,19 +231,40 @@
           "name": "moduleIds",
           "type": "bounded_array",
           "required": true,
-          "maxBytes": 16384
+          "maxBytes": 16384,
+          "minItems": 1,
+          "maxItems": 40,
+          "uniqueItems": true,
+          "items": {
+            "type": "utf8",
+            "maxBytes": 128
+          }
         },
         {
           "name": "workPackageIds",
           "type": "bounded_array",
           "required": true,
-          "maxBytes": 16384
+          "maxBytes": 16384,
+          "minItems": 1,
+          "maxItems": 128,
+          "uniqueItems": true,
+          "items": {
+            "type": "utf8",
+            "maxBytes": 256
+          }
         },
         {
           "name": "allowedWritePaths",
           "type": "bounded_array",
           "required": true,
-          "maxBytes": 32768
+          "maxBytes": 32768,
+          "minItems": 1,
+          "maxItems": 256,
+          "uniqueItems": true,
+          "items": {
+            "type": "utf8",
+            "maxBytes": 1024
+          }
         },
         {
           "name": "frozenContractDigest",
@@ -233,19 +276,81 @@
           "name": "mandatoryChecks",
           "type": "bounded_array",
           "required": true,
-          "maxBytes": 32768
+          "maxBytes": 32768,
+          "minItems": 1,
+          "maxItems": 128,
+          "uniqueItems": true,
+          "items": {
+            "type": "utf8",
+            "maxBytes": 256
+          }
         },
         {
           "name": "resourceCeiling",
           "type": "bounded_object",
           "required": true,
-          "maxBytes": 16384
+          "maxBytes": 16384,
+          "minProperties": 7,
+          "maxProperties": 7,
+          "additionalProperties": false,
+          "properties": [
+            {
+              "name": "cpuMicros",
+              "type": "u64",
+              "required": true
+            },
+            {
+              "name": "memoryBytes",
+              "type": "u64",
+              "required": true
+            },
+            {
+              "name": "diskBytes",
+              "type": "u64",
+              "required": true
+            },
+            {
+              "name": "networkBytes",
+              "type": "u64",
+              "required": true
+            },
+            {
+              "name": "processCount",
+              "type": "u32",
+              "required": true
+            },
+            {
+              "name": "fileDescriptorCount",
+              "type": "u32",
+              "required": true
+            },
+            {
+              "name": "wallClockMicros",
+              "type": "u64",
+              "required": true
+            }
+          ]
         },
         {
           "name": "stopConditions",
           "type": "bounded_array",
           "required": true,
-          "maxBytes": 16384
+          "maxBytes": 16384,
+          "minItems": 1,
+          "maxItems": 6,
+          "uniqueItems": true,
+          "items": {
+            "type": "enum",
+            "maxBytes": 64,
+            "values": [
+              "PACKAGE_CLOSED_CANDIDATE",
+              "BASE_DRIFT",
+              "BLOCKED_UPSTREAM",
+              "BLOCKED_EXTERNAL",
+              "STOP_CONDITION",
+              "RESUME_REQUIRED"
+            ]
+          }
         },
         {
           "name": "expiry",
@@ -284,7 +389,17 @@
           "name": "stage",
           "type": "enum",
           "required": true,
-          "maxBytes": 64
+          "maxBytes": 64,
+          "values": [
+            "I0_SOURCE",
+            "I1_TYPES",
+            "I2_STORES",
+            "I3_VERTICAL",
+            "I4_SHADOW",
+            "I5_LONGITUDINAL",
+            "I6_ITERATION",
+            "I7_EMBODIED_ASSIMILATION"
+          ]
         },
         {
           "name": "sourceCommit",
@@ -302,7 +417,14 @@
           "name": "laneReceipts",
           "type": "bounded_array",
           "required": true,
-          "maxBytes": 65536
+          "maxBytes": 65536,
+          "minItems": 1,
+          "maxItems": 7,
+          "uniqueItems": true,
+          "items": {
+            "type": "sha256",
+            "maxBytes": 64
+          }
         },
         {
           "name": "contractDigest",
@@ -320,7 +442,14 @@
           "name": "openBlockers",
           "type": "bounded_array",
           "required": true,
-          "maxBytes": 32768
+          "maxBytes": 32768,
+          "minItems": 0,
+          "maxItems": 128,
+          "uniqueItems": true,
+          "items": {
+            "type": "utf8",
+            "maxBytes": 256
+          }
         },
         {
           "name": "evaluatorIdentity",
@@ -332,7 +461,12 @@
           "name": "decision",
           "type": "enum",
           "required": true,
-          "maxBytes": 32
+          "maxBytes": 32,
+          "values": [
+            "passed",
+            "blocked",
+            "rejected"
+          ]
         }
       ],
       "invariants": [
@@ -377,13 +511,445 @@
           "name": "structuredIntent",
           "type": "bounded_object",
           "required": true,
-          "maxBytes": 131072
+          "maxBytes": 131072,
+          "minProperties": 11,
+          "maxProperties": 11,
+          "additionalProperties": false,
+          "properties": [
+            {
+              "name": "successPredicates",
+              "type": "bounded_array",
+              "required": true,
+              "maxBytes": 32768,
+              "minItems": 1,
+              "maxItems": 128,
+              "uniqueItems": true,
+              "items": {
+                "type": "bounded_object",
+                "maxBytes": 1024,
+                "minProperties": 6,
+                "maxProperties": 6,
+                "additionalProperties": false,
+                "properties": [
+                  {
+                    "name": "predicateId",
+                    "type": "id128",
+                    "required": true,
+                    "maxBytes": 128
+                  },
+                  {
+                    "name": "unit",
+                    "type": "utf8",
+                    "required": true,
+                    "maxBytes": 64
+                  },
+                  {
+                    "name": "comparator",
+                    "type": "enum",
+                    "required": true,
+                    "maxBytes": 32,
+                    "values": [
+                      "eq",
+                      "ne",
+                      "lt",
+                      "lte",
+                      "gt",
+                      "gte"
+                    ]
+                  },
+                  {
+                    "name": "boundQ32",
+                    "type": "i64",
+                    "required": true
+                  },
+                  {
+                    "name": "evidenceSourceId",
+                    "type": "utf8",
+                    "required": true,
+                    "maxBytes": 256
+                  },
+                  {
+                    "name": "terminal",
+                    "type": "bool",
+                    "required": true
+                  }
+                ]
+              }
+            },
+            {
+              "name": "terminalConditions",
+              "type": "bounded_array",
+              "required": true,
+              "maxBytes": 16384,
+              "minItems": 1,
+              "maxItems": 128,
+              "uniqueItems": true,
+              "items": {
+                "type": "bounded_object",
+                "maxBytes": 1024,
+                "minProperties": 6,
+                "maxProperties": 6,
+                "additionalProperties": false,
+                "properties": [
+                  {
+                    "name": "predicateId",
+                    "type": "id128",
+                    "required": true,
+                    "maxBytes": 128
+                  },
+                  {
+                    "name": "unit",
+                    "type": "utf8",
+                    "required": true,
+                    "maxBytes": 64
+                  },
+                  {
+                    "name": "comparator",
+                    "type": "enum",
+                    "required": true,
+                    "maxBytes": 32,
+                    "values": [
+                      "eq",
+                      "ne",
+                      "lt",
+                      "lte",
+                      "gt",
+                      "gte"
+                    ]
+                  },
+                  {
+                    "name": "boundQ32",
+                    "type": "i64",
+                    "required": true
+                  },
+                  {
+                    "name": "evidenceSourceId",
+                    "type": "utf8",
+                    "required": true,
+                    "maxBytes": 256
+                  },
+                  {
+                    "name": "terminal",
+                    "type": "bool",
+                    "required": true
+                  }
+                ]
+              }
+            },
+            {
+              "name": "legalActionClasses",
+              "type": "bounded_array",
+              "required": true,
+              "maxBytes": 16384,
+              "minItems": 1,
+              "maxItems": 128,
+              "uniqueItems": true,
+              "items": {
+                "type": "utf8",
+                "maxBytes": 128
+              }
+            },
+            {
+              "name": "forbiddenActionClasses",
+              "type": "bounded_array",
+              "required": true,
+              "maxBytes": 16384,
+              "minItems": 0,
+              "maxItems": 128,
+              "uniqueItems": true,
+              "items": {
+                "type": "utf8",
+                "maxBytes": 128
+              }
+            },
+            {
+              "name": "confirmationActionClasses",
+              "type": "bounded_array",
+              "required": true,
+              "maxBytes": 16384,
+              "minItems": 0,
+              "maxItems": 128,
+              "uniqueItems": true,
+              "items": {
+                "type": "utf8",
+                "maxBytes": 128
+              }
+            },
+            {
+              "name": "constraints",
+              "type": "bounded_array",
+              "required": true,
+              "maxBytes": 32768,
+              "minItems": 1,
+              "maxItems": 256,
+              "uniqueItems": true,
+              "items": {
+                "type": "bounded_object",
+                "maxBytes": 1024,
+                "minProperties": 6,
+                "maxProperties": 6,
+                "additionalProperties": false,
+                "properties": [
+                  {
+                    "name": "constraintId",
+                    "type": "id128",
+                    "required": true,
+                    "maxBytes": 128
+                  },
+                  {
+                    "name": "unit",
+                    "type": "utf8",
+                    "required": true,
+                    "maxBytes": 64
+                  },
+                  {
+                    "name": "comparator",
+                    "type": "enum",
+                    "required": true,
+                    "maxBytes": 32,
+                    "values": [
+                      "eq",
+                      "ne",
+                      "lt",
+                      "lte",
+                      "gt",
+                      "gte",
+                      "in",
+                      "not_in"
+                    ]
+                  },
+                  {
+                    "name": "boundQ32",
+                    "type": "i64",
+                    "required": true
+                  },
+                  {
+                    "name": "evidenceSourceId",
+                    "type": "utf8",
+                    "required": true,
+                    "maxBytes": 256
+                  },
+                  {
+                    "name": "terminal",
+                    "type": "bool",
+                    "required": true
+                  }
+                ]
+              }
+            },
+            {
+              "name": "softDimensions",
+              "type": "bounded_array",
+              "required": true,
+              "maxBytes": 16384,
+              "minItems": 0,
+              "maxItems": 64,
+              "uniqueItems": true,
+              "items": {
+                "type": "bounded_object",
+                "maxBytes": 768,
+                "minProperties": 5,
+                "maxProperties": 5,
+                "additionalProperties": false,
+                "properties": [
+                  {
+                    "name": "dimensionId",
+                    "type": "utf8",
+                    "required": true,
+                    "maxBytes": 128
+                  },
+                  {
+                    "name": "unit",
+                    "type": "utf8",
+                    "required": true,
+                    "maxBytes": 64
+                  },
+                  {
+                    "name": "direction",
+                    "type": "enum",
+                    "required": true,
+                    "maxBytes": 16,
+                    "values": [
+                      "maximize",
+                      "minimize"
+                    ]
+                  },
+                  {
+                    "name": "minimumWeightQ32",
+                    "type": "i64",
+                    "required": true
+                  },
+                  {
+                    "name": "maximumWeightQ32",
+                    "type": "i64",
+                    "required": true
+                  }
+                ]
+              }
+            },
+            {
+              "name": "evidenceRequirements",
+              "type": "bounded_array",
+              "required": true,
+              "maxBytes": 16384,
+              "minItems": 1,
+              "maxItems": 128,
+              "uniqueItems": true,
+              "items": {
+                "type": "bounded_object",
+                "maxBytes": 768,
+                "minProperties": 4,
+                "maxProperties": 4,
+                "additionalProperties": false,
+                "properties": [
+                  {
+                    "name": "requirementId",
+                    "type": "id128",
+                    "required": true,
+                    "maxBytes": 128
+                  },
+                  {
+                    "name": "evidenceSourceId",
+                    "type": "utf8",
+                    "required": true,
+                    "maxBytes": 256
+                  },
+                  {
+                    "name": "minimumConfidencePpm",
+                    "type": "u32",
+                    "required": true
+                  },
+                  {
+                    "name": "terminal",
+                    "type": "bool",
+                    "required": true
+                  }
+                ]
+              }
+            },
+            {
+              "name": "resources",
+              "type": "bounded_object",
+              "required": true,
+              "maxBytes": 4096,
+              "minProperties": 6,
+              "maxProperties": 6,
+              "additionalProperties": false,
+              "properties": [
+                {
+                  "name": "timeMicros",
+                  "type": "u64",
+                  "required": true
+                },
+                {
+                  "name": "tokenCount",
+                  "type": "u64",
+                  "required": true
+                },
+                {
+                  "name": "computeMicros",
+                  "type": "u64",
+                  "required": true
+                },
+                {
+                  "name": "memoryBytes",
+                  "type": "u64",
+                  "required": true
+                },
+                {
+                  "name": "networkBytes",
+                  "type": "u64",
+                  "required": true
+                },
+                {
+                  "name": "externalEffectCount",
+                  "type": "u32",
+                  "required": true
+                }
+              ]
+            },
+            {
+              "name": "risk",
+              "type": "bounded_object",
+              "required": true,
+              "maxBytes": 4096,
+              "minProperties": 4,
+              "maxProperties": 4,
+              "additionalProperties": false,
+              "properties": [
+                {
+                  "name": "riskClass",
+                  "type": "enum",
+                  "required": true,
+                  "maxBytes": 32,
+                  "values": [
+                    "low",
+                    "medium",
+                    "high",
+                    "critical"
+                  ]
+                },
+                {
+                  "name": "abstentionRule",
+                  "type": "utf8",
+                  "required": true,
+                  "maxBytes": 512
+                },
+                {
+                  "name": "rollbackClass",
+                  "type": "enum",
+                  "required": true,
+                  "maxBytes": 32,
+                  "values": [
+                    "none",
+                    "reversible",
+                    "compensatable",
+                    "irreversible"
+                  ]
+                },
+                {
+                  "name": "compensationRequired",
+                  "type": "bool",
+                  "required": true
+                }
+              ]
+            },
+            {
+              "name": "provenance",
+              "type": "bounded_object",
+              "required": true,
+              "maxBytes": 1024,
+              "minProperties": 2,
+              "maxProperties": 2,
+              "additionalProperties": false,
+              "properties": [
+                {
+                  "name": "sourceDigest",
+                  "type": "sha256",
+                  "required": true,
+                  "maxBytes": 64
+                },
+                {
+                  "name": "normalizationProfileDigest",
+                  "type": "sha256",
+                  "required": true,
+                  "maxBytes": 64
+                }
+              ]
+            }
+          ]
         },
         {
           "name": "sourceTrustClass",
           "type": "enum",
           "required": true,
-          "maxBytes": 64
+          "maxBytes": 64,
+          "values": [
+            "principal",
+            "trusted_system",
+            "authorized_adapter",
+            "untrusted_evidence"
+          ]
         },
         {
           "name": "locale",
@@ -446,49 +1012,306 @@
           "name": "constitutionalConstraints",
           "type": "bounded_array",
           "required": true,
-          "maxBytes": 32768
+          "maxBytes": 32768,
+          "minItems": 1,
+          "maxItems": 256,
+          "uniqueItems": true,
+          "items": {
+            "type": "bounded_object",
+            "maxBytes": 1024,
+            "minProperties": 6,
+            "maxProperties": 6,
+            "additionalProperties": false,
+            "properties": [
+              {
+                "name": "constraintId",
+                "type": "id128",
+                "required": true,
+                "maxBytes": 128
+              },
+              {
+                "name": "unit",
+                "type": "utf8",
+                "required": true,
+                "maxBytes": 64
+              },
+              {
+                "name": "comparator",
+                "type": "enum",
+                "required": true,
+                "maxBytes": 32,
+                "values": [
+                  "eq",
+                  "ne",
+                  "lt",
+                  "lte",
+                  "gt",
+                  "gte",
+                  "in",
+                  "not_in"
+                ]
+              },
+              {
+                "name": "boundQ32",
+                "type": "i64",
+                "required": true
+              },
+              {
+                "name": "evidenceSourceId",
+                "type": "utf8",
+                "required": true,
+                "maxBytes": 256
+              },
+              {
+                "name": "terminal",
+                "type": "bool",
+                "required": true
+              }
+            ]
+          }
         },
         {
           "name": "principalConstraints",
           "type": "bounded_array",
           "required": true,
-          "maxBytes": 32768
+          "maxBytes": 32768,
+          "minItems": 0,
+          "maxItems": 256,
+          "uniqueItems": true,
+          "items": {
+            "type": "bounded_object",
+            "maxBytes": 1024,
+            "minProperties": 6,
+            "maxProperties": 6,
+            "additionalProperties": false,
+            "properties": [
+              {
+                "name": "constraintId",
+                "type": "id128",
+                "required": true,
+                "maxBytes": 128
+              },
+              {
+                "name": "unit",
+                "type": "utf8",
+                "required": true,
+                "maxBytes": 64
+              },
+              {
+                "name": "comparator",
+                "type": "enum",
+                "required": true,
+                "maxBytes": 32,
+                "values": [
+                  "eq",
+                  "ne",
+                  "lt",
+                  "lte",
+                  "gt",
+                  "gte",
+                  "in",
+                  "not_in"
+                ]
+              },
+              {
+                "name": "boundQ32",
+                "type": "i64",
+                "required": true
+              },
+              {
+                "name": "evidenceSourceId",
+                "type": "utf8",
+                "required": true,
+                "maxBytes": 256
+              },
+              {
+                "name": "terminal",
+                "type": "bool",
+                "required": true
+              }
+            ]
+          }
         },
         {
           "name": "environmentConstraints",
           "type": "bounded_array",
           "required": true,
-          "maxBytes": 32768
+          "maxBytes": 32768,
+          "minItems": 0,
+          "maxItems": 256,
+          "uniqueItems": true,
+          "items": {
+            "type": "bounded_object",
+            "maxBytes": 1024,
+            "minProperties": 6,
+            "maxProperties": 6,
+            "additionalProperties": false,
+            "properties": [
+              {
+                "name": "constraintId",
+                "type": "id128",
+                "required": true,
+                "maxBytes": 128
+              },
+              {
+                "name": "unit",
+                "type": "utf8",
+                "required": true,
+                "maxBytes": 64
+              },
+              {
+                "name": "comparator",
+                "type": "enum",
+                "required": true,
+                "maxBytes": 32,
+                "values": [
+                  "eq",
+                  "ne",
+                  "lt",
+                  "lte",
+                  "gt",
+                  "gte",
+                  "in",
+                  "not_in"
+                ]
+              },
+              {
+                "name": "boundQ32",
+                "type": "i64",
+                "required": true
+              },
+              {
+                "name": "evidenceSourceId",
+                "type": "utf8",
+                "required": true,
+                "maxBytes": 256
+              },
+              {
+                "name": "terminal",
+                "type": "bool",
+                "required": true
+              }
+            ]
+          }
         },
         {
           "name": "legalActionClasses",
           "type": "bounded_array",
           "required": true,
-          "maxBytes": 32768
+          "maxBytes": 32768,
+          "minItems": 1,
+          "maxItems": 128,
+          "uniqueItems": true,
+          "items": {
+            "type": "utf8",
+            "maxBytes": 128
+          }
         },
         {
           "name": "forbiddenActionClasses",
           "type": "bounded_array",
           "required": true,
-          "maxBytes": 32768
+          "maxBytes": 32768,
+          "minItems": 0,
+          "maxItems": 128,
+          "uniqueItems": true,
+          "items": {
+            "type": "utf8",
+            "maxBytes": 128
+          }
         },
         {
           "name": "evidenceRequirements",
           "type": "bounded_array",
           "required": true,
-          "maxBytes": 32768
+          "maxBytes": 32768,
+          "minItems": 1,
+          "maxItems": 128,
+          "uniqueItems": true,
+          "items": {
+            "type": "bounded_object",
+            "maxBytes": 768,
+            "minProperties": 4,
+            "maxProperties": 4,
+            "additionalProperties": false,
+            "properties": [
+              {
+                "name": "requirementId",
+                "type": "id128",
+                "required": true,
+                "maxBytes": 128
+              },
+              {
+                "name": "evidenceSourceId",
+                "type": "utf8",
+                "required": true,
+                "maxBytes": 256
+              },
+              {
+                "name": "minimumConfidencePpm",
+                "type": "u32",
+                "required": true
+              },
+              {
+                "name": "terminal",
+                "type": "bool",
+                "required": true
+              }
+            ]
+          }
         },
         {
           "name": "resourceCeiling",
           "type": "bounded_object",
           "required": true,
-          "maxBytes": 16384
+          "maxBytes": 16384,
+          "minProperties": 6,
+          "maxProperties": 6,
+          "additionalProperties": false,
+          "properties": [
+            {
+              "name": "timeMicros",
+              "type": "u64",
+              "required": true
+            },
+            {
+              "name": "tokenCount",
+              "type": "u64",
+              "required": true
+            },
+            {
+              "name": "computeMicros",
+              "type": "u64",
+              "required": true
+            },
+            {
+              "name": "memoryBytes",
+              "type": "u64",
+              "required": true
+            },
+            {
+              "name": "networkBytes",
+              "type": "u64",
+              "required": true
+            },
+            {
+              "name": "externalEffectCount",
+              "type": "u32",
+              "required": true
+            }
+          ]
         },
         {
           "name": "rollbackClass",
           "type": "enum",
           "required": true,
-          "maxBytes": 64
+          "maxBytes": 64,
+          "values": [
+            "none",
+            "reversible",
+            "compensatable",
+            "irreversible"
+          ]
         },
         {
           "name": "semanticDigest",
@@ -533,19 +1356,47 @@
           "name": "constraintIds",
           "type": "bounded_array",
           "required": true,
-          "maxBytes": 16384
+          "maxBytes": 16384,
+          "minItems": 1,
+          "maxItems": 256,
+          "uniqueItems": true,
+          "items": {
+            "type": "id128",
+            "maxBytes": 128
+          }
         },
         {
           "name": "precedenceClasses",
           "type": "bounded_array",
           "required": true,
-          "maxBytes": 16384
+          "maxBytes": 16384,
+          "minItems": 1,
+          "maxItems": 5,
+          "uniqueItems": true,
+          "items": {
+            "type": "enum",
+            "maxBytes": 16,
+            "values": [
+              "P0",
+              "P1",
+              "P2",
+              "P3",
+              "P4"
+            ]
+          }
         },
         {
           "name": "minimalUnsatisfiedSet",
           "type": "bounded_array",
           "required": true,
-          "maxBytes": 32768
+          "maxBytes": 32768,
+          "minItems": 1,
+          "maxItems": 256,
+          "uniqueItems": true,
+          "items": {
+            "type": "id128",
+            "maxBytes": 128
+          }
         },
         {
           "name": "safeExplanationDigest",
@@ -557,7 +1408,12 @@
           "name": "disposition",
           "type": "enum",
           "required": true,
-          "maxBytes": 64
+          "maxBytes": 64,
+          "values": [
+            "conflict",
+            "authority_rejection",
+            "clarification_required"
+          ]
         }
       ],
       "invariants": [
@@ -631,7 +1487,14 @@
           "name": "disposition",
           "type": "enum",
           "required": true,
-          "maxBytes": 64
+          "maxBytes": 64,
+          "values": [
+            "compiled",
+            "rejected",
+            "conflict",
+            "clarification_required",
+            "unavailable"
+          ]
         }
       ],
       "invariants": [
@@ -683,25 +1546,49 @@
           "name": "utilityVectorQ32",
           "type": "bounded_fixed_point_vector",
           "required": true,
-          "maxBytes": 8192
+          "maxBytes": 8192,
+          "scale": "Q32",
+          "minItems": 1,
+          "maxItems": 8,
+          "items": {
+            "type": "i64"
+          }
         },
         {
           "name": "riskVectorQ32",
           "type": "bounded_fixed_point_vector",
           "required": true,
-          "maxBytes": 4096
+          "maxBytes": 4096,
+          "scale": "Q32",
+          "minItems": 1,
+          "maxItems": 32,
+          "items": {
+            "type": "i64"
+          }
         },
         {
           "name": "resourceCostQ32",
           "type": "bounded_fixed_point_vector",
           "required": true,
-          "maxBytes": 4096
+          "maxBytes": 4096,
+          "scale": "Q32",
+          "minItems": 1,
+          "maxItems": 32,
+          "items": {
+            "type": "i64"
+          }
         },
         {
           "name": "uncertaintyQ32",
           "type": "bounded_fixed_point_vector",
           "required": true,
-          "maxBytes": 4096
+          "maxBytes": 4096,
+          "scale": "Q32",
+          "minItems": 1,
+          "maxItems": 32,
+          "items": {
+            "type": "i64"
+          }
         },
         {
           "name": "timeHorizonMicros",
@@ -807,7 +1694,15 @@
           "name": "disposition",
           "type": "enum",
           "required": true,
-          "maxBytes": 64
+          "maxBytes": 64,
+          "values": [
+            "updated",
+            "infeasible",
+            "unavailable",
+            "slow_path",
+            "multiple_solution_unresolved",
+            "predecessor_selected"
+          ]
         }
       ],
       "invariants": [
@@ -841,7 +1736,13 @@
           "name": "subjectClass",
           "type": "enum",
           "required": true,
-          "maxBytes": 32
+          "maxBytes": 32,
+          "values": [
+            "system",
+            "domain",
+            "agent",
+            "episode"
+          ]
         },
         {
           "name": "objectiveClassDigest",
@@ -885,7 +1786,12 @@
           "name": "multipleSolutionDisposition",
           "type": "enum",
           "required": true,
-          "maxBytes": 64
+          "maxBytes": 64,
+          "values": [
+            "unique",
+            "predecessor_nearest_certified",
+            "multiple_solution_unresolved"
+          ]
         },
         {
           "name": "evaluatorIdentity",
@@ -897,7 +1803,12 @@
           "name": "decision",
           "type": "enum",
           "required": true,
-          "maxBytes": 32
+          "maxBytes": 32,
+          "values": [
+            "accepted",
+            "rejected",
+            "unavailable"
+          ]
         }
       ],
       "invariants": [
@@ -947,19 +1858,111 @@
           "name": "stateDimensions",
           "type": "bounded_object",
           "required": true,
-          "maxBytes": 8192
+          "maxBytes": 8192,
+          "minProperties": 4,
+          "maxProperties": 4,
+          "additionalProperties": false,
+          "properties": [
+            {
+              "name": "temporalState",
+              "type": "u32",
+              "required": true
+            },
+            {
+              "name": "activation",
+              "type": "u32",
+              "required": true
+            },
+            {
+              "name": "modulators",
+              "type": "u32",
+              "required": true
+            },
+            {
+              "name": "inhibitionEdges",
+              "type": "u32",
+              "required": true
+            }
+          ]
         },
         {
           "name": "fixedPointProfile",
           "type": "bounded_object",
           "required": true,
-          "maxBytes": 8192
+          "maxBytes": 8192,
+          "minProperties": 5,
+          "maxProperties": 5,
+          "additionalProperties": false,
+          "properties": [
+            {
+              "name": "stateScale",
+              "type": "enum",
+              "required": true,
+              "maxBytes": 8,
+              "values": [
+                "Q24"
+              ]
+            },
+            {
+              "name": "rounding",
+              "type": "enum",
+              "required": true,
+              "maxBytes": 32,
+              "values": [
+                "nearest_ties_even"
+              ]
+            },
+            {
+              "name": "stateMinimumQ24",
+              "type": "i64",
+              "required": true
+            },
+            {
+              "name": "stateMaximumQ24",
+              "type": "i64",
+              "required": true
+            },
+            {
+              "name": "checkedWideIntermediates",
+              "type": "bool",
+              "required": true
+            }
+          ]
         },
         {
           "name": "topKPolicy",
           "type": "bounded_object",
           "required": true,
-          "maxBytes": 8192
+          "maxBytes": 8192,
+          "minProperties": 4,
+          "maxProperties": 4,
+          "additionalProperties": false,
+          "properties": [
+            {
+              "name": "minimumRatioPpm",
+              "type": "u32",
+              "required": true
+            },
+            {
+              "name": "maximumRatioPpm",
+              "type": "u32",
+              "required": true
+            },
+            {
+              "name": "tieBreak",
+              "type": "enum",
+              "required": true,
+              "maxBytes": 32,
+              "values": [
+                "canonical_unit_id"
+              ]
+            },
+            {
+              "name": "perPopulationFirst",
+              "type": "bool",
+              "required": true
+            }
+          ]
         },
         {
           "name": "inhibitionDigest",
@@ -971,19 +1974,105 @@
           "name": "homeostasisProfile",
           "type": "bounded_object",
           "required": true,
-          "maxBytes": 8192
+          "maxBytes": 8192,
+          "minProperties": 5,
+          "maxProperties": 5,
+          "additionalProperties": false,
+          "properties": [
+            {
+              "name": "movingAverageAlphaQ24",
+              "type": "i64",
+              "required": true
+            },
+            {
+              "name": "thresholdStepQ24",
+              "type": "i64",
+              "required": true
+            },
+            {
+              "name": "thresholdMinimumQ24",
+              "type": "i64",
+              "required": true
+            },
+            {
+              "name": "thresholdMaximumQ24",
+              "type": "i64",
+              "required": true
+            },
+            {
+              "name": "saturationLimit",
+              "type": "u32",
+              "required": true
+            }
+          ]
         },
         {
           "name": "eligibilityProfile",
           "type": "bounded_object",
           "required": true,
-          "maxBytes": 8192
+          "maxBytes": 8192,
+          "minProperties": 4,
+          "maxProperties": 4,
+          "additionalProperties": false,
+          "properties": [
+            {
+              "name": "traceDimension",
+              "type": "u32",
+              "required": true
+            },
+            {
+              "name": "maximumNormQ24",
+              "type": "i64",
+              "required": true
+            },
+            {
+              "name": "decayQ24",
+              "type": "i64",
+              "required": true
+            },
+            {
+              "name": "localRuleDigest",
+              "type": "sha256",
+              "required": true,
+              "maxBytes": 64
+            }
+          ]
         },
         {
           "name": "resourceEnvelope",
           "type": "bounded_object",
           "required": true,
-          "maxBytes": 8192
+          "maxBytes": 8192,
+          "minProperties": 5,
+          "maxProperties": 5,
+          "additionalProperties": false,
+          "properties": [
+            {
+              "name": "p95LatencyMicros",
+              "type": "u64",
+              "required": true
+            },
+            {
+              "name": "p99LatencyMicros",
+              "type": "u64",
+              "required": true
+            },
+            {
+              "name": "transientAllocationBytes",
+              "type": "u64",
+              "required": true
+            },
+            {
+              "name": "checkpointBytes",
+              "type": "u64",
+              "required": true
+            },
+            {
+              "name": "writeAmplificationPpm",
+              "type": "u32",
+              "required": true
+            }
+          ]
         },
         {
           "name": "expiry",
@@ -1049,7 +2138,13 @@
           "name": "featureVectorQ24",
           "type": "bounded_fixed_point_vector",
           "required": true,
-          "maxBytes": 8192
+          "maxBytes": 8192,
+          "scale": "Q24",
+          "minItems": 1,
+          "maxItems": 512,
+          "items": {
+            "type": "i64"
+          }
         },
         {
           "name": "objectiveDigest",
@@ -1124,7 +2219,13 @@
           "name": "activeIndices",
           "type": "bounded_array",
           "required": true,
-          "maxBytes": 8192
+          "maxBytes": 8192,
+          "minItems": 0,
+          "maxItems": 512,
+          "uniqueItems": true,
+          "items": {
+            "type": "u32"
+          }
         },
         {
           "name": "sparsityPpm",
@@ -1167,7 +2268,37 @@
           "name": "resourceReceipt",
           "type": "bounded_object",
           "required": true,
-          "maxBytes": 8192
+          "maxBytes": 8192,
+          "minProperties": 5,
+          "maxProperties": 5,
+          "additionalProperties": false,
+          "properties": [
+            {
+              "name": "executionMicros",
+              "type": "u64",
+              "required": true
+            },
+            {
+              "name": "transientAllocationBytes",
+              "type": "u64",
+              "required": true
+            },
+            {
+              "name": "checkpointBytes",
+              "type": "u64",
+              "required": true
+            },
+            {
+              "name": "saturationCount",
+              "type": "u32",
+              "required": true
+            },
+            {
+              "name": "queueAgeMicros",
+              "type": "u64",
+              "required": true
+            }
+          ]
         }
       ],
       "invariants": [
@@ -1218,37 +2349,167 @@
           "name": "estimators",
           "type": "bounded_array",
           "required": true,
-          "maxBytes": 8192
+          "maxBytes": 8192,
+          "minItems": 3,
+          "maxItems": 3,
+          "uniqueItems": true,
+          "items": {
+            "type": "enum",
+            "maxBytes": 64,
+            "values": [
+              "ips",
+              "snips",
+              "cross_fitted_doubly_robust"
+            ]
+          }
         },
         {
           "name": "weightPolicy",
           "type": "bounded_object",
           "required": true,
-          "maxBytes": 8192
+          "maxBytes": 8192,
+          "minProperties": 4,
+          "maxProperties": 4,
+          "additionalProperties": false,
+          "properties": [
+            {
+              "name": "supportFloorPpm",
+              "type": "u32",
+              "required": true
+            },
+            {
+              "name": "maximumImportanceWeightQ32",
+              "type": "i64",
+              "required": true
+            },
+            {
+              "name": "clippingThresholdQ32",
+              "type": "i64",
+              "required": true
+            },
+            {
+              "name": "publishUnclippedDiagnostics",
+              "type": "bool",
+              "required": true
+            }
+          ]
         },
         {
           "name": "futureWindows",
           "type": "bounded_array",
           "required": true,
-          "maxBytes": 16384
+          "maxBytes": 16384,
+          "minItems": 2,
+          "maxItems": 64,
+          "uniqueItems": true,
+          "items": {
+            "type": "bounded_object",
+            "maxBytes": 1024,
+            "minProperties": 4,
+            "maxProperties": 4,
+            "additionalProperties": false,
+            "properties": [
+              {
+                "name": "windowId",
+                "type": "id128",
+                "required": true,
+                "maxBytes": 128
+              },
+              {
+                "name": "notBefore",
+                "type": "timestamp_utc",
+                "required": true,
+                "maxBytes": 64
+              },
+              {
+                "name": "notAfter",
+                "type": "timestamp_utc",
+                "required": true,
+                "maxBytes": 64
+              },
+              {
+                "name": "minimumSnapshots",
+                "type": "u32",
+                "required": true
+              }
+            ]
+          }
         },
         {
           "name": "retentionSlices",
           "type": "bounded_array",
           "required": true,
-          "maxBytes": 16384
+          "maxBytes": 16384,
+          "minItems": 1,
+          "maxItems": 128,
+          "uniqueItems": true,
+          "items": {
+            "type": "utf8",
+            "maxBytes": 128
+          }
         },
         {
           "name": "multiplicityPolicy",
           "type": "bounded_object",
           "required": true,
-          "maxBytes": 8192
+          "maxBytes": 8192,
+          "minProperties": 3,
+          "maxProperties": 3,
+          "additionalProperties": false,
+          "properties": [
+            {
+              "name": "method",
+              "type": "enum",
+              "required": true,
+              "maxBytes": 32,
+              "values": [
+                "bonferroni",
+                "holm",
+                "benjamini_hochberg"
+              ]
+            },
+            {
+              "name": "familySize",
+              "type": "u32",
+              "required": true
+            },
+            {
+              "name": "alphaPpm",
+              "type": "u32",
+              "required": true
+            }
+          ]
         },
         {
           "name": "minimumSampleProfile",
           "type": "bounded_object",
           "required": true,
-          "maxBytes": 8192
+          "maxBytes": 8192,
+          "minProperties": 4,
+          "maxProperties": 4,
+          "additionalProperties": false,
+          "properties": [
+            {
+              "name": "total",
+              "type": "u64",
+              "required": true
+            },
+            {
+              "name": "perCluster",
+              "type": "u64",
+              "required": true
+            },
+            {
+              "name": "perSubgroup",
+              "type": "u64",
+              "required": true
+            },
+            {
+              "name": "minimumEffectiveSampleQ32",
+              "type": "i64",
+              "required": true
+            }
+          ]
         },
         {
           "name": "frozenBeforeDataDigest",
@@ -1322,7 +2583,12 @@
           "name": "decision",
           "type": "enum",
           "required": true,
-          "maxBytes": 32
+          "maxBytes": 32,
+          "values": [
+            "independent",
+            "role_collision",
+            "insufficient_evidence"
+          ]
         }
       ],
       "invariants": [
@@ -1382,7 +2648,37 @@
           "name": "confidenceInterval",
           "type": "bounded_object",
           "required": true,
-          "maxBytes": 4096
+          "maxBytes": 4096,
+          "minProperties": 4,
+          "maxProperties": 4,
+          "additionalProperties": false,
+          "properties": [
+            {
+              "name": "lowerQ32",
+              "type": "i64",
+              "required": true
+            },
+            {
+              "name": "upperQ32",
+              "type": "i64",
+              "required": true
+            },
+            {
+              "name": "confidencePpm",
+              "type": "u32",
+              "required": true
+            },
+            {
+              "name": "method",
+              "type": "enum",
+              "required": true,
+              "maxBytes": 32,
+              "values": [
+                "cluster_bootstrap",
+                "conservative_exact"
+              ]
+            }
+          ]
         },
         {
           "name": "sampleCount",
@@ -1399,7 +2695,12 @@
           "name": "decision",
           "type": "enum",
           "required": true,
-          "maxBytes": 32
+          "maxBytes": 32,
+          "values": [
+            "accepted",
+            "rejected",
+            "insufficient_evidence"
+          ]
         }
       ],
       "invariants": [
@@ -1437,13 +2738,48 @@
           "name": "allowedOperations",
           "type": "bounded_array",
           "required": true,
-          "maxBytes": 16384
+          "maxBytes": 16384,
+          "minItems": 1,
+          "maxItems": 19,
+          "uniqueItems": true,
+          "items": {
+            "type": "enum",
+            "maxBytes": 64,
+            "values": [
+              "bounded_delta",
+              "replace_with_predecessor_compatible_artifact",
+              "add_factor",
+              "revise_realization",
+              "retire_factor",
+              "add_step",
+              "revise_bounded_step",
+              "retire_step",
+              "add",
+              "revise_precondition",
+              "revise_effect_model",
+              "retire",
+              "add_file",
+              "edit_ast_node",
+              "delete_owned_file",
+              "dependency_update",
+              "split",
+              "merge",
+              "rewire"
+            ]
+          }
         },
         {
           "name": "protectedPathGlobs",
           "type": "bounded_array",
           "required": true,
-          "maxBytes": 32768
+          "maxBytes": 32768,
+          "minItems": 1,
+          "maxItems": 256,
+          "uniqueItems": true,
+          "items": {
+            "type": "utf8",
+            "maxBytes": 1024
+          }
         },
         {
           "name": "maximumFiles",
@@ -1464,13 +2800,46 @@
           "name": "authorityDenyList",
           "type": "bounded_array",
           "required": true,
-          "maxBytes": 16384
+          "maxBytes": 16384,
+          "minItems": 17,
+          "maxItems": 17,
+          "uniqueItems": true,
+          "items": {
+            "type": "enum",
+            "maxBytes": 64,
+            "values": [
+              "runtimeAuthority",
+              "productionCaller",
+              "productionWriter",
+              "modelInvocation",
+              "providerDispatch",
+              "toolExecution",
+              "networkConnect",
+              "externalFilesystemMutation",
+              "secretOperation",
+              "matrixSend",
+              "externalEffect",
+              "fleetMutation",
+              "canonicalSelection",
+              "merge",
+              "operatorAcceptance",
+              "promotion",
+              "release"
+            ]
+          }
         },
         {
           "name": "mandatoryChecks",
           "type": "bounded_array",
           "required": true,
-          "maxBytes": 32768
+          "maxBytes": 32768,
+          "minItems": 1,
+          "maxItems": 128,
+          "uniqueItems": true,
+          "items": {
+            "type": "utf8",
+            "maxBytes": 256
+          }
         },
         {
           "name": "semanticDigest",
@@ -1527,7 +2896,12 @@
           "name": "networkMode",
           "type": "enum",
           "required": true,
-          "maxBytes": 32
+          "maxBytes": 32,
+          "values": [
+            "none",
+            "loopback_only",
+            "bounded_egress"
+          ]
         },
         {
           "name": "credentialCount",
@@ -1538,13 +2912,88 @@
           "name": "resourceLimits",
           "type": "bounded_object",
           "required": true,
-          "maxBytes": 8192
+          "maxBytes": 8192,
+          "minProperties": 7,
+          "maxProperties": 7,
+          "additionalProperties": false,
+          "properties": [
+            {
+              "name": "cpuMicros",
+              "type": "u64",
+              "required": true
+            },
+            {
+              "name": "memoryBytes",
+              "type": "u64",
+              "required": true
+            },
+            {
+              "name": "diskBytes",
+              "type": "u64",
+              "required": true
+            },
+            {
+              "name": "networkBytes",
+              "type": "u64",
+              "required": true
+            },
+            {
+              "name": "processCount",
+              "type": "u32",
+              "required": true
+            },
+            {
+              "name": "fileDescriptorCount",
+              "type": "u32",
+              "required": true
+            },
+            {
+              "name": "wallClockMicros",
+              "type": "u64",
+              "required": true
+            }
+          ]
         },
         {
           "name": "executedChecks",
           "type": "bounded_array",
           "required": true,
-          "maxBytes": 32768
+          "maxBytes": 32768,
+          "minItems": 1,
+          "maxItems": 128,
+          "uniqueItems": true,
+          "items": {
+            "type": "bounded_object",
+            "maxBytes": 768,
+            "minProperties": 3,
+            "maxProperties": 3,
+            "additionalProperties": false,
+            "properties": [
+              {
+                "name": "checkId",
+                "type": "utf8",
+                "required": true,
+                "maxBytes": 256
+              },
+              {
+                "name": "result",
+                "type": "enum",
+                "required": true,
+                "maxBytes": 32,
+                "values": [
+                  "passed",
+                  "failed",
+                  "blocked"
+                ]
+              },
+              {
+                "name": "evidenceDigest",
+                "type": "sha256",
+                "required": true,
+                "maxBytes": 64
+              }
+            ]
+          }
         },
         {
           "name": "outputDigest",
@@ -1566,7 +3015,12 @@
           "name": "decision",
           "type": "enum",
           "required": true,
-          "maxBytes": 32
+          "maxBytes": 32,
+          "values": [
+            "passed",
+            "failed",
+            "quarantined"
+          ]
         }
       ],
       "invariants": [
@@ -1600,13 +3054,29 @@
           "name": "candidateClass",
           "type": "enum",
           "required": true,
-          "maxBytes": 64
+          "maxBytes": 64,
+          "values": [
+            "parameter",
+            "prompt_factor",
+            "policy",
+            "workflow",
+            "skill",
+            "code",
+            "topology"
+          ]
         },
         {
           "name": "predecessorIds",
           "type": "bounded_array",
           "required": true,
-          "maxBytes": 16384
+          "maxBytes": 16384,
+          "minItems": 0,
+          "maxItems": 128,
+          "uniqueItems": true,
+          "items": {
+            "type": "id128",
+            "maxBytes": 128
+          }
         },
         {
           "name": "baseCommit",
@@ -1642,7 +3112,14 @@
           "name": "evaluationReceiptDigests",
           "type": "bounded_array",
           "required": true,
-          "maxBytes": 32768
+          "maxBytes": 32768,
+          "minItems": 0,
+          "maxItems": 256,
+          "uniqueItems": true,
+          "items": {
+            "type": "sha256",
+            "maxBytes": 64
+          }
         },
         {
           "name": "rollbackDigest",
@@ -1654,7 +3131,22 @@
           "name": "state",
           "type": "enum",
           "required": true,
-          "maxBytes": 64
+          "maxBytes": 64,
+          "values": [
+            "drafted",
+            "statically_validated",
+            "sandbox_tested",
+            "independently_evaluated",
+            "review_requested",
+            "accepted_candidate",
+            "selected",
+            "promoted",
+            "released",
+            "rejected",
+            "quarantined",
+            "superseded",
+            "revoked"
+          ]
         }
       ],
       "invariants": [
@@ -1689,7 +3181,16 @@
           "name": "sensorClass",
           "type": "enum",
           "required": true,
-          "maxBytes": 64
+          "maxBytes": 64,
+          "values": [
+            "physical_sensor",
+            "browser_session",
+            "matrix_session",
+            "provider_runtime",
+            "filesystem_mount",
+            "service_adapter",
+            "simulator"
+          ]
         },
         {
           "name": "hardwareOrAdapterDigest",
@@ -1724,19 +3225,77 @@
           "name": "uncertaintyProfile",
           "type": "bounded_object",
           "required": true,
-          "maxBytes": 8192
+          "maxBytes": 8192,
+          "minProperties": 4,
+          "maxProperties": 4,
+          "additionalProperties": false,
+          "properties": [
+            {
+              "name": "distributionClass",
+              "type": "enum",
+              "required": true,
+              "maxBytes": 32,
+              "values": [
+                "bounded_interval",
+                "normal_approximation",
+                "empirical_quantiles"
+              ]
+            },
+            {
+              "name": "lowerQ32",
+              "type": "i64",
+              "required": true
+            },
+            {
+              "name": "upperQ32",
+              "type": "i64",
+              "required": true
+            },
+            {
+              "name": "confidencePpm",
+              "type": "u32",
+              "required": true
+            }
+          ]
         },
         {
           "name": "operatingRange",
           "type": "bounded_object",
           "required": true,
-          "maxBytes": 8192
+          "maxBytes": 8192,
+          "minProperties": 3,
+          "maxProperties": 3,
+          "additionalProperties": false,
+          "properties": [
+            {
+              "name": "unit",
+              "type": "utf8",
+              "required": true,
+              "maxBytes": 64
+            },
+            {
+              "name": "minimumQ32",
+              "type": "i64",
+              "required": true
+            },
+            {
+              "name": "maximumQ32",
+              "type": "i64",
+              "required": true
+            }
+          ]
         },
         {
           "name": "failurePolicy",
           "type": "enum",
           "required": true,
-          "maxBytes": 64
+          "maxBytes": 64,
+          "values": [
+            "reject",
+            "degrade",
+            "abstain",
+            "reflex_stop"
+          ]
         }
       ],
       "invariants": [
@@ -1769,7 +3328,14 @@
           "name": "loopClass",
           "type": "enum",
           "required": true,
-          "maxBytes": 64
+          "maxBytes": 64,
+          "values": [
+            "reflex",
+            "sensorimotor",
+            "cognitive",
+            "consolidation",
+            "development"
+          ]
         },
         {
           "name": "periodMicros",
@@ -1795,7 +3361,13 @@
           "name": "priorityClass",
           "type": "enum",
           "required": true,
-          "maxBytes": 64
+          "maxBytes": 64,
+          "values": [
+            "hard_realtime",
+            "soft_realtime",
+            "best_effort",
+            "offline"
+          ]
         },
         {
           "name": "fallbackControllerDigest",
@@ -1807,7 +3379,38 @@
           "name": "watchdogPolicy",
           "type": "bounded_object",
           "required": true,
-          "maxBytes": 8192
+          "maxBytes": 8192,
+          "minProperties": 4,
+          "maxProperties": 4,
+          "additionalProperties": false,
+          "properties": [
+            {
+              "name": "missedDeadlineLimit",
+              "type": "u32",
+              "required": true
+            },
+            {
+              "name": "timeoutMicros",
+              "type": "u64",
+              "required": true
+            },
+            {
+              "name": "action",
+              "type": "enum",
+              "required": true,
+              "maxBytes": 16,
+              "values": [
+                "degrade",
+                "fallback",
+                "stop"
+              ]
+            },
+            {
+              "name": "acknowledgementDeadlineMicros",
+              "type": "u64",
+              "required": true
+            }
+          ]
         },
         {
           "name": "qualifiedHostDigest",
@@ -1858,7 +3461,15 @@
           "name": "triggerClass",
           "type": "enum",
           "required": true,
-          "maxBytes": 64
+          "maxBytes": 64,
+          "values": [
+            "human",
+            "safety_circuit",
+            "watchdog",
+            "policy_violation",
+            "integrity_failure",
+            "resource_breach"
+          ]
         },
         {
           "name": "issuedAtMonotonicMicros",
@@ -1869,19 +3480,39 @@
           "name": "affectedActuators",
           "type": "bounded_array",
           "required": true,
-          "maxBytes": 32768
+          "maxBytes": 32768,
+          "minItems": 1,
+          "maxItems": 256,
+          "uniqueItems": true,
+          "items": {
+            "type": "id128",
+            "maxBytes": 128
+          }
         },
         {
           "name": "acknowledgedBy",
           "type": "bounded_array",
           "required": true,
-          "maxBytes": 16384
+          "maxBytes": 16384,
+          "minItems": 0,
+          "maxItems": 256,
+          "uniqueItems": true,
+          "items": {
+            "type": "utf8",
+            "maxBytes": 256
+          }
         },
         {
           "name": "terminalState",
           "type": "enum",
           "required": true,
-          "maxBytes": 64
+          "maxBytes": 64,
+          "values": [
+            "safe",
+            "degraded",
+            "indeterminate",
+            "failed"
+          ]
         },
         {
           "name": "restartPrerequisiteDigest",
@@ -1933,7 +3564,14 @@
           "name": "dispatchState",
           "type": "enum",
           "required": true,
-          "maxBytes": 64
+          "maxBytes": 64,
+          "values": [
+            "not_dispatched",
+            "dispatched",
+            "acknowledged",
+            "rejected",
+            "timed_out"
+          ]
         },
         {
           "name": "observedEffectDigest",
@@ -1956,7 +3594,13 @@
           "name": "reconciliationState",
           "type": "enum",
           "required": true,
-          "maxBytes": 64
+          "maxBytes": 64,
+          "values": [
+            "succeeded",
+            "failed",
+            "indeterminate",
+            "compensated"
+          ]
         },
         {
           "name": "observedAt",
@@ -1996,7 +3640,14 @@
           "name": "systemClass",
           "type": "enum",
           "required": true,
-          "maxBytes": 64
+          "maxBytes": 64,
+          "values": [
+            "debian_host",
+            "debian_service",
+            "posix_host",
+            "posix_service",
+            "digital_adapter"
+          ]
         },
         {
           "name": "hostIdentityDigest",
@@ -2096,31 +3747,237 @@
           "name": "nodes",
           "type": "bounded_array",
           "required": true,
-          "maxBytes": 131072
+          "maxBytes": 131072,
+          "minItems": 1,
+          "maxItems": 1024,
+          "uniqueItems": true,
+          "items": {
+            "type": "bounded_object",
+            "maxBytes": 1024,
+            "minProperties": 4,
+            "maxProperties": 4,
+            "additionalProperties": false,
+            "properties": [
+              {
+                "name": "nodeId",
+                "type": "utf8",
+                "required": true,
+                "maxBytes": 256
+              },
+              {
+                "name": "nodeClass",
+                "type": "enum",
+                "required": true,
+                "maxBytes": 64,
+                "values": [
+                  "service",
+                  "socket",
+                  "dbus_name",
+                  "state_root",
+                  "process",
+                  "cgroup",
+                  "namespace",
+                  "mount",
+                  "device"
+                ]
+              },
+              {
+                "name": "ownerIdentity",
+                "type": "utf8",
+                "required": true,
+                "maxBytes": 256
+              },
+              {
+                "name": "manifestDigest",
+                "type": "sha256",
+                "required": true,
+                "maxBytes": 64
+              }
+            ]
+          }
         },
         {
           "name": "dependencyEdges",
           "type": "bounded_array",
           "required": true,
-          "maxBytes": 131072
+          "maxBytes": 131072,
+          "minItems": 0,
+          "maxItems": 4096,
+          "uniqueItems": true,
+          "items": {
+            "type": "bounded_object",
+            "maxBytes": 768,
+            "minProperties": 3,
+            "maxProperties": 3,
+            "additionalProperties": false,
+            "properties": [
+              {
+                "name": "sourceNodeId",
+                "type": "utf8",
+                "required": true,
+                "maxBytes": 256
+              },
+              {
+                "name": "targetNodeId",
+                "type": "utf8",
+                "required": true,
+                "maxBytes": 256
+              },
+              {
+                "name": "edgeClass",
+                "type": "enum",
+                "required": true,
+                "maxBytes": 32,
+                "values": [
+                  "requires",
+                  "wants",
+                  "before",
+                  "after",
+                  "conflicts"
+                ]
+              }
+            ]
+          }
         },
         {
           "name": "socketEdges",
           "type": "bounded_array",
           "required": true,
-          "maxBytes": 65536
+          "maxBytes": 65536,
+          "minItems": 0,
+          "maxItems": 2048,
+          "uniqueItems": true,
+          "items": {
+            "type": "bounded_object",
+            "maxBytes": 1024,
+            "minProperties": 4,
+            "maxProperties": 4,
+            "additionalProperties": false,
+            "properties": [
+              {
+                "name": "sourceNodeId",
+                "type": "utf8",
+                "required": true,
+                "maxBytes": 256
+              },
+              {
+                "name": "endpoint",
+                "type": "utf8",
+                "required": true,
+                "maxBytes": 512
+              },
+              {
+                "name": "protocol",
+                "type": "enum",
+                "required": true,
+                "maxBytes": 16,
+                "values": [
+                  "unix",
+                  "tcp",
+                  "udp"
+                ]
+              },
+              {
+                "name": "direction",
+                "type": "enum",
+                "required": true,
+                "maxBytes": 16,
+                "values": [
+                  "listen",
+                  "connect"
+                ]
+              }
+            ]
+          }
         },
         {
           "name": "dbusEdges",
           "type": "bounded_array",
           "required": true,
-          "maxBytes": 65536
+          "maxBytes": 65536,
+          "minItems": 0,
+          "maxItems": 2048,
+          "uniqueItems": true,
+          "items": {
+            "type": "bounded_object",
+            "maxBytes": 2048,
+            "minProperties": 5,
+            "maxProperties": 5,
+            "additionalProperties": false,
+            "properties": [
+              {
+                "name": "sourceNodeId",
+                "type": "utf8",
+                "required": true,
+                "maxBytes": 256
+              },
+              {
+                "name": "destination",
+                "type": "utf8",
+                "required": true,
+                "maxBytes": 256
+              },
+              {
+                "name": "interface",
+                "type": "utf8",
+                "required": true,
+                "maxBytes": 256
+              },
+              {
+                "name": "method",
+                "type": "utf8",
+                "required": true,
+                "maxBytes": 256
+              },
+              {
+                "name": "signature",
+                "type": "utf8",
+                "required": true,
+                "maxBytes": 256
+              }
+            ]
+          }
         },
         {
           "name": "stateOwnershipEdges",
           "type": "bounded_array",
           "required": true,
-          "maxBytes": 65536
+          "maxBytes": 65536,
+          "minItems": 0,
+          "maxItems": 2048,
+          "uniqueItems": true,
+          "items": {
+            "type": "bounded_object",
+            "maxBytes": 1536,
+            "minProperties": 3,
+            "maxProperties": 3,
+            "additionalProperties": false,
+            "properties": [
+              {
+                "name": "ownerNodeId",
+                "type": "utf8",
+                "required": true,
+                "maxBytes": 256
+              },
+              {
+                "name": "statePath",
+                "type": "utf8",
+                "required": true,
+                "maxBytes": 1024
+              },
+              {
+                "name": "accessClass",
+                "type": "enum",
+                "required": true,
+                "maxBytes": 32,
+                "values": [
+                  "read_only",
+                  "single_writer",
+                  "append_only_writer"
+                ]
+              }
+            ]
+          }
         },
         {
           "name": "topologicalOrderDigest",
@@ -2132,7 +3989,13 @@
           "name": "cycleDisposition",
           "type": "enum",
           "required": true,
-          "maxBytes": 64
+          "maxBytes": 64,
+          "values": [
+            "acyclic",
+            "explicit_strategy_required",
+            "qualified_start_stop_strategy",
+            "rejected"
+          ]
         }
       ],
       "invariants": [
@@ -2178,37 +4041,212 @@
           "name": "allowedOperations",
           "type": "bounded_array",
           "required": true,
-          "maxBytes": 32768
+          "maxBytes": 32768,
+          "minItems": 0,
+          "maxItems": 256,
+          "uniqueItems": true,
+          "items": {
+            "type": "bounded_object",
+            "maxBytes": 1024,
+            "minProperties": 4,
+            "maxProperties": 5,
+            "additionalProperties": false,
+            "properties": [
+              {
+                "name": "operationId",
+                "type": "utf8",
+                "required": true,
+                "maxBytes": 256
+              },
+              {
+                "name": "effectClass",
+                "type": "enum",
+                "required": true,
+                "maxBytes": 64,
+                "values": [
+                  "read",
+                  "package_download",
+                  "package_install",
+                  "package_remove",
+                  "package_configure",
+                  "service_start",
+                  "service_stop",
+                  "service_reload",
+                  "service_enable",
+                  "service_mask",
+                  "dbus_call",
+                  "filesystem_write",
+                  "cgroup_change",
+                  "namespace_change"
+                ]
+              },
+              {
+                "name": "targetId",
+                "type": "utf8",
+                "required": true,
+                "maxBytes": 256
+              },
+              {
+                "name": "terminalObserverId",
+                "type": "utf8",
+                "required": false,
+                "maxBytes": 256
+              },
+              {
+                "name": "requiresFinalPayloadDigest",
+                "type": "bool",
+                "required": true
+              }
+            ]
+          }
         },
         {
           "name": "deniedOperations",
           "type": "bounded_array",
           "required": true,
-          "maxBytes": 32768
+          "maxBytes": 32768,
+          "minItems": 1,
+          "maxItems": 256,
+          "uniqueItems": true,
+          "items": {
+            "type": "bounded_object",
+            "maxBytes": 1024,
+            "minProperties": 4,
+            "maxProperties": 5,
+            "additionalProperties": false,
+            "properties": [
+              {
+                "name": "operationId",
+                "type": "utf8",
+                "required": true,
+                "maxBytes": 256
+              },
+              {
+                "name": "effectClass",
+                "type": "enum",
+                "required": true,
+                "maxBytes": 64,
+                "values": [
+                  "read",
+                  "package_download",
+                  "package_install",
+                  "package_remove",
+                  "package_configure",
+                  "service_start",
+                  "service_stop",
+                  "service_reload",
+                  "service_enable",
+                  "service_mask",
+                  "dbus_call",
+                  "filesystem_write",
+                  "cgroup_change",
+                  "namespace_change"
+                ]
+              },
+              {
+                "name": "targetId",
+                "type": "utf8",
+                "required": true,
+                "maxBytes": 256
+              },
+              {
+                "name": "terminalObserverId",
+                "type": "utf8",
+                "required": false,
+                "maxBytes": 256
+              },
+              {
+                "name": "requiresFinalPayloadDigest",
+                "type": "bool",
+                "required": true
+              }
+            ]
+          }
         },
         {
           "name": "filesystemRoots",
           "type": "bounded_array",
           "required": true,
-          "maxBytes": 32768
+          "maxBytes": 32768,
+          "minItems": 0,
+          "maxItems": 128,
+          "uniqueItems": true,
+          "items": {
+            "type": "utf8",
+            "maxBytes": 1024
+          }
         },
         {
           "name": "networkDestinations",
           "type": "bounded_array",
           "required": true,
-          "maxBytes": 32768
+          "maxBytes": 32768,
+          "minItems": 0,
+          "maxItems": 128,
+          "uniqueItems": true,
+          "items": {
+            "type": "utf8",
+            "maxBytes": 256
+          }
         },
         {
           "name": "serviceUnitIds",
           "type": "bounded_array",
           "required": true,
-          "maxBytes": 32768
+          "maxBytes": 32768,
+          "minItems": 0,
+          "maxItems": 512,
+          "uniqueItems": true,
+          "items": {
+            "type": "utf8",
+            "maxBytes": 256
+          }
         },
         {
           "name": "resourceCeiling",
           "type": "bounded_object",
           "required": true,
-          "maxBytes": 16384
+          "maxBytes": 16384,
+          "minProperties": 7,
+          "maxProperties": 7,
+          "additionalProperties": false,
+          "properties": [
+            {
+              "name": "cpuMicros",
+              "type": "u64",
+              "required": true
+            },
+            {
+              "name": "memoryBytes",
+              "type": "u64",
+              "required": true
+            },
+            {
+              "name": "diskBytes",
+              "type": "u64",
+              "required": true
+            },
+            {
+              "name": "networkBytes",
+              "type": "u64",
+              "required": true
+            },
+            {
+              "name": "processCount",
+              "type": "u32",
+              "required": true
+            },
+            {
+              "name": "fileDescriptorCount",
+              "type": "u32",
+              "required": true
+            },
+            {
+              "name": "wallClockMicros",
+              "type": "u64",
+              "required": true
+            }
+          ]
         },
         {
           "name": "expiry",
@@ -2266,7 +4304,33 @@
           "name": "targetOrganClass",
           "type": "enum",
           "required": true,
-          "maxBytes": 64
+          "maxBytes": 64,
+          "values": [
+            "constitutional_kernel",
+            "human_override",
+            "brainstem",
+            "resource_metabolism",
+            "homeostasis",
+            "reflex_safety",
+            "time_calibration",
+            "sensor_bus",
+            "body_state",
+            "multimodal_memory",
+            "value_system",
+            "world_model",
+            "attention_workspace",
+            "action_gating",
+            "executive_cortex",
+            "metacognition",
+            "skill_library",
+            "motor_planning",
+            "motor_control",
+            "actuator_gateway",
+            "digital_twin",
+            "consolidation",
+            "anomaly_immunity",
+            "social_cognition"
+          ]
         },
         {
           "name": "adapterSourceDigest",
@@ -2302,7 +4366,19 @@
           "name": "requestedLifecycleState",
           "type": "enum",
           "required": true,
-          "maxBytes": 64
+          "maxBytes": 64,
+          "values": [
+            "proposed",
+            "built",
+            "simulated",
+            "qualified",
+            "dormant",
+            "canary",
+            "active",
+            "draining",
+            "quarantined",
+            "retired"
+          ]
         }
       ],
       "invariants": [
@@ -2348,31 +4424,237 @@
           "name": "orderedSteps",
           "type": "bounded_array",
           "required": true,
-          "maxBytes": 131072
+          "maxBytes": 131072,
+          "minItems": 1,
+          "maxItems": 1024,
+          "uniqueItems": true,
+          "items": {
+            "type": "bounded_object",
+            "maxBytes": 1024,
+            "minProperties": 6,
+            "maxProperties": 6,
+            "additionalProperties": false,
+            "properties": [
+              {
+                "name": "stepId",
+                "type": "id128",
+                "required": true,
+                "maxBytes": 128
+              },
+              {
+                "name": "operationId",
+                "type": "utf8",
+                "required": true,
+                "maxBytes": 256
+              },
+              {
+                "name": "ownerId",
+                "type": "utf8",
+                "required": true,
+                "maxBytes": 256
+              },
+              {
+                "name": "idempotencyKey",
+                "type": "id128",
+                "required": true,
+                "maxBytes": 128
+              },
+              {
+                "name": "timeoutMicros",
+                "type": "u64",
+                "required": true
+              },
+              {
+                "name": "expectedStateDigest",
+                "type": "sha256",
+                "required": true,
+                "maxBytes": 64
+              }
+            ]
+          }
         },
         {
           "name": "stateOwnershipMap",
           "type": "bounded_object",
           "required": true,
-          "maxBytes": 65536
+          "maxBytes": 65536,
+          "minProperties": 1,
+          "maxProperties": 1,
+          "additionalProperties": false,
+          "properties": [
+            {
+              "name": "entries",
+              "type": "bounded_array",
+              "required": true,
+              "maxBytes": 64512,
+              "minItems": 1,
+              "maxItems": 1024,
+              "uniqueItems": true,
+              "items": {
+                "type": "bounded_object",
+                "maxBytes": 1536,
+                "minProperties": 4,
+                "maxProperties": 4,
+                "additionalProperties": false,
+                "properties": [
+                  {
+                    "name": "stateRoot",
+                    "type": "utf8",
+                    "required": true,
+                    "maxBytes": 1024
+                  },
+                  {
+                    "name": "sourceOwner",
+                    "type": "utf8",
+                    "required": true,
+                    "maxBytes": 256
+                  },
+                  {
+                    "name": "destinationOwner",
+                    "type": "utf8",
+                    "required": true,
+                    "maxBytes": 256
+                  },
+                  {
+                    "name": "accessClass",
+                    "type": "enum",
+                    "required": true,
+                    "maxBytes": 32,
+                    "values": [
+                      "read_only",
+                      "single_writer",
+                      "append_only_writer"
+                    ]
+                  }
+                ]
+              }
+            }
+          ]
         },
         {
           "name": "quiescencePolicy",
           "type": "bounded_object",
           "required": true,
-          "maxBytes": 16384
+          "maxBytes": 16384,
+          "minProperties": 4,
+          "maxProperties": 4,
+          "additionalProperties": false,
+          "properties": [
+            {
+              "name": "mode",
+              "type": "enum",
+              "required": true,
+              "maxBytes": 16,
+              "values": [
+                "online",
+                "drain",
+                "stop"
+              ]
+            },
+            {
+              "name": "maximumWaitMicros",
+              "type": "u64",
+              "required": true
+            },
+            {
+              "name": "requiredStableChecks",
+              "type": "u32",
+              "required": true
+            },
+            {
+              "name": "newWorkFenced",
+              "type": "bool",
+              "required": true
+            }
+          ]
         },
         {
           "name": "verificationSteps",
           "type": "bounded_array",
           "required": true,
-          "maxBytes": 65536
+          "maxBytes": 65536,
+          "minItems": 1,
+          "maxItems": 256,
+          "uniqueItems": true,
+          "items": {
+            "type": "bounded_object",
+            "maxBytes": 768,
+            "minProperties": 3,
+            "maxProperties": 3,
+            "additionalProperties": false,
+            "properties": [
+              {
+                "name": "checkId",
+                "type": "utf8",
+                "required": true,
+                "maxBytes": 256
+              },
+              {
+                "name": "expectedDigest",
+                "type": "sha256",
+                "required": true,
+                "maxBytes": 64
+              },
+              {
+                "name": "terminal",
+                "type": "bool",
+                "required": true
+              }
+            ]
+          }
         },
         {
           "name": "compensationSteps",
           "type": "bounded_array",
           "required": true,
-          "maxBytes": 65536
+          "maxBytes": 65536,
+          "minItems": 0,
+          "maxItems": 256,
+          "uniqueItems": true,
+          "items": {
+            "type": "bounded_object",
+            "maxBytes": 1024,
+            "minProperties": 6,
+            "maxProperties": 6,
+            "additionalProperties": false,
+            "properties": [
+              {
+                "name": "stepId",
+                "type": "id128",
+                "required": true,
+                "maxBytes": 128
+              },
+              {
+                "name": "operationId",
+                "type": "utf8",
+                "required": true,
+                "maxBytes": 256
+              },
+              {
+                "name": "ownerId",
+                "type": "utf8",
+                "required": true,
+                "maxBytes": 256
+              },
+              {
+                "name": "idempotencyKey",
+                "type": "id128",
+                "required": true,
+                "maxBytes": 128
+              },
+              {
+                "name": "timeoutMicros",
+                "type": "u64",
+                "required": true
+              },
+              {
+                "name": "expectedStateDigest",
+                "type": "sha256",
+                "required": true,
+                "maxBytes": 64
+              }
+            ]
+          }
         },
         {
           "name": "maximumDowntimeMicros",
@@ -2476,7 +4758,13 @@
           "name": "decision",
           "type": "enum",
           "required": true,
-          "maxBytes": 32
+          "maxBytes": 32,
+          "values": [
+            "accepted",
+            "rejected",
+            "insufficient_evidence",
+            "quarantined"
+          ]
         }
       ],
       "invariants": [
@@ -2540,7 +4828,14 @@
           "name": "dataSnapshotDigests",
           "type": "bounded_array",
           "required": true,
-          "maxBytes": 65536
+          "maxBytes": 65536,
+          "minItems": 1,
+          "maxItems": 1024,
+          "uniqueItems": true,
+          "items": {
+            "type": "sha256",
+            "maxBytes": 64
+          }
         },
         {
           "name": "restoreProcedureDigest",

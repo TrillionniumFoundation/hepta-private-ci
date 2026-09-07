@@ -123,8 +123,8 @@ impl CognitiveStore {
             transaction,
             &self.owner_agent_id,
             &memory_id,
-            1,
-            None,
+            /*revision*/ 1,
+            /*supersedes_revision*/ None,
             &draft.revision,
         )
         .await?;

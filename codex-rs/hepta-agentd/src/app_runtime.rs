@@ -68,7 +68,11 @@ pub(crate) fn app_server_runtime_options(
     identity: &AgentdIdentity,
     cognitive_runtime: CognitiveRuntime,
 ) -> std::io::Result<AppServerRuntimeOptions> {
-    app_server_runtime_options_with_writer(identity, cognitive_runtime, None)
+    app_server_runtime_options_with_writer(
+        identity,
+        cognitive_runtime,
+        /*qualification_turn_writer*/ None,
+    )
 }
 
 pub(crate) fn app_server_runtime_options_for_agent(

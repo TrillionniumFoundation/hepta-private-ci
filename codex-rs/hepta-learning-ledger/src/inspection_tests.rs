@@ -78,7 +78,11 @@ impl Fixture {
                 .create_new(true)
                 .open(self.path()),
         );
-        let mut ledger = must(DurableLedger::create(file, binding(), /*max_records*/ 16));
+        let mut ledger = must(DurableLedger::create(
+            file,
+            binding(),
+            /*max_records*/ 16,
+        ));
         let mut head = Digest32::ZERO;
         for event in events {
             head = must(ledger.append(head, event)).chain_digest;

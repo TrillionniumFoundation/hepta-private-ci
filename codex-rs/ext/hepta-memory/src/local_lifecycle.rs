@@ -71,7 +71,7 @@ impl LocalTurnLifecycleContributor {
         Self { store }
     }
 
-    fn state<'a>(&self, turn_store: &'a ExtensionData) -> Arc<Mutex<TurnLeaseState>> {
+    fn state(&self, turn_store: &ExtensionData) -> Arc<Mutex<TurnLeaseState>> {
         turn_store.get_or_init(Mutex::default)
     }
 
@@ -235,7 +235,9 @@ impl TurnLifecycleContributor for LocalTurnLifecycleContributor {
                     .starting = false;
                 return;
             };
-            let acquired = self.store.acquire_local_lease(lease_id, 1, fence);
+            let acquired = self
+                .store
+                .acquire_local_lease(lease_id, /*generation*/ 1, fence);
             let acquired = match tokio::time::timeout(LOCAL_LIFECYCLE_IO_TIMEOUT, acquired).await {
                 Ok(result) => result,
                 Err(_) => {

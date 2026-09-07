@@ -1,3 +1,6 @@
+use pretty_assertions::assert_eq;
+use pretty_assertions::assert_ne;
+
 use super::*;
 
 fn id(value: &str) -> StableId {
@@ -74,4 +77,51 @@ fn duplicate_candidate_is_rejected() {
         compose(request(vec![value.clone(), value])),
         Err(Error::DuplicateCandidate("candidate:a".to_string()))
     );
+}
+
+#[test]
+fn canonical_candidate_limit_is_enforced() {
+    let bounded = (0..128)
+        .map(|index| candidate(&format!("candidate:{index}"), index))
+        .collect();
+    assert!(compose(request(bounded)).is_ok());
+
+    let oversized = (0..129)
+        .map(|index| candidate(&format!("candidate:{index}"), index))
+        .collect();
+    assert_eq!(
+        compose(request(oversized)),
+        Err(Error::CandidateLimitExceeded)
+    );
+}
+
+#[test]
+fn maximum_candidate_receipt_is_canonical_and_digest_complete() {
+    let mut candidates = (0..128)
+        .map(|index| candidate(&format!("candidate:{index:03}"), index))
+        .collect::<Vec<_>>();
+    candidates[0].score = FixedQ32::from_raw(i64::MIN);
+    candidates[127].score = FixedQ32::from_raw(i64::MAX);
+
+    let receipt = compose(request(candidates.clone()))
+        .unwrap_or_else(|error| panic!("maximum candidate set must compose: {error:?}"));
+    assert_eq!(
+        receipt.decision,
+        PlanDecision::Selected(id("candidate:127"))
+    );
+
+    let mut reversed = candidates.clone();
+    reversed.reverse();
+    assert_eq!(
+        compose(request(reversed))
+            .unwrap_or_else(|error| panic!("permuted candidate set must compose: {error:?}")),
+        receipt
+    );
+
+    candidates[127].support_digest = Digest32::of_bytes(b"changed-final-support");
+    let changed = compose(request(candidates))
+        .unwrap_or_else(|error| panic!("changed candidate set must compose: {error:?}"));
+    assert_eq!(changed.decision, receipt.decision);
+    assert_eq!(changed.considered_candidates, receipt.considered_candidates);
+    assert_ne!(changed.plan_digest, receipt.plan_digest);
 }

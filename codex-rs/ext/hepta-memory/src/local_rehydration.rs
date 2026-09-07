@@ -195,8 +195,8 @@ pub async fn read_local_rehydration_for_turn(
     executor: &LocalCompactExecutor,
     input: LocalRehydrationHostInput<'_>,
 ) -> Result<LocalRehydrationHostRead, LocalRehydrationHostError> {
-    validate_text(input.turn_id, "turn id", 256)?;
-    validate_text(input.operation_id, "operation id", 512)?;
+    validate_text(input.turn_id, "turn id", /*max_bytes*/ 256)?;
+    validate_text(input.operation_id, "operation id", /*max_bytes*/ 512)?;
     if input.turn_id != turn_store.level_id() {
         return Err(LocalRehydrationHostError::TurnBindingMismatch);
     }

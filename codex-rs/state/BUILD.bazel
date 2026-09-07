@@ -16,3 +16,12 @@ codex_rust_crate(
         "state-unit-tests": 4,
     },
 )
+
+# Caller evidence inspected by the Hepta contracts tests.
+exports_files(
+    [
+        "src/runtime/queued_items.rs",
+        "src/runtime/queued_items_tests.rs",
+    ],
+    visibility = ["//codex-rs/hepta-contracts:__pkg__"],
+)

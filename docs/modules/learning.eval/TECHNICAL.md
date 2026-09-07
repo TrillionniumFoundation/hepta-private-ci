@@ -135,6 +135,16 @@ Critical protocol schemas:
 - `TopologyProposalV1`
 - `UnlearningComplianceReceiptV1`
 
+### Temporal evaluation digest compatibility
+
+The internal `TemporalEvaluationPlan` composite digest follows the canonical machine-readable profile in `docs/learning/LEARNING_SYSTEM.json` and the normative algorithm text in `docs/learning/CAUSAL_LONGITUDINAL_SPEC.md`. The plan preimage is SHA-256 over the unframed `hepta.ope.temporal-evaluation-plan.v1` domain followed, in order, by the framed evaluation ID, objective digest, every fold field, every OPE field and every confidence field. The stored top-level digest is excluded from its own preimage. The fold, OPE and confidence child plan digests remain independent values; the composite binds them without aliasing them.
+
+Evaluation rejects zero or stale composite plan digests before fitting or estimation. `usize` counts are checked before canonical `u64` big-endian encoding; fixed Q32 values use signed raw `i64` big-endian bytes; IDs use `u32` big-endian UTF-8 byte length followed by exact UTF-8 bytes; digests use raw 32 bytes.
+
+`TemporalEvaluationReceipt.evidence_digest` uses the unframed `hepta.ope.temporal-holdout-pipeline.v2` domain and binds, in order, evaluation ID, composite plan digest, objective digest, fitted model digest, fitted predictions digest and cluster-estimate evidence digest. Version 2 is not wire-compatible with the previous v1 digest preimage: historical v1 evidence stays version-tagged and cannot be reinterpreted as v2. These internal digest profiles do not create a published contract or alter the authority of `EvaluationReceiptV1` and `LongitudinalEvaluationReceiptV1`.
+
+Canonical vector `TEMPORAL-PLAN-DIGEST-GV-001` fixes the complete 293-byte composite preimage and expected digest `dba5b45f87d6a8ef08dccfc9b2108a1456d94b226c3315777c3de2f15f4219b3`; source tests must compare against that hard-coded oracle rather than a value emitted by the implementation under test.
+
 Every producer validates output before publication and binds semantic fields into the declared digest scope. Every consumer validates version, bounds, producer identity, scope and digest before use. Compatibility is additive only where registered; unknown critical fields are rejected. Contract identifiers, meaning and authority interpretation cannot change in place.
 
 Rust types and canonical JSON represent identical semantics. Tests cover round trips, maximum bounds, missing fields, unknown fields, invalid enums, canonical ordering and digest stability. Error mapping preserves rejected, unavailable, timed out, indeterminate, quarantined and terminally failed outcomes.

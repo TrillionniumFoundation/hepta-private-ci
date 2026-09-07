@@ -91,7 +91,10 @@ async fn app_protocol(
     let stdin = child.take_stdin()?;
     let mut driver = driver_run.app_server(stdin)?;
     driver.initialize().await?;
-    let initialize = result(child.read_response(1).await?, "app-server initialize")?;
+    let initialize = result(
+        child.read_response(/*expected_id*/ 1).await?,
+        "app-server initialize",
+    )?;
     if initialize.get("codexHome").and_then(Value::as_str)
         != Some(layout.home().to_string_lossy().as_ref())
     {
@@ -101,7 +104,10 @@ async fn app_protocol(
     }
     driver.initialized().await?;
     driver.start_thread().await?;
-    let thread = result(child.read_response(2).await?, "app-server thread/start")?;
+    let thread = result(
+        child.read_response(/*expected_id*/ 2).await?,
+        "app-server thread/start",
+    )?;
     let thread_id = dynamic_pointer(&thread, "/thread/id", "thread/start thread.id")?;
     if thread.get("model").and_then(Value::as_str) != Some(FIXED_MODEL)
         || thread.get("modelProvider").and_then(Value::as_str) != Some(FIXED_PROVIDER)
@@ -136,13 +142,19 @@ async fn mcp_protocol(
     let stdin = child.take_stdin()?;
     let mut driver = driver_run.mcp(stdin)?;
     driver.initialize().await?;
-    let initialize = result(child.read_response(1).await?, "MCP initialize")?;
+    let initialize = result(
+        child.read_response(/*expected_id*/ 1).await?,
+        "MCP initialize",
+    )?;
     if initialize.get("protocolVersion").and_then(Value::as_str) != Some(MCP_PROTOCOL_VERSION) {
         return Err(invalid("MCP negotiated an unexpected protocol version"));
     }
     driver.initialized().await?;
     driver.start_thread().await?;
-    let first = result(child.read_response(2).await?, "first MCP tools/call")?;
+    let first = result(
+        child.read_response(/*expected_id*/ 2).await?,
+        "first MCP tools/call",
+    )?;
     ensure_mcp_success(&first)?;
     let thread_id = dynamic_pointer(
         &first,
@@ -150,7 +162,10 @@ async fn mcp_protocol(
         "MCP structuredContent.threadId",
     )?;
     driver.continue_thread(&thread_id).await?;
-    let second = result(child.read_response(3).await?, "second MCP tools/call")?;
+    let second = result(
+        child.read_response(/*expected_id*/ 3).await?,
+        "second MCP tools/call",
+    )?;
     ensure_mcp_success(&second)?;
     if dynamic_pointer(
         &second,

@@ -39,18 +39,16 @@ impl Fixture {
         Self { root }
     }
 
-    fn create(&self, name: &str) -> File {
-        must(
-            OpenOptions::new()
-                .read(true)
-                .write(true)
-                .create_new(true)
-                .open(self.root.join(name)),
-        )
+    fn path(&self, name: &str) -> PathBuf {
+        self.root.join(name)
+    }
+
+    fn create(&self, name: &str) -> CreateOnlyArtifactFile {
+        must(CreateOnlyArtifactFile::create(self.path(name)))
     }
 
     fn read(&self, name: &str) -> File {
-        must(File::open(self.root.join(name)))
+        must(File::open(self.path(name)))
     }
 
     fn write(&self, name: &str) -> File {
@@ -58,7 +56,7 @@ impl Fixture {
             OpenOptions::new()
                 .read(true)
                 .write(true)
-                .open(self.root.join(name)),
+                .open(self.path(name)),
         )
     }
 }
@@ -113,7 +111,7 @@ fn readonly_handles_load_registry_and_payload() {
 }
 
 #[test]
-fn shared_read_does_not_unlock_other_reader_or_permit_writer() {
+fn shared_readers_coexist_and_existing_path_cannot_be_recreated() {
     let fixture = Fixture::new();
     let registry = ArtifactRegistry::new();
     let witness = must(write_registry_snapshot(
@@ -128,10 +126,11 @@ fn shared_read_does_not_unlock_other_reader_or_permit_writer() {
         registry.snapshot()
     );
     assert_eq!(
-        write_registry_snapshot(fixture.write("registry"), &registry, binding()),
-        Err(ArtifactStorageError::Busy)
+        CreateOnlyArtifactFile::create(fixture.path("registry")).unwrap_err(),
+        ArtifactStorageError::AlreadyExists
     );
     must(shared.unlock());
+
     let exclusive = fixture.write("registry");
     must(exclusive.try_lock());
     assert_eq!(
@@ -139,10 +138,20 @@ fn shared_read_does_not_unlock_other_reader_or_permit_writer() {
         Some(ArtifactStorageError::Busy)
     );
     must(exclusive.unlock());
+}
+
+#[test]
+fn created_target_held_by_another_writer_fails_busy_without_writing() {
+    let fixture = Fixture::new();
+    let created = fixture.create("registry");
+    let held = fixture.write("registry");
+    must(held.try_lock());
     assert_eq!(
-        write_registry_snapshot(fixture.write("registry"), &registry, binding()),
-        Err(ArtifactStorageError::AlreadyExists)
+        write_registry_snapshot(created, &ArtifactRegistry::new(), binding()),
+        Err(ArtifactStorageError::Busy)
     );
+    assert!(must(fs::read(fixture.path("registry"))).is_empty());
+    must(held.unlock());
 }
 
 #[cfg(target_os = "linux")]
@@ -150,7 +159,7 @@ fn shared_read_does_not_unlock_other_reader_or_permit_writer() {
 fn write_guard_releases_lock_with_transient_duplicate_retained() {
     let fixture = Fixture::new();
     let file = fixture.create("registry");
-    let transient = must(file.try_clone());
+    let transient = must(file.0.try_clone());
     let registry = ArtifactRegistry::new();
     let witness = must(write_registry_snapshot(file, &registry, binding()));
     assert_eq!(

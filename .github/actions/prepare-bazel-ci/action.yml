@@ -27,6 +27,23 @@ runs:
       with:
         target: ${{ inputs.target }}
 
+    - name: Configure fail-closed release lockdown root
+      if: github.job == 'verify-release-build'
+      shell: bash
+      run: |
+        set -euo pipefail
+        if [[ "${RUNNER_OS}" == "Windows" ]]; then
+          mkdir_root="$(cygpath -u "${RUNNER_TEMP}")/hepta-lockdown-root"
+          lockdown_root="$(cygpath -m "${RUNNER_TEMP}")/hepta-lockdown-root"
+        else
+          mkdir_root="${RUNNER_TEMP}/hepta-lockdown-root"
+          lockdown_root="${mkdir_root}"
+        fi
+        rm -rf "${mkdir_root}"
+        mkdir -p "${mkdir_root}"
+        chmod 700 "${mkdir_root}" || true
+        printf 'HEPTA_LOCKDOWN_ROOT=%s\n' "${lockdown_root}" >> "${GITHUB_ENV}"
+
     - name: Compute bazel repository cache key
       id: cache_bazel_repository_key
       shell: bash

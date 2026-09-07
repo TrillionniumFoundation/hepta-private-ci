@@ -27,6 +27,34 @@ UTILITY_NAME_EXCEPTIONS = {
 }
 MANIFEST_FEATURE_EXCEPTIONS = {
     "codex-rs/v8-poc/Cargo.toml": {"sandbox": ("v8/v8_enable_sandbox",)},
+    # Temporary migration: retain existing opt-in Hepta profiles until their
+    # qualification libraries/tests are extracted into dedicated Bazel targets.
+    # This exact allowlist does not certify Bazel feature coverage or independent
+    # acceptance. Remove each entry with its reviewed extraction; defaults stay off.
+    "codex-rs/hepta-agentd/Cargo.toml": {
+        "default": (),
+        "qualification-cognitive-write": (),
+    },
+    "codex-rs/hepta-automation/Cargo.toml": {
+        "default": (),
+        "taskflow-structural-qualification": (),
+    },
+    "codex-rs/hepta-contracts/Cargo.toml": {
+        "default": (),
+        "authbus-local-qualification": (),
+    },
+    "codex-rs/hepta-matrix-sdk/Cargo.toml": {
+        "default": (),
+        "qualification-failpoints": (),
+    },
+    "codex-rs/hepta-matrixd/Cargo.toml": {
+        "default": (),
+        "real-synapse-e2e": ("codex-hepta-matrix-sdk/qualification-failpoints",),
+    },
+    "codex-rs/hepta-supervisor/Cargo.toml": {
+        "default": (),
+        "production-authority": (),
+    },
 }
 OPTIONAL_DEPENDENCY_EXCEPTIONS = set()
 INTERNAL_DEPENDENCY_FEATURE_EXCEPTIONS = {}

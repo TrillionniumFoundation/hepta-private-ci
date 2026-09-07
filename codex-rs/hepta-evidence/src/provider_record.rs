@@ -24,9 +24,15 @@ pub(crate) async fn ensure_provider_intent(
     let payload_json = String::from_utf8(payload.clone())
         .map_err(|error| EvidenceError::Serialization(error.to_string()))?;
     let digest = Sha256Digest::for_bytes(&payload);
-    verify_provider_intent(transaction, intent, &payload_json, digest.as_str(), false)
-        .await
-        .map(|_| ())
+    verify_provider_intent(
+        transaction,
+        intent,
+        &payload_json,
+        digest.as_str(),
+        /*inserted*/ false,
+    )
+    .await
+    .map(|_| ())
 }
 
 pub(crate) async fn verify_provider_intent(

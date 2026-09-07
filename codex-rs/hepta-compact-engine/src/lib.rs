@@ -7,7 +7,10 @@ use std::error::Error as StdError;
 use std::fmt;
 
 use codex_hepta_cognitive_types::MemoryRecord;
-use codex_hepta_types::{AuthorityPosture, Digest32, Generation, StableId};
+use codex_hepta_types::AuthorityPosture;
+use codex_hepta_types::Digest32;
+use codex_hepta_types::Generation;
+use codex_hepta_types::StableId;
 
 const MAX_INPUT_RECORDS: usize = 65_536;
 

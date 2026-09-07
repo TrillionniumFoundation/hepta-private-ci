@@ -1,0 +1,174 @@
+{
+  "schema": "hepta.implementation-design-dispositions.v1",
+  "schemaVersion": 1,
+  "planId": "HEPTA-GLOBAL-MODULAR-DEVELOPMENT-PLAN",
+  "planVersion": "8.0.0",
+  "scope": "sixteen enumerated design requirements; not every possible implementation gap",
+  "allGapsClosed": false,
+  "independentReviewPassed": false,
+  "designRequirements": [
+    {
+      "id": "IMP-01",
+      "topic": "forty concrete module contracts",
+      "state": "specified",
+      "documents": [
+        "qualification/module-execution-dossiers/IMPLEMENTATION_PROFILES.json",
+        "qualification/module-execution-dossiers/IMPLEMENTATION_CONTRACTS.md"
+      ],
+      "remainingEvidence": "Each module owner maps proposed operations to compiled native symbols, real consumers and package tests; no module deployment is certified by these profiles."
+    },
+    {
+      "id": "IMP-02",
+      "topic": "observed native source versus target",
+      "state": "specified",
+      "documents": [
+        "qualification/module-execution-dossiers/NATIVE_BINDINGS.json"
+      ],
+      "remainingEvidence": "Re-read changed source blobs and complete all module native mappings; five inspected source locations are not forty qualified runtimes."
+    },
+    {
+      "id": "IMP-03",
+      "topic": "physical cognitive persistence",
+      "state": "specified",
+      "documents": [
+        "qualification/module-execution-dossiers/PERSISTENCE.md",
+        "qualification/module-execution-dossiers/COGNITIVE_STORE.sql"
+      ],
+      "remainingEvidence": "Memory owner implements and migrates the selected native backend; crash/reopen, witness, backup and restore tests run on the actual host."
+    },
+    {
+      "id": "IMP-04",
+      "topic": "counter and transaction failure atomicity",
+      "state": "specified",
+      "documents": [
+        "qualification/module-execution-dossiers/PERSISTENCE.md",
+        "qualification/module-execution-dossiers/IMPLEMENTATION_PROFILES.json"
+      ],
+      "remainingEvidence": "Native implementations preflight sequence/capacity/encoding and prove no visible state mutation on rejected operations, including counter exhaustion."
+    },
+    {
+      "id": "IMP-05",
+      "topic": "revocation and final-payload linearization",
+      "state": "specified",
+      "documents": [
+        "qualification/module-execution-dossiers/IMPLEMENTATION_CONTRACTS.md"
+      ],
+      "remainingEvidence": "Security and adapter owners implement serialized entry/revocation ordering, current epoch checks, non-retroactive terminal observation and bounded stop."
+    },
+    {
+      "id": "IMP-06",
+      "topic": "general NDU covariance regression",
+      "state": "specified",
+      "documents": [
+        "docs/learning/NDU_FBSDE_SPEC.md"
+      ],
+      "remainingEvidence": "Native conditional-moment estimation and coefficient profile admission, operating-region tests and independent mathematical review remain required."
+    },
+    {
+      "id": "IMP-07",
+      "topic": "numeric-profile compatibility",
+      "state": "specified",
+      "documents": [
+        "qualification/module-execution-dossiers/IMPLEMENTATION_PROFILES.json",
+        "qualification/module-execution-dossiers/IMPLEMENTATION_CONTRACTS.md"
+      ],
+      "remainingEvidence": "Native Rust and client conversion goldens, overflow behavior and protocol/profile migration remain required."
+    },
+    {
+      "id": "IMP-08",
+      "topic": "causal and future-time evaluation",
+      "state": "specified",
+      "documents": [
+        "qualification/module-execution-dossiers/LEARNING_EXPERIMENT.md"
+      ],
+      "remainingEvidence": "Independent observers and evaluator preregister real future windows, support, folds, precision/power, multiplicity and retained-task outcomes."
+    },
+    {
+      "id": "IMP-09",
+      "topic": "four separate organ graphs",
+      "state": "specified",
+      "documents": [
+        "qualification/module-execution-dossiers/ORGAN_EVOLUTION.md"
+      ],
+      "remainingEvidence": "Implement versioned native graph types and test initialization/fallback acyclicity separately from declared runtime feedback and failure domains."
+    },
+    {
+      "id": "IMP-10",
+      "topic": "composite migration and post-cutover rollback",
+      "state": "specified",
+      "documents": [
+        "qualification/module-execution-dossiers/ORGAN_EVOLUTION.md",
+        "qualification/module-execution-dossiers/PERSISTENCE.md"
+      ],
+      "remainingEvidence": "Native split/merge ownership registration, route publication, witness authentication, fault matrix and successor-delta-preserving rollback remain required."
+    },
+    {
+      "id": "IMP-11",
+      "topic": "typed extension admission",
+      "state": "specified",
+      "documents": [
+        "qualification/module-execution-dossiers/ORGAN_EVOLUTION.md"
+      ],
+      "remainingEvidence": "Contract integrator admits versioned manifests and factories without changing a running generation or automatically granting new module ownership."
+    },
+    {
+      "id": "IMP-12",
+      "topic": "concrete simulator and timing analysis",
+      "state": "specified",
+      "documents": [
+        "qualification/module-execution-dossiers/EMBODIMENT.md"
+      ],
+      "remainingEvidence": "Implement native plant/controller ports, target timing measurements, scheduling assumptions, independent physical emergency stop and SIL/HIL tests."
+    },
+    {
+      "id": "IMP-13",
+      "topic": "authorized service assimilation",
+      "state": "specified",
+      "documents": [
+        "qualification/module-execution-dossiers/ASSIMILATION.md"
+      ],
+      "remainingEvidence": "External owner enrolls a real target and evaluator verifies service parity, resources, state migration and rollback; no target inherits consent or credentials."
+    },
+    {
+      "id": "IMP-14",
+      "topic": "real C1 process and storage loop",
+      "state": "specified",
+      "documents": [
+        "qualification/module-execution-dossiers/C1_EXECUTION.md"
+      ],
+      "remainingEvidence": "Integrate named product callers, durable stores, independent outcomes, selected artifacts, new-process behavior change and safe rollback."
+    },
+    {
+      "id": "IMP-15",
+      "topic": "bounded seven-lane implementation",
+      "state": "specified",
+      "documents": [
+        "qualification/module-execution-dossiers/IMPLEMENTATION_CONTRACTS.md",
+        "qualification/module-execution-dossiers/IMPLEMENTATION_PROFILES.json"
+      ],
+      "remainingEvidence": "Freeze source/contracts and existing package DAGs, assign real owners and path leases, and retain exact-source/synthetic-merge evidence."
+    },
+    {
+      "id": "IMP-16",
+      "topic": "executable qualification and scope-limited closure",
+      "state": "specified",
+      "documents": [
+        "qualification/module-execution-dossiers/implementation_contracts.py",
+        "qualification/module-execution-dossiers/test_implementation_contracts.py"
+      ],
+      "remainingEvidence": "Complete repository verification, native integration CI and independent semantic review remain distinct from local Python/SQL oracle results."
+    }
+  ],
+  "externalGateIds": [
+    "RDY-EXT-001",
+    "RDY-EXT-002",
+    "RDY-EXT-003",
+    "RDY-EXT-004",
+    "RDY-EXT-005",
+    "RDY-EXT-006",
+    "RDY-EXT-007",
+    "RDY-EXT-008",
+    "RDY-EXT-009"
+  ],
+  "closureRule": "A document or local oracle cannot issue native, deployment, future-time, hardware, consent, independent acceptance or release evidence. Newly discovered gaps remain explicit."
+}

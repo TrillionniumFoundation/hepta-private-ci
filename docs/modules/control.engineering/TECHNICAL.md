@@ -544,3 +544,14 @@ The bootstrap source-location obligation for `control.engineering` is implemente
 - `tools/hepta-engineering-control`
 
 The source candidate is checked by `.github/workflows/hepta-gap-closure.yml`, including closed-world inventory, package tests, all-target compilation, strict Clippy and clean tracked state. This receipt is source implementation evidence only. It grants no runtime, production-writer, model-provider, external-effect, independent-acceptance, selection, promotion, merge or release authority.
+
+## 18. Owner-clean technical contract handoff
+
+Cross-module technical changes are staged as linear, owner-pure commits. The
+`DOC-3B-MODULE-TECHNICAL-DOCUMENTS` commit changes only canonical files under
+`docs/modules/**` and the mechanically derived module-document index. A
+descendant `ART-1-LEARNING-ARTIFACT-REGISTRY` commit owns the module-local
+`READ_BOUNDARY.md` and `STORAGE.md` files together with the implementation and
+tests under the existing `learning.artifacts` namespace. The source commit must
+retain the documentation commit as its direct ancestor; this handoff creates no
+cross-owner path lease, co-ownership, activation or runtime authority.

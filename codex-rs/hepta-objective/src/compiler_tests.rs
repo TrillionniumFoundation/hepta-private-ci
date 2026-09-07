@@ -192,3 +192,107 @@ fn untrusted_evidence_cannot_create_privileged_authority() {
     assert_eq!(error, ObjectiveError::UntrustedAuthorityEscalation);
     assert_eq!(error.code(), "OBJ-E009");
 }
+
+#[test]
+fn forbidden_abstain_is_not_implicitly_legalized_or_misreported() {
+    let mut source = envelope();
+    source.forbidden_actions.push(id("abstain"));
+    let receipt = must(must(compile(source.clone())));
+    assert_eq!(receipt.objective.legal_actions, source.allowed_actions);
+    assert_eq!(receipt.disposition, CompileDisposition::Compiled);
+    source.allowed_actions.clear();
+    assert_eq!(
+        must_err(must(compile(source))).conflicting_ids,
+        vec![id("abstain")]
+    );
+}
+
+#[test]
+fn implicit_abstain_cannot_exceed_the_legal_action_bound() {
+    let mut source = envelope();
+    source.allowed_actions = (0..128)
+        .map(|i| ActionClass {
+            id: id(&format!("action-{i:03}")),
+            confirmation: ConfirmationPolicy::Required,
+        })
+        .collect();
+    assert_eq!(
+        must_err(compile(source)),
+        ObjectiveError::InvalidBound {
+            kind: "compiled legal actions",
+            maximum: 128,
+            actual: 129
+        }
+    );
+}
+
+#[test]
+fn maximum_scalar_conflict_is_deterministic_at_numeric_extremes() {
+    let mut source = envelope();
+    source.constraints = vec![
+        Constraint {
+            id: id("maximum-bound"),
+            class: ConstraintClass::Task,
+            axis: id("extreme-axis"),
+            relation: ConstraintRelation::AtMost,
+            bound: FixedQ32::from_raw(i64::MIN),
+            evidence_source: id("request-1"),
+        },
+        Constraint {
+            id: id("minimum-bound"),
+            class: ConstraintClass::Task,
+            axis: id("extreme-axis"),
+            relation: ConstraintRelation::AtLeast,
+            bound: FixedQ32::from_raw(i64::MAX),
+            evidence_source: id("request-1"),
+        },
+    ];
+    source.constraints.extend((0..254).map(|index| Constraint {
+        id: id(&format!("irrelevant-{index:03}")),
+        class: ConstraintClass::Task,
+        axis: id(&format!("irrelevant-axis-{index:03}")),
+        relation: ConstraintRelation::Equal,
+        bound: FixedQ32::ZERO,
+        evidence_source: id("request-1"),
+    }));
+
+    let first = must_err(must(compile(source.clone())));
+    let mut reordered = source;
+    reordered.constraints.reverse();
+    let second = must_err(must(compile(reordered)));
+
+    assert_eq!(first, second);
+    assert_eq!(
+        first.conflicting_ids,
+        vec![id("maximum-bound"), id("minimum-bound")]
+    );
+}
+
+#[test]
+fn scalar_extreme_endpoints_compile_without_arithmetic() {
+    let mut source = envelope();
+    source.constraints = vec![
+        Constraint {
+            id: id("lower-extreme"),
+            class: ConstraintClass::Task,
+            axis: id("lower-axis"),
+            relation: ConstraintRelation::Equal,
+            bound: FixedQ32::from_raw(i64::MIN),
+            evidence_source: id("request-1"),
+        },
+        Constraint {
+            id: id("upper-extreme"),
+            class: ConstraintClass::Task,
+            axis: id("upper-axis"),
+            relation: ConstraintRelation::Equal,
+            bound: FixedQ32::from_raw(i64::MAX),
+            evidence_source: id("request-1"),
+        },
+    ];
+
+    let first = must(must(compile(source.clone())));
+    source.constraints.reverse();
+    assert_eq!(must(must(compile(source))), first);
+    assert_eq!(first.objective.constraints[0].bound.raw(), i64::MIN);
+    assert_eq!(first.objective.constraints[1].bound.raw(), i64::MAX);
+}

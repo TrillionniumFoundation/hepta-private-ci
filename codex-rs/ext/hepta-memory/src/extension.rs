@@ -353,7 +353,8 @@ where
                 return Vec::new();
             };
 
-            let preflight = shadow_recall(&request, query.as_str(), &[], 0);
+            let preflight =
+                shadow_recall(&request, query.as_str(), &[], /*now_unix_seconds*/ 0);
             if preflight.reason == RecallObservationReason::SecretLikeQuery {
                 commit_turn_observation(
                     turn_store,
@@ -429,7 +430,12 @@ where
                     )
                 })
                 .collect::<Vec<_>>();
-            let observation = shadow_recall(&request, query.as_str(), &recall_candidates, 0);
+            let observation = shadow_recall(
+                &request,
+                query.as_str(),
+                &recall_candidates,
+                /*now_unix_seconds*/ 0,
+            );
             let prepared_attachment = prepare_memory_attachment(
                 &thread_state,
                 &request,
@@ -685,8 +691,8 @@ where
         cognitive_runtime,
         local_turn_lifecycle_enabled,
         local_development_policy,
-        false,
-        None,
+        /*qualification_turn_writer_enabled*/ false,
+        /*qualification_turn_writer*/ None,
         resolve_thread,
     )
 }
@@ -760,12 +766,10 @@ where
     if let Some(store) = local_lifecycle_store {
         builder.turn_lifecycle_contributor(Arc::new(LocalTurnLifecycleContributor::new(store)));
     }
-    if qualification_writer_profile {
-        if let Some(host) = qualification_turn_writer {
-            builder.turn_lifecycle_contributor(Arc::new(
-                QualificationTurnLifecycleContributor::with_host(host),
-            ));
-        }
+    if qualification_writer_profile && let Some(host) = qualification_turn_writer {
+        builder.turn_lifecycle_contributor(Arc::new(
+            QualificationTurnLifecycleContributor::with_host(host),
+        ));
     }
     extension
 }

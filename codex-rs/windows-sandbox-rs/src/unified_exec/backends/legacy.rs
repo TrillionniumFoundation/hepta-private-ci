@@ -356,7 +356,7 @@ pub(crate) async fn spawn_windows_sandbox_session_legacy(
     )?;
     allow_null_device_for_workspace_write(common.uses_write_capabilities);
 
-    apply_legacy_session_acl_rules(
+    if let Err(err) = apply_legacy_session_acl_rules(
         &common.permissions,
         codex_home,
         &common.current_dir,
@@ -368,7 +368,12 @@ pub(crate) async fn spawn_windows_sandbox_session_legacy(
             readonly_sid_str: security.readonly_sid_str.as_deref(),
             write_root_sids: &security.write_root_sids,
         },
-    )?;
+    ) {
+        unsafe {
+            CloseHandle(security.h_token);
+        }
+        return Err(err);
+    }
 
     let (writer_tx, writer_rx) = mpsc::channel::<Vec<u8>>(128);
     let (stdout_tx, stdout_rx) = broadcast::channel::<Vec<u8>>(256);

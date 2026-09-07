@@ -3,6 +3,7 @@
 use std::path::Path;
 use std::sync::Arc;
 use std::sync::Mutex;
+use std::sync::atomic::AtomicBool;
 use std::sync::atomic::AtomicUsize;
 use std::sync::atomic::Ordering;
 use std::time::Duration;
@@ -10,6 +11,7 @@ use std::time::Instant;
 
 use anyhow::Context;
 use anyhow::Result;
+use anyhow::anyhow;
 use anyhow::bail;
 use anyhow::ensure;
 use app_test_support::MockResponsesConfig;
@@ -453,6 +455,28 @@ async fn start_queued_if_pending(
 struct SequenceState {
     requests: Mutex<Vec<Request>>,
     calls: AtomicUsize,
+    capture_failed: AtomicBool,
+}
+
+impl SequenceState {
+    fn capture_request(&self, request: &Request) -> Result<()> {
+        self.requests
+            .lock()
+            .map_err(|_| {
+                self.capture_failed.store(/*val*/ true, Ordering::Release);
+                anyhow!("request capture lock poisoned")
+            })?
+            .push(request.clone());
+        Ok(())
+    }
+
+    fn request_count(&self) -> Result<usize> {
+        ensure!(
+            !self.capture_failed.load(Ordering::Acquire),
+            "request capture failed"
+        );
+        Ok(self.calls.load(Ordering::Acquire))
+    }
 }
 
 struct DelayedFirstSequence {
@@ -462,11 +486,9 @@ struct DelayedFirstSequence {
 
 impl Respond for DelayedFirstSequence {
     fn respond(&self, request: &Request) -> ResponseTemplate {
-        self.state
-            .requests
-            .lock()
-            .expect("request capture lock poisoned")
-            .push(request.clone());
+        if self.state.capture_request(request).is_err() {
+            return ResponseTemplate::new(/*s*/ 500);
+        }
         let index = self.state.calls.fetch_add(1, Ordering::AcqRel);
         let body = self
             .bodies
@@ -495,11 +517,9 @@ struct GatedFirstSequence {
 
 impl Respond for GatedFirstSequence {
     fn respond(&self, request: &Request) -> ResponseTemplate {
-        self.state
-            .requests
-            .lock()
-            .expect("request capture lock poisoned")
-            .push(request.clone());
+        if self.state.capture_request(request).is_err() {
+            return ResponseTemplate::new(/*s*/ 500);
+        }
         let index = self.state.calls.fetch_add(1, Ordering::AcqRel);
         let body = self
             .bodies
@@ -521,6 +541,51 @@ impl Respond for GatedFirstSequence {
             response
         }
     }
+}
+
+#[tokio::test]
+async fn poisoned_request_capture_is_reported_without_counting_a_send() -> Result<()> {
+    let request = Request {
+        url: "http://localhost/responses".parse()?,
+        method: "POST".parse()?,
+        headers: Default::default(),
+        body: Vec::new(),
+    };
+    for gated in [false, true] {
+        let state = Arc::new(SequenceState::default());
+        let poisoned = std::panic::catch_unwind(|| {
+            let _guard = state.requests.lock();
+            panic!("injected request capture failure");
+        });
+        ensure!(poisoned.is_err() && state.requests.is_poisoned());
+        let _response = if gated {
+            GatedFirstSequence {
+                state: Arc::clone(&state),
+                bodies: Vec::new(),
+            }
+            .respond(&request)
+        } else {
+            DelayedFirstSequence {
+                state: Arc::clone(&state),
+                bodies: Vec::new(),
+            }
+            .respond(&request)
+        };
+        ensure!(state.capture_failed.load(Ordering::Acquire) && state.requests.is_poisoned());
+        ensure!(state.calls.load(Ordering::Acquire) == 0);
+        ensure!(state.request_count().is_err());
+        ensure!(
+            wait_for_request_count(&state, /*expected*/ 0)
+                .await
+                .is_err()
+        );
+        ensure!(
+            assert_request_count_stable(&state, /*expected*/ 0, "poisoned capture")
+                .await
+                .is_err()
+        );
+    }
+    Ok(())
 }
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 4)]
@@ -605,8 +670,8 @@ async fn killed_agent_recovers_same_turn_then_dispatches_queue_once_while_peer_s
         .await
         .expect_err("Agent B must not recover Agent A's private turn");
     assert_cross_agent_thread_not_found(&cross_agent_recover, "recovery")?;
-    ensure!(model_a_state.calls.load(Ordering::Acquire) == 1);
-    ensure!(model_b_state.calls.load(Ordering::Acquire) == 0);
+    ensure!(model_a_state.request_count()? == 1);
+    ensure!(model_b_state.request_count()? == 0);
 
     // A gated provider response must not block the request that starts the
     // turn: the test needs a second control connection to observe the
@@ -665,7 +730,7 @@ async fn killed_agent_recovers_same_turn_then_dispatches_queue_once_while_peer_s
         TurnStatus::InProgress,
     )?;
     assert_user_item_once(&b_during_failure.thread.turns, B_CLIENT_ID, B_TEXT)?;
-    ensure!(model_b_state.calls.load(Ordering::Acquire) == 1);
+    ensure!(model_b_state.request_count()? == 1);
 
     fleet
         .supervisor
@@ -690,7 +755,7 @@ async fn killed_agent_recovers_same_turn_then_dispatches_queue_once_while_peer_s
         TurnStatus::InProgress,
     )?;
     assert_user_item_once(&b_after_restart.thread.turns, B_CLIENT_ID, B_TEXT)?;
-    ensure!(model_b_state.calls.load(Ordering::Acquire) == 1);
+    ensure!(model_b_state.request_count()? == 1);
 
     let mut restarted_a = QualificationClient::connect(&agent_a, &restarted_control_a).await?;
     let mut restarted_queue_a = QueueAdapter::connect(&agent_a, &restarted_control_a).await?;
@@ -710,7 +775,7 @@ async fn killed_agent_recovers_same_turn_then_dispatches_queue_once_while_peer_s
         "cold normalization dispatched or lost the durable queue before turn/recover; \
          queue={:?}; model_calls={}; turns={:?}",
         queue_after_resume.data,
-        model_a_state.calls.load(Ordering::Acquire),
+        model_a_state.request_count()?,
         resumed
             .thread
             .turns
@@ -774,7 +839,7 @@ async fn killed_agent_recovers_same_turn_then_dispatches_queue_once_while_peer_s
         TurnStatus::InProgress,
     )?;
     assert_user_item_once(&b_before_release.thread.turns, B_CLIENT_ID, B_TEXT)?;
-    ensure!(model_b_state.calls.load(Ordering::Acquire) == 1);
+    ensure!(model_b_state.request_count()? == 1);
 
     let b_turn = b_turn_task
         .await
@@ -810,7 +875,7 @@ async fn killed_agent_recovers_same_turn_then_dispatches_queue_once_while_peer_s
     let requests_a = model_a_state
         .requests
         .lock()
-        .expect("request capture lock poisoned")
+        .map_err(|_| anyhow!("request capture lock poisoned"))?
         .clone();
     ensure!(requests_a.len() == 3);
     let bodies_a = requests_a
@@ -840,7 +905,7 @@ async fn killed_agent_recovers_same_turn_then_dispatches_queue_once_while_peer_s
     let requests_b = model_b_state
         .requests
         .lock()
-        .expect("request capture lock poisoned")
+        .map_err(|_| anyhow!("request capture lock poisoned"))?
         .clone();
     ensure!(requests_b.len() == 2);
     let bodies_b = requests_b
@@ -868,13 +933,15 @@ async fn killed_agent_recovers_same_turn_then_dispatches_queue_once_while_peer_s
             .all(|body| request_user_text_count(body, B_QUEUED_TEXT) <= 1),
         "Agent B queued user message was duplicated within a physical request"
     );
-    ensure!(model_a_state.calls.load(Ordering::Acquire) == 3);
-    ensure!(model_b_state.calls.load(Ordering::Acquire) == 2);
+    ensure!(model_a_state.request_count()? == 3);
+    ensure!(model_b_state.request_count()? == 2);
 
     restarted_a.inner.shutdown().await?;
     restarted_queue_a.inner.shutdown().await?;
     client_b.inner.shutdown().await?;
     queue_b.inner.shutdown().await?;
+    ensure!(model_a_state.request_count()? == 3);
+    ensure!(model_b_state.request_count()? == 2);
     Ok(())
 }
 
@@ -895,13 +962,13 @@ fn final_sse(response_id: &str) -> String {
 
 async fn wait_for_request_count(state: &SequenceState, expected: usize) -> Result<()> {
     timeout(EVENT_TIMEOUT, async {
-        while state.calls.load(Ordering::Acquire) < expected {
+        while state.request_count()? < expected {
             tokio::time::sleep(Duration::from_millis(20)).await;
         }
+        Ok::<(), anyhow::Error>(())
     })
     .await
-    .with_context(|| format!("model did not receive {expected} physical requests"))?;
-    Ok(())
+    .with_context(|| format!("model did not receive {expected} physical requests"))?
 }
 
 async fn assert_request_count_stable(
@@ -911,7 +978,7 @@ async fn assert_request_count_stable(
 ) -> Result<()> {
     let deadline = Instant::now() + STABLE_REQUEST_WINDOW;
     loop {
-        let observed = state.calls.load(Ordering::Acquire);
+        let observed = state.request_count()?;
         ensure!(
             observed == expected,
             "{agent} physical request count changed during the stable window: expected {expected}, found {observed}"

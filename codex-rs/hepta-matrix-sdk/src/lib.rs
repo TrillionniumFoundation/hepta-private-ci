@@ -7,11 +7,14 @@
 #![forbid(unsafe_code)]
 
 mod config;
+#[cfg(test)]
+mod gap_fill;
 mod ingress;
 mod outbound;
 #[cfg(feature = "qualification-failpoints")]
 mod qualification;
 mod sdk;
+mod sync;
 
 pub use config::MatrixSdkPaths;
 pub use config::MatrixSidecarConfig;

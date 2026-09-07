@@ -118,3 +118,71 @@ fn expired_or_payload_mismatched_witness_is_rejected() {
         Err(OperationError::AuthorityRejected)
     );
 }
+
+#[test]
+fn exhausted_revision_preserves_every_transition_and_terminal_outcome() {
+    let key = key(b"payload");
+    let Ok(revision) = Revision::new(u64::MAX) else {
+        panic!("maximum revision must be representable");
+    };
+    let digest = Digest32::of_bytes(b"transition");
+    for state in [
+        OperationState::Pending,
+        OperationState::Authorized {
+            witness_digest: digest,
+            authority_generation: generation(9),
+        },
+        OperationState::Dispatched {
+            dispatch_digest: digest,
+        },
+        OperationState::Indeterminate {
+            reason_digest: digest,
+        },
+    ] {
+        let mut ledger = OperationLedger::default();
+        ledger.records.insert(
+            key.id.clone(),
+            OperationRecord {
+                key: key.clone(),
+                owner_generation: generation(3),
+                revision,
+                state: state.clone(),
+            },
+        );
+        let original = ledger.clone();
+        let error = Err(OperationError::Conflict(key.id.clone()));
+        match &state {
+            OperationState::Pending => {
+                assert_eq!(ledger.authorize(&key.id, &witness(&key), 1_000), error);
+            }
+            OperationState::Authorized { .. } => {
+                assert_eq!(ledger.record_dispatch(&key.id, digest), error);
+            }
+            OperationState::Dispatched { .. } => {
+                assert_eq!(ledger.mark_indeterminate(&key.id, digest), error);
+                assert_eq!(ledger, original);
+            }
+            OperationState::Indeterminate { .. } => {}
+            OperationState::Applied { .. }
+            | OperationState::NotApplied { .. }
+            | OperationState::Quarantined { .. } => panic!("fixture is nonterminal"),
+        }
+        assert_eq!(ledger, original);
+        if matches!(
+            state,
+            OperationState::Dispatched { .. } | OperationState::Indeterminate { .. }
+        ) {
+            for outcome in [
+                ReconciliationOutcome::Applied,
+                ReconciliationOutcome::NotApplied,
+                ReconciliationOutcome::Quarantined,
+            ] {
+                assert_eq!(
+                    ledger.observe_terminal(&key.id, outcome, digest, generation(3)),
+                    error
+                );
+                assert_eq!(ledger, original);
+            }
+        }
+    }
+}

@@ -43,8 +43,11 @@ impl Session {
     }
 
     pub(crate) async fn emit_thread_idle_lifecycle_if_idle(&self, cause: ThreadIdleCause) {
-        self.emit_thread_idle_lifecycle_if_idle_inner(cause, None, None, false)
-            .await;
+        self.emit_thread_idle_lifecycle_if_idle_inner(
+            cause, /*terminalization_owner*/ None, /*start_transition_owner*/ None,
+            /*allow_shutdown*/ false,
+        )
+        .await;
     }
 
     /// A detached start-transition terminalizer may be the last owner of the
@@ -58,9 +61,9 @@ impl Session {
     ) {
         self.emit_thread_idle_lifecycle_if_idle_inner(
             cause,
-            None,
+            /*terminalization_owner*/ None,
             Some(start_transition_owner),
-            true,
+            /*allow_shutdown*/ true,
         )
         .await;
     }
@@ -73,8 +76,13 @@ impl Session {
         cause: ThreadIdleCause,
         terminalization_owner: Option<&std::sync::Arc<()>>,
     ) {
-        self.emit_thread_idle_lifecycle_if_idle_inner(cause, terminalization_owner, None, false)
-            .await;
+        self.emit_thread_idle_lifecycle_if_idle_inner(
+            cause,
+            terminalization_owner,
+            /*start_transition_owner*/ None,
+            /*allow_shutdown*/ false,
+        )
+        .await;
     }
 
     async fn emit_thread_idle_lifecycle_if_idle_inner(

@@ -120,7 +120,7 @@ impl TaskFlowNodeSpec {
     }
 
     fn validate(&self, capabilities: &BTreeSet<String>) -> Result<(), TaskFlowError> {
-        validate_text(&self.node_id, "node_id", 128)?;
+        validate_text(&self.node_id, "node_id", /*max_bytes*/ 128)?;
         if self.max_attempts == 0 || self.max_attempts > 32 {
             return Err(invalid("max_attempts must be in 1..=32"));
         }
@@ -229,7 +229,7 @@ impl TaskFlowDefinition {
 
     pub fn validate(&self) -> Result<(), TaskFlowError> {
         validate_text(&self.workflow_id, "workflow_id", MAX_ID_BYTES)?;
-        validate_text(&self.entry_node, "entry_node", 128)?;
+        validate_text(&self.entry_node, "entry_node", /*max_bytes*/ 128)?;
         if self.version == 0 {
             return Err(invalid("workflow version must be non-zero"));
         }
@@ -274,8 +274,8 @@ impl TaskFlowDefinition {
         let mut incoming: BTreeMap<String, Vec<String>> =
             nodes.keys().cloned().map(|key| (key, Vec::new())).collect();
         for edge in &self.edges {
-            validate_text(&edge.from, "edge source", 128)?;
-            validate_text(&edge.to, "edge target", 128)?;
+            validate_text(&edge.from, "edge source", /*max_bytes*/ 128)?;
+            validate_text(&edge.to, "edge target", /*max_bytes*/ 128)?;
             if edge.from == edge.to {
                 return Err(invalid("self-loop is not allowed"));
             }
@@ -1028,7 +1028,7 @@ impl AutomationStore {
             .ok_or_else(|| corrupt("run revision overflow"))?;
         run.updated_at_ms = now_ms;
         run.state_digest = run.compute_state_digest()?;
-        update_taskflow_run(&mut tx, &run, None).await?;
+        update_taskflow_run(&mut tx, &run, /*fence*/ None).await?;
         let previous = previous_event_digest(&mut tx, &run).await?;
         append_taskflow_event(
             &mut tx,
@@ -1290,7 +1290,7 @@ fn apply_transition(
             }
             validate_text(token, "wait token", MAX_ID_BYTES)?;
             if let Some(node) = resume_node {
-                validate_text(node, "resume node", 128)?;
+                validate_text(node, "resume node", /*max_bytes*/ 128)?;
                 if node == &run.current_node {
                     return Err(invalid("wait resume node cannot equal current node"));
                 }

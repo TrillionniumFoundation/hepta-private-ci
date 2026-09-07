@@ -111,6 +111,8 @@ class RunBazelCiIntegrationTest(unittest.TestCase):
         args = calls[0]
         self.assertIn("--host_platform=//:local_windows_msvc", args)
         self.assertIn("--platforms=//:windows_x86_64_gnullvm", args)
+        self.assertIn("--extra_toolchains=//:local_windows_msvc_cc_toolchain", args)
+        self.assertIn("--repo_env=BAZEL_DO_NOT_DETECT_CPP_TOOLCHAIN=0", args)
         self.assertIn("--jobs=8", args)
         self.assertIn(f"--test_env=PATH={self.env['CODEX_BAZEL_WINDOWS_PATH']}", args)
         self.assertNotIn("--config=ci-windows-cross", args)

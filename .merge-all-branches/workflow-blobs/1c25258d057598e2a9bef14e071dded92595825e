@@ -1,0 +1,65 @@
+name: Hepta deployment handoff (read-only)
+
+on:
+  pull_request:
+    paths:
+      - "tools/hepta-engineering-control/**"
+      - "docs/modules/**"
+      - "docs/cns/**"
+      - "docs/data/**"
+      - ".github/workflows/hepta-deployment-handoff.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  inventory:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        lane: [source-head, synthetic-merge]
+    env:
+      SOURCE_SHA: ${{ github.event.pull_request.head.sha }}
+      BASE_SHA: ${{ github.event.pull_request.base.sha }}
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Bind exact source and actual-base synthetic merge
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          test "$BASE_SHA" != "$SOURCE_SHA"
+          if [ '${{ matrix.lane }}' = synthetic-merge ]; then
+            TREE=$(git merge-tree --write-tree "$BASE_SHA" "$SOURCE_SHA")
+            export GIT_AUTHOR_NAME=hepta-qualification GIT_COMMITTER_NAME=hepta-qualification
+            export GIT_AUTHOR_EMAIL=qualification@invalid GIT_COMMITTER_EMAIL=qualification@invalid
+            export GIT_AUTHOR_DATE=2000-01-01T00:00:00Z GIT_COMMITTER_DATE=2000-01-01T00:00:00Z
+            MERGE=$(printf '%s\n' 'Qualification only, no selection' | git commit-tree "$TREE" -p "$BASE_SHA" -p "$SOURCE_SHA")
+            test "$(git show -s --format=%P "$MERGE")" = "$BASE_SHA $SOURCE_SHA"
+            git checkout --detach "$MERGE"
+          fi
+          git rev-parse HEAD HEAD^{tree}
+      - name: Run all engineering-control regressions
+        run: python3 -m unittest discover -s tools/hepta-engineering-control -p 'test_*.py' -v
+      - name: Generate exact committed inventory
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 tools/hepta-engineering-control/deployment_inventory.py --base "$BASE_SHA" > "$RUNNER_TEMP/deployment-inventory.json"
+          python3 -c 'import json,os; p=json.load(open(os.environ["RUNNER_TEMP"]+"/deployment-inventory.json")); assert p["counts"]["modules"] == 40; assert p["counts"]["organs"] == 24; assert not p["runtimeAuthority"]; print(json.dumps(p,indent=2))'
+      - name: Existing module and CNS integrity
+        run: |
+          python3 scripts/hepta-module-docs.py verify
+          python3 scripts/hepta-cns.py verify
+      - name: Ensure tests did not rewrite tracked source
+        if: always()
+        run: |
+          git diff --check
+          git diff --exit-code
+          test -z "$(git status --porcelain --untracked-files=no)"

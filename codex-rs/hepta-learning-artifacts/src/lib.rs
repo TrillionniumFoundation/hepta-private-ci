@@ -29,6 +29,7 @@ pub use model::RegistryAppendReceipt;
 pub use model::StateChange;
 pub use registry::ArtifactRegistry;
 pub use storage::ArtifactStorageError;
+pub use storage::CreateOnlyArtifactFile;
 pub use storage::RegistrySnapshotReceipt;
 pub use storage::read_candidate_payload;
 pub use storage::read_registry_snapshot;

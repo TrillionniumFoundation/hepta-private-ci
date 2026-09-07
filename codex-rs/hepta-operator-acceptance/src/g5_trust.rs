@@ -5,9 +5,12 @@
 //! or flips a release authority flag.  The external signer remains the only
 //! party that can produce the detached SSHSIG consumed by a later ceremony.
 
+#[cfg(unix)]
 use std::io::Write;
 use std::path::Path;
+#[cfg(unix)]
 use std::process::Command;
+#[cfg(unix)]
 use std::process::Stdio;
 
 use base64::Engine as _;

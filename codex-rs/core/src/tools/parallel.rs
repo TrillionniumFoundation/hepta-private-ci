@@ -210,7 +210,7 @@ impl ToolCallRuntime {
                             &attempt_id,
                             abort_source.clone(),
                             terminal_outcome_reached.as_ref(),
-                            false,
+                            /*terminal_claimed_by_outer*/ false,
                         )
                         .await?;
                         Err(Self::tool_task_join_error(err))
@@ -243,7 +243,7 @@ impl ToolCallRuntime {
                                     &attempt_id,
                                     abort_source.clone(),
                                     terminal_outcome_reached.as_ref(),
-                                    false,
+                                    /*terminal_claimed_by_outer*/ false,
                                 )
                                 .await?;
                                 Err(Self::tool_task_join_error(err))
@@ -264,7 +264,7 @@ impl ToolCallRuntime {
                                             &attempt_id,
                                             abort_source.clone(),
                                             terminal_outcome_reached.as_ref(),
-                                            false,
+                                            /*terminal_claimed_by_outer*/ false,
                                         )
                                         .await?;
                                         Err(Self::tool_task_join_error(err))
@@ -284,7 +284,7 @@ impl ToolCallRuntime {
                                         &attempt_id,
                                         abort_source.clone(),
                                         terminal_outcome_reached.as_ref(),
-                                        true,
+                                        /*terminal_claimed_by_outer*/ true,
                                     )
                                     .await?;
                                     return Err(Self::tool_task_join_error(err));
@@ -302,7 +302,7 @@ impl ToolCallRuntime {
                                             &attempt_id,
                                             abort_source.clone(),
                                             terminal_outcome_reached.as_ref(),
-                                            false,
+                                            /*terminal_claimed_by_outer*/ false,
                                         )
                                         .await?;
                                         Err(Self::tool_task_join_error(err))
@@ -321,7 +321,7 @@ impl ToolCallRuntime {
                                         &attempt_id,
                                         abort_source.clone(),
                                         terminal_outcome_reached.as_ref(),
-                                        true,
+                                        /*terminal_claimed_by_outer*/ true,
                                     )
                                     .await?;
                                     return Err(Self::tool_task_join_error(err));
@@ -372,7 +372,7 @@ impl ToolCallRuntime {
                         attempt_id,
                         source,
                         legacy_terminal_outcome_reached,
-                        false,
+                        /*terminal_claimed_by_outer*/ false,
                     )
                     .await?;
                     Err(Self::tool_task_join_error(err))
@@ -513,7 +513,7 @@ impl ToolCallRuntime {
                                 attempt_id,
                                 source.clone(),
                                 legacy_terminal_outcome_reached,
-                                true,
+                                /*terminal_claimed_by_outer*/ true,
                             )
                             .await?;
                             return Err(Self::tool_task_join_error(err));

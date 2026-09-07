@@ -220,6 +220,7 @@ For `learning.artifacts`, this document grants no runtime, production, model, pr
 - Owner/deputy: `learning-platform` / `durability-kernel`.
 - Allowed write paths:
 - `codex-rs/hepta-learning-artifacts/**`
+- `codex-rs/hepta-shadow-qualification/tests/durable_learning_roundtrip.rs`
 - Development predecessors:
 - `LRN-0-CAUSAL-LEARNING-CONTRACTS`
 - `MEM-1-STORE`
@@ -435,3 +436,38 @@ The bootstrap source-location obligation for `learning.artifacts` is implemented
 - `codex-rs/hepta-learning-artifacts`
 
 The source candidate is checked by `.github/workflows/hepta-gap-closure.yml`, including closed-world inventory, package tests, all-target compilation, strict Clippy and clean tracked state. This receipt is source implementation evidence only. It grants no runtime, production-writer, model-provider, external-effect, independent-acceptance, selection, promotion, merge or release authority.
+
+## 18. Atomic create-only artifact writer contract
+
+The ART-1 storage writer accepts only an opaque `CreateOnlyArtifactFile`
+capability. Its sole safe constructor performs one atomic
+`OpenOptions::create_new(true)` open of the authorized final path component;
+writers consume the capability. No safe conversion from an arbitrary `File`,
+raw descriptor or cloned handle is part of the public contract. Read ports remain
+file-capability based and continue to accept independently opened read-only
+`File` values.
+
+The fixed writer signatures are
+`write_registry_snapshot(CreateOnlyArtifactFile, &ArtifactRegistry, Digest32)`
+and
+`write_candidate_payload(CreateOnlyArtifactFile, &ArtifactRegistry, &StableId, &[u8])`.
+An existing nonempty file, existing empty file, acknowledged file truncated to
+zero, or symlink at the final component returns `AlreadyExists` without opening
+that inode for write. Bytes appearing after atomic creation but before the guarded
+write return `Indeterminate`; lock contention returns `Busy`; write or sync
+failure remains `Indeterminate`.
+
+Because target creation precedes semantic validation, invalid binding,
+eligibility or payload input can leave a zero-length orphan. The host must
+reconcile or separately remove it and must never relabel or reuse it as a new
+artifact. Atomic final-component creation does not authenticate parent traversal,
+synchronize the parent directory, preserve a later path-to-inode binding or
+isolate hostile writers. Those duties remain at the host boundary and require
+target-host qualification.
+
+Mandatory regression cases are existing empty and truncate-to-zero targets,
+nonempty targets, regular and dangling symlinks where supported, exactly one
+winner under concurrent creation, lock contention, post-create interference,
+normal snapshot/payload reopen, truncation rejection and current-revocation
+enforcement. This contract changes no artifact encoding, digest, lineage,
+selection, activation, acceptance, promotion or release authority.

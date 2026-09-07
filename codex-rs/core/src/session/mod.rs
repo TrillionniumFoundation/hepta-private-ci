@@ -1260,7 +1260,7 @@ impl Session {
             consumed_generation,
             TurnRecoveryCandidateState::Unready,
             /*request_fingerprint_sha256*/ None,
-            /*history_boundary*/ None,
+            /*replay*/ None,
         )
         .await?;
         if self.rollout_persistence_failure_generation() != persistence_failure_generation {
@@ -4042,7 +4042,7 @@ impl Session {
                     .latest_call_tool(
                         "notes",
                         "thread_hint",
-                        /*arguments*/ None,
+                        /*environment_id*/ None,
                         Some(serde_json::json!({
                             "threadId": self.thread_id().to_string(),
                         })),

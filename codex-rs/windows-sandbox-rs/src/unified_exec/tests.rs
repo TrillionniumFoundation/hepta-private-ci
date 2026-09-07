@@ -1,5 +1,8 @@
 #![cfg(target_os = "windows")]
 
+#[path = "acl_setup_tests.rs"]
+mod acl_setup_tests;
+
 use super::WindowsSandboxSessionRequest;
 use super::spawn_windows_sandbox_session_elevated_for_permission_profile;
 use super::spawn_windows_sandbox_session_for_level;

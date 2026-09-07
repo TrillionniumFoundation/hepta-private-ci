@@ -27,6 +27,7 @@ REMOTE_EXECUTION_CONFIGS = {
 # target remains GNU LLVM. The custom test toolchain is required because Bazel
 # otherwise insists that a test's execution and target platforms are equal.
 LOCAL_WINDOWS_MSVC_EXEC_PLATFORM = "//:windows_x86_64_msvc"
+LOCAL_WINDOWS_MSVC_CC_TOOLCHAIN = "//:local_windows_msvc_cc_toolchain"
 LOCAL_WINDOWS_GNULLVM_TEST_TOOLCHAIN = (
     "//:windows_gnullvm_tests_on_msvc_host_toolchain"
 )
@@ -144,9 +145,10 @@ def bazel_args_without_remote_execution(
     The pinned hermetic LLVM toolchain builds target C/C++ inputs with MinGW,
     so target Rust code must remain gnullvm. Proc-macro and other exec crates
     are loaded by the host Rust compiler process and must use its MSVC ABI. A
-    keyless cross request therefore pairs an MSVC host/exec platform with the
-    gnullvm target platform. Explicit platform choices and arguments after
-    ``--`` belong to the caller.
+    keyless cross request therefore pairs an MSVC host/exec platform and
+    installed MSVC C/C++ toolchain with the gnullvm target platform. The native
+    toolchain is ABI-scoped so GNU target inputs continue to use hermetic LLVM.
+    Explicit platform choices and arguments after ``--`` belong to the caller.
     """
     try:
         separator_idx = args.index("--")
@@ -193,12 +195,15 @@ def bazel_args_without_remote_execution(
         for option, value in (
             ("--extra_execution_platforms", LOCAL_WINDOWS_MSVC_EXEC_PLATFORM),
             ("--extra_toolchains", LOCAL_WINDOWS_GNULLVM_TEST_TOOLCHAIN),
+            ("--extra_toolchains", LOCAL_WINDOWS_MSVC_CC_TOOLCHAIN),
+            ("--repo_env", "BAZEL_DO_NOT_DETECT_CPP_TOOLCHAIN=0"),
         ):
             if not option_contains_value(prefix, option, value):
                 injected_args.append(f"{option}={value}")
 
     # Put defaults before caller options so a CI config cannot override an
     # explicit per-job cache path (or other later command-line setting).
+    # Later --extra_toolchains also take precedence over the fallback compiler.
     return [
         *prefix[: command_idx + 1],
         *injected_args,

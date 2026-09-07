@@ -80,7 +80,7 @@ async fn five_real_agentd_processes_roll_one_agent_without_stopping_peers() -> R
         .context("workspace has no fixture root")?
         .join("immutable-releases");
     std::fs::create_dir(&release_root)?;
-    let agentd_binary = agentd_binary();
+    let agentd_binary = agentd_binary()?;
     let v1 = actual_agentd_wrapper(&release_root, "agentd-v1", &agentd_binary)?;
     let v2 = actual_agentd_wrapper(&release_root, "agentd-v2", &agentd_binary)?;
     let failing = failing_wrapper(&release_root, "agentd-failing")?;
@@ -268,7 +268,7 @@ async fn six_agent_fleet_lifecycle_keeps_peers_fair_and_isolated() -> Result<()>
         .context("workspace has no fixture root")?
         .join("six-immutable-releases");
     std::fs::create_dir(&release_root)?;
-    let agentd_binary = agentd_binary();
+    let agentd_binary = agentd_binary()?;
     let v1 = actual_agentd_wrapper(&release_root, "agentd-six-v1", &agentd_binary)?;
     let v2 = actual_agentd_wrapper(&release_root, "agentd-six-v2", &agentd_binary)?;
     std::fs::set_permissions(&release_root, std::fs::Permissions::from_mode(0o555))?;

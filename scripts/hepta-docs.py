@@ -2,11 +2,18 @@
 """Closed-world verifier for the canonical Hepta V8 development system."""
 
 from __future__ import annotations
-import argparse, hashlib, json, os, re, subprocess, sys
+
+import argparse
+import fnmatch
+import hashlib
+import json
+import os
+import re
+import subprocess
+import sys
 from collections import Counter, defaultdict, deque
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
-from typing import Any
 
 ROOT = Path(__file__).resolve().parents[1]
 PLAN_ID = "HEPTA-GLOBAL-MODULAR-DEVELOPMENT-PLAN"
@@ -86,7 +93,7 @@ SCHEMAS = {
     "development": "hepta.development-dag.v3",
     "activation": "hepta.activation-dag.v3",
     "evidence_dag": "hepta.evidence-dag.v3",
-    "paths": "hepta.path-ownership.v2",
+    "paths": "hepta.path-ownership.v3",
     "objectives": "hepta.global-objective-registry.v2",
     "ndu": "hepta.ndu-registry.v2",
     "optimization": "hepta.optimization-registry.v1",
@@ -104,6 +111,41 @@ SCHEMAS = {
     "paper_traceability": "hepta.paper-traceability.v2",
 }
 RECEIPT_SCHEMA = "hepta.development-docs-execution-receipt.v6"
+LEASE_KEYS = [
+    "leaseId",
+    "packageA",
+    "packageB",
+    "normalizedExactPaths",
+    "pathSetSha256",
+    "purpose",
+    "status",
+    "reviewBinding",
+    "lifecycle",
+    "authorityGranted",
+    "authorityDelta",
+]
+LEASE_REVIEW_KEYS = [
+    "identitySource",
+    "repositorySource",
+    "pullRequestSource",
+    "baseSource",
+    "headSource",
+    "reviewCommitSource",
+    "reviewerIdSource",
+    "authorIdSource",
+    "requiredState",
+    "reviewCommitMustEqualHead",
+    "reviewerMustDifferFromAuthor",
+    "invalidateOnHeadChange",
+    "reusable",
+    "maximumAttestationAgeSeconds",
+]
+LEASE_LIFECYCLE = {
+    "activation": "trusted_external_attestation_after_exact_changed_path_match",
+    "changeSetBinding": "exact_normalized_lease_path_set",
+    "expiresOn": "head_change_review_dismissal_or_ttl",
+    "retention": "manifest_only_no_authority",
+}
 
 
 class DuplicateKey(ValueError):
@@ -257,8 +299,335 @@ def prefix(x):
 
 
 def overlaps(a, b):
-    a, b = prefix(a), prefix(b)
-    return a == b or a.startswith(b + "/") or b.startswith(a + "/")
+    left = prefix(a)
+    right = prefix(b)
+    if left == right or left.startswith(right + "/") or right.startswith(left + "/"):
+        return True
+    left_glob = "*" in a
+    right_glob = "*" in b
+    if left_glob and not right_glob:
+        return glob_path_matches(a, b)
+    if right_glob and not left_glob:
+        return glob_path_matches(b, a)
+    if left_glob and right_glob:
+        return a.rpartition("/")[0] == b.rpartition("/")[0]
+    return False
+
+
+def glob_path_matches(pattern, exact):
+    pattern_parts = pattern.split("/")
+    exact_parts = exact.split("/")
+    return len(pattern_parts) == len(exact_parts) and all(
+        fnmatch.fnmatchcase(value, part)
+        for part, value in zip(pattern_parts, exact_parts, strict=True)
+    )
+
+
+def canonical_exact_path(value, label):
+    need(isinstance(value, str) and value, label + " missing")
+    need(value == value.strip(), label + " surrounding whitespace")
+    need(
+        not value.startswith(("/", "~"))
+        and not value.endswith("/")
+        and "\\" not in value
+        and "//" not in value
+        and not any(char in value for char in "*?[]{}!%"),
+        label + " must be a canonical exact POSIX path",
+    )
+    parts = value.split("/")
+    need(
+        all(part not in {"", ".", ".."} for part in parts),
+        label + " path alias or escape",
+    )
+    need(parts[0] != ".git", label + " protected Git path")
+    need(
+        all(
+            all(ord(char) >= 32 and ord(char) != 127 for char in part) for part in parts
+        ),
+        label + " control character",
+    )
+    normalized = "/".join(parts)
+    need(normalized == value, label + " normalization mismatch")
+    return normalized
+
+
+def is_exact_path(value):
+    return not value.endswith(("/**", "/*")) and not any(
+        char in value for char in "*?[]{}!%"
+    )
+
+
+def validate_allowed_path_pattern(value, label):
+    need(isinstance(value, str) and value, label + " missing")
+    if value.endswith(("/**", "/*")):
+        canonical_exact_path(prefix(value), label + " prefix")
+        return
+    wildcard_count = value.count("*")
+    if wildcard_count:
+        need(
+            wildcard_count == 1
+            and not any(char in value for char in "?[]{}!%")
+            and "*" in value.rpartition("/")[2],
+            label + " unsupported wildcard grammar",
+        )
+        canonical_exact_path(value.replace("*", "WILDCARD"), label + " pattern")
+        return
+    canonical_exact_path(value, label)
+
+
+def leasable_overlap_path(left, right, label):
+    if not overlaps(left, right):
+        return None
+    left_exact = is_exact_path(left)
+    right_exact = is_exact_path(right)
+    if left_exact:
+        left = canonical_exact_path(left, label + " left")
+    if right_exact:
+        right = canonical_exact_path(right, label + " right")
+    if left_exact and right_exact:
+        need(left == right, label + " prefix widening cannot be leased")
+        return left
+    if left_exact:
+        need(
+            glob_path_matches(right, left)
+            if "*" in right and not right.endswith(("/**", "/*"))
+            else left == prefix(right) or left.startswith(prefix(right) + "/"),
+            label + " wildcard expansion mismatch",
+        )
+        return left
+    if right_exact:
+        need(
+            glob_path_matches(left, right)
+            if "*" in left and not left.endswith(("/**", "/*"))
+            else right == prefix(left) or right.startswith(prefix(left) + "/"),
+            label + " wildcard expansion mismatch",
+        )
+        return right
+    die(label + " wildcard-to-wildcard overlap cannot be leased")
+
+
+def lease_path_set_sha(paths):
+    return hashlib.sha256(("\n".join(paths) + "\n").encode()).hexdigest()
+
+
+def validate_path_leases(path_registry, packages, dev, act, changed_paths=None):
+    need(
+        path_registry.get("schema") == "hepta.path-ownership.v3"
+        and path_registry.get("schemaVersion") == 3,
+        "path lease schema version",
+    )
+    need(
+        path_registry.get("rules")
+        == {
+            "onePrimaryOwnerPerPath": True,
+            "foreignNamespaceRequiresCoOwner": True,
+            "overlapRequiresDagOrderingOrLease": True,
+            "unboundedRepositoryScopeAllowed": False,
+        },
+        "path ownership rules",
+    )
+    package_ids = {package["id"] for package in packages}
+    for package in packages:
+        for path in package["allowedWritePaths"]:
+            validate_allowed_path_pattern(path, package["id"] + " allowed path")
+    required = {}
+    for index, package_a in enumerate(packages):
+        for package_b in packages[index + 1 :]:
+            pair = tuple(sorted((package_a["id"], package_b["id"])))
+            ordered = (
+                package_b["id"] in dev[package_a["id"]]
+                or package_a["id"] in dev[package_b["id"]]
+                or package_b["id"] in act[package_a["id"]]
+                or package_a["id"] in act[package_b["id"]]
+            )
+            if ordered:
+                continue
+            overlap_paths = set()
+            for left in package_a["allowedWritePaths"]:
+                for right in package_b["allowedWritePaths"]:
+                    overlap_path = leasable_overlap_path(
+                        left,
+                        right,
+                        "path overlap " + pair[0] + "/" + pair[1],
+                    )
+                    if overlap_path is not None:
+                        overlap_paths.add(overlap_path)
+            if overlap_paths:
+                required[pair] = tuple(sorted(overlap_paths))
+
+    leases = path_registry.get("activeLeases")
+    need(isinstance(leases, list), "active leases")
+    declared = {}
+    lease_ids = set()
+    lease_paths = set()
+    for lease in leases:
+        need(isinstance(lease, dict), "lease object")
+        need(list(lease) == LEASE_KEYS, "lease key closure/order")
+        lease_id = lease.get("leaseId")
+        need(
+            isinstance(lease_id, str)
+            and re.fullmatch(r"LEASE-[A-Z0-9]+(?:-[A-Z0-9]+)*-[0-9]{3}", lease_id)
+            and lease_id not in lease_ids,
+            "lease ID",
+        )
+        lease_ids.add(lease_id)
+        package_a = lease.get("packageA")
+        package_b = lease.get("packageB")
+        need(
+            package_a in package_ids
+            and package_b in package_ids
+            and package_a < package_b,
+            lease_id + " canonical package pair",
+        )
+        pair = (package_a, package_b)
+        need(pair not in declared, lease_id + " duplicate package pair")
+        paths = lease.get("normalizedExactPaths")
+        need(isinstance(paths, list) and paths, lease_id + " exact paths")
+        normalized = [canonical_exact_path(path, lease_id + " path") for path in paths]
+        need(
+            normalized == sorted(set(normalized)),
+            lease_id + " path order/uniqueness",
+        )
+        for path in normalized:
+            need(path not in lease_paths, lease_id + " path leased more than once")
+            lease_paths.add(path)
+        need(
+            lease.get("pathSetSha256") == lease_path_set_sha(normalized),
+            lease_id + " path-set digest",
+        )
+        need(
+            isinstance(lease.get("purpose"), str)
+            and re.fullmatch(r"[a-z][a-z0-9_]{0,127}", lease["purpose"]),
+            lease_id + " purpose",
+        )
+        need(
+            lease.get("status") == "requires_external_attestation",
+            lease_id + " external attestation posture",
+        )
+        review = lease.get("reviewBinding")
+        need(
+            isinstance(review, dict) and list(review) == LEASE_REVIEW_KEYS,
+            lease_id + " review binding key closure/order",
+        )
+        need(
+            {
+                key: review.get(key)
+                for key in LEASE_REVIEW_KEYS
+                if key != "maximumAttestationAgeSeconds"
+            }
+            == {
+                "identitySource": "github_pull_request_review",
+                "repositorySource": "github.event.repository.id",
+                "pullRequestSource": "github.event.pull_request.number",
+                "baseSource": "github.event.pull_request.base.sha",
+                "headSource": "github.event.pull_request.head.sha",
+                "reviewCommitSource": "github.event.review.commit_id",
+                "reviewerIdSource": "github.event.review.user.id",
+                "authorIdSource": "github.event.pull_request.user.id",
+                "requiredState": "approved",
+                "reviewCommitMustEqualHead": True,
+                "reviewerMustDifferFromAuthor": True,
+                "invalidateOnHeadChange": True,
+                "reusable": False,
+            }
+            and type(review.get("maximumAttestationAgeSeconds")) is int
+            and 0 < review["maximumAttestationAgeSeconds"] <= 604800,
+            lease_id + " exact-head external review policy",
+        )
+        need(
+            lease.get("lifecycle") == LEASE_LIFECYCLE,
+            lease_id + " lifecycle",
+        )
+        need(
+            lease.get("authorityGranted") is False
+            and lease.get("authorityDelta") == "none",
+            lease_id + " authority posture",
+        )
+        declared[pair] = tuple(normalized)
+
+    need(set(declared) == set(required), "missing or unused path lease")
+    for pair, paths in required.items():
+        need(declared[pair] == paths, "lease path mismatch " + "/".join(pair))
+
+    if changed_paths is not None:
+        changed = {canonical_exact_path(path, "changed path") for path in changed_paths}
+        for pair, paths in declared.items():
+            path_set = set(paths)
+            prefix_aliases = {
+                path
+                for path in changed
+                if any(overlaps(path, leased) and path != leased for leased in path_set)
+            }
+            need(not prefix_aliases, "changed path prefix aliases a lease")
+            touched = changed & path_set
+            if touched:
+                need(
+                    touched == path_set,
+                    "changed leased path set must equal manifest " + "/".join(pair),
+                )
+                die("external path lease attestation required " + "/".join(pair))
+    return {
+        "declaredLeaseCount": len(declared),
+        "leasedPathCount": len(lease_paths),
+        "touchedLeaseCount": 0,
+        "externallyAttestedLeaseCount": 0,
+    }
+
+
+def pull_request_changed_paths():
+    context = event_context()
+    base = context["base"]
+    source = context["source"]
+    if base is None and source is None:
+        return None
+    need(
+        isinstance(base, str)
+        and isinstance(source, str)
+        and re.fullmatch(r"[0-9a-f]{40}", base)
+        and re.fullmatch(r"[0-9a-f]{40}", source),
+        "pull-request base/source identity",
+    )
+    repository = context["event"].get("repository") or {}
+    need(
+        repository.get("id") == REPO_ID
+        and repository.get("full_name") == REPO
+        and type(context["number"]) is int
+        and context["number"] > 0,
+        "pull-request repository/number identity",
+    )
+    git("cat-file", "-e", base + "^{commit}")
+    git("cat-file", "-e", source + "^{commit}")
+    actual = git("rev-parse", "HEAD")
+    if actual != source:
+        parents = git("rev-list", "--parents", "-n", "1", "HEAD").split()[1:]
+        need(
+            len(parents) == 2 and parents == [base, source],
+            "checkout is neither source head nor exact synthetic merge",
+        )
+    process = subprocess.run(
+        [
+            "git",
+            "-C",
+            str(ROOT),
+            "diff",
+            "--name-only",
+            "--no-renames",
+            "-z",
+            base + "..." + source,
+        ],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+    )
+    need(process.returncode == 0, "pull-request changed-path diff")
+    try:
+        raw = process.stdout.decode("utf-8")
+    except UnicodeDecodeError as exc:
+        die("pull-request changed path is not UTF-8: " + str(exc))
+    return {
+        canonical_exact_path(path, "pull-request changed path")
+        for path in raw.split("\0")
+        if path
+    }
 
 
 def acyclic(nodes, edges, label):
@@ -849,29 +1218,9 @@ def verify() -> int:
         acyclic(dag["nodes"], dag["edges"], name)
     dev = reach(d["development"]["nodes"], d["development"]["edges"])
     act = reach(d["activation"]["nodes"], d["activation"]["edges"])
-    leases = {(x["packageA"], x["packageB"]) for x in d["paths"]["activeLeases"]}
-    un = []
-    for i, a in enumerate(packages):
-        for b in packages[i + 1 :]:
-            if not any(
-                overlaps(x, y)
-                for x in a["allowedWritePaths"]
-                for y in b["allowedWritePaths"]
-            ):
-                continue
-            ordered = (
-                b["id"] in dev[a["id"]]
-                or a["id"] in dev[b["id"]]
-                or b["id"] in act[a["id"]]
-                or a["id"] in act[b["id"]]
-            )
-            if (
-                not ordered
-                and (a["id"], b["id"]) not in leases
-                and (b["id"], a["id"]) not in leases
-            ):
-                un.append((a["id"], b["id"]))
-    need(not un, "path conflicts " + repr(un[:20]))
+    lease_summary = validate_path_leases(
+        d["paths"], packages, dev, act, pull_request_changed_paths()
+    )
     evid = {x["id"] for x in d["evidence"]["evidenceTypes"]}
     for ladder in d["claims"]["ladders"]:
         levels = [x["id"] for x in ladder["levels"]]
@@ -1055,6 +1404,7 @@ def verify() -> int:
                 "hnmfReferenceGaps": len(sub["hnmf_gaps"]["gaps"]),
                 "legacyPaths": 0,
                 "unresolvedPathConflicts": 0,
+                **lease_summary,
             },
             sort_keys=True,
         )
@@ -1394,6 +1744,222 @@ def self_test():
         cases.append("cycle")
     need(overlaps("a/**", "a/b") and not overlaps("a/b", "a2/b"), "overlap fixture")
     cases.append("overlap")
+
+    fixture_path = ".github/workflows/shared.yml"
+    fixture_review = {
+        "identitySource": "github_pull_request_review",
+        "repositorySource": "github.event.repository.id",
+        "pullRequestSource": "github.event.pull_request.number",
+        "baseSource": "github.event.pull_request.base.sha",
+        "headSource": "github.event.pull_request.head.sha",
+        "reviewCommitSource": "github.event.review.commit_id",
+        "reviewerIdSource": "github.event.review.user.id",
+        "authorIdSource": "github.event.pull_request.user.id",
+        "requiredState": "approved",
+        "reviewCommitMustEqualHead": True,
+        "reviewerMustDifferFromAuthor": True,
+        "invalidateOnHeadChange": True,
+        "reusable": False,
+        "maximumAttestationAgeSeconds": 86400,
+    }
+    fixture_lease = {
+        "leaseId": "LEASE-MATRIX-TASKFLOW-001",
+        "packageA": "MATRIX-1",
+        "packageB": "TASKFLOW-1",
+        "normalizedExactPaths": [fixture_path],
+        "pathSetSha256": lease_path_set_sha([fixture_path]),
+        "purpose": "shared_qualification",
+        "status": "requires_external_attestation",
+        "reviewBinding": fixture_review,
+        "lifecycle": LEASE_LIFECYCLE,
+        "authorityGranted": False,
+        "authorityDelta": "none",
+    }
+    fixture_registry = {
+        "schema": "hepta.path-ownership.v3",
+        "schemaVersion": 3,
+        "rules": {
+            "onePrimaryOwnerPerPath": True,
+            "foreignNamespaceRequiresCoOwner": True,
+            "overlapRequiresDagOrderingOrLease": True,
+            "unboundedRepositoryScopeAllowed": False,
+        },
+        "activeLeases": [fixture_lease],
+    }
+    fixture_packages = [
+        {"id": "MATRIX-1", "allowedWritePaths": [fixture_path]},
+        {"id": "TASKFLOW-1", "allowedWritePaths": [fixture_path]},
+    ]
+    fixture_reach = {"MATRIX-1": set(), "TASKFLOW-1": set()}
+    need(
+        validate_path_leases(
+            fixture_registry,
+            fixture_packages,
+            fixture_reach,
+            fixture_reach,
+        )
+        == {
+            "declaredLeaseCount": 1,
+            "leasedPathCount": 1,
+            "touchedLeaseCount": 0,
+            "externallyAttestedLeaseCount": 0,
+        },
+        "valid static exact path lease request",
+    )
+    cases.append("static_exact_path_lease_request")
+
+    def cloned(value):
+        return json.loads(json.dumps(value))
+
+    def rejects(name, expected, registry, packages=None, changed_paths=None):
+        try:
+            validate_path_leases(
+                registry,
+                packages or fixture_packages,
+                fixture_reach,
+                fixture_reach,
+                changed_paths,
+            )
+            die(name + " accepted")
+        except SystemExit as exc:
+            if expected not in str(exc):
+                raise
+        cases.append(name)
+
+    registry = cloned(fixture_registry)
+    registry["activeLeases"] = []
+    rejects("reject_missing_lease", "missing or unused path lease", registry)
+
+    packages = [
+        {
+            "id": "MATRIX-1",
+            "allowedWritePaths": [".github/workflows/hepta-intelligence-*.yml"],
+        },
+        {
+            "id": "TASKFLOW-1",
+            "allowedWritePaths": [
+                ".github/workflows/hepta-intelligence-qualification.yml"
+            ],
+        },
+    ]
+    registry = cloned(fixture_registry)
+    registry["activeLeases"] = []
+    rejects(
+        "reject_unleased_internal_glob_match",
+        "missing or unused path lease",
+        registry,
+        packages,
+    )
+
+    rejects(
+        "reject_no_review_exact_touch",
+        "external path lease attestation required",
+        fixture_registry,
+        fixture_packages,
+        {fixture_path},
+    )
+
+    packages = cloned(fixture_packages)
+    second_path = ".github/workflows/second.yml"
+    for package in packages:
+        package["allowedWritePaths"].append(second_path)
+    rejects(
+        "reject_second_unlisted_overlap",
+        "lease path mismatch",
+        fixture_registry,
+        packages,
+    )
+
+    registry = cloned(fixture_registry)
+    paths = registry["activeLeases"][0]["normalizedExactPaths"]
+    paths.append(second_path)
+    paths.sort()
+    registry["activeLeases"][0]["pathSetSha256"] = lease_path_set_sha(paths)
+    rejects("reject_unused_extra_path", "lease path mismatch", registry)
+
+    registry = cloned(fixture_registry)
+    paths = registry["activeLeases"][0]["normalizedExactPaths"]
+    paths[0] = ".github/workflows/**"
+    registry["activeLeases"][0]["pathSetSha256"] = lease_path_set_sha(paths)
+    rejects(
+        "reject_wildcard_lease",
+        "canonical exact POSIX path",
+        registry,
+    )
+
+    packages = [
+        {"id": "MATRIX-1", "allowedWritePaths": ["shared"]},
+        {"id": "TASKFLOW-1", "allowedWritePaths": ["shared/workflow.yml"]},
+    ]
+    rejects(
+        "reject_prefix_widening",
+        "prefix widening cannot be leased",
+        fixture_registry,
+        packages,
+    )
+
+    registry = cloned(fixture_registry)
+    lease = registry["activeLeases"][0]
+    lease["packageA"], lease["packageB"] = lease["packageB"], lease["packageA"]
+    rejects("reject_reversed_pair", "canonical package pair", registry)
+
+    for name, path in [
+        ("reject_path_alias", ".github//workflows/shared.yml"),
+        ("reject_path_escape", "../shared.yml"),
+    ]:
+        registry = cloned(fixture_registry)
+        registry["activeLeases"][0]["normalizedExactPaths"] = [path]
+        registry["activeLeases"][0]["pathSetSha256"] = lease_path_set_sha([path])
+        rejects(
+            name,
+            "canonical exact POSIX path" if "//" in path else "path alias or escape",
+            registry,
+        )
+
+    registry = cloned(fixture_registry)
+    registry["activeLeases"][0]["pathSetSha256"] = "0" * 64
+    rejects("reject_path_digest_mismatch", "path-set digest", registry)
+
+    registry = cloned(fixture_registry)
+    registry["activeLeases"][0]["reviewBinding"]["invalidateOnHeadChange"] = False
+    rejects("reject_stale_head_policy", "exact-head external review policy", registry)
+
+    registry = cloned(fixture_registry)
+    registry["activeLeases"][0]["reviewBinding"]["reviewerMustDifferFromAuthor"] = False
+    rejects(
+        "reject_non_independent_review_policy",
+        "exact-head external review policy",
+        registry,
+    )
+
+    registry = cloned(fixture_registry)
+    registry["activeLeases"][0]["authorityGranted"] = True
+    rejects("reject_positive_lease_authority", "authority posture", registry)
+
+    two_paths = sorted([fixture_path, second_path])
+    packages = [
+        {"id": "MATRIX-1", "allowedWritePaths": two_paths},
+        {"id": "TASKFLOW-1", "allowedWritePaths": two_paths},
+    ]
+    registry = cloned(fixture_registry)
+    registry["activeLeases"][0]["normalizedExactPaths"] = two_paths
+    registry["activeLeases"][0]["pathSetSha256"] = lease_path_set_sha(two_paths)
+    rejects(
+        "reject_partial_changed_lease_set",
+        "changed leased path set must equal manifest",
+        registry,
+        packages,
+        {fixture_path},
+    )
+
+    rejects(
+        "reject_changed_path_prefix_alias",
+        "changed path prefix aliases a lease",
+        fixture_registry,
+        fixture_packages,
+        {".github/workflows"},
+    )
+
     need(shape_sha({"a": 1}) != shape_sha({"a": "1"}), "shape fixture")
     cases.append("shape")
     need(

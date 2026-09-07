@@ -84,7 +84,212 @@
       "maximumWeight",
       "coverageBySubgroup"
     ],
-    "promotionRule": "candidate_LCB_greater_than_baseline_UCB_and_all_safety_floors"
+    "promotionRule": "candidate_LCB_greater_than_baseline_UCB_and_all_safety_floors",
+    "temporalCompositePlanDigest": {
+      "profileId": "TemporalEvaluationPlanDigestV1",
+      "domain": "hepta.ope.temporal-evaluation-plan.v1",
+      "algorithm": "sha256",
+      "resultField": "TemporalEvaluationPlan.plan_digest",
+      "canonicalBytes": [
+        {
+          "ordinal": 0,
+          "source": "domain",
+          "encoding": "literal_utf8_unframed"
+        },
+        {
+          "ordinal": 1,
+          "source": "evaluation_id",
+          "encoding": "stable_id_u32_be_utf8_length_then_utf8"
+        },
+        {
+          "ordinal": 2,
+          "source": "objective_digest",
+          "encoding": "digest32_raw_32_bytes"
+        },
+        {
+          "ordinal": 3,
+          "source": "fold.plan_digest",
+          "encoding": "digest32_raw_32_bytes"
+        },
+        {
+          "ordinal": 4,
+          "source": "fold.fold_id",
+          "encoding": "stable_id_u32_be_utf8_length_then_utf8"
+        },
+        {
+          "ordinal": 5,
+          "source": "fold.training_watermark",
+          "encoding": "u64_be"
+        },
+        {
+          "ordinal": 6,
+          "source": "fold.evaluation_start",
+          "encoding": "u64_be"
+        },
+        {
+          "ordinal": 7,
+          "source": "fold.minimum_per_action",
+          "encoding": "usize_checked_to_u64_be"
+        },
+        {
+          "ordinal": 8,
+          "source": "ope.plan_digest",
+          "encoding": "digest32_raw_32_bytes"
+        },
+        {
+          "ordinal": 9,
+          "source": "ope.outcome_watermark",
+          "encoding": "u64_be"
+        },
+        {
+          "ordinal": 10,
+          "source": "ope.minimum_rows",
+          "encoding": "usize_checked_to_u64_be"
+        },
+        {
+          "ordinal": 11,
+          "source": "ope.minimum_ess.raw",
+          "encoding": "fixed_q32_raw_i64_be"
+        },
+        {
+          "ordinal": 12,
+          "source": "ope.maximum_weight.raw",
+          "encoding": "fixed_q32_raw_i64_be"
+        },
+        {
+          "ordinal": 13,
+          "source": "confidence.plan_digest",
+          "encoding": "digest32_raw_32_bytes"
+        },
+        {
+          "ordinal": 14,
+          "source": "confidence.assumptions_digest",
+          "encoding": "digest32_raw_32_bytes"
+        },
+        {
+          "ordinal": 15,
+          "source": "confidence.family_alpha_ppm",
+          "encoding": "u32_be"
+        },
+        {
+          "ordinal": 16,
+          "source": "confidence.simultaneous_comparisons",
+          "encoding": "u32_be"
+        },
+        {
+          "ordinal": 17,
+          "source": "confidence.minimum_clusters",
+          "encoding": "usize_checked_to_u64_be"
+        }
+      ],
+      "preimageExcludes": [
+        "TemporalEvaluationPlan.plan_digest"
+      ],
+      "invariants": [
+        "stored_digest_nonzero_and_equal_to_recomputation",
+        "fold_ope_confidence_child_digests_are_independent_and_each_bound",
+        "conversion_failure_rejects_before_evaluation"
+      ],
+      "goldenVector": {
+        "id": "TEMPORAL-PLAN-DIGEST-GV-001",
+        "domain": "hepta.ope.temporal-evaluation-plan.v1",
+        "fixture": {
+          "evaluationId": "evaluation",
+          "objectiveDigest": {
+            "sourceUtf8": "immutable-objective",
+            "sha256": "316dcebf2a099b59af9f8890b134c86c228d683d67c84d2cb8bd26318546a820"
+          },
+          "fold": {
+            "planDigest": {
+              "sourceUtf8": "fold-plan",
+              "sha256": "b8f519aee2a9a10bf76e02171868d8970ec91c0cb8c7e4b4f9fc7d63414c8a56"
+            },
+            "foldId": "fold-1",
+            "trainingWatermark": 10,
+            "evaluationStart": 20,
+            "minimumPerAction": 2
+          },
+          "ope": {
+            "planDigest": {
+              "sourceUtf8": "ope-plan",
+              "sha256": "cfe7a60b639e129a92ae2925c76aea93553339d7113a507b3c378a0a92ca3913"
+            },
+            "outcomeWatermark": 100,
+            "minimumRows": 2,
+            "minimumEssRawQ32": 4294967296,
+            "maximumWeightRawQ32": 8589934592
+          },
+          "confidence": {
+            "planDigest": {
+              "sourceUtf8": "confidence-plan",
+              "sha256": "300b564a998f1da1558ea0408f896f3bf2db3f203c9dfd4cf8e17dd15ce141e5"
+            },
+            "assumptionsDigest": {
+              "sourceUtf8": "prespecified-independent-clusters",
+              "sha256": "b86e0f510ce25aacef4fca760e25f213af5003f3dead7d05c5e4f6da77ec9faa"
+            },
+            "familyAlphaPpm": 50000,
+            "simultaneousComparisons": 1,
+            "minimumClusters": 2
+          }
+        },
+        "canonicalPreimageBytes": 293,
+        "expectedPlanDigest": "dba5b45f87d6a8ef08dccfc9b2108a1456d94b226c3315777c3de2f15f4219b3"
+      }
+    },
+    "temporalHoldoutReceiptDigest": {
+      "profileId": "TemporalHoldoutPipelineReceiptDigestV2",
+      "domain": "hepta.ope.temporal-holdout-pipeline.v2",
+      "algorithm": "sha256",
+      "resultField": "TemporalEvaluationReceipt.evidence_digest",
+      "canonicalBytes": [
+        {
+          "ordinal": 0,
+          "source": "domain",
+          "encoding": "literal_utf8_unframed"
+        },
+        {
+          "ordinal": 1,
+          "source": "evaluation_id",
+          "encoding": "stable_id_u32_be_utf8_length_then_utf8"
+        },
+        {
+          "ordinal": 2,
+          "source": "plan_digest",
+          "encoding": "digest32_raw_32_bytes"
+        },
+        {
+          "ordinal": 3,
+          "source": "objective_digest",
+          "encoding": "digest32_raw_32_bytes"
+        },
+        {
+          "ordinal": 4,
+          "source": "model_digest",
+          "encoding": "digest32_raw_32_bytes"
+        },
+        {
+          "ordinal": 5,
+          "source": "predictions_digest",
+          "encoding": "digest32_raw_32_bytes"
+        },
+        {
+          "ordinal": 6,
+          "source": "estimate.evidence_digest",
+          "encoding": "digest32_raw_32_bytes"
+        }
+      ],
+      "compatibility": {
+        "predecessorDomain": "hepta.ope.temporal-holdout-pipeline.v1",
+        "reinterpretationAllowed": false,
+        "crossModuleContractReplacement": false
+      },
+      "invariants": [
+        "binds_composite_plan_digest",
+        "v1_and_v2_evidence_are_not_interchangeable",
+        "authority_posture_remains_deny_all"
+      ]
+    }
   },
   "longitudinal": {
     "minimumIndependentSnapshots": 3,
@@ -116,7 +321,311 @@
     "topologyProposalAllowed": true,
     "topologyOnlineActivationAllowed": false,
     "sandboxAndCapabilityTypingRequired": true,
-    "independentAcceptanceRequired": true
+    "independentAcceptanceRequired": true,
+    "internalProposalCompatibility": {
+      "crossModuleProtocolReplacement": false,
+      "canonicalJsonPlasticityProposalV1Unchanged": true,
+      "legacyV1": {
+        "profileId": "LegacyInternalPlasticityProposalV1",
+        "domain": "hepta.plasticity.proposal.v1",
+        "version": 1,
+        "readPolicy": "explicit_dispatch_read_only",
+        "writePolicy": "fail_closed",
+        "automaticMigrationAllowed": false,
+        "digestReconstructionFromStoredRecord": false,
+        "digestReconstructionBlocker": "maximum_absolute_delta_was_in_preimage_but_not_stored",
+        "goldenVector": {
+          "id": "PLASTICITY-V1-GV-001",
+          "fixture": {
+            "proposalId": "proposal:1",
+            "proposerId": "proposer:1",
+            "evaluatorId": "evaluator:1",
+            "baselineGeneration": 1,
+            "candidateGeneration": 2,
+            "evaluationDigest": "efe77b201dc216c0edf435a227df2b2898d3f6ea1ff16e5d4d0d4ec0cf593271",
+            "maximumAbsoluteDeltaRawQ32": 10,
+            "parameterDeltas": [
+              {
+                "parameterId": "parameter:1",
+                "deltaRawQ32": 5,
+                "lowerBoundRawQ32": -10,
+                "upperBoundRawQ32": 10,
+                "evidenceDigest": "5d4f5c450de0e80ed46105e34428ec55d28da1a93742880a028c5864a94e0f9c"
+              }
+            ],
+            "topologyDeltas": [
+              {
+                "moduleId": "module:1",
+                "operationCode": 2,
+                "predecessorDigest": "cba06b5736faf67e54b07b561eae94395e774c517a7d910a54369e1263ccfbd4",
+                "candidateDigest": "11507a0e2f5e69d5dfa40a62a1bd7b6ee57e6bcd85c67c9b8431b36fff21c437",
+                "evidenceDigest": "1e0032d27ad03b8be6071ab234af88914fd31fe0c7b0d3900302a048a44601ff"
+              }
+            ]
+          },
+          "canonicalPreimageBytes": 307,
+          "expectedProposalDigest": "a143a54a94d60d2734237612f1c2e0af4b4d986ea52efa6099765b83442dedb4"
+        }
+      },
+      "parameterV2": {
+        "profileId": "InternalParameterProposalV2",
+        "domain": "hepta.plasticity.parameter-proposal.v2",
+        "version": 2,
+        "writePolicy": "only_new_write_profile",
+        "proposalKind": "parameter_only_caller_supplied_candidate_set",
+        "canonicalBytes": [
+          {
+            "ordinal": 0,
+            "source": "domain",
+            "encoding": "literal_utf8_unframed"
+          },
+          {
+            "ordinal": 1,
+            "source": "version",
+            "encoding": "u16_be"
+          },
+          {
+            "ordinal": 2,
+            "source": "proposal_id",
+            "encoding": "stable_id_u32_be_utf8_length_then_utf8"
+          },
+          {
+            "ordinal": 3,
+            "source": "proposer_id",
+            "encoding": "stable_id_u32_be_utf8_length_then_utf8"
+          },
+          {
+            "ordinal": 4,
+            "source": "evaluator_id",
+            "encoding": "stable_id_u32_be_utf8_length_then_utf8"
+          },
+          {
+            "ordinal": 5,
+            "source": "selected_artifact_digest",
+            "encoding": "digest32_raw_32_bytes"
+          },
+          {
+            "ordinal": 6,
+            "source": "window.window_id",
+            "encoding": "stable_id_u32_be_utf8_length_then_utf8"
+          },
+          {
+            "ordinal": 7,
+            "source": "window.window_digest",
+            "encoding": "digest32_raw_32_bytes"
+          },
+          {
+            "ordinal": 8,
+            "source": "baseline_generation",
+            "encoding": "u64_be"
+          },
+          {
+            "ordinal": 9,
+            "source": "candidate_generation",
+            "encoding": "u64_be_exact_successor"
+          },
+          {
+            "ordinal": 10,
+            "source": "dataset_digest",
+            "encoding": "digest32_raw_32_bytes"
+          },
+          {
+            "ordinal": 11,
+            "source": "update_rule_digest",
+            "encoding": "digest32_raw_32_bytes"
+          },
+          {
+            "ordinal": 12,
+            "source": "modulator_digest",
+            "encoding": "digest32_raw_32_bytes"
+          },
+          {
+            "ordinal": 13,
+            "source": "modulator_broadcast_digest",
+            "encoding": "digest32_raw_32_bytes"
+          },
+          {
+            "ordinal": 14,
+            "source": "eligibility_digest",
+            "encoding": "digest32_raw_32_bytes"
+          },
+          {
+            "ordinal": 15,
+            "source": "evaluation_digest",
+            "encoding": "digest32_raw_32_bytes"
+          },
+          {
+            "ordinal": 16,
+            "source": "rollback_predecessor_digest",
+            "encoding": "digest32_raw_32_bytes_equal_selected_artifact"
+          },
+          {
+            "ordinal": 17,
+            "source": "norm_profile.profile_digest",
+            "encoding": "digest32_raw_32_bytes"
+          },
+          {
+            "ordinal": 18,
+            "source": "candidates.length",
+            "encoding": "u32_be"
+          },
+          {
+            "ordinal": 19,
+            "source": "candidates",
+            "encoding": "canonical_candidate_sequence"
+          },
+          {
+            "ordinal": 20,
+            "source": "status",
+            "encoding": "u8_zero_requires_independent_acceptance"
+          },
+          {
+            "ordinal": 21,
+            "source": "authority",
+            "encoding": "u8_zero_deny_all"
+          }
+        ],
+        "candidateSet": {
+          "minimumCount": 1,
+          "maximumCount": 32,
+          "maximumTotalParameterDeltas": 4096,
+          "canonicalOrder": "candidate_id_ascending",
+          "exactNoChangeCount": 1,
+          "noChangeHasDeltas": false,
+          "updateRequiresNonzeroDelta": true,
+          "selectionFieldPresent": false,
+          "multipleFinalProposalsImplied": false
+        },
+        "normProfile": {
+          "profileId": "ParameterL2EnergyNormProfileV1",
+          "domain": "hepta.plasticity.parameter-norm-profile.v1",
+          "numerator": "candidate_layer_delta_squared_l2_raw_q64",
+          "perLayerDenominator": "selected_artifact_layer_baseline_squared_l2_raw_q64",
+          "globalNumerator": "checked_sum_candidate_layer_delta_squared_l2_raw_q64",
+          "globalDenominator": "checked_sum_all_declared_layer_baseline_squared_l2_raw_q64",
+          "perLayerMaximumPpm": 5000,
+          "globalMaximumPpm": 2500,
+          "comparison": "exact_squared_integer_ratio_fail_on_overflow",
+          "zeroDenominatorAllowed": false,
+          "profileDigestBindsSelectedArtifact": true,
+          "callerProfileAuthenticitySelfCertified": false,
+          "minimumLayers": 1,
+          "maximumLayers": 256
+        },
+        "registry": {
+          "slotIdentity": [
+            "selected_artifact_digest",
+            "window_id"
+          ],
+          "windowDigestDriftConflicts": true,
+          "identicalReplayIdempotent": true,
+          "proposalIdUnique": true,
+          "maximumRecords": 4096,
+          "capacityCounts": "distinct_retained_v1_records_plus_inserted_v2_slots",
+          "rejectedOrIdempotentAttemptConsumesCapacity": false
+        },
+        "invariants": [
+          "all_required_digests_nonzero",
+          "proposer_and_evaluator_differ",
+          "proposer_evaluator_id_inequality_is_not_independent_identity_authentication",
+          "candidate_completeness_is_structural_over_the_caller_supplied_set_not_generator_relative",
+          "caller_supplied_artifact_window_and_other_lineage_or_evidence_digest_authenticity_freshness_and_completeness_not_authenticated",
+          "candidate_generation_exact_successor",
+          "rollback_predecessor_equals_selected_artifact",
+          "parameter_and_topology_profiles_separate",
+          "computed_per_layer_and_global_norms_bound",
+          "no_selection_training_or_external_evaluation_claim",
+          "authority_posture_deny_all"
+        ],
+        "goldenVector": {
+          "id": "PLASTICITY-V2-GV-001",
+          "fixture": {
+            "proposalId": "proposal:2",
+            "proposerId": "proposer:1",
+            "evaluatorId": "evaluator:1",
+            "selectedArtifactDigest": "db97d812f86c57d2006ce7b710a35726487fae0dd5352990875052e56b702678",
+            "window": {
+              "windowId": "window:1",
+              "windowDigest": "44ff7b02c80d38b26dd6aa31d9470aed81b32e10331a3c994fb1a9945fd847ba"
+            },
+            "baselineGeneration": 7,
+            "candidateGeneration": 8,
+            "datasetDigest": "b277fd623676a525c29b9eb155afc8c9010681814ceafb2d7627f47b9a232576",
+            "updateRuleDigest": "676930b9dbcb784f138a40d18a26ac6b635cc9aed0b7fc7d8b0c6f285f6801c4",
+            "modulatorDigest": "60b2e155ab43be32e673ee432405675cbd0633707bf6227639959d1c5931d99a",
+            "modulatorBroadcastDigest": "e88199c423228a456677d367059b4f9b9fc769bae4a5c88aef9f7d0fcbe0726b",
+            "eligibilityDigest": "533cbfe95669c4380a5e671d25fd9ae9699eda36f6c29c3d3be349cb2f3b778e",
+            "evaluationDigest": "efe77b201dc216c0edf435a227df2b2898d3f6ea1ff16e5d4d0d4ec0cf593271",
+            "rollbackPredecessorDigest": "db97d812f86c57d2006ce7b710a35726487fae0dd5352990875052e56b702678",
+            "normProfile": {
+              "layers": [
+                {
+                  "layerId": "layer:a",
+                  "baselineSquaredL2RawQ64": 1000000
+                },
+                {
+                  "layerId": "layer:b",
+                  "baselineSquaredL2RawQ64": 4000000
+                }
+              ],
+              "globalBaselineSquaredL2RawQ64": 5000000,
+              "canonicalPreimageBytes": 156,
+              "expectedProfileDigest": "d31bd6f69d36817557272d747e5209d431e3ef3058e6f415dc57da4f8f98fb97"
+            },
+            "candidates": [
+              {
+                "candidateId": "candidate:no-change",
+                "kindCode": 0,
+                "parameterDeltas": [],
+                "layerDeltaSquaredL2RawQ64": [
+                  0,
+                  0
+                ],
+                "globalDeltaSquaredL2RawQ64": 0
+              },
+              {
+                "candidateId": "candidate:update",
+                "kindCode": 1,
+                "parameterDeltas": [
+                  {
+                    "layerId": "layer:a",
+                    "parameterId": "parameter:a",
+                    "deltaRawQ32": 2,
+                    "lowerBoundRawQ32": -10,
+                    "upperBoundRawQ32": 10,
+                    "evidenceDigest": "eaabde0277545d2c783ce6bc9904046ddb0cba975e8d06276ca22b13f406391c"
+                  },
+                  {
+                    "layerId": "layer:b",
+                    "parameterId": "parameter:b",
+                    "deltaRawQ32": -3,
+                    "lowerBoundRawQ32": -10,
+                    "upperBoundRawQ32": 10,
+                    "evidenceDigest": "d97439ab09c1d233b0cf9ccb0f1111937a0f9d5c6c58126601e2a139b1fff6e1"
+                  }
+                ],
+                "layerDeltaSquaredL2RawQ64": [
+                  4,
+                  9
+                ],
+                "globalDeltaSquaredL2RawQ64": 13
+              }
+            ]
+          },
+          "canonicalPreimageBytes": 898,
+          "expectedProposalDigest": "e2ecdc9e0fd3278865665a2b0b168a3048919e86e8979e2e90bc6e5db9ab357c"
+        }
+      },
+      "versionDispatch": {
+        "acceptedVersions": [
+          1,
+          2
+        ],
+        "unknownVersionPolicy": "reject",
+        "versionPayloadMismatchPolicy": "reject",
+        "implicitUpconversionAllowed": false
+      }
+    }
   },
   "selfIteration": {
     "mayGenerateCandidates": true,

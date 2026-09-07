@@ -1,0 +1,82 @@
+name: Hepta NDU recursion (read-only)
+
+on:
+  pull_request:
+    paths:
+      - "codex-rs/hepta-ndu/**"
+      - ".github/workflows/hepta-ndu-recursion.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-ndu-recursion-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  ndu:
+    name: NDU (${{ matrix.lane }})
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    strategy:
+      fail-fast: false
+      matrix:
+        lane: [source-head, synthetic-merge]
+    env:
+      SOURCE_SHA: ${{ github.event.pull_request.head.sha }}
+      BASE_SHA: ${{ github.event.pull_request.base.sha }}
+      CARGO_NET_GIT_FETCH_WITH_CLI: "true"
+    steps:
+      - name: Check out exact source without credentials
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          persist-credentials: false
+          fetch-depth: 0
+
+      - name: Bind source and optional synthetic merge
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          if [ '${{ matrix.lane }}' = synthetic-merge ]; then
+            TREE=$(git merge-tree --write-tree "$BASE_SHA" "$SOURCE_SHA")
+            export GIT_AUTHOR_NAME=hepta-qualification GIT_COMMITTER_NAME=hepta-qualification
+            export GIT_AUTHOR_EMAIL=qualification@invalid GIT_COMMITTER_EMAIL=qualification@invalid
+            export GIT_AUTHOR_DATE=2000-01-01T00:00:00Z GIT_COMMITTER_DATE=2000-01-01T00:00:00Z
+            MERGE=$(printf '%s\n' 'Qualification only; no selection or release' | git commit-tree "$TREE" -p "$BASE_SHA" -p "$SOURCE_SHA")
+            test "$(git show -s --format=%P "$MERGE")" = "$BASE_SHA $SOURCE_SHA"
+            git checkout --detach "$MERGE"
+          fi
+          git rev-parse HEAD HEAD^{tree}
+
+      - name: Install pinned repository test tools
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+
+      - name: Locked all-target compilation
+        working-directory: codex-rs
+        run: cargo check --locked -p codex-hepta-ndu --all-targets
+
+      - name: Regression tests
+        working-directory: codex-rs
+        run: just test --locked -p codex-hepta-ndu
+
+      - name: Strict lint
+        working-directory: codex-rs
+        run: cargo clippy --locked -p codex-hepta-ndu --all-targets -- -D warnings
+
+      - name: Formatting check without source mutation
+        if: always()
+        working-directory: codex-rs
+        run: cargo fmt --package codex-hepta-ndu -- --check
+
+      - name: Preserve exact source state
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          git diff --check
+          git diff --exit-code
+          test -z "$(git status --porcelain --untracked-files=no)"

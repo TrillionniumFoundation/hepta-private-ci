@@ -136,6 +136,78 @@ SupportAuditReceiptV1 {
 }
 ```
 
+### Temporal composite plan and receipt digest profile
+
+The Rust `TemporalEvaluationPlan` is an internal deterministic evaluation record, not a new cross-module protocol. Its machine-readable digest profile is registered in `docs/learning/LEARNING_SYSTEM.json`; `docs/contracts/CONTRACTS.json` and `docs/contracts/PROTOCOL_SCHEMAS.json` remain authoritative for published contracts. Both profiles below hash the exact concatenation with SHA-256. Domain literals are unframed UTF-8 with no terminator, a `StableId` is `u32_be(UTF-8 byte length) || UTF-8 bytes`, and a digest is its raw 32 bytes.
+
+The canonical `TemporalEvaluationPlan.plan_digest` preimage, in exact order, is:
+
+| Ordinal | Source | Canonical bytes |
+| ---: | --- | --- |
+| 0 | domain | exact UTF-8 `hepta.ope.temporal-evaluation-plan.v1` |
+| 1 | `evaluation_id` | framed `StableId` |
+| 2 | `objective_digest` | raw 32 bytes |
+| 3 | `fold.plan_digest` | raw 32 bytes |
+| 4 | `fold.fold_id` | framed `StableId` |
+| 5 | `fold.training_watermark` | `u64`, big-endian |
+| 6 | `fold.evaluation_start` | `u64`, big-endian |
+| 7 | `fold.minimum_per_action` | checked `usize` to `u64`, big-endian |
+| 8 | `ope.plan_digest` | raw 32 bytes |
+| 9 | `ope.outcome_watermark` | `u64`, big-endian |
+| 10 | `ope.minimum_rows` | checked `usize` to `u64`, big-endian |
+| 11 | `ope.minimum_ess.raw()` | signed `i64` Q32 raw value, big-endian |
+| 12 | `ope.maximum_weight.raw()` | signed `i64` Q32 raw value, big-endian |
+| 13 | `confidence.plan_digest` | raw 32 bytes |
+| 14 | `confidence.assumptions_digest` | raw 32 bytes |
+| 15 | `confidence.family_alpha_ppm` | `u32`, big-endian |
+| 16 | `confidence.simultaneous_comparisons` | `u32`, big-endian |
+| 17 | `confidence.minimum_clusters` | checked `usize` to `u64`, big-endian |
+
+The top-level `plan_digest` field is excluded from its own preimage. A zero digest, a stale digest, or a failed `usize` conversion fails closed before evaluation. The fold, OPE and confidence child `plan_digest` values are independently assigned semantic digests: each is bound into the composite preimage, but they need not equal the composite digest or one another. Revising one child requires recomputing the composite without changing unaffected child digests.
+
+#### Golden vector `TEMPORAL-PLAN-DIGEST-GV-001`
+
+This fixture is complete for the v1 composite preimage. Digest-valued fields show both the UTF-8 seed used by the fixture and its resulting SHA-256 bytes; verification uses the hex value as the field value.
+
+| Source | Exact fixture value |
+| --- | --- |
+| domain | `hepta.ope.temporal-evaluation-plan.v1` |
+| `evaluation_id` | `evaluation` |
+| `objective_digest` | SHA-256 of `immutable-objective` = `316dcebf2a099b59af9f8890b134c86c228d683d67c84d2cb8bd26318546a820` |
+| `fold.plan_digest` | SHA-256 of `fold-plan` = `b8f519aee2a9a10bf76e02171868d8970ec91c0cb8c7e4b4f9fc7d63414c8a56` |
+| `fold.fold_id` | `fold-1` |
+| `fold.training_watermark` | `10` |
+| `fold.evaluation_start` | `20` |
+| `fold.minimum_per_action` | `2` |
+| `ope.plan_digest` | SHA-256 of `ope-plan` = `cfe7a60b639e129a92ae2925c76aea93553339d7113a507b3c378a0a92ca3913` |
+| `ope.outcome_watermark` | `100` |
+| `ope.minimum_rows` | `2` |
+| `ope.minimum_ess.raw()` | `4294967296` |
+| `ope.maximum_weight.raw()` | `8589934592` |
+| `confidence.plan_digest` | SHA-256 of `confidence-plan` = `300b564a998f1da1558ea0408f896f3bf2db3f203c9dfd4cf8e17dd15ce141e5` |
+| `confidence.assumptions_digest` | SHA-256 of `prespecified-independent-clusters` = `b86e0f510ce25aacef4fca760e25f213af5003f3dead7d05c5e4f6da77ec9faa` |
+| `confidence.family_alpha_ppm` | `50000` |
+| `confidence.simultaneous_comparisons` | `1` |
+| `confidence.minimum_clusters` | `2` |
+| canonical preimage length | `293` bytes |
+| expected `plan_digest` | `dba5b45f87d6a8ef08dccfc9b2108a1456d94b226c3315777c3de2f15f4219b3` |
+
+The expected digest is a fixed oracle, not a value captured from the Rust implementation under test. It was independently encoded twice from the table above and both encoders were checked against the standard empty-string and `abc` SHA-256 vectors.
+
+The canonical `TemporalEvaluationReceipt.evidence_digest` v2 preimage, in exact order, is:
+
+| Ordinal | Source | Canonical bytes |
+| ---: | --- | --- |
+| 0 | domain | exact UTF-8 `hepta.ope.temporal-holdout-pipeline.v2` |
+| 1 | `evaluation_id` | framed `StableId` |
+| 2 | `plan_digest` | raw 32 bytes |
+| 3 | plan `objective_digest` | raw 32 bytes |
+| 4 | fitted `model_digest` | raw 32 bytes |
+| 5 | fitted `predictions_digest` | raw 32 bytes |
+| 6 | cluster estimate `evidence_digest` | raw 32 bytes |
+
+The v2 domain and added composite `plan_digest` are an intentional compatibility boundary. A v1 receipt digest cannot be relabeled or accepted as v2; retained v1 history requires version-aware verification. This internal receipt digest does not replace or broaden the authority of `EvaluationReceiptV1` or `LongitudinalEvaluationReceiptV1`.
+
 Ledger tables are append-only, keyed by stable IDs and semantic digests. Projection indexes are rebuildable. A deletion request marks source rows ineligible, traverses derived dataset/artifact lineage and requires a rebuilt successor or revocation. Backups are tested to ensure deleted rows and derived artifacts do not reappear.
 
 ## 7. Numerical stability, complexity and resource bounds

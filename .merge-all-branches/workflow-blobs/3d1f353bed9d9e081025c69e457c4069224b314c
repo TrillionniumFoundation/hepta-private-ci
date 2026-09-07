@@ -1,0 +1,157 @@
+name: Hepta development documents
+
+on:
+  pull_request:
+  push:
+    branches:
+      - integration/vnext-main-20260811
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-development-docs-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  source-head:
+    name: Verify exact source head
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - name: Check out exact source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+          fetch-depth: 0
+
+      - name: Verify source and emit receipts
+        env:
+          EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          python3 scripts/hepta-docs.py self-test
+          python3 scripts/hepta-docs.py inventory-legacy
+          python3 scripts/hepta-docs.py generate-status
+          git diff --exit-code -- docs/STATUS.md
+          python3 scripts/hepta-module-docs.py self-test
+          python3 scripts/hepta-module-docs.py verify
+          python3 scripts/hepta-algorithm-docs.py self-test
+          python3 scripts/hepta-algorithm-docs.py verify-sources
+          python3 scripts/hepta-algorithm-docs.py generate-status --check
+          python3 scripts/hepta-algorithm-docs.py verify
+          python3 scripts/hepta-readiness.py self-test
+          python3 scripts/hepta-readiness.py generate-status --check
+          python3 scripts/hepta-readiness.py verify
+          python3 scripts/hepta-cns.py self-test
+          python3 scripts/hepta-cns.py generate-status --check
+          python3 scripts/hepta-cns.py verify
+          python3 scripts/hepta-hnmf.py self-test
+          python3 scripts/hepta-hnmf.py verify
+          python3 scripts/hepta-docs.py verify
+          python3 scripts/hepta-docs.py cleanup-inventory --output .hepta-evidence/cleanup-source-head.json
+          python3 scripts/hepta-docs.py receipt --kind source-head --expected-sha "$EXPECTED_SHA" --output .hepta-evidence/source-head.json
+          python3 scripts/hepta-docs.py receipt-verify --input .hepta-evidence/source-head.json --kind source-head --expected-sha "$EXPECTED_SHA"
+          git diff --check
+          test -z "$(git status --porcelain --untracked-files=no)"
+
+      - name: Retain exact source receipts
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-v8-source-${{ github.event.pull_request.head.sha || github.sha }}
+          path: .hepta-evidence/*.json
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 30
+
+  merge-candidate:
+    name: Verify exact merge candidate
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - name: Check out exact source for merge construction
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+          fetch-depth: 0
+
+      - name: Construct exact synthetic merge candidate
+        id: synthetic
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          SOURCE_SHA: ${{ github.event.pull_request.head.sha }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$BASE_SHA"
+          test -n "$SOURCE_SHA"
+          test -n "$PR_NUMBER"
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          git cat-file -e "$BASE_SHA^{commit}"
+          git cat-file -e "$SOURCE_SHA^{commit}"
+          MERGE_TREE="$(git merge-tree --write-tree "$BASE_SHA" "$SOURCE_SHA")"
+          [[ "$MERGE_TREE" =~ ^[0-9a-f]{40}$ ]]
+          export GIT_AUTHOR_NAME="Hepta Docs CI"
+          export GIT_AUTHOR_EMAIL="hepta-docs-ci@users.noreply.github.com"
+          export GIT_COMMITTER_NAME="$GIT_AUTHOR_NAME"
+          export GIT_COMMITTER_EMAIL="$GIT_AUTHOR_EMAIL"
+          export GIT_AUTHOR_DATE="2000-01-01T00:00:00Z"
+          export GIT_COMMITTER_DATE="$GIT_AUTHOR_DATE"
+          MERGE_SHA="$(printf 'Synthetic merge for PR %s\n' "$PR_NUMBER" | git commit-tree "$MERGE_TREE" -p "$BASE_SHA" -p "$SOURCE_SHA")"
+          [[ "$MERGE_SHA" =~ ^[0-9a-f]{40}$ ]]
+          git checkout --detach "$MERGE_SHA"
+          test "$(git rev-parse HEAD)" = "$MERGE_SHA"
+          test "$(git rev-parse HEAD^{tree})" = "$MERGE_TREE"
+          test "$(git rev-list --parents -n 1 HEAD)" = "$MERGE_SHA $BASE_SHA $SOURCE_SHA"
+          printf 'sha=%s\n' "$MERGE_SHA" >> "$GITHUB_OUTPUT"
+          printf 'tree=%s\n' "$MERGE_TREE" >> "$GITHUB_OUTPUT"
+
+      - name: Verify merge candidate and emit receipts
+        env:
+          EXPECTED_SHA: ${{ steps.synthetic.outputs.sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$EXPECTED_SHA"
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          python3 scripts/hepta-docs.py self-test
+          python3 scripts/hepta-docs.py inventory-legacy
+          python3 scripts/hepta-docs.py generate-status
+          git diff --exit-code -- docs/STATUS.md
+          python3 scripts/hepta-module-docs.py self-test
+          python3 scripts/hepta-module-docs.py verify
+          python3 scripts/hepta-algorithm-docs.py self-test
+          python3 scripts/hepta-algorithm-docs.py verify-sources
+          python3 scripts/hepta-algorithm-docs.py generate-status --check
+          python3 scripts/hepta-algorithm-docs.py verify
+          python3 scripts/hepta-readiness.py self-test
+          python3 scripts/hepta-readiness.py generate-status --check
+          python3 scripts/hepta-readiness.py verify
+          python3 scripts/hepta-cns.py self-test
+          python3 scripts/hepta-cns.py generate-status --check
+          python3 scripts/hepta-cns.py verify
+          python3 scripts/hepta-hnmf.py self-test
+          python3 scripts/hepta-hnmf.py verify
+          python3 scripts/hepta-docs.py verify
+          python3 scripts/hepta-docs.py cleanup-inventory --output .hepta-evidence/cleanup-merge-candidate.json
+          python3 scripts/hepta-docs.py receipt --kind merge-candidate --expected-sha "$EXPECTED_SHA" --output .hepta-evidence/merge-candidate.json
+          python3 scripts/hepta-docs.py receipt-verify --input .hepta-evidence/merge-candidate.json --kind merge-candidate --expected-sha "$EXPECTED_SHA"
+          git diff --check
+          test -z "$(git status --porcelain --untracked-files=no)"
+
+      - name: Retain exact merge receipts
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-v8-merge-${{ steps.synthetic.outputs.sha }}
+          path: .hepta-evidence/*.json
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 30

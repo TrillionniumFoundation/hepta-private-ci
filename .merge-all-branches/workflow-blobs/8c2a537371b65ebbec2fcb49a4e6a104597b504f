@@ -1,0 +1,94 @@
+name: Hepta converged learning qualification (read-only)
+
+on:
+  pull_request:
+    paths:
+      - "codex-rs/hepta-learning-ledger/**"
+      - "codex-rs/hepta-learning-artifacts/**"
+      - "codex-rs/hepta-intelligence-eval/**"
+      - "codex-rs/hepta-neuron/**"
+      - "codex-rs/hepta-ndu/**"
+      - "codex-rs/hepta-shadow-qualification/**"
+      - "tools/hepta-engineering-control/**"
+      - ".github/workflows/hepta-converged-learning.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-converged-learning-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  qualification:
+    name: Converged learning ARM (${{ matrix.lane }})
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        lane: [source-head, synthetic-merge]
+    env:
+      SOURCE_SHA: ${{ github.event.pull_request.head.sha }}
+      BASE_SHA: ${{ github.event.pull_request.base.sha }}
+      PYTHONDONTWRITEBYTECODE: "1"
+      CARGO_NET_GIT_FETCH_WITH_CLI: "true"
+    steps:
+      - name: Checkout exact source without retained credentials
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Bind source and actual-base merge identities
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          test "$SOURCE_SHA" != "$BASE_SHA"
+          if [ '${{ matrix.lane }}' = synthetic-merge ]; then
+            TREE=$(git merge-tree --write-tree "$BASE_SHA" "$SOURCE_SHA")
+            export GIT_AUTHOR_NAME=hepta-qualification GIT_COMMITTER_NAME=hepta-qualification
+            export GIT_AUTHOR_EMAIL=qualification@invalid GIT_COMMITTER_EMAIL=qualification@invalid
+            export GIT_AUTHOR_DATE=2000-01-01T00:00:00Z GIT_COMMITTER_DATE=2000-01-01T00:00:00Z
+            MERGE=$(printf '%s\n' 'Qualification only; no selection or release' | git commit-tree "$TREE" -p "$BASE_SHA" -p "$SOURCE_SHA")
+            test "$(git show -s --format=%P "$MERGE")" = "$BASE_SHA $SOURCE_SHA"
+            git checkout --detach "$MERGE"
+          fi
+          git rev-parse HEAD HEAD^{tree}
+      - name: Existing engineering and full document integrity
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m unittest discover -v -s tools/hepta-engineering-control -p 'test_*.py'
+          python3 scripts/hepta-module-docs.py verify
+          python3 scripts/hepta-readiness.py verify
+          python3 scripts/hepta-docs.py verify
+      - name: Install pinned repository test tools
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+      - name: Locked all-target compilation of the combined source
+        working-directory: codex-rs
+        run: cargo check --locked -p codex-hepta-learning-ledger -p codex-hepta-learning-artifacts -p codex-hepta-intelligence-eval -p codex-hepta-neuron -p codex-hepta-ndu -p codex-hepta-shadow-qualification --all-targets
+      - name: Original and added component regressions
+        working-directory: codex-rs
+        run: just test --locked -p codex-hepta-learning-ledger -p codex-hepta-learning-artifacts -p codex-hepta-intelligence-eval -p codex-hepta-neuron -p codex-hepta-ndu
+      - name: Real-file cross-crate qualification
+        working-directory: codex-rs
+        run: just test --locked -p codex-hepta-shadow-qualification --test durable_learning_roundtrip
+      - name: Strict selected-package Clippy
+        working-directory: codex-rs
+        run: cargo clippy --locked -p codex-hepta-learning-ledger -p codex-hepta-learning-artifacts -p codex-hepta-intelligence-eval -p codex-hepta-neuron -p codex-hepta-ndu -p codex-hepta-shadow-qualification --all-targets -- -D warnings
+      - name: Formatting without tested-source mutation
+        if: always()
+        working-directory: codex-rs
+        run: cargo fmt --package codex-hepta-learning-ledger --package codex-hepta-learning-artifacts --package codex-hepta-intelligence-eval --package codex-hepta-neuron --package codex-hepta-ndu --package codex-hepta-shadow-qualification -- --check
+      - name: Unmodified source
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          git diff --check
+          git diff --exit-code
+          test -z "$(git status --porcelain --untracked-files=no)"
