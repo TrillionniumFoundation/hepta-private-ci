@@ -1,0 +1,78 @@
+name: Hepta R11 latest-check-attempt hotfix
+
+on:
+  push:
+    branches:
+      - codex/hepta-v8-windows-bazel-diagnostics-r3-20260907
+
+permissions:
+  actions: write
+  contents: write
+
+jobs:
+  hotfix:
+    if: ${{ contains(github.event.head_commit.message, '[hepta-r11-hotfix]') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      CONTROL_BRANCH: codex/hepta-v8-windows-bazel-diagnostics-r3-20260907
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Cancel obsolete R11 executions
+        shell: bash
+        run: |
+          set -euo pipefail
+          gh run list --repo "${GITHUB_REPOSITORY}" --branch "${CONTROL_BRANCH}" --limit 100 \
+            --json databaseId,status,name \
+            --jq '.[] | select((.status == "queued" or .status == "in_progress") and (.name | contains("closure controller R11"))) | .databaseId' \
+            | while read -r run_id; do
+                [[ -n "${run_id}" ]] || continue
+                [[ "${run_id}" == "${GITHUB_RUN_ID}" ]] && continue
+                gh run cancel "${run_id}" --repo "${GITHUB_REPOSITORY}" || true
+              done
+
+      - name: Make check verification latest-attempt aware
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "hepta-closure-controller"
+          git config user.email "hepta-closure-controller@users.noreply.github.com"
+          git fetch origin "${CONTROL_BRANCH}" --no-tags
+          git checkout -B "${CONTROL_BRANCH}" "origin/${CONTROL_BRANCH}"
+          python - <<'PY'
+          from __future__ import annotations
+          import pathlib
+
+          path = pathlib.Path('.github/workflows/hepta-exact-head-closure-controller-r11.yml')
+          text = path.read_text(encoding='utf-8')
+          old = '''            check_count="$(jq '[.[].check_runs[]] | length' <<<"${checks_json}")"
+            active="$(jq '[.[].check_runs[] | select(.status != "completed")] | length' <<<"${checks_json}")"
+            failed="$(jq '[.[].check_runs[] | select(.status == "completed" and (.conclusion != "success" and .conclusion != "neutral" and .conclusion != "skipped"))] | length' <<<"${checks_json}")"'''
+          new = '''            latest_filter='[.[].check_runs[]] | sort_by(.name, .app.slug, .id) | group_by([.name, .app.slug]) | map(max_by(.id))'
+            check_count="$(jq "(${latest_filter}) | length" <<<"${checks_json}")"
+            active="$(jq "(${latest_filter}) | map(select(.status != \\"completed\\")) | length" <<<"${checks_json}")"
+            failed="$(jq "(${latest_filter}) | map(select(.status == \\"completed\\" and (.conclusion != \\"success\\" and .conclusion != \\"neutral\\" and .conclusion != \\"skipped\\"))) | length" <<<"${checks_json}")"'''
+          if old not in text:
+              raise SystemExit('verification block not found; refusing an ambiguous edit')
+          text = text.replace(old, new, 1)
+
+          old_proof = '''          count="$(jq '[.[].check_runs[]] | length' <<<"${checks_json}")"
+          bad="$(jq '[.[].check_runs[] | select(.status != "completed" or (.conclusion != "success" and .conclusion != "neutral" and .conclusion != "skipped"))] | length' <<<"${checks_json}")"'''
+          new_proof = '''          latest_filter='[.[].check_runs[]] | sort_by(.name, .app.slug, .id) | group_by([.name, .app.slug]) | map(max_by(.id))'
+          count="$(jq "(${latest_filter}) | length" <<<"${checks_json}")"
+          bad="$(jq "(${latest_filter}) | map(select(.status != \\"completed\\" or (.conclusion != \\"success\\" and .conclusion != \\"neutral\\" and .conclusion != \\"skipped\\"))) | length" <<<"${checks_json}")"'''
+          if old_proof not in text:
+              raise SystemExit('closure-proof block not found; refusing an ambiguous edit')
+          text = text.replace(old_proof, new_proof, 1)
+          path.write_text(text, encoding='utf-8')
+          PY
+          git rm -f .github/workflows/hepta-r11-latest-check-hotfix.yml
+          git add .github/workflows/hepta-exact-head-closure-controller-r11.yml
+          git diff --cached --check
+          git commit -m "ci: verify only latest check attempts [hepta-r11-start]"
+          git push origin "HEAD:${CONTROL_BRANCH}"
