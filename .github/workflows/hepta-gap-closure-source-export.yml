@@ -1,0 +1,43 @@
+name: Hepta gap-closure exact source export
+
+on:
+  push:
+    branches:
+      - codex/hepta-gap-closure-full-ci-20260907
+
+permissions:
+  contents: read
+
+jobs:
+  export:
+    name: Export exact candidate source
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Check out exact candidate without credentials
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Archive and bind exact source
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${GITHUB_SHA}"
+          test -z "$(git status --porcelain=v1 --untracked-files=all)"
+          git archive --format=tar --prefix=hepta-private-ci/ "${GITHUB_SHA}" \
+            | gzip -n > "${RUNNER_TEMP}/hepta-private-ci-${GITHUB_SHA}.tar.gz"
+          sha256sum "${RUNNER_TEMP}/hepta-private-ci-${GITHUB_SHA}.tar.gz" \
+            > "${RUNNER_TEMP}/hepta-private-ci-${GITHUB_SHA}.tar.gz.sha256"
+
+      - name: Upload exact source
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        with:
+          name: hepta-gap-closure-source-${{ github.sha }}
+          path: |
+            ${{ runner.temp }}/hepta-private-ci-${{ github.sha }}.tar.gz
+            ${{ runner.temp }}/hepta-private-ci-${{ github.sha }}.tar.gz.sha256
+          if-no-files-found: error
+          retention-days: 7
