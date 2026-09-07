@@ -1,0 +1,98 @@
+name: Persist Trillionnium OS status snapshot
+
+on:
+  push:
+    branches:
+      - ops/trillionnium-os-status-snapshot-20260908
+    paths:
+      - .github/workflows/trillionnium-os-status-snapshot-commit-20260908.yml
+
+permissions:
+  contents: write
+  pull-requests: read
+  actions: read
+  issues: read
+
+jobs:
+  snapshot:
+    name: Persist current PR and blocker status
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ops/trillionnium-os-status-snapshot-20260908
+          fetch-depth: 1
+          persist-credentials: true
+      - name: Fetch and summarize current state
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p ops-status/raw
+          fetch() {
+            local name="$1"
+            local url="$2"
+            curl --fail --silent --show-error --location \
+              -H "Accept: application/vnd.github+json" \
+              -H "Authorization: Bearer ${GH_TOKEN}" \
+              -H "X-GitHub-Api-Version: 2022-11-28" \
+              "$url" >"ops-status/raw/${name}.json"
+          }
+          fetch pr47 https://api.github.com/repos/TrillionniumFoundation/trillionnium-os/pulls/47
+          fetch pr47-reviews 'https://api.github.com/repos/TrillionniumFoundation/trillionnium-os/pulls/47/reviews?per_page=100'
+          fetch pr47-runs 'https://api.github.com/repos/TrillionniumFoundation/trillionnium-os/actions/runs?head_sha=b8e875d8d01893d894ae0666db9e4efdcc106d59&per_page=100'
+          fetch pr47-checks 'https://api.github.com/repos/TrillionniumFoundation/trillionnium-os/commits/b8e875d8d01893d894ae0666db9e4efdcc106d59/check-runs?per_page=100'
+          fetch pr459 https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/pulls/459
+          fetch pr459-reviews 'https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/pulls/459/reviews?per_page=100'
+          fetch pr459-runs 'https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs?head_sha=185dcaff7d610dfd5a6e3ece96c75699e8cdcb49&per_page=100'
+          fetch pr459-checks 'https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/commits/185dcaff7d610dfd5a6e3ece96c75699e8cdcb49/check-runs?per_page=100'
+          fetch issue22 https://api.github.com/repos/TrillionniumFoundation/trillionnium-os/issues/22
+          jq -n \
+            --slurpfile pr47 ops-status/raw/pr47.json \
+            --slurpfile pr47_reviews ops-status/raw/pr47-reviews.json \
+            --slurpfile pr47_runs ops-status/raw/pr47-runs.json \
+            --slurpfile pr47_checks ops-status/raw/pr47-checks.json \
+            --slurpfile pr459 ops-status/raw/pr459.json \
+            --slurpfile pr459_reviews ops-status/raw/pr459-reviews.json \
+            --slurpfile pr459_runs ops-status/raw/pr459-runs.json \
+            --slurpfile pr459_checks ops-status/raw/pr459-checks.json \
+            --slurpfile issue22 ops-status/raw/issue22.json \
+            '{
+              captured_at: (now | todateiso8601),
+              pr47: {
+                state: $pr47[0].state, merged: $pr47[0].merged,
+                merged_at: $pr47[0].merged_at, merge_commit_sha: $pr47[0].merge_commit_sha,
+                draft: $pr47[0].draft, mergeable: $pr47[0].mergeable,
+                mergeable_state: $pr47[0].mergeable_state,
+                head: $pr47[0].head.sha, base: $pr47[0].base.sha,
+                requested_reviewers: ($pr47[0].requested_reviewers | map(.login)),
+                reviews: ($pr47_reviews[0] | map({user:.user.login,state,commit_id,submitted_at})),
+                runs: ($pr47_runs[0].workflow_runs | map({id,name,status,conclusion,head_sha,created_at,updated_at})),
+                checks: ($pr47_checks[0].check_runs | map({id,name,status,conclusion,head_sha,started_at,completed_at}))
+              },
+              pr459: {
+                state: $pr459[0].state, merged: $pr459[0].merged,
+                merged_at: $pr459[0].merged_at, merge_commit_sha: $pr459[0].merge_commit_sha,
+                draft: $pr459[0].draft, mergeable: $pr459[0].mergeable,
+                mergeable_state: $pr459[0].mergeable_state,
+                head: $pr459[0].head.sha, base: $pr459[0].base.sha,
+                requested_reviewers: ($pr459[0].requested_reviewers | map(.login)),
+                reviews: ($pr459_reviews[0] | map({user:.user.login,state,commit_id,submitted_at})),
+                runs: ($pr459_runs[0].workflow_runs | map({id,name,status,conclusion,head_sha,created_at,updated_at})),
+                checks: ($pr459_checks[0].check_runs | map({id,name,status,conclusion,head_sha,started_at,completed_at}))
+              },
+              issue22: {state:$issue22[0].state,updated_at:$issue22[0].updated_at,comments:$issue22[0].comments}
+            }' >ops-status/summary.json
+          jq . ops-status/summary.json
+      - name: Commit immutable snapshot to ops branch
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add ops-status
+          git diff --cached --quiet && exit 0
+          git commit -m 'ops: persist current Trillionnium OS closure status'
+          git push origin HEAD:refs/heads/ops/trillionnium-os-status-snapshot-20260908
