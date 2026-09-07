@@ -45,7 +45,8 @@ jobs:
           set -euo pipefail
 
           cp .github/scripts/hepta_final_materializer.py "${RUNNER_TEMP}/hepta_final_materializer.py"
-          rm -rf hepta-final-patch
+          git reset --hard HEAD
+          git clean -fdx
           git checkout --detach "${SOURCE_SHA}"
           python3 "${RUNNER_TEMP}/hepta_final_materializer.py"
           rm -rf hepta-final-patch
