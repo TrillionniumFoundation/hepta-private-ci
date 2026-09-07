@@ -370,6 +370,9 @@ def retire(proc,owner_pid,baseline):
 def run_harness(harness,cwd,env,kind,clock:Callable[[],datetime],authority_expiry):
     if clock()>=authority_expiry: return {"exit_code":-1,"stdout":b"","stderr":b"","failure":"authorization_expired_before_target_contact","leader_reaped":True,"cleanup_confirmed":True,"escaped_descendants_absence_proven":True,"target_contact_performed":False}
     owner_pid,prior_subreaper,baseline=_enter_descendant_containment()
+    if clock()>=authority_expiry:
+        _restore_descendant_containment(prior_subreaper,True)
+        return {"exit_code":-1,"stdout":b"","stderr":b"","failure":"authorization_expired_before_target_contact","leader_reaped":True,"cleanup_confirmed":True,"escaped_descendants_absence_proven":True,"target_contact_performed":False}
     cmd=f"/proc/self/fd/{harness.fd}"; proc=None; clean=False
     try: proc=subprocess.Popen([cmd],executable=cmd,stdin=subprocess.DEVNULL,stdout=subprocess.PIPE,stderr=subprocess.PIPE,cwd=cwd,env=env,close_fds=True,pass_fds=(harness.fd,),start_new_session=True)
     except Exception:

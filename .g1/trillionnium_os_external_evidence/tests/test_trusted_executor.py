@@ -131,6 +131,25 @@ class TrustedExecutorTest(unittest.TestCase):
         with self.assertRaisesRegex(ExecutionError,"authorization_expired"): execute(NONCE,config=self.config,now=NOW,clock=clock)
         self.assertLess(time.monotonic()-started,1.5); self.assertTrue(self.result()["target_contact_performed"])
 
+    def test_containment_setup_crossing_expiry_never_launches_harness(self):
+        self.prepare(expiry_seconds=.25); clock_now=[NOW]
+        original_enter=trusted_executor._enter_descendant_containment
+        def enter_then_expire():
+            state=original_enter(); clock_now[0]=NOW+timedelta(seconds=.3); return state
+        with mock.patch.object(trusted_executor,"_enter_descendant_containment",side_effect=enter_then_expire), mock.patch.object(trusted_executor.subprocess,"Popen",wraps=trusted_executor.subprocess.Popen) as popen:
+            with self.assertRaisesRegex(ExecutionError,"authorization_expired_before_target_contact"): execute(NONCE,config=self.config,now=NOW,clock=lambda:clock_now[0])
+        popen.assert_not_called(); result=self.result(); self.assertFalse(result["target_contact_performed"]); self.assertEqual(result["failure"],"authorization_expired_before_target_contact")
+        with self.assertRaises(ReplayError): execute(NONCE,config=self.config,now=NOW)
+
+    def test_containment_setup_delay_still_launches_when_authority_is_valid(self):
+        self.prepare(expiry_seconds=2); clock_now=[NOW]
+        original_enter=trusted_executor._enter_descendant_containment
+        def enter_with_valid_delay():
+            state=original_enter(); clock_now[0]=NOW+timedelta(seconds=.1); return state
+        with mock.patch.object(trusted_executor,"_enter_descendant_containment",side_effect=enter_with_valid_delay), mock.patch.object(trusted_executor.subprocess,"Popen",wraps=trusted_executor.subprocess.Popen) as popen:
+            result=execute(NONCE,config=self.config,now=NOW,clock=lambda:clock_now[0])
+        self.assertEqual(popen.call_count,1); self.assertTrue(result["target_contact_performed"]); self.assertEqual(result["status"],"CAPTURE_COMPLETE_PENDING_INDEPENDENT_REVIEW")
+
     def test_bundle_manifest_is_closed_world(self):
         for extra in ({"evidence_reviewed":True},{"gap_transition_authorized":True},{"release_authorized":True}):
             with self.subTest(extra=extra):
@@ -144,7 +163,7 @@ class TrustedExecutorTest(unittest.TestCase):
         with self.assertRaisesRegex(ExecutionError,"authorization_expired_during_execution"): execute(NONCE,config=self.config,now=NOW,clock=clock)
         self.assertLess(time.monotonic()-started,.65); self.assertFalse((self.state/"work"/NONCE/"cwd"/"delayed-marker").exists()); self.assertEqual(self.result()["failure"],"authorization_expired_during_execution")
         with self.assertRaises(ReplayError): execute(NONCE,config=self.config,now=NOW)
-        self.tearDown(); self.setUp(); self.prepare(close_output=True,sleep_seconds=.05,expiry_seconds=1,delayed_marker=True); started=time.monotonic(); clock=lambda:NOW+timedelta(seconds=time.monotonic()-started)
+        self.tearDown(); self.setUp(); self.prepare(close_output=True,sleep_seconds=.05,expiry_seconds=5,delayed_marker=True); started=time.monotonic(); clock=lambda:NOW+timedelta(seconds=time.monotonic()-started)
         result=execute(NONCE,config=self.config,now=NOW,clock=clock); self.assertEqual(result["status"],"CAPTURE_COMPLETE_PENDING_INDEPENDENT_REVIEW"); self.assertTrue((self.state/"work"/NONCE/"cwd"/"delayed-marker").exists())
 
     def test_double_fork_setsid_descendant_is_contained_and_terminalized(self):
