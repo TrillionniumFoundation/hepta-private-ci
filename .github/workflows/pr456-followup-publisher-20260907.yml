@@ -1,4 +1,4 @@
-name: PR 456 exact-head follow-up publisher
+name: PR 456 publisher startup probe
 
 on:
   push:
@@ -6,106 +6,17 @@ on:
       - ops/pr456-followup-publisher-20260907-r1
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
-  publish:
-    name: Verify and publish one sealed-base follow-up
+  probe:
+    name: Confirm hosted workflow startup
     runs-on: ubuntu-24.04
-    timeout-minutes: 10
-    env:
-      EXPECTED_HEAD: a04ba23781879c67d4545a4480ce94468c07337c
-      EXPECTED_TREE: 03dd11db161c7d3c55003552103cd3aa914e80b5
-      SEALED_BASE: b97b856b0a23625ea98eccd97e701134aa967e2f
-      PATCH_CARRIER: b2a87e5d9b3542cc522b5e7760956261d2d8b52d
-      DEST_BRANCH: integration/final-main-tree-followup-20260907-r1
-      PATCH_SHA256: df5d4db1f3f9ec761bdf27bbd008f4808f91aa6b5fd9942d7848a57ed72079e6
-      PATCH_GZIP_SHA256: 1a9ba79dc43fca1db27ac59f9b014f461cfbfd4fc9bdcc25cb02b447ed51ef52
-      PATCH_B64_SHA256: b2d71770aa5223a74b5f5d06a1bc8cec3593a4fb79610e27828fd43c0a4fd944
+    timeout-minutes: 2
     steps:
-      - name: Check out exact reviewed predecessor
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
-        with:
-          ref: a04ba23781879c67d4545a4480ce94468c07337c
-          fetch-depth: 0
-          persist-credentials: true
-
-      - name: Verify predecessor and recover digest-pinned patch
+      - name: Record immutable probe
         shell: bash
         run: |
           set -euo pipefail
-          test "$(git rev-parse HEAD)" = "$EXPECTED_HEAD"
-          test "$(git rev-parse 'HEAD^{tree}')" = "$EXPECTED_TREE"
-          test "$(git show -s --format=%P HEAD)" = "$SEALED_BASE"
-          git fetch --no-tags origin "$PATCH_CARRIER"
-          git show "$PATCH_CARRIER:.github/workflows/pr456-followup-publisher-20260907.yml" > "$RUNNER_TEMP/carrier.yml"
-          python3 - "$RUNNER_TEMP/carrier.yml" "$RUNNER_TEMP/followup.patch.gz.b64" <<'PY'
-          from pathlib import Path
-          import sys
-          lines = Path(sys.argv[1]).read_text().splitlines()
-          start = next(i for i, line in enumerate(lines) if "<<'PATCH_B64'" in line)
-          end = next(i for i in range(start + 1, len(lines)) if lines[i].strip() == "PATCH_B64")
-          payload = "".join(line.strip() for line in lines[start + 1:end])
-          if not payload:
-              raise SystemExit("empty patch payload")
-          Path(sys.argv[2]).write_text(payload)
-          PY
-          test "$(sha256sum "$RUNNER_TEMP/followup.patch.gz.b64" | cut -d' ' -f1)" = "$PATCH_B64_SHA256"
-          base64 -d "$RUNNER_TEMP/followup.patch.gz.b64" > "$RUNNER_TEMP/followup.patch.gz"
-          test "$(sha256sum "$RUNNER_TEMP/followup.patch.gz" | cut -d' ' -f1)" = "$PATCH_GZIP_SHA256"
-          gzip -dc "$RUNNER_TEMP/followup.patch.gz" > "$RUNNER_TEMP/followup.patch"
-          test "$(sha256sum "$RUNNER_TEMP/followup.patch" | cut -d' ' -f1)" = "$PATCH_SHA256"
-
-      - name: Apply closed three-path repair and run hostile suite
-        shell: bash
-        run: |
-          set -euo pipefail
-          git apply --check "$RUNNER_TEMP/followup.patch"
-          git apply "$RUNNER_TEMP/followup.patch"
-          git diff --check
-          git diff --name-only | LC_ALL=C sort > "$RUNNER_TEMP/changed.txt"
-          printf '%s\n' \
-            .g1/trillionnium_os_external_evidence/EXECUTOR.md \
-            .g1/trillionnium_os_external_evidence/tests/test_trusted_executor.py \
-            .g1/trillionnium_os_external_evidence/trusted_executor.py \
-            | LC_ALL=C sort > "$RUNNER_TEMP/expected.txt"
-          diff -u "$RUNNER_TEMP/expected.txt" "$RUNNER_TEMP/changed.txt"
-          cd .g1/trillionnium_os_external_evidence
-          rm -rf __pycache__ tests/__pycache__
-          python3 -m py_compile admission_service.py trusted_executor.py tests/*.py
-          python3 -m unittest discover -s tests -v
-          rm -rf __pycache__ tests/__pycache__
-          cd "$GITHUB_WORKSPACE"
-          test -z "$(git status --porcelain=v1 --untracked-files=all | awk '$1 == "??" {print $2}')"
-
-      - name: Create single-parent candidate and publish new branch
-        shell: bash
-        run: |
-          set -euo pipefail
-          git config user.name "Qian QI"
-          git config user.email "102159240+ProfHepta@users.noreply.github.com"
-          git add \
-            .g1/trillionnium_os_external_evidence/EXECUTOR.md \
-            .g1/trillionnium_os_external_evidence/tests/test_trusted_executor.py \
-            .g1/trillionnium_os_external_evidence/trusted_executor.py
-          new_tree="$(git write-tree)"
-          message="fix(g1): terminalize every post-start evidence failure
-
-Close the exact-head review gaps for authorization expiry after output-pipe closure, bundle traversal failures, process setup/procfs cleanup uncertainty, and durable non-overwriting terminal receipts after STARTED.
-
-This single-parent source candidate retains unprovisioned policies and grants no target, device, destructive, signing, promotion, deployment, gap-transition or public-release authority."
-          new_commit="$(printf '%s\n' "$message" | git commit-tree "$new_tree" -p "$SEALED_BASE")"
-          test "$(git show -s --format=%P "$new_commit")" = "$SEALED_BASE"
-          test "$(git rev-parse "$new_commit^{tree}")" = "$new_tree"
-          if git ls-remote --exit-code --heads origin "refs/heads/$DEST_BRANCH" >/dev/null 2>&1; then
-            echo "destination branch already exists" >&2
-            exit 1
-          fi
-          git push origin "$new_commit:refs/heads/$DEST_BRANCH"
-          {
-            echo "candidate_commit=$new_commit"
-            echo "candidate_tree=$new_tree"
-            echo "source_predecessor=$EXPECTED_HEAD"
-            echo "sealed_base=$SEALED_BASE"
-            echo "patch_sha256=$PATCH_SHA256"
-          } >> "$GITHUB_STEP_SUMMARY"
+          echo "head=${GITHUB_SHA}"
+          echo "This probe performs no checkout, write, target contact, evidence transition, or release action."
