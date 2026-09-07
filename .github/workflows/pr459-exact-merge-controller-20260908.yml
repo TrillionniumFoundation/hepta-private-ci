@@ -1,0 +1,90 @@
+name: PR459 exact merge controller
+
+on:
+  push:
+    branches:
+      - ops/trillionnium-os-status-snapshot-20260908
+    paths:
+      - .github/workflows/pr459-exact-merge-controller-20260908.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+  actions: read
+
+jobs:
+  merge:
+    name: Merge only exact reviewed green PR459
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ops/trillionnium-os-status-snapshot-20260908
+          fetch-depth: 1
+          persist-credentials: true
+      - name: Evaluate exact-head admission and ordinary merge
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: TrillionniumFoundation/hepta-private-ci
+          PR: "459"
+          EXPECTED_HEAD: 185dcaff7d610dfd5a6e3ece96c75699e8cdcb49
+          EXPECTED_BASE: e31df34dd30d046c78057eaa7af775b3210aa9b1
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p ops-status
+          api() {
+            curl --fail --silent --show-error --location \
+              -H "Accept: application/vnd.github+json" \
+              -H "Authorization: Bearer ${GH_TOKEN}" \
+              -H "X-GitHub-Api-Version: 2022-11-28" "$@"
+          }
+          api "https://api.github.com/repos/${REPO}/pulls/${PR}" >pr.json
+          state=$(jq -r .state pr.json)
+          actual_head=$(jq -r .head.sha pr.json)
+          actual_base=$(jq -r .base.sha pr.json)
+          if [[ "$state" == closed && "$(jq -r .merged pr.json)" == true ]]; then
+            jq '{status:"ALREADY_MERGED",state,merged,merged_at,merge_commit_sha,head:.head.sha,base:.base.sha}' pr.json >ops-status/pr459-merge-controller.json
+            exit 0
+          fi
+          test "$state" = open
+          test "$actual_head" = "$EXPECTED_HEAD"
+          test "$actual_base" = "$EXPECTED_BASE"
+          api "https://api.github.com/repos/${REPO}/pulls/${PR}/reviews?per_page=100" >reviews.json
+          api "https://api.github.com/repos/${REPO}/commits/${EXPECTED_HEAD}/check-runs?per_page=100" >checks.json
+          jq -e --arg head "$EXPECTED_HEAD" '
+            [ .[] | select(.user.login == "Franksudoman" and .commit_id == $head) ] | last | .state == "APPROVED"
+          ' reviews.json >/dev/null
+          jq -e --arg head "$EXPECTED_HEAD" '
+            [ .[] | select(.user.login == "Tomasrgbsf" and .commit_id == $head) ] | last | .state == "APPROVED"
+          ' reviews.json >/dev/null
+          jq -e --arg head "$EXPECTED_HEAD" '
+            [ .[] | select(.commit_id == $head and .state == "CHANGES_REQUESTED") ] | length == 0
+          ' reviews.json >/dev/null
+          jq -e '
+            (.total_count > 0) and
+            ([.check_runs[] | select(.status != "completed")] | length == 0) and
+            ([.check_runs[] | select((.conclusion | IN("success","neutral","skipped")) | not)] | length == 0)
+          ' checks.json >/dev/null
+          jq -e '[.check_runs[] | select(.name == "Trillionnium OS external-evidence source boundary" and .status == "completed" and .conclusion == "success")] | length > 0' checks.json >/dev/null
+          jq -e '[.check_runs[] | select(.name == "Hepta consolidated source qualification (read-only)" and .status == "completed" and .conclusion == "success")] | length > 0' checks.json >/dev/null
+          payload=$(jq -n --arg sha "$EXPECTED_HEAD" '{sha:$sha,merge_method:"squash",commit_title:"fix(g1): restore reviewed Trillionnium OS external-evidence boundary (#459)",commit_message:"Integrate the exact reviewed admission, fixed-target executor, source-only CI and release-Clippy hardening. Checked-in policies remain unprovisioned. No target execution, evidence, gap transition, destructive action, signing, deployment or public release is authorized."}')
+          api --request PUT --data "$payload" "https://api.github.com/repos/${REPO}/pulls/${PR}/merge" >merge.json
+          jq -e '.merged == true' merge.json >/dev/null
+          jq -n --slurpfile merge merge.json --arg head "$EXPECTED_HEAD" '{status:"MERGED_BY_ORDINARY_REVIEWED_PATH",head:$head,result:$merge[0]}' >ops-status/pr459-merge-controller.json
+      - name: Persist controller decision
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ ! -f ops-status/pr459-merge-controller.json ]]; then
+            jq -n --arg status "NOT_MERGED_FAIL_CLOSED" --arg run "$GITHUB_RUN_ID" '{status:$status,run_id:$run}' >ops-status/pr459-merge-controller.json
+          fi
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add ops-status/pr459-merge-controller.json
+          git diff --cached --quiet && exit 0
+          git commit -m 'ops: record exact PR459 merge decision'
+          git push origin HEAD:refs/heads/ops/trillionnium-os-status-snapshot-20260908
