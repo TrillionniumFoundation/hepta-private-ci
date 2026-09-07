@@ -9,10 +9,14 @@ use std::error::Error as StdError;
 use std::fmt;
 
 use codex_hepta_cognitive_types::MemoryRecord;
+use codex_hepta_cognitive_types::RecordState;
 use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::FixedQ32;
 use codex_hepta_types::StableId;
+
+pub use v2::RetrievalReceiptV2;
+pub use v2::retrieve_v2;
 
 const MAX_CANDIDATES: usize = 16_384;
 const MAX_RESULTS: usize = 256;
