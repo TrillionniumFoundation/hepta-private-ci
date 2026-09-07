@@ -1,0 +1,39 @@
+name: Exact PR 456 source export
+
+on:
+  push:
+    branches:
+      - ops/exact-source-export-20260907
+
+permissions:
+  contents: read
+
+jobs:
+  export:
+    name: Export exact source without target authority
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Check out exact reviewed source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: 4506b0076e51211976eeb6d2df8ca1a4287f1cd1
+          fetch-depth: 1
+          persist-credentials: false
+      - name: Archive exact tracked tree
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "4506b0076e51211976eeb6d2df8ca1a4287f1cd1"
+          git archive --format=tar.gz --output="${RUNNER_TEMP}/hepta-pr456-4506b007.tar.gz" HEAD
+          sha256sum "${RUNNER_TEMP}/hepta-pr456-4506b007.tar.gz" > "${RUNNER_TEMP}/hepta-pr456-4506b007.tar.gz.sha256"
+          test -z "$(git status --porcelain=v1 --untracked-files=all --ignore-submodules=none)"
+      - name: Upload exact source archive
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: hepta-pr456-exact-source-4506b007
+          if-no-files-found: error
+          retention-days: 1
+          path: |
+            ${{ runner.temp }}/hepta-pr456-4506b007.tar.gz
+            ${{ runner.temp }}/hepta-pr456-4506b007.tar.gz.sha256
