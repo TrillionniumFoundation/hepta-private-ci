@@ -33,10 +33,9 @@ use codex_hepta_types::ProbabilityQ32;
 use codex_hepta_types::StableId;
 use pretty_assertions::assert_eq;
 
-#[expect(
-    clippy::unwrap_used,
-    reason = "fixture identifiers are deterministic literals and should fail at their construction site"
-)]
+#[path = "support/durable_process.rs"]
+mod process;
+
 fn id(value: &str) -> StableId {
     let Ok(identifier) = StableId::new(value) else {
         panic!("fixture identifier must be valid");
@@ -44,10 +43,6 @@ fn id(value: &str) -> StableId {
     identifier
 }
 
-#[expect(
-    clippy::unwrap_used,
-    reason = "fixture files are required preconditions and collisions must fail the test immediately"
-)]
 fn create(path: &Path) -> File {
     let Ok(file) = OpenOptions::new()
         .read(true)
@@ -60,10 +55,13 @@ fn create(path: &Path) -> File {
     file
 }
 
-#[expect(
-    clippy::unwrap_used,
-    reason = "fixture files were created earlier in the same test and missing files must fail immediately"
-)]
+fn create_artifact(path: &Path) -> CreateOnlyArtifactFile {
+    let Ok(file) = CreateOnlyArtifactFile::create(path) else {
+        panic!("new artifact fixture file must be created");
+    };
+    file
+}
+
 fn open_readonly(path: &Path) -> File {
     let Ok(file) = File::open(path) else {
         panic!("fixture file must be readable");
@@ -73,10 +71,6 @@ fn open_readonly(path: &Path) -> File {
 
 /// A bounded fixture learner using ONLY reopened training records. This is not
 /// OPE, NDU training or a general cross-fit/statistical acceptance algorithm.
-#[expect(
-    clippy::unwrap_used,
-    reason = "the fixture asserts complete decisions and a non-empty balanced score set before selection"
-)]
 fn fit_binary_fixture(ledger: &LearningLedger) -> Vec<u8> {
     let records = ledger.active_records();
     let mut decisions = BTreeMap::new();
@@ -116,19 +110,15 @@ fn fit_binary_fixture(ledger: &LearningLedger) -> Vec<u8> {
 /// tested by a local fixture and real efficacy is not inferred from this score.
 fn held_out_oracle(policy: &[u8]) -> u64 {
     [
-        b"fresh".as_slice(),
-        b"fresh".as_slice(),
-        b"fresh".as_slice(),
+        b"freshness-order".as_slice(),
+        b"freshness-order".as_slice(),
+        b"freshness-order".as_slice(),
     ]
     .iter()
     .map(|expected| u64::from(*expected == policy))
     .sum()
 }
 
-#[expect(
-    clippy::unwrap_used,
-    reason = "fixture generation and registration are deterministic setup and must fail at the first invalid invariant"
-)]
 fn register(
     registry: &mut ArtifactRegistry,
     name: &str,
@@ -297,18 +287,63 @@ fn durable_experience_candidate_reopen_next_snapshot_and_revocation_safe_rollbac
         read_registry_snapshot(open_readonly(&registry_path), registry_receipt).unwrap();
     assert_eq!(registry.snapshot(), expected_registry);
 
-    // These are fixture-host run snapshots, not production selection receipts.
-    let existing_run =
-        read_candidate_payload(open_readonly(&baseline_path), &registry, &id("baseline")).unwrap();
-    let next_run =
-        read_candidate_payload(open_readonly(&candidate_path), &registry, &id("candidate"))
-            .unwrap();
-    assert_eq!(existing_run, b"stale");
-    assert_eq!(next_run, b"fresh");
-    assert_eq!(existing_run, baseline); // Current run is unchanged.
-    let rollback =
-        read_candidate_payload(open_readonly(&baseline_path), &registry, &id("baseline")).unwrap();
-    assert_eq!(rollback, baseline); // Uses current registry, not an old backup.
+    // Three real executable process generations consume exact fixture-selected
+    // tuples. Both ranking policies order the same two legal supported facts.
+    let baseline_request = process::LoadRequest::new(
+        &registry_path,
+        registry_receipt,
+        &baseline_path,
+        registry.manifest(&id("baseline")).unwrap(),
+    );
+    let candidate_request = process::LoadRequest::new(
+        &registry_path,
+        registry_receipt,
+        &candidate_path,
+        registry.manifest(&id("candidate")).unwrap(),
+    );
+    let old = process::load(&baseline_request, /*generation*/ 1);
+    let next = process::load(&candidate_request, /*generation*/ 2);
+    let rollback = process::load(&baseline_request, /*generation*/ 3);
+    let old_behavior = process::assert_loaded(
+        &old,
+        &baseline_request,
+        &["supported-alpha", "supported-beta"],
+    );
+    let next_behavior = process::assert_loaded(
+        &next,
+        &candidate_request,
+        &["supported-beta", "supported-alpha"],
+    );
+    let rollback_behavior = process::assert_loaded(
+        &rollback,
+        &baseline_request,
+        &["supported-alpha", "supported-beta"],
+    );
+    assert_ne!(old_behavior, next_behavior);
+    assert_eq!(old_behavior, rollback_behavior);
+    assert_eq!(old.generation, 1);
+    assert_eq!(next.generation, 2);
+    assert_eq!(rollback.generation, 3);
+
+    // The current request tuple cannot mix an old compatibility profile or a
+    // different objective with the selected checkpoint.
+    let mut mixed = candidate_request.clone();
+    mixed.objective = Digest32::of_bytes(b"different-objective").to_string();
+    process::assert_rejected(&process::load(&mixed, /*generation*/ 4), "tuple_mismatch");
+    mixed = candidate_request.clone();
+    mixed.compatibility = Digest32::of_bytes(b"different-encoder").to_string();
+    process::assert_rejected(&process::load(&mixed, /*generation*/ 5), "tuple_mismatch");
+    let corrupt_path = directory.path().join("corrupt-candidate");
+    std::fs::write(&corrupt_path, b"corrupt-policy").unwrap();
+    let mut corrupt = candidate_request.clone();
+    corrupt.payload = corrupt_path;
+    process::assert_rejected(
+        &process::load(&corrupt, /*generation*/ 6),
+        "PayloadMismatch",
+    );
+    assert_eq!(std::fs::read(&journal_path).unwrap(), journal_bytes);
+    assert_eq!(std::fs::read(&baseline_path).unwrap(), baseline);
+    assert_eq!(std::fs::read(&candidate_path).unwrap(), learned);
 
     registry
         .append(ArtifactEvent::Revoke(StateChange {

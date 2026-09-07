@@ -323,16 +323,15 @@ pub(super) fn scaled_ratio(numerator: i128, denominator: i128) -> Result<ScaledR
         }
     }
     result = checked_add(result, fraction)?;
-    let twice = remainder.checked_mul(2).ok_or(OpeError::Arithmetic)?;
-    if twice > denominator || (twice == denominator && result % 2 != 0) {
-        checked_add(result, /*right*/ 1)
+    let floor = result;
+    // Compare 2 * remainder with the denominator without overflowing i128.
+    let complement = denominator - remainder;
+    let rounded = if remainder > complement || (remainder == complement && result % 2 != 0) {
+        checked_add(result, /*right*/ 1)?
     } else {
         result
     };
-    Ok(ScaledRatio {
-        floor: result,
-        rounded,
-    })
+    Ok(ScaledRatio { floor, rounded })
 }
 
 pub(super) fn round_ratio(numerator: i128, denominator: i128) -> Result<i128, OpeError> {
