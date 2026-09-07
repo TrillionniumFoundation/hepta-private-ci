@@ -1,0 +1,96 @@
+name: Hepta safe workflow blob
+
+on:
+  push:
+    branches:
+      - ops/hepta-safe-workflow-blob-20260907
+
+permissions:
+  contents: write
+
+jobs:
+  create:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+
+      - name: Create and verify patched workflow blob
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPOSITORY: ${{ github.repository }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import base64
+          import hashlib
+          import json
+          import os
+          import pathlib
+          import urllib.error
+          import urllib.request
+
+          path = pathlib.Path('.github/workflows/rust-ci-full.yml')
+          text = path.read_text(encoding='utf-8')
+          marker = '\njobs:\n'
+          if marker not in text:
+              raise SystemExit('jobs marker not found')
+          prefix = text.split(marker, 1)[0]
+          if '\npermissions:\n' not in prefix:
+              text = text.replace(
+                  marker,
+                  '\npermissions:\n  contents: read\n\njobs:\n',
+                  1,
+              )
+          data = text.encode('utf-8')
+          required = (
+              b'permissions:',
+              b'contents: read',
+              b'persist-credentials: false',
+          )
+          for token in required:
+              if token not in data:
+                  raise SystemExit(f'missing safe token: {token!r}')
+          forbidden = (b'contents: write', b'persist-credentials: true')
+          for token in forbidden:
+              if token in data:
+                  raise SystemExit(f'unsafe token remains: {token!r}')
+
+          local_sha = hashlib.sha1(
+              f'blob {len(data)}\0'.encode('ascii') + data
+          ).hexdigest()
+          payload = json.dumps(
+              {
+                  'content': base64.b64encode(data).decode('ascii'),
+                  'encoding': 'base64',
+              },
+              separators=(',', ':'),
+          ).encode('utf-8')
+          request = urllib.request.Request(
+              f"https://api.github.com/repos/{os.environ['REPOSITORY']}/git/blobs",
+              data=payload,
+              method='POST',
+              headers={
+                  'Accept': 'application/vnd.github+json',
+                  'Authorization': f"Bearer {os.environ['GH_TOKEN']}",
+                  'X-GitHub-Api-Version': '2022-11-28',
+                  'User-Agent': 'hepta-safe-workflow-blob',
+              },
+          )
+          try:
+              with urllib.request.urlopen(request, timeout=60) as response:
+                  remote = json.load(response)
+          except urllib.error.HTTPError as error:
+              body = error.read().decode('utf-8', errors='replace')
+              raise SystemExit(f'GitHub API {error.code}: {body}') from error
+          if remote.get('sha') != local_sha:
+              raise SystemExit(
+                  f"blob mismatch local={local_sha} remote={remote.get('sha')}"
+              )
+          print(f'SAFE_WORKFLOW_BLOB_SHA={local_sha}')
+          print(f'SAFE_WORKFLOW_BYTES={len(data)}')
+          PY
