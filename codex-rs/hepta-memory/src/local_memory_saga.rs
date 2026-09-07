@@ -238,6 +238,7 @@ impl LocalLeaseOutbox {
     /// Tombstone a candidate through the same Pending -> Applied/Rejected
     /// target-ack path.  The underlying CognitiveStore forget operation is
     /// append-only and cannot resurrect a tombstoned head.
+    #[allow(clippy::too_many_arguments)]
     pub async fn tombstone_memory_candidate_saga(
         &self,
         access: &CognitiveAccess,
@@ -442,6 +443,7 @@ impl LocalLeaseOutbox {
         }
     }
 
+    #[allow(clippy::too_many_arguments)]
     async fn replay_tombstone(
         &self,
         access: &CognitiveAccess,
