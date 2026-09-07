@@ -85,6 +85,21 @@ public_items = ["HeptaRuntime", "RuntimeStatus"]
 product_callers = ["codex-rs/hepta-native-gateway/src/lib.rs"]
 
 [[surface]]
+crate = "codex-hepta-control-plane"
+role = "read_only_compiled_in_organ_composition"
+public_items = ["OrganGraphsV1", "OrganHostV1", "TrustedReadOnlyOrganV1"]
+product_callers = ["codex-rs/hepta-runtime/src/organs.rs"]
+
+[[surface]]
+crate = "codex-hepta-types"
+role = "authority_free_identity_generation_and_digest_primitives"
+public_items = ["StableId", "Generation", "Digest32", "AuthorityPosture"]
+product_callers = [
+  "codex-rs/hepta-control-plane/src/organ_runtime.rs",
+  "codex-rs/hepta-runtime/src/organs.rs",
+]
+
+[[surface]]
 crate = "codex-hepta-native-gateway"
 role = "loopback_read_only_product_gateway"
 public_items = [
