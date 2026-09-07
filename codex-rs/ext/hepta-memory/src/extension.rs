@@ -766,12 +766,10 @@ where
     if let Some(store) = local_lifecycle_store {
         builder.turn_lifecycle_contributor(Arc::new(LocalTurnLifecycleContributor::new(store)));
     }
-    if qualification_writer_profile {
-        if let Some(host) = qualification_turn_writer {
-            builder.turn_lifecycle_contributor(Arc::new(
-                QualificationTurnLifecycleContributor::with_host(host),
-            ));
-        }
+    if qualification_writer_profile && let Some(host) = qualification_turn_writer {
+        builder.turn_lifecycle_contributor(Arc::new(
+            QualificationTurnLifecycleContributor::with_host(host),
+        ));
     }
     extension
 }

@@ -71,7 +71,7 @@ impl LocalTurnLifecycleContributor {
         Self { store }
     }
 
-    fn state<'a>(&self, turn_store: &'a ExtensionData) -> Arc<Mutex<TurnLeaseState>> {
+    fn state(&self, turn_store: &ExtensionData) -> Arc<Mutex<TurnLeaseState>> {
         turn_store.get_or_init(Mutex::default)
     }
 

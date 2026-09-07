@@ -543,14 +543,9 @@ enum TerminalAction {
 /// Hosts may either attach a [`QualificationTurnWriterInput`] before
 /// `on_turn_start` or supply a [`QualificationTurnWriterHost`] capability.
 /// The regular extension installer deliberately does not register it.
+#[derive(Default)]
 pub struct QualificationTurnLifecycleContributor {
     host: Option<QualificationTurnWriterHost>,
-}
-
-impl Default for QualificationTurnLifecycleContributor {
-    fn default() -> Self {
-        Self { host: None }
-    }
 }
 
 impl QualificationTurnLifecycleContributor {
@@ -562,7 +557,7 @@ impl QualificationTurnLifecycleContributor {
         Self { host: Some(host) }
     }
 
-    fn state<'a>(&self, turn_store: &'a ExtensionData) -> std::sync::Arc<Mutex<TurnWriterState>> {
+    fn state(&self, turn_store: &ExtensionData) -> std::sync::Arc<Mutex<TurnWriterState>> {
         turn_store.get_or_init(Mutex::default)
     }
 
@@ -629,41 +624,39 @@ impl QualificationTurnLifecycleContributor {
         )
         .await
         .map_err(|error| QualificationTurnWriterInputError::Invalid(error.to_string()))?;
-        if let Some(trajectory) = recovery.trajectory {
-            if let Some(terminal) = trajectory.events.last().filter(|event| event.terminal) {
-                let terminal_occurrence_key =
-                    bounded_terminal_occurrence_key(&input.occurrence_key);
-                if !trajectory.is_complete_qualification_terminal(
-                    &input.turn_id,
-                    &input.occurrence_key,
-                    &terminal_occurrence_key,
-                ) {
-                    return Err(QualificationTurnWriterInputError::Invalid(
-                        "durable H7 terminal does not match qualification lifecycle shape"
-                            .to_string(),
-                    ));
-                }
-                // A process may die after the H7 terminal observation commits
-                // but before the local outcome/release transaction.  The
-                // durable trajectory is authoritative for this local
-                // observation; close the leftover lease without attempting a
-                // second turn_start append.
-                if recovery.lease_expired {
-                    // Post-TTL recovery is deliberately timeout-only.  Do
-                    // not append an outcome or reopen a writable executor;
-                    // the exact old head is terminalized by the lease CAS.
-                    input.lease.expire_lease().await?;
-                    return Ok(None);
-                }
-                Self::settle_and_release(
-                    &input.lease,
-                    &input.occurrence_key,
-                    &terminal.outcome,
-                    &bounded_terminal_reason(&terminal.reason),
-                )
-                .await?;
+        if let Some(trajectory) = recovery.trajectory
+            && let Some(terminal) = trajectory.events.last().filter(|event| event.terminal)
+        {
+            let terminal_occurrence_key = bounded_terminal_occurrence_key(&input.occurrence_key);
+            if !trajectory.is_complete_qualification_terminal(
+                &input.turn_id,
+                &input.occurrence_key,
+                &terminal_occurrence_key,
+            ) {
+                return Err(QualificationTurnWriterInputError::Invalid(
+                    "durable H7 terminal does not match qualification lifecycle shape".to_string(),
+                ));
+            }
+            // A process may die after the H7 terminal observation commits
+            // but before the local outcome/release transaction.  The
+            // durable trajectory is authoritative for this local
+            // observation; close the leftover lease without attempting a
+            // second turn_start append.
+            if recovery.lease_expired {
+                // Post-TTL recovery is deliberately timeout-only.  Do
+                // not append an outcome or reopen a writable executor;
+                // the exact old head is terminalized by the lease CAS.
+                input.lease.expire_lease().await?;
                 return Ok(None);
             }
+            Self::settle_and_release(
+                &input.lease,
+                &input.occurrence_key,
+                &terminal.outcome,
+                &bounded_terminal_reason(&terminal.reason),
+            )
+            .await?;
+            return Ok(None);
         }
         if recovery.lease_expired {
             // An expired attempt without a durable H7 terminal is not safe to
@@ -776,26 +769,24 @@ impl QualificationTurnLifecycleContributor {
         )
         .await
         .map_err(|error| QualificationTurnWriterInputError::Invalid(error.to_string()))?;
-        if let Some(trajectory) = recovery.trajectory {
-            if let Some(terminal) = trajectory.events.last().filter(|event| event.terminal) {
-                let terminal_occurrence_key =
-                    bounded_terminal_occurrence_key(&input.occurrence_key);
-                if !trajectory.is_complete_qualification_terminal(
-                    &input.turn_id,
-                    &input.occurrence_key,
-                    &terminal_occurrence_key,
-                ) {
-                    return Err(QualificationTurnWriterInputError::Invalid(
-                        "durable H7 terminal does not match qualification lifecycle shape"
-                            .to_string(),
-                    ));
-                }
-                return Ok(TerminalProjection {
-                    outcome: terminal.outcome.clone(),
-                    reason: bounded_terminal_reason(&terminal.reason),
-                    lease_expired: recovery.lease_expired,
-                });
+        if let Some(trajectory) = recovery.trajectory
+            && let Some(terminal) = trajectory.events.last().filter(|event| event.terminal)
+        {
+            let terminal_occurrence_key = bounded_terminal_occurrence_key(&input.occurrence_key);
+            if !trajectory.is_complete_qualification_terminal(
+                &input.turn_id,
+                &input.occurrence_key,
+                &terminal_occurrence_key,
+            ) {
+                return Err(QualificationTurnWriterInputError::Invalid(
+                    "durable H7 terminal does not match qualification lifecycle shape".to_string(),
+                ));
             }
+            return Ok(TerminalProjection {
+                outcome: terminal.outcome.clone(),
+                reason: bounded_terminal_reason(&terminal.reason),
+                lease_expired: recovery.lease_expired,
+            });
         }
         if recovery.lease_expired {
             return Err(QualificationTurnWriterInputError::Invalid(
