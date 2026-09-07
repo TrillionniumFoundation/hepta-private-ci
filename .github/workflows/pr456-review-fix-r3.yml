@@ -1,0 +1,104 @@
+name: PR 456 exact review-fix publisher
+
+on:
+  push:
+    branches:
+      - ops/pr456-review-fix-r3-20260907
+
+permissions:
+  contents: write
+
+concurrency:
+  group: pr456-external-evidence-review-fix
+  cancel-in-progress: false
+
+jobs:
+  repair-and-publish:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Check out repair branch with complete ancestry
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Prove the publication lease
+        id: lease
+        shell: bash
+        run: |
+          set -euo pipefail
+          target='integration/final-main-tree-20260907'
+          git fetch --no-tags origin "+refs/heads/${target}:refs/remotes/origin/${target}"
+          expected="$(git merge-base HEAD "origin/${target}")"
+          observed="$(git rev-parse "origin/${target}")"
+          test "$observed" = "$expected"
+          echo "target=${target}" >> "$GITHUB_OUTPUT"
+          echo "expected=${expected}" >> "$GITHUB_OUTPUT"
+
+      - name: Restore the exact reviewed source before applying bounded fixes
+        shell: bash
+        run: |
+          set -euo pipefail
+          baseline='4506b0076e51211976eeb6d2df8ca1a4287f1cd1'
+          paths=(
+            .g1/trillionnium_os_external_evidence/admission_service.py
+            .g1/trillionnium_os_external_evidence/tests/test_admission_service.py
+            .g1/trillionnium_os_external_evidence/policy.template.json
+            .g1/trillionnium_os_external_evidence/README.md
+            .g1/trillionnium_os_external_evidence/trusted_executor.py
+            .g1/trillionnium_os_external_evidence/tests/test_trusted_executor.py
+            .g1/trillionnium_os_external_evidence/EXECUTOR.md
+            .github/workflows/rust-ci-full.yml
+          )
+          for path in "${paths[@]}"; do
+            git show "${baseline}:${path}" > "$path"
+          done
+
+      - name: Apply admission and executor review repairs
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 .github/repair_pr456_admission.py
+          python3 .github/repair_pr456_executor.py
+
+      - name: Verify repaired source and hostile fixtures
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd .g1/trillionnium_os_external_evidence
+          python3 -m py_compile admission_service.py trusted_executor.py tests/*.py
+          python3 -m unittest discover -s tests -v
+          python3 -m json.tool policy.template.json >/dev/null
+          python3 -m json.tool execution-policy.template.json >/dev/null
+          cd ../..
+          git diff --check
+          grep -F 'git restore --source="$reviewed_head" --staged --worktree -- .' .github/workflows/rust-ci-full.yml
+          grep -F 'git diff --exit-code --no-ext-diff "$reviewed_head" -- .' .github/workflows/rust-ci-full.yml
+
+      - name: Remove all repository-controlled publication helpers
+        shell: bash
+        run: |
+          set -euo pipefail
+          git rm -f --ignore-unmatch \
+            .github/repair_pr456_admission.py \
+            .github/repair_pr456_executor.py \
+            .github/workflows/pr456-review-fix-r3.yml \
+            .github/workflows/repair-external-evidence-and-publish.yml
+
+      - name: Publish through an exact non-forced lease
+        env:
+          TARGET: ${{ steps.lease.outputs.target }}
+          EXPECTED: ${{ steps.lease.outputs.expected }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add --all
+          git diff --cached --check
+          git diff --cached --quiet && { echo 'repair produced no publication commit' >&2; exit 1; }
+          git commit -m 'fix(g1): close external-evidence source review blockers'
+          git push \
+            --force-with-lease="refs/heads/${TARGET}:${EXPECTED}" \
+            origin "HEAD:refs/heads/${TARGET}"
