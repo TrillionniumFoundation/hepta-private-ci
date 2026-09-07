@@ -1,0 +1,109 @@
+name: Hepta blocking CI failure diagnostic
+
+on:
+  push:
+    branches:
+      - ops/ci-failure-diagnostic-20260907
+
+permissions:
+  actions: read
+  contents: write
+
+jobs:
+  collect:
+    if: ${{ contains(github.event.head_commit.message, '[collect-blocking-ci-34109579088]') }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: true
+      - name: Download and summarize archived workflow logs
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SOURCE_RUN: '34109579088'
+        run: |
+          set -euo pipefail
+          rm -rf .diagnostic-run-logs
+          mkdir -p .diagnostic-run-logs qualification/diagnostics
+          gh api "repos/${GITHUB_REPOSITORY}/actions/runs/${SOURCE_RUN}/logs" > .diagnostic-run-logs.zip
+          unzip -q .diagnostic-run-logs.zip -d .diagnostic-run-logs
+          python3 - <<'PY'
+          from __future__ import annotations
+
+          from pathlib import Path
+          import re
+
+          root = Path('.diagnostic-run-logs')
+          out = Path('qualification/diagnostics/blocking-ci-34109579088.txt')
+          wanted = (
+              'windows-latest',
+              'macos-15',
+              'clippy',
+              'verify release build',
+              'shard 1',
+              'shard 2',
+              'shard 3',
+              'shard 4',
+          )
+          markers = re.compile(
+              r'(?i)(##\[error\]|^error(?:\[E\d+\])?:|ERROR:|FAILED|failure|fatal error|'
+              r'unresolved external|LNK\d+|link\.exe|cannot find|not found|exit code [1-9]|'
+              r'process_wrapper failed|panicked at|test result: FAILED)'
+          )
+          files = sorted(path for path in root.rglob('*') if path.is_file())
+          chunks: list[str] = [
+              'source_run=34109579088',
+              f'log_files={len(files)}',
+              '',
+          ]
+          selected = 0
+          for path in files:
+              name = str(path.relative_to(root))
+              lower = name.lower()
+              if not any(token in lower for token in wanted):
+                  continue
+              raw = path.read_bytes().replace(b'\x00', b'')
+              text = raw.decode('utf-8', errors='replace')
+              lines = text.splitlines()
+              hits = [idx for idx, line in enumerate(lines) if markers.search(line)]
+              if not hits:
+                  continue
+              selected += 1
+              chunks.append('=' * 100)
+              chunks.append(name)
+              chunks.append('=' * 100)
+              seen: set[tuple[int, int]] = set()
+              emitted = 0
+              for idx in hits:
+                  start = max(0, idx - 8)
+                  end = min(len(lines), idx + 18)
+                  key = (start, end)
+                  if any(a <= start <= b or a <= end <= b for a, b in seen):
+                      continue
+                  seen.add(key)
+                  chunks.append(f'--- lines {start + 1}-{end} ---')
+                  chunks.extend(lines[start:end])
+                  emitted += 1
+                  if emitted >= 80:
+                      chunks.append('--- context limit reached ---')
+                      break
+              chunks.append('')
+          chunks.insert(2, f'failed_log_files_with_markers={selected}')
+          rendered = '\n'.join(chunks)
+          if len(rendered) > 800_000:
+              rendered = rendered[:800_000] + '\n--- output truncated at 800000 characters ---\n'
+          out.write_text(rendered, encoding='utf-8')
+          print(out)
+          PY
+          rm -rf .diagnostic-run-logs .diagnostic-run-logs.zip
+      - name: Publish immutable diagnostic receipt on this isolated branch
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add qualification/diagnostics/blocking-ci-34109579088.txt
+          git commit -m 'diagnostic: retain blocking CI 34109579088 failure contexts'
+          git push origin HEAD:${GITHUB_REF_NAME}
