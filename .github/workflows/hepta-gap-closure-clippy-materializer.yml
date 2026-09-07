@@ -31,7 +31,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          test "$(git rev-parse HEAD^)" = "16f05e434e7f68945445ae39e95ea7bdf55f7cdc"
+          test "$(git rev-parse HEAD^)" = "838b5d274adac33dced20c3846a5415ef6e5a387"
           test "$(git diff --name-only HEAD^ HEAD)" = ".github/workflows/hepta-gap-closure-clippy-materializer.yml"
 
       - name: Apply targeted source repairs
@@ -98,19 +98,25 @@ jobs:
 
           feedback = root / "h7_feedback.rs"
           text = feedback.read_text(encoding="utf-8")
-          old = '''        serde_json::to_string(&(key.trajectory_id, key.event_seq, key.event_id))
-            .expect("feedback key tuple is serializable")'''
-          new = '''        serde_json::json!([key.trajectory_id, key.event_seq, key.event_id]).to_string()'''
-          if text.count(old) != 1:
-              raise SystemExit("unexpected H7 feedback key serialization source")
-          feedback.write_text(text.replace(old, new), encoding="utf-8")
+          pattern = re.compile(
+              r'serde_json::to_string\(&\(key\.trajectory_id,\s*key\.event_seq,\s*key\.event_id\)\)\s*\.expect\("feedback key tuple is serializable"\)'
+          )
+          text, count = pattern.subn(
+              "serde_json::json!([key.trajectory_id, key.event_seq, key.event_id]).to_string()",
+              text,
+          )
+          if count != 1:
+              raise SystemExit(f"unexpected H7 feedback key serialization source: {count} matches")
+          feedback.write_text(text, encoding="utf-8")
 
           lease = root / "local_lease_outbox.rs"
           text = lease.read_text(encoding="utf-8")
           old = '            let prior = latest.as_ref().expect("lease prior row");'
-          new = '''            let Some(prior) = latest.as_ref() else {
-                return Err(corrupt("lease journal prior row is missing"));
-            };'''
+          new = (
+              "            let Some(prior) = latest.as_ref() else {\n"
+              "                return Err(corrupt(\"lease journal prior row is missing\"));\n"
+              "            };"
+          )
           if text.count(old) != 1:
               raise SystemExit("unexpected lease prior-row source")
           text = text.replace(old, new)
