@@ -8,7 +8,6 @@ use codex_hepta_cognitive_types::RecordState;
 use codex_hepta_types::FixedQ32;
 use codex_hepta_types::Revision;
 use codex_hepta_types::StableId;
-use pretty_assertions::assert_eq;
 
 fn id(value: &str) -> StableId {
     StableId::new(value).expect("fixture identifier is valid")
