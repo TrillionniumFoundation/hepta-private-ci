@@ -1,0 +1,54 @@
+name: Hepta superseded PR cleanup
+
+on:
+  push:
+    branches:
+      - codex/hepta-all-gap-closure-20260908
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+  issues: write
+  pull-requests: write
+
+concurrency:
+  group: hepta-superseded-pr-cleanup-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  reconcile:
+    if: ${{ github.repository == 'TrillionniumFoundation/hepta-private-ci' }}
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+
+      - name: Close only strict-ancestor pull requests
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          python3 .github/scripts/hepta_close_superseded_prs.py \
+            --repository "${GITHUB_REPOSITORY}" \
+            --canonical-sha "${GITHUB_SHA}" \
+            --apply \
+            --report /tmp/hepta-superseded-pr-report.json
+          python3 - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          report = json.loads(Path('/tmp/hepta-superseded-pr-report.json').read_text())
+          counts = report['counts']
+          summary = Path(os.environ['GITHUB_STEP_SUMMARY'])
+          summary.write_text(
+              '# Hepta superseded PR reconciliation\n\n'
+              f"- Canonical SHA: `{report['canonicalSha']}`\n"
+              f"- Open PRs examined: **{counts['total']}**\n"
+              f"- Strict-ancestor PRs closed: **{counts['closed']}**\n"
+              f"- PRs retained: **{counts['kept']}**\n\n"
+              'A closed PR is marked superseded, not falsely represented as merged.\n',
+              encoding='utf-8',
+          )
+          PY
