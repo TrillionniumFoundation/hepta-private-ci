@@ -14,4 +14,20 @@ doctest = false
 workspace = true
 
 [dependencies]
+codex-hepta-contracts = { path = "../hepta-contracts" }
 codex-hepta-types = { path = "../hepta-types" }
+codex-http-client = { workspace = true }
+http = { workspace = true }
+serde = { workspace = true, features = ["derive"] }
+serde_json = { workspace = true }
+url = { workspace = true }
+zeroize = { workspace = true, features = ["serde"] }
+
+[dev-dependencies]
+ed25519-dalek = { workspace = true }
+pretty_assertions = { workspace = true }
+tempfile = { workspace = true }
+rcgen = { workspace = true }
+rustls = { workspace = true }
+tokio = { workspace = true, features = ["macros", "rt-multi-thread", "net", "io-util", "time"] }
+tokio-rustls = { workspace = true }

@@ -2,8 +2,8 @@
 //!
 //! The boundary exposes no raw-secret payload field: V1 accepts only bounded
 //! reference identifiers, digests and permission observations. It cannot
-//! dispatch because this tree has no owner-issued `VerifiedUseToken` or
-//! enrolled provider port.
+//! dispatch. The separate HTTPS consumer requires kernel-owned, independently
+//! signed final-use authority; permission projections never enable it.
 
 #![forbid(unsafe_code)]
 
@@ -14,7 +14,14 @@ use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
 
+mod https_consumer;
 mod secret_boundary_v1;
+
+pub use https_consumer::BaoClient;
+pub use https_consumer::BaoClientError;
+pub use https_consumer::BaoReadRequest;
+pub use https_consumer::BaoSecretReceipt;
+pub use https_consumer::BaoToken;
 
 pub use secret_boundary_v1::AUTHBUS_POLICY_PRODUCER_ID;
 pub use secret_boundary_v1::HEPTABAO_BACKEND_ID;

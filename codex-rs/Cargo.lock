@@ -3535,7 +3535,21 @@ dependencies = [
 name = "codex-hepta-bao-adapter"
 version = "0.0.0"
 dependencies = [
+ "codex-hepta-contracts",
  "codex-hepta-types",
+ "codex-http-client",
+ "ed25519-dalek",
+ "http 1.4.0",
+ "pretty_assertions",
+ "rcgen",
+ "rustls",
+ "serde",
+ "serde_json",
+ "tempfile",
+ "tokio",
+ "tokio-rustls",
+ "url",
+ "zeroize",
 ]
 
 [[package]]
@@ -3594,10 +3608,13 @@ dependencies = [
 name = "codex-hepta-contracts"
 version = "0.0.0"
 dependencies = [
+ "ed25519-dalek",
  "pretty_assertions",
+ "rustix 1.1.4",
  "serde",
  "serde_json",
  "sha2 0.10.9",
+ "tempfile",
  "tokio",
  "toml 0.9.11+spec-1.1.0",
  "zeroize",
@@ -4011,6 +4028,7 @@ dependencies = [
  "jsonschema",
  "libc",
  "pretty_assertions",
+ "rustix 1.1.4",
  "serde",
  "serde_json",
  "sha2 0.10.9",
@@ -18262,6 +18280,7 @@ version = "1.8.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "b97154e67e32c85465826e8bcc1c59429aaaf107c1e4a9e53c8d8ccd5eff88d0"
 dependencies = [
+ "serde",
  "zeroize_derive",
 ]
 

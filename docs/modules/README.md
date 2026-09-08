@@ -52,3 +52,7 @@ The module guides above define ownership, boundaries and delivery envelopes. Imp
 ## Pre-coding readiness overlay
 
 Every guide now includes Section 16, which binds the module to one primary implementation lane and the exact specifications and typed protocols in [`../readiness/README.md`](../readiness/README.md). The overlay closes implementation ambiguity but does not change source or capability status.
+
+## HeptaBao executable connection
+
+For the implemented host-enrolled read path, continue from the `kernel.authority`, `runtime.supervisor` and `secrets.heptabao` guides to the [final-use and issuer design](../../codex-rs/hepta-contracts/FINAL_USE.md) and [HTTPS consumer integration](../../codex-rs/hepta-bao-adapter/README.md). They specify the actual signatures, persistent state schema, atomic-write and revocation fences, callback trust boundary, APIs, failure outcomes and tests. The earlier metadata-only adapter API remains available with dispatch disabled. These implementation notes add no automatic runtime enrollment or release authority.
