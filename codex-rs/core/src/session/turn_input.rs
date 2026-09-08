@@ -67,6 +67,10 @@ async fn release_start_reservation_after_error(
 /// recovery preamble. The active-turn lock is already held by both callers;
 /// taking the short synchronous gate second makes the shutdown/fence check
 /// and `reserve_start` one publication window without changing lock order.
+#[expect(
+    clippy::expect_used,
+    reason = "the reservation invariant is established under the admission and active-turn fences"
+)]
 fn reserve_start_after_admission(
     session: &Session,
     active_turn: &mut Option<ActiveTurn>,
@@ -234,6 +238,10 @@ pub(super) async fn handle_recovery(
     .await
 }
 
+#[expect(
+    clippy::await_holding_invalid_type,
+    reason = "the active-turn guard serializes recovery consumption with start admission"
+)]
 async fn start_or_steer(
     session: &Arc<Session>,
     request: TurnInputRequest,
@@ -386,6 +394,11 @@ async fn start_or_steer(
     }
 }
 
+#[expect(
+    clippy::expect_used,
+    clippy::await_holding_invalid_type,
+    reason = "the guarded idle-to-start transition validates exact recovery and reservation identities"
+)]
 async fn start_if_idle(
     session: &Arc<Session>,
     request: TurnInputRequest,
@@ -732,9 +745,7 @@ async fn recovery_reference_context(
     turn_id: &str,
     replay: &codex_history::TurnRecoveryReplayV1,
 ) -> Option<TurnContextItem> {
-    let Some(expected) = session.reference_context_item().await else {
-        return None;
-    };
+    let expected = session.reference_context_item().await?;
     if expected.turn_id.as_deref() != Some(turn_id) {
         return None;
     }
@@ -852,6 +863,10 @@ impl Session {
         }
     }
 
+    #[expect(
+        dead_code,
+        reason = "retained for focused lifecycle qualification and recovery probes"
+    )]
     pub(crate) async fn clear_reserved_idle_turn(
         &self,
         turn_state: &Arc<tokio::sync::Mutex<TurnState>>,
@@ -899,6 +914,10 @@ impl Session {
     #[expect(
         clippy::too_many_arguments,
         reason = "steering carries the accepted input plus its turn-scoped metadata"
+    )]
+    #[expect(
+        clippy::expect_used,
+        reason = "steering only dereferences state after the active-turn identity check"
     )]
     async fn steer_input(
         &self,

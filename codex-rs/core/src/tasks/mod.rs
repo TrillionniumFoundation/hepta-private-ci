@@ -219,6 +219,10 @@ struct TaskFinishHandoffOwner {
     handoff: Option<TaskFinishHandoff>,
 }
 
+#[expect(
+    clippy::expect_used,
+    reason = "the finish handoff owner remains armed until explicit disarm or Drop"
+)]
 impl TaskFinishHandoffOwner {
     fn new(slot: TaskFinishHandoffSlot, handoff: TaskFinishHandoff) -> Self {
         Self {
@@ -244,6 +248,10 @@ impl TaskFinishHandoffOwner {
     }
 }
 
+#[expect(
+    clippy::expect_used,
+    reason = "Drop observes a private fail-stop handoff mutex"
+)]
 impl Drop for TaskFinishHandoffOwner {
     fn drop(&mut self) {
         let Some(mut handoff) = self.handoff.take() else {
@@ -326,6 +334,10 @@ struct TaskAbortHandoffOwner {
     handoff: Option<TaskAbortHandoff>,
 }
 
+#[expect(
+    clippy::expect_used,
+    reason = "the abort handoff owner remains armed until explicit disarm or Drop"
+)]
 impl TaskAbortHandoffOwner {
     fn new(slot: TaskAbortHandoffSlot, handoff: TaskAbortHandoff) -> Self {
         Self {
@@ -351,6 +363,10 @@ impl TaskAbortHandoffOwner {
     }
 }
 
+#[expect(
+    clippy::expect_used,
+    reason = "Drop observes a private fail-stop handoff mutex"
+)]
 impl Drop for TaskAbortHandoffOwner {
     fn drop(&mut self) {
         let Some(mut handoff) = self.handoff.take() else {
@@ -399,6 +415,10 @@ pub(crate) enum AbortTurnOutcome {
 #[derive(Debug)]
 pub(crate) enum StartReservationRelease {
     Released,
+    #[expect(
+        dead_code,
+        reason = "the abort reason is retained as an audit witness even when callers only branch on the outcome"
+    )]
     AbortRequested(TurnAbortReason),
     Stale,
 }
@@ -414,6 +434,10 @@ pub(crate) struct StartReservationOwner {
     handle: Option<StartReservationHandle>,
 }
 
+#[expect(
+    clippy::expect_used,
+    reason = "the start reservation owner remains armed until explicit completion"
+)]
 impl StartReservationOwner {
     pub(crate) fn new(session: &Arc<Session>, handle: StartReservationHandle) -> Self {
         Self {
@@ -522,6 +546,10 @@ struct StartTransitionCleanupOwner {
     side_effects_started: bool,
 }
 
+#[expect(
+    clippy::expect_used,
+    reason = "the cleanup owner and slot are identity-fenced lifecycle state"
+)]
 impl StartTransitionCleanupOwner {
     fn new(slot: StartTransitionCleanupSlot, cleanup: StartTransitionCleanup) -> Self {
         Self {
@@ -555,6 +583,10 @@ impl StartTransitionCleanupOwner {
     }
 }
 
+#[expect(
+    clippy::expect_used,
+    reason = "Drop observes a private fail-stop cleanup slot"
+)]
 impl Drop for StartTransitionCleanupOwner {
     fn drop(&mut self) {
         let Some(mut cleanup) = self.cleanup.take() else {
@@ -944,7 +976,7 @@ impl Session {
             .expect("task terminalization completion registry mutex poisoned")
             .iter()
             .filter(|(identity, _, _, _, _, _)| {
-                excluded_identity.map_or(true, |excluded| !Arc::ptr_eq(identity, excluded))
+                excluded_identity.is_none_or(|excluded| !Arc::ptr_eq(identity, excluded))
             })
             .map(|(_, completion, _, _, _, _)| Arc::clone(completion))
             .collect()
@@ -1033,7 +1065,7 @@ impl Session {
             .expect("start transition completion registry mutex poisoned")
             .iter()
             .any(|(identity, _, _cleanup)| {
-                ignored_identity.map_or(true, |ignored| !Arc::ptr_eq(identity, ignored))
+                ignored_identity.is_none_or(|ignored| !Arc::ptr_eq(identity, ignored))
             })
     }
 
@@ -1055,7 +1087,7 @@ impl Session {
             .expect("task terminalization completion registry mutex poisoned")
             .iter()
             .any(|(identity, _, _, _, _, _)| {
-                ignored_identity.map_or(true, |ignored| !Arc::ptr_eq(identity, ignored))
+                ignored_identity.is_none_or(|ignored| !Arc::ptr_eq(identity, ignored))
             })
     }
 
@@ -1391,6 +1423,10 @@ impl Session {
     /// held. The running task stays attached until the owner has revoked its
     /// recovery authority, so every admission path continues to see a busy
     /// slot during the lock-free await phase.
+    #[expect(
+        clippy::too_many_arguments,
+        reason = "terminalization claims bind independent task, turn, epoch, kind, and handoff witnesses"
+    )]
     fn claim_task_terminalization_locked(
         &self,
         active_turn: &mut ActiveTurn,
@@ -1453,6 +1489,10 @@ impl Session {
 
     /// Moves the exact task into its terminal owner while retaining the marker
     /// in the active slot. A stale owner can never consume a replacement task.
+    #[expect(
+        clippy::expect_used,
+        reason = "the task remains attached after the exact terminalization marker identity check"
+    )]
     fn take_task_for_terminalization_locked(
         active_turn: &mut ActiveTurn,
         identity: &Arc<()>,
@@ -1482,12 +1522,8 @@ impl Session {
         turn_context: &Arc<TurnContext>,
         attach_epoch: u64,
     ) -> Option<Arc<StartTransitionCompletion>> {
-        let Some(active_turn) = active.as_mut() else {
-            return None;
-        };
-        let Some(marker) = active_turn.task_terminalization.as_ref() else {
-            return None;
-        };
+        let active_turn = active.as_mut()?;
+        let marker = active_turn.task_terminalization.as_ref()?;
         if active_turn.task.is_some()
             || active_turn.start_reservation.is_some()
             || active_turn.start_transition.is_some()
@@ -1511,6 +1547,11 @@ impl Session {
     /// its complete handoff witness before sealing shutdown.  The caller may
     /// disappear immediately after this future returns; the registry already
     /// owns the task, writer, reply, and exact terminalization identity.
+    #[expect(
+        clippy::expect_used,
+        clippy::await_holding_invalid_type,
+        reason = "the terminalization claim lock and handoff identity fence the complete suspension detach"
+    )]
     pub(crate) async fn take_task_for_suspension(
         &self,
         handoff_slot: SuspensionHandoffSlot,
@@ -1693,9 +1734,7 @@ impl Session {
         authority: Option<&Arc<TurnRecoveryAuthority>>,
         mut recovery_seed: Option<RecoverySeed>,
     ) -> Option<RecoverySeed> {
-        let Some(authority) = authority else {
-            return None;
-        };
+        let authority = authority?;
         let seed_interval_is_valid = recovery_seed.as_ref().is_some_and(|seed| {
             seed.persistence_failure_generation == self.rollout_persistence_failure_generation()
         });
@@ -1736,6 +1775,11 @@ impl Session {
     /// Publishes one live recovery candidate only after the task is quiescent
     /// and its terminal event is durable. All detach paths converge here so a
     /// stale atomic Ready bit can never outlive a generation/state transition.
+    #[expect(
+        clippy::expect_used,
+        clippy::await_holding_invalid_type,
+        reason = "active-turn and recovery-authority locks intentionally serialize terminal recovery publication"
+    )]
     async fn publish_recovery_seed_after_terminal(
         &self,
         recovery_seed: Option<RecoverySeed>,
@@ -1869,6 +1913,10 @@ impl Session {
         .await
     }
 
+    #[expect(
+        clippy::await_holding_invalid_type,
+        reason = "the active-turn identity fence spans durable Ready publication"
+    )]
     pub(crate) async fn mark_recovery_ready_for_sampling_with_replay(
         &self,
         turn_id: &str,
@@ -1968,6 +2016,10 @@ impl Session {
     /// tool dispatch, hooks, commands, or other product effects. Provider-policy
     /// evidence, tracing, and diagnostic telemetry belong to the transport
     /// mapper and are explicitly outside this bounded gate.
+    #[expect(
+        clippy::await_holding_invalid_type,
+        reason = "the active-turn identity fence spans the first-provider-output recovery transition"
+    )]
     pub(crate) async fn gate_first_provider_output(
         &self,
         turn_id: &str,
@@ -2006,6 +2058,11 @@ impl Session {
         Ok(RecoveryProviderOutputGate::Attached)
     }
 
+    #[expect(
+        clippy::expect_used,
+        clippy::await_holding_invalid_type,
+        reason = "the active-turn guard owns the single start reservation while task startup is admitted"
+    )]
     pub async fn spawn_task<T: SessionTask>(
         self: &Arc<Self>,
         turn_context: Arc<TurnContext>,
@@ -2062,6 +2119,14 @@ impl Session {
         }
     }
 
+    #[expect(
+        clippy::too_many_arguments,
+        reason = "retained compatibility entry point with explicit lifecycle witnesses"
+    )]
+    #[cfg_attr(
+        not(test),
+        expect(dead_code, reason = "used by focused lifecycle qualification tests")
+    )]
     pub(crate) async fn start_task<T: SessionTask>(
         self: &Arc<Self>,
         turn_context: Arc<TurnContext>,
@@ -2081,6 +2146,10 @@ impl Session {
         .await;
     }
 
+    #[expect(
+        dead_code,
+        reason = "retained compatibility entry point for qualified recovery starts"
+    )]
     pub(crate) async fn start_task_with_recovery<T: SessionTask>(
         self: &Arc<Self>,
         turn_context: Arc<TurnContext>,
@@ -2142,6 +2211,12 @@ impl Session {
         .await
     }
 
+    #[expect(
+        clippy::expect_used,
+        clippy::await_holding_invalid_type,
+        clippy::too_many_arguments,
+        reason = "the start transaction explicitly carries identity witnesses and retains its admission locks across durable transitions"
+    )]
     async fn start_task_with_options<T: SessionTask>(
         self: &Arc<Self>,
         turn_context: Arc<TurnContext>,
@@ -2490,18 +2565,18 @@ impl Session {
             // clearer or replacement start from stealing this turn state.
             drop(active);
             drop(admission_gate);
-            if let Some(cleanup) = start_transition_owner.spawn_cleanup(reason) {
-                if let Err(error) = cleanup.await {
-                    // A panic or runtime teardown in the detached path must
-                    // remain observable.  The cleanup CAS is intentionally
-                    // fail-closed, so an errored join cannot make this turn
-                    // look idle or permit a replacement start.
-                    warn!(
-                        turn_id = %turn_context.sub_id,
-                        ?error,
-                        "start transition terminalizer did not complete"
-                    );
-                }
+            if let Some(cleanup) = start_transition_owner.spawn_cleanup(reason)
+                && let Err(error) = cleanup.await
+            {
+                // A panic or runtime teardown in the detached path must
+                // remain observable.  The cleanup CAS is intentionally
+                // fail-closed, so an errored join cannot make this turn
+                // look idle or permit a replacement start.
+                warn!(
+                    turn_id = %turn_context.sub_id,
+                    ?error,
+                    "start transition terminalizer did not complete"
+                );
             }
             return StartTaskOutcome::Aborted;
         }
@@ -2676,6 +2751,10 @@ impl Session {
         .await;
     }
 
+    #[expect(
+        clippy::expect_used,
+        reason = "the pending-work start reservation is created only after the exact idle-state check"
+    )]
     async fn maybe_start_turn_for_pending_work_with_sub_id_and_owner(
         self: &Arc<Self>,
         sub_id: String,
@@ -2807,6 +2886,10 @@ impl Session {
     /// thread-stop lifecycle.  A terminalizer that panics, hangs, or cannot be
     /// scheduled leaves the completion fence unresolved and therefore keeps
     /// teardown fail-closed instead of publishing thread-stop out of order.
+    #[expect(
+        clippy::expect_used,
+        reason = "shutdown drains a transition only after matching its exact cleanup identity"
+    )]
     pub(crate) async fn drain_start_transition_for_shutdown(self: &Arc<Self>) {
         loop {
             // Start-transition publication is serialized by the active-turn
@@ -2923,6 +3006,10 @@ impl Session {
         }
     }
 
+    #[cfg_attr(
+        not(test),
+        expect(dead_code, reason = "used by focused lifecycle qualification tests")
+    )]
     pub(crate) async fn abort_turn_if_active(
         self: &Arc<Self>,
         turn_id: &str,
@@ -3044,6 +3131,11 @@ impl Session {
     /// into the registry while the active-turn lock is held.  This closes the
     /// construction-runtime race where a stored Tokio handle accepts a spawn
     /// after its runtime has already stopped polling it.
+    #[expect(
+        clippy::expect_used,
+        clippy::await_holding_invalid_type,
+        reason = "the terminalization claim lock and handoff identity fence the complete finish detach"
+    )]
     async fn claim_task_for_finish(
         &self,
         turn_context: &Arc<TurnContext>,
@@ -3184,6 +3276,10 @@ impl Session {
         }
     }
 
+    #[expect(
+        clippy::expect_used,
+        reason = "a claimed finish handoff necessarily owns its task result"
+    )]
     async fn run_finish_handoff(self: &Arc<Self>, handoff: &mut TaskFinishHandoff) {
         let (task_identity, task_epoch) = {
             let Some(task) = handoff.task.as_ref() else {
@@ -3510,6 +3606,10 @@ impl Session {
         }
     }
 
+    #[expect(
+        clippy::expect_used,
+        reason = "poisoning this private handoff mutex is an unrecoverable lifecycle invariant breach"
+    )]
     fn take_finish_handoff(slot: &TaskFinishHandoffSlot) -> Option<TaskFinishHandoff> {
         slot.lock()
             .expect("task finish handoff slot mutex poisoned")
@@ -3568,6 +3668,10 @@ impl Session {
         }
     }
 
+    #[expect(
+        clippy::expect_used,
+        reason = "poisoning this private handoff mutex is an unrecoverable lifecycle invariant breach"
+    )]
     fn take_abort_handoff(slot: &TaskAbortHandoffSlot) -> Option<TaskAbortHandoff> {
         slot.lock()
             .expect("task abort handoff slot mutex poisoned")
@@ -3731,6 +3835,11 @@ impl Session {
     /// host-owned start transition. Starts and injections therefore cannot
     /// observe an idle session until the old task is quiescent and its terminal
     /// is durable (or the start owner has completed its deferred handoff).
+    #[expect(
+        clippy::expect_used,
+        clippy::await_holding_invalid_type,
+        reason = "the terminalization claim lock and handoff identity fence the complete abort detach"
+    )]
     async fn detach_active_task_for_abort(
         &self,
         reason: &TurnAbortReason,
@@ -3956,6 +4065,10 @@ impl Session {
     /// Claims an exact host-owned transition for detached cleanup after its
     /// owner future disappeared.  An external abort may already have stored a
     /// stronger reason; otherwise cancellation is represented as Interrupted.
+    #[expect(
+        clippy::expect_used,
+        reason = "the dropped transition identity is checked before its retained abort reason is consumed"
+    )]
     async fn abort_dropped_start_transition(
         self: &Arc<Self>,
         cleanup_owner: &mut StartTransitionCleanupOwner,
@@ -3995,15 +4108,14 @@ impl Session {
                 .start_transition
                 .as_mut()
                 .expect("transition identity was checked above");
-            if transition.abort_reason.is_none() {
-                if transition.request_abort(fallback_reason.clone())
-                    && matches!(
-                        fallback_reason,
-                        TurnAbortReason::Interrupted | TurnAbortReason::BudgetLimited
-                    )
-                {
-                    self.mark_interrupted();
-                }
+            if transition.abort_reason.is_none()
+                && transition.request_abort(fallback_reason.clone())
+                && matches!(
+                    fallback_reason,
+                    TurnAbortReason::Interrupted | TurnAbortReason::BudgetLimited
+                )
+            {
+                self.mark_interrupted();
             }
             transition
                 .abort_reason
@@ -4073,6 +4185,11 @@ impl Session {
     /// host-owned start transition still owns the active slot.  The marker is
     /// retained across the history lock await, so a replacement cannot race
     /// the restore; a stale continuation simply abandons its witness.
+    #[expect(
+        clippy::expect_used,
+        clippy::await_holding_invalid_type,
+        reason = "the active-turn identity fence spans restoration of the exact recovery history witness"
+    )]
     async fn restore_recovery_history_if_current(
         &self,
         turn_state: Option<&Arc<Mutex<TurnState>>>,
@@ -4134,7 +4251,7 @@ impl Session {
         let deferred_idle_cause = active_turn
             .start_transition
             .as_mut()
-            .and_then(|transition| transition.take_deferred_idle());
+            .and_then(super::state::turn::StartTransition::take_deferred_idle);
         // Keep the marker installed until all terminal side effects above
         // have completed; only this final identity check may release it.
         *active = None;
@@ -4155,6 +4272,10 @@ impl Session {
         Self::release_start_reservation_if_current_locked(&mut active, handle)
     }
 
+    #[expect(
+        clippy::expect_used,
+        reason = "the reservation is consumed only after its exact identity and turn-state checks"
+    )]
     fn release_start_reservation_if_current_locked(
         active: &mut Option<ActiveTurn>,
         handle: &StartReservationHandle,
@@ -4350,9 +4471,7 @@ fn qualification_admission_identity(
         }
         user_input = Some((content.as_slice(), client_id.as_deref()?));
     }
-    let Some((content, client_id)) = user_input else {
-        return None;
-    };
+    let (content, client_id) = user_input?;
     let payload_sha256 = user_input_payload_sha256(content).ok()?;
     QualificationTurnAdmissionIdentity::new(
         thread_scope_key.to_string(),

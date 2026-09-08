@@ -281,6 +281,10 @@ fn identity_digest(kind: &[u8], value: &str) -> Sha256Digest {
     Sha256Digest::for_bytes(&hasher.finalize())
 }
 
+#[expect(
+    clippy::too_many_arguments,
+    reason = "the digest binds each lifecycle witness independently and argument order is protocol-significant"
+)]
 fn binding_digest(
     lease_id: &Sha256Digest,
     fencing_token: &Sha256Digest,

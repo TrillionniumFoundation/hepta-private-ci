@@ -113,6 +113,10 @@ impl<'a> LocalRehydrationWitnessLifecycleInput<'a> {
     }
 
     /// Construct an input with an embedding-supplied policy gate.
+    #[expect(
+        clippy::too_many_arguments,
+        reason = "the constructor makes every lifecycle witness and policy dependency explicit"
+    )]
     pub fn with_policy(
         policy: LocalDevelopmentLifecyclePolicy,
         turn_id: &'a str,

@@ -1210,6 +1210,10 @@ impl Session {
     }
 
     /// Captures a recovery token only for the exact idle model-turn candidate.
+    #[expect(
+        clippy::expect_used,
+        reason = "the recovery-candidate mutex is an internal fail-stop invariant"
+    )]
     pub(crate) async fn recovery_epoch_if_idle(&self, turn_id: &str) -> Option<u64> {
         if !self.enabled(Feature::HeptaTurnRecovery)
             || self.shutdown_started()
@@ -1239,6 +1243,10 @@ impl Session {
     /// or fork may change the logical tail. The caller must hold the active
     /// turn lock across this transition so no publisher or competing start can
     /// install a new candidate between the strict tombstone and live clear.
+    #[expect(
+        clippy::expect_used,
+        reason = "the recovery-candidate mutex is an internal fail-stop invariant"
+    )]
     pub(crate) async fn consume_recovery_candidate_for_mutation(&self) -> CodexResult<bool> {
         let candidate = self
             .recovery_candidate
@@ -1285,6 +1293,10 @@ impl Session {
     /// Reserves the idle session for a history mutation and durably consumes
     /// recovery authority before releasing the active-turn lock. The returned
     /// turn state must be passed to `clear_reserved_idle_turn` on every exit.
+    #[expect(
+        clippy::await_holding_invalid_type,
+        reason = "the active-turn guard is the atomic idle-history mutation fence"
+    )]
     pub(crate) async fn reserve_history_mutation_if_idle(
         &self,
     ) -> CodexResult<Option<Arc<Mutex<TurnState>>>> {
@@ -1307,6 +1319,10 @@ impl Session {
         matches!(*self.agent_status.borrow(), AgentStatus::Interrupted)
     }
 
+    #[expect(
+        clippy::expect_used,
+        reason = "the recovery-candidate mutex is an internal fail-stop invariant"
+    )]
     pub(crate) fn settle_consumed_recovery_status(&self) {
         if self.is_interrupted()
             && self
@@ -1477,6 +1493,10 @@ impl Session {
             .boxed()
     }
 
+    #[expect(
+        clippy::expect_used,
+        reason = "the recovery-candidate mutex is an internal fail-stop invariant"
+    )]
     async fn record_initial_history_inner(
         &self,
         conversation_history: InitialHistory,
@@ -2866,7 +2886,7 @@ impl Session {
                 || self.has_pending_task_terminalization()
                 || active
                     .as_ref()
-                    .map_or(true, |current| current.task_terminalization.is_some())
+                    .is_none_or(|current| current.task_terminalization.is_some())
             {
                 return None;
             }
@@ -2891,7 +2911,7 @@ impl Session {
                     || self.has_pending_task_terminalization()
                     || active
                         .as_ref()
-                        .map_or(true, |current| current.task_terminalization.is_some())
+                        .is_none_or(|current| current.task_terminalization.is_some())
                 {
                     return None;
                 }
@@ -4407,6 +4427,10 @@ impl Session {
 
     /// Revokes live and cold recovery authority before accepting or processing
     /// any new model-visible input or side-effectful hook generation.
+    #[expect(
+        clippy::await_holding_invalid_type,
+        reason = "the authority guard serializes durable recovery state with its persisted transition"
+    )]
     pub(crate) async fn ensure_turn_recovery_unready(
         &self,
         turn_id: &str,
@@ -4458,6 +4482,10 @@ impl Session {
     /// a strict prerequisite for this Ready marker. A non-zero generation is
     /// session-lifetime sticky: after any transcript gap, only a fresh session
     /// rebuilt from durable history may establish recovery authority again.
+    #[expect(
+        clippy::await_holding_invalid_type,
+        reason = "the authority guard serializes durable recovery state with its persisted transition"
+    )]
     pub(crate) async fn mark_turn_recovery_ready(
         &self,
         turn_id: &str,
@@ -4586,6 +4614,10 @@ impl Session {
     /// commits Unready, then emits its terminal event, and only then may commit
     /// InterruptedConfirmed. This keeps a failed terminal write from looking
     /// like an unclean process death during cold replay.
+    #[expect(
+        clippy::await_holding_invalid_type,
+        reason = "the authority guard serializes revocation with the durable Unready marker"
+    )]
     pub(crate) async fn prepare_turn_recovery_for_controlled_detach(
         &self,
         turn_id: &str,
@@ -4632,6 +4664,10 @@ impl Session {
     /// turn to become recoverable. The marker must extend the exact Unready
     /// generation created before detach and the Ready-to-terminal interval
     /// must have observed no best-effort persistence failure.
+    #[expect(
+        clippy::await_holding_invalid_type,
+        reason = "the authority guard serializes confirmation with the durable proof marker"
+    )]
     pub(crate) async fn confirm_interrupted_turn_recovery(
         &self,
         turn_id: &str,
@@ -4761,6 +4797,10 @@ impl Session {
     /// says Unready, because a failed flush may have exposed a confirmation
     /// marker to cold replay. A second persistent write failure is fail-stop
     /// and cannot be distinguished from power loss using an append-only log.
+    #[expect(
+        clippy::await_holding_invalid_type,
+        reason = "the authority guard serializes poisoning with the durable successor tombstone"
+    )]
     pub(crate) async fn persist_turn_recovery_failure_tombstone(
         &self,
         turn_id: &str,

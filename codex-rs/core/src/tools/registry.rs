@@ -486,6 +486,10 @@ impl ToolRegistry {
         Some(tool.exposure != ToolExposure::Hidden && tool.runtime.supports_parallel_tool_calls())
     }
 
+    #[expect(
+        dead_code,
+        reason = "retained for runtime cancellation capability inspection"
+    )]
     pub(crate) fn waits_for_runtime_cancellation(&self, name: &ToolName) -> Option<bool> {
         let tool = self.tool(name)?;
         Some(tool.waits_for_runtime_cancellation())

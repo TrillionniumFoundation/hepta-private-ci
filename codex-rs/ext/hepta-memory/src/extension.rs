@@ -703,6 +703,10 @@ where
 /// embedding's explicit flag, a validated qualification-only policy, and an
 /// available CognitiveRuntime plus host capability.  Ordinary `install`
 /// callers retain the historical no-writer behavior.
+#[expect(
+    clippy::too_many_arguments,
+    reason = "the extension installation boundary carries independent runtime capabilities explicitly"
+)]
 pub fn install_with_turn_writer<C, F>(
     builder: &mut ExtensionRegistryBuilder<C>,
     state_db: Option<Arc<StateRuntime>>,

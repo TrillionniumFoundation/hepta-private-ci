@@ -27,6 +27,10 @@ impl Drop for AgentExecutionGuard {
 }
 
 impl AgentControl {
+    #[expect(
+        clippy::await_holding_invalid_type,
+        reason = "the active-turn guard preserves capacity and turn-start identity across the control transaction"
+    )]
     pub(crate) async fn ensure_execution_capacity_for_turn_start(
         &self,
         thread: &CodexThread,

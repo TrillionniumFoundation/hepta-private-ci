@@ -534,7 +534,7 @@ fn canonical_turn_recovery_endpoint_sha256(
     canonical_sha256(&CanonicalRecoveryEndpoint {
         schema: "turn-recovery-provider-endpoint:v1",
         scheme_family,
-        host: parsed.host_str().map(|host| host.to_ascii_lowercase()),
+        host: parsed.host_str().map(str::to_ascii_lowercase),
         port: parsed.port_or_known_default(),
         path: parsed.path().to_string(),
         query,

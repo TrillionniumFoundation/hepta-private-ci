@@ -158,6 +158,10 @@ fn spawn_suspension_handoff(
     Some(started_rx)
 }
 
+#[expect(
+    clippy::expect_used,
+    reason = "poisoning this private handoff mutex is an unrecoverable lifecycle invariant breach"
+)]
 fn take_suspension_handoff(slot: &SuspensionHandoffSlot) -> Option<SuspensionHandoff> {
     slot.lock()
         .expect("suspension handoff slot mutex poisoned")
@@ -189,6 +193,10 @@ impl SuspensionHandoffOwner {
         }
     }
 
+    #[expect(
+        clippy::expect_used,
+        reason = "the owner remains armed until it is explicitly disarmed or dropped"
+    )]
     fn handoff_mut(&mut self) -> &mut SuspensionHandoff {
         self.handoff
             .as_mut()
@@ -242,6 +250,10 @@ impl<'a> SuspensionRunningTaskGuard<'a> {
         })
     }
 
+    #[expect(
+        clippy::expect_used,
+        reason = "the running task remains attached while the suspension owner is armed"
+    )]
     fn task_mut(&mut self) -> &mut RunningTask {
         self.task
             .as_mut()

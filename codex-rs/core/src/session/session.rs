@@ -38,6 +38,21 @@ use std::sync::OnceLock;
 use std::sync::atomic::AtomicBool;
 use tokio::sync::Semaphore;
 
+type PendingStartTransitionFence = (
+    Arc<()>,
+    Arc<StartTransitionCompletion>,
+    StartTransitionCleanupSlot,
+);
+
+type PendingTaskTerminalizationFence = (
+    Arc<()>,
+    Arc<StartTransitionCompletion>,
+    TaskTerminalizationKind,
+    Option<crate::tasks::SuspensionHandoffSlot>,
+    Option<crate::tasks::TaskAbortHandoffSlot>,
+    Option<crate::tasks::TaskFinishHandoffSlot>,
+);
+
 /// Context for an initialized model agent
 ///
 /// A session has at most 1 running task at a time, and can be interrupted by user input.
@@ -72,27 +87,14 @@ pub(crate) struct Session {
     /// Completion fences for materialized start transitions whose terminal
     /// side effects may outlive the active-turn marker.  Shutdown drains this
     /// registry instead of inferring liveness from `active_turn` alone.
-    pub(crate) pending_start_transition_completions: std::sync::Mutex<
-        Vec<(
-            Arc<()>,
-            Arc<StartTransitionCompletion>,
-            StartTransitionCleanupSlot,
-        )>,
-    >,
+    pub(crate) pending_start_transition_completions:
+        std::sync::Mutex<Vec<PendingStartTransitionFence>>,
     /// Completion fences for task finish/abort terminalizers.  The active-turn
     /// marker is intentionally cleared before a replacement turn may be
     /// admitted, so shutdown must retain an independent registry until the
     /// terminalizer has also published recovery and idle side effects.
-    pub(crate) pending_task_terminalization_completions: std::sync::Mutex<
-        Vec<(
-            Arc<()>,
-            Arc<StartTransitionCompletion>,
-            TaskTerminalizationKind,
-            Option<crate::tasks::SuspensionHandoffSlot>,
-            Option<crate::tasks::TaskAbortHandoffSlot>,
-            Option<crate::tasks::TaskFinishHandoffSlot>,
-        )>,
-    >,
+    pub(crate) pending_task_terminalization_completions:
+        std::sync::Mutex<Vec<PendingTaskTerminalizationFence>>,
     /// Once teardown begins, no new host-owned start transition may be
     /// admitted.  This prevents pending-mailbox wakeups from racing the
     /// shutdown completion drain.

@@ -284,6 +284,10 @@ impl CodexThread {
         self.io.session_loop_termination.clone().await;
     }
 
+    #[expect(
+        dead_code,
+        reason = "retained as the explicit thread-ready lifecycle hook for staged host integration"
+    )]
     pub(crate) async fn emit_thread_ready_lifecycle(&self) {
         let config = self.config().await;
         for contributor in self

@@ -1166,6 +1166,10 @@ impl ModelClient {
         }
     }
 
+    #[expect(
+        clippy::too_many_arguments,
+        reason = "the request builder mirrors independent provider protocol fields"
+    )]
     fn build_responses_request(
         &self,
         prompt: &Prompt,
