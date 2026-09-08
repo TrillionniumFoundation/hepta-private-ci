@@ -92,7 +92,9 @@ impl fmt::Display for ShadowDecisionError {
             }
             Self::Intuition(error) => write!(formatter, "intuition decision failed: {error}"),
             Self::Ledger(error) => write!(formatter, "learning ledger append failed: {error}"),
-            Self::InternalInvariant => formatter.write_str("shadow adapter internal invariant failed"),
+            Self::InternalInvariant => {
+                formatter.write_str("shadow adapter internal invariant failed")
+            }
         }
     }
 }
