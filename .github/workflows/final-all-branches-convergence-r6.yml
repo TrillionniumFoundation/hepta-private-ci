@@ -1,0 +1,76 @@
+name: Final all-branches convergence R6 diagnostic
+
+on:
+  push:
+    branches:
+      - ops/final-all-branches-convergence-r6-20260908
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: read
+
+concurrency:
+  group: final-all-branches-convergence-r6-diagnostic
+  cancel-in-progress: false
+
+jobs:
+  diagnose:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 180
+    env:
+      CANDIDATE_BRANCH: integration/final-all-branches-main-tree-r6-20260908
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: 1.95.0
+          components: rustfmt, clippy
+
+      - name: Rebuild the exact R5 candidate and TLS fix
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+
+          source = Path('.github/workflows/final-all-branches-convergence-r5.yml').read_text().splitlines()
+
+          def extract(step_name: str, output: str) -> None:
+              marker = f'      - name: {step_name}'
+              start = source.index(marker)
+              run = next(i for i in range(start + 1, len(source)) if source[i] == '        run: |') + 1
+              body = []
+              for line in source[run:]:
+                  if line.startswith('      - '):
+                      break
+                  if line.startswith('          '):
+                      body.append(line[10:])
+                  elif not line:
+                      body.append('')
+                  else:
+                      raise SystemExit(f'unexpected workflow indentation while extracting {step_name}: {line!r}')
+              Path(output).write_text('\n'.join(body) + '\n')
+
+          extract('Build one canonical history', '/tmp/r5-build.sh')
+          extract('Repair nested TLS error-chain classification only when reproduced', '/tmp/r5-tls.sh')
+          PY
+          bash /tmp/r5-build.sh
+          bash /tmp/r5-tls.sh
+          git push --force-with-lease origin "HEAD:refs/heads/$CANDIDATE_BRANCH"
+
+      - name: Capture the remaining memory blocker from the materialized tree
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo '===== failing test definition ====='
+          rg -n -C 40 'summary_replacement_preserves_unrelated_daily_entries' codex-rs/core/src || true
+          echo '===== summary and daily implementation candidates ====='
+          rg -n -C 12 'replace|replacement|summary|daily|unlink|remove_file|retain' codex-rs/core/src/memories* codex-rs/core/src 2>/dev/null | head -n 1600 || true
+          echo '===== exact failure ====='
+          cd codex-rs
+          cargo test --locked -p codex-core summary_replacement_preserves_unrelated_daily_entries -- --nocapture --test-threads=1
