@@ -17,6 +17,7 @@ use codex_utils_cli::CliConfigOverrides;
 
 use crate::AgentdIdentity;
 use crate::AgentdState;
+use crate::error::contextual_io_error;
 use crate::qualification_writer::qualification_turn_writer_host;
 
 #[cfg(feature = "qualification-cognitive-write")]
@@ -46,6 +47,13 @@ pub(crate) async fn run_app_server(
         runtime_options,
     )
     .await
+    .map_err(|error| {
+        contextual_io_error(
+            /* operation */ "run Codex App Server unix socket transport",
+            /* path */ &identity.app_server_socket,
+            /* source */ error,
+        )
+    })
 }
 
 fn app_server_config_overrides() -> CliConfigOverrides {
@@ -64,6 +72,13 @@ fn app_server_config_overrides() -> CliConfigOverrides {
     }
 }
 
+#[cfg_attr(
+    not(test),
+    allow(
+        dead_code,
+        reason = "the shared runtime-options constructor is retained for process qualification and the product-host integration seam"
+    )
+)]
 pub(crate) fn app_server_runtime_options(
     identity: &AgentdIdentity,
     cognitive_runtime: CognitiveRuntime,

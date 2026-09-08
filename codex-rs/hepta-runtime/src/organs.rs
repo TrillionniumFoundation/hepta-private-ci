@@ -87,7 +87,7 @@ impl RuntimeOrgans {
 
 fn build_host(root: HeptaStateRoot, state: Arc<dyn RuntimeStateAdapter>) -> Result<StatusHost> {
     let ingress = StableId::new("runtime.status.ingress")?;
-    let generation = Generation::new(1)?;
+    let generation = Generation::new(/* value */ 1)?;
     let status = StableId::new("runtime.status.adapter")?;
     let owner = StableId::new("runtime.hepta-live-shell")?;
     let port = StableId::new("runtime.status.request.v1")?;
