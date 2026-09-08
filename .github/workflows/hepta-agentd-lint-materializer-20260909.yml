@@ -38,35 +38,50 @@ jobs:
           from pathlib import Path
 
           path = Path("codex-rs/hepta-agentd/examples/h4_persistent_writer.rs")
-          text = path.read_text(encoding="utf-8")
-          old = '''        .filter_map(|entry| {
-              let name = entry.file_name().to_string_lossy().to_string();
-              let root = entry.path();
-              Some(CacheDeviceEvidence {
-                  name,
-                  model: read_trimmed(root.join("device/model")),
-                  write_cache: read_trimmed(root.join("queue/write_cache")),
-                  fua: read_trimmed(root.join("queue/fua")),
-                  rotational: read_trimmed(root.join("queue/rotational")),
-                  state: read_trimmed(root.join("device/state")),
-              })
-          })'''
-          new = '''        .map(|entry| {
-              let name = entry.file_name().to_string_lossy().to_string();
-              let root = entry.path();
-              CacheDeviceEvidence {
-                  name,
-                  model: read_trimmed(root.join("device/model")),
-                  write_cache: read_trimmed(root.join("queue/write_cache")),
-                  fua: read_trimmed(root.join("queue/fua")),
-                  rotational: read_trimmed(root.join("queue/rotational")),
-                  state: read_trimmed(root.join("device/state")),
-              }
-          })'''
-          count = text.count(old)
-          if count != 1:
-              raise SystemExit(f"expected exactly one H4 filter_map block, found {count}")
-          path.write_text(text.replace(old, new), encoding="utf-8")
+          lines = path.read_text(encoding="utf-8").splitlines(keepends=True)
+
+          filter_matches = [
+              index
+              for index, line in enumerate(lines)
+              if line.strip() == ".filter_map(|entry| {"
+          ]
+          if len(filter_matches) != 1:
+              raise SystemExit(
+                  f"expected one H4 filter_map entry block, found {len(filter_matches)}"
+              )
+          filter_index = filter_matches[0]
+          lines[filter_index] = lines[filter_index].replace(
+              ".filter_map(|entry| {", ".map(|entry| {", 1
+          )
+
+          constructor_matches = [
+              index
+              for index in range(filter_index + 1, len(lines))
+              if "Some(CacheDeviceEvidence {" in lines[index]
+          ]
+          if len(constructor_matches) != 1:
+              raise SystemExit(
+                  "expected one H4 optional CacheDeviceEvidence constructor, "
+                  f"found {len(constructor_matches)}"
+              )
+          constructor_index = constructor_matches[0]
+          lines[constructor_index] = lines[constructor_index].replace(
+              "Some(CacheDeviceEvidence {", "CacheDeviceEvidence {", 1
+          )
+
+          closing_index = next(
+              (
+                  index
+                  for index in range(constructor_index + 1, len(lines))
+                  if lines[index].strip() == "})"
+              ),
+              None,
+          )
+          if closing_index is None:
+              raise SystemExit("H4 CacheDeviceEvidence constructor close marker drifted")
+          lines[closing_index] = lines[closing_index].replace("})", "}", 1)
+
+          path.write_text("".join(lines), encoding="utf-8")
           PY
 
           cargo fmt --manifest-path codex-rs/Cargo.toml --package codex-hepta-agentd
