@@ -1,0 +1,44 @@
+name: Finalize V5 single-main management plane
+
+on:
+  push:
+    branches:
+      - ops/final-main-convergence-20260908
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+  actions: read
+
+concurrency:
+  group: hepta-final-management-v5
+  cancel-in-progress: true
+
+jobs:
+  finalize:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 240
+    steps:
+      - name: Check out V5 management controller
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ops/final-main-convergence-20260908
+          fetch-depth: 0
+          fetch-tags: true
+          persist-credentials: true
+
+      - name: Validate V5 ready point and finalize repository refs
+        env:
+          GH_TOKEN: ${{ github.token }}
+          HEPTA_ADMIN_TOKEN: ${{ secrets.HEPTA_ADMIN_TOKEN || secrets.GH_ADMIN_TOKEN || secrets.REPO_ADMIN_TOKEN || secrets.ADMIN_TOKEN || secrets.GH_PAT || secrets.GITHUB_PAT || secrets.REPO_TOKEN || secrets.BOT_TOKEN || secrets.HEPTA_BOT_TOKEN || secrets.PERSONAL_ACCESS_TOKEN }}
+        run: bash .github/scripts/finalize_management_v5.sh
+
+      - name: Upload V5 management evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-management-v5-${{ github.sha }}
+          path: ${{ runner.temp }}/hepta-management-v5/
+          if-no-files-found: warn
+          retention-days: 90
