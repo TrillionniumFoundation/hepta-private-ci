@@ -1,0 +1,307 @@
+name: Hepta exact-head final candidate r5
+
+on:
+  push:
+    branches:
+      - ops/exact-head-final-candidate-20260908-r5
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-exact-head-final-candidate-r5
+  cancel-in-progress: false
+
+env:
+  BASE_SHA: 04f60466394a024c218ce66b1b32d1c42c462985
+  SOURCE_SHA: d0f64ecfbbab31a8495c4adc1ec0a987281ade4c
+  CANDIDATE_BRANCH: codex/hepta-all-gap-closure-20260908
+  RESULT_BRANCH: ops/exact-head-final-result-20260908-r5
+  RUST_BACKTRACE: "1"
+
+jobs:
+  validate:
+    name: validate final tree (${{ matrix.os }})
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, macos-15]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 100
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout immutable source subject
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 2
+          persist-credentials: false
+
+      - name: Bind immutable topology
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${SOURCE_SHA}"
+          test "$(git rev-parse HEAD^)" = "${BASE_SHA}"
+          git cat-file -e "${BASE_SHA}^{commit}"
+
+      - name: Materialize the complete final-tree delta locally
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 .github/scripts/hepta_agentd_gap_patch.py
+          python3 - <<'PY'
+          from pathlib import Path
+
+          app = Path("codex-rs/hepta-agentd/src/app_runtime.rs")
+          text = app.read_text(encoding="utf-8")
+          old = "pub(crate) fn app_server_runtime_options(\n"
+          new = (
+              "#[cfg_attr(\n"
+              "    not(test),\n"
+              "    expect(\n"
+              "        dead_code,\n"
+              "        reason = \"the shared runtime-options constructor is retained for process qualification and the product-host integration seam\"\n"
+              "    )\n"
+              ")]\n"
+              "pub(crate) fn app_server_runtime_options(\n"
+          )
+          if text.count(old) != 1:
+              raise SystemExit("expected exactly one app_server_runtime_options anchor")
+          app.write_text(text.replace(old, new, 1), encoding="utf-8")
+
+          workflow = Path(".github/workflows/rust-ci.yml")
+          text = workflow.read_text(encoding="utf-8")
+          old = (
+              "  argument_comment_lint:\n"
+              "    name: Argument comment lint - Linux (${{ matrix.impl }})\n"
+              "    runs-on: ubuntu-24.04\n"
+              "    timeout-minutes: 30\n"
+          )
+          new = old.replace("timeout-minutes: 30", "timeout-minutes: 60")
+          if text.count(old) != 1:
+              raise SystemExit("expected exactly one Linux argument-comment timeout anchor")
+          workflow.write_text(text.replace(old, new, 1), encoding="utf-8")
+          PY
+          rm .github/workflows/hepta-agentd-gap-autofix.yml
+          rm .github/scripts/hepta_agentd_gap_patch.py
+          cargo fmt --manifest-path codex-rs/Cargo.toml \
+            --package codex-hepta-agentd --package codex-uds
+          expected="$({
+            printf '%s\n' \
+              .github/scripts/hepta_agentd_gap_patch.py \
+              .github/workflows/hepta-agentd-gap-autofix.yml \
+              .github/workflows/rust-ci.yml \
+              codex-rs/hepta-agentd/src/app_runtime.rs \
+              codex-rs/hepta-agentd/src/control.rs \
+              codex-rs/hepta-agentd/tests/support/fleet.rs \
+              codex-rs/uds/src/lib.rs
+          } | sort)"
+          actual="$(git diff --name-only | sort)"
+          test "${actual}" = "${expected}"
+          test ! -e .github/workflows/hepta-agentd-gap-autofix.yml
+          test ! -e .github/scripts/hepta_agentd_gap_patch.py
+          git diff --check
+
+      - name: UDS boundary qualification
+        working-directory: codex-rs
+        shell: bash
+        run: cargo test --locked -p codex-uds -- --nocapture
+
+      - name: Agentd qualification unit suite
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          cargo test --locked -p codex-hepta-agentd \
+            --features qualification-cognitive-write \
+            runtime::tests::qualification_ -- --nocapture --test-threads=1
+
+      - name: Agentd physical process qualification
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          cargo test --locked -p codex-hepta-agentd \
+            --features qualification-cognitive-write \
+            --test cognitive_product_e2e -- --nocapture --test-threads=1
+
+      - name: Memory extension strict Clippy
+        working-directory: codex-rs
+        shell: bash
+        run: cargo clippy --locked --no-deps -p codex-hepta-memory-extension --lib -- -D warnings
+
+      - name: Supervisor strict Clippy
+        working-directory: codex-rs
+        shell: bash
+        run: cargo clippy --locked --no-deps -p codex-hepta-supervisor --lib -- -D warnings
+
+      - name: UDS strict Clippy
+        working-directory: codex-rs
+        shell: bash
+        run: cargo clippy --locked --no-deps -p codex-uds --all-targets -- -D warnings
+
+      - name: Agentd strict Clippy
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          cargo clippy --locked --no-deps \
+            -p codex-hepta-agentd --all-targets \
+            --features qualification-cognitive-write -- -D warnings
+
+      - name: Final formatting and scope invariants
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo fmt --manifest-path codex-rs/Cargo.toml \
+            --package codex-hepta-agentd --package codex-uds -- --check
+          expected="$({
+            printf '%s\n' \
+              .github/scripts/hepta_agentd_gap_patch.py \
+              .github/workflows/hepta-agentd-gap-autofix.yml \
+              .github/workflows/rust-ci.yml \
+              codex-rs/hepta-agentd/src/app_runtime.rs \
+              codex-rs/hepta-agentd/src/control.rs \
+              codex-rs/hepta-agentd/tests/support/fleet.rs \
+              codex-rs/uds/src/lib.rs
+          } | sort)"
+          actual="$(git diff --name-only | sort)"
+          test "${actual}" = "${expected}"
+          git diff --check
+
+  materialize:
+    name: materialize immutable-base single-parent result
+    needs: validate
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout immutable source subject
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 2
+          persist-credentials: true
+
+      - name: Revalidate live refs and topology
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${SOURCE_SHA}"
+          test "$(git rev-parse HEAD^)" = "${BASE_SHA}"
+          git fetch --no-tags origin \
+            "+refs/heads/${CANDIDATE_BRANCH}:refs/remotes/origin/${CANDIDATE_BRANCH}"
+          test "$(git rev-parse refs/remotes/origin/${CANDIDATE_BRANCH})" = "${SOURCE_SHA}"
+          test -z "$(git ls-remote --heads origin "refs/heads/${RESULT_BRANCH}")"
+          test ! -e .github/workflows/hepta-exact-head-final-candidate-r5.yml
+
+      - name: Reproduce the validated final-tree delta
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 .github/scripts/hepta_agentd_gap_patch.py
+          python3 - <<'PY'
+          from pathlib import Path
+
+          app = Path("codex-rs/hepta-agentd/src/app_runtime.rs")
+          text = app.read_text(encoding="utf-8")
+          old = "pub(crate) fn app_server_runtime_options(\n"
+          new = (
+              "#[cfg_attr(\n"
+              "    not(test),\n"
+              "    expect(\n"
+              "        dead_code,\n"
+              "        reason = \"the shared runtime-options constructor is retained for process qualification and the product-host integration seam\"\n"
+              "    )\n"
+              ")]\n"
+              "pub(crate) fn app_server_runtime_options(\n"
+          )
+          if text.count(old) != 1:
+              raise SystemExit("expected exactly one app_server_runtime_options anchor")
+          app.write_text(text.replace(old, new, 1), encoding="utf-8")
+
+          workflow = Path(".github/workflows/rust-ci.yml")
+          text = workflow.read_text(encoding="utf-8")
+          old = (
+              "  argument_comment_lint:\n"
+              "    name: Argument comment lint - Linux (${{ matrix.impl }})\n"
+              "    runs-on: ubuntu-24.04\n"
+              "    timeout-minutes: 30\n"
+          )
+          new = old.replace("timeout-minutes: 30", "timeout-minutes: 60")
+          if text.count(old) != 1:
+              raise SystemExit("expected exactly one Linux argument-comment timeout anchor")
+          workflow.write_text(text.replace(old, new, 1), encoding="utf-8")
+          PY
+          rm .github/workflows/hepta-agentd-gap-autofix.yml
+          rm .github/scripts/hepta_agentd_gap_patch.py
+          cargo fmt --manifest-path codex-rs/Cargo.toml \
+            --package codex-hepta-agentd --package codex-uds
+          expected="$({
+            printf '%s\n' \
+              .github/scripts/hepta_agentd_gap_patch.py \
+              .github/workflows/hepta-agentd-gap-autofix.yml \
+              .github/workflows/rust-ci.yml \
+              codex-rs/hepta-agentd/src/app_runtime.rs \
+              codex-rs/hepta-agentd/src/control.rs \
+              codex-rs/hepta-agentd/tests/support/fleet.rs \
+              codex-rs/uds/src/lib.rs
+          } | sort)"
+          actual="$(git diff --name-only | sort)"
+          test "${actual}" = "${expected}"
+          git diff --check
+
+      - name: Create and publish the single-parent result
+        id: result
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "hepta-exact-head-finalizer"
+          git config user.email "hepta-exact-head-finalizer@users.noreply.github.com"
+          git add -A -- \
+            .github/scripts/hepta_agentd_gap_patch.py \
+            .github/workflows/hepta-agentd-gap-autofix.yml \
+            .github/workflows/rust-ci.yml \
+            codex-rs/hepta-agentd/src/app_runtime.rs \
+            codex-rs/hepta-agentd/src/control.rs \
+            codex-rs/hepta-agentd/tests/support/fleet.rs \
+            codex-rs/uds/src/lib.rs
+          tree_sha="$(git write-tree)"
+          result_sha="$(printf '%s\n' \
+            'fix(hepta): close remaining exact-head blockers' \
+            '' \
+            'Close the Darwin pathname-socket boundary, preserve explicit contextual diagnostics, bind the process-qualification harness to a short temporary root, retain strict linting with a locally fulfilled expectation, remove the consumed one-shot Agentd patch workflow, and align the Linux argument-comment cold-cache timeout with the existing macOS and Windows gates.' \
+            '' \
+            'This commit is one direct child of the immutable all-branch base and grants no deployment, promotion, signing, operator, hardware, or release authority.' \
+            | git commit-tree "${tree_sha}" -p "${BASE_SHA}")"
+          test "$(git rev-parse "${result_sha}^")" = "${BASE_SHA}"
+          test "$(git rev-parse "${result_sha}^{tree}")" = "${tree_sha}"
+          git push origin "${result_sha}:refs/heads/${RESULT_BRANCH}"
+          test "$(git ls-remote --heads origin "refs/heads/${RESULT_BRANCH}" | awk '{print $1}')" = "${result_sha}"
+          printf 'sha=%s\n' "${result_sha}" >> "${GITHUB_OUTPUT}"
+          printf 'tree=%s\n' "${tree_sha}" >> "${GITHUB_OUTPUT}"
+
+      - name: Retain exact identity and patch receipt
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "${RUNNER_TEMP}/hepta-final-r5"
+          {
+            printf 'base=%s\n' "${BASE_SHA}"
+            printf 'source=%s\n' "${SOURCE_SHA}"
+            printf 'result=%s\n' "${{ steps.result.outputs.sha }}"
+            printf 'tree=%s\n' "${{ steps.result.outputs.tree }}"
+            printf 'parent=%s\n' "$(git rev-parse "${{ steps.result.outputs.sha }}^")"
+          } | tee "${RUNNER_TEMP}/hepta-final-r5/IDENTITY"
+          git diff --binary "${SOURCE_SHA}" "${{ steps.result.outputs.sha }}" \
+            > "${RUNNER_TEMP}/hepta-final-r5/final.patch"
+          sha256sum "${RUNNER_TEMP}/hepta-final-r5/final.patch" \
+            > "${RUNNER_TEMP}/hepta-final-r5/SHA256SUMS"
+
+      - name: Upload exact result receipt
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-exact-head-final-candidate-r5
+          path: ${{ runner.temp }}/hepta-final-r5
+          if-no-files-found: error
+          retention-days: 30
