@@ -1,0 +1,67 @@
+name: Final-main lint source slice export
+
+on:
+  push:
+    branches:
+      - ops/final-main-source-slice-export-20260908
+
+permissions:
+  contents: read
+
+jobs:
+  export:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - name: Check out exact V8 candidate
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: 04f60466394a024c218ce66b1b32d1c42c462985
+          persist-credentials: false
+
+      - name: Collect exact affected source files
+        shell: bash
+        run: |
+          set -euo pipefail
+          out="$RUNNER_TEMP/hepta-source-slice"
+          mkdir -p "$out"
+          files=(
+            codex-rs/Cargo.toml
+            codex-rs/core/Cargo.toml
+            codex-rs/core/src/lib.rs
+            codex-rs/core/src/tasks/mod.rs
+            codex-rs/core/src/client.rs
+            codex-rs/core/src/codex_thread.rs
+            codex-rs/core/src/tools/registry.rs
+            codex-rs/core/src/tools/handlers/dynamic.rs
+            codex-rs/core/src/model_provider_policy/binding.rs
+            codex-rs/core/src/session/inject.rs
+            codex-rs/core/src/session/session.rs
+            codex-rs/core/src/session/turn.rs
+            codex-rs/core/src/session/turn_input.rs
+            codex-rs/core/src/session/turn_suspension.rs
+            codex-rs/core/src/session/mod.rs
+            codex-rs/core/src/agent/control/execution.rs
+            codex-rs/core/src/agent/control/residency.rs
+            codex-rs/ext/hepta-memory/src/extension.rs
+            codex-rs/ext/hepta-memory/src/local_replay.rs
+            codex-rs/ext/hepta-memory/src/local_runtime.rs
+            codex-rs/ext/hepta-memory/src/local_witness.rs
+            codex-rs/hepta-memory-federation/src/federation.rs
+          )
+          for file in "${files[@]}"; do
+            test -f "$file"
+            mkdir -p "$out/$(dirname "$file")"
+            cp -- "$file" "$out/$file"
+          done
+          git rev-parse HEAD > "$out/CANDIDATE_SHA"
+          git rev-parse HEAD^{tree} > "$out/CANDIDATE_TREE"
+          find "$out" -type f -print0 | sort -z | xargs -0 sha256sum > "$out/SHA256SUMS"
+
+      - name: Upload exact source slice
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-final-main-source-slice-04f60466
+          path: ${{ runner.temp }}/hepta-source-slice/
+          if-no-files-found: error
+          retention-days: 7
