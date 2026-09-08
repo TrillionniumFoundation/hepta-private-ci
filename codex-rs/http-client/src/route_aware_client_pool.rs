@@ -33,6 +33,7 @@ use crate::route_aware_redirect::redirect_request;
 use crate::route_aware_redirect::redirect_url;
 use crate::route_aware_redirect::remove_sensitive_headers;
 use crate::tls_backend_fallback::RustlsClientCache;
+use crate::tls_backend_fallback::has_tls_error;
 use crate::tls_backend_fallback::should_retry_with_rustls;
 
 const MAX_CACHED_ROUTES: usize = 16;
@@ -110,20 +111,12 @@ impl RouteAwareRequestError {
         if self.status() == Some(StatusCode::PROXY_AUTHENTICATION_REQUIRED) {
             return Some(RouteFailureClass::ProxyAuthenticationRequired);
         }
-        if let Self::Route(RouteAwareClientPoolError::Resolve(error)) = self
-            && let Some(source) = error.get_ref()
-            && source.is::<rustls::Error>()
-        {
+        if has_tls_error(self) {
             return Some(RouteFailureClass::TlsError);
         }
 
         let mut source: Option<&(dyn std::error::Error + 'static)> = Some(self);
         while let Some(error) = source {
-            if error.downcast_ref::<rustls::Error>().is_some()
-                || error.downcast_ref::<native_tls::Error>().is_some()
-            {
-                return Some(RouteFailureClass::TlsError);
-            }
             if error.to_string() == "tunnel error: proxy authorization required" {
                 return Some(RouteFailureClass::ProxyAuthenticationRequired);
             }

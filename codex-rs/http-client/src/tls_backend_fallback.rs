@@ -101,37 +101,59 @@ impl DestinationRoute {
     }
 }
 
+const MAX_ERROR_CHAIN_DEPTH: usize = 32;
+
 pub(crate) fn should_retry_with_rustls(error: &reqwest::Error) -> bool {
     error.is_connect() && !error.is_timeout() && error.source().is_some_and(has_retryable_tls_error)
 }
 
-fn has_retryable_tls_error(error: &(dyn Error + 'static)) -> bool {
-    let mut source = Some(error);
-    let mut recognized_negotiation_failure = false;
+pub(crate) fn has_tls_error(error: &(dyn Error + 'static)) -> bool {
+    let mut has_tls_error = false;
+    walk_error_chain(error, 0, &mut |error| {
+        has_tls_error |= error.is::<rustls::Error>() || error.is::<native_tls::Error>();
+    });
+    has_tls_error
+}
 
-    while let Some(error) = source {
-        let message = error.to_string().to_ascii_lowercase();
+fn has_retryable_tls_error(error: &(dyn Error + 'static)) -> bool {
+    let mut recognized_negotiation_failure = false;
+    let mut certificate_failure = false;
+
+    walk_error_chain(error, 0, &mut |error| {
+        let mut message = error.to_string().to_ascii_lowercase();
+        if error.is::<rustls::Error>() {
+            message.push(' ');
+            message.push_str(&format!("{error:?}").to_ascii_lowercase());
+        }
+
         if [
             "certificate",
             "unknown issuer",
+            "unknownissuer",
             "unknown ca",
+            "unknownca",
             "untrusted",
             "self signed",
             "self-signed",
             "hostname",
+            "notvalidforname",
             "expired",
             "revoked",
         ]
         .iter()
         .any(|marker| message.contains(marker))
         {
-            return false;
+            certificate_failure = true;
         }
 
         // macOS Secure Transport reports the protocol alert as "bad protocol version".
         let is_macos_protocol_version_error = message.contains("bad protocol version");
         // Linux OpenSSL reports the peer's "tlsv1 alert protocol version".
         let is_linux_protocol_version_error = message.contains("tlsv1 alert protocol version");
+        // rustls retains the protocol alert as a structured error nested inside io::Error.
+        let is_rustls_protocol_version_error = error.is::<rustls::Error>()
+            && (message.contains("alertreceived(protocolversion)")
+                || message.contains("received fatal alert: protocolversion"));
         // Windows Schannel may expose the protocol alert as a raw or formatted OS error.
         let is_schannel_protocol_version_error = error
             .downcast_ref::<std::io::Error>()
@@ -141,14 +163,40 @@ fn has_retryable_tls_error(error: &(dyn Error + 'static)) -> bool {
             || message.contains("0x80090302");
         if is_macos_protocol_version_error
             || is_linux_protocol_version_error
+            || is_rustls_protocol_version_error
             || is_schannel_protocol_version_error
         {
             recognized_negotiation_failure = true;
         }
-        source = error.source();
+    });
+
+    recognized_negotiation_failure && !certificate_failure
+}
+
+fn walk_error_chain(
+    error: &(dyn Error + 'static),
+    depth: usize,
+    visitor: &mut impl FnMut(&(dyn Error + 'static)),
+) {
+    if depth >= MAX_ERROR_CHAIN_DEPTH {
+        return;
     }
 
-    recognized_negotiation_failure
+    visitor(error);
+
+    // std::io::Error stores custom errors behind get_ref(); on current Rust versions that
+    // inner value is not guaranteed to be exposed by Error::source(). Walk it explicitly
+    // so rustls certificate and protocol alerts remain classifiable through hyper/reqwest.
+    if let Some(io_error) = error.downcast_ref::<std::io::Error>()
+        && let Some(inner) = io_error.get_ref()
+    {
+        walk_error_chain(inner, depth + 1, visitor);
+        return;
+    }
+
+    if let Some(source) = error.source() {
+        walk_error_chain(source, depth + 1, visitor);
+    }
 }
 
 #[cfg(test)]
