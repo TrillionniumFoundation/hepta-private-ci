@@ -1,0 +1,89 @@
+name: Hepta Agentd lint materializer 20260909
+
+on:
+  push:
+    branches:
+      - ops/hepta-agentd-lint-materializer-20260909-r2
+
+permissions:
+  contents: write
+
+concurrency:
+  group: hepta-agentd-lint-materializer-20260909-r2
+  cancel-in-progress: false
+
+jobs:
+  amend-exact-candidate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: codex/hepta-all-gap-closure-20260908
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Bind, repair, qualify, and atomically amend
+        shell: bash
+        run: |
+          set -euo pipefail
+          expected_head=c916ecf0e3629411e56f086f2b3be5363ea5837d
+          expected_parent=04f60466394a024c218ce66b1b32d1c42c462985
+          candidate_ref=refs/heads/codex/hepta-all-gap-closure-20260908
+
+          test "$(git rev-parse HEAD)" = "${expected_head}"
+          test "$(git rev-parse HEAD^)" = "${expected_parent}"
+
+          python3 - <<'PY'
+          from pathlib import Path
+
+          path = Path("codex-rs/hepta-agentd/examples/h4_persistent_writer.rs")
+          text = path.read_text(encoding="utf-8")
+          old = '''        .filter_map(|entry| {
+              let name = entry.file_name().to_string_lossy().to_string();
+              let root = entry.path();
+              Some(CacheDeviceEvidence {
+                  name,
+                  model: read_trimmed(root.join("device/model")),
+                  write_cache: read_trimmed(root.join("queue/write_cache")),
+                  fua: read_trimmed(root.join("queue/fua")),
+                  rotational: read_trimmed(root.join("queue/rotational")),
+                  state: read_trimmed(root.join("device/state")),
+              })
+          })'''
+          new = '''        .map(|entry| {
+              let name = entry.file_name().to_string_lossy().to_string();
+              let root = entry.path();
+              CacheDeviceEvidence {
+                  name,
+                  model: read_trimmed(root.join("device/model")),
+                  write_cache: read_trimmed(root.join("queue/write_cache")),
+                  fua: read_trimmed(root.join("queue/fua")),
+                  rotational: read_trimmed(root.join("queue/rotational")),
+                  state: read_trimmed(root.join("device/state")),
+              }
+          })'''
+          count = text.count(old)
+          if count != 1:
+              raise SystemExit(f"expected exactly one H4 filter_map block, found {count}")
+          path.write_text(text.replace(old, new), encoding="utf-8")
+          PY
+
+          cargo fmt --manifest-path codex-rs/Cargo.toml --package codex-hepta-agentd
+          git diff --check
+          test "$(git diff --name-only | sort)" = "codex-rs/hepta-agentd/examples/h4_persistent_writer.rs"
+
+          cd codex-rs
+          cargo clippy --locked -p codex-hepta-agentd --no-deps \
+            --example h4_persistent_writer \
+            --features qualification-cognitive-write -- -D warnings
+          cd ..
+
+          git config user.name "hepta-gap-materializer"
+          git config user.email "hepta-gap-materializer@users.noreply.github.com"
+          git add codex-rs/hepta-agentd/examples/h4_persistent_writer.rs
+          git commit --amend --no-edit
+          test "$(git rev-parse HEAD^)" = "${expected_parent}"
+          git push \
+            --force-with-lease="${candidate_ref}:${expected_head}" \
+            origin "HEAD:${candidate_ref}"
