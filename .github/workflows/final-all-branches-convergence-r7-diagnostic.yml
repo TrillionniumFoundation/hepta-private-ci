@@ -1,0 +1,89 @@
+name: Final convergence R7 memory diagnostic
+
+on:
+  push:
+    branches:
+      - ops/final-all-branches-convergence-r7-diagnostic-20260908
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: write
+
+jobs:
+  diagnose:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 180
+    env:
+      CANDIDATE_BRANCH: integration/final-all-branches-main-tree-r7-diagnostic-20260908
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: 1.95.0
+          components: rustfmt, clippy
+
+      - name: Rebuild the exact convergence tree and TLS repair
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          source = Path('.github/workflows/final-all-branches-convergence-r5.yml').read_text().splitlines()
+          def extract(step_name: str, output: str) -> None:
+              marker = f'      - name: {step_name}'
+              start = source.index(marker)
+              run = next(i for i in range(start + 1, len(source)) if source[i] == '        run: |') + 1
+              body = []
+              for line in source[run:]:
+                  if line.startswith('      - '):
+                      break
+                  if line.startswith('          '):
+                      body.append(line[10:])
+                  elif not line:
+                      body.append('')
+                  else:
+                      raise SystemExit(f'unexpected indentation: {line!r}')
+              Path(output).write_text('\n'.join(body) + '\n')
+          extract('Build one canonical history', '/tmp/r5-build.sh')
+          extract('Repair nested TLS error-chain classification only when reproduced', '/tmp/r5-tls.sh')
+          PY
+          bash /tmp/r5-build.sh
+          bash /tmp/r5-tls.sh
+
+      - name: Export memory implementation and reproduce exact blocker
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/memory-debug
+          find codex-rs/core/src -maxdepth 3 \( -path '*/memories*' -o -iname '*memory*' \) -print0 | while IFS= read -r -d '' path; do
+            if [[ -f "$path" ]]; then
+              mkdir -p "/tmp/memory-debug/$(dirname "$path")"
+              cp "$path" "/tmp/memory-debug/$path"
+            elif [[ -d "$path" ]]; then
+              mkdir -p "/tmp/memory-debug/$path"
+              cp -a "$path"/. "/tmp/memory-debug/$path/"
+            fi
+          done
+          git rev-parse HEAD > /tmp/memory-debug/convergence-head.txt
+          git status --short > /tmp/memory-debug/git-status.txt
+          cd codex-rs
+          set +e
+          cargo test --locked -p codex-core summary_replacement_preserves_unrelated_daily_entries -- --nocapture --test-threads=1 2>&1 | tee /tmp/memory-debug/failing-test.log
+          rc=${PIPESTATUS[0]}
+          set -e
+          printf '%s\n' "$rc" > /tmp/memory-debug/failing-test.rc
+          cd ..
+          tar -C /tmp -czf /tmp/hepta-memory-debug-r7.tar.gz memory-debug
+          test "$rc" -ne 0
+
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-memory-debug-r7
+          path: /tmp/hepta-memory-debug-r7.tar.gz
+          if-no-files-found: error
+          retention-days: 7
