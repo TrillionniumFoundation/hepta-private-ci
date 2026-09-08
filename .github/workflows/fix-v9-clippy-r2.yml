@@ -1,0 +1,141 @@
+name: Apply remaining scoped Clippy expectations v9 r2
+
+on:
+  push:
+    branches:
+      - ops/final-blocker-closure-v9-20260908
+
+permissions:
+  contents: write
+
+jobs:
+  fix:
+    if: github.event.head_commit.message == 'ops apply remaining scoped clippy expectations v9 r2'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ops/final-blocker-closure-v9-20260908
+          fetch-depth: 0
+          persist-credentials: true
+
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: 1.95.0
+          components: rustfmt
+
+      - name: Add only fulfilled function-scoped expectations
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+
+          def replace_once(source: str, old: str, new: str, label: str) -> str:
+              count = source.count(old)
+              if count != 1:
+                  raise SystemExit(f"{label}: expected exactly one match, found {count}")
+              return source.replace(old, new, 1)
+
+          tasks_path = Path("codex-rs/core/src/tasks/mod.rs")
+          tasks = tasks_path.read_text(encoding="utf-8")
+          attr = (
+              "    #[expect(\n"
+              "        clippy::expect_used,\n"
+              "        reason = \"private lifecycle mutex poisoning and armed-owner consumption are explicit fail-closed state-machine invariants\"\n"
+              "    )]\n"
+          )
+          signatures = [
+              "    fn spawn_cleanup(\n",
+              "    fn register_start_transition(\n",
+              "    fn finish_start_transition(\n",
+              "    fn pending_start_transition_completions(&self) -> Vec<Arc<StartTransitionCompletion>> {\n",
+              "    fn pending_start_transition_cleanup_slots(&self) -> Vec<StartTransitionCleanupSlot> {\n",
+              "    fn register_task_terminalization(\n",
+              "    pub(crate) fn pending_suspension_handoffs_except(\n",
+              "    fn pending_abort_handoffs_except(\n",
+              "    fn pending_finish_handoffs_except(\n",
+              "    fn finish_task_terminalization(\n",
+              "    fn pending_task_terminalization_completions_except(\n",
+              "    pub(crate) fn has_pending_start_transition_except(\n",
+              "    pub(crate) fn has_pending_task_terminalization_except(\n",
+              "    pub(crate) fn begin_shutdown(&self) {\n",
+              "    fn retain_finish_handoff(slot: &TaskFinishHandoffSlot, handoff: TaskFinishHandoff) {\n",
+              "    fn retain_abort_handoff(slot: &TaskAbortHandoffSlot, handoff: TaskAbortHandoff) {\n",
+          ]
+          for signature in signatures:
+              tasks = replace_once(tasks, signature, attr + signature, signature.strip())
+
+          disarm_old = (
+              "    /// Mark a successfully attached or already-stale transition as complete.\n"
+              "    fn disarm(&mut self) {\n"
+          )
+          disarm_new = (
+              "    /// Mark a successfully attached or already-stale transition as complete.\n"
+              + attr
+              + "    fn disarm(&mut self) {\n"
+          )
+          tasks = replace_once(tasks, disarm_old, disarm_new, "StartTransitionOwner::disarm")
+
+          stale_expect = (
+              "    #[expect(\n"
+              "        clippy::too_many_arguments,\n"
+              "        reason = \"retained compatibility entry point with explicit lifecycle witnesses\"\n"
+              "    )]\n"
+              "    #[cfg_attr(\n"
+              "        not(test),\n"
+              "        expect(dead_code, reason = \"used by focused lifecycle qualification tests\")\n"
+              "    )]\n"
+              "    pub(crate) async fn start_task<T: SessionTask>(\n"
+          )
+          start_task = (
+              "    #[cfg_attr(\n"
+              "        not(test),\n"
+              "        expect(dead_code, reason = \"used by focused lifecycle qualification tests\")\n"
+              "    )]\n"
+              "    pub(crate) async fn start_task<T: SessionTask>(\n"
+          )
+          tasks = replace_once(tasks, stale_expect, start_task, "stale start_task too_many_arguments expectation")
+          tasks_path.write_text(tasks, encoding="utf-8")
+
+          suspension_path = Path("codex-rs/core/src/session/turn_suspension.rs")
+          suspension = suspension_path.read_text(encoding="utf-8")
+          top_attr = (
+              "#[expect(\n"
+              "    clippy::expect_used,\n"
+              "    reason = \"private handoff mutex poisoning is an explicit fail-closed lifecycle invariant\"\n"
+              ")]\n"
+          )
+          suspension = replace_once(
+              suspension,
+              "fn retain_suspension_handoff(slot: &SuspensionHandoffSlot, handoff: SuspensionHandoff) {\n",
+              top_attr + "fn retain_suspension_handoff(slot: &SuspensionHandoffSlot, handoff: SuspensionHandoff) {\n",
+              "retain_suspension_handoff",
+          )
+          owner_attr = (
+              "    #[expect(\n"
+              "        clippy::expect_used,\n"
+              "        reason = \"the suspension owner remains armed until explicit disarm or drop\"\n"
+              "    )]\n"
+          )
+          suspension = replace_once(
+              suspension,
+              "    fn disarm(mut self) -> SuspensionHandoff {\n",
+              owner_attr + "    fn disarm(mut self) -> SuspensionHandoff {\n",
+              "SuspensionHandoffOwner::disarm",
+          )
+          suspension_path.write_text(suspension, encoding="utf-8")
+          PY
+          (cd codex-rs && cargo fmt --all && cargo fmt --all -- --check)
+          git diff --check
+
+      - name: Commit remaining scoped closure
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "hepta-blocker-closure-bot"
+          git config user.email "hepta-blocker-closure-bot@users.noreply.github.com"
+          git add codex-rs/core/src/tasks/mod.rs codex-rs/core/src/session/turn_suspension.rs
+          git commit -m "fix: cover remaining lifecycle invariants with scoped lint expectations"
+          git push origin HEAD:ops/final-blocker-closure-v9-20260908
