@@ -1,0 +1,359 @@
+name: Hepta exact-head Agentd UDS repair r4
+
+on:
+  push:
+    branches:
+      - ops/exact-head-repair-20260908-r4
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-exact-head-agentd-uds-repair-r4
+  cancel-in-progress: false
+
+env:
+  BASE_SHA: 04f60466394a024c218ce66b1b32d1c42c462985
+  SOURCE_SHA: d0f64ecfbbab31a8495c4adc1ec0a987281ade4c
+  CANDIDATE_BRANCH: codex/hepta-all-gap-closure-20260908
+  RESULT_BRANCH: ops/exact-head-repair-result-20260908-r4
+  RUST_BACKTRACE: "1"
+
+jobs:
+  validate:
+    name: validate (${{ matrix.os }})
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, macos-15]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 100
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout immutable source subject
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 2
+          persist-credentials: false
+
+      - name: Bind immutable source topology
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${SOURCE_SHA}"
+          test "$(git rev-parse HEAD^)" = "${BASE_SHA}"
+          git cat-file -e "${BASE_SHA}^{commit}"
+
+      - name: Apply source repair deterministically
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 .github/scripts/hepta_agentd_gap_patch.py
+          python3 - <<'PY'
+          from pathlib import Path
+
+          path = Path("codex-rs/hepta-agentd/src/app_runtime.rs")
+          text = path.read_text(encoding="utf-8")
+          old = "pub(crate) fn app_server_runtime_options(\n"
+          new = (
+              "#[cfg_attr(\n"
+              "    not(test),\n"
+              "    allow(\n"
+              "        dead_code,\n"
+              "        reason = \"the shared runtime-options constructor is retained for process qualification and the product-host integration seam\"\n"
+              "    )\n"
+              ")]\n"
+              "pub(crate) fn app_server_runtime_options(\n"
+          )
+          if text.count(old) != 1:
+              raise SystemExit("expected exactly one app_server_runtime_options anchor")
+          if new in text:
+              raise SystemExit("app_server_runtime_options already locally annotated")
+          path.write_text(text.replace(old, new, 1), encoding="utf-8")
+          PY
+          cargo fmt --manifest-path codex-rs/Cargo.toml \
+            --package codex-hepta-agentd --package codex-uds
+          expected="$({
+            printf '%s\n' \
+              codex-rs/hepta-agentd/src/app_runtime.rs \
+              codex-rs/hepta-agentd/src/control.rs \
+              codex-rs/hepta-agentd/tests/support/fleet.rs \
+              codex-rs/uds/src/lib.rs
+          } | sort)"
+          actual="$(git diff --name-only | sort)"
+          test "${actual}" = "${expected}"
+          git diff --check
+
+      - name: UDS unit and boundary tests
+        id: uds_tests
+        continue-on-error: true
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          log="${RUNNER_TEMP}/uds-tests.log"
+          if ! cargo test --locked -p codex-uds -- --nocapture >"${log}" 2>&1; then
+            tail -n 260 "${log}"
+            exit 1
+          fi
+          tail -n 30 "${log}"
+
+      - name: Agentd qualification unit tests
+        id: qualification_tests
+        continue-on-error: true
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          log="${RUNNER_TEMP}/qualification-tests.log"
+          if ! cargo test --locked -p codex-hepta-agentd \
+            --features qualification-cognitive-write \
+            runtime::tests::qualification_ -- --nocapture --test-threads=1 \
+            >"${log}" 2>&1; then
+            tail -n 300 "${log}"
+            exit 1
+          fi
+          tail -n 40 "${log}"
+
+      - name: Agentd physical process qualification
+        id: process_tests
+        continue-on-error: true
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          log="${RUNNER_TEMP}/process-tests.log"
+          if ! cargo test --locked -p codex-hepta-agentd \
+            --features qualification-cognitive-write \
+            --test cognitive_product_e2e -- --nocapture --test-threads=1 \
+            >"${log}" 2>&1; then
+            tail -n 360 "${log}"
+            exit 1
+          fi
+          tail -n 70 "${log}"
+
+      - name: Memory extension strict Clippy
+        id: memory_clippy
+        continue-on-error: true
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          log="${RUNNER_TEMP}/memory-clippy.log"
+          if ! cargo clippy --locked --no-deps \
+            -p codex-hepta-memory-extension --lib -- -D warnings \
+            >"${log}" 2>&1; then
+            tail -n 300 "${log}"
+            exit 1
+          fi
+          tail -n 30 "${log}"
+
+      - name: Supervisor strict Clippy
+        id: supervisor_clippy
+        continue-on-error: true
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          log="${RUNNER_TEMP}/supervisor-clippy.log"
+          if ! cargo clippy --locked --no-deps \
+            -p codex-hepta-supervisor --lib -- -D warnings \
+            >"${log}" 2>&1; then
+            tail -n 300 "${log}"
+            exit 1
+          fi
+          tail -n 30 "${log}"
+
+      - name: UDS strict Clippy
+        id: uds_clippy
+        continue-on-error: true
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          log="${RUNNER_TEMP}/uds-clippy.log"
+          if ! cargo clippy --locked --no-deps \
+            -p codex-uds --all-targets -- -D warnings \
+            >"${log}" 2>&1; then
+            tail -n 300 "${log}"
+            exit 1
+          fi
+          tail -n 30 "${log}"
+
+      - name: Agentd strict Clippy
+        id: agentd_clippy
+        continue-on-error: true
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          log="${RUNNER_TEMP}/agentd-clippy.log"
+          if ! cargo clippy --locked --no-deps \
+            -p codex-hepta-agentd --all-targets \
+            --features qualification-cognitive-write -- -D warnings \
+            >"${log}" 2>&1; then
+            tail -n 360 "${log}"
+            exit 1
+          fi
+          tail -n 40 "${log}"
+
+      - name: Formatting and patch-scope invariants
+        id: fmt_diff
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -euo pipefail
+          log="${RUNNER_TEMP}/fmt-diff.log"
+          if ! {
+            cargo fmt --manifest-path codex-rs/Cargo.toml \
+              --package codex-hepta-agentd --package codex-uds -- --check
+            git diff --check
+            expected="$({
+              printf '%s\n' \
+                codex-rs/hepta-agentd/src/app_runtime.rs \
+                codex-rs/hepta-agentd/src/control.rs \
+                codex-rs/hepta-agentd/tests/support/fleet.rs \
+                codex-rs/uds/src/lib.rs
+            } | sort)"
+            actual="$(git diff --name-only | sort)"
+            test "${actual}" = "${expected}"
+          } >"${log}" 2>&1; then
+            tail -n 260 "${log}"
+            exit 1
+          fi
+          tail -n 30 "${log}"
+
+      - name: Require every diagnostic lane
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "${{ steps.uds_tests.outcome }}" = "success"
+          test "${{ steps.qualification_tests.outcome }}" = "success"
+          test "${{ steps.process_tests.outcome }}" = "success"
+          test "${{ steps.memory_clippy.outcome }}" = "success"
+          test "${{ steps.supervisor_clippy.outcome }}" = "success"
+          test "${{ steps.uds_clippy.outcome }}" = "success"
+          test "${{ steps.agentd_clippy.outcome }}" = "success"
+          test "${{ steps.fmt_diff.outcome }}" = "success"
+
+  materialize:
+    name: materialize single-parent result
+    needs: validate
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout immutable source subject
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 2
+          persist-credentials: true
+
+      - name: Revalidate live refs and immutable topology
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${SOURCE_SHA}"
+          test "$(git rev-parse HEAD^)" = "${BASE_SHA}"
+          git fetch --no-tags origin \
+            "+refs/heads/${CANDIDATE_BRANCH}:refs/remotes/origin/${CANDIDATE_BRANCH}"
+          test "$(git rev-parse refs/remotes/origin/${CANDIDATE_BRANCH})" = "${SOURCE_SHA}"
+          test -z "$(git ls-remote --heads origin "refs/heads/${RESULT_BRANCH}")"
+          test ! -e .github/workflows/hepta-exact-head-agentd-uds-repair-r4.yml
+
+      - name: Reproduce exact source repair
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 .github/scripts/hepta_agentd_gap_patch.py
+          python3 - <<'PY'
+          from pathlib import Path
+
+          path = Path("codex-rs/hepta-agentd/src/app_runtime.rs")
+          text = path.read_text(encoding="utf-8")
+          old = "pub(crate) fn app_server_runtime_options(\n"
+          new = (
+              "#[cfg_attr(\n"
+              "    not(test),\n"
+              "    allow(\n"
+              "        dead_code,\n"
+              "        reason = \"the shared runtime-options constructor is retained for process qualification and the product-host integration seam\"\n"
+              "    )\n"
+              ")]\n"
+              "pub(crate) fn app_server_runtime_options(\n"
+          )
+          if text.count(old) != 1:
+              raise SystemExit("expected exactly one app_server_runtime_options anchor")
+          if new in text:
+              raise SystemExit("app_server_runtime_options already locally annotated")
+          path.write_text(text.replace(old, new, 1), encoding="utf-8")
+          PY
+          cargo fmt --manifest-path codex-rs/Cargo.toml \
+            --package codex-hepta-agentd --package codex-uds
+          expected="$({
+            printf '%s\n' \
+              codex-rs/hepta-agentd/src/app_runtime.rs \
+              codex-rs/hepta-agentd/src/control.rs \
+              codex-rs/hepta-agentd/tests/support/fleet.rs \
+              codex-rs/uds/src/lib.rs
+          } | sort)"
+          actual="$(git diff --name-only | sort)"
+          test "${actual}" = "${expected}"
+          git diff --check
+
+      - name: Create immutable-base single-parent result commit
+        id: result
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "hepta-exact-head-repair"
+          git config user.email "hepta-exact-head-repair@users.noreply.github.com"
+          git add \
+            codex-rs/hepta-agentd/src/app_runtime.rs \
+            codex-rs/hepta-agentd/src/control.rs \
+            codex-rs/hepta-agentd/tests/support/fleet.rs \
+            codex-rs/uds/src/lib.rs
+          tree_sha="$(git write-tree)"
+          result_sha="$(printf '%s\n' \
+            'fix(hepta): close Agentd UDS platform blockers' \
+            '' \
+            'Materialize the validated Darwin pathname-socket boundary, short process-qualification root, explicit contextual arguments, and a narrowly scoped non-test dead-code allowance as one direct child of the immutable all-branch base.' \
+            '' \
+            'This commit grants no deployment, promotion, signing, operator, hardware, or release authority.' \
+            | git commit-tree "${tree_sha}" -p "${BASE_SHA}")"
+          test "$(git rev-parse "${result_sha}^")" = "${BASE_SHA}"
+          test "$(git rev-parse "${result_sha}^{tree}")" = "${tree_sha}"
+          git push origin "${result_sha}:refs/heads/${RESULT_BRANCH}"
+          test "$(git ls-remote --heads origin "refs/heads/${RESULT_BRANCH}" | awk '{print $1}')" = "${result_sha}"
+          printf 'sha=%s\n' "${result_sha}" >> "${GITHUB_OUTPUT}"
+          printf 'tree=%s\n' "${tree_sha}" >> "${GITHUB_OUTPUT}"
+
+      - name: Retain exact result receipt
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "${RUNNER_TEMP}/hepta-r4"
+          {
+            printf 'base=%s\n' "${BASE_SHA}"
+            printf 'source=%s\n' "${SOURCE_SHA}"
+            printf 'result=%s\n' "${{ steps.result.outputs.sha }}"
+            printf 'tree=%s\n' "${{ steps.result.outputs.tree }}"
+            printf 'parent=%s\n' "$(git rev-parse "${{ steps.result.outputs.sha }}^")"
+          } | tee "${RUNNER_TEMP}/hepta-r4/IDENTITY"
+          git diff "${SOURCE_SHA}" "${{ steps.result.outputs.sha }}" -- \
+            codex-rs/hepta-agentd codex-rs/uds/src/lib.rs \
+            > "${RUNNER_TEMP}/hepta-r4/repair.diff"
+          sha256sum "${RUNNER_TEMP}/hepta-r4/repair.diff" \
+            > "${RUNNER_TEMP}/hepta-r4/SHA256SUMS"
+
+      - name: Upload exact result receipt
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-exact-head-agentd-uds-repair-r4
+          path: ${{ runner.temp }}/hepta-r4
+          if-no-files-found: error
+          retention-days: 30
