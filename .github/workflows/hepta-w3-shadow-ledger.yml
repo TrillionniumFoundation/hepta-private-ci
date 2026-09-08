@@ -1,0 +1,86 @@
+name: Hepta W3 shadow ledger qualification
+
+on:
+  push:
+    branches:
+      - codex/hepta-w3-shadow-ledger-20260908
+
+permissions:
+  contents: write
+
+concurrency:
+  group: hepta-w3-shadow-ledger
+  cancel-in-progress: false
+
+jobs:
+  qualify:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    env:
+      RESULT_BRANCH: codex/hepta-w3-shadow-ledger-result-20260908-r1
+    steps:
+      - name: Check out exact candidate
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: codex/hepta-w3-shadow-ledger-20260908
+          fetch-depth: 1
+          persist-credentials: true
+
+      - name: Bind candidate and result ref
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test -z "$(git status --porcelain)"
+          test -z "$(git ls-remote --heads origin "refs/heads/${RESULT_BRANCH}")"
+
+      - name: Canonicalize source and dependency lock
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo fmt --manifest-path codex-rs/Cargo.toml --all
+          cargo check --manifest-path codex-rs/Cargo.toml \
+            -p codex-hepta-learning-ledger
+          allowed='^(codex-rs/Cargo.lock|codex-rs/hepta-learning-ledger/Cargo.toml|codex-rs/hepta-learning-ledger/src/lib.rs|codex-rs/hepta-learning-ledger/src/shadow.rs|codex-rs/hepta-learning-ledger/src/shadow_tests.rs)$'
+          unexpected="$(git diff --name-only | grep -Ev "$allowed" || true)"
+          test -z "$unexpected"
+          git diff --check
+
+      - name: Strict Cargo qualification
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo fmt --all -- --check
+          cargo test --locked -p codex-hepta-learning-ledger --all-targets -- --nocapture
+          cargo clippy --locked --no-deps \
+            -p codex-hepta-learning-ledger --all-targets -- -D warnings
+
+      - name: Bazel package qualification
+        shell: bash
+        run: |
+          set -euo pipefail
+          bazel query //codex-rs/hepta-learning-ledger:all
+          bazel test //codex-rs/hepta-learning-ledger:all --test_output=errors
+
+      - name: Publish qualified result
+        shell: bash
+        env:
+          GIT_AUTHOR_NAME: hepta-w3-qualifier
+          GIT_AUTHOR_EMAIL: hepta-w3-qualifier@users.noreply.github.com
+          GIT_COMMITTER_NAME: hepta-w3-qualifier
+          GIT_COMMITTER_EMAIL: hepta-w3-qualifier@users.noreply.github.com
+        run: |
+          set -euo pipefail
+          git add \
+            codex-rs/Cargo.lock \
+            codex-rs/hepta-learning-ledger/Cargo.toml \
+            codex-rs/hepta-learning-ledger/src/lib.rs \
+            codex-rs/hepta-learning-ledger/src/shadow.rs \
+            codex-rs/hepta-learning-ledger/src/shadow_tests.rs
+          if ! git diff --cached --quiet; then
+            git commit -m "build(learning): canonicalize W3 shadow ledger candidate"
+          fi
+          git push origin "HEAD:refs/heads/${RESULT_BRANCH}"
+          git rev-parse HEAD HEAD^{tree} | tee -a "$GITHUB_STEP_SUMMARY"
