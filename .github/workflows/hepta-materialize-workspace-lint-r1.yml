@@ -42,7 +42,7 @@ jobs:
           test -z "$(git status --porcelain)"
           test -z "$(git ls-remote --heads origin "refs/heads/${RESULT_BRANCH}")"
 
-      - name: Remove stale lint formalism
+      - name: Apply exact strict-lint repairs
         shell: bash
         run: |
           set -euo pipefail
@@ -51,6 +51,11 @@ jobs:
           expected="$({
             printf '%s\n' \
               codex-rs/app-server/src/request_processors/account_processor/bedrock_setup.rs \
+              codex-rs/core/src/model_provider_policy/binding.rs \
+              codex-rs/core/src/session/mod.rs \
+              codex-rs/core/src/session/turn_input.rs \
+              codex-rs/core/src/tasks/mod.rs \
+              codex-rs/core/src/tools/handlers/dynamic.rs \
               codex-rs/core/src/tools/registry.rs
           } | sort)"
           actual="$(git diff --name-only | sort)"
@@ -79,7 +84,12 @@ jobs:
           set -euo pipefail
           git add \
             codex-rs/app-server/src/request_processors/account_processor/bedrock_setup.rs \
+            codex-rs/core/src/model_provider_policy/binding.rs \
+            codex-rs/core/src/session/mod.rs \
+            codex-rs/core/src/session/turn_input.rs \
+            codex-rs/core/src/tasks/mod.rs \
+            codex-rs/core/src/tools/handlers/dynamic.rs \
             codex-rs/core/src/tools/registry.rs
-          git commit -m "refactor(lint): remove stale dead-code formalism"
+          git commit -m "refactor(lint): remove stale formalism and repair strict findings"
           git push origin "HEAD:refs/heads/${RESULT_BRANCH}"
           git rev-parse HEAD HEAD^{tree} | tee -a "$GITHUB_STEP_SUMMARY"
