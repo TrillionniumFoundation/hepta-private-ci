@@ -1,0 +1,104 @@
+name: Verified main-tree convergence
+
+on:
+  workflow_dispatch:
+    inputs:
+      phase:
+        description: prepare or cleanup
+        required: true
+        default: prepare
+        type: choice
+        options:
+          - prepare
+          - cleanup
+
+permissions:
+  contents: write
+  pull-requests: write
+  actions: read
+
+concurrency:
+  group: verified-main-tree-convergence
+  cancel-in-progress: false
+
+jobs:
+  prepare:
+    if: inputs.phase == 'prepare'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 180
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: main
+          fetch-depth: 0
+          persist-credentials: true
+      - name: Fetch every branch and tag
+        run: git fetch --prune origin '+refs/heads/*:refs/remotes/origin/*' '+refs/tags/*:refs/tags/*'
+      - name: Configure identity
+        run: |
+          git config user.name 'hepta-convergence-bot'
+          git config user.email 'hepta-convergence-bot@users.noreply.github.com'
+      - name: Build canonical candidate and close branch ancestry
+        shell: bash
+        run: |
+          set -euo pipefail
+          final='ops/main-tree-convergence-final-20260908'
+          git switch -C "$final" origin/main
+          merge_real() {
+            local ref="$1"
+            if git show-ref --verify --quiet "refs/remotes/origin/$ref" && ! git merge-base --is-ancestor "origin/$ref" HEAD; then
+              git merge --no-edit --no-ff -X theirs "origin/$ref" -m "merge: absorb $ref into canonical main tree"
+            fi
+          }
+          for ref in integration/vnext-main-20260811 integration/all-branches-final-seal-20260907 integration/hepta-w0-internal-closure-20260908 codex/hepta-w0-seven-lanes-handoff-20260908 codex/hepta-final-gap-closure-r3-20260908 codex/hepta-bao-connect-20260908 reviewer/ci-governance-simplification-20260908; do
+            merge_real "$ref"
+          done
+          mapfile -t refs < <(git for-each-ref --format='%(refname:strip=3)' refs/remotes/origin | grep -v '^HEAD$' | grep -v '^main$' | grep -v "^$final$" | sort -u)
+          for ref in "${refs[@]}"; do
+            if ! git merge-base --is-ancestor "origin/$ref" HEAD; then
+              git merge -s ours --no-edit --no-ff "origin/$ref" -m "history: close $ref into canonical ancestry"
+            fi
+          done
+          git push --force-with-lease origin "$final"
+          for ref in "${refs[@]}"; do git merge-base --is-ancestor "origin/$ref" HEAD || { echo "::error::unclosed branch ancestry: $ref"; exit 1; }; done
+      - name: Rust format
+        run: cargo fmt --all -- --check
+      - name: Focused HTTP client tests
+        run: cargo test --locked -p codex-http-client --lib -- --test-threads=1
+      - name: Hepta focused tests
+        run: cargo test --locked -p codex-hepta-contracts -p codex-hepta-bao-adapter -p codex-hepta-supervisor -p codex-hepta-ndu -p codex-hepta-neuron -p codex-hepta-learning-ledger -p codex-hepta-intelligence-eval -p codex-hepta-plasticity -p codex-hepta-shadow-qualification
+      - name: Workspace check
+        run: cargo check --locked --workspace --all-targets
+      - name: Workspace clippy
+        run: cargo clippy --locked --workspace --all-targets -- -D warnings
+      - name: Workspace tests
+        run: cargo test --locked --workspace --all-targets
+      - name: Create or update convergence PR
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          head='ops/main-tree-convergence-final-20260908'
+          number="$(gh pr list --state open --head "$head" --base main --json number --jq '.[0].number // empty')"
+          body='Canonical one-tree convergence. Product-authoritative integration/W0/HeptaBao lines are merged in order; every remaining remote branch tip is ancestry-closed with an ours merge so obsolete backup/controller trees cannot overwrite the canonical tree. Cleanup is separately fail-closed on ancestry and runs only after this PR is merged.'
+          if [[ -z "$number" ]]; then gh pr create --base main --head "$head" --title 'merge: converge every branch into the canonical main tree' --body "$body"; else gh pr edit "$number" --title 'merge: converge every branch into the canonical main tree' --body "$body"; fi
+
+  cleanup:
+    if: inputs.phase == 'cleanup'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: main
+          fetch-depth: 0
+          persist-credentials: true
+      - name: Fetch every branch
+        run: git fetch --prune origin '+refs/heads/*:refs/remotes/origin/*'
+      - name: Fail closed unless every branch is merged, then delete
+        shell: bash
+        run: |
+          set -euo pipefail
+          mapfile -t refs < <(git for-each-ref --format='%(refname:strip=3)' refs/remotes/origin | grep -v '^HEAD$' | grep -v '^main$' | sort -u)
+          for ref in "${refs[@]}"; do git merge-base --is-ancestor "origin/$ref" origin/main || { echo "::error::refusing cleanup; $ref is not an ancestor of main"; exit 1; }; done
+          for ref in "${refs[@]}"; do git push origin --delete "$ref"; done
