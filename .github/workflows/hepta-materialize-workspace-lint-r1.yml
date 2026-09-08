@@ -40,50 +40,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          python3 - <<'PY'
-          from pathlib import Path
-          import re
-
-          registry = Path("codex-rs/core/src/tools/registry.rs")
-          text = registry.read_text(encoding="utf-8")
-          trait_expect = '''    #[expect(dead_code, reason = "retained tool cancellation metadata query")]
-'''
-          if text.count(trait_expect) != 1:
-              raise SystemExit("expected one trait cancellation lint expectation")
-          text = text.replace(trait_expect, "", 1)
-
-          wrapper = re.compile(
-              r"\n    pub\(crate\) fn waits_for_runtime_cancellation\("
-              r"&self, name: &ToolName"
-              r"\) -> Option<bool> \{\n"
-              r"(?:        .*\n)+?"
-              r"    \}\n",
-          )
-          matches = list(wrapper.finditer(text))
-          if len(matches) != 1:
-              raise SystemExit(
-                  f"expected one unused ToolRegistry cancellation wrapper, found {len(matches)}"
-              )
-          text = text[:matches[0].start()] + "\n" + text[matches[0].end():]
-          registry.write_text(text, encoding="utf-8")
-
-          bedrock = Path(
-              "codex-rs/app-server/src/request_processors/account_processor/bedrock_setup.rs"
-          )
-          text = bedrock.read_text(encoding="utf-8")
-          top_level_expect = '''#[expect(
-    dead_code,
-    reason = "Bedrock account endpoints are not yet routed by the stable protocol"
-)]
-'''
-          count = text.count(top_level_expect)
-          if count != 4:
-              raise SystemExit(
-                  f"expected four stale top-level Bedrock expectations, found {count}"
-              )
-          text = text.replace(top_level_expect, "")
-          bedrock.write_text(text, encoding="utf-8")
-          PY
+          python3 .github/scripts/hepta_workspace_lint_patch.py
           cargo fmt --manifest-path codex-rs/Cargo.toml --all
           expected="$({
             printf '%s\n' \
