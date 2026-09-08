@@ -1,0 +1,69 @@
+name: Hepta objective admission autofix
+
+on:
+  push:
+    branches:
+      - codex/hepta-objective-admission-20260908
+    paths:
+      - .github/workflows/hepta-objective-admission-autofix.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: hepta-objective-admission-autofix
+  cancel-in-progress: false
+
+jobs:
+  close-mechanical-gaps:
+    if: ${{ github.actor != 'github-actions[bot]' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Apply exact lint fixes and canonical formatting
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+
+          path = Path('codex-rs/hepta-objective/src/objective_admission.rs')
+          text = path.read_text(encoding='utf-8')
+          for line in (
+              'use crate::CompileDisposition;\n',
+              'use crate::ObjectiveFunction;\n',
+          ):
+              if text.count(line) != 1:
+                  raise SystemExit(f'expected exactly one import: {line!r}')
+              text = text.replace(line, '')
+          path.write_text(text, encoding='utf-8')
+          PY
+          cargo fmt --manifest-path codex-rs/Cargo.toml --package codex-hepta-objective
+
+      - name: Verify objective package
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo test --locked -p codex-hepta-objective -- --nocapture
+          cargo clippy --locked -p codex-hepta-objective --all-targets -- -D warnings
+          cargo fmt --manifest-path Cargo.toml --package codex-hepta-objective -- --check
+
+      - name: Commit verified mechanical closure
+        shell: bash
+        run: |
+          set -euo pipefail
+          git diff --check
+          git config user.name hepta-closure-bot
+          git config user.email hepta-closure-bot@users.noreply.github.com
+          git add codex-rs/hepta-objective/src/objective_admission.rs \
+                  codex-rs/hepta-objective/src/objective_admission_tests.rs \
+                  codex-rs/hepta-objective/src/lib.rs
+          git diff --cached --quiet && exit 0
+          git commit -m 'fix(objective): satisfy strict lint and canonical formatting'
+          git push origin HEAD:codex/hepta-objective-admission-20260908
