@@ -1,0 +1,122 @@
+name: Hepta materialize workspace lint r1
+
+on:
+  push:
+    branches:
+      - ops/materialize-workspace-lint-20260908-r1
+
+permissions:
+  contents: write
+
+concurrency:
+  group: hepta-materialize-workspace-lint-r1
+  cancel-in-progress: false
+
+jobs:
+  materialize:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    env:
+      SOURCE_SHA: d0f64ecfbbab31a8495c4adc1ec0a987281ade4c
+      RESULT_BRANCH: ops/materialized-workspace-lint-20260908-r1
+    steps:
+      - name: Check out exact source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: d0f64ecfbbab31a8495c4adc1ec0a987281ade4c
+          fetch-depth: 1
+          persist-credentials: true
+
+      - name: Bind source and destination
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          test -z "$(git status --porcelain)"
+          test -z "$(git ls-remote --heads origin "refs/heads/${RESULT_BRANCH}")"
+
+      - name: Remove stale lint formalism
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+
+          registry = Path("codex-rs/core/src/tools/registry.rs")
+          text = registry.read_text(encoding="utf-8")
+          trait_expect = '''    #[expect(dead_code, reason = "retained tool cancellation metadata query")]
+'''
+          if text.count(trait_expect) != 1:
+              raise SystemExit("expected one trait cancellation lint expectation")
+          text = text.replace(trait_expect, "", 1)
+
+          wrapper = re.compile(
+              r"\n    pub\(crate\) fn waits_for_runtime_cancellation\("
+              r"&self, name: &ToolName"
+              r"\) -> Option<bool> \{\n"
+              r"(?:        .*\n)+?"
+              r"    \}\n",
+          )
+          matches = list(wrapper.finditer(text))
+          if len(matches) != 1:
+              raise SystemExit(
+                  f"expected one unused ToolRegistry cancellation wrapper, found {len(matches)}"
+              )
+          text = text[:matches[0].start()] + "\n" + text[matches[0].end():]
+          registry.write_text(text, encoding="utf-8")
+
+          bedrock = Path(
+              "codex-rs/app-server/src/request_processors/account_processor/bedrock_setup.rs"
+          )
+          text = bedrock.read_text(encoding="utf-8")
+          top_level_expect = '''#[expect(
+    dead_code,
+    reason = "Bedrock account endpoints are not yet routed by the stable protocol"
+)]
+'''
+          count = text.count(top_level_expect)
+          if count != 4:
+              raise SystemExit(
+                  f"expected four stale top-level Bedrock expectations, found {count}"
+              )
+          text = text.replace(top_level_expect, "")
+          bedrock.write_text(text, encoding="utf-8")
+          PY
+          cargo fmt --manifest-path codex-rs/Cargo.toml --all
+          expected="$({
+            printf '%s\n' \
+              codex-rs/app-server/src/request_processors/account_processor/bedrock_setup.rs \
+              codex-rs/core/src/tools/registry.rs
+          } | sort)"
+          actual="$(git diff --name-only | sort)"
+          test "$actual" = "$expected"
+          git diff --check
+
+      - name: Validate strict affected packages
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo fmt --all -- --check
+          cargo clippy --locked --no-deps -p codex-core --all-targets -- -D warnings
+          cargo clippy --locked --no-deps -p codex-app-server --all-targets -- -D warnings
+          cargo test --locked -p codex-core tools::parallel::tests -- --nocapture
+          cargo test --locked -p codex-app-server request_processors::account_processor -- --nocapture
+
+      - name: Publish result
+        shell: bash
+        env:
+          GIT_AUTHOR_NAME: hepta-source-materializer
+          GIT_AUTHOR_EMAIL: hepta-source-materializer@users.noreply.github.com
+          GIT_COMMITTER_NAME: hepta-source-materializer
+          GIT_COMMITTER_EMAIL: hepta-source-materializer@users.noreply.github.com
+        run: |
+          set -euo pipefail
+          git add \
+            codex-rs/app-server/src/request_processors/account_processor/bedrock_setup.rs \
+            codex-rs/core/src/tools/registry.rs
+          git commit -m "refactor(lint): remove stale dead-code formalism"
+          git push origin "HEAD:refs/heads/${RESULT_BRANCH}"
+          git rev-parse HEAD HEAD^{tree} | tee -a "$GITHUB_STEP_SUMMARY"
