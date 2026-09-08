@@ -40,3 +40,7 @@ pub use shadow::ShadowDecisionRequest;
 pub use shadow::append_shadow_decision;
 pub use shadow::canonical_candidate_set_digest;
 pub use shadow::prepare_shadow_decision;
+
+#[cfg(test)]
+#[path = "shadow_tests.rs"]
+mod shadow_tests;
