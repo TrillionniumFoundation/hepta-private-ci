@@ -1,0 +1,232 @@
+name: Final all-branches convergence
+
+on:
+  push:
+    branches:
+      - ops/final-all-branches-convergence-20260908
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+  actions: read
+
+concurrency:
+  group: final-all-branches-convergence
+  cancel-in-progress: false
+
+jobs:
+  converge:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 360
+    env:
+      CANDIDATE_BRANCH: integration/final-all-branches-main-tree-20260908
+      CONTROLLER_BRANCH: ops/final-all-branches-convergence-20260908
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Configure repository
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "hepta-convergence-bot"
+          git config user.email "hepta-convergence-bot@users.noreply.github.com"
+          git fetch --prune origin '+refs/heads/*:refs/remotes/origin/*' '+refs/tags/*:refs/tags/*'
+
+      - name: Construct canonical candidate and absorb every branch
+        id: converge
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p .convergence
+          report=.convergence/report.tsv
+          printf 'branch\tsha\tmode\n' > "$report"
+
+          canonical='origin/main'
+          if git show-ref --verify --quiet refs/remotes/origin/codex/hepta-v9-blocker-closure-20260908; then
+            canonical='origin/codex/hepta-v9-blocker-closure-20260908'
+          elif git show-ref --verify --quiet refs/remotes/origin/codex/hepta-w0-seven-lanes-handoff-20260908; then
+            canonical='origin/codex/hepta-w0-seven-lanes-handoff-20260908'
+          fi
+
+          git checkout -B "$CANDIDATE_BRANCH" "$canonical"
+          if ! git merge-base --is-ancestor origin/main HEAD; then
+            git merge --no-ff -X ours origin/main -m 'merge: retain current main lineage in final convergence'
+          fi
+
+          priority=(
+            codex/hepta-final-gap-closure-r3-20260908
+            integration/hepta-w0-internal-closure-20260908
+            codex/hepta-w0-seven-lanes-handoff-20260908
+            reviewer/ci-governance-simplification-20260908
+            codex/hepta-bao-connect-20260908
+            codex/hepta-v9-blocker-closure-20260908
+          )
+
+          for branch in "${priority[@]}"; do
+            ref="refs/remotes/origin/$branch"
+            git show-ref --verify --quiet "$ref" || continue
+            sha=$(git rev-parse "$ref")
+            if git merge-base --is-ancestor "$sha" HEAD; then
+              printf '%s\t%s\talready-contained\n' "$branch" "$sha" >> "$report"
+              continue
+            fi
+            git merge --no-ff -X ours "$ref" -m "merge: integrate priority branch $branch"
+            printf '%s\t%s\tcontent-merge\n' "$branch" "$sha" >> "$report"
+          done
+
+          # The Trillionnium OS external-evidence subtree was never part of the
+          # Hepta canonical product tree. A priority merge may contain it as a
+          # non-conflicting side effect, so remove it before qualification.
+          if [[ -e .g1/trillionnium_os_external_evidence ]]; then
+            git rm -r .g1/trillionnium_os_external_evidence
+            git commit -m 'chore: keep external OS evidence outside the Hepta main tree'
+          fi
+
+          mapfile -t branches < <(
+            git for-each-ref --format='%(refname:strip=3)' refs/remotes/origin \
+              | grep -v '^HEAD$' \
+              | grep -v '^main$' \
+              | grep -v "^${CANDIDATE_BRANCH}$" \
+              | sort -u
+          )
+
+          for branch in "${branches[@]}"; do
+            ref="refs/remotes/origin/$branch"
+            sha=$(git rev-parse "$ref")
+            if git merge-base --is-ancestor "$sha" HEAD; then
+              grep -Fq "$branch"$'\t' "$report" || printf '%s\t%s\talready-contained\n' "$branch" "$sha" >> "$report"
+              continue
+            fi
+            # Historical, backup, diagnostic and superseded lane heads are
+            # absorbed with an ours merge. Their complete commit history stays
+            # reachable from main, while their old snapshots cannot roll the
+            # canonical tree backward or reactivate one-shot controllers.
+            git merge --no-ff -s ours "$ref" -m "archive: absorb superseded branch $branch without changing canonical tree"
+            printf '%s\t%s\thistory-merge\n' "$branch" "$sha" >> "$report"
+          done
+
+          python3 - <<'PY'
+          import csv, json, subprocess
+          from pathlib import Path
+          rows = list(csv.DictReader(Path('.convergence/report.tsv').open(), delimiter='\t'))
+          payload = {
+              'schema': 1,
+              'generated_by': 'final-all-branches-convergence.yml',
+              'canonical_source': subprocess.check_output(['git','rev-parse','HEAD'], text=True).strip(),
+              'branches': rows,
+          }
+          p = Path('docs/archive')
+          p.mkdir(parents=True, exist_ok=True)
+          (p / 'branch-convergence-20260908.json').write_text(
+              json.dumps(payload, indent=2, sort_keys=True) + '\n', encoding='utf-8'
+          )
+          PY
+          git add docs/archive/branch-convergence-20260908.json
+          git commit -m 'docs: record final branch convergence ancestry'
+
+          # Prove every remote branch head, including snapshots absorbed with
+          # an ours merge, is now an ancestor of the candidate.
+          failed=0
+          while IFS= read -r branch; do
+            [[ "$branch" == HEAD || "$branch" == main || "$branch" == "$CANDIDATE_BRANCH" ]] && continue
+            sha=$(git rev-parse "refs/remotes/origin/$branch")
+            if ! git merge-base --is-ancestor "$sha" HEAD; then
+              echo "::error::unabsorbed branch $branch at $sha"
+              failed=1
+            fi
+          done < <(git for-each-ref --format='%(refname:strip=3)' refs/remotes/origin | sort -u)
+          test "$failed" -eq 0
+          echo "candidate_sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: 1.95.0
+          components: rustfmt, clippy
+
+      - name: Format gate
+        shell: bash
+        run: cargo fmt --all -- --check
+
+      - name: Shared HTTP TLS blocker gate
+        shell: bash
+        run: cargo test --locked -p codex-http-client --lib -- --test-threads=1
+
+      - name: Hepta focused package gates
+        shell: bash
+        run: |
+          set -euo pipefail
+          packages=(
+            codex-hepta-contracts
+            codex-hepta-bao-adapter
+            codex-hepta-supervisor
+            codex-hepta-ndu
+            codex-hepta-neuron
+            codex-hepta-learning-ledger
+            codex-hepta-intelligence-eval
+            codex-hepta-plasticity
+            codex-hepta-shadow-qualification
+          )
+          for package in "${packages[@]}"; do
+            cargo test --locked -p "$package" --all-targets
+          done
+
+      - name: Workspace check
+        shell: bash
+        run: cargo check --locked --workspace --all-targets
+
+      - name: Workspace clippy
+        shell: bash
+        run: cargo clippy --locked --workspace --all-targets -- -D warnings
+
+      - name: Workspace tests
+        shell: bash
+        run: cargo test --locked --workspace --all-targets
+
+      - name: Repository-native qualification scripts
+        shell: bash
+        run: |
+          set -euo pipefail
+          run_if_present() {
+            local path="$1"
+            shift
+            if [[ -f "$path" ]]; then
+              echo "running $path $*"
+              python3 "$path" "$@"
+            fi
+          }
+          run_if_present scripts/verify_pre_coding_readiness.py
+          run_if_present scripts/verify_implementation_dossiers.py
+          run_if_present scripts/verify_technical_closure.py
+          run_if_present scripts/verify_implementation_contracts.py
+          run_if_present scripts/verify_paper_evidence.py
+          run_if_present scripts/verify_adaptive_algorithm_sources.py
+
+      - name: Push qualified candidate and open/update PR
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          git push --force-with-lease origin "HEAD:refs/heads/$CANDIDATE_BRANCH"
+          existing=$(gh pr list --repo "$GITHUB_REPOSITORY" --state open --head "$CANDIDATE_BRANCH" --json number --jq '.[0].number // empty')
+          body=$(cat <<'EOF'
+          Final repository convergence candidate.
+
+          - Integrates the latest Hepta W0/v9 product candidate and current main lineage.
+          - Applies the CI-governance simplification and HeptaBao final-use boundary when not already contained.
+          - Records every other branch head as merge ancestry without allowing historical snapshots or one-shot controllers to overwrite the canonical product tree.
+          - Includes a machine-readable branch-to-SHA convergence manifest.
+          - Is pushed only after format, shared HTTP, focused Hepta, workspace check, Clippy, workspace tests and repository-native verification pass.
+
+          After normal protected merge, a separate cleanup run will switch the default branch to main, verify every branch head is reachable, archive the convergence manifest and delete all branches except main.
+          EOF
+          )
+          if [[ -n "$existing" ]]; then
+            gh pr edit "$existing" --repo "$GITHUB_REPOSITORY" --title 'merge: converge every branch into the single main tree' --body "$body"
+          else
+            gh pr create --repo "$GITHUB_REPOSITORY" --base main --head "$CANDIDATE_BRANCH" --title 'merge: converge every branch into the single main tree' --body "$body"
+          fi
