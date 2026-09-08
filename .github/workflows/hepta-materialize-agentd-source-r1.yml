@@ -74,38 +74,32 @@ jobs:
 
           example_path = Path("codex-rs/hepta-agentd/examples/h4_persistent_writer.rs")
           example_text = example_path.read_text(encoding="utf-8")
-          example_old = '''        .filter_map(|entry| {
-              let name = entry.file_name().to_string_lossy().to_string();
-              let root = entry.path();
-              Some(CacheDeviceEvidence {
-                  name,
-                  model: read_trimmed(root.join("device/model")),
-                  write_cache: read_trimmed(root.join("queue/write_cache")),
-                  fua: read_trimmed(root.join("queue/fua")),
-                  rotational: read_trimmed(root.join("queue/rotational")),
-                  state: read_trimmed(root.join("device/state")),
-              })
-          })
-          '''
-          example_new = '''        .map(|entry| {
-              let name = entry.file_name().to_string_lossy().to_string();
-              let root = entry.path();
-              CacheDeviceEvidence {
-                  name,
-                  model: read_trimmed(root.join("device/model")),
-                  write_cache: read_trimmed(root.join("queue/write_cache")),
-                  fua: read_trimmed(root.join("queue/fua")),
-                  rotational: read_trimmed(root.join("queue/rotational")),
-                  state: read_trimmed(root.join("device/state")),
-              }
-          })
-          '''
-          if example_text.count(example_old) != 1:
-              raise SystemExit("expected exactly one H4 cache-device filter_map anchor")
-          example_path.write_text(
-              example_text.replace(example_old, example_new, 1),
-              encoding="utf-8",
+          replacements = (
+              (
+                  "        .filter_map(|entry| {\n",
+                  "        .map(|entry| {\n",
+                  "H4 cache-device iterator",
+              ),
+              (
+                  "            Some(CacheDeviceEvidence {\n",
+                  "            CacheDeviceEvidence {\n",
+                  "H4 cache-device constructor",
+              ),
+              (
+                  "                state: read_trimmed(root.join(\"device/state\")),\n"
+                  "            })\n"
+                  "        })\n",
+                  "                state: read_trimmed(root.join(\"device/state\")),\n"
+                  "            }\n"
+                  "        })\n",
+                  "H4 cache-device constructor tail",
+              ),
           )
+          for old, new, label in replacements:
+              if example_text.count(old) != 1:
+                  raise SystemExit(f"expected exactly one {label} anchor")
+              example_text = example_text.replace(old, new, 1)
+          example_path.write_text(example_text, encoding="utf-8")
           PY
           cargo fmt --manifest-path codex-rs/Cargo.toml --all
           expected="$({
