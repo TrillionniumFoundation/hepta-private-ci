@@ -1,0 +1,119 @@
+name: Hepta materialize Agentd exact source r1
+
+on:
+  push:
+    branches:
+      - ops/materialize-agentd-source-20260908-r1
+
+permissions:
+  contents: write
+
+concurrency:
+  group: hepta-materialize-agentd-source-r1
+  cancel-in-progress: false
+
+jobs:
+  materialize:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    env:
+      BASE_SHA: 04f60466394a024c218ce66b1b32d1c42c462985
+      SOURCE_SHA: d0f64ecfbbab31a8495c4adc1ec0a987281ade4c
+      SOURCE_BRANCH: codex/hepta-all-gap-closure-20260908
+      RESULT_BRANCH: ops/materialized-agentd-source-20260908-r1
+    steps:
+      - name: Check out exact source candidate
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: d0f64ecfbbab31a8495c4adc1ec0a987281ade4c
+          fetch-depth: 2
+          persist-credentials: true
+
+      - name: Bind exact source and result ref
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          test "$(git rev-parse HEAD^)" = "$BASE_SHA"
+          git fetch --no-tags origin \
+            "+refs/heads/${SOURCE_BRANCH}:refs/remotes/origin/${SOURCE_BRANCH}"
+          test "$(git rev-parse refs/remotes/origin/${SOURCE_BRANCH})" = "$SOURCE_SHA"
+          test -z "$(git ls-remote --heads origin "refs/heads/${RESULT_BRANCH}")"
+          test ! -e .github/workflows/hepta-exact-head-blocker-materializer.yml
+
+      - name: Materialize bounded Agentd source repairs
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 .github/scripts/hepta_agentd_gap_patch.py
+          python3 - <<'PY'
+          from pathlib import Path
+
+          path = Path("codex-rs/hepta-agentd/src/app_runtime.rs")
+          text = path.read_text(encoding="utf-8")
+          old = "pub(crate) fn app_server_runtime_options(\n"
+          new = (
+              "#[expect(\n"
+              "    dead_code,\n"
+              "    reason = \"retained read-only Agentd runtime constructor awaiting the registered product caller\"\n"
+              ")]\n"
+              + old
+          )
+          if text.count(old) != 1:
+              raise SystemExit("expected exactly one app_server_runtime_options anchor")
+          if new in text:
+              raise SystemExit("Agentd dead-code expectation already present")
+          path.write_text(text.replace(old, new, 1), encoding="utf-8")
+          PY
+          cargo fmt --all
+          expected="$({
+            printf '%s\n' \
+              codex-rs/hepta-agentd/src/app_runtime.rs \
+              codex-rs/hepta-agentd/src/control.rs \
+              codex-rs/hepta-agentd/tests/support/fleet.rs \
+              codex-rs/uds/src/lib.rs
+          } | sort)"
+          actual="$(git diff --name-only | sort)"
+          test "$actual" = "$expected"
+          git diff --check
+
+      - name: Validate Agentd source and qualification slice
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo fmt --all -- --check
+          cargo clippy --locked --no-deps \
+            -p codex-hepta-agentd --all-targets \
+            --features qualification-cognitive-write -- -D warnings
+          cargo test --locked -p codex-hepta-agentd \
+            --features qualification-cognitive-write \
+            runtime::tests::qualification_ -- --nocapture --test-threads=1
+          cargo test --locked -p codex-hepta-agentd \
+            --features qualification-cognitive-write \
+            --test cognitive_product_e2e -- --nocapture --test-threads=1
+
+      - name: Publish immutable-base result commit
+        shell: bash
+        env:
+          GIT_AUTHOR_NAME: hepta-source-materializer
+          GIT_AUTHOR_EMAIL: hepta-source-materializer@users.noreply.github.com
+          GIT_COMMITTER_NAME: hepta-source-materializer
+          GIT_COMMITTER_EMAIL: hepta-source-materializer@users.noreply.github.com
+        run: |
+          set -euo pipefail
+          git add \
+            codex-rs/hepta-agentd/src/app_runtime.rs \
+            codex-rs/hepta-agentd/src/control.rs \
+            codex-rs/hepta-agentd/tests/support/fleet.rs \
+            codex-rs/uds/src/lib.rs
+          tree="$(git write-tree)"
+          result="$(printf '%s\n' \
+            'fix(agentd): materialize exact process and socket blockers' \
+            '' \
+            'Apply the bounded checked-in Agentd patch, retain the read-only constructor with a local documented expectation, and preserve the canonical base as the sole parent.' \
+            | git commit-tree "$tree" -p "$BASE_SHA")"
+          test "$(git rev-parse "$result^")" = "$BASE_SHA"
+          git push origin "$result:refs/heads/$RESULT_BRANCH"
+          printf 'result=%s\n' "$result" >> "$GITHUB_STEP_SUMMARY"
