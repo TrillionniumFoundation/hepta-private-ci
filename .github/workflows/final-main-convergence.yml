@@ -1,0 +1,55 @@
+name: Final all-branch main convergence
+
+on:
+  push:
+    branches:
+      - ops/final-main-convergence-20260908
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+  actions: read
+
+concurrency:
+  group: final-main-convergence
+  cancel-in-progress: false
+
+jobs:
+  converge:
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      !contains(github.event.head_commit.message, 'converge every branch into the canonical main lineage')
+    runs-on: ubuntu-24.04
+    timeout-minutes: 360
+    steps:
+      - name: Check out convergence controller
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ops/final-main-convergence-20260908
+          fetch-depth: 0
+          fetch-tags: true
+          persist-credentials: true
+
+      - name: Configure repository CI prerequisites
+        uses: ./.github/actions/setup-ci
+
+      - name: Install pinned Rust toolchain
+        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: 1.95.0
+          components: clippy,rustfmt
+
+      - name: Execute deterministic convergence
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: bash .github/scripts/final_main_convergence.sh
+
+      - name: Upload convergence evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: final-main-convergence-${{ github.sha }}
+          path: convergence/
+          if-no-files-found: warn
+          retention-days: 30
