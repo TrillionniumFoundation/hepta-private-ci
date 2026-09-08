@@ -21,17 +21,23 @@ jobs:
       SOURCE_SHA: d0f64ecfbbab31a8495c4adc1ec0a987281ade4c
       RESULT_BRANCH: ops/materialized-workspace-lint-20260908-r1
     steps:
-      - name: Check out exact source
+      - name: Check out controller
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
-          ref: d0f64ecfbbab31a8495c4adc1ec0a987281ade4c
+          ref: ops/materialize-workspace-lint-20260908-r1
           fetch-depth: 1
           persist-credentials: true
 
-      - name: Bind source and destination
+      - name: Export patcher and bind exact source
         shell: bash
         run: |
           set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          git show HEAD:.github/scripts/hepta_workspace_lint_patch.py \
+            > /tmp/hepta_workspace_lint_patch.py
+          test -s /tmp/hepta_workspace_lint_patch.py
+          git fetch --no-tags origin "$SOURCE_SHA"
+          git checkout --detach "$SOURCE_SHA"
           test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
           test -z "$(git status --porcelain)"
           test -z "$(git ls-remote --heads origin "refs/heads/${RESULT_BRANCH}")"
@@ -40,7 +46,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          python3 .github/scripts/hepta_workspace_lint_patch.py
+          python3 /tmp/hepta_workspace_lint_patch.py
           cargo fmt --manifest-path codex-rs/Cargo.toml --all
           expected="$({
             printf '%s\n' \
