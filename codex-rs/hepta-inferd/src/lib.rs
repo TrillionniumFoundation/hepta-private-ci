@@ -93,6 +93,7 @@ pub fn plan(
     bytes.extend_from_slice(request.reservation_digest.as_array());
     bytes.extend_from_slice(request.lease_digest.as_array());
     bytes.extend_from_slice(request.model_digest.as_array());
+    bytes.extend_from_slice(&request.deadline_ms.to_be_bytes());
     Ok(DispatchPlan {
         dispatch_id: request.dispatch_id,
         request_id: request.request_id,
@@ -112,3 +113,7 @@ fn push_id(bytes: &mut Vec<u8>, value: &StableId) {
 #[cfg(test)]
 #[path = "lib_tests.rs"]
 mod tests;
+
+#[cfg(test)]
+#[path = "deadline_digest_tests.rs"]
+mod deadline_digest_tests;

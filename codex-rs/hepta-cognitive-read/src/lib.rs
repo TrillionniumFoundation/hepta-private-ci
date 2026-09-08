@@ -16,6 +16,12 @@ use codex_hepta_cognitive_types::RecordState;
 use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
 
+pub use v2::MAX_ENCODED_READ_RESULT_BYTES_V2;
+pub use v2::ReadRequestV2;
+pub use v2::ReadResultV2;
+pub use v2::ReadV2Error;
+pub use v2::read_v2;
+
 const MAX_RESULTS: usize = 1_024;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -64,6 +70,32 @@ pub fn read(snapshot: &CognitiveSnapshot, request: ReadRequest) -> Result<ReadRe
     for kind in request.allowed_kinds {
         if !allowed.insert(kind) {
             return Err(Error::DuplicateKind);
+        }
+    }
+
+    // The owning store makes a tombstone terminal. Preserve that invariant
+    // when reading a caller-supplied snapshot. Every complete resurrection
+    // contains a direct tombstone-to-live edge, so checking exact present
+    // same-record predecessors is sufficient. Missing or cross-record
+    // predecessors are not inferred to be lineage.
+    let records_by_digest = snapshot
+        .records
+        .iter()
+        .map(|record| (record.record_digest(), record))
+        .collect::<BTreeMap<_, _>>();
+    for record in &snapshot.records {
+        if record.state == RecordState::Tombstone {
+            continue;
+        }
+        let Some(predecessor) = record
+            .predecessor_digest
+            .and_then(|digest| records_by_digest.get(&digest))
+        else {
+            continue;
+        };
+        if predecessor.record_id == record.record_id && predecessor.state == RecordState::Tombstone
+        {
+            return Err(Error::SnapshotMismatch);
         }
     }
 
@@ -116,3 +148,7 @@ pub fn read(snapshot: &CognitiveSnapshot, request: ReadRequest) -> Result<ReadRe
 #[cfg(test)]
 #[path = "lib_tests.rs"]
 mod tests;
+
+#[cfg(test)]
+#[path = "tombstone_resurrection_tests.rs"]
+mod tombstone_resurrection_tests;

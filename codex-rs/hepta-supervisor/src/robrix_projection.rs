@@ -643,12 +643,12 @@ fn corpus() -> Result<CorpusDocument> {
     for (id, request) in [
         (
             "supervisord_request_health",
-            RobrixSupervisordRequest::new(1, RobrixSupervisordMethod::Health),
+            RobrixSupervisordRequest::new(/*request_id*/ 1, RobrixSupervisordMethod::Health),
         ),
         (
             "supervisord_request_roster",
             RobrixSupervisordRequest::new(
-                2,
+                /*request_id*/ 2,
                 RobrixSupervisordMethod::Roster {
                     limit: MAX_SUPERVISORD_ROSTER,
                 },
@@ -657,7 +657,7 @@ fn corpus() -> Result<CorpusDocument> {
         (
             "supervisord_request_snapshot",
             RobrixSupervisordRequest::new(
-                3,
+                /*request_id*/ 3,
                 RobrixSupervisordMethod::Snapshot {
                     agent_id: agent_a.clone(),
                 },
@@ -669,22 +669,23 @@ fn corpus() -> Result<CorpusDocument> {
             CorpusPlane::Supervisord,
             CorpusDirection::Request,
             &request,
-            expectation(Some(true), true, true),
+            expectation(Some(true), /*decode*/ true, /*validate*/ true),
             CorpusContext::default(),
         )?);
     }
 
-    let zero_request = RobrixSupervisordRequest::new(0, RobrixSupervisordMethod::Health);
+    let zero_request =
+        RobrixSupervisordRequest::new(/*request_id*/ 0, RobrixSupervisordMethod::Health);
     cases.push(corpus_case(
         "supervisord_request_zero_id",
         CorpusPlane::Supervisord,
         CorpusDirection::Request,
         &zero_request,
-        expectation(Some(true), true, false),
+        expectation(Some(true), /*decode*/ true, /*validate*/ false),
         CorpusContext::default(),
     )?);
     let mut unknown_request = serde_json::to_value(RobrixSupervisordRequest::new(
-        4,
+        /*request_id*/ 4,
         RobrixSupervisordMethod::Health,
     ))?;
     unknown_request["unknown"] = json!(true);
@@ -693,7 +694,7 @@ fn corpus() -> Result<CorpusDocument> {
         CorpusPlane::Supervisord,
         CorpusDirection::Request,
         &unknown_request,
-        expectation(Some(false), false, false),
+        expectation(Some(false), /*decode*/ false, /*validate*/ false),
         CorpusContext::default(),
     )?);
 
@@ -748,8 +749,8 @@ fn corpus() -> Result<CorpusDocument> {
             format!("supervisord_request_forbidden_{name}"),
             CorpusPlane::Supervisord,
             CorpusDirection::Request,
-            &SupervisordRequest::new(10, method),
-            expectation(Some(true), false, false),
+            &SupervisordRequest::new(/*request_id*/ 10, method),
+            expectation(Some(true), /*decode*/ false, /*validate*/ false),
             CorpusContext::default(),
         )?);
     }
@@ -806,7 +807,7 @@ fn corpus() -> Result<CorpusDocument> {
             CorpusPlane::Supervisord,
             CorpusDirection::Response,
             &response,
-            expectation(Some(true), true, true),
+            expectation(Some(true), /*decode*/ true, /*validate*/ true),
             CorpusContext {
                 expected_request_id: Some(request_id),
                 ..CorpusContext::default()
@@ -846,7 +847,7 @@ fn corpus() -> Result<CorpusDocument> {
                 request_id: 24,
                 payload: SupervisordPayload::Agent(drifted),
             },
-            expectation(Some(true), true, false),
+            expectation(Some(true), /*decode*/ true, /*validate*/ false),
             CorpusContext {
                 expected_request_id: Some(24),
                 ..CorpusContext::default()
@@ -867,7 +868,7 @@ fn corpus() -> Result<CorpusDocument> {
                 production_receipt: None,
             },
         },
-        expectation(Some(true), false, false),
+        expectation(Some(true), /*decode*/ false, /*validate*/ false),
         CorpusContext {
             expected_request_id: Some(24),
             ..CorpusContext::default()
@@ -943,7 +944,9 @@ fn corpus() -> Result<CorpusDocument> {
             CorpusPlane::Matrixd,
             CorpusDirection::Request,
             &request,
-            expectation(None, true, true),
+            expectation(
+                /*admin*/ None, /*decode*/ true, /*validate*/ true,
+            ),
             CorpusContext {
                 expected_request_id: Some(request_id),
                 expected_agent_id: Some(AGENT_A.to_string()),
@@ -1053,7 +1056,9 @@ fn corpus() -> Result<CorpusDocument> {
             CorpusPlane::Matrixd,
             CorpusDirection::Request,
             &request,
-            expectation(None, true, false),
+            expectation(
+                /*admin*/ None, /*decode*/ true, /*validate*/ false,
+            ),
             CorpusContext {
                 expected_request_id: Some(request.request_id),
                 expected_agent_id: Some(AGENT_A.to_string()),
@@ -1077,7 +1082,9 @@ fn corpus() -> Result<CorpusDocument> {
         CorpusPlane::Matrixd,
         CorpusDirection::Request,
         &wrong_agent,
-        expectation(None, true, false),
+        expectation(
+            /*admin*/ None, /*decode*/ true, /*validate*/ false,
+        ),
         CorpusContext {
             expected_request_id: Some(39),
             expected_agent_id: Some(AGENT_A.to_string()),
@@ -1101,7 +1108,9 @@ fn corpus() -> Result<CorpusDocument> {
             CorpusPlane::Matrixd,
             CorpusDirection::Request,
             &request,
-            expectation(None, true, false),
+            expectation(
+                /*admin*/ None, /*decode*/ true, /*validate*/ false,
+            ),
             CorpusContext {
                 expected_request_id: Some(40),
                 expected_agent_id: Some(AGENT_A.to_string()),
@@ -1126,11 +1135,13 @@ fn corpus() -> Result<CorpusDocument> {
         CorpusPlane::Matrixd,
         CorpusDirection::Request,
         &bad_digest,
-        expectation(None, true, false),
+        expectation(
+            /*admin*/ None, /*decode*/ true, /*validate*/ false,
+        ),
         CorpusContext::default(),
     )?);
 
-    let snapshot = matrix_snapshot(false)?;
+    let snapshot = matrix_snapshot(/*maximum*/ false)?;
     let events = all_matrixd_event_variants();
     for (id, request_id, payload, after_cursor) in [
         (
@@ -1190,7 +1201,9 @@ fn corpus() -> Result<CorpusDocument> {
             CorpusPlane::Matrixd,
             CorpusDirection::Response,
             &response,
-            expectation(None, true, true),
+            expectation(
+                /*admin*/ None, /*decode*/ true, /*validate*/ true,
+            ),
             CorpusContext {
                 expected_request_id: Some(request_id),
                 expected_agent_id: Some(AGENT_A.to_string()),
@@ -1202,16 +1215,18 @@ fn corpus() -> Result<CorpusDocument> {
 
     let maximum = matrix_response(
         agent_a.clone(),
-        56,
+        /*request_id*/ 56,
         matrix_fence.clone(),
-        MatrixdPayload::Snapshot(matrix_snapshot(true)?),
+        MatrixdPayload::Snapshot(matrix_snapshot(/*maximum*/ true)?),
     );
     let maximum_case = corpus_case(
         "matrixd_response_maximum_snapshot",
         CorpusPlane::Matrixd,
         CorpusDirection::Response,
         &maximum,
-        expectation(None, true, true),
+        expectation(
+            /*admin*/ None, /*decode*/ true, /*validate*/ true,
+        ),
         CorpusContext {
             expected_request_id: Some(56),
             expected_agent_id: Some(AGENT_A.to_string()),
@@ -1228,7 +1243,7 @@ fn corpus() -> Result<CorpusDocument> {
 
     let maximum_events = matrix_response(
         agent_a.clone(),
-        57,
+        /*request_id*/ 57,
         matrix_fence.clone(),
         MatrixdPayload::Events(maximum_matrixd_events()),
     );
@@ -1237,7 +1252,9 @@ fn corpus() -> Result<CorpusDocument> {
         CorpusPlane::Matrixd,
         CorpusDirection::Response,
         &maximum_events,
-        expectation(None, true, true),
+        expectation(
+            /*admin*/ None, /*decode*/ true, /*validate*/ true,
+        ),
         CorpusContext {
             expected_request_id: Some(57),
             expected_agent_id: Some(AGENT_A.to_string()),
@@ -1252,11 +1269,11 @@ fn corpus() -> Result<CorpusDocument> {
     );
     cases.push(maximum_events_case);
 
-    let mut duplicate_approval = matrix_snapshot(false)?;
+    let mut duplicate_approval = matrix_snapshot(/*maximum*/ false)?;
     duplicate_approval
         .pending_approvals
         .push(duplicate_approval.pending_approvals[0].clone());
-    let mut partial_active_turn = matrix_snapshot(false)?;
+    let mut partial_active_turn = matrix_snapshot(/*maximum*/ false)?;
     partial_active_turn.active_turn_id = None;
 
     for (id, payload, after_cursor) in [
@@ -1405,13 +1422,20 @@ fn corpus() -> Result<CorpusDocument> {
             Some(0),
         ),
     ] {
-        let response = matrix_response(agent_a.clone(), 58, matrix_fence.clone(), payload);
+        let response = matrix_response(
+            agent_a.clone(),
+            /*request_id*/ 58,
+            matrix_fence.clone(),
+            payload,
+        );
         cases.push(corpus_case(
             id,
             CorpusPlane::Matrixd,
             CorpusDirection::Response,
             &response,
-            expectation(None, true, false),
+            expectation(
+                /*admin*/ None, /*decode*/ true, /*validate*/ false,
+            ),
             CorpusContext {
                 expected_request_id: Some(58),
                 expected_agent_id: Some(AGENT_A.to_string()),
@@ -1422,7 +1446,7 @@ fn corpus() -> Result<CorpusDocument> {
     }
     let response_with_stale_fence = matrix_response(
         agent_a,
-        59,
+        /*request_id*/ 59,
         MatrixdFence {
             plane_epoch: matrix_fence.plane_epoch + 1,
             ..matrix_fence.clone()
@@ -1434,7 +1458,9 @@ fn corpus() -> Result<CorpusDocument> {
         CorpusPlane::Matrixd,
         CorpusDirection::Response,
         &response_with_stale_fence,
-        expectation(None, true, false),
+        expectation(
+            /*admin*/ None, /*decode*/ true, /*validate*/ false,
+        ),
         CorpusContext {
             expected_request_id: Some(59),
             expected_agent_id: Some(AGENT_A.to_string()),
@@ -1449,7 +1475,7 @@ fn corpus() -> Result<CorpusDocument> {
         CorpusDirection::Response,
         &matrix_response(
             agent(AGENT_A)?,
-            60,
+            /*request_id*/ 60,
             matrix_fence.clone(),
             MatrixdPayload::Events(MatrixdEventBatch {
                 events: Vec::new(),
@@ -1458,7 +1484,9 @@ fn corpus() -> Result<CorpusDocument> {
                 latest_cursor: 8,
             }),
         ),
-        expectation(None, true, false),
+        expectation(
+            /*admin*/ None, /*decode*/ true, /*validate*/ false,
+        ),
         CorpusContext {
             expected_request_id: Some(60),
             expected_agent_id: Some(AGENT_A.to_string()),
@@ -1649,7 +1677,7 @@ fn all_matrixd_event_variants() -> MatrixdEventBatch {
             turn_id: "turn-0".to_string(),
         },
         MatrixdEventKind::ApprovalPending {
-            approval: pending_approval(0, false),
+            approval: pending_approval(/*index*/ 0, /*maximum*/ false),
         },
         MatrixdEventKind::ApprovalResolved {
             approval_key: "approval-0".to_string(),
@@ -1679,7 +1707,7 @@ fn maximum_matrixd_events() -> MatrixdEventBatch {
         .map(|index| MatrixdEvent {
             cursor: index as u64 + 1,
             kind: MatrixdEventKind::ApprovalPending {
-                approval: pending_approval(index, true),
+                approval: pending_approval(index, /*maximum*/ true),
             },
         })
         .collect::<Vec<_>>();

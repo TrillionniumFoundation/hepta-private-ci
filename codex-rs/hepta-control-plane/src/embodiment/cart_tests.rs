@@ -1,5 +1,4 @@
 use super::*;
-use pretty_assertions::assert_eq;
 
 fn ok<T, E: std::fmt::Debug>(result: Result<T, E>) -> T {
     match result {

@@ -320,3 +320,7 @@ fn solve(
 #[cfg(test)]
 #[path = "feasibility_tests.rs"]
 mod tests;
+
+#[cfg(test)]
+#[path = "feasibility_exhaustive_tests.rs"]
+mod exhaustive_tests;
