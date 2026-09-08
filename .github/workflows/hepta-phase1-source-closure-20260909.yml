@@ -1,0 +1,311 @@
+name: Hepta phase-one source closure 20260909
+
+on:
+  push:
+    branches:
+      - ops/hepta-phase1-source-closure-20260909-r1
+
+permissions:
+  contents: write
+
+concurrency:
+  group: hepta-phase1-source-closure-20260909-r1
+  cancel-in-progress: false
+
+env:
+  SOURCE_SHA: d2a3c6330a351ae4e352387228f627bd3b5eee7a
+  BASE_SHA: 04f60466394a024c218ce66b1b32d1c42c462985
+  CANDIDATE_REF: refs/heads/codex/hepta-all-gap-closure-20260908
+
+jobs:
+  rust-qualification:
+    name: Rust ${{ matrix.group }} (${{ matrix.lane }})
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    strategy:
+      fail-fast: false
+      matrix:
+        group:
+          - foundation
+          - runtime
+          - inference
+          - memory
+          - integration
+          - adaptive
+        lane:
+          - source-head
+          - merge-candidate
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Bind exact source or synthetic merge
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          test "$(git rev-parse HEAD^)" = "$BASE_SHA"
+          test "$(git rev-list --count "$BASE_SHA"..HEAD)" = 1
+          if [ '${{ matrix.lane }}' = merge-candidate ]; then
+            tree="$(git merge-tree --write-tree "$BASE_SHA" "$SOURCE_SHA")"
+            export GIT_AUTHOR_NAME=hepta-qualification
+            export GIT_COMMITTER_NAME=hepta-qualification
+            export GIT_AUTHOR_EMAIL=qualification@invalid
+            export GIT_COMMITTER_EMAIL=qualification@invalid
+            export GIT_AUTHOR_DATE=2000-01-01T00:00:00Z
+            export GIT_COMMITTER_DATE=2000-01-01T00:00:00Z
+            merge="$(printf '%s\n' 'Qualification only; no activation or release' | git commit-tree "$tree" -p "$BASE_SHA" -p "$SOURCE_SHA")"
+            git checkout --detach "$merge"
+            test "$(git rev-parse HEAD^{tree})" = "$tree"
+            test "$(git rev-list --parents -n 1 HEAD)" = "$merge $BASE_SHA $SOURCE_SHA"
+          fi
+          git rev-parse HEAD HEAD^{tree}
+
+      - name: Resolve package and Bazel target group
+        id: scope
+        shell: bash
+        run: |
+          set -euo pipefail
+          case '${{ matrix.group }}' in
+            foundation)
+              packages='codex-hepta-types codex-hepta-wire codex-hepta-contracts codex-hepta-operations'
+              targets='//codex-rs/hepta-types:all //codex-rs/hepta-wire:all //codex-rs/hepta-contracts:all //codex-rs/hepta-operations:all'
+              ;;
+            runtime)
+              packages='codex-hepta-supervisor codex-hepta-fleet codex-hepta-agentd codex-hepta-codex-adapter'
+              targets='//codex-rs/hepta-supervisor:all //codex-rs/hepta-fleet:all //codex-rs/hepta-agentd:all //codex-rs/hepta-codex-adapter:all'
+              ;;
+            inference)
+              packages='codex-hepta-infer-core codex-hepta-inferd codex-hepta-intelligence codex-hepta-objective codex-hepta-context-compiler'
+              targets='//codex-rs/hepta-infer-core:all //codex-rs/hepta-inferd:all //codex-rs/hepta-intelligence:all //codex-rs/hepta-objective:all //codex-rs/hepta-context-compiler:all'
+              ;;
+            memory)
+              packages='codex-hepta-cognitive-types codex-hepta-cognitive-store codex-hepta-cognitive-read codex-hepta-memory-retrieval codex-hepta-memory-federation codex-hepta-kg codex-hepta-compact-engine'
+              targets='//codex-rs/hepta-cognitive-types:all //codex-rs/hepta-cognitive-store:all //codex-rs/hepta-cognitive-read:all //codex-rs/hepta-memory-retrieval:all //codex-rs/hepta-memory-federation:all //codex-rs/hepta-kg:all //codex-rs/hepta-compact-engine:all'
+              ;;
+            integration)
+              packages='codex-hepta-automation codex-hepta-matrix-sdk codex-hepta-matrixd'
+              targets='//codex-rs/hepta-automation:all //codex-rs/hepta-matrix-sdk:all //codex-rs/hepta-matrixd:all'
+              ;;
+            adaptive)
+              packages='codex-hepta-learning-ledger codex-hepta-ndu'
+              targets='//codex-rs/hepta-learning-ledger:all //codex-rs/hepta-ndu:all'
+              ;;
+            *)
+              exit 2
+              ;;
+          esac
+          printf 'packages=%s\n' "$packages" >> "$GITHUB_OUTPUT"
+          printf 'targets=%s\n' "$targets" >> "$GITHUB_OUTPUT"
+
+      - name: Exact-lane Cargo qualification
+        working-directory: codex-rs
+        shell: bash
+        env:
+          PACKAGES: ${{ steps.scope.outputs.packages }}
+        run: |
+          set -euo pipefail
+          args=()
+          fmt_args=()
+          for package in $PACKAGES; do
+            args+=(-p "$package")
+            fmt_args+=(--package "$package")
+          done
+          cargo check --locked "${args[@]}" --all-targets
+          cargo test --locked "${args[@]}" --all-targets -- --nocapture
+          cargo clippy --locked --no-deps "${args[@]}" --all-targets -- -D warnings
+          cargo fmt --manifest-path Cargo.toml "${fmt_args[@]}" -- --check
+
+      - name: Exact-lane Bazel qualification
+        shell: bash
+        env:
+          TARGETS: ${{ steps.scope.outputs.targets }}
+        run: |
+          set -euo pipefail
+          for target in $TARGETS; do
+            bazel query "$target"
+            bazel test "$target" --test_output=errors
+          done
+          git diff --check
+          git diff --exit-code
+          test -z "$(git status --porcelain --untracked-files=no)"
+
+  non-rust-qualification:
+    name: Non-Rust source surfaces (${{ matrix.lane }})
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        lane:
+          - source-head
+          - merge-candidate
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Bind exact source or synthetic merge
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          test "$(git rev-parse HEAD^)" = "$BASE_SHA"
+          if [ '${{ matrix.lane }}' = merge-candidate ]; then
+            tree="$(git merge-tree --write-tree "$BASE_SHA" "$SOURCE_SHA")"
+            export GIT_AUTHOR_NAME=hepta-qualification
+            export GIT_COMMITTER_NAME=hepta-qualification
+            export GIT_AUTHOR_EMAIL=qualification@invalid
+            export GIT_COMMITTER_EMAIL=qualification@invalid
+            export GIT_AUTHOR_DATE=2000-01-01T00:00:00Z
+            export GIT_COMMITTER_DATE=2000-01-01T00:00:00Z
+            merge="$(printf '%s\n' 'Qualification only; no activation or release' | git commit-tree "$tree" -p "$BASE_SHA" -p "$SOURCE_SHA")"
+            git checkout --detach "$merge"
+          fi
+
+      - name: Browser, native, control and QA tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --test \
+            apps/hepta-browser/test/*.js \
+            apps/hepta-control-ui/test/*.js \
+            apps/hepta-native/test/*.js
+          python3 -m unittest discover -v -s tools/hepta-engineering-control -p 'test_*.py'
+          python3 -m unittest discover -v -s qa/b4-no-bypass -p 'test_*.py'
+          python3 -m unittest discover -v -s qa/performance -p 'test_*.py'
+          python3 -m unittest discover -v -s qa/vertical-slice -p 'test_*.py'
+          python3 scripts/verify_hepta_callers.py
+          python3 scripts/hepta_module_doc_metadata.py
+          python3 scripts/hepta-module-docs.py verify
+          python3 scripts/hepta-readiness.py verify
+          python3 scripts/hepta-docs.py verify
+          python3 scripts/hepta-gap-closure.py verify
+          git diff --check
+          git diff --exit-code
+          test -z "$(git status --porcelain --untracked-files=no)"
+
+  materialize:
+    name: Atomically publish phase-one source closure
+    needs:
+      - rust-qualification
+      - non-rust-qualification
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - name: Checkout immutable controller
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          path: controller
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Checkout exact candidate with write lease
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          path: candidate
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Apply deterministic verifier and registry expansion
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git -C candidate rev-parse HEAD)" = "$SOURCE_SHA"
+          test "$(git -C candidate rev-parse HEAD^)" = "$BASE_SHA"
+          python3 controller/.github/scripts/hepta_phase1_source_closure.py candidate
+          cd candidate
+          python3 scripts/hepta-gap-closure.py normalize
+          python3 scripts/hepta-gap-closure.py verify
+          python3 scripts/test_hepta_gap_closure.py
+          python3 scripts/hepta_module_doc_metadata.py
+          python3 scripts/hepta-module-docs.py verify
+          python3 scripts/hepta-readiness.py verify
+          python3 scripts/hepta-docs.py verify
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+
+          audit = json.loads(Path("qualification/gap-closure/PLAN_AUDIT.json").read_text())
+          expected_counts = {
+              "blocked_external": 2,
+              "planned": 32,
+              "source_implemented": 55,
+              "source_implemented_semantic_review_pending": 2,
+          }
+          if audit["implementedModuleCount"] != 36:
+              raise SystemExit(f"implemented module count drifted: {audit['implementedModuleCount']}")
+          if audit["unresolvedWorkPackageCount"] != 36:
+              raise SystemExit(
+                  f"unresolved package count drifted: {audit['unresolvedWorkPackageCount']}"
+              )
+          if audit["workPackageStateCounts"] != expected_counts:
+              raise SystemExit(
+                  f"work package state counts drifted: {audit['workPackageStateCounts']}"
+              )
+
+          packages = json.loads(Path("docs/delivery/WORK_PACKAGES.json").read_text())["packages"]
+          states = {item["id"]: item["state"] for item in packages}
+          expected_open = {
+              "AUTHBUS-P1.3-V12": "source_implemented_semantic_review_pending",
+              "DOC-2-DEFAULT-BRANCH-SELECTION": "blocked_external",
+              "DOC-3E-PRECODING-READINESS-CLOSED-WORLD": "source_implemented_semantic_review_pending",
+              "P0.9-EXTERNAL-GATES": "blocked_external",
+          }
+          for package_id, state in expected_open.items():
+              if states.get(package_id) != state:
+                  raise SystemExit(
+                      f"{package_id} authority/evidence state drifted: {states.get(package_id)}"
+                  )
+
+          manifest = json.loads(Path("qualification/gap-closure/MANIFEST.json").read_text())
+          if any(manifest["authority"].values()):
+              raise SystemExit("phase-one closure must not grant runtime or release authority")
+          PY
+
+      - name: Enforce generated-only change boundary
+        working-directory: candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          git diff --check
+          unexpected="$(
+            git diff --name-only |
+              grep -Ev '^(\.github/workflows/hepta-consolidated-source\.yml|scripts/hepta-gap-closure\.py|scripts/hepta_source_registry_closure\.py|docs/|qualification/gap-closure/)' ||
+              true
+          )"
+          test -z "$unexpected"
+          test -z "$(git ls-files --others --exclude-standard)"
+          git add \
+            .github/workflows/hepta-consolidated-source.yml \
+            scripts/hepta-gap-closure.py \
+            scripts/hepta_source_registry_closure.py \
+            docs \
+            qualification/gap-closure
+          test -z "$(git diff --name-only)"
+          git diff --cached --check
+
+      - name: Preserve single-parent topology and force-with-lease publish
+        working-directory: candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "hepta-gap-materializer"
+          git config user.email "hepta-gap-materializer@users.noreply.github.com"
+          git commit --amend \
+            -m "feat(hepta): qualify 36 module source surfaces" \
+            -m "Close all execution-pending work packages and the bounded objective, inference, durable-ledger and deterministic-NDU source packages through exact source-head and merge-candidate Cargo, Bazel, Node and Python qualification. Preserve semantic-review and external-evidence gates without granting activation, effect, promotion or release authority." \
+            -m "Signed-off-by: OpenAI <noreply@openai.com>"
+          test "$(git rev-parse HEAD^)" = "$BASE_SHA"
+          test "$(git rev-list --count "$BASE_SHA"..HEAD)" = 1
+          git push \
+            --force-with-lease="${CANDIDATE_REF}:${SOURCE_SHA}" \
+            origin "HEAD:${CANDIDATE_REF}"
+          git rev-parse HEAD HEAD^{tree}
