@@ -66,7 +66,7 @@ jobs:
               raise SystemExit("Agentd dead-code expectation already present")
           path.write_text(text.replace(old, new, 1), encoding="utf-8")
           PY
-          cargo fmt --all
+          cargo fmt --manifest-path codex-rs/Cargo.toml --all
           expected="$({
             printf '%s\n' \
               codex-rs/hepta-agentd/src/app_runtime.rs \
