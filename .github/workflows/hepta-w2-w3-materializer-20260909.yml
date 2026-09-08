@@ -131,11 +131,10 @@ jobs:
 
           git config user.name "hepta-gap-materializer"
           git config user.email "hepta-gap-materializer@users.noreply.github.com"
-          git commit --amend -m "feat(hepta): converge W0-W3 blocker closure
-
-Close the Agentd qualification blockers and integrate the separately qualified read-only intelligence vertical and shadow learning ledger while preserving the immutable single-parent baseline and deny-all runtime authority.
-
-Signed-off-by: OpenAI <noreply@openai.com>"
+          git commit --amend \
+            -m "feat(hepta): converge W0-W3 blocker closure" \
+            -m "Close the Agentd qualification blockers and integrate the separately qualified read-only intelligence vertical and shadow learning ledger while preserving the immutable single-parent baseline and deny-all runtime authority." \
+            -m "Signed-off-by: OpenAI <noreply@openai.com>"
 
           test "$(git rev-parse HEAD^)" = "$expected_parent"
           test "$(git rev-list --count "$expected_parent"..HEAD)" = 1
