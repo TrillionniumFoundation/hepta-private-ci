@@ -1,0 +1,43 @@
+name: Source export v9
+
+on:
+  push:
+    branches:
+      - ops/source-export-v9-20260908
+
+permissions:
+  contents: read
+
+jobs:
+  export:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: Check out exact pushed tree
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Capture source and dependency feature graph
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p source-export
+          git rev-parse HEAD > source-export/HEAD
+          (
+            cd codex-rs
+            cargo tree --locked -e features -i v8 > ../source-export/v8-feature-tree.txt 2>&1 || true
+          )
+          tar \
+            --exclude=.git \
+            --exclude=source-export/repository.tar.gz \
+            -czf source-export/repository.tar.gz .
+
+      - name: Upload exact source bundle
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: source-export-v9-${{ github.sha }}
+          path: source-export/
+          if-no-files-found: error
+          retention-days: 7
