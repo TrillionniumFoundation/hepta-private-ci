@@ -17,7 +17,6 @@ use codex_hepta_types::Revision;
 use codex_hepta_types::StableId;
 
 use crate::ActionClass;
-use crate::CompileDisposition;
 use crate::ConfirmationPolicy;
 use crate::Constraint;
 use crate::ConstraintClass;
@@ -26,7 +25,6 @@ use crate::ObjectiveCompileReceipt;
 use crate::ObjectiveConflictReceipt;
 use crate::ObjectiveError;
 use crate::ObjectiveEvidenceRequirementV1;
-use crate::ObjectiveFunction;
 use crate::ObjectivePredicateComparatorV1;
 use crate::ObjectiveResourcesV1;
 use crate::ObjectiveRiskClassV1;
@@ -301,13 +299,21 @@ impl fmt::Display for ObjectiveAdmissionError {
         match self {
             Self::Structure(error) => error.fmt(formatter),
             Self::InvalidProfile(field) => write!(formatter, "invalid admission profile: {field}"),
-            Self::ProfileDigestMismatch => formatter.write_str("selected admission profile digest mismatch"),
-            Self::InputSchemaMismatch => formatter.write_str("objective input schema digest mismatch"),
+            Self::ProfileDigestMismatch => {
+                formatter.write_str("selected admission profile digest mismatch")
+            }
+            Self::InputSchemaMismatch => {
+                formatter.write_str("objective input schema digest mismatch")
+            }
             Self::NormalizationProfileMismatch => {
                 formatter.write_str("objective normalization profile digest mismatch")
             }
-            Self::PrincipalScopeMismatch => formatter.write_str("objective principal scope mismatch"),
-            Self::SourceTrustMismatch => formatter.write_str("objective source trust class mismatch"),
+            Self::PrincipalScopeMismatch => {
+                formatter.write_str("objective principal scope mismatch")
+            }
+            Self::SourceTrustMismatch => {
+                formatter.write_str("objective source trust class mismatch")
+            }
             Self::SourceAuthenticationMismatch => {
                 formatter.write_str("objective source authentication mismatch")
             }
@@ -315,33 +321,51 @@ impl fmt::Display for ObjectiveAdmissionError {
             Self::IntentDigestMismatch => formatter.write_str("objective intent digest mismatch"),
             Self::LocaleNotAllowed => formatter.write_str("objective locale is not registered"),
             Self::InvalidTimestamp(field) => write!(formatter, "invalid UTC timestamp: {field}"),
-            Self::SourceFromFuture => formatter.write_str("objective observation is from the future"),
+            Self::SourceFromFuture => {
+                formatter.write_str("objective observation is from the future")
+            }
             Self::SourceStale => formatter.write_str("objective observation is stale"),
             Self::DeadlineMissing => formatter.write_str("objective deadline is required"),
             Self::DeadlineBeforeObservation => {
                 formatter.write_str("objective deadline precedes observation")
             }
             Self::DeadlineExpired => formatter.write_str("objective deadline has expired"),
-            Self::InvalidIdentifier(field) => write!(formatter, "invalid objective identifier: {field}"),
-            Self::UnknownConstraint => formatter.write_str("objective constraint is not registered"),
-            Self::ConstraintUnitMismatch => formatter.write_str("objective constraint unit mismatch"),
+            Self::InvalidIdentifier(field) => {
+                write!(formatter, "invalid objective identifier: {field}")
+            }
+            Self::UnknownConstraint => {
+                formatter.write_str("objective constraint is not registered")
+            }
+            Self::ConstraintUnitMismatch => {
+                formatter.write_str("objective constraint unit mismatch")
+            }
             Self::TerminalConstraintUnsupported => {
                 formatter.write_str("terminal hard constraint is not representable")
             }
             Self::UnknownPredicate => formatter.write_str("objective predicate is not registered"),
             Self::PredicateUnitMismatch => formatter.write_str("objective predicate unit mismatch"),
-            Self::InvalidTerminality => formatter.write_str("objective predicate terminality mismatch"),
-            Self::UnsupportedComparator => formatter.write_str("objective comparator is unsupported"),
+            Self::InvalidTerminality => {
+                formatter.write_str("objective predicate terminality mismatch")
+            }
+            Self::UnsupportedComparator => {
+                formatter.write_str("objective comparator is unsupported")
+            }
             Self::UnknownAction => formatter.write_str("objective action class is not registered"),
             Self::ConfirmationActionNotLegal => {
                 formatter.write_str("confirmation action is not in the legal action set")
             }
-            Self::UnknownSoftDimension => formatter.write_str("objective soft dimension is not registered"),
-            Self::SoftDimensionMismatch => formatter.write_str("objective soft dimension profile mismatch"),
+            Self::UnknownSoftDimension => {
+                formatter.write_str("objective soft dimension is not registered")
+            }
+            Self::SoftDimensionMismatch => {
+                formatter.write_str("objective soft dimension profile mismatch")
+            }
             Self::UnknownEvidenceRequirement => {
                 formatter.write_str("objective evidence requirement is not registered")
             }
-            Self::ResourceOverflow(field) => write!(formatter, "objective resource conversion overflow: {field}"),
+            Self::ResourceOverflow(field) => {
+                write!(formatter, "objective resource conversion overflow: {field}")
+            }
             Self::Compiler(error) => error.fmt(formatter),
         }
     }
@@ -412,7 +436,11 @@ pub fn admit_and_compile_objective_v1(
     if envelope.principal_scope_digest != profile.principal_scope_digest {
         return Err(ObjectiveAdmissionError::PrincipalScopeMismatch);
     }
-    if !profile.allowed_locales.iter().any(|locale| locale == &envelope.locale) {
+    if !profile
+        .allowed_locales
+        .iter()
+        .any(|locale| locale == &envelope.locale)
+    {
         return Err(ObjectiveAdmissionError::LocaleNotAllowed);
     }
 
@@ -461,11 +489,8 @@ pub fn admit_and_compile_objective_v1(
         }
     }
 
-    let admitted_source_digest = admitted_source_digest(
-        envelope,
-        profile_digest,
-        &context.source_authentication,
-    );
+    let admitted_source_digest =
+        admitted_source_digest(envelope, profile_digest, &context.source_authentication);
     let source = adapt_source(envelope, profile, context, admitted_source_digest)?;
     let compile_result = crate::compile(source)?;
     Ok(ObjectiveAdmissionOutcomeV1 {
@@ -552,10 +577,14 @@ fn adapt_source(
 
     let mut success_predicates = Vec::new();
     for source in &envelope.structured_intent.success_predicates {
-        success_predicates.push(adapt_predicate(source, profile, /*must_be_terminal*/ false)?);
+        success_predicates.push(adapt_predicate(
+            source, profile, /*must_be_terminal*/ false,
+        )?);
     }
     for source in &envelope.structured_intent.terminal_conditions {
-        success_predicates.push(adapt_predicate(source, profile, /*must_be_terminal*/ true)?);
+        success_predicates.push(adapt_predicate(
+            source, profile, /*must_be_terminal*/ true,
+        )?);
     }
     for source in &envelope.structured_intent.evidence_requirements {
         success_predicates.push(adapt_evidence_requirement(source, profile)?);
@@ -623,8 +652,9 @@ fn adapt_source(
         revision: context.revision,
         source_trust: match envelope.source_trust_class {
             ObjectiveSourceTrustV1::Principal => SourceTrust::PrincipalStructured,
-            ObjectiveSourceTrustV1::TrustedSystem
-            | ObjectiveSourceTrustV1::AuthorizedAdapter => SourceTrust::RegisteredAdapter,
+            ObjectiveSourceTrustV1::TrustedSystem | ObjectiveSourceTrustV1::AuthorizedAdapter => {
+                SourceTrust::RegisteredAdapter
+            }
             ObjectiveSourceTrustV1::UntrustedEvidence => SourceTrust::UntrustedEvidence,
         },
         source_digest: admitted_source_digest,
@@ -715,10 +745,7 @@ fn adapt_evidence_requirement(
             i64::try_from(raw)
                 .map_err(|_| ObjectiveAdmissionError::ResourceOverflow("minimumConfidencePpm"))?,
         ),
-        evidence_source: stable_id(
-            &source.evidence_source_id,
-            "requirement.evidenceSourceId",
-        )?,
+        evidence_source: stable_id(&source.evidence_source_id, "requirement.evidenceSourceId")?,
         terminality: if source.terminal {
             PredicateTerminality::Terminal
         } else {
@@ -735,7 +762,11 @@ fn append_resources(
     for (field, value, mapping) in [
         ("timeMicros", source.time_micros, &profile.time_micros),
         ("tokenCount", source.token_count, &profile.token_count),
-        ("computeMicros", source.compute_micros, &profile.compute_micros),
+        (
+            "computeMicros",
+            source.compute_micros,
+            &profile.compute_micros,
+        ),
         ("memoryBytes", source.memory_bytes, &profile.memory_bytes),
         ("networkBytes", source.network_bytes, &profile.network_bytes),
         (
@@ -824,9 +855,9 @@ fn scaled_resource(
         ));
     }
     let raw = i128::from(value) * i128::from(scale.raw());
-    Ok(FixedQ32::from_raw(
-        i64::try_from(raw).map_err(|_| ObjectiveAdmissionError::ResourceOverflow(field))?,
-    ))
+    Ok(FixedQ32::from_raw(i64::try_from(raw).map_err(|_| {
+        ObjectiveAdmissionError::ResourceOverflow(field)
+    })?))
 }
 
 fn constraint_relation(
@@ -967,7 +998,12 @@ fn validate_source_mappings(
         .constraints
         .iter()
         .map(|mapping| &mapping.expected_unit)
-        .chain(profile.predicates.iter().map(|mapping| &mapping.expected_unit))
+        .chain(
+            profile
+                .predicates
+                .iter()
+                .map(|mapping| &mapping.expected_unit),
+        )
         .chain(
             profile
                 .soft_dimensions
@@ -978,9 +1014,7 @@ fn validate_source_mappings(
         safe_profile_text(unit, "unit")?;
     }
     for mapping in &profile.soft_dimensions {
-        if mapping.baseline_weight < FixedQ32::ZERO
-            || mapping.baseline_weight > FixedQ32::ONE
-        {
+        if mapping.baseline_weight < FixedQ32::ZERO || mapping.baseline_weight > FixedQ32::ONE {
             return Err(ObjectiveAdmissionError::InvalidProfile("soft weight"));
         }
     }
@@ -1004,9 +1038,7 @@ fn validate_generated_constraint_ids(
     Ok(())
 }
 
-fn resource_mappings(
-    profile: &ObjectiveResourceProfileV1,
-) -> [&ObjectiveResourceAxisProfileV1; 6] {
+fn resource_mappings(profile: &ObjectiveResourceProfileV1) -> [&ObjectiveResourceAxisProfileV1; 6] {
     [
         &profile.time_micros,
         &profile.token_count,
@@ -1055,10 +1087,7 @@ fn profile_digest_unchecked(profile: &ObjectiveAdmissionProfileV1) -> Digest32 {
     push_id(&mut bytes, &profile.profile_id);
     push_u64(&mut bytes, profile.profile_revision.get());
     push_digest(&mut bytes, profile.expected_input_schema_digest);
-    push_digest(
-        &mut bytes,
-        profile.expected_normalization_profile_digest,
-    );
+    push_digest(&mut bytes, profile.expected_normalization_profile_digest);
     push_digest(&mut bytes, profile.principal_scope_digest);
     push_id(&mut bytes, &profile.principal_scope);
     let mut locales = profile.allowed_locales.clone();
@@ -1231,10 +1260,7 @@ fn intent_digest_unchecked(envelope: &ObjectiveSourceEnvelopeV1) -> Digest32 {
     bytes.push(rollback_class_tag(intent.risk.rollback_class));
     bytes.push(u8::from(intent.risk.compensation_required));
     push_digest(&mut bytes, intent.provenance.source_digest);
-    push_digest(
-        &mut bytes,
-        intent.provenance.normalization_profile_digest,
-    );
+    push_digest(&mut bytes, intent.provenance.normalization_profile_digest);
     Digest32::of_bytes(&bytes)
 }
 
@@ -1360,9 +1386,7 @@ fn parse_decimal(bytes: &[u8]) -> Option<u64> {
         return None;
     }
     bytes.iter().try_fold(0_u64, |value, byte| {
-        value
-            .checked_mul(10)?
-            .checked_add(u64::from(byte - b'0'))
+        value.checked_mul(10)?.checked_add(u64::from(byte - b'0'))
     })
 }
 

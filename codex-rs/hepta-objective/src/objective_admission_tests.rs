@@ -228,7 +228,10 @@ fn envelope() -> ObjectiveSourceEnvelopeV1 {
     envelope
 }
 
-fn context(profile: &ObjectiveAdmissionProfileV1, envelope: &ObjectiveSourceEnvelopeV1) -> ObjectiveAdmissionContextV1 {
+fn context(
+    profile: &ObjectiveAdmissionProfileV1,
+    envelope: &ObjectiveSourceEnvelopeV1,
+) -> ObjectiveAdmissionContextV1 {
     ObjectiveAdmissionContextV1 {
         revision: Revision::new(7).expect("revision"),
         now_unix_micros: NOW_MICROS,
@@ -251,11 +254,14 @@ fn complete_profile_bound_envelope_compiles_without_dropping_fields() {
     let envelope = envelope();
     let context = context(&profile, &envelope);
 
-    let outcome = admit_and_compile_objective_v1(&envelope, &profile, &context)
-        .expect("admit and compile");
+    let outcome =
+        admit_and_compile_objective_v1(&envelope, &profile, &context).expect("admit and compile");
     assert!(!outcome.receipt.authority.grants_any());
     assert_eq!(OBSERVED_MICROS, outcome.receipt.observed_at_unix_micros);
-    assert_eq!(Some(OBSERVED_MICROS + 300_000_000), outcome.receipt.deadline_unix_micros);
+    assert_eq!(
+        Some(OBSERVED_MICROS + 300_000_000),
+        outcome.receipt.deadline_unix_micros
+    );
     assert_eq!(envelope.intent_digest, outcome.receipt.intent_digest);
     assert_ne!(Digest32::ZERO, outcome.receipt.admitted_source_digest);
 
@@ -266,9 +272,18 @@ fn complete_profile_bound_envelope_compiles_without_dropping_fields() {
     assert!(compiled.objective.legal_actions.iter().any(|action| {
         action.id == id("action.inspect") && action.confirmation == ConfirmationPolicy::Required
     }));
-    assert!(compiled.objective.legal_actions.iter().any(|action| action.id == id("abstain")));
+    assert!(
+        compiled
+            .objective
+            .legal_actions
+            .iter()
+            .any(|action| action.id == id("abstain"))
+    );
     assert_eq!(1, compiled.objective.soft_preferences.len());
-    assert_eq!(Revision::new(7).expect("revision"), compiled.objective.revision);
+    assert_eq!(
+        Revision::new(7).expect("revision"),
+        compiled.objective.revision
+    );
 }
 
 #[test]
@@ -404,7 +419,10 @@ fn fractional_utc_timestamp_is_parsed_exactly() {
 
     let outcome = admit_and_compile_objective_v1(&envelope, &profile, &context)
         .expect("fractional UTC timestamp");
-    assert_eq!(OBSERVED_MICROS + 123_456, outcome.receipt.observed_at_unix_micros);
+    assert_eq!(
+        OBSERVED_MICROS + 123_456,
+        outcome.receipt.observed_at_unix_micros
+    );
     assert_eq!(
         Some(OBSERVED_MICROS + 300_123_456),
         outcome.receipt.deadline_unix_micros
