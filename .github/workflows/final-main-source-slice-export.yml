@@ -47,18 +47,23 @@ jobs:
             codex-rs/ext/hepta-memory/src/local_replay.rs
             codex-rs/ext/hepta-memory/src/local_runtime.rs
             codex-rs/ext/hepta-memory/src/local_witness.rs
-            codex-rs/hepta-memory-federation/src/federation.rs
           )
+          : > "$out/MISSING_FILES"
           for file in "${files[@]}"; do
-            test -f "$file"
+            if [[ ! -f "$file" ]]; then
+              printf '%s\n' "$file" >> "$out/MISSING_FILES"
+              continue
+            fi
             mkdir -p "$out/$(dirname "$file")"
             cp -- "$file" "$out/$file"
           done
+          test ! -s "$out/MISSING_FILES"
           git rev-parse HEAD > "$out/CANDIDATE_SHA"
           git rev-parse HEAD^{tree} > "$out/CANDIDATE_TREE"
           find "$out" -type f -print0 | sort -z | xargs -0 sha256sum > "$out/SHA256SUMS"
 
       - name: Upload exact source slice
+        if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: hepta-final-main-source-slice-04f60466
