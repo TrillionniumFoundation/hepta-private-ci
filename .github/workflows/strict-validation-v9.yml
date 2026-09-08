@@ -1,0 +1,112 @@
+name: Strict five-gate validation v9
+
+on:
+  push:
+    branches:
+      - ops/strict-validation-v9-20260908
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-strict-validation-v9
+  cancel-in-progress: true
+
+env:
+  CANDIDATE_SHA: 311112df542976dc55055e7cd23563af2091ae1b
+
+jobs:
+  gate:
+    name: gate (${{ matrix.gate }})
+    runs-on: ubuntu-24.04
+    timeout-minutes: 180
+    strategy:
+      fail-fast: false
+      matrix:
+        gate:
+          - cargo-fmt
+          - http-client-tests
+          - workspace-check
+          - workspace-clippy
+          - workspace-test
+    steps:
+      - name: Check out exact candidate
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.CANDIDATE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Verify candidate identity
+        shell: bash
+        run: test "$(git rev-parse HEAD)" = "$CANDIDATE_SHA"
+
+      - name: Configure repository CI prerequisites
+        uses: ./.github/actions/setup-ci
+
+      - name: Install pinned Rust toolchain
+        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: 1.95.0
+          components: clippy,rustfmt
+
+      - name: Configure verified sandbox rusty_v8 artifacts
+        uses: ./.github/actions/setup-rusty-v8
+        with:
+          target: x86_64-unknown-linux-gnu
+
+      - name: Run exact gate
+        shell: bash
+        env:
+          GATE: ${{ matrix.gate }}
+          CARGO_NET_GIT_FETCH_WITH_CLI: "true"
+          CARGO_INCREMENTAL: "0"
+          CARGO_PROFILE_DEV_DEBUG: "0"
+          CARGO_PROFILE_TEST_DEBUG: "0"
+          CARGO_BUILD_JOBS: "2"
+          CARGO_TARGET_DIR: ${{ runner.temp }}/cargo-target
+        run: |
+          set -uo pipefail
+          evidence="$RUNNER_TEMP/hepta-v9-$GATE"
+          mkdir -p "$evidence"
+          cd codex-rs
+          set +e
+          case "$GATE" in
+            cargo-fmt)
+              cargo fmt --all -- --check 2>&1 | tee "$evidence/gate.log"
+              rc=${PIPESTATUS[0]}
+              ;;
+            http-client-tests)
+              cargo test --locked -p codex-http-client --all-targets 2>&1 | tee "$evidence/gate.log"
+              rc=${PIPESTATUS[0]}
+              ;;
+            workspace-check)
+              cargo check --locked --workspace --all-targets 2>&1 | tee "$evidence/gate.log"
+              rc=${PIPESTATUS[0]}
+              ;;
+            workspace-clippy)
+              cargo clippy --locked --workspace --all-targets -- -D warnings 2>&1 | tee "$evidence/gate.log"
+              rc=${PIPESTATUS[0]}
+              ;;
+            workspace-test)
+              cargo test --locked --workspace --all-targets 2>&1 | tee "$evidence/gate.log"
+              rc=${PIPESTATUS[0]}
+              ;;
+            *)
+              echo "unknown gate: $GATE" | tee "$evidence/gate.log"
+              rc=91
+              ;;
+          esac
+          set -e
+          printf '%s\n' "$rc" > "$evidence/exit-code.txt"
+          printf '%s\n' "$CANDIDATE_SHA" > "$evidence/candidate-sha.txt"
+          exit "$rc"
+
+      - name: Upload gate evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-v9-${{ matrix.gate }}-${{ env.CANDIDATE_SHA }}
+          path: ${{ runner.temp }}/hepta-v9-${{ matrix.gate }}/
+          if-no-files-found: warn
+          retention-days: 90
