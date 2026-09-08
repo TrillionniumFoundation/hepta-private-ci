@@ -1,0 +1,44 @@
+name: Finalize single-main management plane
+
+on:
+  push:
+    branches:
+      - ops/final-main-convergence-v3-20260908
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+  actions: read
+
+concurrency:
+  group: hepta-final-management-plane
+  cancel-in-progress: true
+
+jobs:
+  finalize:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 180
+    steps:
+      - name: Check out management finalizer
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ops/final-main-convergence-v3-20260908
+          fetch-depth: 0
+          fetch-tags: true
+          persist-credentials: true
+
+      - name: Finalize tested ready point, default branch, and refs
+        env:
+          GH_TOKEN: ${{ github.token }}
+          HEPTA_ADMIN_TOKEN: ${{ secrets.HEPTA_ADMIN_TOKEN || secrets.GH_ADMIN_TOKEN || secrets.REPO_ADMIN_TOKEN || secrets.ADMIN_TOKEN || secrets.GH_PAT || secrets.GITHUB_PAT || secrets.REPO_TOKEN || secrets.BOT_TOKEN || secrets.HEPTA_BOT_TOKEN || secrets.PERSONAL_ACCESS_TOKEN }}
+        run: bash .github/scripts/finalize_management_plane.sh
+
+      - name: Upload management-plane evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-management-finalizer-${{ github.sha }}
+          path: ${{ runner.temp }}/hepta-management-finalizer/
+          if-no-files-found: warn
+          retention-days: 90
