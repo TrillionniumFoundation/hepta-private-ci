@@ -1,0 +1,126 @@
+name: Promote final all-branches convergence R2
+
+on:
+  push:
+    branches:
+      - ops/final-all-branches-convergence-20260908
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+  checks: read
+  actions: read
+
+concurrency:
+  group: promote-final-all-branches-convergence-r2
+  cancel-in-progress: false
+
+jobs:
+  promote:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 360
+    env:
+      GH_TOKEN: ${{ github.token }}
+      CANDIDATE_BRANCH: integration/final-all-branches-main-tree-r2-20260908
+    steps:
+      - name: Wait for qualified R2 pull request
+        id: pr
+        shell: bash
+        run: |
+          set -euo pipefail
+          pr=''
+          for _ in $(seq 1 600); do
+            pr=$(gh pr list --repo "$GITHUB_REPOSITORY" --state open --head "$CANDIDATE_BRANCH" --json number --jq '.[0].number // empty')
+            [[ -n "$pr" ]] && break
+            sleep 30
+          done
+          [[ -n "$pr" ]] || { echo '::error::R2 convergence PR was not created'; exit 1; }
+          echo "number=$pr" >> "$GITHUB_OUTPUT"
+          gh pr ready "$pr" --repo "$GITHUB_REPOSITORY" 2>/dev/null || true
+
+      - name: Require all candidate checks green
+        shell: bash
+        run: |
+          set -euo pipefail
+          pr='${{ steps.pr.outputs.number }}'
+          observed=0
+          settled=0
+          for _ in $(seq 1 600); do
+            json=$(gh pr view "$pr" --repo "$GITHUB_REPOSITORY" --json mergeable,mergeStateStatus,statusCheckRollup)
+            count=$(jq '.statusCheckRollup | length' <<<"$json")
+            pending=$(jq '[.statusCheckRollup[] | select(((.status // "COMPLETED") | ascii_upcase) != "COMPLETED" and ((.state // "") | ascii_upcase) != "SUCCESS" and ((.state // "") | ascii_upcase) != "FAILURE" and ((.state // "") | ascii_upcase) != "ERROR")] | length' <<<"$json")
+            failed=$(jq '[.statusCheckRollup[] | ((.conclusion // .state // "") | ascii_upcase) | select(. == "FAILURE" or . == "ERROR" or . == "CANCELLED" or . == "TIMED_OUT" or . == "ACTION_REQUIRED" or . == "STALE")] | length' <<<"$json")
+            (( count > 0 )) && observed=1
+            if (( failed > 0 )); then gh pr checks "$pr" --repo "$GITHUB_REPOSITORY" || true; exit 1; fi
+            mergeable=$(jq -r '.mergeable' <<<"$json")
+            if (( observed == 1 && pending == 0 )) && [[ "$mergeable" != UNKNOWN ]]; then settled=1; break; fi
+            sleep 30
+          done
+          (( observed == 1 && settled == 1 )) || { echo '::error::candidate checks did not settle green'; exit 1; }
+          gh pr checks "$pr" --repo "$GITHUB_REPOSITORY"
+
+      - name: Merge normally through main protection
+        shell: bash
+        run: gh pr merge '${{ steps.pr.outputs.number }}' --repo "$GITHUB_REPOSITORY" --merge --delete-branch
+
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: main
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Prove reachability and archive convergence
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'hepta-convergence-bot'
+          git config user.email 'hepta-convergence-bot@users.noreply.github.com'
+          git fetch --prune origin '+refs/heads/*:refs/remotes/origin/*' '+refs/tags/*:refs/tags/*'
+          python3 - <<'PY'
+          import json, subprocess, sys
+          from pathlib import Path
+          p=Path('docs/archive/branch-convergence-20260908.json')
+          payload=json.loads(p.read_text())
+          failed=[]
+          for item in payload['branches']:
+            if subprocess.run(['git','merge-base','--is-ancestor',item['sha'],'HEAD']).returncode:
+              failed.append(item)
+          if failed:
+            for item in failed: print(f"::error::not reachable {item['branch']} {item['sha']}")
+            sys.exit(1)
+          print(f"verified {len(payload['branches'])} branch heads")
+          PY
+          tag=all-branches-converged-20260908-r2
+          if ! git show-ref --verify --quiet "refs/tags/$tag"; then
+            git tag -a "$tag" -m 'All repository branches converged into the single main history (R2)'
+            git push origin "refs/tags/$tag"
+          fi
+
+      - name: Delete unchanged non-main branch refs
+        shell: bash
+        run: |
+          set -euo pipefail
+          default_branch=$(gh repo view "$GITHUB_REPOSITORY" --json defaultBranchRef --jq '.defaultBranchRef.name')
+          python3 - <<'PY' > /tmp/branches.tsv
+          import json
+          from pathlib import Path
+          for item in json.loads(Path('docs/archive/branch-convergence-20260908.json').read_text())['branches']:
+            print(f"{item['branch']}\t{item['sha']}")
+          PY
+          while IFS=$'\t' read -r branch recorded_sha; do
+            [[ "$branch" == main || "$branch" == "$default_branch" ]] && continue
+            current_sha=$(gh api "repos/$GITHUB_REPOSITORY/git/ref/heads/$branch" --jq '.object.sha' 2>/dev/null || true)
+            [[ -z "$current_sha" ]] && continue
+            [[ "$current_sha" == "$recorded_sha" ]] || { echo "::error::branch moved: $branch"; exit 1; }
+            gh api --method DELETE "repos/$GITHUB_REPOSITORY/git/refs/heads/$branch"
+          done < /tmp/branches.tsv
+
+      - name: Switch default branch to main when permitted
+        shell: bash
+        run: |
+          set -euo pipefail
+          current=$(gh repo view "$GITHUB_REPOSITORY" --json defaultBranchRef --jq '.defaultBranchRef.name')
+          if [[ "$current" != main ]]; then
+            gh api --method PATCH "repos/$GITHUB_REPOSITORY" -f default_branch=main || echo '::warning::administrator connector must finish the default-branch switch'
+          fi
