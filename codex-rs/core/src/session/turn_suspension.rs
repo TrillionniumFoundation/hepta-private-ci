@@ -168,6 +168,10 @@ fn take_suspension_handoff(slot: &SuspensionHandoffSlot) -> Option<SuspensionHan
         .take()
 }
 
+#[expect(
+    clippy::expect_used,
+    reason = "private handoff mutex poisoning is an explicit fail-closed lifecycle invariant"
+)]
 fn retain_suspension_handoff(slot: &SuspensionHandoffSlot, handoff: SuspensionHandoff) {
     let mut current = slot.lock().expect("suspension handoff slot mutex poisoned");
     if current.is_some() {
@@ -203,6 +207,10 @@ impl SuspensionHandoffOwner {
             .expect("suspension owner remains armed")
     }
 
+    #[expect(
+        clippy::expect_used,
+        reason = "the suspension owner remains armed until explicit disarm or drop"
+    )]
     fn disarm(mut self) -> SuspensionHandoff {
         self.handoff.take().expect("suspension owner remains armed")
     }

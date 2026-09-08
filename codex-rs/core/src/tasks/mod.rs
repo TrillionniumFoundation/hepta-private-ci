@@ -645,6 +645,10 @@ impl StartTransitionOwner {
     /// Spawn exactly one detached terminalizer.  The returned handle is only
     /// for callers that want to await normal terminal ordering; dropping the
     /// owner after this method has been called never aborts the cleanup task.
+    #[expect(
+        clippy::expect_used,
+        reason = "private lifecycle mutex poisoning and armed-owner consumption are explicit fail-closed state-machine invariants"
+    )]
     fn spawn_cleanup(
         &mut self,
         fallback_reason: TurnAbortReason,
@@ -721,6 +725,10 @@ impl StartTransitionOwner {
     }
 
     /// Mark a successfully attached or already-stale transition as complete.
+    #[expect(
+        clippy::expect_used,
+        reason = "private lifecycle mutex poisoning and armed-owner consumption are explicit fail-closed state-machine invariants"
+    )]
     fn disarm(&mut self) {
         if let Some(cleanup_slot) = self.cleanup.take()
             && let Some(cleanup) = cleanup_slot
@@ -750,6 +758,10 @@ impl Session {
     /// The registry intentionally outlives `ActiveTurn::start_transition` so
     /// shutdown can wait through post-clear idle/recovery/pending-work side
     /// effects.
+    #[expect(
+        clippy::expect_used,
+        reason = "private lifecycle mutex poisoning and armed-owner consumption are explicit fail-closed state-machine invariants"
+    )]
     fn register_start_transition(
         &self,
         transition_identity: Arc<()>,
@@ -765,6 +777,10 @@ impl Session {
     /// Removes one exact fence before signalling it.  Identity and completion
     /// are both checked so a stale continuation cannot retire a later turn's
     /// registry entry.
+    #[expect(
+        clippy::expect_used,
+        reason = "private lifecycle mutex poisoning and armed-owner consumption are explicit fail-closed state-machine invariants"
+    )]
     fn finish_start_transition(
         &self,
         transition_identity: &Arc<()>,
@@ -781,6 +797,10 @@ impl Session {
         completion.complete();
     }
 
+    #[expect(
+        clippy::expect_used,
+        reason = "private lifecycle mutex poisoning and armed-owner consumption are explicit fail-closed state-machine invariants"
+    )]
     fn pending_start_transition_completions(&self) -> Vec<Arc<StartTransitionCompletion>> {
         self.pending_start_transition_completions
             .lock()
@@ -790,6 +810,10 @@ impl Session {
             .collect()
     }
 
+    #[expect(
+        clippy::expect_used,
+        reason = "private lifecycle mutex poisoning and armed-owner consumption are explicit fail-closed state-machine invariants"
+    )]
     fn pending_start_transition_cleanup_slots(&self) -> Vec<StartTransitionCleanupSlot> {
         self.pending_start_transition_completions
             .lock()
@@ -804,6 +828,10 @@ impl Session {
     /// a replacement may be admitted as soon as the old slot CAS succeeds,
     /// while shutdown still has to wait for the old owner's post-CAS recovery
     /// and lifecycle side effects.
+    #[expect(
+        clippy::expect_used,
+        reason = "private lifecycle mutex poisoning and armed-owner consumption are explicit fail-closed state-machine invariants"
+    )]
     fn register_task_terminalization(
         &self,
         identity: Arc<()>,
@@ -830,6 +858,10 @@ impl Session {
     /// running detached owner has already taken its slot, so shutdown merely
     /// waits on the completion fence; a queued/no-runtime owner leaves the
     /// slot populated and can be adopted by the shutdown drain.
+    #[expect(
+        clippy::expect_used,
+        reason = "private lifecycle mutex poisoning and armed-owner consumption are explicit fail-closed state-machine invariants"
+    )]
     pub(crate) fn pending_suspension_handoffs_except(
         &self,
         excluded_identity: Option<&Arc<()>>,
@@ -857,6 +889,10 @@ impl Session {
     /// taken its slot; a queued/no-runtime owner leaves it populated for the
     /// shutdown drain to adopt. Non-claimed witnesses are returned too so the
     /// drain can preserve their failed-closed fence without replaying them.
+    #[expect(
+        clippy::expect_used,
+        reason = "private lifecycle mutex poisoning and armed-owner consumption are explicit fail-closed state-machine invariants"
+    )]
     fn pending_abort_handoffs_except(
         &self,
         excluded_identity: Option<&Arc<()>>,
@@ -900,6 +936,10 @@ impl Session {
     /// Returns queued ordinary finish witnesses. A live detached owner has
     /// taken its slot; a scheduler that drops the first poll leaves the full
     /// witness here for the shutdown drain to adopt.
+    #[expect(
+        clippy::expect_used,
+        reason = "private lifecycle mutex poisoning and armed-owner consumption are explicit fail-closed state-machine invariants"
+    )]
     fn pending_finish_handoffs_except(
         &self,
         excluded_identity: Option<&Arc<()>>,
@@ -941,6 +981,10 @@ impl Session {
     /// Retires and signals one exact task terminalizer after all of its
     /// post-terminal side effects have completed.  A stale owner cannot
     /// retire a later entry because both identity pointers are checked.
+    #[expect(
+        clippy::expect_used,
+        reason = "private lifecycle mutex poisoning and armed-owner consumption are explicit fail-closed state-machine invariants"
+    )]
     fn finish_task_terminalization(
         &self,
         identity: &Arc<()>,
@@ -967,6 +1011,10 @@ impl Session {
         completion.complete();
     }
 
+    #[expect(
+        clippy::expect_used,
+        reason = "private lifecycle mutex poisoning and armed-owner consumption are explicit fail-closed state-machine invariants"
+    )]
     fn pending_task_terminalization_completions_except(
         &self,
         excluded_identity: Option<&Arc<()>>,
@@ -1056,6 +1104,10 @@ impl Session {
         self.has_pending_start_transition_except(/*ignored_identity*/ None)
     }
 
+    #[expect(
+        clippy::expect_used,
+        reason = "private lifecycle mutex poisoning and armed-owner consumption are explicit fail-closed state-machine invariants"
+    )]
     pub(crate) fn has_pending_start_transition_except(
         &self,
         ignored_identity: Option<&Arc<()>>,
@@ -1078,6 +1130,10 @@ impl Session {
         self.has_pending_task_terminalization_except(/*ignored_identity*/ None)
     }
 
+    #[expect(
+        clippy::expect_used,
+        reason = "private lifecycle mutex poisoning and armed-owner consumption are explicit fail-closed state-machine invariants"
+    )]
     pub(crate) fn has_pending_task_terminalization_except(
         &self,
         ignored_identity: Option<&Arc<()>>,
@@ -1107,6 +1163,10 @@ impl Session {
             || self.has_pending_task_terminalization_except(ignored_terminalization)
     }
 
+    #[expect(
+        clippy::expect_used,
+        reason = "private lifecycle mutex poisoning and armed-owner consumption are explicit fail-closed state-machine invariants"
+    )]
     pub(crate) fn begin_shutdown(&self) {
         let _admission_gate = self
             .start_admission_gate
@@ -2119,10 +2179,6 @@ impl Session {
         }
     }
 
-    #[expect(
-        clippy::too_many_arguments,
-        reason = "retained compatibility entry point with explicit lifecycle witnesses"
-    )]
     #[cfg_attr(
         not(test),
         expect(dead_code, reason = "used by focused lifecycle qualification tests")
@@ -3616,6 +3672,10 @@ impl Session {
             .take()
     }
 
+    #[expect(
+        clippy::expect_used,
+        reason = "private lifecycle mutex poisoning and armed-owner consumption are explicit fail-closed state-machine invariants"
+    )]
     fn retain_finish_handoff(slot: &TaskFinishHandoffSlot, handoff: TaskFinishHandoff) {
         let mut current = slot
             .lock()
@@ -3678,6 +3738,10 @@ impl Session {
             .take()
     }
 
+    #[expect(
+        clippy::expect_used,
+        reason = "private lifecycle mutex poisoning and armed-owner consumption are explicit fail-closed state-machine invariants"
+    )]
     fn retain_abort_handoff(slot: &TaskAbortHandoffSlot, handoff: TaskAbortHandoff) {
         let mut current = slot.lock().expect("task abort handoff slot mutex poisoned");
         if current.is_none() {
