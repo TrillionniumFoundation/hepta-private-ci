@@ -1,0 +1,352 @@
+name: Final single-main repair V10
+
+on:
+  push:
+    branches:
+      - ops/final-main-repair-v10-20260908
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+  actions: read
+
+concurrency:
+  group: hepta-final-main-repair-v10
+  cancel-in-progress: true
+
+jobs:
+  repair:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 360
+    outputs:
+      candidate_sha: ${{ steps.repair.outputs.candidate_sha }}
+    steps:
+      - name: Check out V10 controller
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ops/final-main-repair-v10-20260908
+          fetch-depth: 0
+          fetch-tags: true
+          persist-credentials: true
+
+      - name: Configure repository CI prerequisites
+        uses: ./.github/actions/setup-ci
+
+      - name: Install native Cargo build prerequisites
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update -y
+          sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+            build-essential clang libcap-dev libssl-dev pkg-config bubblewrap
+
+      - name: Install pinned Rust toolchain
+        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: 1.95.0
+          components: clippy,rustfmt
+
+      - name: Configure exact sandboxed rusty_v8 artifacts
+        uses: ./.github/actions/setup-rusty-v8
+        with:
+          target: x86_64-unknown-linux-gnu
+
+      - name: Materialize mechanically repaired candidate
+        id: repair
+        env:
+          CARGO_NET_GIT_FETCH_WITH_CLI: "true"
+          CARGO_INCREMENTAL: "0"
+          CARGO_PROFILE_DEV_DEBUG: "0"
+          CARGO_PROFILE_TEST_DEBUG: "0"
+          CARGO_BUILD_JOBS: "2"
+          CARGO_TARGET_DIR: ${{ runner.temp }}/cargo-target-v10-repair
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          git config user.name "hepta-convergence-bot"
+          git config user.email "hepta-convergence-bot@users.noreply.github.com"
+          git fetch origin '+refs/heads/*:refs/remotes/origin/*' '+refs/tags/*:refs/tags/*' --prune --force
+          git show-ref --verify --quiet refs/remotes/origin/candidate/final-main-v6-20260908
+          git switch --force-create hepta-final-repair-v10 origin/candidate/final-main-v6-20260908
+          parent="$(git rev-parse HEAD)"
+          test -f convergence/source-selection-v6.json
+          test -f convergence/branch-closure-v6.json
+          evidence="$RUNNER_TEMP/hepta-v10-repair"
+          mkdir -p "$CARGO_TARGET_DIR" convergence "$evidence"
+          capture() {
+            git status --short > "$evidence/status.txt" || true
+            git diff --stat > "$evidence/diff-stat.txt" || true
+            git diff --binary > "$evidence/repair.patch" || true
+          }
+          trap capture EXIT
+
+          pushd codex-rs >/dev/null
+          set +e
+          cargo fix --locked --workspace --all-targets --allow-dirty --allow-staged \
+            2>&1 | tee "$evidence/cargo-fix.log"
+          cargo_fix_rc=${PIPESTATUS[0]}
+          cargo clippy --fix --locked --workspace --all-targets \
+            --allow-dirty --allow-staged -- -D warnings \
+            2>&1 | tee "$evidence/clippy-fix.log"
+          clippy_fix_rc=${PIPESTATUS[0]}
+          set -e
+          cargo fmt --all
+          cargo check --locked --workspace --all-targets \
+            2>&1 | tee "$evidence/post-fix-check.log"
+          popd >/dev/null
+
+          python3 - "$parent" "$cargo_fix_rc" "$clippy_fix_rc" <<'PY'
+          import json
+          import sys
+          from pathlib import Path
+
+          parent, cargo_rc, clippy_rc = sys.argv[1:]
+          Path("convergence/source-selection-v10.json").write_text(
+              json.dumps(
+                  {
+                      "schema": 10,
+                      "parent_v6_candidate": parent,
+                      "repair_surface": "machine-applicable-rust-diagnostics-only",
+                      "native_prerequisites": ["pkg-config", "libcap-dev", "bubblewrap"],
+                      "rusty_v8_profile": "ptrcomp_sandbox_release_x86_64-unknown-linux-gnu",
+                      "repairs": ["cargo-fix", "clippy-fix", "cargo-fmt"],
+                      "repair_exit_codes": {
+                          "cargo_fix": int(cargo_rc),
+                          "clippy_fix": int(clippy_rc),
+                      },
+                      "qualification": [
+                          "repository-policy",
+                          "cargo-fmt",
+                          "http-client-tests",
+                          "workspace-check",
+                          "workspace-clippy",
+                          "workspace-test",
+                      ],
+                      "authority_granted": False,
+                  },
+                  indent=2,
+                  sort_keys=True,
+              )
+              + "\n",
+              encoding="utf-8",
+          )
+          PY
+
+          git diff --check
+          capture
+          git add -A
+          git commit -s -m "fix(convergence): persist verified mechanical workspace repairs"
+          candidate="$(git rev-parse HEAD)"
+          tree="$(git rev-parse HEAD^{tree})"
+          printf '%s\n' "$candidate" > "$evidence/candidate-sha.txt"
+          printf '%s\n' "$tree" > "$evidence/candidate-tree.txt"
+          echo "candidate_sha=$candidate" >> "$GITHUB_OUTPUT"
+          tag="candidate/final-main/v10-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          git tag -a "$tag" "$candidate" -m "V10 mechanically repaired candidate $candidate"
+          git push origin "refs/tags/$tag" "+HEAD:refs/heads/candidate/final-main-v10-20260908"
+          trap - EXIT
+          capture
+
+      - name: Upload V10 repair evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-repair-v10-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/hepta-v10-repair/
+          if-no-files-found: warn
+          retention-days: 90
+
+  qualify:
+    needs: repair
+    runs-on: ubuntu-24.04
+    timeout-minutes: 360
+    strategy:
+      fail-fast: false
+      matrix:
+        gate:
+          - repository-policy
+          - cargo-fmt
+          - http-client-tests
+          - workspace-check
+          - workspace-clippy
+          - workspace-test
+    steps:
+      - name: Check out exact V10 candidate
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ needs.repair.outputs.candidate_sha }}
+          fetch-depth: 0
+          fetch-tags: true
+          persist-credentials: false
+
+      - name: Configure repository CI prerequisites
+        uses: ./.github/actions/setup-ci
+
+      - name: Install native Cargo build prerequisites
+        if: matrix.gate != 'repository-policy' && matrix.gate != 'cargo-fmt'
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update -y
+          sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+            build-essential clang libcap-dev libssl-dev pkg-config bubblewrap
+
+      - name: Install pinned Rust toolchain
+        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: 1.95.0
+          components: clippy,rustfmt
+
+      - name: Configure exact sandboxed rusty_v8 artifacts
+        if: matrix.gate != 'repository-policy' && matrix.gate != 'cargo-fmt'
+        uses: ./.github/actions/setup-rusty-v8
+        with:
+          target: x86_64-unknown-linux-gnu
+
+      - name: Run V10 ${{ matrix.gate }}
+        shell: bash
+        env:
+          CANDIDATE_SHA: ${{ needs.repair.outputs.candidate_sha }}
+          GATE: ${{ matrix.gate }}
+          CARGO_NET_GIT_FETCH_WITH_CLI: "true"
+          CARGO_INCREMENTAL: "0"
+          CARGO_PROFILE_DEV_DEBUG: "0"
+          CARGO_PROFILE_TEST_DEBUG: "0"
+          CARGO_BUILD_JOBS: "2"
+          CARGO_TARGET_DIR: ${{ runner.temp }}/cargo-target-v10
+        run: |
+          set -uo pipefail
+          evidence="$RUNNER_TEMP/hepta-v10-$GATE"
+          mkdir -p "$evidence" "$CARGO_TARGET_DIR"
+          [[ "$(git rev-parse HEAD)" == "$CANDIDATE_SHA" ]] || exit 90
+          set +e
+          case "$GATE" in
+            repository-policy)
+              {
+                python3 scripts/hepta-docs.py verify &&
+                python3 scripts/hepta-module-docs.py verify &&
+                python3 scripts/hepta-algorithm-docs.py verify &&
+                python3 scripts/hepta-readiness.py verify &&
+                python3 scripts/hepta-cns.py verify &&
+                python3 scripts/hepta-hnmf.py verify &&
+                python3 scripts/hepta-gap-closure.py verify &&
+                git diff --check &&
+                test -z "$(git status --porcelain --untracked-files=no)"
+              } 2>&1 | tee "$evidence/gate.log"
+              rc=${PIPESTATUS[0]}
+              ;;
+            cargo-fmt)
+              (cd codex-rs && cargo fmt --all -- --check) 2>&1 | tee "$evidence/gate.log"; rc=${PIPESTATUS[0]} ;;
+            http-client-tests)
+              (cd codex-rs && cargo test --locked -p codex-http-client --all-targets) 2>&1 | tee "$evidence/gate.log"; rc=${PIPESTATUS[0]} ;;
+            workspace-check)
+              (cd codex-rs && cargo check --locked --workspace --all-targets) 2>&1 | tee "$evidence/gate.log"; rc=${PIPESTATUS[0]} ;;
+            workspace-clippy)
+              (cd codex-rs && cargo clippy --locked --workspace --all-targets -- -D warnings) 2>&1 | tee "$evidence/gate.log"; rc=${PIPESTATUS[0]} ;;
+            workspace-test)
+              (cd codex-rs && cargo test --locked --workspace --all-targets) 2>&1 | tee "$evidence/gate.log"; rc=${PIPESTATUS[0]} ;;
+            *)
+              echo "unknown gate: $GATE" | tee "$evidence/gate.log"; rc=91 ;;
+          esac
+          set -e
+          printf '%s\n' "$rc" > "$evidence/exit-code.txt"
+          python3 - "$evidence/receipt.json" "$CANDIDATE_SHA" "$GATE" "$rc" <<'PY'
+          import json, sys
+          from pathlib import Path
+          path, candidate, gate, rc = sys.argv[1:]
+          Path(path).write_text(json.dumps({
+              "schema": 10,
+              "candidate_sha": candidate,
+              "gate": gate,
+              "exit_code": int(rc),
+          }, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+          PY
+          exit "$rc"
+
+      - name: Upload V10 gate evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-v10-${{ matrix.gate }}-${{ needs.repair.outputs.candidate_sha }}
+          path: ${{ runner.temp }}/hepta-v10-${{ matrix.gate }}/
+          if-no-files-found: error
+          retention-days: 90
+
+  publish:
+    needs: [repair, qualify]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    outputs:
+      qualified_tag: ${{ steps.publish.outputs.qualified_tag }}
+    steps:
+      - name: Check out exact qualified V10 candidate
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ needs.repair.outputs.candidate_sha }}
+          fetch-depth: 0
+          fetch-tags: true
+          persist-credentials: true
+
+      - name: Publish qualified V10 compatibility refs
+        id: publish
+        env:
+          CANDIDATE_SHA: ${{ needs.repair.outputs.candidate_sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          [[ "$(git rev-parse HEAD)" == "$CANDIDATE_SHA" ]]
+          test -f convergence/source-selection-v6.json
+          test -f convergence/branch-closure-v6.json
+          test -f convergence/source-selection-v10.json
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          v10 = json.loads(Path("convergence/source-selection-v10.json").read_text(encoding="utf-8"))
+          closure = json.loads(Path("convergence/branch-closure-v6.json").read_text(encoding="utf-8"))
+          assert v10.get("schema") == 10, v10
+          assert v10.get("authority_granted") is False, v10
+          assert closure.get("unreachable") == [], closure.get("unreachable")
+          PY
+          git config user.name "hepta-convergence-bot"
+          git config user.email "hepta-convergence-bot@users.noreply.github.com"
+          tag="qualified/final-main-v10/${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          git tag -a "$tag" "$CANDIDATE_SHA" -m "All six V10 qualification gates passed on $CANDIDATE_SHA"
+          git push origin "refs/tags/$tag"
+          git push origin \
+            "+$CANDIDATE_SHA:refs/heads/candidate/final-main-v10-20260908" \
+            "+$CANDIDATE_SHA:refs/heads/candidate/final-main-v6-20260908" \
+            "+$CANDIDATE_SHA:refs/heads/ready/final-main-v10-20260908" \
+            "+$CANDIDATE_SHA:refs/heads/ready/final-main-v6-20260908" \
+            "+$CANDIDATE_SHA:refs/heads/ready/final-main-20260908"
+          echo "qualified_tag=$tag" >> "$GITHUB_OUTPUT"
+
+  finalize:
+    needs: [repair, publish]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 240
+    steps:
+      - name: Check out V10 management controller
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ops/final-main-repair-v10-20260908
+          fetch-depth: 0
+          fetch-tags: true
+          persist-credentials: true
+
+      - name: Promote qualified seal and retire every non-main ref
+        env:
+          GH_TOKEN: ${{ github.token }}
+          HEPTA_ADMIN_TOKEN: ${{ secrets.HEPTA_ADMIN_TOKEN || secrets.GH_ADMIN_TOKEN || secrets.REPO_ADMIN_TOKEN || secrets.ADMIN_TOKEN || secrets.GH_PAT || secrets.GITHUB_PAT || secrets.REPO_TOKEN || secrets.BOT_TOKEN || secrets.HEPTA_BOT_TOKEN || secrets.PERSONAL_ACCESS_TOKEN }}
+          EXPECTED_CANDIDATE: ${{ needs.repair.outputs.candidate_sha }}
+          QUALIFIED_TAG: ${{ needs.publish.outputs.qualified_tag }}
+        run: bash .github/scripts/finalize_management_v6.sh
+
+      - name: Upload V10 management evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-management-v10-${{ needs.repair.outputs.candidate_sha }}
+          path: ${{ runner.temp }}/hepta-management-v6/
+          if-no-files-found: warn
+          retention-days: 90
