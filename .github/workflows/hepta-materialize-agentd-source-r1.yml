@@ -50,10 +50,10 @@ jobs:
           python3 - <<'PY'
           from pathlib import Path
 
-          path = Path("codex-rs/hepta-agentd/src/app_runtime.rs")
-          text = path.read_text(encoding="utf-8")
-          old = "pub(crate) fn app_server_runtime_options(\n"
-          new = (
+          runtime_path = Path("codex-rs/hepta-agentd/src/app_runtime.rs")
+          runtime_text = runtime_path.read_text(encoding="utf-8")
+          runtime_old = "pub(crate) fn app_server_runtime_options(\n"
+          runtime_new = (
               "#[cfg_attr(\n"
               "    not(test),\n"
               "    allow(\n"
@@ -61,17 +61,56 @@ jobs:
               "        reason = \"retained read-only Agentd runtime constructor awaiting the registered product caller\"\n"
               "    )\n"
               ")]\n"
-              + old
+              + runtime_old
           )
-          if text.count(old) != 1:
+          if runtime_text.count(runtime_old) != 1:
               raise SystemExit("expected exactly one app_server_runtime_options anchor")
-          if new in text:
+          if runtime_new in runtime_text:
               raise SystemExit("Agentd dead-code allowance already present")
-          path.write_text(text.replace(old, new, 1), encoding="utf-8")
+          runtime_path.write_text(
+              runtime_text.replace(runtime_old, runtime_new, 1),
+              encoding="utf-8",
+          )
+
+          example_path = Path("codex-rs/hepta-agentd/examples/h4_persistent_writer.rs")
+          example_text = example_path.read_text(encoding="utf-8")
+          example_old = '''        .filter_map(|entry| {
+              let name = entry.file_name().to_string_lossy().to_string();
+              let root = entry.path();
+              Some(CacheDeviceEvidence {
+                  name,
+                  model: read_trimmed(root.join("device/model")),
+                  write_cache: read_trimmed(root.join("queue/write_cache")),
+                  fua: read_trimmed(root.join("queue/fua")),
+                  rotational: read_trimmed(root.join("queue/rotational")),
+                  state: read_trimmed(root.join("device/state")),
+              })
+          })
+          '''
+          example_new = '''        .map(|entry| {
+              let name = entry.file_name().to_string_lossy().to_string();
+              let root = entry.path();
+              CacheDeviceEvidence {
+                  name,
+                  model: read_trimmed(root.join("device/model")),
+                  write_cache: read_trimmed(root.join("queue/write_cache")),
+                  fua: read_trimmed(root.join("queue/fua")),
+                  rotational: read_trimmed(root.join("queue/rotational")),
+                  state: read_trimmed(root.join("device/state")),
+              }
+          })
+          '''
+          if example_text.count(example_old) != 1:
+              raise SystemExit("expected exactly one H4 cache-device filter_map anchor")
+          example_path.write_text(
+              example_text.replace(example_old, example_new, 1),
+              encoding="utf-8",
+          )
           PY
           cargo fmt --manifest-path codex-rs/Cargo.toml --all
           expected="$({
             printf '%s\n' \
+              codex-rs/hepta-agentd/examples/h4_persistent_writer.rs \
               codex-rs/hepta-agentd/src/app_runtime.rs \
               codex-rs/hepta-agentd/src/control.rs \
               codex-rs/hepta-agentd/tests/support/fleet.rs \
@@ -107,6 +146,7 @@ jobs:
         run: |
           set -euo pipefail
           git add \
+            codex-rs/hepta-agentd/examples/h4_persistent_writer.rs \
             codex-rs/hepta-agentd/src/app_runtime.rs \
             codex-rs/hepta-agentd/src/control.rs \
             codex-rs/hepta-agentd/tests/support/fleet.rs \
@@ -115,7 +155,7 @@ jobs:
           result="$(printf '%s\n' \
             'fix(agentd): materialize exact process and socket blockers' \
             '' \
-            'Apply the bounded checked-in Agentd patch, retain the read-only constructor with a local documented non-test allowance, and preserve the canonical base as the sole parent.' \
+            'Apply the bounded checked-in Agentd patch, retain the read-only constructor with a local documented non-test allowance, simplify the H4 iterator, and preserve the canonical base as the sole parent.' \
             | git commit-tree "$tree" -p "$BASE_SHA")"
           test "$(git rev-parse "$result^")" = "$BASE_SHA"
           git push origin "$result:refs/heads/$RESULT_BRANCH"
