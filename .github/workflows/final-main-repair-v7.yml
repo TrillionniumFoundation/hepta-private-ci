@@ -1,0 +1,344 @@
+name: Conditional final-main mechanical repair V7
+
+on:
+  push:
+    branches:
+      - ops/final-main-repair-v7-20260908
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+  actions: read
+
+concurrency:
+  group: hepta-final-main-repair-v7
+  cancel-in-progress: true
+
+jobs:
+  detect:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 300
+    outputs:
+      active: ${{ steps.detect.outputs.active }}
+      v6_run_id: ${{ steps.detect.outputs.v6_run_id }}
+      v6_conclusion: ${{ steps.detect.outputs.v6_conclusion }}
+    steps:
+      - name: Wait for V6 and activate only on failure
+        id: detect
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          repo="$GITHUB_REPOSITORY"
+          for _ in $(seq 1 960); do
+            ready="$(git ls-remote --heads "https://github.com/$repo.git" refs/heads/ready/final-main-v6-20260908 | awk '{print $1}')"
+            if [[ -n "$ready" ]]; then
+              marker_code="$(curl -sS -o /tmp/v6-marker.json -w '%{http_code}' -H "Authorization: Bearer $GH_TOKEN" -H 'Accept: application/vnd.github+json' "https://api.github.com/repos/$repo/contents/convergence/source-selection-v6.json?ref=ready%2Ffinal-main-v6-20260908")"
+              if [[ "$marker_code" == 200 ]]; then
+                tag_target="$(git ls-remote --tags "https://github.com/$repo.git" 'refs/tags/qualified/final-main-v6/*^{}' | awk -v sha="$ready" '$1 == sha {print $1; exit}')"
+                if [[ "$tag_target" == "$ready" ]]; then
+                  echo "active=false" >> "$GITHUB_OUTPUT"
+                  echo "v6_run_id=qualified-ready" >> "$GITHUB_OUTPUT"
+                  echo "v6_conclusion=success" >> "$GITHUB_OUTPUT"
+                  exit 0
+                fi
+              fi
+            fi
+
+            run_json="$(gh run list --repo "$repo" --workflow final-main-convergence-v6.yml --branch ops/final-main-convergence-20260908 --limit 1 --json databaseId,status,conclusion,headSha 2>/dev/null || echo '[]')"
+            run_id="$(jq -r '.[0].databaseId // empty' <<<"$run_json")"
+            status="$(jq -r '.[0].status // empty' <<<"$run_json")"
+            conclusion="$(jq -r '.[0].conclusion // empty' <<<"$run_json")"
+            if [[ "$status" == completed ]]; then
+              echo "v6_run_id=$run_id" >> "$GITHUB_OUTPUT"
+              echo "v6_conclusion=$conclusion" >> "$GITHUB_OUTPUT"
+              if [[ "$conclusion" == success ]]; then
+                echo "active=false" >> "$GITHUB_OUTPUT"
+              else
+                echo "active=true" >> "$GITHUB_OUTPUT"
+              fi
+              exit 0
+            fi
+            sleep 15
+          done
+          echo "V6 did not reach a terminal state within the bounded observation window" >&2
+          exit 20
+
+  repair:
+    needs: detect
+    if: needs.detect.outputs.active == 'true'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 300
+    outputs:
+      candidate_sha: ${{ steps.repair.outputs.candidate_sha }}
+    steps:
+      - name: Check out repair controller
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ops/final-main-repair-v7-20260908
+          fetch-depth: 0
+          fetch-tags: true
+          persist-credentials: true
+
+      - name: Configure repository CI prerequisites
+        uses: ./.github/actions/setup-ci
+
+      - name: Install pinned Rust toolchain
+        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: 1.95.0
+          components: clippy,rustfmt
+
+      - name: Materialize repaired candidate
+        id: repair
+        env:
+          GH_TOKEN: ${{ github.token }}
+          CARGO_NET_GIT_FETCH_WITH_CLI: "true"
+          CARGO_INCREMENTAL: "0"
+          CARGO_PROFILE_DEV_DEBUG: "0"
+          CARGO_PROFILE_TEST_DEBUG: "0"
+          CARGO_BUILD_JOBS: "2"
+          CARGO_TARGET_DIR: ${{ runner.temp }}/cargo-target-v7
+          V6_RUN_ID: ${{ needs.detect.outputs.v6_run_id }}
+          V6_CONCLUSION: ${{ needs.detect.outputs.v6_conclusion }}
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          git config user.name "hepta-convergence-bot"
+          git config user.email "hepta-convergence-bot@users.noreply.github.com"
+          git fetch origin '+refs/heads/*:refs/remotes/origin/*' '+refs/tags/*:refs/tags/*' --prune --force
+
+          if git show-ref --verify --quiet refs/remotes/origin/candidate/final-main-v6-20260908; then
+            git switch --force-create hepta-final-repair-v7 origin/candidate/final-main-v6-20260908
+          else
+            bash .github/scripts/run_materialize_v6.sh
+            git fetch origin candidate/final-main-v6-20260908:refs/remotes/origin/candidate/final-main-v6-20260908 --force
+            git switch --force-create hepta-final-repair-v7 origin/candidate/final-main-v6-20260908
+          fi
+
+          parent="$(git rev-parse HEAD)"
+          test -f convergence/source-selection-v6.json
+          mkdir -p "$CARGO_TARGET_DIR" convergence
+
+          set +e
+          cargo fix --locked --workspace --all-targets --allow-dirty --allow-staged 2>&1 | tee "$RUNNER_TEMP/cargo-fix-v7.log"
+          cargo_fix_rc=${PIPESTATUS[0]}
+          cargo clippy --fix --locked --workspace --all-targets --allow-dirty --allow-staged 2>&1 | tee "$RUNNER_TEMP/clippy-fix-v7.log"
+          clippy_fix_rc=${PIPESTATUS[0]}
+          set -e
+          cargo fmt --all
+
+          # The repair candidate must at least compile before it can consume five
+          # independent qualification runners.
+          cargo check --locked --workspace --all-targets
+
+          python3 - "$parent" "$V6_RUN_ID" "$V6_CONCLUSION" "$cargo_fix_rc" "$clippy_fix_rc" <<'PY'
+          import json
+          import sys
+          from pathlib import Path
+
+          parent, run_id, conclusion, cargo_rc, clippy_rc = sys.argv[1:]
+          Path("convergence/source-selection-v7.json").write_text(
+              json.dumps(
+                  {
+                      "schema": 7,
+                      "parent_v6_candidate": parent,
+                      "activation": {
+                          "v6_run_id": run_id,
+                          "v6_conclusion": conclusion,
+                      },
+                      "repairs": ["cargo-fix", "clippy-fix", "cargo-fmt"],
+                      "repair_exit_codes": {
+                          "cargo_fix": int(cargo_rc),
+                          "clippy_fix": int(clippy_rc),
+                      },
+                      "qualification": "immutable-candidate-matrix",
+                  },
+                  indent=2,
+              )
+              + "\n",
+              encoding="utf-8",
+          )
+          PY
+
+          find convergence -type f -name '*.log' -delete
+          git diff --check
+          git add -A
+          git commit --allow-empty -s -m "fix(convergence): apply mechanical repairs to failed V6 candidate"
+          candidate="$(git rev-parse HEAD)"
+          echo "candidate_sha=$candidate" >> "$GITHUB_OUTPUT"
+          tag="candidate/final-main/v7-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          git tag -a "$tag" "$candidate" -m "Conditional V7 repaired candidate $candidate"
+          git push origin "refs/tags/$tag" "+HEAD:refs/heads/candidate/final-main-v7-20260908"
+
+      - name: Upload V7 repair evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-repair-v7-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            ${{ runner.temp }}/cargo-fix-v7.log
+            ${{ runner.temp }}/clippy-fix-v7.log
+          if-no-files-found: warn
+          retention-days: 90
+
+  qualify:
+    needs:
+      - detect
+      - repair
+    if: needs.detect.outputs.active == 'true'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 360
+    strategy:
+      fail-fast: false
+      matrix:
+        gate:
+          - cargo-fmt
+          - http-client-tests
+          - workspace-check
+          - workspace-clippy
+          - workspace-test
+    steps:
+      - name: Check out exact V7 candidate
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ needs.repair.outputs.candidate_sha }}
+          fetch-depth: 0
+          fetch-tags: true
+          persist-credentials: false
+
+      - name: Configure repository CI prerequisites
+        uses: ./.github/actions/setup-ci
+
+      - name: Install pinned Rust toolchain
+        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: 1.95.0
+          components: clippy,rustfmt
+
+      - name: Run V7 ${{ matrix.gate }}
+        shell: bash
+        env:
+          CANDIDATE_SHA: ${{ needs.repair.outputs.candidate_sha }}
+          GATE: ${{ matrix.gate }}
+          CARGO_NET_GIT_FETCH_WITH_CLI: "true"
+          CARGO_INCREMENTAL: "0"
+          CARGO_PROFILE_DEV_DEBUG: "0"
+          CARGO_PROFILE_TEST_DEBUG: "0"
+          CARGO_BUILD_JOBS: "2"
+          CARGO_TARGET_DIR: ${{ runner.temp }}/cargo-target
+        run: |
+          set -uo pipefail
+          evidence="$RUNNER_TEMP/hepta-v7-$GATE"
+          mkdir -p "$evidence" "$CARGO_TARGET_DIR"
+          [[ "$(git rev-parse HEAD)" == "$CANDIDATE_SHA" ]] || exit 90
+          set +e
+          case "$GATE" in
+            cargo-fmt) cargo fmt --all -- --check 2>&1 | tee "$evidence/gate.log"; rc=${PIPESTATUS[0]} ;;
+            http-client-tests) cargo test --locked -p codex-http-client --all-targets 2>&1 | tee "$evidence/gate.log"; rc=${PIPESTATUS[0]} ;;
+            workspace-check) cargo check --locked --workspace --all-targets 2>&1 | tee "$evidence/gate.log"; rc=${PIPESTATUS[0]} ;;
+            workspace-clippy) cargo clippy --locked --workspace --all-targets -- -D warnings 2>&1 | tee "$evidence/gate.log"; rc=${PIPESTATUS[0]} ;;
+            workspace-test) cargo test --locked --workspace --all-targets 2>&1 | tee "$evidence/gate.log"; rc=${PIPESTATUS[0]} ;;
+            *) rc=91 ;;
+          esac
+          set -e
+          printf '%s\n' "$rc" > "$evidence/exit-code.txt"
+          python3 - "$evidence/receipt.json" "$CANDIDATE_SHA" "$GATE" "$rc" <<'PY'
+          import json, sys
+          from pathlib import Path
+          path, candidate, gate, rc = sys.argv[1:]
+          Path(path).write_text(json.dumps({
+              "schema": 7,
+              "candidate_sha": candidate,
+              "gate": gate,
+              "exit_code": int(rc),
+          }, indent=2) + "\n", encoding="utf-8")
+          PY
+          exit "$rc"
+
+      - name: Upload V7 gate evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-v7-${{ matrix.gate }}-${{ needs.repair.outputs.candidate_sha }}
+          path: ${{ runner.temp }}/hepta-v7-${{ matrix.gate }}/
+          if-no-files-found: error
+          retention-days: 90
+
+  publish:
+    needs:
+      - detect
+      - repair
+      - qualify
+    if: needs.detect.outputs.active == 'true'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    outputs:
+      qualified_tag: ${{ steps.publish.outputs.qualified_tag }}
+    steps:
+      - name: Check out exact V7 candidate
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ needs.repair.outputs.candidate_sha }}
+          fetch-depth: 0
+          fetch-tags: true
+          persist-credentials: true
+
+      - name: Publish V7-qualified compatibility refs
+        id: publish
+        env:
+          GH_TOKEN: ${{ github.token }}
+          CANDIDATE_SHA: ${{ needs.repair.outputs.candidate_sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          [[ "$(git rev-parse HEAD)" == "$CANDIDATE_SHA" ]]
+          test -f convergence/source-selection-v6.json
+          test -f convergence/source-selection-v7.json
+          git config user.name "hepta-convergence-bot"
+          git config user.email "hepta-convergence-bot@users.noreply.github.com"
+          tag="qualified/final-main-v7/${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          git tag -a "$tag" "$CANDIDATE_SHA" -m "All five V7 gates passed on $CANDIDATE_SHA"
+          git push origin "refs/tags/$tag"
+          git push origin \
+            "+$CANDIDATE_SHA:refs/heads/candidate/final-main-v6-20260908" \
+            "+$CANDIDATE_SHA:refs/heads/ready/final-main-v6-20260908" \
+            "+$CANDIDATE_SHA:refs/heads/ready/final-main-20260908"
+          echo "qualified_tag=$tag" >> "$GITHUB_OUTPUT"
+          gh api --method PATCH "repos/$GITHUB_REPOSITORY/git/refs/heads/main" -f sha="$CANDIDATE_SHA" -F force=false >/dev/null 2>&1 || true
+
+  finalize:
+    needs:
+      - detect
+      - repair
+      - publish
+    if: needs.detect.outputs.active == 'true'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 240
+    steps:
+      - name: Check out V6 management controller
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ops/final-main-convergence-20260908
+          fetch-depth: 0
+          fetch-tags: true
+          persist-credentials: true
+
+      - name: Finalize repaired qualified candidate
+        env:
+          GH_TOKEN: ${{ github.token }}
+          HEPTA_ADMIN_TOKEN: ${{ secrets.HEPTA_ADMIN_TOKEN || secrets.GH_ADMIN_TOKEN || secrets.REPO_ADMIN_TOKEN || secrets.ADMIN_TOKEN || secrets.GH_PAT || secrets.GITHUB_PAT || secrets.REPO_TOKEN || secrets.BOT_TOKEN || secrets.HEPTA_BOT_TOKEN || secrets.PERSONAL_ACCESS_TOKEN }}
+          EXPECTED_CANDIDATE: ${{ needs.repair.outputs.candidate_sha }}
+          QUALIFIED_TAG: ${{ needs.publish.outputs.qualified_tag }}
+        run: bash .github/scripts/finalize_management_v6.sh
+
+      - name: Upload V7 management evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-management-v7-${{ needs.repair.outputs.candidate_sha }}
+          path: ${{ runner.temp }}/hepta-management-v6/
+          if-no-files-found: warn
+          retention-days: 90
