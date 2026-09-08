@@ -1,0 +1,36 @@
+name: Final all-branches convergence R3
+
+on:
+  push:
+    branches:
+      - ops/final-all-branches-convergence-20260908
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+  actions: read
+
+concurrency:
+  group: final-all-branches-convergence-r3
+  cancel-in-progress: false
+
+jobs:
+  converge:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 360
+    env:
+      CANDIDATE_BRANCH: integration/final-all-branches-main-tree-r3-20260908
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: 1.95.0
+          components: rustfmt, clippy
+      - name: Converge, qualify, and publish candidate
+        shell: bash
+        run: bash ops/final-convergence/final_converge.sh
