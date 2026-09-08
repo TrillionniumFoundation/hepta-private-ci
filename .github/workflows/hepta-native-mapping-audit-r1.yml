@@ -1,0 +1,319 @@
+name: Hepta native mapping audit r1
+
+on:
+  push:
+    branches:
+      - ops/hepta-native-mapping-audit-20260908-r1
+
+permissions:
+  contents: write
+
+concurrency:
+  group: hepta-native-mapping-audit-r1
+  cancel-in-progress: false
+
+jobs:
+  audit:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      SOURCE_SHA: d0f64ecfbbab31a8495c4adc1ec0a987281ade4c
+      RESULT_BRANCH: ops/hepta-native-mapping-report-20260908-r1
+    steps:
+      - name: Check out exact source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: d0f64ecfbbab31a8495c4adc1ec0a987281ade4c
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Bind source and result identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          test -z "$(git status --porcelain)"
+          test -z "$(git ls-remote --heads origin "refs/heads/${RESULT_BRANCH}")"
+
+      - name: Generate closed-world native source inventory
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from __future__ import annotations
+
+          import hashlib
+          import json
+          import re
+          import subprocess
+          import tomllib
+          from pathlib import Path
+
+          root = Path.cwd()
+          source_sha = subprocess.check_output(
+              ["git", "rev-parse", "HEAD"], text=True
+          ).strip()
+          bindings_path = root / "docs/modules/SOURCE_BINDINGS.json"
+          bindings = json.loads(bindings_path.read_text(encoding="utf-8"))["bindings"]
+          if len(bindings) != 40 or len({row["module"] for row in bindings}) != 40:
+              raise SystemExit("source binding registry is not a forty-module closed world")
+
+          def run(*args: str, check: bool = True) -> str:
+              result = subprocess.run(
+                  list(args),
+                  cwd=root,
+                  check=False,
+                  text=True,
+                  stdout=subprocess.PIPE,
+                  stderr=subprocess.PIPE,
+              )
+              if check and result.returncode:
+                  raise RuntimeError(
+                      f"command failed ({result.returncode}): {' '.join(args)}\n{result.stderr}"
+                  )
+              return result.stdout
+
+          def git_blob_sha(path: Path) -> str:
+              data = path.read_bytes()
+              header = f"blob {len(data)}\0".encode()
+              return hashlib.sha1(header + data).hexdigest()
+
+          def tracked_files(relative_root: str) -> list[str]:
+              return [
+                  line
+                  for line in run("git", "ls-files", "--", relative_root).splitlines()
+                  if line
+              ]
+
+          rust_export = re.compile(
+              r"(?m)^\s*pub(?:\([^\n)]*\))?\s+"
+              r"(?:unsafe\s+)?(?:async\s+)?"
+              r"(?:extern\s+\"[^\"]+\"\s+)?"
+              r"(fn|struct|enum|trait|type|const|static|mod)\s+"
+              r"([A-Za-z_][A-Za-z0-9_]*)"
+          )
+          non_rust_export = re.compile(
+              r"(?m)^\s*(?:export\s+(?:async\s+)?(?:function|class|const|let|var)|"
+              r"def|class)\s+([A-Za-z_][A-Za-z0-9_]*)"
+          )
+          source_suffixes = {
+              ".rs", ".py", ".ts", ".tsx", ".js", ".jsx", ".go", ".c", ".cc", ".cpp", ".h", ".hpp"
+          }
+          build_names = {
+              "Cargo.toml", "BUILD", "BUILD.bazel", "package.json", "pyproject.toml",
+              "go.mod", "CMakeLists.txt", "MODULE.bazel"
+          }
+          storage_terms = re.compile(
+              r"(?i)(?:^|[/_.-])(migration|migrations|schema|sql|sqlite|store|ledger|journal|wal|snapshot)(?:[/_.-]|$)"
+          )
+          test_terms = re.compile(r"(?i)(?:^|/)(tests?|fixtures?)(?:/|$)|(?:_test|\.test|\.spec)\.")
+
+          all_tracked = run("git", "ls-files").splitlines()
+          text_candidates = [
+              p for p in all_tracked
+              if Path(p).suffix in {".rs", ".toml", ".py", ".ts", ".tsx", ".js", ".json", ".md"}
+          ]
+
+          observations = []
+          failures = []
+          for binding in sorted(bindings, key=lambda row: row["module"]):
+              module = binding["module"]
+              declared_roots = binding["declaredRoots"]
+              root_records = []
+              package_names: list[str] = []
+              crate_names: list[str] = []
+              public_symbols: set[str] = set()
+              binary_targets: set[str] = set()
+              store_files: list[str] = []
+              migration_files: list[str] = []
+              test_files: list[str] = []
+              build_files: list[str] = []
+              source_files: list[str] = []
+              primary_path: str | None = None
+
+              for declared in declared_roots:
+                  declared_path = root / declared
+                  if not declared_path.exists():
+                      failures.append(f"{module}: missing declared root {declared}")
+                      root_records.append({
+                          "path": declared,
+                          "exists": False,
+                          "treeSha": None,
+                          "trackedFileCount": 0,
+                      })
+                      continue
+                  files = tracked_files(declared)
+                  tree_sha = run("git", "rev-parse", f"HEAD:{declared}", check=False).strip() or None
+                  root_records.append({
+                      "path": declared,
+                      "exists": True,
+                      "treeSha": tree_sha,
+                      "trackedFileCount": len(files),
+                  })
+                  for rel in files:
+                      path = root / rel
+                      if path.name in build_names:
+                          build_files.append(rel)
+                      if path.suffix in source_suffixes:
+                          source_files.append(rel)
+                      if storage_terms.search(rel):
+                          store_files.append(rel)
+                          if re.search(r"(?i)migrations?|\.sql$", rel):
+                              migration_files.append(rel)
+                      if test_terms.search(rel):
+                          test_files.append(rel)
+
+                  cargo = declared_path / "Cargo.toml"
+                  if cargo.is_file():
+                      try:
+                          data = tomllib.loads(cargo.read_text(encoding="utf-8"))
+                      except (OSError, UnicodeDecodeError, tomllib.TOMLDecodeError) as error:
+                          failures.append(f"{module}: unreadable Cargo.toml: {error}")
+                      else:
+                          package = data.get("package") or {}
+                          package_name = package.get("name")
+                          if isinstance(package_name, str) and package_name:
+                              package_names.append(package_name)
+                              crate_names.append(package_name.replace("-", "_"))
+                          for target in data.get("bin", []):
+                              name = target.get("name") if isinstance(target, dict) else None
+                              if isinstance(name, str) and name:
+                                  binary_targets.add(name)
+                  for candidate in (
+                      declared_path / "src/lib.rs",
+                      declared_path / "src/main.rs",
+                      declared_path / "package.json",
+                      declared_path / "pyproject.toml",
+                  ):
+                      if candidate.is_file() and primary_path is None:
+                          primary_path = candidate.relative_to(root).as_posix()
+                  if (declared_path / "src/main.rs").is_file():
+                      binary_targets.add(Path(declared).name)
+
+              for rel in sorted(set(source_files)):
+                  path = root / rel
+                  try:
+                      text = path.read_text(encoding="utf-8")
+                  except (OSError, UnicodeDecodeError):
+                      continue
+                  if path.suffix == ".rs":
+                      for kind, name in rust_export.findall(text):
+                          public_symbols.add(f"{kind}:{name}")
+                  elif path.suffix in {".py", ".ts", ".tsx", ".js", ".jsx"}:
+                      public_symbols.update(f"symbol:{name}" for name in non_rust_export.findall(text))
+
+              if primary_path is None and source_files:
+                  primary_path = sorted(source_files)[0]
+              if primary_path is None and build_files:
+                  primary_path = sorted(build_files)[0]
+
+              consumer_patterns = sorted(set(package_names + crate_names))
+              consumers: set[str] = set()
+              if consumer_patterns:
+                  compiled = re.compile(
+                      "|".join(re.escape(pattern) for pattern in consumer_patterns)
+                  )
+                  own_prefixes = tuple(f"{item.rstrip('/')}/" for item in declared_roots)
+                  for rel in text_candidates:
+                      if rel in build_files or rel.startswith(own_prefixes):
+                          continue
+                      path = root / rel
+                      try:
+                          if compiled.search(path.read_text(encoding="utf-8", errors="ignore")):
+                              consumers.add(rel)
+                      except OSError:
+                          continue
+                      if len(consumers) >= 64:
+                          break
+
+              primary_blob = None
+              if primary_path is not None:
+                  primary_blob = git_blob_sha(root / primary_path)
+                  git_sha = run("git", "hash-object", primary_path).strip()
+                  if primary_blob != git_sha:
+                      failures.append(f"{module}: primary blob mismatch for {primary_path}")
+
+              mapped = bool(primary_path and root_records and all(row["exists"] for row in root_records))
+              observations.append({
+                  "module": module,
+                  "bootstrapWorkPackage": binding["bootstrapWorkPackage"],
+                  "sourceStatus": binding["sourceStatus"],
+                  "declaredRoots": root_records,
+                  "primaryPath": primary_path,
+                  "primaryBlobSha": primary_blob,
+                  "packageNames": sorted(set(package_names)),
+                  "binaryTargets": sorted(binary_targets),
+                  "buildFiles": sorted(set(build_files))[:64],
+                  "sourceFileCount": len(set(source_files)),
+                  "publicSymbols": sorted(public_symbols)[:256],
+                  "knownConsumerFiles": sorted(consumers),
+                  "storageFiles": sorted(set(store_files))[:128],
+                  "migrationFiles": sorted(set(migration_files))[:128],
+                  "testFiles": sorted(set(test_files))[:128],
+                  "mappingState": "source_inventory_complete" if mapped else "source_inventory_incomplete",
+                  "consumerEvidenceClass": "bounded_textual_reference_only",
+                  "productExecutionProved": False,
+                  "remainingEvidence": (
+                      "Runtime composition, authenticated authority, independent acceptance, deployment, "
+                      "longitudinal efficacy and physical safety remain separate gates."
+                  ),
+              })
+
+          complete = [row for row in observations if row["mappingState"] == "source_inventory_complete"]
+          report = {
+              "schema": "hepta.native-source-inventory.v2",
+              "schemaVersion": 2,
+              "planId": "HEPTA-GLOBAL-MODULAR-DEVELOPMENT-PLAN",
+              "planVersion": "8.0.0",
+              "sourceCommit": source_sha,
+              "evidenceClass": "closed_world_source_inventory_only",
+              "moduleCount": len(observations),
+              "completeSourceInventoryCount": len(complete),
+              "allModulesSourceMapped": len(complete) == 40 and not failures,
+              "productExecutionProved": False,
+              "observations": observations,
+              "failures": failures,
+              "claimBoundary": {
+                  "runtimeCompositionProved": False,
+                  "productionAuthorityProved": False,
+                  "independentAcceptanceProved": False,
+                  "longitudinalEfficacyProved": False,
+                  "physicalSafetyProved": False,
+                  "allGapsClosed": False,
+              },
+          }
+          output = root / "qualification/gap-closure/NATIVE_MAPPING_AUDIT.json"
+          output.write_text(json.dumps(report, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+          if failures or len(observations) != 40 or len(complete) != 40:
+              print(json.dumps({
+                  "moduleCount": len(observations),
+                  "complete": len(complete),
+                  "failures": failures,
+              }, indent=2))
+              raise SystemExit("native source inventory is incomplete")
+          print(json.dumps({
+              "moduleCount": len(observations),
+              "complete": len(complete),
+              "withConsumers": sum(bool(row["knownConsumerFiles"]) for row in observations),
+              "withPublicSymbols": sum(bool(row["publicSymbols"]) for row in observations),
+              "withTests": sum(bool(row["testFiles"]) for row in observations),
+              "withStorage": sum(bool(row["storageFiles"]) for row in observations),
+          }, indent=2))
+          PY
+          python3 -m json.tool qualification/gap-closure/NATIVE_MAPPING_AUDIT.json >/dev/null
+          git diff --check
+
+      - name: Publish audit report branch
+        shell: bash
+        env:
+          GIT_AUTHOR_NAME: hepta-native-auditor
+          GIT_AUTHOR_EMAIL: hepta-native-auditor@users.noreply.github.com
+          GIT_COMMITTER_NAME: hepta-native-auditor
+          GIT_COMMITTER_EMAIL: hepta-native-auditor@users.noreply.github.com
+        run: |
+          set -euo pipefail
+          git add qualification/gap-closure/NATIVE_MAPPING_AUDIT.json
+          git commit -m "audit(hepta): inventory all forty native source mappings"
+          git push origin "HEAD:refs/heads/${RESULT_BRANCH}"
+          git rev-parse HEAD HEAD^{tree} | tee -a "$GITHUB_STEP_SUMMARY"
