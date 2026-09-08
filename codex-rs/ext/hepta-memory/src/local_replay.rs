@@ -1170,7 +1170,7 @@ mod tests {
             &current_fence,
         )
         .expect("valid replay");
-        let mut replay_tampered = replay.clone();
+        let mut replay_tampered = replay;
         replay_tampered.replay_performed = true;
         assert!(replay_tampered.validate().is_err());
         assert_eq!(

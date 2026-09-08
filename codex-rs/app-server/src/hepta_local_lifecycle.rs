@@ -332,13 +332,13 @@ mod tests {
             second.witness.witness_sequence,
             first.witness.witness_sequence
         );
-        assert!(matches!(
+        assert!(
             executor
                 .rehydration("operation:e19-owner")
                 .await
-                .expect("witness lookup"),
-            Some(_)
-        ));
+                .expect("witness lookup")
+                .is_some()
+        );
         let snapshot = executor.snapshot().await.expect("compact snapshot");
         assert_eq!(snapshot.entries.len(), 3, "one rehydration witness row");
         assert!(matches!(

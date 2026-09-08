@@ -623,7 +623,7 @@ mod tests {
                 binding.generation,
                 "\0",
                 binding.lease_expires_at_unix_seconds,
-                binding.lease_head_sha256.clone(),
+                binding.lease_head_sha256,
             )
             .is_err()
         );

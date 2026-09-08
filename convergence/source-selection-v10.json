@@ -1,0 +1,29 @@
+{
+  "authority_granted": false,
+  "native_prerequisites": [
+    "pkg-config",
+    "libcap-dev",
+    "bubblewrap"
+  ],
+  "parent_v6_candidate": "04f60466394a024c218ce66b1b32d1c42c462985",
+  "qualification": [
+    "repository-policy",
+    "cargo-fmt",
+    "http-client-tests",
+    "workspace-check",
+    "workspace-clippy",
+    "workspace-test"
+  ],
+  "repair_exit_codes": {
+    "cargo_fix": 0,
+    "clippy_fix": 0
+  },
+  "repair_surface": "machine-applicable-rust-diagnostics-only",
+  "repairs": [
+    "cargo-fix",
+    "clippy-fix",
+    "cargo-fmt"
+  ],
+  "rusty_v8_profile": "ptrcomp_sandbox_release_x86_64-unknown-linux-gnu",
+  "schema": 10
+}
