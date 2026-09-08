@@ -1,0 +1,145 @@
+name: Hepta W2 W3 materializer 20260909
+
+on:
+  push:
+    branches:
+      - ops/hepta-w2-w3-materializer-20260909-r1
+
+permissions:
+  contents: write
+
+concurrency:
+  group: hepta-w2-w3-materializer-20260909-r1
+  cancel-in-progress: false
+
+jobs:
+  converge-qualified-modules:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: codex/hepta-all-gap-closure-20260908
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Bind immutable inputs
+        shell: bash
+        run: |
+          set -euo pipefail
+          candidate=e1f1a3a4762561202e93526a6d16b79656e3f057
+          parent=04f60466394a024c218ce66b1b32d1c42c462985
+          w2=17fe90c615c3de9bb6f40ab9a6c2fb29039c9c7b
+          w3=d812f1ae896cd956771989b1f9a0c53ec0f67519
+
+          test "$(git rev-parse HEAD)" = "$candidate"
+          test "$(git rev-parse HEAD^)" = "$parent"
+          test "$(git rev-list --count "$parent"..HEAD)" = 1
+
+          git fetch --no-tags origin \
+            +refs/heads/codex/hepta-w2-readonly-vertical-result-20260908-r1:refs/remotes/origin/hepta-w2-result \
+            +refs/heads/codex/hepta-w3-shadow-ledger-result-20260908-r1:refs/remotes/origin/hepta-w3-result
+          test "$(git rev-parse refs/remotes/origin/hepta-w2-result)" = "$w2"
+          test "$(git rev-parse refs/remotes/origin/hepta-w3-result)" = "$w3"
+
+      - name: Import only qualified module-owned source
+        shell: bash
+        run: |
+          set -euo pipefail
+          w2=17fe90c615c3de9bb6f40ab9a6c2fb29039c9c7b
+          w3=d812f1ae896cd956771989b1f9a0c53ec0f67519
+
+          git checkout "$w2" -- \
+            codex-rs/hepta-intelligence/Cargo.toml \
+            codex-rs/hepta-intelligence/src/lib.rs \
+            codex-rs/hepta-intelligence/src/vertical.rs \
+            codex-rs/hepta-intelligence/src/vertical_tests.rs
+
+          git checkout "$w3" -- \
+            codex-rs/hepta-learning-ledger/Cargo.toml \
+            codex-rs/hepta-learning-ledger/src/lib.rs \
+            codex-rs/hepta-learning-ledger/src/shadow.rs \
+            codex-rs/hepta-learning-ledger/src/shadow_tests.rs
+
+          cargo check --manifest-path codex-rs/Cargo.toml \
+            -p codex-hepta-intelligence \
+            -p codex-hepta-learning-ledger
+          cargo fmt --manifest-path codex-rs/Cargo.toml \
+            --package codex-hepta-intelligence \
+            --package codex-hepta-learning-ledger
+
+          git diff --check HEAD
+          test -z "$(git ls-files --others --exclude-standard)"
+          changed="$(git diff --name-only HEAD | sort)"
+          test -n "$changed"
+          unexpected="$(printf '%s\n' "$changed" | grep -Ev '^(codex-rs/Cargo.lock|codex-rs/hepta-intelligence/|codex-rs/hepta-learning-ledger/)' || true)"
+          test -z "$unexpected"
+          for required in \
+            codex-rs/hepta-intelligence/Cargo.toml \
+            codex-rs/hepta-intelligence/src/lib.rs \
+            codex-rs/hepta-intelligence/src/vertical.rs \
+            codex-rs/hepta-intelligence/src/vertical_tests.rs \
+            codex-rs/hepta-learning-ledger/Cargo.toml \
+            codex-rs/hepta-learning-ledger/src/lib.rs \
+            codex-rs/hepta-learning-ledger/src/shadow.rs \
+            codex-rs/hepta-learning-ledger/src/shadow_tests.rs; do
+            printf '%s\n' "$changed" | grep -Fxq "$required"
+          done
+
+      - name: Combined Cargo qualification
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo test --locked -p codex-hepta-intelligence --all-targets -- --nocapture
+          cargo clippy --locked --no-deps \
+            -p codex-hepta-intelligence --all-targets -- -D warnings
+          cargo test --locked -p codex-hepta-learning-ledger --all-targets -- --nocapture
+          cargo clippy --locked --no-deps \
+            -p codex-hepta-learning-ledger --all-targets -- -D warnings
+
+      - name: Combined Bazel qualification
+        shell: bash
+        run: |
+          set -euo pipefail
+          bazel query //codex-rs/hepta-intelligence:all
+          bazel test //codex-rs/hepta-intelligence:all --test_output=errors
+          bazel query //codex-rs/hepta-learning-ledger:all
+          bazel test //codex-rs/hepta-learning-ledger:all --test_output=errors
+
+      - name: Atomically amend the single-parent candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          expected_head=e1f1a3a4762561202e93526a6d16b79656e3f057
+          expected_parent=04f60466394a024c218ce66b1b32d1c42c462985
+          candidate_ref=refs/heads/codex/hepta-all-gap-closure-20260908
+
+          git diff --check HEAD
+          git add \
+            codex-rs/Cargo.lock \
+            codex-rs/hepta-intelligence/Cargo.toml \
+            codex-rs/hepta-intelligence/src/lib.rs \
+            codex-rs/hepta-intelligence/src/vertical.rs \
+            codex-rs/hepta-intelligence/src/vertical_tests.rs \
+            codex-rs/hepta-learning-ledger/Cargo.toml \
+            codex-rs/hepta-learning-ledger/src/lib.rs \
+            codex-rs/hepta-learning-ledger/src/shadow.rs \
+            codex-rs/hepta-learning-ledger/src/shadow_tests.rs
+          test -z "$(git diff --name-only)"
+          test -z "$(git ls-files --others --exclude-standard)"
+
+          git config user.name "hepta-gap-materializer"
+          git config user.email "hepta-gap-materializer@users.noreply.github.com"
+          git commit --amend -m "feat(hepta): converge W0-W3 blocker closure
+
+Close the Agentd qualification blockers and integrate the separately qualified read-only intelligence vertical and shadow learning ledger while preserving the immutable single-parent baseline and deny-all runtime authority.
+
+Signed-off-by: OpenAI <noreply@openai.com>"
+
+          test "$(git rev-parse HEAD^)" = "$expected_parent"
+          test "$(git rev-list --count "$expected_parent"..HEAD)" = 1
+          git push \
+            --force-with-lease="${candidate_ref}:${expected_head}" \
+            origin "HEAD:${candidate_ref}"
+          git rev-parse HEAD HEAD^{tree}
