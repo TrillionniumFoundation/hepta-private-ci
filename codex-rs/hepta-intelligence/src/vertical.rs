@@ -157,12 +157,9 @@ pub fn run_read_only_vertical(
         .map_err(ReadOnlyVerticalError::Snapshot)?;
     ensure_no_authority("cognitive snapshot", cognitive_snapshot.authority)?;
 
-    let objective_outcome = admit_and_compile_objective_v1(
-        &objective_envelope,
-        &objective_profile,
-        &objective_context,
-    )
-    .map_err(ReadOnlyVerticalError::ObjectiveAdmission)?;
+    let objective_outcome =
+        admit_and_compile_objective_v1(&objective_envelope, &objective_profile, &objective_context)
+            .map_err(ReadOnlyVerticalError::ObjectiveAdmission)?;
     ensure_no_authority("objective admission", objective_outcome.receipt.authority)?;
     let objective_admission = objective_outcome.receipt;
     let objective = objective_outcome
@@ -179,19 +176,15 @@ pub fn run_read_only_vertical(
             "cognitive read snapshot",
         ));
     }
-    let cognitive_read = read(&cognitive_snapshot, read_request)
-        .map_err(ReadOnlyVerticalError::CognitiveRead)?;
+    let cognitive_read =
+        read(&cognitive_snapshot, read_request).map_err(ReadOnlyVerticalError::CognitiveRead)?;
     ensure_no_authority("cognitive read", cognitive_read.authority)?;
 
     if context_request.run_snapshot_digest != cognitive_snapshot.snapshot_digest {
-        return Err(ReadOnlyVerticalError::DigestMismatch(
-            "context snapshot",
-        ));
+        return Err(ReadOnlyVerticalError::DigestMismatch("context snapshot"));
     }
     if context_request.objective_digest != objective_digest {
-        return Err(ReadOnlyVerticalError::DigestMismatch(
-            "context objective",
-        ));
+        return Err(ReadOnlyVerticalError::DigestMismatch("context objective"));
     }
     validate_read_evidence_item(
         &context_request,
@@ -392,10 +385,7 @@ fn ensure_no_authority(
     Ok(())
 }
 
-fn ensure_digest(
-    stage: &'static str,
-    digest: Digest32,
-) -> Result<(), ReadOnlyVerticalError> {
+fn ensure_digest(stage: &'static str, digest: Digest32) -> Result<(), ReadOnlyVerticalError> {
     if digest.is_zero() {
         return Err(ReadOnlyVerticalError::DigestMismatch(stage));
     }

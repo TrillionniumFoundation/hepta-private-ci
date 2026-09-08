@@ -479,9 +479,7 @@ fn selected_objective_profile_digest_cannot_be_replaced() {
     let error = run_read_only_vertical(request).expect_err("profile mismatch must reject");
     assert!(matches!(
         error,
-        ReadOnlyVerticalError::ObjectiveAdmission(
-            ObjectiveAdmissionError::ProfileDigestMismatch
-        )
+        ReadOnlyVerticalError::ObjectiveAdmission(ObjectiveAdmissionError::ProfileDigestMismatch)
     ));
 }
 
