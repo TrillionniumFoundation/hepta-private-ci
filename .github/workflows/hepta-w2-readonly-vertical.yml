@@ -1,0 +1,86 @@
+name: Hepta W2 read-only vertical qualification
+
+on:
+  push:
+    branches:
+      - codex/hepta-w2-readonly-vertical-20260908
+
+permissions:
+  contents: write
+
+concurrency:
+  group: hepta-w2-readonly-vertical
+  cancel-in-progress: false
+
+jobs:
+  qualify:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    env:
+      RESULT_BRANCH: codex/hepta-w2-readonly-vertical-result-20260908-r1
+    steps:
+      - name: Check out exact candidate
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: codex/hepta-w2-readonly-vertical-20260908
+          fetch-depth: 1
+          persist-credentials: true
+
+      - name: Bind candidate and result ref
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test -z "$(git status --porcelain)"
+          test -z "$(git ls-remote --heads origin "refs/heads/${RESULT_BRANCH}")"
+
+      - name: Canonicalize source and lock graph
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo fmt --manifest-path codex-rs/Cargo.toml --all
+          cargo check --manifest-path codex-rs/Cargo.toml \
+            -p codex-hepta-intelligence
+          allowed='^(codex-rs/Cargo.lock|codex-rs/hepta-intelligence/Cargo.toml|codex-rs/hepta-intelligence/src/lib.rs|codex-rs/hepta-intelligence/src/vertical.rs|codex-rs/hepta-intelligence/src/vertical_tests.rs)$'
+          unexpected="$(git diff --name-only | grep -Ev "$allowed" || true)"
+          test -z "$unexpected"
+          git diff --check
+
+      - name: Strict Cargo qualification
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo fmt --all -- --check
+          cargo test --locked -p codex-hepta-intelligence --all-targets -- --nocapture
+          cargo clippy --locked --no-deps \
+            -p codex-hepta-intelligence --all-targets -- -D warnings
+
+      - name: Bazel package qualification
+        shell: bash
+        run: |
+          set -euo pipefail
+          bazel query //codex-rs/hepta-intelligence:all
+          bazel test //codex-rs/hepta-intelligence:all --test_output=errors
+
+      - name: Publish qualified result
+        shell: bash
+        env:
+          GIT_AUTHOR_NAME: hepta-w2-qualifier
+          GIT_AUTHOR_EMAIL: hepta-w2-qualifier@users.noreply.github.com
+          GIT_COMMITTER_NAME: hepta-w2-qualifier
+          GIT_COMMITTER_EMAIL: hepta-w2-qualifier@users.noreply.github.com
+        run: |
+          set -euo pipefail
+          git add \
+            codex-rs/Cargo.lock \
+            codex-rs/hepta-intelligence/Cargo.toml \
+            codex-rs/hepta-intelligence/src/lib.rs \
+            codex-rs/hepta-intelligence/src/vertical.rs \
+            codex-rs/hepta-intelligence/src/vertical_tests.rs
+          if ! git diff --cached --quiet; then
+            git commit -m "build(intelligence): canonicalize W2 vertical candidate"
+          fi
+          git push origin "HEAD:refs/heads/${RESULT_BRANCH}"
+          git rev-parse HEAD HEAD^{tree} | tee -a "$GITHUB_STEP_SUMMARY"
