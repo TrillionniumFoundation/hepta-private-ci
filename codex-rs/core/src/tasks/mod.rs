@@ -4251,7 +4251,7 @@ impl Session {
         let deferred_idle_cause = active_turn
             .start_transition
             .as_mut()
-            .and_then(super::state::turn::StartTransition::take_deferred_idle);
+            .and_then(crate::state::StartTransition::take_deferred_idle);
         // Keep the marker installed until all terminal side effects above
         // have completed; only this final identity check may release it.
         *active = None;
