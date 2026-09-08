@@ -1,0 +1,45 @@
+name: Hepta gap source export
+
+on:
+  push:
+    branches:
+      - codex/hepta-all-gap-closure-20260908
+    paths:
+      - .github/workflows/hepta-gap-source-export.yml
+
+permissions:
+  contents: read
+
+jobs:
+  export:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Bind and package exact source subset
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${GITHUB_SHA}"
+          mkdir -p "${RUNNER_TEMP}/hepta-gap-source"
+          tar --format=posix -czf "${RUNNER_TEMP}/hepta-gap-source/source.tar.gz" \
+            codex-rs/hepta-agentd \
+            codex-rs/hepta-paths \
+            codex-rs/uds \
+            codex-rs/windows-sandbox-rs \
+            .github/workflows/hepta-gap-agentd-process.yml
+          git rev-parse HEAD HEAD^{tree} > "${RUNNER_TEMP}/hepta-gap-source/IDENTITY"
+          sha256sum "${RUNNER_TEMP}/hepta-gap-source/source.tar.gz" \
+            > "${RUNNER_TEMP}/hepta-gap-source/SHA256SUMS"
+          git diff --exit-code
+
+      - name: Upload exact source subset
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-gap-source-${{ github.sha }}
+          path: ${{ runner.temp }}/hepta-gap-source
+          if-no-files-found: error
+          retention-days: 1

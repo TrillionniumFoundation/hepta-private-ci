@@ -17,6 +17,7 @@ use codex_utils_cli::CliConfigOverrides;
 
 use crate::AgentdIdentity;
 use crate::AgentdState;
+use crate::error::contextual_io_error;
 use crate::qualification_writer::qualification_turn_writer_host;
 
 #[cfg(feature = "qualification-cognitive-write")]
@@ -46,6 +47,13 @@ pub(crate) async fn run_app_server(
         runtime_options,
     )
     .await
+    .map_err(|error| {
+        contextual_io_error(
+            "run Codex App Server unix socket transport",
+            &identity.app_server_socket,
+            error,
+        )
+    })
 }
 
 fn app_server_config_overrides() -> CliConfigOverrides {

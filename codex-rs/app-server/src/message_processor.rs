@@ -1068,6 +1068,10 @@ impl MessageProcessor {
     }
 
     #[inline(never)]
+    #[expect(
+        clippy::too_many_arguments,
+        reason = "request dispatch keeps connection, client and stream context explicit"
+    )]
     fn initialized_client_request_future(
         processor: Arc<Self>,
         request_id: ConnectionRequestId,

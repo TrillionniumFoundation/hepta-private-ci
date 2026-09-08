@@ -1881,7 +1881,7 @@ mod tests {
         assert_eq!(counts_before_forget.event_rows, 1);
         assert_eq!(counts_before_forget.outbox_rows, 1);
         assert!(
-            !writer_input
+            writer_input
                 .lease
                 .admit(
                     OCCURRENCE,
@@ -1889,7 +1889,7 @@ mod tests {
                     r#"{"candidate_id":"different"}"#,
                 )
                 .await
-                .is_ok(),
+                .is_err(),
             "replaying with a different payload must fail closed"
         );
 

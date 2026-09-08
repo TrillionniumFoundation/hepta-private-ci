@@ -21,6 +21,7 @@ use crate::AgentdRequest;
 use crate::AgentdResponse;
 use crate::AgentdState;
 use crate::MAX_CONTROL_FRAME_BYTES;
+use crate::error::io_context;
 
 const CONNECTION_CAPACITY: usize = 32;
 const IO_TIMEOUT: Duration = Duration::from_secs(2);
@@ -40,7 +41,9 @@ impl AgentdControlServer {
         cancellation: CancellationToken,
     ) -> Result<Self, AgentdError> {
         prepare_socket(&socket_path).await?;
-        let listener = UnixListener::bind(&socket_path).await?;
+        let listener = UnixListener::bind(&socket_path)
+            .await
+            .map_err(|error| io_context("bind agentd control socket", &socket_path, error))?;
         set_owner_only(&socket_path).await?;
         Ok(Self {
             listener,
@@ -157,7 +160,9 @@ async fn prepare_socket(socket_path: &Path) -> Result<(), AgentdError> {
     let parent = socket_path.parent().ok_or_else(|| {
         AgentdError::Invalid("agentd control socket has no parent directory".to_string())
     })?;
-    codex_uds::prepare_private_socket_directory(parent).await?;
+    codex_uds::prepare_private_socket_directory(parent)
+        .await
+        .map_err(|error| io_context("prepare agentd control socket directory", parent, error))?;
     match UnixStream::connect(socket_path).await {
         Ok(_) => {
             return Err(AgentdError::Io(std::io::Error::new(
@@ -171,10 +176,21 @@ async fn prepare_socket(socket_path: &Path) -> Result<(), AgentdError> {
         Err(error) if error.kind() == ErrorKind::NotFound => return Ok(()),
         Err(error) if error.kind() == ErrorKind::ConnectionRefused => {}
         Err(_error) if !socket_path.exists() => return Ok(()),
-        Err(error) => return Err(error.into()),
+        Err(error) => {
+            return Err(io_context(
+                "probe existing agentd control socket",
+                socket_path,
+                error,
+            ));
+        }
     }
-    if codex_uds::is_stale_socket_path(socket_path).await? {
-        tokio::fs::remove_file(socket_path).await?;
+    if codex_uds::is_stale_socket_path(socket_path)
+        .await
+        .map_err(|error| io_context("inspect stale agentd control socket", socket_path, error))?
+    {
+        tokio::fs::remove_file(socket_path).await.map_err(|error| {
+            io_context("remove stale agentd control socket", socket_path, error)
+        })?;
         Ok(())
     } else {
         Err(AgentdError::Io(std::io::Error::new(
@@ -191,7 +207,15 @@ async fn prepare_socket(socket_path: &Path) -> Result<(), AgentdError> {
 async fn set_owner_only(path: &Path) -> Result<(), AgentdError> {
     use std::os::unix::fs::PermissionsExt;
 
-    tokio::fs::set_permissions(path, std::fs::Permissions::from_mode(0o600)).await?;
+    tokio::fs::set_permissions(path, std::fs::Permissions::from_mode(0o600))
+        .await
+        .map_err(|error| {
+            io_context(
+                "set owner-only agentd control socket permissions",
+                path,
+                error,
+            )
+        })?;
     Ok(())
 }
 
