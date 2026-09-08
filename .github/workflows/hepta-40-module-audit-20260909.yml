@@ -1,0 +1,122 @@
+name: Hepta 40 module runtime audit 20260909
+
+on:
+  push:
+    branches:
+      - ops/hepta-40-module-audit-20260909-r1
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: e1f1a3a4762561202e93526a6d16b79656e3f057
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Emit closed-world module and work-package inventory
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "e1f1a3a4762561202e93526a6d16b79656e3f057"
+          python3 - <<'PY'
+          import json
+          import tomllib
+          from pathlib import Path
+
+          root = Path.cwd()
+          modules_doc = json.loads((root / "docs/modules/MODULES.json").read_text())
+          packages_doc = json.loads((root / "docs/delivery/WORK_PACKAGES.json").read_text())
+          workspace_doc = tomllib.loads((root / "codex-rs/Cargo.toml").read_text())
+          workspace_members = set(workspace_doc["workspace"]["members"])
+
+          packages = {row["id"]: row for row in packages_doc["packages"]}
+          for module in modules_doc["modules"]:
+              roots = [row["path"] for row in module.get("rootBindings", [])]
+              root_rows = []
+              for relative in roots:
+                  path = root / relative
+                  cargo = path / "Cargo.toml"
+                  package_json = path / "package.json"
+                  rust_package = None
+                  if cargo.is_file():
+                      parsed = tomllib.loads(cargo.read_text())
+                      rust_package = parsed.get("package", {}).get("name")
+                  tests = sorted(
+                      str(item.relative_to(root))
+                      for item in path.rglob("*")
+                      if item.is_file()
+                      and (
+                          item.name.endswith("_tests.rs")
+                          or item.name.startswith("test_")
+                          or item.name.endswith(".test.js")
+                          or item.name.endswith(".test.ts")
+                          or "/tests/" in "/" + str(item.relative_to(root)).replace("\\", "/")
+                      )
+                  )
+                  root_rows.append(
+                      {
+                          "path": relative,
+                          "exists": path.exists(),
+                          "rustPackage": rust_package,
+                          "workspaceMember": (
+                              relative.removeprefix("codex-rs/") in workspace_members
+                              if relative.startswith("codex-rs/")
+                              else None
+                          ),
+                          "bazel": (path / "BUILD.bazel").is_file(),
+                          "nodePackage": package_json.is_file(),
+                          "pythonFiles": len(list(path.glob("*.py"))) if path.is_dir() else 0,
+                          "sourceFiles": sum(1 for item in path.rglob("*") if item.is_file())
+                          if path.is_dir()
+                          else 0,
+                          "testFiles": len(tests),
+                          "testExamples": tests[:8],
+                      }
+                  )
+              bootstrap = module.get("bootstrapWorkPackage")
+              package = packages.get(bootstrap, {})
+              print(
+                  "MODULE_AUDIT "
+                  + json.dumps(
+                      {
+                          "module": module["id"],
+                          "bootstrap": bootstrap,
+                          "bootstrapState": package.get("state"),
+                          "sourceStatus": module.get("sourceStatus"),
+                          "roots": root_rows,
+                      },
+                      sort_keys=True,
+                      separators=(",", ":"),
+                  )
+              )
+
+          for package in packages_doc["packages"]:
+              if package.get("state") == "source_implemented":
+                  continue
+              print(
+                  "PACKAGE_AUDIT "
+                  + json.dumps(
+                      {
+                          "id": package.get("id"),
+                          "module": package.get("module"),
+                          "state": package.get("state"),
+                          "priority": package.get("priority"),
+                          "profile": package.get("qualificationProfile"),
+                          "developmentAfter": package.get("developmentAfter", []),
+                          "allowedWritePaths": package.get("allowedWritePaths", []),
+                          "deliverables": package.get("deliverables", []),
+                      },
+                      sort_keys=True,
+                      separators=(",", ":"),
+                  )
+              )
+          PY
+
+          git diff --exit-code
+          test -z "$(git status --porcelain)"
