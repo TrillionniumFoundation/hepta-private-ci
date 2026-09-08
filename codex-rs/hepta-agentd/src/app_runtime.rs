@@ -64,6 +64,7 @@ fn app_server_config_overrides() -> CliConfigOverrides {
     }
 }
 
+#[expect(dead_code, reason = "retained read-only Agentd runtime constructor")]
 pub(crate) fn app_server_runtime_options(
     identity: &AgentdIdentity,
     cognitive_runtime: CognitiveRuntime,

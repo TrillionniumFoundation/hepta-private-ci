@@ -1,0 +1,26 @@
+{
+  "authority_granted": false,
+  "automatic_repair_exit_codes": {
+    "cargo_fix": 0,
+    "clippy_fix": 0
+  },
+  "manual_patch_bytes": 56259,
+  "native_prerequisites": [
+    "pkg-config",
+    "libcap-dev",
+    "bubblewrap"
+  ],
+  "parent_v6_candidate": "04f60466394a024c218ce66b1b32d1c42c462985",
+  "parent_v6_tree": "a9797f471d27194e29c13f49723d4508ac52cb84",
+  "qualification": [
+    "repository-policy",
+    "cargo-fmt",
+    "http-client-tests",
+    "workspace-check",
+    "workspace-clippy",
+    "workspace-test"
+  ],
+  "repair_surface": "item-local-invariant-and-state-machine-lint-repair",
+  "rusty_v8_profile": "ptrcomp_sandbox_release_x86_64-unknown-linux-gnu",
+  "schema": 11
+}
