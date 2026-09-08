@@ -1,0 +1,211 @@
+name: Hepta exact-head final candidate r6
+
+on:
+  push:
+    branches:
+      - ops/exact-head-final-candidate-20260908-r6
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-exact-head-final-candidate-r6
+  cancel-in-progress: false
+
+env:
+  BASE_SHA: 04f60466394a024c218ce66b1b32d1c42c462985
+  SOURCE_SHA: d0f64ecfbbab31a8495c4adc1ec0a987281ade4c
+  SOURCE_TREE: b5a1de9094fab07465a0e710e0bc2751887ac77e
+  CANDIDATE_BRANCH: codex/hepta-all-gap-closure-20260908
+  RESULT_BRANCH: ops/exact-head-final-result-20260908-r6
+  RUST_BACKTRACE: "1"
+
+jobs:
+  validate:
+    name: validate final tree (${{ matrix.os }})
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, macos-15]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 110
+    permissions:
+      contents: read
+    steps:
+      - name: Retain controller materializer outside the source checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - shell: bash
+        run: cp .github/scripts/hepta_final_candidate_r6.py "${RUNNER_TEMP}/hepta_final_candidate_r6.py"
+
+      - name: Checkout immutable source subject
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 2
+          persist-credentials: false
+
+      - name: Bind immutable topology and tree
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${SOURCE_SHA}"
+          test "$(git rev-parse HEAD^)" = "${BASE_SHA}"
+          test "$(git rev-parse HEAD^{tree})" = "${SOURCE_TREE}"
+
+      - name: Materialize the complete final-tree delta locally
+        shell: bash
+        run: python3 "${RUNNER_TEMP}/hepta_final_candidate_r6.py"
+
+      - name: UDS boundary qualification
+        working-directory: codex-rs
+        shell: bash
+        run: cargo test --locked -p codex-uds -- --nocapture
+
+      - name: Agentd qualification unit suite
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          cargo test --locked -p codex-hepta-agentd \
+            --features qualification-cognitive-write \
+            runtime::tests::qualification_ -- --nocapture --test-threads=1
+
+      - name: Agentd physical process qualification
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          cargo test --locked -p codex-hepta-agentd \
+            --features qualification-cognitive-write \
+            --test cognitive_product_e2e -- --nocapture --test-threads=1
+
+      - name: Memory extension strict Clippy
+        working-directory: codex-rs
+        shell: bash
+        run: cargo clippy --locked --no-deps -p codex-hepta-memory-extension --lib -- -D warnings
+
+      - name: Supervisor strict Clippy
+        working-directory: codex-rs
+        shell: bash
+        run: cargo clippy --locked --no-deps -p codex-hepta-supervisor --lib -- -D warnings
+
+      - name: UDS strict Clippy
+        working-directory: codex-rs
+        shell: bash
+        run: cargo clippy --locked --no-deps -p codex-uds --all-targets -- -D warnings
+
+      - name: Agentd strict Clippy
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          cargo clippy --locked --no-deps \
+            -p codex-hepta-agentd --all-targets \
+            --features qualification-cognitive-write -- -D warnings
+
+      - name: Final formatting and bounded-scope invariants
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo fmt --manifest-path codex-rs/Cargo.toml \
+            --package codex-hepta-agentd --package codex-uds -- --check
+          python3 "${RUNNER_TEMP}/hepta_final_candidate_r6.py" >/dev/null 2>&1 && exit 1 || true
+          git diff --check
+          test -z "$(git status --porcelain --untracked-files=no | grep -vE '^ (M|D)|^(M|D) ' || true)"
+
+  materialize:
+    name: materialize immutable-base single-parent result
+    needs: validate
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    permissions:
+      contents: write
+    steps:
+      - name: Retain controller materializer outside the source checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - shell: bash
+        run: cp .github/scripts/hepta_final_candidate_r6.py "${RUNNER_TEMP}/hepta_final_candidate_r6.py"
+
+      - name: Checkout immutable source subject
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 2
+          persist-credentials: true
+
+      - name: Revalidate live refs, topology, and source tree
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${SOURCE_SHA}"
+          test "$(git rev-parse HEAD^)" = "${BASE_SHA}"
+          test "$(git rev-parse HEAD^{tree})" = "${SOURCE_TREE}"
+          git fetch --no-tags origin \
+            "+refs/heads/${CANDIDATE_BRANCH}:refs/remotes/origin/${CANDIDATE_BRANCH}"
+          test "$(git rev-parse refs/remotes/origin/${CANDIDATE_BRANCH})" = "${SOURCE_SHA}"
+          test -z "$(git ls-remote --heads origin "refs/heads/${RESULT_BRANCH}")"
+          test ! -e .github/workflows/hepta-exact-head-final-candidate-r6.yml
+          test ! -e .github/scripts/hepta_final_candidate_r6.py
+
+      - name: Reproduce the validated final-tree delta
+        shell: bash
+        run: python3 "${RUNNER_TEMP}/hepta_final_candidate_r6.py"
+
+      - name: Create and publish the single-parent result
+        id: result
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "hepta-exact-head-finalizer"
+          git config user.email "hepta-exact-head-finalizer@users.noreply.github.com"
+          git add -A -- \
+            .github/scripts/hepta_agentd_gap_patch.py \
+            .github/workflows/hepta-agentd-gap-autofix.yml \
+            .github/workflows/rust-ci.yml \
+            codex-rs/hepta-agentd/src/app_runtime.rs \
+            codex-rs/hepta-agentd/src/control.rs \
+            codex-rs/hepta-agentd/tests/support/fleet.rs \
+            codex-rs/uds/src/lib.rs
+          tree_sha="$(git write-tree)"
+          result_sha="$(printf '%s\n' \
+            'fix(hepta): close remaining exact-head blockers' \
+            '' \
+            'Close the Darwin pathname-socket boundary, preserve explicit contextual diagnostics, bind the process-qualification harness to a short temporary root, retain strict linting with a locally fulfilled expectation, remove the consumed one-shot Agentd patch workflow, and align the Linux argument-comment cold-cache timeout with the existing macOS and Windows gates.' \
+            '' \
+            'This commit is one direct child of the immutable all-branch base and grants no deployment, promotion, signing, operator, hardware, or release authority.' \
+            | git commit-tree "${tree_sha}" -p "${BASE_SHA}")"
+          test "$(git rev-parse "${result_sha}^")" = "${BASE_SHA}"
+          test "$(git rev-parse "${result_sha}^{tree}")" = "${tree_sha}"
+          git push origin "${result_sha}:refs/heads/${RESULT_BRANCH}"
+          remote_sha="$(git ls-remote --heads origin "refs/heads/${RESULT_BRANCH}" | awk '{print $1}')"
+          test "${remote_sha}" = "${result_sha}"
+          printf 'sha=%s\n' "${result_sha}" >> "${GITHUB_OUTPUT}"
+          printf 'tree=%s\n' "${tree_sha}" >> "${GITHUB_OUTPUT}"
+
+      - name: Retain exact identity and patch receipt
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "${RUNNER_TEMP}/hepta-final-r6"
+          {
+            printf 'base=%s\n' "${BASE_SHA}"
+            printf 'source=%s\n' "${SOURCE_SHA}"
+            printf 'result=%s\n' "${{ steps.result.outputs.sha }}"
+            printf 'tree=%s\n' "${{ steps.result.outputs.tree }}"
+            printf 'parent=%s\n' "$(git rev-parse "${{ steps.result.outputs.sha }}^")"
+          } | tee "${RUNNER_TEMP}/hepta-final-r6/IDENTITY"
+          git diff --binary "${SOURCE_SHA}" "${{ steps.result.outputs.sha }}" \
+            > "${RUNNER_TEMP}/hepta-final-r6/final.patch"
+          sha256sum "${RUNNER_TEMP}/hepta-final-r6/final.patch" \
+            > "${RUNNER_TEMP}/hepta-final-r6/SHA256SUMS"
+
+      - name: Upload exact result receipt
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-exact-head-final-candidate-r6
+          path: ${{ runner.temp }}/hepta-final-r6
+          if-no-files-found: error
+          retention-days: 30
