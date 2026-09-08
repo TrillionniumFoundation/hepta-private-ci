@@ -1,0 +1,363 @@
+name: Final all-branches convergence R5
+
+on:
+  push:
+    branches:
+      - ops/final-all-branches-convergence-20260908
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+  actions: read
+
+concurrency:
+  group: final-all-branches-convergence-r5
+  cancel-in-progress: false
+
+jobs:
+  converge:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 360
+    env:
+      CANDIDATE_BRANCH: integration/final-all-branches-main-tree-r5-20260908
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Build one canonical history
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'hepta-convergence-bot'
+          git config user.email 'hepta-convergence-bot@users.noreply.github.com'
+          git fetch --prune origin '+refs/heads/*:refs/remotes/origin/*' '+refs/tags/*:refs/tags/*'
+          canonical=origin/main
+          if git show-ref --verify --quiet refs/remotes/origin/codex/hepta-v9-blocker-closure-20260908; then
+            canonical=origin/codex/hepta-v9-blocker-closure-20260908
+          elif git show-ref --verify --quiet refs/remotes/origin/codex/hepta-w0-seven-lanes-handoff-20260908; then
+            canonical=origin/codex/hepta-w0-seven-lanes-handoff-20260908
+          fi
+          git checkout -B "$CANDIDATE_BRANCH" "$canonical"
+          if ! git merge-base --is-ancestor origin/main HEAD; then
+            git merge --no-ff -X ours origin/main -m 'merge: retain current main lineage in final convergence R5'
+          fi
+          mkdir -p .convergence
+          printf 'branch\tsha\tmode\n' > .convergence/report.tsv
+          priority=(
+            codex/hepta-final-gap-closure-r3-20260908
+            integration/hepta-w0-internal-closure-20260908
+            codex/hepta-w0-seven-lanes-handoff-20260908
+            reviewer/ci-governance-simplification-20260908
+            codex/hepta-bao-connect-20260908
+            codex/hepta-v9-blocker-closure-20260908
+          )
+          for branch in "${priority[@]}"; do
+            ref="refs/remotes/origin/$branch"
+            git show-ref --verify --quiet "$ref" || continue
+            sha=$(git rev-parse "$ref")
+            if git merge-base --is-ancestor "$sha" HEAD; then
+              printf '%s\t%s\talready-contained\n' "$branch" "$sha" >> .convergence/report.tsv
+            else
+              git merge --no-ff -X ours "$ref" -m "merge: integrate priority branch $branch"
+              printf '%s\t%s\tcontent-merge\n' "$branch" "$sha" >> .convergence/report.tsv
+            fi
+          done
+          if [[ -e .g1/trillionnium_os_external_evidence ]]; then
+            git rm -r .g1/trillionnium_os_external_evidence
+            git commit -m 'chore: keep external OS evidence outside the Hepta main tree'
+          fi
+          mapfile -t branches < <(git for-each-ref --format='%(refname:strip=3)' refs/remotes/origin | grep -v '^HEAD$' | grep -v '^main$' | grep -v "^${CANDIDATE_BRANCH}$" | sort -u)
+          for branch in "${branches[@]}"; do
+            ref="refs/remotes/origin/$branch"
+            sha=$(git rev-parse "$ref")
+            if git merge-base --is-ancestor "$sha" HEAD; then
+              grep -Fq "$branch"$'\t' .convergence/report.tsv || printf '%s\t%s\talready-contained\n' "$branch" "$sha" >> .convergence/report.tsv
+            else
+              git merge --no-ff -s ours "$ref" -m "archive: absorb superseded branch $branch without changing canonical tree"
+              printf '%s\t%s\thistory-merge\n' "$branch" "$sha" >> .convergence/report.tsv
+            fi
+          done
+          python3 - <<'PY'
+          import csv, json, subprocess
+          from pathlib import Path
+          rows=list(csv.DictReader(Path('.convergence/report.tsv').open(),delimiter='\t'))
+          p=Path('docs/archive'); p.mkdir(parents=True,exist_ok=True)
+          payload={
+              'schema': 1,
+              'generated_by': 'final-all-branches-convergence-r5.yml',
+              'pre_qualification_head': subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip(),
+              'branches': rows,
+          }
+          (p/'branch-convergence-20260908.json').write_text(json.dumps(payload,indent=2,sort_keys=True)+'\n')
+          PY
+          git add docs/archive/branch-convergence-20260908.json
+          git commit -m 'docs: record final branch convergence ancestry R5'
+          failed=0
+          while IFS= read -r branch; do
+            [[ "$branch" == HEAD || "$branch" == main || "$branch" == "$CANDIDATE_BRANCH" ]] && continue
+            sha=$(git rev-parse "refs/remotes/origin/$branch")
+            git merge-base --is-ancestor "$sha" HEAD || { echo "::error::unabsorbed $branch $sha"; failed=1; }
+          done < <(git for-each-ref --format='%(refname:strip=3)' refs/remotes/origin | sort -u)
+          test "$failed" -eq 0
+
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: 1.95.0
+          components: rustfmt, clippy
+
+      - name: Repair nested TLS error-chain classification only when reproduced
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd codex-rs
+          if cargo test --locked -p codex-http-client --lib -- --test-threads=1; then
+            exit 0
+          fi
+          cd ..
+          python3 - <<'PY'
+          from pathlib import Path
+
+          tls_path = Path('codex-rs/http-client/src/tls_backend_fallback.rs')
+          tls_text = tls_path.read_text()
+          old_tls = '''pub(crate) fn should_retry_with_rustls(error: &reqwest::Error) -> bool {
+              error.is_connect() && !error.is_timeout() && error.source().is_some_and(has_retryable_tls_error)
+          }
+
+          fn has_retryable_tls_error(error: &(dyn Error + 'static)) -> bool {
+              let mut source = Some(error);
+              let mut recognized_negotiation_failure = false;
+
+              while let Some(error) = source {
+                  let message = error.to_string().to_ascii_lowercase();
+                  if [
+                      "certificate",
+                      "unknown issuer",
+                      "unknown ca",
+                      "untrusted",
+                      "self signed",
+                      "self-signed",
+                      "hostname",
+                      "expired",
+                      "revoked",
+                  ]
+                  .iter()
+                  .any(|marker| message.contains(marker))
+                  {
+                      return false;
+                  }
+
+                  // macOS Secure Transport reports the protocol alert as "bad protocol version".
+                  let is_macos_protocol_version_error = message.contains("bad protocol version");
+                  // Linux OpenSSL reports the peer's "tlsv1 alert protocol version".
+                  let is_linux_protocol_version_error = message.contains("tlsv1 alert protocol version");
+                  // Windows Schannel may expose the protocol alert as a raw or formatted OS error.
+                  let is_schannel_protocol_version_error = error
+                      .downcast_ref::<std::io::Error>()
+                      .and_then(std::io::Error::raw_os_error)
+                      == Some(SCHANNEL_PROTOCOL_VERSION_ERROR)
+                      || message.contains("(os error -2146893054)")
+                      || message.contains("0x80090302");
+                  if is_macos_protocol_version_error
+                      || is_linux_protocol_version_error
+                      || is_schannel_protocol_version_error
+                  {
+                      recognized_negotiation_failure = true;
+                  }
+                  source = error.source();
+              }
+
+              recognized_negotiation_failure
+          }
+          '''
+          new_tls = '''const MAX_ERROR_CHAIN_DEPTH: usize = 32;
+
+          pub(crate) fn should_retry_with_rustls(error: &reqwest::Error) -> bool {
+              error.is_connect() && !error.is_timeout() && error.source().is_some_and(has_retryable_tls_error)
+          }
+
+          pub(crate) fn has_tls_error(error: &(dyn Error + 'static)) -> bool {
+              let mut has_tls_error = false;
+              walk_error_chain(error, 0, &mut |error| {
+                  has_tls_error |= error.is::<rustls::Error>() || error.is::<native_tls::Error>();
+              });
+              has_tls_error
+          }
+
+          fn has_retryable_tls_error(error: &(dyn Error + 'static)) -> bool {
+              let mut recognized_negotiation_failure = false;
+              let mut certificate_failure = false;
+
+              walk_error_chain(error, 0, &mut |error| {
+                  let mut message = error.to_string().to_ascii_lowercase();
+                  if error.is::<rustls::Error>() {
+                      message.push(' ');
+                      message.push_str(&format!("{error:?}").to_ascii_lowercase());
+                  }
+
+                  if [
+                      "certificate",
+                      "unknown issuer",
+                      "unknownissuer",
+                      "unknown ca",
+                      "unknownca",
+                      "untrusted",
+                      "self signed",
+                      "self-signed",
+                      "hostname",
+                      "notvalidforname",
+                      "expired",
+                      "revoked",
+                  ]
+                  .iter()
+                  .any(|marker| message.contains(marker))
+                  {
+                      certificate_failure = true;
+                  }
+
+                  // macOS Secure Transport reports the protocol alert as "bad protocol version".
+                  let is_macos_protocol_version_error = message.contains("bad protocol version");
+                  // Linux OpenSSL reports the peer's "tlsv1 alert protocol version".
+                  let is_linux_protocol_version_error = message.contains("tlsv1 alert protocol version");
+                  // rustls retains the protocol alert as a structured error nested inside io::Error.
+                  let is_rustls_protocol_version_error = error.is::<rustls::Error>()
+                      && (message.contains("alertreceived(protocolversion)")
+                          || message.contains("received fatal alert: protocolversion"));
+                  // Windows Schannel may expose the protocol alert as a raw or formatted OS error.
+                  let is_schannel_protocol_version_error = error
+                      .downcast_ref::<std::io::Error>()
+                      .and_then(std::io::Error::raw_os_error)
+                      == Some(SCHANNEL_PROTOCOL_VERSION_ERROR)
+                      || message.contains("(os error -2146893054)")
+                      || message.contains("0x80090302");
+                  if is_macos_protocol_version_error
+                      || is_linux_protocol_version_error
+                      || is_rustls_protocol_version_error
+                      || is_schannel_protocol_version_error
+                  {
+                      recognized_negotiation_failure = true;
+                  }
+              });
+
+              recognized_negotiation_failure && !certificate_failure
+          }
+
+          fn walk_error_chain(
+              error: &(dyn Error + 'static),
+              depth: usize,
+              visitor: &mut impl FnMut(&(dyn Error + 'static)),
+          ) {
+              if depth >= MAX_ERROR_CHAIN_DEPTH {
+                  return;
+              }
+
+              visitor(error);
+
+              // std::io::Error stores custom errors behind get_ref(); on current Rust versions that
+              // inner value is not guaranteed to be exposed by Error::source(). Walk it explicitly
+              // so rustls certificate and protocol alerts remain classifiable through hyper/reqwest.
+              if let Some(io_error) = error.downcast_ref::<std::io::Error>()
+                  && let Some(inner) = io_error.get_ref()
+              {
+                  walk_error_chain(inner, depth + 1, visitor);
+                  return;
+              }
+
+              if let Some(source) = error.source() {
+                  walk_error_chain(source, depth + 1, visitor);
+              }
+          }
+          '''
+          if old_tls not in tls_text:
+              raise SystemExit('expected TLS classifier block was not found')
+          tls_path.write_text(tls_text.replace(old_tls, new_tls, 1))
+
+          pool_path = Path('codex-rs/http-client/src/route_aware_client_pool.rs')
+          pool_text = pool_path.read_text()
+          old_import = '''use crate::tls_backend_fallback::RustlsClientCache;
+          use crate::tls_backend_fallback::should_retry_with_rustls;
+          '''
+          new_import = '''use crate::tls_backend_fallback::RustlsClientCache;
+          use crate::tls_backend_fallback::has_tls_error;
+          use crate::tls_backend_fallback::should_retry_with_rustls;
+          '''
+          if old_import not in pool_text:
+              raise SystemExit('expected TLS import block was not found')
+          pool_text = pool_text.replace(old_import, new_import, 1)
+
+          old_failure = '''        if let Self::Route(RouteAwareClientPoolError::Resolve(error)) = self
+                      && let Some(source) = error.get_ref()
+                      && source.is::<rustls::Error>()
+                  {
+                      return Some(RouteFailureClass::TlsError);
+                  }
+
+                  let mut source: Option<&(dyn std::error::Error + 'static)> = Some(self);
+                  while let Some(error) = source {
+                      if error.downcast_ref::<rustls::Error>().is_some()
+                          || error.downcast_ref::<native_tls::Error>().is_some()
+                      {
+                          return Some(RouteFailureClass::TlsError);
+                      }
+                      if error.to_string() == "tunnel error: proxy authorization required" {
+                          return Some(RouteFailureClass::ProxyAuthenticationRequired);
+                      }
+                      source = error.source();
+                  }
+          '''
+          new_failure = '''        if has_tls_error(self) {
+                      return Some(RouteFailureClass::TlsError);
+                  }
+
+                  let mut source: Option<&(dyn std::error::Error + 'static)> = Some(self);
+                  while let Some(error) = source {
+                      if error.to_string() == "tunnel error: proxy authorization required" {
+                          return Some(RouteFailureClass::ProxyAuthenticationRequired);
+                      }
+                      source = error.source();
+                  }
+          '''
+          if old_failure not in pool_text:
+              raise SystemExit('expected route failure classifier block was not found')
+          pool_path.write_text(pool_text.replace(old_failure, new_failure, 1))
+          PY
+          cd codex-rs
+          cargo fmt --all
+          cargo test --locked -p codex-http-client --lib -- --test-threads=1
+          cd ..
+          git add codex-rs/http-client/src/tls_backend_fallback.rs codex-rs/http-client/src/route_aware_client_pool.rs
+          git commit -m 'fix(http): traverse nested TLS transport error chains'
+
+      - name: Full source qualification
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd codex-rs
+          cargo fmt --all -- --check
+          for package in codex-hepta-contracts codex-hepta-bao-adapter codex-hepta-supervisor codex-hepta-ndu codex-hepta-neuron codex-hepta-learning-ledger codex-hepta-intelligence-eval codex-hepta-plasticity codex-hepta-shadow-qualification; do
+            cargo test --locked -p "$package" --all-targets
+          done
+          cargo check --locked --workspace --all-targets
+          cargo clippy --locked --workspace --all-targets -- -D warnings
+          cargo test --locked --workspace --all-targets
+          cd ..
+          for script in scripts/verify_pre_coding_readiness.py scripts/verify_implementation_dossiers.py scripts/verify_technical_closure.py scripts/verify_implementation_contracts.py scripts/verify_paper_evidence.py scripts/verify_adaptive_algorithm_sources.py; do
+            [[ -f "$script" ]] && python3 "$script"
+          done
+
+      - name: Push R5 candidate and open or update PR
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          git push --force-with-lease origin "HEAD:refs/heads/$CANDIDATE_BRANCH"
+          existing=$(gh pr list --repo "$GITHUB_REPOSITORY" --state open --head "$CANDIDATE_BRANCH" --json number --jq '.[0].number // empty')
+          body='Final R5 convergence candidate. Every remote branch head is recorded as ancestry; current product branches are content-integrated, historical/backup/controller branches are history-integrated without rolling the canonical tree backward. Nested std::io::Error TLS causes are traversed structurally, preserving certificate fail-closed behavior while allowing only explicit protocol-version fallback. This head is pushed only after the HTTP regression suite, full format, focused Hepta packages, workspace check, Clippy, workspace tests and repository-native verification pass.'
+          if [[ -n "$existing" ]]; then
+            gh pr edit "$existing" --repo "$GITHUB_REPOSITORY" --title 'merge: converge every branch into the single main tree (R5)' --body "$body"
+          else
+            gh pr create --repo "$GITHUB_REPOSITORY" --base main --head "$CANDIDATE_BRANCH" --title 'merge: converge every branch into the single main tree (R5)' --body "$body"
+          fi
