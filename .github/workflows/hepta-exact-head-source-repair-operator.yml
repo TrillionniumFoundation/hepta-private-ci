@@ -132,6 +132,7 @@ jobs:
 
       - name: Validate formatting and the three affected Rust packages
         shell: bash
+        working-directory: codex-rs
         run: |
           set -euo pipefail
           cargo fmt --all -- --check
