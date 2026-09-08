@@ -1,0 +1,327 @@
+name: Final single-main convergence V6
+
+on:
+  push:
+    branches:
+      - ops/final-main-convergence-20260908
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+  actions: read
+
+concurrency:
+  group: hepta-final-main-v6
+  cancel-in-progress: true
+
+jobs:
+  materialize:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 180
+    outputs:
+      candidate_sha: ${{ steps.materialize.outputs.candidate_sha }}
+    steps:
+      - name: Check out V6 controller
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ops/final-main-convergence-20260908
+          fetch-depth: 0
+          fetch-tags: true
+          persist-credentials: true
+
+      - name: Configure repository CI prerequisites
+        uses: ./.github/actions/setup-ci
+
+      - name: Install pinned Rust toolchain
+        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: 1.95.0
+          components: clippy,rustfmt
+
+      - name: Materialize immutable all-branch candidate
+        id: materialize
+        env:
+          GH_TOKEN: ${{ github.token }}
+          HEPTA_ADMIN_TOKEN: ${{ secrets.HEPTA_ADMIN_TOKEN || secrets.GH_ADMIN_TOKEN || secrets.REPO_ADMIN_TOKEN || secrets.ADMIN_TOKEN || secrets.GH_PAT || secrets.GITHUB_PAT || secrets.REPO_TOKEN || secrets.BOT_TOKEN || secrets.HEPTA_BOT_TOKEN || secrets.PERSONAL_ACCESS_TOKEN }}
+        run: bash .github/scripts/materialize_source_v6.sh
+
+      - name: Upload materialization evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-materialize-v6-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            convergence/
+            ${{ runner.temp }}/hepta-materialize-v6/
+          if-no-files-found: warn
+          retention-days: 90
+
+  qualify:
+    needs: materialize
+    runs-on: ubuntu-24.04
+    timeout-minutes: 360
+    strategy:
+      fail-fast: false
+      matrix:
+        gate:
+          - cargo-fmt
+          - http-client-tests
+          - workspace-check
+          - workspace-clippy
+          - workspace-test
+    steps:
+      - name: Check out exact immutable candidate
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ needs.materialize.outputs.candidate_sha }}
+          fetch-depth: 0
+          fetch-tags: true
+          persist-credentials: false
+
+      - name: Configure repository CI prerequisites
+        uses: ./.github/actions/setup-ci
+
+      - name: Install pinned Rust toolchain
+        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: 1.95.0
+          components: clippy,rustfmt
+
+      - name: Run ${{ matrix.gate }} on exact candidate
+        id: gate
+        shell: bash
+        env:
+          CANDIDATE_SHA: ${{ needs.materialize.outputs.candidate_sha }}
+          GATE: ${{ matrix.gate }}
+          CARGO_NET_GIT_FETCH_WITH_CLI: "true"
+          CARGO_INCREMENTAL: "0"
+          CARGO_PROFILE_DEV_DEBUG: "0"
+          CARGO_PROFILE_TEST_DEBUG: "0"
+          CARGO_BUILD_JOBS: "2"
+          CARGO_TARGET_DIR: ${{ runner.temp }}/cargo-target
+        run: |
+          set -uo pipefail
+          evidence="$RUNNER_TEMP/hepta-gate-$GATE"
+          mkdir -p "$evidence" "$CARGO_TARGET_DIR"
+          actual="$(git rev-parse HEAD)"
+          if [[ "$actual" != "$CANDIDATE_SHA" ]]; then
+            printf 'expected=%s\nactual=%s\n' "$CANDIDATE_SHA" "$actual" > "$evidence/identity-error.txt"
+            exit 90
+          fi
+
+          set +e
+          case "$GATE" in
+            cargo-fmt)
+              cargo fmt --all -- --check 2>&1 | tee "$evidence/gate.log"
+              rc=${PIPESTATUS[0]}
+              ;;
+            http-client-tests)
+              cargo test --locked -p codex-http-client --all-targets 2>&1 | tee "$evidence/gate.log"
+              rc=${PIPESTATUS[0]}
+              ;;
+            workspace-check)
+              cargo check --locked --workspace --all-targets 2>&1 | tee "$evidence/gate.log"
+              rc=${PIPESTATUS[0]}
+              ;;
+            workspace-clippy)
+              cargo clippy --locked --workspace --all-targets -- -D warnings 2>&1 | tee "$evidence/gate.log"
+              rc=${PIPESTATUS[0]}
+              ;;
+            workspace-test)
+              cargo test --locked --workspace --all-targets 2>&1 | tee "$evidence/gate.log"
+              rc=${PIPESTATUS[0]}
+              ;;
+            *)
+              echo "unknown gate: $GATE" | tee "$evidence/gate.log"
+              rc=91
+              ;;
+          esac
+          set -e
+
+          printf '%s\n' "$rc" > "$evidence/exit-code.txt"
+          python3 - "$evidence/receipt.json" "$CANDIDATE_SHA" "$GATE" "$rc" "$GITHUB_RUN_ID" "$GITHUB_RUN_ATTEMPT" <<'PY'
+          import json
+          import sys
+          from pathlib import Path
+
+          path, candidate, gate, rc, run_id, attempt = sys.argv[1:]
+          Path(path).write_text(
+              json.dumps(
+                  {
+                      "schema": 1,
+                      "candidate_sha": candidate,
+                      "gate": gate,
+                      "exit_code": int(rc),
+                      "workflow_run_id": run_id,
+                      "workflow_run_attempt": attempt,
+                  },
+                  indent=2,
+              )
+              + "\n",
+              encoding="utf-8",
+          )
+          PY
+          exit "$rc"
+
+      - name: Upload ${{ matrix.gate }} evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-v6-${{ matrix.gate }}-${{ needs.materialize.outputs.candidate_sha }}
+          path: ${{ runner.temp }}/hepta-gate-${{ matrix.gate }}/
+          if-no-files-found: error
+          retention-days: 90
+
+  publish:
+    needs:
+      - materialize
+      - qualify
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    outputs:
+      qualified_tag: ${{ steps.publish.outputs.qualified_tag }}
+    steps:
+      - name: Check out exact qualified candidate
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ needs.materialize.outputs.candidate_sha }}
+          fetch-depth: 0
+          fetch-tags: true
+          persist-credentials: true
+
+      - name: Verify V6 source identity and closure
+        env:
+          CANDIDATE_SHA: ${{ needs.materialize.outputs.candidate_sha }}
+        run: |
+          set -euo pipefail
+          [[ "$(git rev-parse HEAD)" == "$CANDIDATE_SHA" ]]
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+
+          source = json.loads(Path("convergence/source-selection-v6.json").read_text(encoding="utf-8"))
+          closure = json.loads(Path("convergence/branch-closure-v6.json").read_text(encoding="utf-8"))
+          assert source.get("schema") == 6, source
+          assert source.get("primary") == "origin/codex/hepta-w0-seven-lanes-handoff-20260908", source
+          assert source.get("materialization") == "immutable-candidate-matrix", source
+          assert source.get("http_tls_classifier") == "source-chain-only", source
+          assert source.get("qualification_gates") == [
+              "cargo-fmt",
+              "http-client-tests",
+              "workspace-check",
+              "workspace-clippy",
+              "workspace-test",
+          ], source
+          assert closure.get("schema") == 6, closure
+          assert closure.get("unreachable") == [], closure.get("unreachable")
+          PY
+          test ! -e .github/scripts/materialize_source_v6.sh
+          test ! -e .github/scripts/finalize_management_v6.sh
+          test ! -e .github/workflows/final-main-convergence-v6.yml
+
+      - name: Publish qualified tag and fixed ready refs
+        id: publish
+        env:
+          GH_TOKEN: ${{ github.token }}
+          CANDIDATE_SHA: ${{ needs.materialize.outputs.candidate_sha }}
+        run: |
+          set -euo pipefail
+          git config user.name "hepta-convergence-bot"
+          git config user.email "hepta-convergence-bot@users.noreply.github.com"
+          tag="qualified/final-main-v6/${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          git tag -a "$tag" "$CANDIDATE_SHA" -m "All five V6 qualification gates passed on $CANDIDATE_SHA"
+          git push origin "refs/tags/$tag"
+          git push origin "+$CANDIDATE_SHA:refs/heads/ready/final-main-v6-20260908" "+$CANDIDATE_SHA:refs/heads/ready/final-main-20260908"
+
+          peeled="$(git ls-remote --tags origin "refs/tags/$tag^{}" | awk '{print $1}')"
+          ready="$(git ls-remote --heads origin refs/heads/ready/final-main-v6-20260908 | awk '{print $1}')"
+          compat="$(git ls-remote --heads origin refs/heads/ready/final-main-20260908 | awk '{print $1}')"
+          [[ "$peeled" == "$CANDIDATE_SHA" ]]
+          [[ "$ready" == "$CANDIDATE_SHA" ]]
+          [[ "$compat" == "$CANDIDATE_SHA" ]]
+          echo "qualified_tag=$tag" >> "$GITHUB_OUTPUT"
+
+          set +e
+          gh api --method PATCH "repos/$GITHUB_REPOSITORY/git/refs/heads/main" -f sha="$CANDIDATE_SHA" -F force=false >"$RUNNER_TEMP/main-fast-forward.json" 2>"$RUNNER_TEMP/main-fast-forward.err"
+          printf '%s\n' "$?" > "$RUNNER_TEMP/main-fast-forward.rc"
+          set -e
+
+      - name: Write and upload qualification manifest
+        env:
+          CANDIDATE_SHA: ${{ needs.materialize.outputs.candidate_sha }}
+          QUALIFIED_TAG: ${{ steps.publish.outputs.qualified_tag }}
+        run: |
+          mkdir -p "$RUNNER_TEMP/hepta-v6-qualified"
+          python3 - "$RUNNER_TEMP/hepta-v6-qualified/qualification.json" "$CANDIDATE_SHA" "$QUALIFIED_TAG" "$GITHUB_RUN_ID" "$GITHUB_RUN_ATTEMPT" <<'PY'
+          import json
+          import sys
+          from pathlib import Path
+
+          path, candidate, tag, run_id, attempt = sys.argv[1:]
+          Path(path).write_text(
+              json.dumps(
+                  {
+                      "schema": 6,
+                      "candidate_sha": candidate,
+                      "qualified_tag": tag,
+                      "workflow_run_id": run_id,
+                      "workflow_run_attempt": attempt,
+                      "gates": [
+                          "cargo-fmt",
+                          "http-client-tests",
+                          "workspace-check",
+                          "workspace-clippy",
+                          "workspace-test",
+                      ],
+                      "all_gates_passed": True,
+                  },
+                  indent=2,
+              )
+              + "\n",
+              encoding="utf-8",
+          )
+          PY
+          cp "$RUNNER_TEMP/main-fast-forward.rc" "$RUNNER_TEMP/hepta-v6-qualified/" || true
+          cp "$RUNNER_TEMP/main-fast-forward.json" "$RUNNER_TEMP/hepta-v6-qualified/" || true
+          cp "$RUNNER_TEMP/main-fast-forward.err" "$RUNNER_TEMP/hepta-v6-qualified/" || true
+
+      - name: Upload V6 qualification manifest
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-v6-qualified-${{ needs.materialize.outputs.candidate_sha }}
+          path: ${{ runner.temp }}/hepta-v6-qualified/
+          if-no-files-found: error
+          retention-days: 90
+
+  finalize:
+    needs:
+      - materialize
+      - publish
+    runs-on: ubuntu-24.04
+    timeout-minutes: 240
+    steps:
+      - name: Check out V6 management controller
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ops/final-main-convergence-20260908
+          fetch-depth: 0
+          fetch-tags: true
+          persist-credentials: true
+
+      - name: Promote qualified V6 seal and retire every non-main ref
+        env:
+          GH_TOKEN: ${{ github.token }}
+          HEPTA_ADMIN_TOKEN: ${{ secrets.HEPTA_ADMIN_TOKEN || secrets.GH_ADMIN_TOKEN || secrets.REPO_ADMIN_TOKEN || secrets.ADMIN_TOKEN || secrets.GH_PAT || secrets.GITHUB_PAT || secrets.REPO_TOKEN || secrets.BOT_TOKEN || secrets.HEPTA_BOT_TOKEN || secrets.PERSONAL_ACCESS_TOKEN }}
+          EXPECTED_CANDIDATE: ${{ needs.materialize.outputs.candidate_sha }}
+          QUALIFIED_TAG: ${{ needs.publish.outputs.qualified_tag }}
+        run: bash .github/scripts/finalize_management_v6.sh
+
+      - name: Upload V6 management evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-management-v6-${{ needs.materialize.outputs.candidate_sha }}
+          path: ${{ runner.temp }}/hepta-management-v6/
+          if-no-files-found: warn
+          retention-days: 90
