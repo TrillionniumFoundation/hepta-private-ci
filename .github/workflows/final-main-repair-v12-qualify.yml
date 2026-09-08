@@ -1,0 +1,187 @@
+name: Final single-main repair V12 qualification
+
+on:
+  push:
+    branches:
+      - ops/final-main-repair-v12-20260908
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: read
+
+concurrency:
+  group: hepta-final-main-repair-v12-qualification
+  cancel-in-progress: true
+
+jobs:
+  repair:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 360
+    outputs:
+      candidate_sha: ${{ steps.repair.outputs.candidate_sha }}
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ops/final-main-repair-v12-20260908
+          fetch-depth: 0
+          fetch-tags: true
+          persist-credentials: true
+      - name: Reconstruct reviewed source patch
+        run: |
+          set -euo pipefail
+          cat .github/patches/final-main-v11.patch.gz.b64.part* | base64 --decode > "$RUNNER_TEMP/v12.patch.gz"
+          gzip -dc "$RUNNER_TEMP/v12.patch.gz" > "$RUNNER_TEMP/v12.patch"
+          test "$(wc -c < "$RUNNER_TEMP/v12.patch")" -eq 56259
+          test "$(sha256sum "$RUNNER_TEMP/v12.patch" | cut -d' ' -f1)" = "66e26b42c39a6c518a53548a89937ea7562c910586850aedc0f7172115fd6a2f"
+      - uses: ./.github/actions/setup-ci
+      - name: Install native prerequisites
+        run: |
+          sudo apt-get update -y
+          sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends build-essential clang libcap-dev libssl-dev pkg-config bubblewrap
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: 1.95.0
+          components: clippy,rustfmt
+      - uses: ./.github/actions/setup-rusty-v8
+        with:
+          target: x86_64-unknown-linux-gnu
+      - name: Materialize exact V12 candidate
+        id: repair
+        env:
+          CARGO_INCREMENTAL: "0"
+          CARGO_PROFILE_DEV_DEBUG: "0"
+          CARGO_PROFILE_TEST_DEBUG: "0"
+          CARGO_BUILD_JOBS: "2"
+          CARGO_TARGET_DIR: ${{ runner.temp }}/cargo-target-v12-repair
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          evidence="$RUNNER_TEMP/hepta-v12-repair"
+          mkdir -p "$evidence" "$CARGO_TARGET_DIR" convergence
+          trap 'git status --short > "$evidence/status.txt" || true; git diff --stat > "$evidence/diff-stat.txt" || true; git diff --binary > "$evidence/working.patch" || true' EXIT
+          git config user.name "hepta-convergence-bot"
+          git config user.email "hepta-convergence-bot@users.noreply.github.com"
+          git fetch origin '+refs/heads/*:refs/remotes/origin/*' '+refs/tags/*:refs/tags/*' --prune --force
+          git switch --force-create hepta-final-repair-v12 origin/candidate/final-main-v6-20260908
+          [[ "$(git rev-parse HEAD)" == "04f60466394a024c218ce66b1b32d1c42c462985" ]]
+          [[ "$(git rev-parse HEAD^{tree})" == "a9797f471d27194e29c13f49723d4508ac52cb84" ]]
+          git apply --check "$RUNNER_TEMP/v12.patch"
+          git apply "$RUNNER_TEMP/v12.patch"
+          (cd codex-rs && cargo fmt --all)
+          (cd codex-rs && cargo check --locked --workspace --all-targets) 2>&1 | tee "$evidence/check.log"
+          cat > convergence/source-selection-v12.json <<'JSON'
+          {
+            "authority_granted": false,
+            "automatic_fixer_used": false,
+            "parent_v6_candidate": "04f60466394a024c218ce66b1b32d1c42c462985",
+            "parent_v6_tree": "a9797f471d27194e29c13f49723d4508ac52cb84",
+            "patch_sha256": "66e26b42c39a6c518a53548a89937ea7562c910586850aedc0f7172115fd6a2f",
+            "schema": 12
+          }
+          JSON
+          git diff --check
+          git add -A
+          git commit -s -m "fix(convergence): apply reviewed state-machine and workspace lint repairs"
+          candidate="$(git rev-parse HEAD)"
+          printf '%s\n' "$candidate" > "$evidence/candidate-sha.txt"
+          git rev-parse HEAD^{tree} > "$evidence/candidate-tree.txt"
+          echo "candidate_sha=$candidate" >> "$GITHUB_OUTPUT"
+          git tag -a "candidate/final-main/v12-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}" "$candidate" -m "V12 candidate"
+          git push origin "refs/tags/candidate/final-main/v12-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}" "+HEAD:refs/heads/candidate/final-main-v12-20260908"
+          trap - EXIT
+      - name: Upload repair evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-repair-v12-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/hepta-v12-repair/
+          if-no-files-found: warn
+          retention-days: 90
+
+  qualify:
+    needs: repair
+    strategy:
+      fail-fast: false
+      matrix:
+        gate: [repository-policy, cargo-fmt, http-client-tests, workspace-check, workspace-clippy, workspace-test]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 360
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ needs.repair.outputs.candidate_sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: ./.github/actions/setup-ci
+      - name: Install native prerequisites
+        if: matrix.gate != 'repository-policy' && matrix.gate != 'cargo-fmt'
+        run: |
+          sudo apt-get update -y
+          sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends build-essential clang libcap-dev libssl-dev pkg-config bubblewrap
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: 1.95.0
+          components: clippy,rustfmt
+      - uses: ./.github/actions/setup-rusty-v8
+        if: matrix.gate != 'repository-policy' && matrix.gate != 'cargo-fmt'
+        with:
+          target: x86_64-unknown-linux-gnu
+      - name: Run exact qualification gate
+        env:
+          CANDIDATE_SHA: ${{ needs.repair.outputs.candidate_sha }}
+          GATE: ${{ matrix.gate }}
+          CARGO_INCREMENTAL: "0"
+          CARGO_PROFILE_DEV_DEBUG: "0"
+          CARGO_PROFILE_TEST_DEBUG: "0"
+          CARGO_BUILD_JOBS: "2"
+          CARGO_TARGET_DIR: ${{ runner.temp }}/cargo-target-v12
+        shell: bash
+        run: |
+          set -uo pipefail
+          evidence="$RUNNER_TEMP/hepta-v12-$GATE"
+          mkdir -p "$evidence" "$CARGO_TARGET_DIR"
+          [[ "$(git rev-parse HEAD)" == "$CANDIDATE_SHA" ]] || exit 90
+          set +e
+          case "$GATE" in
+            repository-policy) { python3 scripts/hepta-docs.py verify && python3 scripts/hepta-module-docs.py verify && python3 scripts/hepta-algorithm-docs.py verify && python3 scripts/hepta-readiness.py verify && python3 scripts/hepta-cns.py verify && python3 scripts/hepta-hnmf.py verify && python3 scripts/hepta-gap-closure.py verify && git diff --check && test -z "$(git status --porcelain --untracked-files=no)"; } 2>&1 | tee "$evidence/gate.log"; rc=${PIPESTATUS[0]} ;;
+            cargo-fmt) (cd codex-rs && cargo fmt --all -- --check) 2>&1 | tee "$evidence/gate.log"; rc=${PIPESTATUS[0]} ;;
+            http-client-tests) (cd codex-rs && cargo test --locked -p codex-http-client --all-targets) 2>&1 | tee "$evidence/gate.log"; rc=${PIPESTATUS[0]} ;;
+            workspace-check) (cd codex-rs && cargo check --locked --workspace --all-targets) 2>&1 | tee "$evidence/gate.log"; rc=${PIPESTATUS[0]} ;;
+            workspace-clippy) (cd codex-rs && cargo clippy --locked --workspace --all-targets -- -D warnings) 2>&1 | tee "$evidence/gate.log"; rc=${PIPESTATUS[0]} ;;
+            workspace-test) (cd codex-rs && cargo test --locked --workspace --all-targets) 2>&1 | tee "$evidence/gate.log"; rc=${PIPESTATUS[0]} ;;
+            *) rc=91 ;;
+          esac
+          set -e
+          printf '%s\n' "$rc" > "$evidence/exit-code.txt"
+          exit "$rc"
+      - name: Upload gate evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-v12-${{ matrix.gate }}-${{ needs.repair.outputs.candidate_sha }}
+          path: ${{ runner.temp }}/hepta-v12-${{ matrix.gate }}/
+          if-no-files-found: warn
+          retention-days: 90
+
+  seal:
+    needs: [repair, qualify]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ needs.repair.outputs.candidate_sha }}
+          fetch-depth: 0
+          persist-credentials: true
+      - name: Publish qualified V12 seal
+        env:
+          CANDIDATE_SHA: ${{ needs.repair.outputs.candidate_sha }}
+        run: |
+          set -euo pipefail
+          [[ "$(git rev-parse HEAD)" == "$CANDIDATE_SHA" ]]
+          git config user.name "hepta-convergence-bot"
+          git config user.email "hepta-convergence-bot@users.noreply.github.com"
+          tag="qualified/final-main-v12/${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          git tag -a "$tag" "$CANDIDATE_SHA" -m "All six V12 qualification gates passed"
+          git push origin "refs/tags/$tag" "+$CANDIDATE_SHA:refs/heads/ready/final-main-v12-20260908"
