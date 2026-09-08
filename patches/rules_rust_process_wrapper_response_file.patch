@@ -9,7 +9,7 @@ index 9622cdd..8ab9269 100644
 +    # even when rustc_flags already use a response file. Keep the child command
 +    # and its response files separate from the wrapper's multiline arguments.
 +    process_wrapper_flags.set_param_file_format("multiline")
-+    process_wrapper_flags.use_param_file("--wrapper-args=%s", use_always = False)
++    process_wrapper_flags.use_param_file("--wrapper-args=%s", use_always = True)
      for build_env_file in build_env_files:
 diff --git a/util/process_wrapper/options.rs b/util/process_wrapper/options.rs
 index c3e5a67..49a2b8f 100644

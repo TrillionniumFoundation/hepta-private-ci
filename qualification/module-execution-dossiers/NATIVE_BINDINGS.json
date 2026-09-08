@@ -3,7 +3,7 @@
   "schemaVersion": 1,
   "planId": "HEPTA-GLOBAL-MODULAR-DEVELOPMENT-PLAN",
   "planVersion": "8.0.0",
-  "sourceSnapshot": "b19625495ead1445854489923db6ae227ffe1874",
+  "sourceSnapshot": "5c34496f40a7a3953f1dc9682c8f96bd4916ad11",
   "evidenceClass": "source_observation_only",
   "productExecutionProved": false,
   "observations": [
@@ -64,17 +64,21 @@
     {
       "module": "learning.artifacts",
       "path": "codex-rs/hepta-learning-artifacts/src/lib.rs",
-      "blobSha": "7bf21a7d83154ec3046a0b3966ab99d6301d99b8",
+      "blobSha": "b9c3649a914444a69eaa80a03d13d38bed82f126",
       "exports": [
         "ArtifactRegistry",
         "CreateOnlyArtifactFile",
+        "LoadedPinnedCandidate",
+        "PinnedCandidateLoadError",
+        "PinnedCandidateSpec",
+        "load_pinned_candidate",
         "write_candidate_payload",
         "read_candidate_payload",
         "write_registry_snapshot",
         "read_registry_snapshot",
         "prepare_dataset_revocation"
       ],
-      "interpretation": "Artifact storage writers consume an opaque atomically created CreateOnlyArtifactFile; shared-lock readers and lineage eligibility remain separate from host-authenticated current witnesses, selection, production new-process loading and release."
+      "interpretation": "Artifact storage writers remain create-only. The reviewed pinned loader performs read-only exact snapshot, manifest, lineage and payload validation from caller-opened files. It does not authenticate freshness, establish newest state, select or activate an artifact, prove anti-rollback, compose a production caller or authorize promotion or release."
     }
   ]
 }
