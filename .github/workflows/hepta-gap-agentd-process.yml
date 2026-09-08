@@ -19,7 +19,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: hepta-agentd-process-${{ github.event.pull_request.number || github.ref }}-${{ matrix.os }}
+  group: hepta-agentd-process-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
 jobs:

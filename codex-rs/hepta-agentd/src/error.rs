@@ -61,18 +61,26 @@ impl StdError for AgentdIoContext {
 /// qualification can distinguish directory preparation, stale-socket probing,
 /// bind, permission and App Server transport failures without weakening any
 /// fail-closed behavior.
-pub(crate) fn io_context(
+pub(crate) fn contextual_io_error(
     operation: &'static str,
     path: &Path,
     source: std::io::Error,
-) -> AgentdError {
+) -> std::io::Error {
     let kind = source.kind();
-    AgentdError::Io(std::io::Error::new(
+    std::io::Error::new(
         kind,
         AgentdIoContext {
             operation,
             path: path.to_path_buf(),
             source,
         },
-    ))
+    )
+}
+
+pub(crate) fn io_context(
+    operation: &'static str,
+    path: &Path,
+    source: std::io::Error,
+) -> AgentdError {
+    AgentdError::Io(contextual_io_error(operation, path, source))
 }
