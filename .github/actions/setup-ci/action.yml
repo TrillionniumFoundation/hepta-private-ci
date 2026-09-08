@@ -24,12 +24,20 @@ runs:
       shell: bash
       run: echo "CI_BUILD_ROOT=$HOME/.cache/codex-ci" >> "$GITHUB_ENV"
 
+    - name: Install Linux native build prerequisites
+      if: runner.os == 'Linux'
+      shell: bash
+      run: |
+        set -euo pipefail
+        sudo apt-get update -qq
+        sudo apt-get install -y --no-install-recommends libcap-dev pkg-config
+
     - name: Enable unprivileged user namespaces (Linux)
       if: runner.os == 'Linux'
       shell: bash
       run: |
         sudo sysctl -w kernel.unprivileged_userns_clone=1
-        if sudo sysctl -a 2>/dev/null | grep -q '^kernel.apparmor_restrict_unprivileged_userns'; then
+        if sudo sysctl -a 2>/dev/null | grep -q '^kernel.appamor_restrict_unprivileged_userns'; then
           sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
         fi
 
