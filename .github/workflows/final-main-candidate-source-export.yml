@@ -1,0 +1,42 @@
+name: Final-main exact candidate source export
+
+on:
+  push:
+    branches:
+      - ops/final-main-candidate-source-export-20260908
+
+permissions:
+  contents: read
+
+jobs:
+  export:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - name: Check out exact V6 candidate
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: 04f60466394a024c218ce66b1b32d1c42c462985
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Build exact tracked-source archive
+        shell: bash
+        run: |
+          set -euo pipefail
+          out="$RUNNER_TEMP/hepta-candidate-source"
+          mkdir -p "$out"
+          [[ "$(git rev-parse HEAD)" == "04f60466394a024c218ce66b1b32d1c42c462985" ]]
+          [[ "$(git rev-parse HEAD^{tree})" == "a9797f471d27194e29c13f49723d4508ac52cb84" ]]
+          git archive --format=tar --prefix=hepta-private-ci/ HEAD | gzip -9 > "$out/hepta-private-ci-04f60466.tar.gz"
+          sha256sum "$out/hepta-private-ci-04f60466.tar.gz" > "$out/SHA256SUMS"
+          printf '%s\n' "$(git rev-parse HEAD)" > "$out/CANDIDATE_SHA"
+          printf '%s\n' "$(git rev-parse HEAD^{tree})" > "$out/CANDIDATE_TREE"
+
+      - name: Upload exact candidate source
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-final-main-candidate-source-04f60466
+          path: ${{ runner.temp }}/hepta-candidate-source/
+          if-no-files-found: error
+          retention-days: 7
