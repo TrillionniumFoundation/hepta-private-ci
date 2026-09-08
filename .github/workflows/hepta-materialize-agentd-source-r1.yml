@@ -54,16 +54,19 @@ jobs:
           text = path.read_text(encoding="utf-8")
           old = "pub(crate) fn app_server_runtime_options(\n"
           new = (
-              "#[expect(\n"
-              "    dead_code,\n"
-              "    reason = \"retained read-only Agentd runtime constructor awaiting the registered product caller\"\n"
+              "#[cfg_attr(\n"
+              "    not(test),\n"
+              "    allow(\n"
+              "        dead_code,\n"
+              "        reason = \"retained read-only Agentd runtime constructor awaiting the registered product caller\"\n"
+              "    )\n"
               ")]\n"
               + old
           )
           if text.count(old) != 1:
               raise SystemExit("expected exactly one app_server_runtime_options anchor")
           if new in text:
-              raise SystemExit("Agentd dead-code expectation already present")
+              raise SystemExit("Agentd dead-code allowance already present")
           path.write_text(text.replace(old, new, 1), encoding="utf-8")
           PY
           cargo fmt --manifest-path codex-rs/Cargo.toml --all
@@ -112,7 +115,7 @@ jobs:
           result="$(printf '%s\n' \
             'fix(agentd): materialize exact process and socket blockers' \
             '' \
-            'Apply the bounded checked-in Agentd patch, retain the read-only constructor with a local documented expectation, and preserve the canonical base as the sole parent.' \
+            'Apply the bounded checked-in Agentd patch, retain the read-only constructor with a local documented non-test allowance, and preserve the canonical base as the sole parent.' \
             | git commit-tree "$tree" -p "$BASE_SHA")"
           test "$(git rev-parse "$result^")" = "$BASE_SHA"
           git push origin "$result:refs/heads/$RESULT_BRANCH"
