@@ -3,7 +3,6 @@
 
 from __future__ import annotations
 
-import re
 from pathlib import Path
 
 
@@ -28,22 +27,18 @@ def patch_registry() -> None:
         "",
         label="trait cancellation lint expectation",
     )
-
-    wrapper = re.compile(
-        r"\n    pub\(crate\) fn waits_for_runtime_cancellation\("
-        r"&self, name: &ToolName"
-        r"\) -> Option<bool> \{\n"
-        r"(?:        [^\n]*\n)+?"
-        r"    \}\n"
+    wrapper = '''
+    pub(crate) fn waits_for_runtime_cancellation(&self, name: &ToolName) -> Option<bool> {
+        let tool = self.tool(name)?;
+        Some(tool.waits_for_runtime_cancellation())
+    }
+'''
+    text = replace_exact(
+        text,
+        wrapper,
+        "",
+        label="unused ToolRegistry cancellation wrapper",
     )
-    matches = list(wrapper.finditer(text))
-    if len(matches) != 1:
-        raise SystemExit(
-            "unused ToolRegistry cancellation wrapper: "
-            f"expected one match, found {len(matches)}"
-        )
-    match = matches[0]
-    text = text[: match.start()] + "\n" + text[match.end() :]
     REGISTRY.write_text(text, encoding="utf-8")
 
 
