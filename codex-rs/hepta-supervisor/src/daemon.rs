@@ -349,15 +349,21 @@ async fn handle_request<D: ProcessDriver>(
         SupervisordMethod::Health => {
             let registered_agents = match state.registry.load() {
                 Ok(snapshot) => snapshot.agents.len(),
-                Err(error) => return safe_rejection(error.into(), None, false),
+                Err(error) => {
+                    return safe_rejection(
+                        error.into(),
+                        /*actual*/ None,
+                        /*mutation_started*/ false,
+                    );
+                }
             };
             let registered_agents = match u16::try_from(registered_agents) {
                 Ok(count) => count,
                 Err(_) => {
                     return safe_rejection(
                         SupervisorError::Invalid("registered agent count exceeds u16".to_string()),
-                        None,
-                        false,
+                        /*actual*/ None,
+                        /*mutation_started*/ false,
                     );
                 }
             };
@@ -374,13 +380,19 @@ async fn handle_request<D: ProcessDriver>(
                 return error_payload(
                     "invalid_frame",
                     "request is not valid supervisord control JSON",
-                    None,
+                    /*actual*/ None,
                 );
             }
             let supervisor = state.supervisor.lock().await;
             let records = match state.registry.load() {
                 Ok(snapshot) => snapshot.agents,
-                Err(error) => return safe_rejection(error.into(), None, false),
+                Err(error) => {
+                    return safe_rejection(
+                        error.into(),
+                        /*actual*/ None,
+                        /*mutation_started*/ false,
+                    );
+                }
             };
             let agents = match records
                 .into_iter()
@@ -395,13 +407,19 @@ async fn handle_request<D: ProcessDriver>(
                 .collect::<Result<Vec<_>, _>>()
             {
                 Ok(agents) => agents,
-                Err(error) => return safe_rejection(error, None, false),
+                Err(error) => {
+                    return safe_rejection(
+                        error, /*actual*/ None, /*mutation_started*/ false,
+                    );
+                }
             };
             SupervisordPayload::Roster { agents }
         }
         SupervisordMethod::Snapshot { agent_id } => match agent_status(&state, &agent_id).await {
             Ok(status) => SupervisordPayload::Agent(status),
-            Err(error) => safe_rejection(error, None, false),
+            Err(error) => {
+                safe_rejection(error, /*actual*/ None, /*mutation_started*/ false)
+            }
         },
         SupervisordMethod::Start { fence, release_id } => {
             let target = match resolve_release_outside_lock(
@@ -414,22 +432,46 @@ async fn handle_request<D: ProcessDriver>(
                 Ok(target) => target,
                 Err(error) => {
                     let actual = agent_status(&state, &fence.agent_id).await.ok();
-                    return safe_rejection(error, actual, false);
+                    return safe_rejection(error, actual, /*mutation_started*/ false);
                 }
             };
             handle_mutation(state, SupervisordMutation::Start, fence, Some(target)).await
         }
         SupervisordMethod::Drain { fence } => {
-            handle_mutation(state, SupervisordMutation::Drain, fence, None).await
+            handle_mutation(
+                state,
+                SupervisordMutation::Drain,
+                fence,
+                /*target*/ None,
+            )
+            .await
         }
         SupervisordMethod::Stop { fence } => {
-            handle_mutation(state, SupervisordMutation::Stop, fence, None).await
+            handle_mutation(
+                state,
+                SupervisordMutation::Stop,
+                fence,
+                /*target*/ None,
+            )
+            .await
         }
         SupervisordMethod::Kill { fence } => {
-            handle_mutation(state, SupervisordMutation::Kill, fence, None).await
+            handle_mutation(
+                state,
+                SupervisordMutation::Kill,
+                fence,
+                /*target*/ None,
+            )
+            .await
         }
         SupervisordMethod::Restart { fence } => {
-            handle_mutation(state, SupervisordMutation::Restart, fence, None).await
+            handle_mutation(
+                state,
+                SupervisordMutation::Restart,
+                fence,
+                /*target*/ None,
+            )
+            .await
         }
         SupervisordMethod::Upgrade { fence, release_id } => {
             let target = match resolve_release_outside_lock(
@@ -442,13 +484,19 @@ async fn handle_request<D: ProcessDriver>(
                 Ok(target) => target,
                 Err(error) => {
                     let actual = agent_status(&state, &fence.agent_id).await.ok();
-                    return safe_rejection(error, actual, false);
+                    return safe_rejection(error, actual, /*mutation_started*/ false);
                 }
             };
             handle_mutation(state, SupervisordMutation::Upgrade, fence, Some(target)).await
         }
         SupervisordMethod::Rollback { fence } => {
-            handle_mutation(state, SupervisordMutation::Rollback, fence, None).await
+            handle_mutation(
+                state,
+                SupervisordMutation::Rollback,
+                fence,
+                /*target*/ None,
+            )
+            .await
         }
         SupervisordMethod::SignedUpgrade {
             fence,
@@ -492,21 +540,21 @@ async fn handle_signed_mutation<D: ProcessDriver>(
         return error_payload(
             "production_authority_unavailable",
             "signed production mutations are disabled in this build",
-            None,
+            /*actual*/ None,
         );
     }
     let Some(verifier) = state.production_grant_verifier.clone() else {
         return error_payload(
             "production_authority_unavailable",
             "signed production mutations require an externally pinned verifier",
-            None,
+            /*actual*/ None,
         );
     };
     if grant.transition != transition {
         return error_payload(
             "production_authority_rejected",
             "signed operation transition does not match the requested RPC method",
-            None,
+            /*actual*/ None,
         );
     }
     let agent_id = fence.agent_id.clone();
@@ -514,7 +562,9 @@ async fn handle_signed_mutation<D: ProcessDriver>(
     let mut supervisor = state.supervisor.lock().await;
     let actual = match agent_status_locked(&state, &supervisor, &agent_id) {
         Ok(actual) => actual,
-        Err(error) => return safe_rejection(error, None, false),
+        Err(error) => {
+            return safe_rejection(error, /*actual*/ None, /*mutation_started*/ false);
+        }
     };
     if !control_fence_matches(&fence, &actual.control_fence) {
         return error_payload(
@@ -536,7 +586,11 @@ async fn handle_signed_mutation<D: ProcessDriver>(
         Ok(receipt) => receipt,
         Err(error) => {
             let post = agent_status_locked(&state, &supervisor, &agent_id).ok();
-            return safe_rejection(error, post.or(Some(actual)), false);
+            return safe_rejection(
+                error,
+                post.or(Some(actual)),
+                /*mutation_started*/ false,
+            );
         }
     };
     let post = agent_status_locked(&state, &supervisor, &agent_id).ok();
@@ -544,7 +598,7 @@ async fn handle_signed_mutation<D: ProcessDriver>(
         return error_payload(
             "operation_indeterminate",
             "signed operation outcome is indeterminate; refresh before retry",
-            None,
+            /*actual*/ None,
         );
     };
     SupervisordPayload::MutationAccepted {
@@ -576,7 +630,9 @@ async fn handle_mutation<D: ProcessDriver>(
     let mut supervisor = state.supervisor.lock().await;
     let actual = match agent_status_locked(&state, &supervisor, &agent_id) {
         Ok(actual) => actual,
-        Err(error) => return safe_rejection(error, None, false),
+        Err(error) => {
+            return safe_rejection(error, /*actual*/ None, /*mutation_started*/ false);
+        }
     };
     if !control_fence_matches(&fence, &actual.control_fence) {
         return error_payload(
@@ -629,15 +685,19 @@ async fn handle_mutation<D: ProcessDriver>(
     };
     if let Err(error) = preflight {
         let refreshed = agent_status_locked(&state, &supervisor, &agent_id).ok();
-        return safe_rejection(error, refreshed.or(Some(actual)), false);
+        return safe_rejection(
+            error,
+            refreshed.or(Some(actual)),
+            /*mutation_started*/ false,
+        );
     }
 
     let next_revision = match supervisor.next_control_revision(&agent_id) {
         Ok(revision) => revision,
-        Err(error) => return safe_rejection(error, Some(actual), false),
+        Err(error) => return safe_rejection(error, Some(actual), /*mutation_started*/ false),
     };
     if let Err(error) = supervisor.set_control_revision(&agent_id, next_revision) {
-        return safe_rejection(error, Some(actual), false);
+        return safe_rejection(error, Some(actual), /*mutation_started*/ false);
     }
 
     let mutation = match prepared {
@@ -663,7 +723,7 @@ async fn handle_mutation<D: ProcessDriver>(
         return error_payload(
             "operation_indeterminate",
             "operation outcome is indeterminate; refresh before retry",
-            None,
+            /*actual*/ None,
         );
     };
     SupervisordPayload::MutationAccepted {
@@ -909,7 +969,11 @@ fn safe_rejection(
     }
     match error {
         SupervisorError::UnknownAgent(_) => {
-            error_payload("unknown_agent", "selected Agent is not registered", None)
+            error_payload(
+                "unknown_agent",
+                "selected Agent is not registered",
+                /*actual*/ None,
+            )
         }
         SupervisorError::Registry(FleetRegistryError::UnknownRelease(_)) => error_payload(
             "release_not_found",
@@ -1298,26 +1362,30 @@ mod tests {
     fn wire_errors_are_closed_and_never_expose_driver_or_filesystem_detail() {
         let agent_id = AgentId::parse(AGENT_ID).expect("fixed AgentId");
         let cases = [
-            safe_rejection(SupervisorError::UnknownAgent(agent_id.clone()), None, false),
+            safe_rejection(
+                SupervisorError::UnknownAgent(agent_id.clone()),
+                /*actual*/ None,
+                /*mutation_started*/ false,
+            ),
             safe_rejection(
                 SupervisorError::NoPreviousRelease(agent_id.clone()),
-                None,
-                false,
+                /*actual*/ None,
+                /*mutation_started*/ false,
             ),
             safe_rejection(
                 SupervisorError::NoPreviousCommand(agent_id.clone()),
-                None,
-                false,
+                /*actual*/ None,
+                /*mutation_started*/ false,
             ),
             safe_rejection(
                 SupervisorError::ReleaseChangePending(agent_id.clone()),
-                None,
-                false,
+                /*actual*/ None,
+                /*mutation_started*/ false,
             ),
             safe_rejection(
                 SupervisorError::UnresolvedLease(agent_id.clone()),
-                None,
-                false,
+                /*actual*/ None,
+                /*mutation_started*/ false,
             ),
             safe_rejection(
                 SupervisorError::GenerationFence {
@@ -1325,21 +1393,21 @@ mod tests {
                     runtime: 1,
                     registry: 2,
                 },
-                None,
-                false,
+                /*actual*/ None,
+                /*mutation_started*/ false,
             ),
             safe_rejection(
                 SupervisorError::TargetReleaseUnchanged(agent_id.clone()),
-                None,
-                false,
+                /*actual*/ None,
+                /*mutation_started*/ false,
             ),
             safe_rejection(
                 SupervisorError::Driver {
                     agent_id,
                     message: "/secret/bin/agentd --token raw-driver-secret".to_string(),
                 },
-                None,
-                false,
+                /*actual*/ None,
+                /*mutation_started*/ false,
             ),
         ];
         let allowed = [

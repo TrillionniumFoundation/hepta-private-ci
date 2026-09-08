@@ -7,6 +7,8 @@
 
 #![forbid(unsafe_code)]
 
+mod organs;
+
 use std::fmt;
 use std::fs::File;
 use std::fs::Metadata;
@@ -71,17 +73,34 @@ pub trait RuntimeStateAdapter: fmt::Debug + Send + Sync {
 pub struct HeptaRuntime {
     state_root: HeptaStateRoot,
     state: Arc<dyn RuntimeStateAdapter>,
+    organs: Arc<organs::RuntimeOrgans>,
 }
 
 impl HeptaRuntime {
     pub async fn open_existing(state_root: HeptaStateRoot) -> Result<Self> {
         let layout = state_root.layout();
         let adapter = SchemaV5OpenExistingAdapter::open(&layout).await?;
-        Ok(Self::from_adapter(state_root, Arc::new(adapter)))
+        let runtime = Self::from_adapter(state_root, Arc::new(adapter));
+        runtime.organs.ensure_ready()?;
+        Ok(runtime)
     }
 
     pub fn from_adapter(state_root: HeptaStateRoot, state: Arc<dyn RuntimeStateAdapter>) -> Self {
-        Self { state_root, state }
+        let organs = Arc::new(organs::RuntimeOrgans::new(
+            state_root.clone(),
+            Arc::clone(&state),
+        ));
+        Self {
+            state_root,
+            state,
+            organs,
+        }
+    }
+
+    /// Query the initialized, generation-fenced, read-only organ graph.
+    /// The wire payload is unchanged; no mutable or external organ is admitted.
+    pub fn status_json(&self) -> Result<Vec<u8>> {
+        self.organs.status_json()
     }
 
     pub fn status(&self) -> RuntimeStatus {
@@ -816,7 +835,7 @@ mod tests {
     #[tokio::test]
     async fn opens_exact_schema_v5_without_mutation_authority() -> Result<()> {
         let (_directory, root) = fixture(EXISTING_SCHEMA_VERSION).await?;
-        let runtime = HeptaRuntime::open_existing(root).await?;
+        let runtime = HeptaRuntime::open_existing(root.clone()).await?;
         let status = runtime.status();
         assert_eq!(status.status, "ready");
         assert_eq!(status.state.schema_version, 5);
@@ -826,6 +845,14 @@ mod tests {
             "hmac-sha256-v1-key-id-and-row-macs-verified"
         );
         assert_eq!(status.authority, RuntimeAuthorityStatus::default());
+        let report = runtime.status_json()?;
+        assert_eq!(
+            serde_json::from_slice::<serde_json::Value>(&report)?,
+            serde_json::to_value(&status)?
+        );
+        drop(runtime);
+        let reopened = HeptaRuntime::open_existing(root).await?;
+        assert_eq!(reopened.status_json()?, report);
         Ok(())
     }
 

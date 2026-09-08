@@ -8,6 +8,7 @@
 mod dataset_revocation;
 mod error;
 mod model;
+mod pinned;
 mod registry;
 mod storage;
 
@@ -27,6 +28,10 @@ pub use model::LineageDisposition;
 pub use model::RegistryAppendDisposition;
 pub use model::RegistryAppendReceipt;
 pub use model::StateChange;
+pub use pinned::LoadedPinnedCandidate;
+pub use pinned::PinnedCandidateLoadError;
+pub use pinned::PinnedCandidateSpec;
+pub use pinned::load_pinned_candidate;
 pub use registry::ArtifactRegistry;
 pub use storage::ArtifactStorageError;
 pub use storage::CreateOnlyArtifactFile;

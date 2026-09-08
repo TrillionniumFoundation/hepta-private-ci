@@ -16,6 +16,8 @@ workspace = true
 [dependencies]
 anyhow = { workspace = true }
 codex-hepta-paths = { workspace = true }
+codex-hepta-control-plane = { path = "../hepta-control-plane" }
+codex-hepta-types = { path = "../hepta-types" }
 hmac = { workspace = true }
 libc = { workspace = true }
 serde = { workspace = true, features = ["derive"] }

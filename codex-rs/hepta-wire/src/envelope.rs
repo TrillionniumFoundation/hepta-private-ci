@@ -124,9 +124,9 @@ impl WireEnvelope {
         let producer = std::str::from_utf8(&encoded[schema_end..producer_end])
             .map_err(|_| WireError::IdentityEncoding)
             .and_then(parse_id)?;
-        let payload = encoded[producer_end..payload_end].to_vec();
+        let payload = &encoded[producer_end..payload_end];
         let expected = Digest32::from_array(digest);
-        let observed = Digest32::of_bytes(&payload);
+        let observed = Digest32::of_bytes(payload);
         if observed != expected {
             return Err(WireError::DigestMismatch { expected, observed });
         }
@@ -135,7 +135,7 @@ impl WireEnvelope {
             producer,
             generation,
             payload_digest: expected,
-            payload,
+            payload: payload.to_vec(),
         })
     }
 }
@@ -223,3 +223,7 @@ impl Error for WireError {}
 #[cfg(test)]
 #[path = "envelope_tests.rs"]
 mod tests;
+
+#[cfg(test)]
+#[path = "boundary_tests.rs"]
+mod boundary_tests;

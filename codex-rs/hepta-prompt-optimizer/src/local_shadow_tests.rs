@@ -1,5 +1,3 @@
-use pretty_assertions::assert_eq;
-
 use super::*;
 use crate::OptimizationRequest;
 use crate::optimize;

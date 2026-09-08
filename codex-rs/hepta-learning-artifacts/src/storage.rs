@@ -139,7 +139,12 @@ pub fn read_registry_snapshot(
     {
         return Err(ArtifactStorageError::InvalidReceipt);
     }
-    let bytes = read_bounded(file, MAX_SNAPSHOT)?;
+    let bytes = read_bounded(
+        file,
+        MAX_SNAPSHOT,
+        expected.encoded_bytes as u64,
+        ArtifactStorageError::Corrupt,
+    )?;
     if bytes.len() != expected.encoded_bytes || Digest32::of_bytes(&bytes) != expected.file_digest {
         return Err(ArtifactStorageError::Corrupt);
     }
@@ -194,7 +199,12 @@ pub fn read_candidate_payload(
     artifact: &StableId,
 ) -> Result<Vec<u8>, ArtifactStorageError> {
     let manifest = eligible_manifest(registry, artifact)?;
-    let bytes = read_bounded(file, MAX_PAYLOAD)?;
+    let bytes = read_bounded(
+        file,
+        MAX_PAYLOAD,
+        manifest.encoded_size_bytes,
+        ArtifactStorageError::PayloadMismatch,
+    )?;
     validate_payload(manifest, &bytes)?;
     Ok(bytes)
 }
@@ -269,20 +279,52 @@ fn write_new(file: CreateOnlyArtifactFile, bytes: &[u8]) -> Result<(), ArtifactS
         .map_err(|_| ArtifactStorageError::Indeterminate)
 }
 
-fn read_bounded(file: File, limit: usize) -> Result<Vec<u8>, ArtifactStorageError> {
-    let mut guard = lock(file, LockKind::Shared)?;
-    if guard.0.metadata()?.len() > limit as u64 {
+fn read_bounded(
+    file: File,
+    limit: usize,
+    expected_bytes: u64,
+    mismatch: ArtifactStorageError,
+) -> Result<Vec<u8>, ArtifactStorageError> {
+    if expected_bytes > limit as u64 {
         return Err(ArtifactStorageError::Capacity);
     }
+    let mut guard = lock(file, LockKind::Shared)?;
+    let observed_bytes = guard.0.metadata()?.len();
+    // A tiny pin must not force a full global-quota read of a different file.
+    // Check under the shared lock before seeking, allocating or hashing bytes.
+    validate_read_length(observed_bytes, expected_bytes, limit, mismatch)?;
     guard.0.seek(SeekFrom::Start(0))?;
     let mut bytes = Vec::new();
     (&mut guard.0)
-        .take(limit as u64 + 1)
+        .take(expected_bytes + 1)
         .read_to_end(&mut bytes)?;
     if bytes.len() > limit {
         return Err(ArtifactStorageError::Capacity);
     }
+    // Locks are advisory on some hosts. Refuse observed growth/truncation too;
+    // the caller still verifies the full digest against its independent pin.
+    validate_read_length(guard.0.metadata()?.len(), expected_bytes, limit, mismatch)?;
+    if bytes.len() as u64 != expected_bytes {
+        return Err(mismatch);
+    }
     Ok(bytes)
+}
+
+fn validate_read_length(
+    observed_bytes: u64,
+    expected_bytes: u64,
+    limit: usize,
+    mismatch: ArtifactStorageError,
+) -> Result<(), ArtifactStorageError> {
+    if observed_bytes > limit as u64
+        || (observed_bytes == 0 && mismatch == ArtifactStorageError::PayloadMismatch)
+    {
+        return Err(ArtifactStorageError::Capacity);
+    }
+    if observed_bytes != expected_bytes {
+        return Err(mismatch);
+    }
+    Ok(())
 }
 
 fn encode_snapshot(
@@ -413,3 +455,7 @@ mod tests;
 #[cfg(test)]
 #[path = "storage_lock_tests.rs"]
 mod lock_tests;
+
+#[cfg(test)]
+#[path = "storage_budget_tests.rs"]
+mod budget_tests;

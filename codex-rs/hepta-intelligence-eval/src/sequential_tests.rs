@@ -1,5 +1,3 @@
-use pretty_assertions::assert_eq;
-
 use super::*;
 use codex_hepta_types::Generation;
 use codex_hepta_types::ProbabilityQ32;

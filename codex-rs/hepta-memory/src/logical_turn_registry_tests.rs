@@ -768,7 +768,9 @@ fn registry_policy_is_explicitly_local_only() {
         crate::LOGICAL_TURN_REGISTRY_NAMESPACE,
         "local_qualification_only"
     );
-    assert!(!crate::LOGICAL_TURN_REGISTRY_EXTERNAL_EFFECTS);
-    assert!(!crate::LOGICAL_TURN_REGISTRY_KG_WRITE_AUTHORITY);
-    assert!(!crate::LOGICAL_TURN_REGISTRY_PRODUCTION_CALLER);
+    const {
+        assert!(!crate::LOGICAL_TURN_REGISTRY_EXTERNAL_EFFECTS);
+        assert!(!crate::LOGICAL_TURN_REGISTRY_KG_WRITE_AUTHORITY);
+        assert!(!crate::LOGICAL_TURN_REGISTRY_PRODUCTION_CALLER);
+    }
 }

@@ -25,6 +25,39 @@ candidate = discover(root_fd, scope)
 # A separate typed adapter/reviewer must admit a canonical external manifest.
 ```
 
+For a real process boundary, the same reader is available as a module command.
+All operational inputs are mandatory; there is no current-host default, unit
+enumeration or recursive discovery:
+
+```sh
+PYTHONDONTWRITEBYTECODE=1 python3 -m assimilation.discovery \
+  --root /srv/hepta/frozen-debian-rootfs \
+  --scope-receipt /run/hepta/discovery-scope.json \
+  --unit etc/systemd/system/example.service
+```
+
+Run it from `tools/hepta-engineering-control`. The scope input has schema
+`hepta.assimilation.discovery-scope-input.v1` and exactly these fields:
+`schema`, `rootDevice`, `rootInode`, `hostIdentityDigest`,
+`enrollmentReceiptDigest`, `expiresUnixNs`, `osReleasePath`, and `unitPaths`.
+The repeated command-line units must match the nonempty receipt list exactly.
+The absolute root path must open to the receipt's device/inode. The input is
+bounded to 64 KiB, must be a single regular non-symlink file, rejects duplicate
+or unknown JSON members, and is read consistently before the root is opened.
+
+The CLI does not verify a signature, consent, revocation, enrollment or rootfs
+freeze. Digests are opaque references, not authentication. Success emits one
+canonical JSON line with status `DISCOVERED_CANDIDATE`, the private candidate,
+its digest, stable omission codes, explicit false trust checks, and
+`authorityGranted:false` / `activation:false`. Rejection emits a JSON line with
+status `REJECTED`, a fixed `error.code`, `partialCandidate:false`, and the same
+false authority/activation fields; stderr contains only that safe code. Exit 2
+means CLI arguments, JSON, shape or selection failed before discovery. Exit 3
+means unsupported platform, root open, or reader-side scope/path/content/target
+validation rejected; 70 means an internal failure. Standard `--help` is the sole
+human-readable, non-operational exit. No output-file option exists, so this
+command adds no write authority.
+
 The default OS source is `etc/os-release`. The host may explicitly select only
 `usr/lib/os-release` instead after resolving OS metadata precedence. There is no
 automatic fallback that silently ignores an etc override, and no symlink is
@@ -65,8 +98,8 @@ This partial graph must never be used as a service start/stop plan.
 
 ## Verification, migration and remaining work
 
-`python3 -m unittest -v test_assimilation_discovery.py` executes 28 disposable
-filesystem tests: actual reads, deterministic replay, bounds, retained package
+`python3 -m unittest discover -v -s . -p 'test_*.py'` executes the disposable
+filesystem and subprocess tests: actual reads, deterministic replay, bounds, retained package
 flags, ordering semantics, symlink/hardlink/FIFO rejection, expiry, identity and
 replacement races, no content mutation, safe output and descriptor cleanup.
 The dedicated read-only workflow repeats the entire engineering-control test

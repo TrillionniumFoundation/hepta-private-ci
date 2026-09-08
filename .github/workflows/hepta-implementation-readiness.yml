@@ -1,7 +1,22 @@
 name: Hepta pre-coding implementation readiness
 
+# Readiness validates the documentation/native-binding surface only when that
+# surface changes. Ordinary product source correctness remains owned by
+# blocking-ci.yml; relevant readiness pull requests retain exact-head and
+# deterministic merge-candidate validation.
 on:
   pull_request:
+    paths:
+      - ".github/workflows/hepta-implementation-readiness.yml"
+      - "docs/**"
+      - "qualification/module-execution-dossiers/**"
+      - "scripts/hepta*.py"
+      - "tools/hepta-engineering-control/**"
+      - "codex-rs/hepta-ndu/**"
+      - "codex-rs/hepta-learning-ledger/**"
+      - "codex-rs/hepta-cognitive-store/**"
+      - "codex-rs/hepta-neuron/**"
+      - "codex-rs/hepta-learning-artifacts/**"
   push:
     branches:
       - main
@@ -88,8 +103,8 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          test -n "$BASE_SHA"
-          test -n "$SOURCE_SHA"
+          [[ "$BASE_SHA" =~ ^[0-9a-f]{40}$ ]]
+          [[ "$SOURCE_SHA" =~ ^[0-9a-f]{40}$ ]]
           test -n "$PR_NUMBER"
           test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
           git cat-file -e "$BASE_SHA^{commit}"
