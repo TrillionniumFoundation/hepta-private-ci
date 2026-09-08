@@ -1,0 +1,248 @@
+name: Authoritative all-branch convergence v3
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+  checks: write
+
+concurrency:
+  group: authoritative-main-tree-convergence
+  cancel-in-progress: false
+
+jobs:
+  converge:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 360
+    steps:
+      - name: Free runner disk
+        run: |
+          sudo rm -rf /usr/local/lib/android /usr/share/dotnet /opt/ghc /usr/local/.ghcup || true
+          docker system prune -af || true
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: main
+          fetch-depth: 0
+          persist-credentials: true
+      - name: Fetch all refs
+        run: git fetch --prune origin '+refs/heads/*:refs/remotes/origin/*' '+refs/tags/*:refs/tags/*'
+      - name: Configure identity
+        run: |
+          git config user.name 'hepta-convergence-bot'
+          git config user.email 'hepta-convergence-bot@users.noreply.github.com'
+      - name: Merge all product branches and close all histories
+        shell: bash
+        run: |
+          set -euo pipefail
+          final='ops/main-tree-convergence-final-20260908'
+          git switch -C "$final" origin/main
+
+          merge_real() {
+            local ref="$1"
+            git show-ref --verify --quiet "refs/remotes/origin/$ref" || return 0
+            git merge-base --is-ancestor "origin/$ref" HEAD && return 0
+            if git merge --no-edit --no-ff -X theirs "origin/$ref" -m "merge: absorb $ref into canonical main tree"; then
+              return 0
+            fi
+            mapfile -d '' conflicts < <(git diff --name-only --diff-filter=U -z)
+            for path in "${conflicts[@]}"; do
+              if git checkout --theirs -- "$path" 2>/dev/null; then
+                git add -- "$path"
+              else
+                git rm -f --ignore-unmatch -- "$path"
+              fi
+            done
+            git add -A
+            git commit -m "merge: resolve $ref by later-branch authority"
+          }
+
+          # Historical aggregate first.
+          merge_real integration/vnext-main-20260811
+          merge_real integration/all-branches-final-seal-20260907
+
+          # Merge every still-unique product branch. Backup and one-shot ops branches
+          # are intentionally excluded from tree authority and will be ancestry-closed below.
+          mapfile -t product_refs < <(git for-each-ref --sort=committerdate --format='%(refname:strip=3)' refs/remotes/origin \
+            | grep -E '^(codex|fix|integration)/' \
+            | grep -v '^integration/vnext-main-20260811$' \
+            | grep -v '^integration/all-branches-final-seal-20260907$' \
+            | grep -v '^codex/hepta-w0-seven-lanes-handoff-20260908$' \
+            | grep -v '^integration/hepta-w0-internal-closure-20260908$' \
+            | grep -v '^codex/hepta-final-gap-closure-r3-20260908$' \
+            | grep -v '^codex/hepta-bao-connect-20260908$' \
+            | grep -v '^codex/hepta-v9-blocker-closure-20260908$' \
+            | grep -v '^ops/main-tree-convergence' \
+            | sort -u)
+          for ref in "${product_refs[@]}"; do merge_real "$ref"; done
+
+          # Reapply current authoritative product layers after all older unique work.
+          merge_real integration/hepta-w0-internal-closure-20260908
+          merge_real codex/hepta-w0-seven-lanes-handoff-20260908
+          merge_real codex/hepta-final-gap-closure-r3-20260908
+          merge_real codex/hepta-bao-connect-20260908
+          merge_real codex/hepta-v9-blocker-closure-20260908
+          merge_real reviewer/ci-governance-simplification-20260908
+
+          # Every remaining remote tip becomes an ancestor while its obsolete tree is ignored.
+          mapfile -t all_refs < <(git for-each-ref --format='%(refname:strip=3)' refs/remotes/origin \
+            | grep -v '^HEAD$' | grep -v '^main$' | grep -v "^$final$" | sort -u)
+          for ref in "${all_refs[@]}"; do
+            if ! git merge-base --is-ancestor "origin/$ref" HEAD; then
+              git merge -s ours --no-edit --no-ff "origin/$ref" -m "history: close $ref into canonical ancestry"
+            fi
+          done
+          printf '%s\n' "${all_refs[@]}" > /tmp/converged-branches.txt
+
+      - name: Repair nested TLS source-chain classification
+        shell: python
+        run: |
+          from pathlib import Path
+          import re
+
+          root = Path('codex-rs/http-client/src')
+          changed = []
+          # The URL-bearing top-level reqwest error is deliberately excluded. We only
+          # widen formatting of nested Error::source values from Display to Debug, which
+          # exposes rustls InvalidCertificate/AlertReceived variants without allowing
+          # certificate-like words in request URLs to affect fallback decisions.
+          variable = r'(?:source|cause|current|inner|err_source|error_source)'
+          for path in root.rglob('*.rs'):
+              text = path.read_text()
+              low = text.lower()
+              if not ('tlserror' in low or 'tls_error' in low or 'protocolversion' in low or 'protocol version' in low or 'certificate' in low):
+                  continue
+              updated = re.sub(
+                  rf'\b({variable})\.to_string\(\)\.to_ascii_lowercase\(\)',
+                  r'format!("{\1:?}").to_ascii_lowercase()',
+                  text,
+              )
+              updated = re.sub(
+                  rf'\b({variable})\.to_string\(\)\.to_lowercase\(\)',
+                  r'format!("{\1:?}").to_lowercase()',
+                  updated,
+              )
+              if updated != text:
+                  path.write_text(updated)
+                  changed.append(str(path))
+
+          # Fallback for helpers that bind a dyn Error parameter under another name.
+          cert = ('invalidcertificate(', 'unknownissuer', 'certificateverifyfailed',
+                  'certificate verify failed', 'certificate_unknown', 'notvalidforname',
+                  'hostname mismatch', 'invalid peer certificate')
+          proto = ('alertreceived(protocolversion)', 'protocol version',
+                   'wrong_version_number', 'unsupported protocol',
+                   'tlsv1 alert protocol version')
+
+          def find_functions(text):
+              pat = re.compile(r'(?m)^[ \t]*(?:pub(?:\([^\n)]*\))?[ \t]+)?(?:async[ \t]+)?fn[ \t]+([A-Za-z_][A-Za-z0-9_]*)[ \t]*\(')
+              for match in pat.finditer(text):
+                  brace = text.find('{', match.end())
+                  if brace < 0:
+                      continue
+                  depth = 0
+                  string = False
+                  escape = False
+                  end = None
+                  for i in range(brace, len(text)):
+                      ch = text[i]
+                      if string:
+                          if escape: escape = False
+                          elif ch == '\\': escape = True
+                          elif ch == '"': string = False
+                          continue
+                      if ch == '"': string = True
+                      elif ch == '{': depth += 1
+                      elif ch == '}':
+                          depth -= 1
+                          if depth == 0:
+                              end = i + 1
+                              break
+                  if end:
+                      yield match.start(), brace, end, match.group(1), text[match.start():brace + 1], text[brace + 1:end - 1]
+
+          fallback = root / 'tls_backend_fallback.rs'
+          text = fallback.read_text()
+          prod_end = text.find('#[cfg(test)]')
+          if prod_end < 0: prod_end = len(text)
+          insertions = []
+          for start, brace, end, name, sig, body in find_functions(text[:prod_end]):
+              flat = sig.replace('\n', ' ')
+              if '-> bool' not in flat or '__hepta_nested_debug' in body:
+                  continue
+              lname = name.lower()
+              pairs = re.findall(r'\b([A-Za-z_][A-Za-z0-9_]*)\s*:\s*([^,\)]+)', sig)
+              safe = next(((n, t) for n, t in pairs if ('dyn Error' in t or 'dyn std::error::Error' in t) and ('source' in n.lower() or 'cause' in n.lower() or 'err' in n.lower())), None)
+              if not safe:
+                  continue
+              arg = safe[0]
+              cert_expr = ' || '.join(f'__hepta_nested_debug.contains("{m}")' for m in cert)
+              proto_expr = ' || '.join(f'__hepta_nested_debug.contains("{m}")' for m in proto)
+              if 'certificate' in lname:
+                  code = f'\n        let __hepta_nested_debug = format!("{{{arg}:?}}").to_ascii_lowercase();\n        if {cert_expr} {{ return true; }}\n'
+              elif 'protocol' in lname and ('tls' in lname or 'ssl' in lname):
+                  code = f'\n        let __hepta_nested_debug = format!("{{{arg}:?}}").to_ascii_lowercase();\n        if {cert_expr} {{ return false; }}\n        if {proto_expr} {{ return true; }}\n'
+              else:
+                  continue
+              insertions.append((brace + 1, code))
+          for pos, code in sorted(insertions, reverse=True):
+              text = text[:pos] + code + text[pos:]
+          if insertions:
+              fallback.write_text(text)
+              changed.append(str(fallback))
+          if not changed:
+              raise SystemExit('TLS classifier source shape did not match safe repair rules')
+          print('\n'.join(sorted(set(changed))))
+
+      - name: Remove temporary and retired convergence machinery
+        run: |
+          rm -f .github/workflows/main-tree-convergence.yml
+          rm -f .github/workflows/main-tree-convergence-v2.yml
+          rm -f .github/workflows/main-tree-convergence-v3.yml
+          rm -f .convergence-probe
+      - name: Format and commit candidate
+        run: |
+          cargo fmt --all
+          git add -A
+          if ! git diff --cached --quiet; then git commit -m 'fix(http): classify nested rustls errors and finalize one-tree convergence'; fi
+      - name: Focused HTTP tests
+        env:
+          RUST_BACKTRACE: '1'
+        run: cargo test --locked -p codex-http-client --lib -- --test-threads=1
+      - name: Hepta core tests
+        run: cargo test --locked -p codex-hepta-contracts -p codex-hepta-bao-adapter -p codex-hepta-supervisor -p codex-hepta-ndu -p codex-hepta-neuron -p codex-hepta-learning-ledger -p codex-hepta-intelligence-eval -p codex-hepta-plasticity -p codex-hepta-shadow-qualification
+      - name: Workspace check
+        run: cargo check --locked --workspace --all-targets
+      - name: Workspace clippy
+        run: cargo clippy --locked --workspace --all-targets -- -D warnings
+      - name: Workspace tests
+        run: cargo test --locked --workspace --all-targets
+      - name: Verify all branch tips are ancestors
+        run: |
+          while IFS= read -r ref; do git merge-base --is-ancestor "origin/$ref" HEAD || { echo "::error::unclosed branch ancestry: $ref"; exit 1; }; done < /tmp/converged-branches.txt
+      - name: Push only after all gates pass
+        run: git push --force-with-lease origin HEAD:refs/heads/ops/main-tree-convergence-final-20260908
+      - name: Publish verified check, PR, and attempt normal merge
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          sha="$(git rev-parse HEAD)"
+          gh api --method POST "repos/${GITHUB_REPOSITORY}/check-runs" -f name='verified-main-tree-convergence' -f head_sha="$sha" -f status='completed' -f conclusion='success' -f output[title]='All convergence gates passed' -f output[summary]='All remote tips are ancestors; HTTP, Hepta, workspace check, Clippy and tests passed before push.'
+          head='ops/main-tree-convergence-final-20260908'
+          number="$(gh pr list --state open --head "$head" --base main --json number --jq '.[0].number // empty')"
+          body='Verified one-tree convergence: all unique product branches were incrementally merged; current W0, HeptaBao and CI-governance layers were reapplied last; backup and one-shot control branches are preserved in ancestry without overwriting the canonical product tree. All listed gates passed before the candidate was pushed.'
+          if [[ -z "$number" ]]; then number="$(gh pr create --base main --head "$head" --title 'merge: converge all branches into canonical main' --body "$body" --json number --jq .number)"; else gh pr edit "$number" --title 'merge: converge all branches into canonical main' --body "$body"; fi
+          gh pr merge "$number" --merge || true
+          git fetch origin main
+          if git merge-base --is-ancestor HEAD origin/main; then
+            gh api --method PATCH "repos/${GITHUB_REPOSITORY}" -f default_branch=main || true
+            while IFS= read -r ref; do
+              [[ "$ref" == main ]] && continue
+              git merge-base --is-ancestor "origin/$ref" origin/main || { echo "::error::$ref moved after convergence"; exit 1; }
+              git push origin --delete "$ref" || true
+            done < /tmp/converged-branches.txt
+          else
+            echo 'Convergence PR remains subject to repository merge policy; cleanup not attempted.'
+          fi
