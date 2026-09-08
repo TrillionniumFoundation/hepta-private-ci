@@ -53,22 +53,13 @@ def patch_runtime_helper() -> None:
 
 def patch_linux_timeout() -> None:
     path = Path(".github/workflows/rust-ci.yml")
-    text = path.read_text(encoding="utf-8")
-    start_marker = "  argument_comment_lint:\n"
-    end_marker = "\n  argument_comment_lint_macos:\n"
-    if text.count(start_marker) != 1 or text.count(end_marker) != 1:
-        raise SystemExit("Linux argument-comment job boundary is not unique")
-    prefix, remainder = text.split(start_marker, 1)
-    block, suffix = remainder.split(end_marker, 1)
-    old_timeout = "    timeout-minutes: 30\n"
-    new_timeout = "    timeout-minutes: 60\n"
-    if block.count(old_timeout) != 1:
-        raise SystemExit("Linux argument-comment timeout is not exactly 30 once")
-    block = block.replace(old_timeout, new_timeout, 1)
-    path.write_text(
-        prefix + start_marker + block + end_marker + suffix,
-        encoding="utf-8",
+    old = (
+        "          - name: Linux\n"
+        "            runner: ubuntu-24.04\n"
+        "            timeout_minutes: 30\n"
     )
+    new = old.replace("timeout_minutes: 30", "timeout_minutes: 60")
+    replace_once(path, old, new, "Linux argument-comment matrix timeout")
 
 
 def remove_consumed_assets() -> None:
