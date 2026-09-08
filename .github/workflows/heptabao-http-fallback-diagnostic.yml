@@ -1,0 +1,66 @@
+name: HeptaBao HTTP fallback diagnostic
+
+# Branch-only incident diagnostic. Delete with its branch after the shared
+# codex-http-client failure is resolved; never merge this workflow to main.
+on:
+  push:
+    branches:
+      - ops/heptabao-http-fallback-diagnostic-20260908
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: heptabao-http-fallback-diagnostic-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  http-client:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - name: Check out exact diagnostic source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+          fetch-depth: 0
+
+      - name: Prepare repository CI environment
+        uses: ./.github/actions/setup-ci
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+
+      - name: Record bounded environment shape
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import json, os
+          names = [
+              "HTTP_PROXY", "HTTPS_PROXY", "ALL_PROXY", "NO_PROXY",
+              "http_proxy", "https_proxy", "all_proxy", "no_proxy",
+              "SSL_CERT_FILE", "SSL_CERT_DIR", "REQUESTS_CA_BUNDLE",
+          ]
+          print(json.dumps({name: {"present": name in os.environ, "length": len(os.environ.get(name, ""))} for name in names}, sort_keys=True))
+          PY
+
+      - name: Run shared HTTP client tests serially with backtraces
+        working-directory: codex-rs
+        shell: bash
+        env:
+          RUST_BACKTRACE: full
+          RUST_LOG: codex_http_client=trace,reqwest=trace,hyper=debug
+        run: |
+          set -euo pipefail
+          cargo test --locked -p codex-http-client --lib -- --nocapture --test-threads=1 2>&1 | tee "$RUNNER_TEMP/codex-http-client.log"
+
+      - name: Retain exact diagnostic log
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: heptabao-http-fallback-${{ github.sha }}
+          path: ${{ runner.temp }}/codex-http-client.log
+          if-no-files-found: error
+          retention-days: 7
