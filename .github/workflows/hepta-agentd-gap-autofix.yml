@@ -1,0 +1,49 @@
+name: Hepta Agentd gap verification
+
+on:
+  push:
+    branches:
+      - codex/hepta-all-gap-closure-20260908
+    paths:
+      - .github/workflows/hepta-agentd-gap-autofix.yml
+      - .github/scripts/hepta_agentd_gap_patch.py
+      - codex-rs/hepta-agentd/**
+      - codex-rs/uds/src/lib.rs
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-agentd-gap-verification
+  cancel-in-progress: false
+
+jobs:
+  close-agentd-gaps:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Recompute deterministic repair
+        run: python3 .github/scripts/hepta_agentd_gap_patch.py
+
+      - name: Canonical formatting
+        run: cargo fmt --manifest-path codex-rs/Cargo.toml --package codex-hepta-agentd --package codex-uds
+
+      - name: Verify repaired packages
+        working-directory: codex-rs
+        run: |
+          set -euo pipefail
+          cargo test --locked -p codex-uds -- --nocapture
+          cargo test --locked -p codex-hepta-agentd --features qualification-cognitive-write runtime::tests::qualification_ -- --nocapture --test-threads=1
+          cargo clippy --locked -p codex-uds -p codex-hepta-agentd --all-targets --features codex-hepta-agentd/qualification-cognitive-write -- -D warnings
+          cargo fmt --manifest-path Cargo.toml --package codex-hepta-agentd --package codex-uds -- --check
+
+      - name: Require committed repair parity
+        run: |
+          set -euo pipefail
+          git diff --check
+          git diff --exit-code -- codex-rs/hepta-agentd codex-rs/uds/src/lib.rs

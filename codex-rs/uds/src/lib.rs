@@ -103,6 +103,7 @@ mod platform {
     use std::io;
     use std::io::ErrorKind;
     use std::io::Result as IoResult;
+    use std::os::unix::ffi::OsStrExt;
     use std::os::unix::fs::FileTypeExt;
     use std::os::unix::fs::PermissionsExt;
     use std::os::unix::io::AsRawFd;
@@ -154,7 +155,38 @@ mod platform {
         Ok(())
     }
 
+    // sockaddr_un::sun_path reserves one trailing NUL byte. Linux/Android
+    // expose 108 bytes; Apple and BSD targets expose 104. Reject before the
+    // syscall so callers see the real contract violation instead of a platform-
+    // specific EINVAL/EPERM/ENOENT translation.
+    #[cfg(any(target_os = "linux", target_os = "android"))]
+    const MAX_PATHNAME_SOCKET_BYTES: usize = 107;
+    #[cfg(not(any(target_os = "linux", target_os = "android")))]
+    const MAX_PATHNAME_SOCKET_BYTES: usize = 103;
+
+    fn validate_socket_path(socket_path: &Path) -> IoResult<()> {
+        let raw = socket_path.as_os_str().as_bytes();
+        let length = raw.len();
+        if length > MAX_PATHNAME_SOCKET_BYTES {
+            Err(io::Error::new(
+                ErrorKind::InvalidInput,
+                format!(
+                    "Unix socket path is {length} bytes; platform maximum is {MAX_PATHNAME_SOCKET_BYTES}: {}",
+                    socket_path.display()
+                ),
+            ))
+        } else if raw.contains(&0) {
+            Err(io::Error::new(
+                ErrorKind::InvalidInput,
+                "Unix socket path contains a NUL byte",
+            ))
+        } else {
+            Ok(())
+        }
+    }
+
     pub(super) async fn bind_listener(socket_path: &Path) -> IoResult<Listener> {
+        validate_socket_path(socket_path)?;
         UnixListener::bind(socket_path).map(Listener)
     }
 
@@ -165,6 +197,7 @@ mod platform {
     }
 
     pub(super) async fn connect_stream(socket_path: &Path) -> IoResult<Stream> {
+        validate_socket_path(socket_path)?;
         UnixStream::connect(socket_path).await
     }
 
@@ -248,7 +281,22 @@ mod platform {
     mod tests {
         use std::io::ErrorKind;
 
+        use super::MAX_PATHNAME_SOCKET_BYTES;
         use super::ensure_peer_uid;
+        use super::validate_socket_path;
+        use std::path::Path;
+
+        #[test]
+        fn pathname_socket_limit_rejects_before_bind_or_connect() {
+            let exact = format!("/{}", "s".repeat(MAX_PATHNAME_SOCKET_BYTES - 1));
+            validate_socket_path(Path::new(&exact)).expect("maximum path must fit");
+
+            let oversized = format!("/{}", "s".repeat(MAX_PATHNAME_SOCKET_BYTES));
+            let error = validate_socket_path(Path::new(&oversized))
+                .expect_err("overlong socket path must fail before the syscall");
+            assert_eq!(error.kind(), ErrorKind::InvalidInput);
+            assert!(error.to_string().contains("platform maximum"));
+        }
 
         #[test]
         fn peer_uid_gate_accepts_only_the_process_owner() {

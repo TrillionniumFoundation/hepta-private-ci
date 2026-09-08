@@ -51,7 +51,14 @@ pub(crate) struct FleetHarness {
 
 impl FleetHarness {
     pub(crate) fn new() -> Result<Self> {
-        let temp = tempfile::tempdir()?;
+        // macOS limits pathname-based AF_UNIX endpoints to 103 bytes. Its
+        // hosted-runner TMPDIR is intentionally deep, so use a short private root
+        // for process qualification rather than hiding a bind failure as EPERM.
+        let temp = if cfg!(target_os = "macos") {
+            tempfile::Builder::new().prefix("hpa").tempdir_in("/tmp")?
+        } else {
+            tempfile::tempdir()?
+        };
         let root = temp.path().canonicalize()?;
         let fleet_root = HeptaFleetRoot::parse(root.join("fleet"))?;
         let registry = FleetRegistry::initialize(fleet_root.clone())?;
