@@ -1,0 +1,174 @@
+name: Hepta contracts runfiles fix 20260909
+
+on:
+  push:
+    branches:
+      - ops/hepta-contracts-runfiles-fix-20260909-r1
+
+permissions:
+  contents: write
+
+concurrency:
+  group: hepta-contracts-runfiles-fix-20260909-r1
+  cancel-in-progress: false
+
+env:
+  SOURCE_SHA: d2a3c6330a351ae4e352387228f627bd3b5eee7a
+  BASE_SHA: 04f60466394a024c218ce66b1b32d1c42c462985
+  CANDIDATE_REF: refs/heads/codex/hepta-all-gap-closure-20260908
+
+jobs:
+  repair-and-qualify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Bind exact single-parent source
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          test "$(git rev-parse HEAD^)" = "$BASE_SHA"
+          test "$(git rev-list --count "$BASE_SHA"..HEAD)" = 1
+
+      - name: Apply runfiles-aware caller path repair
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+
+          cargo = Path("codex-rs/hepta-contracts/Cargo.toml")
+          cargo_text = cargo.read_text(encoding="utf-8")
+          marker = "[dev-dependencies]\n"
+          addition = "[dev-dependencies]\ncodex-utils-cargo-bin = { workspace = true }\n"
+          if cargo_text.count(marker) != 1:
+              raise SystemExit("hepta-contracts dev-dependencies marker drifted")
+          if "codex-utils-cargo-bin" in cargo_text:
+              raise SystemExit("hepta-contracts already has cargo-bin dependency")
+          cargo.write_text(cargo_text.replace(marker, addition, 1), encoding="utf-8")
+
+          tests = Path("codex-rs/hepta-contracts/src/callers_manifest_tests.rs")
+          text = tests.read_text(encoding="utf-8")
+          surface_marker = '''fn surface<'a>(manifest: &'a CallersManifest, crate_name: &str) -> &'a Surface {
+              manifest
+                  .surface
+                  .iter()
+                  .find(|surface| surface.crate_name == crate_name)
+                  .unwrap_or_else(|| panic!("missing product surface {crate_name}"))
+          }
+          '''
+          helper = surface_marker + '''
+          fn worktree_root() -> std::path::PathBuf {
+              codex_utils_cargo_bin::repo_root()
+                  .expect("resolve repository root under Cargo or Bazel runfiles")
+          }
+          '''
+          if text.count(surface_marker) != 1:
+              raise SystemExit("callers manifest surface helper marker drifted")
+          text = text.replace(surface_marker, helper, 1)
+
+          old_root = '''let worktree_root = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
+                  .parent()
+                  .and_then(std::path::Path::parent)
+                  .expect("hepta-contracts must live under codex-rs");'''
+          count = text.count(old_root)
+          if count != 3:
+              raise SystemExit(f"expected three checkout-root lookups, found {count}")
+          text = text.replace(old_root, "let worktree_root = worktree_root();")
+          tests.write_text(text, encoding="utf-8")
+          PY
+
+          cargo check --manifest-path codex-rs/Cargo.toml \
+            -p codex-hepta-contracts --tests
+          cargo fmt --manifest-path codex-rs/Cargo.toml \
+            --package codex-hepta-contracts
+          git diff --check
+          changed="$(git diff --name-only | sort)"
+          expected="$(printf '%s\n' \
+            codex-rs/Cargo.lock \
+            codex-rs/hepta-contracts/Cargo.toml \
+            codex-rs/hepta-contracts/src/callers_manifest_tests.rs | sort)"
+          test "$changed" = "$expected"
+
+      - name: Cargo qualification
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo test --locked -p codex-hepta-contracts --all-targets -- --nocapture
+          cargo clippy --locked --no-deps \
+            -p codex-hepta-contracts --all-targets -- -D warnings
+          cargo fmt --manifest-path Cargo.toml \
+            --package codex-hepta-contracts -- --check
+
+      - name: Commit candidate object before Bazel qualification
+        id: candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "hepta-gap-materializer"
+          git config user.email "hepta-gap-materializer@users.noreply.github.com"
+          git add \
+            codex-rs/Cargo.lock \
+            codex-rs/hepta-contracts/Cargo.toml \
+            codex-rs/hepta-contracts/src/callers_manifest_tests.rs
+          test -z "$(git diff --name-only)"
+          git diff --cached --check
+          git commit --amend \
+            -m "fix(hepta): make caller truth tests runfiles-aware" \
+            -m "Resolve repository-relative caller paths through the shared Cargo/Bazel repo-root marker, preserving exact data inputs and all fail-closed G4/G5 truth assertions without skipping tests." \
+            -m "Signed-off-by: OpenAI <noreply@openai.com>"
+          amended="$(git rev-parse HEAD)"
+          test "$(git rev-parse HEAD^)" = "$BASE_SHA"
+          test "$(git rev-list --count "$BASE_SHA"..HEAD)" = 1
+          printf 'sha=%s\n' "$amended" >> "$GITHUB_OUTPUT"
+
+      - name: Bazel source-head qualification
+        shell: bash
+        run: |
+          set -euo pipefail
+          bazel query //codex-rs/hepta-contracts:all
+          bazel test //codex-rs/hepta-contracts:all --test_output=errors
+          git diff --check
+          git diff --exit-code
+          test -z "$(git status --porcelain --untracked-files=no)"
+
+      - name: Bazel prospective merge qualification
+        shell: bash
+        env:
+          AMENDED_SHA: ${{ steps.candidate.outputs.sha }}
+        run: |
+          set -euo pipefail
+          tree="$(git merge-tree --write-tree "$BASE_SHA" "$AMENDED_SHA")"
+          test "$tree" = "$(git rev-parse "$AMENDED_SHA^{tree}")"
+          export GIT_AUTHOR_NAME=hepta-qualification
+          export GIT_COMMITTER_NAME=hepta-qualification
+          export GIT_AUTHOR_EMAIL=qualification@invalid
+          export GIT_COMMITTER_EMAIL=qualification@invalid
+          export GIT_AUTHOR_DATE=2000-01-01T00:00:00Z
+          export GIT_COMMITTER_DATE=2000-01-01T00:00:00Z
+          merge="$(printf '%s\n' 'Qualification only; no activation or release' | git commit-tree "$tree" -p "$BASE_SHA" -p "$AMENDED_SHA")"
+          git checkout --detach "$merge"
+          test "$(git rev-list --parents -n 1 HEAD)" = "$merge $BASE_SHA $AMENDED_SHA"
+          bazel test //codex-rs/hepta-contracts:all --test_output=errors
+          git diff --check
+          git diff --exit-code
+          test -z "$(git status --porcelain --untracked-files=no)"
+
+      - name: Atomically publish repaired single-parent candidate
+        shell: bash
+        env:
+          AMENDED_SHA: ${{ steps.candidate.outputs.sha }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse "$AMENDED_SHA^")" = "$BASE_SHA"
+          git push \
+            --force-with-lease="${CANDIDATE_REF}:${SOURCE_SHA}" \
+            origin "${AMENDED_SHA}:${CANDIDATE_REF}"
+          git rev-parse "$AMENDED_SHA" "$AMENDED_SHA^{tree}"
