@@ -1,0 +1,77 @@
+name: Final-main V11 targeted validation
+
+on:
+  push:
+    branches:
+      - ops/final-main-repair-v11-targeted-20260908
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 180
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ops/final-main-repair-v11-targeted-20260908
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: ./.github/actions/setup-ci
+      - name: Install native prerequisites
+        run: |
+          sudo apt-get update -y
+          sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends build-essential clang libcap-dev libssl-dev pkg-config bubblewrap
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: 1.95.0
+          components: clippy,rustfmt
+      - uses: ./.github/actions/setup-rusty-v8
+        with:
+          target: x86_64-unknown-linux-gnu
+      - name: Apply exact V11 patch and validate affected packages
+        env:
+          CARGO_INCREMENTAL: "0"
+          CARGO_PROFILE_DEV_DEBUG: "0"
+          CARGO_PROFILE_TEST_DEBUG: "0"
+          CARGO_BUILD_JOBS: "2"
+          CARGO_TARGET_DIR: ${{ runner.temp }}/cargo-target-v11-targeted
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          out="$RUNNER_TEMP/v11-targeted"
+          mkdir -p "$out" "$CARGO_TARGET_DIR"
+          cat .github/patches/final-main-v11.patch.gz.b64.part* | base64 --decode > "$RUNNER_TEMP/v11.patch.gz"
+          gzip -dc "$RUNNER_TEMP/v11.patch.gz" > "$RUNNER_TEMP/v11.patch"
+          test "$(wc -c < "$RUNNER_TEMP/v11.patch")" -eq 56259
+          git fetch origin candidate/final-main-v6-20260908
+          git switch --detach 04f60466394a024c218ce66b1b32d1c42c462985
+          [[ "$(git rev-parse HEAD^{tree})" == "a9797f471d27194e29c13f49723d4508ac52cb84" ]]
+          git apply --check "$RUNNER_TEMP/v11.patch"
+          git apply "$RUNNER_TEMP/v11.patch"
+          (cd codex-rs && cargo fmt --all)
+          packages=(
+            codex-core codex-app-server codex-hepta-memory-extension
+            codex-queue-extension codex-hepta-agent-protocol
+            codex-hepta-supervisor codex-hepta-agentd
+          )
+          args=()
+          for package in "${packages[@]}"; do args+=( -p "$package" ); done
+          set +e
+          (cd codex-rs && cargo check --locked "${args[@]}" --all-targets) 2>&1 | tee "$out/check.log"
+          check_rc=${PIPESTATUS[0]}
+          (cd codex-rs && cargo clippy --locked "${args[@]}" --all-targets -- -D warnings) 2>&1 | tee "$out/clippy.log"
+          clippy_rc=${PIPESTATUS[0]}
+          set -e
+          printf 'check=%s\nclippy=%s\n' "$check_rc" "$clippy_rc" | tee "$out/result.txt"
+          git diff --check
+          exit $(( check_rc != 0 || clippy_rc != 0 ))
+      - name: Upload targeted logs
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-v11-targeted-logs
+          path: ${{ runner.temp }}/v11-targeted/
+          if-no-files-found: warn
+          retention-days: 30
