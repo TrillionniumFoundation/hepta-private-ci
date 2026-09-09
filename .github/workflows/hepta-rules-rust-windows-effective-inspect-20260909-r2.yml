@@ -1,0 +1,96 @@
+name: Inspect effective rules_rust Windows link function r2
+
+on:
+  push:
+    branches:
+      - ops/hepta-rules-rust-windows-effective-inspect-20260909-r2
+
+permissions:
+  contents: read
+
+jobs:
+  inspect:
+    runs-on: windows-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 0
+
+      - name: Bind exact candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          expected_head=05981ed1adfb931a87a47b0606f1cedaa69f123b
+          expected_parent=04f60466394a024c218ce66b1b32d1c42c462985
+          git fetch --no-tags origin \
+            +refs/heads/codex/hepta-all-gap-closure-20260908:refs/remotes/origin/hepta-exact-candidate
+          test "$(git rev-parse refs/remotes/origin/hepta-exact-candidate)" = "${expected_head}"
+          git checkout --detach "${expected_head}"
+          git config core.autocrlf false
+          git reset --hard "${expected_head}"
+          git clean -ffdx
+          test "$(git rev-parse HEAD^)" = "${expected_parent}"
+          test "$(git rev-list --count "${expected_parent}"..HEAD)" = 1
+          test -z "$(git status --porcelain)"
+
+      - name: Prepare Bazel CI
+        uses: ./.github/actions/prepare-bazel-ci
+        with:
+          target: x86_64-pc-windows-msvc
+          cache-scope: rules-rust-effective-inspect-r2
+
+      - name: Print effective Windows link function
+        shell: bash
+        run: |
+          set -euo pipefail
+          bazel query @rules_rust//rust/settings:extra_rustc_flag >/dev/null
+          OUTPUT_BASE="${BAZEL_OUTPUT_BASE}" python - <<'PY'
+          import os
+          import sys
+          from pathlib import Path
+
+          root = Path(os.environ["OUTPUT_BASE"]) / "external"
+          candidates = sorted(root.glob("**/rust/private/rustc.bzl"))
+          matches = []
+          for path in candidates:
+              try:
+                  text = path.read_text(encoding="utf-8")
+              except (OSError, UnicodeError):
+                  continue
+              if (
+                  "rules_rust" in path.as_posix()
+                  and "def _add_user_link_flags(ret, linker_input):" in text
+                  and "def _make_link_flags_windows(make_link_flags_args, flavor_msvc, use_direct_driver):" in text
+              ):
+                  matches.append((path, text.splitlines()))
+          if len(matches) != 1:
+              print(f"expected one effective rules_rust source, found {len(matches)}", file=sys.stderr)
+              for path in candidates:
+                  print(path.as_posix(), file=sys.stderr)
+              raise SystemExit(1)
+
+          path, lines = matches[0]
+          header = "def _make_link_flags_windows(make_link_flags_args, flavor_msvc, use_direct_driver):"
+          start = next(i for i, line in enumerate(lines) if line == header)
+          end = next(
+              (i for i in range(start + 1, len(lines)) if lines[i].startswith("def ")),
+              len(lines),
+          )
+          print(f"EFFECTIVE_SOURCE={path.as_posix()}")
+          print(f"WINDOWS_FUNCTION_RANGE={start + 1}:{end}")
+          print("WINDOWS_FUNCTION_BEGIN")
+          for number, line in enumerate(lines[start:end], start=start + 1):
+              print(f"{number:05d}|{line}")
+          print("WINDOWS_FUNCTION_END")
+
+          print("USER_LINK_OCCURRENCES_BEGIN")
+          for number, line in enumerate(lines, start=1):
+              if "user_link_flags" in line or "_add_user_link_flags" in line:
+                  lo = max(1, number - 3)
+                  hi = min(len(lines), number + 3)
+                  print(f"--- occurrence line {number} window {lo}:{hi} ---")
+                  for window_number in range(lo, hi + 1):
+                      print(f"{window_number:05d}|{lines[window_number - 1]}")
+          print("USER_LINK_OCCURRENCES_END")
+          PY
