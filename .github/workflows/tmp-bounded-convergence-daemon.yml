@@ -1,0 +1,194 @@
+name: tmp-bounded-convergence-daemon
+
+on:
+  push:
+    branches:
+      - ops/lane-f-final-source-export-20260910
+    paths:
+      - .github/workflows/tmp-bounded-convergence-daemon.yml
+
+permissions:
+  actions: read
+  checks: read
+  contents: write
+  pull-requests: write
+
+env:
+  CANDIDATE_BRANCH: integration/hepta-seven-lane-gap-closure-20260910-r2
+  BASE_BRANCH: codex/hepta-all-gap-closure-20260908
+
+jobs:
+  converge:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 240
+    steps:
+      - name: Check out carrier
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 0
+
+      - name: Reconcile current stack for bounded rounds
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          mkdir -p "${RUNNER_TEMP}/daemon"
+
+          normalize_and_validate() {
+            python3 - <<'PY'
+          from __future__ import annotations
+          import hashlib,json
+          from pathlib import Path
+          root=Path.cwd()
+          path=root/'qualification/module-execution-dossiers/NATIVE_BINDINGS.json'
+          data=json.loads(path.read_text(encoding='utf-8'))
+          rows=data.get('observations')
+          if not isinstance(rows,list) or len(rows)!=40:
+              raise SystemExit('native source ledger is not exactly 40 modules')
+          seen=set()
+          for row in rows:
+              module=row.get('module'); source_path=row.get('path')
+              if not isinstance(module,str) or module in seen:
+                  raise SystemExit(f'invalid native module {module!r}')
+              seen.add(module)
+              if not isinstance(source_path,str):
+                  raise SystemExit(f'missing source path for {module}')
+              source=root/source_path
+              if not source.is_file(): raise SystemExit(f'missing source {source_path}')
+              payload=source.read_bytes()
+              row['blobSha']=hashlib.sha1(f'blob {len(payload)}\0'.encode('ascii')+payload,usedforsecurity=False).hexdigest()
+          path.write_text(json.dumps(data,indent=2,ensure_ascii=False)+'\n',encoding='utf-8')
+          PY
+            find .github/workflows -maxdepth 1 -type f \( -name 'tmp-*.yml' -o -name 'tmp-*.yaml' \) -delete
+            python3 scripts/hepta-readiness.py generate-status || true
+            python3 scripts/hepta-implementation-dossiers.py generate-status || true
+            python3 scripts/hepta-algorithm-docs.py generate-status || true
+            python3 scripts/hepta-cns.py generate-status || true
+            python3 scripts/hepta-docs.py generate-status || true
+            git add -A
+            git diff --cached --check
+            if ! git diff --cached --quiet; then
+              git commit -m 'chore(convergence): reconcile newly settled stack heads'
+            fi
+            test -z "$(git status --porcelain)"
+            python3 scripts/hepta-readiness.py generate-status --check
+            python3 scripts/hepta-readiness.py verify
+            python3 scripts/hepta-implementation-dossiers.py generate-status --check
+            python3 scripts/hepta-implementation-dossiers.py verify
+            python3 qualification/module-execution-dossiers/implementation_contracts.py verify-repository
+            python3 scripts/hepta-module-docs.py verify
+            python3 scripts/hepta-algorithm-docs.py verify-sources
+            python3 scripts/hepta-algorithm-docs.py generate-status --check
+            python3 scripts/hepta-algorithm-docs.py verify
+            python3 scripts/hepta-docs.py generate-status
+            git diff --exit-code -- docs/STATUS.md
+            python3 scripts/hepta-docs.py verify
+            if [[ -f scripts/hepta-lane-b-truth.py ]]; then
+              python3 scripts/hepta-lane-b-truth.py verify
+              python3 scripts/hepta-lane-b-docs.py verify
+            fi
+            git diff --check
+            test -z "$(git status --porcelain)"
+          }
+
+          count_gaps() {
+            python3 - <<'PY'
+          import json
+          from collections import Counter
+          from pathlib import Path
+          statuses={'planned','source_implemented_execution_pending','source_implemented_semantic_review_pending','blocked_external'}
+          ignored={'.git','node_modules','target','bazel-bin','bazel-out','bazel-testlogs'}
+          counts=Counter()
+          def walk(x):
+              if isinstance(x,dict):
+                  for v in x.values():
+                      if isinstance(v,str) and v in statuses: counts[v]+=1
+                      walk(v)
+              elif isinstance(x,list):
+                  for v in x: walk(v)
+          for p in Path.cwd().rglob('*.json'):
+              if any(part in ignored for part in p.parts): continue
+              try: walk(json.loads(p.read_text(encoding='utf-8')))
+              except Exception: pass
+          print(counts['planned']+counts['source_implemented_execution_pending'],counts['source_implemented_semantic_review_pending'],counts['blocked_external'])
+          PY
+          }
+
+          for round in 1 2 3 4 5 6; do
+            echo "===== CONVERGENCE ROUND ${round} ====="
+            git fetch origin '+refs/heads/*:refs/remotes/origin/*' --prune
+            if ! git show-ref --verify --quiet "refs/remotes/origin/${CANDIDATE_BRANCH}"; then
+              sleep 600
+              continue
+            fi
+            git reset --hard "refs/remotes/origin/${CANDIDATE_BRANCH}"
+            git clean -ffd
+            original="$(git rev-parse HEAD)"
+
+            gh pr list --repo "${GITHUB_REPOSITORY}" --state open --limit 100 \
+              --json number,title,headRefName,baseRefName,updatedAt >"${RUNNER_TEMP}/daemon/prs.json"
+            python3 - "${RUNNER_TEMP}/daemon/prs.json" "${CANDIDATE_BRANCH}" >"${RUNNER_TEMP}/daemon/heads.tsv" <<'PY'
+          import json,re,sys
+          from datetime import datetime,timezone
+          rows=json.load(open(sys.argv[1],encoding='utf-8')); candidate=sys.argv[2]
+          cutoff=datetime(2026,9,9,tzinfo=timezone.utc)
+          pat=re.compile(r'(lane[ -]?[a-g]\b|gap[- ]closure|native[- ]source|external[- ]gap|convergence)',re.I)
+          allowed={'main','codex/hepta-all-gap-closure-20260908','codex/hepta-native-source-closed-world-20260909'}
+          for r in sorted(rows,key=lambda x:int(x['number'])):
+              head=r.get('headRefName') or ''; base=r.get('baseRefName') or ''; title=r.get('title') or ''
+              try: stamp=datetime.fromisoformat((r.get('updatedAt') or '').replace('Z','+00:00'))
+              except Exception: continue
+              if stamp<cutoff or head==candidate or base not in allowed: continue
+              if not head.startswith(('codex/','integration/')) or head.startswith(('archive/','backup/','ops/')): continue
+              if not (pat.search(title) or pat.search(head)): continue
+              print(f"{r['number']}\t{head}\t{title.replace(chr(9),' ')}")
+          PY
+
+            conflict=0
+            while IFS=$'\t' read -r number branch title; do
+              [[ -z "${branch}" ]] && continue
+              ref="refs/remotes/origin/${branch}"
+              git show-ref --verify --quiet "${ref}" || { conflict=1; break; }
+              git merge-base --is-ancestor "${ref}" HEAD && continue
+              if git merge --no-ff --no-edit "${ref}"; then continue; fi
+              mapfile -t files < <(git diff --name-only --diff-filter=U)
+              safe=1
+              for file in "${files[@]}"; do
+                case "${file}" in
+                  docs/STATUS.md|qualification/module-execution-dossiers/NATIVE_BINDINGS.json|qualification/convergence/*.json|qualification/convergence/*.tsv)
+                    git checkout --ours -- "${file}"; git add "${file}" ;;
+                  *) echo "SOURCE_CONFLICT #${number} ${branch} ${file}"; safe=0 ;;
+                esac
+              done
+              if [[ "${safe}" != 1 ]]; then git merge --abort || true; conflict=1; break; fi
+              git commit --no-edit
+            done <"${RUNNER_TEMP}/daemon/heads.tsv"
+            if [[ "${conflict}" == 1 ]]; then
+              git reset --hard "refs/remotes/origin/${CANDIDATE_BRANCH}"
+              printf '%s\tSOURCE_CONFLICT\n' "${round}" >>"${RUNNER_TEMP}/daemon/rounds.tsv"
+              sleep 600
+              continue
+            fi
+
+            normalize_and_validate
+            if [[ "$(git rev-parse HEAD)" != "${original}" ]]; then
+              git fetch origin "refs/heads/${CANDIDATE_BRANCH}:refs/remotes/origin/${CANDIDATE_BRANCH}"
+              if [[ "$(git rev-parse refs/remotes/origin/${CANDIDATE_BRANCH})" != "${original}" ]]; then
+                git reset --hard "refs/remotes/origin/${CANDIDATE_BRANCH}"
+                printf '%s\tREMOTE_RACE_RETRY\n' "${round}" >>"${RUNNER_TEMP}/daemon/rounds.tsv"
+                sleep 600
+                continue
+              fi
+              git push origin "HEAD:refs/heads/${CANDIDATE_BRANCH}"
+            fi
+
+            read -r repository review external <<<"$(count_gaps)"
+            printf '%s\t%s\t%s\t%s\t%s\n' "${round}" "$(git rev-parse HEAD)" "${repository}" "${review}" "${external}" >>"${RUNNER_TEMP}/daemon/rounds.tsv"
+            if [[ "${repository}" == 0 && "${review}" == 0 && "${external}" == 0 ]]; then
+              exit 0
+            fi
+            sleep 600
+          done
