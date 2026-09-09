@@ -1,0 +1,91 @@
+name: Hepta ops hygiene 20260909 r7
+
+on:
+  push:
+    branches:
+      - ops/hepta-gap-convergence-controller-20260909-r6b
+  workflow_dispatch:
+
+permissions:
+  actions: write
+  contents: read
+  pull-requests: write
+
+jobs:
+  retain-latest-convergence-and-close-transient-prs:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Cancel stale convergence runs and close transient control PRs
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPOSITORY: ${{ github.repository }}
+          CURRENT_RUN_ID: ${{ github.run_id }}
+        run: |
+          python - <<'PY'
+          import json
+          import os
+          import urllib.error
+          import urllib.parse
+          import urllib.request
+
+          repo = os.environ["REPOSITORY"]
+          token = os.environ["GH_TOKEN"]
+          api_root = f"https://api.github.com/repos/{repo}"
+
+          def call(method, path, payload=None, accepted=(200,)):
+              data = None if payload is None else json.dumps(payload).encode()
+              request = urllib.request.Request(api_root + path, data=data, method=method)
+              request.add_header("Authorization", f"Bearer {token}")
+              request.add_header("Accept", "application/vnd.github+json")
+              request.add_header("X-GitHub-Api-Version", "2022-11-28")
+              request.add_header("Content-Type", "application/json")
+              try:
+                  with urllib.request.urlopen(request, timeout=60) as response:
+                      status = response.status
+                      raw = response.read()
+              except urllib.error.HTTPError as error:
+                  status = error.code
+                  raw = error.read()
+              if status not in accepted:
+                  raise RuntimeError(f"{method} {path}: HTTP {status}: {raw[:1000]!r}")
+              return json.loads(raw) if raw else None
+
+          workflow = urllib.parse.quote(
+              "hepta-windows-exact-candidate-convergence-20260909-r7.yml", safe=""
+          )
+          branch = urllib.parse.quote(
+              "ops/hepta-gap-convergence-controller-20260909-r6b", safe=""
+          )
+          response = call(
+              "GET",
+              f"/actions/workflows/{workflow}/runs?branch={branch}&per_page=100",
+          )
+          active = [
+              run for run in response.get("workflow_runs", [])
+              if run.get("status") in {"queued", "in_progress", "waiting", "requested", "pending"}
+          ]
+          active.sort(key=lambda run: int(run.get("run_number", 0)), reverse=True)
+          for stale in active[1:]:
+              call("POST", f"/actions/runs/{stale['id']}/cancel", accepted=(202, 409))
+              print(f"cancelled stale r7 run {stale['id']}")
+
+          owner = repo.split("/", 1)[0]
+          transient_heads = {
+              "ops/hepta-gap-convergence-controller-20260909-r6",
+              "ops/hepta-gap-convergence-controller-20260909-r6b",
+          }
+          pulls = call("GET", "/pulls?state=open&per_page=100")
+          for pull in pulls:
+              head = pull.get("head") or {}
+              if head.get("ref") not in transient_heads:
+                  continue
+              if (head.get("repo") or {}).get("owner", {}).get("login") != owner:
+                  continue
+              call(
+                  "PATCH",
+                  f"/pulls/{pull['number']}",
+                  {"state": "closed"},
+              )
+              print(f"closed transient ops PR #{pull['number']}")
+          PY
