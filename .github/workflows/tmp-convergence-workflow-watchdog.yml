@@ -1,0 +1,116 @@
+name: tmp-convergence-workflow-watchdog
+
+on:
+  push:
+    branches:
+      - ops/lane-f-final-source-export-20260910
+    paths:
+      - .github/workflows/tmp-convergence-workflow-watchdog.yml
+
+permissions:
+  actions: write
+  contents: read
+  pull-requests: write
+
+env:
+  HEAD_BRANCH: integration/hepta-seven-lane-gap-closure-20260910-r2
+  BASE_BRANCH: codex/hepta-all-gap-closure-20260908
+
+jobs:
+  watchdog:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    steps:
+      - name: Wait for initial workflow wave
+        shell: bash
+        run: sleep 600
+
+      - name: Inspect and retry transient failures once
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p "${RUNNER_TEMP}/watchdog"
+          gh run list --repo "${GITHUB_REPOSITORY}" \
+            --branch ops/lane-f-final-source-export-20260910 \
+            --limit 100 \
+            --json databaseId,name,status,conclusion,headSha,createdAt,url \
+            >"${RUNNER_TEMP}/watchdog/runs.json"
+
+          python3 - "${RUNNER_TEMP}/watchdog/runs.json" >"${RUNNER_TEMP}/watchdog/candidates.tsv" <<'PY'
+          import json,sys
+          rows=json.load(open(sys.argv[1],encoding='utf-8'))
+          names={
+              'tmp-global-gap-convergence-r1',
+              'tmp-global-gap-convergence-r2',
+              'tmp-lane-a-e-f-current-head-seal',
+              'tmp-lane-d-g-current-head-seal',
+              'tmp-seven-lane-candidate-pr-controller',
+              'tmp-seven-lane-ci-autoremediate',
+              'tmp-seven-lane-ci-autoremediate-v2',
+              'tmp-seven-lane-refresh-after-seals',
+              'tmp-replay-current-stack-prs',
+              'tmp-seven-lane-plan-gap-audit',
+          }
+          latest={}
+          for row in rows:
+              if row.get('name') in names and row.get('name') not in latest:
+                  latest[row['name']]=row
+          for name,row in sorted(latest.items()):
+              print(f"{row['databaseId']}\t{name}\t{row.get('status','')}\t{row.get('conclusion') or ''}\t{row.get('url','')}")
+          PY
+
+          : >"${RUNNER_TEMP}/watchdog/actions.tsv"
+          while IFS=$'\t' read -r id name status conclusion url; do
+            [[ "${status}" != completed ]] && continue
+            [[ "${conclusion}" == success ]] && continue
+            log="${RUNNER_TEMP}/watchdog/${id}.log"
+            gh run view "${id}" --repo "${GITHUB_REPOSITORY}" --log-failed >"${log}" 2>&1 || true
+            transient=0
+            case "${conclusion}" in
+              cancelled|timed_out|stale) transient=1 ;;
+            esac
+            if grep -Eqi 'candidate branch did not materialize|did not settle|non-fast-forward|fetch first|cannot lock ref|remote contains work|HTTP 5[0-9][0-9]|runner lost communication|The operation was canceled' "${log}"; then
+              transient=1
+            fi
+            if [[ "${transient}" == 1 ]]; then
+              gh run rerun "${id}" --repo "${GITHUB_REPOSITORY}" --failed
+              printf '%s\t%s\tRERUN_TRANSIENT\n' "${id}" "${name}" >>"${RUNNER_TEMP}/watchdog/actions.tsv"
+            else
+              printf '%s\t%s\tDETERMINISTIC_FAILURE_RETAINED\n' "${id}" "${name}" >>"${RUNNER_TEMP}/watchdog/actions.tsv"
+            fi
+          done <"${RUNNER_TEMP}/watchdog/candidates.tsv"
+
+          number="$(gh pr list --repo "${GITHUB_REPOSITORY}" --state open --head "${HEAD_BRANCH}" --base "${BASE_BRANCH}" --json number --jq '.[0].number // empty')"
+          if [[ -n "${number}" ]]; then
+            marker='<!-- hepta-convergence-watchdog -->'
+            body="${RUNNER_TEMP}/watchdog/comment.md"
+            {
+              echo "${marker}"
+              echo '## Convergence workflow watchdog'
+              echo
+              echo '| Run | Workflow | Decision |'
+              echo '|---:|---|---|'
+              while IFS=$'\t' read -r id name decision; do
+                printf '| `%s` | `%s` | `%s` |\n' "${id}" "${name}" "${decision}"
+              done <"${RUNNER_TEMP}/watchdog/actions.tsv"
+              echo
+              echo 'Only transient infrastructure or branch-race failures are retried. Deterministic test failures are retained for remediation.'
+            } >"${body}"
+            existing="$(gh api "repos/${GITHUB_REPOSITORY}/issues/${number}/comments" --paginate --jq ".[] | select(.body | contains(\"${marker}\")) | .id" | head -n1)"
+            if [[ -n "${existing}" ]]; then
+              gh api --method PATCH "repos/${GITHUB_REPOSITORY}/issues/comments/${existing}" -F "body=@${body}"
+            else
+              gh pr comment "${number}" --repo "${GITHUB_REPOSITORY}" --body-file "${body}"
+            fi
+          fi
+
+      - name: Retain watchdog evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: convergence-workflow-watchdog-${{ github.run_id }}
+          path: ${{ runner.temp }}/watchdog
+          if-no-files-found: warn
+          retention-days: 7
