@@ -1,0 +1,69 @@
+name: tmp-lane-e-binding-finalizer
+
+on:
+  push:
+    branches:
+      - codex/hepta-lane-e-gap-closure-20260910
+    paths:
+      - .github/workflows/tmp-lane-e-binding-finalizer.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: tmp-lane-e-binding-finalizer
+  cancel-in-progress: false
+
+jobs:
+  reconcile-verify-publish:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - name: Check out carrier
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 2
+
+      - name: Commit exact binding set
+        shell: bash
+        run: |
+          set -euo pipefail
+          carrier="$(git rev-parse HEAD)"
+          python3 - <<'PY'
+          import json
+          import subprocess
+          from pathlib import Path
+          path = Path("qualification/module-execution-dossiers/NATIVE_BINDINGS.json")
+          doc = json.loads(path.read_text(encoding="utf-8"))
+          for row in doc["observations"]:
+              source = Path(row["path"])
+              if not source.is_file():
+                  raise SystemExit(f"missing bound source: {source}")
+              row["blobSha"] = subprocess.check_output(
+                  ["git", "hash-object", "--", str(source)], text=True
+              ).strip()
+          path.write_text(json.dumps(doc, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+          PY
+          find .github/workflows -maxdepth 1 -type f -name 'tmp-lane-e-*.yml' -print -delete
+          git add -A
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'chore(lane-e): publish exact native-source binding set'
+          test "$(git rev-parse HEAD^)" = "$carrier"
+          test -z "$(git status --porcelain --untracked-files=no)"
+
+      - name: Verify committed closed world
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 qualification/module-execution-dossiers/implementation_contracts.py verify-repository
+          python3 scripts/hepta-readiness.py generate-status --check
+          python3 scripts/hepta-readiness.py verify
+          git show --check --oneline --no-renames HEAD
+          test -z "$(git status --porcelain --untracked-files=no)"
+
+      - name: Publish verified head
+        shell: bash
+        run: |
+          set -euo pipefail
+          git push origin HEAD:codex/hepta-lane-e-gap-closure-20260910
