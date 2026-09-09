@@ -95,7 +95,7 @@ jobs:
           patch_lines = [
               '--- a/rust/private/rustc.bzl',
               '+++ b/rust/private/rustc.bzl',
-              '@@ -3047,5 +3047,33 @@',
+              '@@ -3047,6 +3047,34 @@',
               '     return []',
               ' ',
               '-def _add_user_link_flags(ret, linker_input):',
