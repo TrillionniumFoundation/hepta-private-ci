@@ -2,10 +2,10 @@
 //!
 //! The legacy target builder remains available as `train`, while
 //! `build_targets` makes its actual scope explicit. Applicability admission,
-//! sensor geometry, tabular Bellman reference, regularity/error-budget checks
-//! and an action-conditioned tabular world model are separate bounded surfaces.
-//! None can mutate an online policy, activate an artifact, select itself, or
-//! write production state.
+//! sensor geometry, tabular Bellman reference, simplest-sufficient tabular
+//! learning, regularity/error-budget checks and an action-conditioned tabular
+//! world model are separate bounded surfaces. None can mutate an online policy,
+//! activate an artifact, select itself, or write production state.
 #![forbid(unsafe_code)]
 
 use std::collections::BTreeSet;
@@ -17,9 +17,18 @@ use codex_hepta_types::FixedQ32;
 use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
 
+mod learned;
 mod reference;
 mod world_model;
 
+pub use learned::LearnedOperatorError;
+pub use learned::TabularOperatorArtifactV1;
+pub use learned::TabularOperatorCellV1;
+pub use learned::TabularOperatorPlanV1;
+pub use learned::TabularOperatorPredictionV1;
+pub use learned::TabularOperatorSampleV1;
+pub use learned::fit_tabular_operator;
+pub use learned::predict_tabular_operator;
 pub use reference::ApplicabilityDecisionV1;
 pub use reference::BellmanReferenceCellV1;
 pub use reference::BellmanReferencePlanV1;
