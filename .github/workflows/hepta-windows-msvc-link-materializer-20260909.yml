@@ -44,7 +44,7 @@ jobs:
           from pathlib import Path
 
           def read(path: Path) -> str:
-              return path.read_bytes().decode("utf-8")
+              return path.read_bytes().decode("utf-8").replace("\r\n", "\n")
 
           def write(path: Path, text: str) -> None:
               path.write_bytes(text.encode("utf-8"))
