@@ -1,0 +1,60 @@
+name: tmp-enable-convergence-automerge-20260910
+
+on:
+  push:
+    branches:
+      - codex/hepta-all-gap-closure-20260908
+    paths:
+      - .github/workflows/tmp-enable-convergence-automerge-20260910.yml
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: tmp-enable-convergence-automerge-20260910
+  cancel-in-progress: false
+
+jobs:
+  enable-and-clean:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - name: Enable protected auto-merge for newest published candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          found=0
+          for head in \
+            integration/all-lanes-gap-closure-20260910-r2 \
+            integration/all-lanes-gap-closure-20260910-r1
+          do
+            number="$(gh pr list --repo "$GITHUB_REPOSITORY" --state open --head "$head" --json number --jq '.[0].number // empty')"
+            if test -z "$number"; then
+              continue
+            fi
+            found=1
+            gh pr ready "$number" --repo "$GITHUB_REPOSITORY" || true
+            gh pr merge "$number" --repo "$GITHUB_REPOSITORY" --auto --merge
+            echo "AUTO_MERGE_ENABLED pr=$number head=$head"
+            break
+          done
+          test "$found" -eq 1
+
+      - name: Check out controller branch for cleanup
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 2
+
+      - name: Remove controller and publish clean parent
+        shell: bash
+        run: |
+          set -euo pipefail
+          git rm -f .github/workflows/tmp-enable-convergence-automerge-20260910.yml
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'chore(ci): remove convergence auto-merge controller'
+          git show --check --oneline --no-renames HEAD
+          git push origin HEAD:codex/hepta-all-gap-closure-20260908
