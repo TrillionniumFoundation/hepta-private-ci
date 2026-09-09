@@ -230,7 +230,7 @@ impl TaskFinishHandoffOwner {
     fn handoff_mut(&mut self) -> &mut TaskFinishHandoff {
         self.handoff
             .as_mut()
-            .expect("finish handoff owner remains armed")
+            .unwrap_or_else(|| panic!("finish handoff owner remains armed"))
     }
 
     fn is_complete(&self) -> bool {
@@ -258,7 +258,7 @@ impl Drop for TaskFinishHandoffOwner {
         let mut slot = self
             .slot
             .lock()
-            .expect("task finish handoff slot mutex poisoned");
+            .unwrap_or_else(|error| panic!("task finish handoff slot mutex poisoned: {error:?}"));
         if slot.is_none() {
             *slot = Some(handoff);
         } else {
@@ -337,7 +337,7 @@ impl TaskAbortHandoffOwner {
     fn handoff_mut(&mut self) -> &mut TaskAbortHandoff {
         self.handoff
             .as_mut()
-            .expect("abort handoff owner remains armed")
+            .unwrap_or_else(|| panic!("abort handoff owner remains armed"))
     }
 
     fn is_complete(&self) -> bool {
@@ -365,7 +365,7 @@ impl Drop for TaskAbortHandoffOwner {
         let mut slot = self
             .slot
             .lock()
-            .expect("task abort handoff slot mutex poisoned");
+            .unwrap_or_else(|error| panic!("task abort handoff slot mutex poisoned: {error:?}"));
         if slot.is_none() {
             *slot = Some(handoff);
         } else {
@@ -399,6 +399,10 @@ pub(crate) enum AbortTurnOutcome {
 #[derive(Debug)]
 pub(crate) enum StartReservationRelease {
     Released,
+    #[expect(
+        dead_code,
+        reason = "the abort reason is retained in the state-machine audit value"
+    )]
     AbortRequested(TurnAbortReason),
     Stale,
 }
@@ -425,7 +429,7 @@ impl StartReservationOwner {
     pub(crate) fn handle(&self) -> &StartReservationHandle {
         self.handle
             .as_ref()
-            .expect("start reservation owner remains armed until completion")
+            .unwrap_or_else(|| panic!("start reservation owner remains armed until completion"))
     }
 
     pub(crate) fn disarm(&mut self) {
@@ -534,7 +538,7 @@ impl StartTransitionCleanupOwner {
     fn cleanup(&self) -> &StartTransitionCleanup {
         self.cleanup
             .as_ref()
-            .expect("start transition cleanup owner must retain its witness")
+            .unwrap_or_else(|| panic!("start transition cleanup owner must retain its witness"))
     }
 
     fn mark_side_effects_started(&mut self) {
@@ -569,10 +573,9 @@ impl Drop for StartTransitionCleanupOwner {
         if self.side_effects_started {
             cleanup.failed_closed = true;
         }
-        let mut slot = self
-            .slot
-            .lock()
-            .expect("start transition cleanup slot mutex poisoned");
+        let mut slot = self.slot.lock().unwrap_or_else(|error| {
+            panic!("start transition cleanup slot mutex poisoned: {error:?}")
+        });
         if slot.is_none() {
             *slot = Some(cleanup);
         } else {
@@ -638,7 +641,9 @@ impl StartTransitionOwner {
         Some(runtime_handle.spawn(async move {
             let Some(cleanup) = cleanup_slot
                 .lock()
-                .expect("start transition cleanup slot mutex poisoned")
+                .unwrap_or_else(|error| {
+                    panic!("start transition cleanup slot mutex poisoned: {error:?}")
+                })
                 .take()
             else {
                 return;
@@ -649,7 +654,9 @@ impl StartTransitionOwner {
                 // began.  Do not let a late scheduler poll replay it.
                 cleanup_slot
                     .lock()
-                    .expect("start transition cleanup slot mutex poisoned")
+                    .unwrap_or_else(|error| {
+                        panic!("start transition cleanup slot mutex poisoned: {error:?}")
+                    })
                     .replace(cleanup);
                 return;
             }
@@ -693,7 +700,9 @@ impl StartTransitionOwner {
         if let Some(cleanup_slot) = self.cleanup.take()
             && let Some(cleanup) = cleanup_slot
                 .lock()
-                .expect("start transition cleanup slot mutex poisoned")
+                .unwrap_or_else(|error| {
+                    panic!("start transition cleanup slot mutex poisoned: {error:?}")
+                })
                 .take()
         {
             cleanup
@@ -726,7 +735,9 @@ impl Session {
     ) {
         self.pending_start_transition_completions
             .lock()
-            .expect("start transition completion registry mutex poisoned")
+            .unwrap_or_else(|error| {
+                panic!("start transition completion registry mutex poisoned: {error:?}")
+            })
             .push((transition_identity, completion, cleanup));
     }
 
@@ -741,7 +752,9 @@ impl Session {
         let mut pending = self
             .pending_start_transition_completions
             .lock()
-            .expect("start transition completion registry mutex poisoned");
+            .unwrap_or_else(|error| {
+                panic!("start transition completion registry mutex poisoned: {error:?}")
+            });
         pending.retain(|(identity, current, _cleanup)| {
             !(Arc::ptr_eq(identity, transition_identity) && Arc::ptr_eq(current, completion))
         });
@@ -752,7 +765,9 @@ impl Session {
     fn pending_start_transition_completions(&self) -> Vec<Arc<StartTransitionCompletion>> {
         self.pending_start_transition_completions
             .lock()
-            .expect("start transition completion registry mutex poisoned")
+            .unwrap_or_else(|error| {
+                panic!("start transition completion registry mutex poisoned: {error:?}")
+            })
             .iter()
             .map(|(_, completion, _cleanup)| Arc::clone(completion))
             .collect()
@@ -761,7 +776,9 @@ impl Session {
     fn pending_start_transition_cleanup_slots(&self) -> Vec<StartTransitionCleanupSlot> {
         self.pending_start_transition_completions
             .lock()
-            .expect("start transition completion registry mutex poisoned")
+            .unwrap_or_else(|error| {
+                panic!("start transition completion registry mutex poisoned: {error:?}")
+            })
             .iter()
             .map(|(_, _, cleanup)| Arc::clone(cleanup))
             .collect()
@@ -783,7 +800,9 @@ impl Session {
     ) {
         self.pending_task_terminalization_completions
             .lock()
-            .expect("task terminalization completion registry mutex poisoned")
+            .unwrap_or_else(|error| {
+                panic!("task terminalization completion registry mutex poisoned: {error:?}")
+            })
             .push((
                 identity,
                 completion,
@@ -804,7 +823,9 @@ impl Session {
     ) -> Vec<(Arc<()>, SuspensionHandoffSlot)> {
         self.pending_task_terminalization_completions
             .lock()
-            .expect("task terminalization completion registry mutex poisoned")
+            .unwrap_or_else(|error| {
+                panic!("task terminalization completion registry mutex poisoned: {error:?}")
+            })
             .iter()
             .filter_map(
                 |(identity, _, kind, handoff, _abort_handoff, _finish_handoff)| {
@@ -835,7 +856,9 @@ impl Session {
     )> {
         self.pending_task_terminalization_completions
             .lock()
-            .expect("task terminalization completion registry mutex poisoned")
+            .unwrap_or_else(|error| {
+                panic!("task terminalization completion registry mutex poisoned: {error:?}")
+            })
             .iter()
             .filter_map(
                 |(
@@ -878,7 +901,9 @@ impl Session {
     )> {
         self.pending_task_terminalization_completions
             .lock()
-            .expect("task terminalization completion registry mutex poisoned")
+            .unwrap_or_else(|error| {
+                panic!("task terminalization completion registry mutex poisoned: {error:?}")
+            })
             .iter()
             .filter_map(
                 |(
@@ -917,7 +942,9 @@ impl Session {
         let mut pending = self
             .pending_task_terminalization_completions
             .lock()
-            .expect("task terminalization completion registry mutex poisoned");
+            .unwrap_or_else(|error| {
+                panic!("task terminalization completion registry mutex poisoned: {error:?}")
+            });
         pending.retain(
             |(
                 current_identity,
@@ -941,7 +968,9 @@ impl Session {
     ) -> Vec<Arc<StartTransitionCompletion>> {
         self.pending_task_terminalization_completions
             .lock()
-            .expect("task terminalization completion registry mutex poisoned")
+            .unwrap_or_else(|error| {
+                panic!("task terminalization completion registry mutex poisoned: {error:?}")
+            })
             .iter()
             .filter(|(identity, _, _, _, _, _)| {
                 excluded_identity.map_or(true, |excluded| !Arc::ptr_eq(identity, excluded))
@@ -1030,7 +1059,9 @@ impl Session {
     ) -> bool {
         self.pending_start_transition_completions
             .lock()
-            .expect("start transition completion registry mutex poisoned")
+            .unwrap_or_else(|error| {
+                panic!("start transition completion registry mutex poisoned: {error:?}")
+            })
             .iter()
             .any(|(identity, _, _cleanup)| {
                 ignored_identity.map_or(true, |ignored| !Arc::ptr_eq(identity, ignored))
@@ -1052,7 +1083,9 @@ impl Session {
     ) -> bool {
         self.pending_task_terminalization_completions
             .lock()
-            .expect("task terminalization completion registry mutex poisoned")
+            .unwrap_or_else(|error| {
+                panic!("task terminalization completion registry mutex poisoned: {error:?}")
+            })
             .iter()
             .any(|(identity, _, _, _, _, _)| {
                 ignored_identity.map_or(true, |ignored| !Arc::ptr_eq(identity, ignored))
@@ -1079,7 +1112,7 @@ impl Session {
         let _admission_gate = self
             .start_admission_gate
             .lock()
-            .expect("start admission gate mutex poisoned");
+            .unwrap_or_else(|error| panic!("start admission gate mutex poisoned: {error:?}"));
         self.shutdown_started.store(true, Ordering::Release);
     }
 
@@ -1391,6 +1424,10 @@ impl Session {
     /// held. The running task stays attached until the owner has revoked its
     /// recovery authority, so every admission path continues to see a busy
     /// slot during the lock-free await phase.
+    #[expect(
+        clippy::too_many_arguments,
+        reason = "terminalization claim binds every ownership and recovery witness explicitly"
+    )]
     fn claim_task_terminalization_locked(
         &self,
         active_turn: &mut ActiveTurn,
@@ -1465,7 +1502,7 @@ impl Session {
         active_turn
             .task_terminalization
             .as_mut()
-            .expect("terminalization marker matched")
+            .unwrap_or_else(|| panic!("terminalization marker matched"))
             .phase = TaskTerminalizationPhase::Terminalizing;
         active_turn.task.take()
     }
@@ -1511,6 +1548,10 @@ impl Session {
     /// its complete handoff witness before sealing shutdown.  The caller may
     /// disappear immediately after this future returns; the registry already
     /// owns the task, writer, reply, and exact terminalization identity.
+    #[expect(
+        clippy::await_holding_invalid_type,
+        reason = "the active-turn guard is the atomic ownership fence across this awaited state transition"
+    )]
     pub(crate) async fn take_task_for_suspension(
         &self,
         handoff_slot: SuspensionHandoffSlot,
@@ -1570,9 +1611,9 @@ impl Session {
         // or this method can return.  A shutdown drain can therefore never
         // observe a claimed Suspend marker without its full witness.
         {
-            let mut slot = handoff_slot
-                .lock()
-                .expect("suspension handoff slot mutex poisoned");
+            let mut slot = handoff_slot.lock().unwrap_or_else(|error| {
+                panic!("suspension handoff slot mutex poisoned: {error:?}")
+            });
             debug_assert!(
                 slot.is_none(),
                 "new suspension handoff slot was pre-populated"
@@ -1736,6 +1777,10 @@ impl Session {
     /// Publishes one live recovery candidate only after the task is quiescent
     /// and its terminal event is durable. All detach paths converge here so a
     /// stale atomic Ready bit can never outlive a generation/state transition.
+    #[expect(
+        clippy::await_holding_invalid_type,
+        reason = "the active-turn guard is the atomic ownership fence across this awaited state transition"
+    )]
     async fn publish_recovery_seed_after_terminal(
         &self,
         recovery_seed: Option<RecoverySeed>,
@@ -1824,14 +1869,15 @@ impl Session {
         *self
             .recovery_candidate
             .lock()
-            .expect("recovery candidate mutex poisoned") = Some(RecoveryCandidate {
-            turn_id: seed.turn_id,
-            marker_generation: confirmation_generation,
-            request_fingerprint_sha256: seed.request_fingerprint_sha256,
-            replay: seed.replay,
-            epoch: seed.attach_epoch,
-            persistence_failure_generation: seed.persistence_failure_generation,
-        });
+            .unwrap_or_else(|error| panic!("recovery candidate mutex poisoned: {error:?}")) =
+            Some(RecoveryCandidate {
+                turn_id: seed.turn_id,
+                marker_generation: confirmation_generation,
+                request_fingerprint_sha256: seed.request_fingerprint_sha256,
+                replay: seed.replay,
+                epoch: seed.attach_epoch,
+                persistence_failure_generation: seed.persistence_failure_generation,
+            });
         drop(state);
         drop(active_turn);
         true
@@ -1869,6 +1915,10 @@ impl Session {
         .await
     }
 
+    #[expect(
+        clippy::await_holding_invalid_type,
+        reason = "the active-turn guard is the atomic ownership fence across this awaited state transition"
+    )]
     pub(crate) async fn mark_recovery_ready_for_sampling_with_replay(
         &self,
         turn_id: &str,
@@ -1968,6 +2018,10 @@ impl Session {
     /// tool dispatch, hooks, commands, or other product effects. Provider-policy
     /// evidence, tracing, and diagnostic telemetry belong to the transport
     /// mapper and are explicitly outside this bounded gate.
+    #[expect(
+        clippy::await_holding_invalid_type,
+        reason = "the active-turn guard is the atomic ownership fence across this awaited state transition"
+    )]
     pub(crate) async fn gate_first_provider_output(
         &self,
         turn_id: &str,
@@ -2006,6 +2060,10 @@ impl Session {
         Ok(RecoveryProviderOutputGate::Attached)
     }
 
+    #[expect(
+        clippy::await_holding_invalid_type,
+        reason = "the active-turn guard is the atomic ownership fence across this awaited state transition"
+    )]
     pub async fn spawn_task<T: SessionTask>(
         self: &Arc<Self>,
         turn_context: Arc<TurnContext>,
@@ -2038,7 +2096,7 @@ impl Session {
             let active = active_turn.get_or_insert_with(ActiveTurn::default);
             active
                 .reserve_start(turn_context.sub_id.clone())
-                .expect("idle slot should accept one start reservation")
+                .unwrap_or_else(|| panic!("idle slot should accept one start reservation"))
         };
         let mut start_reservation_owner = StartReservationOwner::new(self, start_reservation);
         self.clear_connector_selection().await;
@@ -2062,6 +2120,7 @@ impl Session {
         }
     }
 
+    #[expect(dead_code, reason = "retained compatibility task-start wrapper")]
     pub(crate) async fn start_task<T: SessionTask>(
         self: &Arc<Self>,
         turn_context: Arc<TurnContext>,
@@ -2081,6 +2140,7 @@ impl Session {
         .await;
     }
 
+    #[expect(dead_code, reason = "retained recovery task-start wrapper")]
     pub(crate) async fn start_task_with_recovery<T: SessionTask>(
         self: &Arc<Self>,
         turn_context: Arc<TurnContext>,
@@ -2142,6 +2202,10 @@ impl Session {
         .await
     }
 
+    #[expect(
+        clippy::too_many_arguments,
+        reason = "task admission keeps every recovery and origin control explicit"
+    )]
     async fn start_task_with_options<T: SessionTask>(
         self: &Arc<Self>,
         turn_context: Arc<TurnContext>,
@@ -2173,7 +2237,7 @@ impl Session {
             let _admission_gate = self
                 .start_admission_gate
                 .lock()
-                .expect("start admission gate mutex poisoned");
+                .unwrap_or_else(|error| panic!("start admission gate mutex poisoned: {error:?}"));
             if self.shutdown_started()
                 || self.has_pending_admission_fence_except(terminalization_owner.as_ref())
             {
@@ -2194,7 +2258,7 @@ impl Session {
                     &turn
                         .start_transition
                         .as_ref()
-                        .expect("promotion installs start transition")
+                        .unwrap_or_else(|| panic!("promotion installs start transition"))
                         .identity,
                 );
                 transition_turn_state = Arc::clone(&turn.turn_state);
@@ -2202,7 +2266,7 @@ impl Session {
                     &turn
                         .start_transition
                         .as_ref()
-                        .expect("promotion installs start transition")
+                        .unwrap_or_else(|| panic!("promotion installs start transition"))
                         .completion,
                 );
             } else {
@@ -2224,7 +2288,7 @@ impl Session {
                     &turn
                         .start_transition
                         .as_ref()
-                        .expect("direct start installs start transition")
+                        .unwrap_or_else(|| panic!("direct start installs start transition"))
                         .completion,
                 );
             }
@@ -2470,7 +2534,7 @@ impl Session {
         let admission_gate = self
             .start_admission_gate
             .lock()
-            .expect("start admission gate mutex poisoned");
+            .unwrap_or_else(|error| panic!("start admission gate mutex poisoned: {error:?}"));
         if self.shutdown_started()
             && let Some(transition) = turn.start_transition.as_mut()
             && transition.abort_reason.is_none()
@@ -2596,7 +2660,7 @@ impl Session {
         *self
             .recovery_candidate
             .lock()
-            .expect("recovery candidate mutex poisoned") = None;
+            .unwrap_or_else(|error| panic!("recovery candidate mutex poisoned: {error:?}")) = None;
         let attach_epoch = self.turn_epoch.fetch_add(1, Ordering::AcqRel) + 1;
         let running_task = RunningTask {
             done,
@@ -2705,7 +2769,7 @@ impl Session {
                 && self
                     .recovery_candidate
                     .lock()
-                    .expect("recovery candidate mutex poisoned")
+                    .unwrap_or_else(|error| panic!("recovery candidate mutex poisoned: {error:?}"))
                     .is_some()
             {
                 // Durable queued work must wait for explicit recovery or an
@@ -2715,7 +2779,7 @@ impl Session {
             let active = active_turn.get_or_insert_with(ActiveTurn::default);
             active
                 .reserve_start(sub_id.clone())
-                .expect("idle slot should accept one start reservation")
+                .unwrap_or_else(|| panic!("idle slot should accept one start reservation"))
         };
 
         let mut start_reservation_owner = StartReservationOwner::new(self, start_reservation);
@@ -2870,7 +2934,9 @@ impl Session {
             for cleanup_slot in self.pending_start_transition_cleanup_slots() {
                 let Some(cleanup) = cleanup_slot
                     .lock()
-                    .expect("start transition cleanup slot mutex poisoned")
+                    .unwrap_or_else(|error| {
+                        panic!("start transition cleanup slot mutex poisoned: {error:?}")
+                    })
                     .take()
                 else {
                     continue;
@@ -2883,7 +2949,9 @@ impl Session {
                     // order.  Keep it registered and fail closed.
                     cleanup_slot
                         .lock()
-                        .expect("start transition cleanup slot mutex poisoned")
+                        .unwrap_or_else(|error| {
+                            panic!("start transition cleanup slot mutex poisoned: {error:?}")
+                        })
                         .replace(cleanup);
                     continue;
                 }
@@ -2923,6 +2991,7 @@ impl Session {
         }
     }
 
+    #[expect(dead_code, reason = "retained bounded abort entry point")]
     pub(crate) async fn abort_turn_if_active(
         self: &Arc<Self>,
         turn_id: &str,
@@ -3044,6 +3113,10 @@ impl Session {
     /// into the registry while the active-turn lock is held.  This closes the
     /// construction-runtime race where a stored Tokio handle accepts a spawn
     /// after its runtime has already stopped polling it.
+    #[expect(
+        clippy::await_holding_invalid_type,
+        reason = "the active-turn guard is the atomic ownership fence across this awaited state transition"
+    )]
     async fn claim_task_for_finish(
         &self,
         turn_context: &Arc<TurnContext>,
@@ -3089,7 +3162,7 @@ impl Session {
         // lock while it takes the slot, so it cannot observe an empty witness.
         let mut slot_guard = slot
             .lock()
-            .expect("task finish handoff slot mutex poisoned");
+            .unwrap_or_else(|error| panic!("task finish handoff slot mutex poisoned: {error:?}"));
         let (terminalization_identity, completion) = self
             .claim_task_terminalization_locked(
                 active_turn,
@@ -3101,13 +3174,13 @@ impl Session {
                 /*abort_handoff*/ None,
                 Some(Arc::clone(&slot)),
             )
-            .expect("task terminalization claim should be unique");
+            .unwrap_or_else(|| panic!("task terminalization claim should be unique"));
         let mut task = Self::take_task_for_terminalization_locked(
             active_turn,
             &terminalization_identity,
             TaskTerminalizationKind::Finish,
         )
-        .expect("claimed finish task should remain attached");
+        .unwrap_or_else(|| panic!("claimed finish task should remain attached"));
         // The callback is running from this very task's future.  Detach its
         // AbortOnDropHandle before publishing the witness so dropping the
         // caller/runtime cannot abort the task that owns the terminalizer.
@@ -3225,7 +3298,7 @@ impl Session {
         let task_result = handoff
             .task_result
             .take()
-            .expect("claimed finish handoff has task result");
+            .unwrap_or_else(|| panic!("claimed finish handoff has task result"));
         let (last_agent_message, abort_reason) = match task_result {
             Ok(last_agent_message) => (last_agent_message, None),
             Err(err) if matches!(err.details(), CodexErrorDetails::TurnAborted) => {
@@ -3512,14 +3585,14 @@ impl Session {
 
     fn take_finish_handoff(slot: &TaskFinishHandoffSlot) -> Option<TaskFinishHandoff> {
         slot.lock()
-            .expect("task finish handoff slot mutex poisoned")
+            .unwrap_or_else(|error| panic!("task finish handoff slot mutex poisoned: {error:?}"))
             .take()
     }
 
     fn retain_finish_handoff(slot: &TaskFinishHandoffSlot, handoff: TaskFinishHandoff) {
         let mut current = slot
             .lock()
-            .expect("task finish handoff slot mutex poisoned");
+            .unwrap_or_else(|error| panic!("task finish handoff slot mutex poisoned: {error:?}"));
         if current.is_none() {
             *current = Some(handoff);
         } else {
@@ -3570,12 +3643,14 @@ impl Session {
 
     fn take_abort_handoff(slot: &TaskAbortHandoffSlot) -> Option<TaskAbortHandoff> {
         slot.lock()
-            .expect("task abort handoff slot mutex poisoned")
+            .unwrap_or_else(|error| panic!("task abort handoff slot mutex poisoned: {error:?}"))
             .take()
     }
 
     fn retain_abort_handoff(slot: &TaskAbortHandoffSlot, handoff: TaskAbortHandoff) {
-        let mut current = slot.lock().expect("task abort handoff slot mutex poisoned");
+        let mut current = slot
+            .lock()
+            .unwrap_or_else(|error| panic!("task abort handoff slot mutex poisoned: {error:?}"));
         if current.is_none() {
             *current = Some(handoff);
         } else {
@@ -3731,6 +3806,10 @@ impl Session {
     /// host-owned start transition. Starts and injections therefore cannot
     /// observe an idle session until the old task is quiescent and its terminal
     /// is durable (or the start owner has completed its deferred handoff).
+    #[expect(
+        clippy::await_holding_invalid_type,
+        reason = "the active-turn guard is the atomic ownership fence across this awaited state transition"
+    )]
     async fn detach_active_task_for_abort(
         &self,
         reason: &TurnAbortReason,
@@ -3810,7 +3889,9 @@ impl Session {
         // Keep the cell locked across registry publication, task take, and
         // witness fill. Shutdown may snapshot the registry concurrently, but
         // it cannot observe an empty slot and miss a Claimed witness.
-        let mut slot_guard = slot.lock().expect("task abort handoff slot mutex poisoned");
+        let mut slot_guard = slot
+            .lock()
+            .unwrap_or_else(|error| panic!("task abort handoff slot mutex poisoned: {error:?}"));
         let (terminalization_identity, completion) = self
             .claim_task_terminalization_locked(
                 active_turn,
@@ -3822,13 +3903,13 @@ impl Session {
                 Some(Arc::clone(&slot)),
                 /*finish_handoff*/ None,
             )
-            .expect("task terminalization claim should be unique");
+            .unwrap_or_else(|| panic!("task terminalization claim should be unique"));
         let task = Self::take_task_for_terminalization_locked(
             active_turn,
             &terminalization_identity,
             TaskTerminalizationKind::Abort,
         )
-        .expect("claimed abort task should remain attached");
+        .unwrap_or_else(|| panic!("claimed abort task should remain attached"));
         *slot_guard = Some(TaskAbortHandoff {
             task: Some(task),
             turn_state,
@@ -3994,7 +4075,7 @@ impl Session {
             let transition = active_turn
                 .start_transition
                 .as_mut()
-                .expect("transition identity was checked above");
+                .unwrap_or_else(|| panic!("transition identity was checked above"));
             if transition.abort_reason.is_none() {
                 if transition.request_abort(fallback_reason.clone())
                     && matches!(
@@ -4008,7 +4089,7 @@ impl Session {
             transition
                 .abort_reason
                 .clone()
-                .expect("dropped transition cleanup stores an abort reason")
+                .unwrap_or_else(|| panic!("dropped transition cleanup stores an abort reason"))
         };
 
         // `abort_unstarted_turn` performs durable/lifecycle writes and awaits
@@ -4073,6 +4154,10 @@ impl Session {
     /// host-owned start transition still owns the active slot.  The marker is
     /// retained across the history lock await, so a replacement cannot race
     /// the restore; a stale continuation simply abandons its witness.
+    #[expect(
+        clippy::await_holding_invalid_type,
+        reason = "the active-turn guard is the atomic ownership fence across this awaited state transition"
+    )]
     async fn restore_recovery_history_if_current(
         &self,
         turn_state: Option<&Arc<Mutex<TurnState>>>,
@@ -4100,7 +4185,7 @@ impl Session {
         drop(active);
         let history = recovery_history_restore
             .take()
-            .expect("recovery history witness remained present");
+            .unwrap_or_else(|| panic!("recovery history witness remained present"));
         // The witness is intentionally consumed only after the identity check;
         // the actual install is performed below without the active lock.
         self.install_recovery_history_snapshot(history).await;
@@ -4180,7 +4265,7 @@ impl Session {
         let reservation = active_turn
             .start_reservation
             .take()
-            .expect("reservation remained present after identity check");
+            .unwrap_or_else(|| panic!("reservation remained present after identity check"));
         *active = None;
         match reservation.abort_reason {
             Some(reason) => StartReservationRelease::AbortRequested(reason),

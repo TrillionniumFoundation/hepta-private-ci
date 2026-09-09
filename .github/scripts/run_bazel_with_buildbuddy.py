@@ -140,15 +140,15 @@ def option_contains_value(args: Sequence[str], option: str, value: str) -> bool:
 def bazel_args_without_remote_execution(
     args: Sequence[str], env: Mapping[str, str]
 ) -> list[str]:
-    """Remove credentialed RBE configs and select a coherent local Windows split.
+    """Remove credentialed RBE configs and select a coherent local Windows ABI.
 
-    The pinned hermetic LLVM toolchain builds target C/C++ inputs with MinGW,
-    so target Rust code must remain gnullvm. Proc-macro and other exec crates
-    are loaded by the host Rust compiler process and must use its MSVC ABI. A
-    keyless cross request therefore pairs an MSVC host/exec platform and
-    installed MSVC C/C++ toolchain with the gnullvm target platform. The native
-    toolchain is ABI-scoped so GNU target inputs continue to use hermetic LLVM.
-    Explicit platform choices and arguments after ``--`` belong to the caller.
+    The pinned hermetic LLVM toolchain builds GNU Windows target C/C++ inputs,
+    while native MSVC Rust targets and host-loaded proc macros must consume
+    archives produced by the installed MSVC compiler. A keyless cross request
+    therefore pairs an MSVC host/exec platform with a gnullvm target. A native
+    MSVC request keeps its MSVC target and receives the same ABI-scoped local
+    C/C++ toolchain. Explicit platform choices and arguments after ``--``
+    remain owned by the caller.
     """
     try:
         separator_idx = args.index("--")
@@ -157,6 +157,10 @@ def bazel_args_without_remote_execution(
 
     prefix = list(args[:separator_idx])
     requested_windows_cross = "--config=ci-windows-cross" in prefix
+    requested_native_windows_msvc = (
+        option_contains_value(prefix, "--host_platform", "//:local_windows_msvc")
+        or option_contains_value(prefix, "--platforms", "//:windows_x86_64_msvc")
+    )
     prefix = [arg for arg in prefix if arg not in REMOTE_EXECUTION_CONFIGS]
     suffix = list(args[separator_idx:])
     if env.get("RUNNER_OS") != "Windows":
@@ -195,6 +199,15 @@ def bazel_args_without_remote_execution(
         for option, value in (
             ("--extra_execution_platforms", LOCAL_WINDOWS_MSVC_EXEC_PLATFORM),
             ("--extra_toolchains", LOCAL_WINDOWS_GNULLVM_TEST_TOOLCHAIN),
+        ):
+            if not option_contains_value(prefix, option, value):
+                injected_args.append(f"{option}={value}")
+
+    if requested_windows_cross or requested_native_windows_msvc:
+        # Keep native archives on the same ABI as the Rust action that links
+        # them. Without this bounded override, globally registered hermetic
+        # LLVM can produce MinGW objects for an MSVC Rust target.
+        for option, value in (
             ("--extra_toolchains", LOCAL_WINDOWS_MSVC_CC_TOOLCHAIN),
             ("--repo_env", "BAZEL_DO_NOT_DETECT_CPP_TOOLCHAIN=0"),
         ):

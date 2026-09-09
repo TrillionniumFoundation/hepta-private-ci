@@ -26,15 +26,22 @@
     {
       "module": "learning.ledger",
       "path": "codex-rs/hepta-learning-ledger/src/lib.rs",
-      "blobSha": "c17b62a0d408b0366cba9923b74e7af1c5bc596b",
+      "blobSha": "893b43eadb473c817e19d6450132b7b6fd4d8e85",
       "exports": [
         "DurableLedger",
         "LedgerAnchor",
         "LedgerRecovery",
         "inspect_ledger",
-        "LearningLedger"
+        "LearningLedger",
+        "ShadowAppendReceipt",
+        "ShadowDecisionArtifact",
+        "ShadowDecisionError",
+        "ShadowDecisionRequest",
+        "append_shadow_decision",
+        "canonical_candidate_set_digest",
+        "prepare_shadow_decision"
       ],
-      "interpretation": "Pure core and opt-in host-authorized durable adapter; real observer authentication and host composition remain separate."
+      "interpretation": "Pure core, opt-in host-authorized durable storage and a deterministic deny-all shadow-decision adapter are observed. This source observation does not authenticate live observers, execute an authorized production policy, activate artifacts, compose a production host or grant model, tool, network, promotion or release authority."
     },
     {
       "module": "cognitive.store",
