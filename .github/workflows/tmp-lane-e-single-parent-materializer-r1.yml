@@ -1,0 +1,129 @@
+name: tmp-lane-e-single-parent-materializer-r1
+
+on:
+  push:
+    branches:
+      - ops/lane-e-single-parent-materializer-20260910-r1
+    paths:
+      - .github/workflows/tmp-lane-e-single-parent-materializer-r1.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: lane-e-single-parent-materializer-r1
+  cancel-in-progress: false
+
+jobs:
+  materialize:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 150
+    env:
+      BASE_SHA: 05981ed1adfb931a87a47b0606f1cedaa69f123b
+      EXPECTED_HEAD: da2c840b2521eaac10afa8ba0dfd5a96865da13f
+      TARGET_REF: refs/heads/codex/hepta-lane-e-gap-closure-20260910
+      RESULT_REF: refs/heads/ops/lane-e-single-parent-result-20260910-r1
+    steps:
+      - name: Check out controller
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Construct exact single-parent commit
+        id: construct
+        shell: bash
+        run: |
+          set -euo pipefail
+          remote_head="$(git ls-remote origin "${TARGET_REF}" | cut -f1)"
+          test "${remote_head}" = "${EXPECTED_HEAD}"
+          git fetch --no-tags origin "${TARGET_REF}" "${BASE_SHA}"
+          test "$(git rev-parse "${EXPECTED_HEAD}^{commit}")" = "${EXPECTED_HEAD}"
+          tree="$(git rev-parse "${EXPECTED_HEAD}^{tree}")"
+          export GIT_AUTHOR_NAME='Qian QI'
+          export GIT_AUTHOR_EMAIL='102159240+ProfHepta@users.noreply.github.com'
+          export GIT_COMMITTER_NAME='Qian QI'
+          export GIT_COMMITTER_EMAIL='102159240+ProfHepta@users.noreply.github.com'
+          candidate="$(printf '%s\n' 'feat(lane-e): close repository-controlled learning blockers' | git commit-tree "${tree}" -p "${BASE_SHA}")"
+          test "$(git rev-parse "${candidate}^{tree}")" = "${tree}"
+          test "$(git rev-parse "${candidate}^")" = "${BASE_SHA}"
+          test "$(git rev-list --count "${BASE_SHA}..${candidate}")" = 1
+          git checkout --detach "${candidate}"
+          test -z "$(git status --porcelain)"
+          printf 'candidate=%s\n' "${candidate}" >> "${GITHUB_OUTPUT}"
+          printf 'tree=%s\n' "${tree}" >> "${GITHUB_OUTPUT}"
+          git show --no-patch --format=fuller "${candidate}"
+
+      - name: Install pinned Rust toolchain
+        shell: bash
+        run: |
+          set -euo pipefail
+          rustup toolchain install 1.95.0 \
+            --profile minimal \
+            --component clippy \
+            --component rustfmt \
+            --no-self-update
+          rustup default 1.95.0
+          rustc --version --verbose
+
+      - name: Verify topology and repository truth
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${{ steps.construct.outputs.candidate }}"
+          test "$(git rev-parse HEAD^)" = "${BASE_SHA}"
+          test "$(git rev-list --count "${BASE_SHA}..HEAD")" = 1
+          python3 scripts/hepta-lane-e-closure.py self-test
+          python3 scripts/hepta-lane-e-closure.py verify
+          python3 qualification/module-execution-dossiers/implementation_contracts.py verify-repository
+          python3 scripts/hepta-implementation-dossiers.py generate-status --check
+          python3 scripts/hepta-implementation-dossiers.py verify
+          python3 scripts/hepta-readiness.py generate-status --check
+          python3 scripts/hepta-readiness.py verify
+          python3 scripts/hepta-module-docs.py self-test
+          python3 scripts/hepta-module-docs.py verify
+          python3 scripts/hepta-docs.py self-test
+          python3 scripts/hepta-docs.py generate-status
+          git diff --exit-code -- docs/STATUS.md
+          python3 scripts/hepta-docs.py verify
+          git diff --check
+          test -z "$(git status --porcelain)"
+
+      - name: Verify strict Lane E Rust source
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo fmt --all -- --check
+          cargo check --locked \
+            -p codex-hepta-learning-ledger \
+            -p codex-hepta-learning-artifacts \
+            -p codex-hepta-bellman-operator \
+            -p codex-hepta-intelligence-eval \
+            -p codex-hepta-shadow-qualification \
+            --all-targets
+          cargo clippy --locked \
+            -p codex-hepta-learning-ledger \
+            -p codex-hepta-learning-artifacts \
+            -p codex-hepta-bellman-operator \
+            -p codex-hepta-intelligence-eval \
+            -p codex-hepta-shadow-qualification \
+            --all-targets -- -D warnings
+          cargo test --locked \
+            -p codex-hepta-learning-ledger \
+            -p codex-hepta-learning-artifacts \
+            -p codex-hepta-bellman-operator \
+            -p codex-hepta-intelligence-eval \
+            -- --nocapture
+          cargo test --locked \
+            -p codex-hepta-shadow-qualification \
+            lane_e_causal_candidate_chain_is_digest_bound_and_deny_all \
+            -- --nocapture --test-threads=1
+
+      - name: Publish isolated verified result ref
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git ls-remote origin "${TARGET_REF}" | cut -f1)" = "${EXPECTED_HEAD}"
+          test -z "$(git status --porcelain)"
+          git push origin "${{ steps.construct.outputs.candidate }}:${RESULT_REF}"
