@@ -1,0 +1,202 @@
+name: Hepta private CI HeptaBao V2.4 full hardened integration r2
+
+on:
+  push:
+    branches:
+      - ops/heptabao-v24-integration-r2-20260909
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: hepta-private-ci-heptabao-v24-integration-r2
+  cancel-in-progress: false
+
+env:
+  HEPTABAO_REPOSITORY: TrillionniumFoundation/HeptaBao
+  HEPTABAO_BRANCH: codex/openbao-replacement-v2.4-final-clean-candidate-r4-20260909
+  HEPTABAO_PARENT: 633848024e5315f3def23c035a1dec53f83a62b3
+  OUTPUT_BRANCH: codex/heptabao-v24-final-integration-r2-20260909
+  BASE_BRANCH: integration/hepta-w0-internal-closure-20260908
+
+jobs:
+  integrate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 480
+    steps:
+      - name: Checkout parent integration controller
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Wait for exact full hardened HeptaBao ref
+        shell: bash
+        run: |
+          set -euo pipefail
+          out="$RUNNER_TEMP/heptabao-v24-parent-integration-r2"
+          mkdir -p "$out"
+          deadline=$((SECONDS + 25200))
+          while [ "$SECONDS" -lt "$deadline" ]; do
+            row="$(git ls-remote "https://github.com/$HEPTABAO_REPOSITORY.git" "refs/heads/$HEPTABAO_BRANCH" || true)"
+            if [ -n "$row" ]; then
+              sha="${row%%$'\t'*}"
+              printf 'HEPTABAO_SHA=%s\n' "$sha" >> "$GITHUB_ENV"
+              printf 'repository=%s\nbranch=%s\nsha=%s\n' "$HEPTABAO_REPOSITORY" "$HEPTABAO_BRANCH" "$sha" > "$out/component-binding.txt"
+              exit 0
+            fi
+            sleep 60
+          done
+          echo 'full hardened HeptaBao ref did not materialize' >&2
+          exit 1
+
+      - name: Verify clean component history and source tree
+        shell: bash
+        run: |
+          set -euo pipefail
+          out="$RUNNER_TEMP/heptabao-v24-parent-integration-r2"
+          repo="$RUNNER_TEMP/HeptaBao-r4"
+          git init "$repo"
+          git -C "$repo" remote add origin "https://github.com/$HEPTABAO_REPOSITORY.git"
+          git -C "$repo" fetch --no-tags --depth=2 origin "$HEPTABAO_SHA"
+          test "$(git -C "$repo" rev-parse FETCH_HEAD)" = "$HEPTABAO_SHA"
+          parents="$(git -C "$repo" show -s --format=%P "$HEPTABAO_SHA")"
+          test "$(printf '%s\n' "$parents" | wc -w)" -eq 1
+          test "$parents" = "$HEPTABAO_PARENT"
+          tree="$(git -C "$repo" rev-parse "$HEPTABAO_SHA^{tree}")"
+          git -C "$repo" ls-tree -r --name-only "$HEPTABAO_SHA" > "$out/component-tree-paths.txt"
+          if grep -E '(^|/)(v24-.*(materializer|orchestrator|republisher|qualifier|opener|cleanup|convergence)\.ya?ml|payload/|part-[0-9]+$)' "$out/component-tree-paths.txt"; then
+            echo 'component tree contains controller transport or payload' >&2
+            exit 1
+          fi
+          for required in \
+            crates/heptabao-plugin-host/src/lib.rs \
+            crates/heptabao-migration/src/migration_journal_v2_4.rs \
+            crates/heptabao-identity/src/federated_auth_v2_4.rs \
+            crates/heptabao-raft-runtime/src/ha_service_v2_4.rs \
+            scripts/openbao_differential_runner_v2_4.py; do
+            git -C "$repo" cat-file -e "$HEPTABAO_SHA:$required"
+          done
+          printf 'parent=%s\ntree=%s\n' "$parents" "$tree" >> "$out/component-binding.txt"
+          printf 'HEPTABAO_TREE=%s\n' "$tree" >> "$GITHUB_ENV"
+
+      - name: Materialize exact parent-repository component binding
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+          import json
+          import os
+
+          binding={
+              'schema':'hepta.external-component-binding.v2',
+              'component':'secrets.heptabao',
+              'repository':os.environ['HEPTABAO_REPOSITORY'],
+              'branch':os.environ['HEPTABAO_BRANCH'],
+              'commit':os.environ['HEPTABAO_SHA'],
+              'tree':os.environ['HEPTABAO_TREE'],
+              'single_parent':os.environ['HEPTABAO_PARENT'],
+              'integration_mode':'https_runtime_candidate',
+              'component_repository_exact_head_and_prospective_merge_qualified':True,
+              'parent_repository_runtime_smoke_qualified':False,
+              'runtime_authority':False,
+              'compatibility_claim':False,
+              'migration_authority':False,
+              'release_authority':False,
+              'production_authority':False,
+              'required_parent_and_independent_gates':[
+                  'parent-consumer-process-smoke',
+                  'deployment-and-rollback-review',
+                  'legal-license-approval',
+                  'independent-product-security-review',
+                  'production-kms-hsm-and-signer-custody',
+                  'independent-openbao-oracle-admission',
+                  'complete-object-adapter-migration-fixtures',
+                  'concrete-server-raft-adapter-qualification',
+                  'destructive-multiplatform-multinode-qualification',
+                  'operations-and-incident-response-readiness',
+                  'independent-reproduction',
+              ],
+          }
+          destination=Path('integrations/heptabao/HEPTABAO_V2_4_FULL_HARDENED_BINDING.json')
+          destination.parent.mkdir(parents=True,exist_ok=True)
+          destination.write_text(json.dumps(binding,indent=2,sort_keys=True)+'\n',encoding='utf-8')
+          docs=Path('docs/integrations/HEPTABAO_V2_4_FULL_HARDENED_BINDING.md')
+          docs.parent.mkdir(parents=True,exist_ok=True)
+          docs.write_text(f'''# HeptaBao V2.4 full hardened integration binding
+
+- Repository: `{binding["repository"]}`
+- Branch: `{binding["branch"]}`
+- Commit: `{binding["commit"]}`
+- Tree: `{binding["tree"]}`
+- Single parent: `{binding["single_parent"]}`
+
+The component repository exact-head and prospective-merge gates do not grant parent-repository runtime, compatibility, migration, release or production authority. This binding deliberately leaves parent process smoke, concrete deployment/rollback, complete migration fixtures, server/Raft composition, independent review, key custody, independent Oracle evidence and operations qualification open.
+''',encoding='utf-8')
+          PY
+
+      - name: Remove controller and run all discoverable parent validation
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -f .github/workflows/heptabao-v24-final-integration-r2.yml
+          out="$RUNNER_TEMP/heptabao-v24-parent-integration-r2"
+          python -m json.tool integrations/heptabao/HEPTABAO_V2_4_FULL_HARDENED_BINDING.json >/dev/null
+          git diff --check 2>&1 | tee "$out/diff-check.log"
+          if [ -f MODULES.json ]; then python -m json.tool MODULES.json >/dev/null; fi
+          if [ -f scripts/validate_repository.py ]; then python scripts/validate_repository.py 2>&1 | tee "$out/repository-validator.log"; fi
+          if [ -f scripts/validate_repository_v2.py ]; then python scripts/validate_repository_v2.py 2>&1 | tee "$out/repository-validator-v2.log"; fi
+          if [ -d tests ]; then
+            timeout --signal=TERM --kill-after=20s 2400s python -m unittest discover -s tests -p 'test_*.py' 2>&1 | tee "$out/python-tests.log"
+          fi
+
+      - name: Publish parent integration candidate and one draft PR
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'Hepta Private CI HeptaBao R4 Integrator'
+          git config user.email '102159240+ProfHepta@users.noreply.github.com'
+          git add -A
+          git commit -m 'chore(integration): bind full hardened HeptaBao V2.4 r4 candidate'
+          candidate="$(git rev-parse HEAD)"
+          if git ls-remote --exit-code origin "refs/heads/$OUTPUT_BRANCH" >/dev/null 2>&1; then
+            observed="$(git ls-remote origin "refs/heads/$OUTPUT_BRANCH" | cut -f1)"
+            test "$observed" = "$candidate"
+          else
+            git push --force-with-lease="refs/heads/$OUTPUT_BRANCH:" origin "$candidate:refs/heads/$OUTPUT_BRANCH"
+          fi
+          owner="${GITHUB_REPOSITORY%%/*}"
+          existing="$(gh api --paginate "/repos/$GITHUB_REPOSITORY/pulls?state=open&head=${owner}:${OUTPUT_BRANCH}&base=${BASE_BRANCH}&per_page=100" --jq '.[0].number // empty' || true)"
+          if [ -z "$existing" ]; then
+            cat > "$RUNNER_TEMP/body.md" <<EOF
+          ## Exact HeptaBao r4 component binding
+
+          - component repository: \`$HEPTABAO_REPOSITORY\`
+          - component branch: \`$HEPTABAO_BRANCH\`
+          - component commit: \`$HEPTABAO_SHA\`
+          - component tree: \`$HEPTABAO_TREE\`
+          - component parent: \`$HEPTABAO_PARENT\`
+
+          This parent draft binds exact component bytes only. It does not inherit component approval or issue parent runtime, compatibility, migration, release or production authority. Parent process smoke, deployment/rollback, complete object adapters, concrete server/Raft integration, independent security/Oracle evidence, production key custody and operations qualification remain explicit gates.
+          EOF
+            gh pr create \
+              --repo "$GITHUB_REPOSITORY" \
+              --draft \
+              --base "$BASE_BRANCH" \
+              --head "$OUTPUT_BRANCH" \
+              --title 'chore(integration): bind full hardened HeptaBao V2.4 r4 candidate' \
+              --body-file "$RUNNER_TEMP/body.md" > "$out/pr-url.txt"
+          fi
+
+      - name: Upload bounded parent integration evidence
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: heptabao-v24-parent-integration-r2
+          path: ${{ runner.temp }}/heptabao-v24-parent-integration-r2/
+          if-no-files-found: warn
+          retention-days: 30
