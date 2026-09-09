@@ -1,0 +1,193 @@
+name: tmp-v5-deterministic-autoremediate
+
+on:
+  push:
+    branches:
+      - ops/lane-f-final-source-export-20260910
+    paths:
+      - .github/workflows/tmp-v5-deterministic-autoremediate.yml
+
+permissions:
+  actions: read
+  checks: read
+  contents: write
+  pull-requests: read
+
+env:
+  BASE_BRANCH: codex/hepta-all-gap-closure-20260908
+  HEAD_BRANCH: integration/hepta-seven-lane-gap-closure-20260910-v5
+
+jobs:
+  remediate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 240
+    steps:
+      - name: Wait for exact v5 PR
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          for attempt in $(seq 1 180); do
+            number="$(gh pr list --repo "${GITHUB_REPOSITORY}" --state open --head "${HEAD_BRANCH}" --base "${BASE_BRANCH}" --json number --jq '.[0].number // empty')"
+            if [[ -n "${number}" ]]; then printf 'PR_NUMBER=%s\n' "${number}" >>"${GITHUB_ENV}"; exit 0; fi
+            sleep 30
+          done
+          exit 161
+
+      - name: Check out writable v5 candidate
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.HEAD_BRANCH }}
+          fetch-depth: 0
+
+      - name: Poll and repair deterministic failures
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p "${RUNNER_TEMP}/v5-remediation"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+
+          recompute_bindings() {
+            python3 - <<'PY'
+          from __future__ import annotations
+          import hashlib,json
+          from pathlib import Path
+          root=Path.cwd(); path=root/'qualification/module-execution-dossiers/NATIVE_BINDINGS.json'
+          data=json.loads(path.read_text(encoding='utf-8')); rows=data.get('observations')
+          if not isinstance(rows,list) or len(rows)!=40: raise SystemExit('native source ledger must contain exactly 40 modules')
+          seen=set()
+          for row in rows:
+              module=row.get('module'); source_path=row.get('path')
+              if not isinstance(module,str) or module in seen: raise SystemExit(f'invalid native module {module!r}')
+              seen.add(module)
+              if not isinstance(source_path,str): raise SystemExit(f'missing source path for {module}')
+              source=root/source_path
+              if not source.is_file(): raise SystemExit(f'missing source {source_path}')
+              payload=source.read_bytes()
+              row['blobSha']=hashlib.sha1(f'blob {len(payload)}\0'.encode('ascii')+payload,usedforsecurity=False).hexdigest()
+          path.write_text(json.dumps(data,indent=2,ensure_ascii=False)+'\n',encoding='utf-8')
+          PY
+          }
+
+          regenerate() {
+            python3 scripts/hepta-readiness.py generate-status || true
+            python3 scripts/hepta-implementation-dossiers.py generate-status || true
+            python3 scripts/hepta-algorithm-docs.py generate-status || true
+            python3 scripts/hepta-cns.py generate-status || true
+            python3 scripts/hepta-docs.py generate-status || true
+          }
+
+          validate() {
+            python3 scripts/hepta-readiness.py generate-status --check
+            python3 scripts/hepta-readiness.py verify
+            python3 scripts/hepta-implementation-dossiers.py generate-status --check
+            python3 scripts/hepta-implementation-dossiers.py verify
+            python3 scripts/hepta-technical-closure.py verify
+            python3 qualification/module-execution-dossiers/implementation_contracts.py verify-repository
+            python3 scripts/hepta-module-docs.py verify
+            python3 scripts/hepta-algorithm-docs.py verify-sources
+            python3 scripts/hepta-algorithm-docs.py generate-status --check
+            python3 scripts/hepta-algorithm-docs.py verify
+            python3 scripts/hepta-cns.py generate-status --check
+            python3 scripts/hepta-cns.py verify
+            python3 scripts/hepta-hnmf.py verify
+            python3 scripts/hepta-docs.py generate-status
+            git diff --exit-code -- docs/STATUS.md
+            python3 scripts/hepta-docs.py verify
+            if [[ -f scripts/hepta-lane-b-truth.py ]]; then python3 scripts/hepta-lane-b-truth.py verify; python3 scripts/hepta-lane-b-docs.py verify; fi
+            cargo fmt --manifest-path codex-rs/Cargo.toml --all -- --check
+            git diff --check
+            test -z "$(git status --porcelain)"
+          }
+
+          for round in 1 2 3 4; do
+            git fetch origin "refs/heads/${HEAD_BRANCH}:refs/remotes/origin/${HEAD_BRANCH}"
+            git reset --hard "refs/remotes/origin/${HEAD_BRANCH}"
+            git clean -ffd
+            original="$(git rev-parse HEAD)"
+            dir="${RUNNER_TEMP}/v5-remediation/round-${round}-${original}"
+            mkdir -p "${dir}"
+
+            settled=0
+            for attempt in $(seq 1 240); do
+              gh pr checks "${PR_NUMBER}" --repo "${GITHUB_REPOSITORY}" --json name,state,bucket,link >"${dir}/checks.json" 2>/dev/null || true
+              read -r total pending failed <<<"$(python3 - "${dir}/checks.json" <<'PY'
+          import json,sys
+          try: rows=json.load(open(sys.argv[1],encoding='utf-8'))
+          except Exception: rows=[]
+          pending=sum(1 for r in rows if str(r.get('bucket','')).lower() in {'pending','skipping'} or str(r.get('state','')).upper() in {'QUEUED','IN_PROGRESS','PENDING','WAITING','REQUESTED'})
+          failed=sum(1 for r in rows if str(r.get('bucket','')).lower() in {'fail','cancel'} or str(r.get('state','')).upper() in {'FAILURE','ERROR','TIMED_OUT','CANCELLED','ACTION_REQUIRED'})
+          print(len(rows),pending,failed)
+          PY
+              )"
+              if [[ "${total}" -gt 0 && "${pending}" -eq 0 ]]; then settled=1; break; fi
+              sleep 30
+            done
+            test "${settled}" = 1
+            if [[ "${failed}" -eq 0 ]]; then validate; echo "${original}" >"${RUNNER_TEMP}/v5-remediation/PASS_HEAD"; exit 0; fi
+
+            python3 - "${dir}/checks.json" >"${dir}/links.txt" <<'PY'
+          import json,sys
+          for r in json.load(open(sys.argv[1],encoding='utf-8')):
+              if str(r.get('bucket','')).lower() in {'fail','cancel'} or str(r.get('state','')).upper() in {'FAILURE','ERROR','TIMED_OUT','CANCELLED','ACTION_REQUIRED'}:
+                  print(r.get('link',''))
+          PY
+            : >"${dir}/failed.log"
+            while IFS= read -r link; do
+              id="$(sed -nE 's#.*\/actions\/runs\/([0-9]+).*#\1#p' <<<"${link}" | head -n1)"
+              [[ -z "${id}" ]] && continue
+              echo "===== RUN ${id} =====" >>"${dir}/failed.log"
+              gh run view "${id}" --repo "${GITHUB_REPOSITORY}" --log-failed >>"${dir}/failed.log" 2>&1 || true
+            done <"${dir}/links.txt"
+
+            changed=0
+            if grep -Eqi 'blobSha|native[- ]source|native binding|NATIVE_BINDINGS|uncommitted candidate document' "${dir}/failed.log"; then recompute_bindings; changed=1; fi
+            if grep -Eqi 'docs/STATUS\.md|generate-status|status.*(drift|stale|diff)|implementation dossier status|readiness status' "${dir}/failed.log"; then regenerate; changed=1; fi
+            if grep -Eqi 'rustfmt|cargo fmt|Diff in .*\.rs' "${dir}/failed.log"; then cargo fmt --manifest-path codex-rs/Cargo.toml --all; changed=1; fi
+            if grep -Eqi 'clippy|warning:.*denied|forbid.*warnings' "${dir}/failed.log"; then cargo clippy --manifest-path codex-rs/Cargo.toml --workspace --all-targets --fix --allow-dirty --allow-staged || true; changed=1; fi
+            if grep -Eqi 'ruff|would reformat|python.*format' "${dir}/failed.log"; then
+              mapfile -t files < <(git diff --name-only "origin/${BASE_BRANCH}...HEAD" -- '*.py')
+              if ((${#files[@]})); then
+                if command -v uv >/dev/null 2>&1; then uvx ruff check --fix "${files[@]}" || true; uvx ruff format "${files[@]}" || true;
+                elif python3 -m ruff --version >/dev/null 2>&1; then python3 -m ruff check --fix "${files[@]}" || true; python3 -m ruff format "${files[@]}" || true;
+                else exit 162; fi
+              fi
+              changed=1
+            fi
+            if grep -Eqi 'buildifier|BUILD.*format|Starlark.*format' "${dir}/failed.log"; then
+              command -v buildifier >/dev/null 2>&1 || exit 163
+              mapfile -t files < <(git diff --name-only "origin/${BASE_BRANCH}...HEAD" -- 'BUILD' 'BUILD.bazel' '*.bzl')
+              ((${#files[@]})) && buildifier "${files[@]}"
+              changed=1
+            fi
+            if grep -Eqi 'MODULE\.bazel\.lock.*(out of date|needs.*update|changed)|lockfile.*MODULE\.bazel' "${dir}/failed.log"; then
+              if command -v bazel >/dev/null 2>&1; then bazel mod deps --lockfile_mode=update;
+              elif command -v bazelisk >/dev/null 2>&1; then bazelisk mod deps --lockfile_mode=update;
+              else exit 164; fi
+              changed=1
+            fi
+
+            if [[ "${changed}" != 1 ]]; then echo 'UNKNOWN_NON_MECHANICAL_FAILURE' >"${dir}/decision"; exit 165; fi
+            git add -A
+            git diff --cached --check
+            git diff --cached --quiet && { echo 'CLASSIFIED_BUT_NO_CHANGE' >"${dir}/decision"; exit 166; }
+            git commit -m "chore(ci): repair deterministic v5 drift round ${round}"
+            validate
+            git fetch origin "refs/heads/${HEAD_BRANCH}:refs/remotes/origin/${HEAD_BRANCH}"
+            test "$(git rev-parse refs/remotes/origin/${HEAD_BRANCH})" = "${original}"
+            git push origin "HEAD:refs/heads/${HEAD_BRANCH}"
+          done
+          exit 167
+
+      - name: Retain v5 remediation evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: v5-deterministic-remediation-${{ github.run_id }}
+          path: ${{ runner.temp }}/v5-remediation
+          if-no-files-found: warn
+          retention-days: 14
