@@ -1,0 +1,81 @@
+name: Hepta Lane E final lint repair
+
+on:
+  push:
+    branches:
+      - codex/hepta-lane-e-gap-closure-20260910
+    paths:
+      - .github/workflows/hepta-lane-e-final-lint-fix.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: hepta-lane-e-final-lint-repair
+  cancel-in-progress: false
+
+jobs:
+  repair:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Install pinned Rust toolchain
+        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: 1.95.0
+          components: clippy,rustfmt
+
+      - name: Apply exact interface narrowing
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+
+          path = Path('codex-rs/hepta-intelligence-eval/src/closure.rs')
+          text = path.read_text(encoding='utf-8')
+          old = 'fn normalize_unique_ids(values: &mut Vec<StableId>) -> Result<(), EvaluationClosureError> {'
+          new = 'fn normalize_unique_ids(values: &mut [StableId]) -> Result<(), EvaluationClosureError> {'
+          if text.count(old) != 1:
+              raise SystemExit(f'expected exactly one lint target, found {text.count(old)}')
+          path.write_text(text.replace(old, new), encoding='utf-8')
+          PY
+          cargo fmt --manifest-path codex-rs/Cargo.toml \
+            --package codex-hepta-intelligence-eval
+
+      - name: Verify strict Lane E source
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo clippy --locked \
+            -p codex-hepta-learning-ledger \
+            -p codex-hepta-learning-artifacts \
+            -p codex-hepta-bellman-operator \
+            -p codex-hepta-intelligence-eval \
+            -p codex-hepta-shadow-qualification \
+            --all-targets -- -D warnings
+          cargo test --locked \
+            -p codex-hepta-learning-ledger \
+            -p codex-hepta-learning-artifacts \
+            -p codex-hepta-bellman-operator \
+            -p codex-hepta-intelligence-eval \
+            -- --nocapture
+          python3 ../scripts/hepta-lane-e-closure.py verify
+
+      - name: Commit exact repair
+        shell: bash
+        run: |
+          set -euo pipefail
+          git add codex-rs/hepta-intelligence-eval/src/closure.rs
+          git diff --cached --check
+          git config user.name hepta-lane-e-bot
+          git config user.email hepta-lane-e-bot@users.noreply.github.com
+          git commit -m 'chore(lane-e): narrow closure identifier slice'
+          git push origin HEAD:codex/hepta-lane-e-gap-closure-20260910
