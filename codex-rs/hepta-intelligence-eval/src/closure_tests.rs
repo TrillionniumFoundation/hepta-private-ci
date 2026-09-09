@@ -87,9 +87,9 @@ fn eval_04_rejects_role_collision_and_missing_future_windows() {
     collision.evaluator.signing_key_digest = collision.generator.signing_key_digest;
     assert!(matches!(
         decide_independently(collision, 50),
-        Err(EvaluationClosureError::Role(
-            CausalV2Error::RoleCollision("signing key")
-        ))
+        Err(EvaluationClosureError::Role(CausalV2Error::RoleCollision(
+            "signing key"
+        )))
     ));
 
     let mut insufficient = bundle();
@@ -146,24 +146,8 @@ fn eval_cross_fold_plan_binds_disjoint_lineage_and_final_holdout() {
     let plan = CrossFoldPlanV1 {
         plan_id: id("cross-fold-plan"),
         folds: vec![
-            fold(
-                "fold-1",
-                "p-2",
-                "e-2",
-                "train-w-1",
-                "p-1",
-                "e-1",
-                "w-1",
-            ),
-            fold(
-                "fold-2",
-                "p-1",
-                "e-1",
-                "train-w-2",
-                "p-2",
-                "e-2",
-                "w-2",
-            ),
+            fold("fold-1", "p-2", "e-2", "train-w-1", "p-1", "e-1", "w-1"),
+            fold("fold-2", "p-1", "e-1", "train-w-2", "p-2", "e-2", "w-2"),
         ],
         final_holdout_window_id: id("w-2"),
         final_holdout_digest: digest("final-holdout"),
@@ -178,24 +162,8 @@ fn eval_cross_fold_plan_binds_disjoint_lineage_and_final_holdout() {
     let leaking = CrossFoldPlanV1 {
         plan_id: id("leaking-plan"),
         folds: vec![
-            fold(
-                "fold-1",
-                "p-1",
-                "e-2",
-                "train-w-1",
-                "p-1",
-                "e-1",
-                "w-1",
-            ),
-            fold(
-                "fold-2",
-                "p-1",
-                "e-1",
-                "train-w-2",
-                "p-2",
-                "e-2",
-                "w-2",
-            ),
+            fold("fold-1", "p-1", "e-2", "train-w-1", "p-1", "e-1", "w-1"),
+            fold("fold-2", "p-1", "e-1", "train-w-2", "p-2", "e-2", "w-2"),
         ],
         final_holdout_window_id: id("w-2"),
         final_holdout_digest: digest("final-holdout"),

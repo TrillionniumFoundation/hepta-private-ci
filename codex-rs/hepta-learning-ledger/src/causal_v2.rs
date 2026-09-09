@@ -129,10 +129,7 @@ pub fn validate_authenticated_outcome(
     Ok(Digest32::of_bytes(&bytes))
 }
 
-fn validate_watermark(
-    outcome: &AuthenticatedOutcomeV1,
-    now: u64,
-) -> Result<(), CausalV2Error> {
+fn validate_watermark(outcome: &AuthenticatedOutcomeV1, now: u64) -> Result<(), CausalV2Error> {
     let watermark = &outcome.watermark;
     require_digest(
         watermark.expected_delay_profile_digest,
@@ -287,10 +284,13 @@ pub fn finalize_credit_batch(
         }
     }
 
-    let allocated = batch.allocations.iter().try_fold(0_i128, |sum, allocation| {
-        sum.checked_add(i128::from(allocation.credit.raw()))
-            .ok_or(CausalV2Error::Arithmetic)
-    })?;
+    let allocated = batch
+        .allocations
+        .iter()
+        .try_fold(0_i128, |sum, allocation| {
+            sum.checked_add(i128::from(allocation.credit.raw()))
+                .ok_or(CausalV2Error::Arithmetic)
+        })?;
     let conserved = allocated
         .checked_add(i128::from(batch.conservation_residual.raw()))
         .ok_or(CausalV2Error::Arithmetic)?;

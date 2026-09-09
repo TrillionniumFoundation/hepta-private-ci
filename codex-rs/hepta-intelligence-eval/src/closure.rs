@@ -202,17 +202,15 @@ pub fn decide_independently(
             continue;
         }
         let superiority = match metric.direction {
-            EvaluationDirectionV1::Maximize => {
-                metric.candidate.lower > metric.baseline.upper
-            }
-            EvaluationDirectionV1::Minimize => {
-                metric.candidate.upper < metric.baseline.lower
-            }
+            EvaluationDirectionV1::Maximize => metric.candidate.lower > metric.baseline.upper,
+            EvaluationDirectionV1::Minimize => metric.candidate.upper < metric.baseline.lower,
         };
-        let safety = metric.safety_floor.is_none_or(|floor| match metric.direction {
-            EvaluationDirectionV1::Maximize => metric.candidate.lower >= floor,
-            EvaluationDirectionV1::Minimize => metric.candidate.upper <= floor,
-        });
+        let safety = metric
+            .safety_floor
+            .is_none_or(|floor| match metric.direction {
+                EvaluationDirectionV1::Maximize => metric.candidate.lower >= floor,
+                EvaluationDirectionV1::Minimize => metric.candidate.upper <= floor,
+            });
         if !superiority || !safety {
             failed_metrics.push(metric.metric_id.clone());
         }
@@ -318,10 +316,8 @@ pub fn freeze_cross_fold_plan(
         {
             return Err(EvaluationClosureError::FinalHoldoutLeakage);
         }
-        final_holdout_count += usize::from(
-            fold.holdout_windows
-                .contains(&plan.final_holdout_window_id),
-        );
+        final_holdout_count +=
+            usize::from(fold.holdout_windows.contains(&plan.final_holdout_window_id));
         insert_unique_holdouts(&mut held_out_principals, &fold.holdout_principals)?;
         insert_unique_holdouts(&mut held_out_episodes, &fold.holdout_episodes)?;
         insert_unique_holdouts(&mut held_out_windows, &fold.holdout_windows)?;
@@ -546,10 +542,7 @@ fn normalize_unique_ids(values: &mut Vec<StableId>) -> Result<(), EvaluationClos
 }
 
 fn reject_duplicate_digests(values: &[Digest32]) -> Result<(), EvaluationClosureError> {
-    if values
-        .windows(2)
-        .any(|adjacent| adjacent[0] == adjacent[1])
-    {
+    if values.windows(2).any(|adjacent| adjacent[0] == adjacent[1]) {
         return Err(EvaluationClosureError::DuplicateDigest);
     }
     Ok(())
@@ -599,10 +592,7 @@ fn push_principal(bytes: &mut Vec<u8>, principal: &AuthenticatedPrincipalV1) {
     bytes.extend_from_slice(&principal.expires_at.to_be_bytes());
 }
 
-fn push_digest_vec(
-    bytes: &mut Vec<u8>,
-    values: &[Digest32],
-) -> Result<(), EvaluationClosureError> {
+fn push_digest_vec(bytes: &mut Vec<u8>, values: &[Digest32]) -> Result<(), EvaluationClosureError> {
     bytes.extend_from_slice(
         &u32::try_from(values.len())
             .map_err(|_| EvaluationClosureError::Arithmetic)?

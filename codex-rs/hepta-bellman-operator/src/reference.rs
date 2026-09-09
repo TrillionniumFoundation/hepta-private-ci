@@ -65,9 +65,18 @@ pub fn validate_applicability_certificate(
         ("action space", certificate.action_space_digest),
         ("Holder exponents", certificate.holder_exponents_digest),
         ("Holder constants", certificate.holder_constants_digest),
-        ("state Lipschitz profile", certificate.state_lipschitz_digest),
-        ("action Lipschitz profile", certificate.action_lipschitz_digest),
-        ("evaluator credential", certificate.evaluator_credential_digest),
+        (
+            "state Lipschitz profile",
+            certificate.state_lipschitz_digest,
+        ),
+        (
+            "action Lipschitz profile",
+            certificate.action_lipschitz_digest,
+        ),
+        (
+            "evaluator credential",
+            certificate.evaluator_credential_digest,
+        ),
         ("operator fallback", certificate.fallback_digest),
     ] {
         require_digest(digest, label)?;
@@ -234,8 +243,10 @@ pub fn build_sensor_core(
     let mut minimum_separation_squared = u128::MAX;
     for left in 0..selected_points.len() {
         for right in left + 1..selected_points.len() {
-            minimum_separation_squared = minimum_separation_squared
-                .min(distance_squared(&selected_points[left], &selected_points[right])?);
+            minimum_separation_squared = minimum_separation_squared.min(distance_squared(
+                &selected_points[left],
+                &selected_points[right],
+            )?);
         }
     }
     let separation_radius_raw = integer_sqrt(minimum_separation_squared)? / 2;
@@ -253,10 +264,8 @@ pub fn build_sensor_core(
         return Err(OperatorClosureError::MeshRatio);
     }
 
-    let hull_digest = digest_sensor_points(
-        b"hepta.bellman-operator.sensor-hull.v1",
-        &selected_points,
-    )?;
+    let hull_digest =
+        digest_sensor_points(b"hepta.bellman-operator.sensor-hull.v1", &selected_points)?;
     let mut bytes = b"hepta.bellman-operator.sensor-core.v1".to_vec();
     push_id(&mut bytes, &design.sensor_core_id);
     bytes.extend_from_slice(design.state_axis_digest.as_array());
@@ -270,11 +279,7 @@ pub fn build_sensor_core(
     for point in &selected_points {
         push_sensor_point(&mut bytes, point)?;
     }
-    for value in [
-        fill_distance_q32,
-        separation_radius_q32,
-        mesh_ratio_q32,
-    ] {
+    for value in [fill_distance_q32, separation_radius_q32, mesh_ratio_q32] {
         bytes.extend_from_slice(&value.raw().to_be_bytes());
     }
     bytes.extend_from_slice(hull_digest.as_array());
@@ -368,7 +373,8 @@ pub fn evaluate_bellman_reference(
     if plan.cells.len() != expected_cells {
         return Err(OperatorClosureError::IncompleteReferenceGrid);
     }
-    plan.cells.sort_by_key(|cell| (cell.sensor_id.clone(), cell.action_id.clone()));
+    plan.cells
+        .sort_by_key(|cell| (cell.sensor_id.clone(), cell.action_id.clone()));
     if plan.cells.windows(2).any(|adjacent| {
         adjacent[0].sensor_id == adjacent[1].sensor_id
             && adjacent[0].action_id == adjacent[1].action_id
@@ -547,9 +553,8 @@ pub fn admit_operator_regularity(
     if maximum_component * 2 > total && !assessment.dominant_component_approved {
         return Err(OperatorClosureError::DominantErrorComponent);
     }
-    let total_normalized_error = FixedQ32::from_raw(
-        i64::try_from(total).map_err(|_| OperatorClosureError::Arithmetic)?,
-    );
+    let total_normalized_error =
+        FixedQ32::from_raw(i64::try_from(total).map_err(|_| OperatorClosureError::Arithmetic)?);
 
     let mut bytes = b"hepta.bellman-operator.regularity-admission.v1".to_vec();
     push_id(&mut bytes, &assessment.artifact_id);

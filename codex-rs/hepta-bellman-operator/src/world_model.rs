@@ -231,8 +231,8 @@ fn exact_probabilities(
         let numerator = u128::from(count)
             .checked_mul(u128::from(Q32_SCALE))
             .ok_or(WorldModelError::Arithmetic)?;
-        let base = u64::try_from(numerator / denominator)
-            .map_err(|_| WorldModelError::Arithmetic)?;
+        let base =
+            u64::try_from(numerator / denominator).map_err(|_| WorldModelError::Arithmetic)?;
         let remainder = numerator % denominator;
         assigned = assigned
             .checked_add(base)
@@ -266,8 +266,8 @@ fn exact_probabilities(
         check_sum = check_sum
             .checked_add(raw_probability)
             .ok_or(WorldModelError::Arithmetic)?;
-        let probability = ProbabilityQ32::from_raw(raw_probability)
-            .map_err(|_| WorldModelError::Arithmetic)?;
+        let probability =
+            ProbabilityQ32::from_raw(raw_probability).map_err(|_| WorldModelError::Arithmetic)?;
         branches.push(TransitionBranchV1 {
             next_state_id,
             count,

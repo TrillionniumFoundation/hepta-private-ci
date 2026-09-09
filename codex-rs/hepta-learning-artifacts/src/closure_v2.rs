@@ -237,17 +237,14 @@ impl DatasetWithdrawalRegistry {
             .map_err(|_| ArtifactClosureError::Arithmetic)?
             .checked_add(1)
             .ok_or(ArtifactClosureError::Arithmetic)?;
-        let sequence = LogicalSequence::new(sequence_value)
-            .map_err(|_| ArtifactClosureError::Arithmetic)?;
+        let sequence =
+            LogicalSequence::new(sequence_value).map_err(|_| ArtifactClosureError::Arithmetic)?;
         let predecessor_chain_digest = self
             .records
             .last()
             .map_or(Digest32::ZERO, |record| record.chain_digest);
-        let chain_digest = digest_withdrawal_chain(
-            predecessor_chain_digest,
-            sequence,
-            event_digest,
-        );
+        let chain_digest =
+            digest_withdrawal_chain(predecessor_chain_digest, sequence, event_digest);
         let record = DatasetWithdrawalRecordV1 {
             sequence,
             predecessor_chain_digest,
@@ -310,8 +307,7 @@ impl DatasetWithdrawalRegistry {
                 .records
                 .last()
                 .ok_or(ArtifactClosureError::InternalInvariant)?;
-            if actual != &expected
-                || receipt.disposition != WithdrawalAppendDispositionV1::Appended
+            if actual != &expected || receipt.disposition != WithdrawalAppendDispositionV1::Appended
             {
                 return Err(ArtifactClosureError::WithdrawalSnapshotMismatch);
             }
@@ -367,8 +363,7 @@ pub fn validate_registry_head_witness(
     if witness.generation < requirement.minimum_generation {
         return Err(ArtifactClosureError::RegistryGenerationRollback);
     }
-    if witness.authority_epoch < requirement.minimum_authority_epoch
-        || witness.authority_epoch == 0
+    if witness.authority_epoch < requirement.minimum_authority_epoch || witness.authority_epoch == 0
     {
         return Err(ArtifactClosureError::RegistryEpochRollback);
     }
@@ -578,7 +573,9 @@ impl fmt::Display for ArtifactClosureError {
 
 impl StdError for ArtifactClosureError {}
 
-fn digest_manifest(manifest: &LearningArtifactManifestV2) -> Result<Digest32, ArtifactClosureError> {
+fn digest_manifest(
+    manifest: &LearningArtifactManifestV2,
+) -> Result<Digest32, ArtifactClosureError> {
     let mut bytes = b"hepta.learning-artifacts.manifest.v2".to_vec();
     push_id(&mut bytes, &manifest.artifact_id);
     bytes.push(manifest.kind.tag());
@@ -663,10 +660,7 @@ fn withdrawal_receipt(
 }
 
 fn reject_duplicate_digests(values: &[Digest32]) -> Result<(), ArtifactClosureError> {
-    if values
-        .windows(2)
-        .any(|adjacent| adjacent[0] == adjacent[1])
-    {
+    if values.windows(2).any(|adjacent| adjacent[0] == adjacent[1]) {
         return Err(ArtifactClosureError::DuplicateLineage);
     }
     Ok(())
@@ -691,10 +685,7 @@ fn require_digest(digest: Digest32, label: &'static str) -> Result<(), ArtifactC
     Ok(())
 }
 
-fn push_digest_vec(
-    bytes: &mut Vec<u8>,
-    values: &[Digest32],
-) -> Result<(), ArtifactClosureError> {
+fn push_digest_vec(bytes: &mut Vec<u8>, values: &[Digest32]) -> Result<(), ArtifactClosureError> {
     bytes.extend_from_slice(
         &u32::try_from(values.len())
             .map_err(|_| ArtifactClosureError::Arithmetic)?

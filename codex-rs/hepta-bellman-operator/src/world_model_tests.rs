@@ -94,11 +94,7 @@ fn world_model_rejects_duplicate_samples_and_invalid_outcomes() {
 
     let invalid = sample("sample-2", "state-b", FixedQ32::ONE.raw() + 1);
     assert_eq!(
-        fit_transition_model(
-            id("world-model-2"),
-            digest("dataset"),
-            vec![invalid],
-        ),
+        fit_transition_model(id("world-model-2"), digest("dataset"), vec![invalid],),
         Err(WorldModelError::InvalidOutcome)
     );
 }
