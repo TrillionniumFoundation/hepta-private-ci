@@ -1,0 +1,146 @@
+name: Hepta global blocker convergence controller r3
+
+on:
+  push:
+    branches:
+      - ops/hepta-global-gap-closure-controller-20260910-r1
+    paths:
+      - .github/workflows/hepta-global-gap-closure-controller-r3.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: read
+  actions: read
+
+concurrency:
+  group: hepta-global-gap-closure-controller-r3
+  cancel-in-progress: false
+
+jobs:
+  converge-r3:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 360
+    env:
+      HEPTA_CONVERGENCE_TARGET: integration/hepta-global-gap-closure-20260910-r3
+      CARGO_TERM_COLOR: always
+      RUST_BACKTRACE: '1'
+    steps:
+      - name: Check out exact controller source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Select exact convergence base and harden executor
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${GITHUB_SHA}"
+          git fetch --prune origin '+refs/heads/*:refs/remotes/origin/*'
+          for ref in \
+            origin/ops/hepta-final-convergence-review-anchor-20260909 \
+            origin/codex/hepta-native-source-closed-world-20260909 \
+            origin/integration/vnext-main-20260811
+          do
+            if git rev-parse --verify --quiet "${ref}^{commit}" >/dev/null; then
+              echo "HEPTA_CONVERGENCE_BASE=${ref}" >> "${GITHUB_ENV}"
+              break
+            fi
+          done
+          test -n "$(grep '^HEPTA_CONVERGENCE_BASE=' "${GITHUB_ENV}" || true)"
+          cp scripts/hepta-global-gap-closure.py "${RUNNER_TEMP}/hepta-global-gap-closure-r3.py"
+          python3 - <<'PY'
+          from pathlib import Path
+          from textwrap import dedent
+
+          path = Path('${{ runner.temp }}/hepta-global-gap-closure-r3.py')
+          text = path.read_text(encoding='utf-8')
+
+          marker = '\n\ndef available_remote_branches() -> dict[str, int]:\n'
+          helper = dedent('''
+
+          def extract_json_object(output: str) -> dict[str, Any]:
+              decoder = json.JSONDecoder()
+              for index, character in enumerate(output):
+                  if character != "{":
+                      continue
+                  try:
+                      value, _ = decoder.raw_decode(output[index:])
+                  except json.JSONDecodeError:
+                      continue
+                  if isinstance(value, dict):
+                      return value
+              raise json.JSONDecodeError("no JSON object in command output", output, 0)
+          ''')
+          if marker not in text:
+              raise SystemExit('executor function marker drifted')
+          text = text.replace(marker, helper + marker, 1)
+          text = text.replace(
+              'return json.loads(result.output), result',
+              'return extract_json_object(result.output), result',
+          )
+          text = text.replace(
+              'metadata = json.loads(metadata_result.output)',
+              'metadata = extract_json_object(metadata_result.output)',
+          )
+
+          old_gate = dedent('''
+              package_receipts = run_package_gates(packages)
+
+              repository_passed = (
+          ''')
+          new_gate = dedent('''
+              package_receipts = run_package_gates(packages)
+              repair_receipts: list[dict[str, Any]] = []
+              if not all_receipts_pass(package_receipts):
+                  for package in packages:
+                      repair = run(
+                          (
+                              "cargo", "clippy", "--fix", "--allow-dirty", "--allow-staged",
+                              "--manifest-path", "codex-rs/Cargo.toml", "--locked", "-p", package,
+                              "--all-targets", "--no-deps", "--", "-D", "warnings",
+                          ),
+                          check=False,
+                          timeout=5400,
+                      )
+                      repair_receipts.append({"package": package, **repair.receipt()})
+                  run(
+                      ("cargo", "fmt", "--manifest-path", "codex-rs/Cargo.toml", "--all"),
+                      check=False,
+                      timeout=1800,
+                  )
+                  repair_native_binding_hashes()
+                  commit_if_dirty("fix: apply deterministic convergence lint repairs")
+                  verifier_receipts = run_repository_verifiers()
+                  package_receipts = run_package_gates(packages)
+
+              repository_passed = (
+          ''')
+          if old_gate not in text:
+              raise SystemExit('executor package-gate marker drifted')
+          text = text.replace(old_gate, new_gate, 1)
+          text = text.replace(
+              '"packageGateReceipts": package_receipts,',
+              '"mechanicalRepairReceipts": repair_receipts,\n        "packageGateReceipts": package_receipts,',
+              1,
+          )
+          path.write_text(text, encoding='utf-8')
+          PY
+          python3 -m py_compile "${RUNNER_TEMP}/hepta-global-gap-closure-r3.py"
+
+      - name: Materialize, repair and qualify the r3 candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 "${RUNNER_TEMP}/hepta-global-gap-closure-r3.py"
+
+      - name: Upload convergence receipts
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-global-gap-closure-r3-${{ github.run_id }}-${{ github.run_attempt }}
+          path: qualification/global-gap-closure
+          if-no-files-found: warn
+          retention-days: 7
