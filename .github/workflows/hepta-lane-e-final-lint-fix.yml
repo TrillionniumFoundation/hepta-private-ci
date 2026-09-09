@@ -1,4 +1,4 @@
-name: Hepta Lane E final lint repair
+name: Hepta Lane E final blocker repair
 
 on:
   push:
@@ -11,7 +11,7 @@ permissions:
   contents: write
 
 concurrency:
-  group: hepta-lane-e-final-lint-repair
+  group: hepta-lane-e-final-blocker-repair
   cancel-in-progress: false
 
 jobs:
@@ -20,40 +20,144 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 120
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+      - name: Check out exact carrier
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           fetch-depth: 0
           persist-credentials: true
 
-      - name: Install pinned Rust toolchain
-        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
-        with:
-          toolchain: 1.95.0
-          components: clippy,rustfmt
+      - name: Bind carrier identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD^)" = "fc9bb1059a6dc2e840acebf4e1d852b01ee5f1c5"
+          test "$(git rev-parse --abbrev-ref HEAD)" = "codex/hepta-lane-e-gap-closure-20260910"
 
-      - name: Apply exact interface narrowing
+      - name: Install pinned Rust toolchain
+        shell: bash
+        run: |
+          set -euo pipefail
+          rustup toolchain install 1.95.0 \
+            --profile minimal \
+            --component clippy \
+            --component rustfmt \
+            --no-self-update
+          rustup default 1.95.0
+          rustc --version --verbose
+
+      - name: Apply exact source and metadata repairs
         shell: bash
         run: |
           set -euo pipefail
           python3 - <<'PY'
           from pathlib import Path
 
-          path = Path('codex-rs/hepta-intelligence-eval/src/closure.rs')
-          text = path.read_text(encoding='utf-8')
-          old = 'fn normalize_unique_ids(values: &mut Vec<StableId>) -> Result<(), EvaluationClosureError> {'
-          new = 'fn normalize_unique_ids(values: &mut [StableId]) -> Result<(), EvaluationClosureError> {'
-          if text.count(old) != 1:
-              raise SystemExit(f'expected exactly one lint target, found {text.count(old)}')
-          path.write_text(text.replace(old, new), encoding='utf-8')
+          replacements = {
+              Path('codex-rs/hepta-bellman-operator/src/learned.rs'): [
+                  (
+                      'fn normalize_ids(values: &mut Vec<StableId>) -> Result<(), LearnedOperatorError> {',
+                      'fn normalize_ids(values: &mut [StableId]) -> Result<(), LearnedOperatorError> {',
+                  ),
+              ],
+              Path('codex-rs/hepta-bellman-operator/src/reference.rs'): [
+                  (
+                      'fn normalize_ids(values: &mut Vec<StableId>) -> Result<(), OperatorClosureError> {',
+                      'fn normalize_ids(values: &mut [StableId]) -> Result<(), OperatorClosureError> {',
+                  ),
+              ],
+              Path('codex-rs/hepta-intelligence-eval/src/closure.rs'): [
+                  (
+                      'fn normalize_unique_ids(values: &mut Vec<StableId>) -> Result<(), EvaluationClosureError> {',
+                      'fn normalize_unique_ids(values: &mut [StableId]) -> Result<(), EvaluationClosureError> {',
+                  ),
+              ],
+              Path('qualification/module-execution-dossiers/DETAILS.json'): [
+                  (
+                      '754dc8fbd7652f59d6c582b012fc23297352ed2ba76132c2a4521d81ec7cfb21',
+                      '40fc718b909626d8627c41cada26afb2e203559db3d7bdc3a111d16e0afe8c84',
+                  ),
+                  (
+                      'fdb180c922475e293015df091ed93a566ed2b237e42b2f85d8bee39266d6bba5',
+                      '70ed178dcbcd0313f8b4efc635ac279a077b04e6f91ede8bb17b7aeda59c4f84',
+                  ),
+                  (
+                      'f6636b4fca86b3d5b270201c9a503d11b86ba01d64844c50530b4cb0cc537d42',
+                      '5d3a7ab4b0b098ad1e61d2c79c131875a9d33a5f52b3ce523d4f61fa3009021a',
+                  ),
+                  (
+                      'f56ed7e90e63ca7a6f576b650007dc03fcbdf1f842eacd1031124982e286358f',
+                      '9f08b764d75d6b2e5042eed619e31a0c856539833e18f8ed5eac0ff131b53a33',
+                  ),
+              ],
+              Path('qualification/module-execution-dossiers/NATIVE_BINDINGS.json'): [
+                  (
+                      '893b43eadb473c817e19d6450132b7b6fd4d8e85',
+                      '4374ec9a8cce83fab9e491773cfb389aa39306f6',
+                  ),
+                  (
+                      'b9c3649a914444a69eaa80a03d13d38bed82f126',
+                      '6d1f37b485ad8fc4c82bb6a0ef3697e4b86c5e70',
+                  ),
+              ],
+          }
+
+          for path, pairs in replacements.items():
+              text = path.read_text(encoding='utf-8')
+              for old, new in pairs:
+                  count = text.count(old)
+                  if count != 1:
+                      raise SystemExit(f'{path}: expected one repair anchor for {old}, found {count}')
+                  text = text.replace(old, new, 1)
+              path.write_text(text, encoding='utf-8')
           PY
+          rm .github/workflows/hepta-lane-e-final-lint-fix.yml
           cargo fmt --manifest-path codex-rs/Cargo.toml \
+            --package codex-hepta-bellman-operator \
             --package codex-hepta-intelligence-eval
 
-      - name: Verify strict Lane E source
+      - name: Commit exact clean tree
+        shell: bash
+        run: |
+          set -euo pipefail
+          git diff --check
+          git config user.name hepta-lane-e-bot
+          git config user.email hepta-lane-e-bot@users.noreply.github.com
+          git add \
+            codex-rs/hepta-bellman-operator/src/learned.rs \
+            codex-rs/hepta-bellman-operator/src/reference.rs \
+            codex-rs/hepta-intelligence-eval/src/closure.rs \
+            qualification/module-execution-dossiers/DETAILS.json \
+            qualification/module-execution-dossiers/NATIVE_BINDINGS.json \
+            .github/workflows/hepta-lane-e-final-lint-fix.yml
+          git diff --cached --check
+          git commit -m 'fix(lane-e): close lint and source-binding blockers'
+          test -z "$(git status --porcelain)"
+          git rev-parse HEAD HEAD^{tree}
+
+      - name: Verify repository-controlled Lane E closure
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta-lane-e-closure.py self-test
+          python3 scripts/hepta-lane-e-closure.py verify
+          python3 qualification/module-execution-dossiers/implementation_contracts.py verify-repository
+          python3 scripts/hepta-implementation-dossiers.py generate-status --check
+          python3 scripts/hepta-implementation-dossiers.py verify
+          python3 scripts/hepta-readiness.py generate-status --check
+          python3 scripts/hepta-readiness.py verify
+
+      - name: Verify strict Rust source
         working-directory: codex-rs
         shell: bash
         run: |
           set -euo pipefail
+          cargo check --locked \
+            -p codex-hepta-learning-ledger \
+            -p codex-hepta-learning-artifacts \
+            -p codex-hepta-bellman-operator \
+            -p codex-hepta-intelligence-eval \
+            -p codex-hepta-shadow-qualification \
+            --all-targets
           cargo clippy --locked \
             -p codex-hepta-learning-ledger \
             -p codex-hepta-learning-artifacts \
@@ -67,15 +171,28 @@ jobs:
             -p codex-hepta-bellman-operator \
             -p codex-hepta-intelligence-eval \
             -- --nocapture
-          python3 ../scripts/hepta-lane-e-closure.py verify
+          cargo test --locked \
+            -p codex-hepta-shadow-qualification \
+            lane_e_causal_candidate_chain_is_digest_bound_and_deny_all \
+            -- --nocapture --test-threads=1
 
-      - name: Commit exact repair
+      - name: Verify immutable clean result
         shell: bash
         run: |
           set -euo pipefail
-          git add codex-rs/hepta-intelligence-eval/src/closure.rs
-          git diff --cached --check
-          git config user.name hepta-lane-e-bot
-          git config user.email hepta-lane-e-bot@users.noreply.github.com
-          git commit -m 'chore(lane-e): narrow closure identifier slice'
+          cargo fmt --manifest-path codex-rs/Cargo.toml \
+            --package codex-hepta-learning-ledger \
+            --package codex-hepta-learning-artifacts \
+            --package codex-hepta-bellman-operator \
+            --package codex-hepta-intelligence-eval \
+            --package codex-hepta-shadow-qualification \
+            -- --check
+          git diff --check HEAD^
+          git diff --exit-code
+          test -z "$(git status --porcelain)"
+
+      - name: Publish only the verified commit
+        shell: bash
+        run: |
+          set -euo pipefail
           git push origin HEAD:codex/hepta-lane-e-gap-closure-20260910
