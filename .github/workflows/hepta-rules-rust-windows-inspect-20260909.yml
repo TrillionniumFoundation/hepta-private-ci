@@ -1,0 +1,50 @@
+name: Inspect effective rules_rust Windows link functions
+
+on:
+  push:
+    branches:
+      - ops/hepta-rules-rust-windows-inspect-20260909-r1
+
+permissions:
+  contents: read
+
+jobs:
+  inspect:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: 05981ed1adfb931a87a47b0606f1cedaa69f123b
+          fetch-depth: 1
+          persist-credentials: false
+
+      - uses: ./.github/actions/prepare-bazel-ci
+        with:
+          target: x86_64-unknown-linux-gnu
+          cache-scope: rules-rust-effective-source-inspect
+
+      - name: Print effective patched function bodies
+        shell: bash
+        run: |
+          set -euo pipefail
+          bazel query @rules_rust//rust/settings:extra_rustc_flag >/dev/null
+          output_base="$(bazel info output_base)"
+          source="$(find "${output_base}/external" -path '*/rust/private/rustc.bzl' -type f | grep -E '/rules_rust[^/]*/rust/private/rustc\.bzl$' | head -n1)"
+          test -n "${source}"
+          SOURCE="${source}" python3 - <<'PY'
+          import os
+          from pathlib import Path
+
+          path = Path(os.environ["SOURCE"])
+          lines = path.read_text(encoding="utf-8").splitlines()
+          for index, line in enumerate(lines):
+              if line.startswith("def _add_user_link_flags") or line.startswith("def _make_link_flags_windows"):
+                  start = max(0, index - 8)
+                  end = min(len(lines), index + 55)
+                  print(f"EFFECTIVE_SOURCE_RANGE {start + 1}:{end}")
+                  for number in range(start, end):
+                      print(f"{number + 1:05d}: {lines[number]}")
+          PY
+          git diff --exit-code
+          test -z "$(git status --porcelain)"
