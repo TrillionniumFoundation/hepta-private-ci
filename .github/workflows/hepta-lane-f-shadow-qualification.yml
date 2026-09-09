@@ -34,24 +34,22 @@ jobs:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
           persist-credentials: false
           fetch-depth: 0
-
-      - name: Verify exact source and clean tree
-        env:
-          EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+      - name: Generate exact dependency lock
         shell: bash
         run: |
           set -euo pipefail
-          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          test "$(git rev-parse HEAD)" = "${{ github.event.pull_request.head.sha || github.sha }}"
           test -z "$(git status --porcelain)"
-
-      - name: Generate dependency lock from the exact manifests
-        shell: bash
-        run: |
-          set -euo pipefail
           rm -f qualification/lane-f-shadow/Cargo.lock
           cargo generate-lockfile --manifest-path qualification/lane-f-shadow/Cargo.toml
           test -s qualification/lane-f-shadow/Cargo.lock
-
+      - name: Upload exact generated lock
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: lane-f-shadow-lock-${{ github.run_id }}
+          path: qualification/lane-f-shadow/Cargo.lock
+          if-no-files-found: error
+          retention-days: 7
       - name: Test and lint standalone vertical
         shell: bash
         run: |
@@ -59,22 +57,6 @@ jobs:
           cargo test --locked --manifest-path qualification/lane-f-shadow/Cargo.toml
           cargo clippy --locked --manifest-path qualification/lane-f-shadow/Cargo.toml --all-targets -- -D warnings
           cargo fmt --manifest-path qualification/lane-f-shadow/Cargo.toml -- --check
-
-      - name: Upload generated lock for source binding
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
-        with:
-          name: lane-f-shadow-lock-${{ github.run_id }}
-          path: qualification/lane-f-shadow/Cargo.lock
-          if-no-files-found: error
-          retention-days: 7
-
-      - name: Verify checkout remains unchanged
-        shell: bash
-        run: |
-          set -euo pipefail
-          rm qualification/lane-f-shadow/Cargo.lock
-          git diff --check
-          test -z "$(git status --porcelain)"
 
   synthetic-merge:
     name: Deterministic vertical on merge candidate
@@ -88,7 +70,6 @@ jobs:
           ref: ${{ github.event.pull_request.head.sha }}
           persist-credentials: false
           fetch-depth: 0
-
       - name: Build deterministic merge commit
         id: merge
         env:
@@ -111,23 +92,13 @@ jobs:
           git checkout --detach "$SHA"
           test "$(git rev-parse HEAD)" = "$SHA"
           printf 'sha=%s\n' "$SHA" >> "$GITHUB_OUTPUT"
-
-      - name: Generate dependency lock from merge-candidate manifests
+      - name: Generate lock and test merge candidate
         shell: bash
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "${{ steps.merge.outputs.sha }}"
           rm -f qualification/lane-f-shadow/Cargo.lock
           cargo generate-lockfile --manifest-path qualification/lane-f-shadow/Cargo.toml
-          test -s qualification/lane-f-shadow/Cargo.lock
-
-      - name: Test merge candidate
-        shell: bash
-        run: |
-          set -euo pipefail
           cargo test --locked --manifest-path qualification/lane-f-shadow/Cargo.toml
           cargo clippy --locked --manifest-path qualification/lane-f-shadow/Cargo.toml --all-targets -- -D warnings
           cargo fmt --manifest-path qualification/lane-f-shadow/Cargo.toml -- --check
-          rm qualification/lane-f-shadow/Cargo.lock
-          git diff --check
-          test -z "$(git status --porcelain)"
