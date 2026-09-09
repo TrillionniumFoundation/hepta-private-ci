@@ -1,0 +1,245 @@
+name: Hepta protected merge chain monitor 20260909 r7
+
+on:
+  push:
+    branches:
+      - ops/hepta-gap-closure-orchestrator-20260909-r6b
+
+permissions:
+  actions: write
+  checks: read
+  contents: write
+  pull-requests: write
+  statuses: read
+
+concurrency:
+  group: hepta-protected-merge-chain-monitor-20260909-r7
+  cancel-in-progress: false
+
+jobs:
+  monitor-protected-chain:
+    runs-on: ubuntu-latest
+    timeout-minutes: 720
+    env:
+      GH_TOKEN: ${{ secrets.HEPTA_CI_PAT || secrets.GH_PAT || secrets.REPO_PAT || github.token }}
+      REPO: TrillionniumFoundation/hepta-private-ci
+      R6_BRANCH: ops/hepta-gap-closure-orchestrator-20260909-r6
+      CANDIDATE_BRANCH: codex/hepta-all-gap-closure-20260908
+    steps:
+      - name: Close only this session's probe PRs
+        shell: bash
+        run: |
+          set -euo pipefail
+          gh api "repos/${REPO}/pulls?state=open&per_page=100" --paginate \
+            --jq '.[] | select(.number != 480 and .number != 482) | select(.head.ref == "ops/hepta-windows-msvc-schema-oracle-materializer-20260909-r5") | select(.title == "chore: continue bounded gap closure orchestration" or .title == "noop" or .title == "DO NOT MERGE - cleanup probe" or .title == "test" or .title == "__invalid_probe__" or .title == "invalid" or .title == "invalid-missing-head") | .number' \
+            | while read -r number; do
+                test -n "${number}" || continue
+                gh api --method PATCH "repos/${REPO}/pulls/${number}" -f state=closed >/dev/null
+                printf 'closed probe PR #%s\n' "${number}"
+              done
+
+      - name: Wait for successful r6 qualification
+        shell: bash
+        run: |
+          set -euo pipefail
+          deadline=$(( $(date +%s) + 21600 ))
+          rerun_count=0
+          while [ "$(date +%s)" -lt "${deadline}" ]; do
+            run_json="$(gh api "repos/${REPO}/actions/runs?branch=${R6_BRANCH}&event=push&per_page=20" \
+              --jq '[.workflow_runs[] | select(.name == "Hepta bounded gap closure orchestrator 20260909 r6")][0]')"
+            run_id="$(jq -r '.id // empty' <<<"${run_json}")"
+            status="$(jq -r '.status // empty' <<<"${run_json}")"
+            conclusion="$(jq -r '.conclusion // empty' <<<"${run_json}")"
+            printf 'r6 run=%s status=%s conclusion=%s\n' "${run_id}" "${status}" "${conclusion}"
+            if [ -z "${run_id}" ]; then
+              sleep 60
+              continue
+            fi
+            if [ "${status}" != completed ]; then
+              sleep 120
+              continue
+            fi
+            if [ "${conclusion}" = success ]; then
+              exit 0
+            fi
+            if [ "${rerun_count}" -lt 2 ]; then
+              gh api --method POST "repos/${REPO}/actions/runs/${run_id}/rerun-failed-jobs" >/dev/null || \
+                gh api --method POST "repos/${REPO}/actions/runs/${run_id}/rerun" >/dev/null
+              rerun_count=$((rerun_count + 1))
+              sleep 180
+              continue
+            fi
+            echo "r6 qualification did not converge after bounded reruns" >&2
+            exit 1
+          done
+          echo "timed out waiting for r6 qualification" >&2
+          exit 1
+
+      - name: Define protected-chain helpers
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat >"${RUNNER_TEMP}/protected-chain.sh" <<'SH'
+          set -euo pipefail
+
+          choose_merge_method() {
+            if [ "$(gh api "repos/${REPO}" --jq .allow_merge_commit)" = true ]; then
+              printf '%s\n' --merge
+            elif [ "$(gh api "repos/${REPO}" --jq .allow_squash_merge)" = true ]; then
+              printf '%s\n' --squash
+            elif [ "$(gh api "repos/${REPO}" --jq .allow_rebase_merge)" = true ]; then
+              printf '%s\n' --rebase
+            else
+              return 1
+            fi
+          }
+
+          request_independent_reviewers() {
+            local pr="$1"
+            local author
+            author="$(gh api "repos/${REPO}/pulls/${pr}" --jq .user.login)"
+            {
+              gh api --paginate "repos/${REPO}/pulls/${pr}/reviews?per_page=100" \
+                --jq ".[] | select(.user.type == \"User\") | select(.user.login != \"${author}\") | select(.state != \"DISMISSED\") | .user.login"
+              gh api "repos/${REPO}/pulls/${pr}/requested_reviewers" --jq '.users[] | select(.type == "User") | .login'
+            } | sort -u | grep -Ev '\[bot\]$' | while read -r reviewer; do
+              test -n "${reviewer}" || continue
+              gh api --method POST "repos/${REPO}/pulls/${pr}/requested_reviewers" \
+                --raw-field "reviewers[]=${reviewer}" >/dev/null || true
+              printf 'PR #%s reviewer requested: %s\n' "${pr}" "${reviewer}"
+            done
+          }
+
+          rerun_failed_exact_head_runs() {
+            local sha="$1"
+            gh api --paginate "repos/${REPO}/actions/runs?head_sha=${sha}&per_page=100" \
+              --jq '.workflow_runs[] | select(.status == "completed") | select(.conclusion == "failure" or .conclusion == "cancelled" or .conclusion == "timed_out") | .id' \
+              | sort -u | while read -r run_id; do
+                  test -n "${run_id}" || continue
+                  marker="${RUNNER_TEMP}/rerun-${run_id}"
+                  if [ -e "${marker}" ]; then
+                    continue
+                  fi
+                  : >"${marker}"
+                  gh api --method POST "repos/${REPO}/actions/runs/${run_id}/rerun-failed-jobs" >/dev/null || \
+                    gh api --method POST "repos/${REPO}/actions/runs/${run_id}/rerun" >/dev/null || true
+                  printf 'exact-head rerun requested: %s\n' "${run_id}"
+                done
+          }
+
+          prepare_pr() {
+            local pr="$1"
+            local state draft method
+            state="$(gh api "repos/${REPO}/pulls/${pr}" --jq .state)"
+            [ "${state}" = open ] || return 0
+            draft="$(gh api "repos/${REPO}/pulls/${pr}" --jq .draft)"
+            if [ "${draft}" = true ]; then
+              gh pr ready "${pr}" --repo "${REPO}"
+            fi
+            request_independent_reviewers "${pr}"
+            method="$(choose_merge_method)"
+            gh pr merge "${pr}" --repo "${REPO}" --auto "${method}" || true
+          }
+
+          wait_for_merge() {
+            local pr="$1"
+            local deadline=$(( $(date +%s) + 18000 ))
+            while [ "$(date +%s)" -lt "${deadline}" ]; do
+              state="$(gh api "repos/${REPO}/pulls/${pr}" --jq .state)"
+              merged="$(gh api "repos/${REPO}/pulls/${pr}" --jq .merged)"
+              sha="$(gh api "repos/${REPO}/pulls/${pr}" --jq .head.sha)"
+              mergeable_state="$(gh api "repos/${REPO}/pulls/${pr}" --jq .mergeable_state)"
+              printf 'PR #%s state=%s merged=%s mergeable_state=%s head=%s\n' \
+                "${pr}" "${state}" "${merged}" "${mergeable_state}" "${sha}"
+              if [ "${merged}" = true ]; then
+                return 0
+              fi
+              if [ "${state}" != open ]; then
+                echo "PR #${pr} closed without merge" >&2
+                return 1
+              fi
+              rerun_failed_exact_head_runs "${sha}"
+              request_independent_reviewers "${pr}"
+              sleep 300
+            done
+            echo "timed out waiting for protected merge of PR #${pr}" >&2
+            return 1
+          }
+          SH
+
+      - name: Prepare and monitor PR 480
+        shell: bash
+        run: |
+          set -euo pipefail
+          source "${RUNNER_TEMP}/protected-chain.sh"
+          candidate_sha="$(gh api "repos/${REPO}/branches/${CANDIDATE_BRANCH}" --jq .commit.sha)"
+          head_ref="$(gh api "repos/${REPO}/pulls/480" --jq .head.ref)"
+          head_sha="$(gh api "repos/${REPO}/pulls/480" --jq .head.sha)"
+          test "${head_ref}" = "${CANDIDATE_BRANCH}"
+          test "${head_sha}" = "${candidate_sha}"
+          prepare_pr 480
+          wait_for_merge 480
+
+      - name: Update, prepare, and monitor PR 482
+        shell: bash
+        run: |
+          set -euo pipefail
+          source "${RUNNER_TEMP}/protected-chain.sh"
+          merged="$(gh api "repos/${REPO}/pulls/482" --jq .merged)"
+          state="$(gh api "repos/${REPO}/pulls/482" --jq .state)"
+          if [ "${merged}" = true ]; then
+            exit 0
+          fi
+          if [ "${state}" != open ]; then
+            echo 'PR #482 is closed without merge' >&2
+            exit 1
+          fi
+          old_head="$(gh api "repos/${REPO}/pulls/482" --jq .head.sha)"
+          gh api --method PUT "repos/${REPO}/pulls/482/update-branch" \
+            -f "expected_head_sha=${old_head}" >/dev/null || true
+          sleep 30
+          prepare_pr 482
+          wait_for_merge 482
+
+      - name: Verify convergence on main
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(gh api "repos/${REPO}/pulls/480" --jq .merged)" = true
+          test "$(gh api "repos/${REPO}/pulls/482" --jq .merged)" = true
+          default_branch="$(gh api "repos/${REPO}" --jq .default_branch)"
+          default_sha="$(gh api "repos/${REPO}/branches/${default_branch}" --jq .commit.sha)"
+          test -n "${default_sha}"
+          printf 'default branch %s converged at %s\n' "${default_branch}" "${default_sha}"
+
+      - name: Delete only merged-chain temporary branches
+        shell: bash
+        run: |
+          set -euo pipefail
+          default_branch="$(gh api "repos/${REPO}" --jq .default_branch)"
+          pr482_head="$(gh api "repos/${REPO}/pulls/482" --jq .head.ref)"
+          branches=(
+            "ops/hepta-windows-msvc-link-materializer-20260909-r4"
+            "ops/hepta-windows-msvc-schema-oracle-materializer-20260909-r5"
+            "ops/hepta-gap-closure-orchestrator-20260909-r6"
+            "ops/hepta-gap-closure-orchestrator-20260909-r6b"
+            "${CANDIDATE_BRANCH}"
+            "${pr482_head}"
+          )
+          printf '%s\n' "${branches[@]}" | awk 'NF && !seen[$0]++' | while read -r branch; do
+            [ "${branch}" != "${default_branch}" ] || continue
+            if ! gh api "repos/${REPO}/branches/${branch}" >/dev/null 2>&1; then
+              continue
+            fi
+            open_heads="$(gh api "repos/${REPO}/pulls?state=open&head=TrillionniumFoundation:${branch}&per_page=100" --jq 'length')"
+            if [ "${open_heads}" != 0 ]; then
+              printf 'retain branch with open PR: %s\n' "${branch}"
+              continue
+            fi
+            if gh api "repos/${REPO}/branches/${branch}/protection" >/dev/null 2>&1; then
+              printf 'retain protected branch: %s\n' "${branch}"
+              continue
+            fi
+            gh api --method DELETE "repos/${REPO}/git/refs/heads/${branch}"
+            printf 'deleted merged-chain branch: %s\n' "${branch}"
+          done
