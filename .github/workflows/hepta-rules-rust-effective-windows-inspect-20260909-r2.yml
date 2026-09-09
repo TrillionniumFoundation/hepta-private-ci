@@ -35,7 +35,15 @@ jobs:
           from pathlib import Path
 
           root = Path(os.environ["OUTPUT_BASE"]) / "external"
-          candidates = sorted(root.glob("**/rust/private/rustc.bzl"))
+          candidates = []
+          for directory, _, filenames in os.walk(root, followlinks=True):
+              if "rustc.bzl" not in filenames:
+                  continue
+              path = Path(directory) / "rustc.bzl"
+              if path.as_posix().endswith("/rust/private/rustc.bzl"):
+                  candidates.append(path)
+          candidates = sorted(set(candidates))
+
           matches = []
           for path in candidates:
               try:
@@ -49,6 +57,7 @@ jobs:
                   matches.append(path)
           if len(matches) != 1:
               print(f"expected one effective source, found {len(matches)}", file=sys.stderr)
+              print(f"candidate rustc sources: {len(candidates)}", file=sys.stderr)
               for path in candidates:
                   print(path.as_posix(), file=sys.stderr)
               raise SystemExit(1)
