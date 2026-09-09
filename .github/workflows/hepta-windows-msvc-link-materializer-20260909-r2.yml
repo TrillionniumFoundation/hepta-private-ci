@@ -1,0 +1,130 @@
+name: Hepta Windows MSVC rules_rust materializer 20260909 r2
+
+on:
+  push:
+    branches:
+      - ops/hepta-windows-msvc-link-materializer-20260909-r2
+
+permissions:
+  contents: write
+
+concurrency:
+  group: hepta-windows-msvc-link-materializer-20260909-r2
+  cancel-in-progress: false
+
+jobs:
+  qualify-and-amend:
+    runs-on: windows-latest
+    timeout-minutes: 180
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Preserve bounded materializer and bind exact candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          expected_head=05981ed1adfb931a87a47b0606f1cedaa69f123b
+          expected_parent=04f60466394a024c218ce66b1b32d1c42c462985
+          materializer="$(cygpath -u "${RUNNER_TEMP}")/hepta_windows_msvc_link_materialize_20260909.py"
+          cp .github/scripts/hepta_windows_msvc_link_materialize_20260909.py "${materializer}"
+          printf 'MATERIALIZER=%s\n' "${materializer}" >> "${GITHUB_ENV}"
+
+          git fetch --no-tags origin \
+            +refs/heads/codex/hepta-all-gap-closure-20260908:refs/remotes/origin/hepta-exact-candidate
+          test "$(git rev-parse refs/remotes/origin/hepta-exact-candidate)" = "${expected_head}"
+          git checkout --detach "${expected_head}"
+          git config core.autocrlf false
+          git reset --hard "${expected_head}"
+          git clean -ffdx
+          test "$(git rev-parse HEAD^)" = "${expected_parent}"
+          test "$(git rev-list --count "${expected_parent}"..HEAD)" = 1
+          test -z "$(git status --porcelain)"
+
+      - name: Materialize global MSVC link-boundary repair
+        shell: bash
+        run: |
+          set -euo pipefail
+          python "${MATERIALIZER}"
+          python -m py_compile "${MATERIALIZER}"
+          bash -n .github/scripts/run-bazel-ci.sh
+          git diff --check
+
+          changed="$( { git diff --name-only HEAD; git ls-files --others --exclude-standard; } | sort -u)"
+          expected="$(printf '%s\n' \
+            .github/scripts/run-bazel-ci.sh \
+            MODULE.bazel \
+            patches/BUILD.bazel \
+            patches/rules_rust_windows_msvc_user_link_flags.patch | sort)"
+          test "${changed}" = "${expected}"
+
+      - name: Prepare Bazel CI
+        id: prepare_bazel
+        uses: ./.github/actions/prepare-bazel-ci
+        with:
+          target: x86_64-pc-windows-msvc
+          cache-scope: bazel-windows-msvc-link-materializer-r2
+
+      - name: Qualify representative native MSVC links
+        env:
+          BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_API_KEY }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          ./.github/scripts/run-bazel-ci.sh \
+            --print-failed-action-summary \
+            --print-failed-test-logs \
+            --windows-msvc-host-platform \
+            --remote-download-toplevel \
+            -- \
+            test \
+            --platforms=//:windows_x86_64_msvc \
+            --skip_incompatible_explicit_targets \
+            --test_tag_filters=-argument-comment-lint \
+            --test_output=errors \
+            --build_metadata=COMMIT_SHA=${GITHUB_SHA} \
+            -- \
+            //codex-rs/hepta-types:all \
+            //codex-rs/uds:all \
+            //codex-rs/hepta-agentd:all
+
+          ./scripts/check-module-bazel-lock.sh
+          git diff --check
+          observed="$( { git diff --name-only HEAD; git ls-files --others --exclude-standard; } | sort -u)"
+          unexpected="$(printf '%s\n' "${observed}" | grep -Ev '^(.github/scripts/run-bazel-ci.sh|MODULE.bazel|MODULE.bazel.lock|patches/BUILD.bazel|patches/rules_rust_windows_msvc_user_link_flags.patch)$' || true)"
+          test -z "${unexpected}"
+
+      - name: Atomically amend exact single-parent candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          expected_head=05981ed1adfb931a87a47b0606f1cedaa69f123b
+          expected_parent=04f60466394a024c218ce66b1b32d1c42c462985
+          candidate_ref=refs/heads/codex/hepta-all-gap-closure-20260908
+
+          test "$(git rev-parse HEAD)" = "${expected_head}"
+          test "$(git rev-parse HEAD^)" = "${expected_parent}"
+          git diff --check
+          git add \
+            .github/scripts/run-bazel-ci.sh \
+            MODULE.bazel \
+            MODULE.bazel.lock \
+            patches/BUILD.bazel \
+            patches/rules_rust_windows_msvc_user_link_flags.patch
+          test -z "$(git diff --name-only)"
+          test -z "$(git ls-files --others --exclude-standard)"
+
+          git config user.name hepta-gap-materializer
+          git config user.email hepta-gap-materializer@users.noreply.github.com
+          git commit --amend --signoff \
+            -m "fix(windows): bind MSVC libraries into rules_rust links" \
+            -m "Propagate trusted VsDevCmd library roots into target and exec Rustc final links, normalize GNU-style native library flags for the direct MSVC linker, and preserve the immutable single-parent candidate with no authority expansion."
+
+          test "$(git rev-parse HEAD^)" = "${expected_parent}"
+          test "$(git rev-list --count "${expected_parent}"..HEAD)" = 1
+          git push \
+            --force-with-lease="${candidate_ref}:${expected_head}" \
+            origin "HEAD:${candidate_ref}"
+          git rev-parse HEAD HEAD^{tree}
