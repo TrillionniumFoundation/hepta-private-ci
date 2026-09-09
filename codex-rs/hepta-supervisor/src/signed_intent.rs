@@ -66,6 +66,10 @@ pub enum SignedIntentError {
 }
 
 impl SignedSupervisorIntent {
+    #[expect(
+        clippy::too_many_arguments,
+        reason = "signed intent constructor keeps every digest-bound field explicit"
+    )]
     pub fn new(
         grant_sha256: Sha256Digest,
         agent_id: impl Into<String>,

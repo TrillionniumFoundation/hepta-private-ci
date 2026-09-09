@@ -13,6 +13,7 @@ mod durable_lock;
 mod error;
 mod ledger;
 mod model;
+mod shadow;
 
 pub use durable::DurableLedger;
 pub use durable::DurableLedgerError;
@@ -32,3 +33,14 @@ pub use model::LedgerSnapshot;
 pub use model::OutcomeFinality;
 pub use model::OutcomeObservation;
 pub use model::Revocation;
+pub use shadow::ShadowAppendReceipt;
+pub use shadow::ShadowDecisionArtifact;
+pub use shadow::ShadowDecisionError;
+pub use shadow::ShadowDecisionRequest;
+pub use shadow::append_shadow_decision;
+pub use shadow::canonical_candidate_set_digest;
+pub use shadow::prepare_shadow_decision;
+
+#[cfg(test)]
+#[path = "shadow_tests.rs"]
+mod shadow_tests;
