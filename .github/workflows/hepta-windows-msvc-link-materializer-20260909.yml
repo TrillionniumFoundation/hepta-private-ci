@@ -1,0 +1,255 @@
+name: Hepta Windows MSVC rules_rust materializer 20260909
+
+on:
+  push:
+    branches:
+      - ops/hepta-windows-msvc-link-materializer-20260909-r1
+
+permissions:
+  contents: write
+
+concurrency:
+  group: hepta-windows-msvc-link-materializer-20260909-r1
+  cancel-in-progress: false
+
+jobs:
+  qualify-and-amend:
+    runs-on: windows-latest
+    timeout-minutes: 180
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: codex/hepta-all-gap-closure-20260908
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Bind exact single-parent candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          expected_head=05981ed1adfb931a87a47b0606f1cedaa69f123b
+          expected_parent=04f60466394a024c218ce66b1b32d1c42c462985
+          test "$(git rev-parse HEAD)" = "${expected_head}"
+          test "$(git rev-parse HEAD^)" = "${expected_parent}"
+          test "$(git rev-list --count "${expected_parent}"..HEAD)" = 1
+          git config core.autocrlf false
+          git reset --hard HEAD
+          test -z "$(git status --porcelain)"
+
+      - name: Materialize global MSVC link-boundary repair
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+
+          def read(path: Path) -> str:
+              return path.read_bytes().decode("utf-8")
+
+          def write(path: Path, text: str) -> None:
+              path.write_bytes(text.encode("utf-8"))
+
+          wrapper = Path(".github/scripts/run-bazel-ci.sh")
+          text = read(wrapper)
+          old = '''    for env_var in "${windows_action_env_vars[@]}"; do
+              if [[ -n "${!env_var:-}" ]]; then
+                post_config_bazel_args+=("--action_env=${env_var}" "--host_action_env=${env_var}")
+              fi
+            done
+          '''
+          new = '''    for env_var in "${windows_action_env_vars[@]}"; do
+              if [[ -n "${!env_var:-}" ]]; then
+                post_config_bazel_args+=("--action_env=${env_var}" "--host_action_env=${env_var}")
+              fi
+            done
+
+            # rules_rust Rustc actions do not reliably inherit LIB even when Bazel's
+            # generic action environment contains it. Bind every VsDevCmd-provided
+            # MSVC/Windows SDK library directory into target and exec rustc links.
+            if [[ -n "${LIB:-}" && $windows_cross_compile -eq 0 ]]; then
+              IFS=';' read -r -a windows_msvc_lib_dirs <<<"${LIB}"
+              for windows_msvc_lib_dir in "${windows_msvc_lib_dirs[@]}"; do
+                windows_msvc_lib_dir="${windows_msvc_lib_dir%$'\\r'}"
+                [[ -n "${windows_msvc_lib_dir}" ]] || continue
+                if command -v cygpath >/dev/null 2>&1; then
+                  windows_msvc_lib_dir="$(cygpath -m "${windows_msvc_lib_dir}")"
+                fi
+                post_config_bazel_args+=(
+                  "--@rules_rust//rust/settings:extra_rustc_flag=-Clink-arg=/LIBPATH:${windows_msvc_lib_dir}"
+                  "--@rules_rust//rust/settings:extra_exec_rustc_flag=-Clink-arg=/LIBPATH:${windows_msvc_lib_dir}"
+                )
+              done
+            fi
+          '''
+          if text.count(old) != 1:
+              raise SystemExit(f"unexpected Windows action environment anchor count: {text.count(old)}")
+          write(wrapper, text.replace(old, new, 1))
+
+          patch = Path("patches/rules_rust_windows_msvc_user_link_flags.patch")
+          if patch.exists():
+              raise SystemExit(f"new patch path already exists: {patch}")
+          write(
+              patch,
+              '''--- a/rust/private/rustc.bzl
+          +++ b/rust/private/rustc.bzl
+          @@ -3024,8 +3024,36 @@
+               return []
+           
+          -def _add_user_link_flags(ret, linker_input):
+          -    ret.extend(["--codegen=link-arg={}".format(flag) for flag in linker_input.user_link_flags])
+          +def _normalize_windows_msvc_direct_user_link_flag(flag):
+          +    if flag == "-pthread":
+          +        return None
+          +
+          +    for prefix in ("-lstatic=", "-ldylib="):
+          +        if flag.startswith(prefix):
+          +            library = flag[len(prefix):]
+          +            return library if library.endswith(".lib") else library + ".lib"
+          +
+          +    if flag.startswith("-l") and len(flag) > 2:
+          +        library = flag[2:]
+          +        return library if library.endswith(".lib") else library + ".lib"
+          +
+          +    if flag.startswith("-Lnative="):
+          +        return "/LIBPATH:" + flag[len("-Lnative="):]
+          +
+          +    if flag.startswith("-L") and len(flag) > 2:
+          +        return "/LIBPATH:" + flag[2:]
+          +
+          +    return flag
+          +
+          +def _add_user_link_flags(ret, linker_input, windows_msvc_direct = False):
+          +    if not windows_msvc_direct:
+          +        ret.extend(["--codegen=link-arg={}".format(flag) for flag in linker_input.user_link_flags])
+          +        return
+          +
+          +    for flag in linker_input.user_link_flags:
+          +        normalized = _normalize_windows_msvc_direct_user_link_flag(flag)
+          +        if normalized != None:
+          +            ret.append("--codegen=link-arg={}".format(normalized))
+           
+           def _make_link_flags_windows(make_link_flags_args, flavor_msvc, use_direct_driver):
+               linker_input, use_pic, ambiguous_libs, include_link_flags = make_link_flags_args
+          @@ -3069,7 +3097,11 @@
+                   elif include_link_flags:
+                       ret.extend(_portable_link_flags(lib, use_pic, ambiguous_libs, get_lib_name_for_windows, for_windows = True, flavor_msvc = flavor_msvc))
+          -    _add_user_link_flags(ret, linker_input)
+          +    _add_user_link_flags(
+          +        ret,
+          +        linker_input,
+          +        windows_msvc_direct = flavor_msvc and use_direct_driver,
+          +    )
+               return ret
+           
+           def _make_link_flags_windows_msvc(make_link_flags_args, use_direct_driver):
+          '''.replace("          ", "", 1),
+          )
+
+          build = Path("patches/BUILD.bazel")
+          text = read(build)
+          old = '''    "rules_rust_windows_msvc_direct_link_args.patch",
+              "rules_rust_windows_process_wrapper_skip_temp_outputs.patch",
+          '''
+          new = '''    "rules_rust_windows_msvc_direct_link_args.patch",
+              "rules_rust_windows_msvc_user_link_flags.patch",
+              "rules_rust_windows_process_wrapper_skip_temp_outputs.patch",
+          '''
+          if text.count(old) != 1:
+              raise SystemExit(f"unexpected patches BUILD anchor count: {text.count(old)}")
+          write(build, text.replace(old, new, 1))
+
+          module = Path("MODULE.bazel")
+          text = read(module)
+          old = '''        "//patches:rules_rust_windows_msvc_direct_link_args.patch",
+                  "//patches:rules_rust_windows_native_cc.patch",
+          '''
+          new = '''        "//patches:rules_rust_windows_msvc_direct_link_args.patch",
+                  "//patches:rules_rust_windows_msvc_user_link_flags.patch",
+                  "//patches:rules_rust_windows_native_cc.patch",
+          '''
+          if text.count(old) != 1:
+              raise SystemExit(f"unexpected MODULE patch anchor count: {text.count(old)}")
+          write(module, text.replace(old, new, 1))
+          PY
+
+          bash -n .github/scripts/run-bazel-ci.sh
+          git diff --check
+          test "$(git diff --numstat -- .github/scripts/run-bazel-ci.sh | awk '{print $1}')" -le 30
+          test "$(git diff --numstat -- .github/scripts/run-bazel-ci.sh | awk '{print $2}')" -le 5
+          changed="$(git diff --name-only HEAD | sort)"
+          expected="$(printf '%s\n' \
+            .github/scripts/run-bazel-ci.sh \
+            MODULE.bazel \
+            patches/BUILD.bazel \
+            patches/rules_rust_windows_msvc_user_link_flags.patch | sort)"
+          test "${changed}" = "${expected}"
+
+      - name: Prepare Bazel CI
+        id: prepare_bazel
+        uses: ./.github/actions/prepare-bazel-ci
+        with:
+          target: x86_64-pc-windows-msvc
+          cache-scope: bazel-windows-msvc-link-materializer
+
+      - name: Qualify representative native MSVC links
+        env:
+          BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_API_KEY }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          ./.github/scripts/run-bazel-ci.sh \
+            --print-failed-action-summary \
+            --print-failed-test-logs \
+            --windows-msvc-host-platform \
+            --remote-download-toplevel \
+            -- \
+            test \
+            --platforms=//:windows_x86_64_msvc \
+            --skip_incompatible_explicit_targets \
+            --test_tag_filters=-argument-comment-lint \
+            --test_output=errors \
+            --build_metadata=COMMIT_SHA=${GITHUB_SHA} \
+            -- \
+            //codex-rs/hepta-types:all \
+            //codex-rs/uds:all \
+            //codex-rs/hepta-agentd:all
+
+          ./scripts/check-module-bazel-lock.sh
+          git diff --check
+          unexpected="$(git diff --name-only HEAD | grep -Ev '^(.github/scripts/run-bazel-ci.sh|MODULE.bazel|MODULE.bazel.lock|patches/BUILD.bazel|patches/rules_rust_windows_msvc_user_link_flags.patch)$' || true)"
+          test -z "${unexpected}"
+
+      - name: Atomically amend exact candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          expected_head=05981ed1adfb931a87a47b0606f1cedaa69f123b
+          expected_parent=04f60466394a024c218ce66b1b32d1c42c462985
+          candidate_ref=refs/heads/codex/hepta-all-gap-closure-20260908
+
+          test "$(git rev-parse HEAD)" = "${expected_head}"
+          test "$(git rev-parse HEAD^)" = "${expected_parent}"
+          git diff --check
+          git add \
+            .github/scripts/run-bazel-ci.sh \
+            MODULE.bazel \
+            MODULE.bazel.lock \
+            patches/BUILD.bazel \
+            patches/rules_rust_windows_msvc_user_link_flags.patch
+          test -z "$(git diff --name-only)"
+          test -z "$(git ls-files --others --exclude-standard)"
+
+          git config user.name "hepta-gap-materializer"
+          git config user.email "hepta-gap-materializer@users.noreply.github.com"
+          git commit --amend -m "fix(windows): bind MSVC libraries into rules_rust links
+
+Propagate the trusted VsDevCmd library roots into target and exec Rustc final links, normalize GNU-style native library flags for the direct MSVC linker, and preserve the immutable single-parent candidate with no authority expansion.
+
+Signed-off-by: OpenAI <noreply@openai.com>"
+
+          test "$(git rev-parse HEAD^)" = "${expected_parent}"
+          test "$(git rev-list --count "${expected_parent}"..HEAD)" = 1
+          git push \
+            --force-with-lease="${candidate_ref}:${expected_head}" \
+            origin "HEAD:${candidate_ref}"
+          git rev-parse HEAD HEAD^{tree}
