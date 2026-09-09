@@ -1,0 +1,47 @@
+name: Repair Windows materializer diff counts
+
+on:
+  push:
+    branches:
+      - ops/hepta-windows-msvc-materializer-fixer-20260909-r1
+
+permissions:
+  contents: write
+
+jobs:
+  repair:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ops/hepta-windows-msvc-link-materializer-20260909-r1
+          fetch-depth: 0
+          persist-credentials: true
+      - name: Correct exact unified diff hunk counts
+        shell: bash
+        run: |
+          set -euo pipefail
+          expected=74f31e7baa8a81928cf0732b9d9856236cb37b8f
+          ref=refs/heads/ops/hepta-windows-msvc-link-materializer-20260909-r1
+          test "$(git rev-parse HEAD)" = "$expected"
+          python3 - <<'PY'
+          from pathlib import Path
+          path = Path('.github/workflows/hepta-windows-msvc-link-materializer-20260909.yml')
+          text = path.read_text(encoding='utf-8')
+          replacements = {
+              "'@@ -3047,5 +3047,33 @@'": "'@@ -3047,2 +3047,30 @@'",
+              "'@@ -3073,2 +3101,6 @@ def _make_link_flags_windows(make_link_flags_args, flavor_msvc, use_direct_driver):'": "'@@ -3073,1 +3101,5 @@'",
+          }
+          for old, new in replacements.items():
+              if text.count(old) != 1:
+                  raise SystemExit(f'expected exactly one anchor: {old}')
+              text = text.replace(old, new, 1)
+          path.write_text(text, encoding='utf-8')
+          PY
+          git diff --check
+          test "$(git diff --name-only)" = ".github/workflows/hepta-windows-msvc-link-materializer-20260909.yml"
+          git config user.name hepta-gap-materializer
+          git config user.email hepta-gap-materializer@users.noreply.github.com
+          git add .github/workflows/hepta-windows-msvc-link-materializer-20260909.yml
+          git commit -m "fix(ops): correct rules_rust unified diff hunk counts"
+          git push --force-with-lease="${ref}:${expected}" origin "HEAD:${ref}"
