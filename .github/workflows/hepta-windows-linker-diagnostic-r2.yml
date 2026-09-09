@@ -1,0 +1,144 @@
+name: Hepta Windows linker diagnostic r2
+
+on:
+  push:
+    branches:
+      - ops/windows-linker-diagnostic-20260909-r2
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-windows-linker-diagnostic-r2
+  cancel-in-progress: false
+
+env:
+  SOURCE_SHA: 05981ed1adfb931a87a47b0606f1cedaa69f123b
+
+jobs:
+  diagnose-sdk-env:
+    runs-on: windows-latest
+    timeout-minutes: 60
+    environment:
+      name: bazel
+      deployment: false
+    steps:
+      - name: Checkout immutable candidate
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 2
+          persist-credentials: false
+
+      - name: Bind exact source
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${SOURCE_SHA}"
+          test "$(git rev-parse HEAD^)" = "04f60466394a024c218ce66b1b32d1c42c462985"
+          test "$(git rev-parse HEAD^{tree})" = "454061365d2c816598012c3a317e56bfe4ffa5cf"
+
+      - name: Prepare Bazel CI
+        uses: ./.github/actions/prepare-bazel-ci
+        with:
+          target: x86_64-pc-windows-msvc
+          cache-scope: bazel-windows-linker-diagnostic-r2
+
+      - name: Verify SDK variables exist in client environment
+        shell: pwsh
+        run: |
+          $required = @('LIB','LIBPATH','INCLUDE','WindowsSdkDir','WindowsSDKVersion','UniversalCRTSdkDir','UCRTVersion')
+          foreach ($name in $required) {
+            $value = [Environment]::GetEnvironmentVariable($name)
+            if ([string]::IsNullOrWhiteSpace($value)) { throw "missing Windows SDK variable: $name" }
+          }
+
+      - name: Build minimal AWS-LC/Rustls consumer with SDK action env
+        id: sdk_env
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -o pipefail
+          out="${RUNNER_TEMP}/hepta-windows-linker-diagnostic-r2"
+          mkdir -p "${out}"
+          ./.github/scripts/run-bazel-ci.sh \
+            --windows-msvc-host-platform \
+            -- \
+            build \
+            --platforms=//:windows_x86_64_msvc \
+            --action_env=LIB \
+            --action_env=LIBPATH \
+            --action_env=INCLUDE \
+            --action_env=WindowsSdkDir \
+            --action_env=WindowsSDKVersion \
+            --action_env=UniversalCRTSdkDir \
+            --action_env=UCRTVersion \
+            --verbose_failures \
+            --subcommands \
+            --sandbox_debug \
+            --remote_download_outputs=all \
+            -- \
+            //codex-rs/utils/rustls-provider:rustls-provider-preinstalled-test \
+            2>&1 | tee "${out}/sdk-action-env.log"
+
+      - name: Build with SDK action env plus explicit ProcessPrng library
+        id: sdk_env_process_prng
+        if: steps.sdk_env.outcome != 'success'
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -o pipefail
+          out="${RUNNER_TEMP}/hepta-windows-linker-diagnostic-r2"
+          ./.github/scripts/run-bazel-ci.sh \
+            --windows-msvc-host-platform \
+            -- \
+            build \
+            --platforms=//:windows_x86_64_msvc \
+            --action_env=LIB \
+            --action_env=LIBPATH \
+            --action_env=INCLUDE \
+            --action_env=WindowsSdkDir \
+            --action_env=WindowsSDKVersion \
+            --action_env=UniversalCRTSdkDir \
+            --action_env=UCRTVersion \
+            --@rules_rust//rust/settings:extra_rustc_flag=-Clink-arg=bcryptprimitives.lib \
+            --@rules_rust//rust/settings:extra_exec_rustc_flag=-Clink-arg=bcryptprimitives.lib \
+            --verbose_failures \
+            --subcommands \
+            --sandbox_debug \
+            --remote_download_outputs=all \
+            -- \
+            //codex-rs/utils/rustls-provider:rustls-provider-preinstalled-test \
+            2>&1 | tee "${out}/sdk-action-env-plus-bcryptprimitives.log"
+
+      - name: Write diagnostic verdict
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          out="${RUNNER_TEMP}/hepta-windows-linker-diagnostic-r2"
+          mkdir -p "${out}"
+          {
+            echo "source=${SOURCE_SHA}"
+            echo "sdk_action_env=${{ steps.sdk_env.outcome }}"
+            echo "sdk_action_env_plus_bcryptprimitives=${{ steps.sdk_env_process_prng.outcome }}"
+          } | tee "${out}/VERDICT"
+
+      - name: Upload exact diagnostic packet
+        if: always()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: hepta-windows-linker-diagnostic-r2-${{ env.SOURCE_SHA }}
+          path: ${{ runner.temp }}/hepta-windows-linker-diagnostic-r2
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Require one verified repair path
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ "${{ steps.sdk_env.outcome }}" == "success" ]]; then
+            exit 0
+          fi
+          test "${{ steps.sdk_env_process_prng.outcome }}" = "success"
