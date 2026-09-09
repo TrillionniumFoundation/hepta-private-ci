@@ -1,0 +1,320 @@
+name: Hepta bounded gap closure orchestrator 20260909 r6
+
+on:
+  push:
+    branches:
+      - ops/hepta-gap-closure-orchestrator-20260909-r6
+
+permissions:
+  actions: write
+  checks: read
+  contents: write
+  pull-requests: write
+  statuses: read
+
+concurrency:
+  group: hepta-gap-closure-orchestrator-20260909-r6
+  cancel-in-progress: false
+
+jobs:
+  qualify-and-amend:
+    runs-on: windows-latest
+    timeout-minutes: 240
+    outputs:
+      candidate_sha: ${{ steps.publish.outputs.candidate_sha }}
+      candidate_changed: ${{ steps.publish.outputs.candidate_changed }}
+    env:
+      CANDIDATE_BRANCH: codex/hepta-all-gap-closure-20260908
+      PUSH_TOKEN: ${{ secrets.HEPTA_CI_PAT || secrets.GH_PAT || secrets.REPO_PAT || github.token }}
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Preserve bounded materializers and bind current candidate
+        id: bind
+        shell: bash
+        run: |
+          set -euo pipefail
+          base_materializer="$(cygpath -u "${RUNNER_TEMP}")/hepta_windows_msvc_link_materialize_20260909_r4.py"
+          materializer="$(cygpath -u "${RUNNER_TEMP}")/hepta_gap_closure_orchestrate_20260909_r6.py"
+          cp .github/scripts/hepta_windows_msvc_link_materialize_20260909_r4.py "${base_materializer}"
+          cp .github/scripts/hepta_gap_closure_orchestrate_20260909_r6.py "${materializer}"
+          printf 'BASE_MATERIALIZER=%s\n' "${base_materializer}" >> "${GITHUB_ENV}"
+          printf 'MATERIALIZER=%s\n' "${materializer}" >> "${GITHUB_ENV}"
+
+          git fetch --no-tags origin \
+            "+refs/heads/${CANDIDATE_BRANCH}:refs/remotes/origin/hepta-current-candidate"
+          candidate_head="$(git rev-parse refs/remotes/origin/hepta-current-candidate)"
+          git checkout --detach "${candidate_head}"
+          git config core.autocrlf false
+          git reset --hard "${candidate_head}"
+          git clean -ffdx
+          candidate_parent="$(git rev-parse HEAD^)"
+          test "$(git rev-list --count "${candidate_parent}"..HEAD)" = 1
+          test -z "$(git status --porcelain)"
+          printf 'CANDIDATE_HEAD=%s\n' "${candidate_head}" >> "${GITHUB_ENV}"
+          printf 'CANDIDATE_PARENT=%s\n' "${candidate_parent}" >> "${GITHUB_ENV}"
+          printf 'candidate_head=%s\n' "${candidate_head}" >> "${GITHUB_OUTPUT}"
+          printf 'candidate_parent=%s\n' "${candidate_parent}" >> "${GITHUB_OUTPUT}"
+
+      - name: Prepare Bazel CI from current candidate
+        uses: ./.github/actions/prepare-bazel-ci
+        with:
+          target: x86_64-pc-windows-msvc
+          cache-scope: bazel-windows-msvc-gap-closure-r6
+
+      - name: Resolve fully patched rules_rust source
+        shell: bash
+        run: |
+          set -euo pipefail
+          bazel query @rules_rust//rust/settings:extra_rustc_flag >/dev/null
+          source="$(OUTPUT_BASE="${BAZEL_OUTPUT_BASE}" python - <<'PY'
+          import os
+          import sys
+          from pathlib import Path
+
+          root = Path(os.environ["OUTPUT_BASE"]) / "external"
+          candidates = sorted(root.glob("**/rust/private/rustc.bzl"))
+          matches = []
+          for path in candidates:
+              try:
+                  text = path.read_text(encoding="utf-8")
+              except (OSError, UnicodeError):
+                  continue
+              if (
+                  "rules_rust" in path.as_posix()
+                  and "def _add_user_link_flags(ret, linker_input):" in text
+                  and "def _make_link_flags_windows(make_link_flags_args, flavor_msvc, use_direct_driver):" in text
+                  and 'if flag in ("-pthread", "-lpthread"):' in text
+              ):
+                  matches.append(path)
+          if len(matches) != 1:
+              print(f"expected one effective rules_rust source, found {len(matches)}", file=sys.stderr)
+              for path in candidates:
+                  print(path.as_posix(), file=sys.stderr)
+              raise SystemExit(1)
+          print(matches[0].as_posix())
+          PY
+          )"
+          test -n "${source}"
+          test -f "$(cygpath -u "${source}")"
+          printf 'RULES_RUST_EFFECTIVE_SOURCE=%s\n' "${source}" >> "${GITHUB_ENV}"
+
+      - name: Idempotently materialize and structurally verify bounded repairs
+        shell: bash
+        run: |
+          set -euo pipefail
+          python "${MATERIALIZER}"
+          python -m py_compile "${BASE_MATERIALIZER}" "${MATERIALIZER}"
+          bash -n .github/scripts/run-bazel-ci.sh
+          git diff --check
+
+          grep -F 'fn canonicalize_schema_sql(sql: String) -> Result<String, CognitiveStoreError>' \
+            codex-rs/hepta-memory/src/cognitive_store.rs
+          grep -F 'let canonical = sql.replace("\r\n", "\n");' \
+            codex-rs/hepta-memory/src/cognitive_store.rs
+          grep -F 'let canonical_sql = canonicalize_schema_sql(sql)?;' \
+            codex-rs/hepta-memory/src/cognitive_store.rs
+          grep -F 'mod schema_oracle_canonicalization_tests' \
+            codex-rs/hepta-memory/src/cognitive_store.rs
+
+          workspace="$(cygpath -u "${GITHUB_WORKSPACE}")"
+          check_root="$(cygpath -u "${RUNNER_TEMP}")/rules-rust-patch-check-r6"
+          rm -rf "${check_root}"
+          mkdir -p "${check_root}/rust/private"
+          cp "$(cygpath -u "${RULES_RUST_EFFECTIVE_SOURCE}")" \
+            "${check_root}/rust/private/rustc.bzl"
+          (
+            cd "${check_root}"
+            git init -q
+            git apply --check \
+              "${workspace}/patches/rules_rust_windows_msvc_user_link_flags.patch"
+            git apply \
+              "${workspace}/patches/rules_rust_windows_msvc_user_link_flags.patch"
+            grep -F 'if flavor_msvc and use_direct_driver:' rust/private/rustc.bzl
+            grep -F 'normalized_flag = "/LIBPATH:" + flag[len("-Lnative="):]' \
+              rust/private/rustc.bzl
+            test "$(grep -F -x -c '    _add_user_link_flags(ret, linker_input)' rust/private/rustc.bzl)" = 2
+          )
+
+          changed="$( { git diff --name-only HEAD; git ls-files --others --exclude-standard; } | sort -u)"
+          unexpected="$(printf '%s\n' "${changed}" | grep -Ev '^(.github/scripts/run-bazel-ci.sh|MODULE.bazel|MODULE.bazel.lock|codex-rs/hepta-memory/src/cognitive_store.rs|patches/BUILD.bazel|patches/rules_rust_windows_msvc_user_link_flags.patch)$' || true)"
+          test -z "${unexpected}"
+
+          bazel shutdown || true
+          output_base="$(cygpath -u "${BAZEL_OUTPUT_BASE}")"
+          rm -rf "${output_base}"
+          mkdir -p "${output_base}"
+
+      - name: Qualify native MSVC links and schema-oracle portability
+        env:
+          BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_API_KEY }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          ./.github/scripts/run-bazel-ci.sh \
+            --print-failed-action-summary \
+            --print-failed-test-logs \
+            --windows-msvc-host-platform \
+            --remote-download-toplevel \
+            -- \
+            test \
+            --platforms=//:windows_x86_64_msvc \
+            --skip_incompatible_explicit_targets \
+            --test_tag_filters=-argument-comment-lint \
+            --test_output=errors \
+            --build_metadata=COMMIT_SHA=${CANDIDATE_HEAD} \
+            -- \
+            //codex-rs/hepta-memory:all \
+            //codex-rs/hepta-types:all \
+            //codex-rs/uds:all \
+            //codex-rs/hepta-agentd:all
+
+          ./scripts/check-module-bazel-lock.sh
+          git diff --check
+          observed="$( { git diff --name-only HEAD; git ls-files --others --exclude-standard; } | sort -u)"
+          unexpected="$(printf '%s\n' "${observed}" | grep -Ev '^(.github/scripts/run-bazel-ci.sh|MODULE.bazel|MODULE.bazel.lock|codex-rs/hepta-memory/src/cognitive_store.rs|patches/BUILD.bazel|patches/rules_rust_windows_msvc_user_link_flags.patch)$' || true)"
+          test -z "${unexpected}"
+
+      - name: Atomically amend current single-parent candidate
+        id: publish
+        shell: bash
+        run: |
+          set -euo pipefail
+          candidate_ref="refs/heads/${CANDIDATE_BRANCH}"
+          test "$(git rev-parse HEAD)" = "${CANDIDATE_HEAD}"
+          test "$(git rev-parse HEAD^)" = "${CANDIDATE_PARENT}"
+          git diff --check
+          git add \
+            .github/scripts/run-bazel-ci.sh \
+            MODULE.bazel \
+            MODULE.bazel.lock \
+            codex-rs/hepta-memory/src/cognitive_store.rs \
+            patches/BUILD.bazel \
+            patches/rules_rust_windows_msvc_user_link_flags.patch
+          git diff --cached --check
+          test -z "$(git diff --name-only)"
+          test -z "$(git ls-files --others --exclude-standard)"
+
+          staged="$(git diff --cached --name-only | sort)"
+          unexpected="$(printf '%s\n' "${staged}" | grep -Ev '^(.github/scripts/run-bazel-ci.sh|MODULE.bazel|MODULE.bazel.lock|codex-rs/hepta-memory/src/cognitive_store.rs|patches/BUILD.bazel|patches/rules_rust_windows_msvc_user_link_flags.patch)$' || true)"
+          test -z "${unexpected}"
+          if [ -n "${staged}" ]; then
+            candidate_changed=true
+          else
+            candidate_changed=false
+          fi
+
+          git config user.name hepta-gap-materializer
+          git config user.email hepta-gap-materializer@users.noreply.github.com
+          git commit --amend --allow-empty --signoff \
+            -m "fix(windows): stabilize native links and schema oracle" \
+            -m "Bind native MSVC C/C++ dependencies and SDK library roots into Windows Rust actions, normalize rules_rust direct-link spellings only for MSVC, and canonicalize only CRLF line endings before hashing SQLite schema definitions while rejecting bare carriage returns. Preserve the immutable single-parent candidate and record successful r6 requalification."
+
+          test "$(git rev-parse HEAD^)" = "${CANDIDATE_PARENT}"
+          test "$(git rev-list --count "${CANDIDATE_PARENT}"..HEAD)" = 1
+          new_head="$(git rev-parse HEAD)"
+
+          basic="$(printf 'x-access-token:%s' "${PUSH_TOKEN}" | base64 | tr -d '\r\n')"
+          git -c http.https://github.com/.extraheader="AUTHORIZATION: basic ${basic}" push \
+            --force-with-lease="${candidate_ref}:${CANDIDATE_HEAD}" \
+            origin "HEAD:${candidate_ref}"
+          printf 'candidate_sha=%s\n' "${new_head}" >> "${GITHUB_OUTPUT}"
+          printf 'candidate_changed=%s\n' "${candidate_changed}" >> "${GITHUB_OUTPUT}"
+          git rev-parse HEAD HEAD^{tree}
+
+  pr-control:
+    needs: qualify-and-amend
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      GH_TOKEN: ${{ secrets.HEPTA_CI_PAT || secrets.GH_PAT || secrets.REPO_PAT || github.token }}
+      REPO: TrillionniumFoundation/hepta-private-ci
+      CANDIDATE_BRANCH: codex/hepta-all-gap-closure-20260908
+      CANDIDATE_SHA: ${{ needs.qualify-and-amend.outputs.candidate_sha }}
+    steps:
+      - name: Remove this session's probe PRs only
+        shell: bash
+        run: |
+          set -euo pipefail
+          gh api "repos/${REPO}/pulls?state=open&head=TrillionniumFoundation:ops/hepta-windows-msvc-schema-oracle-materializer-20260909-r5&per_page=100" \
+            --jq '.[] | select(.number != 480 and .number != 482) | select(.title == "chore: continue bounded gap closure orchestration" or .title == "noop" or .title == "DO NOT MERGE - cleanup probe" or .title == "test" or .title == "__invalid_probe__" or .title == "invalid" or .title == "invalid-missing-head") | .number' \
+            | while read -r number; do
+                test -n "${number}" || continue
+                gh api --method PATCH "repos/${REPO}/pulls/${number}" -f state=closed >/dev/null
+                printf 'closed probe PR #%s\n' "${number}"
+              done
+
+      - name: Verify PR 480 exact head and make it reviewable
+        shell: bash
+        run: |
+          set -euo pipefail
+          state="$(gh api "repos/${REPO}/pulls/480" --jq .state)"
+          head_ref="$(gh api "repos/${REPO}/pulls/480" --jq .head.ref)"
+          head_sha="$(gh api "repos/${REPO}/pulls/480" --jq .head.sha)"
+          draft="$(gh api "repos/${REPO}/pulls/480" --jq .draft)"
+          test "${head_ref}" = "${CANDIDATE_BRANCH}"
+          test "${head_sha}" = "${CANDIDATE_SHA}"
+          if [ "${state}" = open ] && [ "${draft}" = true ]; then
+            gh pr ready 480 --repo "${REPO}"
+          fi
+
+      - name: Re-request eligible independent reviewers
+        shell: bash
+        run: |
+          set -euo pipefail
+          author="$(gh api "repos/${REPO}/pulls/480" --jq .user.login)"
+          gh api --paginate "repos/${REPO}/pulls/480/reviews?per_page=100" \
+            --jq ".[] | select(.user.type == \"User\") | select(.user.login != \"${author}\") | select(.state != \"DISMISSED\") | .user.login" \
+            | sort -u \
+            | grep -Ev '\[bot\]$' \
+            | while read -r reviewer; do
+                test -n "${reviewer}" || continue
+                gh api --method POST "repos/${REPO}/pulls/480/requested_reviewers" \
+                  --raw-field "reviewers[]=${reviewer}" >/dev/null || true
+                printf 'requested reviewer %s\n' "${reviewer}"
+              done
+
+      - name: Rerun failed exact-head Actions runs
+        shell: bash
+        run: |
+          set -euo pipefail
+          gh api --paginate "repos/${REPO}/actions/runs?head_sha=${CANDIDATE_SHA}&per_page=100" \
+            --jq '.workflow_runs[] | select(.status == "completed") | select(.conclusion == "failure" or .conclusion == "cancelled" or .conclusion == "timed_out") | .id' \
+            | sort -u \
+            | while read -r run_id; do
+                test -n "${run_id}" || continue
+                gh api --method POST "repos/${REPO}/actions/runs/${run_id}/rerun-failed-jobs" >/dev/null || \
+                  gh api --method POST "repos/${REPO}/actions/runs/${run_id}/rerun" >/dev/null || true
+                printf 'requested rerun for %s\n' "${run_id}"
+              done
+
+      - name: Enable protected auto-merge when repository policy permits
+        shell: bash
+        run: |
+          set -euo pipefail
+          state="$(gh api "repos/${REPO}/pulls/480" --jq .state)"
+          if [ "${state}" != open ]; then
+            exit 0
+          fi
+          if [ "$(gh api "repos/${REPO}" --jq .allow_merge_commit)" = true ]; then
+            method=--merge
+          elif [ "$(gh api "repos/${REPO}" --jq .allow_squash_merge)" = true ]; then
+            method=--squash
+          elif [ "$(gh api "repos/${REPO}" --jq .allow_rebase_merge)" = true ]; then
+            method=--rebase
+          else
+            echo 'No repository merge method is enabled' >&2
+            exit 1
+          fi
+          gh pr merge 480 --repo "${REPO}" --auto "${method}" || true
+
+      - name: Publish exact-head control summary
+        shell: bash
+        run: |
+          set -euo pipefail
+          gh api "repos/${REPO}/pulls/480" --jq '{number,state,draft,mergeable,mergeable_state,head_sha:.head.sha,base_ref:.base.ref}'
+          gh api "repos/${REPO}/commits/${CANDIDATE_SHA}/check-runs?per_page=100" \
+            --jq '[.check_runs[] | {name,status,conclusion}]'
