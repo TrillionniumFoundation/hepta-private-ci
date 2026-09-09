@@ -1,0 +1,178 @@
+name: tmp-seven-lane-ci-autoremediate-v2
+
+on:
+  push:
+    branches:
+      - ops/lane-f-final-source-export-20260910
+    paths:
+      - .github/workflows/tmp-seven-lane-ci-autoremediate-v2.yml
+
+permissions:
+  actions: read
+  checks: read
+  contents: write
+  pull-requests: read
+
+env:
+  BASE_BRANCH: codex/hepta-all-gap-closure-20260908
+  HEAD_BRANCH: integration/hepta-seven-lane-gap-closure-20260910-r2
+
+jobs:
+  remediate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 180
+    steps:
+      - name: Wait for first convergence and CI rounds
+        shell: bash
+        run: sleep 900
+
+      - name: Resolve current candidate PR
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          for attempt in $(seq 1 60); do
+            number="$(gh pr list --repo "${GITHUB_REPOSITORY}" --state open --head "${HEAD_BRANCH}" --base "${BASE_BRANCH}" --json number --jq '.[0].number // empty')"
+            if [[ -n "${number}" ]]; then
+              printf 'PR_NUMBER=%s\n' "${number}" >>"${GITHUB_ENV}"
+              exit 0
+            fi
+            sleep 30
+          done
+          exit 111
+
+      - name: Check out writable candidate
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.HEAD_BRANCH }}
+          fetch-depth: 0
+
+      - name: Apply compiler-guided mechanical fixes only
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          git fetch origin "refs/heads/${HEAD_BRANCH}:refs/remotes/origin/${HEAD_BRANCH}"
+          git reset --hard "refs/remotes/origin/${HEAD_BRANCH}"
+          original="$(git rev-parse HEAD)"
+          mkdir -p "${RUNNER_TEMP}/triage-v2"
+
+          settled=0
+          for attempt in $(seq 1 120); do
+            gh pr checks "${PR_NUMBER}" --repo "${GITHUB_REPOSITORY}" --json name,state,bucket,link >"${RUNNER_TEMP}/triage-v2/checks.json" 2>/dev/null || true
+            state="$(python3 - "${RUNNER_TEMP}/triage-v2/checks.json" <<'PY'
+          import json,sys
+          try: rows=json.load(open(sys.argv[1],encoding='utf-8'))
+          except Exception: print('0 1'); raise SystemExit
+          pending=sum(1 for r in rows if str(r.get('bucket','')).lower() in {'pending','skipping'} or str(r.get('state','')).upper() in {'QUEUED','IN_PROGRESS','PENDING','WAITING','REQUESTED'})
+          print(len(rows),pending)
+          PY
+            )"
+            read -r total pending <<<"${state}"
+            if [[ "${total}" -gt 0 && "${pending}" -eq 0 ]]; then settled=1; break; fi
+            sleep 30
+          done
+          test "${settled}" = 1
+
+          python3 - "${RUNNER_TEMP}/triage-v2/checks.json" >"${RUNNER_TEMP}/triage-v2/links.txt" <<'PY'
+          import json,sys
+          for r in json.load(open(sys.argv[1],encoding='utf-8')):
+              if str(r.get('bucket','')).lower() in {'fail','cancel'} or str(r.get('state','')).upper() in {'FAILURE','ERROR','TIMED_OUT','CANCELLED','ACTION_REQUIRED'}:
+                  print(r.get('link',''))
+          PY
+          : >"${RUNNER_TEMP}/triage-v2/failed.log"
+          while IFS= read -r link; do
+            id="$(sed -nE 's#.*\/actions\/runs\/([0-9]+).*#\1#p' <<<"${link}" | head -n1)"
+            [[ -z "${id}" ]] && continue
+            echo "===== RUN ${id} =====" >>"${RUNNER_TEMP}/triage-v2/failed.log"
+            gh run view "${id}" --repo "${GITHUB_REPOSITORY}" --log-failed >>"${RUNNER_TEMP}/triage-v2/failed.log" 2>&1 || true
+          done <"${RUNNER_TEMP}/triage-v2/links.txt"
+
+          if [[ ! -s "${RUNNER_TEMP}/triage-v2/failed.log" ]]; then
+            exit 0
+          fi
+
+          changed=0
+          if grep -Eqi 'rustfmt|cargo fmt|Diff in .*\.rs' "${RUNNER_TEMP}/triage-v2/failed.log"; then
+            cargo fmt --manifest-path codex-rs/Cargo.toml --all
+            changed=1
+          fi
+          if grep -Eqi 'clippy|warning:.*denied|forbid.*warnings' "${RUNNER_TEMP}/triage-v2/failed.log"; then
+            cargo clippy --manifest-path codex-rs/Cargo.toml --workspace --all-targets --fix --allow-dirty --allow-staged || true
+            changed=1
+          fi
+          if grep -Eqi 'ruff|python format|would reformat' "${RUNNER_TEMP}/triage-v2/failed.log"; then
+            mapfile -t pyfiles < <(git diff --name-only "origin/${BASE_BRANCH}...HEAD" -- '*.py')
+            if ((${#pyfiles[@]})); then
+              if command -v uv >/dev/null 2>&1; then
+                uvx ruff check --fix "${pyfiles[@]}" || true
+                uvx ruff format "${pyfiles[@]}" || true
+              elif python3 -m ruff --version >/dev/null 2>&1; then
+                python3 -m ruff check --fix "${pyfiles[@]}" || true
+                python3 -m ruff format "${pyfiles[@]}" || true
+              else
+                echo 'Ruff failure detected but pinned Ruff executable is unavailable' >&2
+                exit 112
+              fi
+            fi
+            changed=1
+          fi
+          if grep -Eqi 'buildifier|BUILD.*format|Starlark.*format' "${RUNNER_TEMP}/triage-v2/failed.log"; then
+            if command -v buildifier >/dev/null 2>&1; then
+              mapfile -t bfiles < <(git diff --name-only "origin/${BASE_BRANCH}...HEAD" -- 'BUILD' 'BUILD.bazel' '*.bzl')
+              ((${#bfiles[@]})) && buildifier "${bfiles[@]}"
+            else
+              echo 'Buildifier failure detected but buildifier is unavailable' >&2
+              exit 113
+            fi
+            changed=1
+          fi
+          if grep -Eqi 'MODULE\.bazel\.lock.*(out of date|needs.*update|changed)|lockfile.*MODULE\.bazel' "${RUNNER_TEMP}/triage-v2/failed.log"; then
+            if command -v bazel >/dev/null 2>&1; then
+              bazel mod deps --lockfile_mode=update
+            elif command -v bazelisk >/dev/null 2>&1; then
+              bazelisk mod deps --lockfile_mode=update
+            else
+              echo 'Bazel lock drift detected but Bazel is unavailable' >&2
+              exit 114
+            fi
+            changed=1
+          fi
+
+          if [[ "${changed}" != 1 ]]; then
+            echo 'No additional compiler-guided mechanical repair is applicable' >&2
+            exit 115
+          fi
+          git add -A
+          git diff --cached --check
+          if git diff --cached --quiet; then
+            echo 'Mechanical repair commands produced no source change' >&2
+            exit 116
+          fi
+
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'chore(ci): apply compiler-guided mechanical fixes'
+          cargo fmt --manifest-path codex-rs/Cargo.toml --all -- --check
+          python3 scripts/hepta-readiness.py generate-status --check
+          python3 scripts/hepta-readiness.py verify
+          python3 scripts/hepta-implementation-dossiers.py generate-status --check
+          python3 scripts/hepta-implementation-dossiers.py verify
+          python3 qualification/module-execution-dossiers/implementation_contracts.py verify-repository
+          git diff --check
+          test -z "$(git status --porcelain)"
+
+          git fetch origin "refs/heads/${HEAD_BRANCH}:refs/remotes/origin/${HEAD_BRANCH}"
+          test "$(git rev-parse refs/remotes/origin/${HEAD_BRANCH})" = "${original}"
+          git push origin "HEAD:refs/heads/${HEAD_BRANCH}"
+
+      - name: Retain extended triage evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: seven-lane-ci-triage-v2-${{ github.run_id }}
+          path: ${{ runner.temp }}/triage-v2
+          if-no-files-found: warn
+          retention-days: 7
