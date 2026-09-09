@@ -701,7 +701,7 @@ fn subtract_q32(left: FixedQ32, right: FixedQ32) -> Result<FixedQ32, OperatorClo
     ))
 }
 
-fn normalize_ids(values: &mut Vec<StableId>) -> Result<(), OperatorClosureError> {
+fn normalize_ids(values: &mut [StableId]) -> Result<(), OperatorClosureError> {
     values.sort();
     if let Some(adjacent) = values
         .windows(2)

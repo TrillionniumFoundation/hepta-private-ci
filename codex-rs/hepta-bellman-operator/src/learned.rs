@@ -345,7 +345,7 @@ fn digest_cell(
     Ok(Digest32::of_bytes(&bytes))
 }
 
-fn normalize_ids(values: &mut Vec<StableId>) -> Result<(), LearnedOperatorError> {
+fn normalize_ids(values: &mut [StableId]) -> Result<(), LearnedOperatorError> {
     values.sort();
     if let Some(adjacent) = values
         .windows(2)

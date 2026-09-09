@@ -525,7 +525,7 @@ fn digest_evaluation_bundle(
     Ok(Digest32::of_bytes(&bytes))
 }
 
-fn normalize_unique_ids(values: &mut Vec<StableId>) -> Result<(), EvaluationClosureError> {
+fn normalize_unique_ids(values: &mut [StableId]) -> Result<(), EvaluationClosureError> {
     if values.len() > MAX_LINEAGE_IDS {
         return Err(EvaluationClosureError::FoldLineageLimit);
     }
