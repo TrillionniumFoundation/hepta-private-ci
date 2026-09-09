@@ -347,6 +347,26 @@ if [[ "${RUNNER_OS:-}" == "Windows" ]]; then
       WindowsSDKLibVersion
       WindowsSDKVersion
     )
+    required_windows_action_env_vars=(
+      INCLUDE
+      LIB
+      LIBPATH
+      UniversalCRTSdkDir
+      VCToolsInstallDir
+      WindowsSdkDir
+    )
+    missing_windows_action_env_vars=()
+
+    for env_var in "${required_windows_action_env_vars[@]}"; do
+      if [[ -z "${!env_var:-}" ]]; then
+        missing_windows_action_env_vars+=("${env_var}")
+      fi
+    done
+    if (( ${#missing_windows_action_env_vars[@]} > 0 )); then
+      printf 'Missing required native Windows toolchain environment: %s\n' \
+        "${missing_windows_action_env_vars[*]}" >&2
+      exit 1
+    fi
 
     for env_var in "${windows_action_env_vars[@]}"; do
       if [[ -n "${!env_var:-}" ]]; then
