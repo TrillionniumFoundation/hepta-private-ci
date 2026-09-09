@@ -1,0 +1,100 @@
+name: Hepta canonical internal candidate publisher r12
+
+on:
+  push:
+    branches:
+      - ops/hepta-global-gap-closure-controller-20260910-r1
+    paths:
+      - .github/workflows/hepta-candidate-publisher-r12.yml
+      - scripts/hepta-candidate-publisher-r12.py
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+  actions: read
+
+concurrency:
+  group: hepta-candidate-publisher-r12
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 180
+    env:
+      HEPTA_SEALED_SOURCE: origin/integration/hepta-all-gap-closure-20260910-sealed-r11
+      HEPTA_CANONICAL_CANDIDATE: candidate/hepta-all-gap-closure-final-20260910
+    steps:
+      - name: Check out exact publisher source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Bind and syntax-check publisher
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${GITHUB_SHA}"
+          git rev-parse HEAD HEAD^{tree}
+          python3 -m py_compile scripts/hepta-candidate-publisher-r12.py
+          cp scripts/hepta-candidate-publisher-r12.py \
+            "${RUNNER_TEMP}/hepta-candidate-publisher-r12.py"
+
+      - name: Publish only from stable bound seal
+        id: publish
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 "${RUNNER_TEMP}/hepta-candidate-publisher-r12.py"
+
+      - name: Upload candidate publication receipt
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-canonical-candidate-r12-${{ github.run_id }}-${{ github.run_attempt }}
+          path: qualification/global-gap-closure-final-candidate
+          if-no-files-found: warn
+          retention-days: 30
+
+      - name: Create or locate canonical candidate PR
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          BASE_BRANCH: ops/hepta-final-convergence-review-anchor-20260909
+          HEAD_BRANCH: candidate/hepta-all-gap-closure-final-20260910
+        run: |
+          set -euo pipefail
+          existing="$(gh pr list --repo "${GITHUB_REPOSITORY}" --state open \
+            --head "${HEAD_BRANCH}" --base "${BASE_BRANCH}" --json number \
+            --jq '.[0].number // empty')"
+          if [[ -n "${existing}" ]]; then
+            echo "canonical candidate PR already exists: #${existing}"
+            exit 0
+          fi
+          body="${RUNNER_TEMP}/hepta-r12-pr.md"
+          cat > "${body}" <<'EOF'
+          ## Canonical internal candidate
+
+          This is the single canonical candidate published from the stable r11 fixed-point seal. It requires:
+
+          - r8 complete repository and all-package qualification;
+          - r9 complete fixed-point replay qualification;
+          - identical exact Git blob tables outside receipt directories;
+          - no source drift and no newly granted authority.
+
+          Review:
+
+          - `qualification/global-gap-closure-final-candidate/STATUS.json`
+          - `qualification/global-gap-closure-final-candidate/REPORT.md`
+          - `qualification/global-gap-closure-final-candidate/EXTERNAL_GATE_HANDOFF.json`
+          - r11, r9, and r8 underlying receipts
+
+          This remains an internal draft candidate. It grants no independent-review, production, runtime/model, target-host/hardware, operator, canary, selection, promotion, release, provider/model dispatch, or second-writer authority.
+          EOF
+          gh pr create --repo "${GITHUB_REPOSITORY}" --draft \
+            --base "${BASE_BRANCH}" --head "${HEAD_BRANCH}" \
+            --title "chore(hepta): publish canonical all-gap-closure candidate r12" \
+            --body-file "${body}"
