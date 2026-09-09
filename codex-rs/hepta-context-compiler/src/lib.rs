@@ -15,6 +15,7 @@ use codex_hepta_types::StableId;
 
 mod candidate_bound;
 mod requirements;
+mod v2;
 
 pub use candidate_bound::CandidateBoundContextCompilationReceipt;
 pub use candidate_bound::compile_candidate_bound;
@@ -22,6 +23,26 @@ pub use candidate_bound::compile_candidate_bound_with_requirements;
 pub use requirements::CompilationRequirementsV1;
 pub use requirements::MandatoryContextGroup;
 pub use requirements::compile_with_requirements;
+pub use v2::CompiledContextV2;
+pub use v2::ContextAttachmentV2;
+pub use v2::ContextCandidateV2;
+pub use v2::ContextCompilationReceiptV2;
+pub use v2::ContextCompilationRequestV2;
+pub use v2::ContextCompilerV2Error;
+pub use v2::ContextDeliveryDispositionV2;
+pub use v2::ContextDeliveryObservationV2;
+pub use v2::ContextModelProfileV2;
+pub use v2::ContextRoleV2;
+pub use v2::ContextSerializationReceiptV2;
+pub use v2::MAX_CONTEXT_CANDIDATES_V2;
+pub use v2::MAX_CONTEXT_GROUPS_V2;
+pub use v2::MAX_CONTEXT_TOKENS_V2;
+pub use v2::MandatoryContextGroupV2;
+pub use v2::TokenizationReceiptV2;
+pub use v2::build_attachment;
+pub use v2::compile_v2;
+pub use v2::observe_delivery;
+pub use v2::record_serialization;
 
 const MAX_ITEMS: usize = 4_096;
 const MAX_TOKENS: u64 = 1_000_000;
