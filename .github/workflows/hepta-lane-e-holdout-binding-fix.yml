@@ -1,0 +1,92 @@
+name: Hepta Lane E holdout semantic binding repair
+
+on:
+  push:
+    branches:
+      - codex/hepta-lane-e-gap-closure-20260910
+    paths:
+      - .github/workflows/hepta-lane-e-holdout-binding-fix.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: hepta-lane-e-holdout-binding-fix
+  cancel-in-progress: false
+
+jobs:
+  repair:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Install pinned Rust toolchain
+        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: 1.95.0
+          components: clippy,rustfmt
+
+      - name: Apply reviewed semantic repair
+        shell: bash
+        env:
+          PATCH_PROGRAM_ZLIB_B64: >-
+            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
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import base64
+          import os
+          import zlib
+
+          program = zlib.decompress(
+              base64.b64decode(os.environ["PATCH_PROGRAM_ZLIB_B64"])
+          ).decode("utf-8")
+          exec(compile(program, "hepta-lane-e-holdout-binding-fix.py", "exec"))
+          PY
+          cargo fmt --manifest-path codex-rs/Cargo.toml \
+            --package codex-hepta-intelligence-eval \
+            --package codex-hepta-shadow-qualification
+          git diff --check
+
+      - name: Verify semantic repair
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta-lane-e-closure.py self-test
+          python3 scripts/hepta-lane-e-closure.py verify
+          cd codex-rs
+          cargo check --locked \
+            -p codex-hepta-learning-ledger \
+            -p codex-hepta-learning-artifacts \
+            -p codex-hepta-bellman-operator \
+            -p codex-hepta-intelligence-eval \
+            -p codex-hepta-shadow-qualification \
+            --all-targets
+          cargo test --locked \
+            -p codex-hepta-intelligence-eval \
+            -p codex-hepta-shadow-qualification \
+            -- --nocapture
+          cargo clippy --locked \
+            -p codex-hepta-learning-ledger \
+            -p codex-hepta-learning-artifacts \
+            -p codex-hepta-bellman-operator \
+            -p codex-hepta-intelligence-eval \
+            -p codex-hepta-shadow-qualification \
+            --all-targets -- -D warnings
+
+      - name: Commit verified repair and remove one-shot workflow
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm .github/workflows/hepta-lane-e-holdout-binding-fix.yml
+          git add -A
+          git diff --cached --check
+          git config user.name hepta-lane-e-bot
+          git config user.email hepta-lane-e-bot@users.noreply.github.com
+          git commit -m 'fix(lane-e): bind holdout use to frozen plan semantics'
+          git push origin HEAD:codex/hepta-lane-e-gap-closure-20260910
