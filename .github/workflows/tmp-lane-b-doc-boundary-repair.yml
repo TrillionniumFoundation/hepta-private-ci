@@ -1,0 +1,50 @@
+name: tmp-lane-b-doc-boundary-repair
+
+on:
+  push:
+    branches:
+      - codex/hepta-lane-b-gap-closure-20260910
+    paths:
+      - .github/workflows/tmp-lane-b-doc-boundary-repair.yml
+
+permissions:
+  contents: write
+
+jobs:
+  repair:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Check out exact carrier
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 2
+
+      - name: Repair, verify and publish clean tree
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD^)" = "ca2a7ae387c8c5330c88070dfab3af3b7f83b071"
+          python3 - <<'PY'
+          from pathlib import Path
+          path = Path("docs/readiness/LANE_B_RUNTIME_COMPOSITION.md")
+          text = path.read_text(encoding="utf-8")
+          anchor = "The following claims remain false until exact evidence is committed and independently issued where required:\n\n"
+          replacement = anchor + "- production activation passed;\n"
+          if text.count(anchor) != 1:
+              raise SystemExit("Lane B claim-boundary anchor drifted")
+          if "- production activation passed;" in text:
+              raise SystemExit("Lane B production boundary already present")
+          path.write_text(text.replace(anchor, replacement, 1), encoding="utf-8")
+          PY
+          rm .github/workflows/tmp-lane-b-doc-boundary-repair.yml
+          python3 scripts/hepta-lane-b-truth.py self-test
+          python3 -m unittest scripts/test_hepta_lane_b_truth.py
+          python3 scripts/hepta-lane-b-truth.py verify
+          python3 scripts/hepta-lane-b-docs.py verify
+          git diff --check
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add docs/readiness/LANE_B_RUNTIME_COMPOSITION.md .github/workflows/tmp-lane-b-doc-boundary-repair.yml
+          git commit -m 'docs(lane-b): state production activation boundary explicitly'
+          git push origin HEAD:codex/hepta-lane-b-gap-closure-20260910
