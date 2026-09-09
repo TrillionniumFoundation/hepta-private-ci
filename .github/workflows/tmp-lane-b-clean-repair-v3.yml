@@ -1,0 +1,76 @@
+name: tmp-lane-b-clean-repair-v3
+
+on:
+  push:
+    branches:
+      - codex/hepta-lane-b-gap-closure-20260910
+    paths:
+      - .github/workflows/tmp-lane-b-clean-repair-v3.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: tmp-lane-b-document-finalizer
+  cancel-in-progress: false
+
+jobs:
+  finalize:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: Check out carrier
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 2
+
+      - name: Commit clean document candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          carrier="$(git rev-parse HEAD)"
+          python3 - <<'PY'
+          from pathlib import Path
+          path = Path("docs/readiness/LANE_B_RUNTIME_COMPOSITION.md")
+          text = path.read_text(encoding="utf-8")
+          statement = "- production activation passed;\n"
+          anchor = (
+              "The following claims remain false until exact evidence is committed "
+              "and independently issued where required:\n\n"
+          )
+          count = text.count(statement)
+          if count == 0:
+              if text.count(anchor) != 1:
+                  raise SystemExit("Lane B claim-boundary anchor drifted")
+              text = text.replace(anchor, anchor + statement, 1)
+          elif count != 1:
+              raise SystemExit("production boundary is not unique")
+          path.write_text(text, encoding="utf-8")
+          PY
+          git rm -f --ignore-unmatch \
+            .github/workflows/tmp-lane-b-doc-boundary-repair.yml \
+            .github/workflows/tmp-lane-b-clean-repair-v2.yml \
+            .github/workflows/tmp-lane-b-clean-repair-v3.yml
+          git add docs/readiness/LANE_B_RUNTIME_COMPOSITION.md
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'docs(lane-b): finalize explicit production boundary'
+          test "$(git rev-parse HEAD^)" = "$carrier"
+          test -z "$(git status --porcelain --untracked-files=no)"
+
+      - name: Verify committed Lane B contract
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta-lane-b-truth.py self-test
+          python3 -m unittest scripts/test_hepta_lane_b_truth.py
+          python3 scripts/hepta-lane-b-truth.py verify
+          python3 scripts/hepta-lane-b-docs.py verify
+          git show --check --oneline --no-renames HEAD
+          test -z "$(git status --porcelain --untracked-files=no)"
+
+      - name: Publish verified head
+        shell: bash
+        run: |
+          set -euo pipefail
+          git push origin HEAD:codex/hepta-lane-b-gap-closure-20260910
