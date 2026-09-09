@@ -19,23 +19,36 @@ from pathlib import Path
 
 ROOT = Path.cwd()
 
-PATH_IDENTITY_FILES = (
+DIRECTORY_IDENTITY_FILES = (
     "codex-rs/hepta-memory/src/cognitive_store.rs",
-    "codex-rs/hepta-memory/src/cognitive_federation.rs",
     "codex-rs/hepta-automation/src/store.rs",
     "codex-rs/hepta-matrix-store/src/store.rs",
 )
+FEDERATION_IDENTITY_FILE = "codex-rs/hepta-memory/src/cognitive_federation.rs"
+PATH_IDENTITY_FILES = (*DIRECTORY_IDENTITY_FILES, FEDERATION_IDENTITY_FILE)
 
-R6_IDENTITY_CHECK = """    let canonical_path = AbsolutePathBuf::try_from(path)
+R6_DIRECTORY_IDENTITY_CHECK = """    let canonical_path = AbsolutePathBuf::try_from(path)
         .map_err(unavailable)?
         .canonicalize()
         .map_err(unavailable)?;
     if canonical_path.as_path() != path {
 """
 
-R7_IDENTITY_CHECK = """    let logical_path = AbsolutePathBuf::try_from(path).map_err(unavailable)?;
+R7_DIRECTORY_IDENTITY_CHECK = """    let logical_path = AbsolutePathBuf::try_from(path).map_err(unavailable)?;
     let canonical_path = logical_path.canonicalize().map_err(unavailable)?;
     if canonical_path != logical_path {
+"""
+
+R6_FEDERATION_IDENTITY_CHECK = """    let canonical_path = AbsolutePathBuf::try_from(path)
+        .map_err(unavailable)?
+        .canonicalize()
+        .map_err(unavailable)?;
+    if !metadata.is_file() || canonical_path.as_path() != path {
+"""
+
+R7_FEDERATION_IDENTITY_CHECK = """    let logical_path = AbsolutePathBuf::try_from(path).map_err(unavailable)?;
+    let canonical_path = logical_path.canonicalize().map_err(unavailable)?;
+    if !metadata.is_file() || canonical_path != logical_path {
 """
 
 R6_WINDOWS_TEST_MODULE = r"""
@@ -104,13 +117,19 @@ def replace_once(path: Path, old: str, new: str, label: str) -> None:
 
 
 def patch_normalized_identity_checks() -> None:
-    for relative in PATH_IDENTITY_FILES:
+    for relative in DIRECTORY_IDENTITY_FILES:
         replace_once(
             ROOT / relative,
-            R6_IDENTITY_CHECK,
-            R7_IDENTITY_CHECK,
-            "r6 raw-vs-normalized path identity",
+            R6_DIRECTORY_IDENTITY_CHECK,
+            R7_DIRECTORY_IDENTITY_CHECK,
+            "r6 directory raw-vs-normalized path identity",
         )
+    replace_once(
+        ROOT / FEDERATION_IDENTITY_FILE,
+        R6_FEDERATION_IDENTITY_CHECK,
+        R7_FEDERATION_IDENTITY_CHECK,
+        "r6 federated-database raw-vs-normalized path identity",
+    )
 
 
 def strengthen_windows_regression() -> None:
@@ -141,7 +160,9 @@ def verify_materialized_shape() -> None:
     checks = {
         "let logical_path = AbsolutePathBuf::try_from(path).map_err(unavailable)?;": 4,
         "let canonical_path = logical_path.canonicalize().map_err(unavailable)?;": 4,
-        "if canonical_path != logical_path {": 4,
+        "canonical_path != logical_path": 4,
+        "if canonical_path != logical_path {": 3,
+        "if !metadata.is_file() || canonical_path != logical_path {": 1,
         "canonical_path.as_path() != path": 0,
         "path.canonicalize().map_err(unavailable)? != path": 0,
         "device_prefixed_temp_root_normalizes_before_identity_comparison": 1,

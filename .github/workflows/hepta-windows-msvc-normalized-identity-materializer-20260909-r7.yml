@@ -119,11 +119,17 @@ jobs:
             codex-rs/hepta-memory/src/cognitive_federation.rs \
             codex-rs/hepta-automation/src/store.rs \
             codex-rs/hepta-matrix-store/src/store.rs | awk -F: '{sum += $2} END {print sum}')" = 4
-          test "$(grep -R -F -c 'if canonical_path != logical_path {' \
+          test "$(grep -R -F -c 'canonical_path != logical_path' \
             codex-rs/hepta-memory/src/cognitive_store.rs \
             codex-rs/hepta-memory/src/cognitive_federation.rs \
             codex-rs/hepta-automation/src/store.rs \
             codex-rs/hepta-matrix-store/src/store.rs | awk -F: '{sum += $2} END {print sum}')" = 4
+          test "$(grep -R -F -c 'if canonical_path != logical_path {' \
+            codex-rs/hepta-memory/src/cognitive_store.rs \
+            codex-rs/hepta-automation/src/store.rs \
+            codex-rs/hepta-matrix-store/src/store.rs | awk -F: '{sum += $2} END {print sum}')" = 3
+          test "$(grep -F -c 'if !metadata.is_file() || canonical_path != logical_path {' \
+            codex-rs/hepta-memory/src/cognitive_federation.rs)" = 1
           test -z "$(grep -R -F 'canonical_path.as_path() != path' \
             codex-rs/hepta-memory/src/cognitive_store.rs \
             codex-rs/hepta-memory/src/cognitive_federation.rs \
