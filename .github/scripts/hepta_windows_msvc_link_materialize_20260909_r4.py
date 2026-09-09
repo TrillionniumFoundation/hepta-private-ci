@@ -171,14 +171,19 @@ def create_rules_rust_patch() -> None:
         )
     )
     patch_text = "\n".join(patch_lines) + "\n"
-    required_fragments = [
-        "if flavor_msvc and use_direct_driver:",
-        'normalized_flag = "/LIBPATH:" + flag[len("-Lnative="):]',
-        'normalized_flag = library if library.endswith(".lib") else library + ".lib"',
-    ]
-    for fragment in required_fragments:
-        if patch_text.count(fragment) != 1:
-            raise SystemExit(f"generated patch missing unique fragment: {fragment}")
+    expected_fragments = {
+        "if flavor_msvc and use_direct_driver:": 1,
+        'normalized_flag = "/LIBPATH:" + flag[len("-Lnative="): ]': 0,
+        'normalized_flag = "/LIBPATH:" + flag[len("-Lnative="):]': 1,
+        'normalized_flag = library if library.endswith(".lib") else library + ".lib"': 3,
+    }
+    for fragment, expected_count in expected_fragments.items():
+        observed_count = patch_text.count(fragment)
+        if observed_count != expected_count:
+            raise SystemExit(
+                f"generated patch fragment count mismatch: {fragment}: "
+                f"expected {expected_count}, observed {observed_count}"
+            )
 
     patch = ROOT / "patches/rules_rust_windows_msvc_user_link_flags.patch"
     if patch.exists():
