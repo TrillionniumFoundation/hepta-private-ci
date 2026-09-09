@@ -1,10 +1,13 @@
 use std::collections::BTreeMap;
 use std::collections::BTreeSet;
+use std::collections::btree_map::Entry;
 
 use codex_hepta_types::Digest32;
 use codex_hepta_types::FixedQ32;
 use codex_hepta_types::StableId;
 
+use crate::AggregationOperator;
+use crate::AxisAggregationRule;
 use crate::AxisDirection;
 use crate::AxisLimit;
 use crate::AxisValue;
@@ -12,9 +15,11 @@ use crate::CandidateRejectionReason;
 use crate::CandidateUtility;
 use crate::ContributionSet;
 use crate::EvaluationDisposition;
+use crate::EvaluationPolicyV1;
 use crate::FeasibilityPosture;
 use crate::NduError;
 use crate::NduEvaluationReceipt;
+use crate::NduEvaluationReceiptV2;
 use crate::RejectedCandidate;
 use crate::ScalarizationProfile;
 use crate::UtilityContribution;
@@ -32,6 +37,8 @@ const MAX_UTILITY_DIMENSIONS: usize = 8;
 const MAX_RISK_RESOURCE_DIMENSIONS: usize = 32;
 const MAX_REQUIRED_ORGANS: usize = 32;
 const SCALARIZATION_DIGEST_DOMAIN: &[u8] = b"hepta.ndu.scalarization-profile.v1";
+const EVALUATION_POLICY_DIGEST_DOMAIN: &[u8] = b"hepta.ndu.evaluation-policy.v1";
+const EVALUATION_V2_DIGEST_DOMAIN: &[u8] = b"hepta.ndu.evaluation.v2";
 
 #[derive(Default)]
 struct CandidateAccumulator {
@@ -44,20 +51,48 @@ struct CandidateAccumulator {
     hard_violation: bool,
 }
 
-/// Applies hard feasibility, contribution completeness, Pareto filtering and
-/// optional registered scalarization. Any recommendation is advisory only.
+struct ValidatedEvaluationPolicy {
+    utility: BTreeMap<StableId, AggregationOperator>,
+    risk: BTreeMap<StableId, AggregationOperator>,
+    resource: BTreeMap<StableId, AggregationOperator>,
+    uncertainty: BTreeMap<StableId, AggregationOperator>,
+    tolerances: BTreeMap<StableId, FixedQ32>,
+}
+
+/// Compatibility entry point. Its former implicit sum/sum/sum/max and exact
+/// Pareto semantics are now materialized as a digestible policy.
 pub fn evaluate_candidates(
+    set: ContributionSet,
+    profile: UtilityProfile,
+    scalarization: Option<ScalarizationProfile>,
+) -> Result<NduEvaluationReceipt, NduError> {
+    let policy = legacy_evaluation_policy(&profile)?;
+    Ok(evaluate_candidates_with_policy(set, profile, scalarization, policy)?.base)
+}
+
+/// Applies hard feasibility, complete profile-bound aggregation, tolerant
+/// Pareto filtering and optional registered scalarization. Any recommendation
+/// remains advisory and carries no selection or effect authority.
+pub fn evaluate_candidates_with_policy(
     set: ContributionSet,
     mut profile: UtilityProfile,
     scalarization: Option<ScalarizationProfile>,
-) -> Result<NduEvaluationReceipt, NduError> {
+    mut policy: EvaluationPolicyV1,
+) -> Result<NduEvaluationReceiptV2, NduError> {
     validate_profile(&mut profile)?;
     validate_contribution_envelope(&set)?;
+    let validated_policy = validate_evaluation_policy(&profile, &mut policy)?;
+    let evaluation_policy_digest = digest_evaluation_policy(&policy);
     let utility_profile_digest = digest_profile(&profile);
 
     let mut grouped: BTreeMap<StableId, CandidateAccumulator> = BTreeMap::new();
     for contribution in set.contributions {
-        accumulate(&mut grouped, contribution, &profile)?;
+        accumulate(
+            &mut grouped,
+            contribution,
+            &profile,
+            &validated_policy,
+        )?;
     }
     if grouped.len() > MAX_CANDIDATES {
         return Err(NduError::CandidateLimitExceeded);
@@ -104,7 +139,11 @@ pub fn evaluate_candidates(
         return Err(NduError::AbstainInfeasible);
     }
 
-    let mut frontier = pareto_frontier(&evaluated_candidates, &profile.dimensions);
+    let mut frontier = pareto_frontier(
+        &evaluated_candidates,
+        &profile.dimensions,
+        &validated_policy.tolerances,
+    );
     frontier.sort_by(candidate_order);
     let scalarization_profile_digest = scalarization
         .as_ref()
@@ -138,7 +177,7 @@ pub fn evaluate_candidates(
         utility_profile_digest,
         scalarization_digest: scalarization_profile_digest,
     });
-    Ok(NduEvaluationReceipt {
+    let base = NduEvaluationReceipt {
         objective_digest: set.objective_digest,
         generation: set.generation,
         disposition,
@@ -149,7 +188,71 @@ pub fn evaluate_candidates(
         pareto_frontier: frontier,
         advisory_recommendation,
         evaluation_digest,
+    };
+    let evaluation_digest_v2 = digest_evaluation_v2(&base, evaluation_policy_digest);
+    Ok(NduEvaluationReceiptV2 {
+        base,
+        evaluation_policy_digest,
+        evaluation_digest_v2,
     })
+}
+
+/// Returns the exact compatibility policy used by `evaluate_candidates`.
+pub fn legacy_evaluation_policy(profile: &UtilityProfile) -> Result<EvaluationPolicyV1, NduError> {
+    Ok(EvaluationPolicyV1 {
+        policy_id: stable_id("legacy-sum-max-zero-tolerance-v1")?,
+        utility_rules: profile
+            .dimensions
+            .iter()
+            .map(|(axis, _)| AxisAggregationRule {
+                axis: axis.clone(),
+                operator: AggregationOperator::Sum,
+            })
+            .collect(),
+        risk_rules: profile
+            .risk_ceilings
+            .iter()
+            .map(|limit| AxisAggregationRule {
+                axis: limit.axis.clone(),
+                operator: AggregationOperator::Sum,
+            })
+            .collect(),
+        resource_rules: profile
+            .resource_ceilings
+            .iter()
+            .map(|limit| AxisAggregationRule {
+                axis: limit.axis.clone(),
+                operator: AggregationOperator::Sum,
+            })
+            .collect(),
+        uncertainty_rules: profile
+            .dimensions
+            .iter()
+            .map(|(axis, _)| AxisAggregationRule {
+                axis: axis.clone(),
+                operator: AggregationOperator::Maximum,
+            })
+            .collect(),
+        pareto_absolute_tolerances: profile
+            .dimensions
+            .iter()
+            .map(|(axis, _)| AxisValue {
+                axis: axis.clone(),
+                value: FixedQ32::ZERO,
+            })
+            .collect(),
+    })
+}
+
+pub fn canonical_evaluation_policy_digest(
+    profile: &UtilityProfile,
+    policy: &EvaluationPolicyV1,
+) -> Result<Digest32, NduError> {
+    let mut normalized_profile = profile.clone();
+    let mut normalized_policy = policy.clone();
+    validate_profile(&mut normalized_profile)?;
+    validate_evaluation_policy(&normalized_profile, &mut normalized_policy)?;
+    Ok(digest_evaluation_policy(&normalized_policy))
 }
 
 /// Returns the canonical digest of a scalarization profile after validating and
@@ -224,6 +327,108 @@ fn validate_profile(profile: &mut UtilityProfile) -> Result<(), NduError> {
     Ok(())
 }
 
+fn validate_evaluation_policy(
+    profile: &UtilityProfile,
+    policy: &mut EvaluationPolicyV1,
+) -> Result<ValidatedEvaluationPolicy, NduError> {
+    policy.utility_rules.sort();
+    policy.risk_rules.sort();
+    policy.resource_rules.sort();
+    policy.uncertainty_rules.sort();
+    normalize_axis_values(&mut policy.pareto_absolute_tolerances)?;
+
+    let utility = rule_map(&policy.utility_rules)?;
+    let risk = rule_map(&policy.risk_rules)?;
+    let resource = rule_map(&policy.resource_rules)?;
+    let uncertainty = rule_map(&policy.uncertainty_rules)?;
+    let tolerances: BTreeMap<_, _> = policy
+        .pareto_absolute_tolerances
+        .iter()
+        .map(|value| (value.axis.clone(), value.value))
+        .collect();
+
+    let utility_axes: BTreeSet<_> = profile
+        .dimensions
+        .iter()
+        .map(|(axis, _)| axis.clone())
+        .collect();
+    let risk_axes: BTreeSet<_> = profile
+        .risk_ceilings
+        .iter()
+        .map(|value| value.axis.clone())
+        .collect();
+    let resource_axes: BTreeSet<_> = profile
+        .resource_ceilings
+        .iter()
+        .map(|value| value.axis.clone())
+        .collect();
+
+    validate_rule_axes(&utility_axes, &utility)?;
+    validate_rule_axes(&risk_axes, &risk)?;
+    validate_rule_axes(&resource_axes, &resource)?;
+    validate_rule_axes(&utility_axes, &uncertainty)?;
+    validate_value_axes(&utility_axes, &tolerances)?;
+    for (axis, tolerance) in &tolerances {
+        if *tolerance < FixedQ32::ZERO {
+            return Err(NduError::NegativeTolerance(axis.to_string()));
+        }
+    }
+
+    Ok(ValidatedEvaluationPolicy {
+        utility,
+        risk,
+        resource,
+        uncertainty,
+        tolerances,
+    })
+}
+
+fn rule_map(
+    rules: &[AxisAggregationRule],
+) -> Result<BTreeMap<StableId, AggregationOperator>, NduError> {
+    let mut result = BTreeMap::new();
+    for rule in rules {
+        if result.insert(rule.axis.clone(), rule.operator).is_some() {
+            return Err(NduError::DuplicateAggregationRule(rule.axis.to_string()));
+        }
+    }
+    Ok(result)
+}
+
+fn validate_rule_axes(
+    expected: &BTreeSet<StableId>,
+    actual: &BTreeMap<StableId, AggregationOperator>,
+) -> Result<(), NduError> {
+    for axis in expected {
+        if !actual.contains_key(axis) {
+            return Err(NduError::MissingAggregationRule(axis.to_string()));
+        }
+    }
+    for axis in actual.keys() {
+        if !expected.contains(axis) {
+            return Err(NduError::AggregationAxisMismatch(axis.to_string()));
+        }
+    }
+    Ok(())
+}
+
+fn validate_value_axes(
+    expected: &BTreeSet<StableId>,
+    actual: &BTreeMap<StableId, FixedQ32>,
+) -> Result<(), NduError> {
+    for axis in expected {
+        if !actual.contains_key(axis) {
+            return Err(NduError::MissingAggregationRule(axis.to_string()));
+        }
+    }
+    for axis in actual.keys() {
+        if !expected.contains(axis) {
+            return Err(NduError::AggregationAxisMismatch(axis.to_string()));
+        }
+    }
+    Ok(())
+}
+
 fn reject_duplicate_ids<'a>(values: impl Iterator<Item = &'a StableId>) -> Result<(), NduError> {
     let mut seen = BTreeSet::new();
     for value in values {
@@ -238,6 +443,7 @@ fn accumulate(
     grouped: &mut BTreeMap<StableId, CandidateAccumulator>,
     mut contribution: UtilityContribution,
     profile: &UtilityProfile,
+    policy: &ValidatedEvaluationPolicy,
 ) -> Result<(), NduError> {
     if contribution.support_digest.is_zero() {
         return Err(NduError::EmptySupportDigest {
@@ -261,13 +467,59 @@ fn accumulate(
     }
     accumulator.hard_violation |=
         contribution.feasibility == FeasibilityPosture::HardConstraintViolation;
-    sum_values(&mut accumulator.utility, contribution.utility)?;
-    sum_values(&mut accumulator.risk, contribution.risk)?;
-    sum_values(&mut accumulator.resource, contribution.resource)?;
-    max_values(&mut accumulator.uncertainty, contribution.uncertainty);
+    aggregate_values(
+        &mut accumulator.utility,
+        contribution.utility,
+        &policy.utility,
+    )?;
+    aggregate_values(&mut accumulator.risk, contribution.risk, &policy.risk)?;
+    aggregate_values(
+        &mut accumulator.resource,
+        contribution.resource,
+        &policy.resource,
+    )?;
+    aggregate_values(
+        &mut accumulator.uncertainty,
+        contribution.uncertainty,
+        &policy.uncertainty,
+    )?;
     accumulator
         .support_digests
         .push(contribution.support_digest);
+    Ok(())
+}
+
+fn aggregate_values(
+    target: &mut BTreeMap<StableId, FixedQ32>,
+    values: Vec<AxisValue>,
+    rules: &BTreeMap<StableId, AggregationOperator>,
+) -> Result<(), NduError> {
+    for value in values {
+        let operator = rules
+            .get(&value.axis)
+            .copied()
+            .ok_or_else(|| NduError::MissingAggregationRule(value.axis.to_string()))?;
+        match target.entry(value.axis.clone()) {
+            Entry::Vacant(entry) => {
+                entry.insert(value.value);
+            }
+            Entry::Occupied(mut entry) => {
+                let current = *entry.get();
+                let next = match operator {
+                    AggregationOperator::Sum => current
+                        .checked_add(value.value)
+                        .map_err(|_| NduError::Arithmetic)?,
+                    AggregationOperator::Maximum => current.max(value.value),
+                    AggregationOperator::Minimum => current.min(value.value),
+                    AggregationOperator::RequireEqual if current == value.value => current,
+                    AggregationOperator::RequireEqual => {
+                        return Err(NduError::AggregationConflict(value.axis.to_string()));
+                    }
+                };
+                entry.insert(next);
+            }
+        }
+    }
     Ok(())
 }
 
@@ -327,26 +579,6 @@ fn validate_known_axes(
         }
     }
     Ok(())
-}
-
-fn sum_values(
-    target: &mut BTreeMap<StableId, FixedQ32>,
-    values: Vec<AxisValue>,
-) -> Result<(), NduError> {
-    for value in values {
-        let current = target.entry(value.axis).or_insert(FixedQ32::ZERO);
-        *current = current
-            .checked_add(value.value)
-            .map_err(|_| NduError::Arithmetic)?;
-    }
-    Ok(())
-}
-
-fn max_values(target: &mut BTreeMap<StableId, FixedQ32>, values: Vec<AxisValue>) {
-    for value in values {
-        let current = target.entry(value.axis).or_insert(value.value);
-        *current = (*current).max(value.value);
-    }
 }
 
 fn validate_required_organs(
@@ -418,6 +650,38 @@ fn into_axis_values(values: BTreeMap<StableId, FixedQ32>) -> Vec<AxisValue> {
         .into_iter()
         .map(|(axis, value)| AxisValue { axis, value })
         .collect()
+}
+
+fn digest_evaluation_policy(policy: &EvaluationPolicyV1) -> Digest32 {
+    let mut bytes = Vec::new();
+    bytes.extend_from_slice(EVALUATION_POLICY_DIGEST_DOMAIN);
+    push_id(&mut bytes, &policy.policy_id);
+    push_rules(&mut bytes, &policy.utility_rules);
+    push_rules(&mut bytes, &policy.risk_rules);
+    push_rules(&mut bytes, &policy.resource_rules);
+    push_rules(&mut bytes, &policy.uncertainty_rules);
+    push_axis_values(&mut bytes, &policy.pareto_absolute_tolerances);
+    Digest32::of_bytes(&bytes)
+}
+
+fn digest_evaluation_v2(
+    receipt: &NduEvaluationReceipt,
+    evaluation_policy_digest: Digest32,
+) -> Digest32 {
+    let mut bytes = Vec::new();
+    bytes.extend_from_slice(EVALUATION_V2_DIGEST_DOMAIN);
+    bytes.extend_from_slice(receipt.evaluation_digest.as_array());
+    bytes.extend_from_slice(evaluation_policy_digest.as_array());
+    bytes.push(receipt.disposition.tag());
+    Digest32::of_bytes(&bytes)
+}
+
+fn push_rules(bytes: &mut Vec<u8>, rules: &[AxisAggregationRule]) {
+    push_len(bytes, rules.len());
+    for rule in rules {
+        push_id(bytes, &rule.axis);
+        bytes.push(rule.operator.tag());
+    }
 }
 
 fn stable_id(value: &str) -> Result<StableId, NduError> {
