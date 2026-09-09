@@ -1,0 +1,125 @@
+name: Hepta Windows linker diagnostic r4
+
+on:
+  push:
+    branches:
+      - ops/windows-linker-diagnostic-20260909-r4
+
+permissions:
+  contents: read
+
+env:
+  SOURCE_SHA: 05981ed1adfb931a87a47b0606f1cedaa69f123b
+
+jobs:
+  compare-standard-linker:
+    runs-on: windows-latest
+    timeout-minutes: 75
+    environment:
+      name: bazel
+      deployment: false
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 2
+          persist-credentials: false
+
+      - name: Bind exact source
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${SOURCE_SHA}"
+          test "$(git rev-parse HEAD^)" = "04f60466394a024c218ce66b1b32d1c42c462985"
+          test "$(git rev-parse HEAD^{tree})" = "454061365d2c816598012c3a317e56bfe4ffa5cf"
+
+      - name: Remove only the custom MSVC direct-linker patches locally
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+          path = Path('MODULE.bazel')
+          text = path.read_text(encoding='utf-8')
+          needles = [
+              '        "//patches:rules_rs_windows_msvc_linker.patch",\n',
+              '        "//patches:rules_rust_windows_msvc_direct_link_args.patch",\n',
+          ]
+          for needle in needles:
+              if text.count(needle) != 1:
+                  raise SystemExit(f'expected exactly one patch entry: {needle!r}')
+              text = text.replace(needle, '', 1)
+          path.write_text(text, encoding='utf-8')
+          PY
+          git diff --check
+          test "$(git diff --name-only)" = "MODULE.bazel"
+
+      - uses: ./.github/actions/prepare-bazel-ci
+        with:
+          target: x86_64-pc-windows-msvc
+          cache-scope: bazel-windows-linker-diagnostic-r4
+
+      - name: Create std-only diagnostic target
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p .hepta-link-diag
+          cat > .hepta-link-diag/BUILD.bazel <<'EOF'
+          load("@rules_rust//rust:defs.bzl", "rust_binary")
+          rust_binary(name = "hello", srcs = ["main.rs"], edition = "2024")
+          EOF
+          cat > .hepta-link-diag/main.rs <<'EOF'
+          fn main() { println!("hepta-standard-msvc-linker"); }
+          EOF
+
+      - name: Build std-only target through standard toolchain linker
+        id: std
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -o pipefail
+          out="${RUNNER_TEMP}/hepta-windows-linker-diagnostic-r4"
+          mkdir -p "${out}"
+          ./.github/scripts/run-bazel-ci.sh --windows-msvc-host-platform -- \
+            build --platforms=//:windows_x86_64_msvc --verbose_failures --subcommands --sandbox_debug --remote_download_outputs=all -- \
+            //.hepta-link-diag:hello 2>&1 | tee "${out}/std-standard-linker.log"
+
+      - name: Build AWS-LC/Rustls consumer through standard toolchain linker
+        id: rustls
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -o pipefail
+          out="${RUNNER_TEMP}/hepta-windows-linker-diagnostic-r4"
+          ./.github/scripts/run-bazel-ci.sh --windows-msvc-host-platform -- \
+            build --platforms=//:windows_x86_64_msvc --verbose_failures --subcommands --sandbox_debug --remote_download_outputs=all -- \
+            //codex-rs/utils/rustls-provider:rustls-provider-preinstalled-test 2>&1 | tee "${out}/rustls-standard-linker.log"
+
+      - name: Record verdict
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          out="${RUNNER_TEMP}/hepta-windows-linker-diagnostic-r4"
+          mkdir -p "${out}"
+          {
+            echo "source=${SOURCE_SHA}"
+            echo "std_standard_linker=${{ steps.std.outcome }}"
+            echo "rustls_standard_linker=${{ steps.rustls.outcome }}"
+          } | tee "${out}/VERDICT"
+
+      - name: Upload comparison packet
+        if: always()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: hepta-windows-linker-diagnostic-r4-${{ env.SOURCE_SHA }}
+          path: ${{ runner.temp }}/hepta-windows-linker-diagnostic-r4
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Require standard linker validation
+        if: always()
+        shell: bash
+        run: |
+          test "${{ steps.std.outcome }}" = "success"
+          test "${{ steps.rustls.outcome }}" = "success"
