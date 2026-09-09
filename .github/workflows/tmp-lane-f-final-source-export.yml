@@ -1,0 +1,46 @@
+name: tmp-lane-f-final-source-export
+
+on:
+  push:
+    branches:
+      - ops/lane-f-final-source-export-20260910
+    paths:
+      - .github/workflows/tmp-lane-f-final-source-export.yml
+
+permissions:
+  contents: read
+
+jobs:
+  export-exact-source:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: Checkout exact immutable candidate head
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: 2dbd518e4a0b8507adfaec02b507aa2b8e7f5e11
+          path: source
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Bind identity and create bounded archive
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git -C source rev-parse HEAD)" = "2dbd518e4a0b8507adfaec02b507aa2b8e7f5e11"
+          test "$(git -C source rev-parse HEAD^{tree})" = "d6e7400cf17d1cffc1ec9e34d98134de7ccb04a1"
+          archive="${RUNNER_TEMP}/hepta-lane-f-final-source.tar.gz"
+          tar --sort=name --mtime='@0' --owner=0 --group=0 --numeric-owner \
+            --exclude=.git -cf - -C source . | gzip -n > "${archive}"
+          test -s "${archive}"
+          test "$(stat -c %s "${archive}")" -le 134217728
+          sha256sum "${archive}"
+          printf 'SOURCE_ARCHIVE=%s\n' "${archive}" >> "${GITHUB_ENV}"
+
+      - name: Upload exact source archive
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-lane-f-final-source-2dbd518
+          path: ${{ env.SOURCE_ARCHIVE }}
+          if-no-files-found: error
+          retention-days: 1
