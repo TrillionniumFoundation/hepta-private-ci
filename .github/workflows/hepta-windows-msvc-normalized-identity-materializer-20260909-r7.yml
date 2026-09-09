@@ -26,7 +26,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          expected_head=05981ed1adfb931a87a47b0606f1cedaa69f123b
+          expected_head=b99aaa5abbf7a4d3d797591acc7ed88990c67997
           expected_parent=04f60466394a024c218ce66b1b32d1c42c462985
           r4_materializer="$(cygpath -u "${RUNNER_TEMP}")/hepta_windows_msvc_link_materialize_20260909_r4.py"
           r5_materializer="$(cygpath -u "${RUNNER_TEMP}")/hepta_windows_msvc_schema_oracle_materialize_20260909_r5.py"
@@ -215,7 +215,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          expected_head=05981ed1adfb931a87a47b0606f1cedaa69f123b
+          expected_head=b99aaa5abbf7a4d3d797591acc7ed88990c67997
           expected_parent=04f60466394a024c218ce66b1b32d1c42c462985
           candidate_ref=refs/heads/codex/hepta-all-gap-closure-20260908
 
