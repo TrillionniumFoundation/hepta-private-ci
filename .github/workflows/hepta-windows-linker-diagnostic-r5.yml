@@ -1,0 +1,92 @@
+name: Hepta Windows linker diagnostic r5
+
+on:
+  push:
+    branches: [ops/windows-linker-diagnostic-20260909-r5]
+
+permissions:
+  contents: read
+
+env:
+  SOURCE_SHA: 05981ed1adfb931a87a47b0606f1cedaa69f123b
+
+jobs:
+  validate-native-msvc-cc:
+    runs-on: windows-latest
+    timeout-minutes: 80
+    environment:
+      name: bazel
+      deployment: false
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 2
+          persist-credentials: false
+      - name: Bind exact source
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          test "$(git rev-parse HEAD^)" = 04f60466394a024c218ce66b1b32d1c42c462985
+          test "$(git rev-parse HEAD^{tree})" = 454061365d2c816598012c3a317e56bfe4ffa5cf
+      - uses: ./.github/actions/prepare-bazel-ci
+        with:
+          target: x86_64-pc-windows-msvc
+          cache-scope: bazel-windows-linker-diagnostic-r5
+      - name: Build AWS-LC/Rustls with ABI-matched C toolchain
+        id: rustls
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -o pipefail
+          out="$RUNNER_TEMP/hepta-windows-linker-diagnostic-r5"
+          mkdir -p "$out"
+          ./.github/scripts/run-bazel-ci.sh --windows-msvc-host-platform -- \
+            build \
+            --platforms=//:windows_x86_64_msvc \
+            --extra_execution_platforms=//:windows_x86_64_msvc \
+            --extra_toolchains=//:local_windows_msvc_cc_toolchain \
+            --repo_env=BAZEL_DO_NOT_DETECT_CPP_TOOLCHAIN=0 \
+            --verbose_failures --subcommands --sandbox_debug \
+            --remote_download_outputs=all -- \
+            //codex-rs/utils/rustls-provider:rustls-provider-preinstalled-test \
+            2>&1 | tee "$out/rustls-msvc-cc.log"
+      - name: Build SQLx consumer with ABI-matched C toolchain
+        id: sqlx
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -o pipefail
+          out="$RUNNER_TEMP/hepta-windows-linker-diagnostic-r5"
+          ./.github/scripts/run-bazel-ci.sh --windows-msvc-host-platform -- \
+            build \
+            --platforms=//:windows_x86_64_msvc \
+            --extra_execution_platforms=//:windows_x86_64_msvc \
+            --extra_toolchains=//:local_windows_msvc_cc_toolchain \
+            --repo_env=BAZEL_DO_NOT_DETECT_CPP_TOOLCHAIN=0 \
+            --verbose_failures --subcommands --sandbox_debug \
+            --remote_download_outputs=all -- \
+            //codex-rs/state:state \
+            2>&1 | tee "$out/sqlx-msvc-cc.log"
+      - name: Record verdict
+        if: always()
+        shell: bash
+        run: |
+          out="$RUNNER_TEMP/hepta-windows-linker-diagnostic-r5"
+          mkdir -p "$out"
+          printf 'source=%s\nrustls=%s\nsqlx=%s\n' "$SOURCE_SHA" '${{ steps.rustls.outcome }}' '${{ steps.sqlx.outcome }}' | tee "$out/VERDICT"
+      - name: Upload packet
+        if: always()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: hepta-windows-linker-diagnostic-r5-${{ env.SOURCE_SHA }}
+          path: ${{ runner.temp }}/hepta-windows-linker-diagnostic-r5
+          if-no-files-found: error
+          retention-days: 14
+      - name: Require both consumers
+        if: always()
+        shell: bash
+        run: |
+          test '${{ steps.rustls.outcome }}' = success
+          test '${{ steps.sqlx.outcome }}' = success
