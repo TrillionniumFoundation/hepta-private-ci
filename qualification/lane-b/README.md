@@ -16,7 +16,7 @@ Run from the repository root:
 python3 scripts/hepta-lane-b-truth.py self-test
 python3 -m unittest scripts/test_hepta_lane_b_truth.py
 python3 scripts/hepta-lane-b-truth.py verify
-python3 scripts/hepta-lane-b-docs.py
+python3 scripts/hepta-lane-b-docs.py verify
 ```
 
 `.github/workflows/hepta-lane-b-truth.yml` executes these checks on the exact source head and on a deterministic synthetic merge candidate.
