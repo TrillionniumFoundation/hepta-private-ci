@@ -1,0 +1,86 @@
+name: Inspect effective rules_rust Windows function 20260909 r2
+
+on:
+  push:
+    branches:
+      - ops/hepta-rules-rust-effective-windows-inspect-20260909-r2
+
+permissions:
+  contents: read
+
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: 05981ed1adfb931a87a47b0606f1cedaa69f123b
+          fetch-depth: 1
+          persist-credentials: false
+
+      - uses: ./.github/actions/prepare-bazel-ci
+        with:
+          target: x86_64-unknown-linux-gnu
+          cache-scope: rules-rust-effective-windows-inspect-r2
+
+      - name: Print effective functions after every candidate patch
+        shell: bash
+        run: |
+          set -euo pipefail
+          bazel query @rules_rust//rust/settings:extra_rustc_flag >/dev/null
+          OUTPUT_BASE="${BAZEL_OUTPUT_BASE}" python3 - <<'PY'
+          import os
+          import sys
+          from pathlib import Path
+
+          root = Path(os.environ["OUTPUT_BASE"]) / "external"
+          candidates = sorted(root.glob("**/rust/private/rustc.bzl"))
+          matches = []
+          for path in candidates:
+              try:
+                  text = path.read_text(encoding="utf-8")
+              except (OSError, UnicodeError):
+                  continue
+              if (
+                  "rules_rust" in path.as_posix()
+                  and "def _make_link_flags_windows(make_link_flags_args, flavor_msvc, use_direct_driver):" in text
+              ):
+                  matches.append(path)
+          if len(matches) != 1:
+              print(f"expected one effective source, found {len(matches)}", file=sys.stderr)
+              for path in candidates:
+                  print(path.as_posix(), file=sys.stderr)
+              raise SystemExit(1)
+
+          path = matches[0]
+          lines = path.read_text(encoding="utf-8").splitlines()
+          print(f"EFFECTIVE_SOURCE={path.as_posix()}")
+
+          def dump(header: str, label: str) -> None:
+              starts = [i for i, line in enumerate(lines) if line == header]
+              print(f"{label}_MATCHES={len(starts)}")
+              for start in starts:
+                  end = next(
+                      (i for i in range(start + 1, len(lines)) if lines[i].startswith("def ")),
+                      len(lines),
+                  )
+                  print(f"{label}_START={start + 1}")
+                  for number in range(start, end):
+                      print(f"{number + 1:05d}: {lines[number]}")
+                  print(f"{label}_END={end}")
+
+          dump("def _add_user_link_flags(ret, linker_input):", "EFFECTIVE_ADD_USER")
+          dump(
+              "def _make_link_flags_windows(make_link_flags_args, flavor_msvc, use_direct_driver):",
+              "EFFECTIVE_WINDOWS",
+          )
+          print("EFFECTIVE_ALL_ADD_USER_CALLS_START")
+          for number, line in enumerate(lines, start=1):
+              if "_add_user_link_flags" in line:
+                  print(f"{number:05d}: {line}")
+          print("EFFECTIVE_ALL_ADD_USER_CALLS_END")
+          PY
+
+          git diff --exit-code
+          test -z "$(git status --porcelain)"
