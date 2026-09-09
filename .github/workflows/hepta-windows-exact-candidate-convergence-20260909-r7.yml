@@ -1,0 +1,272 @@
+name: Hepta Windows exact candidate convergence 20260909 r7
+
+on:
+  push:
+    branches:
+      - ops/hepta-gap-convergence-controller-20260909-r6b
+  workflow_dispatch:
+
+permissions:
+  actions: write
+  checks: read
+  contents: write
+  issues: write
+  pull-requests: write
+  statuses: read
+
+concurrency:
+  group: hepta-windows-exact-candidate-convergence-20260909-r7
+  cancel-in-progress: false
+
+jobs:
+  qualify-converge-and-gate-pr-480:
+    runs-on: windows-latest
+    timeout-minutes: 360
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Preserve bounded repair and governance controllers
+        shell: bash
+        run: |
+          set -euo pipefail
+          control_root="$(cygpath -u "${RUNNER_TEMP}")/hepta-r7-control"
+          rm -rf "${control_root}"
+          mkdir -p "${control_root}"
+          cp .github/scripts/hepta_windows_msvc_link_materialize_20260909_r4.py \
+            "${control_root}/hepta_windows_msvc_link_materialize_20260909_r4.py"
+          cp .github/scripts/hepta_windows_msvc_schema_oracle_materialize_20260909_r5.py \
+            "${control_root}/hepta_windows_msvc_schema_oracle_materialize_20260909_r5.py"
+          cp .github/scripts/hepta_gap_convergence_controller_20260909_r6.py \
+            "${control_root}/hepta_gap_convergence_controller_20260909_r6.py"
+          cp .github/scripts/hepta_gap_convergence_after_qualification_20260909_r7.py \
+            "${control_root}/hepta_gap_convergence_after_qualification_20260909_r7.py"
+          python -m py_compile "${control_root}"/*.py
+
+          printf 'CONTROL_ROOT=%s\n' "${control_root}" >> "${GITHUB_ENV}"
+          printf 'BASE_MATERIALIZER=%s\n' \
+            "${control_root}/hepta_windows_msvc_link_materialize_20260909_r4.py" >> "${GITHUB_ENV}"
+          printf 'MATERIALIZER=%s\n' \
+            "${control_root}/hepta_windows_msvc_schema_oracle_materialize_20260909_r5.py" >> "${GITHUB_ENV}"
+          printf 'CONVERGENCE_WRAPPER=%s\n' \
+            "${control_root}/hepta_gap_convergence_after_qualification_20260909_r7.py" >> "${GITHUB_ENV}"
+
+      - name: Bind exact current candidate without weakening ancestry
+        shell: bash
+        run: |
+          set -euo pipefail
+          expected_parent=04f60466394a024c218ce66b1b32d1c42c462985
+          candidate_ref=refs/heads/codex/hepta-all-gap-closure-20260908
+          git fetch --no-tags origin \
+            "+${candidate_ref}:refs/remotes/origin/hepta-r7-exact-candidate"
+          candidate_head="$(git rev-parse refs/remotes/origin/hepta-r7-exact-candidate)"
+          git checkout --detach "${candidate_head}"
+          git config core.autocrlf false
+          git reset --hard "${candidate_head}"
+          git clean -ffdx
+          test "$(git rev-parse HEAD^)" = "${expected_parent}"
+          test "$(git rev-list --count "${expected_parent}"..HEAD)" = 1
+          test -z "$(git status --porcelain)"
+          printf 'CANDIDATE_HEAD=%s\n' "${candidate_head}" >> "${GITHUB_ENV}"
+          printf 'CANDIDATE_REF=%s\n' "${candidate_ref}" >> "${GITHUB_ENV}"
+
+      - name: Prepare Bazel CI from exact candidate
+        uses: ./.github/actions/prepare-bazel-ci
+        with:
+          target: x86_64-pc-windows-msvc
+          cache-scope: bazel-windows-msvc-exact-convergence-r7
+
+      - name: Resolve effective rules_rust source
+        shell: bash
+        run: |
+          set -euo pipefail
+          bazel query @rules_rust//rust/settings:extra_rustc_flag >/dev/null
+          source="$(OUTPUT_BASE="${BAZEL_OUTPUT_BASE}" python - <<'PY'
+          import os
+          import sys
+          from pathlib import Path
+
+          root = Path(os.environ["OUTPUT_BASE"]) / "external"
+          candidates = sorted(root.glob("**/rust/private/rustc.bzl"))
+          matches = []
+          for path in candidates:
+              try:
+                  text = path.read_text(encoding="utf-8")
+              except (OSError, UnicodeError):
+                  continue
+              if (
+                  "rules_rust" in path.as_posix()
+                  and "def _add_user_link_flags(ret, linker_input):" in text
+                  and "def _make_link_flags_windows(make_link_flags_args, flavor_msvc, use_direct_driver):" in text
+                  and 'if flag in ("-pthread", "-lpthread"):' in text
+              ):
+                  matches.append(path)
+          if len(matches) != 1:
+              print(f"expected one effective rules_rust source, found {len(matches)}", file=sys.stderr)
+              for path in candidates:
+                  print(path.as_posix(), file=sys.stderr)
+              raise SystemExit(1)
+          print(matches[0].as_posix())
+          PY
+          )"
+          test -n "${source}"
+          test -f "$(cygpath -u "${source}")"
+          printf 'RULES_RUST_EFFECTIVE_SOURCE=%s\n' "${source}" >> "${GITHUB_ENV}"
+
+      - name: Idempotently materialize or verify bounded repairs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cognitive=codex-rs/hepta-memory/src/cognitive_store.rs
+          if grep -Fq \
+            'fn canonicalize_schema_sql(sql: String) -> Result<String, CognitiveStoreError>' \
+            "${cognitive}"; then
+            grep -F 'let canonical = sql.replace("\r\n", "\n");' "${cognitive}"
+            grep -F 'let canonical_sql = canonicalize_schema_sql(sql)?;' "${cognitive}"
+            grep -F 'mod schema_oracle_canonicalization_tests' "${cognitive}"
+            grep -F 'rules_rust_windows_msvc_user_link_flags.patch' MODULE.bazel
+            grep -F 'if flavor_msvc and use_direct_driver:' \
+              patches/rules_rust_windows_msvc_user_link_flags.patch
+            grep -F 'normalized_flag = "/LIBPATH:" + flag[len("-Lnative="):]' \
+              patches/rules_rust_windows_msvc_user_link_flags.patch
+          else
+            python "${MATERIALIZER}"
+          fi
+
+          python -m py_compile "${BASE_MATERIALIZER}" "${MATERIALIZER}"
+          bash -n .github/scripts/run-bazel-ci.sh
+          git diff --check
+
+          workspace="$(cygpath -u "${GITHUB_WORKSPACE}")"
+          check_root="$(cygpath -u "${RUNNER_TEMP}")/rules-rust-patch-check-r7"
+          rm -rf "${check_root}"
+          mkdir -p "${check_root}/rust/private"
+          cp "$(cygpath -u "${RULES_RUST_EFFECTIVE_SOURCE}")" \
+            "${check_root}/rust/private/rustc.bzl"
+          if ! grep -Fq 'if flavor_msvc and use_direct_driver:' \
+            "${check_root}/rust/private/rustc.bzl"; then
+            (
+              cd "${check_root}"
+              git init -q
+              git apply --check \
+                "${workspace}/patches/rules_rust_windows_msvc_user_link_flags.patch"
+              git apply \
+                "${workspace}/patches/rules_rust_windows_msvc_user_link_flags.patch"
+            )
+          fi
+          grep -F 'if flavor_msvc and use_direct_driver:' \
+            "${check_root}/rust/private/rustc.bzl"
+          grep -F 'normalized_flag = "/LIBPATH:" + flag[len("-Lnative="):]' \
+            "${check_root}/rust/private/rustc.bzl"
+          test "$(grep -F -x -c '    _add_user_link_flags(ret, linker_input)' \
+            "${check_root}/rust/private/rustc.bzl")" = 2
+
+          changed="$( { git diff --name-only HEAD; git ls-files --others --exclude-standard; } | sort -u)"
+          if test -n "${changed}"; then
+            expected="$(printf '%s\n' \
+              .github/scripts/run-bazel-ci.sh \
+              MODULE.bazel \
+              codex-rs/hepta-memory/src/cognitive_store.rs \
+              patches/BUILD.bazel \
+              patches/rules_rust_windows_msvc_user_link_flags.patch | sort)"
+            test "${changed}" = "${expected}"
+          fi
+
+          bazel shutdown || true
+          output_base="$(cygpath -u "${BAZEL_OUTPUT_BASE}")"
+          rm -rf "${output_base}"
+          mkdir -p "${output_base}"
+
+      - name: Qualify native MSVC links and schema portability on exact SHA
+        env:
+          BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_API_KEY }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          ./.github/scripts/run-bazel-ci.sh \
+            --print-failed-action-summary \
+            --print-failed-test-logs \
+            --windows-msvc-host-platform \
+            --remote-download-toplevel \
+            -- \
+            test \
+            --platforms=//:windows_x86_64_msvc \
+            --skip_incompatible_explicit_targets \
+            --test_tag_filters=-argument-comment-lint \
+            --test_output=errors \
+            --build_metadata=COMMIT_SHA=${CANDIDATE_HEAD} \
+            -- \
+            //codex-rs/hepta-memory:all \
+            //codex-rs/hepta-types:all \
+            //codex-rs/uds:all \
+            //codex-rs/hepta-agentd:all
+
+          ./scripts/check-module-bazel-lock.sh
+          git diff --check
+          observed="$( { git diff --name-only HEAD; git ls-files --others --exclude-standard; } | sort -u)"
+          unexpected="$(printf '%s\n' "${observed}" | grep -Ev \
+            '^(.github/scripts/run-bazel-ci.sh|MODULE.bazel|MODULE.bazel.lock|codex-rs/hepta-memory/src/cognitive_store.rs|patches/BUILD.bazel|patches/rules_rust_windows_msvc_user_link_flags.patch)$' || true)"
+          test -z "${unexpected}"
+
+      - name: Lease-amend only when the qualified tree changed
+        shell: bash
+        run: |
+          set -euo pipefail
+          expected_parent=04f60466394a024c218ce66b1b32d1c42c462985
+          git fetch --no-tags origin \
+            "+${CANDIDATE_REF}:refs/remotes/origin/hepta-r7-prepublish-candidate"
+          test "$(git rev-parse refs/remotes/origin/hepta-r7-prepublish-candidate)" = "${CANDIDATE_HEAD}"
+          test "$(git rev-parse HEAD)" = "${CANDIDATE_HEAD}"
+          test "$(git rev-parse HEAD^)" = "${expected_parent}"
+          git diff --check
+          git add \
+            .github/scripts/run-bazel-ci.sh \
+            MODULE.bazel \
+            MODULE.bazel.lock \
+            codex-rs/hepta-memory/src/cognitive_store.rs \
+            patches/BUILD.bazel \
+            patches/rules_rust_windows_msvc_user_link_flags.patch
+          git diff --cached --check
+          test -z "$(git diff --name-only)"
+          test -z "$(git ls-files --others --exclude-standard)"
+
+          if git diff --cached --quiet; then
+            qualified_head="${CANDIDATE_HEAD}"
+          else
+            staged="$(git diff --cached --name-only | sort)"
+            expected="$(printf '%s\n' \
+              .github/scripts/run-bazel-ci.sh \
+              MODULE.bazel \
+              MODULE.bazel.lock \
+              codex-rs/hepta-memory/src/cognitive_store.rs \
+              patches/BUILD.bazel \
+              patches/rules_rust_windows_msvc_user_link_flags.patch | sort)"
+            test "${staged}" = "${expected}"
+            git config user.name hepta-gap-materializer
+            git config user.email hepta-gap-materializer@users.noreply.github.com
+            git commit --amend --signoff \
+              -m "fix(windows): stabilize native links and schema oracle" \
+              -m "Bind native MSVC C/C++ dependencies and SDK library roots into Windows Rust actions, normalize rules_rust direct-link spellings only for MSVC, and canonicalize only CRLF line endings before hashing SQLite schema definitions while rejecting bare carriage returns. Preserve the immutable single-parent candidate."
+            test "$(git rev-parse HEAD^)" = "${expected_parent}"
+            test "$(git rev-list --count "${expected_parent}"..HEAD)" = 1
+            qualified_head="$(git rev-parse HEAD)"
+            git push \
+              --force-with-lease="${CANDIDATE_REF}:${CANDIDATE_HEAD}" \
+              origin "HEAD:${CANDIDATE_REF}"
+          fi
+          printf 'QUALIFIED_HEAD=%s\n' "${qualified_head}" >> "${GITHUB_ENV}"
+          printf 'qualified exact candidate: %s\n' "${qualified_head}"
+
+      - name: Converge required checks, independent review request, and normal auto-merge
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TARGET_PR: "480"
+          EXPECTED_PARENT: "04f60466394a024c218ce66b1b32d1c42c462985"
+          OLD_CANDIDATE_HEAD: "05981ed1adfb931a87a47b0606f1cedaa69f123b"
+          EXPECTED_HEAD_REF: codex/hepta-all-gap-closure-20260908
+          MAX_WAIT_SECONDS: "12600"
+          POLL_SECONDS: "30"
+        shell: bash
+        run: python "${CONVERGENCE_WRAPPER}"
