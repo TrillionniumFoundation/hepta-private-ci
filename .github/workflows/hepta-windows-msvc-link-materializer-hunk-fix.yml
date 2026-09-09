@@ -1,0 +1,56 @@
+name: Hepta Windows MSVC materializer hunk fix
+
+on:
+  push:
+    branches:
+      - ops/hepta-windows-msvc-link-materializer-20260909-r1
+    paths:
+      - .github/workflows/hepta-windows-msvc-link-materializer-hunk-fix.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: hepta-windows-msvc-materializer-hunk-fix
+  cancel-in-progress: false
+
+jobs:
+  repair:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ops/hepta-windows-msvc-link-materializer-20260909-r1
+          fetch-depth: 2
+          persist-credentials: true
+
+      - name: Correct the generated unified-diff hunk and remove this controller
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD^)" = "74f31e7baa8a81928cf0732b9d9856236cb37b8f"
+
+          python3 - <<'PY'
+          from pathlib import Path
+
+          path = Path('.github/workflows/hepta-windows-msvc-link-materializer-20260909.yml')
+          text = path.read_text(encoding='utf-8')
+          old = "              '@@ -3047,5 +3047,33 @@',"
+          new = "              '@@ -3047,6 +3047,34 @@',"
+          if text.count(old) != 1:
+              raise SystemExit(f'expected exactly one stale hunk header, found {text.count(old)}')
+          path.write_text(text.replace(old, new), encoding='utf-8')
+          PY
+
+          git diff --check
+          git rm .github/workflows/hepta-windows-msvc-link-materializer-hunk-fix.yml
+          git add .github/workflows/hepta-windows-msvc-link-materializer-20260909.yml
+          test "$(git diff --cached --name-only | sort)" = "$(printf '%s\n' \
+            .github/workflows/hepta-windows-msvc-link-materializer-20260909.yml \
+            .github/workflows/hepta-windows-msvc-link-materializer-hunk-fix.yml | sort)"
+
+          git config user.name "hepta-gap-materializer"
+          git config user.email "hepta-gap-materializer@users.noreply.github.com"
+          git commit --signoff -m "fix(ops): correct rules_rust patch hunk counts"
+          git push origin HEAD:refs/heads/ops/hepta-windows-msvc-link-materializer-20260909-r1
