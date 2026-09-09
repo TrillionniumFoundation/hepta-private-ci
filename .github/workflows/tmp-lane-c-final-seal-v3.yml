@@ -1,0 +1,87 @@
+name: tmp-lane-c-final-seal-v3
+
+on:
+  push:
+    branches:
+      - codex/lane-c-full-gap-closure-20260910
+    paths:
+      - .github/workflows/tmp-lane-c-final-seal-v3.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: lane-c-final-seal-v3
+  cancel-in-progress: false
+
+jobs:
+  seal:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - name: Check out exact current branch
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 0
+
+      - name: Seal, commit, validate and publish
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch origin "${GITHUB_REF}:refs/remotes/origin/${GITHUB_REF_NAME}"
+          test "$(git rev-parse HEAD)" = "$(git rev-parse refs/remotes/origin/${GITHUB_REF_NAME})"
+
+          python3 - <<'PY'
+          from __future__ import annotations
+          import hashlib
+          import json
+          from pathlib import Path
+
+          root = Path.cwd()
+          path = root / "qualification/module-execution-dossiers/NATIVE_BINDINGS.json"
+          data = json.loads(path.read_text(encoding="utf-8"))
+          rows = data.get("observations")
+          if not isinstance(rows, list) or len(rows) != 40:
+              raise SystemExit("expected exactly 40 native source observations")
+          modules: set[str] = set()
+          for row in rows:
+              module = row.get("module")
+              source_path = row.get("path")
+              if not isinstance(module, str) or module in modules:
+                  raise SystemExit(f"invalid or duplicate module: {module!r}")
+              modules.add(module)
+              if not isinstance(source_path, str):
+                  raise SystemExit(f"missing source path for {module}")
+              source = root / source_path
+              if not source.is_file():
+                  raise SystemExit(f"missing source for {module}: {source_path}")
+              payload = source.read_bytes()
+              row["blobSha"] = hashlib.sha1(
+                  f"blob {len(payload)}\0".encode("ascii") + payload,
+                  usedforsecurity=False,
+              ).hexdigest()
+          path.write_text(json.dumps(data, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+          PY
+
+          find .github/workflows -maxdepth 1 -type f \
+            \( -name 'tmp-lane-c-*.yml' -o -name 'tmp-lane-c-*.yaml' \) -delete
+
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          git diff --cached --check
+          git commit -m 'chore(lane-c): seal exact source-binding ledger'
+          test -z "$(git status --porcelain)"
+
+          python3 qualification/module-execution-dossiers/implementation_contracts.py self-test
+          python3 qualification/module-execution-dossiers/implementation_contracts.py verify-repository
+          python3 scripts/hepta-readiness.py self-test
+          python3 scripts/hepta-readiness.py generate-status --check
+          python3 scripts/hepta-readiness.py verify
+          python3 scripts/hepta-implementation-dossiers.py self-test
+          python3 scripts/hepta-implementation-dossiers.py generate-status --check
+          python3 scripts/hepta-implementation-dossiers.py verify
+          git diff --check
+          test -z "$(git status --porcelain)"
+
+          git push origin "HEAD:${GITHUB_REF_NAME}"
