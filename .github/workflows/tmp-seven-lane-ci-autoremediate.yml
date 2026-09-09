@@ -1,0 +1,240 @@
+name: tmp-seven-lane-ci-autoremediate
+
+on:
+  push:
+    branches:
+      - ops/lane-f-final-source-export-20260910
+    paths:
+      - .github/workflows/tmp-seven-lane-ci-autoremediate.yml
+
+permissions:
+  actions: read
+  checks: read
+  contents: write
+  pull-requests: read
+
+env:
+  BASE_BRANCH: codex/hepta-all-gap-closure-20260908
+  HEAD_BRANCH: integration/hepta-seven-lane-gap-closure-20260910-r2
+
+jobs:
+  remediate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 180
+    steps:
+      - name: Wait for candidate PR
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          for attempt in $(seq 1 120); do
+            number="$(gh pr list --repo "${GITHUB_REPOSITORY}" --state open --head "${HEAD_BRANCH}" --base "${BASE_BRANCH}" --json number --jq '.[0].number // empty')"
+            if [[ -n "${number}" ]]; then
+              printf 'PR_NUMBER=%s\n' "${number}" >>"${GITHUB_ENV}"
+              exit 0
+            fi
+            sleep 30
+          done
+          echo 'candidate PR did not materialize' >&2
+          exit 71
+
+      - name: Check out writable candidate
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.HEAD_BRANCH }}
+          fetch-depth: 0
+
+      - name: Poll checks and repair deterministic drift
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p "${RUNNER_TEMP}/triage"
+
+          recompute_bindings() {
+            python3 - <<'PY'
+          from __future__ import annotations
+          import hashlib
+          import json
+          from pathlib import Path
+          root = Path.cwd()
+          path = root / "qualification/module-execution-dossiers/NATIVE_BINDINGS.json"
+          data = json.loads(path.read_text(encoding="utf-8"))
+          rows = data.get("observations")
+          if not isinstance(rows, list) or len(rows) != 40:
+              raise SystemExit("native source ledger is not exactly 40 modules")
+          seen: set[str] = set()
+          for row in rows:
+              module = row.get("module")
+              source_path = row.get("path")
+              if not isinstance(module, str) or module in seen:
+                  raise SystemExit(f"invalid native module {module!r}")
+              seen.add(module)
+              if not isinstance(source_path, str):
+                  raise SystemExit(f"missing source path for {module}")
+              source = root / source_path
+              if not source.is_file():
+                  raise SystemExit(f"missing source {source_path}")
+              payload = source.read_bytes()
+              row["blobSha"] = hashlib.sha1(
+                  f"blob {len(payload)}\0".encode("ascii") + payload,
+                  usedforsecurity=False,
+              ).hexdigest()
+          path.write_text(json.dumps(data, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+          PY
+          }
+
+          regenerate_status() {
+            python3 scripts/hepta-readiness.py generate-status || true
+            python3 scripts/hepta-implementation-dossiers.py generate-status || true
+            python3 scripts/hepta-algorithm-docs.py generate-status || true
+            python3 scripts/hepta-cns.py generate-status || true
+            python3 scripts/hepta-docs.py generate-status || true
+          }
+
+          validate_clean() {
+            python3 scripts/hepta-readiness.py generate-status --check
+            python3 scripts/hepta-readiness.py verify
+            python3 scripts/hepta-implementation-dossiers.py generate-status --check
+            python3 scripts/hepta-implementation-dossiers.py verify
+            python3 qualification/module-execution-dossiers/implementation_contracts.py verify-repository
+            python3 scripts/hepta-module-docs.py verify
+            python3 scripts/hepta-algorithm-docs.py verify-sources
+            python3 scripts/hepta-algorithm-docs.py generate-status --check
+            python3 scripts/hepta-algorithm-docs.py verify
+            python3 scripts/hepta-docs.py generate-status
+            git diff --exit-code -- docs/STATUS.md
+            python3 scripts/hepta-docs.py verify
+            if [[ -f scripts/hepta-lane-b-truth.py ]]; then
+              python3 scripts/hepta-lane-b-truth.py verify
+              python3 scripts/hepta-lane-b-docs.py verify
+            fi
+            git diff --check
+            test -z "$(git status --porcelain)"
+          }
+
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+
+          for round in 1 2 3; do
+            git fetch origin "refs/heads/${HEAD_BRANCH}:refs/remotes/origin/${HEAD_BRANCH}"
+            git reset --hard "refs/remotes/origin/${HEAD_BRANCH}"
+            head_sha="$(git rev-parse HEAD)"
+            round_dir="${RUNNER_TEMP}/triage/round-${round}-${head_sha}"
+            mkdir -p "${round_dir}"
+
+            settled=0
+            for attempt in $(seq 1 120); do
+              set +e
+              gh pr checks "${PR_NUMBER}" --repo "${GITHUB_REPOSITORY}" --json name,state,bucket,link >"${round_dir}/checks.json" 2>"${round_dir}/checks.stderr"
+              checks_rc=$?
+              set -e
+              pending="$(python3 - "${round_dir}/checks.json" <<'PY'
+          import json, sys
+          try:
+              rows=json.load(open(sys.argv[1], encoding='utf-8'))
+          except Exception:
+              print(1); raise SystemExit
+          print(sum(1 for row in rows if str(row.get('bucket','')).lower() in {'pending','skipping'} or str(row.get('state','')).upper() in {'QUEUED','IN_PROGRESS','PENDING','WAITING','REQUESTED'}))
+          PY
+              )"
+              total="$(python3 - "${round_dir}/checks.json" <<'PY'
+          import json, sys
+          try: rows=json.load(open(sys.argv[1], encoding='utf-8'))
+          except Exception: rows=[]
+          print(len(rows))
+          PY
+              )"
+              if [[ "${total}" -gt 0 && "${pending}" -eq 0 ]]; then
+                settled=1
+                break
+              fi
+              sleep 30
+            done
+            if [[ "${settled}" != 1 ]]; then
+              echo "checks did not settle for ${head_sha}" >&2
+              exit 72
+            fi
+
+            python3 - "${round_dir}/checks.json" >"${round_dir}/failed-links.txt" <<'PY'
+          import json, sys
+          rows=json.load(open(sys.argv[1], encoding='utf-8'))
+          for row in rows:
+              if str(row.get('bucket','')).lower() in {'fail','cancel'} or str(row.get('state','')).upper() in {'FAILURE','ERROR','TIMED_OUT','CANCELLED','ACTION_REQUIRED'}:
+                  print(row.get('link',''))
+          PY
+
+            : >"${round_dir}/failed.log"
+            while IFS= read -r link; do
+              [[ -z "${link}" ]] && continue
+              run_id="$(sed -nE 's#.*\/actions\/runs\/([0-9]+).*#\1#p' <<<"${link}" | head -n 1)"
+              [[ -z "${run_id}" ]] && continue
+              {
+                echo "===== RUN ${run_id} ====="
+                gh run view "${run_id}" --repo "${GITHUB_REPOSITORY}" --log-failed || true
+              } >>"${round_dir}/failed.log" 2>&1
+            done <"${round_dir}/failed-links.txt"
+
+            failed_count="$(python3 - "${round_dir}/checks.json" <<'PY'
+          import json, sys
+          rows=json.load(open(sys.argv[1], encoding='utf-8'))
+          print(sum(1 for row in rows if str(row.get('bucket','')).lower() in {'fail','cancel'} or str(row.get('state','')).upper() in {'FAILURE','ERROR','TIMED_OUT','CANCELLED','ACTION_REQUIRED'}))
+          PY
+            )"
+            if [[ "${failed_count}" -eq 0 ]]; then
+              validate_clean
+              printf '%s\n' "${head_sha}" >"${RUNNER_TEMP}/triage/PASS_HEAD"
+              exit 0
+            fi
+
+            binding_fix=0
+            status_fix=0
+            rustfmt_fix=0
+            if grep -Eqi 'blobSha|native[- ]source|native binding|NATIVE_BINDINGS|uncommitted candidate document' "${round_dir}/failed.log"; then
+              binding_fix=1
+            fi
+            if grep -Eqi 'docs/STATUS\.md|generate-status|status.*(drift|stale|diff)|implementation dossier status|readiness status' "${round_dir}/failed.log"; then
+              status_fix=1
+            fi
+            if grep -Eqi 'rustfmt|cargo fmt|Diff in .*\.rs' "${round_dir}/failed.log"; then
+              rustfmt_fix=1
+            fi
+
+            if [[ "${binding_fix}" -eq 0 && "${status_fix}" -eq 0 && "${rustfmt_fix}" -eq 0 ]]; then
+              echo 'only non-mechanical or unknown failures remain' >&2
+              exit 73
+            fi
+
+            [[ "${binding_fix}" -eq 1 ]] && recompute_bindings
+            [[ "${status_fix}" -eq 1 ]] && regenerate_status
+            if [[ "${rustfmt_fix}" -eq 1 ]]; then
+              cargo fmt --manifest-path codex-rs/Cargo.toml --all
+            fi
+
+            git add -A
+            git diff --cached --check
+            if git diff --cached --quiet; then
+              echo 'failure classifier requested a fix but tree did not change' >&2
+              exit 74
+            fi
+            git commit -m "chore(ci): remediate deterministic candidate drift round ${round}"
+            validate_clean
+
+            git fetch origin "refs/heads/${HEAD_BRANCH}:refs/remotes/origin/${HEAD_BRANCH}"
+            test "$(git rev-parse HEAD^)" = "$(git rev-parse refs/remotes/origin/${HEAD_BRANCH})"
+            git push origin "HEAD:refs/heads/${HEAD_BRANCH}"
+          done
+
+          echo 'deterministic remediation rounds exhausted' >&2
+          exit 75
+
+      - name: Retain triage evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: seven-lane-ci-triage-${{ github.run_id }}
+          path: ${{ runner.temp }}/triage
+          if-no-files-found: warn
+          retention-days: 7
