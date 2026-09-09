@@ -1,0 +1,234 @@
+name: Hepta final convergence staging
+
+on:
+  push:
+    branches:
+      - ops/hepta-final-convergence-controller-20260909-r1
+
+concurrency:
+  group: hepta-final-convergence-staging-r1
+  cancel-in-progress: false
+
+jobs:
+  audit:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    permissions:
+      actions: read
+      checks: read
+      contents: read
+      pull-requests: read
+      statuses: read
+    env:
+      HEPTA_PR_NUMBER: '480'
+      HEPTA_CONTROLLER_BRANCH: ops/hepta-final-convergence-controller-20260909-r1
+      HEPTA_AUDIT_OUT: ${{ runner.temp }}/hepta-final-convergence-audit
+      GITHUB_TOKEN: ${{ github.token }}
+    outputs:
+      eligible: ${{ steps.result.outputs.eligible }}
+      blocker_count: ${{ steps.result.outputs.blocker_count }}
+      head_sha: ${{ steps.result.outputs.head_sha }}
+      head_tree: ${{ steps.result.outputs.head_tree }}
+      base_ref: ${{ steps.result.outputs.base_ref }}
+    steps:
+      - name: Check out exact controller
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Execute live audit
+        id: execute
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$GITHUB_REF_NAME" = "$HEPTA_CONTROLLER_BRANCH"
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          python3 -m py_compile .github/scripts/hepta_final_convergence_audit.py
+          python3 .github/scripts/hepta_final_convergence_audit.py
+
+      - name: Export immutable audit identity
+        id: result
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY' >> "$GITHUB_OUTPUT"
+          import json
+          import os
+          from pathlib import Path
+          packet = json.loads((Path(os.environ['HEPTA_AUDIT_OUT']) / 'audit.json').read_text())
+          pr = packet['pullRequest']
+          print(f"eligible={str(packet['eligibleForConvergenceStaging']).lower()}")
+          print(f"blocker_count={packet['blockerCount']}")
+          print(f"head_sha={pr['headSha']}")
+          print(f"head_tree={pr['headTree']}")
+          print(f"base_ref={pr['baseRef']}")
+          PY
+
+      - name: Upload audit packet
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-final-convergence-stage-audit-${{ github.sha }}
+          path: ${{ env.HEPTA_AUDIT_OUT }}
+          if-no-files-found: error
+          retention-days: 30
+
+  stage:
+    if: needs.audit.outputs.eligible == 'true' && needs.audit.outputs.blocker_count == '0'
+    needs: audit
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    permissions:
+      contents: write
+      pull-requests: write
+    env:
+      GITHUB_TOKEN: ${{ github.token }}
+      REPOSITORY: ${{ github.repository }}
+      SOURCE_PR: '480'
+      SOURCE_HEAD: ${{ needs.audit.outputs.head_sha }}
+      SOURCE_TREE: ${{ needs.audit.outputs.head_tree }}
+      SOURCE_BASE_REF: ${{ needs.audit.outputs.base_ref }}
+      RESULT_BRANCH: candidate/hepta-main-tree-convergence-20260909
+      TARGET_BRANCH: main
+    steps:
+      - name: Download exact audit packet
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: hepta-final-convergence-stage-audit-${{ github.sha }}
+          path: ${{ runner.temp }}/audit
+
+      - name: Check out controller without executing repository code
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Revalidate immutable source and complete ref set
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch --force --no-tags origin '+refs/heads/*:refs/remotes/origin/*'
+          python3 - <<'PY'
+          from __future__ import annotations
+          import json
+          import os
+          import subprocess
+          from pathlib import Path
+
+          packet = json.loads((Path(os.environ['RUNNER_TEMP']) / 'audit' / 'audit.json').read_text())
+          expected = {item['branch']: item['tip'] for item in packet['branches']['records']}
+          raw = subprocess.run(
+              ['git', 'ls-remote', '--heads', 'origin'],
+              check=True, text=True, capture_output=True,
+          ).stdout
+          current = {}
+          for line in raw.splitlines():
+              sha, ref = line.split('\t', 1)
+              current[ref.removeprefix('refs/heads/')] = sha
+          if current != expected:
+              missing = sorted(set(expected) - set(current))
+              added = sorted(set(current) - set(expected))
+              moved = sorted(name for name in set(current) & set(expected) if current[name] != expected[name])
+              raise SystemExit(f'ref set drifted; missing={missing}; added={added}; moved={moved}')
+          if packet['blockerCount'] != 0 or not packet['eligibleForConvergenceStaging']:
+              raise SystemExit('audit packet is not eligible')
+          if packet['pullRequest']['headSha'] != os.environ['SOURCE_HEAD']:
+              raise SystemExit('source head output mismatch')
+          if packet['pullRequest']['headTree'] != os.environ['SOURCE_TREE']:
+              raise SystemExit('source tree output mismatch')
+          PY
+          test "$(git rev-parse "$SOURCE_HEAD^{tree}")" = "$SOURCE_TREE"
+          test -z "$(git ls-remote --heads origin "refs/heads/$RESULT_BRANCH")"
+          git merge-base --is-ancestor "refs/remotes/origin/$TARGET_BRANCH" "$SOURCE_HEAD"
+
+      - name: Create tree-preserving all-history convergence commit
+        id: candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          mapfile -t tips < <(
+            git ls-remote --heads origin \
+              | awk '{print $1}' \
+              | LC_ALL=C sort -u
+          )
+          args=("$SOURCE_TREE" -p "$SOURCE_HEAD")
+          for tip in "${tips[@]}"; do
+            if test "$tip" = "$SOURCE_HEAD"; then
+              continue
+            fi
+            if git merge-base --is-ancestor "$tip" "$SOURCE_HEAD"; then
+              continue
+            fi
+            args+=(-p "$tip")
+          done
+          git config user.name "hepta-convergence-controller"
+          git config user.email "hepta-convergence-controller@users.noreply.github.com"
+          candidate_sha="$({
+            printf '%s\n' \
+              'chore(repo): converge all reviewed branch histories onto main' \
+              '' \
+              'Preserve the exact qualified Hepta source tree while making every frozen live branch tip reachable from one convergence object. No stale branch tree is selected, no readiness flag is promoted, and no deployment, release, hardware, operator, or external-evidence authority is created.'
+          } | git commit-tree "${args[@]}")"
+          test "$(git rev-parse "$candidate_sha^{tree}")" = "$SOURCE_TREE"
+          test "$(git rev-parse "$candidate_sha^1")" = "$SOURCE_HEAD"
+          git push origin "$candidate_sha:refs/heads/$RESULT_BRANCH"
+          test "$(git ls-remote --heads origin "refs/heads/$RESULT_BRANCH" | awk '{print $1}')" = "$candidate_sha"
+          printf 'sha=%s\n' "$candidate_sha" >> "$GITHUB_OUTPUT"
+
+      - name: Open a draft main convergence PR
+        shell: bash
+        env:
+          CANDIDATE_SHA: ${{ steps.candidate.outputs.sha }}
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json
+          import os
+          import urllib.request
+
+          token = os.environ['GITHUB_TOKEN']
+          repo = os.environ['REPOSITORY']
+          body = {
+              'title': 'chore(repo): final all-branch history convergence to main',
+              'head': os.environ['RESULT_BRANCH'],
+              'base': os.environ['TARGET_BRANCH'],
+              'draft': True,
+              'body': (
+                  'This candidate was generated only after the fail-closed live audit returned zero blockers. '
+                  f"Its first parent is the qualified source `{os.environ['SOURCE_HEAD']}`, its tree is exactly "
+                  f"`{os.environ['SOURCE_TREE']}`, and all frozen branch tips are represented in Git ancestry. "
+                  'It grants no release, deployment, production, hardware, operator, or external-evidence authority. '
+                  'Keep Draft until exact-head and prospective-merge checks pass and fresh eligible non-author review approves the unchanged tuple.'
+              ),
+          }
+          request = urllib.request.Request(
+              f'https://api.github.com/repos/{repo}/pulls',
+              method='POST',
+              data=json.dumps(body).encode(),
+              headers={
+                  'Accept': 'application/vnd.github+json',
+                  'Authorization': f'Bearer {token}',
+                  'X-GitHub-Api-Version': '2022-11-28',
+                  'User-Agent': 'hepta-final-convergence-stager-v1',
+              },
+          )
+          with urllib.request.urlopen(request, timeout=30) as response:
+              result = json.load(response)
+          print(json.dumps({'number': result['number'], 'url': result['html_url'], 'head': result['head']['sha']}, sort_keys=True))
+          PY
+
+  hold:
+    if: always() && needs.audit.outputs.eligible != 'true'
+    needs: audit
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    permissions: {}
+    steps:
+      - name: Preserve fail-closed hold
+        shell: bash
+        run: |
+          printf 'convergence staging blocked: blocker_count=%s\n' "${{ needs.audit.outputs.blocker_count }}"
