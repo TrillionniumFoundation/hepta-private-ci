@@ -159,7 +159,9 @@ fn ledger_dataset_freeze_is_order_independent_and_rejects_duplicates() {
         Err(error) => panic!("reordered dataset freeze failed: {error}"),
     };
     assert_eq!(ordered.dataset_digest, reversed.dataset_digest);
-    assert_eq!(ordered.source_record_digests, vec![first, second]);
+    let mut expected = vec![first, second];
+    expected.sort_unstable();
+    assert_eq!(ordered.source_record_digests, expected);
 
     let mut duplicate = request;
     duplicate.source_record_digests = vec![first, first];
