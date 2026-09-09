@@ -1,0 +1,110 @@
+name: hepta-paper-external-gap-handoff
+
+on:
+  workflow_dispatch:
+    inputs:
+      gap:
+        description: Canonical external package to execute outside repository authority
+        required: true
+        type: choice
+        options:
+          - EXT-GOV-MAIN-001
+          - LEGACY-REPLAY-001
+          - EXT-HOST-CGROUP-001
+          - EXT-HOST-STORAGE-001
+          - EXT-KEY-OWNER-001
+          - EXT-CODEX-ROLE-001
+          - EXT-AUTHORITY-SET-001
+          - EXT-CUTOVER-SOAK-001
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-paper-external-gap-handoff-${{ github.ref }}-${{ inputs.gap }}
+  cancel-in-progress: false
+
+jobs:
+  emit-request:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Checkout exact public candidate
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
+        with:
+          repository: TrillionniumFoundation/hepta-paper
+          ref: 3ad568f523e5ae0d99f8e3ba3339cbf480f32327
+          fetch-depth: 1
+          persist-credentials: false
+          submodules: false
+
+      - name: Prove immutable source identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "3ad568f523e5ae0d99f8e3ba3339cbf480f32327"
+          test "$(git rev-parse HEAD^{tree})" = "de5c20b9e600740c8757ef923d6c3f4c78a398b4"
+          test -z "$(git status --porcelain=v1 --untracked-files=all)"
+
+      - name: Emit non-authorizing execution request
+        shell: bash
+        env:
+          GAP: ${{ inputs.gap }}
+        run: |
+          set -euo pipefail
+          case "$GAP" in
+            EXT-GOV-MAIN-001) ISSUE=25; SCHEMA=protected-main-ruleset-evidence-v1.schema.json ;;
+            LEGACY-REPLAY-001) ISSUE=28; SCHEMA=legacy-matrix-replay-closure-v1.schema.json ;;
+            EXT-HOST-CGROUP-001) ISSUE=17; SCHEMA=independent-linux-review-v1.schema.json ;;
+            EXT-HOST-STORAGE-001) ISSUE=12; SCHEMA=external-host-storage-package-v1.schema.json ;;
+            EXT-KEY-OWNER-001) ISSUE=14; SCHEMA=external-key-owner-drill-v1.schema.json ;;
+            EXT-CODEX-ROLE-001) ISSUE=21; SCHEMA=authenticated-codex-role-canary-v1.schema.json ;;
+            EXT-AUTHORITY-SET-001) ISSUE=22; SCHEMA=external-authority-set-v1.schema.json ;;
+            EXT-CUTOVER-SOAK-001) ISSUE=22; SCHEMA=production-cutover-soak-v1.schema.json ;;
+            *) echo 'unsupported gap' >&2; exit 2 ;;
+          esac
+          mkdir -p "$RUNNER_TEMP/hepta-paper-gap-request"
+          python3 - "$GAP" "$ISSUE" "$SCHEMA" > "$RUNNER_TEMP/hepta-paper-gap-request/request.v1.json" <<'PY'
+          import json, sys
+          gap, issue, schema = sys.argv[1:]
+          print(json.dumps({
+              "schema": "hepta-paper.external-gap-execution-request.v1",
+              "schemaVersion": 1,
+              "gap": gap,
+              "issue": int(issue),
+              "evidenceSchema": schema,
+              "subject": {
+                  "repository": "TrillionniumFoundation/hepta-paper",
+                  "repositoryId": 1349108143,
+                  "pullRequest": 116,
+                  "baseCommit": "7176fdad2d5fd8ae42b6e0b89c78783f938d8bc2",
+                  "headCommit": "3ad568f523e5ae0d99f8e3ba3339cbf480f32327",
+                  "headTree": "de5c20b9e600740c8757ef923d6c3f4c78a398b4",
+                  "prospectiveMerge": "0fa15a45b23979082bf12670c6f8f310e030bd22"
+              },
+              "requiredIssuer": "separately_controlled_external_authority",
+              "forbiddenIssuers": [
+                  "implementation-author",
+                  "repository-admin",
+                  "github-hosted-ci",
+                  "model",
+                  "fixture"
+              ],
+              "externalExecutionCompleted": False,
+              "independentAcceptanceCompleted": False,
+              "productionAuthorized": False,
+              "writerCutoverAuthorized": False,
+              "nodeRetirementAuthorized": False
+          }, sort_keys=True, separators=(",", ":")))
+          PY
+          sha256sum "$RUNNER_TEMP/hepta-paper-gap-request/request.v1.json" \
+            > "$RUNNER_TEMP/hepta-paper-gap-request/SHA256SUMS"
+
+      - name: Upload request only
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: hepta-paper-${{ inputs.gap }}-request-3ad568f
+          path: ${{ runner.temp }}/hepta-paper-gap-request
+          if-no-files-found: error
+          retention-days: 30
+          compression-level: 0
