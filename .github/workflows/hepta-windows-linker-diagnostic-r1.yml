@@ -1,0 +1,102 @@
+name: Hepta Windows linker diagnostic r1
+
+on:
+  push:
+    branches:
+      - ops/windows-linker-diagnostic-20260909-r1
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-windows-linker-diagnostic-r1
+  cancel-in-progress: false
+
+env:
+  SOURCE_SHA: 05981ed1adfb931a87a47b0606f1cedaa69f123b
+
+jobs:
+  diagnose:
+    runs-on: windows-latest
+    timeout-minutes: 75
+    environment:
+      name: bazel
+      deployment: false
+    steps:
+      - name: Checkout immutable candidate
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 2
+          persist-credentials: false
+
+      - name: Bind exact source
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${SOURCE_SHA}"
+          test "$(git rev-parse HEAD^)" = "04f60466394a024c218ce66b1b32d1c42c462985"
+          test "$(git rev-parse HEAD^{tree})" = "454061365d2c816598012c3a317e56bfe4ffa5cf"
+
+      - name: Prepare Bazel CI
+        uses: ./.github/actions/prepare-bazel-ci
+        with:
+          target: x86_64-pc-windows-msvc
+          cache-scope: bazel-windows-linker-diagnostic-r1
+
+      - name: Diagnose minimal Windows Rust link targets
+        id: diagnose
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -uo pipefail
+          mkdir -p "${RUNNER_TEMP}/hepta-windows-linker-diagnostic"
+          log="${RUNNER_TEMP}/hepta-windows-linker-diagnostic/full.log"
+          summary="${RUNNER_TEMP}/hepta-windows-linker-diagnostic/summary.txt"
+          : >"${log}"
+          : >"${summary}"
+          run_case() {
+            name="$1"; shift
+            echo "===== BEGIN ${name} =====" | tee -a "${log}"
+            set +e
+            "$@" 2>&1 | tee -a "${log}"
+            rc=${PIPESTATUS[0]}
+            set -e
+            printf '%s\t%s\n' "${name}" "${rc}" | tee -a "${summary}"
+            echo "===== END ${name} rc=${rc} =====" | tee -a "${log}"
+          }
+          set -e
+          run_case rustls-preinstalled ./.github/scripts/run-bazel-ci.sh --windows-msvc-host-platform -- build --platforms=//:windows_x86_64_msvc --verbose_failures --subcommands --sandbox_debug --remote_download_outputs=all -- //codex-rs/utils/rustls-provider:rustls-provider-preinstalled-test
+          run_case sqlx-local-consumer ./.github/scripts/run-bazel-ci.sh --windows-msvc-host-platform -- build --platforms=//:windows_x86_64_msvc --verbose_failures --subcommands --sandbox_debug --remote_download_outputs=all -- //codex-rs/state:state
+          python - <<'PY'
+          from pathlib import Path
+          import os, re
+          root = Path(os.environ['RUNNER_TEMP']) / 'hepta-windows-linker-diagnostic'
+          text = (root / 'full.log').read_text(encoding='utf-8', errors='replace')
+          patterns = re.compile(r'(?i)(error:|fatal error|linking with|linker command failed|LNK\d+|unresolved external|undefined reference|bcrypt|sqlx|libcrypto|rust-lld|process exited|exit code)')
+          lines = text.splitlines(); selected = []
+          for i, line in enumerate(lines):
+              if patterns.search(line): selected.extend(lines[max(0, i-3):min(len(lines), i+8)])
+          compact=[]
+          for line in selected:
+              if not compact or compact[-1] != line: compact.append(line)
+          (root / 'error-context.txt').write_text('\n'.join(compact[-3000:]) + '\n', encoding='utf-8')
+          PY
+
+      - name: Upload complete Windows diagnostic
+        if: always()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: hepta-windows-linker-diagnostic-r1-${{ env.SOURCE_SHA }}
+          path: ${{ runner.temp }}/hepta-windows-linker-diagnostic
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Require diagnostic packet
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -s "${RUNNER_TEMP}/hepta-windows-linker-diagnostic/summary.txt"
+          test -s "${RUNNER_TEMP}/hepta-windows-linker-diagnostic/error-context.txt"
+          cat "${RUNNER_TEMP}/hepta-windows-linker-diagnostic/summary.txt"
