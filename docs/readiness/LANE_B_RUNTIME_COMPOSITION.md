@@ -14,6 +14,7 @@ The canonical module guides remain the target architecture. `LANE_B_IMPLEMENTATI
 
 The following claims remain false until exact evidence is committed and independently issued where required:
 
+- production activation passed;
 - every target design operation is implemented;
 - every module has a real product consumer;
 - a provider or model executed;
