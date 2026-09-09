@@ -1,0 +1,82 @@
+name: Hepta final convergence audit
+
+on:
+  push:
+    branches:
+      - ops/hepta-final-convergence-controller-20260909-r1
+
+permissions:
+  actions: read
+  checks: read
+  contents: read
+  pull-requests: read
+  statuses: read
+
+concurrency:
+  group: hepta-final-convergence-audit-r1
+  cancel-in-progress: false
+
+jobs:
+  audit:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    env:
+      HEPTA_PR_NUMBER: '480'
+      HEPTA_CONTROLLER_BRANCH: ops/hepta-final-convergence-controller-20260909-r1
+      HEPTA_AUDIT_OUT: ${{ runner.temp }}/hepta-final-convergence-audit
+      GITHUB_TOKEN: ${{ github.token }}
+    steps:
+      - name: Check out exact controller source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Bind controller identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$GITHUB_REF_NAME" = "$HEPTA_CONTROLLER_BRANCH"
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test "$(git diff-tree --no-commit-id --name-only -r HEAD | LC_ALL=C sort)" = ".github/workflows/hepta-final-convergence-audit.yml"
+          test -f .github/scripts/hepta_final_convergence_audit.py
+          python3 -m py_compile .github/scripts/hepta_final_convergence_audit.py
+
+      - name: Execute live exact-source audit
+        id: audit
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 .github/scripts/hepta_final_convergence_audit.py
+
+      - name: Seal retained audit output
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -s "$HEPTA_AUDIT_OUT/audit.json"
+          test -s "$HEPTA_AUDIT_OUT/audit.md"
+          test -s "$HEPTA_AUDIT_OUT/SHA256SUMS"
+          (
+            cd "$HEPTA_AUDIT_OUT"
+            sha256sum --check SHA256SUMS
+          )
+          cat "$HEPTA_AUDIT_OUT/audit.md"
+
+      - name: Upload immutable audit packet
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-final-convergence-audit-${{ github.sha }}
+          path: ${{ env.HEPTA_AUDIT_OUT }}
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Enforce fail-closed admission result
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "${{ steps.audit.outcome }}" = success
