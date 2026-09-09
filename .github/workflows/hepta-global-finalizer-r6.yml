@@ -1,0 +1,62 @@
+name: Hepta final all-package convergence r6
+
+on:
+  push:
+    branches:
+      - ops/hepta-global-gap-closure-controller-20260910-r1
+    paths:
+      - .github/workflows/hepta-global-finalizer-r6.yml
+      - scripts/hepta-global-finalizer-r6.py
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: read
+  actions: read
+
+concurrency:
+  group: hepta-global-finalizer-r6
+  cancel-in-progress: false
+
+jobs:
+  final-all-package-qualification:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 360
+    env:
+      HEPTA_FINAL_TARGET: integration/hepta-all-gap-closure-20260910-r6
+      CARGO_TERM_COLOR: always
+      RUST_BACKTRACE: '1'
+    steps:
+      - name: Check out exact finalizer source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Bind and syntax-check finalizer
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${GITHUB_SHA}"
+          git rev-parse HEAD HEAD^{tree}
+          python3 -m py_compile scripts/hepta-global-finalizer-r6.py
+          rustc --version
+          cargo --version
+          python3 --version
+          cp scripts/hepta-global-finalizer-r6.py "${RUNNER_TEMP}/hepta-global-finalizer-r6.py"
+
+      - name: Qualify every canonical Hepta workspace package
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 "${RUNNER_TEMP}/hepta-global-finalizer-r6.py"
+
+      - name: Upload final qualification receipts
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-global-finalizer-r6-${{ github.run_id }}-${{ github.run_attempt }}
+          path: qualification/global-gap-closure-final-r6
+          if-no-files-found: warn
+          retention-days: 14
