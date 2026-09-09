@@ -1,0 +1,221 @@
+name: tmp-gap-driven-pr-replay
+
+on:
+  push:
+    branches:
+      - ops/lane-f-final-source-export-20260910
+    paths:
+      - .github/workflows/tmp-gap-driven-pr-replay.yml
+
+permissions:
+  contents: write
+  pull-requests: read
+
+env:
+  CANDIDATE_BRANCH: integration/hepta-seven-lane-gap-closure-20260910-r2
+  BASE_BRANCH: codex/hepta-all-gap-closure-20260908
+
+jobs:
+  replay:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 150
+    steps:
+      - name: Wait for current candidate
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          for attempt in $(seq 1 120); do
+            if gh api "repos/${GITHUB_REPOSITORY}/git/ref/heads/${CANDIDATE_BRANCH}" >/dev/null 2>&1; then
+              exit 0
+            fi
+            sleep 30
+          done
+          exit 131
+
+      - name: Check out current candidate
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.CANDIDATE_BRANCH }}
+          fetch-depth: 0
+
+      - name: Select PR heads by exact gap-to-source overlap
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          git fetch origin '+refs/heads/*:refs/remotes/origin/*' --prune
+          original="$(git rev-parse HEAD)"
+          test "${original}" = "$(git rev-parse refs/remotes/origin/${CANDIDATE_BRANCH})"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          mkdir -p "${RUNNER_TEMP}/gap-replay" qualification/convergence
+
+          gh pr list --repo "${GITHUB_REPOSITORY}" --state open --limit 100 \
+            --json number,title,headRefName,baseRefName,updatedAt,isDraft \
+            >"${RUNNER_TEMP}/gap-replay/open-prs.json"
+
+          python3 - <<'PY'
+          from __future__ import annotations
+          import json
+          from pathlib import Path
+          from typing import Any
+
+          root=Path.cwd()
+          statuses={'planned','source_implemented_execution_pending','source_implemented_semantic_review_pending'}
+          ignored={'.git','node_modules','target','bazel-bin','bazel-out','bazel-testlogs'}
+          bindings_path=root/'qualification/module-execution-dossiers/NATIVE_BINDINGS.json'
+          binding_rows=json.loads(bindings_path.read_text(encoding='utf-8')).get('observations',[])
+          module_roots={}
+          for row in binding_rows:
+              module=row.get('module'); path=row.get('path')
+              if isinstance(module,str) and isinstance(path,str):
+                  parts=Path(path).parts
+                  module_roots[module]=Path(*parts[:2]).as_posix() if len(parts)>=2 else path
+          gaps=[]
+          def walk(value:Any,pointer:str,file:Path,parent:dict[str,Any]|None=None)->None:
+              if isinstance(value,dict):
+                  for key,item in value.items():
+                      child=f"{pointer}/{key.replace('~','~0').replace('/','~1')}"
+                      if isinstance(item,str) and item in statuses:
+                          identity=next((value.get(k) for k in ('id','workPackageId','packageId','module','name') if isinstance(value.get(k),str)),None)
+                          module=value.get('module') if isinstance(value.get('module'),str) else None
+                          gaps.append({'file':file.as_posix(),'pointer':child,'status':item,'identity':identity,'module':module,'root':module_roots.get(module or '')})
+                      walk(item,child,file,value)
+              elif isinstance(value,list):
+                  for index,item in enumerate(value): walk(item,f'{pointer}/{index}',file,parent)
+          for file in sorted(root.rglob('*.json')):
+              if any(part in ignored for part in file.parts): continue
+              try: data=json.loads(file.read_text(encoding='utf-8'))
+              except Exception: continue
+              walk(data,'',file.relative_to(root))
+          Path('/tmp/gap-ledger.json').write_text(json.dumps(gaps,indent=2,ensure_ascii=False)+'\n',encoding='utf-8')
+          PY
+
+          python3 - "${RUNNER_TEMP}/gap-replay/open-prs.json" >"${RUNNER_TEMP}/gap-replay/pr-numbers.txt" <<'PY'
+          import json,sys
+          from datetime import datetime,timezone
+          rows=json.load(open(sys.argv[1],encoding='utf-8'))
+          cutoff=datetime(2026,9,9,tzinfo=timezone.utc)
+          for row in rows:
+              head=row.get('headRefName') or ''
+              if head.startswith(('ops/','archive/','backup/')) or head=='integration/hepta-seven-lane-gap-closure-20260910-r2': continue
+              if not head.startswith(('codex/','integration/','fix/','reviewer/')): continue
+              try: stamp=datetime.fromisoformat((row.get('updatedAt') or '').replace('Z','+00:00'))
+              except Exception: continue
+              if stamp<cutoff: continue
+              print(row['number'])
+          PY
+
+          : >"${RUNNER_TEMP}/gap-replay/selected.tsv"
+          while IFS= read -r number; do
+            gh pr view "${number}" --repo "${GITHUB_REPOSITORY}" --json number,title,headRefName,baseRefName,files \
+              >"${RUNNER_TEMP}/gap-replay/pr-${number}.json"
+            python3 - "/tmp/gap-ledger.json" "${RUNNER_TEMP}/gap-replay/pr-${number}.json" >>"${RUNNER_TEMP}/gap-replay/selected.tsv" <<'PY'
+          import json,re,sys
+          gaps=json.load(open(sys.argv[1],encoding='utf-8'))
+          pr=json.load(open(sys.argv[2],encoding='utf-8'))
+          title=(pr.get('title') or '')+' '+(pr.get('headRefName') or '')
+          files=[row.get('path','') for row in pr.get('files',[])]
+          reasons=[]
+          for gap in gaps:
+              identity=gap.get('identity') or ''
+              module=gap.get('module') or ''
+              root=gap.get('root') or ''
+              if identity and len(identity)>=4 and re.search(re.escape(identity),title,re.I):
+                  reasons.append('identity:'+identity)
+              if module and re.search(re.escape(module),title,re.I):
+                  reasons.append('module:'+module)
+              if root and any(path==root or path.startswith(root.rstrip('/')+'/') for path in files):
+                  reasons.append('root:'+root)
+              gap_file=gap.get('file') or ''
+              if gap_file and gap_file in files:
+                  reasons.append('ledger:'+gap_file)
+          if reasons:
+              print(f"{pr['number']}\t{pr['headRefName']}\t{';'.join(sorted(set(reasons)))}\t{pr.get('title','').replace(chr(9),' ')}")
+          PY
+          done <"${RUNNER_TEMP}/gap-replay/pr-numbers.txt"
+
+          cp "${RUNNER_TEMP}/gap-replay/selected.tsv" qualification/convergence/GAP_DRIVEN_CURRENT_PRS.tsv
+
+          while IFS=$'\t' read -r number branch reason title; do
+            [[ -z "${branch}" ]] && continue
+            ref="refs/remotes/origin/${branch}"
+            git show-ref --verify --quiet "${ref}" || { echo "missing ref ${branch}" >&2; exit 132; }
+            git merge-base --is-ancestor "${ref}" HEAD && continue
+            echo "GAP_REPLAY #${number} ${branch} ${reason}"
+            if git merge --no-ff --no-edit "${ref}"; then continue; fi
+            mapfile -t conflicts < <(git diff --name-only --diff-filter=U)
+            safe=1
+            for file in "${conflicts[@]}"; do
+              case "${file}" in
+                docs/STATUS.md|qualification/module-execution-dossiers/NATIVE_BINDINGS.json|qualification/convergence/*.json|qualification/convergence/*.tsv)
+                  git checkout --ours -- "${file}"; git add "${file}" ;;
+                *) echo "UNRESOLVED_GAP_PR_CONFLICT #${number} ${branch} ${file}" >&2; safe=0 ;;
+              esac
+            done
+            if [[ "${safe}" != 1 ]]; then git merge --abort || true; exit 133; fi
+            git commit --no-edit
+          done <"${RUNNER_TEMP}/gap-replay/selected.tsv"
+
+          python3 - <<'PY'
+          from __future__ import annotations
+          import hashlib,json
+          from pathlib import Path
+          root=Path.cwd(); path=root/'qualification/module-execution-dossiers/NATIVE_BINDINGS.json'
+          data=json.loads(path.read_text(encoding='utf-8')); rows=data.get('observations')
+          if not isinstance(rows,list) or len(rows)!=40: raise SystemExit('native ledger must contain exactly 40 modules')
+          seen=set()
+          for row in rows:
+              module=row.get('module'); source_path=row.get('path')
+              if not isinstance(module,str) or module in seen: raise SystemExit(f'invalid module {module!r}')
+              seen.add(module)
+              if not isinstance(source_path,str): raise SystemExit(f'missing path for {module}')
+              source=root/source_path
+              if not source.is_file(): raise SystemExit(f'missing source {source_path}')
+              payload=source.read_bytes()
+              row['blobSha']=hashlib.sha1(f'blob {len(payload)}\0'.encode('ascii')+payload,usedforsecurity=False).hexdigest()
+          path.write_text(json.dumps(data,indent=2,ensure_ascii=False)+'\n',encoding='utf-8')
+          PY
+
+          find .github/workflows -maxdepth 1 -type f \( -name 'tmp-*.yml' -o -name 'tmp-*.yaml' \) -delete
+          python3 scripts/hepta-readiness.py generate-status || true
+          python3 scripts/hepta-implementation-dossiers.py generate-status || true
+          python3 scripts/hepta-algorithm-docs.py generate-status || true
+          python3 scripts/hepta-cns.py generate-status || true
+          python3 scripts/hepta-docs.py generate-status || true
+          git add -A
+          git diff --cached --check
+          if ! git diff --cached --quiet; then git commit -m 'chore(convergence): replay gap-overlapping current PR heads'; fi
+          test -z "$(git status --porcelain)"
+
+          python3 scripts/hepta-readiness.py generate-status --check
+          python3 scripts/hepta-readiness.py verify
+          python3 scripts/hepta-implementation-dossiers.py generate-status --check
+          python3 scripts/hepta-implementation-dossiers.py verify
+          python3 qualification/module-execution-dossiers/implementation_contracts.py verify-repository
+          python3 scripts/hepta-module-docs.py verify
+          python3 scripts/hepta-algorithm-docs.py verify-sources
+          python3 scripts/hepta-algorithm-docs.py generate-status --check
+          python3 scripts/hepta-algorithm-docs.py verify
+          python3 scripts/hepta-docs.py generate-status
+          git diff --exit-code -- docs/STATUS.md
+          python3 scripts/hepta-docs.py verify
+          if [[ -f scripts/hepta-lane-b-truth.py ]]; then python3 scripts/hepta-lane-b-truth.py verify; python3 scripts/hepta-lane-b-docs.py verify; fi
+          git diff --check
+          test -z "$(git status --porcelain)"
+
+          git fetch origin "refs/heads/${CANDIDATE_BRANCH}:refs/remotes/origin/${CANDIDATE_BRANCH}"
+          test "$(git rev-parse refs/remotes/origin/${CANDIDATE_BRANCH})" = "${original}"
+          git push origin "HEAD:refs/heads/${CANDIDATE_BRANCH}"
+
+      - name: Retain gap-driven replay evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: gap-driven-pr-replay-${{ github.run_id }}
+          path: ${{ runner.temp }}/gap-replay
+          if-no-files-found: warn
+          retention-days: 14
