@@ -1,0 +1,57 @@
+name: tmp-enable-final-automerge-v2-20260910
+
+on:
+  push:
+    branches:
+      - codex/hepta-all-gap-closure-20260908
+    paths:
+      - .github/workflows/tmp-enable-final-automerge-v2-20260910.yml
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: tmp-enable-final-automerge-v2-20260910
+  cancel-in-progress: false
+
+jobs:
+  enable-clean-publish:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - name: Enable policy-respecting auto-merge
+        shell: bash
+        run: |
+          set -euo pipefail
+          integration_pr="$(gh pr list --repo "$GITHUB_REPOSITORY" --state open --head integration/all-lanes-gap-closure-20260910-r2 --json number --jq '.[0].number // empty')"
+          test -n "$integration_pr"
+          gh pr ready "$integration_pr" --repo "$GITHUB_REPOSITORY" || true
+          gh pr merge "$integration_pr" --repo "$GITHUB_REPOSITORY" --auto --merge
+          echo "AUTO_MERGE_ENABLED integration_pr=$integration_pr"
+
+          parent_state="$(gh pr view 480 --repo "$GITHUB_REPOSITORY" --json state --jq .state)"
+          if test "$parent_state" = OPEN; then
+            gh pr ready 480 --repo "$GITHUB_REPOSITORY" || true
+            gh pr merge 480 --repo "$GITHUB_REPOSITORY" --auto --merge
+            echo "AUTO_MERGE_ENABLED parent_pr=480"
+          fi
+
+      - name: Check out latest parent carrier
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 2
+
+      - name: Remove all temporary controllers
+        shell: bash
+        run: |
+          set -euo pipefail
+          find .github/workflows -maxdepth 1 -type f -name 'tmp-*.yml' -print -delete
+          git add -A
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'chore(ci): remove final auto-merge controllers'
+          git show --check --oneline --no-renames HEAD
+          git push origin HEAD:codex/hepta-all-gap-closure-20260908
