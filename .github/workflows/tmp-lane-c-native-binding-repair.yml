@@ -1,0 +1,47 @@
+name: tmp-lane-c-native-binding-repair
+
+on:
+  push:
+    branches:
+      - codex/lane-c-full-gap-closure-20260910
+    paths:
+      - .github/workflows/tmp-lane-c-native-binding-repair.yml
+
+permissions:
+  contents: write
+
+jobs:
+  repair:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Check out exact carrier
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 2
+
+      - name: Repair, verify and publish clean tree
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD^)" = "79f7c072844626d7391d81c4adb06e24a5a56de0"
+          python3 - <<'PY'
+          from pathlib import Path
+          path = Path("qualification/module-execution-dossiers/NATIVE_BINDINGS.json")
+          text = path.read_text(encoding="utf-8")
+          old = '"blobSha": "f4fca6216821c994a401442cf06f69a3d082"'
+          new = '"blobSha": "f4fca6216821c994a401e401442cf06f69a3d082"'
+          if text.count(old) != 1:
+              raise SystemExit("infer-worker stale binding anchor drifted")
+          path.write_text(text.replace(old, new, 1), encoding="utf-8")
+          PY
+          rm .github/workflows/tmp-lane-c-native-binding-repair.yml
+          python3 qualification/module-execution-dossiers/implementation_contracts.py verify-repository
+          python3 scripts/hepta-readiness.py generate-status --check
+          python3 scripts/hepta-readiness.py verify
+          git diff --check
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add qualification/module-execution-dossiers/NATIVE_BINDINGS.json .github/workflows/tmp-lane-c-native-binding-repair.yml
+          git commit -m 'chore(lane-c): restore exact infer-worker source binding'
+          git push origin HEAD:codex/lane-c-full-gap-closure-20260910
