@@ -153,6 +153,10 @@ jobs:
           test "$(git rev-parse "${MERGE_COMMIT}^1")" = "${BASE_COMMIT}"
           test "$(git rev-parse "${MERGE_COMMIT}^2")" = "${SOURCE_COMMIT}"
           test "$(git rev-parse "${MERGE_COMMIT}^{tree}")" = "${MERGE_TREE}"
+          {
+            printf 'MERGE_TREE=%s\n' "${MERGE_TREE}"
+            printf 'MERGE_COMMIT=%s\n' "${MERGE_COMMIT}"
+          } >> "${GITHUB_ENV}"
           git diff --cached --check
           git diff --exit-code
 
@@ -204,4 +208,5 @@ jobs:
             -- --check
           git diff --cached --check
           git diff --exit-code
-          test -z "$(git status --porcelain --untracked-files=no)"
+          test "$(git write-tree)" = "${MERGE_TREE}"
+          test "$(git rev-parse "${MERGE_COMMIT}^{tree}")" = "${MERGE_TREE}"
