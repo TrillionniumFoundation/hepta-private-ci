@@ -1,0 +1,122 @@
+name: Hepta Lane E terminal autofix
+
+on:
+  push:
+    branches:
+      - codex/hepta-lane-e-gap-closure-20260910
+    paths:
+      - .github/workflows/hepta-lane-e-terminal-autofix.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: hepta-lane-e-terminal-autofix
+  cancel-in-progress: false
+
+jobs:
+  repair:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 180
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Install pinned Rust toolchain
+        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: 1.95.0
+          components: clippy,rustfmt
+
+      - name: Apply machine-applicable Lane E repairs
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo clippy --fix --locked --allow-dirty --allow-staged \
+            -p codex-hepta-learning-ledger \
+            -p codex-hepta-learning-artifacts \
+            -p codex-hepta-bellman-operator \
+            -p codex-hepta-intelligence-eval \
+            -p codex-hepta-shadow-qualification \
+            --all-targets -- -D warnings
+          cargo fmt \
+            --package codex-hepta-learning-ledger \
+            --package codex-hepta-learning-artifacts \
+            --package codex-hepta-bellman-operator \
+            --package codex-hepta-intelligence-eval \
+            --package codex-hepta-shadow-qualification
+
+      - name: Verify repaired exact source
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta-lane-e-closure.py self-test
+          python3 scripts/hepta-lane-e-closure.py verify
+          cargo check --manifest-path codex-rs/Cargo.toml --locked \
+            -p codex-hepta-learning-ledger \
+            -p codex-hepta-learning-artifacts \
+            -p codex-hepta-bellman-operator \
+            -p codex-hepta-intelligence-eval \
+            -p codex-hepta-shadow-qualification \
+            --all-targets
+          cargo test --manifest-path codex-rs/Cargo.toml --locked \
+            -p codex-hepta-learning-ledger \
+            -p codex-hepta-learning-artifacts \
+            -p codex-hepta-bellman-operator \
+            -p codex-hepta-intelligence-eval \
+            -- --nocapture
+          cargo test --manifest-path codex-rs/Cargo.toml --locked \
+            -p codex-hepta-shadow-qualification \
+            lane_e_causal_candidate_chain_is_digest_bound_and_deny_all \
+            -- --nocapture --test-threads=1
+          cargo clippy --manifest-path codex-rs/Cargo.toml --locked \
+            -p codex-hepta-learning-ledger \
+            -p codex-hepta-learning-artifacts \
+            -p codex-hepta-bellman-operator \
+            -p codex-hepta-intelligence-eval \
+            -p codex-hepta-shadow-qualification \
+            --all-targets -- -D warnings
+          cargo fmt --manifest-path codex-rs/Cargo.toml \
+            --package codex-hepta-learning-ledger \
+            --package codex-hepta-learning-artifacts \
+            --package codex-hepta-bellman-operator \
+            --package codex-hepta-intelligence-eval \
+            --package codex-hepta-shadow-qualification \
+            -- --check
+          git diff --check
+
+      - name: Commit deterministic repair
+        shell: bash
+        run: |
+          set -euo pipefail
+          mapfile -t changed < <(git status --porcelain | sed 's/^...//')
+          for path in "${changed[@]}"; do
+            case "$path" in
+              codex-rs/hepta-learning-ledger/*|\
+              codex-rs/hepta-learning-artifacts/*|\
+              codex-rs/hepta-bellman-operator/*|\
+              codex-rs/hepta-intelligence-eval/*|\
+              codex-rs/hepta-shadow-qualification/*|\
+              codex-rs/Cargo.lock) ;;
+              *) echo "unexpected generated path: $path" >&2; exit 1 ;;
+            esac
+          done
+          git add codex-rs/Cargo.lock \
+            codex-rs/hepta-learning-ledger \
+            codex-rs/hepta-learning-artifacts \
+            codex-rs/hepta-bellman-operator \
+            codex-rs/hepta-intelligence-eval \
+            codex-rs/hepta-shadow-qualification
+          if git diff --cached --quiet; then
+            echo 'No source repair required.'
+            exit 0
+          fi
+          git diff --cached --check
+          git config user.name hepta-lane-e-bot
+          git config user.email hepta-lane-e-bot@users.noreply.github.com
+          git commit -m 'chore(lane-e): close terminal lint and formatting blockers'
+          git push origin HEAD:codex/hepta-lane-e-gap-closure-20260910
