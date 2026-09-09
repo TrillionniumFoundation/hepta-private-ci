@@ -1,0 +1,127 @@
+name: tmp-seven-lane-candidate-pr-controller
+
+on:
+  push:
+    branches:
+      - ops/lane-f-final-source-export-20260910
+    paths:
+      - .github/workflows/tmp-seven-lane-candidate-pr-controller.yml
+
+permissions:
+  contents: read
+  pull-requests: write
+
+env:
+  BASE_BRANCH: codex/hepta-all-gap-closure-20260908
+  HEAD_BRANCH: integration/hepta-seven-lane-gap-closure-20260910-r2
+
+jobs:
+  qualify-and-publish:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 50
+    steps:
+      - name: Wait for exact candidate branch
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          for attempt in $(seq 1 60); do
+            if gh api "repos/${GITHUB_REPOSITORY}/git/ref/heads/${HEAD_BRANCH}" >/tmp/ref.json 2>/dev/null; then
+              exit 0
+            fi
+            sleep 30
+          done
+          echo "candidate branch did not materialize" >&2
+          exit 61
+
+      - name: Check out exact candidate
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.HEAD_BRANCH }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Verify candidate repository gates
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -z "$(find .github/workflows -maxdepth 1 -type f \( -name 'tmp-*.yml' -o -name 'tmp-*.yaml' \) -print -quit)"
+          python3 scripts/hepta-readiness.py self-test
+          python3 scripts/hepta-readiness.py generate-status --check
+          python3 scripts/hepta-readiness.py verify
+          python3 scripts/hepta-implementation-dossiers.py self-test
+          python3 scripts/hepta-implementation-dossiers.py generate-status --check
+          python3 scripts/hepta-implementation-dossiers.py verify
+          python3 scripts/hepta-technical-closure.py self-test
+          python3 scripts/hepta-technical-closure.py verify
+          python3 qualification/module-execution-dossiers/implementation_contracts.py self-test
+          python3 qualification/module-execution-dossiers/implementation_contracts.py verify-repository
+          python3 scripts/hepta-module-docs.py self-test
+          python3 scripts/hepta-module-docs.py verify
+          python3 scripts/hepta-algorithm-docs.py self-test
+          python3 scripts/hepta-algorithm-docs.py verify-sources
+          python3 scripts/hepta-algorithm-docs.py generate-status --check
+          python3 scripts/hepta-algorithm-docs.py verify
+          python3 scripts/hepta-cns.py self-test
+          python3 scripts/hepta-cns.py generate-status --check
+          python3 scripts/hepta-cns.py verify
+          python3 scripts/hepta-hnmf.py self-test
+          python3 scripts/hepta-hnmf.py verify
+          python3 scripts/hepta-docs.py self-test
+          python3 scripts/hepta-docs.py generate-status
+          git diff --exit-code -- docs/STATUS.md
+          python3 scripts/hepta-docs.py verify
+          if [[ -f scripts/hepta-lane-b-truth.py ]]; then
+            python3 scripts/hepta-lane-b-truth.py self-test
+            python3 -m unittest scripts/test_hepta_lane_b_truth.py
+            python3 scripts/hepta-lane-b-truth.py verify
+            python3 scripts/hepta-lane-b-docs.py verify
+          fi
+          git diff --check
+          test -z "$(git status --porcelain)"
+
+      - name: Create or refresh draft PR
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          head_sha="$(git rev-parse HEAD)"
+          base_sha="$(git rev-parse "origin/${BASE_BRANCH}")"
+          body="${RUNNER_TEMP}/body.md"
+          {
+            echo '## Exact convergence tuple'
+            echo
+            printf -- '- base: `%s` / `%s`\n' "${BASE_BRANCH}" "${base_sha}"
+            printf -- '- head: `%s` / `%s`\n' "${HEAD_BRANCH}" "${head_sha}"
+            echo
+            echo '## Included source heads'
+            echo
+            echo '```json'
+            cat qualification/convergence/SEVEN_LANE_SOURCE_HEADS.json
+            echo '```'
+            echo
+            echo '## Repository-controlled qualification'
+            echo
+            echo '- 40-module native source bindings recomputed from the exact candidate tree.'
+            echo '- readiness, implementation dossiers, technical closure, module docs, algorithm docs, CNS/HNMF, repository docs and Lane B truth validators passed before this PR was created or refreshed.'
+            echo '- temporary remediation workflows are absent from the candidate tree.'
+            echo
+            echo '## Claim boundary'
+            echo
+            echo 'This draft does not self-issue production activation, independent acceptance, external-provider effects, hardware safety, longitudinal efficacy, promotion or release. Those gates remain separately evidenced and governed.'
+          } >"${body}"
+
+          number="$(gh pr list --repo "${GITHUB_REPOSITORY}" --state open --head "${HEAD_BRANCH}" --base "${BASE_BRANCH}" --json number --jq '.[0].number // empty')"
+          if [[ -z "${number}" ]]; then
+            gh pr create \
+              --repo "${GITHUB_REPOSITORY}" \
+              --base "${BASE_BRANCH}" \
+              --head "${HEAD_BRANCH}" \
+              --title 'chore(convergence): qualify sealed seven-lane candidate' \
+              --body-file "${body}" \
+              --draft
+          else
+            gh pr edit "${number}" --repo "${GITHUB_REPOSITORY}" --body-file "${body}"
+          fi
