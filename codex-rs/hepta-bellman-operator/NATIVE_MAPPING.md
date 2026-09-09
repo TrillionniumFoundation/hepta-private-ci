@@ -1,9 +1,9 @@
 # `learning.operator` native implementation mapping
 
 This file separates deterministic target construction, applicability admission,
-sensor geometry, Bellman reference evaluation and world-model estimation. No
-symbol in this crate is an online policy, artifact selector or production
-writer.
+sensor geometry, Bellman reference evaluation, simplest-sufficient tabular
+learning and world-model estimation. No symbol in this crate is an online
+policy, artifact selector or production writer.
 
 ## Compatibility and naming
 
@@ -24,6 +24,8 @@ interpreted as the Hölder/operator qualification profile.
 | admit smooth-axis applicability | `validate_applicability_certificate` | `src/reference.rs` | implemented |
 | build fixed sensor core | `build_sensor_core` | `src/reference.rs` | implemented |
 | execute tabular Bellman reference | `evaluate_bellman_reference` | `src/reference.rs` | implemented |
+| fit complete simplest-sufficient operator | `fit_tabular_operator` | `src/learned.rs` | implemented |
+| predict only a fitted sensor/action cell | `predict_tabular_operator` | `src/learned.rs` | implemented |
 | admit rank/gain/shape/OOD/error budget | `admit_operator_regularity` | `src/reference.rs` | implemented |
 | fit action-conditioned tabular dynamics | `fit_transition_model` | `src/world_model.rs` | implemented |
 | predict supported transition distribution | `predict_transition` | `src/world_model.rs` | implemented |
@@ -43,12 +45,26 @@ The manifest records selected points, fill distance, separation radius, mesh
 ratio and a hull digest. A zero separation radius or mesh ratio above the pilot
 bound fails.
 
-## Bellman reference and regularity
+## Bellman reference, learned baseline and regularity
 
 `evaluate_bellman_reference` requires the complete Cartesian product of the
 registered sensor and action identities. Missing or duplicate cells fail. It
 computes Q32 targets, deterministic greedy actions and action gaps; ties break by
 canonical action ID. This reference is the oracle for any later learned model.
+
+`fit_tabular_operator` is the first source-complete trainable operator profile.
+It canonicalizes a frozen sensor-by-action grid, validates every sample and
+requires a configurable positive minimum sample count for every grid cell. The
+artifact stores each cell's mean, minimum, maximum, sample count and evidence
+digest. Caller order cannot change the result. `predict_tabular_operator`
+returns only an explicitly fitted cell; an unknown sensor or action is OOD. Its
+output is marked both learned and synthetic and retains `DENY_ALL` authority.
+
+This profile deliberately implements the simplest sufficient learner. A neural
+or low-rank tensor candidate is not required merely because the architecture
+permits one. Such a candidate needs a new immutable training/runtime profile and
+must independently justify itself against the deterministic and tabular
+baselines.
 
 `admit_operator_regularity` intersects:
 
@@ -80,8 +96,7 @@ A production integration must still provide:
 
 1. authenticated applicability and regularity evidence;
 2. immutable dataset and artifact lineage;
-3. actual model/training code, optimizer, precision, device and runtime tuple
-   when a learned model is introduced;
+3. actual training code, profile, precision, device and runtime tuple;
 4. target-host training and inference measurements;
 5. held-out one-step and multistep calibration, change-point and OOD evidence;
 6. independent future-time evaluation, retention and rollback;
@@ -97,6 +112,7 @@ Focused tests live in:
 
 - `src/lib_tests.rs`;
 - `src/reference_tests.rs`;
+- `src/learned_tests.rs`;
 - `src/world_model_tests.rs`.
 
 Cross-crate composition is exercised by
