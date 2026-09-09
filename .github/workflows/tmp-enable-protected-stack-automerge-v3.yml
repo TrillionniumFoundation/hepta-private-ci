@@ -1,0 +1,59 @@
+name: tmp-enable-protected-stack-automerge-v3
+
+on:
+  push:
+    branches:
+      - ops/lane-f-final-source-export-20260910
+    paths:
+      - .github/workflows/tmp-enable-protected-stack-automerge-v3.yml
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: tmp-enable-protected-stack-automerge-v3
+  cancel-in-progress: false
+
+jobs:
+  enable-and-clean:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - name: Enable policy-respecting auto-merge in stack order
+        shell: bash
+        run: |
+          set -euo pipefail
+          integration_pr="$(gh pr list --repo "$GITHUB_REPOSITORY" --state open --head integration/all-lanes-gap-closure-20260910-r2 --json number --jq '.[0].number // empty')"
+          if test -z "$integration_pr"; then
+            echo "r2 integration PR is not published" >&2
+            exit 1
+          fi
+          gh pr ready "$integration_pr" --repo "$GITHUB_REPOSITORY" || true
+          gh pr merge "$integration_pr" --repo "$GITHUB_REPOSITORY" --auto --merge
+          echo "AUTO_MERGE_ENABLED integration_pr=$integration_pr"
+
+          parent_state="$(gh pr view 480 --repo "$GITHUB_REPOSITORY" --json state --jq .state)"
+          if test "$parent_state" = OPEN; then
+            gh pr ready 480 --repo "$GITHUB_REPOSITORY" || true
+            gh pr merge 480 --repo "$GITHUB_REPOSITORY" --auto --merge
+            echo "AUTO_MERGE_ENABLED parent_pr=480"
+          fi
+
+      - name: Check out ops carrier
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 2
+
+      - name: Remove ops controller
+        shell: bash
+        run: |
+          set -euo pipefail
+          git rm -f .github/workflows/tmp-enable-protected-stack-automerge-v3.yml
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'chore(ci): remove protected auto-merge controller'
+          git show --check --oneline --no-renames HEAD
+          git push origin HEAD:ops/lane-f-final-source-export-20260910
