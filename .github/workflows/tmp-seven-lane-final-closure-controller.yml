@@ -1,0 +1,191 @@
+name: tmp-seven-lane-final-closure-controller
+
+on:
+  push:
+    branches:
+      - ops/lane-f-final-source-export-20260910
+    paths:
+      - .github/workflows/tmp-seven-lane-final-closure-controller.yml
+
+permissions:
+  actions: read
+  checks: read
+  contents: read
+  pull-requests: write
+
+env:
+  BASE_BRANCH: codex/hepta-all-gap-closure-20260908
+  HEAD_BRANCH: integration/hepta-seven-lane-gap-closure-20260910-r2
+
+jobs:
+  decide:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 180
+    steps:
+      - name: Wait for convergence and remediation rounds
+        shell: bash
+        run: sleep 1800
+
+      - name: Resolve candidate PR
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          for attempt in $(seq 1 60); do
+            number="$(gh pr list --repo "${GITHUB_REPOSITORY}" --state open --head "${HEAD_BRANCH}" --base "${BASE_BRANCH}" --json number --jq '.[0].number // empty')"
+            if [[ -n "${number}" ]]; then
+              printf 'PR_NUMBER=%s\n' "${number}" >>"${GITHUB_ENV}"
+              exit 0
+            fi
+            sleep 30
+          done
+          exit 121
+
+      - name: Check out exact current candidate
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.HEAD_BRANCH }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Audit exact structured closure state
+        id: audit
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from __future__ import annotations
+          import json
+          import os
+          from collections import Counter
+          from pathlib import Path
+          from typing import Any
+
+          root=Path.cwd()
+          statuses={
+              'planned',
+              'source_implemented_execution_pending',
+              'source_implemented_semantic_review_pending',
+              'blocked_external',
+          }
+          ignored={'.git','node_modules','target','bazel-bin','bazel-out','bazel-testlogs'}
+          rows=[]
+          def walk(value:Any,pointer:str,file:Path)->None:
+              if isinstance(value,dict):
+                  for key,item in value.items():
+                      child=f"{pointer}/{key.replace('~','~0').replace('/','~1')}"
+                      if isinstance(item,str) and item in statuses:
+                          identity=next((value.get(k) for k in ('id','workPackageId','packageId','module','name') if isinstance(value.get(k),str)),None)
+                          rows.append({'file':file.as_posix(),'pointer':child,'status':item,'identity':identity})
+                      walk(item,child,file)
+              elif isinstance(value,list):
+                  for index,item in enumerate(value): walk(item,f'{pointer}/{index}',file)
+          for file in sorted(root.rglob('*.json')):
+              if any(part in ignored for part in file.parts): continue
+              try: data=json.loads(file.read_text(encoding='utf-8'))
+              except Exception: continue
+              walk(data,'',file.relative_to(root))
+          counts=Counter(r['status'] for r in rows)
+          repository=counts['planned']+counts['source_implemented_execution_pending']
+          review=counts['source_implemented_semantic_review_pending']
+          external=counts['blocked_external']
+          temp=list((root/'.github/workflows').glob('tmp-*.y*ml'))
+          report={
+              'candidateSha':os.popen('git rev-parse HEAD').read().strip(),
+              'repositoryControlledOpen':repository,
+              'semanticReviewOpen':review,
+              'externalOpen':external,
+              'temporaryWorkflows':sorted(p.relative_to(root).as_posix() for p in temp),
+              'counts':dict(counts),
+              'entries':rows,
+          }
+          Path(os.environ['RUNNER_TEMP'],'final-closure.json').write_text(json.dumps(report,indent=2,ensure_ascii=False)+'\n',encoding='utf-8')
+          with open(os.environ['GITHUB_OUTPUT'],'a',encoding='utf-8') as out:
+              out.write(f'repository={repository}\nreview={review}\nexternal={external}\ntemp={len(temp)}\n')
+          PY
+
+      - name: Wait for all candidate checks to settle
+        id: checks
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p "${RUNNER_TEMP}/final-checks"
+          settled=0
+          for attempt in $(seq 1 180); do
+            gh pr checks "${PR_NUMBER}" --repo "${GITHUB_REPOSITORY}" --json name,state,bucket,link >"${RUNNER_TEMP}/final-checks/checks.json" 2>/dev/null || true
+            read -r total pending failed <<<"$(python3 - "${RUNNER_TEMP}/final-checks/checks.json" <<'PY'
+          import json,sys
+          try: rows=json.load(open(sys.argv[1],encoding='utf-8'))
+          except Exception: rows=[]
+          pending=sum(1 for r in rows if str(r.get('bucket','')).lower() in {'pending','skipping'} or str(r.get('state','')).upper() in {'QUEUED','IN_PROGRESS','PENDING','WAITING','REQUESTED'})
+          failed=sum(1 for r in rows if str(r.get('bucket','')).lower() in {'fail','cancel'} or str(r.get('state','')).upper() in {'FAILURE','ERROR','TIMED_OUT','CANCELLED','ACTION_REQUIRED'})
+          print(len(rows),pending,failed)
+          PY
+            )"
+            if [[ "${total}" -gt 0 && "${pending}" -eq 0 ]]; then settled=1; break; fi
+            sleep 30
+          done
+          test "${settled}" = 1
+          printf 'failed=%s\ntotal=%s\n' "${failed}" "${total}" >>"${GITHUB_OUTPUT}"
+
+      - name: Publish final closure decision
+        if: always()
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPOSITORY_OPEN: ${{ steps.audit.outputs.repository }}
+          REVIEW_OPEN: ${{ steps.audit.outputs.review }}
+          EXTERNAL_OPEN: ${{ steps.audit.outputs.external }}
+          TEMP_OPEN: ${{ steps.audit.outputs.temp }}
+          FAILED_CHECKS: ${{ steps.checks.outputs.failed }}
+          TOTAL_CHECKS: ${{ steps.checks.outputs.total }}
+        run: |
+          set -euo pipefail
+          marker='<!-- hepta-final-closure-controller -->'
+          body="${RUNNER_TEMP}/final-decision.md"
+          head_sha="$(git rev-parse HEAD)"
+          closed=false
+          if [[ "${REPOSITORY_OPEN:-1}" == 0 && "${REVIEW_OPEN:-1}" == 0 && "${EXTERNAL_OPEN:-1}" == 0 && "${TEMP_OPEN:-1}" == 0 && "${FAILED_CHECKS:-1}" == 0 && "${TOTAL_CHECKS:-0}" -gt 0 ]]; then
+            closed=true
+          fi
+          {
+            echo "${marker}"
+            echo '## Final closure controller'
+            echo
+            printf -- '- candidate: `%s`\n' "${head_sha}"
+            printf -- '- candidate checks: `%s` total / `%s` failed\n' "${TOTAL_CHECKS:-unknown}" "${FAILED_CHECKS:-unknown}"
+            printf -- '- repository-controlled structured gaps: `%s`\n' "${REPOSITORY_OPEN:-unknown}"
+            printf -- '- semantic-review gaps: `%s`\n' "${REVIEW_OPEN:-unknown}"
+            printf -- '- external gaps: `%s`\n' "${EXTERNAL_OPEN:-unknown}"
+            printf -- '- temporary workflows in candidate: `%s`\n' "${TEMP_OPEN:-unknown}"
+            printf -- '- all gaps closed: **%s**\n' "${closed}"
+            echo
+            echo 'No repository source, CI result, or controller can self-issue missing independent, external, hardware, longitudinal, promotion, or release evidence.'
+          } >"${body}"
+          comment_id="$(gh api "repos/${GITHUB_REPOSITORY}/issues/${PR_NUMBER}/comments" --paginate --jq ".[] | select(.body | contains(\"${marker}\")) | .id" | head -n1)"
+          if [[ -n "${comment_id}" ]]; then
+            gh api --method PATCH "repos/${GITHUB_REPOSITORY}/issues/comments/${comment_id}" -F "body=@${body}"
+          else
+            gh pr comment "${PR_NUMBER}" --repo "${GITHUB_REPOSITORY}" --body-file "${body}"
+          fi
+          if [[ "${closed}" == true ]]; then
+            gh pr ready "${PR_NUMBER}" --repo "${GITHUB_REPOSITORY}"
+            gh pr merge "${PR_NUMBER}" --repo "${GITHUB_REPOSITORY}" --auto --merge
+          else
+            exit 122
+          fi
+
+      - name: Retain final decision evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: seven-lane-final-closure-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/final-closure.json
+            ${{ runner.temp }}/final-checks
+            ${{ runner.temp }}/final-decision.md
+          if-no-files-found: warn
+          retention-days: 30
