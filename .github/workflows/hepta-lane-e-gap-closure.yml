@@ -23,15 +23,20 @@ concurrency:
   group: hepta-lane-e-gap-closure-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
+env:
+  SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+  TARGET_BRANCH: codex/hepta-main-convergence-20260909
+
 jobs:
   rust-closure:
     runs-on: ubuntu-24.04
-    timeout-minutes: 90
+    timeout-minutes: 120
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           fetch-depth: 0
           persist-credentials: false
+          ref: ${{ env.SOURCE_SHA }}
 
       - name: Install pinned Rust toolchain
         uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
@@ -43,8 +48,15 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          test "$(git rev-parse HEAD)" = "${GITHUB_SHA}"
+          test "$(git rev-parse HEAD)" = "${SOURCE_SHA}"
           git rev-parse HEAD HEAD^{tree}
+
+      - name: Closed-world Lane E verification
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta-lane-e-closure.py self-test
+          python3 scripts/hepta-lane-e-closure.py verify
 
       - name: Locked all-target compilation
         working-directory: codex-rs
@@ -54,9 +66,10 @@ jobs:
           -p codex-hepta-learning-artifacts
           -p codex-hepta-bellman-operator
           -p codex-hepta-intelligence-eval
+          -p codex-hepta-shadow-qualification
           --all-targets
 
-      - name: Lane E regression tests
+      - name: Lane E owner regression tests
         working-directory: codex-rs
         run: >-
           cargo test --locked
@@ -66,6 +79,14 @@ jobs:
           -p codex-hepta-intelligence-eval
           -- --nocapture
 
+      - name: Cross-crate causal learning closure
+        working-directory: codex-rs
+        run: >-
+          cargo test --locked
+          -p codex-hepta-shadow-qualification
+          lane_e_causal_candidate_chain_is_digest_bound_and_deny_all
+          -- --nocapture --test-threads=1
+
       - name: Strict Lane E lint
         working-directory: codex-rs
         run: >-
@@ -74,6 +95,7 @@ jobs:
           -p codex-hepta-learning-artifacts
           -p codex-hepta-bellman-operator
           -p codex-hepta-intelligence-eval
+          -p codex-hepta-shadow-qualification
           --all-targets -- -D warnings
 
       - name: Formatting and clean source
@@ -86,7 +108,100 @@ jobs:
             --package codex-hepta-learning-artifacts \
             --package codex-hepta-bellman-operator \
             --package codex-hepta-intelligence-eval \
+            --package codex-hepta-shadow-qualification \
             -- --check
           git diff --check
+          git diff --exit-code
+          test -z "$(git status --porcelain --untracked-files=no)"
+
+  synthetic-merge:
+    needs: rust-closure
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+          ref: ${{ env.SOURCE_SHA }}
+
+      - name: Install pinned Rust toolchain
+        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: 1.95.0
+          components: rustfmt
+
+      - name: Materialize ordered-parent synthetic merge
+        shell: bash
+        run: |
+          set -euo pipefail
+          SOURCE_COMMIT="$(git rev-parse HEAD)"
+          test "${SOURCE_COMMIT}" = "${SOURCE_SHA}"
+          git fetch --no-tags origin "${TARGET_BRANCH}"
+          BASE_COMMIT="$(git rev-parse FETCH_HEAD)"
+          git checkout --detach "${BASE_COMMIT}"
+          git -c user.name=hepta-lane-e-ci \
+            -c user.email=hepta-lane-e-ci@users.noreply.github.com \
+            merge --no-commit --no-ff "${SOURCE_COMMIT}"
+          MERGE_TREE="$(git write-tree)"
+          MERGE_COMMIT="$(printf '%s\n' 'Lane E synthetic merge qualification' | \
+            git -c user.name=hepta-lane-e-ci \
+              -c user.email=hepta-lane-e-ci@users.noreply.github.com \
+              commit-tree "${MERGE_TREE}" -p "${BASE_COMMIT}" -p "${SOURCE_COMMIT}")"
+          printf 'base=%s\nsource=%s\nmerge=%s\ntree=%s\n' \
+            "${BASE_COMMIT}" "${SOURCE_COMMIT}" "${MERGE_COMMIT}" "${MERGE_TREE}"
+          test "$(git rev-parse "${MERGE_COMMIT}^1")" = "${BASE_COMMIT}"
+          test "$(git rev-parse "${MERGE_COMMIT}^2")" = "${SOURCE_COMMIT}"
+          test "$(git rev-parse "${MERGE_COMMIT}^{tree}")" = "${MERGE_TREE}"
+          git diff --cached --check
+          git diff --exit-code
+
+      - name: Verify merged closed world
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta-lane-e-closure.py verify
+
+      - name: Compile merged candidate
+        working-directory: codex-rs
+        run: >-
+          cargo check --locked
+          -p codex-hepta-learning-ledger
+          -p codex-hepta-learning-artifacts
+          -p codex-hepta-bellman-operator
+          -p codex-hepta-intelligence-eval
+          -p codex-hepta-shadow-qualification
+          --all-targets
+
+      - name: Test merged owner crates
+        working-directory: codex-rs
+        run: >-
+          cargo test --locked
+          -p codex-hepta-learning-ledger
+          -p codex-hepta-learning-artifacts
+          -p codex-hepta-bellman-operator
+          -p codex-hepta-intelligence-eval
+          -- --nocapture
+
+      - name: Test merged cross-crate closure
+        working-directory: codex-rs
+        run: >-
+          cargo test --locked
+          -p codex-hepta-shadow-qualification
+          lane_e_causal_candidate_chain_is_digest_bound_and_deny_all
+          -- --nocapture --test-threads=1
+
+      - name: Verify merged formatting and index stability
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo fmt --manifest-path codex-rs/Cargo.toml \
+            --package codex-hepta-learning-ledger \
+            --package codex-hepta-learning-artifacts \
+            --package codex-hepta-bellman-operator \
+            --package codex-hepta-intelligence-eval \
+            --package codex-hepta-shadow-qualification \
+            -- --check
+          git diff --cached --check
           git diff --exit-code
           test -z "$(git status --porcelain --untracked-files=no)"
