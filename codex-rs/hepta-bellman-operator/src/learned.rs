@@ -145,8 +145,7 @@ pub fn fit_tabular_operator(
     }
     normalize_ids(&mut plan.sensor_ids)?;
     normalize_ids(&mut plan.action_ids)?;
-    plan.samples
-        .sort_by_key(|sample| sample.sample_id.clone());
+    plan.samples.sort_by_key(|sample| sample.sample_id.clone());
     if let Some(adjacent) = plan
         .samples
         .windows(2)

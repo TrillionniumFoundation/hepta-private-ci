@@ -42,7 +42,11 @@ fn op_03_high_fit_without_retention_is_insufficient() {
             baseline_id: id("deterministic-baseline"),
             claim_scope: EvaluationClaimScopeV1::SystemLongitudinal,
             generator: actor("operator-trainer", "trainer-credential", "trainer-key"),
-            evaluator: actor("operator-evaluator", "evaluator-credential", "evaluator-key"),
+            evaluator: actor(
+                "operator-evaluator",
+                "evaluator-credential",
+                "evaluator-key",
+            ),
             plan_digest: digest("frozen-plan"),
             objective_digest: digest("objective"),
             estimate_receipt_digest: digest("excellent-in-sample-fit"),

@@ -210,7 +210,7 @@ fn lane_e_causal_candidate_chain_is_digest_bound_and_deny_all() {
 
     let artifact_id = id("candidate-1");
     let producer_id = generator.principal_id.clone();
-    let mut withdrawal_registry = DatasetWithdrawalRegistry::new();
+    let withdrawal_registry = DatasetWithdrawalRegistry::new();
     let artifact = match withdrawal_registry.admit_manifest(
         LearningArtifactManifestV2 {
             artifact_id: artifact_id.clone(),
