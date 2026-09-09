@@ -1,0 +1,91 @@
+name: Hepta Lane E final mechanical repair r2
+
+on:
+  push:
+    branches:
+      - codex/hepta-lane-e-gap-closure-20260910
+    paths:
+      - .github/workflows/hepta-lane-e-final-repair-r2.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: hepta-lane-e-final-mechanical-repair-r2
+  cancel-in-progress: false
+
+jobs:
+  repair:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Install pinned Rust toolchain
+        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: 1.95.0
+          components: rustfmt
+
+      - name: Apply idempotent final repairs
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+
+          replacements = {
+              Path('codex-rs/hepta-bellman-operator/src/learned.rs'): [
+                  ('fn normalize_ids(values: &mut Vec<StableId>) -> Result<(), LearnedOperatorError> {',
+                   'fn normalize_ids(values: &mut [StableId]) -> Result<(), LearnedOperatorError> {'),
+              ],
+              Path('codex-rs/hepta-bellman-operator/src/reference.rs'): [
+                  ('fn normalize_ids(values: &mut Vec<StableId>) -> Result<(), OperatorClosureError> {',
+                   'fn normalize_ids(values: &mut [StableId]) -> Result<(), OperatorClosureError> {'),
+              ],
+              Path('codex-rs/hepta-shadow-qualification/src/lane_e_closure_tests.rs'): [
+                  ('let mut withdrawal_registry = DatasetWithdrawalRegistry::new();',
+                   'let withdrawal_registry = DatasetWithdrawalRegistry::new();'),
+              ],
+          }
+          for path, pairs in replacements.items():
+              text = path.read_text(encoding='utf-8')
+              for old, new in pairs:
+                  text = text.replace(old, new)
+              path.write_text(text, encoding='utf-8')
+          PY
+
+          cargo fmt --manifest-path codex-rs/Cargo.toml \
+            --package codex-hepta-learning-ledger \
+            --package codex-hepta-learning-artifacts \
+            --package codex-hepta-bellman-operator \
+            --package codex-hepta-intelligence-eval \
+            --package codex-hepta-shadow-qualification
+
+          for stale in \
+            .github/workflows/hepta-lane-e-final-lint-fix.yml \
+            .github/workflows/hepta-lane-e-autofix.yml \
+            .github/workflows/hepta-lane-e-materialize-generated.yml; do
+            if test -e "$stale"; then
+              git rm -f "$stale"
+            fi
+          done
+          git rm -f .github/workflows/hepta-lane-e-final-repair-r2.yml
+          git diff --check
+
+      - name: Commit repaired candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          git add -A
+          if git diff --cached --quiet; then
+            exit 0
+          fi
+          git config user.name hepta-lane-e-bot
+          git config user.email hepta-lane-e-bot@users.noreply.github.com
+          git commit -m 'chore(lane-e): close final lint and formatting blockers'
+          git push origin HEAD:codex/hepta-lane-e-gap-closure-20260910
