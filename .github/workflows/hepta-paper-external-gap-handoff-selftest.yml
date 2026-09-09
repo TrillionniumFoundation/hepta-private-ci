@@ -1,0 +1,87 @@
+name: hepta-paper-external-gap-handoff-selftest
+
+on:
+  push:
+    branches:
+      - codex/hepta-paper-external-gap-orchestrator-20260909
+  pull_request:
+    paths:
+      - .github/workflows/hepta-paper-external-gap-handoff.yml
+      - .github/workflows/hepta-paper-external-gap-handoff-selftest.yml
+      - docs/hepta-paper-external-gap-orchestrator.md
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Checkout exact change
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
+        with:
+          persist-credentials: false
+          fetch-depth: 1
+
+      - name: Validate closed non-authority contract
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+
+          workflow = Path('.github/workflows/hepta-paper-external-gap-handoff.yml')
+          document = Path('docs/hepta-paper-external-gap-orchestrator.md')
+          assert workflow.is_file()
+          assert document.is_file()
+          text = workflow.read_text(encoding='utf-8')
+          doc = document.read_text(encoding='utf-8')
+          required = [
+              '3ad568f523e5ae0d99f8e3ba3339cbf480f32327',
+              'de5c20b9e600740c8757ef923d6c3f4c78a398b4',
+              '0fa15a45b23979082bf12670c6f8f310e030bd22',
+              'EXT-GOV-MAIN-001',
+              'LEGACY-REPLAY-001',
+              'EXT-HOST-CGROUP-001',
+              'EXT-HOST-STORAGE-001',
+              'EXT-KEY-OWNER-001',
+              'EXT-CODEX-ROLE-001',
+              'EXT-AUTHORITY-SET-001',
+              'EXT-CUTOVER-SOAK-001',
+              'requiredIssuer',
+              'separately_controlled_external_authority',
+              'externalExecutionCompleted',
+              'independentAcceptanceCompleted',
+              'productionAuthorized',
+              'writerCutoverAuthorized',
+              'nodeRetirementAuthorized',
+          ]
+          for marker in required:
+              assert marker in text, marker
+          for marker in required[:11]:
+              assert marker in doc, marker
+          forbidden = [
+              'contents: write',
+              'actions: write',
+              'pull-requests: write',
+              'id-token: write',
+              '${{ secrets.',
+              'repository_dispatch',
+              'schedule:',
+          ]
+          for marker in forbidden:
+              assert marker not in text, marker
+          assert 'workflow_dispatch:' in text
+          assert 'permissions:\n  contents: read' in text
+          print('hepta_paper_external_gap_handoff_valid_non_authorizing')
+          PY
+
+      - name: Verify no credential or authority material
+        shell: bash
+        run: |
+          set -euo pipefail
+          ! grep -RInE --exclude='hepta-paper-external-gap-handoff-selftest.yml' \
+            '(BEGIN (RSA|OPENSSH|PRIVATE) KEY|AKIA[0-9A-Z]{16}|gh[pousr]_[A-Za-z0-9]{20,}|productionAuthorized[[:space:]]*:[[:space:]]*true|externalExecutionCompleted[[:space:]]*:[[:space:]]*true)' \
+            .github/workflows/hepta-paper-external-gap-handoff.yml \
+            docs/hepta-paper-external-gap-orchestrator.md
