@@ -1,4 +1,4 @@
-name: Bootstrap Lane F full gap closure
+name: Materialize and verify Lane F gap closure
 
 on:
   push:
@@ -10,32 +10,57 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
 
 concurrency:
-  group: lane-f-bootstrap-${{ github.ref }}
+  group: lane-f-materializer-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  materialize-verify-publish:
+  materialize-verify:
     runs-on: ubuntu-24.04
-    timeout-minutes: 60
+    timeout-minutes: 120
     steps:
-      - name: Check out exact bootstrap candidate
+      - name: Check out exact source
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           ref: ${{ github.sha }}
           fetch-depth: 0
-          persist-credentials: true
+          persist-credentials: false
 
-      - name: Verify and extract immutable overlay
+      - name: Validate and extract source-bound overlay
         shell: bash
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test -z "$(git status --porcelain)"
           cat .lane-f-bootstrap/part-* > /tmp/lane-f-overlay.tar.gz
-          echo "a5743f201c82118e390fff7128f9304ccae82f1c33fdc2d41c7349d7a266d2bc  /tmp/lane-f-overlay.tar.gz" | sha256sum -c -
-          tar -xzf /tmp/lane-f-overlay.tar.gz -C .
+          ARCHIVE_SHA="$(sha256sum /tmp/lane-f-overlay.tar.gz | awk '{print $1}')"
+          printf 'ARCHIVE_SHA=%s\n' "$ARCHIVE_SHA" >> "$GITHUB_ENV"
+          gzip -t /tmp/lane-f-overlay.tar.gz
+          python3 - <<'PY'
+          from pathlib import Path, PurePosixPath
+          import tarfile
+
+          archive = Path('/tmp/lane-f-overlay.tar.gz')
+          with tarfile.open(archive, 'r:gz') as bundle:
+              members = bundle.getmembers()
+              if not members:
+                  raise SystemExit('overlay archive is empty')
+              for member in members:
+                  path = PurePosixPath(member.name)
+                  if (
+                      path.is_absolute()
+                      or '..' in path.parts
+                      or not path.parts
+                      or path.parts[0] == '.git'
+                      or member.issym()
+                      or member.islnk()
+                      or not (member.isfile() or member.isdir())
+                  ):
+                      raise SystemExit(f'unsafe overlay member: {member.name!r}')
+              bundle.extractall('.', members=members, filter='data')
+          PY
 
       - name: Materialize explicit prompt profile boundary
         shell: bash
@@ -43,9 +68,10 @@ jobs:
           set -euo pipefail
           python3 - <<'PY'
           from pathlib import Path
-          path = Path("codex-rs/hepta-prompt-optimizer/src/lib.rs")
-          text = path.read_text(encoding="utf-8")
-          marker = "pub mod local_shadow;\n"
+
+          path = Path('codex-rs/hepta-prompt-optimizer/src/lib.rs')
+          text = path.read_text(encoding='utf-8')
+          marker = 'pub mod local_shadow;\n'
           addition = '''pub mod local_shadow;
           pub use local_shadow::calculate_local_shadow as calculate_shadow_portfolio_v2;
 
@@ -56,20 +82,134 @@ jobs:
           pub const PROMPT_PORTFOLIO_SHADOW_V2_PROFILE: &str =
               "hepta.prompt-portfolio.shadow-v2";
           '''
-          if "PROMPT_PORTFOLIO_SHADOW_V2_PROFILE" not in text:
+          if 'PROMPT_PORTFOLIO_SHADOW_V2_PROFILE' not in text:
               if text.count(marker) != 1:
-                  raise SystemExit("unexpected prompt optimizer module marker")
+                  raise SystemExit('unexpected prompt optimizer module marker')
               text = text.replace(marker, addition, 1)
-          legacy = "pub fn optimize(mut request: OptimizationRequest)"
-          if "Compatibility-only legacy V1 optimizer" not in text:
+          legacy = 'pub fn optimize(mut request: OptimizationRequest)'
+          if 'Compatibility-only legacy V1 optimizer' not in text:
+              if text.count(legacy) != 1:
+                  raise SystemExit('unexpected legacy optimizer marker')
               text = text.replace(
                   legacy,
-                  "/// Compatibility-only legacy V1 optimizer. New shadow composition uses "
-                  "[`calculate_shadow_portfolio_v2`].\n" + legacy,
+                  '/// Compatibility-only legacy V1 optimizer. New shadow composition uses '
+                  '[`calculate_shadow_portfolio_v2`].\n' + legacy,
                   1,
               )
-          path.write_text(text, encoding="utf-8")
+          path.write_text(text, encoding='utf-8')
           PY
+
+      - name: Install final read-only Lane F qualification workflow
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat > .github/workflows/hepta-lane-f-shadow-qualification.yml <<'YAML'
+          name: Hepta Lane F shadow qualification
+
+          on:
+            pull_request:
+              paths:
+                - "codex-rs/hepta-neuron/**"
+                - "codex-rs/hepta-intuition/**"
+                - "codex-rs/hepta-prompt-optimizer/**"
+                - "codex-rs/hepta-plasticity/**"
+                - "codex-rs/hepta-intelligence/**"
+                - "qualification/lane-f-shadow/**"
+                - ".github/workflows/hepta-lane-f-shadow-qualification.yml"
+            push:
+              branches:
+                - integration/vnext-main-20260811
+                - "codex/lane-f-gap-closure-*"
+            workflow_dispatch:
+
+          permissions:
+            contents: read
+
+          concurrency:
+            group: lane-f-shadow-${{ github.event.pull_request.number || github.ref }}
+            cancel-in-progress: true
+
+          jobs:
+            exact-head:
+              name: Deterministic authority-free vertical
+              runs-on: ubuntu-24.04
+              timeout-minutes: 30
+              steps:
+                - name: Check out exact source
+                  uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+                  with:
+                    ref: ${{ github.event.pull_request.head.sha || github.sha }}
+                    persist-credentials: false
+                    fetch-depth: 0
+
+                - name: Verify exact source and clean tree
+                  env:
+                    EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+                  shell: bash
+                  run: |
+                    set -euo pipefail
+                    test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+                    test -f qualification/lane-f-shadow/Cargo.lock
+                    test -z "$(git status --porcelain)"
+
+                - name: Test and lint standalone vertical
+                  shell: bash
+                  run: |
+                    set -euo pipefail
+                    cargo test --locked --manifest-path qualification/lane-f-shadow/Cargo.toml
+                    cargo clippy --locked --manifest-path qualification/lane-f-shadow/Cargo.toml --all-targets -- -D warnings
+                    cargo fmt --manifest-path qualification/lane-f-shadow/Cargo.toml -- --check
+                    git diff --check
+                    test -z "$(git status --porcelain)"
+
+            synthetic-merge:
+              name: Deterministic vertical on merge candidate
+              if: github.event_name == 'pull_request'
+              runs-on: ubuntu-24.04
+              timeout-minutes: 30
+              steps:
+                - name: Check out source
+                  uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+                  with:
+                    ref: ${{ github.event.pull_request.head.sha }}
+                    persist-credentials: false
+                    fetch-depth: 0
+
+                - name: Build deterministic merge commit
+                  id: merge
+                  env:
+                    BASE_SHA: ${{ github.event.pull_request.base.sha }}
+                    SOURCE_SHA: ${{ github.event.pull_request.head.sha }}
+                    PR_NUMBER: ${{ github.event.pull_request.number }}
+                  shell: bash
+                  run: |
+                    set -euo pipefail
+                    test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+                    TREE="$(git merge-tree --write-tree "$BASE_SHA" "$SOURCE_SHA")"
+                    [[ "$TREE" =~ ^[0-9a-f]{40}$ ]]
+                    export GIT_AUTHOR_NAME="Hepta Lane F Shadow CI"
+                    export GIT_AUTHOR_EMAIL="hepta-lane-f-shadow-ci@users.noreply.github.com"
+                    export GIT_COMMITTER_NAME="$GIT_AUTHOR_NAME"
+                    export GIT_COMMITTER_EMAIL="$GIT_AUTHOR_EMAIL"
+                    export GIT_AUTHOR_DATE="2000-01-01T00:00:00Z"
+                    export GIT_COMMITTER_DATE="$GIT_AUTHOR_DATE"
+                    SHA="$(printf 'Synthetic Lane F shadow merge for PR %s\n' "$PR_NUMBER" | git commit-tree "$TREE" -p "$BASE_SHA" -p "$SOURCE_SHA")"
+                    git checkout --detach "$SHA"
+                    test "$(git rev-parse HEAD^{tree})" = "$TREE"
+                    printf 'sha=%s\n' "$SHA" >> "$GITHUB_OUTPUT"
+
+                - name: Test merge candidate
+                  shell: bash
+                  run: |
+                    set -euo pipefail
+                    test "$(git rev-parse HEAD)" = "${{ steps.merge.outputs.sha }}"
+                    test -f qualification/lane-f-shadow/Cargo.lock
+                    cargo test --locked --manifest-path qualification/lane-f-shadow/Cargo.toml
+                    cargo clippy --locked --manifest-path qualification/lane-f-shadow/Cargo.toml --all-targets -- -D warnings
+                    cargo fmt --manifest-path qualification/lane-f-shadow/Cargo.toml -- --check
+                    git diff --check
+                    test -z "$(git status --porcelain)"
+          YAML
 
       - name: Generate canonical Lane F documentation and metadata
         shell: bash
@@ -79,7 +219,7 @@ jobs:
           python3 scripts/hepta_module_doc_metadata.py --write
           python3 scripts/hepta-docs.py generate-status
 
-      - name: Format changed Rust packages
+      - name: Format sources and generate exact locks
         shell: bash
         run: |
           set -euo pipefail
@@ -89,28 +229,25 @@ jobs:
             --package codex-hepta-prompt-optimizer \
             --package codex-hepta-plasticity \
             --package codex-hepta-intelligence
+          cargo test --manifest-path codex-rs/Cargo.toml \
+            -p codex-hepta-intelligence --all-targets --no-run
+          cargo generate-lockfile --manifest-path qualification/lane-f-shadow/Cargo.toml
 
-      - name: Resolve lockfile and compile the cross-crate vertical before commit
-        working-directory: codex-rs
-        shell: bash
-        run: |
-          set -euo pipefail
-          cargo test -p codex-hepta-intelligence --all-targets --no-run
-
-      - name: Build exact local candidate commit
+      - name: Build immutable local candidate
         shell: bash
         run: |
           set -euo pipefail
           rm -rf .lane-f-bootstrap
           rm -f .github/workflows/lane-f-bootstrap.yml
-          git config user.name "hepta-lane-f-bot"
-          git config user.email "hepta-lane-f-bot@users.noreply.github.com"
+          git config user.name "hepta-lane-f-validator"
+          git config user.email "hepta-lane-f-validator@users.noreply.github.com"
           git add -A
           git diff --cached --check
-          git commit -m "feat(lane-f): close adaptive-policy source and documentation gaps"
-          echo "CANDIDATE_SHA=$(git rev-parse HEAD)" >> "$GITHUB_ENV"
+          git commit -m "feat(lane-f): materialize adaptive-policy gap closure candidate"
+          printf 'CANDIDATE_SHA=%s\n' "$(git rev-parse HEAD)" >> "$GITHUB_ENV"
+          printf 'CANDIDATE_TREE=%s\n' "$(git rev-parse HEAD^{tree})" >> "$GITHUB_ENV"
 
-      - name: Verify Lane F generated closed world at committed HEAD
+      - name: Verify Lane F generated closed world
         shell: bash
         run: |
           set -euo pipefail
@@ -125,7 +262,7 @@ jobs:
           git diff --check
           test -z "$(git status --porcelain)"
 
-      - name: Verify repository documentation registries at committed HEAD
+      - name: Verify repository documentation registries
         shell: bash
         run: |
           set -euo pipefail
@@ -151,8 +288,11 @@ jobs:
           python3 scripts/hepta-hnmf.py self-test
           python3 scripts/hepta-hnmf.py verify
           python3 scripts/hepta-docs.py verify
+          python3 scripts/hepta-repository-integrity.py verify
+          git diff --check
+          test -z "$(git status --porcelain)"
 
-      - name: Test Lane F native crates at exact committed candidate
+      - name: Test Lane F native crates
         working-directory: codex-rs
         shell: bash
         run: |
@@ -177,10 +317,72 @@ jobs:
             --package codex-hepta-intelligence \
             -- --check
 
-      - name: Publish verified exact candidate
+      - name: Test standalone Lane F vertical
         shell: bash
         run: |
           set -euo pipefail
-          test "$(git rev-parse HEAD)" = "$CANDIDATE_SHA"
+          cargo test --locked --manifest-path qualification/lane-f-shadow/Cargo.toml
+          cargo clippy --locked --manifest-path qualification/lane-f-shadow/Cargo.toml --all-targets -- -D warnings
+          cargo fmt --manifest-path qualification/lane-f-shadow/Cargo.toml -- --check
+          git diff --check
           test -z "$(git status --porcelain)"
-          git push origin "HEAD:${GITHUB_REF_NAME}"
+
+      - name: Package verified candidate
+        env:
+          BASE_SHA: 04f60466394a024c218ce66b1b32d1c42c462985
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/lane-f-materialized
+          git diff --binary "$BASE_SHA...HEAD" > /tmp/lane-f-materialized/candidate.patch
+          python3 - <<'PY'
+          from pathlib import Path
+          import json
+          import os
+          import subprocess
+          import tarfile
+
+          base = os.environ['BASE_SHA']
+          head = subprocess.check_output(['git', 'rev-parse', 'HEAD'], text=True).strip()
+          tree = subprocess.check_output(['git', 'rev-parse', 'HEAD^{tree}'], text=True).strip()
+          changed_raw = subprocess.check_output(
+              ['git', 'diff', '--name-only', '--diff-filter=ACMRT', '-z', f'{base}...{head}']
+          )
+          deleted_raw = subprocess.check_output(
+              ['git', 'diff', '--name-only', '--diff-filter=D', '-z', f'{base}...{head}']
+          )
+          changed = [item.decode() for item in changed_raw.split(b'\0') if item]
+          deleted = [item.decode() for item in deleted_raw.split(b'\0') if item]
+          output = Path('/tmp/lane-f-materialized')
+          with tarfile.open(output / 'changed-files.tar.gz', 'w:gz') as archive:
+              for name in changed:
+                  path = Path(name)
+                  if not path.is_file():
+                      raise SystemExit(f'missing changed file: {name}')
+                  archive.add(path, arcname=name, recursive=False)
+          manifest = {
+              'schema': 'hepta.lane-f-materialized-candidate.v1',
+              'baseSha': base,
+              'candidateSha': head,
+              'candidateTree': tree,
+              'sourceWorkflowSha': os.environ['GITHUB_SHA'],
+              'inputArchiveSha256': os.environ['ARCHIVE_SHA'],
+              'changedFiles': changed,
+              'deletedFiles': deleted,
+              'authorityGranted': False,
+              'independentAcceptanceClaimed': False,
+              'productionReleaseClaimed': False,
+          }
+          (output / 'manifest.json').write_text(
+              json.dumps(manifest, indent=2, sort_keys=True) + '\n', encoding='utf-8'
+          )
+          PY
+          sha256sum /tmp/lane-f-materialized/* > /tmp/lane-f-materialized/SHA256SUMS
+
+      - name: Upload verified candidate
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: lane-f-materialized-${{ github.run_id }}
+          path: /tmp/lane-f-materialized
+          if-no-files-found: error
+          retention-days: 7
