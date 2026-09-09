@@ -14,6 +14,8 @@ mod durable_tests;
 mod importer;
 #[cfg(test)]
 mod importer_tests;
+#[cfg(test)]
+mod lane_e_closure_tests;
 mod loopback;
 #[cfg(test)]
 mod loopback_tests;
