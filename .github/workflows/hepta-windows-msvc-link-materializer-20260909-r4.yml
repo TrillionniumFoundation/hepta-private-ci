@@ -115,7 +115,7 @@ jobs:
               rust/private/rustc.bzl
             grep -F 'normalized_flag = library if library.endswith(".lib") else library + ".lib"' \
               rust/private/rustc.bzl
-            test "$(grep -F -c '_add_user_link_flags(ret, linker_input)' rust/private/rustc.bzl)" = 2
+            test "$(grep -F -x -c '    _add_user_link_flags(ret, linker_input)' rust/private/rustc.bzl)" = 2
           )
 
           changed="$( { git diff --name-only HEAD; git ls-files --others --exclude-standard; } | sort -u)"
