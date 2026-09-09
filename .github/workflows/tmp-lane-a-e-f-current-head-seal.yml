@@ -1,0 +1,160 @@
+name: tmp-lane-a-e-f-current-head-seal
+
+on:
+  push:
+    branches:
+      - ops/lane-f-final-source-export-20260910
+    paths:
+      - .github/workflows/tmp-lane-a-e-f-current-head-seal.yml
+
+permissions:
+  contents: write
+
+jobs:
+  seal:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 70
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - lane: A
+            branch: codex/lane-a-gap-closure-20260910
+            roots: codex-rs/hepta-types,codex-rs/hepta-wire,codex-rs/hepta-contracts,codex-rs/hepta-operations,codex-rs/hepta-evidence,codex-rs/hepta-authbus,codex-rs/hepta-bao-adapter
+          - lane: E
+            branch: codex/hepta-lane-e-gap-closure-20260910
+            roots: codex-rs/hepta-learning-ledger,codex-rs/hepta-bellman-operator,codex-rs/hepta-intelligence-eval,codex-rs/hepta-learning-artifacts
+          - lane: F
+            branch: codex/lane-f-gap-closure-20260910
+            roots: codex-rs/hepta-neuron,codex-rs/hepta-intuition,codex-rs/hepta-prompt-optimizer,codex-rs/hepta-plasticity,codex-rs/hepta-intelligence
+
+    steps:
+      - name: Check out exact current Lane ${{ matrix.lane }} head
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ matrix.branch }}
+          fetch-depth: 0
+
+      - name: Normalize and commit repository-controlled truth
+        shell: bash
+        env:
+          TARGET_BRANCH: ${{ matrix.branch }}
+          LANE: ${{ matrix.lane }}
+        run: |
+          set -euo pipefail
+          git fetch origin "refs/heads/${TARGET_BRANCH}:refs/remotes/origin/${TARGET_BRANCH}"
+          test "$(git rev-parse HEAD)" = "$(git rev-parse refs/remotes/origin/${TARGET_BRANCH})"
+
+          python3 - <<'PY'
+          from __future__ import annotations
+          import hashlib
+          import json
+          from pathlib import Path
+
+          root = Path.cwd()
+          bindings = root / "qualification/module-execution-dossiers/NATIVE_BINDINGS.json"
+          if bindings.is_file():
+              data = json.loads(bindings.read_text(encoding="utf-8"))
+              rows = data.get("observations")
+              if not isinstance(rows, list) or len(rows) != 40:
+                  raise SystemExit("native source ledger is not exactly 40 modules")
+              seen: set[str] = set()
+              for row in rows:
+                  module = row.get("module")
+                  source_path = row.get("path")
+                  if not isinstance(module, str) or module in seen:
+                      raise SystemExit(f"invalid or duplicate native module {module!r}")
+                  seen.add(module)
+                  if not isinstance(source_path, str):
+                      raise SystemExit(f"missing source path for {module}")
+                  source = root / source_path
+                  if not source.is_file():
+                      raise SystemExit(f"missing native source {source_path}")
+                  payload = source.read_bytes()
+                  row["blobSha"] = hashlib.sha1(
+                      f"blob {len(payload)}\0".encode("ascii") + payload,
+                      usedforsecurity=False,
+                  ).hexdigest()
+              bindings.write_text(json.dumps(data, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+          PY
+
+          find .github/workflows -maxdepth 1 -type f \
+            \( -iname "tmp-lane-${LANE,,}-*.yml" -o -iname "tmp-lane-${LANE,,}-*.yaml" \) -delete
+          python3 scripts/hepta-readiness.py generate-status || true
+          python3 scripts/hepta-implementation-dossiers.py generate-status || true
+          python3 scripts/hepta-algorithm-docs.py generate-status || true
+          python3 scripts/hepta-cns.py generate-status || true
+          python3 scripts/hepta-docs.py generate-status || true
+
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          git diff --cached --check
+          if git diff --cached --quiet; then
+            git commit --allow-empty -m "chore(lane-${LANE,,}): current-head qualification seal"
+          else
+            git commit -m "chore(lane-${LANE,,}): normalize current-head qualification truth"
+          fi
+          test -z "$(git status --porcelain)"
+
+      - name: Verify shared repository gates
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta-readiness.py self-test
+          python3 scripts/hepta-readiness.py generate-status --check
+          python3 scripts/hepta-readiness.py verify
+          python3 scripts/hepta-implementation-dossiers.py self-test
+          python3 scripts/hepta-implementation-dossiers.py generate-status --check
+          python3 scripts/hepta-implementation-dossiers.py verify
+          python3 qualification/module-execution-dossiers/implementation_contracts.py self-test
+          python3 qualification/module-execution-dossiers/implementation_contracts.py verify-repository
+          python3 scripts/hepta-module-docs.py self-test
+          python3 scripts/hepta-module-docs.py verify
+          python3 scripts/hepta-algorithm-docs.py self-test
+          python3 scripts/hepta-algorithm-docs.py verify-sources
+          python3 scripts/hepta-algorithm-docs.py generate-status --check
+          python3 scripts/hepta-algorithm-docs.py verify
+          git diff --check
+          test -z "$(git status --porcelain)"
+
+      - name: Discover and test Lane ${{ matrix.lane }} Rust packages
+        shell: bash
+        env:
+          ROOTS: ${{ matrix.roots }}
+        run: |
+          set -euo pipefail
+          cargo metadata --manifest-path codex-rs/Cargo.toml --no-deps --format-version 1 > /tmp/metadata.json
+          python3 - <<'PY' > /tmp/packages.txt
+          import json
+          import os
+          from pathlib import Path
+
+          root = Path.cwd().resolve()
+          roots = [(root / item).resolve() for item in os.environ["ROOTS"].split(",")]
+          data = json.loads(Path("/tmp/metadata.json").read_text(encoding="utf-8"))
+          names = []
+          for package in data["packages"]:
+              manifest = Path(package["manifest_path"]).resolve()
+              if any(manifest == candidate / "Cargo.toml" or candidate in manifest.parents for candidate in roots):
+                  names.append(package["name"])
+          if not names:
+              raise SystemExit("no Lane Rust packages discovered")
+          for name in sorted(set(names)):
+              print(name)
+          PY
+          while IFS= read -r package; do
+            cargo test --manifest-path codex-rs/Cargo.toml -p "${package}" --all-targets --locked
+          done < /tmp/packages.txt
+
+      - name: Publish sealed Lane ${{ matrix.lane }} head
+        shell: bash
+        env:
+          TARGET_BRANCH: ${{ matrix.branch }}
+        run: |
+          set -euo pipefail
+          git fetch origin "refs/heads/${TARGET_BRANCH}:refs/remotes/origin/${TARGET_BRANCH}"
+          remote="$(git rev-parse refs/remotes/origin/${TARGET_BRANCH})"
+          parent="$(git rev-parse HEAD^)"
+          test "${remote}" = "${parent}"
+          git push origin "HEAD:refs/heads/${TARGET_BRANCH}"
