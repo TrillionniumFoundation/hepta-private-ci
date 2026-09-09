@@ -19,7 +19,7 @@ python3 scripts/hepta-lane-b-truth.py verify
 python3 scripts/hepta-lane-b-docs.py verify
 ```
 
-`.github/workflows/hepta-lane-b-truth.yml` executes these checks on the exact source head and on a deterministic synthetic merge candidate.
+`.github/workflows/hepta-lane-b-truth.yml` executes these checks on the exact source head and on a deterministic synthetic merge candidate. Source-identity validation is intentionally evaluated only on committed, clean trees with the declared baseline available in Git history; a patched or shallow working tree is not an admissible receipt.
 
 ## Claim boundary
 
