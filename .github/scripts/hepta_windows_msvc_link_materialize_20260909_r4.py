@@ -28,6 +28,37 @@ def insert_after_unique(lines: list[str], anchor: str, value: str, label: str) -
 def patch_wrapper() -> None:
     path = ROOT / ".github/scripts/run-bazel-ci.sh"
     lines = read(path).splitlines()
+
+    host_anchor = [
+        '    post_config_bazel_args+=("--host_platform=//:local_windows_msvc")',
+        "  fi",
+        "fi",
+    ]
+    host_matches = [
+        index
+        for index in range(len(lines) - len(host_anchor) + 1)
+        if lines[index : index + len(host_anchor)] == host_anchor
+    ]
+    if len(host_matches) != 1:
+        raise SystemExit(
+            f"expected one Windows MSVC host-platform block, found {len(host_matches)}"
+        )
+    host_insert = [
+        "",
+        "  # A native MSVC Rust target must use MSVC-built C/C++ dependencies too.",
+        "  # Register the ABI-scoped installed compiler and its local execution",
+        "  # platform; otherwise hermetic MinGW objects reach lld-link.",
+        "  if [[ $windows_cross_compile -eq 0 ]]; then",
+        "    post_config_bazel_args+=(",
+        '      "--extra_execution_platforms=//:windows_x86_64_msvc"',
+        '      "--extra_toolchains=//:local_windows_msvc_cc_toolchain"',
+        '      "--repo_env=BAZEL_DO_NOT_DETECT_CPP_TOOLCHAIN=0"',
+        "    )",
+        "  fi",
+    ]
+    host_index = host_matches[0]
+    lines[host_index + 2 : host_index + 2] = host_insert
+
     needle = (
         '        post_config_bazel_args+=("--action_env=${env_var}" '
         '"--host_action_env=${env_var}")'
