@@ -142,7 +142,7 @@ jobs:
                return ret
            
            def _make_link_flags_windows_msvc(make_link_flags_args, use_direct_driver):
-          '''.replace("          ", "", 1),
+          ''',
           )
 
           build = Path("patches/BUILD.bazel")
@@ -241,11 +241,9 @@ jobs:
 
           git config user.name "hepta-gap-materializer"
           git config user.email "hepta-gap-materializer@users.noreply.github.com"
-          git commit --amend -m "fix(windows): bind MSVC libraries into rules_rust links
-
-Propagate the trusted VsDevCmd library roots into target and exec Rustc final links, normalize GNU-style native library flags for the direct MSVC linker, and preserve the immutable single-parent candidate with no authority expansion.
-
-Signed-off-by: OpenAI <noreply@openai.com>"
+          git commit --amend --signoff \
+            -m "fix(windows): bind MSVC libraries into rules_rust links" \
+            -m "Propagate trusted VsDevCmd library roots into target and exec Rustc final links, normalize GNU-style native library flags for the direct MSVC linker, and preserve the immutable single-parent candidate with no authority expansion."
 
           test "$(git rev-parse HEAD^)" = "${expected_parent}"
           test "$(git rev-list --count "${expected_parent}"..HEAD)" = 1
