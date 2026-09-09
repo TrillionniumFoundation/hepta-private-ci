@@ -248,6 +248,10 @@ impl Session {
     }
 
     /// Injects items into active work, or records them without starting a turn.
+    #[expect(
+        clippy::await_holding_invalid_type,
+        reason = "the active-turn guard is the atomic ownership fence across this awaited state transition"
+    )]
     pub(crate) async fn inject_no_new_turn(
         &self,
         items: Vec<ResponseItem>,

@@ -1,5 +1,6 @@
 """Qualification-only tests: analytic rules and a disposable SQLite DDL fixture."""
 import json
+import re
 import sqlite3
 import subprocess
 import sys
@@ -58,6 +59,28 @@ class NumericTests(unittest.TestCase):
         self.assertEqual(c.sequential_dr([dict(v=0,q=0,reward=1,behavior=1,evaluation=1,discount=1)],F(0)),1)
     def test_duplicate_json_keys(self):
         with self.assertRaises(c.Invalid): json.loads('{"x":1,"x":2}',object_pairs_hook=c.pairs)
+
+class NativeBindingCoverageTests(unittest.TestCase):
+    def test_native_binding_module_closed_world(self):
+        profiles=c.read_json(BASE/'IMPLEMENTATION_PROFILES.json')
+        native=c.read_json(BASE/'NATIVE_BINDINGS.json')
+        self.assertEqual(native['moduleCoverage'],40)
+        self.assertFalse(native['consumerCallsitesProved'])
+        self.assertFalse(native['productExecutionProved'])
+        self.assertEqual(
+            [row['module'] for row in native['observations']],
+            [row['module'] for row in profiles['modules']],
+        )
+
+    def test_native_binding_blobs_and_exports_are_exact(self):
+        native=c.read_json(BASE/'NATIVE_BINDINGS.json')
+        for row in native['observations']:
+            path=c.ROOT/row['path']
+            data=path.read_bytes()
+            self.assertEqual(c.blob(data),row['blobSha'],row['path'])
+            text=data.decode('utf-8')
+            for symbol in row['exports']:
+                self.assertRegex(text,r'\b'+re.escape(symbol)+r'\b',row['path']+': '+symbol)
 
 class GraphAndEvolutionTests(unittest.TestCase):
     def test_stable_topology(self): self.assertEqual(c.topo(['b','a','c'],[('a','c'),('b','c')]),['a','b','c'])
