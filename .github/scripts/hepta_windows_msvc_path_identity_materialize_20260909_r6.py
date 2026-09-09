@@ -3,6 +3,7 @@
 
 from __future__ import annotations
 
+import subprocess
 from pathlib import Path
 
 ROOT = Path.cwd()
@@ -91,6 +92,19 @@ mod windows_canonical_path_identity_tests {
     write(path, text)
 
 
+def rustfmt_materialized_workspace() -> None:
+    subprocess.run(
+        [
+            "cargo",
+            "fmt",
+            "--manifest-path",
+            "codex-rs/Cargo.toml",
+            "--all",
+        ],
+        check=True,
+    )
+
+
 def verify_materialized_shape() -> None:
     files = (
         ROOT / "codex-rs/hepta-memory/src/cognitive_store.rs",
@@ -118,6 +132,7 @@ def main() -> None:
     patch_private_directory_checks()
     patch_federation_database_check()
     add_windows_regression_test()
+    rustfmt_materialized_workspace()
     verify_materialized_shape()
 
 
