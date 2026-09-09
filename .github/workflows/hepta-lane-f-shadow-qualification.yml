@@ -44,27 +44,13 @@ jobs:
           test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
           test -z "$(git status --porcelain)"
 
-      - name: Prepare exact dependency lock
+      - name: Generate dependency lock from the exact manifests
         shell: bash
         run: |
           set -euo pipefail
-          cp codex-rs/Cargo.lock qualification/lane-f-shadow/Cargo.lock
-          if ! grep -q '^name = "lane-f-shadow-qualification"$' qualification/lane-f-shadow/Cargo.lock; then
-            {
-              printf '\n'
-              printf '%s\n' '[[package]]'
-              printf '%s\n' 'name = "lane-f-shadow-qualification"'
-              printf '%s\n' 'version = "0.1.0"'
-              printf '%s\n' 'dependencies = ['
-              printf '%s\n' ' "codex-hepta-intelligence",'
-              printf '%s\n' ' "codex-hepta-intuition",'
-              printf '%s\n' ' "codex-hepta-neuron",'
-              printf '%s\n' ' "codex-hepta-plasticity",'
-              printf '%s\n' ' "codex-hepta-prompt-optimizer",'
-              printf '%s\n' ' "codex-hepta-types",'
-              printf '%s\n' ']'
-            } >> qualification/lane-f-shadow/Cargo.lock
-          fi
+          rm -f qualification/lane-f-shadow/Cargo.lock
+          cargo generate-lockfile --manifest-path qualification/lane-f-shadow/Cargo.toml
+          test -s qualification/lane-f-shadow/Cargo.lock
 
       - name: Test and lint standalone vertical
         shell: bash
@@ -73,9 +59,22 @@ jobs:
           cargo test --locked --manifest-path qualification/lane-f-shadow/Cargo.toml
           cargo clippy --locked --manifest-path qualification/lane-f-shadow/Cargo.toml --all-targets -- -D warnings
           cargo fmt --manifest-path qualification/lane-f-shadow/Cargo.toml -- --check
+
+      - name: Upload generated lock for source binding
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: lane-f-shadow-lock-${{ github.run_id }}
+          path: qualification/lane-f-shadow/Cargo.lock
+          if-no-files-found: error
+          retention-days: 7
+
+      - name: Verify checkout remains unchanged
+        shell: bash
+        run: |
+          set -euo pipefail
           rm qualification/lane-f-shadow/Cargo.lock
           git diff --check
-          test -z "$(git status --porcelain --untracked-files=no)"
+          test -z "$(git status --porcelain)"
 
   synthetic-merge:
     name: Deterministic vertical on merge candidate
@@ -99,6 +98,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
           TREE="$(git merge-tree --write-tree "$BASE_SHA" "$SOURCE_SHA")"
           [[ "$TREE" =~ ^[0-9a-f]{40}$ ]]
           export GIT_AUTHOR_NAME="Hepta Lane F Shadow CI"
@@ -109,30 +109,17 @@ jobs:
           export GIT_COMMITTER_DATE="$GIT_AUTHOR_DATE"
           SHA="$(printf 'Synthetic Lane F shadow merge for PR %s\n' "$PR_NUMBER" | git commit-tree "$TREE" -p "$BASE_SHA" -p "$SOURCE_SHA")"
           git checkout --detach "$SHA"
+          test "$(git rev-parse HEAD)" = "$SHA"
           printf 'sha=%s\n' "$SHA" >> "$GITHUB_OUTPUT"
 
-      - name: Prepare exact dependency lock
+      - name: Generate dependency lock from merge-candidate manifests
         shell: bash
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "${{ steps.merge.outputs.sha }}"
-          cp codex-rs/Cargo.lock qualification/lane-f-shadow/Cargo.lock
-          if ! grep -q '^name = "lane-f-shadow-qualification"$' qualification/lane-f-shadow/Cargo.lock; then
-            {
-              printf '\n'
-              printf '%s\n' '[[package]]'
-              printf '%s\n' 'name = "lane-f-shadow-qualification"'
-              printf '%s\n' 'version = "0.1.0"'
-              printf '%s\n' 'dependencies = ['
-              printf '%s\n' ' "codex-hepta-intelligence",'
-              printf '%s\n' ' "codex-hepta-intuition",'
-              printf '%s\n' ' "codex-hepta-neuron",'
-              printf '%s\n' ' "codex-hepta-plasticity",'
-              printf '%s\n' ' "codex-hepta-prompt-optimizer",'
-              printf '%s\n' ' "codex-hepta-types",'
-              printf '%s\n' ']'
-            } >> qualification/lane-f-shadow/Cargo.lock
-          fi
+          rm -f qualification/lane-f-shadow/Cargo.lock
+          cargo generate-lockfile --manifest-path qualification/lane-f-shadow/Cargo.toml
+          test -s qualification/lane-f-shadow/Cargo.lock
 
       - name: Test merge candidate
         shell: bash
@@ -143,4 +130,4 @@ jobs:
           cargo fmt --manifest-path qualification/lane-f-shadow/Cargo.toml -- --check
           rm qualification/lane-f-shadow/Cargo.lock
           git diff --check
-          test -z "$(git status --porcelain --untracked-files=no)"
+          test -z "$(git status --porcelain)"
