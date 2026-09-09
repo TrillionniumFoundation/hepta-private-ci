@@ -1,0 +1,43 @@
+name: Hepta gap convergence controller 20260909 r6
+
+on:
+  push:
+    branches:
+      - ops/hepta-gap-convergence-controller-20260909-r6b
+  workflow_dispatch:
+
+permissions:
+  actions: write
+  checks: read
+  contents: read
+  issues: write
+  pull-requests: write
+  statuses: read
+
+concurrency:
+  group: hepta-gap-convergence-controller-20260909-r6
+  cancel-in-progress: false
+
+jobs:
+  converge-pr-480:
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+
+      - name: Syntax-check fail-closed controller
+        run: python -m py_compile .github/scripts/hepta_gap_convergence_controller_20260909_r6.py
+
+      - name: Converge exact candidate without governance bypass
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TARGET_PR: "480"
+          R5_RUN_ID: "34310417060"
+          EXPECTED_PARENT: "04f60466394a024c218ce66b1b32d1c42c462985"
+          OLD_CANDIDATE_HEAD: "05981ed1adfb931a87a47b0606f1cedaa69f123b"
+          EXPECTED_HEAD_REF: codex/hepta-all-gap-closure-20260908
+          MAX_WAIT_SECONDS: "9600"
+          POLL_SECONDS: "30"
+        run: python .github/scripts/hepta_gap_convergence_controller_20260909_r6.py
