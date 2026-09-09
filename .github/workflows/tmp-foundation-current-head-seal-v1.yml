@@ -1,0 +1,264 @@
+name: tmp-foundation-current-head-seal-v2
+
+on:
+  push:
+    branches:
+      - codex/hepta-all-gap-closure-20260908
+    paths:
+      - .github/workflows/tmp-foundation-current-head-seal-v1.yml
+
+permissions:
+  contents: read
+
+concurrency:
+  group: foundation-current-head-seal-v1
+  cancel-in-progress: true
+
+env:
+  BASE_SHA: 04f60466394a024c218ce66b1b32d1c42c462985
+  PYTHONDONTWRITEBYTECODE: "1"
+
+jobs:
+  render:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    steps:
+      - name: Check out exact carrier
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Install pinned Rust formatter and linter
+        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: 1.95.0
+          components: rustfmt,clippy
+
+      - name: Render clean single-parent candidate
+        id: render
+        shell: bash
+        run: |
+          set -euo pipefail
+          SOURCE_SHA="$(git rev-parse HEAD)"
+          test "$SOURCE_SHA" = "$GITHUB_SHA"
+          git fetch --no-tags origin "${GITHUB_REF}:refs/remotes/origin/${GITHUB_REF_NAME}"
+          test "$SOURCE_SHA" = "$(git rev-parse "refs/remotes/origin/${GITHUB_REF_NAME}")"
+          git cat-file -e "${BASE_SHA}^{commit}"
+
+          python3 - <<'PY'
+          from pathlib import Path
+
+          defs = Path("defs.bzl")
+          text = defs.read_text(encoding="utf-8")
+          old = '''# Match Cargo's Windows linker behavior so Bazel-built binaries and tests use
+          # the same stack reserve on both Windows ABIs and resolve UCRT imports on MSVC.
+          '''
+          new = '''# Match Cargo's Windows linker behavior so Bazel-built binaries and tests keep
+          # the same stack reserve on both Windows ABIs. The selected MSVC toolchain owns
+          # its CRT defaults; do not force a second UCRT archive beside V8's allocator shim.
+          '''
+          if text.count(old) != 1:
+              raise SystemExit("unexpected Windows linker comment shape")
+          text = text.replace(old, new)
+          old = '''        "-C",
+                  "link-arg=/STACK:8388608",  # 8 MiB
+                  "-C",
+                  "link-arg=/NODEFAULTLIB:libucrt.lib",
+                  "-C",
+                  "link-arg=ucrt.lib",
+          '''
+          new = '''        "-C",
+                  "link-arg=/STACK:8388608",  # 8 MiB
+          '''
+          if text.count(old) != 1:
+              raise SystemExit("unexpected MSVC linker flag shape")
+          defs.write_text(text.replace(old, new), encoding="utf-8")
+
+          store = Path("codex-rs/hepta-cognitive-store/src/v2.rs")
+          text = store.read_text(encoding="utf-8")
+          old = '''        let record = MemoryRecord {
+                      record_id: record_id.clone(),
+                      revision,
+          '''
+          new = '''        let record = MemoryRecord {
+                      record_id,
+                      revision,
+          '''
+          if text.count(old) != 1:
+              raise SystemExit("unexpected cognitive-store record construction")
+          store.write_text(text.replace(old, new), encoding="utf-8")
+          PY
+
+          rm -f .github/workflows/tmp-foundation-current-head-seal-v1.yml
+          rm -f .github/workflows/lane-f-bootstrap.yml
+          rm -f .github/workflows/tmp-integration-final-cleanup-v2.yml
+          rm -f .github/workflows/tmp-integration-finalizer-r2.yml
+          find .github/workflows -maxdepth 1 -type f -name 'tmp-*.yml' -delete
+          rm -rf .lane-f-bootstrap
+
+          cargo fmt --manifest-path codex-rs/Cargo.toml --all
+
+          python3 - <<'PY'
+          from __future__ import annotations
+
+          import hashlib
+          import json
+          from pathlib import Path
+
+          root = Path.cwd()
+          bindings = root / "qualification/module-execution-dossiers/NATIVE_BINDINGS.json"
+          data = json.loads(bindings.read_text(encoding="utf-8"))
+          rows = data.get("observations")
+          if not isinstance(rows, list) or len(rows) != 40:
+              raise SystemExit("native source ledger is not exactly 40 modules")
+          seen: set[str] = set()
+          for row in rows:
+              module = row.get("module")
+              source_path = row.get("path")
+              if not isinstance(module, str) or module in seen:
+                  raise SystemExit(f"invalid native module {module!r}")
+              seen.add(module)
+              if not isinstance(source_path, str):
+                  raise SystemExit(f"missing native source path for {module}")
+              source = root / source_path
+              if not source.is_file():
+                  raise SystemExit(f"missing native source {source_path}")
+              payload = source.read_bytes()
+              row["blobSha"] = hashlib.sha1(
+                  f"blob {len(payload)}\0".encode("ascii") + payload,
+                  usedforsecurity=False,
+              ).hexdigest()
+          bindings.write_text(
+              json.dumps(data, indent=2, ensure_ascii=False) + "\n",
+              encoding="utf-8",
+          )
+          PY
+
+          python3 scripts/hepta-readiness.py generate-status || true
+          python3 scripts/hepta-implementation-dossiers.py generate-status || true
+          python3 scripts/hepta-algorithm-docs.py generate-status || true
+          python3 scripts/hepta-cns.py generate-status || true
+          python3 scripts/hepta-docs.py generate-status || true
+
+          test ! -e .github/workflows/lane-f-bootstrap.yml
+          test ! -e .lane-f-bootstrap
+          test -z "$(find .github/workflows -maxdepth 1 -type f -name 'tmp-*.yml' -print -quit)"
+
+          git add -A
+          git diff --cached --check
+
+          ARTIFACT_DIR="${RUNNER_TEMP}/hepta-closure-artifact"
+          mkdir -p "$ARTIFACT_DIR"
+          git diff --cached --name-only --diff-filter=ACMRTUXB -z > "${RUNNER_TEMP}/changed-files.zlist"
+          tar --null --files-from="${RUNNER_TEMP}/changed-files.zlist" -czf "$ARTIFACT_DIR/final-files.tar.gz"
+          git diff --cached --name-only --diff-filter=D > "$ARTIFACT_DIR/deleted-paths.txt"
+          git diff --cached --binary > "$ARTIFACT_DIR/final.patch"
+          git diff --cached --stat > "$ARTIFACT_DIR/final.stat"
+
+          TREE_SHA="$(git write-tree)"
+          export GIT_AUTHOR_NAME="Hepta closure renderer"
+          export GIT_AUTHOR_EMAIL="hepta-closure-renderer@users.noreply.github.com"
+          export GIT_COMMITTER_NAME="$GIT_AUTHOR_NAME"
+          export GIT_COMMITTER_EMAIL="$GIT_AUTHOR_EMAIL"
+          export GIT_AUTHOR_DATE="2000-01-01T00:00:00Z"
+          export GIT_COMMITTER_DATE="$GIT_AUTHOR_DATE"
+          CANDIDATE_SHA="$(printf '%s\n' 'Exact single-parent all-lanes blocker closure' | git commit-tree "$TREE_SHA" -p "$BASE_SHA")"
+
+          printf '%s\n' "$SOURCE_SHA" > "$ARTIFACT_DIR/carrier-sha.txt"
+          printf '%s\n' "$BASE_SHA" > "$ARTIFACT_DIR/base-sha.txt"
+          printf '%s\n' "$TREE_SHA" > "$ARTIFACT_DIR/tree-sha.txt"
+          printf '%s\n' "$CANDIDATE_SHA" > "$ARTIFACT_DIR/candidate-sha.txt"
+          printf 'artifact_dir=%s\n' "$ARTIFACT_DIR" >> "$GITHUB_OUTPUT"
+          printf 'candidate_sha=%s\n' "$CANDIDATE_SHA" >> "$GITHUB_OUTPUT"
+          printf 'tree_sha=%s\n' "$TREE_SHA" >> "$GITHUB_OUTPUT"
+
+          git checkout --detach "$CANDIDATE_SHA"
+          test "$(git rev-parse HEAD^)" = "$BASE_SHA"
+          test "$(git rev-parse HEAD^{tree})" = "$TREE_SHA"
+          test -z "$(git status --porcelain)"
+
+      - name: Validate rendered candidate
+        env:
+          CANDIDATE_SHA: ${{ steps.render.outputs.candidate_sha }}
+          ARTIFACT_DIR: ${{ steps.render.outputs.artifact_dir }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$CANDIDATE_SHA"
+          test "$(git rev-parse HEAD^)" = "$BASE_SHA"
+
+          cargo fmt --manifest-path codex-rs/Cargo.toml --all -- --check
+          cargo clippy --manifest-path codex-rs/Cargo.toml --locked \
+            -p codex-hepta-cognitive-store \
+            -p codex-hepta-learning-ledger \
+            -p codex-hepta-learning-artifacts \
+            -p codex-hepta-bellman-operator \
+            -p codex-hepta-intelligence-eval \
+            -p codex-hepta-shadow-qualification \
+            --all-targets -- -D warnings
+
+          python3 scripts/hepta-repository-integrity.py self-test
+          python3 scripts/hepta-repository-integrity.py verify \
+            --base "$BASE_SHA" \
+            --head "$CANDIDATE_SHA" \
+            --output "${RUNNER_TEMP}/repository-integrity.json"
+          python3 scripts/hepta-readiness.py self-test
+          python3 scripts/hepta-readiness.py generate-status --check
+          python3 scripts/hepta-readiness.py verify
+          python3 scripts/hepta-implementation-dossiers.py self-test
+          python3 scripts/hepta-implementation-dossiers.py generate-status --check
+          python3 scripts/hepta-implementation-dossiers.py verify
+          python3 qualification/module-execution-dossiers/implementation_contracts.py self-test
+          python3 qualification/module-execution-dossiers/implementation_contracts.py verify-repository
+          python3 scripts/hepta-module-docs.py self-test
+          python3 scripts/hepta-module-docs.py verify
+          python3 scripts/hepta-algorithm-docs.py self-test
+          python3 scripts/hepta-algorithm-docs.py verify-sources
+          python3 scripts/hepta-algorithm-docs.py generate-status --check
+          python3 scripts/hepta-algorithm-docs.py verify
+          python3 scripts/hepta-docs.py self-test
+          python3 scripts/hepta-docs.py generate-status
+          git diff --exit-code -- docs/STATUS.md
+          python3 scripts/hepta-docs.py verify
+
+          if [[ -f scripts/verify_lane_a_foundation.py ]]; then
+            python3 scripts/verify_lane_a_foundation.py self-test
+            python3 scripts/verify_lane_a_foundation.py verify
+            python3 -m unittest qualification/module-execution-dossiers/test_lane_a_foundation.py
+          fi
+          if [[ -f scripts/hepta-lane-b-truth.py ]]; then
+            python3 scripts/hepta-lane-b-truth.py self-test
+            python3 -m unittest scripts/test_hepta_lane_b_truth.py
+            python3 scripts/hepta-lane-b-truth.py verify
+            python3 scripts/hepta-lane-b-docs.py
+          fi
+          if [[ -f scripts/hepta-lane-e-closure.py ]]; then
+            python3 scripts/hepta-lane-e-closure.py self-test
+            python3 scripts/hepta-lane-e-closure.py verify
+          fi
+          if [[ -f .github/scripts/test_run_bazel_windows_fallback.py ]]; then
+            python3 -m unittest .github/scripts/test_run_bazel_windows_fallback.py
+          fi
+          if [[ -f .github/scripts/test_run_bazel_with_buildbuddy.py ]]; then
+            python3 -m unittest .github/scripts/test_run_bazel_with_buildbuddy.py
+          fi
+          if [[ -f .github/scripts/test_run_bazel_native_msvc_toolchain.py ]]; then
+            python3 -m unittest .github/scripts/test_run_bazel_native_msvc_toolchain.py
+          fi
+          bash -n .github/scripts/run-bazel-ci.sh
+          git diff --check
+          git diff --exit-code
+          test -z "$(git status --porcelain)"
+          printf 'validated\n' > "$ARTIFACT_DIR/validated.txt"
+
+      - name: Retain rendered closure package
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-final-closure-${{ github.sha }}
+          path: ${{ runner.temp }}/hepta-closure-artifact
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 2
