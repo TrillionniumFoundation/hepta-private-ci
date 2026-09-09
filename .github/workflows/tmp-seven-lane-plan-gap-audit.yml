@@ -1,0 +1,183 @@
+name: tmp-seven-lane-plan-gap-audit
+
+on:
+  push:
+    branches:
+      - ops/lane-f-final-source-export-20260910
+    paths:
+      - .github/workflows/tmp-seven-lane-plan-gap-audit.yml
+
+permissions:
+  contents: read
+  pull-requests: write
+
+env:
+  BASE_BRANCH: codex/hepta-all-gap-closure-20260908
+  HEAD_BRANCH: integration/hepta-seven-lane-gap-closure-20260910-r2
+
+jobs:
+  audit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - name: Wait for candidate PR
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          for attempt in $(seq 1 120); do
+            number="$(gh pr list --repo "${GITHUB_REPOSITORY}" --state open --head "${HEAD_BRANCH}" --base "${BASE_BRANCH}" --json number --jq '.[0].number // empty')"
+            if [[ -n "${number}" ]]; then
+              printf 'PR_NUMBER=%s\n' "${number}" >>"${GITHUB_ENV}"
+              exit 0
+            fi
+            sleep 30
+          done
+          exit 91
+
+      - name: Check out exact candidate
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.HEAD_BRANCH }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Build exact structured gap ledger
+        id: ledger
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "${RUNNER_TEMP}/gap-audit"
+          python3 - <<'PY'
+          from __future__ import annotations
+
+          import json
+          import os
+          from collections import Counter
+          from pathlib import Path
+          from typing import Any
+
+          root = Path.cwd()
+          exact_statuses = {
+              "planned",
+              "source_implemented_execution_pending",
+              "source_implemented_semantic_review_pending",
+              "blocked_external",
+          }
+          ignored = {".git", "node_modules", "target", "bazel-bin", "bazel-out", "bazel-testlogs"}
+          rows: list[dict[str, Any]] = []
+
+          def walk(value: Any, pointer: str, file: Path) -> None:
+              if isinstance(value, dict):
+                  for key, item in value.items():
+                      child = f"{pointer}/{key.replace('~','~0').replace('/','~1')}"
+                      if isinstance(item, str) and item in exact_statuses:
+                          identity = None
+                          for candidate in ("id", "workPackageId", "packageId", "module", "name"):
+                              if isinstance(value.get(candidate), str):
+                                  identity = value[candidate]
+                                  break
+                          rows.append({
+                              "file": file.as_posix(),
+                              "pointer": child,
+                              "status": item,
+                              "identity": identity,
+                          })
+                      walk(item, child, file)
+              elif isinstance(value, list):
+                  for index, item in enumerate(value):
+                      walk(item, f"{pointer}/{index}", file)
+
+          for file in sorted(root.rglob("*.json")):
+              if any(part in ignored for part in file.parts):
+                  continue
+              try:
+                  data = json.loads(file.read_text(encoding="utf-8"))
+              except Exception:
+                  continue
+              walk(data, "", file.relative_to(root))
+
+          counts = Counter(row["status"] for row in rows)
+          repository_open = counts["planned"] + counts["source_implemented_execution_pending"]
+          review_open = counts["source_implemented_semantic_review_pending"]
+          external_open = counts["blocked_external"]
+          report = {
+              "schema": "hepta.convergence-gap-audit.v1",
+              "candidateSha": os.popen("git rev-parse HEAD").read().strip(),
+              "counts": dict(sorted(counts.items())),
+              "repositoryControlledOpen": repository_open,
+              "semanticReviewOpen": review_open,
+              "externalOpen": external_open,
+              "allStructuredGapsClosed": not rows,
+              "entries": rows,
+              "claimBoundary": {
+                  "statusOccurrenceAuditOnly": True,
+                  "productionActivationProved": False,
+                  "independentAcceptanceProved": False,
+                  "externalEffectsProved": False,
+              },
+          }
+          out = Path(os.environ["RUNNER_TEMP"]) / "gap-audit" / "REMAINING_GAPS.json"
+          out.write_text(json.dumps(report, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+          summary = Path(os.environ["RUNNER_TEMP"]) / "gap-audit" / "SUMMARY.md"
+          lines = [
+              "## Seven-lane structured gap audit",
+              "",
+              f"- candidate: `{report['candidateSha']}`",
+              f"- repository-controlled open: **{repository_open}**",
+              f"- semantic-review open: **{review_open}**",
+              f"- external open: **{external_open}**",
+              "",
+          ]
+          for status in sorted(exact_statuses):
+              lines.append(f"- `{status}`: {counts[status]}")
+          lines.extend(["", "### Exact open entries", ""])
+          for row in rows[:200]:
+              identity = f" — `{row['identity']}`" if row["identity"] else ""
+              lines.append(f"- `{row['status']}` — `{row['file']}{row['pointer']}`{identity}")
+          if len(rows) > 200:
+              lines.append(f"- … {len(rows)-200} additional entries are in the JSON artifact")
+          summary.write_text("\n".join(lines) + "\n", encoding="utf-8")
+          with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as handle:
+              handle.write(f"repository_open={repository_open}\n")
+              handle.write(f"review_open={review_open}\n")
+              handle.write(f"external_open={external_open}\n")
+          PY
+          cat "${RUNNER_TEMP}/gap-audit/SUMMARY.md" >>"${GITHUB_STEP_SUMMARY}"
+
+      - name: Update candidate PR audit comment
+        if: always()
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          marker='<!-- hepta-seven-lane-gap-audit -->'
+          body="${RUNNER_TEMP}/gap-audit/comment.md"
+          {
+            echo "${marker}"
+            cat "${RUNNER_TEMP}/gap-audit/SUMMARY.md"
+            echo
+            echo 'This is a structural status audit. It does not turn source or CI evidence into production, independent, hardware, longitudinal, promotion or release authority.'
+          } >"${body}"
+          comment_id="$(gh api "repos/${GITHUB_REPOSITORY}/issues/${PR_NUMBER}/comments" --paginate --jq ".[] | select(.body | contains(\"${marker}\")) | .id" | head -n 1)"
+          if [[ -n "${comment_id}" ]]; then
+            gh api --method PATCH "repos/${GITHUB_REPOSITORY}/issues/comments/${comment_id}" -F "body=@${body}"
+          else
+            gh pr comment "${PR_NUMBER}" --repo "${GITHUB_REPOSITORY}" --body-file "${body}"
+          fi
+
+      - name: Retain exact gap ledger
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: seven-lane-remaining-gaps-${{ github.run_id }}
+          path: ${{ runner.temp }}/gap-audit
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Enforce repository-controlled closure
+        shell: bash
+        run: |
+          test "${{ steps.ledger.outputs.repository_open }}" = '0'
