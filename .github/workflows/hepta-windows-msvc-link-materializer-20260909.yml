@@ -164,7 +164,7 @@ jobs:
 
           bash -n .github/scripts/run-bazel-ci.sh
           git diff --check
-          changed="$(git diff --name-only HEAD | sort)"
+          changed="$( { git diff --name-only HEAD; git ls-files --others --exclude-standard; } | sort -u)"
           expected="$(printf '%s\n' \
             .github/scripts/run-bazel-ci.sh \
             MODULE.bazel \
@@ -204,7 +204,8 @@ jobs:
 
           ./scripts/check-module-bazel-lock.sh
           git diff --check
-          unexpected="$(git diff --name-only HEAD | grep -Ev '^(.github/scripts/run-bazel-ci.sh|MODULE.bazel|MODULE.bazel.lock|patches/BUILD.bazel|patches/rules_rust_windows_msvc_user_link_flags.patch)$' || true)"
+          observed="$( { git diff --name-only HEAD; git ls-files --others --exclude-standard; } | sort -u)"
+          unexpected="$(printf '%s\n' "${observed}" | grep -Ev '^(.github/scripts/run-bazel-ci.sh|MODULE.bazel|MODULE.bazel.lock|patches/BUILD.bazel|patches/rules_rust_windows_msvc_user_link_flags.patch)$' || true)"
           test -z "${unexpected}"
 
       - name: Atomically amend exact candidate
