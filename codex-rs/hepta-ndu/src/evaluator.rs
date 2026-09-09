@@ -87,12 +87,7 @@ pub fn evaluate_candidates_with_policy(
 
     let mut grouped: BTreeMap<StableId, CandidateAccumulator> = BTreeMap::new();
     for contribution in set.contributions {
-        accumulate(
-            &mut grouped,
-            contribution,
-            &profile,
-            &validated_policy,
-        )?;
+        accumulate(&mut grouped, contribution, &profile, &validated_policy)?;
     }
     if grouped.len() > MAX_CANDIDATES {
         return Err(NduError::CandidateLimitExceeded);

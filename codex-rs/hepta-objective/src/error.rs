@@ -54,9 +54,8 @@ impl fmt::Display for ObjectiveError {
                 formatter,
                 "soft preference weight must be in [0, 1] for dimension {dimension}"
             ),
-            Self::AbstainUnavailable => formatter.write_str(
-                "the intrinsic abstain action must remain legal and confirmation-free",
-            ),
+            Self::AbstainUnavailable => formatter
+                .write_str("the intrinsic abstain action must remain legal and confirmation-free"),
             Self::UntrustedAuthorityEscalation => formatter.write_str(
                 "untrusted evidence cannot create privileged constraints or legal actions",
             ),

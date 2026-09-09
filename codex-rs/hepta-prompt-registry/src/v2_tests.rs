@@ -110,14 +110,7 @@ fn exact_model_tuple_and_frozen_snapshot_gate_delivery() {
         .snapshot_v2(vector, &tuple)
         .unwrap_or_else(|error| panic!("snapshot: {error}"));
     let compatible = registry
-        .read_compatible_v2(
-            &snapshot,
-            vector,
-            &tuple,
-            10,
-            vec![id("factor:1")],
-            8,
-        )
+        .read_compatible_v2(&snapshot, vector, &tuple, 10, vec![id("factor:1")], 8)
         .unwrap_or_else(|error| panic!("compatible read: {error}"));
     assert_eq!(compatible.bindings, vec![binding()]);
     compatible
@@ -127,14 +120,7 @@ fn exact_model_tuple_and_frozen_snapshot_gate_delivery() {
     let mut wrong_tuple = tuple.clone();
     wrong_tuple.tokenizer_digest = digest("wrong-tokenizer");
     assert_eq!(
-        registry.read_compatible_v2(
-            &snapshot,
-            vector,
-            &wrong_tuple,
-            10,
-            Vec::new(),
-            8,
-        ),
+        registry.read_compatible_v2(&snapshot, vector, &wrong_tuple, 10, Vec::new(), 8,),
         Err(PromptRegistryV2Error::SnapshotStale)
     );
 }
@@ -155,14 +141,7 @@ fn revocation_invalidates_old_snapshot_and_disables_realization() {
         .unwrap_or_else(|error| panic!("revoke: {error}"));
     assert!(registry.revocation_frontier() > 0);
     assert_eq!(
-        registry.read_compatible_v2(
-            &old_snapshot,
-            vector,
-            &tuple,
-            10,
-            Vec::new(),
-            8,
-        ),
+        registry.read_compatible_v2(&old_snapshot, vector, &tuple, 10, Vec::new(), 8,),
         Err(PromptRegistryV2Error::SnapshotStale)
     );
     assert!(
@@ -185,14 +164,7 @@ fn expired_or_missing_required_realization_fails_closed() {
         .snapshot_v2(vector, &tuple)
         .unwrap_or_else(|error| panic!("snapshot: {error}"));
     assert_eq!(
-        registry.read_compatible_v2(
-            &snapshot,
-            vector,
-            &tuple,
-            100,
-            vec![id("factor:1")],
-            8,
-        ),
+        registry.read_compatible_v2(&snapshot, vector, &tuple, 100, vec![id("factor:1")], 8,),
         Err(PromptRegistryV2Error::RequiredFactorUnavailable)
     );
 }

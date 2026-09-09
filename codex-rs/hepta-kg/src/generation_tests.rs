@@ -17,8 +17,7 @@ fn revision(value: u64) -> Revision {
 }
 
 fn probability(raw: u64) -> ProbabilityQ32 {
-    ProbabilityQ32::from_raw(raw)
-        .unwrap_or_else(|error| panic!("valid probability: {error}"))
+    ProbabilityQ32::from_raw(raw).unwrap_or_else(|error| panic!("valid probability: {error}"))
 }
 
 fn support(label: &str, tombstoned: bool) -> KnowledgeSupportV2 {
@@ -85,12 +84,7 @@ fn incremental_and_full_rebuilds_are_semantically_equal() {
     )
     .unwrap_or_else(|error| panic!("valid first generation: {error}"));
 
-    let mut updated_edge = edge(
-        "a",
-        "b",
-        KnowledgeRelationKindV2::Supports,
-        "edge-ab-v2",
-    );
+    let mut updated_edge = edge("a", "b", KnowledgeRelationKindV2::Supports, "edge-ab-v2");
     updated_edge.confidence = probability(3_u64 << 30);
     let delta = KnowledgeProjectionDeltaV2 {
         expected_predecessor_digest: first.generation_digest,
@@ -123,12 +117,7 @@ fn incremental_and_full_rebuilds_are_semantically_equal() {
 
 #[test]
 fn tombstoning_last_edge_support_removes_relation() {
-    let mut removed = edge(
-        "a",
-        "b",
-        KnowledgeRelationKindV2::Contradicts,
-        "edge-ab",
-    );
+    let mut removed = edge("a", "b", KnowledgeRelationKindV2::Contradicts, "edge-ab");
     removed.supports[0].tombstoned = true;
     let generation = build_complete_generation(
         generation(1),
@@ -147,11 +136,9 @@ fn incomplete_generation_and_wrong_predecessor_cannot_publish() {
         Err(KnowledgeGenerationErrorV2::IncompleteSourceCut)
     );
 
-    let candidate = build_complete_generation(
-        generation(2),
-        input(vec![node("a", "a")], Vec::new()),
-    )
-    .unwrap_or_else(|error| panic!("valid candidate: {error}"));
+    let candidate =
+        build_complete_generation(generation(2), input(vec![node("a", "a")], Vec::new()))
+            .unwrap_or_else(|error| panic!("valid candidate: {error}"));
     assert_eq!(
         publish_generation(None, &candidate),
         Err(KnowledgeGenerationErrorV2::InvalidPredecessor)
@@ -164,12 +151,7 @@ fn publication_is_predecessor_bound_and_query_is_generation_bound() {
         generation(1),
         input(
             vec![node("a", "a"), node("b", "b")],
-            vec![edge(
-                "a",
-                "b",
-                KnowledgeRelationKindV2::Causes,
-                "edge-ab",
-            )],
+            vec![edge("a", "b", KnowledgeRelationKindV2::Causes, "edge-ab")],
         ),
     )
     .unwrap_or_else(|error| panic!("valid first: {error}"));
@@ -229,12 +211,7 @@ fn supports_and_contradicts_remain_distinct_edges() {
         input(
             vec![node("a", "a"), node("b", "b")],
             vec![
-                edge(
-                    "a",
-                    "b",
-                    KnowledgeRelationKindV2::Supports,
-                    "support-edge",
-                ),
+                edge("a", "b", KnowledgeRelationKindV2::Supports, "support-edge"),
                 edge(
                     "a",
                     "b",
