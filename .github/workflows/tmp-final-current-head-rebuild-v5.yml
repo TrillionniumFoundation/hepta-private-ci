@@ -1,0 +1,356 @@
+name: tmp-final-current-head-rebuild-v5
+
+on:
+  push:
+    branches:
+      - ops/lane-f-final-source-export-20260910
+    paths:
+      - .github/workflows/tmp-final-current-head-rebuild-v5.yml
+
+permissions:
+  contents: write
+  pull-requests: write
+
+env:
+  FOUNDATION_BRANCH: codex/hepta-all-gap-closure-20260908
+  CANDIDATE_BRANCH: integration/hepta-seven-lane-gap-closure-20260910-v5
+
+jobs:
+  rebuild:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 180
+    steps:
+      - name: Fetch complete current repository graph
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 0
+
+      - name: Construct exact current-head source graph
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          git fetch origin '+refs/heads/*:refs/remotes/origin/*' --prune
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+
+          foundation="refs/remotes/origin/${FOUNDATION_BRANCH}"
+          git rev-parse --verify "${foundation}^{commit}"
+          git switch --detach "${foundation}"
+          git switch -C "${CANDIDATE_BRANCH}"
+          mkdir -p qualification/convergence "${RUNNER_TEMP}/v5"
+
+          latest_matching() {
+            local pattern="$1"
+            git for-each-ref --sort=-committerdate --format='%(refname:strip=3)' refs/remotes/origin/codex |
+              grep -Ei "${pattern}" | head -n 1 || true
+          }
+
+          declare -a branches=(
+            'codex/hepta-native-source-closed-world-20260909'
+          )
+          choose() {
+            local preferred="$1" pattern="$2" branch=''
+            if [[ -n "${preferred}" ]] && git show-ref --verify --quiet "refs/remotes/origin/${preferred}"; then
+              branch="${preferred}"
+            else
+              branch="$(latest_matching "${pattern}")"
+            fi
+            [[ -n "${branch}" ]] && branches+=("${branch}")
+          }
+          choose 'codex/lane-a-gap-closure-20260910' 'lane-a.*20260910|20260910.*lane-a'
+          choose 'codex/hepta-lane-b-gap-closure-20260910' 'lane-b.*20260910|20260910.*lane-b'
+          choose 'codex/lane-c-full-gap-closure-20260910' 'lane-c.*20260910|20260910.*lane-c'
+          choose '' 'lane-d.*20260910|20260910.*lane-d'
+          choose 'codex/hepta-lane-e-gap-closure-20260910' 'lane-e.*20260910|20260910.*lane-e'
+          choose 'codex/lane-f-gap-closure-20260910' 'lane-f.*20260910|20260910.*lane-f'
+          choose '' 'lane-g.*20260910|20260910.*lane-g'
+
+          python3 - <<'PY'
+          import json,subprocess
+          from pathlib import Path
+          source=[{
+              'role':'foundation',
+              'branch':'codex/hepta-all-gap-closure-20260908',
+              'sha':subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip(),
+          }]
+          Path('/tmp/source-heads.json').write_text(json.dumps(source),encoding='utf-8')
+          PY
+
+          add_receipt() {
+            python3 - "$1" "$2" <<'PY'
+          import json,sys
+          from pathlib import Path
+          path=Path('/tmp/source-heads.json')
+          rows=json.loads(path.read_text(encoding='utf-8'))
+          rows.append({'role':'merge','branch':sys.argv[1],'sha':sys.argv[2]})
+          path.write_text(json.dumps(rows),encoding='utf-8')
+          PY
+          }
+
+          declare -A seen=()
+          for branch in "${branches[@]}"; do
+            [[ -n "${seen[${branch}]:-}" ]] && continue
+            seen["${branch}"]=1
+            ref="refs/remotes/origin/${branch}"
+            git rev-parse --verify "${ref}^{commit}"
+            add_receipt "${branch}" "$(git rev-parse "${ref}")"
+            git merge-base --is-ancestor "${ref}" HEAD && continue
+            if git merge --no-ff --no-edit "${ref}"; then continue; fi
+            mapfile -t conflicts < <(git diff --name-only --diff-filter=U)
+            safe=1
+            for file in "${conflicts[@]}"; do
+              case "${file}" in
+                docs/STATUS.md|qualification/module-execution-dossiers/NATIVE_BINDINGS.json|qualification/convergence/*)
+                  git checkout --ours -- "${file}"; git add "${file}" ;;
+                *) echo "CANONICAL_LANE_SOURCE_CONFLICT ${branch} ${file}" >&2; safe=0 ;;
+              esac
+            done
+            if [[ "${safe}" != 1 ]]; then git merge --abort || true; exit 141; fi
+            git commit --no-edit
+          done
+
+          gh pr list --repo "${GITHUB_REPOSITORY}" --state open --limit 100 \
+            --json number,title,headRefName,baseRefName,updatedAt >"${RUNNER_TEMP}/v5/open-prs.json"
+
+          python3 - <<'PY'
+          from __future__ import annotations
+          import json
+          from pathlib import Path
+          from typing import Any
+          root=Path.cwd()
+          statuses={'planned','source_implemented_execution_pending','source_implemented_semantic_review_pending'}
+          ignored={'.git','node_modules','target','bazel-bin','bazel-out','bazel-testlogs'}
+          binding_rows=json.loads((root/'qualification/module-execution-dossiers/NATIVE_BINDINGS.json').read_text(encoding='utf-8')).get('observations',[])
+          roots={}
+          for row in binding_rows:
+              module=row.get('module'); path=row.get('path')
+              if isinstance(module,str) and isinstance(path,str):
+                  parts=Path(path).parts
+                  roots[module]=Path(*parts[:2]).as_posix() if len(parts)>=2 else path
+          gaps=[]
+          def walk(x:Any,file:Path,pointer=''):
+              if isinstance(x,dict):
+                  for k,v in x.items():
+                      p=f'{pointer}/{k}'
+                      if isinstance(v,str) and v in statuses:
+                          identity=next((x.get(key) for key in ('id','workPackageId','packageId','module','name') if isinstance(x.get(key),str)),None)
+                          module=x.get('module') if isinstance(x.get('module'),str) else None
+                          gaps.append({'file':file.as_posix(),'status':v,'identity':identity,'module':module,'root':roots.get(module or '')})
+                      walk(v,file,p)
+              elif isinstance(x,list):
+                  for i,v in enumerate(x): walk(v,file,f'{pointer}/{i}')
+          for path in root.rglob('*.json'):
+              if any(part in ignored for part in path.parts): continue
+              try: walk(json.loads(path.read_text(encoding='utf-8')),path.relative_to(root))
+              except Exception: pass
+          Path('/tmp/current-gaps.json').write_text(json.dumps(gaps,indent=2,ensure_ascii=False)+'\n',encoding='utf-8')
+          PY
+
+          python3 - "${RUNNER_TEMP}/v5/open-prs.json" >"${RUNNER_TEMP}/v5/candidate-prs.txt" <<'PY'
+          import json,sys
+          from datetime import datetime,timezone
+          rows=json.load(open(sys.argv[1],encoding='utf-8'))
+          cutoff=datetime(2026,9,9,tzinfo=timezone.utc)
+          for row in rows:
+              head=row.get('headRefName') or ''
+              if head.startswith(('ops/','archive/','backup/')): continue
+              if not head.startswith(('codex/','integration/','fix/','reviewer/')): continue
+              if head=='integration/hepta-seven-lane-gap-closure-20260910-v5': continue
+              try: stamp=datetime.fromisoformat((row.get('updatedAt') or '').replace('Z','+00:00'))
+              except Exception: continue
+              if stamp>=cutoff: print(row['number'])
+          PY
+
+          : >"${RUNNER_TEMP}/v5/overlap-prs.tsv"
+          while IFS= read -r number; do
+            gh pr view "${number}" --repo "${GITHUB_REPOSITORY}" --json number,title,headRefName,baseRefName,files >"${RUNNER_TEMP}/v5/pr-${number}.json"
+            python3 - /tmp/current-gaps.json "${RUNNER_TEMP}/v5/pr-${number}.json" >>"${RUNNER_TEMP}/v5/overlap-prs.tsv" <<'PY'
+          import json,re,sys
+          gaps=json.load(open(sys.argv[1],encoding='utf-8'))
+          pr=json.load(open(sys.argv[2],encoding='utf-8'))
+          head=pr.get('headRefName') or ''
+          title=(pr.get('title') or '')+' '+head
+          files=[x.get('path','') for x in pr.get('files',[])]
+          reasons=[]
+          for gap in gaps:
+              for value,label in ((gap.get('identity'),'identity'),(gap.get('module'),'module')):
+                  if isinstance(value,str) and len(value)>=4 and re.search(re.escape(value),title,re.I): reasons.append(f'{label}:{value}')
+              root=gap.get('root') or ''
+              if root and any(path==root or path.startswith(root.rstrip('/')+'/') for path in files): reasons.append('root:'+root)
+              ledger=gap.get('file') or ''
+              if ledger and ledger in files: reasons.append('ledger:'+ledger)
+          if reasons:
+              print(f"{pr['number']}\t{head}\t{';'.join(sorted(set(reasons)))}\t{pr.get('title','').replace(chr(9),' ')}")
+          PY
+          done <"${RUNNER_TEMP}/v5/candidate-prs.txt"
+          cp "${RUNNER_TEMP}/v5/overlap-prs.tsv" qualification/convergence/V5_GAP_OVERLAP_PRS.tsv
+
+          while IFS=$'\t' read -r number branch reason title; do
+            [[ -z "${branch}" ]] && continue
+            ref="refs/remotes/origin/${branch}"
+            git show-ref --verify --quiet "${ref}" || continue
+            git merge-base --is-ancestor "${ref}" HEAD && continue
+            add_receipt "${branch}" "$(git rev-parse "${ref}")"
+            if git merge --no-ff --no-edit "${ref}"; then continue; fi
+            mapfile -t conflicts < <(git diff --name-only --diff-filter=U)
+            safe=1
+            for file in "${conflicts[@]}"; do
+              case "${file}" in
+                docs/STATUS.md|qualification/module-execution-dossiers/NATIVE_BINDINGS.json|qualification/convergence/*)
+                  git checkout --ours -- "${file}"; git add "${file}" ;;
+                *) echo "OVERLAP_PR_SOURCE_CONFLICT #${number} ${branch} ${file}" >&2; safe=0 ;;
+              esac
+            done
+            if [[ "${safe}" != 1 ]]; then git merge --abort || true; exit 142; fi
+            git commit --no-edit
+          done <"${RUNNER_TEMP}/v5/overlap-prs.tsv"
+
+          python3 - <<'PY'
+          from __future__ import annotations
+          import hashlib,json
+          from pathlib import Path
+          root=Path.cwd()
+          path=root/'qualification/module-execution-dossiers/NATIVE_BINDINGS.json'
+          data=json.loads(path.read_text(encoding='utf-8')); rows=data.get('observations')
+          if not isinstance(rows,list) or len(rows)!=40: raise SystemExit('native source ledger must contain exactly 40 modules')
+          seen=set()
+          for row in rows:
+              module=row.get('module'); source_path=row.get('path')
+              if not isinstance(module,str) or module in seen: raise SystemExit(f'invalid native module {module!r}')
+              seen.add(module)
+              if not isinstance(source_path,str): raise SystemExit(f'missing source path for {module}')
+              source=root/source_path
+              if not source.is_file(): raise SystemExit(f'missing source {source_path}')
+              payload=source.read_bytes()
+              row['blobSha']=hashlib.sha1(f'blob {len(payload)}\0'.encode('ascii')+payload,usedforsecurity=False).hexdigest()
+          path.write_text(json.dumps(data,indent=2,ensure_ascii=False)+'\n',encoding='utf-8')
+          source_heads=json.loads(Path('/tmp/source-heads.json').read_text(encoding='utf-8'))
+          (root/'qualification/convergence/V5_SOURCE_HEADS.json').write_text(json.dumps({'schema':'hepta.v5-source-heads.v1','sources':source_heads},indent=2)+'\n',encoding='utf-8')
+          PY
+
+          find .github/workflows -maxdepth 1 -type f \( -name 'tmp-*.yml' -o -name 'tmp-*.yaml' \) -delete
+          python3 scripts/hepta-readiness.py generate-status || true
+          python3 scripts/hepta-implementation-dossiers.py generate-status || true
+          python3 scripts/hepta-algorithm-docs.py generate-status || true
+          python3 scripts/hepta-cns.py generate-status || true
+          python3 scripts/hepta-docs.py generate-status || true
+          git add -A
+          git diff --cached --check
+          if ! git diff --cached --quiet; then git commit -m 'chore(convergence): normalize final current-head candidate v5'; fi
+          test -z "$(git status --porcelain)"
+
+      - name: Run repository-controlled closure suite
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta-readiness.py self-test
+          python3 scripts/hepta-readiness.py generate-status --check
+          python3 scripts/hepta-readiness.py verify
+          python3 scripts/hepta-implementation-dossiers.py self-test
+          python3 scripts/hepta-implementation-dossiers.py generate-status --check
+          python3 scripts/hepta-implementation-dossiers.py verify
+          python3 scripts/hepta-technical-closure.py self-test
+          python3 scripts/hepta-technical-closure.py verify
+          python3 qualification/module-execution-dossiers/implementation_contracts.py self-test
+          python3 qualification/module-execution-dossiers/implementation_contracts.py verify-repository
+          python3 scripts/hepta-module-docs.py self-test
+          python3 scripts/hepta-module-docs.py verify
+          python3 scripts/hepta-algorithm-docs.py self-test
+          python3 scripts/hepta-algorithm-docs.py verify-sources
+          python3 scripts/hepta-algorithm-docs.py generate-status --check
+          python3 scripts/hepta-algorithm-docs.py verify
+          python3 scripts/hepta-cns.py self-test
+          python3 scripts/hepta-cns.py generate-status --check
+          python3 scripts/hepta-cns.py verify
+          python3 scripts/hepta-hnmf.py self-test
+          python3 scripts/hepta-hnmf.py verify
+          python3 scripts/hepta-docs.py self-test
+          python3 scripts/hepta-docs.py generate-status
+          git diff --exit-code -- docs/STATUS.md
+          python3 scripts/hepta-docs.py verify
+          if [[ -f scripts/hepta-lane-b-truth.py ]]; then
+            python3 scripts/hepta-lane-b-truth.py self-test
+            python3 -m unittest scripts/test_hepta_lane_b_truth.py
+            python3 scripts/hepta-lane-b-truth.py verify
+            python3 scripts/hepta-lane-b-docs.py verify
+          fi
+          cargo fmt --manifest-path codex-rs/Cargo.toml --all -- --check
+          git diff --check
+          test -z "$(git status --porcelain)"
+
+      - name: Audit structured gap state
+        id: gaps
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from __future__ import annotations
+          import json,os
+          from collections import Counter
+          from pathlib import Path
+          from typing import Any
+          root=Path.cwd(); statuses={'planned','source_implemented_execution_pending','source_implemented_semantic_review_pending','blocked_external'}
+          ignored={'.git','node_modules','target','bazel-bin','bazel-out','bazel-testlogs'}; rows=[]
+          def walk(x:Any,file:Path,pointer=''):
+              if isinstance(x,dict):
+                  for k,v in x.items():
+                      p=f'{pointer}/{k}'
+                      if isinstance(v,str) and v in statuses:
+                          identity=next((x.get(key) for key in ('id','workPackageId','packageId','module','name') if isinstance(x.get(key),str)),None)
+                          rows.append({'status':v,'file':file.as_posix(),'pointer':p,'identity':identity})
+                      walk(v,file,p)
+              elif isinstance(x,list):
+                  for i,v in enumerate(x): walk(v,file,f'{pointer}/{i}')
+          for path in root.rglob('*.json'):
+              if any(part in ignored for part in path.parts): continue
+              try: walk(json.loads(path.read_text(encoding='utf-8')),path.relative_to(root))
+              except Exception: pass
+          counts=Counter(x['status'] for x in rows)
+          report={'candidateSha':os.popen('git rev-parse HEAD').read().strip(),'counts':dict(counts),'repositoryControlledOpen':counts['planned']+counts['source_implemented_execution_pending'],'semanticReviewOpen':counts['source_implemented_semantic_review_pending'],'externalOpen':counts['blocked_external'],'entries':rows}
+          Path('qualification/convergence/V5_REMAINING_GAPS.json').write_text(json.dumps(report,indent=2,ensure_ascii=False)+'\n',encoding='utf-8')
+          with open(os.environ['GITHUB_OUTPUT'],'a',encoding='utf-8') as out:
+              out.write(f"repository={report['repositoryControlledOpen']}\nreview={report['semanticReviewOpen']}\nexternal={report['externalOpen']}\n")
+          PY
+          git add qualification/convergence/V5_REMAINING_GAPS.json
+          git diff --cached --check
+          git commit -m 'chore(convergence): record exact v5 remaining-gap ledger'
+          test -z "$(git status --porcelain)"
+
+      - name: Publish candidate and draft PR
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          git push --force-with-lease origin "HEAD:refs/heads/${CANDIDATE_BRANCH}"
+          body="${RUNNER_TEMP}/v5/body.md"
+          {
+            echo '## Exact current-head rebuild v5'
+            echo
+            printf -- '- base: `%s` / `%s`\n' "${FOUNDATION_BRANCH}" "$(git rev-parse "refs/remotes/origin/${FOUNDATION_BRANCH}")"
+            printf -- '- head: `%s` / `%s`\n' "${CANDIDATE_BRANCH}" "$(git rev-parse HEAD)"
+            printf -- '- repository-controlled structured gaps: `%s`\n' '${{ steps.gaps.outputs.repository }}'
+            printf -- '- semantic-review gaps: `%s`\n' '${{ steps.gaps.outputs.review }}'
+            printf -- '- external gaps: `%s`\n' '${{ steps.gaps.outputs.external }}'
+            echo
+            echo 'Source heads and exact remaining entries are committed under `qualification/convergence/`.'
+            echo
+            echo 'This draft does not self-issue production activation, independent acceptance, hardware safety, external effects, longitudinal efficacy, promotion or release.'
+          } >"${body}"
+          number="$(gh pr list --repo "${GITHUB_REPOSITORY}" --state open --head "${CANDIDATE_BRANCH}" --base "${FOUNDATION_BRANCH}" --json number --jq '.[0].number // empty')"
+          if [[ -z "${number}" ]]; then
+            gh pr create --repo "${GITHUB_REPOSITORY}" --base "${FOUNDATION_BRANCH}" --head "${CANDIDATE_BRANCH}" --title 'chore(convergence): final current-head seven-lane candidate v5' --body-file "${body}" --draft
+          else
+            gh pr edit "${number}" --repo "${GITHUB_REPOSITORY}" --body-file "${body}"
+          fi
+
+      - name: Retain rebuild diagnostics
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: final-current-head-rebuild-v5-${{ github.run_id }}
+          path: ${{ runner.temp }}/v5
+          if-no-files-found: warn
+          retention-days: 30
