@@ -21,6 +21,9 @@ pub struct AuthEnvelope {
     pub subject_id: StableId,
     pub scope_digest: Digest32,
     pub payload_digest: Digest32,
+    /// Opaque reference to authentication material verified by a trusted
+    /// upstream boundary. This crate does not verify that signature; nonzero is
+    /// only a structural admission check and never creates authority.
     pub signature_digest: Digest32,
     pub sequence: u64,
     pub expires_at_ms: u64,
