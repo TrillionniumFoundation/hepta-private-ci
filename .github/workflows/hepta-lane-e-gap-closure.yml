@@ -1,0 +1,92 @@
+name: Hepta Lane E gap closure
+
+on:
+  push:
+    branches:
+      - codex/hepta-lane-e-gap-closure-20260910
+  pull_request:
+    paths:
+      - codex-rs/hepta-learning-ledger/**
+      - codex-rs/hepta-learning-artifacts/**
+      - codex-rs/hepta-bellman-operator/**
+      - codex-rs/hepta-intelligence-eval/**
+      - codex-rs/hepta-shadow-qualification/**
+      - docs/lane-e/**
+      - qualification/lane-e/**
+      - scripts/hepta-lane-e-closure.py
+      - .github/workflows/hepta-lane-e-gap-closure.yml
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-lane-e-gap-closure-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  rust-closure:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Install pinned Rust toolchain
+        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: 1.95.0
+          components: clippy,rustfmt
+
+      - name: Bind exact source
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${GITHUB_SHA}"
+          git rev-parse HEAD HEAD^{tree}
+
+      - name: Locked all-target compilation
+        working-directory: codex-rs
+        run: >-
+          cargo check --locked
+          -p codex-hepta-learning-ledger
+          -p codex-hepta-learning-artifacts
+          -p codex-hepta-bellman-operator
+          -p codex-hepta-intelligence-eval
+          --all-targets
+
+      - name: Lane E regression tests
+        working-directory: codex-rs
+        run: >-
+          cargo test --locked
+          -p codex-hepta-learning-ledger
+          -p codex-hepta-learning-artifacts
+          -p codex-hepta-bellman-operator
+          -p codex-hepta-intelligence-eval
+          -- --nocapture
+
+      - name: Strict Lane E lint
+        working-directory: codex-rs
+        run: >-
+          cargo clippy --locked
+          -p codex-hepta-learning-ledger
+          -p codex-hepta-learning-artifacts
+          -p codex-hepta-bellman-operator
+          -p codex-hepta-intelligence-eval
+          --all-targets -- -D warnings
+
+      - name: Formatting and clean source
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo fmt --manifest-path codex-rs/Cargo.toml \
+            --package codex-hepta-learning-ledger \
+            --package codex-hepta-learning-artifacts \
+            --package codex-hepta-bellman-operator \
+            --package codex-hepta-intelligence-eval \
+            -- --check
+          git diff --check
+          git diff --exit-code
+          test -z "$(git status --porcelain --untracked-files=no)"
