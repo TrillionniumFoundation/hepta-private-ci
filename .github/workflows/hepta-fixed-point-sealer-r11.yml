@@ -1,0 +1,106 @@
+name: Hepta race-free fixed-point convergence seal r11
+
+on:
+  push:
+    branches:
+      - ops/hepta-global-gap-closure-controller-20260910-r1
+    paths:
+      - .github/workflows/hepta-fixed-point-sealer-r11.yml
+      - scripts/hepta-fixed-point-sealer-r10.py
+      - scripts/hepta-fixed-point-sealer-r11.py
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+  actions: read
+
+concurrency:
+  group: hepta-fixed-point-sealer-r11
+  cancel-in-progress: false
+
+jobs:
+  seal:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 180
+    env:
+      HEPTA_R8_REF: origin/integration/hepta-all-gap-closure-20260910-r8
+      HEPTA_R9_REF: origin/integration/hepta-all-gap-closure-20260910-r9
+      HEPTA_SEALED_TARGET: integration/hepta-all-gap-closure-20260910-sealed-r11
+    steps:
+      - name: Check out exact sealer source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Bind and syntax-check sealer bundle
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${GITHUB_SHA}"
+          git rev-parse HEAD HEAD^{tree}
+          python3 -m py_compile \
+            scripts/hepta-fixed-point-sealer-r10.py \
+            scripts/hepta-fixed-point-sealer-r11.py
+          mkdir -p "${RUNNER_TEMP}/hepta-r11-sealer"
+          cp scripts/hepta-fixed-point-sealer-r10.py \
+            scripts/hepta-fixed-point-sealer-r11.py \
+            "${RUNNER_TEMP}/hepta-r11-sealer/"
+
+      - name: Wait for bound r8/r9 status and seal
+        id: seal
+        shell: bash
+        run: |
+          set +e
+          python3 "${RUNNER_TEMP}/hepta-r11-sealer/hepta-fixed-point-sealer-r11.py"
+          rc=$?
+          set -e
+          echo "return_code=${rc}" >> "${GITHUB_OUTPUT}"
+          exit "${rc}"
+
+      - name: Upload race-free seal receipts
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-fixed-point-seal-r11-${{ github.run_id }}-${{ github.run_attempt }}
+          path: qualification/global-gap-closure-seal-r11
+          if-no-files-found: warn
+          retention-days: 30
+
+      - name: Create or locate sealed draft PR
+        if: steps.seal.outputs.return_code == '0'
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          BASE_BRANCH: ops/hepta-final-convergence-review-anchor-20260909
+          HEAD_BRANCH: integration/hepta-all-gap-closure-20260910-sealed-r11
+        run: |
+          set -euo pipefail
+          existing="$(gh pr list --repo "${GITHUB_REPOSITORY}" --state open \
+            --head "${HEAD_BRANCH}" --base "${BASE_BRANCH}" --json number \
+            --jq '.[0].number // empty')"
+          if [[ -n "${existing}" ]]; then
+            echo "sealed draft PR already exists: #${existing}"
+            exit 0
+          fi
+          body="${RUNNER_TEMP}/hepta-r11-pr.md"
+          cat > "${body}" <<'EOF'
+          ## Race-free fixed-point seal
+
+          The sealer waited for both r8 and r9 branches to expose their bound qualification status, required both all-package validations to pass, and required identical Git blob tables after excluding convergence-receipt directories.
+
+          Review:
+
+          - `qualification/global-gap-closure-seal-r11/STATUS.json`
+          - `qualification/global-gap-closure-seal-r11/REPORT.md`
+          - `qualification/global-gap-closure-seal-r11/EXTERNAL_GATE_HANDOFF.json`
+          - underlying r8/r9 repository and package-shard receipts
+
+          This seal proves repository-internal fixed-point convergence only. It grants no independent-review, production, runtime/model, target-host/hardware, operator, canary, selection, promotion, release, provider/model dispatch, or second-writer authority.
+          EOF
+          gh pr create --repo "${GITHUB_REPOSITORY}" --draft \
+            --base "${BASE_BRANCH}" --head "${HEAD_BRANCH}" \
+            --title "chore(hepta): race-free all-package convergence seal r11" \
+            --body-file "${body}"
