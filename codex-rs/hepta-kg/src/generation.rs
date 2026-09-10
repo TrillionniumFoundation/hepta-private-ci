@@ -472,7 +472,7 @@ fn validate_generation_fields(
 }
 
 fn canonicalize_supports(
-    supports: &mut Vec<KnowledgeSupportV2>,
+    supports: &mut [KnowledgeSupportV2],
 ) -> Result<(), KnowledgeGenerationErrorV2> {
     if supports.len() > MAX_SUPPORTS_PER_RELATION_V2 {
         return Err(KnowledgeGenerationErrorV2::SupportLimitExceeded);

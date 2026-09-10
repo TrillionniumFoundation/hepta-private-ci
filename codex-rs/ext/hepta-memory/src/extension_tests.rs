@@ -871,7 +871,9 @@ fn install_registers_only_the_three_owned_contributor_seams() {
     assert_eq!(registry.turn_input_contributors().len(), 1);
     assert_eq!(registry.ephemeral_model_input_contributors().len(), 1);
     assert!(Arc::strong_count(&extension) >= 4);
-    assert!(!crate::LOCAL_REHYDRATION_REPLAY_LIFECYCLE_REGISTERED);
+    const {
+        assert!(!crate::LOCAL_REHYDRATION_REPLAY_LIFECYCLE_REGISTERED);
+    }
 }
 
 #[test]

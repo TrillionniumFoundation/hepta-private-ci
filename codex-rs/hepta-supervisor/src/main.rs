@@ -131,7 +131,7 @@ fn load_public_key(path: PathBuf, label: &str) -> anyhow::Result<[u8; 32]> {
             anyhow::bail!("{label} must be exactly 32 raw bytes or 64 hex characters");
         }
         let mut key = [0_u8; 32];
-        for (index, pair) in text.as_bytes().chunks_exact(2).enumerate() {
+        for (index, pair) in text.as_bytes().as_chunks::<2>().0.iter().enumerate() {
             key[index] = (hex_value(pair[0])? << 4) | hex_value(pair[1])?;
         }
         key

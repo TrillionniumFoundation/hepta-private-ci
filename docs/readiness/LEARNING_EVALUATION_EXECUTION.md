@@ -75,15 +75,15 @@ Coding may start when evaluation plan, independence and retention protocols comp
 
 ## Appendix A. Closed gap and protocol mapping
 
-This appendix is a closed-world traceability projection. Each identifier is normative in `READINESS.json`, `PROTOCOLS.json` or `GAPS.json`; this Markdown file does not redefine the registry record.
+This appendix records repository specification closure only. It does not grant runtime, model, provider, external-effect, operator, promotion or release authority.
 
-Protocols:
+### Protocol bindings
 
 - `EvaluationPlanV1`
 - `EvaluatorIndependenceReceiptV1`
 - `RetentionSliceReceiptV1`
 
-Closed documentation gaps:
+### Closed specification gaps
 
 - `RDY-GAP-LRN-001`
 - `RDY-GAP-LRN-002`
@@ -92,24 +92,3 @@ Closed documentation gaps:
 - `RDY-GAP-LRN-005`
 - `RDY-GAP-LRN-006`
 - `RDY-GAP-LRN-007`
-
-Bound work packages:
-
-- `ART-1-LEARNING-ARTIFACT-REGISTRY`
-- `ART-2-NEXT-SNAPSHOT-RELOAD-ROLLBACK`
-- `BIO-2-REPLAY-CONSOLIDATION`
-- `BIO-3-WORLD-MODEL-PREDICTION-ERROR`
-- `DOC-3E-PRECODING-READINESS-CLOSED-WORLD`
-- `HBO-0-BELLMAN-OPERATOR-CONTRACTS`
-- `HBO-1-OPERATOR-SENSOR-CORE`
-- `HBO-2-BELLMAN-OPERATOR-SHADOW`
-- `LONG-1-TEMPORAL-HOLDOUT`
-- `LONG-2-RETENTION-FORGETTING`
-- `LONG-3-UNLEARNING-NON-RESURRECTION`
-- `LRN-0-CAUSAL-LEARNING-CONTRACTS`
-- `LRN-1-DURABLE-EPISODE-LEDGER`
-- `LRN-2-CAUSAL-EVALUATION`
-- `P0.9-EXTERNAL-GATES`
-- `PLS-1-PARAMETER-PLASTICITY`
-- `PLS-2-TOPOLOGY-PROPOSAL`
-- `PLS-3-BOUNDED-STRUCTURAL-CANARY`

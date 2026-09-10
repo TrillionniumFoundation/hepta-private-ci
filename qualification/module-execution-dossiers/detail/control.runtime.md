@@ -9,7 +9,7 @@ Root: `codex-rs/hepta-control-plane`. Owner-local package: `RCP-1-RUNTIME-CONTRO
 
 The planner is distinct from the existing desired-state FSM, organ host, local cart controller and timing reference. It has no effect or capability issuance authority.
 
-## 2. Native operations and contract details
+## 2. Public operations and contract details
 
 Implemented operations are:
 
@@ -26,7 +26,7 @@ Planning is deliberately two-stage. `prepare_plan` owns snapshot, owner and reso
 
 Every prepared input, evaluation binding, plan receipt and grant-request set is `AuthorityPosture::DENY_ALL`. A grant request is not a capability.
 
-## 3. Snapshot, state and transaction design
+## 3. State records and transaction design
 
 `GlobalStateSnapshotV1` binds exact objective, body generation, configuration, revocation frontier, owner revisions, observation/expiry times, readiness, source frontiers and support. Missing, stale and unavailable owner masks are explicit. Any non-empty required mask blocks planning; absence is never treated as zero cost or ready state.
 

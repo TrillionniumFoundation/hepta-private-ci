@@ -9,7 +9,7 @@ Root: `codex-rs/hepta-objective`. Packages: `OBJ-0-OBJECTIVE-CONTRACTS`, `OBJ-1-
 
 This candidate changes no authority, effect or writer ownership. The module remains stateless for domain facts. The owning product caller, which is not established by this source candidate, persists immutable objective and run snapshots.
 
-## 2. Native operations and contract details
+## 2. Public operations and contract details
 
 The implemented path is:
 
@@ -26,13 +26,13 @@ Admission validates source authentication, principal scope, schema, normalizatio
 
 `abstain` is intrinsic and confirmation-free. A request cannot forbid it. The compiled action ceiling is 128 including abstain: at most 127 caller actions when abstain is implicit, or 128 when the caller supplies the valid intrinsic action explicitly.
 
-## 3. State, identity and publication
+## 3. State records and transaction design
 
 The compiler owns no durable store. Its pure output binds request, principal, source, schema, selected profile, hard constraints, legal actions, success and terminal predicates, evidence requirements, resource/risk policy and semantic digest. A product caller must publish the immutable objective and `RunStartSnapshotV1` atomically and reconcile by exact semantic identity.
 
 A typed hard conflict produces `ObjectiveConflictReceiptV1`. `CompileDisposition::ExplicitAbstain` is a successful non-error outcome in which abstain is the sole legal action. Stable error meanings are generated from `docs/contracts/OBJECTIVE_ERRORS.json`; Markdown or Rust code may not locally redefine a code.
 
-## 4. Deterministic algorithm and complexity
+## 4. Deterministic algorithm and scheduling
 
 Decode and normalize bounded fields, authenticate source, map registered units/IDs, classify P0-P4 precedence, intersect scalar or finite-enum domains, close bounded positive action implications and stable-sort all sets. Infeasible hard atoms use deterministic deletion filtering and return an inclusion-minimal conflict set.
 

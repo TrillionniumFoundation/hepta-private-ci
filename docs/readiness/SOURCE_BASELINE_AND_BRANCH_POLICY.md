@@ -94,35 +94,17 @@ A lane may start only when it has a current `CanonicalSourceReceiptV1`, a `Branc
 
 ## Appendix A. Closed gap and protocol mapping
 
-This appendix is a closed-world traceability projection. Each identifier is normative in `READINESS.json`, `PROTOCOLS.json` or `GAPS.json`; this Markdown file does not redefine the registry record.
+This appendix records repository specification closure only. It does not grant runtime, model, provider, external-effect, operator, promotion or release authority.
 
-Protocols:
+### Protocol bindings
 
 - `BranchPurposeManifestV1`
 - `CanonicalSourceReceiptV1`
 - `IntegrationCheckpointV1`
 
-Closed documentation gaps:
+### Closed specification gaps
 
 - `RDY-GAP-SRC-001`
 - `RDY-GAP-SRC-002`
 - `RDY-GAP-SRC-003`
 - `RDY-GAP-SRC-004`
-
-Bound work packages:
-
-- `DOC-0-CANONICAL-DOCUMENT-CONSOLIDATION`
-- `DOC-1-V8-SEMANTIC-UPGRADE`
-- `DOC-2-DEFAULT-BRANCH-SELECTION`
-- `DOC-3A-SOURCE-BINDING-RECONCILIATION`
-- `DOC-3B-MODULE-TECHNICAL-DOCUMENTS`
-- `DOC-3C-MODULE-DOC-CLOSED-WORLD`
-- `DOC-3D-ADAPTIVE-ALGORITHM-DOC-CLOSED-WORLD`
-- `DOC-3E-PRECODING-READINESS-CLOSED-WORLD`
-- `DOC-REGISTRY-CLOSED-WORLD`
-- `ECP-1-ENGINEERING-CONTROL-PLANE`
-- `P0.7A-RUNTIME-BOOTSTRAP`
-- `P0.8B-READINESS`
-- `P0.8C-RESOURCE-BUDGETS`
-- `P0.9-EXTERNAL-GATES`
-- `SELF-1-CODE-CANDIDATE-PIPELINE`

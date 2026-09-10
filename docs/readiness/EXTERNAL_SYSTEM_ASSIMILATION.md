@@ -121,9 +121,9 @@ Coding may start when all seven assimilation protocols plus sandbox receipt comp
 
 ## Appendix A. Closed gap and protocol mapping
 
-This appendix is a closed-world traceability projection. Each identifier is normative in `READINESS.json`, `PROTOCOLS.json` or `GAPS.json`; this Markdown file does not redefine the registry record.
+This appendix records repository specification closure only. It does not grant runtime, model, provider, external-effect, operator, promotion or release authority.
 
-Protocols:
+### Protocol bindings
 
 - `ExternalSystemManifestV1`
 - `ServiceGraphV1`
@@ -134,7 +134,7 @@ Protocols:
 - `RollbackPointV1`
 - `SandboxExecutionReceiptV1`
 
-Closed documentation gaps:
+### Closed specification gaps
 
 - `RDY-GAP-ASM-001`
 - `RDY-GAP-ASM-002`
@@ -145,43 +145,3 @@ Closed documentation gaps:
 - `RDY-GAP-ASM-007`
 - `RDY-GAP-ASM-008`
 - `RDY-GAP-ASM-009`
-
-Bound work packages:
-
-- `ASM-0-EXTERNAL-SYSTEM-CONTRACTS`
-- `ASM-1-DISCOVERY-MANIFEST`
-- `ASM-2-DEBIAN-BRIDGE-SANDBOX`
-- `ASM-3-STATE-MIGRATION-QUALIFICATION`
-- `ASM-4-FEDERATED-ORGAN-ENROLLMENT`
-- `BIO-0-NEURON-INTUITION-CONTRACTS`
-- `DOC-0-CANONICAL-DOCUMENT-CONSOLIDATION`
-- `DOC-1-V8-SEMANTIC-UPGRADE`
-- `DOC-2-DEFAULT-BRANCH-SELECTION`
-- `DOC-3A-SOURCE-BINDING-RECONCILIATION`
-- `DOC-3B-MODULE-TECHNICAL-DOCUMENTS`
-- `DOC-3C-MODULE-DOC-CLOSED-WORLD`
-- `DOC-3D-ADAPTIVE-ALGORITHM-DOC-CLOSED-WORLD`
-- `DOC-3E-PRECODING-READINESS-CLOSED-WORLD`
-- `DOC-REGISTRY-CLOSED-WORLD`
-- `ECP-1-ENGINEERING-CONTROL-PLANE`
-- `FLEET-1-ALLOCATION-CONTRACT`
-- `HBO-0-BELLMAN-OPERATOR-CONTRACTS`
-- `LRN-0-CAUSAL-LEARNING-CONTRACTS`
-- `MEM-3-FEDERATION`
-- `NDU-0-PREFERENCE-UTILITY-CONTRACTS`
-- `OBJ-0-OBJECTIVE-CONTRACTS`
-- `P0.7A-RUNTIME-BOOTSTRAP`
-- `P0.7B-B0-VERIFIED-USE`
-- `P0.7B-B2-TOOL-NET-FS`
-- `P0.7B-B3-BOUNDARIES`
-- `P0.7B-B4-CALLSITE-PROOF`
-- `P0.7D-FAULT-MATRIX`
-- `P0.7E-DEPENDENCY-INVERSION`
-- `P0.8A-AST-RATCHET`
-- `P0.8B-READINESS`
-- `P0.8C-RESOURCE-BUDGETS`
-- `P0.8D-VERTICAL-SLICE`
-- `P0.9-EXTERNAL-GATES`
-- `PIM-0-PROMPT-INTERVENTION-CONTRACTS`
-- `PLATFORM-0-TYPE-BOUNDARY`
-- `SELF-1-CODE-CANDIDATE-PIPELINE`

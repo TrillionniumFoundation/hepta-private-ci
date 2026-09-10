@@ -82,16 +82,16 @@ Coding may start when grammar, sandbox and lineage protocols compile, protected 
 
 ## Appendix A. Closed gap and protocol mapping
 
-This appendix is a closed-world traceability projection. Each identifier is normative in `READINESS.json`, `PROTOCOLS.json` or `GAPS.json`; this Markdown file does not redefine the registry record.
+This appendix records repository specification closure only. It does not grant runtime, model, provider, external-effect, operator, promotion or release authority.
 
-Protocols:
+### Protocol bindings
 
 - `MutationGrammarManifestV1`
 - `SandboxExecutionReceiptV1`
 - `CandidateLineageV1`
 - `EvaluatorIndependenceReceiptV1`
 
-Closed documentation gaps:
+### Closed specification gaps
 
 - `RDY-GAP-SI-001`
 - `RDY-GAP-SI-002`
@@ -99,31 +99,3 @@ Closed documentation gaps:
 - `RDY-GAP-SI-004`
 - `RDY-GAP-SI-005`
 - `RDY-GAP-SI-006`
-
-Bound work packages:
-
-- `ART-1-LEARNING-ARTIFACT-REGISTRY`
-- `ART-2-NEXT-SNAPSHOT-RELOAD-ROLLBACK`
-- `C1-PROMPTED-MEMORY-RETRIEVAL-RANK`
-- `DOC-0-CANONICAL-DOCUMENT-CONSOLIDATION`
-- `DOC-1-V8-SEMANTIC-UPGRADE`
-- `DOC-2-DEFAULT-BRANCH-SELECTION`
-- `DOC-3A-SOURCE-BINDING-RECONCILIATION`
-- `DOC-3B-MODULE-TECHNICAL-DOCUMENTS`
-- `DOC-3C-MODULE-DOC-CLOSED-WORLD`
-- `DOC-3D-ADAPTIVE-ALGORITHM-DOC-CLOSED-WORLD`
-- `DOC-3E-PRECODING-READINESS-CLOSED-WORLD`
-- `DOC-REGISTRY-CLOSED-WORLD`
-- `ECP-1-ENGINEERING-CONTROL-PLANE`
-- `HBO-1-OPERATOR-SENSOR-CORE`
-- `INT-2-AGENTD-CODEX-COMPOSITION`
-- `INTELLIGENCE-A0-Q0.63`
-- `LONG-1-TEMPORAL-HOLDOUT`
-- `LONG-2-RETENTION-FORGETTING`
-- `LONG-3-UNLEARNING-NON-RESURRECTION`
-- `LRN-2-CAUSAL-EVALUATION`
-- `P0.9-EXTERNAL-GATES`
-- `PLS-1-PARAMETER-PLASTICITY`
-- `PLS-2-TOPOLOGY-PROPOSAL`
-- `PLS-3-BOUNDED-STRUCTURAL-CANARY`
-- `SELF-1-CODE-CANDIDATE-PIPELINE`

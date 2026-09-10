@@ -250,3 +250,22 @@ Closed documentation gap identifiers remain:
 - `RDY-GAP-NDU-004`
 - `RDY-GAP-NDU-005`
 - `RDY-GAP-NDU-006`
+
+## Appendix A. Closed gap and protocol mapping
+
+This appendix records repository specification closure only. It does not grant runtime, model, provider, external-effect, operator, promotion or release authority.
+
+### Protocol bindings
+
+- `UtilityContributionV1`
+- `NduIterationReceiptV1`
+- `NduConvergenceCertificateV1`
+
+### Closed specification gaps
+
+- `RDY-GAP-NDU-001`
+- `RDY-GAP-NDU-002`
+- `RDY-GAP-NDU-003`
+- `RDY-GAP-NDU-004`
+- `RDY-GAP-NDU-005`
+- `RDY-GAP-NDU-006`

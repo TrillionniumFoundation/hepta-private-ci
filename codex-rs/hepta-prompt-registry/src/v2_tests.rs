@@ -117,7 +117,7 @@ fn exact_model_tuple_and_frozen_snapshot_gate_delivery() {
         .validate()
         .unwrap_or_else(|error| panic!("valid compatible set: {error}"));
 
-    let mut wrong_tuple = tuple.clone();
+    let mut wrong_tuple = tuple;
     wrong_tuple.tokenizer_digest = digest("wrong-tokenizer");
     assert_eq!(
         registry.read_compatible_v2(&snapshot, vector, &wrong_tuple, 10, Vec::new(), 8,),

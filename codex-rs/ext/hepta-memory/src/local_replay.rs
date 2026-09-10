@@ -717,7 +717,9 @@ mod tests {
             before_witness
         );
         assert!(turn_store.get::<LocalRehydrationReplayPlan>().is_none());
-        assert!(!LOCAL_REHYDRATION_REPLAY_LIFECYCLE_REGISTERED);
+        const {
+            assert!(!LOCAL_REHYDRATION_REPLAY_LIFECYCLE_REGISTERED);
+        }
     }
 
     #[tokio::test]

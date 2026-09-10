@@ -96,15 +96,15 @@ Coding may start when the three readiness protocols and canonical Neuron protoco
 
 ## Appendix A. Closed gap and protocol mapping
 
-This appendix is a closed-world traceability projection. Each identifier is normative in `READINESS.json`, `PROTOCOLS.json` or `GAPS.json`; this Markdown file does not redefine the registry record.
+This appendix records repository specification closure only. It does not grant runtime, model, provider, external-effect, operator, promotion or release authority.
 
-Protocols:
+### Protocol bindings
 
 - `NeuronRuntimeConfigV1`
 - `NeuronTickInputV1`
 - `NeuronTickReceiptV1`
 
-Closed documentation gaps:
+### Closed specification gaps
 
 - `RDY-GAP-NEU-001`
 - `RDY-GAP-NEU-002`
@@ -112,21 +112,3 @@ Closed documentation gaps:
 - `RDY-GAP-NEU-004`
 - `RDY-GAP-NEU-005`
 - `RDY-GAP-NEU-006`
-
-Bound work packages:
-
-- `ART-1-LEARNING-ARTIFACT-REGISTRY`
-- `ART-2-NEXT-SNAPSHOT-RELOAD-ROLLBACK`
-- `BIO-0-NEURON-INTUITION-CONTRACTS`
-- `BIO-1-ELIGIBILITY-HOMEOSTASIS`
-- `DOC-3E-PRECODING-READINESS-CLOSED-WORLD`
-- `HBO-1-OPERATOR-SENSOR-CORE`
-- `INT-1-CALIBRATED-INTUITION-POLICY`
-- `LONG-1-TEMPORAL-HOLDOUT`
-- `LONG-2-RETENTION-FORGETTING`
-- `LONG-3-UNLEARNING-NON-RESURRECTION`
-- `LRN-0-CAUSAL-LEARNING-CONTRACTS`
-- `LRN-1-DURABLE-EPISODE-LEDGER`
-- `LRN-2-CAUSAL-EVALUATION`
-- `NEU-1-LOCAL-MODEL-BAKEOFF`
-- `NEU-2-TEMPORAL-SIGNAL-RUNTIME`

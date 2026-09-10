@@ -180,16 +180,16 @@ Coding entry requires a current `CanonicalSourceReceiptV1`, frozen contract/read
 
 ## Appendix A. Closed gap and protocol mapping
 
-This appendix is a closed-world traceability projection. Each identifier remains normative in `READINESS.json`, `PROTOCOLS.json`, `GAPS.json` or `OBJECTIVE_ERRORS.json`; this Markdown file does not redefine the registry record.
+This appendix records repository specification closure only. It does not grant runtime, model, provider, external-effect, operator, promotion or release authority.
 
-Protocols:
+### Protocol bindings
 
 - `ObjectiveSourceEnvelopeV1`
 - `ObjectiveConstraintSetV1`
 - `ObjectiveConflictReceiptV1`
 - `ObjectiveCompileReceiptV1`
 
-Closed documentation gaps:
+### Closed specification gaps
 
 - `RDY-GAP-OBJ-001`
 - `RDY-GAP-OBJ-002`
@@ -197,19 +197,3 @@ Closed documentation gaps:
 - `RDY-GAP-OBJ-004`
 - `RDY-GAP-OBJ-005`
 - `RDY-GAP-OBJ-006`
-
-Bound work packages:
-
-- `C1-PROMPTED-MEMORY-RETRIEVAL-RANK`
-- `DOC-3E-PRECODING-READINESS-CLOSED-WORLD`
-- `INT-2-AGENTD-CODEX-COMPOSITION`
-- `INTELLIGENCE-A0-Q0.63`
-- `LRN-0-CAUSAL-LEARNING-CONTRACTS`
-- `LRN-1-DURABLE-EPISODE-LEDGER`
-- `OBJ-0-OBJECTIVE-CONTRACTS`
-- `OBJ-1-OBJECTIVE-COMPILER`
-- `P0.7B-B0-VERIFIED-USE`
-- `P0.7B-B2-TOOL-NET-FS`
-- `P0.7B-B3-BOUNDARIES`
-- `P0.7B-B4-CALLSITE-PROOF`
-- `P0.8A-AST-RATCHET`

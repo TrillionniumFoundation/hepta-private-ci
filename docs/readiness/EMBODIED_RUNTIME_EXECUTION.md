@@ -90,16 +90,16 @@ Coding may start when the four readiness protocols and CNS protocols compile, ev
 
 ## Appendix A. Closed gap and protocol mapping
 
-This appendix is a closed-world traceability projection. Each identifier is normative in `READINESS.json`, `PROTOCOLS.json` or `GAPS.json`; this Markdown file does not redefine the registry record.
+This appendix records repository specification closure only. It does not grant runtime, model, provider, external-effect, operator, promotion or release authority.
 
-Protocols:
+### Protocol bindings
 
 - `SensorCalibrationManifestV1`
 - `RealTimeLoopProfileV1`
 - `EmergencyStopReceiptV1`
 - `ActuatorReconciliationReceiptV1`
 
-Closed documentation gaps:
+### Closed specification gaps
 
 - `RDY-GAP-EMB-001`
 - `RDY-GAP-EMB-002`
@@ -107,29 +107,3 @@ Closed documentation gaps:
 - `RDY-GAP-EMB-004`
 - `RDY-GAP-EMB-005`
 - `RDY-GAP-EMB-006`
-
-Bound work packages:
-
-- `BROWSER-WEB-C1`
-- `DOC-3E-PRECODING-READINESS-CLOSED-WORLD`
-- `EMB-0-EMBODIED-CONTRACTS`
-- `EMB-1-SENSOR-BUS-BODY-SCHEMA`
-- `EMB-2-REFLEX-MOTOR-ACTUATION`
-- `EMB-3-HIL-SIM-TO-REAL-QUALIFICATION`
-- `INFER-V4-T4`
-- `INFER-V4-T5`
-- `MATRIX-1-CHANNEL-BOUNDARY`
-- `NDU-2-AGENT-DOMAIN-HIERARCHY`
-- `NEU-1-LOCAL-MODEL-BAKEOFF`
-- `P0.7A-RUNTIME-BOOTSTRAP`
-- `P0.7B-B0-VERIFIED-USE`
-- `P0.7B-B2-TOOL-NET-FS`
-- `P0.7B-B3-BOUNDARIES`
-- `P0.7B-B4-CALLSITE-PROOF`
-- `P0.7D-FAULT-MATRIX`
-- `P0.8A-AST-RATCHET`
-- `P0.8B-READINESS`
-- `P0.8C-RESOURCE-BUDGETS`
-- `P0.8D-VERTICAL-SLICE`
-- `RCP-1-RUNTIME-CONTROL-PLANE`
-- `TASKFLOW-1-EXECUTION-BOUNDARY`

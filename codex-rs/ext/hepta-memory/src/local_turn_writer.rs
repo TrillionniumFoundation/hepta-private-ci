@@ -2000,9 +2000,11 @@ mod tests {
             .await
             .expect("terminalize Saga lease");
         assert_eq!(released.state, LocalLeaseState::Released);
-        assert!(!QUALIFICATION_TURN_WRITER_EXTERNAL_EFFECTS);
-        assert!(!QUALIFICATION_TURN_WRITER_KG_WRITE_AUTHORITY);
-        assert!(!QUALIFICATION_TURN_WRITER_PRODUCTION_CALLER);
+        const {
+            assert!(!QUALIFICATION_TURN_WRITER_EXTERNAL_EFFECTS);
+            assert!(!QUALIFICATION_TURN_WRITER_KG_WRITE_AUTHORITY);
+            assert!(!QUALIFICATION_TURN_WRITER_PRODUCTION_CALLER);
+        }
     }
 
     #[tokio::test]

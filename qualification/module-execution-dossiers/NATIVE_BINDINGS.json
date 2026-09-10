@@ -77,7 +77,8 @@
       "path": "codex-rs/hepta-authbus/src/lib.rs",
       "blobSha": "8df3f4bd424f53329e54ce509084deceea69ce34",
       "exports": [
-        "AuthEnvelope",
+        "PreverifiedAuthEnvelope",
+        "TrustedReplayContext",
         "VerificationReceipt",
         "ReplayWindow",
         "verify"
