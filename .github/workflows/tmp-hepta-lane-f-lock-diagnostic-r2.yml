@@ -1,0 +1,116 @@
+name: tmp-hepta-lane-f-lock-diagnostic-r2
+
+on:
+  push:
+    branches:
+      - ops/hepta-lane-f-lock-diagnostic-r2-20260910
+    paths:
+      - .github/workflows/tmp-hepta-lane-f-lock-diagnostic-r2.yml
+
+permissions:
+  contents: read
+
+jobs:
+  diagnose:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    env:
+      SOURCE_SHA: 298bd904d72b715515f30c1eab25140d06830ede
+    steps:
+      - name: Check out exact controller
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Construct exact source worktree
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD^)" = "$SOURCE_SHA"
+          test -z "$(git ls-tree -r --name-only "$SOURCE_SHA" | grep '^.github/workflows/tmp-' || true)"
+          git worktree add --detach "$RUNNER_TEMP/lane-f-source" "$SOURCE_SHA"
+
+      - name: Refresh only the standalone graph from the workspace lock seed
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP/lane-f-source"
+          cp codex-rs/Cargo.lock qualification/lane-f-shadow/Cargo.lock
+          cp qualification/lane-f-shadow/Cargo.lock "$RUNNER_TEMP/lane-f-seed.lock"
+          cargo metadata --format-version 1 --manifest-path qualification/lane-f-shadow/Cargo.toml >/dev/null
+          python3 - "$RUNNER_TEMP/lane-f-seed.lock" qualification/lane-f-shadow/Cargo.lock <<'PY'
+          import sys
+          import tomllib
+
+          seed_path, generated_path = sys.argv[1:]
+          with open(seed_path, "rb") as handle:
+              seed = tomllib.load(handle)
+          with open(generated_path, "rb") as handle:
+              generated = tomllib.load(handle)
+
+          def external_identity(package):
+              return (
+                  package["name"],
+                  package["version"],
+                  package.get("source"),
+                  package.get("checksum"),
+              )
+
+          seed_external = {
+              external_identity(package)
+              for package in seed.get("package", [])
+              if package.get("source") is not None
+          }
+          generated_external = {
+              external_identity(package)
+              for package in generated.get("package", [])
+              if package.get("source") is not None
+          }
+          drift = generated_external - seed_external
+          if drift:
+              raise SystemExit(f"standalone lock introduced dependency drift: {sorted(drift)!r}")
+
+          roots = [
+              package
+              for package in generated.get("package", [])
+              if package.get("name") == "lane-f-shadow-qualification"
+          ]
+          if len(roots) != 1:
+              raise SystemExit(f"expected one harness root package, found {len(roots)}")
+          observed = {dependency.split(" ", 1)[0] for dependency in roots[0].get("dependencies", [])}
+          expected = {
+              "codex-hepta-intelligence",
+              "codex-hepta-intuition",
+              "codex-hepta-neuron",
+              "codex-hepta-plasticity",
+              "codex-hepta-prompt-optimizer",
+              "codex-hepta-types",
+          }
+          if observed != expected:
+              raise SystemExit(f"harness dependency set mismatch: observed={observed!r} expected={expected!r}")
+          print(
+              "validated zero-drift lock refresh: "
+              f"seed_packages={len(seed.get('package', []))} "
+              f"generated_packages={len(generated.get('package', []))} "
+              f"external_packages={len(generated_external)}"
+          )
+          PY
+
+      - name: Exercise exact Lane F test and lint contract
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP/lane-f-source"
+          cargo test --locked --manifest-path qualification/lane-f-shadow/Cargo.toml
+          cargo clippy --locked --manifest-path qualification/lane-f-shadow/Cargo.toml --all-targets -- -D warnings
+          cargo fmt --manifest-path qualification/lane-f-shadow/Cargo.toml -- --check
+          rm qualification/lane-f-shadow/Cargo.lock
+          git diff --check
+          test -z "$(git status --porcelain --untracked-files=all)"
+
+      - name: Remove source worktree
+        if: always()
+        shell: bash
+        run: |
+          git worktree remove --force "$RUNNER_TEMP/lane-f-source" || true
