@@ -21,39 +21,52 @@ function input(overrides = {}) {
   };
 }
 
-function driver() {
+function driver({ terminal = false } = {}) {
+  const calls = [];
+  let pageGeneration = 0;
   return {
-    async start() {
+    calls,
+    async start(value) {
+      calls.push(["start", value]);
       return { started: true, processId: "servo.process.1" };
     },
-    async observe() {
+    async observe(value) {
+      calls.push(["observe", value]);
+      pageGeneration += 1;
       return {
-        pageGeneration: 1,
-        documentDigest: D3,
+        pageGeneration,
+        documentDigest: pageGeneration === 1 ? D3 : D4,
         origin: "https://example.com",
       };
     },
-    async act() {
-      return { terminalObserved: false };
+    async act(value) {
+      calls.push(["act", value]);
+      return terminal
+        ? { terminalObserved: true, status: "succeeded", outcomeDigest: D4 }
+        : { terminalObserved: false };
     },
-    async stop() {
+    async stop(value) {
+      calls.push(["stop", value]);
       return { stopped: true };
     },
   };
 }
 
-test("opens, observes, preserves indeterminate action, and closes", async () => {
-  const host = new BrowserProfileHost({ driver: driver(), clock: () => 1_000 });
-  const session = await host.openProfile(input());
-  assert.equal(session.networkAuthority, false);
-  const page = await host.observePage({
+async function openedHost(options) {
+  const io = driver(options);
+  const host = new BrowserProfileHost({ driver: io, clock: () => 1_000 });
+  await host.openProfile(input());
+  await host.observePage({
     profileId: "profile.1",
     principalId: "principal.1",
     generation: 1,
     observationBudget: 2048,
   });
-  assert.equal(page.pageGeneration, 1);
-  const effect = await host.navigateOrAct({
+  return { host, io };
+}
+
+function action(overrides = {}) {
+  return {
     profileId: "profile.1",
     principalId: "principal.1",
     generation: 1,
@@ -64,9 +77,16 @@ test("opens, observes, preserves indeterminate action, and closes", async () => 
     finalPayloadDigest: D4,
     grantPayloadDigest: D4,
     deadlineMs: 9_000,
-  });
+    ...overrides,
+  };
+}
+
+test("opens, observes, preserves indeterminate action, and closes", async () => {
+  const { host } = await openedHost();
+  const effect = await host.navigateOrAct(action());
   assert.equal(effect.status, "indeterminate");
   assert.equal(effect.terminalObserved, false);
+  assert.equal(effect.networkAuthority, false);
   const closed = await host.closeProfile({
     profileId: "profile.1",
     principalId: "principal.1",
@@ -75,37 +95,65 @@ test("opens, observes, preserves indeterminate action, and closes", async () => 
   assert.equal(closed.terminalObserved, true);
 });
 
-test("rejects stale page, scope escape, and payload drift", async () => {
-  const host = new BrowserProfileHost({ driver: driver(), clock: () => 1_000 });
-  await host.openProfile(input());
+test("identical retry is observation-only and does not repeat the driver effect", async () => {
+  const { host, io } = await openedHost({ terminal: true });
+  const first = await host.navigateOrAct(action());
+  const second = await host.navigateOrAct(action());
+  assert.strictEqual(second, first);
+  assert.equal(io.calls.filter(([name]) => name === "act").length, 1);
+});
+
+test("replay binds action, destination, page, grant, payload, and deadline", async () => {
+  const { host } = await openedHost();
+  await host.navigateOrAct(action());
+  const mutations = [
+    { action: "click" },
+    { destinationOrigin: "https://example.com:444" },
+    { pageGeneration: 2 },
+    { grantPayloadDigest: D3 },
+    { finalPayloadDigest: D3, grantPayloadDigest: D3 },
+    { deadlineMs: 8_000 },
+  ];
+  for (const mutation of mutations) {
+    await assert.rejects(
+      host.navigateOrAct(action(mutation)),
+      /changed semantics|outside the profile grant/,
+    );
+  }
+});
+
+test("rejects stale page, scope escape, payload drift, and generation drift", async () => {
+  const { host } = await openedHost();
+  await assert.rejects(
+    host.navigateOrAct(action({ operationId: "operation.2", pageGeneration: 2 })),
+    /stale page generation/,
+  );
+  await assert.rejects(
+    host.navigateOrAct(
+      action({ operationId: "operation.3", destinationOrigin: "https://other.example" }),
+    ),
+    /outside the profile grant/,
+  );
+  await assert.rejects(
+    host.navigateOrAct(action({ operationId: "operation.4", grantPayloadDigest: D3 })),
+    /final payload/,
+  );
+  await assert.rejects(
+    host.navigateOrAct(action({ operationId: "operation.5", generation: 2 })),
+    /generation mismatch/,
+  );
+});
+
+test("an old identical retry remains observation-only after the page advances", async () => {
+  const { host, io } = await openedHost({ terminal: true });
+  const first = await host.navigateOrAct(action());
   await host.observePage({
     profileId: "profile.1",
     principalId: "principal.1",
     generation: 1,
-    observationBudget: 128,
+    observationBudget: 2048,
   });
-  const common = {
-    profileId: "profile.1",
-    principalId: "principal.1",
-    generation: 1,
-    operationId: "operation.2",
-    pageGeneration: 1,
-    action: "click",
-    destinationOrigin: "https://example.com",
-    finalPayloadDigest: D3,
-    grantPayloadDigest: D3,
-    deadlineMs: 9_000,
-  };
-  await assert.rejects(
-    host.navigateOrAct({ ...common, pageGeneration: 2 }),
-    /stale page generation/,
-  );
-  await assert.rejects(
-    host.navigateOrAct({ ...common, destinationOrigin: "https://other.example" }),
-    /outside the profile grant/,
-  );
-  await assert.rejects(
-    host.navigateOrAct({ ...common, grantPayloadDigest: D4 }),
-    /final payload/,
-  );
+  const replay = await host.navigateOrAct(action());
+  assert.strictEqual(replay, first);
+  assert.equal(io.calls.filter(([name]) => name === "act").length, 1);
 });
