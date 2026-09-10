@@ -1,13 +1,14 @@
-name: Hepta single-main convergence r2
+name: Hepta single-main convergence r3
 
 on:
   push:
     branches:
-      - ops/hepta-single-main-convergence-20260910-r2
+      - ops/hepta-single-main-convergence-20260910-r3
     paths:
       - .github/workflows/hepta-single-main-convergence-r2.yml
       - scripts/hepta-single-main-convergence-r1.py
       - scripts/hepta-single-main-convergence-r2.py
+      - scripts/hepta-single-main-convergence-r3.py
   workflow_dispatch:
 
 permissions:
@@ -16,7 +17,7 @@ permissions:
   pull-requests: write
 
 concurrency:
-  group: hepta-single-main-convergence-r2
+  group: hepta-single-main-convergence-r3
   cancel-in-progress: true
 
 env:
@@ -24,7 +25,8 @@ env:
   HEPTA_OLD_DEFAULT_BRANCH: integration/vnext-main-20260811
   HEPTA_LANE_F_BRANCH: codex/lane-f-gap-closure-20260910
   HEPTA_LANE_G_BRANCH: codex/lane-g-real-full-closure-v2-20260910
-  HEPTA_SINGLE_MAIN_OUT: qualification/single-main-closure-r2
+  HEPTA_SINGLE_MAIN_OUT: qualification/single-main-closure-r3
+  HEPTA_ARCHIVE_PREFIX: archive/final-branch-tip/20260910-r3-${{ github.run_id }}-r${{ github.run_attempt }}
   HEPTA_PACKAGE_SHARDS: '8'
   CARGO_TERM_COLOR: always
   RUST_BACKTRACE: '1'
@@ -44,7 +46,7 @@ jobs:
       lane_f_sha: ${{ steps.freeze.outputs.lane_f_sha }}
       lane_g_sha: ${{ steps.freeze.outputs.lane_g_sha }}
     steps:
-      - name: Check out exact R2 controller
+      - name: Check out exact R3 controller
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           fetch-depth: 0
@@ -66,7 +68,8 @@ jobs:
           set -euo pipefail
           python3 -m py_compile \
             scripts/hepta-single-main-convergence-r1.py \
-            scripts/hepta-single-main-convergence-r2.py
+            scripts/hepta-single-main-convergence-r2.py \
+            scripts/hepta-single-main-convergence-r3.py
 
       - name: Freeze authoritative sources and archive every observed branch tip
         id: freeze
@@ -75,18 +78,19 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          BUNDLE="${RUNNER_TEMP}/hepta-single-main-r2-bundle"
+          BUNDLE="${RUNNER_TEMP}/hepta-single-main-r3-bundle"
           rm -rf "$BUNDLE"
           mkdir -p "$BUNDLE"
           cp scripts/hepta-single-main-convergence-r1.py "$BUNDLE/"
           cp scripts/hepta-single-main-convergence-r2.py "$BUNDLE/"
-          python3 scripts/hepta-single-main-convergence-r2.py freeze --out "$BUNDLE"
+          cp scripts/hepta-single-main-convergence-r3.py "$BUNDLE/"
+          python3 scripts/hepta-single-main-convergence-r3.py freeze --out "$BUNDLE"
 
-      - name: Upload immutable R2 freeze and executor bundle
+      - name: Upload immutable R3 freeze and executor bundle
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: hepta-single-main-r2-freeze-${{ github.run_id }}
-          path: ${{ runner.temp }}/hepta-single-main-r2-bundle
+          name: hepta-single-main-r3-freeze-${{ github.run_id }}
+          path: ${{ runner.temp }}/hepta-single-main-r3-bundle
           if-no-files-found: error
           retention-days: 30
 
@@ -103,7 +107,7 @@ jobs:
       packages_json: ${{ steps.prepare.outputs.packages_json }}
       matrix: ${{ steps.prepare.outputs.matrix }}
     steps:
-      - name: Check out exact R2 controller repository
+      - name: Check out exact R3 controller repository
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           fetch-depth: 0
@@ -119,11 +123,11 @@ jobs:
           git config user.name 'Hepta single-main convergence controller'
           git config user.email 'hepta-single-main@users.noreply.github.com'
 
-      - name: Download immutable R2 freeze and executor bundle
+      - name: Download immutable R3 freeze and executor bundle
         uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
         with:
-          name: hepta-single-main-r2-freeze-${{ github.run_id }}
-          path: ${{ runner.temp }}/hepta-single-main-r2-bundle
+          name: hepta-single-main-r3-freeze-${{ github.run_id }}
+          path: ${{ runner.temp }}/hepta-single-main-r3-bundle
 
       - name: Assemble exact product tree and absorb frozen history
         id: prepare
@@ -132,17 +136,17 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          EVIDENCE="${RUNNER_TEMP}/hepta-single-main-r2-prepare"
+          EVIDENCE="${RUNNER_TEMP}/hepta-single-main-r3-prepare"
           rm -rf "$EVIDENCE"
-          python3 "${RUNNER_TEMP}/hepta-single-main-r2-bundle/hepta-single-main-convergence-r2.py" prepare \
-            --manifest "${RUNNER_TEMP}/hepta-single-main-r2-bundle/freeze.json" \
+          python3 "${RUNNER_TEMP}/hepta-single-main-r3-bundle/hepta-single-main-convergence-r3.py" prepare \
+            --manifest "${RUNNER_TEMP}/hepta-single-main-r3-bundle/freeze.json" \
             --evidence "$EVIDENCE"
 
       - name: Upload candidate preparation evidence
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: hepta-single-main-r2-prepare-${{ github.run_id }}
-          path: ${{ runner.temp }}/hepta-single-main-r2-prepare
+          name: hepta-single-main-r3-prepare-${{ github.run_id }}
+          path: ${{ runner.temp }}/hepta-single-main-r3-prepare
           if-no-files-found: error
           retention-days: 30
 
@@ -158,11 +162,11 @@ jobs:
           fetch-depth: 0
           persist-credentials: false
 
-      - name: Download immutable R2 executor bundle
+      - name: Download immutable R3 executor bundle
         uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
         with:
-          name: hepta-single-main-r2-freeze-${{ github.run_id }}
-          path: ${{ runner.temp }}/hepta-single-main-r2-bundle
+          name: hepta-single-main-r3-freeze-${{ github.run_id }}
+          path: ${{ runner.temp }}/hepta-single-main-r3-bundle
 
       - name: Run repository, documentation, Lane and standalone gates
         env:
@@ -170,7 +174,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          python3 "${RUNNER_TEMP}/hepta-single-main-r2-bundle/hepta-single-main-convergence-r2.py" repo-gate
+          python3 "${RUNNER_TEMP}/hepta-single-main-r3-bundle/hepta-single-main-convergence-r3.py" repo-gate
 
   package-gates:
     needs: prepare
@@ -188,11 +192,11 @@ jobs:
           fetch-depth: 1
           persist-credentials: false
 
-      - name: Download immutable R2 executor bundle
+      - name: Download immutable R3 executor bundle
         uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
         with:
-          name: hepta-single-main-r2-freeze-${{ github.run_id }}
-          path: ${{ runner.temp }}/hepta-single-main-r2-bundle
+          name: hepta-single-main-r3-freeze-${{ github.run_id }}
+          path: ${{ runner.temp }}/hepta-single-main-r3-bundle
 
       - name: Test and lint canonical package shard ${{ matrix.shard }}
         env:
@@ -200,7 +204,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          python3 "${RUNNER_TEMP}/hepta-single-main-r2-bundle/hepta-single-main-convergence-r2.py" package-gate \
+          python3 "${RUNNER_TEMP}/hepta-single-main-r3-bundle/hepta-single-main-convergence-r3.py" package-gate \
             --packages-json '${{ matrix.packages_json }}'
 
   windows-gate:
@@ -215,11 +219,11 @@ jobs:
           fetch-depth: 1
           persist-credentials: false
 
-      - name: Download immutable R2 executor bundle
+      - name: Download immutable R3 executor bundle
         uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
         with:
-          name: hepta-single-main-r2-freeze-${{ github.run_id }}
-          path: ${{ runner.temp }}/hepta-single-main-r2-bundle
+          name: hepta-single-main-r3-freeze-${{ github.run_id }}
+          path: ${{ runner.temp }}/hepta-single-main-r3-bundle
 
       - name: Check every canonical package under MSVC
         env:
@@ -227,7 +231,7 @@ jobs:
         shell: pwsh
         run: |
           $ErrorActionPreference = 'Stop'
-          python "$env:RUNNER_TEMP/hepta-single-main-r2-bundle/hepta-single-main-convergence-r2.py" package-gate `
+          python "$env:RUNNER_TEMP/hepta-single-main-r3-bundle/hepta-single-main-convergence-r3.py" package-gate `
             --check-only `
             --packages-json '${{ needs.prepare.outputs.packages_json }}'
 
@@ -259,11 +263,11 @@ jobs:
           git config user.name 'Hepta single-main convergence controller'
           git config user.email 'hepta-single-main@users.noreply.github.com'
 
-      - name: Download immutable R2 freeze and executor bundle
+      - name: Download immutable R3 freeze and executor bundle
         uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
         with:
-          name: hepta-single-main-r2-freeze-${{ github.run_id }}
-          path: ${{ runner.temp }}/hepta-single-main-r2-bundle
+          name: hepta-single-main-r3-freeze-${{ github.run_id }}
+          path: ${{ runner.temp }}/hepta-single-main-r3-bundle
 
       - name: Reconcile late history, publish main and delete every non-main branch
         env:
@@ -272,10 +276,10 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          EVIDENCE="${RUNNER_TEMP}/hepta-single-main-r2-final"
+          EVIDENCE="${RUNNER_TEMP}/hepta-single-main-r3-final"
           rm -rf "$EVIDENCE"
-          python3 "${RUNNER_TEMP}/hepta-single-main-r2-bundle/hepta-single-main-convergence-r2.py" finalize \
-            --manifest "${RUNNER_TEMP}/hepta-single-main-r2-bundle/freeze.json" \
+          python3 "${RUNNER_TEMP}/hepta-single-main-r3-bundle/hepta-single-main-convergence-r3.py" finalize \
+            --manifest "${RUNNER_TEMP}/hepta-single-main-r3-bundle/freeze.json" \
             --final-sha '${{ needs.prepare.outputs.final_sha }}' \
             --tree-sha '${{ needs.prepare.outputs.tree_sha }}' \
             --candidate-branch '${{ needs.prepare.outputs.candidate_branch }}' \
@@ -285,7 +289,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: hepta-single-main-r2-final-${{ github.run_id }}
-          path: ${{ runner.temp }}/hepta-single-main-r2-final
+          name: hepta-single-main-r3-final-${{ github.run_id }}
+          path: ${{ runner.temp }}/hepta-single-main-r3-final
           if-no-files-found: warn
           retention-days: 90
