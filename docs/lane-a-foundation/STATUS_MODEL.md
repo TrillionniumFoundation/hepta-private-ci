@@ -8,19 +8,15 @@ Every module reports six independent axes. No axis implies another.
 | `implementation` | What implementation class exists now? |
 | `durability` | What state survives process and host failure? |
 | `qualification` | What exact class of tests/evidence exists? |
-| `activation` | Is there a named product caller and enabled path? |
+| `activation` | Is there a named enabled product caller? |
 | `acceptance` | Has an independent authority accepted the exact candidate? |
 
-The following implications are forbidden:
-
-- `source=implemented` does not imply a production caller;
-- `qualification=*tests_present` does not imply acceptance;
-- a target API in a dossier does not imply a native symbol;
-- an in-memory model does not imply durable recovery;
-- a nonzero signature digest does not imply signature verification;
-- evidence persistence does not grant promotion or release authority;
-- external secret metadata does not transfer ownership of secret values.
-
 A module may advance one axis only when the corresponding exact-candidate
-receipt exists. Rollback, migration and retirement decisions must name the axis
-being changed rather than using an overloaded word such as `complete`.
+evidence exists. Rollback, migration and retirement decisions must name the
+axis being changed rather than using an overloaded word such as `complete`.
+
+The matrix also records lane-level closure fields. In particular,
+`targetArchitectureImplementation=partial` is compatible with
+`repositoryControlledDocumentationGaps=closed`: the first describes future
+implementation, while the second describes the checked-in documentation and
+traceability obligation.

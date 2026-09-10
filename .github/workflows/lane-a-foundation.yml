@@ -1,4 +1,4 @@
-name: Lane A foundation truth
+name: Lane A foundation truth and native qualification
 
 on:
   pull_request:
@@ -17,9 +17,9 @@ concurrency:
 
 jobs:
   source-head:
-    name: Verify exact Lane A source truth
+    name: Verify exact Lane A source and native contracts
     runs-on: ubuntu-24.04
-    timeout-minutes: 20
+    timeout-minutes: 90
     steps:
       - name: Check out exact source
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
@@ -28,7 +28,12 @@ jobs:
           persist-credentials: false
           fetch-depth: 0
 
-      - name: Verify current implementation and non-claims
+      - name: Verify pull-request exact-subject tuple
+        if: github.event_name == 'pull_request'
+        shell: bash
+        run: python3 scripts/verify_lane_a_pr_tuple.py --event "$GITHUB_EVENT_PATH"
+
+      - name: Verify current implementation, traceability and nonclaims
         env:
           EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
         shell: bash
@@ -38,26 +43,41 @@ jobs:
           python3 scripts/verify_lane_a_foundation.py self-test
           python3 scripts/verify_lane_a_foundation.py verify
           python3 -m unittest qualification/module-execution-dossiers/test_lane_a_foundation.py
-          python3 scripts/verify_lane_a_foundation.py receipt \
-            --expected-sha "$EXPECTED_SHA" \
-            --output .hepta-evidence/lane-a-source-head.json
+          (cd qualification/module-execution-dossiers && python3 -m unittest test_implementation_contracts.py)
           git diff --check
           test -z "$(git status --porcelain --untracked-files=no)"
 
-      - name: Retain source receipt
+      - name: Run Lane A native tests and strict lint
+        shell: bash
+        run: scripts/run_lane_a_native_qualification.sh
+
+      - name: Write exact-source and native receipts
+        env:
+          EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/verify_lane_a_foundation.py source-receipt \
+            --expected-sha "$EXPECTED_SHA" \
+            --output .hepta-evidence/lane-a-source-head.json
+          python3 scripts/verify_lane_a_foundation.py native-receipt \
+            --expected-sha "$EXPECTED_SHA" \
+            --output .hepta-evidence/lane-a-native-head.json
+
+      - name: Retain exact source receipts
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: lane-a-source-${{ github.event.pull_request.head.sha || github.sha }}
-          path: .hepta-evidence/lane-a-source-head.json
+          name: lane-a-source-native-${{ github.event.pull_request.head.sha || github.sha }}
+          path: .hepta-evidence/lane-a-*.json
           include-hidden-files: true
           if-no-files-found: error
-          retention-days: 30
+          retention-days: 90
 
   merge-candidate:
-    name: Verify synthetic Lane A merge candidate
+    name: Verify synthetic Lane A merge candidate and native contracts
     if: github.event_name == 'pull_request'
     runs-on: ubuntu-24.04
-    timeout-minutes: 20
+    timeout-minutes: 90
     steps:
       - name: Check out source
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
@@ -98,17 +118,32 @@ jobs:
           python3 scripts/verify_lane_a_foundation.py self-test
           python3 scripts/verify_lane_a_foundation.py verify
           python3 -m unittest qualification/module-execution-dossiers/test_lane_a_foundation.py
-          python3 scripts/verify_lane_a_foundation.py receipt \
-            --expected-sha "$EXPECTED_SHA" \
-            --output .hepta-evidence/lane-a-merge-candidate.json
+          (cd qualification/module-execution-dossiers && python3 -m unittest test_implementation_contracts.py)
           git diff --check
           test -z "$(git status --porcelain --untracked-files=no)"
 
-      - name: Retain merge receipt
+      - name: Run Lane A native tests and strict lint on merge candidate
+        shell: bash
+        run: scripts/run_lane_a_native_qualification.sh
+
+      - name: Write synthetic-merge receipts
+        env:
+          EXPECTED_SHA: ${{ steps.merge.outputs.sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/verify_lane_a_foundation.py source-receipt \
+            --expected-sha "$EXPECTED_SHA" \
+            --output .hepta-evidence/lane-a-merge-candidate.json
+          python3 scripts/verify_lane_a_foundation.py native-receipt \
+            --expected-sha "$EXPECTED_SHA" \
+            --output .hepta-evidence/lane-a-native-merge-candidate.json
+
+      - name: Retain synthetic merge receipts
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: lane-a-merge-${{ steps.merge.outputs.sha }}
-          path: .hepta-evidence/lane-a-merge-candidate.json
+          name: lane-a-merge-native-${{ steps.merge.outputs.sha }}
+          path: .hepta-evidence/lane-a-*.json
           include-hidden-files: true
           if-no-files-found: error
-          retention-days: 30
+          retention-days: 90

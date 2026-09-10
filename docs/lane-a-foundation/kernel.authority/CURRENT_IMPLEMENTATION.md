@@ -1,39 +1,56 @@
-# kernel.authority current implementation
+# `kernel.authority` current implementation
 
 ## Current executable contract
 
 The implemented authority slice is the final-use boundary in
-`codex-rs/hepta-contracts/src/final_use.rs`, specified in `FINAL_USE.md`. A
-separately operated Ed25519 signer signs a complete, short-lived operation
-binding. `FinalUseAuthority` pins the issuer identity and public key, validates
-the signature and exact binding, persists a single-use nonce and monotonic
-revocation head, then returns a non-cloneable, non-serializable
-`VerifiedUseToken`.
+`codex-rs/hepta-contracts/src/final_use.rs`, specified in
+`codex-rs/hepta-contracts/FINAL_USE.md`. A separately operated Ed25519 issuer
+signs a complete short-lived binding. `FinalUseAuthority` pins the signer and
+public key, verifies the signature and exact binding, durably burns a single-use
+nonce, applies monotonic revocation and returns a non-cloneable,
+non-serializable `VerifiedUseToken`.
 
-The supported durable backend is an owner-controlled Unix directory with a
-process lock, owner-only permissions, no-follow opens, atomic same-directory
-replacement and file/directory fsync. A persistence failure fences the live
-authority. The final synchronous consumer entry rechecks time, epoch, binding
-and revocation under the authority lock.
+The final synchronous consumer entry rechecks owner identity, binding, time,
+epoch and revocation under the authority lock.
+
+## Public symbols and source bindings
+
+- grant and binding schemas, signing preimage, `FinalUseAuthority`,
+  `VerifiedUseToken` and errors: `src/final_use.rs`;
+- private Unix nonce/revocation store, process lock and fsync protocol:
+  `src/final_use_store.rs`;
+- independent signer command: `hepta-supervisor` production-authority binary;
+- normative source-adjacent specification: `FINAL_USE.md`.
+
+## Durability and activation
+
+The supported backend is one owner-controlled Unix directory with no-follow
+opens, owner-only permissions, a process lock, atomic same-directory replace,
+file fsync and directory fsync. Equivalent non-Unix backends are not current.
+Activation requires a host-selected consumer and protected trust/configuration.
 
 ## Target-only design
 
 A general identity provider, approval-policy engine, distributed authority
-service, remote quorum and external anti-rollback oracle are not implemented by
-this slice. Equivalent durable backends for unsupported platforms require
-separate qualification.
+service, external anti-rollback oracle, trusted time service and cross-platform
+store are target-only.
 
 ## Known limits and non-claims
 
 Deleting or restoring the complete local authority directory can reset local
-history; recovery therefore requires independent issuer/epoch action. The
-library is not a sandbox against untrusted code in the same process or Unix
-account. Revocation cannot undo an effect that already entered the bounded
-consumer callback.
+history. Wall-clock rollback is not independently detected. The library is not
+a sandbox against code in the same process/account. A callback already entered
+cannot be revoked retroactively, and a slow callback delays revocation.
 
 ## Verification
 
-The source and specification cover signed-field substitution, expiry, epoch
-fencing, monotonic revocation, nonce replay across restart, unsafe storage,
-concurrent ownership and provider-adapter integration. Those checks do not grant
-production activation or operator acceptance.
+Tests cover signed-field/key substitution, expiry, epoch changes, monotonic
+revocation, replay across restart, unsafe storage, process locking, missing
+state and final-use delivery fencing.
+
+## Integration prerequisites
+
+The host must protect issuer keys, pinned public trust, directory ancestors,
+clock and consumer registry. A claimed token is consumed once at the final
+adapter boundary; a failed or uncertain effect requires a new authorized
+operation after reconciliation.

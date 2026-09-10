@@ -1,19 +1,7 @@
 # Lane A foundation: current implementation truth
 
-This directory is the closed-world, source-checked companion for the Lane A
-foundation modules. The canonical registries and each module's `TECHNICAL.md`
-remain authoritative for ownership, contracts and target architecture. This
-package is authoritative for a narrower question: **what the checked-in native
-source implements now, and what remains target-only**.
-
-A target design is not an executable capability. A source root is not an
-activation receipt. A passing fixture is not operator acceptance. The verifier
-in `scripts/verify_lane_a_foundation.py` fails when those states are collapsed
-or when a source anchor drifts.
-
-## Closed-world module set
-
-The set is exactly:
+This directory is the source-checked current-contract surface for the seven Lane A
+foundation modules:
 
 1. `platform.types`
 2. `platform.wire`
@@ -23,24 +11,29 @@ The set is exactly:
 6. `auth.authbus`
 7. `secrets.heptabao`
 
-`MODULE_TRUTH_MATRIX.json` records six orthogonal status axes, current
-capabilities, target-only capabilities and source anchors for every module.
-Each module-specific document includes the current executable contract, the
-target-only design, non-claims and verification obligations.
+Read [`BOUNDARY_POLICY.md`](BOUNDARY_POLICY.md) before interpreting any status.
+The stable `docs/modules/*/TECHNICAL.md` guides describe target architecture and
+ownership. The module documents here describe what the checked-in native source
+implements at the exact candidate. Target design is never promoted into current
+capability merely because it appears in a guide or execution dossier.
 
-## Closure claim
+`MODULE_TRUTH_MATRIX.json` records six orthogonal status axes and
+`CAPABILITY_EVIDENCE_MAP.json` maps every current capability to public symbols,
+source anchors, positive tests, negative tests, durability, activation and
+receipt status. `qualification/module-execution-dossiers/NATIVE_BINDINGS_LANE_A.json`
+overrides the historical Lane A rows in the repository-wide native-source snapshot
+with exact current-source blobs. `scripts/verify_lane_a_foundation.py` validates
+those links and writes exact-source receipts.
 
-This package closes repository-controlled documentation gaps for Lane A:
+## Closure boundary
 
-- current source and target design are separated;
-- misleading production/durability claims are prohibited;
-- the V1 wire layout is normative and source-checked;
-- authority and Bao source-adjacent specifications are linked into one lane
-  truth surface;
-- the evidence migration range is explicit;
-- drift is checked at exact source head and synthetic merge candidate.
+Repository-controlled current-contract documentation, source/test traceability
+and drift checks are closed when the verifier and native qualification jobs pass
+for the exact source and synthetic merge candidate.
 
-It deliberately does **not** claim production activation, operator acceptance,
-release, distributed anti-rollback, a durable operations backend, a durable
-AuthBus policy/quota service, or any external effect not proven by an exact
-candidate receipt.
+This package deliberately does **not** claim completion of target-only
+implementations, production activation, operator acceptance, promotion, release,
+distributed anti-rollback, durable operations, durable AuthBus policy/quota, or
+any external effect not proven by an exact-candidate receipt. Remaining
+implementation and external gates are listed in
+[`REMAINING_GATES.md`](REMAINING_GATES.md).

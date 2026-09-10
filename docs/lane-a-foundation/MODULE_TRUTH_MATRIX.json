@@ -1,6 +1,9 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "lane": "LANE-A-FOUNDATION",
+  "documentationPolicy": "docs/lane-a-foundation/BOUNDARY_POLICY.md",
+  "capabilityEvidenceMap": "docs/lane-a-foundation/CAPABILITY_EVIDENCE_MAP.json",
+  "nativeBindingOverride": "qualification/module-execution-dossiers/NATIVE_BINDINGS_LANE_A.json",
   "moduleCoverage": 7,
   "statusAxes": [
     "source",
@@ -12,9 +15,10 @@
   ],
   "closure": {
     "repositoryControlledDocumentationGaps": "closed",
-    "currentImplementationTruth": "closed",
+    "currentImplementationTruth": "source_and_test_anchored",
     "automatedDriftGate": "closed",
-    "productionImplementation": "not_claimed",
+    "nativeQualification": "workflow_required",
+    "targetArchitectureImplementation": "partial",
     "productionActivation": "not_claimed",
     "externalAcceptance": "not_claimed"
   },
@@ -23,7 +27,10 @@
       "module": "platform.types",
       "profile": "pure_types",
       "formalGuide": "docs/modules/platform.types/TECHNICAL.md",
+      "formalGuideRole": "target_architecture",
       "currentSpecification": "docs/lane-a-foundation/platform.types/CURRENT_IMPLEMENTATION.md",
+      "currentSpecificationRole": "current_executable_contract",
+      "implementationDetail": "docs/lane-a-foundation/platform.types/PRIMITIVES_V1.md",
       "states": {
         "source": "implemented",
         "implementation": "native_primitives",
@@ -37,13 +44,17 @@
         "digest and monotonic revision/generation primitives",
         "fixed-point probability and numeric-signal conversion"
       ],
-      "targetOnlyCapabilities": [],
+      "targetOnlyCapabilities": [
+        "cross-language generated bindings",
+        "runtime schema registry"
+      ],
       "sourceAnchors": [
         {
           "path": "codex-rs/hepta-types/src/lib.rs",
           "mustContain": [
             "#![forbid(unsafe_code)]",
             "pub use identity::StableId;",
+            "pub use identity::IdentityError;",
             "pub use numeric_conversion::rescale_signal;"
           ]
         },
@@ -60,12 +71,15 @@
       "module": "platform.wire",
       "profile": "stateless_codec",
       "formalGuide": "docs/modules/platform.wire/TECHNICAL.md",
+      "formalGuideRole": "target_architecture",
       "currentSpecification": "docs/lane-a-foundation/platform.wire/WIRE_V1.md",
+      "currentSpecificationRole": "current_executable_contract",
+      "implementationDetail": "docs/lane-a-foundation/platform.wire/HPTA_V1_CONFORMANCE.json",
       "states": {
         "source": "implemented",
         "implementation": "fixed_v1_codec",
         "durability": "none",
-        "qualification": "boundary_tests_present",
+        "qualification": "boundary_tests_and_frozen_vector_present",
         "activation": "library_only",
         "acceptance": "not_granted"
       },
@@ -77,7 +91,8 @@
       "targetOnlyCapabilities": [
         "version negotiation",
         "streaming decoder",
-        "multi-version compatibility adapter"
+        "multi-version compatibility adapter",
+        "authenticated complete-envelope digest"
       ],
       "sourceAnchors": [
         {
@@ -103,7 +118,10 @@
       "module": "kernel.authority",
       "profile": "authority_kernel",
       "formalGuide": "docs/modules/kernel.authority/TECHNICAL.md",
+      "formalGuideRole": "target_architecture",
       "currentSpecification": "docs/lane-a-foundation/kernel.authority/CURRENT_IMPLEMENTATION.md",
+      "currentSpecificationRole": "current_executable_contract",
+      "implementationDetail": "codex-rs/hepta-contracts/FINAL_USE.md",
       "states": {
         "source": "implemented",
         "implementation": "final_use_boundary",
@@ -120,7 +138,8 @@
       "targetOnlyCapabilities": [
         "general identity provider",
         "distributed anti-rollback oracle",
-        "cross-platform durable authority backend"
+        "cross-platform durable authority backend",
+        "trusted time service and clock rollback detection"
       ],
       "sourceAnchors": [
         {
@@ -143,41 +162,62 @@
     },
     {
       "module": "kernel.operations",
-      "profile": "operation_reference_model",
+      "profile": "bounded_operation_reference_model",
       "formalGuide": "docs/modules/kernel.operations/TECHNICAL.md",
+      "formalGuideRole": "target_architecture",
       "currentSpecification": "docs/lane-a-foundation/kernel.operations/CURRENT_IMPLEMENTATION.md",
+      "currentSpecificationRole": "current_executable_contract",
+      "implementationDetail": "docs/lane-a-foundation/kernel.operations/REFERENCE_MODEL_V1.md",
       "states": {
         "source": "implemented",
-        "implementation": "reference_model",
+        "implementation": "bounded_reference_model",
         "durability": "not_implemented",
         "qualification": "model_tests_present",
         "activation": "inactive",
         "acceptance": "not_granted"
       },
       "currentCapabilities": [
-        "deterministic operation-state transition model",
-        "in-memory outbox claim and acknowledgement model",
-        "generation-fenced terminal observation"
+        "bounded deterministic operation-state reference model",
+        "bounded in-memory outbox claim and acknowledgement model",
+        "generation-fenced idempotent terminal observation"
       ],
       "targetOnlyCapabilities": [
         "durable operation ledger",
         "transactional durable outbox",
-        "crash-reopen reconciliation service"
+        "claim lease expiry and crash-reopen takeover",
+        "background reconciliation service"
       ],
       "sourceAnchors": [
         {
+          "path": "codex-rs/hepta-operations/src/lib.rs",
+          "mustContain": [
+            "In-memory reference model",
+            "does not provide durable storage",
+            "ReferenceAuthorityWitness"
+          ]
+        },
+        {
           "path": "codex-rs/hepta-operations/src/ledger.rs",
           "mustContain": [
-            "In-memory deterministic model of the durable operation ledger",
+            "MAX_MODEL_OPERATION_RECORDS",
             "pub struct OperationLedger",
-            "pub fn observe_terminal"
+            "pub fn observe_terminal",
+            "terminal_matches"
           ]
         },
         {
           "path": "codex-rs/hepta-operations/src/outbox.rs",
           "mustContain": [
-            "pub struct Outbox",
-            "pub fn acknowledge"
+            "MAX_MODEL_OUTBOX_RECORDS",
+            "InvalidDigest(\"outbox payload\")",
+            "InvalidDigest(\"outbox acknowledgement\")"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-operations/src/model.rs",
+          "mustContain": [
+            "pub struct ReferenceAuthorityWitness",
+            "not a cryptographic credential"
           ]
         }
       ]
@@ -186,7 +226,10 @@
       "module": "kernel.evidence",
       "profile": "sqlite_evidence_store",
       "formalGuide": "docs/modules/kernel.evidence/TECHNICAL.md",
+      "formalGuideRole": "target_architecture",
       "currentSpecification": "docs/lane-a-foundation/kernel.evidence/CURRENT_IMPLEMENTATION.md",
+      "currentSpecificationRole": "current_executable_contract",
+      "implementationDetail": "docs/lane-a-foundation/kernel.evidence/STORE_V1.md",
       "states": {
         "source": "implemented",
         "implementation": "sqlite_store",
@@ -197,12 +240,13 @@
       },
       "currentCapabilities": [
         "governance and historical evidence storage",
-        "provider intent, terminal and effect evidence storage",
+        "provider intent terminal and effect evidence storage",
         "schema migration and integrity validation"
       ],
       "targetOnlyCapabilities": [
         "external monotonic checkpoint",
         "cryptographic database replacement detection",
+        "signed evaluator-role and independence verification",
         "promotion or release authority"
       ],
       "sourceAnchors": [
@@ -214,36 +258,49 @@
           ]
         },
         {
+          "path": "codex-rs/hepta-evidence/src/store.rs",
+          "mustContain": [
+            "verify_current_migration_ledger",
+            "verify_quick_check",
+            "open_existing_read_only"
+          ]
+        },
+        {
           "path": "codex-rs/hepta-evidence/migrations/0001_governance.sql",
           "mustContain": [
-            "CREATE TABLE"
+            "CREATE TABLE",
+            "governance_decisions_no_update"
           ]
         },
         {
           "path": "codex-rs/hepta-evidence/migrations/0008_provider_effect_ack_source.sql",
           "mustContain": [
-            "ALTER TABLE"
+            "ALTER TABLE",
+            "status_lookup"
           ]
         }
       ]
     },
     {
       "module": "auth.authbus",
-      "profile": "replay_verifier",
+      "profile": "preverified_replay_verifier",
       "formalGuide": "docs/modules/auth.authbus/TECHNICAL.md",
+      "formalGuideRole": "target_architecture",
       "currentSpecification": "docs/lane-a-foundation/auth.authbus/CURRENT_IMPLEMENTATION.md",
+      "currentSpecificationRole": "current_executable_contract",
+      "implementationDetail": "docs/lane-a-foundation/auth.authbus/PREVERIFIED_REPLAY_V1.md",
       "states": {
         "source": "implemented",
-        "implementation": "replay_verifier",
+        "implementation": "preverified_replay_verifier",
         "durability": "process_memory_only",
         "qualification": "unit_tests_present",
         "activation": "library_only",
         "acceptance": "not_granted"
       },
       "currentCapabilities": [
-        "bounded in-process replay window",
-        "expiry, scope and payload digest matching",
-        "deny-all verification receipt"
+        "bounded in-process replay window keyed by issuer epoch subject and scope",
+        "trusted-context expiry revocation scope and payload matching",
+        "deny-all replay verification receipt"
       ],
       "targetOnlyCapabilities": [
         "cryptographic signature verification",
@@ -256,10 +313,15 @@
         {
           "path": "codex-rs/hepta-authbus/src/lib.rs",
           "mustContain": [
-            "pub struct ReplayWindow",
-            "signature_digest: Digest32",
-            "authority: AuthorityPosture::DENY_ALL"
-          ],
+            "pub struct PreverifiedAuthEnvelope",
+            "pub struct TrustedReplayContext",
+            "BTreeMap<ReplayKey, u64>",
+            "AuthorityPosture::DENY_ALL",
+            "does not verify a signature"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-authbus/src/lib.rs",
           "mustNotContain": [
             "pub fn reserve(",
             "pub fn settle(",
@@ -272,7 +334,10 @@
       "module": "secrets.heptabao",
       "profile": "bounded_external_secret_reader",
       "formalGuide": "docs/modules/secrets.heptabao/TECHNICAL.md",
+      "formalGuideRole": "target_architecture",
       "currentSpecification": "docs/lane-a-foundation/secrets.heptabao/CURRENT_IMPLEMENTATION.md",
+      "currentSpecificationRole": "current_executable_contract",
+      "implementationDetail": "docs/lane-a-foundation/secrets.heptabao/KV_V2_READ_V1.md",
       "states": {
         "source": "implemented",
         "implementation": "bounded_kv_v2_reader",
@@ -290,6 +355,7 @@
         "secret mutation",
         "generic lease renewal API",
         "generic revoke API",
+        "durable operation and evidence composition",
         "automatic production enrollment"
       ],
       "sourceAnchors": [
@@ -297,7 +363,9 @@
           "path": "codex-rs/hepta-bao-adapter/src/https_consumer.rs",
           "mustContain": [
             "pub struct BaoClient",
-            "consume_kv_v2"
+            "consume_kv_v2",
+            "MAX_RESPONSE_BYTES",
+            "with_verified_use"
           ]
         },
         {
