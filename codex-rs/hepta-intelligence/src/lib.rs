@@ -5,8 +5,6 @@
 
 #![forbid(unsafe_code)]
 
-mod vertical;
-
 use std::collections::BTreeSet;
 use std::error::Error as StdError;
 use std::fmt;
@@ -16,11 +14,8 @@ use codex_hepta_types::Digest32;
 use codex_hepta_types::FixedQ32;
 use codex_hepta_types::StableId;
 
-pub use vertical::ReadOnlyUtilityContribution;
-pub use vertical::ReadOnlyVerticalError;
-pub use vertical::ReadOnlyVerticalReceipt;
-pub use vertical::ReadOnlyVerticalRequest;
-pub use vertical::run_read_only_vertical;
+mod pipeline;
+pub use pipeline::*;
 
 const MAX_CANDIDATES: usize = 128;
 
@@ -79,6 +74,8 @@ impl fmt::Display for Error {
 
 impl StdError for Error {}
 
+/// Compatibility planning kernel. The Lane F stage machine is
+/// [`run_shadow_pipeline`].
 pub fn compose(mut request: PlanningRequest) -> Result<IntelligencePlanReceipt, Error> {
     for (name, digest) in [
         ("objective", request.objective_digest),
@@ -156,7 +153,3 @@ fn push_id(bytes: &mut Vec<u8>, value: &StableId) {
 #[cfg(test)]
 #[path = "lib_tests.rs"]
 mod tests;
-
-#[cfg(test)]
-#[path = "vertical_tests.rs"]
-mod vertical_tests;

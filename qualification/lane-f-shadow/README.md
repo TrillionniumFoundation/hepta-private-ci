@@ -11,9 +11,9 @@ neuron.runtime
 -> learning.plasticity next-generation candidate set
 ```
 
-It remains outside the product workspace. The workflow derives a temporary lock
-from the exact `codex-rs/Cargo.lock`, adds only this harness root package, runs
-locked tests/lint, and removes the temporary file before the clean-tree check.
+It remains outside the product workspace. The standalone manifest owns a source-controlled `Cargo.lock` generated from its exact
+path manifests. CI runs locked tests and lint at both the exact head and a deterministic
+synthetic merge candidate.
 
 A pass proves source-level composition, deterministic replay, bounded inputs, a
 no-change candidate, an exact rollback predecessor, and
