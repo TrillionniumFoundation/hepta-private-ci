@@ -44,11 +44,21 @@ pub struct FinalHoldoutJournalReceiptV1 {
     pub authority: AuthorityPosture,
 }
 
-#[derive(Clone, Debug, Default)]
+#[derive(Clone, Debug)]
 pub struct FinalHoldoutJournalV1 {
     registry: FinalHoldoutRegistry,
     records: Vec<FinalHoldoutJournalRecordV1>,
     head_digest: Digest32,
+}
+
+impl Default for FinalHoldoutJournalV1 {
+    fn default() -> Self {
+        Self {
+            registry: FinalHoldoutRegistry::default(),
+            records: Vec::new(),
+            head_digest: Digest32::ZERO,
+        }
+    }
 }
 
 impl FinalHoldoutJournalV1 {
