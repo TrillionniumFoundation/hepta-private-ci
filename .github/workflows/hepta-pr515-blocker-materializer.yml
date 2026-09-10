@@ -52,6 +52,7 @@ jobs:
           scripts/hepta-module-dossiers.py
           scripts/hepta-plan-digest.py
           scripts/qualification/hepta_current_ci_state.py
+          scripts/qualification/hepta_evidence.py
           scripts/qualification/hepta_full_validator.py
           scripts/qualification/hepta_write_external_handoff.py
           scripts/qualification/hepta_write_report.py
@@ -90,6 +91,7 @@ jobs:
             scripts/hepta-module-dossiers.py \
             scripts/hepta-plan-digest.py \
             scripts/qualification/hepta_current_ci_state.py \
+            scripts/qualification/hepta_evidence.py \
             scripts/qualification/hepta_full_validator.py \
             scripts/qualification/hepta_write_external_handoff.py \
             scripts/qualification/hepta_write_report.py \
@@ -117,6 +119,25 @@ jobs:
             tests.test_hepta_blocker_orchestrator \
             tests.test_validate_contract_providers
           echo PASS_PR515_FOCUSED_REGRESSIONS
+
+      - name: Re-canonicalize generated qualification sources
+        shell: bash
+        run: |
+          set -euo pipefail
+          uv run --frozen --project scripts ruff format \
+            scripts/hepta-module-dossiers.py \
+            scripts/hepta-plan-digest.py \
+            scripts/qualification/hepta_current_ci_state.py \
+            scripts/qualification/hepta_evidence.py \
+            scripts/qualification/hepta_full_validator.py \
+            scripts/qualification/hepta_write_external_handoff.py \
+            scripts/qualification/hepta_write_report.py \
+            scripts/qualification/tests/test_hepta_current_ci_state.py \
+            tests/test_hepta_blocker_orchestrator.py \
+            tests/test_validate_contract_providers.py
+          git diff --name-only | sort > "$RUNNER_TEMP/actual-files"
+          diff -u "$RUNNER_TEMP/expected-files" "$RUNNER_TEMP/actual-files"
+          echo PASS_PR515_FINAL_EXACT_CHANGESET
 
       - name: Run full formatting and spelling gates
         shell: bash
