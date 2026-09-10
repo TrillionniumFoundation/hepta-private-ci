@@ -13,6 +13,7 @@ on:
   push:
     branches:
       - "codex/lane-f-gap-closure-20260910"
+      - "codex/hepta-all-gap-closure-final-r12-20260910"
       - "integration/hepta-all-gap-closure-20260910-r12"
       - "candidate/hepta-all-gap-closure-final-20260910"
   workflow_dispatch:
@@ -46,35 +47,27 @@ jobs:
           test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
           test -z "$(git status --porcelain)"
 
-      - name: Prepare exact dependency lock
+      - name: Generate and verify exact dependency lock
         shell: bash
         run: |
           set -euo pipefail
           cp codex-rs/Cargo.lock qualification/lane-f-shadow/Cargo.lock
-          if ! grep -q '^name = "lane-f-shadow-qualification"$' qualification/lane-f-shadow/Cargo.lock; then
-            {
-              printf '\n[[package]]\n'
-              printf 'name = "lane-f-shadow-qualification"\n'
-              printf 'version = "0.1.0"\n'
-              printf 'dependencies = [\n'
-              printf ' "codex-hepta-intelligence",\n'
-              printf ' "codex-hepta-intuition",\n'
-              printf ' "codex-hepta-neuron",\n'
-              printf ' "codex-hepta-plasticity",\n'
-              printf ' "codex-hepta-prompt-optimizer",\n'
-              printf ' "codex-hepta-types",\n'
-              printf ']\n'
-            } >> qualification/lane-f-shadow/Cargo.lock
-          fi
+          cp qualification/lane-f-shadow/Cargo.lock "$RUNNER_TEMP/lane-f-seed.lock"
+          cargo metadata --format-version 1 --manifest-path qualification/lane-f-shadow/Cargo.toml >/dev/null
+          python3 qualification/lane-f-shadow/verify_lock.py \
+            "$RUNNER_TEMP/lane-f-seed.lock" \
+            qualification/lane-f-shadow/Cargo.lock
 
       - name: Test and lint standalone vertical
         shell: bash
         run: |
           set -euo pipefail
+          trap 'rm -f qualification/lane-f-shadow/Cargo.lock' EXIT
           cargo test --locked --manifest-path qualification/lane-f-shadow/Cargo.toml
           cargo clippy --locked --manifest-path qualification/lane-f-shadow/Cargo.toml --all-targets -- -D warnings
           cargo fmt --manifest-path qualification/lane-f-shadow/Cargo.toml -- --check
           rm qualification/lane-f-shadow/Cargo.lock
+          trap - EXIT
           git diff --check
           test -z "$(git status --porcelain --untracked-files=no)"
 
@@ -112,35 +105,27 @@ jobs:
           git checkout --detach "$SHA"
           printf 'sha=%s\n' "$SHA" >> "$GITHUB_OUTPUT"
 
-      - name: Prepare exact dependency lock
+      - name: Generate and verify exact dependency lock
         shell: bash
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "${{ steps.merge.outputs.sha }}"
           cp codex-rs/Cargo.lock qualification/lane-f-shadow/Cargo.lock
-          if ! grep -q '^name = "lane-f-shadow-qualification"$' qualification/lane-f-shadow/Cargo.lock; then
-            {
-              printf '\n[[package]]\n'
-              printf 'name = "lane-f-shadow-qualification"\n'
-              printf 'version = "0.1.0"\n'
-              printf 'dependencies = [\n'
-              printf ' "codex-hepta-intelligence",\n'
-              printf ' "codex-hepta-intuition",\n'
-              printf ' "codex-hepta-neuron",\n'
-              printf ' "codex-hepta-plasticity",\n'
-              printf ' "codex-hepta-prompt-optimizer",\n'
-              printf ' "codex-hepta-types",\n'
-              printf ']\n'
-            } >> qualification/lane-f-shadow/Cargo.lock
-          fi
+          cp qualification/lane-f-shadow/Cargo.lock "$RUNNER_TEMP/lane-f-seed.lock"
+          cargo metadata --format-version 1 --manifest-path qualification/lane-f-shadow/Cargo.toml >/dev/null
+          python3 qualification/lane-f-shadow/verify_lock.py \
+            "$RUNNER_TEMP/lane-f-seed.lock" \
+            qualification/lane-f-shadow/Cargo.lock
 
       - name: Test merge candidate
         shell: bash
         run: |
           set -euo pipefail
+          trap 'rm -f qualification/lane-f-shadow/Cargo.lock' EXIT
           cargo test --locked --manifest-path qualification/lane-f-shadow/Cargo.toml
           cargo clippy --locked --manifest-path qualification/lane-f-shadow/Cargo.toml --all-targets -- -D warnings
           cargo fmt --manifest-path qualification/lane-f-shadow/Cargo.toml -- --check
           rm qualification/lane-f-shadow/Cargo.lock
+          trap - EXIT
           git diff --check
           test -z "$(git status --porcelain --untracked-files=no)"
