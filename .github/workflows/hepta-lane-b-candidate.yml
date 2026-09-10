@@ -1,0 +1,81 @@
+name: Hepta Lane B exact candidate
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/hepta-lane-b-candidate.yml"
+      - "qualification/lane-b/**"
+      - "scripts/hepta-lane-b-*.py"
+      - "codex-rs/hepta-supervisor/**"
+      - "codex-rs/hepta-fleet/**"
+      - "codex-rs/hepta-agentd/**"
+      - "codex-rs/app-server/**"
+      - "codex-rs/core/**"
+      - "codex-rs/hepta-codex-adapter/**"
+      - "codex-rs/hepta-infer-core/**"
+      - "codex-rs/hepta-inferd/**"
+      - "codex-rs/hepta-infer-worker-host/**"
+      - "codex-rs/hepta-automation/**"
+      - "codex-rs/hepta-matrix-sdk/**"
+      - "codex-rs/hepta-matrixd/**"
+      - "apps/hepta-browser/**"
+      - "apps/hepta-control-ui/**"
+      - "apps/hepta-native/**"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-lane-b-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  exact-candidate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: Checkout exact PR head
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Self-test fail-closed verifier
+        run: python3 scripts/hepta-lane-b-candidate.py self-test
+
+      - name: Verify exact Lane B candidate
+        run: python3 scripts/hepta-lane-b-candidate.py verify
+
+      - name: Browser runtime boundary tests
+        run: node --test apps/hepta-browser/test/runtime.test.js
+
+      - name: Web control runtime tests
+        run: node --test apps/hepta-control-ui/test/runtime-client.test.js
+
+      - name: Native shell runtime tests
+        run: node --test apps/hepta-native/test/shell-runtime.test.js
+
+      - name: Fleet lease runtime tests
+        working-directory: codex-rs
+        run: cargo test -p codex-hepta-fleet --bin hepta-fleet-leased
+
+      - name: Durable inference control tests
+        working-directory: codex-rs
+        run: cargo test -p codex-hepta-infer-core --bin hepta-infer-control
+
+      - name: Inference worker boundary tests
+        working-directory: codex-rs
+        run: cargo test -p codex-hepta-infer-worker-host --bin hepta-infer-worker
+
+      - name: TaskFlow runtime tests
+        working-directory: codex-rs
+        run: cargo test -p codex-hepta-automation --bin hepta-taskflow-runtime
+
+      - name: Matrix send observer tests
+        working-directory: codex-rs
+        run: cargo test -p codex-hepta-matrixd --bin hepta-matrix-send-observer
+
+      - name: Check tracked tree is clean
+        run: test -z "$(git status --porcelain --untracked-files=no)"
