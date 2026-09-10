@@ -1,0 +1,62 @@
+name: Hepta r19 lock diagnostic
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: read
+
+concurrency:
+  group: hepta-r19-lock-diagnostic
+  cancel-in-progress: true
+
+env:
+  HEPTA_FINAL_TARGET: integration/hepta-all-gap-closure-20260910-r19
+  HEPTA_R7_SHARDS: '8'
+  CARGO_TERM_COLOR: never
+  RUST_BACKTRACE: '1'
+
+jobs:
+  diagnose:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 360
+    steps:
+      - name: Check out exact r19 controller
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Reproduce prepare and capture complete evidence
+        id: reproduce
+        shell: bash
+        run: |
+          set -uo pipefail
+          mkdir -p "$RUNNER_TEMP/hepta-r19-diagnostic"
+          LOG="$RUNNER_TEMP/hepta-r19-diagnostic/prepare.log"
+          STATUS="$RUNNER_TEMP/hepta-r19-diagnostic/status.txt"
+          BEFORE="$RUNNER_TEMP/hepta-r19-diagnostic/before.sha"
+          AFTER="$RUNNER_TEMP/hepta-r19-diagnostic/after.sha"
+          git rev-parse HEAD > "$BEFORE"
+          set +e
+          python3 scripts/hepta-global-finalizer-r7.py prepare --shards "$HEPTA_R7_SHARDS" >"$LOG" 2>&1
+          result=$?
+          set -e
+          printf '%s\n' "$result" > "$STATUS"
+          git rev-parse HEAD > "$AFTER"
+          git status --short > "$RUNNER_TEMP/hepta-r19-diagnostic/status-short.txt" || true
+          git diff --stat > "$RUNNER_TEMP/hepta-r19-diagnostic/diff-stat.txt" || true
+          git diff -- codex-rs/Cargo.lock > "$RUNNER_TEMP/hepta-r19-diagnostic/Cargo.lock.patch" || true
+          cat "$LOG"
+          printf 'HEPTA_R19_DIAGNOSTIC_EXIT=%s\n' "$result"
+          exit "$result"
+
+      - name: Upload complete diagnostic evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-r19-lock-diagnostic-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/hepta-r19-diagnostic
+          if-no-files-found: error
+          retention-days: 14
