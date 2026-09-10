@@ -320,8 +320,10 @@ class CandidateTests(unittest.TestCase):
                 candidate,
                 ((sys.executable, "-c", "print('ok')"),),
             )
-            self.assertEqual(tested.state, "sandbox_tested")
+            self.assertEqual(tested.state, "fixture_tested")
             self.assertTrue(receipt.passed)
+            self.assertFalse(receipt.filesystem_isolated)
+            self.assertFalse(receipt.network_isolated)
             self.assertFalse(receipt.authority_delta)
             self.assertEqual(run_git(root, "rev-parse", "HEAD^{tree}"), tree)
             self.assertFalse(
