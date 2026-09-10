@@ -1,0 +1,114 @@
+name: patch-global-finalizer-r19
+
+on:
+  push:
+    branches:
+      - ops/hepta-global-gap-closure-controller-20260910-r1
+    paths:
+      - .github/workflows/patch-global-finalizer-r19.yml
+
+permissions:
+  contents: write
+  actions: read
+
+concurrency:
+  group: patch-global-finalizer-r19
+  cancel-in-progress: false
+
+jobs:
+  patch:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      EXPECTED_PARENT: 770c26dfeeac52d69f1f272803878900be1f0b05
+      TARGET_BRANCH: ops/hepta-global-gap-closure-controller-20260910-r1
+      FINALIZER: scripts/hepta-global-finalizer-r7.py
+      PATCH_SCRIPT: scripts/patch-global-finalizer-r19.py
+    steps:
+      - name: Check out exact one-shot source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Verify immutable patch tuple
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "${GITHUB_REF_NAME}" = "${TARGET_BRANCH}"
+          test "$(git rev-parse HEAD^)" = "${EXPECTED_PARENT}"
+          test "$(git rev-parse HEAD:.github/workflows/patch-global-finalizer-r19.yml)" = "$(git hash-object .github/workflows/patch-global-finalizer-r19.yml)"
+          test "$(git rev-parse HEAD:${PATCH_SCRIPT})" = "$(git hash-object "${PATCH_SCRIPT}")"
+          test "$(git ls-remote origin "refs/heads/${TARGET_BRANCH}" | awk '{print $1}')" = "${GITHUB_SHA}"
+
+      - name: Complete and apply the fixed-point repair
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+
+          path = Path("scripts/patch-global-finalizer-r19.py")
+          text = path.read_text(encoding="utf-8")
+          anchor = '''        (
+              Path("codex-rs/hepta-prompt-registry/src/v2_tests.rs"),
+              "let mut wrong_tuple = tuple.clone();",
+              "let mut wrong_tuple = tuple;",
+              1,
+          ),
+          '''
+          insertion = anchor + '''        (
+              Path("codex-rs/hepta-cognitive-store/src/v2.rs"),
+              "record_id: record_id.clone(),",
+              "record_id: record_id,",
+              1,
+          ),
+          '''
+          if "codex-rs/hepta-cognitive-store/src/v2.rs" not in text:
+              if text.count(anchor) != 1:
+                  raise SystemExit(
+                      f"r19 cognitive-store anchor drift: {text.count(anchor)}"
+                  )
+              text = text.replace(anchor, insertion, 1)
+          path.write_text(text, encoding="utf-8")
+          PY
+          python3 -m py_compile "${PATCH_SCRIPT}"
+          python3 "${PATCH_SCRIPT}"
+          python3 -m py_compile "${FINALIZER}"
+          python3 "${PATCH_SCRIPT}"
+          python3 -m py_compile "${FINALIZER}"
+          grep -Fq 'def repair_repository_lints()' "${FINALIZER}"
+          grep -Fq 'codex-rs/hepta-cognitive-store/src/v2.rs' "${FINALIZER}"
+          grep -Fq 'def repair_repository_projections()' "${FINALIZER}"
+          grep -Fq 'base.glob("NATIVE_BINDINGS_LANE_*.json")' "${FINALIZER}"
+          grep -Fq 'projection_fixed_point = repair_repository_projections()' "${FINALIZER}"
+          grep -Fq 'native_fixed_point = repair_native_bindings()' "${FINALIZER}"
+          grep -Fq 'projection_preflight_receipts = [' "${FINALIZER}"
+          git diff --check
+
+      - name: Publish clean fixed-point controller
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'hepta-global-finalizer-patcher'
+          git config user.email 'actions@users.noreply.github.com'
+          git rm -f --ignore-unmatch \
+            .github/workflows/patch-global-finalizer-r19.yml \
+            scripts/patch-global-finalizer-r19.py \
+            .github/workflows/tmp-hepta-r13-patcher-fixer.yml \
+            .github/workflows/tmp-hepta-r13-chain-patcher.yml \
+            .github/workflows/patch-global-finalizer-r18.yml \
+            scripts/patch-global-finalizer-r18.py \
+            .github/workflows/patch-global-finalizer-r17.yml \
+            scripts/patch-global-finalizer-r17.py
+          git add "${FINALIZER}"
+          git diff --cached --check
+          git diff --cached --name-only | grep -Fxq "${FINALIZER}"
+          git commit --signoff -m 'fix(hepta): converge repository projections and strict Clippy'
+          remote_sha="$(git ls-remote origin "refs/heads/${TARGET_BRANCH}" | awk '{print $1}')"
+          test "${remote_sha}" = "${GITHUB_SHA}"
+          git push \
+            --force-with-lease="refs/heads/${TARGET_BRANCH}:${GITHUB_SHA}" \
+            origin "HEAD:refs/heads/${TARGET_BRANCH}"
