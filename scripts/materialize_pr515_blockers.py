@@ -49,8 +49,6 @@ RUN_IDENTITY_FIELDS = (
     "html_url",
 )
 
-Scalar = str | int | float | bool | None
-
 
 def canonical_bytes(value: Any) -> bytes:
     return json.dumps(
