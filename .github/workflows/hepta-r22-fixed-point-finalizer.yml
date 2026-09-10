@@ -1,0 +1,301 @@
+name: Hepta r22 sealed fixed-point convergence
+
+on:
+  push:
+    branches:
+      - ops/hepta-r19-fixed-point-controller-20260910
+    paths:
+      - .github/workflows/hepta-r22-fixed-point-finalizer.yml
+      - scripts/hepta-r22-fixed-point-driver.py
+      - scripts/hepta-global-finalizer-r7.py
+  workflow_dispatch:
+    inputs:
+      target_branch:
+        description: Dedicated exact-source candidate branch
+        required: false
+        default: integration/hepta-all-gap-closure-20260910-r22
+      shard_count:
+        description: Parallel canonical-package shards
+        required: false
+        default: '8'
+
+permissions:
+  contents: write
+  pull-requests: write
+  actions: read
+
+concurrency:
+  group: hepta-r22-fixed-point-${{ inputs.target_branch || 'integration/hepta-all-gap-closure-20260910-r22' }}
+  cancel-in-progress: true
+
+env:
+  HEPTA_FINAL_TARGET: ${{ inputs.target_branch || 'integration/hepta-all-gap-closure-20260910-r22' }}
+  HEPTA_R22_SHARDS: ${{ inputs.shard_count || '8' }}
+  CARGO_TERM_COLOR: always
+  RUST_BACKTRACE: '1'
+
+jobs:
+  bootstrap:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Check out exact controller source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Materialize hash-bound r22 executor
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${GITHUB_SHA}"
+          test -z "$(git status --porcelain)"
+          python3 -m py_compile \
+            scripts/hepta-r22-fixed-point-driver.py \
+            scripts/hepta-global-finalizer-r7.py
+          bundle="${RUNNER_TEMP}/hepta-r22-executor"
+          mkdir -p "${bundle}"
+          python3 scripts/hepta-r22-fixed-point-driver.py \
+            --source scripts/hepta-global-finalizer-r7.py \
+            --output "${bundle}/hepta-global-finalizer-r22.py" \
+            --receipt "${bundle}/EXECUTOR_PATCH.json"
+          python3 -m py_compile "${bundle}/hepta-global-finalizer-r22.py"
+          cat "${bundle}/EXECUTOR_PATCH.json"
+          test -z "$(git status --porcelain)"
+
+      - name: Upload exact executor bundle
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-r22-executor-${{ github.sha }}
+          path: ${{ runner.temp }}/hepta-r22-executor
+          if-no-files-found: error
+          retention-days: 14
+
+  prepare:
+    needs: bootstrap
+    runs-on: ubuntu-24.04
+    timeout-minutes: 360
+    outputs:
+      candidate_sha: ${{ steps.prepare.outputs.candidate_sha }}
+      candidate_branch: ${{ steps.prepare.outputs.candidate_branch }}
+      matrix: ${{ steps.prepare.outputs.matrix }}
+      package_count: ${{ steps.prepare.outputs.package_count }}
+      prepared: ${{ steps.prepare.outputs.prepared }}
+    steps:
+      - name: Check out controller with complete repository history
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Download exact executor bundle
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: hepta-r22-executor-${{ github.sha }}
+          path: ${{ runner.temp }}/hepta-r22-executor
+
+      - name: Materialize exact r22 candidate
+        id: prepare
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 "${RUNNER_TEMP}/hepta-r22-executor/hepta-global-finalizer-r22.py" \
+            prepare --shards "${HEPTA_R22_SHARDS}"
+
+      - name: Upload prepare receipt
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-r22-receipt-prepare-${{ github.run_id }}-${{ github.run_attempt }}
+          path: qualification/global-gap-closure-final-r7/PREPARE.json
+          if-no-files-found: warn
+          retention-days: 30
+
+  repository-gate:
+    needs: prepare
+    if: needs.prepare.result == 'success' && needs.prepare.outputs.prepared == 'true'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 180
+    steps:
+      - name: Check out exact candidate source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ needs.prepare.outputs.candidate_sha }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Download exact executor bundle
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: hepta-r22-executor-${{ github.sha }}
+          path: ${{ runner.temp }}/hepta-r22-executor
+
+      - name: Execute closed-world and document gates
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 "${RUNNER_TEMP}/hepta-r22-executor/hepta-global-finalizer-r22.py" \
+            repository-gate \
+            --expected-sha "${{ needs.prepare.outputs.candidate_sha }}"
+
+      - name: Upload repository-gate receipt
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-r22-receipt-repository-${{ github.run_id }}-${{ github.run_attempt }}
+          path: qualification/global-gap-closure-final-r7/REPOSITORY_GATE.json
+          if-no-files-found: warn
+          retention-days: 30
+
+  package-gates:
+    needs: prepare
+    if: needs.prepare.result == 'success' && needs.prepare.outputs.prepared == 'true'
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.prepare.outputs.matrix) }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 300
+    steps:
+      - name: Check out exact candidate source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ needs.prepare.outputs.candidate_sha }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Download exact executor bundle
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: hepta-r22-executor-${{ github.sha }}
+          path: ${{ runner.temp }}/hepta-r22-executor
+
+      - name: Test and lint package shard ${{ matrix.shard }}
+        shell: bash
+        env:
+          HEPTA_PACKAGES_JSON: ${{ matrix.packages_json }}
+        run: |
+          set -euo pipefail
+          python3 "${RUNNER_TEMP}/hepta-r22-executor/hepta-global-finalizer-r22.py" \
+            package-gate \
+            --expected-sha "${{ needs.prepare.outputs.candidate_sha }}" \
+            --shard "${{ matrix.shard }}" \
+            --packages-json "${HEPTA_PACKAGES_JSON}"
+
+      - name: Upload package-shard receipt
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-r22-receipt-package-${{ matrix.shard }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: qualification/global-gap-closure-final-r7/PACKAGE_GATE_${{ matrix.shard }}.json
+          if-no-files-found: warn
+          retention-days: 30
+
+  finalize:
+    needs:
+      - prepare
+      - repository-gate
+      - package-gates
+    if: always() && needs.prepare.outputs.candidate_sha != ''
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    outputs:
+      internal_passed: ${{ steps.finalize.outputs.internal_passed }}
+      receipt_commit: ${{ steps.finalize.outputs.receipt_commit }}
+    steps:
+      - name: Check out qualified candidate source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ needs.prepare.outputs.candidate_sha }}
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Download exact executor bundle
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: hepta-r22-executor-${{ github.sha }}
+          path: ${{ runner.temp }}/hepta-r22-executor
+
+      - name: Download all qualification receipts
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          pattern: hepta-r22-receipt-*-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/hepta-r22-receipts
+          merge-multiple: true
+
+      - name: Bind controller patch, source, and qualification receipts
+        id: finalize
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p qualification/global-gap-closure-final-r7/controller
+          cp "${RUNNER_TEMP}/hepta-r22-executor/EXECUTOR_PATCH.json" \
+            qualification/global-gap-closure-final-r7/controller/EXECUTOR_PATCH.json
+          set +e
+          python3 "${RUNNER_TEMP}/hepta-r22-executor/hepta-global-finalizer-r22.py" \
+            finalize \
+            --expected-sha "${{ needs.prepare.outputs.candidate_sha }}" \
+            --artifact-root "${RUNNER_TEMP}/hepta-r22-receipts" \
+            --expected-shards "${HEPTA_R22_SHARDS}" \
+            --prepare-result "${{ needs.prepare.result }}" \
+            --repository-result "${{ needs.repository-gate.result }}" \
+            --package-result "${{ needs.package-gates.result }}"
+          rc=$?
+          set -e
+          exit "${rc}"
+
+      - name: Upload final bound receipts
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-r22-final-${{ github.run_id }}-${{ github.run_attempt }}
+          path: qualification/global-gap-closure-final-r7
+          if-no-files-found: warn
+          retention-days: 60
+
+      - name: Create or locate draft r22 convergence PR
+        if: steps.finalize.outputs.internal_passed == 'true'
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          BASE_BRANCH: ops/hepta-final-convergence-review-anchor-20260909
+          HEAD_BRANCH: ${{ needs.prepare.outputs.candidate_branch }}
+          QUALIFIED_SHA: ${{ needs.prepare.outputs.candidate_sha }}
+          RECEIPT_SHA: ${{ steps.finalize.outputs.receipt_commit }}
+        run: |
+          set -euo pipefail
+          existing="$(gh pr list \
+            --repo "${GITHUB_REPOSITORY}" \
+            --state open \
+            --head "${HEAD_BRANCH}" \
+            --base "${BASE_BRANCH}" \
+            --json number \
+            --jq '.[0].number // empty')"
+          if [[ -n "${existing}" ]]; then
+            echo "draft PR already exists: #${existing}"
+            exit 0
+          fi
+          body="${RUNNER_TEMP}/hepta-r22-pr.md"
+          cat > "${body}" <<EOF
+          ## Exact qualified source
+
+          - source commit: \`${QUALIFIED_SHA}\`
+          - receipt commit: \`${RECEIPT_SHA}\`
+          - package scope: every canonical \`codex-hepta-*\` workspace package
+          - repository gates: closed-world source, generated documents, 40-module native bindings, format and clean-tree checks
+          - package gates: tests and strict Clippy over ${HEPTA_R22_SHARDS} exact-source shards
+          - Lane F owner: \`codex/lane-f-gap-closure-20260910-r2\`
+          - controller transformation: hash-bound and committed with final receipts
+
+          ## Authority ceiling
+
+          This draft does not self-issue independent semantic approval, runtime/model identity, future-time validity, target-host or hardware qualification, remote-owner consent, operator acceptance, production canary, selection, promotion, release, model/provider dispatch, or a second production writer.
+          EOF
+          gh pr create \
+            --repo "${GITHUB_REPOSITORY}" \
+            --draft \
+            --base "${BASE_BRANCH}" \
+            --head "${HEAD_BRANCH}" \
+            --title "chore(hepta): r22 sealed exact-source convergence" \
+            --body-file "${body}"
