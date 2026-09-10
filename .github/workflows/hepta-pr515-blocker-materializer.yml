@@ -37,32 +37,15 @@ jobs:
         with:
           version: "0.11.3"
 
-      - name: Materialize, qualify, and publish exact PR head
+      - name: Bind and checkout exact source head
         shell: bash
         run: |
           set -euo pipefail
-          materializer="$GITHUB_WORKSPACE/scripts/.materialize_pr515_blockers.py"
-          cp scripts/materialize_pr515_blockers.py "$materializer"
-
+          cp scripts/materialize_pr515_blockers.py "$RUNNER_TEMP/materialize_pr515_blockers.py"
           test "$(git rev-parse "origin/$OUTPUT_BRANCH")" = "$SOURCE_SHA"
           git checkout --detach "$SOURCE_SHA"
           test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
-          test -f "$materializer"
-
-          python3 "$materializer"
-          rm -f "$materializer"
-
-          uv run --frozen --project scripts ruff format \
-            scripts/hepta-module-dossiers.py \
-            scripts/hepta-plan-digest.py \
-            scripts/qualification/hepta_current_ci_state.py \
-            scripts/qualification/hepta_full_validator.py \
-            scripts/qualification/hepta_write_external_handoff.py \
-            scripts/qualification/hepta_write_report.py \
-            scripts/qualification/tests/test_hepta_current_ci_state.py \
-            tests/test_hepta_blocker_orchestrator.py \
-            tests/test_validate_contract_providers.py
-
+          test -f "$RUNNER_TEMP/materialize_pr515_blockers.py"
           cat > "$RUNNER_TEMP/expected-files" <<'EOF'
           qualification/global-gap-closure-final-r6/STATUS.json
           qualification/global-gap-closure-final-r8/receipts/PREPARE.json
@@ -76,31 +59,77 @@ jobs:
           tests/test_hepta_blocker_orchestrator.py
           tests/test_validate_contract_providers.py
           EOF
-          git diff --name-only | sort > "$RUNNER_TEMP/actual-files"
           sort -o "$RUNNER_TEMP/expected-files" "$RUNNER_TEMP/expected-files"
-          diff -u "$RUNNER_TEMP/expected-files" "$RUNNER_TEMP/actual-files"
+          echo PASS_PR515_SOURCE_BINDING
 
+      - name: Materialize compact exact evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 "$RUNNER_TEMP/materialize_pr515_blockers.py"
           python3 -m json.tool \
             qualification/global-gap-closure-final-r6/STATUS.json \
             >/dev/null
           python3 -m json.tool \
             qualification/global-gap-closure-final-r8/receipts/PREPARE.json \
             >/dev/null
-          test "$(wc -c < qualification/global-gap-closure-final-r6/STATUS.json)" -lt 480000
-          test "$(wc -c < qualification/global-gap-closure-final-r8/receipts/PREPARE.json)" -lt 480000
+          status_bytes="$(wc -c < qualification/global-gap-closure-final-r6/STATUS.json)"
+          prepare_bytes="$(wc -c < qualification/global-gap-closure-final-r8/receipts/PREPARE.json)"
+          test "$status_bytes" -lt 480000
+          test "$prepare_bytes" -lt 480000
+          echo "PASS_PR515_EVIDENCE_BOUNDS status_bytes=$status_bytes prepare_bytes=$prepare_bytes"
 
+      - name: Format exact Python blocker set
+        shell: bash
+        run: |
+          set -euo pipefail
+          uv run --frozen --project scripts ruff format \
+            scripts/hepta-module-dossiers.py \
+            scripts/hepta-plan-digest.py \
+            scripts/qualification/hepta_current_ci_state.py \
+            scripts/qualification/hepta_full_validator.py \
+            scripts/qualification/hepta_write_external_handoff.py \
+            scripts/qualification/hepta_write_report.py \
+            scripts/qualification/tests/test_hepta_current_ci_state.py \
+            tests/test_hepta_blocker_orchestrator.py \
+            tests/test_validate_contract_providers.py
+          git diff --name-only | sort > "$RUNNER_TEMP/actual-files"
+          diff -u "$RUNNER_TEMP/expected-files" "$RUNNER_TEMP/actual-files"
+          echo PASS_PR515_EXACT_CHANGESET
+
+      - name: Run repository readiness validators
+        shell: bash
+        run: |
+          set -euo pipefail
           python3 scripts/hepta-readiness.py verify
           python3 scripts/hepta-docs.py verify
+          echo PASS_PR515_REPOSITORY_VALIDATORS
+
+      - name: Run focused blocker regression suites
+        shell: bash
+        run: |
+          set -euo pipefail
           python3 -m unittest \
             scripts.qualification.tests.test_hepta_current_ci_state \
             tests.test_hepta_blocker_orchestrator \
             tests.test_validate_contract_providers
+          echo PASS_PR515_FOCUSED_REGRESSIONS
+
+      - name: Run full formatting and spelling gates
+        shell: bash
+        run: |
+          set -euo pipefail
           python3 scripts/format.py --check
           uv tool run --from codespell==2.4.3 codespell \
             --ignore-words .codespellignore \
             --skip './.git'
           git diff --check
+          echo PASS_PR515_FORMAT_AND_SPELLING
 
+      - name: Commit deterministic candidate
+        shell: bash
+        run: |
+          set -euo pipefail
           git add --pathspec-from-file="$RUNNER_TEMP/expected-files"
           test -n "$(git diff --cached --name-only)"
           test -z "$(git diff --name-only)"
@@ -109,40 +138,57 @@ jobs:
               commit -m 'fix(ci): close PR515 formatting and evidence-size blockers'
           test "$(git rev-parse HEAD^)" = "$SOURCE_SHA"
           candidate_sha="$(git rev-parse HEAD)"
-          echo "candidate_sha=$candidate_sha"
+          echo "CANDIDATE_SHA=$candidate_sha" >> "$GITHUB_ENV"
+          echo "PASS_PR515_CANDIDATE_SHA=$candidate_sha"
 
-          set +e
+      - name: Enforce full-PR blob-size policy
+        shell: bash
+        run: |
+          set -euo pipefail
           python3 scripts/check_blob_size.py \
             --base "$BASE_SHA" \
             --head HEAD \
             --max-bytes 512000 \
-            --allowlist .github/blob-size-allowlist.txt \
-            >"$RUNNER_TEMP/blob-size.log" 2>&1
-          blob_rc=$?
-          set -e
-          echo "blob_size_exit=$blob_rc"
-          tail -80 "$RUNNER_TEMP/blob-size.log"
-          test "$blob_rc" -eq 0
+            --allowlist .github/blob-size-allowlist.txt
           echo PASS_PR515_BLOB_SIZE_POLICY
 
-          set +e
-          git diff --check "$BASE_SHA" HEAD \
-            >"$RUNNER_TEMP/full-diff-check.log" 2>&1
-          diff_rc=$?
-          set -e
-          echo "full_diff_check_exit=$diff_rc"
-          cat "$RUNNER_TEMP/full-diff-check.log"
-          test "$diff_rc" -eq 0
+      - name: Enforce full-PR whitespace policy
+        shell: bash
+        run: |
+          set -euo pipefail
+          git diff --check "$BASE_SHA" HEAD
           echo PASS_PR515_FULL_DIFF_CHECK
 
-          status="$(git status --porcelain=v1 --untracked-files=all)"
-          if [[ -n "$status" ]]; then
-            printf '%s\n' "$status"
-            exit 1
-          fi
+      - name: Enforce clean candidate worktree
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -z "$(git status --porcelain=v1 --untracked-files=all)"
+          test "$(git rev-parse HEAD)" = "$CANDIDATE_SHA"
           echo PASS_PR515_CLEAN_WORKTREE
 
-          test "$(git rev-parse "origin/$OUTPUT_BRANCH")" = "$SOURCE_SHA"
+      - name: Revalidate source compare-and-swap
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch origin "$OUTPUT_BRANCH"
+          remote_sha="$(git rev-parse "origin/$OUTPUT_BRANCH")"
+          echo "remote_source_sha=$remote_sha"
+          test "$remote_sha" = "$SOURCE_SHA"
+          echo PASS_PR515_SOURCE_CAS
+
+      - name: Publish exact candidate to PR branch
+        shell: bash
+        run: |
+          set -euo pipefail
           git push origin "HEAD:refs/heads/$OUTPUT_BRANCH"
-          test "$(git ls-remote origin "refs/heads/$OUTPUT_BRANCH" | cut -f1)" = "$candidate_sha"
-          echo "PASS_PR515_PUBLISHED_SHA=$candidate_sha"
+          echo PASS_PR515_PUSH
+
+      - name: Verify published exact head
+        shell: bash
+        run: |
+          set -euo pipefail
+          published_sha="$(git ls-remote origin "refs/heads/$OUTPUT_BRANCH" | cut -f1)"
+          echo "published_sha=$published_sha"
+          test "$published_sha" = "$CANDIDATE_SHA"
+          echo "PASS_PR515_PUBLISHED_SHA=$published_sha"
