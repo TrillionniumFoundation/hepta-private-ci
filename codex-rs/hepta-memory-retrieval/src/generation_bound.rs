@@ -96,9 +96,7 @@ impl RetrievalPolicyV1 {
         if maximum_results == 0 || maximum_results > MAX_GENERATION_BOUND_RESULTS {
             return Err(RecallErrorV1::InvalidMaximumResults);
         }
-        if self.minimum_total_score < FixedQ32::ZERO
-            || self.minimum_total_score > FixedQ32::ONE
-        {
+        if self.minimum_total_score < FixedQ32::ZERO || self.minimum_total_score > FixedQ32::ONE {
             return Err(RecallErrorV1::ScoreOutOfRange("minimum_total_score"));
         }
         if self.minimum_distinct_channels == 0
@@ -117,8 +115,7 @@ impl RetrievalPolicyV1 {
                 return Err(RecallErrorV1::ScoreOutOfRange("channel_weight"));
             }
             positive_weight |= row.weight > FixedQ32::ZERO;
-            let maximum_candidates =
-                usize::try_from(row.maximum_candidates).unwrap_or(usize::MAX);
+            let maximum_candidates = usize::try_from(row.maximum_candidates).unwrap_or(usize::MAX);
             if maximum_candidates == 0 || maximum_candidates > MAX_GENERATION_BOUND_CANDIDATES {
                 return Err(RecallErrorV1::InvalidChannelLimit(row.channel));
             }
@@ -164,10 +161,7 @@ pub struct RetrievalChannelCandidateV1 {
 }
 
 impl RetrievalChannelCandidateV1 {
-    fn validate(
-        &self,
-        expected_generation_vector_digest: Digest32,
-    ) -> Result<(), RecallErrorV1> {
+    fn validate(&self, expected_generation_vector_digest: Digest32) -> Result<(), RecallErrorV1> {
         self.record
             .validate()
             .map_err(|error| RecallErrorV1::InvalidRecord(error.to_string()))?;
@@ -430,7 +424,10 @@ pub fn build_candidate_union(
         let Some(policy_row) = policy_rows.get(&candidate.channel) else {
             return Err(RecallErrorV1::ChannelNotEnabled(candidate.channel));
         };
-        let identity = (candidate.record.record_id.clone(), candidate.record.revision);
+        let identity = (
+            candidate.record.record_id.clone(),
+            candidate.record.revision,
+        );
         if !seen_channel_identity.insert((candidate.channel, identity.clone())) {
             return Err(RecallErrorV1::DuplicateChannelCandidate(
                 candidate.record.record_id.to_string(),
@@ -594,10 +591,7 @@ impl UnionBuilder {
             weighted_score: self.weighted_score,
             maximum_ood: self.maximum_ood,
             support_digests: self.support_digests.into_iter().collect(),
-            contradiction_group_digests: self
-                .contradiction_group_digests
-                .into_iter()
-                .collect(),
+            contradiction_group_digests: self.contradiction_group_digests.into_iter().collect(),
         }
     }
 }

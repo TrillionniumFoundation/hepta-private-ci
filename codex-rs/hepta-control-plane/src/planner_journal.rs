@@ -163,8 +163,8 @@ impl PlannerJournalV1 {
         for entry in &self.entries {
             match entry.kind {
                 PlannerJournalKindV1::SelectedPlan => {
-                    selected = (!revoked.contains(&entry.payload_digest))
-                        .then_some(entry.payload_digest);
+                    selected =
+                        (!revoked.contains(&entry.payload_digest)).then_some(entry.payload_digest);
                 }
                 PlannerJournalKindV1::Revocation if selected == Some(entry.payload_digest) => {
                     selected = None;
@@ -259,8 +259,8 @@ impl PlannerJournalV1 {
                 .try_into()
                 .map_err(|_| PlannerJournalError::Truncated)?,
         );
-        let count = usize::try_from(count_u32)
-            .map_err(|_| PlannerJournalError::RecordLimitExceeded)?;
+        let count =
+            usize::try_from(count_u32).map_err(|_| PlannerJournalError::RecordLimitExceeded)?;
         if count > MAX_RECORDS {
             return Err(PlannerJournalError::RecordLimitExceeded);
         }
@@ -376,10 +376,7 @@ fn read_u64(bytes: &[u8], offset: &mut usize) -> Result<u64, PlannerJournalError
     Ok(value)
 }
 
-fn read_digest(
-    bytes: &[u8],
-    offset: &mut usize,
-) -> Result<Digest32, PlannerJournalError> {
+fn read_digest(bytes: &[u8], offset: &mut usize) -> Result<Digest32, PlannerJournalError> {
     let end = (*offset)
         .checked_add(32)
         .ok_or(PlannerJournalError::Truncated)?;

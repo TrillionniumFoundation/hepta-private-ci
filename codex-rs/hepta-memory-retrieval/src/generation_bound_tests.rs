@@ -22,8 +22,7 @@ fn generation(value: u64) -> Generation {
 }
 
 fn probability(raw: u64) -> ProbabilityQ32 {
-    ProbabilityQ32::from_raw(raw)
-        .unwrap_or_else(|error| panic!("valid probability: {error}"))
+    ProbabilityQ32::from_raw(raw).unwrap_or_else(|error| panic!("valid probability: {error}"))
 }
 
 fn snapshot_key() -> CognitiveSnapshotKeyV1 {
@@ -139,10 +138,10 @@ fn channel_completion_order_cannot_change_union_or_recall() {
         .unwrap_or_else(|error| panic!("valid union: {error}"));
     assert_eq!(left, right);
 
-    let left = recall(&cue, &policy, candidates)
-        .unwrap_or_else(|error| panic!("valid recall: {error}"));
-    let right = recall(&cue, &policy, reversed)
-        .unwrap_or_else(|error| panic!("valid recall: {error}"));
+    let left =
+        recall(&cue, &policy, candidates).unwrap_or_else(|error| panic!("valid recall: {error}"));
+    let right =
+        recall(&cue, &policy, reversed).unwrap_or_else(|error| panic!("valid recall: {error}"));
     assert_eq!(left, right);
     assert_eq!(left.disposition, RecallDispositionV1::Recalled);
     assert_eq!(left.selections.len(), 2);
@@ -189,9 +188,7 @@ fn ood_and_insufficient_coverage_abstain_explicitly() {
         .unwrap_or_else(|error| panic!("coverage abstention: {error}"));
     assert_eq!(
         packet.disposition,
-        RecallDispositionV1::Abstained(
-            RecallAbstentionReasonV1::InsufficientChannelCoverage
-        )
+        RecallDispositionV1::Abstained(RecallAbstentionReasonV1::InsufficientChannelCoverage)
     );
 
     let first = candidate(record(1), RetrievalChannelV1::Lexical, 1);

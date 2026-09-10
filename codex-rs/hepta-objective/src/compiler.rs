@@ -133,7 +133,11 @@ fn validate_source(source: &ObjectiveSourceEnvelope) -> Result<(), ObjectiveErro
             return Err(ObjectiveError::AbstainUnavailable);
         }
         Some(_) => {
-            validate_count("caller allowed actions", source.allowed_actions.len(), MAX_ACTIONS)?;
+            validate_count(
+                "caller allowed actions",
+                source.allowed_actions.len(),
+                MAX_ACTIONS,
+            )?;
         }
         None => validate_count(
             "caller allowed actions without intrinsic abstain",

@@ -13,6 +13,9 @@ doctest = false
 workspace = true
 
 [dependencies]
+codex-utils-path-uri = { path = "../../utils/path-uri" }
+codex-utils-absolute-path = { path = "../../utils/absolute-path" }
+codex-hepta-paths = { path = "../../hepta-paths" }
 codex-extension-api = { workspace = true }
 codex-hepta-contracts = { workspace = true }
 codex-hepta-memory = { workspace = true }

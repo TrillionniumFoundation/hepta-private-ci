@@ -251,7 +251,8 @@ impl PromptRegistry {
         let Some(factor) = self.factors.get(&binding.factor_id) else {
             return Err(Error::FactorNotFound(binding.factor_id.to_string()));
         };
-        if factor.source != FactorSource::GovernedInternal || factor.lifecycle != Lifecycle::Admitted
+        if factor.source != FactorSource::GovernedInternal
+            || factor.lifecycle != Lifecycle::Admitted
         {
             return Err(Error::FactorNotAdmitted(binding.factor_id.to_string()));
         }
@@ -374,7 +375,10 @@ impl PromptRegistry {
                 .iter()
                 .map(|binding| binding.factor_id.clone())
                 .collect::<BTreeSet<_>>();
-            if factor_filter.iter().any(|factor_id| !returned.contains(factor_id)) {
+            if factor_filter
+                .iter()
+                .any(|factor_id| !returned.contains(factor_id))
+            {
                 return Err(PromptRegistryV2Error::RequiredFactorUnavailable);
             }
         }
@@ -415,10 +419,7 @@ impl fmt::Display for PromptRegistryV2Error {
 
 impl StdError for PromptRegistryV2Error {}
 
-fn ensure_digest(
-    name: &'static str,
-    digest: Digest32,
-) -> Result<(), PromptRegistryV2Error> {
+fn ensure_digest(name: &'static str, digest: Digest32) -> Result<(), PromptRegistryV2Error> {
     if digest.is_zero() {
         return Err(PromptRegistryV2Error::EmptyDigest(name));
     }

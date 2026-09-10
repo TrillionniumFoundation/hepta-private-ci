@@ -455,7 +455,7 @@ fn read_integrity_key(path: &Path, description: &str) -> Result<IntegrityKey> {
         _ => anyhow::bail!("{description} must contain 64 lowercase hex bytes"),
     };
     let mut key = [0_u8; 32];
-    for (index, pair) in encoded.chunks_exact(2).enumerate() {
+    for (index, pair) in encoded.as_chunks::<2>().0.iter().enumerate() {
         key[index] = (decode_hex_nibble(pair[0], description)? << 4)
             | decode_hex_nibble(pair[1], description)?;
     }
@@ -548,7 +548,7 @@ fn decode_hex_32(encoded: &str) -> Option<[u8; 32]> {
         return None;
     }
     let mut decoded = [0_u8; 32];
-    for (index, pair) in encoded.as_bytes().chunks_exact(2).enumerate() {
+    for (index, pair) in encoded.as_bytes().as_chunks::<2>().0.iter().enumerate() {
         let high = decode_hex_nibble_option(pair[0])?;
         let low = decode_hex_nibble_option(pair[1])?;
         decoded[index] = (high << 4) | low;

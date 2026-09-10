@@ -685,12 +685,13 @@ mod tests {
         let restarted_state = restarted_turn
             .get::<Mutex<TurnLeaseState>>()
             .expect("restarted state");
-        let guard = restarted_state
-            .lock()
-            .unwrap_or_else(PoisonError::into_inner);
-        assert!(guard.active.is_none());
-        assert!(guard.terminal_started);
-        drop(guard);
+        {
+            let guard = restarted_state
+                .lock()
+                .unwrap_or_else(PoisonError::into_inner);
+            assert!(guard.active.is_none());
+            assert!(guard.terminal_started);
+        }
         assert_eq!(
             active.lease.snapshot_counts().await.expect("counts"),
             codex_hepta_memory::LocalLeaseOutboxCounts {

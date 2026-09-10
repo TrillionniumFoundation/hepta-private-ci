@@ -13,6 +13,7 @@ doctest = false
 workspace = true
 
 [dependencies]
+codex-exec-server-test-support = { path = "../exec-server/tests/support" }
 anyhow = { workspace = true }
 arc-swap = { workspace = true }
 async-channel = { workspace = true }

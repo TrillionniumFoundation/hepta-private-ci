@@ -112,9 +112,7 @@ impl ContextModelProfileV2 {
         ] {
             ensure_digest(name, digest)?;
         }
-        if self.maximum_context_tokens == 0
-            || self.maximum_context_tokens > MAX_CONTEXT_TOKENS_V2
-        {
+        if self.maximum_context_tokens == 0 || self.maximum_context_tokens > MAX_CONTEXT_TOKENS_V2 {
             return Err(ContextCompilerV2Error::InvalidModelContextLimit);
         }
         Ok(())
@@ -260,7 +258,8 @@ impl ContextCompilationReceiptV2 {
         ] {
             ensure_digest(name, digest)?;
         }
-        if self.used_tokens > self.token_upper_bound || self.token_upper_bound > MAX_CONTEXT_TOKENS_V2
+        if self.used_tokens > self.token_upper_bound
+            || self.token_upper_bound > MAX_CONTEXT_TOKENS_V2
         {
             return Err(ContextCompilerV2Error::TokenBudgetExceeded);
         }
@@ -491,10 +490,7 @@ pub struct ContextSerializationReceiptV2 {
 }
 
 impl ContextSerializationReceiptV2 {
-    pub fn validate_for(
-        &self,
-        compiled: &CompiledContextV2,
-    ) -> Result<(), ContextCompilerV2Error> {
+    pub fn validate_for(&self, compiled: &CompiledContextV2) -> Result<(), ContextCompilerV2Error> {
         compiled.validate()?;
         for (name, digest) in [
             ("compilation_receipt", self.compilation_receipt_digest),
@@ -806,10 +802,10 @@ fn context_placement_order(left: &ContextCandidateV2, right: &ContextCandidateV2
 }
 
 fn value_per_token_order(left: &ContextCandidateV2, right: &ContextCandidateV2) -> Ordering {
-    let left_cross = i128::from(left.expected_value.raw())
-        * i128::from(right.tokenization.token_count);
-    let right_cross = i128::from(right.expected_value.raw())
-        * i128::from(left.tokenization.token_count);
+    let left_cross =
+        i128::from(left.expected_value.raw()) * i128::from(right.tokenization.token_count);
+    let right_cross =
+        i128::from(right.expected_value.raw()) * i128::from(left.tokenization.token_count);
     right_cross
         .cmp(&left_cross)
         .then_with(|| right.expected_value.cmp(&left.expected_value))
@@ -861,10 +857,7 @@ impl fmt::Display for ContextCompilerV2Error {
 
 impl StdError for ContextCompilerV2Error {}
 
-fn ensure_digest(
-    name: &'static str,
-    digest: Digest32,
-) -> Result<(), ContextCompilerV2Error> {
+fn ensure_digest(name: &'static str, digest: Digest32) -> Result<(), ContextCompilerV2Error> {
     if digest.is_zero() {
         return Err(ContextCompilerV2Error::EmptyDigest(name));
     }

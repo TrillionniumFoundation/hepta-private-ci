@@ -114,10 +114,7 @@ fn nonterminal_attempt_is_explicitly_indeterminate_without_retry() {
     let result = execute_once(&transport, 10, query.clone(), &lease(&query))
         .unwrap_or_else(|error| panic!("indeterminate result: {error}"));
     assert!(result.items.is_empty());
-    assert_eq!(
-        result.completeness,
-        FederatedCompletenessV2::Indeterminate
-    );
+    assert_eq!(result.completeness, FederatedCompletenessV2::Indeterminate);
     assert_eq!(result.validity, FederatedValidityV2::Indeterminate);
     assert_eq!(result.coverage.failed_peers, 1);
 }

@@ -543,9 +543,7 @@ impl ProjectionReceiptV1 {
                     "initial_projection_generation",
                 ));
             }
-            Some(predecessor)
-                if predecessor.next().ok() != Some(self.generation.generation) =>
-            {
+            Some(predecessor) if predecessor.next().ok() != Some(self.generation.generation) => {
                 return Err(LaneCContractError::InvalidState(
                     "projection_predecessor_generation",
                 ));
@@ -553,9 +551,7 @@ impl ProjectionReceiptV1 {
             _ => {}
         }
         if self.publication_digest != self.compute_publication_digest() {
-            return Err(LaneCContractError::DigestMismatch(
-                "projection_publication",
-            ));
+            return Err(LaneCContractError::DigestMismatch("projection_publication"));
         }
         ensure_deny_all(self.authority)
     }
@@ -601,7 +597,10 @@ impl CompactCheckpointV1 {
             ("compact_support_manifest", self.support_manifest_digest),
             ("compact_algorithm", self.algorithm_digest),
             ("compact_payload", self.payload_digest),
-            ("compact_omitted_information", self.omitted_information_digest),
+            (
+                "compact_omitted_information",
+                self.omitted_information_digest,
+            ),
             ("compact_compatibility", self.compatibility_digest),
         ] {
             ensure_digest(name, digest)?;

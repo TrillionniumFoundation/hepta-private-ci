@@ -185,10 +185,7 @@ fn proof_requires_all_loss_and_deletion_obligations() {
         generation(2),
         Some(digest("predecessor-checkpoint")),
         &policy(2, Vec::new()),
-        vec![input(
-            record("memory:a", 1, None, RecordState::Live),
-            1,
-        )],
+        vec![input(record("memory:a", 1, None, RecordState::Live), 1)],
     )
     .unwrap_or_else(|error| panic!("valid candidate: {error}"));
     let qualification = CompactionQualificationV2 {
@@ -203,7 +200,10 @@ fn proof_requires_all_loss_and_deletion_obligations() {
     };
     let proof = prove_compaction(&candidate, qualification.clone())
         .unwrap_or_else(|error| panic!("valid proof: {error}"));
-    assert_eq!(proof.checkpoint_digest, candidate.checkpoint.checkpoint_digest);
+    assert_eq!(
+        proof.checkpoint_digest,
+        candidate.checkpoint.checkpoint_digest
+    );
     assert_eq!(proof.authority, AuthorityPosture::DENY_ALL);
 
     let mut failed = qualification;

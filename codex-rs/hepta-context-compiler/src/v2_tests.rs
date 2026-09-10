@@ -71,12 +71,7 @@ fn deterministic_value_per_token_preserves_mandatory_floors() {
         40,
         FixedQ32::ONE,
     );
-    let schema = candidate(
-        "item:schema",
-        ContextRoleV2::Schema,
-        20,
-        FixedQ32::ONE,
-    );
+    let schema = candidate("item:schema", ContextRoleV2::Schema, 20, FixedQ32::ONE);
     let high_ratio = candidate(
         "item:high-ratio",
         ContextRoleV2::UntrustedEvidence,
@@ -118,12 +113,7 @@ fn tiny_budget_refuses_instead_of_truncating_instruction_or_schema() {
         40,
         FixedQ32::ONE,
     );
-    let schema = candidate(
-        "item:schema",
-        ContextRoleV2::Schema,
-        20,
-        FixedQ32::ONE,
-    );
+    let schema = candidate("item:schema", ContextRoleV2::Schema, 20, FixedQ32::ONE);
     assert_eq!(
         compile_v2(request(vec![trusted, schema], 50)),
         Err(ContextCompilerV2Error::InsufficientMandatoryBudget {
@@ -153,8 +143,8 @@ fn mandatory_evidence_group_is_all_or_nothing() {
         item_ids: vec![first.item_id.clone(), second.item_id.clone()],
         reason_digest: digest("citation-contradiction-obligation"),
     }];
-    let compiled = compile_v2(grouped)
-        .unwrap_or_else(|error| panic!("valid grouped compilation: {error}"));
+    let compiled =
+        compile_v2(grouped).unwrap_or_else(|error| panic!("valid grouped compilation: {error}"));
     assert_eq!(
         compiled.receipt.selected_item_ids,
         vec![first.item_id, second.item_id]
@@ -238,12 +228,9 @@ fn compilation_serialization_attachment_and_delivery_form_one_digest_chain() {
         100,
     ))
     .unwrap_or_else(|error| panic!("valid compilation: {error}"));
-    let serialization = record_serialization(
-        &compiled,
-        id("serialization:1"),
-        digest("exact-payload"),
-    )
-    .unwrap_or_else(|error| panic!("valid serialization: {error}"));
+    let serialization =
+        record_serialization(&compiled, id("serialization:1"), digest("exact-payload"))
+            .unwrap_or_else(|error| panic!("valid serialization: {error}"));
     let attachment = build_attachment(&compiled, &serialization, id("attachment:1"))
         .unwrap_or_else(|error| panic!("valid attachment: {error}"));
     let observation = observe_delivery(
@@ -273,12 +260,9 @@ fn delivery_payload_mismatch_cannot_receive_delivered_status() {
         100,
     ))
     .unwrap_or_else(|error| panic!("valid compilation: {error}"));
-    let serialization = record_serialization(
-        &compiled,
-        id("serialization:1"),
-        digest("expected-payload"),
-    )
-    .unwrap_or_else(|error| panic!("valid serialization: {error}"));
+    let serialization =
+        record_serialization(&compiled, id("serialization:1"), digest("expected-payload"))
+            .unwrap_or_else(|error| panic!("valid serialization: {error}"));
     let attachment = build_attachment(&compiled, &serialization, id("attachment:1"))
         .unwrap_or_else(|error| panic!("valid attachment: {error}"));
     assert_eq!(
@@ -306,12 +290,8 @@ fn nonterminal_delivery_is_indeterminate_not_success() {
         100,
     ))
     .unwrap_or_else(|error| panic!("valid compilation: {error}"));
-    let serialization = record_serialization(
-        &compiled,
-        id("serialization:1"),
-        digest("payload"),
-    )
-    .unwrap_or_else(|error| panic!("valid serialization: {error}"));
+    let serialization = record_serialization(&compiled, id("serialization:1"), digest("payload"))
+        .unwrap_or_else(|error| panic!("valid serialization: {error}"));
     let attachment = build_attachment(&compiled, &serialization, id("attachment:1"))
         .unwrap_or_else(|error| panic!("valid attachment: {error}"));
     let observation = observe_delivery(

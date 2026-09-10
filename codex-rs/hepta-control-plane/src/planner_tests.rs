@@ -155,10 +155,7 @@ fn coherent_snapshot_prepares_finalizes_and_emits_authority_free_grant_requests(
     assert_eq!(receipt.ndu_evaluation_digest, ndu.evaluation_digest);
 
     let grants = must(request_execution_grants(
-        &snapshot,
-        &prepared,
-        &receipt,
-        1_200,
+        &snapshot, &prepared, &receipt, 1_200,
     ));
     assert_eq!(grants.requests.len(), 1);
     assert_eq!(
@@ -197,10 +194,7 @@ fn essential_floor_survives_overload_before_ndu_evaluation() {
     request.resource_reservations[0].essential_floor = q32(2);
     let prepared = must(prepare_plan(&snapshot, request));
 
-    assert_eq!(
-        prepared.resource_rejected_candidate_ids,
-        vec![id("work")]
-    );
+    assert_eq!(prepared.resource_rejected_candidate_ids, vec![id("work")]);
     assert_eq!(prepared.feasible_candidates.len(), 1);
     assert_eq!(prepared.feasible_candidates[0].candidate_id, id("abstain"));
 
@@ -238,10 +232,7 @@ fn changed_configuration_invalidates_prepared_plan() {
 
     assert_eq!(
         must_err(request_execution_grants(
-            &changed,
-            &prepared,
-            &receipt,
-            1_200,
+            &changed, &prepared, &receipt, 1_200,
         )),
         PlannerError::PreparedPlanMismatch
     );
