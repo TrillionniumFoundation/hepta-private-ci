@@ -1,11 +1,10 @@
 #!/usr/bin/env python3
-"""Materialize deterministic repository-only fixes for Hepta PR #515.
+"""Materialize deterministic compact evidence for Hepta PR #515.
 
-The qualification files handled here are historical receipts. Their original
-representation recursively embedded complete workflow, job, step, artifact,
-and archived-log payloads. This script preserves bounded identity and decision
-scalars while replacing non-decision or unbounded payloads with
-content-addressed summaries.
+Historical receipts contain recursive workflow/job/log payloads and have used
+more than one envelope schema. Preserve bounded scalar identity and decisions,
+replace unbounded payloads with canonical SHA-256 summaries, and never assume a
+single historical ``details.result`` shape.
 """
 
 from __future__ import annotations
@@ -24,7 +23,8 @@ PREPARE_PATH = (
 MAX_REPOSITORY_BLOB_BYTES = 512_000
 TARGET_MAX_BYTES = 480_000
 MAX_INLINE_STRING_BYTES = 2_048
-COMPACTION_SCHEMA = "hepta.content-addressed-workflow-summary.v2"
+MAX_RECURSION_DEPTH = 12
+COMPACTION_SCHEMA = "hepta.content-addressed-workflow-summary.v3"
 
 RUN_IDENTITY_FIELDS = (
     "id",
@@ -48,6 +48,12 @@ RUN_IDENTITY_FIELDS = (
     "url",
     "html_url",
 )
+FORBIDDEN_RAW_KEYS = {
+    "archived_job_logs",
+    "raw_job_logs",
+    "raw_logs",
+    "log_archive",
+}
 
 
 def canonical_bytes(value: Any) -> bytes:
@@ -74,9 +80,7 @@ def is_scalar(value: Any) -> bool:
 def is_inline_scalar(value: Any) -> bool:
     if not is_scalar(value):
         return False
-    if isinstance(value, str):
-        return len(value.encode("utf-8")) <= MAX_INLINE_STRING_BYTES
-    return True
+    return not isinstance(value, str) or len(value.encode("utf-8")) <= MAX_INLINE_STRING_BYTES
 
 
 def counter(values: list[Any], key: str) -> dict[str, int]:
@@ -109,11 +113,12 @@ def payload_summary(value: Any) -> dict[str, Any]:
 def compact_generic_record(value: Any) -> Any:
     if not isinstance(value, dict):
         return payload_summary(value)
-
     compacted: dict[str, Any] = {}
     omitted: dict[str, Any] = {}
     for key, child in value.items():
-        if is_inline_scalar(child):
+        if key in FORBIDDEN_RAW_KEYS:
+            omitted[key] = payload_summary(child)
+        elif is_inline_scalar(child):
             compacted[key] = child
         else:
             omitted[key] = payload_summary(child)
@@ -122,17 +127,16 @@ def compact_generic_record(value: Any) -> Any:
     return compacted
 
 
-def compact_job(value: Any, *, keep_steps: bool = False) -> Any:
+def compact_job(value: Any) -> Any:
     if not isinstance(value, dict):
         return payload_summary(value)
-
     compacted: dict[str, Any] = {}
     omitted: dict[str, Any] = {}
     for key, child in value.items():
-        if is_inline_scalar(child):
+        if key in FORBIDDEN_RAW_KEYS or key == "steps":
+            omitted[key] = payload_summary(child)
+        elif is_inline_scalar(child):
             compacted[key] = child
-        elif key == "steps" and isinstance(child, list) and keep_steps:
-            compacted[key] = [compact_generic_record(step) for step in child]
         else:
             omitted[key] = payload_summary(child)
     if omitted:
@@ -143,16 +147,17 @@ def compact_job(value: Any, *, keep_steps: bool = False) -> Any:
 def compact_run(value: Any, *, include_jobs: bool) -> Any:
     if not isinstance(value, dict):
         return payload_summary(value)
-
     compacted: dict[str, Any] = {}
     omitted: dict[str, Any] = {}
     for key, child in value.items():
-        if is_inline_scalar(child):
+        if key in FORBIDDEN_RAW_KEYS:
+            omitted[key] = payload_summary(child)
+        elif is_inline_scalar(child):
             compacted[key] = child
         elif key == "jobs" and isinstance(child, list) and include_jobs:
             compacted[key] = [compact_job(job) for job in child]
         elif key == "artifacts" and isinstance(child, list):
-            compacted[key] = [compact_generic_record(artifact) for artifact in child]
+            compacted[key] = [compact_generic_record(item) for item in child]
         else:
             omitted[key] = payload_summary(child)
     if omitted:
@@ -163,7 +168,6 @@ def compact_run(value: Any, *, include_jobs: bool) -> Any:
 def compact_run_identity(value: Any) -> Any:
     if not isinstance(value, dict):
         return payload_summary(value)
-
     compacted = {
         key: value[key]
         for key in RUN_IDENTITY_FIELDS
@@ -173,28 +177,20 @@ def compact_run_identity(value: Any) -> Any:
     return compacted
 
 
-def compact_status(
-    value: Any,
-    *,
-    child_profile: str,
-) -> Any:
+def compact_status(value: Any, *, child_profile: str) -> Any:
     if not isinstance(value, dict):
         return payload_summary(value)
-
     compacted: dict[str, Any] = {}
     omitted: dict[str, Any] = {}
     children = value.get("children")
-
     for key, child in value.items():
-        if key == "children" and isinstance(child, list):
+        if key in FORBIDDEN_RAW_KEYS:
+            omitted[key] = payload_summary(child)
+        elif key == "children" and isinstance(child, list):
             if child_profile == "jobs":
-                compacted[key] = [
-                    compact_run(item, include_jobs=True) for item in child
-                ]
+                compacted[key] = [compact_run(item, include_jobs=True) for item in child]
             elif child_profile == "scalars":
-                compacted[key] = [
-                    compact_run(item, include_jobs=False) for item in child
-                ]
+                compacted[key] = [compact_run(item, include_jobs=False) for item in child]
             elif child_profile == "minimal":
                 compacted[key] = [compact_run_identity(item) for item in child]
             elif child_profile == "summary":
@@ -207,7 +203,6 @@ def compact_status(
             compacted[key] = compact_generic_record(child)
         else:
             omitted[key] = payload_summary(child)
-
     if omitted:
         compacted["_omitted_payloads"] = omitted
     if isinstance(children, list):
@@ -217,6 +212,57 @@ def compact_status(
             "child_count": len(children),
         }
     compacted["_compaction_schema"] = COMPACTION_SCHEMA
+    return compacted
+
+
+def compact_tree(value: Any, *, depth: int, profile: str) -> Any:
+    """Compact an arbitrary historical envelope without changing dict shape."""
+    if is_inline_scalar(value):
+        return value
+    if is_scalar(value):
+        return payload_summary(value)
+    if depth >= MAX_RECURSION_DEPTH:
+        return payload_summary(value)
+    if isinstance(value, list):
+        if profile == "detailed" and len(value) <= 64:
+            return [compact_tree(item, depth=depth + 1, profile=profile) for item in value]
+        if profile == "minimal" and len(value) <= 16:
+            return [compact_tree(item, depth=depth + 1, profile="summary") for item in value]
+        return payload_summary(value)
+    if not isinstance(value, dict):
+        return payload_summary(value)
+
+    compacted: dict[str, Any] = {}
+    omitted: dict[str, Any] = {}
+    for key, child in value.items():
+        if key in FORBIDDEN_RAW_KEYS:
+            omitted[key] = payload_summary(child)
+        elif key == "steps" and isinstance(child, list):
+            omitted[key] = payload_summary(child)
+        elif key == "runs" and isinstance(child, list):
+            if profile == "detailed":
+                compacted[key] = [compact_run(run, include_jobs=False) for run in child]
+            elif profile == "minimal":
+                compacted[key] = [compact_run_identity(run) for run in child]
+            else:
+                compacted[key] = payload_summary(child)
+            compacted[f"{key}_compaction"] = payload_summary(child)
+        elif key == "jobs" and isinstance(child, list):
+            compacted[key] = (
+                [compact_job(job) for job in child]
+                if profile == "detailed"
+                else payload_summary(child)
+            )
+        elif key == "status" and isinstance(child, dict):
+            compacted[key] = compact_status(child, child_profile="minimal")
+        else:
+            compacted[key] = compact_tree(
+                child,
+                depth=depth + 1,
+                profile=profile,
+            )
+    if omitted:
+        compacted["_omitted_payloads"] = omitted
     return compacted
 
 
@@ -230,9 +276,9 @@ def compaction_metadata(raw: bytes, *, profile: str) -> dict[str, Any]:
         "canonical_source_sha256": value_digest(parsed),
         "max_inline_string_bytes": MAX_INLINE_STRING_BYTES,
         "policy": (
-            "retain bounded decision/identity scalars; represent nested or unbounded "
-            "workflow, job, step, artifact, and archived-log payloads by canonical "
-            "SHA-256, canonical byte count, item count, and outcome counts"
+            "retain bounded decision/identity scalars and historical dictionary "
+            "shape; represent recursive or unbounded payloads by canonical SHA-256, "
+            "canonical byte count, item count, and outcome counts"
         ),
     }
 
@@ -263,8 +309,7 @@ def write_checked(path: Path, value: Any) -> None:
         )
     if len(encoded) > MAX_REPOSITORY_BLOB_BYTES:
         raise SystemExit(
-            f"{path.relative_to(REPO_ROOT)} exceeds repository blob policy: "
-            f"{len(encoded)} bytes"
+            f"{path.relative_to(REPO_ROOT)} exceeds repository blob policy: {len(encoded)} bytes"
         )
     path.write_bytes(encoded)
     reparsed = json.loads(path.read_bytes())
@@ -275,24 +320,18 @@ def write_checked(path: Path, value: Any) -> None:
 def compact_status_file() -> None:
     raw = STATUS_PATH.read_bytes()
     original = json.loads(raw)
-
-    profiles = (
+    compacted: Any = None
+    for child_profile, metadata_profile in (
         ("jobs", "historical-status-with-job-identities"),
         ("scalars", "historical-status-child-scalars"),
         ("minimal", "historical-status-minimal-child-identities"),
         ("summary", "historical-status-content-addressed-child-summary"),
-    )
-    compacted: Any = None
-    for child_profile, metadata_profile in profiles:
+    ):
         candidate = compact_status(original, child_profile=child_profile)
-        candidate["_compaction"] = compaction_metadata(
-            raw,
-            profile=metadata_profile,
-        )
+        candidate["_compaction"] = compaction_metadata(raw, profile=metadata_profile)
         compacted = candidate
         if len(encode(candidate)) <= TARGET_MAX_BYTES:
             break
-
     write_checked(STATUS_PATH, compacted)
 
 
@@ -302,87 +341,35 @@ def compact_prepare_file() -> None:
     if not isinstance(original, dict):
         raise SystemExit("PREPARE.json root is not an object")
 
-    compacted: dict[str, Any] = {}
-    for key, child in original.items():
-        if key == "details":
-            continue
-        if is_inline_scalar(child):
-            compacted[key] = child
-        elif isinstance(child, dict):
-            compacted[key] = compact_generic_record(child)
-        else:
-            compacted.setdefault("_omitted_payloads", {})[key] = payload_summary(child)
-
-    details = original.get("details")
-    if not isinstance(details, dict):
-        raise SystemExit("PREPARE.json details is not an object")
-    compact_details = compact_generic_record(details)
-    if not isinstance(compact_details, dict):
-        raise SystemExit("PREPARE.json compact details is not an object")
-
-    result = details.get("result")
-    if not isinstance(result, dict):
-        raise SystemExit("PREPARE.json details.result is not an object")
-    compact_result = compact_generic_record(result)
-    if not isinstance(compact_result, dict):
-        raise SystemExit("PREPARE.json compact result is not an object")
-
-    runs = result.get("runs")
-    if not isinstance(runs, list):
-        raise SystemExit("PREPARE.json details.result.runs is not an array")
-    compact_result["runs"] = [compact_run(run, include_jobs=False) for run in runs]
-    compact_result["runs_compaction"] = {
-        "source": payload_summary(runs),
-        "profile": "run-scalars",
-        "run_count": len(runs),
-    }
-
-    status = result.get("status")
-    if isinstance(status, dict):
-        compact_result["status"] = compact_status(status, child_profile="minimal")
-        compact_result["status_compaction"] = payload_summary(status)
-
-    compact_details["result"] = compact_result
-    compacted["details"] = compact_details
-    compacted["_compaction"] = compaction_metadata(
-        raw,
-        profile="prepare-run-scalars-and-status-summary",
-    )
-
-    if len(encode(compacted)) > TARGET_MAX_BYTES:
-        compact_result["runs"] = [compact_run_identity(run) for run in runs]
-        compact_result["runs_compaction"]["profile"] = "minimal-run-identities"
-        compacted["_compaction"]["profile"] = (
-            "prepare-minimal-run-identities-and-status-summary"
+    compacted: Any = None
+    for profile in ("detailed", "minimal", "summary"):
+        candidate = compact_tree(original, depth=0, profile=profile)
+        if not isinstance(candidate, dict):
+            raise SystemExit("PREPARE.json compacted root is not an object")
+        candidate["_compaction"] = compaction_metadata(
+            raw,
+            profile=f"schema-independent-{profile}",
         )
-
-    if len(encode(compacted)) > TARGET_MAX_BYTES:
-        compact_result["runs"] = payload_summary(runs)
-        compact_result["runs_compaction"]["profile"] = "content-addressed-summary"
-        compacted["_compaction"]["profile"] = (
-            "prepare-content-addressed-runs-and-status-summary"
-        )
-
+        compacted = candidate
+        if len(encode(candidate)) <= TARGET_MAX_BYTES:
+            break
     write_checked(PREPARE_PATH, compacted)
 
 
 def verify_no_recursive_payloads() -> None:
     status = json.loads(STATUS_PATH.read_bytes())
     prepare = json.loads(PREPARE_PATH.read_bytes())
-
     for path, value in ((STATUS_PATH, status), (PREPARE_PATH, prepare)):
-        encoded = path.read_bytes()
-        if len(encoded) > TARGET_MAX_BYTES:
+        if len(path.read_bytes()) > TARGET_MAX_BYTES:
             raise SystemExit(f"compacted file exceeds target: {path}")
         if value.get("_compaction", {}).get("schema") != COMPACTION_SCHEMA:
             raise SystemExit(f"missing compaction provenance: {path}")
 
-    forbidden_keys = {"archived_job_logs"}
     stack: list[Any] = [status, prepare]
     while stack:
         value = stack.pop()
         if isinstance(value, dict):
-            if forbidden_keys.intersection(value):
+            if FORBIDDEN_RAW_KEYS.intersection(value):
                 raise SystemExit("raw archived job logs remain in compacted evidence")
             for key, child in value.items():
                 if key == "steps" and isinstance(child, list):
@@ -390,9 +377,8 @@ def verify_no_recursive_payloads() -> None:
                 stack.append(child)
         elif isinstance(value, list):
             stack.extend(value)
-        elif isinstance(value, str):
-            if len(value.encode("utf-8")) > MAX_INLINE_STRING_BYTES:
-                raise SystemExit("unbounded string remains in compacted evidence")
+        elif isinstance(value, str) and len(value.encode("utf-8")) > MAX_INLINE_STRING_BYTES:
+            raise SystemExit("unbounded string remains in compacted evidence")
 
 
 def main() -> int:
