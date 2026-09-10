@@ -1,9 +1,10 @@
 name: Temporary Lane B rustfmt materializer
 
 on:
-  push:
+  pull_request:
     branches:
       - ops/lane-b-rustfmt-materialize-20260910
+    types: [opened, synchronize, reopened]
 
 permissions:
   contents: write
@@ -14,10 +15,10 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 20
     steps:
-      - name: Check out exact temporary source
+      - name: Check out exact temporary base
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
-          ref: ${{ github.sha }}
+          ref: ${{ github.event.pull_request.base.sha }}
           fetch-depth: 0
           persist-credentials: true
 
