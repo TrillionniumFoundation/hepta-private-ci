@@ -1,0 +1,126 @@
+{
+  "schemaVersion": 1,
+  "runId": "34434885926",
+  "runAttempt": "1",
+  "targetBranch": "integration/hepta-all-gap-closure-20260910-r7",
+  "qualifiedSourceCommit": "16dc9b1d74b669164860bf9e09d6c5f4c25b7bb0",
+  "prepareJobResult": "success",
+  "repositoryJobResult": "failure",
+  "packageJobResult": "failure",
+  "expectedShards": 8,
+  "observedPackageShards": 8,
+  "canonicalHeptaPackageCount": 50,
+  "canonicalHeptaPackages": [
+    "codex-hepta-agent-protocol",
+    "codex-hepta-agentd",
+    "codex-hepta-authbus",
+    "codex-hepta-authbus-p1-3-qualification",
+    "codex-hepta-automation",
+    "codex-hepta-bao-adapter",
+    "codex-hepta-bellman-operator",
+    "codex-hepta-codex-adapter",
+    "codex-hepta-cognitive-read",
+    "codex-hepta-cognitive-store",
+    "codex-hepta-cognitive-types",
+    "codex-hepta-compact-engine",
+    "codex-hepta-context-compiler",
+    "codex-hepta-contracts",
+    "codex-hepta-control-plane",
+    "codex-hepta-evidence",
+    "codex-hepta-fleet",
+    "codex-hepta-governance",
+    "codex-hepta-infer-core",
+    "codex-hepta-infer-worker-host",
+    "codex-hepta-inferd",
+    "codex-hepta-intelligence",
+    "codex-hepta-intelligence-eval",
+    "codex-hepta-intuition",
+    "codex-hepta-kg",
+    "codex-hepta-learning-artifacts",
+    "codex-hepta-learning-ledger",
+    "codex-hepta-matrix-protocol",
+    "codex-hepta-matrix-sdk",
+    "codex-hepta-matrix-store",
+    "codex-hepta-matrixd",
+    "codex-hepta-memory",
+    "codex-hepta-memory-extension",
+    "codex-hepta-memory-federation",
+    "codex-hepta-memory-retrieval",
+    "codex-hepta-native-gateway",
+    "codex-hepta-ndu",
+    "codex-hepta-neuron",
+    "codex-hepta-objective",
+    "codex-hepta-operations",
+    "codex-hepta-operator-acceptance",
+    "codex-hepta-paths",
+    "codex-hepta-plasticity",
+    "codex-hepta-prompt-optimizer",
+    "codex-hepta-prompt-registry",
+    "codex-hepta-runtime",
+    "codex-hepta-shadow-qualification",
+    "codex-hepta-supervisor",
+    "codex-hepta-types",
+    "codex-hepta-wire"
+  ],
+  "artifactErrors": [],
+  "sourceMismatches": [],
+  "repositoryInternalValidationPassed": false,
+  "repositoryInternalGapsClosed": false,
+  "externalAuthorityGates": [
+    {
+      "id": "RDY-EXT-001",
+      "status": "external_open",
+      "selfCertificationAllowed": false
+    },
+    {
+      "id": "RDY-EXT-002",
+      "status": "external_open",
+      "selfCertificationAllowed": false
+    },
+    {
+      "id": "RDY-EXT-003",
+      "status": "external_open",
+      "selfCertificationAllowed": false
+    },
+    {
+      "id": "RDY-EXT-004",
+      "status": "external_open",
+      "selfCertificationAllowed": false
+    },
+    {
+      "id": "RDY-EXT-005",
+      "status": "external_open",
+      "selfCertificationAllowed": false
+    },
+    {
+      "id": "RDY-EXT-006",
+      "status": "external_open",
+      "selfCertificationAllowed": false
+    },
+    {
+      "id": "RDY-EXT-007",
+      "status": "external_open",
+      "selfCertificationAllowed": false
+    },
+    {
+      "id": "RDY-EXT-008",
+      "status": "external_open",
+      "selfCertificationAllowed": false
+    },
+    {
+      "id": "RDY-EXT-009",
+      "status": "external_open",
+      "selfCertificationAllowed": false
+    }
+  ],
+  "externalAuthorityGatesRetained": true,
+  "allGapsClosed": false,
+  "authorityGranted": false,
+  "productionActivation": false,
+  "modelInvocationAuthority": false,
+  "providerDispatchAuthority": false,
+  "productionWriterAuthorityAdded": false,
+  "selection": false,
+  "promotion": false,
+  "release": false
+}

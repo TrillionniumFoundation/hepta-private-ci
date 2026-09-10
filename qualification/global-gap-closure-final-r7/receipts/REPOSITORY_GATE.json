@@ -1,0 +1,562 @@
+{
+  "schemaVersion": 1,
+  "sourceCommit": "16dc9b1d74b669164860bf9e09d6c5f4c25b7bb0",
+  "receipts": [
+    {
+      "command": [
+        "python3",
+        "scripts/hepta-readiness.py",
+        "self-test"
+      ],
+      "returnCode": 0,
+      "durationSeconds": 0.049,
+      "outputSha256": "800c8e62923ce412dd8c497a1b5c6800b57ac28c27163f704ac4fdb0e8704803",
+      "tail": [
+        "{\"authorityGranted\": false, \"boundedObjectFixtures\": {\"missingAdditionalProperties\": 1, \"permissiveAdditionalProperties\": 1, \"positive\": 1}, \"cases\": [\"acyclic\", \"cycle\", \"duplicate_key\", \"path_ownership\", \"valid_recursive_field_schemas\", \"schema_key_order\", \"duplicate_enum_value\", \"invalid_array_bounds\", \"invalid_unique_enum_bound\", \"invalid_fixed_point_items\", \"duplicate_object_property\", \"invalid_required_property_count\", \"nested_byte_bound_escape\", \"missing_additional_properties_policy\", \"positive_additional_properties_policy\"], \"status\": \"PASS_HEPTA_READINESS_SELF_TEST\"}"
+      ]
+    },
+    {
+      "command": [
+        "python3",
+        "scripts/hepta-readiness.py",
+        "generate-status",
+        "--check"
+      ],
+      "returnCode": 0,
+      "durationSeconds": 0.049,
+      "outputSha256": "97c26bfa51c33d61354cd2f0e139700a6efd5624892287a1601c498d73874783",
+      "tail": [
+        "PASS_HEPTA_READINESS_STATUS"
+      ]
+    },
+    {
+      "command": [
+        "python3",
+        "scripts/hepta-readiness.py",
+        "verify"
+      ],
+      "returnCode": 1,
+      "durationSeconds": 0.059,
+      "outputSha256": "d9dd113ba9fc6b67c68a823331b9ffde3ff4ed333930f1d9aa40735a24aac9e5",
+      "tail": [
+        "FAIL_HEPTA_IMPLEMENTATION_READINESS: RDY-OBJ sections"
+      ]
+    },
+    {
+      "command": [
+        "python3",
+        "scripts/hepta-implementation-dossiers.py",
+        "self-test"
+      ],
+      "returnCode": 0,
+      "durationSeconds": 0.041,
+      "outputSha256": "e1eb2792507fad0c110a7139392823327925b81168d1f39ea7a0514ba995aa08",
+      "tail": [
+        "{\"authorityGranted\": false, \"cases\": [\"duplicate_key\", \"inverse_organ_projection\", \"receipt_fields\", \"profile_ids\"], \"status\": \"PASS_HEPTA_MODULE_EXECUTION_DOSSIER_SELF_TEST\"}"
+      ]
+    },
+    {
+      "command": [
+        "python3",
+        "scripts/hepta-implementation-dossiers.py",
+        "generate-status",
+        "--check"
+      ],
+      "returnCode": 0,
+      "durationSeconds": 0.041,
+      "outputSha256": "3189280077d333f17a141a99e36b5de4a81c9ba78405278c7d32b9fb9f0788c6",
+      "tail": [
+        "PASS_HEPTA_MODULE_EXECUTION_DOSSIER_STATUS"
+      ]
+    },
+    {
+      "command": [
+        "python3",
+        "scripts/hepta-implementation-dossiers.py",
+        "verify"
+      ],
+      "returnCode": 0,
+      "durationSeconds": 0.049,
+      "outputSha256": "e7987ea98babb939e930c4d58a35897ebb4b17edb2b1d333157f923c93676b2a",
+      "tail": [
+        "{\"authorityGranted\": false, \"documentationGapsClosed\": 12, \"externalGatesRetained\": 9, \"faultProfiles\": 7, \"lanes\": 7, \"modules\": 40, \"organs\": 24, \"performanceProfiles\": 8, \"receiptFields\": 18, \"runtimeCompositionClaimed\": false, \"status\": \"PASS_HEPTA_MODULE_EXECUTION_DOSSIERS\"}"
+      ]
+    },
+    {
+      "command": [
+        "python3",
+        "scripts/hepta-technical-closure.py",
+        "self-test"
+      ],
+      "returnCode": 0,
+      "durationSeconds": 0.094,
+      "outputSha256": "c214ae2a362961688493675f2b3c7e7bc81fe043f138588090db5deb0dc9a26e",
+      "tail": [
+        "test_action_cycle_closure (__main__.OracleTests.test_action_cycle_closure) ... ok",
+        "test_action_forbidden_conflict (__main__.OracleTests.test_action_forbidden_conflict) ... ok",
+        "test_action_unknown_node (__main__.OracleTests.test_action_unknown_node) ... ok",
+        "test_boolean_not_integer (__main__.OracleTests.test_boolean_not_integer) ... ok",
+        "test_correlated_covariance (__main__.OracleTests.test_correlated_covariance) ... ok",
+        "test_duplicate_json_key (__main__.OracleTests.test_duplicate_json_key) ... ok",
+        "test_ess_stricter_floor (__main__.OracleTests.test_ess_stricter_floor) ... ok",
+        "test_handoff_body_generation_advance (__main__.OracleTests.test_handoff_body_generation_advance) ... ok",
+        "test_handoff_every_phase_reopen (__main__.OracleTests.test_handoff_every_phase_reopen) ... ok",
+        "test_handoff_export_range_count (__main__.OracleTests.test_handoff_export_range_count) ... ok",
+        "test_handoff_full_transition_chain (__main__.OracleTests.test_handoff_full_transition_chain) ... ok",
+        "test_handoff_idempotent_observation (__main__.OracleTests.test_handoff_idempotent_observation) ... ok",
+        "test_handoff_identity_drift (__main__.OracleTests.test_handoff_identity_drift) ... ok",
+        "test_handoff_migration_count (__main__.OracleTests.test_handoff_migration_count) ... ok",
+        "test_handoff_missing_drain_watermark (__main__.OracleTests.test_handoff_missing_drain_watermark) ... ok",
+        "test_handoff_missing_epoch (__main__.OracleTests.test_handoff_missing_epoch) ... ok",
+        "test_handoff_missing_evidence (__main__.OracleTests.test_handoff_missing_evidence) ... ok",
+        "test_handoff_no_authority (__main__.OracleTests.test_handoff_no_authority) ... ok",
+        "test_handoff_no_early_new_admission (__main__.OracleTests.test_handoff_no_early_new_admission) ... ok",
+        "test_handoff_no_late_old_admission (__main__.OracleTests.test_handoff_no_late_old_admission) ... ok",
+        "test_handoff_owner_transfer_requires_new_profile (__main__.OracleTests.test_handoff_owner_transfer_requires_new_profile) ... ok",
+        "test_handoff_phase_skip (__main__.OracleTests.test_handoff_phase_skip) ... ok",
+        "test_handoff_progress_immutable (__main__.OracleTests.test_handoff_progress_immutable) ... ok",
+        "test_handoff_quarantine_closes_admission (__main__.OracleTests.test_handoff_quarantine_closes_admission) ... ok",
+        "test_handoff_role_collision (__main__.OracleTests.test_handoff_role_collision) ... ok",
+        "test_handoff_stale_fence (__main__.OracleTests.test_handoff_stale_fence) ... ok",
+        "test_handoff_two_writers (__main__.OracleTests.test_handoff_two_writers) ... ok",
+        "test_handoff_unknown_effect (__main__.OracleTests.test_handoff_unknown_effect) ... ok",
+        "test_handoff_unknown_secret_field (__main__.OracleTests.test_handoff_unknown_secret_field) ... ok",
+        "test_identity_covariance (__main__.OracleTests.test_identity_covariance) ... ok",
+        "test_indefinite_covariance (__main__.OracleTests.test_indefinite_covariance) ... ok",
+        "test_interval_budget (__main__.OracleTests.test_interval_budget) ... ok",
+        "test_interval_conflict_core (__main__.OracleTests.test_interval_conflict_core) ... ok",
+        "test_interval_duplicate (__main__.OracleTests.test_interval_duplicate) ... ok",
+        "test_interval_feasible (__main__.OracleTests.test_interval_feasible) ... ok",
+        "test_invalid_atom_after_conflict (__main__.OracleTests.test_invalid_atom_after_conflict) ... ok",
+        "test_nonsymmetric_covariance (__main__.OracleTests.test_nonsymmetric_covariance) ... ok",
+        "test_nonzero_mean_centering (__main__.OracleTests.test_nonzero_mean_centering) ... ok",
+        "test_numeric_overflow (__main__.OracleTests.test_numeric_overflow) ... ok",
+        "test_numeric_roundtrip (__main__.OracleTests.test_numeric_roundtrip) ... ok",
+        "test_numeric_ties (__main__.OracleTests.test_numeric_ties) ... ok",
+        "test_numeric_toward_zero (__main__.OracleTests.test_numeric_toward_zero) ... ok",
+        "test_scaled_covariance (__main__.OracleTests.test_scaled_covariance) ... ok",
+        "test_sequential_dr_gold (__main__.OracleTests.test_sequential_dr_gold) ... ok",
+        "test_sequential_missing_history_fields (__main__.OracleTests.test_sequential_missing_history_fields) ... ok",
+        "test_sequential_zero_support (__main__.OracleTests.test_sequential_zero_support) ... ok",
+        "test_singular_covariance (__main__.OracleTests.test_singular_covariance) ... ok",
+        "test_unknown_numeric_profile (__main__.OracleTests.test_unknown_numeric_profile) ... ok",
+        "test_unknown_schema_keyword (__main__.OracleTests.test_unknown_schema_keyword) ... ok",
+        "",
+        "----------------------------------------------------------------------",
+        "Ran 49 tests in 0.014s",
+        "",
+        "OK",
+        "{\"authorityGranted\": false, \"independentAcceptance\": false, \"kind\": \"analytic_qualification_fixture\", \"passed\": true, \"runtimeProof\": false, \"testsRun\": 49}"
+      ]
+    },
+    {
+      "command": [
+        "python3",
+        "scripts/hepta-technical-closure.py",
+        "verify"
+      ],
+      "returnCode": 1,
+      "durationSeconds": 0.08,
+      "outputSha256": "87ac48f0ca15ecfc78e90c9736de0c47090ac5a6d8d537e0889533d06b6b41ed",
+      "tail": [
+        "FAIL_HEPTA_DETAILED_DESIGN: objective.compiler: design digest drift"
+      ]
+    },
+    {
+      "command": [
+        "python3",
+        "qualification/module-execution-dossiers/implementation_contracts.py",
+        "self-test"
+      ],
+      "returnCode": 1,
+      "durationSeconds": 0.284,
+      "outputSha256": "17efcf2fc87ac6a3f32b1af0fc715b27e7cafb52655f0f9bb2725a468b1081f3",
+      "tail": [
+        "test_ideal_matrix_polynomial (implementation_contract_tests_system.EmbodimentTests.test_ideal_matrix_polynomial) ... ok",
+        "test_overloaded_task_set (implementation_contract_tests_system.EmbodimentTests.test_overloaded_task_set) ... ok",
+        "test_schedulable_controller (implementation_contract_tests_system.EmbodimentTests.test_schedulable_controller) ... ok",
+        "test_stationary_brake (implementation_contract_tests_system.EmbodimentTests.test_stationary_brake) ... ok",
+        "test_zero_control_not_instant_stop (implementation_contract_tests_system.EmbodimentTests.test_zero_control_not_instant_stop) ... ok",
+        "test_all_handoff_phases (implementation_contract_tests_core.GraphAndEvolutionTests.test_all_handoff_phases) ... ok",
+        "test_clamp_requires_new_binding (implementation_contract_tests_core.GraphAndEvolutionTests.test_clamp_requires_new_binding) ... ok",
+        "test_current_epoch_admission (implementation_contract_tests_core.GraphAndEvolutionTests.test_current_epoch_admission) ... ok",
+        "test_cycle_rejects (implementation_contract_tests_core.GraphAndEvolutionTests.test_cycle_rejects) ... ok",
+        "test_duplicate_edge (implementation_contract_tests_core.GraphAndEvolutionTests.test_duplicate_edge) ... ok",
+        "test_duplicate_writer_partition (implementation_contract_tests_core.GraphAndEvolutionTests.test_duplicate_writer_partition) ... ok",
+        "test_new_admission_before_route (implementation_contract_tests_core.GraphAndEvolutionTests.test_new_admission_before_route) ... ok",
+        "test_omitted_fact_partition (implementation_contract_tests_core.GraphAndEvolutionTests.test_omitted_fact_partition) ... ok",
+        "test_path_escape_rejects (implementation_contract_tests_core.GraphAndEvolutionTests.test_path_escape_rejects) ... ok",
+        "test_revoke_blocks_later_admission (implementation_contract_tests_core.GraphAndEvolutionTests.test_revoke_blocks_later_admission) ... ok",
+        "test_revoked_rollback_rejects (implementation_contract_tests_core.GraphAndEvolutionTests.test_revoked_rollback_rejects) ... ok",
+        "test_rollback_old_snapshot_loses_delta (implementation_contract_tests_core.GraphAndEvolutionTests.test_rollback_old_snapshot_loses_delta) ... ok",
+        "test_rollback_preserves_delta (implementation_contract_tests_core.GraphAndEvolutionTests.test_rollback_preserves_delta) ... ok",
+        "test_stable_topology (implementation_contract_tests_core.GraphAndEvolutionTests.test_stable_topology) ... ok",
+        "test_stale_fence (implementation_contract_tests_core.GraphAndEvolutionTests.test_stale_fence) ... ok",
+        "test_total_disjoint_split (implementation_contract_tests_core.GraphAndEvolutionTests.test_total_disjoint_split) ... ok",
+        "test_two_valid_writers (implementation_contract_tests_core.GraphAndEvolutionTests.test_two_valid_writers) ... ok",
+        "test_unknown_edge (implementation_contract_tests_core.GraphAndEvolutionTests.test_unknown_edge) ... ok",
+        "test_unknown_effect_blocks_cutover (implementation_contract_tests_core.GraphAndEvolutionTests.test_unknown_effect_blocks_cutover) ... ok",
+        "test_native_binding_blobs_and_exports_are_exact (implementation_contract_tests_core.NativeBindingCoverageTests.test_native_binding_blobs_and_exports_are_exact) ... FAIL",
+        "test_native_binding_module_closed_world (implementation_contract_tests_core.NativeBindingCoverageTests.test_native_binding_module_closed_world) ... ok",
+        "test_advance_sequence (implementation_contract_tests_core.NumericTests.test_advance_sequence) ... ok",
+        "test_boolean_is_not_counter (implementation_contract_tests_core.NumericTests.test_boolean_is_not_counter) ... ok",
+        "test_constant_driver_unsupported (implementation_contract_tests_core.NumericTests.test_constant_driver_unsupported) ... ok",
+        "test_correlated_covariance (implementation_contract_tests_core.NumericTests.test_correlated_covariance) ... ok",
+        "test_duplicate_json_keys (implementation_contract_tests_core.NumericTests.test_duplicate_json_keys) ... ok",
+        "test_exhaustion_before_mutation (implementation_contract_tests_core.NumericTests.test_exhaustion_before_mutation) ... ok",
+        "test_identity_covariance (implementation_contract_tests_core.NumericTests.test_identity_covariance) ... ok",
+        "test_indefinite_covariance (implementation_contract_tests_core.NumericTests.test_indefinite_covariance) ... ok",
+        "test_joint_ess_floor (implementation_contract_tests_core.NumericTests.test_joint_ess_floor) ... ok",
+        "test_minimum_ess (implementation_contract_tests_core.NumericTests.test_minimum_ess) ... ok",
+        "test_nonzero_mean_centered (implementation_contract_tests_core.NumericTests.test_nonzero_mean_centered) ... ok",
+        "test_overflow_rejects (implementation_contract_tests_core.NumericTests.test_overflow_rejects) ... ok",
+        "test_scaled_driver (implementation_contract_tests_core.NumericTests.test_scaled_driver) ... ok",
+        "test_sequential_dr (implementation_contract_tests_core.NumericTests.test_sequential_dr) ... ok",
+        "test_signed_half_ties (implementation_contract_tests_core.NumericTests.test_signed_half_ties) ... ok",
+        "test_singular_covariance (implementation_contract_tests_core.NumericTests.test_singular_covariance) ... ok",
+        "test_stricter_ess (implementation_contract_tests_core.NumericTests.test_stricter_ess) ... ok",
+        "test_terminal_not_double_counted (implementation_contract_tests_core.NumericTests.test_terminal_not_double_counted) ... ok",
+        "test_threshold_empty_intersection (implementation_contract_tests_core.NumericTests.test_threshold_empty_intersection) ... ok",
+        "test_threshold_intersection (implementation_contract_tests_core.NumericTests.test_threshold_intersection) ... ok",
+        "test_threshold_unit_mismatch (implementation_contract_tests_core.NumericTests.test_threshold_unit_mismatch) ... ok",
+        "test_toward_zero_is_not_nearest (implementation_contract_tests_core.NumericTests.test_toward_zero_is_not_nearest) ... ok",
+        "test_unknown_rounding_rejects (implementation_contract_tests_core.NumericTests.test_unknown_rounding_rejects) ... ok",
+        "test_zero_propensity (implementation_contract_tests_core.NumericTests.test_zero_propensity) ... ok",
+        "test_abrupt_exit_after_commit (implementation_contract_tests_system.SqlFixtureTests.test_abrupt_exit_after_commit) ... ok",
+        "test_abrupt_exit_before_commit (implementation_contract_tests_system.SqlFixtureTests.test_abrupt_exit_before_commit) ... ok",
+        "test_commit_reopen (implementation_contract_tests_system.SqlFixtureTests.test_commit_reopen) ... ok",
+        "test_current_foreign_key (implementation_contract_tests_system.SqlFixtureTests.test_current_foreign_key) ... ok",
+        "test_duplicate_revision (implementation_contract_tests_system.SqlFixtureTests.test_duplicate_revision) ... ok",
+        "test_fractional_sequence (implementation_contract_tests_system.SqlFixtureTests.test_fractional_sequence) ... ok",
+        "test_invalid_digest_type (implementation_contract_tests_system.SqlFixtureTests.test_invalid_digest_type) ... ok",
+        "test_orphan_publication_intent (implementation_contract_tests_system.SqlFixtureTests.test_orphan_publication_intent) ... ok",
+        "test_publication_intent_requires_valid_disposition (implementation_contract_tests_system.SqlFixtureTests.test_publication_intent_requires_valid_disposition) ... ok",
+        "test_revocation_overlay_query (implementation_contract_tests_system.SqlFixtureTests.test_revocation_overlay_query) ... ok",
+        "test_transaction_rollback (implementation_contract_tests_system.SqlFixtureTests.test_transaction_rollback) ... ok",
+        "test_two_writer_lock (implementation_contract_tests_system.SqlFixtureTests.test_two_writer_lock) ... ok",
+        "test_wrong_record_pointer (implementation_contract_tests_system.SqlFixtureTests.test_wrong_record_pointer) ... ok",
+        "",
+        "======================================================================",
+        "FAIL: test_native_binding_blobs_and_exports_are_exact (implementation_contract_tests_core.NativeBindingCoverageTests.test_native_binding_blobs_and_exports_are_exact)",
+        "----------------------------------------------------------------------",
+        "Traceback (most recent call last):",
+        "  File \"/home/runner/work/hepta-private-ci/hepta-private-ci/qualification/module-execution-dossiers/implementation_contract_tests_core.py\", line 85, in test_native_binding_blobs_and_exports_are_exact",
+        "    self.assertEqual(c.blob(data),row['blobSha'],row['path'])",
+        "AssertionError: '8df3f4bd424f53329e54ce509084deceea69ce34' != 'a006e48beb8e6f7093f66124f454bacb720a9693'",
+        "- 8df3f4bd424f53329e54ce509084deceea69ce34",
+        "+ a006e48beb8e6f7093f66124f454bacb720a9693",
+        " : codex-rs/hepta-authbus/src/lib.rs",
+        "",
+        "----------------------------------------------------------------------",
+        "Ran 69 tests in 0.199s",
+        "",
+        "FAILED (failures=1)",
+        "{\"hardwareProof\": false, \"independentAcceptance\": false, \"kind\": \"local_qualification_oracles\", \"longitudinalProof\": false, \"nativeProductTestsExecuted\": false, \"passed\": false, \"skipped\": 0, \"testsRun\": 69}"
+      ]
+    },
+    {
+      "command": [
+        "python3",
+        "qualification/module-execution-dossiers/implementation_contracts.py",
+        "verify-repository"
+      ],
+      "returnCode": 1,
+      "durationSeconds": 0.116,
+      "outputSha256": "042a6330ee96c0718b04eca256cda697ef23d328aa4aee0f958b3b7b341d0be6",
+      "tail": [
+        "FAIL_IMPLEMENTATION_CONTRACTS: native observation drift; re-review required: codex-rs/hepta-authbus/src/lib.rs"
+      ]
+    },
+    {
+      "command": [
+        "python3",
+        "scripts/hepta-module-docs.py",
+        "self-test"
+      ],
+      "returnCode": 0,
+      "durationSeconds": 0.04,
+      "outputSha256": "7adc81f8cda535e185b9ec226faabd2d73978159eb9f88b54b94a20559c0966c",
+      "tail": [
+        "{\"authorityGranted\": false, \"cases\": [\"headings\", \"statuses\", \"duplicate_key\"], \"status\": \"PASS_HEPTA_MODULE_DOCS_SELF_TEST\"}"
+      ]
+    },
+    {
+      "command": [
+        "python3",
+        "scripts/hepta-module-docs.py",
+        "verify"
+      ],
+      "returnCode": 0,
+      "durationSeconds": 0.122,
+      "outputSha256": "cafbf97ee9e4fd06cbbdd7e978639d28f1aea807a0800cd0148869a756e49613",
+      "tail": [
+        "{\"authorityGranted\": false, \"modules\": 40, \"sourceBindings\": 40, \"status\": \"PASS_HEPTA_MODULE_DOCS_CLOSED_WORLD\", \"technicalDocuments\": 40}"
+      ]
+    },
+    {
+      "command": [
+        "python3",
+        "scripts/hepta-algorithm-docs.py",
+        "self-test"
+      ],
+      "returnCode": 0,
+      "durationSeconds": 0.055,
+      "outputSha256": "a2c24634b796129208932561d72fb7ad5dbb419e6c8028a88de761d505f376b9",
+      "tail": [
+        "{\"authorityGranted\": false, \"hostilePaperSourceCases\": [\"missing_source_digest\", \"wrong_source_digest\", \"challenge_body_substitution\", \"missing_exact_locator\", \"claim_text_substitution\", \"source_artifact_substitution\", \"abstract_promoted_to_theorem\", \"Hepta_extension_attributed_to_paper\"], \"hostileProtocolAuthorityCases\": [\"abbreviated_protocol_schema\", \"abbreviated_contract_registry\", \"wrong_protocol_directory\", \"unquoted_canonical_protocol_path\", \"canonical_pair_plus_abbreviated_reference\"], \"status\": \"PASS_HEPTA_ALGORITHM_DOCS_SELF_TEST_V4\"}"
+      ]
+    },
+    {
+      "command": [
+        "python3",
+        "scripts/hepta-algorithm-docs.py",
+        "verify-sources"
+      ],
+      "returnCode": 0,
+      "durationSeconds": 0.052,
+      "outputSha256": "87f6dc5d5d607fe575df13ef9a96e34a037a6b4f0084f6a7e9d3e4c67ee4c42f",
+      "tail": [
+        "{\"authorityGranted\": false, \"claimAnchors\": 20, \"hostileSubstitutionPolicy\": \"fail_closed\", \"papers\": 4, \"status\": \"PASS_HEPTA_PAPER_SOURCE_LOCKS_V2\"}"
+      ]
+    },
+    {
+      "command": [
+        "python3",
+        "scripts/hepta-algorithm-docs.py",
+        "generate-status",
+        "--check"
+      ],
+      "returnCode": 0,
+      "durationSeconds": 0.052,
+      "outputSha256": "f856883910a42dce47d9ef916d03c5689a914a2eca1bade6a20f1b2fa1a2cb75",
+      "tail": [
+        "{\"status\": \"PASS_HEPTA_ALGORITHM_STATUS_CHECK\"}"
+      ]
+    },
+    {
+      "command": [
+        "python3",
+        "scripts/hepta-algorithm-docs.py",
+        "verify"
+      ],
+      "returnCode": 0,
+      "durationSeconds": 0.083,
+      "outputSha256": "9626d5ac87cab66e75c3cd580568f5fb06ae988e69b61b16a85e735aa65be253",
+      "tail": [
+        "{\"authorityGranted\": false, \"claimAnchors\": 20, \"hostileSubstitutionPolicy\": \"fail_closed\", \"papers\": 4, \"status\": \"PASS_HEPTA_PAPER_SOURCE_LOCKS_V2\"}",
+        "{\"authorityGranted\": false, \"capabilityClaimsAdvanced\": false, \"closureGates\": 13, \"criticalModules\": 14, \"documentationGapState\": \"closed\", \"globalClosureState\": \"closed\", \"papers\": 4, \"protocols\": 20, \"specifications\": 6, \"status\": \"PASS_HEPTA_ALGORITHM_DOCS_CLOSED_WORLD_V2\"}"
+      ]
+    },
+    {
+      "command": [
+        "python3",
+        "scripts/hepta-cns.py",
+        "self-test"
+      ],
+      "returnCode": 0,
+      "durationSeconds": 0.049,
+      "outputSha256": "5f3fd882dff5ad83ed63cad442b9f2f2625f1d2393b7d0b80f93fdfab84c3979",
+      "tail": [
+        "{\"authorityGranted\": false, \"cases\": [\"acyclic\", \"cycle\", \"duplicate_key\"], \"status\": \"PASS_HEPTA_CNS_SELF_TEST\"}"
+      ]
+    },
+    {
+      "command": [
+        "python3",
+        "scripts/hepta-cns.py",
+        "generate-status",
+        "--check"
+      ],
+      "returnCode": 0,
+      "durationSeconds": 0.054,
+      "outputSha256": "12f7ef3ef9934b93238aeb280d561b325b94fc2d63631ed7bd66539679b70cd0",
+      "tail": [
+        "PASS_HEPTA_CNS_STATUS"
+      ]
+    },
+    {
+      "command": [
+        "python3",
+        "scripts/hepta-cns.py",
+        "verify"
+      ],
+      "returnCode": 0,
+      "durationSeconds": 0.185,
+      "outputSha256": "643256798cf078f07888cbcba27064b721e6f3536fcc67f35a150d3ae47af707",
+      "tail": [
+        "{\"authorityGranted\": false, \"externalCapabilityGates\": 8, \"organs\": 24, \"protocols\": 15, \"repositoryGaps\": 22, \"status\": \"PASS_HEPTA_CNS_ORGAN_CLOSED_WORLD\", \"topologicalOrderDigest\": \"d9e00d6e06d2e8c0be4bf2c742b379558082260b9c325a53a050d205e3d60874\"}"
+      ]
+    },
+    {
+      "command": [
+        "python3",
+        "scripts/hepta-hnmf.py",
+        "self-test"
+      ],
+      "returnCode": 0,
+      "durationSeconds": 0.039,
+      "outputSha256": "21a21184f7be9530d09bf7e496af4f73897919ceae01a42a791767058cc80da8",
+      "tail": [
+        "{\"cases\": [\"duplicate_keys\", \"modalities\", \"populations\", \"work_packages\"], \"productionAuthority\": false, \"status\": \"PASS_HEPTA_HNMF_SELF_TEST\"}"
+      ]
+    },
+    {
+      "command": [
+        "python3",
+        "scripts/hepta-hnmf.py",
+        "verify"
+      ],
+      "returnCode": 0,
+      "durationSeconds": 0.042,
+      "outputSha256": "3af113f35ec1816a1d64170bf9f39201424facc32b0511598a1694d45dc437e1",
+      "tail": [
+        "{\"gaps\": 18, \"modalities\": 9, \"populations\": 7, \"productionAuthority\": false, \"protocols\": 12, \"status\": \"PASS_HEPTA_HNMF_REFERENCE_CLOSED_WORLD\", \"workPackages\": 7}"
+      ]
+    },
+    {
+      "command": [
+        "python3",
+        "scripts/hepta-docs.py",
+        "self-test"
+      ],
+      "returnCode": 0,
+      "durationSeconds": 0.055,
+      "outputSha256": "0713c485fa19a5da0ff715ef1df5bf191b913f4630c85d0a0776809a2d9b2854",
+      "tail": [
+        "{\"authorityGranted\": false, \"cases\": [\"duplicate_key\", \"cycle\", \"overlap\", \"static_exact_path_lease_request\", \"reject_missing_lease\", \"reject_unleased_internal_glob_match\", \"reject_no_review_exact_touch\", \"reject_second_unlisted_overlap\", \"reject_unused_extra_path\", \"reject_wildcard_lease\", \"reject_prefix_widening\", \"reject_reversed_pair\", \"reject_path_alias\", \"reject_path_escape\", \"reject_path_digest_mismatch\", \"reject_stale_head_policy\", \"reject_non_independent_review_policy\", \"reject_positive_lease_authority\", \"reject_partial_changed_lease_set\", \"reject_changed_path_prefix_alias\", \"shape\", \"authority\", \"deleted_json_basename_boundary\", \"bounded_future_time\", \"reject_future_time\", \"reject_stale_time\"], \"status\": \"PASS_HEPTA_DEVELOPMENT_DOCS_V8_SELF_TEST\"}"
+      ]
+    },
+    {
+      "command": [
+        "python3",
+        "scripts/hepta-docs.py",
+        "verify"
+      ],
+      "returnCode": 1,
+      "durationSeconds": 77.738,
+      "outputSha256": "07bb4c435c1042e2878a21af185cf0c39b5e020aabe61be1014bf229e5694881",
+      "tail": [
+        "FAIL_HEPTA_DEVELOPMENT_DOCS_V8: readiness verifier FAIL_HEPTA_IMPLEMENTATION_READINESS: RDY-OBJ sections"
+      ]
+    },
+    {
+      "command": [
+        "cargo",
+        "fmt",
+        "--manifest-path",
+        "codex-rs/Cargo.toml",
+        "--all",
+        "--",
+        "--check"
+      ],
+      "returnCode": 0,
+      "durationSeconds": 17.212,
+      "outputSha256": "ffe36918a37ad2e8e4aad8c8d012f194804462a4a7d845d7c381d430ea94ba66",
+      "tail": [
+        "Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.",
+        "Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.",
+        "Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.",
+        "Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.",
+        "Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.",
+        "Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.",
+        "Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.",
+        "Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.",
+        "Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.",
+        "Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.",
+        "Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.",
+        "Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.",
+        "Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.",
+        "Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.",
+        "Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.",
+        "Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.",
+        "Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.",
+        "Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.",
+        "Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.",
+        "Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.",
+        "Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.",
+        "Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.",
+        "Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.",
+        "Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.",
+        "Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.",
+        "Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.",
+        "Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.",
+        "Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.",
+        "Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.",
+        "Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.",
+        "Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.",
+        "Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.",
+        "Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.",
+        "Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.",
+        "Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.",
+        "Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.",
+        "Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.",
+        "Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.",
+        "Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.",
+        "Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.",
+        "Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.",
+        "Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.",
+        "Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.",
+        "Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.",
+        "Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.",
+        "Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.",
+        "Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.",
+        "Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.",
+        "Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.",
+        "Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.",
+        "Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.",
+        "Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.",
+        "Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.",
+        "Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.",
+        "Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.",
+        "Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.",
+        "Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.",
+        "Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.",
+        "Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.",
+        "Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.",
+        "Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.",
+        "Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.",
+        "Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.",
+        "Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.",
+        "Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.",
+        "Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.",
+        "Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.",
+        "Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.",
+        "Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.",
+        "Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.",
+        "Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.",
+        "Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.",
+        "Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.",
+        "Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.",
+        "Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.",
+        "Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.",
+        "Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.",
+        "Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.",
+        "Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.",
+        "Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel."
+      ]
+    }
+  ],
+  "nativeBinding": {
+    "present": true,
+    "moduleCoverage": 40,
+    "observationCount": 40,
+    "updated": 0,
+    "failures": [],
+    "valid": true
+  },
+  "cleanAfterNativeCheck": true,
+  "diffCheck": {
+    "command": [
+      "git",
+      "diff",
+      "--check"
+    ],
+    "returnCode": 0,
+    "durationSeconds": 0.011,
+    "outputSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "tail": []
+  },
+  "passed": false,
+  "authorityGranted": false,
+  "artifactPath": "REPOSITORY_GATE.json"
+}
