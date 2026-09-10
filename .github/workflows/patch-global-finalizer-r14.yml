@@ -21,9 +21,10 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 20
     env:
-      EXPECTED_PARENT: e1de63773f6f27ff5486a746be1aeb1d84c8307b
+      EXPECTED_PARENT: 4caa52d050b8834c274ca3836bf4c5881e22147d
       TARGET_BRANCH: ops/hepta-global-gap-closure-controller-20260910-r1
       FINALIZER: scripts/hepta-global-finalizer-r7.py
+      PATCH_SCRIPT: scripts/patch-global-finalizer-r14.py
       GH_TOKEN: ${{ github.token }}
     steps:
       - name: Check out exact one-shot patch commit
@@ -39,256 +40,21 @@ jobs:
           set -euo pipefail
           test "${GITHUB_REF_NAME}" = "${TARGET_BRANCH}"
           test "$(git rev-parse HEAD^)" = "${EXPECTED_PARENT}"
-          test "$(git rev-parse HEAD:.github/workflows/patch-global-finalizer-r14.yml)" = \
-            "$(git hash-object .github/workflows/patch-global-finalizer-r14.yml)"
+          test "$(git rev-parse HEAD:.github/workflows/patch-global-finalizer-r14.yml)" = "$(git hash-object .github/workflows/patch-global-finalizer-r14.yml)"
+          test "$(git rev-parse HEAD:${PATCH_SCRIPT})" = "$(git hash-object "${PATCH_SCRIPT}")"
           test "$(git ls-remote origin "refs/heads/${TARGET_BRANCH}" | awk '{print $1}')" = "${GITHUB_SHA}"
 
-      - name: Apply idempotent Lane F and Lane G semantic repair
+      - name: Apply and validate semantic convergence repair
         shell: bash
         run: |
           set -euo pipefail
-          python3 - <<'PY'
-          from pathlib import Path
-
-          path = Path("scripts/hepta-global-finalizer-r7.py")
-          text = path.read_text(encoding="utf-8")
-
-          def replace_once_or_verify(old: str, new: str, marker: str) -> None:
-              global text
-              if marker in text:
-                  return
-              count = text.count(old)
-              if count != 1:
-                  raise SystemExit(
-                      f"r14 patch precondition drift for {marker!r}: old-count={count}"
-                  )
-              text = text.replace(old, new, 1)
-
-          replace_once_or_verify(
-              "\n\n\ndef merge_lane(lane: str, branch: str) -> dict[str, Any]:\n",
-              '''
-
-LANE_G_SHARED_CONFLICTS = frozenset(
-    {
-        "qualification/module-execution-dossiers/NATIVE_BINDINGS.json",
-        "qualification/module-execution-dossiers/test_implementation_contracts.py",
-    }
-)
-
-
-def merge_lane(lane: str, branch: str) -> dict[str, Any]:
-''',
-              "LANE_G_SHARED_CONFLICTS = frozenset(",
-          )
-          replace_once_or_verify(
-              "    lane_f_owner_conflict = False\n    if not result.passed:\n",
-              "    lane_f_owner_conflict = False\n    lane_g_shared_conflict = False\n    if not result.passed:\n",
-              "lane_g_shared_conflict = False",
-          )
-          replace_once_or_verify(
-              '''        lane_f_owner_conflict = (
-            lane == "F"
-            and len(conflicts) == len(LANE_F_OWNER_CONFLICTS)
-            and frozenset(conflicts) == LANE_F_OWNER_CONFLICTS
-        )
-        if (
-''',
-              '''        lane_f_owner_conflict = (
-            lane == "F"
-            and len(conflicts) == len(LANE_F_OWNER_CONFLICTS)
-            and frozenset(conflicts) == LANE_F_OWNER_CONFLICTS
-        )
-        lane_g_shared_conflict = (
-            lane == "G"
-            and len(conflicts) == len(LANE_G_SHARED_CONFLICTS)
-            and frozenset(conflicts) == LANE_G_SHARED_CONFLICTS
-        )
-        if (
-''',
-              "lane_g_shared_conflict = (",
-          )
-          replace_once_or_verify(
-              '''            and not lane_f_owner_conflict
-        ):
-''',
-              '''            and not lane_f_owner_conflict
-            and not lane_g_shared_conflict
-        ):
-''',
-              "and not lane_g_shared_conflict",
-          )
-          replace_once_or_verify(
-              '''        checkout_side = (
-            "--theirs"
-            if lane_owner_conflict or lane_f_owner_conflict
-            else "--ours"
-        )
-        for path in conflicts:
-            git("checkout", checkout_side, "--", path)
-            git("add", "--", path)
-''',
-              '''        for path in conflicts:
-            if (
-                lane_f_owner_conflict
-                and path == ".github/workflows/lane-f-bootstrap.yml"
-            ):
-                git("rm", "--", path)
-                continue
-            checkout_side = (
-                "--ours"
-                if lane_g_shared_conflict
-                else (
-                    "--theirs"
-                    if lane_owner_conflict or lane_f_owner_conflict
-                    else "--ours"
-                )
-            )
-            git("checkout", checkout_side, "--", path)
-            git("add", "--", path)
-''',
-              "if lane_g_shared_conflict",
-          )
-          replace_once_or_verify(
-              '''        elif lane_f_owner_conflict:
-            resolution_class = "Lane F owner shadow qualification paths"
-        else:
-''',
-              '''        elif lane_f_owner_conflict:
-            resolution_class = "Lane F owner shadow qualification paths"
-        elif lane_g_shared_conflict:
-            resolution_class = "Lane G shared dossiers retained then semantically regenerated"
-        else:
-''',
-              "Lane G shared dossiers retained then semantically regenerated",
-          )
-          replace_once_or_verify(
-              '''            and not lane_f_owner_conflict
-        ),
-''',
-              '''            and not lane_f_owner_conflict
-            and not lane_g_shared_conflict
-        ),
-''',
-              "and not lane_g_shared_conflict\n        ),",
-          )
-          replace_once_or_verify(
-              '''        "autoResolvedLaneFOwnerOnly": lane_f_owner_conflict,
-        "conflicts": conflicts,
-''',
-              '''        "autoResolvedLaneFOwnerOnly": lane_f_owner_conflict,
-        "autoResolvedLaneGSharedOnly": lane_g_shared_conflict,
-        "conflicts": conflicts,
-''',
-              "autoResolvedLaneGSharedOnly",
-          )
-
-          repair_marker = '''def repair_argument_comment_blockers() -> dict[str, Any]:
-'''
-          repair_function = '''def repair_lane_g_shared_artifacts() -> dict[str, Any]:
-    """Regenerate Lane G's shared dossier projection without flattening A-F tests."""
-
-    changed: list[str] = []
-    native_path = ROOT / "qualification/module-execution-dossiers/NATIVE_BINDINGS.json"
-    document = read_json(native_path)
-    rows = [
-        row
-        for row in document.get("observations", [])
-        if row.get("module") == "control.engineering"
-    ]
-    if len(rows) != 1:
-        raise RuntimeError(
-            f"expected one control.engineering native binding, observed {len(rows)}"
-        )
-    row = rows[0]
-    desired_path = (
-        "tools/hepta-engineering-control/control_engineering_v2/__init__.py"
-    )
-    desired_exports = [
-        "EngineeringStore",
-        "WorkEnvelope",
-        "WorkPackage",
-        "Candidate",
-        "SandboxReceipt",
-        "EvidenceDecision",
-        "AssimilationProposal",
-        "issue_work_envelope",
-        "schedule_ready_packages",
-        "generate_candidate",
-        "execute_candidate_sandbox",
-        "verify_integration_evidence",
-        "request_independent_review",
-        "record_integration_decision",
-        "publish_audit_projection",
-        "prepare_assimilation_candidate",
-    ]
-    if row.get("path") != desired_path or row.get("exports") != desired_exports:
-        row["path"] = desired_path
-        row["exports"] = desired_exports
-        write_json(native_path, document)
-        changed.append(native_path.relative_to(ROOT).as_posix())
-
-    native_tests_path = (
-        ROOT
-        / "qualification/module-execution-dossiers/implementation_contract_tests_native.py"
-    )
-    native_tests = '''\"\"\"Native-source closed-world implementation contract tests.\"\"\"\nimport re\nimport unittest\n\nimport implementation_contracts as c\n\nBASE = c.ROOT / \"qualification/module-execution-dossiers\"\n\n\nclass NativeBindingCoverageTests(unittest.TestCase):\n    def test_native_binding_module_closed_world(self):\n        profiles = c.read_json(BASE / \"IMPLEMENTATION_PROFILES.json\")\n        native = c.read_json(BASE / \"NATIVE_BINDINGS.json\")\n        self.assertEqual(native[\"moduleCoverage\"], 40)\n        self.assertFalse(native[\"consumerCallsitesProved\"])\n        self.assertFalse(native[\"productExecutionProved\"])\n        self.assertEqual(\n            [row[\"module\"] for row in native[\"observations\"]],\n            [row[\"module\"] for row in profiles[\"modules\"]],\n        )\n\n    def test_native_binding_blobs_and_exports_are_exact(self):\n        native = c.read_json(BASE / \"NATIVE_BINDINGS.json\")\n        for row in native[\"observations\"]:\n            source = c.ROOT / row[\"path\"]\n            data = source.read_bytes()\n            self.assertEqual(c.blob(data), row[\"blobSha\"], row[\"path\"])\n            source_text = data.decode(\"utf-8\")\n            for symbol in row[\"exports\"]:\n                self.assertRegex(\n                    source_text,\n                    r\"\\b\" + re.escape(symbol) + r\"\\b\",\n                    row[\"path\"] + \": \" + symbol,\n                )\n'''
-    if not native_tests_path.is_file() or native_tests_path.read_text(
-        encoding="utf-8"
-    ) != native_tests:
-        native_tests_path.write_text(native_tests, encoding="utf-8")
-        changed.append(native_tests_path.relative_to(ROOT).as_posix())
-
-    harness_path = (
-        ROOT / "qualification/module-execution-dossiers/test_implementation_contracts.py"
-    )
-    harness = '''\"\"\"Qualification-only implementation contract test suite.\"\"\"\nfrom implementation_contract_tests_core import *  # noqa: F403\nfrom implementation_contract_tests_system import *  # noqa: F403\nfrom implementation_contract_tests_native import *  # noqa: F403\n\nif __name__ == \"__main__\":\n    import unittest\n\n    unittest.main()\n'''
-    if harness_path.read_text(encoding="utf-8") != harness:
-        harness_path.write_text(harness, encoding="utf-8")
-        changed.append(harness_path.relative_to(ROOT).as_posix())
-
-    return {"changed": changed, "count": len(changed)}
-
-
-def repair_argument_comment_blockers() -> dict[str, Any]:
-'''
-          replace_once_or_verify(
-              repair_marker,
-              repair_function,
-              "def repair_lane_g_shared_artifacts()",
-          )
-          replace_once_or_verify(
-              '''    generator_receipts = run_generators()
-    native_before = repair_native_bindings()
-''',
-              '''    generator_receipts = run_generators()
-    lane_g_artifact_repair = repair_lane_g_shared_artifacts()
-    native_before = repair_native_bindings()
-''',
-              "lane_g_artifact_repair = repair_lane_g_shared_artifacts()",
-          )
-          replace_once_or_verify(
-              '''        "generatorReceipts": generator_receipts,
-        "nativeBindingBefore": native_before,
-''',
-              '''        "generatorReceipts": generator_receipts,
-        "laneGArtifactRepair": lane_g_artifact_repair,
-        "nativeBindingBefore": native_before,
-''',
-              '"laneGArtifactRepair": lane_g_artifact_repair',
-          )
-
-          required_cycle_safety = (
-              "def workspace_dependency_graph(",
-              "def dependency_cycle_path(",
-              '"skippedCycleCount": len(skipped_cycles)',
-          )
-          for phrase in required_cycle_safety:
-              if phrase not in text:
-                  raise SystemExit(f"cycle-safe dependency repair missing: {phrase}")
-
-          path.write_text(text, encoding="utf-8")
-          PY
-          python3 -m py_compile "${FINALIZER}"
+          python3 "${PATCH_SCRIPT}"
+          python3 -m py_compile "${FINALIZER}" "${PATCH_SCRIPT}"
+          grep -Fq 'LANE_G_SHARED_CONFLICTS = frozenset(' "${FINALIZER}"
+          grep -Fq 'autoResolvedLaneGSharedOnly' "${FINALIZER}"
+          grep -Fq 'lane_g_artifact_repair = repair_lane_g_shared_artifacts()' "${FINALIZER}"
+          grep -Fq 'path == ".github/workflows/lane-f-bootstrap.yml"' "${FINALIZER}"
+          grep -Fq 'def dependency_cycle_path(' "${FINALIZER}"
           git diff --check
 
       - name: Publish exact patched controller and dispatch r7
@@ -297,18 +63,14 @@ def repair_argument_comment_blockers() -> dict[str, Any]:
           set -euo pipefail
           git config user.name 'hepta-global-finalizer-patcher'
           git config user.email 'actions@users.noreply.github.com'
-          git rm \
-            .github/workflows/patch-global-finalizer-r13.yml \
-            scripts/patch-global-finalizer-r13.py \
-            .github/workflows/patch-global-finalizer-r14.yml
+          git rm .github/workflows/patch-global-finalizer-r13.yml
+          git rm scripts/patch-global-finalizer-r13.py
+          git rm .github/workflows/patch-global-finalizer-r14.yml
+          git rm "${PATCH_SCRIPT}"
           git add "${FINALIZER}"
           git diff --cached --check
           git commit --signoff -m 'fix(hepta): semantically converge Lane G shared dossiers'
           remote_sha="$(git ls-remote origin "refs/heads/${TARGET_BRANCH}" | awk '{print $1}')"
           test "${remote_sha}" = "${GITHUB_SHA}"
-          git push \
-            --force-with-lease="refs/heads/${TARGET_BRANCH}:${GITHUB_SHA}" \
-            origin "HEAD:refs/heads/${TARGET_BRANCH}"
-          gh workflow run hepta-global-finalizer-r7.yml \
-            --repo "${GITHUB_REPOSITORY}" \
-            --ref "${TARGET_BRANCH}"
+          git push --force-with-lease="refs/heads/${TARGET_BRANCH}:${GITHUB_SHA}" origin "HEAD:refs/heads/${TARGET_BRANCH}"
+          gh workflow run hepta-global-finalizer-r7.yml --repo "${GITHUB_REPOSITORY}" --ref "${TARGET_BRANCH}"
