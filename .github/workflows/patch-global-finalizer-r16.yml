@@ -1,0 +1,85 @@
+name: patch-global-finalizer-r16
+
+on:
+  push:
+    branches:
+      - ops/hepta-global-gap-closure-controller-20260910-r1
+    paths:
+      - .github/workflows/patch-global-finalizer-r16.yml
+
+permissions:
+  contents: write
+  actions: write
+
+concurrency:
+  group: patch-global-finalizer-r16
+  cancel-in-progress: false
+
+jobs:
+  patch:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      EXPECTED_PARENT: 31ad3ca21109a34cd70769ba336a78d3a49ec246
+      TARGET_BRANCH: ops/hepta-global-gap-closure-controller-20260910-r1
+      TARGET_CANDIDATE: integration/hepta-all-gap-closure-20260910-r7
+      FINALIZER: scripts/hepta-global-finalizer-r7.py
+      PATCH_SCRIPT: scripts/patch-global-finalizer-r16.py
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - name: Check out exact one-shot source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Verify immutable patch tuple
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "${GITHUB_REF_NAME}" = "${TARGET_BRANCH}"
+          test "$(git rev-parse HEAD^)" = "${EXPECTED_PARENT}"
+          test "$(git rev-parse HEAD:.github/workflows/patch-global-finalizer-r16.yml)" = "$(git hash-object .github/workflows/patch-global-finalizer-r16.yml)"
+          test "$(git rev-parse HEAD:${PATCH_SCRIPT})" = "$(git hash-object "${PATCH_SCRIPT}")"
+          test "$(git ls-remote origin "refs/heads/${TARGET_BRANCH}" | awk '{print $1}')" = "${GITHUB_SHA}"
+
+      - name: Apply and validate native aggregation repair
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m py_compile "${PATCH_SCRIPT}"
+          python3 "${PATCH_SCRIPT}"
+          python3 -m py_compile "${FINALIZER}"
+          grep -Fq 'repair_lane_g_shared_artifacts(selected)' "${FINALIZER}"
+          grep -Fq 'seed_ref = "origin/codex/hepta-native-source-closed-world-20260909"' "${FINALIZER}"
+          grep -Fq 'aggregated[module] = dict(row)' "${FINALIZER}"
+          grep -Fq 'aggregated["control.engineering"] = {' "${FINALIZER}"
+          grep -Fq 'output_document["moduleCoverage"] = 40' "${FINALIZER}"
+          grep -Fq 'fallbackModules' "${FINALIZER}"
+          git diff --check
+
+      - name: Publish clean controller and dispatch r7
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'hepta-global-finalizer-patcher'
+          git config user.email 'actions@users.noreply.github.com'
+          git rm --ignore-unmatch \
+            .github/workflows/patch-global-finalizer-r16.yml \
+            scripts/patch-global-finalizer-r16.py
+          git add "${FINALIZER}"
+          git diff --cached --check
+          git diff --cached --name-only | grep -Fxq "${FINALIZER}"
+          git commit --signoff -m 'fix(hepta): aggregate all 40 native rows by primary lane'
+          remote_sha="$(git ls-remote origin "refs/heads/${TARGET_BRANCH}" | awk '{print $1}')"
+          test "${remote_sha}" = "${GITHUB_SHA}"
+          git push --force-with-lease="refs/heads/${TARGET_BRANCH}:${GITHUB_SHA}" origin "HEAD:refs/heads/${TARGET_BRANCH}"
+          clean_sha="$(git rev-parse HEAD)"
+          test "$(git ls-remote origin "refs/heads/${TARGET_BRANCH}" | awk '{print $1}')" = "${clean_sha}"
+          gh workflow run hepta-global-finalizer-r7.yml \
+            --repo "${GITHUB_REPOSITORY}" \
+            --ref "${TARGET_BRANCH}" \
+            --field target_branch="${TARGET_CANDIDATE}" \
+            --field shard_count='8'
