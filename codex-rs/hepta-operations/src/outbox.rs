@@ -6,12 +6,23 @@ use codex_hepta_types::StableId;
 
 use crate::OperationError;
 
+pub const MAX_MODEL_OUTBOX_RECORDS: usize = 16_384;
+
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct OutboxIntent {
     pub intent_id: StableId,
     pub operation_id: StableId,
     pub destination: StableId,
     pub payload_digest: Digest32,
+}
+
+impl OutboxIntent {
+    fn validate(&self) -> Result<(), OperationError> {
+        if self.payload_digest.is_zero() {
+            return Err(OperationError::InvalidDigest("outbox payload"));
+        }
+        Ok(())
+    }
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -27,18 +38,44 @@ struct OutboxRecord {
     state: OutboxState,
 }
 
-#[derive(Clone, Debug, Default, Eq, PartialEq)]
+/// Bounded in-memory outbox reference model.
+///
+/// Claims do not expire or survive process exit. A durable implementation must
+/// add transactional persistence, claim leases and crash/reopen takeover.
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub struct Outbox {
     records: BTreeMap<StableId, OutboxRecord>,
+    maximum_records: usize,
+}
+
+impl Default for Outbox {
+    fn default() -> Self {
+        Self::new(MAX_MODEL_OUTBOX_RECORDS)
+    }
 }
 
 impl Outbox {
+    #[must_use]
+    pub fn new(maximum_records: usize) -> Self {
+        Self {
+            records: BTreeMap::new(),
+            maximum_records: maximum_records.min(MAX_MODEL_OUTBOX_RECORDS),
+        }
+    }
+
     pub fn enqueue(&mut self, intent: OutboxIntent) -> Result<(), OperationError> {
+        intent.validate()?;
         if let Some(existing) = self.records.get(&intent.intent_id) {
             if existing.intent == intent {
                 return Ok(());
             }
             return Err(OperationError::Conflict(intent.intent_id));
+        }
+        if self.records.len() >= self.maximum_records {
+            return Err(OperationError::CapacityExceeded {
+                resource: "reference outbox",
+                maximum: self.maximum_records,
+            });
         }
         self.records.insert(
             intent.intent_id.clone(),
@@ -78,6 +115,9 @@ impl Outbox {
         owner_generation: Generation,
         acknowledgement_digest: Digest32,
     ) -> Result<(), OperationError> {
+        if acknowledgement_digest.is_zero() {
+            return Err(OperationError::InvalidDigest("outbox acknowledgement"));
+        }
         let record = self
             .records
             .get_mut(intent_id)
@@ -102,6 +142,14 @@ impl Outbox {
 
     pub fn state(&self, intent_id: &StableId) -> Option<&OutboxState> {
         self.records.get(intent_id).map(|record| &record.state)
+    }
+
+    pub fn len(&self) -> usize {
+        self.records.len()
+    }
+
+    pub fn is_empty(&self) -> bool {
+        self.records.is_empty()
     }
 }
 

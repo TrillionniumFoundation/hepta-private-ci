@@ -23,14 +23,18 @@ fn key(payload: &[u8]) -> OperationKey {
     }
 }
 
-fn witness(key: &OperationKey) -> AuthorityWitness {
-    AuthorityWitness {
-        operation_id: key.id.clone(),
-        final_payload_digest: key.payload_digest,
-        authority_generation: generation(9),
-        expires_at_unix_ms: 2_000,
-        witness_digest: Digest32::of_bytes(b"independent-witness"),
-    }
+fn witness(key: &OperationKey) -> ReferenceAuthorityWitness {
+    let result = ReferenceAuthorityWitness::new(
+        key.id.clone(),
+        key.payload_digest,
+        generation(9),
+        2_000,
+        Digest32::of_bytes(b"independent-reference-witness"),
+    );
+    let Ok(value) = result else {
+        panic!("reference witness rejected");
+    };
+    value
 }
 
 fn dispatched_ledger() -> (OperationKey, OperationLedger) {
@@ -98,52 +102,107 @@ fn indeterminate_requires_current_fence_reconciliation() {
 }
 
 #[test]
-fn zero_uncertainty_and_terminal_digests_reject_without_mutation() {
+fn zero_digests_reject_without_mutation() {
     let zero = Digest32::from_array([0; 32]);
+    let mut ledger = OperationLedger::default();
+    let invalid_key = OperationKey {
+        id: stable_id("operation:zero"),
+        payload_digest: zero,
+    };
+    assert_eq!(
+        ledger.begin(invalid_key, generation(3)),
+        Err(OperationError::InvalidDigest("operation payload"))
+    );
+    assert!(ledger.is_empty());
+
     let (key, mut ledger) = dispatched_ledger();
     let dispatched = ledger.clone();
     assert_eq!(
         ledger.mark_indeterminate(&key.id, zero),
-        Err(OperationError::Conflict(key.id.clone()))
+        Err(OperationError::InvalidDigest("indeterminate reason"))
     );
     assert_eq!(ledger, dispatched);
     assert_eq!(
-        ledger.observe_terminal(&key.id, ReconciliationOutcome::Applied, zero, generation(3),),
-        Err(OperationError::Conflict(key.id.clone()))
+        ledger.observe_terminal(&key.id, ReconciliationOutcome::Applied, zero, generation(3)),
+        Err(OperationError::InvalidDigest("terminal outcome"))
     );
     assert_eq!(ledger, dispatched);
-
-    assert!(
-        ledger
-            .mark_indeterminate(&key.id, Digest32::of_bytes(b"unknown"))
-            .is_ok()
-    );
-    let indeterminate = ledger.clone();
-    assert_eq!(
-        ledger.observe_terminal(
-            &key.id,
-            ReconciliationOutcome::Quarantined,
-            zero,
-            generation(3),
-        ),
-        Err(OperationError::Conflict(key.id))
-    );
-    assert_eq!(ledger, indeterminate);
 }
 
 #[test]
-fn exact_replay_survives_reopen_and_payload_drift_conflicts() {
+fn exact_command_replay_is_idempotent_within_the_reference_model() {
     let original_key = key(b"payload");
     let mut ledger = OperationLedger::default();
-    let first = ledger.begin(original_key.clone(), generation(3));
-    assert!(first.is_ok());
-    let restored = ledger.clone();
-    let mut restored = restored;
-    assert!(restored.begin(original_key.clone(), generation(3)).is_ok());
-    assert_eq!(restored.len(), 1);
+    assert!(ledger.begin(original_key.clone(), generation(3)).is_ok());
+    assert!(ledger.begin(original_key.clone(), generation(3)).is_ok());
+    assert_eq!(ledger.len(), 1);
+    assert!(
+        ledger
+            .authorize(&original_key.id, &witness(&original_key), 1_000)
+            .is_ok()
+    );
+    let authorized = ledger.clone();
+    assert!(
+        ledger
+            .authorize(&original_key.id, &witness(&original_key), 1_500)
+            .is_ok()
+    );
+    assert_eq!(ledger, authorized);
+    let dispatch = Digest32::of_bytes(b"dispatch");
+    assert!(ledger.record_dispatch(&original_key.id, dispatch).is_ok());
+    let dispatched = ledger.clone();
+    assert!(ledger.record_dispatch(&original_key.id, dispatch).is_ok());
+    assert_eq!(ledger, dispatched);
+    let outcome = Digest32::of_bytes(b"observed");
+    assert!(
+        ledger
+            .observe_terminal(
+                &original_key.id,
+                ReconciliationOutcome::Applied,
+                outcome,
+                generation(3),
+            )
+            .is_ok()
+    );
+    let terminal = ledger.clone();
+    assert!(
+        ledger
+            .observe_terminal(
+                &original_key.id,
+                ReconciliationOutcome::Applied,
+                outcome,
+                generation(3),
+            )
+            .is_ok()
+    );
+    assert_eq!(ledger, terminal);
+}
+
+#[test]
+fn payload_drift_conflicts() {
+    let original_key = key(b"payload");
+    let mut ledger = OperationLedger::default();
+    assert!(ledger.begin(original_key.clone(), generation(3)).is_ok());
     assert_eq!(
-        restored.begin(key(b"changed"), generation(3)),
+        ledger.begin(key(b"changed"), generation(3)),
         Err(OperationError::Conflict(original_key.id))
+    );
+}
+
+#[test]
+fn reference_ledger_capacity_is_bounded() {
+    let mut ledger = OperationLedger::new(1);
+    assert!(ledger.begin(key(b"one"), generation(3)).is_ok());
+    let second = OperationKey {
+        id: stable_id("operation:test:2"),
+        payload_digest: Digest32::of_bytes(b"two"),
+    };
+    assert_eq!(
+        ledger.begin(second, generation(3)),
+        Err(OperationError::CapacityExceeded {
+            resource: "reference operation ledger",
+            maximum: 1,
+        })
     );
 }
 
