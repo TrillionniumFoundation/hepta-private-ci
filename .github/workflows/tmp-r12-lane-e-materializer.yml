@@ -1,0 +1,86 @@
+name: Temporary r12 Lane E materializer
+
+on:
+  push:
+    branches:
+      - "ops/r12-lane-e-materializer-20260910"
+
+permissions:
+  contents: write
+
+jobs:
+  materialize:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Check out exact r12 target
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: integration/hepta-all-gap-closure-20260910-r12
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Apply exact Lane E semantic delta
+        env:
+          EXPECTED_TARGET: 09b34685f020cfc44d7c7f1f4e2f435adfb3d990
+          LANE_E_HEAD: 42b24ed1a5ff0daedd2593b98d439af322b8045c
+          TARGET_BRANCH: integration/hepta-all-gap-closure-20260910-r12
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_TARGET"
+          test -z "$(git status --porcelain)"
+          git fetch --no-tags origin "$LANE_E_HEAD"
+
+          cat >"$RUNNER_TEMP/lane-e-owned.txt" <<'EOF'
+          codex-rs/hepta-intelligence-eval/NATIVE_MAPPING.md
+          codex-rs/hepta-intelligence-eval/src/closure.rs
+          codex-rs/hepta-intelligence-eval/src/closure_tests.rs
+          codex-rs/hepta-intelligence-eval/src/lib.rs
+          codex-rs/hepta-intelligence-eval/tests/operator_claim.rs
+          codex-rs/hepta-shadow-qualification/src/lane_e_closure_tests.rs
+          docs/lane-e/END_TO_END_LEARNING_SEQUENCE.md
+          docs/lane-e/LANE_E_IMPLEMENTATION_MATRIX.json
+          qualification/lane-e/TEST_TRACEABILITY.json
+          qualification/module-execution-dossiers/detail/learning.eval.md
+          scripts/hepta-lane-e-closure.py
+          EOF
+          sed -i 's/^          //' "$RUNNER_TEMP/lane-e-owned.txt"
+
+          while IFS= read -r path; do
+            git cat-file -e "$LANE_E_HEAD:$path"
+            git checkout "$LANE_E_HEAD" -- "$path"
+          done <"$RUNNER_TEMP/lane-e-owned.txt"
+
+          python3 - <<'PY'
+          import hashlib
+          import json
+          from pathlib import Path
+
+          index_path = Path("qualification/module-execution-dossiers/DETAILS.json")
+          detail_path = Path("qualification/module-execution-dossiers/detail/learning.eval.md")
+          data = json.loads(index_path.read_text(encoding="utf-8"))
+          digest = hashlib.sha256(detail_path.read_bytes()).hexdigest()
+          matches = [row for row in data["rows"] if row["module"] == "learning.eval"]
+          if len(matches) != 1:
+              raise SystemExit(f"expected one learning.eval row, found {len(matches)}")
+          matches[0]["sha256"] = digest
+          index_path.write_text(
+              json.dumps(data, ensure_ascii=False, separators=(",", ":")) + "\n",
+              encoding="utf-8",
+          )
+          PY
+          git add qualification/module-execution-dossiers/DETAILS.json
+
+          cat "$RUNNER_TEMP/lane-e-owned.txt" >"$RUNNER_TEMP/expected.txt"
+          echo qualification/module-execution-dossiers/DETAILS.json >>"$RUNNER_TEMP/expected.txt"
+          sort -o "$RUNNER_TEMP/expected.txt" "$RUNNER_TEMP/expected.txt"
+          git diff --cached --name-only | sort >"$RUNNER_TEMP/actual.txt"
+          diff -u "$RUNNER_TEMP/expected.txt" "$RUNNER_TEMP/actual.txt"
+          git diff --cached --check
+          git config user.name 'Hepta r12 integrator'
+          git config user.email 'hepta-r12-integrator@users.noreply.github.com'
+          git commit -m 'feat(r12): absorb Lane E semantic holdout closure'
+          test "$(git rev-list --parents -n1 HEAD | awk '{print NF}')" -eq 2
+          git push origin "HEAD:$TARGET_BRANCH"
