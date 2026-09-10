@@ -492,13 +492,13 @@ def repair_argument_comment_blockers() -> dict[str, Any]:
         (
             Path("codex-rs/http-client/src/tls_backend_fallback.rs"),
             "walk_error_chain(error, 0, &mut |error| {",
-            "walk_error_chain(error, /* depth */ 0, &mut |error| {",
+            "walk_error_chain(error, /*depth*/ 0, &mut |error| {",
             2,
         ),
         (
             Path("codex-rs/hepta-runtime/src/organs.rs"),
             "Generation::new(1)?",
-            "Generation::new(/* value */ 1)?",
+            "Generation::new(/*value*/ 1)?",
             1,
         ),
     )
