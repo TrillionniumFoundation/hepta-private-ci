@@ -38,11 +38,7 @@ pub fn admit_manifest_at_withdrawal_head_v3(
         return Err(ArtifactAdmissionError::WithdrawalHeadChanged);
     }
     let validated_manifest = registry.admit_manifest(manifest, now)?;
-    let admission_digest = digest_admission(
-        validated_manifest.manifest_digest,
-        observed_head,
-        now,
-    );
+    let admission_digest = digest_admission(validated_manifest.manifest_digest, observed_head, now);
     Ok(WithdrawalBoundArtifactAdmissionV3 {
         validated_manifest,
         withdrawal_head_digest: observed_head,
@@ -66,10 +62,8 @@ pub fn verify_artifact_admission_v3(
     if admission.admitted_at > now {
         return Err(ArtifactAdmissionError::AdmissionTimeWindow);
     }
-    let revalidated = validate_artifact_manifest_v2(
-        admission.validated_manifest.manifest.clone(),
-        now,
-    )?;
+    let revalidated =
+        validate_artifact_manifest_v2(admission.validated_manifest.manifest.clone(), now)?;
     if revalidated.manifest_digest != admission.validated_manifest.manifest_digest {
         return Err(ArtifactAdmissionError::ManifestDigestMismatch);
     }
@@ -186,13 +180,9 @@ mod tests {
     fn art_05_admission_binds_exact_withdrawal_head() {
         let registry = DatasetWithdrawalRegistry::new();
         let head = registry.snapshot().head_digest;
-        let admission = admit_manifest_at_withdrawal_head_v3(
-            &registry,
-            head,
-            manifest(digest("dataset")),
-            20,
-        )
-        .expect("admission succeeds");
+        let admission =
+            admit_manifest_at_withdrawal_head_v3(&registry, head, manifest(digest("dataset")), 20)
+                .expect("admission succeeds");
         validate_artifact_publication_v3(&admission, &registry, 20)
             .expect("unchanged head remains valid");
         assert!(!admission.authority.grants_any());

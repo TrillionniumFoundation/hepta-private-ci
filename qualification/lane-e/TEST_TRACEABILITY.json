@@ -12,7 +12,8 @@
       "requirement": "Acknowledgement loss reconciles the committed event from its original identity and anchor.",
       "tests": [
         {"source": "codex-rs/hepta-learning-ledger/src/durable_tests.rs", "function": "full_unacknowledged_frame_is_synced_and_deduplicated_on_recover"},
-        {"source": "codex-rs/hepta-learning-ledger/src/durable_tests.rs", "function": "failed_write_poisons_memory_and_requires_recovery"}
+        {"source": "codex-rs/hepta-learning-ledger/src/durable_tests.rs", "function": "failed_write_poisons_memory_and_requires_recovery"},
+        {"source": "codex-rs/hepta-learning-ledger/src/durable_tests.rs", "function": "unacknowledged_partial_tail_recovers_exact_predecessor_at_every_cut"}
       ],
       "status": "native_test_mapped"
     },
@@ -32,7 +33,8 @@
       "requirement": "Generator and observer independence uses principal, credential-chain and signing-key identity.",
       "tests": [
         {"source": "codex-rs/hepta-learning-ledger/src/causal_v2_tests.rs", "function": "ledger_03_rejects_shared_credential_chain"},
-        {"source": "codex-rs/hepta-learning-ledger/src/shadow_tests.rs", "function": "shadow_bridge_does_not_weaken_independent_terminal_outcome_rules"}
+        {"source": "codex-rs/hepta-learning-ledger/src/shadow_tests.rs", "function": "shadow_bridge_does_not_weaken_independent_terminal_outcome_rules"},
+        {"source": "codex-rs/hepta-learning-ledger/src/causal_v2_tests.rs", "function": "ledger_candidate_receipt_binds_generator_relative_completeness"}
       ],
       "status": "native_test_mapped"
     },
@@ -43,6 +45,7 @@
       "tests": [
         {"source": "codex-rs/hepta-learning-ledger/src/causal_v2_tests.rs", "function": "ledger_04_validates_terminal_watermark_and_correction_lineage"},
         {"source": "codex-rs/hepta-learning-ledger/src/causal_v2_tests.rs", "function": "ledger_dataset_freeze_is_order_independent_and_rejects_duplicates"},
+        {"source": "codex-rs/hepta-learning-ledger/src/causal_v2_tests.rs", "function": "ledger_credit_batch_enforces_conservation"},
         {"source": "codex-rs/hepta-learning-ledger/src/durable_tests.rs", "function": "persisted_causal_events_replay_exact_core_and_revocation_excludes_descendants"}
       ],
       "status": "native_test_mapped"
@@ -138,7 +141,8 @@
       "tests": [
         {"source": "codex-rs/hepta-intelligence-eval/src/sequential_tests.rs", "function": "deep_ess_and_joint_scope_cannot_inherit_a_weaker_local_floor"},
         {"source": "codex-rs/hepta-intelligence-eval/src/sequential_tests.rs", "function": "exact_depth_ess_floor_cannot_be_weakened_by_q32_rounding"},
-        {"source": "codex-rs/hepta-intelligence-eval/src/closure_tests.rs", "function": "eval_03_intersects_superiority_safety_retention_and_unlearning"}
+        {"source": "codex-rs/hepta-intelligence-eval/src/closure_tests.rs", "function": "eval_03_intersects_superiority_safety_retention_and_unlearning"},
+        {"source": "codex-rs/hepta-intelligence-eval/src/closure_tests.rs", "function": "evaluation_fails_candidate_when_interval_or_floor_does_not_pass"}
       ],
       "status": "native_test_mapped"
     },
@@ -172,7 +176,8 @@
       "requirement": "Create-only identity reuse with changed bytes conflicts and exact retry is idempotent.",
       "tests": [
         {"source": "codex-rs/hepta-learning-artifacts/src/registry_tests.rs", "function": "registration_is_immutable_and_idempotent"},
-        {"source": "codex-rs/hepta-learning-artifacts/src/registry_tests.rs", "function": "event_identity_reuse_with_drift_fails"}
+        {"source": "codex-rs/hepta-learning-artifacts/src/registry_tests.rs", "function": "event_identity_reuse_with_drift_fails"},
+        {"source": "codex-rs/hepta-learning-artifacts/src/closure_v2_tests.rs", "function": "art_01_manifest_v2_normalizes_complete_lineage"}
       ],
       "status": "native_test_mapped"
     },
@@ -194,7 +199,8 @@
       "tests": [
         {"source": "codex-rs/hepta-learning-artifacts/src/storage_tests.rs", "function": "payload_corruption_and_invalid_receipt_reject"},
         {"source": "codex-rs/hepta-learning-artifacts/src/storage_tests.rs", "function": "every_truncation_and_wrong_external_witness_rejects_without_repair"},
-        {"source": "codex-rs/hepta-learning-artifacts/src/pinned_tests.rs", "function": "objective_and_compatibility_drift_are_pin_mismatches"}
+        {"source": "codex-rs/hepta-learning-artifacts/src/pinned_tests.rs", "function": "objective_and_compatibility_drift_are_pin_mismatches"},
+        {"source": "codex-rs/hepta-learning-artifacts/src/closure_v2_tests.rs", "function": "artifact_manifest_rejects_duplicate_lineage_and_missing_rollback_parent"}
       ],
       "status": "native_test_mapped"
     },
@@ -205,7 +211,8 @@
       "tests": [
         {"source": "codex-rs/hepta-learning-artifacts/src/pinned_tests.rs", "function": "revoked_ancestor_blocks_loading"},
         {"source": "codex-rs/hepta-learning-artifacts/src/dataset_revocation_tests.rs", "function": "persisted_batch_reopens_and_blocks_candidate_but_keeps_clean_rollback"},
-        {"source": "codex-rs/hepta-learning-artifacts/src/closure_v2_tests.rs", "function": "art_03_registry_head_witness_rejects_rollback"}
+        {"source": "codex-rs/hepta-learning-artifacts/src/closure_v2_tests.rs", "function": "art_03_registry_head_witness_rejects_rollback"},
+        {"source": "codex-rs/hepta-learning-artifacts/src/closure_v2_tests.rs", "function": "art_04_lifecycle_forbids_self_selection_and_state_skips"}
       ],
       "status": "native_test_mapped"
     },

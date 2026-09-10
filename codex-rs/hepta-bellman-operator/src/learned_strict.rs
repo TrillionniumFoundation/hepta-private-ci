@@ -46,9 +46,7 @@ pub fn predict_tabular_operator_indexed_v2(
     }
     let index = artifact
         .cells
-        .binary_search_by(|cell| {
-            (&cell.sensor_id, &cell.action_id).cmp(&(sensor_id, action_id))
-        })
+        .binary_search_by(|cell| (&cell.sensor_id, &cell.action_id).cmp(&(sensor_id, action_id)))
         .map_err(|_| StrictLearnedOperatorError::UnsupportedCell)?;
     let cell = &artifact.cells[index];
     Ok(TabularOperatorPredictionV1 {
@@ -159,12 +157,9 @@ mod tests {
     #[test]
     fn op_05_indexed_prediction_uses_canonical_grid() {
         let artifact = fit_tabular_operator_strict_v2(plan()).expect("strict fit succeeds");
-        let prediction = predict_tabular_operator_indexed_v2(
-            &artifact,
-            &id("sensor-b"),
-            &id("action-a"),
-        )
-        .expect("supported cell");
+        let prediction =
+            predict_tabular_operator_indexed_v2(&artifact, &id("sensor-b"), &id("action-a"))
+                .expect("supported cell");
         assert_eq!(prediction.value, FixedQ32::from_raw(30));
         assert!(prediction.synthetic);
         assert!(!prediction.authority.grants_any());

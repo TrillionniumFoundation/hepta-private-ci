@@ -182,7 +182,8 @@ impl ArtifactLifecycleJournalV2 {
         };
         self.states
             .insert(event.artifact_id.clone(), event.next_state);
-        self.event_digests.insert(event.event_id.clone(), event_digest);
+        self.event_digests
+            .insert(event.event_id.clone(), event_digest);
         self.records.push(record);
         self.head_digest = chain_digest;
         Ok(ArtifactLifecycleJournalReceiptV2 {
@@ -224,7 +225,8 @@ impl ArtifactLifecycleJournalV2 {
                 .records
                 .last()
                 .ok_or(ArtifactLifecycleJournalError::InternalInvariant)?;
-            if receipt.disposition != LifecycleAppendDispositionV2::Appended || actual != &expected {
+            if receipt.disposition != LifecycleAppendDispositionV2::Appended || actual != &expected
+            {
                 return Err(ArtifactLifecycleJournalError::SnapshotMismatch);
             }
         }
@@ -362,10 +364,7 @@ mod tests {
         Digest32::of_bytes(value.as_bytes())
     }
 
-    fn actor(
-        actor_id: &str,
-        role: LifecycleActorRoleV2,
-    ) -> LifecycleActorEvidenceV2 {
+    fn actor(actor_id: &str, role: LifecycleActorRoleV2) -> LifecycleActorEvidenceV2 {
         LifecycleActorEvidenceV2 {
             actor_id: id(actor_id),
             credential_digest: digest(&format!("credential-{actor_id}")),

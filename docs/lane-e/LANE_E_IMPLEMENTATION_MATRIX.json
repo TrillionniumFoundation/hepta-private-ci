@@ -106,7 +106,7 @@
       "compatibility": "existing_estimators_retained_with_predecessor_bound_replayable_holdout_journal_additive",
       "operations": [
         {"operation": "estimate_ope", "nativeSymbol": "codex_hepta_intelligence_eval::estimate_ope", "source": "codex-rs/hepta-intelligence-eval/src/ope.rs", "status": "implemented_existing"},
-        {"operation": "estimate_cluster_intervals", "nativeSymbol": "codex_hepta_intelligence_eval::estimate_cluster_intervals", "source": "codex-rs/hepta-intelligence-eval/src/ope.rs", "status": "implemented_existing"},
+        {"operation": "estimate_cluster_intervals", "nativeSymbol": "codex_hepta_intelligence_eval::estimate_cluster_intervals", "source": "codex-rs/hepta-intelligence-eval/src/ope_confidence.rs", "status": "implemented_existing"},
         {"operation": "estimate_sequential", "nativeSymbol": "codex_hepta_intelligence_eval::estimate_sequential", "source": "codex-rs/hepta-intelligence-eval/src/sequential.rs", "status": "implemented_existing"},
         {"operation": "fit_temporal_fold", "nativeSymbol": "codex_hepta_intelligence_eval::fit_temporal_fold", "source": "codex-rs/hepta-intelligence-eval/src/temporal_fold.rs", "status": "implemented_existing"},
         {"operation": "evaluate_temporal_holdout", "nativeSymbol": "codex_hepta_intelligence_eval::evaluate_temporal_holdout", "source": "codex-rs/hepta-intelligence-eval/src/temporal_evaluation.rs", "status": "implemented_existing"},

@@ -291,8 +291,8 @@ mod tests {
         let first = journal
             .consume(Digest32::ZERO, &plan)
             .expect("first consume succeeds");
-        let reopened = FinalHoldoutJournalV1::from_snapshot(journal.snapshot())
-            .expect("snapshot reopens");
+        let reopened =
+            FinalHoldoutJournalV1::from_snapshot(journal.snapshot()).expect("snapshot reopens");
         assert_eq!(reopened.head_digest(), first.head_digest);
         assert_eq!(reopened.records().len(), 1);
     }
