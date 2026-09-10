@@ -16,7 +16,7 @@ permissions:
 
 concurrency:
   group: hepta-candidate-publisher-r12
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   publish:
