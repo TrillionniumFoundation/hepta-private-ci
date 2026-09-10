@@ -1,66 +1,80 @@
 # learning.eval: implementation design
 
 Parent: `docs/modules/learning.eval/TECHNICAL.md`. Lane: `LANE-E-LEARNING`.
-Status: point, cluster, sequential, temporal, cross-fold and independent-decision source candidate implemented; current exact-head and synthetic-merge CI determine source qualification, while real future-window and independent acceptance evidence remain separate. Common requirements: `../EXECUTION_SEMANTICS.md` and `../TECHNICAL.md`. Canonical ownership and package predecessors are unchanged.
+Status: point, cluster, sequential, temporal, cross-fold and independent-decision source candidate implemented; exact-head and ordered-base synthetic-merge CI determine source qualification. Common requirements: `../EXECUTION_SEMANTICS.md`, `../TECHNICAL.md` and `../../../docs/engineering/MODULE_ENGINEERING_STANDARD.md`.
 
 ## 1. Source and work envelope
 
-Roots: `codex-rs/hepta-intelligence-eval`.
+Root: `codex-rs/hepta-intelligence-eval`.
 Packages: `LRN-2-CAUSAL-EVALUATION`, `LONG-1-TEMPORAL-HOLDOUT`, `LONG-2-RETENTION-FORGETTING`, `LONG-3-UNLEARNING-NON-RESURRECTION`.
 
-Concrete source mappings are recorded in `../../../codex-rs/hepta-intelligence-eval/NATIVE_MAPPING.md` and `../../../docs/lane-e/LANE_E_IMPLEMENTATION_MATRIX.json`. Preserve existing estimators and APIs; do not create another authority or execution spine.
+Concrete mappings are recorded in `../../../codex-rs/hepta-intelligence-eval/NATIVE_MAPPING.md` and `../../../docs/lane-e/LANE_E_IMPLEMENTATION_MATRIX.json`. Estimation, eligibility, selection and release remain separate authorities.
 
 ## 2. Public operations and contract details
 
-`estimate_ope(plan, rows) -> OpeEstimate`; `estimate_cluster_intervals(plan, rows, assignments) -> ClusterOpeEstimate`; `estimate_sequential(plan, trajectories) -> SequentialEstimate`; `fit_temporal_fold(plan, training, targets) -> TemporalFoldReceipt`; `evaluate_temporal_holdout(plan, training, targets, observations, assignments) -> TemporalEvaluationReceipt`; `freeze_cross_fold_plan(plan) -> CrossFoldPlanReceiptV1`; `FinalHoldoutRegistry::consume(&frozen_plan_receipt) -> HoldoutUseReceiptV1`; `decide_independently(bundle) -> IndependentEvaluationDecisionV1`.
+The authoritative operation set includes:
 
-The estimand class is mandatory. A single-decision estimate cannot certify a long-horizon policy. Estimator receipts and the independent eligibility decision are separate outputs; neither selects or releases an artifact.
+- `estimate_ope` and `estimate_cluster_intervals`;
+- `estimate_sequential`;
+- `fit_temporal_fold` and `evaluate_temporal_holdout`;
+- `freeze_cross_fold_plan`;
+- `FinalHoldoutRegistry::consume`;
+- `FinalHoldoutJournalV1::consume` and `FinalHoldoutJournalV1::from_snapshot`;
+- `decide_independently`.
+
+The estimand class is mandatory. A single-decision estimate cannot certify a long-horizon policy. Point estimates, confidence evidence, independent eligibility, artifact selection and release are distinct outputs.
 
 ## 3. State records and transaction design
 
-Analysis outputs are immutable evidence with plan/data/code/model IDs, eligibility/censoring counts, estimator, support, cluster definition, intervals, multiplicity, resource/retention/privacy results and issuer identity. Durable publication uses the designated evidence owner or an explicitly bound existing evaluation store, not an undeclared production writer. Generator hidden tests and final holdouts remain access-separated.
+Evaluation records bind plan, data, code, model, eligibility/censoring counts, estimator, support, cluster definition, intervals, multiplicity, retention/privacy/unlearning evidence and issuer identity. Generator hidden tests and final holdouts remain access-separated.
 
-`CrossFoldPlanV1` binds two to thirty-two canonical folds, each with disjoint training and holdout principal, episode and window lineages. It also binds claim scope, candidate and baseline identities, objective, dataset, estimand, metric directions and safety floors, multiplicity, final-holdout window and final-holdout digest. The final holdout cannot appear in training and must occur in exactly one holdout fold. `freeze_cross_fold_plan` emits a deterministic sealed receipt; the seal detects post-freeze mutation but is not issuer authentication.
+`CrossFoldPlanV1` binds two to thirty-two canonical folds with disjoint training and holdout principal, episode and window lineages. It also binds claim scope, candidate/baseline, objective, dataset, estimand, metric direction and safety floors, multiplicity, final-holdout window and digest.
 
-The in-memory `FinalHoldoutRegistry` consumes that typed receipt. It permits an exact idempotent retry, rejects semantic mutation under the same plan identity, and prevents a second plan from reusing either the final-holdout digest or final-holdout window. Its sealed use receipt binds the complete frozen-plan semantics and registry state. A product adapter must persist both registry and receipts under an exclusive writer and authenticated storage boundary.
+`FinalHoldoutRegistry` remains the pure semantic core. `FinalHoldoutJournalV1` adds expected-head compare-and-swap, a canonical record chain, exact idempotent retry and deterministic snapshot replay. Changed semantics under an existing plan identity conflict; a second plan cannot reuse either final-holdout digest or window. A product adapter must persist the typed journal snapshot under an exclusive writer and authenticate its issuer.
 
-`IndependentEvaluationBundleV1` consumes authenticated generator/evaluator roles, the exact sealed frozen-plan and holdout-use receipts, objective, dataset, estimand, estimate, support, confidence, retention, unlearning, snapshot and future-window facts. It validates receipt integrity and semantic equality before statistical admission. The evaluator cannot share a principal, credential chain or signing key with the generator.
+Receipt seals are integrity checks, not signatures. Authenticated origin, trust root and physical durability remain explicit host obligations.
 
 ## 4. Deterministic algorithm and scheduling
 
-Freeze all decisions before outcomes are inspected; audit candidate completeness and support; compute single-decision IPS/SNIPS/DR only under its assumptions or sequential history-conditioned DR under its own assumptions; cluster dependent trajectories; freeze the complete cross-fold analysis semantics; consume the exact sealed plan receipt once; apply preregistered monitoring and multiplicity; validate plan/use receipt integrity and equality; intersect all thresholds; and return eligible, insufficient or rejected per claim.
+Freeze every decision before inspecting outcomes; audit candidate completeness and support; run only an estimator whose assumptions match the estimand; cluster dependent trajectories; freeze the complete cross-fold semantics; consume the final holdout against the exact journal head; apply preregistered monitoring and multiplicity; validate plan/use bindings; intersect superiority, safety, support, retention, unlearning and future-window requirements; then emit eligible, ineligible or insufficient evidence.
 
-Candidate eligibility requires candidate lower confidence bound beyond baseline upper confidence bound in the declared direction, every safety floor, supported metrics and the claim-specific longitudinal evidence. A system-longitudinal claim additionally requires at least three snapshots, two future windows, retention evidence and an unlearning receipt. No learned outcome model repairs zero support. An internal NDU utility increase is not an independent task-success observation.
+Multiplicity-adjusted intervals are produced by the responsible statistical engine and bound into typed plan/evidence receipts. The independent decision validates those bindings; it does not silently invent an adjustment from bare unregistered values. No outcome model repairs zero support.
+
+System-longitudinal claims require at least three independently identified snapshots, two real future windows, retention evidence and an unlearning receipt. Internal utility or synthetic model predictions are not independent task-success observations.
 
 ## 5. Capacity and performance profile
 
-Resource ceilings are stage-specific, not one global batch claim:
+Stage bounds are distinct:
 
-- point OPE: at most 1000000 rows;
-- temporal fold fitting: at most 100000 training or target rows;
-- composed temporal holdout: at most 16384 held-out rows;
-- sequential evaluator: at most 4096 trajectories, 65536 steps and horizon 128;
-- candidate actions: at most 128 where the applicable estimator declares that bound.
+| Stage | Bound |
+|---|---:|
+| Point OPE | 1,000,000 rows |
+| Temporal fold | 100,000 training or target rows |
+| Composed temporal holdout | 16,384 held-out rows |
+| Sequential evaluator | 4,096 trajectories / 65,536 steps |
+| Sequential horizon | 128 |
+| Complete cross-fold lineage | 1,000,000 IDs across the plan profile |
 
-System-longitudinal ESS is at least `max(400, ceil(0.1*n), stricter slice minimum)`, not a weaker local minimum. Keep at least two real future windows and three independently identified snapshots for a longitudinal claim. These source bounds are not target-host measurements.
+The implementation must enforce both per-vector and total-plan encoded-size, memory and CPU budgets. A broad point-estimator ceiling is never reused as the composed temporal-pipeline capacity claim.
 
 ## 6. Concrete verification cases
 
-- EVAL-01: two-step sequential DR analytic fixture returns 9/10; zero propensity rejects before division.
-- EVAL-02: correlated repeated decisions do not count as independent bootstrap samples.
-- EVAL-03: stricter profile wins when ESS floors differ; missing metrics block acceptance.
-- EVAL-04: future leakage, holdout reuse, role collision, old-task regression and restored deleted lineage invalidate the corresponding claim.
+- EVAL-01: sequential DR goldens are exact and zero support rejects before division.
+- EVAL-02: correlated repeated decisions do not manufacture precision.
+- EVAL-03: the strictest support profile, superiority, safety, retention and unlearning gates are intersected.
+- EVAL-04: future leakage, holdout reuse, receipt drift, role collision and restored deleted lineage invalidate the claim.
+- EVAL-05: final-holdout consumption is expected-head-bound, idempotent and exactly replayable after reopen.
 
-Every case is mapped to concrete Rust test functions in `../../lane-e/TEST_TRACEABILITY.json`. The OP-03 cross-module test also confirms that excellent in-sample fit without retention or unlearning remains insufficient.
+Every case maps to concrete Rust tests in `../../lane-e/TEST_TRACEABILITY.json`. Synthetic timestamps do not qualify as future-calendar evidence.
 
 ## 7. Integration, rollback and capability ceiling
 
-The former single temporal holdout and conservative cluster code is no longer labelled generic cross-fitting by implication. `freeze_cross_fold_plan` now supplies an explicit complete analysis contract and sealed receipt, and `FinalHoldoutRegistry::consume` derives its use binding from that receipt rather than loose caller arguments. Actual nuisance-model scheduling, canonical receipt persistence and durable single-writer holdout storage remain product bindings. Native estimator, independent observer and authentication adapters are separately identified. The evaluator emits eligibility evidence, never selection or release authority.
+The final-holdout product adapter must persist the journal and its predecessor head atomically, fence concurrent writers, fsync containing metadata where applicable, reopen and replay before readiness, and quarantine any mismatch. The evaluator emits eligibility evidence only; a separate selector consumes it.
 
-Use all eighteen dossier receipt fields. Immediate revocation and stop remain effective across frozen snapshots. Preserve every applicable external gate; no generator self-acceptance, self-merge or self-release.
+Immediate revocation and stop remain effective across frozen plans. Preserve all external gates; no evaluator self-selection, activation, promotion or release is authorized.
 
 ## 8. Native closure and remaining evidence
 
-Repository-controlled source coverage is checked by `../../../scripts/hepta-lane-e-closure.py`; exact-head and ordered-parent synthetic-merge execution are defined in `.github/workflows/hepta-lane-e-gap-closure.yml`. The workflow compiles all targets, runs owner and cross-crate tests, strict Clippy and rustfmt.
+Repository-controlled coverage now includes the previously omitted cluster and temporal operations, cross-fold plan integrity, final-holdout anti-reuse, predecessor-bound replay and independent decision. `../../../scripts/hepta-lane-e-closure.py` validates public symbols, exports, attributed tests and cross-crate linkage. CI repeats compilation, tests, strict lint and formatting on exact head and ordered merge.
 
-The repository cannot self-issue live outcome authentication, a product scheduler and durable holdout-use writer, real future-calendar windows, independent snapshots, statistical power/precision, subgroup/privacy review, retention/change-point observations, backup non-resurrection, independent operator acceptance, selection, canary, promotion or release. These remain external exact-candidate evidence gates.
+The repository cannot self-issue live outcome authentication, a named product scheduler and physical single-writer store, real future-calendar windows, statistical power/precision, subgroup/privacy review, change-point observations, backup non-resurrection, independent operator acceptance, selection, canary, promotion or release. Those exact-candidate gates remain external.
