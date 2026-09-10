@@ -218,6 +218,16 @@
         {"source": "codex-rs/hepta-learning-artifacts/src/admission_v3.rs", "function": "art_05_withdrawal_race_invalidates_admission"}
       ],
       "status": "native_test_mapped"
+    },
+    {
+      "id": "ART-06",
+      "module": "learning.artifacts",
+      "requirement": "Lifecycle publication is predecessor-head-bound, role-gated and exactly replayable from an immutable snapshot.",
+      "tests": [
+        {"source": "codex-rs/hepta-learning-artifacts/src/lifecycle_journal.rs", "function": "art_06_lifecycle_journal_enforces_head_state_and_role"},
+        {"source": "codex-rs/hepta-learning-artifacts/src/lifecycle_journal.rs", "function": "art_06_lifecycle_journal_replays_exact_snapshot"}
+      ],
+      "status": "native_test_mapped"
     }
   ],
   "crossCrateCases": [
