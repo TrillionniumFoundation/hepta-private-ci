@@ -21,7 +21,7 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 20
     env:
-      EXPECTED_PARENT: 64f5ffa23bca2bb2ba1b280a320873a7a5aeb01c
+      EXPECTED_PARENT: 544e7ef67a6aff6dd29a4d8f4937a4245e866bc5
       TARGET_BRANCH: ops/hepta-global-gap-closure-controller-20260910-r1
       FINALIZER: scripts/hepta-global-finalizer-r7.py
       PATCH_SCRIPT: scripts/patch-global-finalizer-r14.py
@@ -63,10 +63,10 @@ jobs:
           set -euo pipefail
           git config user.name 'hepta-global-finalizer-patcher'
           git config user.email 'actions@users.noreply.github.com'
-          git rm .github/workflows/patch-global-finalizer-r13.yml
-          git rm scripts/patch-global-finalizer-r13.py
-          git rm .github/workflows/patch-global-finalizer-r14.yml
-          git rm "${PATCH_SCRIPT}"
+          git rm --ignore-unmatch .github/workflows/patch-global-finalizer-r13.yml
+          git rm --ignore-unmatch scripts/patch-global-finalizer-r13.py
+          git rm --ignore-unmatch .github/workflows/patch-global-finalizer-r14.yml
+          git rm --ignore-unmatch "${PATCH_SCRIPT}"
           git add "${FINALIZER}"
           git diff --cached --check
           git commit --signoff -m 'fix(hepta): regenerate Lane G shared execution dossiers'
