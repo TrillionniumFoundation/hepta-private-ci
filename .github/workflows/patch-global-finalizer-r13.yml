@@ -1,0 +1,239 @@
+name: patch-global-finalizer-r13
+
+on:
+  push:
+    branches:
+      - ops/hepta-global-gap-closure-controller-20260910-r1
+    paths:
+      - .github/workflows/patch-global-finalizer-r13.yml
+
+permissions:
+  contents: write
+  actions: write
+
+concurrency:
+  group: patch-global-finalizer-r13
+  cancel-in-progress: false
+
+jobs:
+  patch:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      EXPECTED_PARENT: 79291c129a6994ed957bd247c8c175c096343306
+      TARGET_BRANCH: ops/hepta-global-gap-closure-controller-20260910-r1
+      FINALIZER: scripts/hepta-global-finalizer-r7.py
+    steps:
+      - name: Check out exact patch bootstrap
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Verify exact patch bootstrap
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "${GITHUB_REF_NAME}" = "${TARGET_BRANCH}"
+          test "$(git rev-parse HEAD^)" = "${EXPECTED_PARENT}"
+          test "$(git rev-parse HEAD:.github/workflows/patch-global-finalizer-r13.yml)" = "$(git hash-object .github/workflows/patch-global-finalizer-r13.yml)"
+
+      - name: Apply cycle-safe dependency and Lane F cleanup repair
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+
+          path = Path("scripts/hepta-global-finalizer-r7.py")
+          text = path.read_text(encoding="utf-8")
+
+          old_lane_f = '''        for path in conflicts:
+            git("checkout", checkout_side, "--", path)
+            git("add", "--", path)
+'''
+          new_lane_f = '''        for path in conflicts:
+            if (
+                lane_f_owner_conflict
+                and path == ".github/workflows/lane-f-bootstrap.yml"
+            ):
+                git("rm", "--", path)
+                continue
+            git("checkout", checkout_side, "--", path)
+            git("add", "--", path)
+'''
+          if text.count(old_lane_f) != 1:
+              raise SystemExit("Lane F resolver patch precondition drifted")
+          text = text.replace(old_lane_f, new_lane_f, 1)
+
+          marker = '''def repair_missing_local_dependencies(metadata: dict[str, Any]) -> dict[str, Any]:
+'''
+          helpers = '''def workspace_dependency_graph(
+    metadata: dict[str, Any],
+) -> dict[str, set[str]]:
+    packages = workspace_package_map(metadata)
+    graph: dict[str, set[str]] = {name: set() for name in packages}
+    for package_name, row in packages.items():
+        dependencies = row.get("dependencies", [])
+        if not isinstance(dependencies, list):
+            raise RuntimeError(f"metadata dependencies are invalid for {package_name}")
+        for dependency in dependencies:
+            if not isinstance(dependency, dict):
+                raise RuntimeError(
+                    f"metadata dependency row is invalid for {package_name}"
+                )
+            dependency_name = dependency.get("name")
+            if dependency_name in packages:
+                graph[package_name].add(dependency_name)
+    return graph
+
+
+def dependency_reaches(
+    graph: dict[str, set[str]],
+    start: str,
+    target: str,
+) -> bool:
+    pending = [start]
+    seen: set[str] = set()
+    while pending:
+        current = pending.pop()
+        if current == target:
+            return True
+        if current in seen:
+            continue
+        seen.add(current)
+        pending.extend(sorted(graph.get(current, ()), reverse=True))
+    return False
+
+
+def repair_missing_local_dependencies(metadata: dict[str, Any]) -> dict[str, Any]:
+'''
+          if text.count(marker) != 1 or "def workspace_dependency_graph(" in text:
+              raise SystemExit("dependency graph helper patch precondition drifted")
+          text = text.replace(marker, helpers, 1)
+
+          old_body = '''    added: list[dict[str, str]] = []
+    for package_name, row in sorted(packages.items()):
+        manifest = Path(row["manifest_path"])
+        package_root = manifest.parent
+        declared = dependency_sections(manifest.read_text(encoding="utf-8"))
+        for crate_name in sorted(imported_workspace_crates(package_root)):
+            target = crate_to_package.get(crate_name)
+            if target is None:
+                continue
+            dependency_name, dependency_path = target
+            if dependency_name == package_name or dependency_name in declared:
+                continue
+            if add_dependency(manifest, dependency_name, dependency_path):
+                declared.add(dependency_name)
+                added.append(
+                    {
+                        "package": package_name,
+                        "dependency": dependency_name,
+                        "manifest": manifest.relative_to(ROOT).as_posix(),
+                    }
+                )
+    return {"added": added, "count": len(added)}
+'''
+          new_body = '''    graph = workspace_dependency_graph(metadata)
+    added: list[dict[str, str]] = []
+    skipped_cycles: list[dict[str, Any]] = []
+    for package_name, row in sorted(packages.items()):
+        manifest = Path(row["manifest_path"])
+        package_root = manifest.parent
+        declared = dependency_sections(manifest.read_text(encoding="utf-8"))
+        for crate_name in sorted(imported_workspace_crates(package_root)):
+            target = crate_to_package.get(crate_name)
+            if target is None:
+                continue
+            dependency_name, dependency_path = target
+            if dependency_name == package_name or dependency_name in declared:
+                continue
+            if dependency_reaches(graph, dependency_name, package_name):
+                skipped_cycles.append(
+                    {
+                        "package": package_name,
+                        "dependency": dependency_name,
+                        "manifest": manifest.relative_to(ROOT).as_posix(),
+                        "reason": "would-create-workspace-dependency-cycle",
+                    }
+                )
+                continue
+            if add_dependency(manifest, dependency_name, dependency_path):
+                declared.add(dependency_name)
+                graph.setdefault(package_name, set()).add(dependency_name)
+                added.append(
+                    {
+                        "package": package_name,
+                        "dependency": dependency_name,
+                        "manifest": manifest.relative_to(ROOT).as_posix(),
+                    }
+                )
+    return {
+        "added": added,
+        "count": len(added),
+        "skippedCycles": skipped_cycles,
+        "skippedCycleCount": len(skipped_cycles),
+    }
+'''
+          if text.count(old_body) != 1:
+              raise SystemExit("dependency repair body patch precondition drifted")
+          text = text.replace(old_body, new_body, 1)
+          path.write_text(text, encoding="utf-8")
+          PY
+
+          python3 -m py_compile "${FINALIZER}"
+          python3 - <<'PY'
+          import importlib.util
+          from pathlib import Path
+
+          source = Path("scripts/hepta-global-finalizer-r7.py")
+          spec = importlib.util.spec_from_file_location("hepta_global_finalizer_r7", source)
+          if spec is None or spec.loader is None:
+              raise SystemExit("cannot load patched finalizer")
+          module = importlib.util.module_from_spec(spec)
+          spec.loader.exec_module(module)
+
+          graph = {
+              "codex-state": {"codex-core"},
+              "codex-core": {"codex-agent-graph-store"},
+              "codex-agent-graph-store": set(),
+          }
+          assert module.dependency_reaches(
+              graph, "codex-core", "codex-agent-graph-store"
+          )
+          assert not module.dependency_reaches(
+              graph, "codex-agent-graph-store", "codex-state"
+          )
+          graph["codex-agent-graph-store"].add("codex-state")
+          assert module.dependency_reaches(
+              graph, "codex-agent-graph-store", "codex-core"
+          )
+
+          text = source.read_text(encoding="utf-8")
+          assert 'path == ".github/workflows/lane-f-bootstrap.yml"' in text
+          assert 'git("rm", "--", path)' in text
+          assert "would-create-workspace-dependency-cycle" in text
+          PY
+
+          git rm .github/workflows/patch-global-finalizer-r13.yml
+          git diff --check
+          git diff --cached --check
+
+      - name: Publish patched controller and dispatch r7
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          git config user.name 'hepta-global-finalizer-patcher'
+          git config user.email 'actions@users.noreply.github.com'
+          git add "${FINALIZER}"
+          git commit -m 'fix(hepta): reject dependency repairs that create workspace cycles'
+          git push origin "HEAD:refs/heads/${TARGET_BRANCH}"
+          gh workflow run hepta-global-finalizer-r7.yml \
+            --repo "${GITHUB_REPOSITORY}" \
+            --ref "${TARGET_BRANCH}" \
+            -f target_branch=integration/hepta-all-gap-closure-20260910-r7 \
+            -f shard_count=8
