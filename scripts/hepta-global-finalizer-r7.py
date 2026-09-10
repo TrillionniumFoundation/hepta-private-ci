@@ -25,6 +25,7 @@ import shlex
 import subprocess
 import sys
 import time
+import tomllib
 from collections import defaultdict, deque
 from dataclasses import dataclass
 from pathlib import Path
@@ -619,23 +620,52 @@ def workspace_package_map(metadata: dict[str, Any]) -> dict[str, dict[str, Any]]
     }
 
 
+def dependency_names(section: Any, context: str) -> set[str]:
+    if section is None:
+        return set()
+    if not isinstance(section, dict):
+        raise RuntimeError(f"{context} must be a TOML table")
+    names: set[str] = set()
+    for declared_name, declaration in section.items():
+        names.add(declared_name)
+        if isinstance(declaration, dict):
+            package_name = declaration.get("package")
+            if package_name is not None:
+                if not isinstance(package_name, str) or not package_name:
+                    raise RuntimeError(
+                        f"{context}.{declared_name}.package must be a non-empty string"
+                    )
+                names.add(package_name)
+    return names
+
+
 def dependency_sections(text: str) -> set[str]:
+    try:
+        document = tomllib.loads(text)
+    except tomllib.TOMLDecodeError as error:
+        raise RuntimeError(f"cannot inspect invalid Cargo manifest: {error}") from error
+
     declared: set[str] = set()
-    current = ""
-    for raw_line in text.splitlines():
-        line = raw_line.strip()
-        if line.startswith("[") and line.endswith("]"):
-            current = line
-            continue
-        if current not in {
-            "[dependencies]",
-            "[dev-dependencies]",
-            "[build-dependencies]",
-        }:
-            continue
-        match = re.match(r"([A-Za-z0-9_-]+)\s*=", line)
-        if match:
-            declared.add(match.group(1))
+    dependency_kinds = (
+        "dependencies",
+        "dev-dependencies",
+        "build-dependencies",
+    )
+    for kind in dependency_kinds:
+        declared.update(dependency_names(document.get(kind), kind))
+
+    targets = document.get("target")
+    if targets is None:
+        return declared
+    if not isinstance(targets, dict):
+        raise RuntimeError("target must be a TOML table")
+    for target_name, target in targets.items():
+        if not isinstance(target, dict):
+            raise RuntimeError(f"target.{target_name} must be a TOML table")
+        for kind in dependency_kinds:
+            declared.update(
+                dependency_names(target.get(kind), f"target.{target_name}.{kind}")
+            )
     return declared
 
 
