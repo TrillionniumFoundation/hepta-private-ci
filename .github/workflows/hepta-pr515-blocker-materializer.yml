@@ -1,0 +1,119 @@
+name: Hepta PR515 blocker materializer
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - ops/hepta-pr515-blocker-materializer-20260910
+
+permissions:
+  contents: write
+
+concurrency:
+  group: hepta-pr515-blocker-materializer
+  cancel-in-progress: false
+
+env:
+  SOURCE_SHA: f278a89eea18fccb6d37b876aa5679863a64139d
+  BASE_SHA: 04f60466394a024c218ce66b1b32d1c42c462985
+  OUTPUT_BRANCH: integration/hepta-all-gap-closure-20260910-r13
+
+jobs:
+  materialize:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    steps:
+      - name: Checkout materializer source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Set up repository tools
+        uses: ./.github/actions/setup-ci
+
+      - name: Install exact uv
+        uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b
+        with:
+          version: "0.11.3"
+
+      - name: Materialize, qualify, and publish exact PR head
+        shell: bash
+        run: |
+          set -euo pipefail
+          materializer="$GITHUB_WORKSPACE/scripts/.materialize_pr515_blockers.py"
+          cp scripts/materialize_pr515_blockers.py "$materializer"
+
+          test "$(git rev-parse "origin/$OUTPUT_BRANCH")" = "$SOURCE_SHA"
+          git checkout --detach "$SOURCE_SHA"
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          test -f "$materializer"
+
+          python3 "$materializer"
+          rm -f "$materializer"
+
+          uv run --frozen --project scripts ruff format \
+            scripts/hepta-module-dossiers.py \
+            scripts/hepta-plan-digest.py \
+            scripts/qualification/hepta_current_ci_state.py \
+            scripts/qualification/hepta_full_validator.py \
+            scripts/qualification/hepta_write_external_handoff.py \
+            scripts/qualification/hepta_write_report.py \
+            scripts/qualification/tests/test_hepta_current_ci_state.py \
+            tests/test_hepta_blocker_orchestrator.py \
+            tests/test_validate_contract_providers.py
+
+          cat > "$RUNNER_TEMP/expected-files" <<'EOF'
+          qualification/global-gap-closure-final-r6/STATUS.json
+          qualification/global-gap-closure-final-r8/receipts/PREPARE.json
+          scripts/hepta-module-dossiers.py
+          scripts/hepta-plan-digest.py
+          scripts/qualification/hepta_current_ci_state.py
+          scripts/qualification/hepta_full_validator.py
+          scripts/qualification/hepta_write_external_handoff.py
+          scripts/qualification/hepta_write_report.py
+          scripts/qualification/tests/test_hepta_current_ci_state.py
+          tests/test_hepta_blocker_orchestrator.py
+          tests/test_validate_contract_providers.py
+          EOF
+          git diff --name-only | sort > "$RUNNER_TEMP/actual-files"
+          sort -o "$RUNNER_TEMP/expected-files" "$RUNNER_TEMP/expected-files"
+          diff -u "$RUNNER_TEMP/expected-files" "$RUNNER_TEMP/actual-files"
+
+          python3 -m json.tool \
+            qualification/global-gap-closure-final-r6/STATUS.json \
+            >/dev/null
+          python3 -m json.tool \
+            qualification/global-gap-closure-final-r8/receipts/PREPARE.json \
+            >/dev/null
+          test "$(wc -c < qualification/global-gap-closure-final-r6/STATUS.json)" -lt 480000
+          test "$(wc -c < qualification/global-gap-closure-final-r8/receipts/PREPARE.json)" -lt 480000
+
+          python3 scripts/hepta-readiness.py verify
+          python3 scripts/hepta-docs.py verify
+          python3 -m unittest \
+            scripts.qualification.tests.test_hepta_current_ci_state \
+            tests.test_hepta_blocker_orchestrator \
+            tests.test_validate_contract_providers
+          python3 scripts/format.py --check
+          uv tool run --from codespell==2.4.3 codespell \
+            --ignore-words .codespellignore \
+            --skip './.git'
+          git diff --check
+
+          git add --pathspec-from-file="$RUNNER_TEMP/expected-files"
+          test -n "$(git diff --cached --name-only)"
+          test -z "$(git diff --name-only)"
+          git -c user.name='Hepta convergence repair' \
+              -c user.email='convergence-repair@users.noreply.github.com' \
+              commit -m 'fix(ci): close PR515 formatting and evidence-size blockers'
+          test "$(git rev-parse HEAD^)" = "$SOURCE_SHA"
+
+          python3 scripts/check_blob_size.py \
+            --base "$BASE_SHA" \
+            --head HEAD \
+            --max-bytes 512000 \
+            --allowlist .github/blob-size-allowlist.txt
+          git diff --check "$BASE_SHA" HEAD
+          test -z "$(git status --porcelain=v1 --untracked-files=all)"
+          git push origin "HEAD:refs/heads/$OUTPUT_BRANCH"
