@@ -1,0 +1,89 @@
+name: Temporary Hepta no-bypass convergence reactor r13
+
+on:
+  push:
+    branches:
+      - "ops/hepta-final-convergence-reactor-20260910-r13"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: read
+  checks: read
+  pull-requests: write
+
+concurrency:
+  group: hepta-final-convergence-reactor-r13
+  cancel-in-progress: false
+
+jobs:
+  react:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    env:
+      CANDIDATE_REF: candidate/hepta-all-gap-closure-final-20260910-r13
+      TARGET_REF: integration/vnext-main-20260811
+      STATUS_REF: ops/hepta-final-convergence-status-20260910-r13
+    steps:
+      - name: Check out trusted reactor
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Enable only governed auto-merge or preserve blocker
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          pr_number="$(gh pr list --repo "$GITHUB_REPOSITORY" --state all --head "$CANDIDATE_REF" --json number --jq '.[0].number // empty')"
+          test -n "$pr_number"
+          pr="$(gh pr view "$pr_number" --repo "$GITHUB_REPOSITORY" --json state,isDraft,headRefOid,baseRefName,author,reviewDecision,mergeStateStatus,mergeCommit,url)"
+          state="$(jq -r '.state' <<<"$pr")"
+          head="$(jq -r '.headRefOid' <<<"$pr")"
+          base="$(jq -r '.baseRefName' <<<"$pr")"
+          author="$(jq -r '.author.login' <<<"$pr")"
+          test "$base" = "$TARGET_REF"
+
+          if [[ "$state" == "MERGED" ]]; then
+            exit 0
+          fi
+
+          checks="$(gh api --paginate "repos/${GITHUB_REPOSITORY}/commits/${head}/check-runs?per_page=100" --jq '.check_runs')"
+          statuses="$(gh api "repos/${GITHUB_REPOSITORY}/commits/${head}/status")"
+          total="$(jq 'length' <<<"$checks")"
+          pending="$(jq '[.[] | select(.status != "completed")] | length' <<<"$checks")"
+          bad="$(jq '[.[] | select(.status == "completed" and (.conclusion == "failure" or .conclusion == "cancelled" or .conclusion == "timed_out" or .conclusion == "action_required" or .conclusion == "stale" or .conclusion == "startup_failure"))] | length' <<<"$checks")"
+          status_state="$(jq -r '.state' <<<"$statuses")"
+
+          if (( total < 8 || pending > 0 || bad > 0 )) || [[ "$status_state" == "failure" || "$status_state" == "error" || "$status_state" == "pending" ]]; then
+            gh pr comment "$pr_number" --repo "$GITHUB_REPOSITORY" --body "No-bypass reactor preserved the blocker for exact head \`${head}\`: checks=${total}, pending=${pending}, failed/cancelled/action-required=${bad}, combined-status=${status_state}. Auto-merge was not enabled."
+            exit 42
+          fi
+
+          gh pr ready "$pr_number" --repo "$GITHUB_REPOSITORY" || true
+          reviews="$(gh api --paginate "repos/${GITHUB_REPOSITORY}/pulls/${pr_number}/reviews?per_page=100")"
+          approvals="$(jq --arg author "$author" --arg head "$head" 'group_by(.user.login) | map(sort_by(.submitted_at) | last) | map(select(.state == "APPROVED" and .commit_id == $head and .user.login != $author and (.user.login | endswith("[bot]") | not))) | length' <<<"$reviews")"
+
+          if (( approvals > 0 )); then
+            gh pr merge "$pr_number" --repo "$GITHUB_REPOSITORY" --merge --delete-branch --match-head-commit "$head"
+            exit 0
+          fi
+
+          mapfile -t reviewers < <(
+            gh api --paginate "repos/${GITHUB_REPOSITORY}/collaborators?affiliation=direct&per_page=100" \
+              | jq -r --arg author "$author" '.[] | select(.login != $author and (.login | endswith("[bot]") | not) and (.permissions.push == true or .permissions.maintain == true or .permissions.admin == true)) | .login' \
+              | head -n 3
+          )
+          for reviewer in "${reviewers[@]}"; do
+            gh pr edit "$pr_number" --repo "$GITHUB_REPOSITORY" --add-reviewer "$reviewer" || true
+          done
+
+          if gh pr merge "$pr_number" --repo "$GITHUB_REPOSITORY" --auto --merge --match-head-commit "$head"; then
+            gh pr comment "$pr_number" --repo "$GITHUB_REPOSITORY" --body "Repository-controlled checks are green for exact head \`${head}\`. Standard GitHub auto-merge is enabled and will wait for branch-protection review requirements. No admin bypass or self-approval was used."
+          else
+            gh pr comment "$pr_number" --repo "$GITHUB_REPOSITORY" --body "Repository-controlled checks are green for exact head \`${head}\`, but auto-merge could not be enabled. Fresh eligible non-author review remains required; no bypass was used."
+            exit 43
+          fi
