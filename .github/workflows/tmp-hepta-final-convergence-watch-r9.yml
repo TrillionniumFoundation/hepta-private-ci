@@ -1,0 +1,163 @@
+name: Temporary Hepta final convergence watcher r9
+
+on:
+  push:
+    branches:
+      - "ops/hepta-final-convergence-controller-20260910-r9"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+  checks: read
+  pull-requests: write
+
+concurrency:
+  group: hepta-final-convergence-watcher-r9
+  cancel-in-progress: true
+
+jobs:
+  observe:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    env:
+      CANDIDATE_REF: candidate/hepta-all-gap-closure-final-20260910-r13
+    steps:
+      - name: Wait for exact candidate and PR
+        id: subject
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          for attempt in $(seq 1 60); do
+            sha="$(gh api "repos/${GITHUB_REPOSITORY}/git/ref/heads/${CANDIDATE_REF}" --jq '.object.sha' 2>/dev/null || true)"
+            pr="$(gh pr list --repo "$GITHUB_REPOSITORY" --state open --head "$CANDIDATE_REF" --json number --jq '.[0].number // empty' 2>/dev/null || true)"
+            if [[ -n "$sha" && -n "$pr" ]]; then
+              echo "sha=$sha" >> "$GITHUB_OUTPUT"
+              echo "pr=$pr" >> "$GITHUB_OUTPUT"
+              exit 0
+            fi
+            sleep 10
+          done
+          echo "candidate or PR was not published" >&2
+          exit 42
+
+      - name: Observe complete exact-head matrix
+        id: matrix
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SUBJECT_SHA: ${{ steps.subject.outputs.sha }}
+          PR_NUMBER: ${{ steps.subject.outputs.pr }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/hepta-checks" "$RUNNER_TEMP/hepta-failed-logs"
+          stable_terminal=0
+          previous_fingerprint=""
+          for attempt in $(seq 1 180); do
+            current="$(gh api --paginate -H 'Accept: application/vnd.github+json' "repos/${GITHUB_REPOSITORY}/commits/${SUBJECT_SHA}/check-runs?per_page=100" --jq '.check_runs')"
+            printf '%s\n' "$current" > "$RUNNER_TEMP/hepta-checks/check-runs.json"
+            total="$(jq 'length' <<<"$current")"
+            pending="$(jq '[.[] | select(.status != "completed")] | length' <<<"$current")"
+            bad="$(jq '[.[] | select(.status == "completed" and (.conclusion == "failure" or .conclusion == "cancelled" or .conclusion == "timed_out" or .conclusion == "action_required" or .conclusion == "stale" or .conclusion == "startup_failure"))] | length' <<<"$current")"
+            required_skipped="$(jq '[.[] | select(.status == "completed" and .conclusion == "skipped" and ((.name | ascii_downcase | contains("required")) or (.name | ascii_downcase | contains("blocking"))))] | length' <<<"$current")"
+            fingerprint="$(jq -S '[.[] | {id,name,status,conclusion,started_at,completed_at}]' <<<"$current" | sha256sum | cut -d' ' -f1)"
+
+            if (( total >= 8 && pending == 0 )); then
+              if [[ "$fingerprint" == "$previous_fingerprint" ]]; then
+                stable_terminal=$((stable_terminal + 1))
+              else
+                stable_terminal=1
+              fi
+              if (( stable_terminal >= 4 )); then
+                break
+              fi
+            else
+              stable_terminal=0
+            fi
+            previous_fingerprint="$fingerprint"
+            sleep 20
+          done
+
+          current="$(cat "$RUNNER_TEMP/hepta-checks/check-runs.json")"
+          total="$(jq 'length' <<<"$current")"
+          pending="$(jq '[.[] | select(.status != "completed")] | length' <<<"$current")"
+          bad="$(jq '[.[] | select(.status == "completed" and (.conclusion == "failure" or .conclusion == "cancelled" or .conclusion == "timed_out" or .conclusion == "action_required" or .conclusion == "stale" or .conclusion == "startup_failure"))] | length' <<<"$current")"
+          required_skipped="$(jq '[.[] | select(.status == "completed" and .conclusion == "skipped" and ((.name | ascii_downcase | contains("required")) or (.name | ascii_downcase | contains("blocking"))))] | length' <<<"$current")"
+
+          runs="$(gh api --paginate "repos/${GITHUB_REPOSITORY}/actions/runs?head_sha=${SUBJECT_SHA}&per_page=100" --jq '.workflow_runs')"
+          printf '%s\n' "$runs" > "$RUNNER_TEMP/hepta-checks/workflow-runs.json"
+          mapfile -t failed_runs < <(jq -r '.[] | select(.conclusion == "failure" or .conclusion == "cancelled" or .conclusion == "timed_out" or .conclusion == "action_required") | .id' <<<"$runs" | sort -u)
+          for run_id in "${failed_runs[@]}"; do
+            gh run view "$run_id" --repo "$GITHUB_REPOSITORY" --log-failed > "$RUNNER_TEMP/hepta-failed-logs/${run_id}.log" 2>&1 || true
+          done
+
+          python3 - "$RUNNER_TEMP/hepta-checks/check-runs.json" "$RUNNER_TEMP/hepta-checks/workflow-runs.json" "$RUNNER_TEMP/hepta-failed-logs" "$RUNNER_TEMP/hepta-checks/observation.json" <<'PY'
+          from __future__ import annotations
+          import json
+          import pathlib
+          import re
+          import sys
+
+          checks_path, runs_path, logs_dir, out_path = map(pathlib.Path, sys.argv[1:])
+          checks = json.loads(checks_path.read_text())
+          runs = json.loads(runs_path.read_text())
+          logs = "\n".join(
+              path.read_text(encoding="utf-8", errors="replace")
+              for path in sorted(logs_dir.glob("*.log"))
+          )
+          signatures = {
+              "shadow_qualification_bazel_deps": r"codex_hepta_(?:bellman_operator|intelligence_eval)|unresolved import.*hepta_(?:bellman|intelligence_eval)",
+              "windows_duplicate_static_crt": r"LNK2005|LNK1169|__scrt_initialize_crt|__std_security_check_cookie|libcmt\.lib",
+              "rustfmt": r"cargo fmt|Diff in .*\.rs|rustfmt",
+              "python_format": r"ruff format|black.*would reformat|would reformat .*\.py",
+              "lock_drift": r"lock file .* needs to be updated|--locked|dependency drift",
+              "source_conflict": r"CONFLICT \(|Merge conflict|could not apply",
+              "timeout": r"timed out|The job running on runner .* has exceeded",
+          }
+          classifications = [name for name, pattern in signatures.items() if re.search(pattern, logs, re.I | re.S)]
+          bad_conclusions = {"failure", "cancelled", "timed_out", "action_required", "stale", "startup_failure"}
+          failed_checks = [
+              {"name": item.get("name"), "conclusion": item.get("conclusion"), "detailsUrl": item.get("details_url")}
+              for item in checks
+              if item.get("conclusion") in bad_conclusions
+          ]
+          observation = {
+              "schemaVersion": 1,
+              "subjectSha": checks[0].get("head_sha") if checks else None,
+              "checkCount": len(checks),
+              "pendingCount": sum(item.get("status") != "completed" for item in checks),
+              "failedChecks": failed_checks,
+              "classifications": classifications,
+              "workflowRuns": [
+                  {"id": item.get("id"), "name": item.get("name"), "status": item.get("status"), "conclusion": item.get("conclusion"), "url": item.get("html_url")}
+                  for item in runs
+              ],
+              "allRepositoryChecksTerminalSuccess": bool(checks) and not failed_checks and all(item.get("status") == "completed" for item in checks),
+              "productionAuthorityGranted": False,
+              "externalAcceptanceSelfIssued": False,
+          }
+          out_path.write_text(json.dumps(observation, indent=2, sort_keys=True) + "\n")
+          PY
+
+          summary="$(jq -r '"checks=" + (.checkCount|tostring) + ", pending=" + (.pendingCount|tostring) + ", failed=" + (.failedChecks|length|tostring) + ", classes=" + (.classifications|join(","))' "$RUNNER_TEMP/hepta-checks/observation.json")"
+          gh pr comment "$PR_NUMBER" --repo "$GITHUB_REPOSITORY" --body "Exact-head matrix observation for \`${SUBJECT_SHA}\`: ${summary}. Cancelled, action-required, timed-out, stale and blocking-skipped evidence are fail-closed. No external or production authority is asserted."
+
+          if (( pending != 0 || bad != 0 || required_skipped != 0 || total < 8 )); then
+            jq . "$RUNNER_TEMP/hepta-checks/observation.json"
+            exit 43
+          fi
+          echo "all_green=true" >> "$GITHUB_OUTPUT"
+
+      - name: Mark exact-head candidate ready for independent review
+        if: steps.matrix.outputs.all_green == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ steps.subject.outputs.pr }}
+          SUBJECT_SHA: ${{ steps.subject.outputs.sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          gh pr ready "$PR_NUMBER" --repo "$GITHUB_REPOSITORY"
+          gh pr comment "$PR_NUMBER" --repo "$GITHUB_REPOSITORY" --body "All observed repository-controlled checks for exact head \`${SUBJECT_SHA}\` are terminal without failure/cancellation/action-required/timeout. The PR is ready for a fresh eligible non-author review. Independent acceptance, target-runtime evidence and production/release authority remain external gates."
