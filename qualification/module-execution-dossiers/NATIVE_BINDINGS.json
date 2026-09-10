@@ -3,10 +3,349 @@
   "schemaVersion": 1,
   "planId": "HEPTA-GLOBAL-MODULAR-DEVELOPMENT-PLAN",
   "planVersion": "8.0.0",
-  "sourceSnapshot": "5c34496f40a7a3953f1dc9682c8f96bd4916ad11",
+  "sourceSnapshot": "5c54b74720957cb8be099292fe1a2b44801a9eab",
+  "moduleCoverage": 40,
+  "coverageScope": "one reviewed primary source blob anchor for each canonical module; not exhaustive operation or consumer coverage",
   "evidenceClass": "source_observation_only",
+  "consumerCallsitesProved": false,
   "productExecutionProved": false,
   "observations": [
+    {
+      "module": "platform.types",
+      "path": "codex-rs/hepta-types/src/numeric_conversion.rs",
+      "blobSha": "34ac6fb5ff34a177f88e59abce76626d075d92e0",
+      "exports": [
+        "rescale_signal",
+        "NumericSignalV1",
+        "NumericErrorBoundV1",
+        "NumericConversionReceiptV1"
+      ]
+    },
+    {
+      "module": "platform.wire",
+      "path": "codex-rs/hepta-wire/src/envelope.rs",
+      "blobSha": "00e767ccc12e1703296f8f73ef1f53da6996922a",
+      "exports": [
+        "WireEnvelope",
+        "WireError",
+        "MAX_WIRE_PAYLOAD_BYTES",
+        "encode",
+        "decode"
+      ]
+    },
+    {
+      "module": "kernel.authority",
+      "path": "codex-rs/hepta-contracts/src/final_use.rs",
+      "blobSha": "7b9158657df7d76e8e9a46e1b5fa1da50473f390",
+      "exports": [
+        "FinalUseAuthority",
+        "VerifiedUseToken",
+        "claim",
+        "with_verified_use",
+        "verify_strict"
+      ]
+    },
+    {
+      "module": "kernel.operations",
+      "path": "codex-rs/hepta-operations/src/ledger.rs",
+      "blobSha": "bd087cd814e5c51b13908f455abd60b165f69569",
+      "exports": [
+        "MAX_MODEL_OPERATION_RECORDS",
+        "OperationLedger",
+        "begin",
+        "authorize",
+        "record_dispatch",
+        "mark_indeterminate",
+        "observe_terminal"
+      ]
+    },
+    {
+      "module": "kernel.evidence",
+      "path": "codex-rs/hepta-evidence/src/provider_effect_store.rs",
+      "blobSha": "45b1794ee80a8e4b1067b7b8fd86cb2f2d08c241",
+      "exports": [
+        "StoredProviderEffect",
+        "append_provider_effect_intent",
+        "dispatch_provider_effect_qualification",
+        "append_provider_effect_ack",
+        "mark_provider_effect_indeterminate",
+        "reconcile_provider_effect_lookup"
+      ]
+    },
+    {
+      "module": "auth.authbus",
+      "path": "codex-rs/hepta-authbus/src/lib.rs",
+      "blobSha": "8df3f4bd424f53329e54ce509084deceea69ce34",
+      "exports": [
+        "PreverifiedAuthEnvelope",
+        "TrustedReplayContext",
+        "VerificationReceipt",
+        "ReplayWindow",
+        "verify"
+      ]
+    },
+    {
+      "module": "secrets.heptabao",
+      "path": "codex-rs/hepta-bao-adapter/src/https_consumer.rs",
+      "blobSha": "90c46f6361cc40d8d0c8e0aebb8eae9b2955010d",
+      "exports": [
+        "BaoToken",
+        "BaoReadRequest",
+        "BaoSecretReceipt",
+        "BaoClient",
+        "binding",
+        "consume_kv_v2"
+      ]
+    },
+    {
+      "module": "runtime.supervisor",
+      "path": "codex-rs/hepta-supervisor/src/supervisor.rs",
+      "blobSha": "873b5a36f2dea0ba5bf9fffc8449ebd6f05731b9",
+      "exports": [
+        "Supervisor",
+        "start",
+        "drain",
+        "stop",
+        "kill",
+        "restart",
+        "upgrade",
+        "rollback"
+      ]
+    },
+    {
+      "module": "runtime.fleet",
+      "path": "codex-rs/hepta-fleet/src/registry.rs",
+      "blobSha": "82d0abe2d4eda5bf5c7fa21582663f848c1a7b27",
+      "exports": [
+        "FleetRegistry",
+        "FleetSnapshot",
+        "AgentRecord",
+        "initialize",
+        "open_existing",
+        "register",
+        "compare_and_transition"
+      ]
+    },
+    {
+      "module": "runtime.agentd",
+      "path": "codex-rs/hepta-agentd/src/production_writer_host.rs",
+      "blobSha": "65782e693be130ff3d0e526883005f19f15ca8dd",
+      "exports": [
+        "AgentdProductionWriterHost",
+        "open",
+        "attach_target",
+        "dispatch"
+      ]
+    },
+    {
+      "module": "runtime.codex",
+      "path": "codex-rs/hepta-codex-adapter/src/lib.rs",
+      "blobSha": "c81c3ec10dd11a85ed28cf71207ff0f973329c17",
+      "exports": [
+        "CodexOperationIntent",
+        "AppServerObservation",
+        "CodexAdapterReceipt",
+        "adapt"
+      ]
+    },
+    {
+      "module": "inference.control",
+      "path": "codex-rs/hepta-infer-core/src/lib.rs",
+      "blobSha": "60757e17b2342a38e62bf43419d07651260a6afe",
+      "exports": [
+        "InferenceLedger",
+        "InferenceRequest",
+        "RequestRecord",
+        "submit",
+        "reserve",
+        "complete",
+        "cancel"
+      ]
+    },
+    {
+      "module": "inference.worker",
+      "path": "codex-rs/hepta-infer-worker-host/src/lib.rs",
+      "blobSha": "f4fca6216821c994a401e401442cf06f69a3d082",
+      "exports": [
+        "InferenceRequest",
+        "AuthorityLease",
+        "Reservation",
+        "ExecutionObservation",
+        "InferenceReceipt",
+        "execute"
+      ]
+    },
+    {
+      "module": "automation.taskflow",
+      "path": "codex-rs/hepta-automation/src/taskflow_execution_boundary.rs",
+      "blobSha": "bed9cd9422cacdc1211ca11b4915f9bc945b01d9",
+      "exports": [
+        "LocalTaskFlowBoundaryRequestV1",
+        "TaskFlowBoundaryScope",
+        "TaskFlowBoundaryAuthority",
+        "TaskFlowExecutionUnavailableV1",
+        "assess_local_taskflow_boundary"
+      ]
+    },
+    {
+      "module": "channel.matrix",
+      "path": "codex-rs/hepta-matrixd/src/runtime.rs",
+      "blobSha": "7a81a5a338e153bae8df20c46575fc3e5d1b1080",
+      "exports": [
+        "MatrixRuntime",
+        "MatrixRuntimeBridge",
+        "MatrixDispatchOutcome",
+        "MatrixRuntimeRecovery",
+        "process_event",
+        "recover_pending"
+      ]
+    },
+    {
+      "module": "browser.servo",
+      "path": "apps/hepta-browser/src/browser.js",
+      "blobSha": "4d8e8cbb1886083ec23d21ef5810c7cca50be81d",
+      "exports": [
+        "buildNavigationIntent",
+        "projectPageState",
+        "buildLocalNavigationProposalFromCanonicalJson",
+        "projectPageStateFromLocalCanonicalJson"
+      ]
+    },
+    {
+      "module": "ui.control",
+      "path": "apps/hepta-control-ui/src/control.js",
+      "blobSha": "9ceeea6df55c108831acd00fca00dd58b8fb8513",
+      "exports": [
+        "projectRuntime",
+        "buildOperationIntent",
+        "projectRuntimeFromLocalCanonicalJson",
+        "buildLocalOperationProposalFromCanonicalJson"
+      ]
+    },
+    {
+      "module": "ui.native",
+      "path": "apps/hepta-native/src/native.js",
+      "blobSha": "0b43af170d02a2d672c68b18e100a1507957f483",
+      "exports": [
+        "buildNativeIntent",
+        "observeNativeOutcome"
+      ]
+    },
+    {
+      "module": "cognitive.types",
+      "path": "codex-rs/hepta-cognitive-types/src/lib.rs",
+      "blobSha": "2736967377a5db749495e6ed29abb6977380681e",
+      "exports": [
+        "MemoryRecord",
+        "CognitiveSnapshot",
+        "build_snapshot",
+        "validate_integrity"
+      ]
+    },
+    {
+      "module": "cognitive.store",
+      "path": "codex-rs/hepta-cognitive-store/src/lib.rs",
+      "blobSha": "ae2c8f53190a5be8f906394a467be292a27bfdde",
+      "exports": [
+        "CognitiveStore",
+        "append",
+        "get",
+        "snapshot_records",
+        "StoreReceipt"
+      ]
+    },
+    {
+      "module": "cognitive.read",
+      "path": "codex-rs/hepta-cognitive-read/src/v2.rs",
+      "blobSha": "67135f3f56c4779fbd27568ee69c389a38522e5c",
+      "exports": [
+        "ReadRequestV2",
+        "ReadResultV2",
+        "read_v2",
+        "binding_digest"
+      ]
+    },
+    {
+      "module": "memory.retrieval",
+      "path": "codex-rs/hepta-memory-retrieval/src/v2.rs",
+      "blobSha": "69e7c773f9ebaa777783a4965749a0051edf37eb",
+      "exports": [
+        "RetrievalReceiptV2",
+        "retrieve_v2",
+        "binding_digest_v2"
+      ]
+    },
+    {
+      "module": "memory.federation",
+      "path": "codex-rs/hepta-memory-federation/src/lib.rs",
+      "blobSha": "f1b655fff7c183b370f80efc0be992a7d38a9d97",
+      "exports": [
+        "FederatedReadRequest",
+        "FederatedReadLease",
+        "RemoteObservation",
+        "FederatedReadReceipt",
+        "observe"
+      ]
+    },
+    {
+      "module": "knowledge.graph",
+      "path": "codex-rs/hepta-kg/src/lib.rs",
+      "blobSha": "be1b84f977885e430e7bcce23fda60bf81af118d",
+      "exports": [
+        "KnowledgeEdge",
+        "KnowledgeProjection",
+        "rebuild"
+      ]
+    },
+    {
+      "module": "compact.engine",
+      "path": "codex-rs/hepta-compact-engine/src/lib.rs",
+      "blobSha": "b95dfeb1cf5515190b4093853ab7f070f630ed22",
+      "exports": [
+        "CompactCheckpoint",
+        "compact"
+      ]
+    },
+    {
+      "module": "prompt.registry",
+      "path": "codex-rs/hepta-prompt-registry/src/lib.rs",
+      "blobSha": "84905f3149b28c81fa03337636e8ecdc9059f436",
+      "exports": [
+        "PromptRegistry",
+        "PromptFactor",
+        "PromptRealization",
+        "RegistryReceipt",
+        "register_factor",
+        "admit_factor",
+        "register_realization",
+        "revoke_factor"
+      ]
+    },
+    {
+      "module": "context.compiler",
+      "path": "codex-rs/hepta-context-compiler/src/lib.rs",
+      "blobSha": "68723686724b774ef6a5fd27e36c2c6bc2d5ee60",
+      "exports": [
+        "CompilationRequest",
+        "ContextCompilationReceipt",
+        "CompilationRequirementsV1",
+        "compile",
+        "compile_candidate_bound",
+        "compile_with_requirements"
+      ]
+    },
+    {
+      "module": "objective.compiler",
+      "path": "codex-rs/hepta-objective/src/objective_admission.rs",
+      "blobSha": "d07d1c1a0c314ba8c4713a25d613ad45d8269978",
+      "exports": [
+        "ObjectiveAdmissionProfileV1",
+        "ObjectiveAdmissionContextV1",
+        "ObjectiveAdmissionReceiptV1",
+        "ObjectiveAdmissionOutcomeV1",
+        "admit_and_compile_objective_v1"
+      ]
+    },
     {
       "module": "utility.ndu",
       "path": "codex-rs/hepta-ndu/src/lib.rs",
@@ -20,65 +359,148 @@
         "admit_covariance_profile",
         "estimate_conditional_moments",
         "solve_backward_regression"
-      ],
-      "interpretation": "Deterministic exports plus bounded native shadow conditional moments and covariance regression; production conditioning, independent mathematical admission and real consumers are not inferred."
+      ]
+    },
+    {
+      "module": "control.runtime",
+      "path": "codex-rs/hepta-control-plane/src/organ_runtime.rs",
+      "blobSha": "4d103ac856d6f37426be03a0538d9187e49a5965",
+      "exports": [
+        "OrganHostV1",
+        "TrustedReadOnlyOrganV1",
+        "OrganDeliveryV1",
+        "OrganFaultRecordV1",
+        "start_all",
+        "dispatch_once",
+        "stop_all"
+      ]
     },
     {
       "module": "learning.ledger",
       "path": "codex-rs/hepta-learning-ledger/src/lib.rs",
-      "blobSha": "c17b62a0d408b0366cba9923b74e7af1c5bc596b",
+      "blobSha": "4374ec9a8cce83fab9e491773cfb389aa39306f6",
       "exports": [
         "DurableLedger",
         "LedgerAnchor",
         "LedgerRecovery",
-        "inspect_ledger",
-        "LearningLedger"
-      ],
-      "interpretation": "Pure core and opt-in host-authorized durable adapter; real observer authentication and host composition remain separate."
+        "LearningLedger",
+        "ShadowDecisionRequest",
+        "ShadowDecisionArtifact",
+        "append_shadow_decision",
+        "prepare_shadow_decision"
+      ]
     },
     {
-      "module": "cognitive.store",
-      "path": "codex-rs/hepta-cognitive-store/src/lib.rs",
-      "blobSha": "bcde2e155f283318971989001c832e297e4ad7c7",
+      "module": "learning.operator",
+      "path": "codex-rs/hepta-bellman-operator/src/lib.rs",
+      "blobSha": "075adc51a9a981cdbe743e471ca96e3173f01f99",
       "exports": [
-        "CognitiveStore",
-        "append",
-        "snapshot_records",
-        "BTreeMap"
-      ],
-      "interpretation": "This pinned owner remains in-memory, with checked failure atomicity and original retry receipts. The separate hepta-memory owner provides SQLite storage and exact current-cut witness capture; recovery admission remains fail-closed without opening SQLite until a descriptor-safe backend and current writer fencing are available. Independent current witness authority and production admission are not inferred."
+        "Transition",
+        "DatasetSnapshot",
+        "TrainingRequest",
+        "BellmanOperatorArtifact",
+        "train"
+      ]
+    },
+    {
+      "module": "learning.eval",
+      "path": "codex-rs/hepta-intelligence-eval/src/temporal_evaluation.rs",
+      "blobSha": "f6a832b964f35a9a4e6bc27c2710638f3e7ca4c6",
+      "exports": [
+        "TemporalEvaluationPlan",
+        "TemporalEvaluationReceipt",
+        "TemporalEvaluationError",
+        "evaluate_temporal_holdout"
+      ]
+    },
+    {
+      "module": "learning.artifacts",
+      "path": "codex-rs/hepta-learning-artifacts/src/lib.rs",
+      "blobSha": "6d1f37b485ad8fc4c82bb6a0ef3697e4b86c5e70",
+      "exports": [
+        "ArtifactRegistry",
+        "CreateOnlyArtifactFile",
+        "PinnedCandidateSpec",
+        "LoadedPinnedCandidate",
+        "load_pinned_candidate",
+        "write_candidate_payload",
+        "read_candidate_payload",
+        "prepare_dataset_revocation"
+      ]
     },
     {
       "module": "neuron.runtime",
       "path": "codex-rs/hepta-neuron/src/lib.rs",
       "blobSha": "0630fd43b70768f7b9ffdf0bd1b27d78f2acf171",
       "exports": [
+        "NeuronState",
+        "StepRequest",
+        "NeuronSignalReceipt",
         "SparseJournal",
-        "JournalAnchor",
         "SparseCheckpoint",
         "SparseSignalReceipt",
         "sparse_tick"
-      ],
-      "interpretation": "Sparse mechanisms and optional checkpoint journal; the distinct legacy step profile and a model digest do not prove real encoder use."
+      ]
     },
     {
-      "module": "learning.artifacts",
-      "path": "codex-rs/hepta-learning-artifacts/src/lib.rs",
-      "blobSha": "b9c3649a914444a69eaa80a03d13d38bed82f126",
+      "module": "intuition.policy",
+      "path": "codex-rs/hepta-intuition/src/lib.rs",
+      "blobSha": "96730953c88569f74e6268c87fca0ef2c8ae23df",
       "exports": [
-        "ArtifactRegistry",
-        "CreateOnlyArtifactFile",
-        "LoadedPinnedCandidate",
-        "PinnedCandidateLoadError",
-        "PinnedCandidateSpec",
-        "load_pinned_candidate",
-        "write_candidate_payload",
-        "read_candidate_payload",
-        "write_registry_snapshot",
-        "read_registry_snapshot",
-        "prepare_dataset_revocation"
-      ],
-      "interpretation": "Artifact storage writers remain create-only. The reviewed pinned loader performs read-only exact snapshot, manifest, lineage and payload validation from caller-opened files. It does not authenticate freshness, establish newest state, select or activate an artifact, prove anti-rollback, compose a production caller or authorize promotion or release."
+        "ActionCandidate",
+        "DecisionRequest",
+        "Decision",
+        "IntuitionDecisionReceipt",
+        "decide"
+      ]
+    },
+    {
+      "module": "prompt.optimizer",
+      "path": "codex-rs/hepta-prompt-optimizer/src/lib.rs",
+      "blobSha": "ba8b14e770a33896ab465d5ad0152ac8d6c62d8b",
+      "exports": [
+        "PromptCandidate",
+        "OptimizationRequest",
+        "CandidateDecision",
+        "PromptPortfolioReceipt",
+        "optimize"
+      ]
+    },
+    {
+      "module": "learning.plasticity",
+      "path": "codex-rs/hepta-plasticity/src/parameter_v2.rs",
+      "blobSha": "bfbfc27f8f4210ced8eee4210c6120e7cb8a2d00",
+      "exports": [
+        "propose_v2",
+        "verify_parameter_proposal_v2",
+        "within_relative_limit"
+      ]
+    },
+    {
+      "module": "intelligence.control",
+      "path": "codex-rs/hepta-intelligence/src/vertical.rs",
+      "blobSha": "c9de33c4123e7a235a0b463c0d2c7ece86a3e4fc",
+      "exports": [
+        "ReadOnlyVerticalRequest",
+        "ReadOnlyVerticalReceipt",
+        "ReadOnlyVerticalError",
+        "run_read_only_vertical"
+      ]
+    },
+    {
+      "module": "control.engineering",
+      "path": "tools/hepta-engineering-control/hepta_engineering_control.py",
+      "blobSha": "8bb54ee7998ca1e6202ee67096f51b1fde6ca64a",
+      "exports": [
+        "WorkPackage",
+        "PathLease",
+        "ScheduleReceipt",
+        "IntegrationEvidence",
+        "IntegrationDecision",
+        "schedule",
+        "decide_integration"
+      ]
     }
-  ]
+  ],
+  "interpretation": "This document pins one reviewed primary source blob and observed identifier set for each canonical module. It does not prove exhaustive designed-operation coverage, consumer callsites, product execution, deployment, external effect, independent acceptance, promotion, or release."
 }

@@ -281,6 +281,10 @@ fn identity_digest(kind: &[u8], value: &str) -> Sha256Digest {
     Sha256Digest::for_bytes(&hasher.finalize())
 }
 
+#[expect(
+    clippy::too_many_arguments,
+    reason = "digest preimage fields must remain explicit and ordered"
+)]
 fn binding_digest(
     lease_id: &Sha256Digest,
     fencing_token: &Sha256Digest,
