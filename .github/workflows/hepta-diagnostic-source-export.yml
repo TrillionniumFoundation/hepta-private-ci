@@ -88,6 +88,25 @@ jobs:
           set -e
           test "$(git rev-parse HEAD)" = "${{ github.event.pull_request.head.sha }}"
 
+      - name: Produce repository-pinned Rust formatting candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${{ github.event.pull_request.head.sha }}"
+          cargo fmt --all --manifest-path ./codex-rs/Cargo.toml -- --config imports_granularity=Item
+          mkdir -p .hepta-diagnostics/formatted-rust/codex-rs
+          git diff --name-only --diff-filter=ACMRT -- codex-rs \
+            | while IFS= read -r path; do
+                case "$path" in
+                  *.rs)
+                    install -D -m 0644 "$path" ".hepta-diagnostics/formatted-rust/$path"
+                    ;;
+                esac
+              done
+          tar -C .hepta-diagnostics/formatted-rust -czf .hepta-diagnostics/formatted-rust.tar.gz codex-rs
+          git diff --check
+          git diff --stat -- codex-rs > .hepta-diagnostics/formatted-rust.stat
+
       - name: Retain Rust policy diagnostics
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
@@ -206,16 +225,15 @@ jobs:
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "${{ github.event.pull_request.head.sha }}"
           uv run --frozen --project scripts ruff format scripts
-          mkdir -p .hepta-diagnostics/formatted-scripts
-          for path in \
-            scripts/hepta-algorithm-docs.py \
-            scripts/hepta-docs.py \
-            scripts/hepta-g5-local-profile.py \
-            scripts/hepta-hnmf.py \
-            scripts/hepta-module-docs.py \
-            scripts/hepta-repository-integrity.py; do
-            install -D -m 0644 "$path" ".hepta-diagnostics/formatted-scripts/$path"
-          done
+          mkdir -p .hepta-diagnostics/formatted-scripts/scripts
+          git diff --name-only --diff-filter=ACMRT -- scripts \
+            | while IFS= read -r path; do
+                case "$path" in
+                  *.py)
+                    install -D -m 0644 "$path" ".hepta-diagnostics/formatted-scripts/$path"
+                    ;;
+                esac
+              done
           tar -C .hepta-diagnostics/formatted-scripts -czf .hepta-diagnostics/formatted-scripts.tar.gz scripts
           git diff --check
           git diff --stat -- scripts > .hepta-diagnostics/formatted-scripts.stat

@@ -23,6 +23,7 @@ pub use fixed::FixedQ32Error;
 pub use fixed::ProbabilityQ32;
 pub use identity::AuthorityPosture;
 pub use identity::Generation;
+pub use identity::IdentityError;
 pub use identity::LogicalSequence;
 pub use identity::Revision;
 pub use identity::StableId;

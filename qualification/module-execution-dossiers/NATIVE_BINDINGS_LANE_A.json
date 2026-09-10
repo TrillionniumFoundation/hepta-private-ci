@@ -1,0 +1,113 @@
+{
+  "schema": "hepta.native-source-observations.lane-a.v1",
+  "schemaVersion": 1,
+  "lane": "LANE-A-FOUNDATION",
+  "sourceCodeCommit": "adc7414fce248fe65c4078263953d3a6f39423a2",
+  "moduleCoverage": 7,
+  "coverageScope": "current Lane A executable slices; exact source blobs and observed identifiers only",
+  "evidenceClass": "source_observation_only",
+  "consumerCallsitesProved": false,
+  "productExecutionProved": false,
+  "closedWorldModules": [
+    "platform.types",
+    "platform.wire",
+    "kernel.authority",
+    "kernel.operations",
+    "kernel.evidence",
+    "auth.authbus",
+    "secrets.heptabao"
+  ],
+  "observations": [
+    {
+      "module": "platform.types",
+      "path": "codex-rs/hepta-types/src/numeric_conversion.rs",
+      "blobSha": "34ac6fb5ff34a177f88e59abce76626d075d92e0",
+      "exports": [
+        "rescale_signal",
+        "NumericSignalV1",
+        "NumericErrorBoundV1",
+        "NumericConversionReceiptV1"
+      ]
+    },
+    {
+      "module": "platform.wire",
+      "path": "codex-rs/hepta-wire/src/envelope.rs",
+      "blobSha": "00e767ccc12e1703296f8f73ef1f53da6996922a",
+      "exports": [
+        "WireEnvelope",
+        "WireError",
+        "MAX_WIRE_PAYLOAD_BYTES",
+        "encode",
+        "decode"
+      ]
+    },
+    {
+      "module": "kernel.authority",
+      "path": "codex-rs/hepta-contracts/src/final_use.rs",
+      "blobSha": "7b9158657df7d76e8e9a46e1b5fa1da50473f390",
+      "exports": [
+        "FinalUseAuthority",
+        "VerifiedUseToken",
+        "claim",
+        "with_verified_use",
+        "verify_strict"
+      ]
+    },
+    {
+      "module": "kernel.operations",
+      "path": "codex-rs/hepta-operations/src/ledger.rs",
+      "blobSha": "bd087cd814e5c51b13908f455abd60b165f69569",
+      "exports": [
+        "MAX_MODEL_OPERATION_RECORDS",
+        "OperationLedger",
+        "begin",
+        "authorize",
+        "record_dispatch",
+        "mark_indeterminate",
+        "observe_terminal"
+      ]
+    },
+    {
+      "module": "kernel.evidence",
+      "path": "codex-rs/hepta-evidence/src/provider_effect_store.rs",
+      "blobSha": "45b1794ee80a8e4b1067b7b8fd86cb2f2d08c241",
+      "exports": [
+        "StoredProviderEffect",
+        "append_provider_effect_intent",
+        "dispatch_provider_effect_qualification",
+        "append_provider_effect_ack",
+        "mark_provider_effect_indeterminate",
+        "reconcile_provider_effect_lookup"
+      ]
+    },
+    {
+      "module": "auth.authbus",
+      "path": "codex-rs/hepta-authbus/src/lib.rs",
+      "blobSha": "8df3f4bd424f53329e54ce509084deceea69ce34",
+      "exports": [
+        "PreverifiedAuthEnvelope",
+        "TrustedReplayContext",
+        "VerificationReceipt",
+        "ReplayWindow",
+        "verify"
+      ]
+    },
+    {
+      "module": "secrets.heptabao",
+      "path": "codex-rs/hepta-bao-adapter/src/https_consumer.rs",
+      "blobSha": "90c46f6361cc40d8d0c8e0aebb8eae9b2955010d",
+      "exports": [
+        "BaoToken",
+        "BaoReadRequest",
+        "BaoSecretReceipt",
+        "BaoClient",
+        "binding",
+        "consume_kv_v2"
+      ]
+    }
+  ],
+  "interpretation": "This file supersedes the Lane A rows of NATIVE_BINDINGS.json for current-tree verification. sourceCodeCommit is non-authoritative provenance only; exact candidate identity is supplied by the source receipt, which binds HEAD, tree and this manifest. sourceObservationDigest and every blobSha bind the current source table. The file proves source identity and observed symbols only; it does not prove production callers, activation, external effects, independent acceptance, promotion or release.",
+  "sourceCodeCommitRole": "provenance_only_non_authoritative",
+  "candidateBinding": "exact_head_tree_receipt_plus_current_blob_table",
+  "sourceObservationDigest": "20ffe4334377ab580b65f294930003e1a644fca7239f85423b0fb7bf5f5a9107"
+}
