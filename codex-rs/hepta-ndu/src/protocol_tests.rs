@@ -88,10 +88,8 @@ fn zero_context_digest_rejects_before_protocol_publication() {
         coefficient_digest: Digest32::of_bytes(b"coefficient"),
     };
 
-    let error = bind_solver_iteration_receipt_v1(
-        &context,
-        receipts.first().expect("first solver receipt"),
-    )
-    .expect_err("zero objective digest must reject");
+    let error =
+        bind_solver_iteration_receipt_v1(&context, receipts.first().expect("first solver receipt"))
+            .expect_err("zero objective digest must reject");
     assert_eq!(error.code(), "NDU-E002");
 }

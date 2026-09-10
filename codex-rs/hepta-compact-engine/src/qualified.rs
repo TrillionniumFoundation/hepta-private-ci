@@ -422,7 +422,9 @@ pub fn prove_compaction(
         authority: AuthorityPosture::DENY_ALL,
     };
     proof.proof_digest = proof.compute_proof_digest();
-    proof.validate().map_err(QualifiedCompactionError::Contract)?;
+    proof
+        .validate()
+        .map_err(QualifiedCompactionError::Contract)?;
     Ok(proof)
 }
 
@@ -535,10 +537,7 @@ impl fmt::Display for QualifiedCompactionError {
 
 impl StdError for QualifiedCompactionError {}
 
-fn ensure_digest(
-    name: &'static str,
-    digest: Digest32,
-) -> Result<(), QualifiedCompactionError> {
+fn ensure_digest(name: &'static str, digest: Digest32) -> Result<(), QualifiedCompactionError> {
     if digest.is_zero() {
         return Err(QualifiedCompactionError::EmptyDigest(name));
     }

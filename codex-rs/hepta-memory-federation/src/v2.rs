@@ -210,10 +210,7 @@ impl RemoteFederatedResponseV2 {
         for (name, digest) in [
             ("response_scope", self.scope_digest),
             ("response_purpose", self.purpose_digest),
-            (
-                "response_generation_vector",
-                self.generation_vector_digest,
-            ),
+            ("response_generation_vector", self.generation_vector_digest),
             ("response", self.response_digest),
         ] {
             ensure_digest(name, digest)?;
@@ -224,15 +221,10 @@ impl RemoteFederatedResponseV2 {
         if matches!(self.completeness, FederatedCompletenessV2::Empty) && !self.items.is_empty() {
             return Err(FederationV2Error::InvalidCompleteness);
         }
-        if matches!(self.completeness, FederatedCompletenessV2::Complete)
-            && self.items.is_empty()
-        {
+        if matches!(self.completeness, FederatedCompletenessV2::Complete) && self.items.is_empty() {
             return Err(FederationV2Error::InvalidCompleteness);
         }
-        if matches!(
-            self.completeness,
-            FederatedCompletenessV2::Indeterminate
-        ) {
+        if matches!(self.completeness, FederatedCompletenessV2::Indeterminate) {
             return Err(FederationV2Error::InvalidCompleteness);
         }
         let mut identities = BTreeSet::new();
@@ -308,19 +300,14 @@ impl FederatedResultV2 {
             return Err(FederationV2Error::ZeroValue("result_expiry"));
         }
         if self.coverage.requested_peers != 1
-            || u64::from(self.coverage.completed_peers)
-                + u64::from(self.coverage.failed_peers)
-                > 1
+            || u64::from(self.coverage.completed_peers) + u64::from(self.coverage.failed_peers) > 1
         {
             return Err(FederationV2Error::InvalidCoverage);
         }
         if self.items.len() > MAX_FEDERATED_RESULTS_V2 {
             return Err(FederationV2Error::ResultLimitExceeded);
         }
-        let indeterminate = matches!(
-            self.completeness,
-            FederatedCompletenessV2::Indeterminate
-        );
+        let indeterminate = matches!(self.completeness, FederatedCompletenessV2::Indeterminate);
         if indeterminate != matches!(self.validity, FederatedValidityV2::Indeterminate) {
             return Err(FederationV2Error::InvalidCompleteness);
         }

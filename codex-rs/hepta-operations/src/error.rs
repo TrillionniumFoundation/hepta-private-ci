@@ -29,7 +29,10 @@ impl fmt::Display for OperationError {
             Self::Conflict(id) => write!(formatter, "operation binding conflict: {id}"),
             Self::InvalidDigest(field) => write!(formatter, "{field} digest must be nonzero"),
             Self::CapacityExceeded { resource, maximum } => {
-                write!(formatter, "{resource} capacity exceeded; maximum is {maximum}")
+                write!(
+                    formatter,
+                    "{resource} capacity exceeded; maximum is {maximum}"
+                )
             }
             Self::InvalidTransition { from, to } => {
                 write!(

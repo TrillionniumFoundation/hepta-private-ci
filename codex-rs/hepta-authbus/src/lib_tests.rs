@@ -42,12 +42,8 @@ fn envelope(sequence: u64) -> PreverifiedAuthEnvelope {
 #[test]
 fn exact_envelope_is_replay_checked_without_authority_grant() {
     let mut window = ReplayWindow::new(8);
-    let Ok(receipt) = window.verify(
-        context(),
-        envelope(1),
-        digest(b"scope"),
-        digest(b"payload"),
-    ) else {
+    let Ok(receipt) = window.verify(context(), envelope(1), digest(b"scope"), digest(b"payload"))
+    else {
         panic!("exact envelope must verify");
     };
     assert_eq!(receipt.sequence, 1);
@@ -59,12 +55,9 @@ fn exact_envelope_is_replay_checked_without_authority_grant() {
 fn a_nonzero_signature_reference_is_not_cryptographic_authority() {
     let mut value = envelope(1);
     value.signature_digest = digest(b"untrusted-but-nonzero-reference");
-    let Ok(receipt) = ReplayWindow::new(8).verify(
-        context(),
-        value,
-        digest(b"scope"),
-        digest(b"payload"),
-    ) else {
+    let Ok(receipt) =
+        ReplayWindow::new(8).verify(context(), value, digest(b"scope"), digest(b"payload"))
+    else {
         panic!("the replay verifier only performs structural digest checks");
     };
     assert_eq!(receipt.authority, AuthorityPosture::DENY_ALL);
@@ -76,21 +69,11 @@ fn replay_is_rejected_within_one_issuer_epoch_subject_and_scope() {
     let mut window = ReplayWindow::new(8);
     assert!(
         window
-            .verify(
-                context(),
-                envelope(1),
-                digest(b"scope"),
-                digest(b"payload"),
-            )
+            .verify(context(), envelope(1), digest(b"scope"), digest(b"payload"),)
             .is_ok()
     );
     assert_eq!(
-        window.verify(
-            context(),
-            envelope(1),
-            digest(b"scope"),
-            digest(b"payload"),
-        ),
+        window.verify(context(), envelope(1), digest(b"scope"), digest(b"payload"),),
         Err(Error::Replay)
     );
 }
@@ -100,12 +83,7 @@ fn scope_issuer_and_key_epoch_have_independent_replay_sequences() {
     let mut window = ReplayWindow::new(8);
     assert!(
         window
-            .verify(
-                context(),
-                envelope(1),
-                digest(b"scope"),
-                digest(b"payload"),
-            )
+            .verify(context(), envelope(1), digest(b"scope"), digest(b"payload"),)
             .is_ok()
     );
 
@@ -154,12 +132,7 @@ fn trusted_revocation_context_is_fail_closed() {
     let mut revoked = context();
     revoked.revoked = true;
     assert_eq!(
-        ReplayWindow::new(8).verify(
-            revoked,
-            envelope(1),
-            digest(b"scope"),
-            digest(b"payload"),
-        ),
+        ReplayWindow::new(8).verify(revoked, envelope(1), digest(b"scope"), digest(b"payload"),),
         Err(Error::Revoked)
     );
 }
@@ -167,12 +140,7 @@ fn trusted_revocation_context_is_fail_closed() {
 #[test]
 fn payload_drift_is_rejected() {
     assert_eq!(
-        ReplayWindow::new(8).verify(
-            context(),
-            envelope(1),
-            digest(b"scope"),
-            digest(b"other"),
-        ),
+        ReplayWindow::new(8).verify(context(), envelope(1), digest(b"scope"), digest(b"other"),),
         Err(Error::PayloadMismatch)
     );
 }
@@ -182,12 +150,7 @@ fn expiration_is_fail_closed() {
     let mut expired = context();
     expired.now_ms = 2_000;
     assert_eq!(
-        ReplayWindow::new(8).verify(
-            expired,
-            envelope(1),
-            digest(b"scope"),
-            digest(b"payload"),
-        ),
+        ReplayWindow::new(8).verify(expired, envelope(1), digest(b"scope"), digest(b"payload"),),
         Err(Error::Expired)
     );
 }
@@ -197,21 +160,11 @@ fn zero_digest_and_zero_sequence_are_rejected() {
     let mut zero_digest = envelope(1);
     zero_digest.signature_digest = Digest32::ZERO;
     assert_eq!(
-        ReplayWindow::new(8).verify(
-            context(),
-            zero_digest,
-            digest(b"scope"),
-            digest(b"payload"),
-        ),
+        ReplayWindow::new(8).verify(context(), zero_digest, digest(b"scope"), digest(b"payload"),),
         Err(Error::EmptyDigest("signature"))
     );
     assert_eq!(
-        ReplayWindow::new(8).verify(
-            context(),
-            envelope(0),
-            digest(b"scope"),
-            digest(b"payload"),
-        ),
+        ReplayWindow::new(8).verify(context(), envelope(0), digest(b"scope"), digest(b"payload"),),
         Err(Error::ZeroSequence)
     );
 }
@@ -221,23 +174,13 @@ fn replay_key_capacity_is_bounded() {
     let mut window = ReplayWindow::new(1);
     assert!(
         window
-            .verify(
-                context(),
-                envelope(1),
-                digest(b"scope"),
-                digest(b"payload"),
-            )
+            .verify(context(), envelope(1), digest(b"scope"), digest(b"payload"),)
             .is_ok()
     );
     let mut second = envelope(1);
     second.subject_id = id("subject:2");
     assert_eq!(
-        window.verify(
-            context(),
-            second,
-            digest(b"scope"),
-            digest(b"payload"),
-        ),
+        window.verify(context(), second, digest(b"scope"), digest(b"payload"),),
         Err(Error::CapacityExceeded)
     );
 }

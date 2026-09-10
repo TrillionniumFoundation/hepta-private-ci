@@ -151,8 +151,7 @@ impl ReplayWindow {
         {
             return Err(Error::CapacityExceeded);
         }
-        self.highest_sequence
-            .insert(replay_key, envelope.sequence);
+        self.highest_sequence.insert(replay_key, envelope.sequence);
 
         let mut bytes = Vec::new();
         bytes.extend_from_slice(b"hepta.authbus.preverified-replay.v1\0");

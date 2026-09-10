@@ -299,10 +299,16 @@ impl fmt::Display for PlannerError {
                 "candidate {candidate} requires unknown or unready owner {owner}"
             ),
             Self::InvalidResourceReservation(axis) => {
-                write!(formatter, "invalid essential resource reservation for {axis}")
+                write!(
+                    formatter,
+                    "invalid essential resource reservation for {axis}"
+                )
             }
             Self::MissingResourceAxis { candidate, axis } => {
-                write!(formatter, "candidate {candidate} is missing resource axis {axis}")
+                write!(
+                    formatter,
+                    "candidate {candidate} is missing resource axis {axis}"
+                )
             }
             Self::UnknownResourceAxis { candidate, axis } => write!(
                 formatter,
@@ -763,10 +769,7 @@ fn validate_candidates(
             return Err(PlannerError::EmptyDigest("candidate final payload"));
         }
         candidate.required_owner_ids.sort();
-        reject_duplicate_ids(
-            &candidate.required_owner_ids,
-            PlannerError::DuplicateOwner,
-        )?;
+        reject_duplicate_ids(&candidate.required_owner_ids, PlannerError::DuplicateOwner)?;
         candidate.final_payload_digests.sort();
         candidate.final_payload_digests.dedup();
         candidate.resource_costs.sort();

@@ -113,9 +113,7 @@ impl KnowledgeGenerationV2 {
             return Err(KnowledgeGenerationErrorV2::AuthorityGranted);
         }
         if self.generation_digest != compute_generation_digest(self) {
-            return Err(KnowledgeGenerationErrorV2::DigestMismatch(
-                "generation",
-            ));
+            return Err(KnowledgeGenerationErrorV2::DigestMismatch("generation"));
         }
         Ok(())
     }
@@ -155,9 +153,7 @@ impl KnowledgePublicationReceiptV2 {
         ensure_digest("published_generation", self.generation_digest)?;
         match (self.predecessor_generation, self.predecessor_digest) {
             (None, None) if self.generation.get() == 1 => {}
-            (Some(generation), Some(digest))
-                if generation.next().ok() == Some(self.generation) =>
-            {
+            (Some(generation), Some(digest)) if generation.next().ok() == Some(self.generation) => {
                 ensure_digest("publication_predecessor", digest)?;
             }
             _ => {
@@ -168,9 +164,7 @@ impl KnowledgePublicationReceiptV2 {
             return Err(KnowledgeGenerationErrorV2::AuthorityGranted);
         }
         if self.publication_digest != compute_publication_digest(self) {
-            return Err(KnowledgeGenerationErrorV2::DigestMismatch(
-                "publication",
-            ));
+            return Err(KnowledgeGenerationErrorV2::DigestMismatch("publication"));
         }
         Ok(())
     }
@@ -648,10 +642,7 @@ impl fmt::Display for KnowledgeGenerationErrorV2 {
 
 impl StdError for KnowledgeGenerationErrorV2 {}
 
-fn ensure_digest(
-    name: &'static str,
-    digest: Digest32,
-) -> Result<(), KnowledgeGenerationErrorV2> {
+fn ensure_digest(name: &'static str, digest: Digest32) -> Result<(), KnowledgeGenerationErrorV2> {
     if digest.is_zero() {
         return Err(KnowledgeGenerationErrorV2::EmptyDigest(name));
     }

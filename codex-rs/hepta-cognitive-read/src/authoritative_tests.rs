@@ -57,8 +57,8 @@ fn envelope() -> AuthoritativeSnapshotV1 {
     };
     let snapshot = build_snapshot(generation(1), vec![record])
         .unwrap_or_else(|error| panic!("valid snapshot: {error}"));
-    let key = CognitiveSnapshotKeyV1::new(vector())
-        .unwrap_or_else(|error| panic!("valid key: {error}"));
+    let key =
+        CognitiveSnapshotKeyV1::new(vector()).unwrap_or_else(|error| panic!("valid key: {error}"));
     AuthoritativeSnapshotV1::new(id("provider:one"), key, snapshot, 5, 50)
         .unwrap_or_else(|error| panic!("valid envelope: {error}"))
 }

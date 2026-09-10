@@ -78,13 +78,11 @@ impl AdmittedCognitiveStoreV2 {
         if snapshot_key.vector.memory_ledger_frontier == 0 {
             return Err(CognitiveStoreV2Error::ZeroMemoryFrontier);
         }
-        if maximum_record_revisions == 0
-            || maximum_record_revisions > MAX_V2_RECORD_REVISIONS
-        {
+        if maximum_record_revisions == 0 || maximum_record_revisions > MAX_V2_RECORD_REVISIONS {
             return Err(CognitiveStoreV2Error::InvalidCapacity);
         }
-        let sequence = LogicalSequence::new(1)
-            .map_err(|_| CognitiveStoreV2Error::SequenceOverflow)?;
+        let sequence =
+            LogicalSequence::new(1).map_err(|_| CognitiveStoreV2Error::SequenceOverflow)?;
         Ok(Self {
             histories: BTreeMap::new(),
             intent_journal: BTreeMap::new(),
@@ -107,7 +105,9 @@ impl AdmittedCognitiveStoreV2 {
 
     #[must_use]
     pub fn current_head(&self, record_id: &StableId) -> Option<&MemoryRecord> {
-        self.histories.get(record_id).and_then(|history| history.last())
+        self.histories
+            .get(record_id)
+            .and_then(|history| history.last())
     }
 
     #[must_use]
@@ -124,9 +124,7 @@ impl AdmittedCognitiveStoreV2 {
         candidate
             .validate()
             .map_err(CognitiveStoreV2Error::Contract)?;
-        intent
-            .validate()
-            .map_err(CognitiveStoreV2Error::Contract)?;
+        intent.validate().map_err(CognitiveStoreV2Error::Contract)?;
         if candidate.verification == MemoryVerificationState::Revoked {
             return Err(CognitiveStoreV2Error::RevokedCandidate);
         }
@@ -422,11 +420,7 @@ impl AdmittedCognitiveStoreV2 {
         record: MemoryRecord,
         disposition: MemoryWriteDisposition,
     ) -> Result<MemoryWriteReceiptV1, CognitiveStoreV2Error> {
-        let current_count = self
-            .histories
-            .values()
-            .map(Vec::len)
-            .sum::<usize>();
+        let current_count = self.histories.values().map(Vec::len).sum::<usize>();
         if current_count >= self.maximum_record_revisions {
             return Err(CognitiveStoreV2Error::CapacityExceeded);
         }
@@ -465,8 +459,8 @@ impl AdmittedCognitiveStoreV2 {
         next_vector.memory_ledger_frontier = next_memory_frontier;
         next_vector.tombstone_frontier = next_tombstone_frontier;
         next_vector.knowledge_fact_frontier = next_knowledge_fact_frontier;
-        let next_snapshot_key = CognitiveSnapshotKeyV1::new(next_vector)
-            .map_err(CognitiveStoreV2Error::Contract)?;
+        let next_snapshot_key =
+            CognitiveSnapshotKeyV1::new(next_vector).map_err(CognitiveStoreV2Error::Contract)?;
         let record_id = record.record_id.clone();
         let record_digest = record.record_digest();
         let receipt = MemoryWriteReceiptV1 {
@@ -752,18 +746,14 @@ fn validate_record_history(
         match previous {
             None => {
                 if record.revision.get() != 1 || record.predecessor_digest.is_some() {
-                    return Err(CognitiveStoreV2Error::BrokenLineage(
-                        record_id.to_string(),
-                    ));
+                    return Err(CognitiveStoreV2Error::BrokenLineage(record_id.to_string()));
                 }
             }
             Some(previous) => {
                 if record.revision.get() != previous.revision.get().saturating_add(1)
                     || record.predecessor_digest != Some(previous.record_digest())
                 {
-                    return Err(CognitiveStoreV2Error::BrokenLineage(
-                        record_id.to_string(),
-                    ));
+                    return Err(CognitiveStoreV2Error::BrokenLineage(record_id.to_string()));
                 }
             }
         }

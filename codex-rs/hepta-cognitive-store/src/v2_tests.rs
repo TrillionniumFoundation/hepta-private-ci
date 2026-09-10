@@ -41,7 +41,11 @@ fn snapshot_key() -> CognitiveSnapshotKeyV1 {
     .unwrap_or_else(|error| panic!("valid snapshot key: {error}"))
 }
 
-fn candidate(record_id: &str, content: &str, kind: MemoryAdmissionKind) -> MemoryAdmissionCandidateV1 {
+fn candidate(
+    record_id: &str,
+    content: &str,
+    kind: MemoryAdmissionKind,
+) -> MemoryAdmissionCandidateV1 {
     MemoryAdmissionCandidateV1 {
         candidate_id: id(record_id),
         proposed_by: id("proposer:1"),
@@ -109,14 +113,21 @@ fn admission_appends_full_revision_history_and_advances_frontiers() {
 
     let second = candidate("memory:1", "content:v2", MemoryAdmissionKind::Inference);
     let second_receipt = store
-        .append_admitted(&Verifier, second.clone(), intent(&store, "intent:2", &second))
+        .append_admitted(
+            &Verifier,
+            second.clone(),
+            intent(&store, "intent:2", &second),
+        )
         .unwrap_or_else(|error| panic!("append correction: {error}"));
     assert_eq!(second_receipt.committed_frontier, 3);
     let history = store.history(&id("memory:1")).expect("history exists");
     assert_eq!(history.len(), 2);
     assert_eq!(history[0].revision, revision(1));
     assert_eq!(history[1].revision, revision(2));
-    assert_eq!(history[1].predecessor_digest, Some(history[0].record_digest()));
+    assert_eq!(
+        history[1].predecessor_digest,
+        Some(history[0].record_digest())
+    );
 }
 
 #[test]

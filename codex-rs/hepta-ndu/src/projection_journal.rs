@@ -176,13 +176,14 @@ impl NduProjectionJournalV1 {
         let revoked = self.revoked_digests();
         let mut selected = None;
         for entry in &self.entries {
-            if entry.objective_digest != objective_digest || entry.subject_digest != subject_digest {
+            if entry.objective_digest != objective_digest || entry.subject_digest != subject_digest
+            {
                 continue;
             }
             match entry.kind {
                 NduProjectionKindV1::SelectedProjection => {
-                    selected = (!revoked.contains(&entry.payload_digest))
-                        .then_some(entry.payload_digest);
+                    selected =
+                        (!revoked.contains(&entry.payload_digest)).then_some(entry.payload_digest);
                 }
                 NduProjectionKindV1::Revocation if selected == Some(entry.payload_digest) => {
                     selected = None;
@@ -431,10 +432,7 @@ fn read_u64(bytes: &[u8], offset: &mut usize) -> Result<u64, NduProjectionJourna
     Ok(value)
 }
 
-fn read_digest(
-    bytes: &[u8],
-    offset: &mut usize,
-) -> Result<Digest32, NduProjectionJournalError> {
+fn read_digest(bytes: &[u8], offset: &mut usize) -> Result<Digest32, NduProjectionJournalError> {
     let end = (*offset)
         .checked_add(32)
         .ok_or(NduProjectionJournalError::Truncated)?;
