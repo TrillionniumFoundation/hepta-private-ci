@@ -28,7 +28,7 @@ jobs:
       - name: Build Lane B closure tree
         shell: bash
         run: |
-          set -euo pipefail
+          set -euxo pipefail
           python3 .github/scripts/lane_b_closure_builder.py
           python3 .github/scripts/lane_b_closure_canonical_patch.py
           test ! -e .github/scripts/lane_b_closure_builder.py
@@ -40,7 +40,7 @@ jobs:
         id: candidate
         shell: bash
         run: |
-          set -euo pipefail
+          set -euxo pipefail
           git config user.name hepta-lane-b-closure-bot
           git config user.email hepta-lane-b-closure-bot@users.noreply.github.com
           git add -A
@@ -49,28 +49,74 @@ jobs:
           printf 'sha=%s\n' "$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
           printf 'tree=%s\n' "$(git rev-parse HEAD^{tree})" >> "$GITHUB_OUTPUT"
 
-      - name: Verify committed documentation and mappings
+      - name: Verify candidate identity
         shell: bash
         run: |
-          set -euo pipefail
+          set -euxo pipefail
           test "$(git rev-parse HEAD)" = "${{ steps.candidate.outputs.sha }}"
+          git rev-parse HEAD HEAD^{tree}
+
+      - name: Verify Lane B registry and native mappings
+        shell: bash
+        run: |
+          set -euxo pipefail
           python3 scripts/hepta-lane-b-closure.py self-test
           python3 scripts/hepta-lane-b-closure.py generate-status --check
           python3 scripts/hepta-lane-b-closure.py verify
+
+      - name: Verify module document metadata
+        shell: bash
+        run: |
+          set -euxo pipefail
           python3 scripts/hepta_module_doc_metadata.py
           python3 scripts/hepta-module-docs.py self-test
           python3 scripts/hepta-module-docs.py verify
+
+      - name: Verify implementation dossier contracts
+        shell: bash
+        run: |
+          set -euxo pipefail
           python3 qualification/module-execution-dossiers/implementation_contracts.py self-test
           python3 qualification/module-execution-dossiers/implementation_contracts.py verify-repository
+
+      - name: Verify global canonical document system
+        shell: bash
+        run: |
+          set -euxo pipefail
           python3 scripts/hepta-docs.py self-test
           python3 scripts/hepta-docs.py verify
+
+      - name: Verify repository integrity policy
+        shell: bash
+        run: |
+          set -euxo pipefail
           python3 scripts/hepta-repository-integrity.py self-test
           python3 scripts/hepta-repository-integrity.py verify \
             --base 04f60466394a024c218ce66b1b32d1c42c462985 \
             --head "$(git rev-parse HEAD)"
+
+      - name: Verify browser boundary
+        shell: bash
+        run: |
+          set -euxo pipefail
           npm --prefix apps/hepta-browser run ci
+
+      - name: Verify control UI boundary
+        shell: bash
+        run: |
+          set -euxo pipefail
           npm --prefix apps/hepta-control-ui run ci
+
+      - name: Verify native UI boundary
+        shell: bash
+        run: |
+          set -euxo pipefail
           npm --prefix apps/hepta-native run ci
+
+      - name: Verify clean committed candidate
+        shell: bash
+        run: |
+          set -euxo pipefail
           git diff --check
           git diff --exit-code
           test -z "$(git status --porcelain --untracked-files=no)"
@@ -78,5 +124,5 @@ jobs:
       - name: Push verified closure candidate
         shell: bash
         run: |
-          set -euo pipefail
+          set -euxo pipefail
           git push origin "HEAD:${GITHUB_REF_NAME}"
