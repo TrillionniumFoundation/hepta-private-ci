@@ -20,99 +20,45 @@ jobs:
           fetch-depth: 0
           persist-credentials: false
 
-      - name: Emit bounded structural summaries
+      - name: Locate evidence producers and consumers
         shell: bash
         run: |
           set -euo pipefail
-          python3 - <<'PY'
-          from __future__ import annotations
+          echo '=== producers/consumers outside generated qualification payloads ==='
+          git grep -n -E \
+            'archived_job_logs|prepared_by_run|FINAL_QUALIFIED_STATUS|global-gap-closure-final-r[68]|PREPARE\.json|children.*channel_states|channel_states.*children' \
+            -- \
+            . \
+            ':!qualification/**' \
+            ':!.github/workflows/hepta-pr515-blocker-diagnostic.yml' \
+            | head -400 || true
 
-          import hashlib
-          import json
-          from pathlib import Path
-          from typing import Any
+          echo '=== likely convergence scripts/workflows ==='
+          find .github/workflows scripts convergence -type f \
+            \( -iname '*closure*' -o -iname '*converg*' -o -iname '*qualif*' -o -iname '*archive*' \) \
+            -print | sort | head -400
 
-          targets = [
-              Path("qualification/global-gap-closure-final-r6/STATUS.json"),
-              Path("qualification/global-gap-closure-final-r8/receipts/PREPARE.json"),
-          ]
+          echo '=== exact references in bounded text artifacts ==='
+          git grep -n -E \
+            'STATUS\.json|PREPARE\.json|FINAL_QUALIFIED_STATUS\.json' \
+            -- \
+            'qualification/**/*.md' \
+            'qualification/**/*.json' \
+            ':!qualification/global-gap-closure-final-r6/STATUS.json' \
+            ':!qualification/global-gap-closure-final-r8/receipts/PREPARE.json' \
+            | head -400 || true
 
-          def compact_size(value: Any) -> int:
-              return len(
-                  json.dumps(value, ensure_ascii=False, separators=(",", ":")).encode(
-                      "utf-8"
-                  )
-              )
-
-          for path in targets:
-              raw = path.read_bytes()
-              value = json.loads(raw)
-              print(f"FILE={path}")
-              print(f"BYTES={len(raw)}")
-              print(f"SHA256={hashlib.sha256(raw).hexdigest()}")
-              print(f"ROOT_TYPE={type(value).__name__}")
-
-              if isinstance(value, dict):
-                  for key in sorted(value):
-                      child = value[key]
-                      count = len(child) if isinstance(child, (dict, list, str)) else 0
-                      print(
-                          f"TOP key={key!r} type={type(child).__name__} "
-                          f"items={count} compact_bytes={compact_size(child)}"
-                      )
-              elif isinstance(value, list):
-                  print(f"ROOT_ITEMS={len(value)}")
-
-              containers: list[tuple[int, int, str, Any]] = []
-              stack: list[tuple[str, Any, int]] = [("$", value, 0)]
-              while stack:
-                  current_path, node, depth = stack.pop()
-                  if isinstance(node, dict):
-                      containers.append((compact_size(node), len(node), current_path, node))
-                      if depth < 4:
-                          for key, child in node.items():
-                              stack.append((f"{current_path}.{key}", child, depth + 1))
-                  elif isinstance(node, list):
-                      containers.append((compact_size(node), len(node), current_path, node))
-                      if depth < 4:
-                          for index, child in enumerate(node[:1000]):
-                              stack.append((f"{current_path}[{index}]", child, depth + 1))
-
-              print("LARGEST_CONTAINERS")
-              for size, count, current_path, node in sorted(containers, reverse=True)[:20]:
-                  sample = ""
-                  if isinstance(node, list) and node:
-                      first = node[0]
-                      if isinstance(first, dict):
-                          sample = " first_keys=" + ",".join(sorted(first))
-                      else:
-                          sample = f" first_type={type(first).__name__}"
-                  elif isinstance(node, dict):
-                      sample = " keys=" + ",".join(sorted(node)[:30])
-                  print(
-                      f"CONTAINER path={current_path} type={type(node).__name__} "
-                      f"items={count} compact_bytes={size}{sample}"
-                  )
-              print("END_FILE")
-          PY
-
-      - name: Locate bounded repository references and writers
+      - name: Inspect repository validation entrypoints
         shell: bash
         run: |
           set -euo pipefail
-          for needle in \
-            'qualification/global-gap-closure-final-r6/STATUS.json' \
-            'qualification/global-gap-closure-final-r8/receipts/PREPARE.json' \
-            'global-gap-closure-final-r6' \
-            'global-gap-closure-final-r8' \
-            'PREPARE.json'
+          for file in \
+            scripts/hepta-readiness.py \
+            scripts/hepta-docs.py \
+            scripts/check_blob_size.py
           do
-            echo "NEEDLE=$needle"
-            git grep -n -F "$needle" -- \
-              . \
-              ':!qualification/global-gap-closure-final-r6/STATUS.json' \
-              ':!qualification/global-gap-closure-final-r8/receipts/PREPARE.json' \
-              | head -80 || true
+            echo "=== $file ==="
+            grep -n -E 'qualification|STATUS|PREPARE|receipt|json' "$file" | head -160 || true
           done
 
       - name: Confirm checkout remains clean
