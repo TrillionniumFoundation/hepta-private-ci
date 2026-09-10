@@ -512,6 +512,71 @@ def merge_lane(lane: str, branch: str) -> dict[str, Any]:
     }
 
 
+def repair_lane_g_shared_artifacts() -> dict[str, Any]:
+    """Regenerate Lane G shared dossiers without flattening the A-F test split."""
+
+    changed: list[str] = []
+    native_path = ROOT / "qualification/module-execution-dossiers/NATIVE_BINDINGS.json"
+    document = read_json(native_path)
+    rows = [
+        row
+        for row in document.get("observations", [])
+        if row.get("module") == "control.engineering"
+    ]
+    if len(rows) != 1:
+        raise RuntimeError(
+            f"expected one control.engineering native binding, observed {len(rows)}"
+        )
+    row = rows[0]
+    desired_path = (
+        "tools/hepta-engineering-control/control_engineering_v2/__init__.py"
+    )
+    desired_exports = [
+        "EngineeringStore",
+        "WorkEnvelope",
+        "WorkPackage",
+        "Candidate",
+        "SandboxReceipt",
+        "EvidenceDecision",
+        "AssimilationProposal",
+        "issue_work_envelope",
+        "schedule_ready_packages",
+        "generate_candidate",
+        "execute_candidate_sandbox",
+        "verify_integration_evidence",
+        "request_independent_review",
+        "record_integration_decision",
+        "publish_audit_projection",
+        "prepare_assimilation_candidate",
+    ]
+    if row.get("path") != desired_path or row.get("exports") != desired_exports:
+        row["path"] = desired_path
+        row["exports"] = desired_exports
+        write_json(native_path, document)
+        changed.append(native_path.relative_to(ROOT).as_posix())
+
+    native_tests_path = (
+        ROOT
+        / "qualification/module-execution-dossiers/implementation_contract_tests_native.py"
+    )
+    native_tests = '"""Native-source closed-world implementation contract tests."""\nimport re\nimport unittest\n\nimport implementation_contracts as c\n\nBASE = c.ROOT / "qualification/module-execution-dossiers"\n\n\nclass NativeBindingCoverageTests(unittest.TestCase):\n    def test_native_binding_module_closed_world(self):\n        profiles = c.read_json(BASE / "IMPLEMENTATION_PROFILES.json")\n        native = c.read_json(BASE / "NATIVE_BINDINGS.json")\n        self.assertEqual(native["moduleCoverage"], 40)\n        self.assertFalse(native["consumerCallsitesProved"])\n        self.assertFalse(native["productExecutionProved"])\n        self.assertEqual(\n            [row["module"] for row in native["observations"]],\n            [row["module"] for row in profiles["modules"]],\n        )\n\n    def test_native_binding_blobs_and_exports_are_exact(self):\n        native = c.read_json(BASE / "NATIVE_BINDINGS.json")\n        for row in native["observations"]:\n            source = c.ROOT / row["path"]\n            data = source.read_bytes()\n            self.assertEqual(c.blob(data), row["blobSha"], row["path"])\n            source_text = data.decode("utf-8")\n            for symbol in row["exports"]:\n                self.assertRegex(\n                    source_text,\n                    r"\\b" + re.escape(symbol) + r"\\b",\n                    row["path"] + ": " + symbol,\n                )\n'
+    if not native_tests_path.is_file() or native_tests_path.read_text(
+        encoding="utf-8"
+    ) != native_tests:
+        native_tests_path.write_text(native_tests, encoding="utf-8")
+        changed.append(native_tests_path.relative_to(ROOT).as_posix())
+
+    harness_path = (
+        ROOT / "qualification/module-execution-dossiers/test_implementation_contracts.py"
+    )
+    harness = '"""Qualification-only implementation contract test suite."""\nfrom implementation_contract_tests_core import *  # noqa: F403\nfrom implementation_contract_tests_system import *  # noqa: F403\nfrom implementation_contract_tests_native import *  # noqa: F403\n\nif __name__ == "__main__":\n    import unittest\n\n    unittest.main()\n'
+    if harness_path.read_text(encoding="utf-8") != harness:
+        harness_path.write_text(harness, encoding="utf-8")
+        changed.append(harness_path.relative_to(ROOT).as_posix())
+
+    return {"changed": changed, "count": len(changed)}
+
+
 def repair_argument_comment_blockers() -> dict[str, Any]:
     repairs = (
         (
@@ -1118,6 +1183,7 @@ def prepare(args: argparse.Namespace) -> int:
 
     argument_comment_repair = repair_argument_comment_blockers()
     generator_receipts = run_generators()
+    lane_g_artifact_repair = repair_lane_g_shared_artifacts()
     native_before = repair_native_bindings()
     metadata, lock_receipts = normalize_lockfile()
     if metadata is None:
@@ -1160,6 +1226,7 @@ def prepare(args: argparse.Namespace) -> int:
         "mergeReceipts": merge_receipts,
         "argumentCommentRepair": argument_comment_repair,
         "generatorReceipts": generator_receipts,
+        "laneGArtifactRepair": lane_g_artifact_repair,
         "nativeBindingBefore": native_before,
         "nativeBindingAfterFormat": native_after_format,
         "lockReceipts": lock_receipts,
