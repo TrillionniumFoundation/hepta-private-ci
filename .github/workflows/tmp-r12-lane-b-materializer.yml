@@ -1,0 +1,67 @@
+name: Temporary r12 Lane B materializer
+
+on:
+  push:
+    branches:
+      - "ops/r12-lane-b-materializer-20260910"
+
+permissions:
+  contents: write
+
+jobs:
+  materialize:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Check out exact r12 target
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: integration/hepta-all-gap-closure-20260910-r12
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Apply exact Lane B delta
+        env:
+          EXPECTED_TARGET: d9b159ca6494cddb7a49dfd45d1566a3de3feeb1
+          LANE_B_HEAD: 6175b374d70a0d442abb5266f471a0b7f87cbf70
+          TARGET_BRANCH: integration/hepta-all-gap-closure-20260910-r12
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_TARGET"
+          test -z "$(git status --porcelain)"
+          git fetch --no-tags origin "$LANE_B_HEAD"
+
+          cat >"$RUNNER_TEMP/lane-b-paths.txt" <<'EOF'
+          apps/hepta-browser/src/runtime.js
+          apps/hepta-browser/test/runtime.test.js
+          apps/hepta-control-ui/src/runtime-client.js
+          apps/hepta-control-ui/test/runtime-client.test.js
+          apps/hepta-native/src/shell-runtime.js
+          apps/hepta-native/test/shell-runtime.test.js
+          codex-rs/hepta-automation/src/bin/hepta-taskflow-runtime.rs
+          codex-rs/hepta-fleet/src/bin/hepta-fleet-leased.rs
+          codex-rs/hepta-infer-core/src/bin/hepta-infer-control.rs
+          codex-rs/hepta-infer-worker-host/src/bin/hepta-infer-worker.rs
+          codex-rs/hepta-matrixd/src/bin/hepta-matrix-send-observer.rs
+          qualification/lane-b/LANE_B_CANDIDATE_MANIFEST.json
+          qualification/lane-b/LANE_B_IMPLEMENTATION_TRUTH.json
+          scripts/hepta-lane-b-candidate.py
+          EOF
+          sed -i 's/^          //' "$RUNNER_TEMP/lane-b-paths.txt"
+
+          while IFS= read -r path; do
+            git cat-file -e "$LANE_B_HEAD:$path"
+            git checkout "$LANE_B_HEAD" -- "$path"
+          done <"$RUNNER_TEMP/lane-b-paths.txt"
+
+          git diff --cached --name-only | sort >"$RUNNER_TEMP/actual.txt"
+          sort "$RUNNER_TEMP/lane-b-paths.txt" >"$RUNNER_TEMP/expected.txt"
+          diff -u "$RUNNER_TEMP/expected.txt" "$RUNNER_TEMP/actual.txt"
+          git diff --cached --check
+          git config user.name 'Hepta r12 integrator'
+          git config user.email 'hepta-r12-integrator@users.noreply.github.com'
+          git commit -m 'feat(r12): absorb latest Lane B runtime hardening'
+          test "$(git rev-list --parents -n1 HEAD | awk '{print NF}')" -eq 2
+          git push origin "HEAD:$TARGET_BRANCH"
