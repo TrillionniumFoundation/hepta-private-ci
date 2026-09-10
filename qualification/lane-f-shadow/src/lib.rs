@@ -235,15 +235,15 @@ pub fn run_lane_f_shadow() -> Result<LaneFShadowReceipt, String> {
 }
 
 fn id(value: &str) -> Result<StableId, String> {
-    StableId::new(value).map_err(|error| format!("id {value}: {error}"))
+    StableId::new(value).map_err(|_| format!("invalid id: {value}"))
 }
 
 fn generation(value: u64) -> Result<Generation, String> {
-    Generation::new(value).map_err(|error| format!("generation {value}: {error}"))
+    Generation::new(value).map_err(|_| format!("invalid generation: {value}"))
 }
 
 fn probability(value: u64) -> Result<ProbabilityQ32, String> {
-    ProbabilityQ32::from_raw(value).map_err(|error| format!("probability {value}: {error}"))
+    ProbabilityQ32::from_raw(value).map_err(|_| format!("invalid probability: {value}"))
 }
 
 fn digest(value: &[u8]) -> Digest32 {
