@@ -23,10 +23,11 @@ impl OperationKey {
 
 /// Reference-model witness used to exercise operation transitions.
 ///
-/// This value is deliberately named `ReferenceAuthorityWitness`: it is not a
-/// cryptographic credential, cannot authenticate a caller and must never be
-/// accepted by a production effect adapter. Product composition consumes the
-/// non-serializable final-use token owned by `kernel.authority` instead.
+/// This value is deliberately named `ReferenceAuthorityWitness`.
+/// It is not a cryptographic credential, cannot authenticate a caller and must
+/// never be accepted by a production effect adapter. Product composition
+/// consumes the non-serializable final-use token owned by `kernel.authority`
+/// instead.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct ReferenceAuthorityWitness {
     operation_id: StableId,
