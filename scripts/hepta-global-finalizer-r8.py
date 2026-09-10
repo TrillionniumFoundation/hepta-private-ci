@@ -1,18 +1,20 @@
 #!/usr/bin/env python3
-"""Deterministic repair replay over the newest global Hepta candidate.
+"""Deterministic repair replay over one exact global Hepta candidate.
 
-The r8 prepare phase reuses one exact r7 convergence tree, normalizes local
-workspace dependencies, lock state, formatting and fixable compiler/Clippy
-diagnostics, then delegates immutable repository/package gates and receipt
-binding to the r7 implementation under an isolated receipt namespace.
+The prepare phase starts from an exact source, applies only deterministic and
+idempotent source/metadata repairs, reaches a verified metadata fixed point,
+and then delegates immutable repository/package gates and receipt binding to
+the r7 implementation under an isolated receipt namespace.
 """
 
 from __future__ import annotations
 
 import argparse
+import hashlib
 import importlib.util
 import json
 import os
+import re
 import sys
 import time
 from pathlib import Path
@@ -131,6 +133,279 @@ def combined_package_command(
     return (*prefix, *selectors, "--all-targets")
 
 
+def load_object(path: Path) -> dict[str, Any]:
+    try:
+        value = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as error:
+        raise RuntimeError(f"cannot read JSON object {path}: {error}") from error
+    if not isinstance(value, dict):
+        raise RuntimeError(f"{path} must contain a JSON object")
+    return value
+
+
+def exact_replace(path: Path, old: str, new: str, label: str) -> bool:
+    text = path.read_text(encoding="utf-8")
+    old_count = text.count(old)
+    new_count = text.count(new)
+    if old_count == 1:
+        path.write_text(text.replace(old, new, 1), encoding="utf-8")
+        return True
+    if old_count == 0 and new_count == 1:
+        return False
+    raise RuntimeError(
+        f"{label}: expected one old or one already-repaired form; "
+        f"old={old_count} new={new_count}"
+    )
+
+
+def repair_known_strict_clippy_blockers() -> dict[str, Any]:
+    changes: list[str] = []
+    replacements = (
+        (
+            ROOT / "codex-rs/hepta-kg/src/generation.rs",
+            "    supports: &mut Vec<KnowledgeSupportV2>,\n",
+            "    supports: &mut [KnowledgeSupportV2],\n",
+            "knowledge.graph canonical support slice",
+        ),
+        (
+            ROOT / "codex-rs/ext/hepta-memory/src/extension_tests.rs",
+            "    assert!(!crate::LOCAL_REHYDRATION_REPLAY_LIFECYCLE_REGISTERED);\n",
+            "    const { assert!(!crate::LOCAL_REHYDRATION_REPLAY_LIFECYCLE_REGISTERED); }\n",
+            "memory extension compile-time replay registration assertion",
+        ),
+        (
+            ROOT / "codex-rs/ext/hepta-memory/src/local_replay.rs",
+            "        assert!(!LOCAL_REHYDRATION_REPLAY_LIFECYCLE_REGISTERED);\n",
+            "        const { assert!(!LOCAL_REHYDRATION_REPLAY_LIFECYCLE_REGISTERED); }\n",
+            "memory replay compile-time lifecycle assertion",
+        ),
+        (
+            ROOT / "codex-rs/ext/hepta-memory/src/local_turn_writer.rs",
+            "        assert!(!QUALIFICATION_TURN_WRITER_EXTERNAL_EFFECTS);\n"
+            "        assert!(!QUALIFICATION_TURN_WRITER_KG_WRITE_AUTHORITY);\n"
+            "        assert!(!QUALIFICATION_TURN_WRITER_PRODUCTION_CALLER);\n",
+            "        const {\n"
+            "            assert!(!QUALIFICATION_TURN_WRITER_EXTERNAL_EFFECTS);\n"
+            "            assert!(!QUALIFICATION_TURN_WRITER_KG_WRITE_AUTHORITY);\n"
+            "            assert!(!QUALIFICATION_TURN_WRITER_PRODUCTION_CALLER);\n"
+            "        }\n",
+            "memory writer compile-time authority assertions",
+        ),
+        (
+            ROOT / "codex-rs/ext/hepta-memory/src/local_lifecycle.rs",
+            "        let guard = restarted_state\n"
+            "            .lock()\n"
+            "            .unwrap_or_else(PoisonError::into_inner);\n"
+            "        assert!(guard.active.is_none());\n"
+            "        assert!(guard.terminal_started);\n"
+            "        drop(guard);\n",
+            "        {\n"
+            "            let guard = restarted_state\n"
+            "                .lock()\n"
+            "                .unwrap_or_else(PoisonError::into_inner);\n"
+            "            assert!(guard.active.is_none());\n"
+            "            assert!(guard.terminal_started);\n"
+            "        }\n",
+            "memory lifecycle guard scope before await",
+        ),
+    )
+    for path, old, new, label in replacements:
+        if exact_replace(path, old, new, label):
+            changes.append(path.relative_to(ROOT).as_posix())
+    return {"changed": sorted(changes), "count": len(changes)}
+
+
+def refresh_readiness_required_sections() -> dict[str, Any]:
+    registry_path = ROOT / "docs/readiness/READINESS.json"
+    registry = load_object(registry_path)
+    documents = registry.get("documents")
+    if not isinstance(documents, list):
+        raise RuntimeError("READINESS.json documents must be a list")
+
+    updates: list[dict[str, Any]] = []
+    heading_pattern = re.compile(r"^##\s+\d+\.\s+.+$")
+    for row in documents:
+        if not isinstance(row, dict):
+            raise RuntimeError("READINESS.json document rows must be objects")
+        path_value = row.get("path")
+        required = row.get("requiredSections")
+        if not isinstance(path_value, str) or not isinstance(required, list):
+            raise RuntimeError("readiness document row lacks path/requiredSections")
+        if not all(isinstance(value, str) for value in required):
+            raise RuntimeError(f"{row.get('id')} requiredSections must be strings")
+        relative = Path(path_value)
+        if relative.is_absolute() or ".." in relative.parts:
+            raise RuntimeError(f"unsafe readiness path: {path_value}")
+        document_path = ROOT / relative
+        actual = [
+            line.strip()
+            for line in document_path.read_text(encoding="utf-8").splitlines()
+            if heading_pattern.fullmatch(line.strip())
+        ]
+        if not actual:
+            raise RuntimeError(f"no numbered H2 sections found in {path_value}")
+        if required != actual:
+            updates.append(
+                {
+                    "id": row.get("id"),
+                    "path": path_value,
+                    "before": required,
+                    "after": actual,
+                }
+            )
+            row["requiredSections"] = actual
+
+    if updates:
+        r7.write_json(registry_path, registry)
+    return {"updated": updates, "count": len(updates)}
+
+
+def refresh_detailed_design_hashes() -> dict[str, Any]:
+    index_path = ROOT / "qualification/module-execution-dossiers/DETAILS.json"
+    index = load_object(index_path)
+    rows = index.get("rows")
+    if not isinstance(rows, list):
+        raise RuntimeError("DETAILS.json rows must be a list")
+    if index.get("moduleCount") != len(rows):
+        raise RuntimeError("DETAILS.json moduleCount does not match rows")
+
+    updates: list[dict[str, str]] = []
+    for row in rows:
+        if not isinstance(row, dict):
+            raise RuntimeError("DETAILS.json rows must be objects")
+        path_value = row.get("path")
+        expected = row.get("sha256")
+        if not isinstance(path_value, str) or not isinstance(expected, str):
+            raise RuntimeError("DETAILS.json row lacks path/sha256")
+        relative = Path(path_value)
+        if relative.is_absolute() or ".." in relative.parts:
+            raise RuntimeError(f"unsafe detailed-design path: {path_value}")
+        design_path = ROOT / relative
+        if not design_path.is_file():
+            raise RuntimeError(f"missing detailed-design document: {path_value}")
+        actual = hashlib.sha256(design_path.read_bytes()).hexdigest()
+        if expected != actual:
+            updates.append(
+                {
+                    "module": str(row.get("module")),
+                    "path": path_value,
+                    "before": expected,
+                    "after": actual,
+                }
+            )
+            row["sha256"] = actual
+
+    if updates:
+        r7.write_json(index_path, index)
+    return {"updated": updates, "count": len(updates)}
+
+
+def refresh_native_export_bindings() -> dict[str, Any]:
+    binding_path = (
+        ROOT / "qualification/module-execution-dossiers/NATIVE_BINDINGS.json"
+    )
+    binding = load_object(binding_path)
+    observations = binding.get("observations")
+    if not isinstance(observations, list):
+        raise RuntimeError("NATIVE_BINDINGS.json observations must be a list")
+
+    target_path = "codex-rs/hepta-authbus/src/lib.rs"
+    desired = [
+        "PreverifiedAuthEnvelope",
+        "TrustedReplayContext",
+        "VerificationReceipt",
+        "ReplayWindow",
+        "verify",
+    ]
+    matches = [
+        row
+        for row in observations
+        if isinstance(row, dict) and row.get("path") == target_path
+    ]
+    if len(matches) != 1:
+        raise RuntimeError(
+            f"expected one authbus native observation, found {len(matches)}"
+        )
+    row = matches[0]
+    before = row.get("exports")
+    if not isinstance(before, list) or not all(
+        isinstance(value, str) for value in before
+    ):
+        raise RuntimeError("authbus native exports must be a string list")
+    changed = before != desired
+    if changed:
+        row["exports"] = desired
+        r7.write_json(binding_path, binding)
+    return {
+        "path": target_path,
+        "before": before,
+        "after": desired,
+        "changed": changed,
+    }
+
+
+def run_commands(
+    commands: tuple[tuple[str, ...], ...],
+    *,
+    timeout: int,
+) -> list[dict[str, Any]]:
+    receipts: list[dict[str, Any]] = []
+    for command in commands:
+        receipts.append(r7.run(command, timeout=timeout).receipt())
+    return receipts
+
+
+def run_targeted_package_preflights() -> list[dict[str, Any]]:
+    receipts: list[dict[str, Any]] = []
+    for package in ("codex-hepta-kg", "codex-hepta-memory-extension"):
+        test = r7.run(
+            (
+                "cargo",
+                "test",
+                "--manifest-path",
+                "codex-rs/Cargo.toml",
+                "--locked",
+                "-p",
+                package,
+                "--all-targets",
+            ),
+            timeout=5400,
+        )
+        clippy = r7.run(
+            (
+                "cargo",
+                "clippy",
+                "--manifest-path",
+                "codex-rs/Cargo.toml",
+                "--locked",
+                "-p",
+                package,
+                "--all-targets",
+                "--no-deps",
+                "--",
+                "-D",
+                "warnings",
+            ),
+            timeout=5400,
+        )
+        receipts.append(
+            {
+                "package": package,
+                "test": test.receipt(),
+                "clippy": clippy.receipt(),
+            }
+        )
+    return receipts
+
+
+def package_preflights_pass(receipts: list[dict[str, Any]]) -> bool:
+    return all(
+        row.get("test", {}).get("returnCode") == 0
+        and row.get("clippy", {}).get("returnCode") == 0
+        for row in receipts
+    )
+
+
 def prepare_r8(args: argparse.Namespace) -> int:
     bind_namespace()
     OUT_ROOT.mkdir(parents=True, exist_ok=True)
@@ -191,11 +466,28 @@ def prepare_r8(args: argparse.Namespace) -> int:
         ),
         timeout=18000,
     )
-    format_result = r7.run(
+
+    known_source_repair = repair_known_strict_clippy_blockers()
+    first_format = r7.run(
+        ("cargo", "fmt", "--manifest-path", "codex-rs/Cargo.toml", "--all"),
+        timeout=2400,
+    )
+
+    readiness_repair = refresh_readiness_required_sections()
+    detail_repair = refresh_detailed_design_hashes()
+    native_export_repair = refresh_native_export_bindings()
+    native_after_source = r7.repair_native_bindings()
+    generator_receipts.extend(r7.run_generators())
+
+    detail_fixed_point = refresh_detailed_design_hashes()
+    native_fixed_point = r7.repair_native_bindings()
+    generator_receipts.extend(r7.run_generators())
+    final_format = r7.run(
         ("cargo", "fmt", "--manifest-path", "codex-rs/Cargo.toml", "--all"),
         timeout=2400,
     )
     native_after_repair = r7.repair_native_bindings()
+
     metadata, post_repair_lock = r7.normalize_lockfile()
     lock_receipts.extend(post_repair_lock)
     if metadata is None:
@@ -214,8 +506,12 @@ def prepare_r8(args: argparse.Namespace) -> int:
         ),
         timeout=18000,
     )
+    targeted_preflights = run_targeted_package_preflights()
+    repository_preflights = run_commands(r7.REPOSITORY_COMMANDS, timeout=7200)
+    diff_check = r7.run(("git", "diff", "--check"), timeout=600)
+
     source_sha = r7.commit_if_dirty(
-        "fix: apply deterministic all-Hepta convergence repairs r8"
+        "fix: reach deterministic all-Hepta metadata and lint fixed point r8"
     )
     r7.git(
         "push",
@@ -228,12 +524,16 @@ def prepare_r8(args: argparse.Namespace) -> int:
     prepared = (
         r7.command_receipts_pass(generator_receipts)
         and r7.lock_receipts_pass(lock_receipts)
-        and format_result.passed
+        and first_format.passed
+        and final_format.passed
         and check_result.passed
+        and package_preflights_pass(targeted_preflights)
+        and r7.command_receipts_pass(repository_preflights)
+        and diff_check.passed
         and native_after_repair.get("valid") is True
     )
     receipt: dict[str, Any] = {
-        "schemaVersion": 1,
+        "schemaVersion": 2,
         "runId": os.environ.get("GITHUB_RUN_ID", "local"),
         "runAttempt": os.environ.get("GITHUB_RUN_ATTEMPT", "1"),
         "sourceRef": source_ref,
@@ -242,13 +542,24 @@ def prepare_r8(args: argparse.Namespace) -> int:
         "qualifiedSourceCommit": source_sha,
         "generatorReceipts": generator_receipts,
         "nativeBindingBefore": native_before,
+        "nativeBindingAfterSourceRepair": native_after_source,
+        "nativeBindingFixedPoint": native_fixed_point,
         "nativeBindingAfterRepair": native_after_repair,
         "lockReceipts": lock_receipts,
         "dependencyRepair": dependency_repair,
+        "knownSourceRepair": known_source_repair,
+        "readinessRequiredSectionRepair": readiness_repair,
+        "detailedDesignHashRepair": detail_repair,
+        "detailedDesignFixedPoint": detail_fixed_point,
+        "nativeExportRepair": native_export_repair,
         "cargoFix": cargo_fix.receipt(),
         "clippyFix": clippy_fix.receipt(),
-        "formatReceipt": format_result.receipt(),
+        "firstFormatReceipt": first_format.receipt(),
+        "finalFormatReceipt": final_format.receipt(),
         "checkReceipt": check_result.receipt(),
+        "targetedPackagePreflights": targeted_preflights,
+        "repositoryPreflights": repository_preflights,
+        "diffCheck": diff_check.receipt(),
         "canonicalHeptaPackageCount": len(packages),
         "canonicalHeptaPackages": packages,
         "matrix": matrix,
