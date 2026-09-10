@@ -65,7 +65,7 @@ jobs:
           mkdir -p "$RUNNER_TEMP/hepta-diagnostics"
           log="$RUNNER_TEMP/hepta-diagnostics/${AREA}.log"
           status_file="$RUNNER_TEMP/hepta-diagnostics/${AREA}.status"
-          {
+          (
             echo "area=$AREA"
             echo "subject=$SUBJECT_SHA"
             echo "base=$BASE_SHA"
@@ -147,7 +147,7 @@ jobs:
                 ;;
             esac
             echo "--- commands passed ---"
-          } >"$log" 2>&1
+          ) >"$log" 2>&1
           status=$?
           printf '%s\n' "$status" > "$status_file"
           cat "$log"
@@ -214,7 +214,7 @@ jobs:
           mkdir -p "$RUNNER_TEMP/hepta-diagnostics"
           log="$RUNNER_TEMP/hepta-diagnostics/${AREA}.log"
           status_file="$RUNNER_TEMP/hepta-diagnostics/${AREA}.status"
-          {
+          (
             echo "area=$AREA"
             echo "subject=$SUBJECT_SHA"
             echo "head=$(git rev-parse HEAD)"
@@ -286,7 +286,7 @@ jobs:
                 ;;
             esac
             echo "--- commands passed ---"
-          } >"$log" 2>&1
+          ) >"$log" 2>&1
           status=$?
           printf '%s\n' "$status" > "$status_file"
           tail -n 500 "$log"
