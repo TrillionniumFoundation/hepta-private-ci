@@ -5,6 +5,7 @@
 
 #![forbid(unsafe_code)]
 
+mod admission_v3;
 mod closure_v2;
 mod dataset_revocation;
 mod error;
@@ -13,6 +14,11 @@ mod pinned;
 mod registry;
 mod storage;
 
+pub use admission_v3::ArtifactAdmissionError;
+pub use admission_v3::WithdrawalBoundArtifactAdmissionV3;
+pub use admission_v3::admit_manifest_at_withdrawal_head_v3;
+pub use admission_v3::validate_artifact_publication_v3;
+pub use admission_v3::verify_artifact_admission_v3;
 pub use closure_v2::ArtifactClosureError;
 pub use closure_v2::ArtifactLifecycleEventV1;
 pub use closure_v2::ArtifactLifecycleStateV1;
