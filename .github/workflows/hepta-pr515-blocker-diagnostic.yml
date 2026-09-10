@@ -1,0 +1,100 @@
+name: Hepta PR515 blocker diagnostic
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - ops/hepta-pr515-blocker-diagnostic-20260910
+
+permissions:
+  contents: read
+
+jobs:
+  inspect:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: Checkout exact diagnostic source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Inspect oversized generated evidence without emitting payloads
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from __future__ import annotations
+
+          import hashlib
+          import json
+          from pathlib import Path
+
+          targets = [
+              Path("qualification/global-gap-closure-final-r6/STATUS.json"),
+              Path("qualification/global-gap-closure-final-r8/receipts/PREPARE.json"),
+          ]
+
+          for path in targets:
+              raw = path.read_bytes()
+              print(f"FILE {path}")
+              print(f"bytes={len(raw)} sha256={hashlib.sha256(raw).hexdigest()}")
+              value = json.loads(raw)
+              print(f"root_type={type(value).__name__}")
+              if isinstance(value, dict):
+                  print("top_level_keys=" + ",".join(sorted(value)))
+                  for key in sorted(value):
+                      encoded = json.dumps(
+                          value[key], ensure_ascii=False, separators=(",", ":")
+                      ).encode("utf-8")
+                      print(
+                          f"top_key={key!r} type={type(value[key]).__name__} compact_bytes={len(encoded)}"
+                      )
+
+              strings: list[tuple[int, str]] = []
+              containers: list[tuple[int, str, str]] = []
+              stack: list[tuple[str, object]] = [("$", value)]
+              nodes = 0
+              while stack:
+                  current_path, node = stack.pop()
+                  nodes += 1
+                  if isinstance(node, dict):
+                      containers.append((len(node), current_path, "dict"))
+                      for key, child in node.items():
+                          stack.append((f"{current_path}.{key}", child))
+                  elif isinstance(node, list):
+                      containers.append((len(node), current_path, "list"))
+                      for index, child in enumerate(node):
+                          stack.append((f"{current_path}[{index}]", child))
+                  elif isinstance(node, str):
+                      strings.append((len(node.encode("utf-8")), current_path))
+
+              print(f"node_count={nodes} string_count={len(strings)}")
+              for size, current_path in sorted(strings, reverse=True)[:30]:
+                  print(f"large_string bytes={size} path={current_path}")
+              for count, current_path, kind in sorted(containers, reverse=True)[:20]:
+                  print(f"large_container items={count} type={kind} path={current_path}")
+              print("END_FILE")
+          PY
+
+      - name: Locate repository references to generated evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          for target in \
+            qualification/global-gap-closure-final-r6/STATUS.json \
+            qualification/global-gap-closure-final-r8/receipts/PREPARE.json
+          do
+            echo "REFERENCES $target"
+            git grep -n -F "$target" -- . ":!$target" || true
+            echo "BASENAME REFERENCES $(basename "$target")"
+            git grep -n -F "$(basename "$target")" -- . ":!$target" | head -100 || true
+          done
+
+      - name: Confirm exact source identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD
+          git status --short
