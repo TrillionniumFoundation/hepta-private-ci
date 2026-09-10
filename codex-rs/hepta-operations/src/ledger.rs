@@ -96,6 +96,9 @@ impl OperationLedger {
         operation_id: &StableId,
         reason_digest: Digest32,
     ) -> Result<&OperationRecord, OperationError> {
+        if reason_digest.is_zero() {
+            return Err(OperationError::Conflict(operation_id.clone()));
+        }
         let record = self.record_mut(operation_id)?;
         if record.state.is_terminal() {
             return Err(OperationError::Terminal);
@@ -115,6 +118,9 @@ impl OperationLedger {
         outcome_digest: Digest32,
         observer_generation: Generation,
     ) -> Result<&OperationRecord, OperationError> {
+        if outcome_digest.is_zero() {
+            return Err(OperationError::Conflict(operation_id.clone()));
+        }
         let record = self.record_mut(operation_id)?;
         if observer_generation != record.owner_generation {
             return Err(OperationError::StaleGeneration);

@@ -77,6 +77,12 @@ class RunBazelCiIntegrationTest(unittest.TestCase):
             BAZEL_PROBE_LOG=str(self.log),
             BAZEL_PROBE_TESTLOGS=str(self.testlogs),
             BAZEL_REPO_CONTENTS_CACHE="job scoped cache",
+            INCLUDE=r"C:\VS\include;C:\SDK\include",
+            LIB=r"C:\VS\lib;C:\SDK\lib",
+            LIBPATH=r"C:\VS\libpath",
+            UniversalCRTSdkDir=r"C:\SDK\ucrt",
+            VCToolsInstallDir=r"C:\VS\VC\Tools\MSVC\14.51.36231",
+            WindowsSdkDir=r"C:\SDK",
         )
 
     def run_wrapper(
@@ -123,6 +129,65 @@ class RunBazelCiIntegrationTest(unittest.TestCase):
             args.index("--repo_contents_cache=job scoped cache"),
         )
         self.assertEqual(args[args.index("--") + 1 :], ["//fake:target"])
+
+    def test_native_windows_forwards_required_msvc_environment(self) -> None:
+        result, calls = self.run_wrapper(
+            "--windows-msvc-host-platform",
+            "--",
+            "build",
+            "--",
+            "//fake:target",
+        )
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        self.assertEqual(len(calls), 1)
+        args = calls[0]
+        for name in (
+            "INCLUDE",
+            "LIB",
+            "LIBPATH",
+            "UniversalCRTSdkDir",
+            "VCToolsInstallDir",
+            "WindowsSdkDir",
+        ):
+            self.assertIn(f"--action_env={name}", args)
+            self.assertIn(f"--host_action_env={name}", args)
+        self.assertIn(
+            f"--action_env=PATH={self.env['CODEX_BAZEL_WINDOWS_PATH']}", args
+        )
+        self.assertIn(
+            f"--host_action_env=PATH={self.env['CODEX_BAZEL_WINDOWS_PATH']}", args
+        )
+        self.assertFalse(
+            any(arg == "--incompatible_strict_action_env=0" for arg in args)
+        )
+
+    def test_native_windows_rejects_missing_required_msvc_environment(self) -> None:
+        del self.env["LIB"]
+        result = subprocess.run(
+            [
+                self.bash,
+                str(SCRIPTS / "run-bazel-ci.sh"),
+                "--windows-msvc-host-platform",
+                "--",
+                "build",
+                "--",
+                "//fake:target",
+            ],
+            env=self.env,
+            check=False,
+            capture_output=True,
+            text=True,
+            timeout=60,
+        )
+        self.assertNotEqual(result.returncode, 0, result.stdout + result.stderr)
+        self.assertIn(
+            "Missing required native Windows toolchain environment: LIB",
+            result.stderr,
+        )
+        self.assertFalse(
+            self.log.exists(),
+            "Bazel must not run without the MSVC library environment",
+        )
 
     def test_windows_argument_lint_uses_the_shared_split_abi_wrapper(self) -> None:
         result = subprocess.run(

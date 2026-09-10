@@ -1,5 +1,11 @@
-//! Bounded, deterministic Bellman-target candidate builder for qualification space.
-//! It cannot mutate an online policy, activate an artifact, or write production state.
+//! Bounded, deterministic Bellman/operator candidates for qualification space.
+//!
+//! The legacy target builder remains available as `train`, while
+//! `build_targets` makes its actual scope explicit. Applicability admission,
+//! sensor geometry, tabular Bellman reference, simplest-sufficient tabular
+//! learning, regularity/error-budget checks and an action-conditioned tabular
+//! world model are separate bounded surfaces. None can mutate an online policy,
+//! activate an artifact, select itself, or write production state.
 #![forbid(unsafe_code)]
 
 use std::collections::BTreeSet;
@@ -10,6 +16,45 @@ use codex_hepta_types::Digest32;
 use codex_hepta_types::FixedQ32;
 use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
+
+mod learned;
+mod reference;
+mod world_model;
+
+pub use learned::LearnedOperatorError;
+pub use learned::TabularOperatorArtifactV1;
+pub use learned::TabularOperatorCellV1;
+pub use learned::TabularOperatorPlanV1;
+pub use learned::TabularOperatorPredictionV1;
+pub use learned::TabularOperatorSampleV1;
+pub use learned::fit_tabular_operator;
+pub use learned::predict_tabular_operator;
+pub use reference::ApplicabilityDecisionV1;
+pub use reference::BellmanReferenceCellV1;
+pub use reference::BellmanReferencePlanV1;
+pub use reference::BellmanReferenceReceiptV1;
+pub use reference::BellmanReferenceTargetV1;
+pub use reference::GreedyReferenceActionV1;
+pub use reference::OperatorApplicabilityCertificateV1;
+pub use reference::OperatorClosureError;
+pub use reference::OperatorErrorComponentV1;
+pub use reference::OperatorRegularityAdmissionV1;
+pub use reference::OperatorRegularityAssessmentV1;
+pub use reference::OperatorSensorCoreManifestV1;
+pub use reference::SensorCoreDesignV1;
+pub use reference::SensorPointV1;
+pub use reference::admit_operator_regularity;
+pub use reference::build_sensor_core;
+pub use reference::evaluate_bellman_reference;
+pub use reference::validate_applicability_certificate;
+pub use world_model::TabularWorldModelV1;
+pub use world_model::TransitionBranchV1;
+pub use world_model::TransitionEstimateV1;
+pub use world_model::WorldModelError;
+pub use world_model::WorldModelPredictionV1;
+pub use world_model::WorldModelSampleV1;
+pub use world_model::fit_transition_model;
+pub use world_model::predict_transition;
 
 const MAX_SAMPLES: usize = 16_384;
 const SCALE: i128 = 1_i128 << 32;
@@ -48,6 +93,9 @@ pub struct BellmanTarget {
     pub target: FixedQ32,
 }
 
+/// Legacy target-builder diagnostics. This is deliberately not the complete
+/// operator regularity certificate; use `OperatorRegularityAssessmentV1` for
+/// rank, reconstruction, shape, OOD and total-error admission.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct RegularityProfile {
     pub sample_count: u32,
@@ -84,7 +132,9 @@ impl fmt::Display for Error {
 }
 impl StdError for Error {}
 
-pub fn train(mut request: TrainingRequest) -> Result<BellmanOperatorArtifact, Error> {
+/// Build deterministic Bellman targets from already supplied continuation
+/// values. This is not model fitting, sensor construction or policy training.
+pub fn build_targets(mut request: TrainingRequest) -> Result<BellmanOperatorArtifact, Error> {
     if request.dataset.transitions.is_empty() {
         return Err(Error::EmptyDataset);
     }
@@ -103,7 +153,7 @@ pub fn train(mut request: TrainingRequest) -> Result<BellmanOperatorArtifact, Er
     request
         .dataset
         .transitions
-        .sort_by(|left, right| left.sample_id.cmp(&right.sample_id));
+        .sort_by_key(|transition| transition.sample_id.clone());
     let mut seen = BTreeSet::new();
     for sample in &request.dataset.transitions {
         if !seen.insert(sample.sample_id.clone()) {
@@ -153,6 +203,12 @@ pub fn train(mut request: TrainingRequest) -> Result<BellmanOperatorArtifact, Er
         targets,
         regularity,
     })
+}
+
+/// Compatibility alias for the original API. The implementation remains a
+/// deterministic target builder and does not imply a learned operator.
+pub fn train(request: TrainingRequest) -> Result<BellmanOperatorArtifact, Error> {
+    build_targets(request)
 }
 
 fn mul_q32(left: FixedQ32, right: FixedQ32) -> Result<FixedQ32, Error> {
