@@ -1,0 +1,65 @@
+name: Temporary r12 lane merge diagnostic
+
+on:
+  push:
+    branches:
+      - "ops/r12-lane-merge-diagnostic-20260910"
+
+permissions:
+  contents: read
+
+jobs:
+  diagnose:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Check out exact r12 integration target
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: integration/hepta-all-gap-closure-20260910-r12
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Enumerate exact three-way conflicts
+        shell: bash
+        run: |
+          set -euo pipefail
+          target="$(git rev-parse HEAD)"
+          git fetch --no-tags origin \
+            codex/lane-a-gap-closure-20260910 \
+            ops/lane-b-hardening-staging-20260910 \
+            codex/hepta-lane-e-semantic-holdout-closure-r4-20260910
+
+          probe() {
+            local label="$1"
+            local source="$2"
+            git reset --hard "$target" >/dev/null
+            git clean -fdx >/dev/null
+            echo "::group::${label}"
+            set +e
+            git -c user.name='Hepta merge diagnostic' \
+                -c user.email='hepta-merge-diagnostic@users.noreply.github.com' \
+                merge --no-commit --no-ff "$source"
+            rc=$?
+            set -e
+            echo "merge_rc=$rc"
+            echo "unmerged_paths_begin"
+            git diff --name-only --diff-filter=U || true
+            echo "unmerged_paths_end"
+            echo "staged_paths_begin"
+            git diff --cached --name-status || true
+            echo "staged_paths_end"
+            git merge --abort >/dev/null 2>&1 || true
+            echo "::endgroup::"
+          }
+
+          probe lane-a FETCH_HEAD~2
+          probe lane-b FETCH_HEAD~1
+          probe lane-e FETCH_HEAD
+
+          git reset --hard "$target" >/dev/null
+          git clean -fdx >/dev/null
+          echo "temporary_target_paths_begin"
+          git ls-tree -r --name-only HEAD | grep -E '(^|/)(tmp-|\.lane-f-|lane-f-bootstrap|global-gap-closure-(final|seal))' || true
+          echo "temporary_target_paths_end"
