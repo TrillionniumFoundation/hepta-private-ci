@@ -26,85 +26,20 @@ jobs:
           fetch-depth: 0
           persist-credentials: true
 
-      - name: Patch exact Lane F ownership rule and remove temporary workflow
+      - name: Apply bounded patch and publish
         shell: bash
         env:
           TARGET_BRANCH: ops/hepta-global-gap-closure-controller-20260910-r1
         run: |
           set -euo pipefail
           test "${GITHUB_REF_NAME}" = "${TARGET_BRANCH}"
-          python3 - <<'PY'
-          from pathlib import Path
-
-          path = Path("scripts/hepta-global-finalizer-r7.py")
-          text = path.read_text(encoding="utf-8")
-
-          def replace_once(old: str, new: str) -> None:
-              global text
-              count = text.count(old)
-              if count != 1:
-                  raise SystemExit(f"expected one replacement marker, found {count}: {old[:100]!r}")
-              text = text.replace(old, new, 1)
-
-          if "LANE_F_OWNER_CONFLICTS" not in text:
-              marker = "\n\ndef merge_lane(lane: str, branch: str) -> dict[str, Any]:\n"
-              lane_f_contract = '''
-
-LANE_F_OWNER_CONFLICTS = frozenset(
-    {
-        ".github/workflows/hepta-lane-f-shadow-qualification.yml",
-        ".github/workflows/lane-f-bootstrap.yml",
-        "qualification/lane-f-shadow/src/lib.rs",
-    }
-)
-'''
-              replace_once(marker, lane_f_contract + marker)
-              replace_once(
-                  "    lane_d_prior_owner_conflict = False\n",
-                  "    lane_d_prior_owner_conflict = False\n    lane_f_owner_conflict = False\n",
-              )
-              replace_once(
-                  "        lane_d_prior_owner_conflict = (\n            lane == \"D\"\n            and len(conflicts) == len(LANE_D_PRIOR_OWNER_CONFLICTS)\n            and frozenset(conflicts) == LANE_D_PRIOR_OWNER_CONFLICTS\n        )\n",
-                  "        lane_d_prior_owner_conflict = (\n            lane == \"D\"\n            and len(conflicts) == len(LANE_D_PRIOR_OWNER_CONFLICTS)\n            and frozenset(conflicts) == LANE_D_PRIOR_OWNER_CONFLICTS\n        )\n        lane_f_owner_conflict = (\n            lane == \"F\"\n            and len(conflicts) == len(LANE_F_OWNER_CONFLICTS)\n            and frozenset(conflicts) == LANE_F_OWNER_CONFLICTS\n        )\n",
-              )
-              replace_once(
-                  "            and not lane_d_prior_owner_conflict\n        ):\n",
-                  "            and not lane_d_prior_owner_conflict\n            and not lane_f_owner_conflict\n        ):\n",
-              )
-              replace_once(
-                  "        checkout_side = \"--theirs\" if lane_owner_conflict else \"--ours\"\n",
-                  "        checkout_side = (\n            \"--theirs\" if lane_owner_conflict or lane_f_owner_conflict else \"--ours\"\n        )\n",
-              )
-              replace_once(
-                  "        elif lane_d_prior_owner_conflict:\n            resolution_class = \"prior Lane A/C owner paths retained during Lane D merge\"\n        else:\n",
-                  "        elif lane_d_prior_owner_conflict:\n            resolution_class = \"prior Lane A/C owner paths retained during Lane D merge\"\n        elif lane_f_owner_conflict:\n            resolution_class = \"Lane F owner shadow qualification paths\"\n        else:\n",
-              )
-              replace_once(
-                  "            and not lane_d_prior_owner_conflict\n        ),\n",
-                  "            and not lane_d_prior_owner_conflict\n            and not lane_f_owner_conflict\n        ),\n",
-              )
-              replace_once(
-                  "        \"autoResolvedLaneDPriorOwnerOnly\": lane_d_prior_owner_conflict,\n",
-                  "        \"autoResolvedLaneDPriorOwnerOnly\": lane_d_prior_owner_conflict,\n        \"autoResolvedLaneFOwnerOnly\": lane_f_owner_conflict,\n",
-              )
-          else:
-              required = (
-                  '".github/workflows/hepta-lane-f-shadow-qualification.yml"',
-                  '".github/workflows/lane-f-bootstrap.yml"',
-                  '"qualification/lane-f-shadow/src/lib.rs"',
-                  '"autoResolvedLaneFOwnerOnly"',
-              )
-              missing = [fragment for fragment in required if fragment not in text]
-              if missing:
-                  raise SystemExit(f"partial Lane F owner patch: {missing!r}")
-
-          path.write_text(text, encoding="utf-8")
-          PY
+          python3 scripts/tmp-hepta-lane-f-owner-resolution.py
           python3 -m py_compile scripts/hepta-global-finalizer-r7.py
           rm .github/workflows/tmp-hepta-lane-f-owner-resolution.yml
+          rm scripts/tmp-hepta-lane-f-owner-resolution.py
           git config user.name 'Hepta Blocker Remediator'
           git config user.email 'noreply@openai.com'
-          git add scripts/hepta-global-finalizer-r7.py .github/workflows/tmp-hepta-lane-f-owner-resolution.yml
+          git add -A
           git diff --cached --check
           git commit --signoff -m 'fix(hepta): honor exact Lane F shadow ownership during convergence'
           git fetch --no-tags origin "${TARGET_BRANCH}"
