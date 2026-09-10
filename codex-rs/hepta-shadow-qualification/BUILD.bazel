@@ -26,6 +26,8 @@ rust_test(
     compile_data = ["fixtures/live_product_oracle_v2_2f704.json"],
     crate = ":hepta-shadow-qualification-lib",
     deps = [
+        "//codex-rs/hepta-bellman-operator",
+        "//codex-rs/hepta-intelligence-eval",
         "//codex-rs/hepta-learning-artifacts",
         "//codex-rs/hepta-learning-ledger",
         "//codex-rs/hepta-ndu",

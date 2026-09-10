@@ -1,0 +1,27 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "hepta-control-engineering"
+version = "0.1.0"
+description = "Bounded Lane G engineering-control implementation"
+requires-python = ">=3.11"
+license = { text = "Apache-2.0" }
+authors = [{ name = "Trillionnium Foundation" }]
+dependencies = []
+
+[tool.setuptools]
+packages = ["control_engineering_v2"]
+
+[tool.setuptools.package-data]
+control_engineering_v2 = [
+  "COMPONENTS.json",
+  "TRACEABILITY.json",
+  "EXTERNAL_GATES.json",
+  "FAILURE_CODES.json",
+  "IMPLEMENTATION.md",
+  "README.md",
+  "SCHEMA.sql",
+  "py.typed",
+]

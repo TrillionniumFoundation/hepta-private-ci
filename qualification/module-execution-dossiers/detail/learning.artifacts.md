@@ -1,32 +1,42 @@
 # learning.artifacts: implementation design
 
 Parent: `docs/modules/learning.artifacts/TECHNICAL.md`. Lane: `LANE-E-LEARNING`.
-Status: specified target, not implemented or independently accepted. Common requirements: `../EXECUTION_SEMANTICS.md` and `../TECHNICAL.md`. Canonical ownership and package predecessors are unchanged.
+Status: create-only storage, complete V2 manifest, persistent dataset withdrawal, head anti-rollback and lifecycle source candidate implemented; current exact-head and synthetic-merge CI determine source qualification, while product loading and independent selection remain separate. Common requirements: `../EXECUTION_SEMANTICS.md` and `../TECHNICAL.md`. Canonical ownership and package predecessors are unchanged.
 
 ## 1. Source and work envelope
 
 Roots: `codex-rs/hepta-learning-artifacts`.
 Packages: `ART-1-LEARNING-ARTIFACT-REGISTRY`, `ART-2-NEXT-SNAPSHOT-RELOAD-ROLLBACK`.
 
-Operation signatures below are design contracts, not assertions of existing native symbols. Bind each to an existing or planned symbol and consumer inside the owner envelope. Preserve existing stores and APIs; do not create another authority or execution spine.
+Concrete source mappings are recorded in `../../../codex-rs/hepta-learning-artifacts/NATIVE_MAPPING.md` and `../../../docs/lane-e/LANE_E_IMPLEMENTATION_MATRIX.json`. Preserve the stable V1 registry and create-only storage APIs; do not create another authority or execution spine.
 
 ## 2. Public operations and contract details
 
-`put_candidate(bytes, manifest, create_only_key) -> ArtifactReference`; `append_registry_event(artifact, lifecycle_event, evidence) -> RegistryCommit`; `resolve_eligible(reference, current_revocations, compatibility) -> ReadHandle`; `read_for_next_snapshot(selected_reference, supervisor_evidence) -> ImmutableArtifact`. Candidate registration is not selection; the supervisor consumes independent selection and the artifact owner never installs itself.
+`write_candidate_payload(file, registry, artifact, bytes) -> Digest32`; `write_registry_snapshot(file, registry, binding) -> RegistrySnapshotReceipt`; `load_pinned_candidate(snapshot, payload, pin) -> LoadedPinnedCandidate`; `validate_artifact_manifest_v2(manifest, now) -> ValidatedArtifactManifestV2`; `DatasetWithdrawalRegistry::append(notice) -> DatasetWithdrawalReceiptV1`; `DatasetWithdrawalRegistry::admit_manifest(manifest, now) -> ValidatedArtifactManifestV2`; `validate_registry_head_witness(witness, requirement) -> RegistryHeadReceiptV1`; `validate_artifact_lifecycle_transition(producer, event) -> Digest32`.
+
+Candidate registration is not selection. A successful read is not execution or activation. The supervisor or separately authorized selector consumes independent selection evidence; the artifact owner never installs itself.
 
 ## 3. State records and transaction design
 
-Own create-only learning_artifact_registry and operator_sensor_core_registry. Manifest fields bind byte digest/length, code, dataset/source lineage, model/runtime/device/profile, objective class, schema/config/body compatibility, expiry and rollback predecessor. Registry lifecycle and revocation are append-only. Store bytes durably before publishing their registry reference; reconcile interrupted byte/registry publication through the existing transaction/outbox design.
+Own create-only `learning_artifact_registry` and `operator_sensor_core_registry`. The stable V1 registry and payload encoding remain readable. `LearningArtifactManifestV2` explicitly binds payload digest/length, every source dataset, complete lineage, multiple predecessors, rollback predecessor, training code, runtime, device, objective class, schema, normalization, compatibility, producer, creation time and expiry.
+
+`DatasetWithdrawalRegistry` is a separate append-only digest chain. It persists dataset tombstones and blocks every future manifest that references a withdrawn dataset, closing the gap left by a snapshot-local invalidation batch. Exact notice retries are idempotent; changed semantics under a reused notice ID conflict.
+
+`RegistryHeadWitnessV1` binds registry identity, generation, predecessor head, authority epoch, signer, signing key and validity window. Generation rollback, authority-epoch rollback, predecessor mismatch and expiry fail. A product host must authenticate the witness signature before constructing the typed value.
 
 ## 4. Deterministic algorithm and scheduling
 
-Validate scope, size and complete lineage; create immutable bytes with conflict-on-different-content identity; sync; append a canonical registry snapshot/event; obtain independent evidence; resolve only a currently eligible complete artifact. New run loads an exact selected tuple; the old run retains its snapshot. Restore and rollback always overlay current revocations before exposing artifacts.
+Validate scope, size and complete lineage; check the persistent withdrawal frontier; create immutable bytes with conflict-on-different-content identity; synchronize; append a canonical registry event against an exact predecessor; publish the registry snapshot; obtain an independently authenticated head witness; and acknowledge only after the witness is durable.
+
+New runs load an exact selected tuple against the current head and withdrawal frontier; the old run retains its snapshot. Restore and rollback always overlay current revocations and withdrawals before exposing artifacts. Payload and registry publication form a bounded saga: bytes synchronized without a registry event are an orphan candidate, never selected state.
+
+The lifecycle evidence state machine is `proposed -> trained -> evaluated -> shadow -> canary -> operator_accepted -> selected -> retired`, with bounded quarantine and revocation edges. A producer cannot issue its own evaluation, acceptance, selection, quarantine or revocation decision, and mandatory states cannot be skipped.
 
 ## 5. Capacity and performance profile
 
-Artifact byte size, concurrent uploads and retained versions are package profile bounds; pilot manifest <=256 KiB with <=1024 lineage references per bounded publication. Large lineage graphs use bounded indexed traversal and reject incomplete eligibility proofs. Measure put/fsync, cold read/hash, registry reopen and revoke propagation.
+Payload bytes remain bounded by the native create-only storage profile. V2 source datasets are bounded to 64, lineage digests to 1024 and predecessor IDs to 64 per manifest. Persistent withdrawal and registry record counts are bounded. Large lineage graphs use indexed traversal and reject incomplete eligibility proofs.
 
-Pilot ceilings are design targets, not measurements. Stricter canonical limits prevail. Bind actual schema/migration, host and measurements before composition; stateless modules prove absence rather than inventing state.
+Measure put/fsync, containing-directory synchronization, witness publication, cold read/hash, registry reopen, withdrawal lookup, revoke propagation, backup replay and orphan reconciliation. Source limits are not target-host measurements.
 
 ## 6. Concrete verification cases
 
@@ -35,10 +45,16 @@ Pilot ceilings are design targets, not measurements. Stricter canonical limits p
 - ART-03: corrupt/incomplete/mixed-generation payload is refused by a new loading process.
 - ART-04: rollback to a revoked or incompatible predecessor fails safely even if an old backup once marked it selected.
 
-These are required product test designs, not executed-test receipts. Each implementation supplies native test identity, exact input/output and independent oracle evidence.
+Every case is mapped to concrete Rust test functions in `../../lane-e/TEST_TRACEABILITY.json`. Additional V2 tests cover complete manifest normalization, persistent withdrawal replay, anti-rollback witnesses and lifecycle self-decision/state-skip rejection.
 
 ## 7. Integration, rollback and capability ceiling
 
 C1 proves durable round-trip, independent decision, new-process changed behavior and exact compatible rollback separately. Passing a same-process fixture is not production deployment. Deletion may require full retraining or revocation when selective unlearning is unsupported.
 
-Use all eighteen dossier receipt fields. Immediate revocation/stop remains effective across frozen snapshots. Preserve every applicable external gate; no generator self-acceptance, self-merge or self-release.
+Use all eighteen dossier receipt fields. Immediate revocation and stop remain effective across frozen snapshots. Preserve every applicable external gate; no generator self-acceptance, self-merge or self-release.
+
+## 8. Native closure and remaining evidence
+
+Repository-controlled source coverage is checked by `../../../scripts/hepta-lane-e-closure.py`; exact-head and ordered-parent synthetic-merge execution are defined in `.github/workflows/hepta-lane-e-gap-closure.yml`. The workflow compiles all targets, runs owner and cross-crate tests, strict Clippy and rustfmt.
+
+The repository cannot self-provision a trusted filesystem namespace, signing key or newest-head distribution service; cannot prove containing-directory durability on every target; cannot produce external-cache or physical-erasure evidence; and cannot issue independent selection, product process loading, canary, operator acceptance, promotion or release. Those exact-candidate gates remain external.
