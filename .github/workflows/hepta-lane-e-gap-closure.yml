@@ -3,7 +3,7 @@ name: Hepta Lane E gap closure
 on:
   push:
     branches:
-      - codex/hepta-lane-e-gap-closure-20260910
+      - codex/lane-e-gap-closure-*
   pull_request:
     paths:
       - codex-rs/hepta-learning-ledger/**
@@ -12,7 +12,19 @@ on:
       - codex-rs/hepta-intelligence-eval/**
       - codex-rs/hepta-shadow-qualification/**
       - docs/lane-e/**
+      - docs/modules/learning.ledger/**
+      - docs/modules/learning.operator/**
+      - docs/modules/learning.eval/**
+      - docs/modules/learning.artifacts/**
+      - docs/engineering/**
+      - docs/readiness/LEARNING_EVALUATION_EXECUTION.md
       - qualification/lane-e/**
+      - qualification/module-execution-dossiers/detail/learning.ledger.md
+      - qualification/module-execution-dossiers/detail/learning.operator.md
+      - qualification/module-execution-dossiers/detail/learning.eval.md
+      - qualification/module-execution-dossiers/detail/learning.artifacts.md
+      - qualification/module-execution-dossiers/IMPLEMENTATION_COMPLETION.json
+      - qualification/module-execution-dossiers/NATIVE_BINDINGS.json
       - scripts/hepta-lane-e-closure.py
       - .github/workflows/hepta-lane-e-gap-closure.yml
 
@@ -25,7 +37,7 @@ concurrency:
 
 env:
   SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
-  TARGET_BRANCH: codex/hepta-main-convergence-20260909
+  PR_BASE_SHA: ${{ github.event.pull_request.base.sha || '' }}
 
 jobs:
   rust-closure:
@@ -49,7 +61,10 @@ jobs:
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "${SOURCE_SHA}"
-          git rev-parse HEAD HEAD^{tree}
+          SOURCE_TREE="$(git rev-parse HEAD^{tree})"
+          SOURCE_PARENT="$(git rev-parse HEAD^)"
+          printf 'source=%s\ntree=%s\nparent=%s\n' \
+            "${SOURCE_SHA}" "${SOURCE_TREE}" "${SOURCE_PARENT}"
 
       - name: Closed-world Lane E verification
         shell: bash
@@ -129,16 +144,24 @@ jobs:
         uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
         with:
           toolchain: 1.95.0
-          components: rustfmt
+          components: clippy,rustfmt
 
-      - name: Materialize ordered-parent synthetic merge
+      - name: Materialize immutable-base ordered-parent synthetic merge
         shell: bash
         run: |
           set -euo pipefail
           SOURCE_COMMIT="$(git rev-parse HEAD)"
           test "${SOURCE_COMMIT}" = "${SOURCE_SHA}"
-          git fetch --no-tags origin "${TARGET_BRANCH}"
-          BASE_COMMIT="$(git rev-parse FETCH_HEAD)"
+
+          if [ "${GITHUB_EVENT_NAME}" = "pull_request" ]; then
+            test -n "${PR_BASE_SHA}"
+            BASE_COMMIT="${PR_BASE_SHA}"
+          else
+            BASE_COMMIT="$(git rev-parse "${SOURCE_COMMIT}^")"
+          fi
+          git cat-file -e "${BASE_COMMIT}^{commit}"
+          test "$(git merge-base "${BASE_COMMIT}" "${SOURCE_COMMIT}")" = "${BASE_COMMIT}"
+
           git checkout --detach "${BASE_COMMIT}"
           git -c user.name=hepta-lane-e-ci \
             -c user.email=hepta-lane-e-ci@users.noreply.github.com \
@@ -154,6 +177,7 @@ jobs:
           test "$(git rev-parse "${MERGE_COMMIT}^2")" = "${SOURCE_COMMIT}"
           test "$(git rev-parse "${MERGE_COMMIT}^{tree}")" = "${MERGE_TREE}"
           {
+            printf 'BASE_COMMIT=%s\n' "${BASE_COMMIT}"
             printf 'MERGE_TREE=%s\n' "${MERGE_TREE}"
             printf 'MERGE_COMMIT=%s\n' "${MERGE_COMMIT}"
           } >> "${GITHUB_ENV}"
@@ -195,6 +219,17 @@ jobs:
           lane_e_causal_candidate_chain_is_digest_bound_and_deny_all
           -- --nocapture --test-threads=1
 
+      - name: Strict merged Lane E lint
+        working-directory: codex-rs
+        run: >-
+          cargo clippy --locked
+          -p codex-hepta-learning-ledger
+          -p codex-hepta-learning-artifacts
+          -p codex-hepta-bellman-operator
+          -p codex-hepta-intelligence-eval
+          -p codex-hepta-shadow-qualification
+          --all-targets -- -D warnings
+
       - name: Verify merged formatting and index stability
         shell: bash
         run: |
@@ -210,3 +245,5 @@ jobs:
           git diff --exit-code
           test "$(git write-tree)" = "${MERGE_TREE}"
           test "$(git rev-parse "${MERGE_COMMIT}^{tree}")" = "${MERGE_TREE}"
+          test "$(git rev-parse "${MERGE_COMMIT}^1")" = "${BASE_COMMIT}"
+          test "$(git rev-parse "${MERGE_COMMIT}^2")" = "${SOURCE_SHA}"
