@@ -4,24 +4,29 @@ on:
   push:
     branches:
       - codex/hepta-lane-d-final-gap-closure-20260910-r2
+  pull_request:
+    paths:
+      - .github/workflows/hepta-lane-d-finalizer.yml
+      - .hepta-tools/hepta-lane-d-finalize.py.gz
+  workflow_dispatch:
 
 permissions:
   contents: write
 
 concurrency:
-  group: hepta-lane-d-finalizer-${{ github.ref }}
+  group: hepta-lane-d-finalizer-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
 jobs:
   finalize:
-    if: ${{ !contains(github.event.head_commit.message, '[lane-d-finalized]') }}
+    if: ${{ github.event_name != 'push' || !contains(github.event.head_commit.message, '[lane-d-finalized]') }}
     runs-on: ubuntu-24.04
     timeout-minutes: 45
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           fetch-depth: 0
-          ref: ${{ github.ref }}
+          ref: ${{ github.event.pull_request.head.ref || github.ref_name }}
 
       - name: Apply deterministic Lane D hardening
         shell: bash
@@ -48,7 +53,7 @@ jobs:
       - name: Commit exact repair and self-remove
         shell: bash
         env:
-          BRANCH: ${{ github.ref_name }}
+          BRANCH: ${{ github.event.pull_request.head.ref || github.ref_name }}
         run: |
           set -euo pipefail
           rm -f scripts/hepta-lane-d-finalize.py
