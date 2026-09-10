@@ -50,4 +50,6 @@ fn lane_e_public_operation_surface_is_linkable() {
     let _ = codex_hepta_learning_artifacts::admit_manifest_at_withdrawal_head_v3;
     let _ = codex_hepta_learning_artifacts::validate_artifact_publication_v3;
     let _ = codex_hepta_learning_artifacts::verify_artifact_admission_v3;
+    let _ = codex_hepta_learning_artifacts::ArtifactLifecycleJournalV2::append;
+    let _ = codex_hepta_learning_artifacts::ArtifactLifecycleJournalV2::from_snapshot;
 }
