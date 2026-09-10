@@ -87,13 +87,35 @@ jobs:
           python3 scripts/hepta-docs.py verify
 
       - name: Verify repository integrity policy
+        id: integrity
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -uo pipefail
+          {
+            set -x
+            python3 scripts/hepta-repository-integrity.py self-test
+            python3 scripts/hepta-repository-integrity.py verify \
+              --base 04f60466394a024c218ce66b1b32d1c42c462985 \
+              --head "$(git rev-parse HEAD)"
+          } 2>&1 | tee "$RUNNER_TEMP/lane-b-integrity.log"
+          exit "${PIPESTATUS[0]}"
+
+      - name: Retain repository-integrity diagnostic
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: lane-b-integrity-${{ steps.candidate.outputs.sha }}
+          path: ${{ runner.temp }}/lane-b-integrity.log
+          if-no-files-found: error
+          retention-days: 7
+
+      - name: Require repository integrity
+        if: always()
         shell: bash
         run: |
           set -euxo pipefail
-          python3 scripts/hepta-repository-integrity.py self-test
-          python3 scripts/hepta-repository-integrity.py verify \
-            --base 04f60466394a024c218ce66b1b32d1c42c462985 \
-            --head "$(git rev-parse HEAD)"
+          test "${{ steps.integrity.outcome }}" = success
 
       - name: Verify browser boundary
         shell: bash
