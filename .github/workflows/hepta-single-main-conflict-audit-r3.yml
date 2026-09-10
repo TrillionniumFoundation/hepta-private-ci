@@ -1,0 +1,206 @@
+name: Hepta single-main semantic conflict audit r3
+
+on:
+  push:
+    branches:
+      - ops/hepta-single-main-conflict-audit-20260910-r3
+    paths:
+      - .github/workflows/hepta-single-main-conflict-audit-r3.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  HEPTA_BASE_SHA: 9a71e0bf02e7c538c725f0aaeffa6f1404546aa2
+  HEPTA_LANE_G_SHA: 54629ac932b1ccad8417d6a98c013400850800af
+
+jobs:
+  audit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - name: Check out full repository history
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Produce deterministic semantic and textual conflict audit
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch --no-tags origin \
+            "${HEPTA_BASE_SHA}" \
+            "${HEPTA_LANE_G_SHA}"
+          EVIDENCE="${RUNNER_TEMP}/hepta-single-main-conflict-audit-r3"
+          rm -rf "$EVIDENCE"
+          mkdir -p "$EVIDENCE"
+          export EVIDENCE
+          python3 - <<'PY'
+          from __future__ import annotations
+
+          import ast
+          import difflib
+          import hashlib
+          import json
+          import os
+          import re
+          import subprocess
+          from pathlib import Path
+          from typing import Any
+
+          base_sha = os.environ["HEPTA_BASE_SHA"]
+          lane_sha = os.environ["HEPTA_LANE_G_SHA"]
+          evidence = Path(os.environ["EVIDENCE"])
+          paths = [
+              "codex-rs/hepta-objective/src/objective_admission.rs",
+              "codex-rs/hepta-objective/src/objective_admission_tests.rs",
+              "qualification/module-execution-dossiers/NATIVE_BINDINGS.json",
+              "qualification/module-execution-dossiers/test_implementation_contracts.py",
+          ]
+
+          def git_show(sha: str, path: str) -> str:
+              return subprocess.check_output(
+                  ["git", "show", f"{sha}:{path}"],
+                  text=True,
+                  encoding="utf-8",
+              )
+
+          def digest(text: str) -> str:
+              return hashlib.sha256(text.encode("utf-8")).hexdigest()
+
+          def rust_inventory(text: str) -> dict[str, list[str]]:
+              public_items = sorted(set(re.findall(
+                  r"(?m)^\s*pub(?:\([^)]*\))?\s+(?:const|static|type|struct|enum|trait|fn)\s+([A-Za-z_][A-Za-z0-9_]*)",
+                  text,
+              )))
+              functions = sorted(set(re.findall(
+                  r"(?m)^\s*(?:pub(?:\([^)]*\))?\s+)?(?:async\s+)?fn\s+([A-Za-z_][A-Za-z0-9_]*)",
+                  text,
+              )))
+              constants = sorted(set(re.findall(
+                  r"(?m)^\s*(?:pub(?:\([^)]*\))?\s+)?const\s+([A-Za-z_][A-Za-z0-9_]*)",
+                  text,
+              )))
+              tests = []
+              lines = text.splitlines()
+              for index, line in enumerate(lines):
+                  if re.match(r"^\s*#\[(?:tokio::)?test(?:\([^]]*\))?\]\s*$", line):
+                      for candidate in lines[index + 1:index + 6]:
+                          match = re.search(r"\bfn\s+([A-Za-z_][A-Za-z0-9_]*)", candidate)
+                          if match:
+                              tests.append(match.group(1))
+                              break
+              return {
+                  "public_items": public_items,
+                  "functions": functions,
+                  "constants": constants,
+                  "tests": sorted(set(tests)),
+                  "error_codes": sorted(set(re.findall(r"OBJ-E[0-9]{3}", text))),
+              }
+
+          def python_inventory(text: str) -> dict[str, list[str]]:
+              tree = ast.parse(text)
+              functions = sorted({node.name for node in ast.walk(tree) if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef))})
+              classes = sorted({node.name for node in ast.walk(tree) if isinstance(node, ast.ClassDef)})
+              imports: set[str] = set()
+              for node in ast.walk(tree):
+                  if isinstance(node, ast.Import):
+                      imports.update(alias.name for alias in node.names)
+                  elif isinstance(node, ast.ImportFrom):
+                      imports.add(node.module or "")
+              return {"functions": functions, "classes": classes, "imports": sorted(imports)}
+
+          def recursive_json_diff(left: Any, right: Any, pointer: str = "") -> list[dict[str, Any]]:
+              differences: list[dict[str, Any]] = []
+              if type(left) is not type(right):
+                  return [{"path": pointer or "/", "base": left, "lane_g": right, "kind": "type_or_value"}]
+              if isinstance(left, dict):
+                  for key in sorted(set(left) | set(right)):
+                      child = f"{pointer}/{key}"
+                      if key not in left:
+                          differences.append({"path": child, "kind": "lane_g_only", "lane_g": right[key]})
+                      elif key not in right:
+                          differences.append({"path": child, "kind": "base_only", "base": left[key]})
+                      else:
+                          differences.extend(recursive_json_diff(left[key], right[key], child))
+                  return differences
+              if isinstance(left, list):
+                  if left != right:
+                      differences.append({"path": pointer or "/", "kind": "list_value", "base": left, "lane_g": right})
+                  return differences
+              if left != right:
+                  differences.append({"path": pointer or "/", "kind": "value", "base": left, "lane_g": right})
+              return differences
+
+          summary: dict[str, Any] = {
+              "base_sha": base_sha,
+              "lane_g_sha": lane_sha,
+              "files": {},
+          }
+
+          for path in paths:
+              base = git_show(base_sha, path)
+              lane = git_show(lane_sha, path)
+              safe = path.replace("/", "__")
+              (evidence / f"{safe}.base").write_text(base, encoding="utf-8")
+              (evidence / f"{safe}.lane-g").write_text(lane, encoding="utf-8")
+              diff = "".join(difflib.unified_diff(
+                  base.splitlines(keepends=True),
+                  lane.splitlines(keepends=True),
+                  fromfile=f"base/{path}",
+                  tofile=f"lane-g/{path}",
+                  n=5,
+              ))
+              (evidence / f"{safe}.diff").write_text(diff, encoding="utf-8")
+              entry: dict[str, Any] = {
+                  "base_sha256": digest(base),
+                  "lane_g_sha256": digest(lane),
+                  "base_lines": len(base.splitlines()),
+                  "lane_g_lines": len(lane.splitlines()),
+                  "sequence_ratio": round(difflib.SequenceMatcher(None, base, lane, autojunk=False).ratio(), 6),
+                  "diff_lines": len(diff.splitlines()),
+              }
+              if path.endswith(".rs"):
+                  base_inventory = rust_inventory(base)
+                  lane_inventory = rust_inventory(lane)
+                  entry["inventory"] = {
+                      key: {
+                          "lane_g_only": sorted(set(lane_inventory[key]) - set(base_inventory[key])),
+                          "base_only": sorted(set(base_inventory[key]) - set(lane_inventory[key])),
+                          "common_count": len(set(base_inventory[key]) & set(lane_inventory[key])),
+                      }
+                      for key in sorted(base_inventory)
+                  }
+              elif path.endswith(".json"):
+                  json_diff = recursive_json_diff(json.loads(base), json.loads(lane))
+                  entry["json_difference_count"] = len(json_diff)
+                  entry["json_differences"] = json_diff
+              elif path.endswith(".py"):
+                  base_inventory = python_inventory(base)
+                  lane_inventory = python_inventory(lane)
+                  entry["inventory"] = {
+                      key: {
+                          "lane_g_only": sorted(set(lane_inventory[key]) - set(base_inventory[key])),
+                          "base_only": sorted(set(base_inventory[key]) - set(lane_inventory[key])),
+                          "common_count": len(set(base_inventory[key]) & set(lane_inventory[key])),
+                      }
+                      for key in sorted(base_inventory)
+                  }
+              summary["files"][path] = entry
+
+          summary_path = evidence / "summary.json"
+          summary_path.write_text(json.dumps(summary, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+          print("HEPTA_SEMANTIC_CONFLICT_AUDIT_R3_BEGIN")
+          print(summary_path.read_text(encoding="utf-8"))
+          print("HEPTA_SEMANTIC_CONFLICT_AUDIT_R3_END")
+          PY
+
+      - name: Upload full conflict audit bundle
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-single-main-conflict-audit-r3-${{ github.run_id }}
+          path: ${{ runner.temp }}/hepta-single-main-conflict-audit-r3
+          if-no-files-found: error
+          retention-days: 30
