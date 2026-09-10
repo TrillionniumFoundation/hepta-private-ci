@@ -18,7 +18,7 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 90
     env:
-      EXPECTED_PARENT: bbf6e8279747130892c7431d7ea956ec4edf0218
+      EXPECTED_PARENT: ed0a4dd3d9cdae3caaa60926570570ae59cb371c
       BASE_SHA: eb76d20401ee8b7b19a155de3366a6168668a3cc
       TARGET_BRANCH: codex/lane-a-gap-closure-20260910
       NATIVE_BINDINGS: qualification/module-execution-dossiers/NATIVE_BINDINGS.json
@@ -162,22 +162,26 @@ jobs:
           from pathlib import Path
 
           path = Path("codex-rs/hepta-contracts/src/provider_effect.rs")
-          old = '''        Some(
-            observations
-                .and_then(|items| items.last())
-                .map_or(ProviderEffectState::Pending, ProviderEffectAck::state),
-        )
-        .filter(|_| intent.key == *key)
-'''
-          new = '''        let state = observations
-            .and_then(|items| items.last())
-            .map_or(ProviderEffectState::Pending, ProviderEffectAck::state);
-        if intent.key == *key {
-            Some(state)
-        } else {
-            None
-        }
-'''
+          old = "\n".join((
+              "        Some(",
+              "            observations",
+              "                .and_then(|items| items.last())",
+              "                .map_or(ProviderEffectState::Pending, ProviderEffectAck::state),",
+              "        )",
+              "        .filter(|_| intent.key == *key)",
+              "",
+          ))
+          new = "\n".join((
+              "        let state = observations",
+              "            .and_then(|items| items.last())",
+              "            .map_or(ProviderEffectState::Pending, ProviderEffectAck::state);",
+              "        if intent.key == *key {",
+              "            Some(state)",
+              "        } else {",
+              "            None",
+              "        }",
+              "",
+          ))
           text = path.read_text(encoding="utf-8")
           if text.count(old) != 1 or new in text:
               raise SystemExit("provider-effect state repair precondition drifted")
