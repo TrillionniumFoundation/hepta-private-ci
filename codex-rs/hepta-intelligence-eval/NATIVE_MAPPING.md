@@ -35,19 +35,29 @@ efficacy.
 deduplicates every principal, episode and window set; rejects training/holdout
 leakage within a fold; prevents the final holdout from entering any training
 set; prevents a holdout lineage from appearing in multiple folds; and requires
-the final holdout window to be covered exactly once.
+the final holdout window to be covered exactly once. The frozen receipt also
+binds claim scope, candidate and baseline identities, objective, dataset,
+estimand, metric direction and safety-floor contract, multiplicity profile,
+final-holdout window and final-holdout bytes. Its deterministic integrity seal
+detects post-freeze field mutation; it is not a signature or issuer credential.
 
-`FinalHoldoutRegistry` allows an exact retry under the same plan but rejects a
-second plan attempting to consume the same final-holdout digest. A future
-persistent host adapter must retain this registry under a single writer; the
-pure type alone does not prove durable exclusivity.
+`FinalHoldoutRegistry::consume` accepts only the typed sealed frozen-plan
+receipt. An exact retry of the identical plan is idempotent. Reusing the same
+plan identity with changed semantics conflicts, while a different plan using
+either the same final-holdout digest or the same final-holdout window is
+rejected. The emitted holdout-use receipt binds the complete plan semantics,
+registry state and use digest and carries its own deterministic integrity seal.
+A future persistent host adapter must retain this registry under a single
+writer; the pure type and unkeyed seals alone do not prove durable exclusivity
+or authenticated origin.
 
 `decide_independently` consumes authenticated generator and evaluator identities
 from `learning.ledger`. It rejects shared principal, credential-chain or
 signing-key identity and validates expiry and authority epoch. It then
 intersects:
 
-- a frozen plan and unused final holdout;
+- an integrity-checked frozen-plan receipt and the exact consumed
+  holdout-use receipt bound to it;
 - estimate, support-audit and confidence receipt digests;
 - candidate lower confidence bound versus baseline upper bound;
 - every metric safety floor;
@@ -87,7 +97,8 @@ owners must provide the actual evidence.
 A product receipt must name:
 
 1. the scheduler and immutable evaluation plan store;
-2. the durable final-holdout-use registry and single-writer fence;
+2. the durable final-holdout-use registry, single-writer fence and
+   canonical persistence/reload of frozen-plan and holdout-use receipts;
 3. the authenticated dataset, outcome-observer and candidate manifests;
 4. the exact fold assignments and nuisance-model runtime;
 5. the target host, resource measurements and incomplete/censored counts;
