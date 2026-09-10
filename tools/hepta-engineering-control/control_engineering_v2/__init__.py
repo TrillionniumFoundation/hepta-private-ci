@@ -55,5 +55,31 @@ from .facade import (
     request_independent_review,
     schedule_ready_packages,
 )
+from .hardening import (
+    AttestedSandboxParity,
+    BoundEvidenceDecision,
+    CandidateEvidenceBindingReceipt,
+    OwnerConsentAttestation,
+    SandboxParityAttestation,
+    assignment_frontier,
+    bind_candidate_evidence,
+    consent_payload_digest,
+    hardened_execute_candidate_sandbox,
+    hardened_prepare_assimilation_candidate,
+    hardened_record_integration_decision,
+    hardened_request_independent_review,
+    hardened_sandbox_candidate,
+    install_hardening,
+)
+
+# Install before exposing composition operations.  Low-level constructors remain
+# importable for deterministic fixtures, while every authority-adjacent public
+# transition below is the fail-closed hardened implementation.
+install_hardening()
+sandbox_candidate = hardened_sandbox_candidate
+execute_candidate_sandbox = hardened_execute_candidate_sandbox
+request_independent_review = hardened_request_independent_review
+record_integration_decision = hardened_record_integration_decision
+prepare_assimilation_candidate = hardened_prepare_assimilation_candidate
 
 __all__ = [name for name in globals() if not name.startswith("_")]
