@@ -1,0 +1,82 @@
+name: Lane B closure candidate builder (temporary)
+
+on:
+  push:
+    branches:
+      - codex/lane-b-gap-closure-20260911
+
+permissions:
+  contents: write
+
+concurrency:
+  group: lane-b-closure-builder-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  build-and-push:
+    if: github.actor != 'hepta-lane-b-closure-bot'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    steps:
+      - name: Check out exact candidate
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Build Lane B closure tree
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 .github/scripts/lane_b_closure_builder.py
+          python3 .github/scripts/lane_b_closure_canonical_patch.py
+          test ! -e .github/scripts/lane_b_closure_builder.py
+          test ! -e .github/scripts/lane_b_closure_canonical_patch.py
+          test ! -e .github/workflows/lane-b-closure-builder.yml
+          git diff --check
+
+      - name: Commit exact closure candidate
+        id: candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name hepta-lane-b-closure-bot
+          git config user.email hepta-lane-b-closure-bot@users.noreply.github.com
+          git add -A
+          test -n "$(git status --porcelain)"
+          git commit -m "fix(lane-b): close repository-internal runtime blockers"
+          printf 'sha=%s\n' "$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+          printf 'tree=%s\n' "$(git rev-parse HEAD^{tree})" >> "$GITHUB_OUTPUT"
+
+      - name: Verify committed documentation and mappings
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${{ steps.candidate.outputs.sha }}"
+          python3 scripts/hepta-lane-b-closure.py self-test
+          python3 scripts/hepta-lane-b-closure.py generate-status --check
+          python3 scripts/hepta-lane-b-closure.py verify
+          python3 scripts/hepta_module_doc_metadata.py
+          python3 scripts/hepta-module-docs.py self-test
+          python3 scripts/hepta-module-docs.py verify
+          python3 qualification/module-execution-dossiers/implementation_contracts.py self-test
+          python3 qualification/module-execution-dossiers/implementation_contracts.py verify-repository
+          python3 scripts/hepta-docs.py self-test
+          python3 scripts/hepta-docs.py verify
+          python3 scripts/hepta-repository-integrity.py self-test
+          python3 scripts/hepta-repository-integrity.py verify \
+            --base 04f60466394a024c218ce66b1b32d1c42c462985 \
+            --head "$(git rev-parse HEAD)"
+          npm --prefix apps/hepta-browser run ci
+          npm --prefix apps/hepta-control-ui run ci
+          npm --prefix apps/hepta-native run ci
+          git diff --check
+          git diff --exit-code
+          test -z "$(git status --porcelain --untracked-files=no)"
+
+      - name: Push verified closure candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          git push origin "HEAD:${GITHUB_REF_NAME}"
