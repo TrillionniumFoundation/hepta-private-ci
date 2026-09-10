@@ -320,6 +320,46 @@ LANE_C_SPLIT_TEST_HARNESS_CONFLICT = (
     "qualification/module-execution-dossiers/test_implementation_contracts.py"
 )
 
+LANE_D_PRIOR_OWNER_CONFLICTS = frozenset(
+    {
+        ".github/workflows/lane-a-foundation.yml",
+        "codex-rs/hepta-authbus/src/lib.rs",
+        "codex-rs/hepta-authbus/src/lib_tests.rs",
+        "codex-rs/hepta-cognitive-read/src/authoritative_tests.rs",
+        "codex-rs/hepta-cognitive-store/src/v2.rs",
+        "codex-rs/hepta-cognitive-store/src/v2_tests.rs",
+        "codex-rs/hepta-cognitive-types/src/lane_c.rs",
+        "codex-rs/hepta-compact-engine/src/qualified.rs",
+        "codex-rs/hepta-compact-engine/src/qualified_tests.rs",
+        "codex-rs/hepta-context-compiler/src/v2.rs",
+        "codex-rs/hepta-context-compiler/src/v2_tests.rs",
+        "codex-rs/hepta-kg/src/generation.rs",
+        "codex-rs/hepta-kg/src/generation_tests.rs",
+        "codex-rs/hepta-memory-federation/src/v2.rs",
+        "codex-rs/hepta-memory-federation/src/v2_tests.rs",
+        "codex-rs/hepta-memory-retrieval/src/generation_bound.rs",
+        "codex-rs/hepta-memory-retrieval/src/generation_bound_tests.rs",
+        "codex-rs/hepta-operations/src/ledger.rs",
+        "codex-rs/hepta-operations/src/ledger_tests.rs",
+        "codex-rs/hepta-prompt-registry/src/v2.rs",
+        "codex-rs/hepta-prompt-registry/src/v2_tests.rs",
+        "docs/lane-a-foundation/MODULE_TRUTH_MATRIX.json",
+        "docs/lane-a-foundation/README.md",
+        "docs/lane-a-foundation/STATUS_MODEL.md",
+        "docs/lane-a-foundation/auth.authbus/CURRENT_IMPLEMENTATION.md",
+        "docs/lane-a-foundation/kernel.authority/CURRENT_IMPLEMENTATION.md",
+        "docs/lane-a-foundation/kernel.evidence/CURRENT_IMPLEMENTATION.md",
+        "docs/lane-a-foundation/kernel.operations/CURRENT_IMPLEMENTATION.md",
+        "docs/lane-a-foundation/platform.types/CURRENT_IMPLEMENTATION.md",
+        "docs/lane-a-foundation/platform.wire/WIRE_V1.md",
+        "docs/lane-a-foundation/secrets.heptabao/CURRENT_IMPLEMENTATION.md",
+        "qualification/module-execution-dossiers/NATIVE_BINDINGS.json",
+        "qualification/module-execution-dossiers/test_implementation_contracts.py",
+        "qualification/module-execution-dossiers/test_lane_a_foundation.py",
+        "scripts/verify_lane_a_foundation.py",
+    }
+)
+
 
 def merge_lane(lane: str, branch: str) -> dict[str, Any]:
     before = git_text("rev-parse", "HEAD")
@@ -342,6 +382,7 @@ def merge_lane(lane: str, branch: str) -> dict[str, Any]:
     lane_owner_conflict = False
     prior_lane_owner_conflict = False
     split_test_harness_conflict = False
+    lane_d_prior_owner_conflict = False
     if not result.passed:
         conflicts = [
             line.strip()
@@ -359,11 +400,17 @@ def merge_lane(lane: str, branch: str) -> dict[str, Any]:
         split_test_harness_conflict = lane == "C" and conflicts == [
             LANE_C_SPLIT_TEST_HARNESS_CONFLICT
         ]
+        lane_d_prior_owner_conflict = (
+            lane == "D"
+            and len(conflicts) == len(LANE_D_PRIOR_OWNER_CONFLICTS)
+            and frozenset(conflicts) == LANE_D_PRIOR_OWNER_CONFLICTS
+        )
         if (
             not generated_conflicts_only(conflicts)
             and not lane_owner_conflict
             and not prior_lane_owner_conflict
             and not split_test_harness_conflict
+            and not lane_d_prior_owner_conflict
         ):
             git("merge", "--abort", check=False)
             return {
@@ -384,6 +431,8 @@ def merge_lane(lane: str, branch: str) -> dict[str, Any]:
             resolution_class = "prior lane-A owner paths retained during lane-B merge"
         elif split_test_harness_conflict:
             resolution_class = "split implementation-contract test harness"
+        elif lane_d_prior_owner_conflict:
+            resolution_class = "prior Lane A/C owner paths retained during Lane D merge"
         else:
             resolution_class = "generated convergence metadata"
         git(
@@ -404,10 +453,12 @@ def merge_lane(lane: str, branch: str) -> dict[str, Any]:
             and not lane_owner_conflict
             and not prior_lane_owner_conflict
             and not split_test_harness_conflict
+            and not lane_d_prior_owner_conflict
         ),
         "autoResolvedLaneOwnerOnly": lane_owner_conflict,
         "autoResolvedPriorLaneOwnerOnly": prior_lane_owner_conflict,
         "autoResolvedSplitTestHarnessOnly": split_test_harness_conflict,
+        "autoResolvedLaneDPriorOwnerOnly": lane_d_prior_owner_conflict,
         "conflicts": conflicts,
     }
 
