@@ -1,0 +1,61 @@
+name: lane-a-reconcile-20260910
+
+on:
+  push:
+    branches:
+      - codex/lane-a-gap-closure-20260910
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: lane-a-reconcile-20260910
+  cancel-in-progress: true
+
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      EXPECTED_PARENT: 9308ffb0f480932c3a122626fe08a3ba6dd1c05b
+      BASE_SHA: eb76d20401ee8b7b19a155de3366a6168668a3cc
+      TARGET_BRANCH: codex/lane-a-gap-closure-20260910
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Verify exact diagnostic bootstrap
+        run: |
+          set -euo pipefail
+          test "${GITHUB_REF_NAME}" = "${TARGET_BRANCH}"
+          test "$(git rev-parse HEAD^)" = "${EXPECTED_PARENT}"
+          test "$(git rev-parse HEAD:.github/workflows/lane-a-reconcile-20260910.yml)" = "$(git hash-object .github/workflows/lane-a-reconcile-20260910.yml)"
+      - name: Diagnose three-way merge
+        run: |
+          set -euo pipefail
+          git config user.name lane-a-reconcile-diagnostic
+          git config user.email actions@users.noreply.github.com
+          set +e
+          git merge --no-commit --no-ff "${BASE_SHA}"
+          merge_status=$?
+          set -e
+          echo "merge_exit=${merge_status}"
+          echo "merge_base=$(git merge-base HEAD "${BASE_SHA}")"
+          echo "head=$(git rev-parse HEAD)"
+          echo "base=${BASE_SHA}"
+          echo '--- status ---'
+          git status --short
+          echo '--- unresolved paths ---'
+          git diff --name-only --diff-filter=U
+          echo '--- unresolved index stages ---'
+          git ls-files -u
+          if [ "${merge_status}" -eq 0 ]; then
+            echo 'Merge is clean; publication workflow can commit the merge directly.'
+          else
+            echo 'Merge conflicts require explicit resolution.'
+          fi
+          git merge --abort || true
+          exit "${merge_status}"
