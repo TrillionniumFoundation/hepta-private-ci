@@ -1,0 +1,182 @@
+name: Hepta Lane B closure
+
+on:
+  workflow_call:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-lane-b-closure-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+env:
+  SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+  LANE_B_PACKAGES: >-
+    codex-hepta-supervisor
+    codex-hepta-fleet
+    codex-hepta-agentd
+    codex-hepta-codex-adapter
+    codex-hepta-infer-core
+    codex-hepta-inferd
+    codex-hepta-infer-worker-host
+    codex-hepta-automation
+    codex-hepta-matrix-sdk
+    codex-hepta-matrixd
+
+jobs:
+  registry:
+    name: Lane B registry and documentation
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: Check out exact source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Verify exact source identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          git rev-parse HEAD HEAD^{tree}
+
+      - name: Verify Lane B closed world
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta-lane-b-closure.py self-test
+          python3 scripts/hepta-lane-b-closure.py generate-status --check
+          python3 scripts/hepta-lane-b-closure.py verify
+          python3 scripts/hepta_module_doc_metadata.py
+          python3 scripts/hepta-module-docs.py verify
+          python3 qualification/module-execution-dossiers/implementation_contracts.py verify-repository
+          git diff --check
+          git diff --exit-code
+          test -z "$(git status --porcelain --untracked-files=no)"
+
+  rust:
+    name: Lane B Rust (${{ matrix.os }})
+    needs: registry
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - ubuntu-24.04
+          - macos-15
+          - windows-latest
+    steps:
+      - name: Check out exact source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          persist-credentials: false
+
+      - name: Compile and test Lane B packages
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          args=()
+          for package in $LANE_B_PACKAGES; do
+            args+=(-p "$package")
+          done
+          cargo check --locked "${args[@]}" --all-targets
+          cargo test --locked "${args[@]}" --lib --tests
+
+  rust-lint:
+    name: Lane B Rust lint
+    needs: registry
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - name: Check out exact source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          persist-credentials: false
+
+      - name: Strict Clippy for Lane B packages
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          args=()
+          for package in $LANE_B_PACKAGES; do
+            args+=(-p "$package")
+          done
+          cargo clippy --locked "${args[@]}" --all-targets -- -D warnings
+
+  javascript:
+    name: Lane B JavaScript (${{ matrix.os }})
+    needs: registry
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - ubuntu-24.04
+          - macos-15
+          - windows-latest
+    steps:
+      - name: Check out exact source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          persist-credentials: false
+
+      - name: Check and test browser and UI boundaries
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm --prefix apps/hepta-browser run ci
+          npm --prefix apps/hepta-control-ui run ci
+          npm --prefix apps/hepta-native run ci
+
+  merge-candidate:
+    name: Lane B deterministic merge candidate
+    if: github.event_name == 'pull_request'
+    needs: registry
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - name: Check out exact source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Construct and verify deterministic merge candidate
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          SOURCE_SHA: ${{ github.event.pull_request.head.sha }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          git cat-file -e "$BASE_SHA^{commit}"
+          TREE="$(git merge-tree --write-tree "$BASE_SHA" "$SOURCE_SHA")"
+          export GIT_AUTHOR_NAME="Hepta Lane B CI"
+          export GIT_AUTHOR_EMAIL="hepta-lane-b-ci@users.noreply.github.com"
+          export GIT_COMMITTER_NAME="$GIT_AUTHOR_NAME"
+          export GIT_COMMITTER_EMAIL="$GIT_AUTHOR_EMAIL"
+          export GIT_AUTHOR_DATE="2000-01-01T00:00:00Z"
+          export GIT_COMMITTER_DATE="$GIT_AUTHOR_DATE"
+          MERGE_SHA="$(printf 'Synthetic Lane B merge for PR %s\n' "$PR_NUMBER" | git commit-tree "$TREE" -p "$BASE_SHA" -p "$SOURCE_SHA")"
+          git checkout --detach "$MERGE_SHA"
+          test "$(git rev-parse HEAD^{tree})" = "$TREE"
+          test "$(git rev-list --parents -n 1 HEAD)" = "$MERGE_SHA $BASE_SHA $SOURCE_SHA"
+          python3 scripts/hepta-lane-b-closure.py generate-status --check
+          python3 scripts/hepta-lane-b-closure.py verify
+          python3 scripts/hepta-module-docs.py verify
+          git diff --check
+          git diff --exit-code
