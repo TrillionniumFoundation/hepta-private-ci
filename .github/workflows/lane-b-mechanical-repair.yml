@@ -1,0 +1,113 @@
+name: Lane B mechanical repair
+
+on:
+  push:
+    branches:
+      - ops/lane-b-format-fix-20260910-r1
+
+permissions:
+  contents: write
+
+concurrency:
+  group: lane-b-mechanical-repair
+  cancel-in-progress: false
+
+jobs:
+  repair:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    steps:
+      - name: Check out repair source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ops/lane-b-format-fix-20260910-r1
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Install pinned Rust toolchain
+        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          components: rustfmt,clippy
+
+      - name: Repair generated Rust identifiers and manifest test discovery
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+
+          rust_files = [
+              Path("codex-rs/hepta-fleet/src/bin/hepta-fleet-leased.rs"),
+              Path("codex-rs/hepta-infer-core/src/bin/hepta-infer-control.rs"),
+              Path("codex-rs/hepta-infer-worker-host/src/bin/hepta-infer-worker.rs"),
+              Path("codex-rs/hepta-automation/src/bin/hepta-taskflow-runtime.rs"),
+              Path("codex-rs/hepta-matrixd/src/bin/hepta-matrix-send-observer.rs"),
+          ]
+          invalid = []
+          for path in rust_files:
+              text = path.read_text(encoding="utf-8")
+              output = []
+              for number, line in enumerate(text.splitlines(keepends=True), start=1):
+                  match = re.match(r"^(\s*)fn\s+([^()]*)\((.*)$", line)
+                  if match:
+                      indent, raw_name, tail = match.groups()
+                      name = raw_name.strip()
+                      if not re.fullmatch(r"[A-Za-z_][A-Za-z0-9_]*", name):
+                          repaired = re.sub(r"[^A-Za-z0-9_]+", "_", name).strip("_")
+                          if not repaired or repaired[0].isdigit():
+                              repaired = "test_" + repaired
+                          invalid.append((str(path), number, name, repaired))
+                          line = f"{indent}fn {repaired}({tail}"
+                  output.append(line)
+              path.write_text("".join(output), encoding="utf-8")
+
+          manifest = Path("codex-rs/hepta-automation/Cargo.toml")
+          text = manifest.read_text(encoding="utf-8")
+          before = "path = \"src/lib.rs\"\ntest = false\ndoctest = false"
+          after = "path = \"src/lib.rs\"\ntest = true\ndoctest = false"
+          if before not in text:
+              raise SystemExit("expected hepta-automation lib test setting not found")
+          manifest.write_text(text.replace(before, after, 1), encoding="utf-8")
+          print({"repaired_identifiers": invalid, "manifest_test_enabled": True})
+          PY
+
+      - name: Format complete Rust workspace
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo fmt --manifest-path codex-rs/Cargo.toml --all
+          cargo fmt --manifest-path codex-rs/Cargo.toml --all -- --check
+
+      - name: Test Lane B owner targets
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo test --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-fleet --bin hepta-fleet-leased
+          cargo test --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-infer-core --bin hepta-infer-control
+          cargo test --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-infer-worker-host --bin hepta-infer-worker
+          cargo test --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-automation --lib --bin hepta-taskflow-runtime
+          cargo test --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-matrixd --bin hepta-matrix-send-observer
+
+      - name: Strict Clippy for Lane B owner targets
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo clippy --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-fleet --bin hepta-fleet-leased -- -D warnings
+          cargo clippy --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-infer-core --bin hepta-infer-control -- -D warnings
+          cargo clippy --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-infer-worker-host --bin hepta-infer-worker -- -D warnings
+          cargo clippy --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-automation --lib --bin hepta-taskflow-runtime -- -D warnings
+          cargo clippy --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-matrixd --bin hepta-matrix-send-observer -- -D warnings
+
+      - name: Commit repaired tree without the temporary workflow
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm .github/workflows/lane-b-mechanical-repair.yml
+          git diff --check
+          git config user.name "Hepta Lane B Repair"
+          git config user.email "hepta-lane-b-repair@users.noreply.github.com"
+          git add -A
+          test -n "$(git status --porcelain)"
+          git commit -m "fix(lane-b): normalize Rust sources and test discovery"
+          git push origin HEAD:refs/heads/ops/lane-b-format-fix-20260910-r1
