@@ -21,7 +21,7 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 15
     env:
-      EXPECTED_PARENT: edd9ecfd8e42d37ae7c330ab926ccf0c49ce169b
+      EXPECTED_PARENT: d82ff27cd253210d8c1c0c625fe1c1880fa54931
       TARGET_BRANCH: ops/hepta-global-gap-closure-controller-20260910-r1
       FINALIZER: scripts/hepta-global-finalizer-r7.py
       PATCH_SCRIPT: scripts/patch-global-finalizer-r13.py
@@ -54,10 +54,12 @@ jobs:
 
           text = Path("scripts/hepta-global-finalizer-r7.py").read_text(encoding="utf-8")
           required = (
+              "def imported_workspace_crates_by_kind(",
               "def workspace_dependency_graph(",
-              "def dependency_reaches(",
-              "would-create-workspace-dependency-cycle",
-              "skippedCycleCount",
+              "def dependency_cycle_path(",
+              "cycle = dependency_cycle_path(graph, package_name, dependency_name)",
+              '"skippedCycles": skipped_cycles',
+              '"skippedCycleCount": len(skipped_cycles)',
               'path == ".github/workflows/lane-f-bootstrap.yml"',
               'git("rm", "--", path)',
           )
@@ -78,7 +80,7 @@ jobs:
           git rm "${PATCH_WORKFLOW}" "${PATCH_SCRIPT}"
           git add "${FINALIZER}"
           git diff --cached --check
-          git commit -m 'fix(hepta): reject dependency repairs that create workspace cycles'
+          git commit -m 'fix(hepta): remove transient Lane F publisher from convergence'
           git push origin "HEAD:refs/heads/${TARGET_BRANCH}"
           gh workflow run hepta-global-finalizer-r7.yml \
             --repo "${GITHUB_REPOSITORY}" \
