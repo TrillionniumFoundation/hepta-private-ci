@@ -35,19 +35,32 @@ efficacy.
 deduplicates every principal, episode and window set; rejects training/holdout
 leakage within a fold; prevents the final holdout from entering any training
 set; prevents a holdout lineage from appearing in multiple folds; and requires
-the final holdout window to be covered exactly once.
+the final holdout window to be covered exactly once. Its v2 plan digest also
+binds claim scope, candidate, baseline, objective, dataset, estimand, metric
+identities/directions/safety floors, multiplicity, every fold model and
+predictions digest, and the final-holdout window and byte digest. The returned
+typed receipt carries a module-private integrity seal, so field mutation cannot
+be reintroduced as an apparently frozen plan.
 
-`FinalHoldoutRegistry` allows an exact retry under the same plan but rejects a
-second plan attempting to consume the same final-holdout digest. A future
-persistent host adapter must retain this registry under a single writer; the
-pure type alone does not prove durable exclusivity.
+`FinalHoldoutRegistry::consume` accepts the sealed frozen-plan receipt rather
+than a reusable plan name. It indexes both final-holdout byte digest and window
+identity. Reusing one plan ID with changed claim scope, model, predictions,
+lineage, candidate, objective, dataset, estimand, threshold or multiplicity is
+an identity conflict. A different plan reusing either holdout identity is
+rejected. A genuinely identical retry returns the original registry and use
+digests even after unrelated registry growth. The returned use receipt is also
+integrity-sealed. A future persistent host adapter must retain this state under
+a single writer; the pure type does not itself prove durable exclusivity.
 
 `decide_independently` consumes authenticated generator and evaluator identities
-from `learning.ledger`. It rejects shared principal, credential-chain or
-signing-key identity and validates expiry and authority epoch. It then
-intersects:
+from `learning.ledger`, a sealed `CrossFoldPlanReceiptV1`, and the corresponding
+sealed `HoldoutUseReceiptV1`. It rejects receipt mutation and every mismatch in
+claim scope, candidate, baseline, objective, dataset, estimand, metric contract,
+multiplicity, plan digest, holdout digest or holdout window before evaluating
+results. It also rejects shared principal, credential-chain or signing-key
+identity and validates expiry and authority epoch. It then intersects:
 
-- a frozen plan and unused final holdout;
+- the sealed frozen plan and its exact registered holdout-use receipt;
 - estimate, support-audit and confidence receipt digests;
 - candidate lower confidence bound versus baseline upper bound;
 - every metric safety floor;

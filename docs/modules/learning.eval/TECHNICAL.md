@@ -145,6 +145,34 @@ Evaluation rejects zero or stale composite plan digests before fitting or estima
 
 Canonical vector `TEMPORAL-PLAN-DIGEST-GV-001` fixes the complete 293-byte composite preimage and expected digest `dba5b45f87d6a8ef08dccfc9b2108a1456d94b226c3315777c3de2f15f4219b3`; source tests must compare against that hard-coded oracle rather than a value emitted by the implementation under test.
 
+### Frozen cross-fold and final-holdout-use compatibility
+
+The additive `hepta.intelligence-eval.cross-fold-plan.v2` preimage freezes the
+claim scope, plan ID, candidate, baseline, objective, dataset, estimand, metric
+identities/directions/safety floors, family alpha, simultaneous-comparison
+count, canonical fold principal/episode/window lineages, fold model and
+predictions digests, and final-holdout window and byte digest. Changing any of
+those fields creates a different plan digest. `CrossFoldPlanReceiptV1` also has
+a module-private integrity seal; consumers reject a mutated public field before
+comparing business semantics.
+
+`FinalHoldoutRegistry::consume` accepts only that typed frozen-plan receipt. It
+owns indexes for plan ID, final-holdout digest and final-holdout window ID. The
+same plan ID with changed semantics is `FinalHoldoutIdentityConflict`; another
+plan reusing either holdout identity is `FinalHoldoutReused`. The first use
+stores its registry digest and use digest. A byte/semantic-identical retry
+returns the original pair even if unrelated uses were appended later. The
+additive `hepta.intelligence-eval.final-holdout-use.v2` receipt is itself
+module-sealed.
+
+`decide_independently` requires both the sealed plan receipt and its sealed use
+receipt and rechecks claim scope, candidate, baseline, objective, dataset,
+estimand, metric contract, multiplicity, plan digest, holdout digest and
+holdout window. The former caller booleans `analysis_plan_frozen` and
+`final_holdout_reused` are not accepted evidence. These source-level seals do
+not authenticate a production issuer or persist the registry; an exclusive
+durable host adapter and current trust-root verification remain required.
+
 Every producer validates output before publication and binds semantic fields into the declared digest scope. Every consumer validates version, bounds, producer identity, scope and digest before use. Compatibility is additive only where registered; unknown critical fields are rejected. Contract identifiers, meaning and authority interpretation cannot change in place.
 
 Rust types and canonical JSON represent identical semantics. Tests cover round trips, maximum bounds, missing fields, unknown fields, invalid enums, canonical ordering and digest stability. Error mapping preserves rejected, unavailable, timed out, indeterminate, quarantined and terminally failed outcomes.

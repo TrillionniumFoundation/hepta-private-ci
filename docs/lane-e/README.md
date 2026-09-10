@@ -68,6 +68,8 @@ exact commit and tree:
 - strict Clippy and rustfmt pass without mutating the tested source;
 - generated dependency metadata is committed;
 - the closed-world Lane E verifier passes;
+- final-holdout admission is bound to sealed immutable analysis semantics, with
+  conflict-stable same-ID drift rejection and stable exact replay;
 - all authority-bearing outputs in this slice remain `DENY_ALL` or explicitly
   delegated to an external owner.
 

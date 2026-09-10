@@ -15,9 +15,26 @@ ROOT = Path(__file__).resolve().parents[1]
 MATRIX_PATH = ROOT / "docs/lane-e/LANE_E_IMPLEMENTATION_MATRIX.json"
 TRACE_PATH = ROOT / "qualification/lane-e/TEST_TRACEABILITY.json"
 WORKFLOW_PATH = ROOT / ".github/workflows/hepta-lane-e-gap-closure.yml"
-TEMPORARY_WORKFLOW_PATH = (
-    ROOT / ".github/workflows/hepta-lane-e-materialize-generated.yml"
-)
+EVAL_CLOSURE_PATH = ROOT / "codex-rs/hepta-intelligence-eval/src/closure.rs"
+EVAL_CLOSURE_TEST_PATH = ROOT / "codex-rs/hepta-intelligence-eval/src/closure_tests.rs"
+TEMPORARY_WORKFLOW_GLOB = "tmp-lane-e-*.yml"
+EXPECTED_HOLDOUT_FROZEN_FIELDS = {
+    "plan_id",
+    "claim_scope",
+    "candidate_id",
+    "baseline_id",
+    "objective_digest",
+    "dataset_digest",
+    "estimand_digest",
+    "metric_contract_digest",
+    "family_alpha_ppm",
+    "simultaneous_comparisons",
+    "fold_principal_episode_window_lineage",
+    "fold_model_digest",
+    "fold_predictions_digest",
+    "final_holdout_window_id",
+    "final_holdout_digest",
+}
 
 EXPECTED_MODULES = {
     "learning.ledger",
@@ -94,7 +111,9 @@ class Findings:
 
 def load_json(path: Path, findings: Findings) -> dict[str, Any]:
     if not path.is_file():
-        findings.add("missing_file", f"missing required JSON file: {path.relative_to(ROOT)}")
+        findings.add(
+            "missing_file", f"missing required JSON file: {path.relative_to(ROOT)}"
+        )
         return {}
     try:
         value = json.loads(path.read_text(encoding="utf-8"))
@@ -112,7 +131,9 @@ def load_json(path: Path, findings: Findings) -> dict[str, Any]:
 
 def relative_path(value: object, findings: Findings, context: str) -> Path | None:
     if not isinstance(value, str) or not value or value.startswith(("/", "../")):
-        findings.add("invalid_path", f"{context} has invalid repository path: {value!r}")
+        findings.add(
+            "invalid_path", f"{context} has invalid repository path: {value!r}"
+        )
         return None
     path = Path(value)
     if ".." in path.parts:
@@ -135,7 +156,9 @@ def verify_symbol(source: str, native_symbol: str) -> bool:
     return True
 
 
-def verify_matrix(matrix: dict[str, Any], findings: Findings) -> dict[str, dict[str, Any]]:
+def verify_matrix(
+    matrix: dict[str, Any], findings: Findings
+) -> dict[str, dict[str, Any]]:
     findings.require(
         matrix.get("schema") == "hepta.lane-e-implementation-matrix.v1",
         "matrix_schema",
@@ -159,7 +182,9 @@ def verify_matrix(matrix: dict[str, Any], findings: Findings) -> dict[str, dict[
     modules: dict[str, dict[str, Any]] = {}
     for item in modules_raw:
         if not isinstance(item, dict) or not isinstance(item.get("module"), str):
-            findings.add("matrix_module_record", "matrix contains an invalid module record")
+            findings.add(
+                "matrix_module_record", "matrix contains an invalid module record"
+            )
             continue
         module = item["module"]
         if module in modules:
@@ -267,9 +292,13 @@ def verify_matrix(matrix: dict[str, Any], findings: Findings) -> dict[str, dict[
 
     cross = matrix.get("crossCrateQualification")
     if not isinstance(cross, dict):
-        findings.add("cross_crate_missing", "cross-crate qualification record is missing")
+        findings.add(
+            "cross_crate_missing", "cross-crate qualification record is missing"
+        )
     else:
-        path = relative_path(cross.get("source"), findings, "crossCrateQualification.source")
+        path = relative_path(
+            cross.get("source"), findings, "crossCrateQualification.source"
+        )
         test = cross.get("test")
         if path is not None and path.is_file() and isinstance(test, str):
             text = path.read_text(encoding="utf-8")
@@ -342,7 +371,9 @@ def verify_traceability(
             if not isinstance(test, dict):
                 findings.add("invalid_test_mapping", f"{context} is not an object")
                 continue
-            source_path = relative_path(test.get("source"), findings, f"{context}.source")
+            source_path = relative_path(
+                test.get("source"), findings, f"{context}.source"
+            )
             function = test.get("function")
             if source_path is None or not source_path.is_file():
                 findings.add("test_source_missing", f"{context} source is missing")
@@ -375,15 +406,128 @@ def verify_traceability(
             if not isinstance(item, dict):
                 findings.add("invalid_cross_case", "invalid cross-crate case")
                 continue
-            source_path = relative_path(item.get("source"), findings, "crossCase.source")
+            source_path = relative_path(
+                item.get("source"), findings, "crossCase.source"
+            )
             function = item.get("function")
-            if source_path is not None and source_path.is_file() and isinstance(function, str):
+            if (
+                source_path is not None
+                and source_path.is_file()
+                and isinstance(function, str)
+            ):
                 text = source_path.read_text(encoding="utf-8")
                 findings.require(
                     bool(re.search(rf"\bfn\s+{re.escape(function)}\s*\(", text)),
                     "cross_case_unresolved",
                     f"cross-crate function is missing: {function}",
                 )
+
+
+def verify_holdout_semantics(matrix: dict[str, Any], findings: Findings) -> None:
+    if not EVAL_CLOSURE_PATH.is_file():
+        findings.add("holdout_source_missing", "evaluation closure source is missing")
+        return
+    source = EVAL_CLOSURE_PATH.read_text(encoding="utf-8")
+    required_tokens = (
+        "hepta.intelligence-eval.cross-fold-plan.v2",
+        "hepta.intelligence-eval.final-holdout-registry.v2",
+        "hepta.intelligence-eval.final-holdout-use.v2",
+        "hepta.intelligence-eval.frozen-plan-receipt-seal.v1",
+        "hepta.intelligence-eval.holdout-use-receipt-seal.v1",
+        "pub frozen_plan: CrossFoldPlanReceiptV1",
+        "pub holdout_use: HoldoutUseReceiptV1",
+        "receipt_seal: Digest32",
+        "HoldoutUseRecordV1",
+        "uses_by_window",
+        "FinalHoldoutIdentityConflict",
+        "FrozenPlanReceiptIntegrity",
+        "HoldoutUseReceiptIntegrity",
+        "validate_frozen_evaluation_binding",
+        "metric_contract_digest",
+        "claim_scope",
+    )
+    for token in required_tokens:
+        findings.require(
+            token in source,
+            "holdout_semantic_token_missing",
+            f"evaluation closure is missing semantic holdout token: {token}",
+        )
+    for token in (
+        "pub analysis_plan_frozen: bool",
+        "pub final_holdout_reused: bool",
+    ):
+        findings.require(
+            token not in source,
+            "legacy_holdout_assertion_present",
+            f"legacy caller assertion remains accepted: {token}",
+        )
+    findings.require(
+        re.search(
+            r"pub fn consume\(\s*&mut self,\s*plan: &CrossFoldPlanReceiptV1",
+            source,
+        )
+        is not None,
+        "holdout_consume_signature",
+        "FinalHoldoutRegistry must consume the typed frozen-plan receipt",
+    )
+    findings.require(
+        re.search(
+            r"pub fn consume\(\s*&mut self,\s*plan_id: StableId,\s*holdout_digest: Digest32",
+            source,
+        )
+        is None,
+        "legacy_holdout_consume_signature",
+        "legacy plan-name and holdout-digest consume signature remains",
+    )
+
+    binding = matrix.get("holdoutIdentityBinding")
+    if not isinstance(binding, dict):
+        findings.add("holdout_matrix_missing", "holdout identity matrix is missing")
+    else:
+        findings.require(
+            binding.get("schema") == "hepta.lane-e-holdout-identity-binding.v2",
+            "holdout_matrix_schema",
+            "unexpected holdout identity binding schema",
+        )
+        findings.require(
+            set(binding.get("frozenFields", [])) == EXPECTED_HOLDOUT_FROZEN_FIELDS,
+            "holdout_frozen_fields",
+            "holdout frozen field set is incomplete or contains drift",
+        )
+        expected = {
+            "planDigestDomain": "hepta.intelligence-eval.cross-fold-plan.v2",
+            "registryDigestDomain": "hepta.intelligence-eval.final-holdout-registry.v2",
+            "useDigestDomain": "hepta.intelligence-eval.final-holdout-use.v2",
+            "planReceiptSealDomain": "hepta.intelligence-eval.frozen-plan-receipt-seal.v1",
+            "useReceiptSealDomain": "hepta.intelligence-eval.holdout-use-receipt-seal.v1",
+            "samePlanSemanticDrift": "identity_conflict",
+            "sameHoldoutDigestOtherPlan": "reuse_rejected",
+            "sameHoldoutWindowOtherPlan": "reuse_rejected",
+            "exactReplay": "original_registry_and_use_digests_preserved",
+            "eligibilityInput": "sealed_frozen_plan_and_holdout_use_receipts",
+            "authority": "DENY_ALL",
+        }
+        for key, value in expected.items():
+            findings.require(
+                binding.get(key) == value,
+                "holdout_matrix_policy",
+                f"holdout identity policy mismatch for {key}",
+            )
+
+    if not EVAL_CLOSURE_TEST_PATH.is_file():
+        findings.add("holdout_test_source_missing", "holdout test source is missing")
+        return
+    tests = EVAL_CLOSURE_TEST_PATH.read_text(encoding="utf-8")
+    for function_name in (
+        "final_holdout_registry_allows_exact_retry_but_blocks_adaptive_reuse",
+        "final_holdout_replay_receipt_is_stable_after_unrelated_registry_growth",
+        "independent_decision_consumes_bound_holdout_receipt",
+    ):
+        findings.require(
+            re.search(rf"\bfn\s+{re.escape(function_name)}\s*\(", tests) is not None,
+            "holdout_regression_missing",
+            f"missing semantic holdout regression: {function_name}",
+        )
 
 
 def verify_authority_posture(findings: Findings) -> None:
@@ -396,7 +540,9 @@ def verify_authority_posture(findings: Findings) -> None:
     ]
     for path in sources:
         if not path.is_file():
-            findings.add("authority_source_missing", f"missing {path.relative_to(ROOT)}")
+            findings.add(
+                "authority_source_missing", f"missing {path.relative_to(ROOT)}"
+            )
             continue
         text = path.read_text(encoding="utf-8")
         findings.require(
@@ -434,10 +580,12 @@ def verify_workflow(findings: Findings) -> None:
             "workflow_gate_missing",
             f"workflow is missing required gate token: {token}",
         )
+    temporary_workflows = sorted(WORKFLOW_PATH.parent.glob(TEMPORARY_WORKFLOW_GLOB))
     findings.require(
-        not TEMPORARY_WORKFLOW_PATH.exists(),
+        not temporary_workflows,
         "temporary_workflow_present",
-        "temporary generated-file materializer must not remain in the candidate",
+        "temporary Lane E workflows must not remain in the candidate: "
+        + ", ".join(path.name for path in temporary_workflows),
     )
 
 
@@ -445,7 +593,8 @@ def run_self_test() -> list[Finding]:
     findings = Findings()
     findings.require(
         verify_symbol(
-            "pub struct Demo; impl Demo { pub fn execute(&self) {} }", "crate::Demo::execute"
+            "pub struct Demo; impl Demo { pub fn execute(&self) {} }",
+            "crate::Demo::execute",
         ),
         "self_test_method",
         "method symbol resolver failed",
@@ -469,6 +618,7 @@ def verify() -> Findings:
     trace = load_json(TRACE_PATH, findings)
     modules = verify_matrix(matrix, findings)
     verify_traceability(trace, modules, findings)
+    verify_holdout_semantics(matrix, findings)
     verify_authority_posture(findings)
     verify_workflow(findings)
     return findings

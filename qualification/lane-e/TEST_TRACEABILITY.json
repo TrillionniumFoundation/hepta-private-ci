@@ -11,8 +11,14 @@
       "module": "learning.ledger",
       "requirement": "Acknowledgement loss reconciles the committed event from its original identity and anchor.",
       "tests": [
-        {"source": "codex-rs/hepta-learning-ledger/src/durable_tests.rs", "function": "full_unacknowledged_frame_is_synced_and_deduplicated_on_recover"},
-        {"source": "codex-rs/hepta-learning-ledger/src/durable_tests.rs", "function": "failed_write_poisons_memory_and_requires_recovery"}
+        {
+          "source": "codex-rs/hepta-learning-ledger/src/durable_tests.rs",
+          "function": "full_unacknowledged_frame_is_synced_and_deduplicated_on_recover"
+        },
+        {
+          "source": "codex-rs/hepta-learning-ledger/src/durable_tests.rs",
+          "function": "failed_write_poisons_memory_and_requires_recovery"
+        }
       ],
       "status": "native_test_mapped"
     },
@@ -21,8 +27,14 @@
       "module": "learning.ledger",
       "requirement": "Truncating acknowledged history fails anchored recovery.",
       "tests": [
-        {"source": "codex-rs/hepta-learning-ledger/src/durable_tests.rs", "function": "acknowledged_revocation_cannot_disappear_as_a_valid_prefix_or_partial_tail"},
-        {"source": "codex-rs/hepta-learning-ledger/src/inspection_tests.rs", "function": "missing_and_mismatched_acknowledged_history_never_mutate_file"}
+        {
+          "source": "codex-rs/hepta-learning-ledger/src/durable_tests.rs",
+          "function": "acknowledged_revocation_cannot_disappear_as_a_valid_prefix_or_partial_tail"
+        },
+        {
+          "source": "codex-rs/hepta-learning-ledger/src/inspection_tests.rs",
+          "function": "missing_and_mismatched_acknowledged_history_never_mutate_file"
+        }
       ],
       "status": "native_test_mapped"
     },
@@ -31,8 +43,14 @@
       "module": "learning.ledger",
       "requirement": "A generator posing as an independent observer is rejected by authenticated role identity, not string comparison.",
       "tests": [
-        {"source": "codex-rs/hepta-learning-ledger/src/causal_v2_tests.rs", "function": "ledger_03_rejects_shared_credential_chain"},
-        {"source": "codex-rs/hepta-learning-ledger/src/shadow_tests.rs", "function": "shadow_bridge_does_not_weaken_independent_terminal_outcome_rules"}
+        {
+          "source": "codex-rs/hepta-learning-ledger/src/causal_v2_tests.rs",
+          "function": "ledger_03_rejects_shared_credential_chain"
+        },
+        {
+          "source": "codex-rs/hepta-learning-ledger/src/shadow_tests.rs",
+          "function": "shadow_bridge_does_not_weaken_independent_terminal_outcome_rules"
+        }
       ],
       "status": "native_test_mapped"
     },
@@ -41,9 +59,18 @@
       "module": "learning.ledger",
       "requirement": "Delayed or corrected outcomes and revoked ancestry alter dataset eligibility without rewriting history.",
       "tests": [
-        {"source": "codex-rs/hepta-learning-ledger/src/causal_v2_tests.rs", "function": "ledger_04_validates_terminal_watermark_and_correction_lineage"},
-        {"source": "codex-rs/hepta-learning-ledger/src/causal_v2_tests.rs", "function": "ledger_dataset_freeze_is_order_independent_and_rejects_duplicates"},
-        {"source": "codex-rs/hepta-learning-ledger/src/durable_tests.rs", "function": "persisted_causal_events_replay_exact_core_and_revocation_excludes_descendants"}
+        {
+          "source": "codex-rs/hepta-learning-ledger/src/causal_v2_tests.rs",
+          "function": "ledger_04_validates_terminal_watermark_and_correction_lineage"
+        },
+        {
+          "source": "codex-rs/hepta-learning-ledger/src/causal_v2_tests.rs",
+          "function": "ledger_dataset_freeze_is_order_independent_and_rejects_duplicates"
+        },
+        {
+          "source": "codex-rs/hepta-learning-ledger/src/durable_tests.rs",
+          "function": "persisted_causal_events_replay_exact_core_and_revocation_excludes_descendants"
+        }
       ],
       "status": "native_test_mapped"
     },
@@ -52,8 +79,14 @@
       "module": "learning.operator",
       "requirement": "The analytic sensor and Bellman reference produces deterministic canonical targets and action gaps.",
       "tests": [
-        {"source": "codex-rs/hepta-bellman-operator/src/reference_tests.rs", "function": "op_01_farthest_point_sensor_core_is_deterministic"},
-        {"source": "codex-rs/hepta-bellman-operator/src/reference_tests.rs", "function": "op_01_tabular_reference_produces_exact_targets_and_gaps"}
+        {
+          "source": "codex-rs/hepta-bellman-operator/src/reference_tests.rs",
+          "function": "op_01_farthest_point_sensor_core_is_deterministic"
+        },
+        {
+          "source": "codex-rs/hepta-bellman-operator/src/reference_tests.rs",
+          "function": "op_01_tabular_reference_produces_exact_targets_and_gaps"
+        }
       ],
       "status": "native_test_mapped"
     },
@@ -62,8 +95,14 @@
       "module": "learning.operator",
       "requirement": "Degenerate diffusion, invalid geometry, excessive reconstruction gain or shape/error breach disables the learned path.",
       "tests": [
-        {"source": "codex-rs/hepta-bellman-operator/src/reference_tests.rs", "function": "op_02_applicability_rejects_degenerate_diffusion"},
-        {"source": "codex-rs/hepta-bellman-operator/src/reference_tests.rs", "function": "op_02_regularity_admission_enforces_gain_shape_ood_and_error_budget"}
+        {
+          "source": "codex-rs/hepta-bellman-operator/src/reference_tests.rs",
+          "function": "op_02_applicability_rejects_degenerate_diffusion"
+        },
+        {
+          "source": "codex-rs/hepta-bellman-operator/src/reference_tests.rs",
+          "function": "op_02_regularity_admission_enforces_gain_shape_ood_and_error_budget"
+        }
       ],
       "status": "native_test_mapped"
     },
@@ -72,8 +111,14 @@
       "module": "learning.operator",
       "requirement": "A high in-sample fit without future-window, retention and unlearning evidence is not eligible.",
       "tests": [
-        {"source": "codex-rs/hepta-intelligence-eval/tests/operator_claim.rs", "function": "op_03_high_fit_without_retention_is_insufficient"},
-        {"source": "codex-rs/hepta-intelligence-eval/src/temporal_fold_tests.rs", "function": "rejects_all_training_validation_lineage_overlaps"}
+        {
+          "source": "codex-rs/hepta-intelligence-eval/tests/operator_claim.rs",
+          "function": "op_03_high_fit_without_retention_is_insufficient"
+        },
+        {
+          "source": "codex-rs/hepta-intelligence-eval/src/temporal_fold_tests.rs",
+          "function": "rejects_all_training_validation_lineage_overlaps"
+        }
       ],
       "status": "native_test_mapped"
     },
@@ -82,8 +127,14 @@
       "module": "learning.operator",
       "requirement": "World-model rollouts remain synthetic and cannot become independent factual outcome evidence.",
       "tests": [
-        {"source": "codex-rs/hepta-bellman-operator/src/world_model_tests.rs", "function": "op_04_prediction_is_synthetic_and_unsupported_pairs_abstain"},
-        {"source": "codex-rs/hepta-bellman-operator/src/world_model_tests.rs", "function": "op_04_transition_model_is_action_conditioned_and_probability_exact"}
+        {
+          "source": "codex-rs/hepta-bellman-operator/src/world_model_tests.rs",
+          "function": "op_04_prediction_is_synthetic_and_unsupported_pairs_abstain"
+        },
+        {
+          "source": "codex-rs/hepta-bellman-operator/src/world_model_tests.rs",
+          "function": "op_04_transition_model_is_action_conditioned_and_probability_exact"
+        }
       ],
       "status": "native_test_mapped"
     },
@@ -92,8 +143,14 @@
       "module": "learning.eval",
       "requirement": "The two-step sequential doubly robust fixture returns nine tenths and zero support rejects before division.",
       "tests": [
-        {"source": "codex-rs/hepta-intelligence-eval/src/sequential_tests.rs", "function": "two_step_backward_dr_matches_nine_tenths_and_reports_depth_support"},
-        {"source": "codex-rs/hepta-intelligence-eval/src/sequential_tests.rs", "function": "zero_support_and_tiny_behavior_probability_reject_before_overflow"}
+        {
+          "source": "codex-rs/hepta-intelligence-eval/src/sequential_tests.rs",
+          "function": "two_step_backward_dr_matches_nine_tenths_and_reports_depth_support"
+        },
+        {
+          "source": "codex-rs/hepta-intelligence-eval/src/sequential_tests.rs",
+          "function": "zero_support_and_tiny_behavior_probability_reject_before_overflow"
+        }
       ],
       "status": "native_test_mapped"
     },
@@ -102,9 +159,18 @@
       "module": "learning.eval",
       "requirement": "Correlated repeated decisions do not count as independent bootstrap or confidence samples.",
       "tests": [
-        {"source": "codex-rs/hepta-intelligence-eval/src/ope_confidence_tests.rs", "function": "repeating_rows_within_clusters_does_not_manufacture_precision"},
-        {"source": "codex-rs/hepta-intelligence-eval/src/temporal_evaluation_tests.rs", "function": "dependent_episodes_cannot_be_split_between_clusters"},
-        {"source": "codex-rs/hepta-intelligence-eval/src/temporal_evaluation_tests.rs", "function": "dependent_principals_cannot_be_split_between_clusters"}
+        {
+          "source": "codex-rs/hepta-intelligence-eval/src/ope_confidence_tests.rs",
+          "function": "repeating_rows_within_clusters_does_not_manufacture_precision"
+        },
+        {
+          "source": "codex-rs/hepta-intelligence-eval/src/temporal_evaluation_tests.rs",
+          "function": "dependent_episodes_cannot_be_split_between_clusters"
+        },
+        {
+          "source": "codex-rs/hepta-intelligence-eval/src/temporal_evaluation_tests.rs",
+          "function": "dependent_principals_cannot_be_split_between_clusters"
+        }
       ],
       "status": "native_test_mapped"
     },
@@ -113,21 +179,50 @@
       "module": "learning.eval",
       "requirement": "The stricter support profile wins and missing metrics or evidence block eligibility.",
       "tests": [
-        {"source": "codex-rs/hepta-intelligence-eval/src/sequential_tests.rs", "function": "deep_ess_and_joint_scope_cannot_inherit_a_weaker_local_floor"},
-        {"source": "codex-rs/hepta-intelligence-eval/src/sequential_tests.rs", "function": "exact_depth_ess_floor_cannot_be_weakened_by_q32_rounding"},
-        {"source": "codex-rs/hepta-intelligence-eval/src/closure_tests.rs", "function": "eval_03_intersects_superiority_safety_retention_and_unlearning"}
+        {
+          "source": "codex-rs/hepta-intelligence-eval/src/sequential_tests.rs",
+          "function": "deep_ess_and_joint_scope_cannot_inherit_a_weaker_local_floor"
+        },
+        {
+          "source": "codex-rs/hepta-intelligence-eval/src/sequential_tests.rs",
+          "function": "exact_depth_ess_floor_cannot_be_weakened_by_q32_rounding"
+        },
+        {
+          "source": "codex-rs/hepta-intelligence-eval/src/closure_tests.rs",
+          "function": "eval_03_intersects_superiority_safety_retention_and_unlearning"
+        }
       ],
       "status": "native_test_mapped"
     },
     {
       "id": "EVAL-04",
       "module": "learning.eval",
-      "requirement": "Future leakage, holdout reuse, role collision, retention failure and deleted-lineage restoration invalidate the claim.",
+      "requirement": "Future leakage, same-ID semantic drift, holdout digest/window reuse, receipt mutation, role collision, retention failure and deleted-lineage restoration invalidate the claim, while an exact retry preserves its original use receipt.",
       "tests": [
-        {"source": "codex-rs/hepta-intelligence-eval/src/closure_tests.rs", "function": "eval_04_rejects_role_collision_and_missing_future_windows"},
-        {"source": "codex-rs/hepta-intelligence-eval/src/closure_tests.rs", "function": "eval_cross_fold_plan_binds_disjoint_lineage_and_final_holdout"},
-        {"source": "codex-rs/hepta-intelligence-eval/src/closure_tests.rs", "function": "final_holdout_registry_allows_exact_retry_but_blocks_adaptive_reuse"},
-        {"source": "codex-rs/hepta-learning-artifacts/src/closure_v2_tests.rs", "function": "art_02_persistent_withdrawal_blocks_future_admission_and_replays"}
+        {
+          "source": "codex-rs/hepta-intelligence-eval/src/closure_tests.rs",
+          "function": "eval_04_rejects_role_collision_and_missing_future_windows"
+        },
+        {
+          "source": "codex-rs/hepta-intelligence-eval/src/closure_tests.rs",
+          "function": "eval_cross_fold_plan_binds_disjoint_lineage_and_final_holdout"
+        },
+        {
+          "source": "codex-rs/hepta-intelligence-eval/src/closure_tests.rs",
+          "function": "final_holdout_registry_allows_exact_retry_but_blocks_adaptive_reuse"
+        },
+        {
+          "source": "codex-rs/hepta-learning-artifacts/src/closure_v2_tests.rs",
+          "function": "art_02_persistent_withdrawal_blocks_future_admission_and_replays"
+        },
+        {
+          "source": "codex-rs/hepta-intelligence-eval/src/closure_tests.rs",
+          "function": "final_holdout_replay_receipt_is_stable_after_unrelated_registry_growth"
+        },
+        {
+          "source": "codex-rs/hepta-intelligence-eval/src/closure_tests.rs",
+          "function": "independent_decision_consumes_bound_holdout_receipt"
+        }
       ],
       "status": "native_test_mapped"
     },
@@ -136,8 +231,14 @@
       "module": "learning.artifacts",
       "requirement": "Create-only identity reuse with changed bytes conflicts and an exact retry is idempotent.",
       "tests": [
-        {"source": "codex-rs/hepta-learning-artifacts/src/registry_tests.rs", "function": "registration_is_immutable_and_idempotent"},
-        {"source": "codex-rs/hepta-learning-artifacts/src/registry_tests.rs", "function": "event_identity_reuse_with_drift_fails"}
+        {
+          "source": "codex-rs/hepta-learning-artifacts/src/registry_tests.rs",
+          "function": "registration_is_immutable_and_idempotent"
+        },
+        {
+          "source": "codex-rs/hepta-learning-artifacts/src/registry_tests.rs",
+          "function": "event_identity_reuse_with_drift_fails"
+        }
       ],
       "status": "native_test_mapped"
     },
@@ -146,9 +247,18 @@
       "module": "learning.artifacts",
       "requirement": "A crash after payload synchronization but before registry publication leaves an orphan candidate, never a selected artifact.",
       "tests": [
-        {"source": "codex-rs/hepta-learning-artifacts/src/storage_tests.rs", "function": "zero_binding_leaves_created_file_empty_for_host_reconciliation"},
-        {"source": "codex-rs/hepta-learning-artifacts/src/storage_tests.rs", "function": "bytes_appearing_after_atomic_creation_are_indeterminate"},
-        {"source": "codex-rs/hepta-learning-artifacts/src/pinned_tests.rs", "function": "loads_exact_pinned_manifest_and_payload"}
+        {
+          "source": "codex-rs/hepta-learning-artifacts/src/storage_tests.rs",
+          "function": "zero_binding_leaves_created_file_empty_for_host_reconciliation"
+        },
+        {
+          "source": "codex-rs/hepta-learning-artifacts/src/storage_tests.rs",
+          "function": "bytes_appearing_after_atomic_creation_are_indeterminate"
+        },
+        {
+          "source": "codex-rs/hepta-learning-artifacts/src/pinned_tests.rs",
+          "function": "loads_exact_pinned_manifest_and_payload"
+        }
       ],
       "status": "native_test_mapped"
     },
@@ -157,9 +267,18 @@
       "module": "learning.artifacts",
       "requirement": "Corrupt, incomplete or mixed-generation payload and manifest combinations are refused by a new loader.",
       "tests": [
-        {"source": "codex-rs/hepta-learning-artifacts/src/storage_tests.rs", "function": "payload_corruption_and_invalid_receipt_reject"},
-        {"source": "codex-rs/hepta-learning-artifacts/src/storage_tests.rs", "function": "every_truncation_and_wrong_external_witness_rejects_without_repair"},
-        {"source": "codex-rs/hepta-learning-artifacts/src/pinned_tests.rs", "function": "objective_and_compatibility_drift_are_pin_mismatches"}
+        {
+          "source": "codex-rs/hepta-learning-artifacts/src/storage_tests.rs",
+          "function": "payload_corruption_and_invalid_receipt_reject"
+        },
+        {
+          "source": "codex-rs/hepta-learning-artifacts/src/storage_tests.rs",
+          "function": "every_truncation_and_wrong_external_witness_rejects_without_repair"
+        },
+        {
+          "source": "codex-rs/hepta-learning-artifacts/src/pinned_tests.rs",
+          "function": "objective_and_compatibility_drift_are_pin_mismatches"
+        }
       ],
       "status": "native_test_mapped"
     },
@@ -168,9 +287,18 @@
       "module": "learning.artifacts",
       "requirement": "Rollback to a revoked, withdrawn or incompatible predecessor fails even when an older snapshot once admitted it.",
       "tests": [
-        {"source": "codex-rs/hepta-learning-artifacts/src/pinned_tests.rs", "function": "revoked_ancestor_blocks_loading"},
-        {"source": "codex-rs/hepta-learning-artifacts/src/dataset_revocation_tests.rs", "function": "persisted_batch_reopens_and_blocks_candidate_but_keeps_clean_rollback"},
-        {"source": "codex-rs/hepta-learning-artifacts/src/closure_v2_tests.rs", "function": "art_03_registry_head_witness_rejects_rollback"}
+        {
+          "source": "codex-rs/hepta-learning-artifacts/src/pinned_tests.rs",
+          "function": "revoked_ancestor_blocks_loading"
+        },
+        {
+          "source": "codex-rs/hepta-learning-artifacts/src/dataset_revocation_tests.rs",
+          "function": "persisted_batch_reopens_and_blocks_candidate_but_keeps_clean_rollback"
+        },
+        {
+          "source": "codex-rs/hepta-learning-artifacts/src/closure_v2_tests.rs",
+          "function": "art_03_registry_head_witness_rejects_rollback"
+        }
       ],
       "status": "native_test_mapped"
     }

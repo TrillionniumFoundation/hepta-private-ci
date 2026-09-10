@@ -97,20 +97,31 @@ registry head.
 ## 4. Evaluation and independent decision
 
 ```text
-freeze EvaluationPlan and all thresholds before outcomes are inspected
-  -> register final holdout exactly once
-  -> freeze two or more cross-fold partitions
+freeze CrossFoldPlanV1 before final outcomes are inspected, binding claim scope,
+  candidate, baseline, objective, dataset, estimand, metric contracts,
+  multiplicity, fold lineages, model/prediction digests and final-holdout identity
+  -> freeze_cross_fold_plan emits a sealed deny-all plan receipt
+  -> FinalHoldoutRegistry::consume records that exact semantic receipt once by
+     plan ID, holdout byte digest and holdout window ID
+  -> identical retries preserve the original registry/use receipt; same-ID drift
+     conflicts and another plan reusing either holdout identity is rejected
   -> every fold keeps training and holdout principal, episode and window
      lineages disjoint
   -> fit nuisance model on training folds only
   -> compute OPE/sequential estimates and support diagnostics
   -> compute prespecified cluster intervals and multiplicity-adjusted evidence
   -> collect retention, subgroup, privacy and unlearning receipts
-  -> decide_independently verifies distinct principal, credential and signing key
+  -> decide_independently consumes both sealed receipts and verifies distinct
+     principal, credential and signing key
   -> intersect candidate LCB versus baseline UCB, safety floors, support,
      multiplicity, snapshot count, future windows, retention and unlearning
   -> emit EligibleForIndependentSelection, Ineligible or InsufficientEvidence
 ```
+
+Caller booleans such as “plan frozen” or “holdout unused” are not evidence. The
+independent decision path accepts only a receipt emitted for the exact frozen
+analysis identity. Receipt integrity is a source-level construction boundary;
+durable single-writer storage and external authentication remain host duties.
 
 `EligibleForIndependentSelection` deliberately grants no selection authority.
 The evaluator cannot install, activate, merge, promote or release the artifact.

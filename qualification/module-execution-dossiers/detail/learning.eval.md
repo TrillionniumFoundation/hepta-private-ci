@@ -12,7 +12,7 @@ Concrete source mappings are recorded in `../../../codex-rs/hepta-intelligence-e
 
 ## 2. Public operations and contract details
 
-`estimate_ope(plan, rows) -> OpeEstimate`; `estimate_cluster_intervals(plan, rows, assignments) -> ClusterOpeEstimate`; `estimate_sequential(plan, trajectories) -> SequentialEstimate`; `fit_temporal_fold(plan, training, targets) -> TemporalFoldReceipt`; `evaluate_temporal_holdout(plan, training, targets, observations, assignments) -> TemporalEvaluationReceipt`; `freeze_cross_fold_plan(plan) -> CrossFoldPlanReceiptV1`; `FinalHoldoutRegistry::consume(plan, holdout) -> HoldoutUseReceiptV1`; `decide_independently(bundle) -> IndependentEvaluationDecisionV1`.
+`estimate_ope(plan, rows) -> OpeEstimate`; `estimate_cluster_intervals(plan, rows, assignments) -> ClusterOpeEstimate`; `estimate_sequential(plan, trajectories) -> SequentialEstimate`; `fit_temporal_fold(plan, training, targets) -> TemporalFoldReceipt`; `evaluate_temporal_holdout(plan, training, targets, observations, assignments) -> TemporalEvaluationReceipt`; `freeze_cross_fold_plan(plan) -> CrossFoldPlanReceiptV1`; `FinalHoldoutRegistry::consume(&frozen_plan_receipt) -> HoldoutUseReceiptV1`; `decide_independently(bundle_with_frozen_plan_and_holdout_use) -> IndependentEvaluationDecisionV1`.
 
 The estimand class is mandatory. A single-decision estimate cannot certify a long-horizon policy. Estimator receipts and the independent eligibility decision are separate outputs; neither selects or releases an artifact.
 
@@ -20,9 +20,9 @@ The estimand class is mandatory. A single-decision estimate cannot certify a lon
 
 Analysis outputs are immutable evidence with plan/data/code/model IDs, eligibility/censoring counts, estimator, support, cluster definition, intervals, multiplicity, resource/retention/privacy results and issuer identity. Durable publication uses the designated evidence owner or an explicitly bound existing evaluation store, not an undeclared production writer. Generator hidden tests and final holdouts remain access-separated.
 
-`CrossFoldPlanV1` binds two to thirty-two canonical folds, each with disjoint training and holdout principal, episode and window lineages. The final holdout cannot appear in training, must occur in exactly one holdout fold and cannot be reused by another plan. The in-memory `FinalHoldoutRegistry` defines deterministic semantics; a product adapter must persist it under an exclusive writer.
+`CrossFoldPlanV1` binds two to thirty-two canonical folds, each with disjoint training and holdout principal, episode and window lineages. Its v2 semantic digest additionally binds claim scope, candidate, baseline, objective, dataset, estimand, metric identities/directions/safety floors, multiplicity, fold model/prediction digests, and final-holdout window and byte identity. The typed frozen-plan receipt is module-sealed. `FinalHoldoutRegistry` compares the complete binding under both plan ID and holdout digest/window indexes: same-ID semantic drift conflicts, another plan reusing either holdout identity rejects, and an identical replay preserves its original use receipt after unrelated registry growth. A product adapter must persist this deterministic state under an exclusive writer.
 
-`IndependentEvaluationBundleV1` consumes authenticated generator/evaluator roles, plan, objective, estimate, support, confidence, retention, unlearning, snapshot, future-window and final-holdout facts. The evaluator cannot share a principal, credential chain or signing key with the generator.
+`IndependentEvaluationBundleV1` consumes authenticated generator/evaluator roles, the sealed frozen plan, the matching sealed holdout-use receipt, objective, dataset, estimand, estimate, support, confidence, retention, unlearning, snapshot and future-window facts. It rejects receipt mutation and every semantic mismatch before scoring. The evaluator cannot share a principal, credential chain or signing key with the generator.
 
 ## 4. Deterministic algorithm and scheduling
 
@@ -47,7 +47,7 @@ System-longitudinal ESS is at least `max(400, ceil(0.1*n), stricter slice minimu
 - EVAL-01: two-step sequential DR analytic fixture returns 9/10; zero propensity rejects before division.
 - EVAL-02: correlated repeated decisions do not count as independent bootstrap samples.
 - EVAL-03: stricter profile wins when ESS floors differ; missing metrics block acceptance.
-- EVAL-04: future leakage, holdout reuse, role collision, old-task regression and restored deleted lineage invalidate the corresponding claim.
+- EVAL-04: future leakage, same-ID analysis drift, holdout digest/window reuse, receipt mutation, role collision, old-task regression and restored deleted lineage invalidate the corresponding claim; exact semantic replay remains stable.
 
 Every case is mapped to concrete Rust test functions in `../../lane-e/TEST_TRACEABILITY.json`. The OP-03 cross-module test also confirms that excellent in-sample fit without retention or unlearning remains insufficient.
 

@@ -4,10 +4,10 @@
   "planId": "HEPTA-GLOBAL-MODULAR-DEVELOPMENT-PLAN",
   "planVersion": "8.0.0",
   "lane": "LANE-E-LEARNING",
-  "baseCommit": "05981ed1adfb931a87a47b0606f1cedaa69f123b",
-  "candidateBranch": "codex/hepta-lane-e-gap-closure-20260910",
+  "baseCommit": "6303bceab938c25d645e220a32f91701e2c31701",
+  "candidateBranch": "codex/hepta-lane-e-semantic-holdout-closure-20260910",
   "sourceIdentityPolicy": "exact_ci_head_tree_and_ordered_parent_synthetic_merge_required",
-  "repositoryClosureState": "source_implemented_ci_pending",
+  "repositoryClosureState": "source_implemented_semantic_holdout_ci_pending",
   "capabilityClosureState": "external_evidence_required",
   "authorityDelta": "none",
   "modules": [
@@ -21,12 +21,42 @@
       "implementationState": "source_implemented_ci_pending",
       "compatibility": "stable_v1_durable_encoding_retained_v2_additive_surface",
       "operations": [
-        {"operation": "verify_independent_roles", "nativeSymbol": "codex_hepta_learning_ledger::verify_independent_roles", "source": "codex-rs/hepta-learning-ledger/src/causal_v2.rs", "status": "implemented"},
-        {"operation": "validate_authenticated_outcome", "nativeSymbol": "codex_hepta_learning_ledger::validate_authenticated_outcome", "source": "codex-rs/hepta-learning-ledger/src/causal_v2.rs", "status": "implemented"},
-        {"operation": "validate_candidate_set_completeness", "nativeSymbol": "codex_hepta_learning_ledger::validate_candidate_set_completeness", "source": "codex-rs/hepta-learning-ledger/src/causal_v2.rs", "status": "implemented"},
-        {"operation": "finalize_credit_batch", "nativeSymbol": "codex_hepta_learning_ledger::finalize_credit_batch", "source": "codex-rs/hepta-learning-ledger/src/causal_v2.rs", "status": "implemented"},
-        {"operation": "freeze_dataset", "nativeSymbol": "codex_hepta_learning_ledger::freeze_dataset", "source": "codex-rs/hepta-learning-ledger/src/causal_v2.rs", "status": "implemented"},
-        {"operation": "append_shadow_decision", "nativeSymbol": "codex_hepta_learning_ledger::append_shadow_decision", "source": "codex-rs/hepta-learning-ledger/src/shadow.rs", "status": "implemented_existing"}
+        {
+          "operation": "verify_independent_roles",
+          "nativeSymbol": "codex_hepta_learning_ledger::verify_independent_roles",
+          "source": "codex-rs/hepta-learning-ledger/src/causal_v2.rs",
+          "status": "implemented"
+        },
+        {
+          "operation": "validate_authenticated_outcome",
+          "nativeSymbol": "codex_hepta_learning_ledger::validate_authenticated_outcome",
+          "source": "codex-rs/hepta-learning-ledger/src/causal_v2.rs",
+          "status": "implemented"
+        },
+        {
+          "operation": "validate_candidate_set_completeness",
+          "nativeSymbol": "codex_hepta_learning_ledger::validate_candidate_set_completeness",
+          "source": "codex-rs/hepta-learning-ledger/src/causal_v2.rs",
+          "status": "implemented"
+        },
+        {
+          "operation": "finalize_credit_batch",
+          "nativeSymbol": "codex_hepta_learning_ledger::finalize_credit_batch",
+          "source": "codex-rs/hepta-learning-ledger/src/causal_v2.rs",
+          "status": "implemented"
+        },
+        {
+          "operation": "freeze_dataset",
+          "nativeSymbol": "codex_hepta_learning_ledger::freeze_dataset",
+          "source": "codex-rs/hepta-learning-ledger/src/causal_v2.rs",
+          "status": "implemented"
+        },
+        {
+          "operation": "append_shadow_decision",
+          "nativeSymbol": "codex_hepta_learning_ledger::append_shadow_decision",
+          "source": "codex-rs/hepta-learning-ledger/src/shadow.rs",
+          "status": "implemented_existing"
+        }
       ],
       "tests": [
         "ledger_03_rejects_shared_credential_chain",
@@ -54,11 +84,36 @@
       "implementationState": "source_implemented_ci_pending",
       "compatibility": "stable_v1_registry_retained_v2_manifest_withdrawal_head_and_lifecycle_additive",
       "operations": [
-        {"operation": "validate_artifact_manifest_v2", "nativeSymbol": "codex_hepta_learning_artifacts::validate_artifact_manifest_v2", "source": "codex-rs/hepta-learning-artifacts/src/closure_v2.rs", "status": "implemented"},
-        {"operation": "DatasetWithdrawalRegistry::append", "nativeSymbol": "codex_hepta_learning_artifacts::DatasetWithdrawalRegistry::append", "source": "codex-rs/hepta-learning-artifacts/src/closure_v2.rs", "status": "implemented"},
-        {"operation": "validate_registry_head_witness", "nativeSymbol": "codex_hepta_learning_artifacts::validate_registry_head_witness", "source": "codex-rs/hepta-learning-artifacts/src/closure_v2.rs", "status": "implemented"},
-        {"operation": "validate_artifact_lifecycle_transition", "nativeSymbol": "codex_hepta_learning_artifacts::validate_artifact_lifecycle_transition", "source": "codex-rs/hepta-learning-artifacts/src/closure_v2.rs", "status": "implemented"},
-        {"operation": "load_pinned_candidate", "nativeSymbol": "codex_hepta_learning_artifacts::load_pinned_candidate", "source": "codex-rs/hepta-learning-artifacts/src/pinned.rs", "status": "implemented_existing"}
+        {
+          "operation": "validate_artifact_manifest_v2",
+          "nativeSymbol": "codex_hepta_learning_artifacts::validate_artifact_manifest_v2",
+          "source": "codex-rs/hepta-learning-artifacts/src/closure_v2.rs",
+          "status": "implemented"
+        },
+        {
+          "operation": "DatasetWithdrawalRegistry::append",
+          "nativeSymbol": "codex_hepta_learning_artifacts::DatasetWithdrawalRegistry::append",
+          "source": "codex-rs/hepta-learning-artifacts/src/closure_v2.rs",
+          "status": "implemented"
+        },
+        {
+          "operation": "validate_registry_head_witness",
+          "nativeSymbol": "codex_hepta_learning_artifacts::validate_registry_head_witness",
+          "source": "codex-rs/hepta-learning-artifacts/src/closure_v2.rs",
+          "status": "implemented"
+        },
+        {
+          "operation": "validate_artifact_lifecycle_transition",
+          "nativeSymbol": "codex_hepta_learning_artifacts::validate_artifact_lifecycle_transition",
+          "source": "codex-rs/hepta-learning-artifacts/src/closure_v2.rs",
+          "status": "implemented"
+        },
+        {
+          "operation": "load_pinned_candidate",
+          "nativeSymbol": "codex_hepta_learning_artifacts::load_pinned_candidate",
+          "source": "codex-rs/hepta-learning-artifacts/src/pinned.rs",
+          "status": "implemented_existing"
+        }
       ],
       "tests": [
         "art_01_manifest_v2_normalizes_complete_lineage",
@@ -85,17 +140,64 @@
       "implementationState": "source_implemented_ci_pending",
       "compatibility": "legacy_train_alias_retained_build_targets_explicit_and_learned_profile_additive",
       "operations": [
-        {"operation": "build_targets", "nativeSymbol": "codex_hepta_bellman_operator::build_targets", "source": "codex-rs/hepta-bellman-operator/src/lib.rs", "status": "implemented"},
-        {"operation": "validate_applicability_certificate", "nativeSymbol": "codex_hepta_bellman_operator::validate_applicability_certificate", "source": "codex-rs/hepta-bellman-operator/src/reference.rs", "status": "implemented"},
-        {"operation": "build_sensor_core", "nativeSymbol": "codex_hepta_bellman_operator::build_sensor_core", "source": "codex-rs/hepta-bellman-operator/src/reference.rs", "status": "implemented"},
-        {"operation": "evaluate_bellman_reference", "nativeSymbol": "codex_hepta_bellman_operator::evaluate_bellman_reference", "source": "codex-rs/hepta-bellman-operator/src/reference.rs", "status": "implemented"},
-        {"operation": "admit_operator_regularity", "nativeSymbol": "codex_hepta_bellman_operator::admit_operator_regularity", "source": "codex-rs/hepta-bellman-operator/src/reference.rs", "status": "implemented"},
-        {"operation": "fit_transition_model", "nativeSymbol": "codex_hepta_bellman_operator::fit_transition_model", "source": "codex-rs/hepta-bellman-operator/src/world_model.rs", "status": "implemented"},
-        {"operation": "predict_transition", "nativeSymbol": "codex_hepta_bellman_operator::predict_transition", "source": "codex-rs/hepta-bellman-operator/src/world_model.rs", "status": "implemented"}
+        {
+          "operation": "build_targets",
+          "nativeSymbol": "codex_hepta_bellman_operator::build_targets",
+          "source": "codex-rs/hepta-bellman-operator/src/lib.rs",
+          "status": "implemented"
+        },
+        {
+          "operation": "validate_applicability_certificate",
+          "nativeSymbol": "codex_hepta_bellman_operator::validate_applicability_certificate",
+          "source": "codex-rs/hepta-bellman-operator/src/reference.rs",
+          "status": "implemented"
+        },
+        {
+          "operation": "build_sensor_core",
+          "nativeSymbol": "codex_hepta_bellman_operator::build_sensor_core",
+          "source": "codex-rs/hepta-bellman-operator/src/reference.rs",
+          "status": "implemented"
+        },
+        {
+          "operation": "evaluate_bellman_reference",
+          "nativeSymbol": "codex_hepta_bellman_operator::evaluate_bellman_reference",
+          "source": "codex-rs/hepta-bellman-operator/src/reference.rs",
+          "status": "implemented"
+        },
+        {
+          "operation": "admit_operator_regularity",
+          "nativeSymbol": "codex_hepta_bellman_operator::admit_operator_regularity",
+          "source": "codex-rs/hepta-bellman-operator/src/reference.rs",
+          "status": "implemented"
+        },
+        {
+          "operation": "fit_transition_model",
+          "nativeSymbol": "codex_hepta_bellman_operator::fit_transition_model",
+          "source": "codex-rs/hepta-bellman-operator/src/world_model.rs",
+          "status": "implemented"
+        },
+        {
+          "operation": "predict_transition",
+          "nativeSymbol": "codex_hepta_bellman_operator::predict_transition",
+          "source": "codex-rs/hepta-bellman-operator/src/world_model.rs",
+          "status": "implemented"
+        }
       ],
       "supplementalOperations": [
-        {"operation": "fit_tabular_operator", "nativeSymbol": "codex_hepta_bellman_operator::fit_tabular_operator", "source": "codex-rs/hepta-bellman-operator/src/learned.rs", "status": "implemented", "profile": "simplest_sufficient_complete_grid_v1"},
-        {"operation": "predict_tabular_operator", "nativeSymbol": "codex_hepta_bellman_operator::predict_tabular_operator", "source": "codex-rs/hepta-bellman-operator/src/learned.rs", "status": "implemented", "profile": "supported_cell_only_synthetic_deny_all_v1"}
+        {
+          "operation": "fit_tabular_operator",
+          "nativeSymbol": "codex_hepta_bellman_operator::fit_tabular_operator",
+          "source": "codex-rs/hepta-bellman-operator/src/learned.rs",
+          "status": "implemented",
+          "profile": "simplest_sufficient_complete_grid_v1"
+        },
+        {
+          "operation": "predict_tabular_operator",
+          "nativeSymbol": "codex_hepta_bellman_operator::predict_tabular_operator",
+          "source": "codex-rs/hepta-bellman-operator/src/learned.rs",
+          "status": "implemented",
+          "profile": "supported_cell_only_synthetic_deny_all_v1"
+        }
       ],
       "tests": [
         "op_01_farthest_point_sensor_core_is_deterministic",
@@ -123,14 +225,39 @@
       "stableGuide": "docs/modules/learning.eval/TECHNICAL.md",
       "dossier": "qualification/module-execution-dossiers/detail/learning.eval.md",
       "nativeMapping": "codex-rs/hepta-intelligence-eval/NATIVE_MAPPING.md",
-      "implementationState": "source_implemented_ci_pending",
-      "compatibility": "existing_estimators_retained_cross_fold_holdout_and_independent_decision_additive",
+      "implementationState": "source_implemented_semantic_holdout_ci_pending",
+      "compatibility": "existing_estimators_retained_sealed_cross_fold_holdout_receipts_and_independent_decision_additive",
       "operations": [
-        {"operation": "estimate_ope", "nativeSymbol": "codex_hepta_intelligence_eval::estimate_ope", "source": "codex-rs/hepta-intelligence-eval/src/ope.rs", "status": "implemented_existing"},
-        {"operation": "estimate_sequential", "nativeSymbol": "codex_hepta_intelligence_eval::estimate_sequential", "source": "codex-rs/hepta-intelligence-eval/src/sequential.rs", "status": "implemented_existing"},
-        {"operation": "freeze_cross_fold_plan", "nativeSymbol": "codex_hepta_intelligence_eval::freeze_cross_fold_plan", "source": "codex-rs/hepta-intelligence-eval/src/closure.rs", "status": "implemented"},
-        {"operation": "FinalHoldoutRegistry::consume", "nativeSymbol": "codex_hepta_intelligence_eval::FinalHoldoutRegistry::consume", "source": "codex-rs/hepta-intelligence-eval/src/closure.rs", "status": "implemented"},
-        {"operation": "decide_independently", "nativeSymbol": "codex_hepta_intelligence_eval::decide_independently", "source": "codex-rs/hepta-intelligence-eval/src/closure.rs", "status": "implemented"}
+        {
+          "operation": "estimate_ope",
+          "nativeSymbol": "codex_hepta_intelligence_eval::estimate_ope",
+          "source": "codex-rs/hepta-intelligence-eval/src/ope.rs",
+          "status": "implemented_existing"
+        },
+        {
+          "operation": "estimate_sequential",
+          "nativeSymbol": "codex_hepta_intelligence_eval::estimate_sequential",
+          "source": "codex-rs/hepta-intelligence-eval/src/sequential.rs",
+          "status": "implemented_existing"
+        },
+        {
+          "operation": "freeze_cross_fold_plan",
+          "nativeSymbol": "codex_hepta_intelligence_eval::freeze_cross_fold_plan",
+          "source": "codex-rs/hepta-intelligence-eval/src/closure.rs",
+          "status": "implemented"
+        },
+        {
+          "operation": "FinalHoldoutRegistry::consume",
+          "nativeSymbol": "codex_hepta_intelligence_eval::FinalHoldoutRegistry::consume",
+          "source": "codex-rs/hepta-intelligence-eval/src/closure.rs",
+          "status": "implemented"
+        },
+        {
+          "operation": "decide_independently",
+          "nativeSymbol": "codex_hepta_intelligence_eval::decide_independently",
+          "source": "codex-rs/hepta-intelligence-eval/src/closure.rs",
+          "status": "implemented"
+        }
       ],
       "tests": [
         "eval_03_intersects_superiority_safety_retention_and_unlearning",
@@ -138,7 +265,9 @@
         "evaluation_fails_candidate_when_interval_or_floor_does_not_pass",
         "eval_cross_fold_plan_binds_disjoint_lineage_and_final_holdout",
         "final_holdout_registry_allows_exact_retry_but_blocks_adaptive_reuse",
-        "op_03_high_fit_without_retention_is_insufficient"
+        "op_03_high_fit_without_retention_is_insufficient",
+        "final_holdout_replay_receipt_is_stable_after_unrelated_registry_growth",
+        "independent_decision_consumes_bound_holdout_receipt"
       ],
       "stageResourceBounds": {
         "pointOpeRows": 1000000,
@@ -174,14 +303,81 @@
     ]
   },
   "externalGates": [
-    {"id": "RDY-EXT-001", "state": "open_until_exact_head_and_synthetic_merge_ci_pass", "repositoryMaySelfCertify": false},
-    {"id": "RDY-EXT-002", "state": "open_independent_semantic_review_required", "repositoryMaySelfCertify": false},
-    {"id": "RDY-EXT-003", "state": "open_real_product_consumer_runtime_model_and_device_identity_required", "repositoryMaySelfCertify": false},
-    {"id": "RDY-EXT-004", "state": "open_future_calendar_efficacy_retention_and_support_required", "repositoryMaySelfCertify": false},
-    {"id": "RDY-EXT-005", "state": "conditional_open_for_biomimicry_claims", "repositoryMaySelfCertify": false},
-    {"id": "RDY-EXT-006", "state": "conditional_open_for_target_hardware_or_embodied_use", "repositoryMaySelfCertify": false},
-    {"id": "RDY-EXT-007", "state": "conditional_open_for_external_system_or_data_owner_consent", "repositoryMaySelfCertify": false},
-    {"id": "RDY-EXT-008", "state": "open_independent_operator_acceptance_required", "repositoryMaySelfCertify": false},
-    {"id": "RDY-EXT-009", "state": "open_canary_selection_promotion_and_release_decisions_required", "repositoryMaySelfCertify": false}
-  ]
+    {
+      "id": "RDY-EXT-001",
+      "state": "open_until_exact_head_and_synthetic_merge_ci_pass",
+      "repositoryMaySelfCertify": false
+    },
+    {
+      "id": "RDY-EXT-002",
+      "state": "open_independent_semantic_review_required",
+      "repositoryMaySelfCertify": false
+    },
+    {
+      "id": "RDY-EXT-003",
+      "state": "open_real_product_consumer_runtime_model_and_device_identity_required",
+      "repositoryMaySelfCertify": false
+    },
+    {
+      "id": "RDY-EXT-004",
+      "state": "open_future_calendar_efficacy_retention_and_support_required",
+      "repositoryMaySelfCertify": false
+    },
+    {
+      "id": "RDY-EXT-005",
+      "state": "conditional_open_for_biomimicry_claims",
+      "repositoryMaySelfCertify": false
+    },
+    {
+      "id": "RDY-EXT-006",
+      "state": "conditional_open_for_target_hardware_or_embodied_use",
+      "repositoryMaySelfCertify": false
+    },
+    {
+      "id": "RDY-EXT-007",
+      "state": "conditional_open_for_external_system_or_data_owner_consent",
+      "repositoryMaySelfCertify": false
+    },
+    {
+      "id": "RDY-EXT-008",
+      "state": "open_independent_operator_acceptance_required",
+      "repositoryMaySelfCertify": false
+    },
+    {
+      "id": "RDY-EXT-009",
+      "state": "open_canary_selection_promotion_and_release_decisions_required",
+      "repositoryMaySelfCertify": false
+    }
+  ],
+  "holdoutIdentityBinding": {
+    "schema": "hepta.lane-e-holdout-identity-binding.v2",
+    "planDigestDomain": "hepta.intelligence-eval.cross-fold-plan.v2",
+    "registryDigestDomain": "hepta.intelligence-eval.final-holdout-registry.v2",
+    "useDigestDomain": "hepta.intelligence-eval.final-holdout-use.v2",
+    "planReceiptSealDomain": "hepta.intelligence-eval.frozen-plan-receipt-seal.v1",
+    "useReceiptSealDomain": "hepta.intelligence-eval.holdout-use-receipt-seal.v1",
+    "frozenFields": [
+      "plan_id",
+      "claim_scope",
+      "candidate_id",
+      "baseline_id",
+      "objective_digest",
+      "dataset_digest",
+      "estimand_digest",
+      "metric_contract_digest",
+      "family_alpha_ppm",
+      "simultaneous_comparisons",
+      "fold_principal_episode_window_lineage",
+      "fold_model_digest",
+      "fold_predictions_digest",
+      "final_holdout_window_id",
+      "final_holdout_digest"
+    ],
+    "samePlanSemanticDrift": "identity_conflict",
+    "sameHoldoutDigestOtherPlan": "reuse_rejected",
+    "sameHoldoutWindowOtherPlan": "reuse_rejected",
+    "exactReplay": "original_registry_and_use_digests_preserved",
+    "eligibilityInput": "sealed_frozen_plan_and_holdout_use_receipts",
+    "authority": "DENY_ALL"
+  }
 }
