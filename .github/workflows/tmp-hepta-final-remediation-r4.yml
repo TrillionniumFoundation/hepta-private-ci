@@ -1,0 +1,326 @@
+name: tmp-hepta-final-remediation-r4
+
+on:
+  push:
+    branches:
+      - ops/hepta-final-remediation-r4-20260910
+    paths:
+      - .github/workflows/tmp-hepta-final-remediation-r4.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: hepta-final-remediation-r4-20260910
+  cancel-in-progress: false
+
+env:
+  BASE_BRANCH: integration/vnext-main-20260811
+  BASE_SHA: 04f60466394a024c218ce66b1b32d1c42c462985
+  SOURCE_BRANCH: codex/hepta-all-gap-closure-20260908
+  SOURCE_SHA: 4d75adedbd0869fb3b8f85d8c1d697202aa8e48b
+  TARGET_BRANCH: codex/hepta-all-gap-closure-final-20260910
+  HEPTABAO_REPOSITORY: TrillionniumFoundation/HeptaBao
+  HEPTABAO_PR: "81"
+  HEPTABAO_BASE_SHA: 92894aa52de06f2f4ba7d5f234a0a55f93314474
+  HEPTABAO_HEAD_SHA: 6480504418eaa2222dc372844114adb44c703510
+  HEPTABAO_REMEDIATION_RUN_ID: "34424125351"
+  PYTHONDONTWRITEBYTECODE: "1"
+
+jobs:
+  remediate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 180
+    steps:
+      - name: Check out exact controller
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Install pinned uv
+        uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b
+        with:
+          version: 0.11.3
+
+      - name: Install pinned Rust toolchain
+        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: 1.95.0
+          components: rustfmt,clippy
+
+      - name: Verify immutable inputs and bind HeptaBao
+        shell: bash
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD^)" = "$SOURCE_SHA"
+          test "$(git rev-parse "$SOURCE_SHA^")" = "$BASE_SHA"
+          git fetch --no-tags origin "+refs/heads/$BASE_BRANCH:refs/remotes/origin/final-base"
+          git fetch --no-tags origin "+refs/heads/$SOURCE_BRANCH:refs/remotes/origin/final-source"
+          test "$(git rev-parse refs/remotes/origin/final-base)" = "$BASE_SHA"
+          test "$(git rev-parse refs/remotes/origin/final-source)" = "$SOURCE_SHA"
+          test "$(git merge-base "$BASE_SHA" "$SOURCE_SHA")" = "$BASE_SHA"
+          test "$(git rev-list --count "$BASE_SHA..$SOURCE_SHA")" = "1"
+          test -z "$(git ls-tree -r --name-only "$SOURCE_SHA" | grep '^.github/workflows/tmp-' || true)"
+          test -z "$(git ls-remote origin "refs/heads/$TARGET_BRANCH")"
+
+          curl --fail --silent --show-error --location \
+            -H 'Accept: application/vnd.github+json' \
+            -H "Authorization: Bearer $GITHUB_TOKEN" \
+            -H 'X-GitHub-Api-Version: 2022-11-28' \
+            "https://api.github.com/repos/$HEPTABAO_REPOSITORY/pulls/$HEPTABAO_PR" \
+            -o "$RUNNER_TEMP/heptabao-pr-initial.json"
+          curl --fail --silent --show-error --location \
+            -H 'Accept: application/vnd.github+json' \
+            -H "Authorization: Bearer $GITHUB_TOKEN" \
+            -H 'X-GitHub-Api-Version: 2022-11-28' \
+            "https://api.github.com/repos/$HEPTABAO_REPOSITORY/actions/runs/$HEPTABAO_REMEDIATION_RUN_ID" \
+            -o "$RUNNER_TEMP/heptabao-remediation-run.json"
+          python3 - "$RUNNER_TEMP/heptabao-pr-initial.json" \
+            "$RUNNER_TEMP/heptabao-remediation-run.json" "$GITHUB_ENV" <<'PY'
+          import json
+          import sys
+
+          pr_path, run_path, env_path = sys.argv[1:]
+          with open(pr_path, encoding="utf-8") as handle:
+              pull = json.load(handle)
+          with open(run_path, encoding="utf-8") as handle:
+              run = json.load(handle)
+
+          observed_base = pull["base"]["sha"]
+          observed_head = pull["head"]["sha"]
+          observed_merge = pull.get("merge_commit_sha")
+          expected_base = "92894aa52de06f2f4ba7d5f234a0a55f93314474"
+          expected_head = "6480504418eaa2222dc372844114adb44c703510"
+          if pull["state"] != "open":
+              raise SystemExit(f"HeptaBao PR is not open: {pull['state']!r}")
+          if (observed_base, observed_head) != (expected_base, expected_head):
+              raise SystemExit(
+                  f"HeptaBao base/head moved: observed={(observed_base, observed_head)!r} "
+                  f"expected={(expected_base, expected_head)!r}"
+              )
+          if not observed_merge:
+              raise SystemExit("HeptaBao prospective merge SHA is absent")
+          if run.get("status") != "completed" or run.get("conclusion") != "success":
+              raise SystemExit(
+                  f"HeptaBao remediation run is not successful: "
+                  f"status={run.get('status')!r} conclusion={run.get('conclusion')!r}"
+              )
+          with open(env_path, "a", encoding="utf-8") as handle:
+              handle.write(f"HEPTABAO_MERGE_SHA={observed_merge}\n")
+          print(
+              f"HeptaBao binding verified: base={observed_base} head={observed_head} "
+              f"merge={observed_merge} remediation_run={run['id']}"
+          )
+          PY
+
+      - name: Apply source-rooted blocker repairs
+        shell: bash
+        run: |
+          set -euo pipefail
+          work="$RUNNER_TEMP/hepta-final-remediation-r4"
+          git worktree add --detach "$work" "$SOURCE_SHA"
+          cd "$work"
+          python3 - <<'PY'
+          import os
+          from pathlib import Path
+
+          kg = Path("codex-rs/hepta-kg/src/generation.rs")
+          text = kg.read_text(encoding="utf-8")
+          old = "    supports: &mut Vec<KnowledgeSupportV2>,\n"
+          new = "    supports: &mut [KnowledgeSupportV2],\n"
+          if old in text:
+              if text.count(old) != 1:
+                  raise SystemExit("expected at most one hepta-kg mutable Vec parameter")
+              text = text.replace(old, new, 1)
+          elif new not in text:
+              raise SystemExit("hepta-kg support parameter shape is unexpected")
+          kg.write_text(text, encoding="utf-8")
+
+          build = Path("codex-rs/hepta-shadow-qualification/BUILD.bazel")
+          text = build.read_text(encoding="utf-8")
+          target_marker = 'rust_test(\n    name = "hepta-shadow-qualification-tests",'
+          if text.count(target_marker) != 1:
+              raise SystemExit("expected exactly one hepta-shadow-qualification-tests target")
+          start = text.index(target_marker)
+          end = text.find("\n)\n", start)
+          if end < 0:
+              raise SystemExit("could not find end of hepta-shadow-qualification-tests target")
+          end += len("\n)\n")
+          block = text[start:end]
+          deps_marker = "    deps = [\n"
+          if block.count(deps_marker) != 1:
+              raise SystemExit("expected exactly one dependency list in hepta-shadow-qualification-tests")
+          required = [
+              "//codex-rs/hepta-bellman-operator",
+              "//codex-rs/hepta-intelligence-eval",
+          ]
+          missing = [dep for dep in required if f'"{dep}"' not in block]
+          if missing:
+              insertion = "".join(f'        "{dep}",\n' for dep in missing)
+              block = block.replace(deps_marker, deps_marker + insertion, 1)
+              text = text[:start] + block + text[end:]
+          for dep in required:
+              if text.count(f'"{dep}"') < 1:
+                  raise SystemExit(f"failed to bind Bazel dependency {dep}")
+          build.write_text(text, encoding="utf-8")
+
+          lane_e_workflow = Path(".github/workflows/hepta-lane-e-gap-closure.yml")
+          text = lane_e_workflow.read_text(encoding="utf-8")
+          old_branch = "  TARGET_BRANCH: codex/hepta-main-convergence-20260909\n"
+          new_binding = (
+              "  TARGET_BRANCH: integration/vnext-main-20260811\n"
+              "  TARGET_SHA: 04f60466394a024c218ce66b1b32d1c42c462985\n"
+          )
+          if old_branch in text:
+              if text.count(old_branch) != 1:
+                  raise SystemExit("expected exactly one stale Lane E target branch")
+              text = text.replace(old_branch, new_binding, 1)
+          elif new_binding not in text:
+              raise SystemExit("Lane E target binding is unexpected")
+          base_line = '          BASE_COMMIT="$(git rev-parse FETCH_HEAD)"\n'
+          base_assertion = '          test "${BASE_COMMIT}" = "${TARGET_SHA}"\n'
+          if base_assertion not in text:
+              if text.count(base_line) != 1:
+                  raise SystemExit("expected exactly one Lane E synthetic-merge base line")
+              text = text.replace(base_line, base_line + base_assertion, 1)
+          lane_e_workflow.write_text(text, encoding="utf-8")
+
+          merge_sha = os.environ.get("HEPTABAO_MERGE_SHA")
+          if not merge_sha:
+              raise SystemExit("HEPTABAO_MERGE_SHA was not bound")
+          candidate = Path("qualification/convergence/CANDIDATE_20260910.md")
+          text = candidate.read_text(encoding="utf-8").rstrip()
+          marker = "## Exact HeptaBao dependency binding"
+          if marker in text:
+              text = text.split(marker, 1)[0].rstrip()
+          binding = f"""## Exact HeptaBao dependency binding
+
+          This candidate is qualified only against `TrillionniumFoundation/HeptaBao` PR #81 with base `92894aa52de06f2f4ba7d5f234a0a55f93314474`, head `6480504418eaa2222dc372844114adb44c703510`, and the observed GitHub prospective merge `{merge_sha}`. The HeptaBao repository-controlled remediation qualification is GitHub Actions run `34424125351`. Any movement of the base/head pair invalidates this binding and requires exact-head requalification. A rematerialized prospective merge must be requalified even when its tree is content-equivalent. This dependency record does not grant compatibility, migration, release, deployment, or production authority.
+          """
+          candidate.write_text(text + "\n\n" + binding.strip() + "\n", encoding="utf-8")
+          PY
+
+          uv run --frozen --project scripts ruff format scripts/hepta-lane-e-closure.py
+          cargo fmt --manifest-path codex-rs/Cargo.toml --all
+          cargo clippy --manifest-path codex-rs/Cargo.toml --locked \
+            -p codex-hepta-prompt-registry --all-targets \
+            --fix --allow-dirty --allow-staged -- -D warnings
+          cargo fmt --manifest-path codex-rs/Cargo.toml --all
+
+      - name: Regenerate and verify repository-controlled evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          work="$RUNNER_TEMP/hepta-final-remediation-r4"
+          cd "$work"
+          python3 scripts/hepta-readiness.py self-test
+          python3 scripts/hepta-readiness.py generate-status
+          python3 scripts/hepta-readiness.py verify
+          python3 scripts/hepta-implementation-dossiers.py self-test
+          python3 scripts/hepta-implementation-dossiers.py generate-status
+          python3 scripts/hepta-implementation-dossiers.py verify
+          python3 qualification/module-execution-dossiers/implementation_contracts.py self-test
+          python3 qualification/module-execution-dossiers/implementation_contracts.py verify-repository
+          python3 scripts/hepta-module-docs.py self-test
+          python3 scripts/hepta-module-docs.py verify
+          python3 scripts/hepta-algorithm-docs.py self-test
+          python3 scripts/hepta-algorithm-docs.py verify-sources
+          python3 scripts/hepta-algorithm-docs.py generate-status
+          python3 scripts/hepta-algorithm-docs.py verify
+          python3 scripts/hepta-docs.py self-test
+          python3 scripts/hepta-docs.py generate-status
+          python3 scripts/hepta-docs.py verify
+          uv run --frozen --project scripts ruff format --check scripts
+          cargo fmt --manifest-path codex-rs/Cargo.toml --all -- --check
+          cargo clippy --manifest-path codex-rs/Cargo.toml --locked \
+            -p codex-hepta-kg \
+            -p codex-hepta-prompt-registry \
+            -p codex-hepta-shadow-qualification \
+            --all-targets -- -D warnings
+          cargo test --manifest-path codex-rs/Cargo.toml --locked \
+            -p codex-hepta-kg \
+            -p codex-hepta-prompt-registry \
+            -p codex-hepta-shadow-qualification \
+            -- --nocapture
+          python3 scripts/hepta-lane-e-closure.py self-test
+          python3 scripts/hepta-lane-e-closure.py verify
+          git diff --check
+          test -z "$(find .github/workflows -maxdepth 1 -type f -name 'tmp-*' -print -quit)"
+
+      - name: Reverify dependency tuple and publish new protected-safe branch
+        shell: bash
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          curl --fail --silent --show-error --location \
+            -H 'Accept: application/vnd.github+json' \
+            -H "Authorization: Bearer $GITHUB_TOKEN" \
+            -H 'X-GitHub-Api-Version: 2022-11-28' \
+            "https://api.github.com/repos/$HEPTABAO_REPOSITORY/pulls/$HEPTABAO_PR" \
+            -o "$RUNNER_TEMP/heptabao-pr-final.json"
+          python3 - "$RUNNER_TEMP/heptabao-pr-final.json" <<'PY'
+          import json
+          import os
+          import sys
+
+          with open(sys.argv[1], encoding="utf-8") as handle:
+              pull = json.load(handle)
+          observed = (
+              pull["base"]["sha"],
+              pull["head"]["sha"],
+              pull.get("merge_commit_sha"),
+          )
+          expected = (
+              os.environ["HEPTABAO_BASE_SHA"],
+              os.environ["HEPTABAO_HEAD_SHA"],
+              os.environ["HEPTABAO_MERGE_SHA"],
+          )
+          if pull["state"] != "open" or observed != expected:
+              raise SystemExit(
+                  f"HeptaBao tuple changed during qualification: observed={observed!r} expected={expected!r}"
+              )
+          PY
+
+          work="$RUNNER_TEMP/hepta-final-remediation-r4"
+          cd "$work"
+          git config user.name 'Hepta final remediation'
+          git config user.email '102159240+ProfHepta@users.noreply.github.com'
+          git add -A
+          test -n "$(git status --porcelain)"
+          git diff --cached --check
+          tree_sha="$(git write-tree)"
+          export GIT_AUTHOR_NAME='Hepta final remediation'
+          export GIT_AUTHOR_EMAIL='102159240+ProfHepta@users.noreply.github.com'
+          export GIT_COMMITTER_NAME="$GIT_AUTHOR_NAME"
+          export GIT_COMMITTER_EMAIL="$GIT_AUTHOR_EMAIL"
+          new_sha="$(printf '%s\n' 'fix(hepta): close final repository-controlled blockers r4' | git commit-tree "$tree_sha" -p "$BASE_SHA")"
+          test "$(git rev-parse "$new_sha^")" = "$BASE_SHA"
+          test "$(git rev-list --count "$BASE_SHA..$new_sha")" = "1"
+          test "$(git rev-parse "$new_sha^{tree}")" = "$tree_sha"
+          test "$(git ls-remote origin "refs/heads/$SOURCE_BRANCH" | cut -f1)" = "$SOURCE_SHA"
+          test -z "$(git ls-remote origin "refs/heads/$TARGET_BRANCH")"
+          git push origin "$new_sha:refs/heads/$TARGET_BRANCH"
+          printf 'new_candidate=%s\nbase=%s\ntree=%s\ntarget_branch=%s\n' \
+            "$new_sha" "$BASE_SHA" "$tree_sha" "$TARGET_BRANCH"
+
+      - name: Dump candidate diff on failure
+        if: failure()
+        shell: bash
+        run: |
+          work="$RUNNER_TEMP/hepta-final-remediation-r4"
+          if test -d "$work/.git" || test -f "$work/.git"; then
+            cd "$work"
+            git status --short || true
+            git diff --stat || true
+            git diff --check || true
+          fi
+
+      - name: Remove source worktree
+        if: always()
+        shell: bash
+        run: |
+          git worktree remove --force "$RUNNER_TEMP/hepta-final-remediation-r4" || true
