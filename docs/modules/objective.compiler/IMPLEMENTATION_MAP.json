@@ -16,8 +16,12 @@
       "operation": "decode_source_envelope_json_v1",
       "nativeSymbol": "codex_hepta_objective::decode_source_envelope_json_v1",
       "sourcePath": "codex-rs/hepta-objective/src/source_envelope_json.rs",
-      "inputs": ["bounded JSON bytes"],
-      "outputs": ["ObjectiveSourceEnvelopeV1"],
+      "inputs": [
+        "bounded JSON bytes"
+      ],
+      "outputs": [
+        "ObjectiveSourceEnvelopeV1"
+      ],
       "state": "source_implemented",
       "authority": "none",
       "tests": [
@@ -31,8 +35,12 @@
       "operation": "validate_structure",
       "nativeSymbol": "ObjectiveSourceEnvelopeV1::validate_structure",
       "sourcePath": "codex-rs/hepta-objective/src/source_envelope_validation.rs",
-      "inputs": ["ObjectiveSourceEnvelopeV1"],
-      "outputs": ["validated owner-local structure"],
+      "inputs": [
+        "ObjectiveSourceEnvelopeV1"
+      ],
+      "outputs": [
+        "validated owner-local structure"
+      ],
       "state": "source_implemented",
       "authority": "none",
       "tests": [
@@ -46,8 +54,12 @@
       "operation": "canonical_objective_intent_digest_v1",
       "nativeSymbol": "codex_hepta_objective::canonical_objective_intent_digest_v1",
       "sourcePath": "codex-rs/hepta-objective/src/objective_admission.rs",
-      "inputs": ["ObjectiveSourceEnvelopeV1"],
-      "outputs": ["canonical intent digest"],
+      "inputs": [
+        "ObjectiveSourceEnvelopeV1"
+      ],
+      "outputs": [
+        "canonical intent digest"
+      ],
       "state": "source_implemented",
       "authority": "none",
       "tests": [
@@ -81,6 +93,14 @@
         {
           "path": "codex-rs/hepta-objective/src/objective_admission_tests.rs",
           "symbol": "untrusted_evidence_reaches_native_authority_rejection"
+        },
+        {
+          "path": "codex-rs/hepta-objective/src/objective_admission_tests.rs",
+          "symbol": "oversized_profile_mapping_set_is_rejected"
+        },
+        {
+          "path": "codex-rs/hepta-objective/src/objective_admission_tests.rs",
+          "symbol": "risk_profile_ordering_is_monotone"
         }
       ]
     },
@@ -88,8 +108,14 @@
       "operation": "check_feasibility_v1",
       "nativeSymbol": "codex_hepta_objective::check_feasibility_v1",
       "sourcePath": "codex-rs/hepta-objective/src/feasibility.rs",
-      "inputs": ["RegisteredGrammarV1", "ConstraintAtomV1", "OracleBudgetV1"],
-      "outputs": ["FeasibilityReportV1"],
+      "inputs": [
+        "RegisteredGrammarV1",
+        "ConstraintAtomV1",
+        "OracleBudgetV1"
+      ],
+      "outputs": [
+        "FeasibilityReceiptV1"
+      ],
       "state": "source_implemented",
       "authority": "none",
       "tests": [
@@ -107,8 +133,13 @@
       "operation": "compile",
       "nativeSymbol": "codex_hepta_objective::compile",
       "sourcePath": "codex-rs/hepta-objective/src/compiler.rs",
-      "inputs": ["ObjectiveSourceEnvelope"],
-      "outputs": ["ObjectiveCompileReceipt", "ObjectiveConflictReceipt"],
+      "inputs": [
+        "ObjectiveSourceEnvelope"
+      ],
+      "outputs": [
+        "ObjectiveCompileReceipt",
+        "ObjectiveConflictReceipt"
+      ],
       "state": "source_implemented",
       "authority": "none",
       "tests": [

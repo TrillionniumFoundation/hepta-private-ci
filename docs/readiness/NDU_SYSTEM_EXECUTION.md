@@ -12,7 +12,7 @@ NDU is the typed preference and utility owner for supported feasible consequence
 
 The source implementation contains a deterministic fixed-point baseline, policy-bound aggregation and Pareto logic, recursive utility, preference updates, conditional-moment/covariance kernels, a protocol-context adapter and an owner-local projection-journal reference. Stochastic learned coefficients remain shadow candidates. None of these operations executes an effect, selects an artifact for production, diagnoses a person, changes the current objective or issues a capability.
 
-## 2. Cross-organ contribution contract
+## 2. Cross-organ utility contract
 
 Every organ or module contributing to one candidate supplies a bounded contribution containing:
 
@@ -27,11 +27,11 @@ uncertainty vector
 support digest
 ```
 
-The canonical external contract remains `UtilityContributionV1`; the Rust owner-local type preserves the same core semantics. Each axis has a registered unit and direction. A contribution with an empty support digest, mixed objective, mixed generation, duplicate organ identity, unknown axis or missing required organ is unavailable rather than zero.
+The canonical external contract remains `UtilityContributionV1`; the Rust owner-local type preserves the same core semantics. Each axis has a registered unit and direction. A contribution with an empty support digest, mixed objective, mixed generation, duplicate organ identity, unknown axis or missing required organ is unavailable rather than zero. Every evaluated candidate must also contain a value for every registered uncertainty axis. The candidate support digest is derived from the organ identity, objective, generation, feasibility posture, complete normalized vectors and the upstream support digest, so provenance cannot be detached from contribution semantics.
 
 An organ contributes only facts it owns. `utility.ndu` aggregates supported contributions. `control.runtime` consumes a digest-bound projection of the resulting evaluation; it does not reimplement NDU. `learning.ledger` records the complete candidate/contribution set under its own writer rules.
 
-## 3. Versioned aggregation policy
+## 3. Multi-objective feasibility and Pareto policy
 
 Cross-organ aggregation is never implicit for a new integration. `EvaluationPolicyV1` names exactly one rule for every utility, risk, resource and uncertainty axis:
 
@@ -54,7 +54,7 @@ The compatibility API `evaluate_candidates` remains available, but its prior beh
 
 New integrations call `evaluate_candidates_with_policy`. `NduEvaluationReceiptV2` binds the normalized policy digest in addition to the legacy evaluation digest, preventing a future aggregation change from silently reinterpreting an old result.
 
-## 4. Feasibility, Pareto and scalarization
+### 3.1 Feasibility, Pareto and scalarization
 
 Selection is staged:
 
@@ -72,7 +72,7 @@ Each utility axis has a non-negative absolute Pareto tolerance. Candidate `a` do
 
 Scalarization is permitted only when every registered utility axis has one weight, each weight lies in `[0,1]`, and the exact Q32 sum is one. A tie produces a slow-path disposition, not an arbitrary ID-based winner. Without scalarization, multiple non-dominated candidates return the Pareto set and no advisory recommendation.
 
-## 5. Deterministic hierarchical preference solver
+## 4. Deterministic hierarchical solver
 
 Valid subject classes are system, domain, agent and episode. Updates are staged:
 
@@ -95,7 +95,7 @@ U_k = project(instant_utility + discount * continuation_utility)
 
 `eta` is in `[1/16,1/4]`. The preference target solver emits immutable revisions and at most 64 local iteration receipts. Parent and child artifact updates cannot share one generation.
 
-## 6. Local solver receipts versus independent certificate
+## 5. Convergence, infeasibility and multiple solutions
 
 `NduSolverIterationReceipt` records one owner-local numerical step. `NduSolverTerminationReceipt` records:
 
@@ -122,7 +122,9 @@ The canonical `NduConvergenceCertificateV1` remains owned by `learning.eval`. It
 
 The receipt has a semantic digest and `AuthorityPosture::DENY_ALL`. Missing context fails before publication.
 
-## 7. Conditional covariance and stochastic shadow boundary
+## 6. State, persistence and scheduling
+
+### 6.1 Conditional covariance and stochastic shadow boundary
 
 For a shadow stochastic candidate, let centered increment and utility be:
 
@@ -140,7 +142,7 @@ The full-rank pilot rejects singular or ill-conditioned covariance. A pseudoinve
 
 A numeric covariance fixture proves algebra only. It does not prove conditional identification, a complete FBSDE solution, adaptive efficacy or activation safety.
 
-## 8. Projection state and owner-local durability reference
+### 6.2 Projection state and owner-local durability reference
 
 Preference and utility projections are append-only revisions owned by `utility.ndu`. The full semantic identity includes subject, principal scope, objective, predecessor, event and coefficient. A selected pointer changes only after the immutable projection and required independent evidence exist.
 
@@ -157,7 +159,7 @@ The journal enforces equal-identity/equal-semantics replay, rejects identity dri
 
 This reference does not claim an activated production writer, operating-system durability, fsync, schema migration, retention or backup qualification. Product composition must bind a selected store and prove those properties independently.
 
-## 9. Goodhart, wireheading and outcome ownership
+## 7. Goodhart and wireheading controls
 
 Outcome definitions and observers are owned outside the evaluated policy. NDU cannot write terminal success, alter evidence requirements, change evaluation slices or count its own activation as user utility.
 
@@ -165,7 +167,7 @@ Required controls include complete candidate logging, independent terminal outco
 
 Preferences are uncertain internal estimates, not psychological diagnoses or authority statements about a person. Subject identifiers are purpose-scoped. Raw credentials, unrestricted prompts and consumable capability tokens never enter projection or evaluation receipts.
 
-## 10. Scheduling, fallback and rollback
+### 7.1 Scheduling, fallback and rollback
 
 The local hot path consumes frozen or cached system/domain summaries and current episode/agent state. It performs no fleet-wide synchronous optimization. Revocation checks remain current even when an artifact or projection is cached.
 
@@ -181,7 +183,7 @@ Every predecessor is checked against current revocation and deletion frontiers. 
 
 Corrections and deletion append revocation edges. Rebuild excludes revoked events, features, datasets, coefficients and descendants. If selective parameter unlearning is unsupported, revoke and retrain; a logical tombstone alone does not prove removal from learned parameters.
 
-## 11. Numerical and resource envelope
+## 8. Numerical and resource envelope
 
 Pilot ceilings are:
 
@@ -201,7 +203,7 @@ All normalization, units, scales, clipping locations and tolerances are manifest
 
 Reference-host p95/p99, transient memory and persistent projection targets remain design targets until bound to a named host, compiler, build profile, exact source and fixture. A solver residual is not a statistical-error or efficacy proof.
 
-## 12. Golden fixtures and tests
+## 9. Golden fixtures and tests
 
 - `NDU-SYS-GV-001`: deterministic zero-noise preference/utility vector reproduces exact Q32 values.
 - `NDU-SYS-GV-002`: a higher-utility privacy-violating candidate is filtered before Pareto analysis.
@@ -218,7 +220,7 @@ Reference-host p95/p99, transient memory and persistent projection targets remai
 
 Exact native mappings are registered in `docs/modules/utility.ndu/IMPLEMENTATION_MAP.json`. The same implementation cannot be the sole oracle for a critical numerical claim; analytic or independent scalar fixtures remain required.
 
-## 13. Implementation sequence and completion rule
+## 10. Implementation sequence
 
 Implementation order is typed contributions, explicit aggregation policy, feasibility, tolerant Pareto, optional scalarization, fixed-point preference state, local solver receipts, canonical context adapter, recursive utility, covariance shadow kernel, owner-local durability reference, exact source tests and semantic conformance.
 
@@ -232,7 +234,17 @@ The legacy `NDU-2-AGENT-DOMAIN-HIERARCHY` identifier remains in historical DAGs 
 
 Repository-controlled completion requires the implementation map, source tests, strict lint, semantic checker, exact-head workflows and synthetic merge checks. Product caller, production writer, independent convergence decision, activation and release remain separately governed.
 
-## Appendix A. Canonical protocol mapping
+## 11. Coding-entry checklist
+
+- contribution sets bind one objective and generation and contain every required organ;
+- every utility axis has an explicit uncertainty value, never an omitted implicit zero;
+- candidate support digests bind organ identity and complete normalized contribution semantics;
+- aggregation, Pareto tolerance and optional scalarization profiles are digest-bound;
+- local termination receipts remain distinct from independent convergence certificates;
+- projection reopen, tamper and revocation non-resurrection fixtures pass;
+- exact-head and synthetic-merge checks pass before source completion is claimed.
+
+## Appendix A. Closed gap and protocol mapping
 
 Canonical readiness protocols:
 

@@ -18,8 +18,14 @@
       "operation": "evaluate_candidates",
       "nativeSymbol": "codex_hepta_ndu::evaluate_candidates",
       "sourcePath": "codex-rs/hepta-ndu/src/evaluator.rs",
-      "inputs": ["ContributionSet", "UtilityProfile", "optional ScalarizationProfile"],
-      "outputs": ["NduEvaluationReceipt"],
+      "inputs": [
+        "ContributionSet",
+        "UtilityProfile",
+        "optional ScalarizationProfile"
+      ],
+      "outputs": [
+        "NduEvaluationReceipt"
+      ],
       "state": "source_implemented_compatibility_entry",
       "authority": "none",
       "semanticProfile": "legacy-sum-max-zero-tolerance-v1",
@@ -44,7 +50,9 @@
         "optional ScalarizationProfile",
         "EvaluationPolicyV1"
       ],
-      "outputs": ["NduEvaluationReceiptV2"],
+      "outputs": [
+        "NduEvaluationReceiptV2"
+      ],
       "state": "source_implemented_owner_local_v2",
       "authority": "none",
       "tests": [
@@ -59,6 +67,14 @@
         {
           "path": "codex-rs/hepta-ndu/src/evaluator_tests.rs",
           "symbol": "pareto_tolerance_is_digest_bound_and_changes_dominance"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/evaluator_tests.rs",
+          "symbol": "missing_uncertainty_axis_is_unavailable"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/evaluator_tests.rs",
+          "symbol": "candidate_support_digest_binds_organ_and_contribution_semantics"
         }
       ]
     },
@@ -66,8 +82,13 @@
       "operation": "canonical_evaluation_policy_digest",
       "nativeSymbol": "codex_hepta_ndu::canonical_evaluation_policy_digest",
       "sourcePath": "codex-rs/hepta-ndu/src/evaluator.rs",
-      "inputs": ["UtilityProfile", "EvaluationPolicyV1"],
-      "outputs": ["evaluation policy digest"],
+      "inputs": [
+        "UtilityProfile",
+        "EvaluationPolicyV1"
+      ],
+      "outputs": [
+        "evaluation policy digest"
+      ],
       "state": "source_implemented",
       "authority": "none",
       "tests": [
@@ -81,7 +102,11 @@
       "operation": "solve_preference_target",
       "nativeSymbol": "codex_hepta_ndu::solve_preference_target",
       "sourcePath": "codex-rs/hepta-ndu/src/preference.rs",
-      "inputs": ["PreferenceState", "target AxisValue set", "eta"],
+      "inputs": [
+        "PreferenceState",
+        "target AxisValue set",
+        "eta"
+      ],
       "outputs": [
         "PreferenceState",
         "NduSolverTerminationReceipt",
@@ -105,8 +130,13 @@
       "operation": "bind_solver_iteration_receipt_v1",
       "nativeSymbol": "codex_hepta_ndu::bind_solver_iteration_receipt_v1",
       "sourcePath": "codex-rs/hepta-ndu/src/protocol.rs",
-      "inputs": ["NduIterationContextV1", "NduSolverIterationReceipt"],
-      "outputs": ["owner-local NduIterationReceiptV1"],
+      "inputs": [
+        "NduIterationContextV1",
+        "NduSolverIterationReceipt"
+      ],
+      "outputs": [
+        "owner-local NduIterationReceiptV1"
+      ],
       "state": "source_implemented_protocol_adapter",
       "authority": "deny_all",
       "tests": [
@@ -124,8 +154,13 @@
       "operation": "solve_backward_regression",
       "nativeSymbol": "codex_hepta_ndu::solve_backward_regression",
       "sourcePath": "codex-rs/hepta-ndu/src/covariance.rs",
-      "inputs": ["conditional moments", "admitted covariance profile"],
-      "outputs": ["ZEstimateV1"],
+      "inputs": [
+        "conditional moments",
+        "admitted covariance profile"
+      ],
+      "outputs": [
+        "ZEstimateV1"
+      ],
       "state": "source_implemented_shadow_numeric_kernel",
       "authority": "none",
       "tests": [
@@ -139,8 +174,13 @@
       "operation": "NduProjectionJournalV1",
       "nativeSymbol": "codex_hepta_ndu::NduProjectionJournalV1",
       "sourcePath": "codex-rs/hepta-ndu/src/projection_journal.rs",
-      "inputs": ["immutable projection, selection and revocation records"],
-      "outputs": ["bounded hash-chain journal bytes", "selected projection view"],
+      "inputs": [
+        "immutable projection, selection and revocation records"
+      ],
+      "outputs": [
+        "bounded hash-chain journal bytes",
+        "selected projection view"
+      ],
       "state": "source_implemented_owner_local_durability_reference",
       "authority": "none",
       "nonClaim": "not an activated production writer or fsync profile",

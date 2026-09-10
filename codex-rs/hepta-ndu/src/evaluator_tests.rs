@@ -75,10 +75,16 @@ fn contribution_from(
             axis: id("compute"),
             value: q32(1),
         }],
-        uncertainty: vec![AxisValue {
-            axis: id("success"),
-            value: FixedQ32::ZERO,
-        }],
+        uncertainty: vec![
+            AxisValue {
+                axis: id("success"),
+                value: FixedQ32::ZERO,
+            },
+            AxisValue {
+                axis: id("latency"),
+                value: FixedQ32::ZERO,
+            },
+        ],
         support_digest: Digest32::of_bytes(format!("{candidate}:{organ}").as_bytes()),
     }
 }
@@ -358,4 +364,54 @@ fn policy_digest_is_permutation_invariant() {
         must(canonical_evaluation_policy_digest(&profile, &first)),
         must(canonical_evaluation_policy_digest(&profile, &reordered))
     );
+}
+
+#[test]
+fn missing_uncertainty_axis_is_unavailable() {
+    let abstain = contribution("abstain", 0, 0);
+    let mut work = contribution("work", 1, 1);
+    work.uncertainty.retain(|value| value.axis == id("success"));
+
+    let error = must_err(evaluate_candidates(
+        set(vec![abstain, work]),
+        profile(),
+        None,
+    ));
+    assert_eq!(error.code(), "NDU-E003");
+}
+
+#[test]
+fn candidate_support_digest_binds_organ_and_contribution_semantics() {
+    let mut open_profile = profile();
+    open_profile.required_organs.organ_ids.clear();
+    let first = must(evaluate_candidates(
+        set(vec![
+            contribution("abstain", 0, 0),
+            contribution("work", 1, 1),
+        ]),
+        open_profile.clone(),
+        None,
+    ));
+    let first_support = first
+        .evaluated_candidates
+        .iter()
+        .find(|candidate| candidate.candidate_id == id("work"))
+        .expect("work candidate")
+        .support_digest;
+
+    let mut changed = contribution("work", 1, 1);
+    changed.organ_id = id("other-organ");
+    let second = must(evaluate_candidates(
+        set(vec![contribution("abstain", 0, 0), changed]),
+        open_profile,
+        None,
+    ));
+    let second_support = second
+        .evaluated_candidates
+        .iter()
+        .find(|candidate| candidate.candidate_id == id("work"))
+        .expect("work candidate")
+        .support_digest;
+
+    assert_ne!(first_support, second_support);
 }

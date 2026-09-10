@@ -67,7 +67,10 @@ fn hash_chain_round_trips_and_preserves_selected_pointer() {
     let reopened = must(PlannerJournalV1::reopen(&bytes));
 
     assert_eq!(reopened.entries(), journal.entries());
-    assert_eq!(reopened.selected_plan_digest(), Some(receipt.receipt_digest));
+    assert_eq!(
+        reopened.selected_plan_digest(),
+        Some(receipt.receipt_digest)
+    );
 }
 
 #[test]

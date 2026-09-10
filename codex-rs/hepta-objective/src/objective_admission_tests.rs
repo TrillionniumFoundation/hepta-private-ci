@@ -428,3 +428,32 @@ fn fractional_utc_timestamp_is_parsed_exactly() {
         outcome.receipt.deadline_unix_micros
     );
 }
+
+#[test]
+fn oversized_profile_mapping_set_is_rejected() {
+    let mut profile = profile();
+    profile.constraints = (0..257)
+        .map(|index| ObjectiveConstraintProfileV1 {
+            source_constraint_id: format!("constraint.{index}"),
+            expected_unit: "unit".to_string(),
+            class: ConstraintClass::Task,
+            axis: id(&format!("axis.{index}")),
+        })
+        .collect();
+    assert_eq!(
+        ObjectiveAdmissionError::InvalidProfile("mapping count bound"),
+        profile.digest().expect_err("oversized profile must reject")
+    );
+}
+
+#[test]
+fn risk_profile_ordering_is_monotone() {
+    let mut profile = profile();
+    profile.risk.high_value = FixedQ32::from_raw(0);
+    assert_eq!(
+        ObjectiveAdmissionError::InvalidProfile("risk ordering"),
+        profile
+            .digest()
+            .expect_err("non-monotone risk profile must reject")
+    );
+}

@@ -15,8 +15,13 @@
       "operation": "collect_snapshot",
       "nativeSymbol": "codex_hepta_control_plane::collect_snapshot",
       "sourcePath": "codex-rs/hepta-control-plane/src/planner.rs",
-      "inputs": ["SnapshotRequestV1", "OwnerSummaryV1 list"],
-      "outputs": ["GlobalStateSnapshotV1"],
+      "inputs": [
+        "SnapshotRequestV1",
+        "OwnerSummaryV1 list"
+      ],
+      "outputs": [
+        "GlobalStateSnapshotV1"
+      ],
       "state": "source_implemented",
       "authority": "deny_all",
       "tests": [
@@ -30,8 +35,13 @@
       "operation": "prepare_plan",
       "nativeSymbol": "codex_hepta_control_plane::prepare_plan",
       "sourcePath": "codex-rs/hepta-control-plane/src/planner.rs",
-      "inputs": ["GlobalStateSnapshotV1", "PlanningRequestV1"],
-      "outputs": ["PreparedPlanInputV1"],
+      "inputs": [
+        "GlobalStateSnapshotV1",
+        "PlanningRequestV1"
+      ],
+      "outputs": [
+        "PreparedPlanInputV1"
+      ],
       "state": "source_implemented",
       "authority": "deny_all",
       "tests": [
@@ -49,8 +59,12 @@
       "operation": "bind_ndu_plan_evaluation_v1",
       "nativeSymbol": "codex_hepta_control_plane::bind_ndu_plan_evaluation_v1",
       "sourcePath": "codex-rs/hepta-control-plane/src/planner.rs",
-      "inputs": ["NduPlanEvaluationInputV1"],
-      "outputs": ["NduPlanEvaluationV1"],
+      "inputs": [
+        "NduPlanEvaluationInputV1"
+      ],
+      "outputs": [
+        "NduPlanEvaluationV1"
+      ],
       "state": "source_implemented_owner_port_adapter",
       "authority": "deny_all",
       "ownerBoundary": "utility.ndu computes the opaque evaluation digest; control.runtime binds only the consumed projection",
@@ -71,7 +85,9 @@
         "NduPlanEvaluationV1",
         "current monotonic time"
       ],
-      "outputs": ["FeasiblePlanReceiptV1"],
+      "outputs": [
+        "FeasiblePlanReceiptV1"
+      ],
       "state": "source_implemented",
       "authority": "deny_all",
       "tests": [
@@ -82,6 +98,10 @@
         {
           "path": "codex-rs/hepta-control-plane/src/planner_tests.rs",
           "symbol": "evaluation_must_cover_exact_prepared_candidate_set"
+        },
+        {
+          "path": "codex-rs/hepta-control-plane/src/planner_tests.rs",
+          "symbol": "evaluation_policy_is_frozen_before_ndu_evaluation"
         }
       ]
     },
@@ -95,7 +115,9 @@
         "FeasiblePlanReceiptV1",
         "current monotonic time"
       ],
-      "outputs": ["GrantRequestSetV1"],
+      "outputs": [
+        "GrantRequestSetV1"
+      ],
       "state": "source_implemented_request_only",
       "authority": "deny_all",
       "nonClaim": "GrantRequestSetV1 is not a capability or execution acknowledgement",
@@ -103,6 +125,18 @@
         {
           "path": "codex-rs/hepta-control-plane/src/planner_tests.rs",
           "symbol": "changed_configuration_invalidates_prepared_plan"
+        },
+        {
+          "path": "codex-rs/hepta-control-plane/src/planner_tests.rs",
+          "symbol": "tampered_candidate_payload_is_rejected_before_grant_request"
+        },
+        {
+          "path": "codex-rs/hepta-control-plane/src/planner_tests.rs",
+          "symbol": "tampered_candidate_operation_resource_or_owner_is_rejected"
+        },
+        {
+          "path": "codex-rs/hepta-control-plane/src/planner_tests.rs",
+          "symbol": "grant_request_revalidates_snapshot_masks_and_digest"
         }
       ]
     },
@@ -110,8 +144,13 @@
       "operation": "PlannerJournalV1",
       "nativeSymbol": "codex_hepta_control_plane::PlannerJournalV1",
       "sourcePath": "codex-rs/hepta-control-plane/src/planner_journal.rs",
-      "inputs": ["snapshot, decision, selection and revocation records"],
-      "outputs": ["bounded hash-chain bytes", "selected plan projection"],
+      "inputs": [
+        "snapshot, decision, selection and revocation records"
+      ],
+      "outputs": [
+        "bounded hash-chain bytes",
+        "selected plan projection"
+      ],
       "state": "source_implemented_owner_local_durability_reference",
       "authority": "none",
       "nonClaim": "not an activated production store or external-effect ledger",

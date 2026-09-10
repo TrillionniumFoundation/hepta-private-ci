@@ -71,6 +71,7 @@ fn snapshot_request() -> SnapshotRequestV1 {
         body_generation: must(Generation::new(7)),
         configuration_digest: digest("configuration"),
         revocation_frontier_digest: digest("revocations"),
+        snapshot_policy_digest: digest("snapshot-policy"),
         collected_at_micros: 1_000,
         maximum_owner_age_micros: 100,
         expires_at_micros: 2_000,
@@ -100,6 +101,8 @@ fn planning_request(work_resource: i64) -> PlanningRequestV1 {
         plan_id: id("plan-run-1"),
         now_micros: 1_000,
         deadline_micros: 1_900,
+        evaluation_policy_digest: digest("policy"),
+        resource_profile_digest: digest("resource-profile"),
         candidates: vec![candidate("abstain", 0), candidate("work", work_resource)],
         resource_reservations: vec![ResourceReservationV1 {
             axis: id("compute"),
@@ -155,10 +158,7 @@ fn coherent_snapshot_prepares_finalizes_and_emits_authority_free_grant_requests(
     assert_eq!(receipt.ndu_evaluation_digest, ndu.evaluation_digest);
 
     let grants = must(request_execution_grants(
-        &snapshot,
-        &prepared,
-        &receipt,
-        1_200,
+        &snapshot, &prepared, &receipt, 1_200,
     ));
     assert_eq!(grants.requests.len(), 1);
     assert_eq!(
@@ -197,10 +197,7 @@ fn essential_floor_survives_overload_before_ndu_evaluation() {
     request.resource_reservations[0].essential_floor = q32(2);
     let prepared = must(prepare_plan(&snapshot, request));
 
-    assert_eq!(
-        prepared.resource_rejected_candidate_ids,
-        vec![id("work")]
-    );
+    assert_eq!(prepared.resource_rejected_candidate_ids, vec![id("work")]);
     assert_eq!(prepared.feasible_candidates.len(), 1);
     assert_eq!(prepared.feasible_candidates[0].candidate_id, id("abstain"));
 
@@ -238,10 +235,7 @@ fn changed_configuration_invalidates_prepared_plan() {
 
     assert_eq!(
         must_err(request_execution_grants(
-            &changed,
-            &prepared,
-            &receipt,
-            1_200,
+            &changed, &prepared, &receipt, 1_200,
         )),
         PlannerError::PreparedPlanMismatch
     );
@@ -309,5 +303,152 @@ fn missing_resource_axis_is_unavailable_not_zero_cost() {
             candidate: "work".to_string(),
             axis: "compute".to_string(),
         }
+    );
+}
+
+#[test]
+fn tampered_candidate_payload_is_rejected_before_grant_request() {
+    let snapshot = must(collect_snapshot(
+        snapshot_request(),
+        vec![summary(OwnerReadinessV1::Ready, 950, 1_800)],
+    ));
+    let prepared = must(prepare_plan(&snapshot, planning_request(1)));
+    let ndu = evaluation(
+        &prepared,
+        PlanningEvaluationDispositionV1::UniqueParetoRecommendation,
+        vec![id("work")],
+        Some(id("work")),
+    );
+    let receipt = must(finalize_plan(&snapshot, &prepared, &ndu, 1_100));
+    let mut tampered = prepared.clone();
+    let candidate = tampered
+        .feasible_candidates
+        .iter_mut()
+        .find(|candidate| candidate.candidate_id == id("work"))
+        .expect("work candidate");
+    candidate.final_payload_digests[0] = digest("tampered-payload");
+
+    assert_eq!(
+        must_err(request_execution_grants(
+            &snapshot, &tampered, &receipt, 1_200,
+        )),
+        PlannerError::PreparedPlanMismatch
+    );
+}
+
+#[test]
+fn tampered_candidate_operation_resource_or_owner_is_rejected() {
+    let snapshot = must(collect_snapshot(
+        snapshot_request(),
+        vec![summary(OwnerReadinessV1::Ready, 950, 1_800)],
+    ));
+    let prepared = must(prepare_plan(&snapshot, planning_request(1)));
+    let ndu = evaluation(
+        &prepared,
+        PlanningEvaluationDispositionV1::UniqueParetoRecommendation,
+        vec![id("work")],
+        Some(id("work")),
+    );
+    let receipt = must(finalize_plan(&snapshot, &prepared, &ndu, 1_100));
+
+    let mut operation = prepared.clone();
+    operation.feasible_candidates[1].operation_id = id("tampered-operation");
+    assert_eq!(
+        must_err(request_execution_grants(
+            &snapshot, &operation, &receipt, 1_200
+        )),
+        PlannerError::PreparedPlanMismatch
+    );
+
+    let mut resource = prepared.clone();
+    resource.feasible_candidates[1].resource_costs[0].value = q32(2);
+    assert_eq!(
+        must_err(request_execution_grants(
+            &snapshot, &resource, &receipt, 1_200
+        )),
+        PlannerError::PreparedPlanMismatch
+    );
+
+    let mut owner = prepared.clone();
+    owner.feasible_candidates[1].required_owner_ids.clear();
+    assert_eq!(
+        must_err(request_execution_grants(&snapshot, &owner, &receipt, 1_200)),
+        PlannerError::PreparedPlanMismatch
+    );
+}
+
+#[test]
+fn grant_request_revalidates_snapshot_masks_and_digest() {
+    let snapshot = must(collect_snapshot(
+        snapshot_request(),
+        vec![summary(OwnerReadinessV1::Ready, 950, 1_800)],
+    ));
+    let prepared = must(prepare_plan(&snapshot, planning_request(1)));
+    let ndu = evaluation(
+        &prepared,
+        PlanningEvaluationDispositionV1::UniqueParetoRecommendation,
+        vec![id("work")],
+        Some(id("work")),
+    );
+    let receipt = must(finalize_plan(&snapshot, &prepared, &ndu, 1_100));
+    let mut tampered = snapshot.clone();
+    tampered.stale_owner_ids.push(id("planner"));
+
+    assert_eq!(
+        must_err(request_execution_grants(
+            &tampered, &prepared, &receipt, 1_200,
+        )),
+        PlannerError::PreparedPlanMismatch
+    );
+}
+
+#[test]
+fn evaluation_policy_is_frozen_before_ndu_evaluation() {
+    let snapshot = must(collect_snapshot(
+        snapshot_request(),
+        vec![summary(OwnerReadinessV1::Ready, 950, 1_800)],
+    ));
+    let prepared = must(prepare_plan(&snapshot, planning_request(1)));
+    let ndu = must(bind_ndu_plan_evaluation_v1(NduPlanEvaluationInputV1 {
+        objective_digest: prepared.objective_digest,
+        body_generation: prepared.body_generation,
+        evaluation_policy_digest: digest("different-policy"),
+        evaluation_digest: digest("ndu-evaluation"),
+        evaluated_candidate_ids: prepared
+            .feasible_candidates
+            .iter()
+            .map(|candidate| candidate.candidate_id.clone())
+            .collect(),
+        rejected_candidate_ids: Vec::new(),
+        pareto_candidate_ids: vec![id("work")],
+        advisory_candidate_id: Some(id("work")),
+        uncertainty_digest: digest("uncertainty"),
+        disposition: PlanningEvaluationDispositionV1::UniqueParetoRecommendation,
+    }));
+
+    assert_eq!(
+        must_err(finalize_plan(&snapshot, &prepared, &ndu, 1_100)),
+        PlannerError::EvaluationBindingMismatch
+    );
+}
+
+#[test]
+fn resource_profile_and_snapshot_policy_are_mandatory_and_digest_bound() {
+    let snapshot = must(collect_snapshot(
+        snapshot_request(),
+        vec![summary(OwnerReadinessV1::Ready, 950, 1_800)],
+    ));
+    let mut request = planning_request(1);
+    request.resource_profile_digest = Digest32::ZERO;
+    assert_eq!(
+        must_err(prepare_plan(&snapshot, request)),
+        PlannerError::EmptyDigest("resource profile")
+    );
+
+    let mut changed = snapshot.clone();
+    changed.snapshot_policy_digest = digest("changed-snapshot-policy");
+    assert_eq!(
+        must_err(prepare_plan(&changed, planning_request(1))),
+        PlannerError::PreparedPlanMismatch
     );
 }

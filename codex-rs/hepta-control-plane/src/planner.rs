@@ -15,6 +15,7 @@ const MAX_CANDIDATES: usize = 128;
 const MAX_REQUIRED_OWNERS_PER_CANDIDATE: usize = 32;
 const MAX_PAYLOADS_PER_CANDIDATE: usize = 64;
 const MAX_RESOURCE_RESERVATIONS: usize = 32;
+// LANE_D_FINAL_HARDENING_V1: output envelopes are sealed and revalidated.
 
 #[derive(Clone, Copy, Debug, Eq, Ord, PartialEq, PartialOrd)]
 pub enum OwnerReadinessV1 {
@@ -53,6 +54,7 @@ pub struct SnapshotRequestV1 {
     pub body_generation: Generation,
     pub configuration_digest: Digest32,
     pub revocation_frontier_digest: Digest32,
+    pub snapshot_policy_digest: Digest32,
     pub collected_at_micros: u64,
     pub maximum_owner_age_micros: u64,
     pub expires_at_micros: u64,
@@ -61,17 +63,79 @@ pub struct SnapshotRequestV1 {
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct GlobalStateSnapshotV1 {
-    pub objective_digest: Digest32,
-    pub body_generation: Generation,
-    pub configuration_digest: Digest32,
-    pub revocation_frontier_digest: Digest32,
-    pub collected_at_micros: u64,
-    pub expires_at_micros: u64,
-    pub owner_summaries: Vec<OwnerSummaryV1>,
-    pub missing_owner_ids: Vec<StableId>,
-    pub stale_owner_ids: Vec<StableId>,
-    pub unavailable_owner_ids: Vec<StableId>,
-    pub snapshot_digest: Digest32,
+    objective_digest: Digest32,
+    body_generation: Generation,
+    configuration_digest: Digest32,
+    revocation_frontier_digest: Digest32,
+    snapshot_policy_digest: Digest32,
+    maximum_owner_age_micros: u64,
+    required_owner_set_digest: Digest32,
+    collected_at_micros: u64,
+    expires_at_micros: u64,
+    owner_summaries: Vec<OwnerSummaryV1>,
+    missing_owner_ids: Vec<StableId>,
+    stale_owner_ids: Vec<StableId>,
+    unavailable_owner_ids: Vec<StableId>,
+    snapshot_digest: Digest32,
+}
+
+impl GlobalStateSnapshotV1 {
+    #[must_use]
+    pub const fn objective_digest(&self) -> Digest32 {
+        self.objective_digest
+    }
+    #[must_use]
+    pub const fn body_generation(&self) -> Generation {
+        self.body_generation
+    }
+    #[must_use]
+    pub const fn configuration_digest(&self) -> Digest32 {
+        self.configuration_digest
+    }
+    #[must_use]
+    pub const fn revocation_frontier_digest(&self) -> Digest32 {
+        self.revocation_frontier_digest
+    }
+    #[must_use]
+    pub const fn snapshot_policy_digest(&self) -> Digest32 {
+        self.snapshot_policy_digest
+    }
+    #[must_use]
+    pub const fn maximum_owner_age_micros(&self) -> u64 {
+        self.maximum_owner_age_micros
+    }
+    #[must_use]
+    pub const fn required_owner_set_digest(&self) -> Digest32 {
+        self.required_owner_set_digest
+    }
+    #[must_use]
+    pub const fn collected_at_micros(&self) -> u64 {
+        self.collected_at_micros
+    }
+    #[must_use]
+    pub const fn expires_at_micros(&self) -> u64 {
+        self.expires_at_micros
+    }
+    #[must_use]
+    pub fn owner_summaries(&self) -> &[OwnerSummaryV1] {
+        &self.owner_summaries
+    }
+    #[must_use]
+    pub fn missing_owner_ids(&self) -> &[StableId] {
+        &self.missing_owner_ids
+    }
+    #[must_use]
+    pub fn stale_owner_ids(&self) -> &[StableId] {
+        &self.stale_owner_ids
+    }
+    #[must_use]
+    pub fn unavailable_owner_ids(&self) -> &[StableId] {
+        &self.unavailable_owner_ids
+    }
+    #[must_use]
+    pub const fn snapshot_digest(&self) -> Digest32 {
+        self.snapshot_digest
+    }
 }
 
 #[derive(Clone, Debug, Eq, Ord, PartialEq, PartialOrd)]
@@ -102,25 +166,92 @@ pub struct PlanningRequestV1 {
     pub plan_id: StableId,
     pub now_micros: u64,
     pub deadline_micros: u64,
+    pub evaluation_policy_digest: Digest32,
+    pub resource_profile_digest: Digest32,
     pub candidates: Vec<PlanCandidateV1>,
     pub resource_reservations: Vec<ResourceReservationV1>,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct PreparedPlanInputV1 {
-    pub plan_id: StableId,
-    pub objective_digest: Digest32,
-    pub body_generation: Generation,
-    pub configuration_digest: Digest32,
-    pub revocation_frontier_digest: Digest32,
-    pub snapshot_digest: Digest32,
-    pub source_candidate_set_digest: Digest32,
-    pub candidate_set_digest: Digest32,
-    pub feasible_candidates: Vec<PlanCandidateV1>,
-    pub resource_rejected_candidate_ids: Vec<StableId>,
-    pub expires_at_micros: u64,
-    pub prepared_digest: Digest32,
-    pub authority: AuthorityPosture,
+    plan_id: StableId,
+    objective_digest: Digest32,
+    body_generation: Generation,
+    configuration_digest: Digest32,
+    revocation_frontier_digest: Digest32,
+    snapshot_digest: Digest32,
+    evaluation_policy_digest: Digest32,
+    resource_profile_digest: Digest32,
+    source_candidate_set_digest: Digest32,
+    candidate_set_digest: Digest32,
+    feasible_candidates: Vec<PlanCandidateV1>,
+    resource_rejected_candidate_ids: Vec<StableId>,
+    expires_at_micros: u64,
+    prepared_digest: Digest32,
+    authority: AuthorityPosture,
+}
+
+impl PreparedPlanInputV1 {
+    #[must_use]
+    pub fn plan_id(&self) -> &StableId {
+        &self.plan_id
+    }
+    #[must_use]
+    pub const fn objective_digest(&self) -> Digest32 {
+        self.objective_digest
+    }
+    #[must_use]
+    pub const fn body_generation(&self) -> Generation {
+        self.body_generation
+    }
+    #[must_use]
+    pub const fn configuration_digest(&self) -> Digest32 {
+        self.configuration_digest
+    }
+    #[must_use]
+    pub const fn revocation_frontier_digest(&self) -> Digest32 {
+        self.revocation_frontier_digest
+    }
+    #[must_use]
+    pub const fn snapshot_digest(&self) -> Digest32 {
+        self.snapshot_digest
+    }
+    #[must_use]
+    pub const fn evaluation_policy_digest(&self) -> Digest32 {
+        self.evaluation_policy_digest
+    }
+    #[must_use]
+    pub const fn resource_profile_digest(&self) -> Digest32 {
+        self.resource_profile_digest
+    }
+    #[must_use]
+    pub const fn source_candidate_set_digest(&self) -> Digest32 {
+        self.source_candidate_set_digest
+    }
+    #[must_use]
+    pub const fn candidate_set_digest(&self) -> Digest32 {
+        self.candidate_set_digest
+    }
+    #[must_use]
+    pub fn feasible_candidates(&self) -> &[PlanCandidateV1] {
+        &self.feasible_candidates
+    }
+    #[must_use]
+    pub fn resource_rejected_candidate_ids(&self) -> &[StableId] {
+        &self.resource_rejected_candidate_ids
+    }
+    #[must_use]
+    pub const fn expires_at_micros(&self) -> u64 {
+        self.expires_at_micros
+    }
+    #[must_use]
+    pub const fn prepared_digest(&self) -> Digest32 {
+        self.prepared_digest
+    }
+    #[must_use]
+    pub const fn authority(&self) -> &AuthorityPosture {
+        &self.authority
+    }
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -163,18 +294,69 @@ pub struct NduPlanEvaluationInputV1 {
 /// disposition projection consumed by control.runtime and carries no authority.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct NduPlanEvaluationV1 {
-    pub objective_digest: Digest32,
-    pub body_generation: Generation,
-    pub evaluation_policy_digest: Digest32,
-    pub evaluation_digest: Digest32,
-    pub evaluated_candidate_ids: Vec<StableId>,
-    pub rejected_candidate_ids: Vec<StableId>,
-    pub pareto_candidate_ids: Vec<StableId>,
-    pub advisory_candidate_id: Option<StableId>,
-    pub uncertainty_digest: Digest32,
-    pub disposition: PlanningEvaluationDispositionV1,
-    pub binding_digest: Digest32,
-    pub authority: AuthorityPosture,
+    objective_digest: Digest32,
+    body_generation: Generation,
+    evaluation_policy_digest: Digest32,
+    evaluation_digest: Digest32,
+    evaluated_candidate_ids: Vec<StableId>,
+    rejected_candidate_ids: Vec<StableId>,
+    pareto_candidate_ids: Vec<StableId>,
+    advisory_candidate_id: Option<StableId>,
+    uncertainty_digest: Digest32,
+    disposition: PlanningEvaluationDispositionV1,
+    binding_digest: Digest32,
+    authority: AuthorityPosture,
+}
+
+impl NduPlanEvaluationV1 {
+    #[must_use]
+    pub const fn objective_digest(&self) -> Digest32 {
+        self.objective_digest
+    }
+    #[must_use]
+    pub const fn body_generation(&self) -> Generation {
+        self.body_generation
+    }
+    #[must_use]
+    pub const fn evaluation_policy_digest(&self) -> Digest32 {
+        self.evaluation_policy_digest
+    }
+    #[must_use]
+    pub const fn evaluation_digest(&self) -> Digest32 {
+        self.evaluation_digest
+    }
+    #[must_use]
+    pub fn evaluated_candidate_ids(&self) -> &[StableId] {
+        &self.evaluated_candidate_ids
+    }
+    #[must_use]
+    pub fn rejected_candidate_ids(&self) -> &[StableId] {
+        &self.rejected_candidate_ids
+    }
+    #[must_use]
+    pub fn pareto_candidate_ids(&self) -> &[StableId] {
+        &self.pareto_candidate_ids
+    }
+    #[must_use]
+    pub fn advisory_candidate_id(&self) -> Option<&StableId> {
+        self.advisory_candidate_id.as_ref()
+    }
+    #[must_use]
+    pub const fn uncertainty_digest(&self) -> Digest32 {
+        self.uncertainty_digest
+    }
+    #[must_use]
+    pub const fn disposition(&self) -> PlanningEvaluationDispositionV1 {
+        self.disposition
+    }
+    #[must_use]
+    pub const fn binding_digest(&self) -> Digest32 {
+        self.binding_digest
+    }
+    #[must_use]
+    pub const fn authority(&self) -> &AuthorityPosture {
+        &self.authority
+    }
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -198,26 +380,119 @@ impl SearchDisclosureV1 {
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct FeasiblePlanReceiptV1 {
-    pub plan_id: StableId,
-    pub objective_digest: Digest32,
-    pub body_generation: Generation,
-    pub configuration_digest: Digest32,
-    pub revocation_frontier_digest: Digest32,
-    pub snapshot_digest: Digest32,
-    pub source_candidate_set_digest: Digest32,
-    pub candidate_set_digest: Digest32,
-    pub resource_rejected_candidate_ids: Vec<StableId>,
-    pub evaluation_policy_digest: Digest32,
-    pub ndu_evaluation_digest: Digest32,
-    pub ndu_binding_digest: Digest32,
-    pub evaluation_disposition: PlanningEvaluationDispositionV1,
-    pub chosen_candidate_id: Option<StableId>,
-    pub chosen_plan_digest: Option<Digest32>,
-    pub uncertainty_digest: Digest32,
-    pub expires_at_micros: u64,
-    pub search_disclosure: SearchDisclosureV1,
-    pub receipt_digest: Digest32,
-    pub authority: AuthorityPosture,
+    plan_id: StableId,
+    objective_digest: Digest32,
+    body_generation: Generation,
+    configuration_digest: Digest32,
+    revocation_frontier_digest: Digest32,
+    snapshot_digest: Digest32,
+    source_candidate_set_digest: Digest32,
+    candidate_set_digest: Digest32,
+    prepared_digest: Digest32,
+    resource_profile_digest: Digest32,
+    resource_rejected_candidate_ids: Vec<StableId>,
+    evaluation_policy_digest: Digest32,
+    ndu_evaluation_digest: Digest32,
+    ndu_binding_digest: Digest32,
+    evaluation_disposition: PlanningEvaluationDispositionV1,
+    chosen_candidate_id: Option<StableId>,
+    chosen_plan_digest: Option<Digest32>,
+    uncertainty_digest: Digest32,
+    expires_at_micros: u64,
+    search_disclosure: SearchDisclosureV1,
+    receipt_digest: Digest32,
+    authority: AuthorityPosture,
+}
+
+impl FeasiblePlanReceiptV1 {
+    #[must_use]
+    pub fn plan_id(&self) -> &StableId {
+        &self.plan_id
+    }
+    #[must_use]
+    pub const fn objective_digest(&self) -> Digest32 {
+        self.objective_digest
+    }
+    #[must_use]
+    pub const fn body_generation(&self) -> Generation {
+        self.body_generation
+    }
+    #[must_use]
+    pub const fn configuration_digest(&self) -> Digest32 {
+        self.configuration_digest
+    }
+    #[must_use]
+    pub const fn revocation_frontier_digest(&self) -> Digest32 {
+        self.revocation_frontier_digest
+    }
+    #[must_use]
+    pub const fn snapshot_digest(&self) -> Digest32 {
+        self.snapshot_digest
+    }
+    #[must_use]
+    pub const fn source_candidate_set_digest(&self) -> Digest32 {
+        self.source_candidate_set_digest
+    }
+    #[must_use]
+    pub const fn candidate_set_digest(&self) -> Digest32 {
+        self.candidate_set_digest
+    }
+    #[must_use]
+    pub const fn prepared_digest(&self) -> Digest32 {
+        self.prepared_digest
+    }
+    #[must_use]
+    pub const fn resource_profile_digest(&self) -> Digest32 {
+        self.resource_profile_digest
+    }
+    #[must_use]
+    pub fn resource_rejected_candidate_ids(&self) -> &[StableId] {
+        &self.resource_rejected_candidate_ids
+    }
+    #[must_use]
+    pub const fn evaluation_policy_digest(&self) -> Digest32 {
+        self.evaluation_policy_digest
+    }
+    #[must_use]
+    pub const fn ndu_evaluation_digest(&self) -> Digest32 {
+        self.ndu_evaluation_digest
+    }
+    #[must_use]
+    pub const fn ndu_binding_digest(&self) -> Digest32 {
+        self.ndu_binding_digest
+    }
+    #[must_use]
+    pub const fn evaluation_disposition(&self) -> PlanningEvaluationDispositionV1 {
+        self.evaluation_disposition
+    }
+    #[must_use]
+    pub fn chosen_candidate_id(&self) -> Option<&StableId> {
+        self.chosen_candidate_id.as_ref()
+    }
+    #[must_use]
+    pub const fn chosen_plan_digest(&self) -> Option<Digest32> {
+        self.chosen_plan_digest
+    }
+    #[must_use]
+    pub const fn uncertainty_digest(&self) -> Digest32 {
+        self.uncertainty_digest
+    }
+    #[must_use]
+    pub const fn expires_at_micros(&self) -> u64 {
+        self.expires_at_micros
+    }
+    #[must_use]
+    pub const fn search_disclosure(&self) -> SearchDisclosureV1 {
+        self.search_disclosure
+    }
+    #[must_use]
+    pub const fn receipt_digest(&self) -> Digest32 {
+        self.receipt_digest
+    }
+    #[must_use]
+    pub const fn authority(&self) -> &AuthorityPosture {
+        &self.authority
+    }
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -234,10 +509,29 @@ pub struct GrantRequestV1 {
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct GrantRequestSetV1 {
-    pub plan_receipt_digest: Digest32,
-    pub requests: Vec<GrantRequestV1>,
-    pub request_set_digest: Digest32,
-    pub authority: AuthorityPosture,
+    plan_receipt_digest: Digest32,
+    requests: Vec<GrantRequestV1>,
+    request_set_digest: Digest32,
+    authority: AuthorityPosture,
+}
+
+impl GrantRequestSetV1 {
+    #[must_use]
+    pub const fn plan_receipt_digest(&self) -> Digest32 {
+        self.plan_receipt_digest
+    }
+    #[must_use]
+    pub fn requests(&self) -> &[GrantRequestV1] {
+        &self.requests
+    }
+    #[must_use]
+    pub const fn request_set_digest(&self) -> Digest32 {
+        self.request_set_digest
+    }
+    #[must_use]
+    pub const fn authority(&self) -> &AuthorityPosture {
+        &self.authority
+    }
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -299,10 +593,16 @@ impl fmt::Display for PlannerError {
                 "candidate {candidate} requires unknown or unready owner {owner}"
             ),
             Self::InvalidResourceReservation(axis) => {
-                write!(formatter, "invalid essential resource reservation for {axis}")
+                write!(
+                    formatter,
+                    "invalid essential resource reservation for {axis}"
+                )
             }
             Self::MissingResourceAxis { candidate, axis } => {
-                write!(formatter, "candidate {candidate} is missing resource axis {axis}")
+                write!(
+                    formatter,
+                    "candidate {candidate} is missing resource axis {axis}"
+                )
             }
             Self::UnknownResourceAxis { candidate, axis } => write!(
                 formatter,
@@ -340,6 +640,7 @@ pub fn collect_snapshot(
     require_digest(request.objective_digest, "objective")?;
     require_digest(request.configuration_digest, "configuration")?;
     require_digest(request.revocation_frontier_digest, "revocation frontier")?;
+    require_digest(request.snapshot_policy_digest, "snapshot policy")?;
     if request.maximum_owner_age_micros == 0 {
         return Err(PlannerError::InvalidTime("maximum owner age"));
     }
@@ -352,6 +653,7 @@ pub fn collect_snapshot(
 
     request.required_owner_ids.sort();
     reject_duplicate_ids(&request.required_owner_ids, PlannerError::DuplicateOwner)?;
+    let required_owner_set_digest = digest_owner_set(&request.required_owner_ids);
     owner_summaries.sort_by(|left, right| left.owner_id.cmp(&right.owner_id));
     for window in owner_summaries.windows(2) {
         if window[0].owner_id == window[1].owner_id {
@@ -415,6 +717,9 @@ pub fn collect_snapshot(
         body_generation: request.body_generation,
         configuration_digest: request.configuration_digest,
         revocation_frontier_digest: request.revocation_frontier_digest,
+        snapshot_policy_digest: request.snapshot_policy_digest,
+        maximum_owner_age_micros: request.maximum_owner_age_micros,
+        required_owner_set_digest,
         collected_at_micros: request.collected_at_micros,
         expires_at_micros: expiry,
         owner_summaries,
@@ -432,13 +737,17 @@ pub fn prepare_plan(
     mut request: PlanningRequestV1,
 ) -> Result<PreparedPlanInputV1, PlannerError> {
     validate_snapshot_for_planning(snapshot, request.now_micros)?;
+    require_digest(request.evaluation_policy_digest, "evaluation policy")?;
+    require_digest(request.resource_profile_digest, "resource profile")?;
     if request.deadline_micros <= request.now_micros {
         return Err(PlannerError::InvalidTime("planning deadline"));
     }
     if request.candidates.is_empty() || request.candidates.len() > MAX_CANDIDATES {
         return Err(PlannerError::LimitExceeded("plan candidates"));
     }
-    if request.resource_reservations.len() > MAX_RESOURCE_RESERVATIONS {
+    if request.resource_reservations.is_empty()
+        || request.resource_reservations.len() > MAX_RESOURCE_RESERVATIONS
+    {
         return Err(PlannerError::LimitExceeded("resource reservations"));
     }
 
@@ -489,6 +798,8 @@ pub fn prepare_plan(
         configuration_digest: snapshot.configuration_digest,
         revocation_frontier_digest: snapshot.revocation_frontier_digest,
         snapshot_digest: snapshot.snapshot_digest,
+        evaluation_policy_digest: request.evaluation_policy_digest,
+        resource_profile_digest: request.resource_profile_digest,
         source_candidate_set_digest,
         candidate_set_digest,
         feasible_candidates,
@@ -568,6 +879,7 @@ pub fn finalize_plan(
         return Err(PlannerError::SnapshotExpired);
     }
     if prepared.prepared_digest != digest_prepared_plan(prepared)
+        || prepared.candidate_set_digest != digest_candidates(&prepared.feasible_candidates)
         || prepared.authority.grants_any()
         || prepared.snapshot_digest != snapshot.snapshot_digest
         || prepared.objective_digest != snapshot.objective_digest
@@ -578,6 +890,7 @@ pub fn finalize_plan(
         return Err(PlannerError::PreparedPlanMismatch);
     }
     if evaluation.binding_digest != digest_ndu_evaluation(evaluation)
+        || evaluation.evaluation_policy_digest != prepared.evaluation_policy_digest
         || evaluation.authority.grants_any()
     {
         return Err(PlannerError::EvaluationBindingMismatch);
@@ -633,6 +946,8 @@ pub fn finalize_plan(
         snapshot_digest: prepared.snapshot_digest,
         source_candidate_set_digest: prepared.source_candidate_set_digest,
         candidate_set_digest: prepared.candidate_set_digest,
+        prepared_digest: prepared.prepared_digest,
+        resource_profile_digest: prepared.resource_profile_digest,
         resource_rejected_candidate_ids: prepared.resource_rejected_candidate_ids.clone(),
         evaluation_policy_digest: evaluation.evaluation_policy_digest,
         ndu_evaluation_digest: evaluation.evaluation_digest,
@@ -656,13 +971,18 @@ pub fn request_execution_grants(
     receipt: &FeasiblePlanReceiptV1,
     now_micros: u64,
 ) -> Result<GrantRequestSetV1, PlannerError> {
+    validate_snapshot_for_planning(snapshot, now_micros)?;
     if receipt.receipt_digest != digest_plan_receipt(receipt)
         || receipt.authority.grants_any()
         || prepared.prepared_digest != digest_prepared_plan(prepared)
+        || prepared.candidate_set_digest != digest_candidates(&prepared.feasible_candidates)
         || prepared.authority.grants_any()
         || receipt.snapshot_digest != snapshot.snapshot_digest
         || prepared.snapshot_digest != snapshot.snapshot_digest
         || receipt.candidate_set_digest != prepared.candidate_set_digest
+        || receipt.prepared_digest != prepared.prepared_digest
+        || receipt.resource_profile_digest != prepared.resource_profile_digest
+        || receipt.evaluation_policy_digest != prepared.evaluation_policy_digest
         || receipt.objective_digest != snapshot.objective_digest
         || receipt.body_generation != snapshot.body_generation
         || receipt.configuration_digest != snapshot.configuration_digest
@@ -763,10 +1083,7 @@ fn validate_candidates(
             return Err(PlannerError::EmptyDigest("candidate final payload"));
         }
         candidate.required_owner_ids.sort();
-        reject_duplicate_ids(
-            &candidate.required_owner_ids,
-            PlannerError::DuplicateOwner,
-        )?;
+        reject_duplicate_ids(&candidate.required_owner_ids, PlannerError::DuplicateOwner)?;
         candidate.final_payload_digests.sort();
         candidate.final_payload_digests.dedup();
         candidate.resource_costs.sort();
@@ -921,6 +1238,12 @@ fn stable_id(value: &str) -> Result<StableId, PlannerError> {
     StableId::new(value).map_err(|_| PlannerError::Arithmetic)
 }
 
+fn digest_owner_set(owners: &[StableId]) -> Digest32 {
+    let mut bytes = b"hepta.control.required-owner-set.v1".to_vec();
+    push_ids(&mut bytes, owners);
+    Digest32::of_bytes(&bytes)
+}
+
 fn digest_snapshot(snapshot: &GlobalStateSnapshotV1) -> Digest32 {
     let mut bytes = Vec::new();
     bytes.extend_from_slice(b"hepta.control.global-state-snapshot.v1");
@@ -928,6 +1251,9 @@ fn digest_snapshot(snapshot: &GlobalStateSnapshotV1) -> Digest32 {
     push_u64(&mut bytes, snapshot.body_generation.get());
     push_digest(&mut bytes, snapshot.configuration_digest);
     push_digest(&mut bytes, snapshot.revocation_frontier_digest);
+    push_digest(&mut bytes, snapshot.snapshot_policy_digest);
+    push_u64(&mut bytes, snapshot.maximum_owner_age_micros);
+    push_digest(&mut bytes, snapshot.required_owner_set_digest);
     push_u64(&mut bytes, snapshot.collected_at_micros);
     push_u64(&mut bytes, snapshot.expires_at_micros);
     push_len(&mut bytes, snapshot.owner_summaries.len());
@@ -981,6 +1307,8 @@ fn digest_prepared_plan(prepared: &PreparedPlanInputV1) -> Digest32 {
     push_digest(&mut bytes, prepared.configuration_digest);
     push_digest(&mut bytes, prepared.revocation_frontier_digest);
     push_digest(&mut bytes, prepared.snapshot_digest);
+    push_digest(&mut bytes, prepared.evaluation_policy_digest);
+    push_digest(&mut bytes, prepared.resource_profile_digest);
     push_digest(&mut bytes, prepared.source_candidate_set_digest);
     push_digest(&mut bytes, prepared.candidate_set_digest);
     push_ids(&mut bytes, &prepared.resource_rejected_candidate_ids);
@@ -1015,6 +1343,8 @@ fn digest_plan_receipt(receipt: &FeasiblePlanReceiptV1) -> Digest32 {
     push_digest(&mut bytes, receipt.snapshot_digest);
     push_digest(&mut bytes, receipt.source_candidate_set_digest);
     push_digest(&mut bytes, receipt.candidate_set_digest);
+    push_digest(&mut bytes, receipt.prepared_digest);
+    push_digest(&mut bytes, receipt.resource_profile_digest);
     push_ids(&mut bytes, &receipt.resource_rejected_candidate_ids);
     push_digest(&mut bytes, receipt.evaluation_policy_digest);
     push_digest(&mut bytes, receipt.ndu_evaluation_digest);

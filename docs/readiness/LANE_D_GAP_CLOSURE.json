@@ -112,7 +112,9 @@
       "severity": "P0",
       "title": "Control runtime lacked a dedicated global-planner execution specification",
       "state": "closed",
-      "closure": ["docs/readiness/CONTROL_RUNTIME_EXECUTION.md"]
+      "closure": [
+        "docs/readiness/CONTROL_RUNTIME_EXECUTION.md"
+      ]
     },
     {
       "id": "LANE-D-RCP-KERNEL-012",
@@ -191,21 +193,27 @@
       "severity": "P1",
       "title": "One-dimensional source status obscured composition and activation state",
       "state": "closed",
-      "closure": ["docs/readiness/LANE_D_MATURITY.json"]
+      "closure": [
+        "docs/readiness/LANE_D_MATURITY.json"
+      ]
     },
     {
       "id": "LANE-D-WORK-020",
       "severity": "P1",
       "title": "NDU hierarchy package spanned a foreign owner source root",
       "state": "closed",
-      "closure": ["docs/delivery/LANE_D_WORK_PACKAGE_OVERLAY.json"]
+      "closure": [
+        "docs/delivery/LANE_D_WORK_PACKAGE_OVERLAY.json"
+      ]
     },
     {
       "id": "LANE-D-BASELINE-021",
       "severity": "P2",
       "title": "Module guides repeated generic implementation boilerplate",
       "state": "closed",
-      "closure": ["docs/governance/MODULE_IMPLEMENTATION_BASELINE.md"]
+      "closure": [
+        "docs/governance/MODULE_IMPLEMENTATION_BASELINE.md"
+      ]
     },
     {
       "id": "LANE-D-CI-022",
@@ -215,6 +223,67 @@
       "closure": [
         "scripts/hepta-lane-d-semantic-conformance.py",
         ".github/workflows/hepta-lane-d-semantic-conformance.yml"
+      ]
+    },
+    {
+      "id": "LANE-D-OBJ-PROFILE-023",
+      "severity": "P1",
+      "title": "Objective admission profile collections and total encoded semantics were not comprehensively bounded",
+      "state": "closed",
+      "closure": [
+        "codex-rs/hepta-objective/src/objective_admission.rs",
+        "codex-rs/hepta-objective/src/objective_admission_tests.rs"
+      ]
+    },
+    {
+      "id": "LANE-D-NDU-UNCERTAINTY-024",
+      "severity": "P1",
+      "title": "NDU candidate finalization did not require every registered uncertainty axis",
+      "state": "closed",
+      "closure": [
+        "codex-rs/hepta-ndu/src/evaluator.rs",
+        "codex-rs/hepta-ndu/src/evaluator_tests.rs"
+      ]
+    },
+    {
+      "id": "LANE-D-NDU-PROVENANCE-025",
+      "severity": "P1",
+      "title": "Candidate support digests did not bind organ identity and full normalized contribution semantics",
+      "state": "closed",
+      "closure": [
+        "codex-rs/hepta-ndu/src/evaluator.rs",
+        "codex-rs/hepta-ndu/src/evaluator_tests.rs"
+      ]
+    },
+    {
+      "id": "LANE-D-RCP-INTEGRITY-026",
+      "severity": "P0",
+      "title": "Prepared candidates and snapshots could be mutated after finalization without complete revalidation before grant requests",
+      "state": "closed",
+      "closure": [
+        "codex-rs/hepta-control-plane/src/planner.rs",
+        "codex-rs/hepta-control-plane/src/planner_tests.rs"
+      ]
+    },
+    {
+      "id": "LANE-D-RCP-POLICY-027",
+      "severity": "P0",
+      "title": "NDU evaluation, resource and snapshot freshness policies were not frozen through the complete planning receipt chain",
+      "state": "closed",
+      "closure": [
+        "codex-rs/hepta-control-plane/src/planner.rs",
+        "docs/readiness/LANE_D_PROTOCOLS.json"
+      ]
+    },
+    {
+      "id": "LANE-D-READINESS-028",
+      "severity": "P0",
+      "title": "Readiness section identities and implementation map types drifted from the latest execution specifications and Rust API",
+      "state": "closed",
+      "closure": [
+        "docs/readiness/OBJECTIVE_COMPILER_EXECUTION.md",
+        "docs/readiness/NDU_SYSTEM_EXECUTION.md",
+        "docs/modules/objective.compiler/IMPLEMENTATION_MAP.json"
       ]
     }
   ],

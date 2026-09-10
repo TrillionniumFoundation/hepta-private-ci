@@ -118,14 +118,20 @@ impl fmt::Display for NduError {
                 write!(formatter, "duplicate aggregation rule for axis {axis}")
             }
             Self::AggregationAxisMismatch(axis) => {
-                write!(formatter, "aggregation policy contains unexpected axis {axis}")
+                write!(
+                    formatter,
+                    "aggregation policy contains unexpected axis {axis}"
+                )
             }
             Self::AggregationConflict(axis) => write!(
                 formatter,
                 "require-equal aggregation received conflicting values for axis {axis}"
             ),
             Self::NegativeTolerance(axis) => {
-                write!(formatter, "Pareto tolerance must be non-negative for axis {axis}")
+                write!(
+                    formatter,
+                    "Pareto tolerance must be non-negative for axis {axis}"
+                )
             }
             Self::MissingAbstainCandidate => {
                 formatter.write_str("every legal candidate set must contain abstain")

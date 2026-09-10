@@ -65,7 +65,7 @@ Each `OwnerSummaryV1` binds:
 - source-frontier digest;
 - support digest.
 
-`SnapshotRequestV1` binds the required owner set, objective, body generation, configuration, current revocation frontier, collection time, maximum owner age and snapshot expiry.
+`SnapshotRequestV1` binds the required owner set, objective, body generation, configuration, current revocation frontier, a snapshot-policy digest, collection time, maximum owner age and snapshot expiry. The resulting snapshot additionally binds the required-owner-set digest and the exact maximum-age policy.
 
 `collect_snapshot` stable-sorts owners, rejects duplicates, rejects future observations, rejects mixed objective/body/configuration values and records three explicit masks:
 
@@ -98,6 +98,8 @@ available_for_plan(axis) = endowment(axis) - essential_floor(axis)
 
 Both terms are non-negative fixed-point values, and the floor cannot exceed the endowment. Every candidate must explicitly report each registered resource axis; missing axes are unavailable rather than zero. Unknown axes reject rather than widening the budget.
 
+The evaluation-policy digest and resource-profile digest are frozen in the planning request before candidate filtering. At least one explicit resource reservation is required in the pilot; an empty collection cannot silently mean an unbounded or zero-resource profile.
+
 `prepare_plan` filters resource-infeasible candidates before NDU evaluation and records their IDs in `resource_rejected_candidate_ids`. The intrinsic `abstain` candidate must remain feasible after this filter. The digest of the source candidate set and the digest of the feasible candidate set are both retained, so resource filtering cannot be hidden.
 
 ## 5. Typed NDU owner port
@@ -129,7 +131,7 @@ The union of NDU evaluated and NDU rejected candidates must equal the exact feas
 
 ## 6. Plan finalization and search disclosure
 
-`finalize_plan` revalidates:
+`finalize_plan` recomputes the complete feasible-candidate-set digest from candidate identity, operation, plan, owner, final-payload and resource fields, verifies it against the sealed prepared envelope, and revalidates:
 
 - snapshot digest, freshness and masks;
 - prepared-plan digest and deny-all authority posture;
@@ -150,7 +152,7 @@ A selected plan is described only relative to the bounded supplied candidate set
 
 ## 7. Grant requests and final authority boundary
 
-`request_execution_grants` accepts only a current snapshot, the exact prepared input and the exact final plan receipt. It recomputes both digests, verifies objective/body/configuration/frontier identity, checks expiry and locates the chosen candidate inside the feasible set.
+`request_execution_grants` accepts only a current snapshot, the exact sealed prepared input and the exact final plan receipt. Before reading any selected operation or payload, it recomputes the snapshot, candidate-set, prepared-plan and receipt digests, checks all readiness masks, policy bindings and expiry, and rejects any mutation. It recomputes both digests, verifies objective/body/configuration/frontier identity, checks expiry and locates the chosen candidate inside the feasible set.
 
 Each `GrantRequestV1` binds:
 
@@ -235,6 +237,9 @@ Target metrics include snapshot age, stale/missing owner counts, candidate and r
 - `RCP-10`: truncated or tampered journal bytes fail closed.
 - `RCP-11`: a revoked plan cannot be reselected after reopen.
 - `RCP-12`: no receipt claims an optimum outside the bounded candidate set.
+- `RCP-13`: operation, payload, resource or required-owner mutation after finalization rejects before grant-request construction.
+- `RCP-14`: grant-request construction revalidates snapshot masks and digest.
+- `RCP-15`: the NDU evaluation policy and resource profile are frozen before evaluation and bound through the final receipt.
 
 Native mappings and tests are recorded in `docs/modules/control.runtime/IMPLEMENTATION_MAP.json`.
 

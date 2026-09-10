@@ -29,15 +29,21 @@
         },
         "sourceMaterialization": {
           "state": "candidate_implemented",
-          "evidence": ["codex-rs/hepta-objective"]
+          "evidence": [
+            "codex-rs/hepta-objective"
+          ]
         },
         "nativeApiMapping": {
           "state": "candidate_complete",
-          "evidence": ["docs/modules/objective.compiler/IMPLEMENTATION_MAP.json"]
+          "evidence": [
+            "docs/modules/objective.compiler/IMPLEMENTATION_MAP.json"
+          ]
         },
         "durability": {
           "state": "not_applicable_stateless_compiler",
-          "evidence": ["owning caller persists immutable objective and run snapshot"]
+          "evidence": [
+            "owning caller persists immutable objective and run snapshot"
+          ]
         },
         "exactHeadSourceQualification": {
           "state": "pending_current_candidate_workflows",
@@ -62,6 +68,13 @@
         "release": {
           "state": "not_established",
           "evidence": []
+        },
+        "boundedAdmissionProfile": {
+          "state": "candidate_implemented",
+          "evidence": [
+            "MAX_PROFILE_ENCODED_BYTES",
+            "oversized_profile_mapping_set_is_rejected"
+          ]
         }
       }
     },
@@ -88,11 +101,15 @@
         },
         "sourceMaterialization": {
           "state": "candidate_implemented",
-          "evidence": ["codex-rs/hepta-ndu"]
+          "evidence": [
+            "codex-rs/hepta-ndu"
+          ]
         },
         "nativeApiMapping": {
           "state": "candidate_complete",
-          "evidence": ["docs/modules/utility.ndu/IMPLEMENTATION_MAP.json"]
+          "evidence": [
+            "docs/modules/utility.ndu/IMPLEMENTATION_MAP.json"
+          ]
         },
         "deterministicKernel": {
           "state": "candidate_implemented",
@@ -104,11 +121,15 @@
         },
         "durability": {
           "state": "owner_local_reference_implemented_not_production_writer",
-          "evidence": ["NduProjectionJournalV1"]
+          "evidence": [
+            "NduProjectionJournalV1"
+          ]
         },
         "independentConvergenceDecision": {
           "state": "owned_by_learning.eval_not_self_issued",
-          "evidence": ["NduConvergenceCertificateV1"]
+          "evidence": [
+            "NduConvergenceCertificateV1"
+          ]
         },
         "exactHeadSourceQualification": {
           "state": "pending_current_candidate_workflows",
@@ -133,6 +154,13 @@
         "release": {
           "state": "not_established",
           "evidence": []
+        },
+        "completeUncertaintyAndProvenance": {
+          "state": "candidate_implemented",
+          "evidence": [
+            "missing_uncertainty_axis_is_unavailable",
+            "candidate_support_digest_binds_organ_and_contribution_semantics"
+          ]
         }
       }
     },
@@ -144,7 +172,9 @@
       "dimensions": {
         "technicalSpecification": {
           "state": "candidate_complete",
-          "evidence": ["docs/readiness/CONTROL_RUNTIME_EXECUTION.md"]
+          "evidence": [
+            "docs/readiness/CONTROL_RUNTIME_EXECUTION.md"
+          ]
         },
         "canonicalProtocolRegistration": {
           "state": "existing_domain_contracts_with_owner_local_planner_types",
@@ -155,11 +185,15 @@
         },
         "sourceMaterialization": {
           "state": "candidate_implemented",
-          "evidence": ["codex-rs/hepta-control-plane"]
+          "evidence": [
+            "codex-rs/hepta-control-plane"
+          ]
         },
         "nativeApiMapping": {
           "state": "candidate_complete",
-          "evidence": ["docs/modules/control.runtime/IMPLEMENTATION_MAP.json"]
+          "evidence": [
+            "docs/modules/control.runtime/IMPLEMENTATION_MAP.json"
+          ]
         },
         "globalPlannerKernel": {
           "state": "candidate_implemented",
@@ -173,11 +207,15 @@
         },
         "durability": {
           "state": "owner_local_reference_implemented_not_production_writer",
-          "evidence": ["PlannerJournalV1"]
+          "evidence": [
+            "PlannerJournalV1"
+          ]
         },
         "effectAuthority": {
           "state": "explicitly_absent",
-          "evidence": ["AuthorityPosture::DENY_ALL"]
+          "evidence": [
+            "AuthorityPosture::DENY_ALL"
+          ]
         },
         "exactHeadSourceQualification": {
           "state": "pending_current_candidate_workflows",
@@ -202,6 +240,21 @@
         "release": {
           "state": "not_established",
           "evidence": []
+        },
+        "sealedPlanningIntegrity": {
+          "state": "candidate_implemented",
+          "evidence": [
+            "tampered_candidate_payload_is_rejected_before_grant_request",
+            "grant_request_revalidates_snapshot_masks_and_digest"
+          ]
+        },
+        "policyPrebinding": {
+          "state": "candidate_implemented",
+          "evidence": [
+            "snapshotPolicyDigest",
+            "evaluationPolicyDigest",
+            "resourceProfileDigest"
+          ]
         }
       }
     }

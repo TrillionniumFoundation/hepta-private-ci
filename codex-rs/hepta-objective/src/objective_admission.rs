@@ -47,6 +47,13 @@ const MAX_PROFILE_SOURCES: usize = 32;
 const MAX_SOURCE_TEXT_BYTES: usize = 128;
 const MICROS_PER_SECOND: u64 = 1_000_000;
 const Q32_ONE_RAW: i128 = 1_i128 << 32;
+const MAX_PROFILE_CONSTRAINTS: usize = 256;
+const MAX_PROFILE_PREDICATES: usize = 128;
+const MAX_PROFILE_ACTIONS: usize = 128;
+const MAX_PROFILE_SOFT_DIMENSIONS: usize = 64;
+const MAX_PROFILE_EVIDENCE_REQUIREMENTS: usize = 128;
+const MAX_PROFILE_ABSTENTION_RULES: usize = 64;
+const MAX_PROFILE_ENCODED_BYTES: usize = 256 * 1024;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct ObjectiveConstraintProfileV1 {
@@ -923,6 +930,31 @@ fn validate_profile(profile: &ObjectiveAdmissionProfileV1) -> Result<(), Objecti
     {
         return Err(ObjectiveAdmissionError::InvalidProfile("collection bound"));
     }
+    if profile.constraints.len() > MAX_PROFILE_CONSTRAINTS
+        || profile.predicates.len() > MAX_PROFILE_PREDICATES
+        || profile.actions.len() > MAX_PROFILE_ACTIONS
+        || profile.soft_dimensions.len() > MAX_PROFILE_SOFT_DIMENSIONS
+        || profile.evidence_requirements.len() > MAX_PROFILE_EVIDENCE_REQUIREMENTS
+        || profile.risk.abstention_rules.len() > MAX_PROFILE_ABSTENTION_RULES
+    {
+        return Err(ObjectiveAdmissionError::InvalidProfile(
+            "mapping count bound",
+        ));
+    }
+    if profile_encoded_size(profile) > MAX_PROFILE_ENCODED_BYTES {
+        return Err(ObjectiveAdmissionError::InvalidProfile(
+            "profile byte bound",
+        ));
+    }
+    if !(profile.risk.low_value <= profile.risk.medium_value
+        && profile.risk.medium_value <= profile.risk.high_value
+        && profile.risk.high_value <= profile.risk.critical_value
+        && profile.risk.rollback_none_value <= profile.risk.rollback_reversible_value
+        && profile.risk.rollback_reversible_value <= profile.risk.rollback_compensatable_value
+        && profile.risk.rollback_compensatable_value <= profile.risk.rollback_irreversible_value)
+    {
+        return Err(ObjectiveAdmissionError::InvalidProfile("risk ordering"));
+    }
     unique_texts(&profile.allowed_locales, "allowed locales")?;
     for locale in &profile.allowed_locales {
         safe_profile_text(locale, "locale")?;
@@ -952,6 +984,66 @@ fn validate_profile(profile: &ObjectiveAdmissionProfileV1) -> Result<(), Objecti
         safe_profile_text(&rule, "abstention rule")?;
     }
     Ok(())
+}
+
+fn profile_encoded_size(profile: &ObjectiveAdmissionProfileV1) -> usize {
+    let mut size = 1024usize;
+    let mut add = |value: &str| {
+        size = size.saturating_add(value.len() + 4);
+    };
+    add(profile.profile_id.as_str());
+    add(profile.principal_scope.as_str());
+    for value in &profile.allowed_locales {
+        add(value);
+    }
+    for value in &profile.allowed_trusted_source_identities {
+        add(value.as_str());
+    }
+    for value in &profile.constraints {
+        add(&value.source_constraint_id);
+        add(&value.expected_unit);
+        add(value.axis.as_str());
+    }
+    for value in &profile.predicates {
+        add(&value.source_predicate_id);
+        add(&value.expected_unit);
+        add(value.axis.as_str());
+    }
+    for value in &profile.actions {
+        add(&value.source_action_class);
+        add(value.action_id.as_str());
+    }
+    for value in &profile.soft_dimensions {
+        add(&value.source_dimension_id);
+        add(&value.expected_unit);
+        add(value.dimension.as_str());
+    }
+    for value in &profile.evidence_requirements {
+        add(&value.source_requirement_id);
+        add(value.axis.as_str());
+    }
+    for value in resource_mappings(&profile.resources) {
+        add(value.constraint_id.as_str());
+        add(value.axis.as_str());
+        add(value.evidence_source.as_str());
+    }
+    add(profile.risk.evidence_source.as_str());
+    for value in [
+        &profile.risk.risk_constraint_id,
+        &profile.risk.risk_axis,
+        &profile.risk.rollback_constraint_id,
+        &profile.risk.rollback_axis,
+        &profile.risk.compensation_constraint_id,
+        &profile.risk.compensation_axis,
+        &profile.risk.abstention_constraint_id,
+        &profile.risk.abstention_axis,
+    ] {
+        add(value.as_str());
+    }
+    for value in &profile.risk.abstention_rules {
+        add(&value.source_rule);
+    }
+    size
 }
 
 fn validate_source_mappings(
