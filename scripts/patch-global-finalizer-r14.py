@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Apply the exact, idempotent Lane F/G semantic convergence repair."""
+"""Apply the exact, idempotent Lane G shared-artifact regeneration repair."""
 from __future__ import annotations
 
 from pathlib import Path
@@ -21,128 +21,24 @@ def main() -> int:
             )
         text = text.replace(old, new, 1)
 
-    replace_once_or_verify(
-        "\n\n\ndef merge_lane(lane: str, branch: str) -> dict[str, Any]:\n",
-        '''
-
-LANE_G_SHARED_CONFLICTS = frozenset(
-    {
-        "qualification/module-execution-dossiers/NATIVE_BINDINGS.json",
-        "qualification/module-execution-dossiers/test_implementation_contracts.py",
-    }
-)
-
-
-def merge_lane(lane: str, branch: str) -> dict[str, Any]:
-''',
-        "LANE_G_SHARED_CONFLICTS = frozenset(",
+    existing_policy = (
+        "LANE_G_PRIOR_OWNER_CONFLICTS = frozenset(",
+        "lane_g_prior_owner_conflict = False",
+        "and not lane_g_prior_owner_conflict",
+        '"autoResolvedLaneGPriorOwnerOnly": lane_g_prior_owner_conflict',
+        'path == ".github/workflows/lane-f-bootstrap.yml"',
+        "def workspace_dependency_graph(",
+        "def dependency_cycle_path(",
+        '"skippedCycleCount": len(skipped_cycles)',
     )
-    replace_once_or_verify(
-        "    lane_f_owner_conflict = False\n    if not result.passed:\n",
-        "    lane_f_owner_conflict = False\n    lane_g_shared_conflict = False\n    if not result.passed:\n",
-        "lane_g_shared_conflict = False",
-    )
-    replace_once_or_verify(
-        '''        lane_f_owner_conflict = (
-            lane == "F"
-            and len(conflicts) == len(LANE_F_OWNER_CONFLICTS)
-            and frozenset(conflicts) == LANE_F_OWNER_CONFLICTS
-        )
-        if (
-''',
-        '''        lane_f_owner_conflict = (
-            lane == "F"
-            and len(conflicts) == len(LANE_F_OWNER_CONFLICTS)
-            and frozenset(conflicts) == LANE_F_OWNER_CONFLICTS
-        )
-        lane_g_shared_conflict = (
-            lane == "G"
-            and len(conflicts) == len(LANE_G_SHARED_CONFLICTS)
-            and frozenset(conflicts) == LANE_G_SHARED_CONFLICTS
-        )
-        if (
-''',
-        "lane_g_shared_conflict = (",
-    )
-    replace_once_or_verify(
-        '''            and not lane_f_owner_conflict
-        ):
-''',
-        '''            and not lane_f_owner_conflict
-            and not lane_g_shared_conflict
-        ):
-''',
-        "and not lane_g_shared_conflict",
-    )
-    replace_once_or_verify(
-        '''        checkout_side = (
-            "--theirs"
-            if lane_owner_conflict or lane_f_owner_conflict
-            else "--ours"
-        )
-        for path in conflicts:
-            git("checkout", checkout_side, "--", path)
-            git("add", "--", path)
-''',
-        '''        for path in conflicts:
-            if (
-                lane_f_owner_conflict
-                and path == ".github/workflows/lane-f-bootstrap.yml"
-            ):
-                git("rm", "--", path)
-                continue
-            checkout_side = (
-                "--ours"
-                if lane_g_shared_conflict
-                else (
-                    "--theirs"
-                    if lane_owner_conflict or lane_f_owner_conflict
-                    else "--ours"
-                )
-            )
-            git("checkout", checkout_side, "--", path)
-            git("add", "--", path)
-''',
-        "if lane_g_shared_conflict",
-    )
-    replace_once_or_verify(
-        '''        elif lane_f_owner_conflict:
-            resolution_class = "Lane F owner shadow qualification paths"
-        else:
-''',
-        '''        elif lane_f_owner_conflict:
-            resolution_class = "Lane F owner shadow qualification paths"
-        elif lane_g_shared_conflict:
-            resolution_class = "Lane G shared dossiers retained then semantically regenerated"
-        else:
-''',
-        "Lane G shared dossiers retained then semantically regenerated",
-    )
-    replace_once_or_verify(
-        '''            and not lane_f_owner_conflict
-        ),
-''',
-        '''            and not lane_f_owner_conflict
-            and not lane_g_shared_conflict
-        ),
-''',
-        "and not lane_g_shared_conflict\n        ),",
-    )
-    replace_once_or_verify(
-        '''        "autoResolvedLaneFOwnerOnly": lane_f_owner_conflict,
-        "conflicts": conflicts,
-''',
-        '''        "autoResolvedLaneFOwnerOnly": lane_f_owner_conflict,
-        "autoResolvedLaneGSharedOnly": lane_g_shared_conflict,
-        "conflicts": conflicts,
-''',
-        "autoResolvedLaneGSharedOnly",
-    )
+    for phrase in existing_policy:
+        if phrase not in text:
+            raise SystemExit(f"required converged controller policy missing: {phrase}")
 
     repair_marker = '''def repair_argument_comment_blockers() -> dict[str, Any]:
 '''
     repair_function = '''def repair_lane_g_shared_artifacts() -> dict[str, Any]:
-    """Regenerate Lane G's shared dossier projection without flattening A-F tests."""
+    """Regenerate Lane G shared dossiers without flattening the A-F test split."""
 
     changed: list[str] = []
     native_path = ROOT / "qualification/module-execution-dossiers/NATIVE_BINDINGS.json"
@@ -276,15 +172,6 @@ def repair_argument_comment_blockers() -> dict[str, Any]:
 ''',
         '"laneGArtifactRepair": lane_g_artifact_repair',
     )
-
-    required_cycle_safety = (
-        "def workspace_dependency_graph(",
-        "def dependency_cycle_path(",
-        '"skippedCycleCount": len(skipped_cycles)',
-    )
-    for phrase in required_cycle_safety:
-        if phrase not in text:
-            raise SystemExit(f"cycle-safe dependency repair missing: {phrase}")
 
     FINALIZER.write_text(text, encoding="utf-8")
     return 0
