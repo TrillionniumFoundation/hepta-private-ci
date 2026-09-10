@@ -1,0 +1,139 @@
+name: verify-and-dispatch-r25
+
+on:
+  push:
+    branches:
+      - ops/hepta-global-gap-closure-controller-20260910-r1
+    paths:
+      - .github/workflows/verify-and-dispatch-r25.yml
+
+permissions:
+  contents: write
+  actions: write
+
+concurrency:
+  group: verify-and-dispatch-r25
+  cancel-in-progress: true
+
+jobs:
+  qualify-and-dispatch:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    env:
+      TARGET_BRANCH: ops/hepta-global-gap-closure-controller-20260910-r1
+      TARGET_CANDIDATE: integration/hepta-all-gap-closure-20260910-r7
+      FINALIZER: scripts/hepta-global-finalizer-r7.py
+      HELPER: scripts/hepta-final-projection-repair-v2.py
+      PATCHER: scripts/patch-global-finalizer-r24.py
+      R7_WORKFLOW: .github/workflows/hepta-global-finalizer-r7.yml
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - name: Check out exact controller source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Verify and converge controller integration
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "${GITHUB_REF_NAME}" = "${TARGET_BRANCH}"
+          test "$(git rev-parse HEAD)" = "${GITHUB_SHA}"
+          test "$(git ls-remote origin "refs/heads/${TARGET_BRANCH}" | awk '{print $1}')" = "${GITHUB_SHA}"
+          python3 -m py_compile "${HELPER}"
+          integrated=true
+          grep -Fq 'def finalize_generated_state()' "${FINALIZER}" || integrated=false
+          grep -Fq 'hepta-final-projection-repair-v2.py' "${FINALIZER}" || integrated=false
+          grep -Fq 'scripts/hepta-final-projection-repair-v2.py' "${R7_WORKFLOW}" || integrated=false
+          grep -Fq '${RUNNER_TEMP}/hepta-r7-executor/hepta-final-projection-repair-v2.py' "${R7_WORKFLOW}" || integrated=false
+          if [[ "${integrated}" != true ]]; then
+            test -f "${PATCHER}"
+            python3 -m py_compile "${PATCHER}"
+            python3 "${PATCHER}"
+          fi
+          python3 -m py_compile "${FINALIZER}" "${HELPER}"
+          grep -Fq 'def finalize_generated_state()' "${FINALIZER}"
+          grep -Fq 'hepta-final-projection-repair-v2.py' "${FINALIZER}"
+          grep -Fq 'scripts/hepta-final-projection-repair-v2.py' "${R7_WORKFLOW}"
+          grep -Fq '${RUNNER_TEMP}/hepta-r7-executor/hepta-final-projection-repair-v2.py' "${R7_WORKFLOW}"
+          grep -Fq 'cancel-in-progress: true' "${R7_WORKFLOW}"
+          git diff --check
+
+      - name: Smoke-qualify exact candidate projection repair
+        shell: bash
+        run: |
+          set -euo pipefail
+          candidate_dir="${RUNNER_TEMP}/hepta-r25-candidate"
+          git fetch --force origin \
+            "refs/heads/${TARGET_CANDIDATE}:refs/remotes/origin/${TARGET_CANDIDATE}"
+          candidate_sha="$(git rev-parse "origin/${TARGET_CANDIDATE}^{commit}")"
+          git worktree add --detach "${candidate_dir}" "${candidate_sha}"
+          cp "${HELPER}" "${candidate_dir}/hepta-final-projection-repair-v2.py"
+          cd "${candidate_dir}"
+          python3 -m py_compile hepta-final-projection-repair-v2.py
+          python3 hepta-final-projection-repair-v2.py
+          python3 scripts/hepta-readiness.py verify
+          python3 scripts/hepta-technical-closure.py verify
+          python3 \
+            qualification/module-execution-dossiers/implementation_contracts.py \
+            verify-repository
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+
+          receipt = json.loads(
+              Path(
+                  'qualification/global-gap-closure-final-r7/'
+                  'FINAL_PROJECTION_REPAIR.json'
+              ).read_text(encoding='utf-8')
+          )
+          assert receipt['passed'] is True
+          assert receipt['authorityGranted'] is False
+          assert receipt['selfCertificationAllowed'] is False
+          native = json.loads(
+              Path(
+                  'qualification/module-execution-dossiers/NATIVE_BINDINGS.json'
+              ).read_text(encoding='utf-8')
+          )
+          assert native['moduleCoverage'] == 40
+          assert len(native['observations']) == 40
+          PY
+          git diff --check
+          git status --porcelain > "${RUNNER_TEMP}/hepta-r25-smoke-changes.txt"
+          test -s "${RUNNER_TEMP}/hepta-r25-smoke-changes.txt"
+
+      - name: Publish clean controller and dispatch exact r7
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd "${GITHUB_WORKSPACE}"
+          git config user.name 'hepta-global-finalizer-patcher'
+          git config user.email 'actions@users.noreply.github.com'
+          git rm -f --ignore-unmatch \
+            .github/workflows/verify-and-dispatch-r25.yml \
+            .github/workflows/patch-global-finalizer-r24.yml \
+            .github/workflows/patch-global-finalizer-r23.yml \
+            .github/workflows/patch-global-finalizer-r22.yml \
+            .github/workflows/patch-global-finalizer-r21.yml \
+            .github/workflows/patch-global-finalizer-r20.yml \
+            scripts/patch-global-finalizer-r24.py \
+            scripts/patch-global-finalizer-r19.py \
+            scripts/hepta-final-projection-repair.py
+          git add "${FINALIZER}" "${HELPER}" "${R7_WORKFLOW}"
+          git diff --cached --check
+          git commit --signoff -m 'fix(hepta): qualify and activate final projection fixed point'
+          remote_sha="$(git ls-remote origin "refs/heads/${TARGET_BRANCH}" | awk '{print $1}')"
+          test "${remote_sha}" = "${GITHUB_SHA}"
+          git push \
+            --force-with-lease="refs/heads/${TARGET_BRANCH}:${GITHUB_SHA}" \
+            origin "HEAD:refs/heads/${TARGET_BRANCH}"
+          clean_sha="$(git rev-parse HEAD)"
+          test "$(git ls-remote origin "refs/heads/${TARGET_BRANCH}" | awk '{print $1}')" = "${clean_sha}"
+          gh workflow run hepta-global-finalizer-r7.yml \
+            --repo "${GITHUB_REPOSITORY}" \
+            --ref "${TARGET_BRANCH}" \
+            --field target_branch="${TARGET_CANDIDATE}" \
+            --field shard_count='8'
