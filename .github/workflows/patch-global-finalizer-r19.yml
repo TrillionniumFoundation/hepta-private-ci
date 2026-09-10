@@ -3,16 +3,16 @@ name: patch-global-finalizer-r19
 on:
   push:
     branches:
-      - ops/hepta-global-gap-closure-controller-20260910-r1
+      - ops/hepta-r19-fixed-point-controller-20260910
     paths:
       - .github/workflows/patch-global-finalizer-r19.yml
 
 permissions:
   contents: write
-  actions: read
+  actions: write
 
 concurrency:
-  group: patch-global-finalizer-r19
+  group: patch-global-finalizer-r19-isolated
   cancel-in-progress: false
 
 jobs:
@@ -21,19 +21,22 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 30
     env:
-      EXPECTED_PARENT: 8dfbf4a00bd7d7c3003549316ac888c8909f26e2
-      TARGET_BRANCH: ops/hepta-global-gap-closure-controller-20260910-r1
+      EXPECTED_PARENT: 4199030ba0288dd4bfa731085309dccfc29180cc
+      TARGET_BRANCH: ops/hepta-r19-fixed-point-controller-20260910
+      TARGET_CANDIDATE: integration/hepta-all-gap-closure-20260910-r19
       FINALIZER: scripts/hepta-global-finalizer-r7.py
       PATCH_SCRIPT: scripts/patch-global-finalizer-r19.py
+      R7_WORKFLOW: .github/workflows/hepta-global-finalizer-r7.yml
+      GH_TOKEN: ${{ github.token }}
     steps:
-      - name: Check out exact one-shot source
+      - name: Check out exact isolated one-shot source
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           ref: ${{ github.sha }}
           fetch-depth: 0
           persist-credentials: true
 
-      - name: Verify immutable patch tuple
+      - name: Verify immutable isolated patch tuple
         shell: bash
         run: |
           set -euo pipefail
@@ -43,7 +46,7 @@ jobs:
           test "$(git rev-parse HEAD:${PATCH_SCRIPT})" = "$(git hash-object "${PATCH_SCRIPT}")"
           test "$(git ls-remote origin "refs/heads/${TARGET_BRANCH}" | awk '{print $1}')" = "${GITHUB_SHA}"
 
-      - name: Complete and apply the fixed-point repair
+      - name: Apply fixed-point repository and Rust repairs
         shell: bash
         run: |
           set -euo pipefail
@@ -81,6 +84,18 @@ jobs:
                   )
               text = text.replace(anchor, anchor + cognitive, 1)
           path.write_text(text, encoding="utf-8")
+
+          workflow = Path(".github/workflows/hepta-global-finalizer-r7.yml")
+          workflow_text = workflow.read_text(encoding="utf-8")
+          old_group = "  group: hepta-global-finalizer-r7\n"
+          new_group = "  group: hepta-global-finalizer-r7-r19-fixed-point\n"
+          if new_group not in workflow_text:
+              if workflow_text.count(old_group) != 1:
+                  raise SystemExit(
+                      f"r7 concurrency-group drift: {workflow_text.count(old_group)}"
+                  )
+              workflow_text = workflow_text.replace(old_group, new_group, 1)
+          workflow.write_text(workflow_text, encoding="utf-8")
           PY
           python3 -m py_compile "${PATCH_SCRIPT}"
           python3 "${PATCH_SCRIPT}"
@@ -94,9 +109,10 @@ jobs:
           grep -Fq 'projection_fixed_point = repair_repository_projections()' "${FINALIZER}"
           grep -Fq 'native_fixed_point = repair_native_bindings()' "${FINALIZER}"
           grep -Fq 'projection_preflight_receipts = [' "${FINALIZER}"
+          grep -Fq 'group: hepta-global-finalizer-r7-r19-fixed-point' "${R7_WORKFLOW}"
           git diff --check
 
-      - name: Publish clean fixed-point controller
+      - name: Publish clean isolated controller and dispatch r7
         shell: bash
         run: |
           set -euo pipefail
@@ -111,12 +127,20 @@ jobs:
             scripts/patch-global-finalizer-r18.py \
             .github/workflows/patch-global-finalizer-r17.yml \
             scripts/patch-global-finalizer-r17.py
-          git add "${FINALIZER}"
+          git add "${FINALIZER}" "${R7_WORKFLOW}"
           git diff --cached --check
           git diff --cached --name-only | grep -Fxq "${FINALIZER}"
-          git commit --signoff -m 'fix(hepta): converge repository projections and strict Clippy'
+          git diff --cached --name-only | grep -Fxq "${R7_WORKFLOW}"
+          git commit --signoff -m 'fix(hepta): converge projections native overlays and strict Clippy'
           remote_sha="$(git ls-remote origin "refs/heads/${TARGET_BRANCH}" | awk '{print $1}')"
           test "${remote_sha}" = "${GITHUB_SHA}"
           git push \
             --force-with-lease="refs/heads/${TARGET_BRANCH}:${GITHUB_SHA}" \
             origin "HEAD:refs/heads/${TARGET_BRANCH}"
+          clean_sha="$(git rev-parse HEAD)"
+          test "$(git ls-remote origin "refs/heads/${TARGET_BRANCH}" | awk '{print $1}')" = "${clean_sha}"
+          gh workflow run hepta-global-finalizer-r7.yml \
+            --repo "${GITHUB_REPOSITORY}" \
+            --ref "${TARGET_BRANCH}" \
+            --field target_branch="${TARGET_CANDIDATE}" \
+            --field shard_count='8'
