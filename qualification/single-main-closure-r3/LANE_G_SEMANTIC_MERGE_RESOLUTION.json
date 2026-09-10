@@ -1,0 +1,77 @@
+{
+  "authorityGranted": false,
+  "blanketOursOrTheirsForbidden": true,
+  "conflicts": [
+    "codex-rs/hepta-objective/src/objective_admission.rs",
+    "codex-rs/hepta-objective/src/objective_admission_tests.rs",
+    "qualification/module-execution-dossiers/NATIVE_BINDINGS.json",
+    "qualification/module-execution-dossiers/test_implementation_contracts.py"
+  ],
+  "externalAuthorityGatesRetained": true,
+  "fixedPointQualificationPending": true,
+  "laneGSha": "54629ac932b1ccad8417d6a98c013400850800af",
+  "proofs": {
+    "codex-rs/hepta-objective/src/objective_admission.rs": {
+      "laneGLineCount": 1508,
+      "laneGSha256": "513e3eba64271981a375d24106f13ba308de184426699e0e2cdc897f77b38f22",
+      "requiredHardeningFragments": [
+        "MAX_PROFILE_CONSTRAINTS",
+        "MAX_PROFILE_ENCODED_BYTES",
+        "profile_encoded_size",
+        "InvalidProfile(\"risk ordering\")"
+      ],
+      "retainedLineCount": 1600,
+      "retainedSha256": "449c9a22d8d51b459171e1e40614892ef99e03ec5e02aa9705bc41a6c6393c91",
+      "strategy": "retain_integrated_strict_line_superset"
+    },
+    "codex-rs/hepta-objective/src/objective_admission_tests.rs": {
+      "laneGLineCount": 430,
+      "laneGSha256": "b69bc27022affbc671699422a614f7b64c645060e4551d3dc04d18acec46f347",
+      "requiredHardeningFragments": [
+        "oversized_profile_mapping_set_is_rejected",
+        "risk_profile_ordering_is_monotone"
+      ],
+      "retainedLineCount": 459,
+      "retainedSha256": "9a6fe03d51a1f2499f27b7c00c1e8200bc7ce0ab67f857b44b94b108e4b40b20",
+      "strategy": "retain_integrated_strict_line_superset"
+    },
+    "qualification/module-execution-dossiers/NATIVE_BINDINGS.json": {
+      "fixedPointRegenerationRequired": true,
+      "laneGSha256": "f46124048769e83ee33906b31841c8c7d83e3f60b29764e3a38d6339bfc47d64",
+      "moduleCount": 40,
+      "moduleOrderPreserved": true,
+      "retainedSha256": "f816fdb2bc0c4115f99fe9103dbbe0a49afc66013172931e08a21b3a76a8a4e7",
+      "strategy": "retain_current_closed_world_source_anchors",
+      "supersededModules": [
+        "kernel.authority",
+        "kernel.operations",
+        "auth.authbus",
+        "secrets.heptabao",
+        "cognitive.types",
+        "cognitive.store",
+        "memory.federation",
+        "knowledge.graph",
+        "compact.engine",
+        "prompt.registry",
+        "context.compiler",
+        "learning.ledger",
+        "learning.operator",
+        "learning.artifacts"
+      ]
+    },
+    "qualification/module-execution-dossiers/test_implementation_contracts.py": {
+      "allLaneGTestNamesRetained": true,
+      "laneGSha256": "3704c710d5587d5d6b3d0514a433cba762647f5de7cb98637ea75a13272bfa12",
+      "laneGTestCount": 69,
+      "retainedEntrySha256": "2702a7adafb08eb3b94edc7090598bb55f6ea7b54a2ea29516d5de7249bba030",
+      "retainedSuiteSha256": {
+        "qualification/module-execution-dossiers/implementation_contract_tests_core.py": "d5eca2296e20aa3c3cc27f9b1adee55fb2388b5de541aba444c9ee36dd93da03",
+        "qualification/module-execution-dossiers/implementation_contract_tests_system.py": "4f76e04ae481ad6a4034a00a1b11c990061f748db663951effbf1429598ceb05"
+      },
+      "retainedTestCount": 69,
+      "strategy": "retain_split_core_and_system_test_entry"
+    }
+  },
+  "resolution": "retain integrated base only after per-file preservation proof",
+  "schema": "hepta.lane-g.semantic-merge-resolution.v1"
+}
