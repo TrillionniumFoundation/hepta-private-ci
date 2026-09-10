@@ -1,0 +1,130 @@
+name: Hepta Lane G v4 semantic closure
+
+on:
+  pull_request:
+    paths:
+      - tools/hepta-engineering-control/**
+      - docs/modules/control.engineering/**
+      - .github/workflows/hepta-lane-g-engineering.yml
+      - .github/workflows/hepta-lane-g-sandbox-hardening.yml
+      - .github/workflows/hepta-lane-g-v4-closure.yml
+  push:
+    branches:
+      - codex/lane-g-final-sandbox-v4-20260910
+    paths:
+      - tools/hepta-engineering-control/**
+      - docs/modules/control.engineering/**
+      - .github/workflows/hepta-lane-g-engineering.yml
+      - .github/workflows/hepta-lane-g-sandbox-hardening.yml
+      - .github/workflows/hepta-lane-g-v4-closure.yml
+
+permissions:
+  contents: read
+
+concurrency:
+  group: lane-g-v4-closure-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  exact-head:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, macos-15, windows-latest]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 25
+    env:
+      PYTHONDONTWRITEBYTECODE: "1"
+      PYTHONUTF8: "1"
+    steps:
+      - name: Checkout immutable head
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+
+      - name: Bind exact head and direct parent
+        shell: bash
+        run: |
+          set -euo pipefail
+          EXPECTED="${{ github.event.pull_request.head.sha || github.sha }}"
+          test "$(git rev-parse HEAD)" = "${EXPECTED}"
+          git rev-parse HEAD HEAD^{tree}
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            read -r HEAD_SHA PARENT EXTRA <<< "$(git rev-list --parents -n 1 HEAD)"
+            test "${HEAD_SHA}" = "${EXPECTED}"
+            test "${PARENT}" = "${{ github.event.pull_request.base.sha }}"
+            test -z "${EXTRA:-}"
+          fi
+
+      - name: Validate semantic and authority closure
+        working-directory: tools/hepta-engineering-control
+        shell: bash
+        env:
+          PYTHONPYCACHEPREFIX: ${{ runner.temp }}/lane-g-pycache
+        run: |
+          set -euo pipefail
+          python -m py_compile \
+            control_engineering_v2/path_policy.py \
+            lane_g_v4_validate.py \
+            test_path_policy_hardening.py
+          python lane_g_v4_validate.py
+          python -m unittest -v test_path_policy_hardening.py
+
+      - name: Verify exact source stayed clean
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          git diff --check
+          git diff --exit-code
+          test -z "$(git status --porcelain --untracked-files=no)"
+
+  ordered-merge:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    env:
+      PYTHONDONTWRITEBYTECODE: "1"
+      PYTHONUTF8: "1"
+    steps:
+      - name: Checkout prospective merge
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+          ref: ${{ github.event.pull_request.merge_commit_sha }}
+
+      - name: Bind ordered parents
+        shell: bash
+        run: |
+          set -euo pipefail
+          EXPECTED="${{ github.event.pull_request.merge_commit_sha }}"
+          test -n "${EXPECTED}"
+          test "$(git rev-parse HEAD)" = "${EXPECTED}"
+          read -r MERGE_SHA FIRST SECOND EXTRA <<< "$(git rev-list --parents -n 1 HEAD)"
+          test "${MERGE_SHA}" = "${EXPECTED}"
+          test "${FIRST}" = "${{ github.event.pull_request.base.sha }}"
+          test "${SECOND}" = "${{ github.event.pull_request.head.sha }}"
+          test -z "${EXTRA:-}"
+          git rev-parse HEAD HEAD^{tree}
+
+      - name: Validate merged semantic and authority closure
+        working-directory: tools/hepta-engineering-control
+        shell: bash
+        env:
+          PYTHONPYCACHEPREFIX: ${{ runner.temp }}/lane-g-pycache
+        run: |
+          set -euo pipefail
+          python lane_g_v4_validate.py
+          python -m unittest -v test_path_policy_hardening.py
+
+      - name: Verify merge subject stayed clean
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          git diff --check
+          git diff --exit-code
+          test -z "$(git status --porcelain --untracked-files=no)"
