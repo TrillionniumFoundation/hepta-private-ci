@@ -3,6 +3,22 @@ const DIGEST = /^[0-9a-f]{64}$/;
 const ZERO_DIGEST = "0".repeat(64);
 const MAX_ORIGINS = 128;
 const MAX_OUTSTANDING_OPERATIONS = 1024;
+const OPERATION_SEMANTIC_FIELDS = Object.freeze([
+  "profileId",
+  "principalId",
+  "processId",
+  "manifestDigest",
+  "grantDigest",
+  "profileGeneration",
+  "pageGeneration",
+  "documentDigest",
+  "pageOrigin",
+  "action",
+  "destinationOrigin",
+  "finalPayloadDigest",
+  "grantPayloadDigest",
+  "deadlineMs",
+]);
 
 function requireRecord(value, name) {
   if (value === null || typeof value !== "object" || Array.isArray(value)) {
@@ -60,6 +76,10 @@ function freezeResult(value) {
   });
 }
 
+function sameOperationSemantics(left, right) {
+  return OPERATION_SEMANTIC_FIELDS.every((field) => left[field] === right[field]);
+}
+
 export class BrowserProfileHost {
   #driver;
   #clock;
@@ -103,6 +123,7 @@ export class BrowserProfileHost {
         profileId,
         principalId,
         manifestDigest,
+        grantDigest,
         generation,
         allowedOrigins: [...allowedOrigins],
       }),
@@ -121,6 +142,8 @@ export class BrowserProfileHost {
       expiresAtMs,
       processId,
       pageGeneration: 0,
+      documentDigest: null,
+      pageOrigin: null,
       allowedOrigins,
       operations: new Map(),
     };
@@ -159,6 +182,8 @@ export class BrowserProfileHost {
     const documentDigest = digest(observed.documentDigest, "documentDigest");
     const origin = canonicalOrigin(observed.origin);
     state.pageGeneration = pageGeneration;
+    state.documentDigest = documentDigest;
+    state.pageOrigin = origin;
     return freezeResult({
       kind: "PageObservationV1",
       profileId: state.profileId,
@@ -176,41 +201,53 @@ export class BrowserProfileHost {
     const state = this.#profile(input);
     const operationId = stableId(input.operationId, "operationId");
     const pageGeneration = positiveInteger(input.pageGeneration, "pageGeneration");
+    const action = stableId(input.action, "action");
+    const destinationOrigin = canonicalOrigin(input.destinationOrigin);
     const finalPayloadDigest = digest(input.finalPayloadDigest, "finalPayloadDigest");
     const grantPayloadDigest = digest(input.grantPayloadDigest, "grantPayloadDigest");
-    deadline(input.deadlineMs, this.#clock());
-    if (pageGeneration !== state.pageGeneration) {
-      throw new TypeError("stale page generation");
-    }
+    const deadlineMs = deadline(input.deadlineMs, this.#clock());
     if (finalPayloadDigest !== grantPayloadDigest) {
       throw new TypeError("grant does not bind the final payload");
     }
-    const destinationOrigin = canonicalOrigin(input.destinationOrigin);
     if (!state.allowedOrigins.has(destinationOrigin)) {
       throw new TypeError("destination origin is outside the profile grant");
     }
-    if (state.operations.size >= MAX_OUTSTANDING_OPERATIONS) {
-      throw new TypeError("profile operation capacity is exhausted");
+    if (state.documentDigest === null || state.pageOrigin === null) {
+      throw new TypeError("browser action requires a current page observation");
     }
+
+    const semantics = Object.freeze({
+      profileId: state.profileId,
+      principalId: state.principalId,
+      processId: state.processId,
+      manifestDigest: state.manifestDigest,
+      grantDigest: state.grantDigest,
+      profileGeneration: state.generation,
+      pageGeneration,
+      documentDigest: state.documentDigest,
+      pageOrigin: state.pageOrigin,
+      action,
+      destinationOrigin,
+      finalPayloadDigest,
+      grantPayloadDigest,
+      deadlineMs,
+    });
     const prior = state.operations.get(operationId);
     if (prior) {
-      if (prior.finalPayloadDigest !== finalPayloadDigest) {
+      if (!sameOperationSemantics(prior.semantics, semantics)) {
         throw new TypeError("operation identity was reused with changed semantics");
       }
       return prior.receipt;
     }
+    if (pageGeneration !== state.pageGeneration) {
+      throw new TypeError("stale page generation");
+    }
+    if (state.operations.size >= MAX_OUTSTANDING_OPERATIONS) {
+      throw new TypeError("profile operation capacity is exhausted");
+    }
 
     const observed = requireRecord(
-      await this.#driver.act({
-        profileId: state.profileId,
-        processId: state.processId,
-        profileGeneration: state.generation,
-        pageGeneration,
-        operationId,
-        action: stableId(input.action, "action"),
-        destinationOrigin,
-        finalPayloadDigest,
-      }),
+      await this.#driver.act({ ...semantics, operationId }),
       "driver effect observation",
     );
     let receipt;
@@ -218,7 +255,13 @@ export class BrowserProfileHost {
       receipt = freezeResult({
         kind: "BrowserEffectObservationV1",
         profileId: state.profileId,
+        processId: state.processId,
+        profileGeneration: state.generation,
+        pageGeneration,
         operationId,
+        action,
+        destinationOrigin,
+        finalPayloadDigest,
         status: "indeterminate",
         outcomeDigest: null,
         terminalObserved: false,
@@ -230,13 +273,19 @@ export class BrowserProfileHost {
       receipt = freezeResult({
         kind: "BrowserEffectObservationV1",
         profileId: state.profileId,
+        processId: state.processId,
+        profileGeneration: state.generation,
+        pageGeneration,
         operationId,
+        action,
+        destinationOrigin,
+        finalPayloadDigest,
         status: observed.status,
         outcomeDigest: digest(observed.outcomeDigest, "outcomeDigest"),
         terminalObserved: true,
       });
     }
-    state.operations.set(operationId, { finalPayloadDigest, receipt });
+    state.operations.set(operationId, { semantics, receipt });
     return receipt;
   }
 
