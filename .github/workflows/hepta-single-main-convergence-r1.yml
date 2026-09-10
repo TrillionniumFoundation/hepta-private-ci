@@ -1,0 +1,249 @@
+name: Hepta single-main convergence r1
+
+on:
+  push:
+    branches:
+      - ops/hepta-single-main-convergence-20260910-r1
+    paths:
+      - .github/workflows/hepta-single-main-convergence-r1.yml
+      - scripts/hepta-single-main-convergence-r1.py
+  workflow_dispatch:
+
+permissions:
+  actions: write
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: hepta-single-main-convergence-r1
+  cancel-in-progress: true
+
+env:
+  HEPTA_BASE_BRANCH: integration/hepta-all-gap-closure-20260910-r12
+  HEPTA_OLD_DEFAULT_BRANCH: integration/vnext-main-20260811
+  HEPTA_LANE_F_BRANCH: codex/lane-f-gap-closure-20260910
+  HEPTA_LANE_G_BRANCH: codex/lane-g-real-full-closure-v2-20260910
+  HEPTA_SINGLE_MAIN_OUT: qualification/single-main-closure-r1
+  HEPTA_PACKAGE_SHARDS: '8'
+  CARGO_TERM_COLOR: always
+  RUST_BACKTRACE: '1'
+
+jobs:
+  freeze:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    outputs:
+      branch_count: ${{ steps.freeze.outputs.branch_count }}
+      snapshot_digest: ${{ steps.freeze.outputs.snapshot_digest }}
+      archive_prefix: ${{ steps.freeze.outputs.archive_prefix }}
+      base_sha: ${{ steps.freeze.outputs.base_sha }}
+      old_default_sha: ${{ steps.freeze.outputs.old_default_sha }}
+      old_main_sha: ${{ steps.freeze.outputs.old_main_sha }}
+      lane_f_sha: ${{ steps.freeze.outputs.lane_f_sha }}
+      lane_g_sha: ${{ steps.freeze.outputs.lane_g_sha }}
+    steps:
+      - name: Check out exact convergence controller
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Freeze stable branch topology and archive every tip
+        id: freeze
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          OUT="${RUNNER_TEMP}/hepta-single-main-freeze"
+          rm -rf "$OUT"
+          python3 scripts/hepta-single-main-convergence-r1.py freeze --out "$OUT"
+          python3 -m py_compile "$OUT/executor.py"
+
+      - name: Upload immutable freeze and executor bundle
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-single-main-freeze-${{ github.run_id }}
+          path: ${{ runner.temp }}/hepta-single-main-freeze
+          if-no-files-found: error
+          retention-days: 30
+
+  prepare:
+    needs: freeze
+    runs-on: ubuntu-24.04
+    timeout-minutes: 180
+    outputs:
+      candidate_branch: ${{ steps.prepare.outputs.candidate_branch }}
+      product_sha: ${{ steps.prepare.outputs.product_sha }}
+      final_sha: ${{ steps.prepare.outputs.final_sha }}
+      tree_sha: ${{ steps.prepare.outputs.tree_sha }}
+      package_count: ${{ steps.prepare.outputs.package_count }}
+      packages_json: ${{ steps.prepare.outputs.packages_json }}
+      matrix: ${{ steps.prepare.outputs.matrix }}
+    steps:
+      - name: Check out exact controller repository
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Download immutable freeze and executor bundle
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: hepta-single-main-freeze-${{ github.run_id }}
+          path: ${{ runner.temp }}/hepta-single-main-freeze
+
+      - name: Assemble product tree, recover Lane F, merge Lane G and absorb all history
+        id: prepare
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          EVIDENCE="${RUNNER_TEMP}/hepta-single-main-prepare"
+          rm -rf "$EVIDENCE"
+          python3 "${RUNNER_TEMP}/hepta-single-main-freeze/executor.py" prepare \
+            --manifest "${RUNNER_TEMP}/hepta-single-main-freeze/freeze.json" \
+            --evidence "$EVIDENCE"
+
+      - name: Upload candidate preparation evidence
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-single-main-prepare-${{ github.run_id }}
+          path: ${{ runner.temp }}/hepta-single-main-prepare
+          if-no-files-found: error
+          retention-days: 30
+
+  repository-gate:
+    needs: prepare
+    runs-on: ubuntu-24.04
+    timeout-minutes: 180
+    steps:
+      - name: Check out exact final history head
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ needs.prepare.outputs.final_sha }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Download immutable convergence executor
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: hepta-single-main-freeze-${{ github.run_id }}
+          path: ${{ runner.temp }}/hepta-single-main-freeze
+
+      - name: Run canonical repository, documentation, Lane and standalone gates
+        env:
+          HEPTA_FINAL_SHA: ${{ needs.prepare.outputs.final_sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 "${RUNNER_TEMP}/hepta-single-main-freeze/executor.py" repo-gate
+
+  package-gates:
+    needs: prepare
+    runs-on: ubuntu-24.04
+    timeout-minutes: 300
+    strategy:
+      fail-fast: false
+      max-parallel: 8
+      matrix: ${{ fromJson(needs.prepare.outputs.matrix) }}
+    steps:
+      - name: Check out exact final history head
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ needs.prepare.outputs.final_sha }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Download immutable convergence executor
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: hepta-single-main-freeze-${{ github.run_id }}
+          path: ${{ runner.temp }}/hepta-single-main-freeze
+
+      - name: Test and lint canonical package shard ${{ matrix.shard }}
+        env:
+          HEPTA_FINAL_SHA: ${{ needs.prepare.outputs.final_sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 "${RUNNER_TEMP}/hepta-single-main-freeze/executor.py" package-gate \
+            --packages-json '${{ matrix.packages_json }}'
+
+  windows-gate:
+    needs: prepare
+    runs-on: windows-2025
+    timeout-minutes: 300
+    steps:
+      - name: Check out exact final history head
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ needs.prepare.outputs.final_sha }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Download immutable convergence executor
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: hepta-single-main-freeze-${{ github.run_id }}
+          path: ${{ runner.temp }}/hepta-single-main-freeze
+
+      - name: Check every canonical package under MSVC
+        env:
+          HEPTA_FINAL_SHA: ${{ needs.prepare.outputs.final_sha }}
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          python "$env:RUNNER_TEMP/hepta-single-main-freeze/executor.py" package-gate `
+            --check-only `
+            --packages-json '${{ needs.prepare.outputs.packages_json }}'
+
+  finalize:
+    needs:
+      - freeze
+      - prepare
+      - repository-gate
+      - package-gates
+      - windows-gate
+    if: ${{ success() }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    steps:
+      - name: Check out exact qualified final history head
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ needs.prepare.outputs.final_sha }}
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Download immutable freeze and convergence executor
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: hepta-single-main-freeze-${{ github.run_id }}
+          path: ${{ runner.temp }}/hepta-single-main-freeze
+
+      - name: Publish exact qualified SHA, rename default to main and delete every other branch
+        env:
+          GH_TOKEN: ${{ github.token }}
+          HEPTA_FINAL_SHA: ${{ needs.prepare.outputs.final_sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          EVIDENCE="${RUNNER_TEMP}/hepta-single-main-final"
+          rm -rf "$EVIDENCE"
+          python3 "${RUNNER_TEMP}/hepta-single-main-freeze/executor.py" finalize \
+            --manifest "${RUNNER_TEMP}/hepta-single-main-freeze/freeze.json" \
+            --final-sha '${{ needs.prepare.outputs.final_sha }}' \
+            --candidate-branch '${{ needs.prepare.outputs.candidate_branch }}' \
+            --evidence "$EVIDENCE"
+
+      - name: Upload final single-main receipt
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-single-main-final-${{ github.run_id }}
+          path: ${{ runner.temp }}/hepta-single-main-final
+          if-no-files-found: warn
+          retention-days: 90
