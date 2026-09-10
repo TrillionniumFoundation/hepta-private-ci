@@ -1,0 +1,69 @@
+name: Hepta PR515 formatting diagnostic
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - ops/hepta-pr515-blocker-materializer-20260910
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-pr515-format-diagnostic
+  cancel-in-progress: true
+
+env:
+  SOURCE_SHA: f278a89eea18fccb6d37b876aa5679863a64139d
+  OUTPUT_BRANCH: integration/hepta-all-gap-closure-20260910-r13
+
+jobs:
+  diagnose:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - name: Checkout trusted diagnostic source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Reproduce and expose formatting failure
+        shell: bash
+        run: |
+          set -euo pipefail
+          cp scripts/materialize_pr515_blockers.py "$RUNNER_TEMP/materializer.py"
+          git fetch --no-tags origin "+refs/heads/$OUTPUT_BRANCH:refs/remotes/origin/$OUTPUT_BRANCH"
+          test "$(git rev-parse "origin/$OUTPUT_BRANCH")" = "$SOURCE_SHA"
+          git checkout --detach "$SOURCE_SHA"
+          cp "$RUNNER_TEMP/materializer.py" scripts/.materializer.py
+          python3 scripts/.materializer.py
+
+          set +e
+          python3 scripts/format_all.py >"$RUNNER_TEMP/format.log" 2>&1
+          format_rc=$?
+          set -e
+          rm -f scripts/.materializer.py
+
+          set +e
+          codespell --skip '*.lock,*.json,*.svg,*.min.js,*.map,qualification/**' >"$RUNNER_TEMP/codespell.log" 2>&1
+          codespell_rc=$?
+          set -e
+
+          echo "FORMAT_RC=$format_rc"
+          echo "CODESPELL_RC=$codespell_rc"
+          echo '--- FORMAT LOG (first 240 lines) ---'
+          sed -n '1,240p' "$RUNNER_TEMP/format.log"
+          echo '--- CODESPELL LOG (first 240 lines) ---'
+          sed -n '1,240p' "$RUNNER_TEMP/codespell.log"
+          echo '--- CHANGED FILES ---'
+          git diff --name-status
+          echo '--- DIFF STAT ---'
+          git diff --stat
+          echo '--- STATUS TARGET DIFF (first 320 lines) ---'
+          git diff -- qualification/global-gap-closure-final-r6/STATUS.json | sed -n '1,320p'
+          echo '--- PREPARE TARGET DIFF (first 320 lines) ---'
+          git diff -- qualification/global-gap-closure-final-r8/receipts/PREPARE.json | sed -n '1,320p'
+          echo '--- NON-TARGET CHANGED PATHS ---'
+          git diff --name-only | grep -v -E '^(qualification/global-gap-closure-final-r6/STATUS.json|qualification/global-gap-closure-final-r8/receipts/PREPARE.json)$' || true
+          exit 0
