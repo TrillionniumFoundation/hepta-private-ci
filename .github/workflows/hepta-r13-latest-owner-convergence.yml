@@ -1,0 +1,60 @@
+name: Hepta r13 latest-owner convergence
+
+on:
+  push:
+    branches:
+      - ops/hepta-r13-latest-owner-controller-20260910
+    paths:
+      - .github/workflows/hepta-r13-latest-owner-convergence.yml
+      - scripts/hepta-r13-latest-owner-convergence.py
+      - scripts/hepta-r13-latest-owner-convergence-runner.py
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+  actions: read
+
+concurrency:
+  group: hepta-r13-latest-owner-convergence
+  cancel-in-progress: true
+
+jobs:
+  converge:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 360
+    steps:
+      - name: Check out exact controller source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Bind and syntax-check exact executor
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${GITHUB_SHA}"
+          python3 -m py_compile \
+            scripts/hepta-r13-latest-owner-convergence.py \
+            scripts/hepta-r13-latest-owner-convergence-runner.py
+
+      - name: Materialize, qualify and publish clean candidate
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta-r13-latest-owner-convergence-runner.py
+
+      - name: Upload convergence evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-r13-convergence-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            qualification/convergence/FINAL_CANDIDATE_R13.json
+            ${{ runner.temp }}/hepta-r13-repository-integrity.json
+          if-no-files-found: warn
+          retention-days: 30
