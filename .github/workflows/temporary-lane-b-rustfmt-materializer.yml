@@ -57,7 +57,9 @@ jobs:
           cargo fmt --manifest-path codex-rs/Cargo.toml --all
           expected=(
             codex-rs/hepta-automation/src/bin/hepta-taskflow-runtime.rs
+            codex-rs/hepta-fleet/src/bin/hepta-fleet-leased.rs
             codex-rs/hepta-infer-core/src/bin/hepta-infer-control.rs
+            codex-rs/hepta-infer-worker-host/src/bin/hepta-infer-worker.rs
             codex-rs/hepta-matrixd/src/bin/hepta-matrix-send-observer.rs
           )
           mapfile -t changed < <(git diff --name-only | sort)
