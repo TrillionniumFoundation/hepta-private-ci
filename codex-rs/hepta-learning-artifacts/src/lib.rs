@@ -5,6 +5,7 @@
 
 #![forbid(unsafe_code)]
 
+mod closure_v2;
 mod dataset_revocation;
 mod error;
 mod model;
@@ -12,6 +13,24 @@ mod pinned;
 mod registry;
 mod storage;
 
+pub use closure_v2::ArtifactClosureError;
+pub use closure_v2::ArtifactLifecycleEventV1;
+pub use closure_v2::ArtifactLifecycleStateV1;
+pub use closure_v2::DatasetWithdrawalNoticeV1;
+pub use closure_v2::DatasetWithdrawalReceiptV1;
+pub use closure_v2::DatasetWithdrawalRecordV1;
+pub use closure_v2::DatasetWithdrawalRegistry;
+pub use closure_v2::DatasetWithdrawalRegistrySnapshotV1;
+pub use closure_v2::LearningArtifactManifestV2;
+pub use closure_v2::ProvenanceModeV1;
+pub use closure_v2::RegistryHeadReceiptV1;
+pub use closure_v2::RegistryHeadRequirementV1;
+pub use closure_v2::RegistryHeadWitnessV1;
+pub use closure_v2::ValidatedArtifactManifestV2;
+pub use closure_v2::WithdrawalAppendDispositionV1;
+pub use closure_v2::validate_artifact_lifecycle_transition;
+pub use closure_v2::validate_artifact_manifest_v2;
+pub use closure_v2::validate_registry_head_witness;
 pub use dataset_revocation::DatasetRevocationError;
 pub use dataset_revocation::DatasetRevocationRequest;
 pub use dataset_revocation::DatasetRevocationSummary;

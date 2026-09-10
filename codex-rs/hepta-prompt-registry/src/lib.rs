@@ -6,6 +6,8 @@
 
 #![forbid(unsafe_code)]
 
+mod v2;
+
 use std::collections::BTreeMap;
 use std::error::Error as StdError;
 use std::fmt;
@@ -14,6 +16,14 @@ use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::Revision;
 use codex_hepta_types::StableId;
+
+pub use v2::CompatibleRealizationSetV2;
+pub use v2::MAX_COMPATIBLE_REALIZATIONS_V2;
+pub use v2::PromptModelTupleV2;
+pub use v2::PromptRealizationBindingV2;
+pub use v2::PromptRegistrySnapshotV2;
+pub use v2::PromptRegistryV2Error;
+pub use v2::PromptRoleV2;
 
 const MAX_RECORDS: usize = 16_384;
 
@@ -93,7 +103,10 @@ impl StdError for Error {}
 pub struct PromptRegistry {
     factors: BTreeMap<StableId, PromptFactor>,
     realizations: BTreeMap<StableId, PromptRealization>,
+    realization_bindings: BTreeMap<StableId, PromptRealizationBindingV2>,
     revision: Revision,
+    lifecycle_frontier: u64,
+    revocation_frontier: u64,
     maximum_records: usize,
 }
 
@@ -108,7 +121,10 @@ impl PromptRegistry {
         Ok(Self {
             factors: BTreeMap::new(),
             realizations: BTreeMap::new(),
+            realization_bindings: BTreeMap::new(),
             revision,
+            lifecycle_frontier: 0,
+            revocation_frontier: 0,
             maximum_records: maximum_records.min(MAX_RECORDS),
         })
     }
@@ -127,7 +143,9 @@ impl PromptRegistry {
             return Err(Error::FactorConflict(factor.factor_id.to_string()));
         }
         self.ensure_capacity(/*additional*/ 1)?;
+        let next_revision = self.next_revision()?;
         self.factors.insert(factor.factor_id.clone(), factor);
+        self.commit_revision(next_revision, false);
         Ok(self.receipt(MutationDisposition::Inserted))
     }
 
@@ -140,22 +158,24 @@ impl PromptRegistry {
         if evidence_digest.is_zero() {
             return Err(Error::EmptyDigest("admission evidence"));
         }
-        {
-            let Some(factor) = self.factors.get_mut(factor_id) else {
-                return Err(Error::FactorNotFound(factor_id.to_string()));
-            };
-            if factor.source == FactorSource::ExternalUntrusted {
-                return Err(Error::ExternalSelfAdmission);
-            }
-            if &factor.proposer_id == reviewer_id {
-                return Err(Error::SelfReview);
-            }
-            if factor.lifecycle != Lifecycle::Draft {
-                return Err(Error::InvalidTransition);
-            }
-            self.revision = self.revision.next().map_err(|_| Error::RevisionOverflow)?;
-            factor.lifecycle = Lifecycle::Admitted;
+        let Some(factor) = self.factors.get(factor_id) else {
+            return Err(Error::FactorNotFound(factor_id.to_string()));
+        };
+        if factor.source == FactorSource::ExternalUntrusted {
+            return Err(Error::ExternalSelfAdmission);
         }
+        if &factor.proposer_id == reviewer_id {
+            return Err(Error::SelfReview);
+        }
+        if factor.lifecycle != Lifecycle::Draft {
+            return Err(Error::InvalidTransition);
+        }
+        let next_revision = self.next_revision()?;
+        let Some(factor) = self.factors.get_mut(factor_id) else {
+            return Err(Error::FactorNotFound(factor_id.to_string()));
+        };
+        factor.lifecycle = Lifecycle::Admitted;
+        self.commit_revision(next_revision, false);
         Ok(self.receipt(MutationDisposition::Transitioned))
     }
 
@@ -190,38 +210,44 @@ impl PromptRegistry {
             ));
         }
         self.ensure_capacity(/*additional*/ 1)?;
+        let next_revision = self.next_revision()?;
         self.realizations
             .insert(realization.realization_id.clone(), realization);
+        self.commit_revision(next_revision, false);
         Ok(self.receipt(MutationDisposition::Inserted))
     }
 
     pub fn retire_factor(&mut self, factor_id: &StableId) -> Result<RegistryReceipt, Error> {
-        {
-            let Some(factor) = self.factors.get_mut(factor_id) else {
-                return Err(Error::FactorNotFound(factor_id.to_string()));
-            };
-            if factor.lifecycle != Lifecycle::Admitted {
-                return Err(Error::InvalidTransition);
-            }
-            self.revision = self.revision.next().map_err(|_| Error::RevisionOverflow)?;
-            factor.lifecycle = Lifecycle::Retired;
+        let Some(factor) = self.factors.get(factor_id) else {
+            return Err(Error::FactorNotFound(factor_id.to_string()));
+        };
+        if factor.lifecycle != Lifecycle::Admitted {
+            return Err(Error::InvalidTransition);
         }
+        let next_revision = self.next_revision()?;
+        let Some(factor) = self.factors.get_mut(factor_id) else {
+            return Err(Error::FactorNotFound(factor_id.to_string()));
+        };
+        factor.lifecycle = Lifecycle::Retired;
         self.disable_realizations(factor_id);
+        self.commit_revision(next_revision, false);
         Ok(self.receipt(MutationDisposition::Transitioned))
     }
 
     pub fn revoke_factor(&mut self, factor_id: &StableId) -> Result<RegistryReceipt, Error> {
-        {
-            let Some(factor) = self.factors.get_mut(factor_id) else {
-                return Err(Error::FactorNotFound(factor_id.to_string()));
-            };
-            if factor.lifecycle == Lifecycle::Revoked {
-                return Err(Error::InvalidTransition);
-            }
-            self.revision = self.revision.next().map_err(|_| Error::RevisionOverflow)?;
-            factor.lifecycle = Lifecycle::Revoked;
+        let Some(factor) = self.factors.get(factor_id) else {
+            return Err(Error::FactorNotFound(factor_id.to_string()));
+        };
+        if factor.lifecycle == Lifecycle::Revoked {
+            return Err(Error::InvalidTransition);
         }
+        let next_revision = self.next_revision()?;
+        let Some(factor) = self.factors.get_mut(factor_id) else {
+            return Err(Error::FactorNotFound(factor_id.to_string()));
+        };
+        factor.lifecycle = Lifecycle::Revoked;
         self.disable_realizations(factor_id);
+        self.commit_revision(next_revision, true);
         Ok(self.receipt(MutationDisposition::Transitioned))
     }
 
@@ -233,10 +259,34 @@ impl PromptRegistry {
         self.realizations.get(realization_id)
     }
 
+    pub fn realization_binding(
+        &self,
+        realization_id: &StableId,
+    ) -> Option<&PromptRealizationBindingV2> {
+        self.realization_bindings.get(realization_id)
+    }
+
+    #[must_use]
+    pub const fn revision(&self) -> Revision {
+        self.revision
+    }
+
+    #[must_use]
+    pub const fn lifecycle_frontier(&self) -> u64 {
+        self.lifecycle_frontier
+    }
+
+    #[must_use]
+    pub const fn revocation_frontier(&self) -> u64 {
+        self.revocation_frontier
+    }
+
     pub fn snapshot_digest(&self) -> Digest32 {
         let mut bytes = Vec::new();
         bytes.extend_from_slice(b"hepta.prompt-registry.snapshot.v1");
         bytes.extend_from_slice(&self.revision.get().to_be_bytes());
+        bytes.extend_from_slice(&self.lifecycle_frontier.to_be_bytes());
+        bytes.extend_from_slice(&self.revocation_frontier.to_be_bytes());
         for factor in self.factors.values() {
             push_id(&mut bytes, &factor.factor_id);
             push_id(&mut bytes, &factor.proposer_id);
@@ -256,6 +306,9 @@ impl PromptRegistry {
             bytes.extend_from_slice(realization.content_digest.as_array());
             bytes.push(u8::from(realization.active));
         }
+        for binding in self.realization_bindings.values() {
+            bytes.extend_from_slice(binding.digest().as_array());
+        }
         Digest32::of_bytes(&bytes)
     }
 
@@ -273,6 +326,18 @@ impl PromptRegistry {
             return Err(Error::CapacityExceeded);
         }
         Ok(())
+    }
+
+    fn next_revision(&self) -> Result<Revision, Error> {
+        self.revision.next().map_err(|_| Error::RevisionOverflow)
+    }
+
+    fn commit_revision(&mut self, revision: Revision, revocation: bool) {
+        self.revision = revision;
+        self.lifecycle_frontier = revision.get();
+        if revocation {
+            self.revocation_frontier = revision.get();
+        }
     }
 
     fn receipt(&self, disposition: MutationDisposition) -> RegistryReceipt {
