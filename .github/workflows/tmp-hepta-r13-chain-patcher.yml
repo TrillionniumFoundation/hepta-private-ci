@@ -1,0 +1,339 @@
+name: Temporary Hepta race-free r8-r12 chain patcher
+
+on:
+  push:
+    branches:
+      - ops/hepta-global-gap-closure-controller-20260910-r1
+    paths:
+      - .github/workflows/tmp-hepta-r13-chain-patcher.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: tmp-hepta-r13-chain-patcher
+  cancel-in-progress: false
+
+jobs:
+  patch-and-dispatch:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Check out exact controller source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Apply exact race-free chain repairs
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${GITHUB_SHA}"
+          python3 - <<'PY'
+          from __future__ import annotations
+
+          import re
+          from pathlib import Path
+
+          PINNED_R7 = "16dc9b1d74b669164860bf9e09d6c5f4c25b7bb0"
+
+          def replace_once(text: str, old: str, new: str, label: str) -> str:
+              count = text.count(old)
+              if count != 1:
+                  raise RuntimeError(f"{label}: expected one exact match, found {count}")
+              return text.replace(old, new, 1)
+
+          # r8: exact source pin, strict override semantics, source-status binding,
+          # independent receipt namespace support, and lock-probe-aware admission.
+          r8_path = Path("scripts/hepta-global-finalizer-r8.py")
+          r8 = r8_path.read_text(encoding="utf-8")
+          r8 = replace_once(
+              r8,
+              'OUT_ROOT = ROOT / "qualification" / "global-gap-closure-final-r8"',
+              'OUT_ROOT = ROOT / os.environ.get(\n'
+              '    "HEPTA_FINAL_OUT_ROOT",\n'
+              '    "qualification/global-gap-closure-final-r8",\n'
+              ')',
+              "r8 output root",
+          )
+          source_function = '''def source_is_usable(ref: str) -> bool:
+              required_status = os.environ.get("HEPTA_REQUIRED_SOURCE_STATUS", "").strip()
+              if not required_status:
+                  return True
+              shown = r7.git("show", f"{ref}:{required_status}", check=False)
+              if not shown.passed:
+                  return False
+              try:
+                  value = json.loads(shown.output)
+              except json.JSONDecodeError:
+                  return False
+              if not isinstance(value, dict):
+                  return False
+              if (
+                  value.get("repositoryInternalValidationPassed") is not True
+                  or value.get("repositoryInternalGapsClosed") is not True
+                  or value.get("externalAuthorityGatesRetained") is not True
+                  or value.get("allGapsClosed") is not False
+                  or value.get("authorityGranted") is not False
+                  or value.get("productionActivation") is not False
+              ):
+                  return False
+              qualified = value.get("qualifiedSourceCommit")
+              if not isinstance(qualified, str) or len(qualified) != 40:
+                  return False
+              return r7.git(
+                  "rev-parse", "--verify", f"{qualified}^{{commit}}", check=False
+              ).passed
+          '''
+          r8, count = re.subn(
+              r"def source_is_usable\(ref: str\) -> bool:\n.*?(?=\ndef wait_for_source\(\))",
+              source_function.rstrip() + "\n",
+              r8,
+              count=1,
+              flags=re.S,
+          )
+          if count != 1:
+              raise RuntimeError(f"r8 source validator: expected one replacement, found {count}")
+          r8 = replace_once(
+              r8,
+              '    override = os.environ.get("HEPTA_REPAIR_SOURCE")\n'
+              '    candidates = (override,) + SOURCE_CANDIDATES if override else SOURCE_CANDIDATES',
+              '    override = os.environ.get("HEPTA_REPAIR_SOURCE", "").strip()\n'
+              '    if not override:\n'
+              '        override = os.environ.get(\n'
+              '            "HEPTA_DEFAULT_REPAIR_SOURCE",\n'
+              f'            "{PINNED_R7}",\n'
+              '        ).strip()\n'
+              '    candidates = (override,) if override else SOURCE_CANDIDATES',
+              "r8 strict source selection",
+          )
+          r8 = replace_once(
+              r8,
+              '        and r7.command_receipts_pass(lock_receipts)\n',
+              '        and r7.lock_receipts_pass(lock_receipts)\n',
+              "r8 lock receipt admission",
+          )
+          r8_path.write_text(r8, encoding="utf-8")
+
+          # r9: wait specifically for a passing r8 receipt and keep a distinct
+          # receipt namespace so the fixed-point sealer cannot read an alias.
+          r9_path = Path(".github/workflows/hepta-global-finalizer-r9.yml")
+          r9 = r9_path.read_text(encoding="utf-8")
+          r9 = r9.replace(
+              "qualification/global-gap-closure-final-r8",
+              "qualification/global-gap-closure-final-r9",
+          )
+          r9 = replace_once(
+              r9,
+              "  HEPTA_REPAIR_SOURCE: origin/integration/hepta-all-gap-closure-20260910-r8\n",
+              "  HEPTA_REPAIR_SOURCE: origin/integration/hepta-all-gap-closure-20260910-r8\n"
+              "  HEPTA_REQUIRED_SOURCE_STATUS: qualification/global-gap-closure-final-r8/STATUS.json\n"
+              "  HEPTA_FINAL_OUT_ROOT: qualification/global-gap-closure-final-r9\n",
+              "r9 exact source status",
+          )
+          r9_path.write_text(r9, encoding="utf-8")
+
+          # r11: accept only the exact r8/r9 status paths, branch identities and
+          # complete internal qualification; stale fallback receipts remain blocked.
+          r11_path = Path("scripts/hepta-fixed-point-sealer-r11.py")
+          r11_path.write_text('''#!/usr/bin/env python3
+          """Race-free, status-bound wrapper for the r10 fixed-point sealer."""
+
+          from __future__ import annotations
+
+          import importlib.util
+          import json
+          import os
+          import sys
+          import time
+          from pathlib import Path
+          from typing import Any
+
+          SCRIPT_DIR = Path(__file__).resolve().parent
+          R10_PATH = SCRIPT_DIR / "hepta-fixed-point-sealer-r10.py"
+          SPEC = importlib.util.spec_from_file_location("hepta_fixed_point_sealer_r10", R10_PATH)
+          if SPEC is None or SPEC.loader is None:
+              raise RuntimeError(f"cannot load r10 sealer from {R10_PATH}")
+          r10 = importlib.util.module_from_spec(SPEC)
+          sys.modules[SPEC.name] = r10
+          SPEC.loader.exec_module(r10)
+
+          r10.TARGET = os.environ.get(
+              "HEPTA_SEALED_TARGET",
+              "integration/hepta-all-gap-closure-20260910-sealed-r11",
+          )
+          r10.OUT = r10.ROOT / "qualification" / "global-gap-closure-seal-r11"
+
+          R8_STATUS_PATH = os.environ.get(
+              "HEPTA_R8_STATUS_PATH",
+              "qualification/global-gap-closure-final-r8/STATUS.json",
+          )
+          R9_STATUS_PATH = os.environ.get(
+              "HEPTA_R9_STATUS_PATH",
+              "qualification/global-gap-closure-final-r9/STATUS.json",
+          )
+          R8_TARGET = "integration/hepta-all-gap-closure-20260910-r8"
+          R9_TARGET = "integration/hepta-all-gap-closure-20260910-r9"
+
+
+          def read_exact_status(
+              ref: str, path: str, expected_target: str
+          ) -> tuple[str, dict[str, Any]]:
+              raw = r10.git("show", f"{ref}:{path}", check=False)
+              try:
+                  value = json.loads(raw)
+              except json.JSONDecodeError as error:
+                  raise RuntimeError(f"no parseable bound status at {ref}:{path}") from error
+              if not isinstance(value, dict):
+                  raise RuntimeError(f"bound status at {ref}:{path} is not an object")
+              if value.get("targetBranch") != expected_target:
+                  raise RuntimeError(
+                      f"status target mismatch at {ref}:{path}: "
+                      f"{value.get('targetBranch')} != {expected_target}"
+                  )
+              if not r10.status_passed(value):
+                  raise RuntimeError(f"status is not internally complete at {ref}:{path}")
+              if value.get("externalAuthorityGatesRetained") is not True:
+                  raise RuntimeError(f"external authority gates not retained at {ref}:{path}")
+              if value.get("allGapsClosed") is not False:
+                  raise RuntimeError(f"invalid all-gaps claim at {ref}:{path}")
+              r10.qualified_source(value)
+              return path, value
+
+
+          def read_bound_status(ref: str) -> tuple[str, dict[str, Any]]:
+              if ref == r10.R8_REF:
+                  return read_exact_status(ref, R8_STATUS_PATH, R8_TARGET)
+              if ref == r10.R9_REF:
+                  return read_exact_status(ref, R9_STATUS_PATH, R9_TARGET)
+              raise RuntimeError(f"unexpected fixed-point input ref: {ref}")
+
+
+          def wait_for_bound_statuses() -> None:
+              for _ in range(2000):
+                  r10.git(
+                      "fetch",
+                      "--prune",
+                      "origin",
+                      "+refs/heads/*:refs/remotes/origin/*",
+                      check=False,
+                  )
+                  if not (r10.ref_exists(r10.R8_REF) and r10.ref_exists(r10.R9_REF)):
+                      time.sleep(10)
+                      continue
+                  try:
+                      read_bound_status(r10.R8_REF)
+                      read_bound_status(r10.R9_REF)
+                  except RuntimeError:
+                      time.sleep(10)
+                      continue
+                  return
+              raise RuntimeError("r8/r9 did not expose exact passing bound statuses")
+
+
+          r10.read_status = read_bound_status
+          r10.wait_for_refs = wait_for_bound_statuses
+
+          if __name__ == "__main__":
+              try:
+                  raise SystemExit(r10.main())
+              except Exception as error:
+                  print(f"HEPTA_FIXED_POINT_SEALER_R11_ERROR: {error}", file=sys.stderr)
+                  raise
+          '''.replace("\n          ", "\n").lstrip(), encoding="utf-8")
+
+          # r12: do not fail against a stale pre-existing seal. Keep polling until
+          # the exact r11 status is publishable and names the distinct r8/r9 receipts.
+          r12_path = Path("scripts/hepta-candidate-publisher-r12.py")
+          r12 = r12_path.read_text(encoding="utf-8")
+          wait_function = '''def wait_for_stable_seal() -> tuple[str, dict[str, Any]]:
+              for _ in range(2000):
+                  git(
+                      "fetch",
+                      "--prune",
+                      "origin",
+                      "+refs/heads/*:refs/remotes/origin/*",
+                      check=False,
+                  )
+                  source = git("rev-parse", "--verify", f"{SOURCE_REF}^{{commit}}", check=False)
+                  if not source:
+                      time.sleep(10)
+                      continue
+                  raw = git("show", f"{SOURCE_REF}:{SEAL_STATUS}", check=False)
+                  try:
+                      status = json.loads(raw)
+                  except json.JSONDecodeError:
+                      time.sleep(10)
+                      continue
+                  if not isinstance(status, dict):
+                      time.sleep(10)
+                      continue
+                  if (
+                      status.get("r8StatusPath")
+                      != "qualification/global-gap-closure-final-r8/STATUS.json"
+                      or status.get("r9StatusPath")
+                      != "qualification/global-gap-closure-final-r9/STATUS.json"
+                  ):
+                      time.sleep(10)
+                      continue
+                  try:
+                      validate(status)
+                  except RuntimeError:
+                      time.sleep(10)
+                      continue
+                  return source, status
+              raise RuntimeError("publishable stable r11 seal did not appear")
+          '''
+          r12, count = re.subn(
+              r"def wait_for_stable_seal\(\) -> tuple\[str, dict\[str, Any\]\]:\n.*?(?=\ndef validate\()",
+              wait_function.rstrip() + "\n",
+              r12,
+              count=1,
+              flags=re.S,
+          )
+          if count != 1:
+              raise RuntimeError(f"r12 stable-seal wait: expected one replacement, found {count}")
+          r12_path.write_text(r12, encoding="utf-8")
+
+          for workflow in (
+              Path(".github/workflows/hepta-fixed-point-sealer-r11.yml"),
+              Path(".github/workflows/hepta-candidate-publisher-r12.yml"),
+          ):
+              text = workflow.read_text(encoding="utf-8")
+              text = replace_once(
+                  text,
+                  "    timeout-minutes: 180\n",
+                  "    timeout-minutes: 360\n",
+                  f"{workflow.name} timeout",
+              )
+              workflow.write_text(text, encoding="utf-8")
+
+          # Structural validation before publishing the controller patch.
+          import py_compile
+          for source in (
+              r8_path,
+              r11_path,
+              r12_path,
+          ):
+              py_compile.compile(str(source), doraise=True)
+          PY
+
+      - name: Publish one atomic controller repair and self-clean
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "Hepta Race-Free Chain Patcher"
+          git config user.email "noreply@openai.com"
+          git rm -f .github/workflows/tmp-hepta-r13-chain-patcher.yml
+          git add \
+            scripts/hepta-global-finalizer-r8.py \
+            .github/workflows/hepta-global-finalizer-r9.yml \
+            scripts/hepta-fixed-point-sealer-r11.py \
+            .github/workflows/hepta-fixed-point-sealer-r11.yml \
+            scripts/hepta-candidate-publisher-r12.py \
+            .github/workflows/hepta-candidate-publisher-r12.yml
+          git diff --cached --check
+          git commit --signoff -m "fix(hepta): bind race-free r8-r12 convergence chain"
+          git push origin HEAD:ops/hepta-global-gap-closure-controller-20260910-r1
