@@ -893,6 +893,12 @@ def normalize_lockfile() -> tuple[dict[str, Any] | None, list[dict[str, Any]]]:
         return None, receipts
     metadata, locked_again = cargo_metadata(locked=True)
     receipts.append(locked_again)
+    if metadata is not None and locked_again.get("returnCode") == 0:
+        first["expectedFailure"] = "stale_lockfile_regeneration_probe"
+        first["recoveredBy"] = {
+            "unlockedMetadataOutputSha256": unlocked.get("outputSha256"),
+            "lockedRecheckOutputSha256": locked_again.get("outputSha256"),
+        }
     return metadata, receipts
 
 
@@ -1330,6 +1336,14 @@ def command_receipts_pass(receipts: Iterable[dict[str, Any]]) -> bool:
     )
 
 
+def lock_receipts_pass(receipts: Iterable[dict[str, Any]]) -> bool:
+    return all(
+        receipt.get("returnCode") == 0
+        or receipt.get("expectedFailure") == "stale_lockfile_regeneration_probe"
+        for receipt in receipts
+    )
+
+
 def prepare(args: argparse.Namespace) -> int:
     OUT_ROOT.mkdir(parents=True, exist_ok=True)
     git("config", "user.name", "Hepta Parallel Finalizer")
@@ -1409,7 +1423,7 @@ def prepare(args: argparse.Namespace) -> int:
     matrix = shard_matrix(packages, args.shards)
     prepared = (
         command_receipts_pass(generator_receipts)
-        and command_receipts_pass(lock_receipts)
+        and lock_receipts_pass(lock_receipts)
         and command_receipts_pass(compile_receipts)
         and format_result.passed
         and native_after_format.get("valid") is True
