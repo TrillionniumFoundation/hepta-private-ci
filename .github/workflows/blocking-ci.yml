@@ -7,6 +7,9 @@ on:
   push:
     branches: [main]
 
+permissions:
+  contents: read
+
 # Keep at most one full repository matrix per PR/ref. A synchronize event makes
 # every older head non-authoritative, so retaining its cross-platform matrix
 # only consumes scarce hosted capacity and can delay the exact current object.
