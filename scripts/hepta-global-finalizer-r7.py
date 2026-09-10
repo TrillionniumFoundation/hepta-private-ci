@@ -42,13 +42,34 @@ BASE_CANDIDATES = (
 )
 LANE_ORDER = ("A", "B", "C", "D", "E", "F", "G")
 LANE_PREFERENCES: dict[str, tuple[str, ...]] = {
-    "A": ("codex/lane-a-gap-closure-20260910", "codex/hepta-lane-a-gap-closure-20260910"),
-    "B": ("codex/hepta-lane-b-gap-closure-20260910", "codex/lane-b-gap-closure-20260910"),
-    "C": ("codex/lane-c-full-gap-closure-20260910", "codex/hepta-lane-c-gap-closure-20260910"),
-    "D": ("codex/hepta-lane-d-gap-closure-20260910", "codex/lane-d-gap-closure-20260910"),
-    "E": ("codex/hepta-lane-e-gap-closure-20260910", "codex/lane-e-gap-closure-20260910"),
-    "F": ("codex/lane-f-gap-closure-20260910", "codex/hepta-lane-f-gap-closure-20260910"),
-    "G": ("codex/hepta-lane-g-gap-closure-20260910", "codex/lane-g-gap-closure-20260910"),
+    "A": (
+        "codex/lane-a-gap-closure-20260910",
+        "codex/hepta-lane-a-gap-closure-20260910",
+    ),
+    "B": (
+        "codex/hepta-lane-b-gap-closure-20260910",
+        "codex/lane-b-gap-closure-20260910",
+    ),
+    "C": (
+        "codex/lane-c-full-gap-closure-20260910",
+        "codex/hepta-lane-c-gap-closure-20260910",
+    ),
+    "D": (
+        "codex/hepta-lane-d-gap-closure-20260910",
+        "codex/lane-d-gap-closure-20260910",
+    ),
+    "E": (
+        "codex/hepta-lane-e-gap-closure-20260910",
+        "codex/lane-e-gap-closure-20260910",
+    ),
+    "F": (
+        "codex/lane-f-gap-closure-20260910",
+        "codex/hepta-lane-f-gap-closure-20260910",
+    ),
+    "G": (
+        "codex/hepta-lane-g-gap-closure-20260910",
+        "codex/lane-g-gap-closure-20260910",
+    ),
 }
 GENERATED_CONFLICTS = (
     re.compile(r"^codex-rs/Cargo\.lock$"),
@@ -76,7 +97,12 @@ REPOSITORY_COMMANDS: tuple[tuple[str, ...], ...] = (
     ("python3", "scripts/hepta-readiness.py", "generate-status", "--check"),
     ("python3", "scripts/hepta-readiness.py", "verify"),
     ("python3", "scripts/hepta-implementation-dossiers.py", "self-test"),
-    ("python3", "scripts/hepta-implementation-dossiers.py", "generate-status", "--check"),
+    (
+        "python3",
+        "scripts/hepta-implementation-dossiers.py",
+        "generate-status",
+        "--check",
+    ),
     ("python3", "scripts/hepta-implementation-dossiers.py", "verify"),
     ("python3", "scripts/hepta-technical-closure.py", "self-test"),
     ("python3", "scripts/hepta-technical-closure.py", "verify"),
@@ -174,7 +200,9 @@ def git_text(*args: str) -> str:
 
 def write_json(path: Path, value: Any) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(value, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    path.write_text(
+        json.dumps(value, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
+    )
 
 
 def read_json(path: Path) -> Any:
@@ -282,13 +310,17 @@ def merge_lane(lane: str, branch: str) -> dict[str, Any]:
     )
     conflicts: list[str] = []
     auto_resolved = False
+    lane_owner_conflict = False
     if not result.passed:
         conflicts = [
             line.strip()
-            for line in git("diff", "--name-only", "--diff-filter=U", check=False).output.splitlines()
+            for line in git(
+                "diff", "--name-only", "--diff-filter=U", check=False
+            ).output.splitlines()
             if line.strip()
         ]
-        if not generated_conflicts_only(conflicts):
+        lane_owner_conflict = lane == "E" and conflicts == ["docs/lane-e/README.md"]
+        if not generated_conflicts_only(conflicts) and not lane_owner_conflict:
             git("merge", "--abort", check=False)
             return {
                 "lane": lane,
@@ -298,14 +330,20 @@ def merge_lane(lane: str, branch: str) -> dict[str, Any]:
                 "conflicts": conflicts,
                 "outputTail": result.output.splitlines()[-100:],
             }
+        checkout_side = "--theirs" if lane_owner_conflict else "--ours"
         for path in conflicts:
-            git("checkout", "--ours", "--", path)
+            git("checkout", checkout_side, "--", path)
             git("add", "--", path)
+        resolution_class = (
+            "lane-E owner documentation"
+            if lane_owner_conflict
+            else "generated convergence metadata"
+        )
         git(
             "commit",
             "--signoff",
             "-m",
-            f"merge(lane-{lane.lower()}): resolve generated convergence metadata",
+            f"merge(lane-{lane.lower()}): resolve {resolution_class}",
         )
         auto_resolved = True
     return {
@@ -314,9 +352,43 @@ def merge_lane(lane: str, branch: str) -> dict[str, Any]:
         "merged": True,
         "before": before,
         "after": git_text("rev-parse", "HEAD"),
-        "autoResolvedGeneratedOnly": auto_resolved,
+        "autoResolvedGeneratedOnly": auto_resolved and not lane_owner_conflict,
+        "autoResolvedLaneOwnerOnly": lane_owner_conflict,
         "conflicts": conflicts,
     }
+
+
+def repair_argument_comment_blockers() -> dict[str, Any]:
+    repairs = (
+        (
+            Path("codex-rs/http-client/src/tls_backend_fallback.rs"),
+            "walk_error_chain(error, 0, &mut |error| {",
+            "walk_error_chain(error, /* depth */ 0, &mut |error| {",
+            2,
+        ),
+        (
+            Path("codex-rs/hepta-runtime/src/organs.rs"),
+            "Generation::new(1)?",
+            "Generation::new(/* value */ 1)?",
+            1,
+        ),
+    )
+    changed: list[str] = []
+    for path, old, new, expected_count in repairs:
+        source = path.read_text(encoding="utf-8")
+        old_count = source.count(old)
+        new_count = source.count(new)
+        if old_count == expected_count and new_count == 0:
+            path.write_text(source.replace(old, new), encoding="utf-8")
+            changed.append(path.as_posix())
+            continue
+        if old_count == 0 and new_count == expected_count:
+            continue
+        raise RuntimeError(
+            f"argument-comment repair drift for {path}: "
+            f"old={old_count} new={new_count} expected={expected_count}"
+        )
+    return {"changed": changed, "count": len(changed)}
 
 
 def run_generators() -> list[dict[str, Any]]:
@@ -349,7 +421,9 @@ def repair_native_bindings() -> dict[str, Any]:
             continue
         source_text = source_path.read_text(encoding="utf-8", errors="replace")
         missing_exports = [
-            value for value in exports if not isinstance(value, str) or value not in source_text
+            value
+            for value in exports
+            if not isinstance(value, str) or value not in source_text
         ]
         if missing_exports:
             failures.append(
@@ -443,7 +517,9 @@ def add_dependency(manifest: Path, dependency: str, dependency_path: Path) -> bo
     try:
         relative = dependency_path.relative_to(manifest.parent).as_posix()
     except ValueError:
-        relative = os.path.relpath(dependency_path, manifest.parent).replace(os.sep, "/")
+        relative = os.path.relpath(dependency_path, manifest.parent).replace(
+            os.sep, "/"
+        )
     line = f'{dependency} = {{ path = "{relative}" }}\n'
     marker = "[dependencies]\n"
     if marker in text:
@@ -479,7 +555,10 @@ def imported_workspace_crates(package_root: Path) -> set[str]:
 def repair_missing_local_dependencies(metadata: dict[str, Any]) -> dict[str, Any]:
     packages = workspace_package_map(metadata)
     crate_to_package = {
-        package_name.replace("-", "_"): (package_name, Path(row["manifest_path"]).parent)
+        package_name.replace("-", "_"): (
+            package_name,
+            Path(row["manifest_path"]).parent,
+        )
         for package_name, row in packages.items()
     }
     added: list[dict[str, str]] = []
@@ -510,7 +589,9 @@ def canonical_hepta_packages(metadata: dict[str, Any]) -> list[str]:
     packages = workspace_package_map(metadata)
     selected = sorted(name for name in packages if name.startswith("codex-hepta-"))
     if len(selected) < 40:
-        raise RuntimeError(f"canonical Hepta package set is unexpectedly small: {len(selected)}")
+        raise RuntimeError(
+            f"canonical Hepta package set is unexpectedly small: {len(selected)}"
+        )
     return selected
 
 
@@ -569,7 +650,13 @@ def prepare(args: argparse.Namespace) -> int:
     OUT_ROOT.mkdir(parents=True, exist_ok=True)
     git("config", "user.name", "Hepta Parallel Finalizer")
     git("config", "user.email", "noreply@openai.com")
-    git("fetch", "--prune", "origin", "+refs/heads/*:refs/remotes/origin/*", timeout=1800)
+    git(
+        "fetch",
+        "--prune",
+        "origin",
+        "+refs/heads/*:refs/remotes/origin/*",
+        timeout=1800,
+    )
     base_ref, base_commit = resolve_base()
     branches = repository_remote_branches()
     selected = select_lane_branches(branches)
@@ -602,9 +689,15 @@ def prepare(args: argparse.Namespace) -> int:
                 },
             )
             commit_if_dirty("ops: record fail-closed r7 source convergence conflict")
-            git("push", "--force-with-lease", "origin", f"HEAD:refs/heads/{TARGET_BRANCH}")
+            git(
+                "push",
+                "--force-with-lease",
+                "origin",
+                f"HEAD:refs/heads/{TARGET_BRANCH}",
+            )
             return 2
 
+    argument_comment_repair = repair_argument_comment_blockers()
     generator_receipts = run_generators()
     native_before = repair_native_bindings()
     metadata, lock_receipts = normalize_lockfile()
@@ -623,7 +716,9 @@ def prepare(args: argparse.Namespace) -> int:
         timeout=2400,
     )
     native_after_format = repair_native_bindings()
-    source_commit = commit_if_dirty("chore: materialize parallel all-Hepta convergence r7")
+    source_commit = commit_if_dirty(
+        "chore: materialize parallel all-Hepta convergence r7"
+    )
     git("push", "--force-with-lease", "origin", f"HEAD:refs/heads/{TARGET_BRANCH}")
 
     matrix = shard_matrix(packages, args.shards)
@@ -644,6 +739,7 @@ def prepare(args: argparse.Namespace) -> int:
         "sourceCommit": source_commit,
         "selectedLaneBranches": selected,
         "mergeReceipts": merge_receipts,
+        "argumentCommentRepair": argument_comment_repair,
         "generatorReceipts": generator_receipts,
         "nativeBindingBefore": native_before,
         "nativeBindingAfterFormat": native_after_format,
@@ -671,7 +767,9 @@ def prepare(args: argparse.Namespace) -> int:
 def assert_exact_source(expected_sha: str) -> None:
     actual = git_text("rev-parse", "HEAD")
     if actual != expected_sha:
-        raise RuntimeError(f"source identity mismatch: expected={expected_sha} actual={actual}")
+        raise RuntimeError(
+            f"source identity mismatch: expected={expected_sha} actual={actual}"
+        )
     if git("status", "--porcelain", check=False).output.strip():
         raise RuntimeError("qualification checkout is not clean")
 
@@ -700,7 +798,9 @@ def repository_gate(args: argparse.Namespace) -> int:
         ).receipt()
     )
     native = repair_native_bindings()
-    clean_after_native_check = not git("status", "--porcelain", check=False).output.strip()
+    clean_after_native_check = not git(
+        "status", "--porcelain", check=False
+    ).output.strip()
     diff_check = git("diff", "--check", check=False).receipt()
     passed = (
         command_receipts_pass(receipts)
@@ -727,7 +827,9 @@ def package_gate(args: argparse.Namespace) -> int:
     OUT_ROOT.mkdir(parents=True, exist_ok=True)
     assert_exact_source(args.expected_sha)
     packages = json.loads(args.packages_json)
-    if not isinstance(packages, list) or not all(isinstance(value, str) for value in packages):
+    if not isinstance(packages, list) or not all(
+        isinstance(value, str) for value in packages
+    ):
         raise ValueError("packages-json must be a JSON string array")
     receipts: list[dict[str, Any]] = []
     for package in packages:
@@ -777,13 +879,16 @@ def package_gate(args: argparse.Namespace) -> int:
     return 0 if passed else 3
 
 
-def load_artifact_receipts(artifact_root: Path) -> tuple[list[dict[str, Any]], list[str]]:
+def load_artifact_receipts(
+    artifact_root: Path,
+) -> tuple[list[dict[str, Any]], list[str]]:
     receipts: list[dict[str, Any]] = []
     errors: list[str] = []
     for path in artifact_root.rglob("*.json"):
-        if path.name not in {"PREPARE.json", "REPOSITORY_GATE.json"} and not path.name.startswith(
-            "PACKAGE_GATE_"
-        ):
+        if path.name not in {
+            "PREPARE.json",
+            "REPOSITORY_GATE.json",
+        } and not path.name.startswith("PACKAGE_GATE_"):
             continue
         try:
             value = read_json(path)
@@ -822,7 +927,9 @@ def finalize(args: argparse.Namespace) -> int:
     repository_receipts = [
         value for value in receipts if "nativeBinding" in value and "receipts" in value
     ]
-    package_receipts = [value for value in receipts if "shard" in value and "packages" in value]
+    package_receipts = [
+        value for value in receipts if "shard" in value and "packages" in value
+    ]
     source_mismatches = [
         value.get("artifactPath", "unknown")
         for value in receipts
@@ -931,7 +1038,9 @@ def finalize(args: argparse.Namespace) -> int:
                 f"`{receipt.get('outputSha256')}`."
             )
     elif internal_passed:
-        lines.append("- none detected by exact-source, closed-world, document, format, test and lint gates")
+        lines.append(
+            "- none detected by exact-source, closed-world, document, format, test and lint gates"
+        )
     else:
         lines.extend(
             [
@@ -955,7 +1064,9 @@ def finalize(args: argparse.Namespace) -> int:
         ]
     )
     (OUT_ROOT / "REPORT.md").write_text("\n".join(lines), encoding="utf-8")
-    receipt_commit = commit_if_dirty("docs: bind parallel all-Hepta r7 qualification receipts")
+    receipt_commit = commit_if_dirty(
+        "docs: bind parallel all-Hepta r7 qualification receipts"
+    )
     git("push", "--force-with-lease", "origin", f"HEAD:refs/heads/{TARGET_BRANCH}")
     set_output("receipt_commit", receipt_commit)
     set_output("internal_passed", "true" if internal_passed else "false")

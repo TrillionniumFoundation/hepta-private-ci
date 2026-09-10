@@ -109,7 +109,7 @@ pub(crate) fn should_retry_with_rustls(error: &reqwest::Error) -> bool {
 
 pub(crate) fn has_tls_error(error: &(dyn Error + 'static)) -> bool {
     let mut has_tls_error = false;
-    walk_error_chain(error, 0, &mut |error| {
+    walk_error_chain(error, /* depth */ 0, &mut |error| {
         has_tls_error |= error.is::<rustls::Error>() || error.is::<native_tls::Error>();
     });
     has_tls_error
@@ -119,7 +119,7 @@ fn has_retryable_tls_error(error: &(dyn Error + 'static)) -> bool {
     let mut recognized_negotiation_failure = false;
     let mut certificate_failure = false;
 
-    walk_error_chain(error, 0, &mut |error| {
+    walk_error_chain(error, /* depth */ 0, &mut |error| {
         let mut message = error.to_string().to_ascii_lowercase();
         if error.is::<rustls::Error>() {
             message.push(' ');

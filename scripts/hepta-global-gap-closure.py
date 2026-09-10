@@ -39,20 +39,43 @@ LOG_DIR = OUT / "logs"
 
 LANE_ORDER = ("A", "B", "C", "D", "E", "F", "G")
 LANE_PREFERENCES: dict[str, tuple[str, ...]] = {
-    "A": ("codex/lane-a-gap-closure-20260910", "codex/hepta-lane-a-gap-closure-20260910"),
-    "B": ("codex/hepta-lane-b-gap-closure-20260910", "codex/lane-b-gap-closure-20260910"),
-    "C": ("codex/lane-c-full-gap-closure-20260910", "codex/hepta-lane-c-gap-closure-20260910"),
-    "D": ("codex/hepta-lane-d-gap-closure-20260910", "codex/lane-d-gap-closure-20260910"),
-    "E": ("codex/hepta-lane-e-gap-closure-20260910", "codex/lane-e-gap-closure-20260910"),
-    "F": ("codex/lane-f-gap-closure-20260910", "codex/hepta-lane-f-gap-closure-20260910"),
-    "G": ("codex/hepta-lane-g-gap-closure-20260910", "codex/lane-g-gap-closure-20260910"),
+    "A": (
+        "codex/lane-a-gap-closure-20260910",
+        "codex/hepta-lane-a-gap-closure-20260910",
+    ),
+    "B": (
+        "codex/hepta-lane-b-gap-closure-20260910",
+        "codex/lane-b-gap-closure-20260910",
+    ),
+    "C": (
+        "codex/lane-c-full-gap-closure-20260910",
+        "codex/hepta-lane-c-gap-closure-20260910",
+    ),
+    "D": (
+        "codex/hepta-lane-d-gap-closure-20260910",
+        "codex/lane-d-gap-closure-20260910",
+    ),
+    "E": (
+        "codex/hepta-lane-e-gap-closure-20260910",
+        "codex/lane-e-gap-closure-20260910",
+    ),
+    "F": (
+        "codex/lane-f-gap-closure-20260910",
+        "codex/hepta-lane-f-gap-closure-20260910",
+    ),
+    "G": (
+        "codex/hepta-lane-g-gap-closure-20260910",
+        "codex/lane-g-gap-closure-20260910",
+    ),
 }
 
 GENERATED_CONFLICT_PATTERNS = (
     re.compile(r"^codex-rs/Cargo\.lock$"),
     re.compile(r"^docs/(?:STATUS\.md|CURRENT\.json)$"),
     re.compile(r"^docs/.*/STATUS(?:\.md|\.json)$"),
-    re.compile(r"^qualification/module-execution-dossiers/(?:NATIVE_BINDINGS|IMPLEMENTATION_COMPLETION)\.json$"),
+    re.compile(
+        r"^qualification/module-execution-dossiers/(?:NATIVE_BINDINGS|IMPLEMENTATION_COMPLETION)\.json$"
+    ),
 )
 
 VERIFY_COMMANDS: tuple[tuple[str, ...], ...] = (
@@ -60,12 +83,25 @@ VERIFY_COMMANDS: tuple[tuple[str, ...], ...] = (
     ("python3", "scripts/hepta-readiness.py", "generate-status", "--check"),
     ("python3", "scripts/hepta-readiness.py", "verify"),
     ("python3", "scripts/hepta-implementation-dossiers.py", "self-test"),
-    ("python3", "scripts/hepta-implementation-dossiers.py", "generate-status", "--check"),
+    (
+        "python3",
+        "scripts/hepta-implementation-dossiers.py",
+        "generate-status",
+        "--check",
+    ),
     ("python3", "scripts/hepta-implementation-dossiers.py", "verify"),
     ("python3", "scripts/hepta-technical-closure.py", "self-test"),
     ("python3", "scripts/hepta-technical-closure.py", "verify"),
-    ("python3", "qualification/module-execution-dossiers/implementation_contracts.py", "self-test"),
-    ("python3", "qualification/module-execution-dossiers/implementation_contracts.py", "verify-repository"),
+    (
+        "python3",
+        "qualification/module-execution-dossiers/implementation_contracts.py",
+        "self-test",
+    ),
+    (
+        "python3",
+        "qualification/module-execution-dossiers/implementation_contracts.py",
+        "verify-repository",
+    ),
     ("python3", "scripts/hepta-module-docs.py", "self-test"),
     ("python3", "scripts/hepta-module-docs.py", "verify"),
     ("python3", "scripts/hepta-algorithm-docs.py", "self-test"),
@@ -164,7 +200,9 @@ def git_text(*args: str) -> str:
 
 def write_json(path: Path, value: Any) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(value, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    path.write_text(
+        json.dumps(value, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
+    )
 
 
 def available_remote_branches() -> dict[str, int]:
@@ -204,7 +242,11 @@ def select_lane_branches(branches: dict[str, int]) -> dict[str, str | None]:
                 and ("gap" in branch.lower() or "closure" in branch.lower())
                 and not branch.startswith("ops/hepta-global-gap-closure")
             ]
-            selected[lane] = max(candidates, key=lambda value: branches[value]) if candidates else None
+            selected[lane] = (
+                max(candidates, key=lambda value: branches[value])
+                if candidates
+                else None
+            )
     return selected
 
 
@@ -229,7 +271,9 @@ def merge_lane(lane: str, branch: str) -> dict[str, Any]:
     if not result.passed:
         conflicts = [
             line.strip()
-            for line in git("diff", "--name-only", "--diff-filter=U", check=False).output.splitlines()
+            for line in git(
+                "diff", "--name-only", "--diff-filter=U", check=False
+            ).output.splitlines()
             if line.strip()
         ]
         if conflicts and all(is_generated_conflict(path) for path in conflicts):
@@ -360,10 +404,16 @@ def affected_packages(base_commit: str) -> tuple[list[str], dict[str, Any]]:
     metadata = json.loads(metadata_result.output)
     packages = metadata.get("packages", [])
     workspace_members = set(metadata.get("workspace_members", []))
-    by_id = {package["id"]: package for package in packages if package.get("id") in workspace_members}
+    by_id = {
+        package["id"]: package
+        for package in packages
+        if package.get("id") in workspace_members
+    }
     changed = {
         line.strip()
-        for line in git("diff", "--name-only", f"{base_commit}...HEAD").output.splitlines()
+        for line in git(
+            "diff", "--name-only", f"{base_commit}...HEAD"
+        ).output.splitlines()
         if line.strip()
     }
     direct: set[str] = set()
@@ -373,7 +423,10 @@ def affected_packages(base_commit: str) -> tuple[list[str], dict[str, Any]]:
             package_root = manifest.parent.relative_to(ROOT).as_posix()
         except ValueError:
             continue
-        if any(path == package_root or path.startswith(package_root + "/") for path in changed):
+        if any(
+            path == package_root or path.startswith(package_root + "/")
+            for path in changed
+        ):
             direct.add(package_id)
 
     reverse: dict[str, set[str]] = defaultdict(set)
@@ -514,7 +567,13 @@ def main() -> int:
     LOG_DIR.mkdir(parents=True, exist_ok=True)
     git("config", "user.name", "Hepta Convergence Controller")
     git("config", "user.email", "noreply@openai.com")
-    git("fetch", "--prune", "origin", "+refs/heads/*:refs/remotes/origin/*", timeout=1800)
+    git(
+        "fetch",
+        "--prune",
+        "origin",
+        "+refs/heads/*:refs/remotes/origin/*",
+        timeout=1800,
+    )
 
     branches = available_remote_branches()
     selected = select_lane_branches(branches)
@@ -528,7 +587,9 @@ def main() -> int:
     for lane in LANE_ORDER:
         branch = selected[lane]
         if branch is None:
-            merge_receipts.append({"lane": lane, "branch": None, "status": "no_current_candidate"})
+            merge_receipts.append(
+                {"lane": lane, "branch": None, "status": "no_current_candidate"}
+            )
             continue
         receipt = merge_lane(lane, branch)
         merge_receipts.append(receipt)
@@ -564,7 +625,9 @@ def main() -> int:
         timeout=1800,
     )
     native_repair_after_format = repair_native_binding_hashes()
-    source_commit = commit_if_dirty("chore: materialize dependency-ordered Hepta convergence")
+    source_commit = commit_if_dirty(
+        "chore: materialize dependency-ordered Hepta convergence"
+    )
 
     verifier_receipts = run_repository_verifiers()
     packages, package_selection = affected_packages(base_commit)
@@ -626,7 +689,9 @@ def main() -> int:
         "",
     ]
     for lane in LANE_ORDER:
-        report_lines.append(f"- Lane {lane}: `{selected[lane] or 'no current candidate'}`")
+        report_lines.append(
+            f"- Lane {lane}: `{selected[lane] or 'no current candidate'}`"
+        )
     report_lines.extend(["", "## Remaining repository blockers", ""])
     if failed_commands:
         for receipt in failed_commands:
@@ -635,7 +700,9 @@ def main() -> int:
                 f"output sha256 `{receipt.get('outputSha256')}`."
             )
     else:
-        report_lines.append("- none detected by the exact-source, document, format, test and lint gates")
+        report_lines.append(
+            "- none detected by the exact-source, document, format, test and lint gates"
+        )
     report_lines.extend(
         [
             "",
@@ -657,7 +724,11 @@ def main() -> int:
     git("commit", "--amend", "--no-edit")
     final_commit = git_text("rev-parse", "HEAD")
     git("push", "--force-with-lease", "origin", f"HEAD:refs/heads/{TARGET_BRANCH}")
-    print(json.dumps({"target": TARGET_BRANCH, "head": final_commit, "passed": repository_passed}))
+    print(
+        json.dumps(
+            {"target": TARGET_BRANCH, "head": final_commit, "passed": repository_passed}
+        )
+    )
     return 0 if repository_passed else 3
 
 

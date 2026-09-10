@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Qualify every canonical Hepta workspace package on one final candidate tree."""
+
 from __future__ import annotations
 
 import hashlib
@@ -29,7 +30,12 @@ VERIFY_COMMANDS: tuple[tuple[str, ...], ...] = (
     ("python3", "scripts/hepta-readiness.py", "generate-status", "--check"),
     ("python3", "scripts/hepta-readiness.py", "verify"),
     ("python3", "scripts/hepta-implementation-dossiers.py", "self-test"),
-    ("python3", "scripts/hepta-implementation-dossiers.py", "generate-status", "--check"),
+    (
+        "python3",
+        "scripts/hepta-implementation-dossiers.py",
+        "generate-status",
+        "--check",
+    ),
     ("python3", "scripts/hepta-implementation-dossiers.py", "verify"),
     ("python3", "scripts/hepta-technical-closure.py", "self-test"),
     ("python3", "scripts/hepta-technical-closure.py", "verify"),
@@ -90,7 +96,9 @@ def run(argv: Iterable[str], *, timeout: int = 7200) -> dict[str, Any]:
         "command": list(args),
         "returnCode": code,
         "durationSeconds": round(time.monotonic() - started, 3),
-        "outputSha256": hashlib.sha256(output.encode("utf-8", errors="replace")).hexdigest(),
+        "outputSha256": hashlib.sha256(
+            output.encode("utf-8", errors="replace")
+        ).hexdigest(),
         "tail": output.splitlines()[-60:],
     }
 
@@ -113,7 +121,9 @@ def git_text(*args: str) -> str:
 
 def write_json(path: Path, value: Any) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(value, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    path.write_text(
+        json.dumps(value, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
+    )
 
 
 def parse_json(output_lines: list[str]) -> dict[str, Any]:
@@ -161,10 +171,18 @@ def repair_native_bindings() -> dict[str, Any]:
             failures.append({"path": source, "reason": "missing source"})
             continue
         source_text = source_path.read_text(encoding="utf-8", errors="replace")
-        missing_exports = [value for value in exports if not isinstance(value, str) or value not in source_text]
+        missing_exports = [
+            value
+            for value in exports
+            if not isinstance(value, str) or value not in source_text
+        ]
         if missing_exports:
             failures.append(
-                {"path": source, "reason": "missing exports", "exports": missing_exports}
+                {
+                    "path": source,
+                    "reason": "missing exports",
+                    "exports": missing_exports,
+                }
             )
         actual_receipt = git("hash-object", "--", source)
         if actual_receipt["returnCode"] != 0:
@@ -280,7 +298,9 @@ def main() -> int:
         if row.get("id") in workspace and row.get("name", "").startswith("codex-hepta-")
     )
     if len(packages) < 40:
-        raise RuntimeError(f"canonical Hepta package set is unexpectedly small: {len(packages)}")
+        raise RuntimeError(
+            f"canonical Hepta package set is unexpectedly small: {len(packages)}"
+        )
     selectors: list[str] = []
     for package in packages:
         selectors.extend(("-p", package))
@@ -378,7 +398,9 @@ def main() -> int:
             )
         )
         native_after_repair = repair_native_bindings()
-        repaired_commit = commit_if_dirty("fix: apply all-Hepta deterministic final repairs")
+        repaired_commit = commit_if_dirty(
+            "fix: apply all-Hepta deterministic final repairs"
+        )
         verifier_receipts = [
             run(command, timeout=2400)
             for command in VERIFY_COMMANDS
@@ -492,7 +514,14 @@ def main() -> int:
     )
     failed = [
         receipt
-        for receipt in (*generator_receipts, *lock_receipts, *verifier_receipts, test_receipt, clippy_receipt, diff_check)
+        for receipt in (
+            *generator_receipts,
+            *lock_receipts,
+            *verifier_receipts,
+            test_receipt,
+            clippy_receipt,
+            diff_check,
+        )
         if receipt.get("returnCode") != 0
     ]
     lines = [
@@ -526,7 +555,9 @@ def main() -> int:
         ]
     )
     (OUT / "REPORT.md").write_text("\n".join(lines), encoding="utf-8")
-    final_commit = commit_if_dirty("docs: bind final all-Hepta convergence qualification")
+    final_commit = commit_if_dirty(
+        "docs: bind final all-Hepta convergence qualification"
+    )
     pushed = git("push", "--force-with-lease", "origin", f"HEAD:refs/heads/{TARGET}")
     if pushed["returnCode"] != 0:
         raise RuntimeError("failed to push final candidate")

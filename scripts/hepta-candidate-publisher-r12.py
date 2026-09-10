@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Publish one canonical internal candidate from a stable r11 seal."""
+
 from __future__ import annotations
 
 import json
@@ -22,6 +23,34 @@ TARGET = os.environ.get(
 )
 SEAL_STATUS = "qualification/global-gap-closure-seal-r11/STATUS.json"
 OUT = ROOT / "qualification" / "global-gap-closure-final-candidate"
+PUBLICATION_BASE_REF = os.environ.get(
+    "HEPTA_PUBLICATION_BASE",
+    "origin/ops/hepta-final-convergence-review-anchor-20260909",
+)
+TEMPORARY_MUTATION_PATHS = (
+    ".github/workflows/hepta-candidate-publisher-r12.yml",
+    ".github/workflows/hepta-fixed-point-sealer-r10.yml",
+    ".github/workflows/hepta-fixed-point-sealer-r11.yml",
+    ".github/workflows/hepta-global-finalizer-r6.yml",
+    ".github/workflows/hepta-global-finalizer-r7.yml",
+    ".github/workflows/hepta-global-finalizer-r8.yml",
+    ".github/workflows/hepta-global-finalizer-r9.yml",
+    ".github/workflows/hepta-global-gap-closure-controller-r2.yml",
+    ".github/workflows/hepta-global-gap-closure-controller-r3.yml",
+    ".github/workflows/hepta-global-gap-closure-controller-r4.yml",
+    ".github/workflows/hepta-global-gap-closure-controller.yml",
+    ".github/workflows/tmp-hepta-controller-remediation.yml",
+    "scripts/apply-hepta-remaining-blocker-remediation.sh",
+    "scripts/hepta-candidate-publisher-r12.py",
+    "scripts/hepta-fixed-point-sealer-r10.py",
+    "scripts/hepta-fixed-point-sealer-r11.py",
+    "scripts/hepta-global-finalizer-r6.py",
+    "scripts/hepta-global-finalizer-r7.py",
+    "scripts/hepta-global-finalizer-r8-fixed.py",
+    "scripts/hepta-global-finalizer-r8.py",
+    "scripts/hepta-global-gap-closure-r4.py",
+    "scripts/hepta-global-gap-closure.py",
+)
 
 
 def run(argv: Iterable[str], *, check: bool = True, timeout: int = 1800) -> str:
@@ -50,7 +79,9 @@ def git(*args: str, check: bool = True, timeout: int = 1800) -> str:
 
 def write_json(path: Path, value: Any) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(value, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    path.write_text(
+        json.dumps(value, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
+    )
 
 
 def wait_for_stable_seal() -> tuple[str, dict[str, Any]]:
@@ -109,6 +140,66 @@ def commit_if_dirty(message: str) -> str:
     git("add", "-A")
     git("commit", "--signoff", "-m", message)
     return git("rev-parse", "HEAD")
+
+
+def remove_temporary_mutation_carriers() -> None:
+    git("rm", "-f", "--ignore-unmatch", "--", *TEMPORARY_MUTATION_PATHS)
+    survivors = [path for path in TEMPORARY_MUTATION_PATHS if (ROOT / path).exists()]
+    if survivors:
+        raise RuntimeError(f"temporary mutation carriers survived cleanup: {survivors}")
+
+
+def assert_no_candidate_mutation_workflows(publication_base: str) -> None:
+    changed = git(
+        "diff",
+        "--name-only",
+        publication_base,
+        "--",
+        ".github/workflows",
+        check=False,
+    ).splitlines()
+    violations: list[str] = []
+    for path in sorted(set(changed)):
+        candidate = ROOT / path
+        if not candidate.is_file() or candidate.suffix not in {".yml", ".yaml"}:
+            continue
+        source = candidate.read_text(encoding="utf-8", errors="replace").lower()
+        if (
+            "contents: write" in source
+            or "pull-requests: write" in source
+            or "persist-credentials: true" in source
+        ):
+            violations.append(path)
+    if violations:
+        raise RuntimeError(
+            f"candidate-controlled mutation workflows remain: {violations}"
+        )
+
+
+def publish_as_direct_child(staged_commit: str) -> tuple[str, str]:
+    publication_base = git(
+        "rev-parse",
+        "--verify",
+        f"{PUBLICATION_BASE_REF}^{{commit}}",
+    )
+    candidate_tree = git("rev-parse", f"{staged_commit}^{{tree}}")
+    candidate_commit = git(
+        "commit-tree",
+        candidate_tree,
+        "-p",
+        publication_base,
+        "-m",
+        "fix(hepta): publish exact single-parent all-lanes blocker closure",
+        "-m",
+        "Signed-off-by: Hepta Canonical Candidate Publisher <noreply@openai.com>",
+    )
+    git("reset", "--hard", candidate_commit)
+    parents = git("show", "-s", "--format=%P", candidate_commit).split()
+    if parents != [publication_base]:
+        raise RuntimeError(
+            f"candidate parent mismatch: expected {[publication_base]}, got {parents}"
+        )
+    return candidate_commit, publication_base
 
 
 def main() -> int:
@@ -177,15 +268,26 @@ def main() -> int:
         ),
         encoding="utf-8",
     )
-    candidate_commit = commit_if_dirty(
+    publication_base = git(
+        "rev-parse",
+        "--verify",
+        f"{PUBLICATION_BASE_REF}^{{commit}}",
+    )
+    remove_temporary_mutation_carriers()
+    assert_no_candidate_mutation_workflows(publication_base)
+    staged_commit = commit_if_dirty(
         "docs: publish canonical all-Hepta internal candidate r12"
     )
+    candidate_commit, publication_base = publish_as_direct_child(staged_commit)
     git("push", "--force-with-lease", "origin", f"HEAD:refs/heads/{TARGET}")
     print(
         json.dumps(
             {
                 "targetBranch": TARGET,
                 "candidateCommit": candidate_commit,
+                "publicationBase": publication_base,
+                "directParentVerified": True,
+                "temporaryMutationCarriersPresent": False,
                 "fixedPointStable": True,
                 "repositoryInternalGapsClosed": True,
             }

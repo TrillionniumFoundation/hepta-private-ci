@@ -6,6 +6,7 @@ normalizes local workspace dependencies, lock state, formatting and fixable
 compiler/Clippy diagnostics, then delegates immutable repository/package gates
 and receipt binding to the r7 implementation under an r8 namespace.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -64,7 +65,10 @@ def source_is_usable(ref: str) -> bool:
             value = json.loads(shown.output)
         except json.JSONDecodeError:
             continue
-        if value.get("prepared") is False and value.get("repositoryInternalValidationPassed") is not True:
+        if (
+            value.get("prepared") is False
+            and value.get("repositoryInternalValidationPassed") is not True
+        ):
             return False
     return True
 
@@ -88,7 +92,9 @@ def wait_for_source() -> tuple[str, str]:
     raise RuntimeError("no usable global convergence candidate appeared")
 
 
-def combined_package_command(prefix: tuple[str, ...], packages: list[str]) -> tuple[str, ...]:
+def combined_package_command(
+    prefix: tuple[str, ...], packages: list[str]
+) -> tuple[str, ...]:
     selectors: list[str] = []
     for package in packages:
         selectors.extend(("-p", package))
@@ -178,7 +184,9 @@ def prepare_r8(args: argparse.Namespace) -> int:
         ),
         timeout=18000,
     )
-    source_sha = r7.commit_if_dirty("fix: apply deterministic all-Hepta convergence repairs r8")
+    source_sha = r7.commit_if_dirty(
+        "fix: apply deterministic all-Hepta convergence repairs r8"
+    )
     r7.git("push", "--force-with-lease", "origin", f"HEAD:refs/heads/{TARGET_BRANCH}")
 
     matrix = r7.shard_matrix(packages, args.shards)

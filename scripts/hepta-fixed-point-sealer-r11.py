@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Race-free wrapper for the r10 fixed-point sealer."""
+
 from __future__ import annotations
 
 import importlib.util

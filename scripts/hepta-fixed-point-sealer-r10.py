@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Seal two independently qualified all-Hepta repair passes at a stable fixed point."""
+
 from __future__ import annotations
 
 import hashlib
@@ -64,7 +65,9 @@ def git(*args: str, check: bool = True, timeout: int = 1800) -> str:
 
 def write_json(path: Path, value: Any) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(value, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    path.write_text(
+        json.dumps(value, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
+    )
 
 
 def ref_exists(ref: str) -> bool:

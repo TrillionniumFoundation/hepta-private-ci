@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Identity-binding wrapper for the deterministic r8 repair replay."""
+
 from __future__ import annotations
 
 import importlib.util
