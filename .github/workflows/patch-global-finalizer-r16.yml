@@ -21,7 +21,7 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 20
     env:
-      EXPECTED_PARENT: 1d2eae6f7e624608aceed365b3d7415ad0363eb2
+      EXPECTED_PARENT: a077db06ed2be960cebe446b4e8b1f776ead015b
       TARGET_BRANCH: ops/hepta-global-gap-closure-controller-20260910-r1
       TARGET_CANDIDATE: integration/hepta-all-gap-closure-20260910-r7
       FINALIZER: scripts/hepta-global-finalizer-r7.py
@@ -67,7 +67,7 @@ jobs:
           set -euo pipefail
           git config user.name 'hepta-global-finalizer-patcher'
           git config user.email 'actions@users.noreply.github.com'
-          git rm --ignore-unmatch \
+          git rm -f --ignore-unmatch \
             .github/workflows/patch-global-finalizer-r16.yml \
             scripts/patch-global-finalizer-r16.py
           git add "${FINALIZER}"
