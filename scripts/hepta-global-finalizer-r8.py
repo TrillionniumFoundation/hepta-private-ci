@@ -305,8 +305,7 @@ def repair_readiness_closure_appendices() -> dict[str, Any]:
             raise RuntimeError(f"unsafe readiness path: {path_value}")
         document_path = ROOT / relative
         original = document_path.read_text(encoding="utf-8")
-        if heading in original:
-            continue
+        body = original.split(heading, 1)[0].rstrip()
         appendix_lines = [
             heading,
             "",
@@ -323,7 +322,9 @@ def repair_readiness_closure_appendices() -> dict[str, Any]:
             *[f"- `{value}`" for value in gap_ids],
             "",
         ]
-        rendered = original.rstrip() + "\n\n" + "\n".join(appendix_lines)
+        rendered = body + "\n\n" + "\n".join(appendix_lines)
+        if rendered == original:
+            continue
         document_path.write_text(rendered, encoding="utf-8")
         updated.append(
             {
