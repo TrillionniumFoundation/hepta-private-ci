@@ -7,11 +7,16 @@
 
 #![forbid(unsafe_code)]
 
+mod durable_registry;
 mod legacy;
 mod parameter_v2;
 mod registry;
 mod types;
 
+pub use durable_registry::DurableProposalAppendReceiptV1;
+pub use durable_registry::DurableProposalRegistry;
+pub use durable_registry::DurableProposalRegistryError;
+pub use durable_registry::DurableRegistryAnchorV1;
 pub use parameter_v2::propose_v2;
 pub use parameter_v2::verify_parameter_proposal_v2;
 pub use registry::ProposalRegistry;
