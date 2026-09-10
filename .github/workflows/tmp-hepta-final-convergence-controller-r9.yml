@@ -1,0 +1,268 @@
+name: Temporary Hepta final convergence controller r9
+
+on:
+  push:
+    branches:
+      - "ops/hepta-final-convergence-controller-20260910-r9"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: hepta-final-convergence-controller-r9
+  cancel-in-progress: false
+
+jobs:
+  converge:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      BASE_REF: integration/hepta-all-gap-closure-20260910-sealed-r11
+      CANDIDATE_REF: candidate/hepta-all-gap-closure-final-20260910-r13
+      TARGET_REF: integration/vnext-main-20260811
+      LANE_B_SHA: b61174b7f25ebd8ce35d51599b2d5b57f6f6bd40
+      LANE_C_SHA: 77c29660fc44487bb639a99ee0031392b86473b3
+      LANE_D_SHA: 1cd6135bc6f5f875146a7e5616960ef9a4f20e1a
+      LANE_F_SHA: f1f0148acd08f44fe7a4b8fa3b532d686fb5a71e
+      LANE_G_SHA: 21dfca6cf2f97d0f1712caa5e19790022d0f1d46
+    steps:
+      - name: Check out trusted controller
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Construct exact fail-closed candidate
+        id: construct
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "Hepta convergence controller"
+          git config user.email "hepta-convergence-controller@users.noreply.github.com"
+          git fetch --prune origin "+refs/heads/*:refs/remotes/origin/*"
+
+          base_sha="$(git rev-parse "refs/remotes/origin/${BASE_REF}")"
+          target_sha="$(git rev-parse "refs/remotes/origin/${TARGET_REF}")"
+          git checkout --detach "$base_sha"
+          git switch -C "$CANDIDATE_REF"
+
+          mkdir -p qualification/final-convergence-r13
+          merge_log="$RUNNER_TEMP/merge-log.tsv"
+          : > "$merge_log"
+
+          merge_one() {
+            lane="$1"
+            sha="$2"
+            git cat-file -e "${sha}^{commit}"
+            if git merge-base --is-ancestor "$sha" HEAD; then
+              printf '%s\t%s\talready_ancestor\n' "$lane" "$sha" >> "$merge_log"
+              return
+            fi
+            before="$(git rev-parse HEAD)"
+            if ! git merge --no-ff --no-edit "$sha"; then
+              conflicts="$(git diff --name-only --diff-filter=U | tr '\n' ' ')"
+              git merge --abort || true
+              printf '%s\t%s\tconflict:%s\n' "$lane" "$sha" "$conflicts" >> "$merge_log"
+              echo "Source conflict while absorbing $lane@$sha: $conflicts" >&2
+              exit 41
+            fi
+            after="$(git rev-parse HEAD)"
+            printf '%s\t%s\tmerged:%s:%s\n' "$lane" "$sha" "$before" "$after" >> "$merge_log"
+          }
+
+          merge_one lane-b "$LANE_B_SHA"
+          merge_one lane-c "$LANE_C_SHA"
+          merge_one lane-d "$LANE_D_SHA"
+          merge_one lane-f "$LANE_F_SHA"
+          merge_one lane-g "$LANE_G_SHA"
+
+          python3 <<'PY'
+          from pathlib import Path
+
+          roots = [
+              Path("codex-rs/hepta-shadow-qualification/BUILD.bazel"),
+              Path("codex-rs/hepta-shadow-qualification/BUILD"),
+          ]
+          build = next((path for path in roots if path.exists()), None)
+          if build is None:
+              raise SystemExit("hepta-shadow-qualification Bazel BUILD file not found")
+
+          text = build.read_text(encoding="utf-8")
+          required = [
+              "//codex-rs/hepta-bellman-operator:lib",
+              "//codex-rs/hepta-intelligence-eval:lib",
+          ]
+          if all(item in text for item in required):
+              print("shadow qualification deps already closed")
+              raise SystemExit(0)
+
+          marker = 'name = "unit_tests"'
+          pos = text.find(marker)
+          if pos < 0:
+              raise SystemExit(f"unit_tests target not found in {build}")
+          start = text.rfind("rust_test(", 0, pos)
+          if start < 0:
+              raise SystemExit(f"rust_test block not found in {build}")
+
+          depth = 0
+          end = None
+          in_string = False
+          escaped = False
+          for idx in range(start, len(text)):
+              ch = text[idx]
+              if in_string:
+                  if escaped:
+                      escaped = False
+                  elif ch == "\\":
+                      escaped = True
+                  elif ch == '"':
+                      in_string = False
+                  continue
+              if ch == '"':
+                  in_string = True
+              elif ch == "(":
+                  depth += 1
+              elif ch == ")":
+                  depth -= 1
+                  if depth == 0:
+                      end = idx + 1
+                      break
+          if end is None:
+              raise SystemExit(f"unterminated rust_test block in {build}")
+
+          block = text[start:end]
+          missing = [item for item in required if item not in block]
+          if not missing:
+              raise SystemExit(0)
+
+          deps_pos = block.find("deps = [")
+          if deps_pos >= 0:
+              close = block.find("]", deps_pos)
+              if close < 0:
+                  raise SystemExit("unterminated deps list")
+              indent = "        "
+              insertion = "".join(f'{indent}"{item}",\n' for item in missing)
+              block = block[:close] + insertion + block[close:]
+          else:
+              close = block.rfind(")")
+              insertion = "    deps = [\n" + "".join(
+                  f'        "{item}",\n' for item in missing
+              ) + "    ],\n"
+              block = block[:close] + insertion + block[close:]
+
+          updated = text[:start] + block + text[end:]
+          build.write_text(updated, encoding="utf-8")
+          print(f"closed shadow qualification deps in {build}")
+          PY
+
+          python3 <<'PY'
+          from __future__ import annotations
+          import json
+          import os
+          import subprocess
+          from pathlib import Path
+
+          def git(*args: str) -> str:
+              return subprocess.check_output(["git", *args], text=True).strip()
+
+          merge_rows = []
+          with open(os.environ["RUNNER_TEMP"] + "/merge-log.tsv", encoding="utf-8") as handle:
+              for line in handle:
+                  lane, source, result = line.rstrip("\n").split("\t", 2)
+                  merge_rows.append({"lane": lane, "sourceCommit": source, "result": result})
+
+          crt_matches = []
+          needles = ("v8_ci_static", "libcmt", "libucrt", "vcruntime", "NODEFAULTLIB")
+          allowed_roots = [Path(".github"), Path("codex-rs"), Path("bazel"), Path("third_party")]
+          for root in allowed_roots:
+              if not root.exists():
+                  continue
+              for path in root.rglob("*"):
+                  if not path.is_file() or path.stat().st_size > 2_000_000:
+                      continue
+                  try:
+                      content = path.read_text(encoding="utf-8")
+                  except (UnicodeDecodeError, OSError):
+                      continue
+                  hits = [needle for needle in needles if needle.lower() in content.lower()]
+                  if hits:
+                      crt_matches.append({"path": str(path), "tokens": hits})
+
+          status = {
+              "schemaVersion": 1,
+              "candidateRef": os.environ["CANDIDATE_REF"],
+              "targetRef": os.environ["TARGET_REF"],
+              "targetCommit": git("rev-parse", f"refs/remotes/origin/{os.environ['TARGET_REF']}"),
+              "sealedBaseRef": os.environ["BASE_REF"],
+              "sealedBaseCommit": git("rev-parse", f"refs/remotes/origin/{os.environ['BASE_REF']}"),
+              "candidateCommitBeforeStatus": git("rev-parse", "HEAD"),
+              "absorbedLanes": merge_rows,
+              "knownRepairs": {
+                  "shadowQualificationBazelDeps": True,
+                  "sourceConflictAutoResolution": False,
+                  "productionAuthorityGranted": False,
+                  "externalAcceptanceSelfIssued": False,
+              },
+              "windowsCrtOwnershipSearch": crt_matches,
+              "repositoryInternalState": "candidate_constructed_pending_exact_head_ci",
+              "externalGates": "retained",
+          }
+          out = Path("qualification/final-convergence-r13/STATUS.json")
+          out.write_text(json.dumps(status, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+          PY
+
+          git add codex-rs/hepta-shadow-qualification/BUILD* qualification/final-convergence-r13/STATUS.json 2>/dev/null || true
+          if ! git diff --cached --quiet; then
+            git commit -m "fix(convergence): absorb final Lane heads and close Bazel dependency graph"
+          fi
+
+          candidate_sha="$(git rev-parse HEAD)"
+          candidate_tree="$(git rev-parse HEAD^{tree})"
+          git diff --check "$target_sha...$candidate_sha"
+          git push --force-with-lease origin "HEAD:refs/heads/${CANDIDATE_REF}"
+
+          pr_number="$(gh pr list --repo "$GITHUB_REPOSITORY" --state open --head "$CANDIDATE_REF" --json number --jq '.[0].number // empty')"
+          body_file="$RUNNER_TEMP/pr-body.md"
+          cat > "$body_file" <<EOF
+          ## Exact source
+
+          - target: \\`${TARGET_REF}@${target_sha}\\`
+          - sealed base: \\`${BASE_REF}@${base_sha}\\`
+          - candidate: \\`${CANDIDATE_REF}@${candidate_sha}\\`
+          - candidate tree: \\`${candidate_tree}\\`
+
+          ## Construction
+
+          The candidate starts from the current sealed global integration base and absorbs only exact Lane commits not already present as ancestors. Source conflicts fail closed; no source conflict is resolved by selecting ours/theirs. The known hepta-shadow-qualification Bazel dependency closure is enforced in the resulting tree.
+
+          ## Acceptance boundary
+
+          This draft is pending exact-head and prospective-merge CI. It grants no production activation, provider/model execution, selection, promotion, signing, release, independent review, operator acceptance, target-hardware qualification, remote-owner consent, longitudinal validity or canary authority.
+          EOF
+          if [[ -z "$pr_number" ]]; then
+            gh pr create --repo "$GITHUB_REPOSITORY" --base "$TARGET_REF" --head "$CANDIDATE_REF" --draft --title "feat(convergence): final Lane A-G gap closure r13" --body-file "$body_file"
+          else
+            gh pr edit "$pr_number" --repo "$GITHUB_REPOSITORY" --title "feat(convergence): final Lane A-G gap closure r13" --body-file "$body_file"
+          fi
+
+          echo "candidate_sha=$candidate_sha" >> "$GITHUB_OUTPUT"
+          echo "candidate_tree=$candidate_tree" >> "$GITHUB_OUTPUT"
+
+      - name: Publish controller summary
+        shell: bash
+        run: |
+          {
+            echo "## Final convergence candidate published"
+            echo
+            echo "- candidate ref: \`${CANDIDATE_REF}\`"
+            echo "- candidate SHA: \`${{ steps.construct.outputs.candidate_sha }}\`"
+            echo "- candidate tree: \`${{ steps.construct.outputs.candidate_tree }}\`"
+            echo "- target ref: \`${TARGET_REF}\`"
+            echo "- source-conflict policy: fail closed"
+            echo "- production/external authority: not granted"
+          } >> "$GITHUB_STEP_SUMMARY"
