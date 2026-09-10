@@ -68,33 +68,71 @@ jobs:
           git commit -m "fix(convergence): close repository-controlled blockers"
           git rev-parse HEAD HEAD^{tree}
 
-      - name: Verify repository-controlled Python and dossier closure
+      - name: Verify Python formatting
         shell: bash
         run: |
           set -euo pipefail
           uv run --frozen --project scripts ruff format --check scripts
+
+      - name: Verify module documentation
+        shell: bash
+        run: |
+          set -euo pipefail
           python3 scripts/hepta-module-docs.py self-test
           python3 scripts/hepta-module-docs.py verify
+
+      - name: Verify implementation contract oracles
+        shell: bash
+        run: |
+          set -euo pipefail
           python3 qualification/module-execution-dossiers/implementation_contracts.py self-test
-          python3 qualification/module-execution-dossiers/implementation_contracts.py verify-repository --expected-source-sha "$(git rev-parse HEAD)"
+          python3 qualification/module-execution-dossiers/implementation_contracts.py verify-repository
+
+      - name: Verify technical closure
+        shell: bash
+        run: |
+          set -euo pipefail
           python3 scripts/hepta-technical-closure.py verify
+
+      - name: Verify readiness projections
+        shell: bash
+        run: |
+          set -euo pipefail
           python3 scripts/hepta-readiness.py self-test
           python3 scripts/hepta-readiness.py generate-status --check
           python3 scripts/hepta-readiness.py verify
-          git diff --exit-code
 
-      - name: Verify Rust owner crates
+      - name: Verify repository index stability
+        shell: bash
+        run: |
+          set -euo pipefail
+          git diff --exit-code
+          test -z "$(git status --porcelain)"
+
+      - name: Check Rust owner crates
         working-directory: codex-rs
         shell: bash
         run: |
           set -euo pipefail
           cargo fmt --all -- --check
-          cargo check --locked --all-targets \
+          cargo check --locked --all-targets --message-format=short \
             -p codex-hepta-control-plane \
             -p codex-hepta-cognitive-store
+
+      - name: Test Rust owner crates
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
           cargo test --locked --all-targets \
             -p codex-hepta-control-plane \
             -p codex-hepta-cognitive-store
+
+      - name: Lint Rust owner crates
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
           cargo clippy --locked --all-targets \
             -p codex-hepta-control-plane \
             -p codex-hepta-cognitive-store \
@@ -104,6 +142,5 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          git status --short
           test -z "$(git status --porcelain)"
           git push origin "HEAD:${{ github.event.pull_request.head.ref }}"
