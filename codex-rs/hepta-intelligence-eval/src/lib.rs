@@ -28,6 +28,7 @@ pub use closure::HoldoutUseReceiptV1;
 pub use closure::IndependentEvaluationBundleV1;
 pub use closure::IndependentEvaluationDecisionV1;
 pub use closure::IndependentEvaluationDispositionV1;
+pub use closure::MetricContractV1;
 pub use closure::MetricGateV1;
 pub use closure::decide_independently;
 pub use closure::freeze_cross_fold_plan;
