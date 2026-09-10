@@ -30,7 +30,7 @@ EXPECTED_CASES = {
     *(f"LEDGER-{index:02d}" for index in range(1, 6)),
     *(f"OP-{index:02d}" for index in range(1, 6)),
     *(f"EVAL-{index:02d}" for index in range(1, 6)),
-    *(f"ART-{index:02d}" for index in range(1, 6)),
+    *(f"ART-{index:02d}" for index in range(1, 7)),
 }
 EXPECTED_CROSS_CASES = {"LANE-E-E2E-01", "LANE-E-API-01"}
 EXPECTED_EXTERNAL_GATES = {f"RDY-EXT-{index:03d}" for index in range(1, 10)}
@@ -84,6 +84,8 @@ EXPECTED_OPERATIONS = {
         "admit_manifest_at_withdrawal_head_v3",
         "validate_artifact_publication_v3",
         "verify_artifact_admission_v3",
+        "ArtifactLifecycleJournalV2::append",
+        "ArtifactLifecycleJournalV2::from_snapshot",
     },
 }
 EXPECTED_CRATES = {
@@ -185,6 +187,16 @@ def has_test_function(source: str, function: str) -> bool:
     return pattern.search(clean) is not None
 
 
+def api_contract_symbols(source: str) -> set[str]:
+    clean = strip_rust_comments(source)
+    return set(
+        re.findall(
+            r"\blet\s+_\s*=\s*([A-Za-z_][A-Za-z0-9_:]*)\s*;",
+            clean,
+        )
+    )
+
+
 def verify_status(status: dict[str, Any], findings: Findings) -> None:
     findings.require(
         status.get("schema") == "hepta.lane-e-status.v2",
@@ -281,6 +293,12 @@ def verify_matrix(
         "module_closed_world",
         f"matrix modules must be exactly {sorted(EXPECTED_MODULES)}",
     )
+    expected_api_symbols: set[str] = set()
+    api_text = (
+        API_CONTRACT_PATH.read_text(encoding="utf-8")
+        if API_CONTRACT_PATH.is_file()
+        else ""
+    )
     for module, item in modules.items():
         findings.require(
             "supplementalOperations" not in item,
@@ -346,6 +364,7 @@ def verify_matrix(
             if not isinstance(symbol, str):
                 findings.add("native_symbol_missing", f"missing symbol for {module}.{operation_name}")
                 continue
+            expected_api_symbols.add(symbol)
             source = source_path.read_text(encoding="utf-8")
             findings.require(
                 has_public_symbol(source, symbol),
@@ -364,10 +383,16 @@ def verify_matrix(
                 f"{module}.{operation_name} is not source-implemented",
             )
             findings.require(
-                symbol.split("::")[-1] in API_CONTRACT_PATH.read_text(encoding="utf-8"),
+                symbol in api_text,
                 "api_contract_missing_symbol",
                 f"cross-crate API contract omits {symbol}",
             )
+
+    findings.require(
+        api_contract_symbols(api_text) == expected_api_symbols,
+        "api_contract_closed_world",
+        "cross-crate API contract symbols differ from the implementation matrix",
+    )
 
     external_raw = matrix.get("externalGates")
     external: dict[str, dict[str, Any]] = {}
@@ -423,6 +448,16 @@ def verify_traceability(
         trace.get("schema") == "hepta.lane-e-test-traceability.v2",
         "trace_schema",
         "unexpected Lane E traceability schema",
+    )
+    findings.require(
+        trace.get("authorityDelta") == "none",
+        "trace_authority_delta",
+        "Lane E traceability must retain zero authority delta",
+    )
+    findings.require(
+        trace.get("exactHeadWorkflow") == ".github/workflows/hepta-lane-e-gap-closure.yml",
+        "trace_workflow",
+        "traceability must bind the canonical Lane E workflow",
     )
     cases_raw = trace.get("cases")
     if not isinstance(cases_raw, list):
@@ -537,6 +572,7 @@ def verify_authority_posture(findings: Findings) -> None:
         ROOT / "codex-rs/hepta-learning-ledger/src/dataset_receipt_v3.rs",
         ROOT / "codex-rs/hepta-learning-artifacts/src/closure_v2.rs",
         ROOT / "codex-rs/hepta-learning-artifacts/src/admission_v3.rs",
+        ROOT / "codex-rs/hepta-learning-artifacts/src/lifecycle_journal.rs",
         ROOT / "codex-rs/hepta-bellman-operator/src/reference.rs",
         ROOT / "codex-rs/hepta-bellman-operator/src/world_model.rs",
         ROOT / "codex-rs/hepta-bellman-operator/src/learned.rs",
@@ -627,6 +663,12 @@ def run_self_test() -> list[Finding]:
         not has_test_function("fn works() {}", "works"),
         "self_test_non_test",
         "plain function was accepted as a test",
+    )
+    findings.require(
+        api_contract_symbols("let _ = crate::Demo::execute;")
+        == {"crate::Demo::execute"},
+        "self_test_api_contract",
+        "API contract symbol extraction failed",
     )
     return findings.items
 
