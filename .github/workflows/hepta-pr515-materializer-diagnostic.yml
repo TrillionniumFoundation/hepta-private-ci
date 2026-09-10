@@ -1,0 +1,53 @@
+name: Hepta PR515 materializer diagnostic
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - ops/hepta-pr515-blocker-materializer-20260910
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-pr515-materializer-diagnostic
+  cancel-in-progress: true
+
+env:
+  SOURCE_SHA: f278a89eea18fccb6d37b876aa5679863a64139d
+  OUTPUT_BRANCH: integration/hepta-all-gap-closure-20260910-r13
+
+jobs:
+  diagnose:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Checkout diagnostic source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Run bounded exact-source diagnostic
+        shell: bash
+        run: |
+          set -euo pipefail
+          cp scripts/materialize_pr515_blockers.py "$RUNNER_TEMP/materializer.py"
+          test "$(git rev-parse "origin/$OUTPUT_BRANCH")" = "$SOURCE_SHA"
+          git checkout --detach "$SOURCE_SHA"
+          cp "$RUNNER_TEMP/materializer.py" scripts/.materializer.py
+          set +e
+          python3 scripts/.materializer.py >"$RUNNER_TEMP/materializer.log" 2>&1
+          rc=$?
+          set -e
+          rm -f scripts/.materializer.py
+          echo "MATERIALIZER_RC=$rc"
+          echo "--- MATERIALIZER LOG ---"
+          tail -n 200 "$RUNNER_TEMP/materializer.log"
+          echo "--- TARGET SIZES ---"
+          wc -c \
+            qualification/global-gap-closure-final-r6/STATUS.json \
+            qualification/global-gap-closure-final-r8/receipts/PREPARE.json || true
+          echo "--- CHANGED FILES ---"
+          git diff --name-status || true
+          exit "$rc"
