@@ -1,0 +1,236 @@
+name: Temporary Hepta final convergence remediator r9
+
+on:
+  push:
+    branches:
+      - "ops/hepta-final-convergence-controller-20260910-r9"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: read
+  checks: read
+  pull-requests: write
+
+concurrency:
+  group: hepta-final-convergence-remediator-r9
+  cancel-in-progress: true
+
+jobs:
+  remediate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 180
+    env:
+      CANDIDATE_REF: candidate/hepta-all-gap-closure-final-20260910-r13
+    steps:
+      - name: Check out trusted controller without persisted credentials
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Bounded exact-head remediation loop
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "Hepta convergence remediator"
+          git config user.email "hepta-convergence-remediator@users.noreply.github.com"
+
+          wait_for_subject() {
+            for attempt in $(seq 1 90); do
+              subject_sha="$(gh api "repos/${GITHUB_REPOSITORY}/git/ref/heads/${CANDIDATE_REF}" --jq '.object.sha' 2>/dev/null || true)"
+              pr_number="$(gh pr list --repo "$GITHUB_REPOSITORY" --state open --head "$CANDIDATE_REF" --json number --jq '.[0].number // empty' 2>/dev/null || true)"
+              if [[ -n "$subject_sha" && -n "$pr_number" ]]; then
+                export subject_sha pr_number
+                return 0
+              fi
+              sleep 10
+            done
+            return 1
+          }
+
+          collect_terminal_state() {
+            local sha="$1"
+            local out_dir="$2"
+            mkdir -p "$out_dir/logs"
+            local stable=0 previous=""
+            for attempt in $(seq 1 180); do
+              gh api --paginate "repos/${GITHUB_REPOSITORY}/commits/${sha}/check-runs?per_page=100" --jq '.check_runs' > "$out_dir/checks.json"
+              local total pending fingerprint
+              total="$(jq 'length' "$out_dir/checks.json")"
+              pending="$(jq '[.[] | select(.status != "completed")] | length' "$out_dir/checks.json")"
+              fingerprint="$(jq -S '[.[] | {id,name,status,conclusion}]' "$out_dir/checks.json" | sha256sum | cut -d' ' -f1)"
+              if (( total >= 8 && pending == 0 )); then
+                if [[ "$fingerprint" == "$previous" ]]; then stable=$((stable + 1)); else stable=1; fi
+                if (( stable >= 4 )); then break; fi
+              else
+                stable=0
+              fi
+              previous="$fingerprint"
+              sleep 20
+            done
+            gh api --paginate "repos/${GITHUB_REPOSITORY}/actions/runs?head_sha=${sha}&per_page=100" --jq '.workflow_runs' > "$out_dir/runs.json"
+            mapfile -t failed_runs < <(jq -r '.[] | select(.conclusion == "failure" or .conclusion == "cancelled" or .conclusion == "timed_out" or .conclusion == "action_required" or .conclusion == "stale" or .conclusion == "startup_failure") | .id' "$out_dir/runs.json" | sort -u)
+            for run_id in "${failed_runs[@]}"; do
+              gh run view "$run_id" --repo "$GITHUB_REPOSITORY" --log-failed > "$out_dir/logs/${run_id}.log" 2>&1 || true
+            done
+          }
+
+          wait_for_subject
+          for round in 1 2 3; do
+            work="$RUNNER_TEMP/remediation-${round}"
+            rm -rf "$work"
+            mkdir -p "$work"
+            collect_terminal_state "$subject_sha" "$work"
+            pending="$(jq '[.[] | select(.status != "completed")] | length' "$work/checks.json")"
+            bad="$(jq '[.[] | select(.status == "completed" and (.conclusion == "failure" or .conclusion == "cancelled" or .conclusion == "timed_out" or .conclusion == "action_required" or .conclusion == "stale" or .conclusion == "startup_failure"))] | length' "$work/checks.json")"
+            if (( pending == 0 && bad == 0 )); then
+              gh pr ready "$pr_number" --repo "$GITHUB_REPOSITORY" || true
+              gh pr comment "$pr_number" --repo "$GITHUB_REPOSITORY" --body "Bounded remediation reached a terminal repository-check fixed point at exact head \`${subject_sha}\`. No production, release or independent-acceptance authority is asserted."
+              exit 0
+            fi
+
+            cat "$work"/logs/*.log > "$work/all.log" 2>/dev/null || true
+            python3 - "$work/all.log" "$work/classification.json" <<'PY'
+          import json
+          import pathlib
+          import re
+          import sys
+          source = pathlib.Path(sys.argv[1])
+          logs = source.read_text(encoding="utf-8", errors="replace") if source.exists() else ""
+          patterns = {
+              "shadow_deps": r"codex_hepta_(?:bellman_operator|intelligence_eval)|unresolved import.*hepta_(?:bellman|intelligence_eval)",
+              "duplicate_crt": r"LNK2005|LNK1169|__scrt_initialize_crt|__std_security_check_cookie|libcmt\.lib",
+              "rustfmt": r"Diff in .*\.rs|cargo fmt .*check|rustfmt",
+              "python_format": r"ruff format|black.*would reformat|would reformat .*\.py",
+              "lock_drift": r"lock file .* needs to be updated|dependency drift",
+          }
+          found = {name: bool(re.search(pattern, logs, re.I | re.S)) for name, pattern in patterns.items()}
+          pathlib.Path(sys.argv[2]).write_text(json.dumps(found, indent=2, sort_keys=True) + "\n")
+          PY
+
+            git fetch --prune origin "+refs/heads/${CANDIDATE_REF}:refs/remotes/origin/${CANDIDATE_REF}"
+            git checkout --detach "$subject_sha"
+            git switch -C "$CANDIDATE_REF"
+            changed=0
+
+            if jq -e '.shadow_deps' "$work/classification.json" >/dev/null; then
+              python3 <<'PY'
+          from pathlib import Path
+          build = next((p for p in [Path("codex-rs/hepta-shadow-qualification/BUILD.bazel"), Path("codex-rs/hepta-shadow-qualification/BUILD")] if p.exists()), None)
+          if build is None:
+              raise SystemExit("missing shadow qualification BUILD")
+          text = build.read_text()
+          required = ["//codex-rs/hepta-bellman-operator:lib", "//codex-rs/hepta-intelligence-eval:lib"]
+          if all(item in text for item in required):
+              raise SystemExit(0)
+          marker = 'name = "unit_tests"'
+          pos = text.find(marker)
+          start = text.rfind("rust_test(", 0, pos)
+          if pos < 0 or start < 0:
+              raise SystemExit("unit_tests rust_test target not found")
+          depth = 0
+          end = None
+          in_string = escaped = False
+          for idx in range(start, len(text)):
+              ch = text[idx]
+              if in_string:
+                  if escaped: escaped = False
+                  elif ch == "\\": escaped = True
+                  elif ch == '"': in_string = False
+                  continue
+              if ch == '"': in_string = True
+              elif ch == "(": depth += 1
+              elif ch == ")":
+                  depth -= 1
+                  if depth == 0:
+                      end = idx + 1
+                      break
+          if end is None: raise SystemExit("unterminated rust_test")
+          block = text[start:end]
+          missing = [item for item in required if item not in block]
+          deps = block.find("deps = [")
+          if deps >= 0:
+              close = block.find("]", deps)
+              block = block[:close] + "".join(f'        "{item}",\n' for item in missing) + block[close:]
+          else:
+              close = block.rfind(")")
+              block = block[:close] + "    deps = [\n" + "".join(f'        "{item}",\n' for item in missing) + "    ],\n" + block[close:]
+          build.write_text(text[:start] + block + text[end:])
+          PY
+              if ! git diff --quiet; then changed=1; fi
+            fi
+
+            if jq -e '.duplicate_crt' "$work/classification.json" >/dev/null; then
+              python3 <<'PY'
+          from pathlib import Path
+          import re
+          roots = [Path(".github"), Path("codex-rs"), Path("bazel"), Path("tools")]
+          token = re.compile(r"(?i)(?:-Wl,)?/WHOLEARCHIVE:[^\s\"']*v8_ci_static\.lib")
+          changed = []
+          candidates = []
+          for root in roots:
+              if not root.exists(): continue
+              for path in root.rglob("*"):
+                  if not path.is_file() or path.stat().st_size > 2_000_000: continue
+                  try: text = path.read_text(encoding="utf-8")
+                  except (UnicodeDecodeError, OSError): continue
+                  if "v8_ci_static" not in text.lower(): continue
+                  candidates.append(str(path))
+                  updated = token.sub("", text)
+                  lines = []
+                  for line in updated.splitlines(keepends=True):
+                      if "wholearchive" in line.lower() and "v8_ci_static" in line.lower():
+                          continue
+                      lines.append(line)
+                  updated = "".join(lines)
+                  if updated != text:
+                      path.write_text(updated, encoding="utf-8")
+                      changed.append(str(path))
+          report = Path("qualification/final-convergence-r13/WINDOWS_CRT_REMEDIATION.json")
+          report.parent.mkdir(parents=True, exist_ok=True)
+          import json
+          report.write_text(json.dumps({
+              "strategy": "remove only WHOLEARCHIVE forcing for v8_ci_static; retain normal application CRT resolution",
+              "candidateFiles": candidates,
+              "changedFiles": changed,
+              "blanketNodefaultlibAdded": False,
+              "forceMultipleAdded": False,
+          }, indent=2, sort_keys=True) + "\n")
+          if not changed:
+              raise SystemExit("duplicate CRT observed but no v8_ci_static WHOLEARCHIVE forcing was found; refusing unsafe automatic linker changes")
+          PY
+              changed=1
+            fi
+
+            if jq -e '.rustfmt' "$work/classification.json" >/dev/null; then
+              env -u GH_TOKEN cargo fmt --manifest-path codex-rs/Cargo.toml --all
+              changed=1
+            fi
+
+            if jq -e '.python_format' "$work/classification.json" >/dev/null; then
+              curl -LsSf https://astral.sh/uv/0.11.3/install.sh | env -u GH_TOKEN sh
+              PATH="$HOME/.local/bin:$PATH" env -u GH_TOKEN uv run --frozen --project scripts ruff format scripts
+              changed=1
+            fi
+
+            if (( changed == 0 )) || git diff --quiet; then
+              classes="$(jq -c . "$work/classification.json")"
+              gh pr comment "$pr_number" --repo "$GITHUB_REPOSITORY" --body "Exact head \`${subject_sha}\` remains blocked and no whitelisted deterministic repair applied. Classification: \`${classes}\`. Unsafe linker suppression, source conflict auto-resolution and gate disabling remain prohibited."
+              exit 44
+            fi
+
+            git diff --check
+            git add -A
+            git commit -m "fix(convergence): deterministic remediation round ${round}"
+            new_sha="$(git rev-parse HEAD)"
+            git -c http.extraheader="AUTHORIZATION: basic $(printf 'x-access-token:%s' "$GH_TOKEN" | base64 -w0)" push --force-with-lease origin "HEAD:refs/heads/${CANDIDATE_REF}"
+            gh pr comment "$pr_number" --repo "$GITHUB_REPOSITORY" --body "Published deterministic remediation round ${round}: \`${subject_sha}\` → \`${new_sha}\`. All prior-head checks are superseded; only checks bound to the new exact head count."
+            subject_sha="$new_sha"
+          done
+
+          gh pr comment "$pr_number" --repo "$GITHUB_REPOSITORY" --body "Bounded remediation exhausted three rounds without a terminal all-green exact head. The PR remains fail-closed and draft."
+          exit 45
