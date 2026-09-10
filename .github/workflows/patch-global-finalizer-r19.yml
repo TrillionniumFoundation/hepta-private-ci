@@ -21,12 +21,11 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 30
     env:
-      EXPECTED_PARENT: 4199030ba0288dd4bfa731085309dccfc29180cc
+      EXPECTED_PARENT: 28147a661fb40fb3b7894b29c0f9e4ec7a71047f
       TARGET_BRANCH: ops/hepta-r19-fixed-point-controller-20260910
       TARGET_CANDIDATE: integration/hepta-all-gap-closure-20260910-r19
       FINALIZER: scripts/hepta-global-finalizer-r7.py
       PATCH_SCRIPT: scripts/patch-global-finalizer-r19.py
-      R7_WORKFLOW: .github/workflows/hepta-global-finalizer-r7.yml
       GH_TOKEN: ${{ github.token }}
     steps:
       - name: Check out exact isolated one-shot source
@@ -84,18 +83,6 @@ jobs:
                   )
               text = text.replace(anchor, anchor + cognitive, 1)
           path.write_text(text, encoding="utf-8")
-
-          workflow = Path(".github/workflows/hepta-global-finalizer-r7.yml")
-          workflow_text = workflow.read_text(encoding="utf-8")
-          old_group = "  group: hepta-global-finalizer-r7\n"
-          new_group = "  group: hepta-global-finalizer-r7-r19-fixed-point\n"
-          if new_group not in workflow_text:
-              if workflow_text.count(old_group) != 1:
-                  raise SystemExit(
-                      f"r7 concurrency-group drift: {workflow_text.count(old_group)}"
-                  )
-              workflow_text = workflow_text.replace(old_group, new_group, 1)
-          workflow.write_text(workflow_text, encoding="utf-8")
           PY
           python3 -m py_compile "${PATCH_SCRIPT}"
           python3 "${PATCH_SCRIPT}"
@@ -109,7 +96,6 @@ jobs:
           grep -Fq 'projection_fixed_point = repair_repository_projections()' "${FINALIZER}"
           grep -Fq 'native_fixed_point = repair_native_bindings()' "${FINALIZER}"
           grep -Fq 'projection_preflight_receipts = [' "${FINALIZER}"
-          grep -Fq 'group: hepta-global-finalizer-r7-r19-fixed-point' "${R7_WORKFLOW}"
           git diff --check
 
       - name: Publish clean isolated controller and dispatch r7
@@ -127,10 +113,9 @@ jobs:
             scripts/patch-global-finalizer-r18.py \
             .github/workflows/patch-global-finalizer-r17.yml \
             scripts/patch-global-finalizer-r17.py
-          git add "${FINALIZER}" "${R7_WORKFLOW}"
+          git add "${FINALIZER}"
           git diff --cached --check
           git diff --cached --name-only | grep -Fxq "${FINALIZER}"
-          git diff --cached --name-only | grep -Fxq "${R7_WORKFLOW}"
           git commit --signoff -m 'fix(hepta): converge projections native overlays and strict Clippy'
           remote_sha="$(git ls-remote origin "refs/heads/${TARGET_BRANCH}" | awk '{print $1}')"
           test "${remote_sha}" = "${GITHUB_SHA}"
