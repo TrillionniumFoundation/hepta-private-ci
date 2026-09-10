@@ -18,11 +18,12 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 90
     env:
-      EXPECTED_PARENT: 862661a2c4248ea605e8a7573ee3c9a260266e09
+      EXPECTED_PARENT: bbf6e8279747130892c7431d7ea956ec4edf0218
       BASE_SHA: eb76d20401ee8b7b19a155de3366a6168668a3cc
       TARGET_BRANCH: codex/lane-a-gap-closure-20260910
       NATIVE_BINDINGS: qualification/module-execution-dossiers/NATIVE_BINDINGS.json
       CONTRACT_TEST_ENTRY: qualification/module-execution-dossiers/test_implementation_contracts.py
+      PROVIDER_EFFECT: codex-rs/hepta-contracts/src/provider_effect.rs
     steps:
       - name: Check out exact reconciliation bootstrap
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
@@ -40,7 +41,7 @@ jobs:
           test "$(git rev-parse HEAD:.github/workflows/lane-a-reconcile-20260910.yml)" = "$(git hash-object .github/workflows/lane-a-reconcile-20260910.yml)"
           test "$(git rev-parse "${BASE_SHA}^{commit}")" = "${BASE_SHA}"
 
-      - name: Merge fixed base and resolve the two audited conflicts
+      - name: Merge fixed base and resolve the audited conflicts
         shell: bash
         run: |
           set -euo pipefail
@@ -72,10 +73,9 @@ jobs:
           core_path = Path("qualification/module-execution-dossiers/implementation_contract_tests_core.py")
 
           def stage_json(stage: int, path: str) -> dict:
-              raw = subprocess.check_output(
-                  ["git", "show", f":{stage}:{path}"], text=True
+              value = json.loads(
+                  subprocess.check_output(["git", "show", f":{stage}:{path}"], text=True)
               )
-              value = json.loads(raw)
               if not isinstance(value, dict):
                   raise SystemExit(f"stage {stage} {path} is not an object")
               return value
@@ -83,9 +83,7 @@ jobs:
           ours = stage_json(2, native_path)
           theirs = stage_json(3, native_path)
           overlay = json.loads(overlay_path.read_text(encoding="utf-8"))
-
-          common_keys = (set(ours) | set(theirs)) - {"observations"}
-          for key in sorted(common_keys):
+          for key in sorted((set(ours) | set(theirs)) - {"observations"}):
               if ours.get(key) != theirs.get(key):
                   raise SystemExit(f"non-observation native-binding drift at {key}")
 
@@ -95,7 +93,6 @@ jobs:
               raise SystemExit("native-binding observations must be arrays")
           if len(ours_rows) != 40 or len(theirs_rows) != 40:
               raise SystemExit("both sides must retain the canonical 40-module set")
-
           ours_by = {row["module"]: row for row in ours_rows}
           theirs_by = {row["module"]: row for row in theirs_rows}
           ours_order = [row["module"] for row in ours_rows]
@@ -110,18 +107,12 @@ jobs:
           lane_set = set(lane_modules)
           if len(lane_set) != 7 or {row["module"] for row in overlay_rows} != lane_set:
               raise SystemExit("Lane A overlay is not the exact seven-module closed set")
-
-          differing = {
-              module for module in ours_order if ours_by[module] != theirs_by[module]
-          }
+          differing = {module for module in ours_order if ours_by[module] != theirs_by[module]}
           if not differing <= lane_set:
               raise SystemExit(
                   "base reconciliation changed non-Lane-A rows: "
                   + ",".join(sorted(differing - lane_set))
               )
-          for module in set(ours_order) - lane_set:
-              if ours_by[module] != theirs_by[module]:
-                  raise SystemExit(f"non-Lane-A row drifted: {module}")
 
           for row in overlay_rows:
               path = Path(row["path"])
@@ -131,10 +122,7 @@ jobs:
                   ["git", "hash-object", str(path)], text=True
               ).strip()
               if actual_blob != row["blobSha"]:
-                  raise SystemExit(
-                      f"Lane A blob drift for {row['module']}: "
-                      f"{actual_blob} != {row['blobSha']}"
-                  )
+                  raise SystemExit(f"Lane A blob drift for {row['module']}")
               text = path.read_text(encoding="utf-8")
               for symbol in row["exports"]:
                   if re.search(r"\b" + re.escape(symbol) + r"\b", text) is None:
@@ -149,7 +137,6 @@ jobs:
           ):
               if phrase not in core:
                   raise SystemExit(f"split contract suite lost base coverage: {phrase}")
-
           ours_entry = subprocess.check_output(
               ["git", "show", f":2:{entry_path}"], text=True
           )
@@ -160,21 +147,44 @@ jobs:
               if phrase not in ours_entry:
                   raise SystemExit(f"split test entry lost import: {phrase}")
 
-          print(
-              json.dumps(
-                  {
-                      "canonical_modules": len(ours_rows),
-                      "lane_a_modules": len(lane_set),
-                      "lane_a_global_row_differences": sorted(differing),
-                      "resolution": "ours_with_exact_lane_a_overlay",
-                  },
-                  sort_keys=True,
-              )
-          )
+          print(json.dumps({
+              "canonicalModules": len(ours_rows),
+              "laneAModules": len(lane_set),
+              "laneAGlobalRowDifferences": sorted(differing),
+              "resolution": "ours-with-exact-lane-a-overlay",
+          }, sort_keys=True))
           PY
 
           git checkout --ours -- "${NATIVE_BINDINGS}" "${CONTRACT_TEST_ENTRY}"
           git add "${NATIVE_BINDINGS}" "${CONTRACT_TEST_ENTRY}"
+
+          python3 - <<'PY'
+          from pathlib import Path
+
+          path = Path("codex-rs/hepta-contracts/src/provider_effect.rs")
+          old = '''        Some(
+            observations
+                .and_then(|items| items.last())
+                .map_or(ProviderEffectState::Pending, ProviderEffectAck::state),
+        )
+        .filter(|_| intent.key == *key)
+'''
+          new = '''        let state = observations
+            .and_then(|items| items.last())
+            .map_or(ProviderEffectState::Pending, ProviderEffectAck::state);
+        if intent.key == *key {
+            Some(state)
+        } else {
+            None
+        }
+'''
+          text = path.read_text(encoding="utf-8")
+          if text.count(old) != 1 or new in text:
+              raise SystemExit("provider-effect state repair precondition drifted")
+          path.write_text(text.replace(old, new, 1), encoding="utf-8")
+          PY
+          git add "${PROVIDER_EFFECT}"
+
           git rm .github/workflows/lane-a-reconcile-20260910.yml
           test -z "$(git diff --name-only --diff-filter=U)"
           git diff --cached --check
