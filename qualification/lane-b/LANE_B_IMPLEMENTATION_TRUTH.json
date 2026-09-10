@@ -89,12 +89,12 @@
     {
       "module": "runtime.agentd",
       "maturity": "partial_runtime",
-      "declaredRoots": ["codex-rs/hepta-agentd", "codex-rs/app-server"],
+      "declaredRoots": ["codex-rs/hepta-agentd"],
       "operations": [
         {"designOperation":"compose_runtime","state":"implemented_partial","path":"codex-rs/hepta-agentd/src/app_runtime.rs","symbol":"pub(crate) async fn run_app_server(","callerClass":"daemon_internal","buildTarget":"codex-hepta-agentd"},
-        {"designOperation":"start_run","state":"implemented_partial","path":"codex-rs/app-server/src/request_processors/turn_processor.rs","symbol":"pub(crate) async fn turn_start(","callerClass":"embedded_app_server","buildTarget":"codex-app-server"},
-        {"designOperation":"cancel_run","state":"implemented_partial","path":"codex-rs/app-server/src/request_processors/turn_processor.rs","symbol":"pub(crate) async fn turn_interrupt(","callerClass":"embedded_app_server","buildTarget":"codex-app-server"},
-        {"designOperation":"attach_context","state":"implemented_partial","path":"codex-rs/core/src/codex_thread.rs","symbol":"pub(crate) async fn submit_turn_input_and_wait_for_exact_admission(","callerClass":"embedded_codex_core","buildTarget":"codex-core"}
+        {"designOperation":"start_run","state":"implemented_partial","path":"codex-rs/hepta-agentd/src/app_runtime.rs","symbol":"pub(crate) fn app_server_runtime_options_for_agent(","callerClass":"daemon_internal","buildTarget":"codex-hepta-agentd"},
+        {"designOperation":"cancel_run","state":"planned","path":null,"symbol":null,"callerClass":"none","buildTarget":null},
+        {"designOperation":"attach_context","state":"planned","path":null,"symbol":null,"callerClass":"none","buildTarget":null}
       ],
       "productionCallerState": "unproved",
       "productExecutionState": "unproved",
