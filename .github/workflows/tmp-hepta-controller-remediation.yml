@@ -1,4 +1,4 @@
-# remediation-generation: 8
+# remediation-generation: 9
 name: Temporary Hepta controller remediation
 
 on:
@@ -10,7 +10,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
   actions: write
 
 concurrency:
@@ -18,38 +18,47 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  remediate:
+  dispatch:
     if: github.repository == 'TrillionniumFoundation/hepta-private-ci'
     runs-on: ubuntu-24.04
-    timeout-minutes: 30
+    timeout-minutes: 15
     env:
       GH_TOKEN: ${{ github.token }}
+      CONTROLLER_REF: ops/hepta-global-gap-closure-controller-20260910-r1
     steps:
-      - name: Check out exact controller branch
+      - name: Check out exact controller commit
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
-          ref: ops/hepta-global-gap-closure-controller-20260910-r1
-          fetch-depth: 0
-          persist-credentials: true
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+          persist-credentials: false
 
-      - name: Install repository-pinned uv
-        uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b
-        with:
-          version: "0.11.3"
-
-      - name: Apply fail-closed convergence and publication fixes
+      - name: Validate exact controller executors
         shell: bash
         run: |
           set -euo pipefail
-          bash scripts/apply-hepta-remaining-blocker-remediation.sh --workflow-mode
+          test "$(git rev-parse HEAD)" = "${GITHUB_SHA}"
+          python3 -m py_compile \
+            scripts/hepta-candidate-publisher-r12.py \
+            scripts/hepta-fixed-point-sealer-r10.py \
+            scripts/hepta-fixed-point-sealer-r11.py \
+            scripts/hepta-global-finalizer-r6.py \
+            scripts/hepta-global-finalizer-r7.py \
+            scripts/hepta-global-finalizer-r8-fixed.py \
+            scripts/hepta-global-finalizer-r8.py \
+            scripts/hepta-global-gap-closure-r4.py \
+            scripts/hepta-global-gap-closure.py
+          git diff --check
+          test -z "$(git status --porcelain --untracked-files=no)"
 
-      - name: Dispatch fixed-point pipeline explicitly
+      - name: Dispatch exact fixed-point pipeline
         shell: bash
-        env:
-          GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
-          ref="ops/hepta-global-gap-closure-controller-20260910-r1"
+          remote_head="$(git ls-remote \
+            "https://github.com/${GITHUB_REPOSITORY}.git" \
+            "refs/heads/${CONTROLLER_REF}" | awk '{print $1}')"
+          test "${remote_head}" = "${GITHUB_SHA}"
           for workflow in \
             hepta-global-finalizer-r7.yml \
             hepta-global-finalizer-r8.yml \
@@ -60,5 +69,5 @@ jobs:
           do
             gh workflow run "${workflow}" \
               --repo "${GITHUB_REPOSITORY}" \
-              --ref "${ref}"
+              --ref "${CONTROLLER_REF}"
           done
