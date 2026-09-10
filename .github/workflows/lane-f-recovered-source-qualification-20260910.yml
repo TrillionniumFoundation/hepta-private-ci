@@ -1,0 +1,245 @@
+name: Lane F recovered source qualification
+
+on:
+  push:
+    branches:
+      - codex/lane-f-gap-closure-20260910
+    paths:
+      - .github/workflows/lane-f-recovered-source-qualification-20260910.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: lane-f-recovered-source-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  qualify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    steps:
+      - name: Check out exact recovery carrier
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Recover only hash-pinned complete source members
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from __future__ import annotations
+
+          import base64
+          import hashlib
+          import io
+          import lzma
+          from pathlib import Path, PurePosixPath
+          import zlib
+
+          EXPECTED = {
+              "codex-rs/hepta-intelligence/Cargo.toml": "0a5be4f0ae54dd1a28ee8c3892c2436d1dcad1bff2d24609684598967242a436",
+              "codex-rs/hepta-intelligence/src/lib.rs": "de4ac760d3c6d3bcae572a9fa48cd1a1faf659ba61f61decf2f5e09bc594018f",
+              "codex-rs/hepta-intelligence/src/pipeline.rs": "7938bd5f6f716552977442356848467ce84be2af35361137328de3f05f8bc2ba",
+              "codex-rs/hepta-intelligence/src/pipeline_tests.rs": "a48fc58a4f284e278f0b1180558585b237f5b6a9c32a2a54c6af287b52e3e736",
+              "codex-rs/hepta-intelligence/tests/lane_f_shadow_vertical.rs": "15986b34d9ef2bbe2d146f59e473082b895639bd515b86469bffd73ecf079344",
+              "codex-rs/hepta-intuition/src/calibrated.rs": "168aa033fc0eeeb2c4ff4bcc99782f39dcf514b9e26fe8add8b6b441fe7aa8e5",
+              "codex-rs/hepta-intuition/src/calibrated_tests.rs": "adcd2f8f65e585e3b9aa14179e3f39aaed2a7f0b84a5f5abba587620324ba762",
+              "codex-rs/hepta-intuition/src/lib.rs": "d2b457889daf771fea49b093f1e418027e620c392683d69a340588c98df1aa1e",
+              "codex-rs/hepta-plasticity/src/durable_registry.rs": "7c17e0e071bb99397628c8d533132c36343c3486b1246b770fb576ef112db952",
+              "codex-rs/hepta-plasticity/src/durable_registry_tests.rs": "7e849cc88fb5c58667139ff3eebbd8d08a59b152fd7f8a8ebd08480fe75810fe",
+              "codex-rs/hepta-plasticity/src/lib.rs": "312c8ce62f6ab4a12087504f7f4728f0e1674949b516d46909d6331832e36c54",
+              "codex-rs/hepta-prompt-optimizer/src/lib.rs": "1d01c606361f648eff48423b5026853622533ef974da6c4ed8049ee451f6b097",
+              "qualification/lane-f-shadow/README.md": "49ba8e2cd892bd984432e479d4300b5a94a9579e574d8ab83d26b0a341207bdc",
+              "qualification/lane-f-shadow/src/lib.rs": "8b678805093c3b29e545b586f2be2d8f8fced33d74539a0525e4f6a8628eb600",
+          }
+          BOOTSTRAP = {
+              path for path in EXPECTED
+              if not path.startswith("codex-rs/hepta-plasticity/src/durable_registry_tests.rs")
+              and path not in {
+                  "codex-rs/hepta-plasticity/src/lib.rs",
+                  "codex-rs/hepta-prompt-optimizer/src/lib.rs",
+                  "qualification/lane-f-shadow/README.md",
+                  "qualification/lane-f-shadow/src/lib.rs",
+              }
+          }
+          MINIMAL = set(EXPECTED) - BOOTSTRAP
+
+          def octal(field: bytes) -> int:
+              value = field.rstrip(b"\0 ").lstrip(b" ")
+              return int(value or b"0", 8)
+
+          def extract_selected(payload: bytes, selected: set[str], label: str) -> set[str]:
+              recovered: set[str] = set()
+              offset = 0
+              while offset + 512 <= len(payload):
+                  block = payload[offset : offset + 512]
+                  if not any(block):
+                      break
+                  try:
+                      expected_sum = octal(block[148:156])
+                      actual_sum = sum(block[:148]) + 32 * 8 + sum(block[156:])
+                      if expected_sum != actual_sum:
+                          offset += 512
+                          continue
+                      name = block[:100].split(b"\0", 1)[0].decode("utf-8")
+                      prefix = block[345:500].split(b"\0", 1)[0].decode("utf-8")
+                      if prefix:
+                          name = f"{prefix}/{name}"
+                      size = octal(block[124:136])
+                      kind = block[156:157]
+                  except (UnicodeDecodeError, ValueError):
+                      offset += 512
+                      continue
+                  start = offset + 512
+                  end = start + size
+                  if end > len(payload):
+                      break
+                  if name in selected and kind in (b"", b"0", b"7"):
+                      path = PurePosixPath(name)
+                      if path.is_absolute() or ".." in path.parts:
+                          raise SystemExit(f"unsafe {label} member: {name}")
+                      data = payload[start:end]
+                      digest = hashlib.sha256(data).hexdigest()
+                      if digest != EXPECTED[name]:
+                          raise SystemExit(
+                              f"{label} digest mismatch for {name}: {digest}"
+                          )
+                      target = Path(*path.parts)
+                      target.parent.mkdir(parents=True, exist_ok=True)
+                      target.write_bytes(data)
+                      recovered.add(name)
+                  offset = start + ((size + 511) // 512) * 512
+              missing = selected - recovered
+              if missing:
+                  raise SystemExit(f"missing complete {label} members: {sorted(missing)}")
+              return recovered
+
+          raw = b"".join(
+              path.read_bytes()
+              for path in sorted(Path(".lane-f-bootstrap").glob("part-*"))
+          )
+          decoder = zlib.decompressobj(31)
+          expanded = bytearray()
+          for start in range(0, len(raw), 256):
+              try:
+                  expanded.extend(decoder.decompress(raw[start : start + 256]))
+              except zlib.error:
+                  break
+          extract_selected(bytes(expanded), BOOTSTRAP, "bootstrap")
+
+          text = b"".join(
+              path.read_bytes() for path in sorted(Path(".lane-f-min").glob("part-*"))
+          )
+          compressed = base64.b64decode(b"".join(text.split()), validate=False)
+          decoder_xz = lzma.LZMADecompressor()
+          expanded_xz = bytearray()
+          for start in range(0, len(compressed), 256):
+              try:
+                  expanded_xz.extend(decoder_xz.decompress(compressed[start : start + 256]))
+              except lzma.LZMAError:
+                  break
+          extract_selected(bytes(expanded_xz), MINIMAL, "minimal")
+
+          for path, expected in EXPECTED.items():
+              data = Path(path).read_bytes()
+              actual = hashlib.sha256(data).hexdigest()
+              if actual != expected:
+                  raise SystemExit(f"final digest mismatch for {path}: {actual}")
+              print(f"RECOVERED {actual} {path}")
+          PY
+
+      - name: Normalize exact source and lockfiles
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo fmt --manifest-path codex-rs/Cargo.toml \
+            --package codex-hepta-neuron \
+            --package codex-hepta-intuition \
+            --package codex-hepta-prompt-optimizer \
+            --package codex-hepta-plasticity \
+            --package codex-hepta-intelligence
+          cargo fmt --manifest-path qualification/lane-f-shadow/Cargo.toml
+          cargo generate-lockfile --manifest-path codex-rs/Cargo.toml
+          cargo generate-lockfile --manifest-path qualification/lane-f-shadow/Cargo.toml
+          git diff --check
+
+      - name: Test and lint five native Lane F crates
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo test --locked -p codex-hepta-neuron --all-targets
+          cargo test --locked -p codex-hepta-intuition --all-targets
+          cargo test --locked -p codex-hepta-prompt-optimizer --all-targets
+          cargo test --locked -p codex-hepta-plasticity --all-targets
+          cargo test --locked -p codex-hepta-intelligence --all-targets
+          cargo clippy --locked \
+            -p codex-hepta-neuron \
+            -p codex-hepta-intuition \
+            -p codex-hepta-prompt-optimizer \
+            -p codex-hepta-plasticity \
+            -p codex-hepta-intelligence \
+            --all-targets -- -D warnings
+          cargo fmt \
+            --package codex-hepta-neuron \
+            --package codex-hepta-intuition \
+            --package codex-hepta-prompt-optimizer \
+            --package codex-hepta-plasticity \
+            --package codex-hepta-intelligence \
+            -- --check
+
+      - name: Test and lint standalone shadow composition
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo test --locked --manifest-path qualification/lane-f-shadow/Cargo.toml
+          cargo clippy --locked --manifest-path qualification/lane-f-shadow/Cargo.toml \
+            --all-targets -- -D warnings
+          cargo fmt --manifest-path qualification/lane-f-shadow/Cargo.toml -- --check
+          git diff --check
+
+      - name: Retain normalized source candidate
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          out="$RUNNER_TEMP/lane-f-source-candidate"
+          mkdir -p "$out/tree"
+          for path in \
+            codex-rs/Cargo.lock \
+            codex-rs/hepta-intelligence/Cargo.toml \
+            codex-rs/hepta-intelligence/src/lib.rs \
+            codex-rs/hepta-intelligence/src/pipeline.rs \
+            codex-rs/hepta-intelligence/src/pipeline_tests.rs \
+            codex-rs/hepta-intelligence/tests/lane_f_shadow_vertical.rs \
+            codex-rs/hepta-intuition/src/calibrated.rs \
+            codex-rs/hepta-intuition/src/calibrated_tests.rs \
+            codex-rs/hepta-intuition/src/lib.rs \
+            codex-rs/hepta-plasticity/src/durable_registry.rs \
+            codex-rs/hepta-plasticity/src/durable_registry_tests.rs \
+            codex-rs/hepta-plasticity/src/lib.rs \
+            codex-rs/hepta-prompt-optimizer/src/lib.rs \
+            qualification/lane-f-shadow/Cargo.lock \
+            qualification/lane-f-shadow/README.md \
+            qualification/lane-f-shadow/src/lib.rs; do
+            test -f "$path" || continue
+            mkdir -p "$out/tree/$(dirname "$path")"
+            cp "$path" "$out/tree/$path"
+          done
+          git diff --binary > "$out/materialized.patch"
+          find "$out/tree" -type f -print0 | sort -z | xargs -0 sha256sum > "$out/SHA256SUMS"
+
+      - name: Upload normalized source candidate
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: lane-f-normalized-source-${{ github.run_id }}
+          path: ${{ runner.temp }}/lane-f-source-candidate
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 14
