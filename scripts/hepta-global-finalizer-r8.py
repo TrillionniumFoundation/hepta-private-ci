@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 """Deterministic repair replay over the newest global Hepta candidate.
 
-The r8 prepare phase reuses the exact r7 convergence tree when available,
-normalizes local workspace dependencies, lock state, formatting and fixable
-compiler/Clippy diagnostics, then delegates immutable repository/package gates
-and receipt binding to the r7 implementation under an r8 namespace.
+The r8 prepare phase reuses one exact r7 convergence tree, normalizes local
+workspace dependencies, lock state, formatting and fixable compiler/Clippy
+diagnostics, then delegates immutable repository/package gates and receipt
+binding to the r7 implementation under an isolated receipt namespace.
 """
 
 from __future__ import annotations
@@ -32,7 +32,10 @@ TARGET_BRANCH = os.environ.get(
     "HEPTA_FINAL_TARGET",
     "integration/hepta-all-gap-closure-20260910-r8",
 )
-OUT_ROOT = ROOT / "qualification" / "global-gap-closure-final-r8"
+OUT_ROOT = ROOT / os.environ.get(
+    "HEPTA_FINAL_OUT_ROOT",
+    "qualification/global-gap-closure-final-r8",
+)
 SOURCE_CANDIDATES = (
     "origin/integration/hepta-all-gap-closure-20260910-r7",
     "origin/integration/hepta-all-gap-closure-20260910-r6",
@@ -41,6 +44,7 @@ SOURCE_CANDIDATES = (
     "origin/integration/hepta-global-gap-closure-20260910-r3",
     "origin/integration/hepta-global-gap-closure-20260910",
 )
+PINNED_R7_SOURCE = "16dc9b1d74b669164860bf9e09d6c5f4c25b7bb0"
 
 
 def bind_namespace() -> None:
@@ -52,31 +56,54 @@ def bind_namespace() -> None:
 
 
 def source_is_usable(ref: str) -> bool:
-    blocked_paths = (
-        "qualification/global-gap-closure-final-r7/PREPARE.json",
-        "qualification/global-gap-closure-final-r6/STATUS.json",
-        "qualification/global-gap-closure-r4/STATUS.json",
-    )
-    for path in blocked_paths:
-        shown = r7.git("show", f"{ref}:{path}", check=False)
-        if not shown.passed:
-            continue
-        try:
-            value = json.loads(shown.output)
-        except json.JSONDecodeError:
-            continue
-        if (
-            value.get("prepared") is False
-            and value.get("repositoryInternalValidationPassed") is not True
-        ):
-            return False
-    return True
+    required_status = os.environ.get("HEPTA_REQUIRED_SOURCE_STATUS", "").strip()
+    if not required_status:
+        return True
+
+    shown = r7.git("show", f"{ref}:{required_status}", check=False)
+    if not shown.passed:
+        return False
+    try:
+        value = json.loads(shown.output)
+    except json.JSONDecodeError:
+        return False
+    if not isinstance(value, dict):
+        return False
+
+    expected_target = ref.removeprefix("origin/")
+    if value.get("targetBranch") != expected_target:
+        return False
+    if (
+        value.get("repositoryInternalValidationPassed") is not True
+        or value.get("repositoryInternalGapsClosed") is not True
+        or value.get("externalAuthorityGatesRetained") is not True
+        or value.get("allGapsClosed") is not False
+        or value.get("authorityGranted") is not False
+        or value.get("productionActivation") is not False
+    ):
+        return False
+
+    qualified = value.get("qualifiedSourceCommit")
+    if not isinstance(qualified, str) or len(qualified) != 40:
+        return False
+    return r7.git(
+        "rev-parse",
+        "--verify",
+        f"{qualified}^{{commit}}",
+        check=False,
+    ).passed
 
 
 def wait_for_source() -> tuple[str, str]:
-    override = os.environ.get("HEPTA_REPAIR_SOURCE")
-    candidates = (override,) + SOURCE_CANDIDATES if override else SOURCE_CANDIDATES
-    for _ in range(180):
+    override = os.environ.get("HEPTA_REPAIR_SOURCE", "").strip()
+    if not override:
+        override = os.environ.get(
+            "HEPTA_DEFAULT_REPAIR_SOURCE",
+            PINNED_R7_SOURCE,
+        ).strip()
+    candidates = (override,) if override else SOURCE_CANDIDATES
+
+    for _ in range(2160):
         r7.git(
             "fetch",
             "--prune",
@@ -89,7 +116,10 @@ def wait_for_source() -> tuple[str, str]:
             if probe.passed and source_is_usable(ref):
                 return ref, probe.output.strip()
         time.sleep(10)
-    raise RuntimeError("no usable global convergence candidate appeared")
+    raise RuntimeError(
+        "no usable exact convergence source appeared for "
+        f"candidates={list(candidates)}"
+    )
 
 
 def combined_package_command(
@@ -187,12 +217,17 @@ def prepare_r8(args: argparse.Namespace) -> int:
     source_sha = r7.commit_if_dirty(
         "fix: apply deterministic all-Hepta convergence repairs r8"
     )
-    r7.git("push", "--force-with-lease", "origin", f"HEAD:refs/heads/{TARGET_BRANCH}")
+    r7.git(
+        "push",
+        "--force-with-lease",
+        "origin",
+        f"HEAD:refs/heads/{TARGET_BRANCH}",
+    )
 
     matrix = r7.shard_matrix(packages, args.shards)
     prepared = (
         r7.command_receipts_pass(generator_receipts)
-        and r7.command_receipts_pass(lock_receipts)
+        and r7.lock_receipts_pass(lock_receipts)
         and format_result.passed
         and check_result.passed
         and native_after_repair.get("valid") is True
