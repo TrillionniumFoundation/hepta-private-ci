@@ -37,6 +37,7 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 60
     outputs:
+      candidate_branch: ${{ steps.freeze.outputs.candidate_branch }}
       branch_count: ${{ steps.freeze.outputs.branch_count }}
       snapshot_digest: ${{ steps.freeze.outputs.snapshot_digest }}
       archive_prefix: ${{ steps.freeze.outputs.archive_prefix }}
@@ -46,13 +47,11 @@ jobs:
       lane_f_sha: ${{ steps.freeze.outputs.lane_f_sha }}
       lane_g_sha: ${{ steps.freeze.outputs.lane_g_sha }}
     steps:
-      - name: Check out exact R4 controller
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           fetch-depth: 0
           persist-credentials: false
-
-      - name: Configure write-capable GitHub authentication
+      - name: Configure GitHub authentication
         env:
           GH_TOKEN: ${{ secrets.GH_ADMIN_TOKEN || secrets.HEPTA_ADMIN_TOKEN || secrets.REPO_ADMIN_TOKEN || github.token }}
         shell: bash
@@ -61,17 +60,9 @@ jobs:
           gh auth setup-git
           git config user.name 'Hepta single-main convergence controller'
           git config user.email 'hepta-single-main@users.noreply.github.com'
-
-      - name: Compile convergence executors
-        shell: bash
-        run: |
-          set -euo pipefail
-          python3 -m py_compile \
-            scripts/hepta-single-main-convergence-r1.py \
-            scripts/hepta-single-main-convergence-r2.py \
-            scripts/hepta-single-main-convergence-r3.py
-
-      - name: Freeze authoritative sources and archive every observed branch tip
+      - name: Compile executors
+        run: python3 -m py_compile scripts/hepta-single-main-convergence-r1.py scripts/hepta-single-main-convergence-r2.py scripts/hepta-single-main-convergence-r3.py
+      - name: Freeze authoritative sources
         id: freeze
         env:
           GH_TOKEN: ${{ secrets.GH_ADMIN_TOKEN || secrets.HEPTA_ADMIN_TOKEN || secrets.REPO_ADMIN_TOKEN || github.token }}
@@ -79,15 +70,10 @@ jobs:
         run: |
           set -euo pipefail
           BUNDLE="${RUNNER_TEMP}/hepta-single-main-r4-bundle"
-          rm -rf "$BUNDLE"
-          mkdir -p "$BUNDLE"
-          cp scripts/hepta-single-main-convergence-r1.py "$BUNDLE/"
-          cp scripts/hepta-single-main-convergence-r2.py "$BUNDLE/"
-          cp scripts/hepta-single-main-convergence-r3.py "$BUNDLE/"
+          rm -rf "$BUNDLE"; mkdir -p "$BUNDLE"
+          cp scripts/hepta-single-main-convergence-r{1,2,3}.py "$BUNDLE/"
           python3 scripts/hepta-single-main-convergence-r3.py freeze --out "$BUNDLE"
-
-      - name: Upload immutable R4 freeze and executor bundle
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: hepta-single-main-r4-freeze-${{ github.run_id }}
           path: ${{ runner.temp }}/hepta-single-main-r4-bundle
@@ -100,20 +86,16 @@ jobs:
     timeout-minutes: 240
     outputs:
       candidate_branch: ${{ steps.prepare.outputs.candidate_branch }}
-      product_sha: ${{ steps.prepare.outputs.product_sha }}
       final_sha: ${{ steps.prepare.outputs.final_sha }}
       tree_sha: ${{ steps.prepare.outputs.tree_sha }}
-      package_count: ${{ steps.prepare.outputs.package_count }}
       packages_json: ${{ steps.prepare.outputs.packages_json }}
       matrix: ${{ steps.prepare.outputs.matrix }}
     steps:
-      - name: Check out exact R4 controller repository
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           fetch-depth: 0
           persist-credentials: false
-
-      - name: Configure write-capable GitHub authentication
+      - name: Configure GitHub authentication
         env:
           GH_TOKEN: ${{ secrets.GH_ADMIN_TOKEN || secrets.HEPTA_ADMIN_TOKEN || secrets.REPO_ADMIN_TOKEN || github.token }}
         shell: bash
@@ -122,14 +104,11 @@ jobs:
           gh auth setup-git
           git config user.name 'Hepta single-main convergence controller'
           git config user.email 'hepta-single-main@users.noreply.github.com'
-
-      - name: Download immutable R4 freeze and executor bundle
-        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
         with:
           name: hepta-single-main-r4-freeze-${{ github.run_id }}
           path: ${{ runner.temp }}/hepta-single-main-r4-bundle
-
-      - name: Assemble exact product tree and absorb frozen history
+      - name: Assemble product and history
         id: prepare
         env:
           GH_TOKEN: ${{ secrets.GH_ADMIN_TOKEN || secrets.HEPTA_ADMIN_TOKEN || secrets.REPO_ADMIN_TOKEN || github.token }}
@@ -138,12 +117,8 @@ jobs:
           set -euo pipefail
           EVIDENCE="${RUNNER_TEMP}/hepta-single-main-r4-prepare"
           rm -rf "$EVIDENCE"
-          python3 "${RUNNER_TEMP}/hepta-single-main-r4-bundle/hepta-single-main-convergence-r3.py" prepare \
-            --manifest "${RUNNER_TEMP}/hepta-single-main-r4-bundle/freeze.json" \
-            --evidence "$EVIDENCE"
-
-      - name: Upload candidate preparation evidence
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+          python3 "${RUNNER_TEMP}/hepta-single-main-r4-bundle/hepta-single-main-convergence-r3.py" prepare --manifest "${RUNNER_TEMP}/hepta-single-main-r4-bundle/freeze.json" --evidence "$EVIDENCE"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: hepta-single-main-r4-prepare-${{ github.run_id }}
           path: ${{ runner.temp }}/hepta-single-main-r4-prepare
@@ -155,18 +130,16 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 60
     outputs:
-      final_sha: ${{ steps.reconcile.outputs.final_sha }}
-      tree_sha: ${{ steps.reconcile.outputs.tree_sha }}
+      final_sha: ${{ steps.bind.outputs.final_sha }}
+      tree_sha: ${{ steps.bind.outputs.tree_sha }}
       lock_changed: ${{ steps.reconcile.outputs.lock_changed }}
     steps:
-      - name: Check out exact prepared history head
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           ref: ${{ needs.prepare.outputs.final_sha }}
           fetch-depth: 0
           persist-credentials: false
-
-      - name: Configure write-capable GitHub authentication
+      - name: Configure GitHub authentication
         env:
           GH_TOKEN: ${{ secrets.GH_ADMIN_TOKEN || secrets.HEPTA_ADMIN_TOKEN || secrets.REPO_ADMIN_TOKEN || github.token }}
         shell: bash
@@ -175,11 +148,9 @@ jobs:
           gh auth setup-git
           git config user.name 'Hepta single-main convergence controller'
           git config user.email 'hepta-single-main@users.noreply.github.com'
-
-      - name: Reconcile Cargo.lock on the exact final candidate tree
+      - name: Reconcile Cargo.lock on exact final tree
         id: reconcile
         env:
-          CANDIDATE_BRANCH: ${{ needs.prepare.outputs.candidate_branch }}
           PREPARED_SHA: ${{ needs.prepare.outputs.final_sha }}
         shell: bash
         run: |
@@ -187,33 +158,17 @@ jobs:
           test "$(git rev-parse HEAD)" = "$PREPARED_SHA"
           test -z "$(git status --porcelain)"
           before="$(sha256sum codex-rs/Cargo.lock | awk '{print $1}')"
-
-          cargo metadata \
-            --manifest-path codex-rs/Cargo.toml \
-            --format-version 1 \
-            >/dev/null
-
-          changed="false"
-          if ! git diff --quiet -- codex-rs/Cargo.lock; then
-            changed="true"
-          fi
+          cargo metadata --manifest-path codex-rs/Cargo.toml --format-version 1 >/dev/null
+          changed=false
+          if ! git diff --quiet -- codex-rs/Cargo.lock; then changed=true; fi
           unexpected="$(git status --porcelain | awk '{print $2}' | grep -v '^codex-rs/Cargo.lock$' || true)"
-          if [[ -n "$unexpected" ]]; then
-            printf 'Unexpected reconciliation drift:\n%s\n' "$unexpected" >&2
-            exit 1
-          fi
-
-          cargo metadata \
-            --manifest-path codex-rs/Cargo.toml \
-            --format-version 1 \
-            --locked \
-            >/dev/null
-
+          if [[ -n "$unexpected" ]]; then printf 'Unexpected reconciliation drift:\n%s\n' "$unexpected" >&2; exit 1; fi
+          cargo metadata --manifest-path codex-rs/Cargo.toml --format-version 1 --locked >/dev/null
           after="$(sha256sum codex-rs/Cargo.lock | awk '{print $1}')"
+          export BEFORE="$before" AFTER="$after" CHANGED="$changed"
           mkdir -p qualification/single-main-closure-r4
           python3 - <<'PY'
-          import json
-          import os
+          import json, os
           from pathlib import Path
           receipt = {
               'schema': 'hepta.cargo-lock-reconciliation.v1',
@@ -228,18 +183,10 @@ jobs:
               'lockedQualificationRetained': True,
               'authorityGranted': False,
           }
-          Path('qualification/single-main-closure-r4/CARGO_LOCK_RECONCILIATION.json').write_text(
-              json.dumps(receipt, indent=2, sort_keys=True) + '\n', encoding='utf-8'
-          )
+          Path('qualification/single-main-closure-r4/CARGO_LOCK_RECONCILIATION.json').write_text(json.dumps(receipt, indent=2, sort_keys=True) + '\n', encoding='utf-8')
           PY
-        env:
-          CANDIDATE_BRANCH: ${{ needs.prepare.outputs.candidate_branch }}
-          PREPARED_SHA: ${{ needs.prepare.outputs.final_sha }}
-          BEFORE: ${{ steps.reconcile.outputs.before }}
-          AFTER: ${{ steps.reconcile.outputs.after }}
-          CHANGED: ${{ steps.reconcile.outputs.lock_changed }}
-
-      - name: Commit reconciled lock and bind downstream qualification SHA
+          echo "lock_changed=$changed" >> "$GITHUB_OUTPUT"
+      - name: Commit reconciliation and bind qualification SHA
         id: bind
         env:
           CANDIDATE_BRANCH: ${{ needs.prepare.outputs.candidate_branch }}
@@ -250,14 +197,9 @@ jobs:
           git diff --cached --check
           git commit --signoff -m 'fix(convergence): reconcile Cargo.lock on final candidate tree'
           git push origin "HEAD:refs/heads/${CANDIDATE_BRANCH}"
-          final_sha="$(git rev-parse HEAD)"
-          tree_sha="$(git rev-parse HEAD^{tree})"
-          {
-            echo "final_sha=$final_sha"
-            echo "tree_sha=$tree_sha"
-          } >> "$GITHUB_OUTPUT"
-
-      - name: Verify committed candidate is lock-clean
+          echo "final_sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+          echo "tree_sha=$(git rev-parse HEAD^{tree})" >> "$GITHUB_OUTPUT"
+      - name: Verify committed candidate remains lock-clean
         shell: bash
         run: |
           set -euo pipefail
@@ -270,18 +212,16 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 240
     steps:
-      - name: Check out exact reconciled qualification head
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           ref: ${{ needs.lockfile-reconcile.outputs.final_sha }}
           fetch-depth: 0
           persist-credentials: false
-      - name: Download immutable R4 executor bundle
-        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
         with:
           name: hepta-single-main-r4-freeze-${{ github.run_id }}
           path: ${{ runner.temp }}/hepta-single-main-r4-bundle
-      - name: Run repository, documentation, Lane and standalone gates
+      - name: Run repository gates
         env:
           HEPTA_FINAL_SHA: ${{ needs.lockfile-reconcile.outputs.final_sha }}
         shell: bash
@@ -298,51 +238,44 @@ jobs:
       max-parallel: 8
       matrix: ${{ fromJson(needs.prepare.outputs.matrix) }}
     steps:
-      - name: Check out exact reconciled qualification head
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           ref: ${{ needs.lockfile-reconcile.outputs.final_sha }}
           fetch-depth: 1
           persist-credentials: false
-      - name: Download immutable R4 executor bundle
-        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
         with:
           name: hepta-single-main-r4-freeze-${{ github.run_id }}
           path: ${{ runner.temp }}/hepta-single-main-r4-bundle
-      - name: Test and lint canonical package shard ${{ matrix.shard }}
+      - name: Test and lint package shard ${{ matrix.shard }}
         env:
           HEPTA_FINAL_SHA: ${{ needs.lockfile-reconcile.outputs.final_sha }}
         shell: bash
         run: |
           set -euo pipefail
-          python3 "${RUNNER_TEMP}/hepta-single-main-r4-bundle/hepta-single-main-convergence-r3.py" package-gate \
-            --packages-json '${{ matrix.packages_json }}'
+          python3 "${RUNNER_TEMP}/hepta-single-main-r4-bundle/hepta-single-main-convergence-r3.py" package-gate --packages-json '${{ matrix.packages_json }}'
 
   windows-gate:
     needs: [prepare, lockfile-reconcile]
     runs-on: windows-2025
     timeout-minutes: 330
     steps:
-      - name: Check out exact reconciled qualification head
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           ref: ${{ needs.lockfile-reconcile.outputs.final_sha }}
           fetch-depth: 1
           persist-credentials: false
-      - name: Download immutable R4 executor bundle
-        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
         with:
           name: hepta-single-main-r4-freeze-${{ github.run_id }}
           path: ${{ runner.temp }}/hepta-single-main-r4-bundle
-      - name: Check every canonical package under MSVC
+      - name: Check every package under MSVC
         env:
           HEPTA_FINAL_SHA: ${{ needs.lockfile-reconcile.outputs.final_sha }}
         shell: pwsh
         run: |
           $ErrorActionPreference = 'Stop'
-          python "$env:RUNNER_TEMP/hepta-single-main-r4-bundle/hepta-single-main-convergence-r3.py" package-gate `
-            --check-only `
-            --packages-json '${{ needs.prepare.outputs.packages_json }}'
+          python "$env:RUNNER_TEMP/hepta-single-main-r4-bundle/hepta-single-main-convergence-r3.py" package-gate --check-only --packages-json '${{ needs.prepare.outputs.packages_json }}'
 
   finalize:
     needs: [freeze, prepare, lockfile-reconcile, repository-gate, package-gates, windows-gate]
@@ -350,13 +283,12 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 120
     steps:
-      - name: Check out exact qualified history head
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           ref: ${{ needs.lockfile-reconcile.outputs.final_sha }}
           fetch-depth: 0
           persist-credentials: false
-      - name: Configure administrator GitHub authentication
+      - name: Configure GitHub authentication
         env:
           GH_TOKEN: ${{ secrets.GH_ADMIN_TOKEN || secrets.HEPTA_ADMIN_TOKEN || secrets.REPO_ADMIN_TOKEN || github.token }}
         shell: bash
@@ -365,12 +297,11 @@ jobs:
           gh auth setup-git
           git config user.name 'Hepta single-main convergence controller'
           git config user.email 'hepta-single-main@users.noreply.github.com'
-      - name: Download immutable R4 freeze and executor bundle
-        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
         with:
           name: hepta-single-main-r4-freeze-${{ github.run_id }}
           path: ${{ runner.temp }}/hepta-single-main-r4-bundle
-      - name: Reconcile late history, publish main and delete every non-main branch
+      - name: Publish the qualified single main
         env:
           GH_TOKEN: ${{ secrets.GH_ADMIN_TOKEN || secrets.HEPTA_ADMIN_TOKEN || secrets.REPO_ADMIN_TOKEN || github.token }}
           HEPTA_FINAL_SHA: ${{ needs.lockfile-reconcile.outputs.final_sha }}
@@ -379,13 +310,8 @@ jobs:
           set -euo pipefail
           EVIDENCE="${RUNNER_TEMP}/hepta-single-main-r4-final"
           rm -rf "$EVIDENCE"
-          python3 "${RUNNER_TEMP}/hepta-single-main-r4-bundle/hepta-single-main-convergence-r3.py" finalize \
-            --manifest "${RUNNER_TEMP}/hepta-single-main-r4-bundle/freeze.json" \
-            --final-sha '${{ needs.lockfile-reconcile.outputs.final_sha }}' \
-            --tree-sha '${{ needs.lockfile-reconcile.outputs.tree_sha }}' \
-            --candidate-branch '${{ needs.prepare.outputs.candidate_branch }}' \
-            --evidence "$EVIDENCE"
-      - name: Upload final single-main receipt
+          python3 "${RUNNER_TEMP}/hepta-single-main-r4-bundle/hepta-single-main-convergence-r3.py" finalize --manifest "${RUNNER_TEMP}/hepta-single-main-r4-bundle/freeze.json" --final-sha '${{ needs.lockfile-reconcile.outputs.final_sha }}' --tree-sha '${{ needs.lockfile-reconcile.outputs.tree_sha }}' --candidate-branch '${{ needs.prepare.outputs.candidate_branch }}' --evidence "$EVIDENCE"
+      - name: Upload final receipt
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
