@@ -1,0 +1,78 @@
+name: Temporary Hepta r15 Cargo lock materialization
+
+on:
+  push:
+    branches:
+      - "ops/hepta-r15-lock-materialize-20260910-r1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-r15-lock-materialize-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  materialize:
+    name: Materialize and verify canonical Cargo lock
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - name: Check out exact diagnostic source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+          fetch-depth: 0
+
+      - name: Verify exact source and clean tree
+        env:
+          EXPECTED_SHA: ${{ github.sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          test -z "$(git status --porcelain --untracked-files=all)"
+
+      - name: Install pinned Rust toolchain
+        uses: dtolnay/rust-toolchain@4305c38b25d97ef35a8ad1f985ccf2d2242004f2
+        with:
+          toolchain: 1.94.0
+
+      - name: Resolve exact workspace graph and refresh lock
+        shell: bash
+        run: |
+          set -euo pipefail
+          cp codex-rs/Cargo.lock "$RUNNER_TEMP/Cargo.lock.before"
+          cargo metadata \
+            --manifest-path codex-rs/Cargo.toml \
+            --format-version 1 \
+            > "$RUNNER_TEMP/cargo-metadata.json"
+          cargo metadata \
+            --locked \
+            --manifest-path codex-rs/Cargo.toml \
+            --format-version 1 \
+            > "$RUNNER_TEMP/cargo-metadata-locked.json"
+          sha256sum "$RUNNER_TEMP/Cargo.lock.before" codex-rs/Cargo.lock
+          git diff --check -- codex-rs/Cargo.lock
+          git diff --stat -- codex-rs/Cargo.lock
+
+      - name: Upload exact regenerated lock and metadata
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-r15-cargo-lock-${{ github.sha }}
+          path: |
+            codex-rs/Cargo.lock
+            ${{ runner.temp }}/Cargo.lock.before
+            ${{ runner.temp }}/cargo-metadata.json
+            ${{ runner.temp }}/cargo-metadata-locked.json
+          if-no-files-found: error
+          retention-days: 3
+
+      - name: Verify Cargo Shear against regenerated lock
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo install cargo-shear --version 1.9.1 --locked
+          cargo shear --manifest-path codex-rs/Cargo.toml --locked
