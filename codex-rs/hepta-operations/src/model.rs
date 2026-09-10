@@ -3,6 +3,8 @@ use codex_hepta_types::Generation;
 use codex_hepta_types::Revision;
 use codex_hepta_types::StableId;
 
+use crate::OperationError;
+
 /// Stable operation identity plus the exact final payload digest.
 #[derive(Clone, Debug, Eq, Ord, PartialEq, PartialOrd)]
 pub struct OperationKey {
@@ -10,22 +12,71 @@ pub struct OperationKey {
     pub payload_digest: Digest32,
 }
 
-/// Short-lived, independently issued witness consumed before adapter entry.
-#[derive(Clone, Debug, Eq, PartialEq)]
-pub struct AuthorityWitness {
-    pub operation_id: StableId,
-    pub final_payload_digest: Digest32,
-    pub authority_generation: Generation,
-    pub expires_at_unix_ms: u64,
-    pub witness_digest: Digest32,
+impl OperationKey {
+    pub(crate) fn validate(&self) -> Result<(), OperationError> {
+        if self.payload_digest.is_zero() {
+            return Err(OperationError::InvalidDigest("operation payload"));
+        }
+        Ok(())
+    }
 }
 
-impl AuthorityWitness {
+/// Reference-model witness used to exercise operation transitions.
+///
+/// This value is deliberately named `ReferenceAuthorityWitness`.
+/// It is not a cryptographic credential, cannot authenticate a caller and must
+/// never be accepted by a production effect adapter. Product composition
+/// consumes the non-serializable final-use token owned by `kernel.authority`
+/// instead.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct ReferenceAuthorityWitness {
+    operation_id: StableId,
+    final_payload_digest: Digest32,
+    authority_generation: Generation,
+    expires_at_unix_ms: u64,
+    witness_digest: Digest32,
+}
+
+impl ReferenceAuthorityWitness {
+    pub fn new(
+        operation_id: StableId,
+        final_payload_digest: Digest32,
+        authority_generation: Generation,
+        expires_at_unix_ms: u64,
+        witness_digest: Digest32,
+    ) -> Result<Self, OperationError> {
+        if final_payload_digest.is_zero() {
+            return Err(OperationError::InvalidDigest("authority payload"));
+        }
+        if witness_digest.is_zero() {
+            return Err(OperationError::InvalidDigest("authority witness"));
+        }
+        if expires_at_unix_ms == 0 {
+            return Err(OperationError::AuthorityRejected);
+        }
+        Ok(Self {
+            operation_id,
+            final_payload_digest,
+            authority_generation,
+            expires_at_unix_ms,
+            witness_digest,
+        })
+    }
+
     pub fn validates(&self, key: &OperationKey, now_unix_ms: u64) -> bool {
-        self.operation_id == key.id
+        key.validate().is_ok()
+            && self.operation_id == key.id
             && self.final_payload_digest == key.payload_digest
             && now_unix_ms < self.expires_at_unix_ms
             && !self.witness_digest.is_zero()
+    }
+
+    pub const fn authority_generation(&self) -> Generation {
+        self.authority_generation
+    }
+
+    pub const fn witness_digest(&self) -> Digest32 {
+        self.witness_digest
     }
 }
 
