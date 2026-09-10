@@ -18,12 +18,11 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 90
     env:
-      EXPECTED_PARENT: ed0a4dd3d9cdae3caaa60926570570ae59cb371c
+      EXPECTED_PARENT: 62328b16404c316ccf254129f4915f4de95a136b
       BASE_SHA: eb76d20401ee8b7b19a155de3366a6168668a3cc
       TARGET_BRANCH: codex/lane-a-gap-closure-20260910
       NATIVE_BINDINGS: qualification/module-execution-dossiers/NATIVE_BINDINGS.json
       CONTRACT_TEST_ENTRY: qualification/module-execution-dossiers/test_implementation_contracts.py
-      PROVIDER_EFFECT: codex-rs/hepta-contracts/src/provider_effect.rs
     steps:
       - name: Check out exact reconciliation bootstrap
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
@@ -41,7 +40,7 @@ jobs:
           test "$(git rev-parse HEAD:.github/workflows/lane-a-reconcile-20260910.yml)" = "$(git hash-object .github/workflows/lane-a-reconcile-20260910.yml)"
           test "$(git rev-parse "${BASE_SHA}^{commit}")" = "${BASE_SHA}"
 
-      - name: Merge fixed base and resolve the audited conflicts
+      - name: Merge fixed base and resolve the two audited conflicts
         shell: bash
         run: |
           set -euo pipefail
@@ -73,9 +72,8 @@ jobs:
           core_path = Path("qualification/module-execution-dossiers/implementation_contract_tests_core.py")
 
           def stage_json(stage: int, path: str) -> dict:
-              value = json.loads(
-                  subprocess.check_output(["git", "show", f":{stage}:{path}"], text=True)
-              )
+              raw = subprocess.check_output(["git", "show", f":{stage}:{path}"], text=True)
+              value = json.loads(raw)
               if not isinstance(value, dict):
                   raise SystemExit(f"stage {stage} {path} is not an object")
               return value
@@ -107,12 +105,16 @@ jobs:
           lane_set = set(lane_modules)
           if len(lane_set) != 7 or {row["module"] for row in overlay_rows} != lane_set:
               raise SystemExit("Lane A overlay is not the exact seven-module closed set")
+
           differing = {module for module in ours_order if ours_by[module] != theirs_by[module]}
           if not differing <= lane_set:
               raise SystemExit(
                   "base reconciliation changed non-Lane-A rows: "
                   + ",".join(sorted(differing - lane_set))
               )
+          for module in set(ours_order) - lane_set:
+              if ours_by[module] != theirs_by[module]:
+                  raise SystemExit(f"non-Lane-A row drifted: {module}")
 
           for row in overlay_rows:
               path = Path(row["path"])
@@ -137,9 +139,8 @@ jobs:
           ):
               if phrase not in core:
                   raise SystemExit(f"split contract suite lost base coverage: {phrase}")
-          ours_entry = subprocess.check_output(
-              ["git", "show", f":2:{entry_path}"], text=True
-          )
+
+          ours_entry = subprocess.check_output(["git", "show", f":2:{entry_path}"], text=True)
           for phrase in (
               "implementation_contract_tests_core",
               "implementation_contract_tests_system",
@@ -161,33 +162,75 @@ jobs:
           python3 - <<'PY'
           from pathlib import Path
 
-          path = Path("codex-rs/hepta-contracts/src/provider_effect.rs")
-          old = "\n".join((
-              "        Some(",
-              "            observations",
-              "                .and_then(|items| items.last())",
-              "                .map_or(ProviderEffectState::Pending, ProviderEffectAck::state),",
-              "        )",
-              "        .filter(|_| intent.key == *key)",
-              "",
-          ))
-          new = "\n".join((
-              "        let state = observations",
-              "            .and_then(|items| items.last())",
-              "            .map_or(ProviderEffectState::Pending, ProviderEffectAck::state);",
-              "        if intent.key == *key {",
-              "            Some(state)",
-              "        } else {",
-              "            None",
-              "        }",
-              "",
-          ))
-          text = path.read_text(encoding="utf-8")
-          if text.count(old) != 1 or new in text:
-              raise SystemExit("provider-effect state repair precondition drifted")
-          path.write_text(text.replace(old, new, 1), encoding="utf-8")
+          replacements = {
+              Path("codex-rs/hepta-contracts/src/provider_effect.rs"): (
+                  "\n".join((
+                      "        Some(",
+                      "            observations",
+                      "                .and_then(|items| items.last())",
+                      "                .map_or(ProviderEffectState::Pending, ProviderEffectAck::state),",
+                      "        )",
+                      "        .filter(|_| intent.key == *key)",
+                      "",
+                  )),
+                  "\n".join((
+                      "        let state = observations",
+                      "            .and_then(|items| items.last())",
+                      "            .map_or(ProviderEffectState::Pending, ProviderEffectAck::state);",
+                      "        if intent.key == *key {",
+                      "            Some(state)",
+                      "        } else {",
+                      "            None",
+                      "        }",
+                      "",
+                  )),
+              ),
+              Path("codex-rs/utils/path-uri/src/api_path_string.rs"): (
+                  "\n".join((
+                      "    let path_wide = path_bytes",
+                      "        .chunks_exact(2)",
+                      "        .map(|bytes| u16::from_le_bytes([bytes[0], bytes[1]]))",
+                      "        .collect::<Vec<_>>();",
+                      "",
+                  )),
+                  "\n".join((
+                      "    let path_wide = path_bytes",
+                      "        .as_chunks::<2>()",
+                      "        .0",
+                      "        .iter()",
+                      "        .map(|bytes| u16::from_le_bytes(*bytes))",
+                      "        .collect::<Vec<_>>();",
+                      "",
+                  )),
+              ),
+              Path("codex-rs/utils/path-uri/src/lib.rs"): (
+                  "\n".join((
+                      "    let mut path_wide = path_bytes",
+                      "        .chunks_exact(2)",
+                      "        .map(|bytes| u16::from_le_bytes([bytes[0], bytes[1]]));",
+                      "",
+                  )),
+                  "\n".join((
+                      "    let mut path_wide = path_bytes",
+                      "        .as_chunks::<2>()",
+                      "        .0",
+                      "        .iter()",
+                      "        .map(|bytes| u16::from_le_bytes(*bytes));",
+                      "",
+                  )),
+              ),
+          }
+
+          for path, (old, new) in replacements.items():
+              text = path.read_text(encoding="utf-8")
+              if text.count(old) != 1 or new in text:
+                  raise SystemExit(f"strict-clippy repair precondition drifted: {path}")
+              path.write_text(text.replace(old, new, 1), encoding="utf-8")
           PY
-          git add "${PROVIDER_EFFECT}"
+          git add \
+            codex-rs/hepta-contracts/src/provider_effect.rs \
+            codex-rs/utils/path-uri/src/api_path_string.rs \
+            codex-rs/utils/path-uri/src/lib.rs
 
           git rm .github/workflows/lane-a-reconcile-20260910.yml
           test -z "$(git diff --name-only --diff-filter=U)"
