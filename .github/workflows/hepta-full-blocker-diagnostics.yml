@@ -1,0 +1,302 @@
+name: Hepta full blocker diagnostics
+
+on:
+  push:
+    branches:
+      - ops/hepta-gpt56-source-export-20260911
+
+permissions:
+  contents: read
+  pull-requests: read
+
+concurrency:
+  group: hepta-full-blocker-diagnostics-${{ github.sha }}
+  cancel-in-progress: false
+
+env:
+  SUBJECT_SHA: 6f65f67bf049427ceff3304a2a0af9d963a6fcfa
+  BASE_SHA: 04f60466394a024c218ce66b1b32d1c42c462985
+  PR_NUMBER: "524"
+  PYTHONDONTWRITEBYTECODE: "1"
+  PYTHONUTF8: "1"
+
+jobs:
+  semantic:
+    name: Diagnose ${{ matrix.area }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        area:
+          - lane-a-tuple
+          - lane-a-source
+          - lane-b
+          - lane-d-semantic
+          - lane-e-closed-world
+          - readiness
+          - lane-g-portable
+          - lane-g-strong
+    steps:
+      - name: Check out exact rejected candidate
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SUBJECT_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Install Bubblewrap for strong isolation diagnostic
+        if: matrix.area == 'lane-g-strong'
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install --no-install-recommends -y bubblewrap
+          bwrap --version
+
+      - name: Execute and retain complete diagnostic
+        id: diagnose
+        shell: bash
+        env:
+          AREA: ${{ matrix.area }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -uo pipefail
+          mkdir -p "$RUNNER_TEMP/hepta-diagnostics"
+          log="$RUNNER_TEMP/hepta-diagnostics/${AREA}.log"
+          status_file="$RUNNER_TEMP/hepta-diagnostics/${AREA}.status"
+          {
+            echo "area=$AREA"
+            echo "subject=$SUBJECT_SHA"
+            echo "base=$BASE_SHA"
+            echo "head=$(git rev-parse HEAD)"
+            echo "tree=$(git rev-parse HEAD^{tree})"
+            echo "parents=$(git show -s --format=%P HEAD)"
+            echo "--- begin commands ---"
+            set -euo pipefail
+            case "$AREA" in
+              lane-a-tuple)
+                curl -fsSL \
+                  -H "Authorization: Bearer $GH_TOKEN" \
+                  -H "Accept: application/vnd.github+json" \
+                  "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/pulls/$PR_NUMBER" \
+                  > "$RUNNER_TEMP/pr.json"
+                jq '{pull_request: .}' "$RUNNER_TEMP/pr.json" > "$RUNNER_TEMP/event.json"
+                jq '{base:.pull_request.base|{ref,sha},head:.pull_request.head|{ref,sha},commits:.pull_request.commits,body:.pull_request.body}' "$RUNNER_TEMP/event.json"
+                python3 scripts/verify_lane_a_pr_tuple.py --event "$RUNNER_TEMP/event.json"
+                ;;
+              lane-a-source)
+                python3 scripts/verify_lane_a_foundation.py self-test
+                python3 scripts/verify_lane_a_foundation.py verify
+                python3 -m unittest qualification/module-execution-dossiers/test_lane_a_foundation.py
+                (cd qualification/module-execution-dossiers && python3 -m unittest test_implementation_contracts.py)
+                ;;
+              lane-b)
+                python3 scripts/hepta-lane-b-truth.py self-test
+                python3 -m unittest scripts/test_hepta_lane_b_truth.py
+                python3 scripts/hepta-lane-b-truth.py verify
+                python3 scripts/hepta-lane-b-docs.py
+                ;;
+              lane-d-semantic)
+                python3 -m py_compile scripts/hepta-lane-d-semantic-conformance.py
+                python3 scripts/hepta-lane-d-semantic-conformance.py self-test
+                python3 scripts/hepta-lane-d-semantic-conformance.py verify
+                python3 scripts/hepta-lane-d-semantic-conformance.py verify-changes --base "$BASE_SHA"
+                ;;
+              lane-e-closed-world)
+                python3 scripts/hepta-lane-e-closure.py self-test
+                python3 scripts/hepta-lane-e-closure.py verify
+                ;;
+              readiness)
+                python3 scripts/hepta-readiness.py self-test
+                python3 scripts/hepta-readiness.py generate-status --check
+                python3 scripts/hepta-readiness.py verify
+                python3 scripts/hepta-implementation-dossiers.py self-test
+                python3 scripts/hepta-implementation-dossiers.py generate-status --check
+                python3 scripts/hepta-implementation-dossiers.py verify
+                python3 scripts/hepta-technical-closure.py self-test
+                python3 scripts/hepta-technical-closure.py verify
+                python3 qualification/module-execution-dossiers/implementation_contracts.py self-test
+                python3 qualification/module-execution-dossiers/implementation_contracts.py verify-repository
+                python3 scripts/hepta-module-docs.py self-test
+                python3 scripts/hepta-module-docs.py verify
+                python3 scripts/hepta-algorithm-docs.py self-test
+                python3 scripts/hepta-algorithm-docs.py verify-sources
+                python3 scripts/hepta-algorithm-docs.py generate-status --check
+                python3 scripts/hepta-algorithm-docs.py verify
+                python3 scripts/hepta-cns.py self-test
+                python3 scripts/hepta-cns.py generate-status --check
+                python3 scripts/hepta-cns.py verify
+                python3 scripts/hepta-hnmf.py self-test
+                python3 scripts/hepta-hnmf.py verify
+                python3 scripts/hepta-docs.py self-test
+                python3 scripts/hepta-docs.py generate-status
+                git diff --exit-code
+                python3 scripts/hepta-docs.py verify
+                ;;
+              lane-g-portable)
+                (cd tools/hepta-engineering-control && python -m py_compile control_engineering_v2/candidate.py test_candidate_sandbox_hardening.py)
+                (cd tools/hepta-engineering-control && python -m unittest -v test_candidate_sandbox_hardening.CandidateSandboxFixture)
+                ;;
+              lane-g-strong)
+                (cd tools/hepta-engineering-control && python -m unittest -v test_candidate_sandbox_hardening.CandidateSandboxStrongIsolation)
+                ;;
+              *)
+                echo "unknown area: $AREA" >&2
+                exit 64
+                ;;
+            esac
+            echo "--- commands passed ---"
+          } >"$log" 2>&1
+          status=$?
+          printf '%s\n' "$status" > "$status_file"
+          cat "$log"
+          echo "diagnostic_status=$status" >> "$GITHUB_OUTPUT"
+          exit 0
+
+      - name: Upload semantic diagnostic
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-diagnostic-${{ matrix.area }}-${{ env.SUBJECT_SHA }}
+          path: ${{ runner.temp }}/hepta-diagnostics/*
+          if-no-files-found: error
+          retention-days: 2
+
+  rust:
+    name: Diagnose ${{ matrix.area }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    strategy:
+      fail-fast: false
+      matrix:
+        area:
+          - lane-a-native
+          - lane-d-rust
+          - lane-e-rust
+          - ndu
+          - learning
+          - consolidated
+    steps:
+      - name: Check out exact rejected candidate
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SUBJECT_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Install pinned Rust toolchain
+        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: 1.95.0
+          components: clippy,rustfmt
+
+      - name: Install pinned repository test tools
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+
+      - name: Execute and retain complete diagnostic
+        id: diagnose
+        shell: bash
+        env:
+          AREA: ${{ matrix.area }}
+          CARGO_NET_GIT_FETCH_WITH_CLI: "true"
+          PACKAGES: >-
+            codex-hepta-authbus codex-hepta-authbus-p1-3-qualification
+            codex-hepta-bao-adapter codex-hepta-codex-adapter
+            codex-hepta-cognitive-read codex-hepta-cognitive-store
+            codex-hepta-cognitive-types codex-hepta-compact-engine
+            codex-hepta-context-compiler codex-hepta-control-plane
+            codex-hepta-infer-core codex-hepta-inferd codex-hepta-intelligence
+            codex-hepta-kg codex-hepta-memory-federation codex-hepta-memory-retrieval
+        run: |
+          set -uo pipefail
+          mkdir -p "$RUNNER_TEMP/hepta-diagnostics"
+          log="$RUNNER_TEMP/hepta-diagnostics/${AREA}.log"
+          status_file="$RUNNER_TEMP/hepta-diagnostics/${AREA}.status"
+          {
+            echo "area=$AREA"
+            echo "subject=$SUBJECT_SHA"
+            echo "head=$(git rev-parse HEAD)"
+            echo "tree=$(git rev-parse HEAD^{tree})"
+            rustc --version
+            cargo --version
+            set -euo pipefail
+            case "$AREA" in
+              lane-a-native)
+                scripts/run_lane_a_native_qualification.sh
+                ;;
+              lane-d-rust)
+                cd codex-rs
+                cargo fmt --all -- --check
+                cargo check --locked -p codex-hepta-objective -p codex-hepta-ndu -p codex-hepta-control-plane --all-targets
+                cargo test --locked -p codex-hepta-objective
+                cargo test --locked -p codex-hepta-ndu
+                cargo test --locked -p codex-hepta-control-plane
+                cargo clippy --locked -p codex-hepta-objective -p codex-hepta-ndu -p codex-hepta-control-plane --all-targets -- -D warnings
+                ;;
+              lane-e-rust)
+                cd codex-rs
+                cargo check --locked -p codex-hepta-learning-ledger -p codex-hepta-learning-artifacts -p codex-hepta-bellman-operator -p codex-hepta-intelligence-eval -p codex-hepta-shadow-qualification --all-targets
+                cargo test --locked -p codex-hepta-learning-ledger -p codex-hepta-learning-artifacts -p codex-hepta-bellman-operator -p codex-hepta-intelligence-eval -- --nocapture
+                cargo test --locked -p codex-hepta-shadow-qualification lane_e_causal_candidate_chain_is_digest_bound_and_deny_all -- --nocapture --test-threads=1
+                cargo clippy --locked -p codex-hepta-learning-ledger -p codex-hepta-learning-artifacts -p codex-hepta-bellman-operator -p codex-hepta-intelligence-eval -p codex-hepta-shadow-qualification --all-targets -- -D warnings
+                cargo fmt --package codex-hepta-learning-ledger --package codex-hepta-learning-artifacts --package codex-hepta-bellman-operator --package codex-hepta-intelligence-eval --package codex-hepta-shadow-qualification -- --check
+                ;;
+              ndu)
+                cd codex-rs
+                cargo check --locked -p codex-hepta-ndu --all-targets
+                just test --locked -p codex-hepta-ndu
+                cargo clippy --locked -p codex-hepta-ndu --all-targets -- -D warnings
+                cargo fmt --package codex-hepta-ndu -- --check
+                ;;
+              learning)
+                python3 -m unittest discover -v -s tools/hepta-engineering-control -p 'test_*.py'
+                python3 scripts/hepta-module-docs.py verify
+                python3 scripts/hepta-readiness.py verify
+                python3 scripts/hepta-docs.py verify
+                cd codex-rs
+                cargo check --locked -p codex-hepta-learning-ledger -p codex-hepta-learning-artifacts -p codex-hepta-intelligence-eval -p codex-hepta-neuron -p codex-hepta-ndu -p codex-hepta-shadow-qualification --all-targets
+                just test --locked -p codex-hepta-learning-ledger -p codex-hepta-learning-artifacts -p codex-hepta-intelligence-eval -p codex-hepta-neuron -p codex-hepta-ndu
+                just test --locked -p codex-hepta-shadow-qualification --test durable_learning_roundtrip
+                cargo clippy --locked -p codex-hepta-learning-ledger -p codex-hepta-learning-artifacts -p codex-hepta-intelligence-eval -p codex-hepta-neuron -p codex-hepta-ndu -p codex-hepta-shadow-qualification --all-targets -- -D warnings
+                cargo fmt --package codex-hepta-learning-ledger --package codex-hepta-learning-artifacts --package codex-hepta-intelligence-eval --package codex-hepta-neuron --package codex-hepta-ndu --package codex-hepta-shadow-qualification -- --check
+                ;;
+              consolidated)
+                python3 scripts/hepta_module_doc_metadata.py
+                python3 scripts/hepta-module-docs.py verify
+                python3 scripts/hepta-readiness.py verify
+                python3 scripts/hepta-docs.py verify
+                python3 scripts/hepta-gap-closure.py verify
+                python3 -m unittest discover -v -s tools/hepta-engineering-control -p 'test_*.py'
+                node --test apps/hepta-browser/test/*.js apps/hepta-native/test/*.js
+                cd codex-rs
+                args=()
+                for package in $PACKAGES; do args+=(-p "$package"); done
+                cargo check --locked "${args[@]}" --all-targets
+                just test --locked "${args[@]}"
+                cargo clippy --locked "${args[@]}" --all-targets -- -D warnings
+                fmt_args=()
+                for package in $PACKAGES; do fmt_args+=(--package "$package"); done
+                cargo fmt "${fmt_args[@]}" -- --check
+                ;;
+              *)
+                echo "unknown area: $AREA" >&2
+                exit 64
+                ;;
+            esac
+            echo "--- commands passed ---"
+          } >"$log" 2>&1
+          status=$?
+          printf '%s\n' "$status" > "$status_file"
+          tail -n 500 "$log"
+          echo "diagnostic_status=$status" >> "$GITHUB_OUTPUT"
+          exit 0
+
+      - name: Upload Rust diagnostic
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-diagnostic-${{ matrix.area }}-${{ env.SUBJECT_SHA }}
+          path: ${{ runner.temp }}/hepta-diagnostics/*
+          if-no-files-found: error
+          retention-days: 2
