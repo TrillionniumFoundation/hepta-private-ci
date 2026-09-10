@@ -106,6 +106,68 @@ if old_receipt in text:
     text = text.replace(old_receipt, new_receipt, 1)
 elif "autoResolvedLaneOwnerOnly" not in text:
     raise SystemExit("r7 receipt anchor not found")
+
+argument_helper_anchor = "def run_generators() -> list[dict[str, Any]]:\n"
+argument_helper = '''def repair_argument_comment_blockers() -> dict[str, Any]:
+    repairs = (
+        (
+            Path("codex-rs/http-client/src/tls_backend_fallback.rs"),
+            "walk_error_chain(error, 0, &mut |error| {",
+            "walk_error_chain(error, /* depth */ 0, &mut |error| {",
+            2,
+        ),
+        (
+            Path("codex-rs/hepta-runtime/src/organs.rs"),
+            "Generation::new(1)?",
+            "Generation::new(/* value */ 1)?",
+            1,
+        ),
+    )
+    changed: list[str] = []
+    for path, old, new, expected_count in repairs:
+        source = path.read_text(encoding="utf-8")
+        old_count = source.count(old)
+        new_count = source.count(new)
+        if old_count == expected_count and new_count == 0:
+            path.write_text(source.replace(old, new), encoding="utf-8")
+            changed.append(path.as_posix())
+            continue
+        if old_count == 0 and new_count == expected_count:
+            continue
+        raise RuntimeError(
+            f"argument-comment repair drift for {path}: "
+            f"old={old_count} new={new_count} expected={expected_count}"
+        )
+    return {"changed": changed, "count": len(changed)}
+
+
+def run_generators() -> list[dict[str, Any]]:
+'''
+if "def repair_argument_comment_blockers" not in text:
+    if argument_helper_anchor not in text:
+        raise SystemExit("r7 argument-comment helper anchor not found")
+    text = text.replace(argument_helper_anchor, argument_helper, 1)
+
+argument_call_anchor = "    generator_receipts = run_generators()\n"
+argument_call_replacement = (
+    "    argument_comment_repair = repair_argument_comment_blockers()\n"
+    "    generator_receipts = run_generators()\n"
+)
+if "argument_comment_repair = repair_argument_comment_blockers()" not in text:
+    if argument_call_anchor not in text:
+        raise SystemExit("r7 argument-comment call anchor not found")
+    text = text.replace(argument_call_anchor, argument_call_replacement, 1)
+
+argument_receipt_anchor = '''        "mergeReceipts": merge_receipts,
+        "generatorReceipts": generator_receipts,'''
+argument_receipt_replacement = '''        "mergeReceipts": merge_receipts,
+        "argumentCommentRepair": argument_comment_repair,
+        "generatorReceipts": generator_receipts,'''
+if '"argumentCommentRepair": argument_comment_repair' not in text:
+    if argument_receipt_anchor not in text:
+        raise SystemExit("r7 argument-comment receipt anchor not found")
+    text = text.replace(argument_receipt_anchor, argument_receipt_replacement, 1)
+
 r7.write_text(text, encoding="utf-8")
 
 r12 = Path("scripts/hepta-candidate-publisher-r12.py")
@@ -259,14 +321,14 @@ from pathlib import Path
 repairs = (
     (
         Path("codex-rs/http-client/src/tls_backend_fallback.rs"),
-        "walk_error_chain(error, 0, &mut |source| {",
-        "walk_error_chain(error, /* depth */ 0, &mut |source| {",
+        "walk_error_chain(error, 0, &mut |error| {",
+        "walk_error_chain(error, /* depth */ 0, &mut |error| {",
         2,
     ),
     (
         Path("codex-rs/hepta-runtime/src/organs.rs"),
-        "Generation::new(1).unwrap()",
-        "Generation::new(/* value */ 1).unwrap()",
+        "Generation::new(1)?",
+        "Generation::new(/* value */ 1)?",
         1,
     ),
 )
