@@ -1,0 +1,218 @@
+name: Lane F payload salvage probe
+
+on:
+  push:
+    branches:
+      - codex/lane-f-gap-closure-20260910
+    paths:
+      - .github/workflows/lane-f-payload-salvage-20260910.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: lane-f-payload-salvage-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  salvage:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: Check out exact payload source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Tolerantly decode and extract complete tar members
+        shell: bash
+        run: |
+          set -euo pipefail
+          root="$RUNNER_TEMP/lane-f-salvage"
+          mkdir -p "$root"
+          ROOT="$root" python3 - <<'PY'
+          from __future__ import annotations
+
+          import base64
+          import hashlib
+          import json
+          import lzma
+          import os
+          import pathlib
+          import zlib
+
+          ROOT = pathlib.Path(os.environ["ROOT"])
+          REQUIRED = (
+              "scripts/hepta-lane-f.py",
+              "scripts/test_hepta_lane_f.py",
+              "codex-rs/hepta-neuron/src/lib.rs",
+              "codex-rs/hepta-intuition/src/lib.rs",
+              "codex-rs/hepta-prompt-optimizer/src/lib.rs",
+              "codex-rs/hepta-plasticity/src/lib.rs",
+              "codex-rs/hepta-intelligence/src/lib.rs",
+          )
+
+          def octal(field: bytes) -> int:
+              stripped = field.rstrip(b"\0 ").lstrip(b" ")
+              return int(stripped or b"0", 8)
+
+          def header_at(payload: bytes, offset: int):
+              block = payload[offset : offset + 512]
+              if len(block) != 512 or not any(block):
+                  return None
+              try:
+                  expected = octal(block[148:156])
+                  checksum = sum(block[:148]) + (32 * 8) + sum(block[156:])
+                  if checksum != expected:
+                      return None
+                  name = block[:100].split(b"\0", 1)[0].decode("utf-8", "strict")
+                  prefix = block[345:500].split(b"\0", 1)[0].decode("utf-8", "strict")
+                  if prefix:
+                      name = f"{prefix}/{name}"
+                  size = octal(block[124:136])
+                  typeflag = block[156:157]
+              except (UnicodeDecodeError, ValueError):
+                  return None
+              return name, size, typeflag
+
+          def safe_path(name: str) -> pathlib.PurePosixPath | None:
+              path = pathlib.PurePosixPath(name)
+              if path.is_absolute() or not path.parts or ".." in path.parts:
+                  return None
+              return path
+
+          def extract_tar(label: str, payload: bytes, decode_error: str | None, source_sha: str):
+              destination = ROOT / label
+              destination.mkdir(parents=True, exist_ok=True)
+              members = []
+              offset = 0
+              skipped_blocks = 0
+              while offset + 512 <= len(payload):
+                  parsed = header_at(payload, offset)
+                  if parsed is None:
+                      if not any(payload[offset : offset + 512]):
+                          break
+                      offset += 512
+                      skipped_blocks += 1
+                      continue
+                  name, size, typeflag = parsed
+                  path = safe_path(name)
+                  data_start = offset + 512
+                  data_end = data_start + size
+                  complete = data_end <= len(payload)
+                  record = {
+                      "name": name,
+                      "size": size,
+                      "type": typeflag.decode("ascii", "replace"),
+                      "headerOffset": offset,
+                      "complete": complete,
+                  }
+                  members.append(record)
+                  if path is not None and complete:
+                      target = destination.joinpath(*path.parts)
+                      if typeflag in (b"", b"0", b"7"):
+                          target.parent.mkdir(parents=True, exist_ok=True)
+                          target.write_bytes(payload[data_start:data_end])
+                      elif typeflag == b"5":
+                          target.mkdir(parents=True, exist_ok=True)
+                  if not complete:
+                      break
+                  offset = data_start + ((size + 511) // 512) * 512
+
+              present = {path: (destination / path).is_file() for path in REQUIRED}
+              manifest = {
+                  "schema": "hepta.lane-f-payload-salvage.v1",
+                  "label": label,
+                  "sourceSha256": source_sha,
+                  "decompressedBytes": len(payload),
+                  "decompressionError": decode_error,
+                  "skippedTarBlocks": skipped_blocks,
+                  "members": members,
+                  "required": present,
+                  "allRequiredPresent": all(present.values()),
+              }
+              (ROOT / f"{label}.json").write_text(
+                  json.dumps(manifest, indent=2, sort_keys=True) + "\n",
+                  encoding="utf-8",
+              )
+              print(
+                  f"SALVAGE label={label} source={source_sha} tar_bytes={len(payload)} "
+                  f"members={len(members)} skipped={skipped_blocks} "
+                  f"all_required={all(present.values())} error={decode_error!r}"
+              )
+              for member in members:
+                  print(
+                      f"MEMBER {label} complete={member['complete']} size={member['size']} "
+                      f"offset={member['headerOffset']} {member['name']}"
+                  )
+              for path, exists in present.items():
+                  print(f"REQUIRED {label} {'PRESENT' if exists else 'ABSENT '} {path}")
+
+          def stream_decode(payload: bytes, decoder, label: str):
+              output = bytearray()
+              error = None
+              for start in range(0, len(payload), 256):
+                  chunk = payload[start : start + 256]
+                  try:
+                      output.extend(decoder.decompress(chunk))
+                  except Exception as exc:  # diagnostic boundary
+                      error = f"{type(exc).__name__}: {exc} at compressed offset {start}"
+                      break
+              return bytes(output), error
+
+          bootstrap_parts = sorted(pathlib.Path(".lane-f-bootstrap").glob("part-*"))
+          raw_bootstrap = b"".join(path.read_bytes() for path in bootstrap_parts)
+          bootstrap_variants = {
+              "bootstrap-raw": raw_bootstrap,
+              "bootstrap-unescaped": b"".join(
+                  path.read_bytes().replace(b"\\r\\n", b"\n").replace(b"\\n", b"\n")
+                  for path in bootstrap_parts
+              ),
+          }
+          for label, compressed in bootstrap_variants.items():
+              source_sha = hashlib.sha256(compressed).hexdigest()
+              (ROOT / f"{label}.compressed").write_bytes(compressed)
+              tar_bytes, error = stream_decode(compressed, zlib.decompressobj(31), label)
+              (ROOT / f"{label}.tar").write_bytes(tar_bytes)
+              extract_tar(label, tar_bytes, error, source_sha)
+
+          for label in ("min", "final"):
+              directory = pathlib.Path(f".lane-f-{label}")
+              parts = sorted(directory.glob("part-*"))
+              textual = b"".join(path.read_bytes() for path in parts)
+              try:
+                  compressed = base64.b64decode(b"".join(textual.split()), validate=False)
+                  base64_error = None
+              except Exception as exc:
+                  compressed = b""
+                  base64_error = f"{type(exc).__name__}: {exc}"
+              source_sha = hashlib.sha256(compressed).hexdigest()
+              (ROOT / f"{label}.compressed").write_bytes(compressed)
+              tar_bytes, error = stream_decode(compressed, lzma.LZMADecompressor(), label)
+              if base64_error:
+                  error = f"base64={base64_error}; lzma={error}"
+              (ROOT / f"{label}.tar").write_bytes(tar_bytes)
+              extract_tar(label, tar_bytes, error, source_sha)
+
+          summary = {
+              path.stem: json.loads(path.read_text(encoding="utf-8"))
+              for path in sorted(ROOT.glob("*.json"))
+          }
+          (ROOT / "SUMMARY.json").write_text(
+              json.dumps(summary, indent=2, sort_keys=True) + "\n",
+              encoding="utf-8",
+          )
+          PY
+
+      - name: Upload salvage evidence and complete members
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: lane-f-payload-salvage-${{ github.run_id }}
+          path: ${{ runner.temp }}/lane-f-salvage
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 14
