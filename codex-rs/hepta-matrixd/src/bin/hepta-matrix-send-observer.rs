@@ -49,6 +49,7 @@ pub struct SendReceipt {
     pub state: SendState,
     pub server_event_id: Option<String>,
     pub observation_digest: Option<String>,
+    pub redaction_digest: Option<String>,
     pub terminal_observed: bool,
     pub idempotent: bool,
 }
@@ -80,6 +81,8 @@ impl StdError for Error {}
 struct SendRecord {
     intent: SendIntent,
     receipt: SendReceipt,
+    last_observation: Option<ServerObservation>,
+    terminal_observation: Option<ServerObservation>,
 }
 
 #[derive(Debug, Default)]
@@ -118,6 +121,7 @@ impl MatrixSendObserver {
             state: SendState::Prepared,
             server_event_id: None,
             observation_digest: None,
+            redaction_digest: None,
             terminal_observed: false,
             idempotent: false,
         };
@@ -126,6 +130,8 @@ impl MatrixSendObserver {
             SendRecord {
                 intent,
                 receipt: receipt.clone(),
+                last_observation: None,
+                terminal_observation: None,
             },
         );
         Ok(receipt)
@@ -137,34 +143,37 @@ impl MatrixSendObserver {
             .sends
             .get_mut(&observation.operation_id)
             .ok_or(Error::SendNotFound)?;
-        if observation.transaction_id != current.intent.transaction_id
-            || observation.homeserver_id != current.intent.homeserver_id
-            || observation.room_id != current.intent.room_id
-            || observation.session_generation != current.intent.session_generation
-        {
-            return Err(Error::ObservationMismatch);
-        }
-        if current.receipt.state == SendState::Succeeded {
-            if current.receipt.observation_digest.as_deref()
-                == Some(observation.observation_digest.as_str())
-            {
+        verify_observation_binding(&current.intent, &observation)?;
+
+        if let Some(terminal) = &current.terminal_observation {
+            if terminal == &observation {
                 let mut receipt = current.receipt.clone();
                 receipt.idempotent = true;
                 return Ok(receipt);
             }
             return Err(Error::AlreadyTerminal);
         }
+        if current.receipt.state == SendState::Redacted {
+            return Err(Error::AlreadyTerminal);
+        }
+        if current.last_observation.as_ref() == Some(&observation) {
+            let mut receipt = current.receipt.clone();
+            receipt.idempotent = true;
+            return Ok(receipt);
+        }
+
         if !observation.terminal_observed {
             current.receipt.state = SendState::Indeterminate;
-            current.receipt.observation_digest = Some(observation.observation_digest);
+            current.receipt.observation_digest = Some(observation.observation_digest.clone());
+            current.last_observation = Some(observation);
             return Ok(current.receipt.clone());
         }
+
         if observation.accepted {
             let event_id = observation
                 .server_event_id
                 .as_ref()
                 .ok_or(Error::TerminalEventMissing)?;
-            validate_identity(event_id, "server event")?;
             if let Some(prior_operation) = self.events.get(event_id) {
                 if prior_operation != &observation.operation_id {
                     return Err(Error::OperationConflict);
@@ -175,13 +184,12 @@ impl MatrixSendObserver {
             current.receipt.state = SendState::Succeeded;
             current.receipt.server_event_id = Some(event_id.clone());
         } else {
-            if observation.server_event_id.is_some() {
-                return Err(Error::ObservationMismatch);
-            }
             current.receipt.state = SendState::Failed;
         }
-        current.receipt.observation_digest = Some(observation.observation_digest);
+        current.receipt.observation_digest = Some(observation.observation_digest.clone());
         current.receipt.terminal_observed = true;
+        current.last_observation = Some(observation.clone());
+        current.terminal_observation = Some(observation);
         Ok(current.receipt.clone())
     }
 
@@ -197,16 +205,47 @@ impl MatrixSendObserver {
             .get(server_event_id)
             .cloned()
             .ok_or(Error::SendNotFound)?;
-        let current = self.sends.get_mut(&operation_id).ok_or(Error::SendNotFound)?;
+        let current = self
+            .sends
+            .get_mut(&operation_id)
+            .ok_or(Error::SendNotFound)?;
+        if current.receipt.state == SendState::Redacted {
+            if current.receipt.redaction_digest.as_deref() == Some(redaction_digest) {
+                let mut receipt = current.receipt.clone();
+                receipt.idempotent = true;
+                return Ok(receipt);
+            }
+            return Err(Error::AlreadyTerminal);
+        }
+        if current.receipt.state != SendState::Succeeded
+            || !current.receipt.terminal_observed
+            || current.receipt.server_event_id.as_deref() != Some(server_event_id)
+        {
+            return Err(Error::AlreadyTerminal);
+        }
         current.receipt.state = SendState::Redacted;
-        current.receipt.observation_digest = Some(redaction_digest.to_string());
-        current.receipt.terminal_observed = true;
+        current.receipt.redaction_digest = Some(redaction_digest.to_string());
+        current.receipt.idempotent = false;
         Ok(current.receipt.clone())
     }
 
     pub fn receipt(&self, operation_id: &str) -> Option<&SendReceipt> {
         self.sends.get(operation_id).map(|record| &record.receipt)
     }
+}
+
+fn verify_observation_binding(
+    intent: &SendIntent,
+    observation: &ServerObservation,
+) -> Result<(), Error> {
+    if observation.transaction_id != intent.transaction_id
+        || observation.homeserver_id != intent.homeserver_id
+        || observation.room_id != intent.room_id
+        || observation.session_generation != intent.session_generation
+    {
+        return Err(Error::ObservationMismatch);
+    }
+    Ok(())
 }
 
 fn validate_intent(now_ms: u64, value: &SendIntent) -> Result<(), Error> {
@@ -243,8 +282,14 @@ fn validate_observation(value: &ServerObservation) -> Result<(), Error> {
     if value.session_generation == 0 {
         return Err(Error::InvalidGeneration);
     }
-    if let Some(event) = &value.server_event_id {
-        validate_identity(event, "server event")?;
+    match (
+        value.terminal_observed,
+        value.accepted,
+        value.server_event_id.as_ref(),
+    ) {
+        (false, false, None) | (true, false, None) => {}
+        (true, true, Some(event)) => validate_identity(event, "server event")?,
+        _ => return Err(Error::ObservationMismatch),
     }
     Ok(())
 }
@@ -272,7 +317,25 @@ fn validate_digest(value: &str, field: &'static str) -> Result<(), Error> {
     Ok(())
 }
 
-fn main() {}
+fn main() {
+    let mut arguments = std::env::args().skip(1);
+    match (arguments.next().as_deref(), arguments.next()) {
+        (Some("--describe"), None) => println!(
+            "{{\"kind\":\"hepta.matrix.send-observer-kernel.v1\",\"homeserverTransportEnrolled\":false,\"externalTerminalityProved\":false}}"
+        ),
+        (Some("--self-test"), None) => {
+            let observer = MatrixSendObserver::default();
+            assert!(observer.sends.is_empty());
+            println!(
+                "{{\"status\":\"PASS_HEPTA_MATRIX_OBSERVER_KERNEL_SELF_TEST\",\"homeserverTransportEnrolled\":false}}"
+            );
+        }
+        _ => {
+            eprintln!("usage: hepta-matrix-send-observer --describe|--self-test");
+            std::process::exit(2);
+        }
+    }
+}
 
 #[cfg(test)]
 mod tests {
@@ -293,53 +356,116 @@ mod tests {
         }
     }
 
+    fn observation(
+        terminal_observed: bool,
+        accepted: bool,
+        event: Option<&str>,
+        digest_byte: char,
+    ) -> ServerObservation {
+        ServerObservation {
+            operation_id: "operation.1".to_string(),
+            transaction_id: "transaction.1".to_string(),
+            homeserver_id: "homeserver.1".to_string(),
+            room_id: "!room:example.org".to_string(),
+            session_generation: 3,
+            terminal_observed,
+            accepted,
+            server_event_id: event.map(str::to_string),
+            observation_digest: digest_byte.to_string().repeat(64),
+        }
+    }
+
     #[test]
     fn lost_ack_keeps_transaction_and_reconciles_to_server_event() {
         let mut observer = MatrixSendObserver::default();
         observer.prepare_send(100, intent()).expect("prepare");
         let pending = observer
-            .observe_send(ServerObservation {
-                operation_id: "operation.1".to_string(),
-                transaction_id: "transaction.1".to_string(),
-                homeserver_id: "homeserver.1".to_string(),
-                room_id: "!room:example.org".to_string(),
-                session_generation: 3,
-                terminal_observed: false,
-                accepted: false,
-                server_event_id: None,
-                observation_digest: "2".repeat(64),
-            })
+            .observe_send(observation(false, false, None, '2'))
             .expect("unknown");
         assert_eq!(pending.state, SendState::Indeterminate);
+        let terminal_observation = observation(true, true, Some("$event:example.org"), '3');
         let terminal = observer
-            .observe_send(ServerObservation {
-                operation_id: "operation.1".to_string(),
-                transaction_id: "transaction.1".to_string(),
-                homeserver_id: "homeserver.1".to_string(),
-                room_id: "!room:example.org".to_string(),
-                session_generation: 3,
-                terminal_observed: true,
-                accepted: true,
-                server_event_id: Some("$event:example.org".to_string()),
-                observation_digest: "3".repeat(64),
-            })
+            .observe_send(terminal_observation.clone())
             .expect("terminal");
         assert_eq!(terminal.state, SendState::Succeeded);
         assert_eq!(terminal.transaction_id, "transaction.1");
+        let retry = observer
+            .observe_send(terminal_observation)
+            .expect("idempotent terminal observation");
+        assert!(retry.idempotent);
     }
 
     #[test]
-    fn payload_drift_and transaction_reuse_are rejected() {
+    fn failed_terminal_observation_cannot_be_rewritten() {
+        let mut observer = MatrixSendObserver::default();
+        observer.prepare_send(100, intent()).expect("prepare");
+        observer
+            .observe_send(observation(true, false, None, '4'))
+            .expect("failed terminal");
+        assert_eq!(
+            observer.observe_send(observation(true, true, Some("$event:example.org"), '5')),
+            Err(Error::AlreadyTerminal)
+        );
+        assert_eq!(
+            observer.receipt("operation.1").map(|receipt| receipt.state),
+            Some(SendState::Failed)
+        );
+    }
+
+    #[test]
+    fn redaction_is_terminal_and_preserves_send_observation() {
+        let mut observer = MatrixSendObserver::default();
+        observer.prepare_send(100, intent()).expect("prepare");
+        observer
+            .observe_send(observation(true, true, Some("$event:example.org"), '3'))
+            .expect("terminal");
+        let redacted = observer
+            .apply_redaction("$event:example.org", &"6".repeat(64))
+            .expect("redact");
+        assert_eq!(redacted.state, SendState::Redacted);
+        assert_eq!(redacted.observation_digest, Some("3".repeat(64)));
+        assert_eq!(redacted.redaction_digest, Some("6".repeat(64)));
+        assert!(
+            observer
+                .apply_redaction("$event:example.org", &"6".repeat(64))
+                .expect("same redaction")
+                .idempotent
+        );
+        assert_eq!(
+            observer.apply_redaction("$event:example.org", &"7".repeat(64)),
+            Err(Error::AlreadyTerminal)
+        );
+        assert_eq!(
+            observer.observe_send(observation(true, true, Some("$event:example.org"), '3')),
+            Err(Error::AlreadyTerminal)
+        );
+    }
+
+    #[test]
+    fn payload_drift_and_transaction_reuse_are_rejected() {
         let mut observer = MatrixSendObserver::default();
         let mut changed = intent();
         changed.grant_payload_digest = "2".repeat(64);
-        assert_eq!(observer.prepare_send(100, changed), Err(Error::PayloadMismatch));
+        assert_eq!(
+            observer.prepare_send(100, changed),
+            Err(Error::PayloadMismatch)
+        );
         observer.prepare_send(100, intent()).expect("prepare");
         let mut duplicate = intent();
         duplicate.operation_id = "operation.2".to_string();
         assert_eq!(
             observer.prepare_send(100, duplicate),
             Err(Error::OperationConflict)
+        );
+    }
+
+    #[test]
+    fn malformed_observation_state_is_rejected() {
+        let mut observer = MatrixSendObserver::default();
+        observer.prepare_send(100, intent()).expect("prepare");
+        assert_eq!(
+            observer.observe_send(observation(false, true, Some("$event:example.org"), '8')),
+            Err(Error::ObservationMismatch)
         );
     }
 }
