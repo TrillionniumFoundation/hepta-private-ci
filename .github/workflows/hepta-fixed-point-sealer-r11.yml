@@ -23,10 +23,12 @@ jobs:
   seal:
     if: github.repository == 'TrillionniumFoundation/hepta-private-ci'
     runs-on: ubuntu-24.04
-    timeout-minutes: 180
+    timeout-minutes: 360
     env:
       HEPTA_R8_REF: origin/integration/hepta-all-gap-closure-20260910-r8
       HEPTA_R9_REF: origin/integration/hepta-all-gap-closure-20260910-r9
+      HEPTA_R8_STATUS_PATH: qualification/global-gap-closure-final-r8/STATUS.json
+      HEPTA_R9_STATUS_PATH: qualification/global-gap-closure-final-r9/STATUS.json
       HEPTA_SEALED_TARGET: integration/hepta-all-gap-closure-20260910-sealed-r11
     steps:
       - name: Check out exact sealer source
@@ -89,7 +91,7 @@ jobs:
           cat > "${body}" <<'EOF'
           ## Race-free fixed-point seal
 
-          The sealer waited for both r8 and r9 branches to expose their bound qualification status, required both all-package validations to pass, and required identical Git blob tables after excluding convergence-receipt directories.
+          The sealer waited for both r8 and r9 branches to expose their exact bound qualification status, required both all-package validations to pass, and required identical Git blob tables after excluding convergence-receipt directories.
 
           Review:
 
