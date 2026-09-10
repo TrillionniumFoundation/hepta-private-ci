@@ -20,6 +20,8 @@ concurrency:
 env:
   HEPTA_FINAL_TARGET: integration/hepta-all-gap-closure-20260910-r9
   HEPTA_REPAIR_SOURCE: origin/integration/hepta-all-gap-closure-20260910-r8
+  HEPTA_REQUIRED_SOURCE_STATUS: qualification/global-gap-closure-final-r8/STATUS.json
+  HEPTA_FINAL_OUT_ROOT: qualification/global-gap-closure-final-r9
   HEPTA_R9_SHARDS: '8'
   CARGO_TERM_COLOR: always
   RUST_BACKTRACE: '1'
@@ -86,7 +88,7 @@ jobs:
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: hepta-r9-receipt-prepare-${{ github.run_id }}-${{ github.run_attempt }}
-          path: qualification/global-gap-closure-final-r8/PREPARE.json
+          path: qualification/global-gap-closure-final-r9/PREPARE.json
           if-no-files-found: warn
           retention-days: 14
 
@@ -116,7 +118,7 @@ jobs:
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: hepta-r9-receipt-repository-${{ github.run_id }}-${{ github.run_attempt }}
-          path: qualification/global-gap-closure-final-r8/REPOSITORY_GATE.json
+          path: qualification/global-gap-closure-final-r9/REPOSITORY_GATE.json
           if-no-files-found: warn
           retention-days: 14
 
@@ -154,7 +156,7 @@ jobs:
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: hepta-r9-receipt-package-${{ matrix.shard }}-${{ github.run_id }}-${{ github.run_attempt }}
-          path: qualification/global-gap-closure-final-r8/PACKAGE_GATE_${{ matrix.shard }}.json
+          path: qualification/global-gap-closure-final-r9/PACKAGE_GATE_${{ matrix.shard }}.json
           if-no-files-found: warn
           retention-days: 14
 
@@ -202,7 +204,7 @@ jobs:
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: hepta-r9-final-${{ github.run_id }}-${{ github.run_attempt }}
-          path: qualification/global-gap-closure-final-r8
+          path: qualification/global-gap-closure-final-r9
           if-no-files-found: warn
           retention-days: 30
       - name: Create or locate draft fixed-point PR
@@ -232,7 +234,7 @@ jobs:
           - receipt commit: \`${RECEIPT_SHA}\`
           - scope: every canonical \`codex-hepta-*\` workspace package
 
-          The deterministic repair pass was replayed to a fixed point, followed by immutable repository gates and eight exact-source package shards. Review \`qualification/global-gap-closure-final-r8/STATUS.json\` and bound receipts.
+          The deterministic repair pass was replayed to a fixed point, followed by immutable repository gates and eight exact-source package shards. Review \`qualification/global-gap-closure-final-r9/STATUS.json\` and bound receipts.
 
           This draft grants no independent-review, production, model/provider, writer, selection, promotion, or release authority.
           EOF
