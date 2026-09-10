@@ -9,15 +9,6 @@ pub enum AxisDirection {
     Minimize,
 }
 
-impl AxisDirection {
-    pub(crate) const fn tag(self) -> u8 {
-        match self {
-            Self::Maximize => 0,
-            Self::Minimize => 1,
-        }
-    }
-}
-
 #[derive(Clone, Debug, Eq, Ord, PartialEq, PartialOrd)]
 pub struct AxisValue {
     pub axis: StableId,

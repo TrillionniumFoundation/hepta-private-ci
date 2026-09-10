@@ -1,0 +1,230 @@
+{
+  "schema": "hepta.lane-maturity.v1",
+  "schemaVersion": 1,
+  "lane": "LANE-D-OBJECTIVE-VALUE",
+  "authorityDelta": "none",
+  "interpretation": "Each dimension is independent. A materialized source root does not imply a production caller, independent qualification, activation or release.",
+  "modules": [
+    {
+      "module": "objective.compiler",
+      "owner": "intelligence-platform",
+      "sourceRoot": "codex-rs/hepta-objective",
+      "implementationMap": "docs/modules/objective.compiler/IMPLEMENTATION_MAP.json",
+      "dimensions": {
+        "technicalSpecification": {
+          "state": "candidate_complete",
+          "evidence": [
+            "docs/readiness/OBJECTIVE_COMPILER_EXECUTION.md",
+            "docs/contracts/OBJECTIVE_ERRORS.json"
+          ]
+        },
+        "canonicalProtocolRegistration": {
+          "state": "existing",
+          "evidence": [
+            "ObjectiveSourceEnvelopeV1",
+            "ObjectiveConstraintSetV1",
+            "ObjectiveConflictReceiptV1",
+            "ObjectiveCompileReceiptV1"
+          ]
+        },
+        "sourceMaterialization": {
+          "state": "candidate_implemented",
+          "evidence": ["codex-rs/hepta-objective"]
+        },
+        "nativeApiMapping": {
+          "state": "candidate_complete",
+          "evidence": ["docs/modules/objective.compiler/IMPLEMENTATION_MAP.json"]
+        },
+        "durability": {
+          "state": "not_applicable_stateless_compiler",
+          "evidence": ["owning caller persists immutable objective and run snapshot"]
+        },
+        "exactHeadSourceQualification": {
+          "state": "pending_current_candidate_workflows",
+          "evidence": []
+        },
+        "productCaller": {
+          "state": "not_established",
+          "evidence": []
+        },
+        "productionWriter": {
+          "state": "not_applicable_stateless_compiler",
+          "evidence": []
+        },
+        "independentAcceptance": {
+          "state": "not_established",
+          "evidence": []
+        },
+        "activation": {
+          "state": "not_established",
+          "evidence": []
+        },
+        "release": {
+          "state": "not_established",
+          "evidence": []
+        }
+      }
+    },
+    {
+      "module": "utility.ndu",
+      "owner": "intelligence-platform",
+      "sourceRoot": "codex-rs/hepta-ndu",
+      "implementationMap": "docs/modules/utility.ndu/IMPLEMENTATION_MAP.json",
+      "dimensions": {
+        "technicalSpecification": {
+          "state": "candidate_complete",
+          "evidence": [
+            "docs/readiness/NDU_SYSTEM_EXECUTION.md",
+            "docs/learning/NDU_FBSDE_SPEC.md"
+          ]
+        },
+        "canonicalProtocolRegistration": {
+          "state": "existing_with_owner_local_v2_extensions",
+          "evidence": [
+            "UtilityContributionV1",
+            "NduIterationReceiptV1",
+            "NduConvergenceCertificateV1"
+          ]
+        },
+        "sourceMaterialization": {
+          "state": "candidate_implemented",
+          "evidence": ["codex-rs/hepta-ndu"]
+        },
+        "nativeApiMapping": {
+          "state": "candidate_complete",
+          "evidence": ["docs/modules/utility.ndu/IMPLEMENTATION_MAP.json"]
+        },
+        "deterministicKernel": {
+          "state": "candidate_implemented",
+          "evidence": [
+            "evaluate_candidates_with_policy",
+            "solve_preference_target",
+            "solve_backward_regression"
+          ]
+        },
+        "durability": {
+          "state": "owner_local_reference_implemented_not_production_writer",
+          "evidence": ["NduProjectionJournalV1"]
+        },
+        "independentConvergenceDecision": {
+          "state": "owned_by_learning.eval_not_self_issued",
+          "evidence": ["NduConvergenceCertificateV1"]
+        },
+        "exactHeadSourceQualification": {
+          "state": "pending_current_candidate_workflows",
+          "evidence": []
+        },
+        "productCaller": {
+          "state": "not_established",
+          "evidence": []
+        },
+        "productionWriter": {
+          "state": "not_established",
+          "evidence": []
+        },
+        "independentAcceptance": {
+          "state": "not_established",
+          "evidence": []
+        },
+        "activation": {
+          "state": "not_established",
+          "evidence": []
+        },
+        "release": {
+          "state": "not_established",
+          "evidence": []
+        }
+      }
+    },
+    {
+      "module": "control.runtime",
+      "owner": "runtime-control",
+      "sourceRoot": "codex-rs/hepta-control-plane",
+      "implementationMap": "docs/modules/control.runtime/IMPLEMENTATION_MAP.json",
+      "dimensions": {
+        "technicalSpecification": {
+          "state": "candidate_complete",
+          "evidence": ["docs/readiness/CONTROL_RUNTIME_EXECUTION.md"]
+        },
+        "canonicalProtocolRegistration": {
+          "state": "existing_domain_contracts_with_owner_local_planner_types",
+          "evidence": [
+            "DomainRead::global_state_snapshotV1",
+            "DomainRead::optimization_decisionV1"
+          ]
+        },
+        "sourceMaterialization": {
+          "state": "candidate_implemented",
+          "evidence": ["codex-rs/hepta-control-plane"]
+        },
+        "nativeApiMapping": {
+          "state": "candidate_complete",
+          "evidence": ["docs/modules/control.runtime/IMPLEMENTATION_MAP.json"]
+        },
+        "globalPlannerKernel": {
+          "state": "candidate_implemented",
+          "evidence": [
+            "collect_snapshot",
+            "prepare_plan",
+            "bind_ndu_plan_evaluation_v1",
+            "finalize_plan",
+            "request_execution_grants"
+          ]
+        },
+        "durability": {
+          "state": "owner_local_reference_implemented_not_production_writer",
+          "evidence": ["PlannerJournalV1"]
+        },
+        "effectAuthority": {
+          "state": "explicitly_absent",
+          "evidence": ["AuthorityPosture::DENY_ALL"]
+        },
+        "exactHeadSourceQualification": {
+          "state": "pending_current_candidate_workflows",
+          "evidence": []
+        },
+        "productCaller": {
+          "state": "not_established",
+          "evidence": []
+        },
+        "productionWriter": {
+          "state": "not_established",
+          "evidence": []
+        },
+        "independentAcceptance": {
+          "state": "not_established",
+          "evidence": []
+        },
+        "activation": {
+          "state": "not_established",
+          "evidence": []
+        },
+        "release": {
+          "state": "not_established",
+          "evidence": []
+        }
+      }
+    }
+  ],
+  "repositoryControlledClosure": {
+    "state": "candidate_pending_exact_head_qualification",
+    "requiredChecks": [
+      "Lane D semantic conformance",
+      "cargo fmt",
+      "cargo check --locked for all three Lane D packages",
+      "package tests for all three Lane D packages",
+      "strict Clippy for all three Lane D packages",
+      "existing repository integrity and readiness workflows",
+      "synthetic merge qualification"
+    ]
+  },
+  "externalGates": [
+    "independent non-author review",
+    "production caller and production writer composition",
+    "named-host resource and recovery measurements",
+    "operator acceptance",
+    "deployment and activation",
+    "future-window efficacy",
+    "promotion, signing and release"
+  ]
+}
