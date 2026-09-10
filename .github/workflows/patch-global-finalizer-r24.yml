@@ -1,0 +1,88 @@
+name: patch-global-finalizer-r24
+
+on:
+  push:
+    branches:
+      - ops/hepta-global-gap-closure-controller-20260910-r1
+    paths:
+      - .github/workflows/patch-global-finalizer-r24.yml
+
+permissions:
+  contents: write
+  actions: write
+
+concurrency:
+  group: patch-global-finalizer-r24
+  cancel-in-progress: true
+
+jobs:
+  patch:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      TARGET_BRANCH: ops/hepta-global-gap-closure-controller-20260910-r1
+      FINALIZER: scripts/hepta-global-finalizer-r7.py
+      HELPER: scripts/hepta-final-projection-repair-v2.py
+      PATCHER: scripts/patch-global-finalizer-r24.py
+      R7_WORKFLOW: .github/workflows/hepta-global-finalizer-r7.yml
+    steps:
+      - name: Check out exact one-shot source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Verify immutable source tuple
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "${GITHUB_REF_NAME}" = "${TARGET_BRANCH}"
+          test "$(git rev-parse HEAD)" = "${GITHUB_SHA}"
+          test "$(git rev-parse HEAD:.github/workflows/patch-global-finalizer-r24.yml)" = "$(git hash-object .github/workflows/patch-global-finalizer-r24.yml)"
+          test "$(git rev-parse HEAD:${PATCHER})" = "$(git hash-object "${PATCHER}")"
+          test "$(git rev-parse HEAD:${HELPER})" = "$(git hash-object "${HELPER}")"
+          test "$(git ls-remote origin "refs/heads/${TARGET_BRANCH}" | awk '{print $1}')" = "${GITHUB_SHA}"
+
+      - name: Integrate and statically qualify v2 fixed point
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m py_compile "${PATCHER}" "${HELPER}"
+          python3 "${PATCHER}"
+          python3 -m py_compile "${FINALIZER}" "${HELPER}"
+          grep -Fq 'def finalize_generated_state()' "${FINALIZER}"
+          grep -Fq 'hepta-final-projection-repair-v2.py' "${FINALIZER}"
+          test "$(grep -Fc 'finalize_generated_state()' "${FINALIZER}")" -eq 2
+          grep -Fq 'scripts/hepta-final-projection-repair-v2.py' "${R7_WORKFLOW}"
+          grep -Fq '${RUNNER_TEMP}/hepta-r7-executor/hepta-final-projection-repair-v2.py' "${R7_WORKFLOW}"
+          grep -Fq 'cancel-in-progress: true' "${R7_WORKFLOW}"
+          git diff --check
+
+      - name: Publish clean exact controller
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'hepta-global-finalizer-patcher'
+          git config user.email 'actions@users.noreply.github.com'
+          git rm -f --ignore-unmatch \
+            .github/workflows/patch-global-finalizer-r24.yml \
+            .github/workflows/patch-global-finalizer-r23.yml \
+            .github/workflows/patch-global-finalizer-r22.yml \
+            .github/workflows/patch-global-finalizer-r21.yml \
+            .github/workflows/patch-global-finalizer-r20.yml \
+            scripts/patch-global-finalizer-r24.py \
+            scripts/patch-global-finalizer-r19.py \
+            scripts/hepta-final-projection-repair.py
+          git add "${FINALIZER}" "${HELPER}" "${R7_WORKFLOW}"
+          git diff --cached --check
+          git diff --cached --name-only | grep -Fxq "${FINALIZER}"
+          git diff --cached --name-only | grep -Fxq "${HELPER}"
+          git diff --cached --name-only | grep -Fxq "${R7_WORKFLOW}"
+          git commit --signoff -m 'fix(hepta): reconcile final projections from verifier failure sites'
+          remote_sha="$(git ls-remote origin "refs/heads/${TARGET_BRANCH}" | awk '{print $1}')"
+          test "${remote_sha}" = "${GITHUB_SHA}"
+          git push \
+            --force-with-lease="refs/heads/${TARGET_BRANCH}:${GITHUB_SHA}" \
+            origin "HEAD:refs/heads/${TARGET_BRANCH}"
