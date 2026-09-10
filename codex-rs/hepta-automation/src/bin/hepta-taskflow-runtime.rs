@@ -236,9 +236,7 @@ impl<D: EffectDriver> TaskFlowExecutor<D> {
             }
         }
 
-        let observation = self
-            .driver
-            .dispatch(&record.occurrence, claim, &intent)?;
+        let observation = self.driver.dispatch(&record.occurrence, claim, &intent)?;
         let (state, outcome_digest, terminal_observed) = if !observation.terminal_observed {
             (StepState::Indeterminate, None, false)
         } else {
@@ -294,10 +292,7 @@ impl<D: EffectDriver> TaskFlowExecutor<D> {
 fn validate_occurrence(value: &Occurrence) -> Result<(), Error> {
     validate_identity(&value.occurrence_id, "occurrence")?;
     validate_identity(&value.schedule_id, "schedule")?;
-    if value.schedule_revision == 0
-        || value.scheduled_unix_ms == 0
-        || value.graph_generation == 0
-    {
+    if value.schedule_revision == 0 || value.scheduled_unix_ms == 0 || value.graph_generation == 0 {
         return Err(Error::InvalidOccurrence);
     }
     Ok(())

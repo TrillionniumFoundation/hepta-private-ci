@@ -15,6 +15,9 @@ use codex_hepta_types::FixedQ32;
 use codex_hepta_types::ProbabilityQ32;
 use codex_hepta_types::StableId;
 
+pub mod calibrated;
+pub use calibrated::*;
+
 const MAX_CANDIDATES: usize = 128;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -79,6 +82,11 @@ impl fmt::Display for Error {
 
 impl StdError for Error {}
 
+/// Compatibility-safe deterministic baseline.
+///
+/// This function does not claim calibrated confidence, OOD detection or
+/// randomized assignment. New adaptive integration should prefer the explicit
+/// `calibrated` profile.
 pub fn decide(mut request: DecisionRequest) -> Result<IntuitionDecisionReceipt, Error> {
     if request.candidates.len() > MAX_CANDIDATES {
         return Err(Error::CandidateLimitExceeded);

@@ -15,6 +15,12 @@ use codex_hepta_types::FixedQ32;
 use codex_hepta_types::StableId;
 
 pub mod local_shadow;
+pub use local_shadow::calculate_local_shadow as calculate_shadow_portfolio_v2;
+
+/// Stable identity for the compatibility-only original portfolio API.
+pub const PROMPT_PORTFOLIO_LEGACY_V1_PROFILE: &str = "hepta.prompt-portfolio.legacy-v1";
+/// Stable identity for the bounded interaction-aware shadow API.
+pub const PROMPT_PORTFOLIO_SHADOW_V2_PROFILE: &str = "hepta.prompt-portfolio.shadow-v2";
 
 const MAX_CANDIDATES: usize = 4_096;
 const MAX_SELECTED: usize = 128;
@@ -92,6 +98,8 @@ impl fmt::Display for Error {
 
 impl StdError for Error {}
 
+/// Compatibility-only legacy V1 optimizer. New shadow composition uses
+/// [`calculate_shadow_portfolio_v2`].
 pub fn optimize(mut request: OptimizationRequest) -> Result<PromptPortfolioReceipt, Error> {
     validate_request(&request)?;
     request.candidates.sort_by(|left, right| {

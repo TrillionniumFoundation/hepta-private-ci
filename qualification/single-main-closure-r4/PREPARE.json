@@ -1,0 +1,342 @@
+{
+  "archivePrefix": "archive/final-branch-tip/20260910-r4-34478302584-r1",
+  "authorityGranted": false,
+  "baseBranch": "integration/hepta-all-gap-closure-20260910-r12",
+  "baseSha": "9a71e0bf02e7c538c725f0aaeffa6f1404546aa2",
+  "externalAuthorityGatesRetained": true,
+  "fixedPointReceipts": [
+    {
+      "command": [
+        "/usr/bin/python3",
+        "scripts/hepta-readiness.py",
+        "generate-status"
+      ],
+      "returnCode": 0,
+      "round": 1
+    },
+    {
+      "command": [
+        "/usr/bin/python3",
+        "scripts/hepta-implementation-dossiers.py",
+        "generate-status"
+      ],
+      "returnCode": 0,
+      "round": 1
+    },
+    {
+      "command": [
+        "/usr/bin/python3",
+        "scripts/hepta-algorithm-docs.py",
+        "generate-status"
+      ],
+      "returnCode": 0,
+      "round": 1
+    },
+    {
+      "command": [
+        "/usr/bin/python3",
+        "scripts/hepta-cns.py",
+        "generate-status"
+      ],
+      "returnCode": 0,
+      "round": 1
+    },
+    {
+      "command": [
+        "/usr/bin/python3",
+        "scripts/hepta-docs.py",
+        "generate-status"
+      ],
+      "returnCode": 0,
+      "round": 1
+    },
+    {
+      "command": [
+        "cargo",
+        "fmt"
+      ],
+      "returnCode": 0,
+      "round": 1
+    },
+    {
+      "command": [
+        "/usr/bin/python3",
+        "scripts/hepta-readiness.py",
+        "generate-status"
+      ],
+      "returnCode": 0,
+      "round": 2
+    },
+    {
+      "command": [
+        "/usr/bin/python3",
+        "scripts/hepta-implementation-dossiers.py",
+        "generate-status"
+      ],
+      "returnCode": 0,
+      "round": 2
+    },
+    {
+      "command": [
+        "/usr/bin/python3",
+        "scripts/hepta-algorithm-docs.py",
+        "generate-status"
+      ],
+      "returnCode": 0,
+      "round": 2
+    },
+    {
+      "command": [
+        "/usr/bin/python3",
+        "scripts/hepta-cns.py",
+        "generate-status"
+      ],
+      "returnCode": 0,
+      "round": 2
+    },
+    {
+      "command": [
+        "/usr/bin/python3",
+        "scripts/hepta-docs.py",
+        "generate-status"
+      ],
+      "returnCode": 0,
+      "round": 2
+    },
+    {
+      "command": [
+        "cargo",
+        "fmt"
+      ],
+      "returnCode": 0,
+      "round": 2
+    }
+  ],
+  "frozenBranchCount": 418,
+  "frozenBranchHeadsSha256": "0e0e79019576574df535f6988e8dd7191a5c5250ff657a5b4de14adc0d95489d",
+  "laneF": {
+    "copied": [
+      {
+        "bytes": 556,
+        "path": "codex-rs/hepta-intelligence/Cargo.toml",
+        "sha256": "0a5be4f0ae54dd1a28ee8c3892c2436d1dcad1bff2d24609684598967242a436"
+      },
+      {
+        "bytes": 4777,
+        "path": "codex-rs/hepta-intelligence/src/lib.rs",
+        "sha256": "de4ac760d3c6d3bcae572a9fa48cd1a1faf659ba61f61decf2f5e09bc594018f"
+      },
+      {
+        "bytes": 21440,
+        "path": "codex-rs/hepta-intelligence/src/pipeline.rs",
+        "sha256": "a85bc3a9d0abca3e645bf1847fc1a7ccf9df99914691dca83d99367f25f520b9"
+      },
+      {
+        "bytes": 9274,
+        "path": "codex-rs/hepta-intelligence/src/pipeline_tests.rs",
+        "sha256": "b2171e03a5fde7f24a025e7226fb85c0d7cd677844048c655b819e205979e3ae"
+      },
+      {
+        "bytes": 15885,
+        "path": "codex-rs/hepta-intelligence/tests/lane_f_shadow_vertical.rs",
+        "sha256": "ec77d52543bf4e8e79345729781a4a2e5c7da781f9bcb57e8250766a05786c7b"
+      },
+      {
+        "bytes": 22467,
+        "path": "codex-rs/hepta-intuition/src/calibrated.rs",
+        "sha256": "dddda60a9189fa36871616a87a8c874af4337c24bcc43dc02d3d3c400b081d11"
+      },
+      {
+        "bytes": 9161,
+        "path": "codex-rs/hepta-intuition/src/calibrated_tests.rs",
+        "sha256": "2b3ef2d75b6225461d29d5f43c126f5f4a53abb16802434c72e72f20bf8efb86"
+      },
+      {
+        "bytes": 7095,
+        "path": "codex-rs/hepta-intuition/src/lib.rs",
+        "sha256": "d2b457889daf771fea49b093f1e418027e620c392683d69a340588c98df1aa1e"
+      },
+      {
+        "bytes": 31321,
+        "path": "codex-rs/hepta-plasticity/src/durable_registry.rs",
+        "sha256": "c4d1c5a6cdba84d52990938221b2ebc338720c56186bb778393c2ecfebc67207"
+      },
+      {
+        "bytes": 9992,
+        "path": "codex-rs/hepta-plasticity/src/durable_registry_tests.rs",
+        "sha256": "e4a79dce3c89955026386d9ddb096a4814aa14278cfda9343c8af38caff24534"
+      },
+      {
+        "bytes": 3792,
+        "path": "codex-rs/hepta-plasticity/src/lib.rs",
+        "sha256": "312c8ce62f6ab4a12087504f7f4728f0e1674949b516d46909d6331832e36c54"
+      },
+      {
+        "bytes": 9177,
+        "path": "codex-rs/hepta-prompt-optimizer/src/lib.rs",
+        "sha256": "2d8f3b615f353913fb2533f1616982ef0704a3022af8366ece98c3f3eff25588"
+      },
+      {
+        "bytes": 620,
+        "path": "qualification/lane-f-shadow/Cargo.toml",
+        "sha256": "210eb0ecf749ad5e498863e23098a123d9a682ec4ed1e2baa98f56de9373f431"
+      },
+      {
+        "bytes": 932,
+        "path": "qualification/lane-f-shadow/README.md",
+        "sha256": "49ba8e2cd892bd984432e479d4300b5a94a9579e574d8ab83d26b0a341207bdc"
+      },
+      {
+        "bytes": 11175,
+        "path": "qualification/lane-f-shadow/src/lib.rs",
+        "sha256": "8b678805093c3b29e545b586f2be2d8f8fced33d74539a0525e4f6a8628eb600"
+      }
+    ],
+    "recovery": {
+      "bootstrapCompressedSha256": "d5b0008853c88f6f68095f784987565f65acbd00a3ebe7c7756fdfc6ca864464",
+      "bootstrapDecompressionBoundary": "error: Error -3 while decompressing data: incorrect data check; compressedOffset=47616",
+      "files": [
+        {
+          "bytes": 556,
+          "path": "codex-rs/hepta-intelligence/Cargo.toml",
+          "sha256": "0a5be4f0ae54dd1a28ee8c3892c2436d1dcad1bff2d24609684598967242a436",
+          "source": "bootstrap-prefix"
+        },
+        {
+          "bytes": 4777,
+          "path": "codex-rs/hepta-intelligence/src/lib.rs",
+          "sha256": "de4ac760d3c6d3bcae572a9fa48cd1a1faf659ba61f61decf2f5e09bc594018f",
+          "source": "bootstrap-prefix"
+        },
+        {
+          "bytes": 21720,
+          "path": "codex-rs/hepta-intelligence/src/pipeline.rs",
+          "sha256": "7938bd5f6f716552977442356848467ce84be2af35361137328de3f05f8bc2ba",
+          "source": "bootstrap-prefix"
+        },
+        {
+          "bytes": 9494,
+          "path": "codex-rs/hepta-intelligence/src/pipeline_tests.rs",
+          "sha256": "a48fc58a4f284e278f0b1180558585b237f5b6a9c32a2a54c6af287b52e3e736",
+          "source": "bootstrap-prefix"
+        },
+        {
+          "bytes": 15472,
+          "path": "codex-rs/hepta-intelligence/tests/lane_f_shadow_vertical.rs",
+          "sha256": "15986b34d9ef2bbe2d146f59e473082b895639bd515b86469bffd73ecf079344",
+          "source": "bootstrap-prefix"
+        },
+        {
+          "bytes": 21157,
+          "path": "codex-rs/hepta-intuition/src/calibrated.rs",
+          "sha256": "168aa033fc0eeeb2c4ff4bcc99782f39dcf514b9e26fe8add8b6b441fe7aa8e5",
+          "source": "bootstrap-prefix"
+        },
+        {
+          "bytes": 9670,
+          "path": "codex-rs/hepta-intuition/src/calibrated_tests.rs",
+          "sha256": "adcd2f8f65e585e3b9aa14179e3f39aaed2a7f0b84a5f5abba587620324ba762",
+          "source": "bootstrap-prefix"
+        },
+        {
+          "bytes": 7095,
+          "path": "codex-rs/hepta-intuition/src/lib.rs",
+          "sha256": "d2b457889daf771fea49b093f1e418027e620c392683d69a340588c98df1aa1e",
+          "source": "bootstrap-prefix"
+        },
+        {
+          "bytes": 31349,
+          "path": "codex-rs/hepta-plasticity/src/durable_registry.rs",
+          "sha256": "7c17e0e071bb99397628c8d533132c36343c3486b1246b770fb576ef112db952",
+          "source": "bootstrap-prefix"
+        },
+        {
+          "bytes": 10131,
+          "path": "codex-rs/hepta-plasticity/src/durable_registry_tests.rs",
+          "sha256": "7e849cc88fb5c58667139ff3eebbd8d08a59b152fd7f8a8ebd08480fe75810fe",
+          "source": "minimal-prefix"
+        },
+        {
+          "bytes": 3792,
+          "path": "codex-rs/hepta-plasticity/src/lib.rs",
+          "sha256": "312c8ce62f6ab4a12087504f7f4728f0e1674949b516d46909d6331832e36c54",
+          "source": "minimal-prefix"
+        },
+        {
+          "bytes": 9185,
+          "path": "codex-rs/hepta-prompt-optimizer/src/lib.rs",
+          "sha256": "1d01c606361f648eff48423b5026853622533ef974da6c4ed8049ee451f6b097",
+          "source": "minimal-prefix"
+        },
+        {
+          "bytes": 932,
+          "path": "qualification/lane-f-shadow/README.md",
+          "sha256": "49ba8e2cd892bd984432e479d4300b5a94a9579e574d8ab83d26b0a341207bdc",
+          "source": "minimal-prefix"
+        },
+        {
+          "bytes": 11175,
+          "path": "qualification/lane-f-shadow/src/lib.rs",
+          "sha256": "8b678805093c3b29e545b586f2be2d8f8fced33d74539a0525e4f6a8628eb600",
+          "source": "minimal-prefix"
+        }
+      ],
+      "minimalCompressedSha256": "9f3e965a0a290b81a119d25390752353ea64a509961e8be1f51c0fc28118cba6",
+      "minimalDecompressionBoundary": null,
+      "mode": "materialize",
+      "schema": "hepta.lane-f-source-recovery-receipt.v2",
+      "status": "PASS_LANE_F_SOURCE_RECOVERY"
+    },
+    "repair": {
+      "mode": "materialize",
+      "repairs": [
+        {
+          "invariant": "counter-based assignment is validated before any slow-path disposition",
+          "path": "codex-rs/hepta-intuition/src/calibrated.rs",
+          "rawSha256": "168aa033fc0eeeb2c4ff4bcc99782f39dcf514b9e26fe8add8b6b441fe7aa8e5",
+          "repairedSha256": "d0afe648d436deffbecdf816372e5fd95a2947bc9507246e44c46b3dd1d988d7"
+        },
+        {
+          "invariant": "durable append transfers the final proposal identifier without a redundant clone",
+          "path": "codex-rs/hepta-plasticity/src/durable_registry.rs",
+          "rawSha256": "7c17e0e071bb99397628c8d533132c36343c3486b1246b770fb576ef112db952",
+          "repairedSha256": "bb5b9fe6c7620d6938e8662d9006f457fa64903d9c0ad7b8f6660975e8d75d72"
+        },
+        {
+          "invariant": "budget validation uses the canonical slice membership primitive",
+          "path": "codex-rs/hepta-intelligence/src/pipeline.rs",
+          "rawSha256": "7938bd5f6f716552977442356848467ce84be2af35361137328de3f05f8bc2ba",
+          "repairedSha256": "cfa1e72aafca8a2e86059a912ab603fce78041670c02fbee9fe5915d04d153fc"
+        }
+      ],
+      "schema": "hepta.lane-f-source-repair-receipt.v2",
+      "status": "PASS_LANE_F_SOURCE_REPAIR"
+    },
+    "sourceSha": "e8859943d4ed9df330e582b9671fa99cd200a870"
+  },
+  "laneG": {
+    "alreadyAncestor": false,
+    "changed": true,
+    "conflictsResolved": [
+      "codex-rs/hepta-objective/src/objective_admission.rs",
+      "codex-rs/hepta-objective/src/objective_admission_tests.rs",
+      "qualification/module-execution-dossiers/NATIVE_BINDINGS.json",
+      "qualification/module-execution-dossiers/test_implementation_contracts.py"
+    ],
+    "semanticResolution": "qualification/single-main-closure-r4/LANE_G_SEMANTIC_MERGE_RESOLUTION.json",
+    "sourceSha": "54629ac932b1ccad8417d6a98c013400850800af"
+  },
+  "packageQualificationPending": true,
+  "removedTransientCarriers": [
+    ".lane-f-bootstrap",
+    ".github/workflows/hepta-base-format-shear-diagnostic.yml",
+    ".github/workflows/hepta-diagnostic-source-export.yml",
+    ".github/workflows/hepta-exact-source-export-52c246a.yml",
+    ".github/workflows/hepta-final-materializer.yml",
+    ".github/workflows/hepta-gap-source-export.yml"
+  ],
+  "repositoryQualificationPending": true,
+  "runAttempt": "1",
+  "runId": "34478302584",
+  "schema": "hepta.single-main.prepare.v1"
+}
