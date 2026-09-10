@@ -1,0 +1,168 @@
+name: patch-global-finalizer-r21
+
+on:
+  push:
+    branches:
+      - ops/hepta-global-gap-closure-controller-20260910-r1
+    paths:
+      - .github/workflows/patch-global-finalizer-r21.yml
+
+permissions:
+  contents: write
+  actions: write
+
+concurrency:
+  group: patch-global-finalizer-r21
+  cancel-in-progress: true
+
+jobs:
+  patch:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      TARGET_BRANCH: ops/hepta-global-gap-closure-controller-20260910-r1
+      FINALIZER: scripts/hepta-global-finalizer-r7.py
+    steps:
+      - name: Check out exact patch source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Add final generated-state freeze
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "${GITHUB_REF_NAME}" = "${TARGET_BRANCH}"
+          test "$(git ls-remote origin "refs/heads/${TARGET_BRANCH}" | awk '{print $1}')" = "${GITHUB_SHA}"
+          python3 - <<'PY'
+          from __future__ import annotations
+
+          import ast
+          from pathlib import Path
+
+          path = Path("scripts/hepta-global-finalizer-r7.py")
+          text = path.read_text(encoding="utf-8")
+          helper = '''def finalize_generated_state() -> dict[str, Any]:
+              """Regenerate projections and bind native blobs as the final writes."""
+
+              generator_receipts = run_generators()
+              native = repair_native_bindings()
+              if not native.get("valid"):
+                  raise RuntimeError(
+                      "final native binding projection is invalid: "
+                      + json.dumps(native, sort_keys=True)
+                  )
+              commands = (
+                  ("python3", "scripts/hepta-readiness.py", "verify"),
+                  ("python3", "scripts/hepta-technical-closure.py", "verify"),
+                  (
+                      "python3",
+                      "qualification/module-execution-dossiers/implementation_contracts.py",
+                      "verify-repository",
+                  ),
+              )
+              receipts: list[dict[str, Any]] = []
+              for command in commands:
+                  result = run(command, timeout=1800)
+                  receipts.append(result.receipt())
+                  if not result.passed:
+                      raise RuntimeError(
+                          "final generated-state verifier failed: "
+                          + " ".join(command)
+                          + "\\n"
+                          + "\\n".join(result.output.splitlines()[-80:])
+                      )
+              return {
+                  "generatorReceipts": generator_receipts,
+                  "nativeBindings": native,
+                  "verifiers": receipts,
+              }
+
+
+          '''
+          helper = "\n".join(
+              line[14:] if line.startswith("              ") else line
+              for line in helper.splitlines()
+          )
+          if "def finalize_generated_state()" not in text:
+              marker = "def command_receipts_pass("
+              if text.count(marker) != 1:
+                  raise SystemExit("r21 helper insertion point drifted")
+              text = text.replace(marker, helper + marker, 1)
+
+          def contains_git(statement: ast.AST, command: str) -> bool:
+              for node in ast.walk(statement):
+                  if not isinstance(node, ast.Call):
+                      continue
+                  if not isinstance(node.func, ast.Name) or node.func.id != "git":
+                      continue
+                  if not node.args:
+                      continue
+                  first = node.args[0]
+                  if isinstance(first, ast.Constant) and first.value == command:
+                      return True
+              return False
+
+          call = "final_generated_state = finalize_generated_state()"
+          if call not in text:
+              tree = ast.parse(text, filename=path.as_posix())
+              prepare = next(
+                  node
+                  for node in tree.body
+                  if isinstance(node, ast.FunctionDef) and node.name == "prepare"
+              )
+              commit = next(
+                  (statement for statement in prepare.body if contains_git(statement, "commit")),
+                  None,
+              )
+              if commit is None:
+                  raise SystemExit("r21 prepare commit statement not found")
+              staged = [
+                  statement
+                  for statement in prepare.body
+                  if statement.lineno <= commit.lineno and contains_git(statement, "add")
+              ]
+              insertion = staged[-1] if staged else commit
+              lines = text.splitlines(keepends=True)
+              index = insertion.lineno - 1
+              indent = lines[index][: len(lines[index]) - len(lines[index].lstrip())]
+              lines.insert(index, indent + call + "\n")
+              text = "".join(lines)
+
+          receipt_key = '        "finalGeneratedState": final_generated_state,\n'
+          if receipt_key.strip() not in text:
+              marker = '        "generatorReceipts": generator_receipts,\n'
+              if text.count(marker) != 1:
+                  raise SystemExit("r21 receipt insertion point drifted")
+              text = text.replace(marker, marker + receipt_key, 1)
+
+          ast.parse(text, filename=path.as_posix())
+          for phrase in (
+              "def finalize_generated_state()",
+              call,
+              '"finalGeneratedState": final_generated_state',
+              "native = repair_native_bindings()",
+          ):
+              if phrase not in text:
+                  raise SystemExit(f"r21 output missing {phrase!r}")
+          path.write_text(text, encoding="utf-8")
+          PY
+          python3 -m py_compile "${FINALIZER}"
+          git diff --check
+
+      - name: Publish clean controller
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'hepta-global-finalizer-patcher'
+          git config user.email 'actions@users.noreply.github.com'
+          git rm .github/workflows/patch-global-finalizer-r21.yml
+          git add "${FINALIZER}"
+          git diff --cached --check
+          git commit --signoff -m 'fix(hepta): bind generated state at final fixed point'
+          remote_sha="$(git ls-remote origin "refs/heads/${TARGET_BRANCH}" | awk '{print $1}')"
+          test "${remote_sha}" = "${GITHUB_SHA}"
+          git push --force-with-lease="refs/heads/${TARGET_BRANCH}:${GITHUB_SHA}" origin "HEAD:refs/heads/${TARGET_BRANCH}"
