@@ -1,0 +1,197 @@
+{
+  "schema": "hepta.module-implementation-map.v1",
+  "schemaVersion": 1,
+  "module": "control.runtime",
+  "owner": "runtime-control",
+  "deputy": "security-authority",
+  "technicalGuide": "docs/modules/control.runtime/TECHNICAL.md",
+  "executionSpecification": "docs/readiness/CONTROL_RUNTIME_EXECUTION.md",
+  "sourceRoot": "codex-rs/hepta-control-plane",
+  "authorityDelta": "none",
+  "productCallerState": "not_composed",
+  "productionWriterState": "not_composed",
+  "operations": [
+    {
+      "operation": "collect_snapshot",
+      "nativeSymbol": "codex_hepta_control_plane::collect_snapshot",
+      "sourcePath": "codex-rs/hepta-control-plane/src/planner.rs",
+      "inputs": [
+        "SnapshotRequestV1",
+        "OwnerSummaryV1 list"
+      ],
+      "outputs": [
+        "GlobalStateSnapshotV1"
+      ],
+      "state": "source_implemented",
+      "authority": "deny_all",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-control-plane/src/planner_tests.rs",
+          "symbol": "missing_or_stale_required_owner_blocks_global_planning"
+        }
+      ]
+    },
+    {
+      "operation": "prepare_plan",
+      "nativeSymbol": "codex_hepta_control_plane::prepare_plan",
+      "sourcePath": "codex-rs/hepta-control-plane/src/planner.rs",
+      "inputs": [
+        "GlobalStateSnapshotV1",
+        "PlanningRequestV1"
+      ],
+      "outputs": [
+        "PreparedPlanInputV1"
+      ],
+      "state": "source_implemented",
+      "authority": "deny_all",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-control-plane/src/planner_tests.rs",
+          "symbol": "essential_floor_survives_overload_before_ndu_evaluation"
+        },
+        {
+          "path": "codex-rs/hepta-control-plane/src/planner_tests.rs",
+          "symbol": "missing_resource_axis_is_unavailable_not_zero_cost"
+        }
+      ]
+    },
+    {
+      "operation": "bind_ndu_plan_evaluation_v1",
+      "nativeSymbol": "codex_hepta_control_plane::bind_ndu_plan_evaluation_v1",
+      "sourcePath": "codex-rs/hepta-control-plane/src/planner.rs",
+      "inputs": [
+        "NduPlanEvaluationInputV1"
+      ],
+      "outputs": [
+        "NduPlanEvaluationV1"
+      ],
+      "state": "source_implemented_owner_port_adapter",
+      "authority": "deny_all",
+      "ownerBoundary": "utility.ndu computes the opaque evaluation digest; control.runtime binds only the consumed projection",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-control-plane/src/planner_tests.rs",
+          "symbol": "tampered_ndu_binding_is_rejected"
+        }
+      ]
+    },
+    {
+      "operation": "finalize_plan",
+      "nativeSymbol": "codex_hepta_control_plane::finalize_plan",
+      "sourcePath": "codex-rs/hepta-control-plane/src/planner.rs",
+      "inputs": [
+        "GlobalStateSnapshotV1",
+        "PreparedPlanInputV1",
+        "NduPlanEvaluationV1",
+        "current monotonic time"
+      ],
+      "outputs": [
+        "FeasiblePlanReceiptV1"
+      ],
+      "state": "source_implemented",
+      "authority": "deny_all",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-control-plane/src/planner_tests.rs",
+          "symbol": "coherent_snapshot_prepares_finalizes_and_emits_authority_free_grant_requests"
+        },
+        {
+          "path": "codex-rs/hepta-control-plane/src/planner_tests.rs",
+          "symbol": "evaluation_must_cover_exact_prepared_candidate_set"
+        },
+        {
+          "path": "codex-rs/hepta-control-plane/src/planner_tests.rs",
+          "symbol": "evaluation_policy_is_frozen_before_ndu_evaluation"
+        }
+      ]
+    },
+    {
+      "operation": "request_execution_grants",
+      "nativeSymbol": "codex_hepta_control_plane::request_execution_grants",
+      "sourcePath": "codex-rs/hepta-control-plane/src/planner.rs",
+      "inputs": [
+        "current GlobalStateSnapshotV1",
+        "PreparedPlanInputV1",
+        "FeasiblePlanReceiptV1",
+        "current monotonic time"
+      ],
+      "outputs": [
+        "GrantRequestSetV1"
+      ],
+      "state": "source_implemented_request_only",
+      "authority": "deny_all",
+      "nonClaim": "GrantRequestSetV1 is not a capability or execution acknowledgement",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-control-plane/src/planner_tests.rs",
+          "symbol": "changed_configuration_invalidates_prepared_plan"
+        },
+        {
+          "path": "codex-rs/hepta-control-plane/src/planner_tests.rs",
+          "symbol": "tampered_candidate_payload_is_rejected_before_grant_request"
+        },
+        {
+          "path": "codex-rs/hepta-control-plane/src/planner_tests.rs",
+          "symbol": "tampered_candidate_operation_resource_or_owner_is_rejected"
+        },
+        {
+          "path": "codex-rs/hepta-control-plane/src/planner_tests.rs",
+          "symbol": "grant_request_revalidates_snapshot_masks_and_digest"
+        }
+      ]
+    },
+    {
+      "operation": "PlannerJournalV1",
+      "nativeSymbol": "codex_hepta_control_plane::PlannerJournalV1",
+      "sourcePath": "codex-rs/hepta-control-plane/src/planner_journal.rs",
+      "inputs": [
+        "snapshot, decision, selection and revocation records"
+      ],
+      "outputs": [
+        "bounded hash-chain bytes",
+        "selected plan projection"
+      ],
+      "state": "source_implemented_owner_local_durability_reference",
+      "authority": "none",
+      "nonClaim": "not an activated production store or external-effect ledger",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-control-plane/src/planner_journal_tests.rs",
+          "symbol": "hash_chain_round_trips_and_preserves_selected_pointer"
+        },
+        {
+          "path": "codex-rs/hepta-control-plane/src/planner_journal_tests.rs",
+          "symbol": "truncation_and_tampering_fail_closed"
+        },
+        {
+          "path": "codex-rs/hepta-control-plane/src/planner_journal_tests.rs",
+          "symbol": "revocation_clears_selection_and_prevents_reselection"
+        }
+      ]
+    }
+  ],
+  "canonicalDomainContracts": [
+    "DomainRead::global_state_snapshotV1",
+    "DomainRead::optimization_decisionV1"
+  ],
+  "ownerLocalTypes": [
+    "GlobalStateSnapshotV1",
+    "PreparedPlanInputV1",
+    "NduPlanEvaluationV1",
+    "FeasiblePlanReceiptV1",
+    "GrantRequestSetV1",
+    "PlannerJournalEntryV1"
+  ],
+  "completion": {
+    "specification": "complete",
+    "nativePlanningKernel": "candidate_implemented",
+    "ownerLocalDurabilityReference": "candidate_implemented",
+    "canonicalExternalProtocolAdmission": "not_established",
+    "productionCaller": "not_established",
+    "productionWriter": "not_established",
+    "exactHeadQualification": "required",
+    "independentAcceptance": "not_established",
+    "activation": "not_established",
+    "release": "not_established"
+  }
+}
