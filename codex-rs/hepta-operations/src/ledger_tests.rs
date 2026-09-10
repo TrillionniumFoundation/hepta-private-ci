@@ -33,6 +33,19 @@ fn witness(key: &OperationKey) -> AuthorityWitness {
     }
 }
 
+fn dispatched_ledger() -> (OperationKey, OperationLedger) {
+    let key = key(b"payload");
+    let mut ledger = OperationLedger::default();
+    assert!(ledger.begin(key.clone(), generation(3)).is_ok());
+    assert!(ledger.authorize(&key.id, &witness(&key), 1_000).is_ok());
+    assert!(
+        ledger
+            .record_dispatch(&key.id, Digest32::of_bytes(b"dispatch"))
+            .is_ok()
+    );
+    (key, ledger)
+}
+
 #[test]
 fn dispatch_ack_is_not_terminal_success() {
     let key = key(b"payload");
@@ -53,15 +66,7 @@ fn dispatch_ack_is_not_terminal_success() {
 
 #[test]
 fn indeterminate_requires_current_fence_reconciliation() {
-    let key = key(b"payload");
-    let mut ledger = OperationLedger::default();
-    assert!(ledger.begin(key.clone(), generation(3)).is_ok());
-    assert!(ledger.authorize(&key.id, &witness(&key), 1_000).is_ok());
-    assert!(
-        ledger
-            .record_dispatch(&key.id, Digest32::of_bytes(b"dispatch"))
-            .is_ok()
-    );
+    let (key, mut ledger) = dispatched_ledger();
     assert!(
         ledger
             .mark_indeterminate(&key.id, Digest32::of_bytes(b"ack-lost"))
@@ -90,6 +95,40 @@ fn indeterminate_requires_current_fence_reconciliation() {
         ledger.get(&key.id).map(|value| &value.state),
         Some(OperationState::Applied { .. })
     ));
+}
+
+#[test]
+fn zero_uncertainty_and_terminal_digests_reject_without_mutation() {
+    let zero = Digest32::from_array([0; 32]);
+    let (key, mut ledger) = dispatched_ledger();
+    let dispatched = ledger.clone();
+    assert_eq!(
+        ledger.mark_indeterminate(&key.id, zero),
+        Err(OperationError::Conflict(key.id.clone()))
+    );
+    assert_eq!(ledger, dispatched);
+    assert_eq!(
+        ledger.observe_terminal(&key.id, ReconciliationOutcome::Applied, zero, generation(3),),
+        Err(OperationError::Conflict(key.id.clone()))
+    );
+    assert_eq!(ledger, dispatched);
+
+    assert!(
+        ledger
+            .mark_indeterminate(&key.id, Digest32::of_bytes(b"unknown"))
+            .is_ok()
+    );
+    let indeterminate = ledger.clone();
+    assert_eq!(
+        ledger.observe_terminal(
+            &key.id,
+            ReconciliationOutcome::Quarantined,
+            zero,
+            generation(3),
+        ),
+        Err(OperationError::Conflict(key.id))
+    );
+    assert_eq!(ledger, indeterminate);
 }
 
 #[test]

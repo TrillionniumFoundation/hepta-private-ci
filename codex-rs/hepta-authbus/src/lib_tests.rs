@@ -36,6 +36,19 @@ fn exact_envelope_is_verified_without_authority_grant() {
 }
 
 #[test]
+fn a_nonzero_signature_reference_is_not_cryptographic_authority() {
+    let mut value = envelope(1);
+    value.signature_digest = digest(b"untrusted-but-nonzero-reference");
+    let Ok(receipt) =
+        ReplayWindow::new(8).verify(1_000, value, digest(b"scope"), digest(b"payload"))
+    else {
+        panic!("the replay verifier only performs structural digest checks");
+    };
+    assert_eq!(receipt.authority, AuthorityPosture::DENY_ALL);
+    assert!(!receipt.authority.grants_any());
+}
+
+#[test]
 fn replay_is_rejected() {
     let mut window = ReplayWindow::new(8);
     assert!(

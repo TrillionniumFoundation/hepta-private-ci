@@ -1,0 +1,68 @@
+name: Hepta objective admission verification
+
+on:
+  push:
+    branches:
+      - codex/hepta-objective-admission-20260908
+    paths:
+      - .github/workflows/hepta-objective-admission-autofix.yml
+      - codex-rs/hepta-objective/src/objective_admission.rs
+      - codex-rs/hepta-objective/src/objective_admission_tests.rs
+      - codex-rs/hepta-objective/src/lib.rs
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-objective-admission-verification
+  cancel-in-progress: false
+
+jobs:
+  close-mechanical-gaps:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Recompute exact lint repair and formatting
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+
+          path = Path('codex-rs/hepta-objective/src/objective_admission.rs')
+          text = path.read_text(encoding='utf-8')
+          for line in (
+              'use crate::CompileDisposition;\n',
+              'use crate::ObjectiveFunction;\n',
+          ):
+              count = text.count(line)
+              if count > 1:
+                  raise SystemExit(f'duplicate import: {line!r}')
+              text = text.replace(line, '')
+          path.write_text(text, encoding='utf-8')
+          PY
+          cargo fmt --manifest-path codex-rs/Cargo.toml --package codex-hepta-objective
+
+      - name: Verify objective package
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo test --locked -p codex-hepta-objective -- --nocapture
+          cargo clippy --locked -p codex-hepta-objective --all-targets -- -D warnings
+          cargo fmt --manifest-path Cargo.toml --package codex-hepta-objective -- --check
+
+      - name: Require committed repair parity
+        shell: bash
+        run: |
+          set -euo pipefail
+          git diff --check
+          git diff --exit-code -- \
+            codex-rs/hepta-objective/src/objective_admission.rs \
+            codex-rs/hepta-objective/src/objective_admission_tests.rs \
+            codex-rs/hepta-objective/src/lib.rs
