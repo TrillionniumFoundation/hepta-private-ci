@@ -7,55 +7,199 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 concurrency:
   group: lane-a-reconcile-20260910
   cancel-in-progress: true
 
 jobs:
-  diagnose:
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
+  reconcile:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
     env:
-      EXPECTED_PARENT: 9308ffb0f480932c3a122626fe08a3ba6dd1c05b
+      EXPECTED_PARENT: 862661a2c4248ea605e8a7573ee3c9a260266e09
       BASE_SHA: eb76d20401ee8b7b19a155de3366a6168668a3cc
       TARGET_BRANCH: codex/lane-a-gap-closure-20260910
+      NATIVE_BINDINGS: qualification/module-execution-dossiers/NATIVE_BINDINGS.json
+      CONTRACT_TEST_ENTRY: qualification/module-execution-dossiers/test_implementation_contracts.py
     steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+      - name: Check out exact reconciliation bootstrap
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           ref: ${{ github.sha }}
           fetch-depth: 0
-          persist-credentials: false
-      - name: Verify exact diagnostic bootstrap
+          persist-credentials: true
+
+      - name: Verify exact reconciliation bootstrap
+        shell: bash
         run: |
           set -euo pipefail
           test "${GITHUB_REF_NAME}" = "${TARGET_BRANCH}"
           test "$(git rev-parse HEAD^)" = "${EXPECTED_PARENT}"
           test "$(git rev-parse HEAD:.github/workflows/lane-a-reconcile-20260910.yml)" = "$(git hash-object .github/workflows/lane-a-reconcile-20260910.yml)"
-      - name: Diagnose three-way merge
+          test "$(git rev-parse "${BASE_SHA}^{commit}")" = "${BASE_SHA}"
+
+      - name: Merge fixed base and resolve the two audited conflicts
+        shell: bash
         run: |
           set -euo pipefail
-          git config user.name lane-a-reconcile-diagnostic
-          git config user.email actions@users.noreply.github.com
+          git config user.name 'hepta-lane-a-reconciler'
+          git config user.email 'actions@users.noreply.github.com'
+
           set +e
           git merge --no-commit --no-ff "${BASE_SHA}"
           merge_status=$?
           set -e
-          echo "merge_exit=${merge_status}"
-          echo "merge_base=$(git merge-base HEAD "${BASE_SHA}")"
-          echo "head=$(git rev-parse HEAD)"
-          echo "base=${BASE_SHA}"
-          echo '--- status ---'
-          git status --short
-          echo '--- unresolved paths ---'
-          git diff --name-only --diff-filter=U
-          echo '--- unresolved index stages ---'
-          git ls-files -u
-          if [ "${merge_status}" -eq 0 ]; then
-            echo 'Merge is clean; publication workflow can commit the merge directly.'
-          else
-            echo 'Merge conflicts require explicit resolution.'
-          fi
-          git merge --abort || true
-          exit "${merge_status}"
+          test "${merge_status}" -eq 1
+
+          mapfile -t conflicts < <(git diff --name-only --diff-filter=U | LC_ALL=C sort)
+          test "${#conflicts[@]}" -eq 2
+          test "${conflicts[0]}" = "${NATIVE_BINDINGS}"
+          test "${conflicts[1]}" = "${CONTRACT_TEST_ENTRY}"
+
+          python3 - <<'PY'
+          from __future__ import annotations
+
+          import json
+          import re
+          import subprocess
+          from pathlib import Path
+
+          native_path = "qualification/module-execution-dossiers/NATIVE_BINDINGS.json"
+          entry_path = "qualification/module-execution-dossiers/test_implementation_contracts.py"
+          overlay_path = Path("qualification/module-execution-dossiers/NATIVE_BINDINGS_LANE_A.json")
+          core_path = Path("qualification/module-execution-dossiers/implementation_contract_tests_core.py")
+
+          def stage_json(stage: int, path: str) -> dict:
+              raw = subprocess.check_output(
+                  ["git", "show", f":{stage}:{path}"], text=True
+              )
+              value = json.loads(raw)
+              if not isinstance(value, dict):
+                  raise SystemExit(f"stage {stage} {path} is not an object")
+              return value
+
+          ours = stage_json(2, native_path)
+          theirs = stage_json(3, native_path)
+          overlay = json.loads(overlay_path.read_text(encoding="utf-8"))
+
+          common_keys = (set(ours) | set(theirs)) - {"observations"}
+          for key in sorted(common_keys):
+              if ours.get(key) != theirs.get(key):
+                  raise SystemExit(f"non-observation native-binding drift at {key}")
+
+          ours_rows = ours.get("observations")
+          theirs_rows = theirs.get("observations")
+          if not isinstance(ours_rows, list) or not isinstance(theirs_rows, list):
+              raise SystemExit("native-binding observations must be arrays")
+          if len(ours_rows) != 40 or len(theirs_rows) != 40:
+              raise SystemExit("both sides must retain the canonical 40-module set")
+
+          ours_by = {row["module"]: row for row in ours_rows}
+          theirs_by = {row["module"]: row for row in theirs_rows}
+          ours_order = [row["module"] for row in ours_rows]
+          theirs_order = [row["module"] for row in theirs_rows]
+          if len(ours_by) != 40 or len(theirs_by) != 40 or ours_order != theirs_order:
+              raise SystemExit("native-binding module identity/order drifted")
+
+          lane_modules = overlay.get("closedWorldModules")
+          overlay_rows = overlay.get("observations")
+          if not isinstance(lane_modules, list) or not isinstance(overlay_rows, list):
+              raise SystemExit("Lane A overlay shape is invalid")
+          lane_set = set(lane_modules)
+          if len(lane_set) != 7 or {row["module"] for row in overlay_rows} != lane_set:
+              raise SystemExit("Lane A overlay is not the exact seven-module closed set")
+
+          differing = {
+              module for module in ours_order if ours_by[module] != theirs_by[module]
+          }
+          if not differing <= lane_set:
+              raise SystemExit(
+                  "base reconciliation changed non-Lane-A rows: "
+                  + ",".join(sorted(differing - lane_set))
+              )
+          for module in set(ours_order) - lane_set:
+              if ours_by[module] != theirs_by[module]:
+                  raise SystemExit(f"non-Lane-A row drifted: {module}")
+
+          for row in overlay_rows:
+              path = Path(row["path"])
+              if not path.is_file():
+                  raise SystemExit(f"missing Lane A source: {path}")
+              actual_blob = subprocess.check_output(
+                  ["git", "hash-object", str(path)], text=True
+              ).strip()
+              if actual_blob != row["blobSha"]:
+                  raise SystemExit(
+                      f"Lane A blob drift for {row['module']}: "
+                      f"{actual_blob} != {row['blobSha']}"
+                  )
+              text = path.read_text(encoding="utf-8")
+              for symbol in row["exports"]:
+                  if re.search(r"\b" + re.escape(symbol) + r"\b", text) is None:
+                      raise SystemExit(f"missing {row['module']} export {symbol}")
+
+          core = core_path.read_text(encoding="utf-8")
+          for phrase in (
+              "class NativeBindingCoverageTests",
+              "test_native_binding_module_closed_world",
+              "test_native_binding_blobs_and_exports_are_exact",
+              "NATIVE_BINDINGS_LANE_A.json",
+          ):
+              if phrase not in core:
+                  raise SystemExit(f"split contract suite lost base coverage: {phrase}")
+
+          ours_entry = subprocess.check_output(
+              ["git", "show", f":2:{entry_path}"], text=True
+          )
+          for phrase in (
+              "implementation_contract_tests_core",
+              "implementation_contract_tests_system",
+          ):
+              if phrase not in ours_entry:
+                  raise SystemExit(f"split test entry lost import: {phrase}")
+
+          print(
+              json.dumps(
+                  {
+                      "canonical_modules": len(ours_rows),
+                      "lane_a_modules": len(lane_set),
+                      "lane_a_global_row_differences": sorted(differing),
+                      "resolution": "ours_with_exact_lane_a_overlay",
+                  },
+                  sort_keys=True,
+              )
+          )
+          PY
+
+          git checkout --ours -- "${NATIVE_BINDINGS}" "${CONTRACT_TEST_ENTRY}"
+          git add "${NATIVE_BINDINGS}" "${CONTRACT_TEST_ENTRY}"
+          git rm .github/workflows/lane-a-reconcile-20260910.yml
+          test -z "$(git diff --name-only --diff-filter=U)"
+          git diff --cached --check
+
+      - name: Qualify resolved source and native contracts
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/verify_lane_a_foundation.py self-test
+          python3 scripts/verify_lane_a_foundation.py verify
+          python3 -m unittest qualification/module-execution-dossiers/test_lane_a_foundation.py
+          (
+            cd qualification/module-execution-dossiers
+            python3 -m unittest test_implementation_contracts.py
+          )
+          scripts/run_lane_a_native_qualification.sh
+          git diff --exit-code
+          git diff --cached --check
+
+      - name: Publish only the qualified merge commit
+        shell: bash
+        run: |
+          set -euo pipefail
+          git commit -m 'merge(lane-a): reconcile exact base with current implementation truth'
+          test "$(git rev-list --parents -n 1 HEAD | wc -w)" -eq 3
+          test "$(git rev-parse HEAD^1)" = "${GITHUB_SHA}"
+          test "$(git rev-parse HEAD^2)" = "${BASE_SHA}"
+          git push origin "HEAD:refs/heads/${TARGET_BRANCH}"
