@@ -3,9 +3,14 @@
 use std::collections::BTreeMap;
 use std::error::Error as StdError;
 use std::fmt;
-use std::fs::{self, File, OpenOptions};
-use std::io::{BufRead, BufReader, Write};
-use std::path::{Path, PathBuf};
+use std::fs::File;
+use std::fs::OpenOptions;
+use std::fs::{self};
+use std::io::BufRead;
+use std::io::BufReader;
+use std::io::Write;
+use std::path::Path;
+use std::path::PathBuf;
 
 const MAX_RECORDS: usize = 16_384;
 const MAX_TOKENS: u32 = 1_000_000;
@@ -800,7 +805,8 @@ fn main() {}
 #[cfg(test)]
 mod tests {
     use super::*;
-    use std::time::{SystemTime, UNIX_EPOCH};
+    use std::time::SystemTime;
+    use std::time::UNIX_EPOCH;
 
     fn path(label: &str) -> PathBuf {
         let nonce = SystemTime::now()
