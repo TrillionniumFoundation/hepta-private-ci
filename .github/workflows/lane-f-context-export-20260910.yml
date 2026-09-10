@@ -27,6 +27,8 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          base_ref=origin/integration/vnext-main-20260811
+          test "$(git rev-parse "$base_ref")" = 04f60466394a024c218ce66b1b32d1c42c462985
           out="$RUNNER_TEMP/lane-f-context"
           mkdir -p "$out/repository"
           copy_path() {
@@ -75,11 +77,11 @@ jobs:
           done
 
           git rev-parse HEAD > "$out/HEAD"
-          git rev-parse integration/vnext-main-20260811 > "$out/BASE"
-          git diff --binary integration/vnext-main-20260811...HEAD > "$out/current-pr.diff"
-          git diff --name-status integration/vnext-main-20260811...HEAD > "$out/current-pr-files.txt"
+          git rev-parse "$base_ref" > "$out/BASE"
+          git diff --binary "$base_ref"...HEAD > "$out/current-pr.diff"
+          git diff --name-status "$base_ref"...HEAD > "$out/current-pr-files.txt"
           git ls-tree -r --name-only HEAD > "$out/head-tree.txt"
-          git ls-tree -r --name-only integration/vnext-main-20260811 > "$out/base-tree.txt"
+          git ls-tree -r --name-only "$base_ref" > "$out/base-tree.txt"
           find "$out/repository" -type f -print0 | sort -z | xargs -0 sha256sum > "$out/context-sha256.txt"
 
       - name: Upload exact reconstruction context
