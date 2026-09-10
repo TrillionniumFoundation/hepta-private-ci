@@ -1,0 +1,214 @@
+name: Hepta global gap-closure controller r12
+
+on:
+  push:
+    branches:
+      - "ops/hepta-global-gap-closure-controller-r12-20260910"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+  actions: read
+
+concurrency:
+  group: hepta-global-gap-closure-controller-r12
+  cancel-in-progress: false
+
+jobs:
+  assemble:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    env:
+      ROOT_BASE: 04f60466394a024c218ce66b1b32d1c42c462985
+      SEALED_R11: 596aedff676d1d8a57724d71ca35263bb728c3dd
+      LANE_D: 1cd6135bc6f5f875146a7e5616960ef9a4f20e1a
+      LANE_B: b61174b7f25ebd8ce35d51599b2d5b57f6f6bd40
+      LANE_F: f1f0148acd08f44fe7a4b8fa3b532d686fb5a71e
+      LANE_G: 21dfca6cf2f97d0f1712caa5e19790022d0f1d46
+      CANDIDATE_BRANCH: candidate/hepta-all-gap-closure-final-r12-20260910
+    steps:
+      - name: Check out controller repository
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Verify exact sources and assemble without conflict guessing
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "Hepta global closure controller"
+          git config user.email "hepta-global-closure-controller@users.noreply.github.com"
+          git fetch origin '+refs/heads/*:refs/remotes/origin/*' --prune
+          for sha in "$ROOT_BASE" "$SEALED_R11" "$LANE_D" "$LANE_B" "$LANE_F" "$LANE_G"; do
+            git cat-file -e "$sha^{commit}"
+          done
+          git merge-base --is-ancestor "$ROOT_BASE" "$SEALED_R11"
+          git merge-base --is-ancestor "$SEALED_R11" "$LANE_D"
+
+          git checkout --detach "$LANE_D"
+          for source in "$LANE_B" "$LANE_F" "$LANE_G"; do
+            if git merge-base --is-ancestor "$source" HEAD; then
+              echo "already contains $source"
+              continue
+            fi
+            git merge --no-ff --no-edit "$source" || {
+              echo "Source conflict while merging $source. No ours/theirs fallback is permitted." >&2
+              git status --short >&2
+              exit 70
+            }
+          done
+
+      - name: Remove diagnostic-only carriers from candidate tree
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -f __tool_probe_do_not_create__
+          find .github/workflows -maxdepth 1 -type f -name 'tmp-*' -print -delete
+          git add -A
+          if ! git diff --cached --quiet; then
+            git commit -m "chore(convergence): remove diagnostic-only carriers"
+          fi
+
+      - name: Close shadow-qualification Bazel dependency closure
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+
+          candidates = [
+              Path("codex-rs/hepta-shadow-qualification/BUILD.bazel"),
+              Path("codex-rs/hepta-shadow-qualification/BUILD"),
+          ]
+          path = next((candidate for candidate in candidates if candidate.exists()), None)
+          if path is None:
+              raise SystemExit("missing hepta-shadow-qualification Bazel BUILD file")
+          text = path.read_text(encoding="utf-8")
+          required = [
+              '"//codex-rs/hepta-bellman-operator:lib"',
+              '"//codex-rs/hepta-intelligence-eval:lib"',
+          ]
+          if all(dep in text for dep in required):
+              print(f"{path}: dependencies already closed")
+          else:
+              pattern = re.compile(
+                  r'(rust_test\(\s*\n(?:.|\n)*?name\s*=\s*"unit_tests"\s*,(?:.|\n)*?crate\s*=\s*":lib"\s*,\s*\n)',
+                  re.MULTILINE,
+              )
+              match = pattern.search(text)
+              if match is None:
+                  raise SystemExit(f"unable to locate unit_tests rust_test in {path}")
+              insertion = (
+                  '    deps = [\n'
+                  '        "//codex-rs/hepta-bellman-operator:lib",\n'
+                  '        "//codex-rs/hepta-intelligence-eval:lib",\n'
+                  '    ],\n'
+              )
+              text = text[: match.end()] + insertion + text[match.end() :]
+              path.write_text(text, encoding="utf-8")
+          for dep in required:
+              if dep not in path.read_text(encoding="utf-8"):
+                  raise SystemExit(f"missing required dependency {dep}")
+          PY
+          git add codex-rs/hepta-shadow-qualification/BUILD*
+          if ! git diff --cached --quiet; then
+            git commit -m "fix(bazel): close shadow qualification test dependencies"
+          fi
+
+      - name: Audit Windows V8 CRT archive ownership
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/hepta-controller
+          grep -RIn --exclude-dir=.git --exclude='*.lock' 'v8_ci_static\|libcmt\|NODEFAULTLIB\|vcruntime\|ucrt' \
+            .github codex-rs third_party 2>/dev/null | sort -u > /tmp/hepta-controller/windows-crt-surface.txt || true
+          test -s /tmp/hepta-controller/windows-crt-surface.txt
+          cat /tmp/hepta-controller/windows-crt-surface.txt
+
+      - name: Run deterministic source checks
+        shell: bash
+        run: |
+          set -euo pipefail
+          git diff --check
+          if test -f scripts/hepta-docs.py; then python3 scripts/hepta-docs.py; fi
+          if test -f scripts/hepta-module-docs.py; then python3 scripts/hepta-module-docs.py; fi
+          if test -f scripts/hepta-technical-closure.py; then python3 scripts/hepta-technical-closure.py; fi
+          if test -f scripts/hepta-lane-c-closure.py; then python3 scripts/hepta-lane-c-closure.py; fi
+          if test -f scripts/hepta-lane-e-closure.py; then python3 scripts/hepta-lane-e-closure.py; fi
+          cargo fmt --manifest-path codex-rs/Cargo.toml --all -- --check
+          if test -f codex-rs/hepta-shadow-qualification/Cargo.toml; then
+            cargo test --locked --manifest-path codex-rs/hepta-shadow-qualification/Cargo.toml
+            cargo clippy --locked --manifest-path codex-rs/hepta-shadow-qualification/Cargo.toml --all-targets -- -D warnings
+          fi
+          git diff --check
+
+      - name: Publish one-parent exact candidate
+        id: publish
+        shell: bash
+        run: |
+          set -euo pipefail
+          git add -A
+          if ! git diff --cached --quiet; then
+            git commit -m "chore(convergence): normalize assembled candidate"
+          fi
+          TREE="$(git rev-parse HEAD^{tree})"
+          export GIT_AUTHOR_NAME="Hepta global closure controller"
+          export GIT_AUTHOR_EMAIL="hepta-global-closure-controller@users.noreply.github.com"
+          export GIT_COMMITTER_NAME="$GIT_AUTHOR_NAME"
+          export GIT_COMMITTER_EMAIL="$GIT_AUTHOR_EMAIL"
+          export GIT_AUTHOR_DATE="2000-01-01T00:00:00Z"
+          export GIT_COMMITTER_DATE="$GIT_AUTHOR_DATE"
+          MESSAGE=$(cat <<EOF
+          feat(convergence): assemble global gap-closure candidate r12
+
+          Exact sources:
+          - root base: $ROOT_BASE
+          - sealed r11: $SEALED_R11
+          - Lane D: $LANE_D
+          - Lane B: $LANE_B
+          - Lane F: $LANE_F
+          - Lane G: $LANE_G
+
+          The candidate is a single-parent source object. It grants no deployment,
+          production, signing, selection, promotion, release, model/provider,
+          independent-review, external-owner or operator authority.
+          EOF
+          )
+          FINAL_SHA="$(printf '%s\n' "$MESSAGE" | git commit-tree "$TREE" -p "$ROOT_BASE")"
+          git push origin "+$FINAL_SHA:refs/heads/$CANDIDATE_BRANCH"
+          echo "sha=$FINAL_SHA" >> "$GITHUB_OUTPUT"
+          echo "tree=$TREE" >> "$GITHUB_OUTPUT"
+
+      - name: Create or update draft convergence pull request
+        env:
+          GH_TOKEN: ${{ github.token }}
+          FINAL_SHA: ${{ steps.publish.outputs.sha }}
+          FINAL_TREE: ${{ steps.publish.outputs.tree }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          TITLE="feat(convergence): global all-gap closure candidate r12"
+          BODY=$(cat <<EOF
+          ## Exact source subject
+
+          - base: \`integration/vnext-main-20260811@$ROOT_BASE\`
+          - head: \`$CANDIDATE_BRANCH@$FINAL_SHA\`
+          - tree: \`$FINAL_TREE\`
+          - source inputs: sealed-r11 \`$SEALED_R11\`, Lane D \`$LANE_D\`, Lane B \`$LANE_B\`, Lane F \`$LANE_F\`, Lane G \`$LANE_G\`
+
+          This is a one-parent candidate. All exact-head and prospective-merge checks must complete successfully on this source object before review readiness.
+
+          Repository-controlled implementation, source, test, documentation and CI gaps may be closed here. Independent semantic review, real target hardware/runtime/provider evidence, external-owner consent, operator acceptance, production canary, signing, selection, promotion and release remain externally owned and cannot be self-attested.
+          EOF
+          )
+          NUMBER="$(gh pr list --head "$CANDIDATE_BRANCH" --base integration/vnext-main-20260811 --state open --json number --jq '.[0].number // empty')"
+          if test -z "$NUMBER"; then
+            gh pr create --draft --base integration/vnext-main-20260811 --head "$CANDIDATE_BRANCH" --title "$TITLE" --body "$BODY"
+          else
+            gh pr edit "$NUMBER" --title "$TITLE" --body "$BODY"
+            gh pr ready "$NUMBER" --undo || true
+          fi
