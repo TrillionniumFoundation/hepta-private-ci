@@ -94,7 +94,9 @@ class Findings:
 
 def load_json(path: Path, findings: Findings) -> dict[str, Any]:
     if not path.is_file():
-        findings.add("missing_file", f"missing required JSON file: {path.relative_to(ROOT)}")
+        findings.add(
+            "missing_file", f"missing required JSON file: {path.relative_to(ROOT)}"
+        )
         return {}
     try:
         value = json.loads(path.read_text(encoding="utf-8"))
@@ -112,7 +114,9 @@ def load_json(path: Path, findings: Findings) -> dict[str, Any]:
 
 def relative_path(value: object, findings: Findings, context: str) -> Path | None:
     if not isinstance(value, str) or not value or value.startswith(("/", "../")):
-        findings.add("invalid_path", f"{context} has invalid repository path: {value!r}")
+        findings.add(
+            "invalid_path", f"{context} has invalid repository path: {value!r}"
+        )
         return None
     path = Path(value)
     if ".." in path.parts:
@@ -135,7 +139,9 @@ def verify_symbol(source: str, native_symbol: str) -> bool:
     return True
 
 
-def verify_matrix(matrix: dict[str, Any], findings: Findings) -> dict[str, dict[str, Any]]:
+def verify_matrix(
+    matrix: dict[str, Any], findings: Findings
+) -> dict[str, dict[str, Any]]:
     findings.require(
         matrix.get("schema") == "hepta.lane-e-implementation-matrix.v1",
         "matrix_schema",
@@ -159,7 +165,9 @@ def verify_matrix(matrix: dict[str, Any], findings: Findings) -> dict[str, dict[
     modules: dict[str, dict[str, Any]] = {}
     for item in modules_raw:
         if not isinstance(item, dict) or not isinstance(item.get("module"), str):
-            findings.add("matrix_module_record", "matrix contains an invalid module record")
+            findings.add(
+                "matrix_module_record", "matrix contains an invalid module record"
+            )
             continue
         module = item["module"]
         if module in modules:
@@ -267,9 +275,13 @@ def verify_matrix(matrix: dict[str, Any], findings: Findings) -> dict[str, dict[
 
     cross = matrix.get("crossCrateQualification")
     if not isinstance(cross, dict):
-        findings.add("cross_crate_missing", "cross-crate qualification record is missing")
+        findings.add(
+            "cross_crate_missing", "cross-crate qualification record is missing"
+        )
     else:
-        path = relative_path(cross.get("source"), findings, "crossCrateQualification.source")
+        path = relative_path(
+            cross.get("source"), findings, "crossCrateQualification.source"
+        )
         test = cross.get("test")
         if path is not None and path.is_file() and isinstance(test, str):
             text = path.read_text(encoding="utf-8")
@@ -342,7 +354,9 @@ def verify_traceability(
             if not isinstance(test, dict):
                 findings.add("invalid_test_mapping", f"{context} is not an object")
                 continue
-            source_path = relative_path(test.get("source"), findings, f"{context}.source")
+            source_path = relative_path(
+                test.get("source"), findings, f"{context}.source"
+            )
             function = test.get("function")
             if source_path is None or not source_path.is_file():
                 findings.add("test_source_missing", f"{context} source is missing")
@@ -375,9 +389,15 @@ def verify_traceability(
             if not isinstance(item, dict):
                 findings.add("invalid_cross_case", "invalid cross-crate case")
                 continue
-            source_path = relative_path(item.get("source"), findings, "crossCase.source")
+            source_path = relative_path(
+                item.get("source"), findings, "crossCase.source"
+            )
             function = item.get("function")
-            if source_path is not None and source_path.is_file() and isinstance(function, str):
+            if (
+                source_path is not None
+                and source_path.is_file()
+                and isinstance(function, str)
+            ):
                 text = source_path.read_text(encoding="utf-8")
                 findings.require(
                     bool(re.search(rf"\bfn\s+{re.escape(function)}\s*\(", text)),
@@ -396,7 +416,9 @@ def verify_authority_posture(findings: Findings) -> None:
     ]
     for path in sources:
         if not path.is_file():
-            findings.add("authority_source_missing", f"missing {path.relative_to(ROOT)}")
+            findings.add(
+                "authority_source_missing", f"missing {path.relative_to(ROOT)}"
+            )
             continue
         text = path.read_text(encoding="utf-8")
         findings.require(
@@ -445,7 +467,8 @@ def run_self_test() -> list[Finding]:
     findings = Findings()
     findings.require(
         verify_symbol(
-            "pub struct Demo; impl Demo { pub fn execute(&self) {} }", "crate::Demo::execute"
+            "pub struct Demo; impl Demo { pub fn execute(&self) {} }",
+            "crate::Demo::execute",
         ),
         "self_test_method",
         "method symbol resolver failed",
