@@ -27,23 +27,52 @@ jobs:
           fetch-depth: 1
           persist-credentials: false
 
-      - name: Decode, validate and enumerate each payload
+      - name: Decode, validate and enumerate each payload independently
         shell: bash
         run: |
-          set -euo pipefail
-          for label in final min; do
+          set -uo pipefail
+          valid=0
+          invalid=0
+          for label in min final; do
             directory=".lane-f-$label"
-            test -d "$directory"
+            printf '\n=== %s ===\n' "$label"
+            if ! test -d "$directory"; then
+              printf 'INVALID missing directory %s\n' "$directory"
+              invalid=$((invalid + 1))
+              continue
+            fi
             mapfile -t parts < <(printf '%s\n' "$directory"/part-*.b64 | sort)
-            test "${#parts[@]}" -gt 0
-            cat "${parts[@]}" | base64 --decode > "/tmp/lane-f-$label.tar.xz"
-            printf '%s sha256=' "$label"
-            sha256sum "/tmp/lane-f-$label.tar.xz" | awk '{print $1}'
-            xz --test "/tmp/lane-f-$label.tar.xz"
-            mkdir -p "/tmp/lane-f-$label"
-            tar -xJf "/tmp/lane-f-$label.tar.xz" -C "/tmp/lane-f-$label"
+            if test "${#parts[@]}" -eq 0; then
+              printf 'INVALID no parts\n'
+              invalid=$((invalid + 1))
+              continue
+            fi
+            archive="/tmp/lane-f-$label.tar.xz"
+            if ! cat "${parts[@]}" | base64 --decode > "$archive"; then
+              printf 'INVALID base64 decode failed\n'
+              invalid=$((invalid + 1))
+              continue
+            fi
+            printf 'sha256='
+            sha256sum "$archive" | awk '{print $1}'
+            printf 'bytes='
+            stat -c '%s' "$archive"
+            if ! xz --test "$archive"; then
+              printf 'INVALID xz stream\n'
+              invalid=$((invalid + 1))
+              continue
+            fi
+            destination="/tmp/lane-f-$label"
+            mkdir -p "$destination"
+            if ! tar -xJf "$archive" -C "$destination"; then
+              printf 'INVALID tar extraction\n'
+              invalid=$((invalid + 1))
+              continue
+            fi
+            printf 'VALID\n'
+            valid=$((valid + 1))
             printf '%s members:\n' "$label"
-            tar -tJf "/tmp/lane-f-$label.tar.xz" | sort
+            tar -tJf "$archive" | sort
             printf '%s required-path summary:\n' "$label"
             for required in \
               scripts/hepta-lane-f.py \
@@ -53,10 +82,12 @@ jobs:
               codex-rs/hepta-prompt-optimizer/src/lib.rs \
               codex-rs/hepta-plasticity/src/lib.rs \
               codex-rs/hepta-intelligence/src/lib.rs; do
-              if test -e "/tmp/lane-f-$label/$required"; then
+              if test -e "$destination/$required"; then
                 printf 'PRESENT %s\n' "$required"
               else
                 printf 'ABSENT  %s\n' "$required"
               fi
             done
           done
+          printf '\nsummary valid=%s invalid=%s\n' "$valid" "$invalid"
+          test "$valid" -gt 0
