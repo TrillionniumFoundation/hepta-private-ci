@@ -1,0 +1,63 @@
+name: Temporary Hepta controller remediation
+
+on:
+  push:
+    branches:
+      - ops/hepta-global-gap-closure-controller-20260910-r1
+    paths:
+      - .github/workflows/tmp-hepta-controller-remediation.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: write
+
+concurrency:
+  group: tmp-hepta-controller-remediation
+  cancel-in-progress: false
+
+jobs:
+  remediate:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - name: Check out exact controller branch
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ops/hepta-global-gap-closure-controller-20260910-r1
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Install repository-pinned uv
+        uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b
+        with:
+          version: "0.11.3"
+
+      - name: Apply fail-closed convergence and publication fixes
+        shell: bash
+        run: |
+          set -euo pipefail
+          bash scripts/apply-hepta-remaining-blocker-remediation.sh --workflow-mode
+
+      - name: Dispatch fixed-point pipeline explicitly
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          ref="ops/hepta-global-gap-closure-controller-20260910-r1"
+          for workflow in \
+            hepta-global-finalizer-r7.yml \
+            hepta-global-finalizer-r8.yml \
+            hepta-global-finalizer-r9.yml \
+            hepta-fixed-point-sealer-r10.yml \
+            hepta-fixed-point-sealer-r11.yml \
+            hepta-candidate-publisher-r12.yml
+          do
+            gh workflow run "${workflow}" \
+              --repo "${GITHUB_REPOSITORY}" \
+              --ref "${ref}"
+          don
