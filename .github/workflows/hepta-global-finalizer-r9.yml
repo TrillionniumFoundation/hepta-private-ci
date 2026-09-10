@@ -15,7 +15,7 @@ permissions:
 
 concurrency:
   group: hepta-global-finalizer-r9
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 env:
   HEPTA_FINAL_TARGET: integration/hepta-all-gap-closure-20260910-r9
