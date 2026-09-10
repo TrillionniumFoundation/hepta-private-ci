@@ -154,7 +154,7 @@
       "dossier": "qualification/module-execution-dossiers/detail/learning.artifacts.md",
       "nativeMapping": "codex-rs/hepta-learning-artifacts/NATIVE_MAPPING.md",
       "implementationState": "source_implemented_ci_required",
-      "compatibility": "stable_v1_registry_and_v2_manifest_retained_with_v3_withdrawal_bound_admission_additive",
+      "compatibility": "stable_v1_registry_and_v2_manifest_retained_with_v3_withdrawal_bound_admission_and_v2_predecessor_bound_lifecycle_journal_additive",
       "operations": [
         {"operation": "write_candidate_payload", "nativeSymbol": "codex_hepta_learning_artifacts::write_candidate_payload", "source": "codex-rs/hepta-learning-artifacts/src/storage.rs", "status": "implemented_existing"},
         {"operation": "write_registry_snapshot", "nativeSymbol": "codex_hepta_learning_artifacts::write_registry_snapshot", "source": "codex-rs/hepta-learning-artifacts/src/storage.rs", "status": "implemented_existing"},
@@ -168,7 +168,9 @@
         {"operation": "load_pinned_candidate", "nativeSymbol": "codex_hepta_learning_artifacts::load_pinned_candidate", "source": "codex-rs/hepta-learning-artifacts/src/pinned.rs", "status": "implemented_existing"},
         {"operation": "admit_manifest_at_withdrawal_head_v3", "nativeSymbol": "codex_hepta_learning_artifacts::admit_manifest_at_withdrawal_head_v3", "source": "codex-rs/hepta-learning-artifacts/src/admission_v3.rs", "status": "implemented"},
         {"operation": "validate_artifact_publication_v3", "nativeSymbol": "codex_hepta_learning_artifacts::validate_artifact_publication_v3", "source": "codex-rs/hepta-learning-artifacts/src/admission_v3.rs", "status": "implemented"},
-        {"operation": "verify_artifact_admission_v3", "nativeSymbol": "codex_hepta_learning_artifacts::verify_artifact_admission_v3", "source": "codex-rs/hepta-learning-artifacts/src/admission_v3.rs", "status": "implemented"}
+        {"operation": "verify_artifact_admission_v3", "nativeSymbol": "codex_hepta_learning_artifacts::verify_artifact_admission_v3", "source": "codex-rs/hepta-learning-artifacts/src/admission_v3.rs", "status": "implemented"},
+        {"operation": "ArtifactLifecycleJournalV2::append", "nativeSymbol": "codex_hepta_learning_artifacts::ArtifactLifecycleJournalV2::append", "source": "codex-rs/hepta-learning-artifacts/src/lifecycle_journal.rs", "status": "implemented"},
+        {"operation": "ArtifactLifecycleJournalV2::from_snapshot", "nativeSymbol": "codex_hepta_learning_artifacts::ArtifactLifecycleJournalV2::from_snapshot", "source": "codex-rs/hepta-learning-artifacts/src/lifecycle_journal.rs", "status": "implemented"}
       ],
       "tests": [
         "art_01_manifest_v2_normalizes_complete_lineage",
@@ -177,7 +179,9 @@
         "art_04_lifecycle_forbids_self_selection_and_state_skips",
         "artifact_manifest_rejects_duplicate_lineage_and_missing_rollback_parent",
         "art_05_admission_binds_exact_withdrawal_head",
-        "art_05_withdrawal_race_invalidates_admission"
+        "art_05_withdrawal_race_invalidates_admission",
+        "art_06_lifecycle_journal_enforces_head_state_and_role",
+        "art_06_lifecycle_journal_replays_exact_snapshot"
       ],
       "remainingRepositoryGaps": [],
       "remainingExternalEvidence": [
