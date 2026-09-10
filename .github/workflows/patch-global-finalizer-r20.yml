@@ -1,0 +1,478 @@
+name: patch-global-finalizer-r20
+
+on:
+  push:
+    branches:
+      - ops/hepta-global-gap-closure-controller-20260910-r1
+    paths:
+      - .github/workflows/patch-global-finalizer-r20.yml
+
+permissions:
+  contents: write
+  actions: write
+
+concurrency:
+  group: patch-global-finalizer-r20
+  cancel-in-progress: true
+
+jobs:
+  patch:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      TARGET_BRANCH: ops/hepta-global-gap-closure-controller-20260910-r1
+      FINALIZER: scripts/hepta-global-finalizer-r7.py
+    steps:
+      - name: Check out exact patch source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Patch final fixed-point stage
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "${GITHUB_REF_NAME}" = "${TARGET_BRANCH}"
+          test "$(git ls-remote origin "refs/heads/${TARGET_BRANCH}" | awk '{print $1}')" = "${GITHUB_SHA}"
+          python3 - <<'PY'
+          from __future__ import annotations
+
+          import ast
+          from pathlib import Path
+
+          path = Path("scripts/hepta-global-finalizer-r7.py")
+          text = path.read_text(encoding="utf-8")
+
+          helpers = r'''
+          def _walk_final_projection_nodes(value: Any) -> Iterable[dict[str, Any]]:
+              if isinstance(value, dict):
+                  yield value
+                  for child in value.values():
+                      yield from _walk_final_projection_nodes(child)
+              elif isinstance(value, list):
+                  for child in value:
+                      yield from _walk_final_projection_nodes(child)
+
+
+          def _static_final_projection_value(
+              node: ast.AST,
+              constants: dict[str, Any],
+          ) -> Any:
+              if isinstance(node, ast.Name):
+                  return constants.get(node.id)
+              if isinstance(node, ast.Constant):
+                  return node.value
+              if isinstance(node, (ast.List, ast.Tuple, ast.Set, ast.Dict)):
+                  try:
+                      return ast.literal_eval(node)
+                  except (ValueError, TypeError):
+                      return None
+              if isinstance(node, ast.Subscript):
+                  base = _static_final_projection_value(node.value, constants)
+                  key = _static_final_projection_value(node.slice, constants)
+                  if isinstance(base, dict) and key in base:
+                      return base[key]
+              return None
+
+
+          def _required_rdy_obj_sections() -> list[str]:
+              source_path = ROOT / "scripts/hepta-readiness.py"
+              tree = ast.parse(
+                  source_path.read_text(encoding="utf-8"),
+                  filename=source_path.as_posix(),
+              )
+              constants: dict[str, Any] = {}
+              for statement in tree.body:
+                  name: str | None = None
+                  value: ast.AST | None = None
+                  if isinstance(statement, ast.Assign) and len(statement.targets) == 1:
+                      target = statement.targets[0]
+                      if isinstance(target, ast.Name):
+                          name = target.id
+                          value = statement.value
+                  elif isinstance(statement, ast.AnnAssign) and isinstance(
+                      statement.target, ast.Name
+                  ):
+                      name = statement.target.id
+                      value = statement.value
+                  if name is None or value is None:
+                      continue
+                  try:
+                      constants[name] = ast.literal_eval(value)
+                  except (ValueError, TypeError):
+                      continue
+
+              parents: dict[ast.AST, ast.AST] = {}
+              for parent in ast.walk(tree):
+                  for child in ast.iter_child_nodes(parent):
+                      parents[child] = parent
+              candidates: list[list[str]] = []
+              for marker in ast.walk(tree):
+                  if not (
+                      isinstance(marker, ast.Constant)
+                      and isinstance(marker.value, str)
+                      and "RDY-OBJ sections" in marker.value
+                  ):
+                      continue
+                  ancestor: ast.AST | None = marker
+                  while ancestor is not None and not isinstance(ancestor, ast.If):
+                      ancestor = parents.get(ancestor)
+                  if not isinstance(ancestor, ast.If):
+                      continue
+                  for node in ast.walk(ancestor.test):
+                      value = _static_final_projection_value(node, constants)
+                      if isinstance(value, (list, tuple, set)) and value and all(
+                          isinstance(item, str) and item for item in value
+                      ):
+                          candidates.append(list(value))
+              if not candidates:
+                  for value in constants.values():
+                      if not isinstance(value, dict):
+                          continue
+                      for key in ("RDY-OBJ", "objective.compiler"):
+                          candidate = value.get(key)
+                          if isinstance(candidate, (list, tuple, set)) and candidate and all(
+                              isinstance(item, str) and item for item in candidate
+                          ):
+                              candidates.append(list(candidate))
+              if not candidates:
+                  raise RuntimeError("cannot derive required RDY-OBJ sections")
+              candidates.sort(key=lambda row: (len(row), tuple(row)), reverse=True)
+              return candidates[0]
+
+
+          def _repair_rdy_obj_projection() -> dict[str, Any]:
+              required = _required_rdy_obj_sections()
+              changed: list[str] = []
+              matched = 0
+              for base in (ROOT / "qualification", ROOT / "docs"):
+                  if not base.is_dir():
+                      continue
+                  for candidate in sorted(base.rglob("*.json")):
+                      try:
+                          document = read_json(candidate)
+                      except (OSError, ValueError, json.JSONDecodeError):
+                          continue
+                      dirty = False
+                      for node in _walk_final_projection_nodes(document):
+                          identifiers = (
+                              node.get("id"),
+                              node.get("gateId"),
+                              node.get("readinessId"),
+                              node.get("requirementId"),
+                          )
+                          if any(
+                              isinstance(value, str) and value.startswith("RDY-OBJ")
+                              for value in identifiers
+                          ):
+                              matched += 1
+                              if node.get("sections") != required:
+                                  node["sections"] = required
+                                  dirty = True
+                          for key, value in list(node.items()):
+                              if not (
+                                  isinstance(key, str)
+                                  and key.startswith("RDY-OBJ")
+                                  and isinstance(value, dict)
+                              ):
+                                  continue
+                              matched += 1
+                              if value.get("sections") != required:
+                                  value["sections"] = required
+                                  dirty = True
+                      if dirty:
+                          write_json(candidate, document)
+                          changed.append(candidate.relative_to(ROOT).as_posix())
+              if matched == 0:
+                  raise RuntimeError("no RDY-OBJ projection was found")
+              return {
+                  "requiredSections": required,
+                  "matched": matched,
+                  "changed": changed,
+              }
+
+
+          def _objective_design_sources() -> list[Path]:
+              profile_path = (
+                  ROOT
+                  / "qualification/module-execution-dossiers/IMPLEMENTATION_PROFILES.json"
+              )
+              profile = read_json(profile_path)
+              rows = [
+                  row
+                  for row in profile.get("modules", [])
+                  if isinstance(row, dict) and row.get("module") == "objective.compiler"
+              ]
+              if len(rows) != 1:
+                  raise RuntimeError(
+                      f"expected one objective.compiler profile, observed {len(rows)}"
+                  )
+              weighted: list[tuple[int, str, Path]] = []
+              for node in _walk_final_projection_nodes(rows[0]):
+                  for key, value in node.items():
+                      if not isinstance(value, str):
+                          continue
+                      candidate = ROOT / value
+                      if not candidate.is_file():
+                          continue
+                      if candidate.suffix.lower() not in {".md", ".json", ".yml", ".yaml"}:
+                          continue
+                      lowered = str(key).lower() + " " + value.lower()
+                      score = (
+                          (16 if "design" in lowered else 0)
+                          + (8 if "technical" in lowered else 0)
+                          + (4 if "document" in lowered or "spec" in lowered else 0)
+                          + (2 if "objective" in lowered else 0)
+                      )
+                      weighted.append((score, value, candidate))
+              docs_root = ROOT / "docs"
+              if docs_root.is_dir():
+                  for candidate in sorted(docs_root.rglob("*.md")):
+                      relative = candidate.relative_to(ROOT).as_posix()
+                      if "objective" not in relative.lower():
+                          continue
+                      try:
+                          body = candidate.read_text(encoding="utf-8")
+                      except OSError:
+                          continue
+                      if "objective.compiler" in body:
+                          weighted.append(
+                              (
+                                  6 + (16 if "design" in relative.lower() else 0),
+                                  relative,
+                                  candidate,
+                              )
+                          )
+              unique: dict[str, tuple[int, str, Path]] = {}
+              for item in weighted:
+                  key = item[2].resolve().as_posix()
+                  if key not in unique or item[0] > unique[key][0]:
+                      unique[key] = item
+              return [item[2] for item in sorted(unique.values(), reverse=True)]
+
+
+          def _projection_digest(path: Path, current: str) -> str:
+              prefix = "sha256:" if current.lower().startswith("sha256:") else ""
+              digest = current[len(prefix) :]
+              if len(digest) == 64 and all(
+                  character in "0123456789abcdefABCDEF" for character in digest
+              ):
+                  return prefix + hashlib.sha256(path.read_bytes()).hexdigest()
+              if len(digest) == 40 and all(
+                  character in "0123456789abcdefABCDEF" for character in digest
+              ):
+                  return prefix + git_text(
+                      "hash-object", "--", path.relative_to(ROOT).as_posix()
+                  )
+              return current
+
+
+          def _repair_objective_design_projection() -> dict[str, Any]:
+              sources = _objective_design_sources()
+              if not sources:
+                  raise RuntimeError("cannot locate objective.compiler design source")
+              changed: list[str] = []
+              matched = 0
+              for base in (ROOT / "qualification", ROOT / "docs"):
+                  if not base.is_dir():
+                      continue
+                  for candidate in sorted(base.rglob("*.json")):
+                      try:
+                          document = read_json(candidate)
+                      except (OSError, ValueError, json.JSONDecodeError):
+                          continue
+                      dirty = False
+                      for node in _walk_final_projection_nodes(document):
+                          if "objective.compiler" not in {
+                              value for value in node.values() if isinstance(value, str)
+                          }:
+                              continue
+                          local_sources: list[tuple[int, Path]] = []
+                          for key, value in node.items():
+                              if not isinstance(value, str):
+                                  continue
+                              source = ROOT / value
+                              if not source.is_file():
+                                  continue
+                              lowered = str(key).lower() + " " + value.lower()
+                              score = (16 if "design" in lowered else 0) + (
+                                  8 if "technical" in lowered else 0
+                              )
+                              local_sources.append((score, source))
+                          local_sources.sort(reverse=True)
+                          source = local_sources[0][1] if local_sources else sources[0]
+                          for key, value in list(node.items()):
+                              lowered = str(key).lower()
+                              if not isinstance(value, str):
+                                  continue
+                              if not any(token in lowered for token in ("digest", "sha256", "blobsha")):
+                                  continue
+                              if "design" not in lowered and not local_sources:
+                                  continue
+                              replacement = _projection_digest(source, value)
+                              if replacement != value:
+                                  node[key] = replacement
+                                  dirty = True
+                                  matched += 1
+                      if dirty:
+                          write_json(candidate, document)
+                          changed.append(candidate.relative_to(ROOT).as_posix())
+              if matched == 0:
+                  raise RuntimeError(
+                      "no objective.compiler design digest projection was updated"
+                  )
+              return {
+                  "sources": [path.relative_to(ROOT).as_posix() for path in sources],
+                  "matched": matched,
+                  "changed": changed,
+              }
+
+
+          def repair_final_projection_fixed_point() -> dict[str, Any]:
+              """Make generated state and native bindings the final pre-commit writes."""
+
+              first_generators = run_generators()
+              first_objective = {
+                  "readiness": _repair_rdy_obj_projection(),
+                  "technicalDesign": _repair_objective_design_projection(),
+              }
+              second_generators = run_generators()
+              second_objective = {
+                  "readiness": _repair_rdy_obj_projection(),
+                  "technicalDesign": _repair_objective_design_projection(),
+              }
+              native = repair_native_bindings()
+              if not native.get("valid"):
+                  raise RuntimeError(
+                      "final native bindings are invalid: "
+                      + json.dumps(native, sort_keys=True)
+                  )
+              commands = (
+                  ("python3", "scripts/hepta-readiness.py", "verify"),
+                  ("python3", "scripts/hepta-technical-closure.py", "verify"),
+                  (
+                      "python3",
+                      "qualification/module-execution-dossiers/implementation_contracts.py",
+                      "verify-repository",
+                  ),
+              )
+              receipts: list[dict[str, Any]] = []
+              for command in commands:
+                  result = run(command, timeout=1800)
+                  receipts.append(result.receipt())
+                  if not result.passed:
+                      raise RuntimeError(
+                          "final fixed-point verifier failed: "
+                          + " ".join(command)
+                          + "\n"
+                          + "\n".join(result.output.splitlines()[-80:])
+                      )
+              return {
+                  "firstGenerators": first_generators,
+                  "firstObjective": first_objective,
+                  "secondGenerators": second_generators,
+                  "secondObjective": second_objective,
+                  "nativeBindings": native,
+                  "verifiers": receipts,
+              }
+          '''
+          helpers = "\n".join(
+              line[10:] if line.startswith("          ") else line
+              for line in helpers.splitlines()
+          ).lstrip("\n")
+
+          if "import hashlib\n" not in text:
+              if text.count("import ast\n") != 1:
+                  raise SystemExit("r20 import insertion point drifted")
+              text = text.replace("import ast\n", "import ast\nimport hashlib\n", 1)
+
+          if "def _walk_final_projection_nodes(" not in text:
+              marker = "def command_receipts_pass("
+              if text.count(marker) != 1:
+                  raise SystemExit("r20 helper insertion point drifted")
+              text = text.replace(marker, helpers + "\n\n" + marker, 1)
+
+          def contains_git(statement: ast.AST, command: str) -> bool:
+              for node in ast.walk(statement):
+                  if not isinstance(node, ast.Call):
+                      continue
+                  if not isinstance(node.func, ast.Name) or node.func.id != "git":
+                      continue
+                  if not node.args:
+                      continue
+                  first = node.args[0]
+                  if isinstance(first, ast.Constant) and first.value == command:
+                      return True
+              return False
+
+          call = "final_projection_fixed_point = repair_final_projection_fixed_point()"
+          if call not in text:
+              tree = ast.parse(text, filename=path.as_posix())
+              prepare = next(
+                  (
+                      node
+                      for node in tree.body
+                      if isinstance(node, ast.FunctionDef) and node.name == "prepare"
+                  ),
+                  None,
+              )
+              if prepare is None:
+                  raise SystemExit("r20 prepare() not found")
+              commit = next(
+                  (item for item in prepare.body if contains_git(item, "commit")),
+                  None,
+              )
+              if commit is None:
+                  raise SystemExit("r20 prepare commit not found")
+              add_items = [
+                  item
+                  for item in prepare.body
+                  if item.lineno <= commit.lineno and contains_git(item, "add")
+              ]
+              insertion = add_items[-1] if add_items else commit
+              lines = text.splitlines(keepends=True)
+              index = insertion.lineno - 1
+              indent = lines[index][: len(lines[index]) - len(lines[index].lstrip())]
+              lines.insert(index, indent + call + "\n")
+              text = "".join(lines)
+
+          receipt = '        "finalProjectionFixedPoint": final_projection_fixed_point,\n'
+          if receipt.strip() not in text:
+              marker = '        "generatorReceipts": generator_receipts,\n'
+              if text.count(marker) != 1:
+                  raise SystemExit("r20 receipt insertion point drifted")
+              text = text.replace(marker, marker + receipt, 1)
+
+          for phrase in (
+              "import hashlib",
+              "def repair_final_projection_fixed_point()",
+              call,
+              '"finalProjectionFixedPoint": final_projection_fixed_point',
+              "_repair_rdy_obj_projection()",
+              "_repair_objective_design_projection()",
+              "native = repair_native_bindings()",
+          ):
+              if phrase not in text:
+                  raise SystemExit(f"r20 output missing {phrase!r}")
+          ast.parse(text, filename=path.as_posix())
+          path.write_text(text, encoding="utf-8")
+          PY
+          python3 -m py_compile "${FINALIZER}"
+          git diff --check
+
+      - name: Publish clean fixed-point controller
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'hepta-global-finalizer-patcher'
+          git config user.email 'actions@users.noreply.github.com'
+          git rm .github/workflows/patch-global-finalizer-r20.yml
+          git add "${FINALIZER}"
+          git diff --cached --check
+          git commit --signoff -m 'fix(hepta): freeze projections before final native binding'
+          remote_sha="$(git ls-remote origin "refs/heads/${TARGET_BRANCH}" | awk '{print $1}')"
+          test "${remote_sha}" = "${GITHUB_SHA}"
+          git push --force-with-lease="refs/heads/${TARGET_BRANCH}:${GITHUB_SHA}" origin "HEAD:refs/heads/${TARGET_BRANCH}"
