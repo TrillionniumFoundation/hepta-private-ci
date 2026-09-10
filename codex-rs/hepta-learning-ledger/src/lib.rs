@@ -8,6 +8,7 @@
 #![forbid(unsafe_code)]
 
 mod causal_v2;
+mod dataset_receipt_v3;
 mod durable;
 mod durable_codec;
 mod durable_lock;
@@ -32,6 +33,10 @@ pub use causal_v2::freeze_dataset;
 pub use causal_v2::validate_authenticated_outcome;
 pub use causal_v2::validate_candidate_set_completeness;
 pub use causal_v2::verify_independent_roles;
+pub use dataset_receipt_v3::DatasetReceiptError;
+pub use dataset_receipt_v3::DatasetSnapshotReceiptV3;
+pub use dataset_receipt_v3::freeze_dataset_receipt_v3;
+pub use dataset_receipt_v3::verify_dataset_snapshot_receipt_v3;
 pub use durable::DurableLedger;
 pub use durable::DurableLedgerError;
 pub use durable::LedgerAnchor;
