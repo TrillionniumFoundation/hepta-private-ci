@@ -40,7 +40,7 @@ jobs:
             git cat-file -e "$sha^{commit}"
           done
           test "$(git merge-base "$BASE_SHA" "$LANE_G_SHA")" = "$MERGE_BASE_SHA"
-      - name: Materialize the four exact conflict surfaces
+      - name: Materialize exact conflict and preservation surfaces
         shell: bash
         run: |
           set -euo pipefail
@@ -52,6 +52,8 @@ jobs:
             codex-rs/hepta-objective/src/objective_admission_tests.rs
             qualification/module-execution-dossiers/NATIVE_BINDINGS.json
             qualification/module-execution-dossiers/test_implementation_contracts.py
+            qualification/module-execution-dossiers/implementation_contract_tests_core.py
+            qualification/module-execution-dossiers/implementation_contract_tests_system.py
           )
           for subject in base lane-g merge-base; do
             case "$subject" in
@@ -69,11 +71,13 @@ jobs:
             done
           done
           for path in "${paths[@]}"; do
-            safe="${path//\//__}"
-            git diff --no-index -- \
-              "$root/lane-g/$path" \
-              "$root/base/$path" \
-              > "$root/diff/$safe.patch" || test $? -eq 1
+            lane="$root/lane-g/$path"
+            base="$root/base/$path"
+            if [[ -f "$lane" && -f "$base" ]]; then
+              safe="${path//\//__}"
+              git diff --no-index -- "$lane" "$base" \
+                > "$root/diff/$safe.patch" || test $? -eq 1
+            fi
           done
           python3 - <<'PY'
           import hashlib
