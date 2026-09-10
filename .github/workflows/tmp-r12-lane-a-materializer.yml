@@ -1,0 +1,138 @@
+name: Temporary r12 Lane A materializer
+
+on:
+  push:
+    branches:
+      - "ops/r12-lane-a-materializer-20260910"
+
+permissions:
+  contents: write
+
+jobs:
+  materialize:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: Check out exact r12 target
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: integration/hepta-all-gap-closure-20260910-r12
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Merge Lane A with scoped ownership
+        env:
+          EXPECTED_TARGET: 829e452b6a9d1bf831572a3a3a3b209ec499ead7
+          LANE_A_HEAD: a20b59ae675fa1931ea74cdd389924bfc7b8a0cf
+          TARGET_BRANCH: integration/hepta-all-gap-closure-20260910-r12
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_TARGET"
+          test -z "$(git status --porcelain)"
+          git fetch --no-tags origin "$LANE_A_HEAD"
+
+          set +e
+          git -c user.name='Hepta r12 integrator' \
+              -c user.email='hepta-r12-integrator@users.noreply.github.com' \
+              merge --no-commit --no-ff "$LANE_A_HEAD"
+          merge_rc=$?
+          set -e
+          test "$merge_rc" -eq 1
+
+          cat >"$RUNNER_TEMP/expected-conflicts.txt" <<'EOF'
+          .github/workflows/lane-a-foundation.yml
+          codex-rs/hepta-authbus/src/lib.rs
+          codex-rs/hepta-authbus/src/lib_tests.rs
+          codex-rs/hepta-operations/src/ledger.rs
+          codex-rs/hepta-operations/src/ledger_tests.rs
+          docs/lane-a-foundation/MODULE_TRUTH_MATRIX.json
+          docs/lane-a-foundation/README.md
+          docs/lane-a-foundation/STATUS_MODEL.md
+          docs/lane-a-foundation/auth.authbus/CURRENT_IMPLEMENTATION.md
+          docs/lane-a-foundation/kernel.authority/CURRENT_IMPLEMENTATION.md
+          docs/lane-a-foundation/kernel.evidence/CURRENT_IMPLEMENTATION.md
+          docs/lane-a-foundation/kernel.operations/CURRENT_IMPLEMENTATION.md
+          docs/lane-a-foundation/platform.types/CURRENT_IMPLEMENTATION.md
+          docs/lane-a-foundation/platform.wire/WIRE_V1.md
+          docs/lane-a-foundation/secrets.heptabao/CURRENT_IMPLEMENTATION.md
+          qualification/module-execution-dossiers/NATIVE_BINDINGS.json
+          qualification/module-execution-dossiers/test_lane_a_foundation.py
+          scripts/verify_lane_a_foundation.py
+          EOF
+          sed -i 's/^          //' "$RUNNER_TEMP/expected-conflicts.txt"
+          git diff --name-only --diff-filter=U | sort >"$RUNNER_TEMP/actual-conflicts.txt"
+          diff -u "$RUNNER_TEMP/expected-conflicts.txt" "$RUNNER_TEMP/actual-conflicts.txt"
+
+          while IFS= read -r path; do
+            case "$path" in
+              qualification/module-execution-dossiers/NATIVE_BINDINGS.json)
+                ;;
+              *)
+                git checkout --theirs -- "$path"
+                git add -- "$path"
+                ;;
+            esac
+          done <"$RUNNER_TEMP/expected-conflicts.txt"
+
+          binding_path=qualification/module-execution-dossiers/NATIVE_BINDINGS.json
+          git show ":2:$binding_path" >"$RUNNER_TEMP/native-ours.json"
+          git show ":3:$binding_path" >"$RUNNER_TEMP/native-lane-a.json"
+          python3 - "$RUNNER_TEMP/native-ours.json" "$RUNNER_TEMP/native-lane-a.json" "$binding_path" <<'PY'
+          import json
+          import sys
+
+          ours_path, lane_path, output_path = sys.argv[1:]
+          with open(ours_path, encoding="utf-8") as handle:
+              ours = json.load(handle)
+          with open(lane_path, encoding="utf-8") as handle:
+              lane = json.load(handle)
+
+          lane_a_modules = {
+              "platform.types",
+              "platform.wire",
+              "kernel.authority",
+              "kernel.operations",
+              "kernel.evidence",
+              "auth.authbus",
+              "secrets.heptabao",
+          }
+          lane_by_module = {
+              item["module"]: item for item in lane["observations"]
+          }
+          missing = lane_a_modules - lane_by_module.keys()
+          if missing:
+              raise SystemExit(f"Lane A binding entries missing: {sorted(missing)}")
+          merged = []
+          seen = set()
+          for item in ours["observations"]:
+              module = item["module"]
+              if module in seen:
+                  raise SystemExit(f"duplicate current module: {module}")
+              seen.add(module)
+              merged.append(lane_by_module[module] if module in lane_a_modules else item)
+          if len(merged) != 40 or seen != set(lane_by_module):
+              raise SystemExit(
+                  f"binding coverage mismatch: merged={len(merged)} current={len(seen)} lane={len(lane_by_module)}"
+              )
+          ours["observations"] = merged
+          ours["moduleCoverage"] = len(merged)
+          with open(output_path, "w", encoding="utf-8") as handle:
+              json.dump(ours, handle, indent=2, ensure_ascii=False)
+              handle.write("\n")
+          PY
+          git add "$binding_path"
+
+          # Diagnostic export mechanics are not part of Lane A's source closure.
+          git checkout HEAD -- .github/workflows/hepta-diagnostic-source-export.yml
+          git add .github/workflows/hepta-diagnostic-source-export.yml
+
+          test -z "$(git diff --name-only --diff-filter=U)"
+          git diff --check
+          git status --short
+          git config user.name 'Hepta r12 integrator'
+          git config user.email 'hepta-r12-integrator@users.noreply.github.com'
+          git commit -m 'merge(r12): absorb latest Lane A foundation closure'
+          test "$(git rev-list --parents -n1 HEAD | awk '{print NF}')" -eq 3
+          git push origin "HEAD:$TARGET_BRANCH"
