@@ -1,0 +1,459 @@
+name: tmp-hepta-final-remediation-r9
+
+on:
+  push:
+    branches:
+      - ops/hepta-final-remediation-r9-20260910
+    paths:
+      - .github/workflows/tmp-hepta-final-remediation-r9.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: hepta-final-remediation-r9-20260910
+  cancel-in-progress: false
+
+env:
+  BASE_BRANCH: integration/vnext-main-20260811
+  BASE_SHA: 04f60466394a024c218ce66b1b32d1c42c462985
+  SOURCE_BRANCH: codex/hepta-all-gap-closure-20260908
+  SOURCE_SHA: 298bd904d72b715515f30c1eab25140d06830ede
+  TARGET_BRANCH: codex/hepta-all-gap-closure-final-r5-20260910
+  HEPTABAO_BASE_SHA: 92894aa52de06f2f4ba7d5f234a0a55f93314474
+  HEPTABAO_HEAD_SHA: 6480504418eaa2222dc372844114adb44c703510
+  HEPTABAO_MERGE_SHA: 64b662215ed26e844e5cbaabea418b399386a8c7
+  HEPTABAO_AUTHORITATIVE_RUN: "34425002301"
+  PYTHONDONTWRITEBYTECODE: "1"
+
+jobs:
+  remediate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 180
+    steps:
+      - name: Check out exact controller
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Install pinned uv
+        uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b
+        with:
+          version: 0.11.3
+
+      - name: Install pinned Rust toolchain
+        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: 1.95.0
+          components: rustfmt,clippy
+
+      - name: Install DotSlash
+        uses: facebook/install-dotslash@1e4e7b3e07eaca387acb98f1d4720e0bee8dbb6a
+
+      - name: Install pinned just
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0
+
+      - name: Verify immutable controller inputs
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD^)" = "$SOURCE_SHA"
+          test "$(git rev-parse "$SOURCE_SHA^")" = "$BASE_SHA"
+          git fetch --no-tags origin "+refs/heads/$BASE_BRANCH:refs/remotes/origin/final-base"
+          git fetch --no-tags origin "+refs/heads/$SOURCE_BRANCH:refs/remotes/origin/final-source"
+          test "$(git rev-parse refs/remotes/origin/final-base)" = "$BASE_SHA"
+          test "$(git rev-parse refs/remotes/origin/final-source)" = "$SOURCE_SHA"
+          test "$(git merge-base "$BASE_SHA" "$SOURCE_SHA")" = "$BASE_SHA"
+          test "$(git rev-list --count "$BASE_SHA..$SOURCE_SHA")" = "1"
+          test -z "$(git ls-tree -r --name-only "$SOURCE_SHA" | grep '^.github/workflows/tmp-' || true)"
+          test -z "$(git ls-remote origin "refs/heads/$TARGET_BRANCH")"
+
+      - name: Apply repository-controlled blocker repairs
+        shell: bash
+        run: |
+          set -euo pipefail
+          work="$RUNNER_TEMP/hepta-final-remediation-r9"
+          git worktree add --detach "$work" "$SOURCE_SHA"
+          cd "$work"
+          python3 - <<'PY'
+          from pathlib import Path
+          import textwrap
+
+          kg = Path("codex-rs/hepta-kg/src/generation.rs")
+          text = kg.read_text(encoding="utf-8")
+          old = "    supports: &mut Vec<KnowledgeSupportV2>,\n"
+          new = "    supports: &mut [KnowledgeSupportV2],\n"
+          if old in text:
+              if text.count(old) != 1:
+                  raise SystemExit("expected exactly one hepta-kg mutable Vec parameter")
+              text = text.replace(old, new, 1)
+          elif new not in text:
+              raise SystemExit("hepta-kg support parameter shape is unexpected")
+          kg.write_text(text, encoding="utf-8")
+
+          build = Path("codex-rs/hepta-shadow-qualification/BUILD.bazel")
+          text = build.read_text(encoding="utf-8")
+          target_marker = 'rust_test(\n    name = "hepta-shadow-qualification-tests",'
+          if text.count(target_marker) != 1:
+              raise SystemExit("expected exactly one hepta-shadow-qualification-tests target")
+          start = text.index(target_marker)
+          end = text.find("\n)\n", start)
+          if end < 0:
+              raise SystemExit("could not find end of hepta-shadow-qualification-tests target")
+          end += len("\n)\n")
+          block = text[start:end]
+          deps_marker = "    deps = [\n"
+          if block.count(deps_marker) != 1:
+              raise SystemExit("expected exactly one dependency list in hepta-shadow-qualification-tests")
+          required = [
+              "//codex-rs/hepta-bellman-operator",
+              "//codex-rs/hepta-intelligence-eval",
+          ]
+          missing = [dep for dep in required if f'"{dep}"' not in block]
+          if missing:
+              insertion = "".join(f'        "{dep}",\n' for dep in missing)
+              block = block.replace(deps_marker, deps_marker + insertion, 1)
+              text = text[:start] + block + text[end:]
+          build.write_text(text, encoding="utf-8")
+
+          lock_contract = Path("qualification/lane-f-shadow/lock_contract.py")
+          lock_contract.write_text(
+              textwrap.dedent(
+                  '''\
+                  #!/usr/bin/env python3
+                  """Prepare and verify Lane F's standalone Cargo lock without external drift."""
+
+                  from __future__ import annotations
+
+                  import argparse
+                  import json
+                  import shutil
+                  import subprocess
+                  import tomllib
+                  from pathlib import Path
+                  from typing import Any
+
+
+                  REPO_ROOT = Path(__file__).resolve().parents[2]
+                  WORKSPACE_LOCK = REPO_ROOT / "codex-rs" / "Cargo.lock"
+                  HARNESS_DIR = REPO_ROOT / "qualification" / "lane-f-shadow"
+                  HARNESS_MANIFEST = HARNESS_DIR / "Cargo.toml"
+                  HARNESS_LOCK = HARNESS_DIR / "Cargo.lock"
+                  HARNESS_PACKAGE = "lane-f-shadow-qualification"
+                  EXPECTED_DIRECT_DEPENDENCIES = {
+                      "codex-hepta-intelligence",
+                      "codex-hepta-intuition",
+                      "codex-hepta-neuron",
+                      "codex-hepta-plasticity",
+                      "codex-hepta-prompt-optimizer",
+                      "codex-hepta-types",
+                  }
+
+
+                  class LockContractError(RuntimeError):
+                      """Raised when the generated standalone lock violates its seed contract."""
+
+
+                  def _load_lock(path: Path) -> dict[str, Any]:
+                      with path.open("rb") as handle:
+                          return tomllib.load(handle)
+
+
+                  def _external_identity(package: dict[str, Any]) -> tuple[str, str, str, str | None]:
+                      return (
+                          package["name"],
+                          package["version"],
+                          package["source"],
+                          package.get("checksum"),
+                      )
+
+
+                  def _validate(seed: dict[str, Any], generated: dict[str, Any]) -> dict[str, int]:
+                      seed_packages = seed.get("package", [])
+                      generated_packages = generated.get("package", [])
+                      seed_external = {
+                          _external_identity(package)
+                          for package in seed_packages
+                          if package.get("source") is not None
+                      }
+                      generated_external = {
+                          _external_identity(package)
+                          for package in generated_packages
+                          if package.get("source") is not None
+                      }
+                      drift = generated_external - seed_external
+                      if drift:
+                          raise LockContractError(
+                              f"standalone lock introduced external dependency drift: {sorted(drift)!r}"
+                          )
+
+                      roots = [
+                          package
+                          for package in generated_packages
+                          if package.get("name") == HARNESS_PACKAGE
+                      ]
+                      if len(roots) != 1:
+                          raise LockContractError(
+                              f"expected one {HARNESS_PACKAGE!r} package, found {len(roots)}"
+                          )
+                      observed = {
+                          dependency.split(" ", 1)[0]
+                          for dependency in roots[0].get("dependencies", [])
+                      }
+                      if observed != EXPECTED_DIRECT_DEPENDENCIES:
+                          raise LockContractError(
+                              "standalone harness dependency set mismatch: "
+                              f"observed={sorted(observed)!r} "
+                              f"expected={sorted(EXPECTED_DIRECT_DEPENDENCIES)!r}"
+                          )
+                      return {
+                          "seedPackages": len(seed_packages),
+                          "generatedPackages": len(generated_packages),
+                          "generatedExternalPackages": len(generated_external),
+                      }
+
+
+                  def verify() -> dict[str, int]:
+                      return _validate(_load_lock(WORKSPACE_LOCK), _load_lock(HARNESS_LOCK))
+
+
+                  def prepare() -> dict[str, int]:
+                      shutil.copyfile(WORKSPACE_LOCK, HARNESS_LOCK)
+                      subprocess.run(
+                          [
+                              "cargo",
+                              "metadata",
+                              "--format-version",
+                              "1",
+                              "--manifest-path",
+                              str(HARNESS_MANIFEST),
+                          ],
+                          cwd=REPO_ROOT,
+                          check=True,
+                          stdout=subprocess.DEVNULL,
+                      )
+                      return verify()
+
+
+                  def self_test() -> dict[str, int]:
+                      external = {
+                          "name": "serde",
+                          "version": "1.0.0",
+                          "source": "registry+https://github.com/rust-lang/crates.io-index",
+                          "checksum": "seed-checksum",
+                      }
+                      root = {
+                          "name": HARNESS_PACKAGE,
+                          "version": "0.1.0",
+                          "dependencies": sorted(EXPECTED_DIRECT_DEPENDENCIES),
+                      }
+                      summary = _validate(
+                          {"package": [external]},
+                          {"package": [external.copy(), root]},
+                      )
+                      moved = external.copy()
+                      moved["version"] = "1.0.1"
+                      try:
+                          _validate({"package": [external]}, {"package": [moved, root]})
+                      except LockContractError:
+                          pass
+                      else:
+                          raise LockContractError("self-test accepted external dependency drift")
+                      return summary
+
+
+                  def main() -> int:
+                      parser = argparse.ArgumentParser()
+                      parser.add_argument("command", choices=("prepare", "verify", "self-test"))
+                      args = parser.parse_args()
+                      if args.command == "prepare":
+                          summary = prepare()
+                      elif args.command == "verify":
+                          summary = verify()
+                      else:
+                          summary = self_test()
+                      print(
+                          json.dumps(
+                              {"status": "PASS_LANE_F_LOCK_CONTRACT", **summary},
+                              sort_keys=True,
+                          )
+                      )
+                      return 0
+
+
+                  if __name__ == "__main__":
+                      raise SystemExit(main())
+                  '''
+              ),
+              encoding="utf-8",
+          )
+
+          lane_f = Path(".github/workflows/hepta-lane-f-shadow-qualification.yml")
+          lines = lane_f.read_text(encoding="utf-8").splitlines()
+          output: list[str] = []
+          replacements = 0
+          index = 0
+          copy_line = "cp codex-rs/Cargo.lock qualification/lane-f-shadow/Cargo.lock"
+          while index < len(lines):
+              line = lines[index]
+              if line.strip() == copy_line and index + 1 < len(lines) and lines[index + 1].strip().startswith("if ! grep -q"):
+                  indent = line[: len(line) - len(line.lstrip())]
+                  cursor = index + 1
+                  while cursor < len(lines):
+                      if lines[cursor].strip() == "fi" and lines[cursor].startswith(indent):
+                          break
+                      cursor += 1
+                  if cursor >= len(lines):
+                      raise SystemExit("could not find end of Lane F manual lock block")
+                  output.append(indent + "python3 qualification/lane-f-shadow/lock_contract.py prepare")
+                  replacements += 1
+                  index = cursor + 1
+                  continue
+              output.append(line)
+              index += 1
+          if replacements != 2:
+              raise SystemExit(f"expected two Lane F manual lock blocks, replaced {replacements}")
+          lane_f.write_text("\n".join(output) + "\n", encoding="utf-8")
+
+          lane_e = Path(".github/workflows/hepta-lane-e-gap-closure.yml")
+          text = lane_e.read_text(encoding="utf-8")
+          required_fragments = [
+              "SOURCE_SHA:",
+              "github.event.pull_request.head.sha",
+              "TARGET_BRANCH:",
+              "github.event.pull_request.base.ref",
+              "integration/vnext-main-20260811",
+              "TARGET_SHA:",
+              "github.event.pull_request.base.sha",
+          ]
+          for fragment in required_fragments:
+              if fragment not in text:
+                  raise SystemExit(f"Lane E dynamic binding missing fragment: {fragment}")
+
+          candidate = Path("qualification/convergence/CANDIDATE_20260910.md")
+          text = candidate.read_text(encoding="utf-8").rstrip()
+          marker = "## Exact HeptaBao dependency binding"
+          if marker in text:
+              text = text.split(marker, 1)[0].rstrip()
+          binding = (
+              "## Exact HeptaBao dependency binding\n\n"
+              "This candidate is qualified only against `TrillionniumFoundation/HeptaBao` PR #81 "
+              "with base `92894aa52de06f2f4ba7d5f234a0a55f93314474`, head "
+              "`6480504418eaa2222dc372844114adb44c703510`, and GitHub prospective merge "
+              "`64b662215ed26e844e5cbaabea418b399386a8c7`. The formal exact-head and "
+              "prospective-main repository qualification is GitHub Actions run `34425002301`. "
+              "Any movement of this tuple invalidates the binding and requires exact-head and "
+              "prospective-merge requalification. This dependency record does not grant "
+              "compatibility, migration, release, deployment, or production authority.\n"
+          )
+          candidate.write_text(text + "\n\n" + binding, encoding="utf-8")
+          PY
+
+          python3 qualification/lane-f-shadow/lock_contract.py self-test
+          cargo clippy --manifest-path codex-rs/Cargo.toml --locked \
+            -p codex-hepta-prompt-registry --all-targets \
+            --fix --allow-dirty --allow-staged -- -D warnings
+          cargo fmt --manifest-path qualification/lane-f-shadow/Cargo.toml
+          python3 scripts/format.py
+          cargo fmt --manifest-path qualification/lane-f-shadow/Cargo.toml
+
+      - name: Regenerate repository-controlled evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          work="$RUNNER_TEMP/hepta-final-remediation-r9"
+          cd "$work"
+          python3 scripts/hepta-readiness.py self-test
+          python3 scripts/hepta-readiness.py generate-status
+          python3 scripts/hepta-readiness.py verify
+          python3 scripts/hepta-implementation-dossiers.py self-test
+          python3 scripts/hepta-implementation-dossiers.py generate-status
+          python3 scripts/hepta-implementation-dossiers.py verify
+          python3 qualification/module-execution-dossiers/implementation_contracts.py self-test
+          python3 qualification/module-execution-dossiers/implementation_contracts.py verify-repository
+          python3 scripts/hepta-module-docs.py self-test
+          python3 scripts/hepta-module-docs.py verify
+          python3 scripts/hepta-algorithm-docs.py self-test
+          python3 scripts/hepta-algorithm-docs.py verify-sources
+          python3 scripts/hepta-algorithm-docs.py generate-status
+          python3 scripts/hepta-algorithm-docs.py verify
+          python3 scripts/hepta-docs.py self-test
+          python3 scripts/hepta-docs.py generate-status
+          python3 scripts/hepta-docs.py verify
+
+      - name: Verify formatting and targeted blocker closure
+        shell: bash
+        run: |
+          set -euo pipefail
+          work="$RUNNER_TEMP/hepta-final-remediation-r9"
+          cd "$work"
+          python3 scripts/format.py --check
+          cargo fmt --manifest-path qualification/lane-f-shadow/Cargo.toml -- --check
+          cargo clippy --manifest-path codex-rs/Cargo.toml --locked \
+            -p codex-hepta-kg \
+            -p codex-hepta-prompt-registry \
+            -p codex-hepta-shadow-qualification \
+            --all-targets -- -D warnings
+          cargo test --manifest-path codex-rs/Cargo.toml --locked \
+            -p codex-hepta-kg \
+            -p codex-hepta-prompt-registry \
+            -p codex-hepta-shadow-qualification \
+            -- --nocapture
+          python3 scripts/hepta-lane-e-closure.py self-test
+          python3 scripts/hepta-lane-e-closure.py verify
+          python3 qualification/lane-f-shadow/lock_contract.py prepare
+          cargo test --locked --manifest-path qualification/lane-f-shadow/Cargo.toml
+          cargo clippy --locked --manifest-path qualification/lane-f-shadow/Cargo.toml \
+            --all-targets -- -D warnings
+          cargo fmt --manifest-path qualification/lane-f-shadow/Cargo.toml -- --check
+          rm qualification/lane-f-shadow/Cargo.lock
+          git diff --check
+          test -z "$(find .github/workflows -maxdepth 1 -type f -name 'tmp-*' -print -quit)"
+
+      - name: Publish exact one-parent candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          work="$RUNNER_TEMP/hepta-final-remediation-r9"
+          cd "$work"
+          git config user.name 'Hepta final remediation'
+          git config user.email '102159240+ProfHepta@users.noreply.github.com'
+          git add -A
+          test -n "$(git status --porcelain)"
+          git diff --cached --check
+          tree_sha="$(git write-tree)"
+          export GIT_AUTHOR_NAME='Hepta final remediation'
+          export GIT_AUTHOR_EMAIL='102159240+ProfHepta@users.noreply.github.com'
+          export GIT_COMMITTER_NAME="$GIT_AUTHOR_NAME"
+          export GIT_COMMITTER_EMAIL="$GIT_AUTHOR_EMAIL"
+          new_sha="$(printf '%s\n' 'fix(hepta): close final repository-controlled blockers r9' | git commit-tree "$tree_sha" -p "$BASE_SHA")"
+          test "$(git rev-parse "$new_sha^")" = "$BASE_SHA"
+          test "$(git rev-list --count "$BASE_SHA..$new_sha")" = "1"
+          test "$(git rev-parse "$new_sha^{tree}")" = "$tree_sha"
+          observed="$(git ls-remote origin "refs/heads/$SOURCE_BRANCH" | cut -f1)"
+          test "$observed" = "$SOURCE_SHA"
+          test -z "$(git ls-remote origin "refs/heads/$TARGET_BRANCH")"
+          git push origin "$new_sha:refs/heads/$TARGET_BRANCH"
+          printf 'new_candidate=%s\nbase=%s\ntree=%s\ntarget=%s\n' \
+            "$new_sha" "$BASE_SHA" "$tree_sha" "$TARGET_BRANCH"
+
+      - name: Dump candidate diff on failure
+        if: failure()
+        shell: bash
+        run: |
+          work="$RUNNER_TEMP/hepta-final-remediation-r9"
+          if test -d "$work/.git" || test -f "$work/.git"; then
+            cd "$work"
+            git status --short || true
+            git diff --stat || true
+            git diff --check || true
+          fi
+
+      - name: Remove source worktree
+        if: always()
+        shell: bash
+        run: |
+          git worktree remove --force "$RUNNER_TEMP/hepta-final-remediation-r9" || true
