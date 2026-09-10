@@ -1,0 +1,120 @@
+name: patch-global-finalizer-r23
+
+on:
+  push:
+    branches:
+      - ops/hepta-global-gap-closure-controller-20260910-r1
+    paths:
+      - .github/workflows/patch-global-finalizer-r23.yml
+
+permissions:
+  contents: write
+  actions: write
+
+concurrency:
+  group: patch-global-finalizer-r23
+  cancel-in-progress: true
+
+jobs:
+  patch:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      TARGET_BRANCH: ops/hepta-global-gap-closure-controller-20260910-r1
+      REPAIR: scripts/hepta-final-projection-repair.py
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - name: Check out exact patch source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Harden idempotent reconciliation
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "${GITHUB_REF_NAME}" = "${TARGET_BRANCH}"
+          test "$(git ls-remote origin "refs/heads/${TARGET_BRANCH}" | awk '{print $1}')" = "${GITHUB_SHA}"
+          test -f "${REPAIR}"
+          grep -Fq 'hepta-final-projection-repair.py' scripts/hepta-global-finalizer-r7.py
+          grep -Fq 'hepta-final-projection-repair.py' .github/workflows/hepta-global-finalizer-r7.yml
+          python3 - <<'PY'
+          from pathlib import Path
+
+          path = Path("scripts/hepta-final-projection-repair.py")
+          text = path.read_text(encoding="utf-8")
+          old = '''    if not updates:
+        raise RuntimeError("no objective.compiler design digest projection was repaired")
+    return {
+        "captureOutcome": outcome,
+        "frameCount": len(frames),
+        "changed": changed,
+        "updates": updates,
+    }
+'''
+          new = '''    return {
+        "captureOutcome": outcome,
+        "frameCount": len(frames),
+        "changed": changed,
+        "updates": updates,
+        "alreadyCurrent": not updates,
+    }
+'''
+          if '"alreadyCurrent": not updates' not in text:
+              if text.count(old) != 1:
+                  raise SystemExit("r23 technical idempotence block drifted")
+              text = text.replace(old, new, 1)
+
+          old_native = '''    document["moduleCoverage"] = 40
+    write_json(path, document)
+    return {"changed": changed, "count": len(changed)}
+'''
+          new_native = '''    document["moduleCoverage"] = 40
+    if changed:
+        write_json(path, document)
+    return {
+        "changed": changed,
+        "count": len(changed),
+        "alreadyCurrent": not changed,
+    }
+'''
+          if '"alreadyCurrent": not changed' not in text:
+              if text.count(old_native) != 1:
+                  raise SystemExit("r23 native idempotence block drifted")
+              text = text.replace(old_native, new_native, 1)
+
+          path.write_text(text, encoding="utf-8")
+          PY
+          python3 -m py_compile "${REPAIR}" scripts/hepta-global-finalizer-r7.py
+          grep -Fq '"alreadyCurrent": not updates' "${REPAIR}"
+          grep -Fq '"alreadyCurrent": not changed' "${REPAIR}"
+          git diff --check
+
+      - name: Publish and dispatch exact controller
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'hepta-global-finalizer-patcher'
+          git config user.email 'actions@users.noreply.github.com'
+          git rm -f --ignore-unmatch \
+            .github/workflows/patch-global-finalizer-r23.yml \
+            .github/workflows/patch-global-finalizer-r22.yml \
+            .github/workflows/patch-global-finalizer-r21.yml \
+            .github/workflows/patch-global-finalizer-r20.yml \
+            scripts/patch-global-finalizer-r19.py
+          git add "${REPAIR}"
+          git diff --cached --check
+          git commit --signoff -m 'fix(hepta): make final projection repair idempotent'
+          remote_sha="$(git ls-remote origin "refs/heads/${TARGET_BRANCH}" | awk '{print $1}')"
+          test "${remote_sha}" = "${GITHUB_SHA}"
+          git push --force-with-lease="refs/heads/${TARGET_BRANCH}:${GITHUB_SHA}" origin "HEAD:refs/heads/${TARGET_BRANCH}"
+          clean_sha="$(git rev-parse HEAD)"
+          test "$(git ls-remote origin "refs/heads/${TARGET_BRANCH}" | awk '{print $1}')" = "${clean_sha}"
+          gh workflow run hepta-global-finalizer-r7.yml \
+            --repo "${GITHUB_REPOSITORY}" \
+            --ref "${TARGET_BRANCH}" \
+            --field target_branch='integration/hepta-all-gap-closure-20260910-r7' \
+            --field shard_count='8'
