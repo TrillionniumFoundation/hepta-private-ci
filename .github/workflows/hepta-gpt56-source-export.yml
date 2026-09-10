@@ -1,0 +1,45 @@
+name: Hepta GPT-5.6 exact-source export
+
+on:
+  push:
+    branches:
+      - ops/hepta-gpt56-source-export-20260911
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-gpt56-source-export-${{ github.sha }}
+  cancel-in-progress: false
+
+jobs:
+  export-exact-source:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Check out exact pushed object
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Bind and archive tracked source
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          archive="$RUNNER_TEMP/hepta-source-${GITHUB_SHA}.tar.gz"
+          git archive --format=tar --prefix=hepta-source/ "$GITHUB_SHA" | gzip -n > "$archive"
+          sha256sum "$archive" | tee "$RUNNER_TEMP/hepta-source-${GITHUB_SHA}.sha256"
+
+      - name: Upload immutable source archive
+        uses: actions/upload-artifact@v4
+        with:
+          name: hepta-source-${{ github.sha }}
+          path: |
+            ${{ runner.temp }}/hepta-source-${{ github.sha }}.tar.gz
+            ${{ runner.temp }}/hepta-source-${{ github.sha }}.sha256
+          if-no-files-found: error
+          compression-level: 0
+          retention-days: 1
