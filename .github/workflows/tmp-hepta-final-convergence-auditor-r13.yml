@@ -1,0 +1,196 @@
+name: Temporary Hepta final convergence auditor r13
+
+on:
+  push:
+    branches:
+      - "ops/hepta-final-convergence-auditor-20260910-r13"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: write
+  checks: read
+  pull-requests: write
+
+concurrency:
+  group: hepta-final-convergence-auditor-r13
+  cancel-in-progress: false
+
+jobs:
+  audit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 150
+    env:
+      CANDIDATE_REF: candidate/hepta-all-gap-closure-final-20260910-r13
+      TARGET_REF: integration/vnext-main-20260811
+      STATUS_REF: ops/hepta-final-convergence-status-20260910-r13
+    steps:
+      - name: Check out trusted auditor
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Audit, re-run once, and finalize only under exact gates
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "Hepta convergence auditor"
+          git config user.email "hepta-convergence-auditor@users.noreply.github.com"
+
+          pr_number="$(gh pr list --repo "$GITHUB_REPOSITORY" --state all --head "$CANDIDATE_REF" --json number --jq '.[0].number // empty')"
+          if [[ -z "$pr_number" ]]; then
+            echo "candidate PR not found" >&2
+            exit 41
+          fi
+
+          pr_json="$(gh pr view "$pr_number" --repo "$GITHUB_REPOSITORY" --json number,state,isDraft,headRefOid,baseRefName,author,mergeCommit,mergeStateStatus,reviewDecision,url)"
+          state="$(jq -r '.state' <<<"$pr_json")"
+          head_sha="$(jq -r '.headRefOid' <<<"$pr_json")"
+          base_ref="$(jq -r '.baseRefName' <<<"$pr_json")"
+          author="$(jq -r '.author.login' <<<"$pr_json")"
+          test "$base_ref" = "$TARGET_REF"
+
+          terminal_snapshot() {
+            local sha="$1"
+            local prefix="$2"
+            local stable=0 previous=""
+            for attempt in $(seq 1 180); do
+              gh api --paginate "repos/${GITHUB_REPOSITORY}/commits/${sha}/check-runs?per_page=100" --jq '.check_runs' > "${prefix}-checks.json"
+              gh api "repos/${GITHUB_REPOSITORY}/commits/${sha}/status" > "${prefix}-status.json"
+              local total pending fp status_state
+              total="$(jq 'length' "${prefix}-checks.json")"
+              pending="$(jq '[.[] | select(.status != "completed")] | length' "${prefix}-checks.json")"
+              status_state="$(jq -r '.state' "${prefix}-status.json")"
+              fp="$(jq -S '[.[] | {id,name,status,conclusion,completed_at}]' "${prefix}-checks.json" | sha256sum | cut -d' ' -f1)"
+              if (( total >= 8 && pending == 0 )) && [[ "$status_state" != "pending" ]]; then
+                if [[ "$fp" == "$previous" ]]; then stable=$((stable + 1)); else stable=1; fi
+                if (( stable >= 5 )); then return 0; fi
+              else
+                stable=0
+              fi
+              previous="$fp"
+              sleep 20
+            done
+            return 1
+          }
+
+          if [[ "$state" != "MERGED" ]]; then
+            terminal_snapshot "$head_sha" "$RUNNER_TEMP/pre"
+            bad="$(jq '[.[] | select(.status == "completed" and (.conclusion == "failure" or .conclusion == "cancelled" or .conclusion == "timed_out" or .conclusion == "action_required" or .conclusion == "stale" or .conclusion == "startup_failure"))] | length' "$RUNNER_TEMP/pre-checks.json")"
+            pending="$(jq '[.[] | select(.status != "completed")] | length' "$RUNNER_TEMP/pre-checks.json")"
+            status_state="$(jq -r '.state' "$RUNNER_TEMP/pre-status.json")"
+
+            if (( bad > 0 )); then
+              mapfile -t failed_run_ids < <(
+                gh api --paginate "repos/${GITHUB_REPOSITORY}/actions/runs?head_sha=${head_sha}&per_page=100" --jq '.workflow_runs[] | select(.conclusion == "failure" or .conclusion == "cancelled" or .conclusion == "timed_out" or .conclusion == "action_required" or .conclusion == "stale" or .conclusion == "startup_failure") | .id' | sort -u
+              )
+              for run_id in "${failed_run_ids[@]}"; do
+                gh run rerun "$run_id" --repo "$GITHUB_REPOSITORY" --failed || true
+              done
+              sleep 30
+              terminal_snapshot "$head_sha" "$RUNNER_TEMP/post-rerun"
+              bad="$(jq '[.[] | select(.status == "completed" and (.conclusion == "failure" or .conclusion == "cancelled" or .conclusion == "timed_out" or .conclusion == "action_required" or .conclusion == "stale" or .conclusion == "startup_failure"))] | length' "$RUNNER_TEMP/post-rerun-checks.json")"
+              pending="$(jq '[.[] | select(.status != "completed")] | length' "$RUNNER_TEMP/post-rerun-checks.json")"
+              status_state="$(jq -r '.state' "$RUNNER_TEMP/post-rerun-status.json")"
+              cp "$RUNNER_TEMP/post-rerun-checks.json" "$RUNNER_TEMP/final-checks.json"
+              cp "$RUNNER_TEMP/post-rerun-status.json" "$RUNNER_TEMP/final-status.json"
+            else
+              cp "$RUNNER_TEMP/pre-checks.json" "$RUNNER_TEMP/final-checks.json"
+              cp "$RUNNER_TEMP/pre-status.json" "$RUNNER_TEMP/final-status.json"
+            fi
+
+            if (( bad == 0 && pending == 0 )) && [[ "$status_state" != "failure" && "$status_state" != "error" && "$status_state" != "pending" ]]; then
+              gh pr ready "$pr_number" --repo "$GITHUB_REPOSITORY" || true
+              reviews="$(gh api --paginate "repos/${GITHUB_REPOSITORY}/pulls/${pr_number}/reviews?per_page=100")"
+              approval_count="$(jq --arg author "$author" --arg head "$head_sha" 'group_by(.user.login) | map(sort_by(.submitted_at) | last) | map(select(.state == "APPROVED" and .commit_id == $head and .user.login != $author and (.user.login | endswith("[bot]") | not))) | length' <<<"$reviews")"
+              if (( approval_count == 0 )); then
+                mapfile -t reviewers < <(
+                  gh api --paginate "repos/${GITHUB_REPOSITORY}/collaborators?affiliation=direct&per_page=100" \
+                    | jq -r --arg author "$author" '.[] | select(.login != $author and (.login | endswith("[bot]") | not) and (.permissions.push == true or .permissions.maintain == true or .permissions.admin == true)) | .login' \
+                    | head -n 3
+                )
+                for reviewer in "${reviewers[@]}"; do
+                  gh pr edit "$pr_number" --repo "$GITHUB_REPOSITORY" --add-reviewer "$reviewer" || true
+                done
+                gh pr comment "$pr_number" --repo "$GITHUB_REPOSITORY" --body "Final audit confirms repository-controlled checks are terminal green for exact head \`${head_sha}\`. A fresh eligible non-author approval bound to this head is still required; no administrator bypass is used."
+                for attempt in $(seq 1 180); do
+                  test "$(gh pr view "$pr_number" --repo "$GITHUB_REPOSITORY" --json headRefOid --jq '.headRefOid')" = "$head_sha"
+                  reviews="$(gh api --paginate "repos/${GITHUB_REPOSITORY}/pulls/${pr_number}/reviews?per_page=100")"
+                  approval_count="$(jq --arg author "$author" --arg head "$head_sha" 'group_by(.user.login) | map(sort_by(.submitted_at) | last) | map(select(.state == "APPROVED" and .commit_id == $head and .user.login != $author and (.user.login | endswith("[bot]") | not))) | length' <<<"$reviews")"
+                  if (( approval_count > 0 )); then break; fi
+                  sleep 20
+                done
+              fi
+
+              if (( approval_count > 0 )); then
+                test "$(gh pr view "$pr_number" --repo "$GITHUB_REPOSITORY" --json headRefOid --jq '.headRefOid')" = "$head_sha"
+                gh pr merge "$pr_number" --repo "$GITHUB_REPOSITORY" --merge --delete-branch --match-head-commit "$head_sha"
+                state="MERGED"
+                pr_json="$(gh pr view "$pr_number" --repo "$GITHUB_REPOSITORY" --json number,state,isDraft,headRefOid,baseRefName,author,mergeCommit,mergeStateStatus,reviewDecision,url)"
+              else
+                state="OPEN_REVIEW_REQUIRED"
+              fi
+            else
+              state="OPEN_REPOSITORY_CHECKS_FAILED"
+              gh pr comment "$pr_number" --repo "$GITHUB_REPOSITORY" --body "Final audit remains fail-closed for \`${head_sha}\`: persistent failed/cancelled/timed-out/action-required checks remain after one same-head failed-job rerun. No job was disabled or made non-blocking."
+            fi
+          else
+            gh api --paginate "repos/${GITHUB_REPOSITORY}/commits/${head_sha}/check-runs?per_page=100" --jq '.check_runs' > "$RUNNER_TEMP/final-checks.json"
+            gh api "repos/${GITHUB_REPOSITORY}/commits/${head_sha}/status" > "$RUNNER_TEMP/final-status.json"
+            approval_count="$(gh api --paginate "repos/${GITHUB_REPOSITORY}/pulls/${pr_number}/reviews?per_page=100" | jq --arg author "$author" --arg head "$head_sha" 'group_by(.user.login) | map(sort_by(.submitted_at) | last) | map(select(.state == "APPROVED" and .commit_id == $head and .user.login != $author and (.user.login | endswith("[bot]") | not))) | length')"
+          fi
+
+          merge_sha="$(jq -r '.mergeCommit.oid // empty' <<<"$pr_json")"
+          check_count="$(jq 'length' "$RUNNER_TEMP/final-checks.json" 2>/dev/null || echo 0)"
+          failed_checks="$(jq '[.[] | select(.conclusion == "failure" or .conclusion == "cancelled" or .conclusion == "timed_out" or .conclusion == "action_required" or .conclusion == "stale" or .conclusion == "startup_failure") | {name,conclusion,details_url}]' "$RUNNER_TEMP/final-checks.json" 2>/dev/null || echo '[]')"
+          pending_checks="$(jq '[.[] | select(.status != "completed") | {name,status,details_url}]' "$RUNNER_TEMP/final-checks.json" 2>/dev/null || echo '[]')"
+
+          python3 - "$RUNNER_TEMP/final-report.json" <<PY
+          import json, pathlib
+          report = {
+              "schemaVersion": 1,
+              "repository": "${GITHUB_REPOSITORY}",
+              "candidateRef": "${CANDIDATE_REF}",
+              "targetRef": "${TARGET_REF}",
+              "pullRequest": int("${pr_number}"),
+              "pullRequestState": "${state}",
+              "exactHead": "${head_sha}",
+              "mergeCommit": "${merge_sha}",
+              "checkCount": int("${check_count}"),
+              "failedChecks": json.loads('''${failed_checks}'''),
+              "pendingChecks": json.loads('''${pending_checks}'''),
+              "eligibleExactHeadApprovalCount": int("${approval_count:-0}"),
+              "repositoryInternalChecksClosed": "${state}" in {"MERGED", "OPEN_REVIEW_REQUIRED"} and len(json.loads('''${failed_checks}''')) == 0 and len(json.loads('''${pending_checks}''')) == 0,
+              "mergedWithoutBypass": "${state}" == "MERGED",
+              "productionAuthorityGranted": False,
+              "externalAcceptanceSelfIssued": False,
+              "remainingExternalGates": [
+                  "real_runtime_and_model_identity",
+                  "future_time_validity",
+                  "target_host_or_hardware_qualification",
+                  "remote_owner_consent",
+                  "independent_operator_acceptance",
+                  "production_canary",
+                  "selection_promotion_release_authorization",
+              ],
+          }
+          pathlib.Path("$RUNNER_TEMP/final-report.json").write_text(json.dumps(report, indent=2, sort_keys=True) + "\n")
+          PY
+
+          git fetch --prune origin "+refs/heads/*:refs/remotes/origin/*"
+          git checkout --orphan "$STATUS_REF"
+          git rm -rf . >/dev/null 2>&1 || true
+          mkdir -p qualification/final-convergence-r13
+          cp "$RUNNER_TEMP/final-report.json" qualification/final-convergence-r13/FINAL_STATUS.json
+          cat > qualification/final-convergence-r13/README.md <<EOF
+          # Final convergence r13 status
+
+          This branch records the exact-head audit result for the final Lane A–G candidate. It is an evidence branch only and grants no runtime, production, signing, selection, promotion or release authority.
+          EOF
+          git add qualification/final-convergence-r13
+          git commit -m "docs(convergence): record final r13 audit state"
+          git push --force origin "HEAD:refs/heads/${STATUS_REF}"
