@@ -1,0 +1,92 @@
+name: Lane F exact reconstruction context
+
+on:
+  push:
+    branches:
+      - codex/lane-f-gap-closure-20260910
+    paths:
+      - .github/workflows/lane-f-context-export-20260910.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  export:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: Check out exact candidate and base history
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Export bounded Lane F reconstruction context
+        shell: bash
+        run: |
+          set -euo pipefail
+          out="$RUNNER_TEMP/lane-f-context"
+          mkdir -p "$out/repository"
+          copy_path() {
+            local path="$1"
+            if [[ -e "$path" ]]; then
+              mkdir -p "$out/repository/$(dirname "$path")"
+              cp -a "$path" "$out/repository/$path"
+            fi
+          }
+
+          for path in \
+            codex-rs/Cargo.toml \
+            codex-rs/Cargo.lock \
+            codex-rs/hepta-neuron \
+            codex-rs/hepta-intuition \
+            codex-rs/hepta-prompt-optimizer \
+            codex-rs/hepta-plasticity \
+            codex-rs/hepta-intelligence \
+            qualification/lane-f-shadow \
+            qualification/module-execution-dossiers \
+            docs/lanes \
+            docs/modules/neuron.runtime \
+            docs/modules/intuition.policy \
+            docs/modules/prompt.optimizer \
+            docs/modules/learning.plasticity \
+            docs/modules/intelligence.control \
+            docs/modules/MODULE_DOCS.json \
+            docs/contracts/CONTRACTS.json \
+            docs/contracts/PROTOCOL_SCHEMAS.json \
+            docs/data/DATA_AUTHORITY.json \
+            docs/delivery/WORK_PACKAGES.json \
+            docs/security/THREAT_MODEL.json \
+            docs/readiness/GAPS.json \
+            scripts/hepta-module-docs.py \
+            scripts/hepta-readiness.py \
+            scripts/hepta-implementation-dossiers.py \
+            scripts/hepta-technical-closure.py \
+            scripts/hepta-algorithm-docs.py \
+            scripts/hepta-cns.py \
+            scripts/hepta-hnmf.py \
+            scripts/hepta-docs.py \
+            scripts/hepta_module_doc_metadata.py \
+            .github/workflows/hepta-lane-f-gap-closure.yml \
+            .github/workflows/hepta-lane-f-shadow-qualification.yml; do
+            copy_path "$path"
+          done
+
+          git rev-parse HEAD > "$out/HEAD"
+          git rev-parse integration/vnext-main-20260811 > "$out/BASE"
+          git diff --binary integration/vnext-main-20260811...HEAD > "$out/current-pr.diff"
+          git diff --name-status integration/vnext-main-20260811...HEAD > "$out/current-pr-files.txt"
+          git ls-tree -r --name-only HEAD > "$out/head-tree.txt"
+          git ls-tree -r --name-only integration/vnext-main-20260811 > "$out/base-tree.txt"
+          find "$out/repository" -type f -print0 | sort -z | xargs -0 sha256sum > "$out/context-sha256.txt"
+
+      - name: Upload exact reconstruction context
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: lane-f-context-${{ github.run_id }}
+          path: ${{ runner.temp }}/lane-f-context
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 14
