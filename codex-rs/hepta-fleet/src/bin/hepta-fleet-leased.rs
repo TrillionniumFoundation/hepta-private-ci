@@ -217,7 +217,8 @@ impl LeaseLedger {
         if current.lease_generation != expected_lease_generation {
             return Err(Error::StaleLease);
         }
-        if current.authority_epoch != authority_epoch || current.semantic_digest != semantic_digest {
+        if current.authority_epoch != authority_epoch || current.semantic_digest != semantic_digest
+        {
             return Err(Error::Conflict);
         }
         match disposition {
@@ -238,7 +239,10 @@ impl LeaseLedger {
             }
             LeaseDisposition::Renew { .. } if current.revoked => Err(Error::Revoked),
             LeaseDisposition::Renew { expires_at_ms } => {
-                let host = self.hosts.get(&current.host_id).ok_or(Error::HostNotFound)?;
+                let host = self
+                    .hosts
+                    .get(&current.host_id)
+                    .ok_or(Error::HostNotFound)?;
                 if now_ms >= host.valid_until_ms || host.generation != current.host_generation {
                     return Err(Error::StaleHost);
                 }
@@ -293,7 +297,9 @@ fn validate_identity(value: &str, field: &'static str) -> Result<(), Error> {
 fn validate_digest(value: &str) -> Result<(), Error> {
     if value.len() != 64
         || value.bytes().all(|byte| byte == b'0')
-        || !value.bytes().all(|byte| byte.is_ascii_hexdigit() && !byte.is_ascii_uppercase())
+        || !value
+            .bytes()
+            .all(|byte| byte.is_ascii_hexdigit() && !byte.is_ascii_uppercase())
     {
         return Err(Error::InvalidDigest);
     }
@@ -398,7 +404,10 @@ mod tests {
             ledger.issue(200, first).expect("identical").outcome,
             LeaseOutcome::Unchanged
         );
-        assert_eq!(ledger.issue(200, grant("two", 500)), Err(Error::CapacityExceeded));
+        assert_eq!(
+            ledger.issue(200, grant("two", 500)),
+            Err(Error::CapacityExceeded)
+        );
     }
 
     #[test]
@@ -407,25 +416,11 @@ mod tests {
         ledger.admit_host(host()).expect("host");
         ledger.issue(200, grant("one", 500)).expect("grant");
         assert_eq!(
-            ledger.renew_or_revoke(
-                300,
-                "one",
-                2,
-                3,
-                &"1".repeat(64),
-                LeaseDisposition::Revoke,
-            ),
+            ledger.renew_or_revoke(300, "one", 2, 3, &"1".repeat(64), LeaseDisposition::Revoke,),
             Err(Error::StaleLease)
         );
         let revoked = ledger
-            .renew_or_revoke(
-                300,
-                "one",
-                1,
-                3,
-                &"1".repeat(64),
-                LeaseDisposition::Revoke,
-            )
+            .renew_or_revoke(300, "one", 1, 3, &"1".repeat(64), LeaseDisposition::Revoke)
             .expect("revoke");
         assert!(revoked.revoked);
         assert_eq!(revoked.lease_generation, 2);

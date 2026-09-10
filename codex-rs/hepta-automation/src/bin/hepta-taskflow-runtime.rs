@@ -220,9 +220,7 @@ impl<D: EffectDriver> TaskFlowExecutor<D> {
             }
         }
 
-        let observation = self
-            .driver
-            .dispatch(&record.occurrence, claim, &intent)?;
+        let observation = self.driver.dispatch(&record.occurrence, claim, &intent)?;
         let (state, outcome_digest, terminal_observed) = if !observation.terminal_observed {
             (StepState::Indeterminate, None, false)
         } else {
@@ -398,7 +396,9 @@ mod tests {
             terminal: true,
             succeeded: true,
         });
-        executor.register_occurrence(occurrence()).expect("occurrence");
+        executor
+            .register_occurrence(occurrence())
+            .expect("occurrence");
         executor.claim_occurrence(100, claim(7)).expect("claim");
         let first = executor
             .execute_step(100, "occurrence.1", 7, intent("operation.1", "step.1"))
@@ -411,12 +411,14 @@ mod tests {
     }
 
     #[test]
-    fn stale_fence_and unknown_effect_fail_closed() {
+    fn stale_fence_and_unknown_effect_fail_closed() {
         let mut executor = TaskFlowExecutor::new(Driver {
             terminal: false,
             succeeded: false,
         });
-        executor.register_occurrence(occurrence()).expect("occurrence");
+        executor
+            .register_occurrence(occurrence())
+            .expect("occurrence");
         executor.claim_occurrence(100, claim(3)).expect("claim");
         assert_eq!(
             executor.execute_step(100, "occurrence.1", 2, intent("operation.1", "step.1")),

@@ -197,7 +197,10 @@ impl MatrixSendObserver {
             .get(server_event_id)
             .cloned()
             .ok_or(Error::SendNotFound)?;
-        let current = self.sends.get_mut(&operation_id).ok_or(Error::SendNotFound)?;
+        let current = self
+            .sends
+            .get_mut(&operation_id)
+            .ok_or(Error::SendNotFound)?;
         current.receipt.state = SendState::Redacted;
         current.receipt.observation_digest = Some(redaction_digest.to_string());
         current.receipt.terminal_observed = true;
@@ -329,11 +332,14 @@ mod tests {
     }
 
     #[test]
-    fn payload_drift_and transaction_reuse_are rejected() {
+    fn payload_drift_and_transaction_reuse_are_rejected() {
         let mut observer = MatrixSendObserver::default();
         let mut changed = intent();
         changed.grant_payload_digest = "2".repeat(64);
-        assert_eq!(observer.prepare_send(100, changed), Err(Error::PayloadMismatch));
+        assert_eq!(
+            observer.prepare_send(100, changed),
+            Err(Error::PayloadMismatch)
+        );
         observer.prepare_send(100, intent()).expect("prepare");
         let mut duplicate = intent();
         duplicate.operation_id = "operation.2".to_string();

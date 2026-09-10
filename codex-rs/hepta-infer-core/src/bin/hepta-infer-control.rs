@@ -199,7 +199,11 @@ impl DurableInferenceControl {
         })
     }
 
-    pub fn submit(&mut self, now_ms: u64, request: InferenceRequest) -> Result<ControlReceipt, Error> {
+    pub fn submit(
+        &mut self,
+        now_ms: u64,
+        request: InferenceRequest,
+    ) -> Result<ControlReceipt, Error> {
         validate_request(now_ms, &request)?;
         if let Some(current) = self.records.get(&request.request_id) {
             if current.request == request {
@@ -227,7 +231,9 @@ impl DurableInferenceControl {
         if record.revision != expected_revision {
             return Err(Error::StaleRevision);
         }
-        if record.state == RequestState::Reserved && record.reservation.as_ref() == Some(&reservation) {
+        if record.state == RequestState::Reserved
+            && record.reservation.as_ref() == Some(&reservation)
+        {
             return Ok(receipt(record, true));
         }
         if record.state != RequestState::Pending {
@@ -255,7 +261,8 @@ impl DurableInferenceControl {
         if record.revision != expected_revision {
             return Err(Error::StaleRevision);
         }
-        if record.state == RequestState::Assigned && record.assignment.as_ref() == Some(&assignment) {
+        if record.state == RequestState::Assigned && record.assignment.as_ref() == Some(&assignment)
+        {
             return Ok(receipt(record, true));
         }
         if record.state != RequestState::Reserved {
@@ -314,7 +321,10 @@ impl DurableInferenceControl {
             .reservation
             .as_ref()
             .ok_or(Error::ReservationMismatch)?;
-        let assignment = record.assignment.as_ref().ok_or(Error::AssignmentMismatch)?;
+        let assignment = record
+            .assignment
+            .as_ref()
+            .ok_or(Error::AssignmentMismatch)?;
         if observation.request_id != record.request.request_id
             || observation.reservation_id != reservation.reservation_id
             || observation.worker_id != assignment.worker_id
@@ -331,7 +341,10 @@ impl DurableInferenceControl {
             let status = observation
                 .terminal_status
                 .ok_or(Error::TerminalObservationMissing)?;
-            if !matches!(status, RequestState::Completed | RequestState::Failed | RequestState::Cancelled) {
+            if !matches!(
+                status,
+                RequestState::Completed | RequestState::Failed | RequestState::Cancelled
+            ) {
                 return Err(Error::InvalidTransition);
             }
             if matches!(status, RequestState::Completed) && observation.output_digest.is_none() {
@@ -364,7 +377,10 @@ impl DurableInferenceControl {
         self.file.sync_data()?;
         let request_id = event.request_id().to_string();
         apply_event(&mut self.records, &event, false)?;
-        let record = self.records.get(&request_id).ok_or(Error::RequestNotFound)?;
+        let record = self
+            .records
+            .get(&request_id)
+            .ok_or(Error::RequestNotFound)?;
         Ok(receipt(record, false))
     }
 }
@@ -482,7 +498,10 @@ fn apply_event(
         } => {
             let record = records.get_mut(request_id).ok_or(Error::RequestNotFound)?;
             require_revision(record, *expected_revision, replay)?;
-            if !matches!(record.state, RequestState::Assigned | RequestState::Cancelling) {
+            if !matches!(
+                record.state,
+                RequestState::Assigned | RequestState::Cancelling
+            ) {
                 return Err(Error::InvalidTransition);
             }
             record.state = if observation.terminal_observed {
@@ -582,7 +601,9 @@ fn validate_identity(value: &str, field: &'static str) -> Result<(), Error> {
 fn validate_digest(value: &str, field: &'static str) -> Result<(), Error> {
     if value.len() != 64
         || value.bytes().all(|byte| byte == b'0')
-        || !value.bytes().all(|byte| byte.is_ascii_digit() || (b'a'..=b'f').contains(&byte))
+        || !value
+            .bytes()
+            .all(|byte| byte.is_ascii_digit() || (b'a'..=b'f').contains(&byte))
     {
         return Err(Error::InvalidDigest(field));
     }
@@ -648,7 +669,9 @@ fn encode_event(event: &Event) -> String {
             observation.model_digest,
             observation.payload_digest,
             u8::from(observation.terminal_observed),
-            observation.terminal_status.map_or("none", RequestState::as_str),
+            observation
+                .terminal_status
+                .map_or("none", RequestState::as_str),
             observation.output_digest.as_deref().unwrap_or("none"),
             observation.consumed_tokens,
             observation.usage_units,
@@ -660,41 +683,60 @@ fn encode_event(event: &Event) -> String {
 fn decode_event(line: &str) -> Result<Event, Error> {
     let fields: Vec<_> = line.split('|').collect();
     match fields.as_slice() {
-        ["submit", request_id, principal_id, model, payload, tokens, deadline, semantic] => {
-            Ok(Event::Submit(InferenceRequest {
-                request_id: (*request_id).to_string(),
-                principal_id: (*principal_id).to_string(),
-                model_digest: (*model).to_string(),
-                payload_digest: (*payload).to_string(),
+        [
+            "submit",
+            request_id,
+            principal_id,
+            model,
+            payload,
+            tokens,
+            deadline,
+            semantic,
+        ] => Ok(Event::Submit(InferenceRequest {
+            request_id: (*request_id).to_string(),
+            principal_id: (*principal_id).to_string(),
+            model_digest: (*model).to_string(),
+            payload_digest: (*payload).to_string(),
+            maximum_tokens: parse_u32(tokens)?,
+            deadline_ms: parse_u64(deadline)?,
+            semantic_digest: (*semantic).to_string(),
+        })),
+        [
+            "reserve",
+            request_id,
+            revision,
+            reservation_id,
+            quota,
+            tokens,
+            epoch,
+            valid_until,
+        ] => Ok(Event::Reserve {
+            request_id: (*request_id).to_string(),
+            expected_revision: parse_u64(revision)?,
+            reservation: Reservation {
+                reservation_id: (*reservation_id).to_string(),
+                quota_units: parse_u64(quota)?,
                 maximum_tokens: parse_u32(tokens)?,
-                deadline_ms: parse_u64(deadline)?,
-                semantic_digest: (*semantic).to_string(),
-            }))
-        }
-        ["reserve", request_id, revision, reservation_id, quota, tokens, epoch, valid_until] => {
-            Ok(Event::Reserve {
-                request_id: (*request_id).to_string(),
-                expected_revision: parse_u64(revision)?,
-                reservation: Reservation {
-                    reservation_id: (*reservation_id).to_string(),
-                    quota_units: parse_u64(quota)?,
-                    maximum_tokens: parse_u32(tokens)?,
-                    authority_epoch: parse_u64(epoch)?,
-                    valid_until_ms: parse_u64(valid_until)?,
-                },
-            })
-        }
-        ["assign", request_id, revision, worker_id, generation, assignment_digest] => {
-            Ok(Event::Assign {
-                request_id: (*request_id).to_string(),
-                expected_revision: parse_u64(revision)?,
-                assignment: Assignment {
-                    worker_id: (*worker_id).to_string(),
-                    worker_generation: parse_u64(generation)?,
-                    assignment_digest: (*assignment_digest).to_string(),
-                },
-            })
-        }
+                authority_epoch: parse_u64(epoch)?,
+                valid_until_ms: parse_u64(valid_until)?,
+            },
+        }),
+        [
+            "assign",
+            request_id,
+            revision,
+            worker_id,
+            generation,
+            assignment_digest,
+        ] => Ok(Event::Assign {
+            request_id: (*request_id).to_string(),
+            expected_revision: parse_u64(revision)?,
+            assignment: Assignment {
+                worker_id: (*worker_id).to_string(),
+                worker_generation: parse_u64(generation)?,
+                assignment_digest: (*assignment_digest).to_string(),
+            },
+        }),
         ["cancel", request_id, revision] => Ok(Event::Cancel {
             request_id: (*request_id).to_string(),
             expected_revision: parse_u64(revision)?,
