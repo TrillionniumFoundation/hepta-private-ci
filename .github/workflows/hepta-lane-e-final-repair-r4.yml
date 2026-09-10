@@ -1,0 +1,129 @@
+name: Hepta Lane E final source reconciler r4
+
+on:
+  push:
+    branches:
+      - codex/hepta-lane-e-gap-closure-20260910
+    paths:
+      - .github/workflows/hepta-lane-e-final-repair-r4.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: hepta-lane-e-final-source-reconciler-r4
+  cancel-in-progress: false
+
+jobs:
+  reconcile:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 150
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Install pinned Rust toolchain
+        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: 1.95.0
+          components: clippy,rustfmt
+
+      - name: Remove temporary workflows and apply known repairs
+        shell: bash
+        run: |
+          set -euo pipefail
+          while IFS= read -r -d '' path; do
+            git rm -f "$path"
+          done < <(
+            find .github/workflows -maxdepth 1 -type f \
+              \( -name 'hepta-lane-e-*repair*.yml' \
+                 -o -name 'hepta-lane-e-*autofix*.yml' \
+                 -o -name 'hepta-lane-e-*materialize*.yml' \
+                 -o -name 'hepta-lane-e-final-lint-fix.yml' \) \
+              -print0
+          )
+
+          python3 - <<'PY'
+          from pathlib import Path
+
+          replacements = {
+              Path('codex-rs/hepta-bellman-operator/src/learned.rs'): [
+                  ('fn normalize_ids(values: &mut Vec<StableId>) -> Result<(), LearnedOperatorError> {',
+                   'fn normalize_ids(values: &mut [StableId]) -> Result<(), LearnedOperatorError> {'),
+              ],
+              Path('codex-rs/hepta-bellman-operator/src/reference.rs'): [
+                  ('fn normalize_ids(values: &mut Vec<StableId>) -> Result<(), OperatorClosureError> {',
+                   'fn normalize_ids(values: &mut [StableId]) -> Result<(), OperatorClosureError> {'),
+              ],
+              Path('codex-rs/hepta-intelligence-eval/src/closure.rs'): [
+                  ('fn normalize_unique_ids(values: &mut Vec<StableId>) -> Result<(), EvaluationClosureError> {',
+                   'fn normalize_unique_ids(values: &mut [StableId]) -> Result<(), EvaluationClosureError> {'),
+              ],
+              Path('codex-rs/hepta-shadow-qualification/src/lane_e_closure_tests.rs'): [
+                  ('let mut withdrawal_registry = DatasetWithdrawalRegistry::new();',
+                   'let withdrawal_registry = DatasetWithdrawalRegistry::new();'),
+              ],
+          }
+          for path, pairs in replacements.items():
+              text = path.read_text(encoding='utf-8')
+              for old, new in pairs:
+                  text = text.replace(old, new)
+              path.write_text(text, encoding='utf-8')
+          PY
+
+      - name: Apply machine-applicable lints and canonical formatting
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo clippy --fix --locked --allow-dirty --allow-staged \
+            -p codex-hepta-learning-ledger \
+            -p codex-hepta-learning-artifacts \
+            -p codex-hepta-bellman-operator \
+            -p codex-hepta-intelligence-eval \
+            -p codex-hepta-shadow-qualification \
+            --all-targets
+          cargo fmt \
+            --package codex-hepta-learning-ledger \
+            --package codex-hepta-learning-artifacts \
+            --package codex-hepta-bellman-operator \
+            --package codex-hepta-intelligence-eval \
+            --package codex-hepta-shadow-qualification
+
+      - name: Verify strict source closure before commit
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta-lane-e-closure.py self-test
+          python3 scripts/hepta-lane-e-closure.py verify
+          cargo clippy --manifest-path codex-rs/Cargo.toml --locked \
+            -p codex-hepta-learning-ledger \
+            -p codex-hepta-learning-artifacts \
+            -p codex-hepta-bellman-operator \
+            -p codex-hepta-intelligence-eval \
+            -p codex-hepta-shadow-qualification \
+            --all-targets -- -D warnings
+          cargo fmt --manifest-path codex-rs/Cargo.toml \
+            --package codex-hepta-learning-ledger \
+            --package codex-hepta-learning-artifacts \
+            --package codex-hepta-bellman-operator \
+            --package codex-hepta-intelligence-eval \
+            --package codex-hepta-shadow-qualification \
+            -- --check
+          git diff --check
+
+      - name: Commit reconciled candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          git add -A
+          if git diff --cached --quiet; then
+            exit 0
+          fi
+          git config user.name hepta-lane-e-bot
+          git config user.email hepta-lane-e-bot@users.noreply.github.com
+          git commit -m 'chore(lane-e): reconcile strict source and retire temporary workflows'
+          git push origin HEAD:codex/hepta-lane-e-gap-closure-20260910

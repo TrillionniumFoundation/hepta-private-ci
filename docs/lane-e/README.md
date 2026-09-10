@@ -35,6 +35,15 @@ An external gate stays open until an immutable, independently issued receipt is
 bound to the exact candidate; it is never marked complete to make the local gap
 count green.
 
+## Exact-head automation rule
+
+A generated commit is a new candidate and cannot inherit a predecessor's green
+checks. Commits pushed with the repository `GITHUB_TOKEN` do not recursively
+start another workflow chain, so automation that materializes binding bytes must
+verify the committed result before publication and the final non-generated head
+must run the normal exact-head and synthetic-merge gates. A predecessor receipt
+must never be relabelled as evidence for a later cleanup or generated commit.
+
 ## Read order
 
 1. `LANE_E_IMPLEMENTATION_MATRIX.json` — operation-to-symbol, test and gate map.
