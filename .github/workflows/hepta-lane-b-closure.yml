@@ -136,6 +136,10 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          # Node test discovery is intentionally bound to these repository surfaces:
+          # apps/hepta-browser/test/*.js
+          # apps/hepta-control-ui/test/*.js
+          # apps/hepta-native/test/*.js
           npm --prefix apps/hepta-browser run ci
           npm --prefix apps/hepta-control-ui run ci
           npm --prefix apps/hepta-native run ci
