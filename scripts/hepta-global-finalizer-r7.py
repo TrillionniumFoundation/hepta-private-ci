@@ -316,6 +316,10 @@ LANE_B_PRIOR_LANE_A_CONFLICTS = frozenset(
     }
 )
 
+LANE_C_SPLIT_TEST_HARNESS_CONFLICT = (
+    "qualification/module-execution-dossiers/test_implementation_contracts.py"
+)
+
 
 def merge_lane(lane: str, branch: str) -> dict[str, Any]:
     before = git_text("rev-parse", "HEAD")
@@ -337,6 +341,7 @@ def merge_lane(lane: str, branch: str) -> dict[str, Any]:
     auto_resolved = False
     lane_owner_conflict = False
     prior_lane_owner_conflict = False
+    split_test_harness_conflict = False
     if not result.passed:
         conflicts = [
             line.strip()
@@ -351,10 +356,14 @@ def merge_lane(lane: str, branch: str) -> dict[str, Any]:
             and len(conflicts) == len(LANE_B_PRIOR_LANE_A_CONFLICTS)
             and frozenset(conflicts) == LANE_B_PRIOR_LANE_A_CONFLICTS
         )
+        split_test_harness_conflict = lane == "C" and conflicts == [
+            LANE_C_SPLIT_TEST_HARNESS_CONFLICT
+        ]
         if (
             not generated_conflicts_only(conflicts)
             and not lane_owner_conflict
             and not prior_lane_owner_conflict
+            and not split_test_harness_conflict
         ):
             git("merge", "--abort", check=False)
             return {
@@ -373,6 +382,8 @@ def merge_lane(lane: str, branch: str) -> dict[str, Any]:
             resolution_class = "lane-E owner documentation"
         elif prior_lane_owner_conflict:
             resolution_class = "prior lane-A owner paths retained during lane-B merge"
+        elif split_test_harness_conflict:
+            resolution_class = "split implementation-contract test harness"
         else:
             resolution_class = "generated convergence metadata"
         git(
@@ -389,10 +400,14 @@ def merge_lane(lane: str, branch: str) -> dict[str, Any]:
         "before": before,
         "after": git_text("rev-parse", "HEAD"),
         "autoResolvedGeneratedOnly": (
-            auto_resolved and not lane_owner_conflict and not prior_lane_owner_conflict
+            auto_resolved
+            and not lane_owner_conflict
+            and not prior_lane_owner_conflict
+            and not split_test_harness_conflict
         ),
         "autoResolvedLaneOwnerOnly": lane_owner_conflict,
         "autoResolvedPriorLaneOwnerOnly": prior_lane_owner_conflict,
+        "autoResolvedSplitTestHarnessOnly": split_test_harness_conflict,
         "conflicts": conflicts,
     }
 
