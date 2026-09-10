@@ -1,4 +1,4 @@
-name: Hepta r7 format render
+name: Hepta r7 exact formatter publisher
 
 on:
   push:
@@ -9,45 +9,67 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
+  actions: write
+
+concurrency:
+  group: hepta-r7-exact-formatter-publisher
+  cancel-in-progress: false
 
 jobs:
-  render:
+  publish:
     if: github.repository == 'TrillionniumFoundation/hepta-private-ci'
     runs-on: ubuntu-24.04
-    timeout-minutes: 10
+    timeout-minutes: 15
+    env:
+      EXPECTED_PARENT: dde4b209403361cb91b7b05e7f03c0bf52d7f083
+      TARGET_BRANCH: ops/hepta-global-gap-closure-controller-20260910-r1
+      TARGET_CANDIDATE: integration/hepta-all-gap-closure-20260910-r7
+      EXECUTOR: scripts/hepta-global-finalizer-r7.py
+      GH_TOKEN: ${{ github.token }}
     steps:
-      - name: Check out exact source without credentials
+      - name: Check out exact publisher commit
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           ref: ${{ github.sha }}
-          fetch-depth: 1
-          persist-credentials: false
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Verify immutable publisher tuple
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "${GITHUB_REF_NAME}" = "${TARGET_BRANCH}"
+          test "$(git rev-parse HEAD^)" = "${EXPECTED_PARENT}"
+          test "$(git rev-parse HEAD:.github/workflows/hepta-r7-format-render.yml)" = "$(git hash-object .github/workflows/hepta-r7-format-render.yml)"
+          test "$(git ls-remote origin "refs/heads/${TARGET_BRANCH}" | awk '{print $1}')" = "${GITHUB_SHA}"
 
       - name: Install repository-pinned uv
         uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b
         with:
           version: "0.11.3"
 
-      - name: Render exact Ruff-formatted executor
+      - name: Publish exact Ruff-formatted executor
         shell: bash
         run: |
           set -euo pipefail
-          test "$(git rev-parse HEAD)" = "${GITHUB_SHA}"
-          uv run --frozen --project scripts ruff format scripts/hepta-global-finalizer-r7.py
-          uv run --frozen --project scripts ruff format --check scripts/hepta-global-finalizer-r7.py
-          python3 -m py_compile scripts/hepta-global-finalizer-r7.py
+          uv run --frozen --project scripts ruff format "${EXECUTOR}"
+          uv run --frozen --project scripts ruff format --check "${EXECUTOR}"
+          python3 -m py_compile "${EXECUTOR}"
           git diff --check
-          mkdir -p "${RUNNER_TEMP}/hepta-r7-formatted/scripts"
-          cp scripts/hepta-global-finalizer-r7.py \
-            "${RUNNER_TEMP}/hepta-r7-formatted/scripts/hepta-global-finalizer-r7.py"
-          git diff -- scripts/hepta-global-finalizer-r7.py > \
-            "${RUNNER_TEMP}/hepta-r7-formatted/FORMAT.patch"
-
-      - name: Upload exact formatted executor
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
-        with:
-          name: hepta-r7-formatted-${{ github.sha }}
-          path: ${{ runner.temp }}/hepta-r7-formatted
-          if-no-files-found: error
-          retention-days: 1
+          test "$(git diff --name-only)" = "${EXECUTOR}"
+          git config user.name 'hepta-r7-formatter'
+          git config user.email 'actions@users.noreply.github.com'
+          git add "${EXECUTOR}"
+          git diff --cached --check
+          git commit --signoff -m 'style(hepta): Ruff-format r7 convergence executor'
+          remote_sha="$(git ls-remote origin "refs/heads/${TARGET_BRANCH}" | awk '{print $1}')"
+          test "${remote_sha}" = "${GITHUB_SHA}"
+          git push --force-with-lease="refs/heads/${TARGET_BRANCH}:${GITHUB_SHA}" origin "HEAD:refs/heads/${TARGET_BRANCH}"
+          formatted_sha="$(git rev-parse HEAD)"
+          test "$(git ls-remote origin "refs/heads/${TARGET_BRANCH}" | awk '{print $1}')" = "${formatted_sha}"
+          gh workflow run hepta-global-finalizer-r7.yml \
+            --repo "${GITHUB_REPOSITORY}" \
+            --ref "${TARGET_BRANCH}" \
+            --field target_branch="${TARGET_CANDIDATE}" \
+            --field shard_count='8'
