@@ -27,6 +27,10 @@ PUBLICATION_BASE_REF = os.environ.get(
     "HEPTA_PUBLICATION_BASE",
     "origin/ops/hepta-final-convergence-review-anchor-20260909",
 )
+EXPECTED_R8_REF = "origin/integration/hepta-all-gap-closure-20260910-r8"
+EXPECTED_R9_REF = "origin/integration/hepta-all-gap-closure-20260910-r9"
+EXPECTED_R8_STATUS = "qualification/global-gap-closure-final-r8/STATUS.json"
+EXPECTED_R9_STATUS = "qualification/global-gap-closure-final-r9/STATUS.json"
 TEMPORARY_MUTATION_PATHS = (
     ".github/workflows/hepta-candidate-publisher-r12.yml",
     ".github/workflows/hepta-fixed-point-sealer-r10.yml",
@@ -40,6 +44,8 @@ TEMPORARY_MUTATION_PATHS = (
     ".github/workflows/hepta-global-gap-closure-controller-r4.yml",
     ".github/workflows/hepta-global-gap-closure-controller.yml",
     ".github/workflows/tmp-hepta-controller-remediation.yml",
+    ".github/workflows/tmp-hepta-r13-chain-patcher.yml",
+    ".github/workflows/tmp-hepta-r13-patcher-fixer.yml",
     "scripts/apply-hepta-remaining-blocker-remediation.sh",
     "scripts/hepta-candidate-publisher-r12.py",
     "scripts/hepta-fixed-point-sealer-r10.py",
@@ -85,7 +91,7 @@ def write_json(path: Path, value: Any) -> None:
 
 
 def wait_for_stable_seal() -> tuple[str, dict[str, Any]]:
-    for _ in range(720):
+    for _ in range(2160):
         git(
             "fetch",
             "--prune",
@@ -103,8 +109,24 @@ def wait_for_stable_seal() -> tuple[str, dict[str, Any]]:
         except json.JSONDecodeError:
             time.sleep(10)
             continue
+        if not isinstance(status, dict):
+            time.sleep(10)
+            continue
+        if (
+            status.get("r8Ref") != EXPECTED_R8_REF
+            or status.get("r9Ref") != EXPECTED_R9_REF
+            or status.get("r8StatusPath") != EXPECTED_R8_STATUS
+            or status.get("r9StatusPath") != EXPECTED_R9_STATUS
+        ):
+            time.sleep(10)
+            continue
+        try:
+            validate(status)
+        except RuntimeError:
+            time.sleep(10)
+            continue
         return source, status
-    raise RuntimeError("stable r11 seal did not appear")
+    raise RuntimeError("publishable stable r11 seal did not appear")
 
 
 def validate(status: dict[str, Any]) -> None:
