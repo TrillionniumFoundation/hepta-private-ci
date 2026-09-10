@@ -21,7 +21,7 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 20
     env:
-      EXPECTED_PARENT: 4caa52d050b8834c274ca3836bf4c5881e22147d
+      EXPECTED_PARENT: c9fd340c45340c733481eadc403f7e7f267425b3
       TARGET_BRANCH: ops/hepta-global-gap-closure-controller-20260910-r1
       FINALIZER: scripts/hepta-global-finalizer-r7.py
       PATCH_SCRIPT: scripts/patch-global-finalizer-r14.py
@@ -50,8 +50,8 @@ jobs:
           set -euo pipefail
           python3 "${PATCH_SCRIPT}"
           python3 -m py_compile "${FINALIZER}" "${PATCH_SCRIPT}"
-          grep -Fq 'LANE_G_SHARED_CONFLICTS = frozenset(' "${FINALIZER}"
-          grep -Fq 'autoResolvedLaneGSharedOnly' "${FINALIZER}"
+          grep -Fq 'LANE_G_PRIOR_OWNER_CONFLICTS = frozenset(' "${FINALIZER}"
+          grep -Fq 'autoResolvedLaneGPriorOwnerOnly' "${FINALIZER}"
           grep -Fq 'lane_g_artifact_repair = repair_lane_g_shared_artifacts()' "${FINALIZER}"
           grep -Fq 'path == ".github/workflows/lane-f-bootstrap.yml"' "${FINALIZER}"
           grep -Fq 'def dependency_cycle_path(' "${FINALIZER}"
@@ -69,7 +69,7 @@ jobs:
           git rm "${PATCH_SCRIPT}"
           git add "${FINALIZER}"
           git diff --cached --check
-          git commit --signoff -m 'fix(hepta): semantically converge Lane G shared dossiers'
+          git commit --signoff -m 'fix(hepta): regenerate Lane G shared execution dossiers'
           remote_sha="$(git ls-remote origin "refs/heads/${TARGET_BRANCH}" | awk '{print $1}')"
           test "${remote_sha}" = "${GITHUB_SHA}"
           git push --force-with-lease="refs/heads/${TARGET_BRANCH}:${GITHUB_SHA}" origin "HEAD:refs/heads/${TARGET_BRANCH}"
