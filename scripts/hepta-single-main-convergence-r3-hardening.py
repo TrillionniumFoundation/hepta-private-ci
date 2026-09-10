@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""R3 convergence hardening: exact binding rebasing and compatibility gates."""
+"""R3 convergence hardening: exact binding rebasing, lock closure and compatibility gates."""
 from __future__ import annotations
 
 import hashlib
@@ -24,12 +24,20 @@ NATIVE_BINDINGS = "qualification/module-execution-dossiers/NATIVE_BINDINGS.json"
 LANE_A_BINDINGS = "qualification/module-execution-dossiers/NATIVE_BINDINGS_LANE_A.json"
 CONTRACT_TESTS = "qualification/module-execution-dossiers/test_implementation_contracts.py"
 LEGACY_TEST_ENTRY = r3.IMPLEMENTATION_TEST_ENTRY
+CARGO_MANIFEST = "codex-rs/Cargo.toml"
+CARGO_LOCK = "codex-rs/Cargo.lock"
 _ORIGINAL_NORMALIZE = r1.normalize_fixed_point
 _LEGACY_LANE_G_SHA: str | None = None
 
 
 def sha256_text(value: str) -> str:
     return hashlib.sha256(value.encode("utf-8")).hexdigest()
+
+
+def sha256_file(path: Path) -> str | None:
+    if not path.is_file():
+        return None
+    return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
 def git_blob_sha(data: bytes) -> str:
@@ -111,6 +119,60 @@ def refresh_native_manifests() -> list[dict[str, Any]]:
     return [refresh_manifest(NATIVE_BINDINGS), refresh_manifest(LANE_A_BINDINGS)]
 
 
+def regenerate_and_validate_cargo_lock() -> dict[str, Any]:
+    manifest = r1.ROOT / CARGO_MANIFEST
+    lock = r1.ROOT / CARGO_LOCK
+    if not manifest.is_file():
+        raise r1.ConvergenceError(f"canonical Cargo manifest is absent: {CARGO_MANIFEST}")
+    before = sha256_file(lock)
+    generated = r1.run(
+        (
+            "cargo",
+            "generate-lockfile",
+            "--manifest-path",
+            str(manifest),
+        ),
+        cwd=r1.ROOT,
+        capture=True,
+        timeout=3600,
+    )
+    after = sha256_file(lock)
+    if after is None:
+        raise r1.ConvergenceError(f"cargo did not materialize {CARGO_LOCK}")
+    metadata = r1.run(
+        (
+            "cargo",
+            "metadata",
+            "--manifest-path",
+            str(manifest),
+            "--format-version",
+            "1",
+            "--locked",
+            "--no-deps",
+        ),
+        cwd=r1.ROOT,
+        capture=True,
+        timeout=3600,
+    )
+    parsed = json.loads(metadata.stdout)
+    packages = parsed.get("packages")
+    workspace_members = parsed.get("workspace_members")
+    if not isinstance(packages, list) or not isinstance(workspace_members, list):
+        raise r1.ConvergenceError("cargo metadata returned an invalid workspace shape")
+    return {
+        "path": CARGO_LOCK,
+        "beforeSha256": before,
+        "afterSha256": after,
+        "changed": before != after,
+        "packageCount": len(packages),
+        "workspaceMemberCount": len(workspace_members),
+        "generateStdoutSha256": sha256_text(generated.stdout),
+        "generateStderrSha256": sha256_text(generated.stderr),
+        "metadataSha256": sha256_text(metadata.stdout),
+        "metadataStderrSha256": sha256_text(metadata.stderr),
+    }
+
+
 def merge_lane_g(lane_g_sha: str) -> dict[str, Any]:
     global _LEGACY_LANE_G_SHA
     result = r3.merge_lane_g_semantically(lane_g_sha)
@@ -169,8 +231,9 @@ def run_contract_compatibility() -> dict[str, Any]:
 def normalize_fixed_point() -> list[dict[str, Any]]:
     receipts: list[dict[str, Any]] = []
     prior: str | None = None
-    for outer_round in range(1, 5):
+    for outer_round in range(1, 7):
         inner = _ORIGINAL_NORMALIZE()
+        cargo_lock = regenerate_and_validate_cargo_lock()
         bindings = refresh_native_manifests()
         digest = r1.sha256_bytes(
             r1.git("diff", "--binary", capture=True).stdout.encode("utf-8")
@@ -179,25 +242,36 @@ def normalize_fixed_point() -> list[dict[str, Any]]:
             {
                 "r3HardeningRound": outer_round,
                 "innerFixedPoint": inner,
+                "cargoLock": cargo_lock,
                 "nativeRebinding": bindings,
                 "diffSha256": digest,
             }
         )
-        print(f"r3 hardening fixed-point round={outer_round} diffSha256={digest}")
+        print(
+            "r3 hardening fixed-point "
+            f"round={outer_round} lockSha256={cargo_lock['afterSha256']} "
+            f"diffSha256={digest}"
+        )
         if digest == prior:
             compatibility = run_contract_compatibility()
+            locked_metadata = regenerate_and_validate_cargo_lock()
             after = r1.sha256_bytes(
                 r1.git("diff", "--binary", capture=True).stdout.encode("utf-8")
             )
             if after != digest:
                 raise r1.ConvergenceError(
-                    "contract compatibility gates mutated the product tree"
+                    "compatibility or locked-metadata gates mutated the product tree"
                 )
-            receipts.append({"r3CompatibilityGates": compatibility})
+            receipts.append(
+                {
+                    "r3CompatibilityGates": compatibility,
+                    "r3FinalCargoLockGate": locked_metadata,
+                }
+            )
             return receipts
         prior = digest
     raise r1.ConvergenceError(
-        "R3 native rebinding did not converge with generators and formatters"
+        "R3 lock, native rebinding, generators and formatters did not converge"
     )
 
 
