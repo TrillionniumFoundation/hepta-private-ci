@@ -20,7 +20,7 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 20
     env:
-      EXPECTED_PARENT: 88c254422aef54b78a4f3a465a24c1c47563b259
+      EXPECTED_PARENT: 73b61b56f8bbf3398ee538eca4df08ad10185d26
       TARGET_BRANCH: ops/hepta-global-gap-closure-controller-20260910-r1
       FINALIZER: scripts/hepta-global-finalizer-r7.py
       PATCH_SCRIPT: scripts/patch-global-finalizer-r15.py
@@ -49,11 +49,12 @@ jobs:
           python3 "${PATCH_SCRIPT}"
           python3 -m py_compile "${FINALIZER}" "${PATCH_SCRIPT}"
           grep -Fq 'repair_lane_g_shared_artifacts(selected["G"])' "${FINALIZER}"
-          grep -Fq 'git_text("show", f"origin/{lane_g_branch}:{relative_path}")' "${FINALIZER}"
+          grep -Fq 'git_text("show", f"origin/{lane_g_branch}:{source_path}")' "${FINALIZER}"
+          grep -Fq 'observations.append(desired)' "${FINALIZER}"
+          grep -Fq 'native observation closure requires 40 rows' "${FINALIZER}"
           grep -Fq 'cumulative split implementation-contract harness was flattened' "${FINALIZER}"
           grep -Fq 'class NativeBindingCoverageTests' "${FINALIZER}"
-          ! grep -Fq 'control_engineering_v2' "${FINALIZER}"
-          ! grep -Fq 'implementation_contract_tests_native.py' "${FINALIZER}"
+          grep -Fq 'def dependency_cycle_path(' "${FINALIZER}"
           git diff --check
 
       - name: Publish repaired controller and retire the writer
@@ -72,7 +73,7 @@ jobs:
           git add "${FINALIZER}"
           git diff --cached --check
           git diff --cached --name-only | grep -Fxq "${FINALIZER}"
-          git commit --signoff -m 'fix(hepta): derive Lane G shared dossiers from exact source'
+          git commit --signoff -m 'fix(hepta): insert exact Lane G native observation'
           remote_sha="$(git ls-remote origin "refs/heads/${TARGET_BRANCH}" | awk '{print $1}')"
           test "${remote_sha}" = "${GITHUB_SHA}"
           git push --force-with-lease="refs/heads/${TARGET_BRANCH}:${GITHUB_SHA}" origin "HEAD:refs/heads/${TARGET_BRANCH}"
