@@ -8,6 +8,7 @@
 use std::error::Error as StdError;
 use std::fmt;
 
+use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
 
@@ -53,7 +54,7 @@ pub fn verify_dataset_snapshot_receipt_v3(
     now: u64,
 ) -> Result<(), DatasetReceiptError> {
     receipt.producer.validate(now)?;
-    if receipt.snapshot.authority.grants_any() {
+    if receipt.snapshot.authority != AuthorityPosture::DENY_ALL {
         return Err(DatasetReceiptError::AuthorityGrant);
     }
     for (label, digest) in [
@@ -240,7 +241,7 @@ mod tests {
         let receipt = freeze_dataset_receipt_v3(request(), 60).expect("valid receipt");
         verify_dataset_snapshot_receipt_v3(&receipt, 60).expect("receipt verifies");
         assert_eq!(receipt.snapshot.pending_outcomes, 1);
-        assert!(!receipt.snapshot.authority.grants_any());
+        assert_eq!(receipt.snapshot.authority, AuthorityPosture::DENY_ALL);
     }
 
     #[test]
