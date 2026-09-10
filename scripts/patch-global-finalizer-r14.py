@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Apply the exact, idempotent Lane G shared-artifact regeneration repair."""
+'''Apply the exact, idempotent Lane G shared-artifact regeneration repair.'''
 from __future__ import annotations
 
 from pathlib import Path
@@ -35,10 +35,57 @@ def main() -> int:
         if phrase not in text:
             raise SystemExit(f"required converged controller policy missing: {phrase}")
 
+    native_tests_source = '''\"\"\"Native-source closed-world implementation contract tests.\"\"\"
+import re
+import unittest
+
+import implementation_contracts as c
+
+BASE = c.ROOT / "qualification/module-execution-dossiers"
+
+
+class NativeBindingCoverageTests(unittest.TestCase):
+    def test_native_binding_module_closed_world(self):
+        profiles = c.read_json(BASE / "IMPLEMENTATION_PROFILES.json")
+        native = c.read_json(BASE / "NATIVE_BINDINGS.json")
+        self.assertEqual(native["moduleCoverage"], 40)
+        self.assertFalse(native["consumerCallsitesProved"])
+        self.assertFalse(native["productExecutionProved"])
+        self.assertEqual(
+            [row["module"] for row in native["observations"]],
+            [row["module"] for row in profiles["modules"]],
+        )
+
+    def test_native_binding_blobs_and_exports_are_exact(self):
+        native = c.read_json(BASE / "NATIVE_BINDINGS.json")
+        for row in native["observations"]:
+            source = c.ROOT / row["path"]
+            data = source.read_bytes()
+            self.assertEqual(c.blob(data), row["blobSha"], row["path"])
+            source_text = data.decode("utf-8")
+            for symbol in row["exports"]:
+                self.assertRegex(
+                    source_text,
+                    r"\\b" + re.escape(symbol) + r"\\b",
+                    row["path"] + ": " + symbol,
+                )
+'''
+
+    harness_source = '''\"\"\"Qualification-only implementation contract test suite.\"\"\"
+from implementation_contract_tests_core import *  # noqa: F403
+from implementation_contract_tests_system import *  # noqa: F403
+from implementation_contract_tests_native import *  # noqa: F403
+
+if __name__ == "__main__":
+    import unittest
+
+    unittest.main()
+'''
+
     repair_marker = '''def repair_argument_comment_blockers() -> dict[str, Any]:
 '''
-    repair_function = '''def repair_lane_g_shared_artifacts() -> dict[str, Any]:
-    """Regenerate Lane G shared dossiers without flattening the A-F test split."""
+    repair_template = '''def repair_lane_g_shared_artifacts() -> dict[str, Any]:
+    \"\"\"Regenerate Lane G shared dossiers without flattening the A-F test split.\"\"\"
 
     changed: list[str] = []
     native_path = ROOT / "qualification/module-execution-dossiers/NATIVE_BINDINGS.json"
@@ -84,41 +131,7 @@ def main() -> int:
         ROOT
         / "qualification/module-execution-dossiers/implementation_contract_tests_native.py"
     )
-    native_tests = """\"\"\"Native-source closed-world implementation contract tests.\"\"\"
-import re
-import unittest
-
-import implementation_contracts as c
-
-BASE = c.ROOT / "qualification/module-execution-dossiers"
-
-
-class NativeBindingCoverageTests(unittest.TestCase):
-    def test_native_binding_module_closed_world(self):
-        profiles = c.read_json(BASE / "IMPLEMENTATION_PROFILES.json")
-        native = c.read_json(BASE / "NATIVE_BINDINGS.json")
-        self.assertEqual(native["moduleCoverage"], 40)
-        self.assertFalse(native["consumerCallsitesProved"])
-        self.assertFalse(native["productExecutionProved"])
-        self.assertEqual(
-            [row["module"] for row in native["observations"]],
-            [row["module"] for row in profiles["modules"]],
-        )
-
-    def test_native_binding_blobs_and_exports_are_exact(self):
-        native = c.read_json(BASE / "NATIVE_BINDINGS.json")
-        for row in native["observations"]:
-            source = c.ROOT / row["path"]
-            data = source.read_bytes()
-            self.assertEqual(c.blob(data), row["blobSha"], row["path"])
-            source_text = data.decode("utf-8")
-            for symbol in row["exports"]:
-                self.assertRegex(
-                    source_text,
-                    r"\\b" + re.escape(symbol) + r"\\b",
-                    row["path"] + ": " + symbol,
-                )
-"""
+    native_tests = __NATIVE_TESTS_SOURCE__
     if not native_tests_path.is_file() or native_tests_path.read_text(
         encoding="utf-8"
     ) != native_tests:
@@ -128,16 +141,7 @@ class NativeBindingCoverageTests(unittest.TestCase):
     harness_path = (
         ROOT / "qualification/module-execution-dossiers/test_implementation_contracts.py"
     )
-    harness = """\"\"\"Qualification-only implementation contract test suite.\"\"\"
-from implementation_contract_tests_core import *  # noqa: F403
-from implementation_contract_tests_system import *  # noqa: F403
-from implementation_contract_tests_native import *  # noqa: F403
-
-if __name__ == "__main__":
-    import unittest
-
-    unittest.main()
-"""
+    harness = __HARNESS_SOURCE__
     if harness_path.read_text(encoding="utf-8") != harness:
         harness_path.write_text(harness, encoding="utf-8")
         changed.append(harness_path.relative_to(ROOT).as_posix())
@@ -147,6 +151,9 @@ if __name__ == "__main__":
 
 def repair_argument_comment_blockers() -> dict[str, Any]:
 '''
+    repair_function = repair_template.replace(
+        "__NATIVE_TESTS_SOURCE__", repr(native_tests_source)
+    ).replace("__HARNESS_SOURCE__", repr(harness_source))
     replace_once_or_verify(
         repair_marker,
         repair_function,
