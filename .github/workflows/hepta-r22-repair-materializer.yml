@@ -1,0 +1,52 @@
+name: Hepta r22 repair materializer
+
+on:
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-r22-repair-materializer-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  materialize:
+    if: github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: Check out exact pull-request source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+          fetch-depth: 0
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b
+        with:
+          version: 0.11.3
+
+      - name: Materialize repository-pinned formatting
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${{ github.event.pull_request.head.sha }}"
+          uv run --frozen --project scripts ruff format scripts
+          uv run --frozen --project scripts ruff format --check scripts
+          git diff --check
+          mkdir -p .hepta-r22
+          tar -czf .hepta-r22/formatted-scripts.tar.gz scripts
+          git diff --binary -- scripts > .hepta-r22/formatted-scripts.patch
+          git diff --stat -- scripts > .hepta-r22/formatted-scripts.stat
+          sha256sum .hepta-r22/formatted-scripts.tar.gz .hepta-r22/formatted-scripts.patch > .hepta-r22/SHA256SUMS
+
+      - name: Retain exact repair materialization
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-r22-formatted-scripts-${{ github.event.pull_request.head.sha }}
+          path: .hepta-r22
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 1
