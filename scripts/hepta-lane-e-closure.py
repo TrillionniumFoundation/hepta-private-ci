@@ -7,6 +7,7 @@ import argparse
 import json
 import re
 import sys
+import tempfile
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
@@ -17,7 +18,13 @@ TRACE_PATH = ROOT / "qualification/lane-e/TEST_TRACEABILITY.json"
 WORKFLOW_PATH = ROOT / ".github/workflows/hepta-lane-e-gap-closure.yml"
 EVAL_CLOSURE_PATH = ROOT / "codex-rs/hepta-intelligence-eval/src/closure.rs"
 EVAL_CLOSURE_TEST_PATH = ROOT / "codex-rs/hepta-intelligence-eval/src/closure_tests.rs"
-TEMPORARY_WORKFLOW_GLOB = "tmp-lane-e-*.yml"
+FORBIDDEN_TEMPORARY_WORKFLOWS = (
+    ".github/workflows/hepta-lane-e-review-fixups.yml",
+    ".github/workflows/hepta-lane-e-materialize-generated.yml",
+    ".github/workflows/hepta-lane-e-close-review-blockers.yml",
+    ".github/workflows/hepta-lane-e-round4-closure.yml",
+)
+FORBIDDEN_TEMPORARY_WORKFLOW_GLOBS = (".github/workflows/tmp-lane-e-*.yml",)
 EXPECTED_HOLDOUT_FROZEN_FIELDS = {
     "plan_id",
     "claim_scope",
@@ -552,6 +559,19 @@ def verify_authority_posture(findings: Findings) -> None:
         )
 
 
+def find_forbidden_temporary_workflows(root: Path) -> list[str]:
+    matches: set[str] = set()
+    for relative_path in FORBIDDEN_TEMPORARY_WORKFLOWS:
+        path = root / relative_path
+        if path.is_file():
+            matches.add(relative_path)
+    for pattern in FORBIDDEN_TEMPORARY_WORKFLOW_GLOBS:
+        for path in root.glob(pattern):
+            if path.is_file():
+                matches.add(path.relative_to(root).as_posix())
+    return sorted(matches)
+
+
 def verify_workflow(findings: Findings) -> None:
     findings.require(
         WORKFLOW_PATH.is_file(),
@@ -580,12 +600,12 @@ def verify_workflow(findings: Findings) -> None:
             "workflow_gate_missing",
             f"workflow is missing required gate token: {token}",
         )
-    temporary_workflows = sorted(WORKFLOW_PATH.parent.glob(TEMPORARY_WORKFLOW_GLOB))
+    temporary_workflows = find_forbidden_temporary_workflows(ROOT)
     findings.require(
         not temporary_workflows,
         "temporary_workflow_present",
         "temporary Lane E workflows must not remain in the candidate: "
-        + ", ".join(path.name for path in temporary_workflows),
+        + ", ".join(temporary_workflows),
     )
 
 
@@ -609,6 +629,26 @@ def run_self_test() -> list[Finding]:
         "self_test_false_positive",
         "symbol resolver accepted a missing function",
     )
+    with tempfile.TemporaryDirectory() as directory:
+        fixture_root = Path(directory)
+        hostile_paths = set(FORBIDDEN_TEMPORARY_WORKFLOWS)
+        hostile_paths.add(".github/workflows/tmp-lane-e-hostile.yml")
+        allowed_paths = {
+            ".github/workflows/hepta-lane-e-gap-closure.yml",
+            ".github/workflows/tmp-lane-x-hostile.yml",
+            ".github/workflows/hepta-lane-e-materialize-generated.yaml",
+        }
+        for relative_path in hostile_paths | allowed_paths:
+            path = fixture_root / relative_path
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_text("name: hostile-fixture\n", encoding="utf-8")
+        detected = set(find_forbidden_temporary_workflows(fixture_root))
+        findings.require(
+            detected == hostile_paths,
+            "self_test_temporary_workflow_detection",
+            "temporary-workflow detector mismatch: "
+            f"expected={sorted(hostile_paths)!r}, detected={sorted(detected)!r}",
+        )
     return findings.items
 
 
