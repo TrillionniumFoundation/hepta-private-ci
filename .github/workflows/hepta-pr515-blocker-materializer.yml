@@ -108,12 +108,41 @@ jobs:
               -c user.email='convergence-repair@users.noreply.github.com' \
               commit -m 'fix(ci): close PR515 formatting and evidence-size blockers'
           test "$(git rev-parse HEAD^)" = "$SOURCE_SHA"
+          candidate_sha="$(git rev-parse HEAD)"
+          echo "candidate_sha=$candidate_sha"
 
+          set +e
           python3 scripts/check_blob_size.py \
             --base "$BASE_SHA" \
             --head HEAD \
             --max-bytes 512000 \
-            --allowlist .github/blob-size-allowlist.txt
-          git diff --check "$BASE_SHA" HEAD
-          test -z "$(git status --porcelain=v1 --untracked-files=all)"
+            --allowlist .github/blob-size-allowlist.txt \
+            >"$RUNNER_TEMP/blob-size.log" 2>&1
+          blob_rc=$?
+          set -e
+          echo "blob_size_exit=$blob_rc"
+          tail -80 "$RUNNER_TEMP/blob-size.log"
+          test "$blob_rc" -eq 0
+          echo PASS_PR515_BLOB_SIZE_POLICY
+
+          set +e
+          git diff --check "$BASE_SHA" HEAD \
+            >"$RUNNER_TEMP/full-diff-check.log" 2>&1
+          diff_rc=$?
+          set -e
+          echo "full_diff_check_exit=$diff_rc"
+          cat "$RUNNER_TEMP/full-diff-check.log"
+          test "$diff_rc" -eq 0
+          echo PASS_PR515_FULL_DIFF_CHECK
+
+          status="$(git status --porcelain=v1 --untracked-files=all)"
+          if [[ -n "$status" ]]; then
+            printf '%s\n' "$status"
+            exit 1
+          fi
+          echo PASS_PR515_CLEAN_WORKTREE
+
+          test "$(git rev-parse "origin/$OUTPUT_BRANCH")" = "$SOURCE_SHA"
           git push origin "HEAD:refs/heads/$OUTPUT_BRANCH"
+          test "$(git ls-remote origin "refs/heads/$OUTPUT_BRANCH" | cut -f1)" = "$candidate_sha"
+          echo "PASS_PR515_PUBLISHED_SHA=$candidate_sha"
