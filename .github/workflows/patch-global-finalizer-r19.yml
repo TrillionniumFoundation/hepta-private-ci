@@ -21,7 +21,7 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 30
     env:
-      EXPECTED_PARENT: 6f7e22d31b2240672aca89476b80ea10c79f4864
+      EXPECTED_PARENT: 8dfbf4a00bd7d7c3003549316ac888c8909f26e2
       TARGET_BRANCH: ops/hepta-global-gap-closure-controller-20260910-r1
       FINALIZER: scripts/hepta-global-finalizer-r7.py
       PATCH_SCRIPT: scripts/patch-global-finalizer-r19.py
