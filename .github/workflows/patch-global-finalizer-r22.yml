@@ -1,0 +1,244 @@
+name: patch-global-finalizer-r22
+
+on:
+  push:
+    branches:
+      - ops/hepta-global-gap-closure-controller-20260910-r1
+    paths:
+      - .github/workflows/patch-global-finalizer-r22.yml
+
+permissions:
+  contents: write
+  actions: write
+
+concurrency:
+  group: patch-global-finalizer-r22
+  cancel-in-progress: true
+
+jobs:
+  patch:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    env:
+      TARGET_BRANCH: ops/hepta-global-gap-closure-controller-20260910-r1
+      FINALIZER: scripts/hepta-global-finalizer-r7.py
+      REPAIR: scripts/hepta-final-projection-repair.py
+      WORKFLOW: .github/workflows/hepta-global-finalizer-r7.yml
+    steps:
+      - name: Check out exact patch source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Inject fixed-point repair artifact
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "${GITHUB_REF_NAME}" = "${TARGET_BRANCH}"
+          test "$(git ls-remote origin "refs/heads/${TARGET_BRANCH}" | awk '{print $1}')" = "${GITHUB_SHA}"
+          test -f "${REPAIR}"
+          python3 -m py_compile "${REPAIR}"
+          python3 - <<'PY'
+          from __future__ import annotations
+
+          import ast
+          import re
+          from pathlib import Path
+
+          finalizer_path = Path("scripts/hepta-global-finalizer-r7.py")
+          text = finalizer_path.read_text(encoding="utf-8")
+          function = '''def finalize_generated_state() -> dict[str, Any]:
+              """Run the exact projection repair artifact immediately before staging."""
+
+              repair_script = Path(__file__).with_name(
+                  "hepta-final-projection-repair.py"
+              )
+              if not repair_script.is_file():
+                  raise RuntimeError(
+                      f"final projection repair artifact is missing: {repair_script}"
+                  )
+              result = run(("python3", str(repair_script)), timeout=1800)
+              if not result.passed:
+                  raise RuntimeError(
+                      "final projection repair failed:\n"
+                      + "\n".join(result.output.splitlines()[-120:])
+                  )
+              receipt_path = (
+                  ROOT
+                  / "qualification/global-gap-closure-final-r7/FINAL_PROJECTION_REPAIR.json"
+              )
+              receipt = read_json(receipt_path)
+              if receipt.get("passed") is not True:
+                  raise RuntimeError(
+                      "final projection repair receipt is not passing: "
+                      + json.dumps(receipt, sort_keys=True)
+                  )
+              native = repair_native_bindings()
+              if not native.get("valid"):
+                  raise RuntimeError(
+                      "post-repair native binding projection is invalid: "
+                      + json.dumps(native, sort_keys=True)
+                  )
+              commands = (
+                  ("python3", "scripts/hepta-readiness.py", "verify"),
+                  ("python3", "scripts/hepta-technical-closure.py", "verify"),
+                  (
+                      "python3",
+                      "qualification/module-execution-dossiers/implementation_contracts.py",
+                      "verify-repository",
+                  ),
+              )
+              verifiers: list[dict[str, Any]] = []
+              for command in commands:
+                  verification = run(command, timeout=1800)
+                  verifiers.append(verification.receipt())
+                  if not verification.passed:
+                      raise RuntimeError(
+                          "post-repair verifier failed: "
+                          + " ".join(command)
+                          + "\n"
+                          + "\n".join(verification.output.splitlines()[-120:])
+                      )
+              return {
+                  "executor": repair_script.name,
+                  "executorBlob": git_text("hash-object", "--", repair_script.as_posix()),
+                  "receipt": receipt,
+                  "nativeBindings": native,
+                  "verifiers": verifiers,
+              }
+
+
+          '''
+          function = "\n".join(
+              line[14:] if line.startswith("              ") else line
+              for line in function.splitlines()
+          )
+
+          existing = re.compile(
+              r"def finalize_generated_state\(\) -> dict\[str, Any\]:\n"
+              r".*?\n\ndef command_receipts_pass\(",
+              re.DOTALL,
+          )
+          if existing.search(text):
+              text = existing.sub(
+                  lambda _: function + "def command_receipts_pass(",
+                  text,
+                  count=1,
+              )
+          elif "def finalize_generated_state()" not in text:
+              marker = "def command_receipts_pass("
+              if text.count(marker) != 1:
+                  raise SystemExit("r22 finalizer helper insertion point drifted")
+              text = text.replace(marker, function + marker, 1)
+
+          def contains_git(statement: ast.AST, command: str) -> bool:
+              for node in ast.walk(statement):
+                  if not isinstance(node, ast.Call):
+                      continue
+                  if not isinstance(node.func, ast.Name) or node.func.id != "git":
+                      continue
+                  if not node.args:
+                      continue
+                  first = node.args[0]
+                  if isinstance(first, ast.Constant) and first.value == command:
+                      return True
+              return False
+
+          call = "final_generated_state = finalize_generated_state()"
+          if call not in text:
+              tree = ast.parse(text, filename=finalizer_path.as_posix())
+              prepare = next(
+                  node
+                  for node in tree.body
+                  if isinstance(node, ast.FunctionDef) and node.name == "prepare"
+              )
+              commit = next(
+                  (item for item in prepare.body if contains_git(item, "commit")),
+                  None,
+              )
+              if commit is None:
+                  raise SystemExit("r22 prepare commit statement not found")
+              staged = [
+                  item
+                  for item in prepare.body
+                  if item.lineno <= commit.lineno and contains_git(item, "add")
+              ]
+              insertion = staged[-1] if staged else commit
+              lines = text.splitlines(keepends=True)
+              index = insertion.lineno - 1
+              indent = lines[index][: len(lines[index]) - len(lines[index].lstrip())]
+              lines.insert(index, indent + call + "\n")
+              text = "".join(lines)
+
+          if '"finalGeneratedState": final_generated_state' not in text:
+              marker = '        "generatorReceipts": generator_receipts,\n'
+              if text.count(marker) != 1:
+                  raise SystemExit("r22 finalizer receipt insertion point drifted")
+              text = text.replace(
+                  marker,
+                  marker + '        "finalGeneratedState": final_generated_state,\n',
+                  1,
+              )
+
+          for phrase in (
+              "def finalize_generated_state()",
+              call,
+              '"finalGeneratedState": final_generated_state',
+              'Path(__file__).with_name(',
+              '"hepta-final-projection-repair.py"',
+              'receipt.get("passed") is not True',
+          ):
+              if phrase not in text:
+                  raise SystemExit(f"r22 finalizer output missing {phrase!r}")
+          ast.parse(text, filename=finalizer_path.as_posix())
+          finalizer_path.write_text(text, encoding="utf-8")
+
+          workflow_path = Path(".github/workflows/hepta-global-finalizer-r7.yml")
+          workflow = workflow_path.read_text(encoding="utf-8")
+          old = '''          cp scripts/hepta-global-finalizer-r7.py \\
+            "${RUNNER_TEMP}/hepta-r7-executor/hepta-global-finalizer-r7.py"
+'''
+          new = '''          cp scripts/hepta-global-finalizer-r7.py \\
+            "${RUNNER_TEMP}/hepta-r7-executor/hepta-global-finalizer-r7.py"
+          cp scripts/hepta-final-projection-repair.py \\
+            "${RUNNER_TEMP}/hepta-r7-executor/hepta-final-projection-repair.py"
+          python3 -m py_compile \\
+            "${RUNNER_TEMP}/hepta-r7-executor/hepta-final-projection-repair.py"
+'''
+          if "hepta-final-projection-repair.py" not in workflow:
+              if workflow.count(old) != 1:
+                  raise SystemExit("r22 workflow artifact insertion point drifted")
+              workflow = workflow.replace(old, new, 1)
+          if "cancel-in-progress: true" not in workflow:
+              workflow = workflow.replace(
+                  "cancel-in-progress: false",
+                  "cancel-in-progress: true",
+                  1,
+              )
+          workflow_path.write_text(workflow, encoding="utf-8")
+          PY
+          python3 -m py_compile "${FINALIZER}" "${REPAIR}"
+          grep -Fq 'hepta-final-projection-repair.py' "${WORKFLOW}"
+          grep -Fq 'final_generated_state = finalize_generated_state()' "${FINALIZER}"
+          git diff --check
+
+      - name: Publish exact repaired controller
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'hepta-global-finalizer-patcher'
+          git config user.email 'actions@users.noreply.github.com'
+          git rm -f --ignore-unmatch \
+            .github/workflows/patch-global-finalizer-r22.yml \
+            .github/workflows/patch-global-finalizer-r21.yml \
+            .github/workflows/patch-global-finalizer-r20.yml \
+            scripts/patch-global-finalizer-r19.py
+          git add "${FINALIZER}" "${REPAIR}" "${WORKFLOW}"
+          git diff --cached --check
+          git commit --signoff -m 'fix(hepta): reconcile projections at final fixed point'
+          remote_sha="$(git ls-remote origin "refs/heads/${TARGET_BRANCH}" | awk '{print $1}')"
+          test "${remote_sha}" = "${GITHUB_SHA}"
+          git push --force-with-lease="refs/heads/${TARGET_BRANCH}:${GITHUB_SHA}" origin "HEAD:refs/heads/${TARGET_BRANCH}"
