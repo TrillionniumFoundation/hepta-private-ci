@@ -22,6 +22,10 @@ if [[ "${WORKFLOW_MODE}" != true ]]; then
   git pull --ff-only origin "${CONTROLLER_BRANCH}"
 fi
 
+git config user.name "Hepta Blocker Remediator"
+git config user.email "noreply@openai.com"
+
+apply_lane_f_patch() {
 python3 - <<'PY'
 from pathlib import Path
 
@@ -57,13 +61,11 @@ LANE_F_OWNER_CONFLICTS = frozenset(
 def merge_lane(lane: str, branch: str) -> dict[str, Any]:
 '''
 replace_once(constant_anchor, constant_replacement, "LANE_F_OWNER_CONFLICTS")
-
 replace_once(
     "    lane_d_prior_owner_conflict = False\n",
     "    lane_d_prior_owner_conflict = False\n    lane_f_owner_conflict = False\n",
     "lane_f_owner_conflict = False",
 )
-
 old = '''        lane_d_prior_owner_conflict = (
             lane == "D"
             and len(conflicts) == len(LANE_D_PRIOR_OWNER_CONFLICTS)
@@ -84,7 +86,6 @@ new = '''        lane_d_prior_owner_conflict = (
         if (
 '''
 replace_once(old, new, "lane_f_owner_conflict = (")
-
 replace_once(
     '''            and not lane_d_prior_owner_conflict
         ):
@@ -95,7 +96,6 @@ replace_once(
 ''',
     "and not lane_f_owner_conflict",
 )
-
 replace_once(
     '''        checkout_side = "--theirs" if lane_owner_conflict else "--ours"
 ''',
@@ -105,7 +105,6 @@ replace_once(
 ''',
     "lane_owner_conflict or lane_f_owner_conflict",
 )
-
 old = '''        elif lane_d_prior_owner_conflict:
             resolution_class = "prior Lane A/C owner paths retained during Lane D merge"
         else:
@@ -117,7 +116,6 @@ new = '''        elif lane_d_prior_owner_conflict:
         else:
 '''
 replace_once(old, new, "latest Lane F owner shadow qualification bundle")
-
 replace_once(
     '''            and not lane_d_prior_owner_conflict
         ),
@@ -128,7 +126,6 @@ replace_once(
 ''',
     "and not lane_f_owner_conflict",
 )
-
 replace_once(
     '''        "autoResolvedLaneDPriorOwnerOnly": lane_d_prior_owner_conflict,
         "conflicts": conflicts,
@@ -139,21 +136,36 @@ replace_once(
 ''',
     "autoResolvedLaneFOwnerOnly",
 )
-
 path.write_text(text, encoding="utf-8")
 PY
 
-uv run --frozen --project scripts ruff format scripts/hepta-global-finalizer-r7.py
-uv run --frozen --project scripts ruff format --check scripts/hepta-global-finalizer-r7.py
-python3 -m py_compile scripts/hepta-global-finalizer-r7.py
-git diff --check
+  uv run --frozen --project scripts ruff format scripts/hepta-global-finalizer-r7.py
+  uv run --frozen --project scripts ruff format --check scripts/hepta-global-finalizer-r7.py
+  python3 -m py_compile scripts/hepta-global-finalizer-r7.py
+  git diff --check
+}
 
-git config user.name "Hepta Blocker Remediator"
-git config user.email "noreply@openai.com"
-git add scripts/hepta-global-finalizer-r7.py
-if ! git diff --cached --quiet; then
+pushed=false
+for attempt in 1 2 3 4 5; do
+  git fetch origin "${CONTROLLER_BRANCH}"
+  git reset --hard "origin/${CONTROLLER_BRANCH}"
+  apply_lane_f_patch
+  git add scripts/hepta-global-finalizer-r7.py
+  if git diff --cached --quiet; then
+    pushed=true
+    break
+  fi
   git commit --signoff -m "fix(hepta): select exact Lane F owner bundle during convergence"
-  git push origin "HEAD:refs/heads/${CONTROLLER_BRANCH}"
+  if git push origin "HEAD:refs/heads/${CONTROLLER_BRANCH}"; then
+    pushed=true
+    break
+  fi
+  echo "controller head advanced during attempt ${attempt}; replaying exact patch" >&2
+done
+
+if [[ "${pushed}" != true ]]; then
+  echo "unable to publish exact Lane F patch after bounded retries" >&2
+  exit 3
 fi
 
 printf '%s\n' \
