@@ -454,9 +454,7 @@ def merge_lane(lane: str, branch: str) -> dict[str, Any]:
                 "outputTail": result.output.splitlines()[-100:],
             }
         checkout_side = (
-            "--theirs"
-            if lane_owner_conflict or lane_f_owner_conflict
-            else "--ours"
+            "--theirs" if lane_owner_conflict or lane_f_owner_conflict else "--ours"
         )
         for path in conflicts:
             if (
@@ -478,7 +476,9 @@ def merge_lane(lane: str, branch: str) -> dict[str, Any]:
         elif lane_f_owner_conflict:
             resolution_class = "Lane F owner shadow qualification paths"
         elif lane_g_prior_owner_conflict:
-            resolution_class = "prior cumulative owner metadata retained during Lane G merge"
+            resolution_class = (
+                "prior cumulative owner metadata retained during Lane G merge"
+            )
         else:
             resolution_class = "generated convergence metadata"
         git(
@@ -521,8 +521,7 @@ def repair_lane_g_shared_artifacts(
     relative_path = "qualification/module-execution-dossiers/NATIVE_BINDINGS.json"
     native_path = ROOT / relative_path
     profiles = read_json(
-        ROOT
-        / "qualification/module-execution-dossiers/IMPLEMENTATION_PROFILES.json"
+        ROOT / "qualification/module-execution-dossiers/IMPLEMENTATION_PROFILES.json"
     )
     profile_rows = profiles.get("modules")
     if not isinstance(profile_rows, list):
@@ -646,12 +645,8 @@ def repair_lane_g_shared_artifacts(
     lane_g_branch = selected.get("G")
     if not lane_g_branch:
         raise RuntimeError("Lane G source branch is required")
-    source_path = (
-        "tools/hepta-engineering-control/control_engineering_v2/__init__.py"
-    )
-    source_text = git_text(
-        "show", f"origin/{lane_g_branch}:{source_path}"
-    )
+    source_path = "tools/hepta-engineering-control/control_engineering_v2/__init__.py"
+    source_text = git_text("show", f"origin/{lane_g_branch}:{source_path}")
     merged_source = ROOT / source_path
     if not merged_source.is_file():
         raise RuntimeError(
@@ -660,11 +655,15 @@ def repair_lane_g_shared_artifacts(
     merged_text = merged_source.read_text(encoding="utf-8")
     expected_text = source_text + ("" if source_text.endswith("\n") else "\n")
     if merged_text != expected_text:
-        raise RuntimeError("merged Lane G public surface differs from exact lane source")
+        raise RuntimeError(
+            "merged Lane G public surface differs from exact lane source"
+        )
     try:
         source_tree = ast.parse(source_text, filename=source_path)
     except SyntaxError as error:
-        raise RuntimeError("selected Lane G public surface is invalid Python") from error
+        raise RuntimeError(
+            "selected Lane G public surface is invalid Python"
+        ) from error
     exports = sorted(
         {
             alias.asname or alias.name
@@ -698,15 +697,11 @@ def repair_lane_g_shared_artifacts(
             "selected Lane G public surface lacks required exports: "
             + ", ".join(missing_required)
         )
-    lane_g_commit = git_text(
-        "rev-parse", f"origin/{lane_g_branch}^{{commit}}"
-    )
+    lane_g_commit = git_text("rev-parse", f"origin/{lane_g_branch}^{{commit}}")
     aggregated["control.engineering"] = {
         "module": "control.engineering",
         "path": source_path,
-        "blobSha": git_text(
-            "rev-parse", f"origin/{lane_g_branch}:{source_path}"
-        ),
+        "blobSha": git_text("rev-parse", f"origin/{lane_g_branch}:{source_path}"),
         "exports": exports,
     }
     row_sources["control.engineering"] = {
@@ -739,7 +734,8 @@ def repair_lane_g_shared_artifacts(
     write_json(native_path, output_document)
 
     harness_path = (
-        ROOT / "qualification/module-execution-dossiers/test_implementation_contracts.py"
+        ROOT
+        / "qualification/module-execution-dossiers/test_implementation_contracts.py"
     )
     harness = harness_path.read_text(encoding="utf-8")
     test_surfaces = [harness]
@@ -759,9 +755,7 @@ def repair_lane_g_shared_artifacts(
             raise RuntimeError("split implementation-contract core tests are missing")
 
     fallback_modules = sorted(
-        module
-        for module, source in row_sources.items()
-        if source["source"] == "seed"
+        module for module, source in row_sources.items() if source["source"] == "seed"
     )
     return {
         "seedRef": seed_ref,
@@ -1106,7 +1100,9 @@ def rust_code_only(text: str) -> str:
         index += 1
 
     if block_depth:
-        raise RuntimeError("unterminated nested Rust block comment during dependency scan")
+        raise RuntimeError(
+            "unterminated nested Rust block comment during dependency scan"
+        )
     return "".join(output)
 
 
@@ -1174,7 +1170,9 @@ def workspace_dependency_graph(metadata: dict[str, Any]) -> dict[str, set[str]]:
             raise RuntimeError(f"cargo metadata deps for {source} must be a list")
         for dependency in dependencies:
             if not isinstance(dependency, dict):
-                raise RuntimeError(f"cargo metadata dependency for {source} must be an object")
+                raise RuntimeError(
+                    f"cargo metadata dependency for {source} must be an object"
+                )
             target = workspace_ids.get(dependency.get("pkg"))
             if target is None:
                 continue
