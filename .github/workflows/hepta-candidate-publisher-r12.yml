@@ -22,10 +22,11 @@ jobs:
   publish:
     if: github.repository == 'TrillionniumFoundation/hepta-private-ci'
     runs-on: ubuntu-24.04
-    timeout-minutes: 180
+    timeout-minutes: 360
     env:
       HEPTA_SEALED_SOURCE: origin/integration/hepta-all-gap-closure-20260910-sealed-r11
       HEPTA_CANONICAL_CANDIDATE: candidate/hepta-all-gap-closure-final-20260910
+      HEPTA_PUBLICATION_BASE: origin/ops/hepta-final-convergence-review-anchor-20260909
     steps:
       - name: Check out exact publisher source
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
