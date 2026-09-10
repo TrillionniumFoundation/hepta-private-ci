@@ -1,0 +1,55 @@
+name: Temporary r13 Lane B conflict diagnostic
+
+on:
+  push:
+    branches:
+      - ops/r13-lane-b-merge-controller-20260910
+    paths:
+      - .github/workflows/tmp-r13-lane-b-conflict-diagnostic.yml
+
+permissions:
+  contents: read
+
+jobs:
+  diagnose:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: Check out controller
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Diagnose exact merge
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'Hepta r13 diagnostic'
+          git config user.email 'noreply@openai.com'
+          git fetch --no-tags origin \
+            '+refs/heads/integration/hepta-all-gap-closure-20260910-r12:refs/remotes/origin/r12' \
+            '+refs/heads/codex/hepta-lane-b-full-closure-20260910:refs/remotes/origin/lane-b'
+          base="$(git rev-parse refs/remotes/origin/r12)"
+          lane="$(git rev-parse refs/remotes/origin/lane-b)"
+          test "$base" = '9a71e0bf02e7c538c725f0aaeffa6f1404546aa2'
+          test "$lane" = 'fc5d69029ab896a8d81847282415884964dded2e'
+          git checkout --detach "$base"
+          set +e
+          git merge --no-commit --no-ff "$lane"
+          rc=$?
+          set -e
+          echo "MERGE_RC=$rc"
+          echo '=== UNMERGED PATHS ==='
+          git diff --name-status --diff-filter=U || true
+          echo '=== INDEX STAGES ==='
+          git ls-files -u || true
+          echo '=== MERGE BASE ==='
+          git merge-base "$base" "$lane"
+          echo '=== CHANGED PATHS FROM COMMON BASE TO R12 ==='
+          common="$(git merge-base "$base" "$lane")"
+          git diff --name-only "$common..$base" | sort
+          echo '=== CHANGED PATHS FROM COMMON BASE TO LANE B ==='
+          git diff --name-only "$common..$lane" | sort
+          git merge --abort || true
+          exit 0
