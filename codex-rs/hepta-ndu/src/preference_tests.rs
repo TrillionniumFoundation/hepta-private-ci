@@ -33,7 +33,7 @@ fn id(value: &str) -> StableId {
 }
 
 #[test]
-fn damped_preference_update_converges_with_new_immutable_revisions() {
+fn damped_preference_update_emits_local_solver_receipts() {
     let initial = must(PreferenceState::genesis(
         id("agent-a"),
         SubjectClass::Agent,
@@ -43,7 +43,7 @@ fn damped_preference_update_converges_with_new_immutable_revisions() {
         }],
     ));
     let predecessor = initial.state_digest;
-    let (terminal, certificate, receipts) = must(solve_preference_target(
+    let (terminal, termination, receipts) = must(solve_preference_target(
         initial,
         vec![AxisValue {
             axis: id("evidence-quality"),
@@ -52,11 +52,27 @@ fn damped_preference_update_converges_with_new_immutable_revisions() {
         FixedQ32::from_raw(1_i64 << 30),
     ));
 
-    assert_eq!(certificate.disposition, SolveDisposition::Converged);
-    assert_eq!(certificate.predecessor_digest, predecessor);
+    assert_eq!(termination.disposition, SolveDisposition::Converged);
+    assert_eq!(termination.predecessor_digest, predecessor);
     assert!(!receipts.is_empty());
     assert!(terminal.revision.get() > 1);
     assert!(terminal.values[0].value <= FixedQ32::ONE);
+    assert_eq!(
+        usize::try_from(termination.iterations).expect("bounded iteration count"),
+        receipts.len()
+    );
+    assert_eq!(
+        termination.terminal_residual_raw,
+        receipts.last().expect("terminal receipt").residual_raw
+    );
+    assert_eq!(
+        termination.maximum_residual_raw,
+        receipts
+            .iter()
+            .map(|receipt| receipt.residual_raw)
+            .max()
+            .expect("maximum residual")
+    );
 }
 
 #[test]

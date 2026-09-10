@@ -1,125 +1,248 @@
 # NDU system integration and solver specification
 
-**Overlay:** `HEPTA-V8-PRECODING-READINESS` v8.2.0-readiness
-**Bound modules:** `utility.ndu`, `objective.compiler`, `control.runtime`, `intuition.policy`, `learning.eval`, `learning.ledger`
-**Source target:** `codex-rs/hepta-ndu`
+**Overlay:** `HEPTA-V8-PRECODING-READINESS` v8.2.0-readiness  
+**Bound modules:** `utility.ndu`, `objective.compiler`, `control.runtime`, `intuition.policy`, `learning.eval`, `learning.ledger`  
+**Source target:** `codex-rs/hepta-ndu`  
+**Implementation map:** `docs/modules/utility.ndu/IMPLEMENTATION_MAP.json`  
+**Authority delta:** none
 
 ## 1. Scope and authority boundary
 
-This specification turns NDU from an isolated mathematical document into a system-wide, typed value contract. NDU compares only feasible candidates supplied by an immutable objective and legal-action set. Authority, truth, privacy, deletion, single-writer ownership and emergency-stop state never become utility dimensions and cannot be traded for higher reward.
+NDU is the typed preference and utility owner for supported feasible consequences. It compares only candidates bound to one immutable objective, legal-action set and generation. Authority, truth, privacy, deletion, writer ownership, emergency-stop state and hard risk/resource floors are constraints; they never become compensable utility dimensions.
 
-The first implementation is deterministic and fixed-point. Stochastic preference dynamics and learned FBSDE coefficients remain later shadow candidates. `utility.ndu` may publish summaries and next-revision candidates; it cannot execute effects, select artifacts, diagnose a person or mutate the current objective.
+The source implementation contains a deterministic fixed-point baseline, policy-bound aggregation and Pareto logic, recursive utility, preference updates, conditional-moment/covariance kernels, a protocol-context adapter and an owner-local projection-journal reference. Stochastic learned coefficients remain shadow candidates. None of these operations executes an effect, selects an artifact for production, diagnoses a person, changes the current objective or issues a capability.
 
-## 2. Cross-organ utility contract
+## 2. Cross-organ contribution contract
 
-Every organ or module that contributes to planning emits `UtilityContributionV1` with:
+Every organ or module contributing to one candidate supplies a bounded contribution containing:
 
 ```text
-objective and subject identity
-organ identity and support digest
-bounded utility vector
-bounded risk vector
+candidate and organ identity
+objective digest and body generation
+hard-feasibility posture
+utility vector
+risk vector
 resource-cost vector
 uncertainty vector
-time horizon
-hard-constraint violation flag
+support digest
 ```
 
-The utility vector uses registered dimensions such as task success, evidence quality, latency, resource cost, reversibility and user burden. Dimensions have explicit units and monotonic direction. A contribution without support, units, objective digest or current generation is unavailable. An organ cannot publish a utility contribution for another owner’s state.
+The canonical external contract remains `UtilityContributionV1`; the Rust owner-local type preserves the same core semantics. Each axis has a registered unit and direction. A contribution with an empty support digest, mixed objective, mixed generation, duplicate organ identity, unknown axis or missing required organ is unavailable rather than zero.
 
-`control.runtime` aggregates current contributions into a snapshot; `utility.ndu` computes preference and continuation utility; `learning.ledger` records the complete candidate/contribution set. Missing contribution is represented as uncertainty or unavailability, never zero benefit.
+An organ contributes only facts it owns. `utility.ndu` aggregates supported contributions. `control.runtime` consumes a digest-bound projection of the resulting evaluation; it does not reimplement NDU. `learning.ledger` records the complete candidate/contribution set under its own writer rules.
 
-## 3. Multi-objective feasibility and Pareto policy
+## 3. Versioned aggregation policy
 
-Selection is two-stage:
+Cross-organ aggregation is never implicit for a new integration. `EvaluationPolicyV1` names exactly one rule for every utility, risk, resource and uncertainty axis:
+
+| Operator | Meaning |
+|---|---|
+| `Sum` | checked Q32 addition |
+| `Maximum` | conservative maximum |
+| `Minimum` | registered bottleneck/minimum semantics |
+| `RequireEqual` | all contributing owners must report the same value |
+
+Missing rules, duplicate rules, unknown axes and `RequireEqual` disagreement reject. Overflow rejects rather than saturating outside a named mathematical projection.
+
+The compatibility API `evaluate_candidates` remains available, but its prior behavior is now explicitly materialized as `legacy-sum-max-zero-tolerance-v1`:
+
+- utility: sum;
+- risk: sum;
+- resource: sum;
+- uncertainty: maximum;
+- Pareto absolute tolerance: zero.
+
+New integrations call `evaluate_candidates_with_policy`. `NduEvaluationReceiptV2` binds the normalized policy digest in addition to the legacy evaluation digest, preventing a future aggregation change from silently reinterpreting an old result.
+
+## 4. Feasibility, Pareto and scalarization
+
+Selection is staged:
 
 ```text
-hard feasibility filter -> Pareto frontier -> optional registered scalarization
+complete-contribution validation
+-> hard/risk/resource feasibility
+-> Pareto frontier using registered direction and tolerance
+-> optional registered scalarization
+-> advisory recommendation or slow path
 ```
 
-Candidates violating any hard constraint are removed before utility arithmetic. Among feasible candidates, dominated points are removed using dimension direction and tolerance. Scalarization is permitted only when the objective names a versioned weight profile whose weights and units are complete. Without a valid profile, the output is the Pareto set plus an abstain or slow-path request, not an invented total order.
+A hard violation, risk-ceiling breach or resource-ceiling breach removes a candidate before utility ranking. Abstain must remain present and feasible. If all effectful candidates fail, the outcome is explicit abstain rather than a negative-utility fiction.
 
-Risk ceilings and essential resource floors are constraints, not negative utility. Lexicographic profiles are allowed for safety-critical tasks and take precedence over weighted sums. The no-op/abstain candidate remains in every legal set.
+Each utility axis has a non-negative absolute Pareto tolerance. Candidate `a` dominates candidate `b` only when `a` is not worse beyond tolerance on every axis and is better beyond tolerance on at least one axis. The normalized tolerance vector is part of the evaluation-policy digest.
 
-## 4. Deterministic hierarchical solver
+Scalarization is permitted only when every registered utility axis has one weight, each weight lies in `[0,1]`, and the exact Q32 sum is one. A tie produces a slow-path disposition, not an arbitrary ID-based winner. Without scalarization, multiple non-dominated candidates return the Pareto set and no advisory recommendation.
 
-The baseline has four subject classes: system, domain, agent and episode. Updates are staged rather than simultaneous:
+## 5. Deterministic hierarchical preference solver
+
+Valid subject classes are system, domain, agent and episode. Updates are staged:
 
 ```text
-1. freeze system and domain revisions for a run generation;
+1. freeze system and domain revisions for one run generation;
 2. update episode state at registered decision boundaries;
-3. consolidate episode evidence into an agent candidate after terminal outcome;
-4. evaluate and accept agent candidates against frozen domain boundaries;
+3. consolidate terminal episode evidence into an agent candidate;
+4. evaluate agent candidates against frozen domain boundaries;
 5. update domain candidates in a later generation;
 6. update the system candidate only after domain snapshots and independent evaluation.
 ```
 
-For subject `s` and step `k`, the deterministic baseline is:
+The deterministic baseline uses signed Q32, round-to-nearest ties-to-even:
 
 ```text
-P_candidate = project(P_k + dt * bounded_drift(observation, cost, risk, action))
+P_candidate = project(P_k + dt * bounded_drift(...))
 P_next = (1 - eta) * P_k + eta * P_candidate
 U_k = project(instant_utility + discount * continuation_utility)
 ```
 
-All arithmetic is signed Q32 with round-to-nearest, ties-to-even. `eta` is in `[1/16, 1/4]`. Parent and child artifacts cannot be selected in the same generation. Each step emits `NduIterationReceiptV1` with residuals, projection counts and exact predecessor.
+`eta` is in `[1/16,1/4]`. The preference target solver emits immutable revisions and at most 64 local iteration receipts. Parent and child artifact updates cannot share one generation.
 
-## 5. Convergence, infeasibility and multiple solutions
+## 6. Local solver receipts versus independent certificate
 
-A deterministic solve has explicit maximum iterations, residual tolerance and wall-clock budget. Pilot values are `64` iterations, maximum absolute normalized residual `<=2^-20`, resource conservation `<=1` Q32 unit and risk conservation `<=10 ppm`. Hitting the iteration or time bound returns `unavailable` with the last bounded interval; it does not assert convergence.
+`NduSolverIterationReceipt` records one owner-local numerical step. `NduSolverTerminationReceipt` records:
 
-Infeasible hard constraints produce an empty feasible set and an explicit abstain/clarification result. For multiple fixed points, candidates are partitioned by admissible basin; the solver selects the predecessor-nearest solution only when it is stable under registered perturbations and independently certified. Otherwise it emits `multiple_solution_unresolved`.
+- disposition;
+- iteration count;
+- terminal residual;
+- true maximum residual across all iterations;
+- cumulative projection count;
+- predecessor and terminal state digests.
 
-`NduConvergenceCertificateV1` binds solver, initialization, residuals, spectral-radius upper confidence bound, conservation and evaluator identity. A certificate with spectral-radius upper 95% bound `>=0.95`, unsupported dimensions or stale objective fails activation.
+These local records are not an activation certificate. They deliberately do not use the name `NduConvergenceCertificateV1`.
 
-## 6. State, persistence and scheduling
+The canonical `NduConvergenceCertificateV1` remains owned by `learning.eval`. It additionally binds independent evaluator identity, operating region, residuals, resource/risk conservation, perturbation evidence and the spectral-radius upper confidence bound. A certificate with a spectral-radius upper 95% bound `>=0.95`, stale objective, unsupported dimension or missing independent decision cannot activate an adaptive artifact.
 
-Preference and utility projections are append-only revisions owned by `utility.ndu`. A transactional selected pointer is updated only after the immutable row and certificate exist. Idempotency key is `(subject_id, predecessor_revision, objective_digest, event_digest, coefficient_digest)`.
+`bind_solver_iteration_receipt_v1` converts one local step into an owner-local protocol representation only after binding:
 
-The local hot path consumes cached system/domain summaries and current episode/agent state. It never performs synchronous fleet-wide optimization. Corrections and deletion append revocation edges; rebuild excludes revoked source events, datasets and artifacts. Mixed objective, preference or body generations are rejected.
+- subject ID and class;
+- immutable objective digest;
+- generation;
+- event digest;
+- coefficient digest;
+- predecessor/next revisions;
+- residual, projection count and state digest.
 
-## 7. Goodhart and wireheading controls
+The receipt has a semantic digest and `AuthorityPosture::DENY_ALL`. Missing context fails before publication.
 
-Outcome definitions and observers are owned outside the policy being evaluated. NDU cannot write terminal success, change its own evidence requirements, alter evaluation slices or treat internal activation as user utility. Proxy metrics are registered with known failure modes and at least one non-proxy holdout.
+## 7. Conditional covariance and stochastic shadow boundary
 
-Controls include complete candidate logging, independent outcomes, future-window evaluation, adversarial proxy tests, no self-issued selection, reward-channel integrity checks, causal ablations, subgroup floors and explicit resource accounting. A gain in one utility dimension cannot waive safety, privacy, deletion, support or retention failure.
+For a shadow stochastic candidate, let centered increment and utility be:
 
-## 8. Numerical and resource envelope
+```text
+m_c = m - E[m | F_k]
+u_c = U_next - E[U_next | F_k]
+C_k = E[m_c m_c^T | F_k]
+B_k = E[u_c m_c^T | F_k]
+Z_k C_k = B_k
+```
 
-Pilot bounds are preference dimension `<=64`, utility dimension `<=8`, risk/resource dimensions `<=32`, hierarchy depth `4`, candidate count `<=128` and one selected coefficient artifact per process generation. Update p95 is `<=2 ms`, p99 `<=5 ms`, persistent state `<=256 KiB` per active subject and transient allocation `<=256 KiB`.
+Use a stable linear solve, not explicit matrix inversion. Only when `C_k = dt I` does the result reduce to `B_k/dt`. A covariance-rate manifest, whitening convention, coordinate system, `dt` floor, eigenvalue floor and condition-number ceiling are immutable profile fields.
 
-All normalization, units, clipping and fixed-point scales are manifest-bound. NaN, infinity, dimension drift, unknown unit, excessive projection rate or conservation failure quarantines the candidate and selects the deterministic predecessor.
+The full-rank pilot rejects singular or ill-conditioned covariance. A pseudoinverse requires a separately qualified supported-subspace profile with residual and null-space identifiability tests. Conditional-moment samples use pre-boundary features; future outcomes may label training rows but never enter runtime features.
 
-## 9. Golden fixtures and tests
+A numeric covariance fixture proves algebra only. It does not prove conditional identification, a complete FBSDE solution, adaptive efficacy or activation safety.
 
-- `NDU-SYS-GV-001`: the existing two-step zero-noise preference/utility vector reproduces exact Q32 values.
-- `NDU-SYS-GV-002`: a candidate with higher utility but a hard privacy violation is filtered before Pareto analysis.
-- `NDU-SYS-GV-003`: two non-dominated candidates without a scalarization profile return a Pareto set and slow-path disposition.
-- `NDU-SYS-GV-004`: simultaneous parent/child update oscillates in the fixture and is rejected; staged damped update converges.
-- `NDU-SYS-GV-005`: resource contributions sum above endowment and produce infeasible, not negative utility.
-- `NDU-SYS-GV-006`: tampering with an outcome observer identity invalidates the evaluation chain.
+## 8. Projection state and owner-local durability reference
 
-Property tests cover permutation invariance, projection boundedness, monotonic revision, conservation, parent freezing, no hard-axis mutation, crash/reopen, rollback and deletion rebuild.
+Preference and utility projections are append-only revisions owned by `utility.ndu`. The full semantic identity includes subject, principal scope, objective, predecessor, event and coefficient. A selected pointer changes only after the immutable projection and required independent evidence exist.
 
-## 10. Implementation sequence
+`NduProjectionJournalV1` is an owner-local bounded reference implementation. Each entry binds:
 
-Implement `UtilityContributionV1`, deterministic vector feasibility/Pareto logic, fixed-point subject state, episode update, backward utility recursion, append-only persistence, staged agent/domain hierarchy, convergence certificates and deterministic fallback. Only then add stochastic coefficients, learned approximators and Bellman integration in shadow mode.
+- monotone sequence;
+- preference, utility, selection or revocation kind;
+- idempotency identity digest;
+- objective and subject digests;
+- projection payload digest;
+- predecessor-entry and entry digests.
 
-## 11. Coding-entry checklist
+The journal enforces equal-identity/equal-semantics replay, rejects identity drift, validates exact length and hashes on reopen, rejects truncation/unknown kind/tampering, reconstructs selected projection state and prevents revocation resurrection after restart.
 
-Coding may start when the three readiness protocols and canonical NDU protocols compile, the objective and legal-set digests are frozen, utility dimensions and units are registered, deterministic golden fixtures are immutable, persistence ownership is confirmed, and `NDU-0`, `NDU-1` and `NDU-2` envelopes preserve no current-run mutation and no effect authority.
+This reference does not claim an activated production writer, operating-system durability, fsync, schema migration, retention or backup qualification. Product composition must bind a selected store and prove those properties independently.
 
-## Appendix A. Closed gap and protocol mapping
+## 9. Goodhart, wireheading and outcome ownership
 
-This appendix is a closed-world traceability projection. Each identifier is normative in `READINESS.json`, `PROTOCOLS.json` or `GAPS.json`; this Markdown file does not redefine the registry record.
+Outcome definitions and observers are owned outside the evaluated policy. NDU cannot write terminal success, alter evidence requirements, change evaluation slices or count its own activation as user utility.
 
-Protocols:
+Required controls include complete candidate logging, independent terminal outcomes, future-window evaluation, adversarial proxy tests, reward-channel integrity, causal ablations, subgroup floors, explicit resource accounting and no self-issued selection. A utility gain cannot waive privacy, deletion, authority, support, retention, calibration or safety failure.
 
-- `UtilityContributionV1`
-- `NduIterationReceiptV1`
-- `NduConvergenceCertificateV1`
+Preferences are uncertain internal estimates, not psychological diagnoses or authority statements about a person. Subject identifiers are purpose-scoped. Raw credentials, unrestricted prompts and consumable capability tokens never enter projection or evaluation receipts.
 
-Closed documentation gaps:
+## 10. Scheduling, fallback and rollback
+
+The local hot path consumes frozen or cached system/domain summaries and current episode/agent state. It performs no fleet-wide synchronous optimization. Revocation checks remain current even when an artifact or projection is cached.
+
+Fallback order is:
+
+1. compatible selected adaptive predecessor with current evidence;
+2. compatible selected deterministic predecessor;
+3. valid objective-class deterministic snapshot;
+4. immutable objective baseline;
+5. abstain or governed slow path.
+
+Every predecessor is checked against current revocation and deletion frontiers. A revoked or incompatible projection is quarantined, not loaded because it once worked. Rollback is a fresh fenced transition and cannot reset epochs, resurrect deleted lineage or reuse an old grant.
+
+Corrections and deletion append revocation edges. Rebuild excludes revoked events, features, datasets, coefficients and descendants. If selective parameter unlearning is unsupported, revoke and retrain; a logical tombstone alone does not prove removal from learned parameters.
+
+## 11. Numerical and resource envelope
+
+Pilot ceilings are:
+
+| Dimension | Ceiling |
+|---|---:|
+| preference axes | 64 |
+| utility axes | 8 |
+| risk/resource axes | 32 |
+| required organs | 32 |
+| candidates | 128 |
+| contribution rows | 4096 |
+| hierarchy depth | 4 |
+| deterministic iterations | 64 |
+| projection-journal records per file | 4096 |
+
+All normalization, units, scales, clipping locations and tolerances are manifest-bound. NaN/infinity equivalents, unknown units, dimension drift, excessive projection, covariance failure or conservation failure reject or quarantine the candidate.
+
+Reference-host p95/p99, transient memory and persistent projection targets remain design targets until bound to a named host, compiler, build profile, exact source and fixture. A solver residual is not a statistical-error or efficacy proof.
+
+## 12. Golden fixtures and tests
+
+- `NDU-SYS-GV-001`: deterministic zero-noise preference/utility vector reproduces exact Q32 values.
+- `NDU-SYS-GV-002`: a higher-utility privacy-violating candidate is filtered before Pareto analysis.
+- `NDU-SYS-GV-003`: multiple non-dominated candidates without scalarization return a Pareto slow path.
+- `NDU-SYS-GV-004`: simultaneous parent/child update rejects; staged damping converges in the fixture.
+- `NDU-SYS-GV-005`: resource cost above ceiling is infeasible, not negative utility.
+- `NDU-SYS-GV-006`: changed outcome-observer identity invalidates the evaluation chain.
+- `NDU-SYS-GV-007`: policy-specific maximum aggregation differs from summation and is digest-bound.
+- `NDU-SYS-GV-008`: `RequireEqual` detects contradictory organ values.
+- `NDU-SYS-GV-009`: Pareto tolerance changes the frontier and policy digest deterministically.
+- `NDU-SYS-GV-010`: termination receipt reports terminal and true maximum residual separately.
+- `NDU-SYS-GV-011`: canonical iteration publication rejects missing objective/event/coefficient context.
+- `NDU-SYS-GV-012`: projection-journal reopen, tamper, truncation and revocation non-resurrection fixtures pass.
+
+Exact native mappings are registered in `docs/modules/utility.ndu/IMPLEMENTATION_MAP.json`. The same implementation cannot be the sole oracle for a critical numerical claim; analytic or independent scalar fixtures remain required.
+
+## 13. Implementation sequence and completion rule
+
+Implementation order is typed contributions, explicit aggregation policy, feasibility, tolerant Pareto, optional scalarization, fixed-point preference state, local solver receipts, canonical context adapter, recursive utility, covariance shadow kernel, owner-local durability reference, exact source tests and semantic conformance.
+
+Work-package ownership is narrowed by `docs/delivery/LANE_D_WORK_PACKAGE_OVERLAY.json`:
+
+- `NDU-2A-HIERARCHY-PROTOCOLS` owns cross-module contract specification;
+- `NDU-2B-NDU-HIERARCHY-IMPLEMENTATION` owns `codex-rs/hepta-ndu/**`;
+- `RCP-2-NDU-HIERARCHY-INTEGRATION` owns Control integration under `runtime-control` with explicit co-ownership.
+
+The legacy `NDU-2-AGENT-DOMAIN-HIERARCHY` identifier remains in historical DAGs but is superseded for new source mutation by this overlay. No package gains positive authority.
+
+Repository-controlled completion requires the implementation map, source tests, strict lint, semantic checker, exact-head workflows and synthetic merge checks. Product caller, production writer, independent convergence decision, activation and release remain separately governed.
+
+## Appendix A. Canonical protocol mapping
+
+Canonical readiness protocols:
+
+- `UtilityContributionV1` — owned by `utility.ndu`;
+- `NduIterationReceiptV1` — owned by `utility.ndu`;
+- `NduConvergenceCertificateV1` — owned by `learning.eval`.
+
+Owner-local source types such as `EvaluationPolicyV1`, `NduEvaluationReceiptV2`, `NduSolverTerminationReceipt` and `NduProjectionJournalV1` do not become admitted external wire protocols by appearing in Rust. External protocol admission requires explicit registry and consumer changes.
+
+Closed documentation gap identifiers remain:
 
 - `RDY-GAP-NDU-001`
 - `RDY-GAP-NDU-002`
@@ -127,21 +250,3 @@ Closed documentation gaps:
 - `RDY-GAP-NDU-004`
 - `RDY-GAP-NDU-005`
 - `RDY-GAP-NDU-006`
-
-Bound work packages:
-
-- `BIO-0-NEURON-INTUITION-CONTRACTS`
-- `DOC-3E-PRECODING-READINESS-CLOSED-WORLD`
-- `INT-1-CALIBRATED-INTUITION-POLICY`
-- `LONG-1-TEMPORAL-HOLDOUT`
-- `LONG-2-RETENTION-FORGETTING`
-- `LONG-3-UNLEARNING-NON-RESURRECTION`
-- `LRN-0-CAUSAL-LEARNING-CONTRACTS`
-- `LRN-1-DURABLE-EPISODE-LEDGER`
-- `LRN-2-CAUSAL-EVALUATION`
-- `NDU-0-PREFERENCE-UTILITY-CONTRACTS`
-- `NDU-1-DETERMINISTIC-UTILITY-BASELINE`
-- `NDU-2-AGENT-DOMAIN-HIERARCHY`
-- `OBJ-0-OBJECTIVE-CONTRACTS`
-- `OBJ-1-OBJECTIVE-COMPILER`
-- `RCP-1-RUNTIME-CONTROL-PLANE`

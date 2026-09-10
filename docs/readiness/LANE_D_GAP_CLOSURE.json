@@ -1,0 +1,254 @@
+{
+  "schema": "hepta.lane-gap-closure.v1",
+  "schemaVersion": 1,
+  "lane": "LANE-D-OBJECTIVE-VALUE",
+  "authorityDelta": "none",
+  "repositoryControlledState": "candidate_complete_pending_exact_head_workflows",
+  "gaps": [
+    {
+      "id": "LANE-D-OBJ-ERR-001",
+      "severity": "P0",
+      "title": "Objective error codes had conflicting meanings",
+      "state": "closed",
+      "closure": [
+        "docs/contracts/OBJECTIVE_ERRORS.json",
+        "codex-rs/hepta-objective/src/error.rs",
+        "codex-rs/hepta-objective/src/objective_admission.rs"
+      ]
+    },
+    {
+      "id": "LANE-D-OBJ-PIPE-002",
+      "severity": "P0",
+      "title": "Authenticated admission pipeline was absent from the formal execution spec",
+      "state": "closed",
+      "closure": [
+        "docs/readiness/OBJECTIVE_COMPILER_EXECUTION.md",
+        "docs/modules/objective.compiler/IMPLEMENTATION_MAP.json"
+      ]
+    },
+    {
+      "id": "LANE-D-OBJ-CPLX-003",
+      "severity": "P0",
+      "title": "Normal compilation and conflict extraction shared an incorrect complexity claim",
+      "state": "closed",
+      "closure": [
+        "docs/readiness/OBJECTIVE_COMPILER_EXECUTION.md",
+        "qualification/module-execution-dossiers/detail/objective.compiler.md"
+      ]
+    },
+    {
+      "id": "LANE-D-OBJ-ABSTAIN-004",
+      "severity": "P0",
+      "title": "Intrinsic abstain could be forbidden or exceed the action ceiling",
+      "state": "closed",
+      "closure": [
+        "codex-rs/hepta-objective/src/compiler.rs",
+        "codex-rs/hepta-objective/src/compiler_tests.rs"
+      ]
+    },
+    {
+      "id": "LANE-D-NDU-CERT-005",
+      "severity": "P0",
+      "title": "Local solver result was confusable with the independent convergence certificate",
+      "state": "closed",
+      "closure": [
+        "codex-rs/hepta-ndu/src/preference.rs",
+        "docs/readiness/NDU_SYSTEM_EXECUTION.md"
+      ]
+    },
+    {
+      "id": "LANE-D-NDU-RESIDUAL-006",
+      "severity": "P0",
+      "title": "Maximum residual field contained only the terminal residual",
+      "state": "closed",
+      "closure": [
+        "codex-rs/hepta-ndu/src/preference.rs",
+        "codex-rs/hepta-ndu/src/preference_tests.rs"
+      ]
+    },
+    {
+      "id": "LANE-D-NDU-AGG-007",
+      "severity": "P0",
+      "title": "Cross-organ aggregation semantics were implicit",
+      "state": "closed",
+      "closure": [
+        "codex-rs/hepta-ndu/src/model.rs",
+        "codex-rs/hepta-ndu/src/evaluator.rs",
+        "docs/readiness/LANE_D_PROTOCOLS.json"
+      ]
+    },
+    {
+      "id": "LANE-D-NDU-PARETO-008",
+      "severity": "P0",
+      "title": "The specification required Pareto tolerance but source compared exact values",
+      "state": "closed",
+      "closure": [
+        "codex-rs/hepta-ndu/src/scoring.rs",
+        "codex-rs/hepta-ndu/src/evaluator_tests.rs"
+      ]
+    },
+    {
+      "id": "LANE-D-NDU-PROTO-009",
+      "severity": "P0",
+      "title": "Local iteration receipts lacked complete objective, subject, event and coefficient context",
+      "state": "closed",
+      "closure": [
+        "codex-rs/hepta-ndu/src/protocol.rs",
+        "codex-rs/hepta-ndu/src/protocol_tests.rs"
+      ]
+    },
+    {
+      "id": "LANE-D-NDU-DURABLE-010",
+      "severity": "P1",
+      "title": "No bounded append/reopen/revocation reference existed for NDU projections",
+      "state": "closed",
+      "closure": [
+        "codex-rs/hepta-ndu/src/projection_journal.rs",
+        "codex-rs/hepta-ndu/src/projection_journal_tests.rs"
+      ]
+    },
+    {
+      "id": "LANE-D-RCP-SPEC-011",
+      "severity": "P0",
+      "title": "Control runtime lacked a dedicated global-planner execution specification",
+      "state": "closed",
+      "closure": ["docs/readiness/CONTROL_RUNTIME_EXECUTION.md"]
+    },
+    {
+      "id": "LANE-D-RCP-KERNEL-012",
+      "severity": "P0",
+      "title": "Global snapshot and planner operations existed only as dossier design names",
+      "state": "closed",
+      "closure": [
+        "codex-rs/hepta-control-plane/src/planner.rs",
+        "codex-rs/hepta-control-plane/src/planner_tests.rs"
+      ]
+    },
+    {
+      "id": "LANE-D-RCP-OWNER-013",
+      "severity": "P0",
+      "title": "Control runtime could absorb NDU implementation ownership",
+      "state": "closed",
+      "closure": [
+        "codex-rs/hepta-control-plane/Cargo.toml",
+        "codex-rs/hepta-control-plane/src/planner.rs",
+        "docs/delivery/LANE_D_WORK_PACKAGE_OVERLAY.json"
+      ]
+    },
+    {
+      "id": "LANE-D-RCP-FLOOR-014",
+      "severity": "P0",
+      "title": "Essential resource floors and missing resource axes were not implemented",
+      "state": "closed",
+      "closure": [
+        "codex-rs/hepta-control-plane/src/planner.rs",
+        "codex-rs/hepta-control-plane/src/planner_tests.rs"
+      ]
+    },
+    {
+      "id": "LANE-D-RCP-BIND-015",
+      "severity": "P0",
+      "title": "NDU evaluation and prepared candidate sets were not digest-bound at finalization",
+      "state": "closed",
+      "closure": [
+        "codex-rs/hepta-control-plane/src/planner.rs",
+        "docs/readiness/LANE_D_PROTOCOLS.json"
+      ]
+    },
+    {
+      "id": "LANE-D-RCP-AUTH-016",
+      "severity": "P0",
+      "title": "Grant request and capability issuance were not represented as separate types",
+      "state": "closed",
+      "closure": [
+        "codex-rs/hepta-control-plane/src/planner.rs",
+        "docs/readiness/CONTROL_RUNTIME_EXECUTION.md"
+      ]
+    },
+    {
+      "id": "LANE-D-RCP-DURABLE-017",
+      "severity": "P1",
+      "title": "No bounded planner decision/reopen/revocation reference existed",
+      "state": "closed",
+      "closure": [
+        "codex-rs/hepta-control-plane/src/planner_journal.rs",
+        "codex-rs/hepta-control-plane/src/planner_journal_tests.rs"
+      ]
+    },
+    {
+      "id": "LANE-D-MAP-018",
+      "severity": "P1",
+      "title": "Design operations were not mapped to native symbols and tests",
+      "state": "closed",
+      "closure": [
+        "docs/modules/objective.compiler/IMPLEMENTATION_MAP.json",
+        "docs/modules/utility.ndu/IMPLEMENTATION_MAP.json",
+        "docs/modules/control.runtime/IMPLEMENTATION_MAP.json"
+      ]
+    },
+    {
+      "id": "LANE-D-MATURITY-019",
+      "severity": "P1",
+      "title": "One-dimensional source status obscured composition and activation state",
+      "state": "closed",
+      "closure": ["docs/readiness/LANE_D_MATURITY.json"]
+    },
+    {
+      "id": "LANE-D-WORK-020",
+      "severity": "P1",
+      "title": "NDU hierarchy package spanned a foreign owner source root",
+      "state": "closed",
+      "closure": ["docs/delivery/LANE_D_WORK_PACKAGE_OVERLAY.json"]
+    },
+    {
+      "id": "LANE-D-BASELINE-021",
+      "severity": "P2",
+      "title": "Module guides repeated generic implementation boilerplate",
+      "state": "closed",
+      "closure": ["docs/governance/MODULE_IMPLEMENTATION_BASELINE.md"]
+    },
+    {
+      "id": "LANE-D-CI-022",
+      "severity": "P0",
+      "title": "Document coverage checks did not validate semantic source alignment",
+      "state": "closed",
+      "closure": [
+        "scripts/hepta-lane-d-semantic-conformance.py",
+        ".github/workflows/hepta-lane-d-semantic-conformance.yml"
+      ]
+    }
+  ],
+  "externalGates": [
+    {
+      "id": "LANE-D-EXT-REVIEW",
+      "state": "external_observation_required",
+      "owner": "eligible non-author reviewer"
+    },
+    {
+      "id": "LANE-D-EXT-COMPOSITION",
+      "state": "external_observation_required",
+      "owner": "product runtime and production store owners"
+    },
+    {
+      "id": "LANE-D-EXT-HOST-MEASUREMENT",
+      "state": "external_observation_required",
+      "owner": "target-host qualification"
+    },
+    {
+      "id": "LANE-D-EXT-ACTIVATION",
+      "state": "external_observation_required",
+      "owner": "operator and release governance"
+    },
+    {
+      "id": "LANE-D-EXT-EFFICACY",
+      "state": "future_window_observation_required",
+      "owner": "independent learning evaluation"
+    }
+  ],
+  "enforcement": {
+    "semanticChecker": "scripts/hepta-lane-d-semantic-conformance.py",
+    "workflow": ".github/workflows/hepta-lane-d-semantic-conformance.yml",
+    "exactHeadEvidenceRequired": true,
+    "syntheticMergeEvidenceRequired": true
+  }
+}
