@@ -21,7 +21,7 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 20
     env:
-      EXPECTED_PARENT: 31ad3ca21109a34cd70769ba336a78d3a49ec246
+      EXPECTED_PARENT: 1d2eae6f7e624608aceed365b3d7415ad0363eb2
       TARGET_BRANCH: ops/hepta-global-gap-closure-controller-20260910-r1
       TARGET_CANDIDATE: integration/hepta-all-gap-closure-20260910-r7
       FINALIZER: scripts/hepta-global-finalizer-r7.py
@@ -49,6 +49,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          python3 -c 'import os; from pathlib import Path; p=Path(os.environ["PATCH_SCRIPT"]); s=p.read_text(); old="CORRECT_FUNCTION = " + chr(39)*3; new="CORRECT_FUNCTION = r" + chr(39)*3; assert s.count(old) == 1; p.write_text(s.replace(old,new,1))'
           python3 -m py_compile "${PATCH_SCRIPT}"
           python3 "${PATCH_SCRIPT}"
           python3 -m py_compile "${FINALIZER}"
