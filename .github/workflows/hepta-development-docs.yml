@@ -34,6 +34,8 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          mkdir -p .hepta-evidence
+          exec > >(tee .hepta-evidence/source-head.log) 2>&1
           test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
           python3 scripts/hepta-docs.py self-test
           python3 scripts/hepta-docs.py inventory-legacy
@@ -60,13 +62,14 @@ jobs:
           git diff --check
           test -z "$(git status --porcelain --untracked-files=no)"
 
-      - name: Retain exact source receipts
+      - name: Retain exact source receipts and diagnostics
+        if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: hepta-v8-source-${{ github.event.pull_request.head.sha || github.sha }}
-          path: .hepta-evidence/*.json
+          path: .hepta-evidence/*
           include-hidden-files: true
-          if-no-files-found: error
+          if-no-files-found: warn
           retention-days: 30
 
   merge-candidate:
@@ -120,6 +123,8 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          mkdir -p .hepta-evidence
+          exec > >(tee .hepta-evidence/merge-candidate.log) 2>&1
           test -n "$EXPECTED_SHA"
           test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
           python3 scripts/hepta-docs.py self-test
@@ -147,11 +152,12 @@ jobs:
           git diff --check
           test -z "$(git status --porcelain --untracked-files=no)"
 
-      - name: Retain exact merge receipts
+      - name: Retain exact merge receipts and diagnostics
+        if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: hepta-v8-merge-${{ steps.synthetic.outputs.sha }}
-          path: .hepta-evidence/*.json
+          name: hepta-v8-merge-${{ steps.synthetic.outputs.sha || github.event.pull_request.head.sha }}
+          path: .hepta-evidence/*
           include-hidden-files: true
-          if-no-files-found: error
+          if-no-files-found: warn
           retention-days: 30
