@@ -1,0 +1,61 @@
+{
+  "schema": "hepta.lane-b-candidate-manifest.v2",
+  "schemaVersion": 2,
+  "planId": "HEPTA-GLOBAL-MODULAR-DEVELOPMENT-PLAN",
+  "planVersion": "8.0.0",
+  "laneId": "LANE-B-RUNTIME",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "candidateBranch": "codex/hepta-lane-b-full-closure-20260910",
+  "baseBranch": "codex/hepta-all-gap-closure-20260908",
+  "baseCommit": "1f932d10e77714f3765821b514d126e812b08215",
+  "baseTree": "855bac313c81eecd8b796d7af944ba95199efd86",
+  "historyPolicy": {
+    "baseMustBeAncestor": true,
+    "mergeCommitsForbidden": true,
+    "orderedLinearHistoryRequired": true,
+    "candidateControlledMutationForbidden": true
+  },
+  "allowedPathPrefixes": [
+    ".github/workflows/hepta-lane-b-",
+    "qualification/lane-b/",
+    "docs/readiness/LANE_B_",
+    "scripts/hepta-lane-b-",
+    "scripts/test_hepta_lane_b_",
+    "codex-rs/hepta-supervisor/",
+    "codex-rs/hepta-fleet/",
+    "codex-rs/hepta-agentd/",
+    "codex-rs/app-server/",
+    "codex-rs/core/",
+    "codex-rs/hepta-codex-adapter/",
+    "codex-rs/hepta-infer-core/",
+    "codex-rs/hepta-inferd/",
+    "codex-rs/hepta-infer-worker-host/",
+    "codex-rs/hepta-automation/",
+    "codex-rs/hepta-matrix-sdk/",
+    "codex-rs/hepta-matrixd/",
+    "apps/hepta-browser/",
+    "apps/hepta-control-ui/",
+    "apps/hepta-native/"
+  ],
+  "requiredModuleGuides": [
+    "runtime.supervisor",
+    "runtime.fleet",
+    "runtime.agentd",
+    "runtime.codex",
+    "inference.control",
+    "inference.worker",
+    "automation.taskflow",
+    "channel.matrix",
+    "browser.servo",
+    "ui.control",
+    "ui.native"
+  ],
+  "claimBoundary": {
+    "repositoryControlledClosureMayBeCertified": true,
+    "realProviderExecutionMayBeSelfCertified": false,
+    "externalEffectMayBeSelfCertified": false,
+    "hardwareSafetyMayBeSelfCertified": false,
+    "independentAcceptanceMayBeSelfCertified": false,
+    "promotionOrReleaseMayBeSelfCertified": false
+  }
+}
