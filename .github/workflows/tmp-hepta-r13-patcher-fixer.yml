@@ -1,0 +1,42 @@
+name: Temporary Hepta r13 patcher indentation fixer
+
+on:
+  push:
+    branches:
+      - ops/hepta-global-gap-closure-controller-20260910-r1
+    paths:
+      - .github/workflows/tmp-hepta-r13-patcher-fixer.yml
+
+permissions:
+  contents: write
+
+jobs:
+  fix:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+      - name: Remove destructive indentation rewrite and self-clean
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          path = Path('.github/workflows/tmp-hepta-r13-chain-patcher.yml')
+          text = path.read_text(encoding='utf-8')
+          old = "'''.replace(\"\\n          \", \"\\n\").lstrip()"
+          new = "'''.lstrip()"
+          if text.count(old) != 1:
+              raise RuntimeError(f'expected one indentation rewrite, found {text.count(old)}')
+          path.write_text(text.replace(old, new, 1), encoding='utf-8')
+          PY
+          git config user.name "Hepta Patcher Fixer"
+          git config user.email "noreply@openai.com"
+          git rm -f .github/workflows/tmp-hepta-r13-patcher-fixer.yml
+          git add .github/workflows/tmp-hepta-r13-chain-patcher.yml
+          git diff --cached --check
+          git commit --signoff -m "fix(hepta): preserve generated Python indentation"
+          git push origin HEAD:ops/hepta-global-gap-closure-controller-20260910-r1
