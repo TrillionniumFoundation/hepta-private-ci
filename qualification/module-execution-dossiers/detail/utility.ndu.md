@@ -1,44 +1,85 @@
 # utility.ndu: implementation design
 
 Parent: `docs/modules/utility.ndu/TECHNICAL.md`. Lane: `LANE-D-OBJECTIVE-VALUE`.
-Status: specified target, not implemented or independently accepted. Common requirements: `../EXECUTION_SEMANTICS.md` and `../TECHNICAL.md`. Canonical ownership and package predecessors are unchanged.
+Status: deterministic source candidate, policy-bound evaluator, protocol adapter and owner-local durability reference implemented; production writer, independent convergence decision and activation remain separate. Common requirements: `../EXECUTION_SEMANTICS.md`, `../TECHNICAL.md`, `docs/readiness/NDU_SYSTEM_EXECUTION.md` and `docs/learning/NDU_FBSDE_SPEC.md`.
 
 ## 1. Source and work envelope
 
-Roots: `codex-rs/hepta-ndu`.
-Packages: `NDU-0-PREFERENCE-UTILITY-CONTRACTS`, `NDU-1-DETERMINISTIC-UTILITY-BASELINE`, `NDU-2-AGENT-DOMAIN-HIERARCHY`.
+Root: `codex-rs/hepta-ndu`. Owner-local source package: `NDU-2B-NDU-HIERARCHY-IMPLEMENTATION`. Protocol and Control integration boundaries are split by `docs/delivery/LANE_D_WORK_PACKAGE_OVERLAY.json`. Exact source/test mappings are in `docs/modules/utility.ndu/IMPLEMENTATION_MAP.json`.
 
-Operation signatures below are design contracts, not assertions of existing native symbols. Bind each to an existing or planned symbol and consumer inside the owner envelope. Preserve existing stores and APIs; do not create another authority or execution spine.
+The module owns utility and preference calculations but has no effect, capability, selection, promotion or release authority. Only system, domain, agent and episode are valid NDU subjects.
 
-## 2. Public operations and contract details
+## 2. Native operations and contract details
 
-`evaluate_candidates(objective, complete_contributions, profile) -> NduEvaluationReceipt`; `advance_preference(subject, predecessor, event, coefficient_manifest) -> NduUpdateCandidate`; `evaluate_recursive_utility(path, terminal_outcome) -> RecursiveUtilityReceipt`; `solve_backward_regression(conditional_moments, covariance_profile) -> ZEstimate | Unsupported`. Only system/domain/agent/episode are subjects; an organ or software module is not made a subject by emitting a score.
+Implemented operations include:
 
-## 3. State records and transaction design
+```text
+evaluate_candidates(set, profile, scalarization)
+evaluate_candidates_with_policy(set, profile, scalarization, policy)
+canonical_evaluation_policy_digest(profile, policy)
+solve_preference_target(initial, target, eta)
+bind_solver_iteration_receipt_v1(context, local_step)
+evaluate_recursive_utility(path)
+solve_backward_regression(conditional_moments, covariance_profile)
+NduProjectionJournalV1::{append_projection, select_projection, revoke_projection, reopen}
+```
 
-Own append-only preference and recursive-utility projections keyed by scope+subject+objective+predecessor revision+event+coefficient digest. State and coefficient artifact are distinct: bounded episode state may advance, but selected parameters/objective remain immutable within the run. A selected projection pointer changes transactionally only after the immutable row and applicable evidence exist. No effect/credential/acceptance authority resides in utility values.
+The legacy evaluator is retained as a compatibility entry with an explicit `legacy-sum-max-zero-tolerance-v1` policy. New integrations use `EvaluationPolicyV1` and `NduEvaluationReceiptV2`, whose digest binds utility, risk, resource and uncertainty aggregation plus per-axis Pareto tolerance.
 
-## 4. Deterministic algorithm and scheduling
+## 3. State, receipts and authority separation
 
-Filter hard infeasibility first; reject missing units/support rather than assign zero; compute Pareto candidates; apply only a registered scalarization or return frontier/slow path. Run the deterministic Q32 preference/utility baseline first. Stochastic candidates use Z*C=B with explicit covariance-rate/dt/whitening semantics and reject singular/ill-conditioned pilot covariance. Freeze parent revisions, stage child/parent artifacts across generations and report conservation/residual/gain diagnostics; a local diagnostic is not a global convergence proof.
+`NduSolverIterationReceipt` and `NduSolverTerminationReceipt` are local deterministic solver evidence. The termination receipt records both terminal residual and the true maximum residual observed across iterations.
+
+They are deliberately not named `NduConvergenceCertificateV1`. That canonical certificate remains owned by `learning.eval` and additionally requires independent evaluator identity, conservation, stability and spectral-radius evidence. A local solver cannot certify itself for activation.
+
+`bind_solver_iteration_receipt_v1` publishes an owner-local canonical-context receipt only after binding subject, objective, body generation, event, coefficient, revision, residual, projection count and state digest. The output carries `AuthorityPosture::DENY_ALL`.
+
+`NduProjectionJournalV1` is a bounded durability reference, not a production writer. It provides append-only hash-chain entries, semantic idempotency, selected-projection reconstruction, exact reopen, truncation/tamper detection and revocation non-resurrection. Production composition still requires a selected store, migration, fsync profile, retention and backup/restore evidence.
+
+## 4. Aggregation, Pareto and solver semantics
+
+Hard feasibility is applied before utility arithmetic. Every candidate includes abstain. Missing required organ support, objective/generation mismatch, missing axis or empty support digest rejects rather than contributing zero.
+
+Aggregation is versioned per axis with one of:
+
+- `Sum`;
+- `Maximum`;
+- `Minimum`;
+- `RequireEqual`.
+
+Every utility, risk, resource and uncertainty axis has exactly one rule. Unexpected axes and missing rules reject. `RequireEqual` detects inconsistent owner values instead of selecting one silently.
+
+Pareto dominance uses registered direction and non-negative absolute tolerance for every utility axis. A candidate is strictly better only beyond the tolerance on at least one axis and not worse beyond tolerance on all others. The tolerance vector and aggregation rules are in the evaluation-policy digest.
+
+The deterministic preference solver uses Q32 nearest/ties-even arithmetic, eta in `[1/16,1/4]`, at most 64 iterations, bounded projection and immutable revision advancement. Parent and child hierarchy levels cannot select new artifacts in the same generation.
+
+The stochastic shadow kernel solves `Z C = B` with centered conditional moments and an admitted covariance convention. Singular or ill-conditioned pilot covariance rejects. This numeric kernel is not a production stochastic policy or efficacy claim.
 
 ## 5. Capacity and performance profile
 
-Canonical preference <=64, utility <=8, resource/risk axes <=32, candidates <=128, hierarchy depth 4, iterations <=64; eta in [1/16,1/4]. Existing p95/p99 and storage ceilings remain targets requiring named-host measurement. Stochastic covariance condition ceiling is an additional qualified profile, not a widening of any existing bound.
+Pilot ceilings remain preference dimension 64, utility dimension 8, risk/resource dimension 32, hierarchy depth 4, candidates 128, contributions 4096 and solver iterations 64. Projection and decision journals are bounded to 4096 records per file.
 
-Pilot ceilings are design targets, not measurements. Stricter canonical limits prevail. Bind actual schema/migration, host and measurements before composition; stateless modules prove absence rather than inventing state.
+Runtime cost is deterministic and bounded by the declared dimensions. Dense covariance work stays on a bounded slow path. p95/p99 and persistent-state targets remain design targets until measured on a named host with exact source, compiler, build profile and fixture.
 
 ## 6. Concrete verification cases
 
-- NDU-DETAIL-01: analytic scaled covariance C=2dt with true Z=3 recovers 3, not 6.
-- NDU-DETAIL-02: correlated covariance [[2,1],[1,2]] and B=[5,1] recovers Z=[3,-1]; singular covariance rejects.
-- NDU-DETAIL-03: better soft score with a hard privacy breach is filtered before Pareto ranking.
-- NDU-DETAIL-04: simultaneous parent/child artifact selection rejects; fixed objective outcome holdout detects preference-driven reward redefinition.
+- `NDU-DETAIL-01`: scaled covariance `C=2dt` with true `Z=3` recovers 3, not 6.
+- `NDU-DETAIL-02`: correlated covariance recovers the analytic vector; singular covariance rejects.
+- `NDU-DETAIL-03`: higher utility with a hard privacy breach is filtered before Pareto analysis.
+- `NDU-DETAIL-04`: simultaneous parent/child artifact update rejects.
+- `NDU-DETAIL-05`: axis-specific maximum aggregation differs from implicit summation and is digest-bound.
+- `NDU-DETAIL-06`: `RequireEqual` rejects conflicting owner values.
+- `NDU-DETAIL-07`: Pareto tolerance changes the frontier and changes the policy digest.
+- `NDU-DETAIL-08`: local solver termination records terminal and maximum residual separately.
+- `NDU-DETAIL-09`: protocol publication requires complete objective/subject/event/coefficient context.
+- `NDU-DETAIL-10`: projection journal reopens exactly; tampering, truncation and revoked-projection resurrection reject.
 
-These are required product test designs, not executed-test receipts. Each implementation supplies native test identity, exact input/output and independent oracle evidence.
+Tests and symbols are recorded in the implementation map. They establish source behavior only, not a production caller, longitudinal utility gain or independent activation certificate.
 
 ## 7. Integration, rollback and capability ceiling
 
-Map existing evaluate_candidates, preference and recursive primitives rather than replacing them with an unreviewed trainer. Prove real consumers and durable projections separately. Fallback uses a compatible non-revoked deterministic predecessor, then objective baseline/abstain; it cannot relax constraints.
+Control runtime consumes an opaque NDU evaluation digest plus the complete evaluated/rejected/Pareto/advisory projection through a typed, deny-all owner port. It does not link to or reimplement NDU selection. Learning ledger and learning evaluation consume iteration/evaluation evidence under their own writer and independence rules.
 
-Use all eighteen dossier receipt fields. Immediate revocation/stop remains effective across frozen snapshots. Preserve every applicable external gate; no generator self-acceptance, self-merge or self-release.
+Fallback uses a compatible, selected, non-revoked deterministic predecessor, then a frozen objective baseline or abstain. A revoked projection cannot be restored from an old journal or backup. Rollback is a fresh governed transition, not replay of old authority.
+
+This candidate grants no model, tool, network, filesystem, secret, Matrix, fleet, effect, acceptance, merge, promotion or release authority. Production persistence, exact-head qualification, independent `learning.eval` decision, activation and release remain external to the algorithm kernel.

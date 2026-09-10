@@ -1,0 +1,234 @@
+{
+  "schema": "hepta.lane-protocol-overlay.v1",
+  "schemaVersion": 1,
+  "lane": "LANE-D-OBJECTIVE-VALUE",
+  "authorityDelta": "none",
+  "admissionState": "candidate_owner_local_contracts_pending_product_wire_admission",
+  "canonicalRegistries": [
+    "docs/contracts/CONTRACTS.json",
+    "docs/contracts/PROTOCOL_SCHEMAS.json",
+    "docs/readiness/PROTOCOLS.json"
+  ],
+  "interpretation": "These contracts freeze source semantics and owner-port fields. They do not become production wire protocols or grant authority until admitted into the canonical registries and compiled by named producers and consumers.",
+  "protocols": [
+    {
+      "id": "ObjectiveAdmissionReceiptV1",
+      "owner": "objective.compiler",
+      "consumers": ["intelligence.control", "learning.ledger"],
+      "authority": "deny_all",
+      "fields": [
+        {"name": "profileId", "type": "stable_id"},
+        {"name": "profileRevision", "type": "revision"},
+        {"name": "profileDigest", "type": "sha256"},
+        {"name": "suppliedSourceDigest", "type": "sha256"},
+        {"name": "intentDigest", "type": "sha256"},
+        {"name": "admittedSourceDigest", "type": "sha256"},
+        {"name": "observedAtUnixMicros", "type": "u64"},
+        {"name": "deadlineUnixMicros", "type": "optional_u64"},
+        {"name": "authority", "type": "deny_all_posture"}
+      ],
+      "digestScope": [
+        "profile identity and revision",
+        "source authentication projection",
+        "source and intent digests",
+        "observation and deadline"
+      ]
+    },
+    {
+      "id": "NduEvaluationPolicyV1",
+      "owner": "utility.ndu",
+      "consumers": ["control.runtime", "learning.eval", "learning.ledger"],
+      "authority": "none",
+      "bounds": {
+        "utilityRules": 8,
+        "riskRules": 32,
+        "resourceRules": 32,
+        "uncertaintyRules": 8,
+        "paretoTolerances": 8
+      },
+      "fields": [
+        {"name": "policyId", "type": "stable_id"},
+        {"name": "utilityRules", "type": "axis_aggregation_rule_array"},
+        {"name": "riskRules", "type": "axis_aggregation_rule_array"},
+        {"name": "resourceRules", "type": "axis_aggregation_rule_array"},
+        {"name": "uncertaintyRules", "type": "axis_aggregation_rule_array"},
+        {"name": "paretoAbsoluteTolerancesQ32", "type": "axis_fixed_point_array"}
+      ],
+      "digestScope": ["all normalized fields and rule ordering"]
+    },
+    {
+      "id": "NduEvaluationReceiptV2",
+      "owner": "utility.ndu",
+      "consumers": ["control.runtime", "learning.eval", "learning.ledger"],
+      "authority": "none",
+      "fields": [
+        {"name": "objectiveDigest", "type": "sha256"},
+        {"name": "generation", "type": "generation"},
+        {"name": "disposition", "type": "ndu_evaluation_disposition"},
+        {"name": "utilityProfileDigest", "type": "sha256"},
+        {"name": "evaluationPolicyDigest", "type": "sha256"},
+        {"name": "scalarizationProfileDigest", "type": "optional_sha256"},
+        {"name": "evaluatedCandidates", "type": "bounded_candidate_utility_array"},
+        {"name": "rejectedCandidates", "type": "bounded_rejected_candidate_array"},
+        {"name": "paretoFrontier", "type": "bounded_candidate_utility_array"},
+        {"name": "advisoryRecommendation", "type": "optional_stable_id"},
+        {"name": "evaluationDigestV1", "type": "sha256"},
+        {"name": "evaluationDigestV2", "type": "sha256"}
+      ],
+      "digestScope": [
+        "complete evaluated and rejected sets",
+        "Pareto frontier and advisory",
+        "utility, aggregation, tolerance and scalarization profiles",
+        "objective and generation"
+      ]
+    },
+    {
+      "id": "NduSolverTerminationReceiptV1",
+      "owner": "utility.ndu",
+      "consumers": ["learning.eval", "learning.ledger"],
+      "authority": "none",
+      "nonClaim": "not NduConvergenceCertificateV1",
+      "fields": [
+        {"name": "disposition", "type": "solver_disposition"},
+        {"name": "iterations", "type": "u32"},
+        {"name": "terminalResidualQ32", "type": "i64"},
+        {"name": "maximumResidualQ32", "type": "i64"},
+        {"name": "projectionCount", "type": "u32"},
+        {"name": "predecessorDigest", "type": "sha256"},
+        {"name": "terminalStateDigest", "type": "sha256"}
+      ],
+      "digestScope": ["all fields when published through an owner adapter"]
+    },
+    {
+      "id": "GlobalStateSnapshotV1",
+      "owner": "control.runtime",
+      "consumers": ["control.runtime", "kernel.evidence"],
+      "authority": "deny_all",
+      "bounds": {"ownerSummaries": 32},
+      "fields": [
+        {"name": "objectiveDigest", "type": "sha256"},
+        {"name": "bodyGeneration", "type": "generation"},
+        {"name": "configurationDigest", "type": "sha256"},
+        {"name": "revocationFrontierDigest", "type": "sha256"},
+        {"name": "collectedAtMicros", "type": "u64"},
+        {"name": "expiresAtMicros", "type": "u64"},
+        {"name": "ownerSummaries", "type": "bounded_owner_summary_array"},
+        {"name": "missingOwnerIds", "type": "bounded_id_array"},
+        {"name": "staleOwnerIds", "type": "bounded_id_array"},
+        {"name": "unavailableOwnerIds", "type": "bounded_id_array"},
+        {"name": "snapshotDigest", "type": "sha256"}
+      ],
+      "digestScope": ["all fields except snapshotDigest"]
+    },
+    {
+      "id": "PreparedPlanInputV1",
+      "owner": "control.runtime",
+      "consumers": ["utility.ndu", "control.runtime"],
+      "authority": "deny_all",
+      "bounds": {"candidates": 128, "resourceAxes": 32},
+      "fields": [
+        {"name": "planId", "type": "stable_id"},
+        {"name": "objectiveDigest", "type": "sha256"},
+        {"name": "bodyGeneration", "type": "generation"},
+        {"name": "configurationDigest", "type": "sha256"},
+        {"name": "revocationFrontierDigest", "type": "sha256"},
+        {"name": "snapshotDigest", "type": "sha256"},
+        {"name": "sourceCandidateSetDigest", "type": "sha256"},
+        {"name": "candidateSetDigest", "type": "sha256"},
+        {"name": "feasibleCandidates", "type": "bounded_plan_candidate_array"},
+        {"name": "resourceRejectedCandidateIds", "type": "bounded_id_array"},
+        {"name": "expiresAtMicros", "type": "u64"},
+        {"name": "preparedDigest", "type": "sha256"},
+        {"name": "authority", "type": "deny_all_posture"}
+      ],
+      "digestScope": [
+        "snapshot/objective/body/configuration/frontier",
+        "source and feasible candidate sets",
+        "resource rejection set",
+        "expiry"
+      ]
+    },
+    {
+      "id": "NduPlanEvaluationV1",
+      "owner": "utility.ndu",
+      "adapterOwner": "control.runtime",
+      "consumers": ["control.runtime"],
+      "authority": "deny_all",
+      "fields": [
+        {"name": "objectiveDigest", "type": "sha256"},
+        {"name": "bodyGeneration", "type": "generation"},
+        {"name": "evaluationPolicyDigest", "type": "sha256"},
+        {"name": "evaluationDigest", "type": "sha256"},
+        {"name": "evaluatedCandidateIds", "type": "bounded_id_array"},
+        {"name": "rejectedCandidateIds", "type": "bounded_id_array"},
+        {"name": "paretoCandidateIds", "type": "bounded_id_array"},
+        {"name": "advisoryCandidateId", "type": "optional_stable_id"},
+        {"name": "uncertaintyDigest", "type": "sha256"},
+        {"name": "disposition", "type": "planning_evaluation_disposition"},
+        {"name": "bindingDigest", "type": "sha256"},
+        {"name": "authority", "type": "deny_all_posture"}
+      ],
+      "digestScope": ["all fields except bindingDigest and authority"]
+    },
+    {
+      "id": "FeasiblePlanReceiptV1",
+      "owner": "control.runtime",
+      "consumers": ["kernel.authority", "kernel.evidence", "runtime.fleet"],
+      "authority": "deny_all",
+      "fields": [
+        {"name": "planId", "type": "stable_id"},
+        {"name": "objectiveDigest", "type": "sha256"},
+        {"name": "bodyGeneration", "type": "generation"},
+        {"name": "configurationDigest", "type": "sha256"},
+        {"name": "revocationFrontierDigest", "type": "sha256"},
+        {"name": "snapshotDigest", "type": "sha256"},
+        {"name": "sourceCandidateSetDigest", "type": "sha256"},
+        {"name": "candidateSetDigest", "type": "sha256"},
+        {"name": "resourceRejectedCandidateIds", "type": "bounded_id_array"},
+        {"name": "evaluationPolicyDigest", "type": "sha256"},
+        {"name": "nduEvaluationDigest", "type": "sha256"},
+        {"name": "nduBindingDigest", "type": "sha256"},
+        {"name": "evaluationDisposition", "type": "planning_evaluation_disposition"},
+        {"name": "chosenCandidateId", "type": "optional_stable_id"},
+        {"name": "chosenPlanDigest", "type": "optional_sha256"},
+        {"name": "uncertaintyDigest", "type": "sha256"},
+        {"name": "expiresAtMicros", "type": "u64"},
+        {"name": "searchDisclosure", "type": "bounded_search_disclosure"},
+        {"name": "receiptDigest", "type": "sha256"},
+        {"name": "authority", "type": "deny_all_posture"}
+      ],
+      "digestScope": ["all semantic fields except receiptDigest and authority"]
+    },
+    {
+      "id": "GrantRequestSetV1",
+      "owner": "control.runtime",
+      "consumers": ["kernel.authority"],
+      "authority": "deny_all",
+      "nonClaim": "request set is not a grant or effect acknowledgement",
+      "bounds": {"requestsPerCandidate": 64},
+      "fields": [
+        {"name": "planReceiptDigest", "type": "sha256"},
+        {"name": "requests", "type": "bounded_grant_request_array"},
+        {"name": "requestSetDigest", "type": "sha256"},
+        {"name": "authority", "type": "deny_all_posture"}
+      ],
+      "digestScope": ["plan receipt and every operation/final-payload-bound request"]
+    },
+    {
+      "id": "PlannerJournalEntryV1",
+      "owner": "control.runtime",
+      "consumers": ["control.runtime", "kernel.evidence"],
+      "authority": "none",
+      "bounds": {"recordsPerFile": 4096},
+      "fields": [
+        {"name": "sequence", "type": "u64"},
+        {"name": "kind", "type": "snapshot_decision_selection_or_revocation"},
+        {"name": "identityDigest", "type": "sha256"},
+        {"name": "payloadDigest", "type": "sha256"},
+        {"name": "predecessorEntryDigest", "type": "sha256"},
+        {"name": "entryDigest", "type": "sha256"}
+      ],
+      "digestScope": ["sequence, kind, identity, payload and predecessor"]
+    }
+  ]
+}

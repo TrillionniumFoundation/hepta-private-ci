@@ -1,7 +1,8 @@
 use std::error::Error;
 use std::fmt;
 
-/// Stable objective compiler failures. Codes map to the V8.2 execution spec.
+/// Stable objective compiler failures. Codes are owned by
+/// `docs/contracts/OBJECTIVE_ERRORS.json`.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum ObjectiveError {
     InvalidBound {
@@ -13,6 +14,7 @@ pub enum ObjectiveError {
     EmptyPrincipalScope,
     EmptyDigest(&'static str),
     InvalidSoftWeight(String),
+    AbstainUnavailable,
     UntrustedAuthorityEscalation,
     UnsupportedConstraintLanguage,
     FeasibilityBudgetExhausted,
@@ -27,11 +29,12 @@ impl ObjectiveError {
             | Self::DuplicateSemanticId(_)
             | Self::InvalidSoftWeight(_)
             | Self::Arithmetic => "OBJ-E001",
+            Self::UnsupportedConstraintLanguage => "OBJ-E002",
             Self::EmptyPrincipalScope => "OBJ-E003",
             Self::EmptyDigest(_) => "OBJ-E004",
-            Self::UntrustedAuthorityEscalation => "OBJ-E009",
-            Self::UnsupportedConstraintLanguage => "OBJ-E002",
+            Self::AbstainUnavailable => "OBJ-E006",
             Self::FeasibilityBudgetExhausted => "OBJ-E007",
+            Self::UntrustedAuthorityEscalation => "OBJ-E009",
         }
     }
 }
@@ -50,6 +53,9 @@ impl fmt::Display for ObjectiveError {
             Self::InvalidSoftWeight(dimension) => write!(
                 formatter,
                 "soft preference weight must be in [0, 1] for dimension {dimension}"
+            ),
+            Self::AbstainUnavailable => formatter.write_str(
+                "the intrinsic abstain action must remain legal and confirmation-free",
             ),
             Self::UntrustedAuthorityEscalation => formatter.write_str(
                 "untrusted evidence cannot create privileged constraints or legal actions",
