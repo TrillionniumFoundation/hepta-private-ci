@@ -1,0 +1,109 @@
+name: Hepta PR524 r23 blocker materializer
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    paths:
+      - .github/workflows/hepta-pr524-r23-materializer.yml
+      - .hepta-materializer/**
+
+permissions:
+  contents: write
+
+concurrency:
+  group: hepta-pr524-r23-materializer-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  materialize:
+    if: >-
+      github.event.pull_request.head.repo.full_name == github.repository &&
+      github.event.pull_request.head.ref == 'ops/pr524-r23-materializer-20260911-r1' &&
+      github.event.pull_request.base.ref == 'candidate/hepta-all-gap-closure-final-r21-20260910'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    steps:
+      - name: Check out exact materializer head
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Install pinned uv
+        uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b
+        with:
+          version: 0.11.3
+
+      - name: Install pinned Rust toolchain
+        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: 1.95.0
+          components: rustfmt,clippy
+
+      - name: Apply exact blocker patch and canonical formatting
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${{ github.event.pull_request.head.sha }}"
+          cat .hepta-materializer/patch.b64.* | base64 --decode > /tmp/pr524-r23.patch.gz
+          echo "a0cd3d989563717396d79280c6bf0e36bcb2a61fb0c546a8328223492d265ba8  /tmp/pr524-r23.patch.gz" | sha256sum -c -
+          gzip -dc /tmp/pr524-r23.patch.gz > /tmp/pr524-r23.patch
+          echo "ef56859108534c6984b6026fecc59edbfcd75c927b838e58843205cf0eb5cd4c  /tmp/pr524-r23.patch" | sha256sum -c -
+          git apply --check /tmp/pr524-r23.patch
+          git apply /tmp/pr524-r23.patch
+          rm -rf .hepta-materializer
+          rm .github/workflows/hepta-pr524-r23-materializer.yml
+          uv run --frozen --project scripts ruff format scripts
+          (cd codex-rs && cargo fmt --all)
+          git diff --check
+
+      - name: Commit candidate locally
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name hepta-pr524-materializer
+          git config user.email hepta-pr524-materializer@users.noreply.github.com
+          git add -A
+          git commit -m "fix(convergence): close repository-controlled blockers"
+          git rev-parse HEAD HEAD^{tree}
+
+      - name: Verify repository-controlled Python and dossier closure
+        shell: bash
+        run: |
+          set -euo pipefail
+          uv run --frozen --project scripts ruff format --check scripts
+          python3 scripts/hepta-module-docs.py self-test
+          python3 scripts/hepta-module-docs.py verify
+          python3 qualification/module-execution-dossiers/implementation_contracts.py self-test
+          python3 qualification/module-execution-dossiers/implementation_contracts.py verify-repository --expected-source-sha "$(git rev-parse HEAD)"
+          python3 scripts/hepta-technical-closure.py verify
+          python3 scripts/hepta-readiness.py self-test
+          python3 scripts/hepta-readiness.py generate-status --check
+          python3 scripts/hepta-readiness.py verify
+          git diff --exit-code
+
+      - name: Verify Rust owner crates
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo fmt --all -- --check
+          cargo check --locked --all-targets \
+            -p codex-hepta-control-plane \
+            -p codex-hepta-cognitive-store
+          cargo test --locked --all-targets \
+            -p codex-hepta-control-plane \
+            -p codex-hepta-cognitive-store
+          cargo clippy --locked --all-targets \
+            -p codex-hepta-control-plane \
+            -p codex-hepta-cognitive-store \
+            -- -D warnings
+
+      - name: Publish validated materialized tree
+        shell: bash
+        run: |
+          set -euo pipefail
+          git status --short
+          test -z "$(git status --porcelain)"
+          git push origin "HEAD:${{ github.event.pull_request.head.ref }}"
