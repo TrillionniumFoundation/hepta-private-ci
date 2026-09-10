@@ -1,0 +1,110 @@
+name: hepta-convergence-materialize-r3
+
+on:
+  push:
+    branches:
+      - ops/hepta-convergence-materialize-20260910-r3
+    paths:
+      - .github/workflows/hepta-convergence-materialize-r3.yml
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-convergence-materialize-r3
+  cancel-in-progress: true
+
+jobs:
+  materialize:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      BASE_SHA: 9a71e0bf02e7c538c725f0aaeffa6f1404546aa2
+      LANE_G_SHA: 54629ac932b1ccad8417d6a98c013400850800af
+      MERGE_BASE_SHA: 04f60466394a024c218ce66b1b32d1c42c462985
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Fetch and verify exact subjects
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch --no-tags origin \
+            "$BASE_SHA" \
+            "$LANE_G_SHA" \
+            "$MERGE_BASE_SHA"
+          for sha in "$BASE_SHA" "$LANE_G_SHA" "$MERGE_BASE_SHA"; do
+            git cat-file -e "$sha^{commit}"
+          done
+          test "$(git merge-base "$BASE_SHA" "$LANE_G_SHA")" = "$MERGE_BASE_SHA"
+      - name: Materialize the four exact conflict surfaces
+        shell: bash
+        run: |
+          set -euo pipefail
+          root=build/hepta-convergence-conflicts
+          rm -rf "$root"
+          mkdir -p "$root"/{base,lane-g,merge-base,diff}
+          paths=(
+            codex-rs/hepta-objective/src/objective_admission.rs
+            codex-rs/hepta-objective/src/objective_admission_tests.rs
+            qualification/module-execution-dossiers/NATIVE_BINDINGS.json
+            qualification/module-execution-dossiers/test_implementation_contracts.py
+          )
+          for subject in base lane-g merge-base; do
+            case "$subject" in
+              base) sha="$BASE_SHA" ;;
+              lane-g) sha="$LANE_G_SHA" ;;
+              merge-base) sha="$MERGE_BASE_SHA" ;;
+            esac
+            for path in "${paths[@]}"; do
+              mkdir -p "$root/$subject/$(dirname "$path")"
+              if git cat-file -e "$sha:$path" 2>/dev/null; then
+                git show "$sha:$path" > "$root/$subject/$path"
+              else
+                printf 'ABSENT\n' > "$root/$subject/$path.absent"
+              fi
+            done
+          done
+          for path in "${paths[@]}"; do
+            safe="${path//\//__}"
+            git diff --no-index -- \
+              "$root/lane-g/$path" \
+              "$root/base/$path" \
+              > "$root/diff/$safe.patch" || test $? -eq 1
+          done
+          python3 - <<'PY'
+          import hashlib
+          import json
+          import os
+          from pathlib import Path
+
+          root = Path('build/hepta-convergence-conflicts')
+          records = []
+          for path in sorted(p for p in root.rglob('*') if p.is_file()):
+              data = path.read_bytes()
+              records.append({
+                  'path': path.relative_to(root).as_posix(),
+                  'bytes': len(data),
+                  'sha256': hashlib.sha256(data).hexdigest(),
+              })
+          manifest = {
+              'schema': 'hepta.convergence.conflict-materialization.v1',
+              'base': os.environ['BASE_SHA'],
+              'laneG': os.environ['LANE_G_SHA'],
+              'mergeBase': os.environ['MERGE_BASE_SHA'],
+              'files': records,
+          }
+          (root / 'manifest.json').write_text(
+              json.dumps(manifest, indent=2, sort_keys=True) + '\n',
+              encoding='utf-8',
+          )
+          PY
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-convergence-conflicts-${{ github.sha }}
+          path: build/hepta-convergence-conflicts
+          if-no-files-found: error
+          retention-days: 7
