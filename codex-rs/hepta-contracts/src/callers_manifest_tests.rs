@@ -43,6 +43,11 @@ fn surface<'a>(manifest: &'a CallersManifest, crate_name: &str) -> &'a Surface {
         .unwrap_or_else(|| panic!("missing product surface {crate_name}"))
 }
 
+fn worktree_root() -> std::path::PathBuf {
+    codex_utils_cargo_bin::repo_root()
+        .expect("resolve repository root under Cargo or Bazel runfiles")
+}
+
 #[test]
 fn callers_manifest_schema_and_cutoff_are_frozen() {
     let manifest = manifest();
@@ -479,10 +484,7 @@ fn g4_matrix_robrix_truth_matches_paired_exact_candidate_qualification() {
             .and_then(toml::Value::as_str),
         Some("agentd_managed_one_embedded_app_server_per_canonical_agent_home")
     );
-    let worktree_root = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
-        .parent()
-        .and_then(std::path::Path::parent)
-        .expect("hepta-contracts must live under codex-rs");
+    let worktree_root = worktree_root();
     for callers_field in ["product_callers", "qualification_callers"] {
         for caller in g4
             .get(callers_field)
@@ -625,10 +627,7 @@ fn g5_fleet_automation_truth_matches_bounded_candidate_and_stays_fail_closed() {
         );
     }
 
-    let worktree_root = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
-        .parent()
-        .and_then(std::path::Path::parent)
-        .expect("hepta-contracts must live under codex-rs");
+    let worktree_root = worktree_root();
     let callers = g5
         .get("qualification_callers")
         .and_then(toml::Value::as_array)
@@ -806,10 +805,7 @@ fn g5_crash_recovery_ratchet_binds_exact_head_and_stays_fail_closed() {
             "G5 crash-recovery {field} must remain false",
         );
     }
-    let worktree_root = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
-        .parent()
-        .and_then(std::path::Path::parent)
-        .expect("hepta-contracts must live under codex-rs");
+    let worktree_root = worktree_root();
     let callers = recovery
         .get("qualification_callers")
         .and_then(toml::Value::as_array)
