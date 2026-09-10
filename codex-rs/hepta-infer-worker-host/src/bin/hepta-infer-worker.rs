@@ -235,10 +235,7 @@ impl<D: ModelDriver> InferenceWorker<D> {
         if self.active_requests.contains_key(&request.request_id) {
             return Err(Error::RequestCapacity);
         }
-        let request_limit = self
-            .grant
-            .maximum_active_requests
-            .min(MAX_ACTIVE_REQUESTS);
+        let request_limit = self.grant.maximum_active_requests.min(MAX_ACTIVE_REQUESTS);
         if self.active_requests.len() >= request_limit {
             return Err(Error::RequestCapacity);
         }
@@ -565,8 +562,7 @@ mod tests {
             ..Driver::default()
         };
         let mut worker =
-            InferenceWorker::new(100, "worker.1".to_string(), 3, grant(), driver)
-                .expect("worker");
+            InferenceWorker::new(100, "worker.1".to_string(), 3, grant(), driver).expect("worker");
         worker.load_model(100, manifest()).expect("load");
         let observed = worker.run(100, "model.1", request()).expect("run");
         assert_eq!(observed.status, ExecutionStatus::Indeterminate);

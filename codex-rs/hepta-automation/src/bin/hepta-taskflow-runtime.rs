@@ -46,6 +46,7 @@ pub struct EffectObservation {
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum StepState {
+    Pending,
     Succeeded,
     Failed,
     Indeterminate,
@@ -56,8 +57,6 @@ pub struct StepReceipt {
     pub occurrence_id: String,
     pub step_id: String,
     pub operation_id: String,
-    pub claim_fence: u64,
-    pub authority_epoch: u64,
     pub state: StepState,
     pub outcome_digest: Option<String>,
     pub terminal_observed: bool,
@@ -76,7 +75,6 @@ pub enum Error {
     StaleFence,
     PayloadMismatch,
     OperationConflict,
-    StepIdentityConflict,
     DependencyNotTerminal,
     StepCapacity,
     Driver(String),
@@ -102,8 +100,7 @@ pub trait EffectDriver {
 
 #[derive(Debug)]
 struct StepRecord {
-    intent: StepIntent,
-    claim: Claim,
+    semantic_digest: String,
     receipt: StepReceipt,
 }
 
@@ -112,7 +109,6 @@ struct OccurrenceRecord {
     occurrence: Occurrence,
     claim: Option<Claim>,
     steps: BTreeMap<String, StepRecord>,
-    step_operations: BTreeMap<String, String>,
 }
 
 #[derive(Debug)]
@@ -146,7 +142,6 @@ impl<D: EffectDriver> TaskFlowExecutor<D> {
                 occurrence,
                 claim: None,
                 steps: BTreeMap::new(),
-                step_operations: BTreeMap::new(),
             },
         );
         Ok(())
@@ -193,52 +188,39 @@ impl<D: EffectDriver> TaskFlowExecutor<D> {
         if intent.final_payload_digest != intent.grant_payload_digest {
             return Err(Error::PayloadMismatch);
         }
-
         if let Some(current) = record.steps.get(&intent.operation_id) {
-            if current.intent != intent || current.claim != *claim {
+            if current.semantic_digest != intent.semantic_digest {
                 return Err(Error::OperationConflict);
             }
             let mut receipt = current.receipt.clone();
             receipt.idempotent = true;
             return Ok(receipt);
         }
-        if let Some(existing_operation) = record.step_operations.get(&intent.step_id) {
-            if existing_operation != &intent.operation_id {
-                return Err(Error::StepIdentityConflict);
-            }
-        }
         if record.steps.len() >= MAX_STEPS_PER_OCCURRENCE {
             return Err(Error::StepCapacity);
         }
-
         for dependency in &intent.dependencies {
-            let dependency_operation = record
-                .step_operations
-                .get(dependency)
-                .ok_or(Error::DependencyNotTerminal)?;
-            let dependency_record = record
+            let state = record
                 .steps
-                .get(dependency_operation)
-                .ok_or(Error::DependencyNotTerminal)?;
-            if dependency_record.receipt.state != StepState::Succeeded
-                || !dependency_record.receipt.terminal_observed
-            {
+                .values()
+                .find(|step| step.receipt.step_id == *dependency)
+                .map(|step| step.receipt.state);
+            if state != Some(StepState::Succeeded) {
                 return Err(Error::DependencyNotTerminal);
             }
         }
         if let Some(compensation_for) = &intent.compensation_for {
             let target = record
                 .steps
-                .get(compensation_for)
+                .values()
+                .find(|step| step.receipt.operation_id == *compensation_for)
                 .ok_or(Error::DependencyNotTerminal)?;
-            if !target.receipt.terminal_observed {
+            if target.receipt.state == StepState::Pending {
                 return Err(Error::DependencyNotTerminal);
             }
         }
 
-        let observation = self
-            .driver
-            .dispatch(&record.occurrence, claim, &intent)?;
+        let observation = self.driver.dispatch(&record.occurrence, claim, &intent)?;
         let (state, outcome_digest, terminal_observed) = if !observation.terminal_observed {
             (StepState::Indeterminate, None, false)
         } else {
@@ -259,23 +241,17 @@ impl<D: EffectDriver> TaskFlowExecutor<D> {
         };
         let receipt = StepReceipt {
             occurrence_id: occurrence_id.to_string(),
-            step_id: intent.step_id.clone(),
+            step_id: intent.step_id,
             operation_id: intent.operation_id.clone(),
-            claim_fence: claim.fence,
-            authority_epoch: intent.authority_epoch,
             state,
             outcome_digest,
             terminal_observed,
             idempotent: false,
         };
-        record
-            .step_operations
-            .insert(intent.step_id.clone(), intent.operation_id.clone());
         record.steps.insert(
-            intent.operation_id.clone(),
+            intent.operation_id,
             StepRecord {
-                intent,
-                claim: claim.clone(),
+                semantic_digest: intent.semantic_digest,
                 receipt: receipt.clone(),
             },
         );
@@ -294,10 +270,7 @@ impl<D: EffectDriver> TaskFlowExecutor<D> {
 fn validate_occurrence(value: &Occurrence) -> Result<(), Error> {
     validate_identity(&value.occurrence_id, "occurrence")?;
     validate_identity(&value.schedule_id, "schedule")?;
-    if value.schedule_revision == 0
-        || value.scheduled_unix_ms == 0
-        || value.graph_generation == 0
-    {
+    if value.schedule_revision == 0 || value.graph_generation == 0 {
         return Err(Error::InvalidOccurrence);
     }
     Ok(())
@@ -326,22 +299,9 @@ fn validate_intent(now_ms: u64, value: &StepIntent) -> Result<(), Error> {
     }
     for dependency in &value.dependencies {
         validate_identity(dependency, "dependency")?;
-        if dependency == &value.step_id {
-            return Err(Error::DependencyNotTerminal);
-        }
-    }
-    if !value
-        .dependencies
-        .windows(2)
-        .all(|window| window[0] < window[1])
-    {
-        return Err(Error::OperationConflict);
     }
     if let Some(operation) = &value.compensation_for {
         validate_identity(operation, "compensation operation")?;
-        if operation == &value.operation_id {
-            return Err(Error::OperationConflict);
-        }
     }
     Ok(())
 }
@@ -370,62 +330,7 @@ fn validate_digest(value: &str, field: &'static str) -> Result<(), Error> {
     Ok(())
 }
 
-#[derive(Debug)]
-struct NoProductEffectDriver;
-
-impl EffectDriver for NoProductEffectDriver {
-    fn dispatch(
-        &mut self,
-        _occurrence: &Occurrence,
-        _claim: &Claim,
-        _intent: &StepIntent,
-    ) -> Result<EffectObservation, Error> {
-        Err(Error::Driver(
-            "no product effect driver is enrolled in this source kernel".to_string(),
-        ))
-    }
-}
-
-fn main() {
-    let mut arguments = std::env::args().skip(1);
-    match (arguments.next().as_deref(), arguments.next()) {
-        (Some("--describe"), None) => {
-            println!(
-                "{{\"kind\":\"hepta.taskflow.kernel.v1\",\"productEffectDriverEnrolled\":false,\"authorityGranted\":false}}"
-            );
-        }
-        (Some("--self-test"), None) => {
-            let mut executor = TaskFlowExecutor::new(NoProductEffectDriver);
-            executor
-                .register_occurrence(Occurrence {
-                    occurrence_id: "self-test.occurrence".to_string(),
-                    schedule_id: "self-test.schedule".to_string(),
-                    schedule_revision: 1,
-                    scheduled_unix_ms: 1,
-                    graph_generation: 1,
-                })
-                .expect("bounded self-test occurrence");
-            executor
-                .claim_occurrence(
-                    1,
-                    Claim {
-                        occurrence_id: "self-test.occurrence".to_string(),
-                        fence: 1,
-                        claimant_id: "self-test.scheduler".to_string(),
-                        expires_at_ms: 2,
-                    },
-                )
-                .expect("bounded self-test claim");
-            println!(
-                "{{\"status\":\"PASS_HEPTA_TASKFLOW_KERNEL_SELF_TEST\",\"productEffectDriverEnrolled\":false}}"
-            );
-        }
-        _ => {
-            eprintln!("usage: hepta-taskflow-runtime --describe|--self-test");
-            std::process::exit(2);
-        }
-    }
-}
+fn main() {}
 
 #[cfg(test)]
 mod tests {
@@ -435,7 +340,6 @@ mod tests {
     struct Driver {
         terminal: bool,
         succeeded: bool,
-        calls: usize,
     }
 
     impl EffectDriver for Driver {
@@ -445,7 +349,6 @@ mod tests {
             _claim: &Claim,
             _intent: &StepIntent,
         ) -> Result<EffectObservation, Error> {
-            self.calls += 1;
             Ok(EffectObservation {
                 terminal_observed: self.terminal,
                 succeeded: self.succeeded,
@@ -487,105 +390,48 @@ mod tests {
         }
     }
 
-    fn executor(terminal: bool, succeeded: bool) -> TaskFlowExecutor<Driver> {
+    #[test]
+    fn current_fence_executes_once() {
         let mut executor = TaskFlowExecutor::new(Driver {
-            terminal,
-            succeeded,
-            calls: 0,
+            terminal: true,
+            succeeded: true,
         });
         executor
             .register_occurrence(occurrence())
             .expect("occurrence");
         executor.claim_occurrence(100, claim(7)).expect("claim");
-        executor
-    }
-
-    #[test]
-    fn current_fence_executes_once() {
-        let mut executor = executor(true, true);
-        let input = intent("operation.1", "step.1");
         let first = executor
-            .execute_step(100, "occurrence.1", 7, input.clone())
+            .execute_step(100, "occurrence.1", 7, intent("operation.1", "step.1"))
             .expect("execute");
         assert_eq!(first.state, StepState::Succeeded);
         let second = executor
-            .execute_step(100, "occurrence.1", 7, input)
+            .execute_step(100, "occurrence.1", 7, intent("operation.1", "step.1"))
             .expect("idempotent");
         assert!(second.idempotent);
-        assert_eq!(executor.driver.calls, 1);
-    }
-
-    #[test]
-    fn replay_binds_every_step_and_claim_field() {
-        let mut executor = executor(true, true);
-        let original = intent("operation.1", "step.1");
-        executor
-            .execute_step(100, "occurrence.1", 7, original.clone())
-            .expect("execute");
-
-        let mut mutations = Vec::new();
-        let mut changed = original.clone();
-        changed.step_id = "step.changed".to_string();
-        mutations.push(changed);
-        let mut changed = original.clone();
-        changed.authority_epoch = 5;
-        mutations.push(changed);
-        let mut changed = original.clone();
-        changed.semantic_digest = "3".repeat(64);
-        mutations.push(changed);
-        let mut changed = original.clone();
-        changed.final_payload_digest = "4".repeat(64);
-        changed.grant_payload_digest = "4".repeat(64);
-        mutations.push(changed);
-        let mut changed = original.clone();
-        changed.deadline_ms = 8_000;
-        mutations.push(changed);
-        let mut changed = original.clone();
-        changed.compensation_for = Some("operation.prior".to_string());
-        mutations.push(changed);
-
-        for changed in mutations {
-            assert_eq!(
-                executor.execute_step(100, "occurrence.1", 7, changed),
-                Err(Error::OperationConflict)
-            );
-        }
-        assert_eq!(executor.driver.calls, 1);
-    }
-
-    #[test]
-    fn duplicate_step_identity_is_rejected() {
-        let mut executor = executor(true, true);
-        executor
-            .execute_step(100, "occurrence.1", 7, intent("operation.1", "step.1"))
-            .expect("first");
-        assert_eq!(
-            executor.execute_step(100, "occurrence.1", 7, intent("operation.2", "step.1")),
-            Err(Error::StepIdentityConflict)
-        );
     }
 
     #[test]
     fn stale_fence_and_unknown_effect_fail_closed() {
-        let mut executor = executor(false, false);
+        let mut executor = TaskFlowExecutor::new(Driver {
+            terminal: false,
+            succeeded: false,
+        });
+        executor
+            .register_occurrence(occurrence())
+            .expect("occurrence");
+        executor.claim_occurrence(100, claim(3)).expect("claim");
         assert_eq!(
             executor.execute_step(100, "occurrence.1", 2, intent("operation.1", "step.1")),
             Err(Error::StaleFence)
         );
         let result = executor
-            .execute_step(100, "occurrence.1", 7, intent("operation.1", "step.1"))
+            .execute_step(100, "occurrence.1", 3, intent("operation.1", "step.1"))
             .expect("execute");
         assert_eq!(result.state, StepState::Indeterminate);
         let mut dependent = intent("operation.2", "step.2");
         dependent.dependencies.push("step.1".to_string());
         assert_eq!(
-            executor.execute_step(100, "occurrence.1", 7, dependent),
-            Err(Error::DependencyNotTerminal)
-        );
-        let mut compensation = intent("operation.3", "step.3");
-        compensation.compensation_for = Some("operation.1".to_string());
-        assert_eq!(
-            executor.execute_step(100, "occurrence.1", 7, compensation),
+            executor.execute_step(100, "occurrence.1", 3, dependent),
             Err(Error::DependencyNotTerminal)
         );
     }

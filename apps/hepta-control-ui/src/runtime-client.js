@@ -9,18 +9,7 @@ const STATUSES = new Set([
   "cancelled",
   "rejected",
 ]);
-const TERMINAL_STATUSES = new Set(["succeeded", "failed", "cancelled", "rejected"]);
-const MAX_UNRESOLVED = 1024;
-const BINDING_FIELDS = Object.freeze([
-  "method",
-  "sessionId",
-  "connectionGeneration",
-  "runtimeGeneration",
-  "displayedRevision",
-  "snapshotDigest",
-  "operationId",
-  "semanticDigest",
-]);
+const MAX_PENDING = 1024;
 
 function record(value, name) {
   if (value === null || typeof value !== "object" || Array.isArray(value)) {
@@ -59,16 +48,11 @@ function frozen(value) {
   });
 }
 
-function sameBinding(left, right) {
-  return BINDING_FIELDS.every((field) => left[field] === right[field]);
-}
-
 export class RuntimeClient {
   #transport;
   #session = null;
   #snapshot = null;
   #pending = new Map();
-  #orphaned = new Map();
 
   constructor({ transport }) {
     record(transport, "transport");
@@ -82,11 +66,11 @@ export class RuntimeClient {
 
   async connect(endpointManifest) {
     record(endpointManifest, "endpointManifest");
-    if (this.#session) {
-      throw new TypeError("runtime client is already connected");
-    }
     const endpointId = stableId(endpointManifest.endpointId, "endpointId");
-    const protocolVersion = revision(endpointManifest.protocolVersion, "protocolVersion");
+    const protocolVersion = revision(
+      endpointManifest.protocolVersion,
+      "protocolVersion",
+    );
     const manifestDigest = digest(endpointManifest.manifestDigest, "manifestDigest");
     const observed = record(
       await this.#transport.connect({ endpointId, protocolVersion, manifestDigest }),
@@ -109,12 +93,7 @@ export class RuntimeClient {
       ),
     };
     this.#snapshot = null;
-    this.#pending = new Map();
-    return frozen({
-      kind: "RuntimeSessionV1",
-      ...this.#session,
-      unresolvedPreviousSessionOperations: this.#orphaned.size,
-    });
+    return frozen({ kind: "RuntimeSessionV1", ...this.#session });
   }
 
   applySnapshot(snapshot) {
@@ -155,24 +134,20 @@ export class RuntimeClient {
       return frozen({
         kind: "RuntimeViewV1",
         sessionId: this.#session.sessionId,
-        connectionGeneration: this.#session.connectionGeneration,
         stale: true,
         generation: null,
         revision: null,
         digest: null,
         modules: Object.freeze([]),
         pending: this.#pending.size,
-        unresolvedPreviousSessionOperations: this.#orphaned.size,
       });
     }
     return frozen({
       kind: "RuntimeViewV1",
       sessionId: this.#session.sessionId,
-      connectionGeneration: this.#session.connectionGeneration,
       stale: false,
       ...this.#snapshot,
       pending: this.#pending.size,
-      unresolvedPreviousSessionOperations: this.#orphaned.size,
     });
   }
 
@@ -188,27 +163,27 @@ export class RuntimeClient {
     this.#requireSession();
     record(observation, "observation");
     const operationId = stableId(observation.operationId, "operationId");
-    const current = this.#pending.get(operationId);
-    const orphaned = this.#orphaned.get(operationId);
-    const entry = current ?? orphaned;
-    if (!entry) {
-      throw new TypeError("observation does not match an unresolved operation");
+    const pending = this.#pending.get(operationId);
+    if (!pending) {
+      throw new TypeError("observation does not match a pending operation");
     }
-    const binding = this.#observationBinding(observation);
-    if (!sameBinding(entry.binding, binding)) {
-      throw new TypeError("observation binding does not match the admitted operation");
+    if (observation.semanticDigest !== pending.semanticDigest) {
+      throw new TypeError("observation semantic digest mismatch");
     }
     if (!STATUSES.has(observation.status)) {
       throw new TypeError("operation status is not registered");
     }
-    const terminal = TERMINAL_STATUSES.has(observation.status);
-    if (terminal !== (observation.terminalObserved === true)) {
-      throw new TypeError("terminal status and terminal observation disagree");
+    const terminal = ["succeeded", "failed", "cancelled", "rejected"].includes(
+      observation.status,
+    );
+    if (terminal && observation.terminalObserved !== true) {
+      throw new TypeError("terminal status requires terminal observation");
     }
     const result = frozen({
       kind: "OperationDispositionV1",
-      ...entry.binding,
+      operationId,
       status: observation.status,
+      semanticDigest: pending.semanticDigest,
       terminalObserved: observation.terminalObserved === true,
       outcomeDigest:
         observation.outcomeDigest == null
@@ -217,7 +192,6 @@ export class RuntimeClient {
     });
     if (terminal) {
       this.#pending.delete(operationId);
-      this.#orphaned.delete(operationId);
     }
     return result;
   }
@@ -226,18 +200,7 @@ export class RuntimeClient {
     if (!this.#session) {
       return;
     }
-    await this.#transport.close({
-      sessionId: this.#session.sessionId,
-      connectionGeneration: this.#session.connectionGeneration,
-    });
-    for (const [operationId, entry] of this.#pending) {
-      const existing = this.#orphaned.get(operationId);
-      if (existing && !sameBinding(existing.binding, entry.binding)) {
-        throw new TypeError("operation identity collides across unresolved sessions");
-      }
-      this.#orphaned.set(operationId, entry);
-    }
-    this.#pending = new Map();
+    await this.#transport.close({ sessionId: this.#session.sessionId });
     this.#session = null;
     this.#snapshot = null;
   }
@@ -250,70 +213,53 @@ export class RuntimeClient {
     record(input, "input");
     const operationId = stableId(input.operationId, "operationId");
     const semanticDigest = digest(input.semanticDigest, "semanticDigest");
-    const displayedRevision = revision(input.displayedRevision, "displayedRevision");
+    const displayedRevision = revision(
+      input.displayedRevision,
+      "displayedRevision",
+    );
     if (displayedRevision !== this.#snapshot.revision) {
       throw new TypeError("displayed revision is stale");
     }
-    const binding = Object.freeze({
-      method,
-      sessionId: this.#session.sessionId,
-      connectionGeneration: this.#session.connectionGeneration,
-      runtimeGeneration: this.#snapshot.generation,
-      displayedRevision,
-      snapshotDigest: this.#snapshot.digest,
-      operationId,
-      semanticDigest,
-    });
     const prior = this.#pending.get(operationId);
     if (prior) {
-      if (!sameBinding(prior.binding, binding)) {
+      if (prior.semanticDigest !== semanticDigest) {
         throw new TypeError("operation identity was reused with changed semantics");
       }
       return prior.acknowledgement;
     }
-    if (this.#orphaned.has(operationId)) {
-      throw new TypeError(
-        "operation identity belongs to an unresolved previous session and must be reconciled",
-      );
-    }
-    if (this.#pending.size + this.#orphaned.size >= MAX_UNRESOLVED) {
-      throw new TypeError("unresolved operation capacity is exhausted");
+    if (this.#pending.size >= MAX_PENDING) {
+      throw new TypeError("pending operation capacity is exhausted");
     }
     const response = record(
-      await this.#transport.request(method, binding),
+      await this.#transport.request(method, {
+        sessionId: this.#session.sessionId,
+        connectionGeneration: this.#session.connectionGeneration,
+        runtimeGeneration: this.#snapshot.generation,
+        displayedRevision,
+        operationId,
+        semanticDigest,
+      }),
       "request acknowledgement",
     );
     if (response.accepted !== true) {
       throw new TypeError("backend rejected the request");
     }
-    const responseBinding = this.#observationBinding(response);
-    if (!sameBinding(binding, responseBinding)) {
-      throw new TypeError("backend acknowledgement binding mismatch");
+    if (
+      response.operationId !== operationId ||
+      response.semanticDigest !== semanticDigest
+    ) {
+      throw new TypeError("backend acknowledgement identity mismatch");
     }
     const acknowledgement = frozen({
       kind: "OperationAcknowledgementV1",
-      ...binding,
+      method,
+      operationId,
+      semanticDigest,
       status: "pending",
       accepted: true,
     });
-    this.#pending.set(operationId, { binding, acknowledgement });
+    this.#pending.set(operationId, { semanticDigest, acknowledgement });
     return acknowledgement;
-  }
-
-  #observationBinding(value) {
-    return {
-      method: stableId(value.method, "method"),
-      sessionId: stableId(value.sessionId, "sessionId"),
-      connectionGeneration: revision(
-        value.connectionGeneration,
-        "connectionGeneration",
-      ),
-      runtimeGeneration: revision(value.runtimeGeneration, "runtimeGeneration"),
-      displayedRevision: revision(value.displayedRevision, "displayedRevision"),
-      snapshotDigest: digest(value.snapshotDigest, "snapshotDigest"),
-      operationId: stableId(value.operationId, "operationId"),
-      semanticDigest: digest(value.semanticDigest, "semanticDigest"),
-    };
   }
 
   #requireSession() {

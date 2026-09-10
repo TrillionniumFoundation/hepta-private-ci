@@ -1,24 +1,11 @@
+import { createHash } from "node:crypto";
+
 const STABLE_ID = /^[A-Za-z0-9._:-]{1,128}$/;
 const DIGEST = /^[0-9a-f]{64}$/;
 const ZERO_DIGEST = "0".repeat(64);
 const MAX_ORIGINS = 128;
+const MAX_EFFECT_GRANTS = 1024;
 const MAX_OUTSTANDING_OPERATIONS = 1024;
-const OPERATION_SEMANTIC_FIELDS = Object.freeze([
-  "profileId",
-  "principalId",
-  "processId",
-  "manifestDigest",
-  "grantDigest",
-  "profileGeneration",
-  "pageGeneration",
-  "documentDigest",
-  "pageOrigin",
-  "action",
-  "destinationOrigin",
-  "finalPayloadDigest",
-  "grantPayloadDigest",
-  "deadlineMs",
-]);
 
 function requireRecord(value, name) {
   if (value === null || typeof value !== "object" || Array.isArray(value)) {
@@ -48,10 +35,10 @@ function positiveInteger(value, name) {
   return value;
 }
 
-function deadline(value, now) {
-  const deadlineMs = positiveInteger(value, "deadlineMs");
+function deadline(value, now, name = "deadlineMs") {
+  const deadlineMs = positiveInteger(value, name);
   if (deadlineMs <= now) {
-    throw new TypeError("deadline has expired");
+    throw new TypeError(`${name} has expired`);
   }
   return deadlineMs;
 }
@@ -67,6 +54,10 @@ function canonicalOrigin(value) {
   return url.origin;
 }
 
+function canonicalDigest(value) {
+  return createHash("sha256").update(JSON.stringify(value)).digest("hex");
+}
+
 function freezeResult(value) {
   return Object.freeze({
     ...value,
@@ -76,8 +67,28 @@ function freezeResult(value) {
   });
 }
 
-function sameOperationSemantics(left, right) {
-  return OPERATION_SEMANTIC_FIELDS.every((field) => left[field] === right[field]);
+function parseEffectGrant(value, now, allowedOrigins) {
+  const grant = requireRecord(value, "effectGrant");
+  const grantDigest = digest(grant.grantDigest, "effectGrant.grantDigest");
+  const action = stableId(grant.action, "effectGrant.action");
+  const destinationOrigin = canonicalOrigin(grant.destinationOrigin);
+  if (!allowedOrigins.has(destinationOrigin)) {
+    throw new TypeError("effect grant destination is outside the profile grant");
+  }
+  const finalPayloadDigest = digest(
+    grant.finalPayloadDigest,
+    "effectGrant.finalPayloadDigest",
+  );
+  const authorityEpoch = positiveInteger(grant.authorityEpoch, "effectGrant.authorityEpoch");
+  const expiresAtMs = deadline(grant.expiresAtMs, now, "effectGrant.expiresAtMs");
+  return Object.freeze({
+    grantDigest,
+    action,
+    destinationOrigin,
+    finalPayloadDigest,
+    authorityEpoch,
+    expiresAtMs,
+  });
 }
 
 export class BrowserProfileHost {
@@ -87,7 +98,7 @@ export class BrowserProfileHost {
 
   constructor({ driver, clock = () => Date.now() }) {
     requireRecord(driver, "driver");
-    for (const method of ["start", "observe", "act", "stop"]) {
+    for (const method of ["start", "observe", "act", "reconcile", "stop"]) {
       if (typeof driver[method] !== "function") {
         throw new TypeError(`driver.${method} must be a function`);
       }
@@ -106,13 +117,28 @@ export class BrowserProfileHost {
     const manifestDigest = digest(input.manifestDigest, "manifestDigest");
     const grantDigest = digest(input.grantDigest, "grantDigest");
     const generation = positiveInteger(input.generation, "generation");
-    const expiresAtMs = deadline(input.expiresAtMs, this.#clock());
+    const expiresAtMs = deadline(input.expiresAtMs, this.#clock(), "expiresAtMs");
     if (!Array.isArray(input.allowedOrigins) || input.allowedOrigins.length > MAX_ORIGINS) {
       throw new TypeError("allowedOrigins is not a bounded array");
     }
     const allowedOrigins = new Set(input.allowedOrigins.map(canonicalOrigin));
     if (allowedOrigins.size !== input.allowedOrigins.length) {
       throw new TypeError("allowedOrigins contains duplicates");
+    }
+    if (
+      !Array.isArray(input.effectGrants) ||
+      input.effectGrants.length === 0 ||
+      input.effectGrants.length > MAX_EFFECT_GRANTS
+    ) {
+      throw new TypeError("effectGrants must be a non-empty bounded array");
+    }
+    const effectGrants = new Map();
+    for (const rawGrant of input.effectGrants) {
+      const grant = parseEffectGrant(rawGrant, this.#clock(), allowedOrigins);
+      if (effectGrants.has(grant.grantDigest)) {
+        throw new TypeError("effectGrants contains duplicate grantDigest");
+      }
+      effectGrants.set(grant.grantDigest, grant);
     }
     if (this.#profiles.has(profileId)) {
       throw new TypeError("profile is already open");
@@ -143,8 +169,8 @@ export class BrowserProfileHost {
       processId,
       pageGeneration: 0,
       documentDigest: null,
-      pageOrigin: null,
       allowedOrigins,
+      effectGrants,
       operations: new Map(),
     };
     this.#profiles.set(profileId, state);
@@ -157,6 +183,7 @@ export class BrowserProfileHost {
       manifestDigest,
       grantDigest,
       expiresAtMs,
+      effectGrantCount: effectGrants.size,
     });
   }
 
@@ -183,7 +210,6 @@ export class BrowserProfileHost {
     const origin = canonicalOrigin(observed.origin);
     state.pageGeneration = pageGeneration;
     state.documentDigest = documentDigest;
-    state.pageOrigin = origin;
     return freezeResult({
       kind: "PageObservationV1",
       profileId: state.profileId,
@@ -198,99 +224,57 @@ export class BrowserProfileHost {
   }
 
   async navigateOrAct(input) {
-    const state = this.#profile(input);
-    const operationId = stableId(input.operationId, "operationId");
-    const pageGeneration = positiveInteger(input.pageGeneration, "pageGeneration");
-    const action = stableId(input.action, "action");
-    const destinationOrigin = canonicalOrigin(input.destinationOrigin);
-    const finalPayloadDigest = digest(input.finalPayloadDigest, "finalPayloadDigest");
-    const grantPayloadDigest = digest(input.grantPayloadDigest, "grantPayloadDigest");
-    const deadlineMs = deadline(input.deadlineMs, this.#clock());
-    if (finalPayloadDigest !== grantPayloadDigest) {
-      throw new TypeError("grant does not bind the final payload");
-    }
-    if (!state.allowedOrigins.has(destinationOrigin)) {
-      throw new TypeError("destination origin is outside the profile grant");
-    }
-    if (state.documentDigest === null || state.pageOrigin === null) {
-      throw new TypeError("browser action requires a current page observation");
-    }
-
-    const semantics = Object.freeze({
-      profileId: state.profileId,
-      principalId: state.principalId,
-      processId: state.processId,
-      manifestDigest: state.manifestDigest,
-      grantDigest: state.grantDigest,
-      profileGeneration: state.generation,
-      pageGeneration,
-      documentDigest: state.documentDigest,
-      pageOrigin: state.pageOrigin,
-      action,
-      destinationOrigin,
-      finalPayloadDigest,
-      grantPayloadDigest,
-      deadlineMs,
-    });
+    const admitted = this.#admitOperation(input);
+    const { state, operationId, semantics, semanticDigest } = admitted;
     const prior = state.operations.get(operationId);
     if (prior) {
-      if (!sameOperationSemantics(prior.semantics, semantics)) {
+      if (prior.semanticDigest !== semanticDigest) {
         throw new TypeError("operation identity was reused with changed semantics");
       }
       return prior.receipt;
-    }
-    if (pageGeneration !== state.pageGeneration) {
-      throw new TypeError("stale page generation");
     }
     if (state.operations.size >= MAX_OUTSTANDING_OPERATIONS) {
       throw new TypeError("profile operation capacity is exhausted");
     }
 
     const observed = requireRecord(
-      await this.#driver.act({ ...semantics, operationId }),
+      await this.#driver.act(semantics),
       "driver effect observation",
     );
-    let receipt;
-    if (observed.terminalObserved !== true) {
-      receipt = freezeResult({
-        kind: "BrowserEffectObservationV1",
-        profileId: state.profileId,
-        processId: state.processId,
-        profileGeneration: state.generation,
-        pageGeneration,
-        operationId,
-        action,
-        destinationOrigin,
-        finalPayloadDigest,
-        status: "indeterminate",
-        outcomeDigest: null,
-        terminalObserved: false,
-      });
-    } else {
-      if (observed.status !== "succeeded" && observed.status !== "failed") {
-        throw new TypeError("terminal browser status is not registered");
-      }
-      receipt = freezeResult({
-        kind: "BrowserEffectObservationV1",
-        profileId: state.profileId,
-        processId: state.processId,
-        profileGeneration: state.generation,
-        pageGeneration,
-        operationId,
-        action,
-        destinationOrigin,
-        finalPayloadDigest,
-        status: observed.status,
-        outcomeDigest: digest(observed.outcomeDigest, "outcomeDigest"),
-        terminalObserved: true,
-      });
+    const receipt = this.#effectReceipt(state.profileId, operationId, semanticDigest, observed);
+    state.operations.set(operationId, { semanticDigest, semantics, receipt });
+    return receipt;
+  }
+
+  async reconcileOperation(input) {
+    const admitted = this.#admitOperation(input);
+    const { state, operationId, semantics, semanticDigest } = admitted;
+    const prior = state.operations.get(operationId);
+    if (!prior) {
+      throw new TypeError("operation has not crossed the browser effect boundary");
     }
-    state.operations.set(operationId, { semantics, receipt });
+    if (prior.semanticDigest !== semanticDigest) {
+      throw new TypeError("operation reconciliation changed immutable semantics");
+    }
+    if (prior.receipt.terminalObserved === true) {
+      return prior.receipt;
+    }
+    const observed = requireRecord(
+      await this.#driver.reconcile(semantics),
+      "driver reconciliation observation",
+    );
+    const receipt = this.#effectReceipt(state.profileId, operationId, semanticDigest, observed);
+    if (receipt.terminalObserved === true) {
+      prior.receipt = receipt;
+    }
     return receipt;
   }
 
   async closeProfile(input) {
     const state = this.#profile(input);
+    if ([...state.operations.values()].some((entry) => entry.receipt.terminalObserved !== true)) {
+      throw new TypeError("profile has indeterminate browser effects requiring reconciliation");
+    }
     const observed = requireRecord(
       await this.#driver.stop({
         profileId: state.profileId,
@@ -308,6 +292,87 @@ export class BrowserProfileHost {
       profileId: state.profileId,
       processId: state.processId,
       generation: state.generation,
+      terminalObserved: true,
+    });
+  }
+
+  #admitOperation(input) {
+    const state = this.#profile(input);
+    const operationId = stableId(input.operationId, "operationId");
+    const pageGeneration = positiveInteger(input.pageGeneration, "pageGeneration");
+    if (pageGeneration !== state.pageGeneration || state.documentDigest === null) {
+      throw new TypeError("stale page generation");
+    }
+    const action = stableId(input.action, "action");
+    const destinationOrigin = canonicalOrigin(input.destinationOrigin);
+    if (!state.allowedOrigins.has(destinationOrigin)) {
+      throw new TypeError("destination origin is outside the profile grant");
+    }
+    const finalPayloadDigest = digest(input.finalPayloadDigest, "finalPayloadDigest");
+    const effectGrantDigest = digest(input.effectGrantDigest, "effectGrantDigest");
+    const authorityEpoch = positiveInteger(input.authorityEpoch, "authorityEpoch");
+    const deadlineMs = deadline(input.deadlineMs, this.#clock());
+    const grant = state.effectGrants.get(effectGrantDigest);
+    if (!grant) {
+      throw new TypeError("effect grant is not registered for this profile");
+    }
+    if (this.#clock() >= grant.expiresAtMs) {
+      throw new TypeError("effect grant has expired");
+    }
+    if (
+      grant.action !== action ||
+      grant.destinationOrigin !== destinationOrigin ||
+      grant.finalPayloadDigest !== finalPayloadDigest ||
+      grant.authorityEpoch !== authorityEpoch
+    ) {
+      throw new TypeError("effect grant does not bind the final browser operation");
+    }
+    const semantics = Object.freeze({
+      profileId: state.profileId,
+      principalId: state.principalId,
+      processId: state.processId,
+      profileGeneration: state.generation,
+      pageGeneration,
+      documentDigest: state.documentDigest,
+      operationId,
+      action,
+      destinationOrigin,
+      finalPayloadDigest,
+      profileGrantDigest: state.grantDigest,
+      effectGrantDigest,
+      authorityEpoch,
+      deadlineMs,
+    });
+    return {
+      state,
+      operationId,
+      semantics,
+      semanticDigest: canonicalDigest(semantics),
+    };
+  }
+
+  #effectReceipt(profileId, operationId, semanticDigest, observed) {
+    if (observed.terminalObserved !== true) {
+      return freezeResult({
+        kind: "BrowserEffectObservationV1",
+        profileId,
+        operationId,
+        semanticDigest,
+        status: "indeterminate",
+        outcomeDigest: null,
+        terminalObserved: false,
+      });
+    }
+    if (observed.status !== "succeeded" && observed.status !== "failed") {
+      throw new TypeError("terminal browser status is not registered");
+    }
+    return freezeResult({
+      kind: "BrowserEffectObservationV1",
+      profileId,
+      operationId,
+      semanticDigest,
+      status: observed.status,
+      outcomeDigest: digest(observed.outcomeDigest, "outcomeDigest"),
       terminalObserved: true,
     });
   }
