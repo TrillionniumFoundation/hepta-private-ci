@@ -1,50 +1,43 @@
-name: Lane F verified-only finalization v2
+name: Lane F one-shot clean materialization
 
 on:
   push:
     branches: [codex/lane-f-gap-closure-20260910]
     paths: [.github/workflows/lane-f-finalize-v2-20260910.yml]
-  workflow_dispatch:
 
 permissions:
   contents: write
-  pull-requests: write
-  issues: write
-  statuses: write
 
 concurrency:
-  group: lane-f-finalize-v2-${{ github.ref }}
+  group: lane-f-one-shot-${{ github.ref }}
   cancel-in-progress: false
 
 env:
-  VERIFIED_BRANCH: codex/lane-f-gap-closure-verified-20260910
   BASE_BRANCH: integration/vnext-main-20260811
 
 jobs:
-  finalize:
+  materialize-verify-publish:
     runs-on: ubuntu-24.04
     timeout-minutes: 180
     steps:
-      - name: Check out exact source
+      - name: Check out exact trigger commit
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           ref: ${{ github.sha }}
           fetch-depth: 0
           persist-credentials: true
 
-      - name: Materialize immutable payload or verify ordinary source
+      - name: Materialize immutable Lane F overlay
         shell: bash
         run: |
           set -euo pipefail
-          if compgen -G '.lane-f-bootstrap/part-*' >/dev/null; then
-            cat .lane-f-bootstrap/part-* > /tmp/lane-f-overlay.tar.gz
-            echo 'a5743f201c82118e390fff7128f9304ccae82f1c33fdc2d41c7349d7a266d2bc  /tmp/lane-f-overlay.tar.gz' | sha256sum -c -
-            tar -xzf /tmp/lane-f-overlay.tar.gz -C .
-          fi
+          cat .lane-f-bootstrap/part-* > /tmp/lane-f-overlay.tar.gz
+          echo 'a5743f201c82118e390fff7128f9304ccae82f1c33fdc2d41c7349d7a266d2bc  /tmp/lane-f-overlay.tar.gz' | sha256sum -c -
+          tar -xzf /tmp/lane-f-overlay.tar.gz -C .
           test -f scripts/hepta-lane-f.py
           test -f scripts/test_hepta_lane_f.py
 
-      - name: Normalize Prompt Optimizer V1/V2 profile boundary
+      - name: Normalize explicit Prompt Optimizer profiles
         shell: bash
         run: |
           set -euo pipefail
@@ -80,7 +73,7 @@ pub const PROMPT_PORTFOLIO_SHADOW_V2_PROFILE: &str =
           path.write_text(text, encoding='utf-8')
           PY
 
-      - name: Generate canonical Lane F truth and metadata
+      - name: Generate canonical truth and format sources
         shell: bash
         run: |
           set -euo pipefail
@@ -93,46 +86,39 @@ pub const PROMPT_PORTFOLIO_SHADOW_V2_PROFILE: &str =
             --package codex-hepta-prompt-optimizer \
             --package codex-hepta-plasticity \
             --package codex-hepta-intelligence
-          (cd codex-rs && cargo test -p codex-hepta-intelligence --all-targets --no-run)
+          cargo fmt --manifest-path qualification/lane-f-shadow/Cargo.toml
 
-      - name: Create ordinary source candidate
-        id: candidate
+      - name: Build exact two-commit source topology
+        id: source
         shell: bash
         run: |
           set -euo pipefail
-          rm -rf .lane-f-bootstrap
-          rm -f \
-            .github/workflows/lane-f-bootstrap.yml \
-            .github/workflows/lane-f-resume.yml \
-            .github/workflows/lane-f-resume-20260910.yml \
-            .github/workflows/lane-f-finalize-20260910.yml \
-            .github/workflows/lane-f-finalize-v2-20260910.yml
+          git fetch origin "$BASE_BRANCH"
+          BASE_SHA="$(git rev-parse "origin/$BASE_BRANCH")"
+          rm -rf .lane-f-bootstrap .lane-f-final .lane-f-min
+          rm -f .github/workflows/lane-f-bootstrap.yml
+          rm -f .github/workflows/lane-f-resume.yml
+          rm -f .github/workflows/lane-f-resume-20260910.yml
+          rm -f .github/workflows/lane-f-finalize-20260910.yml
+          rm -f .github/workflows/lane-f-finalize-v2-20260910.yml
           git config user.name hepta-lane-f-bot
           git config user.email hepta-lane-f-bot@users.noreply.github.com
           git add -A
           git diff --cached --check
-          if ! git diff --cached --quiet; then
-            git commit -m 'feat(lane-f): close adaptive-policy source and documentation gaps'
-          fi
-          printf 'sha=%s\n' "$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+          TREE_SHA="$(git write-tree)"
+          SOURCE_SHA="$(printf '%s\n' 'feat(lane-f): close adaptive-policy source and documentation gaps' | git commit-tree "$TREE_SHA" -p "$BASE_SHA")"
+          git reset --hard "$SOURCE_SHA"
+          printf 'base_sha=%s\nsource_sha=%s\n' "$BASE_SHA" "$SOURCE_SHA" >> "$GITHUB_OUTPUT"
 
-      - name: Verify generated Lane F closed world
+      - name: Verify generated closed world and documentation
         shell: bash
         run: |
           set -euo pipefail
-          test "$(git rev-parse HEAD)" = '${{ steps.candidate.outputs.sha }}'
           python3 scripts/hepta-lane-f.py self-test
           python3 -m unittest scripts/test_hepta_lane_f.py
           python3 scripts/hepta-lane-f.py generate --check
           python3 scripts/hepta_module_doc_metadata.py
           python3 scripts/hepta-lane-f.py verify
-          git diff --check
-          test -z "$(git status --porcelain)"
-
-      - name: Verify canonical documentation and registries
-        shell: bash
-        run: |
-          set -euo pipefail
           python3 scripts/hepta-module-docs.py self-test
           python3 scripts/hepta-module-docs.py verify
           python3 scripts/hepta-readiness.py self-test
@@ -160,7 +146,7 @@ pub const PROMPT_PORTFOLIO_SHADOW_V2_PROFILE: &str =
           git diff --check
           test -z "$(git status --porcelain)"
 
-      - name: Verify all Lane F native crates
+      - name: Verify Lane F native crates
         working-directory: codex-rs
         shell: bash
         run: |
@@ -185,16 +171,27 @@ pub const PROMPT_PORTFOLIO_SHADOW_V2_PROFILE: &str =
             --package codex-hepta-intelligence \
             -- --check
 
-      - name: Verify deterministic synthetic merge against current base
-        id: merge
+      - name: Verify cross-module shadow qualification
         shell: bash
         run: |
           set -euo pipefail
-          git fetch origin "$BASE_BRANCH"
-          BASE_SHA="$(git rev-parse "origin/$BASE_BRANCH")"
-          SOURCE_SHA="$(git rev-parse HEAD)"
+          rm -f qualification/lane-f-shadow/Cargo.lock
+          cargo generate-lockfile --manifest-path qualification/lane-f-shadow/Cargo.toml
+          cargo test --locked --manifest-path qualification/lane-f-shadow/Cargo.toml
+          cargo clippy --locked --manifest-path qualification/lane-f-shadow/Cargo.toml --all-targets -- -D warnings
+          cargo fmt --manifest-path qualification/lane-f-shadow/Cargo.toml -- --check
+          rm -f qualification/lane-f-shadow/Cargo.lock
+          test -z "$(git status --porcelain)"
+
+      - name: Bind deterministic synthetic merge receipt
+        id: receipt
+        shell: bash
+        env:
+          BASE_SHA: ${{ steps.source.outputs.base_sha }}
+          SOURCE_SHA: ${{ steps.source.outputs.source_sha }}
+        run: |
+          set -euo pipefail
           TREE="$(git merge-tree --write-tree "$BASE_SHA" "$SOURCE_SHA")"
-          [[ "$TREE" =~ ^[0-9a-f]{40}$ ]]
           export GIT_AUTHOR_NAME='Hepta Lane F CI'
           export GIT_AUTHOR_EMAIL='hepta-lane-f-ci@users.noreply.github.com'
           export GIT_COMMITTER_NAME="$GIT_AUTHOR_NAME"
@@ -202,44 +199,8 @@ pub const PROMPT_PORTFOLIO_SHADOW_V2_PROFILE: &str =
           export GIT_AUTHOR_DATE='2000-01-01T00:00:00Z'
           export GIT_COMMITTER_DATE="$GIT_AUTHOR_DATE"
           MERGE_SHA="$(printf 'Synthetic Lane F verification merge\n' | git commit-tree "$TREE" -p "$BASE_SHA" -p "$SOURCE_SHA")"
-          printf 'base_sha=%s\nsource_sha=%s\nmerge_sha=%s\ntree=%s\n' "$BASE_SHA" "$SOURCE_SHA" "$MERGE_SHA" "$TREE" >> "$GITHUB_OUTPUT"
-          git checkout --detach "$MERGE_SHA"
-          python3 scripts/hepta-lane-f.py generate --check
-          python3 scripts/hepta_module_doc_metadata.py
-          python3 scripts/hepta-lane-f.py verify
-          python3 scripts/hepta-module-docs.py verify
-          python3 scripts/hepta-readiness.py generate-status --check
-          python3 scripts/hepta-readiness.py verify
-          python3 scripts/hepta-implementation-dossiers.py generate-status --check
-          python3 scripts/hepta-implementation-dossiers.py verify
-          python3 scripts/hepta-technical-closure.py verify
-          python3 qualification/module-execution-dossiers/implementation_contracts.py verify-repository
-          python3 scripts/hepta-algorithm-docs.py verify-sources
-          python3 scripts/hepta-algorithm-docs.py generate-status --check
-          python3 scripts/hepta-algorithm-docs.py verify
-          python3 scripts/hepta-cns.py generate-status --check
-          python3 scripts/hepta-cns.py verify
-          python3 scripts/hepta-hnmf.py verify
-          python3 scripts/hepta-docs.py generate-status
-          git diff --exit-code -- docs/STATUS.md
-          python3 scripts/hepta-docs.py verify
-          (cd codex-rs && cargo test --locked -p codex-hepta-neuron --all-targets && cargo test --locked -p codex-hepta-intuition --all-targets && cargo test --locked -p codex-hepta-prompt-optimizer --all-targets && cargo test --locked -p codex-hepta-plasticity --all-targets && cargo test --locked -p codex-hepta-intelligence --all-targets && cargo clippy --locked -p codex-hepta-neuron -p codex-hepta-intuition -p codex-hepta-prompt-optimizer -p codex-hepta-plasticity -p codex-hepta-intelligence --all-targets -- -D warnings)
-          git diff --check
-          test -z "$(git status --porcelain)"
-
-      - name: Bind immutable verification receipt
-        id: receipt
-        shell: bash
-        env:
-          SOURCE_SHA: ${{ steps.merge.outputs.source_sha }}
-          BASE_SHA: ${{ steps.merge.outputs.base_sha }}
-          MERGE_SHA: ${{ steps.merge.outputs.merge_sha }}
-          MERGE_TREE: ${{ steps.merge.outputs.tree }}
-        run: |
-          set -euo pipefail
-          git checkout "$SOURCE_SHA"
           mkdir -p qualification/lane-f
-          python3 - <<'PY'
+          BASE_SHA="$BASE_SHA" SOURCE_SHA="$SOURCE_SHA" MERGE_SHA="$MERGE_SHA" MERGE_TREE="$TREE" python3 - <<'PY'
           import json, os
           from pathlib import Path
           receipt = {
@@ -282,51 +243,20 @@ pub const PROMPT_PORTFOLIO_SHADOW_V2_PROFILE: &str =
           PY
           git add qualification/lane-f/VERIFICATION_RECEIPT.json
           git commit -m 'test(lane-f): bind exact closure verification receipt'
+          test "$(git rev-parse HEAD^)" = "$SOURCE_SHA"
           python3 scripts/hepta-lane-f.py generate --check
           python3 scripts/hepta_module_doc_metadata.py
           python3 scripts/hepta-lane-f.py verify
           python3 scripts/hepta-module-docs.py verify
           git diff --check
           test -z "$(git status --porcelain)"
-          printf 'sha=%s\n' "$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+          printf 'verified_sha=%s\n' "$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
 
-      - name: Publish verified branch, statuses, PR and external-gate tracker
+      - name: Publish clean verified PR head
         shell: bash
         env:
-          GH_TOKEN: ${{ github.token }}
-          VERIFIED_SHA: ${{ steps.receipt.outputs.sha }}
-          SOURCE_SHA: ${{ steps.merge.outputs.source_sha }}
-          BASE_SHA: ${{ steps.merge.outputs.base_sha }}
-          MERGE_SHA: ${{ steps.merge.outputs.merge_sha }}
+          VERIFIED_SHA: ${{ steps.receipt.outputs.verified_sha }}
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$VERIFIED_SHA"
-          test -z "$(git status --porcelain)"
-          git push --force-with-lease origin "HEAD:$VERIFIED_BRANCH"
-          TARGET_URL="$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
-          for CONTEXT in \
-            lane-f/generated-truth \
-            lane-f/native-crates \
-            lane-f/synthetic-merge \
-            lane-f/verified-candidate
-          do
-            gh api --method POST \
-              -H 'Accept: application/vnd.github+json' \
-              "repos/$GITHUB_REPOSITORY/statuses/$VERIFIED_SHA" \
-              -f state=success \
-              -f context="$CONTEXT" \
-              -f description='Lane F exact candidate verified fail-closed' \
-              -f target_url="$TARGET_URL" >/dev/null
-          done
-          PR_BODY=$'## Scope\n\nCloses the repository-internal Lane F adaptive-policy gaps in dependency order: generated documentation truth, maturity/native bindings, explicit profile boundaries, durable proposal semantics, intelligence composition, cross-module shadow vertical, exact-head validation and synthetic-merge qualification.\n\n## Exact evidence\n\nThe verified commit contains `qualification/lane-f/VERIFICATION_RECEIPT.json`; the commit statuses bind generated truth, native crates, synthetic merge and the verified candidate.\n\n## Capability boundary\n\nThis PR grants no production/model/provider/tool/effect authority and does not self-certify independent evaluation, operator acceptance, canary, selection, promotion or release.\n\n## Merge rule\n\nRequire all four Lane F statuses, resolved conversations and at least one independent approving reviewer. The generating workflow must not self-approve or self-merge.'
-          PR_NUMBER="$(gh pr list --repo "$GITHUB_REPOSITORY" --state open --head "$VERIFIED_BRANCH" --json number --jq '.[0].number // empty')"
-          if [ -z "$PR_NUMBER" ]; then
-            gh pr create --repo "$GITHUB_REPOSITORY" --base "$BASE_BRANCH" --head "$VERIFIED_BRANCH" --title 'feat(lane-f): close adaptive-policy source and documentation gaps' --body "$PR_BODY"
-          else
-            gh pr edit "$PR_NUMBER" --repo "$GITHUB_REPOSITORY" --body "$PR_BODY"
-          fi
-          ISSUE_TITLE='Lane F remaining independently governed evidence gates'
-          ISSUE_NUMBER="$(gh issue list --repo "$GITHUB_REPOSITORY" --state open --search "$ISSUE_TITLE in:title" --json number,title --jq '.[] | select(.title == env.ISSUE_TITLE) | .number' | head -n1)"
-          if [ -z "$ISSUE_NUMBER" ]; then
-            gh issue create --repo "$GITHUB_REPOSITORY" --title "$ISSUE_TITLE" --body $'Track only evidence that repository automation and the generating identity must not self-certify:\n\n- exact real model/tokenizer/preprocessor/runtime/device identity and actual consumer evidence\n- future-calendar causal and retention windows\n- independent evaluator principal/signing-chain decision\n- operator acceptance\n- production canary with kill switch and rollback rehearsal\n- selection, promotion and release decisions\n\nClose only when applicable `RDY-EXT-*` gates have non-self-issued receipts at the current revocation frontier. Source tests, branch names, workflow success and fixtures are insufficient.'
-          fi
+          git push --force origin "HEAD:${GITHUB_REF_NAME}"
