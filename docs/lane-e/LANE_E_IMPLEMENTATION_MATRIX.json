@@ -4,10 +4,10 @@
   "planId": "HEPTA-GLOBAL-MODULAR-DEVELOPMENT-PLAN",
   "planVersion": "8.0.0",
   "lane": "LANE-E-LEARNING",
-  "baseCommit": "05981ed1adfb931a87a47b0606f1cedaa69f123b",
-  "candidateBranch": "codex/hepta-lane-e-gap-closure-20260910",
-  "sourceIdentityPolicy": "exact_ci_head_tree_and_ordered_parent_synthetic_merge_required",
-  "repositoryClosureState": "source_implemented_ci_pending",
+  "baseCommit": "6303bceab938c25d645e220a32f91701e2c31701",
+  "candidateBranch": "dynamic_exact_pr_head",
+  "sourceIdentityPolicy": "single_direct_child_exact_ci_head_tree_and_ordered_parent_synthetic_merge_required",
+  "repositoryClosureState": "source_implemented_exact_head_qualification_required",
   "capabilityClosureState": "external_evidence_required",
   "authorityDelta": "none",
   "modules": [
@@ -124,7 +124,7 @@
       "dossier": "qualification/module-execution-dossiers/detail/learning.eval.md",
       "nativeMapping": "codex-rs/hepta-intelligence-eval/NATIVE_MAPPING.md",
       "implementationState": "source_implemented_ci_pending",
-      "compatibility": "existing_estimators_retained_cross_fold_holdout_and_independent_decision_additive",
+      "compatibility": "existing_estimators_retained_complete_plan_receipt_sealed_holdout_use_and_independent_decision_additive",
       "operations": [
         {"operation": "estimate_ope", "nativeSymbol": "codex_hepta_intelligence_eval::estimate_ope", "source": "codex-rs/hepta-intelligence-eval/src/ope.rs", "status": "implemented_existing"},
         {"operation": "estimate_sequential", "nativeSymbol": "codex_hepta_intelligence_eval::estimate_sequential", "source": "codex-rs/hepta-intelligence-eval/src/sequential.rs", "status": "implemented_existing"},
@@ -138,6 +138,8 @@
         "evaluation_fails_candidate_when_interval_or_floor_does_not_pass",
         "eval_cross_fold_plan_binds_disjoint_lineage_and_final_holdout",
         "final_holdout_registry_allows_exact_retry_but_blocks_adaptive_reuse",
+        "final_holdout_replay_receipt_is_stable_after_unrelated_registry_growth",
+        "independent_decision_consumes_bound_holdout_receipt",
         "op_03_high_fit_without_retention_is_insufficient"
       ],
       "stageResourceBounds": {
