@@ -370,6 +370,13 @@ LANE_F_OWNER_CONFLICTS = frozenset(
     }
 )
 
+LANE_G_PRIOR_OWNER_CONFLICTS = frozenset(
+    {
+        "qualification/module-execution-dossiers/NATIVE_BINDINGS.json",
+        "qualification/module-execution-dossiers/test_implementation_contracts.py",
+    }
+)
+
 
 def merge_lane(lane: str, branch: str) -> dict[str, Any]:
     before = git_text("rev-parse", "HEAD")
@@ -394,6 +401,7 @@ def merge_lane(lane: str, branch: str) -> dict[str, Any]:
     split_test_harness_conflict = False
     lane_d_prior_owner_conflict = False
     lane_f_owner_conflict = False
+    lane_g_prior_owner_conflict = False
     if not result.passed:
         conflicts = [
             line.strip()
@@ -421,6 +429,11 @@ def merge_lane(lane: str, branch: str) -> dict[str, Any]:
             and len(conflicts) == len(LANE_F_OWNER_CONFLICTS)
             and frozenset(conflicts) == LANE_F_OWNER_CONFLICTS
         )
+        lane_g_prior_owner_conflict = (
+            lane == "G"
+            and len(conflicts) == len(LANE_G_PRIOR_OWNER_CONFLICTS)
+            and frozenset(conflicts) == LANE_G_PRIOR_OWNER_CONFLICTS
+        )
         if (
             not generated_conflicts_only(conflicts)
             and not lane_owner_conflict
@@ -428,6 +441,7 @@ def merge_lane(lane: str, branch: str) -> dict[str, Any]:
             and not split_test_harness_conflict
             and not lane_d_prior_owner_conflict
             and not lane_f_owner_conflict
+            and not lane_g_prior_owner_conflict
         ):
             git("merge", "--abort", check=False)
             return {
@@ -444,6 +458,12 @@ def merge_lane(lane: str, branch: str) -> dict[str, Any]:
             else "--ours"
         )
         for path in conflicts:
+            if (
+                lane_f_owner_conflict
+                and path == ".github/workflows/lane-f-bootstrap.yml"
+            ):
+                git("rm", "--", path)
+                continue
             git("checkout", checkout_side, "--", path)
             git("add", "--", path)
         if lane_owner_conflict:
@@ -456,6 +476,8 @@ def merge_lane(lane: str, branch: str) -> dict[str, Any]:
             resolution_class = "prior Lane A/C owner paths retained during Lane D merge"
         elif lane_f_owner_conflict:
             resolution_class = "Lane F owner shadow qualification paths"
+        elif lane_g_prior_owner_conflict:
+            resolution_class = "prior cumulative owner metadata retained during Lane G merge"
         else:
             resolution_class = "generated convergence metadata"
         git(
@@ -478,12 +500,14 @@ def merge_lane(lane: str, branch: str) -> dict[str, Any]:
             and not split_test_harness_conflict
             and not lane_d_prior_owner_conflict
             and not lane_f_owner_conflict
+            and not lane_g_prior_owner_conflict
         ),
         "autoResolvedLaneOwnerOnly": lane_owner_conflict,
         "autoResolvedPriorLaneOwnerOnly": prior_lane_owner_conflict,
         "autoResolvedSplitTestHarnessOnly": split_test_harness_conflict,
         "autoResolvedLaneDPriorOwnerOnly": lane_d_prior_owner_conflict,
         "autoResolvedLaneFOwnerOnly": lane_f_owner_conflict,
+        "autoResolvedLaneGPriorOwnerOnly": lane_g_prior_owner_conflict,
         "conflicts": conflicts,
     }
 
