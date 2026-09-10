@@ -20,7 +20,7 @@ jobs:
           fetch-depth: 0
           persist-credentials: false
 
-      - name: Inspect oversized generated evidence without emitting payloads
+      - name: Emit bounded structural summaries
         shell: bash
         run: |
           set -euo pipefail
@@ -30,71 +30,93 @@ jobs:
           import hashlib
           import json
           from pathlib import Path
+          from typing import Any
 
           targets = [
               Path("qualification/global-gap-closure-final-r6/STATUS.json"),
               Path("qualification/global-gap-closure-final-r8/receipts/PREPARE.json"),
           ]
 
+          def compact_size(value: Any) -> int:
+              return len(
+                  json.dumps(value, ensure_ascii=False, separators=(",", ":")).encode(
+                      "utf-8"
+                  )
+              )
+
           for path in targets:
               raw = path.read_bytes()
-              print(f"FILE {path}")
-              print(f"bytes={len(raw)} sha256={hashlib.sha256(raw).hexdigest()}")
               value = json.loads(raw)
-              print(f"root_type={type(value).__name__}")
+              print(f"FILE={path}")
+              print(f"BYTES={len(raw)}")
+              print(f"SHA256={hashlib.sha256(raw).hexdigest()}")
+              print(f"ROOT_TYPE={type(value).__name__}")
+
               if isinstance(value, dict):
-                  print("top_level_keys=" + ",".join(sorted(value)))
                   for key in sorted(value):
-                      encoded = json.dumps(
-                          value[key], ensure_ascii=False, separators=(",", ":")
-                      ).encode("utf-8")
+                      child = value[key]
+                      count = len(child) if isinstance(child, (dict, list, str)) else 0
                       print(
-                          f"top_key={key!r} type={type(value[key]).__name__} compact_bytes={len(encoded)}"
+                          f"TOP key={key!r} type={type(child).__name__} "
+                          f"items={count} compact_bytes={compact_size(child)}"
                       )
+              elif isinstance(value, list):
+                  print(f"ROOT_ITEMS={len(value)}")
 
-              strings: list[tuple[int, str]] = []
-              containers: list[tuple[int, str, str]] = []
-              stack: list[tuple[str, object]] = [("$", value)]
-              nodes = 0
+              containers: list[tuple[int, int, str, Any]] = []
+              stack: list[tuple[str, Any, int]] = [("$", value, 0)]
               while stack:
-                  current_path, node = stack.pop()
-                  nodes += 1
+                  current_path, node, depth = stack.pop()
                   if isinstance(node, dict):
-                      containers.append((len(node), current_path, "dict"))
-                      for key, child in node.items():
-                          stack.append((f"{current_path}.{key}", child))
+                      containers.append((compact_size(node), len(node), current_path, node))
+                      if depth < 4:
+                          for key, child in node.items():
+                              stack.append((f"{current_path}.{key}", child, depth + 1))
                   elif isinstance(node, list):
-                      containers.append((len(node), current_path, "list"))
-                      for index, child in enumerate(node):
-                          stack.append((f"{current_path}[{index}]", child))
-                  elif isinstance(node, str):
-                      strings.append((len(node.encode("utf-8")), current_path))
+                      containers.append((compact_size(node), len(node), current_path, node))
+                      if depth < 4:
+                          for index, child in enumerate(node[:1000]):
+                              stack.append((f"{current_path}[{index}]", child, depth + 1))
 
-              print(f"node_count={nodes} string_count={len(strings)}")
-              for size, current_path in sorted(strings, reverse=True)[:30]:
-                  print(f"large_string bytes={size} path={current_path}")
-              for count, current_path, kind in sorted(containers, reverse=True)[:20]:
-                  print(f"large_container items={count} type={kind} path={current_path}")
+              print("LARGEST_CONTAINERS")
+              for size, count, current_path, node in sorted(containers, reverse=True)[:20]:
+                  sample = ""
+                  if isinstance(node, list) and node:
+                      first = node[0]
+                      if isinstance(first, dict):
+                          sample = " first_keys=" + ",".join(sorted(first))
+                      else:
+                          sample = f" first_type={type(first).__name__}"
+                  elif isinstance(node, dict):
+                      sample = " keys=" + ",".join(sorted(node)[:30])
+                  print(
+                      f"CONTAINER path={current_path} type={type(node).__name__} "
+                      f"items={count} compact_bytes={size}{sample}"
+                  )
               print("END_FILE")
           PY
 
-      - name: Locate repository references to generated evidence
+      - name: Locate bounded repository references and writers
         shell: bash
         run: |
           set -euo pipefail
-          for target in \
-            qualification/global-gap-closure-final-r6/STATUS.json \
-            qualification/global-gap-closure-final-r8/receipts/PREPARE.json
+          for needle in \
+            'qualification/global-gap-closure-final-r6/STATUS.json' \
+            'qualification/global-gap-closure-final-r8/receipts/PREPARE.json' \
+            'global-gap-closure-final-r6' \
+            'global-gap-closure-final-r8' \
+            'PREPARE.json'
           do
-            echo "REFERENCES $target"
-            git grep -n -F "$target" -- . ":!$target" || true
-            echo "BASENAME REFERENCES $(basename "$target")"
-            git grep -n -F "$(basename "$target")" -- . ":!$target" | head -100 || true
+            echo "NEEDLE=$needle"
+            git grep -n -F "$needle" -- \
+              . \
+              ':!qualification/global-gap-closure-final-r6/STATUS.json' \
+              ':!qualification/global-gap-closure-final-r8/receipts/PREPARE.json' \
+              | head -80 || true
           done
 
-      - name: Confirm exact source identity
+      - name: Confirm checkout remains clean
         shell: bash
         run: |
           set -euo pipefail
-          git rev-parse HEAD
-          git status --short
+          test -z "$(git status --porcelain=v1 --untracked-files=all)"
