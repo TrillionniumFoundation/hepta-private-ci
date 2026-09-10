@@ -1,0 +1,34 @@
+{
+  "authorityGranted": false,
+  "controllerId": "HEPTA-R22-FIXED-POINT",
+  "output": "/home/runner/work/_temp/hepta-r22-executor/hepta-global-finalizer-r22.py",
+  "outputSha256": "c190c12643391e6a9c16ed7820619de369803f3908200c17b00e7af734433861",
+  "patches": [
+    {
+      "anchorOccurrencesBefore": 1,
+      "anchorSha256": "85054b6d2843959cb5af341983f253928cb43d2ce2904be03421c07bdfc63806",
+      "patchId": "cognitive-store-clone-count",
+      "replacementOccurrencesAfter": 1,
+      "replacementSha256": "e34e7aa21f6a71855db8d2c6b7c8c92264192a3a3210fd616cad187a1d594cfe"
+    },
+    {
+      "anchorOccurrencesBefore": 1,
+      "anchorSha256": "35c8267951b806d4607db32f8c4e521e24fad9824228d17288f798b73ecbbb26",
+      "patchId": "lane-f-sealed-owner-selection",
+      "replacementOccurrencesAfter": 1,
+      "replacementSha256": "2e54c4325264f632c3d3c76f05b4e806ec01d5dbe6ccc1a45f85ca1382e5527d"
+    },
+    {
+      "anchorOccurrencesBefore": 1,
+      "anchorSha256": "b79695c99526369a9b61b1934944f51c656b97646a43f366b605c79527721ab6",
+      "patchId": "lane-g-engineering-owner-selection",
+      "replacementOccurrencesAfter": 1,
+      "replacementSha256": "09a48b69ce5bf8ef9a169ef8c31d3fb21c7d590aa901bfcf511be04b6da75671"
+    }
+  ],
+  "schemaVersion": 1,
+  "selectedLaneFBranch": "codex/lane-f-gap-closure-20260910-r2",
+  "selectedLaneGBranch": "codex/lane-g-real-full-closure-v2-20260910",
+  "source": "scripts/hepta-global-finalizer-r7.py",
+  "sourceSha256": "087f78edaacc4091f868529842eb1be83b9bcc92563f408ccdd6f859cc55c28a"
+}
