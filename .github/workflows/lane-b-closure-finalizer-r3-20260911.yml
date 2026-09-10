@@ -1,0 +1,96 @@
+name: Lane B closure finalizer r3 (temporary)
+
+on:
+  push:
+    branches:
+      - codex/lane-b-gap-closure-20260911
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: lane-b-closure-finalizer-r3-20260911
+  cancel-in-progress: true
+
+jobs:
+  finalize:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 180
+    steps:
+      - name: Check out exact branch
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: codex/lane-b-gap-closure-20260911
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Materialize final read-only candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git branch --show-current)" = "codex/lane-b-gap-closure-20260911"
+          python3 tools/lane_b_closure_finalizer_r3_20260911.py
+          git diff --check
+          git config user.name "hepta-ci-bot"
+          git config user.email "hepta-ci-bot@users.noreply.github.com"
+          git add -A
+          git commit -m "fix: close Lane B source mapping and verification blockers"
+
+      - name: Verify documentation and closed-world mappings
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 qualification/module-execution-dossiers/lane_b_contracts.py self-test
+          python3 qualification/module-execution-dossiers/lane_b_contracts.py verify-repository
+          python3 scripts/hepta-module-docs.py self-test
+          python3 scripts/hepta-module-docs.py verify
+          python3 scripts/hepta-readiness.py self-test
+          python3 scripts/hepta-readiness.py generate-status --check
+          python3 scripts/hepta-readiness.py verify
+          python3 scripts/hepta-implementation-dossiers.py self-test
+          python3 scripts/hepta-implementation-dossiers.py generate-status --check
+          python3 scripts/hepta-implementation-dossiers.py verify
+          python3 scripts/hepta-technical-closure.py self-test
+          python3 scripts/hepta-technical-closure.py verify
+          python3 qualification/module-execution-dossiers/implementation_contracts.py self-test
+          python3 qualification/module-execution-dossiers/implementation_contracts.py verify-repository
+          python3 scripts/hepta-docs.py generate-status
+          git diff --exit-code -- docs/STATUS.md
+          python3 scripts/hepta-docs.py verify
+          git diff --check
+          test -z "$(git status --porcelain --untracked-files=no)"
+
+      - name: Verify Lane B JavaScript packages
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --test apps/hepta-browser/test/*.js apps/hepta-control-ui/test/*.js apps/hepta-native/test/*.js
+
+      - name: Verify Lane B Rust packages
+        shell: bash
+        working-directory: codex-rs
+        env:
+          PACKAGES: >-
+            codex-app-server
+            codex-hepta-supervisor codex-hepta-fleet codex-hepta-agentd
+            codex-hepta-codex-adapter codex-hepta-infer-core codex-hepta-inferd
+            codex-hepta-infer-worker-host codex-hepta-automation
+            codex-hepta-matrix-sdk codex-hepta-matrixd
+        run: |
+          set -euo pipefail
+          args=()
+          for package in $PACKAGES; do
+            args+=(--package "$package")
+          done
+          cargo check --locked "${args[@]}" --all-targets
+          cargo test --locked "${args[@]}"
+          cargo clippy --locked "${args[@]}" --all-targets -- -D warnings
+
+      - name: Push exact verified candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          git diff --check HEAD^ HEAD
+          test -z "$(git status --porcelain)"
+          git push origin HEAD:codex/lane-b-gap-closure-20260911
