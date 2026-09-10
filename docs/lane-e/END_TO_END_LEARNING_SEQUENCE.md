@@ -97,20 +97,30 @@ registry head.
 ## 4. Evaluation and independent decision
 
 ```text
-freeze EvaluationPlan and all thresholds before outcomes are inspected
-  -> register final holdout exactly once
-  -> freeze two or more cross-fold partitions
+construct the complete EvaluationPlan before outcomes are inspected
+  -> bind claim scope, candidate, baseline, objective, dataset, estimand,
+     metric directions and safety floors, multiplicity, folds, final-holdout
+     window and final-holdout digest
+  -> freeze two or more cross-fold partitions into one sealed plan receipt
   -> every fold keeps training and holdout principal, episode and window
      lineages disjoint
+  -> FinalHoldoutRegistry consumes that exact sealed plan receipt once
   -> fit nuisance model on training folds only
   -> compute OPE/sequential estimates and support diagnostics
   -> compute prespecified cluster intervals and multiplicity-adjusted evidence
   -> collect retention, subgroup, privacy and unlearning receipts
-  -> decide_independently verifies distinct principal, credential and signing key
+  -> decide_independently validates both receipt seals and their exact semantic
+     binding, then verifies distinct principal, credential and signing key
   -> intersect candidate LCB versus baseline UCB, safety floors, support,
      multiplicity, snapshot count, future windows, retention and unlearning
   -> emit EligibleForIndependentSelection, Ineligible or InsufficientEvidence
 ```
+
+An identical retry of the same frozen plan returns an idempotent holdout-use
+receipt. Reusing a plan identity with changed semantics conflicts; a second plan
+cannot reuse either the holdout digest or its final window. The deterministic
+receipt seals detect in-process field mutation but are not signatures and do not
+replace durable single-writer storage or authenticated issuer evidence.
 
 `EligibleForIndependentSelection` deliberately grants no selection authority.
 The evaluator cannot install, activate, merge, promote or release the artifact.

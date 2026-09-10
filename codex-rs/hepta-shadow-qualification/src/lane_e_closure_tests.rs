@@ -3,13 +3,18 @@ use codex_hepta_bellman_operator::BellmanReferencePlanV1;
 use codex_hepta_bellman_operator::WorldModelSampleV1;
 use codex_hepta_bellman_operator::evaluate_bellman_reference;
 use codex_hepta_bellman_operator::fit_transition_model;
+use codex_hepta_intelligence_eval::CrossFoldPartitionV1;
+use codex_hepta_intelligence_eval::CrossFoldPlanV1;
 use codex_hepta_intelligence_eval::EvaluationClaimScopeV1;
 use codex_hepta_intelligence_eval::EvaluationDirectionV1;
 use codex_hepta_intelligence_eval::EvaluationIntervalV1;
+use codex_hepta_intelligence_eval::FinalHoldoutRegistry;
 use codex_hepta_intelligence_eval::IndependentEvaluationBundleV1;
 use codex_hepta_intelligence_eval::IndependentEvaluationDispositionV1;
+use codex_hepta_intelligence_eval::MetricContractV1;
 use codex_hepta_intelligence_eval::MetricGateV1;
 use codex_hepta_intelligence_eval::decide_independently;
+use codex_hepta_intelligence_eval::freeze_cross_fold_plan;
 use codex_hepta_learning_artifacts::ArtifactKind;
 use codex_hepta_learning_artifacts::ArtifactLifecycleEventV1;
 use codex_hepta_learning_artifacts::ArtifactLifecycleStateV1;
@@ -247,6 +252,59 @@ fn lane_e_causal_candidate_chain_is_digest_bound_and_deny_all() {
     };
     assert!(!artifact.authority.grants_any());
 
+    let objective_digest = digest("objective");
+    let estimand_digest = digest("system-longitudinal-task-utility");
+    let frozen_plan = match freeze_cross_fold_plan(CrossFoldPlanV1 {
+        plan_id: id("evaluation-plan"),
+        claim_scope: EvaluationClaimScopeV1::SystemLongitudinal,
+        candidate_id: artifact_id.clone(),
+        baseline_id: id("baseline-1"),
+        objective_digest,
+        dataset_digest: dataset.dataset_digest,
+        estimand_digest,
+        metric_contracts: vec![MetricContractV1 {
+            metric_id: id("task-utility"),
+            direction: EvaluationDirectionV1::Maximize,
+            safety_floor: Some(FixedQ32::from_raw(95)),
+        }],
+        family_alpha_ppm: 50_000,
+        simultaneous_comparisons: 1,
+        folds: vec![
+            CrossFoldPartitionV1 {
+                fold_id: id("evaluation-fold-1"),
+                training_principals: vec![id("evaluation-principal-2")],
+                training_episodes: vec![id("evaluation-episode-2")],
+                training_windows: vec![id("evaluation-train-window-1")],
+                holdout_principals: vec![id("evaluation-principal-1")],
+                holdout_episodes: vec![id("evaluation-episode-1")],
+                holdout_windows: vec![id("window-1")],
+                model_digest: digest("evaluation-model-1"),
+                predictions_digest: digest("evaluation-predictions-1"),
+            },
+            CrossFoldPartitionV1 {
+                fold_id: id("evaluation-fold-2"),
+                training_principals: vec![id("evaluation-principal-1")],
+                training_episodes: vec![id("evaluation-episode-1")],
+                training_windows: vec![id("evaluation-train-window-2")],
+                holdout_principals: vec![id("evaluation-principal-2")],
+                holdout_episodes: vec![id("evaluation-episode-2")],
+                holdout_windows: vec![id("window-2")],
+                model_digest: digest("evaluation-model-2"),
+                predictions_digest: digest("evaluation-predictions-2"),
+            },
+        ],
+        final_holdout_window_id: id("window-2"),
+        final_holdout_digest: digest("final-holdout"),
+    }) {
+        Ok(receipt) => receipt,
+        Err(error) => panic!("frozen evaluation plan failed: {error}"),
+    };
+    let mut final_holdout_registry = FinalHoldoutRegistry::new();
+    let holdout_use = match final_holdout_registry.consume(&frozen_plan) {
+        Ok(receipt) => receipt,
+        Err(error) => panic!("final holdout use failed: {error}"),
+    };
+
     let evaluation = match decide_independently(
         IndependentEvaluationBundleV1 {
             evaluation_id: id("evaluation-1"),
@@ -255,8 +313,11 @@ fn lane_e_causal_candidate_chain_is_digest_bound_and_deny_all() {
             claim_scope: EvaluationClaimScopeV1::SystemLongitudinal,
             generator: generator.clone(),
             evaluator: evaluator.clone(),
-            plan_digest: digest("evaluation-plan"),
-            objective_digest: digest("objective"),
+            frozen_plan,
+            holdout_use,
+            objective_digest,
+            dataset_digest: dataset.dataset_digest,
+            estimand_digest,
             estimate_receipt_digest: bellman.evidence_digest,
             support_audit_digest: candidate_digest,
             confidence_receipt_digest: digest("confidence"),
@@ -264,11 +325,8 @@ fn lane_e_causal_candidate_chain_is_digest_bound_and_deny_all() {
             unlearning_receipt_digest: digest("unlearning"),
             snapshot_ids: vec![id("snapshot-1"), id("snapshot-2"), id("snapshot-3")],
             future_window_ids: vec![id("window-1"), id("window-2")],
-            final_holdout_digest: digest("final-holdout"),
             family_alpha_ppm: 50_000,
             simultaneous_comparisons: 1,
-            analysis_plan_frozen: true,
-            final_holdout_reused: false,
             metrics: vec![MetricGateV1 {
                 metric_id: id("task-utility"),
                 direction: EvaluationDirectionV1::Maximize,
