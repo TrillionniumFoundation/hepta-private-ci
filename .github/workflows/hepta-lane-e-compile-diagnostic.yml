@@ -1,0 +1,115 @@
+name: Hepta Lane E compile diagnostic
+
+on:
+  push:
+    branches:
+      - codex/lane-e-gap-closure-r23-20260911
+    paths:
+      - .github/workflows/hepta-lane-e-compile-diagnostic.yml
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-lane-e-compile-diagnostic-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  diagnose:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    steps:
+      - name: Check out exact source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+          ref: ${{ github.sha }}
+
+      - name: Install pinned Rust toolchain
+        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: 1.95.0
+          components: clippy,rustfmt
+
+      - name: Bind exact source
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${GITHUB_SHA}"
+          printf 'source=%s\ntree=%s\n' "${GITHUB_SHA}" "$(git rev-parse HEAD^{tree})"
+
+      - name: Capture exact Lane E compilation
+        id: compile
+        shell: bash
+        working-directory: codex-rs
+        run: |
+          set +e
+          cargo check --locked \
+            -p codex-hepta-learning-ledger \
+            -p codex-hepta-learning-artifacts \
+            -p codex-hepta-bellman-operator \
+            -p codex-hepta-intelligence-eval \
+            -p codex-hepta-shadow-qualification \
+            --all-targets > ../lane-e-cargo-check.log 2>&1
+          status=$?
+          set -e
+          printf '%s\n' "${status}" > ../lane-e-cargo-check.status
+          printf 'cargo_check_status=%s\n' "${status}"
+
+      - name: Emit bounded compiler diagnostics
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import re
+          from pathlib import Path
+
+          source = Path("lane-e-cargo-check.log")
+          text = source.read_text(encoding="utf-8", errors="replace") if source.exists() else "missing cargo log"
+          text = re.sub(r"\x1b\[[0-9;]*[A-Za-z]", "", text)
+          lines = text.splitlines()
+          selected = set()
+          for index, line in enumerate(lines):
+              if re.match(r"^(error(?:\[E\d+\])?:|error: could not compile)", line) or "error[" in line:
+                  selected.update(range(max(0, index - 8), min(len(lines), index + 18)))
+          selected.update(range(max(0, len(lines) - 100), len(lines)))
+          ordered = sorted(selected)
+          output = []
+          previous = None
+          for index in ordered:
+              if previous is not None and index > previous + 1:
+                  output.append("... omitted ...")
+              output.append(f"{index + 1:05d}: {lines[index]}")
+              previous = index
+          if not output:
+              output = ["no compiler error marker found", *lines[-100:]]
+          bounded = "\n".join(output)
+          if len(bounded) > 60000:
+              bounded = bounded[:60000] + "\n... diagnostic truncated at 60000 characters ...\n"
+          Path("lane-e-cargo-check-summary.log").write_text(bounded + "\n", encoding="utf-8")
+          print("===== LANE E COMPILER DIAGNOSTIC =====")
+          print(bounded)
+          print("===== END LANE E COMPILER DIAGNOSTIC =====")
+          PY
+
+      - name: Upload complete compiler evidence
+        if: always()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: hepta-lane-e-compile-diagnostic-${{ github.sha }}
+          path: |
+            lane-e-cargo-check.log
+            lane-e-cargo-check-summary.log
+            lane-e-cargo-check.status
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Preserve exact compiler conclusion
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          status="$(cat lane-e-cargo-check.status)"
+          test "${status}" = "0"
