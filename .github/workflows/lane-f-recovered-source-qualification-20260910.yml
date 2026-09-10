@@ -1,0 +1,114 @@
+name: Lane F recovered source qualification
+
+on:
+  push:
+    branches:
+      - codex/lane-f-gap-closure-20260910
+    paths:
+      - .github/workflows/lane-f-recovered-source-qualification-20260910.yml
+      - .lane-f-recovery/recover_source.py
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: lane-f-recovered-source-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  CARGO_INCREMENTAL: "0"
+  RUST_BACKTRACE: "1"
+
+jobs:
+  qualify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    steps:
+      - name: Check out exact recovery carrier
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Recover hash-pinned source members
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/lane-f-source"
+          python3 .lane-f-recovery/recover_source.py \
+            --receipt "$RUNNER_TEMP/lane-f-source/recovery-receipt.json"
+          python3 .lane-f-recovery/recover_source.py --check
+
+      - name: Normalize source and lockfiles
+        run: |
+          set -euo pipefail
+          cargo fmt --manifest-path codex-rs/Cargo.toml \
+            --package codex-hepta-neuron \
+            --package codex-hepta-intuition \
+            --package codex-hepta-prompt-optimizer \
+            --package codex-hepta-plasticity \
+            --package codex-hepta-intelligence
+          cargo fmt --manifest-path qualification/lane-f-shadow/Cargo.toml
+          cargo generate-lockfile --manifest-path codex-rs/Cargo.toml
+          rm -f qualification/lane-f-shadow/Cargo.lock
+          cargo generate-lockfile --manifest-path qualification/lane-f-shadow/Cargo.toml
+          git diff --check
+
+      - name: Test native Lane F crates
+        working-directory: codex-rs
+        run: |
+          set -euo pipefail
+          cargo test --locked -p codex-hepta-neuron --all-targets
+          cargo test --locked -p codex-hepta-intuition --all-targets
+          cargo test --locked -p codex-hepta-prompt-optimizer --all-targets
+          cargo test --locked -p codex-hepta-plasticity --all-targets
+          cargo test --locked -p codex-hepta-intelligence --all-targets
+          cargo clippy --locked \
+            -p codex-hepta-neuron \
+            -p codex-hepta-intuition \
+            -p codex-hepta-prompt-optimizer \
+            -p codex-hepta-plasticity \
+            -p codex-hepta-intelligence \
+            --all-targets -- -D warnings
+          cargo fmt \
+            --package codex-hepta-neuron \
+            --package codex-hepta-intuition \
+            --package codex-hepta-prompt-optimizer \
+            --package codex-hepta-plasticity \
+            --package codex-hepta-intelligence \
+            -- --check
+
+      - name: Test standalone shadow vertical
+        run: |
+          set -euo pipefail
+          cargo test --locked --manifest-path qualification/lane-f-shadow/Cargo.toml
+          cargo clippy --locked --manifest-path qualification/lane-f-shadow/Cargo.toml \
+            --all-targets -- -D warnings
+          cargo fmt --manifest-path qualification/lane-f-shadow/Cargo.toml -- --check
+          git diff --check
+
+      - name: Retain normalized source candidate
+        if: always()
+        run: |
+          set -euo pipefail
+          out="$RUNNER_TEMP/lane-f-source"
+          git diff --binary > "$out/materialized.patch"
+          git status --short > "$out/status.txt"
+          tar -czf "$out/materialized-tree.tar.gz" \
+            codex-rs/Cargo.lock \
+            codex-rs/hepta-intelligence \
+            codex-rs/hepta-intuition \
+            codex-rs/hepta-plasticity \
+            codex-rs/hepta-prompt-optimizer \
+            qualification/lane-f-shadow
+          sha256sum "$out/materialized-tree.tar.gz" > "$out/SHA256SUMS"
+
+      - name: Upload normalized source candidate
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: lane-f-normalized-source-${{ github.run_id }}
+          path: ${{ runner.temp }}/lane-f-source
+          if-no-files-found: error
+          retention-days: 14
