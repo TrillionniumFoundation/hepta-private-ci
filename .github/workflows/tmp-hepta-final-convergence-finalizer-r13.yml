@@ -1,0 +1,148 @@
+name: Temporary Hepta governed finalizer r13
+
+on:
+  push:
+    branches:
+      - "ops/hepta-final-convergence-finalizer-20260910-r13"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: read
+  checks: read
+  pull-requests: write
+
+concurrency:
+  group: hepta-governed-finalizer-r13
+  cancel-in-progress: false
+
+jobs:
+  finalize:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 150
+    env:
+      CANDIDATE_REF: candidate/hepta-all-gap-closure-final-20260910-r13
+      TARGET_REF: integration/vnext-main-20260811
+    steps:
+      - name: Resolve candidate PR
+        id: subject
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          for attempt in $(seq 1 90); do
+            head_sha="$(gh api "repos/${GITHUB_REPOSITORY}/git/ref/heads/${CANDIDATE_REF}" --jq '.object.sha' 2>/dev/null || true)"
+            pr_number="$(gh pr list --repo "$GITHUB_REPOSITORY" --state open --head "$CANDIDATE_REF" --json number --jq '.[0].number // empty' 2>/dev/null || true)"
+            if [[ -n "$head_sha" && -n "$pr_number" ]]; then
+              echo "head_sha=$head_sha" >> "$GITHUB_OUTPUT"
+              echo "pr_number=$pr_number" >> "$GITHUB_OUTPUT"
+              exit 0
+            fi
+            sleep 10
+          done
+          exit 41
+
+      - name: Require stable exact-head repository checks
+        id: checks
+        env:
+          GH_TOKEN: ${{ github.token }}
+          HEAD_SHA: ${{ steps.subject.outputs.head_sha }}
+          PR_NUMBER: ${{ steps.subject.outputs.pr_number }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          stable=0
+          previous=""
+          for attempt in $(seq 1 240); do
+            current_head="$(gh pr view "$PR_NUMBER" --repo "$GITHUB_REPOSITORY" --json headRefOid --jq '.headRefOid')"
+            test "$current_head" = "$HEAD_SHA"
+            checks="$(gh api --paginate "repos/${GITHUB_REPOSITORY}/commits/${HEAD_SHA}/check-runs?per_page=100" --jq '.check_runs')"
+            statuses="$(gh api "repos/${GITHUB_REPOSITORY}/commits/${HEAD_SHA}/status")"
+            total="$(jq 'length' <<<"$checks")"
+            pending="$(jq '[.[] | select(.status != "completed")] | length' <<<"$checks")"
+            bad="$(jq '[.[] | select(.status == "completed" and (.conclusion == "failure" or .conclusion == "cancelled" or .conclusion == "timed_out" or .conclusion == "action_required" or .conclusion == "stale" or .conclusion == "startup_failure"))] | length' <<<"$checks")"
+            status_state="$(jq -r '.state' <<<"$statuses")"
+            fingerprint="$(jq -S '[.[] | {id,name,status,conclusion,completed_at}]' <<<"$checks" | sha256sum | cut -d' ' -f1)"
+            if (( total >= 8 && pending == 0 && bad == 0 )) && [[ "$status_state" != "failure" && "$status_state" != "error" && "$status_state" != "pending" ]]; then
+              if [[ "$fingerprint" == "$previous" ]]; then stable=$((stable + 1)); else stable=1; fi
+              if (( stable >= 6 )); then
+                echo "stable=true" >> "$GITHUB_OUTPUT"
+                exit 0
+              fi
+            else
+              stable=0
+            fi
+            previous="$fingerprint"
+            sleep 20
+          done
+          gh pr comment "$PR_NUMBER" --repo "$GITHUB_REPOSITORY" --body "Governed finalization remains blocked: exact head \`${HEAD_SHA}\` did not reach a stable terminal all-green repository-check state. No bypass was used."
+          exit 42
+
+      - name: Mark ready and request eligible non-author review
+        id: review
+        env:
+          GH_TOKEN: ${{ github.token }}
+          HEAD_SHA: ${{ steps.subject.outputs.head_sha }}
+          PR_NUMBER: ${{ steps.subject.outputs.pr_number }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          gh pr ready "$PR_NUMBER" --repo "$GITHUB_REPOSITORY" || true
+          author="$(gh pr view "$PR_NUMBER" --repo "$GITHUB_REPOSITORY" --json author --jq '.author.login')"
+
+          latest_approvals() {
+            gh api --paginate "repos/${GITHUB_REPOSITORY}/pulls/${PR_NUMBER}/reviews?per_page=100" | jq --arg author "$author" --arg head "$HEAD_SHA" '
+              group_by(.user.login)
+              | map(sort_by(.submitted_at) | last)
+              | map(select(.state == "APPROVED" and .commit_id == $head and .user.login != $author and (.user.login | endswith("[bot]") | not)))
+              | length'
+          }
+
+          approvals="$(latest_approvals)"
+          if (( approvals == 0 )); then
+            mapfile -t candidates < <(
+              gh api --paginate "repos/${GITHUB_REPOSITORY}/collaborators?affiliation=direct&per_page=100" \
+                | jq -r --arg author "$author" '.[] | select(.login != $author and (.login | endswith("[bot]") | not) and (.permissions.push == true or .permissions.maintain == true or .permissions.admin == true)) | .login' \
+                | head -n 3
+            )
+            for reviewer in "${candidates[@]}"; do
+              gh pr edit "$PR_NUMBER" --repo "$GITHUB_REPOSITORY" --add-reviewer "$reviewer" || true
+            done
+            gh pr comment "$PR_NUMBER" --repo "$GITHUB_REPOSITORY" --body "Exact head \`${HEAD_SHA}\` is repository-check green and ready for a fresh eligible non-author review. Administrator bypass and author self-approval are not admissible."
+          fi
+
+          for attempt in $(seq 1 180); do
+            current_head="$(gh pr view "$PR_NUMBER" --repo "$GITHUB_REPOSITORY" --json headRefOid --jq '.headRefOid')"
+            test "$current_head" = "$HEAD_SHA"
+            approvals="$(latest_approvals)"
+            if (( approvals > 0 )); then
+              echo "approved=true" >> "$GITHUB_OUTPUT"
+              echo "approval_count=$approvals" >> "$GITHUB_OUTPUT"
+              exit 0
+            fi
+            sleep 20
+          done
+          gh pr comment "$PR_NUMBER" --repo "$GITHUB_REPOSITORY" --body "Repository-controlled checks are green for \`${HEAD_SHA}\`, but no eligible non-author approval bound to that exact head arrived. The PR remains unmerged; no administrator bypass was used."
+          exit 43
+
+      - name: Revalidate tuple and merge without bypass
+        if: steps.review.outputs.approved == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          HEAD_SHA: ${{ steps.subject.outputs.head_sha }}
+          PR_NUMBER: ${{ steps.subject.outputs.pr_number }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          current_head="$(gh pr view "$PR_NUMBER" --repo "$GITHUB_REPOSITORY" --json headRefOid --jq '.headRefOid')"
+          current_base="$(gh pr view "$PR_NUMBER" --repo "$GITHUB_REPOSITORY" --json baseRefName --jq '.baseRefName')"
+          draft="$(gh pr view "$PR_NUMBER" --repo "$GITHUB_REPOSITORY" --json isDraft --jq '.isDraft')"
+          test "$current_head" = "$HEAD_SHA"
+          test "$current_base" = "$TARGET_REF"
+          test "$draft" = "false"
+
+          checks="$(gh api --paginate "repos/${GITHUB_REPOSITORY}/commits/${HEAD_SHA}/check-runs?per_page=100" --jq '.check_runs')"
+          test "$(jq '[.[] | select(.status != "completed" or .conclusion == "failure" or .conclusion == "cancelled" or .conclusion == "timed_out" or .conclusion == "action_required" or .conclusion == "stale" or .conclusion == "startup_failure")] | length' <<<"$checks")" = "0"
+
+          gh pr merge "$PR_NUMBER" --repo "$GITHUB_REPOSITORY" --merge --delete-branch --match-head-commit "$HEAD_SHA"
