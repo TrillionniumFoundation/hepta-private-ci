@@ -2,6 +2,7 @@
 
 #![forbid(unsafe_code)]
 
+mod generation_bound;
 mod v2;
 
 use std::collections::BTreeSet;
@@ -15,6 +16,22 @@ use codex_hepta_types::Digest32;
 use codex_hepta_types::FixedQ32;
 use codex_hepta_types::StableId;
 
+pub use generation_bound::CandidateUnionEntryV1;
+pub use generation_bound::CandidateUnionV1;
+pub use generation_bound::MAX_GENERATION_BOUND_CANDIDATES;
+pub use generation_bound::MAX_GENERATION_BOUND_RESULTS;
+pub use generation_bound::MemoryCueV1;
+pub use generation_bound::RecallAbstentionReasonV1;
+pub use generation_bound::RecallDispositionV1;
+pub use generation_bound::RecallErrorV1;
+pub use generation_bound::RecallPacketV1;
+pub use generation_bound::RecallSelectionV1;
+pub use generation_bound::RetrievalChannelCandidateV1;
+pub use generation_bound::RetrievalChannelV1;
+pub use generation_bound::RetrievalChannelWeightV1;
+pub use generation_bound::RetrievalPolicyV1;
+pub use generation_bound::build_candidate_union;
+pub use generation_bound::recall;
 pub use v2::RetrievalReceiptV2;
 pub use v2::retrieve_v2;
 

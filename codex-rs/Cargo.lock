@@ -3711,6 +3711,7 @@ dependencies = [
 name = "codex-hepta-intelligence-eval"
 version = "0.0.0"
 dependencies = [
+ "codex-hepta-learning-ledger",
  "codex-hepta-types",
 ]
 
@@ -3999,6 +4000,8 @@ dependencies = [
 name = "codex-hepta-shadow-qualification"
 version = "0.0.0"
 dependencies = [
+ "codex-hepta-bellman-operator",
+ "codex-hepta-intelligence-eval",
  "codex-hepta-learning-artifacts",
  "codex-hepta-learning-ledger",
  "codex-hepta-ndu",

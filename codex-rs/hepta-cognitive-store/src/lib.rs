@@ -5,6 +5,8 @@
 
 #![forbid(unsafe_code)]
 
+mod v2;
+
 use std::collections::BTreeMap;
 use std::error::Error as StdError;
 use std::fmt;
@@ -15,6 +17,17 @@ use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::LogicalSequence;
 use codex_hepta_types::StableId;
+
+pub use v2::AdmittedCognitiveStoreV2;
+pub use v2::CognitiveStoreImageV2;
+pub use v2::CognitiveStoreV2Error;
+pub use v2::ForgetIntentV2;
+pub use v2::MAX_V2_RECORD_REVISIONS;
+pub use v2::MAX_V2_SNAPSHOT_LEASE_MS;
+pub use v2::SnapshotOpenRequestV2;
+pub use v2::StoreAuthorityVerifierV2;
+pub use v2::StoreIntentImageEntryV2;
+pub use v2::StoreSnapshotV2;
 
 const MAX_RECORDS: usize = 16_384;
 
