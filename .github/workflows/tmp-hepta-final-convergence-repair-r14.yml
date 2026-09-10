@@ -1,0 +1,153 @@
+name: Temporary Hepta second-pass exact-head repair r14
+
+on:
+  push:
+    branches:
+      - "ops/hepta-final-convergence-repair-20260910-r14"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: write
+  checks: read
+  pull-requests: write
+
+concurrency:
+  group: hepta-final-convergence-repair-r14
+  cancel-in-progress: false
+
+jobs:
+  repair:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 150
+    env:
+      CANDIDATE_REF: candidate/hepta-all-gap-closure-final-20260910-r13
+    steps:
+      - name: Check out trusted repair carrier
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Re-observe and apply only whitelisted deterministic repairs
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "Hepta exact-head repair"
+          git config user.email "hepta-exact-head-repair@users.noreply.github.com"
+          pr="$(gh pr list --repo "$GITHUB_REPOSITORY" --state open --head "$CANDIDATE_REF" --json number --jq '.[0].number // empty')"
+          test -n "$pr"
+
+          for round in 1 2; do
+            head="$(gh pr view "$pr" --repo "$GITHUB_REPOSITORY" --json headRefOid --jq '.headRefOid')"
+            stable=0; old=""
+            for attempt in $(seq 1 210); do
+              gh api --paginate "repos/${GITHUB_REPOSITORY}/commits/${head}/check-runs?per_page=100" --jq '.check_runs' > "$RUNNER_TEMP/checks.json"
+              total="$(jq 'length' "$RUNNER_TEMP/checks.json")"
+              pending="$(jq '[.[] | select(.status != "completed")] | length' "$RUNNER_TEMP/checks.json")"
+              fp="$(jq -S '[.[]|{id,name,status,conclusion}]' "$RUNNER_TEMP/checks.json" | sha256sum | cut -d' ' -f1)"
+              if (( total >= 8 && pending == 0 )); then
+                if [[ "$fp" == "$old" ]]; then stable=$((stable+1)); else stable=1; fi
+                if (( stable >= 5 )); then break; fi
+              else stable=0; fi
+              old="$fp"; sleep 20
+            done
+            bad="$(jq '[.[] | select(.conclusion == "failure" or .conclusion == "cancelled" or .conclusion == "timed_out" or .conclusion == "action_required" or .conclusion == "stale" or .conclusion == "startup_failure")] | length' "$RUNNER_TEMP/checks.json")"
+            pending="$(jq '[.[] | select(.status != "completed")] | length' "$RUNNER_TEMP/checks.json")"
+            if (( bad == 0 && pending == 0 )); then
+              gh pr ready "$pr" --repo "$GITHUB_REPOSITORY" || true
+              exit 0
+            fi
+
+            rm -rf "$RUNNER_TEMP/logs"; mkdir -p "$RUNNER_TEMP/logs"
+            mapfile -t runs < <(gh api --paginate "repos/${GITHUB_REPOSITORY}/actions/runs?head_sha=${head}&per_page=100" --jq '.workflow_runs[] | select(.conclusion == "failure" or .conclusion == "cancelled" or .conclusion == "timed_out" or .conclusion == "action_required" or .conclusion == "stale" or .conclusion == "startup_failure") | .id' | sort -u)
+            for run in "${runs[@]}"; do gh run view "$run" --repo "$GITHUB_REPOSITORY" --log-failed > "$RUNNER_TEMP/logs/${run}.log" 2>&1 || true; done
+            cat "$RUNNER_TEMP"/logs/*.log > "$RUNNER_TEMP/all.log" 2>/dev/null || true
+
+            python3 - "$RUNNER_TEMP/all.log" "$RUNNER_TEMP/classes.json" <<'PY'
+          import json, pathlib, re, sys
+          text = pathlib.Path(sys.argv[1]).read_text(errors="replace") if pathlib.Path(sys.argv[1]).exists() else ""
+          pats = {
+            "shadow_deps": r"codex_hepta_(?:bellman_operator|intelligence_eval)|unresolved import.*hepta_(?:bellman|intelligence_eval)",
+            "duplicate_crt": r"LNK2005|LNK1169|__scrt_initialize_crt|__std_security_check_cookie|libcmt\.lib",
+            "rustfmt": r"Diff in .*\.rs|rustfmt|cargo fmt .*check",
+            "python_format": r"ruff format|would reformat .*\.py|black.*would reformat",
+            "lock": r"lock file .* needs to be updated|dependency drift|--locked.*failed",
+          }
+          pathlib.Path(sys.argv[2]).write_text(json.dumps({k:bool(re.search(v,text,re.I|re.S)) for k,v in pats.items()},indent=2,sort_keys=True)+"\n")
+          PY
+
+            git fetch origin "+refs/heads/${CANDIDATE_REF}:refs/remotes/origin/${CANDIDATE_REF}"
+            git checkout --detach "$head"
+            git switch -C "$CANDIDATE_REF"
+            touched=0
+
+            if jq -e '.shadow_deps' "$RUNNER_TEMP/classes.json" >/dev/null; then
+              python3 <<'PY'
+          from pathlib import Path
+          p=next((x for x in [Path('codex-rs/hepta-shadow-qualification/BUILD.bazel'),Path('codex-rs/hepta-shadow-qualification/BUILD')] if x.exists()),None)
+          if p is None: raise SystemExit('missing BUILD')
+          t=p.read_text(); req=['//codex-rs/hepta-bellman-operator:lib','//codex-rs/hepta-intelligence-eval:lib']
+          if all(x in t for x in req): raise SystemExit(0)
+          m=t.find('name = "unit_tests"'); s=t.rfind('rust_test(',0,m)
+          if m<0 or s<0: raise SystemExit('missing unit_tests rust_test')
+          dep=t.find('deps = [',s,m+5000)
+          if dep<0:
+              close=t.find('\n)',m)
+              if close<0: raise SystemExit('target close not found')
+              ins='    deps = [\n'+''.join(f'        "{x}",\n' for x in req)+'    ],\n'
+              t=t[:close+1]+ins+t[close+1:]
+          else:
+              close=t.find(']',dep)
+              missing=[x for x in req if x not in t[dep:close]]
+              t=t[:close]+''.join(f'        "{x}",\n' for x in missing)+t[close:]
+          p.write_text(t)
+          PY
+              touched=1
+            fi
+
+            if jq -e '.duplicate_crt' "$RUNNER_TEMP/classes.json" >/dev/null; then
+              python3 <<'PY'
+          from pathlib import Path
+          import json,re
+          rx=re.compile(r'(?i)(?:-Wl,)?/WHOLEARCHIVE:[^\s\"\047]*v8_ci_static\.lib')
+          changed=[]; seen=[]
+          for root in map(Path,['.github','codex-rs','bazel','tools']):
+              if not root.exists(): continue
+              for p in root.rglob('*'):
+                  if not p.is_file() or p.stat().st_size>2_000_000: continue
+                  try:t=p.read_text()
+                  except (UnicodeDecodeError,OSError):continue
+                  if 'v8_ci_static' not in t.lower():continue
+                  seen.append(str(p)); u=rx.sub('',t)
+                  u=''.join(line for line in u.splitlines(True) if not ('wholearchive' in line.lower() and 'v8_ci_static' in line.lower()))
+                  if u!=t:p.write_text(u);changed.append(str(p))
+          out=Path('qualification/final-convergence-r13/WINDOWS_CRT_REMEDIATION.json');out.parent.mkdir(parents=True,exist_ok=True)
+          out.write_text(json.dumps({'strategy':'remove only v8_ci_static WHOLEARCHIVE forcing','seen':seen,'changed':changed,'forceMultipleAdded':False,'nodefaultlibAdded':False},indent=2,sort_keys=True)+'\n')
+          if not changed: raise SystemExit('refusing unrecognized CRT linker mutation')
+          PY
+              touched=1
+            fi
+
+            if jq -e '.rustfmt' "$RUNNER_TEMP/classes.json" >/dev/null; then env -u GH_TOKEN cargo fmt --manifest-path codex-rs/Cargo.toml --all; touched=1; fi
+            if jq -e '.python_format' "$RUNNER_TEMP/classes.json" >/dev/null; then
+              curl -LsSf https://astral.sh/uv/0.11.3/install.sh | env -u GH_TOKEN sh
+              PATH="$HOME/.local/bin:$PATH" env -u GH_TOKEN uv run --frozen --project scripts ruff format scripts
+              touched=1
+            fi
+
+            if (( touched == 0 )) || git diff --quiet; then
+              gh pr comment "$pr" --repo "$GITHUB_REPOSITORY" --body "Second-pass repair found persistent failures on \`${head}\` but no safe whitelisted mutation. Classification: \`$(jq -c . "$RUNNER_TEMP/classes.json")\`. The PR remains fail-closed."
+              exit 43
+            fi
+            git diff --check
+            git add -A
+            git commit -m "fix(convergence): second-pass deterministic repair ${round}"
+            new="$(git rev-parse HEAD)"
+            git -c http.extraheader="AUTHORIZATION: basic $(printf 'x-access-token:%s' "$GH_TOKEN" | base64 -w0)" push --force-with-lease origin "HEAD:refs/heads/${CANDIDATE_REF}"
+            gh pr comment "$pr" --repo "$GITHUB_REPOSITORY" --body "Second-pass deterministic repair ${round} published: \`${head}\` → \`${new}\`. Prior-head evidence is superseded."
+          done
+          exit 44
