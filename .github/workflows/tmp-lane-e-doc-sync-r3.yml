@@ -1,0 +1,267 @@
+name: tmp-lane-e-doc-sync-r3
+
+on:
+  push:
+    branches:
+      - tmp/hepta-lane-e-doc-sync-20260910
+    paths:
+      - .github/workflows/tmp-lane-e-doc-sync-r3.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: tmp-lane-e-doc-sync-r3
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Synchronize semantic holdout documentation
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+
+          def replace_once(path: str, old: str, new: str) -> None:
+              target = Path(path)
+              text = target.read_text(encoding="utf-8")
+              count = text.count(old)
+              if count != 1:
+                  raise SystemExit(
+                      f"{path}: expected exactly one replacement, found {count}: {old[:120]!r}"
+                  )
+              target.write_text(text.replace(old, new), encoding="utf-8")
+
+          replace_once(
+              "codex-rs/hepta-intelligence-eval/NATIVE_MAPPING.md",
+              """`freeze_cross_fold_plan` requires two to thirty-two folds. It canonicalizes and
+          deduplicates every principal, episode and window set; rejects training/holdout
+          leakage within a fold; prevents the final holdout from entering any training
+          set; prevents a holdout lineage from appearing in multiple folds; and requires
+          the final holdout window to be covered exactly once.
+
+          `FinalHoldoutRegistry` allows an exact retry under the same plan but rejects a
+          second plan attempting to consume the same final-holdout digest. A future
+          persistent host adapter must retain this registry under a single writer; the
+          pure type alone does not prove durable exclusivity.
+          """,
+              """`freeze_cross_fold_plan` requires two to thirty-two folds. It canonicalizes and
+          deduplicates every principal, episode and window set; rejects training/holdout
+          leakage within a fold; prevents the final holdout from entering any training
+          set; prevents a holdout lineage from appearing in multiple folds; and requires
+          the final holdout window to be covered exactly once. The frozen receipt also
+          binds claim scope, candidate and baseline identities, objective, dataset,
+          estimand, metric direction and safety-floor contract, multiplicity profile,
+          final-holdout window and final-holdout bytes. Its deterministic integrity seal
+          detects post-freeze field mutation; it is not a signature or issuer credential.
+
+          `FinalHoldoutRegistry::consume` accepts only the typed sealed frozen-plan
+          receipt. An exact retry of the identical plan is idempotent. Reusing the same
+          plan identity with changed semantics conflicts, while a different plan using
+          either the same final-holdout digest or the same final-holdout window is
+          rejected. The emitted holdout-use receipt binds the complete plan semantics,
+          registry state and use digest and carries its own deterministic integrity seal.
+          A future persistent host adapter must retain this registry under a single
+          writer; the pure type and unkeyed seals alone do not prove durable exclusivity
+          or authenticated origin.
+          """,
+          )
+
+          replace_once(
+              "codex-rs/hepta-intelligence-eval/NATIVE_MAPPING.md",
+              """- a frozen plan and unused final holdout;
+          """,
+              """- an integrity-checked frozen-plan receipt and the exact consumed
+            holdout-use receipt bound to it;
+          """,
+          )
+
+          replace_once(
+              "codex-rs/hepta-intelligence-eval/NATIVE_MAPPING.md",
+              """2. the durable final-holdout-use registry and single-writer fence;
+          """,
+              """2. the durable final-holdout-use registry, single-writer fence and
+             canonical persistence/reload of frozen-plan and holdout-use receipts;
+          """,
+          )
+
+          replace_once(
+              "docs/lane-e/END_TO_END_LEARNING_SEQUENCE.md",
+              """freeze EvaluationPlan and all thresholds before outcomes are inspected
+            -> register final holdout exactly once
+            -> freeze two or more cross-fold partitions
+            -> every fold keeps training and holdout principal, episode and window
+               lineages disjoint
+            -> fit nuisance model on training folds only
+            -> compute OPE/sequential estimates and support diagnostics
+            -> compute prespecified cluster intervals and multiplicity-adjusted evidence
+            -> collect retention, subgroup, privacy and unlearning receipts
+            -> decide_independently verifies distinct principal, credential and signing key
+            -> intersect candidate LCB versus baseline UCB, safety floors, support,
+               multiplicity, snapshot count, future windows, retention and unlearning
+            -> emit EligibleForIndependentSelection, Ineligible or InsufficientEvidence
+          """,
+              """construct the complete EvaluationPlan before outcomes are inspected
+            -> bind claim scope, candidate, baseline, objective, dataset, estimand,
+               metric directions and safety floors, multiplicity, folds, final-holdout
+               window and final-holdout digest
+            -> freeze two or more cross-fold partitions into one sealed plan receipt
+            -> every fold keeps training and holdout principal, episode and window
+               lineages disjoint
+            -> FinalHoldoutRegistry consumes that exact sealed plan receipt once
+            -> fit nuisance model on training folds only
+            -> compute OPE/sequential estimates and support diagnostics
+            -> compute prespecified cluster intervals and multiplicity-adjusted evidence
+            -> collect retention, subgroup, privacy and unlearning receipts
+            -> decide_independently validates both receipt seals and their exact semantic
+               binding, then verifies distinct principal, credential and signing key
+            -> intersect candidate LCB versus baseline UCB, safety floors, support,
+               multiplicity, snapshot count, future windows, retention and unlearning
+            -> emit EligibleForIndependentSelection, Ineligible or InsufficientEvidence
+          """,
+          )
+
+          replace_once(
+              "docs/lane-e/END_TO_END_LEARNING_SEQUENCE.md",
+              """`EligibleForIndependentSelection` deliberately grants no selection authority.
+          The evaluator cannot install, activate, merge, promote or release the artifact.
+          """,
+              """An identical retry of the same frozen plan returns an idempotent holdout-use
+          receipt. Reusing a plan identity with changed semantics conflicts; a second plan
+          cannot reuse either the holdout digest or its final window. The deterministic
+          receipt seals detect in-process field mutation but are not signatures and do not
+          replace durable single-writer storage or authenticated issuer evidence.
+
+          `EligibleForIndependentSelection` deliberately grants no selection authority.
+          The evaluator cannot install, activate, merge, promote or release the artifact.
+          """,
+          )
+
+          replace_once(
+              "qualification/module-execution-dossiers/detail/learning.eval.md",
+              """`estimate_ope(plan, rows) -> OpeEstimate`; `estimate_cluster_intervals(plan, rows, assignments) -> ClusterOpeEstimate`; `estimate_sequential(plan, trajectories) -> SequentialEstimate`; `fit_temporal_fold(plan, training, targets) -> TemporalFoldReceipt`; `evaluate_temporal_holdout(plan, training, targets, observations, assignments) -> TemporalEvaluationReceipt`; `freeze_cross_fold_plan(plan) -> CrossFoldPlanReceiptV1`; `FinalHoldoutRegistry::consume(plan, holdout) -> HoldoutUseReceiptV1`; `decide_independently(bundle) -> IndependentEvaluationDecisionV1`.
+          """,
+              """`estimate_ope(plan, rows) -> OpeEstimate`; `estimate_cluster_intervals(plan, rows, assignments) -> ClusterOpeEstimate`; `estimate_sequential(plan, trajectories) -> SequentialEstimate`; `fit_temporal_fold(plan, training, targets) -> TemporalFoldReceipt`; `evaluate_temporal_holdout(plan, training, targets, observations, assignments) -> TemporalEvaluationReceipt`; `freeze_cross_fold_plan(plan) -> CrossFoldPlanReceiptV1`; `FinalHoldoutRegistry::consume(&frozen_plan_receipt) -> HoldoutUseReceiptV1`; `decide_independently(bundle) -> IndependentEvaluationDecisionV1`.
+          """,
+          )
+
+          replace_once(
+              "qualification/module-execution-dossiers/detail/learning.eval.md",
+              """`CrossFoldPlanV1` binds two to thirty-two canonical folds, each with disjoint training and holdout principal, episode and window lineages. The final holdout cannot appear in training, must occur in exactly one holdout fold and cannot be reused by another plan. The in-memory `FinalHoldoutRegistry` defines deterministic semantics; a product adapter must persist it under an exclusive writer.
+
+          `IndependentEvaluationBundleV1` consumes authenticated generator/evaluator roles, plan, objective, estimate, support, confidence, retention, unlearning, snapshot, future-window and final-holdout facts. The evaluator cannot share a principal, credential chain or signing key with the generator.
+          """,
+              """`CrossFoldPlanV1` binds two to thirty-two canonical folds, each with disjoint training and holdout principal, episode and window lineages. It also binds claim scope, candidate and baseline identities, objective, dataset, estimand, metric directions and safety floors, multiplicity, final-holdout window and final-holdout digest. The final holdout cannot appear in training and must occur in exactly one holdout fold. `freeze_cross_fold_plan` emits a deterministic sealed receipt; the seal detects post-freeze mutation but is not issuer authentication.
+
+          The in-memory `FinalHoldoutRegistry` consumes that typed receipt. It permits an exact idempotent retry, rejects semantic mutation under the same plan identity, and prevents a second plan from reusing either the final-holdout digest or final-holdout window. Its sealed use receipt binds the complete frozen-plan semantics and registry state. A product adapter must persist both registry and receipts under an exclusive writer and authenticated storage boundary.
+
+          `IndependentEvaluationBundleV1` consumes authenticated generator/evaluator roles, the exact sealed frozen-plan and holdout-use receipts, objective, dataset, estimand, estimate, support, confidence, retention, unlearning, snapshot and future-window facts. It validates receipt integrity and semantic equality before statistical admission. The evaluator cannot share a principal, credential chain or signing key with the generator.
+          """,
+          )
+
+          replace_once(
+              "qualification/module-execution-dossiers/detail/learning.eval.md",
+              """Freeze all decisions before outcomes are inspected; audit candidate completeness and support; compute single-decision IPS/SNIPS/DR only under its assumptions or sequential history-conditioned DR under its own assumptions; cluster dependent trajectories; freeze cross-fold lineage; apply preregistered monitoring and multiplicity; intersect all thresholds; and return eligible, insufficient or rejected per claim.
+          """,
+              """Freeze all decisions before outcomes are inspected; audit candidate completeness and support; compute single-decision IPS/SNIPS/DR only under its assumptions or sequential history-conditioned DR under its own assumptions; cluster dependent trajectories; freeze the complete cross-fold analysis semantics; consume the exact sealed plan receipt once; apply preregistered monitoring and multiplicity; validate plan/use receipt integrity and equality; intersect all thresholds; and return eligible, insufficient or rejected per claim.
+          """,
+          )
+
+          replace_once(
+              "qualification/module-execution-dossiers/detail/learning.eval.md",
+              """The former single temporal holdout and conservative cluster code is no longer labelled generic cross-fitting by implication. `freeze_cross_fold_plan` now supplies an explicit native partition contract, while actual nuisance-model scheduling and durable plan/holdout storage remain product bindings. Native estimator, independent observer and authentication adapters are separately identified. The evaluator emits eligibility evidence, never selection or release authority.
+          """,
+              """The former single temporal holdout and conservative cluster code is no longer labelled generic cross-fitting by implication. `freeze_cross_fold_plan` now supplies an explicit complete analysis contract and sealed receipt, and `FinalHoldoutRegistry::consume` derives its use binding from that receipt rather than loose caller arguments. Actual nuisance-model scheduling, canonical receipt persistence and durable single-writer holdout storage remain product bindings. Native estimator, independent observer and authentication adapters are separately identified. The evaluator emits eligibility evidence, never selection or release authority.
+          """,
+          )
+
+          replace_once(
+              "docs/lane-e/LANE_E_IMPLEMENTATION_MATRIX.json",
+              """  \"baseCommit\": \"05981ed1adfb931a87a47b0606f1cedaa69f123b\",
+            \"candidateBranch\": \"codex/hepta-lane-e-gap-closure-20260910\",
+            \"sourceIdentityPolicy\": \"exact_ci_head_tree_and_ordered_parent_synthetic_merge_required\",
+            \"repositoryClosureState\": \"source_implemented_ci_pending\",
+          """,
+              """  \"baseCommit\": \"6303bceab938c25d645e220a32f91701e2c31701\",
+            \"candidateBranch\": \"dynamic_exact_pr_head\",
+            \"sourceIdentityPolicy\": \"single_direct_child_exact_ci_head_tree_and_ordered_parent_synthetic_merge_required\",
+            \"repositoryClosureState\": \"source_implemented_exact_head_qualification_required\",
+          """,
+          )
+
+          replace_once(
+              "docs/lane-e/LANE_E_IMPLEMENTATION_MATRIX.json",
+              """      \"compatibility\": \"existing_estimators_retained_cross_fold_holdout_and_independent_decision_additive\",
+          """,
+              """      \"compatibility\": \"existing_estimators_retained_complete_plan_receipt_sealed_holdout_use_and_independent_decision_additive\",
+          """,
+          )
+
+          replace_once(
+              "docs/lane-e/LANE_E_IMPLEMENTATION_MATRIX.json",
+              """        \"eval_cross_fold_plan_binds_disjoint_lineage_and_final_holdout\",
+                  \"final_holdout_registry_allows_exact_retry_but_blocks_adaptive_reuse\",
+                  \"op_03_high_fit_without_retention_is_insufficient\"
+          """,
+              """        \"eval_cross_fold_plan_binds_disjoint_lineage_and_final_holdout\",
+                  \"final_holdout_registry_allows_exact_retry_but_blocks_adaptive_reuse\",
+                  \"final_holdout_replay_receipt_is_stable_after_unrelated_registry_growth\",
+                  \"independent_decision_consumes_bound_holdout_receipt\",
+                  \"op_03_high_fit_without_retention_is_insufficient\"
+          """,
+          )
+
+          replace_once(
+              "qualification/lane-e/TEST_TRACEABILITY.json",
+              """      \"requirement\": \"Future leakage, holdout reuse, role collision, retention failure and deleted-lineage restoration invalidate the claim.\",
+          """,
+              """      \"requirement\": \"Future leakage, holdout reuse by digest or window, same-plan semantic mutation, altered plan/use receipts, role collision, retention failure and deleted-lineage restoration invalidate the claim.\",
+          """,
+          )
+
+          replace_once(
+              "qualification/lane-e/TEST_TRACEABILITY.json",
+              """        {\"source\": \"codex-rs/hepta-intelligence-eval/src/closure_tests.rs\", \"function\": \"final_holdout_registry_allows_exact_retry_but_blocks_adaptive_reuse\"},
+                  {\"source\": \"codex-rs/hepta-learning-artifacts/src/closure_v2_tests.rs\", \"function\": \"art_02_persistent_withdrawal_blocks_future_admission_and_replays\"}
+          """,
+              """        {\"source\": \"codex-rs/hepta-intelligence-eval/src/closure_tests.rs\", \"function\": \"final_holdout_registry_allows_exact_retry_but_blocks_adaptive_reuse\"},
+                  {\"source\": \"codex-rs/hepta-intelligence-eval/src/closure_tests.rs\", \"function\": \"final_holdout_replay_receipt_is_stable_after_unrelated_registry_growth\"},
+                  {\"source\": \"codex-rs/hepta-intelligence-eval/src/closure_tests.rs\", \"function\": \"independent_decision_consumes_bound_holdout_receipt\"},
+                  {\"source\": \"codex-rs/hepta-learning-artifacts/src/closure_v2_tests.rs\", \"function\": \"art_02_persistent_withdrawal_blocks_future_admission_and_replays\"}
+          """,
+          )
+          PY
+
+          rm .github/workflows/tmp-lane-e-doc-sync-r3.yml
+          python3 scripts/hepta-lane-e-closure.py self-test
+          python3 scripts/hepta-lane-e-closure.py verify
+          python3 -m json.tool docs/lane-e/LANE_E_IMPLEMENTATION_MATRIX.json >/dev/null
+          python3 -m json.tool qualification/lane-e/TEST_TRACEABILITY.json >/dev/null
+          git diff --check
+
+      - name: Publish clean diagnostic tree
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name hepta-lane-e-doc-sync-bot
+          git config user.email hepta-lane-e-doc-sync-bot@users.noreply.github.com
+          git add \
+            codex-rs/hepta-intelligence-eval/NATIVE_MAPPING.md \
+            docs/lane-e/END_TO_END_LEARNING_SEQUENCE.md \
+            docs/lane-e/LANE_E_IMPLEMENTATION_MATRIX.json \
+            qualification/lane-e/TEST_TRACEABILITY.json \
+            qualification/module-execution-dossiers/detail/learning.eval.md \
+            .github/workflows/tmp-lane-e-doc-sync-r3.yml
+          test -n "$(git diff --cached --name-only)"
+          git commit -m "docs(lane-e): bind frozen-plan and holdout-use semantics"
+          git push origin HEAD:refs/heads/tmp/hepta-lane-e-doc-sync-20260910
