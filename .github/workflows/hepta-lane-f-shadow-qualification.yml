@@ -13,6 +13,8 @@ on:
   push:
     branches:
       - "codex/lane-f-gap-closure-20260910"
+      - "integration/hepta-all-gap-closure-20260910-r12"
+      - "candidate/hepta-all-gap-closure-final-20260910"
   workflow_dispatch:
 
 permissions:
@@ -50,20 +52,19 @@ jobs:
           set -euo pipefail
           cp codex-rs/Cargo.lock qualification/lane-f-shadow/Cargo.lock
           if ! grep -q '^name = "lane-f-shadow-qualification"$' qualification/lane-f-shadow/Cargo.lock; then
-            cat >> qualification/lane-f-shadow/Cargo.lock <<'EOF'
-
-[[package]]
-name = "lane-f-shadow-qualification"
-version = "0.1.0"
-dependencies = [
- "codex-hepta-intelligence",
- "codex-hepta-intuition",
- "codex-hepta-neuron",
- "codex-hepta-plasticity",
- "codex-hepta-prompt-optimizer",
- "codex-hepta-types",
-]
-EOF
+            {
+              printf '\n[[package]]\n'
+              printf 'name = "lane-f-shadow-qualification"\n'
+              printf 'version = "0.1.0"\n'
+              printf 'dependencies = [\n'
+              printf ' "codex-hepta-intelligence",\n'
+              printf ' "codex-hepta-intuition",\n'
+              printf ' "codex-hepta-neuron",\n'
+              printf ' "codex-hepta-plasticity",\n'
+              printf ' "codex-hepta-prompt-optimizer",\n'
+              printf ' "codex-hepta-types",\n'
+              printf ']\n'
+            } >> qualification/lane-f-shadow/Cargo.lock
           fi
 
       - name: Test and lint standalone vertical
@@ -118,20 +119,19 @@ EOF
           test "$(git rev-parse HEAD)" = "${{ steps.merge.outputs.sha }}"
           cp codex-rs/Cargo.lock qualification/lane-f-shadow/Cargo.lock
           if ! grep -q '^name = "lane-f-shadow-qualification"$' qualification/lane-f-shadow/Cargo.lock; then
-            cat >> qualification/lane-f-shadow/Cargo.lock <<'EOF'
-
-[[package]]
-name = "lane-f-shadow-qualification"
-version = "0.1.0"
-dependencies = [
- "codex-hepta-intelligence",
- "codex-hepta-intuition",
- "codex-hepta-neuron",
- "codex-hepta-plasticity",
- "codex-hepta-prompt-optimizer",
- "codex-hepta-types",
-]
-EOF
+            {
+              printf '\n[[package]]\n'
+              printf 'name = "lane-f-shadow-qualification"\n'
+              printf 'version = "0.1.0"\n'
+              printf 'dependencies = [\n'
+              printf ' "codex-hepta-intelligence",\n'
+              printf ' "codex-hepta-intuition",\n'
+              printf ' "codex-hepta-neuron",\n'
+              printf ' "codex-hepta-plasticity",\n'
+              printf ' "codex-hepta-prompt-optimizer",\n'
+              printf ' "codex-hepta-types",\n'
+              printf ']\n'
+            } >> qualification/lane-f-shadow/Cargo.lock
           fi
 
       - name: Test merge candidate
