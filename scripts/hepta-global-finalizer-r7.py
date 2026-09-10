@@ -17,6 +17,7 @@ Subcommands:
 from __future__ import annotations
 
 import argparse
+import ast
 import hashlib
 import json
 import os
@@ -512,26 +513,42 @@ def merge_lane(lane: str, branch: str) -> dict[str, Any]:
     }
 
 
-def repair_lane_g_shared_artifacts() -> dict[str, Any]:
-    """Regenerate Lane G shared dossiers without flattening the A-F test split."""
+def repair_lane_g_shared_artifacts(
+    lane_g_branch: str | None,
+) -> dict[str, Any]:
+    """Insert or replace Lane G's exact native row while retaining A-F tests."""
 
-    changed: list[str] = []
-    native_path = ROOT / "qualification/module-execution-dossiers/NATIVE_BINDINGS.json"
-    document = read_json(native_path)
-    rows = [
-        row
-        for row in document.get("observations", [])
-        if row.get("module") == "control.engineering"
-    ]
-    if len(rows) != 1:
-        raise RuntimeError(
-            f"expected one control.engineering native binding, observed {len(rows)}"
-        )
-    row = rows[0]
-    desired_path = (
+    if not lane_g_branch:
+        raise RuntimeError("Lane G source branch is required for shared-artifact repair")
+
+    source_path = (
         "tools/hepta-engineering-control/control_engineering_v2/__init__.py"
     )
-    desired_exports = [
+    source_text = git_text("show", f"origin/{lane_g_branch}:{source_path}")
+    merged_source = ROOT / source_path
+    if not merged_source.is_file():
+        raise RuntimeError(
+            f"Lane G control.engineering source is missing after merge: {source_path}"
+        )
+    if merged_source.read_text(encoding="utf-8") != source_text + (
+        "" if source_text.endswith("\n") else "\n"
+    ):
+        raise RuntimeError("merged Lane G public surface differs from selected exact source")
+
+    try:
+        source_tree = ast.parse(source_text, filename=source_path)
+    except SyntaxError as error:
+        raise RuntimeError("selected Lane G public surface is invalid Python") from error
+    exports = sorted(
+        {
+            alias.asname or alias.name
+            for node in source_tree.body
+            if isinstance(node, ast.ImportFrom)
+            for alias in node.names
+            if not (alias.asname or alias.name).startswith("_")
+        }
+    )
+    required_exports = {
         "EngineeringStore",
         "WorkEnvelope",
         "WorkPackage",
@@ -548,33 +565,101 @@ def repair_lane_g_shared_artifacts() -> dict[str, Any]:
         "record_integration_decision",
         "publish_audit_projection",
         "prepare_assimilation_candidate",
-    ]
-    if row.get("path") != desired_path or row.get("exports") != desired_exports:
-        row["path"] = desired_path
-        row["exports"] = desired_exports
-        write_json(native_path, document)
-        changed.append(native_path.relative_to(ROOT).as_posix())
+    }
+    missing_required = sorted(required_exports - set(exports))
+    if missing_required:
+        raise RuntimeError(
+            "selected Lane G public surface lacks required exports: "
+            + ", ".join(missing_required)
+        )
+    desired = {
+        "module": "control.engineering",
+        "path": source_path,
+        "blobSha": git_text(
+            "rev-parse", f"origin/{lane_g_branch}:{source_path}"
+        ),
+        "exports": exports,
+    }
 
-    native_tests_path = (
+    relative_path = "qualification/module-execution-dossiers/NATIVE_BINDINGS.json"
+    native_path = ROOT / relative_path
+    document = read_json(native_path)
+    observations = document.get("observations")
+    if not isinstance(observations, list):
+        raise RuntimeError("cumulative native observations must be a list")
+    current_indices = [
+        index
+        for index, row in enumerate(observations)
+        if isinstance(row, dict) and row.get("module") == "control.engineering"
+    ]
+    if len(current_indices) > 1:
+        raise RuntimeError(
+            "cumulative candidate contains duplicate control.engineering observations"
+        )
+
+    changed: list[str] = []
+    if current_indices:
+        if observations[current_indices[0]] != desired:
+            observations[current_indices[0]] = desired
+            changed.append(relative_path)
+    else:
+        observations.append(desired)
+        changed.append(relative_path)
+
+    profiles = read_json(
         ROOT
-        / "qualification/module-execution-dossiers/implementation_contract_tests_native.py"
+        / "qualification/module-execution-dossiers/IMPLEMENTATION_PROFILES.json"
     )
-    native_tests = '"""Native-source closed-world implementation contract tests."""\nimport re\nimport unittest\n\nimport implementation_contracts as c\n\nBASE = c.ROOT / "qualification/module-execution-dossiers"\n\n\nclass NativeBindingCoverageTests(unittest.TestCase):\n    def test_native_binding_module_closed_world(self):\n        profiles = c.read_json(BASE / "IMPLEMENTATION_PROFILES.json")\n        native = c.read_json(BASE / "NATIVE_BINDINGS.json")\n        self.assertEqual(native["moduleCoverage"], 40)\n        self.assertFalse(native["consumerCallsitesProved"])\n        self.assertFalse(native["productExecutionProved"])\n        self.assertEqual(\n            [row["module"] for row in native["observations"]],\n            [row["module"] for row in profiles["modules"]],\n        )\n\n    def test_native_binding_blobs_and_exports_are_exact(self):\n        native = c.read_json(BASE / "NATIVE_BINDINGS.json")\n        for row in native["observations"]:\n            source = c.ROOT / row["path"]\n            data = source.read_bytes()\n            self.assertEqual(c.blob(data), row["blobSha"], row["path"])\n            source_text = data.decode("utf-8")\n            for symbol in row["exports"]:\n                self.assertRegex(\n                    source_text,\n                    r"\\b" + re.escape(symbol) + r"\\b",\n                    row["path"] + ": " + symbol,\n                )\n'
-    if not native_tests_path.is_file() or native_tests_path.read_text(
-        encoding="utf-8"
-    ) != native_tests:
-        native_tests_path.write_text(native_tests, encoding="utf-8")
-        changed.append(native_tests_path.relative_to(ROOT).as_posix())
+    canonical_modules = [row.get("module") for row in profiles.get("modules", [])]
+    if len(canonical_modules) != 40 or len(set(canonical_modules)) != 40:
+        raise RuntimeError("implementation profiles must contain 40 unique modules")
+    order = {module: index for index, module in enumerate(canonical_modules)}
+    observed_modules = [
+        row.get("module") if isinstance(row, dict) else None for row in observations
+    ]
+    duplicates = sorted(
+        str(module)
+        for module in set(observed_modules)
+        if observed_modules.count(module) > 1
+    )
+    unknown = sorted(str(module) for module in observed_modules if module not in order)
+    if duplicates or unknown:
+        raise RuntimeError(
+            f"invalid native observation set: duplicates={duplicates} unknown={unknown}"
+        )
+    observations.sort(key=lambda row: order[row["module"]])
+    document["moduleCoverage"] = len(observations)
+    if len(observations) != 40:
+        raise RuntimeError(
+            f"native observation closure requires 40 rows, observed {len(observations)}"
+        )
+    if changed:
+        write_json(native_path, document)
 
     harness_path = (
         ROOT / "qualification/module-execution-dossiers/test_implementation_contracts.py"
     )
-    harness = '"""Qualification-only implementation contract test suite."""\nfrom implementation_contract_tests_core import *  # noqa: F403\nfrom implementation_contract_tests_system import *  # noqa: F403\nfrom implementation_contract_tests_native import *  # noqa: F403\n\nif __name__ == "__main__":\n    import unittest\n\n    unittest.main()\n'
-    if harness_path.read_text(encoding="utf-8") != harness:
-        harness_path.write_text(harness, encoding="utf-8")
-        changed.append(harness_path.relative_to(ROOT).as_posix())
+    core_path = (
+        ROOT
+        / "qualification/module-execution-dossiers/implementation_contract_tests_core.py"
+    )
+    harness = harness_path.read_text(encoding="utf-8")
+    core = core_path.read_text(encoding="utf-8")
+    if "from implementation_contract_tests_core import *" not in harness:
+        raise RuntimeError("cumulative split implementation-contract harness was flattened")
+    if "from implementation_contract_tests_system import *" not in harness:
+        raise RuntimeError("cumulative system implementation-contract tests are missing")
+    if "class NativeBindingCoverageTests" not in core:
+        raise RuntimeError("cumulative native-binding coverage tests are missing")
 
-    return {"changed": changed, "count": len(changed)}
+    return {
+        "laneGBranch": lane_g_branch,
+        "laneGCommit": git_text("rev-parse", f"origin/{lane_g_branch}^{{commit}}"),
+        "sourcePath": source_path,
+        "exports": exports,
+        "changed": changed,
+        "count": len(changed),
+    }
 
 
 def repair_argument_comment_blockers() -> dict[str, Any]:
@@ -1183,7 +1268,7 @@ def prepare(args: argparse.Namespace) -> int:
 
     argument_comment_repair = repair_argument_comment_blockers()
     generator_receipts = run_generators()
-    lane_g_artifact_repair = repair_lane_g_shared_artifacts()
+    lane_g_artifact_repair = repair_lane_g_shared_artifacts(selected["G"])
     native_before = repair_native_bindings()
     metadata, lock_receipts = normalize_lockfile()
     if metadata is None:
