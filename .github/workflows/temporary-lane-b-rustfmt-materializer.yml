@@ -28,23 +28,48 @@ jobs:
           toolchain: 1.95.0
           components: rustfmt
 
-      - name: Materialize the one permitted rustfmt delta
+      - name: Repair parse blockers and materialize exact rustfmt output
         shell: bash
         env:
           TARGET_BRANCH: ops/lane-b-rustfmt-materialize-20260910
-          TARGET_FILE: codex-rs/hepta-infer-core/src/bin/hepta-infer-control.rs
         run: |
           set -euo pipefail
           test -z "$(git status --porcelain)"
+          python3 - <<'PY'
+          from pathlib import Path
+
+          replacements = {
+              Path("codex-rs/hepta-automation/src/bin/hepta-taskflow-runtime.rs"): (
+                  "fn stale_fence_and unknown_effect_fail_closed()",
+                  "fn stale_fence_and_unknown_effect_fail_closed()",
+              ),
+              Path("codex-rs/hepta-matrixd/src/bin/hepta-matrix-send-observer.rs"): (
+                  "fn payload_drift_and transaction_reuse_are rejected()",
+                  "fn payload_drift_and_transaction_reuse_are_rejected()",
+              ),
+          }
+          for path, (old, new) in replacements.items():
+              text = path.read_text(encoding="utf-8")
+              if text.count(old) != 1 or new in text:
+                  raise SystemExit(f"unexpected parse-blocker state in {path}")
+              path.write_text(text.replace(old, new), encoding="utf-8")
+          PY
           cargo fmt --manifest-path codex-rs/Cargo.toml --all
-          mapfile -t changed < <(git diff --name-only)
-          printf 'rustfmt changed: %s\n' "${changed[*]:-none}"
-          test "${#changed[@]}" -eq 1
-          test "${changed[0]}" = "$TARGET_FILE"
+          expected=(
+            codex-rs/hepta-automation/src/bin/hepta-taskflow-runtime.rs
+            codex-rs/hepta-infer-core/src/bin/hepta-infer-control.rs
+            codex-rs/hepta-matrixd/src/bin/hepta-matrix-send-observer.rs
+          )
+          mapfile -t changed < <(git diff --name-only | sort)
+          printf 'materialized files: %s\n' "${changed[*]:-none}"
+          test "${#changed[@]}" -eq "${#expected[@]}"
+          for index in "${!expected[@]}"; do
+            test "${changed[$index]}" = "${expected[$index]}"
+          done
           git diff --check
           cargo fmt --manifest-path codex-rs/Cargo.toml --all -- --check
           git config user.name "Hepta Rustfmt Materializer"
           git config user.email "hepta-rustfmt@users.noreply.github.com"
-          git add -- "$TARGET_FILE"
-          git commit -m "style(lane-b): materialize repository-pinned rustfmt output"
+          git add -- "${expected[@]}"
+          git commit -m "fix(lane-b): repair parse blockers and materialize rustfmt"
           git push origin "HEAD:refs/heads/$TARGET_BRANCH"
