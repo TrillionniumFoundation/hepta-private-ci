@@ -39,6 +39,7 @@ const MAX_REQUIRED_ORGANS: usize = 32;
 const SCALARIZATION_DIGEST_DOMAIN: &[u8] = b"hepta.ndu.scalarization-profile.v1";
 const EVALUATION_POLICY_DIGEST_DOMAIN: &[u8] = b"hepta.ndu.evaluation-policy.v1";
 const EVALUATION_V2_DIGEST_DOMAIN: &[u8] = b"hepta.ndu.evaluation.v2";
+const CONTRIBUTION_DIGEST_DOMAIN: &[u8] = b"hepta.ndu.contribution.v1";
 
 #[derive(Default)]
 struct CandidateAccumulator {
@@ -452,6 +453,7 @@ fn accumulate(
     normalize_axis_values(&mut contribution.resource)?;
     normalize_axis_values(&mut contribution.uncertainty)?;
     validate_known_axes(&contribution, profile)?;
+    let contribution_digest = digest_contribution(&contribution);
     let candidate_id = contribution.candidate_id.clone();
     let accumulator = grouped.entry(candidate_id.clone()).or_default();
     if !accumulator.organs.insert(contribution.organ_id.clone()) {
@@ -478,9 +480,7 @@ fn accumulate(
         contribution.uncertainty,
         &policy.uncertainty,
     )?;
-    accumulator
-        .support_digests
-        .push(contribution.support_digest);
+    accumulator.support_digests.push(contribution_digest);
     Ok(())
 }
 
@@ -623,6 +623,12 @@ fn finalize_candidate(
                 axis: axis.to_string(),
             });
         }
+        if !accumulator.uncertainty.contains_key(axis) {
+            return Err(NduError::MissingAxis {
+                candidate: candidate_id.to_string(),
+                axis: format!("uncertainty:{axis}"),
+            });
+        }
     }
     accumulator.support_digests.sort();
     let mut support = Vec::with_capacity(accumulator.support_digests.len() * 32);
@@ -645,6 +651,25 @@ fn into_axis_values(values: BTreeMap<StableId, FixedQ32>) -> Vec<AxisValue> {
         .into_iter()
         .map(|(axis, value)| AxisValue { axis, value })
         .collect()
+}
+
+fn digest_contribution(contribution: &UtilityContribution) -> Digest32 {
+    let mut bytes = Vec::new();
+    bytes.extend_from_slice(CONTRIBUTION_DIGEST_DOMAIN);
+    push_id(&mut bytes, &contribution.candidate_id);
+    push_id(&mut bytes, &contribution.organ_id);
+    bytes.extend_from_slice(contribution.objective_digest.as_array());
+    bytes.extend_from_slice(&contribution.generation.get().to_be_bytes());
+    bytes.push(match contribution.feasibility {
+        FeasibilityPosture::Feasible => 0,
+        FeasibilityPosture::HardConstraintViolation => 1,
+    });
+    push_axis_values(&mut bytes, &contribution.utility);
+    push_axis_values(&mut bytes, &contribution.risk);
+    push_axis_values(&mut bytes, &contribution.resource);
+    push_axis_values(&mut bytes, &contribution.uncertainty);
+    bytes.extend_from_slice(contribution.support_digest.as_array());
+    Digest32::of_bytes(&bytes)
 }
 
 fn digest_evaluation_policy(policy: &EvaluationPolicyV1) -> Digest32 {

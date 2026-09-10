@@ -43,7 +43,7 @@ provenance: exact source and normalization-profile digests
 
 Free text is evidence for intent extraction, never the final authority representation. Every predicate has an identifier, unit, comparator, bound, evidence source and terminality. Arrays are stable-sorted by semantic identifier. Unicode uses the selected normalization profile; timestamps are UTC; durations are integer microseconds; numeric values use registered fixed-point profiles. Duplicate semantic keys are rejected.
 
-The canonical IR contains no raw credentials, unrestricted external text, hidden model state or executable code. Every payload and collection has both count and encoded-byte bounds.
+The canonical IR contains no raw credentials, unrestricted external text, hidden model state or executable code. Every payload and collection has both count and encoded-byte bounds. Admission profiles are bounded to 256 constraint mappings, 128 predicate mappings, 128 action mappings, 64 soft dimensions, 128 evidence mappings, 64 abstention rules and 256 KiB of encoded profile semantics; risk and rollback levels must be monotone.
 
 ## 3. Constraint precedence and conflict resolution
 
@@ -61,7 +61,9 @@ A lower class cannot offset a higher-class violation. Soft atoms never participa
 
 For infeasible hard constraints, deterministic deletion filtering returns an **inclusion-minimal** unsatisfied set in canonical order. It does not claim minimum cardinality. A hard conflict is represented by `ObjectiveConflictReceiptV1`, not by reusing an unrelated error code. Oracle exhaustion preserves the original objective and emits unavailable; it never publishes a partial core that permits dropping a hard constraint.
 
-## 4. Legal-action grammar and intrinsic abstain
+## 4. Deterministic compilation algorithm
+
+### 4.1 Legal-action grammar and intrinsic abstain
 
 `abstain` is a compiler-intrinsic, confirmation-free safety action. It is present in every successfully compiled legal set. A caller may include it explicitly, but may not forbid it or require confirmation.
 
@@ -75,7 +77,7 @@ compiled legal action ceiling: 128
 
 A requested action that is also forbidden produces an explicit conflict receipt. Removing all requested actions still leaves intrinsic abstain and yields `CompileDisposition::ExplicitAbstain`. An attempt to forbid or confirmation-gate abstain is `OBJ-E006` and publishes no objective.
 
-## 5. Deterministic compilation algorithm
+### 4.2 Deterministic compilation steps
 
 ```text
 validate raw byte and structural bounds
@@ -97,7 +99,7 @@ emit deny-all admission receipt and compile/conflict outcome
 
 Compilation is a pure function of the authenticated source envelope, selected admission profile and registered schema revisions. Retry with identical inputs yields identical semantic bytes. Reuse of a durable request/revision identity with different semantics is handled by the owning durable caller as conflict; the stateless compiler does not invent persistence.
 
-## 6. State, publication and idempotency
+## 5. State machine and persistence
 
 The compiler owns no domain-fact store. The owning caller persists the immutable `ObjectiveFunctionV1`, `RunStartSnapshotV1` and admission/compile receipts. Publication occurs only after source, intent, profile, constraint and objective digests agree.
 
@@ -115,7 +117,7 @@ received
 
 A crash before caller publication leaves no selected objective. A crash after durable publication is reconciled by an identity that includes request, principal scope, source digest, schema digest and selected profile digest. A changed success predicate, hard constraint, legal effect, evidence requirement, resource/risk rule, principal scope or rollback class creates a new objective revision and a new run snapshot.
 
-## 7. Stable error taxonomy and fallback
+## 6. Error taxonomy and fallback
 
 The only canonical definitions are in `docs/contracts/OBJECTIVE_ERRORS.json`:
 
@@ -135,13 +137,13 @@ The only canonical definitions are in `docs/contracts/OBJECTIVE_ERRORS.json`:
 
 Fallback may reuse a previously selected immutable objective only when the owning caller proves equal request identity, principal scope, compatibility and current revocation frontier. Otherwise it asks for clarification or abstains. It never substitutes an easier goal.
 
-## 8. Security and adversarial inputs
+## 7. Security and adversarial inputs
 
 Untrusted pages, emails, files, tool output and model prose remain evidence. They cannot create P0-P2 constraints, legalize an effect, change principal scope or weaken evidence requirements. Negative fixtures include prompt injection, hidden HTML instructions, homograph identifiers, duplicate JSON keys, oversized arrays, NaN/infinity equivalents, conflicting time units, path traversal, embedded secrets, forged trust labels and stale/future observations.
 
 The compiler records safe identifiers and digests rather than unrestricted source text. It has no model, tool, network, filesystem, secret, Matrix, fleet or external-effect authority. Every admission receipt embeds `AuthorityPosture::DENY_ALL`.
 
-## 9. Complexity, performance and resource envelope
+## 8. Performance envelope
 
 The following paths are measured separately:
 
@@ -157,7 +159,7 @@ Pilot ceilings are `<=256` constraints, `<=128` success predicates, `<=127` call
 
 The p95/p99 targets apply only to a named path, fixture and host. A normal-path latency measurement cannot be reused as a conflict-extraction measurement. No network or synchronous central RPC is permitted on the deterministic compiler path.
 
-## 10. Golden fixtures and tests
+## 9. Golden fixtures and tests
 
 - `OBJ-GV-001`: reordered equivalent input produces identical objective semantics.
 - `OBJ-GV-002`: a principal network prohibition dominates task text requesting network access.
@@ -172,11 +174,20 @@ The p95/p99 targets apply only to a named path, fixture and host. A normal-path 
 
 Tests cover structural round trips, canonical ordering, unit conversion, conflict minimization, idempotent retry, stale/future time, deadline handling, source authentication, resource overflow, action-slot reservation, redaction and property-based permutation invariance.
 
-## 11. Implementation and completion sequence
+## 10. Implementation sequence
 
 Implement and maintain, in order: strict JSON decoder; owner-local source type; structural validator; authenticated admission context; frozen profile mapping; deterministic feasibility grammar; conflict minimizer; intrinsic legal-action grammar; canonical digests; deny-all receipts; durable caller adapter; faults; benchmarks; exact-source and merge-candidate qualification.
 
 Coding entry requires a current `CanonicalSourceReceiptV1`, frozen contract/readiness/error-registry digests, a bounded work-package envelope, mandatory fixtures, deterministic fallback and zero authority delta. Source completion still does not establish a production caller, activation, independent acceptance, promotion or release.
+
+## 11. Coding-entry checklist
+
+- exact canonical source receipt and immutable profile digest are current;
+- every profile collection and encoded profile is within its enforced bound;
+- all represented source semantics map without truncation or guessing;
+- intrinsic `abstain`, hard-feasibility and conflict fixtures pass;
+- outputs remain deny-all and the durable caller boundary is named;
+- exact-head and synthetic-merge checks pass before source completion is claimed.
 
 ## Appendix A. Closed gap and protocol mapping
 

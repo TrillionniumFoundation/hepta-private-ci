@@ -1,0 +1,223 @@
+{
+  "schema": "hepta.module-implementation-map.v1",
+  "schemaVersion": 1,
+  "module": "utility.ndu",
+  "owner": "intelligence-platform",
+  "deputy": "learning-platform",
+  "technicalGuide": "docs/modules/utility.ndu/TECHNICAL.md",
+  "executionSpecifications": [
+    "docs/readiness/NDU_SYSTEM_EXECUTION.md",
+    "docs/learning/NDU_FBSDE_SPEC.md"
+  ],
+  "sourceRoot": "codex-rs/hepta-ndu",
+  "authorityDelta": "none",
+  "productCallerState": "not_composed",
+  "productionWriterState": "not_composed",
+  "operations": [
+    {
+      "operation": "evaluate_candidates",
+      "nativeSymbol": "codex_hepta_ndu::evaluate_candidates",
+      "sourcePath": "codex-rs/hepta-ndu/src/evaluator.rs",
+      "inputs": [
+        "ContributionSet",
+        "UtilityProfile",
+        "optional ScalarizationProfile"
+      ],
+      "outputs": [
+        "NduEvaluationReceipt"
+      ],
+      "state": "source_implemented_compatibility_entry",
+      "authority": "none",
+      "semanticProfile": "legacy-sum-max-zero-tolerance-v1",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-ndu/src/evaluator_tests.rs",
+          "symbol": "hard_violation_is_filtered_before_utility"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/evaluator_tests.rs",
+          "symbol": "non_dominated_candidates_without_scalarization_require_slow_path"
+        }
+      ]
+    },
+    {
+      "operation": "evaluate_candidates_with_policy",
+      "nativeSymbol": "codex_hepta_ndu::evaluate_candidates_with_policy",
+      "sourcePath": "codex-rs/hepta-ndu/src/evaluator.rs",
+      "inputs": [
+        "ContributionSet",
+        "UtilityProfile",
+        "optional ScalarizationProfile",
+        "EvaluationPolicyV1"
+      ],
+      "outputs": [
+        "NduEvaluationReceiptV2"
+      ],
+      "state": "source_implemented_owner_local_v2",
+      "authority": "none",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-ndu/src/evaluator_tests.rs",
+          "symbol": "policy_selects_axis_specific_aggregation_instead_of_implicit_sum"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/evaluator_tests.rs",
+          "symbol": "require_equal_aggregation_rejects_conflicting_owners"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/evaluator_tests.rs",
+          "symbol": "pareto_tolerance_is_digest_bound_and_changes_dominance"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/evaluator_tests.rs",
+          "symbol": "missing_uncertainty_axis_is_unavailable"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/evaluator_tests.rs",
+          "symbol": "candidate_support_digest_binds_organ_and_contribution_semantics"
+        }
+      ]
+    },
+    {
+      "operation": "canonical_evaluation_policy_digest",
+      "nativeSymbol": "codex_hepta_ndu::canonical_evaluation_policy_digest",
+      "sourcePath": "codex-rs/hepta-ndu/src/evaluator.rs",
+      "inputs": [
+        "UtilityProfile",
+        "EvaluationPolicyV1"
+      ],
+      "outputs": [
+        "evaluation policy digest"
+      ],
+      "state": "source_implemented",
+      "authority": "none",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-ndu/src/evaluator_tests.rs",
+          "symbol": "policy_digest_is_permutation_invariant"
+        }
+      ]
+    },
+    {
+      "operation": "solve_preference_target",
+      "nativeSymbol": "codex_hepta_ndu::solve_preference_target",
+      "sourcePath": "codex-rs/hepta-ndu/src/preference.rs",
+      "inputs": [
+        "PreferenceState",
+        "target AxisValue set",
+        "eta"
+      ],
+      "outputs": [
+        "PreferenceState",
+        "NduSolverTerminationReceipt",
+        "NduSolverIterationReceipt list"
+      ],
+      "state": "source_implemented_local_solver",
+      "authority": "none",
+      "nonClaim": "local termination is not NduConvergenceCertificateV1",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-ndu/src/preference_tests.rs",
+          "symbol": "damped_preference_update_emits_local_solver_receipts"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/preference_tests.rs",
+          "symbol": "parent_and_child_updates_cannot_share_generation"
+        }
+      ]
+    },
+    {
+      "operation": "bind_solver_iteration_receipt_v1",
+      "nativeSymbol": "codex_hepta_ndu::bind_solver_iteration_receipt_v1",
+      "sourcePath": "codex-rs/hepta-ndu/src/protocol.rs",
+      "inputs": [
+        "NduIterationContextV1",
+        "NduSolverIterationReceipt"
+      ],
+      "outputs": [
+        "owner-local NduIterationReceiptV1"
+      ],
+      "state": "source_implemented_protocol_adapter",
+      "authority": "deny_all",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-ndu/src/protocol_tests.rs",
+          "symbol": "local_step_requires_complete_context_before_protocol_publication"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/protocol_tests.rs",
+          "symbol": "zero_context_digest_rejects_before_protocol_publication"
+        }
+      ]
+    },
+    {
+      "operation": "solve_backward_regression",
+      "nativeSymbol": "codex_hepta_ndu::solve_backward_regression",
+      "sourcePath": "codex-rs/hepta-ndu/src/covariance.rs",
+      "inputs": [
+        "conditional moments",
+        "admitted covariance profile"
+      ],
+      "outputs": [
+        "ZEstimateV1"
+      ],
+      "state": "source_implemented_shadow_numeric_kernel",
+      "authority": "none",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-ndu/src/covariance_tests.rs",
+          "symbol": "scaled, correlated, singular and whitening analytic fixtures"
+        }
+      ]
+    },
+    {
+      "operation": "NduProjectionJournalV1",
+      "nativeSymbol": "codex_hepta_ndu::NduProjectionJournalV1",
+      "sourcePath": "codex-rs/hepta-ndu/src/projection_journal.rs",
+      "inputs": [
+        "immutable projection, selection and revocation records"
+      ],
+      "outputs": [
+        "bounded hash-chain journal bytes",
+        "selected projection view"
+      ],
+      "state": "source_implemented_owner_local_durability_reference",
+      "authority": "none",
+      "nonClaim": "not an activated production writer or fsync profile",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-ndu/src/projection_journal_tests.rs",
+          "symbol": "projection_journal_round_trips_and_restores_selection"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/projection_journal_tests.rs",
+          "symbol": "revocation_prevents_projection_resurrection"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/projection_journal_tests.rs",
+          "symbol": "truncation_and_tampering_fail_closed"
+        }
+      ]
+    }
+  ],
+  "canonicalReadinessProtocols": [
+    "UtilityContributionV1",
+    "NduIterationReceiptV1",
+    "NduConvergenceCertificateV1"
+  ],
+  "protocolOwnership": {
+    "NduIterationReceiptV1": "utility.ndu",
+    "NduConvergenceCertificateV1": "learning.eval"
+  },
+  "completion": {
+    "specification": "complete",
+    "deterministicKernel": "candidate_implemented",
+    "ownerLocalDurabilityReference": "candidate_implemented",
+    "canonicalExternalV2Admission": "not_established",
+    "productionWriter": "not_established",
+    "exactHeadQualification": "required",
+    "independentConvergenceDecision": "owned_by_learning.eval_not_self_issued",
+    "activation": "not_established",
+    "release": "not_established"
+  }
+}
