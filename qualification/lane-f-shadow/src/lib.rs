@@ -7,12 +7,8 @@
 
 #![forbid(unsafe_code)]
 
-use codex_hepta_intelligence::{
-    IntelligencePlanReceipt, PlanCandidate, PlanningRequest, compose,
-};
-use codex_hepta_intuition::{
-    ActionCandidate, DecisionRequest, IntuitionDecisionReceipt, decide,
-};
+use codex_hepta_intelligence::{IntelligencePlanReceipt, PlanCandidate, PlanningRequest, compose};
+use codex_hepta_intuition::{ActionCandidate, DecisionRequest, IntuitionDecisionReceipt, decide};
 use codex_hepta_neuron::{
     InhibitoryEdge, SparseConfig, SparseSignalReceipt, SparseTick, sparse_tick,
 };
@@ -23,12 +19,10 @@ use codex_hepta_plasticity::{
 };
 use codex_hepta_prompt_optimizer::PromptCandidate;
 use codex_hepta_prompt_optimizer::local_shadow::{
-    LOCAL_NO_INTERVENTION_ID, LocalNoInterventionBaseline, LocalShadowInput,
-    LocalShadowProposal, calculate_local_shadow,
+    LOCAL_NO_INTERVENTION_ID, LocalNoInterventionBaseline, LocalShadowInput, LocalShadowProposal,
+    calculate_local_shadow,
 };
-use codex_hepta_types::{
-    Digest32, FixedQ32, Generation, ProbabilityQ32, StableId,
-};
+use codex_hepta_types::{Digest32, FixedQ32, Generation, ProbabilityQ32, StableId};
 
 const Q24: i64 = 1 << 24;
 
