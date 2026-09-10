@@ -1,12 +1,15 @@
 #!/usr/bin/env python3
 """Materialize the r22 exact-source convergence executor.
 
-The driver applies two narrowly scoped, hash-receipted controller corrections:
+The driver applies three narrowly scoped, hash-receipted controller corrections:
 
 1. the exact merged Lane D source contains two redundant ``record_id.clone()``
    occurrences, so the strict mechanical repair contract must expect two;
 2. Lane F must select the sealed owner branch that contains the r12 zero-drift
-   standalone lock verifier, valid workflow YAML, and canonical rustfmt output.
+   standalone lock verifier, valid workflow YAML, and canonical rustfmt output;
+3. Lane G must select the exact engineering-owner branch with the explicit
+   ``control_engineering_v2`` public surface, rather than a newer governance-only
+   branch selected by the generic timestamp fallback.
 
 The repository copy of the r7 executor remains immutable.  Only the generated
 executor is used by the r22 workflow.
@@ -22,13 +25,42 @@ from pathlib import Path
 PATCHES: tuple[tuple[str, str, str], ...] = (
     (
         "cognitive-store-clone-count",
-        '''        (\n            Path("codex-rs/hepta-cognitive-store/src/v2.rs"),\n            "record_id: record_id.clone(),",\n            "record_id: record_id,",\n            1,\n        ),''',
-        '''        (\n            Path("codex-rs/hepta-cognitive-store/src/v2.rs"),\n            "record_id: record_id.clone(),",\n            "record_id: record_id,",\n            2,\n        ),''',
+        '''        (
+            Path("codex-rs/hepta-cognitive-store/src/v2.rs"),
+            "record_id: record_id.clone(),",
+            "record_id: record_id,",
+            1,
+        ),''',
+        '''        (
+            Path("codex-rs/hepta-cognitive-store/src/v2.rs"),
+            "record_id: record_id.clone(),",
+            "record_id: record_id,",
+            2,
+        ),''',
     ),
     (
         "lane-f-sealed-owner-selection",
-        '''    "F": (\n        "codex/lane-f-gap-closure-20260910",\n        "codex/hepta-lane-f-gap-closure-20260910",\n    ),''',
-        '''    "F": (\n        "codex/lane-f-gap-closure-20260910-r2",\n        "codex/lane-f-gap-closure-20260910",\n        "codex/hepta-lane-f-gap-closure-20260910",\n    ),''',
+        '''    "F": (
+        "codex/lane-f-gap-closure-20260910",
+        "codex/hepta-lane-f-gap-closure-20260910",
+    ),''',
+        '''    "F": (
+        "codex/lane-f-gap-closure-20260910-r2",
+        "codex/lane-f-gap-closure-20260910",
+        "codex/hepta-lane-f-gap-closure-20260910",
+    ),''',
+    ),
+    (
+        "lane-g-engineering-owner-selection",
+        '''    "G": (
+        "codex/hepta-lane-g-gap-closure-20260910",
+        "codex/lane-g-gap-closure-20260910",
+    ),''',
+        '''    "G": (
+        "codex/lane-g-real-full-closure-v2-20260910",
+        "codex/hepta-lane-g-gap-closure-20260910",
+        "codex/lane-g-gap-closure-20260910",
+    ),''',
     ),
 )
 
@@ -77,6 +109,7 @@ def materialize(source: Path, output: Path, receipt: Path) -> None:
                 "outputSha256": sha256(text.encode("utf-8")),
                 "patches": receipts,
                 "selectedLaneFBranch": "codex/lane-f-gap-closure-20260910-r2",
+                "selectedLaneGBranch": "codex/lane-g-real-full-closure-v2-20260910",
                 "authorityGranted": False,
             },
             indent=2,
