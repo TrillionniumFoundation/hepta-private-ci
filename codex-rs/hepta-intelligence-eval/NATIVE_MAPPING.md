@@ -1,125 +1,40 @@
 # `learning.eval` native implementation mapping
 
-This file maps point, sequential, temporal and independent evaluation design to
-concrete Rust symbols. Estimation, evidence eligibility and artifact selection
-remain separate authorities.
+This file maps point, cluster, sequential, temporal, cross-fold and independent evaluation to concrete Rust symbols. Estimation, eligibility, selection and release remain separate authorities.
 
-## Existing estimator primitives
+## Estimator and composition surface
 
-| Evaluation operation | Native symbol | Source | Bound |
-|---|---|---|---:|
-| point IPS/SNIPS/DR and exact ESS | `estimate_ope` | `src/ope.rs` | `1,000,000` rows |
-| conservative cluster intervals | `estimate_cluster_intervals` | `src/ope_confidence.rs` | point-estimator bound |
-| finite-horizon history-conditioned PDIS/DR | `estimate_sequential` | `src/sequential.rs` | `4,096` trajectories / `65,536` steps / horizon `128` |
-| one label-isolated temporal fold | `fit_temporal_fold` | `src/temporal_fold.rs` | `100,000` training or target rows |
-| composed temporal holdout | `evaluate_temporal_holdout` | `src/temporal_evaluation.rs` | `16,384` held-out rows |
-
-The stage bounds are intentionally different. The broad point-estimator ceiling
-must not be presented as the composed temporal pipeline capacity.
-
-Existing primitives validate deterministic arithmetic, probability support,
-outcome watermarks, weight limits, per-depth ESS, lineage separation and exact
-plan digests. They deliberately do not authenticate caller-supplied identities,
-prove causal exchangeability, select a candidate or establish future-calendar
-efficacy.
-
-## Added implementation closure
-
-| Design operation | Native symbol | Source | Status |
+| Operation | Native symbol | Source | Bound / state |
 |---|---|---|---|
-| freeze complete cross-fold lineage | `freeze_cross_fold_plan` | `src/closure.rs` | implemented |
-| record final holdout use | `FinalHoldoutRegistry::consume` | `src/closure.rs` | implemented |
-| issue independent eligibility decision | `decide_independently` | `src/closure.rs` | implemented |
+| point IPS/SNIPS/DR | `estimate_ope` | `src/ope.rs` | 1,000,000 rows |
+| cluster-aware intervals | `estimate_cluster_intervals` | `src/ope.rs` | point profile |
+| finite-horizon PDIS/DR | `estimate_sequential` | `src/sequential.rs` | 4,096 trajectories / 65,536 steps / horizon 128 |
+| label-isolated temporal fold | `fit_temporal_fold` | `src/temporal_fold.rs` | 100,000 training or target rows |
+| composed temporal holdout | `evaluate_temporal_holdout` | `src/temporal_evaluation.rs` | 16,384 held-out rows |
+| complete cross-fold freeze | `freeze_cross_fold_plan` | `src/closure.rs` | implemented |
+| pure final-holdout anti-reuse | `FinalHoldoutRegistry::consume` | `src/closure.rs` | retained |
+| predecessor-bound journal consume | `FinalHoldoutJournalV1::consume` | `src/holdout_journal.rs` | implemented |
+| deterministic journal reopen | `FinalHoldoutJournalV1::from_snapshot` | `src/holdout_journal.rs` | implemented |
+| independent eligibility | `decide_independently` | `src/closure.rs` | implemented |
 
-`freeze_cross_fold_plan` requires two to thirty-two folds. It canonicalizes and
-deduplicates every principal, episode and window set; rejects training/holdout
-leakage within a fold; prevents the final holdout from entering any training
-set; prevents a holdout lineage from appearing in multiple folds; and requires
-the final holdout window to be covered exactly once. The frozen receipt also
-binds claim scope, candidate and baseline identities, objective, dataset,
-estimand, metric direction and safety-floor contract, multiplicity profile,
-final-holdout window and final-holdout bytes. Its deterministic integrity seal
-detects post-freeze field mutation; it is not a signature or issuer credential.
+The stage bounds are intentionally different. A broad point-estimator ceiling is not the capacity claim for temporal or sequential composition.
 
-`FinalHoldoutRegistry::consume` accepts only the typed sealed frozen-plan
-receipt. An exact retry of the identical plan is idempotent. Reusing the same
-plan identity with changed semantics conflicts, while a different plan using
-either the same final-holdout digest or the same final-holdout window is
-rejected. The emitted holdout-use receipt binds the complete plan semantics,
-registry state and use digest and carries its own deterministic integrity seal.
-A future persistent host adapter must retain this registry under a single
-writer; the pure type and unkeyed seals alone do not prove durable exclusivity
-or authenticated origin.
+## Frozen plan and final holdout
 
-`decide_independently` consumes authenticated generator and evaluator identities
-from `learning.ledger`. It rejects shared principal, credential-chain or
-signing-key identity and validates expiry and authority epoch. It then
-intersects:
+`freeze_cross_fold_plan` requires two to thirty-two folds and disjoint training/holdout principal, episode and window lineages. It binds claim scope, candidate, baseline, objective, dataset, estimand, metric contract, multiplicity and final-holdout identity. Its unkeyed seal detects mutation but is not issuer authentication.
 
-- an integrity-checked frozen-plan receipt and the exact consumed
-  holdout-use receipt bound to it;
-- estimate, support-audit and confidence receipt digests;
-- candidate lower confidence bound versus baseline upper bound;
-- every metric safety floor;
-- multiplicity profile;
-- snapshot and future-window coverage;
-- retention receipts and unlearning receipt for system-longitudinal claims.
+`FinalHoldoutRegistry::consume` prevents plan semantic mutation and reuse of either holdout digest or final window. `FinalHoldoutJournalV1` adds an expected-head CAS contract, canonical record chain, exact idempotent retry and deterministic snapshot replay. A product host persists the snapshot under an exclusive writer, authenticates the scheduler and validates the replayed head before readiness.
 
-The output is one of:
+## Independent decision
 
-```text
-EligibleForIndependentSelection
-Ineligible
-InsufficientEvidence
-```
+`decide_independently` verifies generator/evaluator identity separation and exact frozen-plan/holdout-use binding, then intersects superiority intervals, safety floors, support, multiplicity profile, snapshots, future windows, retention and unlearning. `EligibleForIndependentSelection` still has deny-all authority and is not selection.
 
-Even the first state has `DENY_ALL` authority. A separate selector must consume
-it together with all other gates.
+Causal claims remain conditional on support, consistency, propensity correctness, appropriate cluster independence and confounding assumptions. Unsupported assumptions yield insufficient evidence. Synthetic model predictions and internal utility are not independent task outcomes.
 
-## Identity, causal and statistical obligations
+## Product obligations
 
-The native closure verifies authenticated identity fields but cannot create the
-underlying trust. A product adapter must verify signatures and credential chains
-against the current trust root before constructing `AuthenticatedPrincipalV1`.
-
-Causal identification remains conditional on the frozen plan's assumptions:
-consistency, support, correct propensity, appropriate cluster independence and
-absence or bounded treatment of confounding. Unsupported assumptions produce
-insufficient evidence; an outcome model cannot repair zero support.
-
-Intervals and point estimates do not by themselves implement family-wide alpha
-allocation, privacy review, change-point admission or future-window scheduling.
-The independent decision requires their receipt digests, while the responsible
-owners must provide the actual evidence.
-
-## Product integration obligations
-
-A product receipt must name:
-
-1. the scheduler and immutable evaluation plan store;
-2. the durable final-holdout-use registry, single-writer fence and
-   canonical persistence/reload of frozen-plan and holdout-use receipts;
-3. the authenticated dataset, outcome-observer and candidate manifests;
-4. the exact fold assignments and nuisance-model runtime;
-5. the target host, resource measurements and incomplete/censored counts;
-6. future calendar windows and independently identified snapshots;
-7. retention, subgroup/privacy and unlearning evidence;
-8. the distinct selector, operator and release principals.
-
-A fixture using synthetic future timestamps cannot satisfy the future-calendar
-or longitudinal claim.
+A product receipt names the scheduler, immutable plan store, persistent holdout journal and writer fence, authenticated dataset/outcomes/manifests, fold assignments and nuisance runtime, target-host measurements, real future windows, retention/privacy/unlearning evidence and separate selector/operator/release principals.
 
 ## Qualification mapping
 
-Focused tests live in:
-
-- `src/lib_tests.rs`;
-- `src/ope_tests.rs` and `src/ope_confidence_tests.rs`;
-- `src/sequential_tests.rs`;
-- `src/temporal_fold_tests.rs` and `src/temporal_evaluation_tests.rs`;
-- `src/closure_tests.rs`.
-
-Cross-crate composition is exercised by
-`../hepta-shadow-qualification/src/lane_e_closure_tests.rs`. Exact dossier IDs,
-test functions and CI jobs are registered in
-`../../qualification/lane-e/TEST_TRACEABILITY.json`.
+Focused tests live in `src/ope_tests.rs`, `src/ope_confidence_tests.rs`, `src/sequential_tests.rs`, `src/temporal_fold_tests.rs`, `src/temporal_evaluation_tests.rs`, `src/closure_tests.rs` and `src/holdout_journal.rs`. Cross-crate composition and public linkage are compiled by `hepta-shadow-qualification`. Exact mappings are in `../../qualification/lane-e/TEST_TRACEABILITY.json`.
