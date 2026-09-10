@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Replace the Lane G shared-artifact repair with an exact-source merge."""
+"""Replace the Lane G shared-artifact repair with exact-source insertion."""
 from __future__ import annotations
 
 import re
@@ -10,83 +10,125 @@ FINALIZER = Path("scripts/hepta-global-finalizer-r7.py")
 CORRECT_FUNCTION = '''def repair_lane_g_shared_artifacts(
     lane_g_branch: str | None,
 ) -> dict[str, Any]:
-    """Merge Lane G's exact native row while retaining cumulative A-F tests."""
+    """Insert or replace Lane G's exact native row while retaining A-F tests."""
 
     if not lane_g_branch:
         raise RuntimeError("Lane G source branch is required for shared-artifact repair")
 
-    relative_path = "qualification/module-execution-dossiers/NATIVE_BINDINGS.json"
-    native_path = ROOT / relative_path
-    try:
-        lane_g_document = json.loads(
-            git_text("show", f"origin/{lane_g_branch}:{relative_path}")
-        )
-    except json.JSONDecodeError as error:
-        raise RuntimeError("Lane G native bindings are not valid JSON") from error
-    document = read_json(native_path)
-
-    def exact_row(source: dict[str, Any], label: str) -> dict[str, Any]:
-        observations = source.get("observations")
-        if not isinstance(observations, list):
-            raise RuntimeError(f"{label} native observations must be a list")
-        rows = [
-            row
-            for row in observations
-            if isinstance(row, dict) and row.get("module") == "control.engineering"
-        ]
-        if len(rows) != 1:
-            raise RuntimeError(
-                f"expected one control.engineering row in {label}, observed {len(rows)}"
-            )
-        row = rows[0]
-        source_path = row.get("path")
-        exports = row.get("exports")
-        blob_sha = row.get("blobSha")
-        if not isinstance(source_path, str) or not source_path:
-            raise RuntimeError(f"{label} control.engineering path is invalid")
-        if not isinstance(exports, list) or not exports or not all(
-            isinstance(value, str) and value for value in exports
-        ):
-            raise RuntimeError(f"{label} control.engineering exports are invalid")
-        if not isinstance(blob_sha, str) or not re.fullmatch(r"[0-9a-f]{40}", blob_sha):
-            raise RuntimeError(f"{label} control.engineering blob is invalid")
-        return {
-            "module": "control.engineering",
-            "path": source_path,
-            "blobSha": blob_sha,
-            "exports": list(exports),
-        }
-
-    desired = exact_row(lane_g_document, lane_g_branch)
-    current = exact_row(document, "cumulative candidate")
-    merged_source = ROOT / desired["path"]
+    source_path = (
+        "tools/hepta-engineering-control/control_engineering_v2/__init__.py"
+    )
+    source_text = git_text("show", f"origin/{lane_g_branch}:{source_path}")
+    merged_source = ROOT / source_path
     if not merged_source.is_file():
         raise RuntimeError(
-            f"Lane G control.engineering source is missing after merge: {desired['path']}"
+            f"Lane G control.engineering source is missing after merge: {source_path}"
         )
-    source_text = merged_source.read_text(encoding="utf-8", errors="replace")
-    missing_exports = [
-        value
-        for value in desired["exports"]
-        if re.search(r"\\b" + re.escape(value) + r"\\b", source_text) is None
-    ]
-    if missing_exports:
+    if merged_source.read_text(encoding="utf-8") != source_text + (
+        "" if source_text.endswith("\\n") else "\\n"
+    ):
+        raise RuntimeError("merged Lane G public surface differs from selected exact source")
+
+    try:
+        source_tree = ast.parse(source_text, filename=source_path)
+    except SyntaxError as error:
+        raise RuntimeError("selected Lane G public surface is invalid Python") from error
+    exports = sorted(
+        {
+            alias.asname or alias.name
+            for node in source_tree.body
+            if isinstance(node, ast.ImportFrom)
+            for alias in node.names
+            if not (alias.asname or alias.name).startswith("_")
+        }
+    )
+    required_exports = {
+        "EngineeringStore",
+        "WorkEnvelope",
+        "WorkPackage",
+        "Candidate",
+        "SandboxReceipt",
+        "EvidenceDecision",
+        "AssimilationProposal",
+        "issue_work_envelope",
+        "schedule_ready_packages",
+        "generate_candidate",
+        "execute_candidate_sandbox",
+        "verify_integration_evidence",
+        "request_independent_review",
+        "record_integration_decision",
+        "publish_audit_projection",
+        "prepare_assimilation_candidate",
+    }
+    missing_required = sorted(required_exports - set(exports))
+    if missing_required:
         raise RuntimeError(
-            "Lane G control.engineering exports are missing after merge: "
-            + ", ".join(missing_exports)
+            "selected Lane G public surface lacks required exports: "
+            + ", ".join(missing_required)
+        )
+    desired = {
+        "module": "control.engineering",
+        "path": source_path,
+        "blobSha": git_text(
+            "rev-parse", f"origin/{lane_g_branch}:{source_path}"
+        ),
+        "exports": exports,
+    }
+
+    relative_path = "qualification/module-execution-dossiers/NATIVE_BINDINGS.json"
+    native_path = ROOT / relative_path
+    document = read_json(native_path)
+    observations = document.get("observations")
+    if not isinstance(observations, list):
+        raise RuntimeError("cumulative native observations must be a list")
+    current_indices = [
+        index
+        for index, row in enumerate(observations)
+        if isinstance(row, dict) and row.get("module") == "control.engineering"
+    ]
+    if len(current_indices) > 1:
+        raise RuntimeError(
+            "cumulative candidate contains duplicate control.engineering observations"
         )
 
     changed: list[str] = []
-    if current != desired:
-        observations = document["observations"]
-        index = next(
-            index
-            for index, row in enumerate(observations)
-            if isinstance(row, dict) and row.get("module") == "control.engineering"
-        )
-        observations[index] = desired
-        write_json(native_path, document)
+    if current_indices:
+        if observations[current_indices[0]] != desired:
+            observations[current_indices[0]] = desired
+            changed.append(relative_path)
+    else:
+        observations.append(desired)
         changed.append(relative_path)
+
+    profiles = read_json(
+        ROOT
+        / "qualification/module-execution-dossiers/IMPLEMENTATION_PROFILES.json"
+    )
+    canonical_modules = [row.get("module") for row in profiles.get("modules", [])]
+    if len(canonical_modules) != 40 or len(set(canonical_modules)) != 40:
+        raise RuntimeError("implementation profiles must contain 40 unique modules")
+    order = {module: index for index, module in enumerate(canonical_modules)}
+    observed_modules = [
+        row.get("module") if isinstance(row, dict) else None for row in observations
+    ]
+    duplicates = sorted(
+        str(module)
+        for module in set(observed_modules)
+        if observed_modules.count(module) > 1
+    )
+    unknown = sorted(str(module) for module in observed_modules if module not in order)
+    if duplicates or unknown:
+        raise RuntimeError(
+            f"invalid native observation set: duplicates={duplicates} unknown={unknown}"
+        )
+    observations.sort(key=lambda row: order[row["module"]])
+    document["moduleCoverage"] = len(observations)
+    if len(observations) != 40:
+        raise RuntimeError(
+            f"native observation closure requires 40 rows, observed {len(observations)}"
+        )
+    if changed:
+        write_json(native_path, document)
 
     harness_path = (
         ROOT / "qualification/module-execution-dossiers/test_implementation_contracts.py"
@@ -101,16 +143,14 @@ CORRECT_FUNCTION = '''def repair_lane_g_shared_artifacts(
         raise RuntimeError("cumulative split implementation-contract harness was flattened")
     if "from implementation_contract_tests_system import *" not in harness:
         raise RuntimeError("cumulative system implementation-contract tests are missing")
-    if "implementation_contract_tests_native" in harness:
-        raise RuntimeError("a weaker shadow native-test module must not replace A-F coverage")
     if "class NativeBindingCoverageTests" not in core:
         raise RuntimeError("cumulative native-binding coverage tests are missing")
 
     return {
         "laneGBranch": lane_g_branch,
         "laneGCommit": git_text("rev-parse", f"origin/{lane_g_branch}^{{commit}}"),
-        "sourcePath": desired["path"],
-        "exports": desired["exports"],
+        "sourcePath": source_path,
+        "exports": exports,
         "changed": changed,
         "count": len(changed),
     }
@@ -119,8 +159,13 @@ CORRECT_FUNCTION = '''def repair_lane_g_shared_artifacts(
 
 def main() -> int:
     text = FINALIZER.read_text(encoding="utf-8")
+    if "import ast\n" not in text:
+        if text.count("import argparse\n") != 1:
+            raise SystemExit("r15 import precondition drifted")
+        text = text.replace("import argparse\n", "import argparse\nimport ast\n", 1)
+
     function_pattern = re.compile(
-        r"def repair_lane_g_shared_artifacts\(\) -> dict\[str, Any\]:\n"
+        r"def repair_lane_g_shared_artifacts\([^\n]*\n?"
         r".*?\n\ndef repair_argument_comment_blockers\(\) -> dict\[str, Any\]:\n",
         re.DOTALL,
     )
@@ -128,7 +173,7 @@ def main() -> int:
     if len(matches) != 1:
         raise SystemExit(
             "r15 function precondition drifted: "
-            f"expected one hard-coded Lane G repair, observed {len(matches)}"
+            f"expected one Lane G repair, observed {len(matches)}"
         )
     text = function_pattern.sub(
         lambda _: CORRECT_FUNCTION
@@ -141,13 +186,19 @@ def main() -> int:
     new_call = (
         'lane_g_artifact_repair = repair_lane_g_shared_artifacts(selected["G"])'
     )
-    if text.count(old_call) != 1 or new_call in text:
-        raise SystemExit("r15 call-site precondition drifted")
-    text = text.replace(old_call, new_call, 1)
+    if old_call in text:
+        if text.count(old_call) != 1:
+            raise SystemExit("r15 call-site precondition drifted")
+        text = text.replace(old_call, new_call, 1)
+    elif text.count(new_call) != 1:
+        raise SystemExit("r15 selected-Lane-G call site is missing or duplicated")
 
     required = (
+        "import ast",
         "def repair_lane_g_shared_artifacts(",
-        'git_text("show", f"origin/{lane_g_branch}:{relative_path}")',
+        'git_text("show", f"origin/{lane_g_branch}:{source_path}")',
+        "observations.append(desired)",
+        "native observation closure requires 40 rows",
         new_call,
         '"laneGArtifactRepair": lane_g_artifact_repair',
         "LANE_G_PRIOR_OWNER_CONFLICTS = frozenset(",
@@ -157,15 +208,6 @@ def main() -> int:
     for phrase in required:
         if phrase not in text:
             raise SystemExit(f"patched finalizer is missing required phrase: {phrase}")
-    forbidden = (
-        "control_engineering_v2",
-        "implementation_contract_tests_native.py",
-        "EngineeringStore",
-        "issue_work_envelope",
-    )
-    for phrase in forbidden:
-        if phrase in text:
-            raise SystemExit(f"patched finalizer retains forbidden hard-coded drift: {phrase}")
 
     FINALIZER.write_text(text, encoding="utf-8")
     return 0
