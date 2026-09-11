@@ -13,6 +13,51 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  workspace-regression:
+    name: Workspace regression for shared core changes
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 60
+    env:
+      SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+      BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+      CARGO_INCREMENTAL: "0"
+      CARGO_PROFILE_TEST_DEBUG: "0"
+      CARGO_PROFILE_DEV_DEBUG: "0"
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Determine whether the shared-core regression gate applies
+        id: scope
+        shell: bash
+        run: |
+          set -euo pipefail
+          if git diff --quiet "$BASE_SHA" "$SOURCE_SHA" -- codex-rs/core/ codex-rs/common/ codex-rs/protocol/; then
+            echo 'required=false' >> "$GITHUB_OUTPUT"
+          else
+            status=$?
+            test "$status" -eq 1
+            echo 'required=true' >> "$GITHUB_OUTPUT"
+          fi
+      - name: Prepare native workspace prerequisites
+        if: steps.scope.outputs.required == 'true'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y bubblewrap libcap-dev pkg-config
+          sudo sysctl -w kernel.unprivileged_userns_clone=1
+          if sysctl kernel.apparmor_restrict_unprivileged_userns >/dev/null 2>&1; then
+            sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
+          fi
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        if: steps.scope.outputs.required == 'true'
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+      - name: Run the complete workspace suite after shared core changes
+        if: steps.scope.outputs.required == 'true'
+        working-directory: codex-rs
+        run: just test --locked
   engineering-sandbox:
     name: Engineering strong sandbox
     runs-on: ubuntu-24.04
@@ -86,6 +131,7 @@ jobs:
         codex-hepta-memory codex-hepta-memory-federation
         codex-hepta-memory-retrieval codex-hepta-ndu
         codex-hepta-plasticity codex-hepta-shadow-qualification
+        codex-state codex-core
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
@@ -116,8 +162,7 @@ jobs:
         run: |
           set -euo pipefail
           python3 scripts/hepta_module_doc_metadata.py
-          python3 scripts/hepta-module-docs.py verify
-          python3 scripts/hepta-readiness.py verify
+          # The global verifier invokes module/readiness checks itself.
           python3 scripts/hepta-docs.py verify
           python3 scripts/hepta-gap-closure.py verify
           python3 -m unittest discover -v -s tools/hepta-engineering-control -p 'test_*.py'
