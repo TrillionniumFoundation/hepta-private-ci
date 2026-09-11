@@ -33,6 +33,10 @@ CNS_ARCHITECTURE = "docs/cns/CNS_ARCHITECTURE.json"
 CNS_GAPS = "docs/cns/GAPS.json"
 HNMF_REGISTRY = "docs/hnmf/HNMF.json"
 HNMF_GAPS = "docs/hnmf/GAPS.json"
+LANE_B_REGISTRY = "docs/lane-b/LANE_B_CLOSURE.json"
+LANE_B_STATUS = "docs/lane-b/STATUS.md"
+LANE_B_VERIFIER = "scripts/hepta-lane-b-closure.py"
+LANE_B_WORKFLOW = ".github/workflows/hepta-lane-b-closure.yml"
 AUTHORITY_KEYS = [
     "runtimeAuthority",
     "productionCaller",
@@ -681,6 +685,7 @@ def subordinate_state():
     cns_gaps = load(CNS_GAPS)
     hnmf = load(HNMF_REGISTRY)
     hnmf_gaps = load(HNMF_GAPS)
+    lane_b = load(LANE_B_REGISTRY)
     return {
         "readiness": readiness,
         "readiness_protocols": readiness_protocols,
@@ -689,6 +694,7 @@ def subordinate_state():
         "cns_gaps": cns_gaps,
         "hnmf": hnmf,
         "hnmf_gaps": hnmf_gaps,
+        "lane_b": lane_b,
     }
 
 
@@ -726,6 +732,8 @@ def status_text(d):
         f"- CNS functional organs: **{len(sub['cns']['organs'])}**",
         f"- CNS repository reference gaps: **{len(sub['cns_gaps']['gaps'])}**",
         f"- HNMF reference gaps: **{len(sub['hnmf_gaps']['gaps'])}**",
+        f"- Lane B runtime modules source-mapped: **{len(sub['lane_b']['modules'])}**",
+        f"- Lane B repository-internal blockers closed: **{sum(row['state'] == 'closed_by_candidate' for row in sub['lane_b']['repositoryBlockers'])}**",
         "",
         "## Work-package states",
         "",
@@ -936,6 +944,9 @@ def verify() -> int:
         READINESS_PROTOCOLS,
         READINESS_GAPS,
         "docs/readiness/STATUS.md",
+        "docs/lane-b/README.md",
+        LANE_B_REGISTRY,
+        LANE_B_STATUS,
         "docs/cns/README.md",
         CNS_ARCHITECTURE,
         "docs/cns/ORGAN_PROTOCOLS.json",
@@ -953,12 +964,14 @@ def verify() -> int:
         READINESS_VERIFIER,
         CNS_VERIFIER,
         HNMF_VERIFIER,
+        LANE_B_VERIFIER,
         "scripts/hepta-paper-evidence.py",
         ".github/workflows/hepta-development-docs.yml",
         ".github/workflows/hepta-algorithm-docs.yml",
         ".github/workflows/hepta-implementation-readiness.yml",
         ".github/workflows/hepta-cns-embodiment.yml",
         ".github/workflows/hnmf-qualification.yml",
+        LANE_B_WORKFLOW,
         *FILES.values(),
         *technical_paths,
         *algorithm_paths,
@@ -1038,6 +1051,14 @@ def verify() -> int:
                 "statusPath": "docs/readiness/STATUS.md",
                 "validator": "python3 scripts/hepta-readiness.py verify",
                 "workflow": ".github/workflows/hepta-implementation-readiness.yml",
+                "authorityGranted": False,
+            },
+            {
+                "id": "HEPTA-LANE-B-RUNTIME-CLOSURE",
+                "registryPath": LANE_B_REGISTRY,
+                "statusPath": LANE_B_STATUS,
+                "validator": "python3 scripts/hepta-lane-b-closure.py verify",
+                "workflow": LANE_B_WORKFLOW,
                 "authorityGranted": False,
             },
             {
@@ -1306,6 +1327,14 @@ def verify() -> int:
         and len(sub["hnmf_gaps"]["gaps"]) == 18,
         "HNMF subordinate closure",
     )
+    need(
+        sub["lane_b"].get("laneId") == "LANE-B-RUNTIME"
+        and sub["lane_b"].get("moduleCount") == 11
+        and len(sub["lane_b"].get("modules", [])) == 11
+        and sub["lane_b"].get("claimBoundary", {}).get("repositoryInternalGapsClosed") is True
+        and sub["lane_b"].get("claimBoundary", {}).get("allGapsClosed") is False,
+        "Lane B subordinate closure",
+    )
     need((ROOT / "docs/STATUS.md").read_text() == status_text(d), "STATUS stale")
     module_check = subprocess.run(
         [sys.executable, str(ROOT / MODULE_VERIFIER), "verify"],
@@ -1332,6 +1361,7 @@ def verify() -> int:
         ("readiness", READINESS_VERIFIER),
         ("CNS", CNS_VERIFIER),
         ("HNMF", HNMF_VERIFIER),
+        ("Lane B", LANE_B_VERIFIER),
     ]:
         check = subprocess.run(
             [sys.executable, str(ROOT / verifier), "verify"],
@@ -1364,6 +1394,9 @@ def verify() -> int:
         "python3 scripts/hepta-cns.py verify",
         "python3 scripts/hepta-hnmf.py self-test",
         "python3 scripts/hepta-hnmf.py verify",
+        "python3 scripts/hepta-lane-b-closure.py self-test",
+        "python3 scripts/hepta-lane-b-closure.py generate-status --check",
+        "python3 scripts/hepta-lane-b-closure.py verify",
         "python3 scripts/hepta-docs.py inventory-legacy",
         "python3 scripts/hepta-docs.py cleanup-inventory",
         "python3 scripts/hepta-docs.py self-test",
@@ -1402,6 +1435,9 @@ def verify() -> int:
                 "cnsOrgans": len(sub["cns"]["organs"]),
                 "cnsReferenceGaps": len(sub["cns_gaps"]["gaps"]),
                 "hnmfReferenceGaps": len(sub["hnmf_gaps"]["gaps"]),
+                "laneBModules": len(sub["lane_b"]["modules"]),
+                "laneBRepositoryInternalGapsClosed": True,
+                "laneBAllGapsClosed": False,
                 "legacyPaths": 0,
                 "unresolvedPathConflicts": 0,
                 **lease_summary,
@@ -1551,6 +1587,12 @@ def receipt(kind, expected_sha, output):
         "hnmfRegistrySha256": hashlib.sha256(
             (ROOT / HNMF_REGISTRY).read_bytes()
         ).hexdigest(),
+        "laneBVerifierSha256": hashlib.sha256(
+            (ROOT / LANE_B_VERIFIER).read_bytes()
+        ).hexdigest(),
+        "laneBRegistrySha256": hashlib.sha256(
+            (ROOT / LANE_B_REGISTRY).read_bytes()
+        ).hexdigest(),
         "verifiedAt": verified_at,
         "timeEvidence": time_evidence,
         "maximumClockSkewSeconds": policy["maximumClockSkewSeconds"],
@@ -1631,6 +1673,8 @@ def receipt_verify(input_path, kind, expected_sha):
         ("cnsArchitectureSha256", CNS_ARCHITECTURE, "CNS architecture"),
         ("hnmfVerifierSha256", HNMF_VERIFIER, "HNMF verifier"),
         ("hnmfRegistrySha256", HNMF_REGISTRY, "HNMF registry"),
+        ("laneBVerifierSha256", LANE_B_VERIFIER, "Lane B verifier"),
+        ("laneBRegistrySha256", LANE_B_REGISTRY, "Lane B registry"),
     ]:
         need(
             payload.get(field) == hashlib.sha256((ROOT / rel).read_bytes()).hexdigest(),

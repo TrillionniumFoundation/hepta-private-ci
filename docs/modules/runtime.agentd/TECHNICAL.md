@@ -289,3 +289,42 @@ The following additional work packages are source-planning envelopes introduced 
 - `ASM-2-DEBIAN-BRIDGE-SANDBOX`
 - `ASM-3-STATE-MIGRATION-QUALIFICATION`
 - `EMB-2-REFLEX-MOTOR-ACTUATION`
+## 17. Lane B source inventory observation
+
+The declared source roots for `runtime.agentd` are present at the bound baseline:
+
+- `codex-rs/hepta-agentd`
+
+Exact paths and inspected symbols are recorded in `docs/lane-b/LANE_B_CLOSURE.json` and `qualification/module-execution-dossiers/NATIVE_BINDINGS.json`. The read-only gate `.github/workflows/hepta-lane-b-closure.yml` validates the exact source candidate, registered symbols, focused package tests and deterministic merge candidate. A source observation is not product execution, deployment qualification, independent acceptance, promotion or release evidence.
+
+## 18. Lane B current capability, native mapping and remaining gates
+
+<!-- generated: hepta-lane-b-closure -->
+
+This section is generated from `docs/lane-b/LANE_B_CLOSURE.json` and is the current Lane B status projection. It separates source observation from product execution and supersedes any broader interpretation of a source-location receipt.
+
+### Current source capability
+
+The agent host embeds the existing Codex App Server path, exposes a bounded local control protocol and has explicit configuration, client and production-writer host types.
+
+### Target capability
+
+A one-workspace runtime composition host with authenticated local IPC, frozen run snapshots, deterministic cancellation and owner-preserving restart recovery.
+
+### Native source mapping
+
+| Design operation | Source path and symbols | Mapping disposition |
+|---|---|---|
+| `run_agent_host` | `codex-rs/hepta-agentd/src/lib.rs` — `run`, `AgentdConfig`, `AgentdIdentity` | `exact_source_boundary` |
+| `control_and_observe_agent` | `codex-rs/hepta-agentd/src/lib.rs` — `AgentdClient`, `AgentdRequest`, `AgentdResponse` | `exact_source_boundary` |
+| `compose_authorized_writer_host` | `codex-rs/hepta-agentd/src/lib.rs` — `AgentdProductionWriterHost`, `SessionIngress`, `LifecycleSnapshot` | `partial_source_boundary` |
+
+### Remaining bridges
+
+- Publish peer-credential, socket-permission, nonce and replay requirements for every supported platform.
+- Map start-run, context-attachment and cancellation semantics to exact protocol methods and callsites.
+- Qualify service installation, crash recovery, upgrade and undeclared-file audits.
+
+### Evidence boundary
+
+The mapping above proves named source locations and symbols at the bound baseline. Exact-head and deterministic-merge CI must still pass for each candidate. It grants no model, provider, tool, network, filesystem, Matrix, platform, deployment, acceptance, promotion or release authority.

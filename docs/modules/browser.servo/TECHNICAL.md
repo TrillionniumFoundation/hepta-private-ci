@@ -241,11 +241,42 @@ Consumed readiness protocols:
 
 Coding begins only with a current `CanonicalSourceReceiptV1`, a frozen contract/readiness digest, the existing bounded work-package envelope, defined mandatory fixtures, deterministic fallback and zero authority delta. This overlay closes documentation ambiguity only; it does not change source status, activation, acceptance, selection, promotion or release.
 
-## 17. Source implementation receipt
+## 17. Lane B source inventory observation
 
-The bootstrap source-location obligation for `browser.servo` is implemented by work package `BROWSER-WEB-C1` in:
+The declared source roots for `browser.servo` are present at the bound baseline:
 
 - `apps/hepta-browser`
 - `third_party/servo-patches`
 
-The source candidate is checked by `.github/workflows/hepta-gap-closure.yml`, including closed-world inventory, package tests, all-target compilation, strict Clippy and clean tracked state. This receipt is source implementation evidence only. It grants no runtime, production-writer, model-provider, external-effect, independent-acceptance, selection, promotion, merge or release authority.
+Exact paths and inspected symbols are recorded in `docs/lane-b/LANE_B_CLOSURE.json` and `qualification/module-execution-dossiers/NATIVE_BINDINGS.json`. The read-only gate `.github/workflows/hepta-lane-b-closure.yml` validates the exact source candidate, registered symbols, focused package tests and deterministic merge candidate. A source observation is not product execution, deployment qualification, independent acceptance, promotion or release evidence.
+
+## 18. Lane B current capability, native mapping and remaining gates
+
+<!-- generated: hepta-lane-b-closure -->
+
+This section is generated from `docs/lane-b/LANE_B_CLOSURE.json` and is the current Lane B status projection. It separates source observation from product execution and supersedes any broader interpretation of a source-location receipt.
+
+### Current source capability
+
+The JavaScript source validates and projects authority-free navigation proposals and page observations; the Servo manifest pins upstream source but no production navigation caller is asserted.
+
+### Target capability
+
+An isolated Servo-backed browser session with generation-bound observations, typed navigation and input actions, scoped credentials and reconciliation of unknown remote effects.
+
+### Native source mapping
+
+| Design operation | Source path and symbols | Mapping disposition |
+|---|---|---|
+| `build_navigation_intent` | `apps/hepta-browser/src/browser.js` — `buildNavigationIntent`, `buildLocalNavigationProposalFromCanonicalJson` | `exact_source_boundary` |
+| `project_page_state` | `apps/hepta-browser/src/browser.js` — `projectPageState`, `projectPageStateFromLocalCanonicalJson` | `exact_source_boundary` |
+
+### Remaining bridges
+
+- Implement and identify the real Servo process or library integration and its DOM and action protocol.
+- Qualify network, filesystem, DNS, proxy, download, origin and credential sandbox boundaries.
+- Run real Servo build, stale-element, navigation-race, crash and remote-effect reconciliation tests.
+
+### Evidence boundary
+
+The mapping above proves named source locations and symbols at the bound baseline. Exact-head and deterministic-merge CI must still pass for each candidate. It grants no model, provider, tool, network, filesystem, Matrix, platform, deployment, acceptance, promotion or release authority.

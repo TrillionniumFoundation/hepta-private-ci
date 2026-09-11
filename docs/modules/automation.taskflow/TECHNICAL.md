@@ -231,3 +231,42 @@ Consumed readiness protocols:
 - `ActuatorReconciliationReceiptV1`
 
 Coding begins only with a current `CanonicalSourceReceiptV1`, a frozen contract/readiness digest, the existing bounded work-package envelope, defined mandatory fixtures, deterministic fallback and zero authority delta. This overlay closes documentation ambiguity only; it does not change source status, activation, acceptance, selection, promotion or release.
+## 17. Lane B source inventory observation
+
+The declared source roots for `automation.taskflow` are present at the bound baseline:
+
+- `codex-rs/hepta-automation`
+
+Exact paths and inspected symbols are recorded in `docs/lane-b/LANE_B_CLOSURE.json` and `qualification/module-execution-dossiers/NATIVE_BINDINGS.json`. The read-only gate `.github/workflows/hepta-lane-b-closure.yml` validates the exact source candidate, registered symbols, focused package tests and deterministic merge candidate. A source observation is not product execution, deployment qualification, independent acceptance, promotion or release evidence.
+
+## 18. Lane B current capability, native mapping and remaining gates
+
+<!-- generated: hepta-lane-b-closure -->
+
+This section is generated from `docs/lane-b/LANE_B_CLOSURE.json` and is the current Lane B status projection. It separates source observation from product execution and supersedes any broader interpretation of a source-location receipt.
+
+### Current source capability
+
+The automation crate contains a per-agent schedule and lease store, scheduler interfaces, TaskFlow graph and run state types, and an authority-free local execution-boundary assessment.
+
+### Target capability
+
+A fenced scheduler that materializes deterministic occurrences, claims one execution owner, routes typed steps through operation owners and reconciles indeterminate effects.
+
+### Native source mapping
+
+| Design operation | Source path and symbols | Mapping disposition |
+|---|---|---|
+| `schedule_and_store_automation` | `codex-rs/hepta-automation/src/lib.rs` — `AutomationScheduler`, `AutomationStore`, `AutomationSchedule` | `exact_source_boundary` |
+| `manage_taskflow_definition_and_run` | `codex-rs/hepta-automation/src/lib.rs` — `TaskFlowDefinition`, `TaskFlowRun`, `TaskFlowTransition` | `exact_source_boundary` |
+| `assess_local_execution_boundary` | `codex-rs/hepta-automation/src/lib.rs` — `assess_local_taskflow_boundary`, `TaskFlowBoundaryAuthority`, `TaskFlowExecutionUnavailableV1` | `exact_source_boundary` |
+
+### Remaining bridges
+
+- Freeze recurrence grammar and tzdb versions with executable DST gap, fold and revision fixtures.
+- Qualify scheduler leadership, lease fencing, missed-run policy and crash-after-dispatch recovery.
+- Bind the production feature profile and named step runner without granting generated skills execution authority.
+
+### Evidence boundary
+
+The mapping above proves named source locations and symbols at the bound baseline. Exact-head and deterministic-merge CI must still pass for each candidate. It grants no model, provider, tool, network, filesystem, Matrix, platform, deployment, acceptance, promotion or release authority.

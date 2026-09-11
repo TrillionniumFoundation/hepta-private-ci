@@ -28,6 +28,7 @@ This directory closes the registered pre-coding documentation requirements for t
 22. [`../../qualification/module-execution-dossiers/IMPLEMENTATION_CONTRACTS.md`](../../qualification/module-execution-dossiers/IMPLEMENTATION_CONTRACTS.md) — concrete coding contracts, true native evidence and final-gate ordering.
 23. [`../../qualification/module-execution-dossiers/IMPLEMENTATION_PROFILES.json`](../../qualification/module-execution-dossiers/IMPLEMENTATION_PROFILES.json) — all forty module API, encoding, concurrency/recovery, algorithm and acceptance profiles.
 24. [`../../qualification/module-execution-dossiers/IMPLEMENTATION_COMPLETION.json`](../../qualification/module-execution-dossiers/IMPLEMENTATION_COMPLETION.json) — sixteen further implementation-design dispositions, their documents and remaining evidence.
+25. [`../lane-b/LANE_B_CLOSURE.json`](../lane-b/LANE_B_CLOSURE.json) — Lane B current capability, exact source mapping, remaining bridges and repository-internal closure boundary.
 
 ## Validation
 
@@ -67,7 +68,7 @@ The first implementation slice remains deterministic and read-only with respect 
 
 ## Detailed-design interpretation and coding gates
 
-Read the stable module guide, Section 16 readiness overlay, existing detail and matching implementation profile together. Proposed operation names must map to actual native symbols and consumers within an existing work package. The original 160 named acceptance cases are test designs, not pass receipts. Five exact source observations in `NATIVE_BINDINGS.json` are neither forty complete native mappings nor production-call evidence.
+Read the stable module guide, Section 16 readiness overlay, existing detail and matching implementation profile together. Proposed operation names must map to actual native symbols and consumers within an existing work package. The original 160 named acceptance cases are test designs, not pass receipts. The exact source observations in `NATIVE_BINDINGS.json` now include all eleven Lane B modules across thirteen source files, while the remaining module mappings and all production-call evidence remain separate gates.
 
 General stochastic NDU regression now has one corrected authoritative formula in [`../learning/NDU_FBSDE_SPEC.md`](../learning/NDU_FBSDE_SPEC.md): centered conditional moments solve `Z Sigma = B`. The time-only simplification needs its covariance assumption. This document correction does not reinterpret old artifact bytes; any new coefficient profile/wire field requires versioned native admission.
 

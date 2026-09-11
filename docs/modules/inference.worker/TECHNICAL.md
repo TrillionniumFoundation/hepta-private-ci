@@ -301,10 +301,41 @@ Consumed readiness protocols:
 
 Coding begins only with a current `CanonicalSourceReceiptV1`, a frozen contract/readiness digest, the existing bounded work-package envelope, defined mandatory fixtures, deterministic fallback and zero authority delta. This overlay closes documentation ambiguity only; it does not change source status, activation, acceptance, selection, promotion or release.
 
-## 17. Source implementation receipt
+## 17. Lane B source inventory observation
 
-The bootstrap source-location obligation for `inference.worker` is implemented by work package `INFER-V4-T4` in:
+The declared source roots for `inference.worker` are present at the bound baseline:
 
 - `codex-rs/hepta-infer-worker-host`
 
-The source candidate is checked by `.github/workflows/hepta-gap-closure.yml`, including closed-world inventory, package tests, all-target compilation, strict Clippy and clean tracked state. This receipt is source implementation evidence only. It grants no runtime, production-writer, model-provider, external-effect, independent-acceptance, selection, promotion, merge or release authority.
+Exact paths and inspected symbols are recorded in `docs/lane-b/LANE_B_CLOSURE.json` and `qualification/module-execution-dossiers/NATIVE_BINDINGS.json`. The read-only gate `.github/workflows/hepta-lane-b-closure.yml` validates the exact source candidate, registered symbols, focused package tests and deterministic merge candidate. A source observation is not product execution, deployment qualification, independent acceptance, promotion or release evidence.
+
+## 18. Lane B current capability, native mapping and remaining gates
+
+<!-- generated: hepta-lane-b-closure -->
+
+This section is generated from `docs/lane-b/LANE_B_CLOSURE.json` and is the current Lane B status projection. It separates source observation from product execution and supersedes any broader interpretation of a source-location receipt.
+
+### Current source capability
+
+The worker host validates a pre-existing request, lease and reservation and turns an observed terminal result into a receipt; it deliberately does not load or execute a model provider.
+
+### Target capability
+
+A sandboxed worker that verifies model artifacts and runtime identity, loads under explicit resource grants, performs bounded inference, observes cancellation and reports measured usage.
+
+### Native source mapping
+
+| Design operation | Source path and symbols | Mapping disposition |
+|---|---|---|
+| `validate_worker_request_and_observation` | `codex-rs/hepta-infer-worker-host/src/lib.rs` — `execute`, `InferenceRequest`, `InferenceReceipt` | `exact_source_boundary` |
+| `bind_authority_lease_and_reservation` | `codex-rs/hepta-infer-worker-host/src/lib.rs` — `AuthorityLease`, `Reservation`, `ExecutionObservation` | `exact_source_boundary` |
+
+### Remaining bridges
+
+- Implement a provider adapter ABI and real load-model, run and unload lifecycle without weakening authority checks.
+- Bind weights, tokenizer, runtime, driver and device digests to a measured resource grant.
+- Qualify streaming, cancellation, out-of-memory, driver-reset and worker-crash behavior with real model execution.
+
+### Evidence boundary
+
+The mapping above proves named source locations and symbols at the bound baseline. Exact-head and deterministic-merge CI must still pass for each candidate. It grants no model, provider, tool, network, filesystem, Matrix, platform, deployment, acceptance, promotion or release authority.

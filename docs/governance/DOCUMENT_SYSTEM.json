@@ -132,7 +132,12 @@
     "docs/readiness/SELF_ITERATION_EXECUTION.md",
     "docs/readiness/EMBODIED_RUNTIME_EXECUTION.md",
     "docs/readiness/EXTERNAL_SYSTEM_ASSIMILATION.md",
-    "docs/readiness/PARALLEL_DEVELOPMENT.md"
+    "docs/readiness/PARALLEL_DEVELOPMENT.md",
+    "docs/lane-b/README.md",
+    "docs/lane-b/LANE_B_CLOSURE.json",
+    "docs/lane-b/STATUS.md",
+    "scripts/hepta-lane-b-closure.py",
+    ".github/workflows/hepta-lane-b-closure.yml"
   ],
   "singleSourceRules": [
     "only DEVELOPMENT.md defines global policy in prose",
@@ -209,6 +214,10 @@
     },
     "docs/cns/STATUS.md": {
       "generator": "python3 scripts/hepta-cns.py generate-status",
+      "handEditingAllowed": false
+    },
+    "docs/lane-b/STATUS.md": {
+      "generator": "python3 scripts/hepta-lane-b-closure.py generate-status",
       "handEditingAllowed": false
     }
   },
@@ -762,6 +771,14 @@
       "statusPath": "docs/readiness/STATUS.md",
       "validator": "python3 scripts/hepta-readiness.py verify",
       "workflow": ".github/workflows/hepta-implementation-readiness.yml",
+      "authorityGranted": false
+    },
+    {
+      "id": "HEPTA-LANE-B-RUNTIME-CLOSURE",
+      "registryPath": "docs/lane-b/LANE_B_CLOSURE.json",
+      "statusPath": "docs/lane-b/STATUS.md",
+      "validator": "python3 scripts/hepta-lane-b-closure.py verify",
+      "workflow": ".github/workflows/hepta-lane-b-closure.yml",
       "authorityGranted": false
     },
     {

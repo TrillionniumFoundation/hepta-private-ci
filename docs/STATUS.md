@@ -27,6 +27,8 @@ Dynamic Git, branch, pull-request, CI, review, operator, selection, promotion an
 - CNS functional organs: **24**
 - CNS repository reference gaps: **22**
 - HNMF reference gaps: **18**
+- Lane B runtime modules source-mapped: **11**
+- Lane B repository-internal blockers closed: **7**
 
 ## Work-package states
 

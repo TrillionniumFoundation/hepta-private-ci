@@ -3,6 +3,8 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "test": "node --test"
+    "check": "node --check src/*.js",
+    "test": "node --test",
+    "ci": "npm run check && npm test"
   }
 }

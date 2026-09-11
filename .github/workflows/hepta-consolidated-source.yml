@@ -2,7 +2,9 @@ name: Hepta consolidated source qualification (read-only)
 
 on:
   push:
-    branches: [main]
+    branches:
+      - main
+      - integration/vnext-main-20260811
   pull_request:
 
 permissions:
@@ -60,6 +62,9 @@ jobs:
           python3 scripts/hepta_module_doc_metadata.py
           python3 scripts/hepta-module-docs.py verify
           python3 scripts/hepta-readiness.py verify
+          python3 scripts/hepta-lane-b-closure.py self-test
+          python3 scripts/hepta-lane-b-closure.py generate-status --check
+          python3 scripts/hepta-lane-b-closure.py verify
           python3 scripts/hepta-docs.py verify
           python3 scripts/hepta-gap-closure.py verify
           python3 -m unittest discover -v -s tools/hepta-engineering-control -p 'test_*.py'

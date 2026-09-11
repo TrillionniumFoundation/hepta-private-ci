@@ -3,7 +3,7 @@
   "schemaVersion": 1,
   "planId": "HEPTA-GLOBAL-MODULAR-DEVELOPMENT-PLAN",
   "planVersion": "8.0.0",
-  "sourceSnapshot": "5c34496f40a7a3953f1dc9682c8f96bd4916ad11",
+  "sourceSnapshot": "04f60466394a024c218ce66b1b32d1c42c462985",
   "evidenceClass": "source_observation_only",
   "productExecutionProved": false,
   "observations": [
@@ -79,6 +79,153 @@
         "prepare_dataset_revocation"
       ],
       "interpretation": "Artifact storage writers remain create-only. The reviewed pinned loader performs read-only exact snapshot, manifest, lineage and payload validation from caller-opened files. It does not authenticate freshness, establish newest state, select or activate an artifact, prove anti-rollback, compose a production caller or authorize promotion or release."
+    },
+    {
+      "module": "runtime.supervisor",
+      "path": "codex-rs/hepta-supervisor/src/lib.rs",
+      "blobSha": "419b613801889ba314ca96b195f7d653774c1ba4",
+      "exports": [
+        "Supervisor",
+        "ProcessDriver",
+        "run_supervisord",
+        "SupervisordClient"
+      ],
+      "interpretation": "Concrete supervisor daemon and process-control exports; target deployment and independent acceptance are not inferred."
+    },
+    {
+      "module": "runtime.fleet",
+      "path": "codex-rs/hepta-fleet/src/lib.rs",
+      "blobSha": "6e81d287a79e86335dc9456877b5cba872345fee",
+      "exports": [
+        "FleetRegistry",
+        "calculate_local_allocation_v1",
+        "AgentReleaseState"
+      ],
+      "interpretation": "Registry and deterministic local allocation exports; durable distributed lease qualification is not inferred."
+    },
+    {
+      "module": "runtime.agentd",
+      "path": "codex-rs/hepta-agentd/src/lib.rs",
+      "blobSha": "e6284ae50e73d2801eb208f0df2b568fee8fb64c",
+      "exports": [
+        "AgentdClient",
+        "AgentdProductionWriterHost",
+        "run"
+      ],
+      "interpretation": "Agent host and local protocol exports; production composition and deployment evidence remain separate."
+    },
+    {
+      "module": "runtime.codex",
+      "path": "codex-rs/hepta-codex-adapter/src/lib.rs",
+      "blobSha": "c81c3ec10dd11a85ed28cf71207ff0f973329c17",
+      "exports": [
+        "adapt",
+        "CodexOperationIntent",
+        "CodexAdapterReceipt"
+      ],
+      "interpretation": "Authority-free adapter exports; no model or provider invocation is inferred."
+    },
+    {
+      "module": "inference.control",
+      "path": "codex-rs/hepta-infer-core/src/lib.rs",
+      "blobSha": "60757e17b2342a38e62bf43419d07651260a6afe",
+      "exports": [
+        "InferenceLedger",
+        "request_digest",
+        "InferenceRequest"
+      ],
+      "interpretation": "In-memory request state machine; durable control-plane execution is not inferred."
+    },
+    {
+      "module": "inference.control",
+      "path": "codex-rs/hepta-inferd/src/lib.rs",
+      "blobSha": "a149b745e7eb2d40c93fe312ea95070c119ddb7b",
+      "exports": [
+        "plan",
+        "DispatchPlan",
+        "DispatchRequest"
+      ],
+      "interpretation": "Digest-bound dispatch planning; provider dispatch authority is explicitly absent."
+    },
+    {
+      "module": "inference.worker",
+      "path": "codex-rs/hepta-infer-worker-host/src/lib.rs",
+      "blobSha": "f4fca6216821c994a401e401442cf06f69a3d082",
+      "exports": [
+        "execute",
+        "InferenceReceipt",
+        "AuthorityLease"
+      ],
+      "interpretation": "Request and observation validation boundary; no model loading or provider execution is inferred."
+    },
+    {
+      "module": "automation.taskflow",
+      "path": "codex-rs/hepta-automation/src/lib.rs",
+      "blobSha": "f6534c6b20d9fcf9ae6c6b58fac6e6595fcf69a2",
+      "exports": [
+        "AutomationScheduler",
+        "AutomationStore",
+        "TaskFlowDefinition",
+        "assess_local_taskflow_boundary"
+      ],
+      "interpretation": "Schedule, graph and local boundary exports; product scheduler authority remains separately gated."
+    },
+    {
+      "module": "channel.matrix",
+      "path": "codex-rs/hepta-matrix-sdk/src/lib.rs",
+      "blobSha": "35b644e33e8756c5d780bba1004e73d0b84d0e97",
+      "exports": [
+        "MatrixIngress",
+        "dispatch_outbox_once",
+        "MatrixSdkClient"
+      ],
+      "interpretation": "Matrix SDK ingress and outbound exports; remote user reading and administrative authority are not inferred."
+    },
+    {
+      "module": "channel.matrix",
+      "path": "codex-rs/hepta-matrixd/src/lib.rs",
+      "blobSha": "4eae4b8b7cb8bb5c57f21be3e076459994e2b1a0",
+      "exports": [
+        "run",
+        "MatrixRuntime",
+        "MatrixAppServerTransport"
+      ],
+      "interpretation": "Daemon and App Server bridge exports; target homeserver qualification remains separate."
+    },
+    {
+      "module": "browser.servo",
+      "path": "apps/hepta-browser/src/browser.js",
+      "blobSha": "4d8e8cbb1886083ec23d21ef5810c7cca50be81d",
+      "exports": [
+        "buildNavigationIntent",
+        "projectPageState",
+        "buildLocalNavigationProposalFromCanonicalJson"
+      ],
+      "interpretation": "Authority-free browser proposal and projection exports; Servo runtime execution is not inferred."
+    },
+    {
+      "module": "ui.control",
+      "path": "apps/hepta-control-ui/src/control.js",
+      "blobSha": "9ceeea6df55c108831acd00fca00dd58b8fb8513",
+      "exports": [
+        "projectRuntime",
+        "buildOperationIntent",
+        "buildLocalOperationProposalFromCanonicalJson"
+      ],
+      "interpretation": "Authority-free presentation and request-construction exports; deployable UI composition is not inferred."
+    },
+    {
+      "module": "ui.native",
+      "path": "apps/hepta-native/src/native.js",
+      "blobSha": "0b43af170d02a2d672c68b18e100a1507957f483",
+      "exports": [
+        "buildNativeIntent",
+        "observeNativeOutcome"
+      ],
+      "interpretation": "Native intent and guarded observation exports; host platform execution and signed release are not inferred."
     }
-  ]
+  ],
+  "laneBModuleCount": 11,
+  "laneBSourceFileCount": 13,
+  "laneBMappingComplete": true
 }

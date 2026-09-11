@@ -242,3 +242,42 @@ Consumed readiness protocols:
 - None.
 
 Coding begins only with a current `CanonicalSourceReceiptV1`, a frozen contract/readiness digest, the existing bounded work-package envelope, defined mandatory fixtures, deterministic fallback and zero authority delta. This overlay closes documentation ambiguity only; it does not change source status, activation, acceptance, selection, promotion or release.
+## 17. Lane B source inventory observation
+
+The declared source roots for `channel.matrix` are present at the bound baseline:
+
+- `codex-rs/hepta-matrix-sdk`
+- `codex-rs/hepta-matrixd`
+
+Exact paths and inspected symbols are recorded in `docs/lane-b/LANE_B_CLOSURE.json` and `qualification/module-execution-dossiers/NATIVE_BINDINGS.json`. The read-only gate `.github/workflows/hepta-lane-b-closure.yml` validates the exact source candidate, registered symbols, focused package tests and deterministic merge candidate. A source observation is not product execution, deployment qualification, independent acceptance, promotion or release evidence.
+
+## 18. Lane B current capability, native mapping and remaining gates
+
+<!-- generated: hepta-lane-b-closure -->
+
+This section is generated from `docs/lane-b/LANE_B_CLOSURE.json` and is the current Lane B status projection. It separates source observation from product execution and supersedes any broader interpretation of a source-location receipt.
+
+### Current source capability
+
+The Matrix SDK source implements bounded ingress and durable-outbox transport, while the daemon source bridges one enrolled room to the existing Agentd and App Server session path.
+
+### Target capability
+
+A scoped Matrix channel with durable sync and send identities, redaction propagation, encrypted-session recovery, rate-limit handling and exact terminal delivery observations.
+
+### Native source mapping
+
+| Design operation | Source path and symbols | Mapping disposition |
+|---|---|---|
+| `ingest_and_dispatch_matrix_events` | `codex-rs/hepta-matrix-sdk/src/lib.rs` — `MatrixIngress`, `dispatch_outbox_once`, `MatrixSdkClient` | `exact_source_boundary` |
+| `run_matrix_daemon_and_bridge_session` | `codex-rs/hepta-matrixd/src/lib.rs` — `run`, `MatrixRuntime`, `MatrixAppServerTransport` | `exact_source_boundary` |
+
+### Remaining bridges
+
+- Freeze Matrix specification, SDK and homeserver compatibility and document E2EE key lifecycle and recovery.
+- Qualify sync-token, redaction, retry-after, poisoned-event and acknowledgement-loss behavior against a real homeserver.
+- Publish daemon service, credential permissions, migration and rollback procedures.
+
+### Evidence boundary
+
+The mapping above proves named source locations and symbols at the bound baseline. Exact-head and deterministic-merge CI must still pass for each candidate. It grants no model, provider, tool, network, filesystem, Matrix, platform, deployment, acceptance, promotion or release authority.

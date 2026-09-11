@@ -14,7 +14,7 @@ This qualification companion is subordinate to `docs/DEVELOPMENT.md` (plan 8.0.0
 8. [STATUS.md](STATUS.md): generated classification/depth projection, not an independent acceptance record.
 9. [IMPLEMENTATION_CONTRACTS.md](IMPLEMENTATION_CONTRACTS.md): coding-entry, native binding, final-gate ordering, cross-owner composition and seven-lane implementation rules.
 10. [IMPLEMENTATION_PROFILES.json](IMPLEMENTATION_PROFILES.json): concrete API, state/encoding, linearization/recovery, algorithm and acceptance contracts for all forty modules.
-11. [NATIVE_BINDINGS.json](NATIVE_BINDINGS.json): five exact inspected source exports, explicitly distinguished from proposed implementations and real deployment evidence.
+11. [NATIVE_BINDINGS.json](NATIVE_BINDINGS.json): eighteen exact inspected source-file observations, including all eleven Lane B modules, explicitly distinguished from proposed implementations and real deployment evidence.
 12. [PERSISTENCE.md](PERSISTENCE.md) and [COGNITIVE_STORE.sql](COGNITIVE_STORE.sql): proposed cognitive durable adapter, actual format boundaries, commit/acknowledgement, deletion, rotation, backup and recovery.
 13. [ORGAN_EVOLUTION.md](ORGAN_EVOLUTION.md): separate graph types, typed extension admission, composite migration, single-writer barriers and rollback after successor writes.
 14. [C1_EXECUTION.md](C1_EXECUTION.md): real-host vertical composition, independent outcomes, durable learning, new-process loading and exact rollback.

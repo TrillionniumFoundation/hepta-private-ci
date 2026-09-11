@@ -48,6 +48,9 @@ jobs:
           python3 scripts/hepta-readiness.py self-test
           python3 scripts/hepta-readiness.py generate-status --check
           python3 scripts/hepta-readiness.py verify
+          python3 scripts/hepta-lane-b-closure.py self-test
+          python3 scripts/hepta-lane-b-closure.py generate-status --check
+          python3 scripts/hepta-lane-b-closure.py verify
           python3 scripts/hepta-cns.py self-test
           python3 scripts/hepta-cns.py generate-status --check
           python3 scripts/hepta-cns.py verify
@@ -135,6 +138,9 @@ jobs:
           python3 scripts/hepta-readiness.py self-test
           python3 scripts/hepta-readiness.py generate-status --check
           python3 scripts/hepta-readiness.py verify
+          python3 scripts/hepta-lane-b-closure.py self-test
+          python3 scripts/hepta-lane-b-closure.py generate-status --check
+          python3 scripts/hepta-lane-b-closure.py verify
           python3 scripts/hepta-cns.py self-test
           python3 scripts/hepta-cns.py generate-status --check
           python3 scripts/hepta-cns.py verify

@@ -1,0 +1,699 @@
+{
+  "schema": "hepta.lane-b-closure.v1",
+  "schemaVersion": 1,
+  "documentClass": "canonical_subordinate_registry",
+  "authorityScope": "repository_internal_documentation_native_mapping_and_ci_evidence_only",
+  "planId": "HEPTA-GLOBAL-MODULAR-DEVELOPMENT-PLAN",
+  "planVersion": "8.0.0",
+  "laneId": "LANE-B-RUNTIME",
+  "moduleCount": 11,
+  "baseline": {
+    "repository": "TrillionniumFoundation/hepta-private-ci",
+    "baseCommit": "04f60466394a024c218ce66b1b32d1c42c462985",
+    "baseTree": "a9797f471d27194e29c13f49723d4508ac52cb84",
+    "defaultBranch": "integration/vnext-main-20260811",
+    "selectionPolicy": "exact_commit_tree_and_ci_receipt_required"
+  },
+  "lifecycleStates": [
+    "specified",
+    "source_mapped",
+    "compiled",
+    "unit_tested",
+    "integration_tested",
+    "production_called",
+    "deployment_qualified",
+    "independently_accepted"
+  ],
+  "claimBoundary": {
+    "repositoryInternalGapsClosed": true,
+    "productRuntimeQualified": false,
+    "providerExecutionProved": false,
+    "externalEffectProved": false,
+    "deploymentQualified": false,
+    "independentAcceptance": false,
+    "promotionAuthorized": false,
+    "releaseAuthorized": false,
+    "allGapsClosed": false
+  },
+  "nativeSourceFiles": 13,
+  "modules": [
+    {
+      "module": "runtime.supervisor",
+      "guide": "docs/modules/runtime.supervisor/TECHNICAL.md",
+      "design": "qualification/module-execution-dossiers/detail/runtime.supervisor.md",
+      "roots": [
+        "codex-rs/hepta-supervisor"
+      ],
+      "lifecycleState": "source_mapped",
+      "currentCapability": "The Rust crate exposes the supervisor daemon, process driver, control client, lifecycle snapshots and signed mutation boundary while explicitly excluding model-turn execution.",
+      "targetCapability": "A generation-fenced supervisor that starts, observes, drains and reloads selected runtime instances under bounded readiness, resource and rollback policy.",
+      "operationMappings": [
+        {
+          "operation": "start_instance_and_supervise_generation",
+          "path": "codex-rs/hepta-supervisor/src/lib.rs",
+          "symbols": [
+            "Supervisor",
+            "ProcessDriver",
+            "run_supervisord"
+          ],
+          "status": "partial_source_boundary"
+        },
+        {
+          "operation": "observe_health_and_control_epoch",
+          "path": "codex-rs/hepta-supervisor/src/lib.rs",
+          "symbols": [
+            "SupervisordHealth",
+            "SupervisordClient",
+            "SupervisorEpoch"
+          ],
+          "status": "exact_source_boundary"
+        },
+        {
+          "operation": "drain_or_change_release",
+          "path": "codex-rs/hepta-supervisor/src/lib.rs",
+          "symbols": [
+            "AgentCommand",
+            "AgentRelease",
+            "TickReport"
+          ],
+          "status": "partial_source_boundary"
+        }
+      ],
+      "remainingBridges": [
+        "Bind each design operation to exact methods and named product callers.",
+        "Publish the physical persistence schema, migration identifiers and writer-fencing recovery proof.",
+        "Qualify service deployment, restart storms, drain deadlines and rollback on target hosts."
+      ],
+      "claims": {
+        "productRuntimeQualified": false,
+        "providerExecutionProved": false,
+        "externalEffectProved": false,
+        "deploymentQualified": false,
+        "independentAcceptance": false,
+        "promotionAuthorized": false,
+        "releaseAuthorized": false
+      }
+    },
+    {
+      "module": "runtime.fleet",
+      "guide": "docs/modules/runtime.fleet/TECHNICAL.md",
+      "design": "qualification/module-execution-dossiers/detail/runtime.fleet.md",
+      "roots": [
+        "codex-rs/hepta-fleet"
+      ],
+      "lifecycleState": "source_mapped",
+      "currentCapability": "The fleet crate exposes the durable-style registry model, release metadata and a deterministic local allocation calculator over bounded host and resource vectors.",
+      "targetCapability": "A fleet allocator that enrolls hosts, issues fenced resource leases, reconciles uncertain holders and preserves essential floors across failures and partitions.",
+      "operationMappings": [
+        {
+          "operation": "register_and_read_fleet_state",
+          "path": "codex-rs/hepta-fleet/src/lib.rs",
+          "symbols": [
+            "FleetRegistry",
+            "AgentRecord",
+            "FleetSnapshot"
+          ],
+          "status": "exact_source_boundary"
+        },
+        {
+          "operation": "calculate_local_allocation",
+          "path": "codex-rs/hepta-fleet/src/lib.rs",
+          "symbols": [
+            "calculate_local_allocation_v1",
+            "LocalAllocationCalculationV1",
+            "LocalResourceVectorV1"
+          ],
+          "status": "exact_source_boundary"
+        },
+        {
+          "operation": "bind_release_metadata",
+          "path": "codex-rs/hepta-fleet/src/lib.rs",
+          "symbols": [
+            "RegisteredRelease",
+            "AgentReleaseState",
+            "ReleaseMetadata"
+          ],
+          "status": "exact_source_boundary"
+        }
+      ],
+      "remainingBridges": [
+        "Implement and document durable allocation-lease storage, renewal and fencing linearization.",
+        "Name the product caller that consumes allocation decisions and starts real resource holders.",
+        "Execute fairness, partition, clock-skew and capacity benchmarks on qualified hosts."
+      ],
+      "claims": {
+        "productRuntimeQualified": false,
+        "providerExecutionProved": false,
+        "externalEffectProved": false,
+        "deploymentQualified": false,
+        "independentAcceptance": false,
+        "promotionAuthorized": false,
+        "releaseAuthorized": false
+      }
+    },
+    {
+      "module": "runtime.agentd",
+      "guide": "docs/modules/runtime.agentd/TECHNICAL.md",
+      "design": "qualification/module-execution-dossiers/detail/runtime.agentd.md",
+      "roots": [
+        "codex-rs/hepta-agentd"
+      ],
+      "lifecycleState": "source_mapped",
+      "currentCapability": "The agent host embeds the existing Codex App Server path, exposes a bounded local control protocol and has explicit configuration, client and production-writer host types.",
+      "targetCapability": "A one-workspace runtime composition host with authenticated local IPC, frozen run snapshots, deterministic cancellation and owner-preserving restart recovery.",
+      "operationMappings": [
+        {
+          "operation": "run_agent_host",
+          "path": "codex-rs/hepta-agentd/src/lib.rs",
+          "symbols": [
+            "run",
+            "AgentdConfig",
+            "AgentdIdentity"
+          ],
+          "status": "exact_source_boundary"
+        },
+        {
+          "operation": "control_and_observe_agent",
+          "path": "codex-rs/hepta-agentd/src/lib.rs",
+          "symbols": [
+            "AgentdClient",
+            "AgentdRequest",
+            "AgentdResponse"
+          ],
+          "status": "exact_source_boundary"
+        },
+        {
+          "operation": "compose_authorized_writer_host",
+          "path": "codex-rs/hepta-agentd/src/lib.rs",
+          "symbols": [
+            "AgentdProductionWriterHost",
+            "SessionIngress",
+            "LifecycleSnapshot"
+          ],
+          "status": "partial_source_boundary"
+        }
+      ],
+      "remainingBridges": [
+        "Publish peer-credential, socket-permission, nonce and replay requirements for every supported platform.",
+        "Map start-run, context-attachment and cancellation semantics to exact protocol methods and callsites.",
+        "Qualify service installation, crash recovery, upgrade and undeclared-file audits."
+      ],
+      "claims": {
+        "productRuntimeQualified": false,
+        "providerExecutionProved": false,
+        "externalEffectProved": false,
+        "deploymentQualified": false,
+        "independentAcceptance": false,
+        "promotionAuthorized": false,
+        "releaseAuthorized": false
+      }
+    },
+    {
+      "module": "runtime.codex",
+      "guide": "docs/modules/runtime.codex/TECHNICAL.md",
+      "design": "qualification/module-execution-dossiers/detail/runtime.codex.md",
+      "roots": [
+        "codex-rs/codex-app-server",
+        "codex-rs/hepta-codex-adapter"
+      ],
+      "lifecycleState": "source_mapped",
+      "currentCapability": "The Hepta adapter validates an already-authorized payload-bound intent and converts a terminal App Server observation into a deny-all receipt; it does not invoke a model or provider.",
+      "targetCapability": "A traced Codex thread and turn boundary that binds actual templates, tokenizer, model profile, delivery observation and final tool authority to the existing App Server spine.",
+      "operationMappings": [
+        {
+          "operation": "adapt_authorized_app_server_intent",
+          "path": "codex-rs/hepta-codex-adapter/src/lib.rs",
+          "symbols": [
+            "adapt",
+            "CodexOperationIntent",
+            "CodexAdapterReceipt"
+          ],
+          "status": "exact_source_boundary"
+        },
+        {
+          "operation": "classify_terminal_or_indeterminate_observation",
+          "path": "codex-rs/hepta-codex-adapter/src/lib.rs",
+          "symbols": [
+            "AppServerObservation",
+            "AdapterStatus",
+            "MissingTerminalResponse"
+          ],
+          "status": "exact_source_boundary"
+        }
+      ],
+      "remainingBridges": [
+        "Bind open-thread, submit-turn, tool-dispatch and delivery operations to exact App Server RPC symbols and named callers.",
+        "Add disconnect, replay, cancellation and acknowledgement-loss integration tests through a real App Server process.",
+        "Retain the current authority-free adapter boundary until an independently authorized provider path is composed."
+      ],
+      "claims": {
+        "productRuntimeQualified": false,
+        "providerExecutionProved": false,
+        "externalEffectProved": false,
+        "deploymentQualified": false,
+        "independentAcceptance": false,
+        "promotionAuthorized": false,
+        "releaseAuthorized": false
+      }
+    },
+    {
+      "module": "inference.control",
+      "guide": "docs/modules/inference.control/TECHNICAL.md",
+      "design": "qualification/module-execution-dossiers/detail/inference.control.md",
+      "roots": [
+        "codex-rs/hepta-infer-core",
+        "codex-rs/hepta-inferd"
+      ],
+      "lifecycleState": "source_mapped",
+      "currentCapability": "The control sources provide an in-memory request and reservation state machine plus an exact-bound dispatch plan over request, reservation, lease and model digests.",
+      "targetCapability": "A durable inference control plane with quota reservation, deterministic worker selection, outbox dispatch, cancellation settlement and reconciliation of unknown usage.",
+      "operationMappings": [
+        {
+          "operation": "submit_reserve_complete_or_cancel_request",
+          "path": "codex-rs/hepta-infer-core/src/lib.rs",
+          "symbols": [
+            "InferenceLedger",
+            "InferenceRequest",
+            "LedgerReceipt"
+          ],
+          "status": "exact_source_boundary"
+        },
+        {
+          "operation": "plan_digest_bound_worker_dispatch",
+          "path": "codex-rs/hepta-inferd/src/lib.rs",
+          "symbols": [
+            "plan",
+            "DispatchRequest",
+            "DispatchPlan"
+          ],
+          "status": "exact_source_boundary"
+        }
+      ],
+      "remainingBridges": [
+        "Replace process-memory state with a declared durable schema, transaction/outbox and recovery protocol.",
+        "Compose a named scheduler caller and independently authorized provider-dispatch adapter.",
+        "Implement quota settlement, cancellation races and unknown-consumption reconciliation with executable fault tests."
+      ],
+      "claims": {
+        "productRuntimeQualified": false,
+        "providerExecutionProved": false,
+        "externalEffectProved": false,
+        "deploymentQualified": false,
+        "independentAcceptance": false,
+        "promotionAuthorized": false,
+        "releaseAuthorized": false
+      }
+    },
+    {
+      "module": "inference.worker",
+      "guide": "docs/modules/inference.worker/TECHNICAL.md",
+      "design": "qualification/module-execution-dossiers/detail/inference.worker.md",
+      "roots": [
+        "codex-rs/hepta-infer-worker-host"
+      ],
+      "lifecycleState": "source_mapped",
+      "currentCapability": "The worker host validates a pre-existing request, lease and reservation and turns an observed terminal result into a receipt; it deliberately does not load or execute a model provider.",
+      "targetCapability": "A sandboxed worker that verifies model artifacts and runtime identity, loads under explicit resource grants, performs bounded inference, observes cancellation and reports measured usage.",
+      "operationMappings": [
+        {
+          "operation": "validate_worker_request_and_observation",
+          "path": "codex-rs/hepta-infer-worker-host/src/lib.rs",
+          "symbols": [
+            "execute",
+            "InferenceRequest",
+            "InferenceReceipt"
+          ],
+          "status": "exact_source_boundary"
+        },
+        {
+          "operation": "bind_authority_lease_and_reservation",
+          "path": "codex-rs/hepta-infer-worker-host/src/lib.rs",
+          "symbols": [
+            "AuthorityLease",
+            "Reservation",
+            "ExecutionObservation"
+          ],
+          "status": "exact_source_boundary"
+        }
+      ],
+      "remainingBridges": [
+        "Implement a provider adapter ABI and real load-model, run and unload lifecycle without weakening authority checks.",
+        "Bind weights, tokenizer, runtime, driver and device digests to a measured resource grant.",
+        "Qualify streaming, cancellation, out-of-memory, driver-reset and worker-crash behavior with real model execution."
+      ],
+      "claims": {
+        "productRuntimeQualified": false,
+        "providerExecutionProved": false,
+        "externalEffectProved": false,
+        "deploymentQualified": false,
+        "independentAcceptance": false,
+        "promotionAuthorized": false,
+        "releaseAuthorized": false
+      }
+    },
+    {
+      "module": "automation.taskflow",
+      "guide": "docs/modules/automation.taskflow/TECHNICAL.md",
+      "design": "qualification/module-execution-dossiers/detail/automation.taskflow.md",
+      "roots": [
+        "codex-rs/hepta-automation"
+      ],
+      "lifecycleState": "source_mapped",
+      "currentCapability": "The automation crate contains a per-agent schedule and lease store, scheduler interfaces, TaskFlow graph and run state types, and an authority-free local execution-boundary assessment.",
+      "targetCapability": "A fenced scheduler that materializes deterministic occurrences, claims one execution owner, routes typed steps through operation owners and reconciles indeterminate effects.",
+      "operationMappings": [
+        {
+          "operation": "schedule_and_store_automation",
+          "path": "codex-rs/hepta-automation/src/lib.rs",
+          "symbols": [
+            "AutomationScheduler",
+            "AutomationStore",
+            "AutomationSchedule"
+          ],
+          "status": "exact_source_boundary"
+        },
+        {
+          "operation": "manage_taskflow_definition_and_run",
+          "path": "codex-rs/hepta-automation/src/lib.rs",
+          "symbols": [
+            "TaskFlowDefinition",
+            "TaskFlowRun",
+            "TaskFlowTransition"
+          ],
+          "status": "exact_source_boundary"
+        },
+        {
+          "operation": "assess_local_execution_boundary",
+          "path": "codex-rs/hepta-automation/src/lib.rs",
+          "symbols": [
+            "assess_local_taskflow_boundary",
+            "TaskFlowBoundaryAuthority",
+            "TaskFlowExecutionUnavailableV1"
+          ],
+          "status": "exact_source_boundary"
+        }
+      ],
+      "remainingBridges": [
+        "Freeze recurrence grammar and tzdb versions with executable DST gap, fold and revision fixtures.",
+        "Qualify scheduler leadership, lease fencing, missed-run policy and crash-after-dispatch recovery.",
+        "Bind the production feature profile and named step runner without granting generated skills execution authority."
+      ],
+      "claims": {
+        "productRuntimeQualified": false,
+        "providerExecutionProved": false,
+        "externalEffectProved": false,
+        "deploymentQualified": false,
+        "independentAcceptance": false,
+        "promotionAuthorized": false,
+        "releaseAuthorized": false
+      }
+    },
+    {
+      "module": "channel.matrix",
+      "guide": "docs/modules/channel.matrix/TECHNICAL.md",
+      "design": "qualification/module-execution-dossiers/detail/channel.matrix.md",
+      "roots": [
+        "codex-rs/hepta-matrix-sdk",
+        "codex-rs/hepta-matrixd"
+      ],
+      "lifecycleState": "source_mapped",
+      "currentCapability": "The Matrix SDK source implements bounded ingress and durable-outbox transport, while the daemon source bridges one enrolled room to the existing Agentd and App Server session path.",
+      "targetCapability": "A scoped Matrix channel with durable sync and send identities, redaction propagation, encrypted-session recovery, rate-limit handling and exact terminal delivery observations.",
+      "operationMappings": [
+        {
+          "operation": "ingest_and_dispatch_matrix_events",
+          "path": "codex-rs/hepta-matrix-sdk/src/lib.rs",
+          "symbols": [
+            "MatrixIngress",
+            "dispatch_outbox_once",
+            "MatrixSdkClient"
+          ],
+          "status": "exact_source_boundary"
+        },
+        {
+          "operation": "run_matrix_daemon_and_bridge_session",
+          "path": "codex-rs/hepta-matrixd/src/lib.rs",
+          "symbols": [
+            "run",
+            "MatrixRuntime",
+            "MatrixAppServerTransport"
+          ],
+          "status": "exact_source_boundary"
+        }
+      ],
+      "remainingBridges": [
+        "Freeze Matrix specification, SDK and homeserver compatibility and document E2EE key lifecycle and recovery.",
+        "Qualify sync-token, redaction, retry-after, poisoned-event and acknowledgement-loss behavior against a real homeserver.",
+        "Publish daemon service, credential permissions, migration and rollback procedures."
+      ],
+      "claims": {
+        "productRuntimeQualified": false,
+        "providerExecutionProved": false,
+        "externalEffectProved": false,
+        "deploymentQualified": false,
+        "independentAcceptance": false,
+        "promotionAuthorized": false,
+        "releaseAuthorized": false
+      }
+    },
+    {
+      "module": "browser.servo",
+      "guide": "docs/modules/browser.servo/TECHNICAL.md",
+      "design": "qualification/module-execution-dossiers/detail/browser.servo.md",
+      "roots": [
+        "apps/hepta-browser",
+        "third_party/servo-patches"
+      ],
+      "lifecycleState": "source_mapped",
+      "currentCapability": "The JavaScript source validates and projects authority-free navigation proposals and page observations; the Servo manifest pins upstream source but no production navigation caller is asserted.",
+      "targetCapability": "An isolated Servo-backed browser session with generation-bound observations, typed navigation and input actions, scoped credentials and reconciliation of unknown remote effects.",
+      "operationMappings": [
+        {
+          "operation": "build_navigation_intent",
+          "path": "apps/hepta-browser/src/browser.js",
+          "symbols": [
+            "buildNavigationIntent",
+            "buildLocalNavigationProposalFromCanonicalJson"
+          ],
+          "status": "exact_source_boundary"
+        },
+        {
+          "operation": "project_page_state",
+          "path": "apps/hepta-browser/src/browser.js",
+          "symbols": [
+            "projectPageState",
+            "projectPageStateFromLocalCanonicalJson"
+          ],
+          "status": "exact_source_boundary"
+        }
+      ],
+      "remainingBridges": [
+        "Implement and identify the real Servo process or library integration and its DOM and action protocol.",
+        "Qualify network, filesystem, DNS, proxy, download, origin and credential sandbox boundaries.",
+        "Run real Servo build, stale-element, navigation-race, crash and remote-effect reconciliation tests."
+      ],
+      "claims": {
+        "productRuntimeQualified": false,
+        "providerExecutionProved": false,
+        "externalEffectProved": false,
+        "deploymentQualified": false,
+        "independentAcceptance": false,
+        "promotionAuthorized": false,
+        "releaseAuthorized": false
+      }
+    },
+    {
+      "module": "ui.control",
+      "guide": "docs/modules/ui.control/TECHNICAL.md",
+      "design": "qualification/module-execution-dossiers/detail/ui.control.md",
+      "roots": [
+        "apps/hepta-control-ui"
+      ],
+      "lifecycleState": "source_mapped",
+      "currentCapability": "The control UI source provides authority-free runtime projections and operator request construction with bounded canonical JSON shadow entrypoints and Node tests.",
+      "targetCapability": "A production control client using generated versioned protocols, authenticated sessions, coherent state revisions, accessible emergency controls and deployable browser assets.",
+      "operationMappings": [
+        {
+          "operation": "project_runtime_view",
+          "path": "apps/hepta-control-ui/src/control.js",
+          "symbols": [
+            "projectRuntime",
+            "projectRuntimeFromLocalCanonicalJson"
+          ],
+          "status": "exact_source_boundary"
+        },
+        {
+          "operation": "build_operator_request",
+          "path": "apps/hepta-control-ui/src/control.js",
+          "symbols": [
+            "buildOperationIntent",
+            "buildLocalOperationProposalFromCanonicalJson"
+          ],
+          "status": "exact_source_boundary"
+        }
+      ],
+      "remainingBridges": [
+        "Select and pin the production framework, build pipeline, generated client and deployment artifact.",
+        "Implement authenticated session, routing, state management, CSP, error boundaries and sensitive-data presentation rules.",
+        "Qualify component, end-to-end, accessibility, localization and browser-compatibility behavior."
+      ],
+      "claims": {
+        "productRuntimeQualified": false,
+        "providerExecutionProved": false,
+        "externalEffectProved": false,
+        "deploymentQualified": false,
+        "independentAcceptance": false,
+        "promotionAuthorized": false,
+        "releaseAuthorized": false
+      }
+    },
+    {
+      "module": "ui.native",
+      "guide": "docs/modules/ui.native/TECHNICAL.md",
+      "design": "qualification/module-execution-dossiers/detail/ui.native.md",
+      "roots": [
+        "apps/hepta-native"
+      ],
+      "lifecycleState": "source_mapped",
+      "currentCapability": "The native UI source constructs payload-bound native-operation intents and refuses terminal success without a trusted backend receipt; it does not invoke host platform APIs.",
+      "targetCapability": "A signed native shell with scoped IPC, secure session storage, explicit platform permission decisions, accessible lifecycle handling and independently selected updates.",
+      "operationMappings": [
+        {
+          "operation": "build_native_operation_intent",
+          "path": "apps/hepta-native/src/native.js",
+          "symbols": [
+            "buildNativeIntent"
+          ],
+          "status": "exact_source_boundary"
+        },
+        {
+          "operation": "observe_native_outcome",
+          "path": "apps/hepta-native/src/native.js",
+          "symbols": [
+            "observeNativeOutcome"
+          ],
+          "status": "exact_source_boundary"
+        }
+      ],
+      "remainingBridges": [
+        "Select and pin the native shell framework and define the OS and architecture support matrix.",
+        "Implement IPC allowlists, secure storage, platform permissions, signing, notarization and update rollback.",
+        "Qualify crash recovery, request reconciliation, accessibility and release provenance on each target OS."
+      ],
+      "claims": {
+        "productRuntimeQualified": false,
+        "providerExecutionProved": false,
+        "externalEffectProved": false,
+        "deploymentQualified": false,
+        "independentAcceptance": false,
+        "promotionAuthorized": false,
+        "releaseAuthorized": false
+      }
+    }
+  ],
+  "repositoryBlockers": [
+    {
+      "id": "LB-P0-001-STATE-SOURCE",
+      "state": "closed_by_candidate",
+      "evidence": [
+        "docs/lane-b/LANE_B_CLOSURE.json",
+        "docs/lane-b/STATUS.md"
+      ]
+    },
+    {
+      "id": "LB-P0-002-RECEIPT-WORKFLOW",
+      "state": "closed_by_candidate",
+      "evidence": [
+        ".github/workflows/hepta-lane-b-closure.yml",
+        "docs/lane-b/LANE_B_CLOSURE.json"
+      ]
+    },
+    {
+      "id": "LB-P0-003-NATIVE-MAPPING",
+      "state": "closed_by_candidate",
+      "evidence": [
+        "qualification/module-execution-dossiers/NATIVE_BINDINGS.json",
+        "scripts/hepta-lane-b-closure.py"
+      ]
+    },
+    {
+      "id": "LB-P0-004-DEFAULT-BRANCH-CI",
+      "state": "closed_by_candidate",
+      "evidence": [
+        ".github/workflows/blocking-ci.yml",
+        ".github/workflows/postmerge-ci.yml"
+      ]
+    },
+    {
+      "id": "LB-P0-005-EXACT-CANDIDATE-EVIDENCE",
+      "state": "closed_by_candidate",
+      "evidence": [
+        ".github/workflows/hepta-lane-b-closure.yml"
+      ]
+    },
+    {
+      "id": "LB-P1-001-CURRENT-TARGET-BRIDGE",
+      "state": "closed_by_candidate",
+      "evidence": [
+        "docs/lane-b/README.md",
+        "docs/lane-b/LANE_B_CLOSURE.json"
+      ]
+    },
+    {
+      "id": "LB-P2-001-MACHINE-VERIFICATION",
+      "state": "closed_by_candidate",
+      "evidence": [
+        "scripts/hepta-lane-b-closure.py",
+        ".github/workflows/hepta-implementation-readiness.yml"
+      ]
+    }
+  ],
+  "externalGates": [
+    {
+      "id": "RDY-EXT-001",
+      "state": "external_evidence_required",
+      "repositoryMaySelfCertify": false
+    },
+    {
+      "id": "RDY-EXT-002",
+      "state": "external_evidence_required",
+      "repositoryMaySelfCertify": false
+    },
+    {
+      "id": "RDY-EXT-003",
+      "state": "external_evidence_required",
+      "repositoryMaySelfCertify": false
+    },
+    {
+      "id": "RDY-EXT-004",
+      "state": "external_evidence_required",
+      "repositoryMaySelfCertify": false
+    },
+    {
+      "id": "RDY-EXT-005",
+      "state": "external_evidence_required",
+      "repositoryMaySelfCertify": false
+    },
+    {
+      "id": "RDY-EXT-006",
+      "state": "external_evidence_required",
+      "repositoryMaySelfCertify": false
+    },
+    {
+      "id": "RDY-EXT-007",
+      "state": "external_evidence_required",
+      "repositoryMaySelfCertify": false
+    },
+    {
+      "id": "RDY-EXT-008",
+      "state": "external_evidence_required",
+      "repositoryMaySelfCertify": false
+    },
+    {
+      "id": "RDY-EXT-009",
+      "state": "external_evidence_required",
+      "repositoryMaySelfCertify": false
+    }
+  ],
+  "closureRule": "Repository-internal documentation, mapping and CI blockers may close only with exact candidate evidence. Product, provider, external-effect, deployment, operator, promotion and release claims require separate external receipts."
+}

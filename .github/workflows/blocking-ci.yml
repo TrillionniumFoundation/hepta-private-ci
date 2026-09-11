@@ -5,7 +5,9 @@ name: blocking-ci
 on:
   pull_request: {}
   push:
-    branches: [main]
+    branches:
+      - main
+      - integration/vnext-main-20260811
 
 permissions:
   contents: read
@@ -40,6 +42,11 @@ jobs:
     uses: ./.github/workflows/codespell.yml
     secrets: inherit
 
+  hepta-lane-b:
+    name: Hepta Lane B closure
+    uses: ./.github/workflows/hepta-lane-b-closure.yml
+    secrets: inherit
+
   repo-checks:
     name: repo-checks
     uses: ./.github/workflows/repo-checks.yml
@@ -65,6 +72,7 @@ jobs:
       - blob-size-policy
       - cargo-deny
       - codespell
+      - hepta-lane-b
       - repo-checks
       - rust-ci
       - sdk

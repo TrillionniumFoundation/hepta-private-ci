@@ -16,7 +16,7 @@ Read the stable module guide, its existing `detail/<module>.md`, the correspondi
 | `LEARNING_EXPERIMENT.md` | NDU, neural mechanisms, evaluator, artifacts |
 | `NATIVE_BINDINGS.json` | implementers and independent reviewers |
 
-The source observations in `NATIVE_BINDINGS.json` are deliberately bounded: five inspected source files, not forty proven deployments. The remaining native mappings must be produced by implementation packages. No source path, function name, digest or generated profile establishes a production call, physical effect or accepted capability.
+The source observations in `NATIVE_BINDINGS.json` are deliberately bounded: eighteen inspected source files, including complete source-file coverage for the eleven Lane B modules, not forty proven deployments. The remaining module mappings and every product caller must still be produced by implementation packages. No source path, function name, digest or generated profile establishes a production call, physical effect or accepted capability.
 
 ## 2. Separate entry and exit gates
 

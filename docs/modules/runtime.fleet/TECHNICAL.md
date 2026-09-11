@@ -239,3 +239,42 @@ Coding begins only with a current `CanonicalSourceReceiptV1`, a frozen contract/
 The following additional work packages are source-planning envelopes introduced by the readiness overlay; they do not imply implementation or activation:
 
 - `ASM-4-FEDERATED-ORGAN-ENROLLMENT`
+## 17. Lane B source inventory observation
+
+The declared source roots for `runtime.fleet` are present at the bound baseline:
+
+- `codex-rs/hepta-fleet`
+
+Exact paths and inspected symbols are recorded in `docs/lane-b/LANE_B_CLOSURE.json` and `qualification/module-execution-dossiers/NATIVE_BINDINGS.json`. The read-only gate `.github/workflows/hepta-lane-b-closure.yml` validates the exact source candidate, registered symbols, focused package tests and deterministic merge candidate. A source observation is not product execution, deployment qualification, independent acceptance, promotion or release evidence.
+
+## 18. Lane B current capability, native mapping and remaining gates
+
+<!-- generated: hepta-lane-b-closure -->
+
+This section is generated from `docs/lane-b/LANE_B_CLOSURE.json` and is the current Lane B status projection. It separates source observation from product execution and supersedes any broader interpretation of a source-location receipt.
+
+### Current source capability
+
+The fleet crate exposes the durable-style registry model, release metadata and a deterministic local allocation calculator over bounded host and resource vectors.
+
+### Target capability
+
+A fleet allocator that enrolls hosts, issues fenced resource leases, reconciles uncertain holders and preserves essential floors across failures and partitions.
+
+### Native source mapping
+
+| Design operation | Source path and symbols | Mapping disposition |
+|---|---|---|
+| `register_and_read_fleet_state` | `codex-rs/hepta-fleet/src/lib.rs` — `FleetRegistry`, `AgentRecord`, `FleetSnapshot` | `exact_source_boundary` |
+| `calculate_local_allocation` | `codex-rs/hepta-fleet/src/lib.rs` — `calculate_local_allocation_v1`, `LocalAllocationCalculationV1`, `LocalResourceVectorV1` | `exact_source_boundary` |
+| `bind_release_metadata` | `codex-rs/hepta-fleet/src/lib.rs` — `RegisteredRelease`, `AgentReleaseState`, `ReleaseMetadata` | `exact_source_boundary` |
+
+### Remaining bridges
+
+- Implement and document durable allocation-lease storage, renewal and fencing linearization.
+- Name the product caller that consumes allocation decisions and starts real resource holders.
+- Execute fairness, partition, clock-skew and capacity benchmarks on qualified hosts.
+
+### Evidence boundary
+
+The mapping above proves named source locations and symbols at the bound baseline. Exact-head and deterministic-merge CI must still pass for each candidate. It grants no model, provider, tool, network, filesystem, Matrix, platform, deployment, acceptance, promotion or release authority.

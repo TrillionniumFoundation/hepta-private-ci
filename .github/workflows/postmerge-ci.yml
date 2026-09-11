@@ -4,7 +4,9 @@ name: postmerge-ci
 # the merge-blocking suite. It keeps the broader postmerge signal in one run.
 on:
   push:
-    branches: [main]
+    branches:
+      - main
+      - integration/vnext-main-20260811
 
 permissions:
   contents: read

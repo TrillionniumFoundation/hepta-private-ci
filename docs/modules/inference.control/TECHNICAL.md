@@ -343,11 +343,42 @@ Consumed readiness protocols:
 
 Coding begins only with a current `CanonicalSourceReceiptV1`, a frozen contract/readiness digest, the existing bounded work-package envelope, defined mandatory fixtures, deterministic fallback and zero authority delta. This overlay closes documentation ambiguity only; it does not change source status, activation, acceptance, selection, promotion or release.
 
-## 17. Source implementation receipt
+## 17. Lane B source inventory observation
 
-The bootstrap source-location obligation for `inference.control` is implemented by work package `P0.7B-B1A-PROVIDER-BOUNDARY` in:
+The declared source roots for `inference.control` are present at the bound baseline:
 
 - `codex-rs/hepta-infer-core`
 - `codex-rs/hepta-inferd`
 
-The source candidate is checked by `.github/workflows/hepta-gap-closure.yml`, including closed-world inventory, package tests, all-target compilation, strict Clippy and clean tracked state. This receipt is source implementation evidence only. It grants no runtime, production-writer, model-provider, external-effect, independent-acceptance, selection, promotion, merge or release authority.
+Exact paths and inspected symbols are recorded in `docs/lane-b/LANE_B_CLOSURE.json` and `qualification/module-execution-dossiers/NATIVE_BINDINGS.json`. The read-only gate `.github/workflows/hepta-lane-b-closure.yml` validates the exact source candidate, registered symbols, focused package tests and deterministic merge candidate. A source observation is not product execution, deployment qualification, independent acceptance, promotion or release evidence.
+
+## 18. Lane B current capability, native mapping and remaining gates
+
+<!-- generated: hepta-lane-b-closure -->
+
+This section is generated from `docs/lane-b/LANE_B_CLOSURE.json` and is the current Lane B status projection. It separates source observation from product execution and supersedes any broader interpretation of a source-location receipt.
+
+### Current source capability
+
+The control sources provide an in-memory request and reservation state machine plus an exact-bound dispatch plan over request, reservation, lease and model digests.
+
+### Target capability
+
+A durable inference control plane with quota reservation, deterministic worker selection, outbox dispatch, cancellation settlement and reconciliation of unknown usage.
+
+### Native source mapping
+
+| Design operation | Source path and symbols | Mapping disposition |
+|---|---|---|
+| `submit_reserve_complete_or_cancel_request` | `codex-rs/hepta-infer-core/src/lib.rs` — `InferenceLedger`, `InferenceRequest`, `LedgerReceipt` | `exact_source_boundary` |
+| `plan_digest_bound_worker_dispatch` | `codex-rs/hepta-inferd/src/lib.rs` — `plan`, `DispatchRequest`, `DispatchPlan` | `exact_source_boundary` |
+
+### Remaining bridges
+
+- Replace process-memory state with a declared durable schema, transaction/outbox and recovery protocol.
+- Compose a named scheduler caller and independently authorized provider-dispatch adapter.
+- Implement quota settlement, cancellation races and unknown-consumption reconciliation with executable fault tests.
+
+### Evidence boundary
+
+The mapping above proves named source locations and symbols at the bound baseline. Exact-head and deterministic-merge CI must still pass for each candidate. It grants no model, provider, tool, network, filesystem, Matrix, platform, deployment, acceptance, promotion or release authority.

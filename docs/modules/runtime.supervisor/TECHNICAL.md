@@ -331,3 +331,42 @@ The following additional work packages are source-planning envelopes introduced 
 - `ASM-1-DISCOVERY-MANIFEST`
 - `ASM-2-DEBIAN-BRIDGE-SANDBOX`
 - `EMB-2-REFLEX-MOTOR-ACTUATION`
+## 17. Lane B source inventory observation
+
+The declared source roots for `runtime.supervisor` are present at the bound baseline:
+
+- `codex-rs/hepta-supervisor`
+
+Exact paths and inspected symbols are recorded in `docs/lane-b/LANE_B_CLOSURE.json` and `qualification/module-execution-dossiers/NATIVE_BINDINGS.json`. The read-only gate `.github/workflows/hepta-lane-b-closure.yml` validates the exact source candidate, registered symbols, focused package tests and deterministic merge candidate. A source observation is not product execution, deployment qualification, independent acceptance, promotion or release evidence.
+
+## 18. Lane B current capability, native mapping and remaining gates
+
+<!-- generated: hepta-lane-b-closure -->
+
+This section is generated from `docs/lane-b/LANE_B_CLOSURE.json` and is the current Lane B status projection. It separates source observation from product execution and supersedes any broader interpretation of a source-location receipt.
+
+### Current source capability
+
+The Rust crate exposes the supervisor daemon, process driver, control client, lifecycle snapshots and signed mutation boundary while explicitly excluding model-turn execution.
+
+### Target capability
+
+A generation-fenced supervisor that starts, observes, drains and reloads selected runtime instances under bounded readiness, resource and rollback policy.
+
+### Native source mapping
+
+| Design operation | Source path and symbols | Mapping disposition |
+|---|---|---|
+| `start_instance_and_supervise_generation` | `codex-rs/hepta-supervisor/src/lib.rs` — `Supervisor`, `ProcessDriver`, `run_supervisord` | `partial_source_boundary` |
+| `observe_health_and_control_epoch` | `codex-rs/hepta-supervisor/src/lib.rs` — `SupervisordHealth`, `SupervisordClient`, `SupervisorEpoch` | `exact_source_boundary` |
+| `drain_or_change_release` | `codex-rs/hepta-supervisor/src/lib.rs` — `AgentCommand`, `AgentRelease`, `TickReport` | `partial_source_boundary` |
+
+### Remaining bridges
+
+- Bind each design operation to exact methods and named product callers.
+- Publish the physical persistence schema, migration identifiers and writer-fencing recovery proof.
+- Qualify service deployment, restart storms, drain deadlines and rollback on target hosts.
+
+### Evidence boundary
+
+The mapping above proves named source locations and symbols at the bound baseline. Exact-head and deterministic-merge CI must still pass for each candidate. It grants no model, provider, tool, network, filesystem, Matrix, platform, deployment, acceptance, promotion or release authority.
