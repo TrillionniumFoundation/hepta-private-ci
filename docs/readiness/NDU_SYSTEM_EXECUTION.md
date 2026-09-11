@@ -68,7 +68,9 @@ complete-contribution validation
 
 A hard violation, risk-ceiling breach or resource-ceiling breach removes a candidate before utility ranking. Abstain must remain present and feasible. If all effectful candidates fail, the outcome is explicit abstain rather than a negative-utility fiction.
 
-Each utility axis has a non-negative absolute Pareto tolerance. Candidate `a` dominates candidate `b` only when `a` is not worse beyond tolerance on every axis and is better beyond tolerance on at least one axis. The normalized tolerance vector is part of the evaluation-policy digest.
+Each utility axis has a non-negative absolute Pareto tolerance. Candidate `a` dominates candidate `b` only when `a` is no worse on every axis and improves at least one axis by strictly more than that axis's tolerance. Tolerance never permits deterioration on another axis. This is an irreflexive, transitive relation: both comparisons preserve each weak inequality, and the first comparison's strict improvement survives their composition. A finite nonempty feasible set therefore has a nonempty frontier; equivalent or near-equal candidates may remain incomparable.
+
+The normalized tolerance vector is part of the evaluation-policy digest, whose domain is now `hepta.ndu.evaluation-policy.v2`. Historical V1 policy digests identify the old relation and must not be relabeled as V2; replay requiring the corrected semantics must produce a new policy/evaluation binding. The zero-tolerance compatibility API retains its exact-Pareto behavior and base receipt format.
 
 Scalarization is permitted only when every registered utility axis has one weight, each weight lies in `[0,1]`, and the exact Q32 sum is one. A tie produces a slow-path disposition, not an arbitrary ID-based winner. Without scalarization, multiple non-dominated candidates return the Pareto set and no advisory recommendation.
 

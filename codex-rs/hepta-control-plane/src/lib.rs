@@ -13,6 +13,7 @@ mod organ_graph;
 mod organ_runtime;
 mod planner;
 mod planner_journal;
+mod planner_ndu;
 #[path = "embodiment/timing.rs"]
 mod timing;
 
@@ -74,6 +75,11 @@ pub use planner_journal::PlannerJournalEntryV1;
 pub use planner_journal::PlannerJournalError;
 pub use planner_journal::PlannerJournalKindV1;
 pub use planner_journal::PlannerJournalV1;
+pub use planner_ndu::EvaluatedPlanV1;
+pub use planner_ndu::NduPlanningError;
+pub use planner_ndu::NduPlanningInputV1;
+pub use planner_ndu::canonical_ndu_planning_policy_digest;
+pub use planner_ndu::evaluate_prepared_plan_with_ndu;
 pub use timing::FixedPriorityTaskV1;
 pub use timing::TimingError;
 pub use timing::fixed_priority_response_times;
