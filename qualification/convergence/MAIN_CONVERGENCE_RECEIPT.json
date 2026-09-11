@@ -1,0 +1,52 @@
+{
+  "schema": "hepta.main-convergence-validation-request.v1",
+  "schemaVersion": 1,
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "canonicalPlan": "docs/DEVELOPMENT.md",
+  "parentMain": {
+    "commit": "41878c3b81a75e721cbbcf5cf7a4e45d094deaeb",
+    "tree": "389b62adbda417685f7af1142288e58396a30162"
+  },
+  "purpose": "Bind the post-all-branch-convergence working tree to fresh exact-head verification before treating main as the sole development and integration tree.",
+  "sourcePolicy": {
+    "exactHeadResolvedFromGit": true,
+    "branchNameIsNotAuthority": true,
+    "historicalHeadsRetainedByAncestryOnly": true,
+    "ancestorBranchesMustNotBeMergedAgain": true,
+    "workingTreeSelection": "main"
+  },
+  "requiredRepositoryControlledVerification": [
+    "blocking-ci",
+    "v8-canary",
+    "Hepta development documents",
+    "Hepta pre-coding implementation readiness",
+    "Hepta repository integrity",
+    "Lane A foundation truth and native qualification",
+    "Hepta Lane B source closure",
+    "Hepta Lane D semantic conformance",
+    "Hepta Lane E gap closure",
+    "Hepta Lane F shadow qualification",
+    "Hepta consolidated source qualification (read-only)"
+  ],
+  "externalGatesRetained": [
+    "independent acceptance",
+    "external-owner consent",
+    "real provider/model usage evidence",
+    "target-host performance and fault qualification",
+    "hardware and physical safety qualification",
+    "future-window longitudinal efficacy",
+    "production deployment and signing/notarization",
+    "selection, promotion and release authority"
+  ],
+  "authority": {
+    "productionActivation": false,
+    "modelInvocationAuthority": false,
+    "providerDispatchAuthority": false,
+    "productionWriterAuthorityAdded": false,
+    "automaticSelection": false,
+    "automaticPromotion": false,
+    "automaticRelease": false,
+    "autonomousPropagation": false
+  },
+  "closureRule": "Repository-controlled gaps may close only from fresh exact-head executable evidence. External or independent gates remain explicit and may not be self-certified by this receipt or by CI."
+}
