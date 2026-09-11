@@ -1,0 +1,93 @@
+{
+  "schema": "hepta.module-implementation-map.v2",
+  "schemaVersion": 2,
+  "sourceBase": {
+    "commit": "f278a89eea18fccb6d37b876aa5679863a64139d",
+    "tree": "5baa144717d4b3e3c596501fb56ce911d009e728"
+  },
+  "laneId": "LANE-B-RUNTIME",
+  "module": "runtime.fleet",
+  "sourceMaturity": "native_ledger_and_allocator",
+  "declaredRoots": [
+    "codex-rs/hepta-fleet"
+  ],
+  "resolvedRoots": [
+    "codex-rs/hepta-fleet"
+  ],
+  "stateOwnerDisposition": "Owns coherent host enrollment and allocation-lease records; consumers enforce grants locally.",
+  "terminalObserverDisposition": "Current-fence reconciliation records the observed holder disposition; pure allocation arithmetic cannot self-attest use.",
+  "operations": [
+    {
+      "designOperation": "admit_host",
+      "mappingClass": "owner_native",
+      "ownerEntrypoint": {
+        "role": "owner_entrypoint",
+        "path": "codex-rs/hepta-fleet/src/bin/hepta-fleet-leased.rs",
+        "symbol": "pub fn admit_host(",
+        "buildTarget": "hepta-fleet-leased"
+      },
+      "delegatedCallees": [],
+      "tests": [
+        {
+          "path": "codex-rs/hepta-fleet/src/bin/hepta-fleet-leased.rs",
+          "kind": "native_unit",
+          "command": "cargo test -p codex-hepta-fleet --bin hepta-fleet-leased"
+        }
+      ],
+      "sourceSemantics": "Admits an explicitly enrolled host with generation, capacity, epoch, and failure-domain identity."
+    },
+    {
+      "designOperation": "allocate",
+      "mappingClass": "owner_native",
+      "ownerEntrypoint": {
+        "role": "owner_entrypoint",
+        "path": "codex-rs/hepta-fleet/src/bin/hepta-fleet-leased.rs",
+        "symbol": "pub fn issue(",
+        "buildTarget": "hepta-fleet-leased"
+      },
+      "delegatedCallees": [],
+      "tests": [
+        {
+          "path": "codex-rs/hepta-fleet/src/bin/hepta-fleet-leased.rs",
+          "kind": "conservation_and_fencing",
+          "command": "cargo test -p codex-hepta-fleet --bin hepta-fleet-leased"
+        }
+      ],
+      "sourceSemantics": "Issues bounded allocation leases only after capacity, floors, freshness, and generation checks."
+    },
+    {
+      "designOperation": "renew_or_revoke",
+      "mappingClass": "owner_native",
+      "ownerEntrypoint": {
+        "role": "owner_entrypoint",
+        "path": "codex-rs/hepta-fleet/src/bin/hepta-fleet-leased.rs",
+        "symbol": "pub fn renew_or_revoke(",
+        "buildTarget": "hepta-fleet-leased"
+      },
+      "delegatedCallees": [],
+      "tests": [
+        {
+          "path": "codex-rs/hepta-fleet/src/bin/hepta-fleet-leased.rs",
+          "kind": "lease_recovery",
+          "command": "cargo test -p codex-hepta-fleet --bin hepta-fleet-leased"
+        }
+      ],
+      "sourceSemantics": "Renews, revokes, or quarantines a lease under current epoch and holder reconciliation."
+    }
+  ],
+  "repositoryControlledGaps": [],
+  "externalEvidenceGates": [
+    "real enrolled host capacity observation",
+    "non-test local grant enforcement",
+    "partition and lease-expiry target qualification"
+  ],
+  "claimBoundary": {
+    "nativeSourceMappingComplete": true,
+    "repositoryControlledDocumentationGapsClosed": true,
+    "repositoryControlledMappingGapsClosed": true,
+    "repositoryControlledSourceBoundaryGapsClosed": true,
+    "productExecutionComplete": false,
+    "deploymentQualificationComplete": false,
+    "independentAcceptanceComplete": false
+  }
+}
