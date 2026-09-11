@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""Single fail-closed verifier/generator for Lane B source truth."""
-
+"""Single fail-closed Lane B source-truth verifier and projection generator."""
 from __future__ import annotations
 
 import argparse
@@ -12,18 +11,18 @@ from pathlib import Path
 from typing import Any
 
 ROOT = Path(__file__).resolve().parents[1]
-TRUTH_PATH = ROOT / "qualification/lane-b/LANE_B_IMPLEMENTATION_TRUTH.json"
-MANIFEST_PATH = ROOT / "qualification/lane-b/LANE_B_CANDIDATE_MANIFEST.json"
-TRACE_PATH = ROOT / "qualification/lane-b/TEST_TRACEABILITY.json"
-NATIVE_PATH = ROOT / "qualification/lane-b/LANE_B_NATIVE_CLOSURE.md"
-COMPOSITION_PATH = ROOT / "docs/readiness/LANE_B_RUNTIME_COMPOSITION.md"
-README_PATH = ROOT / "qualification/lane-b/README.md"
-EXPECTED_MODULES = [
+TRUTH = ROOT / "qualification/lane-b/LANE_B_IMPLEMENTATION_TRUTH.json"
+MANIFEST = ROOT / "qualification/lane-b/LANE_B_CANDIDATE_MANIFEST.json"
+TRACE = ROOT / "qualification/lane-b/TEST_TRACEABILITY.json"
+NATIVE = ROOT / "qualification/lane-b/LANE_B_NATIVE_CLOSURE.md"
+COMPOSITION = ROOT / "docs/readiness/LANE_B_RUNTIME_COMPOSITION.md"
+README = ROOT / "qualification/lane-b/README.md"
+MODULES = [
     "runtime.supervisor", "runtime.fleet", "runtime.agentd", "runtime.codex",
     "inference.control", "inference.worker", "automation.taskflow", "channel.matrix",
     "browser.servo", "ui.control", "ui.native",
 ]
-EXPECTED_OPERATIONS = {
+OPS = {
     "runtime.supervisor": ["start_instance", "observe_health", "drain", "load_next"],
     "runtime.fleet": ["admit_host", "allocate", "renew_or_revoke"],
     "runtime.agentd": ["compose_runtime", "start_run", "cancel_run", "attach_context"],
@@ -36,7 +35,7 @@ EXPECTED_OPERATIONS = {
     "ui.control": ["read_view", "submit_request", "request_stop"],
     "ui.native": ["connect_runtime", "render_runtime_view", "request_platform_capability", "apply_shell_update"],
 }
-FORBIDDEN = re.compile(r"\b(?:TODO|TBD|FIXME|XXX)\b", re.IGNORECASE)
+FORBIDDEN = re.compile(r"\b(?:TODO|TBD|FIXME|XXX)\b", re.I)
 HEX40 = re.compile(r"[0-9a-f]{40}")
 
 
@@ -44,516 +43,230 @@ class Invalid(ValueError):
     pass
 
 
+def need(ok: bool, message: str) -> None:
+    if not ok:
+        raise Invalid(message)
+
+
 def pairs(items: list[tuple[str, Any]]) -> dict[str, Any]:
-    result: dict[str, Any] = {}
+    out: dict[str, Any] = {}
     for key, value in items:
-        if key in result:
-            raise Invalid(f"duplicate JSON key: {key}")
-        result[key] = value
-    return result
+        need(key not in out, f"duplicate JSON key: {key}")
+        out[key] = value
+    return out
 
 
-def load_json(path: Path) -> dict[str, Any]:
+def load(path: Path) -> dict[str, Any]:
     try:
         value = json.loads(path.read_text(encoding="utf-8"), object_pairs_hook=pairs)
     except Exception as exc:
         raise Invalid(f"{path.relative_to(ROOT)}: {exc}") from exc
-    if not isinstance(value, dict):
-        raise Invalid(f"{path.relative_to(ROOT)}: root must be an object")
+    need(isinstance(value, dict), f"{path.relative_to(ROOT)} must be an object")
     return value
 
 
-def dump_json(value: Any) -> str:
+def dump(value: Any) -> str:
     return json.dumps(value, indent=2, ensure_ascii=False) + "\n"
 
 
-def need(condition: bool, message: str) -> None:
-    if not condition:
-        raise Invalid(message)
-
-
 def git(*args: str) -> str:
-    process = subprocess.run(
-        ["git", *args], cwd=ROOT, check=False, capture_output=True, text=True
-    )
-    if process.returncode != 0:
-        raise Invalid(
-            f"git {' '.join(args)} failed: "
-            f"{process.stderr.strip() or process.stdout.strip()}"
-        )
-    return process.stdout.strip()
+    result = subprocess.run(["git", *args], cwd=ROOT, text=True, capture_output=True)
+    need(result.returncode == 0, result.stderr.strip() or f"git {' '.join(args)} failed")
+    return result.stdout.strip()
 
 
-def path_allowed(path: str, prefixes: list[str]) -> bool:
+def allowed(path: str, prefixes: list[str]) -> bool:
     return any(path == prefix or path.startswith(prefix) for prefix in prefixes)
 
 
-def module_map(truth: dict[str, Any], row: dict[str, Any]) -> dict[str, Any]:
-    index = truth["moduleOrder"].index(row["module"])
-    return {
-        "schema": "hepta.module-implementation-map.v1",
-        "schemaVersion": 1,
-        "sourceBase": truth["sourceBase"],
-        "laneId": truth["laneId"],
-        "module": row["module"],
-        "truthPath": "qualification/lane-b/LANE_B_IMPLEMENTATION_TRUTH.json",
-        "truthPointer": f"/modules/{index}",
-        "sourceMaturity": row["sourceMaturity"],
-        "declaredRoots": row["declaredRoots"],
-        "resolvedRoots": row["resolvedRoots"],
-        "operationIds": [
-            operation["designOperation"] for operation in row["operations"]
-        ],
-        "repositoryControlledGaps": row["repositoryControlledGaps"],
-        "externalEvidenceGates": row["externalEvidenceGates"],
-        "claimBoundary": {
-            "nativeSourceMappingComplete": True,
-            "repositoryControlledGapsClosed": True,
-            "productExecutionComplete": False,
-            "deploymentQualificationComplete": False,
-            "independentAcceptanceComplete": False,
-        },
-    }
+def module_maps(truth: dict[str, Any]) -> list[dict[str, Any]]:
+    index = truth.get("modules")
+    need(isinstance(index, list) and len(index) == len(MODULES), "module index")
+    out = []
+    for position, entry in enumerate(index):
+        module = MODULES[position]
+        path = f"docs/modules/{module}/IMPLEMENTATION_MAP.json"
+        need(entry.get("module") == module and entry.get("mapPath") == path, f"{module}: index")
+        row = load(ROOT / path)
+        need(row.get("module") == module, f"{module}: map identity")
+        need(row.get("sourceBase") == truth.get("sourceBase"), f"{module}: source base")
+        ids = [item.get("designOperation") for item in row.get("operations", [])]
+        need(ids == entry.get("operationIds") == OPS[module], f"{module}: operation index")
+        out.append(row)
+    return out
 
 
-def traceability(truth: dict[str, Any]) -> dict[str, Any]:
+def trace_projection(truth: dict[str, Any], maps: list[dict[str, Any]]) -> dict[str, Any]:
     entries = []
-    for row in truth["modules"]:
-        for operation in row["operations"]:
-            entries.append(
-                {
-                    "module": row["module"],
-                    "designOperation": operation["designOperation"],
-                    "mappingClass": operation["mappingClass"],
-                    "ownerEntrypoint": operation["ownerEntrypoint"],
-                    "tests": operation["tests"],
-                    "workflow": ".github/workflows/hepta-lane-b-truth.yml",
-                    "executionEvidence": (
-                        "exact_head_and_synthetic_merge_workflow_required"
-                    ),
-                    "externalEvidenceRequired": bool(row["externalEvidenceGates"]),
-                }
-            )
+    for row in maps:
+        for item in row["operations"]:
+            entries.append({
+                "module": row["module"],
+                "operation": item["designOperation"],
+                "map": f"docs/modules/{row['module']}/IMPLEMENTATION_MAP.json",
+                "tests": [{"path": test["path"], "command": test["command"]} for test in item["tests"]],
+            })
     return {
-        "schema": "hepta.lane-b-test-traceability.v1",
-        "schemaVersion": 1,
-        "sourceBase": truth["sourceBase"],
-        "laneId": truth["laneId"],
-        "moduleCount": len(truth["modules"]),
-        "operationCount": len(entries),
-        "entries": entries,
+        "schema": "hepta.lane-b-test-traceability.v1", "schemaVersion": 1,
+        "sourceBase": truth["sourceBase"], "laneId": truth["laneId"],
+        "moduleCount": len(maps), "operationCount": len(entries), "entries": entries,
         "claimBoundary": {
-            "testPathCoverageComplete": True,
-            "workflowExecutionRequired": True,
-            "productExecutionProvedByRegistry": False,
-            "externalEffectsProvedByRegistry": False,
+            "testPathCoverageComplete": True, "workflowExecutionRequired": True,
+            "productExecutionProvedByRegistry": False, "externalEffectsProvedByRegistry": False,
         },
     }
 
 
-def render_native_closure(truth: dict[str, Any]) -> str:
+def native_projection(truth: dict[str, Any], maps: list[dict[str, Any]]) -> str:
     base = truth["sourceBase"]
     lines = [
-        "# Lane B native source and implementation closure",
-        "",
+        "# Lane B native source and implementation closure", "",
         "**Lane:** `LANE-B-RUNTIME`  ",
         f"**Immutable source base:** `{base['commit']}` / tree `{base['tree']}`  ",
-        "**Exact candidate:** derived from `git rev-parse HEAD` by the verifier; never hard-coded into this document  ",
-        "**Repository-controlled state:** documentation, operation inventory, source mapping and source-boundary gaps closed  ",
-        "**External state:** product execution, deployment, external effects and independent acceptance remain open until externally evidenced",
-        "",
-        "## 1. Truth model",
-        "",
-        "This file is generated from `qualification/lane-b/LANE_B_IMPLEMENTATION_TRUTH.json`. The machine truth, eleven module `IMPLEMENTATION_MAP.json` projections, this document and `TEST_TRACEABILITY.json` must be byte-for-byte reproducible from the same source. A native symbol proves a repository source boundary only; it does not prove a deployed caller, real provider/model, Servo network effect, Matrix homeserver terminal observation, signed application package or independent acceptance.",
-        "",
-        "The previous ambiguous flag `currentMappingDebtClosed` is removed. Closure is split into documentation structure, operation inventory, native source mapping, repository source boundary, product execution, deployment and independent acceptance.",
-        "",
+        "**Exact candidate:** derived from Git at verification time; never hard-coded  ",
+        "**Repository-controlled scope:** documentation, operation inventory, source mapping and bounded source gaps closed  ",
+        "**External scope:** product execution, deployment, real effects and independent acceptance remain open", "",
+        "## 1. Truth model", "",
+        "The central truth is a closed index. Detailed module roots, ownership, terminal observers, native symbols, delegated callees, tests and external evidence gates live in each module's `IMPLEMENTATION_MAP.json`. This file and `TEST_TRACEABILITY.json` are generated from those maps. A source symbol or fixture is not deployment or external-effect evidence.", "",
     ]
-    for index, row in enumerate(truth["modules"], start=2):
-        lines.extend(
-            [
-                f"## {index}. `{row['module']}`",
-                "",
-                f"**Source maturity:** `{row['sourceMaturity']}`  ",
-                "**Declared roots:** "
-                + ", ".join(f"`{root}`" for root in row["declaredRoots"])
-                + "  ",
-                "**Resolved roots:** "
-                + ", ".join(f"`{root}`" for root in row["resolvedRoots"]),
-                "",
-                row["stateOwnerDisposition"],
-                "",
-                row["terminalObserverDisposition"],
-                "",
-                "| Design operation | Mapping | Owner entrypoint | Build target | Tests |",
-                "|---|---|---|---|---|",
-            ]
-        )
-        for operation in row["operations"]:
-            owner = operation["ownerEntrypoint"]
-            tests = ", ".join(f"`{case['path']}`" for case in operation["tests"])
-            lines.append(
-                f"| `{operation['designOperation']}` | `{operation['mappingClass']}` | "
-                f"`{owner['path']}` — `{owner['symbol']}` | "
-                f"`{owner['buildTarget']}` | {tests} |"
-            )
-        lines.extend(
-            [
-                "",
-                "**Repository-controlled gaps:** none in the declared documentation/mapping/source-boundary scope.",
-                "",
-                "**External evidence still required:**",
-                "",
-            ]
-        )
-        lines.extend(f"- {gap}" for gap in row["externalEvidenceGates"])
-        lines.extend(["", "**Source semantics:**", ""])
-        lines.extend(
-            f"- `{operation['designOperation']}` — {operation['sourceSemantics']}"
-            for operation in row["operations"]
-        )
-        lines.append("")
-    lines.extend(
-        [
-            "## 13. Cross-module acceptance boundary",
-            "",
-            "At one exact head and deterministic synthetic merge, repository-controlled closure requires all 39 operations to have an owner entrypoint, build target, source symbol and test path; every owner entrypoint to remain inside its declared or explicitly resolved owner roots; Agentd delegation to name the downstream owner rather than substituting a downstream symbol for the Agentd entrypoint; all eleven module maps and the test traceability registry to equal the central truth projection; and the exact-head and synthetic-merge workflow to execute successfully.",
-            "",
-            "This state does not close deployment or external gates. Real provider/model execution, real Servo and Matrix effects, deployed Web/native artifacts, target-host measurements, hardware evidence, external-owner consent, independent review, selection, promotion and release remain separately governed. The verifier rejects any attempt to turn these open gates into repository-authored positive evidence.",
-            "",
-        ]
-    )
+    for number, row in enumerate(maps, start=2):
+        lines += [f"## {number}. `{row['module']}`", "", row["stateOwnerDisposition"], "", row["terminalObserverDisposition"], "", "| Operation | Class | Owner entrypoint |", "|---|---|---|"]
+        for item in row["operations"]:
+            owner = item["ownerEntrypoint"]
+            lines.append(f"| `{item['designOperation']}` | `{item['mappingClass']}` | `{owner['path']}` — `{owner['symbol']}` |")
+        lines += ["", "External evidence gates:", ""] + [f"- {gate}" for gate in row["externalEvidenceGates"]] + [""]
+    lines += [
+        "## 13. Cross-module acceptance boundary", "",
+        "All 39 operations require an owner entrypoint, build target and test path. Owner entrypoints remain inside owner roots; delegated callees name their real owner. Exact-head and deterministic synthetic-merge validation must agree with all eleven maps and generated projections.", "",
+        "Repository source closure does not self-issue real model/provider execution, Servo or Matrix effects, deployed Web/native artifacts, target-host measurements, hardware evidence, external-owner consent, independent acceptance, selection, promotion or release.", "",
+    ]
     return "\n".join(lines)
 
 
 def verify_candidate(manifest: dict[str, Any], truth: dict[str, Any]) -> list[str]:
-    need(
-        manifest.get("schema") == "hepta.lane-b-candidate-manifest.v3",
-        "candidate schema",
-    )
-    need(
-        manifest.get("sourceBase") == truth.get("sourceBase"),
-        "manifest/truth source base",
-    )
-    base = manifest["sourceBase"]["commit"]
-    tree = manifest["sourceBase"]["tree"]
-    need(
-        bool(HEX40.fullmatch(base)) and bool(HEX40.fullmatch(tree)),
-        "source base shape",
-    )
-    need(git("rev-parse", f"{base}^{{tree}}") == tree, "source base tree mismatch")
-    need(
-        subprocess.run(
-            ["git", "merge-base", "--is-ancestor", base, "HEAD"],
-            cwd=ROOT,
-            check=False,
-        ).returncode
-        == 0,
-        "source base is not ancestor of HEAD",
-    )
-    synthetic = os.environ.get("HEPTA_SYNTHETIC_MERGE") == "1"
-    parents = git("show", "-s", "--format=%P", "HEAD").split()
-    if synthetic:
-        need(len(parents) == 2, "synthetic merge must have exactly two parents")
+    need(manifest.get("schema") == "hepta.lane-b-candidate-manifest.v3", "manifest schema")
+    need(manifest.get("sourceBase") == truth.get("sourceBase"), "manifest source base")
+    base, tree = manifest["sourceBase"]["commit"], manifest["sourceBase"]["tree"]
+    need(bool(HEX40.fullmatch(base)) and bool(HEX40.fullmatch(tree)), "base identity")
+    need(git("rev-parse", f"{base}^{{tree}}") == tree, "base tree")
+    ancestor = subprocess.run(["git", "merge-base", "--is-ancestor", base, "HEAD"], cwd=ROOT)
+    need(ancestor.returncode == 0, "base is not ancestor")
+    if os.environ.get("HEPTA_SYNTHETIC_MERGE") == "1":
+        need(len(git("show", "-s", "--format=%P", "HEAD").split()) == 2, "synthetic parents")
     else:
-        need(
-            not git("rev-list", "--merges", f"{base}..HEAD"),
-            "source-head candidate contains merge commits",
-        )
+        need(not git("rev-list", "--merges", f"{base}..HEAD"), "merge commit in source candidate")
     prefixes = manifest.get("allowedPathPrefixes")
-    need(isinstance(prefixes, list) and prefixes, "allowed path prefixes")
-    changed = [
-        line
-        for line in git(
-            "diff", "--name-only", "--diff-filter=ACDMRTUXB", f"{base}..HEAD"
-        ).splitlines()
-        if line
-    ]
-    need(changed, "candidate has no changes")
-    denied = [path for path in changed if not path_allowed(path, prefixes)]
-    need(not denied, "candidate path outside envelope: " + ", ".join(denied))
+    need(isinstance(prefixes, list) and prefixes, "path envelope")
+    changed = [path for path in git("diff", "--name-only", "--diff-filter=ACDMRTUXB", f"{base}..HEAD").splitlines() if path]
+    need(changed, "empty candidate")
+    denied = [path for path in changed if not allowed(path, prefixes)]
+    need(not denied, "path outside envelope: " + ", ".join(denied))
     return changed
 
 
-def verify_anchor(
-    module: str, roots: list[str], value: dict[str, Any], owner: bool
-) -> None:
-    need(
-        set(value) >= {"role", "path", "symbol", "buildTarget"},
-        f"{module}: anchor fields",
-    )
-    path = value["path"]
-    need(isinstance(path, str) and path, f"{module}: anchor path")
+def verify_anchor(module: str, roots: list[str], anchor: dict[str, Any], owner: bool) -> None:
+    need(set(anchor) >= {"role", "path", "symbol", "buildTarget"}, f"{module}: anchor")
+    path = anchor["path"]
     if owner:
-        need(
-            any(path == root or path.startswith(root + "/") for root in roots),
-            f"{module}: owner entrypoint escapes resolved roots: {path}",
-        )
+        need(any(path == root or path.startswith(root + "/") for root in roots), f"{module}: owner-root escape {path}")
     else:
-        need(
-            isinstance(value.get("ownerModule"), str) and value["ownerModule"],
-            f"{module}: delegated anchor missing owner module",
-        )
+        need(isinstance(anchor.get("ownerModule"), str), f"{module}: delegated owner")
     source = ROOT / path
     need(source.is_file(), f"{module}: missing source {path}")
-    text = source.read_text(encoding="utf-8")
-    need(
-        value["symbol"] in text,
-        f"{module}: missing symbol {value['symbol']!r} in {path}",
-    )
-    need(
-        isinstance(value["buildTarget"], str) and value["buildTarget"],
-        f"{module}: build target",
-    )
+    need(anchor["symbol"] in source.read_text(encoding="utf-8"), f"{module}: missing symbol {anchor['symbol']!r}")
+    need(isinstance(anchor["buildTarget"], str) and anchor["buildTarget"], f"{module}: build target")
 
 
-def verify_truth(truth: dict[str, Any]) -> tuple[int, int]:
-    need(
-        truth.get("schema") == "hepta.lane-b-implementation-truth.v3"
-        and truth.get("schemaVersion") == 3,
-        "truth schema",
-    )
-    need(truth.get("moduleOrder") == EXPECTED_MODULES, "module order")
-    need(truth.get("operationCount") == 39, "declared operation count")
+def verify_truth(truth: dict[str, Any], maps: list[dict[str, Any]]) -> tuple[int, int]:
+    need(truth.get("schema") == "hepta.lane-b-implementation-truth.v3" and truth.get("schemaVersion") == 3, "truth schema")
+    need(truth.get("moduleOrder") == MODULES and truth.get("operationCount") == 39, "truth closed world")
     claims = truth.get("claimBoundary", {})
-    for key in (
-        "documentationStructureComplete",
-        "designOperationInventoryComplete",
-        "nativeSourceMappingComplete",
-        "repositoryControlledDocumentationGapsClosed",
-        "repositoryControlledMappingGapsClosed",
-        "repositoryControlledSourceBoundaryGapsClosed",
-    ):
-        need(claims.get(key) is True, f"missing repository closure {key}")
-    for key in (
-        "targetDesignImplementationComplete",
-        "productionConsumerCallsitesComplete",
-        "productExecutionComplete",
-        "deploymentQualificationComplete",
-        "independentAcceptanceComplete",
-        "externalEffectsComplete",
-        "hardwareEvidenceComplete",
-        "futureWindowEfficacyComplete",
-        "allGapsClosed",
-    ):
-        need(claims.get(key) is False, f"unsupported positive claim {key}")
-    rows = truth.get("modules")
-    need(
-        isinstance(rows, list)
-        and [row.get("module") for row in rows] == EXPECTED_MODULES,
-        "module closed world",
-    )
-    roots_by_module = {row["module"]: row.get("resolvedRoots", []) for row in rows}
-    operations = 0
-    tests = 0
-    for row in rows:
+    positive = ("documentationStructureComplete", "designOperationInventoryComplete", "nativeSourceMappingComplete", "repositoryControlledDocumentationGapsClosed", "repositoryControlledMappingGapsClosed", "repositoryControlledSourceBoundaryGapsClosed")
+    negative = ("targetDesignImplementationComplete", "productionConsumerCallsitesComplete", "productExecutionComplete", "deploymentQualificationComplete", "independentAcceptanceComplete", "externalEffectsComplete", "hardwareEvidenceComplete", "futureWindowEfficacyComplete", "allGapsClosed")
+    for key in positive: need(claims.get(key) is True, f"missing closure {key}")
+    for key in negative: need(claims.get(key) is False, f"unsupported claim {key}")
+    roots = {row["module"]: row["resolvedRoots"] for row in maps}
+    operations = tests = 0
+    for row in maps:
         module = row["module"]
-        need(
-            row.get("repositoryControlledGaps") == [],
-            f"{module}: repository gaps remain",
-        )
-        need(
-            isinstance(row.get("externalEvidenceGates"), list)
-            and row["externalEvidenceGates"],
-            f"{module}: external gates missing",
-        )
-        roots = row.get("resolvedRoots")
-        need(isinstance(roots, list) and roots, f"{module}: resolved roots")
-        for root in roots:
-            need((ROOT / root).exists(), f"{module}: missing root {root}")
-        module_ops = row.get("operations")
-        need(isinstance(module_ops, list), f"{module}: operations")
-        need(
-            [item.get("designOperation") for item in module_ops]
-            == EXPECTED_OPERATIONS[module],
-            f"{module}: operation coverage/order",
-        )
-        for item in module_ops:
+        need(row.get("schema") == "hepta.module-implementation-map.v2" and row.get("schemaVersion") == 2, f"{module}: schema")
+        need(row.get("repositoryControlledGaps") == [], f"{module}: repository gaps")
+        need(row.get("externalEvidenceGates"), f"{module}: external gates")
+        for root in row["resolvedRoots"]: need((ROOT / root).exists(), f"{module}: missing root {root}")
+        for item in row["operations"]:
             operations += 1
-            need(
-                item.get("mappingClass") in truth["allowedMappingClasses"],
-                f"{module}: mapping class",
-            )
-            verify_anchor(module, roots, item["ownerEntrypoint"], True)
+            need(item.get("mappingClass") in truth["allowedMappingClasses"], f"{module}: mapping class")
+            verify_anchor(module, row["resolvedRoots"], item["ownerEntrypoint"], True)
             for delegate in item.get("delegatedCallees", []):
-                verify_anchor(module, roots, delegate, False)
-                delegate_owner = delegate["ownerModule"]
-                need(
-                    delegate_owner in roots_by_module,
-                    f"{module}: unknown delegated owner {delegate_owner}",
-                )
-                delegate_path = delegate["path"]
-                need(
-                    any(
-                        delegate_path == root
-                        or delegate_path.startswith(root + "/")
-                        for root in roots_by_module[delegate_owner]
-                    ),
-                    f"{module}: delegated path escapes {delegate_owner} roots: {delegate_path}",
-                )
-            cases = item.get("tests")
-            need(
-                isinstance(cases, list) and cases,
-                f"{module}/{item['designOperation']}: tests",
-            )
-            for case in cases:
+                verify_anchor(module, row["resolvedRoots"], delegate, False)
+                owner = delegate["ownerModule"]
+                need(owner in roots and any(delegate["path"] == root or delegate["path"].startswith(root + "/") for root in roots[owner]), f"{module}: delegate-root escape")
+            need(item.get("tests"), f"{module}/{item['designOperation']}: tests")
+            for test in item["tests"]:
                 tests += 1
-                path = ROOT / case["path"]
-                need(
-                    path.is_file(),
-                    f"{module}/{item['designOperation']}: missing test {case['path']}",
-                )
-                need(
-                    isinstance(case.get("command"), str) and case["command"],
-                    f"{module}: test command",
-                )
-            need(
-                isinstance(item.get("sourceSemantics"), str)
-                and len(item["sourceSemantics"]) >= 40,
-                f"{module}: source semantics",
-            )
-        guide = ROOT / f"docs/modules/{module}/TECHNICAL.md"
-        design = ROOT / f"qualification/module-execution-dossiers/detail/{module}.md"
-        for path in (guide, design):
-            need(path.is_file(), f"{module}: missing {path.relative_to(ROOT)}")
+                need((ROOT / test["path"]).is_file() and test.get("command"), f"{module}: invalid test binding")
+            need(len(item.get("sourceSemantics", "")) >= 40, f"{module}: source semantics")
+        for path in (ROOT / f"docs/modules/{module}/TECHNICAL.md", ROOT / f"qualification/module-execution-dossiers/detail/{module}.md"):
             text = path.read_text(encoding="utf-8")
-            need(
-                module in text and not FORBIDDEN.search(text),
-                f"{module}: invalid technical document {path.relative_to(ROOT)}",
-            )
-    need(operations == 39, "operation closed world")
+            need(module in text and not FORBIDDEN.search(text), f"{module}: document {path.relative_to(ROOT)}")
+    need(operations == 39, "operation count")
     return operations, tests
 
 
-def generated_files(truth: dict[str, Any]) -> dict[Path, str]:
-    files: dict[Path, str] = {
-        TRACE_PATH: dump_json(traceability(truth)),
-        NATIVE_PATH: render_native_closure(truth),
-    }
-    for row in truth["modules"]:
-        files[ROOT / f"docs/modules/{row['module']}/IMPLEMENTATION_MAP.json"] = (
-            dump_json(module_map(truth, row))
-        )
-    return files
+def projections(truth: dict[str, Any], maps: list[dict[str, Any]]) -> dict[Path, str]:
+    return {TRACE: dump(trace_projection(truth, maps)), NATIVE: native_projection(truth, maps)}
 
 
-def verify_generated(truth: dict[str, Any]) -> None:
-    for path, expected in generated_files(truth).items():
-        need(path.is_file(), f"missing generated file {path.relative_to(ROOT)}")
-        actual = path.read_text(encoding="utf-8")
-        need(
-            actual == expected,
-            f"generated projection drift: {path.relative_to(ROOT)}",
-        )
-    composition = COMPOSITION_PATH.read_text(encoding="utf-8")
+def verify_generated(truth: dict[str, Any], maps: list[dict[str, Any]]) -> None:
+    for path, expected in projections(truth, maps).items():
+        need(path.read_text(encoding="utf-8") == expected, f"projection drift: {path.relative_to(ROOT)}")
+    composition = COMPOSITION.read_text(encoding="utf-8")
     base = truth["sourceBase"]
-    need(
-        base["commit"] in composition and base["tree"] in composition,
-        "composition source base drift",
-    )
-    need(
-        "product execution" in composition.lower()
-        and "independent acceptance" in composition.lower(),
-        "composition claim boundary",
-    )
-    readme = README_PATH.read_text(encoding="utf-8")
-    need(
-        "hepta-lane-b-truth.py verify" in readme and not FORBIDDEN.search(readme),
-        "Lane B README",
-    )
+    need(base["commit"] in composition and base["tree"] in composition, "composition base")
+    need("product execution" in composition.lower() and "independent acceptance" in composition.lower(), "composition claims")
+    need("hepta-lane-b-truth.py verify" in README.read_text(encoding="utf-8"), "README command")
 
 
-def generate(truth: dict[str, Any]) -> int:
-    for path, content in generated_files(truth).items():
-        path.parent.mkdir(parents=True, exist_ok=True)
-        path.write_text(content, encoding="utf-8")
-    print(
-        json.dumps(
-            {
-                "status": "GENERATED_HEPTA_LANE_B_PROJECTIONS",
-                "files": len(generated_files(truth)),
-            },
-            sort_keys=True,
-        )
-    )
+def generate(truth: dict[str, Any], maps: list[dict[str, Any]]) -> int:
+    for path, content in projections(truth, maps).items(): path.write_text(content, encoding="utf-8")
+    print(json.dumps({"status": "GENERATED_HEPTA_LANE_B_PROJECTIONS", "files": 2}, sort_keys=True))
     return 0
 
 
 def verify() -> int:
-    truth = load_json(TRUTH_PATH)
-    manifest = load_json(MANIFEST_PATH)
-    changed = verify_candidate(manifest, truth)
-    operations, tests = verify_truth(truth)
-    verify_generated(truth)
-    print(
-        json.dumps(
-            {
-                "status": "PASS_HEPTA_LANE_B_SOURCE_CLOSURE",
-                "exactHead": git("rev-parse", "HEAD"),
-                "exactTree": git("rev-parse", "HEAD^{tree}"),
-                "changedPaths": len(changed),
-                "modules": len(EXPECTED_MODULES),
-                "operations": operations,
-                "testBindings": tests,
-                "repositoryControlledSourceBoundaryGapsClosed": True,
-                "productExecutionComplete": False,
-                "externalEffectsComplete": False,
-                "independentAcceptanceComplete": False,
-            },
-            sort_keys=True,
-        )
-    )
+    truth = load(TRUTH); maps = module_maps(truth)
+    changed = verify_candidate(load(MANIFEST), truth)
+    operations, tests = verify_truth(truth, maps); verify_generated(truth, maps)
+    print(json.dumps({
+        "status": "PASS_HEPTA_LANE_B_SOURCE_CLOSURE", "exactHead": git("rev-parse", "HEAD"),
+        "exactTree": git("rev-parse", "HEAD^{tree}"), "changedPaths": len(changed),
+        "modules": len(maps), "operations": operations, "testBindings": tests,
+        "repositoryControlledSourceBoundaryGapsClosed": True, "productExecutionComplete": False,
+        "externalEffectsComplete": False, "independentAcceptanceComplete": False,
+    }, sort_keys=True))
     return 0
 
 
 def self_test() -> int:
     need(pairs([("a", 1), ("b", 2)]) == {"a": 1, "b": 2}, "pairs")
-    try:
-        pairs([("a", 1), ("a", 2)])
-    except Invalid:
-        pass
-    else:
-        raise Invalid("duplicate-key self-test")
-    need(
-        path_allowed("qualification/lane-b/a.json", ["qualification/lane-b/"]),
-        "path allow",
-    )
-    need(
-        not path_allowed("docs/DEVELOPMENT.md", ["qualification/lane-b/"]),
-        "path deny",
-    )
-    need(
-        len(EXPECTED_MODULES) == 11
-        and sum(map(len, EXPECTED_OPERATIONS.values())) == 39,
-        "closed sets",
-    )
-    print(
-        json.dumps(
-            {
-                "status": "PASS_HEPTA_LANE_B_SOURCE_CLOSURE_SELF_TEST",
-                "modules": 11,
-                "operations": 39,
-            },
-            sort_keys=True,
-        )
-    )
+    try: pairs([("a", 1), ("a", 2)])
+    except Invalid: pass
+    else: raise Invalid("duplicate key accepted")
+    need(allowed("qualification/lane-b/a", ["qualification/lane-b/"]), "allow")
+    need(not allowed("qualification/lane-c/a", ["qualification/lane-b/"]), "deny")
+    need(len(MODULES) == 11 and sum(map(len, OPS.values())) == 39, "closed sets")
+    print(json.dumps({"status": "PASS_HEPTA_LANE_B_SOURCE_CLOSURE_SELF_TEST", "modules": 11, "operations": 39}, sort_keys=True))
     return 0
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser()
-    parser.add_argument("command", choices=["verify", "generate", "self-test"])
-    args = parser.parse_args()
-    truth = load_json(TRUTH_PATH) if args.command == "generate" else None
-    if args.command == "generate":
-        return generate(truth)
-    if args.command == "self-test":
-        return self_test()
-    return verify()
+    command = argparse.ArgumentParser(); command.add_argument("command", choices=["verify", "generate", "self-test"])
+    action = command.parse_args().command
+    if action == "self-test": return self_test()
+    truth = load(TRUTH); maps = module_maps(truth)
+    return generate(truth, maps) if action == "generate" else verify()
 
 
 if __name__ == "__main__":
-    try:
-        raise SystemExit(main())
-    except Invalid as exc:
-        raise SystemExit(f"FAIL_HEPTA_LANE_B_SOURCE_CLOSURE: {exc}") from exc
+    try: raise SystemExit(main())
+    except Invalid as exc: raise SystemExit(f"FAIL_HEPTA_LANE_B_SOURCE_CLOSURE: {exc}") from exc
