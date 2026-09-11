@@ -851,7 +851,7 @@ impl<'a> ByteReader<'a> {
         Ok(value)
     }
     fn id(&mut self) -> Result<StableId, DurableProposalRegistryError> {
-        let length = self.bounded_len(128)?;
+        let length = self.bounded_len(/*maximum*/ 128)?;
         let raw = std::str::from_utf8(self.take(length)?)
             .map_err(|_| DurableProposalRegistryError::Corrupt)?;
         StableId::new(raw.to_string()).map_err(|_| DurableProposalRegistryError::Corrupt)

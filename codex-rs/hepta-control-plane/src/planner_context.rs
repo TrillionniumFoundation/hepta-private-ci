@@ -125,7 +125,8 @@ pub fn plan_observed_context(
         },
         vec![OwnerSummaryV1 {
             owner_id: observed.owner_id.clone(),
-            revision: Revision::new(1).map_err(|_| E::Planner(PlannerError::Arithmetic))?,
+            revision: Revision::new(/*value*/ 1)
+                .map_err(|_| E::Planner(PlannerError::Arithmetic))?,
             objective_digest,
             body_generation: observed.body_generation,
             configuration_digest,

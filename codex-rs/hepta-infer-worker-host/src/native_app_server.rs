@@ -107,7 +107,7 @@ impl AppServerModelDriver {
             return Err("Agent is not ready".into());
         }
         let context = match context_query {
-            Some(query) => Some(owner.cognitive_context(query, 4).await?),
+            Some(query) => Some(owner.cognitive_context(query, /*limit*/ 4).await?),
             None => None,
         };
         let additional_context = context
@@ -139,7 +139,7 @@ impl AppServerModelDriver {
                     opt_out_notification_methods: Vec::new(),
                     channel_capacity: 32,
                 },
-                256,
+                /*event_channel_capacity*/ 256,
             ),
         )
         .await??;
@@ -255,7 +255,7 @@ impl AppServerModelDriver {
                     &mut output,
                     Instant::now() + INTERRUPT_GRACE,
                     &grace,
-                    None,
+                    /*owner*/ None,
                 )
                 .await;
             cancel_recorded?;

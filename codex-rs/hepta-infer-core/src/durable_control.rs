@@ -229,7 +229,7 @@ impl DurableInferenceControl {
             if let Some(json) = line.strip_prefix(native::JOURNAL_PREFIX) {
                 native.replay(json)?;
             } else {
-                apply_event(&mut records, &decode_event(line)?, true)?;
+                apply_event(&mut records, &decode_event(line)?, /*replay*/ true)?;
             }
             if records.len() + native.records.len() > capacity
                 || records.keys().any(|id| native.records.contains_key(id))
@@ -264,7 +264,7 @@ impl DurableInferenceControl {
         validate_request(now_ms, &request)?;
         if let Some(current) = self.records.get(&request.request_id) {
             if current.request == request {
-                return Ok(receipt(current, true));
+                return Ok(receipt(current, /*idempotent*/ true));
             }
             return Err(Error::Conflict);
         }
@@ -294,7 +294,7 @@ impl DurableInferenceControl {
         if record.state == RequestState::Reserved
             && record.reservation.as_ref() == Some(&reservation)
         {
-            return Ok(receipt(record, true));
+            return Ok(receipt(record, /*idempotent*/ true));
         }
         if record.state != RequestState::Pending {
             return Err(Error::InvalidTransition);
@@ -323,7 +323,7 @@ impl DurableInferenceControl {
         }
         if record.state == RequestState::Assigned && record.assignment.as_ref() == Some(&assignment)
         {
-            return Ok(receipt(record, true));
+            return Ok(receipt(record, /*idempotent*/ true));
         }
         if record.state != RequestState::Reserved {
             return Err(Error::InvalidTransition);
@@ -346,7 +346,7 @@ impl DurableInferenceControl {
             return Err(Error::StaleRevision);
         }
         if record.state == RequestState::Cancelled || record.state == RequestState::Cancelling {
-            return Ok(receipt(record, true));
+            return Ok(receipt(record, /*idempotent*/ true));
         }
         if record.state.terminal() {
             return Err(Error::InvalidTransition);
@@ -372,7 +372,7 @@ impl DurableInferenceControl {
             return Err(Error::StaleRevision);
         }
         if record.terminal_observation_digest.as_ref() == Some(&observation_digest) {
-            return Ok(receipt(record, true));
+            return Ok(receipt(record, /*idempotent*/ true));
         }
         if record.state.terminal() {
             return Err(Error::Conflict);
@@ -436,7 +436,7 @@ impl DurableInferenceControl {
         // Reject invalid transitions before durable append; a rejected command
         // must not poison the next reopen with an invalid journal event.
         let mut next = self.records.clone();
-        apply_event(&mut next, &event, false)?;
+        apply_event(&mut next, &event, /*replay*/ false)?;
         let encoded = format!("{}\n", encode_event(&event));
         self.append(&encoded)?;
         let request_id = event.request_id().to_string();
@@ -445,7 +445,7 @@ impl DurableInferenceControl {
             .records
             .get(&request_id)
             .ok_or(Error::RequestNotFound)?;
-        Ok(receipt(record, false))
+        Ok(receipt(record, /*idempotent*/ false))
     }
 
     fn append(&mut self, encoded: &str) -> Result<(), Error> {

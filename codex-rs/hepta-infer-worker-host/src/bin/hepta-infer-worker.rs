@@ -60,7 +60,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
     if !journal.is_absolute() {
         return Err("--journal must be absolute".into());
     }
-    let mut control = DurableInferenceControl::open(journal, 16_384)?;
+    let mut control = DurableInferenceControl::open(journal, /*capacity*/ 16_384)?;
     let admission = NativeAdmission {
         request_id: request_id.ok_or("--request-id is required")?,
         maximum_in_flight: maximum_in_flight.ok_or("--maximum-in-flight is required")?,

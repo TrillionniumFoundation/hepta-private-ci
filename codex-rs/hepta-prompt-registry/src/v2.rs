@@ -279,13 +279,13 @@ impl PromptRegistry {
                 ));
             }
         }
-        self.ensure_capacity(1)?;
+        self.ensure_capacity(/*additional*/ 1)?;
         let next_revision = self.next_revision()?;
         self.realizations
             .insert(binding.realization_id.clone(), legacy);
         self.realization_bindings
             .insert(binding.realization_id.clone(), binding);
-        self.commit_revision(next_revision, false);
+        self.commit_revision(next_revision, /*revocation*/ false);
         Ok(self.receipt(MutationDisposition::Inserted))
     }
 
