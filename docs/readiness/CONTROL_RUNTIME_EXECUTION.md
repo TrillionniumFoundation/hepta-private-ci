@@ -275,3 +275,26 @@ Consumed canonical readiness protocols include:
 - `SensorCalibrationManifestV1`
 
 Registration of an owner-local Rust type does not by itself admit a new external wire protocol. Production protocol admission and consumer compilation remain explicit integration work.
+
+## Native measured-context composition
+
+`evaluate_prepared_plan_with_ndu` now computes the owner NDU evaluation before
+sealing a plan. Its frozen policy digest includes the complete utility profile,
+aggregation/tolerance policy and optional scalarization profile; callers cannot
+substitute a chosen candidate or change directions after preparation.
+
+`plan_observed_context` supplies the bounded product adapter for a completed
+canonical cognitive read. The trusted host supplies its actual owner/generation,
+snapshot/read digests, verified record count and exact serialized context bytes.
+The objective is narrowly defined: deliver verified records within the requested
+context-byte budget. It uses at most four records and 24 KiB, evaluates read and
+abstain candidates, and returns the real NDU evaluation and sealed plan. Empty
+records, ties and insufficient budget do not authorize context delivery. This is
+an observed digital task, not an estimate of model quality or memory capacity.
+
+The single-observation owner summary has its own initial revision and an explicit
+request-local generation fence. It does not impersonate a database revision or
+global revocation frontier. Existing host authorization and generation checks
+remain required before and after the read. Context bytes exclude the planning
+metadata to avoid a self-referential digest; the host separately bounds the final
+response envelope. Neither helper grants effects or proves long-term improvement.

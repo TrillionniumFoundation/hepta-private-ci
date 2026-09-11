@@ -12,6 +12,7 @@ mod cart;
 mod organ_graph;
 mod organ_runtime;
 mod planner;
+mod planner_context;
 mod planner_journal;
 mod planner_ndu;
 #[path = "embodiment/timing.rs"]
@@ -71,6 +72,9 @@ pub use planner::collect_snapshot;
 pub use planner::finalize_plan;
 pub use planner::prepare_plan;
 pub use planner::request_execution_grants;
+pub use planner_context::ObservedContextPlanV1;
+pub use planner_context::ObservedContextV1;
+pub use planner_context::plan_observed_context;
 pub use planner_journal::PlannerJournalEntryV1;
 pub use planner_journal::PlannerJournalError;
 pub use planner_journal::PlannerJournalKindV1;
