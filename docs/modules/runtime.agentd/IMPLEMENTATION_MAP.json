@@ -1,0 +1,136 @@
+{
+  "schema": "hepta.module-implementation-map.v2",
+  "schemaVersion": 2,
+  "sourceBase": {
+    "commit": "f278a89eea18fccb6d37b876aa5679863a64139d",
+    "tree": "5baa144717d4b3e3c596501fb56ce911d009e728"
+  },
+  "laneId": "LANE-B-RUNTIME",
+  "module": "runtime.agentd",
+  "sourceMaturity": "native_composition_host",
+  "declaredRoots": [
+    "codex-rs/hepta-agentd"
+  ],
+  "resolvedRoots": [
+    "codex-rs/hepta-agentd"
+  ],
+  "stateOwnerDisposition": "Owns only ephemeral run admission, immutable snapshot references, and runtime-health composition state.",
+  "terminalObserverDisposition": "Agentd preserves dispatch-boundary uncertainty and accepts terminal state only from the delegated execution/effect owner.",
+  "operations": [
+    {
+      "designOperation": "compose_runtime",
+      "mappingClass": "owner_native",
+      "ownerEntrypoint": {
+        "role": "owner_entrypoint",
+        "path": "codex-rs/hepta-agentd/src/lane_b_runtime.rs",
+        "symbol": "pub fn compose_runtime(",
+        "buildTarget": "codex-hepta-agentd"
+      },
+      "delegatedCallees": [],
+      "tests": [
+        {
+          "path": "codex-rs/hepta-agentd/src/lane_b_runtime_tests.rs",
+          "kind": "native_unit",
+          "command": "cargo test -p codex-hepta-agentd --lib"
+        }
+      ],
+      "sourceSemantics": "Validates immutable supervisor/Agentd generations, configuration, and owner-port identities."
+    },
+    {
+      "designOperation": "start_run",
+      "mappingClass": "owner_native",
+      "ownerEntrypoint": {
+        "role": "owner_entrypoint",
+        "path": "codex-rs/hepta-agentd/src/lane_b_runtime.rs",
+        "symbol": "pub fn start_run(",
+        "buildTarget": "codex-hepta-agentd"
+      },
+      "delegatedCallees": [
+        {
+          "role": "delegated_callee",
+          "path": "codex-rs/app-server/src/request_processors/turn_processor.rs",
+          "symbol": "pub(crate) async fn turn_start(",
+          "buildTarget": "codex-app-server",
+          "ownerModule": "runtime.codex"
+        }
+      ],
+      "tests": [
+        {
+          "path": "codex-rs/hepta-agentd/src/lane_b_runtime_tests.rs",
+          "kind": "snapshot_and_capacity",
+          "command": "cargo test -p codex-hepta-agentd --lib"
+        }
+      ],
+      "sourceSemantics": "Admits a bounded run and freezes request, objective, body, artifact, authority, and deadline identity."
+    },
+    {
+      "designOperation": "cancel_run",
+      "mappingClass": "owner_native",
+      "ownerEntrypoint": {
+        "role": "owner_entrypoint",
+        "path": "codex-rs/hepta-agentd/src/lane_b_runtime.rs",
+        "symbol": "pub fn cancel_run(",
+        "buildTarget": "codex-hepta-agentd"
+      },
+      "delegatedCallees": [
+        {
+          "role": "delegated_callee",
+          "path": "codex-rs/app-server/src/request_processors/turn_processor.rs",
+          "symbol": "pub(crate) async fn turn_interrupt(",
+          "buildTarget": "codex-app-server",
+          "ownerModule": "runtime.codex"
+        }
+      ],
+      "tests": [
+        {
+          "path": "codex-rs/hepta-agentd/src/lane_b_runtime_tests.rs",
+          "kind": "cancellation_race",
+          "command": "cargo test -p codex-hepta-agentd --lib"
+        }
+      ],
+      "sourceSemantics": "Distinguishes provable pre-dispatch cancellation from post-dispatch cancelling or indeterminate state."
+    },
+    {
+      "designOperation": "attach_context",
+      "mappingClass": "owner_native",
+      "ownerEntrypoint": {
+        "role": "owner_entrypoint",
+        "path": "codex-rs/hepta-agentd/src/lane_b_runtime.rs",
+        "symbol": "pub fn attach_context(",
+        "buildTarget": "codex-hepta-agentd"
+      },
+      "delegatedCallees": [
+        {
+          "role": "delegated_callee",
+          "path": "codex-rs/core/src/codex_thread.rs",
+          "symbol": "pub(crate) async fn submit_turn_input_and_wait_for_exact_admission(",
+          "buildTarget": "codex-core",
+          "ownerModule": "runtime.codex"
+        }
+      ],
+      "tests": [
+        {
+          "path": "codex-rs/hepta-agentd/src/lane_b_runtime_tests.rs",
+          "kind": "mixed_generation_rejection",
+          "command": "cargo test -p codex-hepta-agentd --lib"
+        }
+      ],
+      "sourceSemantics": "Accepts context only when its receipt binds the complete frozen run tuple."
+    }
+  ],
+  "repositoryControlledGaps": [],
+  "externalEvidenceGates": [
+    "deployed Agentd process and authenticated socket identity",
+    "non-test caller through the full Codex turn path",
+    "target backpressure/restart measurements"
+  ],
+  "claimBoundary": {
+    "nativeSourceMappingComplete": true,
+    "repositoryControlledDocumentationGapsClosed": true,
+    "repositoryControlledMappingGapsClosed": true,
+    "repositoryControlledSourceBoundaryGapsClosed": true,
+    "productExecutionComplete": false,
+    "deploymentQualificationComplete": false,
+    "independentAcceptanceComplete": false
+  }
+}
