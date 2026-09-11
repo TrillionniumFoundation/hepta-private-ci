@@ -1,0 +1,112 @@
+{
+  "schema": "hepta.module-implementation-map.v2",
+  "schemaVersion": 2,
+  "sourceBase": {
+    "commit": "f278a89eea18fccb6d37b876aa5679863a64139d",
+    "tree": "5baa144717d4b3e3c596501fb56ce911d009e728"
+  },
+  "laneId": "LANE-B-RUNTIME",
+  "module": "runtime.supervisor",
+  "sourceMaturity": "native_daemon",
+  "declaredRoots": [
+    "codex-rs/hepta-supervisor"
+  ],
+  "resolvedRoots": [
+    "codex-rs/hepta-supervisor"
+  ],
+  "stateOwnerDisposition": "Owns generation-fenced process lifecycle and release transition records; user-task truth remains outside this module.",
+  "terminalObserverDisposition": "The process driver and current-generation health observations establish process terminality, not user-task success.",
+  "operations": [
+    {
+      "designOperation": "start_instance",
+      "mappingClass": "owner_native",
+      "ownerEntrypoint": {
+        "role": "owner_entrypoint",
+        "path": "codex-rs/hepta-supervisor/src/supervisor.rs",
+        "symbol": "pub fn start(",
+        "buildTarget": "codex-hepta-supervisor"
+      },
+      "delegatedCallees": [],
+      "tests": [
+        {
+          "path": "codex-rs/hepta-supervisor/src/supervisor_tests.rs",
+          "kind": "native_unit",
+          "command": "cargo test -p codex-hepta-supervisor --lib"
+        }
+      ],
+      "sourceSemantics": "Creates a generation-fenced managed process from a registered agent and bounded configuration."
+    },
+    {
+      "designOperation": "observe_health",
+      "mappingClass": "owner_native",
+      "ownerEntrypoint": {
+        "role": "owner_entrypoint",
+        "path": "codex-rs/hepta-supervisor/src/supervisor.rs",
+        "symbol": "pub fn tick(",
+        "buildTarget": "codex-hepta-supervisor"
+      },
+      "delegatedCallees": [],
+      "tests": [
+        {
+          "path": "codex-rs/hepta-supervisor/src/supervisor_tests.rs",
+          "kind": "fault_and_lifecycle",
+          "command": "cargo test -p codex-hepta-supervisor --lib"
+        }
+      ],
+      "sourceSemantics": "Consumes process observations under the active generation and advances readiness, drain, stop, restart, and rollback state."
+    },
+    {
+      "designOperation": "drain",
+      "mappingClass": "owner_native",
+      "ownerEntrypoint": {
+        "role": "owner_entrypoint",
+        "path": "codex-rs/hepta-supervisor/src/supervisor.rs",
+        "symbol": "pub fn drain(",
+        "buildTarget": "codex-hepta-supervisor"
+      },
+      "delegatedCallees": [],
+      "tests": [
+        {
+          "path": "codex-rs/hepta-supervisor/src/supervisor_tests.rs",
+          "kind": "fault_and_lifecycle",
+          "command": "cargo test -p codex-hepta-supervisor --lib"
+        }
+      ],
+      "sourceSemantics": "Stops admission and requests bounded drain without inventing completion."
+    },
+    {
+      "designOperation": "load_next",
+      "mappingClass": "owner_native",
+      "ownerEntrypoint": {
+        "role": "owner_entrypoint",
+        "path": "codex-rs/hepta-supervisor/src/supervisor.rs",
+        "symbol": "pub fn upgrade(",
+        "buildTarget": "codex-hepta-supervisor"
+      },
+      "delegatedCallees": [],
+      "tests": [
+        {
+          "path": "codex-rs/hepta-supervisor/src/supervisor_tests.rs",
+          "kind": "upgrade_and_rollback",
+          "command": "cargo test -p codex-hepta-supervisor --lib"
+        }
+      ],
+      "sourceSemantics": "Transitions through an exact release predecessor and new process generation with rollback support."
+    }
+  ],
+  "repositoryControlledGaps": [],
+  "externalEvidenceGates": [
+    "deployed binary and host identity",
+    "target-host watchdog/start/drain measurements",
+    "independent operational acceptance"
+  ],
+  "claimBoundary": {
+    "nativeSourceMappingComplete": true,
+    "repositoryControlledDocumentationGapsClosed": true,
+    "repositoryControlledMappingGapsClosed": true,
+    "repositoryControlledSourceBoundaryGapsClosed": true,
+    "productExecutionComplete": false,
+    "deploymentQualificationComplete": false,
+    "independentAcceptanceComplete": false
+  }
+}
