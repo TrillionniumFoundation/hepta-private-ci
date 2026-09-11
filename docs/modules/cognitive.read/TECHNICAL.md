@@ -46,6 +46,16 @@ None.
 
 ## 3. Boundary, responsibilities and non-goals
 
+The SQLite owner now exposes `CognitiveStore::lane_c_snapshot` and
+`DurableCognitiveSnapshot::read(ReadRequestV2)` through `hepta-memory`. This is a
+native read-through adapter to the existing durable store. It authorizes the
+exact scope, preserves record and citation IDs, includes committed tombstones,
+and admits only verified, currently valid live heads. Consumers must compare
+retrieved revision/content digests and reacquire the cut before delivery using
+`revalidate_lane_c_snapshot`. Snapshot generation alone does not detect validity
+expiry without a write. See `codex-rs/hepta-memory/LANE_C_SQLITE.md`; the adapter
+does not register a new V2 wire format or grant effects to read results.
+
 Direct dependencies:
 
 - `cognitive.types`

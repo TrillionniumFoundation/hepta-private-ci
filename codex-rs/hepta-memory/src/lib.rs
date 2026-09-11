@@ -457,3 +457,7 @@ mod model_receipt_tests;
 
 #[cfg(test)]
 mod cognitive_test_support;
+
+#[cfg(test)]
+#[path = "lane_c_snapshot_tests.rs"]
+mod lane_c_snapshot_tests;
