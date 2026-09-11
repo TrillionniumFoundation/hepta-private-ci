@@ -1,0 +1,145 @@
+name: Hepta r23 targeted blocker diagnostic
+
+on:
+  push:
+    branches:
+      - ops/r23-targeted-diagnostic-20260911-gpt56
+
+permissions:
+  contents: read
+
+env:
+  SOURCE_SHA: 0a7dae70a5f53ccbc2f2acc027a2de97553a90f2
+  PYTHONDONTWRITEBYTECODE: "1"
+  PYTHONUTF8: "1"
+
+jobs:
+  lane-b-exact:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Run exact Lane B workflow commands independently
+        shell: bash
+        run: |
+          set -u
+          mkdir -p diagnostics/lane-b-exact
+          status=0
+          run_one() {
+            local label="$1"
+            shift
+            printf 'COMMAND:' > "diagnostics/lane-b-exact/${label}.log"
+            printf ' %q' "$@" >> "diagnostics/lane-b-exact/${label}.log"
+            printf '\n' >> "diagnostics/lane-b-exact/${label}.log"
+            set +e
+            "$@" >> "diagnostics/lane-b-exact/${label}.log" 2>&1
+            rc=$?
+            set -e
+            printf '%s=%s\n' "$label" "$rc" | tee -a diagnostics/lane-b-exact/status.txt
+            if [ "$rc" -ne 0 ]; then status=1; fi
+          }
+          set -e
+          run_one pycompile-core python3 -m py_compile scripts/hepta-lane-b-truth-core.py
+          run_one pycompile-truth python3 -m py_compile scripts/hepta-lane-b-truth.py
+          run_one pycompile-docs python3 -m py_compile scripts/hepta-lane-b-docs.py
+          run_one truth-self-test python3 scripts/hepta-lane-b-truth.py self-test
+          run_one unit python3 -m unittest scripts/test_hepta_lane_b_truth.py
+          run_one truth-verify python3 scripts/hepta-lane-b-truth.py verify
+          run_one docs-verify python3 scripts/hepta-lane-b-docs.py
+          run_one diff-worktree git diff --exit-code
+          run_one diff-index git diff --cached --exit-code
+          printf 'aggregate=%s\n' "$status" | tee -a diagnostics/lane-b-exact/status.txt
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: r23-lane-b-exact-diagnostic
+          path: diagnostics/lane-b-exact
+          if-no-files-found: error
+          retention-days: 7
+
+  bubblewrap-capability:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Install Bubblewrap
+        shell: bash
+        run: |
+          set -euo pipefail
+          if ! command -v bwrap >/dev/null 2>&1; then
+            sudo apt-get update
+            sudo apt-get install --no-install-recommends -y bubblewrap
+          fi
+      - name: Probe host namespace policy before and after explicit admission
+        working-directory: tools/hepta-engineering-control
+        shell: bash
+        run: |
+          set -u
+          mkdir -p ../../diagnostics/bwrap
+          {
+            uname -a
+            bwrap --version
+            sysctl kernel.apparmor_restrict_unprivileged_userns 2>&1 || true
+            sysctl kernel.unprivileged_userns_clone 2>&1 || true
+            sysctl user.max_user_namespaces 2>&1 || true
+            cat /proc/self/status
+          } > ../../diagnostics/bwrap/host.txt 2>&1
+          python3 - <<'PY' > ../../diagnostics/bwrap/before.log 2>&1
+          from pathlib import Path
+          import json, shutil, subprocess, tempfile
+          from control_engineering_v2.candidate import _bubblewrap_command
+          bwrap = shutil.which("bwrap")
+          with tempfile.TemporaryDirectory(prefix="hepta-bwrap-probe-") as name:
+              workspace = Path(name)
+              command = _bubblewrap_command(
+                  bwrap,
+                  workspace,
+                  ("/usr/bin/python3", "-I", "-c", "print('probe-ok')"),
+              )
+              result = subprocess.run(command, capture_output=True, text=True, timeout=30)
+              print(json.dumps({"returncode": result.returncode, "argv": command}, sort_keys=True))
+              print("STDOUT:")
+              print(result.stdout)
+              print("STDERR:")
+              print(result.stderr)
+          PY
+          echo "before=$?" > ../../diagnostics/bwrap/status.txt
+          set +e
+          sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0 \
+            > ../../diagnostics/bwrap/sysctl-admit.log 2>&1
+          sysctl_rc=$?
+          set -e
+          echo "sysctl=$sysctl_rc" >> ../../diagnostics/bwrap/status.txt
+          python3 - <<'PY' > ../../diagnostics/bwrap/after.log 2>&1
+          from pathlib import Path
+          import json, shutil, subprocess, tempfile
+          from control_engineering_v2.candidate import _bubblewrap_command
+          bwrap = shutil.which("bwrap")
+          with tempfile.TemporaryDirectory(prefix="hepta-bwrap-probe-") as name:
+              workspace = Path(name)
+              command = _bubblewrap_command(
+                  bwrap,
+                  workspace,
+                  ("/usr/bin/python3", "-I", "-c", "print('probe-ok')"),
+              )
+              result = subprocess.run(command, capture_output=True, text=True, timeout=30)
+              print(json.dumps({"returncode": result.returncode, "argv": command}, sort_keys=True))
+              print("STDOUT:")
+              print(result.stdout)
+              print("STDERR:")
+              print(result.stderr)
+          PY
+          echo "after=$?" >> ../../diagnostics/bwrap/status.txt
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: r23-bubblewrap-capability-diagnostic
+          path: diagnostics/bwrap
+          if-no-files-found: error
+          retention-days: 7
