@@ -7,6 +7,14 @@
 
 #![forbid(unsafe_code)]
 
+mod durable_registry;
+
+pub use durable_registry::DurableProposalAppendReceiptV1;
+pub use durable_registry::DurableProposalRegistry;
+pub use durable_registry::DurableProposalRegistryError;
+pub use durable_registry::DurableRegistryAnchorV1;
+
+
 mod legacy;
 mod parameter_v2;
 mod registry;
