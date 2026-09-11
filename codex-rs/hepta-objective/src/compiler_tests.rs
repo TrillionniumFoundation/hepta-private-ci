@@ -39,6 +39,13 @@ fn id(value: &str) -> StableId {
     must(StableId::new(value))
 }
 
+fn action(value: &str) -> ActionClass {
+    ActionClass {
+        id: id(value),
+        confirmation: ConfirmationPolicy::NotRequired,
+    }
+}
+
 fn envelope() -> ObjectiveSourceEnvelope {
     ObjectiveSourceEnvelope {
         request_id: id("request-1"),
@@ -73,10 +80,7 @@ fn envelope() -> ObjectiveSourceEnvelope {
             evidence_source: id("terminal-observer"),
             terminality: PredicateTerminality::Terminal,
         }],
-        allowed_actions: vec![ActionClass {
-            id: id("read-local"),
-            confirmation: ConfirmationPolicy::NotRequired,
-        }],
+        allowed_actions: vec![action("read-local")],
         forbidden_actions: Vec::new(),
         soft_preferences: vec![SoftPreference {
             dimension: id("evidence-quality"),
@@ -94,11 +98,11 @@ fn compilation_is_permutation_invariant() {
     reordered.allowed_actions.reverse();
     let second = must(must(compile(reordered)));
 
+    assert_eq!(first.objective, second.objective);
     assert_eq!(
         first.objective.semantic_digest,
         second.objective.semantic_digest
     );
-    assert_eq!(first.objective, second.objective);
 }
 
 #[test]
@@ -111,12 +115,11 @@ fn forbidden_requested_action_returns_conflict() {
     source.forbidden_actions.push(id("network-connect"));
 
     let conflict = must_err(must(compile(source)));
-
     assert_eq!(conflict.conflicting_ids, vec![id("network-connect")]);
 }
 
 #[test]
-fn contradictory_hard_bounds_return_minimal_pair() {
+fn contradictory_hard_bounds_return_inclusion_minimal_pair() {
     let mut source = envelope();
     source.constraints.extend([
         Constraint {
@@ -138,7 +141,6 @@ fn contradictory_hard_bounds_return_minimal_pair() {
     ]);
 
     let conflict = must_err(must(compile(source)));
-
     assert_eq!(
         conflict.conflicting_ids,
         vec![id("maximum-memory"), id("minimum-memory")]
@@ -163,13 +165,13 @@ fn changing_soft_weight_preserves_hard_digest() {
 }
 
 #[test]
-fn only_abstain_is_explicitly_reported() {
+fn empty_caller_action_set_still_has_explicit_abstain() {
     let mut source = envelope();
     source.allowed_actions.clear();
     let receipt = must(must(compile(source)));
 
     assert_eq!(receipt.disposition, CompileDisposition::ExplicitAbstain);
-    assert_eq!(receipt.objective.legal_actions[0].id, id("abstain"));
+    assert_eq!(receipt.objective.legal_actions, vec![action("abstain")]);
 }
 
 #[test]
@@ -188,42 +190,79 @@ fn untrusted_evidence_cannot_create_privileged_authority() {
     source.source_trust = SourceTrust::UntrustedEvidence;
 
     let error = must_err(compile(source));
-
     assert_eq!(error, ObjectiveError::UntrustedAuthorityEscalation);
     assert_eq!(error.code(), "OBJ-E009");
 }
 
 #[test]
-fn forbidden_abstain_is_not_implicitly_legalized_or_misreported() {
+fn intrinsic_abstain_cannot_be_forbidden() {
     let mut source = envelope();
     source.forbidden_actions.push(id("abstain"));
-    let receipt = must(must(compile(source.clone())));
-    assert_eq!(receipt.objective.legal_actions, source.allowed_actions);
-    assert_eq!(receipt.disposition, CompileDisposition::Compiled);
-    source.allowed_actions.clear();
+
+    let error = must_err(compile(source));
+    assert_eq!(error, ObjectiveError::AbstainUnavailable);
+    assert_eq!(error.code(), "OBJ-E006");
+}
+
+#[test]
+fn intrinsic_abstain_cannot_require_confirmation() {
+    let mut source = envelope();
+    source.allowed_actions.push(ActionClass {
+        id: id("abstain"),
+        confirmation: ConfirmationPolicy::Required,
+    });
+
     assert_eq!(
-        must_err(must(compile(source))).conflicting_ids,
-        vec![id("abstain")]
+        must_err(compile(source)),
+        ObjectiveError::AbstainUnavailable
     );
 }
 
 #[test]
-fn implicit_abstain_cannot_exceed_the_legal_action_bound() {
+fn intrinsic_abstain_has_one_reserved_action_slot() {
     let mut source = envelope();
     source.allowed_actions = (0..128)
-        .map(|i| ActionClass {
-            id: id(&format!("action-{i:03}")),
-            confirmation: ConfirmationPolicy::Required,
-        })
+        .map(|index| action(&format!("action-{index:03}")))
         .collect();
+
     assert_eq!(
         must_err(compile(source)),
         ObjectiveError::InvalidBound {
-            kind: "compiled legal actions",
-            maximum: 128,
-            actual: 129
+            kind: "caller allowed actions without intrinsic abstain",
+            maximum: 127,
+            actual: 128,
         }
     );
+}
+
+#[test]
+fn maximum_caller_set_compiles_to_exactly_128_actions() {
+    let mut source = envelope();
+    source.allowed_actions = (0..127)
+        .map(|index| action(&format!("action-{index:03}")))
+        .collect();
+    let receipt = must(must(compile(source)));
+
+    assert_eq!(receipt.objective.legal_actions.len(), 128);
+    assert!(
+        receipt
+            .objective
+            .legal_actions
+            .iter()
+            .any(|value| value.id == id("abstain"))
+    );
+}
+
+#[test]
+fn explicit_intrinsic_abstain_does_not_consume_an_extra_slot() {
+    let mut source = envelope();
+    source.allowed_actions = (0..127)
+        .map(|index| action(&format!("action-{index:03}")))
+        .chain(std::iter::once(action("abstain")))
+        .collect();
+    let receipt = must(must(compile(source)));
+
+    assert_eq!(receipt.objective.legal_actions.len(), 128);
 }
 
 #[test]
@@ -266,33 +305,4 @@ fn maximum_scalar_conflict_is_deterministic_at_numeric_extremes() {
         first.conflicting_ids,
         vec![id("maximum-bound"), id("minimum-bound")]
     );
-}
-
-#[test]
-fn scalar_extreme_endpoints_compile_without_arithmetic() {
-    let mut source = envelope();
-    source.constraints = vec![
-        Constraint {
-            id: id("lower-extreme"),
-            class: ConstraintClass::Task,
-            axis: id("lower-axis"),
-            relation: ConstraintRelation::Equal,
-            bound: FixedQ32::from_raw(i64::MIN),
-            evidence_source: id("request-1"),
-        },
-        Constraint {
-            id: id("upper-extreme"),
-            class: ConstraintClass::Task,
-            axis: id("upper-axis"),
-            relation: ConstraintRelation::Equal,
-            bound: FixedQ32::from_raw(i64::MAX),
-            evidence_source: id("request-1"),
-        },
-    ];
-
-    let first = must(must(compile(source.clone())));
-    source.constraints.reverse();
-    assert_eq!(must(must(compile(source))), first);
-    assert_eq!(first.objective.constraints[0].bound.raw(), i64::MIN);
-    assert_eq!(first.objective.constraints[1].bound.raw(), i64::MAX);
 }

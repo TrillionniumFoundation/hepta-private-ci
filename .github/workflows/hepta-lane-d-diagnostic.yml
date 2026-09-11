@@ -1,0 +1,79 @@
+name: Hepta Lane D exact-test diagnostic
+
+on:
+  pull_request:
+    paths:
+      - .github/workflows/hepta-lane-d-diagnostic.yml
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-lane-d-diagnostic-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  diagnose:
+    if: github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    steps:
+      - name: Check out exact pull-request source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Capture exact Lane D failures
+        shell: bash
+        env:
+          RUST_BACKTRACE: full
+        run: |
+          set -uo pipefail
+          test "$(git rev-parse HEAD)" = "${{ github.event.pull_request.head.sha }}"
+          mkdir -p .hepta-lane-d-diagnostic
+
+          run_capture() {
+            local name="$1"
+            shift
+            set +e
+            (cd codex-rs && "$@") >".hepta-lane-d-diagnostic/${name}.log" 2>&1
+            local status=$?
+            set -e
+            printf '%s\n' "${status}" > ".hepta-lane-d-diagnostic/${name}.exit"
+          }
+
+          run_capture cargo-check \
+            cargo check --locked \
+              -p codex-hepta-objective \
+              -p codex-hepta-ndu \
+              -p codex-hepta-control-plane \
+              --all-targets
+          run_capture objective-tests \
+            cargo test --locked -p codex-hepta-objective -- --nocapture
+          run_capture ndu-tests \
+            cargo test --locked -p codex-hepta-ndu -- --nocapture
+          run_capture control-plane-tests \
+            cargo test --locked -p codex-hepta-control-plane -- --nocapture
+
+          tar -czf .hepta-lane-d-diagnostic/lane-d-source.tar.gz \
+            codex-rs/Cargo.toml \
+            codex-rs/Cargo.lock \
+            codex-rs/hepta-objective \
+            codex-rs/hepta-ndu \
+            codex-rs/hepta-control-plane \
+            codex-rs/hepta-types
+          git status --porcelain > .hepta-lane-d-diagnostic/git-status.txt
+          sha256sum .hepta-lane-d-diagnostic/* \
+            > .hepta-lane-d-diagnostic/SHA256SUMS
+
+      - name: Retain exact Lane D diagnostic
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-lane-d-diagnostic-${{ github.event.pull_request.head.sha }}
+          path: .hepta-lane-d-diagnostic
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 1

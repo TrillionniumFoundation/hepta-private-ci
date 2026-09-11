@@ -1533,6 +1533,10 @@ async fn persisted_turn_for_client_id_path_with_mode(
     Ok(found)
 }
 
+#[expect(
+    clippy::too_many_arguments,
+    reason = "replay scanning keeps each mutable state component explicit"
+)]
 fn scan_persisted_client_line(
     item: RolloutItem,
     client_id: &str,

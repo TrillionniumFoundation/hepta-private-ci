@@ -13,6 +13,7 @@ doctest = false
 workspace = true
 
 [dependencies]
+codex-utils-absolute-path = { path = "../utils/absolute-path" }
 codex-protocol = { workspace = true }
 codex-state = { workspace = true }
 serde = { workspace = true, features = ["derive"] }
