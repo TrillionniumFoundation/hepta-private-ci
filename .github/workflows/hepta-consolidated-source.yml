@@ -35,6 +35,39 @@ jobs:
           fi
       - name: Exercise real namespace isolation and candidate evaluation
         run: python3 -m unittest discover -v -s tools/hepta-engineering-control -p 'test_*.py'
+  os-evidence:
+    name: OS evidence native executor
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      PYTHONDONTWRITEBYTECODE: "1"
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Verify native prerequisites and execute RSA and process-lifecycle tests
+        working-directory: tools/hepta-os-evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -x /usr/bin/openssl
+          /usr/bin/openssl version
+          python3 - <<'PYTEST'
+          import os
+          import signal
+          import unittest
+          import trusted_executor
+
+          trusted_executor._require_procfs_namespace()
+          if not hasattr(os, "pidfd_open") or not hasattr(signal, "pidfd_send_signal"):
+              raise SystemExit("Linux pidfd process containment is required")
+          suite = unittest.defaultTestLoader.discover("tests")
+          result = unittest.TextTestRunner(verbosity=2).run(suite)
+          if result.skipped:
+              raise SystemExit("Native OS evidence qualification cannot skip tests")
+          raise SystemExit(0 if result.wasSuccessful() else 1)
+          PYTEST
   qualification:
     runs-on: ubuntu-24.04-arm
     timeout-minutes: 45
@@ -46,14 +79,27 @@ jobs:
       SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
       BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
       PYTHONDONTWRITEBYTECODE: "1"
+      CARGO_INCREMENTAL: "0"
+      CARGO_PROFILE_TEST_DEBUG: "0"
+      CARGO_PROFILE_DEV_DEBUG: "0"
+      # Explicit owners: testing a dependency does not execute its own tests.
       PACKAGES: >-
+        codex-hepta-agent-protocol codex-hepta-agentd
         codex-hepta-authbus codex-hepta-authbus-p1-3-qualification
-        codex-hepta-bao-adapter codex-hepta-codex-adapter
+        codex-hepta-automation codex-hepta-bao-adapter
+        codex-hepta-bellman-operator codex-hepta-codex-adapter
         codex-hepta-cognitive-read codex-hepta-cognitive-store
         codex-hepta-cognitive-types codex-hepta-compact-engine
         codex-hepta-context-compiler codex-hepta-control-plane
-        codex-hepta-infer-core codex-hepta-inferd codex-hepta-intelligence
-        codex-hepta-kg codex-hepta-memory-federation codex-hepta-memory-retrieval
+        codex-hepta-evidence codex-hepta-fleet
+        codex-hepta-infer-core codex-hepta-infer-worker-host
+        codex-hepta-inferd codex-hepta-intelligence
+        codex-hepta-intelligence-eval codex-hepta-intuition
+        codex-hepta-kg codex-hepta-learning-artifacts
+        codex-hepta-learning-ledger codex-hepta-matrixd
+        codex-hepta-memory codex-hepta-memory-federation
+        codex-hepta-memory-retrieval codex-hepta-ndu
+        codex-hepta-plasticity codex-hepta-shadow-qualification
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
@@ -75,6 +121,10 @@ jobs:
             git checkout --detach "$MERGE"
           fi
           git rev-parse HEAD HEAD^{tree}
+      - name: Verify source-identity and owner-scope regressions
+        run: |
+          python3 -m unittest discover -v -s scripts -p 'test_hepta_ci_source_identity.py'
+          python3 -m unittest discover -v -s scripts -p 'test_hepta_lane_d_scope.py'
       - name: Retain original document and source-owner gates
         shell: bash
         run: |
@@ -96,6 +146,7 @@ jobs:
           set -euo pipefail
           args=()
           for package in $PACKAGES; do args+=(-p "$package"); done
+          args+=(--features codex-hepta-infer-worker-host/native-app-server)
           cargo check --locked "${args[@]}" --all-targets
           just test --locked "${args[@]}"
           cargo clippy --locked "${args[@]}" --all-targets -- -D warnings
