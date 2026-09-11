@@ -31,7 +31,12 @@ EXPECTED_OPERATIONS = {
     "runtime.supervisor": ["start_instance", "observe_health", "drain", "load_next"],
     "runtime.fleet": ["admit_host", "allocate", "renew_or_revoke"],
     "runtime.agentd": ["compose_runtime", "start_run", "cancel_run", "attach_context"],
-    "runtime.codex": ["open_thread", "submit_turn", "dispatch_tool", "observe_delivery"],
+    "runtime.codex": [
+        "open_thread",
+        "submit_turn",
+        "dispatch_tool",
+        "observe_delivery",
+    ],
     "inference.control": ["reserve_request", "schedule", "cancel", "settle"],
     "inference.worker": ["load_model", "run", "unload"],
     "automation.taskflow": [
@@ -286,7 +291,9 @@ def verify_truth(truth: dict[str, Any], manifest: dict[str, Any]) -> tuple[int, 
         "truth schema",
     )
     require(truth.get("planId") == manifest.get("planId"), "truth plan identity")
-    require(truth.get("planVersion") == manifest.get("planVersion"), "truth plan version")
+    require(
+        truth.get("planVersion") == manifest.get("planVersion"), "truth plan version"
+    )
     require(truth.get("laneId") == "LANE-B-RUNTIME", "truth lane")
     require(
         truth.get("baseline", {}).get("commit") == manifest.get("baseCommit"),

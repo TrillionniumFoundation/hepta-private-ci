@@ -122,7 +122,9 @@ def verify_baseline_provenance(truth: dict[str, Any]) -> tuple[str, str]:
         isinstance(tree, str) and HEX40.fullmatch(tree) is not None,
         "baseline tree",
     )
-    require(run_git("rev-parse", f"{commit}^{{tree}}") == tree, "baseline tree mismatch")
+    require(
+        run_git("rev-parse", f"{commit}^{{tree}}") == tree, "baseline tree mismatch"
+    )
     return commit, tree
 
 

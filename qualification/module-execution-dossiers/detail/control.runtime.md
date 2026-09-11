@@ -5,11 +5,11 @@ Status: source candidate global planner and owner-local decision journal impleme
 
 ## 1. Source and work envelope
 
-Root: `codex-rs/hepta-control-plane`. Owner-local package: `RCP-1-RUNTIME-CONTROL-PLANE`; NDU integration package: `RCP-2-NDU-HIERARCHY-INTEGRATION` in `docs/delivery/LANE_D_WORK_PACKAGE_OVERLAY.json`. Exact symbol and test mappings are in `docs/modules/control.runtime/IMPLEMENTATION_MAP.json`.
+Root: `codex-rs/hepta-control-plane`. Owner-local package: RCP-1-RUNTIME-CONTROL-PLANE`; NDU integration package: RCP-2-NDU-HIERARCHY-INTEGRATION` in `docs/delivery/LANE_D_WORK_PACKAGE_OVERLAY.json`. Exact symbol and test mappings are in `docs/modules/control.runtime/IMPLEMENTATION_MAP.json`.
 
 The planner is distinct from the existing desired-state FSM, organ host, local cart controller and timing reference. It has no effect or capability issuance authority.
 
-## 2. Native operations and contract details
+## 2. Public operations and contract details
 
 Implemented operations are:
 
@@ -26,7 +26,7 @@ Planning is deliberately two-stage. `prepare_plan` owns snapshot, owner and reso
 
 Every prepared input, evaluation binding, plan receipt and grant-request set is `AuthorityPosture::DENY_ALL`. A grant request is not a capability.
 
-## 3. Snapshot, state and transaction design
+## 3. State records and transaction design
 
 `GlobalStateSnapshotV1` binds exact objective, body generation, configuration, revocation frontier, owner revisions, observation/expiry times, readiness, source frontiers and support. Missing, stale and unavailable owner masks are explicit. Any non-empty required mask blocks planning; absence is never treated as zero cost or ready state.
 
@@ -62,16 +62,16 @@ Metrics include source ages, missing/stale/unavailable masks, resource rejection
 
 ## 6. Concrete verification cases
 
-- `RCP-01`: stale or missing required owner blocks preparation.
-- `RCP-02`: essential floors filter an over-budget candidate before NDU while preserving abstain.
-- `RCP-03`: changed snapshot, body, configuration or revocation frontier invalidates the prepared plan.
-- `RCP-04`: local fallback/stop remains independent during central outage.
-- `RCP-05`: missing resource axes reject instead of becoming zero.
-- `RCP-06`: evaluated and rejected NDU IDs must partition the exact feasible set.
-- `RCP-07`: tampered NDU binding or uncertainty rejects finalization.
-- `RCP-08`: grant requests bind final payloads and remain deny-all.
-- `RCP-09`: journal reopen preserves selection.
-- `RCP-10`: journal truncation/tampering fails closed and revocation prevents reselection.
+- RCP-01: stale or missing required owner blocks preparation.
+- RCP-02: essential floors filter an over-budget candidate before NDU while preserving abstain.
+- RCP-03: changed snapshot, body, configuration or revocation frontier invalidates the prepared plan.
+- RCP-04: local fallback/stop remains independent during central outage.
+- RCP-05: missing resource axes reject instead of becoming zero.
+- RCP-06: evaluated and rejected NDU IDs must partition the exact feasible set.
+- RCP-07: tampered NDU binding or uncertainty rejects finalization.
+- RCP-08: grant requests bind final payloads and remain deny-all.
+- RCP-09: journal reopen preserves selection.
+- RCP-10: journal truncation/tampering fails closed and revocation prevents reselection.
 
 Native tests are registered in the implementation map. Product-callsite, production-store and named-host evidence are not inferred from unit tests.
 

@@ -107,8 +107,8 @@ impl PlannerJournalV1 {
     ) -> Result<PlannerJournalEntryV1, PlannerJournalError> {
         self.append(
             PlannerJournalKindV1::Snapshot,
-            snapshot.snapshot_digest,
-            snapshot.snapshot_digest,
+            snapshot.snapshot_digest(),
+            snapshot.snapshot_digest(),
         )
     }
 
@@ -118,8 +118,8 @@ impl PlannerJournalV1 {
     ) -> Result<PlannerJournalEntryV1, PlannerJournalError> {
         self.append(
             PlannerJournalKindV1::Decision,
-            receipt.receipt_digest,
-            receipt.receipt_digest,
+            receipt.receipt_digest(),
+            receipt.receipt_digest(),
         )
     }
 
@@ -130,17 +130,17 @@ impl PlannerJournalV1 {
     ) -> Result<PlannerJournalEntryV1, PlannerJournalError> {
         if !self.entries.iter().any(|entry| {
             entry.kind == PlannerJournalKindV1::Decision
-                && entry.payload_digest == receipt.receipt_digest
+                && entry.payload_digest == receipt.receipt_digest()
         }) {
             return Err(PlannerJournalError::DecisionNotRecorded);
         }
-        if self.revoked_digests().contains(&receipt.receipt_digest) {
+        if self.revoked_digests().contains(&receipt.receipt_digest()) {
             return Err(PlannerJournalError::RevokedPlan);
         }
         self.append(
             PlannerJournalKindV1::SelectedPlan,
             operation_identity_digest,
-            receipt.receipt_digest,
+            receipt.receipt_digest(),
         )
     }
 

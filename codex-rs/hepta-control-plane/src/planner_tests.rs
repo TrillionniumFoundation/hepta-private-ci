@@ -320,7 +320,7 @@ fn tampered_candidate_payload_is_rejected_before_grant_request() {
         Some(id("work")),
     );
     let receipt = must(finalize_plan(&snapshot, &prepared, &ndu, 1_100));
-    let mut tampered = prepared.clone();
+    let mut tampered = prepared;
     let candidate = tampered
         .feasible_candidates
         .iter_mut()
@@ -369,7 +369,7 @@ fn tampered_candidate_operation_resource_or_owner_is_rejected() {
         PlannerError::PreparedPlanMismatch
     );
 
-    let mut owner = prepared.clone();
+    let mut owner = prepared;
     owner.feasible_candidates[1].required_owner_ids.clear();
     assert_eq!(
         must_err(request_execution_grants(&snapshot, &owner, &receipt, 1_200)),
@@ -391,7 +391,7 @@ fn grant_request_revalidates_snapshot_masks_and_digest() {
         Some(id("work")),
     );
     let receipt = must(finalize_plan(&snapshot, &prepared, &ndu, 1_100));
-    let mut tampered = snapshot.clone();
+    let mut tampered = snapshot;
     tampered.stale_owner_ids.push(id("planner"));
 
     assert_eq!(
@@ -445,7 +445,7 @@ fn resource_profile_and_snapshot_policy_are_mandatory_and_digest_bound() {
         PlannerError::EmptyDigest("resource profile")
     );
 
-    let mut changed = snapshot.clone();
+    let mut changed = snapshot;
     changed.snapshot_policy_digest = digest("changed-snapshot-policy");
     assert_eq!(
         must_err(prepare_plan(&changed, planning_request(1))),

@@ -9,7 +9,7 @@ Root: `codex-rs/hepta-ndu`. Owner-local source package: `NDU-2B-NDU-HIERARCHY-IM
 
 The module owns utility and preference calculations but has no effect, capability, selection, promotion or release authority. Only system, domain, agent and episode are valid NDU subjects.
 
-## 2. Native operations and contract details
+## 2. Public operations and contract details
 
 Implemented operations include:
 
@@ -26,7 +26,7 @@ NduProjectionJournalV1::{append_projection, select_projection, revoke_projection
 
 The legacy evaluator is retained as a compatibility entry with an explicit `legacy-sum-max-zero-tolerance-v1` policy. New integrations use `EvaluationPolicyV1` and `NduEvaluationReceiptV2`, whose digest binds utility, risk, resource and uncertainty aggregation plus per-axis Pareto tolerance.
 
-## 3. State, receipts and authority separation
+## 3. State records and transaction design
 
 `NduSolverIterationReceipt` and `NduSolverTerminationReceipt` are local deterministic solver evidence. The termination receipt records both terminal residual and the true maximum residual observed across iterations.
 
@@ -36,7 +36,7 @@ They are deliberately not named `NduConvergenceCertificateV1`. That canonical ce
 
 `NduProjectionJournalV1` is a bounded durability reference, not a production writer. It provides append-only hash-chain entries, semantic idempotency, selected-projection reconstruction, exact reopen, truncation/tamper detection and revocation non-resurrection. Production composition still requires a selected store, migration, fsync profile, retention and backup/restore evidence.
 
-## 4. Aggregation, Pareto and solver semantics
+## 4. Deterministic algorithm and scheduling
 
 Hard feasibility is applied before utility arithmetic. Every candidate includes abstain. Missing required organ support, objective/generation mismatch, missing axis or empty support digest rejects rather than contributing zero.
 
@@ -63,16 +63,16 @@ Runtime cost is deterministic and bounded by the declared dimensions. Dense cova
 
 ## 6. Concrete verification cases
 
-- `NDU-DETAIL-01`: scaled covariance `C=2dt` with true `Z=3` recovers 3, not 6.
-- `NDU-DETAIL-02`: correlated covariance recovers the analytic vector; singular covariance rejects.
-- `NDU-DETAIL-03`: higher utility with a hard privacy breach is filtered before Pareto analysis.
-- `NDU-DETAIL-04`: simultaneous parent/child artifact update rejects.
-- `NDU-DETAIL-05`: axis-specific maximum aggregation differs from implicit summation and is digest-bound.
-- `NDU-DETAIL-06`: `RequireEqual` rejects conflicting owner values.
-- `NDU-DETAIL-07`: Pareto tolerance changes the frontier and changes the policy digest.
-- `NDU-DETAIL-08`: local solver termination records terminal and maximum residual separately.
-- `NDU-DETAIL-09`: protocol publication requires complete objective/subject/event/coefficient context.
-- `NDU-DETAIL-10`: projection journal reopens exactly; tampering, truncation and revoked-projection resurrection reject.
+- NDU-DETAIL-01: scaled covariance `C=2dt` with true `Z=3` recovers 3, not 6.
+- NDU-DETAIL-02: correlated covariance recovers the analytic vector; singular covariance rejects.
+- NDU-DETAIL-03: higher utility with a hard privacy breach is filtered before Pareto analysis.
+- NDU-DETAIL-04: simultaneous parent/child artifact update rejects.
+- NDU-DETAIL-05: axis-specific maximum aggregation differs from implicit summation and is digest-bound.
+- NDU-DETAIL-06: `RequireEqual` rejects conflicting owner values.
+- NDU-DETAIL-07: Pareto tolerance changes the frontier and changes the policy digest.
+- NDU-DETAIL-08: local solver termination records terminal and maximum residual separately.
+- NDU-DETAIL-09: protocol publication requires complete objective/subject/event/coefficient context.
+- NDU-DETAIL-10: projection journal reopens exactly; tampering, truncation and revoked-projection resurrection reject.
 
 Tests and symbols are recorded in the implementation map. They establish source behavior only, not a production caller, longitudinal utility gain or independent activation certificate.
 

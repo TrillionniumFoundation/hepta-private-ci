@@ -45,9 +45,7 @@ WORKFLOW_PATTERNS = (
     ("ref-rewrite", re.compile(r"(?mi)\bgit\s+update-ref\b")),
     (
         "self-merge",
-        re.compile(
-            r"(?mi)(?:\bgh\s+pr\s+merge\b|\bgit\s+merge\s+--ff-only\s+origin/)"
-        ),
+        re.compile(r"(?mi)(?:\bgh\s+pr\s+merge\b|\bgit\s+merge\s+--ff-only\s+origin/)"),
     ),
     ("untrusted-privileged-trigger", re.compile(r"(?mi)^\s*pull_request_target\s*:")),
 )
@@ -68,9 +66,7 @@ EXECUTABLE_PATTERNS = (
     ),
     (
         "remote-pipe-execution",
-        re.compile(
-            r"(?mi)(?:curl|wget)\b[^\n]{0,400}\|\s*(?:sh|bash|python(?:3)?)\b"
-        ),
+        re.compile(r"(?mi)(?:curl|wget)\b[^\n]{0,400}\|\s*(?:sh|bash|python(?:3)?)\b"),
     ),
 )
 REQUIRED_WORKFLOW_TOKENS = (
@@ -259,14 +255,19 @@ def verify(base: str, head: str, output: str | None) -> int:
         )
         for path in removed:
             if path in PROTECTED_DELETION:
-                violations.append(Violation(path, "protected-deletion", 1, entry.status))
+                violations.append(
+                    Violation(path, "protected-deletion", 1, entry.status)
+                )
         if entry.status == "D":
             continue
         if any(pattern.search(entry.path) for pattern in DENIED_PATH_PATTERNS):
             violations.append(
                 Violation(entry.path, "denied-candidate-path", 1, entry.path)
             )
-        if is_scanned(entry.path) and entry.path != "scripts/hepta-repository-integrity.py":
+        if (
+            is_scanned(entry.path)
+            and entry.path != "scripts/hepta-repository-integrity.py"
+        ):
             scanned.add(entry.path)
             violations.extend(scan_blob(head, entry.path))
 
@@ -305,9 +306,7 @@ def verify(base: str, head: str, output: str | None) -> int:
         try:
             own_text = own.decode("utf-8", "strict")
         except UnicodeDecodeError:
-            violations.append(
-                Violation(own_path, "non-utf8-executable-source", 1, "")
-            )
+            violations.append(Violation(own_path, "non-utf8-executable-source", 1, ""))
             own_text = ""
         for token in (
             "--diff-filter=ACMRTD",
@@ -321,8 +320,7 @@ def verify(base: str, head: str, output: str | None) -> int:
                 )
 
     unique = {
-        (item.path, item.rule, item.line, item.excerpt): item
-        for item in violations
+        (item.path, item.rule, item.line, item.excerpt): item for item in violations
     }
     ordered = sorted(
         unique.values(),
@@ -404,9 +402,7 @@ jobs:
         else:
             raise AssertionError(f"hostile Git record was accepted: {hostile!r}")
 
-    rules = {
-        item.rule for item in scan_path("scripts/materializer.py", "")
-    }
+    rules = {item.rule for item in scan_path("scripts/materializer.py", "")}
     assert "denied-candidate-path" in rules
     print(
         json.dumps(

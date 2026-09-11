@@ -45,9 +45,11 @@ COMPOSITION_SECTIONS = [
     "## 16. Evidence package required for activation",
     "## 17. Acceptance rule",
 ]
-NATIVE_SECTIONS = ["## 1. Review method"] + [
-    f"## {index}. `{module}`" for index, module in enumerate(MODULES, start=2)
-] + ["## 13. Cross-module closure conditions"]
+NATIVE_SECTIONS = (
+    ["## 1. Review method"]
+    + [f"## {index}. `{module}`" for index, module in enumerate(MODULES, start=2)]
+    + ["## 13. Cross-module closure conditions"]
+)
 FORBIDDEN = re.compile(r"\b(?:TODO|TBD|FIXME|XXX)\b", re.IGNORECASE)
 
 

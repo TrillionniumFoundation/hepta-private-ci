@@ -35,7 +35,9 @@ def git_value(*args: str) -> str:
 
 def parse_block(body: str) -> dict[str, str]:
     if body.count(BEGIN) != 1 or body.count(END) != 1:
-        raise TupleError("PR body must contain exactly one Lane A exact-subject v4 block")
+        raise TupleError(
+            "PR body must contain exactly one Lane A exact-subject v4 block"
+        )
     block = body.split(BEGIN, 1)[1].split(END, 1)[0]
     values: dict[str, str] = {}
     for line in block.splitlines():
@@ -85,7 +87,13 @@ def main(argv: list[str] | None = None) -> int:
     args = parser.parse_args(argv)
     try:
         verify(args.event)
-    except (OSError, KeyError, ValueError, subprocess.SubprocessError, TupleError) as error:
+    except (
+        OSError,
+        KeyError,
+        ValueError,
+        subprocess.SubprocessError,
+        TupleError,
+    ) as error:
         print(f"lane-a PR tuple verification failed: {error}", file=sys.stderr)
         return 1
     return 0

@@ -37,7 +37,12 @@ EXPECTED_OPERATIONS = {
     "runtime.supervisor": ["start_instance", "observe_health", "drain", "load_next"],
     "runtime.fleet": ["admit_host", "allocate", "renew_or_revoke"],
     "runtime.agentd": ["compose_runtime", "start_run", "cancel_run", "attach_context"],
-    "runtime.codex": ["open_thread", "submit_turn", "dispatch_tool", "observe_delivery"],
+    "runtime.codex": [
+        "open_thread",
+        "submit_turn",
+        "dispatch_tool",
+        "observe_delivery",
+    ],
     "inference.control": ["reserve_request", "schedule", "cancel", "settle"],
     "inference.worker": ["load_model", "run", "unload"],
     "automation.taskflow": [
@@ -145,14 +150,19 @@ def verify_candidate(manifest: dict[str, Any]) -> list[str]:
     require(manifest.get("requiredModuleGuides") == MODULES, "candidate module order")
     base = manifest.get("baseCommit")
     tree = manifest.get("baseTree")
-    require(isinstance(base, str) and re.fullmatch(r"[0-9a-f]{40}", base), "base commit")
+    require(
+        isinstance(base, str) and re.fullmatch(r"[0-9a-f]{40}", base), "base commit"
+    )
     require(isinstance(tree, str) and re.fullmatch(r"[0-9a-f]{40}", tree), "base tree")
     require(run_git("rev-parse", f"{base}^{{tree}}") == tree, "base tree mismatch")
     ancestor = subprocess.run(
         ["git", "merge-base", "--is-ancestor", base, "HEAD"], cwd=ROOT, check=False
     )
     require(ancestor.returncode == 0, "exact base is not an ancestor of HEAD")
-    require(not run_git("rev-list", "--merges", f"{base}..HEAD"), "merge commit in candidate")
+    require(
+        not run_git("rev-list", "--merges", f"{base}..HEAD"),
+        "merge commit in candidate",
+    )
 
     prefixes = manifest.get("allowedPathPrefixes")
     require(
@@ -163,7 +173,9 @@ def verify_candidate(manifest: dict[str, Any]) -> list[str]:
     )
     changed = [
         line
-        for line in run_git("diff", "--name-only", "--diff-filter=ACDMRTUXB", f"{base}..HEAD").splitlines()
+        for line in run_git(
+            "diff", "--name-only", "--diff-filter=ACDMRTUXB", f"{base}..HEAD"
+        ).splitlines()
         if line
     ]
     require(changed, "candidate has no changes")
@@ -175,7 +187,9 @@ def verify_candidate(manifest: dict[str, Any]) -> list[str]:
             text = (ROOT / path).read_text(encoding="utf-8")
             lowered = text.lower()
             require("contents: write" not in lowered, f"{path}: write permission")
-            require("pull-requests: write" not in lowered, f"{path}: PR write permission")
+            require(
+                "pull-requests: write" not in lowered, f"{path}: PR write permission"
+            )
             require("git push" not in lowered, f"{path}: source mutation")
     return changed
 
@@ -184,9 +198,14 @@ def verify_document(path: Path, title: str, headings: list[str], module: str) ->
     require(path.is_file(), f"missing {path.relative_to(ROOT)}")
     text = path.read_text(encoding="utf-8")
     require(text.startswith(title + "\n"), f"{path.relative_to(ROOT)} title")
-    require(not FORBIDDEN_MARKER.search(text), f"{path.relative_to(ROOT)} unresolved marker")
+    require(
+        not FORBIDDEN_MARKER.search(text), f"{path.relative_to(ROOT)} unresolved marker"
+    )
     positions = [text.find(heading) for heading in headings]
-    require(all(position >= 0 for position in positions), f"{path.relative_to(ROOT)} section")
+    require(
+        all(position >= 0 for position in positions),
+        f"{path.relative_to(ROOT)} section",
+    )
     require(positions == sorted(positions), f"{path.relative_to(ROOT)} section order")
     require(module in text, f"{path.relative_to(ROOT)} module identity")
     for phrase in ("rollback", "authority", "verification"):
@@ -194,7 +213,14 @@ def verify_document(path: Path, title: str, headings: list[str], module: str) ->
 
 
 def verify_operation(module: str, roots: list[str], operation: dict[str, Any]) -> None:
-    required = {"designOperation", "state", "path", "symbol", "callerClass", "buildTarget"}
+    required = {
+        "designOperation",
+        "state",
+        "path",
+        "symbol",
+        "callerClass",
+        "buildTarget",
+    }
     require(set(operation) == required, f"{module}: operation field set")
     state = operation.get("state")
     require(state in ALLOWED_STATES, f"{module}: unknown operation state {state}")
@@ -217,12 +243,18 @@ def verify_operation(module: str, roots: list[str], operation: dict[str, Any]) -
     require(isinstance(path, str) and path, f"{module}: mapped path")
     require(isinstance(symbol, str) and len(symbol) >= 6, f"{module}: mapped symbol")
     require(isinstance(target, str) and target, f"{module}: build target")
-    require(any(path == root or path.startswith(root + "/") for root in roots), f"{module}: owner-root escape")
+    require(
+        any(path == root or path.startswith(root + "/") for root in roots),
+        f"{module}: owner-root escape",
+    )
     source = ROOT / path
     require(source.is_file(), f"{module}: missing mapped source {path}")
     text = source.read_text(encoding="utf-8")
     require(symbol in text, f"{module}: missing mapped symbol {symbol!r} in {path}")
-    require(not path.endswith("_tests.rs") and "/tests/" not in path, f"{module}: test-only mapping")
+    require(
+        not path.endswith("_tests.rs") and "/tests/" not in path,
+        f"{module}: test-only mapping",
+    )
 
 
 def verify_truth(truth: dict[str, Any], manifest: dict[str, Any]) -> tuple[int, int]:
@@ -232,13 +264,25 @@ def verify_truth(truth: dict[str, Any], manifest: dict[str, Any]) -> tuple[int, 
         "truth schema",
     )
     require(truth.get("planId") == manifest.get("planId"), "truth plan identity")
-    require(truth.get("planVersion") == manifest.get("planVersion"), "truth plan version")
+    require(
+        truth.get("planVersion") == manifest.get("planVersion"), "truth plan version"
+    )
     require(truth.get("laneId") == "LANE-B-RUNTIME", "truth lane")
-    require(truth.get("baseline", {}).get("commit") == manifest.get("baseCommit"), "truth base")
-    require(truth.get("baseline", {}).get("tree") == manifest.get("baseTree"), "truth tree")
+    require(
+        truth.get("baseline", {}).get("commit") == manifest.get("baseCommit"),
+        "truth base",
+    )
+    require(
+        truth.get("baseline", {}).get("tree") == manifest.get("baseTree"), "truth tree"
+    )
     claims = truth.get("claimBoundary")
     require(isinstance(claims, dict), "claim boundary")
-    for key in ("repositoryTruthModelClosed", "laneModuleSetClosed", "observedSourceAnchorsClosed", "currentMappingDebtClosed"):
+    for key in (
+        "repositoryTruthModelClosed",
+        "laneModuleSetClosed",
+        "observedSourceAnchorsClosed",
+        "currentMappingDebtClosed",
+    ):
         require(claims.get(key) is True, f"truth positive repository claim {key}")
     for key in (
         "targetDesignImplementationClosed",
@@ -251,7 +295,11 @@ def verify_truth(truth: dict[str, Any], manifest: dict[str, Any]) -> tuple[int, 
         "futureWindowEfficacyProved",
     ):
         require(claims.get(key) is False, f"unsupported positive claim {key}")
-    require(truth.get("allowedOperationStates") == ["implemented", "implemented_partial", "boundary_only", "planned"], "state vocabulary")
+    require(
+        truth.get("allowedOperationStates")
+        == ["implemented", "implemented_partial", "boundary_only", "planned"],
+        "state vocabulary",
+    )
     require(truth.get("moduleOrder") == MODULES, "truth module order")
     rows = truth.get("modules")
     require(isinstance(rows, list), "truth modules")
@@ -278,10 +326,19 @@ def verify_truth(truth: dict[str, Any], manifest: dict[str, Any]) -> tuple[int, 
                 planned += 1
             else:
                 mapped += 1
-        require(row.get("productionCallerState") == "unproved", f"{module}: product caller claim")
-        require(row.get("productExecutionState") == "unproved", f"{module}: product execution claim")
+        require(
+            row.get("productionCallerState") == "unproved",
+            f"{module}: product caller claim",
+        )
+        require(
+            row.get("productExecutionState") == "unproved",
+            f"{module}: product execution claim",
+        )
         for key in ("stateDisposition", "terminalObserverDisposition"):
-            require(isinstance(row.get(key), str) and len(row[key]) >= 40, f"{module}: {key}")
+            require(
+                isinstance(row.get(key), str) and len(row[key]) >= 40,
+                f"{module}: {key}",
+            )
         gaps = row.get("residualGaps")
         require(
             isinstance(gaps, list)
@@ -339,10 +396,27 @@ def self_test() -> int:
         pass
     else:  # pragma: no cover
         raise Invalid("duplicate key self-test")
-    require(path_allowed("qualification/lane-b/a.json", ["qualification/lane-b/"]), "path allow")
-    require(not path_allowed("docs/DEVELOPMENT.md", ["qualification/lane-b/"]), "path deny")
-    require(len(MODULES) == 11 and sum(map(len, EXPECTED_OPERATIONS.values())) == 39, "closed sets")
-    print(json.dumps({"status":"PASS_HEPTA_LANE_B_CANDIDATE_SELF_TEST","modules":11,"operations":39}, sort_keys=True))
+    require(
+        path_allowed("qualification/lane-b/a.json", ["qualification/lane-b/"]),
+        "path allow",
+    )
+    require(
+        not path_allowed("docs/DEVELOPMENT.md", ["qualification/lane-b/"]), "path deny"
+    )
+    require(
+        len(MODULES) == 11 and sum(map(len, EXPECTED_OPERATIONS.values())) == 39,
+        "closed sets",
+    )
+    print(
+        json.dumps(
+            {
+                "status": "PASS_HEPTA_LANE_B_CANDIDATE_SELF_TEST",
+                "modules": 11,
+                "operations": 39,
+            },
+            sort_keys=True,
+        )
+    )
     return 0
 
 
