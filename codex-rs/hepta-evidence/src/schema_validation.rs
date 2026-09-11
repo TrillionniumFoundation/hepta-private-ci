@@ -26,6 +26,26 @@ struct SchemaObjectSpec {
 
 const REQUIRED_SCHEMA_OBJECTS: &[SchemaObjectSpec] = &[
     SchemaObjectSpec {
+        name: "authbus_replay_sequences",
+        object_type: "table",
+        table_name: "authbus_replay_sequences",
+        required_sql_fragments: &[
+            "create table",
+            "issuer_id",
+            "key_epoch",
+            "subject_id",
+            "scope_digest",
+            "sequence",
+            "envelope_digest",
+            "primary key",
+            "length(key_epoch) = 8",
+            "length(sequence) = 8",
+            "length(scope_digest) = 32",
+            "length(envelope_digest) = 32",
+            "without rowid",
+        ],
+    },
+    SchemaObjectSpec {
         name: "governance_decisions",
         object_type: "table",
         table_name: "governance_decisions",

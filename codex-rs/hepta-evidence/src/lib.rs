@@ -1,5 +1,6 @@
 #![forbid(unsafe_code)]
 
+mod authbus_store;
 mod canonical;
 mod governance_store;
 mod governance_validation;
@@ -13,6 +14,7 @@ mod schema_validation;
 mod store;
 mod summary;
 
+pub use authbus_store::AuthBusAdmissionError;
 pub use historical::HISTORICAL_EVIDENCE_SCHEMA_VERSION;
 pub use historical::HistoricalEvidenceFamily;
 pub use historical::HistoricalEvidenceRecord;
