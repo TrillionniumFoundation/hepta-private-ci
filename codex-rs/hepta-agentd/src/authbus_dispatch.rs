@@ -327,3 +327,8 @@ impl TextQueueTransport for RemoteAppServerClient {
             .map_err(|error| invalid(&error.to_string()))
     }
 }
+
+#[cfg(test)]
+#[cfg(unix)]
+#[path = "authbus_dispatch_tests.rs"]
+mod tests;
