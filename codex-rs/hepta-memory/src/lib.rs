@@ -117,6 +117,7 @@ pub use cognitive_store::CognitiveRecoveryError;
 pub use cognitive_store::CognitiveRecoveryRequirement;
 pub use cognitive_store::CognitiveStore;
 pub use cognitive_store::CognitiveStoreError;
+pub use cognitive_store::RecoveredCognitiveReadOnly;
 pub use compact_persistence::COMPACT_PERSISTENCE_EXTERNAL_EFFECTS;
 pub use compact_persistence::COMPACT_PERSISTENCE_KG_WRITE_AUTHORITY;
 pub use compact_persistence::COMPACT_PERSISTENCE_NAMESPACE;
