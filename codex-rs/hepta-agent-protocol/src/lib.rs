@@ -2,6 +2,12 @@
 
 #![forbid(unsafe_code)]
 
+mod authbus;
+pub use authbus::AuthBusTextBody;
+pub use authbus::AuthBusTextIngress;
+pub use authbus::AuthBusTextState;
+pub use authbus::AuthBusTextStatus;
+
 use std::path::PathBuf;
 
 use codex_hepta_automation::AutomationTask;
@@ -244,6 +250,12 @@ pub enum AgentdMethod {
     Health,
     Lifecycle,
     SessionIngress,
+    AuthBusText {
+        request: AuthBusTextIngress,
+    },
+    AuthBusTextStatus {
+        delivery_id: String,
+    },
     CognitiveContext {
         query: String,
         limit: u16,
@@ -300,6 +312,7 @@ pub enum AgentdPayload {
     Lifecycle(LifecycleSnapshot),
     SessionIngress(SessionIngress),
     CognitiveContext(CognitiveContextSnapshot),
+    AuthBusTextStatus(AuthBusTextStatus),
     Events(EventBatch),
     AutomationTask(AutomationTask),
     AutomationTasks {
