@@ -197,7 +197,6 @@ jobs:
           set -euo pipefail
           args=()
           for package in $PACKAGES; do args+=(-p "$package"); done
-          cargo check --locked "${args[@]}" --all-targets
           just test --locked "${args[@]}"
           cargo clippy --locked "${args[@]}" --all-targets -- -D warnings
       - name: Formatting without source mutation

@@ -37,6 +37,8 @@ an `allGapsClosed` flag.
   own lane's changes, so one ordinary integration PR can contain multiple lanes.
 - Native bindings record both historical provenance and the actual checked blob;
   a legitimate implementation change is no longer rejected for changing its hash.
+- Removed the separate owner `cargo check` pass: actual tests and strict
+  all-target Clippy already compile those targets.
 - Preserved substantive tests, owner/root checks, signed evidence, bounded reads,
   source/merge verification, and actual sandbox admission.
 
