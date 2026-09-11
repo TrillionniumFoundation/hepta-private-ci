@@ -1,0 +1,72 @@
+{
+  "schema": "hepta.lane-b-candidate-manifest.v3",
+  "schemaVersion": 3,
+  "planId": "HEPTA-GLOBAL-MODULAR-DEVELOPMENT-PLAN",
+  "planVersion": "8.0.0",
+  "laneId": "LANE-B-RUNTIME",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "lineageAnchor": {
+    "commit": "f278a89eea18fccb6d37b876aa5679863a64139d",
+    "tree": "5baa144717d4b3e3c596501fb56ce911d009e728"
+  },
+  "sourceIdentity": {
+    "exactCandidateIsCurrentCleanHead": true,
+    "expectedHeadMayBeSuppliedByCi": true,
+    "lineageAnchorMustBeAncestor": false,
+    "originalLineageAnchorIsProvenanceOnly": true,
+    "verifiedConvergenceRebaseRequired": true,
+    "convergenceBaseMustBeDirectParent": true,
+    "selfReferentialHeadHashForbidden": true
+  },
+  "historyPolicy": {
+    "lineageAnchorMustBeAncestor": false,
+    "originalLineageAnchorIsProvenanceOnly": true,
+    "unrelatedCommitGraftsForbidden": true,
+    "mergeCommitsForbiddenInSourceLineage": true,
+    "candidateControlledMutationForbidden": true,
+    "workflowWritePermissionsForbidden": true
+  },
+  "convergenceRebaseReceipt": "qualification/lane-b/LANE_B_CONVERGENCE_REBASE.json",
+  "allowedPathPrefixes": [
+    ".github/workflows/hepta-lane-b-",
+    "qualification/lane-b/",
+    "docs/readiness/LANE_B_",
+    "docs/modules/runtime.supervisor/IMPLEMENTATION_MAP.json",
+    "docs/modules/runtime.fleet/IMPLEMENTATION_MAP.json",
+    "docs/modules/runtime.agentd/IMPLEMENTATION_MAP.json",
+    "docs/modules/runtime.codex/IMPLEMENTATION_MAP.json",
+    "docs/modules/inference.control/IMPLEMENTATION_MAP.json",
+    "docs/modules/inference.worker/IMPLEMENTATION_MAP.json",
+    "docs/modules/automation.taskflow/IMPLEMENTATION_MAP.json",
+    "docs/modules/channel.matrix/IMPLEMENTATION_MAP.json",
+    "docs/modules/browser.servo/IMPLEMENTATION_MAP.json",
+    "docs/modules/ui.control/IMPLEMENTATION_MAP.json",
+    "docs/modules/ui.native/IMPLEMENTATION_MAP.json",
+    "scripts/hepta-lane-b-",
+    "scripts/test_hepta_lane_b_"
+  ],
+  "requiredModuleGuides": [
+    "runtime.supervisor",
+    "runtime.fleet",
+    "runtime.agentd",
+    "runtime.codex",
+    "inference.control",
+    "inference.worker",
+    "automation.taskflow",
+    "channel.matrix",
+    "browser.servo",
+    "ui.control",
+    "ui.native"
+  ],
+  "requiredOperationCount": 39,
+  "claimBoundary": {
+    "repositoryControlledDocumentationAndMappingMayBeCertified": true,
+    "targetDesignImplementationMayBeSelfCertified": false,
+    "productionCallsitesMayBeSelfCertified": false,
+    "realProviderExecutionMayBeSelfCertified": false,
+    "externalEffectMayBeSelfCertified": false,
+    "hardwareSafetyMayBeSelfCertified": false,
+    "independentAcceptanceMayBeSelfCertified": false,
+    "promotionOrReleaseMayBeSelfCertified": false
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "schema":"hepta.lane-b-module-implementation-map.v2",
+  "schemaVersion":2,
+  "laneId":"LANE-B-RUNTIME",
+  "module":"inference.worker",
+  "sourceOfTruth":"qualification/lane-b/LANE_B_IMPLEMENTATION_TRUTH.json",
+  "lineageAnchor":{"commit":"f278a89eea18fccb6d37b876aa5679863a64139d","tree":"5baa144717d4b3e3c596501fb56ce911d009e728"},
+  "maturity":"worker_runtime_boundary",
+  "ownerRoots":["codex-rs/hepta-infer-worker-host"],
+  "implementationRoots":["codex-rs/hepta-infer-worker-host"],
+  "aliasResolution":[],
+  "operations":[
+    {"designOperation":"load_model","state":"implemented","ownerEntrypoint":{"path":"codex-rs/hepta-infer-worker-host/src/bin/hepta-infer-worker.rs","symbol":"pub fn load_model(","callerClass":"binary_component","buildTarget":"hepta-infer-worker"},"delegatedCallee":null,"testIds":["WORKER-01","WORKER-02","WORKER-03"]},
+    {"designOperation":"run","state":"implemented","ownerEntrypoint":{"path":"codex-rs/hepta-infer-worker-host/src/bin/hepta-infer-worker.rs","symbol":"pub fn run(","callerClass":"binary_component","buildTarget":"hepta-infer-worker"},"delegatedCallee":null,"testIds":["WORKER-01","WORKER-02","WORKER-04"]},
+    {"designOperation":"unload","state":"implemented","ownerEntrypoint":{"path":"codex-rs/hepta-infer-worker-host/src/bin/hepta-infer-worker.rs","symbol":"pub fn unload_model(","callerClass":"binary_component","buildTarget":"hepta-infer-worker"},"delegatedCallee":null,"testIds":["WORKER-03","WORKER-04"]}
+  ],
+  "productionCallerState":"unproved",
+  "productExecutionState":"unproved",
+  "externalGaps":["Bind a separately qualified real model driver, exact weights, tokenizer, runtime and device.","Qualify authenticated worker transport, OOM, device reset, process kill and target-host resource measurements."],
+  "generatedProjection":true
+}

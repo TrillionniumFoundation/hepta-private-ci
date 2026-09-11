@@ -1,0 +1,1036 @@
+{
+  "schema": "hepta.lane-b-implementation-truth.v3",
+  "schemaVersion": 3,
+  "documentClass": "repository_controlled_truth_boundary",
+  "planId": "HEPTA-GLOBAL-MODULAR-DEVELOPMENT-PLAN",
+  "planVersion": "8.0.0",
+  "laneId": "LANE-B-RUNTIME",
+  "lineageAnchor": {
+    "commit": "f278a89eea18fccb6d37b876aa5679863a64139d",
+    "tree": "5baa144717d4b3e3c596501fb56ce911d009e728",
+    "meaning": "immutable parent snapshot; exact candidate identity is the clean CI checkout HEAD and is never hard-coded into its own tree"
+  },
+  "claimBoundary": {
+    "documentationStructureComplete": true,
+    "laneModuleSetComplete": true,
+    "allDesignOperationsDispositioned": true,
+    "repositoryControlledOperationMappingClosed": true,
+    "nativeSourceAnchorsComplete": true,
+    "testTraceabilitySpecified": true,
+    "targetDesignImplementationClosed": false,
+    "productionConsumerCallsitesProved": false,
+    "productExecutionProved": false,
+    "deploymentProved": false,
+    "independentAcceptanceProved": false,
+    "externalEffectsProved": false,
+    "hardwareEvidenceProved": false,
+    "futureWindowEfficacyProved": false
+  },
+  "rules": {
+    "exactCandidateIdentityComesFromCiHead": true,
+    "lineageAnchorMustBeAncestor": true,
+    "rootMaterializationIsNotImplementation": true,
+    "designOperationIsNotNativeSymbol": true,
+    "libraryReachabilityIsNotProductionCallsite": true,
+    "callerSuppliedObservationIsNotTerminalProof": true,
+    "qualificationOnlyIsNotProduction": true,
+    "externalEvidenceCannotBeSelfIssued": true,
+    "ownerEntrypointMustStayInsideImplementationRoots": true,
+    "delegatedCalleeMustNameAnotherRegisteredModuleOrSameModuleHelper": true,
+    "operationStateMustMatchMappedEvidence": true,
+    "moduleMapsAreGeneratedProjections": true
+  },
+  "allowedOperationStates": [
+    "implemented",
+    "implemented_partial",
+    "boundary_only",
+    "delegated_partial"
+  ],
+  "moduleOrder": [
+    "runtime.supervisor",
+    "runtime.fleet",
+    "runtime.agentd",
+    "runtime.codex",
+    "inference.control",
+    "inference.worker",
+    "automation.taskflow",
+    "channel.matrix",
+    "browser.servo",
+    "ui.control",
+    "ui.native"
+  ],
+  "operationCount": 39,
+  "modules": [
+    {
+      "module": "runtime.supervisor",
+      "maturity": "partial_runtime",
+      "ownerRoots": [
+        "codex-rs/hepta-supervisor"
+      ],
+      "implementationRoots": [
+        "codex-rs/hepta-supervisor"
+      ],
+      "aliasResolution": [],
+      "operations": [
+        {
+          "designOperation": "start_instance",
+          "state": "implemented_partial",
+          "ownerEntrypoint": {
+            "path": "codex-rs/hepta-supervisor/src/supervisor.rs",
+            "symbol": "pub fn start(",
+            "callerClass": "daemon_internal",
+            "buildTarget": "codex-hepta-supervisor"
+          },
+          "delegatedCallee": null,
+          "testIds": [
+            "SUP-01",
+            "SUP-03"
+          ],
+          "implementationNotes": "Native lifecycle start exists; deployed operator RPC identity and host qualification remain separate."
+        },
+        {
+          "designOperation": "observe_health",
+          "state": "implemented_partial",
+          "ownerEntrypoint": {
+            "path": "codex-rs/hepta-supervisor/src/supervisor.rs",
+            "symbol": "pub fn tick(",
+            "callerClass": "daemon_internal",
+            "buildTarget": "codex-hepta-supervisor"
+          },
+          "delegatedCallee": null,
+          "testIds": [
+            "SUP-01",
+            "SUP-02"
+          ],
+          "implementationNotes": "Generation-fenced tick observations exist; readiness must still be qualified against deployed dependencies and stores."
+        },
+        {
+          "designOperation": "drain",
+          "state": "implemented",
+          "ownerEntrypoint": {
+            "path": "codex-rs/hepta-supervisor/src/supervisor.rs",
+            "symbol": "pub fn drain(",
+            "callerClass": "daemon_internal",
+            "buildTarget": "codex-hepta-supervisor"
+          },
+          "delegatedCallee": null,
+          "testIds": [
+            "SUP-03"
+          ],
+          "implementationNotes": "Owner-local drain transition is implemented and remains distinct from external effect settlement."
+        },
+        {
+          "designOperation": "load_next",
+          "state": "implemented_partial",
+          "ownerEntrypoint": {
+            "path": "codex-rs/hepta-supervisor/src/supervisor.rs",
+            "symbol": "pub fn upgrade(",
+            "callerClass": "daemon_internal",
+            "buildTarget": "codex-hepta-supervisor"
+          },
+          "delegatedCallee": null,
+          "testIds": [
+            "SUP-04"
+          ],
+          "implementationNotes": "Upgrade and rollback paths exist; independently selected artifact and target-host reload evidence remain external."
+        }
+      ],
+      "productionCallerState": "unproved",
+      "productExecutionState": "unproved",
+      "stateDisposition": "Supervisor lifecycle transitions, generation fencing, start, drain, upgrade and rollback are present in the native owner root.",
+      "terminalObserverDisposition": "Process and health terminality are owner-local. User-task and external-effect terminality remain with their respective owners.",
+      "residualGaps": [
+        {
+          "class": "external_evidence",
+          "gap": "Publish exact deployed binary, configuration, operator control endpoint and peer identity."
+        },
+        {
+          "class": "external_evidence",
+          "gap": "Execute restart, watchdog, drain, upgrade and rollback qualification on every supported target host."
+        }
+      ]
+    },
+    {
+      "module": "runtime.fleet",
+      "maturity": "lease_runtime",
+      "ownerRoots": [
+        "codex-rs/hepta-fleet"
+      ],
+      "implementationRoots": [
+        "codex-rs/hepta-fleet"
+      ],
+      "aliasResolution": [],
+      "operations": [
+        {
+          "designOperation": "admit_host",
+          "state": "implemented",
+          "ownerEntrypoint": {
+            "path": "codex-rs/hepta-fleet/src/bin/hepta-fleet-leased.rs",
+            "symbol": "pub fn admit_host(",
+            "callerClass": "binary_component",
+            "buildTarget": "hepta-fleet-leased"
+          },
+          "delegatedCallee": null,
+          "testIds": [
+            "FLEET-01",
+            "FLEET-02"
+          ],
+          "implementationNotes": "Generation-bound host observations and freshness windows are implemented."
+        },
+        {
+          "designOperation": "allocate",
+          "state": "implemented",
+          "ownerEntrypoint": {
+            "path": "codex-rs/hepta-fleet/src/bin/hepta-fleet-leased.rs",
+            "symbol": "pub fn issue(",
+            "callerClass": "binary_component",
+            "buildTarget": "hepta-fleet-leased"
+          },
+          "delegatedCallee": {
+            "module": "runtime.fleet",
+            "path": "codex-rs/hepta-fleet/src/allocation.rs",
+            "symbol": "pub fn calculate_local_allocation_v1(",
+            "callerClass": "library_internal",
+            "buildTarget": "codex-hepta-fleet"
+          },
+          "testIds": [
+            "FLEET-01",
+            "FLEET-03"
+          ],
+          "implementationNotes": "Deterministic allocation calculation and capacity-conserving lease issuance are both mapped."
+        },
+        {
+          "designOperation": "renew_or_revoke",
+          "state": "implemented",
+          "ownerEntrypoint": {
+            "path": "codex-rs/hepta-fleet/src/bin/hepta-fleet-leased.rs",
+            "symbol": "pub fn renew_or_revoke(",
+            "callerClass": "binary_component",
+            "buildTarget": "hepta-fleet-leased"
+          },
+          "delegatedCallee": null,
+          "testIds": [
+            "FLEET-02",
+            "FLEET-04"
+          ],
+          "implementationNotes": "Lease generation, epoch, semantic digest, expiry, renewal and revocation checks are implemented."
+        }
+      ],
+      "productionCallerState": "unproved",
+      "productExecutionState": "unproved",
+      "stateDisposition": "The repository implements host admission, deterministic allocation, capacity-conserving grants and generation-fenced renewal or revocation.",
+      "terminalObserverDisposition": "Lease receipts are repository-owned facts; real capacity freshness, resource possession and host enforcement require target observations.",
+      "residualGaps": [
+        {
+          "class": "external_evidence",
+          "gap": "Bind authenticated real-host capacity observations and local enforcement receipts."
+        },
+        {
+          "class": "external_evidence",
+          "gap": "Qualify partitions, uncertain holders, lease expiry and rollback drain on deployed hosts."
+        }
+      ]
+    },
+    {
+      "module": "runtime.agentd",
+      "maturity": "composition_runtime",
+      "ownerRoots": [
+        "codex-rs/hepta-agentd"
+      ],
+      "implementationRoots": [
+        "codex-rs/hepta-agentd"
+      ],
+      "aliasResolution": [],
+      "operations": [
+        {
+          "designOperation": "compose_runtime",
+          "state": "implemented_partial",
+          "ownerEntrypoint": {
+            "path": "codex-rs/hepta-agentd/src/app_runtime.rs",
+            "symbol": "pub(crate) async fn run_app_server(",
+            "callerClass": "daemon_internal",
+            "buildTarget": "codex-hepta-agentd"
+          },
+          "delegatedCallee": {
+            "module": "runtime.codex",
+            "path": "codex-rs/app-server/src/lib.rs",
+            "symbol": "run_main_with_transport_options",
+            "callerClass": "embedded_app_server",
+            "buildTarget": "codex-app-server"
+          },
+          "testIds": [
+            "AGENT-02",
+            "AGENT-04"
+          ],
+          "implementationNotes": "Agentd composes the existing App Server over a bounded local transport and immutable runtime options."
+        },
+        {
+          "designOperation": "start_run",
+          "state": "delegated_partial",
+          "ownerEntrypoint": null,
+          "delegatedCallee": {
+            "module": "runtime.codex",
+            "path": "codex-rs/app-server/src/request_processors/turn_processor.rs",
+            "symbol": "pub(crate) async fn turn_start(",
+            "callerClass": "embedded_app_server",
+            "buildTarget": "codex-app-server"
+          },
+          "testIds": [
+            "AGENT-01",
+            "AGENT-04"
+          ],
+          "implementationNotes": "The single Codex spine owns turn start; Agentd still needs deployed caller tracing through its authenticated transport."
+        },
+        {
+          "designOperation": "cancel_run",
+          "state": "delegated_partial",
+          "ownerEntrypoint": null,
+          "delegatedCallee": {
+            "module": "runtime.codex",
+            "path": "codex-rs/app-server/src/request_processors/turn_processor.rs",
+            "symbol": "pub(crate) async fn turn_interrupt(",
+            "callerClass": "embedded_app_server",
+            "buildTarget": "codex-app-server"
+          },
+          "testIds": [
+            "AGENT-03"
+          ],
+          "implementationNotes": "Cancellation is delegated to the App Server handler rather than reimplemented in Agentd."
+        },
+        {
+          "designOperation": "attach_context",
+          "state": "delegated_partial",
+          "ownerEntrypoint": null,
+          "delegatedCallee": {
+            "module": "runtime.codex",
+            "path": "codex-rs/core/src/codex_thread.rs",
+            "symbol": "pub(crate) async fn submit_turn_input_and_wait_for_exact_admission(",
+            "callerClass": "embedded_codex_core",
+            "buildTarget": "codex-core"
+          },
+          "testIds": [
+            "AGENT-01",
+            "AGENT-04"
+          ],
+          "implementationNotes": "Exact admission is delegated to Codex core; deployed Agentd request-to-turn tracing remains evidence."
+        }
+      ],
+      "productionCallerState": "unproved",
+      "productExecutionState": "unproved",
+      "stateDisposition": "Agentd is a thin process and transport composition owner. It does not duplicate thread, turn, memory or effect ownership.",
+      "terminalObserverDisposition": "The delegated App Server and Codex core own turn admission and interruption; a deployed Agentd trace remains required.",
+      "residualGaps": [
+        {
+          "class": "external_evidence",
+          "gap": "Publish deployed Agentd process tree, local transport, peer authentication and configuration identity."
+        },
+        {
+          "class": "external_evidence",
+          "gap": "Execute backpressure, cancellation acknowledgement, socket failure and restart qualification on target platforms."
+        }
+      ]
+    },
+    {
+      "module": "runtime.codex",
+      "maturity": "execution_spine",
+      "ownerRoots": [
+        "codex-rs/codex-app-server",
+        "codex-rs/hepta-codex-adapter"
+      ],
+      "implementationRoots": [
+        "codex-rs/app-server",
+        "codex-rs/core",
+        "codex-rs/hepta-codex-adapter"
+      ],
+      "aliasResolution": [
+        {
+          "declaredRoot": "codex-rs/codex-app-server",
+          "resolvedRoot": "codex-rs/app-server",
+          "rule": "canonical alias resolves to the existing single App Server package; it is not a duplicate owner"
+        }
+      ],
+      "operations": [
+        {
+          "designOperation": "open_thread",
+          "state": "implemented",
+          "ownerEntrypoint": {
+            "path": "codex-rs/app-server/src/request_processors/thread_processor.rs",
+            "symbol": "pub(crate) async fn thread_start(",
+            "callerClass": "app_server_protocol",
+            "buildTarget": "codex-app-server"
+          },
+          "delegatedCallee": null,
+          "testIds": [
+            "CODEX-03"
+          ],
+          "implementationNotes": "The App Server protocol owns native thread creation."
+        },
+        {
+          "designOperation": "submit_turn",
+          "state": "implemented_partial",
+          "ownerEntrypoint": {
+            "path": "codex-rs/app-server/src/request_processors/turn_processor.rs",
+            "symbol": "pub(crate) async fn turn_start(",
+            "callerClass": "app_server_protocol",
+            "buildTarget": "codex-app-server"
+          },
+          "delegatedCallee": null,
+          "testIds": [
+            "CODEX-01",
+            "CODEX-03"
+          ],
+          "implementationNotes": "Native turn admission exists; deployed Hepta objective/context tuple evidence remains required."
+        },
+        {
+          "designOperation": "dispatch_tool",
+          "state": "implemented_partial",
+          "ownerEntrypoint": {
+            "path": "codex-rs/core/src/tools/router.rs",
+            "symbol": "pub async fn dispatch_tool_call_with_code_mode_result(",
+            "callerClass": "codex_core_runtime",
+            "buildTarget": "codex-core"
+          },
+          "delegatedCallee": null,
+          "testIds": [
+            "CODEX-02",
+            "CODEX-04"
+          ],
+          "implementationNotes": "The sole tool router exists; downstream terminal effect truth remains separately observed."
+        },
+        {
+          "designOperation": "observe_delivery",
+          "state": "implemented_partial",
+          "ownerEntrypoint": {
+            "path": "codex-rs/core/src/codex_thread.rs",
+            "symbol": "pub(crate) async fn submit_turn_input_and_wait_for_exact_admission(",
+            "callerClass": "codex_core_runtime",
+            "buildTarget": "codex-core"
+          },
+          "delegatedCallee": {
+            "module": "runtime.codex",
+            "path": "codex-rs/hepta-codex-adapter/src/lib.rs",
+            "symbol": "pub fn adapt(",
+            "callerClass": "checked_adapter",
+            "buildTarget": "codex-hepta-codex-adapter"
+          },
+          "testIds": [
+            "CODEX-01",
+            "CODEX-04"
+          ],
+          "implementationNotes": "Exact turn-input admission and Hepta binding adapter are mapped; provider delivery is not self-observed by this layer."
+        }
+      ],
+      "productionCallerState": "unproved",
+      "productExecutionState": "unproved",
+      "stateDisposition": "The existing App Server and Codex core remain the sole thread, turn, model-call and tool-execution spine.",
+      "terminalObserverDisposition": "Turn admission is native; provider delivery and irreversible external tool effects remain separate terminal observations.",
+      "residualGaps": [
+        {
+          "class": "external_evidence",
+          "gap": "Capture a deployed Agentd-to-App-Server trace binding objective, context, model and tool schema generations."
+        },
+        {
+          "class": "external_evidence",
+          "gap": "Qualify real model streaming, cancellation, tool terminality and acknowledgement loss."
+        }
+      ]
+    },
+    {
+      "module": "inference.control",
+      "maturity": "durable_control_runtime",
+      "ownerRoots": [
+        "codex-rs/hepta-infer-core",
+        "codex-rs/hepta-inferd"
+      ],
+      "implementationRoots": [
+        "codex-rs/hepta-infer-core",
+        "codex-rs/hepta-inferd"
+      ],
+      "aliasResolution": [],
+      "operations": [
+        {
+          "designOperation": "reserve_request",
+          "state": "implemented",
+          "ownerEntrypoint": {
+            "path": "codex-rs/hepta-infer-core/src/bin/hepta-infer-control.rs",
+            "symbol": "pub fn reserve(",
+            "callerClass": "binary_component",
+            "buildTarget": "hepta-infer-control"
+          },
+          "delegatedCallee": null,
+          "testIds": [
+            "INFER-01",
+            "INFER-02"
+          ],
+          "implementationNotes": "A bounded fsync-backed append journal owns request and reservation transitions."
+        },
+        {
+          "designOperation": "schedule",
+          "state": "implemented",
+          "ownerEntrypoint": {
+            "path": "codex-rs/hepta-infer-core/src/bin/hepta-infer-control.rs",
+            "symbol": "pub fn assign(",
+            "callerClass": "binary_component",
+            "buildTarget": "hepta-infer-control"
+          },
+          "delegatedCallee": {
+            "module": "inference.control",
+            "path": "codex-rs/hepta-inferd/src/lib.rs",
+            "symbol": "pub fn plan(",
+            "callerClass": "library_internal",
+            "buildTarget": "codex-hepta-inferd"
+          },
+          "testIds": [
+            "INFER-01",
+            "INFER-02"
+          ],
+          "implementationNotes": "Deterministic planning is combined with durable assignment state."
+        },
+        {
+          "designOperation": "cancel",
+          "state": "implemented",
+          "ownerEntrypoint": {
+            "path": "codex-rs/hepta-infer-core/src/bin/hepta-infer-control.rs",
+            "symbol": "pub fn cancel(",
+            "callerClass": "binary_component",
+            "buildTarget": "hepta-infer-control"
+          },
+          "delegatedCallee": null,
+          "testIds": [
+            "INFER-03"
+          ],
+          "implementationNotes": "Cancellation is revision-fenced and preserves cancelling versus terminal states."
+        },
+        {
+          "designOperation": "settle",
+          "state": "implemented",
+          "ownerEntrypoint": {
+            "path": "codex-rs/hepta-infer-core/src/bin/hepta-infer-control.rs",
+            "symbol": "pub fn settle(",
+            "callerClass": "binary_component",
+            "buildTarget": "hepta-infer-control"
+          },
+          "delegatedCallee": null,
+          "testIds": [
+            "INFER-03",
+            "INFER-04"
+          ],
+          "implementationNotes": "Settlement validates reservation, worker generation, model, payload, usage and terminal observation."
+        }
+      ],
+      "productionCallerState": "unproved",
+      "productExecutionState": "unproved",
+      "stateDisposition": "A bounded append journal with reopen owns submit, reserve, assignment, cancellation and settlement state.",
+      "terminalObserverDisposition": "Settlement consumes a validated worker observation but cannot self-certify a real provider, weights or device.",
+      "residualGaps": [
+        {
+          "class": "external_evidence",
+          "gap": "Bind deployed worker discovery, quota owner, dispatch transport and reconciliation."
+        },
+        {
+          "class": "external_evidence",
+          "gap": "Attach real provider and device terminal observations with measured usage."
+        }
+      ]
+    },
+    {
+      "module": "inference.worker",
+      "maturity": "worker_runtime_boundary",
+      "ownerRoots": [
+        "codex-rs/hepta-infer-worker-host"
+      ],
+      "implementationRoots": [
+        "codex-rs/hepta-infer-worker-host"
+      ],
+      "aliasResolution": [],
+      "operations": [
+        {
+          "designOperation": "load_model",
+          "state": "implemented",
+          "ownerEntrypoint": {
+            "path": "codex-rs/hepta-infer-worker-host/src/bin/hepta-infer-worker.rs",
+            "symbol": "pub fn load_model(",
+            "callerClass": "binary_component",
+            "buildTarget": "hepta-infer-worker"
+          },
+          "delegatedCallee": null,
+          "testIds": [
+            "WORKER-01",
+            "WORKER-02",
+            "WORKER-03"
+          ],
+          "implementationNotes": "The worker validates the complete model/runtime/device manifest and resource grant before loading."
+        },
+        {
+          "designOperation": "run",
+          "state": "implemented",
+          "ownerEntrypoint": {
+            "path": "codex-rs/hepta-infer-worker-host/src/bin/hepta-infer-worker.rs",
+            "symbol": "pub fn run(",
+            "callerClass": "binary_component",
+            "buildTarget": "hepta-infer-worker"
+          },
+          "delegatedCallee": null,
+          "testIds": [
+            "WORKER-01",
+            "WORKER-02",
+            "WORKER-04"
+          ],
+          "implementationNotes": "Run binds request, reservation, lease payload, token and memory limits, cancellation and indeterminate outcomes."
+        },
+        {
+          "designOperation": "unload",
+          "state": "implemented",
+          "ownerEntrypoint": {
+            "path": "codex-rs/hepta-infer-worker-host/src/bin/hepta-infer-worker.rs",
+            "symbol": "pub fn unload_model(",
+            "callerClass": "binary_component",
+            "buildTarget": "hepta-infer-worker"
+          },
+          "delegatedCallee": null,
+          "testIds": [
+            "WORKER-03",
+            "WORKER-04"
+          ],
+          "implementationNotes": "Unload refuses active requests and reports terminal owner-local completion."
+        }
+      ],
+      "productionCallerState": "unproved",
+      "productExecutionState": "unproved",
+      "stateDisposition": "The worker boundary implements model manifest admission, resource-bounded load, execution, cancellation semantics and unload.",
+      "terminalObserverDisposition": "A ModelDriver supplies observations; a real weights/runtime/device implementation is an external qualification item.",
+      "residualGaps": [
+        {
+          "class": "external_evidence",
+          "gap": "Bind a separately qualified real model driver, exact weights, tokenizer, runtime and device."
+        },
+        {
+          "class": "external_evidence",
+          "gap": "Qualify authenticated worker transport, OOM, device reset, process kill and target-host resource measurements."
+        }
+      ]
+    },
+    {
+      "module": "automation.taskflow",
+      "maturity": "fenced_execution_runtime",
+      "ownerRoots": [
+        "codex-rs/hepta-automation"
+      ],
+      "implementationRoots": [
+        "codex-rs/hepta-automation"
+      ],
+      "aliasResolution": [],
+      "operations": [
+        {
+          "designOperation": "register_schedule",
+          "state": "implemented_partial",
+          "ownerEntrypoint": {
+            "path": "codex-rs/hepta-automation/src/taskflow.rs",
+            "symbol": "pub struct TaskFlowDefinition",
+            "callerClass": "library_internal",
+            "buildTarget": "codex-hepta-automation"
+          },
+          "delegatedCallee": null,
+          "testIds": [
+            "FLOW-01"
+          ],
+          "implementationNotes": "TaskFlow definitions and schedule storage exist; full civil-time product integration remains target qualification."
+        },
+        {
+          "designOperation": "materialize_due",
+          "state": "implemented_partial",
+          "ownerEntrypoint": {
+            "path": "codex-rs/hepta-automation/src/scheduler.rs",
+            "symbol": "pub async fn tick(",
+            "callerClass": "qualification_runtime",
+            "buildTarget": "codex-hepta-automation"
+          },
+          "delegatedCallee": null,
+          "testIds": [
+            "FLOW-01",
+            "FLOW-02"
+          ],
+          "implementationNotes": "The scheduler materializes and claims due work under bounded qualification semantics."
+        },
+        {
+          "designOperation": "claim_occurrence",
+          "state": "implemented",
+          "ownerEntrypoint": {
+            "path": "codex-rs/hepta-automation/src/bin/hepta-taskflow-runtime.rs",
+            "symbol": "pub fn claim_occurrence(",
+            "callerClass": "binary_component",
+            "buildTarget": "hepta-taskflow-runtime"
+          },
+          "delegatedCallee": null,
+          "testIds": [
+            "FLOW-02"
+          ],
+          "implementationNotes": "Occurrence claims are generation-fenced and idempotent."
+        },
+        {
+          "designOperation": "execute_step",
+          "state": "implemented",
+          "ownerEntrypoint": {
+            "path": "codex-rs/hepta-automation/src/bin/hepta-taskflow-runtime.rs",
+            "symbol": "pub fn execute_step(",
+            "callerClass": "binary_component",
+            "buildTarget": "hepta-taskflow-runtime"
+          },
+          "delegatedCallee": null,
+          "testIds": [
+            "FLOW-03",
+            "FLOW-04"
+          ],
+          "implementationNotes": "Step execution binds final payload, authority epoch, dependencies, idempotency and indeterminate outcomes."
+        }
+      ],
+      "productionCallerState": "unproved",
+      "productExecutionState": "unproved",
+      "stateDisposition": "Schedule identity, occurrence fencing and a bounded step executor are present without taking ownership of downstream effects.",
+      "terminalObserverDisposition": "Unknown effects remain indeterminate; compensation and terminal effect truth belong to downstream effect owners.",
+      "residualGaps": [
+        {
+          "class": "external_evidence",
+          "gap": "Bind the deployed App Server admission seam and effect adapter caller."
+        },
+        {
+          "class": "external_evidence",
+          "gap": "Qualify timezone database revisions, DST, crash-reopen, partial compensation and target scheduler measurements."
+        }
+      ]
+    },
+    {
+      "module": "channel.matrix",
+      "maturity": "matrix_runtime_boundary",
+      "ownerRoots": [
+        "codex-rs/hepta-matrix-sdk",
+        "codex-rs/hepta-matrixd"
+      ],
+      "implementationRoots": [
+        "codex-rs/hepta-matrix-sdk",
+        "codex-rs/hepta-matrixd"
+      ],
+      "aliasResolution": [],
+      "operations": [
+        {
+          "designOperation": "admit_event",
+          "state": "implemented_partial",
+          "ownerEntrypoint": {
+            "path": "codex-rs/hepta-matrixd/src/runtime.rs",
+            "symbol": "pub async fn process_event(",
+            "callerClass": "runtime_internal",
+            "buildTarget": "codex-hepta-matrixd"
+          },
+          "delegatedCallee": null,
+          "testIds": [
+            "MATRIX-01",
+            "MATRIX-04"
+          ],
+          "implementationNotes": "Durable event identity, room/thread binding and bounded ingress processing exist."
+        },
+        {
+          "designOperation": "prepare_send",
+          "state": "implemented",
+          "ownerEntrypoint": {
+            "path": "codex-rs/hepta-matrixd/src/bin/hepta-matrix-send-observer.rs",
+            "symbol": "pub fn prepare_send(",
+            "callerClass": "binary_component",
+            "buildTarget": "hepta-matrix-send-observer"
+          },
+          "delegatedCallee": {
+            "module": "channel.matrix",
+            "path": "codex-rs/hepta-matrixd/src/runtime.rs",
+            "symbol": "pub async fn project_app_server_event(",
+            "callerClass": "runtime_internal",
+            "buildTarget": "codex-hepta-matrixd"
+          },
+          "testIds": [
+            "MATRIX-02",
+            "MATRIX-03"
+          ],
+          "implementationNotes": "Operation and transaction identity, room/session generation, authority epoch and payload binding are implemented."
+        },
+        {
+          "designOperation": "observe_send",
+          "state": "implemented",
+          "ownerEntrypoint": {
+            "path": "codex-rs/hepta-matrixd/src/bin/hepta-matrix-send-observer.rs",
+            "symbol": "pub fn observe_send(",
+            "callerClass": "binary_component",
+            "buildTarget": "hepta-matrix-send-observer"
+          },
+          "delegatedCallee": null,
+          "testIds": [
+            "MATRIX-03",
+            "MATRIX-04"
+          ],
+          "implementationNotes": "Matching server observations settle success/failure or preserve indeterminate state; redaction is separately represented."
+        }
+      ],
+      "productionCallerState": "unproved",
+      "productExecutionState": "unproved",
+      "stateDisposition": "The Matrix runtime owns durable ingress and a bounded send-observation state machine with transaction identity and redaction.",
+      "terminalObserverDisposition": "Only a matching homeserver observation can settle a send; repository fixtures cannot self-issue that remote fact.",
+      "residualGaps": [
+        {
+          "class": "external_evidence",
+          "gap": "Bind a real homeserver transport, enrolled user/device/room scope and encryption session."
+        },
+        {
+          "class": "external_evidence",
+          "gap": "Qualify pagination, reconnect, rate limits, redaction, backup restore and server acknowledgement loss."
+        }
+      ]
+    },
+    {
+      "module": "browser.servo",
+      "maturity": "profile_runtime_boundary",
+      "ownerRoots": [
+        "apps/hepta-browser",
+        "third_party/servo-patches"
+      ],
+      "implementationRoots": [
+        "apps/hepta-browser",
+        "third_party/servo-patches"
+      ],
+      "aliasResolution": [],
+      "operations": [
+        {
+          "designOperation": "open_profile",
+          "state": "implemented",
+          "ownerEntrypoint": {
+            "path": "apps/hepta-browser/src/runtime.js",
+            "symbol": "async openProfile(",
+            "callerClass": "runtime_class",
+            "buildTarget": "hepta-browser"
+          },
+          "delegatedCallee": null,
+          "testIds": [
+            "BROWSER-02",
+            "BROWSER-03"
+          ],
+          "implementationNotes": "Profile/principal/process generation, origin allowlist and exact effect grants are bounded."
+        },
+        {
+          "designOperation": "observe_page",
+          "state": "implemented",
+          "ownerEntrypoint": {
+            "path": "apps/hepta-browser/src/runtime.js",
+            "symbol": "async observePage(",
+            "callerClass": "runtime_class",
+            "buildTarget": "hepta-browser"
+          },
+          "delegatedCallee": null,
+          "testIds": [
+            "BROWSER-01",
+            "BROWSER-02"
+          ],
+          "implementationNotes": "Page observations advance a monotone document generation under a bounded observation budget."
+        },
+        {
+          "designOperation": "navigate_or_act",
+          "state": "implemented",
+          "ownerEntrypoint": {
+            "path": "apps/hepta-browser/src/runtime.js",
+            "symbol": "async navigateOrAct(",
+            "callerClass": "runtime_class",
+            "buildTarget": "hepta-browser"
+          },
+          "delegatedCallee": {
+            "module": "browser.servo",
+            "path": "apps/hepta-browser/src/runtime.js",
+            "symbol": "async reconcileOperation(",
+            "callerClass": "runtime_class",
+            "buildTarget": "hepta-browser"
+          },
+          "testIds": [
+            "BROWSER-01",
+            "BROWSER-02",
+            "BROWSER-04"
+          ],
+          "implementationNotes": "Final page, destination, payload, effect grant, epoch and immutable replay identity are checked; reconciliation preserves unknown outcomes."
+        }
+      ],
+      "productionCallerState": "unproved",
+      "productExecutionState": "unproved",
+      "stateDisposition": "The browser host boundary implements isolated profile identity, generation-bound observations, effect grants and reconciliation.",
+      "terminalObserverDisposition": "The injected driver may report indeterminate state; a reproducible Servo process and remote business outcome remain external.",
+      "residualGaps": [
+        {
+          "class": "external_evidence",
+          "gap": "Produce a reproducible deployed Servo binary and authenticated Agentd IPC driver."
+        },
+        {
+          "class": "external_evidence",
+          "gap": "Qualify network, redirects, downloads, uploads, credentials, profile isolation, crashes and remote terminal outcomes."
+        }
+      ]
+    },
+    {
+      "module": "ui.control",
+      "maturity": "authenticated_runtime_client",
+      "ownerRoots": [
+        "apps/hepta-control-ui"
+      ],
+      "implementationRoots": [
+        "apps/hepta-control-ui"
+      ],
+      "aliasResolution": [],
+      "operations": [
+        {
+          "designOperation": "read_view",
+          "state": "implemented",
+          "ownerEntrypoint": {
+            "path": "apps/hepta-control-ui/src/runtime-client.js",
+            "symbol": "readView()",
+            "callerClass": "runtime_class",
+            "buildTarget": "hepta-control-ui"
+          },
+          "delegatedCallee": null,
+          "testIds": [
+            "UI-01",
+            "UI-04"
+          ],
+          "implementationNotes": "Authenticated session and coherent snapshot projection are implemented."
+        },
+        {
+          "designOperation": "submit_request",
+          "state": "implemented",
+          "ownerEntrypoint": {
+            "path": "apps/hepta-control-ui/src/runtime-client.js",
+            "symbol": "async submitRequest(",
+            "callerClass": "runtime_class",
+            "buildTarget": "hepta-control-ui"
+          },
+          "delegatedCallee": null,
+          "testIds": [
+            "UI-02",
+            "UI-03"
+          ],
+          "implementationNotes": "Requests bind session, generation, displayed revision, stable operation identity and semantic digest."
+        },
+        {
+          "designOperation": "request_stop",
+          "state": "implemented",
+          "ownerEntrypoint": {
+            "path": "apps/hepta-control-ui/src/runtime-client.js",
+            "symbol": "async requestStop(",
+            "callerClass": "runtime_class",
+            "buildTarget": "hepta-control-ui"
+          },
+          "delegatedCallee": null,
+          "testIds": [
+            "UI-01",
+            "UI-03",
+            "UI-04"
+          ],
+          "implementationNotes": "Stop uses the same authenticated bounded request path and never invents backend terminality."
+        }
+      ],
+      "productionCallerState": "unproved",
+      "productExecutionState": "unproved",
+      "stateDisposition": "The Web runtime client authenticates a protocol generation, rejects stale views and bounds pending operation identities.",
+      "terminalObserverDisposition": "Backend observations are reconciled without granting the UI terminal or effect authority.",
+      "residualGaps": [
+        {
+          "class": "external_evidence",
+          "gap": "Bind a deployed Web build, framework, browser support matrix, authenticated transport and backend endpoint."
+        },
+        {
+          "class": "external_evidence",
+          "gap": "Run accessibility, CSP/CSRF/XSS, reconnect and end-to-end target-browser qualification."
+        }
+      ]
+    },
+    {
+      "module": "ui.native",
+      "maturity": "native_shell_runtime_boundary",
+      "ownerRoots": [
+        "apps/hepta-native"
+      ],
+      "implementationRoots": [
+        "apps/hepta-native"
+      ],
+      "aliasResolution": [],
+      "operations": [
+        {
+          "designOperation": "connect_runtime",
+          "state": "implemented",
+          "ownerEntrypoint": {
+            "path": "apps/hepta-native/src/shell-runtime.js",
+            "symbol": "async connectRuntime(",
+            "callerClass": "runtime_class",
+            "buildTarget": "hepta-native"
+          },
+          "delegatedCallee": null,
+          "testIds": [
+            "NATIVE-01",
+            "NATIVE-03"
+          ],
+          "implementationNotes": "The shell binds endpoint identity, manifest digest, protocol version, authenticated session and generation."
+        },
+        {
+          "designOperation": "render_runtime_view",
+          "state": "implemented",
+          "ownerEntrypoint": {
+            "path": "apps/hepta-native/src/shell-runtime.js",
+            "symbol": "renderRuntimeView(",
+            "callerClass": "runtime_class",
+            "buildTarget": "hepta-native"
+          },
+          "delegatedCallee": null,
+          "testIds": [
+            "NATIVE-01",
+            "NATIVE-03"
+          ],
+          "implementationNotes": "Views are coherent, monotone and session-generation bound."
+        },
+        {
+          "designOperation": "request_platform_capability",
+          "state": "implemented",
+          "ownerEntrypoint": {
+            "path": "apps/hepta-native/src/shell-runtime.js",
+            "symbol": "async requestPlatformCapability(",
+            "callerClass": "runtime_class",
+            "buildTarget": "hepta-native"
+          },
+          "delegatedCallee": null,
+          "testIds": [
+            "NATIVE-02",
+            "NATIVE-03"
+          ],
+          "implementationNotes": "Only registered narrow platform actions proceed after OS permission and final-payload binding."
+        },
+        {
+          "designOperation": "apply_shell_update",
+          "state": "implemented",
+          "ownerEntrypoint": {
+            "path": "apps/hepta-native/src/shell-runtime.js",
+            "symbol": "async applyShellUpdate(",
+            "callerClass": "runtime_class",
+            "buildTarget": "hepta-native"
+          },
+          "delegatedCallee": null,
+          "testIds": [
+            "NATIVE-04"
+          ],
+          "implementationNotes": "Updates require independent selection, verification, compatibility, restart and rollback on incomplete observation."
+        }
+      ],
+      "productionCallerState": "unproved",
+      "productExecutionState": "unproved",
+      "stateDisposition": "The native shell boundary binds authenticated runtime sessions, coherent views, narrow OS permissions and selected updates.",
+      "terminalObserverDisposition": "Platform and updater observations remain injected boundaries until a signed deployed application is qualified.",
+      "residualGaps": [
+        {
+          "class": "external_evidence",
+          "gap": "Bind signed Windows, macOS and Linux application packages, secure storage and authenticated IPC."
+        },
+        {
+          "class": "external_evidence",
+          "gap": "Qualify OS permission revocation, accessibility, crash recovery, updater signing and rollback on target hosts."
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,158 @@
+name: Lane A foundation truth and native qualification
+
+on:
+  pull_request:
+  push:
+    branches:
+      - integration/vnext-main-20260811
+      - "codex/lane-a-*"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: lane-a-foundation-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  source-head:
+    name: Verify exact Lane A source and native contracts
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    steps:
+      - name: Check out exact source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+          fetch-depth: 0
+
+      - name: Bind exact source object
+        env:
+          EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${EXPECTED_SHA}"
+          git cat-file -e "${EXPECTED_SHA}^{commit}"
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            git cat-file -e "${BASE_SHA}^{commit}"
+          fi
+          git rev-parse HEAD HEAD^{tree}
+
+      - name: Verify current implementation, traceability and nonclaims
+        env:
+          EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          python3 scripts/verify_lane_a_foundation.py self-test
+          python3 scripts/verify_lane_a_foundation.py verify
+          python3 -m unittest qualification/module-execution-dossiers/test_lane_a_foundation.py
+          (cd qualification/module-execution-dossiers && python3 -m unittest test_implementation_contracts.py)
+          git diff --check
+          test -z "$(git status --porcelain --untracked-files=no)"
+
+      - name: Run Lane A native tests and strict lint
+        shell: bash
+        run: scripts/run_lane_a_native_qualification.sh
+
+      - name: Write exact-source and native receipts
+        env:
+          EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/verify_lane_a_foundation.py source-receipt \
+            --expected-sha "$EXPECTED_SHA" \
+            --output .hepta-evidence/lane-a-source-head.json
+          python3 scripts/verify_lane_a_foundation.py native-receipt \
+            --expected-sha "$EXPECTED_SHA" \
+            --output .hepta-evidence/lane-a-native-head.json
+
+      - name: Retain exact source receipts
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: lane-a-source-native-${{ github.event.pull_request.head.sha || github.sha }}
+          path: .hepta-evidence/lane-a-*.json
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 90
+
+  merge-candidate:
+    name: Verify synthetic Lane A merge candidate and native contracts
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    steps:
+      - name: Check out source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+          fetch-depth: 0
+
+      - name: Construct exact synthetic merge
+        id: merge
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          SOURCE_SHA: ${{ github.event.pull_request.head.sha }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          TREE="$(git merge-tree --write-tree "$BASE_SHA" "$SOURCE_SHA")"
+          [[ "$TREE" =~ ^[0-9a-f]{40}$ ]]
+          export GIT_AUTHOR_NAME="Hepta Lane A CI"
+          export GIT_AUTHOR_EMAIL="hepta-lane-a-ci@users.noreply.github.com"
+          export GIT_COMMITTER_NAME="$GIT_AUTHOR_NAME"
+          export GIT_COMMITTER_EMAIL="$GIT_AUTHOR_EMAIL"
+          export GIT_AUTHOR_DATE="2000-01-01T00:00:00Z"
+          export GIT_COMMITTER_DATE="$GIT_AUTHOR_DATE"
+          SHA="$(printf 'Synthetic Lane A merge for PR %s\n' "$PR_NUMBER" | git commit-tree "$TREE" -p "$BASE_SHA" -p "$SOURCE_SHA")"
+          git checkout --detach "$SHA"
+          printf 'sha=%s\n' "$SHA" >> "$GITHUB_OUTPUT"
+
+      - name: Verify synthetic merge truth
+        env:
+          EXPECTED_SHA: ${{ steps.merge.outputs.sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          python3 scripts/verify_lane_a_foundation.py self-test
+          python3 scripts/verify_lane_a_foundation.py verify
+          python3 -m unittest qualification/module-execution-dossiers/test_lane_a_foundation.py
+          (cd qualification/module-execution-dossiers && python3 -m unittest test_implementation_contracts.py)
+          git diff --check
+          test -z "$(git status --porcelain --untracked-files=no)"
+
+      - name: Run Lane A native tests and strict lint on merge candidate
+        shell: bash
+        run: scripts/run_lane_a_native_qualification.sh
+
+      - name: Write synthetic-merge receipts
+        env:
+          EXPECTED_SHA: ${{ steps.merge.outputs.sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/verify_lane_a_foundation.py source-receipt \
+            --expected-sha "$EXPECTED_SHA" \
+            --output .hepta-evidence/lane-a-merge-candidate.json
+          python3 scripts/verify_lane_a_foundation.py native-receipt \
+            --expected-sha "$EXPECTED_SHA" \
+            --output .hepta-evidence/lane-a-native-merge-candidate.json
+
+      - name: Retain synthetic merge receipts
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: lane-a-merge-native-${{ steps.merge.outputs.sha }}
+          path: .hepta-evidence/lane-a-*.json
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 90

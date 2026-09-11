@@ -399,6 +399,10 @@ pub struct HostTurnAuthorityBinding {
 }
 
 impl HostTurnAuthorityBinding {
+    #[expect(
+        clippy::too_many_arguments,
+        reason = "authority binding constructor keeps all signed identity fields explicit"
+    )]
     pub fn new(
         owner_agent_id: AgentId,
         lease_id: impl Into<String>,
@@ -623,7 +627,7 @@ mod tests {
                 binding.generation,
                 "\0",
                 binding.lease_expires_at_unix_seconds,
-                binding.lease_head_sha256.clone(),
+                binding.lease_head_sha256,
             )
             .is_err()
         );

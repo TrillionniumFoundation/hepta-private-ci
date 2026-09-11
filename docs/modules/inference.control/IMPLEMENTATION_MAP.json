@@ -1,0 +1,22 @@
+{
+  "schema": "hepta.lane-b-module-implementation-map.v2",
+  "schemaVersion": 2,
+  "laneId": "LANE-B-RUNTIME",
+  "module": "inference.control",
+  "sourceOfTruth": "qualification/lane-b/LANE_B_IMPLEMENTATION_TRUTH.json",
+  "lineageAnchor": {"commit":"f278a89eea18fccb6d37b876aa5679863a64139d","tree":"5baa144717d4b3e3c596501fb56ce911d009e728"},
+  "maturity": "durable_control_runtime",
+  "ownerRoots": ["codex-rs/hepta-infer-core","codex-rs/hepta-inferd"],
+  "implementationRoots": ["codex-rs/hepta-infer-core","codex-rs/hepta-inferd"],
+  "aliasResolution": [],
+  "operations": [
+    {"designOperation":"reserve_request","state":"implemented","ownerEntrypoint":{"path":"codex-rs/hepta-infer-core/src/bin/hepta-infer-control.rs","symbol":"pub fn reserve(","callerClass":"binary_component","buildTarget":"hepta-infer-control"},"delegatedCallee":null,"testIds":["INFER-01","INFER-02"]},
+    {"designOperation":"schedule","state":"implemented","ownerEntrypoint":{"path":"codex-rs/hepta-infer-core/src/bin/hepta-infer-control.rs","symbol":"pub fn assign(","callerClass":"binary_component","buildTarget":"hepta-infer-control"},"delegatedCallee":{"module":"inference.control","path":"codex-rs/hepta-inferd/src/lib.rs","symbol":"pub fn plan(","callerClass":"library_internal","buildTarget":"codex-hepta-inferd"},"testIds":["INFER-01","INFER-02"]},
+    {"designOperation":"cancel","state":"implemented","ownerEntrypoint":{"path":"codex-rs/hepta-infer-core/src/bin/hepta-infer-control.rs","symbol":"pub fn cancel(","callerClass":"binary_component","buildTarget":"hepta-infer-control"},"delegatedCallee":null,"testIds":["INFER-03"]},
+    {"designOperation":"settle","state":"implemented","ownerEntrypoint":{"path":"codex-rs/hepta-infer-core/src/bin/hepta-infer-control.rs","symbol":"pub fn settle(","callerClass":"binary_component","buildTarget":"hepta-infer-control"},"delegatedCallee":null,"testIds":["INFER-03","INFER-04"]}
+  ],
+  "productionCallerState":"unproved",
+  "productExecutionState":"unproved",
+  "externalGaps":["Bind deployed worker discovery, quota owner, dispatch transport and reconciliation.","Attach real provider and device terminal observations with measured usage."],
+  "generatedProjection":true
+}

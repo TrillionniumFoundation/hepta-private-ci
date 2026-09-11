@@ -1,0 +1,22 @@
+{
+  "schema":"hepta.lane-b-module-implementation-map.v2",
+  "schemaVersion":2,
+  "laneId":"LANE-B-RUNTIME",
+  "module":"ui.native",
+  "sourceOfTruth":"qualification/lane-b/LANE_B_IMPLEMENTATION_TRUTH.json",
+  "lineageAnchor":{"commit":"f278a89eea18fccb6d37b876aa5679863a64139d","tree":"5baa144717d4b3e3c596501fb56ce911d009e728"},
+  "maturity":"native_shell_runtime_boundary",
+  "ownerRoots":["apps/hepta-native"],
+  "implementationRoots":["apps/hepta-native"],
+  "aliasResolution":[],
+  "operations":[
+    {"designOperation":"connect_runtime","state":"implemented","ownerEntrypoint":{"path":"apps/hepta-native/src/shell-runtime.js","symbol":"async connectRuntime(","callerClass":"runtime_class","buildTarget":"hepta-native"},"delegatedCallee":null,"testIds":["NATIVE-01","NATIVE-03"]},
+    {"designOperation":"render_runtime_view","state":"implemented","ownerEntrypoint":{"path":"apps/hepta-native/src/shell-runtime.js","symbol":"renderRuntimeView(","callerClass":"runtime_class","buildTarget":"hepta-native"},"delegatedCallee":null,"testIds":["NATIVE-01","NATIVE-03"]},
+    {"designOperation":"request_platform_capability","state":"implemented","ownerEntrypoint":{"path":"apps/hepta-native/src/shell-runtime.js","symbol":"async requestPlatformCapability(","callerClass":"runtime_class","buildTarget":"hepta-native"},"delegatedCallee":null,"testIds":["NATIVE-02","NATIVE-03"]},
+    {"designOperation":"apply_shell_update","state":"implemented","ownerEntrypoint":{"path":"apps/hepta-native/src/shell-runtime.js","symbol":"async applyShellUpdate(","callerClass":"runtime_class","buildTarget":"hepta-native"},"delegatedCallee":null,"testIds":["NATIVE-04"]}
+  ],
+  "productionCallerState":"unproved",
+  "productExecutionState":"unproved",
+  "externalGaps":["Bind signed Windows, macOS and Linux application packages, secure storage and authenticated IPC.","Qualify OS permission revocation, accessibility, crash recovery, updater signing and rollback on target hosts."],
+  "generatedProjection":true
+}
