@@ -165,10 +165,10 @@ impl MatrixSendObserver {
                 .as_ref()
                 .ok_or(Error::TerminalEventMissing)?;
             validate_identity(event_id, "server event")?;
-            if let Some(prior_operation) = self.events.get(event_id) {
-                if prior_operation != &observation.operation_id {
-                    return Err(Error::OperationConflict);
-                }
+            if let Some(prior_operation) = self.events.get(event_id)
+                && prior_operation != &observation.operation_id
+            {
+                return Err(Error::OperationConflict);
             }
             self.events
                 .insert(event_id.clone(), observation.operation_id.clone());
