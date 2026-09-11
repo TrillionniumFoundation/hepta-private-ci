@@ -5,6 +5,8 @@
 
 #![forbid(unsafe_code)]
 
+mod vertical;
+
 use std::collections::BTreeSet;
 use std::error::Error as StdError;
 use std::fmt;
@@ -13,6 +15,12 @@ use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::FixedQ32;
 use codex_hepta_types::StableId;
+
+pub use vertical::ReadOnlyUtilityContribution;
+pub use vertical::ReadOnlyVerticalError;
+pub use vertical::ReadOnlyVerticalReceipt;
+pub use vertical::ReadOnlyVerticalRequest;
+pub use vertical::run_read_only_vertical;
 
 const MAX_CANDIDATES: usize = 128;
 
@@ -148,3 +156,7 @@ fn push_id(bytes: &mut Vec<u8>, value: &StableId) {
 #[cfg(test)]
 #[path = "lib_tests.rs"]
 mod tests;
+
+#[cfg(test)]
+#[path = "vertical_tests.rs"]
+mod vertical_tests;

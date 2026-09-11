@@ -2,7 +2,9 @@ name: Hepta consolidated source qualification (read-only)
 
 on:
   push:
-    branches: [main]
+    branches:
+      - main
+      - integration/vnext-main-20260811
   pull_request:
 
 permissions:
@@ -38,6 +40,7 @@ jobs:
           ref: ${{ env.SOURCE_SHA }}
           fetch-depth: 0
           persist-credentials: false
+
       - name: Bind exact source and base-merge identities
         shell: bash
         run: |
@@ -53,6 +56,7 @@ jobs:
             git checkout --detach "$MERGE"
           fi
           git rev-parse HEAD HEAD^{tree}
+
       - name: Retain original document and source-owner gates
         shell: bash
         run: |
@@ -64,10 +68,8 @@ jobs:
           python3 scripts/hepta-gap-closure.py verify
           python3 -m unittest discover -v -s tools/hepta-engineering-control -p 'test_*.py'
           node --test apps/hepta-browser/test/*.js apps/hepta-native/test/*.js
-      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
-        with:
-          tool: just@1.51.0,nextest@0.9.103
-      - name: Compile and test actual imported packages
+
+      - name: Compile actual imported packages
         working-directory: codex-rs
         shell: bash
         run: |
@@ -75,8 +77,36 @@ jobs:
           args=()
           for package in $PACKAGES; do args+=(-p "$package"); done
           cargo check --locked "${args[@]}" --all-targets
-          just test --locked "${args[@]}"
+
+      - name: Test actual imported packages deterministically
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -uo pipefail
+          args=()
+          for package in $PACKAGES; do args+=(-p "$package"); done
+          log="${RUNNER_TEMP}/consolidated-source-${{ matrix.lane }}.log"
+          cargo test --locked "${args[@]}" -- --nocapture --test-threads=1 2>&1 | tee "${log}"
+          exit "${PIPESTATUS[0]}"
+
+      - name: Retain package diagnostics
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: consolidated-source-${{ matrix.lane }}-${{ github.event.pull_request.head.sha || github.sha }}
+          path: ${{ runner.temp }}/consolidated-source-${{ matrix.lane }}.log
+          if-no-files-found: warn
+          retention-days: 14
+
+      - name: Strict imported-package lint
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          args=()
+          for package in $PACKAGES; do args+=(-p "$package"); done
           cargo clippy --locked "${args[@]}" --all-targets -- -D warnings
+
       - name: Formatting without source mutation
         if: always()
         working-directory: codex-rs
@@ -86,6 +116,7 @@ jobs:
           args=()
           for package in $PACKAGES; do args+=(--package "$package"); done
           cargo fmt "${args[@]}" -- --check
+
       - name: Clean tracked source
         if: always()
         run: |
