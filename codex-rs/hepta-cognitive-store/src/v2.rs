@@ -200,7 +200,7 @@ impl AdmittedCognitiveStoreV2 {
             ),
         };
         let record = MemoryRecord {
-            record_id: record_id.clone(),
+            record_id,
             revision,
             kind: admission_kind(candidate.kind),
             content_digest: candidate.content_digest,
