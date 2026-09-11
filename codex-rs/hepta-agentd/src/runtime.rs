@@ -36,6 +36,7 @@ enum CompletedRuntimeTask {
     AppServer,
     Monitor,
     Automation,
+    AuthBus,
 }
 
 pub async fn run(config: AgentdConfig, arg0_paths: Arg0DispatchPaths) -> Result<(), AgentdError> {
@@ -125,7 +126,16 @@ pub async fn run(config: AgentdConfig, arg0_paths: Arg0DispatchPaths) -> Result<
         }
     });
 
+    let mut authbus_task = tokio::spawn(crate::authbus_dispatch::run(
+        Arc::clone(&state),
+        cancellation.clone(),
+    ));
+
     let (outcome, completed_task) = tokio::select! {
+        result = &mut authbus_task => (
+            joined("AuthBus text relay", result),
+            Some(CompletedRuntimeTask::AuthBus),
+        ),
         result = &mut control_task => (
             joined("control server", result),
             Some(CompletedRuntimeTask::Control),
@@ -149,6 +159,9 @@ pub async fn run(config: AgentdConfig, arg0_paths: Arg0DispatchPaths) -> Result<
         }
     };
     cancellation.cancel();
+    if completed_task != Some(CompletedRuntimeTask::AuthBus) {
+        abort_and_join(&mut authbus_task).await;
+    }
     cleanup_runtime_tasks(
         completed_task,
         &mut control_task,
