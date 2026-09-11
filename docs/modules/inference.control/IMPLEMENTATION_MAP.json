@@ -1,0 +1,121 @@
+{
+  "schema": "hepta.lane-b-module-implementation-map.v1",
+  "schemaVersion": 1,
+  "laneId": "LANE-B-RUNTIME",
+  "sourceSubject": {
+    "repository": "TrillionniumFoundation/hepta-private-ci",
+    "baseBranch": "integration/hepta-all-gap-closure-20260910-r13",
+    "baseCommit": "f278a89eea18fccb6d37b876aa5679863a64139d",
+    "baseTree": "5baa144717d4b3e3c596501fb56ce911d009e728",
+    "candidateBranch": "codex/hepta-lane-b-truth-runtime-closure-20260911",
+    "historyRequirement": "one_direct_child_of_base"
+  },
+  "module": "inference.control",
+  "owner": "inference-platform",
+  "deputy": "runtime-control",
+  "mission": "Own provider requests, reservations and terminal receipts while preventing raw provider escape.",
+  "canonicalRoots": [
+    "codex-rs/hepta-infer-core",
+    "codex-rs/hepta-inferd"
+  ],
+  "integrationRoots": [],
+  "maturity": "durable_control_runtime",
+  "operations": [
+    {
+      "designOperation": "reserve_request",
+      "mappingState": "closed",
+      "repositoryImplementationState": "implemented",
+      "implementationClass": "durable_owner_method",
+      "ownerEntrypoint": {
+        "path": "codex-rs/hepta-infer-core/src/bin/hepta-infer-control.rs",
+        "symbol": "pub fn reserve(",
+        "buildTarget": "hepta-infer-control"
+      },
+      "callerClass": "control_owner",
+      "testIds": [
+        "INFER-01",
+        "INFER-02"
+      ],
+      "notes": ""
+    },
+    {
+      "designOperation": "schedule",
+      "mappingState": "closed",
+      "repositoryImplementationState": "implemented",
+      "implementationClass": "durable_owner_method",
+      "ownerEntrypoint": {
+        "path": "codex-rs/hepta-infer-core/src/bin/hepta-infer-control.rs",
+        "symbol": "pub fn assign(",
+        "buildTarget": "hepta-infer-control"
+      },
+      "callerClass": "control_owner",
+      "testIds": [
+        "INFER-01",
+        "INFER-04"
+      ],
+      "notes": ""
+    },
+    {
+      "designOperation": "cancel",
+      "mappingState": "closed",
+      "repositoryImplementationState": "implemented",
+      "implementationClass": "durable_owner_method",
+      "ownerEntrypoint": {
+        "path": "codex-rs/hepta-infer-core/src/bin/hepta-infer-control.rs",
+        "symbol": "pub fn cancel(",
+        "buildTarget": "hepta-infer-control"
+      },
+      "callerClass": "control_owner",
+      "testIds": [
+        "INFER-03"
+      ],
+      "notes": ""
+    },
+    {
+      "designOperation": "settle",
+      "mappingState": "closed",
+      "repositoryImplementationState": "implemented",
+      "implementationClass": "durable_owner_method",
+      "ownerEntrypoint": {
+        "path": "codex-rs/hepta-infer-core/src/bin/hepta-infer-control.rs",
+        "symbol": "pub fn settle(",
+        "buildTarget": "hepta-infer-control"
+      },
+      "callerClass": "control_owner",
+      "testIds": [
+        "INFER-03",
+        "INFER-04"
+      ],
+      "notes": ""
+    }
+  ],
+  "runtimeTopology": "Inference control is the owner-local scheduler and settlement authority. It creates durable request, reservation, assignment, cancellation and settlement transitions; workers cannot refund or rewrite them.",
+  "physicalState": "A bounded append journal is fsync'd before in-memory publication and replayed on reopen. Records bind request, principal, model, payload, reservation, worker generation, usage and revision.",
+  "linearization": "Submit/reserve/assign/cancel/settle each linearize at an appended, flushed and sync_data journal event. Expected revision and exact identity prevent conflicting replay.",
+  "recovery": "Corrupt or out-of-order journal events fail reopen. Cancellation racing completion records one settlement; unknown consumption remains indeterminate instead of being refunded.",
+  "security": "No raw provider escape is allowed. Request, reservation, worker, model, payload, token limit and authority epoch must match before dispatch or settlement.",
+  "capacity": "Records <=16384, tokens <=1000000, configured shard queue <=4096. Quota, queue age, cancellation latency and unsettled reservation age are bounded metrics.",
+  "terminalObserver": "Inference control accepts only authenticated worker/provider observations matching the exact assignment. The actual provider/device remains the external terminal observer.",
+  "verificationCommands": [
+    "cargo test -p codex-hepta-infer-core --bin hepta-infer-control",
+    "cargo test -p codex-hepta-infer-core --lib"
+  ],
+  "repositoryControlledGaps": [],
+  "externalEvidenceGaps": [
+    "deployed worker discovery, quota owner and provider/device observation",
+    "target-host persistence path, performance and recovery qualification"
+  ],
+  "externalGateIds": [
+    "RDY-EXT-001",
+    "RDY-EXT-002",
+    "RDY-EXT-003",
+    "RDY-EXT-008",
+    "RDY-EXT-009"
+  ],
+  "claimBoundary": {
+    "repositoryOperationMappingsClosed": true,
+    "productExecutionProved": false,
+    "deploymentProved": false,
+    "independentAcceptanceProved": false
+  }
+}

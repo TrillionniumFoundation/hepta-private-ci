@@ -1,0 +1,117 @@
+{
+  "schema": "hepta.lane-b-module-implementation-map.v1",
+  "schemaVersion": 1,
+  "laneId": "LANE-B-RUNTIME",
+  "sourceSubject": {
+    "repository": "TrillionniumFoundation/hepta-private-ci",
+    "baseBranch": "integration/hepta-all-gap-closure-20260910-r13",
+    "baseCommit": "f278a89eea18fccb6d37b876aa5679863a64139d",
+    "baseTree": "5baa144717d4b3e3c596501fb56ce911d009e728",
+    "candidateBranch": "codex/hepta-lane-b-truth-runtime-closure-20260911",
+    "historyRequirement": "one_direct_child_of_base"
+  },
+  "module": "automation.taskflow",
+  "owner": "automation-platform",
+  "deputy": "agent-runtime",
+  "mission": "Own schedules and occurrences while routing effects through Codex and the operation ledger.",
+  "canonicalRoots": [
+    "codex-rs/hepta-automation"
+  ],
+  "integrationRoots": [],
+  "maturity": "durable_fenced_orchestrator",
+  "operations": [
+    {
+      "designOperation": "register_schedule",
+      "mappingState": "closed",
+      "repositoryImplementationState": "implemented",
+      "implementationClass": "durable_owner_method",
+      "ownerEntrypoint": {
+        "path": "codex-rs/hepta-automation/src/taskflow.rs",
+        "symbol": "pub async fn register_taskflow_definition(",
+        "buildTarget": "codex-hepta-automation"
+      },
+      "callerClass": "automation_owner",
+      "testIds": [
+        "FLOW-01"
+      ],
+      "notes": ""
+    },
+    {
+      "designOperation": "materialize_due",
+      "mappingState": "closed",
+      "repositoryImplementationState": "implemented",
+      "implementationClass": "owner_scheduler_method",
+      "ownerEntrypoint": {
+        "path": "codex-rs/hepta-automation/src/scheduler.rs",
+        "symbol": "pub async fn tick(",
+        "buildTarget": "codex-hepta-automation"
+      },
+      "callerClass": "automation_scheduler",
+      "testIds": [
+        "FLOW-01"
+      ],
+      "notes": ""
+    },
+    {
+      "designOperation": "claim_occurrence",
+      "mappingState": "closed",
+      "repositoryImplementationState": "implemented",
+      "implementationClass": "owner_runtime_boundary",
+      "ownerEntrypoint": {
+        "path": "codex-rs/hepta-automation/src/bin/hepta-taskflow-runtime.rs",
+        "symbol": "pub fn claim_occurrence(",
+        "buildTarget": "hepta-taskflow-runtime"
+      },
+      "callerClass": "automation_scheduler",
+      "testIds": [
+        "FLOW-02"
+      ],
+      "notes": ""
+    },
+    {
+      "designOperation": "execute_step",
+      "mappingState": "closed",
+      "repositoryImplementationState": "implemented",
+      "implementationClass": "effect_driver_boundary",
+      "ownerEntrypoint": {
+        "path": "codex-rs/hepta-automation/src/bin/hepta-taskflow-runtime.rs",
+        "symbol": "pub fn execute_step(",
+        "buildTarget": "hepta-taskflow-runtime"
+      },
+      "callerClass": "automation_scheduler",
+      "testIds": [
+        "FLOW-03",
+        "FLOW-04"
+      ],
+      "notes": ""
+    }
+  ],
+  "runtimeTopology": "The existing AutomationStore remains the durable definition/run owner and scheduler. The fenced executor consumes one occurrence claim and routes typed effects through an injected effect driver.",
+  "physicalState": "Definitions, runs and event chains are SQLite-backed and generation-fenced. Executor receipts bind occurrence, step, operation, semantic digest, final payload and terminality; downstream domain facts stay outside TaskFlow.",
+  "linearization": "Definition registration and scheduler tick use owner transactions. Claims advance a monotone fence. Step dispatch occurs only after dependency success and final-payload equality.",
+  "recovery": "Unknown effects block dependent steps. Compensation is a separate authorized step. Event-chain corruption, stale fences, expired claims and changed operation semantics reject.",
+  "security": "TaskFlow cannot mint final-use authority or call providers/Matrix/browser directly. Capability sets, graph acyclicity, recovery paths and immutable operation identities are validated.",
+  "capacity": "Occurrences <=1024 per bounded scan, nodes <=256, edges <=1024, executor steps <=128. Catch-up, retries and ready steps are bounded by policy.",
+  "terminalObserver": "The downstream effect adapter is the terminal observer. TaskFlow records terminal or indeterminate receipts and never infers success from queue admission.",
+  "verificationCommands": [
+    "cargo test -p codex-hepta-automation --bin hepta-taskflow-runtime",
+    "cargo test -p codex-hepta-automation --lib"
+  ],
+  "repositoryControlledGaps": [],
+  "externalEvidenceGaps": [
+    "deployed App Server/effect adapter callsite and trusted external terminal observer",
+    "target scheduler timezone database, DST, crash-reopen and compensation qualification"
+  ],
+  "externalGateIds": [
+    "RDY-EXT-001",
+    "RDY-EXT-002",
+    "RDY-EXT-008",
+    "RDY-EXT-009"
+  ],
+  "claimBoundary": {
+    "repositoryOperationMappingsClosed": true,
+    "productExecutionProved": false,
+    "deploymentProved": false,
+    "independentAcceptanceProved": false
+  }
+}

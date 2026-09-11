@@ -1,0 +1,105 @@
+{
+  "schema": "hepta.lane-b-module-implementation-map.v1",
+  "schemaVersion": 1,
+  "laneId": "LANE-B-RUNTIME",
+  "sourceSubject": {
+    "repository": "TrillionniumFoundation/hepta-private-ci",
+    "baseBranch": "integration/hepta-all-gap-closure-20260910-r13",
+    "baseCommit": "f278a89eea18fccb6d37b876aa5679863a64139d",
+    "baseTree": "5baa144717d4b3e3c596501fb56ce911d009e728",
+    "candidateBranch": "codex/hepta-lane-b-truth-runtime-closure-20260911",
+    "historyRequirement": "one_direct_child_of_base"
+  },
+  "module": "runtime.fleet",
+  "owner": "fleet-runtime",
+  "deputy": "runtime-control",
+  "mission": "Allocate bounded fleet resources from explicit grants without writing agent-owned state.",
+  "canonicalRoots": [
+    "codex-rs/hepta-fleet"
+  ],
+  "integrationRoots": [],
+  "maturity": "lease_runtime_boundary",
+  "operations": [
+    {
+      "designOperation": "admit_host",
+      "mappingState": "closed",
+      "repositoryImplementationState": "implemented",
+      "implementationClass": "owner_runtime_boundary",
+      "ownerEntrypoint": {
+        "path": "codex-rs/hepta-fleet/src/bin/hepta-fleet-leased.rs",
+        "symbol": "pub fn admit_host(",
+        "buildTarget": "hepta-fleet-leased"
+      },
+      "callerClass": "fleet_owner",
+      "testIds": [
+        "FLEET-02",
+        "FLEET-04"
+      ],
+      "notes": ""
+    },
+    {
+      "designOperation": "allocate",
+      "mappingState": "closed",
+      "repositoryImplementationState": "implemented",
+      "implementationClass": "owner_runtime_boundary",
+      "ownerEntrypoint": {
+        "path": "codex-rs/hepta-fleet/src/bin/hepta-fleet-leased.rs",
+        "symbol": "pub fn issue(",
+        "buildTarget": "hepta-fleet-leased"
+      },
+      "callerClass": "fleet_owner",
+      "testIds": [
+        "FLEET-01",
+        "FLEET-03"
+      ],
+      "notes": "The deterministic allocator remains authority-free; issue publishes only a capacity-checked owner-local lease receipt."
+    },
+    {
+      "designOperation": "renew_or_revoke",
+      "mappingState": "closed",
+      "repositoryImplementationState": "implemented",
+      "implementationClass": "owner_runtime_boundary",
+      "ownerEntrypoint": {
+        "path": "codex-rs/hepta-fleet/src/bin/hepta-fleet-leased.rs",
+        "symbol": "pub fn renew_or_revoke(",
+        "buildTarget": "hepta-fleet-leased"
+      },
+      "callerClass": "fleet_owner",
+      "testIds": [
+        "FLEET-02",
+        "FLEET-04"
+      ],
+      "notes": ""
+    }
+  ],
+  "runtimeTopology": "Fleet is a separate resource-allocation owner. Supervisor may embed the registry library, but ownership of capacity observations and allocation leases remains explicit and does not transfer to Agentd.",
+  "physicalState": "The canonical FleetRegistry is durable. The leased runtime binds host generation, failure domain, authority epoch, resource vector, lease generation and expiry. Deployment must select the physical lease store and writer fence; an in-process test ledger is not a deployment receipt.",
+  "linearization": "Host admission commits an exact generation observation. Lease issue linearizes after freshness and resource-conservation checks. Renewal or revocation uses expected lease generation, authority epoch and semantic digest.",
+  "recovery": "A stale or partitioned host receives no new lease. Expired/revoked leases fail closed. Uncertain hard-resource holders are reconciled before capacity is reallocated.",
+  "security": "Discovery never enrolls a host. Every lease is principal-, host-, failure-domain-, epoch-, generation-, resource- and digest-bound. No direct agent-store mutation is permitted.",
+  "capacity": "Hosts <=256, active grants <=16384, planning requests <=4096, axes <=32. Every hard resource sum must remain <= observed capacity; arithmetic overflow rejects.",
+  "terminalObserver": "The fleet owner observes lease state. Actual host capacity, consumption and release are terminal only when the enrolled target host supplies authenticated observations.",
+  "verificationCommands": [
+    "cargo test -p codex-hepta-fleet --bin hepta-fleet-leased",
+    "cargo test -p codex-hepta-fleet --lib"
+  ],
+  "repositoryControlledGaps": [],
+  "externalEvidenceGaps": [
+    "target-host capacity freshness, physical lease-store selection and local grant enforcement",
+    "partition and uncertain-holder reconciliation on the deployed fleet"
+  ],
+  "externalGateIds": [
+    "RDY-EXT-001",
+    "RDY-EXT-002",
+    "RDY-EXT-006",
+    "RDY-EXT-007",
+    "RDY-EXT-008",
+    "RDY-EXT-009"
+  ],
+  "claimBoundary": {
+    "repositoryOperationMappingsClosed": true,
+    "productExecutionProved": false,
+    "deploymentProved": false,
+    "independentAcceptanceProved": false
+  }
+}

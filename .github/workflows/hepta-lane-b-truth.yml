@@ -1,11 +1,18 @@
-name: Hepta Lane B implementation truth
+name: Hepta Lane B truth compatibility
 
 on:
   pull_request:
+    paths:
+      - ".github/workflows/hepta-lane-b-*.yml"
+      - "qualification/lane-b/**"
+      - "docs/readiness/LANE_B_*.md"
+      - "docs/modules/**/IMPLEMENTATION_MAP.json"
+      - "docs/modules/**/CURRENT_IMPLEMENTATION.md"
+      - "scripts/hepta-lane-b-*.py"
+      - "scripts/hepta_lane_b_schema.py"
+      - "scripts/test_hepta_lane_b_*.py"
   push:
     branches:
-      - main
-      - integration/vnext-main-20260811
       - "codex/hepta-lane-b-*"
   workflow_dispatch:
 
@@ -13,83 +20,69 @@ permissions:
   contents: read
 
 concurrency:
-  group: hepta-lane-b-truth-${{ github.event.pull_request.number || github.ref }}
+  group: hepta-lane-b-truth-compat-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
 jobs:
-  source-head:
-    name: Verify exact Lane B source
+  source-truth:
+    name: Unified v3 source truth
     runs-on: ubuntu-24.04
     timeout-minutes: 15
     steps:
-      - name: Check out exact source
+      - name: Checkout exact source
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
-          persist-credentials: false
           fetch-depth: 0
-
-      - name: Verify Lane B implementation truth and documents
+          persist-credentials: false
+      - name: Verify one shared schema and generated documents
         env:
           EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
-        shell: bash
+          HEPTA_LANE_B_VERIFY_MODE: source
         run: |
           set -euo pipefail
-          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
           python3 scripts/hepta-lane-b-truth.py self-test
           python3 -m unittest scripts/test_hepta_lane_b_truth.py
+          python3 scripts/hepta-lane-b-docs.py check
           python3 scripts/hepta-lane-b-truth.py verify
-          python3 scripts/hepta-lane-b-docs.py
           git diff --check
           test -z "$(git status --porcelain --untracked-files=no)"
 
-  merge-candidate:
-    name: Verify exact Lane B merge candidate
+  merge-truth:
+    name: Unified v3 merge truth
     if: github.event_name == 'pull_request'
     runs-on: ubuntu-24.04
     timeout-minutes: 15
     steps:
-      - name: Check out source for deterministic merge construction
+      - name: Checkout source
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           ref: ${{ github.event.pull_request.head.sha }}
-          persist-credentials: false
           fetch-depth: 0
-
-      - name: Construct exact synthetic merge candidate
-        id: merge
+          persist-credentials: false
+      - name: Construct and verify deterministic merge
         env:
           BASE_SHA: ${{ github.event.pull_request.base.sha }}
           SOURCE_SHA: ${{ github.event.pull_request.head.sha }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
-        shell: bash
         run: |
           set -euo pipefail
-          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
-          git cat-file -e "$BASE_SHA^{commit}"
           TREE="$(git merge-tree --write-tree "$BASE_SHA" "$SOURCE_SHA")"
-          [[ "$TREE" =~ ^[0-9a-f]{40}$ ]]
+          test "$TREE" = "$(git rev-parse "$SOURCE_SHA^{tree}")"
           export GIT_AUTHOR_NAME="Hepta Lane B CI"
           export GIT_AUTHOR_EMAIL="hepta-lane-b-ci@users.noreply.github.com"
           export GIT_COMMITTER_NAME="$GIT_AUTHOR_NAME"
           export GIT_COMMITTER_EMAIL="$GIT_AUTHOR_EMAIL"
           export GIT_AUTHOR_DATE="2000-01-01T00:00:00Z"
           export GIT_COMMITTER_DATE="$GIT_AUTHOR_DATE"
-          SHA="$(printf 'Synthetic Lane B merge for PR %s\n' "$PR_NUMBER" | git commit-tree "$TREE" -p "$BASE_SHA" -p "$SOURCE_SHA")"
+          SHA="$(printf 'Synthetic Lane B truth merge for PR %s\n' "$PR_NUMBER" |
+            git commit-tree "$TREE" -p "$BASE_SHA" -p "$SOURCE_SHA")"
           git checkout --detach "$SHA"
-          test "$(git rev-parse HEAD^{tree})" = "$TREE"
-          printf 'sha=%s\n' "$SHA" >> "$GITHUB_OUTPUT"
-
-      - name: Verify synthetic merge candidate
-        env:
-          EXPECTED_SHA: ${{ steps.merge.outputs.sha }}
-        shell: bash
-        run: |
-          set -euo pipefail
-          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
-          python3 scripts/hepta-lane-b-truth.py self-test
-          python3 -m unittest scripts/test_hepta_lane_b_truth.py
-          python3 scripts/hepta-lane-b-truth.py verify
-          python3 scripts/hepta-lane-b-docs.py
+          EXPECTED_SHA="$SHA" \
+          EXPECTED_BASE_SHA="$BASE_SHA" \
+          EXPECTED_SOURCE_SHA="$SOURCE_SHA" \
+          HEPTA_LANE_B_VERIFY_MODE=merge \
+            python3 scripts/hepta-lane-b-truth.py verify
+          python3 scripts/hepta-lane-b-docs.py check
           git diff --check
           test -z "$(git status --porcelain --untracked-files=no)"

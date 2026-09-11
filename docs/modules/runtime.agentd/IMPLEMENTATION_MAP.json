@@ -1,0 +1,140 @@
+{
+  "schema": "hepta.lane-b-module-implementation-map.v1",
+  "schemaVersion": 1,
+  "laneId": "LANE-B-RUNTIME",
+  "sourceSubject": {
+    "repository": "TrillionniumFoundation/hepta-private-ci",
+    "baseBranch": "integration/hepta-all-gap-closure-20260910-r13",
+    "baseCommit": "f278a89eea18fccb6d37b876aa5679863a64139d",
+    "baseTree": "5baa144717d4b3e3c596501fb56ce911d009e728",
+    "candidateBranch": "codex/hepta-lane-b-truth-runtime-closure-20260911",
+    "historyRequirement": "one_direct_child_of_base"
+  },
+  "module": "runtime.agentd",
+  "owner": "agent-runtime",
+  "deputy": "runtime-control",
+  "mission": "Compose one agent runtime as a thin lifecycle host and never become a product-domain store.",
+  "canonicalRoots": [
+    "codex-rs/hepta-agentd"
+  ],
+  "integrationRoots": [
+    "codex-rs/app-server",
+    "codex-rs/core"
+  ],
+  "maturity": "delegating_composition_runtime",
+  "operations": [
+    {
+      "designOperation": "compose_runtime",
+      "mappingState": "closed",
+      "repositoryImplementationState": "implemented",
+      "implementationClass": "owner_native_method",
+      "ownerEntrypoint": {
+        "path": "codex-rs/hepta-agentd/src/app_runtime.rs",
+        "symbol": "pub(crate) async fn run_app_server(",
+        "buildTarget": "codex-hepta-agentd"
+      },
+      "callerClass": "supervisor_spawn",
+      "testIds": [
+        "AGENT-02",
+        "AGENT-04"
+      ],
+      "notes": ""
+    },
+    {
+      "designOperation": "start_run",
+      "mappingState": "closed",
+      "repositoryImplementationState": "implemented",
+      "implementationClass": "delegated_native_path",
+      "ownerEntrypoint": {
+        "path": "codex-rs/hepta-agentd/src/app_runtime.rs",
+        "symbol": "pub(crate) async fn run_app_server(",
+        "buildTarget": "codex-hepta-agentd"
+      },
+      "callerClass": "authenticated_uds_session",
+      "testIds": [
+        "AGENT-01",
+        "AGENT-02"
+      ],
+      "notes": "Agentd owns composition and session ingress; App Server owns turn admission.",
+      "delegatedCallee": {
+        "module": "runtime.codex",
+        "path": "codex-rs/app-server/src/request_processors/turn_processor.rs",
+        "symbol": "pub(crate) async fn turn_start(",
+        "buildTarget": "codex-app-server"
+      }
+    },
+    {
+      "designOperation": "cancel_run",
+      "mappingState": "closed",
+      "repositoryImplementationState": "implemented",
+      "implementationClass": "delegated_native_path",
+      "ownerEntrypoint": {
+        "path": "codex-rs/hepta-agentd/src/app_runtime.rs",
+        "symbol": "pub(crate) async fn run_app_server(",
+        "buildTarget": "codex-hepta-agentd"
+      },
+      "callerClass": "authenticated_uds_session",
+      "testIds": [
+        "AGENT-03"
+      ],
+      "notes": "",
+      "delegatedCallee": {
+        "module": "runtime.codex",
+        "path": "codex-rs/app-server/src/request_processors/turn_processor.rs",
+        "symbol": "pub(crate) async fn turn_interrupt(",
+        "buildTarget": "codex-app-server"
+      }
+    },
+    {
+      "designOperation": "attach_context",
+      "mappingState": "closed",
+      "repositoryImplementationState": "implemented",
+      "implementationClass": "delegated_native_path",
+      "ownerEntrypoint": {
+        "path": "codex-rs/hepta-agentd/src/app_runtime.rs",
+        "symbol": "pub(crate) async fn run_app_server(",
+        "buildTarget": "codex-hepta-agentd"
+      },
+      "callerClass": "authenticated_uds_session",
+      "testIds": [
+        "AGENT-01",
+        "AGENT-04"
+      ],
+      "notes": "",
+      "delegatedCallee": {
+        "module": "runtime.codex",
+        "path": "codex-rs/core/src/codex_thread.rs",
+        "symbol": "pub(crate) async fn submit_turn_input_and_wait_for_exact_admission(",
+        "buildTarget": "codex-core"
+      }
+    }
+  ],
+  "runtimeTopology": "Supervisor starts one Agentd process. Agentd launches the existing App Server over an owner-only UDS, exposes generation-bound lifecycle/session ingress, and injects owner ports without acquiring their durable facts.",
+  "physicalState": "Only runtime-health observations, process/socket state and ephemeral run references belong to Agentd. Thread, objective, memory, learning, prompt, artifact and operation facts remain with canonical owners.",
+  "linearization": "Composition linearizes when the exact App Server runtime options, local socket, strict configuration and process generation are frozen. Run operations linearize in delegated App Server/Core handlers.",
+  "recovery": "Missing critical owner ports blocks readiness. Stale process generations and socket peers are rejected. Restart reconstructs owner state and does not treat local caches as authority.",
+  "security": "The control socket is owner-only and bounded; App Server uses strict configuration and explicit local thread-store mode. Positive writer seams remain build/profile gated.",
+  "capacity": "Control connections <=32 with a two-second bounded I/O timeout; request frames use MAX_CONTROL_FRAME_BYTES. Turn queue capacity is taken exactly from the Agent manifest.",
+  "terminalObserver": "Agentd observes process and ingress readiness. App Server/Core observe turn admission/interruption; downstream effect owners observe external terminal outcomes.",
+  "verificationCommands": [
+    "cargo test -p codex-hepta-agentd --lib",
+    "cargo check -p codex-hepta-agentd -p codex-app-server -p codex-core"
+  ],
+  "repositoryControlledGaps": [],
+  "externalEvidenceGaps": [
+    "deployed Agentd process/socket peer identity and non-test session consumer",
+    "target-process backpressure, cancellation acknowledgement and restart qualification"
+  ],
+  "externalGateIds": [
+    "RDY-EXT-001",
+    "RDY-EXT-002",
+    "RDY-EXT-008",
+    "RDY-EXT-009"
+  ],
+  "claimBoundary": {
+    "repositoryOperationMappingsClosed": true,
+    "productExecutionProved": false,
+    "deploymentProved": false,
+    "independentAcceptanceProved": false
+  }
+}

@@ -1,0 +1,102 @@
+{
+  "schema": "hepta.lane-b-module-implementation-map.v1",
+  "schemaVersion": 1,
+  "laneId": "LANE-B-RUNTIME",
+  "sourceSubject": {
+    "repository": "TrillionniumFoundation/hepta-private-ci",
+    "baseBranch": "integration/hepta-all-gap-closure-20260910-r13",
+    "baseCommit": "f278a89eea18fccb6d37b876aa5679863a64139d",
+    "baseTree": "5baa144717d4b3e3c596501fb56ce911d009e728",
+    "candidateBranch": "codex/hepta-lane-b-truth-runtime-closure-20260911",
+    "historyRequirement": "one_direct_child_of_base"
+  },
+  "module": "ui.control",
+  "owner": "ui-platform",
+  "deputy": "accessibility",
+  "mission": "Present runtime state and requests without issuing authority or directly writing stores.",
+  "canonicalRoots": [
+    "apps/hepta-control-ui"
+  ],
+  "integrationRoots": [],
+  "maturity": "authenticated_web_runtime_client",
+  "operations": [
+    {
+      "designOperation": "read_view",
+      "mappingState": "closed",
+      "repositoryImplementationState": "implemented",
+      "implementationClass": "presentation_method",
+      "ownerEntrypoint": {
+        "path": "apps/hepta-control-ui/src/runtime-client.js",
+        "symbol": "readView()",
+        "buildTarget": "hepta-control-ui"
+      },
+      "callerClass": "web_application",
+      "testIds": [
+        "UI-01",
+        "UI-04"
+      ],
+      "notes": ""
+    },
+    {
+      "designOperation": "submit_request",
+      "mappingState": "closed",
+      "repositoryImplementationState": "implemented",
+      "implementationClass": "presentation_method",
+      "ownerEntrypoint": {
+        "path": "apps/hepta-control-ui/src/runtime-client.js",
+        "symbol": "async submitRequest(",
+        "buildTarget": "hepta-control-ui"
+      },
+      "callerClass": "web_application",
+      "testIds": [
+        "UI-02",
+        "UI-03"
+      ],
+      "notes": ""
+    },
+    {
+      "designOperation": "request_stop",
+      "mappingState": "closed",
+      "repositoryImplementationState": "implemented",
+      "implementationClass": "presentation_method",
+      "ownerEntrypoint": {
+        "path": "apps/hepta-control-ui/src/runtime-client.js",
+        "symbol": "async requestStop(",
+        "buildTarget": "hepta-control-ui"
+      },
+      "callerClass": "web_application",
+      "testIds": [
+        "UI-01",
+        "UI-04"
+      ],
+      "notes": ""
+    }
+  ],
+  "runtimeTopology": "RuntimeClient authenticates one backend session/protocol generation, consumes coherent snapshots and submits bounded operation/stop requests. It remains a presentation owner only.",
+  "physicalState": "Connection, snapshot, pending request and accessibility state are ephemeral. Backend domain facts and terminal outcomes remain authoritative; no UI database or capability issuer is created.",
+  "linearization": "Snapshot revisions advance monotonically. A request linearizes at an authenticated backend acknowledgement with matching operation and semantic digest, not at a local click.",
+  "recovery": "Reconnect reconciles stable request identities. Disconnect never proves cancellation. Stale views and incompatible protocol generations disable mutation.",
+  "security": "Session authentication, stale-view binding and exact operation identity are enforced. Deployment must add CSP, CSRF, origin and browser-session controls without widening authority.",
+  "capacity": "Pending operations <=1024, view <=1 MiB by profile, retained events <=1000. Render and reconnect work are bounded.",
+  "terminalObserver": "Only the backend/effect owner can authenticate terminal state. The UI may display pending, indeterminate, failed or terminal observations but cannot manufacture them.",
+  "verificationCommands": [
+    "node --test apps/hepta-control-ui/test/runtime-client.test.js"
+  ],
+  "repositoryControlledGaps": [],
+  "externalEvidenceGaps": [
+    "selected Web framework/build artifact, deployed authenticated transport, CSP/CSRF and browser support matrix",
+    "target accessibility, screen-reader, keyboard, reconnect and backend E2E qualification"
+  ],
+  "externalGateIds": [
+    "RDY-EXT-001",
+    "RDY-EXT-002",
+    "RDY-EXT-008",
+    "RDY-EXT-009"
+  ],
+  "claimBoundary": {
+    "repositoryOperationMappingsClosed": true,
+    "productExecutionProved": false,
+    "deploymentProved": false,
+    "independentAcceptanceProved": false
+  }
+}

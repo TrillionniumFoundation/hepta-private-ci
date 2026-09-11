@@ -1,0 +1,151 @@
+{
+  "schema": "hepta.lane-b-gap-ledger.v1",
+  "schemaVersion": 1,
+  "laneId": "LANE-B-RUNTIME",
+  "sourceSubject": {
+    "repository": "TrillionniumFoundation/hepta-private-ci",
+    "baseBranch": "integration/hepta-all-gap-closure-20260910-r13",
+    "baseCommit": "f278a89eea18fccb6d37b876aa5679863a64139d",
+    "baseTree": "5baa144717d4b3e3c596501fb56ce911d009e728",
+    "candidateBranch": "codex/hepta-lane-b-truth-runtime-closure-20260911",
+    "historyRequirement": "one_direct_child_of_base"
+  },
+  "repositoryControlled": {
+    "open": 0,
+    "closed": 10,
+    "allClosed": true,
+    "gaps": [
+      {
+        "id": "LANE-B-GAP-001",
+        "topic": "v1/v2 truth-validator schema divergence",
+        "state": "closed",
+        "closureEvidence": "One shared v3 schema module is used by candidate, truth and document validators."
+      },
+      {
+        "id": "LANE-B-GAP-002",
+        "topic": "stale baseline and candidate identity in human documents",
+        "state": "closed",
+        "closureEvidence": "All generated companions bind the same immutable base subject from the manifest."
+      },
+      {
+        "id": "LANE-B-GAP-003",
+        "topic": "39-operation mapping debt and stale Browser/UI mappings",
+        "state": "closed",
+        "closureEvidence": "Every operation has a current source anchor and generated implementation map."
+      },
+      {
+        "id": "LANE-B-GAP-004",
+        "topic": "Agentd owner-root versus delegated Codex callee ambiguity",
+        "state": "closed",
+        "closureEvidence": "Owner entrypoints and delegated callees are represented separately and validated against distinct root sets."
+      },
+      {
+        "id": "LANE-B-GAP-005",
+        "topic": "missing per-module native implementation maps",
+        "state": "closed",
+        "closureEvidence": "Eleven canonical IMPLEMENTATION_MAP.json companions bind module operations, ownership, state, recovery, security, capacity and tests."
+      },
+      {
+        "id": "LANE-B-GAP-006",
+        "topic": "hand-written closure documents drifting from machine truth",
+        "state": "closed",
+        "closureEvidence": "Human closure, status and native-binding projections are reproducibly generated; the composition document is source-bound and structurally validated."
+      },
+      {
+        "id": "LANE-B-GAP-007",
+        "topic": "missing closed-world test traceability",
+        "state": "closed",
+        "closureEvidence": "All 44 dossier acceptance cases and all 39 operations are linked to exact commands."
+      },
+      {
+        "id": "LANE-B-GAP-008",
+        "topic": "exact-head-only or obsolete Lane B workflow coverage",
+        "state": "closed",
+        "closureEvidence": "One v3 workflow verifies exact source and a deterministic synthetic merge under read-only permissions."
+      },
+      {
+        "id": "LANE-B-GAP-009",
+        "topic": "ambiguous use of mapping closed versus target/deployment closed",
+        "state": "closed",
+        "closureEvidence": "The truth model separates repository mapping/document closure from product, deployment and independent evidence."
+      },
+      {
+        "id": "LANE-B-GAP-010",
+        "topic": "external evidence gaps mixed into source TODOs",
+        "state": "closed",
+        "closureEvidence": "Nine non-self-certifiable gates have explicit owners, evidence requirements and an immutable handoff projection."
+      }
+    ]
+  },
+  "separatelyGoverned": {
+    "open": 9,
+    "closed": 0,
+    "allClosed": false,
+    "gates": [
+      {
+        "id": "RDY-EXT-001",
+        "title": "Exact-candidate compilation and published CI evidence",
+        "state": "open",
+        "owner": "GitHub Actions plus an independent reviewer",
+        "selfCertifiable": false
+      },
+      {
+        "id": "RDY-EXT-002",
+        "title": "Independent semantic review",
+        "state": "open",
+        "owner": "eligible non-author reviewer",
+        "selfCertifiable": false
+      },
+      {
+        "id": "RDY-EXT-003",
+        "title": "Real model, provider, runtime and device identity",
+        "state": "open",
+        "owner": "inference deployment owner and independent observer",
+        "selfCertifiable": false
+      },
+      {
+        "id": "RDY-EXT-004",
+        "title": "Future-calendar efficacy and retention",
+        "state": "open",
+        "owner": "independent learning evaluator",
+        "selfCertifiable": false
+      },
+      {
+        "id": "RDY-EXT-005",
+        "title": "Empirical biomimicry or embodiment claim",
+        "state": "open",
+        "owner": "independent scientific evaluator",
+        "selfCertifiable": false
+      },
+      {
+        "id": "RDY-EXT-006",
+        "title": "Target-host and hardware qualification",
+        "state": "open",
+        "owner": "target custodian and safety evaluator",
+        "selfCertifiable": false
+      },
+      {
+        "id": "RDY-EXT-007",
+        "title": "External owner consent and enrollment",
+        "state": "open",
+        "owner": "external service, homeserver, browser-profile or fleet owner",
+        "selfCertifiable": false
+      },
+      {
+        "id": "RDY-EXT-008",
+        "title": "Operator acceptance",
+        "state": "open",
+        "owner": "independent operator",
+        "selfCertifiable": false
+      },
+      {
+        "id": "RDY-EXT-009",
+        "title": "Canary, selection, signing, promotion and release",
+        "state": "open",
+        "owner": "release and promotion authorities",
+        "selfCertifiable": false
+      }
+    ]
+  },
+  "closureRule": "Repository-controlled blockers may be closed by exact source, generated truth, tests and CI. External deployment, real effects, future time, hardware, independent acceptance and release cannot be converted into repository-authored facts."
+}

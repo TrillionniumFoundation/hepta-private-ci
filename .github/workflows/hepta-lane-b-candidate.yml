@@ -1,0 +1,179 @@
+name: Hepta Lane B exact source and merge qualification
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/hepta-lane-b-*.yml"
+      - "qualification/lane-b/**"
+      - "docs/readiness/LANE_B_*.md"
+      - "docs/modules/**/IMPLEMENTATION_MAP.json"
+      - "docs/modules/**/CURRENT_IMPLEMENTATION.md"
+      - "scripts/hepta-lane-b-*.py"
+      - "scripts/hepta_lane_b_schema.py"
+      - "scripts/test_hepta_lane_b_*.py"
+      - "codex-rs/hepta-supervisor/**"
+      - "codex-rs/hepta-fleet/**"
+      - "codex-rs/hepta-agentd/**"
+      - "codex-rs/app-server/**"
+      - "codex-rs/core/**"
+      - "codex-rs/hepta-codex-adapter/**"
+      - "codex-rs/hepta-infer-core/**"
+      - "codex-rs/hepta-inferd/**"
+      - "codex-rs/hepta-infer-worker-host/**"
+      - "codex-rs/hepta-automation/**"
+      - "codex-rs/hepta-matrix-sdk/**"
+      - "codex-rs/hepta-matrixd/**"
+      - "apps/hepta-browser/**"
+      - "apps/hepta-control-ui/**"
+      - "apps/hepta-native/**"
+  push:
+    branches:
+      - "codex/hepta-lane-b-*"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-lane-b-v3-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  exact-source:
+    name: Exact source / Lane B v3
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - name: Checkout exact source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Verify exact checkout and generated truth
+        env:
+          EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+          HEPTA_LANE_B_VERIFY_MODE: source
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          python3 scripts/hepta-lane-b-candidate.py self-test
+          python3 -m unittest scripts/test_hepta_lane_b_candidate.py scripts/test_hepta_lane_b_truth.py
+          python3 scripts/hepta-lane-b-docs.py check
+          python3 scripts/hepta-lane-b-candidate.py verify
+
+      - name: Browser and UI runtime tests
+        run: |
+          set -euo pipefail
+          node --test apps/hepta-browser/test/runtime.test.js
+          node --test apps/hepta-control-ui/test/runtime-client.test.js
+          node --test apps/hepta-native/test/shell-runtime.test.js
+
+      - name: Lane B Rust owner tests
+        working-directory: codex-rs
+        run: |
+          set -euo pipefail
+          cargo test -p codex-hepta-supervisor --lib
+          cargo test -p codex-hepta-fleet --lib
+          cargo test -p codex-hepta-fleet --bin hepta-fleet-leased
+          cargo test -p codex-hepta-agentd --lib
+          cargo test -p codex-hepta-codex-adapter --lib
+          cargo test -p codex-hepta-infer-core --lib
+          cargo test -p codex-hepta-infer-core --bin hepta-infer-control
+          cargo test -p codex-hepta-infer-worker-host --lib
+          cargo test -p codex-hepta-infer-worker-host --bin hepta-infer-worker
+          cargo test -p codex-hepta-automation --lib
+          cargo test -p codex-hepta-automation --bin hepta-taskflow-runtime
+          cargo test -p codex-hepta-matrixd --bin hepta-matrix-send-observer
+          cargo test -p codex-hepta-matrixd --lib
+          cargo check -p codex-app-server -p codex-core -p codex-hepta-matrixd
+
+      - name: Verify immutable tracked tree
+        run: |
+          set -euo pipefail
+          git diff --check
+          test -z "$(git status --porcelain --untracked-files=no)"
+
+  synthetic-merge:
+    name: Deterministic synthetic merge / Lane B v3
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - name: Checkout exact source for merge construction
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Construct deterministic synthetic merge
+        id: merge
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          SOURCE_SHA: ${{ github.event.pull_request.head.sha }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          git cat-file -e "$BASE_SHA^{commit}"
+          TREE="$(git merge-tree --write-tree "$BASE_SHA" "$SOURCE_SHA")"
+          test "$TREE" = "$(git rev-parse "$SOURCE_SHA^{tree}")"
+          export GIT_AUTHOR_NAME="Hepta Lane B CI"
+          export GIT_AUTHOR_EMAIL="hepta-lane-b-ci@users.noreply.github.com"
+          export GIT_COMMITTER_NAME="$GIT_AUTHOR_NAME"
+          export GIT_COMMITTER_EMAIL="$GIT_AUTHOR_EMAIL"
+          export GIT_AUTHOR_DATE="2000-01-01T00:00:00Z"
+          export GIT_COMMITTER_DATE="$GIT_AUTHOR_DATE"
+          SHA="$(printf 'Synthetic Lane B merge for PR %s\n' "$PR_NUMBER" |
+            git commit-tree "$TREE" -p "$BASE_SHA" -p "$SOURCE_SHA")"
+          git checkout --detach "$SHA"
+          test "$(git rev-parse HEAD^{tree})" = "$TREE"
+          printf 'sha=%s\n' "$SHA" >> "$GITHUB_OUTPUT"
+
+      - name: Verify merged checkout and generated truth
+        env:
+          EXPECTED_SHA: ${{ steps.merge.outputs.sha }}
+          EXPECTED_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          EXPECTED_SOURCE_SHA: ${{ github.event.pull_request.head.sha }}
+          HEPTA_LANE_B_VERIFY_MODE: merge
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          python3 scripts/hepta-lane-b-candidate.py self-test
+          python3 -m unittest scripts/test_hepta_lane_b_candidate.py scripts/test_hepta_lane_b_truth.py
+          python3 scripts/hepta-lane-b-docs.py check
+          python3 scripts/hepta-lane-b-candidate.py verify
+
+      - name: Browser and UI tests on merge
+        run: |
+          set -euo pipefail
+          node --test apps/hepta-browser/test/runtime.test.js
+          node --test apps/hepta-control-ui/test/runtime-client.test.js
+          node --test apps/hepta-native/test/shell-runtime.test.js
+
+      - name: Rust owner tests on merge
+        working-directory: codex-rs
+        run: |
+          set -euo pipefail
+          cargo test -p codex-hepta-supervisor --lib
+          cargo test -p codex-hepta-fleet --lib
+          cargo test -p codex-hepta-fleet --bin hepta-fleet-leased
+          cargo test -p codex-hepta-agentd --lib
+          cargo test -p codex-hepta-codex-adapter --lib
+          cargo test -p codex-hepta-infer-core --lib
+          cargo test -p codex-hepta-infer-core --bin hepta-infer-control
+          cargo test -p codex-hepta-infer-worker-host --lib
+          cargo test -p codex-hepta-infer-worker-host --bin hepta-infer-worker
+          cargo test -p codex-hepta-automation --lib
+          cargo test -p codex-hepta-automation --bin hepta-taskflow-runtime
+          cargo test -p codex-hepta-matrixd --bin hepta-matrix-send-observer
+          cargo test -p codex-hepta-matrixd --lib
+          cargo check -p codex-app-server -p codex-core -p codex-hepta-matrixd
+
+      - name: Verify immutable merged tree
+        run: |
+          set -euo pipefail
+          git diff --check
+          test -z "$(git status --porcelain --untracked-files=no)"

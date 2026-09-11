@@ -1,0 +1,106 @@
+{
+  "schema": "hepta.lane-b-module-implementation-map.v1",
+  "schemaVersion": 1,
+  "laneId": "LANE-B-RUNTIME",
+  "sourceSubject": {
+    "repository": "TrillionniumFoundation/hepta-private-ci",
+    "baseBranch": "integration/hepta-all-gap-closure-20260910-r13",
+    "baseCommit": "f278a89eea18fccb6d37b876aa5679863a64139d",
+    "baseTree": "5baa144717d4b3e3c596501fb56ce911d009e728",
+    "candidateBranch": "codex/hepta-lane-b-truth-runtime-closure-20260911",
+    "historyRequirement": "one_direct_child_of_base"
+  },
+  "module": "inference.worker",
+  "owner": "inference-platform",
+  "deputy": "security-authority",
+  "mission": "Execute a granted inference request in an isolated worker without minting authority or mutating fleet state.",
+  "canonicalRoots": [
+    "codex-rs/hepta-infer-worker-host"
+  ],
+  "integrationRoots": [],
+  "maturity": "isolated_worker_boundary",
+  "operations": [
+    {
+      "designOperation": "load_model",
+      "mappingState": "closed",
+      "repositoryImplementationState": "implemented",
+      "implementationClass": "driver_boundary_method",
+      "ownerEntrypoint": {
+        "path": "codex-rs/hepta-infer-worker-host/src/bin/hepta-infer-worker.rs",
+        "symbol": "pub fn load_model(",
+        "buildTarget": "hepta-infer-worker"
+      },
+      "callerClass": "inference_control",
+      "testIds": [
+        "WORKER-01",
+        "WORKER-02",
+        "WORKER-03"
+      ],
+      "notes": ""
+    },
+    {
+      "designOperation": "run",
+      "mappingState": "closed",
+      "repositoryImplementationState": "implemented",
+      "implementationClass": "driver_boundary_method",
+      "ownerEntrypoint": {
+        "path": "codex-rs/hepta-infer-worker-host/src/bin/hepta-infer-worker.rs",
+        "symbol": "pub fn run(",
+        "buildTarget": "hepta-infer-worker"
+      },
+      "callerClass": "inference_control",
+      "testIds": [
+        "WORKER-01",
+        "WORKER-02",
+        "WORKER-04"
+      ],
+      "notes": ""
+    },
+    {
+      "designOperation": "unload",
+      "mappingState": "closed",
+      "repositoryImplementationState": "implemented",
+      "implementationClass": "driver_boundary_method",
+      "ownerEntrypoint": {
+        "path": "codex-rs/hepta-infer-worker-host/src/bin/hepta-infer-worker.rs",
+        "symbol": "pub fn unload_model(",
+        "buildTarget": "hepta-infer-worker"
+      },
+      "callerClass": "inference_control",
+      "testIds": [
+        "WORKER-03"
+      ],
+      "notes": ""
+    }
+  ],
+  "runtimeTopology": "An isolated worker process consumes a current resource grant and exact model manifest. A ModelDriver owns runtime-specific load/run/unload; the worker enforces identity, resource and cancellation contracts.",
+  "physicalState": "Worker state is ephemeral by design: generation, loaded model handles, active request handles and usage counters. Persistent model bytes belong to the artifact/cache owner and are verified read-only.",
+  "linearization": "Load linearizes after manifest and grant validation and a driver-observed handle. Run linearizes at driver entry after request/reservation binding. Unload occurs only with zero active requests.",
+  "recovery": "Load failure releases acquired resources; indeterminate driver results remain indeterminate; restart never mixes checkpoint/model/runtime generations.",
+  "security": "Grant issuance and fleet mutation are denied. Exact weights, tokenizer, preprocessing, quantization, runtime, device, payload and resource grant are all bound before use.",
+  "capacity": "Models <=8, active requests <=256, tokens <=1000000, memory <= explicit grant. Load/unload, peak/KV memory, token rate, p99 latency and cancellation are measured per target.",
+  "terminalObserver": "The qualified ModelDriver observes model/runtime/device execution. The repository boundary cannot self-certify that real weights or a real accelerator executed.",
+  "verificationCommands": [
+    "cargo test -p codex-hepta-infer-worker-host --bin hepta-infer-worker",
+    "cargo test -p codex-hepta-infer-worker-host --lib"
+  ],
+  "repositoryControlledGaps": [],
+  "externalEvidenceGaps": [
+    "qualified real model driver with exact weights/runtime/device identity",
+    "authenticated control transport, OOM/device-reset and target-host measurements"
+  ],
+  "externalGateIds": [
+    "RDY-EXT-001",
+    "RDY-EXT-002",
+    "RDY-EXT-003",
+    "RDY-EXT-006",
+    "RDY-EXT-008",
+    "RDY-EXT-009"
+  ],
+  "claimBoundary": {
+    "repositoryOperationMappingsClosed": true,
+    "productExecutionProved": false,
+    "deploymentProved": false,
+    "independentAcceptanceProved": false
+  }
+}

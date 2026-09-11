@@ -1,0 +1,105 @@
+{
+  "schema": "hepta.lane-b-module-implementation-map.v1",
+  "schemaVersion": 1,
+  "laneId": "LANE-B-RUNTIME",
+  "sourceSubject": {
+    "repository": "TrillionniumFoundation/hepta-private-ci",
+    "baseBranch": "integration/hepta-all-gap-closure-20260910-r13",
+    "baseCommit": "f278a89eea18fccb6d37b876aa5679863a64139d",
+    "baseTree": "5baa144717d4b3e3c596501fb56ce911d009e728",
+    "candidateBranch": "codex/hepta-lane-b-truth-runtime-closure-20260911",
+    "historyRequirement": "one_direct_child_of_base"
+  },
+  "module": "browser.servo",
+  "owner": "browser-platform",
+  "deputy": "security-authority",
+  "mission": "Isolate browser profiles, credentials and network effects behind exact grants.",
+  "canonicalRoots": [
+    "apps/hepta-browser",
+    "third_party/servo-patches"
+  ],
+  "integrationRoots": [],
+  "maturity": "profile_and_effect_boundary",
+  "operations": [
+    {
+      "designOperation": "open_profile",
+      "mappingState": "closed",
+      "repositoryImplementationState": "implemented",
+      "implementationClass": "driver_boundary_method",
+      "ownerEntrypoint": {
+        "path": "apps/hepta-browser/src/runtime.js",
+        "symbol": "async openProfile(",
+        "buildTarget": "hepta-browser"
+      },
+      "callerClass": "agentd_browser_port",
+      "testIds": [
+        "BROWSER-02",
+        "BROWSER-03"
+      ],
+      "notes": ""
+    },
+    {
+      "designOperation": "observe_page",
+      "mappingState": "closed",
+      "repositoryImplementationState": "implemented",
+      "implementationClass": "driver_boundary_method",
+      "ownerEntrypoint": {
+        "path": "apps/hepta-browser/src/runtime.js",
+        "symbol": "async observePage(",
+        "buildTarget": "hepta-browser"
+      },
+      "callerClass": "agentd_browser_port",
+      "testIds": [
+        "BROWSER-01",
+        "BROWSER-02"
+      ],
+      "notes": ""
+    },
+    {
+      "designOperation": "navigate_or_act",
+      "mappingState": "closed",
+      "repositoryImplementationState": "implemented",
+      "implementationClass": "driver_boundary_method",
+      "ownerEntrypoint": {
+        "path": "apps/hepta-browser/src/runtime.js",
+        "symbol": "async navigateOrAct(",
+        "buildTarget": "hepta-browser"
+      },
+      "callerClass": "agentd_browser_port",
+      "testIds": [
+        "BROWSER-01",
+        "BROWSER-04"
+      ],
+      "notes": ""
+    }
+  ],
+  "runtimeTopology": "BrowserProfileHost owns generation-bound profile sessions and delegates actual process/network operations to a driver. Servo source/patch identity is pinned separately.",
+  "physicalState": "Profile/session/page state and outstanding operation receipts are process-local; the selected driver owns isolated profile files. Credentials remain opaque references and are never emitted in observations.",
+  "linearization": "Profile start requires exact principal/manifest/grant/origin scopes. Page generation advances monotonically. Action dispatch revalidates page, destination, payload, epoch, grant and deadline.",
+  "recovery": "Indeterminate effects require reconcileOperation before profile close. Stale pages, expired grants, cross-principal profiles and changed operation semantics reject.",
+  "security": "Page content is untrusted. Network, filesystem, redirect, upload/download, input and credential use are separately granted. Credentials cannot be exported.",
+  "capacity": "Origins <=128, effect grants <=1024, outstanding operations <=1024, tabs <=16 per deployment profile, observation bytes <=1000000.",
+  "terminalObserver": "The browser driver observes process/page/action outcomes. Remote business effects require destination-owned reconciliation; page load alone is not success.",
+  "verificationCommands": [
+    "node --test apps/hepta-browser/test/runtime.test.js"
+  ],
+  "repositoryControlledGaps": [],
+  "externalEvidenceGaps": [
+    "reproducible Servo binary, isolated process driver and exact patch/build identity",
+    "target browser sandbox, DNS/redirect/download/credential policy and remote outcome qualification"
+  ],
+  "externalGateIds": [
+    "RDY-EXT-001",
+    "RDY-EXT-002",
+    "RDY-EXT-006",
+    "RDY-EXT-007",
+    "RDY-EXT-008",
+    "RDY-EXT-009"
+  ],
+  "claimBoundary": {
+    "repositoryOperationMappingsClosed": true,
+    "productExecutionProved": false,
+    "deploymentProved": false,
+    "independentAcceptanceProved": false
+  }
+}

@@ -1,0 +1,135 @@
+{
+  "schema": "hepta.lane-b-external-gate-handoff.v1",
+  "schemaVersion": 1,
+  "laneId": "LANE-B-RUNTIME",
+  "sourceSubject": {
+    "repository": "TrillionniumFoundation/hepta-private-ci",
+    "baseBranch": "integration/hepta-all-gap-closure-20260910-r13",
+    "baseCommit": "f278a89eea18fccb6d37b876aa5679863a64139d",
+    "baseTree": "5baa144717d4b3e3c596501fb56ce911d009e728",
+    "candidateBranch": "codex/hepta-lane-b-truth-runtime-closure-20260911",
+    "historyRequirement": "one_direct_child_of_base"
+  },
+  "repositoryHandoffComplete": true,
+  "externalGateCount": 9,
+  "externalGatesClosed": 0,
+  "externalGatesOpen": 9,
+  "gates": [
+    {
+      "id": "RDY-EXT-001",
+      "title": "Exact-candidate compilation and published CI evidence",
+      "state": "open",
+      "selfCertifiable": false,
+      "owner": "GitHub Actions plus an independent reviewer",
+      "requiredEvidence": [
+        "terminal-success exact-head workflow bound to the final commit",
+        "terminal-success deterministic synthetic-merge workflow",
+        "clean tracked tree and compiled/tested native targets"
+      ]
+    },
+    {
+      "id": "RDY-EXT-002",
+      "title": "Independent semantic review",
+      "state": "open",
+      "selfCertifiable": false,
+      "owner": "eligible non-author reviewer",
+      "requiredEvidence": [
+        "review submitted after the last required workflow becomes terminal",
+        "review binds base, head, source tree and prospective merge identity",
+        "reviewer principal and credential chain are independent of the author/generator"
+      ]
+    },
+    {
+      "id": "RDY-EXT-003",
+      "title": "Real model, provider, runtime and device identity",
+      "state": "open",
+      "selfCertifiable": false,
+      "owner": "inference deployment owner and independent observer",
+      "requiredEvidence": [
+        "exact model weights, tokenizer, preprocessing, quantization and license/SBOM",
+        "runtime binary, provider endpoint and device identity",
+        "authenticated terminal observations from an actual consumer"
+      ]
+    },
+    {
+      "id": "RDY-EXT-004",
+      "title": "Future-calendar efficacy and retention",
+      "state": "open",
+      "selfCertifiable": false,
+      "owner": "independent learning evaluator",
+      "requiredEvidence": [
+        "preregistered future windows and support conditions",
+        "disjoint evaluation, retention and unlearning slices",
+        "independently observed outcomes with uncertainty and censoring"
+      ]
+    },
+    {
+      "id": "RDY-EXT-005",
+      "title": "Empirical biomimicry or embodiment claim",
+      "state": "open",
+      "selfCertifiable": false,
+      "owner": "independent scientific evaluator",
+      "requiredEvidence": [
+        "declared empirical hypothesis and comparator",
+        "target-specific measurements rather than software analogy",
+        "independent analysis and limitations"
+      ]
+    },
+    {
+      "id": "RDY-EXT-006",
+      "title": "Target-host and hardware qualification",
+      "state": "open",
+      "selfCertifiable": false,
+      "owner": "target custodian and safety evaluator",
+      "requiredEvidence": [
+        "named operating system/runtime/device or hardware target",
+        "p50/p95/p99 resources, deadlines, failure and recovery results",
+        "independent emergency-stop or rollback evidence where applicable"
+      ]
+    },
+    {
+      "id": "RDY-EXT-007",
+      "title": "External owner consent and enrollment",
+      "state": "open",
+      "selfCertifiable": false,
+      "owner": "external service, homeserver, browser-profile or fleet owner",
+      "requiredEvidence": [
+        "explicit target-specific consent and scope",
+        "expiring enrollment identity and credential references",
+        "revocation, migration and rollback disposition"
+      ]
+    },
+    {
+      "id": "RDY-EXT-008",
+      "title": "Operator acceptance",
+      "state": "open",
+      "selfCertifiable": false,
+      "owner": "independent operator",
+      "requiredEvidence": [
+        "operator-run acceptance on the exact deployed candidate",
+        "fault, accessibility, observability and recovery results",
+        "no author/generator self-acceptance"
+      ]
+    },
+    {
+      "id": "RDY-EXT-009",
+      "title": "Canary, selection, signing, promotion and release",
+      "state": "open",
+      "selfCertifiable": false,
+      "owner": "release and promotion authorities",
+      "requiredEvidence": [
+        "independently selected candidate and signed artifact",
+        "bounded canary with abort/reconcile/rollback evidence",
+        "normal policy merge/promotion/release without administrator bypass"
+      ]
+    }
+  ],
+  "nonClaims": {
+    "realProviderOrModelExecuted": false,
+    "externalEffectTerminalityProved": false,
+    "targetHardwareQualified": false,
+    "futureWindowEfficacyProved": false,
+    "independentAcceptancePassed": false,
+    "promotionOrReleaseAuthorized": false
+  }
+}

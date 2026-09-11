@@ -1,0 +1,119 @@
+{
+  "schema": "hepta.lane-b-module-implementation-map.v1",
+  "schemaVersion": 1,
+  "laneId": "LANE-B-RUNTIME",
+  "sourceSubject": {
+    "repository": "TrillionniumFoundation/hepta-private-ci",
+    "baseBranch": "integration/hepta-all-gap-closure-20260910-r13",
+    "baseCommit": "f278a89eea18fccb6d37b876aa5679863a64139d",
+    "baseTree": "5baa144717d4b3e3c596501fb56ce911d009e728",
+    "candidateBranch": "codex/hepta-lane-b-truth-runtime-closure-20260911",
+    "historyRequirement": "one_direct_child_of_base"
+  },
+  "module": "ui.native",
+  "owner": "ui-platform",
+  "deputy": "accessibility",
+  "mission": "Provide the native shell and accessibility layer over the same typed runtime boundary.",
+  "canonicalRoots": [
+    "apps/hepta-native"
+  ],
+  "integrationRoots": [],
+  "maturity": "native_shell_runtime_boundary",
+  "operations": [
+    {
+      "designOperation": "connect_runtime",
+      "mappingState": "closed",
+      "repositoryImplementationState": "implemented",
+      "implementationClass": "presentation_method",
+      "ownerEntrypoint": {
+        "path": "apps/hepta-native/src/shell-runtime.js",
+        "symbol": "async connectRuntime(",
+        "buildTarget": "hepta-native"
+      },
+      "callerClass": "native_application",
+      "testIds": [
+        "NATIVE-01",
+        "NATIVE-03"
+      ],
+      "notes": ""
+    },
+    {
+      "designOperation": "render_runtime_view",
+      "mappingState": "closed",
+      "repositoryImplementationState": "implemented",
+      "implementationClass": "presentation_method",
+      "ownerEntrypoint": {
+        "path": "apps/hepta-native/src/shell-runtime.js",
+        "symbol": "renderRuntimeView(",
+        "buildTarget": "hepta-native"
+      },
+      "callerClass": "native_application",
+      "testIds": [
+        "NATIVE-01",
+        "NATIVE-03"
+      ],
+      "notes": ""
+    },
+    {
+      "designOperation": "request_platform_capability",
+      "mappingState": "closed",
+      "repositoryImplementationState": "implemented",
+      "implementationClass": "platform_driver_boundary",
+      "ownerEntrypoint": {
+        "path": "apps/hepta-native/src/shell-runtime.js",
+        "symbol": "async requestPlatformCapability(",
+        "buildTarget": "hepta-native"
+      },
+      "callerClass": "native_application",
+      "testIds": [
+        "NATIVE-02",
+        "NATIVE-03"
+      ],
+      "notes": ""
+    },
+    {
+      "designOperation": "apply_shell_update",
+      "mappingState": "closed",
+      "repositoryImplementationState": "implemented",
+      "implementationClass": "updater_boundary",
+      "ownerEntrypoint": {
+        "path": "apps/hepta-native/src/shell-runtime.js",
+        "symbol": "async applyShellUpdate(",
+        "buildTarget": "hepta-native"
+      },
+      "callerClass": "native_application",
+      "testIds": [
+        "NATIVE-04"
+      ],
+      "notes": ""
+    }
+  ],
+  "runtimeTopology": "NativeShellRuntime shares backend state semantics with the Web client and delegates narrowly scoped OS actions and updates to injected platform/updater adapters.",
+  "physicalState": "Window/session/view/operation state is ephemeral. Secure storage may retain opaque session references through the secret boundary. Update metadata binds package, predecessor, platform, architecture and backend compatibility.",
+  "linearization": "Runtime connection authenticates endpoint/protocol identity. Platform action linearizes only after OS permission and exact payload checks. Update applies only after independent selection and verification.",
+  "recovery": "Crash/restart reconciles stable operations. Failed or unobserved update restart triggers rollback/quarantine. Revoked sessions and changed payloads cannot be revived.",
+  "security": "OS permission and Hepta grant are separate. Allowed platform actions are closed-world. Package selection cannot be performed by the generator, and update authority is never returned to the shell.",
+  "capacity": "Event/view caches and reconnect/update retries are bounded; startup, RSS and interaction budgets are frozen per target platform.",
+  "terminalObserver": "Platform and updater adapters observe their own terminal states. The shell preserves indeterminate outcomes and cannot self-sign packages or authenticate OS effects.",
+  "verificationCommands": [
+    "node --test apps/hepta-native/test/shell-runtime.test.js"
+  ],
+  "repositoryControlledGaps": [],
+  "externalEvidenceGaps": [
+    "selected native framework, signed/notarized packages, secure storage and supported OS/architecture matrix",
+    "target OS permission, accessibility, crash/restart and updater rollback qualification"
+  ],
+  "externalGateIds": [
+    "RDY-EXT-001",
+    "RDY-EXT-002",
+    "RDY-EXT-006",
+    "RDY-EXT-008",
+    "RDY-EXT-009"
+  ],
+  "claimBoundary": {
+    "repositoryOperationMappingsClosed": true,
+    "productExecutionProved": false,
+    "deploymentProved": false,
+    "independentAcceptanceProved": false
+  }
+}

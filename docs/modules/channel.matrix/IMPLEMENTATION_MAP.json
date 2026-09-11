@@ -1,0 +1,105 @@
+{
+  "schema": "hepta.lane-b-module-implementation-map.v1",
+  "schemaVersion": 1,
+  "laneId": "LANE-B-RUNTIME",
+  "sourceSubject": {
+    "repository": "TrillionniumFoundation/hepta-private-ci",
+    "baseBranch": "integration/hepta-all-gap-closure-20260910-r13",
+    "baseCommit": "f278a89eea18fccb6d37b876aa5679863a64139d",
+    "baseTree": "5baa144717d4b3e3c596501fb56ce911d009e728",
+    "candidateBranch": "codex/hepta-lane-b-truth-runtime-closure-20260911",
+    "historyRequirement": "one_direct_child_of_base"
+  },
+  "module": "channel.matrix",
+  "owner": "channels-platform",
+  "deputy": "security-authority",
+  "mission": "Translate Matrix ingress and governed sends without writing agent state or self-authorizing delivery.",
+  "canonicalRoots": [
+    "codex-rs/hepta-matrix-sdk",
+    "codex-rs/hepta-matrixd"
+  ],
+  "integrationRoots": [],
+  "maturity": "durable_channel_boundary",
+  "operations": [
+    {
+      "designOperation": "admit_event",
+      "mappingState": "closed",
+      "repositoryImplementationState": "implemented",
+      "implementationClass": "durable_owner_method",
+      "ownerEntrypoint": {
+        "path": "codex-rs/hepta-matrixd/src/runtime.rs",
+        "symbol": "pub async fn process_event(",
+        "buildTarget": "codex-hepta-matrixd"
+      },
+      "callerClass": "matrix_sync_runtime",
+      "testIds": [
+        "MATRIX-01",
+        "MATRIX-04"
+      ],
+      "notes": ""
+    },
+    {
+      "designOperation": "prepare_send",
+      "mappingState": "closed",
+      "repositoryImplementationState": "implemented",
+      "implementationClass": "owner_runtime_boundary",
+      "ownerEntrypoint": {
+        "path": "codex-rs/hepta-matrixd/src/bin/hepta-matrix-send-observer.rs",
+        "symbol": "pub fn prepare_send(",
+        "buildTarget": "hepta-matrix-send-observer"
+      },
+      "callerClass": "matrix_outbox",
+      "testIds": [
+        "MATRIX-02",
+        "MATRIX-03"
+      ],
+      "notes": ""
+    },
+    {
+      "designOperation": "observe_send",
+      "mappingState": "closed",
+      "repositoryImplementationState": "implemented",
+      "implementationClass": "terminal_observer_boundary",
+      "ownerEntrypoint": {
+        "path": "codex-rs/hepta-matrixd/src/bin/hepta-matrix-send-observer.rs",
+        "symbol": "pub fn observe_send(",
+        "buildTarget": "hepta-matrix-send-observer"
+      },
+      "callerClass": "matrix_transport",
+      "testIds": [
+        "MATRIX-03",
+        "MATRIX-04"
+      ],
+      "notes": ""
+    }
+  ],
+  "runtimeTopology": "Matrix runtime owns enrolled-room ingress projection, durable room/thread/outbox identities and transaction-bound send observation. It bridges to App Server without transferring agent-store ownership.",
+  "physicalState": "Durable runtime state binds event identity, sync watermark, room/thread, redaction and outbox transaction identity. Send observation state binds operation, transaction, homeserver, room, session generation and server event.",
+  "linearization": "Ingress dedupe and watermark publication are ordered. Send preparation binds final payload before dispatch; observation settles only an exact transaction/session tuple.",
+  "recovery": "Reconnect resumes the durable watermark. Lost acknowledgement preserves transaction identity and indeterminate state. Redaction/deletion frontiers are applied before replay.",
+  "security": "Message text is untrusted. Homeserver/user/device/room/encryption generation and authority epoch are explicit. The adapter cannot self-issue send authority.",
+  "capacity": "Pending sends <=4096, ingress batch <=512, per-room queue <=2048, payload and reconnect budgets come from the registered boundary profile.",
+  "terminalObserver": "A matching authenticated homeserver server-event observation establishes Matrix send terminality. App Server completion and HTTP acceptance are not substitutes.",
+  "verificationCommands": [
+    "cargo test -p codex-hepta-matrixd --bin hepta-matrix-send-observer",
+    "cargo test -p codex-hepta-matrixd --lib"
+  ],
+  "repositoryControlledGaps": [],
+  "externalEvidenceGaps": [
+    "real homeserver transport, authenticated encryption/device session and server-event observation",
+    "target reconnect, pagination, rate-limit, media, redaction and restore qualification"
+  ],
+  "externalGateIds": [
+    "RDY-EXT-001",
+    "RDY-EXT-002",
+    "RDY-EXT-007",
+    "RDY-EXT-008",
+    "RDY-EXT-009"
+  ],
+  "claimBoundary": {
+    "repositoryOperationMappingsClosed": true,
+    "productExecutionProved": false,
+    "deploymentProved": false,
+    "independentAcceptanceProved": false
+  }
+}

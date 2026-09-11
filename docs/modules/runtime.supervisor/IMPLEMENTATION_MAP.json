@@ -1,0 +1,118 @@
+{
+  "schema": "hepta.lane-b-module-implementation-map.v1",
+  "schemaVersion": 1,
+  "laneId": "LANE-B-RUNTIME",
+  "sourceSubject": {
+    "repository": "TrillionniumFoundation/hepta-private-ci",
+    "baseBranch": "integration/hepta-all-gap-closure-20260910-r13",
+    "baseCommit": "f278a89eea18fccb6d37b876aa5679863a64139d",
+    "baseTree": "5baa144717d4b3e3c596501fb56ce911d009e728",
+    "candidateBranch": "codex/hepta-lane-b-truth-runtime-closure-20260911",
+    "historyRequirement": "one_direct_child_of_base"
+  },
+  "module": "runtime.supervisor",
+  "owner": "runtime-control",
+  "deputy": "fleet-runtime",
+  "mission": "Own process and agent lifecycle state while remaining unable to invoke models, tools or secrets.",
+  "canonicalRoots": [
+    "codex-rs/hepta-supervisor"
+  ],
+  "integrationRoots": [],
+  "maturity": "native_lifecycle_runtime",
+  "operations": [
+    {
+      "designOperation": "start_instance",
+      "mappingState": "closed",
+      "repositoryImplementationState": "implemented",
+      "implementationClass": "owner_native_method",
+      "ownerEntrypoint": {
+        "path": "codex-rs/hepta-supervisor/src/supervisor.rs",
+        "symbol": "pub fn start(",
+        "buildTarget": "codex-hepta-supervisor"
+      },
+      "callerClass": "daemon_control",
+      "testIds": [
+        "SUP-01",
+        "SUP-03"
+      ],
+      "notes": "Release-aware start remains separately represented by start_release."
+    },
+    {
+      "designOperation": "observe_health",
+      "mappingState": "closed",
+      "repositoryImplementationState": "implemented",
+      "implementationClass": "owner_native_method",
+      "ownerEntrypoint": {
+        "path": "codex-rs/hepta-supervisor/src/supervisor.rs",
+        "symbol": "pub fn tick(",
+        "buildTarget": "codex-hepta-supervisor"
+      },
+      "callerClass": "daemon_loop",
+      "testIds": [
+        "SUP-01",
+        "SUP-02"
+      ],
+      "notes": "Tick consumes generation-bound process-driver observations."
+    },
+    {
+      "designOperation": "drain",
+      "mappingState": "closed",
+      "repositoryImplementationState": "implemented",
+      "implementationClass": "owner_native_method",
+      "ownerEntrypoint": {
+        "path": "codex-rs/hepta-supervisor/src/supervisor.rs",
+        "symbol": "pub fn drain(",
+        "buildTarget": "codex-hepta-supervisor"
+      },
+      "callerClass": "daemon_control",
+      "testIds": [
+        "SUP-03"
+      ],
+      "notes": ""
+    },
+    {
+      "designOperation": "load_next",
+      "mappingState": "closed",
+      "repositoryImplementationState": "implemented",
+      "implementationClass": "owner_native_method",
+      "ownerEntrypoint": {
+        "path": "codex-rs/hepta-supervisor/src/supervisor.rs",
+        "symbol": "pub fn upgrade(",
+        "buildTarget": "codex-hepta-supervisor"
+      },
+      "callerClass": "daemon_control",
+      "testIds": [
+        "SUP-04"
+      ],
+      "notes": "Rollback and upgrade use a new process generation and current revocation state."
+    }
+  ],
+  "runtimeTopology": "A supervisor process owns generation fencing, launch, health, drain, stop, restart, upgrade and rollback. It starts one Agentd process per enrolled Agent identity and does not own user-task terminality.",
+  "physicalState": "FleetRegistry and release/signed-intent records are the durable owner surfaces; runtime handles, watchdog state and bounded event buffers are process-local projections. The writer identity is the supervisor generation and registry compare-and-transition fence.",
+  "linearization": "A lifecycle mutation linearizes at the durable registry or signed-intent transition before process-side acknowledgement. Readiness is published only for the current process and lifecycle generation.",
+  "recovery": "Startup validates configuration and durable state, recovers signed intents, fences stale processes, and refuses readiness on ambiguous mutation state. Rollback drains and reconciles before loading a compatible predecessor into a new generation.",
+  "security": "Control methods require exact Agent identity, generation and authorization paths. Stale callbacks, unresolved leases, changed release identity and secret/model/tool access are denied.",
+  "capacity": "Managed instances <=256 per configured supervisor profile; health batches <=256; restart budgets and watchdog deadlines are explicit configuration. CI verifies bounded buffers and no unbounded retry path.",
+  "terminalObserver": "The process driver and current-generation health probe may establish process terminality. User-task, provider, Matrix, browser and tool outcomes remain with their effect owners.",
+  "verificationCommands": [
+    "cargo test -p codex-hepta-supervisor --lib",
+    "cargo check -p codex-hepta-supervisor"
+  ],
+  "repositoryControlledGaps": [],
+  "externalEvidenceGaps": [
+    "deployed binary/configuration identity and target-host watchdog measurements",
+    "independent operator acceptance of restart, upgrade and rollback behavior"
+  ],
+  "externalGateIds": [
+    "RDY-EXT-001",
+    "RDY-EXT-002",
+    "RDY-EXT-008",
+    "RDY-EXT-009"
+  ],
+  "claimBoundary": {
+    "repositoryOperationMappingsClosed": true,
+    "productExecutionProved": false,
+    "deploymentProved": false,
+    "independentAcceptanceProved": false
+  }
+}

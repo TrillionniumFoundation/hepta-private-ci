@@ -1,0 +1,397 @@
+{
+  "schema": "hepta.lane-b-test-traceability.v2",
+  "schemaVersion": 2,
+  "laneId": "LANE-B-RUNTIME",
+  "sourceSubject": {
+    "repository": "TrillionniumFoundation/hepta-private-ci",
+    "baseBranch": "integration/hepta-all-gap-closure-20260910-r13",
+    "baseCommit": "f278a89eea18fccb6d37b876aa5679863a64139d",
+    "baseTree": "5baa144717d4b3e3c596501fb56ce911d009e728",
+    "candidateBranch": "codex/hepta-lane-b-truth-runtime-closure-20260911",
+    "historyRequirement": "one_direct_child_of_base"
+  },
+  "caseCount": 44,
+  "operationCount": 39,
+  "exactSourceRequired": true,
+  "syntheticMergeRequired": true,
+  "evidenceClass": "repository_qualification_only",
+  "commandsByModule": {
+    "runtime.supervisor": [
+      "cargo test -p codex-hepta-supervisor --lib",
+      "cargo check -p codex-hepta-supervisor"
+    ],
+    "runtime.fleet": [
+      "cargo test -p codex-hepta-fleet --bin hepta-fleet-leased",
+      "cargo test -p codex-hepta-fleet --lib"
+    ],
+    "runtime.agentd": [
+      "cargo test -p codex-hepta-agentd --lib",
+      "cargo check -p codex-hepta-agentd -p codex-app-server -p codex-core"
+    ],
+    "runtime.codex": [
+      "cargo test -p codex-hepta-codex-adapter --lib",
+      "cargo check -p codex-app-server -p codex-core -p codex-hepta-codex-adapter"
+    ],
+    "inference.control": [
+      "cargo test -p codex-hepta-infer-core --bin hepta-infer-control",
+      "cargo test -p codex-hepta-infer-core --lib"
+    ],
+    "inference.worker": [
+      "cargo test -p codex-hepta-infer-worker-host --bin hepta-infer-worker",
+      "cargo test -p codex-hepta-infer-worker-host --lib"
+    ],
+    "automation.taskflow": [
+      "cargo test -p codex-hepta-automation --bin hepta-taskflow-runtime",
+      "cargo test -p codex-hepta-automation --lib"
+    ],
+    "channel.matrix": [
+      "cargo test -p codex-hepta-matrixd --bin hepta-matrix-send-observer",
+      "cargo test -p codex-hepta-matrixd --lib"
+    ],
+    "browser.servo": [
+      "node --test apps/hepta-browser/test/runtime.test.js"
+    ],
+    "ui.control": [
+      "node --test apps/hepta-control-ui/test/runtime-client.test.js"
+    ],
+    "ui.native": [
+      "node --test apps/hepta-native/test/shell-runtime.test.js"
+    ]
+  },
+  "cases": [
+    {
+      "id": "SUP-01",
+      "module": "runtime.supervisor",
+      "operations": [
+        "runtime.supervisor/start_instance",
+        "runtime.supervisor/observe_health"
+      ]
+    },
+    {
+      "id": "SUP-02",
+      "module": "runtime.supervisor",
+      "operations": [
+        "runtime.supervisor/observe_health"
+      ]
+    },
+    {
+      "id": "SUP-03",
+      "module": "runtime.supervisor",
+      "operations": [
+        "runtime.supervisor/start_instance",
+        "runtime.supervisor/drain"
+      ]
+    },
+    {
+      "id": "SUP-04",
+      "module": "runtime.supervisor",
+      "operations": [
+        "runtime.supervisor/load_next"
+      ]
+    },
+    {
+      "id": "FLEET-01",
+      "module": "runtime.fleet",
+      "operations": [
+        "runtime.fleet/allocate"
+      ]
+    },
+    {
+      "id": "FLEET-02",
+      "module": "runtime.fleet",
+      "operations": [
+        "runtime.fleet/admit_host",
+        "runtime.fleet/renew_or_revoke"
+      ]
+    },
+    {
+      "id": "FLEET-03",
+      "module": "runtime.fleet",
+      "operations": [
+        "runtime.fleet/allocate"
+      ]
+    },
+    {
+      "id": "FLEET-04",
+      "module": "runtime.fleet",
+      "operations": [
+        "runtime.fleet/admit_host",
+        "runtime.fleet/renew_or_revoke"
+      ]
+    },
+    {
+      "id": "AGENT-01",
+      "module": "runtime.agentd",
+      "operations": [
+        "runtime.agentd/start_run",
+        "runtime.agentd/attach_context"
+      ]
+    },
+    {
+      "id": "AGENT-02",
+      "module": "runtime.agentd",
+      "operations": [
+        "runtime.agentd/compose_runtime",
+        "runtime.agentd/start_run"
+      ]
+    },
+    {
+      "id": "AGENT-03",
+      "module": "runtime.agentd",
+      "operations": [
+        "runtime.agentd/cancel_run"
+      ]
+    },
+    {
+      "id": "AGENT-04",
+      "module": "runtime.agentd",
+      "operations": [
+        "runtime.agentd/compose_runtime",
+        "runtime.agentd/attach_context"
+      ]
+    },
+    {
+      "id": "CODEX-01",
+      "module": "runtime.codex",
+      "operations": [
+        "runtime.codex/submit_turn",
+        "runtime.codex/observe_delivery"
+      ]
+    },
+    {
+      "id": "CODEX-02",
+      "module": "runtime.codex",
+      "operations": [
+        "runtime.codex/dispatch_tool"
+      ]
+    },
+    {
+      "id": "CODEX-03",
+      "module": "runtime.codex",
+      "operations": [
+        "runtime.codex/open_thread",
+        "runtime.codex/submit_turn"
+      ]
+    },
+    {
+      "id": "CODEX-04",
+      "module": "runtime.codex",
+      "operations": [
+        "runtime.codex/dispatch_tool",
+        "runtime.codex/observe_delivery"
+      ]
+    },
+    {
+      "id": "INFER-01",
+      "module": "inference.control",
+      "operations": [
+        "inference.control/reserve_request",
+        "inference.control/schedule"
+      ]
+    },
+    {
+      "id": "INFER-02",
+      "module": "inference.control",
+      "operations": [
+        "inference.control/reserve_request"
+      ]
+    },
+    {
+      "id": "INFER-03",
+      "module": "inference.control",
+      "operations": [
+        "inference.control/cancel",
+        "inference.control/settle"
+      ]
+    },
+    {
+      "id": "INFER-04",
+      "module": "inference.control",
+      "operations": [
+        "inference.control/schedule",
+        "inference.control/settle"
+      ]
+    },
+    {
+      "id": "WORKER-01",
+      "module": "inference.worker",
+      "operations": [
+        "inference.worker/load_model",
+        "inference.worker/run"
+      ]
+    },
+    {
+      "id": "WORKER-02",
+      "module": "inference.worker",
+      "operations": [
+        "inference.worker/load_model",
+        "inference.worker/run"
+      ]
+    },
+    {
+      "id": "WORKER-03",
+      "module": "inference.worker",
+      "operations": [
+        "inference.worker/load_model",
+        "inference.worker/unload"
+      ]
+    },
+    {
+      "id": "WORKER-04",
+      "module": "inference.worker",
+      "operations": [
+        "inference.worker/run"
+      ]
+    },
+    {
+      "id": "FLOW-01",
+      "module": "automation.taskflow",
+      "operations": [
+        "automation.taskflow/register_schedule",
+        "automation.taskflow/materialize_due"
+      ]
+    },
+    {
+      "id": "FLOW-02",
+      "module": "automation.taskflow",
+      "operations": [
+        "automation.taskflow/claim_occurrence"
+      ]
+    },
+    {
+      "id": "FLOW-03",
+      "module": "automation.taskflow",
+      "operations": [
+        "automation.taskflow/execute_step"
+      ]
+    },
+    {
+      "id": "FLOW-04",
+      "module": "automation.taskflow",
+      "operations": [
+        "automation.taskflow/execute_step"
+      ]
+    },
+    {
+      "id": "MATRIX-01",
+      "module": "channel.matrix",
+      "operations": [
+        "channel.matrix/admit_event"
+      ]
+    },
+    {
+      "id": "MATRIX-02",
+      "module": "channel.matrix",
+      "operations": [
+        "channel.matrix/prepare_send"
+      ]
+    },
+    {
+      "id": "MATRIX-03",
+      "module": "channel.matrix",
+      "operations": [
+        "channel.matrix/prepare_send",
+        "channel.matrix/observe_send"
+      ]
+    },
+    {
+      "id": "MATRIX-04",
+      "module": "channel.matrix",
+      "operations": [
+        "channel.matrix/admit_event",
+        "channel.matrix/observe_send"
+      ]
+    },
+    {
+      "id": "BROWSER-01",
+      "module": "browser.servo",
+      "operations": [
+        "browser.servo/observe_page",
+        "browser.servo/navigate_or_act"
+      ]
+    },
+    {
+      "id": "BROWSER-02",
+      "module": "browser.servo",
+      "operations": [
+        "browser.servo/open_profile",
+        "browser.servo/observe_page"
+      ]
+    },
+    {
+      "id": "BROWSER-03",
+      "module": "browser.servo",
+      "operations": [
+        "browser.servo/open_profile"
+      ]
+    },
+    {
+      "id": "BROWSER-04",
+      "module": "browser.servo",
+      "operations": [
+        "browser.servo/navigate_or_act"
+      ]
+    },
+    {
+      "id": "UI-01",
+      "module": "ui.control",
+      "operations": [
+        "ui.control/read_view",
+        "ui.control/request_stop"
+      ]
+    },
+    {
+      "id": "UI-02",
+      "module": "ui.control",
+      "operations": [
+        "ui.control/submit_request"
+      ]
+    },
+    {
+      "id": "UI-03",
+      "module": "ui.control",
+      "operations": [
+        "ui.control/submit_request"
+      ]
+    },
+    {
+      "id": "UI-04",
+      "module": "ui.control",
+      "operations": [
+        "ui.control/read_view",
+        "ui.control/request_stop"
+      ]
+    },
+    {
+      "id": "NATIVE-01",
+      "module": "ui.native",
+      "operations": [
+        "ui.native/connect_runtime",
+        "ui.native/render_runtime_view"
+      ]
+    },
+    {
+      "id": "NATIVE-02",
+      "module": "ui.native",
+      "operations": [
+        "ui.native/request_platform_capability"
+      ]
+    },
+    {
+      "id": "NATIVE-03",
+      "module": "ui.native",
+      "operations": [
+        "ui.native/connect_runtime",
+        "ui.native/render_runtime_view",
+        "ui.native/request_platform_capability"
+      ]
+    },
+    {
+      "id": "NATIVE-04",
+      "module": "ui.native",
+      "operations": [
+        "ui.native/apply_shell_update"
+      ]
+    }
+  ]
+}

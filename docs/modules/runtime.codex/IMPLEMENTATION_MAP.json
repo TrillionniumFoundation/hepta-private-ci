@@ -1,0 +1,122 @@
+{
+  "schema": "hepta.lane-b-module-implementation-map.v1",
+  "schemaVersion": 1,
+  "laneId": "LANE-B-RUNTIME",
+  "sourceSubject": {
+    "repository": "TrillionniumFoundation/hepta-private-ci",
+    "baseBranch": "integration/hepta-all-gap-closure-20260910-r13",
+    "baseCommit": "f278a89eea18fccb6d37b876aa5679863a64139d",
+    "baseTree": "5baa144717d4b3e3c596501fb56ce911d009e728",
+    "candidateBranch": "codex/hepta-lane-b-truth-runtime-closure-20260911",
+    "historyRequirement": "one_direct_child_of_base"
+  },
+  "module": "runtime.codex",
+  "owner": "codex-integration",
+  "deputy": "agent-runtime",
+  "mission": "Integrate Hepta contracts with the sole Codex thread, turn, model and tool execution spine.",
+  "canonicalRoots": [
+    "codex-rs/app-server",
+    "codex-rs/core",
+    "codex-rs/hepta-codex-adapter"
+  ],
+  "integrationRoots": [],
+  "maturity": "native_execution_spine",
+  "operations": [
+    {
+      "designOperation": "open_thread",
+      "mappingState": "closed",
+      "repositoryImplementationState": "implemented",
+      "implementationClass": "owner_native_method",
+      "ownerEntrypoint": {
+        "path": "codex-rs/app-server/src/request_processors/thread_processor.rs",
+        "symbol": "pub(crate) async fn thread_start(",
+        "buildTarget": "codex-app-server"
+      },
+      "callerClass": "app_server_protocol",
+      "testIds": [
+        "CODEX-03"
+      ],
+      "notes": ""
+    },
+    {
+      "designOperation": "submit_turn",
+      "mappingState": "closed",
+      "repositoryImplementationState": "implemented",
+      "implementationClass": "owner_native_method",
+      "ownerEntrypoint": {
+        "path": "codex-rs/app-server/src/request_processors/turn_processor.rs",
+        "symbol": "pub(crate) async fn turn_start(",
+        "buildTarget": "codex-app-server"
+      },
+      "callerClass": "app_server_protocol",
+      "testIds": [
+        "CODEX-01",
+        "CODEX-03"
+      ],
+      "notes": ""
+    },
+    {
+      "designOperation": "dispatch_tool",
+      "mappingState": "closed",
+      "repositoryImplementationState": "implemented",
+      "implementationClass": "owner_native_method",
+      "ownerEntrypoint": {
+        "path": "codex-rs/core/src/tools/router.rs",
+        "symbol": "pub async fn dispatch_tool_call_with_code_mode_result(",
+        "buildTarget": "codex-core"
+      },
+      "callerClass": "codex_core_runtime",
+      "testIds": [
+        "CODEX-02",
+        "CODEX-04"
+      ],
+      "notes": ""
+    },
+    {
+      "designOperation": "observe_delivery",
+      "mappingState": "closed",
+      "repositoryImplementationState": "implemented",
+      "implementationClass": "owner_native_method",
+      "ownerEntrypoint": {
+        "path": "codex-rs/core/src/codex_thread.rs",
+        "symbol": "pub(crate) async fn submit_turn_input_and_wait_for_exact_admission(",
+        "buildTarget": "codex-core"
+      },
+      "callerClass": "codex_core_runtime",
+      "testIds": [
+        "CODEX-01",
+        "CODEX-04"
+      ],
+      "notes": ""
+    }
+  ],
+  "runtimeTopology": "The existing App Server and Codex Core remain the single thread/turn/model/tool spine. Hepta adapters validate exact context, deadline, payload and observation bindings without creating a second execution engine.",
+  "physicalState": "Thread store and turn/session state are owned by App Server/Core. External effects stay in operation/effect ledgers. Context and provider payloads are referenced by bounded digests rather than copied into general evidence.",
+  "linearization": "Thread and turn admission linearize in protocol handlers. Context delivery is recorded only after exact admission. Tool dispatch rechecks final payload and authority at the physical boundary.",
+  "recovery": "Provider acknowledgement loss and tool timeout remain indeterminate. Recovery preserves thread/turn/operation identities and does not create an ambient model or tool default.",
+  "security": "Unknown model/session/schema generations reject. Model prose is untrusted data. Tool authority is final-payload-, destination-, epoch- and revocation-bound.",
+  "capacity": "Context/token limits derive from the selected model profile; tool candidates <=128; queue, first-token, last-token and terminal-tool latency are measured separately.",
+  "terminalObserver": "App Server/Core observe local admission and streaming state. Provider and tool adapters remain the trusted terminal observers for their own external effects.",
+  "verificationCommands": [
+    "cargo test -p codex-hepta-codex-adapter --lib",
+    "cargo check -p codex-app-server -p codex-core -p codex-hepta-codex-adapter"
+  ],
+  "repositoryControlledGaps": [],
+  "externalEvidenceGaps": [
+    "real model/provider stream identity and terminal observation",
+    "deployed Agentd-to-App-Server trace and external tool terminality"
+  ],
+  "externalGateIds": [
+    "RDY-EXT-001",
+    "RDY-EXT-002",
+    "RDY-EXT-003",
+    "RDY-EXT-008",
+    "RDY-EXT-009"
+  ],
+  "claimBoundary": {
+    "repositoryOperationMappingsClosed": true,
+    "productExecutionProved": false,
+    "deploymentProved": false,
+    "independentAcceptanceProved": false
+  }
+}
