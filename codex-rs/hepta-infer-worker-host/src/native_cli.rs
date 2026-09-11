@@ -14,17 +14,20 @@ pub async fn run() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
     let mut generation = None;
     let mut model = None;
     let mut context_query = None;
+    let mut native_profile_selected = false;
     let mut timeout_ms = 120_000_u64;
     let mut args = std::env::args().skip(1);
     while let Some(flag) = args.next() {
         if flag == "--help" {
             println!(
-                "hepta-infer-worker --agentd-socket PATH --agent-id ID --generation N --model MODEL [--context-query TEXT] [--timeout-ms N]\nReads one prompt from stdin; executes through the owning Agent's configured model provider."
+                "hepta-infer-worker --profile native-app-server --agentd-socket PATH --agent-id ID --generation N --model MODEL [--context-query TEXT] [--timeout-ms N]\nReads one prompt from stdin; executes through the owning Agent's configured model provider."
             );
             return Ok(());
         }
         let value = args.next().ok_or("missing argument value")?;
         match flag.as_str() {
+            "--profile" if value == "native-app-server" => native_profile_selected = true,
+            "--profile" => return Err(format!("unsupported worker profile: {value}").into()),
             "--agentd-socket" => socket = Some(PathBuf::from(value)),
             "--agent-id" => agent_id = Some(AgentId::parse(value)?),
             "--generation" => generation = Some(value.parse()?),
@@ -33,6 +36,9 @@ pub async fn run() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
             "--timeout-ms" => timeout_ms = value.parse()?,
             _ => return Err(format!("unknown argument: {flag}").into()),
         }
+    }
+    if !native_profile_selected {
+        return Err("--profile native-app-server must be selected explicitly".into());
     }
     let driver = AppServerModelDriver::new(NativeWorkerConfig {
         agentd_socket: socket.ok_or("--agentd-socket is required")?,

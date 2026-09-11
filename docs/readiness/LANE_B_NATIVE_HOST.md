@@ -7,7 +7,7 @@ This page describes executable behavior in the source, including gaps that requi
 | Function | Runtime owner | New component disposition |
 | --- | --- | --- |
 | Agent admission and private memory context | `hepta-agentd` | `CognitiveContext` uses the attached canonical SQLite `CognitiveStore` |
-| Hosted model execution | `hepta-infer-worker` with `native-app-server` | Calls the owning Agent's existing App Server provider |
+| Hosted model execution | `hepta-infer-worker --profile native-app-server` | Calls the owning Agent's existing App Server provider |
 | Local model driver contract | Host still required | `codex_hepta_infer_worker_host::model_worker` exposes the manifest/grant state machine |
 | Inference reservation and settlement | Host still required | `codex_hepta_infer_core::durable_control` exposes a single-writer journal; no reservation authority is invented |
 | Automation | Agentd's existing `AutomationScheduler` and `AutomationStore` | `effect_executor` is an in-memory component; durable TaskFlow effect wiring remains work |
@@ -32,11 +32,11 @@ The worker uses this context as **untrusted additional context** on the actual A
 Build and invoke from the repository:
 
 ```sh
-cargo build --manifest-path codex-rs/Cargo.toml -p codex-hepta-infer-worker-host --features native-app-server --bin hepta-infer-worker
-hepta-infer-worker --agentd-socket /absolute/owner/agentd.sock --agent-id UUID --generation 1 --model MODEL --context-query 'optional memory query' < prompt.txt
+cargo build --manifest-path codex-rs/Cargo.toml -p codex-hepta-infer-worker-host --bin hepta-infer-worker
+hepta-infer-worker --profile native-app-server --agentd-socket /absolute/owner/agentd.sock --agent-id UUID --generation 1 --model MODEL --context-query 'optional memory query' < prompt.txt
 ```
 
-The model must be configured and authenticated in the existing owning App Server. The worker does not install credentials, select hardware or grant itself tools. Without the feature, the binary exits 64. The prompt limit is 32 KiB, observed output limit is 1 MiB, and bounded events cap at 256. `--timeout-ms` defaults to 120000 and applies to turn observation; connection/RPC calls have separate five-second bounds. Cancellation, deadline, event loss, disconnect and fencing trigger an actual interrupt request. Interrupt acknowledgement alone is insufficient: an unobserved outcome remains `indeterminate`. The CLI prints observed JSON and exits nonzero on failure, interruption or indeterminacy. It never automatically replays an uncertain turn/start.
+The model must be configured and authenticated in the existing owning App Server. The worker does not install credentials, select hardware or grant itself tools. The native module and its dependencies compile by default in both Cargo and Bazel. The CLI requires explicit `--profile native-app-server` selection and rejects missing or unsupported profiles before reading the prompt or contacting the provider. The prompt limit is 32 KiB, observed output limit is 1 MiB, and bounded events cap at 256. `--timeout-ms` defaults to 120000 and applies to turn observation; connection/RPC calls have separate five-second bounds. Cancellation, deadline, event loss, disconnect and fencing trigger an actual interrupt request. Interrupt acknowledgement alone is insufficient: an unobserved outcome remains `indeterminate`. The CLI prints observed JSON and exits nonzero on failure, interruption or indeterminacy. It never automatically replays an uncertain turn/start.
 
 ## Measured context planning
 
@@ -61,4 +61,4 @@ Source checks exercise real SQLite memory retrieval and withdrawal, event identi
 
 ## Validation result for this change
 
-The six changed runtime libraries were built with the native App Server feature using `just test`: 97 tests ran, 96 passed. The one failing pre-existing Matrix control-socket test returned `EPERM`; an independent AF_UNIX bind probe returned the same error in this execution environment. No socket restriction or test was bypassed. The new real SQLite → Lane C → NDU read/withdrawal test, worker event/terminal/output tests and durable journal locking/replay/rejection tests passed. The first high-debug link exhausted the 32 GiB workspace; after clearing generated build files, the same scoped test set completed with incremental compilation disabled and dev/test debug information disabled.
+The six changed runtime libraries were built with the native App Server implementation using `just test` (the original feature-selected test build; that same implementation now compiles by default): 97 tests ran, 96 passed. The one failing pre-existing Matrix control-socket test returned `EPERM`; an independent AF_UNIX bind probe returned the same error in this execution environment. No socket restriction or test was bypassed. The new real SQLite → Lane C → NDU read/withdrawal test, worker event/terminal/output tests and durable journal locking/replay/rejection tests passed. The first high-debug link exhausted the 32 GiB workspace; after clearing generated build files, the same scoped test set completed with incremental compilation disabled and dev/test debug information disabled.
