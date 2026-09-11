@@ -1,0 +1,122 @@
+{
+  "schema": "hepta.module-implementation-map.v2",
+  "schemaVersion": 2,
+  "sourceBase": {
+    "commit": "f278a89eea18fccb6d37b876aa5679863a64139d",
+    "tree": "5baa144717d4b3e3c596501fb56ce911d009e728"
+  },
+  "laneId": "LANE-B-RUNTIME",
+  "module": "inference.control",
+  "sourceMaturity": "native_durable_control_boundary",
+  "declaredRoots": [
+    "codex-rs/hepta-infer-core",
+    "codex-rs/hepta-inferd"
+  ],
+  "resolvedRoots": [
+    "codex-rs/hepta-infer-core",
+    "codex-rs/hepta-inferd"
+  ],
+  "stateOwnerDisposition": "Owns request, reservation, assignment, cancellation, and settlement journal facts.",
+  "terminalObserverDisposition": "Settlement records an authenticated worker/provider observation; unknown consumption remains held or quarantined.",
+  "operations": [
+    {
+      "designOperation": "reserve_request",
+      "mappingClass": "owner_native",
+      "ownerEntrypoint": {
+        "role": "owner_entrypoint",
+        "path": "codex-rs/hepta-infer-core/src/bin/hepta-infer-control.rs",
+        "symbol": "pub fn reserve(",
+        "buildTarget": "hepta-infer-control"
+      },
+      "delegatedCallees": [],
+      "tests": [
+        {
+          "path": "codex-rs/hepta-infer-core/src/bin/hepta-infer-control.rs",
+          "kind": "journal_recovery",
+          "command": "cargo test -p codex-hepta-infer-core --bin hepta-infer-control"
+        }
+      ],
+      "sourceSemantics": "Reserves quota and resources in a durable generation-bound journal."
+    },
+    {
+      "designOperation": "schedule",
+      "mappingClass": "owner_native",
+      "ownerEntrypoint": {
+        "role": "owner_entrypoint",
+        "path": "codex-rs/hepta-infer-core/src/bin/hepta-infer-control.rs",
+        "symbol": "pub fn assign(",
+        "buildTarget": "hepta-infer-control"
+      },
+      "delegatedCallees": [
+        {
+          "role": "supporting_algorithm",
+          "path": "codex-rs/hepta-inferd/src/lib.rs",
+          "symbol": "pub fn plan(",
+          "buildTarget": "codex-hepta-inferd",
+          "ownerModule": "inference.control"
+        }
+      ],
+      "tests": [
+        {
+          "path": "codex-rs/hepta-infer-core/src/bin/hepta-infer-control.rs",
+          "kind": "assignment_and_fencing",
+          "command": "cargo test -p codex-hepta-infer-core --bin hepta-infer-control"
+        }
+      ],
+      "sourceSemantics": "Commits deterministic eligible-worker assignment before dispatch."
+    },
+    {
+      "designOperation": "cancel",
+      "mappingClass": "owner_native",
+      "ownerEntrypoint": {
+        "role": "owner_entrypoint",
+        "path": "codex-rs/hepta-infer-core/src/bin/hepta-infer-control.rs",
+        "symbol": "pub fn cancel(",
+        "buildTarget": "hepta-infer-control"
+      },
+      "delegatedCallees": [],
+      "tests": [
+        {
+          "path": "codex-rs/hepta-infer-core/src/bin/hepta-infer-control.rs",
+          "kind": "cancel_settle_race",
+          "command": "cargo test -p codex-hepta-infer-core --bin hepta-infer-control"
+        }
+      ],
+      "sourceSemantics": "Records monotonic cancellation without erasing possible in-flight consumption."
+    },
+    {
+      "designOperation": "settle",
+      "mappingClass": "owner_native",
+      "ownerEntrypoint": {
+        "role": "owner_entrypoint",
+        "path": "codex-rs/hepta-infer-core/src/bin/hepta-infer-control.rs",
+        "symbol": "pub fn settle(",
+        "buildTarget": "hepta-infer-control"
+      },
+      "delegatedCallees": [],
+      "tests": [
+        {
+          "path": "codex-rs/hepta-infer-core/src/bin/hepta-infer-control.rs",
+          "kind": "cancel_settle_race",
+          "command": "cargo test -p codex-hepta-infer-core --bin hepta-infer-control"
+        }
+      ],
+      "sourceSemantics": "Commits exactly one settlement and accounts late valid usage without double refund."
+    }
+  ],
+  "repositoryControlledGaps": [],
+  "externalEvidenceGates": [
+    "real quota/capacity authority integration",
+    "authenticated non-test worker transport",
+    "real provider/model terminal and usage evidence"
+  ],
+  "claimBoundary": {
+    "nativeSourceMappingComplete": true,
+    "repositoryControlledDocumentationGapsClosed": true,
+    "repositoryControlledMappingGapsClosed": true,
+    "repositoryControlledSourceBoundaryGapsClosed": true,
+    "productExecutionComplete": false,
+    "deploymentQualificationComplete": false,
+    "independentAcceptanceComplete": false
+  }
+}
