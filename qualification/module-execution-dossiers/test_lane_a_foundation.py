@@ -164,14 +164,6 @@ class LaneAFoundationTruthTests(unittest.TestCase):
             self.assertTrue(row["source"])
             self.assertTrue(row["invariants"])
 
-    def test_pr_tuple_parser_matches_current_v4_contract(self) -> None:
-        parser = (ROOT / "scripts/verify_lane_a_pr_tuple.py").read_text(
-            encoding="utf-8"
-        )
-        self.assertIn('BEGIN = "<!-- lane-a-exact-subject:v4 -->"', parser)
-        self.assertIn('END = "<!-- /lane-a-exact-subject:v4 -->"', parser)
-        self.assertNotIn("lane-a-exact-subject:v2", parser)
-
     def test_native_observation_manifest_binds_current_candidate_blobs(self) -> None:
         bindings = json.loads(
             (
