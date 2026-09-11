@@ -3688,6 +3688,8 @@ name = "codex-hepta-infer-core"
 version = "0.0.0"
 dependencies = [
  "codex-hepta-types",
+ "serde",
+ "serde_json",
 ]
 
 [[package]]
@@ -3698,10 +3700,11 @@ dependencies = [
  "codex-app-server-protocol",
  "codex-hepta-agentd",
  "codex-hepta-contracts",
+ "codex-hepta-infer-core",
  "codex-hepta-types",
  "codex-utils-absolute-path",
- "serde",
  "serde_json",
+ "sha2 0.10.9",
  "tokio",
  "tokio-util",
 ]

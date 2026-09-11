@@ -91,43 +91,45 @@ External evidence gates:
 
 ## 6. `inference.control`
 
-Owns request, reservation, assignment, cancellation, and settlement journal facts.
+The same single-writer DurableInferenceControl journal owns legacy records and native hosted request identity, local in-flight slot reservations, dispatch bindings and observations.
 
-Settlement records an authenticated worker/provider observation; unknown consumption remains held or quarantined.
+The actual Agent-fenced App Server client supplies matching turn observations through a trusted in-process port. Missing tokens remain null; uncertain execution holds its local slot. This is not provider billing or signed remote-worker authority.
 
 | Operation | Class | Owner entrypoint |
 |---|---|---|
-| `reserve_request` | `owner_native` | `codex-rs/hepta-infer-core/src/durable_control.rs` — `pub fn reserve(` |
-| `schedule` | `owner_native` | `codex-rs/hepta-infer-core/src/durable_control.rs` — `pub fn assign(` |
-| `cancel` | `owner_native` | `codex-rs/hepta-infer-core/src/durable_control.rs` — `pub fn cancel(` |
-| `settle` | `owner_native` | `codex-rs/hepta-infer-core/src/durable_control.rs` — `pub fn settle(` |
+| `reserve_request` | `owner_native` | `codex-rs/hepta-infer-core/src/native_control.rs` — `pub fn reserve_native(` |
+| `schedule` | `owner_native` | `codex-rs/hepta-infer-core/src/native_control.rs` — `pub fn dispatch_native(` |
+| `cancel` | `owner_native` | `codex-rs/hepta-infer-core/src/native_control.rs` — `pub fn cancel_native(` |
+| `settle` | `owner_native` | `codex-rs/hepta-infer-core/src/native_control.rs` — `pub fn settle_native(` |
 
 Remaining repository implementation gaps:
 
-- Connect the single-writer durable control component to an actual reservation authority, worker dispatcher, and terminal usage observer.
+- Connect economically meaningful quota and hardware-capacity authorities; the shipped native policy reserves only local in-flight run slots.
+- Implement authenticated recovery of actual provider terminal/usage observations after process loss; reopening a dispatched run conservatively holds capacity and never replays it.
+- Add bounded archival/retention under the same journal owner; the current 64 MiB journal rejects further appends without truncating acknowledged history.
 
 External evidence gates:
 
-- real quota/capacity authority integration
-- authenticated non-test worker transport
-- real provider/model terminal and usage evidence
+- real provider deployment and crash/cancellation acceptance
+- real economic quota/capacity authority integration
+- authenticated remote-worker transport if a separate process is introduced
 
 ## 7. `inference.worker`
 
-Owns ephemeral process/model handles and resource usage only; persistent model bytes remain with the artifact/cache owner.
+Owns live provider client handles; persistent request/slot/observation facts remain in the inference.control journal. App Server owns ephemeral thread execution; artifact/cache owners retain model bytes.
 
 The hosted native-app-server profile observes real matching turn events; the local manifest driver remains injected and does not prove physical weights/device behavior.
 
 | Operation | Class | Owner entrypoint |
 |---|---|---|
 | `load_model` | `owner_native` | `codex-rs/hepta-infer-worker-host/src/model_worker.rs` — `pub fn load_model(` |
-| `run` | `owner_native` | `codex-rs/hepta-infer-worker-host/src/model_worker.rs` — `pub fn run(` |
+| `run` | `owner_native` | `codex-rs/hepta-infer-worker-host/src/native_run_control.rs` — `pub async fn run(` |
 | `unload` | `owner_native` | `codex-rs/hepta-infer-worker-host/src/model_worker.rs` — `pub fn unload_model(` |
 
 Remaining repository implementation gaps:
 
 - Implement a local model driver that acquires and proves actual weights, device and memory grants before claiming isolated local inference.
-- Connect hosted runs to durable control reservation and usage settlement; the native App Server profile does not fabricate these grants.
+- Implement trusted provider reconciliation for dispatch-unknown/reopened runs and later missing token usage; do not infer zero usage or safe replay from transport loss.
 
 External evidence gates:
 
