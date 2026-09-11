@@ -1,5 +1,7 @@
 # inference.control technical development guide
 
+Current executable behavior, component owners and implementation gaps: [Lane B native host](../../readiness/LANE_B_NATIVE_HOST.md).
+
 **Plan:** `HEPTA-GLOBAL-MODULAR-DEVELOPMENT-PLAN` v8.0.0
 
 **Module:** `inference.control`
