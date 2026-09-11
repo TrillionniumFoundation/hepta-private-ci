@@ -1,9 +1,9 @@
-# Lane B native source and implementation closure
+# Lane B source contracts and implementation gaps
 
 **Lane:** `LANE-B-RUNTIME`  
 **Immutable source base:** `f278a89eea18fccb6d37b876aa5679863a64139d` / tree `5baa144717d4b3e3c596501fb56ce911d009e728`  
 **Exact candidate:** derived from Git at verification time; never hard-coded  
-**Repository-controlled scope:** documentation, operation inventory, source mapping and bounded source gaps closed  
+**Repository-controlled scope:** documentation, operation inventory and source mapping verified; implementation gaps are reported per module  
 **External scope:** product execution, deployment, real effects and independent acceptance remain open
 
 ## 1. Truth model
@@ -37,9 +37,13 @@ Current-fence reconciliation records the observed holder disposition; pure alloc
 
 | Operation | Class | Owner entrypoint |
 |---|---|---|
-| `admit_host` | `owner_native` | `codex-rs/hepta-fleet/src/bin/hepta-fleet-leased.rs` — `pub fn admit_host(` |
-| `allocate` | `owner_native` | `codex-rs/hepta-fleet/src/bin/hepta-fleet-leased.rs` — `pub fn issue(` |
-| `renew_or_revoke` | `owner_native` | `codex-rs/hepta-fleet/src/bin/hepta-fleet-leased.rs` — `pub fn renew_or_revoke(` |
+| `admit_host` | `owner_native` | `codex-rs/hepta-fleet/src/lease_ledger.rs` — `pub fn admit_host(` |
+| `allocate` | `owner_native` | `codex-rs/hepta-fleet/src/lease_ledger.rs` — `pub fn issue(` |
+| `renew_or_revoke` | `owner_native` | `codex-rs/hepta-fleet/src/lease_ledger.rs` — `pub fn renew_or_revoke(` |
+
+Remaining repository implementation gaps:
+
+- Connect the in-memory lease component to supervisor-owned durable FleetRegistry grants, fences, and a real capacity observer.
 
 External evidence gates:
 
@@ -93,10 +97,14 @@ Settlement records an authenticated worker/provider observation; unknown consump
 
 | Operation | Class | Owner entrypoint |
 |---|---|---|
-| `reserve_request` | `owner_native` | `codex-rs/hepta-infer-core/src/bin/hepta-infer-control.rs` — `pub fn reserve(` |
-| `schedule` | `owner_native` | `codex-rs/hepta-infer-core/src/bin/hepta-infer-control.rs` — `pub fn assign(` |
-| `cancel` | `owner_native` | `codex-rs/hepta-infer-core/src/bin/hepta-infer-control.rs` — `pub fn cancel(` |
-| `settle` | `owner_native` | `codex-rs/hepta-infer-core/src/bin/hepta-infer-control.rs` — `pub fn settle(` |
+| `reserve_request` | `owner_native` | `codex-rs/hepta-infer-core/src/durable_control.rs` — `pub fn reserve(` |
+| `schedule` | `owner_native` | `codex-rs/hepta-infer-core/src/durable_control.rs` — `pub fn assign(` |
+| `cancel` | `owner_native` | `codex-rs/hepta-infer-core/src/durable_control.rs` — `pub fn cancel(` |
+| `settle` | `owner_native` | `codex-rs/hepta-infer-core/src/durable_control.rs` — `pub fn settle(` |
+
+Remaining repository implementation gaps:
+
+- Connect the single-writer durable control component to an actual reservation authority, worker dispatcher, and terminal usage observer.
 
 External evidence gates:
 
@@ -112,9 +120,14 @@ The injected model driver reports execution terminality; source tests do not pro
 
 | Operation | Class | Owner entrypoint |
 |---|---|---|
-| `load_model` | `owner_native` | `codex-rs/hepta-infer-worker-host/src/bin/hepta-infer-worker.rs` — `pub fn load_model(` |
-| `run` | `owner_native` | `codex-rs/hepta-infer-worker-host/src/bin/hepta-infer-worker.rs` — `pub fn run(` |
-| `unload` | `owner_native` | `codex-rs/hepta-infer-worker-host/src/bin/hepta-infer-worker.rs` — `pub fn unload_model(` |
+| `load_model` | `owner_native` | `codex-rs/hepta-infer-worker-host/src/model_worker.rs` — `pub fn load_model(` |
+| `run` | `owner_native` | `codex-rs/hepta-infer-worker-host/src/model_worker.rs` — `pub fn run(` |
+| `unload` | `owner_native` | `codex-rs/hepta-infer-worker-host/src/model_worker.rs` — `pub fn unload_model(` |
+
+Remaining repository implementation gaps:
+
+- Implement a local model driver that acquires and proves actual weights, device and memory grants before claiming isolated local inference.
+- Connect hosted runs to durable control reservation and usage settlement; the native App Server profile does not fabricate these grants.
 
 External evidence gates:
 
@@ -132,8 +145,13 @@ The registered effect driver supplies terminal observations; unknown effects blo
 |---|---|---|
 | `register_schedule` | `owner_native` | `codex-rs/hepta-automation/src/store.rs` — `pub async fn create_task(` |
 | `materialize_due` | `owner_native` | `codex-rs/hepta-automation/src/scheduler.rs` — `pub async fn tick(` |
-| `claim_occurrence` | `owner_native` | `codex-rs/hepta-automation/src/bin/hepta-taskflow-runtime.rs` — `pub fn claim_occurrence(` |
-| `execute_step` | `owner_native` | `codex-rs/hepta-automation/src/bin/hepta-taskflow-runtime.rs` — `pub fn execute_step(` |
+| `claim_occurrence` | `owner_native` | `codex-rs/hepta-automation/src/effect_executor.rs` — `pub fn claim_occurrence(` |
+| `execute_step` | `owner_native` | `codex-rs/hepta-automation/src/effect_executor.rs` — `pub fn execute_step(` |
+
+Remaining repository implementation gaps:
+
+- Connect the effect-executor component to the existing durable TaskFlow step outbox and a real final-use authorized effect provider.
+- Implement post-crash effect reconciliation before permitting dependent steps.
 
 External evidence gates:
 
@@ -150,8 +168,12 @@ A homeserver event observation settles send terminality; App Server turn complet
 | Operation | Class | Owner entrypoint |
 |---|---|---|
 | `admit_event` | `owner_native` | `codex-rs/hepta-matrixd/src/runtime.rs` — `pub async fn process_event(` |
-| `prepare_send` | `owner_native` | `codex-rs/hepta-matrixd/src/bin/hepta-matrix-send-observer.rs` — `pub fn prepare_send(` |
-| `observe_send` | `owner_native` | `codex-rs/hepta-matrixd/src/bin/hepta-matrix-send-observer.rs` — `pub fn observe_send(` |
+| `prepare_send` | `owner_native` | `codex-rs/hepta-matrixd/src/send_observer.rs` — `pub fn prepare_send(` |
+| `observe_send` | `owner_native` | `codex-rs/hepta-matrixd/src/send_observer.rs` — `pub fn observe_send(` |
+
+Remaining repository implementation gaps:
+
+- Integrate any new send-observer state with the existing MatrixDurableStore transaction identity; the component alone is not a second durable sender.
 
 External evidence gates:
 
