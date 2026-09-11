@@ -35,11 +35,19 @@ class LaneAFoundationTruthTests(unittest.TestCase):
 
     def test_every_current_capability_has_one_evidence_mapping(self) -> None:
         verify.validate_capability_map(self.matrix, self.capability_map)
-        expected = sum(
-            len(row["currentCapabilities"]) for row in self.matrix["modules"]
-        )
-        self.assertEqual(self.capability_map["entryCount"], expected)
-        self.assertEqual(expected, 21)
+        declared = [
+            (row["module"], capability)
+            for row in self.matrix["modules"]
+            for capability in row["currentCapabilities"]
+        ]
+        mapped = [
+            (entry["module"], entry["summary"])
+            for entry in self.capability_map["entries"]
+        ]
+        self.assertEqual(len(declared), len(set(declared)))
+        self.assertEqual(len(mapped), len(set(mapped)))
+        self.assertCountEqual(mapped, declared)
+        self.assertEqual(self.capability_map["entryCount"], len(mapped))
 
     def test_operations_cannot_claim_unimplemented_durability(self) -> None:
         value = deepcopy(self.matrix)
@@ -77,11 +85,26 @@ class LaneAFoundationTruthTests(unittest.TestCase):
                 set(row["currentCapabilities"]) & set(row["targetOnlyCapabilities"])
             )
 
-    def test_missing_capability_mapping_is_rejected(self) -> None:
-        value = deepcopy(self.capability_map)
-        value["entries"].pop()
-        with self.assertRaises(verify.VerificationError):
-            verify.validate_capability_map(self.matrix, value)
+    def test_missing_extra_or_duplicate_capability_mapping_is_rejected(self) -> None:
+        entries = self.capability_map["entries"]
+        extra = {
+            **entries[0],
+            "capabilityId": "test.undeclared.v1",
+            "summary": "undeclared capability",
+        }
+        duplicate_mapping = {**entries[0], "capabilityId": "test.duplicate.v1"}
+        for case, invalid_entries in (
+            ("missing", entries[:-1]),
+            ("extra", [*entries, extra]),
+            ("duplicate_id", [*entries, entries[0]]),
+            ("duplicate_mapping", [*entries, duplicate_mapping]),
+        ):
+            with self.subTest(case=case):
+                value = deepcopy(self.capability_map)
+                value["entries"] = invalid_entries
+                value["entryCount"] = len(invalid_entries)
+                with self.assertRaises(verify.VerificationError):
+                    verify.validate_capability_map(self.matrix, value)
 
     def test_unproven_production_caller_is_rejected(self) -> None:
         value = deepcopy(self.capability_map)
@@ -98,7 +121,12 @@ class LaneAFoundationTruthTests(unittest.TestCase):
             verify.write_source_receipt(output, verify.git_value("rev-parse", "HEAD"))
             receipt = json.loads(output.read_text(encoding="utf-8"))
         self.assertEqual(receipt["moduleCoverage"], 7)
-        self.assertEqual(receipt["capabilityCoverage"], 21)
+        declared = {
+            (row["module"], capability)
+            for row in self.matrix["modules"]
+            for capability in row["currentCapabilities"]
+        }
+        self.assertEqual(receipt["capabilityCoverage"], len(declared))
         self.assertEqual(
             receipt["currentImplementationTruth"], "source_and_test_anchored"
         )
