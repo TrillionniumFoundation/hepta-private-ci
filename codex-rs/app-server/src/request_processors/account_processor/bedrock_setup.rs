@@ -16,20 +16,8 @@ use codex_app_server_protocol::JSONRPCErrorError;
 use codex_login::CodexAuth;
 use codex_model_provider::is_supported_amazon_bedrock_region;
 
-#[expect(
-    dead_code,
-    reason = "Bedrock account endpoints are not yet routed by the stable protocol"
-)]
 const AWS_ACCESS_KEY_ID: &str = "AWS_ACCESS_KEY_ID";
-#[expect(
-    dead_code,
-    reason = "Bedrock account endpoints are not yet routed by the stable protocol"
-)]
 const AWS_SECRET_ACCESS_KEY: &str = "AWS_SECRET_ACCESS_KEY";
-#[expect(
-    dead_code,
-    reason = "Bedrock account endpoints are not yet routed by the stable protocol"
-)]
 const AWS_BEARER_TOKEN_BEDROCK: &str = "AWS_BEARER_TOKEN_BEDROCK";
 
 impl AccountRequestProcessor {
@@ -155,10 +143,6 @@ impl AccountRequestProcessor {
     }
 }
 
-#[expect(
-    dead_code,
-    reason = "Bedrock account endpoints are not yet routed by the stable protocol"
-)]
 fn non_empty_env_var(name: &str) -> Option<String> {
     std::env::var(name)
         .ok()
