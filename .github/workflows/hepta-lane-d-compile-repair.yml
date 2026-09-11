@@ -35,6 +35,29 @@ jobs:
           python3 scripts/hepta-lane-d-journal-fix.py
           python3 scripts/hepta-lane-d-ndu-error-fix.py
 
+      - name: Remove redundant test-only clones exposed by strict lint
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+
+          path = Path("codex-rs/hepta-control-plane/src/planner_tests.rs")
+          text = path.read_text()
+          replacements = {
+              "let mut tampered = prepared.clone();": "let mut tampered = prepared;",
+              "let mut owner = prepared.clone();": "let mut owner = prepared;",
+              "let mut tampered = snapshot.clone();": "let mut tampered = snapshot;",
+              "let mut changed = snapshot.clone();": "let mut changed = snapshot;",
+          }
+          for old, new in replacements.items():
+              count = text.count(old)
+              if count != 1:
+                  raise SystemExit(f"expected exactly one occurrence of {old!r}, found {count}")
+              text = text.replace(old, new)
+          path.write_text(text)
+          PY
+
       - name: Canonical formatting
         working-directory: codex-rs
         shell: bash
