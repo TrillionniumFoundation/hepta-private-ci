@@ -14,7 +14,7 @@ PR #541 carries the incremental changes and their actual CI results.
 
 | Lane | Implemented in this consolidation | Next repository work |
 |---|---|---|
-| A — foundation | Strict Ed25519 verification; atomic SQLite replay admission and message enqueue; fenced, recoverable delivery leases; migration 0010; current-commit native bindings | Integrate production key/revocation ownership and actual effect, quota and policy consumers. Message delivery is at least once; it does not provide exactly-once external effects. |
+| A — foundation | Strict Ed25519 verification; atomic SQLite replay admission and message enqueue; fenced, recoverable delivery leases and quarantine; explicit Unix owner trust; signed text through the real Agentd-to-Core queue with matching receipts | Extend production key/revocation ownership beyond the bounded text profile and integrate effect, quota and policy consumers. Queue acceptance does not establish completed model execution or exactly-once external effects. |
 | B — runtime | Reusable runtime state machines; bounded single-writer inference journal; private Agent SQLite context; real App Server run admission, dispatch intent and observed settlement; six deployment scripts | Priced quotas and device grants, local weights, unknown-provider reconciliation, journal archival, TaskFlow effects, fleet allocation and channel settlement. Local run slots are not a billing or hardware grant. |
 | C — cognition | Canonical SQLite-to-Lane-C reads; retained-descriptor cold images with independent full-cut and index-integrity checks; a separate, immutable read-only recovery handle | Writable descriptor-backed VFS and current writer fence, live recovery/revocation ownership, rollback policy and deployed federation consumers. The writable recovery API remains unavailable. |
 | D — control and NDU | Strict non-cyclic dominance; NDU-to-planner bridge; observed context planning; stateless read-only organ replacement; fully bound compiled V2 transport; objective-bound Debian discovery proposals | Canonical V1 producer/codec and product boot integration, stateful organ migration, general resource/endowment optimization, real-time scheduling and physical control. A compiled graph or context plan is not dispatch authority. |
@@ -43,9 +43,11 @@ an `allGapsClosed` flag.
 ## Verification limits
 
 Focused local tests cover the new contracts, transactions, recovery, planning and
-consumer paths. All new runtime tests passed; one existing Matrix Unix-socket
-test encountered `EPERM`, also reproduced by an independent minimal bind probe.
-This is recorded as a local environmental failure, not a passing test.
+consumer paths. The signed text host and outbox tests executed 132 passing cases.
+Its two native process tests compiled but failed at Unix-socket bind with `EPERM`,
+before reaching the queue; other local native socket tests encountered the same
+restriction, independently reproduced with a minimal bind probe. These failures
+remain failures and require native CI execution.
 
 The pre-second-wave GitHub source and base-merge runs each executed 1,035 tests
 successfully, with eight existing skips. They exposed strict Clippy failures in
@@ -53,6 +55,15 @@ knowledge support canonicalization and shared task lifecycle code; test success
 alone did not qualify those candidates for merge. The final committed candidate
 must pass its own integration checks. The separate native jobs executed 138
 Engineering tests and 39 OS tests successfully, with zero skips.
+
+Additional platform failures led to concrete fixes: byte-stable historical SQL
+and JSON inputs, canonical Windows path identities, journal tests that respect
+exclusive handles, writable artifact handles through flush, and write-through
+signed-intent replacement. The Windows V8 release failure exposed mixed CRTs;
+Rust, native C/C++ and V8 now select the static MSVC runtime consistently. Bazel
+applied the build-script patch successfully, and an actual compiled runner
+delivered the expected target features for static MSVC, default MSVC and GNU.
+These local probes do not replace native Windows linking and filesystem tests.
 
 The OS executor now rejects procfs/PID-namespace mismatches before execution,
 process enumeration and each signal, including timeout cleanup fallback. Its
@@ -64,7 +75,7 @@ claimed by this document.
 
 ## Integration order after this change
 
-1. A supplies actual host trust and effect consumers; B connects priced/device
+1. A extends the explicit text trust profile to effect consumers; B connects priced/device
    admission and provider reconciliation to its durable native execution path.
 2. C completes writable recovery policy while D connects the compiled graph to
    product boot and implements stateful organ migration.

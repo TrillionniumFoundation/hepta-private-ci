@@ -137,7 +137,9 @@ jobs:
         codex-hepta-memory codex-hepta-memory-federation
         codex-hepta-memory-retrieval codex-hepta-ndu
         codex-hepta-plasticity codex-hepta-shadow-qualification
-        codex-state codex-core
+        codex-state codex-core codex-app-server
+        codex-hepta-matrix-store codex-hepta-memory-extension
+        codex-hepta-neuron codex-hepta-prompt-registry codex-hepta-supervisor
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:

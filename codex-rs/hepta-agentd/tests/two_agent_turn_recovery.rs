@@ -435,9 +435,9 @@ async fn start_queued_if_pending(
                         || error
                             .to_string()
                             .contains("already has an active or pending turn")
-                        || error
-                            .to_string()
-                            .contains("turn start is fenced while the session is terminalizing")
+                        || error.to_string().contains(
+                            "turn start is fenced while the session is terminalizing",
+                        )
                         || error
                             .to_string()
                             .contains("malformed rollout turn boundary") =>
