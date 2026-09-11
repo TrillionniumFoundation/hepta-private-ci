@@ -1,0 +1,93 @@
+{
+  "schema": "hepta.module-implementation-map.v2",
+  "schemaVersion": 2,
+  "sourceBase": {
+    "commit": "f278a89eea18fccb6d37b876aa5679863a64139d",
+    "tree": "5baa144717d4b3e3c596501fb56ce911d009e728"
+  },
+  "laneId": "LANE-B-RUNTIME",
+  "module": "inference.worker",
+  "sourceMaturity": "native_isolated_worker_boundary",
+  "declaredRoots": [
+    "codex-rs/hepta-infer-worker-host"
+  ],
+  "resolvedRoots": [
+    "codex-rs/hepta-infer-worker-host"
+  ],
+  "stateOwnerDisposition": "Owns ephemeral process/model handles and resource usage only; persistent model bytes remain with the artifact/cache owner.",
+  "terminalObserverDisposition": "The injected model driver reports execution terminality; source tests do not prove a real model/runtime/device tuple.",
+  "operations": [
+    {
+      "designOperation": "load_model",
+      "mappingClass": "owner_native",
+      "ownerEntrypoint": {
+        "role": "owner_entrypoint",
+        "path": "codex-rs/hepta-infer-worker-host/src/bin/hepta-infer-worker.rs",
+        "symbol": "pub fn load_model(",
+        "buildTarget": "hepta-infer-worker"
+      },
+      "delegatedCallees": [],
+      "tests": [
+        {
+          "path": "codex-rs/hepta-infer-worker-host/src/bin/hepta-infer-worker.rs",
+          "kind": "manifest_and_resource_binding",
+          "command": "cargo test -p codex-hepta-infer-worker-host --bin hepta-infer-worker"
+        }
+      ],
+      "sourceSemantics": "Verifies the full model artifact/runtime/device tuple and resource grant before load."
+    },
+    {
+      "designOperation": "run",
+      "mappingClass": "owner_native",
+      "ownerEntrypoint": {
+        "role": "owner_entrypoint",
+        "path": "codex-rs/hepta-infer-worker-host/src/bin/hepta-infer-worker.rs",
+        "symbol": "pub fn run(",
+        "buildTarget": "hepta-infer-worker"
+      },
+      "delegatedCallees": [],
+      "tests": [
+        {
+          "path": "codex-rs/hepta-infer-worker-host/src/bin/hepta-infer-worker.rs",
+          "kind": "execution_and_cancellation",
+          "command": "cargo test -p codex-hepta-infer-worker-host --bin hepta-infer-worker"
+        }
+      ],
+      "sourceSemantics": "Runs a bounded request through an injected driver and preserves indeterminate terminality."
+    },
+    {
+      "designOperation": "unload",
+      "mappingClass": "owner_native",
+      "ownerEntrypoint": {
+        "role": "owner_entrypoint",
+        "path": "codex-rs/hepta-infer-worker-host/src/bin/hepta-infer-worker.rs",
+        "symbol": "pub fn unload_model(",
+        "buildTarget": "hepta-infer-worker"
+      },
+      "delegatedCallees": [],
+      "tests": [
+        {
+          "path": "codex-rs/hepta-infer-worker-host/src/bin/hepta-infer-worker.rs",
+          "kind": "drain_and_unload",
+          "command": "cargo test -p codex-hepta-infer-worker-host --bin hepta-infer-worker"
+        }
+      ],
+      "sourceSemantics": "Drains and unloads only the exact admitted generation and releases acquired resources."
+    }
+  ],
+  "repositoryControlledGaps": [],
+  "externalEvidenceGates": [
+    "identified real weights/tokenizer/runtime/device",
+    "isolated deployed worker process and authenticated control channel",
+    "OOM/device-reset/load-kill target qualification"
+  ],
+  "claimBoundary": {
+    "nativeSourceMappingComplete": true,
+    "repositoryControlledDocumentationGapsClosed": true,
+    "repositoryControlledMappingGapsClosed": true,
+    "repositoryControlledSourceBoundaryGapsClosed": true,
+    "productExecutionComplete": false,
+    "deploymentQualificationComplete": false,
+    "independentAcceptanceComplete": false
+  }
+}
