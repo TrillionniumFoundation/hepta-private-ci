@@ -1,26 +1,32 @@
-# Lane B runtime implementation closure
+# Lane B runtime source closure
 
-This directory is the repository-controlled implementation-truth companion for `LANE-B-RUNTIME`.
+This directory contains the closed-world, repository-controlled truth for `LANE-B-RUNTIME` at immutable source base `f278a89eea18fccb6d37b876aa5679863a64139d`. Exact candidate identity is always derived from Git HEAD by the verifier.
 
 ## Authoritative files
 
-- `qualification/lane-b/LANE_B_IMPLEMENTATION_TRUTH.json` — exact eleven-module closed set, maturity, operation-to-source mappings, nonclaims and residual gaps.
-- `qualification/lane-b/LANE_B_NATIVE_CLOSURE.md` — human-readable module-by-module implementation review and closure criteria.
-- `docs/readiness/LANE_B_RUNTIME_COMPOSITION.md` — process topology, identity tuple, startup, execution, cancellation, fault, recovery and rollback semantics.
+- `LANE_B_IMPLEMENTATION_TRUTH.json` — closed index of eleven modules and 39 design operations.
+- `docs/modules/<module>/IMPLEMENTATION_MAP.json` — authoritative module roots, ownership, owner entrypoints, delegated callees, tests, source semantics and external evidence gates.
+- `LANE_B_NATIVE_CLOSURE.md` — generated human projection of the eleven module maps.
+- `TEST_TRACEABILITY.json` — generated operation-to-test/workflow projection.
+- `LANE_B_CANDIDATE_MANIFEST.json` — immutable source base and allowed candidate paths.
+- `docs/readiness/LANE_B_RUNTIME_COMPOSITION.md` — composition, identity, failure, shutdown and rollback semantics.
 
 ## Validation
-
-Run from the repository root:
 
 ```sh
 python3 scripts/hepta-lane-b-truth.py self-test
 python3 -m unittest scripts/test_hepta_lane_b_truth.py
 python3 scripts/hepta-lane-b-truth.py verify
-python3 scripts/hepta-lane-b-docs.py verify
 ```
 
-`.github/workflows/hepta-lane-b-truth.yml` executes these checks on the exact source head and on a deterministic synthetic merge candidate. Source-identity validation is intentionally evaluated only on committed, clean trees with the declared baseline available in Git history; a patched or shallow working tree is not an admissible receipt.
+`generate` rewrites only the human closure and test traceability projections; CI uses `verify` and rejects drift:
+
+```sh
+python3 scripts/hepta-lane-b-truth.py generate
+```
+
+The exact-head and deterministic synthetic-merge workflow also runs the focused Rust and Node suites. The legacy `hepta-lane-b-docs.py` and `hepta-lane-b-candidate.py` entrypoints delegate to this single verifier, so schema and closure logic cannot drift independently.
 
 ## Claim boundary
 
-Repository-controlled truth and documentation can prove source identity, declared mappings and explicit gaps. They cannot self-issue production execution, external effects, deployment, independent acceptance, hardware safety, future-window efficacy, promotion or release evidence.
+Repository-controlled documentation, operation inventory, source mapping and bounded source implementation can be closed here. Real model/provider execution, real Servo or Matrix effects, deployed Web/native artifacts, target-host measurements, hardware evidence, owner consent, independent acceptance, selection, promotion and release cannot be self-issued by this repository and remain explicit external gates.
