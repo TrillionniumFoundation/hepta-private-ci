@@ -1,0 +1,115 @@
+{
+  "schema": "hepta.module-implementation-map.v2",
+  "schemaVersion": 2,
+  "sourceBase": {
+    "commit": "f278a89eea18fccb6d37b876aa5679863a64139d",
+    "tree": "5baa144717d4b3e3c596501fb56ce911d009e728"
+  },
+  "laneId": "LANE-B-RUNTIME",
+  "module": "runtime.codex",
+  "sourceMaturity": "native_execution_spine",
+  "declaredRoots": [
+    "codex-rs/codex-app-server",
+    "codex-rs/hepta-codex-adapter"
+  ],
+  "resolvedRoots": [
+    "codex-rs/app-server",
+    "codex-rs/core",
+    "codex-rs/hepta-codex-adapter"
+  ],
+  "stateOwnerDisposition": "The existing App Server and Codex core remain the sole thread, turn, model, and tool execution spine.",
+  "terminalObserverDisposition": "The App Server observes admission and streaming state; external tool/provider terminality remains with its effect owner.",
+  "operations": [
+    {
+      "designOperation": "open_thread",
+      "mappingClass": "resolved_alias_native",
+      "ownerEntrypoint": {
+        "role": "owner_entrypoint",
+        "path": "codex-rs/app-server/src/request_processors/thread_processor.rs",
+        "symbol": "pub(crate) async fn thread_start(",
+        "buildTarget": "codex-app-server"
+      },
+      "delegatedCallees": [],
+      "tests": [
+        {
+          "path": "codex-rs/app-server/tests/suite/v2/thread_start.rs",
+          "kind": "product_protocol_integration",
+          "command": "cargo test -p codex-app-server --test all thread_start"
+        }
+      ],
+      "sourceSemantics": "Creates a protocol-visible thread through the canonical App Server handler."
+    },
+    {
+      "designOperation": "submit_turn",
+      "mappingClass": "resolved_alias_native",
+      "ownerEntrypoint": {
+        "role": "owner_entrypoint",
+        "path": "codex-rs/app-server/src/request_processors/turn_processor.rs",
+        "symbol": "pub(crate) async fn turn_start(",
+        "buildTarget": "codex-app-server"
+      },
+      "delegatedCallees": [],
+      "tests": [
+        {
+          "path": "codex-rs/app-server/tests/suite/v2/turn_start.rs",
+          "kind": "product_protocol_integration",
+          "command": "cargo test -p codex-app-server --test all turn_start"
+        }
+      ],
+      "sourceSemantics": "Admits a turn through the single App Server execution path."
+    },
+    {
+      "designOperation": "dispatch_tool",
+      "mappingClass": "resolved_alias_native",
+      "ownerEntrypoint": {
+        "role": "owner_entrypoint",
+        "path": "codex-rs/core/src/tools/router.rs",
+        "symbol": "pub async fn dispatch_tool_call_with_code_mode_result(",
+        "buildTarget": "codex-core"
+      },
+      "delegatedCallees": [],
+      "tests": [
+        {
+          "path": "codex-rs/core/src/tools/executed_tool_calls_tests.rs",
+          "kind": "native_tool_state",
+          "command": "cargo test -p codex-core executed_tool_calls"
+        }
+      ],
+      "sourceSemantics": "Routes tool calls through Codex core while retaining operation identity and delegated effect ownership."
+    },
+    {
+      "designOperation": "observe_delivery",
+      "mappingClass": "resolved_alias_native",
+      "ownerEntrypoint": {
+        "role": "owner_entrypoint",
+        "path": "codex-rs/core/src/codex_thread.rs",
+        "symbol": "pub(crate) async fn submit_turn_input_and_wait_for_exact_admission(",
+        "buildTarget": "codex-core"
+      },
+      "delegatedCallees": [],
+      "tests": [
+        {
+          "path": "codex-rs/app-server/tests/suite/v2/turn_start.rs",
+          "kind": "admission_and_delivery",
+          "command": "cargo test -p codex-app-server --test all turn_start"
+        }
+      ],
+      "sourceSemantics": "Binds the submitted input to an exact turn admission before delivery credit can be emitted."
+    }
+  ],
+  "repositoryControlledGaps": [],
+  "externalEvidenceGates": [
+    "named deployed Agentd caller identity",
+    "real model/provider stream observation",
+    "real tool terminal observation and acknowledgement-loss qualification"
+  ],
+  "claimBoundary": {
+    "nativeSourceMappingComplete": true,
+    "repositoryControlledDocumentationGapsClosed": true,
+    "repositoryControlledMappingGapsClosed": true,
+    "repositoryControlledSourceBoundaryGapsClosed": true,
+    "productExecutionComplete": false,
+    "deploymentQualificationComplete": false,
+    "independentAcceptanceComplete": false
+  }
+}
