@@ -18,7 +18,7 @@ concurrency:
 env:
   CANDIDATE_BRANCH: candidate/hepta-main-final-r2-20260911
   CONTROL_BRANCH: ops/hepta-single-main-finalize-20260911-gpt56
-  EXPECTED_CANDIDATE_BASE: a6aae8add8eac6d238511b46c72bf09e360ddfbb
+  EXPECTED_CANDIDATE_BASE: 41878c0252faa3faf43a651573cea4638cd66c28
   EXPECTED_MAIN_BASE: 04f60466394a024c218ce66b1b32d1c42c462985
   CARGO_NET_GIT_FETCH_WITH_CLI: "true"
   CARGO_INCREMENTAL: "0"
@@ -135,8 +135,7 @@ jobs:
           set -euo pipefail
           python3 scripts/verify_lane_a_foundation.py self-test
           python3 scripts/verify_lane_a_foundation.py verify
-          python3 -m unittest qualification/module-execution-dossiers/test_lane_a_foundation.py
-          (cd qualification/module-execution-dossiers && python3 -m unittest test_implementation_contracts.py)
+          (cd qualification/module-execution-dossiers && python3 -m unittest test_lane_a_foundation.py test_implementation_contracts.py)
           scripts/run_lane_a_native_qualification.sh
       - name: Lane B source truth and runtime boundaries
         shell: bash
