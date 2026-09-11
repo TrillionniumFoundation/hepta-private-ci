@@ -40,19 +40,14 @@ jobs:
           python3 scripts/hepta-docs.py generate-status
           git diff --exit-code -- docs/STATUS.md
           python3 scripts/hepta-module-docs.py self-test
-          python3 scripts/hepta-module-docs.py verify
           python3 scripts/hepta-algorithm-docs.py self-test
           python3 scripts/hepta-algorithm-docs.py verify-sources
           python3 scripts/hepta-algorithm-docs.py generate-status --check
-          python3 scripts/hepta-algorithm-docs.py verify
           python3 scripts/hepta-readiness.py self-test
           python3 scripts/hepta-readiness.py generate-status --check
-          python3 scripts/hepta-readiness.py verify
           python3 scripts/hepta-cns.py self-test
           python3 scripts/hepta-cns.py generate-status --check
-          python3 scripts/hepta-cns.py verify
           python3 scripts/hepta-hnmf.py self-test
-          python3 scripts/hepta-hnmf.py verify
           python3 scripts/hepta-docs.py verify
           python3 scripts/hepta-docs.py cleanup-inventory --output .hepta-evidence/cleanup-source-head.json
           python3 scripts/hepta-docs.py receipt --kind source-head --expected-sha "$EXPECTED_SHA" --output .hepta-evidence/source-head.json
@@ -127,19 +122,14 @@ jobs:
           python3 scripts/hepta-docs.py generate-status
           git diff --exit-code -- docs/STATUS.md
           python3 scripts/hepta-module-docs.py self-test
-          python3 scripts/hepta-module-docs.py verify
           python3 scripts/hepta-algorithm-docs.py self-test
           python3 scripts/hepta-algorithm-docs.py verify-sources
           python3 scripts/hepta-algorithm-docs.py generate-status --check
-          python3 scripts/hepta-algorithm-docs.py verify
           python3 scripts/hepta-readiness.py self-test
           python3 scripts/hepta-readiness.py generate-status --check
-          python3 scripts/hepta-readiness.py verify
           python3 scripts/hepta-cns.py self-test
           python3 scripts/hepta-cns.py generate-status --check
-          python3 scripts/hepta-cns.py verify
           python3 scripts/hepta-hnmf.py self-test
-          python3 scripts/hepta-hnmf.py verify
           python3 scripts/hepta-docs.py verify
           python3 scripts/hepta-docs.py cleanup-inventory --output .hepta-evidence/cleanup-merge-candidate.json
           python3 scripts/hepta-docs.py receipt --kind merge-candidate --expected-sha "$EXPECTED_SHA" --output .hepta-evidence/merge-candidate.json

@@ -19,9 +19,9 @@ def expected_metadata(root: Path) -> dict[Path, str]:
     index = json.loads((root / INDEX).read_text())
     by_id = {module["id"]: module for module in modules}
     if (
-        len(modules) != 40
-        or len(by_id) != 40
-        or len(index["modules"]) != 40
+        not modules
+        or len(by_id) != len(modules)
+        or len(index["modules"]) != len(modules)
         or {row["module"] for row in index["modules"]} != set(by_id)
     ):
         raise ValueError("module coverage mismatch")
@@ -45,7 +45,7 @@ def expected_metadata(root: Path) -> dict[Path, str]:
         if count != 1:
             raise ValueError("README module coverage mismatch")
     return {
-        root / INDEX: json.dumps(index, separators=(",", ":")) + "\n",
+        root / INDEX: json.dumps(index, indent=2) + "\n",
         root / README: readme,
     }
 

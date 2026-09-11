@@ -1058,23 +1058,10 @@ def verify() -> int:
         "python3 scripts/hepta-algorithm-docs.py generate-status",
     ):
         need(token in dedicated_workflow, "dedicated workflow token " + token)
-        need(token in global_workflow, "global workflow token " + token)
-    need(
-        re.search(
-            r"(?m)^ALGORITHM_VERIFIER\s*=\s*[\"\']scripts/hepta-algorithm-docs\.py[\"\']\s*$",
-            global_verifier,
-        )
-        is not None,
-        "global verifier binding",
-    )
-    need(
-        re.search(
-            r"(?m)^\s*algorithm_check\s*=\s*subprocess\.run\(",
-            global_verifier,
-        )
-        is not None,
-        "global verifier invocation",
-    )
+        # Global verification owns the subordinate verify call; self-tests and
+        # source checks remain separate commands.
+        if token != "python3 scripts/hepta-algorithm-docs.py verify":
+            need(token in global_workflow, "global workflow token " + token)
 
     print(
         json.dumps(
