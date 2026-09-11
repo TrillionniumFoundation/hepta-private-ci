@@ -3472,10 +3472,12 @@ dependencies = [
  "codex-config",
  "codex-features",
  "codex-hepta-agent-protocol",
+ "codex-hepta-authbus",
  "codex-hepta-automation",
  "codex-hepta-cognitive-read",
  "codex-hepta-contracts",
  "codex-hepta-control-plane",
+ "codex-hepta-evidence",
  "codex-hepta-fleet",
  "codex-hepta-memory",
  "codex-hepta-memory-extension",
@@ -3490,6 +3492,7 @@ dependencies = [
  "codex-utils-cli",
  "codex-utils-home-dir",
  "core_test_support",
+ "ed25519-dalek",
  "serde",
  "serde_json",
  "sqlx",
@@ -4083,6 +4086,7 @@ dependencies = [
  "tokio",
  "tokio-util",
  "uuid",
+ "windows-sys 0.52.0",
  "zeroize",
 ]
 

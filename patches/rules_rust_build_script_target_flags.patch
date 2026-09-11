@@ -1,0 +1,48 @@
+# Forward configuration-specific toolchain flags to Cargo build scripts and
+# their rustc target-cfg query, keeping native CRT selection aligned.
+diff --git a/cargo/private/cargo_build_script.bzl b/cargo/private/cargo_build_script.bzl
+--- a/cargo/private/cargo_build_script.bzl
++++ b/cargo/private/cargo_build_script.bzl
+@@ -23,6 +23,7 @@
+     "expand_dict_value_locations",
+     "find_cc_toolchain",
+     "find_toolchain",
++    "is_exec_configuration",
+     _name_to_crate_name = "name_to_crate_name",
+ )
+ 
+@@ -531,10 +532,11 @@
+ 
+     # Inform build scripts of rustc flags
+     # https://github.com/rust-lang/cargo/issues/9600
++    toolchain_flags = toolchain.extra_exec_rustc_flags if is_exec_configuration(ctx) else toolchain.extra_rustc_flags
+     env["CARGO_ENCODED_RUSTFLAGS"] = "\\x1f".join([
+         # Allow build scripts to locate the generated sysroot
+         "--sysroot=${{pwd}}/{}".format(toolchain.sysroot),
+-    ] + ctx.attr.rustc_flags)
++    ] + toolchain_flags + ctx.attr.rustc_flags)
+ 
+     for f in ctx.attr.crate_features:
+         env["CARGO_FEATURE_" + f.upper().replace("-", "_")] = "1"
+diff --git a/cargo/private/cargo_build_script_runner/bin.rs b/cargo/private/cargo_build_script_runner/bin.rs
+--- a/cargo/private/cargo_build_script_runner/bin.rs
++++ b/cargo/private/cargo_build_script_runner/bin.rs
+@@ -471,9 +471,17 @@
+ }
+ 
+ fn get_target_env_vars<P: AsRef<Path>>(rustc: &P) -> Result<BTreeMap<String, String>, String> {
+-    // As done by Cargo when constructing a cargo::core::compiler::build_context::target_info::TargetInfo.
++    // Query the actual target configuration, including toolchain CRT features.
++    // Decode Bazel's separator and exec-root placeholders before invoking rustc.
++    let exec_root = env::current_dir()
++        .map_err(|err| format!("Error resolving build-script exec root: {err}"))?;
++    let rustflags = env::var("CARGO_ENCODED_RUSTFLAGS")
++        .unwrap_or_default()
++        .replace("\\x1f", "\x1f")
++        .replace("${pwd}", &exec_root.to_string_lossy());
+     let output = Command::new(rustc.as_ref())
+         .arg("--print=cfg")
++        .args(rustflags.split('\x1f').filter(|flag| !flag.is_empty()))
+         .arg(format!(
+             "--target={}",
+             env::var("TARGET").expect("missing TARGET")
