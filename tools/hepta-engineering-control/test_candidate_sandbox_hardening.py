@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import hashlib
+import os
 from pathlib import Path
 import shutil
 import subprocess
@@ -20,14 +21,18 @@ class CandidateSandboxFixture(unittest.TestCase):
         self._git("init", "-q")
         self._git("config", "user.name", "Lane G Test")
         self._git("config", "user.email", "lane-g@example.invalid")
+        # The implementation deliberately ignores global/system Git config. Keep the
+        # fixture repository equally hermetic so host core.autocrlf/filemode settings
+        # cannot make a freshly committed tree appear dirty on Windows.
+        self._git("config", "core.autocrlf", "false")
+        self._git("config", "core.filemode", "false")
         source = self.root / "tools/hepta-engineering-control"
         source.mkdir(parents=True)
-        (source / "base file.txt").write_text("base\n", encoding="utf-8")
-        (source / "archive-hidden.txt").write_text("must remain\n", encoding="utf-8")
-        (self.root / ".gitignore").write_text("*.ignored\n", encoding="utf-8")
-        (self.root / ".gitattributes").write_text(
-            "tools/hepta-engineering-control/archive-hidden.txt export-ignore\n",
-            encoding="utf-8",
+        (source / "base file.txt").write_bytes(b"base\n")
+        (source / "archive-hidden.txt").write_bytes(b"must remain\n")
+        (self.root / ".gitignore").write_bytes(b"*.ignored\n")
+        (self.root / ".gitattributes").write_bytes(
+            b"tools/hepta-engineering-control/archive-hidden.txt export-ignore\n"
         )
         self._git("add", ".")
         self._git("commit", "-q", "-m", "fixture")
@@ -135,7 +140,11 @@ class CandidateSandboxFixture(unittest.TestCase):
         self.assertTrue(delete_receipt.passed)
 
     def test_hostile_but_canonical_filename_is_not_truncated(self) -> None:
-        path = "tools/hepta-engineering-control/name -> safe.txt"
+        # Windows rejects the literal '>' character. POSIX still exercises the
+        # original porcelain-hostile spelling; Windows uses a legal Unicode arrow
+        # while preserving spaces and exact-path semantics.
+        filename = "name -> safe.txt" if os.name != "nt" else "name → safe.txt"
+        path = f"tools/hepta-engineering-control/{filename}"
         envelope = self.envelope()
         candidate = generate_candidates(
             envelope,
@@ -148,7 +157,7 @@ class CandidateSandboxFixture(unittest.TestCase):
             (
                 self.success_check(
                     "from pathlib import Path; "
-                    "assert Path('tools/hepta-engineering-control/name -> safe.txt').read_text() == 'safe\\n'"
+                    f"assert Path({path!r}).read_text() == 'safe\\n'"
                 ),
             ),
         )
