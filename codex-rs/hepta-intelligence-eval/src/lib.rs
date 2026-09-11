@@ -9,12 +9,18 @@ use codex_hepta_types::Digest32;
 use codex_hepta_types::FixedQ32;
 use codex_hepta_types::StableId;
 
+mod holdout_journal;
 mod closure;
 mod ope;
 mod sequential;
 mod temporal_evaluation;
 mod temporal_fold;
 
+pub use holdout_journal::FinalHoldoutJournalError;
+pub use holdout_journal::FinalHoldoutJournalReceiptV1;
+pub use holdout_journal::FinalHoldoutJournalRecordV1;
+pub use holdout_journal::FinalHoldoutJournalSnapshotV1;
+pub use holdout_journal::FinalHoldoutJournalV1;
 pub use closure::CrossFoldPartitionV1;
 pub use closure::CrossFoldPlanReceiptV1;
 pub use closure::CrossFoldPlanV1;

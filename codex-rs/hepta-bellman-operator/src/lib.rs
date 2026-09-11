@@ -17,10 +17,14 @@ use codex_hepta_types::FixedQ32;
 use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
 
+mod learned_strict;
 mod learned;
 mod reference;
 mod world_model;
 
+pub use learned_strict::StrictLearnedOperatorError;
+pub use learned_strict::fit_tabular_operator_strict_v2;
+pub use learned_strict::predict_tabular_operator_indexed_v2;
 pub use learned::LearnedOperatorError;
 pub use learned::TabularOperatorArtifactV1;
 pub use learned::TabularOperatorCellV1;

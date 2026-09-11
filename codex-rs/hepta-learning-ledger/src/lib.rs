@@ -7,6 +7,7 @@
 
 #![forbid(unsafe_code)]
 
+mod dataset_receipt_v3;
 mod causal_v2;
 mod durable;
 mod durable_codec;
@@ -16,6 +17,10 @@ mod ledger;
 mod model;
 mod shadow;
 
+pub use dataset_receipt_v3::DatasetReceiptError;
+pub use dataset_receipt_v3::DatasetSnapshotReceiptV3;
+pub use dataset_receipt_v3::freeze_dataset_receipt_v3;
+pub use dataset_receipt_v3::verify_dataset_snapshot_receipt_v3;
 pub use causal_v2::AuthenticatedOutcomeV1;
 pub use causal_v2::AuthenticatedPrincipalV1;
 pub use causal_v2::CandidateSetCompletenessReceiptV1;

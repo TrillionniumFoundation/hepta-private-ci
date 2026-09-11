@@ -5,6 +5,8 @@
 
 #![forbid(unsafe_code)]
 
+mod admission_v3;
+mod lifecycle_journal;
 mod closure_v2;
 mod dataset_revocation;
 mod error;
@@ -13,6 +15,19 @@ mod pinned;
 mod registry;
 mod storage;
 
+pub use admission_v3::ArtifactAdmissionError;
+pub use admission_v3::WithdrawalBoundArtifactAdmissionV3;
+pub use admission_v3::admit_manifest_at_withdrawal_head_v3;
+pub use admission_v3::validate_artifact_publication_v3;
+pub use admission_v3::verify_artifact_admission_v3;
+pub use lifecycle_journal::ArtifactLifecycleJournalError;
+pub use lifecycle_journal::ArtifactLifecycleJournalReceiptV2;
+pub use lifecycle_journal::ArtifactLifecycleJournalRecordV2;
+pub use lifecycle_journal::ArtifactLifecycleJournalSnapshotV2;
+pub use lifecycle_journal::ArtifactLifecycleJournalV2;
+pub use lifecycle_journal::LifecycleActorEvidenceV2;
+pub use lifecycle_journal::LifecycleActorRoleV2;
+pub use lifecycle_journal::LifecycleAppendDispositionV2;
 pub use closure_v2::ArtifactClosureError;
 pub use closure_v2::ArtifactLifecycleEventV1;
 pub use closure_v2::ArtifactLifecycleStateV1;
