@@ -26,3 +26,24 @@ implicitly by `Drop`. `Drop` cleans up only handlers with no prior stop attempt.
 mean qualified, canary-approved, production-active or externally authorized.
 Those decisions remain outside this host and require a new immutable graph
 generation plus the independently governed product admission path.
+
+`replace_read_only_generation` performs an explicit successor-generation
+cutover of these stateless, compiled-in read-only handlers. The caller must name
+the current generation and provide the immediate successor. Graph validation or
+new-handler start failure leaves the old host ready. After successful candidate
+start, old handlers stop in reverse order, and exclusive mutable access publishes
+the new composition. A predecessor cleanup failure stops the candidate and leaves
+the old stopped/quarantined states visible; it never reports a successful cutover
+or invents rollback. This permits add/remove/replace of read-only handlers without
+pretending to migrate an authoritative writer. Durable/effect-bearing organs
+still require the separate state-handoff and product admission protocol.
+
+Protocol compatibility is explicit: native `OrganGraphsV1` is an internal
+execution model, not a wire alias of canonical `BodyGraphSnapshotV1`. The latter
+currently describes manifest identity, initialization dependency/fallback edges
+and order; it does not encode native runtime links, feedback profiles or process
+failure domains. A loader must not deserialize that canonical record as this
+native type or infer omitted feedback evidence. A future versioned wire adapter
+must bind both graphs, port identities, timing profiles and placement before a
+non-compiled-in graph can be admitted. Native feedback cycles are allowed only
+with an explicit profile; initialization and fallback remain acyclic.
