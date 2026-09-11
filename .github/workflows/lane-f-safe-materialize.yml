@@ -72,16 +72,16 @@ jobs:
           path = Path("codex-rs/hepta-prompt-optimizer/src/lib.rs")
           text = path.read_text(encoding="utf-8")
           marker = "pub mod local_shadow;\n"
-          addition = '''pub mod local_shadow;
-pub use local_shadow::calculate_local_shadow as calculate_shadow_portfolio_v2;
-
-/// Stable identity for the compatibility-only original portfolio API.
-pub const PROMPT_PORTFOLIO_LEGACY_V1_PROFILE: &str =
-    "hepta.prompt-portfolio.legacy-v1";
-/// Stable identity for the bounded interaction-aware shadow API.
-pub const PROMPT_PORTFOLIO_SHADOW_V2_PROFILE: &str =
-    "hepta.prompt-portfolio.shadow-v2";
-'''
+          addition = (
+              "pub mod local_shadow;\n"
+              "pub use local_shadow::calculate_local_shadow as calculate_shadow_portfolio_v2;\n\n"
+              "/// Stable identity for the compatibility-only original portfolio API.\n"
+              "pub const PROMPT_PORTFOLIO_LEGACY_V1_PROFILE: &str =\n"
+              "    \"hepta.prompt-portfolio.legacy-v1\";\n"
+              "/// Stable identity for the bounded interaction-aware shadow API.\n"
+              "pub const PROMPT_PORTFOLIO_SHADOW_V2_PROFILE: &str =\n"
+              "    \"hepta.prompt-portfolio.shadow-v2\";\n"
+          )
           if "PROMPT_PORTFOLIO_SHADOW_V2_PROFILE" not in text:
               if text.count(marker) != 1:
                   raise SystemExit("unexpected prompt optimizer module marker")
