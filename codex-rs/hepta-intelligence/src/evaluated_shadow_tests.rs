@@ -242,6 +242,33 @@ fn invalid_authentication_artifact_or_dataset_never_calls_any_port() {
 }
 
 #[test]
+fn old_signed_evidence_cannot_enter_a_recomputed_new_authority_epoch() {
+    let mut fixture = Fixture::new();
+    // Keep all attestations unchanged but make the caller's new snapshot and
+    // typed intuition internally consistent, so only the trust fence can reject.
+    fixture.run.snapshot.authority_epoch += 1;
+    fixture.intuition.state_digest = fixture.run.snapshot.digest().unwrap();
+    let mut ports = Ports::new(&fixture);
+    let temp = tempfile::tempdir().unwrap();
+    let path = temp.path().join("ledger");
+    let mut ledger = ledger_at(&path);
+    let before = fs::read(&path).unwrap();
+    assert!(matches!(
+        run_evaluated_shadow_v1(
+            fixture.request(),
+            &fixture.verifier,
+            &mut ledger,
+            &mut ports,
+            /*now*/ 50,
+        ),
+        Err(EvaluatedShadowError::Binding("authority epoch"))
+    ));
+    assert!(ports.calls.is_empty());
+    assert!(ledger.records().unwrap().is_empty());
+    assert_eq!(fs::read(path).unwrap(), before);
+}
+
+#[test]
 fn signed_ineligibility_insufficiency_and_expiry_refuse_all_ports() {
     for case in 0..3 {
         let mut fixture = Fixture::new();

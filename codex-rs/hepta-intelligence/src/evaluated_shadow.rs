@@ -55,6 +55,7 @@ const ABSTAIN: &str = "abstain";
 const SLOW_PATH: &str = "shadow:slow-path";
 
 pub struct EvaluatedShadowRequestV1<'a> {
+    /// The snapshot authority epoch belongs to the supplied verifier's trust domain.
     pub run: LaneFRunRequestV1,
     pub evaluation: IndependentEvaluationBundleV1,
     pub metric_roles: Vec<MetricRoleContractV2>,
@@ -162,6 +163,9 @@ pub fn run_evaluated_shadow_v1<P: LaneFShadowPortsV1>(
             now,
         )
         .map_err(E::Evidence)?;
+    if request.run.snapshot.authority_epoch != candidate.principal().authority_epoch {
+        return Err(E::Binding("authority epoch"));
+    }
     if candidate.principal() != &bundle.evaluator
         || request.run.snapshot.model_artifact_digest != Digest32::of_bytes(request.candidate_bytes)
         || request.intuition.objective_digest != bundle.objective_digest
