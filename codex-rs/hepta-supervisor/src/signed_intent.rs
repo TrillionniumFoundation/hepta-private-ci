@@ -5,7 +5,6 @@
 //! release-state CAS commits.  A restart therefore has a durable witness for
 //! an in-flight operation and can fail closed instead of guessing.
 
-use std::fs::File;
 use std::fs::OpenOptions;
 use std::io::ErrorKind;
 use std::io::Write;
@@ -169,8 +168,9 @@ pub fn read_intent(run_root: &Path) -> Result<Option<SignedSupervisorIntent>, Si
     Ok(Some(intent))
 }
 
-/// Atomically publishes one intent and fsyncs both the file and containing
-/// directory.  An unresolved non-terminal intent cannot be overwritten.
+/// Atomically publishes one intent after synchronizing its file. Unix fsyncs
+/// the containing directory; Windows uses a same-directory write-through
+/// replacement. An unresolved non-terminal intent cannot be overwritten.
 pub fn write_intent(
     run_root: &Path,
     intent: &SignedSupervisorIntent,
@@ -205,8 +205,7 @@ pub fn write_intent(
     file.write_all(&bytes)?;
     file.sync_all()?;
     drop(file);
-    std::fs::rename(&temp, &final_path)?;
-    File::open(run_root)?.sync_all()?;
+    publish::publish(&temp, &final_path)?;
     Ok(())
 }
 
@@ -258,3 +257,6 @@ mod tests {
         Ok(())
     }
 }
+
+#[path = "signed_intent_publish.rs"]
+mod publish;

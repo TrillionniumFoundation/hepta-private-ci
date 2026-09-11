@@ -108,12 +108,23 @@ fn register_agent(
     Ok(agent_id)
 }
 
+// FakeDriver never executes these paths, but command admission still requires
+// a fully absolute path, including the drive prefix on Windows.
+fn fake_program(relative: &str) -> PathBuf {
+    std::env::temp_dir()
+        .join("hepta-supervisor-fake")
+        .join(relative)
+}
+
 fn command() -> Result<AgentCommand, SupervisorError> {
-    AgentCommand::new("/fake/hepta-agentd", Vec::new())
+    AgentCommand::new(fake_program("hepta-agentd"), Vec::new())
 }
 
 fn release(identity: &str, program: &str) -> Result<AgentRelease, SupervisorError> {
-    AgentRelease::new(identity, AgentCommand::new(program, Vec::new())?)
+    AgentRelease::new(
+        identity,
+        AgentCommand::new(fake_program(program), Vec::new())?,
+    )
 }
 
 fn config() -> SupervisorConfig {
@@ -722,12 +733,12 @@ fn successful_upgrade_and_explicit_rollback_change_only_target_agent() -> Result
         Supervisor::recover(fleet.registry.clone(), control.driver(), config(), now)?;
     supervisor.start_release(
         &fleet.first,
-        release("release-v1", "/fake/release-v1/hepta-agentd")?,
+        release("release-v1", "release-v1/hepta-agentd")?,
         now,
     )?;
     supervisor.start_release(
         &fleet.second,
-        release("peer-release", "/fake/peer/hepta-agentd")?,
+        release("peer-release", "peer/hepta-agentd")?,
         now,
     )?;
     control.set_healthy(&fleet.first);
@@ -737,7 +748,7 @@ fn successful_upgrade_and_explicit_rollback_change_only_target_agent() -> Result
 
     supervisor.upgrade(
         &fleet.first,
-        release("release-v2", "/fake/release-v2/hepta-agentd")?,
+        release("release-v2", "release-v2/hepta-agentd")?,
         now,
     )?;
     assert!(matches!(
@@ -795,19 +806,16 @@ fn failed_spawn_and_failed_health_each_auto_rollback_once() -> Result<(), Superv
         Supervisor::recover(fleet.registry.clone(), control.driver(), config(), now)?;
     supervisor.start_release(
         &fleet.first,
-        release("release-v1", "/fake/release-v1/hepta-agentd")?,
+        release("release-v1", "release-v1/hepta-agentd")?,
         now,
     )?;
     control.set_healthy(&fleet.first);
     supervisor.tick(now);
 
-    control.reject_spawn_program("/fake/release-spawn-fails/hepta-agentd");
+    control.reject_spawn_program(fake_program("release-spawn-fails/hepta-agentd"));
     supervisor.upgrade(
         &fleet.first,
-        release(
-            "release-spawn-fails",
-            "/fake/release-spawn-fails/hepta-agentd",
-        )?,
+        release("release-spawn-fails", "release-spawn-fails/hepta-agentd")?,
         now,
     )?;
     finish_release_drain(&mut supervisor, &control, &fleet.first, now);
@@ -821,10 +829,7 @@ fn failed_spawn_and_failed_health_each_auto_rollback_once() -> Result<(), Superv
 
     supervisor.upgrade(
         &fleet.first,
-        release(
-            "release-health-fails",
-            "/fake/release-health-fails/hepta-agentd",
-        )?,
+        release("release-health-fails", "release-health-fails/hepta-agentd")?,
         now,
     )?;
     finish_release_drain(&mut supervisor, &control, &fleet.first, now);
