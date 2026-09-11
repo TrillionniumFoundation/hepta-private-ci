@@ -46,7 +46,6 @@ jobs:
         run: |
           set -euo pipefail
           git fetch --no-tags --prune origin '+refs/heads/*:refs/remotes/origin/*'
-
           candidate="$(git rev-parse "refs/remotes/origin/${CANDIDATE_BRANCH}")"
           test "$candidate" = "$EXPECTED_CANDIDATE_BASE"
           tree="$(git rev-parse "${candidate}^{tree}")"
@@ -83,8 +82,8 @@ jobs:
           export GIT_AUTHOR_DATE='2000-01-01T00:00:00Z'
           export GIT_COMMITTER_DATE="$GIT_AUTHOR_DATE"
           merged="$(printf 'Converge every repository branch into one main tree\n\nKeep the reviewed candidate tree byte-for-byte unchanged while recording every frozen branch head in ancestry.\n' | git commit-tree "$tree" "${parent_args[@]}")"
-
           test "$(git rev-parse "${merged}^{tree}")" = "$tree"
+
           while IFS=$'\t' read -r sha ref; do
             if ! git merge-base --is-ancestor "$sha" "$merged"; then
               echo "unabsorbed frozen ref: $ref $sha" >&2
@@ -96,7 +95,6 @@ jobs:
           test "$remote_candidate" = "$EXPECTED_CANDIDATE_BASE"
           git push origin "$merged:refs/heads/${CANDIDATE_BRANCH}"
           test "$(git ls-remote --heads origin "refs/heads/${CANDIDATE_BRANCH}" | awk '{print $1}')" = "$merged"
-
           printf 'merged_sha=%s\n' "$merged" >> "$GITHUB_OUTPUT"
           printf 'merged_tree=%s\n' "$tree" >> "$GITHUB_OUTPUT"
           printf 'parent_count=%s\n' "$((additional + 1))" >> "$GITHUB_OUTPUT"
@@ -113,12 +111,10 @@ jobs:
           ref: ${{ needs.converge-history.outputs.merged_sha }}
           fetch-depth: 0
           persist-credentials: false
-
       - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
         with:
           toolchain: 1.95.0
           components: clippy,rustfmt
-
       - name: Bind exact converged source
         shell: bash
         run: |
@@ -127,14 +123,12 @@ jobs:
           test "$(git rev-parse HEAD^{tree})" = '${{ needs.converge-history.outputs.merged_tree }}'
           test -z "$(git status --porcelain)"
           git diff --check
-
       - name: Repository integrity
         shell: bash
         run: |
           set -euo pipefail
           python3 scripts/hepta-repository-integrity.py self-test
           python3 scripts/hepta-repository-integrity.py verify --base "$EXPECTED_MAIN_BASE" --head '${{ needs.converge-history.outputs.merged_sha }}'
-
       - name: Lane A foundation
         shell: bash
         run: |
@@ -144,7 +138,6 @@ jobs:
           python3 -m unittest qualification/module-execution-dossiers/test_lane_a_foundation.py
           (cd qualification/module-execution-dossiers && python3 -m unittest test_implementation_contracts.py)
           scripts/run_lane_a_native_qualification.sh
-
       - name: Lane B source truth and runtime boundaries
         shell: bash
         run: |
@@ -155,7 +148,6 @@ jobs:
           node --test apps/hepta-browser/test/runtime.test.js
           node --test apps/hepta-control-ui/test/runtime-client.test.js
           node --test apps/hepta-native/test/shell-runtime.test.js
-
       - name: Lane D semantic conformance
         shell: bash
         run: |
@@ -163,14 +155,12 @@ jobs:
           python3 -m py_compile scripts/hepta-lane-d-semantic-conformance.py
           python3 scripts/hepta-lane-d-semantic-conformance.py self-test
           python3 scripts/hepta-lane-d-semantic-conformance.py verify
-
       - name: Lane E closed world
         shell: bash
         run: |
           set -euo pipefail
           python3 scripts/hepta-lane-e-closure.py self-test
           python3 scripts/hepta-lane-e-closure.py verify
-
       - name: Lane F standalone shadow vertical
         shell: bash
         run: |
@@ -187,7 +177,6 @@ jobs:
           trap - EXIT
           git diff --check
           test -z "$(git status --porcelain --untracked-files=no)"
-
       - name: Bazel wrapper regression contracts
         shell: bash
         run: |
@@ -207,39 +196,31 @@ jobs:
           ref: ${{ needs.converge-history.outputs.merged_sha }}
           fetch-depth: 0
           persist-credentials: false
-
       - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
         with:
           toolchain: 1.95.0
           components: clippy,rustfmt
-
       - name: Bind exact converged source
         shell: bash
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD)" = '${{ needs.converge-history.outputs.merged_sha }}'
           test "$(git rev-parse HEAD^{tree})" = '${{ needs.converge-history.outputs.merged_tree }}'
-
       - name: Formatting
         working-directory: codex-rs
         run: cargo fmt --all -- --check
-
       - name: Compile entire workspace
         working-directory: codex-rs
         run: cargo check --locked --workspace --all-targets
-
       - name: Strict workspace lint
         working-directory: codex-rs
         run: cargo clippy --locked --workspace --all-targets -- -D warnings
-
       - name: Test entire workspace
         working-directory: codex-rs
         run: cargo test --locked --workspace --all-targets
-
       - name: Explicit HTTP client regression
         working-directory: codex-rs
         run: cargo test --locked -p codex-http-client --all-targets
-
       - name: Clean tracked source
         shell: bash
         run: |
@@ -262,18 +243,15 @@ jobs:
           ref: ${{ needs.converge-history.outputs.merged_sha }}
           fetch-depth: 0
           persist-credentials: false
-
       - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
         with:
           toolchain: 1.95.0
           components: clippy,rustfmt
-
       - name: Bind exact source
         shell: bash
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD)" = '${{ needs.converge-history.outputs.merged_sha }}'
-
       - name: Lane D format compile test lint
         working-directory: codex-rs
         shell: bash
@@ -285,7 +263,6 @@ jobs:
           cargo test --locked -p codex-hepta-ndu
           cargo test --locked -p codex-hepta-control-plane
           cargo clippy --locked -p codex-hepta-objective -p codex-hepta-ndu -p codex-hepta-control-plane --all-targets -- -D warnings
-
       - name: Clean tracked source
         if: always()
         shell: bash
@@ -302,7 +279,6 @@ jobs:
           ref: ${{ needs.converge-history.outputs.merged_sha }}
           fetch-depth: 0
           persist-credentials: true
-
       - name: Publish exact qualified commit
         shell: bash
         run: |
@@ -329,7 +305,6 @@ jobs:
           ref: main
           fetch-depth: 0
           persist-credentials: false
-
       - name: Exact-main identity and integrity
         shell: bash
         run: |
@@ -355,7 +330,6 @@ jobs:
           ref: main
           fetch-depth: 0
           persist-credentials: true
-
       - name: Revalidate every live branch is merged
         shell: bash
         run: |
@@ -372,14 +346,12 @@ jobs:
               exit 1
             fi
           done < <(git for-each-ref --format='%(refname) %(objectname)' refs/remotes/origin | LC_ALL=C sort)
-
       - name: Switch repository default branch to main
         shell: bash
         run: |
           set -euo pipefail
           gh api -X PATCH "/repos/${GITHUB_REPOSITORY}" -f default_branch=main >/dev/null
           test "$(gh api "/repos/${GITHUB_REPOSITORY}" --jq .default_branch)" = main
-
       - name: Delete every non-main branch head
         shell: bash
         run: |
@@ -399,17 +371,11 @@ jobs:
               echo "ref drifted outside qualified ancestry: $branch $current" >&2
               exit 1
             fi
-            encoded="$(python3 - "$branch" <<'PY'
-import sys
-from urllib.parse import quote
-print(quote(sys.argv[1], safe=''))
-PY
-)"
+            encoded="$(python3 -c 'import sys; from urllib.parse import quote; print(quote(sys.argv[1], safe=""))' "$branch")"
             echo "deleting merged branch $branch ($current)"
             gh api -X DELETE "/repos/${GITHUB_REPOSITORY}/git/refs/heads/${encoded}" >/dev/null
             git update-ref -d refs/tmp/hepta-retire || true
           done
-
           mapfile -t remaining < <(gh api --paginate "/repos/${GITHUB_REPOSITORY}/branches?per_page=100" --jq '.[].name')
           test "${#remaining[@]}" -eq 1
           test "${remaining[0]}" = main
