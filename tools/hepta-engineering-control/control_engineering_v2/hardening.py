@@ -52,13 +52,7 @@ def _lease_frontier(
     envelope: Any,
     now_ns: int,
 ) -> str:
-    rows = store.connection.execute(
-        "SELECT lease_id,envelope_id,holder,paths_json,state,authority_epoch,"
-        "fencing_token,revision,issued_unix_ns,expires_unix_ns,semantic_digest "
-        "FROM path_leases WHERE state='active' AND expires_unix_ns>? "
-        "ORDER BY fencing_token,lease_id",
-        (now_ns,),
-    ).fetchall()
+    rows = store._active_lease_rows(now_ns)
     leases: list[dict[str, object]] = []
     for row in rows:
         leases.append(

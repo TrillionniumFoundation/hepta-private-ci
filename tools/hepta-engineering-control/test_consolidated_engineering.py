@@ -39,6 +39,59 @@ class OwnerTransactionTests(unittest.TestCase):
             time.time_ns() + 60_000_000_000,
         )
 
+    def test_deep_dependency_graph_and_deep_cycle(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            with EngineeringStore(Path(temporary) / "owner.sqlite3") as store:
+                store.issue_work_envelope(self.envelope())
+                packages = [
+                    WorkPackage(0, f"p{i}", (f"p{i - 1}",) if i else (), ("src/a",))
+                    for i in range(1500)
+                ]
+                receipt = store.schedule_ready_packages(
+                    "work", packages, (), generation_id="deep"
+                )
+                self.assertEqual(receipt.assigned, ("p0",))
+                packages[0] = replace(packages[0], predecessors=("p1499",))
+                with self.assertRaisesRegex(EngineeringError, "dependency_cycle"):
+                    store.schedule_ready_packages(
+                        "work", packages, (), generation_id="cycle"
+                    )
+
+    def test_active_lease_capacity_rejects_and_release_recovers(self):
+        from unittest.mock import patch
+
+        with tempfile.TemporaryDirectory() as temporary:
+            with EngineeringStore(Path(temporary) / "owner.sqlite3") as store:
+                envelope = self.envelope()
+                store.issue_work_envelope(envelope)
+                with patch("control_engineering_v2.control_plane.MAX_ACTIVE_LEASES", 2):
+
+                    def acquire(index):
+                        return store.acquire_path_lease(
+                            f"lease{index}",
+                            "work",
+                            "holder",
+                            (f"src/{index}",),
+                            authority_epoch=1,
+                            expires_unix_ns=envelope.expires_unix_ns,
+                        )
+
+                    first = acquire(1)
+                    acquire(2)
+                    before = store.audit_projection()
+                    with self.assertRaisesRegex(
+                        EngineeringError, "active_lease_limit_exceeded"
+                    ):
+                        acquire(3)
+                    self.assertEqual(store.audit_projection(), before)
+                    store.transition_path_lease(
+                        first.lease_id,
+                        disposition="release",
+                        expected_revision=first.revision,
+                        authority_epoch=1,
+                    )
+                    self.assertEqual(acquire(3).state, "active")
+
     def test_future_schema_is_rejected_without_modifying_database(self):
         with tempfile.TemporaryDirectory() as temporary:
             path = Path(temporary) / "owner.sqlite3"

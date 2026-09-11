@@ -43,6 +43,7 @@ MAX_ID_BYTES = 128
 MAX_PATH_BYTES = 1024
 MAX_PATHS = 256
 MAX_PACKAGES = 4096
+MAX_ACTIVE_LEASES = 4096
 MAX_COMPLETED = 4096
 MAX_PREDECESSORS = 256
 MAX_ASSIGNMENTS = 128
@@ -512,6 +513,16 @@ class EngineeringStore:
             int(row["expires_unix_ns"]),
         )
 
+    def _active_lease_rows(self, now_ns: int) -> list[sqlite3.Row]:
+        rows = self.connection.execute(
+            "SELECT * FROM path_leases WHERE state='active' AND expires_unix_ns>? "
+            "ORDER BY fencing_token,lease_id LIMIT ?",
+            (now_ns, MAX_ACTIVE_LEASES + 1),
+        ).fetchall()
+        if len(rows) > MAX_ACTIVE_LEASES:
+            _error("active_lease_limit_exceeded")
+        return rows
+
     def acquire_path_lease(
         self,
         lease_id: str,
@@ -557,10 +568,9 @@ class EngineeringStore:
                 if existing["semantic_digest"] != semantic:
                     _error("lease_identity_conflict")
                 return self._lease_receipt(existing)
-            active = self.connection.execute(
-                "SELECT paths_json FROM path_leases "
-                "WHERE state='active' ORDER BY fencing_token"
-            ).fetchall()
+            active = self._active_lease_rows(now)
+            if len(active) >= MAX_ACTIVE_LEASES:
+                _error("active_lease_limit_exceeded")
             for row in active:
                 current = tuple(json.loads(bytes(row["paths_json"]).decode("utf-8")))
                 if path_sets_overlap(normalized, current):
@@ -676,29 +686,26 @@ class EngineeringStore:
             for predecessor in package.predecessors:
                 if predecessor not in package_ids and predecessor not in completed:
                     _error("unknown_predecessor")
-        graph = {
-            package.package_id: tuple(
-                predecessor
-                for predecessor in package.predecessors
-                if predecessor in package_ids
-            )
-            for package in packages
-        }
-        state: dict[str, int] = {}
-
-        def visit(identity: str) -> None:
-            marker = state.get(identity, 0)
-            if marker == 1:
-                _error("dependency_cycle")
-            if marker == 2:
-                return
-            state[identity] = 1
-            for predecessor in graph[identity]:
-                visit(predecessor)
-            state[identity] = 2
-
-        for identity in sorted(graph):
-            visit(identity)
+        # A valid graph may be deeper than Python's call-stack limit. Kahn's
+        # traversal bounds work by the admitted package and predecessor counts.
+        pending = {package.package_id: 0 for package in packages}
+        successors: dict[str, list[str]] = {identity: [] for identity in package_ids}
+        for package in packages:
+            for predecessor in package.predecessors:
+                if predecessor in package_ids:
+                    pending[package.package_id] += 1
+                    successors[predecessor].append(package.package_id)
+        ready = [identity for identity, count in pending.items() if count == 0]
+        visited = 0
+        while ready:
+            identity = ready.pop()
+            visited += 1
+            for successor in successors[identity]:
+                pending[successor] -= 1
+                if pending[successor] == 0:
+                    ready.append(successor)
+        if visited != len(packages):
+            _error("dependency_cycle")
 
     def schedule_ready_packages(
         self,
@@ -744,10 +751,7 @@ class EngineeringStore:
             from .hardening import bind_assignment_frontier
 
             bind_assignment_frontier(self, envelope, generation_id, now)
-            active_rows = self.connection.execute(
-                "SELECT paths_json FROM path_leases "
-                "WHERE state='active' ORDER BY fencing_token"
-            ).fetchall()
+            active_rows = self._active_lease_rows(now)
             active_paths = tuple(
                 path
                 for row in active_rows
