@@ -1,0 +1,112 @@
+{
+  "schema": "hepta.module-implementation-map.v2",
+  "schemaVersion": 2,
+  "sourceBase": {
+    "commit": "f278a89eea18fccb6d37b876aa5679863a64139d",
+    "tree": "5baa144717d4b3e3c596501fb56ce911d009e728"
+  },
+  "laneId": "LANE-B-RUNTIME",
+  "module": "ui.native",
+  "sourceMaturity": "native_shell_boundary",
+  "declaredRoots": [
+    "apps/hepta-native"
+  ],
+  "resolvedRoots": [
+    "apps/hepta-native"
+  ],
+  "stateOwnerDisposition": "Owns shell/window/session state and opaque platform references; domain facts and secrets remain with their owners.",
+  "terminalObserverDisposition": "The backend, platform permission adapter, and updater each supply their own observations; the shell cannot self-issue success.",
+  "operations": [
+    {
+      "designOperation": "connect_runtime",
+      "mappingClass": "owner_boundary",
+      "ownerEntrypoint": {
+        "role": "owner_entrypoint",
+        "path": "apps/hepta-native/src/shell-runtime.js",
+        "symbol": "async connectRuntime(",
+        "buildTarget": "hepta-native"
+      },
+      "delegatedCallees": [],
+      "tests": [
+        {
+          "path": "apps/hepta-native/test/shell-runtime.test.js",
+          "kind": "node_product_boundary",
+          "command": "node --test apps/hepta-native/test/shell-runtime.test.js"
+        }
+      ],
+      "sourceSemantics": "Authenticates endpoint manifest, protocol version, session identity, and process generation."
+    },
+    {
+      "designOperation": "render_runtime_view",
+      "mappingClass": "owner_boundary",
+      "ownerEntrypoint": {
+        "role": "owner_entrypoint",
+        "path": "apps/hepta-native/src/shell-runtime.js",
+        "symbol": "renderRuntimeView(",
+        "buildTarget": "hepta-native"
+      },
+      "delegatedCallees": [],
+      "tests": [
+        {
+          "path": "apps/hepta-native/test/shell-runtime.test.js",
+          "kind": "node_product_boundary",
+          "command": "node --test apps/hepta-native/test/shell-runtime.test.js"
+        }
+      ],
+      "sourceSemantics": "Rejects mixed/regressed view generations and exposes one coherent presentation state."
+    },
+    {
+      "designOperation": "request_platform_capability",
+      "mappingClass": "owner_boundary",
+      "ownerEntrypoint": {
+        "role": "owner_entrypoint",
+        "path": "apps/hepta-native/src/shell-runtime.js",
+        "symbol": "async requestPlatformCapability(",
+        "buildTarget": "hepta-native"
+      },
+      "delegatedCallees": [],
+      "tests": [
+        {
+          "path": "apps/hepta-native/test/shell-runtime.test.js",
+          "kind": "node_product_boundary",
+          "command": "node --test apps/hepta-native/test/shell-runtime.test.js"
+        }
+      ],
+      "sourceSemantics": "Requires both platform permission and final-payload-bound operation identity before invoking a narrow OS adapter."
+    },
+    {
+      "designOperation": "apply_shell_update",
+      "mappingClass": "owner_boundary",
+      "ownerEntrypoint": {
+        "role": "owner_entrypoint",
+        "path": "apps/hepta-native/src/shell-runtime.js",
+        "symbol": "async applyShellUpdate(",
+        "buildTarget": "hepta-native"
+      },
+      "delegatedCallees": [],
+      "tests": [
+        {
+          "path": "apps/hepta-native/test/shell-runtime.test.js",
+          "kind": "node_product_boundary",
+          "command": "node --test apps/hepta-native/test/shell-runtime.test.js"
+        }
+      ],
+      "sourceSemantics": "Requires independent selection, signature/compatibility verification, explicit restart, and predecessor rollback on uncertain update."
+    }
+  ],
+  "repositoryControlledGaps": [],
+  "externalEvidenceGates": [
+    "selected native framework and supported platform matrix",
+    "real code signing/notarization/keychain and updater trust roots",
+    "packaged crash/restart/accessibility/update rollback qualification"
+  ],
+  "claimBoundary": {
+    "nativeSourceMappingComplete": true,
+    "repositoryControlledDocumentationGapsClosed": true,
+    "repositoryControlledMappingGapsClosed": true,
+    "repositoryControlledSourceBoundaryGapsClosed": true,
+    "productExecutionComplete": false,
+    "deploymentQualificationComplete": false,
+    "independentAcceptanceComplete": false
+  }
+}
