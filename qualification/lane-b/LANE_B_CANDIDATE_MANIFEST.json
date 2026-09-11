@@ -22,6 +22,7 @@
   },
   "allowedPathPrefixes": [
     ".github/workflows/hepta-lane-b-",
+    ".github/workflows/hepta-lane-g-",
     "qualification/lane-b/",
     "docs/readiness/LANE_B_",
     "docs/modules/runtime.supervisor/IMPLEMENTATION_MAP.json",
@@ -35,8 +36,33 @@
     "docs/modules/browser.servo/IMPLEMENTATION_MAP.json",
     "docs/modules/ui.control/IMPLEMENTATION_MAP.json",
     "docs/modules/ui.native/IMPLEMENTATION_MAP.json",
+    "docs/modules/control.engineering/IMPLEMENTATION_BINDING.md",
     "scripts/hepta-lane-b-",
-    "scripts/test_hepta_lane_b_"
+    "scripts/test_hepta_lane_b_",
+    "tools/hepta-engineering-control/README.md",
+    "tools/hepta-engineering-control/control_engineering_v2/",
+    "tools/hepta-engineering-control/lane_g_",
+    "tools/hepta-engineering-control/pyproject.toml",
+    "tools/hepta-engineering-control/test_control_engineering_v2.py",
+    "tools/hepta-engineering-control/test_lane_g_"
+  ],
+  "crossLaneCompatibilityRestorations": [
+    {
+      "lane": "LANE-G-ENGINEERING",
+      "sourceCommit": "54629ac932b1ccad8417d6a98c013400850800af",
+      "reason": "the convergence baseline retained test_lane_g_seal.py while omitting its control_engineering_v2 implementation package and validators",
+      "scope": [
+        "tools/hepta-engineering-control/control_engineering_v2/**",
+        "tools/hepta-engineering-control/lane_g_*.py",
+        "tools/hepta-engineering-control/test_control_engineering_v2.py",
+        "tools/hepta-engineering-control/test_lane_g_*.py",
+        "tools/hepta-engineering-control/pyproject.toml",
+        "tools/hepta-engineering-control/README.md",
+        "docs/modules/control.engineering/IMPLEMENTATION_BINDING.md",
+        ".github/workflows/hepta-lane-g-engineering.yml"
+      ],
+      "authorityDelta": false
+    }
   ],
   "requiredModuleGuides": [
     "runtime.supervisor",

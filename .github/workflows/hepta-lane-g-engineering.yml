@@ -1,0 +1,104 @@
+name: Hepta Lane G engineering qualification
+
+on:
+  pull_request:
+    paths:
+      - tools/hepta-engineering-control/**
+      - .github/workflows/hepta-lane-g-engineering.yml
+  push:
+    branches:
+      - codex/lane-g-real-full-closure-20260910
+    paths:
+      - tools/hepta-engineering-control/**
+      - .github/workflows/hepta-lane-g-engineering.yml
+
+permissions:
+  contents: read
+
+concurrency:
+  group: lane-g-engineering-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  engineering-control:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, macos-15, windows-latest]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 30
+    env:
+      PYTHONDONTWRITEBYTECODE: "1"
+      PYTHONUTF8: "1"
+    steps:
+      - name: Checkout exact candidate
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Bind exact source
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${GITHUB_SHA}"
+          git rev-parse HEAD HEAD^{tree}
+
+      - name: Python runtime identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          python --version
+          python - <<'PY'
+          import sys
+          assert sys.version_info >= (3, 11), sys.version
+          print(sys.executable)
+          PY
+
+      - name: Compile Lane G implementation
+        working-directory: tools/hepta-engineering-control
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m compileall -q control_engineering_v2
+          python -m compileall -q \
+            hepta_engineering_control.py \
+            lane_g_validate.py \
+            test_control_engineering_v2.py
+
+      - name: Semantic closed-world validation
+        working-directory: tools/hepta-engineering-control
+        shell: bash
+        run: |
+          set -euo pipefail
+          python lane_g_validate.py
+
+      - name: Execute Lane G and legacy tests
+        working-directory: tools/hepta-engineering-control
+        shell: bash
+        run: |
+          set -o pipefail
+          python -m unittest -v \
+            test_hepta_engineering_control.py \
+            test_integration_identity.py \
+            test_control_engineering_v2.py \
+            2>&1 | tee "${RUNNER_TEMP}/lane-g-tests-${RUNNER_OS}.txt"
+          exit "${PIPESTATUS[0]}"
+
+      - name: Retain Lane G diagnostics
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: lane-g-tests-${{ runner.os }}-${{ github.sha }}
+          path: ${{ runner.temp }}/lane-g-tests-${{ runner.os }}.txt
+          if-no-files-found: warn
+          retention-days: 1
+
+      - name: Verify no tracked mutation
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          git diff --check
+          git diff --exit-code
+          test -z "$(git status --porcelain --untracked-files=no)"
