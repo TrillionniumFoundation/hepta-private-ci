@@ -53,21 +53,7 @@ jobs:
           set -euo pipefail
           test -x /usr/bin/openssl
           /usr/bin/openssl version
-          python3 - <<'PYTEST'
-          import os
-          import signal
-          import unittest
-          import trusted_executor
-
-          trusted_executor._require_procfs_namespace()
-          if not hasattr(os, "pidfd_open") or not hasattr(signal, "pidfd_send_signal"):
-              raise SystemExit("Linux pidfd process containment is required")
-          suite = unittest.defaultTestLoader.discover("tests")
-          result = unittest.TextTestRunner(verbosity=2).run(suite)
-          if result.skipped:
-              raise SystemExit("Native OS evidence qualification cannot skip tests")
-          raise SystemExit(0 if result.wasSuccessful() else 1)
-          PYTEST
+          python3 run_native_tests.py
   qualification:
     runs-on: ubuntu-24.04-arm
     timeout-minutes: 45
@@ -146,7 +132,6 @@ jobs:
           set -euo pipefail
           args=()
           for package in $PACKAGES; do args+=(-p "$package"); done
-          args+=(--features codex-hepta-infer-worker-host/native-app-server)
           cargo check --locked "${args[@]}" --all-targets
           just test --locked "${args[@]}"
           cargo clippy --locked "${args[@]}" --all-targets -- -D warnings
