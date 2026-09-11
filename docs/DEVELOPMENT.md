@@ -26,7 +26,17 @@ immutable authority, truth, privacy and durability kernel
 
 “Global optimum” means only the best feasible plan for an exact state snapshot, objective revision, preference-state revision, hard-constraint set, candidate set, horizon, solver and time budget. Exact optimality, a bound, or a disclosed heuristic limitation must be recorded. Hepta must never claim universal or permanent global optimality.
 
-Completion requires one selected linear source stack, current exact-candidate evidence for every applicable package, independent decisions in their designated lanes, and separate promotion/release. Until then `all_gaps_closed=false`, `closedLoopLearning=false`, `longitudinalEfficacy=false`, `functionalBiomimicry=false`, and `selfIteration=false`.
+Completion requires one integrated source tree, current exact-candidate evidence for every applicable package, independent decisions in their designated lanes, and separate promotion/release. Normal merge commits preserve reviewed branch history; linear ancestry is not a capability requirement. Until the corresponding executable and empirical conditions hold, `all_gaps_closed=false`, `closedLoopLearning=false`, `longitudinalEfficacy=false`, `functionalBiomimicry=false`, and `selfIteration=false`.
+
+Ordinary development follows the repository owner's authorized scope. A reviewed
+PR may integrate multiple lanes through small ordered commits, with one owner for
+each changed durable domain. Git records source/tree/parents, CI derives the
+candidate identity from the actual event, and the PR records changes, tests and
+remaining work. Do not require a separately handwritten receipt, expiring lane
+envelope, production host binding or deployment approval merely to implement,
+test or merge authorized repository changes. Those records apply when their
+runtime, independent-evaluation or deployment boundary is actually exercised.
+Repository merge does not itself activate that boundary.
 
 ## 2. Canonical document system and historical cleanup
 

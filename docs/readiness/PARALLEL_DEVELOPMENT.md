@@ -6,13 +6,13 @@
 
 ## 1. Scope and authority boundary
 
-This specification assigns every registered module to one primary implementation lane and defines cross-lane checkpoints. It does not grant broad repository ownership, bypass work-package predecessors or authorize merge. Each team receives a bounded `ParallelLaneEnvelopeV1` tied to an exact source receipt and existing `WORK_PACKAGES.json` paths.
+This specification assigns every registered module to one primary implementation lane and defines cross-lane checkpoints. Repository changes follow the owner's authorized scope and actual dependency order. Each coding task identifies its source baseline, owned paths, concrete behavior, tests and remaining dependencies. `ParallelLaneEnvelopeV1` is the bounded runtime coordination format when a coordinator uses it; manually issuing an envelope is not an additional permission gate for ordinary authorized development.
 
 The execution-oriented specification is `qualification/module-execution-dossiers/TECHNICAL.md`; its exact forty-module projection is `qualification/module-execution-dossiers/MODULE_DOSSIERS.json`. These files are qualification companions, not a second global plan or a replacement for module, contract, data-authority, delivery, readiness or CNS registries. Documentation depth cannot manufacture a host, process, physical store, real model, independent decision or production activation.
 
 ## 2. Frozen inputs and lane envelopes
 
-Before coding, every lane freezes:
+At an integration checkpoint, capture the applicable inputs from the actual committed candidate and its dependencies:
 
 ```text
 CanonicalSourceReceiptV1
@@ -23,7 +23,7 @@ readiness, algorithm, CNS, HNMF and execution-dossier digests
 qualification profile, mandatory checks, resource ceiling and expiry
 ```
 
-A semantic change creates base drift and requires a new envelope. Mock implementations are permitted only behind exact typed contracts and cannot become alternative durable owners. `none_by_design` is valid only with evidence proving that the state or boundary does not exist.
+A semantic change requires reviewing and testing affected consumers; it does not stop unrelated lanes or require recertifying every unchanged document. CI obtains Git identity and computes digests rather than asking developers to copy them into PR text. A runtime coordinator that admits an envelope must still reject stale inputs. Mock implementations are permitted only behind exact typed contracts and cannot become alternative durable owners. `none_by_design` is valid only with evidence proving that the state or boundary does not exist.
 
 ## 3. Primary implementation lanes
 
@@ -62,17 +62,17 @@ A later checkpoint cannot waive an earlier failure. `I2` requires real durable f
 
 ## 6. Branch, PR and merge discipline
 
-One PR carries one bounded work package or checkpoint. It records exact source/tree, envelope, changed paths, contracts, authority delta, tests, resources, rollback and unresolved external gates. Source-head and deterministic synthetic-merge checks both pass. Overlapping paths require DAG order or a registered lease. Generated files pass clean-worktree parity. Branch names, labels, comments and queued workflows are observations, not source selection or acceptance.
+A PR may carry several lanes through reviewable ordered commits. Its description records the problem, resulting behavior, material contract or authority changes, actual tests, rollback implications and unresolved dependencies. Git and CI supply source/tree/parent identity; no handwritten exact-head tuple or minimum prose length is required. Source-head and deterministic synthetic-merge checks cover the changed implementation. Overlapping paths are serialized by the integrator or coordinated with their owners. Generated files pass clean-worktree parity. Merge commits retain reviewed branch history. Branch names, labels, comments and queued workflows do not establish runtime or independent acceptance.
 
 ## 7. Stop conditions and escalation
 
-All lanes stop on base drift, authority delta, cross-owner write, contract ambiguity, unknown schema, unbounded queue/retry/resource, mandatory-test failure, missing rollback, evaluator collision, claim/evidence mismatch, deletion resurrection, empty runtime binding, unnamed terminal observer or fallback authority widening. Infrastructure failures may be retried only under package policy; semantic failures require a new candidate.
+Stop the affected operation on cross-owner writes, ambiguous contracts, unknown schemas, unbounded work, mandatory-test failures, evaluator collision, deletion resurrection or claim/evidence mismatch. Review material authority changes explicitly. Missing host bindings, terminal observers or rollback block the operation that needs them, while unrelated implementation and negative tests continue. Rebase or merge and retest affected consumers after conflicting source changes. Retry transient infrastructure failures without modifying source; fix semantic failures in a new commit. No checker may turn a missing production observation into a passing source claim.
 
 ## 8. Required evidence per lane
 
 Every lane produces exact source inventory, static verification, focused/package tests, all-target build, strict lint, clean tracked state, fault evidence, target-host resource measurements and exact-head/merge-candidate receipts. Adapters add revoked grant, payload drift, timeout and indeterminate-outcome tests. Learning modules add support, future-window, retention and unlearning evidence only when making those claims.
 
-Every module handoff materializes:
+Before deploying or qualifying a running module, its runtime handoff materializes:
 
 ```text
 sourceReceipt
@@ -99,7 +99,7 @@ Fault profiles are `FP-CONTRACT`, `FP-DURABLE-OWNER`, `FP-RUNTIME`, `FP-EFFECT-B
 
 ## 9. Coding-entry checklist
 
-Parallel coding begins only when all 40 module guides contain the V8.2 overlay, each module appears exactly once in the readiness lane registry and execution dossier, shared protocol generation is frozen, path conflicts are ordered, deterministic fallbacks exist and external gates remain unclaimed. Coding entry is not activation entry: source-complete modules remain dormant until named callers, hosts, stores, observers, target measurements, rollback and independent decisions are bound.
+The forty-module registry and guides define ownership and contracts. Begin each coding task when its relevant contract and dependency boundaries are clear; resolve ambiguous parts with their owners while independent tasks continue. Order path conflicts, test deterministic fallbacks and leave external gates unclaimed. A documentation count, guide length or absent production receipt is not a substitute for reviewing the changed code. Coding entry is not activation entry: activation still requires the applicable named callers, hosts, stores, observers, target measurements, rollback and independent decisions.
 
 ## 10. Module execution profile matrix
 
