@@ -10,8 +10,21 @@ name = "codex_hepta_infer_worker_host"
 path = "src/lib.rs"
 doctest = false
 
+[features]
+default = []
+native-app-server = ["dep:codex-app-server-client", "dep:codex-app-server-protocol", "dep:codex-hepta-agentd", "dep:codex-hepta-contracts", "dep:codex-utils-absolute-path", "dep:serde", "dep:serde_json", "dep:tokio", "dep:tokio-util"]
+
 [lints]
 workspace = true
 
 [dependencies]
 codex-hepta-types = { path = "../hepta-types" }
+codex-app-server-client = { workspace = true, optional = true }
+codex-app-server-protocol = { workspace = true, optional = true }
+codex-hepta-agentd = { workspace = true, optional = true }
+codex-hepta-contracts = { workspace = true, optional = true }
+codex-utils-absolute-path = { workspace = true, optional = true }
+serde = { workspace = true, features = ["derive"], optional = true }
+serde_json = { workspace = true, optional = true }
+tokio = { workspace = true, features = ["io-std", "io-util", "macros", "rt-multi-thread", "signal", "time"], optional = true }
+tokio-util = { workspace = true, optional = true }

@@ -22,16 +22,16 @@
       "mappingClass": "owner_native",
       "ownerEntrypoint": {
         "role": "owner_entrypoint",
-        "path": "codex-rs/hepta-infer-worker-host/src/bin/hepta-infer-worker.rs",
+        "path": "codex-rs/hepta-infer-worker-host/src/model_worker.rs",
         "symbol": "pub fn load_model(",
-        "buildTarget": "hepta-infer-worker"
+        "buildTarget": "codex-hepta-infer-worker-host::model_worker"
       },
       "delegatedCallees": [],
       "tests": [
         {
-          "path": "codex-rs/hepta-infer-worker-host/src/bin/hepta-infer-worker.rs",
+          "path": "codex-rs/hepta-infer-worker-host/src/model_worker_tests.rs",
           "kind": "manifest_and_resource_binding",
-          "command": "cargo test -p codex-hepta-infer-worker-host --bin hepta-infer-worker"
+          "command": "just test -p codex-hepta-infer-worker-host --lib"
         }
       ],
       "sourceSemantics": "Verifies the full model artifact/runtime/device tuple and resource grant before load."
@@ -41,16 +41,16 @@
       "mappingClass": "owner_native",
       "ownerEntrypoint": {
         "role": "owner_entrypoint",
-        "path": "codex-rs/hepta-infer-worker-host/src/bin/hepta-infer-worker.rs",
+        "path": "codex-rs/hepta-infer-worker-host/src/model_worker.rs",
         "symbol": "pub fn run(",
-        "buildTarget": "hepta-infer-worker"
+        "buildTarget": "codex-hepta-infer-worker-host::model_worker"
       },
       "delegatedCallees": [],
       "tests": [
         {
-          "path": "codex-rs/hepta-infer-worker-host/src/bin/hepta-infer-worker.rs",
+          "path": "codex-rs/hepta-infer-worker-host/src/model_worker_tests.rs",
           "kind": "execution_and_cancellation",
-          "command": "cargo test -p codex-hepta-infer-worker-host --bin hepta-infer-worker"
+          "command": "just test -p codex-hepta-infer-worker-host --lib"
         }
       ],
       "sourceSemantics": "Runs a bounded request through an injected driver and preserves indeterminate terminality."
@@ -60,22 +60,25 @@
       "mappingClass": "owner_native",
       "ownerEntrypoint": {
         "role": "owner_entrypoint",
-        "path": "codex-rs/hepta-infer-worker-host/src/bin/hepta-infer-worker.rs",
+        "path": "codex-rs/hepta-infer-worker-host/src/model_worker.rs",
         "symbol": "pub fn unload_model(",
-        "buildTarget": "hepta-infer-worker"
+        "buildTarget": "codex-hepta-infer-worker-host::model_worker"
       },
       "delegatedCallees": [],
       "tests": [
         {
-          "path": "codex-rs/hepta-infer-worker-host/src/bin/hepta-infer-worker.rs",
+          "path": "codex-rs/hepta-infer-worker-host/src/model_worker_tests.rs",
           "kind": "drain_and_unload",
-          "command": "cargo test -p codex-hepta-infer-worker-host --bin hepta-infer-worker"
+          "command": "just test -p codex-hepta-infer-worker-host --lib"
         }
       ],
       "sourceSemantics": "Drains and unloads only the exact admitted generation and releases acquired resources."
     }
   ],
-  "repositoryControlledGaps": [],
+  "repositoryControlledGaps": [
+    "Implement a local model driver that acquires and proves actual weights, device and memory grants before claiming isolated local inference.",
+    "Connect hosted runs to durable control reservation and usage settlement; the native App Server profile does not fabricate these grants."
+  ],
   "externalEvidenceGates": [
     "identified real weights/tokenizer/runtime/device",
     "isolated deployed worker process and authenticated control channel",
@@ -85,7 +88,7 @@
     "nativeSourceMappingComplete": true,
     "repositoryControlledDocumentationGapsClosed": true,
     "repositoryControlledMappingGapsClosed": true,
-    "repositoryControlledSourceBoundaryGapsClosed": true,
+    "repositoryControlledSourceBoundaryGapsClosed": false,
     "productExecutionComplete": false,
     "deploymentQualificationComplete": false,
     "independentAcceptanceComplete": false

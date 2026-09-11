@@ -7,6 +7,12 @@
 
 #![forbid(unsafe_code)]
 
+/// Model-manifest/grant state machine for native driver implementations.
+pub mod model_worker;
+
+#[cfg(feature = "native-app-server")]
+pub mod native_app_server;
+
 use std::error::Error as StdError;
 use std::fmt;
 
