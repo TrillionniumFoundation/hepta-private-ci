@@ -21,8 +21,12 @@ signature or capacity check leaves the sequence available for a valid retry.
 This admission proves message identity and replay consumption. Quota allocation,
 effect-specific policy and the kernel's final-use token remain separate checks.
 No model, network, filesystem, selection or promotion authority is granted by the
-receipt. The host's trust provisioning and backup rollback protection are not
-created by this API.
+receipt. It remains ordinary evidence data, not an unforgeable capability. The
+issuer registration is a snapshot: a queued admission refreshes time after the
+SQLite lock, but final-use authorization must also refresh revocation/epoch.
+Commit-before-response failure consumes the sequence, so this is at-most-once
+admission, not durable message delivery. The host's trust provisioning, replay-key
+retirement and backup rollback protection are not created by this API.
 
 Run `just test -p codex-hepta-authbus -p codex-hepta-evidence` for signed-field
 substitution, expiry/revocation, real SQLite reopen, two-handle contention and
