@@ -17,5 +17,7 @@ workspace = true
 codex-hepta-intuition = { path = "../hepta-intuition" }
 codex-hepta-types = { path = "../hepta-types" }
 
+ed25519-dalek = { workspace = true }
+
 [dev-dependencies]
 pretty_assertions = { workspace = true }

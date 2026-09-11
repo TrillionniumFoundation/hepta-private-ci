@@ -4,7 +4,9 @@
 //! by a plain `StableId` or an opaque support digest: credential-chain identity,
 //! delayed-outcome watermarks, conserved credit batches, generator-relative
 //! candidate completeness, and immutable dataset-freeze receipts. The existing
-//! durable V1 encoding remains readable and unchanged.
+//! durable V1 encoding remains readable and unchanged. Identity fields here are
+//! assertions, not signature proofs; external evidence admission uses
+//! `LearningEvidenceVerifierV1` with host-owned trust state.
 
 use std::error::Error as StdError;
 use std::fmt;
@@ -18,6 +20,8 @@ const MAX_CANDIDATES: u32 = 128;
 const MAX_CREDIT_ALLOCATIONS: usize = 256;
 const MAX_DATASET_RECORDS: usize = 1_000_000;
 
+/// Legacy identity metadata. `validate` checks structure and time, not a signature.
+/// Authenticate external evidence with `LearningEvidenceVerifierV1` before use.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct AuthenticatedPrincipalV1 {
     pub principal_id: StableId,

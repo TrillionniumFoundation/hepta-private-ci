@@ -7,8 +7,8 @@
 
 #![forbid(unsafe_code)]
 
-mod dataset_receipt_v3;
 mod causal_v2;
+mod dataset_receipt_v3;
 mod durable;
 mod durable_codec;
 mod durable_lock;
@@ -16,11 +16,8 @@ mod error;
 mod ledger;
 mod model;
 mod shadow;
+mod signed_evidence;
 
-pub use dataset_receipt_v3::DatasetReceiptError;
-pub use dataset_receipt_v3::DatasetSnapshotReceiptV3;
-pub use dataset_receipt_v3::freeze_dataset_receipt_v3;
-pub use dataset_receipt_v3::verify_dataset_snapshot_receipt_v3;
 pub use causal_v2::AuthenticatedOutcomeV1;
 pub use causal_v2::AuthenticatedPrincipalV1;
 pub use causal_v2::CandidateSetCompletenessReceiptV1;
@@ -37,6 +34,10 @@ pub use causal_v2::freeze_dataset;
 pub use causal_v2::validate_authenticated_outcome;
 pub use causal_v2::validate_candidate_set_completeness;
 pub use causal_v2::verify_independent_roles;
+pub use dataset_receipt_v3::DatasetReceiptError;
+pub use dataset_receipt_v3::DatasetSnapshotReceiptV3;
+pub use dataset_receipt_v3::freeze_dataset_receipt_v3;
+pub use dataset_receipt_v3::verify_dataset_snapshot_receipt_v3;
 pub use durable::DurableLedger;
 pub use durable::DurableLedgerError;
 pub use durable::LedgerAnchor;
@@ -62,6 +63,14 @@ pub use shadow::ShadowDecisionRequest;
 pub use shadow::append_shadow_decision;
 pub use shadow::canonical_candidate_set_digest;
 pub use shadow::prepare_shadow_decision;
+pub use signed_evidence::LearningEvidenceRoleV1;
+pub use signed_evidence::LearningEvidenceTrustV1;
+pub use signed_evidence::LearningEvidenceVerifierV1;
+pub use signed_evidence::SignedEvidenceError;
+pub use signed_evidence::SignedLearningEvidenceV1;
+pub use signed_evidence::TrustedLearningSignerV1;
+pub use signed_evidence::VerifiedLearningEvidenceV1;
+pub use signed_evidence::verify_signed_role_separation;
 
 #[cfg(test)]
 #[path = "shadow_tests.rs"]

@@ -502,4 +502,3 @@ mod tests {
         assert_eq!(reopened.records(), journal.records());
     }
 }
-

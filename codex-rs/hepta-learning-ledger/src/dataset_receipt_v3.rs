@@ -259,4 +259,3 @@ mod tests {
         assert_eq!(FixedQ32::ZERO.raw(), 0);
     }
 }
-

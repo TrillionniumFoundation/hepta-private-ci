@@ -49,6 +49,7 @@ pub struct FinalHoldoutJournalV1 {
     registry: FinalHoldoutRegistry,
     records: Vec<FinalHoldoutJournalRecordV1>,
     head_digest: Digest32,
+    record_limit: usize,
 }
 
 impl Default for FinalHoldoutJournalV1 {
@@ -57,6 +58,7 @@ impl Default for FinalHoldoutJournalV1 {
             registry: FinalHoldoutRegistry::default(),
             records: Vec::new(),
             head_digest: Digest32::ZERO,
+            record_limit: MAX_JOURNAL_RECORDS,
         }
     }
 }
@@ -65,6 +67,18 @@ impl FinalHoldoutJournalV1 {
     #[must_use]
     pub fn new() -> Self {
         Self::default()
+    }
+
+    /// Host-selected capacity is admission policy, not part of the journal wire format.
+    /// Reopening with the same policy requires `from_snapshot_with_record_limit`.
+    pub fn with_record_limit(record_limit: usize) -> Result<Self, FinalHoldoutJournalError> {
+        if record_limit == 0 || record_limit > MAX_JOURNAL_RECORDS {
+            return Err(FinalHoldoutJournalError::RecordLimit);
+        }
+        Ok(Self {
+            record_limit,
+            ..Self::default()
+        })
     }
 
     #[must_use]
@@ -85,6 +99,20 @@ impl FinalHoldoutJournalV1 {
         if expected_head_digest != self.head_digest {
             return Err(FinalHoldoutJournalError::HeadMismatch);
         }
+        // Check every fallible admission condition before mutating the registry.
+        // Existing plans may still be retried when the journal is full.
+        if self.records.len() >= self.record_limit
+            && !self
+                .records
+                .iter()
+                .any(|record| record.plan.plan_id == plan.plan_id)
+        {
+            return Err(FinalHoldoutJournalError::RecordLimit);
+        }
+        let sequence = u64::try_from(self.records.len())
+            .map_err(|_| FinalHoldoutJournalError::Arithmetic)?
+            .checked_add(1)
+            .ok_or(FinalHoldoutJournalError::Arithmetic)?;
         let use_receipt = self.registry.consume(plan)?;
         if use_receipt.disposition == HoldoutUseDispositionV1::IdempotentReplay {
             let existing = self
@@ -106,13 +134,6 @@ impl FinalHoldoutJournalV1 {
                 authority: AuthorityPosture::DENY_ALL,
             });
         }
-        if self.records.len() >= MAX_JOURNAL_RECORDS {
-            return Err(FinalHoldoutJournalError::RecordLimit);
-        }
-        let sequence = u64::try_from(self.records.len())
-            .map_err(|_| FinalHoldoutJournalError::Arithmetic)?
-            .checked_add(1)
-            .ok_or(FinalHoldoutJournalError::Arithmetic)?;
         let predecessor_head_digest = self.head_digest;
         let record_digest = digest_record(
             sequence,
@@ -150,8 +171,18 @@ impl FinalHoldoutJournalV1 {
     pub fn from_snapshot(
         snapshot: FinalHoldoutJournalSnapshotV1,
     ) -> Result<Self, FinalHoldoutJournalError> {
+        Self::from_snapshot_with_record_limit(snapshot, MAX_JOURNAL_RECORDS)
+    }
+
+    pub fn from_snapshot_with_record_limit(
+        snapshot: FinalHoldoutJournalSnapshotV1,
+        record_limit: usize,
+    ) -> Result<Self, FinalHoldoutJournalError> {
         let expected_head = snapshot.head_digest;
-        let mut journal = Self::new();
+        let mut journal = Self::with_record_limit(record_limit)?;
+        if snapshot.records.len() > record_limit {
+            return Err(FinalHoldoutJournalError::RecordLimit);
+        }
         for expected in snapshot.records {
             if expected.sequence
                 != u64::try_from(journal.records.len())
@@ -232,6 +263,7 @@ mod tests {
     use super::*;
     use codex_hepta_types::FixedQ32;
     use codex_hepta_types::StableId;
+    use pretty_assertions::assert_eq;
 
     use crate::CrossFoldPartitionV1;
     use crate::CrossFoldPlanV1;
@@ -248,9 +280,9 @@ mod tests {
         Digest32::of_bytes(value.as_bytes())
     }
 
-    fn frozen_plan() -> CrossFoldPlanReceiptV1 {
+    fn frozen_plan(name: &str) -> CrossFoldPlanReceiptV1 {
         freeze_cross_fold_plan(CrossFoldPlanV1 {
-            plan_id: id("journal-plan"),
+            plan_id: id(name),
             claim_scope: EvaluationClaimScopeV1::Qualification,
             candidate_id: id("candidate"),
             baseline_id: id("baseline"),
@@ -283,20 +315,20 @@ mod tests {
                     training_windows: vec![id("train-b")],
                     holdout_principals: vec![id("principal-b")],
                     holdout_episodes: vec![id("episode-b")],
-                    holdout_windows: vec![id("holdout-b")],
+                    holdout_windows: vec![id(name)],
                     model_digest: digest("model-b"),
                     predictions_digest: digest("predictions-b"),
                 },
             ],
-            final_holdout_window_id: id("holdout-b"),
-            final_holdout_digest: digest("final-holdout"),
+            final_holdout_window_id: id(name),
+            final_holdout_digest: digest(name),
         })
         .expect("plan freezes")
     }
 
     #[test]
     fn eval_05_holdout_journal_reopens_exactly() {
-        let plan = frozen_plan();
+        let plan = frozen_plan("journal-plan");
         let mut journal = FinalHoldoutJournalV1::new();
         let first = journal
             .consume(Digest32::ZERO, &plan)
@@ -309,7 +341,7 @@ mod tests {
 
     #[test]
     fn eval_05_holdout_journal_rejects_stale_head_and_keeps_retry_idempotent() {
-        let plan = frozen_plan();
+        let plan = frozen_plan("journal-plan");
         let mut journal = FinalHoldoutJournalV1::new();
         let first = journal
             .consume(Digest32::ZERO, &plan)
@@ -324,5 +356,39 @@ mod tests {
         assert_eq!(retry.disposition, HoldoutUseDispositionV1::IdempotentReplay);
         assert_eq!(journal.records().len(), 1);
     }
+    #[test]
+    fn capacity_failure_does_not_consume_holdout_or_break_full_journal_retry() {
+        let first_plan = frozen_plan("first-plan");
+        let next_plan = frozen_plan("next-plan");
+        let mut journal = FinalHoldoutJournalV1::with_record_limit(1).expect("valid capacity");
+        journal
+            .consume(Digest32::ZERO, &first_plan)
+            .expect("first admission");
+        let before = journal.snapshot();
+        let registry_before = journal.registry.digest();
+        assert_eq!(
+            journal.consume(journal.head_digest(), &next_plan),
+            Err(FinalHoldoutJournalError::RecordLimit)
+        );
+        assert_eq!(journal.snapshot(), before);
+        // Registry state must not contain the failed admission, including its digest.
+        assert_eq!(journal.registry.digest(), registry_before);
+        let replay = journal
+            .consume(journal.head_digest(), &first_plan)
+            .expect("retry at capacity");
+        assert_eq!(
+            replay.disposition,
+            HoldoutUseDispositionV1::IdempotentReplay
+        );
+        assert_eq!(journal.snapshot(), before);
+        let mut reopened = FinalHoldoutJournalV1::from_snapshot_with_record_limit(before, 2)
+            .expect("host raises capacity");
+        assert_eq!(
+            reopened
+                .consume(reopened.head_digest(), &next_plan)
+                .expect("second admission")
+                .disposition,
+            HoldoutUseDispositionV1::Recorded
+        );
+    }
 }
-

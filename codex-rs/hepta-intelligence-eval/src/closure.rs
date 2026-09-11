@@ -1,10 +1,11 @@
 //! Independent evaluation composition above the estimator primitives.
 //!
-//! Estimators remain pure evidence producers. This module verifies authenticated
+//! Estimators remain pure evidence producers. This module checks supplied
 //! role separation, frozen K-fold lineage, final-holdout use, conservative
 //! interval gates, future-window coverage, retention and unlearning before it
 //! emits an eligibility decision. Eligibility is still not selection, promotion
-//! or release authority.
+//! or release authority. External claims require the signed-evaluation entry
+//! points to authenticate those supplied identities and evidence bytes.
 
 use std::collections::BTreeMap;
 use std::collections::BTreeSet;
@@ -18,6 +19,15 @@ use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::FixedQ32;
 use codex_hepta_types::StableId;
+
+#[path = "metric_roles.rs"]
+mod metric_roles;
+
+pub use metric_roles::MetricRoleContractV2;
+pub use metric_roles::MetricRoleV2;
+pub use metric_roles::decide_independently_v2;
+pub(crate) use metric_roles::digest_evaluation_roles;
+pub use metric_roles::freeze_cross_fold_plan_v2;
 
 const MAX_FOLDS: usize = 32;
 const MAX_METRICS: usize = 128;
@@ -129,9 +139,26 @@ pub struct IndependentEvaluationDecisionV1 {
     pub authority: AuthorityPosture,
 }
 
+/// Legacy contract: every metric must strictly outperform its baseline.
+/// Use [`decide_independently_v2`] for preregistered metric roles.
 pub fn decide_independently(
+    bundle: IndependentEvaluationBundleV1,
+    now: u64,
+) -> Result<IndependentEvaluationDecisionV1, EvaluationClosureError> {
+    let contract_digest = digest_metric_contracts(&mut metric_contracts(&bundle.metrics))?;
+    decide_with_metric_contract(bundle, now, contract_digest, |metric| {
+        match metric.direction {
+            EvaluationDirectionV1::Maximize => metric.candidate.lower > metric.baseline.upper,
+            EvaluationDirectionV1::Minimize => metric.candidate.upper < metric.baseline.lower,
+        }
+    })
+}
+
+fn decide_with_metric_contract(
     mut bundle: IndependentEvaluationBundleV1,
     now: u64,
+    contract_digest: Digest32,
+    relative_gate: impl Fn(&MetricGateV1) -> bool,
 ) -> Result<IndependentEvaluationDecisionV1, EvaluationClosureError> {
     verify_independent_roles(&bundle.generator, &bundle.evaluator, now)?;
     for (label, digest) in [
@@ -175,7 +202,7 @@ pub fn decide_independently(
             adjacent[0].metric_id.to_string(),
         ));
     }
-    validate_frozen_evaluation_binding(&bundle)?;
+    validate_frozen_evaluation_binding(&bundle, contract_digest)?;
 
     let mut insufficient = bundle.metrics.is_empty();
     match bundle.claim_scope {
@@ -203,17 +230,13 @@ pub fn decide_independently(
             insufficient = true;
             continue;
         }
-        let superiority = match metric.direction {
-            EvaluationDirectionV1::Maximize => metric.candidate.lower > metric.baseline.upper,
-            EvaluationDirectionV1::Minimize => metric.candidate.upper < metric.baseline.lower,
-        };
         let safety = metric
             .safety_floor
             .is_none_or(|floor| match metric.direction {
                 EvaluationDirectionV1::Maximize => metric.candidate.lower >= floor,
                 EvaluationDirectionV1::Minimize => metric.candidate.upper <= floor,
             });
-        if !superiority || !safety {
+        if !relative_gate(metric) || !safety {
             failed_metrics.push(metric.metric_id.clone());
         }
     }
@@ -782,7 +805,7 @@ fn validate_holdout_use_receipt_integrity(
     Ok(())
 }
 
-fn digest_evaluation_bundle(
+pub(crate) fn digest_evaluation_bundle(
     bundle: &IndependentEvaluationBundleV1,
     disposition: IndependentEvaluationDispositionV1,
     failed_metrics: &[StableId],
@@ -835,6 +858,7 @@ fn digest_evaluation_bundle(
 
 fn validate_frozen_evaluation_binding(
     bundle: &IndependentEvaluationBundleV1,
+    contract_digest: Digest32,
 ) -> Result<(), EvaluationClosureError> {
     let plan = &bundle.frozen_plan;
     let holdout = &bundle.holdout_use;
@@ -893,16 +917,7 @@ fn validate_frozen_evaluation_binding(
             "multiplicity",
         ));
     }
-    let mut contracts = bundle
-        .metrics
-        .iter()
-        .map(|metric| MetricContractV1 {
-            metric_id: metric.metric_id.clone(),
-            direction: metric.direction,
-            safety_floor: metric.safety_floor,
-        })
-        .collect::<Vec<_>>();
-    if digest_metric_contracts(&mut contracts)? != plan.metric_contract_digest {
+    if contract_digest != plan.metric_contract_digest {
         return Err(EvaluationClosureError::FrozenPlanBindingMismatch(
             "metric contract",
         ));
@@ -944,6 +959,17 @@ fn validate_frozen_evaluation_binding(
         ));
     }
     Ok(())
+}
+
+fn metric_contracts(metrics: &[MetricGateV1]) -> Vec<MetricContractV1> {
+    metrics
+        .iter()
+        .map(|metric| MetricContractV1 {
+            metric_id: metric.metric_id.clone(),
+            direction: metric.direction,
+            safety_floor: metric.safety_floor,
+        })
+        .collect()
 }
 
 fn digest_metric_contracts(

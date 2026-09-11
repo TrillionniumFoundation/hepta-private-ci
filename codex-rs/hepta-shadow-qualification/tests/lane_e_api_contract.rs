@@ -53,4 +53,3 @@ fn lane_e_public_operation_surface_is_linkable() {
     let _ = codex_hepta_learning_artifacts::ArtifactLifecycleJournalV2::append;
     let _ = codex_hepta_learning_artifacts::ArtifactLifecycleJournalV2::from_snapshot;
 }
-

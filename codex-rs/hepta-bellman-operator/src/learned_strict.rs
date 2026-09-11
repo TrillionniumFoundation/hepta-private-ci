@@ -165,4 +165,3 @@ mod tests {
         assert!(!prediction.authority.grants_any());
     }
 }
-
