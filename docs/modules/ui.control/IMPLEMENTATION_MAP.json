@@ -1,0 +1,93 @@
+{
+  "schema": "hepta.module-implementation-map.v2",
+  "schemaVersion": 2,
+  "sourceBase": {
+    "commit": "f278a89eea18fccb6d37b876aa5679863a64139d",
+    "tree": "5baa144717d4b3e3c596501fb56ce911d009e728"
+  },
+  "laneId": "LANE-B-RUNTIME",
+  "module": "ui.control",
+  "sourceMaturity": "native_web_client_boundary",
+  "declaredRoots": [
+    "apps/hepta-control-ui"
+  ],
+  "resolvedRoots": [
+    "apps/hepta-control-ui"
+  ],
+  "stateOwnerDisposition": "Owns presentation/session state and pending request identities only; backend modules retain authority and durable facts.",
+  "terminalObserverDisposition": "The authenticated backend observation establishes terminal state; local acknowledgement or disconnect never does.",
+  "operations": [
+    {
+      "designOperation": "read_view",
+      "mappingClass": "owner_boundary",
+      "ownerEntrypoint": {
+        "role": "owner_entrypoint",
+        "path": "apps/hepta-control-ui/src/runtime-client.js",
+        "symbol": "readView()",
+        "buildTarget": "hepta-control-ui"
+      },
+      "delegatedCallees": [],
+      "tests": [
+        {
+          "path": "apps/hepta-control-ui/test/runtime-client.test.js",
+          "kind": "node_product_boundary",
+          "command": "node --test apps/hepta-control-ui/test/runtime-client.test.js"
+        }
+      ],
+      "sourceSemantics": "Projects a coherent generation/revision snapshot and explicitly marks absent snapshots stale."
+    },
+    {
+      "designOperation": "submit_request",
+      "mappingClass": "owner_boundary",
+      "ownerEntrypoint": {
+        "role": "owner_entrypoint",
+        "path": "apps/hepta-control-ui/src/runtime-client.js",
+        "symbol": "async submitRequest(",
+        "buildTarget": "hepta-control-ui"
+      },
+      "delegatedCallees": [],
+      "tests": [
+        {
+          "path": "apps/hepta-control-ui/test/runtime-client.test.js",
+          "kind": "node_product_boundary",
+          "command": "node --test apps/hepta-control-ui/test/runtime-client.test.js"
+        }
+      ],
+      "sourceSemantics": "Submits an authenticated request bound to displayed revision, operation identity, and semantic digest."
+    },
+    {
+      "designOperation": "request_stop",
+      "mappingClass": "owner_boundary",
+      "ownerEntrypoint": {
+        "role": "owner_entrypoint",
+        "path": "apps/hepta-control-ui/src/runtime-client.js",
+        "symbol": "async requestStop(",
+        "buildTarget": "hepta-control-ui"
+      },
+      "delegatedCallees": [],
+      "tests": [
+        {
+          "path": "apps/hepta-control-ui/test/runtime-client.test.js",
+          "kind": "node_product_boundary",
+          "command": "node --test apps/hepta-control-ui/test/runtime-client.test.js"
+        }
+      ],
+      "sourceSemantics": "Uses the same authenticated identity/revision path for stop while preserving backend terminality."
+    }
+  ],
+  "repositoryControlledGaps": [],
+  "externalEvidenceGates": [
+    "selected Web framework/build artifact and browser support matrix",
+    "deployed authentication/CSP/CSRF/WebSocket topology",
+    "end-to-end accessibility and backend deployment qualification"
+  ],
+  "claimBoundary": {
+    "nativeSourceMappingComplete": true,
+    "repositoryControlledDocumentationGapsClosed": true,
+    "repositoryControlledMappingGapsClosed": true,
+    "repositoryControlledSourceBoundaryGapsClosed": true,
+    "productExecutionComplete": false,
+    "deploymentQualificationComplete": false,
+    "independentAcceptanceComplete": false
+  }
+}
