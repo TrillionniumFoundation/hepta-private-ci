@@ -5,6 +5,8 @@
 //! It does not implement a second runtime kernel or a fleet-wide message bus.
 
 mod app_runtime;
+mod authbus_ingress;
+mod authbus_trust;
 mod automation;
 mod client;
 mod cognitive_context;
@@ -18,6 +20,7 @@ mod qualification_writer;
 mod runtime;
 mod state;
 
+pub use authbus_ingress::authbus_text_claims;
 pub use client::AgentdClient;
 pub use codex_hepta_agent_protocol::AGENTD_CONTROL_SCHEMA_VERSION;
 pub use codex_hepta_agent_protocol::AgentdEvent;
@@ -26,6 +29,10 @@ pub use codex_hepta_agent_protocol::AgentdMethod;
 pub use codex_hepta_agent_protocol::AgentdPayload;
 pub use codex_hepta_agent_protocol::AgentdRequest;
 pub use codex_hepta_agent_protocol::AgentdResponse;
+pub use codex_hepta_agent_protocol::AuthBusTextBody;
+pub use codex_hepta_agent_protocol::AuthBusTextIngress;
+pub use codex_hepta_agent_protocol::AuthBusTextState;
+pub use codex_hepta_agent_protocol::AuthBusTextStatus;
 pub use codex_hepta_agent_protocol::CognitiveContextItem;
 pub use codex_hepta_agent_protocol::CognitiveContextPlan;
 pub use codex_hepta_agent_protocol::CognitiveContextSnapshot;

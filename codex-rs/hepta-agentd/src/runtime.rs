@@ -39,6 +39,9 @@ enum CompletedRuntimeTask {
 }
 
 pub async fn run(config: AgentdConfig, arg0_paths: Arg0DispatchPaths) -> Result<(), AgentdError> {
+    let trust_file = config
+        .authbus_trust_file()
+        .map(std::path::Path::to_path_buf);
     let (identity, registry, writer_lock) = config.into_parts();
     let _writer_lock = writer_lock;
     let federation_owner_layouts = registry
@@ -53,6 +56,15 @@ pub async fn run(config: AgentdConfig, arg0_paths: Arg0DispatchPaths) -> Result<
         registry,
         EVENT_CAPACITY,
     )?);
+    if let Some(path) = trust_file {
+        state.refresh_generation()?;
+        let host = crate::authbus_ingress::TextIngress::open(&identity, path).await?;
+        state.refresh_generation()?;
+        state
+            .authbus
+            .set(Arc::new(host))
+            .map_err(|_| AgentdError::Protocol("AuthBus host already attached".to_string()))?;
+    }
     let cognitive_layout = identity.layout.clone();
     let cognitive_runtime = open_cognitive_runtime_after_generation_fence(&state, || async move {
         CognitiveStore::open(&cognitive_layout).await

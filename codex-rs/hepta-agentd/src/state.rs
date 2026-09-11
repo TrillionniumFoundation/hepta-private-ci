@@ -38,6 +38,7 @@ const COGNITIVE_CONTROL_UNAVAILABLE_MESSAGE: &str =
     "this Agent's private cognitive control storage is unavailable";
 
 pub(crate) struct AgentdState {
+    pub(crate) authbus: std::sync::OnceLock<Arc<crate::authbus_ingress::TextIngress>>,
     identity: AgentdIdentity,
     registry: FleetRegistry,
     runtime: Mutex<RuntimeState>,
@@ -66,6 +67,7 @@ impl AgentdState {
             generation: identity.spawn_generation,
         });
         Ok(Self {
+            authbus: std::sync::OnceLock::new(),
             runtime: Mutex::new(RuntimeState {
                 current_generation: identity.spawn_generation,
                 lifecycle: AgentLifecycle::Starting,
@@ -316,6 +318,14 @@ impl AgentdState {
                         transport: SessionTransport::CodexAppServerWebsocketOverUds,
                     })
                 }
+            }
+            crate::AgentdMethod::AuthBusText { request } => AgentdPayload::AuthBusTextStatus(
+                crate::authbus_ingress::submit(self, request).await?,
+            ),
+            crate::AgentdMethod::AuthBusTextStatus { delivery_id } => {
+                AgentdPayload::AuthBusTextStatus(
+                    crate::authbus_ingress::status(self, delivery_id).await?,
+                )
             }
             crate::AgentdMethod::CognitiveContext { query, limit } => {
                 require_cognitive_control_ready(lifecycle, app_server_ready, fenced)?;

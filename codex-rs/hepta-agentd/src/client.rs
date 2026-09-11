@@ -120,6 +120,46 @@ impl AgentdClient {
         }
     }
 
+    /// Submit text signed by a separately trusted owner-configured issuer.
+    pub async fn submit_authbus_text(
+        &self,
+        request: crate::AuthBusTextIngress,
+    ) -> Result<crate::AuthBusTextStatus, AgentdError> {
+        match self
+            .send(AgentdRequest {
+                schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
+                request_id: self.request_id(),
+                spawn_generation: self.spawn_generation,
+                method: crate::AgentdMethod::AuthBusText { request },
+            })
+            .await?
+            .payload
+        {
+            AgentdPayload::AuthBusTextStatus(status) => Ok(status),
+            payload => unexpected(payload),
+        }
+    }
+
+    /// Observe queue-admission state; this never reports model/effect completion.
+    pub async fn authbus_text_status(
+        &self,
+        delivery_id: String,
+    ) -> Result<crate::AuthBusTextStatus, AgentdError> {
+        match self
+            .send(AgentdRequest {
+                schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
+                request_id: self.request_id(),
+                spawn_generation: self.spawn_generation,
+                method: crate::AgentdMethod::AuthBusTextStatus { delivery_id },
+            })
+            .await?
+            .payload
+        {
+            AgentdPayload::AuthBusTextStatus(status) => Ok(status),
+            payload => unexpected(payload),
+        }
+    }
+
     pub async fn events(&self, after_cursor: u64, limit: u16) -> Result<EventBatch, AgentdError> {
         match self
             .send(AgentdRequest::events(
