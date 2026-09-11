@@ -2,6 +2,7 @@
 
 mod authbus_outbox;
 mod authbus_outbox_record;
+mod authbus_outbox_worker;
 mod authbus_store;
 mod canonical;
 mod governance_store;
