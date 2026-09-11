@@ -129,14 +129,28 @@ jobs:
             -p codex-hepta-cognitive-store
 
       - name: Lint Rust owner crates
+        id: rust_owner_lint
         working-directory: codex-rs
         shell: bash
         run: |
-          set -euo pipefail
+          set +e
+          set -o pipefail
           cargo clippy --locked --all-targets \
             -p codex-hepta-control-plane \
             -p codex-hepta-cognitive-store \
-            -- -D warnings
+            -- -D warnings \
+            2>&1 | tee "$RUNNER_TEMP/r23-rust-owner-clippy.log"
+          status=${PIPESTATUS[0]}
+          exit "$status"
+
+      - name: Retain exact Rust owner lint diagnostic
+        if: failure() && steps.rust_owner_lint.outcome == 'failure'
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: r23-rust-owner-clippy-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/r23-rust-owner-clippy.log
+          if-no-files-found: error
+          retention-days: 7
 
       - name: Publish validated materialized tree
         shell: bash
