@@ -20,125 +20,310 @@
   "components": [
     {
       "id": "canonical-repository-path",
-      "source": "tools/hepta-engineering-control/control_engineering_v2/control_plane.py",
-      "symbols": ["canonical_repo_path", "canonical_paths", "paths_overlap", "path_sets_overlap"],
+      "source": "tools/hepta-engineering-control/control_engineering_v2/path_policy.py",
+      "symbols": [
+        "canonical_repo_path",
+        "canonical_paths",
+        "paths_overlap",
+        "path_sets_overlap"
+      ],
       "state": "source_implemented",
-      "failureModel": ["invalid_path", "noncanonical_unicode", "unsupported_glob", "path_limit_exceeded"],
-      "resourceBounds": {"maximumPathBytes": 1024, "maximumPathsPerRecord": 256},
-      "rollback": "remove the additive V2 package and retain the legacy pure helper"
+      "failureModel": [
+        "invalid_path",
+        "noncanonical_unicode",
+        "unsupported_glob",
+        "path_limit_exceeded"
+      ],
+      "resourceBounds": {
+        "maximumPathBytes": 1024,
+        "maximumPathsPerRecord": 256
+      },
+      "rollback": "deploy a compatible predecessor only after validating path and lease semantics"
     },
     {
       "id": "work-envelope-store",
       "source": "tools/hepta-engineering-control/control_engineering_v2/control_plane.py",
-      "symbols": ["WorkEnvelope", "EngineeringStore.issue_work_envelope"],
+      "symbols": [
+        "WorkEnvelope",
+        "EngineeringStore.issue_work_envelope"
+      ],
       "state": "source_implemented",
       "physicalState": "SQLite work_envelopes; WAL; synchronous FULL",
-      "failureModel": ["expired_envelope", "authority_ceiling_incomplete", "envelope_identity_conflict"],
-      "resourceBounds": {"maximumEncodedBytes": 262144, "maximumAssignments": 128},
+      "failureModel": [
+        "expired_envelope",
+        "authority_ceiling_incomplete",
+        "envelope_identity_conflict"
+      ],
+      "resourceBounds": {
+        "maximumEncodedBytes": 262144,
+        "maximumAssignments": 128
+      },
       "rollback": "restore an exact compatible predecessor and replay the current revocation frontier"
     },
     {
       "id": "path-lease-arbiter",
       "source": "tools/hepta-engineering-control/control_engineering_v2/control_plane.py",
-      "symbols": ["LeaseReceipt", "EngineeringStore.acquire_path_lease", "EngineeringStore.transition_path_lease"],
+      "symbols": [
+        "LeaseReceipt",
+        "EngineeringStore.acquire_path_lease",
+        "EngineeringStore.transition_path_lease"
+      ],
       "state": "source_implemented",
       "physicalState": "SQLite path_leases with authority epoch, revision and fencing token",
-      "failureModel": ["active_path_conflict", "stale_lease_revision", "stale_authority_epoch", "lease_not_active"],
-      "resourceBounds": {"maximumLeases": 4096, "maximumPathsPerLease": 256},
+      "failureModel": [
+        "active_path_conflict",
+        "stale_lease_revision",
+        "stale_authority_epoch",
+        "lease_not_active"
+      ],
+      "resourceBounds": {
+        "maximumPathsPerLease": 256,
+        "maximumActiveLeases": 4096
+      },
       "rollback": "fence the successor before any predecessor lease is reconsidered"
     },
     {
       "id": "assignment-scheduler",
       "source": "tools/hepta-engineering-control/control_engineering_v2/control_plane.py",
-      "symbols": ["WorkPackage", "ScheduleReceipt", "EngineeringStore.schedule_ready_packages"],
+      "symbols": [
+        "WorkPackage",
+        "ScheduleReceipt",
+        "EngineeringStore.schedule_ready_packages"
+      ],
       "state": "source_implemented",
-      "physicalState": "SQLite assignment_generations",
-      "failureModel": ["dependency_cycle", "unknown_predecessor", "package_path_outside_envelope", "generation_identity_conflict"],
-      "resourceBounds": {"maximumPackages": 4096, "maximumAssignments": 128},
+      "physicalState": "SQLite assignment_generations and assignment_generation_frontiers",
+      "failureModel": [
+        "dependency_cycle",
+        "unknown_predecessor",
+        "package_path_outside_envelope",
+        "generation_identity_conflict"
+      ],
+      "resourceBounds": {
+        "maximumPackages": 4096,
+        "maximumAssignments": 128
+      },
       "rollback": "publish a new immutable generation after revoking conflicting leases"
     },
     {
       "id": "audit-projection",
       "source": "tools/hepta-engineering-control/control_engineering_v2/control_plane.py",
-      "symbols": ["EngineeringStore.verify_audit_chain", "EngineeringStore.audit_projection"],
+      "symbols": [
+        "EngineeringStore.verify_audit_chain",
+        "EngineeringStore.audit_projection"
+      ],
       "state": "source_implemented",
       "physicalState": "append-only hash-linked SQLite audit_events",
-      "failureModel": ["audit_chain_broken", "invalid_audit_query"],
-      "resourceBounds": {"maximumQueryRows": 512},
+      "failureModel": [
+        "audit_chain_broken",
+        "invalid_audit_query"
+      ],
+      "resourceBounds": {
+        "maximumQueryRows": 512
+      },
       "rollback": "quarantine corruption and rebuild the projection from immutable owner facts"
     },
     {
       "id": "integration-decision-store",
       "source": "tools/hepta-engineering-control/control_engineering_v2/control_plane.py",
-      "symbols": ["EngineeringStore.record_integration_decision"],
+      "symbols": [
+        "EngineeringStore.record_integration_decision"
+      ],
       "state": "source_implemented",
-      "physicalState": "immutable SQLite integration_decisions",
-      "failureModel": ["decision_identity_conflict", "eligible_decision_has_reasons"],
-      "resourceBounds": {"maximumReasons": 128},
+      "physicalState": "SQLite integration_decisions, integration_decision_bindings and integration_decision_seals in one transaction",
+      "failureModel": [
+        "decision_identity_conflict",
+        "eligible_decision_has_reasons",
+        "sealed_evidence_required",
+        "sealed_evidence_replay"
+      ],
+      "resourceBounds": {
+        "maximumReasons": 128
+      },
       "rollback": "append a separately governed successor; never rewrite a prior decision"
     },
     {
       "id": "integration-evidence-verifier",
       "source": "tools/hepta-engineering-control/control_engineering_v2/evidence.py",
-      "symbols": ["CanonicalSourceReceipt", "ExecutionReceipt", "EvaluatorIndependenceReceipt", "verify_integration_evidence"],
+      "symbols": [
+        "CanonicalSourceReceipt",
+        "ExecutionReceipt",
+        "EvaluatorIndependenceReceipt",
+        "verify_integration_evidence"
+      ],
       "state": "source_implemented",
-      "failureModel": ["invalid_git_identity", "document_set_drift", "merge_parent_order_mismatch", "evaluator_identity_collision"],
-      "resourceBounds": {"gitCommandTimeoutSeconds": 30, "maximumGitOutputBytes": 1048576},
+      "failureModel": [
+        "invalid_git_identity",
+        "document_set_drift",
+        "merge_parent_order_mismatch",
+        "evaluator_identity_collision"
+      ],
+      "resourceBounds": {
+        "gitCommandTimeoutSeconds": 30,
+        "maximumGitOutputBytes": 1048576
+      },
       "rollback": "invalidate the evidence set and recompute from exact Git objects"
     },
     {
       "id": "candidate-generator",
       "source": "tools/hepta-engineering-control/control_engineering_v2/candidate.py",
-      "symbols": ["CandidateEnvelope", "Mutation", "generate_candidates"],
+      "symbols": [
+        "CandidateEnvelope",
+        "Mutation",
+        "generate_candidates"
+      ],
       "state": "source_implemented",
-      "failureModel": ["candidate_limit_exceeded", "protected_path", "path_outside_candidate_envelope", "no_change_missing"],
-      "resourceBounds": {"maximumCandidates": 32, "maximumChangedFiles": 100, "maximumDiffBytes": 1048576},
+      "failureModel": [
+        "candidate_limit_exceeded",
+        "protected_path",
+        "path_outside_candidate_envelope",
+        "no_change_missing"
+      ],
+      "resourceBounds": {
+        "maximumCandidates": 32,
+        "maximumChangedFiles": 100,
+        "maximumDiffBytes": 1048576
+      },
       "rollback": "discard the candidate; the exact base remains unchanged"
     },
     {
       "id": "candidate-sandbox",
       "source": "tools/hepta-engineering-control/control_engineering_v2/candidate.py",
-      "symbols": ["SandboxReceipt", "sandbox_candidate"],
+      "symbols": [
+        "SandboxReceipt",
+        "sandbox_candidate"
+      ],
       "state": "source_implemented",
-      "failureModel": ["network_isolation_unavailable", "sandbox_path_escape", "binary_change_rejected", "source_tree_mutated"],
-      "resourceBounds": {"maximumChecks": 64, "maximumWallTimeSeconds": 3600, "maximumProcesses": 1024},
-      "rollback": "remove the detached worktree and verify the source tree identity is unchanged"
+      "failureModel": [
+        "network_isolation_unavailable",
+        "sandbox_path_escape",
+        "binary_change_rejected",
+        "source_tree_mutated"
+      ],
+      "resourceBounds": {
+        "maximumChecks": 64,
+        "maximumWallTimeSeconds": 3600,
+        "maximumProcesses": 1024
+      },
+      "rollback": "remove the metadata-free temporary workspace and reject any source identity drift"
     },
     {
       "id": "independent-review-adapter",
       "source": "tools/hepta-engineering-control/control_engineering_v2/facade.py",
-      "symbols": ["ReviewRequest", "request_independent_review"],
+      "symbols": [
+        "ReviewRequest",
+        "request_independent_review"
+      ],
       "state": "source_implemented",
-      "failureModel": ["candidate_not_sandbox_tested", "evidence_not_eligible", "invalid_review_role"],
-      "resourceBounds": {"maximumReviewRoles": 3},
+      "failureModel": [
+        "candidate_not_sandbox_tested",
+        "evidence_not_eligible",
+        "invalid_review_role"
+      ],
+      "resourceBounds": {
+        "maximumReviewRoles": 3
+      },
       "rollback": "withdraw the request; no acceptance or product transition was issued"
     },
     {
       "id": "assimilation-manifest-and-contracts",
       "source": "tools/hepta-engineering-control/control_engineering_v2/assimilation.py",
-      "symbols": ["OwnerConsentReceipt", "build_manifest_candidate", "synthesize_read_only_contracts"],
+      "symbols": [
+        "OwnerConsentReceipt",
+        "build_manifest_candidate",
+        "synthesize_read_only_contracts"
+      ],
       "state": "source_implemented",
-      "failureModel": ["consent_expired", "consent_scope_widens_authority", "manifest_observation_shape", "target_identity_drift"],
-      "resourceBounds": {"maximumOperations": 16, "maximumOmissions": 64},
+      "failureModel": [
+        "consent_expired",
+        "consent_scope_widens_authority",
+        "manifest_observation_shape",
+        "target_identity_drift"
+      ],
+      "resourceBounds": {
+        "maximumOperations": 16,
+        "maximumOmissions": 64
+      },
       "rollback": "discard the private candidate; the target remains untouched"
     },
     {
       "id": "assimilation-qualification-adapter",
       "source": "tools/hepta-engineering-control/control_engineering_v2/assimilation.py",
-      "symbols": ["SandboxParityReceipt", "AssimilationProposal", "propose_dormant_assimilation"],
+      "symbols": [
+        "SandboxParityReceipt",
+        "AssimilationProposal",
+        "propose_dormant_assimilation"
+      ],
       "state": "source_implemented",
-      "failureModel": ["sandbox_input_drift", "sandbox_parity_failed", "sandbox_boundary_violation", "operation_widens_authority"],
-      "resourceBounds": {"maximumOperationOutputBytes": 65536, "operationDeadlineMillis": 5000},
+      "failureModel": [
+        "sandbox_input_drift",
+        "sandbox_parity_failed",
+        "sandbox_boundary_violation",
+        "operation_widens_authority"
+      ],
+      "resourceBounds": {
+        "maximumOperationOutputBytes": 65536,
+        "operationDeadlineMillis": 5000
+      },
       "rollback": "the proposal stays dormant and cannot enroll or activate a host"
     },
     {
       "id": "public-composition-facade",
       "source": "tools/hepta-engineering-control/control_engineering_v2/facade.py",
-      "symbols": ["issue_work_envelope", "schedule_ready_packages", "generate_candidate", "execute_candidate_sandbox", "verify_integration_evidence", "request_independent_review", "record_integration_decision", "publish_audit_projection", "prepare_assimilation_candidate"],
+      "symbols": [
+        "issue_work_envelope",
+        "schedule_ready_packages",
+        "generate_candidate",
+        "execute_candidate_sandbox",
+        "verify_integration_evidence",
+        "request_independent_review",
+        "record_integration_decision",
+        "publish_audit_projection",
+        "prepare_assimilation_candidate"
+      ],
       "state": "source_implemented",
-      "failureModel": ["invalid_sandbox_receipt"],
-      "resourceBounds": {"ambientAuthority": 0},
-      "rollback": "remove the additive facade; canonical owners retain their facts"
+      "failureModel": [
+        "invalid_sandbox_receipt"
+      ],
+      "resourceBounds": {
+        "ambientAuthority": 0
+      },
+      "rollback": "deploy a schema-compatible predecessor without rewriting committed owner facts"
+    },
+    {
+      "id": "authenticated-candidate-seal",
+      "source": "tools/hepta-engineering-control/control_engineering_v2/seal.py",
+      "symbols": [
+        "SealedCandidateEvidence",
+        "bind_candidate_evidence",
+        "verify_sealed_candidate_evidence",
+        "record_integration_decision"
+      ],
+      "state": "source_implemented",
+      "failureModel": [
+        "sealed_evidence_signature",
+        "sealed_evidence_stale",
+        "sealed_evidence_replay"
+      ],
+      "physicalState": "SQLite integration_decision_bindings and integration_decision_seals",
+      "rollback": "request fresh evidence; never rewrite or reuse an existing seal"
+    },
+    {
+      "id": "engineering-local-cli",
+      "source": "tools/hepta-engineering-control/control_engineering_v2/cli.py",
+      "symbols": [
+        "main",
+        "run"
+      ],
+      "state": "source_implemented",
+      "resourceBounds": {
+        "maximumInputFileBytes": 2097152
+      },
+      "failureModel": [
+        "duplicate_json_field",
+        "invalid_input_fields",
+        "input_byte_limit_exceeded"
+      ],
+      "rollback": "retry with corrected input; scheduling retains immutable committed generations"
     }
   ],
   "externalGates": {

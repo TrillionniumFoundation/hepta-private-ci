@@ -1,29 +1,25 @@
-# `control.engineering` latest implementation binding
+# control.engineering implementation binding
 
-This document binds the canonical Lane G module specification to the current repository-owned implementation. It does not grant independent acceptance, merge, activation, promotion, release, deployment, peer-enrollment, credential, or runtime authority.
+The canonical implementation guide is [IMPLEMENTATION.md](IMPLEMENTATION.md).
+Concrete source lives in `tools/hepta-engineering-control/control_engineering_v2/`;
+`__init__.py` exports authenticated public composition, `control_plane.py` directly
+owns the SQLite v5 schema/transactions, `candidate.py` is the sole sandbox owner,
+and `cli.py` exposes local scheduling and candidate qualification.
 
-## Authoritative source package
+[COMPONENTS.json](COMPONENTS.json) and [TRACEABILITY.json](TRACEABILITY.json) are
+source/test navigation maps. They do not self-certify maturity or grant authority.
+Historical `HARDENING.json`, `CLOSURE_V4.json`, `MATURITY.json` and copied package
+registries are retired; their useful behavior is in the current source, schema,
+implementation guide and behavioral regressions. No historical materializer,
+self-pushing workflow or static-registry validator is needed to run this package.
 
-- `tools/hepta-engineering-control/control_engineering_v2/`
-- public composition boundary: `control_engineering_v2.__init__`
-- hardening implementation: `control_engineering_v2/hardening.py`
-- component registry: `COMPONENTS.json`
-- operation traceability: `TRACEABILITY.json`
-- blocker closure registry: `HARDENING.json`
-- maturity dimensions: `MATURITY.json`
-- failure taxonomy: `HARDENING_FAILURE_CODES.json`
-- external gates: `EXTERNAL_GATES.json`
+Run the test commands in the implementation guide. Strong sandbox qualification
+requires the real Linux Bubblewrap probe and `HEPTA_REQUIRE_STRONG_SANDBOX=1`.
+Portable fixture execution has a distinct maturity result. Current CI workflow
+files, actual job logs and signed execution receipts establish qualification;
+a document's description of a historical workflow does not.
 
-## Repository-owned closure
-
-The implementation provides persistent work envelopes, fenced path leases, deterministic assignment generations, bounded candidate generation, a clean disconnected-clone test boundary, exact evidence verification, separately signed candidate/evidence binding, review-request composition, authenticated dormant assimilation composition, audit projection, schema versioning, replay checks, and negative-path qualification.
-
-Assignment generations bind the exact envelope revision, source identity and active-lease frontier. Owner mutations begin with `BEGIN IMMEDIATE`. Candidate qualification rejects zero checks and detects source HEAD, tree, worktree and ref mutation. Exact-source and synthetic-merge receipts must be fresh, signed and bound to the exact candidate before a review or eligible decision can be recorded.
-
-## Qualification identity
-
-`.github/workflows/hepta-lane-g-engineering.yml` tests the exact source head on Linux, macOS and Windows. Pull requests additionally construct an ordered base/head synthetic merge and rerun the complete Lane G, documentation and repository-integrity gates. The workflow emits content-addressed qualification receipts with `authorityGranted=false`.
-
-## External boundary
-
-The source stops at a review request and a dormant assimilation candidate. Production-grade hostile-workload isolation, organizationally independent evaluator credentials, owner-issued production consent, reviewer acceptance, merge, activation, release and deployment remain external gates and may not be self-asserted by this module or its author.
+Owner work stops at durable assignments, candidate qualification, signed review
+eligibility or a dormant external-system proposal. Independent key custody,
+production callers and adapters, measured benefit, real target operation,
+reviewer acceptance and deployment remain separate deliverables.

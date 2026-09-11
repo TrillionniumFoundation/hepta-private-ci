@@ -63,7 +63,7 @@ A successful portable fixture returns `fixture_tested`, never `sandbox_tested`. 
 
 ## Mandatory adversarial qualification
 
-The dedicated workflow executes portable checks on Linux, macOS and Windows and strong checks on both the exact Linux head and the ordered prospective merge. It proves at least the following:
+The behavioral suite supports portable fixture checks and Linux strong checks. A strict Linux job must set `HEPTA_REQUIRE_STRONG_SANDBOX=1`; a skipped host-admission probe is not positive strong-isolation evidence. Current workflow files and observed job results establish platform coverage. The suite exercises:
 
 1. an empty check set is rejected;
 2. an exact Git blob excluded by `export-ignore` is still materialized;
@@ -75,10 +75,16 @@ The dedicated workflow executes portable checks on Linux, macOS and Windows and 
 8. the strong adapter cannot observe the caller checkout or `.git` and cannot write the candidate workspace;
 9. a nonzero strongly isolated check cannot receive `sandbox_tested`.
 
-The workflow itself only installs and identifies Bubblewrap. The implementation's `_admit_bubblewrap` probe is the single source of truth for isolation admission, preventing a second hand-written mount policy from drifting away from the code under qualification.
+Runner configuration installs Bubblewrap and makes the required namespaces available. The implementation's `_admit_bubblewrap` probe is the single source of truth for isolation admission, preventing a second hand-written mount policy from drifting away from the code under qualification.
 
 ## Receipt binding
 
 `SandboxReceipt` binds the candidate and base identities, source tree before and after, ordered check results, check-set digest, candidate-state digest before and after, caller-worktree digest before and after, adapter identity, observed network and filesystem isolation, duration, pass/fail result, credential-environment count and an always-false authority delta.
 
 A receipt with unavailable isolation, no checks, incomplete execution, state drift, source drift, an unrecognized adapter or any nonzero check is not strong sandbox evidence.
+
+The executor compares source HEAD, tree, refs and worktree, plus the candidate
+manifest, after every check. A later check cannot hide an earlier mutation. The
+source-boundary digest includes refs even when HEAD remains unchanged. All checks
+share one elapsed time budget; argument vectors are bounded to 256 arguments,
+8192 characters per argument and 65536 characters total.

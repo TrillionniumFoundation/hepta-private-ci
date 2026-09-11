@@ -10,7 +10,10 @@
       "nativeModule": "control_engineering_v2.facade",
       "nativeSymbol": "issue_work_envelope",
       "ownerSymbol": "EngineeringStore.issue_work_envelope",
-      "tests": ["StoreTests.test_fenced_lease_schedule_reopen_and_audit", "StoreTests.test_envelope_and_generation_semantic_conflicts"],
+      "tests": [
+        "StoreTests.test_fenced_lease_schedule_reopen_and_audit",
+        "StoreTests.test_envelope_and_generation_semantic_conflicts"
+      ],
       "state": "source_implemented",
       "capabilityCeiling": "immutable engineering envelope only"
     },
@@ -19,7 +22,10 @@
       "nativeModule": "control_engineering_v2.facade",
       "nativeSymbol": "schedule_ready_packages",
       "ownerSymbol": "EngineeringStore.schedule_ready_packages",
-      "tests": ["StoreTests.test_fenced_lease_schedule_reopen_and_audit", "StoreTests.test_cycle_and_out_of_scope_paths_reject"],
+      "tests": [
+        "StoreTests.test_fenced_lease_schedule_reopen_and_audit",
+        "StoreTests.test_cycle_and_out_of_scope_paths_reject"
+      ],
       "state": "source_implemented",
       "capabilityCeiling": "assignment proposal only"
     },
@@ -28,7 +34,9 @@
       "nativeModule": "control_engineering_v2.control_plane",
       "nativeSymbol": "EngineeringStore.acquire_path_lease",
       "ownerSymbol": "EngineeringStore.acquire_path_lease",
-      "tests": ["StoreTests.test_fenced_lease_schedule_reopen_and_audit"],
+      "tests": [
+        "StoreTests.test_fenced_lease_schedule_reopen_and_audit"
+      ],
       "state": "source_implemented",
       "capabilityCeiling": "repository path serialization only"
     },
@@ -37,7 +45,9 @@
       "nativeModule": "control_engineering_v2.facade",
       "nativeSymbol": "generate_candidate",
       "ownerSymbol": "generate_candidates",
-      "tests": ["CandidateTests.test_no_change_dedupe_and_protected_paths"],
+      "tests": [
+        "CandidateTests.test_no_change_dedupe_and_protected_paths"
+      ],
       "state": "source_implemented",
       "capabilityCeiling": "draft and no-change candidates only"
     },
@@ -46,7 +56,9 @@
       "nativeModule": "control_engineering_v2.facade",
       "nativeSymbol": "execute_candidate_sandbox",
       "ownerSymbol": "sandbox_candidate",
-      "tests": ["CandidateTests.test_detached_sandbox_does_not_mutate_source"],
+      "tests": [
+        "CandidateTests.test_detached_sandbox_does_not_mutate_source"
+      ],
       "state": "source_implemented",
       "capabilityCeiling": "sandbox_tested at most"
     },
@@ -55,7 +67,10 @@
       "nativeModule": "control_engineering_v2.facade",
       "nativeSymbol": "verify_integration_evidence",
       "ownerSymbol": "evidence.verify_integration_evidence",
-      "tests": ["EvidenceTests.test_exact_objects_and_independent_roles_pass_for_review_only", "EvidenceTests.test_tamper_and_role_collision_fail_closed"],
+      "tests": [
+        "EvidenceTests.test_exact_objects_and_independent_roles_pass_for_review_only",
+        "EvidenceTests.test_tamper_and_role_collision_fail_closed"
+      ],
       "state": "source_implemented",
       "capabilityCeiling": "eligible_for_independent_review at most"
     },
@@ -64,7 +79,9 @@
       "nativeModule": "control_engineering_v2.facade",
       "nativeSymbol": "request_independent_review",
       "ownerSymbol": "request_independent_review",
-      "tests": ["EvidenceTests.test_exact_objects_and_independent_roles_pass_for_review_only"],
+      "tests": [
+        "EvidenceTests.test_exact_objects_and_independent_roles_pass_for_review_only"
+      ],
       "state": "source_implemented",
       "capabilityCeiling": "review request without acceptance"
     },
@@ -73,7 +90,9 @@
       "nativeModule": "control_engineering_v2.facade",
       "nativeSymbol": "record_integration_decision",
       "ownerSymbol": "EngineeringStore.record_integration_decision",
-      "tests": ["StoreTests.test_envelope_and_generation_semantic_conflicts"],
+      "tests": [
+        "StoreTests.test_envelope_and_generation_semantic_conflicts"
+      ],
       "state": "source_implemented",
       "capabilityCeiling": "immutable eligibility projection only"
     },
@@ -82,7 +101,10 @@
       "nativeModule": "control_engineering_v2.facade",
       "nativeSymbol": "publish_audit_projection",
       "ownerSymbol": "EngineeringStore.audit_projection",
-      "tests": ["StoreTests.test_fenced_lease_schedule_reopen_and_audit", "StoreTests.test_constructor_closes_connection_when_audit_is_corrupt"],
+      "tests": [
+        "StoreTests.test_fenced_lease_schedule_reopen_and_audit",
+        "StoreTests.test_constructor_closes_connection_when_audit_is_corrupt"
+      ],
       "state": "source_implemented",
       "capabilityCeiling": "read-only audit projection"
     },
@@ -91,9 +113,23 @@
       "nativeModule": "control_engineering_v2.facade",
       "nativeSymbol": "prepare_assimilation_candidate",
       "ownerSymbol": "propose_dormant_assimilation",
-      "tests": ["AssimilationTests.test_read_only_pipeline_stops_at_dormant_candidate", "AssimilationTests.test_expired_or_effect_scope_rejects"],
+      "tests": [
+        "AssimilationTests.test_read_only_pipeline_stops_at_dormant_candidate",
+        "AssimilationTests.test_expired_or_effect_scope_rejects"
+      ],
       "state": "source_implemented",
       "capabilityCeiling": "dormant target-specific proposal only"
+    },
+    {
+      "designOperation": "local_schedule_and_candidate_qualification",
+      "nativeModule": "control_engineering_v2.cli",
+      "nativeSymbol": "main",
+      "ownerSymbol": "EngineeringStore and sandbox_candidate",
+      "tests": [
+        "test_consolidated_engineering.EngineeringCliTests"
+      ],
+      "state": "source_implemented",
+      "capabilityCeiling": "assignment projection or bounded qualification only"
     }
   ],
   "negativeAuthorityInvariants": [
@@ -106,5 +142,13 @@
     "no_self_release",
     "no_autonomous_host_enrollment",
     "no_credential_propagation"
+  ],
+  "additionalTestFiles": [
+    "tools/hepta-engineering-control/test_candidate_sandbox_hardening.py",
+    "tools/hepta-engineering-control/test_path_policy_hardening.py",
+    "tools/hepta-engineering-control/test_lane_g_hardening.py",
+    "tools/hepta-engineering-control/test_lane_g_closure.py",
+    "tools/hepta-engineering-control/test_lane_g_seal.py",
+    "tools/hepta-engineering-control/test_consolidated_engineering.py"
   ]
 }

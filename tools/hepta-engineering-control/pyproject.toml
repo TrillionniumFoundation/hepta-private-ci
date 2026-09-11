@@ -18,13 +18,4 @@ hepta-engineering = "control_engineering_v2.cli:main"
 packages = ["control_engineering_v2"]
 
 [tool.setuptools.package-data]
-control_engineering_v2 = [
-  "COMPONENTS.json",
-  "TRACEABILITY.json",
-  "EXTERNAL_GATES.json",
-  "FAILURE_CODES.json",
-  "IMPLEMENTATION.md",
-  "README.md",
-  "SCHEMA.sql",
-  "py.typed",
-]
+control_engineering_v2 = ["README.md", "SCHEMA.sql", "py.typed"]

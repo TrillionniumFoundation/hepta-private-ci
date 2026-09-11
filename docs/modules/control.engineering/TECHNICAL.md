@@ -24,6 +24,12 @@ The primary owner `developer-productivity` controls changes inside the declared 
 
 Plane `engineering`, kind `orchestrator`, state model `stateful_projection` and architecture role `engineering_control` define placement. The module may optimize locally, but cannot claim global optimality or absorb another module's durable facts.
 
+The concrete Python owner, SQLite v5 schema, authenticated public API, CLI,
+resource limits, failure recovery and behavioral verification are documented in
+[IMPLEMENTATION.md](IMPLEMENTATION.md). The candidate isolation contract is in
+[SANDBOX_SECURITY.md](SANDBOX_SECURITY.md). These implementation companions replace
+historical package-local maturity/closure assertion registries.
+
 ## 2. Source binding and implementation status
 
 Declared exclusive target roots:
