@@ -321,7 +321,9 @@ mod tests {
     use codex_hepta_memory::H7ArtifactVerifier;
     use codex_hepta_memory::H7QualificationRuntime;
     use codex_hepta_memory::H7TrajectoryEvent;
+    #[cfg(unix)]
     use std::io::Seek;
+    #[cfg(unix)]
     use std::io::Write;
 
     fn digest(seed: u8) -> Sha256Digest {

@@ -15,26 +15,39 @@ use std::os::fd::AsRawFd;
 use std::path::Path;
 #[cfg(unix)]
 use std::path::PathBuf;
+#[cfg(unix)]
 use std::sync::Arc;
+#[cfg(unix)]
 use std::sync::atomic::AtomicU64;
+#[cfg(unix)]
 use std::sync::atomic::Ordering;
 #[cfg(unix)]
 use std::time::Duration;
+#[cfg(unix)]
 use std::time::Instant;
 
+#[cfg(any(unix, test))]
 use codex_hepta_contracts::AgentId;
+#[cfg(any(unix, test))]
 use codex_hepta_fleet::AgentLifecycle;
+#[cfg(unix)]
 use codex_hepta_fleet::FleetRegistry;
+#[cfg(any(unix, test))]
 use codex_hepta_fleet::FleetRegistryError;
+#[cfg(any(unix, test))]
 use codex_hepta_fleet::ReleaseId;
 use codex_hepta_paths::HeptaFleetRoot;
 #[cfg(unix)]
 use codex_uds::UnixListener;
 #[cfg(unix)]
 use codex_uds::UnixStream;
+#[cfg(any(unix, test))]
 use constant_time_eq::constant_time_eq_32;
+#[cfg(any(unix, test))]
 use serde::Serialize;
+#[cfg(any(unix, test))]
 use sha2::Digest;
+#[cfg(any(unix, test))]
 use sha2::Sha256;
 #[cfg(unix)]
 use tokio::io::AsyncBufReadExt;
@@ -44,6 +57,7 @@ use tokio::io::AsyncReadExt;
 use tokio::io::AsyncWriteExt;
 #[cfg(unix)]
 use tokio::io::BufReader;
+#[cfg(unix)]
 use tokio::sync::Mutex;
 #[cfg(unix)]
 use tokio::sync::Semaphore;
@@ -53,36 +67,55 @@ use tokio::time::MissedTickBehavior;
 use tokio::time::timeout;
 use tokio_util::sync::CancellationToken;
 
+#[cfg(unix)]
 use crate::AgentRelease;
+#[cfg(any(unix, test))]
 use crate::AgentSupervisorSnapshot;
+#[cfg(unix)]
 use crate::H7H89ProductionGrant;
 use crate::H7H89ProductionGrantVerifier;
+#[cfg(unix)]
 use crate::H7H89ProductionTransition;
+#[cfg(unix)]
 use crate::ProcessDriver;
+#[cfg(unix)]
 use crate::Supervisor;
 #[cfg(unix)]
 use crate::SupervisorConfig;
 use crate::SupervisorError;
 #[cfg(unix)]
 use crate::UnixProcessDriver;
+#[cfg(any(unix, test))]
 use crate::daemon_protocol::ControlStateDigest;
 #[cfg(unix)]
 use crate::daemon_protocol::MAX_SUPERVISORD_CONTROL_FRAME_BYTES;
+#[cfg(unix)]
 use crate::daemon_protocol::MAX_SUPERVISORD_ROSTER;
+#[cfg(unix)]
 use crate::daemon_protocol::SUPERVISORD_CONTROL_SCHEMA_VERSION;
+#[cfg(any(unix, test))]
 use crate::daemon_protocol::SupervisorEpoch;
+#[cfg(any(unix, test))]
 use crate::daemon_protocol::SupervisordAgentStatus;
+#[cfg(any(unix, test))]
 use crate::daemon_protocol::SupervisordControlFence;
+#[cfg(unix)]
 use crate::daemon_protocol::SupervisordHealth;
+#[cfg(any(unix, test))]
 use crate::daemon_protocol::SupervisordMatrixStatus;
+#[cfg(unix)]
 use crate::daemon_protocol::SupervisordMethod;
+#[cfg(unix)]
 use crate::daemon_protocol::SupervisordMutation;
+#[cfg(any(unix, test))]
 use crate::daemon_protocol::SupervisordPayload;
 #[cfg(unix)]
 use crate::daemon_protocol::SupervisordRequest;
 #[cfg(unix)]
 use crate::daemon_protocol::SupervisordRequestValidationError;
+#[cfg(unix)]
 use crate::daemon_protocol::SupervisordResponse;
+#[cfg(unix)]
 use crate::signed_authority::authority_epoch_for_supervisor_epoch;
 
 #[cfg(unix)]
@@ -91,7 +124,9 @@ const CONNECTION_CAPACITY: usize = 64;
 const IO_TIMEOUT: Duration = Duration::from_secs(2);
 #[cfg(unix)]
 const TICK_INTERVAL: Duration = Duration::from_millis(25);
+#[cfg(any(unix, test))]
 const CONTROL_STATE_DIGEST_DOMAIN: &[u8] = b"hepta.supervisord.control-state.v2\0";
+#[cfg(any(unix, test))]
 const CONTROL_FENCE_IDENTITY_DOMAIN: &[u8] = b"hepta.supervisord.control-fence-identity.v2\0";
 
 /// Compile-time gate for the externally-authorized mutation entry point.
@@ -101,6 +136,7 @@ const CONTROL_FENCE_IDENTITY_DOMAIN: &[u8] = b"hepta.supervisord.control-fence-i
 pub const PRODUCTION_AUTHORITY_FEATURE_ENABLED: bool =
     cfg!(feature = "production-authority") || cfg!(test);
 
+#[cfg(unix)]
 struct DaemonState<D: ProcessDriver> {
     registry: FleetRegistry,
     supervisor: Mutex<Supervisor<D>>,
@@ -341,6 +377,7 @@ async fn write_response(
     Ok(())
 }
 
+#[cfg(unix)]
 async fn handle_request<D: ProcessDriver>(
     state: Arc<DaemonState<D>>,
     method: SupervisordMethod,
@@ -529,6 +566,7 @@ async fn handle_request<D: ProcessDriver>(
     }
 }
 
+#[cfg(unix)]
 async fn handle_signed_mutation<D: ProcessDriver>(
     state: Arc<DaemonState<D>>,
     transition: H7H89ProductionTransition,
@@ -612,6 +650,7 @@ async fn handle_signed_mutation<D: ProcessDriver>(
     }
 }
 
+#[cfg(unix)]
 fn unix_seconds_now() -> u64 {
     std::time::SystemTime::now()
         .duration_since(std::time::UNIX_EPOCH)
@@ -619,6 +658,7 @@ fn unix_seconds_now() -> u64 {
         .unwrap_or(0)
 }
 
+#[cfg(unix)]
 async fn handle_mutation<D: ProcessDriver>(
     state: Arc<DaemonState<D>>,
     operation: SupervisordMutation,
@@ -734,6 +774,7 @@ async fn handle_mutation<D: ProcessDriver>(
     }
 }
 
+#[cfg(unix)]
 enum PreparedMutation {
     Start(AgentRelease),
     Drain,
@@ -744,6 +785,7 @@ enum PreparedMutation {
     Rollback,
 }
 
+#[cfg(unix)]
 async fn resolve_release_outside_lock<D: ProcessDriver>(
     state: Arc<DaemonState<D>>,
     agent_id: AgentId,
@@ -757,6 +799,7 @@ async fn resolve_release_outside_lock<D: ProcessDriver>(
     AgentRelease::try_from(release)
 }
 
+#[cfg(unix)]
 async fn agent_status<D: ProcessDriver>(
     state: &DaemonState<D>,
     agent_id: &AgentId,
@@ -765,6 +808,7 @@ async fn agent_status<D: ProcessDriver>(
     agent_status_locked(state, &supervisor, agent_id)
 }
 
+#[cfg(unix)]
 fn agent_status_locked<D: ProcessDriver>(
     state: &DaemonState<D>,
     supervisor: &Supervisor<D>,
@@ -783,6 +827,7 @@ fn agent_status_locked<D: ProcessDriver>(
     )
 }
 
+#[cfg(any(unix, test))]
 fn status_from(
     supervisor_epoch: &SupervisorEpoch,
     record: &codex_hepta_fleet::AgentRecord,
@@ -841,6 +886,7 @@ fn status_from(
     Ok(status)
 }
 
+#[cfg(any(unix, test))]
 fn control_fence_matches(
     provided: &SupervisordControlFence,
     actual: &SupervisordControlFence,
@@ -860,6 +906,7 @@ fn control_fence_matches(
 }
 
 #[derive(Serialize)]
+#[cfg(any(unix, test))]
 struct FenceIdentity<'a> {
     agent_id: &'a AgentId,
     supervisor_epoch: &'a SupervisorEpoch,
@@ -872,6 +919,7 @@ struct FenceIdentity<'a> {
     release_change_pending: bool,
 }
 
+#[cfg(any(unix, test))]
 impl<'a> From<&'a SupervisordControlFence> for FenceIdentity<'a> {
     fn from(fence: &'a SupervisordControlFence) -> Self {
         Self {
@@ -889,6 +937,7 @@ impl<'a> From<&'a SupervisordControlFence> for FenceIdentity<'a> {
 }
 
 #[derive(Serialize)]
+#[cfg(any(unix, test))]
 struct HiddenControlState<'a> {
     control_revision: u64,
     active: bool,
@@ -908,11 +957,13 @@ struct HiddenControlState<'a> {
 }
 
 #[derive(Serialize)]
+#[cfg(any(unix, test))]
 struct ControlStateMaterial<'a> {
     fence: FenceIdentity<'a>,
     hidden: HiddenControlState<'a>,
 }
 
+#[cfg(any(unix, test))]
 fn control_state_digest(
     fence: &SupervisordControlFence,
     status: &SupervisordAgentStatus,
@@ -947,6 +998,7 @@ fn control_state_digest(
     Ok(ControlStateDigest::from_bytes(hasher.finalize().into()))
 }
 
+#[cfg(any(unix, test))]
 fn fence_identity_digest(fence: &SupervisordControlFence) -> Result<[u8; 32], serde_json::Error> {
     let encoded = serde_json::to_vec(&FenceIdentity::from(fence))?;
     let mut hasher = Sha256::new();
@@ -955,6 +1007,7 @@ fn fence_identity_digest(fence: &SupervisordControlFence) -> Result<[u8; 32], se
     Ok(hasher.finalize().into())
 }
 
+#[cfg(any(unix, test))]
 fn safe_rejection(
     error: SupervisorError,
     actual: Option<SupervisordAgentStatus>,
@@ -1056,6 +1109,7 @@ fn safe_rejection(
     }
 }
 
+#[cfg(any(unix, test))]
 fn error_payload(
     code: &str,
     message: &str,
@@ -1068,6 +1122,7 @@ fn error_payload(
     }
 }
 
+#[cfg(unix)]
 fn error_response(
     request_id: u64,
     code: &str,
