@@ -80,8 +80,7 @@ fn freezes_the_run_tuple_before_context_attachment() {
 
 #[test]
 fn cancellation_preserves_the_dispatch_boundary() {
-    let mut before =
-        AgentRunCoordinator::compose_runtime(composition()).expect("compose runtime");
+    let mut before = AgentRunCoordinator::compose_runtime(composition()).expect("compose runtime");
     before.start_run(100, snapshot()).expect("admit run");
     let early = before.cancel_run("run.1", 1).expect("cancel");
     assert_eq!(
@@ -99,8 +98,7 @@ fn cancellation_preserves_the_dispatch_boundary() {
         )
     );
 
-    let mut after =
-        AgentRunCoordinator::compose_runtime(composition()).expect("compose runtime");
+    let mut after = AgentRunCoordinator::compose_runtime(composition()).expect("compose runtime");
     after.start_run(100, snapshot()).expect("admit run");
     after
         .attach_context(1, attachment())

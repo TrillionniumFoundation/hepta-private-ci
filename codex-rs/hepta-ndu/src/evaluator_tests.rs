@@ -377,7 +377,7 @@ fn missing_uncertainty_axis_is_unavailable() {
         profile(),
         None,
     ));
-    assert_eq!(error.code(), "NDU-E003");
+    assert_eq!(error.code(), "NDU-E004");
 }
 
 #[test]
