@@ -90,12 +90,12 @@ fn rejects_noncanonical_input_before_writing_an_artifact() -> Result<(), Qualifi
     Ok(())
 }
 
-fn assert_private_tree(root: &std::path::Path) -> Result<(), QualificationError> {
+fn assert_private_tree(_root: &std::path::Path) -> Result<(), QualificationError> {
     #[cfg(unix)]
     {
         use std::os::unix::fs::PermissionsExt;
-        assert_eq!(fs::metadata(root)?.permissions().mode() & 0o077, 0);
-        for entry in fs::read_dir(root)? {
+        assert_eq!(fs::metadata(_root)?.permissions().mode() & 0o077, 0);
+        for entry in fs::read_dir(_root)? {
             assert_eq!(entry?.metadata()?.permissions().mode() & 0o077, 0);
         }
     }
