@@ -79,16 +79,16 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          uv run --frozen --project scripts ruff format \
-            scripts/hepta-module-dossiers.py \
-            scripts/hepta-plan-digest.py \
-            scripts/qualification/hepta_current_ci_state.py \
-            scripts/qualification/hepta_full_validator.py \
-            scripts/qualification/hepta_write_external_handoff.py \
-            scripts/qualification/hepta_write_report.py \
-            scripts/qualification/tests/test_hepta_current_ci_state.py \
-            tests/test_hepta_blocker_orchestrator.py \
-            tests/test_validate_contract_providers.py
+          uv run --frozen --project "$GITHUB_WORKSPACE/scripts" ruff format \
+            "$GITHUB_WORKSPACE/scripts/hepta-module-dossiers.py" \
+            "$GITHUB_WORKSPACE/scripts/hepta-plan-digest.py" \
+            "$GITHUB_WORKSPACE/scripts/qualification/hepta_current_ci_state.py" \
+            "$GITHUB_WORKSPACE/scripts/qualification/hepta_full_validator.py" \
+            "$GITHUB_WORKSPACE/scripts/qualification/hepta_write_external_handoff.py" \
+            "$GITHUB_WORKSPACE/scripts/qualification/hepta_write_report.py" \
+            "$GITHUB_WORKSPACE/scripts/qualification/tests/test_hepta_current_ci_state.py" \
+            "$GITHUB_WORKSPACE/tests/test_hepta_blocker_orchestrator.py" \
+            "$GITHUB_WORKSPACE/tests/test_validate_contract_providers.py"
           git diff --name-only | sort > "$RUNNER_TEMP/actual-files"
           diff -u "$RUNNER_TEMP/expected-files" "$RUNNER_TEMP/actual-files"
           echo PASS_PR515_EXACT_CHANGESET
@@ -115,16 +115,16 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          uv run --frozen --project scripts ruff format \
-            scripts/hepta-module-dossiers.py \
-            scripts/hepta-plan-digest.py \
-            scripts/qualification/hepta_current_ci_state.py \
-            scripts/qualification/hepta_full_validator.py \
-            scripts/qualification/hepta_write_external_handoff.py \
-            scripts/qualification/hepta_write_report.py \
-            scripts/qualification/tests/test_hepta_current_ci_state.py \
-            tests/test_hepta_blocker_orchestrator.py \
-            tests/test_validate_contract_providers.py
+          uv run --frozen --project "$GITHUB_WORKSPACE/scripts" ruff format \
+            "$GITHUB_WORKSPACE/scripts/hepta-module-dossiers.py" \
+            "$GITHUB_WORKSPACE/scripts/hepta-plan-digest.py" \
+            "$GITHUB_WORKSPACE/scripts/qualification/hepta_current_ci_state.py" \
+            "$GITHUB_WORKSPACE/scripts/qualification/hepta_full_validator.py" \
+            "$GITHUB_WORKSPACE/scripts/qualification/hepta_write_external_handoff.py" \
+            "$GITHUB_WORKSPACE/scripts/qualification/hepta_write_report.py" \
+            "$GITHUB_WORKSPACE/scripts/qualification/tests/test_hepta_current_ci_state.py" \
+            "$GITHUB_WORKSPACE/tests/test_hepta_blocker_orchestrator.py" \
+            "$GITHUB_WORKSPACE/tests/test_validate_contract_providers.py"
           git diff --name-only | sort > "$RUNNER_TEMP/actual-files"
           diff -u "$RUNNER_TEMP/expected-files" "$RUNNER_TEMP/actual-files"
           echo PASS_PR515_FINAL_EXACT_CHANGESET
