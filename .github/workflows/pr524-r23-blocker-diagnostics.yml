@@ -1,0 +1,188 @@
+name: PR 524 r23 blocker diagnostics
+
+on:
+  push:
+    branches:
+      - ops/pr524-r23-all-blocker-diagnostic-20260911-r1
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pr524-r23-blocker-diagnostics-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  ubuntu:
+    name: Capture Ubuntu blocker assertions
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    env:
+      SOURCE_SHA: bd46f37056293f79e5958445e3eaf979638b24a5
+      BASE_SHA: 04f60466394a024c218ce66b1b32d1c42c462985
+      PYTHONDONTWRITEBYTECODE: "1"
+      CARGO_NET_GIT_FETCH_WITH_CLI: "true"
+    steps:
+      - name: Check out diagnostic source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+          fetch-depth: 0
+
+      - name: Print exact blocker workflow definitions
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p diagnostics
+          {
+            echo "diagnostic_sha=$(git rev-parse HEAD)"
+            echo "diagnostic_tree=$(git rev-parse HEAD^{tree})"
+            echo "source_sha=$SOURCE_SHA"
+            echo "base_sha=$BASE_SHA"
+            echo "parent=$(git show -s --format=%P "$SOURCE_SHA")"
+            echo "source_tree=$(git rev-parse "$SOURCE_SHA^{tree}")"
+          } > diagnostics/identity.log
+          grep -RIlE '^name:.*(Lane A foundation|Lane B implementation|Lane D|Lane E|Lane G|converged learning|consolidated source|NDU recursion)' .github/workflows \
+            | sort > diagnostics/workflow-files.txt || true
+          while IFS= read -r file; do
+            {
+              echo "===== $file ====="
+              sed -n '1,260p' "$file"
+            } >> diagnostics/workflows.log
+          done < diagnostics/workflow-files.txt
+          find scripts -maxdepth 1 -type f | sort | grep -Ei 'lane[-_][abdeg]|ndu|source-closure|readiness|native-closure|product-integration|module-docs' \
+            > diagnostics/candidate-scripts.txt || true
+
+      - name: Install pinned Rust test tools
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+
+      - name: Capture all Ubuntu failures without short-circuiting
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p diagnostics
+          capture() {
+            local name="$1"
+            shift
+            set +e
+            "$@" >"diagnostics/${name}.log" 2>&1
+            local rc=$?
+            set -e
+            printf '%s\n' "$rc" >"diagnostics/${name}.exit"
+          }
+
+          capture lane-a bash -lc '
+            python3 scripts/hepta-lane-a-truth.py self-test &&
+            python3 -m unittest scripts/test_hepta_lane_a_truth.py &&
+            python3 scripts/hepta-lane-a-truth.py verify &&
+            python3 scripts/hepta-lane-a-docs.py
+          '
+
+          capture lane-b bash -lc '
+            python3 scripts/hepta-lane-b-truth.py self-test &&
+            python3 -m unittest scripts/test_hepta_lane_b_truth.py &&
+            python3 scripts/hepta-lane-b-truth.py verify &&
+            python3 scripts/hepta-lane-b-docs.py
+          '
+
+          capture consolidated-source bash -lc '
+            python3 scripts/hepta-source-closure.py self-test &&
+            python3 -m unittest scripts/test_hepta_source_closure.py &&
+            python3 scripts/hepta-source-closure.py verify &&
+            python3 scripts/hepta-readiness.py &&
+            python3 scripts/hepta-native-closure.py &&
+            python3 scripts/hepta-product-integration.py &&
+            python3 scripts/hepta-module-docs.py
+          '
+
+          capture ndu-regressions bash -lc 'cd codex-rs && just test --locked -p codex-hepta-ndu'
+          capture ndu-cargo-test bash -lc 'cd codex-rs && cargo test --locked -p codex-hepta-ndu --all-targets -- --nocapture'
+          capture converged-component-regressions bash -lc '
+            cd codex-rs &&
+            just test --locked \
+              -p codex-hepta-learning-ledger \
+              -p codex-hepta-learning-artifacts \
+              -p codex-hepta-intelligence-eval \
+              -p codex-hepta-neuron \
+              -p codex-hepta-ndu
+          '
+
+          capture blob-size python3 scripts/check_blob_size.py \
+            --base "$BASE_SHA" \
+            --head "$SOURCE_SHA" \
+            --max-bytes 512000 \
+            --allowlist .github/blob-size-allowlist.txt
+
+          while IFS= read -r script; do
+            case "$script" in
+              *lane-d*|*lane_d*|*lane-e*|*lane_e*|*lane-g*|*lane_g*)
+                key=$(printf '%s' "$script" | tr '/.' '__')
+                capture "${key}-self-test" python3 "$script" self-test
+                capture "${key}-verify" python3 "$script" verify
+                ;;
+            esac
+          done < diagnostics/candidate-scripts.txt
+
+          git diff --check > diagnostics/git-diff-check.log 2>&1 || printf '%s\n' "$?" > diagnostics/git-diff-check.exit
+          git status --short --untracked-files=no > diagnostics/git-status.log
+
+      - name: Emit Ubuntu diagnostic corpus
+        if: always()
+        shell: bash
+        run: |
+          set -u
+          for file in diagnostics/*; do
+            echo "::group::$file"
+            cat "$file" || true
+            echo "::endgroup::"
+          done
+
+  windows:
+    name: Capture Windows Lane G assertions
+    runs-on: windows-2025
+    timeout-minutes: 45
+    env:
+      PYTHONDONTWRITEBYTECODE: "1"
+    steps:
+      - name: Check out diagnostic source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+          fetch-depth: 0
+
+      - name: Capture Windows Lane G definitions and regressions
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Continue'
+          New-Item -ItemType Directory -Force diagnostics | Out-Null
+          Get-ChildItem .github/workflows -File | ForEach-Object {
+            $text = Get-Content $_.FullName -Raw
+            if ($text -match 'Lane G|lane-g|lane_g') {
+              "===== $($_.FullName) =====" | Out-File diagnostics/windows-workflows.log -Append -Encoding utf8
+              $text | Out-File diagnostics/windows-workflows.log -Append -Encoding utf8
+            }
+          }
+          Get-ChildItem scripts -File | Where-Object { $_.Name -match 'lane[-_]g' } | ForEach-Object {
+            $script = $_.FullName
+            $key = $_.BaseName
+            & python $script self-test *> "diagnostics/$key-self-test.log"
+            $LASTEXITCODE | Out-File "diagnostics/$key-self-test.exit" -Encoding ascii
+            & python $script verify *> "diagnostics/$key-verify.log"
+            $LASTEXITCODE | Out-File "diagnostics/$key-verify.exit" -Encoding ascii
+          }
+          git status --short --untracked-files=no | Out-File diagnostics/git-status.log -Encoding utf8
+
+      - name: Emit Windows diagnostic corpus
+        if: always()
+        shell: pwsh
+        run: |
+          Get-ChildItem diagnostics -File | Sort-Object Name | ForEach-Object {
+            "::group::$($_.FullName)"
+            Get-Content $_.FullName -Raw
+            "::endgroup::"
+          }
