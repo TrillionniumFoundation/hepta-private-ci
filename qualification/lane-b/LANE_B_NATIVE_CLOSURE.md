@@ -116,7 +116,7 @@ External evidence gates:
 
 Owns ephemeral process/model handles and resource usage only; persistent model bytes remain with the artifact/cache owner.
 
-The injected model driver reports execution terminality; source tests do not prove a real model/runtime/device tuple.
+The hosted native-app-server profile observes real matching turn events; the local manifest driver remains injected and does not prove physical weights/device behavior.
 
 | Operation | Class | Owner entrypoint |
 |---|---|---|
