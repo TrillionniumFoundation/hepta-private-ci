@@ -1,9 +1,9 @@
-name: Hepta Lane D compile repair
+name: Hepta Lane D final candidate repair
 
 on:
   push:
     branches:
-      - codex/hepta-lane-d-final-gap-closure-20260910-r2
+      - candidate/hepta-main-final-r2-20260911
     paths:
       - .github/workflows/hepta-lane-d-compile-repair.yml
       - scripts/hepta-lane-d-journal-fix.py
@@ -14,7 +14,7 @@ permissions:
   contents: write
 
 concurrency:
-  group: hepta-lane-d-compile-repair
+  group: hepta-lane-d-final-candidate-repair
   cancel-in-progress: true
 
 jobs:
@@ -25,7 +25,8 @@ jobs:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           fetch-depth: 0
-          ref: codex/hepta-lane-d-final-gap-closure-20260910-r2
+          ref: ${{ github.sha }}
+          persist-credentials: true
 
       - name: Repair sealed journal call sites and NDU taxonomy fixture
         shell: bash
@@ -78,7 +79,7 @@ jobs:
           python3 scripts/hepta-lane-d-semantic-conformance.py verify
           git diff --check
 
-      - name: Publish verified result branch
+      - name: Publish verified repair and remove one-shot machinery
         shell: bash
         run: |
           set -euo pipefail
@@ -86,9 +87,7 @@ jobs:
           rm -f scripts/hepta-lane-d-ndu-error-fix.py
           rm -f .github/workflows/hepta-lane-d-compile-repair.yml
           git add -A
-          git config user.name "Hepta Lane D Compile Repair"
+          git config user.name "Hepta Convergence Repair"
           git config user.email "noreply@openai.com"
-          git commit -m "fix(lane-d): close sealed journal and NDU taxonomy blockers [lane-d-compile-repaired]"
-          git push origin HEAD:refs/heads/codex/hepta-lane-d-compile-fix-result-20260910-r1
-
-# exact trigger r2
+          git commit -m "fix(lane-d): materialize journal and NDU closure"
+          git push origin HEAD:refs/heads/candidate/hepta-main-final-r2-20260911
