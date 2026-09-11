@@ -7,7 +7,7 @@
   },
   "laneId": "LANE-B-RUNTIME",
   "module": "inference.worker",
-  "sourceMaturity": "native_isolated_worker_boundary",
+  "sourceMaturity": "driver_component_and_native_app_server_profile",
   "declaredRoots": [
     "codex-rs/hepta-infer-worker-host"
   ],
@@ -15,7 +15,7 @@
     "codex-rs/hepta-infer-worker-host"
   ],
   "stateOwnerDisposition": "Owns ephemeral process/model handles and resource usage only; persistent model bytes remain with the artifact/cache owner.",
-  "terminalObserverDisposition": "The injected model driver reports execution terminality; source tests do not prove a real model/runtime/device tuple.",
+  "terminalObserverDisposition": "The hosted native-app-server profile observes real matching turn events; the local manifest driver remains injected and does not prove physical weights/device behavior.",
   "operations": [
     {
       "designOperation": "load_model",
@@ -34,7 +34,7 @@
           "command": "just test -p codex-hepta-infer-worker-host --lib"
         }
       ],
-      "sourceSemantics": "Verifies the full model artifact/runtime/device tuple and resource grant before load."
+      "sourceSemantics": "Validates supplied manifest and resource-grant bindings before invoking the injected driver; physical artifact/device loading remains that driver owner's responsibility."
     },
     {
       "designOperation": "run",
