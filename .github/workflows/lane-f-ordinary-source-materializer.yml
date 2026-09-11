@@ -1,0 +1,57 @@
+name: Temporary Lane F ordinary-source materializer
+
+on:
+  push:
+    branches:
+      - transport/lane-f-full-remediation-20260911
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: lane-f-ordinary-source-materializer
+  cancel-in-progress: false
+
+jobs:
+  materialize:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      TARGET_BRANCH: codex/lane-f-full-remediation-20260911
+      EXPECTED_BASE: 6f65f67bf049427ceff3304a2a0af9d963a6fcfa
+      PAYLOAD_SHA256: 0766eab0b250af4e9ab7265c72209f395fae2440493b12813237b42f1ffe8333
+    steps:
+      - name: Check out transport object
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Verify and materialize ordinary source
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${{ github.sha }}"
+          archive="$RUNNER_TEMP/lane-f-remediation.tar.xz"
+          cat .lane-f-transport/part-* | base64 --decode > "$archive"
+          echo "$PAYLOAD_SHA256  $archive" | sha256sum --check --strict
+          xz --test "$archive"
+
+          git fetch origin "$TARGET_BRANCH"
+          test "$(git rev-parse "origin/$TARGET_BRANCH")" = "$EXPECTED_BASE"
+          git checkout -B "$TARGET_BRANCH" "origin/$TARGET_BRANCH"
+          tar -xJf "$archive" -C .
+
+          python3 scripts/hepta-lane-f.py verify
+          python3 scripts/test_hepta_lane_f.py
+          git diff --check
+          test -n "$(git status --porcelain)"
+
+          git config user.name "hepta-lane-f-materializer[bot]"
+          git config user.email "hepta-lane-f-materializer@users.noreply.github.com"
+          git add --all
+          git commit -m "feat(lane-f): close adaptive policy source and documentation gaps"
+          test "$(git rev-parse HEAD^)" = "$EXPECTED_BASE"
+          git push origin "HEAD:refs/heads/$TARGET_BRANCH"
