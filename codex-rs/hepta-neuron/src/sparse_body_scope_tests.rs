@@ -121,9 +121,10 @@ fn reopened_checkpoint_retains_body_scope_and_rejects_before_write() {
         reopened.commit(first.checkpoint_after, &successor),
         Err(JournalError::Mechanism(SparseError::ScopeDrift))
     );
-    assert_eq!(checked(fs::read(fixture.path())), before);
     assert_eq!(
         checked(reopened.current()).map(SparseCheckpoint::digest),
         Some(first.checkpoint_after)
     );
+    drop(reopened);
+    assert_eq!(checked(fs::read(fixture.path())), before);
 }

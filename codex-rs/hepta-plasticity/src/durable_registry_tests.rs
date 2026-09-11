@@ -322,6 +322,7 @@ fn rejected_anchor_does_not_truncate_recoverable_bytes() -> Result<(), Box<dyn S
         let recovered =
             DurableProposalRegistry::open_anchored(fixture.open(), scope, 19, 4, anchor)?;
         assert_eq!(recovered.current_anchor()?, Some(anchor));
+        drop(recovered);
         assert_eq!(std::fs::read(&fixture.path)?, valid_bytes);
     }
     Ok(())
@@ -354,6 +355,7 @@ fn a_full_registry_can_recover_an_incomplete_tail() -> Result<(), Box<dyn StdErr
     let mut retry = receipt;
     retry.disposition = AppendDisposition::Unchanged;
     assert_eq!(recovered.append_v2(Digest32::ZERO, expected)?, retry);
+    drop(recovered);
     assert_eq!(std::fs::read(&fixture.path)?, valid_bytes);
     Ok(())
 }

@@ -124,6 +124,7 @@ fn anchored_reopen_preserves_the_exact_receipt_and_all_bytes() {
         checked(reopened.commit(fixture.first.checkpoint_after, &tick(2))),
         fixture.second
     );
+    drop(reopened);
     assert_eq!(checked(fs::read(fixture.path())), before);
 }
 
@@ -203,6 +204,7 @@ fn earlier_anchor_accepts_later_complete_frames_and_repairs_only_the_tail() {
         checked(recovered.commit(fixture.first.checkpoint_after, &tick(2))),
         fixture.second
     );
+    drop(recovered);
     assert_eq!(checked(fs::read(fixture.path())), complete);
 }
 
