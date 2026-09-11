@@ -1,0 +1,199 @@
+name: Safe Lane F final materialization
+
+on:
+  push:
+    branches:
+      - candidate/hepta-main-final-r2-20260911
+    paths:
+      - ".github/workflows/lane-f-safe-materialize.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: lane-f-safe-final-materialize
+  cancel-in-progress: false
+
+jobs:
+  materialize-qualify-publish:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    steps:
+      - name: Check out exact candidate
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Reconstruct and safely inspect repository-pinned overlay
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          cat .lane-f-bootstrap/part-* > /tmp/lane-f-overlay.tar.gz
+          gzip -t /tmp/lane-f-overlay.tar.gz
+          python3 - <<'PY'
+          import pathlib, tarfile
+          archive = "/tmp/lane-f-overlay.tar.gz"
+          with tarfile.open(archive, "r:gz") as tf:
+              members = tf.getmembers()
+              if not members:
+                  raise SystemExit("empty Lane F overlay")
+              for m in members:
+                  p = pathlib.PurePosixPath(m.name)
+                  if p.is_absolute() or ".." in p.parts:
+                      raise SystemExit(f"unsafe overlay path: {m.name}")
+                  if m.issym() or m.islnk() or m.isdev():
+                      raise SystemExit(f"unsafe overlay member type: {m.name}")
+              print("LANE_F_OVERLAY_MEMBERS", len(members))
+              for m in members:
+                  print(m.name)
+          PY
+
+      - name: Materialize overlay and explicit prompt profile boundary
+        shell: bash
+        run: |
+          set -euo pipefail
+          tar -xzf /tmp/lane-f-overlay.tar.gz -C .
+          python3 - <<'PY'
+          from pathlib import Path
+          path = Path("codex-rs/hepta-prompt-optimizer/src/lib.rs")
+          text = path.read_text(encoding="utf-8")
+          marker = "pub mod local_shadow;\n"
+          addition = '''pub mod local_shadow;
+          pub use local_shadow::calculate_local_shadow as calculate_shadow_portfolio_v2;
+
+          /// Stable identity for the compatibility-only original portfolio API.
+          pub const PROMPT_PORTFOLIO_LEGACY_V1_PROFILE: &str =
+              "hepta.prompt-portfolio.legacy-v1";
+          /// Stable identity for the bounded interaction-aware shadow API.
+          pub const PROMPT_PORTFOLIO_SHADOW_V2_PROFILE: &str =
+              "hepta.prompt-portfolio.shadow-v2";
+          '''
+          if "PROMPT_PORTFOLIO_SHADOW_V2_PROFILE" not in text:
+              if text.count(marker) != 1:
+                  raise SystemExit("unexpected prompt optimizer module marker")
+              text = text.replace(marker, addition, 1)
+          legacy = "pub fn optimize(mut request: OptimizationRequest)"
+          if "Compatibility-only legacy V1 optimizer" not in text:
+              if legacy not in text:
+                  raise SystemExit("legacy optimizer marker missing")
+              text = text.replace(
+                  legacy,
+                  "/// Compatibility-only legacy V1 optimizer. New shadow composition uses "
+                  "[`calculate_shadow_portfolio_v2`].\n" + legacy,
+                  1,
+              )
+          path.write_text(text, encoding="utf-8")
+          PY
+          git diff --check
+
+      - name: Generate canonical Lane F docs and registries
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta-lane-f.py generate
+          python3 scripts/hepta_module_doc_metadata.py --write
+          python3 scripts/hepta-docs.py generate-status
+
+      - name: Format and compile Lane F vertical
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo fmt --manifest-path codex-rs/Cargo.toml \
+            --package codex-hepta-neuron \
+            --package codex-hepta-intuition \
+            --package codex-hepta-prompt-optimizer \
+            --package codex-hepta-plasticity \
+            --package codex-hepta-intelligence
+          cd codex-rs
+          cargo test -p codex-hepta-intelligence --all-targets --no-run
+
+      - name: Build clean candidate commit and remove one-shot transport
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf .lane-f-bootstrap .lane-f-transport
+          rm -f .github/workflows/lane-f-bootstrap.yml
+          rm -f .github/workflows/lane-f-ordinary-source-materializer.yml
+          rm -f .github/workflows/lane-f-safe-materialize.yml
+          git config user.name "hepta-convergence-bot"
+          git config user.email "hepta-convergence-bot@users.noreply.github.com"
+          git add -A
+          git diff --cached --check
+          git commit -m "feat(lane-f): materialize and qualify adaptive-policy closure"
+          echo "CANDIDATE_SHA=$(git rev-parse HEAD)" >> "$GITHUB_ENV"
+
+      - name: Verify Lane F closed world and documentation registries
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$CANDIDATE_SHA"
+          python3 scripts/hepta-lane-f.py self-test
+          python3 -m unittest scripts/test_hepta_lane_f.py
+          python3 scripts/hepta-lane-f.py generate --check
+          python3 scripts/hepta_module_doc_metadata.py
+          python3 scripts/hepta-lane-f.py verify
+          python3 scripts/hepta-docs.py generate-status
+          git diff --exit-code -- docs/STATUS.md
+          python3 scripts/hepta-module-docs.py self-test
+          python3 scripts/hepta-module-docs.py verify
+          python3 scripts/hepta-readiness.py self-test
+          python3 scripts/hepta-readiness.py generate-status --check
+          python3 scripts/hepta-readiness.py verify
+          python3 scripts/hepta-implementation-dossiers.py self-test
+          python3 scripts/hepta-implementation-dossiers.py generate-status --check
+          python3 scripts/hepta-implementation-dossiers.py verify
+          python3 scripts/hepta-technical-closure.py self-test
+          python3 scripts/hepta-technical-closure.py verify
+          python3 qualification/module-execution-dossiers/implementation_contracts.py self-test
+          python3 qualification/module-execution-dossiers/implementation_contracts.py verify-repository
+          python3 scripts/hepta-algorithm-docs.py self-test
+          python3 scripts/hepta-algorithm-docs.py verify-sources
+          python3 scripts/hepta-algorithm-docs.py generate-status --check
+          python3 scripts/hepta-algorithm-docs.py verify
+          python3 scripts/hepta-cns.py self-test
+          python3 scripts/hepta-cns.py generate-status --check
+          python3 scripts/hepta-cns.py verify
+          python3 scripts/hepta-hnmf.py self-test
+          python3 scripts/hepta-hnmf.py verify
+          python3 scripts/hepta-docs.py verify
+          git diff --check
+          test -z "$(git status --porcelain)"
+
+      - name: Test Lane F native crates under strict lint
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo test --locked -p codex-hepta-neuron --all-targets
+          cargo test --locked -p codex-hepta-intuition --all-targets
+          cargo test --locked -p codex-hepta-prompt-optimizer --all-targets
+          cargo test --locked -p codex-hepta-plasticity --all-targets
+          cargo test --locked -p codex-hepta-intelligence --all-targets
+          cargo clippy --locked \
+            -p codex-hepta-neuron \
+            -p codex-hepta-intuition \
+            -p codex-hepta-prompt-optimizer \
+            -p codex-hepta-plasticity \
+            -p codex-hepta-intelligence \
+            --all-targets -- -D warnings
+          cargo fmt \
+            --package codex-hepta-neuron \
+            --package codex-hepta-intuition \
+            --package codex-hepta-prompt-optimizer \
+            --package codex-hepta-plasticity \
+            --package codex-hepta-intelligence \
+            -- --check
+
+      - name: Verify repository integrity and publish exact candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$CANDIDATE_SHA"
+          python3 scripts/hepta-repository-integrity.py
+          git diff --check
+          test -z "$(git status --porcelain)"
+          git push origin "HEAD:${GITHUB_REF_NAME}"
