@@ -1,0 +1,112 @@
+{
+  "schema": "hepta.module-implementation-map.v2",
+  "schemaVersion": 2,
+  "sourceBase": {
+    "commit": "f278a89eea18fccb6d37b876aa5679863a64139d",
+    "tree": "5baa144717d4b3e3c596501fb56ce911d009e728"
+  },
+  "laneId": "LANE-B-RUNTIME",
+  "module": "automation.taskflow",
+  "sourceMaturity": "native_durable_scheduler_boundary",
+  "declaredRoots": [
+    "codex-rs/hepta-automation"
+  ],
+  "resolvedRoots": [
+    "codex-rs/hepta-automation"
+  ],
+  "stateOwnerDisposition": "Owns schedule, occurrence, claim, and step-orchestration facts without owning downstream domain effects.",
+  "terminalObserverDisposition": "The registered effect driver supplies terminal observations; unknown effects block dependent steps and compensation is separately authorized.",
+  "operations": [
+    {
+      "designOperation": "register_schedule",
+      "mappingClass": "owner_native",
+      "ownerEntrypoint": {
+        "role": "owner_entrypoint",
+        "path": "codex-rs/hepta-automation/src/store.rs",
+        "symbol": "pub async fn create_task(",
+        "buildTarget": "codex-hepta-automation"
+      },
+      "delegatedCallees": [],
+      "tests": [
+        {
+          "path": "codex-rs/hepta-automation/src/store.rs",
+          "kind": "store_and_schedule",
+          "command": "cargo test -p codex-hepta-automation --lib"
+        }
+      ],
+      "sourceSemantics": "Persists the canonical automation definition with revision and owner identity."
+    },
+    {
+      "designOperation": "materialize_due",
+      "mappingClass": "owner_native",
+      "ownerEntrypoint": {
+        "role": "owner_entrypoint",
+        "path": "codex-rs/hepta-automation/src/scheduler.rs",
+        "symbol": "pub async fn tick(",
+        "buildTarget": "codex-hepta-automation"
+      },
+      "delegatedCallees": [],
+      "tests": [
+        {
+          "path": "codex-rs/hepta-automation/src/scheduler.rs",
+          "kind": "scheduler_and_recovery",
+          "command": "cargo test -p codex-hepta-automation --lib"
+        }
+      ],
+      "sourceSemantics": "Materializes bounded due work and commits intent before App Server admission."
+    },
+    {
+      "designOperation": "claim_occurrence",
+      "mappingClass": "owner_native",
+      "ownerEntrypoint": {
+        "role": "owner_entrypoint",
+        "path": "codex-rs/hepta-automation/src/bin/hepta-taskflow-runtime.rs",
+        "symbol": "pub fn claim_occurrence(",
+        "buildTarget": "hepta-taskflow-runtime"
+      },
+      "delegatedCallees": [],
+      "tests": [
+        {
+          "path": "codex-rs/hepta-automation/src/bin/hepta-taskflow-runtime.rs",
+          "kind": "generation_fence",
+          "command": "cargo test -p codex-hepta-automation --bin hepta-taskflow-runtime"
+        }
+      ],
+      "sourceSemantics": "Claims one occurrence under an immutable generation fence."
+    },
+    {
+      "designOperation": "execute_step",
+      "mappingClass": "owner_native",
+      "ownerEntrypoint": {
+        "role": "owner_entrypoint",
+        "path": "codex-rs/hepta-automation/src/bin/hepta-taskflow-runtime.rs",
+        "symbol": "pub fn execute_step(",
+        "buildTarget": "hepta-taskflow-runtime"
+      },
+      "delegatedCallees": [],
+      "tests": [
+        {
+          "path": "codex-rs/hepta-automation/src/bin/hepta-taskflow-runtime.rs",
+          "kind": "effect_terminality_and_compensation",
+          "command": "cargo test -p codex-hepta-automation --bin hepta-taskflow-runtime"
+        }
+      ],
+      "sourceSemantics": "Binds final payload and authority, dispatches once, and records terminal or indeterminate state."
+    }
+  ],
+  "repositoryControlledGaps": [],
+  "externalEvidenceGates": [
+    "non-test Codex/App Server caller",
+    "real downstream effect owner and terminal observer",
+    "DST/timezone-database and multi-scheduler target qualification"
+  ],
+  "claimBoundary": {
+    "nativeSourceMappingComplete": true,
+    "repositoryControlledDocumentationGapsClosed": true,
+    "repositoryControlledMappingGapsClosed": true,
+    "repositoryControlledSourceBoundaryGapsClosed": true,
+    "productExecutionComplete": false,
+    "deploymentQualificationComplete": false,
+    "independentAcceptanceComplete": false
+  }
+}
