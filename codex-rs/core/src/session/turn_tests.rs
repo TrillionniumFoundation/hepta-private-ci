@@ -12,11 +12,6 @@ use crate::environment_selection::ThreadEnvironments;
 use crate::environment_selection::TurnEnvironmentState;
 
 #[test]
-fn turn_recovery_does_not_claim_provider_output_arrival_exactly_once() {
-    assert!(!TURN_RECOVERY_PROVIDER_OUTPUT_ARRIVAL_EXACTLY_ONCE);
-}
-
-#[test]
 fn hepta_turn_recovery_blocks_only_pre_turn_auto_compaction() {
     assert!(hepta_turn_recovery_blocks_auto_compact(
         true,

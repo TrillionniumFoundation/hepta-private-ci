@@ -1241,6 +1241,47 @@ async fn cancelled_after_start_transition_promotes_detached_terminalizer() {
     assert_eq!(1, aborts.load(std::sync::atomic::Ordering::SeqCst));
 }
 
+// A blocking holder creates real lock contention without retaining a mutex
+// guard across an await in the test driver. Cancellation closes the release
+// channel; the timeout also bounds a forgotten release on the success path.
+async fn hold_session_lock<T: Send + 'static>(
+    session: Arc<Session>,
+    select_lock: fn(&Session) -> &Mutex<T>,
+) -> (std::sync::mpsc::Sender<()>, tokio::task::JoinHandle<()>) {
+    let (locked_tx, locked_rx) = tokio::sync::oneshot::channel();
+    let (release_tx, release_rx) = std::sync::mpsc::channel();
+    let holder = tokio::task::spawn_blocking(move || {
+        let deadline = std::time::Instant::now() + StdDuration::from_secs(2);
+        let _guard = loop {
+            if let Ok(guard) = select_lock(&session).try_lock() {
+                break guard;
+            }
+            match release_rx.try_recv() {
+                Ok(()) | Err(std::sync::mpsc::TryRecvError::Disconnected) => return,
+                Err(std::sync::mpsc::TryRecvError::Empty) => {}
+            }
+            assert!(
+                std::time::Instant::now() < deadline,
+                "session lock acquisition must finish within its bounded wait"
+            );
+            std::thread::park_timeout(StdDuration::from_millis(1));
+        };
+        if locked_tx.send(()).is_ok() {
+            match release_rx.recv_timeout(StdDuration::from_secs(10)) {
+                Ok(()) | Err(std::sync::mpsc::RecvTimeoutError::Disconnected) => {}
+                Err(std::sync::mpsc::RecvTimeoutError::Timeout) => {
+                    panic!("test must release the session lock within its bounded wait");
+                }
+            }
+        }
+    });
+    timeout(StdDuration::from_secs(2), locked_rx)
+        .await
+        .expect("session lock holder should become ready promptly")
+        .expect("session lock holder should notify its waiter");
+    (release_tx, holder)
+}
+
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn abort_during_spawn_reservation_preamble_is_fenced_before_start_task() {
     struct SpawnPreambleProbe {
@@ -1279,7 +1320,8 @@ async fn abort_during_spawn_reservation_preamble_is_fenced_before_start_task() {
     // connector selection. Hold the state lock so the reservation is
     // observable while that preamble is waiting, then release it only after
     // abort wins.
-    let state_guard = session.state.lock().await;
+    let (release_state, state_holder) =
+        hold_session_lock(Arc::clone(&session), |session| &session.state).await;
     let runs = Arc::new(std::sync::atomic::AtomicUsize::new(0));
     let aborts = Arc::new(std::sync::atomic::AtomicUsize::new(0));
     let start = tokio::spawn({
@@ -1324,7 +1366,10 @@ async fn abort_during_spawn_reservation_preamble_is_fenced_before_start_task() {
             .abort_turn_if_active(&turn_context.sub_id, TurnAbortReason::Interrupted)
             .await
     );
-    drop(state_guard);
+    release_state
+        .send(())
+        .expect("state lock should be released");
+    state_holder.await.expect("state lock holder should exit");
     start.await.expect("spawn task should join");
 
     assert_eq!(0, runs.load(std::sync::atomic::Ordering::SeqCst));
@@ -1361,7 +1406,8 @@ async fn cancelled_spawn_reservation_owner_releases_before_context() {
     // Hold the state lock so `spawn_task` is parked in its pre-context
     // preamble after installing the caller-owned reservation.  Cancelling
     // that owner must not leave the session permanently busy.
-    let state_guard = session.state.lock().await;
+    let (release_state, state_holder) =
+        hold_session_lock(Arc::clone(&session), |session| &session.state).await;
     let start = tokio::spawn({
         let session = Arc::clone(&session);
         let turn_context = Arc::clone(&turn_context);
@@ -1397,7 +1443,10 @@ async fn cancelled_spawn_reservation_owner_releases_before_context() {
     start
         .await
         .expect_err("the owner future should be cancelled");
-    drop(state_guard);
+    release_state
+        .send(())
+        .expect("state lock should be released");
+    state_holder.await.expect("state lock holder should exit");
 
     timeout(Duration::from_secs(2), async {
         loop {
@@ -1422,16 +1471,8 @@ async fn non_runtime_reservation_drop_waits_for_busy_active_slot() {
             .expect("idle slot should accept a reservation")
     };
 
-    let (locked_tx, locked_rx) = tokio::sync::oneshot::channel();
-    let (release_tx, release_rx) = tokio::sync::oneshot::channel();
-    let holder_session = Arc::clone(&session);
-    let holder = tokio::spawn(async move {
-        let active_guard = holder_session.active_turn.lock().await;
-        locked_tx.send(()).expect("lock waiter should be notified");
-        release_rx.await.expect("lock release should arrive");
-        drop(active_guard);
-    });
-    locked_rx.await.expect("active slot should be held");
+    let (release_tx, holder) =
+        hold_session_lock(Arc::clone(&session), |session| &session.active_turn).await;
 
     let (drop_started_tx, drop_started_rx) = std::sync::mpsc::channel();
     let (drop_done_tx, drop_done_rx) = std::sync::mpsc::channel();
@@ -1870,7 +1911,8 @@ async fn shutdown_transition_drain_serializes_with_start_publication() {
     // section occupied while shutdown begins; the drain must not take an
     // empty registry snapshot and return before the publisher has resolved
     // the shutdown check.
-    let active = session.active_turn.lock().await;
+    let (release_active, active_holder) =
+        hold_session_lock(Arc::clone(&session), |session| &session.active_turn).await;
     session.begin_shutdown();
     let mut drain = tokio::spawn({
         let session = Arc::clone(&session);
@@ -1884,7 +1926,10 @@ async fn shutdown_transition_drain_serializes_with_start_publication() {
         "shutdown drain must wait for the start-publication barrier"
     );
 
-    drop(active);
+    release_active
+        .send(())
+        .expect("active lock should be released");
+    active_holder.await.expect("active lock holder should exit");
     timeout(StdDuration::from_secs(2), &mut drain)
         .await
         .expect("shutdown drain should finish after the publication lock is released")
@@ -1922,7 +1967,8 @@ async fn shutdown_drain_releases_live_caller_reservation_before_context() {
     // Keep the caller in its pre-context preparation await after the
     // reservation is installed.  Shutdown must reclaim the reservation even
     // though the owner future itself is still alive and has not been dropped.
-    let state_guard = session.state.lock().await;
+    let (release_state, state_holder) =
+        hold_session_lock(Arc::clone(&session), |session| &session.state).await;
     let start = tokio::spawn({
         let session = Arc::clone(&session);
         let turn_context = Arc::clone(&turn_context);
@@ -1964,7 +2010,10 @@ async fn shutdown_drain_releases_live_caller_reservation_before_context() {
     .expect("shutdown drain should reclaim the live caller reservation");
     assert!(session.active_turn.lock().await.is_none());
 
-    drop(state_guard);
+    release_state
+        .send(())
+        .expect("state lock should be released");
+    state_holder.await.expect("state lock holder should exit");
     start
         .await
         .expect("caller owner should eventually leave its preamble");

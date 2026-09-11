@@ -366,7 +366,7 @@ fn websocket_connection_identity_binds_provider_and_stable_handshake_semantics()
             .expect("changed beta identity")
     );
 
-    let mut changed_provider = provider.clone();
+    let mut changed_provider = provider;
     changed_provider.base_url = "https://other.example.test/v1".to_string();
     assert_ne!(
         identity_a,
