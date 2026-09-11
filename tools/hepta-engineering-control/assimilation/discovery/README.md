@@ -58,6 +58,25 @@ validation rejected; 70 means an internal failure. Standard `--help` is the sole
 human-readable, non-operational exit. No output-file option exists, so this
 command adds no write authority.
 
+For an additional reviewable proposal, pass `--proposal-config /absolute/path`
+to a regular bounded JSON file with exactly `systemId`, `proposalId` (32 lowercase
+hex characters), `objectiveDigest` (64 lowercase hex), `ownerIdentity`,
+`observedAt` (UTC), and `evidenceUtf8`. The last object contains actual retained
+UTF-8 artifact strings for `filesystemScope`, `identityMap`, `networkSurface`,
+`secretReferences`, `capabilityBoundary`, `adapterSource`, `contractSet`,
+`migrationPlan`, `qualificationPlan`, and `rollbackPoint`. Supply references to
+secrets rather than secret values. The entire config is at most 64 KiB. These
+bytes are hashed, not echoed in the output; the host must retain the originals
+and verify their origin and substance independently. The native Python converter
+also accepts bounded binary artifact bytes.
+
+The result gains `reviewBundle` and `reviewBundleSha256`, binding the selected
+service graph, external dependencies, manifest and proposed sensor-bus adapter.
+The manifest identity/graph/full-manifest hash sequence is explicitly specified in
+`docs/readiness/EXTERNAL_SYSTEM_ASSIMILATION.md`. Missing support rejects the whole
+request. A generated proposal does not admit a manifest, certify the supplied
+evidence, resolve omitted runtime state, or complete external-system enrollment.
+
 The default OS source is `etc/os-release`. The host may explicitly select only
 `usr/lib/os-release` instead after resolving OS metadata precedence. There is no
 automatic fallback that silently ignores an etc override, and no symlink is
@@ -106,8 +125,8 @@ The dedicated read-only workflow repeats the entire engineering-control test
 suite at exact source and deterministic actual-base synthetic merge. Local test
 success is not a passed-CI, live-host qualification or performance claim.
 
-The candidate protocol remains private to discovery. Canonical manifest
-conversion, source signatures/SBOM, effective unit/drop-in resolution, D-Bus and
+The candidate protocol remains private to discovery. Review-bundle conversion
+is implemented, while canonical admission, source signatures/SBOM, effective unit/drop-in resolution, D-Bus and
 runtime inventory, isolated service parity, effect-boundary grants, migration,
 rollback, independent qualification and organ registration remain later work.
 There is no persistent state to migrate or production activation to reverse;

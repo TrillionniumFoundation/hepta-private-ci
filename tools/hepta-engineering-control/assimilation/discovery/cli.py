@@ -10,14 +10,21 @@ from typing import NoReturn
 
 from .parsers import DiscoveryError
 from .reader import DiscoveryScope, discover
+from ..contracts import ProposalError, build_assimilation_proposal
 
 
 RESULT_SCHEMA = "hepta.assimilation.discovery-cli-result.v1"
 SCOPE_SCHEMA = "hepta.assimilation.discovery-scope-input.v1"
 MAX_SCOPE_BYTES = 65_536
 SCOPE_FIELDS = {
-    "schema", "rootDevice", "rootInode", "hostIdentityDigest",
-    "enrollmentReceiptDigest", "expiresUnixNs", "osReleasePath", "unitPaths",
+    "schema",
+    "rootDevice",
+    "rootInode",
+    "hostIdentityDigest",
+    "enrollmentReceiptDigest",
+    "expiresUnixNs",
+    "osReleasePath",
+    "unitPaths",
 }
 FIXED_OMISSIONS = (
     "apt_sources_and_keyrings_not_collected",
@@ -54,15 +61,25 @@ def _parser() -> argparse.ArgumentParser:
         allow_abbrev=False,
     )
     parser.add_argument(
-        "--root", required=True, help="Explicit absolute rootfs path",
+        "--root",
+        required=True,
+        help="Explicit absolute rootfs path",
     )
     parser.add_argument(
-        "--scope-receipt", required=True,
+        "--scope-receipt",
+        required=True,
         help="Explicit absolute host-provided scope-input JSON path",
     )
     parser.add_argument(
-        "--unit", action="append", required=True, metavar="RELATIVE_SERVICE_PATH",
+        "--unit",
+        action="append",
+        required=True,
+        metavar="RELATIVE_SERVICE_PATH",
         help="Selected service path; repeat for each unit and match the scope input exactly",
+    )
+    parser.add_argument(
+        "--proposal-config",
+        help="Optional absolute JSON file of objective and retained UTF-8 owner evidence",
     )
     return parser
 
@@ -89,8 +106,13 @@ def _bounded_json_integer(value: str) -> int:
 
 def _file_signature(info: os.stat_result) -> tuple[int, ...]:
     return (
-        info.st_dev, info.st_ino, info.st_mode, info.st_nlink, info.st_size,
-        info.st_mtime_ns, info.st_ctime_ns,
+        info.st_dev,
+        info.st_ino,
+        info.st_mode,
+        info.st_nlink,
+        info.st_size,
+        info.st_mtime_ns,
+        info.st_ctime_ns,
     )
 
 
@@ -104,8 +126,11 @@ def _read_scope_input(path: str) -> dict[str, object]:
             os.O_RDONLY | os.O_NOFOLLOW | os.O_CLOEXEC | os.O_NONBLOCK,
         )
         before = os.fstat(fd)
-        if (not stat.S_ISREG(before.st_mode) or before.st_nlink != 1
-                or before.st_size > MAX_SCOPE_BYTES):
+        if (
+            not stat.S_ISREG(before.st_mode)
+            or before.st_nlink != 1
+            or before.st_size > MAX_SCOPE_BYTES
+        ):
             raise CliFailure("scope_receipt_rejected")
         chunks: list[bytes] = []
         remaining = MAX_SCOPE_BYTES + 1
@@ -118,9 +143,12 @@ def _read_scope_input(path: str) -> dict[str, object]:
         raw = b"".join(chunks)
         after = os.fstat(fd)
         linked = os.stat(path, follow_symlinks=False)
-        if (len(raw) > MAX_SCOPE_BYTES or len(raw) != after.st_size
-                or _file_signature(before) != _file_signature(after)
-                or _file_signature(after) != _file_signature(linked)):
+        if (
+            len(raw) > MAX_SCOPE_BYTES
+            or len(raw) != after.st_size
+            or _file_signature(before) != _file_signature(after)
+            or _file_signature(after) != _file_signature(linked)
+        ):
             raise CliFailure("scope_receipt_rejected")
     except CliFailure:
         raise
@@ -150,26 +178,32 @@ def _bounded_integer(value: object, maximum: int) -> bool:
     return type(value) is int and 0 <= value <= maximum
 
 
-def _scope_from_input(value: dict[str, object], selected: Sequence[str]) -> DiscoveryScope:
+def _scope_from_input(
+    value: dict[str, object], selected: Sequence[str]
+) -> DiscoveryScope:
     if set(value) != SCOPE_FIELDS or value.get("schema") != SCOPE_SCHEMA:
         raise CliFailure("invalid_scope_shape")
     root_device, root_inode = value["rootDevice"], value["rootInode"]
     expiry = value["expiresUnixNs"]
     unit_paths = value["unitPaths"]
-    if (not _bounded_integer(root_device, 2**64 - 1)
-            or not _bounded_integer(root_inode, 2**64 - 1)
-            or not _bounded_integer(expiry, 2**63 - 1)
-            or not isinstance(value["hostIdentityDigest"], str)
-            or not isinstance(value["enrollmentReceiptDigest"], str)
-            or not isinstance(value["osReleasePath"], str)
-            or not isinstance(unit_paths, list)
-            or not unit_paths
-            or len(unit_paths) > 64
-            or any(not isinstance(path, str) for path in unit_paths)):
+    if (
+        not _bounded_integer(root_device, 2**64 - 1)
+        or not _bounded_integer(root_inode, 2**64 - 1)
+        or not _bounded_integer(expiry, 2**63 - 1)
+        or not isinstance(value["hostIdentityDigest"], str)
+        or not isinstance(value["enrollmentReceiptDigest"], str)
+        or not isinstance(value["osReleasePath"], str)
+        or not isinstance(unit_paths, list)
+        or not unit_paths
+        or len(unit_paths) > 64
+        or any(not isinstance(path, str) for path in unit_paths)
+    ):
         raise CliFailure("invalid_scope_shape")
     if len(unit_paths) != len(set(unit_paths)):
         raise CliFailure("invalid_scope_shape")
-    if len(selected) != len(set(selected)) or tuple(sorted(selected)) != tuple(sorted(unit_paths)):
+    if len(selected) != len(set(selected)) or tuple(sorted(selected)) != tuple(
+        sorted(unit_paths)
+    ):
         raise CliFailure("selected_units_scope_mismatch")
     return DiscoveryScope(
         root_device=root_device,
@@ -184,25 +218,33 @@ def _scope_from_input(value: dict[str, object], selected: Sequence[str]) -> Disc
 
 def _emit(value: dict[str, object]) -> None:
     encoded = json.dumps(
-        value, sort_keys=True, separators=(",", ":"), ensure_ascii=True, allow_nan=False,
+        value,
+        sort_keys=True,
+        separators=(",", ":"),
+        ensure_ascii=True,
+        allow_nan=False,
     )
     sys.stdout.write(encoded + "\n")
     sys.stdout.flush()
 
 
 def _reject(code: str, exit_code: int) -> int:
-    if not code or any(ch not in "abcdefghijklmnopqrstuvwxyz0123456789_" for ch in code):
+    if not code or any(
+        ch not in "abcdefghijklmnopqrstuvwxyz0123456789_" for ch in code
+    ):
         code = "internal_error"
         exit_code = 70
     try:
-        _emit({
-            "activation": False,
-            "authorityGranted": False,
-            "error": {"code": code},
-            "partialCandidate": False,
-            "schema": RESULT_SCHEMA,
-            "status": "REJECTED",
-        })
+        _emit(
+            {
+                "activation": False,
+                "authorityGranted": False,
+                "error": {"code": code},
+                "partialCandidate": False,
+                "schema": RESULT_SCHEMA,
+                "status": "REJECTED",
+            }
+        )
         sys.stderr.write(f"hepta-assimilation-discovery: {code}\n")
     except BrokenPipeError:
         return 74
@@ -235,7 +277,7 @@ def main(argv: Sequence[str] | None = None) -> int:
             omissions.append("unresolved_service_dependencies")
         if payload["ordering_blocked"]:
             omissions.append("ordering_cycle_or_dependents_blocked")
-        _emit({
+        result = {
             "activation": False,
             "authorityGranted": False,
             "candidate": payload,
@@ -254,11 +296,43 @@ def main(argv: Sequence[str] | None = None) -> int:
                 "rootfsFreezeVerifiedByCli": False,
                 "signatureVerifiedByCli": False,
             },
-        })
+        }
+        if args.proposal_config:
+            config = _read_scope_input(args.proposal_config)
+            if set(config) != {
+                "systemId",
+                "proposalId",
+                "objectiveDigest",
+                "ownerIdentity",
+                "observedAt",
+                "evidenceUtf8",
+            }:
+                raise CliFailure("invalid_proposal_config")
+            retained = config["evidenceUtf8"]
+            if not isinstance(retained, dict) or any(
+                not isinstance(value, str) for value in retained.values()
+            ):
+                raise CliFailure("invalid_proposal_config")
+            bundle = build_assimilation_proposal(
+                candidate,
+                system_id=config["systemId"],
+                proposal_id=config["proposalId"],
+                objective_digest=config["objectiveDigest"],
+                owner_identity=config["ownerIdentity"],
+                observed_at=config["observedAt"],
+                evidence={
+                    key: value.encode("utf-8") for key, value in retained.items()
+                },
+            )
+            result["reviewBundle"] = json.loads(bundle.payload)
+            result["reviewBundleSha256"] = bundle.sha256
+        _emit(result)
         return 0
     except CliFailure as error:
         return _reject(error.code, error.exit_code)
     except DiscoveryError as error:
+        return _reject(str(error), 3)
+    except ProposalError as error:
         return _reject(str(error), 3)
     except (BrokenPipeError, KeyboardInterrupt):
         return 74
