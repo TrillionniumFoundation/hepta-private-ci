@@ -92,3 +92,7 @@ mod summary_tests;
 #[cfg(test)]
 #[path = "historical_tests.rs"]
 mod historical_tests;
+
+#[cfg(test)]
+#[path = "authbus_outbox_tests.rs"]
+mod authbus_outbox_tests;
