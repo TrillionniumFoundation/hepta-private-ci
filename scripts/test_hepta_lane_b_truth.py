@@ -21,23 +21,13 @@ class LaneBTruthTests(unittest.TestCase):
             json.loads('{"a":1,"a":2}', object_pairs_hook=MODULE.pairs)
 
     def test_path_envelope_is_prefix_bounded(self) -> None:
-        self.assertTrue(
-            MODULE.path_allowed(
-                "qualification/lane-b/a.json", ["qualification/lane-b/"]
-            )
-        )
-        self.assertFalse(
-            MODULE.path_allowed(
-                "qualification/lane-c/a.json", ["qualification/lane-b/"]
-            )
-        )
+        self.assertTrue(MODULE.allowed("qualification/lane-b/a", ["qualification/lane-b/"]))
+        self.assertFalse(MODULE.allowed("qualification/lane-c/a", ["qualification/lane-b/"]))
 
     def test_closed_module_and_operation_sets(self) -> None:
-        self.assertEqual(11, len(MODULE.EXPECTED_MODULES))
-        self.assertEqual(39, sum(map(len, MODULE.EXPECTED_OPERATIONS.values())))
-        self.assertEqual(
-            len(MODULE.EXPECTED_MODULES), len(set(MODULE.EXPECTED_MODULES))
-        )
+        self.assertEqual(11, len(MODULE.MODULES))
+        self.assertEqual(39, sum(map(len, MODULE.OPS.values())))
+        self.assertEqual(len(MODULE.MODULES), len(set(MODULE.MODULES)))
 
     def test_owner_anchor_cannot_escape_resolved_root(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
@@ -52,32 +42,28 @@ class LaneBTruthTests(unittest.TestCase):
                 "buildTarget": "fixture",
             }
             with mock.patch.object(MODULE, "ROOT", root):
-                with self.assertRaisesRegex(MODULE.Invalid, "escapes resolved roots"):
+                with self.assertRaisesRegex(MODULE.Invalid, "owner-root escape"):
                     MODULE.verify_anchor("fixture", ["owned"], anchor, True)
 
-    def test_generated_map_preserves_external_claim_boundary(self) -> None:
+    def test_traceability_preserves_external_claim_boundary(self) -> None:
         truth = {
             "sourceBase": {"commit": "a" * 40, "tree": "b" * 40},
             "laneId": "LANE-B-RUNTIME",
-            "moduleOrder": ["fixture"],
         }
-        row = {
+        module_map = {
             "module": "fixture",
-            "sourceMaturity": "boundary",
-            "declaredRoots": ["fixture"],
-            "resolvedRoots": ["fixture"],
-            "stateOwnerDisposition": "state remains bounded to the fixture owner",
-            "terminalObserverDisposition": "terminal truth remains externally observed",
-            "operations": [],
-            "repositoryControlledGaps": [],
             "externalEvidenceGates": ["external target"],
+            "operations": [
+                {
+                    "designOperation": "run",
+                    "tests": [{"path": "test.rs", "command": "cargo test"}],
+                }
+            ],
         }
-        projection = MODULE.module_map(truth, row)
-        self.assertTrue(
-            projection["claimBoundary"]["repositoryControlledGapsClosed"]
-        )
-        self.assertFalse(projection["claimBoundary"]["productExecutionComplete"])
-        self.assertEqual(["external target"], projection["externalEvidenceGates"])
+        projection = MODULE.trace_projection(truth, [module_map])
+        self.assertFalse(projection["claimBoundary"]["productExecutionProvedByRegistry"])
+        self.assertFalse(projection["claimBoundary"]["externalEffectsProvedByRegistry"])
+        self.assertEqual(1, projection["operationCount"])
 
 
 if __name__ == "__main__":
