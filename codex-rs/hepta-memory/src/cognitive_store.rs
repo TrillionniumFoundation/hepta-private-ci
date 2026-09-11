@@ -35,6 +35,7 @@ use crate::cognitive_model::MAX_SOURCE_BYTES;
 use crate::cognitive_model::SourceDraft;
 use crate::cognitive_model::SourceEventId;
 use crate::cognitive_model::SourceRevisionId;
+use crate::cognitive_path::canonical_path_without_redirection;
 use crate::framing::frame_part;
 
 #[path = "cognitive_store_recovery.rs"]
@@ -200,8 +201,7 @@ impl CognitiveStore {
     /// rollback to an internally valid old backup. Hosts requiring that guarantee
     /// must use `open_with_recovery` and never fall back here on recovery failure.
     pub async fn open(layout: &HeptaAgentLayout) -> Result<Self, CognitiveStoreError> {
-        let root = layout.cognitive_root();
-        create_private_directory(root)?;
+        let root = create_private_directory(layout.cognitive_root())?;
         let path = root.join(COGNITIVE_DB_FILENAME);
         let sqlite_home = AbsolutePathBuf::try_from(root.to_path_buf())
             .map_err(|error| CognitiveStoreError::Invalid(error.to_string()))?;
@@ -1134,20 +1134,24 @@ fn bounded_limit(maximum: usize) -> Result<i64, CognitiveStoreError> {
         })
 }
 
-fn create_private_directory(path: &Path) -> Result<(), CognitiveStoreError> {
+fn create_private_directory(path: &Path) -> Result<PathBuf, CognitiveStoreError> {
     fs::create_dir_all(path).map_err(unavailable)?;
-    if path.canonicalize().map_err(unavailable)? != path {
-        return Err(CognitiveStoreError::Invalid(
-            "per-agent cognitive root must be canonical and must not traverse a symlink"
-                .to_string(),
-        ));
-    }
+    let canonical = canonical_path_without_redirection(path)
+        .map_err(unavailable)?
+        .ok_or_else(|| {
+            CognitiveStoreError::Invalid(
+                "per-agent cognitive root must be canonical and must not traverse a symlink"
+                    .to_string(),
+            )
+        })?;
     #[cfg(unix)]
     {
         use std::os::unix::fs::PermissionsExt;
         fs::set_permissions(path, fs::Permissions::from_mode(0o700)).map_err(unavailable)?;
     }
-    Ok(())
+    // Keep one spelling for local-store identity and the production writer's
+    // lock key, including when Windows callers use different namespace prefixes.
+    Ok(canonical)
 }
 
 fn protect_database_file(path: &Path) -> Result<(), CognitiveStoreError> {

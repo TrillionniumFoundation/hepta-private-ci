@@ -6,6 +6,7 @@ mod cognitive_intelligence_writer;
 mod cognitive_kg_store;
 mod cognitive_memory_store;
 mod cognitive_model;
+mod cognitive_path;
 mod cognitive_retrieval;
 mod cognitive_runtime;
 mod cognitive_store;

@@ -24,6 +24,7 @@ use crate::MemoryRevalidationBinding;
 use crate::RetrievalCandidate;
 use crate::RetrievalRequest;
 use crate::RevalidationStatus;
+use crate::cognitive_path::canonical_path_without_redirection;
 use crate::cognitive_store::unavailable;
 use crate::framing::frame_part;
 
@@ -1083,7 +1084,11 @@ fn require_authorized(
 
 async fn open_read_only_pool(path: &Path) -> Result<SqlitePool, CognitiveStoreError> {
     let metadata = std::fs::metadata(path).map_err(unavailable)?;
-    if !metadata.is_file() || path.canonicalize().map_err(unavailable)? != path {
+    if !metadata.is_file()
+        || canonical_path_without_redirection(path)
+            .map_err(unavailable)?
+            .is_none()
+    {
         return Err(CognitiveStoreError::Invalid(
             "federated cognitive database must be an existing canonical regular file".to_string(),
         ));
