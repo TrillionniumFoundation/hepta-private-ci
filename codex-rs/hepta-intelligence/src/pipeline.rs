@@ -180,6 +180,10 @@ pub struct PortFailureV1 {
     pub evidence_digest: Digest32,
 }
 
+/// Host adapters for the eight shadow stages. Implementations must honor the
+/// coherent snapshot and predecessor, enforce their supplied time budget, and
+/// return owner evidence without executing the dispatch proposal. This
+/// synchronous coordinator cannot interrupt a blocked port call.
 pub trait LaneFShadowPortsV1 {
     fn validate_objective(&mut self, input: &PortInputV1) -> Result<PortReceiptV1, PortFailureV1>;
 
@@ -696,4 +700,3 @@ const fn outcome_code(value: StageOutcomeV1) -> u8 {
 #[cfg(test)]
 #[path = "pipeline_tests.rs"]
 mod tests;
-

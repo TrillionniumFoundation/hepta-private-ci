@@ -24,7 +24,6 @@ pub use pipeline::StageOutcomeV1;
 pub use pipeline::StageTraceV1;
 pub use pipeline::run_shadow_pipeline;
 
-
 mod vertical;
 
 use std::collections::BTreeSet;

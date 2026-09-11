@@ -1,5 +1,103 @@
 use super::*;
 
+#[test]
+fn v2_binds_same_outcome_to_its_actual_assignment_and_artifact_metadata()
+-> Result<(), CalibratedError> {
+    let original = request_with(
+        vec![candidate(
+            "candidate:a",
+            10,
+            ProbabilityQ32::ONE.raw(),
+            0,
+            ProbabilityQ32::ONE.raw(),
+        )],
+        AssignmentModeV1::CounterBased {
+            random_stream_digest: digest(b"random-stream"),
+            draw: ProbabilityQ32::ZERO,
+            abstain_probability: ProbabilityQ32::ZERO,
+        },
+    );
+    let legacy = decide_calibrated(original.clone())?;
+    let bound = decide_calibrated_v2(original.clone())?;
+    let original_digest = canonical_calibrated_request_digest_v1(&original)?;
+    let mutations: [fn(&mut CalibratedDecisionRequestV1); 7] = [
+        |request| {
+            if let AssignmentModeV1::CounterBased {
+                random_stream_digest,
+                ..
+            } = &mut request.assignment
+            {
+                *random_stream_digest = digest(b"different-stream");
+            }
+        },
+        |request| {
+            if let AssignmentModeV1::CounterBased { draw, .. } = &mut request.assignment {
+                *draw = probability(1);
+            }
+        },
+        |request| request.calibration.measured_ece_ppm += 1,
+        |request| request.calibration.subgroup_audit_digest = digest(b"different-audit"),
+        |request| request.ood.measured_false_acceptance_ppm += 1,
+        |request| request.completeness.grammar_digest = digest(b"different-grammar"),
+        |request| request.assignment = AssignmentModeV1::Deterministic,
+    ];
+    for mutate in mutations {
+        let mut changed = original.clone();
+        mutate(&mut changed);
+        assert_ne!(
+            canonical_calibrated_request_digest_v1(&changed)?,
+            original_digest
+        );
+        assert_eq!(decide_calibrated(changed.clone())?, legacy);
+        let mut changed_receipt = decide_calibrated_v2(changed)?;
+        assert_ne!(changed_receipt.receipt_digest, bound.receipt_digest);
+        changed_receipt.receipt_digest = bound.receipt_digest;
+        assert_eq!(changed_receipt, bound);
+    }
+    let mut changed_candidate = original;
+    changed_candidate.candidates[0].utility = FixedQ32::from_raw(11);
+    changed_candidate.completeness.candidate_set_digest =
+        canonical_candidate_set_digest_v1(&changed_candidate.candidates)?;
+    assert_ne!(
+        canonical_calibrated_request_digest_v1(&changed_candidate)?,
+        original_digest
+    );
+    assert_eq!(decide_calibrated(changed_candidate.clone())?, legacy);
+    assert_ne!(
+        decide_calibrated_v2(changed_candidate)?.receipt_digest,
+        bound.receipt_digest
+    );
+    Ok(())
+}
+
+#[test]
+fn v2_still_validates_the_actual_draw_and_calibration_window() {
+    let mut request = request_with(
+        vec![candidate(
+            "candidate:a",
+            10,
+            ProbabilityQ32::ONE.raw(),
+            0,
+            ProbabilityQ32::ONE.raw(),
+        )],
+        AssignmentModeV1::CounterBased {
+            random_stream_digest: digest(b"random-stream"),
+            draw: ProbabilityQ32::ONE,
+            abstain_probability: ProbabilityQ32::ZERO,
+        },
+    );
+    assert_eq!(
+        decide_calibrated_v2(request.clone()),
+        Err(CalibratedError::RandomDrawOutOfRange)
+    );
+    request.assignment = AssignmentModeV1::Deterministic;
+    request.calibration.expires_after_sequence = request.sequence - 1;
+    assert_eq!(
+        decide_calibrated_v2(request),
+        Err(CalibratedError::ArtifactExpired)
+    );
+}
+
 fn id(value: &str) -> StableId {
     StableId::new(value).unwrap_or_else(|error| panic!("valid test id: {error:?}"))
 }
@@ -288,4 +386,3 @@ fn canonical_candidate_order_is_required() {
         Err(CalibratedError::NonCanonicalCandidateOrder)
     );
 }
-

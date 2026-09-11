@@ -432,4 +432,3 @@ fn lane_f_native_shadow_vertical_closes_without_effect_authority() {
     assert!(!receipt.trace_digest.is_zero());
     assert!(!receipt.authority.grants_any());
 }
-

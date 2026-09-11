@@ -5,7 +5,8 @@
 
 #![forbid(unsafe_code)]
 
-mod calibrated;
+// Retain the historical module path as well as explicit root exports.
+pub mod calibrated;
 
 pub use calibrated::AbstentionReasonV1;
 pub use calibrated::AssignmentModeV1;
@@ -20,10 +21,11 @@ pub use calibrated::CandidateSetCompletenessBindingV1;
 pub use calibrated::OodArtifactV1;
 pub use calibrated::RiskClass;
 pub use calibrated::SlowPathReasonV1;
+pub use calibrated::canonical_calibrated_request_digest_v1;
 pub use calibrated::canonical_candidate_order_digest_v1;
 pub use calibrated::canonical_candidate_set_digest_v1;
 pub use calibrated::decide_calibrated;
-
+pub use calibrated::decide_calibrated_v2;
 
 use std::collections::BTreeSet;
 use std::error::Error as StdError;

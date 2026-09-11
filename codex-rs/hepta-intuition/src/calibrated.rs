@@ -2,7 +2,9 @@
 //!
 //! This module is deliberately separate from the legacy deterministic baseline.
 //! It validates candidate completeness, calibration and OOD artifacts before
-//! emitting an advisory decision. It grants no dispatch or effect authority.
+//! emitting an advisory decision. The host must authenticate calibration/OOD
+//! measurements and supply a correctly generated random draw; nonzero digests
+//! alone establish neither fact. It grants no dispatch or effect authority.
 
 use std::collections::BTreeSet;
 use std::error::Error as StdError;
@@ -13,6 +15,12 @@ use codex_hepta_types::Digest32;
 use codex_hepta_types::FixedQ32;
 use codex_hepta_types::ProbabilityQ32;
 use codex_hepta_types::StableId;
+
+#[path = "calibrated_binding.rs"]
+mod binding;
+
+pub use binding::canonical_calibrated_request_digest_v1;
+pub use binding::decide_calibrated_v2;
 
 const MAX_CANDIDATES: usize = 128;
 
@@ -401,37 +409,9 @@ fn select(
                 selected.candidate_id.clone(),
             ))
         }
-        AssignmentModeV1::CounterBased {
-            random_stream_digest,
-            draw,
-            abstain_probability,
-        } => {
-            if random_stream_digest.is_zero() {
-                return Err(CalibratedError::EmptyDigest("random stream"));
-            }
-            if *draw == ProbabilityQ32::ONE {
-                return Err(CalibratedError::RandomDrawOutOfRange);
-            }
-            let eligible_ids = eligible
-                .iter()
-                .map(|candidate| candidate.candidate_id.clone())
-                .collect::<BTreeSet<_>>();
-            let mut total = u128::from(abstain_probability.raw());
-            for candidate in &request.candidates {
-                if !eligible_ids.contains(&candidate.candidate_id)
-                    && candidate.assignment_probability != ProbabilityQ32::ZERO
-                {
-                    return Err(CalibratedError::ProbabilityForIneligibleCandidate(
-                        candidate.candidate_id.to_string(),
-                    ));
-                }
-                total = total
-                    .checked_add(u128::from(candidate.assignment_probability.raw()))
-                    .ok_or(CalibratedError::Arithmetic)?;
-            }
-            if total != u128::from(ProbabilityQ32::ONE.raw()) {
-                return Err(CalibratedError::ProbabilityNotNormalized);
-            }
+        AssignmentModeV1::CounterBased { draw, .. } => {
+            // The complete assignment was checked before any disposition was
+            // chosen. Selection only traverses that validated distribution.
             let target = u128::from(draw.raw());
             let mut cumulative = 0u128;
             for candidate in &request.candidates {
@@ -635,4 +615,3 @@ const fn abstention_code(value: AbstentionReasonV1) -> u8 {
 #[cfg(test)]
 #[path = "calibrated_tests.rs"]
 mod tests;
-

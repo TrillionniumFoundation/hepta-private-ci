@@ -280,4 +280,3 @@ fn ledger_failure_overrides_advisory_decision() {
         Some(StageOutcomeV1::Failed(PortFailureClassV1::Indeterminate))
     );
 }
-
