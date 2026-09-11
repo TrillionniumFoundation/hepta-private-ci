@@ -3,34 +3,17 @@
 diff --git a/cargo/private/cargo_build_script.bzl b/cargo/private/cargo_build_script.bzl
 --- a/cargo/private/cargo_build_script.bzl
 +++ b/cargo/private/cargo_build_script.bzl
-@@ -23,6 +23,7 @@
-     "expand_dict_value_locations",
-     "find_cc_toolchain",
-     "find_toolchain",
+@@ -25,0 +26 @@
 +    "is_exec_configuration",
-     _name_to_crate_name = "name_to_crate_name",
- )
- 
-@@ -531,10 +532,11 @@
- 
-     # Inform build scripts of rustc flags
-     # https://github.com/rust-lang/cargo/issues/9600
+@@ -533,0 +535 @@
 +    toolchain_flags = toolchain.extra_exec_rustc_flags if is_exec_configuration(ctx) else toolchain.extra_rustc_flags
-     env["CARGO_ENCODED_RUSTFLAGS"] = "\\x1f".join([
-         # Allow build scripts to locate the generated sysroot
-         "--sysroot=${{pwd}}/{}".format(toolchain.sysroot),
+@@ -537 +539 @@
 -    ] + ctx.attr.rustc_flags)
 +    ] + toolchain_flags + ctx.attr.rustc_flags)
- 
-     for f in ctx.attr.crate_features:
-         env["CARGO_FEATURE_" + f.upper().replace("-", "_")] = "1"
 diff --git a/cargo/private/cargo_build_script_runner/bin.rs b/cargo/private/cargo_build_script_runner/bin.rs
 --- a/cargo/private/cargo_build_script_runner/bin.rs
 +++ b/cargo/private/cargo_build_script_runner/bin.rs
-@@ -471,9 +471,17 @@
- }
- 
- fn get_target_env_vars<P: AsRef<Path>>(rustc: &P) -> Result<BTreeMap<String, String>, String> {
+@@ -474 +474,8 @@
 -    // As done by Cargo when constructing a cargo::core::compiler::build_context::target_info::TargetInfo.
 +    // Query the actual target configuration, including toolchain CRT features.
 +    // Decode Bazel's separator and exec-root placeholders before invoking rustc.
@@ -40,9 +23,5 @@ diff --git a/cargo/private/cargo_build_script_runner/bin.rs b/cargo/private/carg
 +        .unwrap_or_default()
 +        .replace("\\x1f", "\x1f")
 +        .replace("${pwd}", &exec_root.to_string_lossy());
-     let output = Command::new(rustc.as_ref())
-         .arg("--print=cfg")
+@@ -476,0 +484 @@
 +        .args(rustflags.split('\x1f').filter(|flag| !flag.is_empty()))
-         .arg(format!(
-             "--target={}",
-             env::var("TARGET").expect("missing TARGET")
