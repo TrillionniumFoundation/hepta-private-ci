@@ -59,6 +59,9 @@ the SQLite lock, reauthenticates the immutable message and caps the lease at its
 signed expiry. Each claim, renew, retry, ack or terminal transition increments a
 fence. Renew/retry/ack require the exact unexpired owner-issued lease; old fences
 are rejected. Clock regression behind that row's last update fails closed.
+For one configured issuer, `pending_authbus_deliveries_for_issuer` filters issuer
+and epoch before `LIMIT`, so other epochs cannot hide eligible pending messages.
+The existing mixed-issuer scan remains available; selection does not revoke rows.
 
 Every worker operation needs fresh issuer registration; queue contents never
 supply trust. Observed expiry becomes `Expired`; revoked/invalid signatures or
@@ -67,6 +70,9 @@ exhausted delivery attempts become `Quarantined`. The host calls
 which no worker will claim. Key rotation alone does not invent a revocation
 policy for other epochs. Registration remains a host snapshot; final external
 use still needs current policy and revocation checks.
+`quarantine_authbus_delivery(issuer, lease)` stops one leased delivery using the
+current issuer and lease fence. It records a terminal outcome without ack and
+does not retire other active messages belonging to that issuer.
 
 Bounds are 4,096 total rows, 16 KiB payload per row (at most 64 MiB payload),
 16 claims per message, 60 seconds per lease and 60 seconds per retry delay.
@@ -95,3 +101,5 @@ remains in force. This API neither claims exactly-once external effects nor
 supplies a production message dispatcher, managed key host or backup anti-rollback
 oracle. Native tests exercise real SQLite and an abrupt child-process exit
 between send and ack.
+Agentd provides a separately configured, restricted [signed text queue host](../hepta-agentd/AUTHBUS_TEXT.md)
+using this library and the existing App Server queue; it is not a general effect dispatcher.
