@@ -1,6 +1,4 @@
 #!/usr/bin/env python3
-"""Unit tests for the Lane B implementation-truth validator."""
-
 from __future__ import annotations
 
 import importlib.util
@@ -22,53 +20,64 @@ class LaneBTruthTests(unittest.TestCase):
         with self.assertRaises(MODULE.Invalid):
             json.loads('{"a":1,"a":2}', object_pairs_hook=MODULE.pairs)
 
-    def test_unresolved_operation_cannot_invent_mapping(self) -> None:
-        operation = {
-            "designOperation": "run",
-            "state": "planned",
-            "path": "invented.rs",
-            "symbol": "run",
-            "callerClass": "none",
-        }
-        with self.assertRaisesRegex(MODULE.Invalid, "must not invent"):
-            MODULE.verify_operation(operation, "fixture")
+    def test_path_envelope_is_prefix_bounded(self) -> None:
+        self.assertTrue(
+            MODULE.path_allowed(
+                "qualification/lane-b/a.json", ["qualification/lane-b/"]
+            )
+        )
+        self.assertFalse(
+            MODULE.path_allowed(
+                "qualification/lane-c/a.json", ["qualification/lane-b/"]
+            )
+        )
 
-    def test_mapped_operation_requires_real_symbol(self) -> None:
+    def test_closed_module_and_operation_sets(self) -> None:
+        self.assertEqual(11, len(MODULE.EXPECTED_MODULES))
+        self.assertEqual(39, sum(map(len, MODULE.EXPECTED_OPERATIONS.values())))
+        self.assertEqual(
+            len(MODULE.EXPECTED_MODULES), len(set(MODULE.EXPECTED_MODULES))
+        )
+
+    def test_owner_anchor_cannot_escape_resolved_root(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
-            source = root / "source.rs"
-            source.write_text("pub fn actual() {}\n", encoding="utf-8")
-            operation = {
-                "designOperation": "run",
-                "state": "implemented",
-                "path": "source.rs",
-                "symbol": "pub fn missing(",
-                "callerClass": "library_only",
+            source = root / "foreign" / "source.rs"
+            source.parent.mkdir()
+            source.write_text("pub fn run() {}\n", encoding="utf-8")
+            anchor = {
+                "role": "owner_entrypoint",
+                "path": "foreign/source.rs",
+                "symbol": "pub fn run(",
+                "buildTarget": "fixture",
             }
             with mock.patch.object(MODULE, "ROOT", root):
-                with self.assertRaisesRegex(MODULE.Invalid, "missing symbol"):
-                    MODULE.verify_operation(operation, "fixture")
+                with self.assertRaisesRegex(MODULE.Invalid, "escapes resolved roots"):
+                    MODULE.verify_anchor("fixture", ["owned"], anchor, True)
 
-    def test_native_anchor_requires_declared_export(self) -> None:
-        with tempfile.TemporaryDirectory() as directory:
-            root = Path(directory)
-            source = root / "source.rs"
-            source.write_text("pub struct Present;\n", encoding="utf-8")
-            native = {"path": "source.rs", "exports": ["Absent"]}
-            with mock.patch.object(MODULE, "ROOT", root):
-                with self.assertRaisesRegex(MODULE.Invalid, "missing native export"):
-                    MODULE.verify_native_anchor("fixture", native)
-
-    def test_expected_lane_is_closed_and_ordered(self) -> None:
-        self.assertEqual(11, len(MODULE.EXPECTED_MODULES))
-        self.assertEqual(11, len(set(MODULE.EXPECTED_MODULES)))
-        self.assertEqual("runtime.supervisor", MODULE.EXPECTED_MODULES[0])
-        self.assertEqual("ui.native", MODULE.EXPECTED_MODULES[-1])
-
-    def test_scaffolds_are_not_runtime_maturity(self) -> None:
-        self.assertIn("boundary_scaffold", MODULE.NO_RUNTIME_MATURITY)
-        self.assertIn("presentation_core", MODULE.NO_RUNTIME_MATURITY)
-        self.assertNotIn("partial_runtime", MODULE.NO_RUNTIME_MATURITY)
+    def test_generated_map_preserves_external_claim_boundary(self) -> None:
+        truth = {
+            "sourceBase": {"commit": "a" * 40, "tree": "b" * 40},
+            "laneId": "LANE-B-RUNTIME",
+            "moduleOrder": ["fixture"],
+        }
+        row = {
+            "module": "fixture",
+            "sourceMaturity": "boundary",
+            "declaredRoots": ["fixture"],
+            "resolvedRoots": ["fixture"],
+            "stateOwnerDisposition": "state remains bounded to the fixture owner",
+            "terminalObserverDisposition": "terminal truth remains externally observed",
+            "operations": [],
+            "repositoryControlledGaps": [],
+            "externalEvidenceGates": ["external target"],
+        }
+        projection = MODULE.module_map(truth, row)
+        self.assertTrue(
+            projection["claimBoundary"]["repositoryControlledGapsClosed"]
+        )
+        self.assertFalse(projection["claimBoundary"]["productExecutionComplete"])
+        self.assertEqual(["external target"], projection["externalEvidenceGates"])
 
 
 if __name__ == "__main__":
