@@ -718,6 +718,12 @@ def _descendant_identities(root_pid):
 
 
 def _signal_identity(ident, sig):
+    # Retirement fallback can arrive here without a successful descendant scan.
+    # Re-establish the PID namespace boundary at every signaling entry point.
+    try:
+        _require_procfs_namespace()
+    except ExecutionError:
+        return False
     if ident.pid == os.getpid():
         return False
     try:

@@ -2,6 +2,8 @@
 
 import os
 from pathlib import Path
+import signal
+import subprocess
 import unittest
 from unittest import mock
 
@@ -9,6 +11,59 @@ import trusted_executor
 
 
 class ProcfsNamespaceTests(unittest.TestCase):
+    def test_signal_entry_rejects_mismatched_namespace_without_pidfd_or_kill(self):
+        ident = trusted_executor.ProcIdentity(os.getpid() + 1, os.getpid(), 1, "R", 7)
+        with (
+            mock.patch.object(
+                trusted_executor,
+                "_require_procfs_namespace",
+                side_effect=trusted_executor.ExecutionError("namespace mismatch"),
+            ),
+            mock.patch.object(trusted_executor.os, "pidfd_open") as open_pidfd,
+            mock.patch.object(
+                trusted_executor.signal, "pidfd_send_signal"
+            ) as send_pidfd,
+            mock.patch.object(trusted_executor.os, "kill") as kill,
+        ):
+            self.assertFalse(trusted_executor._signal_identity(ident, signal.SIGKILL))
+            open_pidfd.assert_not_called()
+            send_pidfd.assert_not_called()
+            kill.assert_not_called()
+
+    def test_retire_timeout_fallback_never_signals_after_namespace_failure(self):
+        proc = mock.Mock(pid=os.getpid() + 1)
+        proc.wait.side_effect = [subprocess.TimeoutExpired("fixture", 1), 0]
+        ident = trusted_executor.ProcIdentity(proc.pid, os.getpid(), 1, "R", 7)
+        with (
+            mock.patch.object(
+                trusted_executor,
+                "_require_procfs_namespace",
+                side_effect=trusted_executor.ExecutionError("namespace mismatch"),
+            ),
+            mock.patch.object(
+                trusted_executor,
+                "_active_descendants",
+                side_effect=trusted_executor.ExecutionError("namespace mismatch"),
+            ),
+            mock.patch.object(
+                trusted_executor, "_read_proc_identity", return_value=ident
+            ) as read_identity,
+            mock.patch.object(trusted_executor.os, "pidfd_open") as open_pidfd,
+            mock.patch.object(
+                trusted_executor.signal, "pidfd_send_signal"
+            ) as send_pidfd,
+            mock.patch.object(trusted_executor.os, "kill") as kill,
+            mock.patch.object(trusted_executor.time, "sleep"),
+        ):
+            self.assertEqual(
+                trusted_executor.retire(proc, os.getpid(), set()), (True, False, False)
+            )
+            read_identity.assert_called_once_with(proc.pid)
+            self.assertEqual(proc.wait.call_count, 2)
+            open_pidfd.assert_not_called()
+            send_pidfd.assert_not_called()
+            kill.assert_not_called()
+
     def test_mismatched_procfs_rejects_before_policy_or_started_write(self):
         current = os.getpid()
         original = Path.read_bytes
