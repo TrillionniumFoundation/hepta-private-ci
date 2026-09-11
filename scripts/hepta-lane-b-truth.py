@@ -66,7 +66,7 @@ def load(path: Path) -> dict[str, Any]:
 
 
 def dump(value: Any) -> str:
-    return json.dumps(value, indent=2, ensure_ascii=False) + "\n"
+    return json.dumps(value, ensure_ascii=False, separators=(",", ":")) + "\n"
 
 
 def git(*args: str) -> str:
