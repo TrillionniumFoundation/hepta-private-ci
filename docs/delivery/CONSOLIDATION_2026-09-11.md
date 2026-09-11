@@ -67,6 +67,14 @@ applied the build-script patch successfully, and an actual compiled runner
 delivered the expected target features for static MSVC, default MSVC and GNU.
 These local probes do not replace native Windows linking and filesystem tests.
 
+All 40 changed owners passed integrated local strict Clippy. Follow-up CI found
+fixed capability-count assertions and an existing oversized session test file;
+coverage now follows the actual declaration/mapping bijection, and 19 unchanged
+configuration tests moved to a sibling module. The 230 test attributes remain
+intact and the resulting Core targets pass strict Clippy. Full-workspace Cargo
+testing also needs the sandboxed V8 archive and matching bindings published by
+Codex; the workflow now uses the existing checksum-verifying artifact resolver.
+
 The OS executor now rejects procfs/PID-namespace mismatches before execution,
 process enumeration and each signal, including timeout cleanup fallback. Its
 native process tests require matching procfs and PID namespaces. Local negative

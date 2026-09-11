@@ -60,6 +60,28 @@ jobs:
         if: steps.scope.outputs.required == 'true'
         with:
           tool: just@1.51.0,nextest@0.9.103
+      - name: Resolve verified sandboxed V8 artifacts for Cargo
+        if: steps.scope.outputs.required == 'true'
+        env:
+          CODEX_REPO_ROOT: ${{ github.workspace }}
+          PYTHONPATH: scripts
+        run: |
+          python3 - <<'PY'
+          import os
+          from pathlib import Path
+          import subprocess
+          from codex_package.targets import TARGET_SPECS
+          from codex_package.v8 import resolve_codex_v8_cargo_env
+
+          version = subprocess.check_output(
+              ["rustc", "-vV"], cwd=Path(os.environ["CODEX_REPO_ROOT"]) / "codex-rs", text=True
+          )
+          host = next(line.removeprefix("host: ") for line in version.splitlines() if line.startswith("host: "))
+          overrides = resolve_codex_v8_cargo_env(TARGET_SPECS[host])
+          with open(os.environ["GITHUB_ENV"], "a", encoding="utf-8") as output:
+              for name, value in overrides.items():
+                  output.write(f"{name}={value}\n")
+          PY
       - name: Run the complete workspace suite after shared core changes
         if: steps.scope.outputs.required == 'true'
         working-directory: codex-rs
