@@ -27,8 +27,12 @@ pub struct PreferenceState {
     pub state_digest: Digest32,
 }
 
+/// Local deterministic solver step. This is not the canonical
+/// `NduIterationReceiptV1` until bound through the protocol adapter with the
+/// frozen objective, subject, event, coefficient and generation context.
 #[derive(Clone, Debug, Eq, PartialEq)]
-pub struct NduIterationReceipt {
+pub struct NduSolverIterationReceipt {
+    pub iteration: u32,
     pub predecessor_revision: Revision,
     pub next_revision: Revision,
     pub residual_raw: i64,
@@ -42,10 +46,14 @@ pub enum SolveDisposition {
     IterationBoundReached,
 }
 
+/// Local solver termination evidence. It deliberately does not use the name
+/// `NduConvergenceCertificateV1`, which is owned by `learning.eval` and also
+/// requires independent stability, conservation and evaluator evidence.
 #[derive(Clone, Debug, Eq, PartialEq)]
-pub struct NduConvergenceCertificate {
+pub struct NduSolverTerminationReceipt {
     pub disposition: SolveDisposition,
     pub iterations: u32,
+    pub terminal_residual_raw: i64,
     pub maximum_residual_raw: i64,
     pub projection_count: u32,
     pub predecessor_digest: Digest32,
@@ -85,8 +93,8 @@ pub fn solve_preference_target(
 ) -> Result<
     (
         PreferenceState,
-        NduConvergenceCertificate,
-        Vec<NduIterationReceipt>,
+        NduSolverTerminationReceipt,
+        Vec<NduSolverIterationReceipt>,
     ),
     NduError,
 > {
@@ -117,10 +125,12 @@ pub fn solve_preference_target(
     let predecessor_digest = state.state_digest;
     let mut receipts = Vec::new();
     let mut total_projection_count = 0_u32;
+    let mut maximum_residual_raw = 0_i64;
 
     for iteration in 1..=MAX_ITERATIONS {
-        let (next, receipt) = update_once(&state, &target, eta)?;
+        let (next, receipt) = update_once(&state, &target, eta, iteration)?;
         let terminal_residual_raw = receipt.residual_raw;
+        maximum_residual_raw = maximum_residual_raw.max(terminal_residual_raw);
         total_projection_count = total_projection_count
             .checked_add(receipt.projection_count)
             .ok_or(NduError::Arithmetic)?;
@@ -128,37 +138,40 @@ pub fn solve_preference_target(
         state = next;
         receipts.push(receipt);
         if converged {
-            let certificate = NduConvergenceCertificate {
+            let termination = NduSolverTerminationReceipt {
                 disposition: SolveDisposition::Converged,
                 iterations: iteration,
-                maximum_residual_raw: terminal_residual_raw,
+                terminal_residual_raw,
+                maximum_residual_raw,
                 projection_count: total_projection_count,
                 predecessor_digest,
                 terminal_state_digest: state.state_digest,
             };
-            return Ok((state, certificate, receipts));
+            return Ok((state, termination, receipts));
         }
     }
 
     let terminal_residual_raw = receipts
         .last()
         .map_or(i64::MAX, |receipt| receipt.residual_raw);
-    let certificate = NduConvergenceCertificate {
+    let termination = NduSolverTerminationReceipt {
         disposition: SolveDisposition::IterationBoundReached,
         iterations: MAX_ITERATIONS,
-        maximum_residual_raw: terminal_residual_raw,
+        terminal_residual_raw,
+        maximum_residual_raw,
         projection_count: total_projection_count,
         predecessor_digest,
         terminal_state_digest: state.state_digest,
     };
-    Ok((state, certificate, receipts))
+    Ok((state, termination, receipts))
 }
 
 fn update_once(
     state: &PreferenceState,
     target: &[AxisValue],
     eta: FixedQ32,
-) -> Result<(PreferenceState, NduIterationReceipt), NduError> {
+    iteration: u32,
+) -> Result<(PreferenceState, NduSolverIterationReceipt), NduError> {
     let mut next_values = Vec::with_capacity(state.values.len());
     let mut residual_raw = 0_i64;
     let mut projection_count = 0_u32;
@@ -209,7 +222,8 @@ fn update_once(
         values: next_values,
         state_digest,
     };
-    let receipt = NduIterationReceipt {
+    let receipt = NduSolverIterationReceipt {
+        iteration,
         predecessor_revision: state.revision,
         next_revision,
         residual_raw,

@@ -1,0 +1,60 @@
+name: Hepta objective admission qualification
+
+on:
+  push:
+    branches:
+      - codex/hepta-objective-admission-20260908
+      - codex/hepta-all-gap-closure-20260908
+  pull_request:
+    paths:
+      - codex-rs/hepta-objective/**
+      - codex-rs/hepta-types/**
+      - .github/workflows/hepta-objective-admission.yml
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-objective-admission-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  qualify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Bind exact source
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${GITHUB_SHA}"
+          git rev-parse HEAD HEAD^{tree}
+
+      - name: Objective tests
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo test --locked -p codex-hepta-objective -- --nocapture
+
+      - name: Strict objective lint
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo clippy --locked -p codex-hepta-objective --all-targets -- -D warnings
+
+      - name: Formatting and clean source
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo fmt --manifest-path codex-rs/Cargo.toml --package codex-hepta-objective -- --check
+          git diff --check
+          git diff --exit-code
+          test -z "$(git status --porcelain --untracked-files=no)"

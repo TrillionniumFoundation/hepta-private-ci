@@ -1,0 +1,208 @@
+{
+  "schema": "hepta.lane-b-test-traceability.v2",
+  "schemaVersion": 2,
+  "laneId": "LANE-B-RUNTIME",
+  "lineageAnchor": {
+    "commit": "f278a89eea18fccb6d37b876aa5679863a64139d",
+    "tree": "5baa144717d4b3e3c596501fb56ce911d009e728",
+    "meaning": "immutable parent snapshot; exact candidate identity is the clean CI checkout HEAD and is never hard-coded into its own tree"
+  },
+  "claimBoundary": {
+    "repositoryTestCommandsSpecified": true,
+    "operationToTestTraceabilityComplete": true,
+    "targetHostQualificationProved": false,
+    "externalEffectsProved": false,
+    "independentAcceptanceProved": false
+  },
+  "suites": [
+    {
+      "id": "RUST-SUPERVISOR",
+      "module": "runtime.supervisor",
+      "workingDirectory": "codex-rs",
+      "command": "cargo test -p codex-hepta-supervisor --lib",
+      "paths": [
+        "codex-rs/hepta-supervisor/src/supervisor.rs",
+        "codex-rs/hepta-supervisor/tests"
+      ],
+      "coverageLevel": "native_owner_package",
+      "externalCompletionRequired": true
+    },
+    {
+      "id": "RUST-FLEET-LEASED",
+      "module": "runtime.fleet",
+      "workingDirectory": "codex-rs",
+      "command": "cargo test -p codex-hepta-fleet --bin hepta-fleet-leased",
+      "paths": [
+        "codex-rs/hepta-fleet/src/bin/hepta-fleet-leased.rs",
+        "codex-rs/hepta-fleet/src/allocation.rs"
+      ],
+      "coverageLevel": "native_owner_boundary",
+      "externalCompletionRequired": true
+    },
+    {
+      "id": "RUST-AGENTD",
+      "module": "runtime.agentd",
+      "workingDirectory": "codex-rs",
+      "command": "cargo test -p codex-hepta-agentd --lib",
+      "paths": [
+        "codex-rs/hepta-agentd/src/app_runtime.rs",
+        "codex-rs/hepta-agentd/src/control.rs"
+      ],
+      "coverageLevel": "native_composition_package",
+      "externalCompletionRequired": true
+    },
+    {
+      "id": "RUST-CODEX-ADAPTER",
+      "module": "runtime.codex",
+      "workingDirectory": "codex-rs",
+      "command": "cargo test -p codex-hepta-codex-adapter",
+      "paths": [
+        "codex-rs/hepta-codex-adapter/src/lib.rs",
+        "codex-rs/app-server/src/request_processors/thread_processor.rs",
+        "codex-rs/app-server/src/request_processors/turn_processor.rs",
+        "codex-rs/core/src/tools/router.rs",
+        "codex-rs/core/src/codex_thread.rs"
+      ],
+      "coverageLevel": "native_adapter_and_source_mapping",
+      "externalCompletionRequired": true
+    },
+    {
+      "id": "RUST-INFERENCE-CONTROL",
+      "module": "inference.control",
+      "workingDirectory": "codex-rs",
+      "command": "cargo test -p codex-hepta-infer-core --bin hepta-infer-control",
+      "paths": [
+        "codex-rs/hepta-infer-core/src/bin/hepta-infer-control.rs",
+        "codex-rs/hepta-inferd/src/lib.rs"
+      ],
+      "coverageLevel": "durable_native_owner_boundary",
+      "externalCompletionRequired": true
+    },
+    {
+      "id": "RUST-INFERENCE-WORKER",
+      "module": "inference.worker",
+      "workingDirectory": "codex-rs",
+      "command": "cargo test -p codex-hepta-infer-worker-host --bin hepta-infer-worker",
+      "paths": [
+        "codex-rs/hepta-infer-worker-host/src/bin/hepta-infer-worker.rs"
+      ],
+      "coverageLevel": "native_driver_boundary",
+      "externalCompletionRequired": true
+    },
+    {
+      "id": "RUST-TASKFLOW",
+      "module": "automation.taskflow",
+      "workingDirectory": "codex-rs",
+      "command": "cargo test -p codex-hepta-automation --bin hepta-taskflow-runtime",
+      "paths": [
+        "codex-rs/hepta-automation/src/bin/hepta-taskflow-runtime.rs",
+        "codex-rs/hepta-automation/src/taskflow.rs",
+        "codex-rs/hepta-automation/src/scheduler.rs"
+      ],
+      "coverageLevel": "native_execution_boundary",
+      "externalCompletionRequired": true
+    },
+    {
+      "id": "RUST-MATRIX",
+      "module": "channel.matrix",
+      "workingDirectory": "codex-rs",
+      "command": "cargo test -p codex-hepta-matrixd --bin hepta-matrix-send-observer",
+      "paths": [
+        "codex-rs/hepta-matrixd/src/bin/hepta-matrix-send-observer.rs",
+        "codex-rs/hepta-matrixd/src/runtime.rs"
+      ],
+      "coverageLevel": "native_send_observer_boundary",
+      "externalCompletionRequired": true
+    },
+    {
+      "id": "NODE-BROWSER",
+      "module": "browser.servo",
+      "workingDirectory": ".",
+      "command": "node --test apps/hepta-browser/test/runtime.test.js",
+      "paths": [
+        "apps/hepta-browser/src/runtime.js",
+        "apps/hepta-browser/test/runtime.test.js"
+      ],
+      "coverageLevel": "native_javascript_runtime_boundary",
+      "externalCompletionRequired": true
+    },
+    {
+      "id": "NODE-UI-CONTROL",
+      "module": "ui.control",
+      "workingDirectory": ".",
+      "command": "node --test apps/hepta-control-ui/test/runtime-client.test.js",
+      "paths": [
+        "apps/hepta-control-ui/src/runtime-client.js",
+        "apps/hepta-control-ui/test/runtime-client.test.js"
+      ],
+      "coverageLevel": "native_javascript_runtime_boundary",
+      "externalCompletionRequired": true
+    },
+    {
+      "id": "NODE-UI-NATIVE",
+      "module": "ui.native",
+      "workingDirectory": ".",
+      "command": "node --test apps/hepta-native/test/shell-runtime.test.js",
+      "paths": [
+        "apps/hepta-native/src/shell-runtime.js",
+        "apps/hepta-native/test/shell-runtime.test.js"
+      ],
+      "coverageLevel": "native_javascript_shell_boundary",
+      "externalCompletionRequired": true
+    }
+  ],
+  "casesByModule": {
+    "runtime.supervisor": ["SUP-01", "SUP-02", "SUP-03", "SUP-04"],
+    "runtime.fleet": ["FLEET-01", "FLEET-02", "FLEET-03", "FLEET-04"],
+    "runtime.agentd": ["AGENT-01", "AGENT-02", "AGENT-03", "AGENT-04"],
+    "runtime.codex": ["CODEX-01", "CODEX-02", "CODEX-03", "CODEX-04"],
+    "inference.control": ["INFER-01", "INFER-02", "INFER-03", "INFER-04"],
+    "inference.worker": ["WORKER-01", "WORKER-02", "WORKER-03", "WORKER-04"],
+    "automation.taskflow": ["FLOW-01", "FLOW-02", "FLOW-03", "FLOW-04"],
+    "channel.matrix": ["MATRIX-01", "MATRIX-02", "MATRIX-03", "MATRIX-04"],
+    "browser.servo": ["BROWSER-01", "BROWSER-02", "BROWSER-03", "BROWSER-04"],
+    "ui.control": ["UI-01", "UI-02", "UI-03", "UI-04"],
+    "ui.native": ["NATIVE-01", "NATIVE-02", "NATIVE-03", "NATIVE-04"]
+  },
+  "operationCases": {
+    "runtime.supervisor/start_instance": ["SUP-01", "SUP-03"],
+    "runtime.supervisor/observe_health": ["SUP-01", "SUP-02"],
+    "runtime.supervisor/drain": ["SUP-03"],
+    "runtime.supervisor/load_next": ["SUP-04"],
+    "runtime.fleet/admit_host": ["FLEET-01", "FLEET-02"],
+    "runtime.fleet/allocate": ["FLEET-01", "FLEET-03"],
+    "runtime.fleet/renew_or_revoke": ["FLEET-02", "FLEET-04"],
+    "runtime.agentd/compose_runtime": ["AGENT-02", "AGENT-04"],
+    "runtime.agentd/start_run": ["AGENT-01", "AGENT-04"],
+    "runtime.agentd/cancel_run": ["AGENT-03"],
+    "runtime.agentd/attach_context": ["AGENT-01", "AGENT-04"],
+    "runtime.codex/open_thread": ["CODEX-03"],
+    "runtime.codex/submit_turn": ["CODEX-01", "CODEX-03"],
+    "runtime.codex/dispatch_tool": ["CODEX-02", "CODEX-04"],
+    "runtime.codex/observe_delivery": ["CODEX-01", "CODEX-04"],
+    "inference.control/reserve_request": ["INFER-01", "INFER-02"],
+    "inference.control/schedule": ["INFER-01", "INFER-02"],
+    "inference.control/cancel": ["INFER-03"],
+    "inference.control/settle": ["INFER-03", "INFER-04"],
+    "inference.worker/load_model": ["WORKER-01", "WORKER-02", "WORKER-03"],
+    "inference.worker/run": ["WORKER-01", "WORKER-02", "WORKER-04"],
+    "inference.worker/unload": ["WORKER-03", "WORKER-04"],
+    "automation.taskflow/register_schedule": ["FLOW-01"],
+    "automation.taskflow/materialize_due": ["FLOW-01", "FLOW-02"],
+    "automation.taskflow/claim_occurrence": ["FLOW-02"],
+    "automation.taskflow/execute_step": ["FLOW-03", "FLOW-04"],
+    "channel.matrix/admit_event": ["MATRIX-01", "MATRIX-04"],
+    "channel.matrix/prepare_send": ["MATRIX-02", "MATRIX-03"],
+    "channel.matrix/observe_send": ["MATRIX-03", "MATRIX-04"],
+    "browser.servo/open_profile": ["BROWSER-02", "BROWSER-03"],
+    "browser.servo/observe_page": ["BROWSER-01", "BROWSER-02"],
+    "browser.servo/navigate_or_act": ["BROWSER-01", "BROWSER-02", "BROWSER-04"],
+    "ui.control/read_view": ["UI-01", "UI-04"],
+    "ui.control/submit_request": ["UI-02", "UI-03"],
+    "ui.control/request_stop": ["UI-01", "UI-03", "UI-04"],
+    "ui.native/connect_runtime": ["NATIVE-01", "NATIVE-03"],
+    "ui.native/render_runtime_view": ["NATIVE-01", "NATIVE-03"],
+    "ui.native/request_platform_capability": ["NATIVE-02", "NATIVE-03"],
+    "ui.native/apply_shell_update": ["NATIVE-04"]
+  }
+}

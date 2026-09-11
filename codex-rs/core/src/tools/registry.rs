@@ -95,6 +95,7 @@ pub(crate) trait CoreToolRuntime: ToolExecutor<ToolInvocation> {
 
     /// Whether cancellation should let the handler finish teardown before the
     /// host returns an aborted tool response.
+    #[expect(dead_code, reason = "retained tool cancellation metadata query")]
     fn waits_for_runtime_cancellation(&self) -> bool {
         false
     }
