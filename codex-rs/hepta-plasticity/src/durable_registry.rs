@@ -258,13 +258,11 @@ impl DurableProposalRegistry {
         };
         let mut offset = HEADER_SIZE as u64;
         let physical_len = store.file.metadata()?.len();
+        let mut incomplete_tail = false;
         while offset < physical_len {
-            if store.frame_digests.len() >= maximum_records {
-                return Err(DurableProposalRegistryError::Capacity);
-            }
             let remaining = physical_len - offset;
             if remaining < 4 {
-                truncate_incomplete_tail(&mut store.file, offset)?;
+                incomplete_tail = true;
                 break;
             }
             store.file.seek(SeekFrom::Start(offset))?;
@@ -279,8 +277,11 @@ impl DurableProposalRegistry {
                 .checked_add(frame_len as u64)
                 .ok_or(DurableProposalRegistryError::Capacity)?;
             if remaining < total {
-                truncate_incomplete_tail(&mut store.file, offset)?;
+                incomplete_tail = true;
                 break;
+            }
+            if store.frame_digests.len() >= maximum_records {
+                return Err(DurableProposalRegistryError::Capacity);
             }
             let mut frame = vec![0_u8; frame_len];
             store.file.read_exact(&mut frame)?;
@@ -338,6 +339,11 @@ impl DurableProposalRegistry {
             if *recovered != anchor.frame_digest {
                 return Err(DurableProposalRegistryError::AnchorMismatch);
             }
+        }
+        // Reconcile the acknowledged history before repairing any bytes. A
+        // rejected anchor must leave the original file available for recovery.
+        if incomplete_tail {
+            truncate_incomplete_tail(&mut store.file, offset)?;
         }
         store
             .file
@@ -855,4 +861,3 @@ impl<'a> ByteReader<'a> {
 #[cfg(test)]
 #[path = "durable_registry_tests.rs"]
 mod tests;
-

@@ -14,7 +14,6 @@ pub use durable_registry::DurableProposalRegistry;
 pub use durable_registry::DurableProposalRegistryError;
 pub use durable_registry::DurableRegistryAnchorV1;
 
-
 mod legacy;
 mod parameter_v2;
 mod registry;

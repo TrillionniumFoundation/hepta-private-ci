@@ -276,3 +276,84 @@ fn a_second_writer_cannot_open_the_same_file() {
     drop(first);
 }
 
+#[test]
+fn rejected_anchor_does_not_truncate_recoverable_bytes() -> Result<(), Box<dyn StdError>> {
+    for tail in [&[0, 0, 0][..], &[0, 0, 1, 0, 7][..]] {
+        let fixture = TestFile::new("rejected-anchor-tail");
+        let scope = digest(b"registry-scope");
+        let anchor = {
+            let mut store = DurableProposalRegistry::open(fixture.create(), scope, 19, 4)?;
+            let receipt = store.append_v2(
+                Digest32::ZERO,
+                proposal("proposal:anchor-tail", b"window-a"),
+            )?;
+            DurableRegistryAnchorV1 {
+                sequence: receipt.sequence,
+                frame_digest: receipt.frame_digest,
+            }
+        };
+        let valid_bytes = std::fs::read(&fixture.path)?;
+        let mut file = OpenOptions::new().append(true).open(&fixture.path)?;
+        file.write_all(tail)?;
+        file.sync_all()?;
+        drop(file);
+        let incomplete_bytes = std::fs::read(&fixture.path)?;
+        for (wrong, expected) in [
+            (
+                DurableRegistryAnchorV1 {
+                    sequence: anchor.sequence,
+                    frame_digest: digest(b"wrong-history"),
+                },
+                DurableProposalRegistryError::AnchorMismatch,
+            ),
+            (
+                DurableRegistryAnchorV1 {
+                    sequence: anchor.sequence + 1,
+                    frame_digest: anchor.frame_digest,
+                },
+                DurableProposalRegistryError::AcknowledgedHistoryMissing,
+            ),
+        ] {
+            let rejected =
+                DurableProposalRegistry::open_anchored(fixture.open(), scope, 19, 4, wrong);
+            assert_eq!(rejected.err(), Some(expected));
+            assert_eq!(std::fs::read(&fixture.path)?, incomplete_bytes);
+        }
+        let recovered =
+            DurableProposalRegistry::open_anchored(fixture.open(), scope, 19, 4, anchor)?;
+        assert_eq!(recovered.current_anchor()?, Some(anchor));
+        assert_eq!(std::fs::read(&fixture.path)?, valid_bytes);
+    }
+    Ok(())
+}
+
+#[test]
+fn a_full_registry_can_recover_an_incomplete_tail() -> Result<(), Box<dyn StdError>> {
+    let fixture = TestFile::new("full-registry-tail");
+    let scope = digest(b"registry-scope");
+    let expected = proposal("proposal:full-tail", b"window-a");
+    let receipt = {
+        let mut store = DurableProposalRegistry::open(fixture.create(), scope, 23, 1)?;
+        store.append_v2(Digest32::ZERO, expected.clone())?
+    };
+    let valid_bytes = std::fs::read(&fixture.path)?;
+    let mut file = OpenOptions::new().append(true).open(&fixture.path)?;
+    file.write_all(&[0, 0, 0])?;
+    file.sync_all()?;
+    drop(file);
+    let anchor = DurableRegistryAnchorV1 {
+        sequence: receipt.sequence,
+        frame_digest: receipt.frame_digest,
+    };
+    let mut recovered =
+        DurableProposalRegistry::open_anchored(fixture.open(), scope, 23, 1, anchor)?;
+    assert_eq!(
+        recovered.get_v2_by_proposal_id(&expected.proposal_id)?,
+        Some(&expected)
+    );
+    let mut retry = receipt;
+    retry.disposition = AppendDisposition::Unchanged;
+    assert_eq!(recovered.append_v2(Digest32::ZERO, expected)?, retry);
+    assert_eq!(std::fs::read(&fixture.path)?, valid_bytes);
+    Ok(())
+}
