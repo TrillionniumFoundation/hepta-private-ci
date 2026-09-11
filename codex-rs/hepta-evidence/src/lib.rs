@@ -1,5 +1,7 @@
 #![forbid(unsafe_code)]
 
+mod authbus_outbox;
+mod authbus_outbox_record;
 mod authbus_store;
 mod canonical;
 mod governance_store;
@@ -14,6 +16,16 @@ mod schema_validation;
 mod store;
 mod summary;
 
+pub use authbus_outbox_record::AUTHBUS_OUTBOX_MAX_ATTEMPTS;
+pub use authbus_outbox_record::AUTHBUS_OUTBOX_MAX_LEASE_MS;
+pub use authbus_outbox_record::AUTHBUS_OUTBOX_MAX_PAYLOAD_BYTES;
+pub use authbus_outbox_record::AUTHBUS_OUTBOX_MAX_ROWS;
+pub use authbus_outbox_record::AuthBusClaimRequest;
+pub use authbus_outbox_record::AuthBusDelivery;
+pub use authbus_outbox_record::AuthBusDeliveryState;
+pub use authbus_outbox_record::AuthBusDeliveryStatus;
+pub use authbus_outbox_record::AuthBusLease;
+pub use authbus_outbox_record::AuthBusOutboxError;
 pub use authbus_store::AuthBusAdmissionError;
 pub use historical::HISTORICAL_EVIDENCE_SCHEMA_VERSION;
 pub use historical::HistoricalEvidenceFamily;
