@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import re
 import subprocess
 from pathlib import Path
@@ -41,7 +42,9 @@ ALLOWED_PREFIXES = (
     "docs/modules/objective.compiler/IMPLEMENTATION_MAP.json",
     "docs/modules/utility.ndu/IMPLEMENTATION_MAP.json",
     "docs/modules/control.runtime/IMPLEMENTATION_MAP.json",
-    "qualification/module-execution-dossiers/",
+    "qualification/module-execution-dossiers/detail/objective.compiler.md",
+    "qualification/module-execution-dossiers/detail/utility.ndu.md",
+    "qualification/module-execution-dossiers/detail/control.runtime.md",
     "scripts/hepta-lane-d-semantic-conformance.py",
     ".github/workflows/hepta-lane-d-semantic-conformance.yml",
 )
@@ -70,13 +73,28 @@ def load(path: str) -> dict[str, Any]:
     )
 
 
-def verify_map(module: str) -> None:
+def verify_map(module: str) -> str:
     mapping = load(MAPS[module])
     need(mapping.get("module") == module, f"{module} map identity")
     need(mapping.get("authorityDelta") == "none", f"{module} authority delta")
+    owner_root = mapping.get("sourceRoot")
+    need(
+        isinstance(owner_root, str)
+        and owner_root
+        and not Path(owner_root).is_absolute()
+        and ".." not in Path(owner_root).parts
+        and owner_root != ".",
+        f"{module} invalid owner root",
+    )
+    resolved_owner = (ROOT / owner_root).resolve()
+    need(resolved_owner.is_relative_to(ROOT.resolve()), f"{module} owner-root escape")
     need(mapping.get("operations"), f"{module} operations")
     for operation in mapping["operations"]:
         source_path = operation["sourcePath"]
+        need(
+            (ROOT / source_path).resolve().is_relative_to(resolved_owner),
+            f"{module} source escapes owner root: {source_path}",
+        )
         need((ROOT / source_path).is_file(), f"missing source {source_path}")
         source = (ROOT / source_path).read_text(encoding="utf-8")
         symbol = operation["nativeSymbol"].split("::")[-1]
@@ -96,6 +114,8 @@ def verify_map(module: str) -> None:
                     f"fn {test_symbol}" in test_source,
                     f"missing test symbol {test_symbol}",
                 )
+
+    return owner_root
 
 
 def verify() -> int:
@@ -235,29 +255,85 @@ def verify() -> int:
     return 0
 
 
-def verify_changes(base: str) -> int:
+def git_value(*args: str) -> str:
     result = subprocess.run(
-        ["git", "diff", "--name-only", f"{base}...HEAD"],
-        cwd=ROOT,
-        check=True,
-        text=True,
-        capture_output=True,
+        ["git", *args], cwd=ROOT, check=True, text=True, capture_output=True
     )
-    changed = [line for line in result.stdout.splitlines() if line]
-    denied = [
+    return result.stdout.rstrip("\n")
+
+
+def verify_changes(base: str) -> int:
+    head = git_value("rev-parse", "HEAD")
+    event_path = os.environ.get("GITHUB_EVENT_PATH")
+    event = load(event_path) if event_path else {}
+    need(
+        os.environ.get("GITHUB_EVENT_NAME") != "pull_request"
+        or "pull_request" in event,
+        "pull-request event identity is missing",
+    )
+    if "pull_request" in event:
+        request = event["pull_request"]
+        need(isinstance(request, dict), "invalid pull-request event")
+        need(base == request["base"]["sha"], "requested base differs from event base")
+        source_head = request["head"]["sha"]
+    else:
+        source_head = event.get("after") or os.environ.get("GITHUB_SHA") or head
+    for label, sha in (("base", base), ("source head", source_head)):
+        need(
+            isinstance(sha, str) and re.fullmatch(r"[0-9a-f]{40}", sha) is not None,
+            f"invalid {label} identity",
+        )
+        need(
+            git_value("rev-parse", "--verify", f"{sha}^{{commit}}") == sha,
+            f"{label} is not an exact commit",
+        )
+    need(head == source_head, "checkout is not the event source head")
+    git_value("diff", "--exit-code", "HEAD", "--")
+    merge_bases = git_value("merge-base", "--all", base, source_head).splitlines()
+    need(len(merge_bases) == 1, "source range has no unique merge base")
+    changed = [
+        path
+        for path in git_value(
+            "diff",
+            "--name-only",
+            "-z",
+            "--no-renames",
+            merge_bases[0],
+            source_head,
+            "--",
+        ).split("\0")
+        if path
+    ]
+
+    # Scope comes from current owner maps and explicitly owned documents. Every
+    # owner map is still validated, including on a PR that changes another lane.
+    # This gate does not approve those other lanes or rescan historical deltas.
+    owner_roots = []
+    for module in MODULES:
+        owner_roots.append(verify_map(module).rstrip("/"))
+    owned_prefixes = (
+        *ALLOWED_PREFIXES,
+        *(root + "/" for root in owner_roots),
+        *(f"docs/modules/{module}/" for module in MODULES),
+    )
+    lane_changes = [
         path
         for path in changed
-        if not any(
-            path == prefix or path.startswith(prefix) for prefix in ALLOWED_PREFIXES
-        )
+        if path in owner_roots
+        or any(path == prefix or path.startswith(prefix) for prefix in owned_prefixes)
     ]
-    need(not denied, "out-of-envelope paths: " + ", ".join(denied))
-    need(changed, "empty Lane D change set")
     print(
         json.dumps(
             {
                 "status": "PASS_HEPTA_LANE_D_CHANGE_POLICY",
-                "changedPaths": len(changed),
+                "sourceHead": source_head,
+                "sourceTree": git_value("rev-parse", f"{source_head}^{{tree}}"),
+                "baseHead": base,
+                "mergeBase": merge_bases[0],
+                "changedPaths": len(lane_changes),
+                "laneDChangedPaths": lane_changes,
+                "otherLaneChangedPaths": len(changed) - len(lane_changes),
+                "ownerMapsVerified": list(MODULES),
                 "authorityGranted": False,
             },
             sort_keys=True,
