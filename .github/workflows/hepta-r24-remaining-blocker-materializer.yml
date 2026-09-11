@@ -1,0 +1,209 @@
+name: Hepta r24 remaining blocker materializer
+
+on:
+  push:
+    branches:
+      - ops/r24-remaining-blocker-materializer-20260911-gpt56
+
+permissions:
+  contents: write
+
+concurrency:
+  group: hepta-r24-remaining-blocker-materializer
+  cancel-in-progress: false
+
+env:
+  SOURCE_SHA: 0a7dae70a5f53ccbc2f2acc027a2de97553a90f2
+  SOURCE_TREE: 12f620230e90857019b01c00c0d7fa05b37ba3ce
+  BASE_SHA: 04f60466394a024c218ce66b1b32d1c42c462985
+  RESULT_BRANCH: ops/r24-materialized-result-20260911-gpt56
+  PYTHONDONTWRITEBYTECODE: "1"
+  PYTHONUTF8: "1"
+  CARGO_NET_GIT_FETCH_WITH_CLI: "true"
+
+jobs:
+  materialize:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    steps:
+      - name: Check out materializer controller
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          path: controller
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Check out immutable r23 source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          path: source
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Bind source object and single-parent topology
+        working-directory: source
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${SOURCE_SHA}"
+          test "$(git rev-parse HEAD^{tree})" = "${SOURCE_TREE}"
+          read -r HEAD_SHA PARENT EXTRA <<< "$(git rev-list --parents -n 1 HEAD)"
+          test "${HEAD_SHA}" = "${SOURCE_SHA}"
+          test "${PARENT}" = "${BASE_SHA}"
+          test -z "${EXTRA:-}"
+
+      - name: Apply exact remaining-blocker repairs
+        working-directory: source
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 ../controller/.github/scripts/r24_apply.py
+
+      - name: Verify exact patch surface and static formats
+        working-directory: source
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat > /tmp/expected-paths <<'EOF'
+          .github/workflows/hepta-lane-d-semantic-conformance.yml
+          .github/workflows/hepta-lane-e-gap-closure.yml
+          .github/workflows/hepta-lane-g-sandbox-hardening.yml
+          codex-rs/hepta-ndu/src/evaluator_tests.rs
+          qualification/lane-b/LANE_B_IMPLEMENTATION_TRUTH.json
+          scripts/hepta-lane-d-semantic-conformance.py
+          tools/hepta-engineering-control/test_candidate_sandbox_hardening.py
+          EOF
+          git diff --name-only | sort > /tmp/actual-paths
+          diff -u /tmp/expected-paths /tmp/actual-paths
+          git diff --check
+          python3 -m py_compile \
+            scripts/hepta-lane-d-semantic-conformance.py \
+            tools/hepta-engineering-control/test_candidate_sandbox_hardening.py
+          python3 -m json.tool \
+            qualification/lane-b/LANE_B_IMPLEMENTATION_TRUTH.json >/dev/null
+
+      - name: Verify Lane B truth and Lane D semantics
+        working-directory: source
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta-lane-b-truth.py self-test
+          python3 -m unittest scripts/test_hepta_lane_b_truth.py
+          python3 scripts/hepta-lane-b-truth.py verify
+          python3 scripts/hepta-lane-b-docs.py
+          python3 scripts/hepta-lane-d-semantic-conformance.py self-test
+          python3 scripts/hepta-lane-d-semantic-conformance.py verify
+          python3 scripts/hepta-lane-d-semantic-conformance.py \
+            verify-changes --base "${BASE_SHA}" --composed-candidate
+
+      - name: Verify portable and strong Lane G sandbox boundaries
+        working-directory: source
+        shell: bash
+        run: |
+          set -euo pipefail
+          (
+            cd tools/hepta-engineering-control
+            python3 -m unittest -v \
+              test_candidate_sandbox_hardening.CandidateSandboxFixture
+          )
+          if ! command -v bwrap >/dev/null 2>&1; then
+            sudo apt-get update
+            sudo apt-get install --no-install-recommends -y bubblewrap
+          fi
+          if sysctl -n kernel.apparmor_restrict_unprivileged_userns >/dev/null 2>&1; then
+            sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
+            test "$(sysctl -n kernel.apparmor_restrict_unprivileged_userns)" = 0
+          fi
+          (
+            cd tools/hepta-engineering-control
+            python3 -m unittest -v \
+              test_candidate_sandbox_hardening.CandidateSandboxStrongIsolation
+          )
+
+      - name: Install pinned Rust toolchain
+        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: 1.95.0
+          components: clippy,rustfmt
+
+      - name: Verify Lane D native packages
+        working-directory: source/codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo fmt --all -- --check
+          cargo check --locked \
+            -p codex-hepta-objective \
+            -p codex-hepta-ndu \
+            -p codex-hepta-control-plane \
+            --all-targets
+          cargo test --locked -p codex-hepta-objective
+          cargo test --locked -p codex-hepta-ndu
+          cargo test --locked -p codex-hepta-control-plane
+          cargo clippy --locked \
+            -p codex-hepta-objective \
+            -p codex-hepta-ndu \
+            -p codex-hepta-control-plane \
+            --all-targets -- -D warnings
+
+      - name: Materialize a single-parent exact candidate object
+        id: object
+        working-directory: source
+        shell: bash
+        run: |
+          set -euo pipefail
+          git add -- \
+            .github/workflows/hepta-lane-d-semantic-conformance.yml \
+            .github/workflows/hepta-lane-e-gap-closure.yml \
+            .github/workflows/hepta-lane-g-sandbox-hardening.yml \
+            codex-rs/hepta-ndu/src/evaluator_tests.rs \
+            qualification/lane-b/LANE_B_IMPLEMENTATION_TRUTH.json \
+            scripts/hepta-lane-d-semantic-conformance.py \
+            tools/hepta-engineering-control/test_candidate_sandbox_hardening.py
+          TREE="$(git write-tree)"
+          export GIT_AUTHOR_NAME="Hepta Convergence Materializer"
+          export GIT_AUTHOR_EMAIL="hepta-convergence@users.noreply.github.com"
+          export GIT_COMMITTER_NAME="${GIT_AUTHOR_NAME}"
+          export GIT_COMMITTER_EMAIL="${GIT_AUTHOR_EMAIL}"
+          NEW_SHA="$(printf '%s\n' \
+            'fix(convergence): close remaining repository blockers (r24)' | \
+            git commit-tree "${TREE}" -p "${BASE_SHA}")"
+          test "$(git rev-parse "${NEW_SHA}^{tree}")" = "${TREE}"
+          read -r COMMIT PARENT EXTRA <<< "$(git rev-list --parents -n 1 "${NEW_SHA}")"
+          test "${COMMIT}" = "${NEW_SHA}"
+          test "${PARENT}" = "${BASE_SHA}"
+          test -z "${EXTRA:-}"
+          MERGE_TREE="$(git merge-tree --write-tree "${BASE_SHA}" "${NEW_SHA}")"
+          test "${MERGE_TREE}" = "${TREE}"
+          printf 'sha=%s\n' "${NEW_SHA}" >> "${GITHUB_OUTPUT}"
+          printf 'tree=%s\n' "${TREE}" >> "${GITHUB_OUTPUT}"
+          {
+            printf 'source=%s\n' "${SOURCE_SHA}"
+            printf 'base=%s\n' "${BASE_SHA}"
+            printf 'sha=%s\n' "${NEW_SHA}"
+            printf 'tree=%s\n' "${TREE}"
+            printf 'merge_tree=%s\n' "${MERGE_TREE}"
+            git diff --cached --stat "${BASE_SHA}"
+          } | tee /tmp/r24-object.txt
+
+      - name: Publish materialized result branch
+        working-directory: source
+        env:
+          NEW_SHA: ${{ steps.object.outputs.sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          git push origin \
+            "${NEW_SHA}:refs/heads/${RESULT_BRANCH}" \
+            --force
+          test "$(git ls-remote origin "refs/heads/${RESULT_BRANCH}" | cut -f1)" = "${NEW_SHA}"
+
+      - name: Retain exact-object receipt
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-r24-materialized-object
+          path: /tmp/r24-object.txt
+          if-no-files-found: error
+          retention-days: 30
