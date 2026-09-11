@@ -35,7 +35,7 @@ class LaneBTruthTests(unittest.TestCase):
             (root / "foreign").mkdir()
             (root / "foreign/source.rs").write_text("pub fn mapped() {}\n", encoding="utf-8")
             mapping = {"path":"foreign/source.rs","symbol":"pub fn mapped(","callerClass":"runtime","buildTarget":"target"}
-            with mock.patch.object(MODULE, "ROOT", root):
+            with mock.patch.object(MODULE.CORE, "ROOT", root):
                 with self.assertRaisesRegex(MODULE.Invalid, "outside implementation roots"):
                     MODULE.verify_mapping("fixture", mapping, ["owner"])
 
@@ -45,7 +45,7 @@ class LaneBTruthTests(unittest.TestCase):
             (root / "owner").mkdir()
             (root / "owner/source.rs").write_text("pub fn actual() {}\n", encoding="utf-8")
             mapping = {"path":"owner/source.rs","symbol":"pub fn missing(","callerClass":"runtime","buildTarget":"target"}
-            with mock.patch.object(MODULE, "ROOT", root):
+            with mock.patch.object(MODULE.CORE, "ROOT", root):
                 with self.assertRaisesRegex(MODULE.Invalid, "missing symbol"):
                     MODULE.verify_mapping("fixture", mapping, ["owner"])
 
@@ -55,7 +55,7 @@ class LaneBTruthTests(unittest.TestCase):
             (root / "owner/tests").mkdir(parents=True)
             (root / "owner/tests/mapped.rs").write_text("pub fn mapped() {}\n", encoding="utf-8")
             mapping = {"path":"owner/tests/mapped.rs","symbol":"pub fn mapped(","callerClass":"runtime","buildTarget":"target"}
-            with mock.patch.object(MODULE, "ROOT", root):
+            with mock.patch.object(MODULE.CORE, "ROOT", root):
                 with self.assertRaisesRegex(MODULE.Invalid, "test-only"):
                     MODULE.verify_mapping("fixture", mapping, ["owner"])
 
