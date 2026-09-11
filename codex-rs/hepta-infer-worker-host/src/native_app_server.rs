@@ -38,6 +38,7 @@ use tokio_util::sync::CancellationToken;
 
 const MAX_PROMPT_BYTES: usize = 32 * 1024;
 const MAX_OUTPUT_BYTES: usize = 1024 * 1024;
+const MAX_MODEL_CONTEXT_BYTES: usize = 8 * 1024;
 const RPC_TIMEOUT: Duration = Duration::from_secs(5);
 const INTERRUPT_GRACE: Duration = Duration::from_secs(3);
 
@@ -123,6 +124,21 @@ impl AppServerModelDriver {
             Some(query) => Some(owner.cognitive_context(query, 4).await?),
             None => None,
         };
+        let additional_context = context
+            .map(|snapshot| -> Result<_> {
+                let value = serde_json::to_string(&snapshot)?;
+                if value.len() > MAX_MODEL_CONTEXT_BYTES {
+                    return Err("verified context exceeds the model attachment byte limit".into());
+                }
+                Ok(HashMap::from([(
+                    "hepta-cognitive-owner".to_string(),
+                    AdditionalContextEntry {
+                        value,
+                        kind: AdditionalContextKind::Untrusted,
+                    },
+                )]))
+            })
+            .transpose()?;
         let ingress = owner.session_ingress().await?;
         let socket_path = AbsolutePathBuf::from_absolute_path(ingress.socket_path)?;
         let mut client = timeout(
@@ -171,17 +187,6 @@ impl AppServerModelDriver {
             let _ = client.shutdown().await;
             return Err("cancelled before model dispatch".into());
         }
-        let additional_context = context
-            .map(|snapshot| -> Result<_> {
-                Ok(HashMap::from([(
-                    "hepta-cognitive-owner".to_string(),
-                    AdditionalContextEntry {
-                        value: serde_json::to_string(&snapshot)?,
-                        kind: AdditionalContextKind::Untrusted,
-                    },
-                )]))
-            })
-            .transpose()?;
         let response = timeout(
             RPC_TIMEOUT,
             client.request_typed::<TurnStartResponse>(ClientRequest::TurnStart {

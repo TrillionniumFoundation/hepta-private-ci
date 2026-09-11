@@ -27,7 +27,7 @@ The standalone `hepta-taskflow-runtime`, `hepta-fleet-leased`, `hepta-infer-cont
 
 The query is 1–2048 bytes and the requested result limit is 1–4. The Lane C read admits at most 1024 records and 1 MiB of canonical encoding. Intersecting that bounded record prefix with search candidates can omit relevant records outside the prefix; `omitted_records` reports the read truncation. The complete context payload is bounded to 24 KiB of JSON encoding, including escaping and its envelope. Oversized items are omitted, not silently truncated. This is verified memory retrieval, not evidence of learned model weights or complete recall.
 
-The worker uses this context as **untrusted additional context** on the actual App Server turn. It checks ready/fenced state and generation through Agentd, verifies the App Server's owning home, requests the exact configured model without fallback, creates an ephemeral read-only thread, and declines approval requests. During execution it monitors owner readiness. It observes matching thread/turn output and usage events; only a matching terminal notification can establish completion.
+The worker uses this context as **untrusted additional context** on the actual App Server turn. The model attachment has an additional 8 KiB encoded byte limit and larger attachments reject before model dispatch. This new fragment can exceed 1,000 tokens and requires the repository's P0 context review; no attachment is unbounded. It checks ready/fenced state and generation through Agentd, verifies the App Server's owning home, requests the exact configured model without fallback, creates an ephemeral read-only thread, and declines approval requests. During execution it monitors owner readiness. It observes matching thread/turn output and usage events; only a matching terminal notification can establish completion.
 
 Build and invoke from the repository:
 
@@ -37,6 +37,12 @@ hepta-infer-worker --agentd-socket /absolute/owner/agentd.sock --agent-id UUID -
 ```
 
 The model must be configured and authenticated in the existing owning App Server. The worker does not install credentials, select hardware or grant itself tools. Without the feature, the binary exits 64. The prompt limit is 32 KiB, observed output limit is 1 MiB, and bounded events cap at 256. `--timeout-ms` defaults to 120000 and applies to turn observation; connection/RPC calls have separate five-second bounds. Cancellation, deadline, event loss, disconnect and fencing trigger an actual interrupt request. Interrupt acknowledgement alone is insufficient: an unobserved outcome remains `indeterminate`. The CLI prints observed JSON and exits nonzero on failure, interruption or indeterminacy. It never automatically replays an uncertain turn/start.
+
+## Measured context planning
+
+Before publishing a context, Agentd passes the actual serialized context, verified record count, source/read digests, owner identity and current host generation to `control_plane::plan_observed_context`. That helper executes the actual CNS planner and NDU evaluator for the narrow objective of delivering verified records within the 24 KiB response budget. It compares read-context with abstain; empty context, ties or infeasibility abstain. Its utility axis counts observed verified items and its resource axis measures bytes; neither predicts model quality or physical capacity.
+
+The host reserves 1 KiB for planning metadata, adds the sealed plan digest, then checks the complete encoded response again. `evaluated_context_digest` binds the context serialized with `plan: null` before the decision. If planning abstains, returned items are empty, so this field does not claim to hash that modified response. Errors fail closed and the canonical memory cut and host generation are revalidated before publication. This is a real, request-local NDU caller; global adaptive module reconfiguration remains separate work.
 
 ## Durable inference journal
 

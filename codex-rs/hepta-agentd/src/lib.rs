@@ -27,6 +27,7 @@ pub use codex_hepta_agent_protocol::AgentdPayload;
 pub use codex_hepta_agent_protocol::AgentdRequest;
 pub use codex_hepta_agent_protocol::AgentdResponse;
 pub use codex_hepta_agent_protocol::CognitiveContextItem;
+pub use codex_hepta_agent_protocol::CognitiveContextPlan;
 pub use codex_hepta_agent_protocol::CognitiveContextSnapshot;
 pub use codex_hepta_agent_protocol::EventBatch;
 pub use codex_hepta_agent_protocol::HealthSnapshot;

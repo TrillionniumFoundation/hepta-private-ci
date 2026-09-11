@@ -326,9 +326,14 @@ impl AgentdState {
                         cognitive_control_unavailable(),
                     );
                 };
-                let result =
-                    crate::cognitive_context::read(&store, &self.identity.agent_id, &query, limit)
-                        .await;
+                let result = crate::cognitive_context::read(
+                    &store,
+                    &self.identity.agent_id,
+                    current_generation,
+                    &query,
+                    limit,
+                )
+                .await;
                 self.refresh_generation()?;
                 {
                     let runtime = self.runtime.lock().map_err(poisoned_state)?;
@@ -341,7 +346,11 @@ impl AgentdState {
                 match result {
                     Ok(snapshot) => AgentdPayload::CognitiveContext(snapshot),
                     Err(error) => {
-                        return self.cognitive_error_response(request_id, current_generation, error);
+                        return self.cognitive_error_response(
+                            request_id,
+                            current_generation,
+                            error,
+                        );
                     }
                 }
             }

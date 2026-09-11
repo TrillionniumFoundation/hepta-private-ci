@@ -327,6 +327,16 @@ pub struct CognitiveContextSnapshot {
     pub read_digest: String,
     pub omitted_records: u64,
     pub items: Vec<CognitiveContextItem>,
+    pub plan: Option<CognitiveContextPlan>,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct CognitiveContextPlan {
+    /// Binds the evaluated context with `plan: null`, before any abstention.
+    pub evaluated_context_digest: String,
+    pub plan_receipt_digest: String,
+    pub read_allowed: bool,
 }
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
