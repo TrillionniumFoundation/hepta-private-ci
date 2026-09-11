@@ -13,7 +13,7 @@ from typing import Any
 from lane_a_foundation_core import *  # noqa: F403
 
 
-def validate_matrix(matrix: dict[str, Any], root: Path = ROOT) -> None:
+def validate_matrix(matrix: dict[str, Any], root: Path = ROOT) -> dict[str, Any]:
     if (
         matrix.get("schemaVersion") != 2
         or matrix.get("lane") != "LANE-A-FOUNDATION"
@@ -106,9 +106,10 @@ def validate_matrix(matrix: dict[str, Any], root: Path = ROOT) -> None:
             raise VerificationError(f"{module}: {axis} drift")
     capability = read_json(root / "docs/lane-a-foundation/CAPABILITY_EVIDENCE_MAP.json")
     validate_capability_map(matrix, capability, root)
-    validate_native_bindings(root)
+    native = validate_native_bindings(root)
     validate_wire_vector(root)
     validate_source_specific(root)
+    return native["currentSourceBinding"]
 
 
 def git_value(*args: str) -> str:
@@ -158,8 +159,10 @@ def exact_source(expected: str | None) -> tuple[str, str]:
 
 def write_receipt(output: Path, expected: str | None, native: bool) -> None:
     matrix = read_json(MATRIX_PATH)
-    validate_matrix(matrix)
+    binding = validate_matrix(matrix)
     source, tree = exact_source(expected)
+    if (source, tree) != (binding["sourceSha"], binding["sourceTree"]):
+        raise VerificationError("checkout changed while producing source receipt")
     if native:
         receipt: dict[str, Any] = {
             "schemaVersion": 1,
@@ -206,6 +209,10 @@ def write_receipt(output: Path, expected: str | None, native: bool) -> None:
             "productionActivation": "not_claimed",
             "externalAcceptance": "not_claimed",
         }
+    receipt["nativeSourceObservations"] = binding["observations"]
+    receipt["nativeSourceObservationSha256"] = hashlib.sha256(
+        canonical(binding)
+    ).hexdigest()
     output.parent.mkdir(parents=True, exist_ok=True)
     output.write_text(
         json.dumps(receipt, indent=2, sort_keys=True) + "\n", encoding="utf-8"

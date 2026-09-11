@@ -96,6 +96,10 @@ class LaneAFoundationTruthTests(unittest.TestCase):
         )
         self.assertEqual(receipt["targetArchitectureImplementation"], "partial")
         self.assertEqual(receipt["externalAcceptance"], "not_claimed")
+        current = verify.validate_native_bindings()["currentSourceBinding"]
+        self.assertEqual(receipt["nativeSourceObservations"], current["observations"])
+        self.assertEqual(receipt["sourceSha"], current["sourceSha"])
+        self.assertEqual(receipt["sourceTree"], current["sourceTree"])
 
     def test_operations_semantic_replay_guards_are_source_pinned(self) -> None:
         model = (ROOT / "codex-rs/hepta-operations/src/model.rs").read_text(
@@ -172,7 +176,7 @@ class LaneAFoundationTruthTests(unittest.TestCase):
         )
         self.assertEqual(
             bindings["candidateBinding"],
-            "exact_head_tree_receipt_plus_current_blob_table",
+            "runtime_head_tree_and_source_blob_receipt",
         )
         observed_digest = verify.hashlib.sha256(
             verify.json.dumps(
@@ -183,9 +187,13 @@ class LaneAFoundationTruthTests(unittest.TestCase):
             ).encode()
         ).hexdigest()
         self.assertEqual(bindings["sourceObservationDigest"], observed_digest)
-        for row in bindings["observations"]:
-            data = (ROOT / row["path"]).read_bytes()
-            self.assertEqual(verify.git_blob_sha(data), row["blobSha"], row["path"])
+        current = verify.validate_native_bindings()["currentSourceBinding"]
+        self.assertEqual(current["sourceSha"], verify.git_value("rev-parse", "HEAD"))
+        self.assertEqual(current["sourceTree"], verify.git_value("rev-parse", "HEAD^{tree}"))
+        for observed, historical in zip(current["observations"], bindings["observations"], strict=True):
+            data = (ROOT / observed["path"]).read_bytes()
+            self.assertEqual(observed["blobSha"], verify.git_blob_sha(data))
+            self.assertEqual(observed["historicalBlobSha"], historical["blobSha"])
 
 
 if __name__ == "__main__":

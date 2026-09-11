@@ -14,7 +14,7 @@ This qualification companion is subordinate to `docs/DEVELOPMENT.md` (plan 8.0.0
 8. [STATUS.md](STATUS.md): generated classification/depth projection, not an independent acceptance record.
 9. [IMPLEMENTATION_CONTRACTS.md](IMPLEMENTATION_CONTRACTS.md): coding-entry, native binding, final-gate ordering, cross-owner composition and seven-lane implementation rules.
 10. [IMPLEMENTATION_PROFILES.json](IMPLEMENTATION_PROFILES.json): concrete API, state/encoding, linearization/recovery, algorithm and acceptance contracts for all forty modules.
-11. [NATIVE_BINDINGS.json](NATIVE_BINDINGS.json): five exact inspected source exports, explicitly distinguished from proposed implementations and real deployment evidence.
+11. [NATIVE_BINDINGS.json](NATIVE_BINDINGS.json): forty registered primary source paths with historical observations; current hashes are generated from the checked Git HEAD and tree, separately from deployment evidence.
 12. [PERSISTENCE.md](PERSISTENCE.md) and [COGNITIVE_STORE.sql](COGNITIVE_STORE.sql): proposed cognitive durable adapter, actual format boundaries, commit/acknowledgement, deletion, rotation, backup and recovery.
 13. [ORGAN_EVOLUTION.md](ORGAN_EVOLUTION.md): separate graph types, typed extension admission, composite migration, single-writer barriers and rollback after successor writes.
 14. [C1_EXECUTION.md](C1_EXECUTION.md): real-host vertical composition, independent outcomes, durable learning, new-process loading and exact rollback.
@@ -99,7 +99,7 @@ python3 scripts/hepta-readiness.py verify
 python3 scripts/hepta-docs.py verify
 ```
 
-`verify-bundle` checks the exported new design surface and explicit nonclaims; it does not require or certify a whole repository. `verify-repository` additionally requires the complete committed checkout, canonical module/lane/root/package bindings, exact observed native source blobs and the corrected NDU blob registry. Existing source-head and deterministic synthetic-merge workflows run both new oracle tests and repository verification without granting write permissions. The existing `verify-details --fixture-dir` remains a separate companion-only check of the original forty detail files.
+`verify-bundle` checks the exported new design surface and explicit nonclaims; it does not require or certify a whole repository. `verify-repository` additionally requires the complete committed checkout, canonical module/lane/root/package bindings, registered native paths, module ownership and source identifiers, then emits current HEAD/tree and actual native source hashes. Historical native blob observations remain provenance; the corrected NDU specification blob registry remains a strict semantic-specification check. Existing source-head and deterministic synthetic-merge workflows run both new oracle tests and repository verification without granting write permissions. The existing `verify-details --fixture-dir` remains a separate companion-only check of the original forty detail files.
 
 A machine pass proves its coverage/hash/path/algebra/schema assertions, not semantic completeness, native product execution, future efficacy or independent review. Product acceptance cases remain designs until executed by their native packages. Local oracle results and current repository CI are recorded in the candidate's external evidence, not hard-coded into this README as permanently current facts.
 

@@ -17,6 +17,8 @@ from fractions import Fraction
 from pathlib import Path
 from typing import Any
 
+from native_source_bindings import BindingError, observe_native_bindings
+
 ROOT = Path(__file__).resolve().parents[2]
 REL = Path('qualification/module-execution-dossiers')
 LANES = {'A': 'LANE-A-FOUNDATION', 'B': 'LANE-B-RUNTIME', 'C': 'LANE-C-MEMORY',
@@ -294,6 +296,19 @@ def git(root: Path,*args: str) -> bytes:
         raise Invalid('required Git read failed: '+' '.join(args))
     return result.stdout
 
+def current_native_bindings(root: Path) -> dict[str, Any]:
+    native = read_json(root / REL / 'NATIVE_BINDINGS.json')
+    lane_a = read_json(root / REL / 'NATIVE_BINDINGS_LANE_A.json')
+    profiles = read_json(root / REL / 'IMPLEMENTATION_PROFILES.json')
+    override = {row['module']: row for row in lane_a['observations']}
+    if len(override) != 7 or set(override) != set(lane_a['closedWorldModules']):
+        raise Invalid('Lane A native binding override coverage')
+    observations = [override.get(row['module'], row) for row in native['observations']]
+    try:
+        return observe_native_bindings(root, observations, [row['module'] for row in profiles['modules']])
+    except BindingError as error:
+        raise Invalid(str(error)) from error
+
 def verify_repository(root: Path) -> dict[str,Any]:
     if Path(git(root,'rev-parse','--show-toplevel').decode().strip()).resolve() != root.resolve():
         raise Invalid('complete repository root required')
@@ -323,21 +338,19 @@ def verify_repository(root: Path) -> dict[str,Any]:
         for path in missing:
             if inside(root,path).exists() or binding['bootstrapWorkPackage'] not in known_packages:
                 raise Invalid(mid+': missing-root or bootstrap declaration drift')
-    for row in read_json(root/REL/'NATIVE_BINDINGS.json')['observations']:
-        data=inside(root,row['path']).read_bytes()
-        if blob(data) != row['blobSha'] or any(re.search(r'\b'+re.escape(s)+r'\b',data.decode()) is None for s in row['exports']):
-            raise Invalid('native observation drift; re-review required: '+row['path'])
+    native_binding = current_native_bindings(root)
     # Verify the revised canonical NDU document is bound to its actual bytes.
     algorithm=read_json(root/'docs/learning/ALGORITHM_SPECS.json')
     ndu=next(d for d in algorithm['documents'] if d['id']=='ALG-NDU-FBSDE')
     if blob(inside(root,ndu['path']).read_bytes()) != ndu['blobSha']:
         raise Invalid('canonical NDU blob mismatch')
-    required=profiles['readWith']+[str(REL/name) for name in ('IMPLEMENTATION_PROFILES.json','IMPLEMENTATION_COMPLETION.json','NATIVE_BINDINGS.json','COGNITIVE_STORE.sql','implementation_contracts.py','test_implementation_contracts.py')]
+    required=profiles['readWith']+[str(REL/name) for name in ('IMPLEMENTATION_PROFILES.json','IMPLEMENTATION_COMPLETION.json','NATIVE_BINDINGS.json','NATIVE_BINDINGS_LANE_A.json','native_source_bindings.py','COGNITIVE_STORE.sql','implementation_contracts.py','test_implementation_contracts.py')]
     for path in required:
         if git(root,'show','HEAD:'+path) != inside(root,path).read_bytes():
             raise Invalid('uncommitted candidate document: '+path)
     result.update(kind='repository_document_binding_conformance',repositoryBindingsChecked=True,
-                  sourceSha=git(root,'rev-parse','HEAD').decode().strip())
+                  sourceSha=native_binding['sourceSha'], sourceTree=native_binding['sourceTree'],
+                  nativeSourceBinding=native_binding)
     return result
 
 def self_test(base: Path) -> int:

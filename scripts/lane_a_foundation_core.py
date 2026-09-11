@@ -7,11 +7,15 @@ import json
 import os
 import re
 import subprocess
+import sys
 from copy import deepcopy
 from pathlib import Path
 from typing import Any
 
 ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT / "qualification/module-execution-dossiers"))
+from native_source_bindings import BindingError, observe_native_bindings
+
 LANE = ROOT / "docs/lane-a-foundation"
 MATRIX_PATH = LANE / "MODULE_TRUTH_MATRIX.json"
 CAPABILITY_MAP_PATH = LANE / "CAPABILITY_EVIDENCE_MAP.json"
@@ -191,8 +195,7 @@ def validate_native_bindings(root: Path = ROOT) -> dict[str, Any]:
         or value.get("consumerCallsitesProved") is not False
         or value.get("productExecutionProved") is not False
         or value.get("sourceCodeCommitRole") != "provenance_only_non_authoritative"
-        or value.get("candidateBinding")
-        != "exact_head_tree_receipt_plus_current_blob_table"
+        or value.get("candidateBinding") != "runtime_head_tree_and_source_blob_receipt"
         or not isinstance(rows, list)
         or [row.get("module") for row in rows if isinstance(row, dict)]
         != EXPECTED_MODULES
@@ -208,34 +211,11 @@ def validate_native_bindings(root: Path = ROOT) -> dict[str, Any]:
     ).hexdigest()
     if value.get("sourceObservationDigest") != observation_digest:
         raise VerificationError("native-binding observation digest mismatch")
-    for row in rows:
-        path = row.get("path")
-        expected = str(row.get("blobSha"))
-        symbols = row.get("exports")
-        if (
-            not isinstance(path, str)
-            or re.fullmatch(r"[0-9a-f]{40}", expected) is None
-            or not isinstance(symbols, list)
-            or not symbols
-        ):
-            raise VerificationError(f"{row.get('module')}: invalid native-binding row")
-        try:
-            data = (root / path).read_bytes()
-            source = data.decode("utf-8")
-        except (OSError, UnicodeDecodeError) as error:
-            raise VerificationError(
-                f"cannot read native binding {path}: {error}"
-            ) from error
-        if git_blob_sha(data) != expected:
-            raise VerificationError(f"{row['module']}: source blob drift for {path}")
-        for symbol in symbols:
-            if (
-                not isinstance(symbol, str)
-                or re.search(r"\b" + re.escape(symbol) + r"\b", source) is None
-            ):
-                raise VerificationError(
-                    f"{row['module']}: missing {symbol!r} in {path}"
-                )
+    try:
+        current = observe_native_bindings(root, rows, EXPECTED_MODULES)
+    except BindingError as error:
+        raise VerificationError(str(error)) from error
+    value["currentSourceBinding"] = current
     return value
 
 
