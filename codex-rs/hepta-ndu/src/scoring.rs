@@ -16,6 +16,7 @@ use crate::mul_q32_ties_even;
 pub(crate) fn pareto_frontier(
     candidates: &[CandidateUtility],
     dimensions: &[(StableId, AxisDirection)],
+    tolerances: &BTreeMap<StableId, FixedQ32>,
 ) -> Vec<CandidateUtility> {
     let mut frontier = Vec::new();
     for (index, candidate) in candidates.iter().enumerate() {
@@ -23,7 +24,7 @@ pub(crate) fn pareto_frontier(
             .iter()
             .enumerate()
             .filter(|(other_index, _)| *other_index != index)
-            .any(|(_, other)| dominates(other, candidate, dimensions));
+            .any(|(_, other)| dominates(other, candidate, dimensions, tolerances));
         if !dominated {
             frontier.push(candidate.clone());
         }
@@ -35,6 +36,7 @@ fn dominates(
     left: &CandidateUtility,
     right: &CandidateUtility,
     dimensions: &[(StableId, AxisDirection)],
+    tolerances: &BTreeMap<StableId, FixedQ32>,
 ) -> bool {
     let mut strictly_better = false;
     for (axis, direction) in dimensions {
@@ -44,18 +46,28 @@ fn dominates(
         let Some(right_value) = axis_value(&right.utility, axis) else {
             return false;
         };
-        let ordering = left_value.cmp(&right_value);
-        let not_worse = match direction {
-            AxisDirection::Maximize => !ordering.is_lt(),
-            AxisDirection::Minimize => !ordering.is_gt(),
+        let tolerance = tolerances
+            .get(axis)
+            .copied()
+            .unwrap_or(FixedQ32::ZERO)
+            .raw();
+        let left_raw = i128::from(left_value.raw());
+        let right_raw = i128::from(right_value.raw());
+        let tolerance_raw = i128::from(tolerance);
+        let (not_worse, better) = match direction {
+            AxisDirection::Maximize => (
+                left_raw + tolerance_raw >= right_raw,
+                left_raw > right_raw + tolerance_raw,
+            ),
+            AxisDirection::Minimize => (
+                left_raw <= right_raw + tolerance_raw,
+                left_raw + tolerance_raw < right_raw,
+            ),
         };
         if !not_worse {
             return false;
         }
-        strictly_better |= match direction {
-            AxisDirection::Maximize => ordering.is_gt(),
-            AxisDirection::Minimize => ordering.is_lt(),
-        };
+        strictly_better |= better;
     }
     strictly_better
 }

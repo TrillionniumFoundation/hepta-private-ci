@@ -1,44 +1,63 @@
 # objective.compiler: implementation design
 
 Parent: `docs/modules/objective.compiler/TECHNICAL.md`. Lane: `LANE-D-OBJECTIVE-VALUE`.
-Status: specified target, not implemented or independently accepted. Common requirements: `../EXECUTION_SEMANTICS.md` and `../TECHNICAL.md`. Canonical ownership and package predecessors are unchanged.
+Status: source candidate implemented and mapped; exact-head qualification and product composition remain separate. Common requirements: `../EXECUTION_SEMANTICS.md`, `../TECHNICAL.md`, `docs/readiness/OBJECTIVE_COMPILER_EXECUTION.md` and `docs/contracts/OBJECTIVE_ERRORS.json`.
 
 ## 1. Source and work envelope
 
-Roots: `codex-rs/hepta-objective`.
-Packages: `OBJ-0-OBJECTIVE-CONTRACTS`, `OBJ-1-OBJECTIVE-COMPILER`.
+Root: `codex-rs/hepta-objective`. Packages: `OBJ-0-OBJECTIVE-CONTRACTS`, `OBJ-1-OBJECTIVE-COMPILER`. Exact operation-to-symbol and test mappings are in `docs/modules/objective.compiler/IMPLEMENTATION_MAP.json`.
 
-Operation signatures below are design contracts, not assertions of existing native symbols. Bind each to an existing or planned symbol and consumer inside the owner envelope. Preserve existing stores and APIs; do not create another authority or execution spine.
+This candidate changes no authority, effect or writer ownership. The module remains stateless for domain facts. The owning product caller, which is not established by this source candidate, persists immutable objective and run snapshots.
 
 ## 2. Public operations and contract details
 
-`compile(ObjectiveSourceEnvelopeV1, baseline_profile) -> ObjectiveCompileReceiptV1 | ObjectiveConflictReceiptV1`; `check_feasibility(typed_constraints, oracle_budget) -> Feasible | Infeasible | Unsupported | Exhausted`. The deterministic grammar is the interval/finite-set/action-implication subset in EXECUTION_SEMANTICS. Model-assisted intent extraction emits an untrusted candidate IR that must pass this same compiler.
+The implemented path is:
+
+```text
+decode_source_envelope_json_v1(bytes)
+ObjectiveSourceEnvelopeV1::validate_structure()
+canonical_objective_intent_digest_v1(envelope)
+admit_and_compile_objective_v1(envelope, profile, authenticated_context)
+check_feasibility_v1(grammar, atoms, budget)
+compile(native_envelope)
+```
+
+Admission validates source authentication, principal scope, schema, normalization, profile, source and intent digests before mapping every represented field. Unknown or unrepresentable semantics fail closed. The admission receipt and compiler output carry no effect authority.
+
+`abstain` is intrinsic and confirmation-free. A request cannot forbid it. The compiled action ceiling is 128 including abstain: at most 127 caller actions when abstain is implicit, or 128 when the caller supplies the valid intrinsic action explicitly.
 
 ## 3. State records and transaction design
 
-The compiler owns no durable fact store. The caller persists immutable ObjectiveFunctionV1 and RunStartSnapshotV1 with request/principal, success/terminal predicates, hard constraints, legal/forbidden actions, evidence sources, resource/risk limits, revision and digest. A semantic goal/scope/acceptance change produces a new run revision, never a mutable field update inside the current run.
+The compiler owns no durable store. Its pure output binds request, principal, source, schema, selected profile, hard constraints, legal actions, success and terminal predicates, evidence requirements, resource/risk policy and semantic digest. A product caller must publish the immutable objective and `RunStartSnapshotV1` atomically and reconcile by exact semantic identity.
+
+A typed hard conflict produces `ObjectiveConflictReceiptV1`. `CompileDisposition::ExplicitAbstain` is a successful non-error outcome in which abstain is the sole legal action. Stable error meanings are generated from `docs/contracts/OBJECTIVE_ERRORS.json`; Markdown or Rust code may not locally redefine a code.
 
 ## 4. Deterministic algorithm and scheduling
 
-Bound and decode source fields; normalize units/time/IDs; classify precedence; reject unknown operators; intersect scalar/enum constraints and solve bounded action implications; on infeasibility run deterministic deletion filtering with at most n+1 oracle calls; return an inclusion-minimal conflict set. O(n log n) applies to normalization/sorting only; the whole algorithm also pays O(n C(n)) conflict-oracle work. Exhaustion preserves all constraints and returns unavailable/ask.
+Decode and normalize bounded fields, authenticate source, map registered units/IDs, classify P0-P4 precedence, intersect scalar or finite-enum domains, close bounded positive action implications and stable-sort all sets. Infeasible hard atoms use deterministic deletion filtering and return an inclusion-minimal conflict set.
+
+Normalization and canonical sorting are `O(n log n)`. A feasibility oracle has profile cost `C(n)`. Inclusion-minimal conflict extraction performs at most `n+1` oracle calls and `O(n C(n))` work. These paths have separate CPU, wall-clock and metric budgets. Exhaustion preserves every original hard constraint and returns unavailable.
 
 ## 5. Capacity and performance profile
 
-Canonical pilot <=256 KiB envelope, <=256 constraints, <=128 success predicates and <=128 action classes; conflict-oracle calls <=257. Freeze CPU/wall-clock budgets before evaluation; no network on deterministic compile path. Record oracle count, elapsed work and unsupported dimensions.
+Pilot bounds are 256 KiB raw input, 256 constraints, 128 success predicates, 64 soft dimensions, 127 caller actions without explicit abstain, 128 compiled actions and 257 conflict-oracle calls. No network or synchronous central RPC occurs in the deterministic compiler path.
 
-Pilot ceilings are design targets, not measurements. Stricter canonical limits prevail. Bind actual schema/migration, host and measurements before composition; stateless modules prove absence rather than inventing state.
+Latency claims require a named host, compiler, build profile, input class and exact source. A normal successful compile measurement cannot be reused as a conflict-extraction measurement.
 
 ## 6. Concrete verification cases
 
-- OBJ-DETAIL-01: [0,1] intersect [2,3] is infeasible and an irrelevant atom is removed from the conflict core.
-- OBJ-DETAIL-02: reorder equivalent constraints -> identical canonical IR and conflict ordering.
-- OBJ-DETAIL-03: unknown nonlinear predicate or oracle exhaustion never weakens the legal action set.
-- OBJ-DETAIL-04: task text requesting network cannot override an explicit principal prohibition.
+- OBJ-DETAIL-01: disjoint scalar intervals produce an inclusion-minimal conflict and remove irrelevant atoms.
+- OBJ-DETAIL-02: equivalent reordered inputs produce identical semantic digests.
+- OBJ-DETAIL-03: unsupported language or oracle exhaustion never weakens the legal set.
+- OBJ-DETAIL-04: principal network prohibition dominates task text.
+- OBJ-DETAIL-05: intrinsic abstain cannot be forbidden or confirmation-gated.
+- OBJ-DETAIL-06: 127 caller actions plus implicit abstain compile to 128; 128 without abstain reject.
+- OBJ-DETAIL-07: source, schema, profile, normalization or intent digest mismatch fails before native compile.
 
-These are required product test designs, not executed-test receipts. Each implementation supplies native test identity, exact input/output and independent oracle evidence.
+Native test files and symbols are registered in the implementation map. A green fixture proves only the tested source boundary; it is not a production-caller or efficacy receipt.
 
 ## 7. Integration, rollback and capability ceiling
 
-Compile before adaptive selection. Utility and neural modules consume the frozen objective but cannot replace it with an easier target. C1 includes a genuine source-envelope-to-host mapping. Rollback retains the original principal and semantics or starts a newly authorized run.
+Compile before adaptive selection. NDU and Control consume the frozen objective but cannot mutate its hard constraints, observer requirements or legal effects. Rollback reuses a prior objective only when request/principal compatibility and current revocation checks pass; otherwise it starts a newly authorized run or abstains.
 
-Use all eighteen dossier receipt fields. Immediate revocation/stop remains effective across frozen snapshots. Preserve every applicable external gate; no generator self-acceptance, self-merge or self-release.
+The candidate issues no runtime, model, provider, network, filesystem, tool, secret, Matrix, fleet, acceptance, merge, promotion or release authority. Product composition, independent review and exact-head workflow success remain separately governed.
