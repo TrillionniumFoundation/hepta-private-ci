@@ -1,4 +1,5 @@
 """Lane A matrix, receipt and self-test helpers."""
+
 from __future__ import annotations
 
 import hashlib
@@ -16,9 +17,12 @@ def validate_matrix(matrix: dict[str, Any], root: Path = ROOT) -> None:
     if (
         matrix.get("schemaVersion") != 2
         or matrix.get("lane") != "LANE-A-FOUNDATION"
-        or matrix.get("documentationPolicy") != "docs/lane-a-foundation/BOUNDARY_POLICY.md"
-        or matrix.get("capabilityEvidenceMap") != "docs/lane-a-foundation/CAPABILITY_EVIDENCE_MAP.json"
-        or matrix.get("nativeBindingOverride") != "qualification/module-execution-dossiers/NATIVE_BINDINGS_LANE_A.json"
+        or matrix.get("documentationPolicy")
+        != "docs/lane-a-foundation/BOUNDARY_POLICY.md"
+        or matrix.get("capabilityEvidenceMap")
+        != "docs/lane-a-foundation/CAPABILITY_EVIDENCE_MAP.json"
+        or matrix.get("nativeBindingOverride")
+        != "qualification/module-execution-dossiers/NATIVE_BINDINGS_LANE_A.json"
         or matrix.get("moduleCoverage") != 7
         or matrix.get("statusAxes") != AXES
     ):
@@ -45,9 +49,11 @@ def validate_matrix(matrix: dict[str, Any], root: Path = ROOT) -> None:
         if phrase not in policy:
             raise VerificationError(f"boundary policy missing {phrase!r}")
     modules = matrix.get("modules")
-    if not isinstance(modules, list) or [
-        row.get("module") for row in modules if isinstance(row, dict)
-    ] != EXPECTED_MODULES:
+    if (
+        not isinstance(modules, list)
+        or [row.get("module") for row in modules if isinstance(row, dict)]
+        != EXPECTED_MODULES
+    ):
         raise VerificationError("closed-world module order mismatch")
     for row in modules:
         module = row["module"]
@@ -67,7 +73,9 @@ def validate_matrix(matrix: dict[str, Any], root: Path = ROOT) -> None:
         current = read_text(root / row["currentSpecification"])
         positions = [current.find(heading) for heading in SECTIONS]
         if -1 in positions or positions != sorted(positions):
-            raise VerificationError(f"{module}: current-contract sections missing/out of order")
+            raise VerificationError(
+                f"{module}: current-contract sections missing/out of order"
+            )
         current_caps = row.get("currentCapabilities")
         target_caps = row.get("targetOnlyCapabilities")
         if (
@@ -142,7 +150,9 @@ def canonical(value: Any) -> bytes:
 def exact_source(expected: str | None) -> tuple[str, str]:
     source = git_value("rev-parse", "HEAD")
     if expected is not None and source != expected:
-        raise VerificationError(f"exact source mismatch: expected {expected}, got {source}")
+        raise VerificationError(
+            f"exact source mismatch: expected {expected}, got {source}"
+        )
     return source, git_value("rev-parse", "HEAD^{tree}")
 
 
@@ -226,9 +236,7 @@ def self_test() -> None:
     capability = read_json(CAPABILITY_MAP_PATH)
     for mutation in (
         lambda value: value["entries"].pop(),
-        lambda value: value["entries"][0].__setitem__(
-            "productionCaller", "unproven"
-        ),
+        lambda value: value["entries"][0].__setitem__("productionCaller", "unproven"),
     ):
         invalid = deepcopy(capability)
         mutation(invalid)

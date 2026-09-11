@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Verify Lane A current truth and emit exact-candidate receipts."""
+
 from __future__ import annotations
 
 import argparse
