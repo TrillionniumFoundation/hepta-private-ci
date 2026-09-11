@@ -81,11 +81,12 @@ def pairs(items: list[tuple[str, Any]]) -> dict[str, Any]:
 
 
 def load(path: Path) -> dict[str, Any]:
+    label = path.relative_to(ROOT) if path.is_relative_to(ROOT) else path
     try:
         value = json.loads(path.read_text(encoding="utf-8"), object_pairs_hook=pairs)
     except Exception as exc:
-        raise Invalid(f"{path.relative_to(ROOT)}: {exc}") from exc
-    need(isinstance(value, dict), f"{path.relative_to(ROOT)} must be an object")
+        raise Invalid(f"{label}: {exc}") from exc
+    need(isinstance(value, dict), f"{label} must be an object")
     return value
 
 
@@ -98,7 +99,7 @@ def git(*args: str) -> str:
     need(
         result.returncode == 0, result.stderr.strip() or f"git {' '.join(args)} failed"
     )
-    return result.stdout.strip()
+    return result.stdout.rstrip("\n")
 
 
 def allowed(path: str, prefixes: list[str]) -> bool:
@@ -165,12 +166,12 @@ def trace_projection(
 def native_projection(truth: dict[str, Any], maps: list[dict[str, Any]]) -> str:
     base = truth["sourceBase"]
     lines = [
-        "# Lane B native source and implementation closure",
+        "# Lane B source contracts and implementation gaps",
         "",
         "**Lane:** `LANE-B-RUNTIME`  ",
         f"**Immutable source base:** `{base['commit']}` / tree `{base['tree']}`  ",
         "**Exact candidate:** derived from Git at verification time; never hard-coded  ",
-        "**Repository-controlled scope:** documentation, operation inventory, source mapping and bounded source gaps closed  ",
+        "**Repository-controlled scope:** documentation, operation inventory and source mapping verified; implementation gaps are reported per module  ",
         "**External scope:** product execution, deployment, real effects and independent acceptance remain open",
         "",
         "## 1. Truth model",
@@ -194,6 +195,10 @@ def native_projection(truth: dict[str, Any], maps: list[dict[str, Any]]) -> str:
             lines.append(
                 f"| `{item['designOperation']}` | `{item['mappingClass']}` | `{owner['path']}` — `{owner['symbol']}` |"
             )
+        gaps = row.get("repositoryControlledGaps", [])
+        if gaps:
+            lines += ["", "Remaining repository implementation gaps:", ""]
+            lines += [f"- {gap}" for gap in gaps]
         lines += (
             ["", "External evidence gates:", ""]
             + [f"- {gate}" for gate in row["externalEvidenceGates"]]
@@ -220,40 +225,104 @@ def verify_candidate(manifest: dict[str, Any], truth: dict[str, Any]) -> list[st
     need(bool(HEX40.fullmatch(base)) and bool(HEX40.fullmatch(tree)), "base identity")
     need(git("rev-parse", f"{base}^{{tree}}") == tree, "base tree")
 
+    head = git("rev-parse", "HEAD")
     synthetic = os.environ.get("HEPTA_SYNTHETIC_MERGE") == "1"
-    parents = git("show", "-s", "--format=%P", "HEAD").split()
-    candidate_subject = "HEAD"
+    event_path = os.environ.get("GITHUB_EVENT_PATH")
+    event = load(Path(event_path)) if event_path else {}
+    pull_request = event.get("pull_request")
+    if "pull_request" in event:
+        need(isinstance(pull_request, dict), "invalid pull-request event")
+        actual_base = pull_request["base"]["sha"]
+        candidate_subject = pull_request["head"]["sha"]
+    else:
+        need(not synthetic, "synthetic merge requires pull-request event identity")
+        # Push events provide an immutable range. Local/manual verification uses
+        # an explicit base if supplied, otherwise exactly the current commit's
+        # first-parent delta, never the historical provenance baseline.
+        candidate_subject = event.get("after") or os.environ.get("GITHUB_SHA") or head
+        actual_base = (
+            event.get("before")
+            or os.environ.get("HEPTA_CANDIDATE_BASE_SHA")
+            or git("rev-parse", "HEAD^1")
+        )
+    for label, sha in (
+        ("actual base", actual_base),
+        ("candidate head", candidate_subject),
+    ):
+        need(isinstance(sha, str) and bool(HEX40.fullmatch(sha)), f"{label} identity")
+        need(
+            git("rev-parse", "--verify", f"{sha}^{{commit}}") == sha, f"{label} commit"
+        )
     if synthetic:
-        need(len(parents) == 2, "synthetic merge must have exactly two parents")
-        # The workflow constructs the synthetic commit with the target base first
-        # and the source candidate second. Audit candidate-controlled paths on the
-        # source parent while executing all semantic tests against the merged tree.
-        candidate_subject = parents[1]
+        parents = git("show", "-s", "--format=%P", "HEAD").split()
+        need(
+            parents == [actual_base, candidate_subject],
+            "synthetic merge parents differ from event",
+        )
+        merged_tree = git("merge-tree", "--write-tree", actual_base, candidate_subject)
+        need(
+            git("rev-parse", "HEAD^{tree}") == merged_tree,
+            "synthetic merge tree differs from source merge",
+        )
+    else:
+        need(head == candidate_subject, "checkout is not the event source head")
+    git("diff", "--exit-code", "HEAD", "--")
     ancestor = subprocess.run(
         ["git", "merge-base", "--is-ancestor", base, candidate_subject],
         cwd=ROOT,
     )
     need(ancestor.returncode == 0, "source base is not ancestor of candidate subject")
-    need(
-        not git("rev-list", "--merges", f"{base}..{candidate_subject}"),
-        "merge commit in source candidate",
-    )
-
-    prefixes = manifest.get("allowedPathPrefixes")
-    need(isinstance(prefixes, list) and prefixes, "path envelope")
-    changed = [
+    # A source merge is valid history. Scope is the current PR's source delta,
+    # which excludes changes added only to the target branch after divergence.
+    merge_bases = git(
+        "merge-base", "--all", actual_base, candidate_subject
+    ).splitlines()
+    need(len(merge_bases) == 1, "candidate range has no unique merge base")
+    delta = [
         path
         for path in git(
             "diff",
             "--name-only",
-            "--diff-filter=ACDMRTUXB",
-            f"{base}..{candidate_subject}",
-        ).splitlines()
+            "-z",
+            "--no-renames",
+            merge_bases[0],
+            candidate_subject,
+            "--",
+        ).split("\0")
         if path
     ]
-    need(changed, "empty candidate")
-    denied = [path for path in changed if not allowed(path, prefixes)]
-    need(not denied, "path outside envelope: " + ", ".join(denied))
+
+    prefixes = manifest.get("allowedPathPrefixes")
+    need(isinstance(prefixes, list) and prefixes, "path envelope")
+    roots = []
+    for row in module_maps(truth):
+        for root in row["resolvedRoots"]:
+            need(
+                isinstance(root, str)
+                and root
+                and not Path(root).is_absolute()
+                and ".." not in Path(root).parts
+                and root != ".",
+                "invalid owner root",
+            )
+            roots.append(root.rstrip("/") + "/")
+    for prefix in prefixes:
+        need(
+            isinstance(prefix, str)
+            and prefix
+            and not Path(prefix).is_absolute()
+            and ".." not in Path(prefix).parts,
+            "invalid path envelope",
+        )
+    # The historical manifest is provenance and the Lane B scope inventory. It
+    # is not a global allowlist for every other lane in a multi-lane PR. Actual
+    # module roots cover new implementations; other lanes retain their own gates.
+    changed = [
+        path
+        for path in delta
+        if allowed(path, prefixes + roots)
+        or any(path == root.rstrip("/") for root in roots)
+    ]
     return changed
 
 
@@ -298,7 +367,6 @@ def verify_truth(truth: dict[str, Any], maps: list[dict[str, Any]]) -> tuple[int
         "nativeSourceMappingComplete",
         "repositoryControlledDocumentationGapsClosed",
         "repositoryControlledMappingGapsClosed",
-        "repositoryControlledSourceBoundaryGapsClosed",
     )
     negative = (
         "targetDesignImplementationComplete",
@@ -315,6 +383,20 @@ def verify_truth(truth: dict[str, Any], maps: list[dict[str, Any]]) -> tuple[int
         need(claims.get(key) is True, f"missing closure {key}")
     for key in negative:
         need(claims.get(key) is False, f"unsupported claim {key}")
+    source_closed = claims.get("repositoryControlledSourceBoundaryGapsClosed")
+    need(isinstance(source_closed, bool), "source boundary completion must be explicit")
+    need(
+        not source_closed
+        or all(
+            row.get("repositoryControlledGaps") == []
+            and row.get("claimBoundary", {}).get(
+                "repositoryControlledSourceBoundaryGapsClosed"
+            )
+            is True
+            for row in maps
+        ),
+        "source boundary completion contradicts module gaps or incomplete modules",
+    )
     roots = {row["module"]: row["resolvedRoots"] for row in maps}
     operations = tests = 0
     for row in maps:
@@ -324,7 +406,19 @@ def verify_truth(truth: dict[str, Any], maps: list[dict[str, Any]]) -> tuple[int
             and row.get("schemaVersion") == 2,
             f"{module}: schema",
         )
-        need(row.get("repositoryControlledGaps") == [], f"{module}: repository gaps")
+        gaps = row.get("repositoryControlledGaps")
+        need(
+            isinstance(gaps, list)
+            and all(isinstance(gap, str) and gap.strip() for gap in gaps),
+            f"{module}: invalid repository gaps",
+        )
+        module_closed = row.get("claimBoundary", {}).get(
+            "repositoryControlledSourceBoundaryGapsClosed"
+        )
+        need(
+            isinstance(module_closed, bool) and (not module_closed or not gaps),
+            f"{module}: source completion contradicts repository gaps",
+        )
         need(row.get("externalEvidenceGates"), f"{module}: external gates")
         for root in row["resolvedRoots"]:
             need((ROOT / root).exists(), f"{module}: missing root {root}")
@@ -421,14 +515,20 @@ def verify() -> int:
     print(
         json.dumps(
             {
-                "status": "PASS_HEPTA_LANE_B_SOURCE_CLOSURE",
+                "status": "PASS_HEPTA_LANE_B_SOURCE_CONFORMANCE",
                 "exactHead": git("rev-parse", "HEAD"),
                 "exactTree": git("rev-parse", "HEAD^{tree}"),
                 "changedPaths": len(changed),
                 "modules": len(maps),
                 "operations": operations,
                 "testBindings": tests,
-                "repositoryControlledSourceBoundaryGapsClosed": True,
+                "sourceContractConformance": True,
+                "repositoryControlledSourceBoundaryGapsClosed": truth["claimBoundary"][
+                    "repositoryControlledSourceBoundaryGapsClosed"
+                ],
+                "modulesWithRepositoryGaps": [
+                    row["module"] for row in maps if row["repositoryControlledGaps"]
+                ],
                 "productExecutionComplete": False,
                 "externalEffectsComplete": False,
                 "independentAcceptanceComplete": False,

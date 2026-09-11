@@ -6,6 +6,7 @@ from __future__ import annotations
 import argparse
 import json
 import re
+import shlex
 import sys
 from dataclasses import dataclass
 from pathlib import Path
@@ -428,6 +429,40 @@ def verify_authority_posture(findings: Findings) -> None:
         )
 
 
+def workflow_commands(text: str) -> list[list[str]]:
+    """Read executable run scalars used by this workflow, not comments or labels.
+
+    This deliberately supports the workflow's plain, literal and folded run
+    forms. It does not interpret arbitrary shell/YAML programs as proof of tests.
+    """
+    lines = text.splitlines()
+    commands = []
+    index = 0
+    while index < len(lines):
+        match = re.fullmatch(r"(\s*)(?:-\s+)?run:\s*(.*)", lines[index])
+        index += 1
+        if not match:
+            continue
+        indent, scalar = match.groups()
+        if scalar in ("|", "|-", "|+", ">", ">-", ">+"):
+            block = []
+            while index < len(lines):
+                line = lines[index]
+                if line.strip() and len(line) - len(line.lstrip()) <= len(indent):
+                    break
+                block.append(line.strip())
+                index += 1
+            scalar = (" " if scalar.startswith(">") else "\n").join(block)
+        for line in scalar.replace("\\\n", " ").splitlines():
+            try:
+                tokens = shlex.split(line, comments=True)
+            except ValueError:
+                continue
+            if tokens:
+                commands.append(tokens)
+    return commands
+
+
 def verify_workflow(findings: Findings) -> None:
     findings.require(
         WORKFLOW_PATH.is_file(),
@@ -437,25 +472,64 @@ def verify_workflow(findings: Findings) -> None:
     if not WORKFLOW_PATH.is_file():
         return
     text = WORKFLOW_PATH.read_text(encoding="utf-8")
+    commands = workflow_commands(text)
+    test_commands = [
+        command
+        for command in commands
+        if command[:2] in (["cargo", "test"], ["just", "test"])
+        and "--locked" in command
+    ]
     for crate in EXPECTED_CRATES:
         findings.require(
-            crate in text,
+            any(
+                any(
+                    command[index : index + 2] in (["-p", crate], ["--package", crate])
+                    for index in range(len(command) - 1)
+                )
+                for command in test_commands
+            ),
             "workflow_crate_missing",
-            f"workflow does not qualify {crate}",
+            f"workflow does not execute locked tests for {crate}",
         )
-    for token in (
-        "cargo check --locked",
-        "cargo test --locked",
-        "cargo clippy --locked",
-        "cargo fmt",
-        "scripts/hepta-lane-e-closure.py",
-        "synthetic-merge",
-    ):
+    for subcommand in ("check", "clippy"):
         findings.require(
-            token in text,
+            any(
+                command[:2] == ["cargo", subcommand] and "--locked" in command
+                for command in commands
+            ),
             "workflow_gate_missing",
-            f"workflow is missing required gate token: {token}",
+            f"workflow is missing cargo {subcommand} --locked",
         )
+    findings.require(
+        any(command[:2] == ["cargo", "fmt"] for command in commands),
+        "workflow_gate_missing",
+        "workflow is missing cargo fmt",
+    )
+    findings.require(
+        any(
+            command[:3] == ["python3", "scripts/hepta-lane-e-closure.py", "verify"]
+            for command in commands
+        ),
+        "workflow_gate_missing",
+        "workflow is missing source closure verification",
+    )
+    findings.require(
+        any(
+            "lane_e_causal_candidate_chain_is_digest_bound_and_deny_all" in command
+            and any(
+                command[index : index + 2] == ["-p", "codex-hepta-shadow-qualification"]
+                for index in range(len(command) - 1)
+            )
+            for command in test_commands
+        ),
+        "workflow_gate_missing",
+        "workflow is missing the cross-crate causal regression",
+    )
+    findings.require(
+        bool(re.search(r"^  synthetic-merge:\s*$", text, re.MULTILINE)),
+        "workflow_gate_missing",
+        "workflow is missing synthetic-merge job",
+    )
     findings.require(
         not TEMPORARY_WORKFLOW_PATH.exists(),
         "temporary_workflow_present",
