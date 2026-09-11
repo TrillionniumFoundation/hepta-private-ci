@@ -1,0 +1,66 @@
+name: PR 534 format and evidence export
+
+on:
+  push:
+    branches:
+      - codex/pr534-format-evidence-export
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  export:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Checkout diagnostic branch
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+          fetch-depth: 1
+
+      - name: Install locked uv
+        uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b
+        with:
+          version: 0.11.3
+          activate-environment: false
+
+      - name: Format exact failing Python files and collect diagnostics
+        shell: bash
+        run: |
+          set -euo pipefail
+          files=(
+            scripts/hepta-lane-b-docs.py
+            scripts/hepta-lane-b-truth-core-v3.py
+            scripts/hepta-lane-b-truth.py
+            scripts/test_hepta_lane_b_truth.py
+          )
+          uv run --frozen --project scripts ruff format "${files[@]}"
+          uv run --frozen --project scripts ruff format --check "${files[@]}"
+
+          out="$RUNNER_TEMP/pr534-export"
+          mkdir -p "$out"
+          cp --parents "${files[@]}" "$out/"
+          cp --parents .codespellrc "$out/"
+          cp --parents .github/workflows/blob-size.yml "$out/"
+          cp --parents scripts/codespell_allowlist.py "$out/" 2>/dev/null || true
+          cp --parents scripts/hepta-*.py "$out/" 2>/dev/null || true
+          cp --parents qualification/merge/reference-macos-14/receipts/PREPARE.json "$out/"
+          cp --parents qualification/merge/reference-macos-14/receipts/lane-c1.log "$out/"
+          find qualification/merge/reference-macos-14 -maxdepth 3 -type f -print0 | xargs -0 -r cp --parents -t "$out/"
+          grep -RIl --exclude-dir=.git -E 'reference-macos-14|lane-c1\.log|PREPARE\.json' scripts qualification .github 2>/dev/null \
+            | head -n 300 \
+            | xargs -r cp --parents -t "$out/"
+          git diff -- "${files[@]}" > "$out/ruff-format.patch"
+          find "$out" -type f -printf '%s %p\n' | sort -nr > "$out/file-sizes.txt"
+          sha256sum "${files[@]}" > "$out/formatted-sha256.txt"
+
+      - name: Upload diagnostic export
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: pr534-format-evidence-export-${{ github.sha }}
+          path: ${{ runner.temp }}/pr534-export
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 1
