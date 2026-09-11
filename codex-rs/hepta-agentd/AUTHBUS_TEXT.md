@@ -128,6 +128,13 @@ keys and are not removed with terminal history. See
 
 ## Development and validation
 
+Manual review covered the model-visible item that can exceed 1,000 tokens:
+the 8 KiB text / 16 KiB encoded-body caps keep a single item below 10,000
+tokens. Text enters the existing `UserInput::Text` queue/history path; the host
+does not rewrite history, add system/developer instructions, or inject a
+model-visible signature endorsement. Signer trust remains a host admission
+check.
+
 `src/authbus_dispatch_tests.rs` injects queue faults around the real signed
 SQLite lifecycle: lost responses, abandoned claims, conservative recovery,
 revocation during transport, and readiness/trust rejection. Evidence tests
