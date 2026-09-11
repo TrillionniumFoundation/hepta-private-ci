@@ -17,43 +17,52 @@ jobs:
   ubuntu:
     name: Capture Ubuntu blocker assertions
     runs-on: ubuntu-24.04
-    timeout-minutes: 90
+    timeout-minutes: 120
     env:
       SOURCE_SHA: bd46f37056293f79e5958445e3eaf979638b24a5
       BASE_SHA: 04f60466394a024c218ce66b1b32d1c42c462985
       PYTHONDONTWRITEBYTECODE: "1"
       CARGO_NET_GIT_FETCH_WITH_CLI: "true"
     steps:
-      - name: Check out diagnostic source
+      - name: Check out exact r23 source
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
-          ref: ${{ github.sha }}
+          ref: ${{ env.SOURCE_SHA }}
           persist-credentials: false
           fetch-depth: 0
 
-      - name: Print exact blocker workflow definitions
+      - name: Bind exact source and print blocker definitions
         shell: bash
         run: |
           set -euo pipefail
-          mkdir -p diagnostics
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          DIAG_DIR="$RUNNER_TEMP/pr524-r23-diagnostics"
+          mkdir -p "$DIAG_DIR"
+          echo "DIAG_DIR=$DIAG_DIR" >> "$GITHUB_ENV"
           {
-            echo "diagnostic_sha=$(git rev-parse HEAD)"
-            echo "diagnostic_tree=$(git rev-parse HEAD^{tree})"
-            echo "source_sha=$SOURCE_SHA"
+            echo "source_sha=$(git rev-parse HEAD)"
+            echo "source_tree=$(git rev-parse HEAD^{tree})"
             echo "base_sha=$BASE_SHA"
-            echo "parent=$(git show -s --format=%P "$SOURCE_SHA")"
-            echo "source_tree=$(git rev-parse "$SOURCE_SHA^{tree}")"
-          } > diagnostics/identity.log
+            echo "parents=$(git show -s --format=%P HEAD)"
+          } > "$DIAG_DIR/identity.log"
           grep -RIlE '^name:.*(Lane A foundation|Lane B implementation|Lane D|Lane E|Lane G|converged learning|consolidated source|NDU recursion)' .github/workflows \
-            | sort > diagnostics/workflow-files.txt || true
+            | sort > "$DIAG_DIR/workflow-files.txt" || true
           while IFS= read -r file; do
             {
               echo "===== $file ====="
-              sed -n '1,260p' "$file"
-            } >> diagnostics/workflows.log
-          done < diagnostics/workflow-files.txt
-          find scripts -maxdepth 1 -type f | sort | grep -Ei 'lane[-_][abdeg]|ndu|source-closure|readiness|native-closure|product-integration|module-docs' \
-            > diagnostics/candidate-scripts.txt || true
+              sed -n '1,320p' "$file"
+            } >> "$DIAG_DIR/workflows.log"
+          done < "$DIAG_DIR/workflow-files.txt"
+
+      - name: Install declared Linux isolation adapter
+        shell: bash
+        run: |
+          set -euo pipefail
+          if ! command -v bwrap >/dev/null 2>&1; then
+            sudo apt-get update
+            sudo apt-get install --no-install-recommends -y bubblewrap
+          fi
+          bwrap --version
 
       - name: Install pinned Rust test tools
         uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
@@ -64,15 +73,14 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          mkdir -p diagnostics
           capture() {
             local name="$1"
             shift
             set +e
-            "$@" >"diagnostics/${name}.log" 2>&1
+            "$@" >"$DIAG_DIR/${name}.log" 2>&1
             local rc=$?
             set -e
-            printf '%s\n' "$rc" >"diagnostics/${name}.exit"
+            printf '%s\n' "$rc" >"$DIAG_DIR/${name}.exit"
           }
 
           capture lane-a bash -lc '
@@ -87,6 +95,18 @@ jobs:
             python3 -m unittest scripts/test_hepta_lane_b_truth.py &&
             python3 scripts/hepta-lane-b-truth.py verify &&
             python3 scripts/hepta-lane-b-docs.py
+          '
+
+          capture lane-d-semantic bash -lc "
+            python3 -m py_compile scripts/hepta-lane-d-semantic-conformance.py &&
+            python3 scripts/hepta-lane-d-semantic-conformance.py self-test &&
+            python3 scripts/hepta-lane-d-semantic-conformance.py verify &&
+            python3 scripts/hepta-lane-d-semantic-conformance.py verify-changes --base '$BASE_SHA'
+          "
+
+          capture lane-e-closed-world bash -lc '
+            python3 scripts/hepta-lane-e-closure.py self-test &&
+            python3 scripts/hepta-lane-e-closure.py verify
           '
 
           capture consolidated-source bash -lc '
@@ -111,31 +131,36 @@ jobs:
               -p codex-hepta-ndu
           '
 
+          capture lane-g-portable bash -lc '
+            cd tools/hepta-engineering-control &&
+            python -m unittest -v test_candidate_sandbox_hardening.CandidateSandboxFixture
+          '
+          capture lane-g-strong bash -lc '
+            cd tools/hepta-engineering-control &&
+            python -m unittest -v test_candidate_sandbox_hardening.CandidateSandboxStrongIsolation
+          '
+          capture lane-g-validate bash -lc 'cd tools/hepta-engineering-control && python lane_g_validate.py'
+          capture lane-g-v4-validate bash -lc 'cd tools/hepta-engineering-control && python lane_g_v4_validate.py'
+          capture lane-g-docs-validate bash -lc 'cd tools/hepta-engineering-control && python lane_g_canonical_docs_validate.py'
+
           capture blob-size python3 scripts/check_blob_size.py \
             --base "$BASE_SHA" \
             --head "$SOURCE_SHA" \
             --max-bytes 512000 \
             --allowlist .github/blob-size-allowlist.txt
 
-          while IFS= read -r script; do
-            case "$script" in
-              *lane-d*|*lane_d*|*lane-e*|*lane_e*|*lane-g*|*lane_g*)
-                key=$(printf '%s' "$script" | tr '/.' '__')
-                capture "${key}-self-test" python3 "$script" self-test
-                capture "${key}-verify" python3 "$script" verify
-                ;;
-            esac
-          done < diagnostics/candidate-scripts.txt
-
-          git diff --check > diagnostics/git-diff-check.log 2>&1 || printf '%s\n' "$?" > diagnostics/git-diff-check.exit
-          git status --short --untracked-files=no > diagnostics/git-status.log
+          capture repository-clean bash -lc '
+            git diff --check &&
+            git diff --exit-code &&
+            test -z "$(git status --porcelain --untracked-files=no)"
+          '
 
       - name: Emit Ubuntu diagnostic corpus
         if: always()
         shell: bash
         run: |
           set -u
-          for file in diagnostics/*; do
+          for file in "$DIAG_DIR"/*; do
             echo "::group::$file"
             cat "$file" || true
             echo "::endgroup::"
@@ -146,42 +171,40 @@ jobs:
     runs-on: windows-2025
     timeout-minutes: 45
     env:
+      SOURCE_SHA: bd46f37056293f79e5958445e3eaf979638b24a5
       PYTHONDONTWRITEBYTECODE: "1"
+      PYTHONUTF8: "1"
     steps:
-      - name: Check out diagnostic source
+      - name: Check out exact r23 source
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
-          ref: ${{ github.sha }}
+          ref: ${{ env.SOURCE_SHA }}
           persist-credentials: false
           fetch-depth: 0
 
-      - name: Capture Windows Lane G definitions and regressions
+      - name: Capture Windows portable fixture regressions
         shell: pwsh
         run: |
           $ErrorActionPreference = 'Continue'
-          New-Item -ItemType Directory -Force diagnostics | Out-Null
-          Get-ChildItem .github/workflows -File | ForEach-Object {
-            $text = Get-Content $_.FullName -Raw
-            if ($text -match 'Lane G|lane-g|lane_g') {
-              "===== $($_.FullName) =====" | Out-File diagnostics/windows-workflows.log -Append -Encoding utf8
-              $text | Out-File diagnostics/windows-workflows.log -Append -Encoding utf8
-            }
-          }
-          Get-ChildItem scripts -File | Where-Object { $_.Name -match 'lane[-_]g' } | ForEach-Object {
-            $script = $_.FullName
-            $key = $_.BaseName
-            & python $script self-test *> "diagnostics/$key-self-test.log"
-            $LASTEXITCODE | Out-File "diagnostics/$key-self-test.exit" -Encoding ascii
-            & python $script verify *> "diagnostics/$key-verify.log"
-            $LASTEXITCODE | Out-File "diagnostics/$key-verify.exit" -Encoding ascii
-          }
-          git status --short --untracked-files=no | Out-File diagnostics/git-status.log -Encoding utf8
+          if ((git rev-parse HEAD) -ne $env:SOURCE_SHA) { throw 'source identity mismatch' }
+          $diag = Join-Path $env:RUNNER_TEMP 'pr524-r23-windows-diagnostics'
+          New-Item -ItemType Directory -Force $diag | Out-Null
+          "DIAG_DIR=$diag" | Out-File $env:GITHUB_ENV -Append -Encoding utf8
+          Push-Location tools/hepta-engineering-control
+          python -m py_compile control_engineering_v2/candidate.py test_candidate_sandbox_hardening.py *> "$diag/compile.log"
+          $LASTEXITCODE | Out-File "$diag/compile.exit" -Encoding ascii
+          python -m unittest -v test_candidate_sandbox_hardening.CandidateSandboxFixture *> "$diag/lane-g-portable.log"
+          $LASTEXITCODE | Out-File "$diag/lane-g-portable.exit" -Encoding ascii
+          Pop-Location
+          git diff --check *> "$diag/git-diff-check.log"
+          $LASTEXITCODE | Out-File "$diag/git-diff-check.exit" -Encoding ascii
+          git status --short --untracked-files=no | Out-File "$diag/git-status.log" -Encoding utf8
 
       - name: Emit Windows diagnostic corpus
         if: always()
         shell: pwsh
         run: |
-          Get-ChildItem diagnostics -File | Sort-Object Name | ForEach-Object {
+          Get-ChildItem $env:DIAG_DIR -File | Sort-Object Name | ForEach-Object {
             "::group::$($_.FullName)"
             Get-Content $_.FullName -Raw
             "::endgroup::"
