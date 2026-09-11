@@ -9,7 +9,7 @@ be declared complete merely by editing this file.
 | Priority | Gate | Current state | Closure evidence required |
 | --- | --- | --- | --- |
 | P1 | Durable operations ledger/outbox | Not implemented; bounded memory oracle only | transactional backend, same state-machine suite, crash/reopen, corruption, migration and multi-writer tests |
-| P1 | AuthBus authentication | Not implemented; upstream authentication is trusted input | issuer/key-epoch schema, signature verification, trusted clock and durable replay tests |
+| P1 | AuthBus host trust and recovery | Signed authentication and SQLite replay implemented; host provisioning and external rollback protection remain | enrolled caller, managed issuer keys/revocation, trusted time and independently retained restore checkpoint |
 | P1 | Authorization policy and quota ledger | Not implemented | durable policy revision, conservation-safe reservation/settlement, crash reconciliation and real caller |
 | P1 | Bao operation/evidence/quota composition | Host composition required | durable intent before dispatch, observed outcome, evidence append and settlement receipts |
 | P1 | Authority trusted time and external anti-rollback | Local wall clock/filesystem only | independently governed time/checkpoint source and rollback tests |

@@ -1,5 +1,10 @@
 # AuthBus preverified replay contract V1
 
+This is the retained legacy API. The separate
+[`signed admission API`](../../../codex-rs/hepta-authbus/SIGNED_ADMISSION.md)
+authenticates signatures and supports durable replay through the evidence store;
+it does not change this API's semantics.
+
 ## Trust split
 
 Untrusted message facts reside in `PreverifiedAuthEnvelope`. Trusted host facts
@@ -28,5 +33,5 @@ authorization, quota, execution, selection, promotion or release authority.
 
 ## Restart behavior
 
-All replay state is lost on process exit. Production replay protection requires
-a durable transactional implementation and recovery tests.
+This API's replay state is lost on process exit. Hosts requiring durable replay
+must use `HeptaEvidenceStore::admit_authbus_message` instead of `ReplayWindow`.

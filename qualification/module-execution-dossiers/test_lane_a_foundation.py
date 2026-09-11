@@ -47,11 +47,21 @@ class LaneAFoundationTruthTests(unittest.TestCase):
         with self.assertRaises(verify.VerificationError):
             verify.validate_matrix(value)
 
-    def test_authbus_cannot_claim_authentication_policy_or_quota(self) -> None:
+    def test_authbus_cannot_claim_policy_quota_or_key_hosting(self) -> None:
+        for capability in (
+            "authorization policy evaluation",
+            "quota reservation and settlement",
+            "host trust provisioning and key lifecycle management",
+        ):
+            with self.subTest(capability=capability):
+                value = deepcopy(self.matrix)
+                value["modules"][5]["currentCapabilities"].append(capability)
+                with self.assertRaises(verify.VerificationError):
+                    verify.validate_matrix(value)
+
+    def test_authbus_cannot_claim_all_replay_paths_are_durable(self) -> None:
         value = deepcopy(self.matrix)
-        value["modules"][5]["currentCapabilities"].append(
-            "cryptographic signature verification"
-        )
+        value["modules"][5]["states"]["durability"] = "durable"
         with self.assertRaises(verify.VerificationError):
             verify.validate_matrix(value)
 
@@ -85,9 +95,7 @@ class LaneAFoundationTruthTests(unittest.TestCase):
     def test_source_receipt_preserves_scope_and_nonclaims(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             output = Path(directory) / "receipt.json"
-            verify.write_source_receipt(
-                output, verify.git_value("rev-parse", "HEAD")
-            )
+            verify.write_source_receipt(output, verify.git_value("rev-parse", "HEAD"))
             receipt = json.loads(output.read_text(encoding="utf-8"))
         self.assertEqual(receipt["moduleCoverage"], 7)
         self.assertEqual(receipt["capabilityCoverage"], 21)
@@ -111,9 +119,9 @@ class LaneAFoundationTruthTests(unittest.TestCase):
         outbox = (ROOT / "codex-rs/hepta-operations/src/outbox.rs").read_text(
             encoding="utf-8"
         )
-        tests = (
-            ROOT / "codex-rs/hepta-operations/src/ledger_tests.rs"
-        ).read_text(encoding="utf-8")
+        tests = (ROOT / "codex-rs/hepta-operations/src/ledger_tests.rs").read_text(
+            encoding="utf-8"
+        )
         outbox_tests = (
             ROOT / "codex-rs/hepta-operations/src/outbox_tests.rs"
         ).read_text(encoding="utf-8")
@@ -126,18 +134,18 @@ class LaneAFoundationTruthTests(unittest.TestCase):
         self.assertIn("AuthorityWitnessDigestMismatch", model)
         self.assertIn("if !witness.validates(&record.key, now_unix_ms)", ledger)
         self.assertIn("owner_generation: Generation", outbox)
-        self.assertIn(
-            "acknowledged_replay_retains_generation_fence", outbox_tests
-        )
+        self.assertIn("acknowledged_replay_retains_generation_fence", outbox_tests)
 
     def test_evidence_migration_contract_is_fail_closed(self) -> None:
-        store = (
-            ROOT / "docs/lane-a-foundation/kernel.evidence/STORE_V1.md"
-        ).read_text(encoding="utf-8")
+        store = (ROOT / "docs/lane-a-foundation/kernel.evidence/STORE_V1.md").read_text(
+            encoding="utf-8"
+        )
         self.assertIn("fail closed", store)
         self.assertNotIn("fail open", store.lower())
 
-    def test_current_protocol_registry_is_closed_world_and_non_authorizing(self) -> None:
+    def test_current_protocol_registry_is_closed_world_and_non_authorizing(
+        self,
+    ) -> None:
         registry = json.loads(
             (ROOT / "docs/lane-a-foundation/PROTOCOL_REGISTRY_V1.json").read_text(
                 encoding="utf-8"
@@ -189,8 +197,12 @@ class LaneAFoundationTruthTests(unittest.TestCase):
         self.assertEqual(bindings["sourceObservationDigest"], observed_digest)
         current = verify.validate_native_bindings()["currentSourceBinding"]
         self.assertEqual(current["sourceSha"], verify.git_value("rev-parse", "HEAD"))
-        self.assertEqual(current["sourceTree"], verify.git_value("rev-parse", "HEAD^{tree}"))
-        for observed, historical in zip(current["observations"], bindings["observations"], strict=True):
+        self.assertEqual(
+            current["sourceTree"], verify.git_value("rev-parse", "HEAD^{tree}")
+        )
+        for observed, historical in zip(
+            current["observations"], bindings["observations"], strict=True
+        ):
             data = (ROOT / observed["path"]).read_bytes()
             self.assertEqual(observed["blobSha"], verify.git_blob_sha(data))
             self.assertEqual(observed["historicalBlobSha"], historical["blobSha"])

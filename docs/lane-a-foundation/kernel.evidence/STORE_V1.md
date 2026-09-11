@@ -13,6 +13,7 @@ ordered and checksum-bound:
 6. `0006_provider_ephemeral_input.sql`
 7. `0007_provider_effect_evidence.sql`
 8. `0008_provider_effect_ack_source.sql`
+9. `0009_authbus_replay.sql`
 
 Unknown, missing, incomplete, failed or checksum-mismatched migration rows cause
 store open to **fail closed**. They are never treated as an empty, current or
@@ -35,6 +36,10 @@ creates or migrates it.
 A transaction encloses each logical append and content-equivalence check.
 Provider-effect operations also use one process-local mutex for clones of one
 store. This mutex does not serialize other processes or independent opens.
+
+AuthBus signed admission uses `BEGIN IMMEDIATE` to serialize replay and capacity
+checks across independent handles. Its sequence update commits before a receipt
+returns. This transaction does not implement a general operations outbox.
 
 ## Backup, restore and retention requirements
 

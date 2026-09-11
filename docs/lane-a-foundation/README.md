@@ -24,8 +24,10 @@ receipt status. [`PROTOCOL_REGISTRY_V1.json`](PROTOCOL_REGISTRY_V1.json) indexes
 the current Lane A executable protocol surfaces and their non-authority
 boundaries. `qualification/module-execution-dossiers/NATIVE_BINDINGS_LANE_A.json`
 overrides the historical Lane A rows in the repository-wide native-source
-snapshot with exact current-source blobs. `scripts/verify_lane_a_foundation.py`
-validates those links and writes exact-source receipts.
+snapshot. `scripts/verify_lane_a_foundation.py` validates paths, module ownership
+and exports, then observes current blobs from the actual checkout HEAD/tree and
+writes exact-source receipts. Historical blob hashes are provenance, not a ban
+on source changes.
 
 ## Internal blocker guards
 
@@ -40,10 +42,9 @@ would otherwise survive document-only validation:
   as fail-closed;
 - the pull-request tuple parser and the PR body use the same exact-subject
   schema version;
-- the exact source receipt binds candidate HEAD/tree and the native-binding
-  manifest; the manifest digest and every declared blob must match the current
-  path, while its historical commit field is explicitly non-authoritative
-  provenance rather than acceptance evidence.
+- the exact source receipt binds candidate HEAD/tree and observed source blobs;
+  required exports and module ownership must match the current paths, while the
+  manifest's historical hashes remain non-authoritative provenance.
 
 ## Closure boundary
 

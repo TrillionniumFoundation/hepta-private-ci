@@ -233,7 +233,7 @@
       "states": {
         "source": "implemented",
         "implementation": "sqlite_store",
-        "durability": "sqlite_migrations_0001_0008",
+        "durability": "sqlite_migrations_0001_0009",
         "qualification": "source_tests_present",
         "activation": "feature_gated",
         "acceptance": "not_granted"
@@ -283,28 +283,28 @@
     },
     {
       "module": "auth.authbus",
-      "profile": "preverified_replay_verifier",
+      "profile": "signed_admission_with_legacy_replay",
       "formalGuide": "docs/modules/auth.authbus/TECHNICAL.md",
       "formalGuideRole": "target_architecture",
       "currentSpecification": "docs/lane-a-foundation/auth.authbus/CURRENT_IMPLEMENTATION.md",
       "currentSpecificationRole": "current_executable_contract",
-      "implementationDetail": "docs/lane-a-foundation/auth.authbus/PREVERIFIED_REPLAY_V1.md",
+      "implementationDetail": "codex-rs/hepta-authbus/SIGNED_ADMISSION.md",
       "states": {
         "source": "implemented",
-        "implementation": "preverified_replay_verifier",
-        "durability": "process_memory_only",
-        "qualification": "unit_tests_present",
-        "activation": "library_only",
+        "implementation": "signed_admission_with_legacy_replay",
+        "durability": "sqlite_admission_and_process_local_legacy",
+        "qualification": "source_tests_present",
+        "activation": "host_composition_required",
         "acceptance": "not_granted"
       },
       "currentCapabilities": [
-        "bounded in-process replay window keyed by issuer epoch subject and scope",
-        "trusted-context expiry revocation scope and payload matching",
-        "deny-all replay verification receipt"
+        "bounded SQLite replay admission keyed by issuer epoch subject and scope",
+        "strict Ed25519 authentication with trusted issuer expiry revocation scope and payload checks",
+        "deny-all admission receipts and legacy preverified in-process replay"
       ],
       "targetOnlyCapabilities": [
-        "cryptographic signature verification",
-        "durable replay protection",
+        "host trust provisioning and key lifecycle management",
+        "external replay-store rollback protection",
         "authorization policy evaluation",
         "quota registry",
         "quota reservation and settlement"
@@ -313,19 +313,42 @@
         {
           "path": "codex-rs/hepta-authbus/src/lib.rs",
           "mustContain": [
+            "pub use signed::SignedMessage;",
             "pub struct PreverifiedAuthEnvelope",
             "pub struct TrustedReplayContext",
             "BTreeMap<ReplayKey, u64>",
-            "AuthorityPosture::DENY_ALL",
-            "does not verify a signature"
+            "AuthorityPosture::DENY_ALL"
+          ],
+          "mustNotContain": [
+            "pub fn reserve(",
+            "pub fn settle("
           ]
         },
         {
-          "path": "codex-rs/hepta-authbus/src/lib.rs",
-          "mustNotContain": [
-            "pub fn reserve(",
-            "pub fn settle(",
-            "verify_strict("
+          "path": "codex-rs/hepta-authbus/src/signed.rs",
+          "mustContain": [
+            "pub struct IssuerRegistration",
+            "pub struct SignedMessageClaims",
+            "pub struct AuthenticatedMessage",
+            "pub fn authenticate(",
+            ".verify_strict("
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-evidence/src/authbus_store.rs",
+          "mustContain": [
+            "pub async fn admit_authbus_message(",
+            "BEGIN IMMEDIATE",
+            "MAX_AUTHBUS_REPLAY_KEYS",
+            "transaction.commit().await",
+            "message.authenticate("
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-evidence/migrations/0009_authbus_replay.sql",
+          "mustContain": [
+            "CREATE TABLE authbus_replay_sequences",
+            "PRIMARY KEY(issuer_id, key_epoch, subject_id, scope_digest)"
           ]
         }
       ]

@@ -2,52 +2,72 @@
 
 ## Current executable contract
 
-`codex-rs/hepta-authbus` is a bounded process-local replay verifier for
-**preverified** envelopes. It does not authenticate a caller or verify a
-signature. The trusted host supplies issuer identity, key epoch, current time
-and revocation state separately from the envelope.
+`codex-rs/hepta-authbus` verifies issuer-bound Ed25519 messages. The host supplies
+trusted issuer registration, current revocation and expected scope/payload.
+`SignedMessage::authenticate` checks the signature, issuer/key epoch, expiry,
+scope and payload and returns a privately constructed `AuthenticatedMessage`.
+Authentication alone does not consume a durable replay sequence.
 
-The replay key is `(issuer, key epoch, subject, scope digest)`. Within that key,
-sequence numbers must increase. Scope, payload and signature-reference digests
-must be nonzero; expected scope/payload must match; expiry and trusted
-revocation fail closed. Successful receipts always carry
-`AuthorityPosture::DENY_ALL`.
+`HeptaEvidenceStore::admit_authbus_message` authenticates and consumes the sequence
+inside one immediate SQLite transaction. The replay key is `(issuer, key epoch,
+subject, scope digest)`; sequences must increase, and new keys are bounded at
+16,384. Time is checked after acquiring the write lock. A receipt returns only
+after commit succeeds; failed authentication or capacity admission consumes
+nothing. Receipts carry `AuthorityPosture::DENY_ALL`.
+
+The legacy `PreverifiedAuthEnvelope` / `ReplayWindow` API still accepts already
+verified facts and records sequences only in process memory. It does not verify
+signatures or become durable through the addition of the signed API.
 
 ## Public symbols and source bindings
 
-- `PreverifiedAuthEnvelope`: post-authentication message facts;
-- `TrustedReplayContext`: host-supplied issuer, key epoch, time and revocation;
-- `ReplayWindow`: bounded in-memory sequence registry;
-- `VerificationReceipt`: deny-all replay observation;
-- `Error`: structural, replay, expiry, mismatch and capacity failures.
-
-All are implemented in `codex-rs/hepta-authbus/src/lib.rs`.
+- `IssuerRegistration`, `SignedMessageClaims::signing_bytes`,
+  `SignedMessage::authenticate`, `AuthenticatedMessage`: authbus `src/signed.rs`;
+- `PreverifiedAuthEnvelope`, `TrustedReplayContext`, `ReplayWindow`,
+  `VerificationReceipt`, `Error`: authbus `src/lib.rs`;
+- `HeptaEvidenceStore::admit_authbus_message`, `AuthBusAdmissionError`:
+  evidence `src/authbus_store.rs`;
+- replay table: evidence `migrations/0009_authbus_replay.sql`.
 
 ## Durability and activation
 
-Replay state is process memory only and lost on restart. The crate is
-library-only and has no product authorization or effect authority.
+The evidence-store admission path preserves replay state across independent
+handles and database reopen. Legacy replay state is lost on restart. The host
+must compose trusted issuer registration and the evidence-store API; production
+enrollment is not established by library tests. Neither path grants effect
+authority.
 
 ## Target-only design
 
-Cryptographic authentication, durable replay protection, authorization policy,
-quota registry, reservation, cancellation, expiry settlement and observed-cost
-settlement are target-only.
+Host trust provisioning and key lifecycle management, external replay-store
+rollback protection, authorization policy, quota registry, reservation,
+cancellation, expiry settlement and observed-cost settlement remain outside this
+implemented admission slice.
 
 ## Known limits and non-claims
 
-Constructing `TrustedReplayContext` does not authenticate its contents; the host
-boundary must supply it after verification. A nonzero `signature_digest` is only
-a reference to authentication material. No persistent transaction, cross-host
-coordination or trusted clock exists in this crate.
+Issuer registration must come from the host trust store, never the incoming
+message. Current time uses the host clock; SQLite persistence is not protection
+against restoration of an older database. No managed key host or distributed
+replay coordinator is provided. In the legacy API, a nonzero `signature_digest`
+is only a reference, and constructing `TrustedReplayContext` does not authenticate
+its contents.
 
 ## Verification
 
-Tests cover issuer/epoch/scope replay partitioning, exact replay, capacity,
-trusted revocation, expiry, payload drift, zero fields and deny-all authority.
+`signed_tests.rs` covers signed-field substitution, key epoch, revocation,
+expiry and scope. Evidence `authbus_store_tests.rs` covers real SQLite reopen,
+the full unsigned sequence range, two-handle contention and failed-admission
+retry. Legacy `lib_tests.rs` covers replay partitioning, capacity, trusted-context
+validation and deny-all authority. Run `just test -p codex-hepta-authbus
+-p codex-hepta-evidence` for native execution; source anchors only establish test
+presence.
 
 ## Integration prerequisites
 
-An upstream authenticator must verify issuer/key/signature and provide current
-revocation/time. Product authorization and quota must occur in separately
-durable modules. No effect adapter may consume `VerificationReceipt` as a grant.
+The host must supply trusted registration and current revocation, use the durable
+admission API where replay must survive restart, and govern clock/backup recovery.
+Effect-specific policy, quota and the final-use token remain separate checks.
+No effect adapter may consume `VerificationReceipt` as a grant. See
+[`SIGNED_ADMISSION.md`](../../../codex-rs/hepta-authbus/SIGNED_ADMISSION.md) and the
+separate legacy [`PREVERIFIED_REPLAY_V1.md`](PREVERIFIED_REPLAY_V1.md) contract.

@@ -83,7 +83,7 @@
         "docs/lane-a-foundation/kernel.evidence/STORE_V1.md"
       ],
       "invariants": [
-        "migration lineage is exactly 0001 through 0008",
+        "migration lineage is exactly 0001 through 0009",
         "unknown incomplete failed or checksum-mismatched migration rows fail closed",
         "same identity and equal content is idempotent",
         "same identity and different content conflicts",
@@ -91,20 +91,25 @@
       ]
     },
     {
-      "protocolId": "hepta.auth.authbus.preverified-replay.v1",
+      "protocolId": "hepta.authbus.signed-message.v1",
       "module": "auth.authbus",
-      "kind": "bounded_process_local_replay_fence",
+      "kind": "signed_admission_with_sqlite_replay",
       "source": [
-        "codex-rs/hepta-authbus/src/lib.rs",
+        "codex-rs/hepta-authbus/src/signed.rs",
+        "codex-rs/hepta-evidence/src/authbus_store.rs",
+        "codex-rs/hepta-authbus/SIGNED_ADMISSION.md",
         "docs/lane-a-foundation/auth.authbus/PREVERIFIED_REPLAY_V1.md"
       ],
       "invariants": [
-        "issuer key epoch time and revocation are trusted host inputs",
-        "scope payload and signature-reference digests are nonzero",
-        "sequence increases per issuer epoch subject and scope",
-        "state is process-local and lost on restart",
-        "successful receipt always carries DENY_ALL authority"
-      ]
+        "host supplies trusted issuer key epoch verification key and current revocation",
+        "strict Ed25519 verification binds every signed claim including sequence scope payload and expiry",
+        "SQLite admission checks expiry after acquiring its write lock and commits replay consumption before returning",
+        "sequence increases per issuer epoch subject and scope across independent handles and reopen",
+        "legacy ReplayWindow remains process-local and does not authenticate signatures",
+        "successful receipt always carries DENY_ALL authority",
+        "key hosting external rollback protection policy and quota are not supplied by admission"
+      ],
+      "legacyProtocolId": "hepta.auth.authbus.preverified-replay.v1"
     },
     {
       "protocolId": "hepta.secrets.heptabao.kv-v2-read.v1",

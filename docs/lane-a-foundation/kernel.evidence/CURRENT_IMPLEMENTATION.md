@@ -8,8 +8,8 @@ provider intent/terminal/effect records, bounded summaries and integrity-aware
 open paths. Equal content is idempotent; reused identity with different content
 conflicts.
 
-The checked-in migration lineage is exactly `0001` through `0008` as documented
-in `STORE_V1.md`.
+The checked-in migration lineage is exactly `0001` through `0009` as documented
+in `STORE_V1.md`. Migration `0009` adds the AuthBus signed-admission replay table.
 
 ## Public symbols and source bindings
 

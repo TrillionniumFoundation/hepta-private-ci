@@ -58,6 +58,7 @@ MIGRATIONS = [
     "0006_provider_ephemeral_input.sql",
     "0007_provider_effect_evidence.sql",
     "0008_provider_effect_ack_source.sql",
+    "0009_authbus_replay.sql",
 ]
 PACKAGES = [
     "codex-hepta-types",
@@ -265,11 +266,21 @@ def validate_source_specific(root: Path = ROOT) -> None:
             'InvalidDigest("outbox acknowledgement")',
         ],
         "codex-rs/hepta-authbus/src/lib.rs": [
-            "does not verify a signature",
+            "pub use signed::SignedMessage;",
             "pub struct PreverifiedAuthEnvelope",
             "pub struct TrustedReplayContext",
             "BTreeMap<ReplayKey, u64>",
             "AuthorityPosture::DENY_ALL",
+        ],
+        "codex-rs/hepta-authbus/src/signed.rs": [
+            "pub fn authenticate(",
+            ".verify_strict(",
+            "pub struct AuthenticatedMessage",
+        ],
+        "codex-rs/hepta-evidence/src/authbus_store.rs": [
+            "pub async fn admit_authbus_message(",
+            'begin_with("BEGIN IMMEDIATE")',
+            "transaction.commit().await",
         ],
     }
     for path, needles in required.items():
@@ -291,8 +302,7 @@ def validate_source_specific(root: Path = ROOT) -> None:
         )
     ]
     if "revoked" in envelope or any(
-        value in auth
-        for value in ("pub fn reserve(", "pub fn settle(", "verify_strict(")
+        value in auth for value in ("pub fn reserve(", "pub fn settle(")
     ):
         raise VerificationError(
             "AuthBus promoted an untrusted or target-only capability"
