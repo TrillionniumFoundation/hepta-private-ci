@@ -1,10 +1,31 @@
-name: Hepta Lane B implementation truth
+name: Hepta Lane B repository closure
 
 on:
   pull_request:
+    paths:
+      - ".github/workflows/hepta-lane-b-*.yml"
+      - "qualification/lane-b/**"
+      - "docs/readiness/LANE_B_*.md"
+      - "docs/modules/**/IMPLEMENTATION_MAP.json"
+      - "scripts/hepta-lane-b-*.py"
+      - "scripts/test_hepta_lane_b_*.py"
+      - "codex-rs/hepta-supervisor/**"
+      - "codex-rs/hepta-fleet/**"
+      - "codex-rs/hepta-agentd/**"
+      - "codex-rs/app-server/**"
+      - "codex-rs/core/**"
+      - "codex-rs/hepta-codex-adapter/**"
+      - "codex-rs/hepta-infer-core/**"
+      - "codex-rs/hepta-inferd/**"
+      - "codex-rs/hepta-infer-worker-host/**"
+      - "codex-rs/hepta-automation/**"
+      - "codex-rs/hepta-matrix-sdk/**"
+      - "codex-rs/hepta-matrixd/**"
+      - "apps/hepta-browser/**"
+      - "apps/hepta-control-ui/**"
+      - "apps/hepta-native/**"
   push:
     branches:
-      - main
       - integration/vnext-main-20260811
       - "codex/hepta-lane-b-*"
   workflow_dispatch:
@@ -13,12 +34,12 @@ permissions:
   contents: read
 
 concurrency:
-  group: hepta-lane-b-truth-${{ github.event.pull_request.number || github.ref }}
+  group: hepta-lane-b-closure-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
 jobs:
-  source-head:
-    name: Verify exact Lane B source
+  governance-head:
+    name: Exact-head truth, maps and documents
     runs-on: ubuntu-24.04
     timeout-minutes: 15
     steps:
@@ -26,43 +47,98 @@ jobs:
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
-          persist-credentials: false
           fetch-depth: 0
+          persist-credentials: false
 
-      - name: Verify Lane B implementation truth and documents
+      - name: Verify exact candidate identity
         env:
           EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
-        shell: bash
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
           python3 scripts/hepta-lane-b-truth.py self-test
           python3 -m unittest scripts/test_hepta_lane_b_truth.py
           python3 scripts/hepta-lane-b-truth.py verify
-          python3 scripts/hepta-lane-b-docs.py
+          python3 scripts/hepta-lane-b-docs.py verify
           git diff --check
           test -z "$(git status --porcelain --untracked-files=no)"
 
-  merge-candidate:
-    name: Verify exact Lane B merge candidate
+  node-boundaries:
+    name: Browser and UI runtime boundaries
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - run: node --test apps/hepta-browser/test/runtime.test.js
+      - run: node --test apps/hepta-control-ui/test/runtime-client.test.js
+      - run: node --test apps/hepta-native/test/shell-runtime.test.js
+
+  rust-runtime-boundaries:
+    name: Fleet, inference, TaskFlow and Matrix boundaries
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Fleet lease runtime
+        working-directory: codex-rs
+        run: cargo test -p codex-hepta-fleet --bin hepta-fleet-leased
+      - name: Durable inference control
+        working-directory: codex-rs
+        run: cargo test -p codex-hepta-infer-core --bin hepta-infer-control
+      - name: Inference worker boundary
+        working-directory: codex-rs
+        run: cargo test -p codex-hepta-infer-worker-host --bin hepta-infer-worker
+      - name: TaskFlow runtime
+        working-directory: codex-rs
+        run: cargo test -p codex-hepta-automation --bin hepta-taskflow-runtime
+      - name: Matrix send observer
+        working-directory: codex-rs
+        run: cargo test -p codex-hepta-matrixd --bin hepta-matrix-send-observer
+
+  rust-existing-spine:
+    name: Supervisor, Agentd and Codex adapter
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Supervisor package
+        working-directory: codex-rs
+        run: cargo test -p codex-hepta-supervisor --lib
+      - name: Agentd package
+        working-directory: codex-rs
+        run: cargo test -p codex-hepta-agentd --lib
+      - name: Codex boundary adapter
+        working-directory: codex-rs
+        run: cargo test -p codex-hepta-codex-adapter
+
+  governance-merge-candidate:
+    name: Deterministic synthetic-merge governance
     if: github.event_name == 'pull_request'
     runs-on: ubuntu-24.04
     timeout-minutes: 15
     steps:
-      - name: Check out source for deterministic merge construction
+      - name: Check out source
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           ref: ${{ github.event.pull_request.head.sha }}
-          persist-credentials: false
           fetch-depth: 0
+          persist-credentials: false
 
-      - name: Construct exact synthetic merge candidate
+      - name: Construct exact synthetic merge
         id: merge
         env:
           BASE_SHA: ${{ github.event.pull_request.base.sha }}
           SOURCE_SHA: ${{ github.event.pull_request.head.sha }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
-        shell: bash
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
@@ -80,16 +156,15 @@ jobs:
           test "$(git rev-parse HEAD^{tree})" = "$TREE"
           printf 'sha=%s\n' "$SHA" >> "$GITHUB_OUTPUT"
 
-      - name: Verify synthetic merge candidate
+      - name: Verify merge candidate
         env:
           EXPECTED_SHA: ${{ steps.merge.outputs.sha }}
-        shell: bash
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
           python3 scripts/hepta-lane-b-truth.py self-test
           python3 -m unittest scripts/test_hepta_lane_b_truth.py
           python3 scripts/hepta-lane-b-truth.py verify
-          python3 scripts/hepta-lane-b-docs.py
+          python3 scripts/hepta-lane-b-docs.py verify
           git diff --check
           test -z "$(git status --porcelain --untracked-files=no)"
