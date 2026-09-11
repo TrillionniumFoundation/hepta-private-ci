@@ -185,7 +185,7 @@ async fn request_dynamic_tool(
             || session.has_pending_task_terminalization()
             || active
                 .as_ref()
-                .map_or(true, |current| current.task_terminalization.is_some())
+                .is_none_or(|current| current.task_terminalization.is_some())
         {
             return None;
         }

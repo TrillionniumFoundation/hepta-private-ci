@@ -2868,7 +2868,7 @@ impl Session {
                 || self.has_pending_task_terminalization()
                 || active
                     .as_ref()
-                    .map_or(true, |current| current.task_terminalization.is_some())
+                    .is_none_or(|current| current.task_terminalization.is_some())
             {
                 return None;
             }
@@ -2893,7 +2893,7 @@ impl Session {
                     || self.has_pending_task_terminalization()
                     || active
                         .as_ref()
-                        .map_or(true, |current| current.task_terminalization.is_some())
+                        .is_none_or(|current| current.task_terminalization.is_some())
                 {
                     return None;
                 }

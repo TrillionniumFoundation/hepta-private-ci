@@ -740,9 +740,7 @@ async fn recovery_reference_context(
     turn_id: &str,
     replay: &codex_history::TurnRecoveryReplayV1,
 ) -> Option<TurnContextItem> {
-    let Some(expected) = session.reference_context_item().await else {
-        return None;
-    };
+    let expected = session.reference_context_item().await?;
     if expected.turn_id.as_deref() != Some(turn_id) {
         return None;
     }
