@@ -1,0 +1,298 @@
+name: Hepta r23 final blocker diagnostic
+
+on:
+  push:
+    branches:
+      - ops/r23-final-diagnostic-20260911-gpt56
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-r23-final-diagnostic-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  SOURCE_SHA: 0a7dae70a5f53ccbc2f2acc027a2de97553a90f2
+  BASE_SHA: 04f60466394a024c218ce66b1b32d1c42c462985
+  PYTHONDONTWRITEBYTECODE: "1"
+  PYTHONUTF8: "1"
+  CARGO_NET_GIT_FETCH_WITH_CLI: "true"
+
+jobs:
+  source-snapshot:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Bind and package diagnostic source
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          mkdir -p diagnostics
+          tar -czf diagnostics/r23-diagnostic-source.tar.gz \
+            .github/workflows \
+            scripts \
+            tools/hepta-engineering-control \
+            qualification/lane-b \
+            qualification/module-execution-dossiers \
+            codex-rs/hepta-ndu \
+            codex-rs/hepta-types \
+            docs/readiness
+          git rev-parse HEAD HEAD^{tree} > diagnostics/identity.txt
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: r23-diagnostic-source
+          path: diagnostics/*
+          if-no-files-found: error
+          retention-days: 7
+
+  lane-b:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Run every Lane B gate independently
+        shell: bash
+        run: |
+          set -u
+          mkdir -p diagnostics/lane-b
+          status=0
+          run_one() {
+            local label="$1"
+            shift
+            printf 'COMMAND: %q ' "$@" > "diagnostics/lane-b/${label}.log"
+            printf '\n' >> "diagnostics/lane-b/${label}.log"
+            set +e
+            "$@" >> "diagnostics/lane-b/${label}.log" 2>&1
+            rc=$?
+            set -e
+            printf '%s=%s\n' "$label" "$rc" | tee -a diagnostics/lane-b/status.txt
+            if [ "$rc" -ne 0 ]; then status=1; fi
+          }
+          set -e
+          run_one pycompile-core python3 -m py_compile scripts/hepta-lane-b-truth-core.py
+          run_one pycompile-truth python3 -m py_compile scripts/hepta-lane-b-truth.py
+          run_one pycompile-candidate python3 -m py_compile scripts/hepta-lane-b-candidate.py
+          run_one pycompile-docs python3 -m py_compile scripts/hepta-lane-b-docs.py
+          run_one unit python3 -m unittest discover -v -s scripts -p test_hepta_lane_b_truth.py
+          run_one truth-verify python3 scripts/hepta-lane-b-truth.py verify --out /tmp/lane-b-truth.json
+          run_one truth-self-test python3 scripts/hepta-lane-b-truth.py self-test
+          run_one candidate-verify python3 scripts/hepta-lane-b-candidate.py verify --out /tmp/lane-b-candidate.json
+          run_one candidate-self-test python3 scripts/hepta-lane-b-candidate.py self-test
+          run_one docs-verify python3 scripts/hepta-lane-b-docs.py verify --out /tmp/lane-b-docs.json
+          run_one docs-self-test python3 scripts/hepta-lane-b-docs.py self-test
+          cp -f /tmp/lane-b-*.json diagnostics/lane-b/ 2>/dev/null || true
+          printf 'aggregate=%s\n' "$status" | tee -a diagnostics/lane-b/status.txt
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: r23-lane-b-diagnostic
+          path: diagnostics/lane-b
+          if-no-files-found: error
+          retention-days: 7
+
+  lane-d-envelope:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Capture semantic envelope decision
+        shell: bash
+        run: |
+          set +e
+          mkdir -p diagnostics/lane-d
+          python3 scripts/hepta-lane-d-semantic-conformance.py verify-changes --base "$BASE_SHA" \
+            > diagnostics/lane-d/verify-changes.log 2>&1
+          echo "verify_changes=$?" > diagnostics/lane-d/status.txt
+          python3 scripts/hepta-lane-d-semantic-conformance.py verify \
+            > diagnostics/lane-d/verify.log 2>&1
+          echo "verify=$?" >> diagnostics/lane-d/status.txt
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: r23-lane-d-envelope-diagnostic
+          path: diagnostics/lane-d
+          if-no-files-found: error
+          retention-days: 7
+
+  lane-e-merge:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      TARGET_BRANCH: codex/hepta-main-convergence-20260909
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Diagnose ordered merge construction
+        shell: bash
+        run: |
+          set -u
+          mkdir -p diagnostics/lane-e
+          git fetch --no-tags origin \
+            "+refs/heads/${TARGET_BRANCH}:refs/remotes/origin/${TARGET_BRANCH}" \
+            > diagnostics/lane-e/fetch.log 2>&1
+          TARGET_SHA="$(git rev-parse "origin/${TARGET_BRANCH}")"
+          SOURCE_SHA_LOCAL="$(git rev-parse HEAD)"
+          MERGE_BASE="$(git merge-base "$TARGET_SHA" "$SOURCE_SHA_LOCAL")"
+          {
+            echo "target_branch=$TARGET_BRANCH"
+            echo "target_sha=$TARGET_SHA"
+            echo "source_sha=$SOURCE_SHA_LOCAL"
+            echo "merge_base=$MERGE_BASE"
+          } > diagnostics/lane-e/identity.txt
+          set +e
+          git merge-tree --write-tree "$TARGET_SHA" "$SOURCE_SHA_LOCAL" \
+            > diagnostics/lane-e/merge-tree.log 2>&1
+          echo "merge_tree=$?" > diagnostics/lane-e/status.txt
+          git checkout --detach "$MERGE_BASE" > diagnostics/lane-e/checkout.log 2>&1
+          git merge --no-ff "$TARGET_SHA" -m "merge ${TARGET_BRANCH}" \
+            > diagnostics/lane-e/merge-target.log 2>&1
+          rc_target=$?
+          echo "merge_target=$rc_target" >> diagnostics/lane-e/status.txt
+          git status --short --branch > diagnostics/lane-e/status-after-target.txt 2>&1
+          git diff --name-only --diff-filter=U > diagnostics/lane-e/unmerged-target.txt 2>&1
+          if [ "$rc_target" -ne 0 ]; then
+            git merge --abort >/dev/null 2>&1 || true
+            git checkout --detach "$MERGE_BASE" >/dev/null 2>&1 || true
+          fi
+          git merge --no-ff "$SOURCE_SHA_LOCAL" -m "merge PR source" \
+            > diagnostics/lane-e/merge-source.log 2>&1
+          rc_source=$?
+          echo "merge_source=$rc_source" >> diagnostics/lane-e/status.txt
+          git status --short --branch > diagnostics/lane-e/status-after-source.txt 2>&1
+          git diff --name-only --diff-filter=U > diagnostics/lane-e/unmerged-source.txt 2>&1
+          git log --oneline --decorate -8 > diagnostics/lane-e/log.txt 2>&1
+          exit 0
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: r23-lane-e-merge-diagnostic
+          path: diagnostics/lane-e
+          if-no-files-found: error
+          retention-days: 7
+
+  converged-components:
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+      - name: Run converged packages independently
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -u
+          mkdir -p ../diagnostics/converged
+          status=0
+          for package in \
+            codex-hepta-learning-ledger \
+            codex-hepta-learning-artifacts \
+            codex-hepta-intelligence-eval \
+            codex-hepta-neuron \
+            codex-hepta-ndu; do
+            set +e
+            just test --locked -p "$package" \
+              > "../diagnostics/converged/${package}.log" 2>&1
+            rc=$?
+            set -e
+            echo "${package}=${rc}" | tee -a ../diagnostics/converged/status.txt
+            if [ "$rc" -ne 0 ]; then status=1; fi
+          done
+          echo "aggregate=${status}" | tee -a ../diagnostics/converged/status.txt
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: r23-converged-component-diagnostic
+          path: diagnostics/converged
+          if-no-files-found: error
+          retention-days: 7
+
+  lane-g-portable:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, macos-15, windows-latest]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Capture portable sandbox fixture output
+        working-directory: tools/hepta-engineering-control
+        shell: bash
+        env:
+          PYTHONPYCACHEPREFIX: ${{ runner.temp }}/lane-g-pycache
+        run: |
+          set +e
+          mkdir -p ../../diagnostics/lane-g-portable
+          python -m unittest -v \
+            test_candidate_sandbox_hardening.CandidateSandboxFixture \
+            > "../../diagnostics/lane-g-portable/${{ matrix.os }}.log" 2>&1
+          echo "portable=${?}" > "../../diagnostics/lane-g-portable/${{ matrix.os }}.status"
+          exit 0
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: r23-lane-g-portable-${{ matrix.os }}
+          path: diagnostics/lane-g-portable
+          if-no-files-found: error
+          retention-days: 7
+
+  lane-g-strong:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Install declared Linux isolation adapter
+        shell: bash
+        run: |
+          set -euo pipefail
+          if ! command -v bwrap >/dev/null 2>&1; then
+            sudo apt-get update
+            sudo apt-get install --no-install-recommends -y bubblewrap
+          fi
+          bwrap --version
+      - name: Capture strong sandbox fixture output
+        working-directory: tools/hepta-engineering-control
+        shell: bash
+        env:
+          PYTHONPYCACHEPREFIX: ${{ runner.temp }}/lane-g-pycache
+        run: |
+          set +e
+          mkdir -p ../../diagnostics/lane-g-strong
+          python -m unittest -v \
+            test_candidate_sandbox_hardening.CandidateSandboxStrongIsolation \
+            > ../../diagnostics/lane-g-strong/strong.log 2>&1
+          echo "strong=${?}" > ../../diagnostics/lane-g-strong/status.txt
+          exit 0
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: r23-lane-g-strong
+          path: diagnostics/lane-g-strong
+          if-no-files-found: error
+          retention-days: 7
