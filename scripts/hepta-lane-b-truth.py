@@ -212,7 +212,7 @@ def native_projection(truth: dict[str, Any], maps: list[dict[str, Any]]) -> str:
         "Repository source closure does not self-issue real model/provider execution, Servo or Matrix effects, deployed Web/native artifacts, target-host measurements, hardware evidence, external-owner consent, independent acceptance, selection, promotion or release.",
         "",
     ]
-    return "\n".join(lines)
+    return "\n".join(line.rstrip() for line in lines)
 
 
 def verify_candidate(manifest: dict[str, Any], truth: dict[str, Any]) -> list[str]:

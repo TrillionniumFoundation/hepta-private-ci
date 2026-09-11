@@ -1,14 +1,10 @@
 diff --git a/http_bsdtar_archive.bzl b/http_bsdtar_archive.bzl
 --- a/http_bsdtar_archive.bzl
 +++ b/http_bsdtar_archive.bzl
-@@ -170,7 +170,9 @@ def _http_bsdtar_archive_impl(rctx):
-     if strip_prefix and not includes:
-         includes = [strip_prefix, strip_prefix + "/*"]
- 
+@@ -173,3 +173,5 @@ def _http_bsdtar_archive_impl(rctx):
 -    args = []
 +    # Source archive uid/gid values are not build inputs. Retain the current
 +    # owner, including in containers that cannot map the archive's numeric IDs.
 +    args = ["--no-same-owner"]
      for include in includes:
          args.extend(["--include", include])
-     for exclude in excludes:

@@ -33,4 +33,3 @@ Golden vectors must be produced independently of the implementation under test. 
 ## Mixed-version process rules
 
 A process declares the exact contract versions it consumes and produces at startup. Unsupported pairs fail readiness rather than falling back implicitly. A generation change freezes existing run snapshots; new runs use the newly selected complete tuple. Current correction, revocation and withdrawal frontiers are overlaid before any historical artifact or backup becomes readable.
-
