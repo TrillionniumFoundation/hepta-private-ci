@@ -149,15 +149,36 @@ def verify_candidate(manifest: dict[str, Any], truth: dict[str, Any]) -> list[st
     base, tree = manifest["sourceBase"]["commit"], manifest["sourceBase"]["tree"]
     need(bool(HEX40.fullmatch(base)) and bool(HEX40.fullmatch(tree)), "base identity")
     need(git("rev-parse", f"{base}^{{tree}}") == tree, "base tree")
-    ancestor = subprocess.run(["git", "merge-base", "--is-ancestor", base, "HEAD"], cwd=ROOT)
-    need(ancestor.returncode == 0, "base is not ancestor")
-    if os.environ.get("HEPTA_SYNTHETIC_MERGE") == "1":
-        need(len(git("show", "-s", "--format=%P", "HEAD").split()) == 2, "synthetic parents")
-    else:
-        need(not git("rev-list", "--merges", f"{base}..HEAD"), "merge commit in source candidate")
+
+    synthetic = os.environ.get("HEPTA_SYNTHETIC_MERGE") == "1"
+    parents = git("show", "-s", "--format=%P", "HEAD").split()
+    candidate_subject = "HEAD"
+    if synthetic:
+        need(len(parents) == 2, "synthetic merge must have exactly two parents")
+        # The workflow constructs the synthetic commit with the target base first
+        # and the source candidate second. Audit candidate-controlled paths on the
+        # source parent while executing all semantic tests against the merged tree.
+        candidate_subject = parents[1]
+    ancestor = subprocess.run(
+        ["git", "merge-base", "--is-ancestor", base, candidate_subject],
+        cwd=ROOT,
+    )
+    need(ancestor.returncode == 0, "source base is not ancestor of candidate subject")
+    need(
+        not git("rev-list", "--merges", f"{base}..{candidate_subject}"),
+        "merge commit in source candidate",
+    )
+
     prefixes = manifest.get("allowedPathPrefixes")
     need(isinstance(prefixes, list) and prefixes, "path envelope")
-    changed = [path for path in git("diff", "--name-only", "--diff-filter=ACDMRTUXB", f"{base}..HEAD").splitlines() if path]
+    changed = [
+        path
+        for path in git(
+            "diff", "--name-only", "--diff-filter=ACDMRTUXB",
+            f"{base}..{candidate_subject}",
+        ).splitlines()
+        if path
+    ]
     need(changed, "empty candidate")
     denied = [path for path in changed if not allowed(path, prefixes)]
     need(not denied, "path outside envelope: " + ", ".join(denied))
