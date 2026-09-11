@@ -44,6 +44,20 @@ jobs:
           git checkout -B "$TARGET_BRANCH" "origin/$TARGET_BRANCH"
           tar -xJf "$archive" -C .
 
+          # Preserve compatibility with the repository's existing Lane F
+          # closed-world verifier while the new matrix keeps clearer names.
+          python3 - <<'PY_MATRIX'
+          import json
+          from pathlib import Path
+          path = Path("docs/lane-f/LANE_F_IMPLEMENTATION_MATRIX.json")
+          data = json.loads(path.read_text(encoding="utf-8"))
+          for record in data["modules"]:
+              record.setdefault("nativeSources", record.get("sourceFiles", []))
+              record.setdefault("nativeTests", record.get("testFiles", []))
+              record.setdefault("publicEntrypoints", record.get("entrypoints", []))
+          path.write_text(json.dumps(data, indent=2) + "\n", encoding="utf-8")
+          PY_MATRIX
+
           python3 scripts/hepta-lane-f.py verify
           python3 scripts/test_hepta_lane_f.py
           git diff --check
