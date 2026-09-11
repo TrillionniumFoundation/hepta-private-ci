@@ -29,8 +29,15 @@ use codex_app_server_protocol::TurnStatus;
 use codex_app_server_protocol::UserInput;
 use codex_hepta_agentd::AgentdClient;
 use codex_hepta_contracts::AgentId;
+use codex_hepta_infer_core::durable_control::DurableInferenceControl;
+use codex_hepta_infer_core::durable_control::native::NativeDispatch;
+pub use codex_hepta_infer_core::durable_control::native::NativeRunOutput;
+pub use codex_hepta_infer_core::durable_control::native::NativeRunStatus;
 use codex_utils_absolute_path::AbsolutePathBuf;
-use serde::Serialize;
+
+#[path = "native_run_control.rs"]
+mod control;
+pub use control::NativeAdmission;
 use tokio::time::Instant;
 use tokio::time::timeout;
 use tokio::time::timeout_at;
@@ -53,32 +60,9 @@ pub struct NativeWorkerConfig {
     pub timeout: Duration,
 }
 
-/// Only terminal notifications can produce Completed/Failed/Interrupted.
-#[derive(Debug, Serialize, PartialEq, Eq)]
-#[serde(rename_all = "snake_case")]
-pub enum NativeRunStatus {
-    Completed,
-    Failed,
-    Interrupted,
-    Indeterminate,
-}
-
-#[derive(Debug, Serialize)]
-pub struct NativeRunOutput {
-    pub thread_id: String,
-    pub turn_id: String,
-    pub model: String,
-    pub model_provider: String,
-    pub status: NativeRunStatus,
-    pub output: String,
-    pub observed_output_tokens: Option<u64>,
-    pub terminal_observed: bool,
-    pub stop_reason: Option<String>,
-}
-
-/// A real provider client. Every run creates an ephemeral thread and obtains
-/// the private socket from a currently ready Agent; caller-supplied execution
-/// observations or provider success flags are never accepted.
+/// A real provider client. Each new request uses a fresh ephemeral thread
+/// behind the exact Agent identity. The control journal owns dispatch identity,
+/// local slot admission and settlement; duplicate requests never start a turn.
 pub struct AppServerModelDriver {
     config: NativeWorkerConfig,
 }
@@ -99,8 +83,10 @@ impl AppServerModelDriver {
 
     /// Execute once. Transport loss after turn/start remains indeterminate and
     /// must never be automatically replayed as a fresh request.
-    pub async fn run(
+    async fn run_once(
         &self,
+        control: &mut DurableInferenceControl,
+        request_id: &str,
         prompt: String,
         context_query: Option<String>,
         cancellation: &CancellationToken,
@@ -187,12 +173,21 @@ impl AppServerModelDriver {
             let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
             return Err("cancelled before model dispatch".into());
         }
+        control.dispatch_native(
+            request_id,
+            NativeDispatch {
+                thread_id: started.thread.id.clone(),
+                model_provider: started.model_provider.clone(),
+                context_digest: control::digest(&serde_json::to_vec(&additional_context)?),
+            },
+        )?;
         let response = timeout(
             RPC_TIMEOUT,
             client.request_typed::<TurnStartResponse>(ClientRequest::TurnStart {
                 request_id: RequestId::Integer(2),
                 params: TurnStartParams {
                     thread_id: started.thread.id.clone(),
+                    client_user_message_id: Some(request_id.to_string()),
                     input: vec![UserInput::Text {
                         text: prompt,
                         text_elements: Vec::new(),
@@ -232,6 +227,11 @@ impl AppServerModelDriver {
             terminal_observed: false,
             stop_reason: None,
         };
+        if let Err(error) = control.native_started(request_id, output.turn_id.clone()) {
+            interrupt(&mut client, &output).await;
+            let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
+            return Err(error.into());
+        }
         let deadline = Instant::now() + self.config.timeout;
         let result = self
             .observe(
@@ -244,18 +244,10 @@ impl AppServerModelDriver {
             .await;
         if let Err(reason) = result {
             output.stop_reason = Some(reason);
-            // Cancellation acknowledgement is not a terminal model outcome.
-            let _ = timeout(
-                RPC_TIMEOUT,
-                client.request(ClientRequest::TurnInterrupt {
-                    request_id: RequestId::Integer(3),
-                    params: TurnInterruptParams {
-                        thread_id: output.thread_id.clone(),
-                        turn_id: output.turn_id.clone(),
-                    },
-                }),
-            )
-            .await;
+            // Persist cancellation intent, but still interrupt if that write
+            // fails. A failed journal write fences later admission/settlement.
+            let cancel_recorded = control.cancel_native(request_id);
+            interrupt(&mut client, &output).await;
             let grace = CancellationToken::new();
             let _ = self
                 .observe(
@@ -266,6 +258,7 @@ impl AppServerModelDriver {
                     None,
                 )
                 .await;
+            cancel_recorded?;
         }
         if output.terminal_observed {
             let _ = timeout(
@@ -341,6 +334,21 @@ impl AppServerModelDriver {
     }
 }
 
+async fn interrupt(client: &mut RemoteAppServerClient, output: &NativeRunOutput) {
+    // An interrupt acknowledgement is not a terminal model outcome.
+    let _ = timeout(
+        RPC_TIMEOUT,
+        client.request(ClientRequest::TurnInterrupt {
+            request_id: RequestId::Integer(3),
+            params: TurnInterruptParams {
+                thread_id: output.thread_id.clone(),
+                turn_id: output.turn_id.clone(),
+            },
+        }),
+    )
+    .await;
+}
+
 fn observe_notification(
     output: &mut NativeRunOutput,
     notification: ServerNotification,
@@ -357,8 +365,15 @@ fn observe_notification(
         ServerNotification::ThreadTokenUsageUpdated(usage)
             if usage.thread_id == output.thread_id && usage.turn_id == output.turn_id =>
         {
-            output.observed_output_tokens =
-                u64::try_from(usage.token_usage.total.output_tokens).ok();
+            let observed = u64::try_from(usage.token_usage.total.output_tokens)
+                .map_err(|_| "invalid negative provider usage".to_string())?;
+            if output
+                .observed_output_tokens
+                .is_some_and(|previous| observed < previous)
+            {
+                return Err("provider cumulative usage regressed".to_string());
+            }
+            output.observed_output_tokens = Some(observed);
         }
         ServerNotification::TurnCompleted(completed)
             if completed.thread_id == output.thread_id && completed.turn.id == output.turn_id =>
@@ -370,7 +385,9 @@ fn observe_notification(
                 TurnStatus::InProgress => return Err("nonterminal completion event".to_string()),
             };
             if let Some(error) = completed.turn.error {
-                output.stop_reason = Some(error.message);
+                // Bound the provider's diagnostic without discarding the
+                // actually observed terminal status or token count.
+                output.stop_reason = Some(error.message.chars().take(1024).collect());
             }
             output.terminal_observed = true;
             return Ok(true);

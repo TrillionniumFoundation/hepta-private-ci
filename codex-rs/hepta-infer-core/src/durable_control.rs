@@ -8,11 +8,17 @@ use std::fs::OpenOptions;
 use std::fs::{self};
 use std::io::BufRead;
 use std::io::BufReader;
+use std::io::Read;
 use std::io::Write;
 use std::path::Path;
 use std::path::PathBuf;
 
+#[path = "native_control.rs"]
+pub mod native;
+
 const MAX_RECORDS: usize = 16_384;
+const MAX_JOURNAL_BYTES: u64 = 64 * 1024 * 1024;
+const MAX_JOURNAL_LINE_BYTES: usize = 8 * 1024 * 1024;
 const MAX_TOKENS: u32 = 1_000_000;
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -166,7 +172,9 @@ pub struct DurableInferenceControl {
     path: PathBuf,
     file: File,
     records: BTreeMap<String, RequestRecord>,
+    native: native::NativeJournal,
     capacity: usize,
+    journal_bytes: u64,
     poisoned: bool,
 }
 
@@ -179,23 +187,55 @@ impl DurableInferenceControl {
         if let Some(parent) = path.parent() {
             fs::create_dir_all(parent)?;
         }
-        let file = OpenOptions::new()
-            .create(true)
-            .append(true)
-            .read(true)
-            .open(&path)?;
+        let mut options = OpenOptions::new();
+        options.create(true).append(true).read(true);
+        #[cfg(unix)]
+        {
+            use std::os::unix::fs::OpenOptionsExt;
+            options.mode(0o600);
+        }
+        let file = options.open(&path)?;
         // Lock before replay: two owners must never admit from the same stale cut.
         file.try_lock().map_err(|_| Error::WriterUnavailable)?;
         let mut records = BTreeMap::new();
-        for line in BufReader::new(file.try_clone()?).lines() {
-            let line = line?;
+        let mut native = native::NativeJournal::default();
+        let mut reader = BufReader::new(file.try_clone()?);
+        let mut journal_bytes = 0_u64;
+        let mut line = Vec::new();
+        loop {
+            line.clear();
+            // Bound actual reads and allocation, including files whose metadata
+            // races with open. One extra byte distinguishes EOF from overflow.
+            let remaining = MAX_JOURNAL_BYTES.saturating_sub(journal_bytes) + 1;
+            let limit = remaining.min(MAX_JOURNAL_LINE_BYTES as u64 + 1);
+            let count = (&mut reader).take(limit).read_until(b'\n', &mut line)?;
+            if count == 0 {
+                break;
+            }
+            journal_bytes += count as u64;
+            if count > MAX_JOURNAL_LINE_BYTES || journal_bytes > MAX_JOURNAL_BYTES {
+                return Err(Error::CapacityExceeded);
+            }
+            if line.pop() != Some(b'\n') {
+                return Err(Error::CorruptJournal("incomplete line"));
+            }
+            if line.last() == Some(&b'\r') {
+                line.pop();
+            }
+            let line = std::str::from_utf8(&line).map_err(|_| Error::CorruptJournal("utf8"))?;
             if line.is_empty() {
                 continue;
             }
-            apply_event(&mut records, &decode_event(&line)?, true)?;
-        }
-        if records.len() > capacity {
-            return Err(Error::CapacityExceeded);
+            if let Some(json) = line.strip_prefix(native::JOURNAL_PREFIX) {
+                native.replay(json)?;
+            } else {
+                apply_event(&mut records, &decode_event(line)?, true)?;
+            }
+            if records.len() + native.records.len() > capacity
+                || records.keys().any(|id| native.records.contains_key(id))
+            {
+                return Err(Error::CapacityExceeded);
+            }
         }
         #[cfg(unix)]
         {
@@ -209,7 +249,9 @@ impl DurableInferenceControl {
             path,
             file,
             records,
+            native,
             capacity,
+            journal_bytes,
             poisoned: false,
         })
     }
@@ -226,7 +268,10 @@ impl DurableInferenceControl {
             }
             return Err(Error::Conflict);
         }
-        if self.records.len() >= self.capacity {
+        if self.native.records.contains_key(&request.request_id) {
+            return Err(Error::Conflict);
+        }
+        if self.records.len() + self.native.records.len() >= self.capacity {
             return Err(Error::CapacityExceeded);
         }
         let event = Event::Submit(request);
@@ -393,6 +438,27 @@ impl DurableInferenceControl {
         let mut next = self.records.clone();
         apply_event(&mut next, &event, false)?;
         let encoded = format!("{}\n", encode_event(&event));
+        self.append(&encoded)?;
+        let request_id = event.request_id().to_string();
+        self.records = next;
+        let record = self
+            .records
+            .get(&request_id)
+            .ok_or(Error::RequestNotFound)?;
+        Ok(receipt(record, false))
+    }
+
+    fn append(&mut self, encoded: &str) -> Result<(), Error> {
+        if self.poisoned {
+            return Err(Error::WriterUnavailable);
+        }
+        let next_bytes = self
+            .journal_bytes
+            .checked_add(encoded.len() as u64)
+            .ok_or(Error::ArithmeticOverflow)?;
+        if encoded.len() > MAX_JOURNAL_LINE_BYTES || next_bytes > MAX_JOURNAL_BYTES {
+            return Err(Error::CapacityExceeded);
+        }
         let persisted = self
             .file
             .write_all(encoded.as_bytes())
@@ -404,13 +470,8 @@ impl DurableInferenceControl {
             self.poisoned = true;
             return Err(error.into());
         }
-        let request_id = event.request_id().to_string();
-        self.records = next;
-        let record = self
-            .records
-            .get(&request_id)
-            .ok_or(Error::RequestNotFound)?;
-        Ok(receipt(record, false))
+        self.journal_bytes = next_bytes;
+        Ok(())
     }
 }
 

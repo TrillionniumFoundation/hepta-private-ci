@@ -97,3 +97,50 @@ fn in_progress_is_not_a_terminal_observation() {
     );
     assert!(!output.terminal_observed);
 }
+
+#[test]
+fn actual_usage_is_bound_monotonic_and_survives_terminal_failure() {
+    use codex_app_server_protocol::ThreadTokenUsage;
+    use codex_app_server_protocol::ThreadTokenUsageUpdatedNotification;
+    use codex_app_server_protocol::TokenUsageBreakdown;
+    use codex_app_server_protocol::TurnError;
+    let usage = |thread: &str, tokens| {
+        let counts = TokenUsageBreakdown {
+            total_tokens: tokens,
+            input_tokens: 0,
+            cached_input_tokens: 0,
+            cache_write_input_tokens: 0,
+            output_tokens: tokens,
+            reasoning_output_tokens: 0,
+        };
+        ServerNotification::ThreadTokenUsageUpdated(ThreadTokenUsageUpdatedNotification {
+            thread_id: thread.to_string(),
+            turn_id: "turn-a".to_string(),
+            token_usage: ThreadTokenUsage {
+                total: counts.clone(),
+                last: counts,
+                model_context_window: None,
+            },
+        })
+    };
+    let mut output = output();
+    observe_notification(&mut output, usage("unrelated", 99)).unwrap();
+    assert_eq!(output.observed_output_tokens, None);
+    observe_notification(&mut output, usage("thread-a", 42)).unwrap();
+    assert!(observe_notification(&mut output, usage("thread-a", -1)).is_err());
+    assert!(observe_notification(&mut output, usage("thread-a", 41)).is_err());
+    assert_eq!(output.observed_output_tokens, Some(42));
+    let mut failed = terminal("thread-a", "turn-a", TurnStatus::Failed);
+    if let ServerNotification::TurnCompleted(ref mut notification) = failed {
+        notification.turn.error = Some(TurnError {
+            message: "provider error".to_string(),
+            codex_error_info: None,
+            additional_details: None,
+        });
+    }
+    assert!(observe_notification(&mut output, failed).unwrap());
+    assert_eq!(output.status, NativeRunStatus::Failed);
+    assert_eq!(output.observed_output_tokens, Some(42));
+    assert_eq!(output.stop_reason.as_deref(), Some("provider error"));
+    assert!(output.terminal_observed);
+}

@@ -7,14 +7,14 @@
   },
   "laneId": "LANE-B-RUNTIME",
   "module": "inference.worker",
-  "sourceMaturity": "driver_component_and_native_app_server_profile",
+  "sourceMaturity": "durable_native_app_server_profile_and_local_driver_component",
   "declaredRoots": [
     "codex-rs/hepta-infer-worker-host"
   ],
   "resolvedRoots": [
     "codex-rs/hepta-infer-worker-host"
   ],
-  "stateOwnerDisposition": "Owns ephemeral process/model handles and resource usage only; persistent model bytes remain with the artifact/cache owner.",
+  "stateOwnerDisposition": "Owns live provider client handles; persistent request/slot/observation facts remain in the inference.control journal. App Server owns ephemeral thread execution; artifact/cache owners retain model bytes.",
   "terminalObserverDisposition": "The hosted native-app-server profile observes real matching turn events; the local manifest driver remains injected and does not prove physical weights/device behavior.",
   "operations": [
     {
@@ -41,19 +41,39 @@
       "mappingClass": "owner_native",
       "ownerEntrypoint": {
         "role": "owner_entrypoint",
-        "path": "codex-rs/hepta-infer-worker-host/src/model_worker.rs",
-        "symbol": "pub fn run(",
-        "buildTarget": "codex-hepta-infer-worker-host::model_worker"
+        "path": "codex-rs/hepta-infer-worker-host/src/native_run_control.rs",
+        "symbol": "pub async fn run(",
+        "buildTarget": "codex-hepta-infer-worker-host::native_app_server"
       },
-      "delegatedCallees": [],
+      "delegatedCallees": [
+        {
+          "role": "supporting_algorithm",
+          "path": "codex-rs/hepta-infer-worker-host/src/native_app_server.rs",
+          "symbol": "async fn run_once(",
+          "buildTarget": "codex-hepta-infer-worker-host::native_app_server",
+          "ownerModule": "inference.worker"
+        },
+        {
+          "role": "supporting_algorithm",
+          "path": "codex-rs/hepta-infer-core/src/native_control.rs",
+          "symbol": "pub fn settle_native(",
+          "buildTarget": "codex-hepta-infer-core::durable_control::native",
+          "ownerModule": "inference.control"
+        }
+      ],
       "tests": [
         {
-          "path": "codex-rs/hepta-infer-worker-host/src/model_worker_tests.rs",
-          "kind": "execution_and_cancellation",
+          "path": "codex-rs/hepta-infer-worker-host/src/native_run_control_tests.rs",
+          "kind": "duplicate_reopen_and_predispatch_cancellation",
+          "command": "just test -p codex-hepta-infer-worker-host --lib"
+        },
+        {
+          "path": "codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs",
+          "kind": "matching_native_events_and_usage",
           "command": "just test -p codex-hepta-infer-worker-host --lib"
         }
       ],
-      "sourceSemantics": "Runs a bounded request through an injected driver and preserves indeterminate terminality."
+      "sourceSemantics": "Reserves through durable inference.control, calls the actual private Agent/App Server once, and commits matching terminal/output/optional-token observations before returning. Reopen and duplicate paths consume the journal without invoking the provider again."
     },
     {
       "designOperation": "unload",
@@ -77,7 +97,7 @@
   ],
   "repositoryControlledGaps": [
     "Implement a local model driver that acquires and proves actual weights, device and memory grants before claiming isolated local inference.",
-    "Connect hosted runs to durable control reservation and usage settlement; the native App Server profile does not fabricate these grants."
+    "Implement trusted provider reconciliation for dispatch-unknown/reopened runs and later missing token usage; do not infer zero usage or safe replay from transport loss."
   ],
   "externalEvidenceGates": [
     "identified real weights/tokenizer/runtime/device",
