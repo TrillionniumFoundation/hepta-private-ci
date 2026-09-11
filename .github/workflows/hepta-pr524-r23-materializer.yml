@@ -52,6 +52,27 @@ jobs:
           echo "ef56859108534c6984b6026fecc59edbfcd75c927b838e58843205cf0eb5cd4c  /tmp/pr524-r23.patch" | sha256sum -c -
           git apply --check /tmp/pr524-r23.patch
           git apply /tmp/pr524-r23.patch
+          python3 - <<'PY'
+          from pathlib import Path
+
+          path = Path("codex-rs/hepta-control-plane/src/planner_tests.rs")
+          lines = path.read_text(encoding="utf-8").splitlines(keepends=True)
+          fixes = {
+              323: ("let mut tampered = prepared.clone();", "let mut tampered = prepared;"),
+              372: ("let mut owner = prepared.clone();", "let mut owner = prepared;"),
+              394: ("let mut tampered = snapshot.clone();", "let mut tampered = snapshot;"),
+              448: ("let mut changed = snapshot.clone();", "let mut changed = snapshot;"),
+          }
+          for line_number, (before, after) in fixes.items():
+              index = line_number - 1
+              if index >= len(lines) or before not in lines[index]:
+                  actual = lines[index].rstrip() if index < len(lines) else "<missing>"
+                  raise SystemExit(
+                      f"owner lint preimage mismatch at {path}:{line_number}: {actual!r}"
+                  )
+              lines[index] = lines[index].replace(before, after, 1)
+          path.write_text("".join(lines), encoding="utf-8")
+          PY
           rm -rf .hepta-materializer
           rm .github/workflows/hepta-pr524-r23-materializer.yml
           uv run --frozen --project scripts ruff format scripts
