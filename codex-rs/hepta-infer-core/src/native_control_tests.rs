@@ -40,6 +40,7 @@ fn output(status: NativeRunStatus, tokens: Option<u64>) -> NativeRunOutput {
         output: "observed text".to_string(),
         observed_output_tokens: tokens,
         stop_reason: None,
+        owner_authority: NativeOwnerAuthority::Unverified,
     }
 }
 
@@ -272,5 +273,93 @@ fn oversized_and_incomplete_lines_are_rejected_without_truncation() {
         Err(Error::CorruptJournal("incomplete line"))
     ));
     assert_eq!(std::fs::metadata(&path).unwrap().len(), truncated_length);
+    std::fs::remove_file(path).unwrap();
+}
+
+#[test]
+fn late_completed_releases_slot_without_erasing_authority_loss() {
+    let path = path("authority-loss");
+    let mut control = DurableInferenceControl::open(&path, 8).unwrap();
+    start(&mut control, "r1");
+    control.cancel_native("r1").unwrap();
+    let mut interrupted_observation = output(NativeRunStatus::Indeterminate, Some(42));
+    interrupted_observation.owner_authority = NativeOwnerAuthority::Lost {
+        reason: "owner generation fenced".to_string(),
+    };
+    control
+        .settle_native("r1", interrupted_observation.clone())
+        .unwrap();
+    let mut terminal = interrupted_observation;
+    terminal.status = NativeRunStatus::Completed;
+    terminal.terminal_observed = true;
+    let settled = control.settle_native("r1", terminal.clone()).unwrap();
+    assert_eq!(settled.state, NativeReservationState::Released);
+    assert!(settled.cancel_requested);
+    assert_eq!(settled.observation, Some(terminal.clone()));
+    assert!(!terminal.succeeded());
+    control.reserve_native(request("r2"), 1).unwrap();
+    let mut dishonest_upgrade = terminal;
+    dishonest_upgrade.owner_authority = NativeOwnerAuthority::ObservedReady;
+    assert_eq!(
+        control.settle_native("r1", dishonest_upgrade),
+        Err(Error::Conflict)
+    );
+    drop(control);
+    let control = DurableInferenceControl::open(&path, 8).unwrap();
+    assert_eq!(control.native_record("r1"), Some(&settled));
+    assert!(
+        !control
+            .native_record("r1")
+            .unwrap()
+            .observation
+            .as_ref()
+            .unwrap()
+            .succeeded()
+    );
+    drop(control);
+    std::fs::remove_file(path).unwrap();
+}
+
+#[test]
+fn legacy_journal_completion_without_authority_cannot_be_replayed_as_success() {
+    let path = path("legacy-authority");
+    let mut control = DurableInferenceControl::open(&path, 8).unwrap();
+    start(&mut control, "r1");
+    let mut old_output = output(NativeRunStatus::Completed, Some(19));
+    old_output.owner_authority = NativeOwnerAuthority::ObservedReady;
+    let event = Event::Observe {
+        request_id: "r1".to_string(),
+        output: old_output,
+    };
+    let mut json = serde_json::to_value(event).unwrap();
+    json["Observe"]["output"]
+        .as_object_mut()
+        .unwrap()
+        .remove("owner_authority");
+    // Write an actual pre-upgrade observation record with the field absent.
+    control
+        .append(&format!(
+            "{JOURNAL_PREFIX}{}\n",
+            serde_json::to_string(&json).unwrap()
+        ))
+        .unwrap();
+    drop(control);
+    let mut control = DurableInferenceControl::open(&path, 8).unwrap();
+    let mut replayed = control
+        .native_record("r1")
+        .unwrap()
+        .observation
+        .clone()
+        .unwrap();
+    assert_eq!(replayed.owner_authority, NativeOwnerAuthority::Unverified);
+    assert_eq!(replayed.status, NativeRunStatus::Completed);
+    assert_eq!(replayed.observed_output_tokens, Some(19));
+    assert!(!replayed.succeeded());
+    // Later token evidence must not retroactively authorize the old attempt.
+    replayed.observed_output_tokens = Some(20);
+    control.settle_native("r1", replayed.clone()).unwrap();
+    replayed.owner_authority = NativeOwnerAuthority::ObservedReady;
+    assert_eq!(control.settle_native("r1", replayed), Err(Error::Conflict));
+    drop(control);
     std::fs::remove_file(path).unwrap();
 }

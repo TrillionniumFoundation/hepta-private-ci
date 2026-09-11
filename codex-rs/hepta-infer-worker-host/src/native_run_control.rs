@@ -8,6 +8,7 @@ use sha2::Sha256;
 use tokio_util::sync::CancellationToken;
 
 use super::AppServerModelDriver;
+use super::NativeOwnerAuthority;
 use super::NativeRunOutput;
 use super::NativeRunStatus;
 use super::Result;
@@ -71,6 +72,7 @@ impl AppServerModelDriver {
                 output: String::new(),
                 observed_output_tokens: None,
                 terminal_observed: false,
+                owner_authority: NativeOwnerAuthority::Unverified,
                 stop_reason: Some(
                     "reopened after possible dispatch; reservation held, no replay".to_string(),
                 ),

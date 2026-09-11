@@ -5,7 +5,6 @@ use codex_hepta_contracts::AgentId;
 use codex_hepta_infer_core::durable_control::DurableInferenceControl;
 use codex_hepta_infer_worker_host::native_app_server::AppServerModelDriver;
 use codex_hepta_infer_worker_host::native_app_server::NativeAdmission;
-use codex_hepta_infer_worker_host::native_app_server::NativeRunStatus;
 use codex_hepta_infer_worker_host::native_app_server::NativeWorkerConfig;
 use tokio::io::AsyncReadExt;
 use tokio_util::sync::CancellationToken;
@@ -92,8 +91,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
     if !output.terminal_observed {
         return Err("model outcome is indeterminate; this request was not replayed".into());
     }
-    if output.status != NativeRunStatus::Completed {
-        return Err("model run did not complete successfully".into());
+    if !output.succeeded() {
+        return Err("model run lacks successful completion with verified owner authority".into());
     }
     Ok(())
 }

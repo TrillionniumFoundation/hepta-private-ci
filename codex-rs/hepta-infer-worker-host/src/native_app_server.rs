@@ -4,6 +4,7 @@
 //! about local weights, accelerator memory, artifact selection or training.
 
 use std::collections::HashMap;
+use std::future::Future;
 use std::path::PathBuf;
 use std::time::Duration;
 
@@ -28,9 +29,12 @@ use codex_app_server_protocol::TurnStartResponse;
 use codex_app_server_protocol::TurnStatus;
 use codex_app_server_protocol::UserInput;
 use codex_hepta_agentd::AgentdClient;
+use codex_hepta_agentd::AgentdError;
+use codex_hepta_agentd::HealthSnapshot;
 use codex_hepta_contracts::AgentId;
 use codex_hepta_infer_core::durable_control::DurableInferenceControl;
 use codex_hepta_infer_core::durable_control::native::NativeDispatch;
+pub use codex_hepta_infer_core::durable_control::native::NativeOwnerAuthority;
 pub use codex_hepta_infer_core::durable_control::native::NativeRunOutput;
 pub use codex_hepta_infer_core::durable_control::native::NativeRunStatus;
 use codex_utils_absolute_path::AbsolutePathBuf;
@@ -212,6 +216,7 @@ impl AppServerModelDriver {
                     output: String::new(),
                     observed_output_tokens: None,
                     terminal_observed: false,
+                    owner_authority: NativeOwnerAuthority::Unverified,
                     stop_reason: Some("turn/start outcome unknown; do not replay".to_string()),
                 });
             }
@@ -225,6 +230,7 @@ impl AppServerModelDriver {
             output: String::new(),
             observed_output_tokens: None,
             terminal_observed: false,
+            owner_authority: NativeOwnerAuthority::Unverified,
             stop_reason: None,
         };
         if let Err(error) = control.native_started(request_id, output.turn_id.clone()) {
@@ -246,6 +252,16 @@ impl AppServerModelDriver {
             output.stop_reason = Some(reason);
             // Persist cancellation intent, but still interrupt if that write
             // fails. A failed journal write fences later admission/settlement.
+            // Commit observed authority loss before waiting for interruption:
+            // a process crash must not erase it from a later settlement.
+            let loss_recorded =
+                if matches!(output.owner_authority, NativeOwnerAuthority::Lost { .. }) {
+                    control
+                        .settle_native(request_id, output.clone())
+                        .map(|_| ())
+                } else {
+                    Ok(())
+                };
             let cancel_recorded = control.cancel_native(request_id);
             interrupt(&mut client, &output).await;
             let grace = CancellationToken::new();
@@ -258,6 +274,7 @@ impl AppServerModelDriver {
                     /*owner*/ None,
                 )
                 .await;
+            loss_recorded?;
             cancel_recorded?;
         }
         if output.terminal_observed {
@@ -273,6 +290,13 @@ impl AppServerModelDriver {
             .await;
         }
         let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
+        if output.terminal_observed {
+            // Even if select! saw Completed before a ready health tick, verify
+            // this exact owner again unless already lost. Grace observes facts and
+            // cannot restore authority lost earlier in the run.
+            let _ = verify_owner_health(&mut output, owner.health(), Instant::now() + RPC_TIMEOUT)
+                .await;
+        }
         Ok(output)
     }
 
@@ -290,12 +314,7 @@ impl AppServerModelDriver {
                 _ = cancellation.cancelled() => return Err("cancelled".to_string()),
                 _ = health_tick.tick(), if owner.is_some() => {
                     if let Some(owner) = owner {
-                        let health = timeout(RPC_TIMEOUT, owner.health()).await
-                            .map_err(|_| "owner health check timed out".to_string())?
-                            .map_err(|error| error.to_string())?;
-                        if !health.ready || health.fenced {
-                            return Err("owning Agent is no longer ready".to_string());
-                        }
+                        verify_owner_health(output, owner.health(), deadline).await?;
                     }
                     continue;
                 },
@@ -332,6 +351,31 @@ impl AppServerModelDriver {
             }
         }
     }
+}
+
+async fn verify_owner_health(
+    output: &mut NativeRunOutput,
+    health: impl Future<Output = std::result::Result<HealthSnapshot, AgentdError>>,
+    deadline: Instant,
+) -> std::result::Result<(), String> {
+    if let NativeOwnerAuthority::Lost { reason } = &output.owner_authority {
+        return Err(reason.clone());
+    }
+    let checked = timeout_at(deadline.min(Instant::now() + RPC_TIMEOUT), health).await;
+    let failure = match checked {
+        Ok(Ok(health)) if health.ready && !health.fenced => {
+            output.owner_authority = NativeOwnerAuthority::ObservedReady;
+            return Ok(());
+        }
+        Ok(Ok(_)) => "owning Agent is no longer ready or is fenced".to_string(),
+        Ok(Err(error)) => format!("owner health check failed: {error}"),
+        Err(_) => "owner health check timed out".to_string(),
+    };
+    let reason: String = failure.chars().take(1024).collect();
+    output.owner_authority = NativeOwnerAuthority::Lost {
+        reason: reason.clone(),
+    };
+    Err(reason)
 }
 
 async fn interrupt(client: &mut RemoteAppServerClient, output: &NativeRunOutput) {

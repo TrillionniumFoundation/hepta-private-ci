@@ -34,6 +34,21 @@ pub enum NativeRunStatus {
     Indeterminate,
 }
 
+/// Provider terminality and the owner's authority observation are independent.
+/// Missing historical fields never establish that authority was checked.
+#[derive(Clone, Debug, Default, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(tag = "state", rename_all = "snake_case", deny_unknown_fields)]
+pub enum NativeOwnerAuthority {
+    #[default]
+    Unverified,
+    /// The exact owner was ready at the last health check, not an atomic grant
+    /// against revocation after that check.
+    ObservedReady,
+    Lost {
+        reason: String,
+    },
+}
+
 /// Fields observed by the native client, never a provider billing assertion.
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(deny_unknown_fields)]
@@ -47,6 +62,18 @@ pub struct NativeRunOutput {
     pub observed_output_tokens: Option<u64>,
     pub terminal_observed: bool,
     pub stop_reason: Option<String>,
+    #[serde(default)]
+    pub owner_authority: NativeOwnerAuthority,
+}
+
+impl NativeRunOutput {
+    /// The CLI and callers must not infer authorized success from provider
+    /// completion alone, including when replaying a historical observation.
+    pub fn succeeded(&self) -> bool {
+        self.terminal_observed
+            && self.status == NativeRunStatus::Completed
+            && self.owner_authority == NativeOwnerAuthority::ObservedReady
+    }
 }
 
 #[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
@@ -419,6 +446,11 @@ fn apply_observation(record: &mut NativeRunRecord, output: NativeRunOutput) -> R
     {
         return Err(Error::CapacityExceeded);
     }
+    if let NativeOwnerAuthority::Lost { reason } = &output.owner_authority
+        && (reason.is_empty() || reason.len() > 4096)
+    {
+        return Err(Error::InvalidIdentity("owner authority loss reason"));
+    }
     if output.terminal_observed == (output.status == NativeRunStatus::Indeterminate)
         || (output.turn_id.is_empty()
             && (output.terminal_observed
@@ -428,6 +460,16 @@ fn apply_observation(record: &mut NativeRunRecord, output: NativeRunOutput) -> R
         return Err(Error::TerminalObservationMissing);
     }
     if let Some(previous) = &record.observation {
+        // A late provider completion or usage refinement cannot erase a lost
+        // owner, or retroactively authorize an unverified historical terminal.
+        if (matches!(previous.owner_authority, NativeOwnerAuthority::Lost { .. })
+            && previous.owner_authority != output.owner_authority)
+            || (previous.terminal_observed
+                && previous.owner_authority == NativeOwnerAuthority::Unverified
+                && output.owner_authority == NativeOwnerAuthority::ObservedReady)
+        {
+            return Err(Error::Conflict);
+        }
         if previous.terminal_observed
             && (previous.status != output.status
                 || !output.terminal_observed
