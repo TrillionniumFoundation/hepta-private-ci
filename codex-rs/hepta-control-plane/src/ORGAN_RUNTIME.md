@@ -43,7 +43,14 @@ execution model, not a wire alias of canonical `BodyGraphSnapshotV1`. The latter
 currently describes manifest identity, initialization dependency/fallback edges
 and order; it does not encode native runtime links, feedback profiles or process
 failure domains. A loader must not deserialize that canonical record as this
-native type or infer omitted feedback evidence. A future versioned wire adapter
-must bind both graphs, port identities, timing profiles and placement before a
-non-compiled-in graph can be admitted. Native feedback cycles are allowed only
-with an explicit profile; initialization and fallback remain acyclic.
+native type or infer omitted feedback evidence. The compiled, stateless,
+read-only subset now has a versioned binding adapter:
+`encode_compiled_body_graph_v2` and `decode_compiled_body_graph_v2`, followed by
+`VerifiedCompiledBodyGraphV2::into_host`. Its complete native graph and explicit
+V1 projection are bound to an independent host-owned digest, generation,
+single-process placement and compiled handler manifest catalog. See
+[ORGAN_WIRE.md](ORGAN_WIRE.md) for the exact encoding and trust boundary. This is
+not a canonical V1 codec, a dynamic code loader, or stateful migration. Native
+feedback cycles still require an explicit profile; initialization and fallback
+remain acyclic. Binding timing evidence does not implement a periodic scheduler
+or prove the evidence's physical claims.
