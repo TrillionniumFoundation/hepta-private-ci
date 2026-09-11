@@ -45,11 +45,17 @@ jobs:
         if: steps.scope.outputs.required == 'true'
         run: |
           sudo apt-get update
-          sudo apt-get install -y bubblewrap libcap-dev pkg-config
+          sudo apt-get install -y build-essential bubblewrap libcap-dev pkg-config
           sudo sysctl -w kernel.unprivileged_userns_clone=1
           if sysctl kernel.apparmor_restrict_unprivileged_userns >/dev/null 2>&1; then
             sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
           fi
+      - name: Install DotSlash for shell integration tests
+        if: steps.scope.outputs.required == 'true'
+        uses: facebook/install-dotslash@1e4e7b3e07eaca387acb98f1d4720e0bee8dbb6a
+      - name: Expose DotSlash at the path used by integration tests
+        if: steps.scope.outputs.required == 'true'
+        run: sudo install -m 0755 "$(command -v dotslash)" /usr/local/bin/dotslash
       - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
         if: steps.scope.outputs.required == 'true'
         with:
@@ -167,6 +173,18 @@ jobs:
           python3 scripts/hepta-gap-closure.py verify
           python3 -m unittest discover -v -s tools/hepta-engineering-control -p 'test_*.py'
           node --test apps/hepta-browser/test/*.js apps/hepta-native/test/*.js
+      - name: Prepare native owner-test prerequisites
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential bubblewrap libcap-dev pkg-config
+          sudo sysctl -w kernel.unprivileged_userns_clone=1
+          if sysctl kernel.apparmor_restrict_unprivileged_userns >/dev/null 2>&1; then
+            sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
+          fi
+      - name: Install DotSlash for shell integration tests
+        uses: facebook/install-dotslash@1e4e7b3e07eaca387acb98f1d4720e0bee8dbb6a
+      - name: Expose DotSlash at the path used by integration tests
+        run: sudo install -m 0755 "$(command -v dotslash)" /usr/local/bin/dotslash
       - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
         with:
           tool: just@1.51.0,nextest@0.9.103
