@@ -1,0 +1,15 @@
+name: postmerge-v8-reuse-probe
+
+on:
+  push:
+    branches:
+      - ops/postmerge-diagnostic-full-ci-20260911
+
+permissions:
+  contents: read
+
+jobs:
+  v8-canary:
+    name: V8 Canary
+    uses: ./.github/workflows/v8-canary.yml
+    secrets: inherit
