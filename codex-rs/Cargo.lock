@@ -3473,12 +3473,15 @@ dependencies = [
  "codex-features",
  "codex-hepta-agent-protocol",
  "codex-hepta-automation",
+ "codex-hepta-cognitive-read",
  "codex-hepta-contracts",
+ "codex-hepta-control-plane",
  "codex-hepta-fleet",
  "codex-hepta-memory",
  "codex-hepta-memory-extension",
  "codex-hepta-paths",
  "codex-hepta-supervisor",
+ "codex-hepta-types",
  "codex-protocol",
  "codex-state",
  "codex-uds",
@@ -3691,7 +3694,16 @@ dependencies = [
 name = "codex-hepta-infer-worker-host"
 version = "0.0.0"
 dependencies = [
+ "codex-app-server-client",
+ "codex-app-server-protocol",
+ "codex-hepta-agentd",
+ "codex-hepta-contracts",
  "codex-hepta-types",
+ "codex-utils-absolute-path",
+ "serde",
+ "serde_json",
+ "tokio",
+ "tokio-util",
 ]
 
 [[package]]
