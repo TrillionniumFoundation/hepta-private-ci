@@ -158,7 +158,7 @@ impl AppServerModelDriver {
         )
         .await??;
         if client.codex_home() != health.home_root.to_str() {
-            let _ = client.shutdown().await;
+            let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
             return Err("App Server home does not match the owning Agent".into());
         }
         let started: ThreadStartResponse = timeout(
@@ -178,13 +178,13 @@ impl AppServerModelDriver {
         )
         .await??;
         if started.model != self.config.model {
-            let _ = client.shutdown().await;
+            let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
             return Err("provider substituted the requested model".into());
         }
         // Recheck the actual generation after acquiring context and connecting.
         owner.session_ingress().await?;
         if cancellation.is_cancelled() {
-            let _ = client.shutdown().await;
+            let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
             return Err("cancelled before model dispatch".into());
         }
         let response = timeout(
@@ -207,7 +207,7 @@ impl AppServerModelDriver {
         let turn = match response {
             Ok(Ok(response)) => response.turn,
             _ => {
-                let _ = client.shutdown().await;
+                let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
                 return Ok(NativeRunOutput {
                     thread_id: started.thread.id,
                     turn_id: String::new(),
@@ -279,7 +279,7 @@ impl AppServerModelDriver {
             )
             .await;
         }
-        let _ = client.shutdown().await;
+        let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
         Ok(output)
     }
 
@@ -318,8 +318,9 @@ impl AppServerModelDriver {
                 }
                 AppServerEvent::ServerRequest(request) => {
                     // Inference does not grant tool/approval authority.
-                    client
-                        .reject_server_request(
+                    timeout_at(
+                        deadline,
+                        client.reject_server_request(
                             request.id().clone(),
                             JSONRPCErrorError {
                                 code: -32000,
@@ -327,9 +328,11 @@ impl AppServerModelDriver {
                                     .to_string(),
                                 data: None,
                             },
-                        )
-                        .await
-                        .map_err(|error| error.to_string())?;
+                        ),
+                    )
+                    .await
+                    .map_err(|_| "approval rejection timed out".to_string())?
+                    .map_err(|error| error.to_string())?;
                 }
                 AppServerEvent::Lagged { .. } => return Err("provider events lost".to_string()),
                 AppServerEvent::Disconnected { message } => return Err(message),
