@@ -244,6 +244,10 @@ pub enum AgentdMethod {
     Health,
     Lifecycle,
     SessionIngress,
+    CognitiveContext {
+        query: String,
+        limit: u16,
+    },
     Events {
         after_cursor: u64,
         limit: u16,
@@ -295,6 +299,7 @@ pub enum AgentdPayload {
     Health(HealthSnapshot),
     Lifecycle(LifecycleSnapshot),
     SessionIngress(SessionIngress),
+    CognitiveContext(CognitiveContextSnapshot),
     Events(EventBatch),
     AutomationTask(AutomationTask),
     AutomationTasks {
@@ -311,6 +316,26 @@ pub enum AgentdPayload {
         code: String,
         message: String,
     },
+}
+
+/// A bounded read from the owning Agent's canonical SQLite store. The digest
+/// identifies an observed cut; it is not a grant or a promise of future freshness.
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct CognitiveContextSnapshot {
+    pub snapshot_digest: String,
+    pub read_digest: String,
+    pub omitted_records: u64,
+    pub items: Vec<CognitiveContextItem>,
+}
+
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct CognitiveContextItem {
+    pub memory_id: String,
+    pub revision: u64,
+    pub content: String,
+    pub content_sha256: String,
 }
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]

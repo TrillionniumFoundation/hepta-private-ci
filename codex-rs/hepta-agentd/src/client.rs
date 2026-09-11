@@ -99,6 +99,27 @@ impl AgentdClient {
         }
     }
 
+    /// Read verified context through this exact generation's canonical owner.
+    pub async fn cognitive_context(
+        &self,
+        query: String,
+        limit: u16,
+    ) -> Result<crate::CognitiveContextSnapshot, AgentdError> {
+        match self
+            .send(AgentdRequest {
+                schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
+                request_id: self.request_id(),
+                spawn_generation: self.spawn_generation,
+                method: crate::AgentdMethod::CognitiveContext { query, limit },
+            })
+            .await?
+            .payload
+        {
+            AgentdPayload::CognitiveContext(snapshot) => Ok(snapshot),
+            payload => unexpected(payload),
+        }
+    }
+
     pub async fn events(&self, after_cursor: u64, limit: u16) -> Result<EventBatch, AgentdError> {
         match self
             .send(AgentdRequest::events(

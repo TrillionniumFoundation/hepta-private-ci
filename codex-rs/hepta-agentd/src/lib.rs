@@ -7,6 +7,7 @@
 mod app_runtime;
 mod automation;
 mod client;
+mod cognitive_context;
 mod config;
 mod control;
 mod error;
@@ -25,6 +26,8 @@ pub use codex_hepta_agent_protocol::AgentdMethod;
 pub use codex_hepta_agent_protocol::AgentdPayload;
 pub use codex_hepta_agent_protocol::AgentdRequest;
 pub use codex_hepta_agent_protocol::AgentdResponse;
+pub use codex_hepta_agent_protocol::CognitiveContextItem;
+pub use codex_hepta_agent_protocol::CognitiveContextSnapshot;
 pub use codex_hepta_agent_protocol::EventBatch;
 pub use codex_hepta_agent_protocol::HealthSnapshot;
 pub use codex_hepta_agent_protocol::LifecycleSnapshot;

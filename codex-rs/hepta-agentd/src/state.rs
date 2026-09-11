@@ -317,6 +317,34 @@ impl AgentdState {
                     })
                 }
             }
+            crate::AgentdMethod::CognitiveContext { query, limit } => {
+                require_cognitive_control_ready(lifecycle, app_server_ready, fenced)?;
+                let Some(store) = cognitive else {
+                    return self.response_with_payload(
+                        request_id,
+                        current_generation,
+                        cognitive_control_unavailable(),
+                    );
+                };
+                let result =
+                    crate::cognitive_context::read(&store, &self.identity.agent_id, &query, limit)
+                        .await;
+                self.refresh_generation()?;
+                {
+                    let runtime = self.runtime.lock().map_err(poisoned_state)?;
+                    require_cognitive_control_ready(
+                        runtime.lifecycle,
+                        runtime.app_server_ready,
+                        runtime.fenced,
+                    )?;
+                }
+                match result {
+                    Ok(snapshot) => AgentdPayload::CognitiveContext(snapshot),
+                    Err(error) => {
+                        return self.cognitive_error_response(request_id, current_generation, error);
+                    }
+                }
+            }
             crate::AgentdMethod::Events {
                 after_cursor,
                 limit,
