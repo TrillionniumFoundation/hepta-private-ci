@@ -24,6 +24,14 @@ jobs:
         uses: codespell-project/actions-codespell@8f01853be192eb0f849a5c7d721450e7a467c579 # v2.2
         with:
           ignore_words_file: .codespellignore
+          # These two machine-captured historical receipts embed verbatim output
+          # from third-party tools. Preserve their evidence bytes and exclude only
+          # the exact immutable snapshots rather than weakening the dictionary or
+          # skipping the qualification tree.
+          skip: >-
+            ./.git,
+            ./qualification/global-gap-closure-final-r8/receipts/PREPARE.json,
+            ./qualification/global-gap-closure-final-r6/STATUS.json
 
       - name: Check for a clean worktree
         if: always() && !cancelled()
