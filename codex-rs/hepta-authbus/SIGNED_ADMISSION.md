@@ -31,3 +31,67 @@ retirement and backup rollback protection are not created by this API.
 Run `just test -p codex-hepta-authbus -p codex-hepta-evidence` for signed-field
 substitution, expiry/revocation, real SQLite reopen, two-handle contention and
 capacity rollback regressions.
+
+## Durable message delivery
+
+For recoverable delivery the host calls
+`HeptaEvidenceStore::enqueue_authbus_message` **instead of**
+`admit_authbus_message`. A receipt from direct admission cannot be upgraded:
+its sequence is already consumed. Migration 0010 uses the same evidence SQLite
+owner; one `BEGIN IMMEDIATE` verifies the actual bounded payload, signature,
+host-selected subject/scope and time, advances the existing replay high-water,
+and inserts an immutable message. Any insertion/capacity failure rolls all of
+that back. No second writer or database is introduced.
+
+The delivery ID is the authenticated envelope digest, which binds all signed
+claims and the signature. An exact retained duplicate enqueue returns its
+current status, including after a committed response was lost. Reuse of a
+retained issuer/epoch/message ID with different content fails. Signatures and
+current registration are still checked on enqueue retries. A consumed sequence
+whose terminal history has been pruned returns `Replay`; status returns
+`NotFound` (absent or pruned), never a fabricated historical acknowledgement.
+
+The host scans `pending_authbus_deliveries(subject, scope, limit)` (1–128 rows),
+resolves each returned issuer/epoch in its trusted current registry, and calls
+`claim_authbus_delivery`. An available message or expired lease can be claimed
+by one worker across independent handles/processes. The owner checks time after
+the SQLite lock, reauthenticates the immutable message and caps the lease at its
+signed expiry. Each claim, renew, retry, ack or terminal transition increments a
+fence. Renew/retry/ack require the exact unexpired owner-issued lease; old fences
+are rejected. Clock regression behind that row's last update fails closed.
+
+Every worker operation needs fresh issuer registration; queue contents never
+supply trust. Observed expiry becomes `Expired`; revoked/invalid signatures or
+exhausted delivery attempts become `Quarantined`. The host calls
+`quarantine_authbus_issuer` when its registry revokes an epoch, including messages
+which no worker will claim. Key rotation alone does not invent a revocation
+policy for other epochs. Registration remains a host snapshot; final external
+use still needs current policy and revocation checks.
+
+Bounds are 4,096 total rows, 16 KiB payload per row (at most 64 MiB payload),
+16 claims per message, 60 seconds per lease and 60 seconds per retry delay.
+Expiry is swept on enqueue/recovery scans. Terminal records (`Acked`, `Expired`,
+`Quarantined`) retain at most 1,024 rows or 24 hours and can be pruned earlier
+under queue pressure. The DB forbids deleting active queued/leased messages.
+Replay high-water rows are never pruned by this policy: their separate 16,384-key
+bound can still reject new identities until a separately defined safe registry
+retirement policy exists. Quarantine and expiry are terminal outcomes, not ack.
+
+Only exact retained enqueue is idempotent. After a lost ack response, inspect
+status: `Acked` plus the acknowledgement digest records the local commit;
+repeating ack returns `Unavailable`. A lost claim/renew response requires waiting
+for its lease to expire and claiming a new fence. A lost retry response can be
+resolved by status or the pending scan. No API assumes a timed-out response means
+the transaction did not commit.
+
+Delivery is **at least once within expiry and the bounded attempt policy**;
+expiration, quarantine and capacity are explicit limits, not guaranteed eventual
+delivery. A crash after sending but before ack can resend the same delivery ID.
+The consumer must durably deduplicate that ID and apply its own effect-specific
+idempotency/final-use/reconciliation protocol. Message ack is ordinary consumer
+evidence, not proof an external effect occurred. Never use message retry to
+resend an unknown provider effect: existing indeterminate-effect quarantine
+remains in force. This API neither claims exactly-once external effects nor
+supplies a production message dispatcher, managed key host or backup anti-rollback
+oracle. Native tests exercise real SQLite and an abrupt child-process exit
+between send and ack.

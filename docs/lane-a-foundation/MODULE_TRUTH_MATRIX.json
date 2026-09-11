@@ -233,7 +233,7 @@
       "states": {
         "source": "implemented",
         "implementation": "sqlite_store",
-        "durability": "sqlite_migrations_0001_0009",
+        "durability": "sqlite_migrations_0001_0010",
         "qualification": "source_tests_present",
         "activation": "feature_gated",
         "acceptance": "not_granted"
@@ -278,6 +278,13 @@
             "ALTER TABLE",
             "status_lookup"
           ]
+        },
+        {
+          "path": "codex-rs/hepta-evidence/migrations/0010_authbus_outbox.sql",
+          "mustContain": [
+            "CREATE TABLE authbus_outbox",
+            "authbus_outbox_active_no_delete"
+          ]
         }
       ]
     },
@@ -292,7 +299,7 @@
       "states": {
         "source": "implemented",
         "implementation": "signed_admission_with_legacy_replay",
-        "durability": "sqlite_admission_and_process_local_legacy",
+        "durability": "sqlite_admission_outbox_and_process_local_legacy",
         "qualification": "source_tests_present",
         "activation": "host_composition_required",
         "acceptance": "not_granted"
@@ -300,7 +307,8 @@
       "currentCapabilities": [
         "bounded SQLite replay admission keyed by issuer epoch subject and scope",
         "strict Ed25519 authentication with trusted issuer expiry revocation scope and payload checks",
-        "deny-all admission receipts and legacy preverified in-process replay"
+        "deny-all admission receipts and legacy preverified in-process replay",
+        "transactional bounded AuthBus message outbox with recoverable fenced delivery"
       ],
       "targetOnlyCapabilities": [
         "host trust provisioning and key lifecycle management",
@@ -349,6 +357,23 @@
           "mustContain": [
             "CREATE TABLE authbus_replay_sequences",
             "PRIMARY KEY(issuer_id, key_epoch, subject_id, scope_digest)"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-evidence/src/authbus_outbox.rs",
+          "mustContain": [
+            "pub async fn enqueue_authbus_message(",
+            "advance_replay(&mut tx, &authenticated)",
+            "pub async fn pending_authbus_deliveries("
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-evidence/src/authbus_outbox_worker.rs",
+          "mustContain": [
+            "pub async fn claim_authbus_delivery(",
+            "pub async fn renew_authbus_delivery(",
+            "pub async fn retry_authbus_delivery(",
+            "pub async fn ack_authbus_delivery("
           ]
         }
       ]

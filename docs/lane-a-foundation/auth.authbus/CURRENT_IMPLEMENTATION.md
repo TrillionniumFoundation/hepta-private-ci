@@ -15,6 +15,15 @@ subject, scope digest)`; sequences must increase, and new keys are bounded at
 after commit succeeds; failed authentication or capacity admission consumes
 nothing. Receipts carry `AuthorityPosture::DENY_ALL`.
 
+For durable delivery, `enqueue_authbus_message` replaces direct admission and
+atomically commits the replay advance plus an immutable message. The same
+`HeptaEvidenceStore` provides bounded recovery scanning, claim, renew, retry, ack,
+status and explicit revoked-issuer quarantine. Every worker transition rechecks
+issuer registration and expiry; a new fence invalidates the old lease. Active
+messages cannot be pruned. Terminal history is bounded independently of replay.
+A send followed by a crash before ack can deliver the same ID twice; consumers
+must deduplicate and retain their separate final-use/effect reconciliation rules.
+
 The legacy `PreverifiedAuthEnvelope` / `ReplayWindow` API still accepts already
 verified facts and records sequences only in process memory. It does not verify
 signatures or become durable through the addition of the signed API.
@@ -27,7 +36,9 @@ signatures or become durable through the addition of the signed API.
   `VerificationReceipt`, `Error`: authbus `src/lib.rs`;
 - `HeptaEvidenceStore::admit_authbus_message`, `AuthBusAdmissionError`:
   evidence `src/authbus_store.rs`;
-- replay table: evidence `migrations/0009_authbus_replay.sql`.
+- outbox APIs and records: evidence `src/authbus_outbox.rs`,
+  `src/authbus_outbox_worker.rs`, `src/authbus_outbox_record.rs`;
+- replay and outbox tables: evidence migrations `0009` and `0010`.
 
 ## Durability and activation
 
@@ -58,7 +69,9 @@ its contents.
 `signed_tests.rs` covers signed-field substitution, key epoch, revocation,
 expiry and scope. Evidence `authbus_store_tests.rs` covers real SQLite reopen,
 the full unsigned sequence range, two-handle contention and failed-admission
-retry. Legacy `lib_tests.rs` covers replay partitioning, capacity, trusted-context
+retry. `authbus_outbox_tests.rs` covers atomic insertion rollback, retained
+duplicate admission, competing leases, stale fences, bounded terminal retention
+and actual process exit after send before ack. Legacy `lib_tests.rs` covers replay partitioning, capacity, trusted-context
 validation and deny-all authority. Run `just test -p codex-hepta-authbus
 -p codex-hepta-evidence` for native execution; source anchors only establish test
 presence.

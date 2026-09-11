@@ -95,10 +95,13 @@ def validate_matrix(matrix: dict[str, Any], root: Path = ROOT) -> dict[str, Any]
         ("kernel.operations", "implementation"): "bounded_reference_model",
         ("kernel.operations", "durability"): "not_implemented",
         ("auth.authbus", "implementation"): "signed_admission_with_legacy_replay",
-        ("auth.authbus", "durability"): "sqlite_admission_and_process_local_legacy",
+        (
+            "auth.authbus",
+            "durability",
+        ): "sqlite_admission_outbox_and_process_local_legacy",
         ("platform.wire", "implementation"): "fixed_v1_codec",
         ("kernel.authority", "implementation"): "final_use_boundary",
-        ("kernel.evidence", "durability"): "sqlite_migrations_0001_0009",
+        ("kernel.evidence", "durability"): "sqlite_migrations_0001_0010",
         ("secrets.heptabao", "implementation"): "bounded_kv_v2_reader",
     }
     for (module, axis), value in exact.items():

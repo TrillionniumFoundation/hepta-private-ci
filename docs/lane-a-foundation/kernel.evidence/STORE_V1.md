@@ -14,6 +14,7 @@ ordered and checksum-bound:
 7. `0007_provider_effect_evidence.sql`
 8. `0008_provider_effect_ack_source.sql`
 9. `0009_authbus_replay.sql`
+10. `0010_authbus_outbox.sql`
 
 Unknown, missing, incomplete, failed or checksum-mismatched migration rows cause
 store open to **fail closed**. They are never treated as an empty, current or
@@ -39,7 +40,7 @@ store. This mutex does not serialize other processes or independent opens.
 
 AuthBus signed admission uses `BEGIN IMMEDIATE` to serialize replay and capacity
 checks across independent handles. Its sequence update commits before a receipt
-returns. This transaction does not implement a general operations outbox.
+returns. `enqueue_authbus_message` replaces direct admission for durable delivery: one transaction advances that same replay registry and inserts the immutable message. Its fenced lease/retry/ack operations redeliver messages, never unknown provider effects. See `hepta-authbus/SIGNED_ADMISSION.md` for retention and delivery semantics.
 
 ## Backup, restore and retention requirements
 
