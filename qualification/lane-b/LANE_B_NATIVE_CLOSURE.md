@@ -1,360 +1,221 @@
-# Lane B native implementation closure status
+# Lane B native source and implementation closure
 
 **Lane:** `LANE-B-RUNTIME`  
-**Baseline:** `8613cd93e04200eb1cb5a743d0d5e12f239bd660` / tree `d6a9b473314b4248722094c1a3a8f494d79f8be6`  
-**Machine truth:** `qualification/lane-b/LANE_B_IMPLEMENTATION_TRUTH.json`  
-**Composition:** `docs/readiness/LANE_B_RUNTIME_COMPOSITION.md`  
-**Status:** repository-controlled mappings closed; target implementation and external evidence remain explicitly open
+**Immutable source base:** `f278a89eea18fccb6d37b876aa5679863a64139d` / tree `5baa144717d4b3e3c596501fb56ce911d009e728`  
+**Exact candidate:** derived from Git at verification time; never hard-coded  
+**Repository-controlled scope:** documentation, operation inventory, source mapping and bounded source gaps closed  
+**External scope:** product execution, deployment, real effects and independent acceptance remain open
 
-## 1. Review method
+## 1. Truth model
 
-Each module is reviewed against five distinct surfaces:
-
-1. canonical target design in `docs/modules/<module>/TECHNICAL.md`;
-2. module execution design in `qualification/module-execution-dossiers/detail/<module>.md`;
-3. declared and resolved source roots;
-4. observed native source symbols at the exact baseline;
-5. product caller, host, state, terminal observer and executable evidence.
-
-A mapping is `implemented` only when a committed source symbol directly performs the designed local operation. `implemented_partial` means a real implementation exists but omits part of the target semantics. `boundary_only` means the source validates or projects caller-supplied values without owning the target runtime effect. `mapping_required` means a likely implementation exists in a larger package but the design operation is not yet bound to an exact symbol. `planned` means no current native mapping is claimed.
-
-No source file, dependency edge, unit test, source pin or local observation is counted as a non-test product callsite. No component may authenticate its own terminal outcome when another owner controls the effect.
+The central truth is a closed index. Detailed module roots, ownership, terminal observers, native symbols, delegated callees, tests and external evidence gates live in each module's `IMPLEMENTATION_MAP.json`. This file and `TEST_TRACEABILITY.json` are generated from those maps. A source symbol or fixture is not deployment or external-effect evidence.
 
 ## 2. `runtime.supervisor`
 
-### Current source
+Owns generation-fenced process lifecycle and release transition records; user-task truth remains outside this module.
 
-- Root: `codex-rs/hepta-supervisor`.
-- Primary observed source: `codex-rs/hepta-supervisor/src/supervisor.rs`.
-- Current native lifecycle surface includes recovery, snapshots, start, release start, drain, stop, kill, restart, upgrade, rollback, production-grant application and periodic tick processing.
+The process driver and current-generation health observations establish process terminality, not user-task success.
 
-### Design mapping
-
-| Design operation | Current mapping | State |
+| Operation | Class | Owner entrypoint |
 |---|---|---|
-| `start_instance` | `Supervisor::start` and release-aware start path | implemented partial |
-| `observe_health` | `Supervisor::tick` plus process-driver observations | implemented partial |
-| `drain` | `Supervisor::drain` | implemented |
-| `load_next` | `Supervisor::upgrade` and rollback paths | implemented partial |
+| `start_instance` | `owner_native` | `codex-rs/hepta-supervisor/src/supervisor.rs` — `pub fn start(` |
+| `observe_health` | `owner_native` | `codex-rs/hepta-supervisor/src/supervisor.rs` — `pub fn tick(` |
+| `drain` | `owner_native` | `codex-rs/hepta-supervisor/src/supervisor.rs` — `pub fn drain(` |
+| `load_next` | `owner_native` | `codex-rs/hepta-supervisor/src/supervisor.rs` — `pub fn upgrade(` |
 
-### State and ownership
+External evidence gates:
 
-The supervisor controls lifecycle transitions and embeds the fleet registry implementation. Records bind agent identity, lifecycle generation, release state, process identity and pending transitions. Embedding a registry library does not by itself settle whether `runtime.supervisor` or `runtime.fleet` is the canonical writer of every physical registry byte; that ownership must be explicit at the field/table/file level.
-
-### Remaining implementation closure
-
-- Bind each externally reachable control RPC to one exact method and authorization path.
-- Publish exact binary, command-line/configuration and host process identity.
-- Define signed-intent fsync and crash-recovery linearization as a public implementation contract.
-- Execute process kill, stale callback, upgrade, automatic rollback and restart qualification on every supported native host.
-- Bind readiness to store integrity and dependency readiness, not only process liveness.
+- deployed binary and host identity
+- target-host watchdog/start/drain measurements
+- independent operational acceptance
 
 ## 3. `runtime.fleet`
 
-### Current source
+Owns coherent host enrollment and allocation-lease records; consumers enforce grants locally.
 
-- Root: `codex-rs/hepta-fleet`.
-- Registry implementation: `src/registry.rs`.
-- Deterministic allocator: `src/allocation.rs` with validation and digest helpers.
+Current-fence reconciliation records the observed holder disposition; pure allocation arithmetic cannot self-attest use.
 
-### Design mapping
-
-| Design operation | Current mapping | State |
+| Operation | Class | Owner entrypoint |
 |---|---|---|
-| `admit_host` | `FleetRegistry::register` covers local agent registration, not full federated host enrollment | implemented partial |
-| `allocate` | `calculate_local_allocation_v1` computes bounded weighted max-min shares | boundary only |
-| `renew_or_revoke` | no native grant/lease publisher mapping | planned |
+| `admit_host` | `owner_native` | `codex-rs/hepta-fleet/src/bin/hepta-fleet-leased.rs` — `pub fn admit_host(` |
+| `allocate` | `owner_native` | `codex-rs/hepta-fleet/src/bin/hepta-fleet-leased.rs` — `pub fn issue(` |
+| `renew_or_revoke` | `owner_native` | `codex-rs/hepta-fleet/src/bin/hepta-fleet-leased.rs` — `pub fn renew_or_revoke(` |
 
-### State and ownership
+External evidence gates:
 
-`FleetRegistry` persists manifests and lifecycle generations with physical-directory checks and compare-and-transition behavior. The allocator is deliberately authority-free: all capacities, floors, weights and demands are caller supplied, and the result is not a grant, lease or scheduling receipt.
-
-### Remaining implementation closure
-
-- Separate the physical registry owner from the allocation-grant owner in canonical data authority.
-- Implement a grant publisher that consumes authenticated capacity, current authority epoch, revocation frontier and generation fence.
-- Persist coherent capacity/allocation generations and reconcile uncertain resource holders before reallocation.
-- Bind a real production consumer that enforces the grant locally.
-- Qualify partition, lease expiry, double allocation, resource conservation and rollback drain.
+- real enrolled host capacity observation
+- non-test local grant enforcement
+- partition and lease-expiry target qualification
 
 ## 4. `runtime.agentd`
 
-### Current source
+Owns only ephemeral run admission, immutable snapshot references, and runtime-health composition state.
 
-- Root: `codex-rs/hepta-agentd`.
-- Relevant components include app runtime, automation host, client, configuration, control socket, error handling, event buffer, process entrypoints and explicit durable-writer host seams.
-- `src/app_runtime.rs` launches the existing Codex App Server over a configured local socket with strict configuration, local thread-store requirements and explicit feature-state constraints.
+Agentd preserves dispatch-boundary uncertainty and accepts terminal state only from the delegated execution/effect owner.
 
-### Design mapping
-
-| Design operation | Current mapping | State |
+| Operation | Class | Owner entrypoint |
 |---|---|---|
-| `compose_runtime` | `run_app_server` and runtime-option construction | implemented partial |
-| `start_run` | app-server launch and queue admission infrastructure | implemented partial |
-| `cancel_run` | no exact Agentd-to-app-server cancellation mapping in the truth registry | planned |
-| `attach_context` | no exact receipt-to-turn attachment mapping in the truth registry | planned |
+| `compose_runtime` | `owner_native` | `codex-rs/hepta-agentd/src/lane_b_runtime.rs` — `pub fn compose_runtime(` |
+| `start_run` | `owner_native` | `codex-rs/hepta-agentd/src/lane_b_runtime.rs` — `pub fn start_run(` |
+| `cancel_run` | `owner_native` | `codex-rs/hepta-agentd/src/lane_b_runtime.rs` — `pub fn cancel_run(` |
+| `attach_context` | `owner_native` | `codex-rs/hepta-agentd/src/lane_b_runtime.rs` — `pub fn attach_context(` |
 
-### State and ownership
+External evidence gates:
 
-Agentd is a composition host. It may hold ephemeral run handles, socket/process state and runtime-health observations, but it must not become the objective, memory, learning, prompt, artifact or operation-ledger owner. The default profile remains read-only; any positive writer capability must be explicit, externally verified and separately qualified.
-
-### Remaining implementation closure
-
-- Publish process tree, socket paths, peer authentication and platform transport matrix.
-- Bind run admission, cancellation and context attachment to exact app-server handlers.
-- Define startup/readiness/shutdown sequencing for every required owner port.
-- Prove queue limits, backpressure and cancellation acknowledgement deadlines.
-- Execute native process qualification, including socket failures, restart and configuration drift.
+- deployed Agentd process and authenticated socket identity
+- non-test caller through the full Codex turn path
+- target backpressure/restart measurements
 
 ## 5. `runtime.codex`
 
-### Current source
+The existing App Server and Codex core remain the sole thread, turn, model, and tool execution spine.
 
-- Canonical alias root: `codex-rs/codex-app-server`.
-- Resolved implementation: `codex-rs/app-server`.
-- Hepta boundary: `codex-rs/hepta-codex-adapter`.
-- The alias is not a duplicate Cargo package; the real app-server remains the single execution spine.
+The App Server observes admission and streaming state; external tool/provider terminality remains with its effect owner.
 
-### Design mapping
-
-| Design operation | Current mapping | State |
+| Operation | Class | Owner entrypoint |
 |---|---|---|
-| `open_thread` | exact app-server protocol handler not yet registered | mapping required |
-| `submit_turn` | exact app-server protocol handler not yet registered | mapping required |
-| `dispatch_tool` | exact final tool-dispatch handler not yet registered | mapping required |
-| `observe_delivery` | `hepta_codex_adapter::adapt` validates request/observation binding | boundary only |
+| `open_thread` | `resolved_alias_native` | `codex-rs/app-server/src/request_processors/thread_processor.rs` — `pub(crate) async fn thread_start(` |
+| `submit_turn` | `resolved_alias_native` | `codex-rs/app-server/src/request_processors/turn_processor.rs` — `pub(crate) async fn turn_start(` |
+| `dispatch_tool` | `resolved_alias_native` | `codex-rs/core/src/tools/router.rs` — `pub async fn dispatch_tool_call_with_code_mode_result(` |
+| `observe_delivery` | `resolved_alias_native` | `codex-rs/core/src/codex_thread.rs` — `pub(crate) async fn submit_turn_input_and_wait_for_exact_admission(` |
 
-### State and ownership
+External evidence gates:
 
-The app-server owns thread and turn execution state. The adapter verifies payload/deadline binding and maps a supplied terminal observation, but it does not open a thread, invoke a model, dispatch a tool or independently observe the app-server transport.
-
-### Remaining implementation closure
-
-- Register canonical alias resolution in the machine-readable mapping.
-- Map all four design operations to exact app-server protocol methods and callsites.
-- Bind Agentd startup and request admission to those methods.
-- Specify thread-store schema, migrations, recovery and pending effect links.
-- Qualify model request, streamed response, cancellation, tool effect and acknowledgement-loss paths through the named product host.
+- named deployed Agentd caller identity
+- real model/provider stream observation
+- real tool terminal observation and acknowledgement-loss qualification
 
 ## 6. `inference.control`
 
-### Current source
+Owns request, reservation, assignment, cancellation, and settlement journal facts.
 
-- Roots: `codex-rs/hepta-infer-core`, `codex-rs/hepta-inferd`.
-- `hepta-infer-core` implements an in-process request ledger.
-- `hepta-inferd` creates exact-bound dispatch plans.
-- Neither current boundary invokes a provider or executes a model.
+Settlement records an authenticated worker/provider observation; unknown consumption remains held or quarantined.
 
-### Design mapping
-
-| Design operation | Current mapping | State |
+| Operation | Class | Owner entrypoint |
 |---|---|---|
-| `reserve_request` | `InferenceLedger::reserve` | implemented partial |
-| `schedule` | `hepta_inferd::plan` | boundary only |
-| `cancel` | `InferenceLedger::cancel` | implemented partial |
-| `settle` | `InferenceLedger::complete` | implemented partial |
+| `reserve_request` | `owner_native` | `codex-rs/hepta-infer-core/src/bin/hepta-infer-control.rs` — `pub fn reserve(` |
+| `schedule` | `owner_native` | `codex-rs/hepta-infer-core/src/bin/hepta-infer-control.rs` — `pub fn assign(` |
+| `cancel` | `owner_native` | `codex-rs/hepta-infer-core/src/bin/hepta-infer-control.rs` — `pub fn cancel(` |
+| `settle` | `owner_native` | `codex-rs/hepta-infer-core/src/bin/hepta-infer-control.rs` — `pub fn settle(` |
 
-### State and ownership
+External evidence gates:
 
-The current ledger is process-local and bounded. It is not yet evidence of the declared durable request, reservation and receipt owner. Completion consumes a terminal receipt digest supplied by a caller rather than observing provider/model execution.
-
-### Remaining implementation closure
-
-- Implement durable request/reservation/settlement storage and migration.
-- Add quota, resource reservation, worker eligibility and deterministic assignment ownership.
-- Add durable dispatch intent/outbox and acknowledgement reconciliation.
-- Define cancellation-versus-completion settlement and usage accounting.
-- Bind real provider/model execution and a non-test Codex caller.
+- real quota/capacity authority integration
+- authenticated non-test worker transport
+- real provider/model terminal and usage evidence
 
 ## 7. `inference.worker`
 
-### Current source
+Owns ephemeral process/model handles and resource usage only; persistent model bytes remain with the artifact/cache owner.
 
-- Root: `codex-rs/hepta-infer-worker-host`.
-- The present `execute` function validates request, lease and reservation compatibility and maps a caller-supplied observation into a receipt.
-- It explicitly does not load weights, call a runtime/provider, mutate fleet state or infer terminality from queue acceptance.
+The injected model driver reports execution terminality; source tests do not prove a real model/runtime/device tuple.
 
-### Design mapping
-
-| Design operation | Current mapping | State |
+| Operation | Class | Owner entrypoint |
 |---|---|---|
-| `load_model` | no implementation | planned |
-| `run` | `execute` receipt boundary | boundary only |
-| `unload` | no implementation | planned |
+| `load_model` | `owner_native` | `codex-rs/hepta-infer-worker-host/src/bin/hepta-infer-worker.rs` — `pub fn load_model(` |
+| `run` | `owner_native` | `codex-rs/hepta-infer-worker-host/src/bin/hepta-infer-worker.rs` — `pub fn run(` |
+| `unload` | `owner_native` | `codex-rs/hepta-infer-worker-host/src/bin/hepta-infer-worker.rs` — `pub fn unload_model(` |
 
-### State and ownership
+External evidence gates:
 
-Current state is ephemeral input validation only. A real worker must bind process identity, model generation, weights, tokenizer, preprocessing, quantization, runtime, device, resource grant, cache handles and request handles.
-
-### Remaining implementation closure
-
-- Implement isolated worker process entrypoint and authenticated control transport.
-- Implement model manifest verification and resource-bounded load/unload.
-- Integrate at least one real model runtime without granting ambient provider authority.
-- Implement bounded generation, streaming, cancellation, usage observation and crash cleanup.
-- Qualify OOM, device reset, load-stage kill, mixed artifacts and acknowledgement loss.
-- Bind a real inference-control product caller and exact binary/model/device evidence.
+- identified real weights/tokenizer/runtime/device
+- isolated deployed worker process and authenticated control channel
+- OOM/device-reset/load-kill target qualification
 
 ## 8. `automation.taskflow`
 
-### Current source
+Owns schedule, occurrence, claim, and step-orchestration facts without owning downstream domain effects.
 
-- Root: `codex-rs/hepta-automation`.
-- Existing sources include schedule/store logic, a substantial TaskFlow definition and run ledger, taskflow kernel, step state machine, scheduler and a fail-closed execution-boundary assessment.
-- The implemented TaskFlow namespace is qualification-only and does not execute external callbacks.
+The registered effect driver supplies terminal observations; unknown effects block dependent steps and compensation is separately authorized.
 
-### Design mapping
-
-| Design operation | Current mapping | State |
+| Operation | Class | Owner entrypoint |
 |---|---|---|
-| `register_schedule` | current TaskFlow definition/store surface | implemented partial |
-| `materialize_due` | scheduler `tick` path | implemented partial |
-| `claim_occurrence` | scheduler/store `claim_due` path | implemented partial |
-| `execute_step` | `assess_local_taskflow_boundary` rejects unavailable effect/terminal owners | boundary only |
+| `register_schedule` | `owner_native` | `codex-rs/hepta-automation/src/store.rs` — `pub async fn create_task(` |
+| `materialize_due` | `owner_native` | `codex-rs/hepta-automation/src/scheduler.rs` — `pub async fn tick(` |
+| `claim_occurrence` | `owner_native` | `codex-rs/hepta-automation/src/bin/hepta-taskflow-runtime.rs` — `pub fn claim_occurrence(` |
+| `execute_step` | `owner_native` | `codex-rs/hepta-automation/src/bin/hepta-taskflow-runtime.rs` — `pub fn execute_step(` |
 
-### State and ownership
+External evidence gates:
 
-The SQLite-backed qualification ledger owns definition/run transitions under generation fences. It does not own final-use authority, the external effect or the trusted terminal observer. A content digest does not authenticate a capability or completion.
-
-### Remaining implementation closure
-
-- Bind design terminology to exact current tables, migrations and symbols.
-- Connect the canonical schedule/occurrence model to the TaskFlow graph/run ledger without a second scheduler.
-- Admit typed final-use capability through the registered authority owner.
-- Route production steps through the Codex/App Server seam.
-- Persist terminal/indeterminate state from a trusted observer and implement separately authorized compensation.
-- Qualify DST, missed-run policy, two-scheduler fencing, crash after dispatch and partial compensation.
+- non-test Codex/App Server caller
+- real downstream effect owner and terminal observer
+- DST/timezone-database and multi-scheduler target qualification
 
 ## 9. `channel.matrix`
 
-### Current source
+Owns Matrix ingress projection, sync frontier, dispatch ledger, outbox, and transaction identities.
 
-- Roots: `codex-rs/hepta-matrix-sdk`, `codex-rs/hepta-matrixd`.
-- Supporting protocol/store packages are non-authoritative evidence roots unless separately registered.
-- `MatrixRuntime` performs serialized inbox processing, pending recovery, room/thread binding, app-server admission and outbox projection over a durable store.
+A homeserver event observation settles send terminality; App Server turn completion and HTTP acceptance cannot substitute.
 
-### Design mapping
-
-| Design operation | Current mapping | State |
+| Operation | Class | Owner entrypoint |
 |---|---|---|
-| `admit_event` | `MatrixRuntime::process_event` | implemented partial |
-| `prepare_send` | `MatrixRuntime::project_app_server_event` and durable outbox construction | implemented partial |
-| `observe_send` | exact homeserver transport observer not registered | mapping required |
+| `admit_event` | `owner_native` | `codex-rs/hepta-matrixd/src/runtime.rs` — `pub async fn process_event(` |
+| `prepare_send` | `owner_native` | `codex-rs/hepta-matrixd/src/bin/hepta-matrix-send-observer.rs` — `pub fn prepare_send(` |
+| `observe_send` | `owner_native` | `codex-rs/hepta-matrixd/src/bin/hepta-matrix-send-observer.rs` — `pub fn observe_send(` |
 
-### State and ownership
+External evidence gates:
 
-The durable store binds event, room/thread, dispatch, outbox and transaction identities. App-server turn terminality and Matrix homeserver send terminality are different observations. Reconnect must preserve the same identities and current redaction/deletion frontier.
-
-### Remaining implementation closure
-
-- Register exact sync ingress, SDK decoder and outbox transport callsites.
-- Bind homeserver/user/device/room/encryption generation and credentials to an enrolled scope.
-- Implement and map server-event send acknowledgement and unknown-send reconciliation.
-- Qualify response-size limits, pagination, reconnect, redaction, duplicate events, rate limits and restore.
-- Prove the named Agentd product host and target homeserver configuration.
+- real enrolled homeserver/user/device/encryption identity
+- live sync and send transport callsites
+- rate-limit/reconnect/redaction/restore target qualification
 
 ## 10. `browser.servo`
 
-### Current source
+Owns in-process profile/session/page/operation state around an injected browser driver; raw credentials remain external references.
 
-- Roots: `apps/hepta-browser`, `third_party/servo-patches`.
-- `browser.js` supplies authority-free URL intent and page-projection primitives.
-- The Servo manifest pins an upstream source commit and currently lists no patches.
-- No Servo process, profile store, network adapter or terminal browser observer is proved.
+The driver must supply process, page, action, and reconciliation observations; unit tests use deterministic fake drivers.
 
-### Design mapping
-
-| Design operation | Current mapping | State |
+| Operation | Class | Owner entrypoint |
 |---|---|---|
-| `open_profile` | no implementation | planned |
-| `observe_page` | `projectPageState` over caller-supplied observations | boundary only |
-| `navigate_or_act` | `buildNavigationIntent` over caller-supplied input | boundary only |
+| `open_profile` | `owner_boundary` | `apps/hepta-browser/src/runtime.js` — `async openProfile(` |
+| `observe_page` | `owner_boundary` | `apps/hepta-browser/src/runtime.js` — `async observePage(` |
+| `navigate_or_act` | `owner_boundary` | `apps/hepta-browser/src/runtime.js` — `async navigateOrAct(` |
 
-### State and ownership
+External evidence gates:
 
-No current source owns `browser_profile_state`. The JavaScript package cannot grant network, filesystem, credential or effect authority. A source pin is not a reproducible deployed browser binary.
-
-### Remaining implementation closure
-
-- Implement a reproducible Servo build and isolated process host.
-- Implement authenticated Agentd IPC and explicit profile lifecycle.
-- Enforce origin, DNS/network, redirect, upload/download, filesystem and credential capabilities at the final boundary.
-- Implement bounded DOM/page observations with document and element generations.
-- Add trusted navigation/action/download terminal observations and reconciliation.
-- Qualify profile isolation, stale element, malicious page instructions, crash/hang and form-submission uncertainty.
+- reproducible Servo binary and patch digest
+- OS sandbox/profile/credential/network enforcement
+- real navigation/download/business terminal observation
 
 ## 11. `ui.control`
 
-### Current source
+Owns presentation/session state and pending request identities only; backend modules retain authority and durable facts.
 
-- Root: `apps/hepta-control-ui`.
-- Current package is a Node-tested presentation core with one JavaScript source file.
-- It projects bounded runtime observations and constructs authority-free local requests; it is not a deployed Web application and has no registered production caller.
+The authenticated backend observation establishes terminal state; local acknowledgement or disconnect never does.
 
-### Design mapping
-
-| Design operation | Current mapping | State |
+| Operation | Class | Owner entrypoint |
 |---|---|---|
-| `read_view` | `projectRuntime` | boundary only |
-| `submit_request` | `buildOperationIntent` local proposal surface | boundary only |
-| `request_stop` | no implementation | planned |
+| `read_view` | `owner_boundary` | `apps/hepta-control-ui/src/runtime-client.js` — `readView()` |
+| `submit_request` | `owner_boundary` | `apps/hepta-control-ui/src/runtime-client.js` — `async submitRequest(` |
+| `request_stop` | `owner_boundary` | `apps/hepta-control-ui/src/runtime-client.js` — `async requestStop(` |
 
-### State and ownership
+External evidence gates:
 
-Only view/session-local state is permitted. Backend facts, authority, operation identities and terminal outcomes remain with their owners. A stale or optimistic view cannot become a mutation receipt.
-
-### Remaining implementation closure
-
-- Select and record Web framework, build target, browser support and deployment topology.
-- Generate the protocol client from the canonical backend schema.
-- Implement authentication, session expiry, CSRF/CSP, reconnect and coherent snapshot handling.
-- Implement pending/indeterminate/terminal presentation and authenticated stop requests.
-- Qualify accessibility, keyboard/screen-reader paths, stale confirmation and reconnect deduplication.
-- Bind an exact production deployment and backend callsite.
+- selected Web framework/build artifact and browser support matrix
+- deployed authentication/CSP/CSRF/WebSocket topology
+- end-to-end accessibility and backend deployment qualification
 
 ## 12. `ui.native`
 
-### Current source
+Owns shell/window/session state and opaque platform references; domain facts and secrets remain with their owners.
 
-- Root: `apps/hepta-native`.
-- Current package defines bounded native-operation intents and rejects terminal success without a trusted backend receipt.
-- It does not contain a native application framework, platform API calls, secure storage or an updater.
+The backend, platform permission adapter, and updater each supply their own observations; the shell cannot self-issue success.
 
-### Design mapping
-
-| Design operation | Current mapping | State |
+| Operation | Class | Owner entrypoint |
 |---|---|---|
-| `connect_runtime` | no implementation | planned |
-| `render_runtime_view` | no implementation | planned |
-| `request_platform_capability` | `buildNativeIntent` boundary | boundary only |
-| `apply_shell_update` | no implementation | planned |
+| `connect_runtime` | `owner_boundary` | `apps/hepta-native/src/shell-runtime.js` — `async connectRuntime(` |
+| `render_runtime_view` | `owner_boundary` | `apps/hepta-native/src/shell-runtime.js` — `renderRuntimeView(` |
+| `request_platform_capability` | `owner_boundary` | `apps/hepta-native/src/shell-runtime.js` — `async requestPlatformCapability(` |
+| `apply_shell_update` | `owner_boundary` | `apps/hepta-native/src/shell-runtime.js` — `async applyShellUpdate(` |
 
-### State and ownership
+External evidence gates:
 
-No platform writer, keychain owner or updater exists in the current scaffold. Native OS permission and a Hepta effect grant are separate requirements. The UI cannot authenticate its own terminal outcome.
+- selected native framework and supported platform matrix
+- real code signing/notarization/keychain and updater trust roots
+- packaged crash/restart/accessibility/update rollback qualification
 
-### Remaining implementation closure
+## 13. Cross-module acceptance boundary
 
-- Select native framework and supported Windows/macOS/Linux targets.
-- Implement authenticated IPC and the shared generated runtime client.
-- Implement narrowly scoped platform adapters for file reveal/open, clipboard and notifications.
-- Integrate secure opaque session references through the designated secret boundary.
-- Implement signed updates, compatibility checks, anti-rollback and predecessor recovery.
-- Qualify OS permission denial/revocation, crash/restart, accessibility, signing and updater rollback.
+All 39 operations require an owner entrypoint, build target and test path. Owner entrypoints remain inside owner roots; delegated callees name their real owner. Exact-head and deterministic synthetic-merge validation must agree with all eleven maps and generated projections.
 
-## 13. Cross-module closure conditions
-
-Repository-controlled target implementation closure requires all of the following at one exact source and synthetic merge candidate:
-
-- all 39 design operations map to compiled native symbols;
-- no operation remains `planned`, `mapping_required`, `boundary_only` or `implemented_partial`;
-- each service/worker/UI names an exact build target, binary/artifact, host and configuration;
-- each state-bearing module binds physical schema, migration, single writer, recovery and rollback;
-- each effect boundary binds current authority, revocation, final payload, destination and terminal observer;
-- every module has a non-test product caller or proved `none_by_design` disposition;
-- exact product tests exercise success, rejection, timeout, cancellation, crash, recovery, drift, saturation and rollback;
-- target-host resource measurements are attached;
-- exact-head and synthetic-merge CI are terminal-success;
-- independent and external gates are separately evidenced rather than self-issued.
-
-Until those conditions hold, the repository truth model is closed but target implementation closure remains false.
+Repository source closure does not self-issue real model/provider execution, Servo or Matrix effects, deployed Web/native artifacts, target-host measurements, hardware evidence, external-owner consent, independent acceptance, selection, promotion or release.
