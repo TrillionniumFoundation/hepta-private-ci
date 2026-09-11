@@ -1,0 +1,15 @@
+name: postmerge-rust-reuse-probe
+
+on:
+  push:
+    branches:
+      - ops/postmerge-diagnostic-full-ci-20260911
+
+permissions:
+  contents: read
+
+jobs:
+  rust-full:
+    name: Rust CI Full
+    uses: ./.github/workflows/rust-ci-full.yml
+    secrets: inherit
