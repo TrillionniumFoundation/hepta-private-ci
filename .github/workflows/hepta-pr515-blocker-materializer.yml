@@ -50,14 +50,7 @@ jobs:
           qualification/global-gap-closure-final-r6/STATUS.json
           qualification/global-gap-closure-final-r8/receipts/PREPARE.json
           scripts/hepta-module-dossiers.py
-          scripts/hepta-plan-digest.py
           scripts/qualification/hepta_current_ci_state.py
-          scripts/qualification/hepta_full_validator.py
-          scripts/qualification/hepta_write_external_handoff.py
-          scripts/qualification/hepta_write_report.py
-          scripts/qualification/tests/test_hepta_current_ci_state.py
-          tests/test_hepta_blocker_orchestrator.py
-          tests/test_validate_contract_providers.py
           EOF
           sort -o "$RUNNER_TEMP/expected-files" "$RUNNER_TEMP/expected-files"
           echo PASS_PR515_SOURCE_BINDING
