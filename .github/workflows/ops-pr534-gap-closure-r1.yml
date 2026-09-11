@@ -1,0 +1,177 @@
+---
+name: ops-pr534-gap-closure-r1
+
+on:
+  push:
+    branches:
+      - ops/pr534-gap-closure-r1-20260911
+
+permissions:
+  contents: write
+
+jobs:
+  remediate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - name: Checkout remediation branch
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Compact oversized immutable evidence
+        env:
+          SOURCE_COMMIT: 05e22e5bf0e920c1d495cd0fc9401969bbb783d4
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from __future__ import annotations
+
+          import hashlib
+          import json
+          import os
+          import subprocess
+          from pathlib import Path
+          from typing import Any
+
+          source_commit = os.environ["SOURCE_COMMIT"]
+          path = Path("qualification/global-gap-closure-final-r8/receipts/PREPARE.json")
+          original_bytes = path.read_bytes()
+          source_blob = subprocess.check_output(
+              ["git", "hash-object", str(path)], text=True
+          ).strip()
+          document = json.loads(original_bytes)
+          threshold = 64 * 1024
+          records: list[dict[str, Any]] = []
+
+          def json_pointer(parts: tuple[str, ...]) -> str:
+              if not parts:
+                  return ""
+              escaped = [part.replace("~", "~0").replace("/", "~1") for part in parts]
+              return "/" + "/".join(escaped)
+
+          def compact(value: Any, parts: tuple[str, ...]) -> Any:
+              if isinstance(value, str):
+                  raw = value.encode("utf-8")
+                  if len(raw) < threshold:
+                      return value
+                  digest = hashlib.sha256(raw).hexdigest()
+                  pointer = json_pointer(parts)
+                  line_count = value.count("\n") + (1 if value else 0)
+                  records.append(
+                      {
+                          "jsonPointer": pointer,
+                          "sha256": digest,
+                          "bytes": len(raw),
+                          "lines": line_count,
+                      }
+                  )
+                  return (
+                      "[hepta-evidence-digest-v1 "
+                      f"sha256={digest} bytes={len(raw)} lines={line_count} "
+                      f"sourceCommit={source_commit} sourceBlob={source_blob} "
+                      f"jsonPointer={pointer}]"
+                  )
+              if isinstance(value, list):
+                  return [compact(item, parts + (str(index),)) for index, item in enumerate(value)]
+              if isinstance(value, dict):
+                  return {
+                      key: compact(item, parts + (str(key),))
+                      for key, item in value.items()
+                  }
+              return value
+
+          compacted = compact(document, ())
+          if not records:
+              raise SystemExit("PREPARE.json contained no oversized string leaves to compact")
+
+          rendered = (json.dumps(compacted, indent=2, ensure_ascii=False) + "\n").encode("utf-8")
+          limit = 5 * 1024 * 1024
+          if len(rendered) >= limit:
+              raise SystemExit(
+                  f"compacted PREPARE.json remains oversized: {len(rendered)} >= {limit}"
+              )
+          json.loads(rendered)
+          path.write_bytes(rendered)
+
+          print(
+              json.dumps(
+                  {
+                      "status": "PASS_HEPTA_EVIDENCE_COMPACTION",
+                      "path": str(path),
+                      "sourceCommit": source_commit,
+                      "sourceBlob": source_blob,
+                      "originalBytes": len(original_bytes),
+                      "compactedBytes": len(rendered),
+                      "compactedStringLeaves": len(records),
+                      "records": sorted(records, key=lambda item: item["bytes"], reverse=True),
+                  },
+                  sort_keys=True,
+              )
+          )
+          PY
+
+      - name: Make Codespell consume repository configuration
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+
+          path = Path(".github/workflows/codespell.yml")
+          text = path.read_text(encoding="utf-8")
+          old = """        with:
+                    ignore_words_file: .codespellignore
+          """
+          new = """        with:
+                    # The action's non-empty default `skip` input overrides the skip list in
+                    # .codespellrc. Clear it explicitly and load the repository config.
+                    config: .codespellrc
+                    ignore_words_file: .codespellignore
+                    skip: ""
+          """
+          if text.count(old) != 1:
+              raise SystemExit("unexpected codespell workflow shape")
+          path.write_text(text.replace(old, new), encoding="utf-8")
+          PY
+
+      - name: Apply canonical Rust formatting
+        run: |
+          set -euo pipefail
+          cargo fmt --all --manifest-path codex-rs/Cargo.toml
+          cargo fmt --all --manifest-path codex-rs/Cargo.toml -- --check
+
+      - name: Verify JSON, size policy, and Codespell configuration
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+
+          targets = (
+              Path("qualification/global-gap-closure-final-r6/STATUS.json"),
+              Path("qualification/global-gap-closure-final-r8/receipts/PREPARE.json"),
+          )
+          for path in targets:
+              json.loads(path.read_text(encoding="utf-8"))
+          size = targets[1].stat().st_size
+          limit = 5 * 1024 * 1024
+          if size >= limit:
+              raise SystemExit(f"oversized receipt: {size} >= {limit}")
+          print(json.dumps({"status": "PASS_PR534_JSON_AND_SIZE", "prepareBytes": size}))
+          PY
+          python3 -m pip install --disable-pip-version-check --quiet 'codespell==2.4.3'
+          python3 -m codespell --config .codespellrc --ignore-words .codespellignore
+
+      - name: Commit remediation result without the temporary workflow
+        run: |
+          set -euo pipefail
+          rm .github/workflows/ops-pr534-gap-closure-r1.yml
+          git add -A
+          git diff --cached --check
+          git diff --cached --stat
+          test -n "$(git diff --cached --name-only)"
+          git config user.name "hepta-gap-closure-bot"
+          git config user.email "hepta-gap-closure-bot@users.noreply.github.com"
+          git commit -m "fix(convergence): close CI hygiene blockers (r30)"
+          git push origin HEAD:ops/pr534-gap-closure-r1-20260911
