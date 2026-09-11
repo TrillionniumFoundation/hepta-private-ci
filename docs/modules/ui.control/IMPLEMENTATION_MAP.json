@@ -1,0 +1,21 @@
+{
+  "schema":"hepta.lane-b-module-implementation-map.v2",
+  "schemaVersion":2,
+  "laneId":"LANE-B-RUNTIME",
+  "module":"ui.control",
+  "sourceOfTruth":"qualification/lane-b/LANE_B_IMPLEMENTATION_TRUTH.json",
+  "lineageAnchor":{"commit":"f278a89eea18fccb6d37b876aa5679863a64139d","tree":"5baa144717d4b3e3c596501fb56ce911d009e728"},
+  "maturity":"authenticated_runtime_client",
+  "ownerRoots":["apps/hepta-control-ui"],
+  "implementationRoots":["apps/hepta-control-ui"],
+  "aliasResolution":[],
+  "operations":[
+    {"designOperation":"read_view","state":"implemented","ownerEntrypoint":{"path":"apps/hepta-control-ui/src/runtime-client.js","symbol":"readView()","callerClass":"runtime_class","buildTarget":"hepta-control-ui"},"delegatedCallee":null,"testIds":["UI-01","UI-04"]},
+    {"designOperation":"submit_request","state":"implemented","ownerEntrypoint":{"path":"apps/hepta-control-ui/src/runtime-client.js","symbol":"async submitRequest(","callerClass":"runtime_class","buildTarget":"hepta-control-ui"},"delegatedCallee":null,"testIds":["UI-02","UI-03"]},
+    {"designOperation":"request_stop","state":"implemented","ownerEntrypoint":{"path":"apps/hepta-control-ui/src/runtime-client.js","symbol":"async requestStop(","callerClass":"runtime_class","buildTarget":"hepta-control-ui"},"delegatedCallee":null,"testIds":["UI-01","UI-03","UI-04"]}
+  ],
+  "productionCallerState":"unproved",
+  "productExecutionState":"unproved",
+  "externalGaps":["Bind a deployed Web build, framework, browser support matrix, authenticated transport and backend endpoint.","Run accessibility, CSP/CSRF/XSS, reconnect and end-to-end target-browser qualification."],
+  "generatedProjection":true
+}

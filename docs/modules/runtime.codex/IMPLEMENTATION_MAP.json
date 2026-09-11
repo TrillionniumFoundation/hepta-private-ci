@@ -1,0 +1,22 @@
+{
+  "schema": "hepta.lane-b-module-implementation-map.v2",
+  "schemaVersion": 2,
+  "laneId": "LANE-B-RUNTIME",
+  "module": "runtime.codex",
+  "sourceOfTruth": "qualification/lane-b/LANE_B_IMPLEMENTATION_TRUTH.json",
+  "lineageAnchor": {"commit":"f278a89eea18fccb6d37b876aa5679863a64139d","tree":"5baa144717d4b3e3c596501fb56ce911d009e728"},
+  "maturity": "execution_spine",
+  "ownerRoots": ["codex-rs/codex-app-server","codex-rs/hepta-codex-adapter"],
+  "implementationRoots": ["codex-rs/app-server","codex-rs/core","codex-rs/hepta-codex-adapter"],
+  "aliasResolution": [{"declaredRoot":"codex-rs/codex-app-server","resolvedRoot":"codex-rs/app-server","rule":"canonical alias resolves to the existing single App Server package; it is not a duplicate owner"}],
+  "operations": [
+    {"designOperation":"open_thread","state":"implemented","ownerEntrypoint":{"path":"codex-rs/app-server/src/request_processors/thread_processor.rs","symbol":"pub(crate) async fn thread_start(","callerClass":"app_server_protocol","buildTarget":"codex-app-server"},"delegatedCallee":null,"testIds":["CODEX-03"]},
+    {"designOperation":"submit_turn","state":"implemented_partial","ownerEntrypoint":{"path":"codex-rs/app-server/src/request_processors/turn_processor.rs","symbol":"pub(crate) async fn turn_start(","callerClass":"app_server_protocol","buildTarget":"codex-app-server"},"delegatedCallee":null,"testIds":["CODEX-01","CODEX-03"]},
+    {"designOperation":"dispatch_tool","state":"implemented_partial","ownerEntrypoint":{"path":"codex-rs/core/src/tools/router.rs","symbol":"pub async fn dispatch_tool_call_with_code_mode_result(","callerClass":"codex_core_runtime","buildTarget":"codex-core"},"delegatedCallee":null,"testIds":["CODEX-02","CODEX-04"]},
+    {"designOperation":"observe_delivery","state":"implemented_partial","ownerEntrypoint":{"path":"codex-rs/core/src/codex_thread.rs","symbol":"pub(crate) async fn submit_turn_input_and_wait_for_exact_admission(","callerClass":"codex_core_runtime","buildTarget":"codex-core"},"delegatedCallee":{"module":"runtime.codex","path":"codex-rs/hepta-codex-adapter/src/lib.rs","symbol":"pub fn adapt(","callerClass":"checked_adapter","buildTarget":"codex-hepta-codex-adapter"},"testIds":["CODEX-01","CODEX-04"]}
+  ],
+  "productionCallerState": "unproved",
+  "productExecutionState": "unproved",
+  "externalGaps": ["Capture a deployed Agentd-to-App-Server trace binding objective, context, model and tool schema generations.","Qualify real model streaming, cancellation, tool terminality and acknowledgement loss."],
+  "generatedProjection": true
+}
