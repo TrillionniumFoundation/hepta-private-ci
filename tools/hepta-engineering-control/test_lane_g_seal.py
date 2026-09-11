@@ -56,6 +56,13 @@ class SealedEvidenceBoundaryTests(unittest.TestCase):
             True,
             10,
             True,
+            filesystem_isolated=True,
+            isolation_adapter="bubblewrap-unshare-all-ro-workspace-v2",
+            check_set_digest="1" * 64,
+            candidate_state_digest_before="2" * 64,
+            candidate_state_digest_after="2" * 64,
+            source_worktree_digest_before="3" * 64,
+            source_worktree_digest_after="3" * 64,
         )
         self.sandbox_digest = semantic_digest(asdict(self.sandbox))
         self.candidate = replace(candidate, sandbox_receipt_digest=self.sandbox_digest)
