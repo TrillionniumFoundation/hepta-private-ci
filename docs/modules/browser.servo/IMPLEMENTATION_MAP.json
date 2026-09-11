@@ -1,0 +1,95 @@
+{
+  "schema": "hepta.module-implementation-map.v2",
+  "schemaVersion": 2,
+  "sourceBase": {
+    "commit": "f278a89eea18fccb6d37b876aa5679863a64139d",
+    "tree": "5baa144717d4b3e3c596501fb56ce911d009e728"
+  },
+  "laneId": "LANE-B-RUNTIME",
+  "module": "browser.servo",
+  "sourceMaturity": "native_driver_boundary",
+  "declaredRoots": [
+    "apps/hepta-browser",
+    "third_party/servo-patches"
+  ],
+  "resolvedRoots": [
+    "apps/hepta-browser",
+    "third_party/servo-patches"
+  ],
+  "stateOwnerDisposition": "Owns in-process profile/session/page/operation state around an injected browser driver; raw credentials remain external references.",
+  "terminalObserverDisposition": "The driver must supply process, page, action, and reconciliation observations; unit tests use deterministic fake drivers.",
+  "operations": [
+    {
+      "designOperation": "open_profile",
+      "mappingClass": "owner_boundary",
+      "ownerEntrypoint": {
+        "role": "owner_entrypoint",
+        "path": "apps/hepta-browser/src/runtime.js",
+        "symbol": "async openProfile(",
+        "buildTarget": "hepta-browser"
+      },
+      "delegatedCallees": [],
+      "tests": [
+        {
+          "path": "apps/hepta-browser/test/runtime.test.js",
+          "kind": "node_product_boundary",
+          "command": "node --test apps/hepta-browser/test/runtime.test.js"
+        }
+      ],
+      "sourceSemantics": "Admits an isolated profile identity, allowed origins, effect grants, generation, and expiry before driver start."
+    },
+    {
+      "designOperation": "observe_page",
+      "mappingClass": "owner_boundary",
+      "ownerEntrypoint": {
+        "role": "owner_entrypoint",
+        "path": "apps/hepta-browser/src/runtime.js",
+        "symbol": "async observePage(",
+        "buildTarget": "hepta-browser"
+      },
+      "delegatedCallees": [],
+      "tests": [
+        {
+          "path": "apps/hepta-browser/test/runtime.test.js",
+          "kind": "node_product_boundary",
+          "command": "node --test apps/hepta-browser/test/runtime.test.js"
+        }
+      ],
+      "sourceSemantics": "Publishes bounded page observations with monotonic page generation and origin identity."
+    },
+    {
+      "designOperation": "navigate_or_act",
+      "mappingClass": "owner_boundary",
+      "ownerEntrypoint": {
+        "role": "owner_entrypoint",
+        "path": "apps/hepta-browser/src/runtime.js",
+        "symbol": "async navigateOrAct(",
+        "buildTarget": "hepta-browser"
+      },
+      "delegatedCallees": [],
+      "tests": [
+        {
+          "path": "apps/hepta-browser/test/runtime.test.js",
+          "kind": "node_product_boundary",
+          "command": "node --test apps/hepta-browser/test/runtime.test.js"
+        }
+      ],
+      "sourceSemantics": "Revalidates page, destination, payload, authority, and operation identity before one driver effect."
+    }
+  ],
+  "repositoryControlledGaps": [],
+  "externalEvidenceGates": [
+    "reproducible Servo binary and patch digest",
+    "OS sandbox/profile/credential/network enforcement",
+    "real navigation/download/business terminal observation"
+  ],
+  "claimBoundary": {
+    "nativeSourceMappingComplete": true,
+    "repositoryControlledDocumentationGapsClosed": true,
+    "repositoryControlledMappingGapsClosed": true,
+    "repositoryControlledSourceBoundaryGapsClosed": true,
+    "productExecutionComplete": false,
+    "deploymentQualificationComplete": false,
+    "independentAcceptanceComplete": false
+  }
+}
