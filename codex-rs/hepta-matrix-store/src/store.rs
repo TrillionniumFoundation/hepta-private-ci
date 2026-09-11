@@ -3885,11 +3885,11 @@ fn create_private_directory(path: &Path) -> Result<(), MatrixDurableError> {
     Ok(())
 }
 
-fn protect_database_file(path: &Path) -> Result<(), MatrixDurableError> {
+fn protect_database_file(_path: &Path) -> Result<(), MatrixDurableError> {
     #[cfg(unix)]
     {
         use std::os::unix::fs::PermissionsExt;
-        fs::set_permissions(path, fs::Permissions::from_mode(0o600)).map_err(unavailable)?;
+        fs::set_permissions(_path, fs::Permissions::from_mode(0o600)).map_err(unavailable)?;
     }
     Ok(())
 }
