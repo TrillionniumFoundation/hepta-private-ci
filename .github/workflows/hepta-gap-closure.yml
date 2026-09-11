@@ -1,73 +1,179 @@
-name: Hepta blocker source materializer (temporary)
+name: Hepta exact source and gap closure (read-only)
 
 on:
-  push:
-    branches:
-      - "codex/hepta-blocker-autofix-20260907"
+  pull_request:
 
 permissions:
   contents: read
 
 concurrency:
-  group: hepta-blocker-source-materializer-${{ github.ref }}
+  group: hepta-exact-source-gap-closure-${{ github.event.pull_request.number }}
   cancel-in-progress: true
 
 jobs:
-  materialize:
+  source-head:
+    name: Verify exact single-parent source head
     runs-on: ubuntu-24.04
-    timeout-minutes: 15
+    timeout-minutes: 30
+    env:
+      BASE_SHA: ${{ github.event.pull_request.base.sha }}
+      SOURCE_SHA: ${{ github.event.pull_request.head.sha }}
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - name: Check out exact source head
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
-          persist-credentials: true
+          ref: ${{ github.event.pull_request.head.sha }}
           fetch-depth: 0
+          persist-credentials: false
 
-      - name: Apply deterministic source fixes and export patched Bazel workflow
+      - name: Bind exact source topology
         shell: bash
         run: |
           set -euo pipefail
-          git show dccfb3382c400c12c2d81f7ab472504aa7504c65:.github/workflows/hepta-gap-closure.yml > /tmp/full-helper.yml
-          awk '
-            /^          python3 - <<'\''PY'\''$/ { capture = 1; next }
-            capture && /^          PY$/ { exit }
-            capture { sub(/^          /, ""); print }
-          ' /tmp/full-helper.yml > /tmp/apply-blocker-fixes.py
-          python3 - <<'PY'
-          from pathlib import Path
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          test "$(git rev-parse HEAD^)" = "$BASE_SHA"
+          test "$(git rev-list --parents -n 1 HEAD | awk '{print NF-1}')" = 1
+          git rev-parse HEAD HEAD^{tree} HEAD^ HEAD^^{tree}
 
-          script = Path('/tmp/apply-blocker-fixes.py')
-          text = script.read_text(encoding='utf-8')
-          start = text.index('    occurrences = text.count(old)\n')
-          end = text.index('    target.write_text', start)
-          script.write_text(text[:start] + text[end:], encoding='utf-8')
-          PY
-          python3 /tmp/apply-blocker-fixes.py
+      - name: Verify bounded gap-closure source
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta-gap-closure.py verify
+          python3 scripts/hepta-repository-integrity.py self-test
+          python3 scripts/hepta-repository-integrity.py verify \
+            --base "$BASE_SHA" \
+            --head "$SOURCE_SHA" \
+            --output "$RUNNER_TEMP/repository-integrity-source.json"
+
+      - name: Issue and replay exact source receipt
+        shell: bash
+        run: |
+          set -euo pipefail
+          receipt="$RUNNER_TEMP/hepta-source-head.json"
+          python3 scripts/hepta-gap-closure.py identity-receipt \
+            --kind source-head \
+            --repository-id "$GITHUB_REPOSITORY_ID" \
+            --repository "$GITHUB_REPOSITORY" \
+            --base "$BASE_SHA" \
+            --source "$SOURCE_SHA" \
+            --expected "$SOURCE_SHA" \
+            --workflow-path .github/workflows/hepta-gap-closure.yml \
+            --event-name "$GITHUB_EVENT_NAME" \
+            --event-path "$GITHUB_EVENT_PATH" \
+            --output "$receipt"
+          python3 scripts/hepta-gap-closure.py identity-verify \
+            --kind source-head \
+            --repository-id "$GITHUB_REPOSITORY_ID" \
+            --repository "$GITHUB_REPOSITORY" \
+            --base "$BASE_SHA" \
+            --source "$SOURCE_SHA" \
+            --expected "$SOURCE_SHA" \
+            --workflow-path .github/workflows/hepta-gap-closure.yml \
+            --event-name "$GITHUB_EVENT_NAME" \
+            --event-path "$GITHUB_EVENT_PATH" \
+            --input "$receipt"
           git diff --check
-          grep -F '@crates//:pretty_assertions' codex-rs/hepta-shadow-qualification/BUILD.bazel
-          grep -F 'HEPTA_LOCKDOWN_ROOT' .github/workflows/bazel.yml
+          test -z "$(git status --porcelain=v1 --untracked-files=all)"
 
-          artifact_root="${RUNNER_TEMP}/hepta-blocker-artifact"
-          rm -rf "${artifact_root}"
-          mkdir -p "${artifact_root}"
-          cp .github/workflows/bazel.yml "${artifact_root}/bazel.yml"
-
-          while IFS= read -r path; do
-            [[ -z "${path}" ]] && continue
-            [[ "${path}" == .github/* ]] && continue
-            git add -- "${path}"
-          done < <(git diff --name-only)
-
-          if ! git diff --cached --quiet; then
-            git config user.name "hepta-ci-bot"
-            git config user.email "hepta-ci-bot@users.noreply.github.com"
-            git commit -m "fix: close Bazel and cross-platform source blockers"
-            git push origin "HEAD:${GITHUB_REF_NAME}"
-          fi
-
-      - name: Upload patched Bazel workflow
-        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+      - name: Retain exact source receipts
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: hepta-patched-bazel-${{ github.sha }}
-          path: ${{ runner.temp }}/hepta-blocker-artifact/bazel.yml
+          name: hepta-gap-closure-source-${{ github.event.pull_request.head.sha }}
+          path: |
+            ${{ runner.temp }}/hepta-source-head.json
+            ${{ runner.temp }}/repository-integrity-source.json
           if-no-files-found: error
-          retention-days: 1
+          retention-days: 30
+
+  merge-candidate:
+    name: Verify ordered synthetic merge candidate
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      BASE_SHA: ${{ github.event.pull_request.base.sha }}
+      SOURCE_SHA: ${{ github.event.pull_request.head.sha }}
+    steps:
+      - name: Check out exact source head
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Construct ordered merge object
+        id: merge
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          test "$(git rev-parse HEAD^)" = "$BASE_SHA"
+          tree="$(git merge-tree --write-tree "$BASE_SHA" "$SOURCE_SHA")"
+          export GIT_AUTHOR_NAME=hepta-qualification
+          export GIT_AUTHOR_EMAIL=hepta-qualification@users.noreply.github.com
+          export GIT_COMMITTER_NAME="$GIT_AUTHOR_NAME"
+          export GIT_COMMITTER_EMAIL="$GIT_AUTHOR_EMAIL"
+          export GIT_AUTHOR_DATE=2000-01-01T00:00:00Z
+          export GIT_COMMITTER_DATE="$GIT_AUTHOR_DATE"
+          merge="$(printf '%s\n' 'Hepta ordered synthetic merge qualification' | \
+            git commit-tree "$tree" -p "$BASE_SHA" -p "$SOURCE_SHA")"
+          test "$(git rev-parse "$merge^{tree}")" = "$tree"
+          test "$(git rev-list --parents -n 1 "$merge" | cut -d' ' -f2-)" = "$BASE_SHA $SOURCE_SHA"
+          git checkout --detach "$merge"
+          test "$(git rev-parse HEAD)" = "$merge"
+          printf 'sha=%s\n' "$merge" >> "$GITHUB_OUTPUT"
+
+      - name: Verify synthetic merge source
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta-gap-closure.py verify
+          python3 scripts/hepta-repository-integrity.py self-test
+          python3 scripts/hepta-repository-integrity.py verify \
+            --base "$BASE_SHA" \
+            --head "$SOURCE_SHA" \
+            --output "$RUNNER_TEMP/repository-integrity-merge.json"
+
+      - name: Issue and replay ordered merge receipt
+        shell: bash
+        env:
+          MERGE_SHA: ${{ steps.merge.outputs.sha }}
+        run: |
+          set -euo pipefail
+          receipt="$RUNNER_TEMP/hepta-merge-candidate.json"
+          python3 scripts/hepta-gap-closure.py identity-receipt \
+            --kind merge-candidate \
+            --repository-id "$GITHUB_REPOSITORY_ID" \
+            --repository "$GITHUB_REPOSITORY" \
+            --base "$BASE_SHA" \
+            --source "$SOURCE_SHA" \
+            --expected "$MERGE_SHA" \
+            --workflow-path .github/workflows/hepta-gap-closure.yml \
+            --event-name "$GITHUB_EVENT_NAME" \
+            --event-path "$GITHUB_EVENT_PATH" \
+            --output "$receipt"
+          python3 scripts/hepta-gap-closure.py identity-verify \
+            --kind merge-candidate \
+            --repository-id "$GITHUB_REPOSITORY_ID" \
+            --repository "$GITHUB_REPOSITORY" \
+            --base "$BASE_SHA" \
+            --source "$SOURCE_SHA" \
+            --expected "$MERGE_SHA" \
+            --workflow-path .github/workflows/hepta-gap-closure.yml \
+            --event-name "$GITHUB_EVENT_NAME" \
+            --event-path "$GITHUB_EVENT_PATH" \
+            --input "$receipt"
+          git diff --check
+          test -z "$(git status --porcelain=v1 --untracked-files=all)"
+
+      - name: Retain ordered merge receipts
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-gap-closure-merge-${{ github.event.pull_request.head.sha }}
+          path: |
+            ${{ runner.temp }}/hepta-merge-candidate.json
+            ${{ runner.temp }}/repository-integrity-merge.json
+          if-no-files-found: error
+          retention-days: 30

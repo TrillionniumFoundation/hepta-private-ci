@@ -1,0 +1,180 @@
+name: Hepta Lane D semantic conformance
+
+on:
+  pull_request:
+    paths:
+      - codex-rs/hepta-objective/**
+      - codex-rs/hepta-ndu/**
+      - codex-rs/hepta-control-plane/**
+      - docs/contracts/OBJECTIVE_ERRORS.json
+      - docs/readiness/OBJECTIVE_COMPILER_EXECUTION.md
+      - docs/readiness/NDU_SYSTEM_EXECUTION.md
+      - docs/readiness/CONTROL_RUNTIME_EXECUTION.md
+      - docs/readiness/LANE_D_MATURITY.json
+      - docs/delivery/LANE_D_WORK_PACKAGE_OVERLAY.json
+      - docs/governance/MODULE_IMPLEMENTATION_BASELINE.md
+      - docs/modules/objective.compiler/IMPLEMENTATION_MAP.json
+      - docs/modules/utility.ndu/IMPLEMENTATION_MAP.json
+      - docs/modules/control.runtime/IMPLEMENTATION_MAP.json
+      - qualification/module-execution-dossiers/detail/objective.compiler.md
+      - qualification/module-execution-dossiers/detail/utility.ndu.md
+      - qualification/module-execution-dossiers/detail/control.runtime.md
+      - scripts/hepta-lane-d-semantic-conformance.py
+      - scripts/hepta-repository-integrity.py
+      - .github/workflows/hepta-lane-d-semantic-conformance.yml
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-lane-d-semantic-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  semantic-contract:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+
+      - name: Bind exact source
+        shell: bash
+        env:
+          EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${EXPECTED_SHA}"
+          git rev-parse HEAD HEAD^{tree}
+
+      - name: Verify Python and JSON semantics
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m py_compile scripts/hepta-lane-d-semantic-conformance.py
+          python3 scripts/hepta-lane-d-semantic-conformance.py self-test
+          python3 scripts/hepta-lane-d-semantic-conformance.py verify
+
+      - name: Verify repository-wide bounded change policy
+        if: github.event_name == 'pull_request'
+        shell: bash
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta-repository-integrity.py self-test
+          python3 scripts/hepta-repository-integrity.py verify \
+            --base "${BASE_SHA}" \
+            --head "${HEAD_SHA}" \
+            --output "${RUNNER_TEMP}/lane-d-repository-integrity.json"
+
+      - name: Retain repository-integrity receipt
+        if: always() && github.event_name == 'pull_request'
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: lane-d-repository-integrity-${{ github.event.pull_request.head.sha }}
+          path: ${{ runner.temp }}/lane-d-repository-integrity.json
+          if-no-files-found: warn
+          retention-days: 14
+
+      - name: Reject whitespace and generated drift
+        shell: bash
+        run: |
+          set -euo pipefail
+          git diff --check
+          test -z "$(git status --porcelain)"
+
+  rust-package-contract:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, macos-15, windows-2025]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+
+      - name: Bind exact source
+        shell: bash
+        env:
+          EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${EXPECTED_SHA}"
+          rustc --version
+          cargo --version
+
+      - name: Formatting
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo fmt --all -- --check
+
+      - name: Compile Lane D packages
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo check --locked \
+            -p codex-hepta-objective \
+            -p codex-hepta-ndu \
+            -p codex-hepta-control-plane \
+            --all-targets
+
+      - name: Execute Lane D package tests
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -uo pipefail
+          log_dir="${RUNNER_TEMP}"
+          if [ "${RUNNER_OS}" = "Windows" ]; then
+            log_dir="$(cygpath -u "${RUNNER_TEMP}")"
+          fi
+          mkdir -p "${log_dir}"
+          log="${log_dir}/lane-d-tests-${RUNNER_OS}.log"
+          status=0
+          for package in codex-hepta-objective codex-hepta-ndu codex-hepta-control-plane; do
+            printf '\n===== cargo test -p %s =====\n' "${package}" | tee -a "${log}"
+            cargo test --locked -p "${package}" -- --nocapture 2>&1 | tee -a "${log}"
+            rc=${PIPESTATUS[0]}
+            if [ "${rc}" -ne 0 ]; then
+              status="${rc}"
+            fi
+          done
+          exit "${status}"
+
+      - name: Retain Lane D test diagnostics
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: lane-d-tests-${{ runner.os }}-${{ github.event.pull_request.head.sha || github.sha }}
+          path: ${{ runner.temp }}/lane-d-tests-*.log
+          if-no-files-found: warn
+          retention-days: 14
+
+      - name: Strict Lane D lint
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo clippy --locked \
+            -p codex-hepta-objective \
+            -p codex-hepta-ndu \
+            -p codex-hepta-control-plane \
+            --all-targets -- -D warnings
+
+      - name: Clean tracked state
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -z "$(git status --porcelain)"

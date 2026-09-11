@@ -13,6 +13,8 @@ doctest = false
 workspace = true
 
 [dependencies]
+codex-protocol = { path = "../protocol" }
+codex-config = { path = "../config" }
 anyhow = { workspace = true }
 axum = { workspace = true, default-features = false, features = [
     "http1",
