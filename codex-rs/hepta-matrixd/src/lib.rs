@@ -11,6 +11,9 @@
 #![forbid(unsafe_code)]
 #![recursion_limit = "256"]
 
+/// Reusable state machine; does not install a second runtime owner.
+pub mod send_observer;
+
 mod config;
 mod control;
 mod runner;

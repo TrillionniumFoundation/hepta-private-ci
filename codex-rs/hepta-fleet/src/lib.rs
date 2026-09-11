@@ -4,6 +4,9 @@
 
 #![forbid(unsafe_code)]
 
+/// Reusable state machine; does not install a second runtime owner.
+pub mod lease_ledger;
+
 mod allocation;
 mod allocation_digest;
 mod allocation_model;

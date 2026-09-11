@@ -60,16 +60,16 @@
       "mappingClass": "owner_native",
       "ownerEntrypoint": {
         "role": "owner_entrypoint",
-        "path": "codex-rs/hepta-automation/src/bin/hepta-taskflow-runtime.rs",
+        "path": "codex-rs/hepta-automation/src/effect_executor.rs",
         "symbol": "pub fn claim_occurrence(",
-        "buildTarget": "hepta-taskflow-runtime"
+        "buildTarget": "codex-hepta-automation::effect_executor"
       },
       "delegatedCallees": [],
       "tests": [
         {
-          "path": "codex-rs/hepta-automation/src/bin/hepta-taskflow-runtime.rs",
+          "path": "codex-rs/hepta-automation/src/effect_executor_tests.rs",
           "kind": "generation_fence",
-          "command": "cargo test -p codex-hepta-automation --bin hepta-taskflow-runtime"
+          "command": "just test -p codex-hepta-automation --lib"
         }
       ],
       "sourceSemantics": "Claims one occurrence under an immutable generation fence."
@@ -79,22 +79,25 @@
       "mappingClass": "owner_native",
       "ownerEntrypoint": {
         "role": "owner_entrypoint",
-        "path": "codex-rs/hepta-automation/src/bin/hepta-taskflow-runtime.rs",
+        "path": "codex-rs/hepta-automation/src/effect_executor.rs",
         "symbol": "pub fn execute_step(",
-        "buildTarget": "hepta-taskflow-runtime"
+        "buildTarget": "codex-hepta-automation::effect_executor"
       },
       "delegatedCallees": [],
       "tests": [
         {
-          "path": "codex-rs/hepta-automation/src/bin/hepta-taskflow-runtime.rs",
+          "path": "codex-rs/hepta-automation/src/effect_executor_tests.rs",
           "kind": "effect_terminality_and_compensation",
-          "command": "cargo test -p codex-hepta-automation --bin hepta-taskflow-runtime"
+          "command": "just test -p codex-hepta-automation --lib"
         }
       ],
       "sourceSemantics": "Binds final payload and authority, dispatches once, and records terminal or indeterminate state."
     }
   ],
-  "repositoryControlledGaps": [],
+  "repositoryControlledGaps": [
+    "Connect the effect-executor component to the existing durable TaskFlow step outbox and a real final-use authorized effect provider.",
+    "Implement post-crash effect reconciliation before permitting dependent steps."
+  ],
   "externalEvidenceGates": [
     "non-test Codex/App Server caller",
     "real downstream effect owner and terminal observer",
@@ -104,7 +107,7 @@
     "nativeSourceMappingComplete": true,
     "repositoryControlledDocumentationGapsClosed": true,
     "repositoryControlledMappingGapsClosed": true,
-    "repositoryControlledSourceBoundaryGapsClosed": true,
+    "repositoryControlledSourceBoundaryGapsClosed": false,
     "productExecutionComplete": false,
     "deploymentQualificationComplete": false,
     "independentAcceptanceComplete": false

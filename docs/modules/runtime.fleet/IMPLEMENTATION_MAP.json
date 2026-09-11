@@ -22,16 +22,16 @@
       "mappingClass": "owner_native",
       "ownerEntrypoint": {
         "role": "owner_entrypoint",
-        "path": "codex-rs/hepta-fleet/src/bin/hepta-fleet-leased.rs",
+        "path": "codex-rs/hepta-fleet/src/lease_ledger.rs",
         "symbol": "pub fn admit_host(",
-        "buildTarget": "hepta-fleet-leased"
+        "buildTarget": "codex-hepta-fleet::lease_ledger"
       },
       "delegatedCallees": [],
       "tests": [
         {
-          "path": "codex-rs/hepta-fleet/src/bin/hepta-fleet-leased.rs",
+          "path": "codex-rs/hepta-fleet/src/lease_ledger_tests.rs",
           "kind": "native_unit",
-          "command": "cargo test -p codex-hepta-fleet --bin hepta-fleet-leased"
+          "command": "just test -p codex-hepta-fleet --lib"
         }
       ],
       "sourceSemantics": "Admits an explicitly enrolled host with generation, capacity, epoch, and failure-domain identity."
@@ -41,16 +41,16 @@
       "mappingClass": "owner_native",
       "ownerEntrypoint": {
         "role": "owner_entrypoint",
-        "path": "codex-rs/hepta-fleet/src/bin/hepta-fleet-leased.rs",
+        "path": "codex-rs/hepta-fleet/src/lease_ledger.rs",
         "symbol": "pub fn issue(",
-        "buildTarget": "hepta-fleet-leased"
+        "buildTarget": "codex-hepta-fleet::lease_ledger"
       },
       "delegatedCallees": [],
       "tests": [
         {
-          "path": "codex-rs/hepta-fleet/src/bin/hepta-fleet-leased.rs",
+          "path": "codex-rs/hepta-fleet/src/lease_ledger_tests.rs",
           "kind": "conservation_and_fencing",
-          "command": "cargo test -p codex-hepta-fleet --bin hepta-fleet-leased"
+          "command": "just test -p codex-hepta-fleet --lib"
         }
       ],
       "sourceSemantics": "Issues bounded allocation leases only after capacity, floors, freshness, and generation checks."
@@ -60,22 +60,24 @@
       "mappingClass": "owner_native",
       "ownerEntrypoint": {
         "role": "owner_entrypoint",
-        "path": "codex-rs/hepta-fleet/src/bin/hepta-fleet-leased.rs",
+        "path": "codex-rs/hepta-fleet/src/lease_ledger.rs",
         "symbol": "pub fn renew_or_revoke(",
-        "buildTarget": "hepta-fleet-leased"
+        "buildTarget": "codex-hepta-fleet::lease_ledger"
       },
       "delegatedCallees": [],
       "tests": [
         {
-          "path": "codex-rs/hepta-fleet/src/bin/hepta-fleet-leased.rs",
+          "path": "codex-rs/hepta-fleet/src/lease_ledger_tests.rs",
           "kind": "lease_recovery",
-          "command": "cargo test -p codex-hepta-fleet --bin hepta-fleet-leased"
+          "command": "just test -p codex-hepta-fleet --lib"
         }
       ],
       "sourceSemantics": "Renews, revokes, or quarantines a lease under current epoch and holder reconciliation."
     }
   ],
-  "repositoryControlledGaps": [],
+  "repositoryControlledGaps": [
+    "Connect the in-memory lease component to supervisor-owned durable FleetRegistry grants, fences, and a real capacity observer."
+  ],
   "externalEvidenceGates": [
     "real enrolled host capacity observation",
     "non-test local grant enforcement",
@@ -85,7 +87,7 @@
     "nativeSourceMappingComplete": true,
     "repositoryControlledDocumentationGapsClosed": true,
     "repositoryControlledMappingGapsClosed": true,
-    "repositoryControlledSourceBoundaryGapsClosed": true,
+    "repositoryControlledSourceBoundaryGapsClosed": false,
     "productExecutionComplete": false,
     "deploymentQualificationComplete": false,
     "independentAcceptanceComplete": false

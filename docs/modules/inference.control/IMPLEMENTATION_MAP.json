@@ -24,16 +24,16 @@
       "mappingClass": "owner_native",
       "ownerEntrypoint": {
         "role": "owner_entrypoint",
-        "path": "codex-rs/hepta-infer-core/src/bin/hepta-infer-control.rs",
+        "path": "codex-rs/hepta-infer-core/src/durable_control.rs",
         "symbol": "pub fn reserve(",
-        "buildTarget": "hepta-infer-control"
+        "buildTarget": "codex-hepta-infer-core::durable_control"
       },
       "delegatedCallees": [],
       "tests": [
         {
-          "path": "codex-rs/hepta-infer-core/src/bin/hepta-infer-control.rs",
+          "path": "codex-rs/hepta-infer-core/src/durable_control_tests.rs",
           "kind": "journal_recovery",
-          "command": "cargo test -p codex-hepta-infer-core --bin hepta-infer-control"
+          "command": "just test -p codex-hepta-infer-core --lib"
         }
       ],
       "sourceSemantics": "Reserves quota and resources in a durable generation-bound journal."
@@ -43,9 +43,9 @@
       "mappingClass": "owner_native",
       "ownerEntrypoint": {
         "role": "owner_entrypoint",
-        "path": "codex-rs/hepta-infer-core/src/bin/hepta-infer-control.rs",
+        "path": "codex-rs/hepta-infer-core/src/durable_control.rs",
         "symbol": "pub fn assign(",
-        "buildTarget": "hepta-infer-control"
+        "buildTarget": "codex-hepta-infer-core::durable_control"
       },
       "delegatedCallees": [
         {
@@ -58,9 +58,9 @@
       ],
       "tests": [
         {
-          "path": "codex-rs/hepta-infer-core/src/bin/hepta-infer-control.rs",
+          "path": "codex-rs/hepta-infer-core/src/durable_control_tests.rs",
           "kind": "assignment_and_fencing",
-          "command": "cargo test -p codex-hepta-infer-core --bin hepta-infer-control"
+          "command": "just test -p codex-hepta-infer-core --lib"
         }
       ],
       "sourceSemantics": "Commits deterministic eligible-worker assignment before dispatch."
@@ -70,16 +70,16 @@
       "mappingClass": "owner_native",
       "ownerEntrypoint": {
         "role": "owner_entrypoint",
-        "path": "codex-rs/hepta-infer-core/src/bin/hepta-infer-control.rs",
+        "path": "codex-rs/hepta-infer-core/src/durable_control.rs",
         "symbol": "pub fn cancel(",
-        "buildTarget": "hepta-infer-control"
+        "buildTarget": "codex-hepta-infer-core::durable_control"
       },
       "delegatedCallees": [],
       "tests": [
         {
-          "path": "codex-rs/hepta-infer-core/src/bin/hepta-infer-control.rs",
+          "path": "codex-rs/hepta-infer-core/src/durable_control_tests.rs",
           "kind": "cancel_settle_race",
-          "command": "cargo test -p codex-hepta-infer-core --bin hepta-infer-control"
+          "command": "just test -p codex-hepta-infer-core --lib"
         }
       ],
       "sourceSemantics": "Records monotonic cancellation without erasing possible in-flight consumption."
@@ -89,22 +89,24 @@
       "mappingClass": "owner_native",
       "ownerEntrypoint": {
         "role": "owner_entrypoint",
-        "path": "codex-rs/hepta-infer-core/src/bin/hepta-infer-control.rs",
+        "path": "codex-rs/hepta-infer-core/src/durable_control.rs",
         "symbol": "pub fn settle(",
-        "buildTarget": "hepta-infer-control"
+        "buildTarget": "codex-hepta-infer-core::durable_control"
       },
       "delegatedCallees": [],
       "tests": [
         {
-          "path": "codex-rs/hepta-infer-core/src/bin/hepta-infer-control.rs",
+          "path": "codex-rs/hepta-infer-core/src/durable_control_tests.rs",
           "kind": "cancel_settle_race",
-          "command": "cargo test -p codex-hepta-infer-core --bin hepta-infer-control"
+          "command": "just test -p codex-hepta-infer-core --lib"
         }
       ],
       "sourceSemantics": "Commits exactly one settlement and accounts late valid usage without double refund."
     }
   ],
-  "repositoryControlledGaps": [],
+  "repositoryControlledGaps": [
+    "Connect the single-writer durable control component to an actual reservation authority, worker dispatcher, and terminal usage observer."
+  ],
   "externalEvidenceGates": [
     "real quota/capacity authority integration",
     "authenticated non-test worker transport",
@@ -114,7 +116,7 @@
     "nativeSourceMappingComplete": true,
     "repositoryControlledDocumentationGapsClosed": true,
     "repositoryControlledMappingGapsClosed": true,
-    "repositoryControlledSourceBoundaryGapsClosed": true,
+    "repositoryControlledSourceBoundaryGapsClosed": false,
     "productExecutionComplete": false,
     "deploymentQualificationComplete": false,
     "independentAcceptanceComplete": false

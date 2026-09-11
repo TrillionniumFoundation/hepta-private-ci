@@ -4,6 +4,9 @@
 
 #![forbid(unsafe_code)]
 
+/// Reusable state machine; does not install a second runtime owner.
+pub mod durable_control;
+
 use std::collections::BTreeMap;
 use std::error::Error as StdError;
 use std::fmt;
