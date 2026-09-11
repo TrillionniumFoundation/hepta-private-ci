@@ -61,6 +61,7 @@ impl HeptaEvidenceStore {
             },
             message: record.message,
             payload: record.payload,
+            attempts: record.status.attempts + 1,
         })
     }
 
@@ -129,6 +130,22 @@ impl HeptaEvidenceStore {
             .await
             .map_err(classify_sqlx_error)?;
         }
+        tx.commit().await.map_err(classify_sqlx_error)?;
+        Ok(())
+    }
+
+    /// Stop this delivery after a consumer rejection or unresolved outcome.
+    /// A fresh trusted issuer and the current unexpired lease are required.
+    /// Quarantine is terminal without acknowledgement; it neither proves an
+    /// effect occurred nor changes any other delivery for this issuer.
+    pub async fn quarantine_authbus_delivery(
+        &self,
+        issuer: &IssuerRegistration,
+        lease: &AuthBusLease,
+    ) -> Result<(), AuthBusOutboxError> {
+        let (mut tx, record, now) = current(self, lease.delivery_id, issuer).await?;
+        require_lease(&record, lease, now)?;
+        terminalize(&mut tx, lease.delivery_id, "quarantined", now).await?;
         tx.commit().await.map_err(classify_sqlx_error)?;
         Ok(())
     }

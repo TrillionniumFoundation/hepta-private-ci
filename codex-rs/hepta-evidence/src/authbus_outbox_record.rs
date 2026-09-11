@@ -50,6 +50,8 @@ pub struct AuthBusDeliveryStatus {
     pub delivery_id: Digest32,
     pub issuer_id: StableId,
     pub key_epoch: Generation,
+    pub subject_id: StableId,
+    pub scope_digest: Digest32,
     pub state: AuthBusDeliveryState,
     pub fence: i64,
     pub attempts: i64,
@@ -84,6 +86,9 @@ pub struct AuthBusDelivery {
     pub lease: AuthBusLease,
     pub message: SignedMessage,
     pub payload: Vec<u8>,
+    /// Successful claim count, including this claim. Values above one require
+    /// reconciliation of any prior delivery before creating a new effect.
+    pub attempts: i64,
 }
 
 /// Host-selected routing and ownership. Neither field is inferred from payload.
@@ -146,6 +151,8 @@ impl OutboxRecord {
             delivery_id: Digest32::from_array(blob(&row, "delivery_id")?),
             issuer_id: message.claims.issuer_id.clone(),
             key_epoch: message.claims.key_epoch,
+            subject_id: message.claims.subject_id.clone(),
+            scope_digest: message.claims.scope_digest,
             state,
             fence: row.try_get("fence").map_err(classify_sqlx_error)?,
             attempts: row.try_get("attempts").map_err(classify_sqlx_error)?,

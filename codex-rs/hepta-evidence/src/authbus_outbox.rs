@@ -136,40 +136,21 @@ impl HeptaEvidenceStore {
         scope: Digest32,
         limit: u32,
     ) -> Result<Vec<AuthBusDeliveryStatus>, AuthBusOutboxError> {
-        if limit == 0 || limit > 128 {
-            return Err(AuthBusOutboxError::InvalidRequest(
-                "list limit must be 1..=128",
-            ));
-        }
-        let mut tx = self
-            .pool
-            .begin_with("BEGIN IMMEDIATE")
-            .await
-            .map_err(classify_sqlx_error)?;
-        let now = now_millis()?;
-        maintain(&mut tx, now).await?;
-        let rows = sqlx::query(
-            "SELECT * FROM authbus_outbox WHERE subject_id = ? AND scope_digest = ?
-            AND available_at_ms <= ? AND updated_at_ms <= ?
-            AND (state = 'queued' OR (state = 'leased' AND lease_until_ms <= ?))
-            ORDER BY available_at_ms, delivery_id LIMIT ?",
-        )
-        .bind(subject.as_str())
-        .bind(scope.as_array().as_slice())
-        .bind(now)
-        .bind(now)
-        .bind(now)
-        .bind(limit)
-        .fetch_all(&mut *tx)
-        .await
-        .map_err(classify_sqlx_error)?;
-        let statuses = rows
-            .into_iter()
-            .map(OutboxRecord::decode)
-            .map(|r| r.map(|r| r.status))
-            .collect::<Result<_, _>>()?;
-        tx.commit().await.map_err(classify_sqlx_error)?;
-        Ok(statuses)
+        pending(self, subject, scope, /*issuer*/ None, limit).await
+    }
+
+    /// Filter by issuer and epoch before applying the bounded recovery limit.
+    /// This selects records only: it neither authenticates them nor revokes
+    /// messages belonging to another issuer or epoch. Claims still require a
+    /// fresh trusted registration.
+    pub async fn pending_authbus_deliveries_for_issuer(
+        &self,
+        subject: &StableId,
+        scope: Digest32,
+        issuer: &IssuerRegistration,
+        limit: u32,
+    ) -> Result<Vec<AuthBusDeliveryStatus>, AuthBusOutboxError> {
+        pending(self, subject, scope, Some(issuer), limit).await
     }
 
     /// Explicitly retire active messages for a host-confirmed revoked issuer
@@ -205,6 +186,55 @@ impl HeptaEvidenceStore {
         tx.commit().await.map_err(classify_sqlx_error)?;
         Ok(affected)
     }
+}
+
+async fn pending(
+    store: &HeptaEvidenceStore,
+    subject: &StableId,
+    scope: Digest32,
+    issuer: Option<&IssuerRegistration>,
+    limit: u32,
+) -> Result<Vec<AuthBusDeliveryStatus>, AuthBusOutboxError> {
+    if limit == 0 || limit > 128 {
+        return Err(AuthBusOutboxError::InvalidRequest(
+            "list limit must be 1..=128",
+        ));
+    }
+    let mut tx = store
+        .pool
+        .begin_with("BEGIN IMMEDIATE")
+        .await
+        .map_err(classify_sqlx_error)?;
+    let now = now_millis()?;
+    maintain(&mut tx, now).await?;
+    let issuer_id = issuer.map(|issuer| issuer.issuer_id.as_str());
+    let key_epoch = issuer.map(|issuer| issuer.key_epoch.get().to_be_bytes());
+    let rows = sqlx::query(
+        "SELECT * FROM authbus_outbox WHERE subject_id = ? AND scope_digest = ?
+        AND (? IS NULL OR (issuer_id = ? AND key_epoch = ?))
+        AND available_at_ms <= ? AND updated_at_ms <= ?
+        AND (state = 'queued' OR (state = 'leased' AND lease_until_ms <= ?))
+        ORDER BY available_at_ms, delivery_id LIMIT ?",
+    )
+    .bind(subject.as_str())
+    .bind(scope.as_array().as_slice())
+    .bind(issuer_id)
+    .bind(issuer_id)
+    .bind(key_epoch.as_ref().map(<[u8; 8]>::as_slice))
+    .bind(now)
+    .bind(now)
+    .bind(now)
+    .bind(limit)
+    .fetch_all(&mut *tx)
+    .await
+    .map_err(classify_sqlx_error)?;
+    let statuses = rows
+        .into_iter()
+        .map(OutboxRecord::decode)
+        .map(|r| r.map(|r| r.status))
+        .collect::<Result<_, _>>()?;
+    tx.commit().await.map_err(classify_sqlx_error)?;
+    Ok(statuses)
 }
 
 pub(crate) async fn load(
@@ -246,3 +276,7 @@ pub(crate) async fn maintain(
         .bind(AUTHBUS_OUTBOX_MAX_ROWS - 1).execute(&mut **tx).await.map_err(classify_sqlx_error)?;
     Ok(())
 }
+
+#[cfg(test)]
+#[path = "authbus_outbox_issuer_tests.rs"]
+mod tests;
