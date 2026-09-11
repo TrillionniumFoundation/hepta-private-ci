@@ -1,0 +1,95 @@
+{
+  "schema": "hepta.module-implementation-map.v2",
+  "schemaVersion": 2,
+  "sourceBase": {
+    "commit": "f278a89eea18fccb6d37b876aa5679863a64139d",
+    "tree": "5baa144717d4b3e3c596501fb56ce911d009e728"
+  },
+  "laneId": "LANE-B-RUNTIME",
+  "module": "channel.matrix",
+  "sourceMaturity": "native_durable_channel_runtime",
+  "declaredRoots": [
+    "codex-rs/hepta-matrix-sdk",
+    "codex-rs/hepta-matrixd"
+  ],
+  "resolvedRoots": [
+    "codex-rs/hepta-matrix-sdk",
+    "codex-rs/hepta-matrixd"
+  ],
+  "stateOwnerDisposition": "Owns Matrix ingress projection, sync frontier, dispatch ledger, outbox, and transaction identities.",
+  "terminalObserverDisposition": "A homeserver event observation settles send terminality; App Server turn completion and HTTP acceptance cannot substitute.",
+  "operations": [
+    {
+      "designOperation": "admit_event",
+      "mappingClass": "owner_native",
+      "ownerEntrypoint": {
+        "role": "owner_entrypoint",
+        "path": "codex-rs/hepta-matrixd/src/runtime.rs",
+        "symbol": "pub async fn process_event(",
+        "buildTarget": "codex-hepta-matrixd"
+      },
+      "delegatedCallees": [],
+      "tests": [
+        {
+          "path": "codex-rs/hepta-matrixd/src/tests.rs",
+          "kind": "runtime_ingress",
+          "command": "cargo test -p codex-hepta-matrixd --lib"
+        }
+      ],
+      "sourceSemantics": "Deduplicates enrolled-room events and advances the durable sync frontier with correction/redaction handling."
+    },
+    {
+      "designOperation": "prepare_send",
+      "mappingClass": "owner_native",
+      "ownerEntrypoint": {
+        "role": "owner_entrypoint",
+        "path": "codex-rs/hepta-matrixd/src/bin/hepta-matrix-send-observer.rs",
+        "symbol": "pub fn prepare_send(",
+        "buildTarget": "hepta-matrix-send-observer"
+      },
+      "delegatedCallees": [],
+      "tests": [
+        {
+          "path": "codex-rs/hepta-matrixd/src/bin/hepta-matrix-send-observer.rs",
+          "kind": "send_identity",
+          "command": "cargo test -p codex-hepta-matrixd --bin hepta-matrix-send-observer"
+        }
+      ],
+      "sourceSemantics": "Binds room, session, payload, authority epoch, and one Matrix transaction identity before dispatch."
+    },
+    {
+      "designOperation": "observe_send",
+      "mappingClass": "owner_native",
+      "ownerEntrypoint": {
+        "role": "owner_entrypoint",
+        "path": "codex-rs/hepta-matrixd/src/bin/hepta-matrix-send-observer.rs",
+        "symbol": "pub fn observe_send(",
+        "buildTarget": "hepta-matrix-send-observer"
+      },
+      "delegatedCallees": [],
+      "tests": [
+        {
+          "path": "codex-rs/hepta-matrixd/src/bin/hepta-matrix-send-observer.rs",
+          "kind": "acknowledgement_and_reconciliation",
+          "command": "cargo test -p codex-hepta-matrixd --bin hepta-matrix-send-observer"
+        }
+      ],
+      "sourceSemantics": "Records trusted server-event acknowledgement or preserves the same transaction as indeterminate for reconciliation."
+    }
+  ],
+  "repositoryControlledGaps": [],
+  "externalEvidenceGates": [
+    "real enrolled homeserver/user/device/encryption identity",
+    "live sync and send transport callsites",
+    "rate-limit/reconnect/redaction/restore target qualification"
+  ],
+  "claimBoundary": {
+    "nativeSourceMappingComplete": true,
+    "repositoryControlledDocumentationGapsClosed": true,
+    "repositoryControlledMappingGapsClosed": true,
+    "repositoryControlledSourceBoundaryGapsClosed": true,
+    "productExecutionComplete": false,
+    "deploymentQualificationComplete": false,
+    "independentAcceptanceComplete": false
+  }
+}
