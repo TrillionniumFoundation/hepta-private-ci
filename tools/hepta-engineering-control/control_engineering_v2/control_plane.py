@@ -3,9 +3,11 @@
 This module owns only engineering coordination facts. It deliberately cannot
 merge, activate, promote, release, deploy, or grant runtime authority.
 """
+
 from __future__ import annotations
 
 from collections.abc import Iterable, Mapping
+from contextlib import contextmanager
 from dataclasses import asdict, dataclass, is_dataclass
 import hashlib
 import json
@@ -20,6 +22,21 @@ from .path_policy import (
     paths_overlap as paths_overlap,
     path_sets_overlap as path_sets_overlap,
     path_is_within as path_is_within,
+)
+
+STORE_SCHEMA_VERSION = 5
+STORE_TABLES = frozenset(
+    {
+        "work_envelopes",
+        "path_leases",
+        "assignment_generations",
+        "integration_decisions",
+        "audit_events",
+        "engineering_schema_meta",
+        "assignment_generation_frontiers",
+        "integration_decision_bindings",
+        "integration_decision_seals",
+    }
 )
 
 MAX_ID_BYTES = 128
@@ -264,11 +281,27 @@ class EngineeringStore:
         self.connection = sqlite3.connect(str(self.database), timeout=30.0)
         self.connection.row_factory = sqlite3.Row
         try:
+            version = int(self.connection.execute("PRAGMA user_version").fetchone()[0])
+            tables = {
+                str(row[0])
+                for row in self.connection.execute(
+                    "SELECT name FROM sqlite_master WHERE type='table'"
+                )
+            }
+            if version > STORE_SCHEMA_VERSION:
+                _error("unsupported_future_store_schema")
+            if "engineering_schema_meta" in tables:
+                metadata = self.connection.execute(
+                    "SELECT schema_version FROM engineering_schema_meta WHERE singleton=1"
+                ).fetchone()
+                if metadata is not None and int(metadata[0]) > STORE_SCHEMA_VERSION:
+                    _error("unsupported_future_store_schema")
+            if version == STORE_SCHEMA_VERSION and not STORE_TABLES.issubset(tables):
+                _error("store_schema_incomplete")
             self.connection.execute("PRAGMA foreign_keys=ON")
             self.connection.execute("PRAGMA journal_mode=WAL")
             self.connection.execute("PRAGMA synchronous=FULL")
             self._create_schema()
-            self.verify_audit_chain()
         except Exception:
             self.connection.close()
             raise
@@ -290,66 +323,59 @@ class EngineeringStore:
         finally:
             self.connection.close()
 
+    @contextmanager
+    def _transaction(self):
+        """Own one immediate transaction across state, frontier and audit writes."""
+        outermost = not self.connection.in_transaction
+        if outermost:
+            self.connection.execute("BEGIN IMMEDIATE")
+        try:
+            yield
+            if outermost:
+                self.connection.commit()
+        except BaseException:
+            if outermost:
+                self.connection.rollback()
+            raise
+
     def _create_schema(self) -> None:
-        self.connection.executescript(
-            """
-            CREATE TABLE IF NOT EXISTS work_envelopes(
-              envelope_id TEXT PRIMARY KEY,
-              semantic_digest TEXT NOT NULL,
-              source_commit TEXT NOT NULL,
-              source_tree TEXT NOT NULL,
-              objective_digest TEXT NOT NULL,
-              contract_digest TEXT NOT NULL,
-              owner TEXT NOT NULL,
-              allowed_paths_json BLOB NOT NULL,
-              denied_authorities_json BLOB NOT NULL,
-              maximum_assignments INTEGER NOT NULL CHECK(maximum_assignments BETWEEN 1 AND 128),
-              expires_unix_ns INTEGER NOT NULL,
-              revision INTEGER NOT NULL CHECK(revision >= 1),
-              created_unix_ns INTEGER NOT NULL
-            );
-            CREATE TABLE IF NOT EXISTS path_leases(
-              lease_id TEXT PRIMARY KEY,
-              envelope_id TEXT NOT NULL REFERENCES work_envelopes(envelope_id),
-              holder TEXT NOT NULL,
-              paths_json BLOB NOT NULL,
-              state TEXT NOT NULL CHECK(state IN ('active','released','revoked','expired')),
-              authority_epoch INTEGER NOT NULL CHECK(authority_epoch >= 1),
-              fencing_token INTEGER NOT NULL UNIQUE CHECK(fencing_token >= 1),
-              revision INTEGER NOT NULL CHECK(revision >= 1),
-              issued_unix_ns INTEGER NOT NULL,
-              expires_unix_ns INTEGER NOT NULL,
-              semantic_digest TEXT NOT NULL
-            );
-            CREATE INDEX IF NOT EXISTS path_leases_active
-              ON path_leases(state, expires_unix_ns);
-            CREATE TABLE IF NOT EXISTS assignment_generations(
-              generation_id TEXT PRIMARY KEY,
-              envelope_id TEXT NOT NULL REFERENCES work_envelopes(envelope_id),
-              semantic_digest TEXT NOT NULL,
-              assigned_json BLOB NOT NULL,
-              blocked_json BLOB NOT NULL,
-              created_unix_ns INTEGER NOT NULL
-            );
-            CREATE TABLE IF NOT EXISTS integration_decisions(
-              decision_id TEXT PRIMARY KEY,
-              evidence_digest TEXT NOT NULL,
-              eligible INTEGER NOT NULL CHECK(eligible IN (0,1)),
-              reasons_json BLOB NOT NULL,
-              created_unix_ns INTEGER NOT NULL
-            );
-            CREATE TABLE IF NOT EXISTS audit_events(
-              sequence INTEGER PRIMARY KEY AUTOINCREMENT,
-              event_id TEXT NOT NULL UNIQUE,
-              previous_digest TEXT NOT NULL,
-              event_digest TEXT NOT NULL UNIQUE,
-              event_type TEXT NOT NULL,
-              payload_json BLOB NOT NULL,
-              created_unix_ns INTEGER NOT NULL
-            );
-            """
-        )
-        self.connection.commit()
+        schema = Path(__file__).with_name("SCHEMA.sql").read_text(encoding="utf-8")
+        with self._transaction():
+            statement = ""
+            for line in schema.splitlines(keepends=True):
+                statement += line
+                if sqlite3.complete_statement(statement):
+                    self.connection.execute(statement)
+                    statement = ""
+            if statement.strip():
+                _error("invalid_store_schema")
+            metadata = self.connection.execute(
+                "SELECT schema_version FROM engineering_schema_meta WHERE singleton=1"
+            ).fetchone()
+            if metadata is None or int(metadata[0]) < STORE_SCHEMA_VERSION:
+                self.connection.execute(
+                    "INSERT INTO engineering_schema_meta VALUES(1,?,?) "
+                    "ON CONFLICT(singleton) DO UPDATE SET schema_version=excluded.schema_version,"
+                    "updated_unix_ns=excluded.updated_unix_ns",
+                    (STORE_SCHEMA_VERSION, time.time_ns()),
+                )
+            self.connection.execute(f"PRAGMA user_version={STORE_SCHEMA_VERSION}")
+            self.verify_audit_chain()
+
+    def assignment_frontier(self, generation_id: str):
+        from .hardening import assignment_frontier
+
+        return assignment_frontier(self, generation_id)
+
+    def integration_decision_binding(self, decision_id: str):
+        from .closure import integration_decision_binding
+
+        return integration_decision_binding(self, decision_id)
+
+    def integration_decision_seal(self, decision_id: str):
+        from .seal import integration_decision_seal
+
+        return integration_decision_seal(self, decision_id)
 
     def _now(self, now_ns: int | None) -> int:
         value = time.time_ns() if now_ns is None else now_ns
@@ -435,7 +461,7 @@ class EngineeringStore:
         if value.expires_unix_ns <= now:
             _error("expired_envelope")
         digest = semantic_digest(asdict(value))
-        with self.connection:
+        with self._transaction():
             existing = self.connection.execute(
                 "SELECT semantic_digest FROM work_envelopes WHERE envelope_id=?",
                 (value.envelope_id,),
@@ -505,7 +531,7 @@ class EngineeringStore:
         if type(expires_unix_ns) is not int or expires_unix_ns <= now:
             _error("invalid_lease_expiry")
         normalized = canonical_paths(paths)
-        with self.connection:
+        with self._transaction():
             envelope = self._get_envelope(envelope_id, now)
             allowed = tuple(
                 json.loads(bytes(envelope["allowed_paths_json"]).decode("utf-8"))
@@ -536,9 +562,7 @@ class EngineeringStore:
                 "WHERE state='active' ORDER BY fencing_token"
             ).fetchall()
             for row in active:
-                current = tuple(
-                    json.loads(bytes(row["paths_json"]).decode("utf-8"))
-                )
+                current = tuple(json.loads(bytes(row["paths_json"]).decode("utf-8")))
                 if path_sets_overlap(normalized, current):
                     _error("active_path_conflict")
             token = int(
@@ -592,7 +616,7 @@ class EngineeringStore:
         now = self._now(now_ns)
         if disposition not in {"renew", "release", "revoke"}:
             _error("invalid_lease_transition")
-        with self.connection:
+        with self._transaction():
             self._expire_leases(now)
             row = self.connection.execute(
                 "SELECT * FROM path_leases WHERE lease_id=?",
@@ -610,9 +634,8 @@ class EngineeringStore:
             expiry = int(row["expires_unix_ns"])
             state = "active"
             if disposition == "renew":
-                if (
-                    type(new_expiry_unix_ns) is not int
-                    or new_expiry_unix_ns <= max(now, expiry)
+                if type(new_expiry_unix_ns) is not int or new_expiry_unix_ns <= max(
+                    now, expiry
                 ):
                     _error("invalid_lease_expiry")
                 expiry = new_expiry_unix_ns
@@ -706,7 +729,7 @@ class EngineeringStore:
             checked_id(value, "completed_id") for value in completed_raw
         )
         self._verify_package_graph(package_values, completed_set)
-        with self.connection:
+        with self._transaction():
             envelope = self._get_envelope(envelope_id, now)
             allowed = tuple(
                 json.loads(bytes(envelope["allowed_paths_json"]).decode("utf-8"))
@@ -718,6 +741,9 @@ class EngineeringStore:
             ):
                 _error("package_path_outside_envelope")
             self._expire_leases(now)
+            from .hardening import bind_assignment_frontier
+
+            bind_assignment_frontier(self, envelope, generation_id, now)
             active_rows = self.connection.execute(
                 "SELECT paths_json FROM path_leases "
                 "WHERE state='active' ORDER BY fencing_token"
@@ -775,9 +801,7 @@ class EngineeringStore:
                 return ScheduleReceipt(
                     generation_id,
                     str(existing["envelope_id"]),
-                    tuple(
-                        json.loads(bytes(existing["assigned_json"]).decode("utf-8"))
-                    ),
+                    tuple(json.loads(bytes(existing["assigned_json"]).decode("utf-8"))),
                     tuple(
                         tuple(item)
                         for item in json.loads(
@@ -848,7 +872,7 @@ class EngineeringStore:
                 "reasons": reason_values,
             }
         )
-        with self.connection:
+        with self._transaction():
             existing = self.connection.execute(
                 "SELECT evidence_digest,eligible,reasons_json "
                 "FROM integration_decisions WHERE decision_id=?",
@@ -861,9 +885,7 @@ class EngineeringStore:
                         "evidenceDigest": existing["evidence_digest"],
                         "eligible": bool(existing["eligible"]),
                         "reasons": tuple(
-                            json.loads(
-                                bytes(existing["reasons_json"]).decode("utf-8")
-                            )
+                            json.loads(bytes(existing["reasons_json"]).decode("utf-8"))
                         ),
                     }
                 )

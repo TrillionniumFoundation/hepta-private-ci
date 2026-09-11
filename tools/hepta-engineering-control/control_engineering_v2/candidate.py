@@ -6,6 +6,7 @@ complete path/type/mode/content manifest, and executes the bound check set in a
 fail-closed Linux Bubblewrap boundary.  Portable fixture execution is retained
 for deterministic regression tests but can never produce ``sandbox_tested``.
 """
+
 from __future__ import annotations
 
 from collections.abc import Iterable, Mapping, Sequence
@@ -209,7 +210,10 @@ def _run_bounded(
         not isinstance(item, str) or not item or "\x00" in item for item in argv
     ):
         raise EngineeringError("invalid_check")
-    with tempfile.TemporaryFile() as stdout_file, tempfile.TemporaryFile() as stderr_file:
+    with (
+        tempfile.TemporaryFile() as stdout_file,
+        tempfile.TemporaryFile() as stderr_file,
+    ):
         try:
             process = subprocess.Popen(
                 list(argv),
@@ -219,7 +223,9 @@ def _run_bounded(
                 stdout=stdout_file,
                 stderr=stderr_file,
                 start_new_session=True,
-                preexec_fn=_resource_limiter(memory_bytes, processes, max(1, math.ceil(timeout)))
+                preexec_fn=_resource_limiter(
+                    memory_bytes, processes, max(1, math.ceil(timeout))
+                )
                 if os.name == "posix"
                 else None,
             )
@@ -293,8 +299,10 @@ def _git_bytes(
 
 def _git(root: Path, *args: str, allow_failure: bool = False) -> str:
     try:
-        return _git_bytes(root, *args, allow_failure=allow_failure).decode("utf-8").rstrip(
-            "\r\n"
+        return (
+            _git_bytes(root, *args, allow_failure=allow_failure)
+            .decode("utf-8")
+            .rstrip("\r\n")
         )
     except UnicodeDecodeError:
         raise EngineeringError("git_operation_failed") from None
@@ -344,7 +352,9 @@ def _validate_envelope(
         or type(envelope.require_network_isolation) is not bool
     ):
         raise EngineeringError("invalid_sandbox_budget")
-    roots = tuple(sorted({canonical_repo_path(value) for value in envelope.allowed_paths}))
+    roots = tuple(
+        sorted({canonical_repo_path(value) for value in envelope.allowed_paths})
+    )
     protected = tuple(
         sorted({canonical_repo_path(value) for value in envelope.protected_paths})
     )
@@ -592,9 +602,9 @@ def _materialize_exact_tree(
                 if not header or len(header) > MAX_GIT_OUTPUT_BYTES:
                     raise EngineeringError("git_operation_failed")
                 try:
-                    returned_oid, returned_type, size_bytes = header.rstrip(b"\n").split(
-                        b" ", 2
-                    )
+                    returned_oid, returned_type, size_bytes = header.rstrip(
+                        b"\n"
+                    ).split(b" ", 2)
                     size = int(size_bytes)
                 except (ValueError, OverflowError):
                     raise EngineeringError("git_operation_failed") from None
@@ -964,7 +974,9 @@ def sandbox_candidate(
             or not check
             or len(check) > MAX_COMMAND_ARGUMENTS
             or any(
-                not isinstance(item, str) or not item or "\x00" in item
+                not isinstance(item, str)
+                or not item
+                or "\x00" in item
                 or len(item.encode("utf-8")) > MAX_COMMAND_ARGUMENT_BYTES
                 for item in check
             )

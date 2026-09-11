@@ -1,21 +1,11 @@
 """Stable owner-clean operation facade for Lane G."""
+
 from __future__ import annotations
 
-from collections.abc import Callable, Iterable, Sequence
+from collections.abc import Iterable, Sequence
 from dataclasses import dataclass
 from pathlib import Path
-import time
 
-from .assimilation import (
-    AssimilationProposal,
-    ExternalManifestCandidate,
-    OwnerConsentReceipt,
-    SandboxParityReceipt,
-    TypedOperation,
-    build_manifest_candidate,
-    propose_dormant_assimilation,
-    synthesize_read_only_contracts,
-)
 from .candidate import (
     Candidate,
     CandidateEnvelope,
@@ -25,12 +15,10 @@ from .candidate import (
     sandbox_candidate,
 )
 from .control_plane import (
-    EngineeringError,
     EngineeringStore,
     ScheduleReceipt,
     WorkEnvelope,
     WorkPackage,
-    semantic_digest,
 )
 from .evidence import (
     CanonicalSourceReceipt,
@@ -127,53 +115,23 @@ def verify_integration_evidence(
 
 
 def request_independent_review(
-    candidate: Candidate,
-    evidence: EvidenceDecision,
-    requested_role: str,
-    *,
-    now_ns: int | None = None,
-) -> ReviewRequest:
-    if candidate.state != "sandbox_tested" or not candidate.sandbox_receipt_digest:
-        raise EngineeringError("candidate_not_sandbox_tested")
-    if evidence.eligible_for_independent_review is not True or evidence.reasons:
-        raise EngineeringError("evidence_not_eligible")
-    if requested_role not in {
-        "independent_evaluator",
-        "architecture_reviewer",
-        "security_reviewer",
-    }:
-        raise EngineeringError("invalid_review_role")
-    now = time.time_ns() if now_ns is None else now_ns
-    body = {
-        "candidateId": candidate.candidate_id,
-        "candidateDigest": candidate.semantic_digest,
-        "sandboxReceiptDigest": candidate.sandbox_receipt_digest,
-        "evidenceDigest": evidence.evidence_digest,
-        "requestedRole": requested_role,
-        "createdUnixNs": now,
-    }
-    return ReviewRequest(
-        semantic_digest(body)[:32],
-        candidate.candidate_id,
-        evidence.evidence_digest,
-        requested_role,
-        now,
+    candidate, evidence, requested_role, *, trust_store, now_ns=None
+):
+    """Route all public review requests through fresh, authenticated evidence."""
+    from .seal import request_independent_review as sealed_review
+
+    return sealed_review(
+        candidate, evidence, requested_role, trust_store=trust_store, now_ns=now_ns
     )
 
 
 def record_integration_decision(
-    store: EngineeringStore,
-    decision_id: str,
-    evidence: EvidenceDecision,
-    *,
-    now_ns: int | None = None,
-) -> None:
-    store.record_integration_decision(
-        decision_id,
-        evidence.evidence_digest,
-        evidence.eligible_for_independent_review,
-        evidence.reasons,
-        now_ns=now_ns,
+    store, decision_id, evidence, *, trust_store=None, now_ns=None
+):
+    from .seal import record_integration_decision as sealed_record
+
+    return sealed_record(
+        store, decision_id, evidence, trust_store=trust_store, now_ns=now_ns
     )
 
 
@@ -187,35 +145,23 @@ def publish_audit_projection(
 
 
 def prepare_assimilation_candidate(
-    consent: OwnerConsentReceipt,
-    observations: dict[str, str],
-    omissions: Iterable[str],
-    sandbox_factory: Callable[
-        [ExternalManifestCandidate, tuple[TypedOperation, ...]],
-        SandboxParityReceipt,
-    ],
+    consent,
+    observations,
+    omissions,
+    sandbox_factory,
     *,
-    now_ns: int | None = None,
-) -> AssimilationProposal:
-    """Create a dormant proposal using a separately issued parity receipt."""
-    manifest = build_manifest_candidate(
+    trust_store,
+    consent_attestation,
+    now_ns=None,
+):
+    from .closure import prepare_assimilation_candidate as authenticated_prepare
+
+    return authenticated_prepare(
         consent,
         observations,
         omissions,
-        now_ns=now_ns,
-    )
-    operations = synthesize_read_only_contracts(
-        consent,
-        manifest,
-        now_ns=now_ns,
-    )
-    sandbox = sandbox_factory(manifest, operations)
-    if not isinstance(sandbox, SandboxParityReceipt):
-        raise EngineeringError("invalid_sandbox_receipt")
-    return propose_dormant_assimilation(
-        consent,
-        manifest,
-        operations,
-        sandbox,
+        sandbox_factory,
+        trust_store=trust_store,
+        consent_attestation=consent_attestation,
         now_ns=now_ns,
     )

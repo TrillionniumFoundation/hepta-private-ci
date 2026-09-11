@@ -29,10 +29,12 @@ from control_engineering_v2 import (
     WorkEnvelope,
     WorkPackage,
     generate_candidates,
-    hardened_prepare_assimilation_candidate,
-    hardened_request_independent_review,
     hardened_sandbox_candidate,
     semantic_digest,
+)
+from control_engineering_v2.hardening import (
+    hardened_prepare_assimilation_candidate,
+    hardened_request_independent_review,
 )
 
 DENIED = (
@@ -68,6 +70,8 @@ def initialize_repository(root: Path) -> tuple[str, str]:
     commit = git(root, "rev-parse", "HEAD").stdout.strip()
     tree = git(root, "rev-parse", "HEAD^{tree}").stdout.strip()
     return commit, tree
+
+
 from control_engineering_v2.closure import bind_candidate_evidence
 
 
@@ -330,9 +334,16 @@ class CandidateEvidenceBindingTests(unittest.TestCase):
         self.trust = HmacTrustStore({("ci_executor", "ci-key"): b"ci-secret"})
         for field in ("source_execution", "merge_execution"):
             receipt = getattr(self, field)
-            setattr(self, field, replace(receipt, signature=self.trust.sign(
-                receipt, receipt.issuer, receipt.signing_identity)))
-
+            setattr(
+                self,
+                field,
+                replace(
+                    receipt,
+                    signature=self.trust.sign(
+                        receipt, receipt.issuer, receipt.signing_identity
+                    ),
+                ),
+            )
 
     def binding(self) -> CandidateEvidenceBindingReceipt:
         value = CandidateEvidenceBindingReceipt(

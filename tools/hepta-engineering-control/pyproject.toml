@@ -11,6 +11,9 @@ license = { text = "Apache-2.0" }
 authors = [{ name = "Trillionnium Foundation" }]
 dependencies = []
 
+[project.scripts]
+hepta-engineering = "control_engineering_v2.cli:main"
+
 [tool.setuptools]
 packages = ["control_engineering_v2"]
 

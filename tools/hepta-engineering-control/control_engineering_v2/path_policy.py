@@ -4,6 +4,7 @@ The module is deliberately independent of storage.  It raises the canonical
 ``EngineeringError`` lazily so it can replace the legacy helpers during package
 initialization without a circular import.
 """
+
 from __future__ import annotations
 
 from collections.abc import Iterable, Sequence

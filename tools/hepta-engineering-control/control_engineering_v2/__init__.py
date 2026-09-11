@@ -1,4 +1,5 @@
 """Lane G engineering-control implementation exports."""
+
 from .assimilation import (
     AssimilationProposal,
     ExternalManifestCandidate,
@@ -61,27 +62,25 @@ from .hardening import (
     assignment_frontier,
     consent_payload_digest,
     hardened_execute_candidate_sandbox,
-    hardened_prepare_assimilation_candidate,
-    hardened_record_integration_decision,
-    hardened_request_independent_review,
     hardened_sandbox_candidate,
-    install_hardening,
 )
 
-# Initialize the owner migrations in order, then expose the authenticated
-# composition API. Candidate execution stays owned by candidate.py.
-install_hardening()
-from .closure import install_closure, prepare_assimilation_candidate
-install_closure()
+# The store owns its schema and transactions directly. Public composition uses
+# authenticated evidence; candidate.py remains the sole sandbox executor.
+from .closure import prepare_assimilation_candidate
 from .seal import (
     SealedCandidateEvidence,
     bind_candidate_evidence,
-    install_seal,
     record_integration_decision,
     request_independent_review,
     verify_sealed_candidate_evidence,
 )
-install_seal()
+
+# Legacy public names use the current authenticated boundary too. Lower-layer
+# composition helpers are implementation details, not an alternate public gate.
+hardened_prepare_assimilation_candidate = prepare_assimilation_candidate
+hardened_record_integration_decision = record_integration_decision
+hardened_request_independent_review = request_independent_review
 
 __all__ = [
     "AssimilationProposal",

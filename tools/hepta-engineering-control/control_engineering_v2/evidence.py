@@ -1,4 +1,5 @@
 """Exact Git and role-separated evidence verification for Lane G."""
+
 from __future__ import annotations
 
 from dataclasses import asdict, dataclass
@@ -99,7 +100,11 @@ class HmacTrustStore:
         signature: str,
     ) -> bool:
         key = self._keys.get((issuer, signing_identity))
-        if key is None or not isinstance(signature, str) or SHA256.fullmatch(signature) is None:
+        if (
+            key is None
+            or not isinstance(signature, str)
+            or SHA256.fullmatch(signature) is None
+        ):
             return False
         expected = hmac.new(key, self.payload(value), hashlib.sha256).hexdigest()
         return hmac.compare_digest(expected, signature)
@@ -179,7 +184,9 @@ def verify_integration_evidence(
     if source.repository_full_name != expected_repository:
         reasons.append("repository_mismatch")
     try:
-        remote = _normal_remote(_run_git(repository, "config", "--get", "remote.origin.url"))
+        remote = _normal_remote(
+            _run_git(repository, "config", "--get", "remote.origin.url")
+        )
         if remote and remote != expected_repository:
             reasons.append("repository_remote_mismatch")
     except EngineeringError:
@@ -201,9 +208,24 @@ def verify_integration_evidence(
         reasons.append("merge_execution_issuer_role")
     signed_values = (
         (source, source.issuer, source.signing_identity, "source_receipt_signature"),
-        (source_execution, source_execution.issuer, source_execution.signing_identity, "source_execution_signature"),
-        (merge_execution, merge_execution.issuer, merge_execution.signing_identity, "merge_execution_signature"),
-        (independence, independence.evaluator_principal, independence.evaluator_signing_identity, "independence_signature"),
+        (
+            source_execution,
+            source_execution.issuer,
+            source_execution.signing_identity,
+            "source_execution_signature",
+        ),
+        (
+            merge_execution,
+            merge_execution.issuer,
+            merge_execution.signing_identity,
+            "merge_execution_signature",
+        ),
+        (
+            independence,
+            independence.evaluator_principal,
+            independence.evaluator_signing_identity,
+            "independence_signature",
+        ),
     )
     for value, issuer, signing_identity, label in signed_values:
         if not trust_store.verify(value, issuer, signing_identity, value.signature):
@@ -218,7 +240,8 @@ def verify_integration_evidence(
             reasons.append(label)
     if (
         independence.generator_principal == independence.evaluator_principal
-        or independence.generator_signing_identity == independence.evaluator_signing_identity
+        or independence.generator_signing_identity
+        == independence.evaluator_signing_identity
     ):
         reasons.append("evaluator_identity_collision")
     try:
@@ -235,11 +258,20 @@ def verify_integration_evidence(
         reasons.append("source_execution_class")
     if merge_execution.class_name != "synthetic_merge":
         reasons.append("merge_execution_class")
-    if source_execution.commit != source.source_commit or exact_tree != source.source_tree:
+    if (
+        source_execution.commit != source.source_commit
+        or exact_tree != source.source_tree
+    ):
         reasons.append("exact_source_mismatch")
-    if source_execution.tree != exact_tree or source_execution.ordered_parents != exact_parents:
+    if (
+        source_execution.tree != exact_tree
+        or source_execution.ordered_parents != exact_parents
+    ):
         reasons.append("source_execution_identity_mismatch")
-    if merge_execution.tree != merge_tree or merge_execution.ordered_parents != merge_parents:
+    if (
+        merge_execution.tree != merge_tree
+        or merge_execution.ordered_parents != merge_parents
+    ):
         reasons.append("merge_execution_identity_mismatch")
     if len(merge_parents) != 2 or merge_parents[1] != source.source_commit:
         reasons.append("merge_parent_order_mismatch")

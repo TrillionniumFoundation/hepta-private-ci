@@ -1,4 +1,5 @@
 """Consent-bound, non-propagating external-system assimilation pipeline."""
+
 from __future__ import annotations
 
 from dataclasses import asdict, dataclass
@@ -112,14 +113,24 @@ def validate_consent(
     ):
         raise EngineeringError("consent_expired")
     operations = tuple(
-        sorted({checked_id(value, "invalid_operation") for value in receipt.allowed_operations})
+        sorted(
+            {
+                checked_id(value, "invalid_operation")
+                for value in receipt.allowed_operations
+            }
+        )
     )
     if not operations or not set(operations).issubset(READ_ONLY_OPERATIONS):
         raise EngineeringError("consent_scope_widens_authority")
     if set(operations) & DENIED_OPERATIONS:
         raise EngineeringError("denied_assimilation_operation")
     roots = tuple(
-        sorted({checked_id(value, "invalid_root_reference") for value in receipt.allowed_roots})
+        sorted(
+            {
+                checked_id(value, "invalid_root_reference")
+                for value in receipt.allowed_roots
+            }
+        )
     )
     if not roots:
         raise EngineeringError("empty_consent_scope")
@@ -199,8 +210,12 @@ def synthesize_read_only_contracts(
             TypedOperation(
                 semantic_digest(body)[:32],
                 name,
-                semantic_digest({"operation": name, "direction": "input", "version": 1}),
-                semantic_digest({"operation": name, "direction": "output", "version": 1}),
+                semantic_digest(
+                    {"operation": name, "direction": "input", "version": 1}
+                ),
+                semantic_digest(
+                    {"operation": name, "direction": "output", "version": 1}
+                ),
                 5_000,
                 65_536,
                 "explicit_target_adapter",
@@ -220,7 +235,9 @@ def propose_dormant_assimilation(
 ) -> AssimilationProposal:
     value = validate_consent(consent, now_ns=now_ns)
     raw_operations = bounded_tuple(operations, 16, "operation_limit_exceeded")
-    if not raw_operations or any(not isinstance(item, TypedOperation) for item in raw_operations):
+    if not raw_operations or any(
+        not isinstance(item, TypedOperation) for item in raw_operations
+    ):
         raise EngineeringError("invalid_operation_set")
     operation_values = tuple(raw_operations)
     if (
@@ -230,13 +247,20 @@ def propose_dormant_assimilation(
         raise EngineeringError("target_identity_drift")
     manifest_digest = semantic_digest(asdict(manifest))
     operations_digest = semantic_digest([asdict(item) for item in operation_values])
-    if sandbox.manifest_digest != manifest_digest or sandbox.operations_digest != operations_digest:
+    if (
+        sandbox.manifest_digest != manifest_digest
+        or sandbox.operations_digest != operations_digest
+    ):
         raise EngineeringError("sandbox_input_drift")
     if sandbox.evaluator_principal == sandbox.generator_principal:
         raise EngineeringError("evaluator_identity_collision")
     if sandbox.passed is not True:
         raise EngineeringError("sandbox_parity_failed")
-    if sandbox.network_unrestricted or sandbox.production_credentials_exposed or sandbox.authority_delta:
+    if (
+        sandbox.network_unrestricted
+        or sandbox.production_credentials_exposed
+        or sandbox.authority_delta
+    ):
         raise EngineeringError("sandbox_boundary_violation")
     if any(
         item.external_effect or item.operation_class not in READ_ONLY_OPERATIONS

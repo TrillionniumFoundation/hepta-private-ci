@@ -7,13 +7,13 @@ with the exact candidate binding.  It still grants no acceptance, merge,
 activation, promotion, release, deployment, peer-enrollment, credential, or
 runtime authority.
 """
+
 from __future__ import annotations
 
 from dataclasses import asdict, dataclass
 import hashlib
-from pathlib import Path
 import time
-from typing import Any, Mapping
+from typing import Mapping
 
 from . import closure as _closure
 from . import control_plane as _control
@@ -22,15 +22,8 @@ from . import hardening as _hardening
 from .candidate import Candidate, SandboxReceipt
 from .evidence import EvidenceDecision, ExecutionReceipt, HmacTrustStore
 
-_SCHEMA_VERSION = 5
 _SEAL_ISSUER = "engineering_evidence_binder"
 
-# Both earlier initializers consult these globals at call time. Raising them
-# before capturing the installed schema-v4 initializer makes schema-v5 stores
-# reopenable and preserves their future-version rejection.
-_hardening._STORE_SCHEMA_VERSION = _SCHEMA_VERSION
-_closure._FINAL_SCHEMA_VERSION = _SCHEMA_VERSION
-_BASE_STORE_INIT = _control.EngineeringStore.__init__
 _BASE_REQUEST_REVIEW = _hardening.hardened_request_independent_review
 _BASE_RECORD_DECISION = _closure._BASE_RECORD_DECISION
 _BASE_INELIGIBLE_RECORD = _closure.record_integration_decision
@@ -90,57 +83,6 @@ def _checked_now(now_ns: int | None) -> int:
     if type(now) is not int or now < 0:
         raise _control.EngineeringError("invalid_time")
     return now
-
-
-def _install_seal_schema(store: _control.EngineeringStore) -> None:
-    row = store.connection.execute(
-        "SELECT schema_version FROM engineering_schema_meta WHERE singleton=1"
-    ).fetchone()
-    if row is not None and int(row[0]) > _SCHEMA_VERSION:
-        raise _control.EngineeringError("unsupported_future_store_schema")
-    store.connection.executescript(
-        """
-        CREATE TABLE IF NOT EXISTS integration_decision_seals(
-          decision_id TEXT PRIMARY KEY,
-          seal_digest TEXT NOT NULL UNIQUE,
-          sealed_evidence_digest TEXT NOT NULL UNIQUE,
-          issuer TEXT NOT NULL,
-          signing_identity TEXT NOT NULL,
-          observed_unix_ns INTEGER NOT NULL,
-          expires_unix_ns INTEGER NOT NULL,
-          signature_digest TEXT NOT NULL,
-          recorded_unix_ns INTEGER NOT NULL,
-          semantic_digest TEXT NOT NULL,
-          FOREIGN KEY(decision_id)
-            REFERENCES integration_decision_bindings(decision_id)
-            DEFERRABLE INITIALLY DEFERRED
-        );
-        CREATE INDEX IF NOT EXISTS idx_integration_decision_seals_identity
-          ON integration_decision_seals(issuer,signing_identity,observed_unix_ns);
-        """
-    )
-    now = time.time_ns()
-    store.connection.execute(
-        "UPDATE engineering_schema_meta SET schema_version=?,updated_unix_ns=? "
-        "WHERE singleton=1",
-        (_SCHEMA_VERSION, now),
-    )
-    store.connection.execute(f"PRAGMA user_version={_SCHEMA_VERSION}")
-    store.connection.commit()
-
-
-def _sealed_store_init(
-    self: _control.EngineeringStore,
-    database: str | Path,
-    *args: Any,
-    **kwargs: Any,
-) -> None:
-    _BASE_STORE_INIT(self, database, *args, **kwargs)
-    try:
-        _install_seal_schema(self)
-    except BaseException:
-        self.connection.close()
-        raise
 
 
 def verify_sealed_candidate_evidence(
@@ -263,7 +205,9 @@ def bind_candidate_evidence(
         unsigned.expires_unix_ns,
     )
     try:
-        signature = trust_store.sign(unsigned, unsigned.issuer, unsigned.signing_identity)
+        signature = trust_store.sign(
+            unsigned, unsigned.issuer, unsigned.signing_identity
+        )
     except (KeyError, ValueError):
         raise _control.EngineeringError("sealed_evidence_signing_key") from None
     sealed = SealedCandidateEvidence(
@@ -348,7 +292,9 @@ def _seal_identity_payload(
         "signingIdentity": evidence.signing_identity,
         "observedUnixNs": evidence.observed_unix_ns,
         "expiresUnixNs": evidence.expires_unix_ns,
-        "signatureDigest": hashlib.sha256(evidence.signature.encode("utf-8")).hexdigest(),
+        "signatureDigest": hashlib.sha256(
+            evidence.signature.encode("utf-8")
+        ).hexdigest(),
     }
 
 
@@ -498,13 +444,3 @@ def integration_decision_seal(
         "recordedUnixNs": int(row["recorded_unix_ns"]),
         "semanticDigest": str(row["semantic_digest"]),
     }
-
-
-def install_seal() -> None:
-    if getattr(_control.EngineeringStore, "_lane_g_seal_installed", False):
-        return
-    _control.EngineeringStore.__init__ = _sealed_store_init  # type: ignore[method-assign]
-    _control.EngineeringStore.integration_decision_seal = integration_decision_seal  # type: ignore[attr-defined]
-    _facade.request_independent_review = request_independent_review
-    _facade.record_integration_decision = record_integration_decision
-    _control.EngineeringStore._lane_g_seal_installed = True  # type: ignore[attr-defined]
