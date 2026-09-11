@@ -3,10 +3,10 @@
 //! A normal SQLite filename, including a descriptor pseudo-path, does not bind
 //! SQLite's WAL and shared-memory opens to the same retained filesystem objects.
 //! A pool can also reconnect after the caller inspected a different object.
-//! Until the state crate has a qualified descriptor-backed VFS and one
-//! non-reconnecting connection, this module validates and retains the complete
-//! local file identity but deliberately returns `Unavailable` before SQLite is
-//! opened.
+//! Writer recovery still requires a qualified descriptor-backed VFS and a
+//! current writer fence. Those entry points return `Unavailable`. The separate
+//! cold-image API copies a retained descriptor into read-only memory; it cannot
+//! replay sidecars or restore a writer, and requires independent cut validation.
 
 use crate::SqliteConfig;
 use sqlx::SqlitePool;
@@ -14,6 +14,9 @@ use std::fmt;
 use std::path::Path;
 use std::path::PathBuf;
 use std::sync::Arc;
+
+#[path = "sqlite_recovery_image.rs"]
+mod image;
 
 #[cfg(unix)]
 use std::ffi::CString;
@@ -66,9 +69,9 @@ impl std::error::Error for SqliteRecoveryError {}
 
 /// Retained, read-only filesystem identities for one recovery attempt.
 ///
-/// This is not a recovery capability. It cannot be converted into a SQLite
-/// connection by this module. Clones share the same descriptors rather than
-/// reopening any path.
+/// This is not a recovery capability. A cold image can be copied into a separate
+/// read-only memory database, but requires an independently authenticated cut
+/// before its contents may be trusted. Clones share the same descriptors.
 #[derive(Clone, Debug)]
 pub struct ExistingSqliteRecoveryGuard {
     inner: Arc<RecoveryGuardInner>,
