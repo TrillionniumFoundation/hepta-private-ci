@@ -69,10 +69,10 @@ pub fn plan_observed_context(
     {
         return Err(E::Planner(PlannerError::LimitExceeded("observed_context")));
     }
-    let id = |name: &str| StableId::new(name).expect("fixed valid identifier");
-    let count_axis = id("verified-context-items");
-    let bytes_axis = id("context-bytes");
-    let read_id = id("read-context");
+    let id = |name: &str| StableId::new(name).map_err(|_| E::Planner(PlannerError::Arithmetic));
+    let count_axis = id("verified-context-items")?;
+    let bytes_axis = id("context-bytes")?;
+    let read_id = id("read-context")?;
     let context_digest = Digest32::of_bytes(observed.encoded_context);
     let q32 = |value: u32| FixedQ32::from_raw(i64::from(value) << 32);
     let budget = q32(observed.maximum_context_bytes);
@@ -81,7 +81,7 @@ pub fn plan_observed_context(
     objective.extend_from_slice(&observed.maximum_context_bytes.to_be_bytes());
     let objective_digest = Digest32::of_bytes(&objective);
     let profile = UtilityProfile {
-        profile_id: id("verified-context-delivery-v1"),
+        profile_id: id("verified-context-delivery-v1")?,
         dimensions: vec![(count_axis.clone(), AxisDirection::Maximize)],
         risk_ceilings: vec![],
         resource_ceilings: vec![AxisLimit {
@@ -125,7 +125,7 @@ pub fn plan_observed_context(
         },
         vec![OwnerSummaryV1 {
             owner_id: observed.owner_id.clone(),
-            revision: Revision::new(1).expect("first immutable observation revision"),
+            revision: Revision::new(1).map_err(|_| E::Planner(PlannerError::Arithmetic))?,
             objective_digest,
             body_generation: observed.body_generation,
             configuration_digest,
@@ -137,7 +137,7 @@ pub fn plan_observed_context(
         }],
     )
     .map_err(E::Planner)?;
-    let candidates = [id("abstain"), read_id.clone()]
+    let candidates = [id("abstain")?, read_id.clone()]
         .into_iter()
         .map(|candidate_id| {
             let is_read = candidate_id == read_id;
@@ -161,7 +161,7 @@ pub fn plan_observed_context(
     let prepared = prepare_plan(
         &snapshot,
         PlanningRequestV1 {
-            plan_id: id("context-delivery"),
+            plan_id: id("context-delivery")?,
             now_micros: observed.observed_at_micros,
             deadline_micros: observed.expires_at_micros,
             evaluation_policy_digest: configuration_digest,

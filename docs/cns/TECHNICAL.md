@@ -41,7 +41,22 @@ No slow loop may block a faster safety loop. A missed consolidation window is ob
 
 `OrganManifestV1` declares identity, version, class, ports, data authority, effect class, resource envelope, health checks, rollback predecessor and retirement policy. `BodyGraphSnapshotV1` contains all manifests, dependency and fallback edges, canonical topological order and a semantic digest.
 
-The body graph is acyclic. Every essential organ except the constitutional kernel and human override has a qualified fallback. A fallback may reduce capability but may not widen scope or effect authority. Local-hot-path organs reject configurations that require synchronous central RPC. Graph publication is atomic by generation; a consumer never mixes manifests from different generations.
+Initialization dependencies and fallback edges are separately acyclic. Runtime
+dataflow may contain feedback cycles, each bound to an explicit feedback profile
+with timing, queue, gain/saturation, operating-region, perturbation and exit
+evidence. Every essential organ except the constitutional kernel and human
+override has a qualified fallback. A fallback may reduce capability but may not
+widen scope or effect authority. Local-hot-path organs reject configurations
+that require synchronous central RPC. Graph publication is atomic by generation;
+a consumer never mixes manifests from different generations.
+
+The native `OrganGraphsV1` validator and `OrganHostV1` encode runtime ports,
+feedback components and process/host failure domains in addition to those two
+DAGs. The currently registered `BodyGraphSnapshotV1` is only the manifest plus
+initialization/fallback projection; it is not a wire-compatible alias of that
+native structure. A complete serialized runtime graph needs a new versioned wire
+adapter and consumer admission. Consumers must not infer omitted runtime links,
+feedback evidence or failure placement from the existing snapshot.
 
 ## 6. Organ lifecycle, addition, removal and modification
 
@@ -57,6 +72,13 @@ active -> draining -> retired
 Activation requires a current qualification receipt and distinct generator/operator identities. Removal begins with `draining`, blocks new work, reconciles outstanding operations, migrates or tombstones owned state, proves fallback readiness and only then retires. Deleting code is not the same as retiring an organ because historical records must remain interpretable.
 
 Runtime may choose among already qualified compatible organs and bounded soft settings. Code, schema, authority, topology and hard-boundary changes create `OrganProposalV1` or `TopologyProposalV1` for the next generation. Structural operations are typed `add`, `split`, `merge`, `rewire` and `retire`; arbitrary graph patches are rejected.
+
+The implemented native `replace_read_only_generation` cutover covers only
+trusted, stateless, compiled-in read-only handlers. It starts and validates the
+successor before retiring predecessor handlers; failed predecessor cleanup
+blocks publication and remains visible as stopped/quarantined state. It does
+not equate ephemeral `Ready` with qualification/activation or implement durable
+writer migration, model replacement or device control.
 
 ## 7. Objective, value and homeostasis
 
