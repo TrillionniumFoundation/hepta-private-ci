@@ -50,6 +50,13 @@ cd tools/hepta-os-evidence
 python3 -m unittest discover -s tests -v
 ```
 
+The native CI gate uses `python3 run_native_tests.py` in this directory. It
+requires matching procfs/PID namespaces and pidfd support and rejects any skipped
+test. The file entry point and `__main__` guard let multiprocessing's `spawn`
+reload the runner without executing the suite inside each inspection worker.
+Do not run this gate through a Python stdin heredoc: `<stdin>` cannot be reloaded
+by a spawned worker and causes legitimate captures to fail bundle inspection.
+
 Production entrypoint after independent deployment:
 
 ```bash

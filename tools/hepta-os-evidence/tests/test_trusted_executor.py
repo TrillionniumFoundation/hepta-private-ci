@@ -320,6 +320,8 @@ class TrustedExecutorTest(unittest.TestCase):
 
     def test_same_inode_and_atomic_replacement_execute_sealed_original(self):
         for atomic in (False, True):
+            self.tearDown()
+            self.setUp()
             with self.subTest(atomic=atomic):
                 self.prepare()
                 original = trusted_executor.run_harness
@@ -346,8 +348,6 @@ class TrustedExecutorTest(unittest.TestCase):
                 self.assertFalse(
                     (self.state / "work" / NONCE / "cwd" / "replacement-ran").exists()
                 )
-                self.tearDown()
-                self.setUp()
 
     def test_fifo_bundle_member_fails_without_hang(self):
         self.prepare(bundle_fifo=True)
@@ -450,13 +450,13 @@ class TrustedExecutorTest(unittest.TestCase):
             {"gap_transition_authorized": True},
             {"release_authorized": True},
         ):
+            self.tearDown()
+            self.setUp()
             with self.subTest(extra=extra):
                 self.prepare(manifest_extra=extra)
                 with self.assertRaisesRegex(ExecutionError, "fields differ"):
                     execute(NONCE, config=self.config, now=NOW)
                 self.assertEqual(self.result()["status"], "CAPTURE_FAILED_NO_RETRY")
-                self.tearDown()
-                self.setUp()
 
     def test_closed_output_pipes_do_not_bypass_authority_expiry(self):
         self.prepare(
