@@ -9,6 +9,7 @@ pub enum NduError {
     DimensionLimitExceeded,
     RequiredOrganLimitExceeded,
     EmptyObjectiveDigest,
+    EmptyProtocolDigest(&'static str),
     EmptySupportDigest { candidate: String, organ: String },
     MixedObjective,
     MixedGeneration,
@@ -18,6 +19,11 @@ pub enum NduError {
     UnknownAxis(String),
     DuplicateAxis(String),
     NegativeCeiling(String),
+    MissingAggregationRule(String),
+    DuplicateAggregationRule(String),
+    AggregationAxisMismatch(String),
+    AggregationConflict(String),
+    NegativeTolerance(String),
     MissingAbstainCandidate,
     AbstainInfeasible,
     IncompleteScalarization,
@@ -39,16 +45,21 @@ impl NduError {
             | Self::DimensionLimitExceeded
             | Self::RequiredOrganLimitExceeded => "NDU-E001",
             Self::EmptyObjectiveDigest
+            | Self::EmptyProtocolDigest(_)
             | Self::EmptySupportDigest { .. }
             | Self::MixedObjective
             | Self::MixedGeneration => "NDU-E002",
-            Self::DuplicateOrganContribution { .. } | Self::MissingRequiredOrgan { .. } => {
-                "NDU-E003"
-            }
-            Self::MissingAxis { .. }
-            | Self::UnknownAxis(_)
+            Self::DuplicateOrganContribution { .. }
+            | Self::MissingRequiredOrgan { .. }
+            | Self::MissingAxis { .. } => "NDU-E003",
+            Self::UnknownAxis(_)
             | Self::DuplicateAxis(_)
-            | Self::NegativeCeiling(_) => "NDU-E004",
+            | Self::NegativeCeiling(_)
+            | Self::MissingAggregationRule(_)
+            | Self::DuplicateAggregationRule(_)
+            | Self::AggregationAxisMismatch(_)
+            | Self::AggregationConflict(_)
+            | Self::NegativeTolerance(_) => "NDU-E004",
             Self::AbstainInfeasible => "NDU-E005",
             Self::MissingAbstainCandidate => "NDU-E006",
             Self::IncompleteScalarization | Self::InvalidWeight(_) => "NDU-E007",
@@ -72,6 +83,9 @@ impl fmt::Display for NduError {
                 formatter.write_str("required organ set exceeds 32 entries")
             }
             Self::EmptyObjectiveDigest => formatter.write_str("objective digest must not be zero"),
+            Self::EmptyProtocolDigest(field) => {
+                write!(formatter, "protocol digest must not be zero: {field}")
+            }
             Self::EmptySupportDigest { candidate, organ } => write!(
                 formatter,
                 "candidate {candidate} contribution from organ {organ} has an empty support digest"
@@ -95,6 +109,28 @@ impl fmt::Display for NduError {
             Self::DuplicateAxis(axis) => write!(formatter, "duplicate utility axis: {axis}"),
             Self::NegativeCeiling(axis) => {
                 write!(formatter, "ceiling must be non-negative: {axis}")
+            }
+            Self::MissingAggregationRule(axis) => {
+                write!(formatter, "missing aggregation rule for axis {axis}")
+            }
+            Self::DuplicateAggregationRule(axis) => {
+                write!(formatter, "duplicate aggregation rule for axis {axis}")
+            }
+            Self::AggregationAxisMismatch(axis) => {
+                write!(
+                    formatter,
+                    "aggregation policy contains unexpected axis {axis}"
+                )
+            }
+            Self::AggregationConflict(axis) => write!(
+                formatter,
+                "require-equal aggregation received conflicting values for axis {axis}"
+            ),
+            Self::NegativeTolerance(axis) => {
+                write!(
+                    formatter,
+                    "Pareto tolerance must be non-negative for axis {axis}"
+                )
             }
             Self::MissingAbstainCandidate => {
                 formatter.write_str("every legal candidate set must contain abstain")

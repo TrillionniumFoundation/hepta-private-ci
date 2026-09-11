@@ -1,0 +1,230 @@
+{
+  "schema": "hepta.lane-b-implementation-truth.v2",
+  "schemaVersion": 2,
+  "documentClass": "repository_controlled_truth_boundary",
+  "planId": "HEPTA-GLOBAL-MODULAR-DEVELOPMENT-PLAN",
+  "planVersion": "8.0.0",
+  "laneId": "LANE-B-RUNTIME",
+  "baseline": {
+    "commit": "1f932d10e77714f3765821b514d126e812b08215",
+    "tree": "855bac313c81eecd8b796d7af944ba95199efd86"
+  },
+  "claimBoundary": {
+    "repositoryTruthModelClosed": true,
+    "laneModuleSetClosed": true,
+    "observedSourceAnchorsClosed": true,
+    "currentMappingDebtClosed": true,
+    "targetDesignImplementationClosed": false,
+    "productionConsumerCallsitesProved": false,
+    "productExecutionProved": false,
+    "deploymentProved": false,
+    "independentAcceptanceProved": false,
+    "externalEffectsProved": false,
+    "hardwareEvidenceProved": false,
+    "futureWindowEfficacyProved": false
+  },
+  "rules": {
+    "rootMaterializationIsNotImplementation": true,
+    "designOperationIsNotNativeSymbol": true,
+    "libraryReachabilityIsNotProductionCallsite": true,
+    "callerSuppliedObservationIsNotTerminalProof": true,
+    "qualificationOnlyIsNotProduction": true,
+    "oneSourceBlobIsNotModuleClosure": true,
+    "externalEvidenceCannotBeSelfIssued": true,
+    "mappedSymbolMustBeUniqueInDeclaredPath": true,
+    "mappedSourceMustBeInsideAllowedOwnerRoots": true,
+    "plannedOperationMustNotInventSource": true
+  },
+  "allowedOperationStates": [
+    "implemented",
+    "implemented_partial",
+    "boundary_only",
+    "planned"
+  ],
+  "moduleOrder": [
+    "runtime.supervisor",
+    "runtime.fleet",
+    "runtime.agentd",
+    "runtime.codex",
+    "inference.control",
+    "inference.worker",
+    "automation.taskflow",
+    "channel.matrix",
+    "browser.servo",
+    "ui.control",
+    "ui.native"
+  ],
+  "modules": [
+    {
+      "module": "runtime.supervisor",
+      "maturity": "partial_runtime",
+      "declaredRoots": ["codex-rs/hepta-supervisor"],
+      "operations": [
+        {"designOperation":"start_instance","state":"implemented_partial","path":"codex-rs/hepta-supervisor/src/supervisor.rs","symbol":"pub fn start(","callerClass":"daemon_internal","buildTarget":"codex-hepta-supervisor"},
+        {"designOperation":"observe_health","state":"implemented_partial","path":"codex-rs/hepta-supervisor/src/supervisor.rs","symbol":"pub fn tick(","callerClass":"daemon_internal","buildTarget":"codex-hepta-supervisor"},
+        {"designOperation":"drain","state":"implemented","path":"codex-rs/hepta-supervisor/src/supervisor.rs","symbol":"pub fn drain(","callerClass":"daemon_internal","buildTarget":"codex-hepta-supervisor"},
+        {"designOperation":"load_next","state":"implemented_partial","path":"codex-rs/hepta-supervisor/src/supervisor.rs","symbol":"pub fn upgrade(","callerClass":"daemon_internal","buildTarget":"codex-hepta-supervisor"}
+      ],
+      "productionCallerState": "unproved",
+      "productExecutionState": "unproved",
+      "stateDisposition": "The supervisor owns lifecycle transitions and generation fencing; exact deployed binary and operator RPC identities remain evidence gates.",
+      "terminalObserverDisposition": "Process and health terminality exist, while user-task terminality remains outside the supervisor owner.",
+      "residualGaps": ["bind each external control RPC to its authorization path", "qualify restart upgrade rollback on every supported host", "publish measured readiness watchdog and drain budgets"]
+    },
+    {
+      "module": "runtime.fleet",
+      "maturity": "partial_runtime",
+      "declaredRoots": ["codex-rs/hepta-fleet"],
+      "operations": [
+        {"designOperation":"admit_host","state":"implemented_partial","path":"codex-rs/hepta-fleet/src/registry.rs","symbol":"pub fn register(","callerClass":"library_only","buildTarget":"codex-hepta-fleet"},
+        {"designOperation":"allocate","state":"boundary_only","path":"codex-rs/hepta-fleet/src/allocation.rs","symbol":"pub fn calculate_local_allocation_v1(","callerClass":"library_only","buildTarget":"codex-hepta-fleet"},
+        {"designOperation":"renew_or_revoke","state":"planned","path":null,"symbol":null,"callerClass":"none","buildTarget":null}
+      ],
+      "productionCallerState": "unproved",
+      "productExecutionState": "unproved",
+      "stateDisposition": "Registry state and authority-free allocation calculation exist; a durable allocation-grant and lease owner is not yet bound.",
+      "terminalObserverDisposition": "The allocator publishes no lease and cannot establish actual resource-holder terminality.",
+      "residualGaps": ["implement allocation grant lease renewal and revocation", "bind authenticated capacity freshness and failure-domain fencing", "prove local enforcement and uncertain-holder reconciliation"]
+    },
+    {
+      "module": "runtime.agentd",
+      "maturity": "partial_runtime",
+      "declaredRoots": ["codex-rs/hepta-agentd"],
+      "operations": [
+        {"designOperation":"compose_runtime","state":"implemented_partial","path":"codex-rs/hepta-agentd/src/app_runtime.rs","symbol":"pub(crate) async fn run_app_server(","callerClass":"daemon_internal","buildTarget":"codex-hepta-agentd"},
+        {"designOperation":"start_run","state":"implemented_partial","path":"codex-rs/hepta-agentd/src/app_runtime.rs","symbol":"pub(crate) fn app_server_runtime_options_for_agent(","callerClass":"daemon_internal","buildTarget":"codex-hepta-agentd"},
+        {"designOperation":"cancel_run","state":"planned","path":null,"symbol":null,"callerClass":"none","buildTarget":null},
+        {"designOperation":"attach_context","state":"planned","path":null,"symbol":null,"callerClass":"none","buildTarget":null}
+      ],
+      "productionCallerState": "unproved",
+      "productExecutionState": "unproved",
+      "stateDisposition": "Agentd remains a thin composition host; app-server and core own thread and turn execution state.",
+      "terminalObserverDisposition": "The embedded spine exposes admission and interrupt handlers, but exact Agentd product callsites and full-run settlement remain unproved.",
+      "residualGaps": ["bind Agentd control operations to exact app-server requests", "publish authenticated socket and peer-identity topology", "qualify backpressure cancellation and restart recovery"]
+    },
+    {
+      "module": "runtime.codex",
+      "maturity": "partial_runtime",
+      "declaredRoots": ["codex-rs/app-server", "codex-rs/core", "codex-rs/hepta-codex-adapter"],
+      "operations": [
+        {"designOperation":"open_thread","state":"implemented","path":"codex-rs/app-server/src/request_processors/thread_processor.rs","symbol":"pub(crate) async fn thread_start(","callerClass":"app_server_protocol","buildTarget":"codex-app-server"},
+        {"designOperation":"submit_turn","state":"implemented_partial","path":"codex-rs/app-server/src/request_processors/turn_processor.rs","symbol":"pub(crate) async fn turn_start(","callerClass":"app_server_protocol","buildTarget":"codex-app-server"},
+        {"designOperation":"dispatch_tool","state":"implemented_partial","path":"codex-rs/core/src/tools/router.rs","symbol":"pub async fn dispatch_tool_call_with_code_mode_result(","callerClass":"codex_core_runtime","buildTarget":"codex-core"},
+        {"designOperation":"observe_delivery","state":"implemented_partial","path":"codex-rs/core/src/codex_thread.rs","symbol":"pub(crate) async fn submit_turn_input_and_wait_for_exact_admission(","callerClass":"codex_core_runtime","buildTarget":"codex-core"}
+      ],
+      "productionCallerState": "unproved",
+      "productExecutionState": "unproved",
+      "stateDisposition": "The existing app-server and Codex core are the single thread turn model and tool execution spine.",
+      "terminalObserverDisposition": "Native handlers and exact admission exist; Hepta-specific payload evidence and external effect settlement remain separately owned.",
+      "residualGaps": ["bind Hepta context and objective tuple at public turn entry", "prove named Agentd product caller through thread and turn handlers", "qualify model stream tool terminality and acknowledgement loss"]
+    },
+    {
+      "module": "inference.control",
+      "maturity": "boundary_and_ledger",
+      "declaredRoots": ["codex-rs/hepta-infer-core", "codex-rs/hepta-inferd"],
+      "operations": [
+        {"designOperation":"reserve_request","state":"implemented_partial","path":"codex-rs/hepta-infer-core/src/lib.rs","symbol":"pub fn reserve(","callerClass":"library_only","buildTarget":"codex-hepta-infer-core"},
+        {"designOperation":"schedule","state":"boundary_only","path":"codex-rs/hepta-inferd/src/lib.rs","symbol":"pub fn plan(","callerClass":"library_only","buildTarget":"codex-hepta-inferd"},
+        {"designOperation":"cancel","state":"implemented_partial","path":"codex-rs/hepta-infer-core/src/lib.rs","symbol":"pub fn cancel(","callerClass":"library_only","buildTarget":"codex-hepta-infer-core"},
+        {"designOperation":"settle","state":"implemented_partial","path":"codex-rs/hepta-infer-core/src/lib.rs","symbol":"pub fn complete(","callerClass":"library_only","buildTarget":"codex-hepta-infer-core"}
+      ],
+      "productionCallerState": "unproved",
+      "productExecutionState": "unproved",
+      "stateDisposition": "The current bounded request ledger is process-local and does not prove the declared durable control-plane writer.",
+      "terminalObserverDisposition": "Settlement consumes a supplied receipt digest rather than an authenticated worker or provider terminal observation.",
+      "residualGaps": ["implement durable request reservation assignment and settlement store", "bind quota worker discovery dispatch outbox and reconciliation", "prove cancellation completion race and late-usage accounting"]
+    },
+    {
+      "module": "inference.worker",
+      "maturity": "boundary_scaffold",
+      "declaredRoots": ["codex-rs/hepta-infer-worker-host"],
+      "operations": [
+        {"designOperation":"load_model","state":"planned","path":null,"symbol":null,"callerClass":"none","buildTarget":null},
+        {"designOperation":"run","state":"boundary_only","path":"codex-rs/hepta-infer-worker-host/src/lib.rs","symbol":"pub fn execute(","callerClass":"library_only","buildTarget":"codex-hepta-infer-worker-host"},
+        {"designOperation":"unload","state":"planned","path":null,"symbol":null,"callerClass":"none","buildTarget":null}
+      ],
+      "productionCallerState": "unproved",
+      "productExecutionState": "unproved",
+      "stateDisposition": "The current worker boundary owns no authoritative state and validates only caller-supplied execution observations.",
+      "terminalObserverDisposition": "No real weights runtime device or model process is currently observed by this module.",
+      "residualGaps": ["implement isolated worker process and authenticated control transport", "implement exact model manifest load run cancellation and unload", "bind real runtime device usage observation and control caller"]
+    },
+    {
+      "module": "automation.taskflow",
+      "maturity": "qualification_runtime",
+      "declaredRoots": ["codex-rs/hepta-automation"],
+      "operations": [
+        {"designOperation":"register_schedule","state":"implemented_partial","path":"codex-rs/hepta-automation/src/taskflow.rs","symbol":"pub struct TaskFlowDefinition","callerClass":"qualification_only","buildTarget":"codex-hepta-automation"},
+        {"designOperation":"materialize_due","state":"implemented_partial","path":"codex-rs/hepta-automation/src/scheduler.rs","symbol":"pub async fn tick(","callerClass":"qualification_only","buildTarget":"codex-hepta-automation"},
+        {"designOperation":"claim_occurrence","state":"implemented_partial","path":"codex-rs/hepta-automation/src/scheduler.rs","symbol":"claim_due(","callerClass":"qualification_only","buildTarget":"codex-hepta-automation"},
+        {"designOperation":"execute_step","state":"boundary_only","path":"codex-rs/hepta-automation/src/taskflow_execution_boundary.rs","symbol":"pub fn assess_local_taskflow_boundary(","callerClass":"qualification_only","buildTarget":"codex-hepta-automation"}
+      ],
+      "productionCallerState": "unproved",
+      "productExecutionState": "unproved",
+      "stateDisposition": "The SQLite qualification scheduler and run ledger are fenced; production effect ownership remains external.",
+      "terminalObserverDisposition": "Uncertain dispatch is preserved, but a trusted external-effect observer and compensation executor are not connected.",
+      "residualGaps": ["unify canonical schedule occurrence and current graph ledger", "bind final-use authority and App Server production caller", "qualify DST fencing crash recovery and compensation"]
+    },
+    {
+      "module": "channel.matrix",
+      "maturity": "partial_runtime",
+      "declaredRoots": ["codex-rs/hepta-matrix-sdk", "codex-rs/hepta-matrixd"],
+      "operations": [
+        {"designOperation":"admit_event","state":"implemented_partial","path":"codex-rs/hepta-matrixd/src/runtime.rs","symbol":"pub async fn process_event(","callerClass":"runtime_internal","buildTarget":"codex-hepta-matrixd"},
+        {"designOperation":"prepare_send","state":"implemented_partial","path":"codex-rs/hepta-matrixd/src/runtime.rs","symbol":"pub async fn project_app_server_event(","callerClass":"runtime_internal","buildTarget":"codex-hepta-matrixd"},
+        {"designOperation":"observe_send","state":"planned","path":null,"symbol":null,"callerClass":"none","buildTarget":null}
+      ],
+      "productionCallerState": "unproved",
+      "productExecutionState": "unproved",
+      "stateDisposition": "Durable event room thread outbox and transaction identities exist; exact homeserver transport ownership remains open.",
+      "terminalObserverDisposition": "App-server turn terminality is distinct from and cannot substitute for Matrix homeserver send terminality.",
+      "residualGaps": ["bind exact sync decoder and outbox transport callsites", "implement homeserver acknowledgement and unknown-send reconciliation", "qualify encryption reconnect redaction rate limits and restore"]
+    },
+    {
+      "module": "browser.servo",
+      "maturity": "boundary_scaffold",
+      "declaredRoots": ["apps/hepta-browser", "third_party/servo-patches"],
+      "operations": [
+        {"designOperation":"open_profile","state":"planned","path":null,"symbol":null,"callerClass":"none","buildTarget":null},
+        {"designOperation":"observe_page","state":"boundary_only","path":"apps/hepta-browser/src/browser.js","symbol":"export function projectPageState(","callerClass":"library_only","buildTarget":"hepta-browser"},
+        {"designOperation":"navigate_or_act","state":"boundary_only","path":"apps/hepta-browser/src/browser.js","symbol":"export function buildNavigationIntent(","callerClass":"library_only","buildTarget":"hepta-browser"}
+      ],
+      "productionCallerState": "unproved",
+      "productExecutionState": "unproved",
+      "stateDisposition": "No browser profile writer exists in the current JavaScript boundary and pinned Servo source scaffold.",
+      "terminalObserverDisposition": "Page projection is caller supplied; no Servo process network action or trusted remote business outcome is observed.",
+      "residualGaps": ["implement reproducible Servo process host and authenticated IPC", "implement isolated profile credential origin network and filesystem enforcement", "qualify page generations actions downloads crashes and reconciliation"]
+    },
+    {
+      "module": "ui.control",
+      "maturity": "presentation_core",
+      "declaredRoots": ["apps/hepta-control-ui"],
+      "operations": [
+        {"designOperation":"read_view","state":"boundary_only","path":"apps/hepta-control-ui/src/control.js","symbol":"export function projectRuntime(","callerClass":"library_only","buildTarget":"hepta-control-ui"},
+        {"designOperation":"submit_request","state":"boundary_only","path":"apps/hepta-control-ui/src/control.js","symbol":"export function buildOperationIntent(","callerClass":"library_only","buildTarget":"hepta-control-ui"},
+        {"designOperation":"request_stop","state":"planned","path":null,"symbol":null,"callerClass":"none","buildTarget":null}
+      ],
+      "productionCallerState": "unproved",
+      "productExecutionState": "unproved",
+      "stateDisposition": "Presentation is stateless by design; backend owners retain operation authority and terminal facts.",
+      "terminalObserverDisposition": "Local projection cannot authenticate a backend terminal state or cancellation result.",
+      "residualGaps": ["select and bind Web runtime generated client and deployment target", "implement authentication reconnect stale-view and stop protocol", "qualify accessibility security and end-to-end backend callsites"]
+    },
+    {
+      "module": "ui.native",
+      "maturity": "boundary_scaffold",
+      "declaredRoots": ["apps/hepta-native"],
+      "operations": [
+        {"designOperation":"connect_runtime","state":"planned","path":null,"symbol":null,"callerClass":"none","buildTarget":null},
+        {"designOperation":"render_runtime_view","state":"planned","path":null,"symbol":null,"callerClass":"none","buildTarget":null},
+        {"designOperation":"request_platform_capability","state":"boundary_only","path":"apps/hepta-native/src/native.js","symbol":"export function buildNativeIntent(","callerClass":"library_only","buildTarget":"hepta-native"},
+        {"designOperation":"apply_shell_update","state":"planned","path":null,"symbol":null,"callerClass":"none","buildTarget":null}
+      ],
+      "productionCallerState": "unproved",
+      "productExecutionState": "unproved",
+      "stateDisposition": "No native application framework platform writer secure-storage owner or updater is implemented in the current scaffold.",
+      "terminalObserverDisposition": "Trusted backend receipt verification is deliberately absent from the local intent builder.",
+      "residualGaps": ["select supported native frameworks and target platform matrix", "implement authenticated IPC secure storage and narrow OS adapters", "implement signed update anti-rollback accessibility and crash recovery"]
+    }
+  ]
+}

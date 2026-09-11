@@ -1,0 +1,36 @@
+{
+  "schema": "hepta.lane-e-status.v2",
+  "schemaVersion": 2,
+  "lane": "LANE-E-LEARNING",
+  "sourceIdentity": {
+    "base": "dynamic_exact_pull_request_base_sha",
+    "head": "dynamic_exact_pull_request_head_sha",
+    "tree": "dynamic_exact_head_tree",
+    "orderedSyntheticMerge": "base_then_head",
+    "mutableBranchAsQualificationTarget": false
+  },
+  "stages": {
+    "documentedTarget": "satisfied_by_repository_source",
+    "sourceImplemented": "satisfied_by_repository_source",
+    "apiAndTestMapped": "satisfied_by_closed_world_verifier",
+    "sourceQualifiedExactHead": "requires_terminal_success_for_current_head",
+    "sourceQualifiedSyntheticMerge": "requires_terminal_success_for_current_ordered_merge",
+    "productWired": "external_exact_candidate_evidence_required",
+    "independentlyAccepted": "external_exact_candidate_evidence_required",
+    "runtimeActivated": "external_exact_candidate_evidence_required",
+    "longitudinallyValidated": "external_future_calendar_evidence_required"
+  },
+  "repositoryControlledGaps": [],
+  "externalEvidenceGates": [
+    "RDY-EXT-002-independent-semantic-review",
+    "RDY-EXT-003-product-consumer-runtime-model-device-identity",
+    "RDY-EXT-004-future-calendar-efficacy-retention-support",
+    "RDY-EXT-005-biomimicry-claim-evidence-when-applicable",
+    "RDY-EXT-006-target-hardware-or-embodied-evidence-when-applicable",
+    "RDY-EXT-007-external-system-or-data-owner-consent-when-applicable",
+    "RDY-EXT-008-independent-operator-acceptance",
+    "RDY-EXT-009-selection-canary-promotion-release"
+  ],
+  "authorityDelta": "none",
+  "closureRule": "Repository-controlled gaps are closed only by exact-head and ordered-merge source checks. External evidence gates cannot be self-issued, converted into source status, or erased by this repository."
+}

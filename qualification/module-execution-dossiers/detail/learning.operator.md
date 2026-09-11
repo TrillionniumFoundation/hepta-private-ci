@@ -1,44 +1,68 @@
 # learning.operator: implementation design
 
 Parent: `docs/modules/learning.operator/TECHNICAL.md`. Lane: `LANE-E-LEARNING`.
-Status: specified target, not implemented or independently accepted. Common requirements: `../EXECUTION_SEMANTICS.md` and `../TECHNICAL.md`. Canonical ownership and package predecessors are unchanged.
+Status: deterministic reference, simplest-sufficient tabular learner and action-conditioned world-model source candidate implemented; exact-head and ordered-base synthetic-merge CI determine source qualification. Common requirements: `../EXECUTION_SEMANTICS.md`, `../TECHNICAL.md` and `../../../docs/engineering/MODULE_ENGINEERING_STANDARD.md`.
 
 ## 1. Source and work envelope
 
-Roots: `codex-rs/hepta-bellman-operator`.
+Root: `codex-rs/hepta-bellman-operator`.
 Packages: `HBO-0-BELLMAN-OPERATOR-CONTRACTS`, `HBO-1-OPERATOR-SENSOR-CORE`, `HBO-2-BELLMAN-OPERATOR-SHADOW`, `BIO-3-WORLD-MODEL-PREDICTION-ERROR`.
 
-Operation signatures below are design contracts, not assertions of existing native symbols. Bind each to an existing or planned symbol and consumer inside the owner envelope. Preserve existing stores and APIs; do not create another authority or execution spine.
+Concrete mappings are recorded in `../../../codex-rs/hepta-bellman-operator/NATIVE_MAPPING.md` and `../../../docs/lane-e/LANE_E_IMPLEMENTATION_MATRIX.json`. No operation is an online policy, selector or production writer.
 
 ## 2. Public operations and contract details
 
-`build_sensor_core(design, applicability_profile) -> OperatorSensorCoreManifestV1`; `fit_transition(dataset, dynamics_profile) -> WorldModelCandidate`; `fit_value_operator(dataset, sensor_core, objective, profile) -> BellmanOperatorArtifactV1`; `predict_candidate(model, state, legal_action) -> OutcomeDistribution`. Transition/dynamics estimation and continuation-value estimation have separate artifacts, losses and evaluations.
+The closed-world native surface includes:
+
+- `build_targets` and its legacy `train` alias;
+- `validate_applicability_certificate`;
+- `build_sensor_core`;
+- `evaluate_bellman_reference`;
+- `admit_operator_regularity`;
+- `fit_transition_model` and `predict_transition`;
+- `fit_tabular_operator` and `predict_tabular_operator`;
+- `fit_tabular_operator_strict_v2` and `predict_tabular_operator_indexed_v2`.
+
+The original `train` function remains a deterministic Bellman-target builder, not a neural trainer. The strict V2 wrapper rejects duplicate underlying evidence even when callers relabel sample IDs. Indexed prediction validates canonical cell order and uses binary search instead of a linear full-grid scan.
 
 ## 3. State records and transaction design
 
-No production source writer. Training reads immutable ledger-bound datasets and writes candidate artifacts through learning.artifacts. Sensor cores are fixed versioned designs, not replay caches. Artifacts bind axis partition, conditioning snapshot, model and dataset lineage, normalized units, rank/architecture, code/runtime/device, error budget, applicability certificate and predecessor.
+There is no production source writer. Training reads an immutable, ledger-bound dataset and emits deny-all candidate values for `learning.artifacts`. Sensor cores are fixed versioned designs rather than replay caches. Artifacts bind objective, dataset, sensor core, model/training profile, runtime/device identity, error budget, applicability evidence and predecessor lineage through the artifact owner.
+
+The tabular learner requires a complete canonical sensor-by-action grid and a positive minimum sample count for every cell. It stores mean, minimum, maximum, sample count and an evidence digest. Missing or underfilled cells fail. The strict path additionally requires globally unique source evidence digests so one observation cannot be counted twice under different sample IDs.
 
 ## 4. Deterministic algorithm and scheduling
 
-Partition smooth, jump and hard axes; reject unsupported ellipticity/regularity rather than inject noise into hard state; construct deterministic farthest-point sensors; run scalar/tabular monotone reference; train the simplest sufficient direct value/action-gap candidate; measure approximation, reconstruction, optimization, statistics and rollout errors separately. Residual mode is allowed only on the supported near-greedy subset. World models additionally predict calibrated one/multistep action-conditioned transitions and flag OOD.
+Partition smooth, jump and hard axes; reject unsupported ellipticity or regularity; construct deterministic farthest-point sensors; measure fill distance, separation radius and mesh ratio; run the complete tabular Bellman reference; fit the simplest sufficient candidate; then measure rank, reconstruction, shape, OOD and each error-budget component separately.
+
+The action-conditioned world-model baseline groups independently observed samples by state/action, publishes exact Q32 branch probabilities that sum to one and rejects unsupported pairs. Every model and operator prediction is synthetic and cannot become the independent factual outcome used to judge the same candidate.
+
+A neural or low-rank tensor model requires a separately reviewed immutable profile and must justify itself against both deterministic and strict-tabular baselines.
 
 ## 5. Capacity and performance profile
 
-Canonical smooth dimensions <=32, sensor count <=4096, rank <=64, reconstruction gain <=1.02 and total normalized error <=0.05 where applicable. Training compute/epochs/memory and simulator calls are manifest budgets. A coordinate failing assumptions uses a qualified simpler fallback, not a fabricated certificate.
+Canonical bounds are: 32 smooth dimensions, 4,096 sensors, 128 actions, 262,144 tabular cells, 1,000,000 training rows, rank 64, reconstruction gain 1.02 and total normalized error 0.05. Thresholds belong to a versioned qualification profile and are not target-host measurements.
 
-Pilot ceilings are design targets, not measurements. Stricter canonical limits prevail. Bind actual schema/migration, host and measurements before composition; stateless modules prove absence rather than inventing state.
+The strict predictor is logarithmic in cell count after canonical artifact construction. Benchmark training sort/group cost, peak memory, cold index validation, supported lookup, OOD rejection and target-device inference separately.
 
 ## 6. Concrete verification cases
 
-- OP-01: analytic sensor/Bellman table reproduces canonical Q32 goldens.
-- OP-02: degenerate diffusion, bad mesh ratio or excessive reconstruction gain disables the learned path.
-- OP-03: a high in-sample fit with poor future calibration/retention fails evaluation.
-- OP-04: model-generated rollouts remain synthetic and cannot become independent factual outcome evidence.
+- OP-01: sensor construction and Bellman tables reproduce deterministic goldens.
+- OP-02: bad applicability, geometry, shape, OOD or error budget disables the learned path.
+- OP-03: high in-sample fit without future calibration, retention and unlearning remains insufficient.
+- OP-04: model-generated rollouts remain synthetic and unsupported pairs abstain.
+- OP-05: complete-grid training, unique source evidence and canonical indexed lookup are mandatory.
 
-These are required product test designs, not executed-test receipts. Each implementation supplies native test identity, exact input/output and independent oracle evidence.
+Every case maps to concrete Rust tests in `../../lane-e/TEST_TRACEABILITY.json`. OP-05 is part of the authoritative operation set and may not be hidden as a supplemental operation.
 
 ## 7. Integration, rollback and capability ceiling
 
-NDU consumes bounded continuation values but does not replace the world model. C1 may use the simpler baseline allowed by its registered package; do not silently bypass existing DAG predecessors. Rollback loads a complete compatible operator/sensor tuple under current revocations.
+Operator input should consume a self-verifying ledger snapshot receipt and current artifact-withdrawal frontier. NDU may consume bounded continuation values but does not replace the world model. Rollback loads a complete compatible tuple under current revocations and never silently bypasses DAG predecessors.
 
-Use all eighteen dossier receipt fields. Immediate revocation/stop remains effective across frozen snapshots. Preserve every applicable external gate; no generator self-acceptance, self-merge or self-release.
+Immediate revocation and stop remain effective. Preserve every external gate; no producer self-evaluation, selection, process loading, promotion or release is authorized.
+
+## 8. Native closure and remaining evidence
+
+Repository-controlled coverage includes applicability, sensor geometry, deterministic Bellman reference, strict simplest-sufficient fitting, regularity/error budgets, action-conditioned dynamics, OOD rejection and cross-crate public API linkage. `../../../scripts/hepta-lane-e-closure.py` verifies the complete operation and test set; `.github/workflows/hepta-lane-e-gap-closure.yml` compiles, tests, lints and formats exact head and ordered merge.
+
+The repository cannot self-issue independent mathematical review, real model/runtime identity, target-device measurements, future-time calibration/retention, live-world transitions, operator acceptance, selected-process loading, canary, promotion or release. Those exact-candidate receipts remain external.

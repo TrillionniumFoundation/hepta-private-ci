@@ -19,13 +19,18 @@ use crate::SuccessPredicate;
 const MAX_CONSTRAINTS: usize = 256;
 const MAX_SUCCESS_PREDICATES: usize = 128;
 const MAX_ACTIONS: usize = 128;
+const MAX_CALLER_ACTIONS_WITHOUT_ABSTAIN: usize = MAX_ACTIONS - 1;
 const MAX_SOFT_DIMENSIONS: usize = 64;
 const OBJECTIVE_DIGEST_DOMAIN: &[u8] = b"hepta.objective.v1";
 const CONFLICT_DIGEST_DOMAIN: &[u8] = b"hepta.objective.conflict.v1";
 const CONSTRAINT_DIGEST_DOMAIN: &[u8] = b"hepta.objective.constraints.v1";
 
 /// Compiles a typed source envelope into an immutable objective or an explicit
-/// minimal conflict receipt.
+/// inclusion-minimal conflict receipt.
+///
+/// `abstain` is an intrinsic, confirmation-free safety action. Callers may
+/// include it explicitly, but cannot forbid it or consume its reserved slot
+/// with another action.
 pub fn compile(
     mut source: ObjectiveSourceEnvelope,
 ) -> Result<Result<ObjectiveCompileReceipt, ObjectiveConflictReceipt>, ObjectiveError> {
@@ -59,17 +64,14 @@ pub fn compile(
         return Ok(Err(conflict_receipt(&source, requested_forbidden)));
     }
 
-    let abstain = StableId::new("abstain").map_err(|_| ObjectiveError::Arithmetic)?;
-    if !forbidden.contains(&abstain) && !legal_actions.iter().any(|action| action.id == abstain) {
+    let abstain = abstain_id()?;
+    if !legal_actions.iter().any(|action| action.id == abstain) {
         legal_actions.push(ActionClass {
             id: abstain.clone(),
             confirmation: ConfirmationPolicy::NotRequired,
         });
-        legal_actions.sort_by(action_order);
     }
-    if legal_actions.is_empty() {
-        return Ok(Err(conflict_receipt(&source, vec![abstain])));
-    }
+    legal_actions.sort_by(action_order);
     validate_count("compiled legal actions", legal_actions.len(), MAX_ACTIONS)?;
 
     let disposition = if legal_actions.len() == 1 && legal_actions[0].id == abstain {
@@ -107,7 +109,6 @@ fn validate_source(source: &ObjectiveSourceEnvelope) -> Result<(), ObjectiveErro
         source.success_predicates.len(),
         MAX_SUCCESS_PREDICATES,
     )?;
-    validate_count("allowed actions", source.allowed_actions.len(), MAX_ACTIONS)?;
     validate_count(
         "forbidden actions",
         source.forbidden_actions.len(),
@@ -118,6 +119,33 @@ fn validate_source(source: &ObjectiveSourceEnvelope) -> Result<(), ObjectiveErro
         source.soft_preferences.len(),
         MAX_SOFT_DIMENSIONS,
     )?;
+
+    let abstain = abstain_id()?;
+    if source.forbidden_actions.iter().any(|id| id == &abstain) {
+        return Err(ObjectiveError::AbstainUnavailable);
+    }
+    match source
+        .allowed_actions
+        .iter()
+        .find(|action| action.id == abstain)
+    {
+        Some(action) if action.confirmation != ConfirmationPolicy::NotRequired => {
+            return Err(ObjectiveError::AbstainUnavailable);
+        }
+        Some(_) => {
+            validate_count(
+                "caller allowed actions",
+                source.allowed_actions.len(),
+                MAX_ACTIONS,
+            )?;
+        }
+        None => validate_count(
+            "caller allowed actions without intrinsic abstain",
+            source.allowed_actions.len(),
+            MAX_CALLER_ACTIONS_WITHOUT_ABSTAIN,
+        )?,
+    }
+
     if source.principal_scope.as_str().is_empty() {
         return Err(ObjectiveError::EmptyPrincipalScope);
     }
@@ -199,6 +227,10 @@ fn validate_soft_preferences(source: &ObjectiveSourceEnvelope) -> Result<(), Obj
         }
     }
     Ok(())
+}
+
+fn abstain_id() -> Result<StableId, ObjectiveError> {
+    StableId::new("abstain").map_err(|_| ObjectiveError::Arithmetic)
 }
 
 fn conflict_receipt(

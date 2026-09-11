@@ -967,12 +967,14 @@ impl ProviderEffectJournal {
             return Some(ProviderEffectState::Indeterminate);
         }
         let observations = self.acknowledgements.get(key.as_str());
-        Some(
-            observations
-                .and_then(|items| items.last())
-                .map_or(ProviderEffectState::Pending, ProviderEffectAck::state),
-        )
-        .filter(|_| intent.key == *key)
+        let state = observations
+            .and_then(|items| items.last())
+            .map_or(ProviderEffectState::Pending, ProviderEffectAck::state);
+        if intent.key == *key {
+            Some(state)
+        } else {
+            None
+        }
     }
 
     pub fn intent(&self, key: &ProviderEffectKey) -> Option<&ProviderEffectIntent> {
