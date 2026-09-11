@@ -806,6 +806,7 @@ mod tests {
     use codex_app_server_protocol::TurnItemsView;
     use codex_app_server_protocol::TurnStatus;
     use codex_core::config::ConfigBuilder;
+    use codex_exec_server::ExecServerRuntimePaths;
     use pretty_assertions::assert_eq;
     use std::path::Path;
     use tempfile::TempDir;
@@ -835,8 +836,33 @@ mod tests {
         let state_db = codex_rollout::state_db::try_init(config.as_ref())
             .await
             .expect("state db should initialize for in-process test");
+        #[cfg(target_os = "linux")]
+        let codex_linux_sandbox_exe = Some(
+            core_test_support::find_codex_linux_sandbox_exe()
+                .expect("should find binary for codex-linux-sandbox"),
+        );
+        #[cfg(not(target_os = "linux"))]
+        let codex_linux_sandbox_exe = None;
+        // core_test_support installs arg0 dispatch for this test executable.
+        let arg0_paths = Arg0DispatchPaths {
+            codex_self_exe: Some(std::env::current_exe().expect("test executable path")),
+            codex_linux_sandbox_exe,
+            ..Arg0DispatchPaths::default()
+        };
+        let runtime_paths = ExecServerRuntimePaths::from_optional_paths(
+            arg0_paths.codex_self_exe.clone(),
+            arg0_paths.codex_linux_sandbox_exe.clone(),
+        )
+        .expect("test runtime paths");
+        let environment_manager = Arc::new(
+            EnvironmentManager::create_for_tests(
+                /*exec_server_url*/ None,
+                Some(runtime_paths),
+            )
+            .await,
+        );
         let args = InProcessStartArgs {
-            arg0_paths: Arg0DispatchPaths::default(),
+            arg0_paths,
             config,
             cli_overrides: Vec::new(),
             loader_overrides: LoaderOverrides::default(),
@@ -846,7 +872,7 @@ mod tests {
             feedback: CodexFeedback::new(),
             log_db: None,
             state_db: Some(state_db),
-            environment_manager: Arc::new(EnvironmentManager::default_for_tests()),
+            environment_manager,
             config_warnings: Vec::new(),
             session_source,
             enable_codex_api_key_env: false,
