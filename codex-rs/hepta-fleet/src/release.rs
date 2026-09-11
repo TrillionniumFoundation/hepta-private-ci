@@ -238,17 +238,13 @@ impl FleetRegistry {
             let bin_root = staging.join("bin");
             std::fs::create_dir(&bin_root)?;
             let agentd_program = staging.join(AGENTD_RELEASE_PROGRAM);
-            std::fs::copy(&source_agentd, &agentd_program)?;
-            set_mode(&agentd_program, /*mode*/ 0o555)?;
-            File::open(&agentd_program)?.sync_all()?;
+            copy_immutable_program(&source_agentd, &agentd_program)?;
             let matrixd = source_matrixd
                 .as_ref()
                 .map(
                     |source| -> Result<ReleaseProgramMetadata, FleetRegistryError> {
                         let matrixd_program = staging.join(MATRIXD_RELEASE_PROGRAM);
-                        std::fs::copy(source, &matrixd_program)?;
-                        set_mode(&matrixd_program, /*mode*/ 0o555)?;
-                        File::open(&matrixd_program)?.sync_all()?;
+                        copy_immutable_program(source, &matrixd_program)?;
                         Ok(ReleaseProgramMetadata {
                             program_relative_path: PathBuf::from(MATRIXD_RELEASE_PROGRAM),
                             program_sha256: sha256_file(&matrixd_program)?,
@@ -752,6 +748,20 @@ fn read_bounded_json<T: for<'de> Deserialize<'de>>(
         .map_err(|error| FleetRegistryError::Corrupt(format!("invalid release JSON: {error}")))
 }
 
+fn copy_immutable_program(source: &Path, destination: &Path) -> Result<(), FleetRegistryError> {
+    let mut input = File::open(source)?;
+    let mut output = OpenOptions::new()
+        .write(true)
+        .create_new(true)
+        .open(destination)?;
+    std::io::copy(&mut input, &mut output)?;
+    set_mode(destination, /*mode*/ 0o555)?;
+    // Flush through the writing handle retained across the mode change.
+    // Windows cannot FlushFileBuffers on a separately opened read-only handle.
+    output.sync_all()?;
+    Ok(())
+}
+
 fn sha256_file(path: &Path) -> Result<String, FleetRegistryError> {
     let mut file = File::open(path)?;
     let mut hasher = Sha256::new();
@@ -1150,3 +1160,7 @@ mod tests {
         Ok(agent_id)
     }
 }
+
+#[cfg(test)]
+#[path = "release_copy_tests.rs"]
+mod copy_tests;
