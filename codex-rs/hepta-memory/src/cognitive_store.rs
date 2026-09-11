@@ -1154,11 +1154,11 @@ fn create_private_directory(path: &Path) -> Result<PathBuf, CognitiveStoreError>
     Ok(canonical)
 }
 
-fn protect_database_file(path: &Path) -> Result<(), CognitiveStoreError> {
+fn protect_database_file(_path: &Path) -> Result<(), CognitiveStoreError> {
     #[cfg(unix)]
     {
         use std::os::unix::fs::PermissionsExt;
-        fs::set_permissions(path, fs::Permissions::from_mode(0o600)).map_err(unavailable)?;
+        fs::set_permissions(_path, fs::Permissions::from_mode(0o600)).map_err(unavailable)?;
     }
     Ok(())
 }
