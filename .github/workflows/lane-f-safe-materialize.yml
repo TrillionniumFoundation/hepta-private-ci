@@ -32,8 +32,18 @@ jobs:
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
-          cat .lane-f-bootstrap/part-* > /tmp/lane-f-overlay.tar.gz
-          gzip -t /tmp/lane-f-overlay.tar.gz
+          cat .lane-f-bootstrap/part-* > /tmp/lane-f-joined
+          if gzip -t /tmp/lane-f-joined 2>/dev/null; then
+            cp /tmp/lane-f-joined /tmp/lane-f-overlay.tar.gz
+            echo "LANE_F_OVERLAY_ENCODING=raw-gzip"
+          else
+            tr -d '\r\n\t ' < /tmp/lane-f-joined | base64 -d > /tmp/lane-f-overlay.tar.gz
+            gzip -t /tmp/lane-f-overlay.tar.gz
+            echo "LANE_F_OVERLAY_ENCODING=base64-gzip"
+          fi
+          actual_sha="$(sha256sum /tmp/lane-f-overlay.tar.gz | awk '{print $1}')"
+          echo "LANE_F_OVERLAY_SHA256=$actual_sha"
+          test "$actual_sha" = "a574dba470fbdbc397401306ebb078c4193a05ea26e62fcb4834717bd3685308"
           python3 - <<'PY'
           import pathlib, tarfile
           archive = "/tmp/lane-f-overlay.tar.gz"
@@ -63,15 +73,15 @@ jobs:
           text = path.read_text(encoding="utf-8")
           marker = "pub mod local_shadow;\n"
           addition = '''pub mod local_shadow;
-          pub use local_shadow::calculate_local_shadow as calculate_shadow_portfolio_v2;
+pub use local_shadow::calculate_local_shadow as calculate_shadow_portfolio_v2;
 
-          /// Stable identity for the compatibility-only original portfolio API.
-          pub const PROMPT_PORTFOLIO_LEGACY_V1_PROFILE: &str =
-              "hepta.prompt-portfolio.legacy-v1";
-          /// Stable identity for the bounded interaction-aware shadow API.
-          pub const PROMPT_PORTFOLIO_SHADOW_V2_PROFILE: &str =
-              "hepta.prompt-portfolio.shadow-v2";
-          '''
+/// Stable identity for the compatibility-only original portfolio API.
+pub const PROMPT_PORTFOLIO_LEGACY_V1_PROFILE: &str =
+    "hepta.prompt-portfolio.legacy-v1";
+/// Stable identity for the bounded interaction-aware shadow API.
+pub const PROMPT_PORTFOLIO_SHADOW_V2_PROFILE: &str =
+    "hepta.prompt-portfolio.shadow-v2";
+'''
           if "PROMPT_PORTFOLIO_SHADOW_V2_PROFILE" not in text:
               if text.count(marker) != 1:
                   raise SystemExit("unexpected prompt optimizer module marker")
