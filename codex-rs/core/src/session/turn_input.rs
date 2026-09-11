@@ -76,7 +76,7 @@ fn reserve_start_after_admission(
     let admission_gate = session
         .start_admission_gate
         .lock()
-        .expect("start admission gate mutex poisoned");
+        .unwrap_or_else(|error| panic!("start admission gate mutex poisoned: {error:?}"));
     if session.shutdown_started() || session.has_pending_admission_fence() {
         drop(admission_gate);
         if consumed_recovery {
@@ -87,7 +87,7 @@ fn reserve_start_after_admission(
     let active_turn = active_turn.get_or_insert_with(ActiveTurn::default);
     let start_reservation = active_turn
         .reserve_start(turn_id)
-        .expect("idle slot should accept one start reservation");
+        .unwrap_or_else(|| panic!("idle slot should accept one start reservation"));
     drop(admission_gate);
     Some(start_reservation)
 }
@@ -234,6 +234,10 @@ pub(super) async fn handle_recovery(
     .await
 }
 
+#[expect(
+    clippy::await_holding_invalid_type,
+    reason = "the active-turn guard is the atomic ownership fence across this awaited state transition"
+)]
 async fn start_or_steer(
     session: &Arc<Session>,
     request: TurnInputRequest,
@@ -386,6 +390,10 @@ async fn start_or_steer(
     }
 }
 
+#[expect(
+    clippy::await_holding_invalid_type,
+    reason = "the active-turn guard is the atomic ownership fence across this awaited state transition"
+)]
 async fn start_if_idle(
     session: &Arc<Session>,
     request: TurnInputRequest,
@@ -447,7 +455,7 @@ async fn start_if_idle(
                 || !session
                     .recovery_candidate
                     .lock()
-                    .expect("recovery candidate mutex poisoned")
+                    .unwrap_or_else(|error| panic!("recovery candidate mutex poisoned: {error:?}"))
                     .as_ref()
                     .is_some_and(|candidate| {
                         candidate.turn_id == submission_id
@@ -469,7 +477,7 @@ async fn start_if_idle(
             let candidate = session
                 .recovery_candidate
                 .lock()
-                .expect("recovery candidate mutex poisoned")
+                .unwrap_or_else(|error| panic!("recovery candidate mutex poisoned: {error:?}"))
                 .clone()
                 .ok_or_else(|| {
                     CodexErr::Fatal(
@@ -548,7 +556,7 @@ async fn start_if_idle(
         };
         let active_turn = active_turn
             .as_ref()
-            .expect("caller reservation should retain the active turn state");
+            .unwrap_or_else(|| panic!("caller reservation should retain the active turn state"));
         (Arc::clone(&active_turn.turn_state), start_reservation)
     };
     let mut start_reservation_owner = StartReservationOwner::new(session, start_reservation);
@@ -590,9 +598,9 @@ async fn start_if_idle(
             .set_responsesapi_client_metadata(responsesapi_client_metadata);
     }
     if let Some((_, _, _, replay)) = recovery_restart.as_ref() {
-        let expected_context = recovery_expected_context
-            .as_ref()
-            .expect("validated recovery context captured before candidate consumption");
+        let expected_context = recovery_expected_context.as_ref().unwrap_or_else(|| {
+            panic!("validated recovery context captured before candidate consumption")
+        });
         let Some(turn_context) = Arc::get_mut(&mut turn_context) else {
             release_start_reservation_after_error(session, start_reservation_owner.handle()).await;
             return Err(CodexErr::Fatal(
@@ -852,6 +860,7 @@ impl Session {
         }
     }
 
+    #[expect(dead_code, reason = "retained idle-reservation rollback entry point")]
     pub(crate) async fn clear_reserved_idle_turn(
         &self,
         turn_state: &Arc<tokio::sync::Mutex<TurnState>>,
@@ -925,7 +934,7 @@ impl Session {
             let _admission_gate = self
                 .start_admission_gate
                 .lock()
-                .expect("start admission gate mutex poisoned");
+                .unwrap_or_else(|error| panic!("start admission gate mutex poisoned: {error:?}"));
             if self.shutdown_started() {
                 return Err(NotSubmittedReason::NotIdle);
             }

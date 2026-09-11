@@ -1166,6 +1166,10 @@ impl ModelClient {
         }
     }
 
+    #[expect(
+        clippy::too_many_arguments,
+        reason = "request construction keeps model, prompt, auth and provider inputs explicit"
+    )]
     fn build_responses_request(
         &self,
         prompt: &Prompt,

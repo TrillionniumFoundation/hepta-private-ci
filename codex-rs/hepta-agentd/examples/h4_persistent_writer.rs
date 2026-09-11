@@ -187,17 +187,17 @@ fn cache_devices() -> Vec<CacheDeviceEvidence> {
         .into_iter()
         .flatten()
         .filter_map(Result::ok)
-        .filter_map(|entry| {
+        .map(|entry| {
             let name = entry.file_name().to_string_lossy().to_string();
             let root = entry.path();
-            Some(CacheDeviceEvidence {
+            CacheDeviceEvidence {
                 name,
                 model: read_trimmed(root.join("device/model")),
                 write_cache: read_trimmed(root.join("queue/write_cache")),
                 fua: read_trimmed(root.join("queue/fua")),
                 rotational: read_trimmed(root.join("queue/rotational")),
                 state: read_trimmed(root.join("device/state")),
-            })
+            }
         })
         .collect::<Vec<_>>();
     devices.sort_by(|left, right| left.name.cmp(&right.name));

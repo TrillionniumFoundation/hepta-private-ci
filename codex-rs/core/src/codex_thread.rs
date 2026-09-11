@@ -284,6 +284,7 @@ impl CodexThread {
         self.io.session_loop_termination.clone().await;
     }
 
+    #[expect(dead_code, reason = "retained lifecycle publication entry point")]
     pub(crate) async fn emit_thread_ready_lifecycle(&self) {
         let config = self.config().await;
         for contributor in self

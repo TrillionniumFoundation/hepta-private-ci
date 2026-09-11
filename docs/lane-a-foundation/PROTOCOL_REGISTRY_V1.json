@@ -1,0 +1,127 @@
+{
+  "schemaVersion": 1,
+  "lane": "LANE-A-FOUNDATION",
+  "role": "current_executable_protocol_index",
+  "authority": "none",
+  "protocols": [
+    {
+      "protocolId": "hepta.platform.types.primitives.v1",
+      "module": "platform.types",
+      "kind": "in_process_semantic_types",
+      "source": [
+        "codex-rs/hepta-types/src/bounded.rs",
+        "codex-rs/hepta-types/src/digest.rs",
+        "codex-rs/hepta-types/src/identity.rs",
+        "codex-rs/hepta-types/src/fixed.rs"
+      ],
+      "invariants": [
+        "bounded values reject empty and oversized content",
+        "stable identifiers preserve exact accepted bytes",
+        "generation revision and logical sequence are nonzero u64 values",
+        "Digest32 is exactly 32 bytes",
+        "types grant no runtime or effect authority"
+      ]
+    },
+    {
+      "protocolId": "hepta.platform.wire.hpta-envelope.v1",
+      "module": "platform.wire",
+      "kind": "transport_neutral_binary_frame",
+      "source": [
+        "codex-rs/hepta-wire/src/envelope.rs",
+        "docs/lane-a-foundation/platform.wire/HPTA_V1_CONFORMANCE.json"
+      ],
+      "invariants": [
+        "magic is HPTA and version is exactly 1",
+        "schema and producer identifiers are 1 through 128 bytes",
+        "generation is nonzero big-endian u64",
+        "payload is 1 through 1048576 bytes",
+        "payload digest is verified before the owned payload copy",
+        "successful decode grants no transport acknowledgement or authority"
+      ]
+    },
+    {
+      "protocolId": "hepta.kernel.authority.final-use.v1",
+      "module": "kernel.authority",
+      "kind": "signed_single_use_in_process_capability",
+      "source": [
+        "codex-rs/hepta-contracts/src/final_use.rs",
+        "codex-rs/hepta-contracts/src/final_use_store.rs",
+        "codex-rs/hepta-contracts/FINAL_USE.md"
+      ],
+      "invariants": [
+        "the Ed25519 signing domain binds the complete final-use grant",
+        "a nonce is durably consumed before dispatch admission",
+        "revocation and epoch checks are repeated at final consumer entry",
+        "VerifiedUseToken is not a wire representation",
+        "the local store is not an external anti-rollback oracle"
+      ]
+    },
+    {
+      "protocolId": "hepta.kernel.operations.reference-model.v1",
+      "module": "kernel.operations",
+      "kind": "bounded_in_memory_reference_state_machine",
+      "source": [
+        "codex-rs/hepta-operations/src/model.rs",
+        "codex-rs/hepta-operations/src/ledger.rs",
+        "codex-rs/hepta-operations/src/outbox.rs"
+      ],
+      "invariants": [
+        "reference witness digest binds operation payload generation and expiry",
+        "authorization replay revalidates the complete live witness",
+        "terminal observation is owner-generation fenced",
+        "acknowledged outbox state retains owner generation and acknowledgement digest",
+        "the model provides no durability or production authority"
+      ]
+    },
+    {
+      "protocolId": "hepta.kernel.evidence.sqlite-lineage.v1",
+      "module": "kernel.evidence",
+      "kind": "append_only_sqlite_evidence_lineage",
+      "source": [
+        "codex-rs/hepta-evidence/src/store.rs",
+        "codex-rs/hepta-evidence/migrations",
+        "docs/lane-a-foundation/kernel.evidence/STORE_V1.md"
+      ],
+      "invariants": [
+        "migration lineage is exactly 0001 through 0008",
+        "unknown incomplete failed or checksum-mismatched migration rows fail closed",
+        "same identity and equal content is idempotent",
+        "same identity and different content conflicts",
+        "stored evidence grants no execution promotion or release authority"
+      ]
+    },
+    {
+      "protocolId": "hepta.auth.authbus.preverified-replay.v1",
+      "module": "auth.authbus",
+      "kind": "bounded_process_local_replay_fence",
+      "source": [
+        "codex-rs/hepta-authbus/src/lib.rs",
+        "docs/lane-a-foundation/auth.authbus/PREVERIFIED_REPLAY_V1.md"
+      ],
+      "invariants": [
+        "issuer key epoch time and revocation are trusted host inputs",
+        "scope payload and signature-reference digests are nonzero",
+        "sequence increases per issuer epoch subject and scope",
+        "state is process-local and lost on restart",
+        "successful receipt always carries DENY_ALL authority"
+      ]
+    },
+    {
+      "protocolId": "hepta.secrets.heptabao.kv-v2-read.v1",
+      "module": "secrets.heptabao",
+      "kind": "host_enrolled_exact_secret_read",
+      "source": [
+        "codex-rs/hepta-bao-adapter/src/https_consumer.rs",
+        "docs/lane-a-foundation/secrets.heptabao/KV_V2_READ_V1.md",
+        "external/HeptaBao/EXTERNAL_SOURCE.json"
+      ],
+      "invariants": [
+        "only a pinned-CA HTTPS root origin is accepted",
+        "request binds namespace mount path field exact version consumer and expected digest",
+        "redirects ambient proxies and automatic retries are disabled",
+        "raw secret bytes do not appear in ordinary receipts",
+        "consumer failure after entry is indeterminate"
+      ]
+    }
+  ]
+}

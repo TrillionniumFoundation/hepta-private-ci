@@ -16,6 +16,7 @@ path = "src/bin/config_schema.rs"
 workspace = true
 
 [dependencies]
+codex-exec-server-test-support = { path = "../exec-server/tests/support" }
 anyhow = { workspace = true }
 arc-swap = { workspace = true }
 async-channel = { workspace = true }
@@ -139,6 +140,7 @@ openssl-sys = { workspace = true, features = ["vendored"] }
 codex-shell-escalation = { workspace = true }
 
 [dev-dependencies]
+codex-arg0 = { path = "../arg0" }
 assert_cmd = { workspace = true }
 assert_matches = { workspace = true }
 codex-exec-server-test-support = { workspace = true }

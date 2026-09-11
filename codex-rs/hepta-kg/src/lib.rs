@@ -2,6 +2,8 @@
 
 #![forbid(unsafe_code)]
 
+mod generation;
+
 use std::collections::BTreeSet;
 use std::error::Error as StdError;
 use std::fmt;
@@ -10,6 +12,27 @@ use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
+
+pub use generation::KnowledgeEdgeIdentityV2;
+pub use generation::KnowledgeEdgeV2;
+pub use generation::KnowledgeGenerationErrorV2;
+pub use generation::KnowledgeGenerationV2;
+pub use generation::KnowledgeNodeV2;
+pub use generation::KnowledgeProjectionDeltaV2;
+pub use generation::KnowledgeProjectionInputV2;
+pub use generation::KnowledgePublicationDispositionV2;
+pub use generation::KnowledgePublicationReceiptV2;
+pub use generation::KnowledgeRelationKindV2;
+pub use generation::KnowledgeRelationQueryV2;
+pub use generation::KnowledgeRelationResultV2;
+pub use generation::KnowledgeSupportV2;
+pub use generation::MAX_KNOWLEDGE_EDGES_V2;
+pub use generation::MAX_KNOWLEDGE_NODES_V2;
+pub use generation::MAX_SUPPORTS_PER_RELATION_V2;
+pub use generation::apply_incremental_delta;
+pub use generation::build_complete_generation;
+pub use generation::publish_generation;
+pub use generation::query_relations;
 
 const MAX_EDGES: usize = 65_536;
 

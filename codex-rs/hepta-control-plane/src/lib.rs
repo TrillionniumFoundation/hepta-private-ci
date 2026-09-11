@@ -1,7 +1,9 @@
-//! Revision- and authority-epoch-fenced runtime control state.
+//! Revision- and authority-epoch-fenced runtime control state plus a bounded,
+//! snapshot-coherent global planning kernel.
 //!
-//! Actions update desired control state only. They do not execute effects,
-//! operate hardware, deploy, merge, promote or release.
+//! Actions update desired control state only. Planning and grant-request
+//! construction remain advisory and deny-all: they do not execute effects,
+//! operate hardware, issue capabilities, deploy, merge, promote or release.
 
 #![forbid(unsafe_code)]
 
@@ -9,6 +11,8 @@
 mod cart;
 mod organ_graph;
 mod organ_runtime;
+mod planner;
+mod planner_journal;
 #[path = "embodiment/timing.rs"]
 mod timing;
 
@@ -44,6 +48,32 @@ pub use organ_runtime::OrganHandlerFaultV1;
 pub use organ_runtime::OrganHostV1;
 pub use organ_runtime::OrganRuntimeError;
 pub use organ_runtime::TrustedReadOnlyOrganV1;
+pub use planner::FeasiblePlanReceiptV1;
+pub use planner::GlobalStateSnapshotV1;
+pub use planner::GrantRequestSetV1;
+pub use planner::GrantRequestV1;
+pub use planner::NduPlanEvaluationInputV1;
+pub use planner::NduPlanEvaluationV1;
+pub use planner::OwnerReadinessV1;
+pub use planner::OwnerSummaryV1;
+pub use planner::PlanCandidateV1;
+pub use planner::PlannerAxisValueV1;
+pub use planner::PlannerError;
+pub use planner::PlanningEvaluationDispositionV1;
+pub use planner::PlanningRequestV1;
+pub use planner::PreparedPlanInputV1;
+pub use planner::ResourceReservationV1;
+pub use planner::SearchDisclosureV1;
+pub use planner::SnapshotRequestV1;
+pub use planner::bind_ndu_plan_evaluation_v1;
+pub use planner::collect_snapshot;
+pub use planner::finalize_plan;
+pub use planner::prepare_plan;
+pub use planner::request_execution_grants;
+pub use planner_journal::PlannerJournalEntryV1;
+pub use planner_journal::PlannerJournalError;
+pub use planner_journal::PlannerJournalKindV1;
+pub use planner_journal::PlannerJournalV1;
 pub use timing::FixedPriorityTaskV1;
 pub use timing::TimingError;
 pub use timing::fixed_priority_response_times;

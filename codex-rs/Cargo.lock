@@ -2874,6 +2874,7 @@ dependencies = [
  "codex-api",
  "codex-app-server-protocol",
  "codex-apply-patch",
+ "codex-arg0",
  "codex-async-utils",
  "codex-client",
  "codex-code-mode",
@@ -3608,6 +3609,7 @@ dependencies = [
 name = "codex-hepta-contracts"
 version = "0.0.0"
 dependencies = [
+ "codex-utils-cargo-bin",
  "ed25519-dalek",
  "pretty_assertions",
  "rustix 1.1.4",
@@ -3698,6 +3700,11 @@ dependencies = [
 name = "codex-hepta-intelligence"
 version = "0.0.0"
 dependencies = [
+ "codex-hepta-cognitive-read",
+ "codex-hepta-cognitive-types",
+ "codex-hepta-context-compiler",
+ "codex-hepta-ndu",
+ "codex-hepta-objective",
  "codex-hepta-types",
 ]
 
@@ -3705,6 +3712,7 @@ dependencies = [
 name = "codex-hepta-intelligence-eval"
 version = "0.0.0"
 dependencies = [
+ "codex-hepta-learning-ledger",
  "codex-hepta-types",
 ]
 
@@ -3734,6 +3742,7 @@ dependencies = [
 name = "codex-hepta-learning-ledger"
 version = "0.0.0"
 dependencies = [
+ "codex-hepta-intuition",
  "codex-hepta-types",
  "pretty_assertions",
 ]
@@ -3992,6 +4001,8 @@ dependencies = [
 name = "codex-hepta-shadow-qualification"
 version = "0.0.0"
 dependencies = [
+ "codex-hepta-bellman-operator",
+ "codex-hepta-intelligence-eval",
  "codex-hepta-learning-artifacts",
  "codex-hepta-learning-ledger",
  "codex-hepta-ndu",
@@ -4375,7 +4386,9 @@ dependencies = [
  "codex-protocol",
  "codex-shell-command",
  "codex-skills-extension",
+ "codex-terminal-detection",
  "codex-utils-absolute-path",
+ "codex-utils-cargo-bin",
  "codex-utils-cli",
  "codex-utils-json-to-toml",
  "core_test_support",

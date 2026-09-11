@@ -160,12 +160,14 @@ fn spawn_suspension_handoff(
 
 fn take_suspension_handoff(slot: &SuspensionHandoffSlot) -> Option<SuspensionHandoff> {
     slot.lock()
-        .expect("suspension handoff slot mutex poisoned")
+        .unwrap_or_else(|error| panic!("suspension handoff slot mutex poisoned: {error:?}"))
         .take()
 }
 
 fn retain_suspension_handoff(slot: &SuspensionHandoffSlot, handoff: SuspensionHandoff) {
-    let mut current = slot.lock().expect("suspension handoff slot mutex poisoned");
+    let mut current = slot
+        .lock()
+        .unwrap_or_else(|error| panic!("suspension handoff slot mutex poisoned: {error:?}"));
     if current.is_some() {
         warn!("suspension handoff slot already has an owner; retaining the existing fence");
     } else {
@@ -192,11 +194,13 @@ impl SuspensionHandoffOwner {
     fn handoff_mut(&mut self) -> &mut SuspensionHandoff {
         self.handoff
             .as_mut()
-            .expect("suspension owner remains armed")
+            .unwrap_or_else(|| panic!("suspension owner remains armed"))
     }
 
     fn disarm(mut self) -> SuspensionHandoff {
-        self.handoff.take().expect("suspension owner remains armed")
+        self.handoff
+            .take()
+            .unwrap_or_else(|| panic!("suspension owner remains armed"))
     }
 }
 
@@ -245,7 +249,7 @@ impl<'a> SuspensionRunningTaskGuard<'a> {
     fn task_mut(&mut self) -> &mut RunningTask {
         self.task
             .as_mut()
-            .expect("suspension running task remains armed")
+            .unwrap_or_else(|| panic!("suspension running task remains armed"))
     }
 
     fn complete(&mut self) {

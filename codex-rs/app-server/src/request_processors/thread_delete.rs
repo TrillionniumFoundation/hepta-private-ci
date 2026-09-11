@@ -355,27 +355,6 @@ impl ThreadRequestProcessor {
     }
 }
 
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn subtree_closure_adds_child_that_becomes_visible_during_parent_shutdown() {
-        let root = ThreadId::from_string("3b199e4d-e9cb-4e26-a8ee-2ff60ca3ce26")
-            .expect("valid root thread id");
-        let child = ThreadId::from_string("862f3c47-596d-49f1-af5b-fef7a3a54db5")
-            .expect("valid child thread id");
-        let mut closure = ThreadDeleteSubtreeClosure::default();
-
-        assert_eq!(closure.observe(vec![root]), Ok(vec![root]));
-        // The child commits while the root's shutdown is in progress. The
-        // post-shutdown observation must schedule it before deletion can seal.
-        assert_eq!(closure.observe(vec![root, child]), Ok(vec![child]));
-        assert_eq!(closure.observe(vec![root, child]), Ok(Vec::new()));
-        assert_eq!(closure.into_prepared_thread_ids(), vec![root, child]);
-    }
-}
-
 fn thread_queue_delete_fence_error(err: anyhow::Error) -> JSONRPCErrorError {
     if let Some(conflict) = err.downcast_ref::<codex_state::QueuedClientBindingConflict>() {
         return invalid_request(conflict.message.clone());
@@ -397,5 +376,26 @@ fn thread_store_delete_error(err: ThreadStoreError) -> JSONRPCErrorError {
             unsupported_thread_store_operation(operation)
         }
         err => internal_error(format!("failed to delete thread: {err}")),
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn subtree_closure_adds_child_that_becomes_visible_during_parent_shutdown() {
+        let root = ThreadId::from_string("3b199e4d-e9cb-4e26-a8ee-2ff60ca3ce26")
+            .expect("valid root thread id");
+        let child = ThreadId::from_string("862f3c47-596d-49f1-af5b-fef7a3a54db5")
+            .expect("valid child thread id");
+        let mut closure = ThreadDeleteSubtreeClosure::default();
+
+        assert_eq!(closure.observe(vec![root]), Ok(vec![root]));
+        // The child commits while the root's shutdown is in progress. The
+        // post-shutdown observation must schedule it before deletion can seal.
+        assert_eq!(closure.observe(vec![root, child]), Ok(vec![child]));
+        assert_eq!(closure.observe(vec![root, child]), Ok(Vec::new()));
+        assert_eq!(closure.into_prepared_thread_ids(), vec![root, child]);
     }
 }

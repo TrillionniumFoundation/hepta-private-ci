@@ -71,20 +71,64 @@ runs:
           'WindowsSDKLibVersion',
           'WindowsSDKVersion'
         )
+        $requiredVars = @(
+          'INCLUDE',
+          'LIB',
+          'LIBPATH',
+          'UniversalCRTSdkDir',
+          'VCToolsInstallDir',
+          'WindowsSdkDir'
+        )
 
         # `VsDevCmd.bat` is a batch file, so invoke it under `cmd.exe`, suppress its
         # banner, then dump the resulting environment with `set`. Re-export only the
         # approved keys into `GITHUB_ENV` so later steps inherit the same MSVC context.
+        # Windows environment names are case-insensitive, but Git Bash variable lookup
+        # is not. Normalize every accepted key to the canonical spelling above before
+        # handing it to the shell wrapper.
         $envLines = & cmd.exe /c ('"{0}" -no_logo -arch=x64 -host_arch=x64 >nul && set' -f $vsDevCmd)
+        if ($LASTEXITCODE -ne 0) {
+          throw "VsDevCmd.bat failed with exit code $LASTEXITCODE"
+        }
+
+        # PowerShell hashtable keys are case-insensitive, matching Windows
+        # environment semantics while retaining the canonical key chosen above.
+        $exportedValues = @{}
         foreach ($line in $envLines) {
           if ($line -notmatch '^(.*?)=(.*)$') {
             continue
           }
 
-          $name = $matches[1]
+          $inputName = $matches[1]
           $value = $matches[2]
-          if ($varsToExport -contains $name) {
-            "$name=$value" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          $canonicalName = $varsToExport |
+            Where-Object { $_ -ieq $inputName } |
+            Select-Object -First 1
+          if ($null -eq $canonicalName) {
+            continue
+          }
+
+          if ($exportedValues.ContainsKey($canonicalName) -and
+              $exportedValues[$canonicalName] -cne $value) {
+            throw "VsDevCmd.bat returned conflicting values for $canonicalName"
+          }
+          $exportedValues[$canonicalName] = $value
+        }
+
+        $missingVars = @(
+          $requiredVars | Where-Object {
+            -not $exportedValues.ContainsKey($_) -or
+            [string]::IsNullOrWhiteSpace($exportedValues[$_])
+          }
+        )
+        if ($missingVars.Count -ne 0) {
+          throw "VsDevCmd.bat did not provide required variables: $($missingVars -join ', ')"
+        }
+
+        foreach ($canonicalName in $varsToExport) {
+          if ($exportedValues.ContainsKey($canonicalName)) {
+            "$canonicalName=$($exportedValues[$canonicalName])" |
+              Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
           }
         }
 

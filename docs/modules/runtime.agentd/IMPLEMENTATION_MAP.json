@@ -1,0 +1,22 @@
+{
+  "schema": "hepta.lane-b-module-implementation-map.v2",
+  "schemaVersion": 2,
+  "laneId": "LANE-B-RUNTIME",
+  "module": "runtime.agentd",
+  "sourceOfTruth": "qualification/lane-b/LANE_B_IMPLEMENTATION_TRUTH.json",
+  "lineageAnchor": {"commit":"f278a89eea18fccb6d37b876aa5679863a64139d","tree":"5baa144717d4b3e3c596501fb56ce911d009e728"},
+  "maturity": "composition_runtime",
+  "ownerRoots": ["codex-rs/hepta-agentd"],
+  "implementationRoots": ["codex-rs/hepta-agentd"],
+  "aliasResolution": [],
+  "operations": [
+    {"designOperation":"compose_runtime","state":"implemented_partial","ownerEntrypoint":{"path":"codex-rs/hepta-agentd/src/app_runtime.rs","symbol":"pub(crate) async fn run_app_server(","callerClass":"daemon_internal","buildTarget":"codex-hepta-agentd"},"delegatedCallee":{"module":"runtime.codex","path":"codex-rs/app-server/src/lib.rs","symbol":"run_main_with_transport_options","callerClass":"embedded_app_server","buildTarget":"codex-app-server"},"testIds":["AGENT-02","AGENT-04"]},
+    {"designOperation":"start_run","state":"delegated_partial","ownerEntrypoint":null,"delegatedCallee":{"module":"runtime.codex","path":"codex-rs/app-server/src/request_processors/turn_processor.rs","symbol":"pub(crate) async fn turn_start(","callerClass":"embedded_app_server","buildTarget":"codex-app-server"},"testIds":["AGENT-01","AGENT-04"]},
+    {"designOperation":"cancel_run","state":"delegated_partial","ownerEntrypoint":null,"delegatedCallee":{"module":"runtime.codex","path":"codex-rs/app-server/src/request_processors/turn_processor.rs","symbol":"pub(crate) async fn turn_interrupt(","callerClass":"embedded_app_server","buildTarget":"codex-app-server"},"testIds":["AGENT-03"]},
+    {"designOperation":"attach_context","state":"delegated_partial","ownerEntrypoint":null,"delegatedCallee":{"module":"runtime.codex","path":"codex-rs/core/src/codex_thread.rs","symbol":"pub(crate) async fn submit_turn_input_and_wait_for_exact_admission(","callerClass":"embedded_codex_core","buildTarget":"codex-core"},"testIds":["AGENT-01","AGENT-04"]}
+  ],
+  "productionCallerState": "unproved",
+  "productExecutionState": "unproved",
+  "externalGaps": ["Publish deployed Agentd process tree, local transport, peer authentication and configuration identity.","Execute backpressure, cancellation acknowledgement, socket failure and restart qualification on target platforms."],
+  "generatedProjection": true
+}

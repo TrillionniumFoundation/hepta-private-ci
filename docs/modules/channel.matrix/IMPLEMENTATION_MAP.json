@@ -1,0 +1,21 @@
+{
+  "schema":"hepta.lane-b-module-implementation-map.v2",
+  "schemaVersion":2,
+  "laneId":"LANE-B-RUNTIME",
+  "module":"channel.matrix",
+  "sourceOfTruth":"qualification/lane-b/LANE_B_IMPLEMENTATION_TRUTH.json",
+  "lineageAnchor":{"commit":"f278a89eea18fccb6d37b876aa5679863a64139d","tree":"5baa144717d4b3e3c596501fb56ce911d009e728"},
+  "maturity":"matrix_runtime_boundary",
+  "ownerRoots":["codex-rs/hepta-matrix-sdk","codex-rs/hepta-matrixd"],
+  "implementationRoots":["codex-rs/hepta-matrix-sdk","codex-rs/hepta-matrixd"],
+  "aliasResolution":[],
+  "operations":[
+    {"designOperation":"admit_event","state":"implemented_partial","ownerEntrypoint":{"path":"codex-rs/hepta-matrixd/src/runtime.rs","symbol":"pub async fn process_event(","callerClass":"runtime_internal","buildTarget":"codex-hepta-matrixd"},"delegatedCallee":null,"testIds":["MATRIX-01","MATRIX-04"]},
+    {"designOperation":"prepare_send","state":"implemented","ownerEntrypoint":{"path":"codex-rs/hepta-matrixd/src/bin/hepta-matrix-send-observer.rs","symbol":"pub fn prepare_send(","callerClass":"binary_component","buildTarget":"hepta-matrix-send-observer"},"delegatedCallee":{"module":"channel.matrix","path":"codex-rs/hepta-matrixd/src/runtime.rs","symbol":"pub async fn project_app_server_event(","callerClass":"runtime_internal","buildTarget":"codex-hepta-matrixd"},"testIds":["MATRIX-02","MATRIX-03"]},
+    {"designOperation":"observe_send","state":"implemented","ownerEntrypoint":{"path":"codex-rs/hepta-matrixd/src/bin/hepta-matrix-send-observer.rs","symbol":"pub fn observe_send(","callerClass":"binary_component","buildTarget":"hepta-matrix-send-observer"},"delegatedCallee":null,"testIds":["MATRIX-03","MATRIX-04"]}
+  ],
+  "productionCallerState":"unproved",
+  "productExecutionState":"unproved",
+  "externalGaps":["Bind a real homeserver transport, enrolled user/device/room scope and encryption session.","Qualify pagination, reconnect, rate limits, redaction, backup restore and server acknowledgement loss."],
+  "generatedProjection":true
+}

@@ -50,18 +50,27 @@ jobs:
           fi
           git rev-parse HEAD HEAD^{tree}
 
-      - name: Install pinned repository test tools
-        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
-        with:
-          tool: just@1.51.0,nextest@0.9.103
-
       - name: Locked all-target compilation
         working-directory: codex-rs
         run: cargo check --locked -p codex-hepta-ndu --all-targets
 
-      - name: Regression tests
+      - name: Deterministic regression tests
         working-directory: codex-rs
-        run: just test --locked -p codex-hepta-ndu
+        shell: bash
+        run: |
+          set -uo pipefail
+          log="${RUNNER_TEMP}/ndu-${{ matrix.lane }}.log"
+          cargo test --locked -p codex-hepta-ndu -- --nocapture --test-threads=1 2>&1 | tee "${log}"
+          exit "${PIPESTATUS[0]}"
+
+      - name: Retain NDU test diagnostics
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: ndu-${{ matrix.lane }}-${{ github.event.pull_request.head.sha }}
+          path: ${{ runner.temp }}/ndu-${{ matrix.lane }}.log
+          if-no-files-found: warn
+          retention-days: 14
 
       - name: Strict lint
         working-directory: codex-rs

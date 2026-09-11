@@ -230,6 +230,10 @@ pub(super) fn is_v2_resident_session_source(session_source: &SessionSource) -> b
     matches!(session_source, SessionSource::SubAgent(_))
 }
 
+#[expect(
+    clippy::await_holding_invalid_type,
+    reason = "the active-turn guard is the atomic ownership fence across this awaited state transition"
+)]
 async fn is_unloadable(thread: &CodexThread) -> bool {
     if !matches!(
         thread.agent_status().await,

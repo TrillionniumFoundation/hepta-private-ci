@@ -40,7 +40,7 @@ fn parse_options() -> anyhow::Result<Options> {
     while let Some(flag) = arguments.next() {
         let value = arguments
             .next()
-            .ok_or_else(|| anyhow::anyhow!("missing value for {:?}", flag))?;
+            .ok_or_else(|| anyhow::anyhow!("missing value for {flag:?}"))?;
         match flag.to_str() {
             Some("--fleet-root") if fleet_root.is_none() => fleet_root = Some(value),
             Some("--grant-verifier-key") if key_path.is_none() => key_path = Some(value),

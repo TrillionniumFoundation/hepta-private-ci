@@ -157,6 +157,10 @@ impl McpEventStreams {
         }
     }
 
+    #[expect(
+        dead_code,
+        reason = "retained per-thread event-stream cleanup entry point"
+    )]
     pub(crate) async fn stop_thread(&self, thread_id: ThreadId) {
         self.stop_matching(Some(thread_id)).await;
     }

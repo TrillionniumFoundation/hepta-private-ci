@@ -409,6 +409,10 @@ fn identity_digest(domain: &[u8], kind: &[u8], value: &str) -> Sha256Digest {
     Sha256Digest::for_bytes(&hasher.finalize())
 }
 
+#[expect(
+    clippy::too_many_arguments,
+    reason = "digest preimage fields must remain explicit and ordered"
+)]
 fn replay_binding_digest(
     turn_id: &Sha256Digest,
     lease_id: &Sha256Digest,
@@ -1170,7 +1174,7 @@ mod tests {
             &current_fence,
         )
         .expect("valid replay");
-        let mut replay_tampered = replay.clone();
+        let mut replay_tampered = replay;
         replay_tampered.replay_performed = true;
         assert!(replay_tampered.validate().is_err());
         assert_eq!(

@@ -1,0 +1,126 @@
+{
+  "schema": "hepta.lane-work-package-overlay.v1",
+  "schemaVersion": 1,
+  "lane": "LANE-D-OBJECTIVE-VALUE",
+  "authorityDelta": "none",
+  "canonicalRegistry": "docs/delivery/WORK_PACKAGES.json",
+  "purpose": "Narrow the legacy cross-owner NDU hierarchy envelope into owner-safe source packages before any further Lane D source mutation.",
+  "legacyPackageDisposition": {
+    "package": "NDU-2-AGENT-DOMAIN-HIERARCHY",
+    "state": "superseded_for_source_mutation_by_this_overlay",
+    "reason": "The legacy package spans utility.ndu and control.runtime source roots under one primary owner. The canonical package ID remains in historical DAGs, but new source changes use the three bounded packages below.",
+    "sourceMutationAllowed": false,
+    "authorityDelta": "none"
+  },
+  "packages": [
+    {
+      "id": "NDU-2A-HIERARCHY-PROTOCOLS",
+      "module": "utility.ndu",
+      "owner": "intelligence-platform",
+      "deputy": "learning-platform",
+      "parallelClass": "contract_first_parallel",
+      "sourceMutationAllowed": true,
+      "allowedWritePaths": [
+        "docs/readiness/NDU_SYSTEM_EXECUTION.md",
+        "docs/learning/NDU_FBSDE_SPEC.md",
+        "docs/modules/utility.ndu/IMPLEMENTATION_MAP.json",
+        "docs/modules/control.runtime/IMPLEMENTATION_MAP.json",
+        "docs/readiness/CONTROL_RUNTIME_EXECUTION.md",
+        "docs/readiness/LANE_D_MATURITY.json",
+        "docs/delivery/LANE_D_WORK_PACKAGE_OVERLAY.json",
+        "scripts/hepta-lane-d-semantic-conformance.py",
+        ".github/workflows/hepta-lane-d-semantic-conformance.yml"
+      ],
+      "foreignSourceRoots": [],
+      "developmentAfter": [
+        "NDU-1-DETERMINISTIC-UTILITY-BASELINE",
+        "RCP-1-RUNTIME-CONTROL-PLANE"
+      ],
+      "deliverables": [
+        "typed NDU evaluation owner port",
+        "complete candidate-set binding",
+        "aggregation and Pareto policy digest",
+        "no positive authority delta"
+      ],
+      "stopConditions": [
+        "cross_owner_write",
+        "authority_violation",
+        "base_drift",
+        "unbounded_resource_or_retry"
+      ]
+    },
+    {
+      "id": "NDU-2B-NDU-HIERARCHY-IMPLEMENTATION",
+      "module": "utility.ndu",
+      "owner": "intelligence-platform",
+      "deputy": "learning-platform",
+      "parallelClass": "owner_local_source",
+      "sourceMutationAllowed": true,
+      "allowedWritePaths": [
+        "codex-rs/hepta-ndu/**",
+        "docs/modules/utility.ndu/IMPLEMENTATION_MAP.json"
+      ],
+      "foreignSourceRoots": [],
+      "developmentAfter": [
+        "NDU-2A-HIERARCHY-PROTOCOLS"
+      ],
+      "deliverables": [
+        "policy-bound evaluator",
+        "local solver receipts distinct from independent certificate",
+        "owner-local projection journal",
+        "deterministic tests"
+      ],
+      "stopConditions": [
+        "cross_owner_write",
+        "authority_violation",
+        "protocol_drift",
+        "unbounded_resource_or_retry"
+      ]
+    },
+    {
+      "id": "RCP-2-NDU-HIERARCHY-INTEGRATION",
+      "module": "control.runtime",
+      "owner": "runtime-control",
+      "deputy": "security-authority",
+      "coOwnerModules": ["utility.ndu"],
+      "parallelClass": "explicit_cross_owner_integration",
+      "sourceMutationAllowed": true,
+      "allowedWritePaths": [
+        "codex-rs/hepta-control-plane/**",
+        "docs/modules/control.runtime/IMPLEMENTATION_MAP.json",
+        "docs/readiness/CONTROL_RUNTIME_EXECUTION.md"
+      ],
+      "foreignSourceRoots": [],
+      "developmentAfter": [
+        "NDU-2A-HIERARCHY-PROTOCOLS",
+        "NDU-2B-NDU-HIERARCHY-IMPLEMENTATION",
+        "RCP-1-RUNTIME-CONTROL-PLANE"
+      ],
+      "deliverables": [
+        "coherent owner snapshot",
+        "essential resource floors before NDU",
+        "digest-bound NDU evaluation projection",
+        "bounded plan receipt",
+        "deny-all grant request set",
+        "owner-local decision journal"
+      ],
+      "stopConditions": [
+        "utility_reimplementation_inside_control_runtime",
+        "capability_issuance",
+        "central_rpc_hot_path",
+        "cross_owner_write",
+        "unbounded_resource_or_retry"
+      ]
+    }
+  ],
+  "enforcement": {
+    "checker": "scripts/hepta-lane-d-semantic-conformance.py",
+    "workflow": ".github/workflows/hepta-lane-d-semantic-conformance.yml",
+    "rules": [
+      "utility.ndu implementation files may not be changed under a runtime-control-only package",
+      "control.runtime may consume NDU through a typed digest-bound port but may not reimplement utility selection",
+      "every source path changed by this candidate is covered by exactly one owner-safe package",
+      "all package authority deltas remain none"
+    ]
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "schema":"hepta.lane-b-module-implementation-map.v2",
+  "schemaVersion":2,
+  "laneId":"LANE-B-RUNTIME",
+  "module":"automation.taskflow",
+  "sourceOfTruth":"qualification/lane-b/LANE_B_IMPLEMENTATION_TRUTH.json",
+  "lineageAnchor":{"commit":"f278a89eea18fccb6d37b876aa5679863a64139d","tree":"5baa144717d4b3e3c596501fb56ce911d009e728"},
+  "maturity":"fenced_execution_runtime",
+  "ownerRoots":["codex-rs/hepta-automation"],
+  "implementationRoots":["codex-rs/hepta-automation"],
+  "aliasResolution":[],
+  "operations":[
+    {"designOperation":"register_schedule","state":"implemented_partial","ownerEntrypoint":{"path":"codex-rs/hepta-automation/src/taskflow.rs","symbol":"pub struct TaskFlowDefinition","callerClass":"library_internal","buildTarget":"codex-hepta-automation"},"delegatedCallee":null,"testIds":["FLOW-01"]},
+    {"designOperation":"materialize_due","state":"implemented_partial","ownerEntrypoint":{"path":"codex-rs/hepta-automation/src/scheduler.rs","symbol":"pub async fn tick(","callerClass":"qualification_runtime","buildTarget":"codex-hepta-automation"},"delegatedCallee":null,"testIds":["FLOW-01","FLOW-02"]},
+    {"designOperation":"claim_occurrence","state":"implemented","ownerEntrypoint":{"path":"codex-rs/hepta-automation/src/bin/hepta-taskflow-runtime.rs","symbol":"pub fn claim_occurrence(","callerClass":"binary_component","buildTarget":"hepta-taskflow-runtime"},"delegatedCallee":null,"testIds":["FLOW-02"]},
+    {"designOperation":"execute_step","state":"implemented","ownerEntrypoint":{"path":"codex-rs/hepta-automation/src/bin/hepta-taskflow-runtime.rs","symbol":"pub fn execute_step(","callerClass":"binary_component","buildTarget":"hepta-taskflow-runtime"},"delegatedCallee":null,"testIds":["FLOW-03","FLOW-04"]}
+  ],
+  "productionCallerState":"unproved",
+  "productExecutionState":"unproved",
+  "externalGaps":["Bind the deployed App Server admission seam and effect adapter caller.","Qualify timezone database revisions, DST, crash-reopen, partial compensation and target scheduler measurements."],
+  "generatedProjection":true
+}

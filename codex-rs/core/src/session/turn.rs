@@ -320,6 +320,10 @@ impl TurnRecoveryRequestCheckpoint for SessionTurnRecoveryRequestCheckpoint {
 /// - If the model sends only an assistant message, we record it in the
 ///   conversation history and consider the turn complete.
 ///
+#[expect(
+    clippy::too_many_arguments,
+    reason = "turn execution keeps all state-machine ownership inputs explicit"
+)]
 pub(crate) async fn run_turn(
     sess: Arc<Session>,
     turn_context: Arc<TurnContext>,

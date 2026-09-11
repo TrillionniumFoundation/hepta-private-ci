@@ -40,6 +40,7 @@ jobs:
           ref: ${{ env.SOURCE_SHA }}
           fetch-depth: 0
           persist-credentials: false
+
       - name: Bind source and actual-base merge identities
         shell: bash
         run: |
@@ -56,6 +57,7 @@ jobs:
             git checkout --detach "$MERGE"
           fi
           git rev-parse HEAD HEAD^{tree}
+
       - name: Existing engineering and full document integrity
         shell: bash
         run: |
@@ -64,26 +66,54 @@ jobs:
           python3 scripts/hepta-module-docs.py verify
           python3 scripts/hepta-readiness.py verify
           python3 scripts/hepta-docs.py verify
-      - name: Install pinned repository test tools
-        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
-        with:
-          tool: just@1.51.0,nextest@0.9.103
+
       - name: Locked all-target compilation of the combined source
         working-directory: codex-rs
         run: cargo check --locked -p codex-hepta-learning-ledger -p codex-hepta-learning-artifacts -p codex-hepta-intelligence-eval -p codex-hepta-neuron -p codex-hepta-ndu -p codex-hepta-shadow-qualification --all-targets
-      - name: Original and added component regressions
+
+      - name: Deterministic component regressions
         working-directory: codex-rs
-        run: just test --locked -p codex-hepta-learning-ledger -p codex-hepta-learning-artifacts -p codex-hepta-intelligence-eval -p codex-hepta-neuron -p codex-hepta-ndu
+        shell: bash
+        run: |
+          set -uo pipefail
+          log="${RUNNER_TEMP}/converged-components-${{ matrix.lane }}.log"
+          cargo test --locked \
+            -p codex-hepta-learning-ledger \
+            -p codex-hepta-learning-artifacts \
+            -p codex-hepta-intelligence-eval \
+            -p codex-hepta-neuron \
+            -p codex-hepta-ndu \
+            -- --nocapture --test-threads=1 2>&1 | tee "${log}"
+          exit "${PIPESTATUS[0]}"
+
       - name: Real-file cross-crate qualification
         working-directory: codex-rs
-        run: just test --locked -p codex-hepta-shadow-qualification --test durable_learning_roundtrip
+        shell: bash
+        run: |
+          set -uo pipefail
+          log="${RUNNER_TEMP}/converged-cross-crate-${{ matrix.lane }}.log"
+          cargo test --locked -p codex-hepta-shadow-qualification \
+            --test durable_learning_roundtrip -- --nocapture --test-threads=1 2>&1 | tee "${log}"
+          exit "${PIPESTATUS[0]}"
+
+      - name: Retain learning diagnostics
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: converged-learning-${{ matrix.lane }}-${{ github.event.pull_request.head.sha }}
+          path: ${{ runner.temp }}/converged-*.log
+          if-no-files-found: warn
+          retention-days: 14
+
       - name: Strict selected-package Clippy
         working-directory: codex-rs
         run: cargo clippy --locked -p codex-hepta-learning-ledger -p codex-hepta-learning-artifacts -p codex-hepta-intelligence-eval -p codex-hepta-neuron -p codex-hepta-ndu -p codex-hepta-shadow-qualification --all-targets -- -D warnings
+
       - name: Formatting without tested-source mutation
         if: always()
         working-directory: codex-rs
         run: cargo fmt --package codex-hepta-learning-ledger --package codex-hepta-learning-artifacts --package codex-hepta-intelligence-eval --package codex-hepta-neuron --package codex-hepta-ndu --package codex-hepta-shadow-qualification -- --check
+
       - name: Unmodified source
         if: always()
         shell: bash

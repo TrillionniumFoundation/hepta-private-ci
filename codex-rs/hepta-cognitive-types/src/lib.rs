@@ -5,6 +5,8 @@
 
 #![forbid(unsafe_code)]
 
+pub mod lane_c;
+
 use std::collections::BTreeSet;
 use std::error::Error as StdError;
 use std::fmt;

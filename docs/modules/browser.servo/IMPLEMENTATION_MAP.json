@@ -1,0 +1,21 @@
+{
+  "schema":"hepta.lane-b-module-implementation-map.v2",
+  "schemaVersion":2,
+  "laneId":"LANE-B-RUNTIME",
+  "module":"browser.servo",
+  "sourceOfTruth":"qualification/lane-b/LANE_B_IMPLEMENTATION_TRUTH.json",
+  "lineageAnchor":{"commit":"f278a89eea18fccb6d37b876aa5679863a64139d","tree":"5baa144717d4b3e3c596501fb56ce911d009e728"},
+  "maturity":"profile_runtime_boundary",
+  "ownerRoots":["apps/hepta-browser","third_party/servo-patches"],
+  "implementationRoots":["apps/hepta-browser","third_party/servo-patches"],
+  "aliasResolution":[],
+  "operations":[
+    {"designOperation":"open_profile","state":"implemented","ownerEntrypoint":{"path":"apps/hepta-browser/src/runtime.js","symbol":"async openProfile(","callerClass":"runtime_class","buildTarget":"hepta-browser"},"delegatedCallee":null,"testIds":["BROWSER-02","BROWSER-03"]},
+    {"designOperation":"observe_page","state":"implemented","ownerEntrypoint":{"path":"apps/hepta-browser/src/runtime.js","symbol":"async observePage(","callerClass":"runtime_class","buildTarget":"hepta-browser"},"delegatedCallee":null,"testIds":["BROWSER-01","BROWSER-02"]},
+    {"designOperation":"navigate_or_act","state":"implemented","ownerEntrypoint":{"path":"apps/hepta-browser/src/runtime.js","symbol":"async navigateOrAct(","callerClass":"runtime_class","buildTarget":"hepta-browser"},"delegatedCallee":{"module":"browser.servo","path":"apps/hepta-browser/src/runtime.js","symbol":"async reconcileOperation(","callerClass":"runtime_class","buildTarget":"hepta-browser"},"testIds":["BROWSER-01","BROWSER-02","BROWSER-04"]}
+  ],
+  "productionCallerState":"unproved",
+  "productExecutionState":"unproved",
+  "externalGaps":["Produce a reproducible deployed Servo binary and authenticated Agentd IPC driver.","Qualify network, redirects, downloads, uploads, credentials, profile isolation, crashes and remote terminal outcomes."],
+  "generatedProjection":true
+}

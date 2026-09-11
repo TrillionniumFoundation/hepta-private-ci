@@ -1225,7 +1225,7 @@ impl Session {
         let persistence_failure_generation = self.rollout_persistence_failure_generation();
         self.recovery_candidate
             .lock()
-            .expect("recovery candidate mutex poisoned")
+            .unwrap_or_else(|error| panic!("recovery candidate mutex poisoned: {error:?}"))
             .as_ref()
             .filter(|candidate| {
                 candidate.turn_id == turn_id
@@ -1243,7 +1243,7 @@ impl Session {
         let candidate = self
             .recovery_candidate
             .lock()
-            .expect("recovery candidate mutex poisoned")
+            .unwrap_or_else(|error| panic!("recovery candidate mutex poisoned: {error:?}"))
             .clone();
         let Some(candidate) = candidate else {
             self.turn_epoch.fetch_add(1, Ordering::AcqRel);
@@ -1271,7 +1271,7 @@ impl Session {
         let mut current = self
             .recovery_candidate
             .lock()
-            .expect("recovery candidate mutex poisoned");
+            .unwrap_or_else(|error| panic!("recovery candidate mutex poisoned: {error:?}"));
         if current.as_ref() != Some(&candidate) {
             return Err(CodexErr::Fatal(
                 "turn recovery candidate changed while consuming authority".to_string(),
@@ -1285,6 +1285,10 @@ impl Session {
     /// Reserves the idle session for a history mutation and durably consumes
     /// recovery authority before releasing the active-turn lock. The returned
     /// turn state must be passed to `clear_reserved_idle_turn` on every exit.
+    #[expect(
+        clippy::await_holding_invalid_type,
+        reason = "the active-turn guard is the atomic ownership fence across this awaited state transition"
+    )]
     pub(crate) async fn reserve_history_mutation_if_idle(
         &self,
     ) -> CodexResult<Option<Arc<Mutex<TurnState>>>> {
@@ -1312,7 +1316,7 @@ impl Session {
             && self
                 .recovery_candidate
                 .lock()
-                .expect("recovery candidate mutex poisoned")
+                .unwrap_or_else(|error| panic!("recovery candidate mutex poisoned: {error:?}"))
                 .is_none()
         {
             self.agent_status
@@ -1542,18 +1546,16 @@ impl Session {
                         let epoch = self.turn_epoch.load(Ordering::Acquire);
                         let persistence_failure_generation =
                             self.rollout_persistence_failure_generation();
-                        *self
-                            .recovery_candidate
-                            .lock()
-                            .expect("recovery candidate mutex poisoned") =
-                            Some(RecoveryCandidate {
-                                turn_id,
-                                marker_generation,
-                                request_fingerprint_sha256,
-                                replay,
-                                epoch,
-                                persistence_failure_generation,
-                            });
+                        *self.recovery_candidate.lock().unwrap_or_else(|error| {
+                            panic!("recovery candidate mutex poisoned: {error:?}")
+                        }) = Some(RecoveryCandidate {
+                            turn_id,
+                            marker_generation,
+                            request_fingerprint_sha256,
+                            replay,
+                            epoch,
+                            persistence_failure_generation,
+                        });
                         self.agent_status.send_replace(AgentStatus::Interrupted);
                     } else {
                         // A feature-off resume may still append history or
@@ -4407,6 +4409,10 @@ impl Session {
 
     /// Revokes live and cold recovery authority before accepting or processing
     /// any new model-visible input or side-effectful hook generation.
+    #[expect(
+        clippy::await_holding_invalid_type,
+        reason = "the active-turn guard is the atomic ownership fence across this awaited state transition"
+    )]
     pub(crate) async fn ensure_turn_recovery_unready(
         &self,
         turn_id: &str,
@@ -4458,6 +4464,10 @@ impl Session {
     /// a strict prerequisite for this Ready marker. A non-zero generation is
     /// session-lifetime sticky: after any transcript gap, only a fresh session
     /// rebuilt from durable history may establish recovery authority again.
+    #[expect(
+        clippy::await_holding_invalid_type,
+        reason = "the active-turn guard is the atomic ownership fence across this awaited state transition"
+    )]
     pub(crate) async fn mark_turn_recovery_ready(
         &self,
         turn_id: &str,
@@ -4586,6 +4596,10 @@ impl Session {
     /// commits Unready, then emits its terminal event, and only then may commit
     /// InterruptedConfirmed. This keeps a failed terminal write from looking
     /// like an unclean process death during cold replay.
+    #[expect(
+        clippy::await_holding_invalid_type,
+        reason = "the active-turn guard is the atomic ownership fence across this awaited state transition"
+    )]
     pub(crate) async fn prepare_turn_recovery_for_controlled_detach(
         &self,
         turn_id: &str,
@@ -4632,6 +4646,10 @@ impl Session {
     /// turn to become recoverable. The marker must extend the exact Unready
     /// generation created before detach and the Ready-to-terminal interval
     /// must have observed no best-effort persistence failure.
+    #[expect(
+        clippy::await_holding_invalid_type,
+        reason = "the active-turn guard is the atomic ownership fence across this awaited state transition"
+    )]
     pub(crate) async fn confirm_interrupted_turn_recovery(
         &self,
         turn_id: &str,
@@ -4761,6 +4779,10 @@ impl Session {
     /// says Unready, because a failed flush may have exposed a confirmation
     /// marker to cold replay. A second persistent write failure is fail-stop
     /// and cannot be distinguished from power loss using an append-only log.
+    #[expect(
+        clippy::await_holding_invalid_type,
+        reason = "the active-turn guard is the atomic ownership fence across this awaited state transition"
+    )]
     pub(crate) async fn persist_turn_recovery_failure_tombstone(
         &self,
         turn_id: &str,
