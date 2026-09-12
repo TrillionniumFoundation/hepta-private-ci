@@ -1,0 +1,77 @@
+name: Hepta extensibility owner contracts
+
+on:
+  pull_request:
+    paths:
+      - "codex-rs/hepta-control-plane/**"
+      - "codex-rs/hepta-intelligence/**"
+      - "codex-rs/hepta-learning-ledger/**"
+      - "codex-rs/hepta-operations/**"
+      - "codex-rs/hepta-types/**"
+      - "codex-rs/hepta-ndu/**"
+      - "codex-rs/Cargo.toml"
+      - "codex-rs/Cargo.lock"
+      - ".github/workflows/hepta-extensibility-contracts.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-extensibility-contracts-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  owner-contracts:
+    name: Extensibility owner contracts (${{ matrix.subject }})
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        subject: [source-head, base-merge]
+    env:
+      SOURCE_SHA: ${{ github.event.pull_request.head.sha }}
+      BASE_SHA: ${{ github.event.pull_request.base.sha }}
+      SUBJECT: ${{ matrix.subject }}
+      CARGO_INCREMENTAL: "0"
+      CARGO_PROFILE_TEST_DEBUG: "0"
+      CARGO_PROFILE_DEV_DEBUG: "0"
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Bind the exact source or deterministic merge candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          if [ "$SUBJECT" = base-merge ]; then
+            TREE=$(git merge-tree --write-tree "$BASE_SHA" "$SOURCE_SHA")
+            export GIT_AUTHOR_NAME=hepta-qualification GIT_COMMITTER_NAME=hepta-qualification
+            export GIT_AUTHOR_EMAIL=qualification@invalid GIT_COMMITTER_EMAIL=qualification@invalid
+            export GIT_AUTHOR_DATE=2000-01-01T00:00:00Z GIT_COMMITTER_DATE=2000-01-01T00:00:00Z
+            MERGE=$(printf '%s\n' 'Qualification only; never a replacement review or release object' | git commit-tree "$TREE" -p "$BASE_SHA" -p "$SOURCE_SHA")
+            git checkout --detach "$MERGE"
+            test "$(git rev-parse HEAD^{tree})" = "$TREE"
+          fi
+          git rev-parse HEAD HEAD^{tree}
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+      - name: Execute actual owner contract suites without the application host
+        working-directory: codex-rs
+        run: just test --locked -p codex-hepta-control-plane -p codex-hepta-intelligence -p codex-hepta-learning-ledger -p codex-hepta-operations
+      - name: Lint owner contracts
+        working-directory: codex-rs
+        run: cargo clippy --locked -p codex-hepta-control-plane -p codex-hepta-intelligence -p codex-hepta-learning-ledger -p codex-hepta-operations --all-targets -- -D warnings
+      - name: Check formatting without rewriting reviewed source
+        if: always()
+        working-directory: codex-rs
+        run: cargo fmt -p codex-hepta-control-plane -p codex-hepta-intelligence -p codex-hepta-learning-ledger -p codex-hepta-operations -- --check
+      - name: Retain source integrity
+        if: always()
+        run: |
+          git diff --check
+          git diff --exit-code
