@@ -56,6 +56,25 @@ Successful construction is only Registered; the caller explicitly starts the
 host. Dispatch retains the existing one-hop and `AuthorityPosture::DENY_ALL`
 semantics. There is no generic remote loader attached to the product daemon.
 
+## Native handoff registry admission
+
+`decode_compiled_body_graph_v2` remains the low-level digest and structural
+decoder. A runtime composition that crosses the native handoff seam must call
+`admit_compiled_body_graph_v2` instead. That entry point first matches the
+caller-supplied `NativeHandoffProtocolAdmissionV1` against the host-owned
+`NativeHandoffProtocolRegistryV1::canonical()` entry (`BodyGraphSnapshotV1`,
+profile `hepta.compiled-body-graph.v2`, version `2`, and a fixed schema
+digest). It then performs the independent payload digest, generation and
+placement checks before returning a `NativeHandoffReceiptV1` and the verified
+graph. Registry admission is therefore a real native producer/consumer seam,
+while the receipt remains an observation with `AuthorityPosture::DENY_ALL`;
+it cannot mint a lease, select a candidate, or open an external effect.
+
+Unknown protocol IDs, profile versions, schema digests, malformed graphs and
+host mismatches fail before handler construction. The registry is deliberately
+in-memory and host-owned: durable state-handoff migration, authenticated
+witnesses and production deployment qualification remain separate gates.
+
 ## Fixed encoding
 
 All integers are unsigned big-endian. Counts, organ/port indexes and identifier
