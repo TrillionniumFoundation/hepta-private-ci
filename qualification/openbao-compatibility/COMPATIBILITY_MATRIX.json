@@ -6,9 +6,19 @@
   "planVersion": "8.0.0",
   "target": {
     "product": "OpenBao",
+    "version": "2.6.2",
     "versionPolicy": "pinned_release_required",
     "profile": "server_api_storage_seal_and_operations",
-    "compatibilityLayers": ["api", "storage", "seal"]
+    "compatibilityLayers": ["api", "storage", "seal"],
+    "observedCandidate": {
+      "repositoryHead": "55f27e4258ea3f71ab7872cd7a44e8cbd4da1f18",
+      "runtimePin": "eac9c608bfda77a8972e1e8a1343dfc21985d62b",
+      "workspacePackages": 46,
+      "surfaceCount": 60,
+      "scopedImplementedSurfaces": 13,
+      "definedNotImplementedSurfaces": 47,
+      "independentObservedCurrentHeadSurfaces": 0
+    }
   },
   "statusVocabulary": ["gap", "partial", "closed"],
   "capabilities": [
@@ -33,91 +43,91 @@
     {
       "id": "http_api_and_cli",
       "layer": "api",
-      "status": "gap",
+      "status": "partial",
       "blocking": true,
       "summary": "OpenBao HTTP API and CLI surface with versioned error and auth semantics.",
-      "evidence": [],
+      "evidence": ["external/HeptaBao/README.md", "external/HeptaBao/EXTERNAL_SOURCE.json"],
       "requiredEvidence": ["native_server", "endpoint_contract_suite", "cli_compatibility_suite"]
     },
     {
       "id": "kv_engines",
       "layer": "api",
-      "status": "gap",
+      "status": "partial",
       "blocking": true,
       "summary": "KV v1/v2 read, write, metadata, versioning, deletion and recovery semantics.",
-      "evidence": [],
+      "evidence": ["external/HeptaBao/README.md", "external/HeptaBao/EXTERNAL_SOURCE.json"],
       "requiredEvidence": ["native_store", "migration_tests", "fault_and_reopen_tests"]
     },
     {
       "id": "auth_tokens_policies",
       "layer": "api",
-      "status": "gap",
+      "status": "partial",
       "blocking": true,
       "summary": "Auth methods, token lifecycle, ACL policy evaluation and renewal.",
-      "evidence": [],
+      "evidence": ["external/HeptaBao/README.md", "external/HeptaBao/EXTERNAL_SOURCE.json"],
       "requiredEvidence": ["auth_method_matrix", "policy_conformance", "revocation_tests"]
     },
     {
       "id": "leases_dynamic_secrets",
       "layer": "api",
-      "status": "gap",
+      "status": "partial",
       "blocking": true,
       "summary": "Lease issuance, renewal, revocation and dynamic database/cloud credentials.",
-      "evidence": [],
+      "evidence": ["external/HeptaBao/README.md", "external/HeptaBao/EXTERNAL_SOURCE.json"],
       "requiredEvidence": ["lease_registry", "indeterminate_reconciliation", "rotation_tests"]
     },
     {
       "id": "transit_and_crypto_engines",
       "layer": "api",
-      "status": "gap",
+      "status": "partial",
       "blocking": true,
       "summary": "Transit encryption, decryption, signing, verification, HMAC, hashing and key lifecycle.",
-      "evidence": [],
+      "evidence": ["external/HeptaBao/README.md", "external/HeptaBao/EXTERNAL_SOURCE.json"],
       "requiredEvidence": ["crypto_engine", "key_rotation_tests", "known_answer_vectors"]
     },
     {
       "id": "audit_devices",
       "layer": "api",
-      "status": "gap",
+      "status": "partial",
       "blocking": true,
       "summary": "Tamper-evident request/response audit output and failure behavior.",
-      "evidence": [],
+      "evidence": ["external/HeptaBao/README.md", "external/HeptaBao/EXTERNAL_SOURCE.json"],
       "requiredEvidence": ["audit_sink", "hmac_redaction_tests", "durability_and_backpressure_tests"]
     },
     {
       "id": "seal_unseal_kms",
       "layer": "seal",
-      "status": "gap",
+      "status": "partial",
       "blocking": true,
       "summary": "Seal, unseal, auto-unseal and KMS integration with recovery semantics.",
-      "evidence": [],
+      "evidence": ["external/HeptaBao/README.md", "external/HeptaBao/EXTERNAL_SOURCE.json"],
       "requiredEvidence": ["seal_provider", "restart_recovery", "key_rotation_and_loss_tests"]
     },
     {
       "id": "raft_storage_ha",
       "layer": "storage",
-      "status": "gap",
+      "status": "partial",
       "blocking": true,
       "summary": "Durable storage, Raft replication, active/standby failover and quorum behavior.",
-      "evidence": [],
+      "evidence": ["external/HeptaBao/README.md", "external/HeptaBao/EXTERNAL_SOURCE.json"],
       "requiredEvidence": ["multi_node_cluster", "failover_drill", "rpo_rto_measurements"]
     },
     {
       "id": "backup_restore_replication",
       "layer": "storage",
-      "status": "gap",
+      "status": "partial",
       "blocking": true,
       "summary": "Snapshots, restore, replication and cross-version recovery.",
-      "evidence": [],
+      "evidence": ["external/HeptaBao/README.md", "external/HeptaBao/EXTERNAL_SOURCE.json"],
       "requiredEvidence": ["snapshot_format", "restore_drill", "rolling_upgrade_and_rollback"]
     },
     {
       "id": "plugins_agent_proxy_ui",
       "layer": "api",
-      "status": "gap",
+      "status": "partial",
       "blocking": true,
       "summary": "Plugin SDK, agent/proxy behavior and operator UI compatibility.",
-      "evidence": [],
+      "evidence": ["external/HeptaBao/README.md", "external/HeptaBao/EXTERNAL_SOURCE.json"],
       "requiredEvidence": ["plugin_sdk", "agent_proxy_suite", "operator_ui"]
     },
     {
