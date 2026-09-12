@@ -29,6 +29,11 @@ pub use metric_roles::decide_independently_v2;
 pub(crate) use metric_roles::digest_evaluation_roles;
 pub use metric_roles::freeze_cross_fold_plan_v2;
 
+#[path = "holdout_codec.rs"]
+mod holdout_codec;
+pub(crate) use holdout_codec::decode as decode_holdout_plan;
+pub(crate) use holdout_codec::encode as encode_holdout_plan;
+
 const MAX_FOLDS: usize = 32;
 const MAX_METRICS: usize = 128;
 const MAX_LINEAGE_IDS: usize = 1_000_000;

@@ -119,3 +119,42 @@ Cross-crate composition is exercised by
 `../hepta-shadow-qualification/src/lane_e_closure_tests.rs`. Exact dossier IDs,
 test functions and CI jobs are registered in
 `../../qualification/lane-e/TEST_TRACEABILITY.json`.
+
+
+## Persisted tabular candidate loading
+
+`encode_tabular_payload_v1` emits a bounded owner-local `HEPTTB01` payload for the
+existing `learning.artifacts` create-only storage APIs. It does not open another
+store. The format contains model identity, generation, five digests and canonical
+sensor/action cells with sample counts, Q32 means/minima/maxima and evidence.
+All integers are big-endian; counts are bounded before allocation. The payload
+ceiling is 64 MiB, the grid is at most 262,144 cells and the existing sensor,
+action and sample bounds apply. Unknown versions, trailing/truncated bytes,
+noncanonical or incomplete grids and invalid statistics reject.
+
+A host-selected `TabularPayloadPinV1` binds payload, original training-artifact,
+objective, dataset, sensor, training-profile and generation identities.
+`LoadedTabularOperatorV1::from_pinned_payload` checks that independent pin and
+validates once; its private immutable state permits O(log n) repeated prediction.
+The original indexed V2 function validates the public mutable artifact in O(n)
+on every call, before its binary search. These are different cost profiles.
+
+The original training digest includes samples not retained in these sufficient
+statistics; it is retained rather than falsely reconstructed. The artifact owner
+must first establish current selection, compatible manifests and non-revoked
+lineage. A hash computed from received bytes is not independent admission.
+`src/loaded_tests.rs` fits actual tabular targets and observes baseline, changed
+candidate and the same predecessor payload in three separate processes. That is
+an engineering reload/rollback test, not a production learning or future-gain
+claim. Scientific evaluation and actual host wiring remain separate gates.
+
+The existing `hepta-shadow-qualification` durable-learning integration target now
+also composes the strict tabular learner with the existing `learning.artifacts`
+create-only payload/snapshot APIs and `load_pinned_candidate`, then the private
+loaded predictor. `tests/support/tabular_reload.rs` checks separate-process
+baseline/candidate/original-predecessor predictions and refuses both a revoked
+predecessor and its descendant under the current registry witness. The parent
+holds expected payload/manifest/registry pins outside the files being inspected;
+no extra artifact store or production selection is introduced. This is executable
+cross-owner engineering qualification, not an authenticated external operator
+acceptance, future-window efficacy result or live C1 deployment.

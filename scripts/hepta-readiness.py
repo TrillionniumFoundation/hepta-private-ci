@@ -1038,11 +1038,6 @@ def verify() -> int:
         "python3 scripts/hepta-readiness.py self-test",
         "python3 scripts/hepta-readiness.py generate-status --check",
         "python3 scripts/hepta-readiness.py verify",
-        "python3 scripts/hepta-module-docs.py verify",
-        "python3 scripts/hepta-algorithm-docs.py verify",
-        "python3 scripts/hepta-cns.py verify",
-        "python3 scripts/hepta-hnmf.py verify",
-        "python3 scripts/hepta-docs.py verify",
         "contents: read",
     ]:
         need(token in workflow, "workflow missing " + token)

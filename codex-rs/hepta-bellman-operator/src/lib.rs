@@ -18,6 +18,11 @@ use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
 
 mod learned;
+mod loaded;
+pub use loaded::LoadedTabularOperatorV1;
+pub use loaded::TabularPayloadError;
+pub use loaded::TabularPayloadPinV1;
+pub use loaded::encode_tabular_payload_v1;
 mod learned_strict;
 mod reference;
 mod world_model;

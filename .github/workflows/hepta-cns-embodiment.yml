@@ -77,16 +77,6 @@ jobs:
           python3 scripts/hepta-cns.py self-test
           python3 scripts/hepta-cns.py generate-status --check
           python3 scripts/hepta-cns.py verify
-          python3 scripts/hepta-module-docs.py self-test
-          python3 scripts/hepta-module-docs.py verify
-          python3 scripts/hepta-algorithm-docs.py self-test
-          python3 scripts/hepta-algorithm-docs.py verify-sources
-          python3 scripts/hepta-algorithm-docs.py generate-status --check
-          python3 scripts/hepta-algorithm-docs.py verify
-          python3 scripts/hepta-docs.py self-test
-          python3 scripts/hepta-docs.py generate-status
-          git diff --exit-code -- docs/STATUS.md
-          python3 scripts/hepta-docs.py verify
 
       - name: Verify HNMF executable references
         shell: bash
@@ -172,13 +162,6 @@ jobs:
           python3 scripts/hepta-cns.py self-test
           python3 scripts/hepta-cns.py generate-status --check
           python3 scripts/hepta-cns.py verify
-          python3 scripts/hepta-module-docs.py verify
-          python3 scripts/hepta-algorithm-docs.py verify-sources
-          python3 scripts/hepta-algorithm-docs.py generate-status --check
-          python3 scripts/hepta-algorithm-docs.py verify
-          python3 scripts/hepta-docs.py generate-status
-          git diff --exit-code -- docs/STATUS.md
-          python3 scripts/hepta-docs.py verify
           for manifest in \
             qualification/hnmf-reference/Cargo.toml \
             qualification/hnmf-contract-reference/Cargo.toml \

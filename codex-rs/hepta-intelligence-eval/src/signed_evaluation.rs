@@ -70,6 +70,9 @@ pub fn decide_with_signed_evidence_v1(
 ) -> Result<SignedEvaluationDecisionV1, SignedEvaluationError> {
     let payload = evaluation_signing_payload_v1(&bundle)?;
     let authentication_digest = authenticate(&bundle, evidence, verifier, &payload, now)?;
+    if bundle.claim_scope == crate::EvaluationClaimScopeV1::SystemLongitudinal {
+        return Err(SignedEvaluationError::MissingLongitudinalTiming);
+    }
     Ok(SignedEvaluationDecisionV1 {
         decision: decide_independently(bundle, now)?,
         trust_digest: verifier.trust_digest(),
@@ -86,6 +89,9 @@ pub fn decide_with_signed_evidence_v2(
 ) -> Result<SignedEvaluationDecisionV1, SignedEvaluationError> {
     let payload = evaluation_signing_payload_v2(&bundle, &roles)?;
     let authentication_digest = authenticate(&bundle, evidence, verifier, &payload, now)?;
+    if bundle.claim_scope == crate::EvaluationClaimScopeV1::SystemLongitudinal {
+        return Err(SignedEvaluationError::MissingLongitudinalTiming);
+    }
     Ok(SignedEvaluationDecisionV1 {
         decision: decide_independently_v2(bundle, roles, now)?,
         trust_digest: verifier.trust_digest(),
@@ -93,7 +99,7 @@ pub fn decide_with_signed_evidence_v2(
     })
 }
 
-fn authenticate(
+pub(crate) fn authenticate(
     bundle: &IndependentEvaluationBundleV1,
     evidence: &SignedEvaluationEvidenceV1,
     verifier: &LearningEvidenceVerifierV1,
@@ -134,6 +140,8 @@ pub enum SignedEvaluationError {
     Evidence(SignedEvidenceError),
     Evaluation(EvaluationClosureError),
     IdentityBinding,
+    MissingLongitudinalTiming,
+    Timing(&'static str),
 }
 impl fmt::Display for SignedEvaluationError {
     fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {

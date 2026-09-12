@@ -9,7 +9,6 @@ runtime, effect, acceptance, promotion, or release authority.
 from __future__ import annotations
 
 import argparse
-import hashlib
 import json
 import re
 import subprocess
@@ -125,12 +124,6 @@ def map_for(module: dict, source_base: dict, lanes: dict):
     }
 
 
-def normalize_for_write(value):
-    # sourcePathExists is a derived field, retained only to make verification
-    # failures actionable and regenerated on every run.
-    return value
-
-
 def migrate_map(row: dict, module: dict, lanes: dict, source_base: dict) -> dict:
     """Upgrade legacy v1/v2 maps without discarding implementation evidence.
 
@@ -149,7 +142,9 @@ def migrate_map(row: dict, module: dict, lanes: dict, source_base: dict) -> dict
     operations = []
     for original in row.get("operations", []):
         op = dict(original)
-        name = op.get("operation") or op.get("designOperation") or "native_mapping_pending"
+        name = (
+            op.get("operation") or op.get("designOperation") or "native_mapping_pending"
+        )
         op.setdefault("operation", name)
         op.setdefault("designOperation", name)
         anchor = op.get("ownerEntrypoint") or {}
@@ -165,43 +160,52 @@ def migrate_map(row: dict, module: dict, lanes: dict, source_base: dict) -> dict
         op["sourcePathExists"] = bool(source and (ROOT / source).is_file())
         operations.append(op)
     if not operations:
-        operations = [{
-            "operation": "native_mapping_pending",
-            "designOperation": "native_mapping_pending",
-            "nativeSymbol": None,
-            "sourcePath": None,
-            "mappingClass": "owner_native",
-            "delegatedCallees": [],
-            "tests": [],
-            "state": "specified_target_native_mapping_pending",
-            "authority": "none",
-            "sourcePathExists": False,
-        }]
+        operations = [
+            {
+                "operation": "native_mapping_pending",
+                "designOperation": "native_mapping_pending",
+                "nativeSymbol": None,
+                "sourcePath": None,
+                "mappingClass": "owner_native",
+                "delegatedCallees": [],
+                "tests": [],
+                "state": "specified_target_native_mapping_pending",
+                "authority": "none",
+                "sourcePathExists": False,
+            }
+        ]
     migrated = dict(row)
-    migrated.update({
-        "schema": "hepta.module-implementation-map.v3",
-        "schemaVersion": 3,
-        "sourceBase": row.get("sourceBase") or source_base,
-        "laneId": row.get("laneId") or lanes[module["id"]],
-        "module": module["id"],
-        "owner": row.get("owner", module["owner"]),
-        "deputy": row.get("deputy", module["deputy"]),
-        "technicalGuide": row.get("technicalGuide", module["technicalDocument"]),
-        "declaredRoots": declared,
-        "resolvedRoots": [x for x in declared if (ROOT / x).exists()],
-        "sourceRootPresent": all((ROOT / x).exists() for x in declared),
-        "productionImplementation": bool(row.get("productionImplementation", False)),
-        "productCallerState": row.get("productCallerState", "not_composed"),
-        "productionWriterState": row.get("productionWriterState", "not_established"),
-        "operations": operations,
-    })
+    migrated.update(
+        {
+            "schema": "hepta.module-implementation-map.v3",
+            "schemaVersion": 3,
+            "sourceBase": row.get("sourceBase") or source_base,
+            "laneId": row.get("laneId") or lanes[module["id"]],
+            "module": module["id"],
+            "owner": row.get("owner", module["owner"]),
+            "deputy": row.get("deputy", module["deputy"]),
+            "technicalGuide": row.get("technicalGuide", module["technicalDocument"]),
+            "declaredRoots": declared,
+            "resolvedRoots": [x for x in declared if (ROOT / x).exists()],
+            "sourceRootPresent": all((ROOT / x).exists() for x in declared),
+            "productionImplementation": bool(
+                row.get("productionImplementation", False)
+            ),
+            "productCallerState": row.get("productCallerState", "not_composed"),
+            "productionWriterState": row.get(
+                "productionWriterState", "not_established"
+            ),
+            "operations": operations,
+        }
+    )
     boundary = migrated.get("claimBoundary") or migrated.get("completion")
     if not isinstance(boundary, dict):
         boundary = {}
     migrated["claimBoundary"] = {
         **boundary,
         "nativeSourceMappingComplete": all(
-            bool(op.get("sourcePathExists") and op.get("nativeSymbol")) for op in operations
+            bool(op.get("sourcePathExists") and op.get("nativeSymbol"))
+            for op in operations
         ),
         "sourceRootPresent": migrated["sourceRootPresent"],
         "productionImplementation": migrated["productionImplementation"],
@@ -210,15 +214,21 @@ def migrate_map(row: dict, module: dict, lanes: dict, source_base: dict) -> dict
         "activation": bool(boundary.get("activation", False)),
         "release": bool(boundary.get("release", False)),
     }
-    migrated.setdefault("repositoryControlledGaps", [
-        "Bind every operation to an authenticated consumer callsite and owner store.",
-        "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary.",
-    ])
-    migrated.setdefault("externalEvidenceGates", [
-        "independent semantic review",
-        "product execution and target-host qualification",
-        "operator acceptance, canary, promotion and release",
-    ])
+    migrated.setdefault(
+        "repositoryControlledGaps",
+        [
+            "Bind every operation to an authenticated consumer callsite and owner store.",
+            "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary.",
+        ],
+    )
+    migrated.setdefault(
+        "externalEvidenceGates",
+        [
+            "independent semantic review",
+            "product execution and target-host qualification",
+            "operator acceptance, canary, promotion and release",
+        ],
+    )
     # ``sourceRoot`` is a v1 spelling.  Retain it as a compatibility alias so
     # downstream readers can migrate independently; v3 readers use roots.
     migrated["sourceRoot"] = declared
@@ -236,12 +246,17 @@ def migrate():
         module = by_id.get(row.get("module") or path.parent.name)
         if module is None:
             continue
-        if row.get("schema") == "hepta.module-implementation-map.v3" and row.get("schemaVersion") == 3:
+        if (
+            row.get("schema") == "hepta.module-implementation-map.v3"
+            and row.get("schemaVersion") == 3
+        ):
             # Normalize existing v3 operations with compatibility aliases.
             migrated = migrate_map(row, module, lanes, source_base)
         else:
             migrated = migrate_map(row, module, lanes, source_base)
-        path.write_text(json.dumps(migrated, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+        path.write_text(
+            json.dumps(migrated, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"
+        )
         changed.append(str(path.relative_to(ROOT)))
     print(json.dumps({"migrated": len(changed), "maps": changed}, ensure_ascii=False))
 
@@ -258,7 +273,7 @@ def generate():
         path = ROOT / f"docs/modules/{module['id']}/IMPLEMENTATION_MAP.json"
         if path.exists():
             continue
-        value = normalize_for_write(map_for(module, source_base, lanes))
+        value = map_for(module, source_base, lanes)
         path.write_text(
             json.dumps(value, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"
         )
@@ -282,14 +297,21 @@ def verify():
         except Exception as exc:
             failures.append(f"{mid}: invalid JSON: {exc}")
             continue
-        if row.get("schema") != "hepta.module-implementation-map.v3" or row.get("schemaVersion") != 3:
+        if (
+            row.get("schema") != "hepta.module-implementation-map.v3"
+            or row.get("schemaVersion") != 3
+        ):
             failures.append(f"{mid}: schema must be v3")
         if row.get("module") != mid:
             failures.append(f"{mid}: identity")
         if row.get("laneId") != lanes.get(mid):
             failures.append(f"{mid}: lane")
         source_base = row.get("sourceBase")
-        if not isinstance(source_base, dict) or not source_base.get("commit") or not source_base.get("tree"):
+        if (
+            not isinstance(source_base, dict)
+            or not source_base.get("commit")
+            or not source_base.get("tree")
+        ):
             failures.append(f"{mid}: source base")
         else:
             source_bases.add((source_base["commit"], source_base["tree"]))

@@ -15,6 +15,8 @@ from collections import Counter, defaultdict, deque
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
+from hepta_workflow_commands import verify_synthetic_merge
+
 ROOT = Path(__file__).resolve().parents[1]
 PLAN_ID = "HEPTA-GLOBAL-MODULAR-DEVELOPMENT-PLAN"
 VERSION = "8.0.0"
@@ -114,7 +116,6 @@ SCHEMAS = {
     "evidence": "hepta.evidence-index.v5",
     "threats": "hepta.threat-model.v2",
     "module_docs": "hepta.module-document-index.v2",
-    "source_bindings": "hepta.module-source-binding.v2",
     "source_bindings": "hepta.module-source-binding.v2",
     "algorithm_specs": "hepta.algorithm-spec-registry.v1",
     "paper_traceability": "hepta.paper-traceability.v2",
@@ -1411,13 +1412,15 @@ def verify() -> int:
             label + " verifier " + (check.stderr or check.stdout).strip(),
         )
     wf = (ROOT / ".github/workflows/hepta-development-docs.yml").read_text()
+    try:
+        verify_synthetic_merge(wf, ROOT)
+    except ValueError as exc:
+        die("synthetic merge workflow: " + str(exc))
     for token in [
         "source-head:",
         "merge-candidate:",
         "github.event.pull_request.head.sha",
         "github.event.pull_request.base.sha",
-        "git merge-tree --write-tree",
-        "git commit-tree",
         "persist-credentials: false",
         "python3 scripts/hepta-docs.py verify",
         "python3 scripts/hepta-algorithm-docs.py verify-sources",

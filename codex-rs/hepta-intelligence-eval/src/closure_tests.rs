@@ -779,15 +779,12 @@ fn signed_evaluation_binds_metrics_roles_and_host_identities() {
         generator_plan: attestations[0].clone(),
         evaluator_bundle: attestations[1].clone(),
     };
-    let admitted =
-        decide_with_signed_evidence_v2(value.clone(), roles.clone(), &evidence, &verifier, 50)
-            .expect("verified evaluation");
+    // Valid signatures and future-looking IDs alone no longer admit an
+    // external longitudinal claim. V3 additionally requires observed time.
     assert_eq!(
-        admitted.decision.disposition,
-        IndependentEvaluationDispositionV1::EligibleForIndependentSelection
+        decide_with_signed_evidence_v2(value.clone(), roles.clone(), &evidence, &verifier, 50),
+        Err(SignedEvaluationError::MissingLongitudinalTiming)
     );
-    assert!(!admitted.decision.authority.grants_any());
-    assert!(!admitted.authentication_digest.is_zero());
     let mut edited = value.clone();
     edited.metrics[0].candidate.upper = FixedQ32::from_raw(95);
     assert_eq!(
@@ -816,3 +813,6 @@ fn signed_evaluation_binds_metrics_roles_and_host_identities() {
         ))
     );
 }
+
+#[path = "longitudinal_time_tests.rs"]
+mod longitudinal_time_tests;
