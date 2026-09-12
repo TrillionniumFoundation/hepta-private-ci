@@ -33,6 +33,13 @@ CNS_ARCHITECTURE = "docs/cns/CNS_ARCHITECTURE.json"
 CNS_GAPS = "docs/cns/GAPS.json"
 HNMF_REGISTRY = "docs/hnmf/HNMF.json"
 HNMF_GAPS = "docs/hnmf/GAPS.json"
+WORKFLOW_REFERENCE_SCRIPTS = (
+    "scripts/hepta-gap-closure.py",
+    "scripts/hepta_source_registry_closure.py",
+)
+WORKFLOW_REFERENCE_RE = re.compile(
+    r"(?<![A-Za-z0-9_.-])(?P<path>\.github/workflows/[A-Za-z0-9_.-]+\.ya?ml)(?![A-Za-z0-9_.-])"
+)
 AUTHORITY_KEYS = [
     "runtimeAuthority",
     "productionCaller",
@@ -85,7 +92,7 @@ SCHEMAS = {
     "current": "hepta.selected-development-source.v3",
     "system": "hepta.document-system.v6",
     "architecture": "hepta.architecture-model.v5",
-    "modules": "hepta.module-registry.v6",
+    "modules": "hepta.module-registry.v7",
     "contracts": "hepta.contract-registry.v2",
     "protocols": "hepta.protocol-schema-registry.v3",
     "data": "hepta.data-authority-registry.v2",
@@ -105,8 +112,9 @@ SCHEMAS = {
     "qualification": "hepta.qualification-registry.v2",
     "evidence": "hepta.evidence-index.v5",
     "threats": "hepta.threat-model.v2",
-    "module_docs": "hepta.module-document-index.v1",
-    "source_bindings": "hepta.module-source-binding.v1",
+    "module_docs": "hepta.module-document-index.v2",
+    "source_bindings": "hepta.module-source-binding.v2",
+    "source_bindings": "hepta.module-source-binding.v2",
     "algorithm_specs": "hepta.algorithm-spec-registry.v1",
     "paper_traceability": "hepta.paper-traceability.v2",
 }
@@ -159,6 +167,44 @@ def die(msg):
 def need(ok, msg):
     if not ok:
         die(msg)
+
+
+def verify_exact_workflow_references() -> None:
+    """Reject stale exact workflow paths in canonical docs and source registries.
+
+    Historical consolidation ledgers intentionally retain deleted paths and are
+    excluded. Test fixtures also use synthetic workflow names; production
+    verifier scripts listed above are scanned explicitly so their identity
+    bindings cannot silently drift.
+    """
+
+    roots = [ROOT / "docs", ROOT / "qualification"]
+    files: list[Path] = []
+    for root in roots:
+        if not root.is_dir():
+            continue
+        for path in root.rglob("*"):
+            if path.is_file() and path.suffix in {".md", ".json"}:
+                if "qualification/main-consolidation" in path.as_posix():
+                    continue
+                files.append(path)
+    files.extend(ROOT / rel for rel in WORKFLOW_REFERENCE_SCRIPTS)
+
+    missing: list[str] = []
+    for path in sorted(set(files)):
+        try:
+            text = path.read_text(encoding="utf-8")
+        except (OSError, UnicodeDecodeError):
+            continue
+        for match in WORKFLOW_REFERENCE_RE.finditer(text):
+            workflow = match.group("path")
+            if not (ROOT / workflow).is_file():
+                line = text.count("\n", 0, match.start()) + 1
+                missing.append(f"{path.relative_to(ROOT)}:{line}: {workflow}")
+    need(
+        not missing,
+        "stale exact workflow references:\n" + "\n".join(sorted(set(missing))),
+    )
 
 
 def pairs(items):
@@ -918,6 +964,7 @@ def verify_cleanup_base(system):
 
 
 def verify() -> int:
+    verify_exact_workflow_references()
     module_index = load(FILES["module_docs"])
     algorithm_index = load(FILES["algorithm_specs"])
     readiness_index = load(READINESS_INDEX)

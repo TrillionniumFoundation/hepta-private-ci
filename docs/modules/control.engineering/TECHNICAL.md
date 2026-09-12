@@ -48,11 +48,7 @@ Declared roots not yet present:
 
 None.
 
-`existing_bound` is a source-location fact: the declared roots exist. The source and test references below identify what can be inspected and invoked; only exact-candidate execution receipts establish that the checks passed. This status does not establish runtime composition, operator acceptance, selection, promotion or release. Any source move updates `MODULES.json`, `SOURCE_BINDINGS.json` and this guide together.
-
-### Native source and scope
-
-The registered primary source is [tools/hepta-engineering-control/hepta_engineering_control.py](../../../tools/hepta-engineering-control/hepta_engineering_control.py); observed identifiers include `WorkPackage`, `PathLease`, `ScheduleReceipt`, `IntegrationEvidence`, `IntegrationDecision`, `schedule`. This is a source navigation binding, not proof that every target operation or production consumer exists. Read the [current native implementation](../../../qualification/module-execution-dossiers/detail/control.engineering.md#8-current-native-implementation) alongside the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/control.engineering.md) for the implemented subset and remaining product work.
+`existing_bound` is a source-location fact. The declared roots above are materialized in the bounded V8 source candidate and are covered by the dedicated closed-world inventory, focused tests, all-target compilation, strict lint and exact-head qualification. This status does not activate `control.engineering`, create a production caller, grant runtime or effect authority, issue independent acceptance, select or promote a candidate, or authorize release. Any later source move updates `MODULES.json`, `SOURCE_BINDINGS.json` and this guide in one candidate.
 
 ## 3. Boundary, responsibilities and non-goals
 
@@ -559,17 +555,4 @@ The bootstrap source-location obligation for `control.engineering` is implemente
 
 - `tools/hepta-engineering-control`
 
-The source candidate is checked by `.github/workflows/hepta-gap-closure.yml`, including closed-world inventory, package tests, all-target compilation, strict Clippy and clean tracked state. This receipt is source implementation evidence only. It grants no runtime, production-writer, model-provider, external-effect, independent-acceptance, selection, promotion, merge or release authority.
-
-## 18. Owner-clean technical contract handoff
-
-The following records the earlier documentation-to-artifact source handoff. It is provenance for that package sequence, not a mandatory branch shape for every subsequent authorized multi-lane change. Ordinary work follows the current global plan and actual owner/dependency boundaries.
-
-That handoff staged cross-module technical changes as linear, owner-pure commits. The
-`DOC-3B-MODULE-TECHNICAL-DOCUMENTS` commit changes only canonical files under
-`docs/modules/**` and the mechanically derived module-document index. A
-descendant `ART-1-LEARNING-ARTIFACT-REGISTRY` commit owns the module-local
-`READ_BOUNDARY.md` and `STORAGE.md` files together with the implementation and
-tests under the existing `learning.artifacts` namespace. The source commit must
-retain the documentation commit as its direct ancestor; this handoff creates no
-cross-owner path lease, co-ownership, activation or runtime authority.
+The source candidate is checked by `.github/workflows/hepta-consolidated-source.yml`, including closed-world inventory, package tests, all-target compilation, strict Clippy and clean tracked state. This receipt is source implementation evidence only. It grants no runtime, production-writer, model-provider, external-effect, independent-acceptance, selection, promotion, merge or release authority.

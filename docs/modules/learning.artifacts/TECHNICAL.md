@@ -42,11 +42,7 @@ Declared roots not yet present:
 
 None.
 
-`existing_bound` is a source-location fact: the declared roots exist. The source and test references below identify what can be inspected and invoked; only exact-candidate execution receipts establish that the checks passed. This status does not establish runtime composition, operator acceptance, selection, promotion or release. Any source move updates `MODULES.json`, `SOURCE_BINDINGS.json` and this guide together.
-
-### Native source and scope
-
-The registered primary source is [codex-rs/hepta-learning-artifacts/src/lib.rs](../../../codex-rs/hepta-learning-artifacts/src/lib.rs); observed identifiers include `ArtifactRegistry`, `CreateOnlyArtifactFile`, `PinnedCandidateSpec`, `LoadedPinnedCandidate`, `load_pinned_candidate`, `write_candidate_payload`. This is a source navigation binding, not proof that every target operation or production consumer exists. Read the [current native implementation](../../../qualification/module-execution-dossiers/detail/learning.artifacts.md#8-current-native-implementation) alongside the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/learning.artifacts.md) for the implemented subset and remaining product work.
+`existing_bound` is a source-location fact. The declared roots above are materialized in the bounded V8 source candidate and are covered by the dedicated closed-world inventory, focused tests, all-target compilation, strict lint and exact-head qualification. This status does not activate `learning.artifacts`, create a production caller, grant runtime or effect authority, issue independent acceptance, select or promote a candidate, or authorize release. Any later source move updates `MODULES.json`, `SOURCE_BINDINGS.json` and this guide in one candidate.
 
 ## 3. Boundary, responsibilities and non-goals
 
@@ -447,39 +443,4 @@ The bootstrap source-location obligation for `learning.artifacts` is implemented
 
 - `codex-rs/hepta-learning-artifacts`
 
-The source candidate is checked by `.github/workflows/hepta-gap-closure.yml`, including closed-world inventory, package tests, all-target compilation, strict Clippy and clean tracked state. This receipt is source implementation evidence only. It grants no runtime, production-writer, model-provider, external-effect, independent-acceptance, selection, promotion, merge or release authority.
-
-## 18. Atomic create-only artifact writer contract
-
-The ART-1 storage writer accepts only an opaque `CreateOnlyArtifactFile`
-capability. Its sole safe constructor performs one atomic
-`OpenOptions::create_new(true)` open of the authorized final path component;
-writers consume the capability. No safe conversion from an arbitrary `File`,
-raw descriptor or cloned handle is part of the public contract. Read ports remain
-file-capability based and continue to accept independently opened read-only
-`File` values.
-
-The fixed writer signatures are
-`write_registry_snapshot(CreateOnlyArtifactFile, &ArtifactRegistry, Digest32)`
-and
-`write_candidate_payload(CreateOnlyArtifactFile, &ArtifactRegistry, &StableId, &[u8])`.
-An existing nonempty file, existing empty file, acknowledged file truncated to
-zero, or symlink at the final component returns `AlreadyExists` without opening
-that inode for write. Bytes appearing after atomic creation but before the guarded
-write return `Indeterminate`; lock contention returns `Busy`; write or sync
-failure remains `Indeterminate`.
-
-Because target creation precedes semantic validation, invalid binding,
-eligibility or payload input can leave a zero-length orphan. The host must
-reconcile or separately remove it and must never relabel or reuse it as a new
-artifact. Atomic final-component creation does not authenticate parent traversal,
-synchronize the parent directory, preserve a later path-to-inode binding or
-isolate hostile writers. Those duties remain at the host boundary and require
-target-host qualification.
-
-Mandatory regression cases are existing empty and truncate-to-zero targets,
-nonempty targets, regular and dangling symlinks where supported, exactly one
-winner under concurrent creation, lock contention, post-create interference,
-normal snapshot/payload reopen, truncation rejection and current-revocation
-enforcement. This contract changes no artifact encoding, digest, lineage,
-selection, activation, acceptance, promotion or release authority.
+The source candidate is checked by `.github/workflows/hepta-consolidated-source.yml`, including closed-world inventory, package tests, all-target compilation, strict Clippy and clean tracked state. This receipt is source implementation evidence only. It grants no runtime, production-writer, model-provider, external-effect, independent-acceptance, selection, promotion, merge or release authority.

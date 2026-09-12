@@ -61,5 +61,20 @@
       "deploymentQualified"
     ],
     "aliasRule": "Deprecated aliases may remain as source-specific facts, but must not be presented as substitutes for the three canonical dimensions."
+  },
+  "moduleFacts": {
+    "source_root_present": {
+      "type": "boolean",
+      "meaning": "At least one declared exclusive source root is present in the exact candidate tree; this is a source-location fact only.",
+      "requiredEvidence": ["declared_root_inventory", "exact_candidate_tree"],
+      "doesNotImply": ["production_implementation", "runtime_activation", "product_efficacy"]
+    },
+    "production_implementation": {
+      "type": "boolean",
+      "meaning": "A named product caller invokes the module through its registered boundary and executable product tests cover that path.",
+      "requiredEvidence": ["canonical_source_receipt", "native_symbol_mapping", "real_consumer_callsite", "product_tests"],
+      "doesNotImply": ["independent_acceptance", "future_window_efficacy", "production_release"]
+    },
+    "invariant": "production_implementation may be true only when source_root_present is true"
   }
 }

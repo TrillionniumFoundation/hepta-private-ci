@@ -1,0 +1,61 @@
+{
+  "schema": "hepta.module-implementation-map.v3",
+  "schemaVersion": 3,
+  "sourceBase": {
+    "commit": "ab584c609ffe30bac96001e286eb4002b03339cc",
+    "tree": "befa7dd1e884be1728085c0f4178002556031288"
+  },
+  "laneId": "LANE-C-MEMORY",
+  "module": "cognitive.read",
+  "owner": "cognitive-platform",
+  "deputy": "agent-runtime",
+  "technicalGuide": "docs/modules/cognitive.read/TECHNICAL.md",
+  "declaredRoots": [
+    "codex-rs/hepta-cognitive-read"
+  ],
+  "resolvedRoots": [
+    "codex-rs/hepta-cognitive-read"
+  ],
+  "sourceRootPresent": true,
+  "productionImplementation": false,
+  "productCallerState": "not_composed",
+  "productionWriterState": "not_established",
+  "operations": [
+    {
+      "operation": "read_v2",
+      "nativeSymbol": "read_v2",
+      "sourcePath": "codex-rs/hepta-cognitive-read/src/v2.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [],
+      "sourcePathExists": true
+    },
+    {
+      "operation": "durablecognitivesnapshot",
+      "nativeSymbol": "DurableCognitiveSnapshot",
+      "sourcePath": "codex-rs/hepta-memory/src/lane_c_snapshot.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [],
+      "sourcePathExists": true
+    }
+  ],
+  "repositoryControlledGaps": [
+    "Bind every operation to an authenticated consumer callsite and owner store.",
+    "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary."
+  ],
+  "externalEvidenceGates": [
+    "independent semantic review",
+    "product execution and target-host qualification",
+    "operator acceptance, canary, promotion and release"
+  ],
+  "claimBoundary": {
+    "nativeSourceMappingComplete": true,
+    "sourceRootPresent": true,
+    "productionImplementation": false,
+    "productExecutionProved": false,
+    "independentAcceptance": false,
+    "activation": false,
+    "release": false
+  }
+}

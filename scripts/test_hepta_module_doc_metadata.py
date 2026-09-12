@@ -29,6 +29,8 @@ class ModuleMetadataTests(unittest.TestCase):
                     "id": module_id,
                     "technicalDocument": path,
                     "sourceStatus": "target_partially_materialized",
+                    "source_root_present": True,
+                    "production_implementation": False,
                 }
             )
             rows.append(
@@ -36,6 +38,8 @@ class ModuleMetadataTests(unittest.TestCase):
                     "module": module_id,
                     "path": path,
                     "sourceStatus": "stale",
+                    "source_root_present": False,
+                    "production_implementation": True,
                     "sha256": "0" * 64,
                     "bytes": 0,
                     "words": 0,
@@ -82,6 +86,12 @@ class ModuleMetadataTests(unittest.TestCase):
                 row["sourceStatus"] == "target_partially_materialized"
                 for row in result["modules"]
             )
+        )
+        self.assertTrue(
+            all(row["source_root_present"] is True for row in result["modules"])
+        )
+        self.assertTrue(
+            all(row["production_implementation"] is False for row in result["modules"])
         )
 
     def test_guide_change_is_bound_to_exact_new_digest(self):

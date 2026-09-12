@@ -115,6 +115,8 @@ Every one of the forty registered modules has one stable implementation guide at
 
 Source states are deliberately truthful: a module may be `existing_bound`, `existing_legacy_aggregate`, `existing_declared_unbound`, `target_partially_materialized`, `target_unmaterialized` or `external_with_adapter_target`. Documentation readiness never changes a source, activation, acceptance, promotion or release claim. `python3 scripts/hepta-module-docs.py verify` fails unless all forty guides, bindings and registry references are closed.
 
+The module registries expose two separate boolean facts for every module: `source_root_present` records only that a declared source root exists in the exact candidate tree, while `production_implementation` is true only after a named product caller and executable product tests are evidenced. A present source root therefore cannot be read as a production implementation. The two facts are projected identically through `MODULES.json`, `SOURCE_BINDINGS.json` and `MODULE_DOCS.json` and are validated against `docs/readiness/STATUS_MODEL.json`.
+
 ## 5B. Adaptive algorithm closed world
 
 The implementation-level adaptive document set is globally governed, not an independent prose island. `docs/learning/ALGORITHM_SPECS.json` binds the six specifications, exact Git blob identities, paper claim anchors, canonical contracts and protocol schemas, data-authority domains, quantitative experiments, artifact lifecycle, work package `DOC-3D-ADAPTIVE-ALGORITHM-DOC-CLOSED-WORLD`, and both read-only CI workflows.

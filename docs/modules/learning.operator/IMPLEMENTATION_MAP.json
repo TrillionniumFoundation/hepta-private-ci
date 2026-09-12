@@ -1,0 +1,70 @@
+{
+  "schema": "hepta.module-implementation-map.v3",
+  "schemaVersion": 3,
+  "sourceBase": {
+    "commit": "ab584c609ffe30bac96001e286eb4002b03339cc",
+    "tree": "befa7dd1e884be1728085c0f4178002556031288"
+  },
+  "laneId": "LANE-E-LEARNING",
+  "module": "learning.operator",
+  "owner": "learning-platform",
+  "deputy": "qualification-plane",
+  "technicalGuide": "docs/modules/learning.operator/TECHNICAL.md",
+  "declaredRoots": [
+    "codex-rs/hepta-bellman-operator"
+  ],
+  "resolvedRoots": [
+    "codex-rs/hepta-bellman-operator"
+  ],
+  "sourceRootPresent": true,
+  "productionImplementation": false,
+  "productCallerState": "not_composed",
+  "productionWriterState": "not_established",
+  "operations": [
+    {
+      "operation": "build_targets",
+      "nativeSymbol": "build_targets",
+      "sourcePath": "codex-rs/hepta-bellman-operator/src/lib.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [],
+      "sourcePathExists": true
+    },
+    {
+      "operation": "fit_tabular_operator",
+      "nativeSymbol": "fit_tabular_operator",
+      "sourcePath": "codex-rs/hepta-bellman-operator/src/learned.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [],
+      "sourcePathExists": true
+    },
+    {
+      "operation": "fit_transition_model",
+      "nativeSymbol": "fit_transition_model",
+      "sourcePath": "codex-rs/hepta-bellman-operator/src/world_model.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [],
+      "sourcePathExists": true
+    }
+  ],
+  "repositoryControlledGaps": [
+    "Bind every operation to an authenticated consumer callsite and owner store.",
+    "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary."
+  ],
+  "externalEvidenceGates": [
+    "independent semantic review",
+    "product execution and target-host qualification",
+    "operator acceptance, canary, promotion and release"
+  ],
+  "claimBoundary": {
+    "nativeSourceMappingComplete": true,
+    "sourceRootPresent": true,
+    "productionImplementation": false,
+    "productExecutionProved": false,
+    "independentAcceptance": false,
+    "activation": false,
+    "release": false
+  }
+}

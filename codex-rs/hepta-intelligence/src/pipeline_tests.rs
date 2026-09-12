@@ -156,6 +156,38 @@ fn full_shadow_path_is_ordered_and_authority_free() {
     );
     assert!(!receipt.trace_digest.is_zero());
     assert!(!receipt.authority.grants_any());
+    receipt
+        .validate()
+        .unwrap_or_else(|error| panic!("valid receipt: {error:?}"));
+}
+
+#[test]
+fn persisted_receipt_rejects_trace_mutation() {
+    let mut ports = FakePorts::default();
+    let mut receipt = run_shadow_pipeline(request(), &mut ports)
+        .unwrap_or_else(|error| panic!("shadow pipeline: {error:?}"));
+    receipt.stages[1].output_digest = digest(b"tampered-output");
+    assert_eq!(
+        receipt.validate(),
+        Err(PipelineErrorV1::PredecessorMismatch)
+    );
+}
+
+#[test]
+fn persisted_receipt_rejects_dispatch_without_required_stages() {
+    let mut ports = FakePorts {
+        intuition_decision: PortDecisionV1::SlowPath,
+        ..FakePorts::default()
+    };
+    let mut receipt = run_shadow_pipeline(request(), &mut ports)
+        .unwrap_or_else(|error| panic!("shadow pipeline: {error:?}"));
+    receipt.disposition = PipelineDispositionV1::DispatchProposed;
+    assert_eq!(
+        receipt.validate(),
+        Err(PipelineErrorV1::InvalidPipelineReceipt(
+            "dispatch disposition"
+        ))
+    );
 }
 
 #[test]

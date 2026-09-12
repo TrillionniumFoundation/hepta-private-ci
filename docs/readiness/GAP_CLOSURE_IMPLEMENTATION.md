@@ -339,9 +339,9 @@ caller-manifest unit tests remain unchanged. These targets require actual
 exact-source execution; they do not retire the Cargo migration exceptions or
 satisfy independent acceptance and production integration gates.
 
-The original `hepta-gap-closure.yml` workflow includes source normalization and
-lockfile reconciliation. A result from a mutated checkout must not substitute
-for exact-source qualification.
+The canonical `hepta-consolidated-source.yml` workflow includes source
+normalization and lockfile reconciliation. A result from a mutated checkout must
+not substitute for exact-source qualification.
 
 The dependency cleanup at `9e339cebaf0be6ee99c880251e809b9524b7b9d2`
 has a verified Bazel lock diagnostic from workflow run `34045950601`, artifact

@@ -33,6 +33,8 @@ def expected_metadata(root: Path) -> dict[Path, str]:
             raise ValueError("technical document path mismatch")
         text = (root / expected_path).read_text(encoding="utf-8")
         row["sourceStatus"] = module["sourceStatus"]
+        row["source_root_present"] = module["source_root_present"]
+        row["production_implementation"] = module["production_implementation"]
         row["sha256"] = hashlib.sha256(text.encode("utf-8")).hexdigest()
         row["bytes"] = len(text.encode("utf-8"))
         row["words"] = len(re.findall(r"\b[\w.-]+\b", text))

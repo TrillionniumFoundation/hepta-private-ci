@@ -1,0 +1,61 @@
+{
+  "schema": "hepta.module-implementation-map.v3",
+  "schemaVersion": 3,
+  "sourceBase": {
+    "commit": "ab584c609ffe30bac96001e286eb4002b03339cc",
+    "tree": "befa7dd1e884be1728085c0f4178002556031288"
+  },
+  "laneId": "LANE-F-ADAPTIVE-POLICY",
+  "module": "intuition.policy",
+  "owner": "intelligence-platform",
+  "deputy": "learning-platform",
+  "technicalGuide": "docs/modules/intuition.policy/TECHNICAL.md",
+  "declaredRoots": [
+    "codex-rs/hepta-intuition"
+  ],
+  "resolvedRoots": [
+    "codex-rs/hepta-intuition"
+  ],
+  "sourceRootPresent": true,
+  "productionImplementation": false,
+  "productCallerState": "not_composed",
+  "productionWriterState": "not_established",
+  "operations": [
+    {
+      "operation": "decide_calibrated",
+      "nativeSymbol": "decide_calibrated",
+      "sourcePath": "codex-rs/hepta-intuition/src/calibrated.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [],
+      "sourcePathExists": true
+    },
+    {
+      "operation": "decide_calibrated_v2",
+      "nativeSymbol": "decide_calibrated_v2",
+      "sourcePath": "codex-rs/hepta-intuition/src/calibrated_binding.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [],
+      "sourcePathExists": true
+    }
+  ],
+  "repositoryControlledGaps": [
+    "Bind every operation to an authenticated consumer callsite and owner store.",
+    "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary."
+  ],
+  "externalEvidenceGates": [
+    "independent semantic review",
+    "product execution and target-host qualification",
+    "operator acceptance, canary, promotion and release"
+  ],
+  "claimBoundary": {
+    "nativeSourceMappingComplete": true,
+    "sourceRootPresent": true,
+    "productionImplementation": false,
+    "productExecutionProved": false,
+    "independentAcceptance": false,
+    "activation": false,
+    "release": false
+  }
+}

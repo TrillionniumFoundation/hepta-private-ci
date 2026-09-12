@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Closed-world validator for Hepta module source bindings and technical guides."""
 
-import argparse, hashlib, json, re
+import argparse, hashlib, json, re, subprocess
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -51,6 +51,7 @@ ALLOWED_STATUS = {
     "target_unmaterialized",
     "external_with_adapter_target",
 }
+STATUS_FACT_FIELDS = ("source_root_present", "production_implementation")
 
 
 class DuplicateKey(ValueError):
@@ -162,9 +163,9 @@ def verify():
     domains = load("docs/data/DATA_AUTHORITY.json")["domains"]
     packages = load("docs/delivery/WORK_PACKAGES.json")["packages"]
     threats = load("docs/security/THREAT_MODEL.json")["threats"]
-    need(modules.get("schema") == "hepta.module-registry.v6", "module schema")
-    need(bindings.get("schema") == "hepta.module-source-binding.v1", "binding schema")
-    need(docs.get("schema") == "hepta.module-document-index.v1", "document schema")
+    need(modules.get("schema") == "hepta.module-registry.v7", "module schema")
+    need(bindings.get("schema") == "hepta.module-source-binding.v2", "binding schema")
+    need(docs.get("schema") == "hepta.module-document-index.v2", "document schema")
     for label, value in [("modules", modules), ("bindings", bindings), ("docs", docs)]:
         need(
             value.get("planId") == "HEPTA-GLOBAL-MODULAR-DEVELOPMENT-PLAN"
@@ -185,9 +186,31 @@ def verify():
         b = bmap[mid]
         row = dmap[mid]
         need(m.get("sourceStatus") in ALLOWED_STATUS, mid + " source status")
+        for record, label in ((m, "module"), (b, "binding"), (row, "document")):
+            need(
+                all(key in record and type(record[key]) is bool for key in STATUS_FACT_FIELDS),
+                mid + " " + label + " status facts",
+            )
+            need(
+                record["production_implementation"] is False
+                or record["source_root_present"] is True,
+                mid + " production implementation without source root",
+            )
         need(
             m.get("sourceStatus") == b["sourceStatus"] == row["sourceStatus"],
             mid + " status agreement",
+        )
+        need(
+            m["source_root_present"]
+            == b["source_root_present"]
+            == row["source_root_present"],
+            mid + " source-root presence agreement",
+        )
+        need(
+            m["production_implementation"]
+            == b["production_implementation"]
+            == row["production_implementation"],
+            mid + " production implementation agreement",
         )
         need(m.get("bootstrapWorkPackage") in pkgids, mid + " bootstrap")
         need(
@@ -213,6 +236,10 @@ def verify():
             and b["existingDeclaredRoots"] == existing
             and b["missingDeclaredRoots"] == missing,
             mid + " declared roots",
+        )
+        need(
+            m["source_root_present"] == bool(existing),
+            mid + " source-root presence truth",
         )
         need(
             all((ROOT / x).exists() for x in b["sourceEvidenceRoots"]),
@@ -270,6 +297,19 @@ def verify():
         verify_local_links(path, text)
     readme = ROOT / "docs/modules/README.md"
     verify_local_links(readme, readme.read_text(encoding="utf-8"))
+    # Every registered module must expose a source navigation map.  The map
+    # records the distinction between a source root being present and a
+    # production implementation being composed; it never upgrades claims.
+    maps = subprocess.run(
+        ["python3", "scripts/hepta-implementation-maps.py", "verify"],
+        cwd=ROOT,
+        text=True,
+        capture_output=True,
+    )
+    need(
+        maps.returncode == 0,
+        "implementation maps: " + (maps.stderr.strip() or maps.stdout.strip()),
+    )
     print(
         json.dumps(
             {

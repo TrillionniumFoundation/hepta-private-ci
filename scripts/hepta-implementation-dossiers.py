@@ -192,6 +192,12 @@ def verify() -> int:
         and status_model.get("schemaVersion") == 1,
         "canonical status model",
     )
+    module_facts = status_model.get("moduleFacts", {})
+    need(
+        set(module_facts)
+        == {"source_root_present", "production_implementation", "invariant"},
+        "module status facts",
+    )
     dossier_projection = status_model.get("projection", {}).get(
         "execution_dossiers", {}
     )
@@ -271,6 +277,32 @@ def verify() -> int:
     need(set(source_map) == module_set, "source binding coverage")
     for module_id, binding in source_map.items():
         need(binding["declaredRoots"], "empty declared roots " + module_id)
+        module = next(row for row in modules if row["id"] == module_id)
+        document = module_doc_map[module_id]
+        records = (module, binding, document)
+        for record in records:
+            need(
+                type(record.get("source_root_present")) is bool
+                and type(record.get("production_implementation")) is bool,
+                module_id + " module status facts",
+            )
+            need(
+                record["production_implementation"] is False
+                or record["source_root_present"] is True,
+                module_id + " production implementation without source root",
+            )
+        need(
+            module["source_root_present"]
+            == binding["source_root_present"]
+            == document["source_root_present"],
+            module_id + " source-root status projection",
+        )
+        need(
+            module["production_implementation"]
+            == binding["production_implementation"]
+            == document["production_implementation"],
+            module_id + " production status projection",
+        )
 
     lane_by_module: dict[str, str] = {}
     for lane in readiness["implementationLanes"]:

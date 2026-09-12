@@ -28,6 +28,7 @@ or filesystem namespace. Those capabilities remain host-owned.
 |---|---|---|---|
 | register/quarantine/revoke V1 candidate | `ArtifactRegistry::append` | `src/registry.rs` | retained |
 | create immutable payload/snapshot | `CreateOnlyArtifactFile`, `write_candidate_payload`, `write_registry_snapshot` | `src/storage.rs` | retained |
+| distribute and reload current head witness | `write_registry_head_witness`, `read_registry_head_witness` | `src/storage.rs` | implemented |
 | read exact pinned candidate | `load_pinned_candidate` | `src/pinned.rs` | retained |
 | prepare snapshot-local dataset revocation | `prepare_dataset_revocation` | `src/dataset_revocation.rs` | retained |
 | validate complete V2 manifest | `validate_artifact_manifest_v2` | `src/closure_v2.rs` | implemented |
@@ -90,8 +91,10 @@ The product host must bind one durable saga:
 
 The host also owns trusted directory traversal, containing-directory durability,
 latest witness discovery, writer fencing, orphan collection, retention, backup
-restore and actual process loading. A self-consistent stale snapshot is not a
-latest-state proof.
+restore and actual process loading. The native head-witness file now provides a
+bounded create-only distribution channel with independent receipt and
+requirement revalidation; it does not discover the latest file or prove that a
+self-consistent stale snapshot is current.
 
 Rollback requires a current authorized transition to a complete compatible
 predecessor under the latest withdrawal and revocation frontier. An old backup

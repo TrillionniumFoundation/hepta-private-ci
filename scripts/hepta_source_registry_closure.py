@@ -35,7 +35,7 @@ SOURCE_ROOTS: dict[str, tuple[str, ...]] = {
 }
 
 SOURCE_STATUS = "existing_bound"
-SOURCE_INTERPRETATION = "declared_root_is_materialized_but_activation_acceptance_promotion_and_release_remain_separate"
+SOURCE_INTERPRETATION = "source_root_present_is_separate_from_production_implementation; activation_acceptance_promotion_and_release_remain_separate"
 SECTION_TWO_HEADING = "## 2. Source binding and implementation status"
 SECTION_THREE_HEADING = "## 3. Boundary, responsibilities and non-goals"
 SOURCE_RECEIPT_HEADING = "## 17. Source implementation receipt"
@@ -171,7 +171,7 @@ The bootstrap source-location obligation for `{module_id}` is implemented by wor
 
 {root_lines}
 
-The source candidate is checked by `.github/workflows/hepta-gap-closure.yml`, including closed-world inventory, package tests, all-target compilation, strict Clippy and clean tracked state. This receipt is source implementation evidence only. It grants no runtime, production-writer, model-provider, external-effect, independent-acceptance, selection, promotion, merge or release authority.
+The source candidate is checked by `.github/workflows/hepta-consolidated-source.yml`, including closed-world inventory, package tests, all-target compilation, strict Clippy and clean tracked state. This receipt is source implementation evidence only. It grants no runtime, production-writer, model-provider, external-effect, independent-acceptance, selection, promotion, merge or release authority.
 """
 
 
@@ -284,6 +284,14 @@ def _build_audit(
         ],
         "moduleSourceStatusCounts": _status_counts(modules, "sourceStatus"),
         "sourceBindingStatusCounts": _status_counts(bindings, "sourceStatus"),
+        "moduleStatusFacts": {
+            "source_root_present": sum(
+                record.get("source_root_present") is True for record in modules
+            ),
+            "production_implementation": sum(
+                record.get("production_implementation") is True for record in modules
+            ),
+        },
         "unresolvedSourceBindingCount": len(unresolved_bindings),
         "unresolvedSourceBindings": unresolved_bindings,
         "workPackageStateCounts": _status_counts(packages, "state"),
@@ -382,10 +390,14 @@ def normalize() -> bool:
                 )
 
         module["sourceStatus"] = SOURCE_STATUS
+        module["source_root_present"] = True
+        module["production_implementation"] = False
         module["sourceEvidenceRoots"] = list(expected_roots)
         module["missingDeclaredRoots"] = []
 
         binding["sourceStatus"] = SOURCE_STATUS
+        binding["source_root_present"] = True
+        binding["production_implementation"] = False
         binding["existingDeclaredRoots"] = list(expected_roots)
         binding["sourceEvidenceRoots"] = list(expected_roots)
         binding["missingDeclaredRoots"] = []
@@ -449,6 +461,24 @@ def verify() -> list[str]:
         return [str(error)]
 
     bootstrap_packages: dict[str, str] = {}
+    # Presence of a declared root is a repository fact. It must never be
+    # interpreted as a production caller or executable product implementation.
+    for module_id, module in modules_by_id.items():
+        binding = bindings_by_id.get(module_id)
+        if binding is None:
+            continue
+        declared = module.get("rootBindings", [])
+        roots = [item.get("path") for item in declared if isinstance(item, dict)]
+        expected_present = bool(roots) and all((ROOT / path).exists() for path in roots)
+        for record, label in ((module, "module"), (binding, "binding")):
+            if type(record.get("source_root_present")) is not bool:
+                failures.append(f"{label} source-root fact is missing: {module_id}")
+            elif record["source_root_present"] != expected_present:
+                failures.append(f"{label} source-root fact is stale: {module_id}")
+            if type(record.get("production_implementation")) is not bool:
+                failures.append(f"{label} production-implementation fact is missing: {module_id}")
+            elif record["production_implementation"] and not record["source_root_present"]:
+                failures.append(f"{label} production implementation has no source root: {module_id}")
     for module_id, expected_roots in SOURCE_ROOTS.items():
         module = modules_by_id.get(module_id)
         binding = bindings_by_id.get(module_id)
@@ -467,6 +497,10 @@ def verify() -> list[str]:
             failures.append(f"declared source roots are incorrect: {module_id}")
         if module.get("sourceStatus") != SOURCE_STATUS:
             failures.append(f"module source status is not closed: {module_id}")
+        if module.get("source_root_present") is not True:
+            failures.append(f"module source root is not present: {module_id}")
+        if module.get("production_implementation") is not False:
+            failures.append(f"module production implementation is overstated: {module_id}")
         if module.get("sourceEvidenceRoots") != list(expected_roots):
             failures.append(f"module source evidence roots are incorrect: {module_id}")
         if module.get("missingDeclaredRoots") != []:
@@ -474,6 +508,10 @@ def verify() -> list[str]:
 
         if binding.get("sourceStatus") != SOURCE_STATUS:
             failures.append(f"binding source status is not closed: {module_id}")
+        if binding.get("source_root_present") is not True:
+            failures.append(f"binding source root is not present: {module_id}")
+        if binding.get("production_implementation") is not False:
+            failures.append(f"binding production implementation is overstated: {module_id}")
         if binding.get("declaredRoots") != list(expected_roots):
             failures.append(f"binding declared roots are incorrect: {module_id}")
         if binding.get("existingDeclaredRoots") != list(expected_roots):

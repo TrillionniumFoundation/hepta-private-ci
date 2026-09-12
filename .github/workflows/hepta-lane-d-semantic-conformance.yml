@@ -23,6 +23,8 @@ on:
       - qualification/module-execution-dossiers/detail/utility.ndu.md
       - qualification/module-execution-dossiers/detail/control.runtime.md
       - scripts/hepta-lane-d-semantic-conformance.py
+      - scripts/verify_cargo_lock.py
+      - scripts/test_verify_cargo_lock.py
       - .github/workflows/hepta-lane-d-semantic-conformance.yml
 
 permissions:
@@ -100,6 +102,9 @@ jobs:
           test "$(git rev-parse HEAD)" = "${EXPECTED_SHA}"
           rustc --version
           cargo --version
+
+      - name: Verify Cargo lockfile integrity
+        run: python3 scripts/verify_cargo_lock.py
 
       - name: Formatting
         working-directory: codex-rs

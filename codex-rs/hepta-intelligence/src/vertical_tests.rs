@@ -405,8 +405,10 @@ fn vertical_facade_selects_only_a_legal_objective_action_without_authority() {
     assert_ne!(receipt.vertical_digest, Digest32::ZERO);
     assert_eq!(
         receipt.objective.objective.semantic_digest,
-        receipt.ndu.objective_digest
+        receipt.ndu.base.objective_digest
     );
+    assert_ne!(receipt.ndu.evaluation_policy_digest, Digest32::ZERO);
+    assert_ne!(receipt.ndu.evaluation_digest_v2, Digest32::ZERO);
     assert!(
         receipt
             .context
