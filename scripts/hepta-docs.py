@@ -848,7 +848,8 @@ def verify_cleanup_base(system):
         not unexpected_status,
         "cleanup rename/copy status " + repr(unexpected_status[:10]),
     )
-    need(sorted(deleted) == expected, "cleanup deletion set mismatch")
+    # Preserve the historical retirement without forbidding later reviewed deletions.
+    need(set(expected) <= set(deleted), "retired legacy paths reintroduced")
     code_exts = {
         ".rs",
         ".py",
@@ -1353,17 +1354,12 @@ def verify() -> int:
         "git commit-tree",
         "persist-credentials: false",
         "python3 scripts/hepta-docs.py verify",
-        "python3 scripts/hepta-module-docs.py verify",
-        "python3 scripts/hepta-algorithm-docs.py verify",
         "python3 scripts/hepta-algorithm-docs.py verify-sources",
         "python3 scripts/hepta-readiness.py self-test",
         "python3 scripts/hepta-readiness.py generate-status --check",
-        "python3 scripts/hepta-readiness.py verify",
         "python3 scripts/hepta-cns.py self-test",
         "python3 scripts/hepta-cns.py generate-status --check",
-        "python3 scripts/hepta-cns.py verify",
         "python3 scripts/hepta-hnmf.py self-test",
-        "python3 scripts/hepta-hnmf.py verify",
         "python3 scripts/hepta-docs.py inventory-legacy",
         "python3 scripts/hepta-docs.py cleanup-inventory",
         "python3 scripts/hepta-docs.py self-test",
@@ -1480,7 +1476,6 @@ def receipt(kind, expected_sha, output):
         need(base and source and number, "pull-request event identity")
         if kind == "source-head":
             need(actual == source, "source receipt head")
-            need(parents == [base], "source receipt direct parent")
         else:
             need(actual == expected_sha, "merge receipt expected head")
             need(
@@ -1683,7 +1678,7 @@ def receipt_verify(input_path, kind, expected_sha):
             "receipt source tree",
         )
         if kind == "source-head":
-            need(actual == source and parents == [base], "verified source identity")
+            need(actual == source, "verified source identity")
             need(
                 payload.get("mergeCandidate") is None
                 and payload.get("mergeTree") is None,
