@@ -1,0 +1,9 @@
+{
+  "schemaVersion": 1,
+  "defaultBranch": "main",
+  "protectedBranches": ["main"],
+  "candidatePatterns": [],
+  "deprecatedPatterns": ["integration/**", "candidate/**", "codex/**", "vnext-main"],
+  "source": "repository",
+  "description": "Canonical branch policy consumed by CI and release tooling. Deprecated patterns are retained only for audit detection and must not be added to workflow triggers."
+}

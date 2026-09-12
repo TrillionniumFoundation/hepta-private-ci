@@ -1,9 +1,9 @@
 {
-  "schema": "hepta.module-implementation-map.v2",
-  "schemaVersion": 2,
+  "schema": "hepta.module-implementation-map.v3",
+  "schemaVersion": 3,
   "sourceBase": {
-    "commit": "f278a89eea18fccb6d37b876aa5679863a64139d",
-    "tree": "5baa144717d4b3e3c596501fb56ce911d009e728"
+    "commit": "7e8379b3954808d4138a7bd2f3773f75691291a3",
+    "tree": "ff9fa6baf95a35fd2f49816e0a80097688f2aeeb"
   },
   "laneId": "LANE-B-RUNTIME",
   "module": "browser.servo",
@@ -36,7 +36,11 @@
           "command": "node --test apps/hepta-browser/test/runtime.test.js"
         }
       ],
-      "sourceSemantics": "Admits an isolated profile identity, allowed origins, effect grants, generation, and expiry before driver start."
+      "sourceSemantics": "Admits an isolated profile identity, allowed origins, effect grants, generation, and expiry before driver start.",
+      "operation": "open_profile",
+      "nativeSymbol": "async openProfile(",
+      "sourcePath": "apps/hepta-browser/src/runtime.js",
+      "sourcePathExists": true
     },
     {
       "designOperation": "observe_page",
@@ -55,7 +59,11 @@
           "command": "node --test apps/hepta-browser/test/runtime.test.js"
         }
       ],
-      "sourceSemantics": "Publishes bounded page observations with monotonic page generation and origin identity."
+      "sourceSemantics": "Publishes bounded page observations with monotonic page generation and origin identity.",
+      "operation": "observe_page",
+      "nativeSymbol": "async observePage(",
+      "sourcePath": "apps/hepta-browser/src/runtime.js",
+      "sourcePathExists": true
     },
     {
       "designOperation": "navigate_or_act",
@@ -74,7 +82,11 @@
           "command": "node --test apps/hepta-browser/test/runtime.test.js"
         }
       ],
-      "sourceSemantics": "Revalidates page, destination, payload, authority, and operation identity before one driver effect."
+      "sourceSemantics": "Revalidates page, destination, payload, authority, and operation identity before one driver effect.",
+      "operation": "navigate_or_act",
+      "nativeSymbol": "async navigateOrAct(",
+      "sourcePath": "apps/hepta-browser/src/runtime.js",
+      "sourcePathExists": true
     }
   ],
   "repositoryControlledGaps": [],
@@ -101,5 +113,12 @@
   "sourceRootPresent": true,
   "productionImplementation": false,
   "productCallerState": "not_composed",
-  "productionWriterState": "not_established"
+  "productionWriterState": "not_established",
+  "owner": "browser-platform",
+  "deputy": "security-authority",
+  "technicalGuide": "docs/modules/browser.servo/TECHNICAL.md",
+  "sourceRoot": [
+    "apps/hepta-browser",
+    "third_party/servo-patches"
+  ]
 }

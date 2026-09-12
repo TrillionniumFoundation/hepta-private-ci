@@ -1,9 +1,9 @@
 {
-  "schema": "hepta.module-implementation-map.v2",
-  "schemaVersion": 2,
+  "schema": "hepta.module-implementation-map.v3",
+  "schemaVersion": 3,
   "sourceBase": {
-    "commit": "f278a89eea18fccb6d37b876aa5679863a64139d",
-    "tree": "5baa144717d4b3e3c596501fb56ce911d009e728"
+    "commit": "7e8379b3954808d4138a7bd2f3773f75691291a3",
+    "tree": "ff9fa6baf95a35fd2f49816e0a80097688f2aeeb"
   },
   "laneId": "LANE-B-RUNTIME",
   "module": "inference.worker",
@@ -34,7 +34,11 @@
           "command": "just test -p codex-hepta-infer-worker-host --lib"
         }
       ],
-      "sourceSemantics": "Validates supplied manifest and resource-grant bindings before invoking the injected driver; physical artifact/device loading remains that driver owner's responsibility."
+      "sourceSemantics": "Validates supplied manifest and resource-grant bindings before invoking the injected driver; physical artifact/device loading remains that driver owner's responsibility.",
+      "operation": "load_model",
+      "nativeSymbol": "pub fn load_model(",
+      "sourcePath": "codex-rs/hepta-infer-worker-host/src/model_worker.rs",
+      "sourcePathExists": true
     },
     {
       "designOperation": "run",
@@ -73,7 +77,11 @@
           "command": "just test -p codex-hepta-infer-worker-host --lib"
         }
       ],
-      "sourceSemantics": "Reserves through durable inference.control, calls the actual private Agent/App Server once, and commits matching terminal/output/optional-token observations before returning. Reopen and duplicate paths consume the journal without invoking the provider again."
+      "sourceSemantics": "Reserves through durable inference.control, calls the actual private Agent/App Server once, and commits matching terminal/output/optional-token observations before returning. Reopen and duplicate paths consume the journal without invoking the provider again.",
+      "operation": "run",
+      "nativeSymbol": "pub async fn run(",
+      "sourcePath": "codex-rs/hepta-infer-worker-host/src/native_run_control.rs",
+      "sourcePathExists": true
     },
     {
       "designOperation": "unload",
@@ -92,7 +100,11 @@
           "command": "just test -p codex-hepta-infer-worker-host --lib"
         }
       ],
-      "sourceSemantics": "Drains and unloads only the exact admitted generation and releases acquired resources."
+      "sourceSemantics": "Drains and unloads only the exact admitted generation and releases acquired resources.",
+      "operation": "unload",
+      "nativeSymbol": "pub fn unload_model(",
+      "sourcePath": "codex-rs/hepta-infer-worker-host/src/model_worker.rs",
+      "sourcePathExists": true
     }
   ],
   "repositoryControlledGaps": [
@@ -122,5 +134,11 @@
   "sourceRootPresent": true,
   "productionImplementation": false,
   "productCallerState": "not_composed",
-  "productionWriterState": "not_established"
+  "productionWriterState": "not_established",
+  "owner": "inference-platform",
+  "deputy": "security-authority",
+  "technicalGuide": "docs/modules/inference.worker/TECHNICAL.md",
+  "sourceRoot": [
+    "codex-rs/hepta-infer-worker-host"
+  ]
 }

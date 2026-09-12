@@ -1,9 +1,9 @@
 {
-  "schema": "hepta.module-implementation-map.v2",
-  "schemaVersion": 2,
+  "schema": "hepta.module-implementation-map.v3",
+  "schemaVersion": 3,
   "sourceBase": {
-    "commit": "f278a89eea18fccb6d37b876aa5679863a64139d",
-    "tree": "5baa144717d4b3e3c596501fb56ce911d009e728"
+    "commit": "7e8379b3954808d4138a7bd2f3773f75691291a3",
+    "tree": "ff9fa6baf95a35fd2f49816e0a80097688f2aeeb"
   },
   "laneId": "LANE-B-RUNTIME",
   "module": "ui.native",
@@ -34,7 +34,11 @@
           "command": "node --test apps/hepta-native/test/shell-runtime.test.js"
         }
       ],
-      "sourceSemantics": "Authenticates endpoint manifest, protocol version, session identity, and process generation."
+      "sourceSemantics": "Authenticates endpoint manifest, protocol version, session identity, and process generation.",
+      "operation": "connect_runtime",
+      "nativeSymbol": "async connectRuntime(",
+      "sourcePath": "apps/hepta-native/src/shell-runtime.js",
+      "sourcePathExists": true
     },
     {
       "designOperation": "render_runtime_view",
@@ -53,7 +57,11 @@
           "command": "node --test apps/hepta-native/test/shell-runtime.test.js"
         }
       ],
-      "sourceSemantics": "Rejects mixed/regressed view generations and exposes one coherent presentation state."
+      "sourceSemantics": "Rejects mixed/regressed view generations and exposes one coherent presentation state.",
+      "operation": "render_runtime_view",
+      "nativeSymbol": "renderRuntimeView(",
+      "sourcePath": "apps/hepta-native/src/shell-runtime.js",
+      "sourcePathExists": true
     },
     {
       "designOperation": "request_platform_capability",
@@ -72,7 +80,11 @@
           "command": "node --test apps/hepta-native/test/shell-runtime.test.js"
         }
       ],
-      "sourceSemantics": "Requires both platform permission and final-payload-bound operation identity before invoking a narrow OS adapter."
+      "sourceSemantics": "Requires both platform permission and final-payload-bound operation identity before invoking a narrow OS adapter.",
+      "operation": "request_platform_capability",
+      "nativeSymbol": "async requestPlatformCapability(",
+      "sourcePath": "apps/hepta-native/src/shell-runtime.js",
+      "sourcePathExists": true
     },
     {
       "designOperation": "apply_shell_update",
@@ -91,7 +103,11 @@
           "command": "node --test apps/hepta-native/test/shell-runtime.test.js"
         }
       ],
-      "sourceSemantics": "Requires independent selection, signature/compatibility verification, explicit restart, and predecessor rollback on uncertain update."
+      "sourceSemantics": "Requires independent selection, signature/compatibility verification, explicit restart, and predecessor rollback on uncertain update.",
+      "operation": "apply_shell_update",
+      "nativeSymbol": "async applyShellUpdate(",
+      "sourcePath": "apps/hepta-native/src/shell-runtime.js",
+      "sourcePathExists": true
     }
   ],
   "repositoryControlledGaps": [],
@@ -118,5 +134,11 @@
   "sourceRootPresent": true,
   "productionImplementation": false,
   "productCallerState": "not_composed",
-  "productionWriterState": "not_established"
+  "productionWriterState": "not_established",
+  "owner": "ui-platform",
+  "deputy": "accessibility",
+  "technicalGuide": "docs/modules/ui.native/TECHNICAL.md",
+  "sourceRoot": [
+    "apps/hepta-native"
+  ]
 }

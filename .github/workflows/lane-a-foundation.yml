@@ -2,10 +2,15 @@ name: Lane A foundation truth and native qualification
 
 on:
   pull_request:
+    paths:
+      - "codex-rs/hepta-*/**"
+      - "codex-rs/kernel-*/**"
+      - "docs/contracts/**"
+      - "scripts/verify_hepta_callers.py"
+      - ".github/workflows/lane-a-foundation.yml"
   push:
     branches:
-      - integration/vnext-main-20260811
-      - "codex/lane-a-*"
+      - main
   workflow_dispatch:
 
 permissions:

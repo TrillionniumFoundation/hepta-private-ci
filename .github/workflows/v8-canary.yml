@@ -15,6 +15,7 @@ concurrency:
 
 jobs:
   metadata:
+    timeout-minutes: 30
     runs-on: ubuntu-latest
     outputs:
       # Older revisions can contain a detector that does not emit this output.
@@ -70,6 +71,7 @@ jobs:
         uses: ./.github/actions/check-clean-worktree
 
   build:
+    timeout-minutes: 30
     name: Build ${{ matrix.variant }} ${{ matrix.target }}
     needs: metadata
     # Metadata always runs; only relevant changes pay for the large matrix.
@@ -331,6 +333,7 @@ jobs:
         uses: ./.github/actions/check-clean-worktree
 
   build-windows-source:
+    timeout-minutes: 30
     name: Build ptrcomp-sandbox ${{ matrix.target }} from source
     needs: metadata
     if: ${{ needs.metadata.outputs.windows_source_required == 'true' }}

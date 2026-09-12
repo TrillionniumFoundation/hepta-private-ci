@@ -303,3 +303,18 @@ The following additional work packages are source-planning envelopes introduced 
 - `ASM-2-DEBIAN-BRIDGE-SANDBOX`
 - `ASM-3-STATE-MIGRATION-QUALIFICATION`
 - `EMB-2-REFLEX-MOTOR-ACTUATION`
+
+## 17. Source implementation receipt
+
+This receipt records repository source bindings for the current documentation candidate. It is navigation evidence only; it does not claim product composition, deployment, or external effect authority.
+
+| Operation | Native symbol | Source path | Tests |
+|---|---|---|---|
+| `compose_runtime` | `pub fn compose_runtime(` | `codex-rs/hepta-agentd/src/lane_b_runtime.rs` | `codex-rs/hepta-agentd/src/lane_b_runtime_tests.rs` |
+| `start_run` | `pub fn start_run(` | `codex-rs/hepta-agentd/src/lane_b_runtime.rs` | `codex-rs/hepta-agentd/src/lane_b_runtime_tests.rs` |
+| `cancel_run` | `pub fn cancel_run(` | `codex-rs/hepta-agentd/src/lane_b_runtime.rs` | `codex-rs/hepta-agentd/src/lane_b_runtime_tests.rs` |
+| `attach_context` | `pub fn attach_context(` | `codex-rs/hepta-agentd/src/lane_b_runtime.rs` | `codex-rs/hepta-agentd/src/lane_b_runtime_tests.rs` |
+
+- Source identity: `sourceBase` is recorded in `IMPLEMENTATION_MAP.json`.
+- Consumer callsites and durable owner stores remain an explicit follow-up when not listed above.
+- Production implementation, runtime composition, independent acceptance, activation, and release remain false until their separate evidence gates pass.

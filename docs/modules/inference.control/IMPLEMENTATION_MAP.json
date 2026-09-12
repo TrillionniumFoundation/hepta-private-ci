@@ -1,9 +1,9 @@
 {
-  "schema": "hepta.module-implementation-map.v2",
-  "schemaVersion": 2,
+  "schema": "hepta.module-implementation-map.v3",
+  "schemaVersion": 3,
   "sourceBase": {
-    "commit": "f278a89eea18fccb6d37b876aa5679863a64139d",
-    "tree": "5baa144717d4b3e3c596501fb56ce911d009e728"
+    "commit": "7e8379b3954808d4138a7bd2f3773f75691291a3",
+    "tree": "ff9fa6baf95a35fd2f49816e0a80097688f2aeeb"
   },
   "laneId": "LANE-B-RUNTIME",
   "module": "inference.control",
@@ -36,7 +36,11 @@
           "command": "just test -p codex-hepta-infer-core --lib"
         }
       ],
-      "sourceSemantics": "Pins explicit local slot capacity and exact request identity before provider contact."
+      "sourceSemantics": "Pins explicit local slot capacity and exact request identity before provider contact.",
+      "operation": "reserve_request",
+      "nativeSymbol": "pub fn reserve_native(",
+      "sourcePath": "codex-rs/hepta-infer-core/src/native_control.rs",
+      "sourcePathExists": true
     },
     {
       "designOperation": "schedule",
@@ -55,7 +59,11 @@
           "command": "just test -p codex-hepta-infer-core --lib"
         }
       ],
-      "sourceSemantics": "Syncs exact thread/provider/context dispatch intent before the actual turn/start RPC; a duplicate cannot issue a new turn."
+      "sourceSemantics": "Syncs exact thread/provider/context dispatch intent before the actual turn/start RPC; a duplicate cannot issue a new turn.",
+      "operation": "schedule",
+      "nativeSymbol": "pub fn dispatch_native(",
+      "sourcePath": "codex-rs/hepta-infer-core/src/native_control.rs",
+      "sourcePathExists": true
     },
     {
       "designOperation": "cancel",
@@ -74,7 +82,11 @@
           "command": "just test -p codex-hepta-infer-core --lib"
         }
       ],
-      "sourceSemantics": "Persists interrupt intent without releasing an in-flight slot; acknowledgement is not terminality."
+      "sourceSemantics": "Persists interrupt intent without releasing an in-flight slot; acknowledgement is not terminality.",
+      "operation": "cancel",
+      "nativeSymbol": "pub fn cancel_native(",
+      "sourcePath": "codex-rs/hepta-infer-core/src/native_control.rs",
+      "sourcePathExists": true
     },
     {
       "designOperation": "settle",
@@ -93,7 +105,11 @@
           "command": "just test -p codex-hepta-infer-core --lib"
         }
       ],
-      "sourceSemantics": "Persists actual matching terminal and optional observed u64 usage; terminality releases a local slot, unknown execution remains held. Late usage can refine an observation without changing its terminal outcome."
+      "sourceSemantics": "Persists actual matching terminal and optional observed u64 usage; terminality releases a local slot, unknown execution remains held. Late usage can refine an observation without changing its terminal outcome.",
+      "operation": "settle",
+      "nativeSymbol": "pub fn settle_native(",
+      "sourcePath": "codex-rs/hepta-infer-core/src/native_control.rs",
+      "sourcePathExists": true
     }
   ],
   "repositoryControlledGaps": [
@@ -124,5 +140,12 @@
   "sourceRootPresent": true,
   "productionImplementation": false,
   "productCallerState": "not_composed",
-  "productionWriterState": "not_established"
+  "productionWriterState": "not_established",
+  "owner": "inference-platform",
+  "deputy": "runtime-control",
+  "technicalGuide": "docs/modules/inference.control/TECHNICAL.md",
+  "sourceRoot": [
+    "codex-rs/hepta-infer-core",
+    "codex-rs/hepta-inferd"
+  ]
 }

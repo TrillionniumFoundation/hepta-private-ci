@@ -23,7 +23,8 @@ jobs:
 
   # PyPI must trust this top-level workflow for manual runtime publication.
   publish-python-runtime:
-    if: github.repository == 'openai/codex'
+    timeout-minutes: 30
+    if: vars.ENABLE_UPSTREAM_AUTOMATION == 'true' && github.repository == 'TrillionniumFoundation/hepta-private-ci'
     name: publish-python-runtime
     needs: prepare-python-runtime
     runs-on: ubuntu-latest

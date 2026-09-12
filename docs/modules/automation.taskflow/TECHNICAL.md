@@ -242,3 +242,18 @@ Consumed readiness protocols:
 - `ActuatorReconciliationReceiptV1`
 
 Ordinary authorized coding identifies the Git baseline, relevant contracts, owned paths, mandatory fixtures, deterministic fallback and rollback. A runtime coordinator admitting an envelope still verifies its current `CanonicalSourceReceiptV1`, frozen contract/readiness digest, expiry and zero authority delta; manually issuing an envelope is not a separate permission gate for ordinary repository work. This overlay does not change activation, acceptance, selection, promotion or release.
+
+## 17. Source implementation receipt
+
+This receipt records repository source bindings for the current documentation candidate. It is navigation evidence only; it does not claim product composition, deployment, or external effect authority.
+
+| Operation | Native symbol | Source path | Tests |
+|---|---|---|---|
+| `register_schedule` | `pub async fn create_task(` | `codex-rs/hepta-automation/src/store.rs` | `codex-rs/hepta-automation/src/store.rs` |
+| `materialize_due` | `pub async fn tick(` | `codex-rs/hepta-automation/src/scheduler.rs` | `codex-rs/hepta-automation/src/scheduler.rs` |
+| `claim_occurrence` | `pub fn claim_occurrence(` | `codex-rs/hepta-automation/src/effect_executor.rs` | `codex-rs/hepta-automation/src/effect_executor_tests.rs` |
+| `execute_step` | `pub fn execute_step(` | `codex-rs/hepta-automation/src/effect_executor.rs` | `codex-rs/hepta-automation/src/effect_executor_tests.rs` |
+
+- Source identity: `sourceBase` is recorded in `IMPLEMENTATION_MAP.json`.
+- Consumer callsites and durable owner stores remain an explicit follow-up when not listed above.
+- Production implementation, runtime composition, independent acceptance, activation, and release remain false until their separate evidence gates pass.

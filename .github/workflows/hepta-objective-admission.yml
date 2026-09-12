@@ -3,8 +3,7 @@ name: Hepta objective admission qualification
 on:
   push:
     branches:
-      - codex/hepta-objective-admission-20260908
-      - codex/hepta-all-gap-closure-20260908
+      - main
   pull_request:
     paths:
       - codex-rs/hepta-objective/**

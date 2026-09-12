@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "ab584c609ffe30bac96001e286eb4002b03339cc",
-    "tree": "befa7dd1e884be1728085c0f4178002556031288"
+    "commit": "7e8379b3954808d4138a7bd2f3773f75691291a3",
+    "tree": "ff9fa6baf95a35fd2f49816e0a80097688f2aeeb"
   },
   "laneId": "LANE-A-FOUNDATION",
   "module": "secrets.heptabao",
@@ -30,7 +30,10 @@
       "state": "source_implemented_not_product_composed",
       "authority": "none",
       "tests": [],
-      "sourcePathExists": true
+      "sourcePathExists": true,
+      "designOperation": "consume_kv_v2",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
     },
     {
       "operation": "binding",
@@ -39,7 +42,10 @@
       "state": "source_implemented_not_product_composed",
       "authority": "none",
       "tests": [],
-      "sourcePathExists": true
+      "sourcePathExists": true,
+      "designOperation": "binding",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
     }
   ],
   "repositoryControlledGaps": [
@@ -59,5 +65,9 @@
     "independentAcceptance": false,
     "activation": false,
     "release": false
-  }
+  },
+  "sourceRoot": [
+    "external/HeptaBao",
+    "codex-rs/hepta-bao-adapter"
+  ]
 }

@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "ab584c609ffe30bac96001e286eb4002b03339cc",
-    "tree": "befa7dd1e884be1728085c0f4178002556031288"
+    "commit": "7e8379b3954808d4138a7bd2f3773f75691291a3",
+    "tree": "ff9fa6baf95a35fd2f49816e0a80097688f2aeeb"
   },
   "laneId": "LANE-E-LEARNING",
   "module": "learning.artifacts",
@@ -28,7 +28,10 @@
       "state": "source_implemented_not_product_composed",
       "authority": "none",
       "tests": [],
-      "sourcePathExists": true
+      "sourcePathExists": true,
+      "designOperation": "load_pinned_candidate",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
     },
     {
       "operation": "write_candidate_payload",
@@ -37,7 +40,10 @@
       "state": "source_implemented_not_product_composed",
       "authority": "none",
       "tests": [],
-      "sourcePathExists": true
+      "sourcePathExists": true,
+      "designOperation": "write_candidate_payload",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
     },
     {
       "operation": "admit_manifest_at_withdrawal_head_v3",
@@ -46,7 +52,10 @@
       "state": "source_implemented_not_product_composed",
       "authority": "none",
       "tests": [],
-      "sourcePathExists": true
+      "sourcePathExists": true,
+      "designOperation": "admit_manifest_at_withdrawal_head_v3",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
     }
   ],
   "repositoryControlledGaps": [
@@ -66,5 +75,8 @@
     "independentAcceptance": false,
     "activation": false,
     "release": false
-  }
+  },
+  "sourceRoot": [
+    "codex-rs/hepta-learning-artifacts"
+  ]
 }

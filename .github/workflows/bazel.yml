@@ -244,6 +244,7 @@ jobs:
         uses: ./.github/actions/check-clean-worktree
 
   test-windows:
+    timeout-minutes: 30
     # Preserve the existing required-check surface while the real work happens
     # in the sharded Windows jobs above.
     if: always()

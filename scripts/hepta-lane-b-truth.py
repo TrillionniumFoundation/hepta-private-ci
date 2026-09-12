@@ -120,7 +120,7 @@ def module_maps(truth: dict[str, Any]) -> list[dict[str, Any]]:
         row = load(ROOT / path)
         need(row.get("module") == module, f"{module}: map identity")
         need(row.get("sourceBase") == truth.get("sourceBase"), f"{module}: source base")
-        ids = [item.get("designOperation") for item in row.get("operations", [])]
+        ids = [item.get("designOperation") or item.get("operation") for item in row.get("operations", [])]
         need(
             ids == entry.get("operationIds") == OPS[module],
             f"{module}: operation index",
@@ -138,7 +138,7 @@ def trace_projection(
             entries.append(
                 {
                     "module": row["module"],
-                    "operation": item["designOperation"],
+                    "operation": item.get("designOperation") or item.get("operation"),
                     "map": f"docs/modules/{row['module']}/IMPLEMENTATION_MAP.json",
                     "tests": [
                         {"path": test["path"], "command": test["command"]}
@@ -191,9 +191,12 @@ def native_projection(truth: dict[str, Any], maps: list[dict[str, Any]]) -> str:
             "|---|---|---|",
         ]
         for item in row["operations"]:
-            owner = item["ownerEntrypoint"]
+            owner = item.get("ownerEntrypoint") or {
+                "path": item.get("sourcePath"),
+                "symbol": item.get("nativeSymbol"),
+            }
             lines.append(
-                f"| `{item['designOperation']}` | `{item['mappingClass']}` | `{owner['path']}` — `{owner['symbol']}` |"
+                f"| `{item.get('designOperation') or item.get('operation')}` | `{item.get('mappingClass', 'owner_native')}` | `{owner.get('path')}` — `{owner.get('symbol')}` |"
             )
         gaps = row.get("repositoryControlledGaps", [])
         if gaps:
@@ -402,8 +405,8 @@ def verify_truth(truth: dict[str, Any], maps: list[dict[str, Any]]) -> tuple[int
     for row in maps:
         module = row["module"]
         need(
-            row.get("schema") == "hepta.module-implementation-map.v2"
-            and row.get("schemaVersion") == 2,
+            row.get("schema") == "hepta.module-implementation-map.v3"
+            and row.get("schemaVersion") == 3,
             f"{module}: schema",
         )
         gaps = row.get("repositoryControlledGaps")
@@ -425,10 +428,16 @@ def verify_truth(truth: dict[str, Any], maps: list[dict[str, Any]]) -> tuple[int
         for item in row["operations"]:
             operations += 1
             need(
-                item.get("mappingClass") in truth["allowedMappingClasses"],
+                item.get("mappingClass", "owner_native") in truth["allowedMappingClasses"],
                 f"{module}: mapping class",
             )
-            verify_anchor(module, row["resolvedRoots"], item["ownerEntrypoint"], True)
+            anchor = item.get("ownerEntrypoint") or {
+                "role": "owner_entrypoint",
+                "path": item.get("sourcePath"),
+                "symbol": item.get("nativeSymbol"),
+                "buildTarget": item.get("buildTarget", "canonical-v3"),
+            }
+            verify_anchor(module, row["resolvedRoots"], anchor, True)
             for delegate in item.get("delegatedCallees", []):
                 verify_anchor(module, row["resolvedRoots"], delegate, False)
                 owner = delegate["ownerModule"]
@@ -441,7 +450,7 @@ def verify_truth(truth: dict[str, Any], maps: list[dict[str, Any]]) -> tuple[int
                     ),
                     f"{module}: delegate-root escape",
                 )
-            need(item.get("tests"), f"{module}/{item['designOperation']}: tests")
+            need(item.get("tests"), f"{module}/{item.get('designOperation') or item.get('operation')}: tests")
             for test in item["tests"]:
                 tests += 1
                 need(

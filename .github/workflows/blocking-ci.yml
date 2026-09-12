@@ -15,6 +15,11 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  hepta-contract-gate:
+    name: Hepta contract gate
+    uses: ./.github/workflows/hepta-contract-gate.yml
+    secrets: inherit
+
   # Keep reusable workflow calls alphabetized. The `required` job below is the
   # version-controlled list that the main-branch ruleset should require.
   bazel:
@@ -53,6 +58,7 @@ jobs:
     secrets: inherit
 
   required:
+    timeout-minutes: 30
     name: CI required
     # Without `always()`, GitHub skips this job after a failed dependency and a
     # required check can appear successful instead of reporting the failure.

@@ -9,6 +9,7 @@ permissions:
 jobs:
   # --- Detect what changed so the fast PR workflow only runs relevant jobs ----
   changed:
+    timeout-minutes: 30
     name: Detect changed areas
     runs-on: ubuntu-24.04
     outputs:
@@ -61,6 +62,7 @@ jobs:
 
   # --- Fast Cargo-native PR checks -------------------------------------------
   general:
+    timeout-minutes: 30
     name: Format / etc
     runs-on: ubuntu-24.04
     needs: changed
@@ -86,6 +88,7 @@ jobs:
         uses: ./.github/actions/check-clean-worktree
 
   cargo_shear:
+    timeout-minutes: 30
     name: cargo shear
     runs-on: ubuntu-24.04
     needs: changed
@@ -110,6 +113,7 @@ jobs:
         uses: ./.github/actions/check-clean-worktree
 
   argument_comment_lint_package:
+    timeout-minutes: 30
     name: Argument comment lint package
     runs-on: ubuntu-24.04
     needs: changed
@@ -217,6 +221,7 @@ jobs:
 
   # --- Gatherer job that you mark as the ONLY required status -----------------
   results:
+    timeout-minutes: 30
     name: CI results (required)
     needs:
       [

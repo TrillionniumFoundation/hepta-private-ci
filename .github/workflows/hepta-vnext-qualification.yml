@@ -4,8 +4,7 @@ on:
   workflow_dispatch:
   push:
     branches:
-      - vnext-main
-      - "integration/vnext-main-full-ci-*"
+      - main
 
 permissions:
   contents: read

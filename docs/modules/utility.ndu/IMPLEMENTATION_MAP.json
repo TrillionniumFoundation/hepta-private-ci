@@ -1,6 +1,6 @@
 {
-  "schema": "hepta.module-implementation-map.v1",
-  "schemaVersion": 1,
+  "schema": "hepta.module-implementation-map.v3",
+  "schemaVersion": 3,
   "module": "utility.ndu",
   "owner": "intelligence-platform",
   "deputy": "learning-platform",
@@ -9,7 +9,9 @@
     "docs/readiness/NDU_SYSTEM_EXECUTION.md",
     "docs/learning/NDU_FBSDE_SPEC.md"
   ],
-  "sourceRoot": "codex-rs/hepta-ndu",
+  "sourceRoot": [
+    "codex-rs/hepta-ndu"
+  ],
   "authorityDelta": "none",
   "productCallerState": "not_composed",
   "productionWriterState": "not_composed",
@@ -38,7 +40,11 @@
           "path": "codex-rs/hepta-ndu/src/evaluator_tests.rs",
           "symbol": "non_dominated_candidates_without_scalarization_require_slow_path"
         }
-      ]
+      ],
+      "designOperation": "evaluate_candidates",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [],
+      "sourcePathExists": true
     },
     {
       "operation": "evaluate_candidates_with_policy",
@@ -76,7 +82,11 @@
           "path": "codex-rs/hepta-ndu/src/evaluator_tests.rs",
           "symbol": "candidate_support_digest_binds_organ_and_contribution_semantics"
         }
-      ]
+      ],
+      "designOperation": "evaluate_candidates_with_policy",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [],
+      "sourcePathExists": true
     },
     {
       "operation": "canonical_evaluation_policy_digest",
@@ -96,7 +106,11 @@
           "path": "codex-rs/hepta-ndu/src/evaluator_tests.rs",
           "symbol": "policy_digest_is_permutation_invariant"
         }
-      ]
+      ],
+      "designOperation": "canonical_evaluation_policy_digest",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [],
+      "sourcePathExists": true
     },
     {
       "operation": "solve_preference_target",
@@ -124,7 +138,11 @@
           "path": "codex-rs/hepta-ndu/src/preference_tests.rs",
           "symbol": "parent_and_child_updates_cannot_share_generation"
         }
-      ]
+      ],
+      "designOperation": "solve_preference_target",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [],
+      "sourcePathExists": true
     },
     {
       "operation": "bind_solver_iteration_receipt_v1",
@@ -148,7 +166,11 @@
           "path": "codex-rs/hepta-ndu/src/protocol_tests.rs",
           "symbol": "zero_context_digest_rejects_before_protocol_publication"
         }
-      ]
+      ],
+      "designOperation": "bind_solver_iteration_receipt_v1",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [],
+      "sourcePathExists": true
     },
     {
       "operation": "solve_backward_regression",
@@ -168,7 +190,11 @@
           "path": "codex-rs/hepta-ndu/src/covariance_tests.rs",
           "symbol": "scaled, correlated, singular and whitening analytic fixtures"
         }
-      ]
+      ],
+      "designOperation": "solve_backward_regression",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [],
+      "sourcePathExists": true
     },
     {
       "operation": "NduProjectionJournalV1",
@@ -197,7 +223,11 @@
           "path": "codex-rs/hepta-ndu/src/projection_journal_tests.rs",
           "symbol": "truncation_and_tampering_fail_closed"
         }
-      ]
+      ],
+      "designOperation": "NduProjectionJournalV1",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [],
+      "sourcePathExists": true
     }
   ],
   "canonicalReadinessProtocols": [
@@ -237,5 +267,18 @@
     "independentAcceptance": false,
     "activation": false,
     "release": false
-  }
+  },
+  "sourceBase": {
+    "commit": "7e8379b3954808d4138a7bd2f3773f75691291a3",
+    "tree": "ff9fa6baf95a35fd2f49816e0a80097688f2aeeb"
+  },
+  "repositoryControlledGaps": [
+    "Bind every operation to an authenticated consumer callsite and owner store.",
+    "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary."
+  ],
+  "externalEvidenceGates": [
+    "independent semantic review",
+    "product execution and target-host qualification",
+    "operator acceptance, canary, promotion and release"
+  ]
 }

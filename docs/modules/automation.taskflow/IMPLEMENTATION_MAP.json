@@ -1,9 +1,9 @@
 {
-  "schema": "hepta.module-implementation-map.v2",
-  "schemaVersion": 2,
+  "schema": "hepta.module-implementation-map.v3",
+  "schemaVersion": 3,
   "sourceBase": {
-    "commit": "f278a89eea18fccb6d37b876aa5679863a64139d",
-    "tree": "5baa144717d4b3e3c596501fb56ce911d009e728"
+    "commit": "7e8379b3954808d4138a7bd2f3773f75691291a3",
+    "tree": "ff9fa6baf95a35fd2f49816e0a80097688f2aeeb"
   },
   "laneId": "LANE-B-RUNTIME",
   "module": "automation.taskflow",
@@ -34,7 +34,11 @@
           "command": "just test -p codex-hepta-automation --lib"
         }
       ],
-      "sourceSemantics": "Persists the canonical automation definition with revision and owner identity."
+      "sourceSemantics": "Persists the canonical automation definition with revision and owner identity.",
+      "operation": "register_schedule",
+      "nativeSymbol": "pub async fn create_task(",
+      "sourcePath": "codex-rs/hepta-automation/src/store.rs",
+      "sourcePathExists": true
     },
     {
       "designOperation": "materialize_due",
@@ -53,7 +57,11 @@
           "command": "just test -p codex-hepta-automation --lib"
         }
       ],
-      "sourceSemantics": "Materializes bounded due work and commits intent before App Server admission."
+      "sourceSemantics": "Materializes bounded due work and commits intent before App Server admission.",
+      "operation": "materialize_due",
+      "nativeSymbol": "pub async fn tick(",
+      "sourcePath": "codex-rs/hepta-automation/src/scheduler.rs",
+      "sourcePathExists": true
     },
     {
       "designOperation": "claim_occurrence",
@@ -72,7 +80,11 @@
           "command": "just test -p codex-hepta-automation --lib"
         }
       ],
-      "sourceSemantics": "Claims one occurrence under an immutable generation fence."
+      "sourceSemantics": "Claims one occurrence under an immutable generation fence.",
+      "operation": "claim_occurrence",
+      "nativeSymbol": "pub fn claim_occurrence(",
+      "sourcePath": "codex-rs/hepta-automation/src/effect_executor.rs",
+      "sourcePathExists": true
     },
     {
       "designOperation": "execute_step",
@@ -91,7 +103,11 @@
           "command": "just test -p codex-hepta-automation --lib"
         }
       ],
-      "sourceSemantics": "Binds final payload and authority, dispatches once, and records terminal or indeterminate state."
+      "sourceSemantics": "Binds final payload and authority, dispatches once, and records terminal or indeterminate state.",
+      "operation": "execute_step",
+      "nativeSymbol": "pub fn execute_step(",
+      "sourcePath": "codex-rs/hepta-automation/src/effect_executor.rs",
+      "sourcePathExists": true
     }
   ],
   "repositoryControlledGaps": [
@@ -121,5 +137,11 @@
   "sourceRootPresent": true,
   "productionImplementation": false,
   "productCallerState": "not_composed",
-  "productionWriterState": "not_established"
+  "productionWriterState": "not_established",
+  "owner": "automation-platform",
+  "deputy": "agent-runtime",
+  "technicalGuide": "docs/modules/automation.taskflow/TECHNICAL.md",
+  "sourceRoot": [
+    "codex-rs/hepta-automation"
+  ]
 }

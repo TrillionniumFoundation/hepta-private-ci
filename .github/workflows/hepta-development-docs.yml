@@ -2,9 +2,14 @@ name: Hepta development documents
 
 on:
   pull_request:
+    paths:
+      - "docs/**"
+      - "qualification/**"
+      - "scripts/hepta-docs.py"
+      - "scripts/hepta-module-docs.py"
+      - ".github/workflows/hepta-development-docs.yml"
   push:
     branches:
-      - integration/vnext-main-20260811
       - main
   workflow_dispatch:
 

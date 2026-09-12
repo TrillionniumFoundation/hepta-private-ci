@@ -1,9 +1,9 @@
 {
-  "schema": "hepta.module-implementation-map.v2",
-  "schemaVersion": 2,
+  "schema": "hepta.module-implementation-map.v3",
+  "schemaVersion": 3,
   "sourceBase": {
-    "commit": "f278a89eea18fccb6d37b876aa5679863a64139d",
-    "tree": "5baa144717d4b3e3c596501fb56ce911d009e728"
+    "commit": "7e8379b3954808d4138a7bd2f3773f75691291a3",
+    "tree": "ff9fa6baf95a35fd2f49816e0a80097688f2aeeb"
   },
   "laneId": "LANE-B-RUNTIME",
   "module": "channel.matrix",
@@ -36,7 +36,11 @@
           "command": "just test -p codex-hepta-matrixd --lib"
         }
       ],
-      "sourceSemantics": "Deduplicates enrolled-room events and advances the durable sync frontier with correction/redaction handling."
+      "sourceSemantics": "Deduplicates enrolled-room events and advances the durable sync frontier with correction/redaction handling.",
+      "operation": "admit_event",
+      "nativeSymbol": "pub async fn process_event(",
+      "sourcePath": "codex-rs/hepta-matrixd/src/runtime.rs",
+      "sourcePathExists": true
     },
     {
       "designOperation": "prepare_send",
@@ -55,7 +59,11 @@
           "command": "just test -p codex-hepta-matrixd --lib"
         }
       ],
-      "sourceSemantics": "Binds room, session, payload, authority epoch, and one Matrix transaction identity before dispatch."
+      "sourceSemantics": "Binds room, session, payload, authority epoch, and one Matrix transaction identity before dispatch.",
+      "operation": "prepare_send",
+      "nativeSymbol": "pub fn prepare_send(",
+      "sourcePath": "codex-rs/hepta-matrixd/src/send_observer.rs",
+      "sourcePathExists": true
     },
     {
       "designOperation": "observe_send",
@@ -74,7 +82,11 @@
           "command": "just test -p codex-hepta-matrixd --lib"
         }
       ],
-      "sourceSemantics": "Records trusted server-event acknowledgement or preserves the same transaction as indeterminate for reconciliation."
+      "sourceSemantics": "Records trusted server-event acknowledgement or preserves the same transaction as indeterminate for reconciliation.",
+      "operation": "observe_send",
+      "nativeSymbol": "pub fn observe_send(",
+      "sourcePath": "codex-rs/hepta-matrixd/src/send_observer.rs",
+      "sourcePathExists": true
     }
   ],
   "repositoryControlledGaps": [
@@ -103,5 +115,12 @@
   "sourceRootPresent": true,
   "productionImplementation": false,
   "productCallerState": "not_composed",
-  "productionWriterState": "not_established"
+  "productionWriterState": "not_established",
+  "owner": "channels-platform",
+  "deputy": "security-authority",
+  "technicalGuide": "docs/modules/channel.matrix/TECHNICAL.md",
+  "sourceRoot": [
+    "codex-rs/hepta-matrix-sdk",
+    "codex-rs/hepta-matrixd"
+  ]
 }

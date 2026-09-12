@@ -251,3 +251,17 @@ Ordinary authorized coding identifies the Git baseline, relevant contracts, owne
 The following additional work packages are source-planning envelopes introduced by the readiness overlay; they do not imply implementation or activation:
 
 - `ASM-4-FEDERATED-ORGAN-ENROLLMENT`
+
+## 17. Source implementation receipt
+
+This receipt records repository source bindings for the current documentation candidate. It is navigation evidence only; it does not claim product composition, deployment, or external effect authority.
+
+| Operation | Native symbol | Source path | Tests |
+|---|---|---|---|
+| `admit_host` | `pub fn admit_host(` | `codex-rs/hepta-fleet/src/lease_ledger.rs` | `codex-rs/hepta-fleet/src/lease_ledger_tests.rs` |
+| `allocate` | `pub fn issue(` | `codex-rs/hepta-fleet/src/lease_ledger.rs` | `codex-rs/hepta-fleet/src/lease_ledger_tests.rs` |
+| `renew_or_revoke` | `pub fn renew_or_revoke(` | `codex-rs/hepta-fleet/src/lease_ledger.rs` | `codex-rs/hepta-fleet/src/lease_ledger_tests.rs` |
+
+- Source identity: `sourceBase` is recorded in `IMPLEMENTATION_MAP.json`.
+- Consumer callsites and durable owner stores remain an explicit follow-up when not listed above.
+- Production implementation, runtime composition, independent acceptance, activation, and release remain false until their separate evidence gates pass.

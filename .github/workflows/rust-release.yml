@@ -25,6 +25,7 @@ concurrency:
 
 jobs:
   tag-check:
+    timeout-minutes: 30
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
@@ -1184,6 +1185,7 @@ jobs:
       publish: true
 
   release:
+    timeout-minutes: 30
     needs:
       - tag-check
       - build
@@ -1386,6 +1388,7 @@ jobs:
       stage: finalize
 
   publish-dotslash:
+    timeout-minutes: 30
     name: publish-dotslash
     needs: release
     runs-on: ubuntu-latest
@@ -1415,6 +1418,7 @@ jobs:
   # July 31, 2025: https://github.blog/changelog/2025-07-31-npm-trusted-publishing-with-oidc-is-generally-available/
   # npm docs: https://docs.npmjs.com/trusted-publishers
   publish-npm:
+    timeout-minutes: 30
     # Publish to npm for stable releases, numbered alphas, and alpha hotfixes.
     if: >-
       ${{
@@ -1575,6 +1579,7 @@ jobs:
           done
 
   deploy-dev-website:
+    timeout-minutes: 30
     name: Trigger developers.openai.com deploy
     needs: release
     # Only trigger the deploy for a stable release.
@@ -1604,6 +1609,7 @@ jobs:
           fi
 
   winget:
+    timeout-minutes: 30
     name: winget
     needs: release
     # Only publish stable/mainline releases to WinGet; pre-releases include a
@@ -1635,6 +1641,7 @@ jobs:
           token: ${{ secrets.WINGET_PUBLISH_PAT }}
 
   update-branch:
+    timeout-minutes: 30
     name: Update latest-alpha-cli branch
     if: >-
       ${{

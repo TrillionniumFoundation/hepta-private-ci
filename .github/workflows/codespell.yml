@@ -10,6 +10,7 @@ permissions:
 
 jobs:
   codespell:
+    timeout-minutes: 30
     name: Check for spelling errors
     runs-on: ubuntu-latest
 

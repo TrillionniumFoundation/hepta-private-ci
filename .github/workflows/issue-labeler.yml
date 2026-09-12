@@ -8,9 +8,10 @@ on:
 
 jobs:
   gather-labels:
+    timeout-minutes: 30
     name: Generate label suggestions
     # Prevent runs on forks (requires OpenAI API key, wastes Actions minutes)
-    if: github.repository == 'openai/codex' && (github.event.action == 'opened' || (github.event.action == 'labeled' && github.event.label.name == 'codex-label'))
+    if: vars.ENABLE_UPSTREAM_AUTOMATION == 'true' && github.repository == 'TrillionniumFoundation/hepta-private-ci' && (github.event.action == 'opened' || (github.event.action == 'labeled' && github.event.label.name == 'codex-label'))
     runs-on: ubuntu-latest
     environment: issue-triage
     permissions:
@@ -107,6 +108,7 @@ jobs:
             }
 
   apply-labels:
+    timeout-minutes: 30
     name: Apply labels from Codex output
     needs: gather-labels
     if: ${{ needs.gather-labels.result != 'skipped' }}

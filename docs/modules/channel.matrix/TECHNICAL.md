@@ -254,3 +254,17 @@ Consumed readiness protocols:
 - None.
 
 Ordinary authorized coding identifies the Git baseline, relevant contracts, owned paths, mandatory fixtures, deterministic fallback and rollback. A runtime coordinator admitting an envelope still verifies its current `CanonicalSourceReceiptV1`, frozen contract/readiness digest, expiry and zero authority delta; manually issuing an envelope is not a separate permission gate for ordinary repository work. This overlay does not change activation, acceptance, selection, promotion or release.
+
+## 17. Source implementation receipt
+
+This receipt records repository source bindings for the current documentation candidate. It is navigation evidence only; it does not claim product composition, deployment, or external effect authority.
+
+| Operation | Native symbol | Source path | Tests |
+|---|---|---|---|
+| `admit_event` | `pub async fn process_event(` | `codex-rs/hepta-matrixd/src/runtime.rs` | `codex-rs/hepta-matrixd/src/tests.rs` |
+| `prepare_send` | `pub fn prepare_send(` | `codex-rs/hepta-matrixd/src/send_observer.rs` | `codex-rs/hepta-matrixd/src/send_observer_tests.rs` |
+| `observe_send` | `pub fn observe_send(` | `codex-rs/hepta-matrixd/src/send_observer.rs` | `codex-rs/hepta-matrixd/src/send_observer_tests.rs` |
+
+- Source identity: `sourceBase` is recorded in `IMPLEMENTATION_MAP.json`.
+- Consumer callsites and durable owner stores remain an explicit follow-up when not listed above.
+- Production implementation, runtime composition, independent acceptance, activation, and release remain false until their separate evidence gates pass.

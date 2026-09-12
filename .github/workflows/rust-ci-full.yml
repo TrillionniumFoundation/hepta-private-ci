@@ -11,6 +11,7 @@ on:
 jobs:
   # --- CI that doesn't need specific targets ---------------------------------
   general:
+    timeout-minutes: 30
     name: Format / etc
     runs-on: ubuntu-24.04
     defaults:
@@ -30,6 +31,7 @@ jobs:
         run: just bench-smoke
 
   cargo_shear:
+    timeout-minutes: 30
     name: cargo shear
     runs-on: ubuntu-24.04
     defaults:
@@ -48,6 +50,7 @@ jobs:
         run: cargo shear --deny-warnings
 
   argument_comment_lint_package:
+    timeout-minutes: 30
     name: Argument comment lint package
     runs-on: ubuntu-24.04
     env:
@@ -484,6 +487,7 @@ jobs:
 
   # --- Gatherer job for the full post-merge workflow --------------------------
   results:
+    timeout-minutes: 30
     name: Full CI results
     needs:
       [

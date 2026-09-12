@@ -1,9 +1,9 @@
 {
-  "schema": "hepta.module-implementation-map.v2",
-  "schemaVersion": 2,
+  "schema": "hepta.module-implementation-map.v3",
+  "schemaVersion": 3,
   "sourceBase": {
-    "commit": "f278a89eea18fccb6d37b876aa5679863a64139d",
-    "tree": "5baa144717d4b3e3c596501fb56ce911d009e728"
+    "commit": "7e8379b3954808d4138a7bd2f3773f75691291a3",
+    "tree": "ff9fa6baf95a35fd2f49816e0a80097688f2aeeb"
   },
   "laneId": "LANE-B-RUNTIME",
   "module": "runtime.codex",
@@ -13,8 +13,7 @@
     "codex-rs/hepta-codex-adapter"
   ],
   "resolvedRoots": [
-    "codex-rs/app-server",
-    "codex-rs/core",
+    "codex-rs/codex-app-server",
     "codex-rs/hepta-codex-adapter"
   ],
   "stateOwnerDisposition": "The existing App Server and Codex core remain the sole thread, turn, model, and tool execution spine.",
@@ -37,7 +36,11 @@
           "command": "just test -p codex-app-server --test all thread_start"
         }
       ],
-      "sourceSemantics": "Creates a protocol-visible thread through the canonical App Server handler."
+      "sourceSemantics": "Creates a protocol-visible thread through the canonical App Server handler.",
+      "operation": "open_thread",
+      "nativeSymbol": "pub(crate) async fn thread_start(",
+      "sourcePath": "codex-rs/app-server/src/request_processors/thread_processor.rs",
+      "sourcePathExists": true
     },
     {
       "designOperation": "submit_turn",
@@ -56,7 +59,11 @@
           "command": "just test -p codex-app-server --test all turn_start"
         }
       ],
-      "sourceSemantics": "Admits a turn through the single App Server execution path."
+      "sourceSemantics": "Admits a turn through the single App Server execution path.",
+      "operation": "submit_turn",
+      "nativeSymbol": "pub(crate) async fn turn_start(",
+      "sourcePath": "codex-rs/app-server/src/request_processors/turn_processor.rs",
+      "sourcePathExists": true
     },
     {
       "designOperation": "dispatch_tool",
@@ -75,7 +82,11 @@
           "command": "just test -p codex-core executed_tool_calls"
         }
       ],
-      "sourceSemantics": "Routes tool calls through Codex core while retaining operation identity and delegated effect ownership."
+      "sourceSemantics": "Routes tool calls through Codex core while retaining operation identity and delegated effect ownership.",
+      "operation": "dispatch_tool",
+      "nativeSymbol": "pub async fn dispatch_tool_call_with_code_mode_result(",
+      "sourcePath": "codex-rs/core/src/tools/router.rs",
+      "sourcePathExists": true
     },
     {
       "designOperation": "observe_delivery",
@@ -94,7 +105,11 @@
           "command": "just test -p codex-app-server --test all turn_start"
         }
       ],
-      "sourceSemantics": "Binds the submitted input to an exact turn admission before delivery credit can be emitted."
+      "sourceSemantics": "Binds the submitted input to an exact turn admission before delivery credit can be emitted.",
+      "operation": "observe_delivery",
+      "nativeSymbol": "pub(crate) async fn submit_turn_input_and_wait_for_exact_admission(",
+      "sourcePath": "codex-rs/core/src/codex_thread.rs",
+      "sourcePathExists": true
     }
   ],
   "repositoryControlledGaps": [],
@@ -121,5 +136,12 @@
   "sourceRootPresent": true,
   "productionImplementation": false,
   "productCallerState": "not_composed",
-  "productionWriterState": "not_established"
+  "productionWriterState": "not_established",
+  "owner": "codex-integration",
+  "deputy": "agent-runtime",
+  "technicalGuide": "docs/modules/runtime.codex/TECHNICAL.md",
+  "sourceRoot": [
+    "codex-rs/codex-app-server",
+    "codex-rs/hepta-codex-adapter"
+  ]
 }

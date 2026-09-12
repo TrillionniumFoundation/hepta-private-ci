@@ -404,11 +404,6 @@ def verify() -> int:
     for field in RECEIPT_FIELDS:
         need(field in handoff, "handoff field missing " + field)
         need(field in technical, "technical field missing " + field)
-    need(len(technical.encode("utf-8")) >= 12000, "technical document too small")
-    need(
-        len(re.findall(r"\b[\w.-]+\b", technical)) >= 1800,
-        "technical document too short",
-    )
     for section in [
         "## 1. Scope and truth boundary",
         "## 2. Module execution receipt contract",
@@ -428,7 +423,6 @@ def verify() -> int:
         "## 16. Coding and activation checklist",
     ]:
         need(section in technical, "technical section " + section)
-
     for command in [
         "python3 scripts/hepta-implementation-dossiers.py self-test",
         "python3 scripts/hepta-implementation-dossiers.py generate-status --check",

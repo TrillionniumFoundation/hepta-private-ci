@@ -1,9 +1,9 @@
 {
-  "schema": "hepta.module-implementation-map.v2",
-  "schemaVersion": 2,
+  "schema": "hepta.module-implementation-map.v3",
+  "schemaVersion": 3,
   "sourceBase": {
-    "commit": "f278a89eea18fccb6d37b876aa5679863a64139d",
-    "tree": "5baa144717d4b3e3c596501fb56ce911d009e728"
+    "commit": "7e8379b3954808d4138a7bd2f3773f75691291a3",
+    "tree": "ff9fa6baf95a35fd2f49816e0a80097688f2aeeb"
   },
   "laneId": "LANE-B-RUNTIME",
   "module": "ui.control",
@@ -34,7 +34,11 @@
           "command": "node --test apps/hepta-control-ui/test/runtime-client.test.js"
         }
       ],
-      "sourceSemantics": "Projects a coherent generation/revision snapshot and explicitly marks absent snapshots stale."
+      "sourceSemantics": "Projects a coherent generation/revision snapshot and explicitly marks absent snapshots stale.",
+      "operation": "read_view",
+      "nativeSymbol": "readView()",
+      "sourcePath": "apps/hepta-control-ui/src/runtime-client.js",
+      "sourcePathExists": true
     },
     {
       "designOperation": "submit_request",
@@ -53,7 +57,11 @@
           "command": "node --test apps/hepta-control-ui/test/runtime-client.test.js"
         }
       ],
-      "sourceSemantics": "Submits an authenticated request bound to displayed revision, operation identity, and semantic digest."
+      "sourceSemantics": "Submits an authenticated request bound to displayed revision, operation identity, and semantic digest.",
+      "operation": "submit_request",
+      "nativeSymbol": "async submitRequest(",
+      "sourcePath": "apps/hepta-control-ui/src/runtime-client.js",
+      "sourcePathExists": true
     },
     {
       "designOperation": "request_stop",
@@ -72,7 +80,11 @@
           "command": "node --test apps/hepta-control-ui/test/runtime-client.test.js"
         }
       ],
-      "sourceSemantics": "Uses the same authenticated identity/revision path for stop while preserving backend terminality."
+      "sourceSemantics": "Uses the same authenticated identity/revision path for stop while preserving backend terminality.",
+      "operation": "request_stop",
+      "nativeSymbol": "async requestStop(",
+      "sourcePath": "apps/hepta-control-ui/src/runtime-client.js",
+      "sourcePathExists": true
     }
   ],
   "repositoryControlledGaps": [],
@@ -99,5 +111,11 @@
   "sourceRootPresent": true,
   "productionImplementation": false,
   "productCallerState": "not_composed",
-  "productionWriterState": "not_established"
+  "productionWriterState": "not_established",
+  "owner": "ui-platform",
+  "deputy": "accessibility",
+  "technicalGuide": "docs/modules/ui.control/TECHNICAL.md",
+  "sourceRoot": [
+    "apps/hepta-control-ui"
+  ]
 }

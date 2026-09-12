@@ -1,9 +1,9 @@
 {
-  "schema": "hepta.module-implementation-map.v2",
-  "schemaVersion": 2,
+  "schema": "hepta.module-implementation-map.v3",
+  "schemaVersion": 3,
   "sourceBase": {
-    "commit": "f278a89eea18fccb6d37b876aa5679863a64139d",
-    "tree": "5baa144717d4b3e3c596501fb56ce911d009e728"
+    "commit": "7e8379b3954808d4138a7bd2f3773f75691291a3",
+    "tree": "ff9fa6baf95a35fd2f49816e0a80097688f2aeeb"
   },
   "laneId": "LANE-B-RUNTIME",
   "module": "runtime.agentd",
@@ -34,7 +34,11 @@
           "command": "just test -p codex-hepta-agentd --lib"
         }
       ],
-      "sourceSemantics": "Validates immutable supervisor/Agentd generations, configuration, and owner-port identities."
+      "sourceSemantics": "Validates immutable supervisor/Agentd generations, configuration, and owner-port identities.",
+      "operation": "compose_runtime",
+      "nativeSymbol": "pub fn compose_runtime(",
+      "sourcePath": "codex-rs/hepta-agentd/src/lane_b_runtime.rs",
+      "sourcePathExists": true
     },
     {
       "designOperation": "start_run",
@@ -61,7 +65,11 @@
           "command": "just test -p codex-hepta-agentd --lib"
         }
       ],
-      "sourceSemantics": "Admits a bounded run and freezes request, objective, body, artifact, authority, and deadline identity."
+      "sourceSemantics": "Admits a bounded run and freezes request, objective, body, artifact, authority, and deadline identity.",
+      "operation": "start_run",
+      "nativeSymbol": "pub fn start_run(",
+      "sourcePath": "codex-rs/hepta-agentd/src/lane_b_runtime.rs",
+      "sourcePathExists": true
     },
     {
       "designOperation": "cancel_run",
@@ -88,7 +96,11 @@
           "command": "just test -p codex-hepta-agentd --lib"
         }
       ],
-      "sourceSemantics": "Distinguishes provable pre-dispatch cancellation from post-dispatch cancelling or indeterminate state."
+      "sourceSemantics": "Distinguishes provable pre-dispatch cancellation from post-dispatch cancelling or indeterminate state.",
+      "operation": "cancel_run",
+      "nativeSymbol": "pub fn cancel_run(",
+      "sourcePath": "codex-rs/hepta-agentd/src/lane_b_runtime.rs",
+      "sourcePathExists": true
     },
     {
       "designOperation": "attach_context",
@@ -115,7 +127,11 @@
           "command": "just test -p codex-hepta-agentd --lib"
         }
       ],
-      "sourceSemantics": "Accepts context only when its receipt binds the complete frozen run tuple."
+      "sourceSemantics": "Accepts context only when its receipt binds the complete frozen run tuple.",
+      "operation": "attach_context",
+      "nativeSymbol": "pub fn attach_context(",
+      "sourcePath": "codex-rs/hepta-agentd/src/lane_b_runtime.rs",
+      "sourcePathExists": true
     }
   ],
   "repositoryControlledGaps": [],
@@ -142,5 +158,11 @@
   "sourceRootPresent": true,
   "productionImplementation": false,
   "productCallerState": "not_composed",
-  "productionWriterState": "not_established"
+  "productionWriterState": "not_established",
+  "owner": "agent-runtime",
+  "deputy": "runtime-control",
+  "technicalGuide": "docs/modules/runtime.agentd/TECHNICAL.md",
+  "sourceRoot": [
+    "codex-rs/hepta-agentd"
+  ]
 }

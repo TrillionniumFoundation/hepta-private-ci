@@ -40,6 +40,7 @@ HEADINGS = [
     "## 13. Implementation sequence and work packages",
     "## 14. Activation, compatibility and retirement",
     "## 15. Definition of module completion",
+    "## 17. Source implementation receipt",
 ]
 ALLOWED_STATUS = {
     "existing_bound",

@@ -17,8 +17,6 @@ on:
   push:
     branches:
       - main
-      - integration/vnext-main-20260811
-      - "codex/hepta-cns-*"
     paths:
       - "docs/cns/**"
       - "docs/hnmf/**"

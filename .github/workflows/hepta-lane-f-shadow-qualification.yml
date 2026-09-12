@@ -12,10 +12,7 @@ on:
       - ".github/workflows/hepta-lane-f-shadow-qualification.yml"
   push:
     branches:
-      - "codex/lane-f-gap-closure-20260910"
-      - "codex/hepta-all-gap-closure-final-r12-20260910"
-      - "integration/hepta-all-gap-closure-20260910-r12"
-      - "candidate/hepta-all-gap-closure-final-20260910"
+      - main
   workflow_dispatch:
 
 permissions:

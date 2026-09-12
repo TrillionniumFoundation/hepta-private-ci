@@ -3,7 +3,7 @@ name: Hepta audit remediation (read-only)
 on:
   push:
     branches:
-      - "codex/hepta-audit-remediation-20260905"
+      - main
   pull_request:
     paths:
       - "qualification/cns-organ-reference/**"

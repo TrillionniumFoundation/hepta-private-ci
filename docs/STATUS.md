@@ -56,3 +56,12 @@ Dynamic Git, branch, pull-request, CI, review, operator, selection, promotion an
 ## Authority posture
 
 Every canonical and subordinate authority flag is present and false. Documentation readiness, source presence, a generated file, a queued workflow or a fixture is not runtime activation, efficacy, selection, merge, operator acceptance, promotion or release.
+
+## OpenBao replacement gate
+
+- Target: **OpenBao 2.6.2** (`server_api_storage_seal_and_operations`)
+- Compatibility capabilities: **13**
+- Closed capabilities: **0**
+- Blocking capabilities: **13**
+- Gate: `python3 scripts/verify_openbao_compatibility.py`
+- A capability cannot close from documentation or scoped tests alone; it requires native implementation, a named product caller, versioned interoperability evidence and applicable independent operational evidence.

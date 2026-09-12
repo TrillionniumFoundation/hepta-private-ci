@@ -14,8 +14,9 @@ permissions:
 
 jobs:
   prepare:
+    timeout-minutes: 30
     # Prevent scheduled runs on forks (no secrets, wastes Actions minutes)
-    if: github.repository == 'openai/codex'
+    if: vars.ENABLE_UPSTREAM_AUTOMATION == 'true' && github.repository == 'TrillionniumFoundation/hepta-private-ci'
     environment:
       name: rust-release-prepare
       deployment: false

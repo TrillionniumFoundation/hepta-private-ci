@@ -1,13 +1,15 @@
 {
-  "schema": "hepta.module-implementation-map.v1",
-  "schemaVersion": 1,
+  "schema": "hepta.module-implementation-map.v3",
+  "schemaVersion": 3,
   "module": "objective.compiler",
   "owner": "intelligence-platform",
   "deputy": "kernel-contracts",
   "technicalGuide": "docs/modules/objective.compiler/TECHNICAL.md",
   "executionSpecification": "docs/readiness/OBJECTIVE_COMPILER_EXECUTION.md",
   "canonicalErrorRegistry": "docs/contracts/OBJECTIVE_ERRORS.json",
-  "sourceRoot": "codex-rs/hepta-objective",
+  "sourceRoot": [
+    "codex-rs/hepta-objective"
+  ],
   "authorityDelta": "none",
   "productCallerState": "not_composed",
   "productionWriterState": "not_applicable_stateless",
@@ -29,7 +31,11 @@
           "path": "codex-rs/hepta-objective/src/source_envelope_json_tests.rs",
           "symbol": "decodes_all_fields_without_loss_or_semantic_admission"
         }
-      ]
+      ],
+      "designOperation": "decode_source_envelope_json_v1",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [],
+      "sourcePathExists": true
     },
     {
       "operation": "validate_structure",
@@ -48,7 +54,11 @@
           "path": "codex-rs/hepta-objective/src/source_envelope_v1_tests.rs",
           "symbol": "text_limits_count_utf8_bytes_for_every_source_field"
         }
-      ]
+      ],
+      "designOperation": "validate_structure",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [],
+      "sourcePathExists": true
     },
     {
       "operation": "canonical_objective_intent_digest_v1",
@@ -67,7 +77,11 @@
           "path": "codex-rs/hepta-objective/src/objective_admission_tests.rs",
           "symbol": "semantic_array_reordering_preserves_intent_digest"
         }
-      ]
+      ],
+      "designOperation": "canonical_objective_intent_digest_v1",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [],
+      "sourcePathExists": true
     },
     {
       "operation": "admit_and_compile_objective_v1",
@@ -102,7 +116,11 @@
           "path": "codex-rs/hepta-objective/src/objective_admission_tests.rs",
           "symbol": "risk_profile_ordering_is_monotone"
         }
-      ]
+      ],
+      "designOperation": "admit_and_compile_objective_v1",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [],
+      "sourcePathExists": true
     },
     {
       "operation": "check_feasibility_v1",
@@ -127,7 +145,11 @@
           "path": "codex-rs/hepta-objective/src/feasibility_exhaustive_tests.rs",
           "symbol": "bounded exhaustive feasibility fixtures"
         }
-      ]
+      ],
+      "designOperation": "check_feasibility_v1",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [],
+      "sourcePathExists": true
     },
     {
       "operation": "compile",
@@ -155,7 +177,11 @@
           "path": "codex-rs/hepta-objective/src/compiler_tests.rs",
           "symbol": "contradictory_hard_bounds_return_inclusion_minimal_pair"
         }
-      ]
+      ],
+      "designOperation": "compile",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [],
+      "sourcePathExists": true
     }
   ],
   "canonicalReadinessProtocols": [
@@ -190,5 +216,18 @@
     "independentAcceptance": false,
     "activation": false,
     "release": false
-  }
+  },
+  "sourceBase": {
+    "commit": "7e8379b3954808d4138a7bd2f3773f75691291a3",
+    "tree": "ff9fa6baf95a35fd2f49816e0a80097688f2aeeb"
+  },
+  "repositoryControlledGaps": [
+    "Bind every operation to an authenticated consumer callsite and owner store.",
+    "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary."
+  ],
+  "externalEvidenceGates": [
+    "independent semantic review",
+    "product execution and target-host qualification",
+    "operator acceptance, canary, promotion and release"
+  ]
 }

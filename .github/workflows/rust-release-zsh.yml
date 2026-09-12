@@ -15,6 +15,7 @@ concurrency:
 
 jobs:
   metadata:
+    timeout-minutes: 30
     runs-on: ubuntu-latest
     outputs:
       release_tag: ${{ steps.release_tag.outputs.release_tag }}
@@ -145,6 +146,7 @@ jobs:
           path: dist/zsh/${{ matrix.target }}/*
 
   publish-release:
+    timeout-minutes: 30
     needs:
       - metadata
       - linux

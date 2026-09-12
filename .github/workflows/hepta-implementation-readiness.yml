@@ -2,13 +2,15 @@ name: Hepta pre-coding implementation readiness
 
 on:
   pull_request:
+    paths:
+      - "docs/readiness/**"
+      - "docs/modules/**"
+      - "qualification/module-execution-dossiers/**"
+      - "scripts/hepta-readiness.py"
+      - ".github/workflows/hepta-implementation-readiness.yml"
   push:
     branches:
       - main
-      - integration/vnext-main-20260811
-      - "codex/hepta-v8-readiness-*"
-      - "codex/hepta-v8-technical-*"
-      - "codex/hepta-v8-implementation-*"
   workflow_dispatch:
 
 permissions:

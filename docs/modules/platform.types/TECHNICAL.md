@@ -547,3 +547,16 @@ The following additional work packages are source-planning envelopes introduced 
 
 - `ASM-0-EXTERNAL-SYSTEM-CONTRACTS`
 - `EMB-0-EMBODIED-CONTRACTS`
+
+## 17. Source implementation receipt
+
+This receipt records repository source bindings for the current documentation candidate. It is navigation evidence only; it does not claim product composition, deployment, or external effect authority.
+
+| Operation | Native symbol | Source path | Tests |
+|---|---|---|---|
+| `rescale_signal` | `rescale_signal` | `codex-rs/hepta-types/src/numeric_conversion.rs` | `pending` |
+| `stableid` | `StableId` | `codex-rs/hepta-types/src/identity.rs` | `pending` |
+
+- Source identity: `sourceBase` is recorded in `IMPLEMENTATION_MAP.json`.
+- Consumer callsites and durable owner stores remain an explicit follow-up when not listed above.
+- Production implementation, runtime composition, independent acceptance, activation, and release remain false until their separate evidence gates pass.

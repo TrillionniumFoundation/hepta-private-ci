@@ -1,9 +1,9 @@
 {
-  "schema": "hepta.module-implementation-map.v2",
-  "schemaVersion": 2,
+  "schema": "hepta.module-implementation-map.v3",
+  "schemaVersion": 3,
   "sourceBase": {
-    "commit": "f278a89eea18fccb6d37b876aa5679863a64139d",
-    "tree": "5baa144717d4b3e3c596501fb56ce911d009e728"
+    "commit": "7e8379b3954808d4138a7bd2f3773f75691291a3",
+    "tree": "ff9fa6baf95a35fd2f49816e0a80097688f2aeeb"
   },
   "laneId": "LANE-B-RUNTIME",
   "module": "runtime.supervisor",
@@ -34,7 +34,11 @@
           "command": "just test -p codex-hepta-supervisor --lib"
         }
       ],
-      "sourceSemantics": "Creates a generation-fenced managed process from a registered agent and bounded configuration."
+      "sourceSemantics": "Creates a generation-fenced managed process from a registered agent and bounded configuration.",
+      "operation": "start_instance",
+      "nativeSymbol": "pub fn start(",
+      "sourcePath": "codex-rs/hepta-supervisor/src/supervisor.rs",
+      "sourcePathExists": true
     },
     {
       "designOperation": "observe_health",
@@ -53,7 +57,11 @@
           "command": "just test -p codex-hepta-supervisor --lib"
         }
       ],
-      "sourceSemantics": "Consumes process observations under the active generation and advances readiness, drain, stop, restart, and rollback state."
+      "sourceSemantics": "Consumes process observations under the active generation and advances readiness, drain, stop, restart, and rollback state.",
+      "operation": "observe_health",
+      "nativeSymbol": "pub fn tick(",
+      "sourcePath": "codex-rs/hepta-supervisor/src/supervisor.rs",
+      "sourcePathExists": true
     },
     {
       "designOperation": "drain",
@@ -72,7 +80,11 @@
           "command": "just test -p codex-hepta-supervisor --lib"
         }
       ],
-      "sourceSemantics": "Stops admission and requests bounded drain without inventing completion."
+      "sourceSemantics": "Stops admission and requests bounded drain without inventing completion.",
+      "operation": "drain",
+      "nativeSymbol": "pub fn drain(",
+      "sourcePath": "codex-rs/hepta-supervisor/src/supervisor.rs",
+      "sourcePathExists": true
     },
     {
       "designOperation": "load_next",
@@ -91,7 +103,11 @@
           "command": "just test -p codex-hepta-supervisor --lib"
         }
       ],
-      "sourceSemantics": "Transitions through an exact release predecessor and new process generation with rollback support."
+      "sourceSemantics": "Transitions through an exact release predecessor and new process generation with rollback support.",
+      "operation": "load_next",
+      "nativeSymbol": "pub fn upgrade(",
+      "sourcePath": "codex-rs/hepta-supervisor/src/supervisor.rs",
+      "sourcePathExists": true
     }
   ],
   "repositoryControlledGaps": [],
@@ -118,5 +134,11 @@
   "sourceRootPresent": true,
   "productionImplementation": false,
   "productCallerState": "not_composed",
-  "productionWriterState": "not_established"
+  "productionWriterState": "not_established",
+  "owner": "runtime-control",
+  "deputy": "fleet-runtime",
+  "technicalGuide": "docs/modules/runtime.supervisor/TECHNICAL.md",
+  "sourceRoot": [
+    "codex-rs/hepta-supervisor"
+  ]
 }

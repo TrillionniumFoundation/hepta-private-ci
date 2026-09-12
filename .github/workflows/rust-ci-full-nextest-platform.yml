@@ -433,6 +433,7 @@ jobs:
           exit 1
 
   result:
+    timeout-minutes: 30
     name: Platform result
     needs: shard
     if: always()

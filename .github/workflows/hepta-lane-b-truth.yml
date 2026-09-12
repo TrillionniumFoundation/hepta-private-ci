@@ -2,10 +2,15 @@ name: Hepta Lane B source closure
 
 on:
   pull_request:
+    paths:
+      - "codex-rs/hepta-memory/**"
+      - "codex-rs/hepta-retrieval/**"
+      - "docs/memory/**"
+      - "qualification/**"
+      - ".github/workflows/hepta-lane-b-truth.yml"
   push:
     branches:
-      - integration/vnext-main-20260811
-      - "codex/lane-b-*"
+      - main
   workflow_dispatch:
 
 permissions:

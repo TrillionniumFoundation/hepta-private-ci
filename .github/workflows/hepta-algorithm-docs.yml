@@ -2,11 +2,14 @@ name: Hepta adaptive algorithm documents
 
 on:
   pull_request:
+    paths:
+      - "docs/algorithms/**"
+      - "docs/modules/**"
+      - "scripts/hepta-algorithm-docs.py"
+      - ".github/workflows/hepta-algorithm-docs.yml"
   push:
     branches:
       - main
-      - integration/vnext-main-20260811
-      - "docs/**"
   workflow_dispatch:
 
 permissions:

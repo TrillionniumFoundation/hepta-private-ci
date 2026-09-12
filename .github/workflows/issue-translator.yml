@@ -7,9 +7,10 @@ on:
 
 jobs:
   translate-issue:
+    timeout-minutes: 30
     name: Translate non-English issue
     # Prevent runs on forks (requires OpenAI API key, wastes Actions minutes)
-    if: github.repository == 'openai/codex'
+    if: vars.ENABLE_UPSTREAM_AUTOMATION == 'true' && github.repository == 'TrillionniumFoundation/hepta-private-ci'
     runs-on: ubuntu-latest
     environment: issue-triage
     permissions:
@@ -60,6 +61,7 @@ jobs:
             }
 
   apply-translation:
+    timeout-minutes: 30
     name: Update issue with English translation
     needs: translate-issue
     if: ${{ needs.translate-issue.result == 'success' }}

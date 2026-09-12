@@ -8,9 +8,10 @@ on:
 
 jobs:
   gather-duplicates-all:
+    timeout-minutes: 30
     name: Identify potential duplicates (all issues)
     # Prevent runs on forks (requires OpenAI API key, wastes Actions minutes)
-    if: github.repository == 'openai/codex' && (github.event.action == 'opened' || (github.event.action == 'labeled' && github.event.label.name == 'codex-deduplicate'))
+    if: vars.ENABLE_UPSTREAM_AUTOMATION == 'true' && github.repository == 'TrillionniumFoundation/hepta-private-ci' && (github.event.action == 'opened' || (github.event.action == 'labeled' && github.event.label.name == 'codex-deduplicate'))
     runs-on: ubuntu-latest
     environment: issue-triage
     permissions:
@@ -98,6 +99,7 @@ jobs:
             }
 
   normalize-duplicates-all:
+    timeout-minutes: 30
     name: Normalize pass 1 output
     needs: gather-duplicates-all
     if: ${{ needs.gather-duplicates-all.result == 'success' }}
@@ -153,6 +155,7 @@ jobs:
           } >> "$GITHUB_OUTPUT"
 
   gather-duplicates-open:
+    timeout-minutes: 30
     name: Identify potential duplicates (open issues fallback)
     # Pass 1 Codex execution drops sudo on its runner, so run the fallback in a fresh job.
     needs: normalize-duplicates-all
@@ -242,6 +245,7 @@ jobs:
             }
 
   normalize-duplicates-open:
+    timeout-minutes: 30
     name: Normalize pass 2 output
     needs: gather-duplicates-open
     if: ${{ needs.gather-duplicates-open.result == 'success' }}
@@ -297,6 +301,7 @@ jobs:
           } >> "$GITHUB_OUTPUT"
 
   select-final:
+    timeout-minutes: 30
     name: Select final duplicate set
     needs:
       - normalize-duplicates-all
@@ -353,6 +358,7 @@ jobs:
           } >> "$GITHUB_OUTPUT"
 
   comment-on-issue:
+    timeout-minutes: 30
     name: Comment with potential duplicates
     needs: select-final
     if: ${{ always() && needs.select-final.result == 'success' }}

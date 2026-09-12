@@ -1,9 +1,9 @@
 {
-  "schema": "hepta.module-implementation-map.v2",
-  "schemaVersion": 2,
+  "schema": "hepta.module-implementation-map.v3",
+  "schemaVersion": 3,
   "sourceBase": {
-    "commit": "f278a89eea18fccb6d37b876aa5679863a64139d",
-    "tree": "5baa144717d4b3e3c596501fb56ce911d009e728"
+    "commit": "7e8379b3954808d4138a7bd2f3773f75691291a3",
+    "tree": "ff9fa6baf95a35fd2f49816e0a80097688f2aeeb"
   },
   "laneId": "LANE-B-RUNTIME",
   "module": "runtime.fleet",
@@ -34,7 +34,11 @@
           "command": "just test -p codex-hepta-fleet --lib"
         }
       ],
-      "sourceSemantics": "Admits an explicitly enrolled host with generation, capacity, epoch, and failure-domain identity."
+      "sourceSemantics": "Admits an explicitly enrolled host with generation, capacity, epoch, and failure-domain identity.",
+      "operation": "admit_host",
+      "nativeSymbol": "pub fn admit_host(",
+      "sourcePath": "codex-rs/hepta-fleet/src/lease_ledger.rs",
+      "sourcePathExists": true
     },
     {
       "designOperation": "allocate",
@@ -53,7 +57,11 @@
           "command": "just test -p codex-hepta-fleet --lib"
         }
       ],
-      "sourceSemantics": "Issues bounded allocation leases only after capacity, floors, freshness, and generation checks."
+      "sourceSemantics": "Issues bounded allocation leases only after capacity, floors, freshness, and generation checks.",
+      "operation": "allocate",
+      "nativeSymbol": "pub fn issue(",
+      "sourcePath": "codex-rs/hepta-fleet/src/lease_ledger.rs",
+      "sourcePathExists": true
     },
     {
       "designOperation": "renew_or_revoke",
@@ -72,7 +80,11 @@
           "command": "just test -p codex-hepta-fleet --lib"
         }
       ],
-      "sourceSemantics": "Renews, revokes, or quarantines a lease under current epoch and holder reconciliation."
+      "sourceSemantics": "Renews, revokes, or quarantines a lease under current epoch and holder reconciliation.",
+      "operation": "renew_or_revoke",
+      "nativeSymbol": "pub fn renew_or_revoke(",
+      "sourcePath": "codex-rs/hepta-fleet/src/lease_ledger.rs",
+      "sourcePathExists": true
     }
   ],
   "repositoryControlledGaps": [
@@ -101,5 +113,11 @@
   "sourceRootPresent": true,
   "productionImplementation": false,
   "productCallerState": "not_composed",
-  "productionWriterState": "not_established"
+  "productionWriterState": "not_established",
+  "owner": "fleet-runtime",
+  "deputy": "runtime-control",
+  "technicalGuide": "docs/modules/runtime.fleet/TECHNICAL.md",
+  "sourceRoot": [
+    "codex-rs/hepta-fleet"
+  ]
 }

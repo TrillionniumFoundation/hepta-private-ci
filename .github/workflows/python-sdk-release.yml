@@ -11,7 +11,8 @@ concurrency:
 
 jobs:
   resolve-python-release:
-    if: github.repository == 'openai/codex'
+    timeout-minutes: 30
+    if: vars.ENABLE_UPSTREAM_AUTOMATION == 'true' && github.repository == 'TrillionniumFoundation/hepta-private-ci'
     name: resolve-python-release
     runs-on: ubuntu-latest
     permissions:
@@ -79,7 +80,8 @@ jobs:
   # building the SDK package. PyPI does not support reusable workflows as
   # Trusted Publishers.
   publish-python-runtime:
-    if: github.repository == 'openai/codex'
+    timeout-minutes: 30
+    if: vars.ENABLE_UPSTREAM_AUTOMATION == 'true' && github.repository == 'TrillionniumFoundation/hepta-private-ci'
     name: publish-python-runtime
     needs:
       - prepare-python-runtime
@@ -158,7 +160,8 @@ jobs:
           exit 1
 
   build-python-sdk:
-    if: github.repository == 'openai/codex'
+    timeout-minutes: 30
+    if: vars.ENABLE_UPSTREAM_AUTOMATION == 'true' && github.repository == 'TrillionniumFoundation/hepta-private-ci'
     name: build-python-sdk
     needs:
       - publish-python-runtime
@@ -216,6 +219,7 @@ jobs:
           if-no-files-found: error
 
   publish-python-sdk:
+    timeout-minutes: 30
     name: publish-python-sdk
     needs: build-python-sdk
     runs-on: ubuntu-latest

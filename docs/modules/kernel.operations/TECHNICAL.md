@@ -301,3 +301,16 @@ The following additional work packages are source-planning envelopes introduced 
 
 - `ASM-2-DEBIAN-BRIDGE-SANDBOX`
 - `ASM-3-STATE-MIGRATION-QUALIFICATION`
+
+## 17. Source implementation receipt
+
+This receipt records repository source bindings for the current documentation candidate. It is navigation evidence only; it does not claim product composition, deployment, or external effect authority.
+
+| Operation | Native symbol | Source path | Tests |
+|---|---|---|---|
+| `operationledger` | `OperationLedger` | `codex-rs/hepta-operations/src/ledger.rs` | `pending` |
+| `outbox` | `Outbox` | `codex-rs/hepta-operations/src/outbox.rs` | `pending` |
+
+- Source identity: `sourceBase` is recorded in `IMPLEMENTATION_MAP.json`.
+- Consumer callsites and durable owner stores remain an explicit follow-up when not listed above.
+- Production implementation, runtime composition, independent acceptance, activation, and release remain false until their separate evidence gates pass.

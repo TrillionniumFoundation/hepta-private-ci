@@ -20,7 +20,7 @@ PLAN_ID = "HEPTA-GLOBAL-MODULAR-DEVELOPMENT-PLAN"
 VERSION = "8.0.0"
 REPO = "TrillionniumFoundation/hepta-private-ci"
 REPO_ID = 1320694176
-DEFAULT_BRANCH = "integration/vnext-main-20260811"
+DEFAULT_BRANCH = "main"
 MODULE_VERIFIER = "scripts/hepta-module-docs.py"
 ALGORITHM_VERIFIER = "scripts/hepta-algorithm-docs.py"
 READINESS_VERIFIER = "scripts/hepta-readiness.py"
@@ -33,6 +33,7 @@ CNS_ARCHITECTURE = "docs/cns/CNS_ARCHITECTURE.json"
 CNS_GAPS = "docs/cns/GAPS.json"
 HNMF_REGISTRY = "docs/hnmf/HNMF.json"
 HNMF_GAPS = "docs/hnmf/GAPS.json"
+OPENBAO_MATRIX = "qualification/openbao-compatibility/COMPATIBILITY_MATRIX.json"
 WORKFLOW_REFERENCE_SCRIPTS = (
     "scripts/hepta-gap-closure.py",
     "scripts/hepta_source_registry_closure.py",
@@ -742,6 +743,15 @@ def status_text(d):
     states = Counter(x["state"] for x in d["work"]["packages"])
     cur = d["current"]
     sub = subordinate_state()
+    openbao = load(OPENBAO_MATRIX)
+    openbao_target = openbao["target"]
+    openbao_capabilities = openbao["capabilities"]
+    openbao_blockers = [
+        row["id"]
+        for row in openbao_capabilities
+        if row.get("blocking") is True and row.get("status") != "closed"
+    ]
+    openbao_closed = sum(row.get("status") == "closed" for row in openbao_capabilities)
     lines = [
         "# Hepta Selected Development Source Status",
         "",
@@ -788,6 +798,15 @@ def status_text(d):
         "## Authority posture",
         "",
         "Every canonical and subordinate authority flag is present and false. Documentation readiness, source presence, a generated file, a queued workflow or a fixture is not runtime activation, efficacy, selection, merge, operator acceptance, promotion or release.",
+        "",
+        "## OpenBao replacement gate",
+        "",
+        f"- Target: **{openbao_target['product']} {openbao_target['version']}** (`{openbao_target['profile']}`)",
+        f"- Compatibility capabilities: **{len(openbao_capabilities)}**",
+        f"- Closed capabilities: **{openbao_closed}**",
+        f"- Blocking capabilities: **{len(openbao_blockers)}**",
+        "- Gate: `python3 scripts/verify_openbao_compatibility.py`",
+        "- A capability cannot close from documentation or scoped tests alone; it requires native implementation, a named product caller, versioned interoperability evidence and applicable independent operational evidence.",
         "",
     ]
     return "\n".join(lines)
