@@ -1,0 +1,20 @@
+name: Hepta session formatter
+on:
+  push:
+    branches: [work/hepta-executable-exits-20260912]
+    paths: [.github/workflows/hepta-session-tools.yml]
+permissions:
+  contents: read
+jobs:
+  formatter:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Download pinned public formatter wheel only
+        run: python3 -m pip download --no-deps --only-binary=:all: --dest "$RUNNER_TEMP/formatter" ruff==0.15.13
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-session-formatter-${{ github.sha }}
+          path: ${{ runner.temp }}/formatter/
+          retention-days: 1
+          if-no-files-found: error
