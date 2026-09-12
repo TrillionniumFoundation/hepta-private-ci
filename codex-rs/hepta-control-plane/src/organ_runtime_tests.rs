@@ -188,6 +188,111 @@ fn handlers(events: &Arc<Mutex<Vec<String>>>) -> Vec<Box<dyn TrustedReadOnlyOrga
 }
 
 #[test]
+fn successor_generation_replaces_a_read_only_organ_and_fences_old_dispatch() {
+    let events = Arc::new(Mutex::new(Vec::new()));
+    let mut host = new_host(graph(), handlers(&events));
+    start_host(&mut host);
+    let mut next = graph();
+    next.generation = generation(8);
+    next.organs[2].id = id("target.c");
+    let next_handlers = ["source", "target.a", "target.c"]
+        .into_iter()
+        .map(|name| {
+            Box::new(FixtureOrgan::new(name, Arc::clone(&events)))
+                as Box<dyn TrustedReadOnlyOrganV1>
+        })
+        .collect();
+    host.replace_read_only_generation(generation(7), next, next_handlers)
+        .expect("cutover");
+    assert_eq!(host.generation(), generation(8));
+    assert_eq!(
+        host.dispatch_once(generation(7), &id("source"), 0, b"old"),
+        Err(OrganRuntimeError::GenerationMismatch {
+            expected: generation(8),
+            actual: generation(7)
+        }),
+    );
+    let deliveries = host
+        .dispatch_once(generation(8), &id("source"), 0, b"new")
+        .expect("new route");
+    assert_eq!(
+        deliveries
+            .iter()
+            .map(|delivery| delivery.target.clone())
+            .collect::<Vec<_>>(),
+        vec![id("target.a"), id("target.c")]
+    );
+}
+
+#[test]
+fn candidate_start_failure_preserves_the_predecessor() {
+    let events = Arc::new(Mutex::new(Vec::new()));
+    let mut host = new_host(graph(), handlers(&events));
+    start_host(&mut host);
+    let before = host.statuses();
+    let mut next = graph();
+    next.generation = generation(8);
+    let mut failing = FixtureOrgan::new("target.a", Arc::clone(&events));
+    failing.start_fault = true;
+    let next_handlers: Vec<Box<dyn TrustedReadOnlyOrganV1>> = vec![
+        Box::new(FixtureOrgan::new("source", Arc::clone(&events))),
+        Box::new(failing),
+        Box::new(FixtureOrgan::new("target.b", Arc::clone(&events))),
+    ];
+    assert!(matches!(
+        host.replace_read_only_generation(generation(7), next, next_handlers),
+        Err(OrganRuntimeError::StartFailed { .. })
+    ));
+    assert_eq!(host.statuses(), before);
+    assert!(
+        host.dispatch_once(generation(7), &id("source"), 0, b"still-live")
+            .is_ok()
+    );
+}
+
+#[test]
+fn predecessor_stop_failure_blocks_publication_and_records_cleanup_faults() {
+    let events = Arc::new(Mutex::new(Vec::new()));
+    let mut old = FixtureOrgan::new("target.a", Arc::clone(&events));
+    old.stop_fault = true;
+    let old_handlers: Vec<Box<dyn TrustedReadOnlyOrganV1>> = vec![
+        Box::new(FixtureOrgan::new("source", Arc::clone(&events))),
+        Box::new(old),
+        Box::new(FixtureOrgan::new("target.b", Arc::clone(&events))),
+    ];
+    let mut host = new_host(graph(), old_handlers);
+    start_host(&mut host);
+    let mut next = graph();
+    next.generation = generation(8);
+    assert_eq!(
+        host.replace_read_only_generation(generation(7), next, handlers(&events)),
+        Err(OrganRuntimeError::ReplacementStopFailed {
+            predecessor_faults: vec![OrganFaultRecordV1 {
+                organ: id("target.a"),
+                code: id("stop.fault")
+            }],
+            candidate_cleanup_faults: vec![],
+        }),
+    );
+    assert_eq!(host.generation(), generation(7));
+    assert_eq!(
+        host.statuses()
+            .iter()
+            .map(|status| status.state)
+            .collect::<Vec<_>>(),
+        vec![
+            HostedOrganStateV1::Stopped,
+            HostedOrganStateV1::Quarantined,
+            HostedOrganStateV1::Stopped
+        ]
+    );
+    assert!(matches!(
+        host.dispatch_once(generation(7), &id("source"), 0, b"cannot-route"),
+        Err(OrganRuntimeError::OrganNotReady { .. })
+    ));
+}
+
+#[test]
 fn starts_routes_and_stops_in_graph_order_without_authority() {
     let events = Arc::new(Mutex::new(Vec::new()));
     let mut host = new_host(graph(), handlers(&events));

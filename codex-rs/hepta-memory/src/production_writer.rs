@@ -998,6 +998,7 @@ fn now_unix_seconds() -> Result<u64, ProductionWriterError> {
 mod tests {
     use super::*;
     use codex_hepta_paths::HeptaFleetRoot;
+    use codex_utils_absolute_path::AbsolutePathBuf;
     use std::sync::atomic::AtomicUsize;
     use std::sync::atomic::Ordering;
     use std::time::Duration;
@@ -1410,8 +1411,23 @@ mod tests {
         // silently become a co-owner merely because SQLite serializes each
         // individual transaction.  The writer lock is held for the lifetime
         // of `first`, so the failed open must not append a successor lease.
+        // Reopen through the ordinary path as well: on Windows the first store
+        // was opened through the OS verbatim spelling. Both must share a lock.
+        let native_fleet = AbsolutePathBuf::from_absolute_path(temp.path().join("fleet"))
+            .unwrap()
+            .canonicalize()
+            .unwrap();
+        let second_store = CognitiveStore::open(
+            &HeptaFleetRoot::parse(native_fleet.into_path_buf())
+                .unwrap()
+                .layout()
+                .agent(store.owner_agent_id()),
+        )
+        .await
+        .unwrap();
+        assert!(store.is_same_local_store(&second_store));
         let second =
-            ProductionDurableWriter::open(store.clone(), auth.clone(), &AllowVerifier, lease_id, 1)
+            ProductionDurableWriter::open(second_store, auth.clone(), &AllowVerifier, lease_id, 1)
                 .await;
         assert!(matches!(second, Err(ProductionWriterError::WriterBusy)));
         let head = store.inspect_local_lease_head(lease_id).await.unwrap();

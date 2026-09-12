@@ -2,6 +2,12 @@
 
 #![forbid(unsafe_code)]
 
+mod authbus;
+pub use authbus::AuthBusTextBody;
+pub use authbus::AuthBusTextIngress;
+pub use authbus::AuthBusTextState;
+pub use authbus::AuthBusTextStatus;
+
 use std::path::PathBuf;
 
 use codex_hepta_automation::AutomationTask;
@@ -244,6 +250,16 @@ pub enum AgentdMethod {
     Health,
     Lifecycle,
     SessionIngress,
+    AuthBusText {
+        request: AuthBusTextIngress,
+    },
+    AuthBusTextStatus {
+        delivery_id: String,
+    },
+    CognitiveContext {
+        query: String,
+        limit: u16,
+    },
     Events {
         after_cursor: u64,
         limit: u16,
@@ -295,6 +311,8 @@ pub enum AgentdPayload {
     Health(HealthSnapshot),
     Lifecycle(LifecycleSnapshot),
     SessionIngress(SessionIngress),
+    CognitiveContext(CognitiveContextSnapshot),
+    AuthBusTextStatus(AuthBusTextStatus),
     Events(EventBatch),
     AutomationTask(AutomationTask),
     AutomationTasks {
@@ -311,6 +329,36 @@ pub enum AgentdPayload {
         code: String,
         message: String,
     },
+}
+
+/// A bounded read from the owning Agent's canonical SQLite store. The digest
+/// identifies an observed cut; it is not a grant or a promise of future freshness.
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct CognitiveContextSnapshot {
+    pub snapshot_digest: String,
+    pub read_digest: String,
+    pub omitted_records: u64,
+    pub items: Vec<CognitiveContextItem>,
+    pub plan: Option<CognitiveContextPlan>,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct CognitiveContextPlan {
+    /// Binds the evaluated context with `plan: null`, before any abstention.
+    pub evaluated_context_digest: String,
+    pub plan_receipt_digest: String,
+    pub read_allowed: bool,
+}
+
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct CognitiveContextItem {
+    pub memory_id: String,
+    pub revision: u64,
+    pub content: String,
+    pub content_sha256: String,
 }
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]

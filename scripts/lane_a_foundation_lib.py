@@ -1,4 +1,5 @@
 """Lane A matrix, receipt and self-test helpers."""
+
 from __future__ import annotations
 
 import hashlib
@@ -12,13 +13,16 @@ from typing import Any
 from lane_a_foundation_core import *  # noqa: F403
 
 
-def validate_matrix(matrix: dict[str, Any], root: Path = ROOT) -> None:
+def validate_matrix(matrix: dict[str, Any], root: Path = ROOT) -> dict[str, Any]:
     if (
         matrix.get("schemaVersion") != 2
         or matrix.get("lane") != "LANE-A-FOUNDATION"
-        or matrix.get("documentationPolicy") != "docs/lane-a-foundation/BOUNDARY_POLICY.md"
-        or matrix.get("capabilityEvidenceMap") != "docs/lane-a-foundation/CAPABILITY_EVIDENCE_MAP.json"
-        or matrix.get("nativeBindingOverride") != "qualification/module-execution-dossiers/NATIVE_BINDINGS_LANE_A.json"
+        or matrix.get("documentationPolicy")
+        != "docs/lane-a-foundation/BOUNDARY_POLICY.md"
+        or matrix.get("capabilityEvidenceMap")
+        != "docs/lane-a-foundation/CAPABILITY_EVIDENCE_MAP.json"
+        or matrix.get("nativeBindingOverride")
+        != "qualification/module-execution-dossiers/NATIVE_BINDINGS_LANE_A.json"
         or matrix.get("moduleCoverage") != 7
         or matrix.get("statusAxes") != AXES
     ):
@@ -45,9 +49,11 @@ def validate_matrix(matrix: dict[str, Any], root: Path = ROOT) -> None:
         if phrase not in policy:
             raise VerificationError(f"boundary policy missing {phrase!r}")
     modules = matrix.get("modules")
-    if not isinstance(modules, list) or [
-        row.get("module") for row in modules if isinstance(row, dict)
-    ] != EXPECTED_MODULES:
+    if (
+        not isinstance(modules, list)
+        or [row.get("module") for row in modules if isinstance(row, dict)]
+        != EXPECTED_MODULES
+    ):
         raise VerificationError("closed-world module order mismatch")
     for row in modules:
         module = row["module"]
@@ -67,7 +73,9 @@ def validate_matrix(matrix: dict[str, Any], root: Path = ROOT) -> None:
         current = read_text(root / row["currentSpecification"])
         positions = [current.find(heading) for heading in SECTIONS]
         if -1 in positions or positions != sorted(positions):
-            raise VerificationError(f"{module}: current-contract sections missing/out of order")
+            raise VerificationError(
+                f"{module}: current-contract sections missing/out of order"
+            )
         current_caps = row.get("currentCapabilities")
         target_caps = row.get("targetOnlyCapabilities")
         if (
@@ -86,11 +94,14 @@ def validate_matrix(matrix: dict[str, Any], root: Path = ROOT) -> None:
     exact = {
         ("kernel.operations", "implementation"): "bounded_reference_model",
         ("kernel.operations", "durability"): "not_implemented",
-        ("auth.authbus", "implementation"): "preverified_replay_verifier",
-        ("auth.authbus", "durability"): "process_memory_only",
+        ("auth.authbus", "implementation"): "signed_admission_with_legacy_replay",
+        (
+            "auth.authbus",
+            "durability",
+        ): "sqlite_admission_outbox_and_process_local_legacy",
         ("platform.wire", "implementation"): "fixed_v1_codec",
         ("kernel.authority", "implementation"): "final_use_boundary",
-        ("kernel.evidence", "durability"): "sqlite_migrations_0001_0008",
+        ("kernel.evidence", "durability"): "sqlite_migrations_0001_0010",
         ("secrets.heptabao", "implementation"): "bounded_kv_v2_reader",
     }
     for (module, axis), value in exact.items():
@@ -98,9 +109,10 @@ def validate_matrix(matrix: dict[str, Any], root: Path = ROOT) -> None:
             raise VerificationError(f"{module}: {axis} drift")
     capability = read_json(root / "docs/lane-a-foundation/CAPABILITY_EVIDENCE_MAP.json")
     validate_capability_map(matrix, capability, root)
-    validate_native_bindings(root)
+    native = validate_native_bindings(root)
     validate_wire_vector(root)
     validate_source_specific(root)
+    return native["currentSourceBinding"]
 
 
 def git_value(*args: str) -> str:
@@ -142,14 +154,18 @@ def canonical(value: Any) -> bytes:
 def exact_source(expected: str | None) -> tuple[str, str]:
     source = git_value("rev-parse", "HEAD")
     if expected is not None and source != expected:
-        raise VerificationError(f"exact source mismatch: expected {expected}, got {source}")
+        raise VerificationError(
+            f"exact source mismatch: expected {expected}, got {source}"
+        )
     return source, git_value("rev-parse", "HEAD^{tree}")
 
 
 def write_receipt(output: Path, expected: str | None, native: bool) -> None:
     matrix = read_json(MATRIX_PATH)
-    validate_matrix(matrix)
+    binding = validate_matrix(matrix)
     source, tree = exact_source(expected)
+    if (source, tree) != (binding["sourceSha"], binding["sourceTree"]):
+        raise VerificationError("checkout changed while producing source receipt")
     if native:
         receipt: dict[str, Any] = {
             "schemaVersion": 1,
@@ -196,6 +212,10 @@ def write_receipt(output: Path, expected: str | None, native: bool) -> None:
             "productionActivation": "not_claimed",
             "externalAcceptance": "not_claimed",
         }
+    receipt["nativeSourceObservations"] = binding["observations"]
+    receipt["nativeSourceObservationSha256"] = hashlib.sha256(
+        canonical(binding)
+    ).hexdigest()
     output.parent.mkdir(parents=True, exist_ok=True)
     output.write_text(
         json.dumps(receipt, indent=2, sort_keys=True) + "\n", encoding="utf-8"
@@ -226,9 +246,7 @@ def self_test() -> None:
     capability = read_json(CAPABILITY_MAP_PATH)
     for mutation in (
         lambda value: value["entries"].pop(),
-        lambda value: value["entries"][0].__setitem__(
-            "productionCaller", "unproven"
-        ),
+        lambda value: value["entries"][0].__setitem__("productionCaller", "unproven"),
     ):
         invalid = deepcopy(capability)
         mutation(invalid)

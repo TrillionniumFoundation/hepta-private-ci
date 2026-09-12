@@ -13,6 +13,107 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  workspace-regression:
+    name: Workspace regression for shared core changes
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 60
+    env:
+      SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+      BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+      CARGO_INCREMENTAL: "0"
+      CARGO_BUILD_JOBS: "2"
+      CARGO_PROFILE_TEST_DEBUG: "0"
+      CARGO_PROFILE_DEV_DEBUG: "0"
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Determine whether the shared-core regression gate applies
+        id: scope
+        shell: bash
+        run: |
+          set -euo pipefail
+          if git diff --quiet "$BASE_SHA" "$SOURCE_SHA" -- codex-rs/core/ codex-rs/common/ codex-rs/protocol/; then
+            echo 'required=false' >> "$GITHUB_OUTPUT"
+          else
+            status=$?
+            test "$status" -eq 1
+            echo 'required=true' >> "$GITHUB_OUTPUT"
+          fi
+      - name: Prepare native workspace prerequisites
+        if: steps.scope.outputs.required == 'true'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential bubblewrap libcap-dev pkg-config
+          sudo sysctl -w kernel.unprivileged_userns_clone=1
+          if sysctl kernel.apparmor_restrict_unprivileged_userns >/dev/null 2>&1; then
+            sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
+          fi
+      - name: Install DotSlash for shell integration tests
+        if: steps.scope.outputs.required == 'true'
+        uses: facebook/install-dotslash@1e4e7b3e07eaca387acb98f1d4720e0bee8dbb6a
+      - name: Expose DotSlash at the path used by integration tests
+        if: steps.scope.outputs.required == 'true'
+        run: sudo install -m 0755 "$(command -v dotslash)" /usr/local/bin/dotslash
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        if: steps.scope.outputs.required == 'true'
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+      - name: Resolve verified sandboxed V8 artifacts for Cargo
+        if: steps.scope.outputs.required == 'true'
+        env:
+          CODEX_REPO_ROOT: ${{ github.workspace }}
+          PYTHONPATH: scripts
+        run: python3 scripts/hepta_ci_v8.py
+      - name: Run the complete workspace suite after shared core changes
+        if: steps.scope.outputs.required == 'true'
+        working-directory: codex-rs
+        env:
+          CARGO_TARGET_DIR: ${{ runner.temp }}/hepta-native-target
+        run: just test --locked
+  engineering-sandbox:
+    name: Engineering strong sandbox
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      HEPTA_REQUIRE_STRONG_SANDBOX: "1"
+      PYTHONDONTWRITEBYTECODE: "1"
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Prepare dedicated sandbox runner
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y bubblewrap
+          sudo sysctl -w kernel.unprivileged_userns_clone=1
+          if sysctl kernel.apparmor_restrict_unprivileged_userns >/dev/null 2>&1; then
+            sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
+          fi
+      - name: Exercise real namespace isolation and candidate evaluation
+        run: python3 -m unittest discover -v -s tools/hepta-engineering-control -p 'test_*.py'
+  os-evidence:
+    name: OS evidence native executor
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      PYTHONDONTWRITEBYTECODE: "1"
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Verify native prerequisites and execute RSA and process-lifecycle tests
+        working-directory: tools/hepta-os-evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -x /usr/bin/openssl
+          /usr/bin/openssl version
+          python3 run_native_tests.py
   qualification:
     runs-on: ubuntu-24.04-arm
     timeout-minutes: 45
@@ -24,14 +125,31 @@ jobs:
       SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
       BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
       PYTHONDONTWRITEBYTECODE: "1"
+      CARGO_INCREMENTAL: "0"
+      CARGO_BUILD_JOBS: "2"
+      CARGO_PROFILE_TEST_DEBUG: "0"
+      CARGO_PROFILE_DEV_DEBUG: "0"
+      # Explicit owners: testing a dependency does not execute its own tests.
       PACKAGES: >-
+        codex-hepta-agent-protocol codex-hepta-agentd
         codex-hepta-authbus codex-hepta-authbus-p1-3-qualification
-        codex-hepta-bao-adapter codex-hepta-codex-adapter
+        codex-hepta-automation codex-hepta-bao-adapter
+        codex-hepta-bellman-operator codex-hepta-codex-adapter
         codex-hepta-cognitive-read codex-hepta-cognitive-store
         codex-hepta-cognitive-types codex-hepta-compact-engine
         codex-hepta-context-compiler codex-hepta-control-plane
-        codex-hepta-infer-core codex-hepta-inferd codex-hepta-intelligence
-        codex-hepta-kg codex-hepta-memory-federation codex-hepta-memory-retrieval
+        codex-hepta-evidence codex-hepta-fleet
+        codex-hepta-infer-core codex-hepta-infer-worker-host
+        codex-hepta-inferd codex-hepta-intelligence
+        codex-hepta-intelligence-eval codex-hepta-intuition
+        codex-hepta-kg codex-hepta-learning-artifacts
+        codex-hepta-learning-ledger codex-hepta-matrixd
+        codex-hepta-memory codex-hepta-memory-federation
+        codex-hepta-memory-retrieval codex-hepta-ndu
+        codex-hepta-plasticity codex-hepta-shadow-qualification
+        codex-state codex-core codex-app-server
+        codex-hepta-matrix-store codex-hepta-memory-extension
+        codex-hepta-neuron codex-hepta-prompt-registry codex-hepta-supervisor
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
@@ -53,28 +171,50 @@ jobs:
             git checkout --detach "$MERGE"
           fi
           git rev-parse HEAD HEAD^{tree}
+      - name: Verify source-identity and owner-scope regressions
+        run: |
+          python3 -m unittest discover -v -s scripts -p 'test_hepta_ci_source_identity.py'
+          python3 -m unittest discover -v -s scripts -p 'test_hepta_lane_d_scope.py'
+          python3 -m unittest discover -v -s scripts -p 'test_hepta_ci_v8.py'
       - name: Retain original document and source-owner gates
         shell: bash
         run: |
           set -euo pipefail
           python3 scripts/hepta_module_doc_metadata.py
-          python3 scripts/hepta-module-docs.py verify
-          python3 scripts/hepta-readiness.py verify
+          # The global verifier invokes module/readiness checks itself.
           python3 scripts/hepta-docs.py verify
           python3 scripts/hepta-gap-closure.py verify
           python3 -m unittest discover -v -s tools/hepta-engineering-control -p 'test_*.py'
           node --test apps/hepta-browser/test/*.js apps/hepta-native/test/*.js
+      - name: Prepare native owner-test prerequisites
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential bubblewrap libcap-dev pkg-config
+          sudo sysctl -w kernel.unprivileged_userns_clone=1
+          if sysctl kernel.apparmor_restrict_unprivileged_userns >/dev/null 2>&1; then
+            sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
+          fi
+      - name: Install DotSlash for shell integration tests
+        uses: facebook/install-dotslash@1e4e7b3e07eaca387acb98f1d4720e0bee8dbb6a
+      - name: Expose DotSlash at the path used by integration tests
+        run: sudo install -m 0755 "$(command -v dotslash)" /usr/local/bin/dotslash
       - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
         with:
           tool: just@1.51.0,nextest@0.9.103
+      - name: Resolve verified sandboxed V8 artifacts for Cargo
+        env:
+          CODEX_REPO_ROOT: ${{ github.workspace }}
+          PYTHONPATH: scripts
+        run: python3 scripts/hepta_ci_v8.py
       - name: Compile and test actual imported packages
         working-directory: codex-rs
+        env:
+          CARGO_TARGET_DIR: ${{ runner.temp }}/hepta-native-target
         shell: bash
         run: |
           set -euo pipefail
           args=()
           for package in $PACKAGES; do args+=(-p "$package"); done
-          cargo check --locked "${args[@]}" --all-targets
           just test --locked "${args[@]}"
           cargo clippy --locked "${args[@]}" --all-targets -- -D warnings
       - name: Formatting without source mutation

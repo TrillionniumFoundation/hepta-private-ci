@@ -37,7 +37,9 @@ use std::os::unix::ffi::OsStrExt;
 #[cfg(unix)]
 use std::os::unix::fs::MetadataExt;
 
+#[cfg(unix)]
 const DISPATCH_LOCK_DIRECTORY_MODE: u32 = 0o700;
+#[cfg(unix)]
 const DISPATCH_LOCK_FILE_MODE: u32 = 0o600;
 
 fn validate_thread_deletion_operation_rows(

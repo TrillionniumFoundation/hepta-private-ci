@@ -37,7 +37,9 @@ const MAX_UTILITY_DIMENSIONS: usize = 8;
 const MAX_RISK_RESOURCE_DIMENSIONS: usize = 32;
 const MAX_REQUIRED_ORGANS: usize = 32;
 const SCALARIZATION_DIGEST_DOMAIN: &[u8] = b"hepta.ndu.scalarization-profile.v1";
-const EVALUATION_POLICY_DIGEST_DOMAIN: &[u8] = b"hepta.ndu.evaluation-policy.v1";
+// V2 identifies non-deteriorating tolerant dominance. Historical V1 policies
+// allowed a tolerated loss on other axes, which could create dominance cycles.
+const EVALUATION_POLICY_DIGEST_DOMAIN: &[u8] = b"hepta.ndu.evaluation-policy.v2";
 const EVALUATION_V2_DIGEST_DOMAIN: &[u8] = b"hepta.ndu.evaluation.v2";
 const CONTRIBUTION_DIGEST_DOMAIN: &[u8] = b"hepta.ndu.contribution.v1";
 
@@ -238,6 +240,13 @@ pub fn legacy_evaluation_policy(profile: &UtilityProfile) -> Result<EvaluationPo
             })
             .collect(),
     })
+}
+
+/// Binds all utility directions, feasibility ceilings and required organs.
+pub fn canonical_utility_profile_digest(profile: &UtilityProfile) -> Result<Digest32, NduError> {
+    let mut normalized = profile.clone();
+    validate_profile(&mut normalized)?;
+    Ok(digest_profile(&normalized))
 }
 
 pub fn canonical_evaluation_policy_digest(

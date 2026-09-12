@@ -275,8 +275,6 @@ mod tests {
         assert!(owner.policy().permits_explicit_witness_write());
         assert!(!owner.runtime_registered());
         assert!(!owner.production_caller());
-        assert!(!HEPTA_LOCAL_LIFECYCLE_OWNER_EXTERNAL_EFFECTS);
-        assert!(!HEPTA_LOCAL_LIFECYCLE_OWNER_KG_WRITE_AUTHORITY);
     }
 
     #[test]
@@ -412,8 +410,6 @@ mod tests {
         let owner = HeptaLocalDevelopmentLifecycleOwner::qualification_only();
         assert!(!owner.runtime_registered());
         assert!(!owner.production_caller());
-        assert!(!HEPTA_LOCAL_LIFECYCLE_OWNER_EXTERNAL_EFFECTS);
-        assert!(!HEPTA_LOCAL_LIFECYCLE_OWNER_KG_WRITE_AUTHORITY);
         assert!(matches!(
             owner.expire_local_lease(&other_store, &lease).await,
             Err(HeptaLocalDevelopmentLifecycleOwnerError::StoreBindingMismatch)

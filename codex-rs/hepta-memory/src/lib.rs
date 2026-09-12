@@ -6,6 +6,7 @@ mod cognitive_intelligence_writer;
 mod cognitive_kg_store;
 mod cognitive_memory_store;
 mod cognitive_model;
+mod cognitive_path;
 mod cognitive_retrieval;
 mod cognitive_runtime;
 mod cognitive_store;
@@ -16,6 +17,7 @@ mod h7_runtime;
 mod h7_signed_artifact;
 mod h7_trajectory_store;
 mod intuition_shadow;
+mod lane_c_snapshot;
 mod local_atomic_witness;
 mod local_compact_executor;
 mod local_compact_hooks;
@@ -31,6 +33,9 @@ mod production_writer;
 mod recall;
 mod shadow_advisory;
 mod shadow_model_runtime;
+
+pub use lane_c_snapshot::CognitiveOwnerFrontiers;
+pub use lane_c_snapshot::DurableCognitiveSnapshot;
 
 pub use cognitive_compact::COGNITIVE_COMPACT_HOOK_NAMESPACE;
 pub use cognitive_compact::COGNITIVE_COMPACT_HOOK_SCHEMA_VERSION;
@@ -113,6 +118,7 @@ pub use cognitive_store::CognitiveRecoveryError;
 pub use cognitive_store::CognitiveRecoveryRequirement;
 pub use cognitive_store::CognitiveStore;
 pub use cognitive_store::CognitiveStoreError;
+pub use cognitive_store::RecoveredCognitiveReadOnly;
 pub use compact_persistence::COMPACT_PERSISTENCE_EXTERNAL_EFFECTS;
 pub use compact_persistence::COMPACT_PERSISTENCE_KG_WRITE_AUTHORITY;
 pub use compact_persistence::COMPACT_PERSISTENCE_NAMESPACE;
@@ -453,3 +459,7 @@ mod model_receipt_tests;
 
 #[cfg(test)]
 mod cognitive_test_support;
+
+#[cfg(test)]
+#[path = "lane_c_snapshot_tests.rs"]
+mod lane_c_snapshot_tests;

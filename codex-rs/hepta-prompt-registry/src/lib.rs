@@ -145,7 +145,7 @@ impl PromptRegistry {
         self.ensure_capacity(/*additional*/ 1)?;
         let next_revision = self.next_revision()?;
         self.factors.insert(factor.factor_id.clone(), factor);
-        self.commit_revision(next_revision, false);
+        self.commit_revision(next_revision, /*revocation*/ false);
         Ok(self.receipt(MutationDisposition::Inserted))
     }
 
@@ -175,7 +175,7 @@ impl PromptRegistry {
             return Err(Error::FactorNotFound(factor_id.to_string()));
         };
         factor.lifecycle = Lifecycle::Admitted;
-        self.commit_revision(next_revision, false);
+        self.commit_revision(next_revision, /*revocation*/ false);
         Ok(self.receipt(MutationDisposition::Transitioned))
     }
 
@@ -213,7 +213,7 @@ impl PromptRegistry {
         let next_revision = self.next_revision()?;
         self.realizations
             .insert(realization.realization_id.clone(), realization);
-        self.commit_revision(next_revision, false);
+        self.commit_revision(next_revision, /*revocation*/ false);
         Ok(self.receipt(MutationDisposition::Inserted))
     }
 
@@ -230,7 +230,7 @@ impl PromptRegistry {
         };
         factor.lifecycle = Lifecycle::Retired;
         self.disable_realizations(factor_id);
-        self.commit_revision(next_revision, false);
+        self.commit_revision(next_revision, /*revocation*/ false);
         Ok(self.receipt(MutationDisposition::Transitioned))
     }
 
@@ -247,7 +247,7 @@ impl PromptRegistry {
         };
         factor.lifecycle = Lifecycle::Revoked;
         self.disable_realizations(factor_id);
-        self.commit_revision(next_revision, true);
+        self.commit_revision(next_revision, /*revocation*/ true);
         Ok(self.receipt(MutationDisposition::Transitioned))
     }
 

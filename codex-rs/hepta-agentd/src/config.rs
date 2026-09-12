@@ -36,6 +36,7 @@ pub struct AgentdConfig {
     identity: AgentdIdentity,
     registry: FleetRegistry,
     _writer_lock: File,
+    authbus_trust_file: Option<PathBuf>,
 }
 
 impl AgentdConfig {
@@ -139,7 +140,19 @@ impl AgentdConfig {
             },
             registry,
             _writer_lock: writer_lock,
+            authbus_trust_file: None,
         })
+    }
+
+    /// Explicit owner-managed public-key/route registry. No file is generated
+    /// or trusted implicitly; the runtime validates and reloads it before use.
+    pub fn with_authbus_trust_file(mut self, path: PathBuf) -> Self {
+        self.authbus_trust_file = Some(path);
+        self
+    }
+
+    pub(crate) fn authbus_trust_file(&self) -> Option<&Path> {
+        self.authbus_trust_file.as_deref()
     }
 
     pub fn identity(&self) -> &AgentdIdentity {

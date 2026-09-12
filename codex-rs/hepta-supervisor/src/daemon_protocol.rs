@@ -217,6 +217,7 @@ impl ControlStateDigest {
         Ok(Self(value))
     }
 
+    #[cfg(any(unix, test))]
     pub(crate) fn from_bytes(bytes: [u8; 32]) -> Self {
         Self(hex_lower(&bytes))
     }
@@ -225,6 +226,7 @@ impl ControlStateDigest {
         &self.0
     }
 
+    #[cfg(any(unix, test))]
     pub(crate) fn decode(&self) -> [u8; 32] {
         let mut bytes = [0_u8; 32];
         for (index, pair) in self.0.as_bytes().chunks_exact(2).enumerate() {
@@ -367,6 +369,7 @@ pub struct SupervisordMutationAccepted {
     pub production_receipt: Option<ProductionMutationReceipt>,
 }
 
+#[cfg(any(unix, test))]
 fn hex_lower(bytes: &[u8]) -> String {
     const HEX: &[u8; 16] = b"0123456789abcdef";
     let mut output = String::with_capacity(bytes.len() * 2);
@@ -377,6 +380,7 @@ fn hex_lower(bytes: &[u8]) -> String {
     output
 }
 
+#[cfg(any(unix, test))]
 fn hex_value(byte: u8) -> u8 {
     match byte {
         b'0'..=b'9' => byte - b'0',

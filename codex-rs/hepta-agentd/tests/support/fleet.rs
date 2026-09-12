@@ -137,6 +137,25 @@ impl FleetHarness {
     }
 
     #[allow(dead_code)]
+    pub(crate) fn start_with_authbus_trust_file(
+        &mut self,
+        agent: &AgentFixture,
+        trust_file: &Path,
+    ) -> Result<()> {
+        let command = AgentCommand::new(
+            agentd_binary()?,
+            vec![
+                "--authbus-trust-file".into(),
+                trust_file.as_os_str().to_owned(),
+            ],
+        )?;
+        self.supervisor
+            .start(&agent.agent_id, command, Instant::now())?;
+        self.started = true;
+        Ok(())
+    }
+
+    #[allow(dead_code)]
     pub(crate) fn start_release(
         &mut self,
         agent: &AgentFixture,

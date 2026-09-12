@@ -435,12 +435,17 @@ async fn start_queued_if_pending(
                         || error
                             .to_string()
                             .contains("already has an active or pending turn")
+                        || error.to_string().contains(
+                            "turn start is fenced while the session is terminalizing",
+                        )
                         || error
                             .to_string()
                             .contains("malformed rollout turn boundary") =>
                 {
                     // The durable row is still present, but the queue/core
                     // idle transition is not yet visible to this request.
+                    // A persisted terminal turn can precede cleanup of the
+                    // pre-admission fence. Keep the same submission identity.
                     sleep(Duration::from_millis(25)).await;
                 }
                 Err(error) => return Err(error),

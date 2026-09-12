@@ -1,12 +1,19 @@
 //! Replay fencing for envelopes that were authenticated by a trusted upstream
 //! boundary.
 //!
-//! This crate does not verify a signature, authenticate a principal, evaluate
-//! authorization policy, reserve quota or dispatch an effect. It cannot mint a
+//! The signed admission API verifies issuer-bound Ed25519 messages. The legacy
+//! replay model accepts preverified input. Neither evaluates effect
+//! authorization policy, reserves quota or dispatches an effect. Neither mints a
 //! grant, widen scope, select, promote, merge or release. Successful receipts
 //! always carry `AuthorityPosture::DENY_ALL`.
 
 #![forbid(unsafe_code)]
+
+mod signed;
+pub use signed::AuthenticatedMessage;
+pub use signed::IssuerRegistration;
+pub use signed::SignedMessage;
+pub use signed::SignedMessageClaims;
 
 use std::collections::BTreeMap;
 use std::error::Error as StdError;
@@ -68,6 +75,8 @@ pub enum Error {
     PayloadMismatch,
     Replay,
     CapacityExceeded,
+    InvalidSignature,
+    IssuerMismatch,
 }
 
 impl fmt::Display for Error {

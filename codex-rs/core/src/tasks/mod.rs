@@ -973,7 +973,7 @@ impl Session {
             })
             .iter()
             .filter(|(identity, _, _, _, _, _)| {
-                excluded_identity.map_or(true, |excluded| !Arc::ptr_eq(identity, excluded))
+                excluded_identity.is_none_or(|excluded| !Arc::ptr_eq(identity, excluded))
             })
             .map(|(_, completion, _, _, _, _)| Arc::clone(completion))
             .collect()
@@ -1064,7 +1064,7 @@ impl Session {
             })
             .iter()
             .any(|(identity, _, _cleanup)| {
-                ignored_identity.map_or(true, |ignored| !Arc::ptr_eq(identity, ignored))
+                ignored_identity.is_none_or(|ignored| !Arc::ptr_eq(identity, ignored))
             })
     }
 
@@ -1088,7 +1088,7 @@ impl Session {
             })
             .iter()
             .any(|(identity, _, _, _, _, _)| {
-                ignored_identity.map_or(true, |ignored| !Arc::ptr_eq(identity, ignored))
+                ignored_identity.is_none_or(|ignored| !Arc::ptr_eq(identity, ignored))
             })
     }
 
@@ -1519,12 +1519,8 @@ impl Session {
         turn_context: &Arc<TurnContext>,
         attach_epoch: u64,
     ) -> Option<Arc<StartTransitionCompletion>> {
-        let Some(active_turn) = active.as_mut() else {
-            return None;
-        };
-        let Some(marker) = active_turn.task_terminalization.as_ref() else {
-            return None;
-        };
+        let active_turn = active.as_mut()?;
+        let marker = active_turn.task_terminalization.as_ref()?;
         if active_turn.task.is_some()
             || active_turn.start_reservation.is_some()
             || active_turn.start_transition.is_some()
@@ -1734,9 +1730,7 @@ impl Session {
         authority: Option<&Arc<TurnRecoveryAuthority>>,
         mut recovery_seed: Option<RecoverySeed>,
     ) -> Option<RecoverySeed> {
-        let Some(authority) = authority else {
-            return None;
-        };
+        let authority = authority?;
         let seed_interval_is_valid = recovery_seed.as_ref().is_some_and(|seed| {
             seed.persistence_failure_generation == self.rollout_persistence_failure_generation()
         });
@@ -2120,7 +2114,7 @@ impl Session {
         }
     }
 
-    #[expect(dead_code, reason = "retained compatibility task-start wrapper")]
+    #[cfg(test)]
     pub(crate) async fn start_task<T: SessionTask>(
         self: &Arc<Self>,
         turn_context: Arc<TurnContext>,
@@ -2134,27 +2128,6 @@ impl Session {
             task,
             mailbox_parent_provenance,
             /*recovery_history*/ None,
-            /*start_reservation*/ None,
-            /*terminalization_owner*/ None,
-        )
-        .await;
-    }
-
-    #[expect(dead_code, reason = "retained recovery task-start wrapper")]
-    pub(crate) async fn start_task_with_recovery<T: SessionTask>(
-        self: &Arc<Self>,
-        turn_context: Arc<TurnContext>,
-        input: Vec<TurnInput>,
-        task: T,
-        mailbox_parent_provenance: MailboxParentProvenance,
-        recovery_history: Option<RecoveryHistoryTransition>,
-    ) {
-        self.start_task_with_options(
-            turn_context,
-            input,
-            task,
-            mailbox_parent_provenance,
-            recovery_history,
             /*start_reservation*/ None,
             /*terminalization_owner*/ None,
         )
@@ -2418,51 +2391,26 @@ impl Session {
         }
         let turn_state = {
             let active = self.active_turn.lock().await;
-            let Some(turn) = active.as_ref() else {
-                drop(active);
-                self.restore_recovery_history_if_current(
-                    /*turn_state*/ None,
-                    &start_transition_identity,
-                    &mut recovery_history_restore,
-                )
-                .await;
-                start_transition_owner.disarm();
-                return StartTaskOutcome::Stale;
-            };
-            if turn.task.is_some() || turn.task_terminalization.is_some() {
-                drop(active);
-                self.restore_recovery_history_if_current(
-                    /*turn_state*/ None,
-                    &start_transition_identity,
-                    &mut recovery_history_restore,
-                )
-                .await;
-                start_transition_owner.disarm();
-                return StartTaskOutcome::Stale;
-            }
-            let Some(transition) = turn.start_transition.as_ref() else {
-                drop(active);
-                self.restore_recovery_history_if_current(
-                    /*turn_state*/ None,
-                    &start_transition_identity,
-                    &mut recovery_history_restore,
-                )
-                .await;
-                start_transition_owner.disarm();
-                return StartTaskOutcome::Stale;
-            };
-            if !Arc::ptr_eq(&transition.identity, &start_transition_identity) {
-                drop(active);
-                self.restore_recovery_history_if_current(
-                    /*turn_state*/ None,
-                    &start_transition_identity,
-                    &mut recovery_history_restore,
-                )
-                .await;
-                start_transition_owner.disarm();
-                return StartTaskOutcome::Stale;
-            }
-            Arc::clone(&turn.turn_state)
+            active
+                .as_ref()
+                .filter(|turn| {
+                    turn.task.is_none()
+                        && turn.task_terminalization.is_none()
+                        && turn.start_transition.as_ref().is_some_and(|transition| {
+                            Arc::ptr_eq(&transition.identity, &start_transition_identity)
+                        })
+                })
+                .map(|turn| Arc::clone(&turn.turn_state))
+        };
+        let Some(turn_state) = turn_state else {
+            self.restore_recovery_history_if_current(
+                /*turn_state*/ None,
+                &start_transition_identity,
+                &mut recovery_history_restore,
+            )
+            .await;
+            start_transition_owner.disarm();
+            return StartTaskOutcome::Stale;
         };
         turn_state.lock().await.token_usage_at_turn_start = token_usage_at_turn_start.clone();
         self.input_queue
@@ -2475,212 +2423,187 @@ impl Session {
         )
         .await;
 
-        let mut active = self.active_turn.lock().await;
-        let Some(turn) = active.as_mut() else {
-            drop(active);
-            self.restore_recovery_history_if_current(
-                /*turn_state*/ None,
-                &start_transition_identity,
-                &mut recovery_history_restore,
-            )
-            .await;
-            start_transition_owner.disarm();
-            return StartTaskOutcome::Stale;
-        };
-        if turn.task.is_some() || turn.task_terminalization.is_some() {
-            drop(active);
-            self.restore_recovery_history_if_current(
-                /*turn_state*/ None,
-                &start_transition_identity,
-                &mut recovery_history_restore,
-            )
-            .await;
-            start_transition_owner.disarm();
-            return StartTaskOutcome::Stale;
-        }
-        {
-            let Some(transition) = turn.start_transition.as_ref() else {
-                drop(active);
-                self.restore_recovery_history_if_current(
-                    /*turn_state*/ None,
-                    &start_transition_identity,
-                    &mut recovery_history_restore,
-                )
-                .await;
-                start_transition_owner.disarm();
-                return StartTaskOutcome::Stale;
-            };
-            if !Arc::ptr_eq(&transition.identity, &start_transition_identity) {
-                drop(active);
-                self.restore_recovery_history_if_current(
-                    /*turn_state*/ None,
-                    &start_transition_identity,
-                    &mut recovery_history_restore,
-                )
-                .await;
-                start_transition_owner.disarm();
-                return StartTaskOutcome::Stale;
-            }
-        }
-
-        // Linearize the final attach against the shutdown seal.  The earlier
-        // identity checks only prove that this is still our transition; a
-        // concurrent `begin_shutdown` could otherwise set the atomic between
-        // that check and publication of `turn.task`.  Both sides use the
-        // short admission gate while the active-turn lock is held, so the
-        // resulting order is unambiguous: either shutdown wins and this
-        // transition is aborted, or this attach wins and shutdown observes a
-        // fully published running task.
-        let admission_gate = self
-            .start_admission_gate
-            .lock()
-            .unwrap_or_else(|error| panic!("start admission gate mutex poisoned: {error:?}"));
-        if self.shutdown_started()
-            && let Some(transition) = turn.start_transition.as_mut()
-            && transition.abort_reason.is_none()
-            && transition.request_abort(TurnAbortReason::Interrupted)
-        {
-            self.mark_interrupted();
-        }
-        let abort_reason = turn
-            .start_transition
-            .as_ref()
-            .and_then(|transition| transition.abort_reason.clone());
-        if let Some(reason) = abort_reason {
-            // Keep the marker installed while terminalization awaits.  The
-            // abort side records the reason but never emits lifecycle or
-            // terminal events concurrently with an in-flight on_turn_start;
-            // retaining the marker also prevents a concurrent reservation
-            // clearer or replacement start from stealing this turn state.
-            drop(active);
-            drop(admission_gate);
-            if let Some(cleanup) = start_transition_owner.spawn_cleanup(reason) {
-                if let Err(error) = cleanup.await {
-                    // A panic or runtime teardown in the detached path must
-                    // remain observable.  The cleanup CAS is intentionally
-                    // fail-closed, so an errored join cannot make this turn
-                    // look idle or permit a replacement start.
-                    warn!(
-                        turn_id = %turn_context.sub_id,
-                        ?error,
-                        "start transition terminalizer did not complete"
-                    );
-                }
-            }
-            return StartTaskOutcome::Aborted;
-        }
-        let agent_execution_guard = self.services.agent_control.execution_guard(
-            turn_context.multi_agent_version,
-            &turn_context.session_source,
-        );
-        let done_clone = Arc::clone(&done);
-        let session = Arc::clone(self);
-        let ctx = Arc::clone(&turn_context);
-        let task_for_run = Arc::clone(&task);
-        let task_input = input;
-        let task_cancellation_token = cancellation_token.child_token();
-        // Task-owned turn spans keep a core-owned span open for the
-        // full task lifecycle after the submission dispatch span ends.
-        let reasoning_effort = turn_context.effective_reasoning_effort_for_tracing();
-        let task_span = info_span!(
-            "turn",
-            otel.name = span_name,
-            thread.id = %self.thread_id,
-            turn.id = %turn_context.sub_id,
-            model = %turn_context.model_info.slug,
-            codex.turn.reasoning_effort = %reasoning_effort,
-            codex.turn.token_usage.input_tokens = field::Empty,
-            codex.turn.token_usage.cached_input_tokens = field::Empty,
-            codex.turn.token_usage.cache_write_input_tokens = field::Empty,
-            codex.turn.token_usage.non_cached_input_tokens = field::Empty,
-            codex.turn.token_usage.output_tokens = field::Empty,
-            codex.turn.token_usage.reasoning_output_tokens = field::Empty,
-            codex.turn.token_usage.total_tokens = field::Empty,
-        );
-        let handle = tokio::spawn(
-            async move {
-                let ctx_for_finish = Arc::clone(&ctx);
-                // Enforce the host-owned gate for every task kind at the
-                // common spawn boundary.  RegularTask repeats the check
-                // before TurnStarted; this common check also protects review,
-                // compact, and shell tasks if a gate is ever attached there.
-                let task_result = AssertUnwindSafe(
-                    async {
-                        if let Some(gate) = ctx
-                            .extension_data
-                            .get::<codex_extension_api::TurnStartGate>()
-                            && !gate.is_allowed()
-                        {
-                            return Err(CodexErr::TurnAborted);
-                        }
-                        task_for_run
-                            .run(
-                                Arc::clone(&session),
-                                ctx,
-                                task_input,
-                                task_cancellation_token.child_token(),
-                            )
-                            .await
-                    }
-                    .instrument(trace_span!("session_task.run")),
-                )
-                .catch_unwind()
-                .await;
-                let task_result = match task_result {
-                    Ok(result) => result,
-                    Err(_) => {
-                        // A panic in a SessionTask must still pass through the
-                        // ordinary terminalization path. The RunningTask is
-                        // already attached to `active_turn`; letting the
-                        // JoinHandle unwind would otherwise strand that task,
-                        // its recovery authority, and every later admission.
-                        warn!(
-                            turn_id = %ctx_for_finish.sub_id,
-                            "session task panicked; converting panic to a terminal error"
-                        );
-                        Err(CodexErr::Fatal("session task panicked".to_string()))
-                    }
+        // Keep validation and publication in one critical section. Only the
+        // cleanup outcome leaves it; no recovery or terminalizer await may
+        // retain either the active-turn lock or the admission gate.
+        let abort_reason =
+            'attach: {
+                let mut active = self.active_turn.lock().await;
+                let Some(turn) = active.as_mut().filter(|turn| {
+                    turn.task.is_none()
+                        && turn.task_terminalization.is_none()
+                        && turn.start_transition.as_ref().is_some_and(|transition| {
+                            Arc::ptr_eq(&transition.identity, &start_transition_identity)
+                        })
+                }) else {
+                    break 'attach None;
                 };
-                let sess = Arc::clone(&session);
-                if !task_cancellation_token.is_cancelled() {
-                    // Finish uniformly from the spawn site so all tasks share the same lifecycle.
-                    sess.on_task_finished(Arc::clone(&ctx_for_finish), task_result)
-                        .await;
+
+                // Linearize the final attach against the shutdown seal.  The earlier
+                // identity checks only prove that this is still our transition; a
+                // concurrent `begin_shutdown` could otherwise set the atomic between
+                // that check and publication of `turn.task`.  Both sides use the
+                // short admission gate while the active-turn lock is held, so the
+                // resulting order is unambiguous: either shutdown wins and this
+                // transition is aborted, or this attach wins and shutdown observes a
+                // fully published running task.
+                let admission_gate = self.start_admission_gate.lock().unwrap_or_else(|error| {
+                    panic!("start admission gate mutex poisoned: {error:?}")
+                });
+                if self.shutdown_started()
+                    && let Some(transition) = turn.start_transition.as_mut()
+                    && transition.abort_reason.is_none()
+                    && transition.request_abort(TurnAbortReason::Interrupted)
+                {
+                    self.mark_interrupted();
                 }
-                done_clone.notify_waiters();
+                let abort_reason = turn
+                    .start_transition
+                    .as_ref()
+                    .and_then(|transition| transition.abort_reason.clone());
+                if let Some(reason) = abort_reason {
+                    // Keep the marker installed while terminalization awaits.  The
+                    // abort side records the reason but never emits lifecycle or
+                    // terminal events concurrently with an in-flight on_turn_start;
+                    // retaining the marker also prevents a concurrent reservation
+                    // clearer or replacement start from stealing this turn state.
+                    break 'attach Some(reason);
+                }
+                let agent_execution_guard = self.services.agent_control.execution_guard(
+                    turn_context.multi_agent_version,
+                    &turn_context.session_source,
+                );
+                let done_clone = Arc::clone(&done);
+                let session = Arc::clone(self);
+                let ctx = Arc::clone(&turn_context);
+                let task_for_run = Arc::clone(&task);
+                let task_input = input;
+                let task_cancellation_token = cancellation_token.child_token();
+                // Task-owned turn spans keep a core-owned span open for the
+                // full task lifecycle after the submission dispatch span ends.
+                let reasoning_effort = turn_context.effective_reasoning_effort_for_tracing();
+                let task_span = info_span!(
+                    "turn",
+                    otel.name = span_name,
+                    thread.id = %self.thread_id,
+                    turn.id = %turn_context.sub_id,
+                    model = %turn_context.model_info.slug,
+                    codex.turn.reasoning_effort = %reasoning_effort,
+                    codex.turn.token_usage.input_tokens = field::Empty,
+                    codex.turn.token_usage.cached_input_tokens = field::Empty,
+                    codex.turn.token_usage.cache_write_input_tokens = field::Empty,
+                    codex.turn.token_usage.non_cached_input_tokens = field::Empty,
+                    codex.turn.token_usage.output_tokens = field::Empty,
+                    codex.turn.token_usage.reasoning_output_tokens = field::Empty,
+                    codex.turn.token_usage.total_tokens = field::Empty,
+                );
+                let handle = tokio::spawn(
+                    async move {
+                        let ctx_for_finish = Arc::clone(&ctx);
+                        // Enforce the host-owned gate for every task kind at the
+                        // common spawn boundary.  RegularTask repeats the check
+                        // before TurnStarted; this common check also protects review,
+                        // compact, and shell tasks if a gate is ever attached there.
+                        let task_result = AssertUnwindSafe(
+                            async {
+                                if let Some(gate) = ctx
+                                    .extension_data
+                                    .get::<codex_extension_api::TurnStartGate>()
+                                    && !gate.is_allowed()
+                                {
+                                    return Err(CodexErr::TurnAborted);
+                                }
+                                task_for_run
+                                    .run(
+                                        Arc::clone(&session),
+                                        ctx,
+                                        task_input,
+                                        task_cancellation_token.child_token(),
+                                    )
+                                    .await
+                            }
+                            .instrument(trace_span!("session_task.run")),
+                        )
+                        .catch_unwind()
+                        .await;
+                        let task_result = match task_result {
+                            Ok(result) => result,
+                            Err(_) => {
+                                // A panic in a SessionTask must still pass through the
+                                // ordinary terminalization path. The RunningTask is
+                                // already attached to `active_turn`; letting the
+                                // JoinHandle unwind would otherwise strand that task,
+                                // its recovery authority, and every later admission.
+                                warn!(
+                                    turn_id = %ctx_for_finish.sub_id,
+                                    "session task panicked; converting panic to a terminal error"
+                                );
+                                Err(CodexErr::Fatal("session task panicked".to_string()))
+                            }
+                        };
+                        let sess = Arc::clone(&session);
+                        if !task_cancellation_token.is_cancelled() {
+                            // Finish uniformly from the spawn site so all tasks share the same lifecycle.
+                            sess.on_task_finished(Arc::clone(&ctx_for_finish), task_result)
+                                .await;
+                        }
+                        done_clone.notify_waiters();
+                    }
+                    .instrument(task_span),
+                );
+                let timer = turn_context
+                    .session_telemetry
+                    .start_timer(TURN_E2E_DURATION_METRIC, &[])
+                    .ok();
+                // Attaching any task invalidates an older recovery token and mints the
+                // epoch while the active-turn critical section is still held.
+                *self.recovery_candidate.lock().unwrap_or_else(|error| {
+                    panic!("recovery candidate mutex poisoned: {error:?}")
+                }) = None;
+                let attach_epoch = self.turn_epoch.fetch_add(1, Ordering::AcqRel) + 1;
+                let running_task = RunningTask {
+                    done,
+                    handle: AbortOnDropHandle::new(handle),
+                    kind: task_kind,
+                    recovery_eligible_model_turn,
+                    recovery_authority,
+                    attach_epoch,
+                    task,
+                    cancellation_token,
+                    turn_context: Arc::clone(&turn_context),
+                    _agent_execution_guard: agent_execution_guard,
+                    _diagnostics_guard: ACTIVE_TURNS.track(),
+                    _timer: timer,
+                };
+                turn.task = Some(running_task);
+                turn.start_transition = None;
+                drop(admission_gate);
+                start_transition_owner.disarm();
+                return StartTaskOutcome::Attached;
+            };
+
+        if let Some(reason) = abort_reason {
+            if let Some(cleanup) = start_transition_owner.spawn_cleanup(reason)
+                && let Err(error) = cleanup.await
+            {
+                // A failed terminalizer keeps its completion fence pending.
+                warn!(
+                    turn_id = %turn_context.sub_id,
+                    ?error,
+                    "start transition terminalizer did not complete"
+                );
             }
-            .instrument(task_span),
-        );
-        let timer = turn_context
-            .session_telemetry
-            .start_timer(TURN_E2E_DURATION_METRIC, &[])
-            .ok();
-        // Attaching any task invalidates an older recovery token and mints the
-        // epoch while the active-turn critical section is still held.
-        *self
-            .recovery_candidate
-            .lock()
-            .unwrap_or_else(|error| panic!("recovery candidate mutex poisoned: {error:?}")) = None;
-        let attach_epoch = self.turn_epoch.fetch_add(1, Ordering::AcqRel) + 1;
-        let running_task = RunningTask {
-            done,
-            handle: AbortOnDropHandle::new(handle),
-            kind: task_kind,
-            recovery_eligible_model_turn,
-            recovery_authority,
-            attach_epoch,
-            task,
-            cancellation_token,
-            turn_context: Arc::clone(&turn_context),
-            _agent_execution_guard: agent_execution_guard,
-            _diagnostics_guard: ACTIVE_TURNS.track(),
-            _timer: timer,
-        };
-        turn.task = Some(running_task);
-        turn.start_transition = None;
-        drop(admission_gate);
-        start_transition_owner.disarm();
-        StartTaskOutcome::Attached
+            StartTaskOutcome::Aborted
+        } else {
+            self.restore_recovery_history_if_current(
+                /*turn_state*/ None,
+                &start_transition_identity,
+                &mut recovery_history_restore,
+            )
+            .await;
+            start_transition_owner.disarm();
+            StartTaskOutcome::Stale
+        }
     }
 
     /// Returns whether an extension has marked this thread as durably asleep.
@@ -2991,7 +2914,7 @@ impl Session {
         }
     }
 
-    #[expect(dead_code, reason = "retained bounded abort entry point")]
+    #[cfg(test)]
     pub(crate) async fn abort_turn_if_active(
         self: &Arc<Self>,
         turn_id: &str,
@@ -4076,15 +3999,14 @@ impl Session {
                 .start_transition
                 .as_mut()
                 .unwrap_or_else(|| panic!("transition identity was checked above"));
-            if transition.abort_reason.is_none() {
-                if transition.request_abort(fallback_reason.clone())
-                    && matches!(
-                        fallback_reason,
-                        TurnAbortReason::Interrupted | TurnAbortReason::BudgetLimited
-                    )
-                {
-                    self.mark_interrupted();
-                }
+            if transition.abort_reason.is_none()
+                && transition.request_abort(fallback_reason.clone())
+                && matches!(
+                    fallback_reason,
+                    TurnAbortReason::Interrupted | TurnAbortReason::BudgetLimited
+                )
+            {
+                self.mark_interrupted();
             }
             transition
                 .abort_reason
@@ -4219,7 +4141,7 @@ impl Session {
         let deferred_idle_cause = active_turn
             .start_transition
             .as_mut()
-            .and_then(|transition| transition.take_deferred_idle());
+            .and_then(StartTransition::take_deferred_idle);
         // Keep the marker installed until all terminal side effects above
         // have completed; only this final identity check may release it.
         *active = None;
@@ -4435,9 +4357,7 @@ fn qualification_admission_identity(
         }
         user_input = Some((content.as_slice(), client_id.as_deref()?));
     }
-    let Some((content, client_id)) = user_input else {
-        return None;
-    };
+    let (content, client_id) = user_input?;
     let payload_sha256 = user_input_payload_sha256(content).ok()?;
     QualificationTurnAdmissionIdentity::new(
         thread_scope_key.to_string(),

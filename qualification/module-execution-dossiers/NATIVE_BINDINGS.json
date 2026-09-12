@@ -5,7 +5,7 @@
   "planVersion": "8.0.0",
   "sourceSnapshot": "5c54b74720957cb8be099292fe1a2b44801a9eab",
   "moduleCoverage": 40,
-  "coverageScope": "one reviewed primary source blob anchor for each canonical module; not exhaustive operation or consumer coverage",
+  "coverageScope": "registered primary source paths and historical observations; current source identity is generated for the actual Git HEAD and tree",
   "evidenceClass": "source_observation_only",
   "consumerCallsitesProved": false,
   "productExecutionProved": false,
@@ -502,5 +502,8 @@
       ]
     }
   ],
-  "interpretation": "This document pins one reviewed primary source blob and observed identifier set for each canonical module. It does not prove exhaustive designed-operation coverage, consumer callsites, product execution, deployment, external effect, independent acceptance, promotion, or release."
+  "interpretation": "Historical blobSha values record earlier source observations and do not freeze future implementations. Current verification checks registered module ownership, paths and observed source identifiers against committed checkout bytes, and emits actual sourceSha, sourceTree and per-file blobSha alongside historicalBlobSha. Lane A rows override the corresponding general rows. Source identity proves neither complete operation coverage nor production callers, activation, external effects, independent acceptance, promotion or release.",
+  "blobShaRole": "historical_observation_only",
+  "candidateBinding": "runtime_head_tree_and_source_blob_receipt",
+  "sourceSnapshotRole": "historical_observation_only"
 }

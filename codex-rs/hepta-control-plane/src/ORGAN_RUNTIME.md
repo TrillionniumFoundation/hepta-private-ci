@@ -26,3 +26,31 @@ implicitly by `Drop`. `Drop` cleans up only handlers with no prior stop attempt.
 mean qualified, canary-approved, production-active or externally authorized.
 Those decisions remain outside this host and require a new immutable graph
 generation plus the independently governed product admission path.
+
+`replace_read_only_generation` performs an explicit successor-generation
+cutover of these stateless, compiled-in read-only handlers. The caller must name
+the current generation and provide the immediate successor. Graph validation or
+new-handler start failure leaves the old host ready. After successful candidate
+start, old handlers stop in reverse order, and exclusive mutable access publishes
+the new composition. A predecessor cleanup failure stops the candidate and leaves
+the old stopped/quarantined states visible; it never reports a successful cutover
+or invents rollback. This permits add/remove/replace of read-only handlers without
+pretending to migrate an authoritative writer. Durable/effect-bearing organs
+still require the separate state-handoff and product admission protocol.
+
+Protocol compatibility is explicit: native `OrganGraphsV1` is an internal
+execution model, not a wire alias of canonical `BodyGraphSnapshotV1`. The latter
+currently describes manifest identity, initialization dependency/fallback edges
+and order; it does not encode native runtime links, feedback profiles or process
+failure domains. A loader must not deserialize that canonical record as this
+native type or infer omitted feedback evidence. The compiled, stateless,
+read-only subset now has a versioned binding adapter:
+`encode_compiled_body_graph_v2` and `decode_compiled_body_graph_v2`, followed by
+`VerifiedCompiledBodyGraphV2::into_host`. Its complete native graph and explicit
+V1 projection are bound to an independent host-owned digest, generation,
+single-process placement and compiled handler manifest catalog. See
+[ORGAN_WIRE.md](ORGAN_WIRE.md) for the exact encoding and trust boundary. This is
+not a canonical V1 codec, a dynamic code loader, or stateful migration. Native
+feedback cycles still require an explicit profile; initialization and fallback
+remain acyclic. Binding timing evidence does not implement a periodic scheduler
+or prove the evidence's physical claims.

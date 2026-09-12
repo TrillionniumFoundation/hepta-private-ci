@@ -220,6 +220,7 @@ impl<D: ProcessDriver> Supervisor<D> {
         Ok(())
     }
 
+    #[cfg(unix)]
     pub(crate) fn preflight_drain(&self, agent_id: &AgentId) -> Result<(), SupervisorError> {
         let record = self.record(agent_id)?;
         let slot = self
@@ -249,6 +250,7 @@ impl<D: ProcessDriver> Supervisor<D> {
         Ok(())
     }
 
+    #[cfg(unix)]
     pub(crate) fn preflight_start(&self, agent_id: &AgentId) -> Result<(), SupervisorError> {
         let record = self.record(agent_id)?;
         let slot = self
@@ -273,6 +275,7 @@ impl<D: ProcessDriver> Supervisor<D> {
         Ok(())
     }
 
+    #[cfg(unix)]
     pub(crate) fn preflight_stop_or_kill(&self, agent_id: &AgentId) -> Result<(), SupervisorError> {
         let record = self.record(agent_id)?;
         let slot = self
@@ -293,6 +296,7 @@ impl<D: ProcessDriver> Supervisor<D> {
         Ok(())
     }
 
+    #[cfg(unix)]
     pub(crate) fn preflight_restart(&self, agent_id: &AgentId) -> Result<(), SupervisorError> {
         let record = self.record(agent_id)?;
         let slot = self
@@ -373,6 +377,7 @@ impl<D: ProcessDriver> Supervisor<D> {
         Ok(())
     }
 
+    #[cfg(unix)]
     pub(crate) fn preflight_rollback(&self, agent_id: &AgentId) -> Result<(), SupervisorError> {
         let slot = self
             .slots

@@ -4,7 +4,7 @@
   "lane": "LANE-A-FOUNDATION",
   "sourceCodeCommit": "adc7414fce248fe65c4078263953d3a6f39423a2",
   "moduleCoverage": 7,
-  "coverageScope": "current Lane A executable slices; exact source blobs and observed identifiers only",
+  "coverageScope": "registered primary source paths and historical observations; current source identity is generated for the actual Git HEAD and tree",
   "evidenceClass": "source_observation_only",
   "consumerCallsitesProved": false,
   "productExecutionProved": false,
@@ -106,8 +106,9 @@
       ]
     }
   ],
-  "interpretation": "This file supersedes the Lane A rows of NATIVE_BINDINGS.json for current-tree verification. sourceCodeCommit is non-authoritative provenance only; exact candidate identity is supplied by the source receipt, which binds HEAD, tree and this manifest. sourceObservationDigest and every blobSha bind the current source table. The file proves source identity and observed symbols only; it does not prove production callers, activation, external effects, independent acceptance, promotion or release.",
+  "interpretation": "Historical blobSha values record earlier source observations and do not freeze future implementations. Current verification checks registered module ownership, paths and observed source identifiers against committed checkout bytes, and emits actual sourceSha, sourceTree and per-file blobSha alongside historicalBlobSha. Lane A rows override the corresponding general rows. Source identity proves neither complete operation coverage nor production callers, activation, external effects, independent acceptance, promotion or release.",
   "sourceCodeCommitRole": "provenance_only_non_authoritative",
-  "candidateBinding": "exact_head_tree_receipt_plus_current_blob_table",
-  "sourceObservationDigest": "20ffe4334377ab580b65f294930003e1a644fca7239f85423b0fb7bf5f5a9107"
+  "candidateBinding": "runtime_head_tree_and_source_blob_receipt",
+  "sourceObservationDigest": "20ffe4334377ab580b65f294930003e1a644fca7239f85423b0fb7bf5f5a9107",
+  "blobShaRole": "historical_observation_only"
 }

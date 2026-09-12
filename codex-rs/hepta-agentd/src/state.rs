@@ -38,6 +38,7 @@ const COGNITIVE_CONTROL_UNAVAILABLE_MESSAGE: &str =
     "this Agent's private cognitive control storage is unavailable";
 
 pub(crate) struct AgentdState {
+    pub(crate) authbus: std::sync::OnceLock<Arc<crate::authbus_ingress::TextIngress>>,
     identity: AgentdIdentity,
     registry: FleetRegistry,
     runtime: Mutex<RuntimeState>,
@@ -66,6 +67,7 @@ impl AgentdState {
             generation: identity.spawn_generation,
         });
         Ok(Self {
+            authbus: std::sync::OnceLock::new(),
             runtime: Mutex::new(RuntimeState {
                 current_generation: identity.spawn_generation,
                 lifecycle: AgentLifecycle::Starting,
@@ -315,6 +317,51 @@ impl AgentdState {
                         socket_path: self.identity.app_server_socket.clone(),
                         transport: SessionTransport::CodexAppServerWebsocketOverUds,
                     })
+                }
+            }
+            crate::AgentdMethod::AuthBusText { request } => AgentdPayload::AuthBusTextStatus(
+                crate::authbus_ingress::submit(self, request).await?,
+            ),
+            crate::AgentdMethod::AuthBusTextStatus { delivery_id } => {
+                AgentdPayload::AuthBusTextStatus(
+                    crate::authbus_ingress::status(self, delivery_id).await?,
+                )
+            }
+            crate::AgentdMethod::CognitiveContext { query, limit } => {
+                require_cognitive_control_ready(lifecycle, app_server_ready, fenced)?;
+                let Some(store) = cognitive else {
+                    return self.response_with_payload(
+                        request_id,
+                        current_generation,
+                        cognitive_control_unavailable(),
+                    );
+                };
+                let result = crate::cognitive_context::read(
+                    &store,
+                    &self.identity.agent_id,
+                    current_generation,
+                    &query,
+                    limit,
+                )
+                .await;
+                self.refresh_generation()?;
+                {
+                    let runtime = self.runtime.lock().map_err(poisoned_state)?;
+                    require_cognitive_control_ready(
+                        runtime.lifecycle,
+                        runtime.app_server_ready,
+                        runtime.fenced,
+                    )?;
+                }
+                match result {
+                    Ok(snapshot) => AgentdPayload::CognitiveContext(snapshot),
+                    Err(error) => {
+                        return self.cognitive_error_response(
+                            request_id,
+                            current_generation,
+                            error,
+                        );
+                    }
                 }
             }
             crate::AgentdMethod::Events {

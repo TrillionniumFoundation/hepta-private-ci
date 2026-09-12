@@ -2,6 +2,12 @@
 
 This is an implementation companion to the existing V8 plan and V8.2 readiness specifications, not a new global plan, cached live status, selection receipt or claim that all work packages are complete. Owners retain their canonical data and effect boundaries. ECP-1 coordinates this handoff; LRN-1, ART-1/2, LRN-2, INT-2 and the C1 vertical slice retain their existing scopes and predecessors.
 
+The deployment records below qualify running systems. For ordinary authorized
+repository work, use the development process in
+`docs/readiness/PARALLEL_DEVELOPMENT.md`: owned tasks, ordered commits, code review
+and actual CI. Do not demand production identities or independent runtime
+receipts before implementing or merging the code that will consume them.
+
 ## 1. One reviewable source stack
 
 Choose one exact reviewed upstream source for a bounded integration candidate. Record source commit/tree, actual target commit/tree, ordered merge parents and all canonical registry digests in external evidence. Do not infer selection from branch names, recency, equal document bytes or administrative privileges. A new source stack must preserve predecessor fixes; unrelated implementation branches are compared and integrated through separately reviewed changes, not overlaid. The current candidate's parent is in Git history, not a mutable pointer here.

@@ -19,6 +19,17 @@ fn checked<T, E: fmt::Debug>(result: Result<T, E>) -> T {
     }
 }
 
+// Read through the owning handle: Windows enforces the exclusive byte-range
+// lock against independently opened readers too. Preserve the append cursor.
+fn journal_bytes(journal: &mut SparseJournal) -> Vec<u8> {
+    let position = checked(journal.file.stream_position());
+    checked(journal.file.seek(SeekFrom::Start(0)));
+    let mut bytes = Vec::new();
+    checked(journal.file.read_to_end(&mut bytes));
+    checked(journal.file.seek(SeekFrom::Start(position)));
+    bytes
+}
+
 struct Fixture(PathBuf);
 impl Fixture {
     fn new() -> Self {
@@ -134,9 +145,9 @@ fn equal_retry_after_later_commit_does_not_append() {
     let mut journal = fixture.open();
     let first = checked(journal.commit(Digest32::ZERO, &tick(1)));
     let second = checked(journal.commit(first.checkpoint_after, &tick(2)));
-    let before = checked(fs::read(fixture.path()));
+    let before = journal_bytes(&mut journal);
     assert_eq!(checked(journal.commit(Digest32::ZERO, &tick(1))), first);
-    assert_eq!(checked(fs::read(fixture.path())), before);
+    assert_eq!(journal_bytes(&mut journal), before);
     assert_eq!(
         checked(journal.current()).map(SparseCheckpoint::digest),
         Some(second.checkpoint_after)
@@ -153,12 +164,13 @@ fn complete_unacknowledged_frame_is_reconciled_on_reopen() {
     checked(writer.write_all(&encode_frame(&tick(1), &expected)));
     // Simulate a writer that exits before acknowledging or syncing a full frame.
     drop(writer);
-    let mut recovered = fixture.open();
     let before = checked(fs::read(fixture.path()));
+    let mut recovered = fixture.open();
     assert_eq!(
         checked(recovered.commit(Digest32::ZERO, &tick(1))),
         expected
     );
+    drop(recovered);
     assert_eq!(checked(fs::read(fixture.path())), before);
 }
 
@@ -167,7 +179,7 @@ fn changed_retry_and_stale_compare_and_swap_do_not_mutate_file() {
     let fixture = Fixture::new();
     let mut journal = fixture.open();
     checked(journal.commit(Digest32::ZERO, &tick(1)));
-    let before = checked(fs::read(fixture.path()));
+    let before = journal_bytes(&mut journal);
     let mut changed = tick(1);
     changed.drive_q24[0] -= 1;
     assert_eq!(
@@ -178,7 +190,7 @@ fn changed_retry_and_stale_compare_and_swap_do_not_mutate_file() {
         journal.commit(Digest32::ZERO, &tick(2)),
         Err(JournalError::Conflict)
     );
-    assert_eq!(checked(fs::read(fixture.path())), before);
+    assert_eq!(journal_bytes(&mut journal), before);
 }
 
 #[test]

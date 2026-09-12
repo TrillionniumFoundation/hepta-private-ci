@@ -1,6 +1,7 @@
 """Real subprocess discovery against disposable rootfs trees, never the host root."""
 
 import hashlib
+from datetime import datetime, timezone
 import json
 import os
 from pathlib import Path
@@ -33,7 +34,10 @@ class DiscoveryCliTests(unittest.TestCase):
             "etc/systemd/system/api.service",
             b"[Unit]\nAfter=network.target\n[Service]\nExecStart=/bin/false --secret=NO_ECHO\n",
         )
-        self.write("etc/systemd/system/unselected.service", b"[Unit]\nDescription=UNSELECTED_MARKER\n")
+        self.write(
+            "etc/systemd/system/unselected.service",
+            b"[Unit]\nDescription=UNSELECTED_MARKER\n",
+        )
         self.write("etc/shadow", b"ROOTFS_SECRET_MARKER")
         root = self.root.stat()
         self.scope_path = self.base / "scope.json"
@@ -60,6 +64,30 @@ class DiscoveryCliTests(unittest.TestCase):
     def write_scope(self, value: object) -> None:
         self.scope_path.write_text(json.dumps(value), encoding="utf-8")
 
+    def proposal_config(self):
+        return {
+            "systemId": "3" * 32,
+            "proposalId": "4" * 32,
+            "objectiveDigest": "5" * 64,
+            "ownerIdentity": "fixture-owner",
+            "observedAt": datetime.now(timezone.utc).isoformat(),
+            "evidenceUtf8": {
+                name: f"retained-fixture-{name}"
+                for name in (
+                    "filesystemScope",
+                    "identityMap",
+                    "networkSurface",
+                    "secretReferences",
+                    "capabilityBoundary",
+                    "adapterSource",
+                    "contractSet",
+                    "migrationPlan",
+                    "qualificationPlan",
+                    "rollbackPoint",
+                )
+            },
+        }
+
     def run_cli(
         self,
         *extra: str,
@@ -67,10 +95,15 @@ class DiscoveryCliTests(unittest.TestCase):
         scope_path: Path | None = None,
     ) -> subprocess.CompletedProcess[str]:
         command = [
-            sys.executable, "-m", "assimilation.discovery",
-            "--root", str(self.root if root is None else root),
-            "--scope-receipt", str(scope_path or self.scope_path),
-            "--unit", "etc/systemd/system/api.service",
+            sys.executable,
+            "-m",
+            "assimilation.discovery",
+            "--root",
+            str(self.root if root is None else root),
+            "--scope-receipt",
+            str(scope_path or self.scope_path),
+            "--unit",
+            "etc/systemd/system/api.service",
             *extra,
         ]
         environment = os.environ.copy()
@@ -85,40 +118,59 @@ class DiscoveryCliTests(unittest.TestCase):
             check=False,
         )
 
-    def assert_rejected(self, result: subprocess.CompletedProcess[str], code: str, exit_code: int) -> None:
+    def assert_rejected(
+        self, result: subprocess.CompletedProcess[str], code: str, exit_code: int
+    ) -> None:
         self.assertEqual(result.returncode, exit_code, result)
         payload = json.loads(result.stdout)
-        self.assertEqual(payload, {
-            "activation": False,
-            "authorityGranted": False,
-            "error": {"code": code},
-            "partialCandidate": False,
-            "schema": RESULT_SCHEMA,
-            "status": "REJECTED",
-        })
+        self.assertEqual(
+            payload,
+            {
+                "activation": False,
+                "authorityGranted": False,
+                "error": {"code": code},
+                "partialCandidate": False,
+                "schema": RESULT_SCHEMA,
+                "status": "REJECTED",
+            },
+        )
         self.assertEqual(result.stderr, f"hepta-assimilation-discovery: {code}\n")
 
     def test_real_subprocess_emits_bounded_non_authoritative_candidate(self):
         before = {
-            str(path.relative_to(self.root)): (path.read_bytes(), path.stat().st_mtime_ns)
-            for path in self.root.rglob("*") if path.is_file()
+            str(path.relative_to(self.root)): (
+                path.read_bytes(),
+                path.stat().st_mtime_ns,
+            )
+            for path in self.root.rglob("*")
+            if path.is_file()
         }
         result = self.run_cli()
         self.assertEqual(result.returncode, 0, result)
         self.assertEqual(result.stderr, "")
         payload = json.loads(result.stdout)
         candidate_bytes = json.dumps(
-            payload["candidate"], sort_keys=True, separators=(",", ":"),
-            ensure_ascii=True, allow_nan=False,
+            payload["candidate"],
+            sort_keys=True,
+            separators=(",", ":"),
+            ensure_ascii=True,
+            allow_nan=False,
         ).encode("utf-8")
         self.assertEqual(payload["schema"], RESULT_SCHEMA)
         self.assertEqual(payload["status"], "DISCOVERED_CANDIDATE")
         self.assertEqual(payload["candidateBytes"], len(candidate_bytes))
-        self.assertEqual(payload["candidateSha256"], hashlib.sha256(candidate_bytes).hexdigest())
-        self.assertEqual(payload["candidate"]["scope"]["unit_paths"], ["etc/systemd/system/api.service"])
+        self.assertEqual(
+            payload["candidateSha256"], hashlib.sha256(candidate_bytes).hexdigest()
+        )
+        self.assertEqual(
+            payload["candidate"]["scope"]["unit_paths"],
+            ["etc/systemd/system/api.service"],
+        )
         self.assertEqual(payload["coverage"]["class"], "selected_metadata_only")
         self.assertIn("selected_units_only", payload["coverage"]["omissions"])
-        self.assertIn("unresolved_service_dependencies", payload["coverage"]["omissions"])
+        self.assertIn(
+            "unresolved_service_dependencies", payload["coverage"]["omissions"]
+        )
         self.assertFalse(payload["authorityGranted"])
         self.assertFalse(payload["activation"])
         self.assertEqual(set(payload["trustBoundary"].values()), {False})
@@ -126,10 +178,90 @@ class DiscoveryCliTests(unittest.TestCase):
         self.assertNotIn("UNSELECTED_MARKER", result.stdout)
         self.assertNotIn("NO_ECHO", result.stdout)
         after = {
-            str(path.relative_to(self.root)): (path.read_bytes(), path.stat().st_mtime_ns)
-            for path in self.root.rglob("*") if path.is_file()
+            str(path.relative_to(self.root)): (
+                path.read_bytes(),
+                path.stat().st_mtime_ns,
+            )
+            for path in self.root.rglob("*")
+            if path.is_file()
         }
         self.assertEqual(before, after)
+
+    def test_discovery_emits_objective_bound_review_bundle_with_noncyclic_hashes(self):
+        config_path = self.base / "proposal.json"
+        config = self.proposal_config()
+        config_path.write_text(json.dumps(config), encoding="utf-8")
+        result = self.run_cli("--proposal-config", str(config_path))
+        self.assertEqual(result.returncode, 0, result)
+        response = json.loads(result.stdout)
+        bundle = response["reviewBundle"]
+        encode = lambda value: json.dumps(
+            value,
+            sort_keys=True,
+            separators=(",", ":"),
+            ensure_ascii=True,
+            allow_nan=False,
+        ).encode()
+        digest = lambda value: hashlib.sha256(value).hexdigest()
+        self.assertEqual(response["reviewBundleSha256"], digest(encode(bundle)))
+        self.assertEqual(bundle["objectiveDigest"], config["objectiveDigest"])
+        self.assertEqual(bundle["discoveryDigest"], response["candidateSha256"])
+        identity = {
+            key: value
+            for key, value in bundle["manifest"].items()
+            if key != "serviceGraphDigest"
+        }
+        self.assertEqual(
+            bundle["serviceGraph"]["systemManifestDigest"],
+            digest(b"hepta.assimilation.manifest-identity.v1\0" + encode(identity)),
+        )
+        self.assertEqual(
+            bundle["manifest"]["serviceGraphDigest"],
+            digest(encode(bundle["serviceGraph"])),
+        )
+        self.assertEqual(
+            bundle["proposal"]["systemManifestDigest"],
+            digest(encode(bundle["manifest"])),
+        )
+        self.assertEqual(bundle["proposal"]["requestedLifecycleState"], "proposed")
+        self.assertFalse(bundle["admitted"])
+        self.assertFalse(bundle["activation"])
+        self.assertEqual(
+            bundle["externalDependencies"][0]["targetNodeId"], "network.target"
+        )
+        protocols = json.loads(
+            (CONTROL_ROOT.parents[1] / "docs/readiness/PROTOCOLS.json").read_text()
+        )["protocols"]
+        for name, value in (
+            ("ExternalSystemManifestV1", bundle["manifest"]),
+            ("ServiceGraphV1", bundle["serviceGraph"]),
+            ("AssimilationProposalV1", bundle["proposal"]),
+        ):
+            protocol = next(row for row in protocols if row["id"] == name)
+            self.assertEqual(
+                set(value), {field["name"] for field in protocol["fields"]}
+            )
+            self.assertLessEqual(len(encode(value)), protocol["maximumEncodedBytes"])
+        self.assertNotIn("retained-fixture-", result.stdout)
+        config["evidenceUtf8"]["adapterSource"] += "-changed"
+        config_path.write_text(json.dumps(config), encoding="utf-8")
+        changed = json.loads(self.run_cli("--proposal-config", str(config_path)).stdout)
+        self.assertNotEqual(
+            response["reviewBundleSha256"], changed["reviewBundleSha256"]
+        )
+
+    def test_missing_proposal_evidence_does_not_fabricate_manifest_or_emit_partial_result(
+        self,
+    ):
+        config_path = self.base / "incomplete-proposal.json"
+        config = self.proposal_config()
+        del config["evidenceUtf8"]["networkSurface"]
+        config_path.write_text(json.dumps(config), encoding="utf-8")
+        self.assert_rejected(
+            self.run_cli("--proposal-config", str(config_path)),
+            "incomplete_owner_evidence",
+            3,
+        )
 
     def test_scope_and_selection_fail_closed_with_machine_errors(self):
         expired = {**self.scope, "expiresUnixNs": 1}
@@ -141,20 +273,24 @@ class DiscoveryCliTests(unittest.TestCase):
         self.write_scope(self.scope)
         self.assert_rejected(
             self.run_cli("--unit", "etc/systemd/system/unselected.service"),
-            "selected_units_scope_mismatch", 2,
+            "selected_units_scope_mismatch",
+            2,
         )
 
     def test_malformed_unknown_duplicate_and_symlink_scope_inputs_reject(self):
         self.scope_path.write_text("{", encoding="utf-8")
         self.assert_rejected(self.run_cli(), "invalid_scope_json", 2)
-        self.scope_path.write_text('{"rootDevice":' + "9" * 5000 + "}", encoding="utf-8")
+        self.scope_path.write_text(
+            '{"rootDevice":' + "9" * 5000 + "}", encoding="utf-8"
+        )
         self.assert_rejected(self.run_cli(), "invalid_scope_json", 2)
         self.write_scope({**self.scope, "unexpected": True})
         self.assert_rejected(self.run_cli(), "invalid_scope_shape", 2)
         self.write_scope({**self.scope, "hostIdentityDigest": "not-a-digest"})
         self.assert_rejected(self.run_cli(), "invalid_scope_digest", 3)
         self.scope_path.write_text(
-            '{"schema":"first","schema":"second"}', encoding="utf-8",
+            '{"schema":"first","schema":"second"}',
+            encoding="utf-8",
         )
         self.assert_rejected(self.run_cli(), "duplicate_json_member", 2)
         real_scope = self.base / "real-scope.json"
@@ -176,7 +312,9 @@ class DiscoveryCliTests(unittest.TestCase):
             check=False,
         )
         self.assert_rejected(result, "invalid_arguments", 2)
-        self.assert_rejected(self.run_cli(root="relative-root"), "root_path_not_absolute", 2)
+        self.assert_rejected(
+            self.run_cli(root="relative-root"), "root_path_not_absolute", 2
+        )
 
 
 if __name__ == "__main__":

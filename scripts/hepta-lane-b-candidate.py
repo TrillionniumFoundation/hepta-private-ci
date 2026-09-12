@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Compatibility entrypoint delegating to the single Lane B verifier."""
+
 from __future__ import annotations
 
 import subprocess

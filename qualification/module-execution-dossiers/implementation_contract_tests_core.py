@@ -77,15 +77,16 @@ class NativeBindingCoverageTests(unittest.TestCase):
             [row['module'] for row in profiles['modules']],
         )
 
-    def test_native_binding_blobs_and_exports_are_exact(self):
-        _, observations=self.merged_native_observations()
-        for row in observations:
-            path=c.ROOT/row['path']
-            data=path.read_bytes()
-            self.assertEqual(c.blob(data),row['blobSha'],row['path'])
-            text=data.decode('utf-8')
-            for symbol in row['exports']:
-                self.assertRegex(text,r'\b'+re.escape(symbol)+r'\b',row['path']+': '+symbol)
+    def test_native_binding_blobs_and_exports_bind_the_current_checkout(self):
+        _, historical = self.merged_native_observations()
+        actual = c.current_native_bindings(c.ROOT)
+        self.assertEqual(actual['sourceSha'], c.git(c.ROOT, 'rev-parse', 'HEAD').decode().strip())
+        self.assertEqual(actual['sourceTree'], c.git(c.ROOT, 'rev-parse', 'HEAD^{tree}').decode().strip())
+        for observed, registered in zip(actual['observations'], historical, strict=True):
+            data = (c.ROOT / registered['path']).read_bytes()
+            self.assertEqual(observed, dict(registered, blobSha=c.blob(data), historicalBlobSha=registered['blobSha']))
+        self.assertFalse(actual['consumerCallsitesProved'])
+        self.assertFalse(actual['productExecutionProved'])
 
 class GraphAndEvolutionTests(unittest.TestCase):
     def test_stable_topology(self): self.assertEqual(c.topo(['b','a','c'],[('a','c'),('b','c')]),['a','b','c'])

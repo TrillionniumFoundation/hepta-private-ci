@@ -28,6 +28,7 @@ platform(
     constraint_values = [
         "@llvm//constraints/windows/abi:msvc",
     ],
+    flags = ["--features=static_link_msvcrt"],
     parents = ["@platforms//host"],
 )
 
@@ -48,6 +49,7 @@ platform(
         "@platforms//os:windows",
         "@llvm//constraints/windows/abi:msvc",
     ],
+    flags = ["--features=static_link_msvcrt"],
 )
 
 # Registered only by the keyless Windows cross wrapper. Native dependencies of

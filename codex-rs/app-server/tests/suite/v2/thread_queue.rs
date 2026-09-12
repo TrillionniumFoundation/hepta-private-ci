@@ -985,8 +985,8 @@ async fn a_new_turn_preserves_queued_messages_until_it_completes() -> Result<()>
     let initial_requests = model_requests
         .iter()
         .filter(|(turn_id, _)| turn_id == &active_turn_id)
-        .collect::<Vec<_>>();
-    assert_eq!(initial_requests.len(), 1);
+        .count();
+    assert_eq!(initial_requests, 1);
 
     let ordinary_requests = model_requests
         .iter()

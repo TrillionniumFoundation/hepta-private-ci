@@ -7,7 +7,7 @@
   },
   "laneId": "LANE-B-RUNTIME",
   "module": "inference.control",
-  "sourceMaturity": "native_durable_control_boundary",
+  "sourceMaturity": "native_hosted_reservation_and_observed_settlement",
   "declaredRoots": [
     "codex-rs/hepta-infer-core",
     "codex-rs/hepta-inferd"
@@ -16,105 +16,101 @@
     "codex-rs/hepta-infer-core",
     "codex-rs/hepta-inferd"
   ],
-  "stateOwnerDisposition": "Owns request, reservation, assignment, cancellation, and settlement journal facts.",
-  "terminalObserverDisposition": "Settlement records an authenticated worker/provider observation; unknown consumption remains held or quarantined.",
+  "stateOwnerDisposition": "The same single-writer DurableInferenceControl journal owns legacy records and native hosted request identity, local in-flight slot reservations, dispatch bindings and observations.",
+  "terminalObserverDisposition": "The actual Agent-fenced App Server client supplies matching turn observations through a trusted in-process port. Missing tokens remain null; uncertain execution holds its local slot. This is not provider billing or signed remote-worker authority.",
   "operations": [
     {
       "designOperation": "reserve_request",
       "mappingClass": "owner_native",
       "ownerEntrypoint": {
         "role": "owner_entrypoint",
-        "path": "codex-rs/hepta-infer-core/src/bin/hepta-infer-control.rs",
-        "symbol": "pub fn reserve(",
-        "buildTarget": "hepta-infer-control"
+        "path": "codex-rs/hepta-infer-core/src/native_control.rs",
+        "symbol": "pub fn reserve_native(",
+        "buildTarget": "codex-hepta-infer-core::durable_control::native"
       },
       "delegatedCallees": [],
       "tests": [
         {
-          "path": "codex-rs/hepta-infer-core/src/bin/hepta-infer-control.rs",
-          "kind": "journal_recovery",
-          "command": "cargo test -p codex-hepta-infer-core --bin hepta-infer-control"
+          "path": "codex-rs/hepta-infer-core/src/native_control_tests.rs",
+          "kind": "native_journal_recovery_and_observation",
+          "command": "just test -p codex-hepta-infer-core --lib"
         }
       ],
-      "sourceSemantics": "Reserves quota and resources in a durable generation-bound journal."
+      "sourceSemantics": "Pins explicit local slot capacity and exact request identity before provider contact."
     },
     {
       "designOperation": "schedule",
       "mappingClass": "owner_native",
       "ownerEntrypoint": {
         "role": "owner_entrypoint",
-        "path": "codex-rs/hepta-infer-core/src/bin/hepta-infer-control.rs",
-        "symbol": "pub fn assign(",
-        "buildTarget": "hepta-infer-control"
+        "path": "codex-rs/hepta-infer-core/src/native_control.rs",
+        "symbol": "pub fn dispatch_native(",
+        "buildTarget": "codex-hepta-infer-core::durable_control::native"
       },
-      "delegatedCallees": [
-        {
-          "role": "supporting_algorithm",
-          "path": "codex-rs/hepta-inferd/src/lib.rs",
-          "symbol": "pub fn plan(",
-          "buildTarget": "codex-hepta-inferd",
-          "ownerModule": "inference.control"
-        }
-      ],
+      "delegatedCallees": [],
       "tests": [
         {
-          "path": "codex-rs/hepta-infer-core/src/bin/hepta-infer-control.rs",
-          "kind": "assignment_and_fencing",
-          "command": "cargo test -p codex-hepta-infer-core --bin hepta-infer-control"
+          "path": "codex-rs/hepta-infer-core/src/native_control_tests.rs",
+          "kind": "native_journal_recovery_and_observation",
+          "command": "just test -p codex-hepta-infer-core --lib"
         }
       ],
-      "sourceSemantics": "Commits deterministic eligible-worker assignment before dispatch."
+      "sourceSemantics": "Syncs exact thread/provider/context dispatch intent before the actual turn/start RPC; a duplicate cannot issue a new turn."
     },
     {
       "designOperation": "cancel",
       "mappingClass": "owner_native",
       "ownerEntrypoint": {
         "role": "owner_entrypoint",
-        "path": "codex-rs/hepta-infer-core/src/bin/hepta-infer-control.rs",
-        "symbol": "pub fn cancel(",
-        "buildTarget": "hepta-infer-control"
+        "path": "codex-rs/hepta-infer-core/src/native_control.rs",
+        "symbol": "pub fn cancel_native(",
+        "buildTarget": "codex-hepta-infer-core::durable_control::native"
       },
       "delegatedCallees": [],
       "tests": [
         {
-          "path": "codex-rs/hepta-infer-core/src/bin/hepta-infer-control.rs",
-          "kind": "cancel_settle_race",
-          "command": "cargo test -p codex-hepta-infer-core --bin hepta-infer-control"
+          "path": "codex-rs/hepta-infer-core/src/native_control_tests.rs",
+          "kind": "native_journal_recovery_and_observation",
+          "command": "just test -p codex-hepta-infer-core --lib"
         }
       ],
-      "sourceSemantics": "Records monotonic cancellation without erasing possible in-flight consumption."
+      "sourceSemantics": "Persists interrupt intent without releasing an in-flight slot; acknowledgement is not terminality."
     },
     {
       "designOperation": "settle",
       "mappingClass": "owner_native",
       "ownerEntrypoint": {
         "role": "owner_entrypoint",
-        "path": "codex-rs/hepta-infer-core/src/bin/hepta-infer-control.rs",
-        "symbol": "pub fn settle(",
-        "buildTarget": "hepta-infer-control"
+        "path": "codex-rs/hepta-infer-core/src/native_control.rs",
+        "symbol": "pub fn settle_native(",
+        "buildTarget": "codex-hepta-infer-core::durable_control::native"
       },
       "delegatedCallees": [],
       "tests": [
         {
-          "path": "codex-rs/hepta-infer-core/src/bin/hepta-infer-control.rs",
-          "kind": "cancel_settle_race",
-          "command": "cargo test -p codex-hepta-infer-core --bin hepta-infer-control"
+          "path": "codex-rs/hepta-infer-core/src/native_control_tests.rs",
+          "kind": "native_journal_recovery_and_observation",
+          "command": "just test -p codex-hepta-infer-core --lib"
         }
       ],
-      "sourceSemantics": "Commits exactly one settlement and accounts late valid usage without double refund."
+      "sourceSemantics": "Persists actual matching terminal and optional observed u64 usage; terminality releases a local slot, unknown execution remains held. Late usage can refine an observation without changing its terminal outcome."
     }
   ],
-  "repositoryControlledGaps": [],
+  "repositoryControlledGaps": [
+    "Connect economically meaningful quota and hardware-capacity authorities; the shipped native policy reserves only local in-flight run slots.",
+    "Implement authenticated recovery of actual provider terminal/usage observations after process loss; reopening a dispatched run conservatively holds capacity and never replays it.",
+    "Add bounded archival/retention under the same journal owner; the current 64 MiB journal rejects further appends without truncating acknowledged history."
+  ],
   "externalEvidenceGates": [
-    "real quota/capacity authority integration",
-    "authenticated non-test worker transport",
-    "real provider/model terminal and usage evidence"
+    "real provider deployment and crash/cancellation acceptance",
+    "real economic quota/capacity authority integration",
+    "authenticated remote-worker transport if a separate process is introduced"
   ],
   "claimBoundary": {
     "nativeSourceMappingComplete": true,
     "repositoryControlledDocumentationGapsClosed": true,
     "repositoryControlledMappingGapsClosed": true,
-    "repositoryControlledSourceBoundaryGapsClosed": true,
+    "repositoryControlledSourceBoundaryGapsClosed": false,
     "productExecutionComplete": false,
     "deploymentQualificationComplete": false,
     "independentAcceptanceComplete": false

@@ -81,8 +81,8 @@ impl AdmittedCognitiveStoreV2 {
         if maximum_record_revisions == 0 || maximum_record_revisions > MAX_V2_RECORD_REVISIONS {
             return Err(CognitiveStoreV2Error::InvalidCapacity);
         }
-        let sequence =
-            LogicalSequence::new(1).map_err(|_| CognitiveStoreV2Error::SequenceOverflow)?;
+        let sequence = LogicalSequence::new(/*value*/ 1)
+            .map_err(|_| CognitiveStoreV2Error::SequenceOverflow)?;
         Ok(Self {
             histories: BTreeMap::new(),
             intent_journal: BTreeMap::new(),
@@ -194,13 +194,13 @@ impl AdmittedCognitiveStoreV2 {
                 )
             }
             None => (
-                Revision::new(1).map_err(|_| CognitiveStoreV2Error::RevisionOverflow)?,
+                Revision::new(/*value*/ 1).map_err(|_| CognitiveStoreV2Error::RevisionOverflow)?,
                 None,
                 MemoryWriteDisposition::Inserted,
             ),
         };
         let record = MemoryRecord {
-            record_id: record_id.clone(),
+            record_id,
             revision,
             kind: admission_kind(candidate.kind),
             content_digest: candidate.content_digest,

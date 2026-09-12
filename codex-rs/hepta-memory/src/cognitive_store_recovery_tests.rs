@@ -26,6 +26,10 @@ use crate::cognitive_test_support::agent_id;
 use crate::cognitive_test_support::layout;
 use crate::cognitive_test_support::source;
 
+#[cfg(unix)]
+#[path = "cognitive_store_recovery_read_only_tests.rs"]
+mod cold_read_only;
+
 async fn seeded(
     temp: &TempDir,
     owner: &AgentId,

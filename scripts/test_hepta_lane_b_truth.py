@@ -21,8 +21,12 @@ class LaneBTruthTests(unittest.TestCase):
             json.loads('{"a":1,"a":2}', object_pairs_hook=MODULE.pairs)
 
     def test_path_envelope_is_prefix_bounded(self) -> None:
-        self.assertTrue(MODULE.allowed("qualification/lane-b/a", ["qualification/lane-b/"]))
-        self.assertFalse(MODULE.allowed("qualification/lane-c/a", ["qualification/lane-b/"]))
+        self.assertTrue(
+            MODULE.allowed("qualification/lane-b/a", ["qualification/lane-b/"])
+        )
+        self.assertFalse(
+            MODULE.allowed("qualification/lane-c/a", ["qualification/lane-b/"])
+        )
 
     def test_closed_module_and_operation_sets(self) -> None:
         self.assertEqual(11, len(MODULE.MODULES))
@@ -61,7 +65,9 @@ class LaneBTruthTests(unittest.TestCase):
             ],
         }
         projection = MODULE.trace_projection(truth, [module_map])
-        self.assertFalse(projection["claimBoundary"]["productExecutionProvedByRegistry"])
+        self.assertFalse(
+            projection["claimBoundary"]["productExecutionProvedByRegistry"]
+        )
         self.assertFalse(projection["claimBoundary"]["externalEffectsProvedByRegistry"])
         self.assertEqual(1, projection["operationCount"])
 

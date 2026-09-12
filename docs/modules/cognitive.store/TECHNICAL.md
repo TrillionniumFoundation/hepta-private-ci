@@ -46,6 +46,18 @@ None.
 
 ## 3. Boundary, responsibilities and non-goals
 
+Current durable integration: the physical memory/source writer remains the
+existing SQLx `hepta-memory::CognitiveStore`. Its
+`codex-rs/hepta-memory/src/lane_c_snapshot.rs` adapter projects one authorized
+SQLite transaction into the new cognitive snapshot and read types; it does not
+add a second writer or synchronize a second database. The in-memory V2 store in
+this module is not a durable backend. See
+`codex-rs/hepta-memory/LANE_C_SQLITE.md` for exact ID/frontier mapping, bounded
+materialization, correction/deletion propagation, and reopen/rollback-witness
+behavior. The separate descriptor-safe `open_with_recovery` prerequisites
+remain unresolved; an ordinary reopen plus independently retained cut comparison
+must not be reported as full recovery admission.
+
 Direct dependencies:
 
 - `cognitive.types`

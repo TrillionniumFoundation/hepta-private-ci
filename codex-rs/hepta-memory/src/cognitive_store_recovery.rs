@@ -31,6 +31,10 @@ use super::REQUIRED_SCHEMA_ORACLE_SHA256;
 use super::unavailable;
 use crate::framing::frame_part;
 
+#[path = "cognitive_store_recovery_read_only.rs"]
+mod read_only;
+pub use read_only::RecoveredCognitiveReadOnly;
+
 const PROFILE: &str = "hepta:cognitive:exact-current-cut:v1";
 const MAX_ROWS: i64 = 65_536;
 const MAX_BYTES: i64 = 64 * 1024 * 1024;
@@ -52,7 +56,8 @@ pub struct CognitiveRecoveryAnchor {
 
 /// Current recovery disposition supplied by the trusted host. Revocation wins
 /// before any filesystem access. An exact witness is an integrity input, not a
-/// grant, and cannot enable opening until the descriptor-safe backend exists.
+/// grant. Cold-image reads require an exact comparison; writer recovery remains
+/// unavailable until a descriptor-safe writer backend and fence exist.
 pub enum CognitiveRecoveryRequirement<'a> {
     ExactCurrentCut(&'a CognitiveRecoveryAnchor),
     Revoked,
@@ -100,26 +105,7 @@ impl CognitiveStore {
         layout: &HeptaAgentLayout,
         requirement: CognitiveRecoveryRequirement<'_>,
     ) -> Result<Self, CognitiveRecoveryError> {
-        let expected = match requirement {
-            CognitiveRecoveryRequirement::Revoked => {
-                return Err(CognitiveRecoveryError::AccessDenied(
-                    "cognitive recovery is revoked".to_string(),
-                ));
-            }
-            CognitiveRecoveryRequirement::ExactCurrentCut(anchor) => anchor,
-        };
-        if expected.owner_agent_id != *layout.agent_id() {
-            return Err(CognitiveRecoveryError::AccessDenied(
-                "cognitive recovery owner mismatch".to_string(),
-            ));
-        }
-        if expected.profile != PROFILE
-            || expected.schema_digest.as_str() != REQUIRED_SCHEMA_ORACLE_SHA256
-        {
-            return Err(CognitiveRecoveryError::Invalid(
-                "unsupported cognitive recovery profile or schema".to_string(),
-            ));
-        }
+        validate_requirement(layout, requirement)?;
         let path = layout.cognitive_root().join(COGNITIVE_DB_FILENAME);
         let sqlite_home = AbsolutePathBuf::try_from(layout.cognitive_root().to_path_buf())
             .map_err(|error| CognitiveRecoveryError::Invalid(error.to_string()))?;
@@ -131,6 +117,33 @@ impl CognitiveStore {
             .map_err(recovery_error)?;
         Err(recovery_error(SqliteRecoveryError::Unavailable))
     }
+}
+
+fn validate_requirement<'a>(
+    layout: &HeptaAgentLayout,
+    requirement: CognitiveRecoveryRequirement<'a>,
+) -> Result<&'a CognitiveRecoveryAnchor, CognitiveRecoveryError> {
+    let expected = match requirement {
+        CognitiveRecoveryRequirement::Revoked => {
+            return Err(CognitiveRecoveryError::AccessDenied(
+                "cognitive recovery is revoked".to_string(),
+            ));
+        }
+        CognitiveRecoveryRequirement::ExactCurrentCut(anchor) => anchor,
+    };
+    if expected.owner_agent_id != *layout.agent_id() {
+        return Err(CognitiveRecoveryError::AccessDenied(
+            "cognitive recovery owner mismatch".to_string(),
+        ));
+    }
+    if expected.profile != PROFILE
+        || expected.schema_digest.as_str() != REQUIRED_SCHEMA_ORACLE_SHA256
+    {
+        return Err(CognitiveRecoveryError::Invalid(
+            "unsupported cognitive recovery profile or schema".to_string(),
+        ));
+    }
+    Ok(expected)
 }
 
 fn recovery_error(error: SqliteRecoveryError) -> CognitiveRecoveryError {

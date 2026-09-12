@@ -136,7 +136,7 @@ impl AgentRunCoordinator {
         validate_snapshot(now_ms, &snapshot)?;
         if let Some(current) = self.runs.get(&snapshot.run_id) {
             if current.snapshot == snapshot {
-                return Ok(receipt(current, true));
+                return Ok(receipt(current, /*idempotent*/ true));
             }
             return Err(AgentRunError::Conflict);
         }
@@ -150,7 +150,7 @@ impl AgentRunCoordinator {
             context_digest: None,
             compilation_receipt_digest: None,
         };
-        let result = receipt(&record, false);
+        let result = receipt(&record, /*idempotent*/ false);
         self.runs.insert(snapshot.run_id, record);
         Ok(result)
     }
@@ -170,7 +170,7 @@ impl AgentRunCoordinator {
             && record.compilation_receipt_digest.as_deref()
                 == Some(attachment.compilation_receipt_digest.as_str())
         {
-            return Ok(receipt(record, true));
+            return Ok(receipt(record, /*idempotent*/ true));
         }
         require_revision(record, expected_revision)?;
         if record.phase != RunPhase::Admitted {
@@ -187,7 +187,7 @@ impl AgentRunCoordinator {
         record.compilation_receipt_digest = Some(attachment.compilation_receipt_digest);
         record.phase = RunPhase::ContextAttached;
         advance_revision(record)?;
-        Ok(receipt(record, false))
+        Ok(receipt(record, /*idempotent*/ false))
     }
 
     pub fn mark_dispatched(
@@ -201,7 +201,7 @@ impl AgentRunCoordinator {
             .get_mut(run_id)
             .ok_or(AgentRunError::RunNotFound)?;
         if record.phase == RunPhase::Dispatched {
-            return Ok(receipt(record, true));
+            return Ok(receipt(record, /*idempotent*/ true));
         }
         require_revision(record, expected_revision)?;
         if record.phase != RunPhase::ContextAttached {
@@ -209,7 +209,7 @@ impl AgentRunCoordinator {
         }
         record.phase = RunPhase::Dispatched;
         advance_revision(record)?;
-        Ok(receipt(record, false))
+        Ok(receipt(record, /*idempotent*/ false))
     }
 
     pub fn cancel_run(
@@ -240,7 +240,7 @@ impl AgentRunCoordinator {
             | RunPhase::Failed
             | RunPhase::Indeterminate => CancellationDisposition::AlreadyTerminal,
         };
-        Ok((disposition, receipt(record, false)))
+        Ok((disposition, receipt(record, /*idempotent*/ false)))
     }
 
     pub fn observe_terminal(
@@ -259,7 +259,7 @@ impl AgentRunCoordinator {
             && ((terminal_observed && phase.terminal_observed())
                 || (!terminal_observed && phase == RunPhase::Indeterminate))
         {
-            return Ok(receipt(record, true));
+            return Ok(receipt(record, /*idempotent*/ true));
         }
         require_revision(record, expected_revision)?;
         if !matches!(record.phase, RunPhase::Dispatched | RunPhase::Cancelling) {
@@ -277,7 +277,7 @@ impl AgentRunCoordinator {
         }
         record.phase = phase;
         advance_revision(record)?;
-        Ok(receipt(record, false))
+        Ok(receipt(record, /*idempotent*/ false))
     }
 
     pub fn remove_closed_run(
@@ -291,13 +291,15 @@ impl AgentRunCoordinator {
         if !record.phase.closed() {
             return Err(AgentRunError::InvalidTransition);
         }
-        let receipt = receipt(record, false);
+        let receipt = receipt(record, /*idempotent*/ false);
         self.runs.remove(run_id);
         Ok(receipt)
     }
 
     pub fn run(&self, run_id: &str) -> Option<RunReceipt> {
-        self.runs.get(run_id).map(|record| receipt(record, false))
+        self.runs
+            .get(run_id)
+            .map(|record| receipt(record, /*idempotent*/ false))
     }
 
     fn active_run_count(&self) -> usize {

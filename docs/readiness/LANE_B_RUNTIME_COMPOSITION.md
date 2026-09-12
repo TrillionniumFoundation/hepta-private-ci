@@ -1,5 +1,7 @@
 # Lane B runtime composition and failure semantics
 
+Implementation correction: [Lane B native host](LANE_B_NATIVE_HOST.md) records actual owner wiring and repository-controlled gaps. The topology and immutable tuple below are target contracts; their presence does not establish an active caller or authority.
+
 **Plan:** `HEPTA-GLOBAL-MODULAR-DEVELOPMENT-PLAN` v8.0.0  
 **Lane:** `LANE-B-RUNTIME`  
 **Immutable source base:** `f278a89eea18fccb6d37b876aa5679863a64139d` / tree `5baa144717d4b3e3c596501fb56ce911d009e728`  
@@ -102,7 +104,7 @@ Stop new admission; persist drain intent; cancel only provably pre-effect work; 
 
 ## 15. Source maturity
 
-The truth registry records source-boundary mappings for all 39 operations. Supervisor and Codex are native runtime spines; Fleet, inference, TaskFlow and Matrix include native owner ledgers/adapters; Agentd now owns its own run coordinator; Browser/Web/Native provide bounded driver/client boundaries. This closes repository documentation and mapping debt, but not real provider, Servo, homeserver, packaged application, target-host or independent evidence.
+The truth registry records source-boundary mappings for all 39 operations. Supervisor and Codex are native runtime spines; Fleet, inference, TaskFlow and Matrix include native owner ledgers/adapters; Agentd now owns its own run coordinator; Browser/Web/Native provide bounded driver/client boundaries. The component mappings do not close repository-controlled integration work. Durable owner wiring, actual local model/browser drivers and runtime composition remain implementation tasks in addition to external qualification.
 
 ## 16. Evidence package required for activation
 

@@ -32,6 +32,10 @@ pub(crate) fn pareto_frontier(
     frontier
 }
 
+/// Strict partial order: no axis may deteriorate, and at least one must improve
+/// by more than its tolerance. A -> B -> C preserves every weak inequality and
+/// the strict improvement from A -> B, so A -> C. Finite nonempty candidate sets
+/// therefore retain a maximal element, including with nonzero tolerances.
 fn dominates(
     left: &CandidateUtility,
     right: &CandidateUtility,
@@ -55,14 +59,12 @@ fn dominates(
         let right_raw = i128::from(right_value.raw());
         let tolerance_raw = i128::from(tolerance);
         let (not_worse, better) = match direction {
-            AxisDirection::Maximize => (
-                left_raw + tolerance_raw >= right_raw,
-                left_raw > right_raw + tolerance_raw,
-            ),
-            AxisDirection::Minimize => (
-                left_raw <= right_raw + tolerance_raw,
-                left_raw + tolerance_raw < right_raw,
-            ),
+            AxisDirection::Maximize => {
+                (left_raw >= right_raw, left_raw > right_raw + tolerance_raw)
+            }
+            AxisDirection::Minimize => {
+                (left_raw <= right_raw, left_raw + tolerance_raw < right_raw)
+            }
         };
         if !not_worse {
             return false;
@@ -71,6 +73,10 @@ fn dominates(
     }
     strictly_better
 }
+
+#[cfg(test)]
+#[path = "scoring_tests.rs"]
+mod tests;
 
 fn axis_value(values: &[AxisValue], axis: &StableId) -> Option<FixedQ32> {
     values

@@ -6,6 +6,9 @@
 
 #![forbid(unsafe_code)]
 
+/// Reusable state machine; does not install a second runtime owner.
+pub mod effect_executor;
+
 mod model;
 mod scheduler;
 mod store;

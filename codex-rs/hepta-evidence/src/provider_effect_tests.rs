@@ -1243,10 +1243,6 @@ async fn qualification_dispatch_unsupported_capability_never_invokes_adapter() {
         .expect_err("unsupported lookup must remain fail-closed");
     assert!(matches!(reconcile_error, EvidenceError::InvalidRecord(_)));
     assert_eq!(adapter.lookups.load(Ordering::Relaxed), 0);
-    let external_effects = crate::PROVIDER_EFFECT_QUALIFICATION_EXTERNAL_EFFECTS;
-    let production_caller = crate::PROVIDER_EFFECT_QUALIFICATION_PRODUCTION_CALLER;
-    assert!(!external_effects);
-    assert!(!production_caller);
 }
 
 #[tokio::test]

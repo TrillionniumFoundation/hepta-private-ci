@@ -46,6 +46,39 @@ resource, restart, health and failure behavior
 
 Raw secrets are never copied into the manifest. `ExternalSystemManifestV1` contains digests and bounded references. `ServiceGraphV1` represents dependencies, sockets, D-Bus, state ownership and canonical topological order. Cycles are explicit and require a start/stop strategy.
 
+### Implemented review conversion and hash scope
+
+The scoped Debian discovery CLI now accepts an optional `--proposal-config`
+containing a system/proposal identity, objective, owner observation timestamp and
+retained supporting artifact bytes. `assimilation.contracts` converts its actual
+discovery candidate to a review bundle with manifest, selected service graph and
+`AssimilationProposalV1`-shaped records. Only `proposed`/`sensor_bus` is emitted.
+The conversion checks source and enrollment references, retains external unit
+dependencies explicitly, binds every supplementary artifact by its actual bytes,
+and rejects incomplete inputs before returning a partial result. The host still
+authenticates and retains the artifacts; hashing user-supplied text does not
+qualify its contents or grant enrollment authority.
+
+Hash profile `hepta.assimilation.manifest-identity.v1` removes an otherwise cyclic
+manifest/graph reference. In this profile, canonical JSON sorts object keys,
+uses compact separators, ASCII escapes and no non-finite numbers. Compute:
+
+1. The identity projection is the manifest with `serviceGraphDigest` omitted.
+   Its digest is SHA-256 of UTF-8 `hepta.assimilation.manifest-identity.v1`, one
+   zero byte, then the canonical projection bytes.
+2. `ServiceGraphV1.systemManifestDigest` references that identity digest. Compute
+   the SHA-256 of the complete canonical graph bytes.
+3. Put that graph digest in the full manifest's `serviceGraphDigest`; compute
+   the full manifest digest. The proposal's `systemManifestDigest` references
+   this full digest, not the identity projection.
+
+These explicit invariants are recorded in `PROTOCOLS.json`; consumers must agree
+on the profile before wire admission. No cryptographic fixed point is required.
+The bundle remains `admitted:false`, `authorityGranted:false`, `activation:false`.
+Effective units, runtime edges, capability admission and state ownership remain
+explicit omissions. Selected metadata alone does not complete A0 or the Debian
+bridge and cannot be used as a service start/stop plan.
+
 ## 4. Contract synthesis and capability boundary
 
 Contract synthesis derives candidates from declared APIs, CLI help, D-Bus introspection, systemd metadata and observed traces. Generated operations have typed inputs, outputs, preconditions, side effects, idempotency, terminal observation, timeouts and error mapping. Inferred contracts remain candidates until reviewed and tested.

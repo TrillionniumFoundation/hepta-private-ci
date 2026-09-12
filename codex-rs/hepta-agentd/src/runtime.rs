@@ -36,9 +36,13 @@ enum CompletedRuntimeTask {
     AppServer,
     Monitor,
     Automation,
+    AuthBus,
 }
 
 pub async fn run(config: AgentdConfig, arg0_paths: Arg0DispatchPaths) -> Result<(), AgentdError> {
+    let trust_file = config
+        .authbus_trust_file()
+        .map(std::path::Path::to_path_buf);
     let (identity, registry, writer_lock) = config.into_parts();
     let _writer_lock = writer_lock;
     let federation_owner_layouts = registry
@@ -53,6 +57,15 @@ pub async fn run(config: AgentdConfig, arg0_paths: Arg0DispatchPaths) -> Result<
         registry,
         EVENT_CAPACITY,
     )?);
+    if let Some(path) = trust_file {
+        state.refresh_generation()?;
+        let host = crate::authbus_ingress::TextIngress::open(&identity, path).await?;
+        state.refresh_generation()?;
+        state
+            .authbus
+            .set(Arc::new(host))
+            .map_err(|_| AgentdError::Protocol("AuthBus host already attached".to_string()))?;
+    }
     let cognitive_layout = identity.layout.clone();
     let cognitive_runtime = open_cognitive_runtime_after_generation_fence(&state, || async move {
         CognitiveStore::open(&cognitive_layout).await
@@ -113,7 +126,16 @@ pub async fn run(config: AgentdConfig, arg0_paths: Arg0DispatchPaths) -> Result<
         }
     });
 
+    let mut authbus_task = tokio::spawn(crate::authbus_dispatch::run(
+        Arc::clone(&state),
+        cancellation.clone(),
+    ));
+
     let (outcome, completed_task) = tokio::select! {
+        result = &mut authbus_task => (
+            joined("AuthBus text relay", result),
+            Some(CompletedRuntimeTask::AuthBus),
+        ),
         result = &mut control_task => (
             joined("control server", result),
             Some(CompletedRuntimeTask::Control),
@@ -137,6 +159,9 @@ pub async fn run(config: AgentdConfig, arg0_paths: Arg0DispatchPaths) -> Result<
         }
     };
     cancellation.cancel();
+    if completed_task != Some(CompletedRuntimeTask::AuthBus) {
+        abort_and_join(&mut authbus_task).await;
+    }
     cleanup_runtime_tasks(
         completed_task,
         &mut control_task,

@@ -87,6 +87,14 @@ pub enum OrganRuntimeError {
         expected: Generation,
         actual: Generation,
     },
+    NonSuccessorGeneration {
+        current: Generation,
+        proposed: Generation,
+    },
+    ReplacementStopFailed {
+        predecessor_faults: Vec<OrganFaultRecordV1>,
+        candidate_cleanup_faults: Vec<OrganFaultRecordV1>,
+    },
     UnknownSource {
         organ: StableId,
     },
@@ -213,6 +221,61 @@ impl OrganHostV1 {
                 state: slot.state,
             })
             .collect()
+    }
+
+    /// Replace one ready, compiled-in read-only composition with its successor.
+    /// Construction/start failure leaves the predecessor untouched. Once old
+    /// cleanup starts, any failure leaves its explicit stopped/quarantined
+    /// state visible and stops the candidate; no successful cutover is reported.
+    /// There is no durable state or effect owner to migrate through this trait.
+    pub fn replace_read_only_generation(
+        &mut self,
+        expected: Generation,
+        graph: OrganGraphsV1,
+        handlers: Vec<Box<dyn TrustedReadOnlyOrganV1>>,
+    ) -> Result<(), OrganRuntimeError> {
+        if self.generation() != expected {
+            return Err(OrganRuntimeError::GenerationMismatch {
+                expected: self.generation(),
+                actual: expected,
+            });
+        }
+        if expected.next().ok() != Some(graph.generation) {
+            return Err(OrganRuntimeError::NonSuccessorGeneration {
+                current: expected,
+                proposed: graph.generation,
+            });
+        }
+        for index in 0..self.slots.len() {
+            self.require_ready(index)?;
+        }
+        let mut candidate = Self::new(graph, handlers)?;
+        candidate.start_all()?;
+        let predecessor_faults = self.stop_indices(
+            self.validated
+                .initialization_order
+                .clone()
+                .into_iter()
+                .rev(),
+        );
+        if !predecessor_faults.is_empty() {
+            let candidate_cleanup_faults = candidate.stop_indices(
+                candidate
+                    .validated
+                    .initialization_order
+                    .clone()
+                    .into_iter()
+                    .rev(),
+            );
+            return Err(OrganRuntimeError::ReplacementStopFailed {
+                predecessor_faults,
+                candidate_cleanup_faults,
+            });
+        }
+        // Exclusive &mut access prevents dispatch from mixing generations.
+        // The replaced host's Drop only sees already-attempted stop operations.
+        *self = candidate;
+        Ok(())
     }
 
     pub fn start_all(&mut self) -> Result<(), OrganRuntimeError> {

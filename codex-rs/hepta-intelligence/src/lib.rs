@@ -1,9 +1,37 @@
 //! Bounded intelligence composition and abstention.
 //!
 //! The output is a plan receipt. It cannot invoke a model, tool or provider,
-//! execute an effect, mutate current learning state, promote or release.
+//! execute an effect, activate a learned artifact, promote or release. The opt-in
+//! evaluated shadow adapter can append Decisions to a host-owned durable ledger.
 
 #![forbid(unsafe_code)]
+
+mod evaluated_shadow;
+
+pub use evaluated_shadow::EvaluatedShadowError;
+pub use evaluated_shadow::EvaluatedShadowReceiptV1;
+pub use evaluated_shadow::EvaluatedShadowRequestV1;
+pub use evaluated_shadow::evaluated_candidate_signing_payload_v1;
+pub use evaluated_shadow::run_evaluated_shadow_v1;
+
+mod pipeline;
+
+pub use pipeline::CoherentLaneFSnapshotV1;
+pub use pipeline::LaneFBudgetV1;
+pub use pipeline::LaneFRunRequestV1;
+pub use pipeline::LaneFShadowPipelineReceiptV1;
+pub use pipeline::LaneFShadowPortsV1;
+pub use pipeline::LaneFStageV1;
+pub use pipeline::PipelineDispositionV1;
+pub use pipeline::PipelineErrorV1;
+pub use pipeline::PortDecisionV1;
+pub use pipeline::PortFailureClassV1;
+pub use pipeline::PortFailureV1;
+pub use pipeline::PortInputV1;
+pub use pipeline::PortReceiptV1;
+pub use pipeline::StageOutcomeV1;
+pub use pipeline::StageTraceV1;
+pub use pipeline::run_shadow_pipeline;
 
 mod vertical;
 

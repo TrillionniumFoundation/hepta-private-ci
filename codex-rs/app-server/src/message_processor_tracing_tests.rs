@@ -28,6 +28,7 @@ use codex_config::LoaderOverrides;
 use codex_core::config::Config;
 use codex_core::config::ConfigBuilder;
 use codex_exec_server::EnvironmentManager;
+use codex_exec_server::ExecServerRuntimePaths;
 use codex_feedback::CodexFeedback;
 use codex_login::AuthManager;
 use codex_protocol::protocol::SessionSource;
@@ -237,13 +238,34 @@ async fn build_test_processor(
         AuthManager::shared_from_config(config.as_ref(), /*enable_codex_api_key_env*/ false)
             .await
             .expect("test auth manager");
+    #[cfg(target_os = "linux")]
+    let codex_linux_sandbox_exe = Some(
+        core_test_support::find_codex_linux_sandbox_exe()
+            .expect("should find binary for codex-linux-sandbox"),
+    );
+    #[cfg(not(target_os = "linux"))]
+    let codex_linux_sandbox_exe = None;
+    // core_test_support installs arg0 dispatch for this test executable.
+    let arg0_paths = Arg0DispatchPaths {
+        codex_self_exe: Some(std::env::current_exe().expect("test executable path")),
+        codex_linux_sandbox_exe,
+        ..Arg0DispatchPaths::default()
+    };
+    let runtime_paths = ExecServerRuntimePaths::from_optional_paths(
+        arg0_paths.codex_self_exe.clone(),
+        arg0_paths.codex_linux_sandbox_exe.clone(),
+    )
+    .expect("test runtime paths");
+    let environment_manager = Arc::new(
+        EnvironmentManager::create_for_tests(/*exec_server_url*/ None, Some(runtime_paths)).await,
+    );
     let config_manager = ConfigManager::new(
         config.codex_home.to_path_buf(),
         Vec::new(),
         LoaderOverrides::default(),
         /*strict_config*/ false,
         CloudConfigBundleLoader::default(),
-        Arg0DispatchPaths::default(),
+        arg0_paths.clone(),
         Arc::new(codex_config::NoopThreadConfigLoader),
     );
     let analytics_events_client =
@@ -255,10 +277,10 @@ async fn build_test_processor(
     let processor = Arc::new(MessageProcessor::new(MessageProcessorArgs {
         outgoing,
         analytics_events_client,
-        arg0_paths: Arg0DispatchPaths::default(),
+        arg0_paths,
         config,
         config_manager,
-        environment_manager: Arc::new(EnvironmentManager::default_for_tests()),
+        environment_manager,
         feedback: CodexFeedback::new(),
         log_db: None,
         state_db: None,
@@ -452,16 +474,26 @@ async fn read_response<T: serde::de::DeserializeOwned>(
         if connection_id != TEST_CONNECTION_ID {
             continue;
         }
-        let crate::outgoing_message::OutgoingMessage::Response(response) = message else {
-            continue;
-        };
-        if response.id != RequestId::Integer(request_id) {
-            continue;
+        match message {
+            crate::outgoing_message::OutgoingMessage::Response(response)
+                if response.id == RequestId::Integer(request_id) =>
+            {
+                return serde_json::from_value(
+                    serde_json::to_value(response.result)
+                        .expect("response payload should serialize"),
+                )
+                .expect("response payload should deserialize");
+            }
+            crate::outgoing_message::OutgoingMessage::Error(error)
+                if error.id == RequestId::Integer(request_id) =>
+            {
+                panic!("request {request_id} failed: {:?}", error.error);
+            }
+            crate::outgoing_message::OutgoingMessage::Request(_)
+            | crate::outgoing_message::OutgoingMessage::AppServerNotification(_)
+            | crate::outgoing_message::OutgoingMessage::Response(_)
+            | crate::outgoing_message::OutgoingMessage::Error(_) => continue,
         }
-        return serde_json::from_value(
-            serde_json::to_value(response.result).expect("response payload should serialize"),
-        )
-        .expect("response payload should deserialize");
     }
 }
 

@@ -1,11 +1,16 @@
 //! Authority-checked inference worker boundary.
 //!
-//! This crate validates a pre-existing request, lease and reservation and maps
-//! an observed terminal result into a receipt. It does not issue grants, mutate
-//! fleet state, invoke a provider, infer success from queue acceptance, promote
-//! an artifact or release anything.
+//! The legacy boundary validates a pre-existing request, lease and reservation.
+//! The native App Server profile invokes the owning Agent's configured provider
+//! and observes its turn events. Neither profile issues grants, mutates fleet
+//! state, infers success from queue acceptance, promotes or releases artifacts.
 
 #![forbid(unsafe_code)]
+
+/// Model-manifest/grant state machine for native driver implementations.
+pub mod model_worker;
+
+pub mod native_app_server;
 
 use std::error::Error as StdError;
 use std::fmt;

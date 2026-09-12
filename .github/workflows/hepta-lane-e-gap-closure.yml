@@ -25,7 +25,7 @@ concurrency:
 
 env:
   SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
-  TARGET_BRANCH: codex/hepta-main-convergence-20260909
+  BASE_SHA: ${{ github.event.pull_request.base.sha }}
 
 jobs:
   rust-closure:
@@ -37,6 +37,11 @@ jobs:
           fetch-depth: 0
           persist-credentials: false
           ref: ${{ env.SOURCE_SHA }}
+
+      - name: Install repository test runner
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
 
       - name: Install pinned Rust toolchain
         uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
@@ -72,20 +77,19 @@ jobs:
       - name: Lane E owner regression tests
         working-directory: codex-rs
         run: >-
-          cargo test --locked
+          just test --locked
           -p codex-hepta-learning-ledger
           -p codex-hepta-learning-artifacts
           -p codex-hepta-bellman-operator
           -p codex-hepta-intelligence-eval
-          -- --nocapture
 
       - name: Cross-crate causal learning closure
         working-directory: codex-rs
         run: >-
-          cargo test --locked
+          just test --locked
           -p codex-hepta-shadow-qualification
           lane_e_causal_candidate_chain_is_digest_bound_and_deny_all
-          -- --nocapture --test-threads=1
+          --test-threads=1
 
       - name: Strict Lane E lint
         working-directory: codex-rs
@@ -115,7 +119,6 @@ jobs:
           test -z "$(git status --porcelain --untracked-files=no)"
 
   synthetic-merge:
-    needs: rust-closure
     runs-on: ubuntu-24.04
     timeout-minutes: 120
     steps:
@@ -124,6 +127,11 @@ jobs:
           fetch-depth: 0
           persist-credentials: false
           ref: ${{ env.SOURCE_SHA }}
+
+      - name: Install repository test runner
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
 
       - name: Install pinned Rust toolchain
         uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
@@ -137,8 +145,9 @@ jobs:
           set -euo pipefail
           SOURCE_COMMIT="$(git rev-parse HEAD)"
           test "${SOURCE_COMMIT}" = "${SOURCE_SHA}"
-          git fetch --no-tags origin "${TARGET_BRANCH}"
-          BASE_COMMIT="$(git rev-parse FETCH_HEAD)"
+          test -n "${BASE_SHA}"
+          git cat-file -e "${BASE_SHA}^{commit}"
+          BASE_COMMIT="${BASE_SHA}"
           git checkout --detach "${BASE_COMMIT}"
           git -c user.name=hepta-lane-e-ci \
             -c user.email=hepta-lane-e-ci@users.noreply.github.com \
@@ -180,20 +189,19 @@ jobs:
       - name: Test merged owner crates
         working-directory: codex-rs
         run: >-
-          cargo test --locked
+          just test --locked
           -p codex-hepta-learning-ledger
           -p codex-hepta-learning-artifacts
           -p codex-hepta-bellman-operator
           -p codex-hepta-intelligence-eval
-          -- --nocapture
 
       - name: Test merged cross-crate closure
         working-directory: codex-rs
         run: >-
-          cargo test --locked
+          just test --locked
           -p codex-hepta-shadow-qualification
           lane_e_causal_candidate_chain_is_digest_bound_and_deny_all
-          -- --nocapture --test-threads=1
+          --test-threads=1
 
       - name: Verify merged formatting and index stability
         shell: bash

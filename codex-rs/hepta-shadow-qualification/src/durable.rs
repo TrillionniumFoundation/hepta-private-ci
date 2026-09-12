@@ -62,12 +62,15 @@ pub(crate) fn create_or_verify_private_directory(path: &Path) -> Result<(), Qual
 }
 
 pub(crate) fn create_private_directory(path: &Path) -> Result<(), QualificationError> {
-    let mut builder = std::fs::DirBuilder::new();
     #[cfg(unix)]
-    {
+    let builder = {
         use std::os::unix::fs::DirBuilderExt;
+        let mut builder = std::fs::DirBuilder::new();
         builder.mode(0o700);
-    }
+        builder
+    };
+    #[cfg(not(unix))]
+    let builder = std::fs::DirBuilder::new();
     builder.create(path)?;
     verify_private_directory(path)
 }
@@ -145,15 +148,15 @@ pub(crate) fn same_file_snapshot(before: &std::fs::Metadata, after: &std::fs::Me
 }
 
 fn verify_private_mode(
-    metadata: &std::fs::Metadata,
-    label: &str,
+    _metadata: &std::fs::Metadata,
+    _label: &str,
 ) -> Result<(), QualificationError> {
     #[cfg(unix)]
     {
         use std::os::unix::fs::PermissionsExt;
-        if metadata.permissions().mode() & 0o077 != 0 {
+        if _metadata.permissions().mode() & 0o077 != 0 {
             return Err(invalid(format!(
-                "{label} must not grant group or other access"
+                "{_label} must not grant group or other access"
             )));
         }
     }
