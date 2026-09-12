@@ -40,7 +40,12 @@ jobs:
               ('service', 'bea3b4c053090b1be07fc090e83cab7ac7134e22', False, '9ef02d6eca94639e1fd6fee164f47cd1247a7403b581f0b18391c04f47b6f36a'),
               ('details', 'bfb3d59322d1067be0038f974ea9478e7e717884', False, '515fd4c6e95905c0794f79f7f238788e0a6e8a837847425880785083fd6e0d49'),
           ]
-          repairs = {}
+          repairs = {
+              'cleanup': [(5663, '1', ''), (10088, '', '=')],
+              'evaluation': [(16529, 'T', '')],
+              'organ': [(3800, 'D', '')],
+              'details': [(6705, '', 'UOau'), (7526, '0', 'w')],
+          }
           def api(path, data=None):
               assert path.startswith('git/')
               request = urllib.request.Request(
