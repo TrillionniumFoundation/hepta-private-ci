@@ -4,8 +4,8 @@
 
 **Parent plan:** `HEPTA-GLOBAL-MODULAR-DEVELOPMENT-PLAN` v8.0.0  
 **Readiness overlay:** `HEPTA-V8-PRECODING-READINESS` v8.2.0-readiness  
-**Documentation-depth state:** `closed`  
-**Runtime and evidence state:** `not implied`
+**Canonical qualification status:** `specification_closed=closed`; `implementation_closed=open`; `external_evidence_closed=open`
+Status vocabulary: [`docs/readiness/STATUS_MODEL.json`](../../docs/readiness/STATUS_MODEL.json).
 
 ## Closed execution-document surface
 
@@ -19,4 +19,4 @@
 - External capability/evidence gates retained: **9**
 - Positive authority flags: **0**
 
-The dossier closes ambiguity about entrypoints, callers, host identity, physical state, migrations, single writers, terminal observers, fault suites, target-host measurements, NDU participation, organ mapping, self-iteration and external-system assimilation. It does not claim that any missing runtime, hardware, future-window, independent-review, canary, selection, promotion or release evidence exists.
+The dossier closes ambiguity about entrypoints, callers, host identity, physical state, migrations, single writers, terminal observers, fault suites, target-host measurements, NDU participation, organ mapping, self-iteration and external-system assimilation. Its canonical projection is specification_closed only; it does not claim that any missing runtime, hardware, future-window, independent-review, canary, selection, promotion or release evidence exists.
