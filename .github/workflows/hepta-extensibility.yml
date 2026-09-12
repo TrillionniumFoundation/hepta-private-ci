@@ -1,0 +1,108 @@
+name: Hepta extensibility regression (read-only)
+
+on:
+  pull_request:
+    paths:
+      - "codex-rs/hepta-agentd/**"
+      - "codex-rs/hepta-control-plane/**"
+      - "codex-rs/hepta-intelligence/**"
+      - "codex-rs/hepta-learning-ledger/**"
+      - "codex-rs/hepta-operations/**"
+      - "scripts/**"
+      - ".github/workflows/hepta-extensibility.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-extensibility-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  source-regression:
+    name: Extensibility source regression
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      SOURCE_SHA: ${{ github.event.pull_request.head.sha }}
+      PYTHONDONTWRITEBYTECODE: "1"
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Retain exact tracked source for reproducibility
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          mkdir -p "$RUNNER_TEMP/hepta-extensibility-source"
+          git archive --format=tar.gz --output="$RUNNER_TEMP/hepta-extensibility-source/source.tar.gz" HEAD
+          git rev-parse HEAD HEAD^{tree} > "$RUNNER_TEMP/hepta-extensibility-source/identity.txt"
+          (cd "$RUNNER_TEMP/hepta-extensibility-source" && sha256sum source.tar.gz > source.tar.gz.sha256)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-extensibility-source-${{ env.SOURCE_SHA }}
+          path: ${{ runner.temp }}/hepta-extensibility-source
+          if-no-files-found: error
+          retention-days: 3
+      - name: Exercise source identity regressions
+        run: python3 -m unittest discover -v -s scripts -p 'test_hepta_ci_source_identity.py'
+      - name: Check tracked source is unchanged
+        if: always()
+        run: git diff --exit-code
+
+  native-regression:
+    name: Extensibility native regression
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 60
+    env:
+      SOURCE_SHA: ${{ github.event.pull_request.head.sha }}
+      PYTHONDONTWRITEBYTECODE: "1"
+      CARGO_INCREMENTAL: "0"
+      CARGO_BUILD_JOBS: "2"
+      CARGO_PROFILE_TEST_DEBUG: "0"
+      CARGO_PROFILE_DEV_DEBUG: "0"
+      CARGO_TARGET_DIR: ${{ runner.temp }}/hepta-extensibility-target
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          persist-credentials: false
+      - name: Prepare native prerequisites
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential bubblewrap libcap-dev pkg-config
+          sudo sysctl -w kernel.unprivileged_userns_clone=1
+          if sysctl kernel.apparmor_restrict_unprivileged_userns >/dev/null 2>&1; then
+            sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
+          fi
+      - uses: facebook/install-dotslash@1e4e7b3e07eaca387acb98f1d4720e0bee8dbb6a
+      - name: Expose DotSlash for integration tests
+        run: sudo install -m 0755 "$(command -v dotslash)" /usr/local/bin/dotslash
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+      - name: Resolve verified V8 artifacts
+        env:
+          CODEX_REPO_ROOT: ${{ github.workspace }}
+          PYTHONPATH: scripts
+        run: python3 scripts/hepta_ci_v8.py
+      - name: Test actual owner packages
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          just test --locked -p codex-hepta-agentd -p codex-hepta-control-plane -p codex-hepta-intelligence -p codex-hepta-learning-ledger -p codex-hepta-operations
+      - name: Lint actual owner packages
+        working-directory: codex-rs
+        run: cargo clippy --locked -p codex-hepta-agentd -p codex-hepta-control-plane -p codex-hepta-intelligence -p codex-hepta-learning-ledger -p codex-hepta-operations --all-targets -- -D warnings
+      - name: Formatting and source integrity
+        if: always()
+        working-directory: codex-rs
+        run: |
+          cargo fmt -p codex-hepta-agentd -p codex-hepta-control-plane -p codex-hepta-intelligence -p codex-hepta-learning-ledger -p codex-hepta-operations -- --check
+          git diff --check
+          git diff --exit-code
