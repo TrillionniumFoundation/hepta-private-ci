@@ -2,9 +2,11 @@
 
 from .assimilation import (
     AssimilationProposal,
+    DebianSandboxAdapter,
     ExternalManifestCandidate,
     OwnerConsentReceipt,
     SandboxParityReceipt,
+    SandboxObservation,
     TypedOperation,
     build_manifest_candidate,
     propose_dormant_assimilation,
@@ -84,6 +86,7 @@ hardened_request_independent_review = request_independent_review
 
 __all__ = [
     "AssimilationProposal",
+    "DebianSandboxAdapter",
     "AttestedSandboxParity",
     "BoundEvidenceDecision",
     "Candidate",
@@ -104,6 +107,7 @@ __all__ = [
     "ReviewRequest",
     "SandboxParityAttestation",
     "SandboxParityReceipt",
+    "SandboxObservation",
     "SandboxReceipt",
     "ScheduleReceipt",
     "SealedCandidateEvidence",
