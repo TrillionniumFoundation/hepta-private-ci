@@ -1,0 +1,33 @@
+name: Hepta session source export
+
+on:
+  push:
+    branches: [work/hepta-executable-exits-20260912]
+    paths: [.github/workflows/hepta-session-source-export.yml]
+
+permissions:
+  contents: read
+
+jobs:
+  export:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+          fetch-depth: 1
+      - name: Archive tracked source only
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/hepta-session-source"
+          git archive --format=tar.gz --output="$RUNNER_TEMP/hepta-session-source/source.tar.gz" HEAD
+          git rev-parse HEAD HEAD^{tree} > "$RUNNER_TEMP/hepta-session-source/identity.txt"
+          git ls-tree -r HEAD > "$RUNNER_TEMP/hepta-session-source/tree.txt"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-session-source-${{ github.sha }}
+          path: ${{ runner.temp }}/hepta-session-source/
+          retention-days: 1
+          if-no-files-found: error
