@@ -14,6 +14,9 @@ concurrency:
   group: blocking-ci-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
+permissions:
+  contents: read
+
 jobs:
   hepta-contract-gate:
     name: Hepta contract gate

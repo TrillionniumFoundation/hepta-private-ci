@@ -12,6 +12,9 @@ concurrency:
   group: python-runtime-release-${{ inputs.runtime_version }}
   cancel-in-progress: false
 
+permissions:
+  contents: read
+
 jobs:
   prepare-python-runtime:
     name: prepare-python-runtime

@@ -3,6 +3,9 @@ name: cargo-deny
 on:
   workflow_call:
 
+permissions:
+  contents: read
+
 jobs:
   cargo-deny:
     timeout-minutes: 30

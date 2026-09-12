@@ -3,6 +3,9 @@ name: blob-size-policy
 on:
   workflow_call:
 
+permissions:
+  contents: read
+
 jobs:
   check:
     timeout-minutes: 30

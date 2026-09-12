@@ -3,6 +3,9 @@ name: repo-checks
 on:
   workflow_call:
 
+permissions:
+  contents: read
+
 jobs:
   build-test:
     runs-on: ubuntu-latest
