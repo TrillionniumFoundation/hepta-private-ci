@@ -455,13 +455,10 @@ async fn running_socket_uses_launch_bound_model_and_isolates_ranker_revocation()
     state.mark_app_server_ready().unwrap();
     let cancellation = CancellationToken::new();
     let _cancel_on_drop = cancellation.clone().drop_guard();
-    let server = crate::AgentdControlServer::bind(
-        socket.clone(),
-        Arc::clone(&state),
-        cancellation.clone(),
-    )
-    .await
-    .unwrap();
+    let server =
+        crate::AgentdControlServer::bind(socket.clone(), Arc::clone(&state), cancellation.clone())
+            .await
+            .unwrap();
     let task = tokio::spawn(server.run());
     let client = crate::AgentdClient::new(socket.clone(), owner(), 1).unwrap();
     assert!(
@@ -541,7 +538,11 @@ async fn running_socket_uses_launch_bound_model_and_isolates_ranker_revocation()
         );
     }
     let other_port = state
-        .response(100, 1, crate::AgentdMethod::MemoryFederationList { limit: 4 })
+        .response(
+            100,
+            1,
+            crate::AgentdMethod::MemoryFederationList { limit: 4 },
+        )
         .await
         .unwrap();
     assert_eq!(other_port.spawn_generation, 1);
