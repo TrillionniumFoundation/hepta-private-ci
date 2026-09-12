@@ -24,6 +24,127 @@ mod codec;
 
 pub const MAX_COMPILED_BODY_GRAPH_BYTES: usize = 2 * 1024 * 1024;
 
+/// Canonical protocol identity for the registered body snapshot projection.
+///
+/// The JSON CNS registry owns the semantic `BodyGraphSnapshotV1` protocol.
+/// Native code must still present an explicit, versioned admission for the
+/// bounded V2 compiled projection below; a payload or source digest alone is
+/// never treated as registry admission.
+pub const BODY_GRAPH_SNAPSHOT_PROTOCOL_V1: &str = "BodyGraphSnapshotV1";
+pub const COMPILED_BODY_GRAPH_PROFILE_V2: &str = "hepta.compiled-body-graph.v2";
+
+fn compiled_body_graph_schema_digest_v2() -> Digest32 {
+    Digest32::of_bytes(b"hepta.compiled-body-graph.v2.schema.v1")
+}
+
+/// Host-owned snapshot of the protocol registry entry used by native handoff.
+/// Construction is intentionally explicit and rejects empty identities. The
+/// registry is metadata only: it grants no runtime or effect authority.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct NativeHandoffProtocolRegistryV1 {
+    protocol_id: StableId,
+    profile_id: StableId,
+    profile_version: u16,
+    schema_digest: Digest32,
+}
+
+impl NativeHandoffProtocolRegistryV1 {
+    /// The only built-in entry. A production owner may construct a reviewed
+    /// registry snapshot with `new` for a future profile/version.
+    pub fn canonical() -> Self {
+        Self {
+            protocol_id: StableId::new(BODY_GRAPH_SNAPSHOT_PROTOCOL_V1)
+                .expect("canonical protocol identity is valid"),
+            profile_id: StableId::new(COMPILED_BODY_GRAPH_PROFILE_V2)
+                .expect("canonical profile identity is valid"),
+            profile_version: 2,
+            schema_digest: compiled_body_graph_schema_digest_v2(),
+        }
+    }
+
+    pub fn new(
+        protocol_id: StableId,
+        profile_id: StableId,
+        profile_version: u16,
+        schema_digest: Digest32,
+    ) -> Result<Self, OrganWireError> {
+        if profile_version == 0 || schema_digest.is_zero() {
+            return Err(OrganWireError::ProtocolRegistry);
+        }
+        Ok(Self {
+            protocol_id,
+            profile_id,
+            profile_version,
+            schema_digest,
+        })
+    }
+
+    fn admit(&self, request: &NativeHandoffProtocolAdmissionV1) -> Result<(), OrganWireError> {
+        if request.protocol_id != self.protocol_id {
+            return Err(OrganWireError::ProtocolRegistry);
+        }
+        if request.profile_id != self.profile_id || request.profile_version != self.profile_version {
+            return Err(OrganWireError::ProtocolVersion);
+        }
+        if request.schema_digest != self.schema_digest {
+            return Err(OrganWireError::ProtocolSchema);
+        }
+        Ok(())
+    }
+
+    pub fn protocol_id(&self) -> &StableId {
+        &self.protocol_id
+    }
+
+    pub fn profile_id(&self) -> &StableId {
+        &self.profile_id
+    }
+
+    pub fn profile_version(&self) -> u16 {
+        self.profile_version
+    }
+
+    pub fn schema_digest(&self) -> Digest32 {
+        self.schema_digest
+    }
+}
+
+/// Caller-supplied, host-independent protocol claim. It is checked against a
+/// host-owned registry before any graph decode or handler construction.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct NativeHandoffProtocolAdmissionV1 {
+    pub protocol_id: StableId,
+    pub profile_id: StableId,
+    pub profile_version: u16,
+    pub schema_digest: Digest32,
+}
+
+impl NativeHandoffProtocolAdmissionV1 {
+    pub fn canonical() -> Self {
+        let registry = NativeHandoffProtocolRegistryV1::canonical();
+        Self {
+            protocol_id: registry.protocol_id,
+            profile_id: registry.profile_id,
+            profile_version: registry.profile_version,
+            schema_digest: registry.schema_digest,
+        }
+    }
+}
+
+/// Receipt produced only after registry, digest, generation, placement and
+/// graph validation all pass. It is an admission observation, not a lease or
+/// a production capability.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct NativeHandoffReceiptV1 {
+    pub protocol_id: StableId,
+    pub profile_id: StableId,
+    pub profile_version: u16,
+    pub schema_digest: Digest32,
+    pub payload_digest: Digest32,
+    pub generation: Generation,
+    pub authority: codex_hepta_types::AuthorityPosture,
+}
+
 /// The V1 manifest's identity and port projection. The digest binds its complete
 /// source manifest (including version, resource and retirement policies).
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -83,6 +204,9 @@ pub enum OrganWireError {
     Projection,
     Placement,
     HandlerManifest,
+    ProtocolRegistry,
+    ProtocolVersion,
+    ProtocolSchema,
     Graph(OrganGraphError),
     Runtime(OrganRuntimeError),
 }
@@ -143,7 +267,45 @@ pub fn decode_compiled_body_graph_v2(
     Ok(VerifiedCompiledBodyGraphV2 { body, graph })
 }
 
+/// Registry-gated native handoff entry point. The protocol claim is checked
+/// against the independently provisioned registry before decoding the bytes;
+/// the existing host admission then verifies the independently supplied
+/// payload digest, generation and placement. Successful return includes a
+/// receipt so callers cannot confuse a decoded projection with an admitted
+/// protocol handoff.
+pub fn admit_compiled_body_graph_v2(
+    bytes: &[u8],
+    admission: &CompiledOrganAdmissionV2,
+    protocol: &NativeHandoffProtocolAdmissionV1,
+    registry: &NativeHandoffProtocolRegistryV1,
+) -> Result<(VerifiedCompiledBodyGraphV2, NativeHandoffReceiptV1), OrganWireError> {
+    registry.admit(protocol)?;
+    let payload_digest = compiled_body_graph_digest_v2(bytes)?;
+    let verified = decode_compiled_body_graph_v2(bytes, admission)?;
+    if verified.generation() != admission.generation {
+        return Err(OrganWireError::Generation);
+    }
+    let receipt = NativeHandoffReceiptV1 {
+        protocol_id: protocol.protocol_id.clone(),
+        profile_id: protocol.profile_id.clone(),
+        profile_version: protocol.profile_version,
+        schema_digest: protocol.schema_digest,
+        payload_digest,
+        generation: verified.generation(),
+        authority: codex_hepta_types::AuthorityPosture::DENY_ALL,
+    };
+    Ok((verified, receipt))
+}
+
 impl VerifiedCompiledBodyGraphV2 {
+    pub fn generation(&self) -> Generation {
+        self.body.generation
+    }
+
+    pub fn snapshot_digest(&self) -> Digest32 {
+        self.body.snapshot_digest
+    }
+
     /// Consume the verified value and the trusted local catalog. A successful
     /// construction is still Registered, not started or externally qualified.
     pub fn into_host(
