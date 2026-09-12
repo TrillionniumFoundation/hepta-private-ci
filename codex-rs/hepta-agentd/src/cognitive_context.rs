@@ -22,18 +22,35 @@ use crate::CognitiveContextSnapshot;
 
 const MAX_CONTEXT_JSON_BYTES: usize = 24 * 1024;
 
+/// Only storage failures may invalidate the canonical SQLite owner. A revoked
+/// or unavailable optional ranker closes the ranked read, not other store ports.
+#[derive(Debug)]
+pub(crate) enum CognitiveContextError {
+    Store(CognitiveStoreError),
+    RankerUnavailable,
+}
+
+impl From<CognitiveStoreError> for CognitiveContextError {
+    fn from(error: CognitiveStoreError) -> Self {
+        Self::Store(error)
+    }
+}
+
+/// `body_generation` is the process launch identity, not the separately fenced
+/// fleet lifecycle epoch (Starting -> Running advances that epoch).
 pub(crate) async fn read(
     store: &CognitiveStore,
     owner: &AgentId,
-    generation: u64,
+    body_generation: u64,
     query: &str,
     limit: u16,
     ranker: Option<&std::sync::Arc<crate::PinnedCognitiveRanker>>,
-) -> Result<CognitiveContextSnapshot, CognitiveStoreError> {
+) -> Result<CognitiveContextSnapshot, CognitiveContextError> {
     if query.is_empty() || query.len() > 2048 || !(1..=4).contains(&limit) {
         return Err(CognitiveStoreError::Invalid(
             "context requires a 1..2048 byte query and a 1..4 result limit".to_string(),
-        ));
+        )
+        .into());
     }
     let access = CognitiveAccess::agent_private(owner.clone());
     let scope = CognitiveScope::AgentPrivate;
@@ -99,12 +116,12 @@ pub(crate) async fn read(
         let rank_query = query.to_string();
         let mut items = std::mem::take(&mut response.items);
         response.items = tokio::task::spawn_blocking(move || {
-            ranker.rank(&rank_owner, generation, &rank_query, &mut items)?;
+            ranker.rank(&rank_owner, body_generation, &rank_query, &mut items)?;
             Ok::<_, String>(items)
         })
         .await
-        .map_err(|error| CognitiveStoreError::Unavailable(error.to_string()))?
-        .map_err(CognitiveStoreError::Unavailable)?;
+        .map_err(|_| CognitiveContextError::RankerUnavailable)?
+        .map_err(|_| CognitiveContextError::RankerUnavailable)?;
         response.items.truncate(usize::from(limit));
     }
     let encoded_context = serde_json::to_vec(&response)
@@ -119,7 +136,7 @@ pub(crate) async fn read(
     let plan = plan_observed_context(ObservedContextV1 {
         owner_id: StableId::new(owner.as_str())
             .map_err(|error| CognitiveStoreError::Invalid(error.to_string()))?,
-        body_generation: Generation::new(generation)
+        body_generation: Generation::new(body_generation)
             .map_err(|error| CognitiveStoreError::Invalid(error.to_string()))?,
         source_snapshot_digest: read.snapshot_digest(),
         read_digest: read.receipt_digest(),
@@ -147,7 +164,8 @@ pub(crate) async fn read(
     {
         return Err(CognitiveStoreError::Invalid(
             "planned context exceeds response budget".to_string(),
-        ));
+        )
+        .into());
     }
     // A concurrent correction, deletion, changed citation, expiry or restored
     // older database must not leak a stale projection into the response.
@@ -158,8 +176,8 @@ pub(crate) async fn read(
         let ranker = std::sync::Arc::clone(ranker);
         tokio::task::spawn_blocking(move || ranker.revalidate())
             .await
-            .map_err(|error| CognitiveStoreError::Unavailable(error.to_string()))?
-            .map_err(CognitiveStoreError::Unavailable)?;
+            .map_err(|_| CognitiveContextError::RankerUnavailable)?
+            .map_err(|_| CognitiveContextError::RankerUnavailable)?;
     }
     Ok(response)
 }
