@@ -1,0 +1,30 @@
+{
+  "schema": "hepta.openbao-adapter-test-receipt.v1",
+  "candidate": {
+    "repository": "TrillionniumFoundation/hepta-private-ci",
+    "commit": "d619a05fefefd53e7766465466abc3938cc79728",
+    "tree": "resolved_at_execution"
+  },
+  "command": "just test --locked -p codex-hepta-bao-adapter -p codex-hepta-contracts",
+  "tests": {
+    "started": 150,
+    "passed": 150,
+    "failed": 0,
+    "skipped": 0
+  },
+  "scope": "adapter_and_contract_crates_only",
+  "synthetic_only": true,
+  "named_production_caller": false,
+  "independent_acceptance": false,
+  "full_openbao_compatibility": false,
+  "authorityFlags": {
+    "runtimeAuthority": false,
+    "productionCaller": false,
+    "productionWriter": false,
+    "networkConnect": false,
+    "secretOperation": false,
+    "operatorAcceptance": false,
+    "promotion": false,
+    "release": false
+  }
+}
