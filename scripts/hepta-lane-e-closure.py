@@ -406,6 +406,41 @@ def verify_traceability(
                     f"cross-crate function is missing: {function}",
                 )
 
+    # Product-boundary tests are tracked separately from the Lane E causal
+    # chain: they exercise a real non-Rust consumer and an injected fault.
+    # Keeping this as an explicit trace prevents a passing unit test from being
+    # mistaken for cross-language product evidence.
+    boundary_raw = trace.get("productBoundaryCases")
+    findings.require(
+        isinstance(boundary_raw, list) and len(boundary_raw) == 1,
+        "product_boundary_case_count",
+        "exactly one product-boundary case is required",
+    )
+    if isinstance(boundary_raw, list):
+        for item in boundary_raw:
+            if not isinstance(item, dict):
+                findings.add("invalid_boundary_case", "invalid product-boundary case")
+                continue
+            source_path = relative_path(
+                item.get("source"), findings, "productBoundaryCase.source"
+            )
+            function = item.get("function")
+            if source_path is None or not source_path.is_file():
+                findings.add("boundary_source_missing", "product-boundary source is missing")
+                continue
+            findings.require(
+                isinstance(function, str),
+                "boundary_function_missing",
+                "product-boundary function is missing",
+            )
+            if isinstance(function, str):
+                text = source_path.read_text(encoding="utf-8")
+                findings.require(
+                    bool(re.search(rf"\bfn\s+{re.escape(function)}\s*\(", text)),
+                    "boundary_function_unresolved",
+                    f"product-boundary function is missing: {function}",
+                )
+
 
 def verify_authority_posture(findings: Findings) -> None:
     sources = [
@@ -524,6 +559,19 @@ def verify_workflow(findings: Findings) -> None:
         ),
         "workflow_gate_missing",
         "workflow is missing the cross-crate causal regression",
+    )
+    findings.require(
+        any(
+            "cross_language_wire_fault" in command
+            and any(
+                command[index : index + 2]
+                == ["-p", "codex-hepta-shadow-qualification"]
+                for index in range(len(command) - 1)
+            )
+            for command in test_commands
+        ),
+        "workflow_gate_missing",
+        "workflow is missing the cross-language payload-fault regression",
     )
     findings.require(
         bool(re.search(r"^  synthetic-merge:\s*$", text, re.MULTILINE)),
