@@ -2,8 +2,8 @@
   "schema": "hepta.openbao-adapter-test-receipt.v1",
   "candidate": {
     "repository": "TrillionniumFoundation/hepta-private-ci",
-    "commit": "226f502fb18baca2b49cce947e4198a4acea526f",
-    "tree": "50662ab96cf82f2b735cd92a28527842fed831a6"
+    "commit": "f5cabb538b75c0b67da9e0988749b01d8402125a",
+    "tree": "b2793e2e10cc9565ffdb8ba21690c197d334a25b"
   },
   "command": "just test --locked -p codex-hepta-bao-adapter -p codex-hepta-contracts",
   "tests": {
@@ -50,5 +50,6 @@
       "404 maps to NotFound and malformed 200 maps to InvalidResponse",
       "authority signature, revocation, timeout, response bound and indeterminate delivery fences"
     ]
-  }
+  },
+  "executedAt": "2026-09-12T15:27:00+08:00"
 }
