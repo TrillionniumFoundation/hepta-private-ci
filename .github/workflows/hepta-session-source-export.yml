@@ -31,3 +31,45 @@ jobs:
           path: ${{ runner.temp }}/hepta-session-source/
           retention-days: 1
           if-no-files-found: error
+  compiler:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+          fetch-depth: 1
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: 1.95.0
+          components: clippy,rustfmt
+      - name: Resolve and compile implementation packages
+        working-directory: codex-rs
+        run: cargo check --locked -p codex-hepta-intelligence-eval -p codex-hepta-intelligence -p codex-hepta-learning-artifacts -p codex-hepta-control-plane -p codex-hepta-bellman-operator --all-targets
+      - name: Archive compiler and public dependency caches only
+        shell: bash
+        run: |
+          set -euo pipefail
+          OUT="$RUNNER_TEMP/hepta-session-compiler"
+          mkdir -p "$OUT/bin"
+          cp -L "$(command -v just)" "$OUT/bin/just"
+          cp -L "$(command -v cargo-nextest)" "$OUT/bin/cargo-nextest"
+          SYSROOT="$(rustc --print sysroot)"
+          tar -czf "$OUT/toolchain.tar.gz" -C "$SYSROOT" bin lib
+          CARGO_CACHE="${CARGO_HOME:-$HOME/.cargo}"
+          ITEMS=()
+          for item in registry git; do
+            if test -d "$CARGO_CACHE/$item"; then ITEMS+=("$item"); fi
+          done
+          tar -czf "$OUT/dependencies.tar.gz" -C "$CARGO_CACHE" "${ITEMS[@]}"
+          rustc -Vv > "$OUT/compiler.txt"
+          cargo -V >> "$OUT/compiler.txt"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-session-compiler-${{ github.sha }}
+          path: ${{ runner.temp }}/hepta-session-compiler/
+          retention-days: 1
+          if-no-files-found: error
