@@ -102,10 +102,7 @@ fn failed_send_is_terminal_and_only_identical_replay_is_idempotent() {
         ..failed
     };
     for observation in [successful_observation(), indeterminate] {
-        assert_eq!(
-            observer.observe_send(observation),
-            Err(Error::AlreadyTerminal)
-        );
+        assert_eq!(observer.observe_send(observation), Err(Error::AlreadyTerminal));
         assert_eq!(observer.receipt("operation.1"), Some(&terminal));
     }
 }
