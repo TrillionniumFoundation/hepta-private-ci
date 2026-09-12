@@ -58,6 +58,14 @@ native structure. A complete serialized runtime graph needs a new versioned wire
 adapter and consumer admission. Consumers must not infer omitted runtime links,
 feedback evidence or failure placement from the existing snapshot.
 
+The organ projection is closed in both directions. Every one of the forty
+registered production module identities must appear in at least one
+`moduleBindings` entry, and every binding must resolve to that registry. The
+HNMF crate is the sole declared exception: `hnmf.reference` is recorded under
+`qualificationReferences` with qualification-only scope and is never counted as
+a production module. The CNS verifier rejects unknown, missing or undeclared
+qualification bindings rather than silently widening this exception.
+
 ## 6. Organ lifecycle, addition, removal and modification
 
 The lifecycle is:
