@@ -156,7 +156,7 @@ class OwnedServiceTests(unittest.TestCase):
         first.request("step", "before")
         first.close()
         with self.assertRaises(ServiceError):
-            self.target(1, 1).start()
+            self.target(1, 1, implementation_version=2).start()
         upgraded = self.target(2, 1, implementation_version=2)
         upgraded.start()
         upgraded.request("step", "after")
