@@ -1,0 +1,65 @@
+{
+  "schema": "hepta.qualification-readiness-status.v1",
+  "schemaVersion": 1,
+  "documentClass": "canonical_status_vocabulary",
+  "authorityScope": "qualification_and_implementation_reporting_only",
+  "dimensions": [
+    {
+      "id": "specification_closed",
+      "meaning": "The normative implementation specification and its registered documentation gaps are closed.",
+      "requiredEvidence": ["readiness_registry", "typed_protocols", "gap_registry", "module_execution_dossiers"],
+      "doesNotImply": ["native_source", "runtime_activation", "product_efficacy"]
+    },
+    {
+      "id": "implementation_closed",
+      "meaning": "The specified behavior is implemented by the canonical native source, mapped to real callers, and covered by executable product tests.",
+      "requiredEvidence": ["canonical_source_receipt", "native_symbol_mapping", "real_consumer_callsite", "product_tests"],
+      "doesNotImply": ["independent_acceptance", "future_window_efficacy", "production_release"]
+    },
+    {
+      "id": "external_evidence_closed",
+      "meaning": "Independent external evidence and acceptance gates required for the target capability are complete.",
+      "requiredEvidence": ["independent_evaluator_receipt", "applicable_capability_gates", "deployment_or_hardware_evidence"],
+      "doesNotImply": ["autonomous_authority", "unbounded_self_modification", "automatic_propagation"]
+    }
+  ],
+  "allowedValues": ["open", "closed"],
+  "ordering": ["specification_closed", "implementation_closed", "external_evidence_closed"],
+  "implicationRules": [
+    "implementation_closed requires specification_closed",
+    "external_evidence_closed requires implementation_closed"
+  ],
+  "projection": {
+    "readiness_registry": {
+      "specification_closed": "closed",
+      "implementation_closed": "open",
+      "external_evidence_closed": "open",
+      "qualification_band": "specification_closed_only"
+    },
+    "execution_dossiers": {
+      "specification_closed": "closed",
+      "implementation_closed": "open",
+      "external_evidence_closed": "open",
+      "qualification_band": "specification_closed_only",
+      "scope": "forty module implementation designs; no native product evidence"
+    },
+    "native_bindings": {
+      "specification_closed": "closed",
+      "implementation_closed": "open",
+      "external_evidence_closed": "open",
+      "qualification_band": "source_observation_only"
+    }
+  },
+  "canonicalVocabulary": {
+    "use": "Use the three dimension IDs above for all qualification, readiness and dossier reports.",
+    "deprecatedAliases": [
+      "documentation_gap_state",
+      "documentation_depth_state",
+      "runtime_and_evidence_state",
+      "allGapsClosed",
+      "productTestsExecuted",
+      "deploymentQualified"
+    ],
+    "aliasRule": "Deprecated aliases may remain as source-specific facts, but must not be presented as substitutes for the three canonical dimensions."
+  }
+}
