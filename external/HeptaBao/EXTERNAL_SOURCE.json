@@ -2,12 +2,12 @@
   "schema_version": 1,
   "module": "secrets.heptabao",
   "repository": "TrillionniumFoundation/HeptaBao",
-  "branch": "codex/bao-service-closure-20260908",
-  "commit": "b798e88c98a7a9ab93a50abc1502c0a869233fda",
+  "branch": "main",
+  "commit": "eac9c608bfda77a8972e1e8a1343dfc21985d62b",
   "integration_mode": "host_enrolled_https_consumer_v1",
   "contains_secret_material": false,
   "automatic_update": false,
   "runtime_authority": false,
   "release_authority": false,
-  "interpretation": "pins the reviewed single-node service candidate; the host must separately configure CA, provider credential and kernel-verified final-use grants; this source record grants no runtime or release authority"
+  "interpretation": "pins the reviewed integrated service source on main; the scoped HTTPS consumer was exercised against this exact source tree with independently issued final-use grants; host enrollment and production qualification remain separate"
 }

@@ -1,11 +1,12 @@
 # HeptaBao external source binding
 
-The authorized HTTPS consumer targets reviewed service candidate
-[`TrillionniumFoundation/HeptaBao@b798e88c98a7a9ab93a50abc1502c0a869233fda`](https://github.com/TrillionniumFoundation/HeptaBao/commit/b798e88c98a7a9ab93a50abc1502c0a869233fda),
-proposed in [HeptaBao PR #78](https://github.com/TrillionniumFoundation/HeptaBao/pull/78).
-This replaces the earlier bootstrap-only source pin with the actual single-node
-HTTPS implementation. It is a reviewed candidate, not a complete OpenBao
-replacement or a production rollout.
+The authorized HTTPS consumer pins the integrated service on
+[`TrillionniumFoundation/HeptaBao@eac9c608bfda77a8972e1e8a1343dfc21985d62b`](https://github.com/TrillionniumFoundation/HeptaBao/commit/eac9c608bfda77a8972e1e8a1343dfc21985d62b)
+on `main`. The real issuer and consumer processes passed 20 synthetic TLS,
+replay, signature, provider-denial and restart checks against that source tree.
+The [source-bound receipt](../../codex-rs/hepta-bao-adapter/qa/evidence/real-consumer-20260912.json)
+records the build and executable digests. This validates the bounded KV consumer
+profile; complete OpenBao replacement and production rollout remain unqualified.
 
 [Client integration](../../codex-rs/hepta-bao-adapter/README.md) and
 [kernel authority design](../../codex-rs/hepta-contracts/FINAL_USE.md) describe
