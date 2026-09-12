@@ -2,13 +2,13 @@
   "schema": "hepta.openbao-adapter-test-receipt.v1",
   "candidate": {
     "repository": "TrillionniumFoundation/hepta-private-ci",
-    "commit": "d619a05fefefd53e7766465466abc3938cc79728",
-    "tree": "resolved_at_execution"
+    "commit": "226f502fbcdba6e3ebf9d0cf85364fdefe7d3fb7",
+    "tree": "50662ab96cf82f2b735cd92a28527842fed831a6"
   },
   "command": "just test --locked -p codex-hepta-bao-adapter -p codex-hepta-contracts",
   "tests": {
-    "started": 150,
-    "passed": 150,
+    "started": 153,
+    "passed": 153,
     "failed": 0,
     "skipped": 0
   },
@@ -26,5 +26,29 @@
     "operatorAcceptance": false,
     "promotion": false,
     "release": false
+  },
+  "contractSuite": {
+    "source": "codex-rs/hepta-bao-adapter/src/https_consumer_tests.rs",
+    "versionedEndpoint": "GET /v1/{mount}/data/{path}?version=N",
+    "scenarios": [
+      "real_tls_read_uses_headers_exact_version_and_secret_only_consumer",
+      "version_and_digest_mismatches_never_deliver",
+      "provider_not_found_and_malformed_success_are_denied",
+      "root_namespace_omits_namespace_header",
+      "invalid_signature_and_provider_denial_do_not_release_secret",
+      "revocation_during_network_wait_prevents_consumer_delivery",
+      "untrusted_tls_certificate_fails_before_secret_delivery",
+      "oversized_reply_fails_without_consumer_delivery",
+      "timeout_does_not_retry_or_release_a_secret",
+      "consumer_failure_after_delivery_is_indeterminate"
+    ],
+    "asserts": [
+      "exact mount/path/version request and X-Vault-Token header",
+      "root namespace omits X-Vault-Namespace",
+      "metadata version mismatch is rejected before consumer delivery",
+      "secret digest mismatch is rejected before consumer delivery",
+      "404 maps to NotFound and malformed 200 maps to InvalidResponse",
+      "authority signature, revocation, timeout, response bound and indeterminate delivery fences"
+    ]
   }
 }
