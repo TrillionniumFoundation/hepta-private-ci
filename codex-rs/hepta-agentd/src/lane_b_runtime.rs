@@ -1,5 +1,12 @@
 use std::collections::BTreeMap;
 
+#[path = "lane_b_reconciliation.rs"]
+mod reconciliation;
+
+pub use reconciliation::ReconciledRunOutcome;
+pub use reconciliation::RunReconciliation;
+pub use reconciliation::RunReconciliationVerifier;
+
 const MAX_ACTIVE_RUNS: usize = 256;
 const MAX_RETAINED_RUNS: usize = 1_024;
 
@@ -13,11 +20,15 @@ pub enum RunPhase {
     Succeeded,
     Failed,
     Indeterminate,
+    Quarantined,
 }
 
 impl RunPhase {
     fn closed(self) -> bool {
-        matches!(self, Self::Cancelled | Self::Succeeded | Self::Failed)
+        matches!(
+            self,
+            Self::Cancelled | Self::Succeeded | Self::Failed | Self::Quarantined
+        )
     }
 
     fn terminal_observed(self) -> bool {
@@ -71,6 +82,8 @@ pub enum CancellationDisposition {
     CancelledBeforeDispatch,
     CancellingAfterDispatch,
     AlreadyTerminal,
+    ReconciliationRequired,
+    AlreadyQuarantined,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -88,15 +101,20 @@ pub enum AgentRunError {
     ContextRequired,
     TerminalObservationRequired,
     ArithmeticOverflow,
+    StaleComposition,
+    StaleAuthorityEpoch,
+    InvalidObservationWindow,
+    ReconciliationRejected,
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Eq, PartialEq)]
 struct RunRecord {
     snapshot: RunSnapshot,
     revision: u64,
     phase: RunPhase,
     context_digest: Option<String>,
     compilation_receipt_digest: Option<String>,
+    reconciliation: Option<RunReconciliation>,
 }
 
 /// Owner-local Lane B coordinator for Agentd.
@@ -149,6 +167,7 @@ impl AgentRunCoordinator {
             phase: RunPhase::Admitted,
             context_digest: None,
             compilation_receipt_digest: None,
+            reconciliation: None,
         };
         let result = receipt(&record, /*idempotent*/ false);
         self.runs.insert(snapshot.run_id, record);
@@ -165,6 +184,14 @@ impl AgentRunCoordinator {
             .runs
             .get_mut(&attachment.run_id)
             .ok_or(AgentRunError::RunNotFound)?;
+        // Equal context digests do not authenticate a different run snapshot.
+        if attachment.request_digest != record.snapshot.request_digest
+            || attachment.objective_digest != record.snapshot.objective_digest
+            || attachment.body_digest != record.snapshot.body_digest
+            || attachment.artifact_set_digest != record.snapshot.artifact_set_digest
+        {
+            return Err(AgentRunError::MixedSnapshot);
+        }
         if record.phase == RunPhase::ContextAttached
             && record.context_digest.as_deref() == Some(attachment.context_digest.as_str())
             && record.compilation_receipt_digest.as_deref()
@@ -176,17 +203,10 @@ impl AgentRunCoordinator {
         if record.phase != RunPhase::Admitted {
             return Err(AgentRunError::InvalidTransition);
         }
-        if attachment.request_digest != record.snapshot.request_digest
-            || attachment.objective_digest != record.snapshot.objective_digest
-            || attachment.body_digest != record.snapshot.body_digest
-            || attachment.artifact_set_digest != record.snapshot.artifact_set_digest
-        {
-            return Err(AgentRunError::MixedSnapshot);
-        }
+        advance_revision(record)?;
         record.context_digest = Some(attachment.context_digest);
         record.compilation_receipt_digest = Some(attachment.compilation_receipt_digest);
         record.phase = RunPhase::ContextAttached;
-        advance_revision(record)?;
         Ok(receipt(record, /*idempotent*/ false))
     }
 
@@ -207,8 +227,8 @@ impl AgentRunCoordinator {
         if record.phase != RunPhase::ContextAttached {
             return Err(AgentRunError::ContextRequired);
         }
-        record.phase = RunPhase::Dispatched;
         advance_revision(record)?;
+        record.phase = RunPhase::Dispatched;
         Ok(receipt(record, /*idempotent*/ false))
     }
 
@@ -225,20 +245,21 @@ impl AgentRunCoordinator {
         require_revision(record, expected_revision)?;
         let disposition = match record.phase {
             RunPhase::Admitted | RunPhase::ContextAttached => {
-                record.phase = RunPhase::Cancelled;
                 advance_revision(record)?;
+                record.phase = RunPhase::Cancelled;
                 CancellationDisposition::CancelledBeforeDispatch
             }
             RunPhase::Dispatched => {
-                record.phase = RunPhase::Cancelling;
                 advance_revision(record)?;
+                record.phase = RunPhase::Cancelling;
                 CancellationDisposition::CancellingAfterDispatch
             }
             RunPhase::Cancelling => CancellationDisposition::CancellingAfterDispatch,
-            RunPhase::Cancelled
-            | RunPhase::Succeeded
-            | RunPhase::Failed
-            | RunPhase::Indeterminate => CancellationDisposition::AlreadyTerminal,
+            RunPhase::Indeterminate => CancellationDisposition::ReconciliationRequired,
+            RunPhase::Quarantined => CancellationDisposition::AlreadyQuarantined,
+            RunPhase::Cancelled | RunPhase::Succeeded | RunPhase::Failed => {
+                CancellationDisposition::AlreadyTerminal
+            }
         };
         Ok((disposition, receipt(record, /*idempotent*/ false)))
     }
@@ -275,11 +296,13 @@ impl AgentRunCoordinator {
         } else if phase != RunPhase::Indeterminate {
             return Err(AgentRunError::TerminalObservationRequired);
         }
-        record.phase = phase;
         advance_revision(record)?;
+        record.phase = phase;
         Ok(receipt(record, /*idempotent*/ false))
     }
 
+    /// Remove only the ephemeral admission record. Reconciliation evidence and
+    /// quarantined effects remain owned by the authenticated domain observer.
     pub fn remove_closed_run(
         &mut self,
         run_id: &str,
