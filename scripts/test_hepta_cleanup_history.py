@@ -8,7 +8,9 @@ import unittest
 from pathlib import Path
 from unittest import mock
 
-spec = importlib.util.spec_from_file_location("hepta_docs_cleanup", Path(__file__).with_name("hepta-docs.py"))
+spec = importlib.util.spec_from_file_location(
+    "hepta_docs_cleanup", Path(__file__).with_name("hepta-docs.py")
+)
 DOCS = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(DOCS)
 
@@ -28,15 +30,19 @@ class HistoricalRetirementTests(unittest.TestCase):
             target.write_text("# original\n", encoding="utf-8")
         self.commit("initial")
         base = self.git("rev-parse", "HEAD")
-        self.system = {"knownLegacyDeletion": {
-            "exactBaseHead": base,
-            "exactBaseTree": self.git("rev-parse", "HEAD^{tree}"),
-            "copiedSnapshotPath": "legacy/snapshot",
-            "copiedSnapshotDescendantCount": 1,
-            "directPaths": ["legacy/plan.md"],
-            "exactPathCount": 2,
-            "exactGitObjects": {"legacy/snapshot": self.git("rev-parse", "HEAD:legacy/snapshot")},
-        }}
+        self.system = {
+            "knownLegacyDeletion": {
+                "exactBaseHead": base,
+                "exactBaseTree": self.git("rev-parse", "HEAD^{tree}"),
+                "copiedSnapshotPath": "legacy/snapshot",
+                "copiedSnapshotDescendantCount": 1,
+                "directPaths": ["legacy/plan.md"],
+                "exactPathCount": 2,
+                "exactGitObjects": {
+                    "legacy/snapshot": self.git("rev-parse", "HEAD:legacy/snapshot")
+                },
+            }
+        }
         self.git("rm", "-r", "legacy")
         self.commit("retire legacy")
         self.patch = mock.patch.object(DOCS, "ROOT", self.root)
@@ -44,7 +50,9 @@ class HistoricalRetirementTests(unittest.TestCase):
         self.addCleanup(self.patch.stop)
 
     def git(self, *args: str) -> str:
-        return subprocess.check_output(["git", *args], cwd=self.root, text=True, stderr=subprocess.PIPE).strip()
+        return subprocess.check_output(
+            ["git", *args], cwd=self.root, text=True, stderr=subprocess.PIPE
+        ).strip()
 
     def commit(self, message: str) -> None:
         self.git("add", "-A")
@@ -56,7 +64,9 @@ class HistoricalRetirementTests(unittest.TestCase):
         self.commit("later reviewed retirement")
         after = DOCS.verify_cleanup_base(self.system)
         self.assertEqual(before["inventorySha256"], after["inventorySha256"])
-        self.assertEqual((after["expectedDeletionCount"], after["observedDeletionCount"]), (2, 3))
+        self.assertEqual(
+            (after["expectedDeletionCount"], after["observedDeletionCount"]), (2, 3)
+        )
 
     def test_reintroduced_legacy_file_remains_rejected(self) -> None:
         path = self.root / "legacy/plan.md"
@@ -67,7 +77,9 @@ class HistoricalRetirementTests(unittest.TestCase):
             DOCS.verify_cleanup_base(self.system)
 
     def test_retained_code_cannot_consume_deleted_json(self) -> None:
-        (self.root / "kept.py").write_text('open("legacy/snapshot/data.json")\n', encoding="utf-8")
+        (self.root / "kept.py").write_text(
+            'open("legacy/snapshot/data.json")\n', encoding="utf-8"
+        )
         self.commit("dangling consumer")
         with self.assertRaisesRegex(SystemExit, "deleted JSON consumer"):
             DOCS.verify_cleanup_base(self.system)

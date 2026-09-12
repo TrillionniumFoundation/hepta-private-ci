@@ -16,8 +16,11 @@ def configure_v8(repo_root: Path, environment_file: Path) -> None:
     version = subprocess.check_output(
         ["rustc", "-vV"], cwd=repo_root / "codex-rs", text=True, timeout=60
     )
-    hosts = [line.removeprefix("host: ").strip() for line in version.splitlines()
-             if line.startswith("host: ")]
+    hosts = [
+        line.removeprefix("host: ").strip()
+        for line in version.splitlines()
+        if line.startswith("host: ")
+    ]
     if len(hosts) != 1 or hosts[0] not in TARGET_SPECS:
         raise RuntimeError(f"Expected one supported Rust host, found {hosts!r}")
 
@@ -28,10 +31,14 @@ def configure_v8(repo_root: Path, environment_file: Path) -> None:
     # Validate the complete result before appending anything to GITHUB_ENV.
     for value in overrides.values():
         if not isinstance(value, str) or not value or any(c in value for c in "\r\n\0"):
-            raise RuntimeError("V8 artifact path cannot be empty or contain control characters")
+            raise RuntimeError(
+                "V8 artifact path cannot be empty or contain control characters"
+            )
     if overrides:
         with environment_file.open("a", encoding="utf-8", newline="\n") as output:
-            output.write("".join(f"{name}={value}\n" for name, value in sorted(overrides.items())))
+            output.write(
+                "".join(f"{name}={value}\n" for name, value in sorted(overrides.items()))
+            )
 
 
 def main() -> None:

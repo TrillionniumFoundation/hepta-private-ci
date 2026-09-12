@@ -23,7 +23,8 @@ class V8EnvironmentTests(unittest.TestCase):
         self.environment.start()
         self.addCleanup(self.environment.stop)
         self.host = mock.patch.object(
-            hepta_ci_v8.subprocess, "check_output",
+            hepta_ci_v8.subprocess,
+            "check_output",
             return_value="rustc 1.95.0\nhost: aarch64-unknown-linux-gnu\n",
         )
         self.host_mock = self.host.start()
@@ -69,7 +70,9 @@ class V8EnvironmentTests(unittest.TestCase):
             hepta_ci_v8.configure_v8(ROOT, self.output)
         self.assertEqual(self.output.read_text(), "EXISTING=preserved\n")
 
-    def test_partial_pair_and_environment_injection_are_rejected_before_writing(self) -> None:
+    def test_partial_pair_and_environment_injection_are_rejected_before_writing(
+        self,
+    ) -> None:
         for overrides in (
             {"RUSTY_V8_ARCHIVE": "/tmp/archive"},
             {"OTHER": "x"},
