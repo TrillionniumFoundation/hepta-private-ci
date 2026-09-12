@@ -19,6 +19,7 @@ MODULES_PATH = "docs/modules/MODULES.json"
 MODULE_DOCS_PATH = "docs/modules/MODULE_DOCS.json"
 SOURCE_BINDINGS_PATH = "docs/modules/SOURCE_BINDINGS.json"
 READINESS_PATH = "docs/readiness/READINESS.json"
+STATUS_MODEL_PATH = "docs/readiness/STATUS_MODEL.json"
 READINESS_GAPS_PATH = "docs/readiness/GAPS.json"
 CNS_PATH = "docs/cns/CNS_ARCHITECTURE.json"
 PARALLEL_PATH = "docs/readiness/PARALLEL_DEVELOPMENT.md"
@@ -143,8 +144,8 @@ def status_text(
             "",
             f"**Parent plan:** `{PLAN_ID}` v{PLAN_VERSION}  ",
             f"**Readiness overlay:** `{OVERLAY_ID}` v{OVERLAY_VERSION}  ",
-            "**Documentation-depth state:** `closed`  ",
-            "**Runtime and evidence state:** `not implied`",
+            "**Canonical qualification status:** `specification_closed=closed`; `implementation_closed=open`; `external_evidence_closed=open`",
+            "Status vocabulary: [`docs/readiness/STATUS_MODEL.json`](../../docs/readiness/STATUS_MODEL.json).",
             "",
             "## Closed execution-document surface",
             "",
@@ -158,7 +159,7 @@ def status_text(
             f"- External capability/evidence gates retained: **{len(dossier['externalGateIds'])}**",
             "- Positive authority flags: **0**",
             "",
-            "The dossier closes ambiguity about entrypoints, callers, host identity, physical state, migrations, single writers, terminal observers, fault suites, target-host measurements, NDU participation, organ mapping, self-iteration and external-system assimilation. It does not claim that any missing runtime, hardware, future-window, independent-review, canary, selection, promotion or release evidence exists.",
+            "The dossier closes ambiguity about entrypoints, callers, host identity, physical state, migrations, single writers, terminal observers, fault suites, target-host measurements, NDU participation, organ mapping, self-iteration and external-system assimilation. Its canonical projection is specification_closed only; it does not claim that any missing runtime, hardware, future-window, independent-review, canary, selection, promotion or release evidence exists.",
             "",
         ]
     )
@@ -183,8 +184,21 @@ def verify() -> int:
     module_docs = load(MODULE_DOCS_PATH)["modules"]
     source_bindings = load(SOURCE_BINDINGS_PATH)["bindings"]
     readiness = load(READINESS_PATH)
+    status_model = load(STATUS_MODEL_PATH)
     readiness_gaps = load(READINESS_GAPS_PATH)
     cns = load(CNS_PATH)
+    need(
+        status_model.get("schema") == "hepta.qualification-readiness-status.v1"
+        and status_model.get("schemaVersion") == 1,
+        "canonical status model",
+    )
+    dossier_projection = status_model.get("projection", {}).get("execution_dossiers", {})
+    need(
+        dossier_projection.get("specification_closed") == "closed"
+        and dossier_projection.get("implementation_closed") == "open"
+        and dossier_projection.get("external_evidence_closed") == "open",
+        "dossier status projection",
+    )
 
     need(
         dossier.get("schema") == "hepta.module-execution-dossier.v1"
@@ -419,6 +433,8 @@ def verify() -> int:
 
 
 def generate_status(check: bool) -> int:
+    status_model = load(STATUS_MODEL_PATH)
+    need(status_model.get("schema") == "hepta.qualification-readiness-status.v1", "canonical status model")
     text = status_text(load(DOSSIER_PATH), load(READINESS_PATH), load(CNS_PATH))
     path = ROOT / STATUS_PATH
     if check:
