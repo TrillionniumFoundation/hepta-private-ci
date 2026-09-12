@@ -144,15 +144,24 @@ impl MatrixSendObserver {
         {
             return Err(Error::ObservationMismatch);
         }
-        if current.receipt.state == SendState::Succeeded {
-            if current.receipt.observation_digest.as_deref()
-                == Some(observation.observation_digest.as_str())
-            {
-                let mut receipt = current.receipt.clone();
-                receipt.idempotent = true;
-                return Ok(receipt);
+        // Terminal outcomes cannot be reopened by delayed or contradictory observations.
+        // A digest alone is not sufficient to establish an identical replay.
+        match current.receipt.state {
+            SendState::Succeeded | SendState::Failed => {
+                if observation.terminal_observed
+                    && observation.accepted == (current.receipt.state == SendState::Succeeded)
+                    && observation.server_event_id == current.receipt.server_event_id
+                    && current.receipt.observation_digest.as_deref()
+                        == Some(observation.observation_digest.as_str())
+                {
+                    let mut receipt = current.receipt.clone();
+                    receipt.idempotent = true;
+                    return Ok(receipt);
+                }
+                return Err(Error::AlreadyTerminal);
             }
-            return Err(Error::AlreadyTerminal);
+            SendState::Redacted => return Err(Error::AlreadyTerminal),
+            SendState::Prepared | SendState::Indeterminate => {}
         }
         if !observation.terminal_observed {
             current.receipt.state = SendState::Indeterminate;
@@ -201,6 +210,14 @@ impl MatrixSendObserver {
             .sends
             .get_mut(&operation_id)
             .ok_or(Error::SendNotFound)?;
+        if current.receipt.state == SendState::Redacted {
+            if current.receipt.observation_digest.as_deref() == Some(redaction_digest) {
+                let mut receipt = current.receipt.clone();
+                receipt.idempotent = true;
+                return Ok(receipt);
+            }
+            return Err(Error::AlreadyTerminal);
+        }
         current.receipt.state = SendState::Redacted;
         current.receipt.observation_digest = Some(redaction_digest.to_string());
         current.receipt.terminal_observed = true;
