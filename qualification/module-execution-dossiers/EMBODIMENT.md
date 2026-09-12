@@ -6,6 +6,8 @@ Scope: a concrete proposed `EMB-0` through `EMB-3` profile, not physical activat
 
 The first simulator is a one-dimensional unit-mass cart with state position x in metres and velocity v in metres/second, action acceleration u in metres/second squared and sample period dt=0.01 seconds. The canonical discrete plant is explicit Euler: x_next=x+dt*v; v_next=v+dt*u. Do not silently substitute another integrator or time unit.
 
+The native typed sensor/controller/actuator seam is documented in [EMBODIED_TYPED_IO.md](../../docs/readiness/EMBODIED_TYPED_IO.md) and implemented by `SyntheticCartIoV1`; it remains simulator/HIL-only and carries deny-all authority.
+
 The simulator supplies tagged x/v observations with monotonic tick, clock identity, calibration, body generation, source interval and uncertainty. Simulation truth is labelled synthetic, not real sensor calibration. The initial profile has direct state observation; a later partial-observation filter requires a separate estimator profile and calibration tests.
 
 ## 2. Deterministic control and mathematical scope
