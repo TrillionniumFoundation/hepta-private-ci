@@ -9,6 +9,9 @@ on:
       - "codex-rs/hepta-learning-ledger/**"
       - "codex-rs/hepta-operations/**"
       - "scripts/**"
+      - "qualification/lane-b/**"
+      - "docs/modules/**"
+      - ".github/CODEOWNERS"
       - ".github/workflows/hepta-extensibility.yml"
 
 permissions:
@@ -47,11 +50,60 @@ jobs:
           path: ${{ runner.temp }}/hepta-extensibility-source
           if-no-files-found: error
           retention-days: 3
-      - name: Exercise source identity regressions
-        run: python3 -m unittest discover -v -s scripts -p 'test_hepta_ci_source_identity.py'
+      - name: Exercise source identity and governance rejection semantics
+        run: |
+          python3 -m unittest discover -v -s scripts -p 'test_hepta_ci_source_identity.py'
+          python3 -m unittest discover -v -s scripts -p 'test_hepta_evolution_governance.py'
       - name: Check tracked source is unchanged
         if: always()
         run: git diff --exit-code
+
+  registry-conformance:
+    name: Extensibility live registry conformance
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    env:
+      SOURCE_SHA: ${{ github.event.pull_request.head.sha }}
+      PYTHONDONTWRITEBYTECODE: "1"
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Verify actual source identities, owner anchors and generated projections
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          python3 scripts/hepta-lane-b-truth.py verify
+      - name: Check source was not repaired during qualification
+        if: always()
+        run: |
+          git diff --check
+          git diff --exit-code
+
+  governance-observation:
+    name: Evolution activation configuration prerequisites
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    env:
+      SOURCE_SHA: ${{ github.event.pull_request.head.sha }}
+      PYTHONDONTWRITEBYTECODE: "1"
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          persist-credentials: false
+      - name: Observe main protection without administrative credentials or writes
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          REPOSITORY: ${{ github.repository }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          python3 scripts/verify_hepta_evolution_governance.py --repository "$REPOSITORY"
 
   native-regression:
     name: Extensibility native regression

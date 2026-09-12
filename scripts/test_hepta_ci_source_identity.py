@@ -12,6 +12,8 @@ import unittest
 from pathlib import Path
 from unittest import mock
 
+from hepta_ci_source_fixture import write_lane_b_fixture
+
 SCRIPTS = Path(__file__).resolve().parent
 
 
@@ -205,6 +207,15 @@ class GitSourceIdentityTests(unittest.TestCase):
 
 
 class SourceConformanceTests(unittest.TestCase):
+    def setUp(self) -> None:
+        self.directory = tempfile.TemporaryDirectory()
+        self.addCleanup(self.directory.cleanup)
+        self.root = Path(self.directory.name)
+        self.truth = write_lane_b_fixture(self.root, LANE_B.MODULES, LANE_B.OPS)
+        patcher = mock.patch.object(LANE_B, "ROOT", self.root)
+        patcher.start()
+        self.addCleanup(patcher.stop)
+
     def test_cli_self_test_runs_the_real_entrypoint(self) -> None:
         result = subprocess.run(
             [sys.executable, str(SCRIPTS / "hepta-lane-b-truth.py"), "self-test"],
@@ -221,10 +232,22 @@ class SourceConformanceTests(unittest.TestCase):
         )
         self.assertTrue(json.loads(evaluation.stdout)["ok"])
 
+    def test_module_maps_rejects_mismatched_source_base(self) -> None:
+        # Unit isolation must not weaken the real loader's provenance check.
+        self.assertEqual(len(LANE_B.module_maps(self.truth)), len(LANE_B.MODULES))
+        path = self.root / self.truth["modules"][0]["mapPath"]
+        row = json.loads(path.read_text(encoding="utf-8"))
+        row["sourceBase"]["commit"] = "c" * 40
+        path.write_text(json.dumps(row), encoding="utf-8")
+        with self.assertRaisesRegex(LANE_B.Invalid, "source base"):
+            LANE_B.module_maps(self.truth)
+
     def test_honest_module_gaps_do_not_claim_completion_or_hide_bad_anchors(
         self,
     ) -> None:
-        truth = LANE_B.load(LANE_B.TRUTH)
+        # Live registry conformance is a separate required CI job. This fixture
+        # tests rejection semantics using real files, not mocked validators.
+        truth = self.truth
         maps = LANE_B.module_maps(truth)
         truth["claimBoundary"]["repositoryControlledSourceBoundaryGapsClosed"] = False
         maps[0]["repositoryControlledGaps"] = [
