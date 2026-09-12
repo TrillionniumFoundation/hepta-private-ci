@@ -1,14 +1,14 @@
 # knowledge.graph: implementation design
 
 Parent: `docs/modules/knowledge.graph/TECHNICAL.md`. Lane: `LANE-C-MEMORY`.
-Status: specified target, not implemented or independently accepted. Common requirements: `../EXECUTION_SEMANTICS.md` and `../TECHNICAL.md`. Canonical ownership and package predecessors are unchanged.
+Status: complete/incremental generation, publication and bounded relation query kernels implemented; remaining target capabilities and independent acceptance are listed in section 8. Common requirements: `../EXECUTION_SEMANTICS.md` and `../TECHNICAL.md`. Canonical ownership and package predecessors are unchanged.
 
 ## 1. Source and work envelope
 
 Roots: `codex-rs/hepta-kg`.
 Packages: `MEM-4-KG`.
 
-Operation signatures below are design contracts, not assertions of existing native symbols. Bind each to an existing or planned symbol and consumer inside the owner envelope. Preserve existing stores and APIs; do not create another authority or execution spine.
+Operation signatures below describe the target contract. Section 8 identifies the implemented native subset and remaining integration; names in section 2 are not automatically native API symbols. Preserve existing stores and APIs; do not create another authority or execution spine.
 
 ## 2. Public operations and contract details
 
@@ -42,3 +42,11 @@ These are required product test designs, not executed-test receipts. Each implem
 World-model consumers must distinguish symbolic evidence relations from learned dynamics. KG reads compose with cognitive snapshots and cannot construct the production cognitive writer. Rollback selects a rebuildable compatible projection after current deletion filtering.
 
 Use all eighteen dossier receipt fields. Immediate revocation/stop remains effective across frozen snapshots. Preserve every applicable external gate; no generator self-acceptance, self-merge or self-release.
+
+## 8. Current native implementation
+
+- **Implemented entrypoints:** `build_complete_generation` in [codex-rs/hepta-kg/src/generation.rs](../../../codex-rs/hepta-kg/src/generation.rs); `apply_incremental_delta` in [codex-rs/hepta-kg/src/generation.rs](../../../codex-rs/hepta-kg/src/generation.rs); `publish_generation` in [codex-rs/hepta-kg/src/generation.rs](../../../codex-rs/hepta-kg/src/generation.rs). Complete/incremental generation, publication and bounded relation query kernels implemented.
+- **State and recovery:** KnowledgeGenerationV2 is a rebuildable native projection with source/revision/validity support, generation vector and canonical digest. Publication checks an exact predecessor; projection values are not a durable source writer.
+- **Source tests:** [codex-rs/hepta-kg/src/generation_tests.rs](../../../codex-rs/hepta-kg/src/generation_tests.rs), [codex-rs/hepta-memory/src/cognitive_kg_store_tests.rs](../../../codex-rs/hepta-memory/src/cognitive_kg_store_tests.rs). These are test identities, not execution receipts for this documentation revision.
+- **Implementation and operating references:** [codex-rs/hepta-memory/LANE_C_SQLITE.md](../../../codex-rs/hepta-memory/LANE_C_SQLITE.md).
+- **Remaining work:** Bind source deltas and generation publication to the existing cognitive SQLite KG owner; qualify restart, current tombstone propagation and real query consumers without introducing a second fact store.

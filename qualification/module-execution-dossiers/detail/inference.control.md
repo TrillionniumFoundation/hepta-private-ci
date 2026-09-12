@@ -1,14 +1,14 @@
 # inference.control: implementation design
 
 Parent: `docs/modules/inference.control/TECHNICAL.md`. Lane: `LANE-B-RUNTIME`.
-Status: specified target, not implemented or independently accepted. Common requirements: `../EXECUTION_SEMANTICS.md` and `../TECHNICAL.md`. Canonical ownership and package predecessors are unchanged.
+Status: durable native App Server slot admission and observed settlement implemented; remaining target capabilities and independent acceptance are listed in section 8. Common requirements: `../EXECUTION_SEMANTICS.md` and `../TECHNICAL.md`. Canonical ownership and package predecessors are unchanged.
 
 ## 1. Source and work envelope
 
 Roots: `codex-rs/hepta-infer-core`, `codex-rs/hepta-inferd`.
 Packages: `P0.7B-B1A-PROVIDER-BOUNDARY`, `INFER-V4-T1`, `INFER-V4-T2`, `INFER-V4-T3`.
 
-Operation signatures below are design contracts, not assertions of existing native symbols. Bind each to an existing or planned symbol and consumer inside the owner envelope. Preserve existing stores and APIs; do not create another authority or execution spine.
+Operation signatures below describe the target contract. Section 8 identifies the implemented native subset and remaining integration; names in section 2 are not automatically native API symbols. Preserve existing stores and APIs; do not create another authority or execution spine.
 
 ## 2. Public operations and contract details
 
@@ -42,3 +42,11 @@ These are required product test designs, not executed-test receipts. Each implem
 A source library that validates an observation is not proof that a real provider ran. Actual worker, runtime/device and consumer evidence remain required. Rollback drains assignments and settles current resource holders before switching scheduler/model generations.
 
 Use all eighteen dossier receipt fields. Immediate revocation/stop remains effective across frozen snapshots. Preserve every applicable external gate; no generator self-acceptance, self-merge or self-release.
+
+## 8. Current native implementation
+
+- **Implemented entrypoints:** `reserve_native` in [codex-rs/hepta-infer-core/src/native_control.rs](../../../codex-rs/hepta-infer-core/src/native_control.rs); `dispatch_native` in [codex-rs/hepta-infer-core/src/native_control.rs](../../../codex-rs/hepta-infer-core/src/native_control.rs); `settle_native` in [codex-rs/hepta-infer-core/src/native_control.rs](../../../codex-rs/hepta-infer-core/src/native_control.rs). Durable native App Server slot admission and observed settlement implemented.
+- **State and recovery:** DurableInferenceControl owns one locked, synced journal with additive native-v1 records. A reservation is a local in-flight slot; unknown execution retains capacity, unknown token usage remains None, and replay never dispatches a replacement turn.
+- **Source tests:** [codex-rs/hepta-infer-core/src/native_control_tests.rs](../../../codex-rs/hepta-infer-core/src/native_control_tests.rs). These are test identities, not execution receipts for this documentation revision.
+- **Implementation and operating references:** [docs/readiness/LANE_B_NATIVE_HOST.md](../../../docs/readiness/LANE_B_NATIVE_HOST.md), [docs/modules/inference.control/IMPLEMENTATION_MAP.json](../../../docs/modules/inference.control/IMPLEMENTATION_MAP.json).
+- **Remaining work:** Integrate economic quota/hardware capacity authorities and authenticated post-crash provider reconciliation. Add bounded archival under the same owner before the 64 MiB journal ceiling is reached.

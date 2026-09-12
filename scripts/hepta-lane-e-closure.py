@@ -426,7 +426,9 @@ def verify_traceability(
             )
             function = item.get("function")
             if source_path is None or not source_path.is_file():
-                findings.add("boundary_source_missing", "product-boundary source is missing")
+                findings.add(
+                    "boundary_source_missing", "product-boundary source is missing"
+                )
                 continue
             findings.require(
                 isinstance(function, str),
@@ -564,8 +566,7 @@ def verify_workflow(findings: Findings) -> None:
         any(
             "cross_language_wire_fault" in command
             and any(
-                command[index : index + 2]
-                == ["-p", "codex-hepta-shadow-qualification"]
+                command[index : index + 2] == ["-p", "codex-hepta-shadow-qualification"]
                 for index in range(len(command) - 1)
             )
             for command in test_commands

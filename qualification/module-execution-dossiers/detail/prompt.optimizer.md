@@ -1,14 +1,14 @@
 # prompt.optimizer: implementation design
 
 Parent: `docs/modules/prompt.optimizer/TECHNICAL.md`. Lane: `LANE-F-ADAPTIVE-POLICY`.
-Status: specified target, not implemented or independently accepted. Common requirements: `../EXECUTION_SEMANTICS.md` and `../TECHNICAL.md`. Canonical ownership and package predecessors are unchanged.
+Status: bounded portfolio optimization and pair-interaction shadow calculator implemented; remaining target capabilities and independent acceptance are listed in section 8. Common requirements: `../EXECUTION_SEMANTICS.md` and `../TECHNICAL.md`. Canonical ownership and package predecessors are unchanged.
 
 ## 1. Source and work envelope
 
 Roots: `codex-rs/hepta-prompt-optimizer`.
 Packages: `PIM-2-PROMPT-PRICING-PORTFOLIO-SHADOW`.
 
-Operation signatures below are design contracts, not assertions of existing native symbols. Bind each to an existing or planned symbol and consumer inside the owner envelope. Preserve existing stores and APIs; do not create another authority or execution spine.
+Operation signatures below describe the target contract. Section 8 identifies the implemented native subset and remaining integration; names in section 2 are not automatically native API symbols. Preserve existing stores and APIs; do not create another authority or execution spine.
 
 ## 2. Public operations and contract details
 
@@ -42,3 +42,11 @@ These are required product test designs, not executed-test receipts. Each implem
 C1 records actual delivery through Codex before assigning intervention credit. Cross-factor interactions need adequate support, not unmeasured additive claims. Rollback uses compatible non-revoked factor/realization snapshots and a deterministic no-intervention fallback.
 
 Use all eighteen dossier receipt fields. Immediate revocation/stop remains effective across frozen snapshots. Preserve every applicable external gate; no generator self-acceptance, self-merge or self-release.
+
+## 8. Current native implementation
+
+- **Implemented entrypoints:** `optimize` in [codex-rs/hepta-prompt-optimizer/src/lib.rs](../../../codex-rs/hepta-prompt-optimizer/src/lib.rs); `calculate_local_shadow` in [codex-rs/hepta-prompt-optimizer/src/local_shadow.rs](../../../codex-rs/hepta-prompt-optimizer/src/local_shadow.rs). Bounded portfolio optimization and pair-interaction shadow calculator implemented.
+- **State and recovery:** Pure local proposals bind caller-supplied gains/costs/relations and explicit local-no-intervention baseline. The latter is distinct from canonical ledger abstain and owns neither a durable receipt nor registry mutation.
+- **Source tests:** [codex-rs/hepta-prompt-optimizer/src/local_shadow_tests.rs](../../../codex-rs/hepta-prompt-optimizer/src/local_shadow_tests.rs), [codex-rs/hepta-prompt-optimizer/src/lib_tests.rs](../../../codex-rs/hepta-prompt-optimizer/src/lib_tests.rs). These are test identities, not execution receipts for this documentation revision.
+- **Implementation and operating references:** [docs/modules/prompt.optimizer/TECHNICAL.md](../../../docs/modules/prompt.optimizer/TECHNICAL.md).
+- **Remaining work:** Authenticate registry/graph/ledger inputs, establish causal support and realization-context compatibility, and bind an owner-approved intervention boundary; local scores alone do not qualify activation.

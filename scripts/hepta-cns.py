@@ -205,8 +205,7 @@ def validate_module_bindings(
     refs: dict[str, dict[str, Any]] = {}
     for row in qualification_references:
         need(
-            isinstance(row, dict)
-            and list(row) == QUALIFICATION_REFERENCE_KEYS,
+            isinstance(row, dict) and list(row) == QUALIFICATION_REFERENCE_KEYS,
             "qualification reference key closure/order",
         )
         identity = row["id"]

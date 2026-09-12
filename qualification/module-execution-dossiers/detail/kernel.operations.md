@@ -1,14 +1,14 @@
 # kernel.operations: implementation design
 
 Parent: `docs/modules/kernel.operations/TECHNICAL.md`. Lane: `LANE-A-FOUNDATION`.
-Status: specified target, not implemented or independently accepted. Common requirements: `../EXECUTION_SEMANTICS.md` and `../TECHNICAL.md`. Canonical ownership and package predecessors are unchanged.
+Status: bounded operation transition reference and outbox components implemented; remaining target capabilities and independent acceptance are listed in section 8. Common requirements: `../EXECUTION_SEMANTICS.md` and `../TECHNICAL.md`. Canonical ownership and package predecessors are unchanged.
 
 ## 1. Source and work envelope
 
 Roots: `codex-rs/hepta-operations`.
 Packages: `P0.7D-FAULT-MATRIX`.
 
-Operation signatures below are design contracts, not assertions of existing native symbols. Bind each to an existing or planned symbol and consumer inside the owner envelope. Preserve existing stores and APIs; do not create another authority or execution spine.
+Operation signatures below describe the target contract. Section 8 identifies the implemented native subset and remaining integration; names in section 2 are not automatically native API symbols. Preserve existing stores and APIs; do not create another authority or execution spine.
 
 ## 2. Public operations and contract details
 
@@ -42,3 +42,11 @@ These are required product test designs, not executed-test receipts. Each implem
 Each adapter supplies its actual terminal observer and compensation semantics. Compensation is a new authorized operation. Restoring an old binary must preserve current revocation and pending effects; no rollback may invent a successful external outcome.
 
 Use all eighteen dossier receipt fields. Immediate revocation/stop remains effective across frozen snapshots. Preserve every applicable external gate; no generator self-acceptance, self-merge or self-release.
+
+## 8. Current native implementation
+
+- **Implemented entrypoints:** `OperationLedger` in [codex-rs/hepta-operations/src/ledger.rs](../../../codex-rs/hepta-operations/src/ledger.rs); `Outbox` in [codex-rs/hepta-operations/src/outbox.rs](../../../codex-rs/hepta-operations/src/outbox.rs). Bounded operation transition reference and outbox components implemented.
+- **State and recovery:** OperationLedger is a BTreeMap reference model capped at 16384 records, with semantic duplicate checks, generation/revision transitions and explicit indeterminate state. Cloning or reopening a caller copy is not durable recovery.
+- **Source tests:** [codex-rs/hepta-operations/src/ledger_tests.rs](../../../codex-rs/hepta-operations/src/ledger_tests.rs), [codex-rs/hepta-operations/src/outbox_tests.rs](../../../codex-rs/hepta-operations/src/outbox_tests.rs). These are test identities, not execution receipts for this documentation revision.
+- **Implementation and operating references:** [docs/lane-a-foundation/kernel.operations/REFERENCE_MODEL_V1.md](../../../docs/lane-a-foundation/kernel.operations/REFERENCE_MODEL_V1.md).
+- **Remaining work:** Bind these transitions to the existing durable effect owner and final-use authority; this reference model does not implement the target transactional production operation ledger.

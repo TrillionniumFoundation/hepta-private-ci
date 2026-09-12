@@ -1,14 +1,14 @@
 # context.compiler: implementation design
 
 Parent: `docs/modules/context.compiler/TECHNICAL.md`. Lane: `LANE-C-MEMORY`.
-Status: specified target, not implemented or independently accepted. Common requirements: `../EXECUTION_SEMANTICS.md` and `../TECHNICAL.md`. Canonical ownership and package predecessors are unchanged.
+Status: source-aware compilation with mandatory groups and candidate-bound receipts implemented; remaining target capabilities and independent acceptance are listed in section 8. Common requirements: `../EXECUTION_SEMANTICS.md` and `../TECHNICAL.md`. Canonical ownership and package predecessors are unchanged.
 
 ## 1. Source and work envelope
 
 Roots: `codex-rs/hepta-context-compiler`.
 Packages: `CTX-1-CONTEXT-COMPILER`.
 
-Operation signatures below are design contracts, not assertions of existing native symbols. Bind each to an existing or planned symbol and consumer inside the owner envelope. Preserve existing stores and APIs; do not create another authority or execution spine.
+Operation signatures below describe the target contract. Section 8 identifies the implemented native subset and remaining integration; names in section 2 are not automatically native API symbols. Preserve existing stores and APIs; do not create another authority or execution spine.
 
 ## 2. Public operations and contract details
 
@@ -42,3 +42,11 @@ These are required product test designs, not executed-test receipts. Each implem
 Native Codex attachment is the consumer contract; no direct provider path. C1 tests stale citation and contradiction preservation under maximum context pressure. Rollback restores compatible profiles and invalidates caches instead of reusing a stale compiled prompt.
 
 Use all eighteen dossier receipt fields. Immediate revocation/stop remains effective across frozen snapshots. Preserve every applicable external gate; no generator self-acceptance, self-merge or self-release.
+
+## 8. Current native implementation
+
+- **Implemented entrypoints:** `compile` in [codex-rs/hepta-context-compiler/src/lib.rs](../../../codex-rs/hepta-context-compiler/src/lib.rs); `compile_with_requirements` in [codex-rs/hepta-context-compiler/src/requirements.rs](../../../codex-rs/hepta-context-compiler/src/requirements.rs); `compile_candidate_bound` in [codex-rs/hepta-context-compiler/src/candidate_bound.rs](../../../codex-rs/hepta-context-compiler/src/candidate_bound.rs). Source-aware compilation with mandatory groups and candidate-bound receipts implemented.
+- **State and recovery:** Stateless compilation separates trusted instructions from untrusted evidence and binds objective/snapshot/items. Explicit mandatory groups validate exact items before budget selection and cannot be silently omitted.
+- **Source tests:** [codex-rs/hepta-context-compiler/src/requirements_tests.rs](../../../codex-rs/hepta-context-compiler/src/requirements_tests.rs), [codex-rs/hepta-context-compiler/src/candidate_bound_tests.rs](../../../codex-rs/hepta-context-compiler/src/candidate_bound_tests.rs). These are test identities, not execution receipts for this documentation revision.
+- **Implementation and operating references:** [codex-rs/hepta-context-compiler/MANDATORY_CONTEXT.md](../../../codex-rs/hepta-context-compiler/MANDATORY_CONTEXT.md), [docs/readiness/LANE_B_NATIVE_HOST.md](../../../docs/readiness/LANE_B_NATIVE_HOST.md).
+- **Remaining work:** Actual tokenizer/model accounting, prompt realization and physical turn delivery belong to the selected caller profile; a compilation receipt alone does not prove them.

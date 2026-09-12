@@ -1,14 +1,14 @@
 # intuition.policy: implementation design
 
 Parent: `docs/modules/intuition.policy/TECHNICAL.md`. Lane: `LANE-F-ADAPTIVE-POLICY`.
-Status: specified target, not implemented or independently accepted. Common requirements: `../EXECUTION_SEMANTICS.md` and `../TECHNICAL.md`. Canonical ownership and package predecessors are unchanged.
+Status: bounded calibrated decision and candidate/request binding implemented; remaining target capabilities and independent acceptance are listed in section 8. Common requirements: `../EXECUTION_SEMANTICS.md` and `../TECHNICAL.md`. Canonical ownership and package predecessors are unchanged.
 
 ## 1. Source and work envelope
 
 Roots: `codex-rs/hepta-intuition`.
 Packages: `INT-1-CALIBRATED-INTUITION-POLICY`.
 
-Operation signatures below are design contracts, not assertions of existing native symbols. Bind each to an existing or planned symbol and consumer inside the owner envelope. Preserve existing stores and APIs; do not create another authority or execution spine.
+Operation signatures below describe the target contract. Section 8 identifies the implemented native subset and remaining integration; names in section 2 are not automatically native API symbols. Preserve existing stores and APIs; do not create another authority or execution spine.
 
 ## 2. Public operations and contract details
 
@@ -42,3 +42,11 @@ These are required product test designs, not executed-test receipts. Each implem
 C1 first uses read-only/reversible supported decisions. Fast path selection is not effect authority. Rollback selects the compatible calibrated predecessor for future runs, or deterministic abstention when its lineage is revoked.
 
 Use all eighteen dossier receipt fields. Immediate revocation/stop remains effective across frozen snapshots. Preserve every applicable external gate; no generator self-acceptance, self-merge or self-release.
+
+## 8. Current native implementation
+
+- **Implemented entrypoints:** `decide_calibrated` in [codex-rs/hepta-intuition/src/calibrated.rs](../../../codex-rs/hepta-intuition/src/calibrated.rs); `decide_calibrated_v2` in [codex-rs/hepta-intuition/src/calibrated_binding.rs](../../../codex-rs/hepta-intuition/src/calibrated_binding.rs). Bounded calibrated decision and candidate/request binding implemented.
+- **State and recovery:** Pure receipts retain action propensities and explicit abstain/slow-path mass; hard veto, OOD, confidence and risk checks precede selection over the supplied candidate set. Calibration, completeness and provenance are input evidence, not learned here.
+- **Source tests:** [codex-rs/hepta-intuition/src/calibrated_tests.rs](../../../codex-rs/hepta-intuition/src/calibrated_tests.rs). These are test identities, not execution receipts for this documentation revision.
+- **Implementation and operating references:** [docs/modules/intuition.policy/TECHNICAL.md](../../../docs/modules/intuition.policy/TECHNICAL.md), [codex-rs/hepta-intelligence/EVALUATED_SHADOW.md](../../../codex-rs/hepta-intelligence/EVALUATED_SHADOW.md).
+- **Remaining work:** Bind authenticated current calibration/OOD/completeness artifacts and an owner-supplied assignment draw; real calibration quality and consumer execution require independent evidence.

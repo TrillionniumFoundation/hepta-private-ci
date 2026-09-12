@@ -1,14 +1,14 @@
 # automation.taskflow: implementation design
 
 Parent: `docs/modules/automation.taskflow/TECHNICAL.md`. Lane: `LANE-B-RUNTIME`.
-Status: specified target, not implemented or independently accepted. Common requirements: `../EXECUTION_SEMANTICS.md` and `../TECHNICAL.md`. Canonical ownership and package predecessors are unchanged.
+Status: durable scheduling and a separate in-memory effect-executor component implemented; remaining target capabilities and independent acceptance are listed in section 8. Common requirements: `../EXECUTION_SEMANTICS.md` and `../TECHNICAL.md`. Canonical ownership and package predecessors are unchanged.
 
 ## 1. Source and work envelope
 
 Roots: `codex-rs/hepta-automation`.
 Packages: `TASKFLOW-1-EXECUTION-BOUNDARY`.
 
-Operation signatures below are design contracts, not assertions of existing native symbols. Bind each to an existing or planned symbol and consumer inside the owner envelope. Preserve existing stores and APIs; do not create another authority or execution spine.
+Operation signatures below describe the target contract. Section 8 identifies the implemented native subset and remaining integration; names in section 2 are not automatically native API symbols. Preserve existing stores and APIs; do not create another authority or execution spine.
 
 ## 2. Public operations and contract details
 
@@ -42,3 +42,11 @@ These are required product test designs, not executed-test receipts. Each implem
 Procedural skills expose preconditions, termination, effects and recovery through the same typed step contract. Skill generation does not grant execution. Rollback preserves schedule/occurrence identities and current operation reconciliation across graph generations.
 
 Use all eighteen dossier receipt fields. Immediate revocation/stop remains effective across frozen snapshots. Preserve every applicable external gate; no generator self-acceptance, self-merge or self-release.
+
+## 8. Current native implementation
+
+- **Implemented entrypoints:** `create_task` in [codex-rs/hepta-automation/src/store.rs](../../../codex-rs/hepta-automation/src/store.rs); `tick` in [codex-rs/hepta-automation/src/scheduler.rs](../../../codex-rs/hepta-automation/src/scheduler.rs); `execute_step` in [codex-rs/hepta-automation/src/effect_executor.rs](../../../codex-rs/hepta-automation/src/effect_executor.rs). Durable scheduling and a separate in-memory effect-executor component implemented.
+- **State and recovery:** The existing SQLite automation owner persists schedule/dispatch facts. EffectExecutor keeps bounded occurrence/claim/step maps and invokes an injected driver; the older assess_local_taskflow_boundary calculator still only returns Unavailable and must not be treated as the executor.
+- **Source tests:** [codex-rs/hepta-automation/src/effect_executor_tests.rs](../../../codex-rs/hepta-automation/src/effect_executor_tests.rs), [codex-rs/hepta-automation/src/scheduler.rs](../../../codex-rs/hepta-automation/src/scheduler.rs). These are test identities, not execution receipts for this documentation revision.
+- **Implementation and operating references:** [docs/modules/automation.taskflow/IMPLEMENTATION_MAP.json](../../../docs/modules/automation.taskflow/IMPLEMENTATION_MAP.json), [docs/readiness/LANE_B_RUNTIME_COMPOSITION.md](../../../docs/readiness/LANE_B_RUNTIME_COMPOSITION.md).
+- **Remaining work:** Join effect-executor state to the existing durable step outbox, a real final-use-authorized provider and post-crash reconciliation before allowing dependent effects.

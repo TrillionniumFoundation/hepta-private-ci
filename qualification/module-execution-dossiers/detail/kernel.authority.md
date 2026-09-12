@@ -1,14 +1,14 @@
 # kernel.authority: implementation design
 
 Parent: `docs/modules/kernel.authority/TECHNICAL.md`. Lane: `LANE-A-FOUNDATION`.
-Status: specified target, not implemented or independently accepted. Common requirements: `../EXECUTION_SEMANTICS.md` and `../TECHNICAL.md`. Canonical ownership and package predecessors are unchanged.
+Status: signed final-use verification and durable nonce/revocation ownership implemented; remaining target capabilities and independent acceptance are listed in section 8. Common requirements: `../EXECUTION_SEMANTICS.md` and `../TECHNICAL.md`. Canonical ownership and package predecessors are unchanged.
 
 ## 1. Source and work envelope
 
 Roots: `codex-rs/hepta-contracts`.
 Packages: `P0.7B-B0-VERIFIED-USE`, `P0.7B-B4-CALLSITE-PROOF`.
 
-Operation signatures below are design contracts, not assertions of existing native symbols. Bind each to an existing or planned symbol and consumer inside the owner envelope. Preserve existing stores and APIs; do not create another authority or execution spine.
+Operation signatures below describe the target contract. Section 8 identifies the implemented native subset and remaining integration; names in section 2 are not automatically native API symbols. Preserve existing stores and APIs; do not create another authority or execution spine.
 
 ## 2. Public operations and contract details
 
@@ -42,3 +42,11 @@ These are required product test designs, not executed-test receipts. Each implem
 B4 call-site proof covers every effect adapter, not just the validator unit test. This module is outside the NDU learnable surface. Rollback cannot restore revoked leases or old key authority; uncertain epoch state stops affected effects.
 
 Use all eighteen dossier receipt fields. Immediate revocation/stop remains effective across frozen snapshots. Preserve every applicable external gate; no generator self-acceptance, self-merge or self-release.
+
+## 8. Current native implementation
+
+- **Implemented entrypoints:** `FinalUseAuthority` in [codex-rs/hepta-contracts/src/final_use.rs](../../../codex-rs/hepta-contracts/src/final_use.rs); `Store` in [codex-rs/hepta-contracts/src/final_use_store.rs](../../../codex-rs/hepta-contracts/src/final_use_store.rs). Signed final-use verification and durable nonce/revocation ownership implemented.
+- **State and recovery:** open_state_dir owns locked private Unix state; claim verifies Ed25519 and syncs nonce consumption before dispatch, while with_verified_use rechecks live epoch/revocation under the same lock before callback entry. Uncertain persistence fences the handle.
+- **Source tests:** [codex-rs/hepta-contracts/src/final_use_tests.rs](../../../codex-rs/hepta-contracts/src/final_use_tests.rs). These are test identities, not execution receipts for this documentation revision.
+- **Implementation and operating references:** [codex-rs/hepta-contracts/FINAL_USE.md](../../../codex-rs/hepta-contracts/FINAL_USE.md), [codex-rs/hepta-supervisor/EXTERNAL_AUTHORITY_SIGNER.md](../../../codex-rs/hepta-supervisor/EXTERNAL_AUTHORITY_SIGNER.md).
+- **Remaining work:** Host trust, current revocation distribution and backup anti-rollback remain external owner responsibilities; equivalent non-Unix ACL storage is not implemented.

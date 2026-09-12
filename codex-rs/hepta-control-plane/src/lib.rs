@@ -9,6 +9,8 @@
 
 #[path = "embodiment/cart.rs"]
 mod cart;
+#[path = "embodiment/io.rs"]
+mod io;
 mod organ_graph;
 mod organ_runtime;
 mod organ_wire;
@@ -18,8 +20,6 @@ mod planner_journal;
 mod planner_ndu;
 #[path = "embodiment/timing.rs"]
 mod timing;
-#[path = "embodiment/io.rs"]
-mod io;
 
 pub use cart::CART_Q24_SCALE;
 pub use cart::CartCommandV1;
@@ -58,21 +58,21 @@ pub use organ_runtime::OrganHandlerFaultV1;
 pub use organ_runtime::OrganHostV1;
 pub use organ_runtime::OrganRuntimeError;
 pub use organ_runtime::TrustedReadOnlyOrganV1;
+pub use organ_wire::BODY_GRAPH_SNAPSHOT_PROTOCOL_V1;
 pub use organ_wire::BodyGraphBindingV1;
+pub use organ_wire::COMPILED_BODY_GRAPH_PROFILE_V2;
 pub use organ_wire::CompiledOrganAdmissionV2;
 pub use organ_wire::CompiledOrganHandlerV2;
+pub use organ_wire::MAX_COMPILED_BODY_GRAPH_BYTES;
 pub use organ_wire::NativeHandoffProtocolAdmissionV1;
 pub use organ_wire::NativeHandoffProtocolRegistryV1;
 pub use organ_wire::NativeHandoffReceiptV1;
-pub use organ_wire::BODY_GRAPH_SNAPSHOT_PROTOCOL_V1;
-pub use organ_wire::COMPILED_BODY_GRAPH_PROFILE_V2;
-pub use organ_wire::MAX_COMPILED_BODY_GRAPH_BYTES;
 pub use organ_wire::OrganManifestBindingV1;
 pub use organ_wire::OrganWireError;
 pub use organ_wire::VerifiedCompiledBodyGraphV2;
+pub use organ_wire::admit_compiled_body_graph_v2;
 pub use organ_wire::compiled_body_graph_digest_v2;
 pub use organ_wire::decode_compiled_body_graph_v2;
-pub use organ_wire::admit_compiled_body_graph_v2;
 pub use organ_wire::encode_compiled_body_graph_v2;
 pub use planner::FeasiblePlanReceiptV1;
 pub use planner::GlobalStateSnapshotV1;

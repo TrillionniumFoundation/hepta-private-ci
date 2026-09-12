@@ -31,7 +31,7 @@
         {
           "path": "codex-rs/hepta-automation/src/store.rs",
           "kind": "store_and_schedule",
-          "command": "cargo test -p codex-hepta-automation --lib"
+          "command": "just test -p codex-hepta-automation --lib"
         }
       ],
       "sourceSemantics": "Persists the canonical automation definition with revision and owner identity."
@@ -50,7 +50,7 @@
         {
           "path": "codex-rs/hepta-automation/src/scheduler.rs",
           "kind": "scheduler_and_recovery",
-          "command": "cargo test -p codex-hepta-automation --lib"
+          "command": "just test -p codex-hepta-automation --lib"
         }
       ],
       "sourceSemantics": "Materializes bounded due work and commits intent before App Server admission."

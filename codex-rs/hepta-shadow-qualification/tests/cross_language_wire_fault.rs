@@ -5,10 +5,13 @@
 //! one-byte fault.  This exercises the actual wire bytes, rather than merely
 //! proving two Rust functions agree with one another.
 
-use codex_hepta_types::{Generation, StableId};
-use codex_hepta_wire::{WireEnvelope, WireError};
+use codex_hepta_types::Generation;
+use codex_hepta_types::StableId;
+use codex_hepta_wire::WireEnvelope;
+use codex_hepta_wire::WireError;
 use serde_json::Value;
-use std::process::{Command, Stdio};
+use std::process::Command;
+use std::process::Stdio;
 
 const PYTHON_PARSER: &str = r#"
 import hashlib, json, struct, sys

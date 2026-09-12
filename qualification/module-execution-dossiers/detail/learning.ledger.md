@@ -49,7 +49,15 @@ Compose native `DurableLedger`, dataset and artifact consumers in C1. Future-tim
 
 Use all eighteen dossier receipt fields. Immediate revocation and stop remain effective across frozen snapshots. Preserve every applicable external gate; no generator self-acceptance, self-merge or self-release.
 
-## 8. Native closure and remaining evidence
+## 8. Current native implementation
+
+- **Implemented entrypoints:** `DurableLedger` in [codex-rs/hepta-learning-ledger/src/durable.rs](../../../codex-rs/hepta-learning-ledger/src/durable.rs); `LearningEvidenceVerifierV1` in [codex-rs/hepta-learning-ledger/src/signed_evidence.rs](../../../codex-rs/hepta-learning-ledger/src/signed_evidence.rs). Anchored file ledger and additional signed evidence admission implemented.
+- **State and recovery:** DurableLedger owns HEPTLR01 framed, checksum/chain-bound append storage over a host-authorized locked File; sync precedes in-memory commit. Anchored recovery requires an independently retained LedgerAnchor. Signed evidence verification is a separate API from pure typed V2 validators.
+- **Source tests:** [codex-rs/hepta-learning-ledger/src/durable_tests.rs](../../../codex-rs/hepta-learning-ledger/src/durable_tests.rs), [codex-rs/hepta-learning-ledger/src/signed_evidence_tests.rs](../../../codex-rs/hepta-learning-ledger/src/signed_evidence_tests.rs). These are test identities, not execution receipts for this documentation revision.
+- **Implementation and operating references:** [codex-rs/hepta-learning-ledger/DURABLE.md](../../../codex-rs/hepta-learning-ledger/DURABLE.md), [codex-rs/hepta-learning-ledger/INSPECTION.md](../../../codex-rs/hepta-learning-ledger/INSPECTION.md).
+- **Remaining work:** Supply current trusted signer/witness distribution, durable directory ownership and product causal consumers. Logical revocation leaves audit bytes and does not establish physical erasure, independent scientific truth or long-term efficacy.
+
+## 9. Native closure and remaining evidence
 
 Repository-controlled implementation coverage is verified by `../../../scripts/hepta-lane-e-closure.py` and `.github/workflows/hepta-lane-e-gap-closure.yml`. The workflow compiles and tests the owner crates, executes a cross-crate causal chain, applies strict Clippy/rustfmt and repeats the source checks on an ordered-parent synthetic merge.
 

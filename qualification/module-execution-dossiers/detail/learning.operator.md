@@ -51,7 +51,15 @@ NDU consumes bounded continuation values but does not replace the world model. C
 
 Use all eighteen dossier receipt fields. Immediate revocation and stop remain effective across frozen snapshots. Preserve every applicable external gate; no generator self-acceptance, self-merge or self-release.
 
-## 8. Native closure and remaining evidence
+## 8. Current native implementation
+
+- **Implemented entrypoints:** `build_targets` in [codex-rs/hepta-bellman-operator/src/lib.rs](../../../codex-rs/hepta-bellman-operator/src/lib.rs); `fit_tabular_operator` in [codex-rs/hepta-bellman-operator/src/learned.rs](../../../codex-rs/hepta-bellman-operator/src/learned.rs); `fit_transition_model` in [codex-rs/hepta-bellman-operator/src/world_model.rs](../../../codex-rs/hepta-bellman-operator/src/world_model.rs). Deterministic targets, tabular operator fitting and action-conditioned world-model baseline implemented.
+- **State and recovery:** Pure candidate artifacts bind immutable data/profile/sensor identities. train is a compatibility alias for target construction; the separate tabular learner requires a complete supported sensor/action grid and retains per-cell sample statistics.
+- **Source tests:** [codex-rs/hepta-bellman-operator/src/learned_tests.rs](../../../codex-rs/hepta-bellman-operator/src/learned_tests.rs), [codex-rs/hepta-bellman-operator/src/world_model_tests.rs](../../../codex-rs/hepta-bellman-operator/src/world_model_tests.rs). These are test identities, not execution receipts for this documentation revision.
+- **Implementation and operating references:** [codex-rs/hepta-bellman-operator/NATIVE_MAPPING.md](../../../codex-rs/hepta-bellman-operator/NATIVE_MAPPING.md), [docs/learning/HOLDER_BELLMAN_SPEC.md](../../../docs/learning/HOLDER_BELLMAN_SPEC.md).
+- **Remaining work:** A neural/tensor model, device execution, independent mathematical applicability and future calibration/retention require separate evidence; model predictions remain synthetic observations.
+
+## 9. Native closure and remaining evidence
 
 Repository-controlled source coverage includes applicability admission, fixed sensor geometry, deterministic Bellman reference, simplest-sufficient tabular fitting, regularity/error-budget admission, action-conditioned dynamics and OOD rejection. `../../../scripts/hepta-lane-e-closure.py` verifies symbol and test mappings, while `.github/workflows/hepta-lane-e-gap-closure.yml` supplies exact-head and synthetic-merge compilation, tests, strict lint and formatting gates.
 

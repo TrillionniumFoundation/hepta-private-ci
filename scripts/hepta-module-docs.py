@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 """Closed-world validator for Hepta module source bindings and technical guides."""
 
-from __future__ import annotations
 import argparse, hashlib, json, re
 from pathlib import Path
 
@@ -94,6 +93,64 @@ def false_authority(value, label):
         label + " authority key closure",
     )
     need(not any(value.values()), label + " positive authority")
+
+
+def verify_local_links(path, text):
+    """Keep native-source, test, operating-guide and shared-rule links usable.
+
+    This checks navigation, not source compilation or semantic completeness.
+    """
+    for target in re.findall(r"\]\(([^\s)]+)\)", text):
+        if "://" in target or target.startswith("mailto:"):
+            continue
+        relative, _, anchor = target.partition("#")
+        destination = (path.parent / relative).resolve() if relative else path
+        need(destination.is_relative_to(ROOT), str(path) + " link outside repository")
+        need(destination.is_file(), str(path) + " missing link " + target)
+        if anchor and destination.suffix == ".md":
+            headings = re.findall(r"^#+ (.+)$", destination.read_text(), re.M)
+            anchors = {
+                re.sub(r"[^\w\- ]", "", heading.lower()).replace(" ", "-")
+                for heading in headings
+            }
+            need(anchor in anchors, str(path) + " missing anchor " + target)
+
+
+def refresh_indexes(check):
+    """Recompute derived bytes/counts/digests without changing claims or scope."""
+    specs = [
+        ("docs/modules/MODULE_DOCS.json", "modules", True),
+        ("qualification/module-execution-dossiers/DETAILS.json", "rows", False),
+    ]
+    changed = []
+    for relative, key, include_metrics in specs:
+        document = load(relative)
+        for row in document[key]:
+            path = ROOT / row["path"]
+            need(path.is_file(), "index source missing " + row["path"])
+            text = path.read_text(encoding="utf-8")
+            updates = {"sha256": sha(text)}
+            if include_metrics:
+                updates.update(
+                    bytes=len(text.encode("utf-8")),
+                    words=len(re.findall(r"\b[\w.-]+\b", text)),
+                )
+            row.update(updates)
+        # Preserve each existing index's representation; refreshing derived
+        # values must not expand the compact detail index into a formatting diff.
+        rendered = (
+            json.dumps(document, indent=2, ensure_ascii=False)
+            if include_metrics
+            else json.dumps(document, separators=(",", ":"), ensure_ascii=False)
+        ) + "\n"
+        path = ROOT / relative
+        if rendered != path.read_text(encoding="utf-8"):
+            changed.append(relative)
+            if not check:
+                path.write_text(rendered, encoding="utf-8")
+    need(not check or not changed, "derived index drift: " + ", ".join(changed))
+    print(json.dumps({"updatedIndexes": changed, "checkOnly": check}))
+    return 0
 
 
 def verify():
@@ -210,6 +267,9 @@ def verify():
         )
         need(row["sha256"] == sha(text), mid + " guide digest")
         need(row["requiredSections"] == HEADINGS, mid + " heading index")
+        verify_local_links(path, text)
+    readme = ROOT / "docs/modules/README.md"
+    verify_local_links(readme, readme.read_text(encoding="utf-8"))
     print(
         json.dumps(
             {
@@ -217,6 +277,8 @@ def verify():
                 "modules": len(mods),
                 "technicalDocuments": len(dmap),
                 "sourceBindings": len(bmap),
+                "validationScope": "registry_digests_paths_and_document_navigation",
+                "productExecutionProved": False,
                 "authorityGranted": False,
             },
             sort_keys=True,
@@ -248,8 +310,14 @@ def self_test():
 
 def main():
     p = argparse.ArgumentParser()
-    p.add_argument("command", choices=["verify", "self-test"])
-    return verify() if p.parse_args().command == "verify" else self_test()
+    p.add_argument("command", choices=["verify", "self-test", "refresh-indexes"])
+    p.add_argument("--check", action="store_true")
+    args = p.parse_args()
+    if args.command == "refresh-indexes":
+        return refresh_indexes(args.check)
+    if args.check:
+        p.error("--check applies only to refresh-indexes")
+    return verify() if args.command == "verify" else self_test()
 
 
 if __name__ == "__main__":

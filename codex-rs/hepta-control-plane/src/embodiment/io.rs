@@ -7,12 +7,16 @@
 //! deterministic simulator/HIL seam; it does not claim hardware calibration,
 //! physical safety or external effect success.
 
-use codex_hepta_types::{AuthorityPosture, Digest32, StableId};
+use codex_hepta_types::AuthorityPosture;
+use codex_hepta_types::Digest32;
+use codex_hepta_types::StableId;
 
-use super::{
-    CartCommandV1, CartError, CartSensorProfileV1, CartSimulatorV1, SyntheticCartObservationV1,
-    SyntheticCartPlant,
-};
+use super::CartCommandV1;
+use super::CartError;
+use super::CartSensorProfileV1;
+use super::CartSimulatorV1;
+use super::SyntheticCartObservationV1;
+use super::SyntheticCartPlant;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct TypedSensorReadingV1 {

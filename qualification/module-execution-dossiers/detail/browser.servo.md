@@ -1,14 +1,14 @@
 # browser.servo: implementation design
 
 Parent: `docs/modules/browser.servo/TECHNICAL.md`. Lane: `LANE-B-RUNTIME`.
-Status: specified target, not implemented or independently accepted. Common requirements: `../EXECUTION_SEMANTICS.md` and `../TECHNICAL.md`. Canonical ownership and package predecessors are unchanged.
+Status: bounded native browser driver boundary and UI projections implemented; remaining target capabilities and independent acceptance are listed in section 8. Common requirements: `../EXECUTION_SEMANTICS.md` and `../TECHNICAL.md`. Canonical ownership and package predecessors are unchanged.
 
 ## 1. Source and work envelope
 
 Roots: `apps/hepta-browser`, `third_party/servo-patches`.
 Packages: `BROWSER-WEB-C1`.
 
-Operation signatures below are design contracts, not assertions of existing native symbols. Bind each to an existing or planned symbol and consumer inside the owner envelope. Preserve existing stores and APIs; do not create another authority or execution spine.
+Operation signatures below describe the target contract. Section 8 identifies the implemented native subset and remaining integration; names in section 2 are not automatically native API symbols. Preserve existing stores and APIs; do not create another authority or execution spine.
 
 ## 2. Public operations and contract details
 
@@ -42,3 +42,11 @@ These are required product test designs, not executed-test receipts. Each implem
 Wrap the existing browser boundary as a digital organ before any physical embodiment. Rollback preserves or quarantines outstanding remote effects and never exports credentials. Source pin and patch identity are part of each qualified deployment.
 
 Use all eighteen dossier receipt fields. Immediate revocation/stop remains effective across frozen snapshots. Preserve every applicable external gate; no generator self-acceptance, self-merge or self-release.
+
+## 8. Current native implementation
+
+- **Implemented entrypoints:** `openProfile` in [apps/hepta-browser/src/runtime.js](../../../apps/hepta-browser/src/runtime.js); `observePage` in [apps/hepta-browser/src/runtime.js](../../../apps/hepta-browser/src/runtime.js); `navigateOrAct` in [apps/hepta-browser/src/runtime.js](../../../apps/hepta-browser/src/runtime.js). Bounded native browser driver boundary and UI projections implemented.
+- **State and recovery:** Runtime maps hold admitted profile, generation, page digest/origin and pending operations. Driver observations supply process/effect outcomes; JavaScript state and digest checks do not themselves isolate a Servo process or persist crash recovery.
+- **Source tests:** [apps/hepta-browser/test/runtime.test.js](../../../apps/hepta-browser/test/runtime.test.js), [apps/hepta-browser/test/browser.test.js](../../../apps/hepta-browser/test/browser.test.js). These are test identities, not execution receipts for this documentation revision.
+- **Implementation and operating references:** [apps/hepta-browser/README.md](../../../apps/hepta-browser/README.md), [docs/modules/browser.servo/IMPLEMENTATION_MAP.json](../../../docs/modules/browser.servo/IMPLEMENTATION_MAP.json).
+- **Remaining work:** Supply the reproducible Servo binary/patch, OS sandbox and credential/network enforcement, and real navigation/download terminal evidence.

@@ -5,7 +5,6 @@ No API here authenticates a production principal, grants capabilities, installs
 artifacts or proves native/physical/longitudinal behavior. Repository verification
 requires a complete clean checkout; bundle verification explicitly does not.
 """
-from __future__ import annotations
 import argparse
 import hashlib
 import json
@@ -17,7 +16,7 @@ from fractions import Fraction
 from pathlib import Path
 from typing import Any
 
-from native_source_bindings import BindingError, observe_native_bindings
+from native_source_bindings import BindingError, identifiers, observe_native_bindings
 
 ROOT = Path(__file__).resolve().parents[2]
 REL = Path('qualification/module-execution-dossiers')
@@ -324,6 +323,7 @@ def verify_repository(root: Path) -> dict[str,Any]:
     if canonical != {r['module'] for r in profiles['modules']} or len(modules) != 40 or len(bindings) != 40:
         raise Invalid('canonical module coverage')
     known_packages={r['id'] for r in packages}
+    native_references = {'entrypoints': 0, 'testFiles': 0, 'runtimeDocuments': 0}
     for row in profiles['modules']:
         mid=row['module']
         if row['declaredRoots'] != roots[mid] or LANES[row['lane']] != lanes[mid] or not set(row['workPackages']) <= known_packages:
@@ -338,6 +338,28 @@ def verify_repository(root: Path) -> dict[str,Any]:
         for path in missing:
             if inside(root,path).exists() or binding['bootstrapWorkPackage'] not in known_packages:
                 raise Invalid(mid+': missing-root or bootstrap declaration drift')
+        current = row.get('nativeImplementation')
+        if not isinstance(current, dict) or set(current) != {'entrypoints', 'stateAndRecovery', 'testFiles', 'runtimeDocuments', 'remainingWork'}:
+            raise Invalid(mid+': missing current-native implementation mapping')
+        if not isinstance(current['stateAndRecovery'], str) or not current['stateAndRecovery'].strip():
+            raise Invalid(mid+': missing native state/recovery disposition')
+        if not isinstance(current['remainingWork'], list) or not current['remainingWork'] or any(not isinstance(value, str) or not value.strip() for value in current['remainingWork']):
+            raise Invalid(mid+': missing remaining capability disposition')
+        entries = current['entrypoints']
+        if not isinstance(entries, list) or not entries:
+            raise Invalid(mid+': missing native entrypoints')
+        for entry in entries:
+            if not isinstance(entry, dict) or set(entry) != {'path', 'symbol'}:
+                raise Invalid(mid+': malformed native entrypoint')
+            path = inside(root, entry['path'])
+            if not path.is_file() or entry['symbol'] not in identifiers(path, path.read_bytes()):
+                raise Invalid(mid+': missing native entrypoint '+str(entry))
+            native_references['entrypoints'] += 1
+        for key in ('testFiles', 'runtimeDocuments'):
+            references = current[key]
+            if not isinstance(references, list) or not references or any(not isinstance(path, str) or not inside(root, path).is_file() for path in references):
+                raise Invalid(mid+': missing current-native '+key)
+            native_references[key] += len(references)
     native_binding = current_native_bindings(root)
     # Verify the revised canonical NDU document is bound to its actual bytes.
     algorithm=read_json(root/'docs/learning/ALGORITHM_SPECS.json')
@@ -350,7 +372,8 @@ def verify_repository(root: Path) -> dict[str,Any]:
             raise Invalid('uncommitted candidate document: '+path)
     result.update(kind='repository_document_binding_conformance',repositoryBindingsChecked=True,
                   sourceSha=native_binding['sourceSha'], sourceTree=native_binding['sourceTree'],
-                  nativeSourceBinding=native_binding)
+                  nativeSourceBinding=native_binding,
+                  nativeDocumentationReferences=native_references)
     return result
 
 def self_test(base: Path) -> int:

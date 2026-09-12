@@ -1,14 +1,14 @@
 # platform.types: implementation design
 
 Parent: `docs/modules/platform.types/TECHNICAL.md`. Lane: `LANE-A-FOUNDATION`.
-Status: specified target, not implemented or independently accepted. Common requirements: `../EXECUTION_SEMANTICS.md` and `../TECHNICAL.md`. Canonical ownership and package predecessors are unchanged.
+Status: bounded identity, digest and numeric-conversion source implemented; remaining target capabilities and independent acceptance are listed in section 8. Common requirements: `../EXECUTION_SEMANTICS.md` and `../TECHNICAL.md`. Canonical ownership and package predecessors are unchanged.
 
 ## 1. Source and work envelope
 
 Roots: `codex-rs/hepta-types`.
 Packages: `PLATFORM-0-TYPE-BOUNDARY`.
 
-Operation signatures below are design contracts, not assertions of existing native symbols. Bind each to an existing or planned symbol and consumer inside the owner envelope. Preserve existing stores and APIs; do not create another authority or execution spine.
+Operation signatures below describe the target contract. Section 8 identifies the implemented native subset and remaining integration; names in section 2 are not automatically native API symbols. Preserve existing stores and APIs; do not create another authority or execution spine.
 
 ## 2. Public operations and contract details
 
@@ -42,3 +42,11 @@ These are required product test designs, not executed-test receipts. Each implem
 Shared type changes land through the contract integrator before consumer PRs. Freeze generated type hashes for all affected lanes; rollback restores compatible readers and profile versions, never silently reinterprets stored numeric bytes.
 
 Use all eighteen dossier receipt fields. Immediate revocation/stop remains effective across frozen snapshots. Preserve every applicable external gate; no generator self-acceptance, self-merge or self-release.
+
+## 8. Current native implementation
+
+- **Implemented entrypoints:** `rescale_signal` in [codex-rs/hepta-types/src/numeric_conversion.rs](../../../codex-rs/hepta-types/src/numeric_conversion.rs); `StableId` in [codex-rs/hepta-types/src/identity.rs](../../../codex-rs/hepta-types/src/identity.rs). Bounded identity, digest and numeric-conversion source implemented.
+- **State and recovery:** Stateless native values. NumericSignalV1 digests bind profile, unit, shape, normalization and raw values; conversion checks i128 intermediates and returns an exact rational error bound, with no saturation.
+- **Source tests:** [codex-rs/hepta-types/src/numeric_conversion_tests.rs](../../../codex-rs/hepta-types/src/numeric_conversion_tests.rs), [codex-rs/hepta-types/src/identity_tests.rs](../../../codex-rs/hepta-types/src/identity_tests.rs). These are test identities, not execution receipts for this documentation revision.
+- **Implementation and operating references:** [codex-rs/hepta-types/NUMERIC_SIGNAL_CONVERSION.md](../../../codex-rs/hepta-types/NUMERIC_SIGNAL_CONVERSION.md).
+- **Remaining work:** Admit production numeric profiles and verify actual consumer/wire compatibility; numerical equivalence alone does not establish byte compatibility.

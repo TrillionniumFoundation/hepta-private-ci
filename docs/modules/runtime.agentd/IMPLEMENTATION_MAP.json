@@ -31,7 +31,7 @@
         {
           "path": "codex-rs/hepta-agentd/src/lane_b_runtime_tests.rs",
           "kind": "native_unit",
-          "command": "cargo test -p codex-hepta-agentd --lib"
+          "command": "just test -p codex-hepta-agentd --lib"
         }
       ],
       "sourceSemantics": "Validates immutable supervisor/Agentd generations, configuration, and owner-port identities."
@@ -58,7 +58,7 @@
         {
           "path": "codex-rs/hepta-agentd/src/lane_b_runtime_tests.rs",
           "kind": "snapshot_and_capacity",
-          "command": "cargo test -p codex-hepta-agentd --lib"
+          "command": "just test -p codex-hepta-agentd --lib"
         }
       ],
       "sourceSemantics": "Admits a bounded run and freezes request, objective, body, artifact, authority, and deadline identity."
@@ -85,7 +85,7 @@
         {
           "path": "codex-rs/hepta-agentd/src/lane_b_runtime_tests.rs",
           "kind": "cancellation_race",
-          "command": "cargo test -p codex-hepta-agentd --lib"
+          "command": "just test -p codex-hepta-agentd --lib"
         }
       ],
       "sourceSemantics": "Distinguishes provable pre-dispatch cancellation from post-dispatch cancelling or indeterminate state."
@@ -112,7 +112,7 @@
         {
           "path": "codex-rs/hepta-agentd/src/lane_b_runtime_tests.rs",
           "kind": "mixed_generation_rejection",
-          "command": "cargo test -p codex-hepta-agentd --lib"
+          "command": "just test -p codex-hepta-agentd --lib"
         }
       ],
       "sourceSemantics": "Accepts context only when its receipt binds the complete frozen run tuple."

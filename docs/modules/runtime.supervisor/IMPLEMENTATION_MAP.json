@@ -31,7 +31,7 @@
         {
           "path": "codex-rs/hepta-supervisor/src/supervisor_tests.rs",
           "kind": "native_unit",
-          "command": "cargo test -p codex-hepta-supervisor --lib"
+          "command": "just test -p codex-hepta-supervisor --lib"
         }
       ],
       "sourceSemantics": "Creates a generation-fenced managed process from a registered agent and bounded configuration."
@@ -50,7 +50,7 @@
         {
           "path": "codex-rs/hepta-supervisor/src/supervisor_tests.rs",
           "kind": "fault_and_lifecycle",
-          "command": "cargo test -p codex-hepta-supervisor --lib"
+          "command": "just test -p codex-hepta-supervisor --lib"
         }
       ],
       "sourceSemantics": "Consumes process observations under the active generation and advances readiness, drain, stop, restart, and rollback state."
@@ -69,7 +69,7 @@
         {
           "path": "codex-rs/hepta-supervisor/src/supervisor_tests.rs",
           "kind": "fault_and_lifecycle",
-          "command": "cargo test -p codex-hepta-supervisor --lib"
+          "command": "just test -p codex-hepta-supervisor --lib"
         }
       ],
       "sourceSemantics": "Stops admission and requests bounded drain without inventing completion."
@@ -88,7 +88,7 @@
         {
           "path": "codex-rs/hepta-supervisor/src/supervisor_tests.rs",
           "kind": "upgrade_and_rollback",
-          "command": "cargo test -p codex-hepta-supervisor --lib"
+          "command": "just test -p codex-hepta-supervisor --lib"
         }
       ],
       "sourceSemantics": "Transitions through an exact release predecessor and new process generation with rollback support."

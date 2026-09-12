@@ -33,7 +33,7 @@
         {
           "path": "codex-rs/hepta-matrixd/src/tests.rs",
           "kind": "runtime_ingress",
-          "command": "cargo test -p codex-hepta-matrixd --lib"
+          "command": "just test -p codex-hepta-matrixd --lib"
         }
       ],
       "sourceSemantics": "Deduplicates enrolled-room events and advances the durable sync frontier with correction/redaction handling."

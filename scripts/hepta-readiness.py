@@ -412,7 +412,8 @@ def validate_status_model(model: dict[str, Any]) -> None:
     projections = model.get("projection")
     need(
         isinstance(projections, dict)
-        and set(projections) == {"readiness_registry", "execution_dossiers", "native_bindings"},
+        and set(projections)
+        == {"readiness_registry", "execution_dossiers", "native_bindings"},
         "status model projections",
     )
     for label, projection in projections.items():
@@ -423,7 +424,10 @@ def validate_status_model(model: dict[str, Any]) -> None:
         if projection["implementation_closed"] == "closed":
             need(projection["specification_closed"] == "closed", label + " implication")
         if projection["external_evidence_closed"] == "closed":
-            need(projection["implementation_closed"] == "closed", label + " evidence implication")
+            need(
+                projection["implementation_closed"] == "closed",
+                label + " evidence implication",
+            )
 
 
 def status_text(

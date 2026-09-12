@@ -1,14 +1,14 @@
 # ui.control: implementation design
 
 Parent: `docs/modules/ui.control/TECHNICAL.md`. Lane: `LANE-B-RUNTIME`.
-Status: specified target, not implemented or independently accepted. Common requirements: `../EXECUTION_SEMANTICS.md` and `../TECHNICAL.md`. Canonical ownership and package predecessors are unchanged.
+Status: coherent-view and authenticated-transport client boundary implemented; remaining target capabilities and independent acceptance are listed in section 8. Common requirements: `../EXECUTION_SEMANTICS.md` and `../TECHNICAL.md`. Canonical ownership and package predecessors are unchanged.
 
 ## 1. Source and work envelope
 
 Roots: `apps/hepta-control-ui`.
 Packages: `UI-V5`.
 
-Operation signatures below are design contracts, not assertions of existing native symbols. Bind each to an existing or planned symbol and consumer inside the owner envelope. Preserve existing stores and APIs; do not create another authority or execution spine.
+Operation signatures below describe the target contract. Section 8 identifies the implemented native subset and remaining integration; names in section 2 are not automatically native API symbols. Preserve existing stores and APIs; do not create another authority or execution spine.
 
 ## 2. Public operations and contract details
 
@@ -42,3 +42,11 @@ These are required product test designs, not executed-test receipts. Each implem
 Web and native clients share the same runtime contracts and state meanings. Human override is authenticated and scoped; hardware emergency stop remains independent. Rollback preserves compatible client/backend versions and does not downgrade authentication.
 
 Use all eighteen dossier receipt fields. Immediate revocation/stop remains effective across frozen snapshots. Preserve every applicable external gate; no generator self-acceptance, self-merge or self-release.
+
+## 8. Current native implementation
+
+- **Implemented entrypoints:** `readView` in [apps/hepta-control-ui/src/runtime-client.js](../../../apps/hepta-control-ui/src/runtime-client.js); `submitRequest` in [apps/hepta-control-ui/src/runtime-client.js](../../../apps/hepta-control-ui/src/runtime-client.js); `requestStop` in [apps/hepta-control-ui/src/runtime-client.js](../../../apps/hepta-control-ui/src/runtime-client.js). Coherent-view and authenticated-transport client boundary implemented.
+- **State and recovery:** The client retains session, coherent generation/revision snapshot and at most 1024 pending requests in memory; stale revisions reject and terminal statuses require terminal observations from the injected transport.
+- **Source tests:** [apps/hepta-control-ui/test/runtime-client.test.js](../../../apps/hepta-control-ui/test/runtime-client.test.js), [apps/hepta-control-ui/test/control.test.js](../../../apps/hepta-control-ui/test/control.test.js). These are test identities, not execution receipts for this documentation revision.
+- **Implementation and operating references:** [apps/hepta-control-ui/README.md](../../../apps/hepta-control-ui/README.md), [docs/modules/ui.control/IMPLEMENTATION_MAP.json](../../../docs/modules/ui.control/IMPLEMENTATION_MAP.json).
+- **Remaining work:** Package the chosen web framework and deployed authentication/CSP/CSRF topology; verify actual backend authority and accessible end-to-end behavior.

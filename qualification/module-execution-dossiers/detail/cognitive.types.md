@@ -1,14 +1,14 @@
 # cognitive.types: implementation design
 
 Parent: `docs/modules/cognitive.types/TECHNICAL.md`. Lane: `LANE-C-MEMORY`.
-Status: specified target, not implemented or independently accepted. Common requirements: `../EXECUTION_SEMANTICS.md` and `../TECHNICAL.md`. Canonical ownership and package predecessors are unchanged.
+Status: bounded record/snapshot types and Lane C generation contracts implemented; remaining target capabilities and independent acceptance are listed in section 8. Common requirements: `../EXECUTION_SEMANTICS.md` and `../TECHNICAL.md`. Canonical ownership and package predecessors are unchanged.
 
 ## 1. Source and work envelope
 
 Roots: `codex-rs/hepta-cognitive-types`.
 Packages: `MEM-0-TYPES`.
 
-Operation signatures below are design contracts, not assertions of existing native symbols. Bind each to an existing or planned symbol and consumer inside the owner envelope. Preserve existing stores and APIs; do not create another authority or execution spine.
+Operation signatures below describe the target contract. Section 8 identifies the implemented native subset and remaining integration; names in section 2 are not automatically native API symbols. Preserve existing stores and APIs; do not create another authority or execution spine.
 
 ## 2. Public operations and contract details
 
@@ -42,3 +42,11 @@ These are required product test designs, not executed-test receipts. Each implem
 Register shared HNMF/native schemas through the contract owner before store/retrieval consumers. Source facts, rebuildable engrams and learned artifacts remain different types with different lifecycle rules. Version migration is explicit and never reinterpretation in place.
 
 Use all eighteen dossier receipt fields. Immediate revocation/stop remains effective across frozen snapshots. Preserve every applicable external gate; no generator self-acceptance, self-merge or self-release.
+
+## 8. Current native implementation
+
+- **Implemented entrypoints:** `build_snapshot` in [codex-rs/hepta-cognitive-types/src/lib.rs](../../../codex-rs/hepta-cognitive-types/src/lib.rs); `CognitiveSnapshotKeyV1` in [codex-rs/hepta-cognitive-types/src/lane_c.rs](../../../codex-rs/hepta-cognitive-types/src/lane_c.rs). Bounded record/snapshot types and Lane C generation contracts implemented.
+- **State and recovery:** Stateless types canonicalize record ID/revision order and hash exact bounded records, citations and generation. These values contain no SQL connection or mutation authority; a snapshot digest does not authenticate its source.
+- **Source tests:** [codex-rs/hepta-cognitive-types/src/lib_tests.rs](../../../codex-rs/hepta-cognitive-types/src/lib_tests.rs), [codex-rs/hepta-cognitive-types/src/lane_c_tests.rs](../../../codex-rs/hepta-cognitive-types/src/lane_c_tests.rs). These are test identities, not execution receipts for this documentation revision.
+- **Implementation and operating references:** [codex-rs/hepta-memory/LANE_C_SQLITE.md](../../../codex-rs/hepta-memory/LANE_C_SQLITE.md).
+- **Remaining work:** Keep native snapshot/contract versions distinct from admitted cross-owner wire formats and bind every generation component to its actual owner.

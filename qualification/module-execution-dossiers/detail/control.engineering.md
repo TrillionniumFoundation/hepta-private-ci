@@ -1,14 +1,14 @@
 # control.engineering: implementation design
 
 Parent: `docs/modules/control.engineering/TECHNICAL.md`. Lane: `LANE-G-ENGINEERING`.
-Status: specified target, not implemented or independently accepted. Common requirements: `../EXECUTION_SEMANTICS.md` and `../TECHNICAL.md`. Canonical ownership and package predecessors are unchanged.
+Status: deterministic scheduling and integration-eligibility source implemented; remaining target capabilities and independent acceptance are listed in section 8. Common requirements: `../EXECUTION_SEMANTICS.md` and `../TECHNICAL.md`. Canonical ownership and package predecessors are unchanged.
 
 ## 1. Source and work envelope
 
 Roots: `tools/hepta-engineering-control`.
 Packages: `ECP-1-ENGINEERING-CONTROL-PLANE`, `SELF-1-CODE-CANDIDATE-PIPELINE`.
 
-Operation signatures below are design contracts, not assertions of existing native symbols. Bind each to an existing or planned symbol and consumer inside the owner envelope. Preserve existing stores and APIs; do not create another authority or execution spine.
+Operation signatures below describe the target contract. Section 8 identifies the implemented native subset and remaining integration; names in section 2 are not automatically native API symbols. Preserve existing stores and APIs; do not create another authority or execution spine.
 
 ## 2. Public operations and contract details
 
@@ -42,3 +42,11 @@ These are required product test designs, not executed-test receipts. Each implem
 Coordinate all seven lanes and the C1/embodiment/authorized-assimilation integration tracks without taking ownership of their facts. Evolution transfers signed capability packages only to independently enrolled hosts. Rollback records exact code/contract/state compatibility and current revocation, with an independent selector.
 
 Use all eighteen dossier receipt fields. Immediate revocation/stop remains effective across frozen snapshots. Preserve every applicable external gate; no generator self-acceptance, self-merge or self-release.
+
+## 8. Current native implementation
+
+- **Implemented entrypoints:** `schedule` in [tools/hepta-engineering-control/hepta_engineering_control.py](../../../tools/hepta-engineering-control/hepta_engineering_control.py); `decide_integration` in [tools/hepta-engineering-control/hepta_engineering_control.py](../../../tools/hepta-engineering-control/hepta_engineering_control.py); `DebianSandboxAdapter` in [tools/hepta-engineering-control/control_engineering_v2/assimilation.py](../../../tools/hepta-engineering-control/control_engineering_v2/assimilation.py).
+- **State and recovery:** The base scheduler consumes immutable package/dependency/path-lease inputs and returns bounded assignments. Integration eligibility binds exact source/base/ordered synthetic-merge identities; supplied booleans or receipts are not GitHub execution or release authority. DebianSandboxAdapter provides consent-expiry-checked query_version/query_health/read_status over a disposable Debian rootfs. Each read reopens the pinned root inode, walks every child through directory descriptors with O_NOFOLLOW, and rechecks directory/file identity before and after reading. Regular single-link files must stay on the root device; version/unit/status reads are bounded to 16 KiB/64 KiB/2 MiB. Its identity and receipt state are process-local; unit-file presence is metadata, not running-service health, and no shell/service-manager/network calls occur.
+- **Source tests:** [tools/hepta-engineering-control/test_hepta_engineering_control.py](../../../tools/hepta-engineering-control/test_hepta_engineering_control.py), [tools/hepta-engineering-control/test_integration_identity.py](../../../tools/hepta-engineering-control/test_integration_identity.py), [tools/hepta-engineering-control/test_assimilation_sandbox.py](../../../tools/hepta-engineering-control/test_assimilation_sandbox.py). Named fixture regressions `test_parent_symlink_swap_during_open_never_reads_outside_root` and `test_parent_directory_replacement_during_read_discards_observation` cover parent-path escape and drift rejection. These are test identities, not execution receipts for this documentation revision.
+- **Implementation and operating references:** [tools/hepta-engineering-control/README.md](../../../tools/hepta-engineering-control/README.md), [tools/hepta-engineering-control/INTEGRATION_HANDOFF.md](../../../tools/hepta-engineering-control/INTEGRATION_HANDOFF.md).
+- **Remaining work:** Bind live repository/CI/independent review identities and authorized handoff. Scheduling eligibility does not itself merge, deploy, release or complete autonomous development. The fixture adapter does not discover or control live Debian services. Its supplied consent/identity still requires a trusted owner; independently witnessed target parity, live service observation and authorized production deployment remain outside this read-only fixture implementation.

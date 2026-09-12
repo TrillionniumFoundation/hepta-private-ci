@@ -1,14 +1,14 @@
 # neuron.runtime: implementation design
 
 Parent: `docs/modules/neuron.runtime/TECHNICAL.md`. Lane: `LANE-F-ADAPTIVE-POLICY`.
-Status: specified target, not implemented or independently accepted. Common requirements: `../EXECUTION_SEMANTICS.md` and `../TECHNICAL.md`. Canonical ownership and package predecessors are unchanged.
+Status: Q24 sparse dynamics and optional anchored journal implemented; remaining target capabilities and independent acceptance are listed in section 8. Common requirements: `../EXECUTION_SEMANTICS.md` and `../TECHNICAL.md`. Canonical ownership and package predecessors are unchanged.
 
 ## 1. Source and work envelope
 
 Roots: `codex-rs/hepta-neuron`.
 Packages: `BIO-0-NEURON-INTUITION-CONTRACTS`, `NEU-1-LOCAL-MODEL-BAKEOFF`, `NEU-2-TEMPORAL-SIGNAL-RUNTIME`, `BIO-1-ELIGIBILITY-HOMEOSTASIS`.
 
-Operation signatures below are design contracts, not assertions of existing native symbols. Bind each to an existing or planned symbol and consumer inside the owner envelope. Preserve existing stores and APIs; do not create another authority or execution spine.
+Operation signatures below describe the target contract. Section 8 identifies the implemented native subset and remaining integration; names in section 2 are not automatically native API symbols. Preserve existing stores and APIs; do not create another authority or execution spine.
 
 ## 2. Public operations and contract details
 
@@ -42,3 +42,11 @@ These are required product test designs, not executed-test receipts. Each implem
 A model digest alone does not prove encoder use; attach exact weights/tokenizer/runtime/device and a real consumer. SparseSignalReceipt.requires_calibration remains truthful until a qualified head exists. Rollback revalidates checkpoint/encoder/profile compatibility and current revocations.
 
 Use all eighteen dossier receipt fields. Immediate revocation/stop remains effective across frozen snapshots. Preserve every applicable external gate; no generator self-acceptance, self-merge or self-release.
+
+## 8. Current native implementation
+
+- **Implemented entrypoints:** `sparse_tick` in [codex-rs/hepta-neuron/src/sparse.rs](../../../codex-rs/hepta-neuron/src/sparse.rs); `SparseJournal` in [codex-rs/hepta-neuron/src/journal.rs](../../../codex-rs/hepta-neuron/src/journal.rs). Q24 sparse dynamics and optional anchored journal implemented.
+- **State and recovery:** sparse_tick binds actual drive/prediction bytes, frozen config, scope/body/objective, sequence and monotonic clock. SparseJournal persists owned checkpoints through a host-authorized file and anchor; this is separate from the legacy Q32 step profile.
+- **Source tests:** [codex-rs/hepta-neuron/src/sparse_tests.rs](../../../codex-rs/hepta-neuron/src/sparse_tests.rs), [codex-rs/hepta-neuron/src/journal_anchor_tests.rs](../../../codex-rs/hepta-neuron/src/journal_anchor_tests.rs). These are test identities, not execution receipts for this documentation revision.
+- **Implementation and operating references:** [codex-rs/hepta-neuron/EXECUTION.md](../../../codex-rs/hepta-neuron/EXECUTION.md), [codex-rs/hepta-neuron/JOURNAL.md](../../../codex-rs/hepta-neuron/JOURNAL.md), [codex-rs/hepta-neuron/RECOVERY_ANCHOR.md](../../../codex-rs/hepta-neuron/RECOVERY_ANCHOR.md).
+- **Remaining work:** Invoke and authenticate the actual encoder, qualify calibration/OOD, deletion rebuild and host recovery, and produce functional/longitudinal evidence before claiming adaptive intelligence.

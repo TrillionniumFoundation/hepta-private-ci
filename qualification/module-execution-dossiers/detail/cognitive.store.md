@@ -1,14 +1,14 @@
 # cognitive.store: implementation design
 
 Parent: `docs/modules/cognitive.store/TECHNICAL.md`. Lane: `LANE-C-MEMORY`.
-Status: specified target, not implemented or independently accepted. Common requirements: `../EXECUTION_SEMANTICS.md` and `../TECHNICAL.md`. Canonical ownership and package predecessors are unchanged.
+Status: native semantic store plus existing SQLite owner snapshot integration implemented; remaining target capabilities and independent acceptance are listed in section 8. Common requirements: `../EXECUTION_SEMANTICS.md` and `../TECHNICAL.md`. Canonical ownership and package predecessors are unchanged.
 
 ## 1. Source and work envelope
 
 Roots: `codex-rs/hepta-cognitive-store`.
 Packages: `MEM-1-STORE`, `MEM-8-PRODUCTION-WRITER`.
 
-Operation signatures below are design contracts, not assertions of existing native symbols. Bind each to an existing or planned symbol and consumer inside the owner envelope. Preserve existing stores and APIs; do not create another authority or execution spine.
+Operation signatures below describe the target contract. Section 8 identifies the implemented native subset and remaining integration; names in section 2 are not automatically native API symbols. Preserve existing stores and APIs; do not create another authority or execution spine.
 
 ## 2. Public operations and contract details
 
@@ -42,3 +42,11 @@ These are required product test designs, not executed-test receipts. Each implem
 C1 uses a real store/open_snapshot consumer with exact physical format and file/DB path receipts. HNMF engrams and KG remain projections. Rollback must validate current tombstone frontier and compatible readers; it must not revive earlier acknowledged deleted content.
 
 Use all eighteen dossier receipt fields. Immediate revocation/stop remains effective across frozen snapshots. Preserve every applicable external gate; no generator self-acceptance, self-merge or self-release.
+
+## 8. Current native implementation
+
+- **Implemented entrypoints:** `CognitiveStore` in [codex-rs/hepta-cognitive-store/src/lib.rs](../../../codex-rs/hepta-cognitive-store/src/lib.rs); `CognitiveStore` in [codex-rs/hepta-memory/src/cognitive_store.rs](../../../codex-rs/hepta-memory/src/cognitive_store.rs); `lane_c_snapshot` in [codex-rs/hepta-memory/src/lane_c_snapshot.rs](../../../codex-rs/hepta-memory/src/lane_c_snapshot.rs). Native semantic store plus existing SQLite owner snapshot integration implemented.
+- **State and recovery:** hepta-cognitive-store V1/V2 are in-memory semantic components. The real durable owner remains hepta-memory::CognitiveStore and cognitive_1.sqlite3; lane_c_snapshot reads one authorized SQLite transaction and revalidation compares the exact cut, including corrections/tombstones.
+- **Source tests:** [codex-rs/hepta-cognitive-store/src/v2_tests.rs](../../../codex-rs/hepta-cognitive-store/src/v2_tests.rs), [codex-rs/hepta-memory/src/lane_c_snapshot_tests.rs](../../../codex-rs/hepta-memory/src/lane_c_snapshot_tests.rs). These are test identities, not execution receipts for this documentation revision.
+- **Implementation and operating references:** [codex-rs/hepta-memory/LANE_C_SQLITE.md](../../../codex-rs/hepta-memory/LANE_C_SQLITE.md).
+- **Remaining work:** Do not create another memory database. Descriptor-safe SQLite VFS/currentness prerequisites for open_with_recovery remain unimplemented; ordinary reopen/snapshot comparison does not satisfy that separate recovery admission. Retain an authenticated current cut witness independently and implement bounded retention/paging without breaking ancestry or deletion frontiers.

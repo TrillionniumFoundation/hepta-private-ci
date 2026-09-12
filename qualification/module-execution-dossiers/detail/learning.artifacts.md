@@ -53,7 +53,15 @@ C1 proves durable round-trip, independent decision, new-process changed behavior
 
 Use all eighteen dossier receipt fields. Immediate revocation and stop remain effective across frozen snapshots. Preserve every applicable external gate; no generator self-acceptance, self-merge or self-release.
 
-## 8. Native closure and remaining evidence
+## 8. Current native implementation
+
+- **Implemented entrypoints:** `load_pinned_candidate` in [codex-rs/hepta-learning-artifacts/src/pinned.rs](../../../codex-rs/hepta-learning-artifacts/src/pinned.rs); `write_candidate_payload` in [codex-rs/hepta-learning-artifacts/src/storage.rs](../../../codex-rs/hepta-learning-artifacts/src/storage.rs); `admit_manifest_at_withdrawal_head_v3` in [codex-rs/hepta-learning-artifacts/src/admission_v3.rs](../../../codex-rs/hepta-learning-artifacts/src/admission_v3.rs). Create-only payload storage, pinned loading and withdrawal-aware admission implemented.
+- **State and recovery:** Create-only file payloads and registry snapshots preserve exact manifest/digest identity. Pinned loading checks the full supplied manifest before bytes return; withdrawal/lifecycle journals retain their own bounded lineage and cannot make an old supplied head current.
+- **Source tests:** [codex-rs/hepta-learning-artifacts/src/pinned_tests.rs](../../../codex-rs/hepta-learning-artifacts/src/pinned_tests.rs), [codex-rs/hepta-learning-artifacts/src/storage_tests.rs](../../../codex-rs/hepta-learning-artifacts/src/storage_tests.rs), [codex-rs/hepta-learning-artifacts/src/closure_v2_tests.rs](../../../codex-rs/hepta-learning-artifacts/src/closure_v2_tests.rs). These are test identities, not execution receipts for this documentation revision.
+- **Implementation and operating references:** [codex-rs/hepta-learning-artifacts/STORAGE.md](../../../codex-rs/hepta-learning-artifacts/STORAGE.md), [codex-rs/hepta-learning-artifacts/PINNED_LOAD.md](../../../codex-rs/hepta-learning-artifacts/PINNED_LOAD.md).
+- **Remaining work:** Supply authenticated latest-head/withdrawal distribution, namespace and directory durability, and independently selected product loading; a successful read is not selection or activation.
+
+## 9. Native closure and remaining evidence
 
 Repository-controlled source coverage is checked by `../../../scripts/hepta-lane-e-closure.py`; exact-head and ordered-parent synthetic-merge execution are defined in `.github/workflows/hepta-lane-e-gap-closure.yml`. The workflow compiles all targets, runs owner and cross-crate tests, strict Clippy and rustfmt.
 

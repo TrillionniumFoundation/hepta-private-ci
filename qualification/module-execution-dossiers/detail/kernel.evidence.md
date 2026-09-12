@@ -1,14 +1,14 @@
 # kernel.evidence: implementation design
 
 Parent: `docs/modules/kernel.evidence/TECHNICAL.md`. Lane: `LANE-A-FOUNDATION`.
-Status: specified target, not implemented or independently accepted. Common requirements: `../EXECUTION_SEMANTICS.md` and `../TECHNICAL.md`. Canonical ownership and package predecessors are unchanged.
+Status: SQLite provider-effect intent, acknowledgement and reconciliation source implemented; remaining target capabilities and independent acceptance are listed in section 8. Common requirements: `../EXECUTION_SEMANTICS.md` and `../TECHNICAL.md`. Canonical ownership and package predecessors are unchanged.
 
 ## 1. Source and work envelope
 
 Roots: `codex-rs/hepta-evidence`.
 Packages: `P0.9-EXTERNAL-GATES`.
 
-Operation signatures below are design contracts, not assertions of existing native symbols. Bind each to an existing or planned symbol and consumer inside the owner envelope. Preserve existing stores and APIs; do not create another authority or execution spine.
+Operation signatures below describe the target contract. Section 8 identifies the implemented native subset and remaining integration; names in section 2 are not automatically native API symbols. Preserve existing stores and APIs; do not create another authority or execution spine.
 
 ## 2. Public operations and contract details
 
@@ -42,3 +42,11 @@ These are required product test designs, not executed-test receipts. Each implem
 The evaluator, reviewer, selector and loader retain separately authorized identities. Evidence storage is not permission to select or release. Rollback keeps append-only history and the current revocation frontier; it does not resurrect invalid evidence.
 
 Use all eighteen dossier receipt fields. Immediate revocation/stop remains effective across frozen snapshots. Preserve every applicable external gate; no generator self-acceptance, self-merge or self-release.
+
+## 8. Current native implementation
+
+- **Implemented entrypoints:** `append_provider_effect_intent` in [codex-rs/hepta-evidence/src/provider_effect_store.rs](../../../codex-rs/hepta-evidence/src/provider_effect_store.rs); `reconcile_provider_effect_lookup` in [codex-rs/hepta-evidence/src/provider_effect_store.rs](../../../codex-rs/hepta-evidence/src/provider_effect_store.rs). SQLite provider-effect intent, acknowledgement and reconciliation source implemented.
+- **State and recovery:** HeptaEvidenceStore stores canonical JSON and digests in existing SQLite tables; BEGIN IMMEDIATE makes exact intent retries idempotent and rejects changed payloads. Dispatch uncertainty remains distinct from provider acknowledgement and ambiguous timestamp order remains indeterminate.
+- **Source tests:** [codex-rs/hepta-evidence/src/provider_effect_tests.rs](../../../codex-rs/hepta-evidence/src/provider_effect_tests.rs), [codex-rs/hepta-evidence/src/provider_claim_tests.rs](../../../codex-rs/hepta-evidence/src/provider_claim_tests.rs). These are test identities, not execution receipts for this documentation revision.
+- **Implementation and operating references:** [docs/lane-a-foundation/kernel.evidence/STORE_V1.md](../../../docs/lane-a-foundation/kernel.evidence/STORE_V1.md).
+- **Remaining work:** dispatch_provider_effect_qualification remains an injected qualification seam; authenticated production providers, terminal observers and target recovery evidence must be supplied separately.

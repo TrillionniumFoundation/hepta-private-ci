@@ -192,7 +192,9 @@ def verify() -> int:
         and status_model.get("schemaVersion") == 1,
         "canonical status model",
     )
-    dossier_projection = status_model.get("projection", {}).get("execution_dossiers", {})
+    dossier_projection = status_model.get("projection", {}).get(
+        "execution_dossiers", {}
+    )
     need(
         dossier_projection.get("specification_closed") == "closed"
         and dossier_projection.get("implementation_closed") == "open"
@@ -434,7 +436,10 @@ def verify() -> int:
 
 def generate_status(check: bool) -> int:
     status_model = load(STATUS_MODEL_PATH)
-    need(status_model.get("schema") == "hepta.qualification-readiness-status.v1", "canonical status model")
+    need(
+        status_model.get("schema") == "hepta.qualification-readiness-status.v1",
+        "canonical status model",
+    )
     text = status_text(load(DOSSIER_PATH), load(READINESS_PATH), load(CNS_PATH))
     path = ROOT / STATUS_PATH
     if check:

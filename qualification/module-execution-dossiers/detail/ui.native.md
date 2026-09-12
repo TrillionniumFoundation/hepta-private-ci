@@ -1,14 +1,14 @@
 # ui.native: implementation design
 
 Parent: `docs/modules/ui.native/TECHNICAL.md`. Lane: `LANE-B-RUNTIME`.
-Status: specified target, not implemented or independently accepted. Common requirements: `../EXECUTION_SEMANTICS.md` and `../TECHNICAL.md`. Canonical ownership and package predecessors are unchanged.
+Status: native shell connection, capability and update driver boundary implemented; remaining target capabilities and independent acceptance are listed in section 8. Common requirements: `../EXECUTION_SEMANTICS.md` and `../TECHNICAL.md`. Canonical ownership and package predecessors are unchanged.
 
 ## 1. Source and work envelope
 
 Roots: `apps/hepta-native`.
 Packages: `UI-NATIVE-1-SHELL`, `UI-V5`.
 
-Operation signatures below are design contracts, not assertions of existing native symbols. Bind each to an existing or planned symbol and consumer inside the owner envelope. Preserve existing stores and APIs; do not create another authority or execution spine.
+Operation signatures below describe the target contract. Section 8 identifies the implemented native subset and remaining integration; names in section 2 are not automatically native API symbols. Preserve existing stores and APIs; do not create another authority or execution spine.
 
 ## 2. Public operations and contract details
 
@@ -42,3 +42,11 @@ These are required product test designs, not executed-test receipts. Each implem
 Keep native lifecycle and accessibility adapters distinct from backend authority. The module may surface stop/takeover but cannot override backend scope. Rollback tests cover shell/backend protocol compatibility and secure-session revocation.
 
 Use all eighteen dossier receipt fields. Immediate revocation/stop remains effective across frozen snapshots. Preserve every applicable external gate; no generator self-acceptance, self-merge or self-release.
+
+## 8. Current native implementation
+
+- **Implemented entrypoints:** `connectRuntime` in [apps/hepta-native/src/shell-runtime.js](../../../apps/hepta-native/src/shell-runtime.js); `requestPlatformCapability` in [apps/hepta-native/src/shell-runtime.js](../../../apps/hepta-native/src/shell-runtime.js); `applyShellUpdate` in [apps/hepta-native/src/shell-runtime.js](../../../apps/hepta-native/src/shell-runtime.js). Native shell connection, capability and update driver boundary implemented.
+- **State and recovery:** The shell retains session and coherent view identity in memory, validates platform permission/final-payload bindings, and delegates OS effects/update verification to injected adapters. Its local receipts do not supply code signing or a keychain.
+- **Source tests:** [apps/hepta-native/test/shell-runtime.test.js](../../../apps/hepta-native/test/shell-runtime.test.js), [apps/hepta-native/test/native.test.js](../../../apps/hepta-native/test/native.test.js). These are test identities, not execution receipts for this documentation revision.
+- **Implementation and operating references:** [apps/hepta-native/README.md](../../../apps/hepta-native/README.md), [docs/modules/ui.native/IMPLEMENTATION_MAP.json](../../../docs/modules/ui.native/IMPLEMENTATION_MAP.json).
+- **Remaining work:** Provide the native framework/platform package, genuine OS permission and signing/updater trust roots, and packaged restart/accessibility/rollback evidence.

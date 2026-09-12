@@ -153,9 +153,8 @@ class DebianSandboxAdapter:
             raise EngineeringError("sandbox_root_unavailable") from None
         if not resolved.is_dir() or resolved == Path("/"):
             raise EngineeringError("sandbox_root_rejected")
-        # Reject a root that is itself a symlink and pin identity for the life
-        # of this adapter.  Discovery still performs its stronger descriptor
-        # relative checks; this guard prevents accidental host-root use here.
+        # Enrollment pins the directory identity. Each read reopens that root
+        # and walks only descriptor-relative, non-symlink directory entries.
         if path.is_symlink():
             raise EngineeringError("sandbox_root_symlink")
         self._root = resolved
@@ -173,6 +172,8 @@ class DebianSandboxAdapter:
             raise EngineeringError("operation_not_consented")
 
     def _read(self, relative: str, *, limit: int) -> bytes:
+        if type(limit) is not int or not 0 < limit <= self._MAX_FILE_BYTES:
+            raise EngineeringError("sandbox_byte_limit")
         if not isinstance(relative, str) or relative.startswith("/") or "\\" in relative:
             raise EngineeringError("sandbox_path_rejected")
         parts = relative.split("/")
@@ -182,38 +183,65 @@ class DebianSandboxAdapter:
             relative.startswith("etc/systemd/system/") and self._SERVICE.fullmatch(parts[-1])
         ):
             raise EngineeringError("sandbox_path_outside_adapter")
-        candidate = self._root.joinpath(*parts)
+        descriptors: list[int] = []
+        links: list[tuple[int, str, int]] = []
+
+        def check_root() -> None:
+            current = self._root.stat(follow_symlinks=False)
+            if not stat.S_ISDIR(current.st_mode) or (current.st_dev, current.st_ino) != self._root_identity:
+                raise EngineeringError("sandbox_root_drift")
+
+        def check_links() -> None:
+            for parent, name, child in links:
+                entry = os.stat(name, dir_fd=parent, follow_symlinks=False)
+                opened = os.fstat(child)
+                if (entry.st_dev, entry.st_ino, entry.st_mode) != (opened.st_dev, opened.st_ino, opened.st_mode):
+                    raise EngineeringError("sandbox_path_drift")
+
         try:
-            candidate.resolve(strict=True).relative_to(self._root)
-        except (OSError, RuntimeError, ValueError):
-            raise EngineeringError("sandbox_path_rejected") from None
-        try:
-            fd = os.open(candidate, os.O_RDONLY | os.O_NOFOLLOW | os.O_CLOEXEC)
-            try:
-                before = os.fstat(fd)
-                current_root = self._root.stat()
-                if (current_root.st_dev, current_root.st_ino) != self._root_identity:
-                    raise EngineeringError("sandbox_root_drift")
-                if not stat.S_ISREG(before.st_mode) or before.st_nlink != 1 or before.st_dev != self._root_identity[0] or before.st_size > limit:
-                    raise EngineeringError("sandbox_file_rejected")
-                value = b""
-                while len(value) <= limit:
-                    chunk = os.read(fd, min(65_536, limit + 1 - len(value)))
-                    if not chunk:
-                        break
-                    value += chunk
-                if len(value) > limit:
-                    raise EngineeringError("sandbox_byte_limit")
-                after = os.fstat(fd)
-                if (before.st_ino, before.st_size, before.st_mtime_ns) != (after.st_ino, after.st_size, after.st_mtime_ns):
-                    raise EngineeringError("sandbox_file_drift")
-                return value
-            finally:
-                os.close(fd)
+            check_root()
+            directory_flags = os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW | os.O_CLOEXEC
+            parent = os.open(self._root, directory_flags)
+            descriptors.append(parent)
+            opened_root = os.fstat(parent)
+            if (opened_root.st_dev, opened_root.st_ino) != self._root_identity:
+                raise EngineeringError("sandbox_root_drift")
+            for part in parts[:-1]:
+                child = os.open(part, directory_flags, dir_fd=parent)
+                descriptors.append(child)
+                links.append((parent, part, child))
+                if os.fstat(child).st_dev != self._root_identity[0]:
+                    raise EngineeringError("sandbox_path_rejected")
+                parent = child
+            fd = os.open(parts[-1], os.O_RDONLY | os.O_NOFOLLOW | os.O_CLOEXEC | os.O_NONBLOCK, dir_fd=parent)
+            descriptors.append(fd)
+            links.append((parent, parts[-1], fd))
+            before = os.fstat(fd)
+            if not stat.S_ISREG(before.st_mode) or before.st_nlink != 1 or before.st_dev != self._root_identity[0] or before.st_size > limit:
+                raise EngineeringError("sandbox_file_rejected")
+            check_root()
+            check_links()
+            value = b""
+            while len(value) <= limit:
+                chunk = os.read(fd, min(65_536, limit + 1 - len(value)))
+                if not chunk:
+                    break
+                value += chunk
+            if len(value) > limit:
+                raise EngineeringError("sandbox_byte_limit")
+            after = os.fstat(fd)
+            if (before.st_ino, before.st_size, before.st_mtime_ns, before.st_ctime_ns, before.st_nlink) != (after.st_ino, after.st_size, after.st_mtime_ns, after.st_ctime_ns, after.st_nlink):
+                raise EngineeringError("sandbox_file_drift")
+            check_root()
+            check_links()
+            return value
         except EngineeringError:
             raise
         except OSError:
             raise EngineeringError("sandbox_file_unavailable") from None
+        finally:
+            for descriptor in reversed(descriptors):
+                os.close(descriptor)
 
     def _observation(self, operation: str, payload: object) -> SandboxObservation:
         encoded = json.dumps(payload, sort_keys=True, separators=(",", ":"), ensure_ascii=True, allow_nan=False).encode()

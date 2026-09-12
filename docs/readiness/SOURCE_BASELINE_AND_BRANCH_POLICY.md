@@ -6,13 +6,15 @@
 
 ## 1. Scope and authority boundary
 
-This specification removes branch-name ambiguity before parallel coding. A branch name, pull-request number, generated status file, local checkout, cached CI result or human phrase such as “latest” is never source authority. A coding envelope is valid only when it binds an exact repository, base commit and tree, source commit and tree, document-set digest, observation time and bounded freshness policy through `CanonicalSourceReceiptV1`.
+This specification removes branch-name ambiguity in source qualification and runtime coordination. A branch name, pull-request number, generated status file, cached CI result or human phrase such as “latest” does not identify immutable source bytes. A coordinator-admitted envelope is valid only when it binds an exact repository, base commit and tree, source commit and tree, document-set digest, observation time and bounded freshness policy through `CanonicalSourceReceiptV1`.
+
+Ordinary authorized implementation follows `docs/DEVELOPMENT.md` and `PARALLEL_DEVELOPMENT.md`: identify the actual Git baseline, owned paths, relevant contracts, tests and dependencies, then perform the work. CI derives source and merge identities from its event. A separately handwritten receipt, expiring lane envelope or deployment decision is not an additional permission requirement for editing, testing or merging authorized repository changes. The stricter receipt and freshness rules below still apply when a runtime coordinator admits an envelope or a qualification consumer accepts evidence.
 
 The base used to author this overlay is `d75a857bff625fb79663eb16544ebc7f74093859` with tree `b2528aad39cbd6362e12504adca2140549063c69`. That identity is provenance, not a claim that the resulting overlay commit is selected. Dynamic Git, CI, review and repository-administration facts remain external receipts.
 
 ## 2. Source identity model
 
-Every development attempt consumes one immutable tuple:
+Every source-qualification or coordinator-admission attempt consumes one immutable tuple:
 
 ```text
 (repository_id, repository_full_name,
@@ -73,7 +75,7 @@ Freshness uses the `dynamicObservationPolicy` in `docs/CURRENT.json`. Future tim
 | `SRC-E004` | stale or future observation | reject |
 | `SRC-E005` | source parent policy violated | recast candidate or restack |
 | `SRC-E006` | merge parent order or merge tree mismatch | reject |
-| `SRC-E007` | branch purpose absent or expired | block coding envelope |
+| `SRC-E007` | branch purpose absent or expired | reject coordinator envelope admission |
 | `SRC-E008` | base drift after evaluation | invalidate all dependent receipts |
 
 No failure may be converted into “probably current.”
@@ -90,7 +92,7 @@ Property tests assert that changing any tuple member changes the semantic digest
 
 ## 9. Coding-entry checklist
 
-A lane may start only when it has a current `CanonicalSourceReceiptV1`, a `BranchPurposeManifestV1`, exact allowed paths, a frozen contract/document digest, a non-expired lane envelope and no base drift. Selection, merge, promotion and release remain separate decisions even when all source checks pass.
+Begin an authorized coding task once its source baseline, owned paths and relevant contract/dependency boundaries are identified. Review affected consumers when semantics change; unrelated lanes can continue. A runtime coordinator admitting `ParallelLaneEnvelopeV1` must additionally validate the current `CanonicalSourceReceiptV1`, `BranchPurposeManifestV1`, allowed paths, contract/document digest, expiry and base-drift checks. Selection, merge, promotion and release remain distinct decisions; repository merge does not itself activate a runtime or deployment boundary.
 
 ## Appendix A. Closed gap and protocol mapping
 

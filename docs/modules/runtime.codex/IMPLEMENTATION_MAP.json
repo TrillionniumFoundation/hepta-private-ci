@@ -34,7 +34,7 @@
         {
           "path": "codex-rs/app-server/tests/suite/v2/thread_start.rs",
           "kind": "product_protocol_integration",
-          "command": "cargo test -p codex-app-server --test all thread_start"
+          "command": "just test -p codex-app-server --test all thread_start"
         }
       ],
       "sourceSemantics": "Creates a protocol-visible thread through the canonical App Server handler."
@@ -53,7 +53,7 @@
         {
           "path": "codex-rs/app-server/tests/suite/v2/turn_start.rs",
           "kind": "product_protocol_integration",
-          "command": "cargo test -p codex-app-server --test all turn_start"
+          "command": "just test -p codex-app-server --test all turn_start"
         }
       ],
       "sourceSemantics": "Admits a turn through the single App Server execution path."
@@ -72,7 +72,7 @@
         {
           "path": "codex-rs/core/src/tools/executed_tool_calls_tests.rs",
           "kind": "native_tool_state",
-          "command": "cargo test -p codex-core executed_tool_calls"
+          "command": "just test -p codex-core executed_tool_calls"
         }
       ],
       "sourceSemantics": "Routes tool calls through Codex core while retaining operation identity and delegated effect ownership."
@@ -91,7 +91,7 @@
         {
           "path": "codex-rs/app-server/tests/suite/v2/turn_start.rs",
           "kind": "admission_and_delivery",
-          "command": "cargo test -p codex-app-server --test all turn_start"
+          "command": "just test -p codex-app-server --test all turn_start"
         }
       ],
       "sourceSemantics": "Binds the submitted input to an exact turn admission before delivery credit can be emitted."

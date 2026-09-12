@@ -4,11 +4,11 @@ Scope: a proposed owner-reviewed pilot profile under the existing module design.
 
 ## 1. Observed source and implementation choice
 
-The inspected `hepta-cognitive-store/src/lib.rs` contains an in-memory `CognitiveStore` backed by `BTreeMap`, with a maximum of 16,384 live record IDs. It is a semantic oracle, not a durable backend. The pilot implementation adds an owner-scoped durable adapter and tests observational parity with compatible `append`, `get` and `snapshot_records` behavior.
+`hepta-cognitive-store/src/lib.rs` contains an in-memory `CognitiveStore` backed by `BTreeMap`, with a maximum of 16,384 live record IDs. It is a semantic oracle, not a durable backend. The implemented durable integration reuses the existing SQLx `hepta-memory::CognitiveStore` and its `cognitive_1.sqlite3` file. `CognitiveStore::lane_c_snapshot` and `DurableCognitiveSnapshot::read` expose an authorized coherent cut without introducing a second writer, database or synchronization service. [Lane C SQLite integration](../../codex-rs/hepta-memory/LANE_C_SQLITE.md) owns the exact native ID/frontier mapping, bounds, correction/deletion behavior, reopen witness and test instructions. Its descriptor-safe `open_with_recovery` admission still has unresolved VFS/currentness prerequisites; ordinary reopen must not be described as that stronger recovery path.
 
 By contrast, learning already exports `DurableLedger`, anchors/recovery/inspection, artifacts export candidate-payload and registry-snapshot storage, and Neuron exports `SparseJournal` and `JournalAnchor`. Preserve those native formats and anchored recovery; do not replace them with a parallel Python product ledger or silently reinterpret them as SQLite rows.
 
-The cognitive pilot uses the accompanying `COGNITIVE_STORE.sql` as a qualification DDL and state-machine fixture. Before native use the owner must bind the schema digest, existing domain-to-table mapping, migration/profile ID and consumer compatibility. This does not add a new canonical fact owner.
+The accompanying `COGNITIVE_STORE.sql` remains a qualification DDL and state-machine fixture for the proposed profile described below. It is not the schema of the deployed native owner and is not an instruction to create a second cognitive database. Any future native use requires an explicitly reviewed migration with schema digest, domain-to-table mapping and consumer compatibility. Existing native formats and the Lane C integration take precedence when operating current code.
 
 ## 2. Cognitive store format
 
