@@ -22,7 +22,6 @@ jobs:
       BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
       CARGO_INCREMENTAL: "0"
       CARGO_BUILD_JOBS: "2"
-      CARGO_TARGET_DIR: ${{ runner.temp }}/hepta-native-target
       CARGO_PROFILE_TEST_DEBUG: "0"
       CARGO_PROFILE_DEV_DEBUG: "0"
     steps:
@@ -71,6 +70,8 @@ jobs:
       - name: Run the complete workspace suite after shared core changes
         if: steps.scope.outputs.required == 'true'
         working-directory: codex-rs
+        env:
+          CARGO_TARGET_DIR: ${{ runner.temp }}/hepta-native-target
         run: just test --locked
   engineering-sandbox:
     name: Engineering strong sandbox
@@ -126,7 +127,6 @@ jobs:
       PYTHONDONTWRITEBYTECODE: "1"
       CARGO_INCREMENTAL: "0"
       CARGO_BUILD_JOBS: "2"
-      CARGO_TARGET_DIR: ${{ runner.temp }}/hepta-native-target
       CARGO_PROFILE_TEST_DEBUG: "0"
       CARGO_PROFILE_DEV_DEBUG: "0"
       # Explicit owners: testing a dependency does not execute its own tests.
@@ -208,6 +208,8 @@ jobs:
         run: python3 scripts/hepta_ci_v8.py
       - name: Compile and test actual imported packages
         working-directory: codex-rs
+        env:
+          CARGO_TARGET_DIR: ${{ runner.temp }}/hepta-native-target
         shell: bash
         run: |
           set -euo pipefail
