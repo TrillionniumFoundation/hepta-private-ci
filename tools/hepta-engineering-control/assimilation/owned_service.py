@@ -35,7 +35,10 @@ class DisposableCounterService:
     retained minimum counter; the service cannot infer currentness from a backup.
     """
 
-    def __init__(self, root: Path, generation: int, minimum_counter: int):
+    def __init__(
+        self, root: Path, generation: int, minimum_counter: int,
+        *, implementation_version: int = 1, migration_fault: str = "none",
+    ):
         self.root = Path(root)
         info = self.root.lstat()
         if (
@@ -54,6 +57,12 @@ class DisposableCounterService:
             or not 0 <= minimum_counter < 256
         ):
             raise ServiceError("invalid_generation_or_anchor")
+        if type(implementation_version) is not int or implementation_version not in (1, 2):
+            raise ServiceError("unsupported_implementation_version")
+        if migration_fault not in {"none", "before_commit", "after_commit"}:
+            raise ServiceError("unsupported_migration_fault")
+        self.implementation_version = implementation_version
+        self.migration_fault = migration_fault
         self.directory_identity = (info.st_dev, info.st_ino)
         self.generation = generation
         self.minimum_counter = minimum_counter
@@ -74,6 +83,8 @@ class DisposableCounterService:
                 str(self.generation),
                 str(self.minimum_counter),
                 *(str(value) for value in self.directory_identity),
+                str(self.implementation_version),
+                self.migration_fault,
             ],
             cwd=self.root,
             env={"LC_ALL": "C", "PYTHONDONTWRITEBYTECODE": "1"},
@@ -91,6 +102,8 @@ class DisposableCounterService:
                 or ready.get("generation") != self.generation
                 or ready.get("uid") != os.geteuid()
                 or ready.get("ready") is not True
+                or ready.get("implementation_version") != self.implementation_version
+                or ready.get("schema_version") not in (1, 2)
                 or type(ready.get("counter")) is not int
                 or ready["counter"] < self.minimum_counter
             ):
@@ -183,10 +196,74 @@ class DisposableCounterService:
             process.stdout.close()
 
 
-def _serve(generation: int, minimum_counter: int, device: int, inode: int):
+def _migrate(database, generation, minimum_counter, implementation_version, fault):
+    """The sole writer migrates and fences atomically before publication.
+
+    V2 adds provenance; V1 remains compatible with that additive column. A code
+    rollback starts V1 at a NEW generation, never restores a stale data backup.
+    Fault points kill this disposable child at actual SQLite commit boundaries.
+    """
+    database.execute("BEGIN IMMEDIATE")
+    try:
+        database.execute(
+            "CREATE TABLE IF NOT EXISTS service_meta "
+            "(singleton INTEGER PRIMARY KEY CHECK(singleton=1), "
+            "generation INTEGER NOT NULL, schema_version INTEGER NOT NULL)"
+        )
+        metadata = database.execute(
+            "SELECT generation, schema_version FROM service_meta WHERE singleton=1"
+        ).fetchone()
+        previous, schema = metadata if metadata else (0, 1)
+        if generation < previous:
+            raise ServiceError("stale_writer_generation")
+        if schema not in (1, 2):
+            raise ServiceError("unsupported_state_schema")
+        database.execute(
+            "CREATE TABLE IF NOT EXISTS operations "
+            "(id TEXT PRIMARY KEY, value INTEGER NOT NULL UNIQUE)"
+        )
+        current = database.execute(
+            "SELECT COALESCE(MAX(value), 0) FROM operations"
+        ).fetchone()[0]
+        if current < minimum_counter:
+            raise ServiceError("state_older_than_independent_anchor")
+        if implementation_version == 2 and schema == 1:
+            database.execute(
+                "ALTER TABLE operations ADD COLUMN origin_generation "
+                "INTEGER NOT NULL DEFAULT 0"
+            )
+            schema = 2
+        database.execute(
+            "INSERT INTO service_meta VALUES (1, ?, ?) "
+            "ON CONFLICT(singleton) DO UPDATE SET "
+            "generation=excluded.generation, schema_version=excluded.schema_version",
+            (generation, schema),
+        )
+        if fault == "before_commit":
+            os._exit(76)
+        database.commit()
+    except BaseException:
+        database.rollback()
+        raise
+    if fault == "after_commit":
+        os._exit(77)
+    return schema
+
+
+def _serve(
+    generation: int, minimum_counter: int, device: int, inode: int,
+    implementation_version: int, migration_fault: str,
+):
     import fcntl
     import resource
 
+    if (
+        not 1 <= generation <= 2**63 - 1
+        or not 0 <= minimum_counter < 256
+        or implementation_version not in (1, 2)
+        or migration_fault not in {"none", "before_commit", "after_commit"}
+    ):
+        raise ServiceError("invalid_child_profile")
     info = os.stat(".")
     if (
         os.geteuid() == 0
@@ -211,9 +288,7 @@ def _serve(generation: int, minimum_counter: int, device: int, inode: int):
     database = sqlite3.connect("service.sqlite3", timeout=1)
     database.execute("PRAGMA journal_mode=WAL")
     database.execute("PRAGMA synchronous=FULL")
-    database.execute(
-        "CREATE TABLE IF NOT EXISTS operations (id TEXT PRIMARY KEY, value INTEGER NOT NULL UNIQUE)"
-    )
+    schema_version = _migrate(database, generation, minimum_counter, implementation_version, migration_fault)
     current = database.execute(
         "SELECT COALESCE(MAX(value), 0) FROM operations"
     ).fetchone()[0]
@@ -227,6 +302,8 @@ def _serve(generation: int, minimum_counter: int, device: int, inode: int):
                 "uid": os.geteuid(),
                 "generation": generation,
                 "counter": current,
+                "implementation_version": implementation_version,
+                "schema_version": schema_version,
             }
         ),
         flush=True,
@@ -259,9 +336,15 @@ def _serve(generation: int, minimum_counter: int, device: int, inode: int):
                     if current >= 255:
                         raise ServiceError("state_capacity")
                     current += 1
-                    database.execute(
-                        "INSERT INTO operations VALUES (?, ?)", (identity, current)
-                    )
+                    if implementation_version == 2:
+                        database.execute(
+                            "INSERT INTO operations(id,value,origin_generation) VALUES (?,?,?)",
+                            (identity, current, generation),
+                        )
+                    else:
+                        database.execute(
+                            "INSERT INTO operations(id,value) VALUES (?,?)", (identity, current)
+                        )
                 value = existing[0] if existing else current
             # A real process fault AFTER SQLite commit, before acknowledgement.
             if operation == "commit_then_exit":
@@ -286,8 +369,8 @@ def _serve(generation: int, minimum_counter: int, device: int, inode: int):
 
 
 if __name__ == "__main__":
-    if len(sys.argv) != 6 or sys.argv[1] != "--counter-child":
+    if len(sys.argv) != 8 or sys.argv[1] != "--counter-child":
         raise SystemExit(
             "owned counter child only; no shell, systemd or host enrollment"
         )
-    _serve(*(int(value) for value in sys.argv[2:]))
+    _serve(*(int(value) for value in sys.argv[2:7]), sys.argv[7])

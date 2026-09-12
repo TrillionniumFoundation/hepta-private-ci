@@ -1,6 +1,8 @@
 """Actual child, SQLite commit, lost acknowledgement and restart observations."""
 
 import os
+from contextlib import closing
+import sqlite3
 from pathlib import Path
 import tempfile
 import unittest
@@ -18,8 +20,8 @@ class OwnedServiceTests(unittest.TestCase):
         self.addCleanup(self.directory.cleanup)
         self.root = Path(self.directory.name)
 
-    def target(self, generation=1, minimum_counter=0):
-        service = DisposableCounterService(self.root, generation, minimum_counter)
+    def target(self, generation=1, minimum_counter=0, **profile):
+        service = DisposableCounterService(self.root, generation, minimum_counter, **profile)
         self.addCleanup(service.close)
         return service
 
@@ -58,6 +60,56 @@ class OwnedServiceTests(unittest.TestCase):
         first.close()
         with self.assertRaises(ServiceError):
             self.target(2, 1).start()
+
+    def test_additive_migration_and_code_rollback_preserve_post_upgrade_writes(self):
+        first = self.target()
+        self.assertEqual(first.start()["schema_version"], 1)
+        first.request("step", "before")
+        first.close()
+        second = self.target(2, 1, implementation_version=2)
+        self.assertEqual(second.start()["schema_version"], 2)
+        second.request("step", "after")
+        second.close()
+        # Roll back implementation, not history: generation must move forward.
+        rollback = self.target(3, 2, implementation_version=1)
+        self.assertEqual(rollback.start()["counter"], 2)
+        self.assertEqual(rollback.request("reconcile", "after")["value"], 2)
+        self.assertEqual(rollback.request("step", "rollbackwrite")["value"], 3)
+        rollback.close()
+        with closing(sqlite3.connect(f"file:{self.root / 'service.sqlite3'}?mode=ro", uri=True)) as observer:
+            rows = observer.execute("SELECT id,value,origin_generation FROM operations ORDER BY value").fetchall()
+            self.assertEqual(rows, [("before", 1, 0), ("after", 2, 2), ("rollbackwrite", 3, 0)])
+
+    def test_migration_crash_before_commit_rolls_back_schema_and_fence(self):
+        first = self.target()
+        first.start()
+        first.request("step", "retained")
+        first.close()
+        with self.assertRaises(ServiceError):
+            self.target(2, 1, implementation_version=2, migration_fault="before_commit").start()
+        restored = self.target(1, 1)
+        self.assertEqual(restored.start()["schema_version"], 1)
+        self.assertEqual(restored.request("reconcile", "retained")["value"], 1)
+
+    def test_migration_commit_without_ready_requires_current_generation(self):
+        first = self.target()
+        first.start()
+        first.request("step", "retained")
+        first.close()
+        with self.assertRaises(ServiceError):
+            self.target(2, 1, implementation_version=2, migration_fault="after_commit").start()
+        with self.assertRaises(ServiceError):
+            self.target(1, 1).start()
+        current = self.target(3, 1)
+        self.assertEqual(current.start()["schema_version"], 2)
+        self.assertEqual(current.request("reconcile", "retained")["value"], 1)
+
+    def test_migration_cannot_run_while_predecessor_owns_writer(self):
+        first = self.target()
+        first.start()
+        with self.assertRaises(ServiceError):
+            self.target(2, 0, implementation_version=2).start()
+        self.assertEqual(first.request("step", "stillowned")["value"], 1)
 
     def test_scope_and_unregistered_operations_reject(self):
         with self.assertRaises(ServiceError):

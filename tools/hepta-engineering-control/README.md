@@ -30,3 +30,18 @@ packages, grant authority or certify a hostile-code sandbox. They add an execute
 single-service software-in-loop target under the existing ASM work packages;
 owner-authorized live service adaptation, full state migration and deployment
 remain separate work.
+
+### Bounded stateful service upgrade
+
+The owned counter has two compatible implementation profiles. Version 2 adds
+`origin_generation` using the same SQLite writer. Schema migration and the
+persisted generation fence commit together while the existing exclusive file
+lock is held; an independent counter frontier is checked before this commit.
+A predecessor cannot restart after a committed successor migration.
+
+The `before_commit` and `after_commit` fault modes terminate a real child at the
+migration boundary. Rolling back code means starting version 1 at a newer body
+generation on the current version-2 database; it never restores an old snapshot
+or drops post-upgrade operations. This demonstrates one additive service-domain
+migration, not arbitrary writer handoff, destructive schema downgrade, systemd
+control or host enrollment. Tests run as an unprivileged user.
