@@ -28,6 +28,22 @@ class IndeterminateOperation(ServiceError):
     """Dispatch may have committed. Reconcile; do not automatically repeat it."""
 
 
+def _validate_operation(operation, identity):
+    # Both ends validate the same bounded protocol; the child is not permitted
+    # to trust the client validation when decoding a frame.
+    if type(operation) is not str or operation not in {
+        "query", "step", "reconcile", "commit_then_exit", "stop"
+    }:
+        raise ServiceError("operation_not_in_disposable_profile")
+    if type(identity) is not str:
+        raise ServiceError("invalid_operation_identity")
+    if operation in {"step", "reconcile", "commit_then_exit"}:
+        if not identity or len(identity) > 64 or not identity.isascii() or not identity.isalnum():
+            raise ServiceError("invalid_operation_identity")
+    elif identity:
+        raise ServiceError("unexpected_operation_identity")
+
+
 class DisposableCounterService:
     """Own one reviewed child in a private directory, never arbitrary PIDs.
 
@@ -68,8 +84,12 @@ class DisposableCounterService:
         self.minimum_counter = minimum_counter
         self.process = None
         self.expires = 0.0
+        self.sequence = 0
+        self.channel_indeterminate = False
 
     def start(self):
+        if self.channel_indeterminate:
+            raise IndeterminateOperation("new_client_and_reconciliation_required")
         if self.process is not None:
             raise ServiceError("reconcile_existing_process_before_restart")
         self.expires = time.monotonic() + 30
@@ -98,60 +118,85 @@ class DisposableCounterService:
         try:
             ready = self._read()
             if (
-                ready.get("pid") != self.process.pid
+                type(ready.get("pid")) is not int
+                or ready["pid"] != self.process.pid
+                or type(ready.get("generation")) is not int
+                or type(ready.get("uid")) is not int
                 or ready.get("generation") != self.generation
                 or ready.get("uid") != os.geteuid()
                 or ready.get("ready") is not True
-                or ready.get("implementation_version") != self.implementation_version
+                or type(ready.get("implementation_version")) is not int
+                or ready["implementation_version"] != self.implementation_version
+                or type(ready.get("schema_version")) is not int
                 or ready.get("schema_version") not in (1, 2)
                 or type(ready.get("counter")) is not int
-                or ready["counter"] < self.minimum_counter
+                or not self.minimum_counter <= ready["counter"] < 256
             ):
                 raise ServiceError("service_not_ready_or_stale_state")
+            self.minimum_counter = ready["counter"]
+            self.sequence = 0
             return ready
         except BaseException:
             self.close()
             raise
 
     def request(self, operation: str, request_id: str = ""):
-        if operation not in {"query", "step", "reconcile", "commit_then_exit", "stop"}:
-            raise ServiceError("operation_not_in_disposable_profile")
-        if operation in {"step", "reconcile", "commit_then_exit"}:
-            if (
-                not request_id
-                or len(request_id) > 64
-                or not request_id.isascii()
-                or not request_id.isalnum()
-            ):
-                raise ServiceError("invalid_operation_identity")
+        if self.channel_indeterminate:
+            raise IndeterminateOperation("new_client_and_reconciliation_required")
+        _validate_operation(operation, request_id)
         if (
             self.process is None
             or self.process.poll() is not None
             or time.monotonic() >= self.expires
+            or self.sequence >= 256
         ):
             raise ServiceError("service_unavailable")
+        self.sequence += 1
         payload = (
             json.dumps(
-                {"op": operation, "id": request_id, "generation": self.generation}
+                {
+                    "op": operation, "id": request_id,
+                    "generation": self.generation, "sequence": self.sequence,
+                }
             ).encode()
             + b"\n"
         )
         try:
-            self.process.stdin.write(payload)
+            if self.process.stdin.write(payload) != len(payload):
+                raise ServiceError("incomplete_dispatch")
             response = self._read()
-        except (OSError, ServiceError) as error:
+            field = {
+                "query": "counter", "stop": "stopped", "step": "value",
+                "reconcile": "value", "commit_then_exit": "value",
+            }[operation]
+            if (
+                set(response) != {"generation", "sequence", field}
+                or type(response["generation"]) is not int
+                or response["generation"] != self.generation
+                or type(response["sequence"]) is not int
+                or response["sequence"] != self.sequence
+            ):
+                raise ServiceError("terminal_request_binding_mismatch")
+            value = response[field]
+            if operation == "stop":
+                if value is not True or self.process.wait(timeout=2) != 0:
+                    raise ServiceError("stop_not_observed")
+            elif operation == "reconcile" and value is None:
+                pass
+            elif (
+                type(value) is not int
+                or not (0 if operation == "query" else 1) <= value < 256
+                or (operation == "query" and value < self.minimum_counter)
+            ):
+                raise ServiceError("terminal_value_invalid_or_stale")
+            else:
+                self.minimum_counter = max(self.minimum_counter, value)
+        except (OSError, ServiceError, subprocess.TimeoutExpired) as error:
+            # A timeout leaves unread bytes on a live pipe. No later request may
+            # consume that acknowledgement or implicitly repeat an unknown effect.
+            self.channel_indeterminate = True
             raise IndeterminateOperation("terminal_observation_missing") from error
-        if response.get("generation") != self.generation:
-            raise IndeterminateOperation("terminal_generation_mismatch")
-        if response.get("error"):
-            raise ServiceError(response["error"])
-        if operation == "stop":
-            try:
-                code = self.process.wait(timeout=2)
-            except subprocess.TimeoutExpired as error:
-                raise IndeterminateOperation("stop_not_observed") from error
-            if code != 0:
-                raise IndeterminateOperation("stop_failed")
+        del response["sequence"]  # Preserve the public response shape.
         return response
 
     def _read(self):
@@ -208,14 +253,26 @@ def _migrate(database, generation, minimum_counter, implementation_version, faul
         database.execute(
             "CREATE TABLE IF NOT EXISTS service_meta "
             "(singleton INTEGER PRIMARY KEY CHECK(singleton=1), "
-            "generation INTEGER NOT NULL, schema_version INTEGER NOT NULL)"
+            "generation INTEGER NOT NULL, schema_version INTEGER NOT NULL, "
+            "implementation_version INTEGER NOT NULL)"
         )
+        columns = {row[1] for row in database.execute("PRAGMA table_info(service_meta)")}
+        if "implementation_version" not in columns:
+            database.execute(
+                "ALTER TABLE service_meta ADD COLUMN implementation_version "
+                "INTEGER NOT NULL DEFAULT 0"
+            )
         metadata = database.execute(
-            "SELECT generation, schema_version FROM service_meta WHERE singleton=1"
+            "SELECT generation, schema_version, implementation_version "
+            "FROM service_meta WHERE singleton=1"
         ).fetchone()
-        previous, schema = metadata if metadata else (0, 1)
+        previous, schema, previous_implementation = metadata if metadata else (0, 1, 0)
         if generation < previous:
             raise ServiceError("stale_writer_generation")
+        if generation == previous and implementation_version != previous_implementation:
+            raise ServiceError("generation_bound_to_another_or_unknown_implementation")
+        if previous_implementation not in (0, 1, 2):
+            raise ServiceError("unsupported_previous_implementation")
         if schema not in (1, 2):
             raise ServiceError("unsupported_state_schema")
         database.execute(
@@ -234,10 +291,11 @@ def _migrate(database, generation, minimum_counter, implementation_version, faul
             )
             schema = 2
         database.execute(
-            "INSERT INTO service_meta VALUES (1, ?, ?) "
-            "ON CONFLICT(singleton) DO UPDATE SET "
-            "generation=excluded.generation, schema_version=excluded.schema_version",
-            (generation, schema),
+            "INSERT INTO service_meta(singleton,generation,schema_version,implementation_version) "
+            "VALUES (1, ?, ?, ?) ON CONFLICT(singleton) DO UPDATE SET "
+            "generation=excluded.generation, schema_version=excluded.schema_version, "
+            "implementation_version=excluded.implementation_version",
+            (generation, schema, implementation_version),
         )
         if fault == "before_commit":
             os._exit(76)
@@ -247,7 +305,7 @@ def _migrate(database, generation, minimum_counter, implementation_version, faul
         raise
     if fault == "after_commit":
         os._exit(77)
-    return schema
+    return schema, current
 
 
 def _serve(
@@ -288,12 +346,9 @@ def _serve(
     database = sqlite3.connect("service.sqlite3", timeout=1)
     database.execute("PRAGMA journal_mode=WAL")
     database.execute("PRAGMA synchronous=FULL")
-    schema_version = _migrate(database, generation, minimum_counter, implementation_version, migration_fault)
-    current = database.execute(
-        "SELECT COALESCE(MAX(value), 0) FROM operations"
-    ).fetchone()[0]
-    if current < minimum_counter:
-        raise ServiceError("state_older_than_independent_anchor")
+    schema_version, current = _migrate(
+        database, generation, minimum_counter, implementation_version, migration_fault
+    )
     print(
         json.dumps(
             {
@@ -308,26 +363,24 @@ def _serve(
         ),
         flush=True,
     )
-    for _ in range(256):
+    for sequence in range(1, 257):
         raw = sys.stdin.buffer.readline(2049)
         if not raw or len(raw) > 2048 or not raw.endswith(b"\n"):
             break
         request = json.loads(raw)
         if (
-            set(request) != {"op", "id", "generation"}
+            not isinstance(request, dict)
+            or set(request) != {"op", "id", "generation", "sequence"}
+            or type(request["generation"]) is not int
             or request["generation"] != generation
+            or type(request["sequence"]) is not int
+            or request["sequence"] != sequence
         ):
             raise ServiceError("bad_request_binding")
         operation, identity = request["op"], request["id"]
-        result = {"generation": generation}
+        _validate_operation(operation, identity)
+        result = {"generation": generation, "sequence": sequence}
         if operation in {"step", "commit_then_exit"}:
-            if (
-                not isinstance(identity, str)
-                or not identity.isascii()
-                or not identity.isalnum()
-                or len(identity) > 64
-            ):
-                raise ServiceError("invalid_operation_identity")
             with database:
                 existing = database.execute(
                     "SELECT value FROM operations WHERE id=?", (identity,)
