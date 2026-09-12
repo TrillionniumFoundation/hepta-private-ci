@@ -1,75 +1,115 @@
-name: Hepta session source export
-
+name: Hepta session source transport
 on:
   push:
     branches: [work/hepta-executable-exits-20260912]
     paths: [.github/workflows/hepta-session-source-export.yml]
-
 permissions:
   contents: read
-
 jobs:
-  export:
+  stage:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci'
     runs-on: ubuntu-24.04
     timeout-minutes: 10
+    permissions:
+      contents: write
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
+          ref: ${{ github.sha }}
           persist-credentials: false
           fetch-depth: 1
-      - name: Archive tracked source only
+      - name: Verify immutable payloads and create unreferenced source objects
+        env:
+          GH_TOKEN: ${{ github.token }}
         shell: bash
         run: |
           set -euo pipefail
-          mkdir -p "$RUNNER_TEMP/hepta-session-source"
-          git archive --format=tar.gz --output="$RUNNER_TEMP/hepta-session-source/source.tar.gz" HEAD
-          git rev-parse HEAD HEAD^{tree} > "$RUNNER_TEMP/hepta-session-source/identity.txt"
-          git ls-tree -r HEAD > "$RUNNER_TEMP/hepta-session-source/tree.txt"
+          python3 - <<'PY'
+          import base64, gzip, hashlib, io, json, os, pathlib, subprocess, urllib.request
+          repo = 'TrillionniumFoundation/hepta-private-ci'
+          assert os.environ['GITHUB_REPOSITORY'] == repo
+          assert os.environ['GITHUB_REF'] == 'refs/heads/work/hepta-executable-exits-20260912'
+          output = pathlib.Path(os.environ['RUNNER_TEMP']) / 'hepta-source-transport'
+          output.mkdir()
+          stages = [
+              ('cleanup', 'b7ae133cd5c95b40dfde91c3e5d7aa97bfe10674', True, 'f43df0043dfa6133e282eddcc28387f050201994b65903e89eac83dccb2c2379'),
+              ('evaluation', 'fdb3423d9a7af5bdaad35aa3b750a9c017734998', False, 'b0e2c9cb5a6b0b76c0f9f218db2fcf2e0ab3a15b4eb1ece45bbf696b6e1f66d1'),
+              ('tabular', '18427060fb51a4b0659ecfebe68551aaad7fb02e', False, 'e56da463f748c3e1b708db1ae57dbf7dd3fc9f1edb458b6eb1462f90672fc6e9'),
+              ('owner-integration', 'bb5fe910996d40263e73f9efc233c62cdcb772b0', False, 'b8f27b9c77a11dd4979ccc76af838dab401eff54cbb1b570d7aa531ea487350c'),
+              ('organ', 'c3d8d20ac98d24ddcd4ebde2975dc517662ef19a', False, '7c1a2b66e594d930e16f95443a443dd043ae161ec269427a7e635ee9e576f7de'),
+              ('service', 'bea3b4c053090b1be07fc090e83cab7ac7134e22', False, '9ef02d6eca94639e1fd6fee164f47cd1247a7403b581f0b18391c04f47b6f36a'),
+              ('details', 'bfb3d59322d1067be0038f974ea9478e7e717884', False, '515fd4c6e95905c0794f79f7f238788e0a6e8a837847425880785083fd6e0d49'),
+          ]
+          repairs = {}
+          def api(path, data=None):
+              assert path.startswith('git/')
+              request = urllib.request.Request(
+                  'https://api.github.com/repos/' + repo + '/' + path,
+                  data=None if data is None else json.dumps(data).encode(),
+                  headers={'Authorization': 'Bearer ' + os.environ['GH_TOKEN'], 'Accept': 'application/vnd.github+json', 'Content-Type': 'application/json', 'X-GitHub-Api-Version': '2022-11-28'},
+                  method='GET' if data is None else 'POST')
+              with urllib.request.urlopen(request, timeout=30) as response:
+                  return json.load(response)
+          def git(*args, input=None):
+              return subprocess.run(['git', *args], input=input, text=True, check=True, capture_output=True).stdout.strip()
+          assert git('rev-parse', 'HEAD') == os.environ['GITHUB_SHA']
+          payloads, errors = [], []
+          for name, sha, binary, expected in stages:
+              raw = base64.b64decode(api('git/blobs/' + sha)['content'])
+              text = base64.b64encode(raw).decode() if binary else raw.decode('ascii')
+              (output / (name + '.raw.b64')).write_text(text)
+              try:
+                  for offset, old, new in sorted(repairs.get(name, []), reverse=True):
+                      assert text[offset:offset + len(old)] == old
+                      text = text[:offset] + new + text[offset + len(old):]
+                  compressed = base64.b64decode(text, validate=True)
+                  assert len(compressed) <= 1048576
+                  assert hashlib.sha256(compressed).hexdigest() == expected, name + ' transport digest mismatch'
+                  with gzip.GzipFile(fileobj=io.BytesIO(compressed)) as stream:
+                      content = stream.read(1048577)
+                  assert len(content) <= 1048576
+                  payload = json.loads(content)
+                  assert set(payload) == {'message', 'paths', 'patch', 'after'}
+                  assert set(payload['paths']) == set(payload['after'])
+                  for path in payload['paths']:
+                      p = pathlib.PurePosixPath(path)
+                      assert not p.is_absolute() and '..' not in p.parts
+                      assert p.parts[0] in {'scripts', 'codex-rs', 'qualification', 'tools'}
+                  payloads.append((name, expected, payload))
+              except Exception as exc:
+                  errors.append(name + ': ' + str(exc))
+          (output / 'validation.json').write_text(json.dumps({'eventHead': os.environ['GITHUB_SHA'], 'errors': errors}, indent=2))
+          if errors:
+              raise SystemExit('; '.join(errors))
+          # Only static Git data is interpreted below. No checked-out or patched
+          # program, test, hook, build, installer, ref update or push is executed.
+          parent = os.environ['GITHUB_SHA']
+          previous_tree = git('rev-parse', 'HEAD^{tree}')
+          records = []
+          for name, expected, payload in payloads:
+              git('apply', '--check', '--index', '-', input=payload['patch'])
+              git('apply', '--index', '-', input=payload['patch'])
+              changed = set(git('diff', '--cached', '--name-only', previous_tree).splitlines())
+              assert changed == set(payload['paths']), name + ' unexpected changed path'
+              entries = []
+              for path in payload['paths']:
+                  assert git('rev-parse', ':' + path) == payload['after'][path], path + ' content mismatch'
+                  value = pathlib.Path(path)
+                  assert not value.is_symlink() and value.is_file()
+                  assert value.resolve().is_relative_to(pathlib.Path.cwd())
+                  entries.append({'path': path, 'mode': '100644', 'type': 'blob', 'content': value.read_text()})
+              tree = api('git/trees', {'base_tree': previous_tree, 'tree': entries})['sha']
+              assert tree == git('write-tree'), name + ' tree mismatch'
+              commit = api('git/commits', {'message': payload['message'], 'tree': tree, 'parents': [parent]})['sha']
+              records.append({'stage': name, 'payloadSha256': expected, 'commit': commit, 'tree': tree, 'paths': payload['paths']})
+              parent, previous_tree = commit, tree
+          (output / 'commits.json').write_text(json.dumps({'eventHead': os.environ['GITHUB_SHA'], 'records': records, 'finalCommit': parent, 'finalTree': previous_tree, 'refsChanged': False}, indent=2))
+          print('Created verified source objects without updating any repository ref.')
+          PY
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
         with:
-          name: hepta-session-source-${{ github.sha }}
-          path: ${{ runner.temp }}/hepta-session-source/
-          retention-days: 1
-          if-no-files-found: error
-  compiler:
-    runs-on: ubuntu-24.04
-    timeout-minutes: 25
-    steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
-        with:
-          persist-credentials: false
-          fetch-depth: 1
-      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
-        with:
-          tool: just@1.51.0,nextest@0.9.103
-      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
-        with:
-          toolchain: 1.95.0
-          components: clippy,rustfmt
-      - name: Resolve and compile implementation packages
-        working-directory: codex-rs
-        run: cargo check --locked -p codex-hepta-intelligence-eval -p codex-hepta-intelligence -p codex-hepta-learning-artifacts -p codex-hepta-control-plane -p codex-hepta-bellman-operator --all-targets
-      - name: Archive compiler and public dependency caches only
-        shell: bash
-        run: |
-          set -euo pipefail
-          OUT="$RUNNER_TEMP/hepta-session-compiler"
-          mkdir -p "$OUT/bin"
-          cp -L "$(command -v just)" "$OUT/bin/just"
-          cp -L "$(command -v cargo-nextest)" "$OUT/bin/cargo-nextest"
-          SYSROOT="$(rustc --print sysroot)"
-          tar -czf "$OUT/toolchain.tar.gz" -C "$SYSROOT" bin lib
-          CARGO_CACHE="${CARGO_HOME:-$HOME/.cargo}"
-          ITEMS=()
-          for item in registry git; do
-            if test -d "$CARGO_CACHE/$item"; then ITEMS+=("$item"); fi
-          done
-          tar -czf "$OUT/dependencies.tar.gz" -C "$CARGO_CACHE" "${ITEMS[@]}"
-          rustc -Vv > "$OUT/compiler.txt"
-          cargo -V >> "$OUT/compiler.txt"
-      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
-        with:
-          name: hepta-session-compiler-${{ github.sha }}
-          path: ${{ runner.temp }}/hepta-session-compiler/
+          name: hepta-source-transport-${{ github.sha }}
+          path: ${{ runner.temp }}/hepta-source-transport/
           retention-days: 1
           if-no-files-found: error
