@@ -119,7 +119,11 @@ fn grant(
 }
 
 fn body() -> String {
-    serde_json::json!({"data":{"data":{"value":SECRET},"metadata":{"version":2}}}).to_string()
+    body_for(2, SECRET)
+}
+
+fn body_for(version: u64, secret: &str) -> String {
+    serde_json::json!({"data":{"data":{"value":secret},"metadata":{"version":version}}}).to_string()
 }
 
 #[tokio::test]
@@ -339,4 +343,118 @@ async fn consumer_failure_after_delivery_is_indeterminate() {
         Err(BaoClientError::Authority(FinalUseError::AlreadyClaimed))
     );
     task.await.unwrap().unwrap();
+}
+
+#[tokio::test]
+async fn version_and_digest_mismatches_never_deliver() {
+    let (endpoint, ca, task) = server(200, body_for(1, SECRET), || async {}).await.unwrap();
+    let client = BaoClient::new(
+        &endpoint,
+        ca.as_bytes(),
+        BaoToken::new("fixture".into()).unwrap(),
+        Duration::from_secs(2),
+    )
+    .unwrap();
+    let request = read_request();
+    let (authority, signed, _directory) = grant(&client, &request).unwrap();
+    assert_eq!(
+        client
+            .consume_kv_v2(&authority, &signed, &request, |_| panic!(
+                "version-mismatched consumer"
+            ))
+            .await,
+        Err(BaoClientError::VersionMismatch)
+    );
+    task.await.unwrap().unwrap();
+
+    let (endpoint, ca, task) = server(200, body_for(2, "wrong-secret"), || async {})
+        .await
+        .unwrap();
+    let client = BaoClient::new(
+        &endpoint,
+        ca.as_bytes(),
+        BaoToken::new("fixture".into()).unwrap(),
+        Duration::from_secs(2),
+    )
+    .unwrap();
+    let request = read_request();
+    let (authority, signed, _directory) = grant(&client, &request).unwrap();
+    assert_eq!(
+        client
+            .consume_kv_v2(&authority, &signed, &request, |_| panic!(
+                "digest-mismatched consumer"
+            ))
+            .await,
+        Err(BaoClientError::SecretDigestMismatch)
+    );
+    task.await.unwrap().unwrap();
+}
+
+#[tokio::test]
+async fn provider_not_found_and_malformed_success_are_denied() {
+    let (endpoint, ca, task) = server(404, "{}".into(), || async {}).await.unwrap();
+    let client = BaoClient::new(
+        &endpoint,
+        ca.as_bytes(),
+        BaoToken::new("fixture".into()).unwrap(),
+        Duration::from_secs(2),
+    )
+    .unwrap();
+    let request = read_request();
+    let (authority, signed, _directory) = grant(&client, &request).unwrap();
+    assert_eq!(
+        client
+            .consume_kv_v2(&authority, &signed, &request, |_| panic!(
+                "missing consumer"
+            ))
+            .await,
+        Err(BaoClientError::NotFound)
+    );
+    task.await.unwrap().unwrap();
+
+    let (endpoint, ca, task) = server(200, "{\"data\":{}}".into(), || async {})
+        .await
+        .unwrap();
+    let client = BaoClient::new(
+        &endpoint,
+        ca.as_bytes(),
+        BaoToken::new("fixture".into()).unwrap(),
+        Duration::from_secs(2),
+    )
+    .unwrap();
+    let request = read_request();
+    let (authority, signed, _directory) = grant(&client, &request).unwrap();
+    assert_eq!(
+        client
+            .consume_kv_v2(&authority, &signed, &request, |_| panic!(
+                "malformed consumer"
+            ))
+            .await,
+        Err(BaoClientError::InvalidResponse)
+    );
+    task.await.unwrap().unwrap();
+}
+
+#[tokio::test]
+async fn root_namespace_omits_namespace_header() {
+    let (endpoint, ca, task) = server(200, body(), || async {}).await.unwrap();
+    let client = BaoClient::new(
+        &endpoint,
+        ca.as_bytes(),
+        BaoToken::new("fixture".into()).unwrap(),
+        Duration::from_secs(2),
+    )
+    .unwrap();
+    let mut request = read_request();
+    request.namespace.clear();
+    let (authority, signed, _directory) = grant(&client, &request).unwrap();
+    client
+        .consume_kv_v2(&authority, &signed, &request, |bytes| {
+            assert_eq!(bytes, SECRET.as_bytes());
+            Ok(())
+        })
+        .await
+        .unwrap();
+    let observed = task.await.unwrap().unwrap().to_ascii_lowercase();
+    assert!(!observed.contains("x-vault-namespace:"));
 }
