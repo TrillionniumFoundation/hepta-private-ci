@@ -62,10 +62,10 @@ Use all eighteen dossier receipt fields. Immediate revocation and stop remain ef
 ## 8. Current native implementation
 
 - **Implemented entrypoints:** `evaluate_temporal_holdout` in [codex-rs/hepta-intelligence-eval/src/temporal_evaluation.rs](../../../codex-rs/hepta-intelligence-eval/src/temporal_evaluation.rs). Point/sequential/temporal estimators and independent decision source implemented.
-- **State and recovery:** Temporal evaluation binds a frozen plan and exact joined held-out cohort, isolates training labels and checks cluster lineage. FinalHoldoutRegistry is an in-memory typed use registry; a sealed digest is not a durable or authenticated holdout-use service.
+- **State and recovery:** Temporal evaluation binds a frozen plan and exact joined held-out cohort, isolates training labels and checks cluster lineage. FinalHoldoutRegistry remains the in-memory semantic registry. DurableFinalHoldoutJournalV1 now wraps its journal with locked, synced, independently anchored file recovery; host authentication/currentness and production scheduling remain external. Signed SystemLongitudinal admission requires V3 observed-time evidence, not window IDs alone.
 - **Source tests:** [codex-rs/hepta-intelligence-eval/src/temporal_evaluation_tests.rs](../../../codex-rs/hepta-intelligence-eval/src/temporal_evaluation_tests.rs), [codex-rs/hepta-intelligence-eval/src/closure_tests.rs](../../../codex-rs/hepta-intelligence-eval/src/closure_tests.rs). These are test identities, not execution receipts for this documentation revision.
 - **Implementation and operating references:** [codex-rs/hepta-intelligence-eval/NATIVE_MAPPING.md](../../../codex-rs/hepta-intelligence-eval/NATIVE_MAPPING.md), [codex-rs/hepta-intelligence-eval/EVIDENCE_ADMISSION.md](../../../codex-rs/hepta-intelligence-eval/EVIDENCE_ADMISSION.md).
-- **Remaining work:** Provide product nuisance-model scheduling, durable single-writer holdout consumption, live authenticated outcomes and real future-window evidence; estimator fixtures cannot establish longitudinal efficacy.
+- **Remaining work:** Bind the durable holdout adapter to the product nuisance-model scheduler and independently retained current anchor; provide live authenticated outcomes and real future-window evidence; estimator fixtures cannot establish longitudinal efficacy.
 
 ## 9. Native closure and remaining evidence
 
