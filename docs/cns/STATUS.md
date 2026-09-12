@@ -13,7 +13,7 @@
 - Repository gaps with deterministic evidence: **22**
 - External capability gates: **8**
 - HNMF reference packages: **3**
-- CNS deterministic unit vectors: **32**
+- CNS deterministic unit vectors: **36**
 - Positive authority flags: **0**
 
 Repository closure covers anatomy, lifecycle, dependency/fallback, local hot paths, homeostasis, sensor staleness, body generation, action gating, reflex veto, terminal-effect observation, next-snapshot topology, role separation, consolidation/unlearning and machine validation.
