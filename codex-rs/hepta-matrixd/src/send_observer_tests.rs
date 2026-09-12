@@ -55,10 +55,7 @@ fn payload_drift_and_transaction_reuse_are_rejected() {
     let mut observer = MatrixSendObserver::default();
     let mut changed = intent();
     changed.grant_payload_digest = "2".repeat(64);
-    assert_eq!(
-        observer.prepare_send(100, changed),
-        Err(Error::PayloadMismatch)
-    );
+    assert_eq!(observer.prepare_send(100, changed), Err(Error::PayloadMismatch));
     observer.prepare_send(100, intent()).expect("prepare");
     let mut duplicate = intent();
     duplicate.operation_id = "operation.2".to_string();
@@ -91,7 +88,9 @@ fn failed_send_is_terminal_and_only_identical_replay_is_idempotent() {
         server_event_id: None,
         ..successful_observation()
     };
-    let terminal = observer.observe_send(failed.clone()).expect("failure");
+    let terminal = observer
+        .observe_send(failed.clone())
+        .expect("failure");
     assert_eq!(terminal.state, SendState::Failed);
     let mut replay = terminal.clone();
     replay.idempotent = true;
@@ -102,7 +101,10 @@ fn failed_send_is_terminal_and_only_identical_replay_is_idempotent() {
         ..failed
     };
     for observation in [successful_observation(), indeterminate] {
-        assert_eq!(observer.observe_send(observation), Err(Error::AlreadyTerminal));
+        assert_eq!(
+            observer.observe_send(observation),
+            Err(Error::AlreadyTerminal)
+        );
         assert_eq!(observer.receipt("operation.1"), Some(&terminal));
     }
 }
@@ -112,7 +114,9 @@ fn successful_send_replay_binds_outcome_event_and_terminal_observation() {
     let mut observer = MatrixSendObserver::default();
     observer.prepare_send(100, intent()).expect("prepare");
     let observation = successful_observation();
-    let terminal = observer.observe_send(observation.clone()).expect("success");
+    let terminal = observer
+        .observe_send(observation.clone())
+        .expect("success");
     let mut replay = terminal.clone();
     replay.idempotent = true;
     assert_eq!(observer.observe_send(observation.clone()), Ok(replay));
@@ -174,7 +178,9 @@ fn redacted_send_cannot_be_resurrected_by_delayed_observations() {
 fn redaction_replay_is_idempotent_without_replacing_original_evidence() {
     let mut observer = MatrixSendObserver::default();
     observer.prepare_send(100, intent()).expect("prepare");
-    observer.observe_send(successful_observation()).expect("success");
+    observer
+        .observe_send(successful_observation())
+        .expect("success");
     let digest = "4".repeat(64);
     let redacted = observer
         .apply_redaction("$event:example.org", &digest)
