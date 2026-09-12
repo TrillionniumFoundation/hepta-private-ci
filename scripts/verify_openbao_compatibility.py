@@ -21,6 +21,39 @@ def main() -> int:
         fail(f"cannot read matrix: {exc}")
     if matrix.get("schema") != "hepta.openbao-compatibility-matrix.v1":
         fail("unexpected matrix schema")
+    target = matrix.get("target")
+    observed = target.get("observedCandidate") if isinstance(target, dict) else None
+    if not isinstance(observed, dict):
+        fail("missing observed candidate projection")
+    try:
+        external = json.loads(
+            (ROOT / "external/HeptaBao/EXTERNAL_SOURCE.json").read_text(
+                encoding="utf-8"
+            )
+        )
+    except (OSError, json.JSONDecodeError) as exc:
+        fail(f"cannot read external source receipt: {exc}")
+    projection = {
+        "repositoryHead": external.get("observed_repository_head"),
+        "runtimePin": external.get("commit"),
+        "workspacePackages": external.get("observed_workspace_packages"),
+        "surfaceCount": external.get("openbao_surface_count"),
+        "scopedImplementedSurfaces": external.get(
+            "openbao_scoped_implemented_surface_count"
+        ),
+        "definedNotImplementedSurfaces": external.get(
+            "openbao_defined_not_implemented_surface_count"
+        ),
+        "independentObservedCurrentHeadSurfaces": external.get(
+            "openbao_independent_observed_current_head_surface_count"
+        ),
+    }
+    if observed != projection:
+        fail(
+            "observed candidate projection is out of sync with external source receipt"
+        )
+    if target.get("version") != external.get("openbao_compatibility_target"):
+        fail("OpenBao target version is out of sync with external source receipt")
     authority = matrix.get("authorityFlags")
     if not isinstance(authority, dict) or any(authority.values()):
         fail("compatibility matrix grants authority")
@@ -44,6 +77,11 @@ def main() -> int:
                 fail(f"{row.get('id')}: missing evidence path {relative}")
         if row.get("blocking") is True and status != "closed":
             blockers.append(row["id"])
+        if (
+            status == "closed"
+            and observed["independentObservedCurrentHeadSurfaces"] == 0
+        ):
+            fail(f"{row.get('id')}: closed without current independent observation")
     result = {
         "status": "PASS_OPENBAO_REPLACEMENT"
         if not blockers
