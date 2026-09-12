@@ -83,7 +83,8 @@ impl NativeHandoffProtocolRegistryV1 {
         if request.protocol_id != self.protocol_id {
             return Err(OrganWireError::ProtocolRegistry);
         }
-        if request.profile_id != self.profile_id || request.profile_version != self.profile_version {
+        if request.profile_id != self.profile_id || request.profile_version != self.profile_version
+        {
             return Err(OrganWireError::ProtocolVersion);
         }
         if request.schema_digest != self.schema_digest {
