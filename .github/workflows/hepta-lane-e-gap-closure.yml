@@ -91,6 +91,14 @@ jobs:
           lane_e_causal_candidate_chain_is_digest_bound_and_deny_all
           --test-threads=1
 
+      - name: Cross-language wire and fault closure
+        working-directory: codex-rs
+        run: >-
+          cargo test --locked
+          -p codex-hepta-shadow-qualification
+          --test cross_language_wire_fault
+          -- --test-threads=1
+
       - name: Strict Lane E lint
         working-directory: codex-rs
         run: >-
@@ -202,6 +210,14 @@ jobs:
           -p codex-hepta-shadow-qualification
           lane_e_causal_candidate_chain_is_digest_bound_and_deny_all
           --test-threads=1
+
+      - name: Test merged cross-language wire and fault closure
+        working-directory: codex-rs
+        run: >-
+          cargo test --locked
+          -p codex-hepta-shadow-qualification
+          --test cross_language_wire_fault
+          -- --test-threads=1
 
       - name: Verify merged formatting and index stability
         shell: bash
