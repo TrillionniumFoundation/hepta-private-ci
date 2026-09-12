@@ -476,9 +476,16 @@ def verify() -> list[str]:
             elif record["source_root_present"] != expected_present:
                 failures.append(f"{label} source-root fact is stale: {module_id}")
             if type(record.get("production_implementation")) is not bool:
-                failures.append(f"{label} production-implementation fact is missing: {module_id}")
-            elif record["production_implementation"] and not record["source_root_present"]:
-                failures.append(f"{label} production implementation has no source root: {module_id}")
+                failures.append(
+                    f"{label} production-implementation fact is missing: {module_id}"
+                )
+            elif (
+                record["production_implementation"]
+                and not record["source_root_present"]
+            ):
+                failures.append(
+                    f"{label} production implementation has no source root: {module_id}"
+                )
     for module_id, expected_roots in SOURCE_ROOTS.items():
         module = modules_by_id.get(module_id)
         binding = bindings_by_id.get(module_id)
@@ -500,7 +507,9 @@ def verify() -> list[str]:
         if module.get("source_root_present") is not True:
             failures.append(f"module source root is not present: {module_id}")
         if module.get("production_implementation") is not False:
-            failures.append(f"module production implementation is overstated: {module_id}")
+            failures.append(
+                f"module production implementation is overstated: {module_id}"
+            )
         if module.get("sourceEvidenceRoots") != list(expected_roots):
             failures.append(f"module source evidence roots are incorrect: {module_id}")
         if module.get("missingDeclaredRoots") != []:
@@ -511,7 +520,9 @@ def verify() -> list[str]:
         if binding.get("source_root_present") is not True:
             failures.append(f"binding source root is not present: {module_id}")
         if binding.get("production_implementation") is not False:
-            failures.append(f"binding production implementation is overstated: {module_id}")
+            failures.append(
+                f"binding production implementation is overstated: {module_id}"
+            )
         if binding.get("declaredRoots") != list(expected_roots):
             failures.append(f"binding declared roots are incorrect: {module_id}")
         if binding.get("existingDeclaredRoots") != list(expected_roots):

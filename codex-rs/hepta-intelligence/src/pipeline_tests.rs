@@ -293,6 +293,40 @@ fn trace_digest_is_deterministic_for_equal_port_receipts() {
 }
 
 #[test]
+fn recomputed_digest_cannot_hide_a_missing_required_stage() -> Result<(), PipelineErrorV1> {
+    let original = run_shadow_pipeline(request(), &mut FakePorts::default())?;
+    for missing in 0..original.stages.len() {
+        let mut receipt = original.clone();
+        receipt.stages.remove(missing);
+        for index in 1..receipt.stages.len() {
+            receipt.stages[index].predecessor_digest = receipt.stages[index - 1].output_digest;
+        }
+        let terminal = receipt
+            .stages
+            .last()
+            .ok_or(PipelineErrorV1::InvalidPipelineReceipt("stage count"))?
+            .output_digest;
+        receipt.trace_digest = digest_trace(
+            &receipt.run_id,
+            receipt.snapshot_digest,
+            receipt.disposition,
+            &receipt.stages,
+            terminal,
+        )?;
+        assert!(receipt.validate().is_err(), "removed stage {missing}");
+    }
+    Ok(())
+}
+
+#[test]
+fn non_intuition_stage_cannot_report_an_advisory_decision() -> Result<(), PipelineErrorV1> {
+    let mut receipt = run_shadow_pipeline(request(), &mut FakePorts::default())?;
+    receipt.stages[0].outcome = StageOutcomeV1::Abstained;
+    assert_eq!(receipt.validate(), Err(PipelineErrorV1::UnexpectedDecision));
+    Ok(())
+}
+
+#[test]
 fn ledger_failure_overrides_advisory_decision() {
     let mut ports = FakePorts {
         failure: Some((

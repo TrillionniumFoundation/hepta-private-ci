@@ -188,7 +188,10 @@ def verify():
         need(m.get("sourceStatus") in ALLOWED_STATUS, mid + " source status")
         for record, label in ((m, "module"), (b, "binding"), (row, "document")):
             need(
-                all(key in record and type(record[key]) is bool for key in STATUS_FACT_FIELDS),
+                all(
+                    key in record and type(record[key]) is bool
+                    for key in STATUS_FACT_FIELDS
+                ),
                 mid + " " + label + " status facts",
             )
             need(

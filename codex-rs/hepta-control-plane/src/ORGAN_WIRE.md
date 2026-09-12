@@ -64,7 +64,9 @@ decoder. A runtime composition that crosses the native handoff seam must call
 caller-supplied `NativeHandoffProtocolAdmissionV1` against the host-owned
 `NativeHandoffProtocolRegistryV1::canonical()` entry (`BodyGraphSnapshotV1`,
 profile `hepta.compiled-body-graph.v2`, version `2`, and a fixed schema
-digest). It then performs the independent payload digest, generation and
+digest). Both canonical constructors return `Result<_, OrganWireError>`;
+invalid built-in identities propagate `ProtocolRegistry` before host construction.
+Admission then performs the independent payload digest, generation and
 placement checks before returning a `NativeHandoffReceiptV1` and the verified
 graph. Registry admission is therefore a real native producer/consumer seam,
 while the receipt remains an observation with `AuthorityPosture::DENY_ALL`;

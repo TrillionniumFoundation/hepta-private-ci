@@ -5,6 +5,7 @@ Maps are source-navigation evidence.  They deliberately distinguish a native
 entrypoint from a composed production caller; an entrypoint never grants
 runtime, effect, acceptance, promotion, or release authority.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -22,12 +23,18 @@ def load(rel: str):
 
 
 def git(*args: str) -> str:
-    p = subprocess.run(["git", *args], cwd=ROOT, text=True, capture_output=True, check=True)
+    p = subprocess.run(
+        ["git", *args], cwd=ROOT, text=True, capture_output=True, check=True
+    )
     return p.stdout.strip()
 
 
 def lane_by_module():
-    return {m: lane["id"] for lane in load("docs/readiness/READINESS.json")["implementationLanes"] for m in lane["modules"]}
+    return {
+        m: lane["id"]
+        for lane in load("docs/readiness/READINESS.json")["implementationLanes"]
+        for m in lane["modules"]
+    }
 
 
 def parse_entrypoints(module: str):
@@ -122,14 +129,19 @@ def normalize_for_write(value):
 def generate():
     modules = load("docs/modules/MODULES.json")["modules"]
     lanes = lane_by_module()
-    source_base = {"commit": git("rev-parse", "HEAD"), "tree": git("rev-parse", "HEAD^{tree}")}
+    source_base = {
+        "commit": git("rev-parse", "HEAD"),
+        "tree": git("rev-parse", "HEAD^{tree}"),
+    }
     written = []
     for module in modules:
         path = ROOT / f"docs/modules/{module['id']}/IMPLEMENTATION_MAP.json"
         if path.exists():
             continue
         value = normalize_for_write(map_for(module, source_base, lanes))
-        path.write_text(json.dumps(value, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+        path.write_text(
+            json.dumps(value, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"
+        )
         written.append(str(path.relative_to(ROOT)))
     print(json.dumps({"generated": len(written), "maps": written}, ensure_ascii=False))
 
@@ -168,7 +180,9 @@ def verify():
         for op in ops:
             if not (op.get("operation") or op.get("designOperation")):
                 failures.append(f"{mid}: operation id")
-            source = op.get("sourcePath") or (op.get("ownerEntrypoint") or {}).get("path")
+            source = op.get("sourcePath") or (op.get("ownerEntrypoint") or {}).get(
+                "path"
+            )
             if source and not (ROOT / source).is_file():
                 failures.append(f"{mid}: missing source {source}")
         boundary = row.get("claimBoundary") or row.get("completion")
@@ -176,7 +190,17 @@ def verify():
             failures.append(f"{mid}: claim boundary")
     if failures:
         raise SystemExit("FAIL_HEPTA_IMPLEMENTATION_MAPS: " + "; ".join(failures))
-    print(json.dumps({"status": "PASS_HEPTA_IMPLEMENTATION_MAPS", "modules": len(modules), "maps": len(modules), "productionImplementationProved": False}, sort_keys=True))
+    print(
+        json.dumps(
+            {
+                "status": "PASS_HEPTA_IMPLEMENTATION_MAPS",
+                "modules": len(modules),
+                "maps": len(modules),
+                "productionImplementationProved": False,
+            },
+            sort_keys=True,
+        )
+    )
 
 
 def main():

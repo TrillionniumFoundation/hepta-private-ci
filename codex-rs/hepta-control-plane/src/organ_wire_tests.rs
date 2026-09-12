@@ -412,13 +412,14 @@ fn producer_rejects_positive_effect_scope_and_ambiguous_port_identities() {
 }
 
 #[test]
-fn registry_admission_is_required_before_native_handoff_host_construction() {
+fn registry_admission_is_required_before_native_handoff_host_construction()
+-> Result<(), OrganWireError> {
     let (body, graph) = fixture();
     let bytes = encode_compiled_body_graph_v2(&body, &graph)
         .unwrap_or_else(|error| panic!("encode: {error:?}"));
     let host_admission = admission(&bytes);
-    let registry = NativeHandoffProtocolRegistryV1::canonical();
-    let protocol = NativeHandoffProtocolAdmissionV1::canonical();
+    let registry = NativeHandoffProtocolRegistryV1::canonical()?;
+    let protocol = NativeHandoffProtocolAdmissionV1::canonical()?;
     let (verified, receipt) =
         admit_compiled_body_graph_v2(&bytes, &host_admission, &protocol, &registry)
             .unwrap_or_else(|error| panic!("registry admission: {error:?}"));
@@ -443,10 +444,11 @@ fn registry_admission_is_required_before_native_handoff_host_construction() {
         .unwrap_or_else(|error| panic!("dispatch: {error:?}"));
     assert_eq!(deliveries[0].authority, AuthorityPosture::DENY_ALL);
 
-    let mut wrong = protocol.clone();
+    let mut wrong = protocol;
     wrong.profile_version = 1;
     assert_eq!(
         admit_compiled_body_graph_v2(&bytes, &host_admission, &wrong, &registry),
         Err(OrganWireError::ProtocolVersion)
     );
+    Ok(())
 }

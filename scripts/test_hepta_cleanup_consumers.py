@@ -20,7 +20,9 @@ FIXTURE_NAME = "hepta-cleanup-fixture-7c3d.json"
 
 class CleanupConsumerTests(unittest.TestCase):
     def test_exact_workflow_reference_must_exist(self):
-        with tempfile.TemporaryDirectory(prefix="hepta-workflow-reference-") as directory:
+        with tempfile.TemporaryDirectory(
+            prefix="hepta-workflow-reference-"
+        ) as directory:
             root = Path(directory)
             (root / "docs").mkdir()
             (root / "scripts").mkdir()
@@ -38,7 +40,9 @@ class CleanupConsumerTests(unittest.TestCase):
                     VERIFIER.verify_exact_workflow_references()
 
     def test_exact_workflow_reference_accepts_existing_file(self):
-        with tempfile.TemporaryDirectory(prefix="hepta-workflow-reference-") as directory:
+        with tempfile.TemporaryDirectory(
+            prefix="hepta-workflow-reference-"
+        ) as directory:
             root = Path(directory)
             (root / "docs").mkdir()
             (root / "scripts").mkdir()

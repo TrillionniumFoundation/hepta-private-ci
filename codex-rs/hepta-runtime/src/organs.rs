@@ -173,14 +173,14 @@ fn build_host(root: HeptaStateRoot, state: Arc<dyn RuntimeStateAdapter>) -> Resu
     let host_admission = CompiledOrganAdmissionV2 {
         expected_digest: compiled_body_graph_digest_v2(&bytes)?,
         generation,
-        process: process.clone(),
-        host: host_id.clone(),
+        process,
+        host: host_id,
     };
     let (verified, _receipt) = admit_compiled_body_graph_v2(
         &bytes,
         &host_admission,
-        &NativeHandoffProtocolAdmissionV1::canonical(),
-        &NativeHandoffProtocolRegistryV1::canonical(),
+        &NativeHandoffProtocolAdmissionV1::canonical()?,
+        &NativeHandoffProtocolRegistryV1::canonical()?,
     )
     .context("admit compiled-in status body through protocol registry")?;
     let handlers: Vec<Box<dyn TrustedReadOnlyOrganV1>> = vec![

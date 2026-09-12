@@ -51,15 +51,15 @@ pub struct NativeHandoffProtocolRegistryV1 {
 impl NativeHandoffProtocolRegistryV1 {
     /// The only built-in entry. A production owner may construct a reviewed
     /// registry snapshot with `new` for a future profile/version.
-    pub fn canonical() -> Self {
-        Self {
+    pub fn canonical() -> Result<Self, OrganWireError> {
+        Ok(Self {
             protocol_id: StableId::new(BODY_GRAPH_SNAPSHOT_PROTOCOL_V1)
-                .expect("canonical protocol identity is valid"),
+                .map_err(|_| OrganWireError::ProtocolRegistry)?,
             profile_id: StableId::new(COMPILED_BODY_GRAPH_PROFILE_V2)
-                .expect("canonical profile identity is valid"),
+                .map_err(|_| OrganWireError::ProtocolRegistry)?,
             profile_version: 2,
             schema_digest: compiled_body_graph_schema_digest_v2(),
-        }
+        })
     }
 
     pub fn new(
@@ -121,14 +121,14 @@ pub struct NativeHandoffProtocolAdmissionV1 {
 }
 
 impl NativeHandoffProtocolAdmissionV1 {
-    pub fn canonical() -> Self {
-        let registry = NativeHandoffProtocolRegistryV1::canonical();
-        Self {
+    pub fn canonical() -> Result<Self, OrganWireError> {
+        let registry = NativeHandoffProtocolRegistryV1::canonical()?;
+        Ok(Self {
             protocol_id: registry.protocol_id,
             profile_id: registry.profile_id,
             profile_version: registry.profile_version,
             schema_digest: registry.schema_digest,
-        }
+        })
     }
 }
 

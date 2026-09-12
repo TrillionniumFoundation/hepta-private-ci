@@ -165,6 +165,11 @@ jobs:
           tool: nextest
           version: 0.9.103
 
+      - name: Configure verified sandbox V8 artifacts
+        uses: ./.github/actions/setup-rusty-v8
+        with:
+          target: ${{ inputs.target }}
+
       - name: Build nextest archive
         shell: bash
         run: |

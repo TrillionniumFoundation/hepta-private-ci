@@ -263,15 +263,13 @@ impl LaneFShadowPipelineReceiptV1 {
             return Err(PipelineErrorV1::InvalidPipelineReceipt("stage count"));
         }
 
-        let mut previous_stage = None;
+        let mut expected_stage = Some(LaneFStageV1::ObjectiveValidated);
         let mut previous_output = None;
         let mut intuition_outcome = None;
         let mut saw_context = false;
         let mut saw_dispatch = false;
         for trace in &self.stages {
-            if let Some(previous) = previous_stage
-                && stage_code(trace.stage) <= stage_code(previous)
-            {
+            if Some(trace.stage) != expected_stage {
                 return Err(PipelineErrorV1::InvalidPipelineReceipt("stage order"));
             }
             if trace.predecessor_digest.is_zero()
@@ -319,11 +317,32 @@ impl LaneFShadowPipelineReceiptV1 {
             }
             saw_context |= trace.stage == LaneFStageV1::ContextCompiled;
             saw_dispatch |= trace.stage == LaneFStageV1::DispatchProposed;
-            previous_stage = Some(trace.stage);
+            expected_stage = match trace.outcome {
+                StageOutcomeV1::Failed(_) => None,
+                StageOutcomeV1::Abstained | StageOutcomeV1::SlowPath => {
+                    if trace.stage != LaneFStageV1::IntuitionDecided {
+                        return Err(PipelineErrorV1::UnexpectedDecision);
+                    }
+                    Some(LaneFStageV1::LearningRecorded)
+                }
+                StageOutcomeV1::Completed | StageOutcomeV1::FallbackUsed(_) => match trace.stage {
+                    LaneFStageV1::ObjectiveValidated => Some(LaneFStageV1::LegalSetBuilt),
+                    LaneFStageV1::LegalSetBuilt => Some(LaneFStageV1::NeuralSignalCollected),
+                    LaneFStageV1::NeuralSignalCollected => Some(LaneFStageV1::PromptPortfolioBuilt),
+                    LaneFStageV1::PromptPortfolioBuilt => Some(LaneFStageV1::IntuitionDecided),
+                    LaneFStageV1::IntuitionDecided => Some(LaneFStageV1::ContextCompiled),
+                    LaneFStageV1::ContextCompiled => Some(LaneFStageV1::DispatchProposed),
+                    LaneFStageV1::DispatchProposed => Some(LaneFStageV1::LearningRecorded),
+                    LaneFStageV1::LearningRecorded => None,
+                },
+            };
             previous_output = Some(trace.output_digest);
         }
 
-        let last = self.stages.last().expect("non-empty checked above");
+        let last = self
+            .stages
+            .last()
+            .ok_or(PipelineErrorV1::InvalidPipelineReceipt("stage count"))?;
         match self.disposition {
             PipelineDispositionV1::DispatchProposed => {
                 if !saw_context

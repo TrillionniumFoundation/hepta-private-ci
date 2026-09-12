@@ -412,7 +412,8 @@ def validate_status_model(model: dict[str, Any]) -> None:
     module_facts = model.get("moduleFacts")
     need(
         isinstance(module_facts, dict)
-        and set(module_facts) == {
+        and set(module_facts)
+        == {
             "source_root_present",
             "production_implementation",
             "invariant",
@@ -817,7 +818,8 @@ def verify() -> int:
     module_doc_map = {row["module"]: row for row in module_docs}
     module_registry_map = {row["id"]: row for row in modules}
     source_binding_map = {
-        row["module"]: row for row in load("docs/modules/SOURCE_BINDINGS.json")["bindings"]
+        row["module"]: row
+        for row in load("docs/modules/SOURCE_BINDINGS.json")["bindings"]
     }
     document_map = {row["id"]: row for row in document_rows}
     for row in binding_rows:
