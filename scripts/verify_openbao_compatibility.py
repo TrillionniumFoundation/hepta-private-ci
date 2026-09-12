@@ -165,8 +165,12 @@ def main() -> int:
     rows = matrix.get("capabilities")
     if not isinstance(rows, list) or not rows:
         fail("empty capability matrix")
+    if any(not isinstance(row, dict) for row in rows):
+        fail("capability rows must be objects")
     ids = [row.get("id") for row in rows]
-    if any(not isinstance(row, dict) for row in rows) or len(set(ids)) != len(ids):
+    if any(not isinstance(identifier, str) or not identifier for identifier in ids):
+        fail("capability IDs must be non-empty strings")
+    if len(set(ids)) != len(ids):
         fail("capability IDs are not unique")
     blockers = []
     for row in rows:
