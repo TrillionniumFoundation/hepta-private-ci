@@ -332,7 +332,10 @@ def verify():
 
 
 def self_test():
-    need(len(HEADINGS) == 15, "heading fixture")
+    # Keep the fixture tied to the canonical section list.  The implementation
+    # receipt section is part of every current technical document, so a stale
+    # literal here would reject the exact source head before document checks run.
+    need(len(HEADINGS) == 16, "heading fixture")
     need("target_unmaterialized" in ALLOWED_STATUS, "status fixture")
     try:
         json.loads('{"a":1,"a":2}', object_pairs_hook=pairs)
