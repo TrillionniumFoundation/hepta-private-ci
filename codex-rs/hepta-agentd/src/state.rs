@@ -29,6 +29,7 @@ use crate::HealthSnapshot;
 use crate::LifecycleSnapshot;
 use crate::SessionIngress;
 use crate::SessionTransport;
+use crate::cognitive_context::CognitiveContextError;
 
 const AUTOMATION_UNAVAILABLE_CODE: &str = "automation_unavailable";
 const AUTOMATION_UNAVAILABLE_MESSAGE: &str =
@@ -338,10 +339,12 @@ impl AgentdState {
                         cognitive_control_unavailable(),
                     );
                 };
+                // The model and context plan bind to the body that was launched.
+                // Current lifecycle authority remains fenced before and after I/O.
                 let result = crate::cognitive_context::read(
                     &store,
                     &self.identity.agent_id,
-                    current_generation,
+                    self.identity.spawn_generation,
                     &query,
                     limit,
                     self.cognitive_ranker.get(),
@@ -358,13 +361,18 @@ impl AgentdState {
                 }
                 match result {
                     Ok(snapshot) => AgentdPayload::CognitiveContext(snapshot),
-                    Err(error) => {
+                    Err(CognitiveContextError::Store(error)) => {
                         return self.cognitive_error_response(
                             request_id,
                             current_generation,
                             error,
                         );
                     }
+                    Err(CognitiveContextError::RankerUnavailable) => AgentdPayload::Error {
+                        code: "cognitive_ranker_unavailable".to_string(),
+                        message: "selected ranker is unavailable; explicit reload required"
+                            .to_string(),
+                    },
                 }
             }
             crate::AgentdMethod::Events {

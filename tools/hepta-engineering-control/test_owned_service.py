@@ -123,6 +123,103 @@ class OwnedServiceTests(unittest.TestCase):
             target.request("step", "../../escape")
         self.assertEqual(target.request("query")["counter"], 0)
 
+    def test_late_acknowledgement_poison_requires_new_client_and_reconciliation(self):
+        from unittest.mock import patch
+        import selectors
+
+        first = self.target()
+        first.start()
+
+        def leave_committed_ack_unread():
+            with selectors.DefaultSelector() as selector:
+                selector.register(first.process.stdout, selectors.EVENT_READ)
+                self.assertTrue(selector.select(2), "real child must publish after commit")
+            raise ServiceError("response_timeout")
+
+        with patch.object(first, "_read", side_effect=leave_committed_ack_unread):
+            with self.assertRaises(IndeterminateOperation):
+                first.request("step", "lateack")
+        # An old response must never satisfy a different request on the pipe.
+        with self.assertRaises(IndeterminateOperation):
+            first.request("query")
+        first.close()
+        with self.assertRaises(IndeterminateOperation):
+            first.start()
+        successor = self.target(2)
+        self.assertEqual(successor.start()["counter"], 1)
+        self.assertEqual(successor.request("reconcile", "lateack")["value"], 1)
+        self.assertEqual(successor.request("query")["counter"], 1)
+
+    def test_same_generation_cannot_change_implementation_in_either_direction(self):
+        first = self.target()
+        first.start()
+        first.request("step", "before")
+        first.close()
+        with self.assertRaises(ServiceError):
+            self.target(1, 1, implementation_version=2).start()
+        upgraded = self.target(2, 1, implementation_version=2)
+        upgraded.start()
+        upgraded.request("step", "after")
+        upgraded.close()
+        with self.assertRaises(ServiceError):
+            self.target(2, 2, implementation_version=1).start()
+        restarted = self.target(2, 2, implementation_version=2)
+        self.assertEqual(restarted.start()["counter"], 2)
+        self.assertEqual(restarted.request("reconcile", "after")["value"], 2)
+
+    def test_invalid_request_identity_is_rejected_before_dispatch(self):
+        target = self.target()
+        target.start()
+        for identity in (None, 1, True, [], {}, b"bytes"):
+            with self.subTest(identity=identity), self.assertRaises(ServiceError):
+                target.request("step", identity)
+        self.assertEqual(target.request("query")["counter"], 0)
+
+    def test_mismatched_acknowledgement_cannot_publish_or_reuse_channel(self):
+        from unittest.mock import patch
+
+        for response in (
+            {"generation": 1, "sequence": 99, "counter": 0},
+            {"generation": True, "sequence": 1, "counter": 0},
+            {"generation": 1, "sequence": True, "counter": 0},
+            {"generation": 1, "sequence": 1, "counter": True},
+            {"generation": 1, "sequence": 1, "value": 0},
+        ):
+            with self.subTest(response=response):
+                target = self.target()
+                target.start()
+                with patch.object(target, "_read", return_value=response):
+                    with self.assertRaises(IndeterminateOperation):
+                        target.request("query")
+                with self.assertRaises(IndeterminateOperation):
+                    target.request("query")
+                target.close()
+
+    def test_legacy_generation_without_profile_needs_explicit_new_generation(self):
+        with closing(sqlite3.connect(self.root / "service.sqlite3")) as database:
+            database.execute(
+                "CREATE TABLE service_meta (singleton INTEGER PRIMARY KEY, "
+                "generation INTEGER NOT NULL, schema_version INTEGER NOT NULL)"
+            )
+            database.execute("INSERT INTO service_meta VALUES (1, 5, 1)")
+            database.execute("CREATE TABLE operations (id TEXT PRIMARY KEY, value INTEGER NOT NULL UNIQUE)")
+            database.execute("INSERT INTO operations VALUES ('retained', 1)")
+            database.commit()
+        with self.assertRaises(ServiceError):
+            self.target(5, 1).start()
+        migrated = self.target(6, 1)
+        self.assertEqual(migrated.start()["counter"], 1)
+        self.assertEqual(migrated.request("reconcile", "retained")["value"], 1)
+
+    def test_successful_restart_keeps_observed_counter_frontier(self):
+        target = self.target()
+        target.start()
+        target.request("step", "observed")
+        self.assertEqual(target.minimum_counter, 1)
+        target.close()
+        self.assertEqual(target.start()["counter"], 1)
+        self.assertEqual(target.request("step", "observed")["value"], 1)
+
 
 if __name__ == "__main__":
     unittest.main()

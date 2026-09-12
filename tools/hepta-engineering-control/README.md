@@ -4,7 +4,6 @@ This source root provides deterministic, bounded work-envelope scheduling and
 integration eligibility. It deliberately has no merge, deployment, runtime,
 promotion or release capability.
 
-
 ## Disposable single-service process slice
 
 `assimilation/owned_service.py` runs exactly one reviewed, unprivileged counter
@@ -45,3 +44,28 @@ generation on the current version-2 database; it never restores an old snapshot
 or drops post-upgrade operations. This demonstrates one additive service-domain
 migration, not arbitrary writer handoff, destructive schema downgrade, systemd
 control or host enrollment. Tests run as an unprivileged user.
+
+### Acknowledgement and implementation identity
+
+Every child-protocol response is bound to its generation and monotonically
+increasing transport sequence. The client validates the complete response shape
+and value before publishing it; the public response dictionaries are unchanged.
+A missing, malformed or mismatched acknowledgement poisons that client. Close it,
+construct a new client with the current independently retained frontier, then
+reconcile the original stable operation ID. Do not dispatch it again to discover
+whether it committed. No later request may consume a late response on the old
+pipe.
+
+Observed counter frontiers survive clean restarts of the same client object;
+they are not a new durable host witness. The host must still retain its anchor
+outside the service and provide it to a new client. This is a private reviewed
+service protocol, not hostile-code isolation or a host-enrollment mechanism.
+
+The writer persists the reviewed implementation profile (1 or 2) alongside its
+schema and generation. Restarting the same profile at the same generation is
+allowed; changing profiles requires a strictly newer generation in either
+direction. An older metadata table without a recorded profile is unknown, not
+implicitly trusted: its first migration also requires a newer generation. These
+profile numbers identify the two reviewed implementations in this file, not
+arbitrary executable provenance. The existing pre/post-commit crash and
+post-upgrade-write preservation tests remain part of the same suite.
