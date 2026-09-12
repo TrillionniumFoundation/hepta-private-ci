@@ -193,6 +193,7 @@ struct MigrationFixture {
     migrations: Vec<(Generation, Generation, Vec<u8>)>,
     rollbacks: Vec<(Generation, Generation, Vec<u8>)>,
     fail_migrate: bool,
+    fail_rollback: bool,
 }
 
 impl OrganStateMigrationV1 for MigrationFixture {
@@ -224,7 +225,11 @@ impl OrganStateMigrationV1 for MigrationFixture {
     ) -> Result<(), OrganMigrationError> {
         self.rollbacks
             .push((predecessor, candidate, snapshot.to_vec()));
-        Ok(())
+        if self.fail_rollback {
+            Err(OrganMigrationError::Callback(id("rollback.failed")))
+        } else {
+            Ok(())
+        }
     }
 }
 
@@ -639,4 +644,101 @@ fn failed_stop_is_quarantined_and_never_retried_by_drop() {
     let before_drop = event_log(&events).clone();
     drop(host);
     assert_eq!(*event_log(&events), before_drop);
+}
+
+#[test]
+fn failed_state_restoration_quarantines_predecessor_dispatch() {
+    let events = Arc::new(Mutex::new(Vec::new()));
+    let mut host = new_host(graph(), handlers(&events));
+    start_host(&mut host);
+    let mut next = graph();
+    next.generation = generation(8);
+    let mut migration = MigrationFixture {
+        fail_migrate: true,
+        fail_rollback: true,
+        ..MigrationFixture::default()
+    };
+    let error = host
+        .replace_read_only_generation_with_migration(
+            generation(7),
+            next,
+            handlers(&events),
+            &mut migration,
+        )
+        .expect_err("failed restoration must not leave old state dispatchable");
+    assert!(matches!(
+        error,
+        OrganRuntimeError::CandidateMigrationFailed {
+            rollback_error: Some(_),
+            ..
+        }
+    ));
+    assert!(
+        host.statuses()
+            .iter()
+            .all(|s| s.state == HostedOrganStateV1::Quarantined)
+    );
+    assert!(matches!(
+        host.dispatch_once(generation(7), &id("source"), 0, b"no"),
+        Err(OrganRuntimeError::OrganNotReady { .. })
+    ));
+    assert_eq!(migration.rollbacks.len(), 1);
+}
+
+#[test]
+fn invalid_successor_does_not_invoke_state_owner() {
+    let events = Arc::new(Mutex::new(Vec::new()));
+    let mut host = new_host(graph(), handlers(&events));
+    start_host(&mut host);
+    let mut next = graph();
+    next.generation = generation(8);
+    let mut migration = MigrationFixture::default();
+    assert!(
+        host.replace_read_only_generation_with_migration(
+            generation(7),
+            next,
+            Vec::new(),
+            &mut migration,
+        )
+        .is_err()
+    );
+    assert!(migration.snapshots.is_empty());
+    assert!(migration.rollbacks.is_empty());
+}
+
+#[test]
+fn failed_predecessor_stop_preserves_the_rollback_error() {
+    let events = Arc::new(Mutex::new(Vec::new()));
+    let mut failing = FixtureOrgan::new("target.a", Arc::clone(&events));
+    failing.stop_fault = true;
+    let old_handlers: Vec<Box<dyn TrustedReadOnlyOrganV1>> = vec![
+        Box::new(FixtureOrgan::new("source", Arc::clone(&events))),
+        Box::new(failing),
+        Box::new(FixtureOrgan::new("target.b", Arc::clone(&events))),
+    ];
+    let mut host = new_host(graph(), old_handlers);
+    start_host(&mut host);
+    let mut next = graph();
+    next.generation = generation(8);
+    let mut migration = MigrationFixture {
+        fail_rollback: true,
+        ..MigrationFixture::default()
+    };
+    assert!(matches!(
+        host.replace_read_only_generation_with_migration(
+            generation(7),
+            next,
+            handlers(&events),
+            &mut migration,
+        ),
+        Err(OrganRuntimeError::MigrationReplacementStopFailed {
+            rollback_error: Some(_),
+            ..
+        })
+    ));
+    assert_eq!(host.generation(), generation(7));
+    assert!(
+        host.dispatch_once(generation(7), &id("source"), 0, b"no")
+            .is_err()
+    );
 }

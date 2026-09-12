@@ -60,3 +60,21 @@ The live `hepta-runtime` status composition uses the registry-gated
 compiled handlers. This is the first native producer/consumer vertical slice;
 the resulting receipt remains deny-all and the status graph has no durable
 writer or external effect boundary.
+
+
+## Owner callback failure semantics
+
+`replace_read_only_generation_with_migration` validates the complete successor
+and handler catalog before invoking the state owner. Snapshot/migrate/rollback
+remain trusted owner callbacks, not an implementation of durable state transfer.
+A failed candidate may leave the predecessor ready **only when rollback succeeds**.
+If restoration fails, all predecessor handlers are quarantined and reject
+further dispatch. A failed predecessor stop returns
+`MigrationReplacementStopFailed`, retaining both cleanup faults and any rollback
+error instead of discarding it. No callback is implicitly retried.
+
+The regression suite interrupts migration and restoration, rejects an invalid
+successor before snapshot acquisition and observes rollback failure after old
+handler cleanup fails. A real stateful organ still needs fenced single-writer
+storage, quiescence, durable phases and current independent recovery evidence.
+These process-local callbacks do not authorize arbitrary schemas or effects.
