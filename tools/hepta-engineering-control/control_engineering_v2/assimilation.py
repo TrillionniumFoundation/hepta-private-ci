@@ -3,6 +3,12 @@
 from __future__ import annotations
 
 from dataclasses import asdict, dataclass
+import hashlib
+import json
+import os
+from pathlib import Path
+import re
+import stat
 import time
 from collections.abc import Iterable, Mapping
 
@@ -98,6 +104,147 @@ class AssimilationProposal:
     federation: bool = False
     propagation: bool = False
     authority_granted: bool = False
+
+
+@dataclass(frozen=True)
+class SandboxObservation:
+    """A bounded read result from an enrolled disposable rootfs.
+
+    This is deliberately an observation, never an effect receipt.  The adapter
+    does not invoke systemd, dpkg, a shell, D-Bus or the network, and cannot
+    turn an observation into consent or activation.
+    """
+
+    operation: str
+    target_identity_digest: str
+    payload: bytes
+    payload_sha256: str
+    authority_granted: bool = False
+    activation: bool = False
+    network_unrestricted: bool = False
+    production_credentials_exposed: bool = False
+
+
+class DebianSandboxAdapter:
+    """Credential-free, read-only Debian fixture adapter (A1 dormant slice).
+
+    ``root_label`` is an owner-issued scope label in ``OwnerConsentReceipt``;
+    it is not inferred from a filesystem path.  The adapter rejects the host
+    root, symlinked files, path traversal, expired consent and every operation
+    outside the read-only consent set.  Service queries inspect unit metadata
+    only; they never start/stop or otherwise call a host service manager.
+    """
+
+    _SERVICE = re.compile(r"[A-Za-z0-9_:@.-]{1,200}\.service\Z")
+    _MAX_FILE_BYTES = 2 * 1024 * 1024
+
+    def __init__(self, root: str | os.PathLike[str], consent: OwnerConsentReceipt, *, root_label: str, now_ns: int | None = None, clock=None):
+        self._clock = time.time_ns if clock is None else clock
+        if not callable(self._clock):
+            raise EngineeringError("invalid_sandbox_clock")
+        self._consent = validate_consent(consent, now_ns=now_ns if now_ns is not None else self._clock())
+        if not isinstance(root_label, str) or root_label not in self._consent.allowed_roots:
+            raise EngineeringError("sandbox_scope_not_enrolled")
+        path = Path(root)
+        try:
+            resolved = path.resolve(strict=True)
+            stat_result = resolved.stat()
+        except (OSError, RuntimeError):
+            raise EngineeringError("sandbox_root_unavailable") from None
+        if not resolved.is_dir() or resolved == Path("/"):
+            raise EngineeringError("sandbox_root_rejected")
+        # Reject a root that is itself a symlink and pin identity for the life
+        # of this adapter.  Discovery still performs its stronger descriptor
+        # relative checks; this guard prevents accidental host-root use here.
+        if path.is_symlink():
+            raise EngineeringError("sandbox_root_symlink")
+        self._root = resolved
+        self._root_identity = (stat_result.st_dev, stat_result.st_ino)
+
+    @property
+    def target_identity_digest(self) -> str:
+        return self._consent.target_identity_digest
+
+    def _check(self, operation: str) -> None:
+        if operation not in READ_ONLY_OPERATIONS:
+            raise EngineeringError("operation_widens_authority")
+        validate_consent(self._consent, now_ns=self._clock())
+        if operation not in self._consent.allowed_operations:
+            raise EngineeringError("operation_not_consented")
+
+    def _read(self, relative: str, *, limit: int) -> bytes:
+        if not isinstance(relative, str) or relative.startswith("/") or "\\" in relative:
+            raise EngineeringError("sandbox_path_rejected")
+        parts = relative.split("/")
+        if not parts or any(part in {"", ".", ".."} for part in parts):
+            raise EngineeringError("sandbox_path_rejected")
+        if relative not in {"etc/os-release", "var/lib/dpkg/status"} and not (
+            relative.startswith("etc/systemd/system/") and self._SERVICE.fullmatch(parts[-1])
+        ):
+            raise EngineeringError("sandbox_path_outside_adapter")
+        candidate = self._root.joinpath(*parts)
+        try:
+            candidate.resolve(strict=True).relative_to(self._root)
+        except (OSError, RuntimeError, ValueError):
+            raise EngineeringError("sandbox_path_rejected") from None
+        try:
+            fd = os.open(candidate, os.O_RDONLY | os.O_NOFOLLOW | os.O_CLOEXEC)
+            try:
+                before = os.fstat(fd)
+                current_root = self._root.stat()
+                if (current_root.st_dev, current_root.st_ino) != self._root_identity:
+                    raise EngineeringError("sandbox_root_drift")
+                if not stat.S_ISREG(before.st_mode) or before.st_nlink != 1 or before.st_dev != self._root_identity[0] or before.st_size > limit:
+                    raise EngineeringError("sandbox_file_rejected")
+                value = b""
+                while len(value) <= limit:
+                    chunk = os.read(fd, min(65_536, limit + 1 - len(value)))
+                    if not chunk:
+                        break
+                    value += chunk
+                if len(value) > limit:
+                    raise EngineeringError("sandbox_byte_limit")
+                after = os.fstat(fd)
+                if (before.st_ino, before.st_size, before.st_mtime_ns) != (after.st_ino, after.st_size, after.st_mtime_ns):
+                    raise EngineeringError("sandbox_file_drift")
+                return value
+            finally:
+                os.close(fd)
+        except EngineeringError:
+            raise
+        except OSError:
+            raise EngineeringError("sandbox_file_unavailable") from None
+
+    def _observation(self, operation: str, payload: object) -> SandboxObservation:
+        encoded = json.dumps(payload, sort_keys=True, separators=(",", ":"), ensure_ascii=True, allow_nan=False).encode()
+        return SandboxObservation(operation, self.target_identity_digest, encoded, hashlib.sha256(encoded).hexdigest())
+
+    def query_version(self) -> SandboxObservation:
+        self._check("query_version")
+        try:
+            raw = self._read("etc/os-release", limit=16_384).decode("utf-8", "strict")
+        except UnicodeDecodeError:
+            raise EngineeringError("sandbox_encoding_rejected") from None
+        values: dict[str, str] = {}
+        for line in raw.splitlines():
+            key, sep, value = line.partition("=")
+            if sep and key in {"ID", "VERSION_ID"}:
+                values[key] = value.strip().strip('"')
+        if values.get("ID") != "debian" or not values.get("VERSION_ID"):
+            raise EngineeringError("unsupported_initial_target")
+        return self._observation("query_version", {"id": "debian", "version_id": values["VERSION_ID"]})
+
+    def query_health(self, service_name: str) -> SandboxObservation:
+        self._check("query_health")
+        if not isinstance(service_name, str) or not self._SERVICE.fullmatch(service_name):
+            raise EngineeringError("invalid_service_name")
+        raw = self._read(f"etc/systemd/system/{service_name}", limit=65_536)
+        return self._observation("query_health", {"service": service_name, "unit_present": True, "unit_sha256": hashlib.sha256(raw).hexdigest()})
+
+    def read_status(self) -> SandboxObservation:
+        self._check("read_status")
+        raw = self._read("var/lib/dpkg/status", limit=self._MAX_FILE_BYTES)
+        return self._observation("read_status", {"status_sha256": hashlib.sha256(raw).hexdigest(), "bytes": len(raw)})
 
 
 def validate_consent(
