@@ -185,5 +185,8 @@
       "status": "native_test_mapped"
     }
   ],
+  "productBoundaryCases": [
+    {"id": "WIRE-PRODUCT-01", "requirement": "A real Python consumer must decode the Rust HPTA frame and reject payload tampering before any product boundary accepts it.", "source": "codex-rs/hepta-shadow-qualification/tests/cross_language_wire_fault.rs", "function": "rust_python_wire_roundtrip_and_payload_fault_reject", "status": "native_test_mapped"}
+  ],
   "closureRule": "Every listed function must exist in the listed source file and pass at the exact candidate head. This registry does not convert source tests into production, future-calendar, independent-acceptance or release evidence."
 }
