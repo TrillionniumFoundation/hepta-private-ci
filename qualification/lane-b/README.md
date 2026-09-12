@@ -25,7 +25,7 @@ python3 scripts/hepta-lane-b-truth.py verify
 python3 scripts/hepta-lane-b-truth.py generate
 ```
 
-The exact-head and deterministic synthetic-merge workflow also runs the focused Rust and Node suites. The legacy `hepta-lane-b-docs.py` and `hepta-lane-b-candidate.py` entrypoints delegate to this single verifier, so schema and closure logic cannot drift independently.
+The exact-head and deterministic synthetic-merge workflow also runs the focused Rust and Node suites.
 
 ## Claim boundary
 
