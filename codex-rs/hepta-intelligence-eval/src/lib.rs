@@ -10,7 +10,11 @@ use codex_hepta_types::FixedQ32;
 use codex_hepta_types::StableId;
 
 mod closure;
+mod durable_holdout;
 mod holdout_journal;
+pub use durable_holdout::DurableFinalHoldoutJournalV1;
+pub use durable_holdout::DurableHoldoutError;
+pub use durable_holdout::HoldoutAnchorV1;
 mod ope;
 mod sequential;
 mod signed_evaluation;
@@ -259,3 +263,10 @@ fn push_id(bytes: &mut Vec<u8>, value: &StableId) {
 #[cfg(test)]
 #[path = "lib_tests.rs"]
 mod tests;
+
+mod longitudinal_time;
+pub use longitudinal_time::LongitudinalTimeEvidenceV1;
+pub use longitudinal_time::ObservedFutureWindowV1;
+pub use longitudinal_time::decide_with_signed_longitudinal_evidence_v3;
+pub use longitudinal_time::future_window_signing_payload_v1;
+pub use longitudinal_time::longitudinal_evaluation_signing_payload_v3;

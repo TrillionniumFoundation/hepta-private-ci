@@ -115,6 +115,43 @@ class GitSourceIdentityTests(unittest.TestCase):
         ):
             return LANE_B.verify_candidate(self.manifest, self.truth)
 
+    def maps_at(self, source_base: dict) -> list[dict]:
+        truth = copy.deepcopy(self.truth)
+        truth["modules"] = [
+            {"module": module, "mapPath": f"docs/modules/{module}/IMPLEMENTATION_MAP.json",
+             "operationIds": LANE_B.OPS[module]}
+            for module in LANE_B.MODULES
+        ]
+        maps = [
+            {"module": module, "sourceBase": copy.deepcopy(source_base),
+             "operations": [{"operation": operation} for operation in LANE_B.OPS[module]]}
+            for module in LANE_B.MODULES
+        ]
+        with mock.patch.object(LANE_B, "ROOT", self.root), mock.patch.object(
+            LANE_B, "load", side_effect=maps
+        ):
+            return LANE_B.module_maps(truth)
+
+    def test_module_provenance_can_advance_without_rewriting_lane_history(self) -> None:
+        base = {"commit": self.head, "tree": self.git("rev-parse", "HEAD^{tree}")}
+        maps = self.maps_at(base)
+        self.assertEqual([row["sourceBase"] for row in maps], [base] * len(maps))
+        self.assertNotEqual(base, self.truth["sourceBase"])
+
+    def test_module_provenance_rejects_forged_tree_and_missing_commit(self) -> None:
+        with self.assertRaisesRegex(LANE_B.Invalid, "source tree"):
+            self.maps_at({"commit": self.head, "tree": self.source_tree})
+        with self.assertRaises(LANE_B.Invalid):
+            self.maps_at({"commit": "a" * 40, "tree": self.source_tree})
+        for malformed in (None, {}, {"commit": [], "tree": self.source_tree}):
+            with self.subTest(malformed=malformed), self.assertRaises(LANE_B.Invalid):
+                self.maps_at(malformed)
+
+    def test_module_provenance_rejects_unrelated_valid_git_tree(self) -> None:
+        unrelated = self.git("commit-tree", self.source_tree, input_text="unrelated\n")
+        with self.assertRaises(LANE_B.Invalid):
+            self.maps_at({"commit": unrelated, "tree": self.source_tree})
+
     def test_lane_a_uses_event_and_git_without_body_registration(self) -> None:
         result = self.lane_a()
         self.assertEqual(result.returncode, 0, result.stderr)
@@ -248,6 +285,22 @@ class SourceConformanceTests(unittest.TestCase):
         )
         with self.assertRaisesRegex(LANE_B.Invalid, "missing symbol"):
             LANE_B.verify_truth(truth, maps)
+
+
+class DependencyOwnershipTests(unittest.TestCase):
+    def test_alias_and_direct_dependency_are_not_arbitrary_ownership(self) -> None:
+        roots = ["codex-rs/codex-app-server", "codex-rs/hepta-codex-adapter"]
+        delegate = {"path": "codex-rs/core/src/codex_thread.rs", "buildTarget": "codex-core"}
+        self.assertTrue(LANE_B.delegate_matches_owner("runtime.codex", roots, delegate))
+        for wrong in (
+            {**delegate, "buildTarget": "codex-tui"},
+            {"path": "codex-rs/tui/src/lib.rs", "buildTarget": "codex-tui"},
+            {**delegate, "path": "../outside/core/src/codex_thread.rs"},
+        ):
+            with self.subTest(wrong=wrong):
+                self.assertFalse(LANE_B.delegate_matches_owner("runtime.codex", roots, wrong))
+        with self.assertRaisesRegex(LANE_B.Invalid, "invalid source alias"):
+            LANE_B.delegate_matches_owner("runtime.agentd", roots, delegate)
 
 
 class WorkflowGateTests(unittest.TestCase):

@@ -16,7 +16,7 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
-          fetch-depth: 1
+          fetch-depth: 0
           persist-credentials: false
       - name: Validate branch policy
         shell: bash
@@ -45,11 +45,8 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          python3 scripts/hepta-module-docs.py verify
           python3 scripts/hepta-implementation-maps.py verify
           python3 scripts/hepta-technical-receipts.py verify
-          python3 scripts/hepta-readiness.py verify
           python3 scripts/hepta-implementation-dossiers.py verify
-          python3 scripts/hepta-cns.py verify
-          python3 scripts/hepta-hnmf.py verify
+          # Includes module, algorithm, readiness, CNS and HNMF checks.
           python3 scripts/hepta-docs.py verify

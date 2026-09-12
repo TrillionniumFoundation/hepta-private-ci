@@ -37,6 +37,7 @@ pub struct AgentdConfig {
     registry: FleetRegistry,
     _writer_lock: File,
     authbus_trust_file: Option<PathBuf>,
+    cognitive_ranker: Option<std::sync::Arc<crate::PinnedCognitiveRanker>>,
 }
 
 impl AgentdConfig {
@@ -141,6 +142,7 @@ impl AgentdConfig {
             registry,
             _writer_lock: writer_lock,
             authbus_trust_file: None,
+            cognitive_ranker: None,
         })
     }
 
@@ -153,6 +155,29 @@ impl AgentdConfig {
 
     pub(crate) fn authbus_trust_file(&self) -> Option<&Path> {
         self.authbus_trust_file.as_deref()
+    }
+
+    /// Attach an explicitly selected, read-only learned consumer. The host must
+    /// authenticate the selection and current revocation witness independently.
+    /// No CLI/environment default manufactures an evaluator or selection.
+    pub fn with_cognitive_ranker(
+        mut self,
+        ranker: std::sync::Arc<crate::PinnedCognitiveRanker>,
+    ) -> Result<Self, AgentdError> {
+        ranker
+            .require_identity(&self.identity.agent_id, self.identity.spawn_generation)
+            .map_err(AgentdError::Invalid)?;
+        if self.cognitive_ranker.is_some() {
+            return Err(AgentdError::Invalid(
+                "cognitive ranker already configured".to_string(),
+            ));
+        }
+        self.cognitive_ranker = Some(ranker);
+        Ok(self)
+    }
+
+    pub(crate) fn cognitive_ranker(&self) -> Option<std::sync::Arc<crate::PinnedCognitiveRanker>> {
+        self.cognitive_ranker.clone()
     }
 
     pub fn identity(&self) -> &AgentdIdentity {

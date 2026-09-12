@@ -36,6 +36,9 @@ use pretty_assertions::assert_eq;
 #[path = "support/durable_process.rs"]
 mod process;
 
+#[path = "support/tabular_reload.rs"]
+mod tabular_reload;
+
 fn id(value: &str) -> StableId {
     let Ok(identifier) = StableId::new(value) else {
         panic!("fixture identifier must be valid");

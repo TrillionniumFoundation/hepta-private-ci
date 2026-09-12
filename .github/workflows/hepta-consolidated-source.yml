@@ -171,20 +171,12 @@ jobs:
             git checkout --detach "$MERGE"
           fi
           git rev-parse HEAD HEAD^{tree}
-      - name: Verify source-identity and owner-scope regressions
-        run: |
-          python3 -m unittest discover -v -s scripts -p 'test_hepta_ci_source_identity.py'
-          python3 -m unittest discover -v -s scripts -p 'test_hepta_lane_d_scope.py'
-          python3 -m unittest discover -v -s scripts -p 'test_hepta_ci_v8.py'
       - name: Retain original document and source-owner gates
         shell: bash
         run: |
           set -euo pipefail
-          python3 scripts/hepta_module_doc_metadata.py
-          # The global verifier invokes module/readiness checks itself.
-          python3 scripts/hepta-docs.py verify
+          # Global source/merge document and script checks run once in hepta-development-docs.
           python3 scripts/hepta-gap-closure.py verify
-          python3 -m unittest discover -v -s tools/hepta-engineering-control -p 'test_*.py'
           node --test apps/hepta-browser/test/*.js apps/hepta-native/test/*.js
       - name: Prepare native owner-test prerequisites
         run: |

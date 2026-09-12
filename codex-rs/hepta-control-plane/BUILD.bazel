@@ -1,6 +1,19 @@
 load("//:defs.bzl", "codex_rust_crate")
+load("@rules_rust//rust:defs.bzl", "rust_binary")
 
 codex_rust_crate(
     name = "hepta-control-plane",
     crate_name = "codex_hepta_control_plane",
+)
+
+# Bounded simulator executable; no hardware or external-effect authority.
+rust_binary(
+    name = "cart_closed_loop",
+    srcs = ["examples/cart_closed_loop.rs"],
+    crate_name = "cart_closed_loop",
+    edition = "2024",
+    deps = [
+        ":hepta-control-plane",
+        "//codex-rs/hepta-types",
+    ],
 )

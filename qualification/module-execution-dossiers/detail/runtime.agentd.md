@@ -45,6 +45,8 @@ Use all eighteen dossier receipt fields. Immediate revocation/stop remains effec
 
 ## 8. Current native implementation
 
+The explicit `AgentdConfig::with_cognitive_ranker` host connects existing artifact-owner loading and the tabular operator to the real SQLite control-read projection before truncation. Current views and memory deletion are rechecked; source tests are `cognitive_ranker_tests.rs`. This is not the App Server automatic memory path or complete C1; the ordinary CLI has no implicit selection.
+
 - **Implemented entrypoints:** `compose_runtime` in [codex-rs/hepta-agentd/src/lane_b_runtime.rs](../../../codex-rs/hepta-agentd/src/lane_b_runtime.rs); `AgentdProductionWriterHost` in [codex-rs/hepta-agentd/src/production_writer_host.rs](../../../codex-rs/hepta-agentd/src/production_writer_host.rs); `read` in [codex-rs/hepta-agentd/src/cognitive_context.rs](../../../codex-rs/hepta-agentd/src/cognitive_context.rs). Native Agentd host, run-binding component and explicit production-writer attachment implemented.
 - **State and recovery:** lane_b_runtime keeps a bounded in-memory run/revision map. Durable cognitive facts stay in hepta-memory SQLite; AgentdProductionWriterHost requires an externally verified lease and explicit target attachment and is not enabled automatically by startup.
 - **Source tests:** [codex-rs/hepta-agentd/src/lane_b_runtime_tests.rs](../../../codex-rs/hepta-agentd/src/lane_b_runtime_tests.rs), [codex-rs/hepta-agentd/src/cognitive_context_tests.rs](../../../codex-rs/hepta-agentd/src/cognitive_context_tests.rs). These are test identities, not execution receipts for this documentation revision.

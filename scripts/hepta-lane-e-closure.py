@@ -6,10 +6,11 @@ from __future__ import annotations
 import argparse
 import json
 import re
-import shlex
 import sys
 from dataclasses import dataclass
 from pathlib import Path
+
+from hepta_workflow_commands import workflow_commands
 from typing import Any
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -464,40 +465,6 @@ def verify_authority_posture(findings: Findings) -> None:
             "deny_all_missing",
             f"{path.relative_to(ROOT)} does not explicitly emit DENY_ALL authority",
         )
-
-
-def workflow_commands(text: str) -> list[list[str]]:
-    """Read executable run scalars used by this workflow, not comments or labels.
-
-    This deliberately supports the workflow's plain, literal and folded run
-    forms. It does not interpret arbitrary shell/YAML programs as proof of tests.
-    """
-    lines = text.splitlines()
-    commands = []
-    index = 0
-    while index < len(lines):
-        match = re.fullmatch(r"(\s*)(?:-\s+)?run:\s*(.*)", lines[index])
-        index += 1
-        if not match:
-            continue
-        indent, scalar = match.groups()
-        if scalar in ("|", "|-", "|+", ">", ">-", ">+"):
-            block = []
-            while index < len(lines):
-                line = lines[index]
-                if line.strip() and len(line) - len(line.lstrip()) <= len(indent):
-                    break
-                block.append(line.strip())
-                index += 1
-            scalar = (" " if scalar.startswith(">") else "\n").join(block)
-        for line in scalar.replace("\\\n", " ").splitlines():
-            try:
-                tokens = shlex.split(line, comments=True)
-            except ValueError:
-                continue
-            if tokens:
-                commands.append(tokens)
-    return commands
 
 
 def verify_workflow(findings: Findings) -> None:

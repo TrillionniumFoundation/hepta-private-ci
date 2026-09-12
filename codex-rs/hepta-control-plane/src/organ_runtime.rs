@@ -158,6 +158,11 @@ pub enum OrganRuntimeError {
         predecessor_faults: Vec<OrganFaultRecordV1>,
         candidate_cleanup_faults: Vec<OrganFaultRecordV1>,
     },
+    MigrationReplacementStopFailed {
+        predecessor_faults: Vec<OrganFaultRecordV1>,
+        candidate_cleanup_faults: Vec<OrganFaultRecordV1>,
+        rollback_error: Option<OrganMigrationError>,
+    },
     MigrationSnapshotFailed {
         error: OrganMigrationError,
     },
@@ -413,8 +418,9 @@ impl OrganHostV1 {
 
     /// Replace a generation while making state transfer an explicit,
     /// owner-provided callback. Snapshot and migration happen before the
-    /// predecessor is stopped. Any candidate failure invokes rollback and
-    /// leaves the predecessor ready; no callback is retried implicitly.
+    /// predecessor is stopped. Failed rollback quarantines the predecessor;
+    /// it must never keep serving state whose restoration is uncertain. These
+    /// callbacks do not implement a durable writer handoff or runtime sandbox.
     pub fn replace_read_only_generation_with_migration<M: OrganStateMigrationV1>(
         &mut self,
         expected: Generation,
@@ -437,6 +443,7 @@ impl OrganHostV1 {
         for index in 0..self.slots.len() {
             self.require_ready(index)?;
         }
+        let mut candidate = Self::new(graph, handlers)?;
         let snapshot = migration
             .snapshot(expected)
             .map_err(|error| OrganRuntimeError::MigrationSnapshotFailed { error })?;
@@ -447,11 +454,15 @@ impl OrganHostV1 {
                 },
             });
         }
-        let mut candidate = Self::new(graph, handlers)?;
         if let Err(error) = candidate.start_all() {
             let rollback_error = migration
                 .rollback(&snapshot, expected, candidate.generation())
                 .err();
+            if rollback_error.is_some() {
+                for slot in &mut self.slots {
+                    slot.state = HostedOrganStateV1::Quarantined;
+                }
+            }
             return Err(OrganRuntimeError::CandidateStartFailed {
                 error: Box::new(error),
                 rollback_error,
@@ -461,6 +472,11 @@ impl OrganHostV1 {
             let rollback_error = migration
                 .rollback(&snapshot, expected, candidate.generation())
                 .err();
+            if rollback_error.is_some() {
+                for slot in &mut self.slots {
+                    slot.state = HostedOrganStateV1::Quarantined;
+                }
+            }
             let candidate_cleanup_faults = candidate.stop_indices(
                 candidate
                     .validated
@@ -491,10 +507,13 @@ impl OrganHostV1 {
                     .into_iter()
                     .rev(),
             );
-            let _ = migration.rollback(&snapshot, expected, candidate.generation());
-            return Err(OrganRuntimeError::ReplacementStopFailed {
+            let rollback_error = migration
+                .rollback(&snapshot, expected, candidate.generation())
+                .err();
+            return Err(OrganRuntimeError::MigrationReplacementStopFailed {
                 predecessor_faults,
                 candidate_cleanup_faults,
+                rollback_error,
             });
         }
         *self = candidate;

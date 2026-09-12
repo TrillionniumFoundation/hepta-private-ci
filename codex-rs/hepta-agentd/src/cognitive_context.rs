@@ -28,6 +28,7 @@ pub(crate) async fn read(
     generation: u64,
     query: &str,
     limit: u16,
+    ranker: Option<&std::sync::Arc<crate::PinnedCognitiveRanker>>,
 ) -> Result<CognitiveContextSnapshot, CognitiveStoreError> {
     if query.is_empty() || query.len() > 2048 || !(1..=4).contains(&limit) {
         return Err(CognitiveStoreError::Invalid(
@@ -88,9 +89,23 @@ pub(crate) async fn read(
             response.items.pop();
             continue;
         }
-        if response.items.len() == usize::from(limit) {
+        if ranker.is_none() && response.items.len() == usize::from(limit) {
             break;
         }
+    }
+    if let Some(ranker) = ranker {
+        let ranker = std::sync::Arc::clone(ranker);
+        let rank_owner = owner.clone();
+        let rank_query = query.to_string();
+        let mut items = std::mem::take(&mut response.items);
+        response.items = tokio::task::spawn_blocking(move || {
+            ranker.rank(&rank_owner, generation, &rank_query, &mut items)?;
+            Ok::<_, String>(items)
+        })
+        .await
+        .map_err(|error| CognitiveStoreError::Unavailable(error.to_string()))?
+        .map_err(CognitiveStoreError::Unavailable)?;
+        response.items.truncate(usize::from(limit));
     }
     let encoded_context = serde_json::to_vec(&response)
         .map_err(|error| CognitiveStoreError::Invalid(error.to_string()))?;
@@ -139,6 +154,13 @@ pub(crate) async fn read(
     store
         .revalidate_lane_c_snapshot(&access, &scope, &cut, now_seconds()?)
         .await?;
+    if let Some(ranker) = ranker {
+        let ranker = std::sync::Arc::clone(ranker);
+        tokio::task::spawn_blocking(move || ranker.revalidate())
+            .await
+            .map_err(|error| CognitiveStoreError::Unavailable(error.to_string()))?
+            .map_err(CognitiveStoreError::Unavailable)?;
+    }
     Ok(response)
 }
 

@@ -43,3 +43,17 @@ Any failure returns no payload. `PinMismatch` covers an absent artifact or any
 manifest drift. `Storage` preserves the existing bounded storage error for
 snapshot, eligibility, locking, I/O, or payload failures. The loader does not
 fall back to a prior snapshot or alternate eligible candidate.
+
+## Revalidating a cached consumer
+
+`RevalidatingCandidate::new` consumes a verified loaded candidate. Before each
+use, `with_current` accepts a host-opened file and an independently authenticated
+current receipt. It checks the scope binding, nondecreasing record count and
+actual previous chain prefix (including longer-fork rejection), then checks the
+exact manifest and all ancestor eligibility before invoking the read-only
+consumer. It does not reread or retrain the immutable payload.
+
+Every failed refresh closes that consumer permanently. Restoring an old snapshot
+cannot revive it: explicit admission of a new consumer is required. The host
+still owns latest-view discovery, publication/use serialization, body generation
+and the final effect boundary. Cached output is not a future-use capability.
