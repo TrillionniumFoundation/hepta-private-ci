@@ -1050,7 +1050,11 @@ def verify() -> int:
             "persist-credentials: true",
         ):
             need(forbidden not in workflow, label + " mutation " + forbidden)
-        need("git merge-tree --write-tree" in workflow, label + " synthetic merge")
+        need(
+            "git merge-tree --write-tree" in workflow
+            or ".github/actions/hepta-synthetic-merge" in workflow,
+            label + " synthetic merge",
+        )
     for token in (
         "python3 scripts/hepta-algorithm-docs.py self-test",
         "python3 scripts/hepta-algorithm-docs.py verify-sources",
