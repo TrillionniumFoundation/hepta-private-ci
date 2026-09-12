@@ -410,3 +410,44 @@ fn producer_rejects_positive_effect_scope_and_ambiguous_port_identities() {
         Err(OrganWireError::Projection)
     );
 }
+
+#[test]
+fn registry_admission_is_required_before_native_handoff_host_construction() {
+    let (body, graph) = fixture();
+    let bytes = encode_compiled_body_graph_v2(&body, &graph)
+        .unwrap_or_else(|error| panic!("encode: {error:?}"));
+    let host_admission = admission(&bytes);
+    let registry = NativeHandoffProtocolRegistryV1::canonical();
+    let protocol = NativeHandoffProtocolAdmissionV1::canonical();
+    let (verified, receipt) = admit_compiled_body_graph_v2(
+        &bytes,
+        &host_admission,
+        &protocol,
+        &registry,
+    )
+    .unwrap_or_else(|error| panic!("registry admission: {error:?}"));
+    assert_eq!(receipt.protocol_id, registry.protocol_id().clone());
+    assert_eq!(receipt.profile_id, registry.profile_id().clone());
+    assert_eq!(receipt.profile_version, registry.profile_version());
+    assert_eq!(receipt.schema_digest, registry.schema_digest());
+    assert_eq!(receipt.payload_digest, compiled_body_graph_digest_v2(&bytes).unwrap());
+    assert_eq!(receipt.generation, generation(7));
+    assert_eq!(receipt.authority, AuthorityPosture::DENY_ALL);
+    let callbacks = Arc::new(AtomicUsize::new(0));
+    let mut host = verified
+        .into_host(handlers(&body, &callbacks))
+        .unwrap_or_else(|error| panic!("host: {error:?}"));
+    host.start_all()
+        .unwrap_or_else(|error| panic!("start: {error:?}"));
+    let deliveries = host
+        .dispatch_once(generation(7), &id("organ:0"), 0, b"ping")
+        .unwrap_or_else(|error| panic!("dispatch: {error:?}"));
+    assert_eq!(deliveries[0].authority, AuthorityPosture::DENY_ALL);
+
+    let mut wrong = protocol.clone();
+    wrong.profile_version = 1;
+    assert_eq!(
+        admit_compiled_body_graph_v2(&bytes, &host_admission, &wrong, &registry),
+        Err(OrganWireError::ProtocolVersion)
+    );
+}
