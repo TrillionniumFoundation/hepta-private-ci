@@ -4,9 +4,9 @@
 
 **Parent plan:** `HEPTA-GLOBAL-MODULAR-DEVELOPMENT-PLAN` v8.0.0
 **Readiness overlay:** `HEPTA-V8-PRECODING-READINESS` v8.2.0-readiness
-**Documentation gap state:** `closed`
-**Source implementation:** `not implied`
-**Runtime activation:** `not implied`
+**Canonical qualification status:** `specification_closed=closed`; `implementation_closed=open`; `external_evidence_closed=open`
+
+Status vocabulary and implication rules: [`STATUS_MODEL.json`](STATUS_MODEL.json).
 
 ## Closed specification surface
 
@@ -22,4 +22,4 @@
 
 The closed surface fixes source identity, objective compilation, system-level NDU integration, neuron execution, causal evaluation, governed self-iteration, embodied timing/safety, authorized external-system assimilation and all-module parallel development semantics.
 
-Source code, real models, future-time efficacy, empirical biomimicry, target hardware, external-system owner consent, independent acceptance and production rollout remain separate gates and cannot be satisfied by documentation or repository fixtures.
+The execution-dossier projection uses the same three dimensions. Source code, real models, future-time efficacy, empirical biomimicry, target hardware, external-system owner consent, independent acceptance and production rollout remain separate gates and cannot be satisfied by documentation or repository fixtures.
