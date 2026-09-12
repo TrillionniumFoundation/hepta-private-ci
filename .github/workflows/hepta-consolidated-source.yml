@@ -21,6 +21,8 @@ jobs:
       SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
       BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
       CARGO_INCREMENTAL: "0"
+      CARGO_BUILD_JOBS: "2"
+      CARGO_TARGET_DIR: ${{ runner.temp }}/hepta-native-target
       CARGO_PROFILE_TEST_DEBUG: "0"
       CARGO_PROFILE_DEV_DEBUG: "0"
     steps:
@@ -65,23 +67,7 @@ jobs:
         env:
           CODEX_REPO_ROOT: ${{ github.workspace }}
           PYTHONPATH: scripts
-        run: |
-          python3 - <<'PY'
-          import os
-          from pathlib import Path
-          import subprocess
-          from codex_package.targets import TARGET_SPECS
-          from codex_package.v8 import resolve_codex_v8_cargo_env
-
-          version = subprocess.check_output(
-              ["rustc", "-vV"], cwd=Path(os.environ["CODEX_REPO_ROOT"]) / "codex-rs", text=True
-          )
-          host = next(line.removeprefix("host: ") for line in version.splitlines() if line.startswith("host: "))
-          overrides = resolve_codex_v8_cargo_env(TARGET_SPECS[host])
-          with open(os.environ["GITHUB_ENV"], "a", encoding="utf-8") as output:
-              for name, value in overrides.items():
-                  output.write(f"{name}={value}\n")
-          PY
+        run: python3 scripts/hepta_ci_v8.py
       - name: Run the complete workspace suite after shared core changes
         if: steps.scope.outputs.required == 'true'
         working-directory: codex-rs
@@ -139,6 +125,8 @@ jobs:
       BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
       PYTHONDONTWRITEBYTECODE: "1"
       CARGO_INCREMENTAL: "0"
+      CARGO_BUILD_JOBS: "2"
+      CARGO_TARGET_DIR: ${{ runner.temp }}/hepta-native-target
       CARGO_PROFILE_TEST_DEBUG: "0"
       CARGO_PROFILE_DEV_DEBUG: "0"
       # Explicit owners: testing a dependency does not execute its own tests.
@@ -187,6 +175,7 @@ jobs:
         run: |
           python3 -m unittest discover -v -s scripts -p 'test_hepta_ci_source_identity.py'
           python3 -m unittest discover -v -s scripts -p 'test_hepta_lane_d_scope.py'
+          python3 -m unittest discover -v -s scripts -p 'test_hepta_ci_v8.py'
       - name: Retain original document and source-owner gates
         shell: bash
         run: |
@@ -212,6 +201,11 @@ jobs:
       - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
         with:
           tool: just@1.51.0,nextest@0.9.103
+      - name: Resolve verified sandboxed V8 artifacts for Cargo
+        env:
+          CODEX_REPO_ROOT: ${{ github.workspace }}
+          PYTHONPATH: scripts
+        run: python3 scripts/hepta_ci_v8.py
       - name: Compile and test actual imported packages
         working-directory: codex-rs
         shell: bash
