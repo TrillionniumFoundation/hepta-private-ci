@@ -268,3 +268,109 @@ fn tampered_payload_is_rejected() {
         ))
     ));
 }
+
+fn write_view(
+    directory: &TestDirectory,
+    registry: &ArtifactRegistry,
+    name: &str,
+) -> (File, RegistrySnapshotReceipt) {
+    let receipt = must(write_registry_snapshot(
+        must(CreateOnlyArtifactFile::create(directory.path(name))),
+        registry,
+        binding(),
+    ));
+    (must(File::open(directory.path(name))), receipt)
+}
+
+#[test]
+fn cached_consumer_observes_revocation_before_use_and_cannot_revive_from_backup() {
+    let directory = TestDirectory::new("cached-revoke");
+    let bytes = b"cached-policy";
+    let selected = manifest("policy", 1, None, bytes);
+    let mut registry = ArtifactRegistry::new();
+    register(&mut registry, "register", selected.clone());
+    write_payload(&directory, &registry, &selected, bytes);
+    let original = write_snapshot(&directory, &registry);
+    let mut cached = RevalidatingCandidate::new(must(load(&directory, original, selected)));
+    let (file, current) = write_view(&directory, &registry, "current");
+    assert_eq!(
+        must(cached.with_current(file, current, <[u8]>::to_vec)),
+        bytes
+    );
+    must(registry.append(ArtifactEvent::Revoke(StateChange {
+        event_id: id("revoke"),
+        artifact_id: id("policy"),
+        evaluator_id: id("external-observer"),
+        reason_digest: Digest32::of_bytes(b"withdrawn"),
+    })));
+    let (file, current) = write_view(&directory, &registry, "revoked");
+    assert_eq!(
+        cached.with_current(file, current, |_| panic!("revoked bytes reached consumer")),
+        Err::<(), _>(PinnedCandidateLoadError::Ineligible)
+    );
+    assert_eq!(
+        cached.with_current(
+            must(File::open(directory.path("snapshot"))),
+            original,
+            |_| panic!("backup revived consumer")
+        ),
+        Err::<(), _>(PinnedCandidateLoadError::Unavailable)
+    );
+}
+
+#[test]
+fn cached_consumer_rejects_longer_fork_and_backwards_frontier() {
+    for fork in [false, true] {
+        let directory = TestDirectory::new("cached-history");
+        let selected = manifest("policy", 1, None, b"value");
+        let mut registry = ArtifactRegistry::new();
+        register(&mut registry, "register", selected.clone());
+        write_payload(&directory, &registry, &selected, b"value");
+        let old = write_snapshot(&directory, &registry);
+        let mut cached = RevalidatingCandidate::new(must(load(&directory, old, selected.clone())));
+        register(&mut registry, "other", manifest("other", 1, None, b"other"));
+        let (file, current) = write_view(&directory, &registry, "extended");
+        must(cached.with_current(file, current, |_| ()));
+        let (file, receipt) = if fork {
+            let mut forked = ArtifactRegistry::new();
+            register(&mut forked, "different-event", selected);
+            register(&mut forked, "fork-2", manifest("fork-2", 1, None, b"two"));
+            register(&mut forked, "fork-3", manifest("fork-3", 1, None, b"three"));
+            write_view(&directory, &forked, "fork")
+        } else {
+            (must(File::open(directory.path("snapshot"))), old)
+        };
+        assert_eq!(
+            cached.with_current(file, receipt, |_| panic!("bad history consumed")),
+            Err::<(), _>(PinnedCandidateLoadError::FrontierMismatch)
+        );
+    }
+}
+
+#[test]
+fn cached_consumer_rejects_new_scope_and_corrupt_current_file_without_calling_consumer() {
+    for scope_change in [false, true] {
+        let directory = TestDirectory::new("cached-corrupt");
+        let selected = manifest("policy", 1, None, b"value");
+        let mut registry = ArtifactRegistry::new();
+        register(&mut registry, "register", selected.clone());
+        write_payload(&directory, &registry, &selected, b"value");
+        let old = write_snapshot(&directory, &registry);
+        let mut cached = RevalidatingCandidate::new(must(load(&directory, old, selected)));
+        let (file, mut current) = write_view(&directory, &registry, "current");
+        if scope_change {
+            current.binding = Digest32::of_bytes(b"different-host");
+        } else {
+            must(fs::write(directory.path("current"), b"truncated"));
+        }
+        assert!(
+            cached
+                .with_current(file, current, |_| panic!("invalid view consumed"))
+                .is_err()
+        );
+        assert_eq!(
+            cached.with_current(must(File::open(directory.path("snapshot"))), old, |_| ()),
+            Err(PinnedCandidateLoadError::Unavailable)
+        );
+    }
+}

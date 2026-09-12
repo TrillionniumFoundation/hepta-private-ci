@@ -76,3 +76,26 @@ The six changed runtime libraries were built with the native App Server implemen
 The subsequent native reservation/run/settlement increment passed all 31 inference-control and worker-host library tests with no retries or skips. These include real journal reopen/size-limit failures, duplicate driver paths against a nonexistent socket, pre-dispatch cancellation/connection failure, and matching observed usage/terminal events. Scoped `just fix`, `just fmt`, and pinned `cargo shear --deny-warnings` validate the source/build mapping. The tests do not claim an authenticated paid-provider run or post-crash provider reconciliation.
 
 The owner-authority correction passed all 36 tests in the two inference libraries. New regressions cover readiness loss, fencing, generation/protocol errors, transport failure, health timeout, completion winning the health-tick race, late completion with retained usage, sticky journal replay and historical observations lacking authority fields. These exercise the production health/notification reducers and real journal files; they do not claim a paid-provider end-to-end run.
+
+## Explicit learned read ranking
+
+`AgentdConfig::with_cognitive_ranker` attaches an externally selected
+`PinnedCognitiveRanker` to the existing `cognitive_context` control read path.
+The host supplies owner/body generation, complete artifact and model pins,
+read-only files, and a `CurrentCognitiveRegistry` implementation. There is no
+implicit CLI selection, trusted file generator or evaluator self-authorization.
+The operator and artifact registry retain their existing owners.
+
+The consumer ranks only records admitted by the same SQLite snapshot. Query
+sensors are exact query hashes; actions bind memory ID, revision and content
+hash. It scores before the result limit, keeps original order for ties, and
+abstains for the entire ranking when any cell is unsupported. A missing or
+revoked current view closes the consumer instead of falling back to a stale
+model. Registry I/O runs on the blocking pool; the trusted host must bound it.
+The memory cut and artifact view are rechecked before returning context.
+
+The fitted-model/SQLite tests prove changed control-read ordering, not improved
+task utility. This control port is not the App Server's automatic memory tool
+path. Full C1 still needs the actual prompt/turn consumer, externally observed
+outcomes, the durable causal-learning path, independent selection, and a new
+process using the selected tuple. No production or longitudinal gate changes.

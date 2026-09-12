@@ -81,6 +81,12 @@ impl LoadedTabularOperatorV1 {
         Ok(Self { artifact })
     }
 
+    /// The immutable training identity, for binding an existing registry manifest.
+    #[must_use]
+    pub fn artifact_id(&self) -> &StableId {
+        &self.artifact.artifact_id
+    }
+
     /// The immutable loaded value validates O(n) once, then looks up in O(log n).
     pub fn predict(
         &self,

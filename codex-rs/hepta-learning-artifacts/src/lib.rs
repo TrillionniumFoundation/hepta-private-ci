@@ -65,6 +65,7 @@ pub use model::StateChange;
 pub use pinned::LoadedPinnedCandidate;
 pub use pinned::PinnedCandidateLoadError;
 pub use pinned::PinnedCandidateSpec;
+pub use pinned::RevalidatingCandidate;
 pub use pinned::load_pinned_candidate;
 pub use registry::ArtifactRegistry;
 pub use storage::ArtifactStorageError;
