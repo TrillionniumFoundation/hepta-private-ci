@@ -156,7 +156,7 @@ class OwnedServiceTests(unittest.TestCase):
         first.request("step", "before")
         first.close()
         with self.assertRaises(ServiceError):
-            self.target(1, 1, implementation_version=2).start()
+            self.target(1, 1).start()
         upgraded = self.target(2, 1, implementation_version=2)
         upgraded.start()
         upgraded.request("step", "after")
@@ -220,6 +220,96 @@ class OwnedServiceTests(unittest.TestCase):
         self.assertEqual(target.start()["counter"], 1)
         self.assertEqual(target.request("step", "observed")["value"], 1)
 
+
+    def test_duplicate_request_fields_are_rejected_before_any_write(self):
+        frames = (
+            b'{"op":"query","op":"step","id":"wire","generation":1,"sequence":1}\n',
+            b'{"op":"step","id":"other","id":"wire","generation":1,"sequence":1}\n',
+            b'{"op":"step","id":"wire","generation":0,"generation":1,"sequence":1}\n',
+            b'{"op":"step","id":"wire","generation":1,"sequence":0,"sequence":1}\n',
+        )
+        for frame in frames:
+            with self.subTest(frame=frame), tempfile.TemporaryDirectory(dir=self.root) as directory:
+                with closing(DisposableCounterService(Path(directory), 1, 0)) as target:
+                    target.start()
+                    target.process.stdin.write(frame)
+                    target.process.stdin.close()
+                    self.assertNotEqual(target.process.wait(timeout=2), 0)
+                with closing(sqlite3.connect(
+                    f"file:{Path(directory) / 'service.sqlite3'}?mode=ro", uri=True
+                )) as observer:
+                    self.assertEqual(observer.execute("SELECT COUNT(*) FROM operations").fetchone()[0], 0)
+
+    def test_utf8_bom_request_cannot_use_an_alternate_decoder_profile(self):
+        target = self.target()
+        target.start()
+        target.process.stdin.write(
+            b'\xef\xbb\xbf{"op":"step","id":"bom","generation":1,"sequence":1}\n'
+        )
+        target.process.stdin.close()
+        self.assertNotEqual(target.process.wait(timeout=2), 0)
+        target.close()
+        successor = self.target(2)
+        self.assertEqual(successor.start()["counter"], 0)
+
+    def test_ambiguous_ack_poison_preserves_committed_effect_for_reconciliation(self):
+        import selectors
+        from unittest.mock import patch
+
+        target = self.target()
+        target.start()
+        actual_read = target._read
+        read_fd, write_fd = os.pipe()
+        with os.fdopen(read_fd, "rb", buffering=0) as reader, os.fdopen(write_fd, "wb", buffering=0) as writer:
+            writer.write(b'{"generation":1,"sequence":0,"sequence":1,"value":1}\n')
+
+            def corrupted_ack():
+                # Wait for the real service's post-commit acknowledgement, then
+                # corrupt only the transport frame, not its durable write.
+                with selectors.DefaultSelector() as selector:
+                    selector.register(target.process.stdout, selectors.EVENT_READ)
+                    self.assertTrue(selector.select(2), "child must actually commit")
+                with patch.object(target.process, "stdout", reader):
+                    return actual_read()
+
+            with patch.object(target, "_read", side_effect=corrupted_ack):
+                with self.assertRaises(IndeterminateOperation):
+                    target.request("step", "ambiguousack")
+        with self.assertRaises(IndeterminateOperation):
+            target.request("query")
+        target.close()
+        successor = self.target(2)
+        self.assertEqual(successor.start()["counter"], 1)
+        self.assertEqual(successor.request("reconcile", "ambiguousack")["value"], 1)
+        self.assertEqual(successor.request("query")["counter"], 1)
+
+    def test_migration_lost_ready_lost_ack_and_code_rollback_form_one_chain(self):
+        first = self.target()
+        first.start()
+        first.request("step", "original")
+        first.close()
+        with self.assertRaises(ServiceError):
+            self.target(2, 1, implementation_version=2, migration_fault="after_commit").start()
+        with self.assertRaises(ServiceError):
+            self.target(1, 1).start()
+        upgraded = self.target(2, 1, implementation_version=2)
+        self.assertEqual(upgraded.start()["schema_version"], 2)
+        with self.assertRaises(IndeterminateOperation):
+            upgraded.request("commit_then_exit", "upgradewrite")
+        upgraded.close()
+        rollback = self.target(3, 1)
+        self.assertEqual(rollback.start()["counter"], 2)
+        self.assertEqual(rollback.request("reconcile", "upgradewrite")["value"], 2)
+        self.assertEqual(rollback.request("step", "upgradewrite")["value"], 2)
+        self.assertEqual(rollback.request("step", "afterrollback")["value"], 3)
+        rollback.close()
+        with closing(sqlite3.connect(
+            f"file:{self.root / 'service.sqlite3'}?mode=ro", uri=True
+        )) as observer:
+            self.assertEqual(
+                observer.execute("SELECT id,value,origin_generation FROM operations ORDER BY value").fetchall(),
+                [("original", 1, 0), ("upgradewrite", 2, 2), ("afterrollback", 3, 0)],
+            )
 
 if __name__ == "__main__":
     unittest.main()
