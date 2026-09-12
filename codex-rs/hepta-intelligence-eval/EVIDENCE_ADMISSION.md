@@ -13,8 +13,11 @@ receipt APIs validate supplied structure and digests. They do not authenticate a
 external caller or prove that an estimate was produced by an independent actor.
 They remain available for trusted in-process composition and compatibility.
 
-External evaluation admission uses `decide_with_signed_evidence_v1` or
-`decide_with_signed_evidence_v2`. The host constructs `LearningEvidenceVerifierV1`
+Qualification-scoped external evaluation uses `decide_with_signed_evidence_v1`
+or `decide_with_signed_evidence_v2`. A `SystemLongitudinal` request now requires
+`decide_with_signed_longitudinal_evidence_v3`: signed window names alone are
+insufficient. V1/V2 authenticate the submitted bytes, then reject that stronger
+claim with `MissingLongitudinalTiming`. The host constructs `LearningEvidenceVerifierV1`
 from its authority store and distributes the resulting trust digest to signers.
 Never construct that verifier from the same remote request being evaluated.
 
@@ -85,3 +88,50 @@ registry mutation. Full journals still permit exact retries; a failed new reques
 changes neither journal nor registry digest. Snapshots keep their existing wire
 shape. Hosts retaining a lower limit reopen through
 `from_snapshot_with_record_limit`; the legacy constructor uses the original cap.
+
+
+## Durable final-holdout owner adapter
+
+`DurableFinalHoldoutJournalV1` wraps the existing semantic journal, not another
+holdout authority. Its actual caller supplies an authorized regular `File`, a
+nonzero scope binding and an independently retained `HoldoutAnchorV1`. `create`
+is explicit initialization; `recover` never recreates or trims a damaged file.
+The adapter takes an exclusive file lock, replays bounded frames and checks the
+acknowledged chain prefix. `consume` checks the expected anchor, validates the
+next semantic state, writes and synchronizes bytes, then publishes memory state.
+An uncertain write poisons the handle. Exact retries do not append duplicates.
+
+Host-owned format `HEPTHO01` is distinct from cross-owner protocols: an eight-byte
+magic, 32-byte binding and 32-byte header checksum precede length-prefixed sealed
+plan payloads and their checksums. Integers are big-endian, IDs are bounded ASCII,
+frames are at most 2,048 bytes, files at most 16 MiB and journals at most 8,192
+records. Unknown/truncated/corrupt bytes reject. No implicit migration is allowed.
+
+Before releasing confirmatory labels or acknowledging consumption externally,
+the host must durably retain the returned anchor independently of this journal.
+A backup cannot manufacture its own expected anchor. The host still owns current
+trust/revocation distribution, directory durability, retention and the production
+scheduler. Locks exclude cooperating writers, not hostile filesystem mutation.
+Tests in `src/durable_holdout_tests.rs` cover a different loading process,
+idempotent retries, acknowledged-history truncation, corruption, writer collision
+and write uncertainty. They are not production-caller or future-window receipts.
+
+## Observed-time longitudinal admission
+
+V3 binds `ObservedFutureWindowV1` records to the frozen plan, objective, dataset,
+snapshot IDs, exact window set, observed source cuts and a host-preregistered
+minimum window duration. Time values use **Unix microseconds throughout the
+selected trust profile**, including signer lifetimes and the caller's current
+time. The frozen time must equal the generator's signed plan timestamp. Windows
+must follow freezing, not overlap, have nonzero observed counts and distinct
+source cuts, and end before the observer's signed observation and trusted current
+time. The final holdout window must be among those observed windows.
+
+The independent observer signs `future_window_signing_payload_v1`. The evaluator
+signs `longitudinal_evaluation_signing_payload_v3`, including the time evidence,
+observer signature and minimum duration; a changed policy requires new evidence.
+Existing trust, role separation, support, intervals, retention and unlearning
+checks still run. The host must authenticate durable preregistration and the
+observer's actual collection/clock provenance; signatures alone do not prove the
+calendar elapsed or that measurements are honest. Native virtual-clock tests are
+explicitly **not** future-calendar efficacy evidence. No capability level changes.
