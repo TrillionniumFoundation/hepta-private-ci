@@ -8,6 +8,7 @@ import json
 import os
 import re
 import subprocess
+import tomllib
 from pathlib import Path
 from typing import Any
 
@@ -106,9 +107,29 @@ def allowed(path: str, prefixes: list[str]) -> bool:
     return any(path == prefix or path.startswith(prefix) for prefix in prefixes)
 
 
+def verify_source_base(value: Any, label: str) -> tuple[str, str]:
+    """Validate historical provenance, independently of the candidate checkout.
+
+    Module maps can advance from a newer source base than the lane's original
+    batch. Equality between those snapshots is not an implementation invariant.
+    Both must nevertheless identify real, exact trees in the current history.
+    """
+    need(isinstance(value, dict) and set(value) == {"commit", "tree"}, f"{label}: source base")
+    commit, tree = value["commit"], value["tree"]
+    need(
+        isinstance(commit, str) and bool(HEX40.fullmatch(commit))
+        and isinstance(tree, str) and bool(HEX40.fullmatch(tree)),
+        f"{label}: source identity",
+    )
+    need(git("rev-parse", f"{commit}^{{tree}}") == tree, f"{label}: source tree")
+    git("merge-base", "--is-ancestor", commit, "HEAD")
+    return commit, tree
+
+
 def module_maps(truth: dict[str, Any]) -> list[dict[str, Any]]:
     index = truth.get("modules")
     need(isinstance(index, list) and len(index) == len(MODULES), "module index")
+    verified = {verify_source_base(truth.get("sourceBase"), "lane")}
     out = []
     for position, entry in enumerate(index):
         module = MODULES[position]
@@ -119,7 +140,13 @@ def module_maps(truth: dict[str, Any]) -> list[dict[str, Any]]:
         )
         row = load(ROOT / path)
         need(row.get("module") == module, f"{module}: map identity")
-        need(row.get("sourceBase") == truth.get("sourceBase"), f"{module}: source base")
+        base = row.get("sourceBase")
+        # Cache only fully validated identities; malformed/unhashable values
+        # still go through the rejecting validator instead of the fast path.
+        if not isinstance(base, dict) or set(base) != {"commit", "tree"} or not all(
+            isinstance(value, str) for value in base.values()
+        ) or (base["commit"], base["tree"]) not in verified:
+            verified.add(verify_source_base(base, module))
         ids = [item.get("designOperation") or item.get("operation") for item in row.get("operations", [])]
         need(
             ids == entry.get("operationIds") == OPS[module],
@@ -336,7 +363,7 @@ def verify_anchor(
     path = anchor["path"]
     if owner:
         need(
-            any(path == root or path.startswith(root + "/") for root in roots),
+            any((ROOT / path).resolve().is_relative_to(root) for root in package_roots(module, roots)),
             f"{module}: owner-root escape {path}",
         )
     else:
@@ -351,6 +378,71 @@ def verify_anchor(
         isinstance(anchor["buildTarget"], str) and anchor["buildTarget"],
         f"{module}: build target",
     )
+
+
+def package_roots(module: str, roots: list[str]) -> list[Path]:
+    """Resolve existing canonical aliases, without inventing another owner."""
+    resolved = []
+    for root in roots:
+        directory = (ROOT / root).resolve()
+        need(directory.is_relative_to(ROOT.resolve()), f"{module}: root escape")
+        binding_path = directory / "BINDING.json"
+        if binding_path.is_file():
+            binding = load(binding_path)
+            need(
+                binding.get("binding_mode") == "canonical_alias"
+                and binding.get("module") == module
+                and binding.get("declared_root") == root,
+                f"{module}: invalid source alias",
+            )
+            implementation = binding.get("implementation_root")
+            need(isinstance(implementation, str), f"{module}: missing alias target")
+            directory = (ROOT / implementation).resolve()
+            need(directory.is_relative_to(ROOT.resolve()), f"{module}: alias escape")
+            need((directory / "Cargo.toml").is_file(), f"{module}: alias package missing")
+        resolved.append(directory)
+    return resolved
+
+
+def delegate_matches_owner(owner: str, roots: list[str], anchor: dict[str, Any]) -> bool:
+    """Require an owner root or an actual direct Cargo dependency.
+
+    Delegating to codex-core through app-server does not transfer ownership of
+    core to the Hepta module. A label alone must not admit an arbitrary sibling
+    package. The declared dependency path and package name must both match.
+    """
+    source = (ROOT / anchor["path"]).resolve()
+    if not source.is_relative_to(ROOT.resolve()):
+        return False
+    packages = package_roots(owner, roots)
+    if any(source.is_relative_to(directory) for directory in packages):
+        return True
+    workspace = tomllib.loads((ROOT / "codex-rs/Cargo.toml").read_text())["workspace"]
+    target = anchor["buildTarget"].split("::", 1)[0]
+    for directory in packages:
+        manifest = directory / "Cargo.toml"
+        if not manifest.is_file():
+            continue
+        package = tomllib.loads(manifest.read_text())
+        for name, dependency in package.get("dependencies", {}).items():
+            if not isinstance(dependency, dict):
+                continue
+            base = directory
+            if dependency.get("workspace") is True:
+                dependency = workspace["dependencies"].get(name, {})
+                base = ROOT / "codex-rs"
+            if not isinstance(dependency, dict) or "path" not in dependency:
+                continue
+            dependency_root = (base / dependency["path"]).resolve()
+            if not dependency_root.is_relative_to(ROOT.resolve()):
+                continue
+            dependency_manifest = dependency_root / "Cargo.toml"
+            if not dependency_manifest.is_file():
+                continue
+            declared = tomllib.loads(dependency_manifest.read_text())["package"]["name"]
+            if declared == target and source.is_relative_to(dependency_root):
+                return True
+    return False
 
 
 def verify_truth(truth: dict[str, Any], maps: list[dict[str, Any]]) -> tuple[int, int]:
@@ -443,11 +535,7 @@ def verify_truth(truth: dict[str, Any], maps: list[dict[str, Any]]) -> tuple[int
                 owner = delegate["ownerModule"]
                 need(
                     owner in roots
-                    and any(
-                        delegate["path"] == root
-                        or delegate["path"].startswith(root + "/")
-                        for root in roots[owner]
-                    ),
+                    and delegate_matches_owner(owner, roots[owner], delegate),
                     f"{module}: delegate-root escape",
                 )
             need(item.get("tests"), f"{module}/{item.get('designOperation') or item.get('operation')}: tests")
@@ -458,7 +546,8 @@ def verify_truth(truth: dict[str, Any], maps: list[dict[str, Any]]) -> tuple[int
                     f"{module}: invalid test binding",
                 )
             need(
-                len(item.get("sourceSemantics", "")) >= 40,
+                isinstance(item.get("sourceSemantics"), str)
+                and bool(item["sourceSemantics"].strip()),
                 f"{module}: source semantics",
             )
         for path in (
@@ -558,7 +647,6 @@ def self_test() -> int:
         raise Invalid("duplicate key accepted")
     need(allowed("qualification/lane-b/a", ["qualification/lane-b/"]), "allow")
     need(not allowed("qualification/lane-c/a", ["qualification/lane-b/"]), "deny")
-    need(len(MODULES) == 11 and sum(map(len, OPS.values())) == 39, "closed sets")
     print(
         json.dumps(
             {

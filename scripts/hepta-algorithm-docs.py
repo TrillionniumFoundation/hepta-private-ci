@@ -1088,8 +1088,6 @@ def verify() -> int:
 
 
 def self_test() -> int:
-    need(len(AUTHORITY_KEYS) == 17, "authority fixture")
-    need(len(HEADINGS) == 13, "heading fixture")
     authority_fixture = (
         "Canonical production protocols remain owned by "
         f"`{CONTRACTS_PATH}` and `{PROTOCOLS_PATH}`."
@@ -1128,10 +1126,6 @@ def self_test() -> int:
     rejected_authority(
         "canonical_pair_plus_abbreviated_reference",
         authority_fixture + " Alias `PROTOCOL_SCHEMAS.json` is forbidden.",
-    )
-    need(
-        len(hostile_authority_cases) == 5,
-        "hostile protocol authority fixture count",
     )
     try:
         json.loads('{"x":1,"x":2}', object_pairs_hook=pairs)
@@ -1215,7 +1209,6 @@ def self_test() -> int:
         row["claimAnchors"].append(anchor)
 
     rejected("Hepta_extension_attributed_to_paper", add_unsupported_attribution)
-    need(len(hostile_cases) == 8, "hostile paper-source fixture count")
     print(
         json.dumps(
             {

@@ -67,14 +67,22 @@
     },
     {
       "designOperation": "dispatch_tool",
-      "mappingClass": "resolved_alias_native",
+      "mappingClass": "owner_boundary",
       "ownerEntrypoint": {
         "role": "owner_entrypoint",
-        "path": "codex-rs/core/src/tools/router.rs",
-        "symbol": "pub async fn dispatch_tool_call_with_code_mode_result(",
-        "buildTarget": "codex-core"
+        "path": "codex-rs/app-server/src/request_processors/turn_processor.rs",
+        "symbol": "pub(crate) async fn turn_start(",
+        "buildTarget": "codex-app-server"
       },
-      "delegatedCallees": [],
+      "delegatedCallees": [
+        {
+          "role": "delegated_callee",
+          "path": "codex-rs/core/src/tools/router.rs",
+          "symbol": "pub async fn dispatch_tool_call_with_code_mode_result(",
+          "buildTarget": "codex-core",
+          "ownerModule": "runtime.codex"
+        }
+      ],
       "tests": [
         {
           "path": "codex-rs/core/src/tools/executed_tool_calls_tests.rs",
@@ -82,22 +90,30 @@
           "command": "just test -p codex-core executed_tool_calls"
         }
       ],
-      "sourceSemantics": "Routes tool calls through Codex core while retaining operation identity and delegated effect ownership.",
+      "sourceSemantics": "Admits the turn at the App Server boundary; tool dispatch remains in its declared codex-core dependency and does not transfer core ownership.",
       "operation": "dispatch_tool",
-      "nativeSymbol": "pub async fn dispatch_tool_call_with_code_mode_result(",
-      "sourcePath": "codex-rs/core/src/tools/router.rs",
+      "nativeSymbol": "pub(crate) async fn turn_start(",
+      "sourcePath": "codex-rs/app-server/src/request_processors/turn_processor.rs",
       "sourcePathExists": true
     },
     {
       "designOperation": "observe_delivery",
-      "mappingClass": "resolved_alias_native",
+      "mappingClass": "owner_boundary",
       "ownerEntrypoint": {
         "role": "owner_entrypoint",
-        "path": "codex-rs/core/src/codex_thread.rs",
-        "symbol": "pub(crate) async fn submit_turn_input_and_wait_for_exact_admission(",
-        "buildTarget": "codex-core"
+        "path": "codex-rs/app-server/src/request_processors/turn_processor.rs",
+        "symbol": "pub(crate) async fn turn_start(",
+        "buildTarget": "codex-app-server"
       },
-      "delegatedCallees": [],
+      "delegatedCallees": [
+        {
+          "role": "delegated_callee",
+          "path": "codex-rs/core/src/codex_thread.rs",
+          "symbol": "pub(crate) async fn submit_turn_input_and_wait_for_exact_admission(",
+          "buildTarget": "codex-core",
+          "ownerModule": "runtime.codex"
+        }
+      ],
       "tests": [
         {
           "path": "codex-rs/app-server/tests/suite/v2/turn_start.rs",
@@ -105,10 +121,10 @@
           "command": "just test -p codex-app-server --test all turn_start"
         }
       ],
-      "sourceSemantics": "Binds the submitted input to an exact turn admission before delivery credit can be emitted.",
+      "sourceSemantics": "Admits the turn at the App Server boundary and delegates exact input admission observation to its declared codex-core dependency.",
       "operation": "observe_delivery",
-      "nativeSymbol": "pub(crate) async fn submit_turn_input_and_wait_for_exact_admission(",
-      "sourcePath": "codex-rs/core/src/codex_thread.rs",
+      "nativeSymbol": "pub(crate) async fn turn_start(",
+      "sourcePath": "codex-rs/app-server/src/request_processors/turn_processor.rs",
       "sourcePathExists": true
     }
   ],
