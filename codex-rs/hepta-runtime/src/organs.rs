@@ -7,27 +7,27 @@ use std::sync::Mutex;
 
 use anyhow::Context;
 use anyhow::Result;
-use codex_hepta_control_plane::admit_compiled_body_graph_v2;
-use codex_hepta_control_plane::compiled_body_graph_digest_v2;
-use codex_hepta_control_plane::DataflowTiming;
 use codex_hepta_control_plane::BodyGraphBindingV1;
 use codex_hepta_control_plane::CompiledOrganAdmissionV2;
 use codex_hepta_control_plane::CompiledOrganHandlerV2;
+use codex_hepta_control_plane::DataflowTiming;
 use codex_hepta_control_plane::FailureDomainV1;
 use codex_hepta_control_plane::FallbackTerminal;
 use codex_hepta_control_plane::InputPort;
+use codex_hepta_control_plane::NativeHandoffProtocolAdmissionV1;
+use codex_hepta_control_plane::NativeHandoffProtocolRegistryV1;
 use codex_hepta_control_plane::OrganEdge;
 use codex_hepta_control_plane::OrganGraphsV1;
 use codex_hepta_control_plane::OrganHandlerFaultV1;
 use codex_hepta_control_plane::OrganHostV1;
+use codex_hepta_control_plane::OrganManifestBindingV1;
 use codex_hepta_control_plane::OrganNodeV1;
 use codex_hepta_control_plane::OrganRole;
-use codex_hepta_control_plane::OrganManifestBindingV1;
-use codex_hepta_control_plane::NativeHandoffProtocolAdmissionV1;
-use codex_hepta_control_plane::NativeHandoffProtocolRegistryV1;
 use codex_hepta_control_plane::OutputPort;
 use codex_hepta_control_plane::RuntimeLinkV1;
 use codex_hepta_control_plane::TrustedReadOnlyOrganV1;
+use codex_hepta_control_plane::admit_compiled_body_graph_v2;
+use codex_hepta_control_plane::compiled_body_graph_digest_v2;
 use codex_hepta_control_plane::encode_compiled_body_graph_v2;
 use codex_hepta_paths::HeptaStateRoot;
 use codex_hepta_types::AuthorityPosture;
@@ -168,8 +168,8 @@ fn build_host(root: HeptaStateRoot, state: Arc<dyn RuntimeStateAdapter>) -> Resu
             .initialization_order,
         snapshot_digest: Digest32::of_bytes(b"hepta.runtime.status.body.v1"),
     };
-    let bytes = encode_compiled_body_graph_v2(&body, &graph)
-        .context("encode compiled-in status body")?;
+    let bytes =
+        encode_compiled_body_graph_v2(&body, &graph).context("encode compiled-in status body")?;
     let host_admission = CompiledOrganAdmissionV2 {
         expected_digest: compiled_body_graph_digest_v2(&bytes)?,
         generation,
