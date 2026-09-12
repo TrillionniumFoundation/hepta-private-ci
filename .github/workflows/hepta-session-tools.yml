@@ -11,7 +11,8 @@ jobs:
     timeout-minutes: 5
     steps:
       - name: Download pinned public formatter wheel only
-        run: python3 -m pip download --no-deps --only-binary=:all: --dest "$RUNNER_TEMP/formatter" ruff==0.15.13
+        run: |
+          python3 -m pip download --no-deps --only-binary=:all: --dest "$RUNNER_TEMP/formatter" ruff==0.15.13
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: hepta-session-formatter-${{ github.sha }}
