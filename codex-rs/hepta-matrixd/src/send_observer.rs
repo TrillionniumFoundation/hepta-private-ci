@@ -206,7 +206,10 @@ impl MatrixSendObserver {
             .get(server_event_id)
             .cloned()
             .ok_or(Error::SendNotFound)?;
-        let current = self.sends.get_mut(&operation_id).ok_or(Error::SendNotFound)?;
+        let current = self
+            .sends
+            .get_mut(&operation_id)
+            .ok_or(Error::SendNotFound)?;
         if current.receipt.state == SendState::Redacted {
             if current.receipt.observation_digest.as_deref() == Some(redaction_digest) {
                 let mut receipt = current.receipt.clone();
