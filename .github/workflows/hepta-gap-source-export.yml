@@ -1,4 +1,4 @@
-name: Hepta gap source export
+name: Hepta maintenance native test inputs
 
 on:
   push:
@@ -17,33 +17,55 @@ concurrency:
 jobs:
   export:
     runs-on: ubuntu-24.04
-    timeout-minutes: 15
+    timeout-minutes: 45
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
-          fetch-depth: 0
+          ref: 36cfa91241a190a32d50323559c712726f77e3e7
           persist-credentials: false
-
-      - name: Export immutable source objects without credentials
-        shell: bash
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+      - uses: facebook/install-dotslash@1e4e7b3e07eaca387acb98f1d4720e0bee8dbb6a
+      - name: Prepare checksum-verified V8 inputs
         env:
-          EXPECTED_HEAD: ${{ github.sha }}
+          CODEX_REPO_ROOT: ${{ github.workspace }}
+          PYTHONPATH: scripts
+        run: python3 scripts/hepta_ci_v8.py
+      - name: Export only tool binaries and locked dependency sources
+        working-directory: codex-rs
+        shell: bash
         run: |
           set -euo pipefail
-          test "$(git rev-parse HEAD)" = "$EXPECTED_HEAD"
-          out="${RUNNER_TEMP}/hepta-maintenance-source"
-          mkdir -p "$out"
-          git rev-parse HEAD HEAD^{tree} > "$out/IDENTITY"
-          git for-each-ref --format='%(objectname) %(refname)' refs/remotes/origin/ refs/tags/ > "$out/REFS"
-          git bundle create "$out/repository.bundle" --all
-          git bundle verify "$out/repository.bundle"
-          (cd "$out" && sha256sum repository.bundle IDENTITY REFS > SHA256SUMS)
+          test "$(git rev-parse HEAD)" = 36cfa91241a190a32d50323559c712726f77e3e7
+          out="$(mktemp -d "${RUNNER_TEMP}/hepta-native-inputs.XXXXXX")"
+          mkdir -p "$out/bin" "$out/v8"
+          rustc -vV > "$out/RUST_VERSION"
+          cargo --version > "$out/CARGO_VERSION"
+          git rev-parse HEAD HEAD^{tree} > "$out/SOURCE_IDENTITY"
+          cp Cargo.lock "$out/Cargo.lock"
+          toolchain="$(dirname "$(dirname "$(rustup which rustc)")")"
+          test -x "$toolchain/bin/rustc"
+          cp -a "$toolchain" "$out/toolchain"
+          cp "$(command -v just)" "$out/bin/just"
+          cp "$(command -v cargo-nextest)" "$out/bin/cargo-nextest"
+          cp "$(command -v dotslash)" "$out/bin/dotslash"
+          test -f "$RUSTY_V8_ARCHIVE"
+          test -f "$RUSTY_V8_SRC_BINDING_PATH"
+          cp "$RUSTY_V8_ARCHIVE" "$out/v8/archive.a.gz"
+          cp "$RUSTY_V8_SRC_BINDING_PATH" "$out/v8/binding.rs"
+          cargo vendor --locked --versioned-dirs "$out/vendor" > "$out/vendor-config.toml"
+          # Do not export the runner home, Cargo credentials, Git credentials,
+          # environment dumps, token files, or checkout authentication metadata.
+          archive="${RUNNER_TEMP}/hepta-native-inputs.tar.gz"
+          tar -czf "$archive" --exclude='toolchain/share/doc' --exclude='toolchain/share/man' -C "$out" .
+          (cd "$RUNNER_TEMP" && sha256sum hepta-native-inputs.tar.gz > hepta-native-inputs.sha256)
           git diff --exit-code
-
-      - name: Upload read-only reconciliation input
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: hepta-maintenance-source-${{ github.sha }}
-          path: ${{ runner.temp }}/hepta-maintenance-source
+          name: hepta-native-inputs-36cfa912
+          path: |
+            ${{ runner.temp }}/hepta-native-inputs.tar.gz
+            ${{ runner.temp }}/hepta-native-inputs.sha256
           if-no-files-found: error
-          retention-days: 3
+          retention-days: 1
