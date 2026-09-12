@@ -97,6 +97,10 @@ test *args:
 test-github-scripts:
     {{ python }} -m unittest discover -s {{ justfile_directory() }}/.github/scripts -p 'test_*.py'
 
+[no-cd]
+verify-openbao-compatibility:
+    {{ python }} {{ justfile_directory() }}/scripts/verify_openbao_compatibility.py
+
 # Run explicit workspace benchmark targets.
 bench *args:
     cargo bench --workspace --bench '*' {args}
