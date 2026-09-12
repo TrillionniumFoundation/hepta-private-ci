@@ -5,29 +5,30 @@ This directory closes the registered pre-coding documentation requirements for t
 ## Read order
 
 1. [`READINESS.json`](READINESS.json) — closed-world document, module, lane, integration and assimilation bindings.
-2. [`PROTOCOLS.json`](PROTOCOLS.json) — 31 implementation-level typed protocols.
-3. [`GAPS.json`](GAPS.json) — 54 bounded documentation requirements and separately named external gates.
-4. [`SOURCE_BASELINE_AND_BRANCH_POLICY.md`](SOURCE_BASELINE_AND_BRANCH_POLICY.md) — exact source, branch purpose, merge identity and base-drift rules.
-5. [`OBJECTIVE_COMPILER_EXECUTION.md`](OBJECTIVE_COMPILER_EXECUTION.md) — bounded objective grammar, precedence, canonicalization and fixtures.
-6. [`NDU_SYSTEM_EXECUTION.md`](NDU_SYSTEM_EXECUTION.md) — cross-organ utility, Pareto policy, deterministic hierarchy and convergence.
-7. [`NEURON_RUNTIME_EXECUTION.md`](NEURON_RUNTIME_EXECUTION.md) — state layout, tick ordering, checkpointing, performance and ablations.
-8. [`LEARNING_EVALUATION_EXECUTION.md`](LEARNING_EVALUATION_EXECUTION.md) — preregistration, support, outcomes, OPE, future windows, retention and unlearning.
-9. [`SELF_ITERATION_EXECUTION.md`](SELF_ITERATION_EXECUTION.md) — mutation grammar, protected surfaces, sandbox, lineage and rollback.
-10. [`EMBODIED_RUNTIME_EXECUTION.md`](EMBODIED_RUNTIME_EXECUTION.md) — timing, calibration, body generation, reflex, actuation and HIL semantics.
-11. [`EXTERNAL_SYSTEM_ASSIMILATION.md`](EXTERNAL_SYSTEM_ASSIMILATION.md) — explicitly authorized Debian/POSIX discovery, wrapping, migration, qualification and federation.
-12. [`PARALLEL_DEVELOPMENT.md`](PARALLEL_DEVELOPMENT.md) — all-40-module lane plan, execution matrix and integration checkpoints.
-13. [`../../qualification/module-execution-dossiers/TECHNICAL.md`](../../qualification/module-execution-dossiers/TECHNICAL.md) — all-module entrypoint, persistence, fault, performance, NDU, evolution, embodiment and assimilation semantics.
-14. [`../../qualification/module-execution-dossiers/MODULE_DOSSIERS.json`](../../qualification/module-execution-dossiers/MODULE_DOSSIERS.json) — exact execution dossier for every registered module.
-15. [`STATUS.md`](STATUS.md) — generated registered readiness status.
-16. [`../../qualification/module-execution-dossiers/STATUS.md`](../../qualification/module-execution-dossiers/STATUS.md) — generated execution-depth projection.
-17. [`../../qualification/module-execution-dossiers/README.md`](../../qualification/module-execution-dossiers/README.md) — forty module-specific design index and detailed implementation reading sequence.
-18. [`../../qualification/module-execution-dossiers/DETAILS.json`](../../qualification/module-execution-dossiers/DETAILS.json) — exact detail hashes, existing guide/root/package references and primary lanes.
-19. [`../../qualification/module-execution-dossiers/EXECUTION_SEMANTICS.md`](../../qualification/module-execution-dossiers/EXECUTION_SEMANTICS.md) — objective conflict complexity, conditional covariance, sequential evaluation, numerical profiles, thresholds and handoff.
-20. [`../../qualification/module-execution-dossiers/STATE_HANDOFF.schema.json`](../../qualification/module-execution-dossiers/STATE_HANDOFF.schema.json) — qualification handoff schema; native production admission is separate.
-21. [`../../qualification/module-execution-dossiers/DETAIL_GAPS.json`](../../qualification/module-execution-dossiers/DETAIL_GAPS.json) — bounded dispositions and unresolved integration/external gates.
-22. [`../../qualification/module-execution-dossiers/IMPLEMENTATION_CONTRACTS.md`](../../qualification/module-execution-dossiers/IMPLEMENTATION_CONTRACTS.md) — concrete coding contracts, true native evidence and final-gate ordering.
-23. [`../../qualification/module-execution-dossiers/IMPLEMENTATION_PROFILES.json`](../../qualification/module-execution-dossiers/IMPLEMENTATION_PROFILES.json) — all forty module API, encoding, concurrency/recovery, algorithm and acceptance profiles.
-24. [`../../qualification/module-execution-dossiers/IMPLEMENTATION_COMPLETION.json`](../../qualification/module-execution-dossiers/IMPLEMENTATION_COMPLETION.json) — sixteen further implementation-design dispositions, their documents and remaining evidence.
+2. [`STATUS_MODEL.json`](STATUS_MODEL.json) — canonical `specification_closed`, `implementation_closed` and `external_evidence_closed` vocabulary and projections.
+3. [`PROTOCOLS.json`](PROTOCOLS.json) — 31 implementation-level typed protocols.
+4. [`GAPS.json`](GAPS.json) — 54 bounded documentation requirements and separately named external gates.
+5. [`SOURCE_BASELINE_AND_BRANCH_POLICY.md`](SOURCE_BASELINE_AND_BRANCH_POLICY.md) — exact source, branch purpose, merge identity and base-drift rules.
+6. [`OBJECTIVE_COMPILER_EXECUTION.md`](OBJECTIVE_COMPILER_EXECUTION.md) — bounded objective grammar, precedence, canonicalization and fixtures.
+7. [`NDU_SYSTEM_EXECUTION.md`](NDU_SYSTEM_EXECUTION.md) — cross-organ utility, Pareto policy, deterministic hierarchy and convergence.
+8. [`NEURON_RUNTIME_EXECUTION.md`](NEURON_RUNTIME_EXECUTION.md) — state layout, tick ordering, checkpointing, performance and ablations.
+9. [`LEARNING_EVALUATION_EXECUTION.md`](LEARNING_EVALUATION_EXECUTION.md) — preregistration, support, outcomes, OPE, future windows, retention and unlearning.
+10. [`SELF_ITERATION_EXECUTION.md`](SELF_ITERATION_EXECUTION.md) — mutation grammar, protected surfaces, sandbox, lineage and rollback.
+11. [`EMBODIED_RUNTIME_EXECUTION.md`](EMBODIED_RUNTIME_EXECUTION.md) — timing, calibration, body generation, reflex, actuation and HIL semantics.
+12. [`EXTERNAL_SYSTEM_ASSIMILATION.md`](EXTERNAL_SYSTEM_ASSIMILATION.md) — explicitly authorized Debian/POSIX discovery, wrapping, migration, qualification and federation.
+13. [`PARALLEL_DEVELOPMENT.md`](PARALLEL_DEVELOPMENT.md) — all-40-module lane plan, execution matrix and integration checkpoints.
+14. [`../../qualification/module-execution-dossiers/TECHNICAL.md`](../../qualification/module-execution-dossiers/TECHNICAL.md) — all-module entrypoint, persistence, fault, performance, NDU, evolution, embodiment and assimilation semantics.
+15. [`../../qualification/module-execution-dossiers/MODULE_DOSSIERS.json`](../../qualification/module-execution-dossiers/MODULE_DOSSIERS.json) — exact execution dossier for every registered module.
+16. [`STATUS.md`](STATUS.md) — generated registered readiness status.
+17. [`../../qualification/module-execution-dossiers/STATUS.md`](../../qualification/module-execution-dossiers/STATUS.md) — generated execution-depth projection.
+18. [`../../qualification/module-execution-dossiers/README.md`](../../qualification/module-execution-dossiers/README.md) — forty module-specific design index and detailed implementation reading sequence.
+19. [`../../qualification/module-execution-dossiers/DETAILS.json`](../../qualification/module-execution-dossiers/DETAILS.json) — exact detail hashes, existing guide/root/package references and primary lanes.
+20. [`../../qualification/module-execution-dossiers/EXECUTION_SEMANTICS.md`](../../qualification/module-execution-dossiers/EXECUTION_SEMANTICS.md) — objective conflict complexity, conditional covariance, sequential evaluation, numerical profiles, thresholds and handoff.
+21. [`../../qualification/module-execution-dossiers/STATE_HANDOFF.schema.json`](../../qualification/module-execution-dossiers/STATE_HANDOFF.schema.json) — qualification handoff schema; native production admission is separate.
+22. [`../../qualification/module-execution-dossiers/DETAIL_GAPS.json`](../../qualification/module-execution-dossiers/DETAIL_GAPS.json) — bounded dispositions and unresolved integration/external gates.
+23. [`../../qualification/module-execution-dossiers/IMPLEMENTATION_CONTRACTS.md`](../../qualification/module-execution-dossiers/IMPLEMENTATION_CONTRACTS.md) — concrete coding contracts, true native evidence and final-gate ordering.
+24. [`../../qualification/module-execution-dossiers/IMPLEMENTATION_PROFILES.json`](../../qualification/module-execution-dossiers/IMPLEMENTATION_PROFILES.json) — all forty module API, encoding, concurrency/recovery, algorithm and acceptance profiles.
+25. [`../../qualification/module-execution-dossiers/IMPLEMENTATION_COMPLETION.json`](../../qualification/module-execution-dossiers/IMPLEMENTATION_COMPLETION.json) — sixteen further implementation-design dispositions, their documents and remaining evidence.
 
 ## Validation
 
