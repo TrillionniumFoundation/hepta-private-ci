@@ -12,14 +12,18 @@ concurrency:
   group: hepta-consolidated-source-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
+env:
+  SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+  BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+  TESTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+  HEPTA_CI_LANE: source-head
+
 jobs:
   workspace-regression:
     name: Workspace regression for shared core changes
     runs-on: ubuntu-24.04-arm
     timeout-minutes: 60
     env:
-      SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
-      BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
       CARGO_INCREMENTAL: "0"
       CARGO_BUILD_JOBS: "2"
       CARGO_PROFILE_TEST_DEBUG: "0"
@@ -36,11 +40,21 @@ jobs:
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          # HEAD alone cannot attest the tracked bytes used by the build.
+          git diff --quiet
+          git diff --cached --quiet
           # A first push or unavailable old commit has no reliable change set.
           # Run the full regression rather than failing or incorrectly skipping it.
           if ! git cat-file -e "$BASE_SHA^{commit}" 2>/dev/null; then
             echo 'required=true' >> "$GITHUB_OUTPUT"
-          elif git diff --quiet "$BASE_SHA" "$SOURCE_SHA" -- codex-rs/core/ codex-rs/common/ codex-rs/protocol/; then
+          elif git diff --quiet "$BASE_SHA" "$SOURCE_SHA" -- \
+            codex-rs/core/ codex-rs/common/ codex-rs/protocol/ \
+            codex-rs/Cargo.toml codex-rs/Cargo.lock \
+            ':(glob)codex-rs/**/Cargo.toml' ':(glob)codex-rs/**/build.rs' \
+            .cargo/ codex-rs/.cargo/ rust-toolchain rust-toolchain.toml \
+            codex-rs/rust-toolchain codex-rs/rust-toolchain.toml \
+            justfile codex-rs/justfile scripts/hepta_ci_v8.py scripts/hepta_ci_exec.py \
+            .github/workflows/hepta-consolidated-source.yml; then
             echo 'required=false' >> "$GITHUB_OUTPUT"
           else
             status=$?
@@ -77,7 +91,15 @@ jobs:
         working-directory: codex-rs
         env:
           CARGO_TARGET_DIR: ${{ runner.temp }}/hepta-native-target
-        run: just test --locked
+        run: python3 ../scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/workspace-test.json" -- just test --locked
+      - name: Retain real command records
+        if: always() && steps.scope.outputs.required == 'true'
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-commands-${{ github.run_id }}-${{ github.run_attempt }}-workspace
+          path: ${{ runner.temp }}/hepta-command-records/*.json
+          if-no-files-found: error
+          retention-days: 30
   engineering-sandbox:
     name: Engineering strong sandbox
     runs-on: ubuntu-24.04
@@ -99,7 +121,15 @@ jobs:
             sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
           fi
       - name: Exercise real namespace isolation and candidate evaluation
-        run: python3 -m unittest discover -v -s tools/hepta-engineering-control -p 'test_*.py'
+        run: python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/engineering-test.json" -- python3 -m unittest discover -v -s tools/hepta-engineering-control -p 'test_*.py'
+      - name: Retain real command records
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-commands-${{ github.run_id }}-${{ github.run_attempt }}-engineering
+          path: ${{ runner.temp }}/hepta-command-records/*.json
+          if-no-files-found: error
+          retention-days: 30
   os-evidence:
     name: OS evidence native executor
     runs-on: ubuntu-24.04
@@ -118,7 +148,15 @@ jobs:
           set -euo pipefail
           test -x /usr/bin/openssl
           /usr/bin/openssl version
-          python3 run_native_tests.py
+          python3 ../../scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/os-test.json" -- python3 run_native_tests.py
+      - name: Retain real command records
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-commands-${{ github.run_id }}-${{ github.run_attempt }}-os
+          path: ${{ runner.temp }}/hepta-command-records/*.json
+          if-no-files-found: error
+          retention-days: 30
   qualification:
     runs-on: ubuntu-24.04-arm
     timeout-minutes: 45
@@ -128,8 +166,6 @@ jobs:
         # A push already tests the merged source. Only PRs need both identities.
         lane: ${{ fromJSON(github.event_name == 'pull_request' && '["source-head","base-merge"]' || '["source-head"]') }}
     env:
-      SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
-      BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
       PYTHONDONTWRITEBYTECODE: "1"
       CARGO_INCREMENTAL: "0"
       CARGO_BUILD_JOBS: "2"
@@ -177,12 +213,27 @@ jobs:
           author-email: hepta-docs-ci@users.noreply.github.com
           message: Synthetic merge
       - name: Retain original document and source-owner gates
+        env:
+          TESTED_SHA: ${{ steps.synthetic.outputs.sha || env.SOURCE_SHA }}
+          HEPTA_CI_LANE: ${{ matrix.lane }}
         shell: bash
         run: |
           set -euo pipefail
           # Global source/merge document and script checks run once in hepta-development-docs.
-          python3 scripts/hepta-gap-closure.py verify
-          node --test apps/hepta-browser/test/*.js apps/hepta-native/test/*.js
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/source-owner.json" -- python3 scripts/hepta-gap-closure.py verify
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/ui-test.json" -- node --test apps/hepta-browser/test/*.js apps/hepta-native/test/*.js
+      - name: Formatting without source mutation
+        if: always()
+        env:
+          TESTED_SHA: ${{ steps.synthetic.outputs.sha || env.SOURCE_SHA }}
+          HEPTA_CI_LANE: ${{ matrix.lane }}
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          args=()
+          for package in $PACKAGES; do args+=(--package "$package"); done
+          python3 ../scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/format.json" -- cargo fmt "${args[@]}" -- --check
       - name: Prepare native owner-test prerequisites
         run: |
           sudo apt-get update
@@ -206,23 +257,16 @@ jobs:
       - name: Compile and test actual imported packages
         working-directory: codex-rs
         env:
+          TESTED_SHA: ${{ steps.synthetic.outputs.sha || env.SOURCE_SHA }}
+          HEPTA_CI_LANE: ${{ matrix.lane }}
           CARGO_TARGET_DIR: ${{ runner.temp }}/hepta-native-target
         shell: bash
         run: |
           set -euo pipefail
           args=()
           for package in $PACKAGES; do args+=(-p "$package"); done
-          just test --locked "${args[@]}"
-          cargo clippy --locked "${args[@]}" --all-targets -- -D warnings
-      - name: Formatting without source mutation
-        if: always()
-        working-directory: codex-rs
-        shell: bash
-        run: |
-          set -euo pipefail
-          args=()
-          for package in $PACKAGES; do args+=(--package "$package"); done
-          cargo fmt "${args[@]}" -- --check
+          python3 ../scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/owner-test.json" -- just test --locked "${args[@]}"
+          python3 ../scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/clippy.json" -- cargo clippy --locked "${args[@]}" --all-targets -- -D warnings
       - name: Clean tracked source
         if: always()
         env:
@@ -242,3 +286,11 @@ jobs:
           git diff --check
           git diff --exit-code
           test -z "$(git status --porcelain --untracked-files=no)"
+      - name: Retain real command records
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-commands-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.lane }}
+          path: ${{ runner.temp }}/hepta-command-records/*.json
+          if-no-files-found: error
+          retention-days: 30

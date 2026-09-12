@@ -91,5 +91,60 @@ class ConsolidatedScopeTests(unittest.TestCase):
         self.assertEqual(output, "")
 
 
+    def test_shared_build_inputs_cannot_skip_full_regression(self):
+        for path in (
+            "codex-rs/Cargo.toml", "codex-rs/Cargo.lock",
+            "codex-rs/another-crate/Cargo.toml", "codex-rs/another-crate/build.rs",
+            "codex-rs/.cargo/config.toml", ".cargo/config.toml",
+            "codex-rs/rust-toolchain.toml", "rust-toolchain.toml",
+            "justfile", "scripts/hepta_ci_v8.py",
+            ".github/workflows/hepta-consolidated-source.yml",
+        ):
+            with self.subTest(path=path):
+                before = self.git("rev-parse", "HEAD")
+                target = self.root / path
+                target.parent.mkdir(parents=True, exist_ok=True)
+                target.write_text("build input changed\n")
+                self.git("add", ".")
+                self.git("commit", "-qm", "build input")
+                result, output = self.scope(before, self.git("rev-parse", "HEAD"))
+                self.assertEqual(result.returncode, 0, result.stderr)
+                self.assertEqual(output, "required=true\n")
+
+    def test_dirty_tracked_content_cannot_claim_exact_source(self):
+        for staged in (False, True):
+            with self.subTest(staged=staged):
+                self.git("reset", "--hard", self.base)
+                (self.root / "readme").write_text("not the committed source\n")
+                if staged:
+                    self.git("add", "readme")
+                result, output = self.scope(self.base, self.base)
+                self.assertNotEqual(result.returncode, 0)
+                self.assertEqual(output, "")
+
+    def test_deleting_shared_build_input_requires_regression(self):
+        lock = self.root / "codex-rs/Cargo.lock"
+        lock.parent.mkdir()
+        lock.write_text("lock data\n")
+        self.git("add", ".")
+        self.git("commit", "-qm", "lock")
+        before = self.git("rev-parse", "HEAD")
+        self.git("rm", "codex-rs/Cargo.lock")
+        self.git("commit", "-qm", "remove lock")
+        result, output = self.scope(before, self.git("rev-parse", "HEAD"))
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(output, "required=true\n")
+
+    def test_module_documentation_does_not_force_workspace_rebuild(self):
+        path = self.root / "codex-rs/some-crate/TECHNICAL.md"
+        path.parent.mkdir(parents=True)
+        path.write_text("documentation only\n")
+        self.git("add", ".")
+        self.git("commit", "-qm", "module docs")
+        result, output = self.scope(self.base, self.git("rev-parse", "HEAD"))
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(output, "required=false\n")
+
+
 if __name__ == "__main__":
     unittest.main()
