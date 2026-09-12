@@ -1,0 +1,112 @@
+name: Hepta one-shot safe branch consolidation
+
+on:
+  push:
+    branches:
+      - integration/vnext-main-20260811
+
+permissions:
+  contents: write
+
+concurrency:
+  group: hepta-one-shot-safe-branch-consolidation
+  cancel-in-progress: false
+
+env:
+  CURRENT_DEFAULT: integration/vnext-main-20260811
+  FUTURE_DEFAULT: main
+  SELF_PATH: .github/workflows/hepta-one-shot-branch-consolidation.yml
+
+jobs:
+  consolidate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    steps:
+      - name: Check out exact mirrored tip
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Verify every removable branch is already absorbed
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "Hepta Repository Consolidation"
+          git config user.email "hepta-repository-consolidation@users.noreply.github.com"
+          git fetch --force --prune origin '+refs/heads/*:refs/remotes/origin/*'
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test "$(git rev-parse refs/remotes/origin/$CURRENT_DEFAULT)" = "$GITHUB_SHA"
+          test "$(git rev-parse refs/remotes/origin/$FUTURE_DEFAULT)" = "$GITHUB_SHA"
+
+          git for-each-ref --format='%(refname:strip=3)%09%(objectname)' refs/remotes/origin \
+            | awk -F '\t' -v old="$CURRENT_DEFAULT" -v new="$FUTURE_DEFAULT" \
+                '$1 != "HEAD" && $1 != old && $1 != new' \
+            | sort > /tmp/delete-branches.tsv
+
+          main_sha="$(git rev-parse refs/remotes/origin/$FUTURE_DEFAULT)"
+          : > /tmp/non-ancestors.tsv
+          while IFS=$'\t' read -r branch sha; do
+            if ! git merge-base --is-ancestor "$sha" "$main_sha"; then
+              printf '%s\t%s\n' "$branch" "$sha" >> /tmp/non-ancestors.tsv
+            fi
+          done < /tmp/delete-branches.tsv
+
+          if test -s /tmp/non-ancestors.tsv; then
+            echo 'NON_ANCESTOR_BRANCHES_BEGIN'
+            cat /tmp/non-ancestors.tsv
+            echo 'NON_ANCESTOR_BRANCHES_END'
+            exit 1
+          fi
+          echo "verifiedRemovableBranches=$(wc -l < /tmp/delete-branches.tsv | tr -d ' ')"
+
+      - name: Delete absorbed branches with exact leases
+        shell: bash
+        run: |
+          set -euo pipefail
+          mapfile -t rows < /tmp/delete-branches.tsv
+          failures=()
+          batch_size=24
+          for ((offset=0; offset<${#rows[@]}; offset+=batch_size)); do
+            args=(git push --atomic origin)
+            upper=$((offset + batch_size))
+            if (( upper > ${#rows[@]} )); then upper=${#rows[@]}; fi
+            for ((index=offset; index<upper; index++)); do
+              row="${rows[$index]}"
+              branch="${row%%$'\t'*}"
+              sha="${row#*$'\t'}"
+              args+=("--force-with-lease=refs/heads/${branch}:${sha}" ":refs/heads/${branch}")
+            done
+            if ! "${args[@]}"; then
+              for ((index=offset; index<upper; index++)); do
+                row="${rows[$index]}"
+                branch="${row%%$'\t'*}"
+                sha="${row#*$'\t'}"
+                if ! git push --force-with-lease="refs/heads/${branch}:${sha}" origin ":refs/heads/${branch}"; then
+                  failures+=("$branch")
+                fi
+              done
+            fi
+          done
+          if (( ${#failures[@]} > 0 )); then
+            printf 'DELETE_FAILURE\t%s\n' "${failures[@]}"
+            exit 1
+          fi
+
+          git fetch --force --prune origin '+refs/heads/*:refs/remotes/origin/*'
+          mapfile -t remaining < <(git for-each-ref --format='%(refname:strip=3)' refs/remotes/origin | awk '$1 != "HEAD"' | sort)
+          printf 'REMAINING_BRANCH\t%s\n' "${remaining[@]}"
+          test "${#remaining[@]}" -eq 2
+          test "${remaining[0]}" = "$CURRENT_DEFAULT"
+          test "${remaining[1]}" = "$FUTURE_DEFAULT"
+
+      - name: Remove the one-shot workflow from both retained refs
+        shell: bash
+        run: |
+          set -euo pipefail
+          git rm "$SELF_PATH"
+          git commit -m "chore(repo): retire one-shot branch consolidation workflow"
+          git push --atomic origin \
+            HEAD:refs/heads/$CURRENT_DEFAULT \
+            HEAD:refs/heads/$FUTURE_DEFAULT
