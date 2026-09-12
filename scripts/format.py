@@ -97,7 +97,8 @@ def python_sdk_formatter_group(*, check: bool) -> FormatterGroup:
         "format",
     ]
     if check:
-        format_args.append("--check")
+        # Diff mode is non-mutating and still fails when formatting is needed.
+        format_args.append("--diff")
         # `ruff check --diff` reports lint-driven rewrites without changing files.
         # It is the check-mode counterpart of `--fix --fix-only`, not a full lint gate.
         lint_args = ["ruff", "check", "--diff"]
@@ -128,7 +129,8 @@ def python_scripts_formatter_group(*, check: bool) -> FormatterGroup:
         "format",
     ]
     if check:
-        args.append("--check")
+        # Show the repair in CI while preserving the nonzero failure result.
+        args.append("--diff")
     args.append("scripts")
     return FormatterGroup("Python scripts", (Command(tuple(args)),))
 
