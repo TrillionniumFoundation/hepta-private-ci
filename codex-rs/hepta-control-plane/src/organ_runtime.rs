@@ -8,6 +8,7 @@ use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
 
+use crate::FallbackTerminal;
 use crate::OrganGraphError;
 use crate::OrganGraphsV1;
 use crate::ValidatedOrganGraphsV1;
@@ -25,6 +26,68 @@ pub trait TrustedReadOnlyOrganV1: fmt::Debug + Send {
     fn handle(&mut self, input_port: usize, payload: &[u8])
     -> Result<Vec<u8>, OrganHandlerFaultV1>;
     fn stop(&mut self) -> Result<(), OrganHandlerFaultV1>;
+}
+
+/// The stable, in-process ABI exposed by a host for one organ generation.
+///
+/// This is intentionally a value projection of the validated graph. It gives
+/// a dynamic coordinator stable identities and typed port names without
+/// turning the coordinator into a code loader or an authority issuer.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct OrganAbiV1 {
+    pub generation: Generation,
+    pub id: StableId,
+    pub role: crate::OrganRole,
+    pub input_ports: Vec<StableId>,
+    pub output_ports: Vec<StableId>,
+    pub effect_scope: Vec<StableId>,
+    pub fallback: FallbackTerminal,
+}
+
+/// A bounded state handoff callback. Implementations own the state store and
+/// may use this hook to snapshot and migrate it; the read-only host never
+/// opens files, databases, sockets or credentials itself.
+pub trait OrganStateMigrationV1 {
+    fn snapshot(&mut self, predecessor: Generation) -> Result<Vec<u8>, OrganMigrationError>;
+
+    fn migrate(
+        &mut self,
+        snapshot: &[u8],
+        predecessor: Generation,
+        candidate: Generation,
+    ) -> Result<(), OrganMigrationError>;
+
+    fn rollback(
+        &mut self,
+        snapshot: &[u8],
+        predecessor: Generation,
+        candidate: Generation,
+    ) -> Result<(), OrganMigrationError>;
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub enum OrganMigrationError {
+    Rejected,
+    SnapshotTooLarge { actual: usize },
+    Callback(StableId),
+}
+
+impl fmt::Display for OrganMigrationError {
+    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(formatter, "{self:?}")
+    }
+}
+
+impl StdError for OrganMigrationError {}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct OrganFallbackStatusV1 {
+    pub generation: Generation,
+    pub organ: StableId,
+    pub state: HostedOrganStateV1,
+    pub terminal: FallbackTerminal,
+    pub fallback_targets: Vec<StableId>,
+    pub available: bool,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -94,6 +157,18 @@ pub enum OrganRuntimeError {
     ReplacementStopFailed {
         predecessor_faults: Vec<OrganFaultRecordV1>,
         candidate_cleanup_faults: Vec<OrganFaultRecordV1>,
+    },
+    MigrationSnapshotFailed {
+        error: OrganMigrationError,
+    },
+    CandidateMigrationFailed {
+        error: OrganMigrationError,
+        rollback_error: Option<OrganMigrationError>,
+        candidate_cleanup_faults: Vec<OrganFaultRecordV1>,
+    },
+    CandidateStartFailed {
+        error: Box<OrganRuntimeError>,
+        rollback_error: Option<OrganMigrationError>,
     },
     UnknownSource {
         organ: StableId,
@@ -223,6 +298,64 @@ impl OrganHostV1 {
             .collect()
     }
 
+    /// Return the stable ABI projection for this exact host generation.
+    pub fn abi(&self) -> Vec<OrganAbiV1> {
+        self.graph
+            .organs
+            .iter()
+            .map(|organ| OrganAbiV1 {
+                generation: self.graph.generation,
+                id: organ.id.clone(),
+                role: organ.role,
+                input_ports: organ.inputs.clone(),
+                output_ports: organ.outputs.clone(),
+                effect_scope: organ.effect_scope.iter().cloned().collect(),
+                fallback: organ.terminal.clone(),
+            })
+            .collect()
+    }
+
+    /// Report local fallback availability without invoking a handler or
+    /// crossing an external boundary. A fallback is available only when its
+    /// target is currently ready; terminal safe-state/human-takeover paths are
+    /// represented as available local endpoints when declared by the graph.
+    pub fn local_fallback_status(&self) -> Vec<OrganFallbackStatusV1> {
+        self.graph
+            .organs
+            .iter()
+            .enumerate()
+            .map(|(index, organ)| {
+                let fallback_targets = self
+                    .graph
+                    .fallback
+                    .iter()
+                    .filter(|edge| edge.from == index)
+                    .map(|edge| self.graph.organs[edge.to].id.clone())
+                    .collect::<Vec<_>>();
+                let target_ready = self
+                    .graph
+                    .fallback
+                    .iter()
+                    .filter(|edge| edge.from == index)
+                    .any(|edge| self.slots[edge.to].state == HostedOrganStateV1::Ready);
+                let terminal_available = !matches!(organ.terminal, FallbackTerminal::None);
+                OrganFallbackStatusV1 {
+                    generation: self.graph.generation,
+                    organ: organ.id.clone(),
+                    state: self.slots[index].state,
+                    terminal: organ.terminal.clone(),
+                    fallback_targets,
+                    available: target_ready || terminal_available,
+                }
+            })
+            .collect()
+    }
+
+    /// Alias with the shorter name used by local supervisors.
+    pub fn fallback_status(&self) -> Vec<OrganFallbackStatusV1> {
+        self.local_fallback_status()
+    }
+
     /// Replace one ready, compiled-in read-only composition with its successor.
     /// Construction/start failure leaves the predecessor untouched. Once old
     /// cleanup starts, any failure leaves its explicit stopped/quarantined
@@ -274,6 +407,96 @@ impl OrganHostV1 {
         }
         // Exclusive &mut access prevents dispatch from mixing generations.
         // The replaced host's Drop only sees already-attempted stop operations.
+        *self = candidate;
+        Ok(())
+    }
+
+    /// Replace a generation while making state transfer an explicit,
+    /// owner-provided callback. Snapshot and migration happen before the
+    /// predecessor is stopped. Any candidate failure invokes rollback and
+    /// leaves the predecessor ready; no callback is retried implicitly.
+    pub fn replace_read_only_generation_with_migration<M: OrganStateMigrationV1>(
+        &mut self,
+        expected: Generation,
+        graph: OrganGraphsV1,
+        handlers: Vec<Box<dyn TrustedReadOnlyOrganV1>>,
+        migration: &mut M,
+    ) -> Result<(), OrganRuntimeError> {
+        if self.generation() != expected {
+            return Err(OrganRuntimeError::GenerationMismatch {
+                expected: self.generation(),
+                actual: expected,
+            });
+        }
+        if expected.next().ok() != Some(graph.generation) {
+            return Err(OrganRuntimeError::NonSuccessorGeneration {
+                current: expected,
+                proposed: graph.generation,
+            });
+        }
+        for index in 0..self.slots.len() {
+            self.require_ready(index)?;
+        }
+        let snapshot = migration
+            .snapshot(expected)
+            .map_err(|error| OrganRuntimeError::MigrationSnapshotFailed { error })?;
+        if snapshot.len() > MAX_ORGAN_MESSAGE_BYTES {
+            return Err(OrganRuntimeError::MigrationSnapshotFailed {
+                error: OrganMigrationError::SnapshotTooLarge {
+                    actual: snapshot.len(),
+                },
+            });
+        }
+        let mut candidate = Self::new(graph, handlers)?;
+        if let Err(error) = candidate.start_all() {
+            let rollback_error = migration
+                .rollback(&snapshot, expected, candidate.generation())
+                .err();
+            return Err(OrganRuntimeError::CandidateStartFailed {
+                error: Box::new(error),
+                rollback_error,
+            });
+        }
+        if let Err(error) = migration.migrate(&snapshot, expected, candidate.generation()) {
+            let rollback_error = migration
+                .rollback(&snapshot, expected, candidate.generation())
+                .err();
+            let candidate_cleanup_faults = candidate.stop_indices(
+                candidate
+                    .validated
+                    .initialization_order
+                    .clone()
+                    .into_iter()
+                    .rev(),
+            );
+            return Err(OrganRuntimeError::CandidateMigrationFailed {
+                error,
+                rollback_error,
+                candidate_cleanup_faults,
+            });
+        }
+        let predecessor_faults = self.stop_indices(
+            self.validated
+                .initialization_order
+                .clone()
+                .into_iter()
+                .rev(),
+        );
+        if !predecessor_faults.is_empty() {
+            let candidate_cleanup_faults = candidate.stop_indices(
+                candidate
+                    .validated
+                    .initialization_order
+                    .clone()
+                    .into_iter()
+                    .rev(),
+            );
+            let _ = migration.rollback(&snapshot, expected, candidate.generation());
+            return Err(OrganRuntimeError::ReplacementStopFailed {
+                predecessor_faults,
+                candidate_cleanup_faults,
+            });
+        }
         *self = candidate;
         Ok(())
     }

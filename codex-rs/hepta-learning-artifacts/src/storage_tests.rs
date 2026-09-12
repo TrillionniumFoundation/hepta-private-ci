@@ -69,6 +69,82 @@ fn binding() -> Digest32 {
     Digest32::of_bytes(b"host-authenticated-scope-fixture-not-a-credential")
 }
 
+fn head_witness() -> RegistryHeadWitnessV1 {
+    RegistryHeadWitnessV1 {
+        registry_id: id("artifact-registry"),
+        generation: Generation::new(2).unwrap(),
+        head_digest: Digest32::of_bytes(b"current-head"),
+        predecessor_head_digest: Digest32::ZERO,
+        authority_epoch: 3,
+        signer_id: id("artifact-owner"),
+        signing_key_digest: Digest32::of_bytes(b"signing-key"),
+        issued_at: 10,
+        expires_at: 100,
+    }
+}
+
+fn head_requirement(now: u64) -> RegistryHeadRequirementV1 {
+    RegistryHeadRequirementV1 {
+        registry_id: id("artifact-registry"),
+        minimum_generation: Generation::new(1).unwrap(),
+        expected_predecessor_head_digest: Digest32::ZERO,
+        minimum_authority_epoch: 2,
+        now,
+    }
+}
+
+#[test]
+fn current_head_witness_round_trips_only_with_current_requirement() {
+    let file = TestFile::new();
+    let witness = head_witness();
+    let receipt = write_registry_head_witness(
+        file.create().unwrap(),
+        &witness,
+        &head_requirement(20),
+        binding(),
+    )
+    .unwrap();
+    assert_eq!(
+        read_registry_head_witness(file.open(), receipt, &head_requirement(20)).unwrap(),
+        witness
+    );
+    assert_eq!(
+        read_registry_head_witness(
+            file.open(),
+            receipt,
+            &RegistryHeadRequirementV1 {
+                expected_predecessor_head_digest: Digest32::of_bytes(b"new-predecessor"),
+                ..head_requirement(20)
+            },
+        )
+        .unwrap_err(),
+        ArtifactStorageError::HeadWitnessMismatch
+    );
+}
+
+#[test]
+fn current_head_witness_rejects_stale_or_tampered_receipts() {
+    let file = TestFile::new();
+    let witness = head_witness();
+    let receipt = write_registry_head_witness(
+        file.create().unwrap(),
+        &witness,
+        &head_requirement(20),
+        binding(),
+    )
+    .unwrap();
+    let mut tampered = receipt;
+    tampered.file_digest = Digest32::of_bytes(b"tampered");
+    assert_eq!(
+        read_registry_head_witness(file.open(), tampered, &head_requirement(20)).unwrap_err(),
+        ArtifactStorageError::Corrupt
+    );
+    assert_eq!(
+        read_registry_head_witness(file.open(), receipt, &head_requirement(101)).unwrap_err(),
+        ArtifactStorageError::HeadWitnessMismatch
+    );
+}
+
 #[test]
 fn snapshot_reopens_exact_history_and_revoked_ancestors() {
     let mut registry = ArtifactRegistry::new();

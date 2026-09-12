@@ -1,0 +1,70 @@
+{
+  "schema": "hepta.module-implementation-map.v3",
+  "schemaVersion": 3,
+  "sourceBase": {
+    "commit": "ab584c609ffe30bac96001e286eb4002b03339cc",
+    "tree": "befa7dd1e884be1728085c0f4178002556031288"
+  },
+  "laneId": "LANE-C-MEMORY",
+  "module": "knowledge.graph",
+  "owner": "knowledge-graph",
+  "deputy": "cognitive-platform",
+  "technicalGuide": "docs/modules/knowledge.graph/TECHNICAL.md",
+  "declaredRoots": [
+    "codex-rs/hepta-kg"
+  ],
+  "resolvedRoots": [
+    "codex-rs/hepta-kg"
+  ],
+  "sourceRootPresent": true,
+  "productionImplementation": false,
+  "productCallerState": "not_composed",
+  "productionWriterState": "not_established",
+  "operations": [
+    {
+      "operation": "build_complete_generation",
+      "nativeSymbol": "build_complete_generation",
+      "sourcePath": "codex-rs/hepta-kg/src/generation.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [],
+      "sourcePathExists": true
+    },
+    {
+      "operation": "apply_incremental_delta",
+      "nativeSymbol": "apply_incremental_delta",
+      "sourcePath": "codex-rs/hepta-kg/src/generation.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [],
+      "sourcePathExists": true
+    },
+    {
+      "operation": "publish_generation",
+      "nativeSymbol": "publish_generation",
+      "sourcePath": "codex-rs/hepta-kg/src/generation.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [],
+      "sourcePathExists": true
+    }
+  ],
+  "repositoryControlledGaps": [
+    "Bind every operation to an authenticated consumer callsite and owner store.",
+    "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary."
+  ],
+  "externalEvidenceGates": [
+    "independent semantic review",
+    "product execution and target-host qualification",
+    "operator acceptance, canary, promotion and release"
+  ],
+  "claimBoundary": {
+    "nativeSourceMappingComplete": true,
+    "sourceRootPresent": true,
+    "productionImplementation": false,
+    "productExecutionProved": false,
+    "independentAcceptance": false,
+    "activation": false,
+    "release": false
+  }
+}

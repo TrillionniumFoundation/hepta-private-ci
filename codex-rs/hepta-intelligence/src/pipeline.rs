@@ -245,6 +245,141 @@ pub struct LaneFShadowPipelineReceiptV1 {
     pub authority: AuthorityPosture,
 }
 
+impl LaneFShadowPipelineReceiptV1 {
+    /// Validate a pipeline receipt before it is handed to another owner.
+    ///
+    /// The coordinator validates every port response while running, but the
+    /// resulting receipt can be persisted, transported, or reconstructed by a
+    /// caller.  Re-validating the stage chain prevents a forged or truncated
+    /// trace from being treated as evidence of a completed shadow run.
+    pub fn validate(&self) -> Result<(), PipelineErrorV1> {
+        if self.snapshot_digest.is_zero() || self.trace_digest.is_zero() {
+            return Err(PipelineErrorV1::InvalidPipelineReceipt("empty digest"));
+        }
+        if self.authority.grants_any() {
+            return Err(PipelineErrorV1::AuthorityWidening);
+        }
+        if self.stages.is_empty() || self.stages.len() > 8 {
+            return Err(PipelineErrorV1::InvalidPipelineReceipt("stage count"));
+        }
+
+        let mut previous_stage = None;
+        let mut previous_output = None;
+        let mut intuition_outcome = None;
+        let mut saw_context = false;
+        let mut saw_dispatch = false;
+        for trace in &self.stages {
+            if let Some(previous) = previous_stage
+                && stage_code(trace.stage) <= stage_code(previous)
+            {
+                return Err(PipelineErrorV1::InvalidPipelineReceipt("stage order"));
+            }
+            if trace.predecessor_digest.is_zero()
+                || trace.output_digest.is_zero()
+                || trace.evidence_digest.is_zero()
+            {
+                return Err(PipelineErrorV1::InvalidPipelineReceipt(
+                    "empty stage digest",
+                ));
+            }
+            if let Some(output) = previous_output
+                && trace.predecessor_digest != output
+            {
+                return Err(PipelineErrorV1::PredecessorMismatch);
+            }
+            let expected_producer = producer_for_stage(trace.stage);
+            if trace.producer.as_str() != expected_producer {
+                return Err(PipelineErrorV1::ProducerMismatch);
+            }
+            if matches!(trace.outcome, StageOutcomeV1::FallbackUsed(_))
+                && !matches!(
+                    trace.stage,
+                    LaneFStageV1::NeuralSignalCollected | LaneFStageV1::PromptPortfolioBuilt
+                )
+            {
+                return Err(PipelineErrorV1::InvalidPipelineReceipt(
+                    "required stage fallback",
+                ));
+            }
+            if let StageOutcomeV1::FallbackUsed(class) | StageOutcomeV1::Failed(class) =
+                trace.outcome
+            {
+                let expected = fallback_digest(
+                    trace.stage,
+                    trace.predecessor_digest,
+                    class,
+                    trace.evidence_digest,
+                );
+                if trace.output_digest != expected {
+                    return Err(PipelineErrorV1::InvalidPipelineReceipt("fallback digest"));
+                }
+            }
+            if trace.stage == LaneFStageV1::IntuitionDecided {
+                intuition_outcome = Some(trace.outcome);
+            }
+            saw_context |= trace.stage == LaneFStageV1::ContextCompiled;
+            saw_dispatch |= trace.stage == LaneFStageV1::DispatchProposed;
+            previous_stage = Some(trace.stage);
+            previous_output = Some(trace.output_digest);
+        }
+
+        let last = self.stages.last().expect("non-empty checked above");
+        match self.disposition {
+            PipelineDispositionV1::DispatchProposed => {
+                if !saw_context
+                    || !saw_dispatch
+                    || !matches!(last.outcome, StageOutcomeV1::Completed)
+                    || last.stage != LaneFStageV1::LearningRecorded
+                {
+                    return Err(PipelineErrorV1::InvalidPipelineReceipt(
+                        "dispatch disposition",
+                    ));
+                }
+            }
+            PipelineDispositionV1::Abstained => {
+                if intuition_outcome != Some(StageOutcomeV1::Abstained)
+                    || saw_context
+                    || saw_dispatch
+                    || last.stage != LaneFStageV1::LearningRecorded
+                {
+                    return Err(PipelineErrorV1::InvalidPipelineReceipt(
+                        "abstain disposition",
+                    ));
+                }
+            }
+            PipelineDispositionV1::SlowPath => {
+                if intuition_outcome != Some(StageOutcomeV1::SlowPath)
+                    || saw_context
+                    || saw_dispatch
+                    || last.stage != LaneFStageV1::LearningRecorded
+                {
+                    return Err(PipelineErrorV1::InvalidPipelineReceipt(
+                        "slow-path disposition",
+                    ));
+                }
+            }
+            PipelineDispositionV1::Failed(class) => {
+                if last.outcome != StageOutcomeV1::Failed(class) {
+                    return Err(PipelineErrorV1::InvalidPipelineReceipt(
+                        "failure disposition",
+                    ));
+                }
+            }
+        }
+        let expected_trace = digest_trace(
+            &self.run_id,
+            self.snapshot_digest,
+            self.disposition,
+            &self.stages,
+            last.output_digest,
+        )?;
+        if self.trace_digest != expected_trace {
+            return Err(PipelineErrorV1::TraceDigestMismatch);
+        }
+        Ok(())
+    }
+}
+
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum PipelineErrorV1 {
     InvalidSnapshot,
@@ -257,6 +392,8 @@ pub enum PipelineErrorV1 {
     PredecessorMismatch,
     AuthorityWidening,
     UnexpectedDecision,
+    InvalidPipelineReceipt(&'static str),
+    TraceDigestMismatch,
     Arithmetic,
 }
 
@@ -546,14 +683,29 @@ fn finish(
         &stages,
         terminal_digest,
     )?;
-    Ok(LaneFShadowPipelineReceiptV1 {
+    let receipt = LaneFShadowPipelineReceiptV1 {
         run_id,
         snapshot_digest,
         disposition,
         stages,
         trace_digest,
         authority: AuthorityPosture::DENY_ALL,
-    })
+    };
+    receipt.validate()?;
+    Ok(receipt)
+}
+
+fn producer_for_stage(stage: LaneFStageV1) -> &'static str {
+    match stage {
+        LaneFStageV1::ObjectiveValidated => "objective.compiler",
+        LaneFStageV1::LegalSetBuilt => "intelligence.control",
+        LaneFStageV1::NeuralSignalCollected => "neuron.runtime",
+        LaneFStageV1::PromptPortfolioBuilt => "prompt.optimizer",
+        LaneFStageV1::IntuitionDecided => "intuition.policy",
+        LaneFStageV1::ContextCompiled => "context.compiler",
+        LaneFStageV1::DispatchProposed => "runtime.agentd",
+        LaneFStageV1::LearningRecorded => "learning.ledger",
+    }
 }
 
 fn port_input(

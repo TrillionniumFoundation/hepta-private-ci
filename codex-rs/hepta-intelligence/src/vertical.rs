@@ -2,7 +2,8 @@
 //!
 //! The facade derives every cross-stage digest inside one call. It cannot invoke
 //! a model, tool, provider or effect and never grants selection, promotion or
-//! release authority.
+//! release authority. NDU evaluation uses the policy-bound V2 receipt so the
+//! aggregation rules and Pareto tolerances are replayable by downstream stages.
 
 use std::collections::BTreeSet;
 use std::error::Error as StdError;
@@ -19,16 +20,19 @@ use codex_hepta_context_compiler::ContextCompilationReceipt;
 use codex_hepta_context_compiler::ContextRole;
 use codex_hepta_context_compiler::Error as ContextCompileError;
 use codex_hepta_context_compiler::compile;
+use codex_hepta_ndu::AggregationOperator;
+use codex_hepta_ndu::AxisAggregationRule;
 use codex_hepta_ndu::AxisDirection;
 use codex_hepta_ndu::AxisValue;
 use codex_hepta_ndu::ContributionSet;
+use codex_hepta_ndu::EvaluationPolicyV1;
 use codex_hepta_ndu::FeasibilityPosture;
 use codex_hepta_ndu::NduError;
-use codex_hepta_ndu::NduEvaluationReceipt;
+use codex_hepta_ndu::NduEvaluationReceiptV2;
 use codex_hepta_ndu::ScalarizationProfile;
 use codex_hepta_ndu::UtilityContribution;
 use codex_hepta_ndu::UtilityProfile;
-use codex_hepta_ndu::evaluate_candidates;
+use codex_hepta_ndu::evaluate_candidates_with_policy;
 use codex_hepta_objective::CompileDisposition;
 use codex_hepta_objective::ObjectiveAdmissionContextV1;
 use codex_hepta_objective::ObjectiveAdmissionError;
@@ -81,7 +85,7 @@ pub struct ReadOnlyVerticalReceipt {
     pub objective: ObjectiveCompileReceipt,
     pub cognitive_read: ReadReceipt,
     pub context: ContextCompilationReceipt,
-    pub ndu: NduEvaluationReceipt,
+    pub ndu: NduEvaluationReceiptV2,
     pub ndu_support_digest: Digest32,
     pub plan: IntelligencePlanReceipt,
     pub vertical_digest: Digest32,
@@ -249,7 +253,8 @@ pub fn run_read_only_vertical(
         ndu_scalarization_profile_id,
         &objective.objective.soft_preferences,
     );
-    let ndu = evaluate_candidates(
+    let policy = derive_evaluation_policy(&ndu_profile)?;
+    let ndu = evaluate_candidates_with_policy(
         ContributionSet {
             objective_digest,
             generation,
@@ -257,6 +262,7 @@ pub fn run_read_only_vertical(
         },
         ndu_profile,
         scalarization,
+        policy,
     )
     .map_err(ReadOnlyVerticalError::Ndu)?;
 
@@ -279,7 +285,7 @@ pub fn run_read_only_vertical(
     }
 
     let mut bytes = Vec::new();
-    bytes.extend_from_slice(b"hepta.intelligence.read-only-vertical.v1");
+    bytes.extend_from_slice(b"hepta.intelligence.read-only-vertical.v2");
     push_id(&mut bytes, &plan.plan_id);
     bytes.extend_from_slice(objective_admission.profile_digest.as_array());
     bytes.extend_from_slice(objective_admission.intent_digest.as_array());
@@ -289,7 +295,8 @@ pub fn run_read_only_vertical(
     bytes.extend_from_slice(cognitive_read.receipt_digest.as_array());
     bytes.extend_from_slice(context.context_digest.as_array());
     bytes.extend_from_slice(ndu_support_digest.as_array());
-    bytes.extend_from_slice(ndu.evaluation_digest.as_array());
+    bytes.extend_from_slice(ndu.evaluation_policy_digest.as_array());
+    bytes.extend_from_slice(ndu.evaluation_digest_v2.as_array());
     bytes.extend_from_slice(plan.plan_digest.as_array());
 
     Ok(ReadOnlyVerticalReceipt {
@@ -375,6 +382,62 @@ fn derive_scalarization(
     })
 }
 
+/// Bind the read-only vertical's deterministic aggregation semantics explicitly.
+///
+/// This preserves the former compatibility behavior (sum utility/risk/resource,
+/// maximum uncertainty and zero Pareto tolerance) while publishing a V2 policy
+/// digest. The policy is rebuilt from the validated profile on every call, so a
+/// profile or tolerance change cannot be hidden behind a legacy evaluator.
+fn derive_evaluation_policy(
+    profile: &UtilityProfile,
+) -> Result<EvaluationPolicyV1, ReadOnlyVerticalError> {
+    let policy_id = StableId::new("hepta-intelligence-read-only-policy-v2")
+        .map_err(|_| ReadOnlyVerticalError::Ndu(NduError::Arithmetic))?;
+    Ok(EvaluationPolicyV1 {
+        policy_id,
+        utility_rules: profile
+            .dimensions
+            .iter()
+            .map(|(axis, _)| AxisAggregationRule {
+                axis: axis.clone(),
+                operator: AggregationOperator::Sum,
+            })
+            .collect(),
+        risk_rules: profile
+            .risk_ceilings
+            .iter()
+            .map(|limit| AxisAggregationRule {
+                axis: limit.axis.clone(),
+                operator: AggregationOperator::Sum,
+            })
+            .collect(),
+        resource_rules: profile
+            .resource_ceilings
+            .iter()
+            .map(|limit| AxisAggregationRule {
+                axis: limit.axis.clone(),
+                operator: AggregationOperator::Sum,
+            })
+            .collect(),
+        uncertainty_rules: profile
+            .dimensions
+            .iter()
+            .map(|(axis, _)| AxisAggregationRule {
+                axis: axis.clone(),
+                operator: AggregationOperator::Maximum,
+            })
+            .collect(),
+        pareto_absolute_tolerances: profile
+            .dimensions
+            .iter()
+            .map(|(axis, _)| AxisValue {
+                axis: axis.clone(),
+                value: codex_hepta_types::FixedQ32::ZERO,
+            })
+            .collect(),
+    })
+}
+
 fn ensure_no_authority(
     stage: &'static str,
     authority: AuthorityPosture,
@@ -431,15 +494,15 @@ struct PlanBindings {
 
 fn plan_from_ndu(
     bindings: PlanBindings,
-    receipt: &NduEvaluationReceipt,
+    receipt: &NduEvaluationReceiptV2,
 ) -> Result<IntelligencePlanReceipt, ReadOnlyVerticalError> {
-    let mut considered = receipt
+    let base = &receipt.base;
+    let mut considered = base
         .evaluated_candidates
         .iter()
         .map(|candidate| candidate.candidate_id.clone())
         .chain(
-            receipt
-                .rejected_candidates
+            base.rejected_candidates
                 .iter()
                 .map(|candidate| candidate.candidate_id.clone()),
         )
@@ -447,12 +510,12 @@ fn plan_from_ndu(
     considered.sort();
     considered.dedup();
 
-    let decision = match &receipt.advisory_recommendation {
+    let decision = match &base.advisory_recommendation {
         Some(candidate_id) if candidate_id.as_str() == ABSTAIN_ID => {
             PlanDecision::Abstained(AbstentionReason::NoEligibleCandidate)
         }
         Some(candidate_id) => {
-            if !receipt
+            if !base
                 .evaluated_candidates
                 .iter()
                 .any(|candidate| &candidate.candidate_id == candidate_id)
@@ -467,14 +530,15 @@ fn plan_from_ndu(
     };
 
     let mut bytes = Vec::new();
-    bytes.extend_from_slice(b"hepta.intelligence.ndu-plan.v1");
+    bytes.extend_from_slice(b"hepta.intelligence.ndu-plan.v2");
     push_id(&mut bytes, &bindings.plan_id);
     bytes.extend_from_slice(bindings.objective_digest.as_array());
     bytes.extend_from_slice(bindings.snapshot_digest.as_array());
     bytes.extend_from_slice(bindings.read_digest.as_array());
     bytes.extend_from_slice(bindings.context_digest.as_array());
     bytes.extend_from_slice(bindings.support_digest.as_array());
-    bytes.extend_from_slice(receipt.evaluation_digest.as_array());
+    bytes.extend_from_slice(receipt.evaluation_policy_digest.as_array());
+    bytes.extend_from_slice(receipt.evaluation_digest_v2.as_array());
     match &decision {
         PlanDecision::Selected(candidate_id) => {
             bytes.push(1);

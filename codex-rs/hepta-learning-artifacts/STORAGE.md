@@ -26,6 +26,8 @@ The required public writer signatures are:
 ```text
 write_registry_snapshot(CreateOnlyArtifactFile, &ArtifactRegistry, Digest32)
 write_candidate_payload(CreateOnlyArtifactFile, &ArtifactRegistry, &StableId, &[u8])
+write_registry_head_witness(CreateOnlyArtifactFile, &RegistryHeadWitnessV1, &RegistryHeadRequirementV1, Digest32)
+read_registry_head_witness(File, RegistryHeadWitnessReceipt, &RegistryHeadRequirementV1)
 ```
 
 `write_registry_snapshot` writes one new empty target and syncs it before
@@ -44,6 +46,13 @@ and newlines. Re-encoding must match byte-for-byte, rejecting alternate integers
 line endings and other noncanonical input. Existing event and chain digest
 algorithms are unchanged and checked after replay. The receipt binds scope,
 record count, chain head, complete file digest and byte count.
+
+The `HEPTAH01` head-witness channel is also create-only and bounded to 4 KiB.
+It writes a canonical witness only after `validate_registry_head_witness` passes,
+and reload verifies the independent file receipt plus the caller's current
+generation, predecessor, authority-epoch and expiry requirement. It distributes
+an authenticated host witness; it does not discover the newest path or grant
+selection or activation authority.
 
 Candidate payload functions verify current registry eligibility, byte length and
 content digest. A revoked ancestor blocks loading descendants. Stored code or

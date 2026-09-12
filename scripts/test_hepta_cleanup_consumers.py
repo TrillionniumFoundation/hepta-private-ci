@@ -19,6 +19,42 @@ FIXTURE_NAME = "hepta-cleanup-fixture-7c3d.json"
 
 
 class CleanupConsumerTests(unittest.TestCase):
+    def test_exact_workflow_reference_must_exist(self):
+        with tempfile.TemporaryDirectory(prefix="hepta-workflow-reference-") as directory:
+            root = Path(directory)
+            (root / "docs").mkdir()
+            (root / "scripts").mkdir()
+            (root / "docs/reference.md").write_text(
+                "`.github/workflows/missing.yml`\n", encoding="utf-8"
+            )
+            for relative in VERIFIER.WORKFLOW_REFERENCE_SCRIPTS:
+                target = root / relative
+                target.parent.mkdir(parents=True, exist_ok=True)
+                target.write_text("", encoding="utf-8")
+            with patch.object(VERIFIER, "ROOT", root):
+                with self.assertRaisesRegex(
+                    SystemExit, "stale exact workflow references"
+                ):
+                    VERIFIER.verify_exact_workflow_references()
+
+    def test_exact_workflow_reference_accepts_existing_file(self):
+        with tempfile.TemporaryDirectory(prefix="hepta-workflow-reference-") as directory:
+            root = Path(directory)
+            (root / "docs").mkdir()
+            (root / "scripts").mkdir()
+            workflow = root / ".github/workflows/current.yml"
+            workflow.parent.mkdir(parents=True)
+            workflow.write_text("name: current\n", encoding="utf-8")
+            (root / "docs/reference.md").write_text(
+                "`.github/workflows/current.yml`\n", encoding="utf-8"
+            )
+            for relative in VERIFIER.WORKFLOW_REFERENCE_SCRIPTS:
+                target = root / relative
+                target.parent.mkdir(parents=True, exist_ok=True)
+                target.write_text("", encoding="utf-8")
+            with patch.object(VERIFIER, "ROOT", root):
+                VERIFIER.verify_exact_workflow_references()
+
     def check_history(self, text, name=FIXTURE_NAME, wrong_count=False):
         with tempfile.TemporaryDirectory(prefix="hepta-cleanup-test-") as directory:
             root = Path(directory)

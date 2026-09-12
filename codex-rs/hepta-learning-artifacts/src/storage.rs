@@ -14,6 +14,7 @@ use std::io::Write;
 #[cfg(unix)]
 use std::os::unix::fs::OpenOptionsExt;
 use std::path::Path;
+use std::str::FromStr;
 
 use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
@@ -24,12 +25,16 @@ use crate::ArtifactKind;
 use crate::ArtifactManifest;
 use crate::ArtifactRegistry;
 use crate::RegistryAppendDisposition;
+use crate::RegistryHeadRequirementV1;
+use crate::RegistryHeadWitnessV1;
 use crate::StateChange;
 
 const MAX_SNAPSHOT: usize = 8 * 1024 * 1024;
 const MAX_PAYLOAD: usize = 64 * 1024 * 1024;
 const MAX_RECORDS: usize = 4096;
+const MAX_HEAD: usize = 4096;
 const MAGIC: &str = "HEPTAR01";
+const HEAD_MAGIC: &str = "HEPTAH01";
 
 /// A file proven to have been atomically created by this module.
 ///
@@ -73,10 +78,24 @@ pub struct RegistrySnapshotReceipt {
     pub encoded_bytes: usize,
 }
 
+/// Exact bytes and validation witness for the host-published current registry
+/// head.  The file is only a distribution channel: the caller still supplies
+/// an independently authenticated witness and requirement, and this crate
+/// grants no selection, activation or release authority.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub struct RegistryHeadWitnessReceipt {
+    pub binding: Digest32,
+    pub witness_digest: Digest32,
+    pub file_digest: Digest32,
+    pub encoded_bytes: usize,
+}
+
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum ArtifactStorageError {
     InvalidBinding,
     InvalidReceipt,
+    InvalidHeadWitness,
+    HeadWitnessMismatch,
     Busy,
     NotRegular,
     AlreadyExists,
@@ -121,6 +140,67 @@ pub fn write_registry_snapshot(
     };
     write_new(file, &bytes)?;
     Ok(receipt)
+}
+
+/// Publish one validated current-head witness through a create-only file.
+/// Validation happens before bytes are written; a stale or malformed witness
+/// therefore cannot become a current-head distribution record by accident.
+pub fn write_registry_head_witness(
+    file: CreateOnlyArtifactFile,
+    witness: &RegistryHeadWitnessV1,
+    requirement: &RegistryHeadRequirementV1,
+    binding: Digest32,
+) -> Result<RegistryHeadWitnessReceipt, ArtifactStorageError> {
+    if binding.is_zero() {
+        return Err(ArtifactStorageError::InvalidBinding);
+    }
+    let validated = crate::validate_registry_head_witness(witness, requirement)
+        .map_err(|_| ArtifactStorageError::InvalidHeadWitness)?;
+    let bytes = encode_head_witness(witness, binding)?;
+    let receipt = RegistryHeadWitnessReceipt {
+        binding,
+        witness_digest: validated.witness_digest,
+        file_digest: Digest32::of_bytes(&bytes),
+        encoded_bytes: bytes.len(),
+    };
+    write_new(file, &bytes)?;
+    Ok(receipt)
+}
+
+/// Read and revalidate a distributed current-head witness.  The caller must
+/// retain the receipt independently of the file and provide the current
+/// requirement; an old self-consistent file is rejected by that requirement.
+pub fn read_registry_head_witness(
+    file: File,
+    expected: RegistryHeadWitnessReceipt,
+    requirement: &RegistryHeadRequirementV1,
+) -> Result<RegistryHeadWitnessV1, ArtifactStorageError> {
+    if expected.binding.is_zero()
+        || expected.witness_digest.is_zero()
+        || expected.file_digest.is_zero()
+        || expected.encoded_bytes == 0
+        || expected.encoded_bytes > MAX_HEAD
+    {
+        return Err(ArtifactStorageError::InvalidReceipt);
+    }
+    let bytes = read_bounded(
+        file,
+        MAX_HEAD,
+        expected.encoded_bytes as u64,
+        ArtifactStorageError::Corrupt,
+    )?;
+    if bytes.len() != expected.encoded_bytes || Digest32::of_bytes(&bytes) != expected.file_digest {
+        return Err(ArtifactStorageError::Corrupt);
+    }
+    let witness = decode_head_witness(&bytes, expected.binding)?;
+    let validated = crate::validate_registry_head_witness(&witness, requirement)
+        .map_err(|_| ArtifactStorageError::HeadWitnessMismatch)?;
+    if validated.witness_digest != expected.witness_digest
+        || encode_head_witness(&witness, expected.binding)? != bytes
+    {
+        return Err(ArtifactStorageError::HeadWitnessMismatch);
+    }
+    Ok(witness)
 }
 
 /// Rebuild the same canonical registry and revocation lineage from exact bytes.
@@ -325,6 +405,64 @@ fn validate_read_length(
         return Err(mismatch);
     }
     Ok(())
+}
+
+fn encode_head_witness(
+    witness: &RegistryHeadWitnessV1,
+    binding: Digest32,
+) -> Result<Vec<u8>, ArtifactStorageError> {
+    if binding.is_zero() {
+        return Err(ArtifactStorageError::InvalidBinding);
+    }
+    let text = format!(
+        "{HEAD_MAGIC}\n{binding}\n{}\n{}\n{}\n{}\n{}\n{}\n{}\n{}\n{}\n",
+        witness.registry_id,
+        witness.generation.get(),
+        witness.head_digest,
+        witness.predecessor_head_digest,
+        witness.authority_epoch,
+        witness.signer_id,
+        witness.signing_key_digest,
+        witness.issued_at,
+        witness.expires_at,
+    );
+    let bytes = text.into_bytes();
+    if bytes.len() > MAX_HEAD {
+        return Err(ArtifactStorageError::Capacity);
+    }
+    Ok(bytes)
+}
+
+fn decode_head_witness(
+    bytes: &[u8],
+    expected_binding: Digest32,
+) -> Result<RegistryHeadWitnessV1, ArtifactStorageError> {
+    let text = std::str::from_utf8(bytes).map_err(|_| ArtifactStorageError::Corrupt)?;
+    let fields: Vec<_> = text.lines().collect();
+    if fields.len() != 11 || fields[0] != HEAD_MAGIC || fields[1] != expected_binding.to_string() {
+        return Err(ArtifactStorageError::Corrupt);
+    }
+    let parse_digest =
+        |value: &str| Digest32::from_str(value).map_err(|_| ArtifactStorageError::Corrupt);
+    let parse_id =
+        |value: &str| StableId::new(value.to_owned()).map_err(|_| ArtifactStorageError::Corrupt);
+    let parse_u64 = |value: &str| {
+        value
+            .parse::<u64>()
+            .map_err(|_| ArtifactStorageError::Corrupt)
+    };
+    Ok(RegistryHeadWitnessV1 {
+        registry_id: parse_id(fields[2])?,
+        generation: Generation::new(parse_u64(fields[3])?)
+            .map_err(|_| ArtifactStorageError::Corrupt)?,
+        head_digest: parse_digest(fields[4])?,
+        predecessor_head_digest: parse_digest(fields[5])?,
+        authority_epoch: parse_u64(fields[6])?,
+        signer_id: parse_id(fields[7])?,
+        signing_key_digest: parse_digest(fields[8])?,
+        issued_at: parse_u64(fields[9])?,
+        expires_at: parse_u64(fields[10])?,
+    })
 }
 
 fn encode_snapshot(

@@ -1,0 +1,70 @@
+{
+  "schema": "hepta.module-implementation-map.v3",
+  "schemaVersion": 3,
+  "sourceBase": {
+    "commit": "ab584c609ffe30bac96001e286eb4002b03339cc",
+    "tree": "befa7dd1e884be1728085c0f4178002556031288"
+  },
+  "laneId": "LANE-E-LEARNING",
+  "module": "learning.artifacts",
+  "owner": "learning-platform",
+  "deputy": "durability-kernel",
+  "technicalGuide": "docs/modules/learning.artifacts/TECHNICAL.md",
+  "declaredRoots": [
+    "codex-rs/hepta-learning-artifacts"
+  ],
+  "resolvedRoots": [
+    "codex-rs/hepta-learning-artifacts"
+  ],
+  "sourceRootPresent": true,
+  "productionImplementation": false,
+  "productCallerState": "not_composed",
+  "productionWriterState": "not_established",
+  "operations": [
+    {
+      "operation": "load_pinned_candidate",
+      "nativeSymbol": "load_pinned_candidate",
+      "sourcePath": "codex-rs/hepta-learning-artifacts/src/pinned.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [],
+      "sourcePathExists": true
+    },
+    {
+      "operation": "write_candidate_payload",
+      "nativeSymbol": "write_candidate_payload",
+      "sourcePath": "codex-rs/hepta-learning-artifacts/src/storage.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [],
+      "sourcePathExists": true
+    },
+    {
+      "operation": "admit_manifest_at_withdrawal_head_v3",
+      "nativeSymbol": "admit_manifest_at_withdrawal_head_v3",
+      "sourcePath": "codex-rs/hepta-learning-artifacts/src/admission_v3.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [],
+      "sourcePathExists": true
+    }
+  ],
+  "repositoryControlledGaps": [
+    "Bind every operation to an authenticated consumer callsite and owner store.",
+    "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary."
+  ],
+  "externalEvidenceGates": [
+    "independent semantic review",
+    "product execution and target-host qualification",
+    "operator acceptance, canary, promotion and release"
+  ],
+  "claimBoundary": {
+    "nativeSourceMappingComplete": true,
+    "sourceRootPresent": true,
+    "productionImplementation": false,
+    "productExecutionProved": false,
+    "independentAcceptance": false,
+    "activation": false,
+    "release": false
+  }
+}

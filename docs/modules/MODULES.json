@@ -1,6 +1,6 @@
 {
-  "schema": "hepta.module-registry.v6",
-  "schemaVersion": 6,
+  "schema": "hepta.module-registry.v7",
+  "schemaVersion": 7,
   "documentClass": "canonical_registry",
   "authorityScope": "module_identity_ownership_dependency_and_writer_source",
   "planId": "HEPTA-GLOBAL-MODULAR-DEVELOPMENT-PLAN",
@@ -56,6 +56,8 @@
         "rawModelOrSecretPayloadExportAllowed": false
       },
       "sourceStatus": "existing_bound",
+      "source_root_present": true,
+      "production_implementation": false,
       "sourceEvidenceRoots": [
         "codex-rs/hepta-types"
       ],
@@ -100,6 +102,8 @@
         "rawModelOrSecretPayloadExportAllowed": false
       },
       "sourceStatus": "existing_bound",
+      "source_root_present": true,
+      "production_implementation": false,
       "sourceEvidenceRoots": [
         "codex-rs/hepta-wire"
       ],
@@ -147,6 +151,8 @@
         "rawModelOrSecretPayloadExportAllowed": false
       },
       "sourceStatus": "existing_bound",
+      "source_root_present": true,
+      "production_implementation": false,
       "sourceEvidenceRoots": [
         "codex-rs/hepta-contracts",
         "codex-rs/ext/hepta-governance"
@@ -193,6 +199,8 @@
         "rawModelOrSecretPayloadExportAllowed": false
       },
       "sourceStatus": "existing_bound",
+      "source_root_present": true,
+      "production_implementation": false,
       "sourceEvidenceRoots": [
         "codex-rs/hepta-operations"
       ],
@@ -239,6 +247,8 @@
         "rawModelOrSecretPayloadExportAllowed": false
       },
       "sourceStatus": "existing_bound",
+      "source_root_present": true,
+      "production_implementation": false,
       "sourceEvidenceRoots": [
         "codex-rs/hepta-evidence"
       ],
@@ -289,6 +299,8 @@
         "rawModelOrSecretPayloadExportAllowed": false
       },
       "sourceStatus": "existing_bound",
+      "source_root_present": true,
+      "production_implementation": false,
       "sourceEvidenceRoots": [
         "codex-rs/hepta-supervisor"
       ],
@@ -334,6 +346,8 @@
         "rawModelOrSecretPayloadExportAllowed": false
       },
       "sourceStatus": "existing_bound",
+      "source_root_present": true,
+      "production_implementation": false,
       "sourceEvidenceRoots": [
         "codex-rs/hepta-fleet"
       ],
@@ -379,6 +393,8 @@
         "rawModelOrSecretPayloadExportAllowed": false
       },
       "sourceStatus": "existing_bound",
+      "source_root_present": true,
+      "production_implementation": false,
       "sourceEvidenceRoots": [
         "codex-rs/hepta-agentd"
       ],
@@ -428,6 +444,8 @@
         "rawModelOrSecretPayloadExportAllowed": false
       },
       "sourceStatus": "existing_bound",
+      "source_root_present": true,
+      "production_implementation": false,
       "sourceEvidenceRoots": [
         "codex-rs/codex-app-server",
         "codex-rs/hepta-codex-adapter"
@@ -482,6 +500,8 @@
         "rawModelOrSecretPayloadExportAllowed": false
       },
       "sourceStatus": "existing_bound",
+      "source_root_present": true,
+      "production_implementation": false,
       "sourceEvidenceRoots": [
         "codex-rs/hepta-authbus",
         "codex-rs/hepta-authbus-p1-3-qualification"
@@ -534,6 +554,8 @@
         "rawModelOrSecretPayloadExportAllowed": false
       },
       "sourceStatus": "existing_bound",
+      "source_root_present": true,
+      "production_implementation": false,
       "sourceEvidenceRoots": [
         "external/HeptaBao",
         "codex-rs/hepta-bao-adapter"
@@ -587,6 +609,8 @@
         "rawModelOrSecretPayloadExportAllowed": false
       },
       "sourceStatus": "existing_bound",
+      "source_root_present": true,
+      "production_implementation": false,
       "sourceEvidenceRoots": [
         "codex-rs/hepta-infer-core",
         "codex-rs/hepta-inferd"
@@ -632,6 +656,8 @@
         "rawModelOrSecretPayloadExportAllowed": false
       },
       "sourceStatus": "existing_bound",
+      "source_root_present": true,
+      "production_implementation": false,
       "sourceEvidenceRoots": [
         "codex-rs/hepta-infer-worker-host"
       ],
@@ -676,6 +702,8 @@
         "rawModelOrSecretPayloadExportAllowed": false
       },
       "sourceStatus": "existing_bound",
+      "source_root_present": true,
+      "production_implementation": false,
       "sourceEvidenceRoots": [
         "codex-rs/hepta-objective"
       ],
@@ -726,6 +754,8 @@
         "rawModelOrSecretPayloadExportAllowed": false
       },
       "sourceStatus": "existing_bound",
+      "source_root_present": true,
+      "production_implementation": false,
       "sourceEvidenceRoots": [
         "codex-rs/hepta-ndu"
       ],
@@ -776,6 +806,8 @@
         "rawModelOrSecretPayloadExportAllowed": false
       },
       "sourceStatus": "existing_bound",
+      "source_root_present": true,
+      "production_implementation": false,
       "sourceEvidenceRoots": [
         "codex-rs/hepta-neuron"
       ],
@@ -824,6 +856,8 @@
         "rawModelOrSecretPayloadExportAllowed": false
       },
       "sourceStatus": "existing_bound",
+      "source_root_present": true,
+      "production_implementation": false,
       "sourceEvidenceRoots": [
         "codex-rs/hepta-intuition"
       ],
@@ -872,6 +906,8 @@
         "rawModelOrSecretPayloadExportAllowed": false
       },
       "sourceStatus": "existing_bound",
+      "source_root_present": true,
+      "production_implementation": false,
       "sourceEvidenceRoots": [
         "codex-rs/hepta-prompt-registry"
       ],
@@ -920,6 +956,8 @@
         "rawModelOrSecretPayloadExportAllowed": false
       },
       "sourceStatus": "existing_bound",
+      "source_root_present": true,
+      "production_implementation": false,
       "sourceEvidenceRoots": [
         "codex-rs/hepta-prompt-optimizer"
       ],
@@ -968,6 +1006,8 @@
         "rawModelOrSecretPayloadExportAllowed": false
       },
       "sourceStatus": "existing_bound",
+      "source_root_present": true,
+      "production_implementation": false,
       "sourceEvidenceRoots": [
         "codex-rs/hepta-context-compiler"
       ],
@@ -1018,6 +1058,8 @@
         "rawModelOrSecretPayloadExportAllowed": false
       },
       "sourceStatus": "existing_bound",
+      "source_root_present": true,
+      "production_implementation": false,
       "sourceEvidenceRoots": [
         "codex-rs/hepta-intelligence"
       ],
@@ -1061,6 +1103,8 @@
         "rawModelOrSecretPayloadExportAllowed": false
       },
       "sourceStatus": "existing_bound",
+      "source_root_present": true,
+      "production_implementation": false,
       "sourceEvidenceRoots": [
         "codex-rs/hepta-cognitive-types"
       ],
@@ -1109,6 +1153,8 @@
         "rawModelOrSecretPayloadExportAllowed": false
       },
       "sourceStatus": "existing_bound",
+      "source_root_present": true,
+      "production_implementation": false,
       "sourceEvidenceRoots": [
         "codex-rs/hepta-cognitive-store"
       ],
@@ -1151,6 +1197,8 @@
         "rawModelOrSecretPayloadExportAllowed": false
       },
       "sourceStatus": "existing_bound",
+      "source_root_present": true,
+      "production_implementation": false,
       "sourceEvidenceRoots": [
         "codex-rs/hepta-cognitive-read"
       ],
@@ -1195,6 +1243,8 @@
         "rawModelOrSecretPayloadExportAllowed": false
       },
       "sourceStatus": "existing_bound",
+      "source_root_present": true,
+      "production_implementation": false,
       "sourceEvidenceRoots": [
         "codex-rs/hepta-memory-retrieval"
       ],
@@ -1239,6 +1289,8 @@
         "rawModelOrSecretPayloadExportAllowed": false
       },
       "sourceStatus": "existing_bound",
+      "source_root_present": true,
+      "production_implementation": false,
       "sourceEvidenceRoots": [
         "codex-rs/hepta-memory-federation"
       ],
@@ -1288,6 +1340,8 @@
         "rawModelOrSecretPayloadExportAllowed": false
       },
       "sourceStatus": "existing_bound",
+      "source_root_present": true,
+      "production_implementation": false,
       "sourceEvidenceRoots": [
         "codex-rs/hepta-kg"
       ],
@@ -1333,6 +1387,8 @@
         "rawModelOrSecretPayloadExportAllowed": false
       },
       "sourceStatus": "existing_bound",
+      "source_root_present": true,
+      "production_implementation": false,
       "sourceEvidenceRoots": [
         "codex-rs/hepta-compact-engine"
       ],
@@ -1383,6 +1439,8 @@
         "rawModelOrSecretPayloadExportAllowed": false
       },
       "sourceStatus": "existing_bound",
+      "source_root_present": true,
+      "production_implementation": false,
       "sourceEvidenceRoots": [
         "codex-rs/hepta-learning-ledger"
       ],
@@ -1429,6 +1487,8 @@
         "rawModelOrSecretPayloadExportAllowed": false
       },
       "sourceStatus": "existing_bound",
+      "source_root_present": true,
+      "production_implementation": false,
       "sourceEvidenceRoots": [
         "codex-rs/hepta-bellman-operator"
       ],
@@ -1475,6 +1535,8 @@
         "rawModelOrSecretPayloadExportAllowed": false
       },
       "sourceStatus": "existing_bound",
+      "source_root_present": true,
+      "production_implementation": false,
       "sourceEvidenceRoots": [
         "codex-rs/hepta-intelligence-eval"
       ],
@@ -1522,6 +1584,8 @@
         "rawModelOrSecretPayloadExportAllowed": false
       },
       "sourceStatus": "existing_bound",
+      "source_root_present": true,
+      "production_implementation": false,
       "sourceEvidenceRoots": [
         "codex-rs/hepta-learning-artifacts"
       ],
@@ -1570,6 +1634,8 @@
         "rawModelOrSecretPayloadExportAllowed": false
       },
       "sourceStatus": "existing_bound",
+      "source_root_present": true,
+      "production_implementation": false,
       "sourceEvidenceRoots": [
         "codex-rs/hepta-plasticity"
       ],
@@ -1617,6 +1683,8 @@
         "rawModelOrSecretPayloadExportAllowed": false
       },
       "sourceStatus": "existing_bound",
+      "source_root_present": true,
+      "production_implementation": false,
       "sourceEvidenceRoots": [
         "codex-rs/hepta-automation"
       ],
@@ -1669,6 +1737,8 @@
         "rawModelOrSecretPayloadExportAllowed": false
       },
       "sourceStatus": "existing_bound",
+      "source_root_present": true,
+      "production_implementation": false,
       "sourceEvidenceRoots": [
         "codex-rs/hepta-matrix-sdk",
         "codex-rs/hepta-matrixd",
@@ -1722,6 +1792,8 @@
         "rawModelOrSecretPayloadExportAllowed": false
       },
       "sourceStatus": "existing_bound",
+      "source_root_present": true,
+      "production_implementation": false,
       "sourceEvidenceRoots": [
         "apps/hepta-browser",
         "third_party/servo-patches"
@@ -1766,6 +1838,8 @@
         "rawModelOrSecretPayloadExportAllowed": false
       },
       "sourceStatus": "existing_bound",
+      "source_root_present": true,
+      "production_implementation": false,
       "sourceEvidenceRoots": [
         "apps/hepta-control-ui"
       ],
@@ -1809,6 +1883,8 @@
         "rawModelOrSecretPayloadExportAllowed": false
       },
       "sourceStatus": "existing_bound",
+      "source_root_present": true,
+      "production_implementation": false,
       "sourceEvidenceRoots": [
         "apps/hepta-native"
       ],
@@ -1858,6 +1934,8 @@
         "rawModelOrSecretPayloadExportAllowed": false
       },
       "sourceStatus": "existing_bound",
+      "source_root_present": true,
+      "production_implementation": false,
       "sourceEvidenceRoots": [
         "codex-rs/hepta-control-plane"
       ],
@@ -1904,6 +1982,8 @@
         "rawModelOrSecretPayloadExportAllowed": false
       },
       "sourceStatus": "existing_bound",
+      "source_root_present": true,
+      "production_implementation": false,
       "sourceEvidenceRoots": [
         "tools/hepta-engineering-control"
       ],

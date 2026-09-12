@@ -1,6 +1,6 @@
 {
-  "schema": "hepta.module-source-binding.v1",
-  "schemaVersion": 1,
+  "schema": "hepta.module-source-binding.v2",
+  "schemaVersion": 2,
   "documentClass": "canonical_registry",
   "authorityScope": "module_declared_target_existing_evidence_missing_root_and_bootstrap_source",
   "planId": "HEPTA-GLOBAL-MODULAR-DEVELOPMENT-PLAN",
@@ -17,6 +17,8 @@
       "module": "platform.types",
       "lifecycle": "existing",
       "sourceStatus": "existing_bound",
+      "source_root_present": true,
+      "production_implementation": false,
       "declaredRoots": [
         "codex-rs/hepta-types"
       ],
@@ -35,6 +37,8 @@
       "module": "platform.wire",
       "lifecycle": "existing",
       "sourceStatus": "existing_bound",
+      "source_root_present": true,
+      "production_implementation": false,
       "declaredRoots": [
         "codex-rs/hepta-wire"
       ],
@@ -53,6 +57,8 @@
       "module": "kernel.authority",
       "lifecycle": "existing",
       "sourceStatus": "existing_bound",
+      "source_root_present": true,
+      "production_implementation": false,
       "declaredRoots": [
         "codex-rs/hepta-contracts"
       ],
@@ -72,6 +78,8 @@
       "module": "kernel.operations",
       "lifecycle": "existing",
       "sourceStatus": "existing_bound",
+      "source_root_present": true,
+      "production_implementation": false,
       "declaredRoots": [
         "codex-rs/hepta-operations"
       ],
@@ -90,6 +98,8 @@
       "module": "kernel.evidence",
       "lifecycle": "existing",
       "sourceStatus": "existing_bound",
+      "source_root_present": true,
+      "production_implementation": false,
       "declaredRoots": [
         "codex-rs/hepta-evidence"
       ],
@@ -108,6 +118,8 @@
       "module": "runtime.supervisor",
       "lifecycle": "existing",
       "sourceStatus": "existing_bound",
+      "source_root_present": true,
+      "production_implementation": false,
       "declaredRoots": [
         "codex-rs/hepta-supervisor"
       ],
@@ -126,6 +138,8 @@
       "module": "runtime.fleet",
       "lifecycle": "existing",
       "sourceStatus": "existing_bound",
+      "source_root_present": true,
+      "production_implementation": false,
       "declaredRoots": [
         "codex-rs/hepta-fleet"
       ],
@@ -144,6 +158,8 @@
       "module": "runtime.agentd",
       "lifecycle": "existing",
       "sourceStatus": "existing_bound",
+      "source_root_present": true,
+      "production_implementation": false,
       "declaredRoots": [
         "codex-rs/hepta-agentd"
       ],
@@ -162,6 +178,8 @@
       "module": "runtime.codex",
       "lifecycle": "existing",
       "sourceStatus": "existing_bound",
+      "source_root_present": true,
+      "production_implementation": false,
       "declaredRoots": [
         "codex-rs/codex-app-server",
         "codex-rs/hepta-codex-adapter"
@@ -183,6 +201,8 @@
       "module": "auth.authbus",
       "lifecycle": "existing",
       "sourceStatus": "existing_bound",
+      "source_root_present": true,
+      "production_implementation": false,
       "declaredRoots": [
         "codex-rs/hepta-authbus",
         "codex-rs/hepta-authbus-p1-3-qualification"
@@ -204,6 +224,8 @@
       "module": "secrets.heptabao",
       "lifecycle": "existing",
       "sourceStatus": "existing_bound",
+      "source_root_present": true,
+      "production_implementation": false,
       "declaredRoots": [
         "external/HeptaBao",
         "codex-rs/hepta-bao-adapter"
@@ -225,6 +247,8 @@
       "module": "inference.control",
       "lifecycle": "existing",
       "sourceStatus": "existing_bound",
+      "source_root_present": true,
+      "production_implementation": false,
       "declaredRoots": [
         "codex-rs/hepta-infer-core",
         "codex-rs/hepta-inferd"
@@ -246,6 +270,8 @@
       "module": "inference.worker",
       "lifecycle": "target",
       "sourceStatus": "existing_bound",
+      "source_root_present": true,
+      "production_implementation": false,
       "declaredRoots": [
         "codex-rs/hepta-infer-worker-host"
       ],
@@ -258,12 +284,14 @@
       "missingDeclaredRoots": [],
       "bootstrapWorkPackage": "INFER-V4-T4",
       "technicalDocument": "docs/modules/inference.worker/TECHNICAL.md",
-      "interpretation": "declared_root_is_materialized_but_activation_acceptance_promotion_and_release_remain_separate"
+      "interpretation": "source_root_present_is_separate_from_production_implementation; activation_acceptance_promotion_and_release_remain_separate"
     },
     {
       "module": "objective.compiler",
       "lifecycle": "target",
       "sourceStatus": "existing_bound",
+      "source_root_present": true,
+      "production_implementation": false,
       "declaredRoots": [
         "codex-rs/hepta-objective"
       ],
@@ -276,12 +304,14 @@
       "missingDeclaredRoots": [],
       "bootstrapWorkPackage": "OBJ-0-OBJECTIVE-CONTRACTS",
       "technicalDocument": "docs/modules/objective.compiler/TECHNICAL.md",
-      "interpretation": "declared_root_is_materialized_but_activation_acceptance_promotion_and_release_remain_separate"
+      "interpretation": "source_root_present_is_separate_from_production_implementation; activation_acceptance_promotion_and_release_remain_separate"
     },
     {
       "module": "utility.ndu",
       "lifecycle": "target",
       "sourceStatus": "existing_bound",
+      "source_root_present": true,
+      "production_implementation": false,
       "declaredRoots": [
         "codex-rs/hepta-ndu"
       ],
@@ -294,12 +324,14 @@
       "missingDeclaredRoots": [],
       "bootstrapWorkPackage": "NDU-0-PREFERENCE-UTILITY-CONTRACTS",
       "technicalDocument": "docs/modules/utility.ndu/TECHNICAL.md",
-      "interpretation": "declared_root_is_materialized_but_activation_acceptance_promotion_and_release_remain_separate"
+      "interpretation": "source_root_present_is_separate_from_production_implementation; activation_acceptance_promotion_and_release_remain_separate"
     },
     {
       "module": "neuron.runtime",
       "lifecycle": "target",
       "sourceStatus": "existing_bound",
+      "source_root_present": true,
+      "production_implementation": false,
       "declaredRoots": [
         "codex-rs/hepta-neuron"
       ],
@@ -312,12 +344,14 @@
       "missingDeclaredRoots": [],
       "bootstrapWorkPackage": "BIO-0-NEURON-INTUITION-CONTRACTS",
       "technicalDocument": "docs/modules/neuron.runtime/TECHNICAL.md",
-      "interpretation": "declared_root_is_materialized_but_activation_acceptance_promotion_and_release_remain_separate"
+      "interpretation": "source_root_present_is_separate_from_production_implementation; activation_acceptance_promotion_and_release_remain_separate"
     },
     {
       "module": "intuition.policy",
       "lifecycle": "target",
       "sourceStatus": "existing_bound",
+      "source_root_present": true,
+      "production_implementation": false,
       "declaredRoots": [
         "codex-rs/hepta-intuition"
       ],
@@ -330,12 +364,14 @@
       "missingDeclaredRoots": [],
       "bootstrapWorkPackage": "INT-1-CALIBRATED-INTUITION-POLICY",
       "technicalDocument": "docs/modules/intuition.policy/TECHNICAL.md",
-      "interpretation": "declared_root_is_materialized_but_activation_acceptance_promotion_and_release_remain_separate"
+      "interpretation": "source_root_present_is_separate_from_production_implementation; activation_acceptance_promotion_and_release_remain_separate"
     },
     {
       "module": "prompt.registry",
       "lifecycle": "target",
       "sourceStatus": "existing_bound",
+      "source_root_present": true,
+      "production_implementation": false,
       "declaredRoots": [
         "codex-rs/hepta-prompt-registry"
       ],
@@ -348,12 +384,14 @@
       "missingDeclaredRoots": [],
       "bootstrapWorkPackage": "PIM-0-PROMPT-INTERVENTION-CONTRACTS",
       "technicalDocument": "docs/modules/prompt.registry/TECHNICAL.md",
-      "interpretation": "declared_root_is_materialized_but_activation_acceptance_promotion_and_release_remain_separate"
+      "interpretation": "source_root_present_is_separate_from_production_implementation; activation_acceptance_promotion_and_release_remain_separate"
     },
     {
       "module": "prompt.optimizer",
       "lifecycle": "target",
       "sourceStatus": "existing_bound",
+      "source_root_present": true,
+      "production_implementation": false,
       "declaredRoots": [
         "codex-rs/hepta-prompt-optimizer"
       ],
@@ -366,12 +404,14 @@
       "missingDeclaredRoots": [],
       "bootstrapWorkPackage": "PIM-2-PROMPT-PRICING-PORTFOLIO-SHADOW",
       "technicalDocument": "docs/modules/prompt.optimizer/TECHNICAL.md",
-      "interpretation": "declared_root_is_materialized_but_activation_acceptance_promotion_and_release_remain_separate"
+      "interpretation": "source_root_present_is_separate_from_production_implementation; activation_acceptance_promotion_and_release_remain_separate"
     },
     {
       "module": "context.compiler",
       "lifecycle": "target",
       "sourceStatus": "existing_bound",
+      "source_root_present": true,
+      "production_implementation": false,
       "declaredRoots": [
         "codex-rs/hepta-context-compiler"
       ],
@@ -390,6 +430,8 @@
       "module": "intelligence.control",
       "lifecycle": "target",
       "sourceStatus": "existing_bound",
+      "source_root_present": true,
+      "production_implementation": false,
       "declaredRoots": [
         "codex-rs/hepta-intelligence"
       ],
@@ -408,6 +450,8 @@
       "module": "cognitive.types",
       "lifecycle": "target",
       "sourceStatus": "existing_bound",
+      "source_root_present": true,
+      "production_implementation": false,
       "declaredRoots": [
         "codex-rs/hepta-cognitive-types"
       ],
@@ -426,6 +470,8 @@
       "module": "cognitive.store",
       "lifecycle": "target",
       "sourceStatus": "existing_bound",
+      "source_root_present": true,
+      "production_implementation": false,
       "declaredRoots": [
         "codex-rs/hepta-cognitive-store"
       ],
@@ -444,6 +490,8 @@
       "module": "cognitive.read",
       "lifecycle": "target",
       "sourceStatus": "existing_bound",
+      "source_root_present": true,
+      "production_implementation": false,
       "declaredRoots": [
         "codex-rs/hepta-cognitive-read"
       ],
@@ -462,6 +510,8 @@
       "module": "memory.retrieval",
       "lifecycle": "target",
       "sourceStatus": "existing_bound",
+      "source_root_present": true,
+      "production_implementation": false,
       "declaredRoots": [
         "codex-rs/hepta-memory-retrieval"
       ],
@@ -480,6 +530,8 @@
       "module": "memory.federation",
       "lifecycle": "target",
       "sourceStatus": "existing_bound",
+      "source_root_present": true,
+      "production_implementation": false,
       "declaredRoots": [
         "codex-rs/hepta-memory-federation"
       ],
@@ -498,6 +550,8 @@
       "module": "knowledge.graph",
       "lifecycle": "target",
       "sourceStatus": "existing_bound",
+      "source_root_present": true,
+      "production_implementation": false,
       "declaredRoots": [
         "codex-rs/hepta-kg"
       ],
@@ -516,6 +570,8 @@
       "module": "compact.engine",
       "lifecycle": "target",
       "sourceStatus": "existing_bound",
+      "source_root_present": true,
+      "production_implementation": false,
       "declaredRoots": [
         "codex-rs/hepta-compact-engine"
       ],
@@ -534,6 +590,8 @@
       "module": "learning.ledger",
       "lifecycle": "target",
       "sourceStatus": "existing_bound",
+      "source_root_present": true,
+      "production_implementation": false,
       "declaredRoots": [
         "codex-rs/hepta-learning-ledger"
       ],
@@ -546,12 +604,14 @@
       "missingDeclaredRoots": [],
       "bootstrapWorkPackage": "LRN-0-CAUSAL-LEARNING-CONTRACTS",
       "technicalDocument": "docs/modules/learning.ledger/TECHNICAL.md",
-      "interpretation": "declared_root_is_materialized_but_activation_acceptance_promotion_and_release_remain_separate"
+      "interpretation": "source_root_present_is_separate_from_production_implementation; activation_acceptance_promotion_and_release_remain_separate"
     },
     {
       "module": "learning.operator",
       "lifecycle": "target",
       "sourceStatus": "existing_bound",
+      "source_root_present": true,
+      "production_implementation": false,
       "declaredRoots": [
         "codex-rs/hepta-bellman-operator"
       ],
@@ -564,12 +624,14 @@
       "missingDeclaredRoots": [],
       "bootstrapWorkPackage": "HBO-0-BELLMAN-OPERATOR-CONTRACTS",
       "technicalDocument": "docs/modules/learning.operator/TECHNICAL.md",
-      "interpretation": "declared_root_is_materialized_but_activation_acceptance_promotion_and_release_remain_separate"
+      "interpretation": "source_root_present_is_separate_from_production_implementation; activation_acceptance_promotion_and_release_remain_separate"
     },
     {
       "module": "learning.eval",
       "lifecycle": "target",
       "sourceStatus": "existing_bound",
+      "source_root_present": true,
+      "production_implementation": false,
       "declaredRoots": [
         "codex-rs/hepta-intelligence-eval"
       ],
@@ -582,12 +644,14 @@
       "missingDeclaredRoots": [],
       "bootstrapWorkPackage": "LRN-2-CAUSAL-EVALUATION",
       "technicalDocument": "docs/modules/learning.eval/TECHNICAL.md",
-      "interpretation": "declared_root_is_materialized_but_activation_acceptance_promotion_and_release_remain_separate"
+      "interpretation": "source_root_present_is_separate_from_production_implementation; activation_acceptance_promotion_and_release_remain_separate"
     },
     {
       "module": "learning.artifacts",
       "lifecycle": "target",
       "sourceStatus": "existing_bound",
+      "source_root_present": true,
+      "production_implementation": false,
       "declaredRoots": [
         "codex-rs/hepta-learning-artifacts"
       ],
@@ -600,12 +664,14 @@
       "missingDeclaredRoots": [],
       "bootstrapWorkPackage": "ART-1-LEARNING-ARTIFACT-REGISTRY",
       "technicalDocument": "docs/modules/learning.artifacts/TECHNICAL.md",
-      "interpretation": "declared_root_is_materialized_but_activation_acceptance_promotion_and_release_remain_separate"
+      "interpretation": "source_root_present_is_separate_from_production_implementation; activation_acceptance_promotion_and_release_remain_separate"
     },
     {
       "module": "learning.plasticity",
       "lifecycle": "target",
       "sourceStatus": "existing_bound",
+      "source_root_present": true,
+      "production_implementation": false,
       "declaredRoots": [
         "codex-rs/hepta-plasticity"
       ],
@@ -618,12 +684,14 @@
       "missingDeclaredRoots": [],
       "bootstrapWorkPackage": "PLS-1-PARAMETER-PLASTICITY",
       "technicalDocument": "docs/modules/learning.plasticity/TECHNICAL.md",
-      "interpretation": "declared_root_is_materialized_but_activation_acceptance_promotion_and_release_remain_separate"
+      "interpretation": "source_root_present_is_separate_from_production_implementation; activation_acceptance_promotion_and_release_remain_separate"
     },
     {
       "module": "automation.taskflow",
       "lifecycle": "existing",
       "sourceStatus": "existing_bound",
+      "source_root_present": true,
+      "production_implementation": false,
       "declaredRoots": [
         "codex-rs/hepta-automation"
       ],
@@ -642,6 +710,8 @@
       "module": "channel.matrix",
       "lifecycle": "existing",
       "sourceStatus": "existing_bound",
+      "source_root_present": true,
+      "production_implementation": false,
       "declaredRoots": [
         "codex-rs/hepta-matrix-sdk",
         "codex-rs/hepta-matrixd"
@@ -665,6 +735,8 @@
       "module": "browser.servo",
       "lifecycle": "existing",
       "sourceStatus": "existing_bound",
+      "source_root_present": true,
+      "production_implementation": false,
       "declaredRoots": [
         "apps/hepta-browser",
         "third_party/servo-patches"
@@ -686,6 +758,8 @@
       "module": "ui.control",
       "lifecycle": "target",
       "sourceStatus": "existing_bound",
+      "source_root_present": true,
+      "production_implementation": false,
       "declaredRoots": [
         "apps/hepta-control-ui"
       ],
@@ -698,12 +772,14 @@
       "missingDeclaredRoots": [],
       "bootstrapWorkPackage": "UI-V5",
       "technicalDocument": "docs/modules/ui.control/TECHNICAL.md",
-      "interpretation": "declared_root_is_materialized_but_activation_acceptance_promotion_and_release_remain_separate"
+      "interpretation": "source_root_present_is_separate_from_production_implementation; activation_acceptance_promotion_and_release_remain_separate"
     },
     {
       "module": "ui.native",
       "lifecycle": "target",
       "sourceStatus": "existing_bound",
+      "source_root_present": true,
+      "production_implementation": false,
       "declaredRoots": [
         "apps/hepta-native"
       ],
@@ -722,6 +798,8 @@
       "module": "control.runtime",
       "lifecycle": "target",
       "sourceStatus": "existing_bound",
+      "source_root_present": true,
+      "production_implementation": false,
       "declaredRoots": [
         "codex-rs/hepta-control-plane"
       ],
@@ -740,6 +818,8 @@
       "module": "control.engineering",
       "lifecycle": "target",
       "sourceStatus": "existing_bound",
+      "source_root_present": true,
+      "production_implementation": false,
       "declaredRoots": [
         "tools/hepta-engineering-control"
       ],
@@ -752,7 +832,7 @@
       "missingDeclaredRoots": [],
       "bootstrapWorkPackage": "ECP-1-ENGINEERING-CONTROL-PLANE",
       "technicalDocument": "docs/modules/control.engineering/TECHNICAL.md",
-      "interpretation": "declared_root_is_materialized_but_activation_acceptance_promotion_and_release_remain_separate"
+      "interpretation": "source_root_present_is_separate_from_production_implementation; activation_acceptance_promotion_and_release_remain_separate"
     }
   ],
   "authorityFlags": {

@@ -409,6 +409,30 @@ def validate_status_model(model: dict[str, Any]) -> None:
     )
     need(model.get("allowedValues") == ["open", "closed"], "status model values")
     need(model.get("ordering") == expected, "status model ordering")
+    module_facts = model.get("moduleFacts")
+    need(
+        isinstance(module_facts, dict)
+        and set(module_facts) == {
+            "source_root_present",
+            "production_implementation",
+            "invariant",
+        },
+        "status model module facts",
+    )
+    for fact in ("source_root_present", "production_implementation"):
+        definition = module_facts[fact]
+        need(
+            isinstance(definition, dict)
+            and definition.get("type") == "boolean"
+            and definition.get("requiredEvidence")
+            and definition.get("doesNotImply"),
+            "status model module fact " + fact,
+        )
+    need(
+        module_facts["invariant"]
+        == "production_implementation may be true only when source_root_present is true",
+        "status model module fact invariant",
+    )
     projections = model.get("projection")
     need(
         isinstance(projections, dict)
@@ -791,9 +815,43 @@ def verify() -> int:
         "module binding order/coverage",
     )
     module_doc_map = {row["module"]: row for row in module_docs}
+    module_registry_map = {row["id"]: row for row in modules}
+    source_binding_map = {
+        row["module"]: row for row in load("docs/modules/SOURCE_BINDINGS.json")["bindings"]
+    }
     document_map = {row["id"]: row for row in document_rows}
     for row in binding_rows:
         mid = row["module"]
+        registry_row = module_registry_map[mid]
+        source_row = source_binding_map[mid]
+        doc_row = module_doc_map[mid]
+        for record, label in (
+            (registry_row, "module registry"),
+            (source_row, "source binding"),
+            (doc_row, "module document"),
+        ):
+            need(
+                type(record.get("source_root_present")) is bool
+                and type(record.get("production_implementation")) is bool,
+                mid + " " + label + " status facts",
+            )
+            need(
+                record["production_implementation"] is False
+                or record["source_root_present"] is True,
+                mid + " " + label + " production implementation without source root",
+            )
+        need(
+            registry_row["source_root_present"]
+            == source_row["source_root_present"]
+            == doc_row["source_root_present"],
+            mid + " source-root fact projection",
+        )
+        need(
+            registry_row["production_implementation"]
+            == source_row["production_implementation"]
+            == doc_row["production_implementation"],
+            mid + " production implementation fact projection",
+        )
         need(
             list(row)
             == [

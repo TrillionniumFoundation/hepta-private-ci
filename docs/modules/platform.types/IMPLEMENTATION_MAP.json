@@ -1,0 +1,61 @@
+{
+  "schema": "hepta.module-implementation-map.v3",
+  "schemaVersion": 3,
+  "sourceBase": {
+    "commit": "ab584c609ffe30bac96001e286eb4002b03339cc",
+    "tree": "befa7dd1e884be1728085c0f4178002556031288"
+  },
+  "laneId": "LANE-A-FOUNDATION",
+  "module": "platform.types",
+  "owner": "kernel-contracts",
+  "deputy": "architecture",
+  "technicalGuide": "docs/modules/platform.types/TECHNICAL.md",
+  "declaredRoots": [
+    "codex-rs/hepta-types"
+  ],
+  "resolvedRoots": [
+    "codex-rs/hepta-types"
+  ],
+  "sourceRootPresent": true,
+  "productionImplementation": false,
+  "productCallerState": "not_composed",
+  "productionWriterState": "not_established",
+  "operations": [
+    {
+      "operation": "rescale_signal",
+      "nativeSymbol": "rescale_signal",
+      "sourcePath": "codex-rs/hepta-types/src/numeric_conversion.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [],
+      "sourcePathExists": true
+    },
+    {
+      "operation": "stableid",
+      "nativeSymbol": "StableId",
+      "sourcePath": "codex-rs/hepta-types/src/identity.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [],
+      "sourcePathExists": true
+    }
+  ],
+  "repositoryControlledGaps": [
+    "Bind every operation to an authenticated consumer callsite and owner store.",
+    "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary."
+  ],
+  "externalEvidenceGates": [
+    "independent semantic review",
+    "product execution and target-host qualification",
+    "operator acceptance, canary, promotion and release"
+  ],
+  "claimBoundary": {
+    "nativeSourceMappingComplete": true,
+    "sourceRootPresent": true,
+    "productionImplementation": false,
+    "productExecutionProved": false,
+    "independentAcceptance": false,
+    "activation": false,
+    "release": false
+  }
+}

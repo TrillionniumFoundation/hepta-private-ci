@@ -1,0 +1,63 @@
+{
+  "schema": "hepta.module-implementation-map.v3",
+  "schemaVersion": 3,
+  "sourceBase": {
+    "commit": "ab584c609ffe30bac96001e286eb4002b03339cc",
+    "tree": "befa7dd1e884be1728085c0f4178002556031288"
+  },
+  "laneId": "LANE-A-FOUNDATION",
+  "module": "secrets.heptabao",
+  "owner": "secrets-platform",
+  "deputy": "security-authority",
+  "technicalGuide": "docs/modules/secrets.heptabao/TECHNICAL.md",
+  "declaredRoots": [
+    "external/HeptaBao",
+    "codex-rs/hepta-bao-adapter"
+  ],
+  "resolvedRoots": [
+    "external/HeptaBao",
+    "codex-rs/hepta-bao-adapter"
+  ],
+  "sourceRootPresent": true,
+  "productionImplementation": false,
+  "productCallerState": "not_composed",
+  "productionWriterState": "not_established",
+  "operations": [
+    {
+      "operation": "consume_kv_v2",
+      "nativeSymbol": "consume_kv_v2",
+      "sourcePath": "codex-rs/hepta-bao-adapter/src/https_consumer.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [],
+      "sourcePathExists": true
+    },
+    {
+      "operation": "binding",
+      "nativeSymbol": "binding",
+      "sourcePath": "codex-rs/hepta-bao-adapter/src/https_consumer.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [],
+      "sourcePathExists": true
+    }
+  ],
+  "repositoryControlledGaps": [
+    "Bind every operation to an authenticated consumer callsite and owner store.",
+    "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary."
+  ],
+  "externalEvidenceGates": [
+    "independent semantic review",
+    "product execution and target-host qualification",
+    "operator acceptance, canary, promotion and release"
+  ],
+  "claimBoundary": {
+    "nativeSourceMappingComplete": true,
+    "sourceRootPresent": true,
+    "productionImplementation": false,
+    "productExecutionProved": false,
+    "independentAcceptance": false,
+    "activation": false,
+    "release": false
+  }
+}
