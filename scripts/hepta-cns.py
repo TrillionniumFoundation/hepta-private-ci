@@ -117,6 +117,12 @@ LIFECYCLE = [
     "retired",
 ]
 
+# These are reference-only packages that may be named by an organ while
+# remaining outside the production module registry.  Keep this exception
+# explicit in the architecture registry; an unregistered module binding must
+# never be silently accepted by the closed-world verifier.
+QUALIFICATION_REFERENCE_KEYS = ["id", "root", "scope"]
+
 
 class DuplicateKey(ValueError):
     pass
@@ -177,6 +183,60 @@ def acyclic(nodes: list[str], edges: list[tuple[str, str]]) -> list[str]:
                 q.append(x)
     need(len(order) == len(ns), "body graph cycle")
     return order
+
+
+def validate_module_bindings(
+    organs: list[dict[str, Any]],
+    module_ids: list[str] | set[str],
+    qualification_references: list[dict[str, Any]],
+) -> tuple[set[str], set[str]]:
+    """Validate the bidirectional organ-to-module projection.
+
+    Every production module must be bound by at least one organ, and every
+    binding must resolve either to one of those registered modules or to an
+    explicitly declared qualification reference.  Qualification references
+    are intentionally kept separate from the forty production modules so a
+    reference crate cannot acquire production identity by appearing in an
+    organ binding.
+    """
+    registered = set(module_ids)
+    need(len(registered) == len(module_ids), "duplicate registered module IDs")
+    need(len(registered) == 40, "forty-module production registry")
+    refs: dict[str, dict[str, Any]] = {}
+    for row in qualification_references:
+        need(
+            isinstance(row, dict)
+            and list(row) == QUALIFICATION_REFERENCE_KEYS,
+            "qualification reference key closure/order",
+        )
+        identity = row["id"]
+        need(
+            isinstance(identity, str)
+            and identity
+            and identity not in registered
+            and identity not in refs,
+            "qualification reference identity",
+        )
+        need(
+            isinstance(row["root"], str)
+            and row["root"]
+            and isinstance(row["scope"], str)
+            and row["scope"] == "qualification_only_not_production_module",
+            identity + " qualification reference posture",
+        )
+        refs[identity] = row
+
+    bound = {module for organ in organs for module in organ["moduleBindings"]}
+    allowed = registered | set(refs)
+    need(not (bound - allowed), "unknown organ module binding")
+    need(not (registered - bound), "unbound registered module")
+    need(not (set(refs) - bound), "unbound qualification reference")
+    # The two sides must be exact: no production module is represented only as
+    # a qualification reference, and no qualification reference is promoted to
+    # a production module by accident.
+    need((bound & registered) == registered, "production module projection")
+    need((bound - registered) == set(refs), "qualification module projection")
+    return registered, set(refs)
 
 
 def status_text(
@@ -319,9 +379,13 @@ def verify() -> int:
                 row["id"] + " fallback depends on failed organ",
             )
     modules = load("docs/modules/MODULES.json")["modules"]
-    mids = {x["id"] for x in modules}
-    bound = {x for row in organs for x in row["moduleBindings"]}
-    need(bound == mids | {"hnmf.reference"}, "forty-module organ projection")
+    module_ids = [x["id"] for x in modules]
+    mids = set(module_ids)
+    validate_module_bindings(
+        organs,
+        module_ids,
+        arch.get("qualificationReferences", []),
+    )
     prows = protocols["protocols"]
     pids = [x["id"] for x in prows]
     need(pids == REQUIRED_PROTOCOLS and len(set(pids)) == 15, "protocol closed world")
