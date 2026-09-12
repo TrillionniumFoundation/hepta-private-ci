@@ -13,17 +13,15 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  workspace-regression:
-    name: Workspace regression for shared core changes
-    runs-on: ubuntu-24.04-arm
-    timeout-minutes: 60
+  change-scope:
+    name: Bind source and determine regression scope
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    outputs:
+      required: ${{ steps.scope.outputs.required }}
     env:
       SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
       BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
-      CARGO_INCREMENTAL: "0"
-      CARGO_BUILD_JOBS: "2"
-      CARGO_PROFILE_TEST_DEBUG: "0"
-      CARGO_PROFILE_DEV_DEBUG: "0"
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
@@ -36,48 +34,27 @@ jobs:
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          # HEAD alone cannot attest the tracked bytes used by the build.
+          git diff --quiet
+          git diff --cached --quiet
           # A first push or unavailable old commit has no reliable change set.
           # Run the full regression rather than failing or incorrectly skipping it.
           if ! git cat-file -e "$BASE_SHA^{commit}" 2>/dev/null; then
             echo 'required=true' >> "$GITHUB_OUTPUT"
-          elif git diff --quiet "$BASE_SHA" "$SOURCE_SHA" -- codex-rs/core/ codex-rs/common/ codex-rs/protocol/; then
+          elif git diff --quiet "$BASE_SHA" "$SOURCE_SHA" -- \
+            codex-rs/core/ codex-rs/common/ codex-rs/protocol/ \
+            codex-rs/Cargo.toml codex-rs/Cargo.lock \
+            ':(glob)codex-rs/**/Cargo.toml' ':(glob)codex-rs/**/build.rs' \
+            .cargo/ codex-rs/.cargo/ rust-toolchain rust-toolchain.toml \
+            codex-rs/rust-toolchain codex-rs/rust-toolchain.toml \
+            justfile codex-rs/justfile scripts/hepta_ci_v8.py \
+            .github/workflows/hepta-consolidated-source.yml; then
             echo 'required=false' >> "$GITHUB_OUTPUT"
           else
             status=$?
             test "$status" -eq 1
             echo 'required=true' >> "$GITHUB_OUTPUT"
           fi
-      - name: Prepare native workspace prerequisites
-        if: steps.scope.outputs.required == 'true'
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y build-essential bubblewrap libcap-dev pkg-config
-          sudo sysctl -w kernel.unprivileged_userns_clone=1
-          if sysctl kernel.apparmor_restrict_unprivileged_userns >/dev/null 2>&1; then
-            sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
-          fi
-      - name: Install DotSlash for shell integration tests
-        if: steps.scope.outputs.required == 'true'
-        uses: facebook/install-dotslash@1e4e7b3e07eaca387acb98f1d4720e0bee8dbb6a
-      - name: Expose DotSlash at the path used by integration tests
-        if: steps.scope.outputs.required == 'true'
-        run: sudo install -m 0755 "$(command -v dotslash)" /usr/local/bin/dotslash
-      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
-        if: steps.scope.outputs.required == 'true'
-        with:
-          tool: just@1.51.0,nextest@0.9.103
-      - name: Resolve verified sandboxed V8 artifacts for Cargo
-        if: steps.scope.outputs.required == 'true'
-        env:
-          CODEX_REPO_ROOT: ${{ github.workspace }}
-          PYTHONPATH: scripts
-        run: python3 scripts/hepta_ci_v8.py
-      - name: Run the complete workspace suite after shared core changes
-        if: steps.scope.outputs.required == 'true'
-        working-directory: codex-rs
-        env:
-          CARGO_TARGET_DIR: ${{ runner.temp }}/hepta-native-target
-        run: just test --locked
   engineering-sandbox:
     name: Engineering strong sandbox
     runs-on: ubuntu-24.04
@@ -120,14 +97,17 @@ jobs:
           /usr/bin/openssl version
           python3 run_native_tests.py
   qualification:
+    needs: change-scope
     runs-on: ubuntu-24.04-arm
-    timeout-minutes: 45
+    timeout-minutes: 60
     strategy:
       fail-fast: false
       matrix:
         # A push already tests the merged source. Only PRs need both identities.
         lane: ${{ fromJSON(github.event_name == 'pull_request' && '["source-head","base-merge"]' || '["source-head"]') }}
     env:
+      FULL_WORKSPACE: ${{ needs.change-scope.outputs.required }}
+      LANE: ${{ matrix.lane }}
       SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
       BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
       PYTHONDONTWRITEBYTECODE: "1"
@@ -183,6 +163,18 @@ jobs:
           # Global source/merge document and script checks run once in hepta-development-docs.
           python3 scripts/hepta-gap-closure.py verify
           node --test apps/hepta-browser/test/*.js apps/hepta-native/test/*.js
+      - name: Formatting without source mutation
+        id: format
+        if: always()
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          args=()
+          for package in $PACKAGES; do args+=(--package "$package"); done
+          evidence="$RUNNER_TEMP/hepta-qualification-$LANE"
+          mkdir -p "$evidence"
+          cargo fmt "${args[@]}" -- --check 2>&1 | tee "$evidence/format.log"
       - name: Prepare native owner-test prerequisites
         run: |
           sudo apt-get update
@@ -204,6 +196,27 @@ jobs:
           PYTHONPATH: scripts
         run: python3 scripts/hepta_ci_v8.py
       - name: Compile and test actual imported packages
+        id: test_suite
+        working-directory: codex-rs
+        env:
+          CARGO_TARGET_DIR: ${{ runner.temp }}/hepta-native-target
+        shell: bash
+        run: |
+          set -euo pipefail
+          args=()
+          case "$FULL_WORKSPACE" in
+            true) ;;  # The full workspace already includes the owner packages.
+            false)
+              test -n "$PACKAGES"
+              for package in $PACKAGES; do args+=(-p "$package"); done
+              ;;
+            *) echo "Missing or invalid regression scope" >&2; exit 1 ;;
+          esac
+          evidence="$RUNNER_TEMP/hepta-qualification-$LANE"
+          mkdir -p "$evidence"
+          just test --locked "${args[@]}" 2>&1 | tee "$evidence/tests.log"
+      - name: Strict owner lint
+        id: owner_lint
         working-directory: codex-rs
         env:
           CARGO_TARGET_DIR: ${{ runner.temp }}/hepta-native-target
@@ -212,33 +225,88 @@ jobs:
           set -euo pipefail
           args=()
           for package in $PACKAGES; do args+=(-p "$package"); done
-          just test --locked "${args[@]}"
-          cargo clippy --locked "${args[@]}" --all-targets -- -D warnings
-      - name: Formatting without source mutation
+          evidence="$RUNNER_TEMP/hepta-qualification-$LANE"
+          mkdir -p "$evidence"
+          cargo clippy --locked "${args[@]}" --all-targets -- -D warnings 2>&1 | tee "$evidence/clippy.log"
+      - name: Record exact tested identity and phase results
         if: always()
-        working-directory: codex-rs
+        env:
+          EXPECTED_TESTED_SHA: ${{ matrix.lane == 'source-head' && env.SOURCE_SHA || steps.synthetic.outputs.sha }}
+          TEST_OUTCOME: ${{ steps.test_suite.outcome }}
+          LINT_OUTCOME: ${{ steps.owner_lint.outcome }}
+          FORMAT_OUTCOME: ${{ steps.format.outcome }}
+          PRIOR_STATUS: ${{ job.status }}
         shell: bash
         run: |
           set -euo pipefail
-          args=()
-          for package in $PACKAGES; do args+=(--package "$package"); done
-          cargo fmt "${args[@]}" -- --check
-      - name: Clean tracked source
+          python3 - <<'PY_RECORD'
+          import json
+          import os
+          from pathlib import Path
+          import subprocess
+
+          def git(*args):
+              return subprocess.check_output(["git", *args], text=True).strip()
+
+          env = os.environ
+          commit = git("rev-parse", "HEAD")
+          parents = git("show", "-s", "--format=%P", "HEAD").split()
+          tracked_clean = not git("status", "--porcelain", "--untracked-files=no")
+          lane = env["LANE"]
+          source = env["SOURCE_SHA"]
+          base = env["BASE_SHA"]
+          lane_valid = (
+              (lane == "source-head" and commit == source)
+              or (lane == "base-merge" and parents == [base, source])
+          )
+          identity_valid = tracked_clean and lane_valid and commit == env["EXPECTED_TESTED_SHA"]
+          full = env["FULL_WORKSPACE"]
+          args = [] if full == "true" else [part for package in env["PACKAGES"].split() for part in ("-p", package)]
+          record = {
+              "source_sha": source, "base_sha": base, "lane": lane,
+              "expected_tested_sha": env["EXPECTED_TESTED_SHA"],
+              "tested_sha": commit, "tested_tree": git("rev-parse", "HEAD^{tree}"),
+              "parents": parents, "tracked_clean": tracked_clean, "identity_valid": identity_valid,
+              "full_workspace": full, "test_command": ["just", "test", "--locked", *args],
+              "outcomes": {"tests": env["TEST_OUTCOME"], "clippy": env["LINT_OUTCOME"], "format": env["FORMAT_OUTCOME"]},
+              "prior_job_status": env["PRIOR_STATUS"],
+              "run_id": env.get("GITHUB_RUN_ID"), "run_attempt": env.get("GITHUB_RUN_ATTEMPT"),
+              "runner_os": env.get("RUNNER_OS"), "runner_arch": env.get("RUNNER_ARCH"),
+          }
+          evidence = Path(env["RUNNER_TEMP"]) / f"hepta-qualification-{lane}"
+          evidence.mkdir(parents=True, exist_ok=True)
+          text = json.dumps(record, indent=2) + "\n"
+          (evidence / "result.json").write_text(text)
+          with open(env["GITHUB_STEP_SUMMARY"], "a") as summary:
+              summary.write("Test execution record; not deployment qualification.\n\n```json\n" + text + "```\n")
+          if not identity_valid or full not in ("true", "false"):
+              raise SystemExit("Tested identity or scope does not match this lane")
+          PY_RECORD
+          git diff --check
+      - name: Retain source-bound execution logs and results
         if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-qualification-${{ matrix.lane }}-${{ env.SOURCE_SHA }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/hepta-qualification-${{ matrix.lane }}/
+          if-no-files-found: error
+          retention-days: 30
+  workspace-regression:
+    # Preserve the existing gate name; successful scope calculation is NOT a test pass.
+    name: Workspace regression for shared core changes
+    needs: [change-scope, qualification]
+    if: always()
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Require completed source and merge qualification
         env:
-          TESTED_SHA: ${{ steps.synthetic.outputs.sha || env.SOURCE_SHA }}
-          PRIOR_STATUS: ${{ job.status }}
+          SCOPE_RESULT: ${{ needs.change-scope.result }}
+          FULL_WORKSPACE: ${{ needs.change-scope.outputs.required }}
+          QUALIFICATION_RESULT: ${{ needs.qualification.result }}
+        shell: bash
         run: |
           set -euo pipefail
-          test "$(git rev-parse HEAD)" = "$TESTED_SHA"
-          {
-            printf 'Source: `%s`\n\n' "$SOURCE_SHA"
-            printf 'Tested commit: `%s`\n\n' "$(git rev-parse HEAD)"
-            printf 'Tested tree: `%s`\n\n' "$(git rev-parse HEAD^{tree})"
-            printf 'Parents: `%s`\n\n' "$(git show -s --format=%P HEAD)"
-            printf 'Prior job status: `%s` (not a deployment qualification)\n\n' "$PRIOR_STATUS"
-            printf 'Targets: `%s`\n' "$PACKAGES"
-          } >> "$GITHUB_STEP_SUMMARY"
-          git diff --check
-          git diff --exit-code
-          test -z "$(git status --porcelain --untracked-files=no)"
+          test "$SCOPE_RESULT" = success
+          case "$FULL_WORKSPACE" in true|false) ;; *) exit 1 ;; esac
+          test "$QUALIFICATION_RESULT" = success
