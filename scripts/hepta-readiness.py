@@ -1034,8 +1034,6 @@ def verify() -> int:
         "merge-candidate:",
         "github.event.pull_request.head.sha",
         "github.event.pull_request.base.sha",
-        "git merge-tree --write-tree",
-        "git commit-tree",
         "persist-credentials: false",
         "python3 scripts/hepta-readiness.py self-test",
         "python3 scripts/hepta-readiness.py generate-status --check",
@@ -1048,6 +1046,11 @@ def verify() -> int:
         "contents: read",
     ]:
         need(token in workflow, "workflow missing " + token)
+    need(
+        "git merge-tree --write-tree" in workflow
+        or ".github/actions/hepta-synthetic-merge" in workflow,
+        "workflow missing deterministic synthetic merge construction",
+    )
     for token in [
         "contents: write",
         "pull-requests: write",
