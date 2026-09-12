@@ -419,18 +419,17 @@ fn registry_admission_is_required_before_native_handoff_host_construction() {
     let host_admission = admission(&bytes);
     let registry = NativeHandoffProtocolRegistryV1::canonical();
     let protocol = NativeHandoffProtocolAdmissionV1::canonical();
-    let (verified, receipt) = admit_compiled_body_graph_v2(
-        &bytes,
-        &host_admission,
-        &protocol,
-        &registry,
-    )
-    .unwrap_or_else(|error| panic!("registry admission: {error:?}"));
+    let (verified, receipt) =
+        admit_compiled_body_graph_v2(&bytes, &host_admission, &protocol, &registry)
+            .unwrap_or_else(|error| panic!("registry admission: {error:?}"));
     assert_eq!(receipt.protocol_id, registry.protocol_id().clone());
     assert_eq!(receipt.profile_id, registry.profile_id().clone());
     assert_eq!(receipt.profile_version, registry.profile_version());
     assert_eq!(receipt.schema_digest, registry.schema_digest());
-    assert_eq!(receipt.payload_digest, compiled_body_graph_digest_v2(&bytes).unwrap());
+    assert_eq!(
+        receipt.payload_digest,
+        compiled_body_graph_digest_v2(&bytes).unwrap()
+    );
     assert_eq!(receipt.generation, generation(7));
     assert_eq!(receipt.authority, AuthorityPosture::DENY_ALL);
     let callbacks = Arc::new(AtomicUsize::new(0));
