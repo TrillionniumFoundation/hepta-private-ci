@@ -207,7 +207,12 @@ fn rollback_failure_is_visible_and_quarantines_every_failure_path() {
             }]
         );
         assert_eq!(
-            host.dispatch_once(generation(7), &id("organ"), /*output_port*/ 0, b"blocked"),
+            host.dispatch_once(
+                generation(7),
+                &id("organ"),
+                /*output_port*/ 0,
+                b"blocked"
+            ),
             Err(OrganRuntimeError::OrganNotReady {
                 organ: id("organ"),
                 state: HostedOrganStateV1::Quarantined,

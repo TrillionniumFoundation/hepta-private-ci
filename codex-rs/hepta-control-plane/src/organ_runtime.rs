@@ -454,12 +454,8 @@ impl OrganHostV1 {
         }
         let mut candidate = Self::new(graph, handlers)?;
         if let Err(error) = candidate.start_all() {
-            let rollback_error = self.rollback_or_quarantine(
-                &snapshot,
-                expected,
-                candidate.generation(),
-                migration,
-            );
+            let rollback_error =
+                self.rollback_or_quarantine(&snapshot, expected, candidate.generation(), migration);
             return Err(OrganRuntimeError::CandidateStartFailed {
                 error: Box::new(error),
                 rollback_error,
@@ -474,12 +470,8 @@ impl OrganHostV1 {
                     .into_iter()
                     .rev(),
             );
-            let rollback_error = self.rollback_or_quarantine(
-                &snapshot,
-                expected,
-                candidate.generation(),
-                migration,
-            );
+            let rollback_error =
+                self.rollback_or_quarantine(&snapshot, expected, candidate.generation(), migration);
             return Err(OrganRuntimeError::CandidateMigrationFailed {
                 error,
                 rollback_error,
@@ -502,12 +494,8 @@ impl OrganHostV1 {
                     .into_iter()
                     .rev(),
             );
-            let rollback_error = self.rollback_or_quarantine(
-                &snapshot,
-                expected,
-                candidate.generation(),
-                migration,
-            );
+            let rollback_error =
+                self.rollback_or_quarantine(&snapshot, expected, candidate.generation(), migration);
             let replacement_error = OrganRuntimeError::ReplacementStopFailed {
                 predecessor_faults,
                 candidate_cleanup_faults,
