@@ -56,10 +56,12 @@ rust_test(
     srcs = [
         "tests/durable_learning_roundtrip.rs",
         "tests/support/durable_process.rs",
+        "tests/support/tabular_reload.rs",
     ],
     crate_root = "tests/durable_learning_roundtrip.rs",
     edition = "2024",
     deps = [
+        "//codex-rs/hepta-bellman-operator",
         "//codex-rs/hepta-learning-artifacts",
         "//codex-rs/hepta-learning-ledger",
         "//codex-rs/hepta-types",
