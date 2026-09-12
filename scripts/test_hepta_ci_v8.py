@@ -37,9 +37,13 @@ class V8EnvironmentTests(unittest.TestCase):
             "RUSTY_V8_SRC_BINDING_PATH": "/tmp/verified artifacts/binding.rs",
         }
 
-    def test_host_selects_matching_pair_and_preserves_existing_environment(self) -> None:
+    def test_host_selects_matching_pair_and_preserves_existing_environment(
+        self,
+    ) -> None:
         hepta_ci_v8.configure_v8(ROOT, self.output)
-        self.assertEqual(self.resolve.call_args.args[0].target, "aarch64-unknown-linux-gnu")
+        self.assertEqual(
+            self.resolve.call_args.args[0].target, "aarch64-unknown-linux-gnu"
+        )
         self.assertEqual(
             self.output.read_text(encoding="utf-8"),
             "EXISTING=preserved\n"
@@ -59,7 +63,9 @@ class V8EnvironmentTests(unittest.TestCase):
         self.resolve.assert_not_called()
         self.assertEqual(self.output.read_text(), "EXISTING=preserved\n")
 
-    def test_verified_override_or_source_build_does_not_replace_environment(self) -> None:
+    def test_verified_override_or_source_build_does_not_replace_environment(
+        self,
+    ) -> None:
         self.resolve.return_value = {}
         hepta_ci_v8.configure_v8(ROOT, self.output)
         self.assertEqual(self.output.read_text(), "EXISTING=preserved\n")
@@ -76,7 +82,10 @@ class V8EnvironmentTests(unittest.TestCase):
         for overrides in (
             {"RUSTY_V8_ARCHIVE": "/tmp/archive"},
             {"OTHER": "x"},
-            {"RUSTY_V8_ARCHIVE": "/tmp/archive", "RUSTY_V8_SRC_BINDING_PATH": "x\nOTHER=1"},
+            {
+                "RUSTY_V8_ARCHIVE": "/tmp/archive",
+                "RUSTY_V8_SRC_BINDING_PATH": "x\nOTHER=1",
+            },
             {"RUSTY_V8_ARCHIVE": "", "RUSTY_V8_SRC_BINDING_PATH": "x"},
         ):
             with self.subTest(overrides=overrides):

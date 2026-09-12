@@ -37,7 +37,9 @@ def configure_v8(repo_root: Path, environment_file: Path) -> None:
     if overrides:
         with environment_file.open("a", encoding="utf-8", newline="\n") as output:
             output.write(
-                "".join(f"{name}={value}\n" for name, value in sorted(overrides.items()))
+                "".join(
+                    f"{name}={value}\n" for name, value in sorted(overrides.items())
+                )
             )
 
 

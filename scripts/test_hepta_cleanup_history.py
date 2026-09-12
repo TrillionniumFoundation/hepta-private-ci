@@ -24,7 +24,12 @@ class HistoricalRetirementTests(unittest.TestCase):
         self.git("config", "user.name", "retirement-test")
         self.git("config", "user.email", "test@example.invalid")
         self.git("config", "commit.gpgsign", "false")
-        for path in ("legacy/snapshot/data.json", "legacy/plan.md", "later.txt", "kept.py"):
+        for path in (
+            "legacy/snapshot/data.json",
+            "legacy/plan.md",
+            "later.txt",
+            "kept.py",
+        ):
             target = self.root / path
             target.parent.mkdir(parents=True, exist_ok=True)
             target.write_text("# original\n", encoding="utf-8")
