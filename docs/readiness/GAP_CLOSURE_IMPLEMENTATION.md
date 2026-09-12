@@ -2,7 +2,7 @@
 
 ## Scope
 
-The candidate branch `codex/hepta-v8-gap-closure-20260905` consolidates the
+The historical candidate change consolidates the
 canonical V8.2 readiness head with bounded implementations for objective
 compilation, NDU utility, causal learning ledgers, immutable learning artifacts,
 Bellman targets, independent evaluation, temporal neuron signals, calibrated

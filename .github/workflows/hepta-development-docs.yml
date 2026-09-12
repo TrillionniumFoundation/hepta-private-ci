@@ -8,6 +8,7 @@ on:
       - "scripts/hepta-docs.py"
       - "scripts/hepta-module-docs.py"
       - ".github/workflows/hepta-development-docs.yml"
+      - ".github/actions/hepta-synthetic-merge/action.yml"
   push:
     branches:
       - main

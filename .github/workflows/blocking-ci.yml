@@ -64,6 +64,7 @@ jobs:
     # required check can appear successful instead of reporting the failure.
     if: ${{ always() }}
     needs:
+      - hepta-contract-gate
       - bazel
       - blob-size-policy
       - cargo-deny

@@ -55,7 +55,7 @@ jobs:
           persist-credentials: false
           fetch-depth: 0
 
-      - uses: ./.github/actions/setup-ci
+      - uses: ./.github/actions/setup-ci-build
 
       - name: Install Rust toolchain
         uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582

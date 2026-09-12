@@ -8,6 +8,7 @@ on:
       - "qualification/module-execution-dossiers/**"
       - "scripts/hepta-readiness.py"
       - ".github/workflows/hepta-implementation-readiness.yml"
+      - ".github/actions/hepta-synthetic-merge/action.yml"
   push:
     branches:
       - main
