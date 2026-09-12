@@ -28,6 +28,34 @@ class IndeterminateOperation(ServiceError):
     """Dispatch may have committed. Reconcile; do not automatically repeat it."""
 
 
+def _decode_message(raw):
+    """One bounded UTF-8 decoder for both ends; ambiguous fields never win."""
+    def unique_fields(pairs):
+        fields = {}
+        for key, value in pairs:
+            if key in fields:
+                raise ServiceError("duplicate_message_field")
+            fields[key] = value
+        return fields
+
+    def reject_constant(_value):
+        raise ServiceError("nonfinite_message_number")
+
+    if not raw or len(raw) > 2048:
+        raise ServiceError("message_size_limit")
+    try:
+        message = json.loads(
+            raw.decode("utf-8"),
+            object_pairs_hook=unique_fields,
+            parse_constant=reject_constant,
+        )
+    except (ValueError, RecursionError) as error:
+        raise ServiceError("invalid_message") from error
+    if not isinstance(message, dict):
+        raise ServiceError("message_object_required")
+    return message
+
+
 def _validate_operation(operation, identity):
     # Both ends validate the same bounded protocol; the child is not permitted
     # to trust the client validation when decoding a frame.
@@ -196,6 +224,11 @@ class DisposableCounterService:
             # consume that acknowledgement or implicitly repeat an unknown effect.
             self.channel_indeterminate = True
             raise IndeterminateOperation("terminal_observation_missing") from error
+        except BaseException:
+            # Preserve cancellation/interrupt semantics, but never let a later
+            # request consume the acknowledgement of an interrupted operation.
+            self.channel_indeterminate = True
+            raise
         del response["sequence"]  # Preserve the public response shape.
         return response
 
@@ -214,13 +247,7 @@ class DisposableCounterService:
                 if not value:
                     raise ServiceError("response_channel_closed")
                 if value == b"\n":
-                    try:
-                        response = json.loads(data)
-                    except (ValueError, UnicodeError) as error:
-                        raise ServiceError("invalid_response") from error
-                    if not isinstance(response, dict):
-                        raise ServiceError("invalid_response")
-                    return response
+                    return _decode_message(data)
                 data.extend(value)
         raise ServiceError("response_limit")
 
@@ -230,12 +257,19 @@ class DisposableCounterService:
             return
         try:
             if process.poll() is None:
-                os.killpg(process.pid, signal.SIGTERM)
-                try:
-                    process.wait(timeout=2)
-                except subprocess.TimeoutExpired:
-                    os.killpg(process.pid, signal.SIGKILL)
-                    process.wait(timeout=2)
+                for termination_signal in (signal.SIGTERM, signal.SIGKILL):
+                    try:
+                        os.killpg(process.pid, termination_signal)
+                    except ProcessLookupError:
+                        # It may exit between poll() and signal delivery. The
+                        # owned child must still be reaped and its pipes closed.
+                        pass
+                    try:
+                        process.wait(timeout=2)
+                        break
+                    except subprocess.TimeoutExpired:
+                        if termination_signal == signal.SIGKILL:
+                            raise
         finally:
             process.stdin.close()
             process.stdout.close()
@@ -367,10 +401,9 @@ def _serve(
         raw = sys.stdin.buffer.readline(2049)
         if not raw or len(raw) > 2048 or not raw.endswith(b"\n"):
             break
-        request = json.loads(raw)
+        request = _decode_message(raw)
         if (
-            not isinstance(request, dict)
-            or set(request) != {"op", "id", "generation", "sequence"}
+            set(request) != {"op", "id", "generation", "sequence"}
             or type(request["generation"]) is not int
             or request["generation"] != generation
             or type(request["sequence"]) is not int

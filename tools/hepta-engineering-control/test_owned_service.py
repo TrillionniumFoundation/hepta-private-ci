@@ -218,7 +218,126 @@ class OwnedServiceTests(unittest.TestCase):
         self.assertEqual(target.minimum_counter, 1)
         target.close()
         self.assertEqual(target.start()["counter"], 1)
-        self.assertEqual(target.request("step", "observed")["value"], 1)
+        self.assertEqual(target.request("step", "observed") ["value"], 1)
+
+
+    def test_ambiguous_request_cannot_commit_an_effect(self):
+        target = self.target()
+        target.start()
+        process = target.process
+        process.stdin.write(
+            b'{"op":"query","op":"step","id":"ambiguous",'
+            b'"generation":1,"sequence":1}\n'
+        )
+        process.stdin.close()
+        code = process.wait(timeout=2)
+        target.close()
+        self.assertNotEqual(code, 0, "duplicate fields must reject, not pick the last value")
+        recovered = self.target(2)
+        self.assertEqual(recovered.start()["counter"], 0)
+        self.assertIsNone(recovered.request("reconcile", "ambiguous")["value"])
+
+    def test_ambiguous_response_poison_requires_reconciliation(self):
+        from unittest.mock import patch
+
+        target = self.target()
+        target.start()
+        read_fd, write_fd = os.pipe()
+        with os.fdopen(read_fd, "rb", buffering=0) as response_pipe:
+            with os.fdopen(write_fd, "wb", buffering=0) as peer:
+                peer.write(
+                    b'{"generation":1,"sequence":999,"sequence":1,"counter":0}\n'
+                )
+            # Inject bytes through a real pipe, not an already-decoded dict.
+            with patch.object(target.process, "stdout", response_pipe):
+                with self.assertRaises(IndeterminateOperation):
+                    target.request("query")
+        with self.assertRaises(IndeterminateOperation):
+            target.request("query")
+
+    def test_cancellation_after_dispatch_never_reuses_the_channel(self):
+        from unittest.mock import patch
+        import selectors
+
+        target = self.target()
+        target.start()
+
+        def interrupted_after_real_commit():
+            with selectors.DefaultSelector() as selector:
+                selector.register(target.process.stdout, selectors.EVENT_READ)
+                self.assertTrue(selector.select(2))
+            raise KeyboardInterrupt()
+
+        with patch.object(target, "_read", side_effect=interrupted_after_real_commit):
+            with self.assertRaises(KeyboardInterrupt):
+                target.request("step", "cancelled")
+        self.assertTrue(target.channel_indeterminate)
+        with self.assertRaises(IndeterminateOperation):
+            target.request("query")
+        target.close()
+        successor = self.target(2)
+        self.assertEqual(successor.start()["counter"], 1)
+        self.assertEqual(successor.request("reconcile", "cancelled")["value"], 1)
+        self.assertEqual(successor.request("query")["counter"], 1)
+
+    def test_child_exit_race_during_close_still_reaps_and_closes(self):
+        from unittest.mock import patch
+
+        target = self.target()
+        target.start()
+        process = target.process
+        real_killpg = os.killpg
+
+        def exit_between_poll_and_signal(pid, signal):
+            real_killpg(pid, signal)
+            process.wait(timeout=2)
+            raise ProcessLookupError("group exited before signal delivery")
+
+        with patch("assimilation.owned_service.os.killpg", side_effect=exit_between_poll_and_signal):
+            target.close()
+        self.assertIsNotNone(process.returncode)
+        self.assertTrue(process.stdin.closed)
+        self.assertTrue(process.stdout.closed)
+        target.close()
+
+    def test_two_services_remain_isolated_across_crash_upgrade_and_code_rollback(self):
+        # Same host, separate owned directories: not multi-host qualification.
+        with tempfile.TemporaryDirectory(prefix="hepta-second-service-") as directory:
+            other = DisposableCounterService(Path(directory), 1, 0)
+            self.addCleanup(other.close)
+            a = self.target()
+            a_ready, b_ready = a.start(), other.start()
+            self.assertNotEqual(a_ready["pid"], b_ready["pid"])
+            a.request("step", "sharedid")
+            other.request("step", "sharedid")
+            other.request("step", "bonly")
+            a.close()
+            with self.assertRaises(ServiceError):
+                self.target(2, 1, implementation_version=2, migration_fault="after_commit").start()
+            # The other writer stays live while A's replacement is indeterminate.
+            self.assertEqual(other.request("step", "bcontinues")["value"], 3)
+            upgraded = self.target(2, 1, implementation_version=2)
+            self.assertEqual(upgraded.start()["schema_version"], 2)
+            self.assertEqual(upgraded.request("step", "afterupgrade")["value"], 2)
+            upgraded.close()
+            rollback = self.target(3, 2, implementation_version=1)
+            self.assertEqual(rollback.start()["counter"], 2)
+            self.assertEqual(rollback.request("reconcile", "afterupgrade")["value"], 2)
+            self.assertIsNone(rollback.request("reconcile", "bonly")["value"])
+            self.assertEqual(rollback.request("step", "afterrollback")["value"], 3)
+            self.assertEqual(other.request("query")["counter"], 3)
+            self.assertIsNone(other.request("reconcile", "afterupgrade")["value"])
+            rollback.close()
+            other.close()
+            for service_root, expected in (
+                (self.root, [("sharedid", 1), ("afterupgrade", 2), ("afterrollback", 3)]),
+                (Path(directory), [("sharedid", 1), ("bonly", 2), ("bcontinues", 3)]),
+            ):
+                with closing(sqlite3.connect(
+                    f"file:{service_root / 'service.sqlite3'}?mode=ro", uri=True
+                )) as observer:
+                    rows = observer.execute("SELECT id,value FROM operations ORDER BY value").fetchall()
+                    self.assertEqual(rows, expected)
 
 
 if __name__ == "__main__":
