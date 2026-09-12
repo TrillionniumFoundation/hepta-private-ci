@@ -74,6 +74,76 @@ steps:
                     declared_commands(f"steps:\n  - uses: {target}\n", root)
 
 
+    def test_documentation_blocks_cannot_supply_commands_or_actions(self):
+        for marker in ("|", "|-", ">-", "|2", "| # example"):
+            with self.subTest(marker=marker):
+                text = (
+                    f"description: {marker}\n"
+                    "  run: git merge-tree --write-tree base source\n"
+                    "  uses: ./missing\n"
+                    "  run: git commit-tree tree\n"
+                )
+                self.assertEqual(workflow_commands(text), [])
+                self.assertEqual(declared_commands(text, ROOT), [])
+                with self.assertRaises(ValueError):
+                    verify_synthetic_merge(text, ROOT)
+
+    def test_run_block_does_not_consume_sibling_metadata(self):
+        text = (
+            "steps:\n  - run: |\n      echo executed\n"
+            "    name: metadata is not a command\n"
+            "    env:\n      EXAMPLE: value\n"
+            "  - run: echo next\n"
+        )
+        self.assertEqual(
+            workflow_commands(text), [["echo", "executed"], ["echo", "next"]]
+        )
+
+    def test_commented_block_header_is_not_a_shell_command(self):
+        self.assertEqual(
+            workflow_commands("run: | # actual script\n  echo executed\n"),
+            [["echo", "executed"]],
+        )
+
+    def test_quoted_local_actions_resolve_and_still_reject_escapes(self):
+        for quote in ("'", '\"'):
+            with self.subTest(quote=quote):
+                verify_synthetic_merge(
+                    f"steps:\n  - uses: {quote}./.github/actions/hepta-synthetic-merge{quote} # shared\n",
+                    ROOT,
+                )
+                with self.assertRaises(ValueError):
+                    declared_commands(f"uses: {quote}./../outside{quote}\n", ROOT)
+
+    def test_local_action_symlinks_cannot_escape_root(self):
+        with tempfile.TemporaryDirectory() as directory:
+            parent = Path(directory)
+            root = parent / "root"
+            root.mkdir()
+            outside = parent / "outside"
+            outside.mkdir()
+            (outside / "action.yml").write_text(
+                "runs:\n  using: composite\n  steps:\n    - run: echo outside\n"
+            )
+            (root / "linked").symlink_to(outside, target_is_directory=True)
+            with self.assertRaises(ValueError):
+                declared_commands("uses: ./linked\n", root)
+            inside = root / "inside"
+            inside.mkdir()
+            (inside / "action.yml").symlink_to(outside / "action.yml")
+            with self.assertRaises(ValueError):
+                declared_commands("uses: ./inside\n", root)
+
+    def test_action_metadata_cannot_claim_composite_execution(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / "action.yml").write_text(
+                "description: |\n  using: composite\n"
+                "runs:\n  using: node20\n  main: index.js\n"
+            )
+            with self.assertRaisesRegex(ValueError, "execution profile"):
+                declared_commands("uses: ./\n", root)
+
 class SyntheticMergeExecutionTests(unittest.TestCase):
     def test_shared_action_builds_ordered_repeatable_candidate(self):
         action = (ROOT / ".github/actions/hepta-synthetic-merge/action.yml").read_text()

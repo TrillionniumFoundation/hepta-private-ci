@@ -9,64 +9,79 @@ import re
 import shlex
 
 
-def workflow_commands(text: str) -> list[list[str]]:
-    """Read executable run scalars used by this workflow, not comments or labels.
+def _workflow_scalars(text: str):
+    """Visit declarations once, never reinterpret block-scalar content as YAML.
 
-    This deliberately supports the workflow's plain, literal and folded run
-    forms. It does not interpret arbitrary shell/YAML programs as proof of tests.
+    This is the repository's restricted declaration profile, not a YAML or
+    shell evaluator. The key column includes a sequence marker, so sibling
+    name/env fields cannot be swallowed by a ``- run: |`` block.
     """
     lines = text.splitlines()
-    commands = []
     index = 0
     while index < len(lines):
-        match = re.fullmatch(r"(\s*)(?:-\s+)?run:\s*(.*)", lines[index])
+        match = re.fullmatch(
+            r" *(?:- +)?(?P<key>[A-Za-z_][\w.-]*):\s*(?P<value>.*)", lines[index]
+        )
         index += 1
         if not match:
             continue
-        indent, scalar = match.groups()
-        if scalar in ("|", "|-", "|+", ">", ">-", ">+"):
+        key, scalar = match.group("key", "value")
+        block_header = re.fullmatch(
+            r"([|>])(?:[1-9][-+]?|[-+][1-9]?)? *(?:#.*)?", scalar
+        )
+        if block_header:
             block = []
             while index < len(lines):
                 line = lines[index]
-                if line.strip() and len(line) - len(line.lstrip()) <= len(indent):
+                if line.strip() and len(line) - len(line.lstrip()) <= match.start("key"):
                     break
                 block.append(line.strip())
                 index += 1
-            scalar = (" " if scalar.startswith(">") else "\n").join(block)
-        for line in scalar.replace("\\\n", " ").splitlines():
-            try:
-                tokens = shlex.split(line, comments=True)
-            except ValueError:
-                continue
-            if tokens:
-                commands.append(tokens)
+            scalar = (" " if block_header[1] == ">" else "\n").join(block)
+        yield key, scalar
+
+
+def _shell_commands(scalar: str) -> list[list[str]]:
+    commands = []
+    for line in scalar.replace("\\\n", " ").splitlines():
+        try:
+            tokens = shlex.split(line, comments=True)
+        except ValueError:
+            continue
+        if tokens:
+            commands.append(tokens)
     return commands
+
+
+def workflow_commands(text: str) -> list[list[str]]:
+    """Read declared run scalars, not comments, labels or examples in prose."""
+    return [
+        command
+        for key, scalar in _workflow_scalars(text)
+        if key == "run"
+        for command in _shell_commands(scalar)
+    ]
 
 
 def declared_commands(
     text: str, root: Path, stack: tuple[Path, ...] = ()
 ) -> list[list[str]]:
-    """Expand local actions outside run scalars; reject cycles and path escapes."""
+    """Expand local actions outside scalar bodies; reject cycles and escapes."""
     if len(stack) >= 16:
         raise ValueError("local action nesting limit")
-    commands = workflow_commands(text)
-    lines = text.splitlines()
-    index = 0
-    while index < len(lines):
-        line = lines[index]
-        index += 1
-        run = re.fullmatch(r"(\s*)(?:-\s+)?run:\s*([|>][-+]?)", line)
-        if run:
-            while index < len(lines):
-                child = lines[index]
-                if child.strip() and len(child) - len(child.lstrip()) <= len(run[1]):
-                    break
-                index += 1
+    commands = []
+    for key, scalar in _workflow_scalars(text):
+        if key == "run":
+            commands.extend(_shell_commands(scalar))
             continue
-        use = re.fullmatch(r"\s*(?:-\s+)?uses:\s*(\./[^\s#]+)\s*(?:#.*)?", line)
-        if not use:
+        if key != "uses":
             continue
-        directory = (root / use[1]).resolve()
+        use = shlex.split(scalar, comments=True)
+        if not use or not use[0].startswith("./"):
+            continue  # Remote actions remain opaque.
+        if len(use) != 1:
+            raise ValueError("unsupported local action reference")
+        directory = (root / use[0]).resolve()
         if not directory.is_relative_to(root.resolve()):
             raise ValueError("local action outside repository")
         candidates = [directory / name for name in ("action.yml", "action.yaml")]
@@ -77,7 +92,10 @@ def declared_commands(
         if not path.is_relative_to(root.resolve()) or path in stack:
             raise ValueError("local action cycle or path escape")
         action = path.read_text(encoding="utf-8")
-        if not re.search(r"^\s+using:\s*composite\s*$", action, re.M):
+        if not any(
+            key == "using" and shlex.split(value, comments=True) == ["composite"]
+            for key, value in _workflow_scalars(action)
+        ):
             raise ValueError("unsupported local action execution profile")
         commands.extend(declared_commands(action, root, (*stack, path)))
     return commands
