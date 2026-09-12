@@ -7,7 +7,12 @@ use std::sync::Mutex;
 
 use anyhow::Context;
 use anyhow::Result;
+use codex_hepta_control_plane::admit_compiled_body_graph_v2;
+use codex_hepta_control_plane::compiled_body_graph_digest_v2;
 use codex_hepta_control_plane::DataflowTiming;
+use codex_hepta_control_plane::BodyGraphBindingV1;
+use codex_hepta_control_plane::CompiledOrganAdmissionV2;
+use codex_hepta_control_plane::CompiledOrganHandlerV2;
 use codex_hepta_control_plane::FailureDomainV1;
 use codex_hepta_control_plane::FallbackTerminal;
 use codex_hepta_control_plane::InputPort;
@@ -17,9 +22,13 @@ use codex_hepta_control_plane::OrganHandlerFaultV1;
 use codex_hepta_control_plane::OrganHostV1;
 use codex_hepta_control_plane::OrganNodeV1;
 use codex_hepta_control_plane::OrganRole;
+use codex_hepta_control_plane::OrganManifestBindingV1;
+use codex_hepta_control_plane::NativeHandoffProtocolAdmissionV1;
+use codex_hepta_control_plane::NativeHandoffProtocolRegistryV1;
 use codex_hepta_control_plane::OutputPort;
 use codex_hepta_control_plane::RuntimeLinkV1;
 use codex_hepta_control_plane::TrustedReadOnlyOrganV1;
+use codex_hepta_control_plane::encode_compiled_body_graph_v2;
 use codex_hepta_paths::HeptaStateRoot;
 use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
@@ -136,6 +145,44 @@ fn build_host(root: HeptaStateRoot, state: Arc<dyn RuntimeStateAdapter>) -> Resu
             })
             .collect(),
     };
+    let body = BodyGraphBindingV1 {
+        generation,
+        organ_manifests: graph
+            .organs
+            .iter()
+            .map(|node| OrganManifestBindingV1 {
+                organ_id: node.id.clone(),
+                manifest_digest: Digest32::of_bytes(
+                    format!("hepta.runtime.status.manifest.v1:{}", node.id).as_bytes(),
+                ),
+                organ_class: node.role,
+                input_ports: node.inputs.clone(),
+                output_ports: node.outputs.clone(),
+            })
+            .collect(),
+        dependency_edges: graph.initialization.clone(),
+        fallback_edges: graph.fallback.clone(),
+        topological_order: graph
+            .validate()
+            .map_err(|error| anyhow::anyhow!("validate status body: {error:?}"))?
+            .initialization_order,
+        snapshot_digest: Digest32::of_bytes(b"hepta.runtime.status.body.v1"),
+    };
+    let bytes = encode_compiled_body_graph_v2(&body, &graph)
+        .context("encode compiled-in status body")?;
+    let host_admission = CompiledOrganAdmissionV2 {
+        expected_digest: compiled_body_graph_digest_v2(&bytes)?,
+        generation,
+        process: process.clone(),
+        host: host_id.clone(),
+    };
+    let (verified, _receipt) = admit_compiled_body_graph_v2(
+        &bytes,
+        &host_admission,
+        &NativeHandoffProtocolAdmissionV1::canonical(),
+        &NativeHandoffProtocolRegistryV1::canonical(),
+    )
+    .context("admit compiled-in status body through protocol registry")?;
     let handlers: Vec<Box<dyn TrustedReadOnlyOrganV1>> = vec![
         Box::new(StatusOrgan {
             id: ingress.clone(),
@@ -146,7 +193,15 @@ fn build_host(root: HeptaStateRoot, state: Arc<dyn RuntimeStateAdapter>) -> Resu
             data: Some((root, state)),
         }),
     ];
-    let mut host = OrganHostV1::new(graph, handlers)?;
+    let handlers = handlers
+        .into_iter()
+        .zip(body.organ_manifests.iter())
+        .map(|(handler, manifest)| CompiledOrganHandlerV2 {
+            manifest_digest: manifest.manifest_digest,
+            handler,
+        })
+        .collect();
+    let mut host = verified.into_host(handlers)?;
     host.start_all()
         .context("start compiled-in status organs")?;
     Ok(StatusHost {
