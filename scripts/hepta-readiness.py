@@ -18,6 +18,7 @@ READINESS_PATH = "docs/readiness/READINESS.json"
 PROTOCOL_PATH = "docs/readiness/PROTOCOLS.json"
 GAPS_PATH = "docs/readiness/GAPS.json"
 STATUS_PATH = "docs/readiness/STATUS.md"
+STATUS_MODEL_PATH = "docs/readiness/STATUS_MODEL.json"
 README_PATH = "docs/readiness/README.md"
 WORKFLOW_PATH = ".github/workflows/hepta-implementation-readiness.yml"
 MODULES_PATH = "docs/modules/MODULES.json"
@@ -388,6 +389,43 @@ def is_under(path: str, root: str) -> bool:
     return clean_path == clean_root or clean_path.startswith(clean_root + "/")
 
 
+def validate_status_model(model: dict[str, Any]) -> None:
+    """Validate the one vocabulary shared by readiness and dossier projections."""
+    need(
+        model.get("schema") == "hepta.qualification-readiness-status.v1"
+        and model.get("schemaVersion") == 1,
+        "status model identity",
+    )
+    expected = [
+        "specification_closed",
+        "implementation_closed",
+        "external_evidence_closed",
+    ]
+    dimensions = model.get("dimensions")
+    need(
+        isinstance(dimensions, list)
+        and [row.get("id") for row in dimensions] == expected,
+        "status model dimensions",
+    )
+    need(model.get("allowedValues") == ["open", "closed"], "status model values")
+    need(model.get("ordering") == expected, "status model ordering")
+    projections = model.get("projection")
+    need(
+        isinstance(projections, dict)
+        and set(projections) == {"readiness_registry", "execution_dossiers", "native_bindings"},
+        "status model projections",
+    )
+    for label, projection in projections.items():
+        need(
+            all(projection.get(key) in {"open", "closed"} for key in expected),
+            label + " status projection",
+        )
+        if projection["implementation_closed"] == "closed":
+            need(projection["specification_closed"] == "closed", label + " implication")
+        if projection["external_evidence_closed"] == "closed":
+            need(projection["implementation_closed"] == "closed", label + " evidence implication")
+
+
 def status_text(
     readiness: dict[str, Any], protocols: dict[str, Any], gaps: dict[str, Any]
 ) -> str:
@@ -399,9 +437,9 @@ def status_text(
             "",
             f"**Parent plan:** `{PLAN_ID}` v{PLAN_VERSION}",
             f"**Readiness overlay:** `{OVERLAY_ID}` v{OVERLAY_VERSION}",
-            "**Documentation gap state:** `closed`",
-            "**Source implementation:** `not implied`",
-            "**Runtime activation:** `not implied`",
+            "**Canonical qualification status:** `specification_closed=closed`; `implementation_closed=open`; `external_evidence_closed=open`",
+            "",
+            "Status vocabulary and implication rules: [`STATUS_MODEL.json`](STATUS_MODEL.json).",
             "",
             "## Closed specification surface",
             "",
@@ -417,7 +455,7 @@ def status_text(
             "",
             "The closed surface fixes source identity, objective compilation, system-level NDU integration, neuron execution, causal evaluation, governed self-iteration, embodied timing/safety, authorized external-system assimilation and all-module parallel development semantics.",
             "",
-            "Source code, real models, future-time efficacy, empirical biomimicry, target hardware, external-system owner consent, independent acceptance and production rollout remain separate gates and cannot be satisfied by documentation or repository fixtures.",
+            "The execution-dossier projection uses the same three dimensions. Source code, real models, future-time efficacy, empirical biomimicry, target hardware, external-system owner consent, independent acceptance and production rollout remain separate gates and cannot be satisfied by documentation or repository fixtures.",
             "",
         ]
     )
@@ -458,6 +496,8 @@ def verify() -> int:
     readiness = load(READINESS_PATH)
     protocols = load(PROTOCOL_PATH)
     gaps = load(GAPS_PATH)
+    status_model = load(STATUS_MODEL_PATH)
+    validate_status_model(status_model)
     modules = load(MODULES_PATH)["modules"]
     packages = load(PACKAGES_PATH)["packages"]
     module_docs = load(MODULE_DOCS_PATH)["modules"]
@@ -898,6 +938,7 @@ def verify() -> int:
             token in readme
             for token in [
                 "READINESS.json",
+                "STATUS_MODEL.json",
                 "PROTOCOLS.json",
                 "GAPS.json",
                 "STATUS.md",
@@ -986,6 +1027,7 @@ def verify() -> int:
 
 
 def generate_status(check: bool) -> int:
+    validate_status_model(load(STATUS_MODEL_PATH))
     text = status_text(load(READINESS_PATH), load(PROTOCOL_PATH), load(GAPS_PATH))
     path = ROOT / STATUS_PATH
     if check:
