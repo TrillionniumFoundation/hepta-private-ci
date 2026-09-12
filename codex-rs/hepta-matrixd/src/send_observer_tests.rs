@@ -88,9 +88,7 @@ fn failed_send_is_terminal_and_only_identical_replay_is_idempotent() {
         server_event_id: None,
         ..successful_observation()
     };
-    let terminal = observer
-        .observe_send(failed.clone())
-        .expect("failure");
+    let terminal = observer.observe_send(failed.clone()).expect("failure");
     assert_eq!(terminal.state, SendState::Failed);
     let mut replay = terminal.clone();
     replay.idempotent = true;
@@ -101,10 +99,7 @@ fn failed_send_is_terminal_and_only_identical_replay_is_idempotent() {
         ..failed
     };
     for observation in [successful_observation(), indeterminate] {
-        assert_eq!(
-            observer.observe_send(observation),
-            Err(Error::AlreadyTerminal)
-        );
+        assert_eq!(observer.observe_send(observation), Err(Error::AlreadyTerminal));
         assert_eq!(observer.receipt("operation.1"), Some(&terminal));
     }
 }
@@ -114,9 +109,7 @@ fn successful_send_replay_binds_outcome_event_and_terminal_observation() {
     let mut observer = MatrixSendObserver::default();
     observer.prepare_send(100, intent()).expect("prepare");
     let observation = successful_observation();
-    let terminal = observer
-        .observe_send(observation.clone())
-        .expect("success");
+    let terminal = observer.observe_send(observation.clone()).expect("success");
     let mut replay = terminal.clone();
     replay.idempotent = true;
     assert_eq!(observer.observe_send(observation.clone()), Ok(replay));
