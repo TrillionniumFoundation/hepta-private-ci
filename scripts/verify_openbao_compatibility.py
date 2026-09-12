@@ -45,7 +45,9 @@ def main() -> int:
         if row.get("blocking") is True and status != "closed":
             blockers.append(row["id"])
     result = {
-        "status": "PASS_OPENBAO_REPLACEMENT" if not blockers else "BLOCKED_OPENBAO_REPLACEMENT_GAPS",
+        "status": "PASS_OPENBAO_REPLACEMENT"
+        if not blockers
+        else "BLOCKED_OPENBAO_REPLACEMENT_GAPS",
         "capabilities": len(rows),
         "blockingGaps": blockers,
         "closed": sum(row["status"] == "closed" for row in rows),
