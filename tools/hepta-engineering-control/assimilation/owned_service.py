@@ -28,6 +28,32 @@ class IndeterminateOperation(ServiceError):
     """Dispatch may have committed. Reconcile; do not automatically repeat it."""
 
 
+def _decode_frame(raw: bytes | bytearray) -> dict:
+    """One UTF-8 JSON object; duplicate keys never silently choose an effect."""
+    def unique_object(pairs):
+        result = {}
+        for key, value in pairs:
+            if key in result:
+                raise ValueError("duplicate frame field")
+            result[key] = value
+        return result
+
+    def reject_constant(value):
+        raise ValueError("non-finite frame value")
+
+    try:
+        frame = json.loads(
+            raw.decode("utf-8"),
+            object_pairs_hook=unique_object,
+            parse_constant=reject_constant,
+        )
+    except (ValueError, RecursionError) as error:
+        raise ServiceError("invalid_protocol_frame") from error
+    if not isinstance(frame, dict):
+        raise ServiceError("invalid_protocol_frame")
+    return frame
+
+
 def _validate_operation(operation, identity):
     # Both ends validate the same bounded protocol; the child is not permitted
     # to trust the client validation when decoding a frame.
@@ -214,13 +240,7 @@ class DisposableCounterService:
                 if not value:
                     raise ServiceError("response_channel_closed")
                 if value == b"\n":
-                    try:
-                        response = json.loads(data)
-                    except (ValueError, UnicodeError) as error:
-                        raise ServiceError("invalid_response") from error
-                    if not isinstance(response, dict):
-                        raise ServiceError("invalid_response")
-                    return response
+                    return _decode_frame(data)
                 data.extend(value)
         raise ServiceError("response_limit")
 
@@ -367,10 +387,9 @@ def _serve(
         raw = sys.stdin.buffer.readline(2049)
         if not raw or len(raw) > 2048 or not raw.endswith(b"\n"):
             break
-        request = json.loads(raw)
+        request = _decode_frame(raw)
         if (
-            not isinstance(request, dict)
-            or set(request) != {"op", "id", "generation", "sequence"}
+            set(request) != {"op", "id", "generation", "sequence"}
             or type(request["generation"]) is not int
             or request["generation"] != generation
             or type(request["sequence"]) is not int
