@@ -46,6 +46,7 @@ ALLOWED_PREFIXES = (
     "qualification/module-execution-dossiers/detail/utility.ndu.md",
     "qualification/module-execution-dossiers/detail/control.runtime.md",
     "scripts/hepta-lane-d-semantic-conformance.py",
+    "scripts/test_hepta_lane_d_scope.py",
     ".github/workflows/hepta-lane-d-semantic-conformance.yml",
 )
 
@@ -68,31 +69,58 @@ def load(path: str) -> dict[str, Any]:
             result[key] = value
         return result
 
-    return json.loads(
-        (ROOT / path).read_text(encoding="utf-8"), object_pairs_hook=pairs
-    )
+    try:
+        value = json.loads(
+            (ROOT / path).read_text(encoding="utf-8"), object_pairs_hook=pairs
+        )
+    except (OSError, ValueError) as error:
+        fail(f"cannot read JSON {path}: {error}")
+    need(isinstance(value, dict), f"JSON object required: {path}")
+    return value
 
 
-def verify_map(module: str) -> str:
+def verify_map(module: str) -> tuple[str, ...]:
     mapping = load(MAPS[module])
     need(mapping.get("module") == module, f"{module} map identity")
     need(mapping.get("authorityDelta") == "none", f"{module} authority delta")
-    owner_root = mapping.get("sourceRoot")
-    need(
-        isinstance(owner_root, str)
-        and owner_root
-        and not Path(owner_root).is_absolute()
-        and ".." not in Path(owner_root).parts
-        and owner_root != ".",
-        f"{module} invalid owner root",
-    )
-    resolved_owner = (ROOT / owner_root).resolve()
-    need(resolved_owner.is_relative_to(ROOT.resolve()), f"{module} owner-root escape")
+    # v3 owns a list of declared roots; sourceRoot is its compatibility alias.
+    # Retain legacy scalar maps without rewriting the canonical registry.
+    raw_roots = mapping.get("declaredRoots", mapping.get("sourceRoot"))
+    if isinstance(raw_roots, str):
+        raw_roots = [raw_roots]
+    need(isinstance(raw_roots, list) and raw_roots, f"{module} invalid owner root list")
+    if "declaredRoots" in mapping and "sourceRoot" in mapping:
+        alias = mapping["sourceRoot"]
+        if isinstance(alias, str):
+            alias = [alias]
+        need(alias == raw_roots, f"{module} owner root aliases differ")
+    resolved_owners = set()
+    owner_roots = []
+    for owner_root in raw_roots:
+        need(
+            isinstance(owner_root, str)
+            and owner_root
+            and "\\" not in owner_root
+            and ":" not in owner_root
+            and not Path(owner_root).is_absolute()
+            and ".." not in Path(owner_root).parts
+            and Path(owner_root) != Path("."),
+            f"{module} invalid owner root",
+        )
+        resolved = (ROOT / owner_root).resolve()
+        need(resolved.is_relative_to(ROOT.resolve()), f"{module} owner-root escape")
+        need(resolved.is_dir(), f"{module} missing owner root {owner_root}")
+        need(resolved not in resolved_owners, f"{module} duplicate owner root")
+        resolved_owners.add(resolved)
+        owner_roots.append(Path(owner_root).as_posix())
     need(mapping.get("operations"), f"{module} operations")
     for operation in mapping["operations"]:
         source_path = operation["sourcePath"]
         need(
-            (ROOT / source_path).resolve().is_relative_to(resolved_owner),
+            any(
+                (ROOT / source_path).resolve().is_relative_to(owner)
+                for owner in resolved_owners
+            ),
             f"{module} source escapes owner root: {source_path}",
         )
         need((ROOT / source_path).is_file(), f"missing source {source_path}")
@@ -106,6 +134,10 @@ def verify_map(module: str) -> str:
             )
         for test in operation.get("tests", []):
             test_path = test["path"]
+            need(
+                (ROOT / test_path).resolve().is_relative_to(ROOT.resolve()),
+                f"{module} test-path escape: {test_path}",
+            )
             need((ROOT / test_path).is_file(), f"missing test {test_path}")
             test_source = (ROOT / test_path).read_text(encoding="utf-8")
             test_symbol = test["symbol"]
@@ -115,7 +147,7 @@ def verify_map(module: str) -> str:
                     f"missing test symbol {test_symbol}",
                 )
 
-    return owner_root
+    return tuple(owner_roots)
 
 
 def verify() -> int:
@@ -310,7 +342,7 @@ def verify_changes(base: str) -> int:
     # This gate does not approve those other lanes or rescan historical deltas.
     owner_roots = []
     for module in MODULES:
-        owner_roots.append(verify_map(module).rstrip("/"))
+        owner_roots.extend(verify_map(module))
     owned_prefixes = (
         *ALLOWED_PREFIXES,
         *(root + "/" for root in owner_roots),
@@ -343,22 +375,22 @@ def verify_changes(base: str) -> int:
 
 
 def self_test() -> int:
-    need(any("x/y".startswith(prefix) for prefix in ("x/",)), "prefix fixture")
-    try:
-        json.loads(
-            '{"a":1,"a":2}',
-            object_pairs_hook=lambda items: (
-                (_ for _ in ()).throw(ValueError("duplicate"))
-                if len(items) != len(dict(items))
-                else dict(items)
-            ),
-        )
-        fail("duplicate-key fixture accepted")
-    except ValueError:
-        pass
+    # Exercise the actual reader and Git range policy, not a second decoder or
+    # a statically true prefix expression. The suite uses temporary repositories.
+    import unittest
+
+    suite = unittest.defaultTestLoader.discover(
+        str(Path(__file__).resolve().parent), pattern="test_hepta_lane_d_scope.py"
+    )
+    result = unittest.TextTestRunner(verbosity=2).run(suite)
+    need(result.testsRun > 0 and result.wasSuccessful(), "behavior regressions failed")
     print(
         json.dumps(
-            {"status": "PASS_HEPTA_LANE_D_SELF_TEST", "authorityGranted": False},
+            {
+                "status": "PASS_HEPTA_LANE_D_SELF_TEST",
+                "testsRun": result.testsRun,
+                "authorityGranted": False,
+            },
             sort_keys=True,
         )
     )
