@@ -74,11 +74,14 @@ jobs:
           git archive --format=tar.gz HEAD > "$snapshot/source.tar.gz"
           git ls-tree -rz HEAD > "$snapshot/tree.nul"
           git cat-file commit HEAD > "$snapshot/commit.object"
+          # Commit objects preserve ancestry checks without exporting credentials
+          # or every historical source tree. No --revs: pack only the listed IDs.
+          git rev-list HEAD | git pack-objects --stdout > "$snapshot/commits.pack"
           {
             printf 'source=%s\nbase=%s\n' "$SOURCE_SHA" "$BASE_SHA"
             git rev-parse HEAD 'HEAD^{tree}'
           } > "$snapshot/identity.txt"
-          (cd "$snapshot" && sha256sum source.tar.gz tree.nul commit.object identity.txt > SHA256SUMS)
+          (cd "$snapshot" && sha256sum source.tar.gz tree.nul commit.object commits.pack identity.txt > SHA256SUMS)
 
       - name: Retain exact tracked source
         if: matrix.profile.name == 'Hierarchy and live consumer'
