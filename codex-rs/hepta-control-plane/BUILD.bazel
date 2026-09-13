@@ -1,5 +1,5 @@
-load("//:defs.bzl", "codex_rust_crate")
 load("@rules_rust//rust:defs.bzl", "rust_binary")
+load("//:defs.bzl", "codex_rust_crate")
 
 codex_rust_crate(
     name = "hepta-control-plane",

@@ -14,9 +14,13 @@ class ConsolidatedScopeTests(unittest.TestCase):
         directory = tempfile.TemporaryDirectory(prefix="hepta-ci-scope-")
         self.addCleanup(directory.cleanup)
         self.root = Path(directory.name)
-        workflow = (ROOT / ".github/workflows/hepta-consolidated-source.yml").read_text()
+        workflow = (
+            ROOT / ".github/workflows/hepta-consolidated-source.yml"
+        ).read_text()
         # Execute the actual run block, not a reimplementation of its decision.
-        block = workflow.split("        id: scope\n", 1)[1].split("        run: |\n", 1)[1]
+        block = workflow.split("        id: scope\n", 1)[1].split(
+            "        run: |\n", 1
+        )[1]
         lines = []
         for line in block.splitlines():
             if line and not line.startswith("          "):
@@ -90,14 +94,18 @@ class ConsolidatedScopeTests(unittest.TestCase):
         self.assertNotEqual(result.returncode, 0)
         self.assertEqual(output, "")
 
-
     def test_shared_build_inputs_cannot_skip_full_regression(self):
         for path in (
-            "codex-rs/Cargo.toml", "codex-rs/Cargo.lock",
-            "codex-rs/another-crate/Cargo.toml", "codex-rs/another-crate/build.rs",
-            "codex-rs/.cargo/config.toml", ".cargo/config.toml",
-            "codex-rs/rust-toolchain.toml", "rust-toolchain.toml",
-            "justfile", "scripts/hepta_ci_v8.py",
+            "codex-rs/Cargo.toml",
+            "codex-rs/Cargo.lock",
+            "codex-rs/another-crate/Cargo.toml",
+            "codex-rs/another-crate/build.rs",
+            "codex-rs/.cargo/config.toml",
+            ".cargo/config.toml",
+            "codex-rs/rust-toolchain.toml",
+            "rust-toolchain.toml",
+            "justfile",
+            "scripts/hepta_ci_v8.py",
             ".github/workflows/hepta-consolidated-source.yml",
         ):
             with self.subTest(path=path):

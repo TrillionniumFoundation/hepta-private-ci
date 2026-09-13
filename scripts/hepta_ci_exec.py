@@ -83,7 +83,11 @@ def run(output: Path, command: list[str]) -> int:
         record["command_exit_code"] = completed.returncode
         after = identity()
         record["after"] = after
-        exit_code = completed.returncode if completed.returncode >= 0 else 128 - completed.returncode
+        exit_code = (
+            completed.returncode
+            if completed.returncode >= 0
+            else 128 - completed.returncode
+        )
         if after != before:
             record["error"] = "source identity or bytes changed during execution"
             exit_code = exit_code or 1
@@ -92,14 +96,18 @@ def run(output: Path, command: list[str]) -> int:
         record["status"] = "interrupted"
         exit_code = 130
     except (OSError, ValueError, subprocess.SubprocessError) as error:
-        record["status"] = "rejected" if record["command_exit_code"] is None else "failed"
+        record["status"] = (
+            "rejected" if record["command_exit_code"] is None else "failed"
+        )
         record["error"] = str(error)
     finally:
         record["finished_at"] = datetime.now(timezone.utc).isoformat()
         record["elapsed_seconds"] = time.monotonic() - started
         record["exit_code"] = exit_code
         # Atomic replacement of the result owned by this invocation only.
-        with tempfile.NamedTemporaryFile("w", dir=output.parent, delete=False, encoding="utf-8") as stream:
+        with tempfile.NamedTemporaryFile(
+            "w", dir=output.parent, delete=False, encoding="utf-8"
+        ) as stream:
             pending = Path(stream.name)
             json.dump(record, stream, indent=2, sort_keys=True)
             stream.write("\n")

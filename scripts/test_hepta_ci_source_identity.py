@@ -118,17 +118,26 @@ class GitSourceIdentityTests(unittest.TestCase):
     def maps_at(self, source_base: dict) -> list[dict]:
         truth = copy.deepcopy(self.truth)
         truth["modules"] = [
-            {"module": module, "mapPath": f"docs/modules/{module}/IMPLEMENTATION_MAP.json",
-             "operationIds": LANE_B.OPS[module]}
+            {
+                "module": module,
+                "mapPath": f"docs/modules/{module}/IMPLEMENTATION_MAP.json",
+                "operationIds": LANE_B.OPS[module],
+            }
             for module in LANE_B.MODULES
         ]
         maps = [
-            {"module": module, "sourceBase": copy.deepcopy(source_base),
-             "operations": [{"operation": operation} for operation in LANE_B.OPS[module]]}
+            {
+                "module": module,
+                "sourceBase": copy.deepcopy(source_base),
+                "operations": [
+                    {"operation": operation} for operation in LANE_B.OPS[module]
+                ],
+            }
             for module in LANE_B.MODULES
         ]
-        with mock.patch.object(LANE_B, "ROOT", self.root), mock.patch.object(
-            LANE_B, "load", side_effect=maps
+        with (
+            mock.patch.object(LANE_B, "ROOT", self.root),
+            mock.patch.object(LANE_B, "load", side_effect=maps),
         ):
             return LANE_B.module_maps(truth)
 
@@ -290,7 +299,10 @@ class SourceConformanceTests(unittest.TestCase):
 class DependencyOwnershipTests(unittest.TestCase):
     def test_alias_and_direct_dependency_are_not_arbitrary_ownership(self) -> None:
         roots = ["codex-rs/codex-app-server", "codex-rs/hepta-codex-adapter"]
-        delegate = {"path": "codex-rs/core/src/codex_thread.rs", "buildTarget": "codex-core"}
+        delegate = {
+            "path": "codex-rs/core/src/codex_thread.rs",
+            "buildTarget": "codex-core",
+        }
         self.assertTrue(LANE_B.delegate_matches_owner("runtime.codex", roots, delegate))
         for wrong in (
             {**delegate, "buildTarget": "codex-tui"},
@@ -298,7 +310,9 @@ class DependencyOwnershipTests(unittest.TestCase):
             {**delegate, "path": "../outside/core/src/codex_thread.rs"},
         ):
             with self.subTest(wrong=wrong):
-                self.assertFalse(LANE_B.delegate_matches_owner("runtime.codex", roots, wrong))
+                self.assertFalse(
+                    LANE_B.delegate_matches_owner("runtime.codex", roots, wrong)
+                )
         with self.assertRaisesRegex(LANE_B.Invalid, "invalid source alias"):
             LANE_B.delegate_matches_owner("runtime.agentd", roots, delegate)
 
