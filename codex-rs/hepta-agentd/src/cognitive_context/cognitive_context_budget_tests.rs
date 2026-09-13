@@ -26,8 +26,8 @@ use codex_hepta_types::FixedQ32;
 use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
 
-use super::*;
 use super::super::MAX_CONTEXT_JSON_BYTES;
+use super::*;
 use crate::CognitiveContextItem;
 use crate::CurrentCognitiveRegistry;
 use crate::PinnedCognitiveRanker;
