@@ -20,10 +20,11 @@ jobs:
           set -euo pipefail
           output="$RUNNER_TEMP/blocker-source"
           mkdir -p "$output"
-          git update-ref refs/heads/export-ranked a40afc0f3afcc4a5c7b73f6d4675243fe1afd8f1
+          git update-ref refs/heads/export-ranked be96e8eb69cd08f851eb5fce252598454b8c52c8
           git update-ref refs/heads/export-phase5 4b94908166111aab519e5e582675d3d53999a0fe
           git update-ref refs/heads/export-alias b6a5712f18427db51d603357d79c28a47e1a7d8f
-          git -c pack.threads=2 bundle create "$output/source.bundle" refs/heads/export-ranked refs/heads/export-phase5 refs/heads/export-alias ^afc11afe64f7b5efafd9234b16793e4080b1d296
+          git update-ref refs/heads/export-merge-identity e505cd874c6e9f4ae228c3a36fb3f2439c8b918e
+          git -c pack.threads=2 bundle create "$output/source.bundle" refs/heads/export-ranked refs/heads/export-phase5 refs/heads/export-alias refs/heads/export-merge-identity ^afc11afe64f7b5efafd9234b16793e4080b1d296
           git bundle list-heads "$output/source.bundle" > "$output/heads.txt"
           (cd "$output" && sha256sum source.bundle > SHA256SUMS)
           git diff --check
