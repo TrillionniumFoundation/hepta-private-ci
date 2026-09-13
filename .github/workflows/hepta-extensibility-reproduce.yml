@@ -2,7 +2,7 @@ name: Hepta offline remediation reproduction
 
 on:
   push:
-    branches: [work/hepta-phase5-closure-20260913]
+    branches: [work/hepta-blocker-repair-20260913]
     paths: [.github/workflows/hepta-extensibility-reproduce.yml]
 
 permissions:
@@ -39,12 +39,16 @@ jobs:
           output="$RUNNER_TEMP/offline-reproduction"
           mkdir -p "$output/tools" "$output/wheels" "$output/v8"
           git -c pack.threads=2 bundle create "$output/source.bundle" HEAD \
-            ^afc11afe64f7b5efafd9234b16793e4080b1d296
+            ^e6c67089e5dd66818d00863b92b491990430fd05
           git rev-parse HEAD HEAD^{tree} > "$output/identity.txt"
           git bundle list-heads "$output/source.bundle" > "$output/heads.txt"
           install -m 0755 "$(command -v dotslash)" "$output/tools/dotslash"
           cp "$RUSTY_V8_ARCHIVE" "$RUSTY_V8_SRC_BINDING_PATH" "$output/v8/"
-          rustc -vV > "$output/rust-version.txt"
+          rustup toolchain install 1.95.0 --profile minimal --component clippy --component rustfmt
+          rustup run 1.95.0 rustc -vV > "$output/rust-version.txt"
+          toolchain=$(rustup run 1.95.0 rustc --print sysroot)
+          tar --exclude='./share/doc' --exclude='./share/man' \
+            -C "$toolchain" -czf "$output/toolchain.tar.gz" .
           python3 - "$output" <<'PY'
           import hashlib
           import json
@@ -85,7 +89,7 @@ jobs:
           git diff --cached --quiet
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: hepta-phase5-reproduction-${{ github.sha }}
+          name: hepta-blocker-reproduction-${{ github.sha }}
           path: ${{ runner.temp }}/offline-reproduction
           if-no-files-found: error
           retention-days: 2
