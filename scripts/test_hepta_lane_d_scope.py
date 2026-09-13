@@ -202,11 +202,13 @@ class LaneDChangeScopeTests(unittest.TestCase):
         result = self.check()
         self.assertEqual(
             result["laneDChangedPaths"],
-            sorted([
-                "codex-rs/hepta-ndu/src/new_policy.rs",
-                f"{extra}/component.rs",
-                path,
-            ]),
+            sorted(
+                [
+                    "codex-rs/hepta-ndu/src/new_policy.rs",
+                    f"{extra}/component.rs",
+                    path,
+                ]
+            ),
         )
         self.assertEqual(result["otherLaneChangedPaths"], 1)
 
