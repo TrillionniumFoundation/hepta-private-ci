@@ -15,6 +15,8 @@ import re
 import subprocess
 from pathlib import Path
 
+from hepta_module_source_roots import resolve_source_roots
+
 ROOT = Path(__file__).resolve().parents[1]
 
 
@@ -96,7 +98,7 @@ def map_for(module: dict, source_base: dict, lanes: dict):
         "deputy": module["deputy"],
         "technicalGuide": module["technicalDocument"],
         "declaredRoots": roots,
-        "resolvedRoots": [x for x in roots if (ROOT / x).exists()],
+        "resolvedRoots": resolve_source_roots(ROOT, module),
         "sourceRootPresent": all((ROOT / x).exists() for x in roots),
         "productionImplementation": False,
         "productCallerState": "not_composed",
@@ -188,7 +190,7 @@ def migrate_map(row: dict, module: dict, lanes: dict, source_base: dict) -> dict
         "deputy": row.get("deputy", module["deputy"]),
         "technicalGuide": row.get("technicalGuide", module["technicalDocument"]),
         "declaredRoots": declared,
-        "resolvedRoots": [x for x in declared if (ROOT / x).exists()],
+        "resolvedRoots": resolve_source_roots(ROOT, module),
         "sourceRootPresent": all((ROOT / x).exists() for x in declared),
         "productionImplementation": bool(row.get("productionImplementation", False)),
         "productCallerState": row.get("productCallerState", "not_composed"),
@@ -299,6 +301,11 @@ def verify():
             declared = [declared]
         if declared != roots:
             failures.append(f"{mid}: declared roots")
+        try:
+            if row.get("resolvedRoots") != resolve_source_roots(ROOT, module):
+                failures.append(f"{mid}: resolved source roots")
+        except (ValueError, OSError) as exc:
+            failures.append(f"{mid}: source alias: {exc}")
         ops = row.get("operations")
         if not isinstance(ops, list) or not ops:
             failures.append(f"{mid}: operations")
