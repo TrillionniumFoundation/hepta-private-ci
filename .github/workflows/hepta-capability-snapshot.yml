@@ -40,7 +40,7 @@ jobs:
           output="$RUNNER_TEMP/capability-tools"
           mkdir -p "$output/bin" "$output/lib"
           cp "$root/bin/rustfmt" "$output/bin/rustfmt"
-          for library in "$root"/lib/*.so; do
+          for library in "$root"/lib/*.so*; do
             if test -f "$library"; then cp "$library" "$output/lib/"; fi
           done
           rustc -vV > "$output/rust-version.txt"
@@ -56,7 +56,10 @@ jobs:
         run: python3 -S ../scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/capability-records/check.json" -- cargo check --locked -p codex-hepta-intelligence --all-targets
       - name: Execute existing and new intelligence tests
         working-directory: codex-rs
-        run: python3 -S ../scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/capability-records/test.json" -- just test --locked -p codex-hepta-intelligence --run-ignored all
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -S ../scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/capability-records/test.json" -- just test --locked -p codex-hepta-intelligence --run-ignored all 2>&1 | tee "$RUNNER_TEMP/capability-records/test.log"
       - name: Strict Clippy
         working-directory: codex-rs
         run: python3 -S ../scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/capability-records/clippy.json" -- cargo clippy --locked -p codex-hepta-intelligence --all-targets -- -D warnings
