@@ -75,19 +75,24 @@ def run(output: Path, command: list[str]) -> int:
             if record["tested_sha"] != record["source_sha"]:
                 raise ValueError("source lane does not test the source SHA")
         elif record["lane"] == "base-merge":
+            if re.fullmatch(r"[0-9a-f]{40}", record["base_sha"]) is None:
+                raise ValueError("invalid base_sha")
             if before["parents"] != [record["base_sha"], record["source_sha"]]:
                 raise ValueError("merge lane has different base/source parents")
+            # Parent identities alone do not prove what was merged. Recompute
+            # the candidate tree before dispatch, independently of other jobs.
+            # Conflicts or unavailable history reject, never certify a fallback.
+            expected_tree = git("merge-tree", "--write-tree", record["base_sha"], record["source_sha"])
+            if before["tree"] != expected_tree:
+                raise ValueError("merge lane tree differs from the recomputed base/source merge")
+            record["recomputed_merge_tree"] = expected_tree
         else:
             raise ValueError("an explicit source-head or base-merge lane is required")
         completed = subprocess.run(command, check=False)
         record["command_exit_code"] = completed.returncode
         after = identity()
         record["after"] = after
-        exit_code = (
-            completed.returncode
-            if completed.returncode >= 0
-            else 128 - completed.returncode
-        )
+        exit_code = completed.returncode if completed.returncode >= 0 else 128 - completed.returncode
         if after != before:
             record["error"] = "source identity or bytes changed during execution"
             exit_code = exit_code or 1
@@ -96,18 +101,14 @@ def run(output: Path, command: list[str]) -> int:
         record["status"] = "interrupted"
         exit_code = 130
     except (OSError, ValueError, subprocess.SubprocessError) as error:
-        record["status"] = (
-            "rejected" if record["command_exit_code"] is None else "failed"
-        )
+        record["status"] = "rejected" if record["command_exit_code"] is None else "failed"
         record["error"] = str(error)
     finally:
         record["finished_at"] = datetime.now(timezone.utc).isoformat()
         record["elapsed_seconds"] = time.monotonic() - started
         record["exit_code"] = exit_code
         # Atomic replacement of the result owned by this invocation only.
-        with tempfile.NamedTemporaryFile(
-            "w", dir=output.parent, delete=False, encoding="utf-8"
-        ) as stream:
+        with tempfile.NamedTemporaryFile("w", dir=output.parent, delete=False, encoding="utf-8") as stream:
             pending = Path(stream.name)
             json.dump(record, stream, indent=2, sort_keys=True)
             stream.write("\n")

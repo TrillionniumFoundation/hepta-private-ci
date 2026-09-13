@@ -39,29 +39,14 @@ class GitExecutionFixture(unittest.TestCase):
         if code is None:
             code = f"from pathlib import Path; Path({str(self.marker)!r}).write_text('executed')"
         return subprocess.run(
-            [
-                sys.executable,
-                str(RUNNER),
-                "--output",
-                str(self.result),
-                "--",
-                sys.executable,
-                "-c",
-                code,
-            ],
+            [sys.executable, str(RUNNER), "--output", str(self.result), "--", sys.executable, "-c", code],
             cwd=self.repo,
             env={
-                **os.environ,
-                "PYTHONDONTWRITEBYTECODE": "1",
-                "SOURCE_SHA": self.source,
-                "TESTED_SHA": self.source,
-                "BASE_SHA": "0" * 40,
-                "HEPTA_CI_LANE": "source-head",
-                **identity,
+                **os.environ, "PYTHONDONTWRITEBYTECODE": "1",
+                "SOURCE_SHA": self.source, "TESTED_SHA": self.source,
+                "BASE_SHA": "0" * 40, "HEPTA_CI_LANE": "source-head", **identity,
             },
-            text=True,
-            capture_output=True,
-            timeout=10,
+            text=True, capture_output=True, timeout=10,
         )
 
     def receipt(self):
@@ -77,15 +62,10 @@ class ExecutionRecordTests(GitExecutionFixture):
         self.assertEqual(receipt["status"], "passed")
         self.assertEqual(receipt["command_exit_code"], 0)
         self.assertEqual(receipt["before"], receipt["after"])
-        self.assertEqual(
-            receipt["before"],
-            {
-                "commit": self.source,
-                "tree": self.git("rev-parse", "HEAD^{tree}"),
-                "parents": [],
-                "dirty": False,
-            },
-        )
+        self.assertEqual(receipt["before"], {
+            "commit": self.source, "tree": self.git("rev-parse", "HEAD^{tree}"),
+            "parents": [], "dirty": False,
+        })
         self.assertEqual(receipt["command"][:2], [sys.executable, "-c"])
 
     def test_nonzero_command_is_retained_and_not_converted_to_pass(self):
@@ -116,9 +96,7 @@ class ExecutionRecordTests(GitExecutionFixture):
                 self.assertFalse(self.marker.exists())
 
     def test_successful_command_mutating_source_still_fails(self):
-        result = self.execute(
-            "from pathlib import Path; Path('input').write_text('changed')"
-        )
+        result = self.execute("from pathlib import Path; Path('input').write_text('changed')")
         self.assertEqual(result.returncode, 1)
         receipt = self.receipt()
         self.assertEqual(receipt["command_exit_code"], 0)
@@ -136,16 +114,9 @@ class ExecutionRecordTests(GitExecutionFixture):
         self.git("commit", "-qam", "source")
         source = self.git("rev-parse", "HEAD")
         tree = self.git("rev-parse", "HEAD^{tree}")
-        merge = self.git(
-            "commit-tree", tree, "-p", base, "-p", source, "-m", "synthetic"
-        )
+        merge = self.git("commit-tree", tree, "-p", base, "-p", source, "-m", "synthetic")
         self.git("checkout", "-q", "--detach", merge)
-        env = {
-            "SOURCE_SHA": source,
-            "BASE_SHA": base,
-            "TESTED_SHA": merge,
-            "HEPTA_CI_LANE": "base-merge",
-        }
+        env = {"SOURCE_SHA": source, "BASE_SHA": base, "TESTED_SHA": merge, "HEPTA_CI_LANE": "base-merge"}
         result = self.execute(**env)
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertEqual(self.receipt()["before"]["parents"], [base, source])
@@ -153,6 +124,68 @@ class ExecutionRecordTests(GitExecutionFixture):
         self.marker.unlink()
         result = self.execute(**{**env, "SOURCE_SHA": base, "BASE_SHA": source})
         self.assertEqual(result.returncode, 2)
+        self.assertFalse(self.marker.exists())
+
+    def test_matching_parents_with_wrong_tree_reject_before_command(self):
+        base = self.source
+        wrong_tree = self.git("rev-parse", "HEAD^{tree}")
+        (self.repo / "input").write_text("source change\n")
+        self.git("commit", "-qam", "source change")
+        source = self.git("rev-parse", "HEAD")
+        merge = self.git("commit-tree", wrong_tree, "-p", base, "-p", source, "-m", "wrong tree")
+        self.git("checkout", "-q", "--detach", merge)
+        result = self.execute(SOURCE_SHA=source, BASE_SHA=base, TESTED_SHA=merge,
+                              HEPTA_CI_LANE="base-merge")
+        self.assertEqual(result.returncode, 2, result.stderr)
+        self.assertEqual(self.receipt()["status"], "rejected")
+        self.assertIsNone(self.receipt()["command_exit_code"])
+        self.assertIn("recomputed", self.receipt()["error"])
+        self.assertFalse(self.marker.exists())
+
+    def test_divergent_clean_merge_records_recomputed_tree(self):
+        ancestor = self.source
+        (self.repo / "source-only").write_text("source\n")
+        self.git("add", ".")
+        self.git("commit", "-qm", "source change")
+        source = self.git("rev-parse", "HEAD")
+        self.git("checkout", "-q", "--detach", ancestor)
+        (self.repo / "target-only").write_text("target\n")
+        self.git("add", ".")
+        self.git("commit", "-qm", "target change")
+        base = self.git("rev-parse", "HEAD")
+        tree = self.git("merge-tree", "--write-tree", base, source)
+        merge = self.git("commit-tree", tree, "-p", base, "-p", source, "-m", "merge")
+        self.git("checkout", "-q", "--detach", merge)
+        result = self.execute(SOURCE_SHA=source, BASE_SHA=base, TESTED_SHA=merge,
+                              HEPTA_CI_LANE="base-merge")
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(self.receipt()["recomputed_merge_tree"], tree)
+        self.assertEqual(self.receipt()["before"]["tree"], tree)
+        self.assertTrue(self.marker.exists())
+
+    def test_conflicting_merge_never_dispatches_an_arbitrary_resolution(self):
+        ancestor = self.source
+        (self.repo / "input").write_text("source\n")
+        self.git("commit", "-qam", "source change")
+        source = self.git("rev-parse", "HEAD")
+        self.git("checkout", "-q", "--detach", ancestor)
+        (self.repo / "input").write_text("target\n")
+        self.git("commit", "-qam", "target change")
+        base = self.git("rev-parse", "HEAD")
+        tree = self.git("rev-parse", "HEAD^{tree}")
+        merge = self.git("commit-tree", tree, "-p", base, "-p", source, "-m", "arbitrary resolution")
+        self.git("checkout", "-q", "--detach", merge)
+        result = self.execute(SOURCE_SHA=source, BASE_SHA=base, TESTED_SHA=merge,
+                              HEPTA_CI_LANE="base-merge")
+        self.assertEqual(result.returncode, 2, result.stderr)
+        self.assertEqual(self.receipt()["status"], "rejected")
+        self.assertIsNone(self.receipt()["command_exit_code"])
+        self.assertFalse(self.marker.exists())
+
+    def test_merge_lane_rejects_symbolic_base_identity(self):
+        result = self.execute(BASE_SHA="HEAD", HEPTA_CI_LANE="base-merge")
+        self.assertEqual(result.returncode, 2, result.stderr)
+        self.assertEqual(self.receipt()["error"], "invalid base_sha")
         self.assertFalse(self.marker.exists())
 
     def test_existing_receipt_cannot_be_overwritten_or_reused(self):
@@ -175,10 +208,7 @@ class ExecutionRecordTests(GitExecutionFixture):
         self.git("commit", "-qam", "next")
         self.source = self.git("rev-parse", "HEAD")
         shallow = self.root / "shallow"
-        subprocess.run(
-            ["git", "clone", "-q", "--depth=1", self.repo.as_uri(), str(shallow)],
-            check=True,
-        )
+        subprocess.run(["git", "clone", "-q", "--depth=1", self.repo.as_uri(), str(shallow)], check=True)
         self.repo = shallow
         self.assertEqual(self.git("rev-parse", "--is-shallow-repository"), "true")
         result = self.execute()
@@ -210,23 +240,13 @@ class WorkflowCommandBindingTests(GitExecutionFixture):
             )
             command.chmod(0o755)
         self.env = {
-            **os.environ,
-            "PYTHONDONTWRITEBYTECODE": "1",
-            "PATH": str(binaries) + os.pathsep + os.environ["PATH"],
-            "SOURCE_SHA": self.source,
-            "TESTED_SHA": self.source,
-            "BASE_SHA": "0" * 40,
-            "HEPTA_CI_LANE": "source-head",
-            "RUNNER_TEMP": str(self.root),
-            "PACKAGES": "codex-one codex-two",
-            "CALLS": str(self.root / "calls"),
+            **os.environ, "PYTHONDONTWRITEBYTECODE": "1", "PATH": str(binaries) + os.pathsep + os.environ["PATH"],
+            "SOURCE_SHA": self.source, "TESTED_SHA": self.source, "BASE_SHA": "0" * 40,
+            "HEPTA_CI_LANE": "source-head", "RUNNER_TEMP": str(self.root),
+            "PACKAGES": "codex-one codex-two", "CALLS": str(self.root / "calls"),
         }
-        workflow = (
-            RUNNER.parents[1] / ".github/workflows/hepta-consolidated-source.yml"
-        ).read_text()
-        block = workflow.split(
-            "      - name: Compile and test actual imported packages\n", 1
-        )[1].split("        run: |\n", 1)[1]
+        workflow = (RUNNER.parents[1] / ".github/workflows/hepta-consolidated-source.yml").read_text()
+        block = workflow.split("      - name: Compile and test actual imported packages\n", 1)[1].split("        run: |\n", 1)[1]
         lines = []
         for line in block.splitlines():
             if line and not line.startswith("          "):
@@ -235,51 +255,21 @@ class WorkflowCommandBindingTests(GitExecutionFixture):
         self.script = "\n".join(lines)
 
     def test_shell_preserves_test_targets_and_strict_lint_arguments(self):
-        result = subprocess.run(
-            ["bash", "-c", self.script],
-            cwd=self.repo / "codex-rs",
-            env=self.env,
-            capture_output=True,
-            text=True,
-            timeout=10,
-        )
+        result = subprocess.run(["bash", "-c", self.script], cwd=self.repo / "codex-rs",
+                                env=self.env, capture_output=True, text=True, timeout=10)
         self.assertEqual(result.returncode, 0, result.stderr)
         folder = self.root / "hepta-command-records"
         test = json.loads((folder / "owner-test.json").read_text())
         lint = json.loads((folder / "clippy.json").read_text())
-        self.assertEqual(
-            test["command"],
-            ["just", "test", "--locked", "-p", "codex-one", "-p", "codex-two"],
-        )
-        self.assertEqual(
-            lint["command"],
-            [
-                "cargo",
-                "clippy",
-                "--locked",
-                "-p",
-                "codex-one",
-                "-p",
-                "codex-two",
-                "--all-targets",
-                "--",
-                "-D",
-                "warnings",
-            ],
-        )
+        self.assertEqual(test["command"], ["just", "test", "--locked", "-p", "codex-one", "-p", "codex-two"])
+        self.assertEqual(lint["command"], ["cargo", "clippy", "--locked", "-p", "codex-one", "-p", "codex-two", "--all-targets", "--", "-D", "warnings"])
         self.assertEqual(test["before"], lint["before"])
         self.assertEqual(test["before"]["commit"], self.source)
         self.assertEqual(test["working_directory"], str(self.repo / "codex-rs"))
 
     def test_shell_test_failure_has_no_lint_pass_receipt(self):
-        result = subprocess.run(
-            ["bash", "-c", self.script],
-            cwd=self.repo / "codex-rs",
-            env={**self.env, "FAIL_TOOL": "just"},
-            capture_output=True,
-            text=True,
-            timeout=10,
-        )
+        result = subprocess.run(["bash", "-c", self.script], cwd=self.repo / "codex-rs",
+                                env={**self.env, "FAIL_TOOL": "just"}, capture_output=True, text=True, timeout=10)
         self.assertEqual(result.returncode, 17, result.stderr)
         folder = self.root / "hepta-command-records"
         test = json.loads((folder / "owner-test.json").read_text())
