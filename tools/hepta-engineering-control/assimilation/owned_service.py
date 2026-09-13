@@ -313,9 +313,24 @@ def _migrate(database, generation, minimum_counter, implementation_version, faul
             "CREATE TABLE IF NOT EXISTS operations "
             "(id TEXT PRIMARY KEY, value INTEGER NOT NULL UNIQUE)"
         )
-        current = database.execute(
-            "SELECT COALESCE(MAX(value), 0) FROM operations"
-        ).fetchone()[0]
+        # Validate the bounded ledger before publishing a new generation.
+        # A matching maximum alone does not establish a complete effect history.
+        history = database.execute(
+            "SELECT id, value FROM operations ORDER BY value LIMIT 256"
+        ).fetchall()
+        if len(history) > 255:
+            raise ServiceError("state_capacity")
+        identities = set()
+        for expected_value, (identity, value) in enumerate(history, start=1):
+            _validate_operation("reconcile", identity)
+            if (
+                identity in identities
+                or type(value) is not int
+                or value != expected_value
+            ):
+                raise ServiceError("invalid_counter_operation_history")
+            identities.add(identity)
+        current = len(history)
         if current < minimum_counter:
             raise ServiceError("state_older_than_independent_anchor")
         if implementation_version == 2 and schema == 1:
