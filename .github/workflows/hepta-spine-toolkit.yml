@@ -1,57 +1,33 @@
-name: Hepta pinned qualification tools (no release)
+name: Hepta qualification runtime action test
 on:
   push:
     branches: [work/spine-toolkit-20260913]
 permissions:
   contents: read
 jobs:
-  dependencies:
-    runs-on: ubuntu-24.04
-    timeout-minutes: 25
-    env:
-      CARGO_NET_GIT_FETCH_WITH_CLI: 'true'
-      PYTHONDONTWRITEBYTECODE: '1'
+  runtime:
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-22.04, ubuntu-24.04]
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           ref: ${{ github.sha }}
           persist-credentials: false
-      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
-        with:
-          tool: just@1.51.0,nextest@0.9.103
-      - name: Resolve nextest host metadata and execute the existing package tests
-        working-directory: codex-rs
-        shell: bash
+      - id: runtime
+        uses: ./.github/actions/hepta-qualified-python
+      - name: Verify following steps use the staged interpreter
         run: |
           set -euo pipefail
-          record="$RUNNER_TEMP/native-dependency-proof"
-          mkdir -p "$record"
-          rustc -vV > "$record/rust-version.txt"
-          git rev-parse HEAD HEAD^{tree} > "$record/toolkit-source-identity.txt"
-          sha256sum Cargo.lock > "$record/cargo-lock.sha256"
-          cargo metadata --locked --format-version 1 --all-features --filter-platform x86_64-unknown-linux-gnu > "$record/host-metadata.json"
-          just test --locked -p codex-hepta-control-plane -p codex-hepta-runtime -p codex-hepta-intelligence --run-ignored all 2>&1 | tee "$record/native-existing-test.log"
-      - name: Retain dependency caches without credentials or the repository
-        working-directory: codex-rs
-        shell: bash
-        run: |
-          set -euo pipefail
-          cargo_root="${CARGO_HOME:-$HOME/.cargo}"
-          output="$RUNNER_TEMP/cargo-offline-cache"
-          mkdir -p "$output"
-          for section in registry git; do
-            if test -d "$cargo_root/$section"; then cp -a "$cargo_root/$section" "$output/"; fi
-          done
-          test ! -e "$output/credentials"
-          test ! -e "$output/credentials.toml"
-          (cd "$output" && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
-          tar -C "$output" -czf "$RUNNER_TEMP/cargo-offline-cache.tar.gz" .
+          python3 -I -S -c 'import sqlite3,sys; assert sqlite3.sqlite_version == "3.51.3"; print(sys.executable,sqlite3.sqlite_version)'
+          git diff --exit-code
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always()
         with:
-          name: hepta-native-dependencies-${{ github.sha }}
-          path: |
-            ${{ runner.temp }}/cargo-offline-cache.tar.gz
-            ${{ runner.temp }}/native-dependency-proof
+          name: qualified-python-${{ github.sha }}-${{ matrix.os }}
+          path: ${{ steps.runtime.outputs.receipt }}
           if-no-files-found: error
-          retention-days: 2
+          retention-days: 30

@@ -1,0 +1,85 @@
+name: Verified SQLite qualification runtime
+description: Stage an isolated Python with upstream-verified SQLite; no host policy or production activation changes.
+outputs:
+  prefix:
+    description: Isolated interpreter prefix for this runner only.
+    value: ${{ steps.stage.outputs.prefix }}
+  receipt:
+    description: Actual library identity and source provenance; not independent acceptance.
+    value: ${{ steps.stage.outputs.receipt }}
+runs:
+  using: composite
+  steps:
+    - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+      with:
+        python-version: '3.13.5'
+    - id: stage
+      shell: bash
+      run: |
+        set -euo pipefail
+        test "$(uname -s)" = Linux
+        test "$(uname -m)" = x86_64
+        output="$RUNNER_TEMP/hepta-qualified-python"
+        test ! -e "$output"
+        mkdir -m 700 "$output"
+        sudo apt-get update
+        sudo apt-get install -y patchelf
+        curl --fail --location --retry 2 --connect-timeout 20 --max-time 120 --max-filesize 5000000 \
+          https://www.sqlite.org/2026/sqlite-amalgamation-3510300.zip --output "$output/source.zip"
+        OUTPUT="$output" python3 -I -S - <<'PY'
+        import hashlib, os, pathlib, zipfile
+        root = pathlib.Path(os.environ['OUTPUT'])
+        with zipfile.ZipFile(root / 'source.zip') as archive:
+            name = 'sqlite-amalgamation-3510300/sqlite3.c'
+            if archive.namelist().count(name) != 1:
+                raise SystemExit('ambiguous SQLite source entry')
+            info = archive.getinfo(name)
+            if not 0 < info.file_size <= 16000000:
+                raise SystemExit('unexpected SQLite source size')
+            data = archive.read(info)
+        expected = '32d5424f97e0a7fc5ed2f6335afbb58be4e0298bd7117a34e39d345ff13d859e'
+        if hashlib.sha3_256(data).hexdigest() != expected:
+            raise SystemExit('SQLite source checksum mismatch')
+        (root / 'sqlite3.c').write_bytes(data)
+        PY
+        cc -O2 -fPIC -shared -DSQLITE_THREADSAFE=1 -DSQLITE_ENABLE_FTS5 -DSQLITE_ENABLE_RTREE \
+          -DSQLITE_ENABLE_COLUMN_METADATA -DSQLITE_ENABLE_MATH_FUNCTIONS \
+          "$output/sqlite3.c" -o "$output/libsqlite3.so.0" -lm -ldl -lpthread
+        prefix=$(python3 -I -S -c 'import sys; assert sys.version_info[:3] == (3,13,5); print(sys.base_prefix)')
+        mkdir "$output/python"
+        cp -a "$prefix/." "$output/python/"
+        cp "$output/libsqlite3.so.0" "$output/python/lib/libsqlite3.so.0"
+        patchelf --set-rpath '$ORIGIN/../lib' "$output/python/bin/python3.13"
+        shopt -s nullglob
+        extensions=("$output"/python/lib/python3.13/lib-dynload/_sqlite3*.so)
+        test "${#extensions[@]}" -eq 1
+        patchelf --set-rpath '$ORIGIN/../..' "${extensions[0]}"
+        OUTPUT="$output" "$output/python/bin/python3" -I -S - <<'PY'
+        import hashlib, json, os, pathlib, sqlite3, subprocess, sys
+        root = pathlib.Path(os.environ['OUTPUT'])
+        expected = '2026-03-13 10:38:09 737ae4a34738ffa0c3ff7f9bb18df914dd1cad163f28fd6b6e114a344fe6d618'
+        with sqlite3.connect(':memory:') as db:
+            source_id = db.execute('select sqlite_source_id()').fetchone()[0]
+        if sqlite3.sqlite_version != '3.51.3' or source_id != expected:
+            raise SystemExit('isolated interpreter loaded an unqualified SQLite library')
+        probe = "import json,sqlite3; c=sqlite3.connect(':memory:'); print(json.dumps([sqlite3.sqlite_version,c.execute('select sqlite_source_id()').fetchone()[0]])); c.close()"
+        observed = json.loads(subprocess.check_output([sys.executable, '-I', '-S', '-c', probe], env={'PATH':'/usr/bin:/bin'}, text=True))
+        if observed != ['3.51.3', expected]:
+            raise SystemExit('sanitized child did not load the same SQLite build')
+        receipt = {
+            'schema': 'hepta.qualification-runtime.v1',
+            'python': sys.version,
+            'sqlite_version': sqlite3.sqlite_version,
+            'sqlite_source_id': source_id,
+            'sqlite_c_sha3_256': hashlib.sha3_256((root/'sqlite3.c').read_bytes()).hexdigest(),
+            'sqlite_library_sha256': hashlib.sha256((root/'python/lib/libsqlite3.so.0').read_bytes()).hexdigest(),
+            'sanitized_child_matches': True,
+            'production_qualified': False,
+            'authority_granted': False,
+        }
+        (root / 'runtime-proof.json').write_text(json.dumps(receipt, indent=2)+'\n', encoding='utf-8')
+        print(json.dumps(receipt, sort_keys=True))
+        PY
+        echo "$output/python/bin" >> "$GITHUB_PATH"
+        echo "prefix=$output/python" >> "$GITHUB_OUTPUT"
+        echo "receipt=$output/runtime-proof.json" >> "$GITHUB_OUTPUT"
