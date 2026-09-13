@@ -124,9 +124,10 @@ impl CnsHierarchyV1 {
             || self.systems.len() > 32
             || self.drivers.len() != count
             || catalog.len() != count
-            || self.systems.iter().any(|system| {
-                system.organs.is_empty() || system.organs.len() > count
-            })
+            || self
+                .systems
+                .iter()
+                .any(|system| system.organs.is_empty() || system.organs.len() > count)
         {
             return Err(E::Bounds);
         }
@@ -143,13 +144,19 @@ impl CnsHierarchyV1 {
                 return Err(E::Membership);
             }
             for organ in &system.organs {
-                if memberships.insert(organ.clone(), system.id.clone()).is_some() {
+                if memberships
+                    .insert(organ.clone(), system.id.clone())
+                    .is_some()
+                {
                     return Err(E::Membership);
                 }
             }
         }
         if memberships.len() != count
-            || graph.organs.iter().any(|node| !memberships.contains_key(&node.id))
+            || graph
+                .organs
+                .iter()
+                .any(|node| !memberships.contains_key(&node.id))
         {
             return Err(E::Membership);
         }
@@ -284,7 +291,12 @@ impl CnsOrganHostV1 {
         }
         let deliveries = self
             .host
-            .dispatch_once(route.generation, &route.source.organ, route.output_port, payload)
+            .dispatch_once(
+                route.generation,
+                &route.source.organ,
+                route.output_port,
+                payload,
+            )
             .map_err(CnsHierarchyError::Runtime)?;
         deliveries
             .into_iter()

@@ -44,12 +44,18 @@ impl TrustedReadOnlyOrganV1 for Driver {
     }
 
     fn start(&mut self) -> Result<(), OrganHandlerFaultV1> {
-        self.events.lock().unwrap().push(format!("start:{}", self.id));
+        self.events
+            .lock()
+            .unwrap()
+            .push(format!("start:{}", self.id));
         Ok(())
     }
 
     fn handle(&mut self, port: usize, payload: &[u8]) -> Result<Vec<u8>, OrganHandlerFaultV1> {
-        self.events.lock().unwrap().push(format!("handle:{}", self.id));
+        self.events
+            .lock()
+            .unwrap()
+            .push(format!("handle:{}", self.id));
         if self.fail || port != 0 {
             return Err(OrganHandlerFaultV1::new(id("driver.failed")));
         }
@@ -59,7 +65,10 @@ impl TrustedReadOnlyOrganV1 for Driver {
     }
 
     fn stop(&mut self) -> Result<(), OrganHandlerFaultV1> {
-        self.events.lock().unwrap().push(format!("stop:{}", self.id));
+        self.events
+            .lock()
+            .unwrap()
+            .push(format!("stop:{}", self.id));
         Ok(())
     }
 }
@@ -115,8 +124,16 @@ fn fixture() -> Fixture {
                 id: id(name),
                 owner: id("test.owner"),
                 role: OrganRole::Other,
-                inputs: if index == 0 { vec![] } else { vec![id("status.v1")] },
-                outputs: if index == 0 { vec![id("status.v1")] } else { vec![] },
+                inputs: if index == 0 {
+                    vec![]
+                } else {
+                    vec![id("status.v1")]
+                },
+                outputs: if index == 0 {
+                    vec![id("status.v1")]
+                } else {
+                    vec![]
+                },
                 effect_scope: BTreeSet::new(),
                 terminal: FallbackTerminal::SafeState(Digest32::of_bytes(b"unavailable")),
             })
@@ -141,53 +158,80 @@ fn fixture() -> Fixture {
     };
     let body = BodyGraphBindingV1 {
         generation,
-        organ_manifests: graph.organs.iter().map(|node| OrganManifestBindingV1 {
-            organ_id: node.id.clone(),
-            manifest_digest: Digest32::of_bytes(node.id.as_str().as_bytes()),
-            organ_class: node.role,
-            input_ports: node.inputs.clone(),
-            output_ports: node.outputs.clone(),
-        }).collect(),
+        organ_manifests: graph
+            .organs
+            .iter()
+            .map(|node| OrganManifestBindingV1 {
+                organ_id: node.id.clone(),
+                manifest_digest: Digest32::of_bytes(node.id.as_str().as_bytes()),
+                organ_class: node.role,
+                input_ports: node.inputs.clone(),
+                output_ports: node.outputs.clone(),
+            })
+            .collect(),
         dependency_edges: graph.initialization.clone(),
         fallback_edges: graph.fallback.clone(),
         topological_order: graph.validate().unwrap().initialization_order,
         snapshot_digest: Digest32::of_bytes(b"test.body.provenance"),
     };
-    let bindings: Vec<_> = names.iter().map(|name| OrganDriverBindingV1 {
-        organ: id(name),
-        driver: id(&format!("driver.{name}")),
-        implementation_digest: Digest32::of_bytes(format!("implementation:{name}").as_bytes()),
-    }).collect();
+    let bindings: Vec<_> = names
+        .iter()
+        .map(|name| OrganDriverBindingV1 {
+            organ: id(name),
+            driver: id(&format!("driver.{name}")),
+            implementation_digest: Digest32::of_bytes(
+                format!("implementation:{name}").as_bytes(),
+            ),
+        })
+        .collect();
     let events = Arc::new(Mutex::new(Vec::new()));
-    let catalog = bindings.iter().enumerate().map(|(index, binding)| CompiledOrganDriverV1 {
-        binding: binding.clone(),
-        compiled: CompiledOrganHandlerV2 {
-            manifest_digest: body.organ_manifests[index].manifest_digest,
-            handler: Box::new(Driver {
-                id: binding.organ.clone(),
-                events: Arc::clone(&events),
-                marker: index as u8,
-                fail: false,
-            }),
-        },
-    }).collect();
+    let catalog = bindings
+        .iter()
+        .enumerate()
+        .map(|(index, binding)| CompiledOrganDriverV1 {
+            binding: binding.clone(),
+            compiled: CompiledOrganHandlerV2 {
+                manifest_digest: body.organ_manifests[index].manifest_digest,
+                handler: Box::new(Driver {
+                    id: binding.organ.clone(),
+                    events: Arc::clone(&events),
+                    marker: index as u8,
+                    fail: false,
+                }),
+            },
+        })
+        .collect();
     let hierarchy = CnsHierarchyV1 {
         cns: id("test.cns"),
         generation,
         body_graph_digest: compiled_body_graph_digest_v2(
             &encode_compiled_body_graph_v2(&body, &graph).unwrap(),
-        ).unwrap(),
+        )
+        .unwrap(),
         systems: vec![
-            OrganSystemV1 { id: id("control"), organs: vec![id("ingress")] },
-            OrganSystemV1 { id: id("observation"), organs: vec![id("status"), id("health")] },
+            OrganSystemV1 {
+                id: id("control"),
+                organs: vec![id("ingress")],
+            },
+            OrganSystemV1 {
+                id: id("observation"),
+                organs: vec![id("status"), id("health")],
+            },
         ],
         drivers: bindings,
     };
-    Fixture { body, graph, hierarchy, catalog, events }
+    Fixture {
+        body,
+        graph,
+        hierarchy,
+        catalog,
+        events,
+    }
 }
 
 fn route(host: &CnsOrganHostV1) -> CnsRouteV1 {
-    host.route(&id("control"), &id("ingress"), /*output_port*/ 0).unwrap()
+    host.route(&id("control"), &id("ingress"), /*output_port*/ 0)
+        .unwrap()
 }
 
 #[test]
@@ -199,29 +243,47 @@ fn actual_dispatch_preserves_all_levels_and_driver_outputs() {
     assert!(host.dispatch_once(&route, b"request").is_err());
     assert!(events.lock().unwrap().is_empty());
     host.start_all().unwrap();
-    let expected: Vec<_> = ["status", "health"].iter().enumerate().map(|(index, name)| {
-        let mut output = vec![(index + 1) as u8];
-        output.extend_from_slice(b"request");
-        CnsDeliveryV1 {
-            cns: route.cns.clone(),
-            generation: route.generation,
-            hierarchy_digest: route.hierarchy_digest,
-            source: route.source.clone(),
-            target: OrganPathV1 {
-                system: id("observation"), organ: id(name), driver: id(&format!("driver.{name}")),
-            },
-            execution: OrganDeliveryV1 {
-                source: id("ingress"), target: id(name), input_port: 0, output,
-                authority: AuthorityPosture::DENY_ALL,
-            },
-        }
-    }).collect();
+    let expected: Vec<_> = ["status", "health"]
+        .iter()
+        .enumerate()
+        .map(|(index, name)| {
+            let mut output = vec![(index + 1) as u8];
+            output.extend_from_slice(b"request");
+            CnsDeliveryV1 {
+                cns: route.cns.clone(),
+                generation: route.generation,
+                hierarchy_digest: route.hierarchy_digest,
+                source: route.source.clone(),
+                target: OrganPathV1 {
+                    system: id("observation"),
+                    organ: id(name),
+                    driver: id(&format!("driver.{name}")),
+                },
+                execution: OrganDeliveryV1 {
+                    source: id("ingress"),
+                    target: id(name),
+                    input_port: 0,
+                    output,
+                    authority: AuthorityPosture::DENY_ALL,
+                },
+            }
+        })
+        .collect();
     assert_eq!(host.dispatch_once(&route, b"request").unwrap(), expected);
     host.stop_all().unwrap();
-    assert_eq!(*events.lock().unwrap(), vec![
-        "start:ingress", "start:status", "start:health", "handle:status", "handle:health",
-        "stop:health", "stop:status", "stop:ingress",
-    ]);
+    assert_eq!(
+        *events.lock().unwrap(),
+        vec![
+            "start:ingress",
+            "start:status",
+            "start:health",
+            "handle:status",
+            "handle:health",
+            "stop:health",
+            "stop:status",
+            "stop:ingress",
+        ]
+    );
 }
 
 #[test]
@@ -242,15 +304,23 @@ fn edited_routes_are_rejected_before_any_driver_callback() {
             5 => changed.source.driver = id("other.driver"),
             6 => changed.output_port = 1,
             7 => changed.targets.reverse(),
-            8 => { changed.targets.pop(); }
+            8 => {
+                changed.targets.pop();
+            }
             9 => changed.targets[0].driver = id("other.target.driver"),
             _ => unreachable!(),
         }
         let before = events.lock().unwrap().clone();
-        assert!(host.dispatch_once(&changed, b"request").is_err(), "case {case}");
+        assert!(
+            host.dispatch_once(&changed, b"request").is_err(),
+            "case {case}"
+        );
         assert_eq!(*events.lock().unwrap(), before);
     }
-    assert!(host.route(&id("wrong"), &id("ingress"), /*output_port*/ 0).is_err());
+    assert!(
+        host.route(&id("wrong"), &id("ingress"), /*output_port*/ 0)
+            .is_err()
+    );
     assert_eq!(host.dispatch_once(&current, b"valid").unwrap().len(), 2);
 }
 
@@ -262,7 +332,9 @@ fn invalid_system_memberships_never_start_handlers() {
         match case {
             0 => fixture.hierarchy.systems[1].id = id("control"),
             1 => fixture.hierarchy.systems[1].organs[0] = id("ingress"),
-            2 => { fixture.hierarchy.systems[1].organs.pop(); }
+            2 => {
+                fixture.hierarchy.systems[1].organs.pop();
+            }
             3 => fixture.hierarchy.systems[1].organs[0] = id("unknown"),
             4 => fixture.hierarchy.systems[1].organs.clear(),
             _ => unreachable!(),
@@ -279,11 +351,17 @@ fn independent_driver_catalog_and_manifest_are_required() {
         let events = Arc::clone(&fixture.events);
         match case {
             0 => fixture.hierarchy.drivers[1].driver = id("unregistered.driver"),
-            1 => fixture.hierarchy.drivers[1].implementation_digest = Digest32::of_bytes(b"changed"),
+            1 => {
+                fixture.hierarchy.drivers[1].implementation_digest = Digest32::of_bytes(b"changed");
+            }
             2 => fixture.hierarchy.drivers[1].driver = fixture.hierarchy.drivers[0].driver.clone(),
-            3 => { fixture.catalog.pop(); }
+            3 => {
+                fixture.catalog.pop();
+            }
             4 => fixture.catalog[1].binding = fixture.catalog[0].binding.clone(),
-            5 => fixture.catalog[1].compiled.manifest_digest = Digest32::of_bytes(b"wrong.manifest"),
+            5 => {
+                fixture.catalog[1].compiled.manifest_digest = Digest32::of_bytes(b"wrong.manifest");
+            }
             _ => unreachable!(),
         }
         assert!(fixture.host().is_err(), "case {case}");
@@ -333,7 +411,10 @@ fn system_or_driver_replacement_invalidates_old_routes() {
                 binding.implementation_digest = Digest32::of_bytes(b"replacement.implementation");
                 fixture.catalog[1].binding = binding.clone();
                 fixture.catalog[1].compiled.handler = Box::new(Driver {
-                    id: id("status"), events: Arc::clone(&fixture.events), marker: 9, fail: false,
+                    id: id("status"),
+                    events: Arc::clone(&fixture.events),
+                    marker: 9,
+                    fail: false,
                 });
             }
             2 => {
@@ -344,7 +425,10 @@ fn system_or_driver_replacement_invalidates_old_routes() {
         }
         let mut host = fixture.host().unwrap();
         host.start_all().unwrap();
-        assert_eq!(host.dispatch_once(&previous, b"old"), Err(CnsHierarchyError::RouteMismatch));
+        assert_eq!(
+            host.dispatch_once(&previous, b"old"),
+            Err(CnsHierarchyError::RouteMismatch)
+        );
         let current = route(&host);
         assert_ne!(current.hierarchy_digest, previous.hierarchy_digest);
         let delivered = host.dispatch_once(&current, b"new").unwrap();
@@ -359,17 +443,24 @@ fn partial_failure_retains_host_quarantine_and_never_uses_direct_fallback() {
     let mut fixture = fixture();
     let events = Arc::clone(&fixture.events);
     fixture.catalog[2].compiled.handler = Box::new(Driver {
-        id: id("health"), events: Arc::clone(&events), marker: 2, fail: true,
+        id: id("health"),
+        events: Arc::clone(&events),
+        marker: 2,
+        fail: true,
     });
     let mut host = fixture.host().unwrap();
     host.start_all().unwrap();
     let route = route(&host);
-    assert_eq!(host.dispatch_once(&route, b"request"), Err(CnsHierarchyError::Runtime(
-        OrganRuntimeError::HandleFailed {
-            fault: OrganFaultRecordV1 { organ: id("health"), code: id("driver.failed") },
+    assert_eq!(
+        host.dispatch_once(&route, b"request"),
+        Err(CnsHierarchyError::Runtime(OrganRuntimeError::HandleFailed {
+            fault: OrganFaultRecordV1 {
+                organ: id("health"),
+                code: id("driver.failed"),
+            },
             delivered: 1,
-        }
-    )));
+        }))
+    );
     let before = events.lock().unwrap().clone();
     assert!(host.dispatch_once(&route, b"retry").is_err());
     assert_eq!(*events.lock().unwrap(), before);
@@ -383,7 +474,10 @@ fn stopped_and_oversized_requests_preserve_existing_host_checks() {
     host.start_all().unwrap();
     let route = route(&host);
     let before = events.lock().unwrap().clone();
-    assert!(host.dispatch_once(&route, &vec![0; MAX_ORGAN_MESSAGE_BYTES + 1]).is_err());
+    assert!(
+        host.dispatch_once(&route, &vec![0; MAX_ORGAN_MESSAGE_BYTES + 1])
+            .is_err()
+    );
     assert_eq!(*events.lock().unwrap(), before);
     host.stop_all().unwrap();
     let stopped = events.lock().unwrap().clone();

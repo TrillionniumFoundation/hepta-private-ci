@@ -4,6 +4,13 @@ on:
   pull_request:
     paths:
       - "codex-rs/hepta-neuron/**"
+      - "codex-rs/hepta-control-plane/**"
+      - "codex-rs/hepta-runtime/**"
+      - "codex-rs/hepta-types/**"
+      - "codex-rs/hepta-wire/**"
+      - "codex-rs/Cargo.toml"
+      - "codex-rs/Cargo.lock"
+      - "codex-rs/rust-toolchain.toml"
       - ".github/workflows/hepta-organ-implementation.yml"
 
 permissions:
@@ -15,16 +22,22 @@ concurrency:
 
 jobs:
   neuron:
-    name: Neuron (${{ matrix.lane }})
+    name: ${{ matrix.profile.name }} (${{ matrix.lane }})
     runs-on: ubuntu-24.04
     timeout-minutes: 35
     strategy:
       fail-fast: false
       matrix:
         lane: [source-head, synthetic-merge]
+        profile:
+          - name: Neuron
+            packages: codex-hepta-neuron
+          - name: Hierarchy and live consumer
+            packages: codex-hepta-control-plane codex-hepta-runtime
     env:
       SOURCE_SHA: ${{ github.event.pull_request.head.sha }}
       BASE_SHA: ${{ github.event.pull_request.base.sha }}
+      PACKAGES: ${{ matrix.profile.packages }}
       CARGO_NET_GIT_FETCH_WITH_CLI: "true"
     steps:
       - name: Check out exact source without credentials
@@ -49,6 +62,7 @@ jobs:
             git checkout --detach "$MERGE"
           fi
           git rev-parse HEAD HEAD^{tree}
+          printf 'Explicit test owners: %s\n' "$PACKAGES"
 
       - name: Install pinned repository test tools
         uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
@@ -57,20 +71,40 @@ jobs:
 
       - name: Locked all-target compilation
         working-directory: codex-rs
-        run: cargo check --locked -p codex-hepta-neuron --all-targets
+        shell: bash
+        run: |
+          set -euo pipefail
+          args=()
+          for package in $PACKAGES; do args+=(-p "$package"); done
+          cargo check --locked "${args[@]}" --all-targets
 
       - name: Regression tests
         working-directory: codex-rs
-        run: just test --locked -p codex-hepta-neuron
+        shell: bash
+        run: |
+          set -euo pipefail
+          args=()
+          for package in $PACKAGES; do args+=(-p "$package"); done
+          just test --locked "${args[@]}"
 
       - name: Strict lint
         working-directory: codex-rs
-        run: cargo clippy --locked -p codex-hepta-neuron --all-targets -- -D warnings
+        shell: bash
+        run: |
+          set -euo pipefail
+          args=()
+          for package in $PACKAGES; do args+=(-p "$package"); done
+          cargo clippy --locked "${args[@]}" --all-targets -- -D warnings
 
       - name: Formatting check without source mutation
         if: always()
         working-directory: codex-rs
-        run: cargo fmt --package codex-hepta-neuron -- --check
+        shell: bash
+        run: |
+          set -euo pipefail
+          args=()
+          for package in $PACKAGES; do args+=(--package "$package"); done
+          cargo fmt "${args[@]}" -- --check
 
       - name: Preserve exact source state
         if: always()

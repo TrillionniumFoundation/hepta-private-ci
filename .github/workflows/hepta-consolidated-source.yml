@@ -192,6 +192,7 @@ jobs:
         codex-state codex-core codex-app-server
         codex-hepta-matrix-store codex-hepta-memory-extension
         codex-hepta-neuron codex-hepta-prompt-registry codex-hepta-supervisor
+        codex-hepta-runtime
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:

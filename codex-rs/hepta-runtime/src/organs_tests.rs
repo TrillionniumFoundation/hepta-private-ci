@@ -61,3 +61,43 @@ fn busy_or_stopped_hosts_never_bypass_dispatch() -> Result<()> {
     assert_eq!(calls.load(Ordering::SeqCst), 0);
     Ok(())
 }
+
+#[test]
+fn status_consumer_checks_the_complete_hierarchy_without_direct_adapter_fallback() -> Result<()> {
+    for case in 0..5 {
+        let calls = Arc::new(AtomicUsize::new(0));
+        let root = HeptaStateRoot::parse(std::env::temp_dir().join("hepta-hierarchy-route"))?;
+        let organs = RuntimeOrgans::new(root, Arc::new(ObservedAdapter(Arc::clone(&calls))));
+        let original = {
+            let mut guard = organs
+                .host
+                .lock()
+                .map_err(|_| anyhow::anyhow!("test host poisoned"))?;
+            let host = guard.as_mut().map_err(|error| anyhow::anyhow!("{error}"))?;
+            let original = host.route.clone();
+            match case {
+                0 => host.route.cns = StableId::new("other.cns")?,
+                1 => host.route.source.system = StableId::new("other.system")?,
+                2 => host.route.source.driver = StableId::new("other.driver")?,
+                3 => host.route.targets[0].driver = StableId::new("other.target.driver")?,
+                4 => host.route.generation = host.route.generation.next()?,
+                _ => unreachable!(),
+            }
+            original
+        };
+        assert!(organs.status_json().is_err(), "case {case}");
+        assert_eq!(calls.load(Ordering::SeqCst), 0);
+        {
+            let mut guard = organs
+                .host
+                .lock()
+                .map_err(|_| anyhow::anyhow!("test host poisoned"))?;
+            let host = guard.as_mut().map_err(|error| anyhow::anyhow!("{error}"))?;
+            host.route = original;
+        }
+        let report: serde_json::Value = serde_json::from_slice(&organs.status_json()?)?;
+        assert_eq!(calls.load(Ordering::SeqCst), 1);
+        assert_eq!(report["state"]["runtime_snapshot_generation"], 9);
+    }
+    Ok(())
+}

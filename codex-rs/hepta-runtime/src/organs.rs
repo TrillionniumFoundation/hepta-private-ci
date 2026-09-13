@@ -1,5 +1,5 @@
-//! The live shell's first compiled-in organ graph. This is a process-local
-//! composition, not a dynamic loader, a physical body, or a selection authority.
+//! The live shell's compiled-in CNS/system/organ/driver status route. This is
+//! process-local read-only composition, not a code loader or effect authority.
 
 use std::collections::BTreeSet;
 use std::sync::Arc;
@@ -8,7 +8,11 @@ use std::sync::Mutex;
 use anyhow::Context;
 use anyhow::Result;
 use codex_hepta_control_plane::BodyGraphBindingV1;
+use codex_hepta_control_plane::CnsHierarchyV1;
+use codex_hepta_control_plane::CnsOrganHostV1;
+use codex_hepta_control_plane::CnsRouteV1;
 use codex_hepta_control_plane::CompiledOrganAdmissionV2;
+use codex_hepta_control_plane::CompiledOrganDriverV1;
 use codex_hepta_control_plane::CompiledOrganHandlerV2;
 use codex_hepta_control_plane::DataflowTiming;
 use codex_hepta_control_plane::FailureDomainV1;
@@ -16,13 +20,14 @@ use codex_hepta_control_plane::FallbackTerminal;
 use codex_hepta_control_plane::InputPort;
 use codex_hepta_control_plane::NativeHandoffProtocolAdmissionV1;
 use codex_hepta_control_plane::NativeHandoffProtocolRegistryV1;
+use codex_hepta_control_plane::OrganDriverBindingV1;
 use codex_hepta_control_plane::OrganEdge;
 use codex_hepta_control_plane::OrganGraphsV1;
 use codex_hepta_control_plane::OrganHandlerFaultV1;
-use codex_hepta_control_plane::OrganHostV1;
 use codex_hepta_control_plane::OrganManifestBindingV1;
 use codex_hepta_control_plane::OrganNodeV1;
 use codex_hepta_control_plane::OrganRole;
+use codex_hepta_control_plane::OrganSystemV1;
 use codex_hepta_control_plane::OutputPort;
 use codex_hepta_control_plane::RuntimeLinkV1;
 use codex_hepta_control_plane::TrustedReadOnlyOrganV1;
@@ -48,9 +53,8 @@ pub(crate) struct RuntimeOrgans {
 
 #[derive(Debug)]
 struct StatusHost {
-    host: OrganHostV1,
-    ingress: StableId,
-    generation: Generation,
+    host: CnsOrganHostV1,
+    route: CnsRouteV1,
 }
 
 impl RuntimeOrgans {
@@ -81,16 +85,16 @@ impl RuntimeOrgans {
         let host = host
             .as_mut()
             .map_err(|error| anyhow::anyhow!("organ initialization failed: {error}"))?;
-        let deliveries =
-            host.host
-                .dispatch_once(host.generation, &host.ingress, /*output_port*/ 0, &[])?;
+        let deliveries = host.host.dispatch_once(&host.route, &[])?;
         let [delivery] = deliveries.as_slice() else {
             anyhow::bail!("status graph returned an unexpected delivery count");
         };
-        if delivery.authority != AuthorityPosture::DENY_ALL {
+        if delivery.execution.authority != AuthorityPosture::DENY_ALL {
             anyhow::bail!("status graph returned an authority delta");
         }
-        Ok(delivery.output.clone())
+        // Preserve the existing public status schema; hierarchy provenance is
+        // checked internally, never accepted from an HTTP request.
+        Ok(delivery.execution.output.clone())
     }
 }
 
@@ -183,6 +187,35 @@ fn build_host(root: HeptaStateRoot, state: Arc<dyn RuntimeStateAdapter>) -> Resu
         &NativeHandoffProtocolRegistryV1::canonical()?,
     )
     .context("admit compiled-in status body through protocol registry")?;
+    let control_system = StableId::new("system.cognition")?;
+    let hierarchy = CnsHierarchyV1 {
+        cns: StableId::new("hepta.runtime.cns")?,
+        generation,
+        body_graph_digest: host_admission.expected_digest,
+        systems: vec![
+            OrganSystemV1 {
+                id: control_system.clone(),
+                organs: vec![ingress.clone()],
+            },
+            OrganSystemV1 {
+                id: StableId::new("system.homeostasis")?,
+                organs: vec![status.clone()],
+            },
+        ],
+        drivers: body
+            .organ_manifests
+            .iter()
+            .map(|manifest| {
+                Ok(OrganDriverBindingV1 {
+                    organ: manifest.organ_id.clone(),
+                    driver: StableId::new(format!("driver.{}", manifest.organ_id))?,
+                    implementation_digest: Digest32::of_bytes(
+                        format!("hepta.status.compiled-driver.v1:{}", manifest.organ_id).as_bytes(),
+                    ),
+                })
+            })
+            .collect::<Result<Vec<_>>>()?,
+    };
     let handlers: Vec<Box<dyn TrustedReadOnlyOrganV1>> = vec![
         Box::new(StatusOrgan {
             id: ingress.clone(),
@@ -193,22 +226,23 @@ fn build_host(root: HeptaStateRoot, state: Arc<dyn RuntimeStateAdapter>) -> Resu
             data: Some((root, state)),
         }),
     ];
-    let handlers = handlers
+    let catalog = handlers
         .into_iter()
         .zip(body.organ_manifests.iter())
-        .map(|(handler, manifest)| CompiledOrganHandlerV2 {
-            manifest_digest: manifest.manifest_digest,
-            handler,
+        .zip(hierarchy.drivers.iter())
+        .map(|((handler, manifest), binding)| CompiledOrganDriverV1 {
+            binding: binding.clone(),
+            compiled: CompiledOrganHandlerV2 {
+                manifest_digest: manifest.manifest_digest,
+                handler,
+            },
         })
         .collect();
-    let mut host = verified.into_host(handlers)?;
+    let mut host = verified.into_hierarchical_host(hierarchy, catalog)?;
+    let route = host.route(&control_system, &ingress, /*output_port*/ 0)?;
     host.start_all()
         .context("start compiled-in status organs")?;
-    Ok(StatusHost {
-        host,
-        ingress,
-        generation,
-    })
+    Ok(StatusHost { host, route })
 }
 
 #[derive(Debug)]
