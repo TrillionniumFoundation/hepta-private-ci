@@ -307,6 +307,25 @@ impl VerifiedCompiledBodyGraphV2 {
         self.body.snapshot_digest
     }
 
+    /// Bind a host-owned hierarchy and driver catalog to this complete graph.
+    /// No lifecycle callback runs before hierarchy and manifest checks pass.
+    /// The existing V2 encoding and flat host API remain unchanged.
+    pub fn into_hierarchical_host(
+        self,
+        hierarchy: crate::CnsHierarchyV1,
+        catalog: Vec<crate::CompiledOrganDriverV1>,
+    ) -> Result<crate::CnsOrganHostV1, crate::CnsHierarchyError> {
+        let bytes = encode_compiled_body_graph_v2(&self.body, &self.graph)
+            .map_err(crate::CnsHierarchyError::Wire)?;
+        let graph_digest = compiled_body_graph_digest_v2(&bytes)
+            .map_err(crate::CnsHierarchyError::Wire)?;
+        let routes = hierarchy.bind(&self.graph, graph_digest, &catalog)?;
+        let host = self
+            .into_host(catalog.into_iter().map(|entry| entry.compiled).collect())
+            .map_err(crate::CnsHierarchyError::Wire)?;
+        Ok(crate::CnsOrganHostV1 { host, routes })
+    }
+
     /// Consume the verified value and the trusted local catalog. A successful
     /// construction is still Registered, not started or externally qualified.
     pub fn into_host(
