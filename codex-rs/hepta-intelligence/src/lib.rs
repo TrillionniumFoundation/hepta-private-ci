@@ -14,6 +14,15 @@ pub use evaluated_shadow::EvaluatedShadowRequestV1;
 pub use evaluated_shadow::evaluated_candidate_signing_payload_v1;
 pub use evaluated_shadow::run_evaluated_shadow_v1;
 
+mod capability_snapshot;
+
+pub use capability_snapshot::CapabilityBindingV2;
+pub use capability_snapshot::CapabilityNecessityV2;
+pub use capability_snapshot::CapabilityRequirementV2;
+pub use capability_snapshot::CapabilitySnapshotErrorV2;
+pub use capability_snapshot::CapabilitySnapshotRequestV2;
+pub use capability_snapshot::CapabilitySnapshotV2;
+
 mod pipeline;
 
 pub use pipeline::CoherentLaneFSnapshotV1;

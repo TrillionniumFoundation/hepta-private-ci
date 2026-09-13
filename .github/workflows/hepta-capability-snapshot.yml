@@ -1,0 +1,73 @@
+name: Hepta capability snapshot source qualification
+on:
+  push:
+    branches: [work/mature-spine-native-20260913]
+  pull_request:
+    paths:
+      - codex-rs/hepta-intelligence/**
+      - .github/workflows/hepta-capability-snapshot.yml
+permissions:
+  contents: read
+concurrency:
+  group: hepta-capability-snapshot-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  native:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    env:
+      SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+      TESTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+      HEPTA_CI_LANE: source-head
+      PYTHONDONTWRITEBYTECODE: '1'
+      CARGO_NET_GIT_FETCH_WITH_CLI: 'true'
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          persist-credentials: false
+          fetch-depth: 0
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+      - name: Retain repository-pinned formatter for offline source reproduction
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          rustfmt --version
+          root=$(rustc --print sysroot)
+          output="$RUNNER_TEMP/capability-tools"
+          mkdir -p "$output/bin" "$output/lib"
+          cp "$root/bin/rustfmt" "$output/bin/rustfmt"
+          for library in "$root"/lib/*.so; do
+            if test -f "$library"; then cp "$library" "$output/lib/"; fi
+          done
+          rustc -vV > "$output/rust-version.txt"
+          (cd "$output" && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: capability-pinned-formatter-${{ env.SOURCE_SHA }}
+          path: ${{ runner.temp }}/capability-tools
+          if-no-files-found: error
+          retention-days: 2
+      - name: Locked all-target compilation
+        working-directory: codex-rs
+        run: python3 -S ../scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/capability-records/check.json" -- cargo check --locked -p codex-hepta-intelligence --all-targets
+      - name: Execute existing and new intelligence tests
+        working-directory: codex-rs
+        run: python3 -S ../scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/capability-records/test.json" -- just test --locked -p codex-hepta-intelligence --run-ignored all
+      - name: Strict Clippy
+        working-directory: codex-rs
+        run: python3 -S ../scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/capability-records/clippy.json" -- cargo clippy --locked -p codex-hepta-intelligence --all-targets -- -D warnings
+      - name: Pinned formatting check without source mutation
+        if: always()
+        working-directory: codex-rs
+        run: python3 -S ../scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/capability-records/format.json" -- cargo fmt --package codex-hepta-intelligence -- --check
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: capability-source-records-${{ env.SOURCE_SHA }}
+          path: ${{ runner.temp }}/capability-records
+          if-no-files-found: error
+          retention-days: 30
