@@ -114,11 +114,16 @@ def verify_source_base(value: Any, label: str) -> tuple[str, str]:
     batch. Equality between those snapshots is not an implementation invariant.
     Both must nevertheless identify real, exact trees in the current history.
     """
-    need(isinstance(value, dict) and set(value) == {"commit", "tree"}, f"{label}: source base")
+    need(
+        isinstance(value, dict) and set(value) == {"commit", "tree"},
+        f"{label}: source base",
+    )
     commit, tree = value["commit"], value["tree"]
     need(
-        isinstance(commit, str) and bool(HEX40.fullmatch(commit))
-        and isinstance(tree, str) and bool(HEX40.fullmatch(tree)),
+        isinstance(commit, str)
+        and bool(HEX40.fullmatch(commit))
+        and isinstance(tree, str)
+        and bool(HEX40.fullmatch(tree)),
         f"{label}: source identity",
     )
     need(git("rev-parse", f"{commit}^{{tree}}") == tree, f"{label}: source tree")
@@ -143,11 +148,17 @@ def module_maps(truth: dict[str, Any]) -> list[dict[str, Any]]:
         base = row.get("sourceBase")
         # Cache only fully validated identities; malformed/unhashable values
         # still go through the rejecting validator instead of the fast path.
-        if not isinstance(base, dict) or set(base) != {"commit", "tree"} or not all(
-            isinstance(value, str) for value in base.values()
-        ) or (base["commit"], base["tree"]) not in verified:
+        if (
+            not isinstance(base, dict)
+            or set(base) != {"commit", "tree"}
+            or not all(isinstance(value, str) for value in base.values())
+            or (base["commit"], base["tree"]) not in verified
+        ):
             verified.add(verify_source_base(base, module))
-        ids = [item.get("designOperation") or item.get("operation") for item in row.get("operations", [])]
+        ids = [
+            item.get("designOperation") or item.get("operation")
+            for item in row.get("operations", [])
+        ]
         need(
             ids == entry.get("operationIds") == OPS[module],
             f"{module}: operation index",
@@ -363,7 +374,10 @@ def verify_anchor(
     path = anchor["path"]
     if owner:
         need(
-            any((ROOT / path).resolve().is_relative_to(root) for root in package_roots(module, roots)),
+            any(
+                (ROOT / path).resolve().is_relative_to(root)
+                for root in package_roots(module, roots)
+            ),
             f"{module}: owner-root escape {path}",
         )
     else:
@@ -399,12 +413,16 @@ def package_roots(module: str, roots: list[str]) -> list[Path]:
             need(isinstance(implementation, str), f"{module}: missing alias target")
             directory = (ROOT / implementation).resolve()
             need(directory.is_relative_to(ROOT.resolve()), f"{module}: alias escape")
-            need((directory / "Cargo.toml").is_file(), f"{module}: alias package missing")
+            need(
+                (directory / "Cargo.toml").is_file(), f"{module}: alias package missing"
+            )
         resolved.append(directory)
     return resolved
 
 
-def delegate_matches_owner(owner: str, roots: list[str], anchor: dict[str, Any]) -> bool:
+def delegate_matches_owner(
+    owner: str, roots: list[str], anchor: dict[str, Any]
+) -> bool:
     """Require an owner root or an actual direct Cargo dependency.
 
     Delegating to codex-core through app-server does not transfer ownership of
@@ -520,7 +538,8 @@ def verify_truth(truth: dict[str, Any], maps: list[dict[str, Any]]) -> tuple[int
         for item in row["operations"]:
             operations += 1
             need(
-                item.get("mappingClass", "owner_native") in truth["allowedMappingClasses"],
+                item.get("mappingClass", "owner_native")
+                in truth["allowedMappingClasses"],
                 f"{module}: mapping class",
             )
             anchor = item.get("ownerEntrypoint") or {
@@ -538,7 +557,10 @@ def verify_truth(truth: dict[str, Any], maps: list[dict[str, Any]]) -> tuple[int
                     and delegate_matches_owner(owner, roots[owner], delegate),
                     f"{module}: delegate-root escape",
                 )
-            need(item.get("tests"), f"{module}/{item.get('designOperation') or item.get('operation')}: tests")
+            need(
+                item.get("tests"),
+                f"{module}/{item.get('designOperation') or item.get('operation')}: tests",
+            )
             for test in item["tests"]:
                 tests += 1
                 need(

@@ -94,6 +94,11 @@ def verify_map(module: str) -> tuple[str, ...]:
         if isinstance(alias, str):
             alias = [alias]
         need(alias == raw_roots, f"{module} owner root aliases differ")
+    if "resolvedRoots" in mapping:
+        need(
+            mapping["resolvedRoots"] == raw_roots,
+            f"{module} owner root aliases differ: resolvedRoots",
+        )
     resolved_owners = set()
     owner_roots = []
     for owner_root in raw_roots:
@@ -110,7 +115,7 @@ def verify_map(module: str) -> tuple[str, ...]:
         resolved = (ROOT / owner_root).resolve()
         need(resolved.is_relative_to(ROOT.resolve()), f"{module} owner-root escape")
         need(resolved.is_dir(), f"{module} missing owner root {owner_root}")
-        need(resolved not in resolved_owners, f"{module} duplicate owner root")
+        need(resolved not in resolved_owners, f"{module} invalid owner root duplicates")
         resolved_owners.add(resolved)
         owner_roots.append(Path(owner_root).as_posix())
     need(mapping.get("operations"), f"{module} operations")

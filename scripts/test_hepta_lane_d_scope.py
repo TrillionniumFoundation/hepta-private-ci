@@ -181,6 +181,69 @@ class LaneDChangeScopeTests(unittest.TestCase):
         with self.assertRaisesRegex(SystemExit, "invalid owner root"):
             self.check()
 
+    def test_canonical_root_arrays_preserve_exact_owner_scope(self) -> None:
+        for module in LANE_D.MODULES:
+            path = LANE_D.MAPS[module]
+            mapping = json.loads((self.root / path).read_text(encoding="utf-8"))
+            roots = [mapping["sourceRoot"]]
+            mapping.update(sourceRoot=roots, declaredRoots=roots, resolvedRoots=roots)
+            self.write(path, json.dumps(mapping))
+        self.event["pull_request"]["head"]["sha"] = self.commit("canonical root arrays")
+        result = self.check()
+        self.assertEqual(result["ownerMapsVerified"], list(LANE_D.MODULES))
+        self.assertIn(
+            "codex-rs/hepta-ndu/src/new_policy.rs", result["laneDChangedPaths"]
+        )
+        self.assertFalse(result["authorityGranted"])
+
+    def test_root_arrays_reject_empty_duplicate_invalid_and_inconsistent_roots(
+        self,
+    ) -> None:
+        path = LANE_D.MAPS["objective.compiler"]
+        mapping = json.loads((self.root / path).read_text(encoding="utf-8"))
+        root = mapping["sourceRoot"]
+        for roots in (
+            [],
+            [root, root],
+            [""],
+            [None],
+            ["."],
+            ["../outside"],
+            [str(self.root)],
+        ):
+            with (
+                self.subTest(roots=roots),
+                mock.patch.object(LANE_D, "ROOT", self.root),
+            ):
+                self.write(path, json.dumps({**mapping, "sourceRoot": roots}))
+                with self.assertRaisesRegex(SystemExit, "invalid owner root"):
+                    LANE_D.verify_map("objective.compiler")
+        for key in ("declaredRoots", "resolvedRoots"):
+            with self.subTest(key=key), mock.patch.object(LANE_D, "ROOT", self.root):
+                self.write(
+                    path,
+                    json.dumps({**mapping, "sourceRoot": [root], key: ["other-lane"]}),
+                )
+                with self.assertRaisesRegex(SystemExit, "owner root aliases differ"):
+                    LANE_D.verify_map("objective.compiler")
+
+    def test_root_arrays_still_reject_source_escape_and_missing_symbols(self) -> None:
+        path = LANE_D.MAPS["objective.compiler"]
+        mapping = json.loads((self.root / path).read_text(encoding="utf-8"))
+        mapping["sourceRoot"] = [mapping["sourceRoot"]]
+        self.write(path, json.dumps(mapping))
+        with mock.patch.object(LANE_D, "ROOT", self.root):
+            self.write(
+                "codex-rs/hepta-objective/src/component.rs", "pub fn renamed() {}"
+            )
+            with self.assertRaisesRegex(SystemExit, "missing native symbol"):
+                LANE_D.verify_map("objective.compiler")
+            mapping["operations"][0]["sourcePath"] = "other-lane/impostor.rs"
+            self.write("other-lane/impostor.rs", "pub fn run() {}")
+            self.write(path, json.dumps(mapping))
+            with self.assertRaisesRegex(SystemExit, "source escapes owner root"):
+                LANE_D.verify_map("objective.compiler")
+
     def test_v3_multi_root_delta_uses_every_declared_owner(self) -> None:
         path = LANE_D.MAPS["utility.ndu"]
         mapping = json.loads((self.root / path).read_text(encoding="utf-8"))

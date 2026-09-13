@@ -92,7 +92,12 @@ def verify_branch_audit(relative: str, external: dict) -> None:
         fail("branch audit repository identity")
     if audit.get("mainHead") != external.get("observed_repository_head"):
         fail("branch audit main head is out of sync")
-    for key in ("remoteBranchCount", "nonMainBranchCount", "nonAncestorBranchCount", "aheadOfMainBranchCount"):
+    for key in (
+        "remoteBranchCount",
+        "nonMainBranchCount",
+        "nonAncestorBranchCount",
+        "aheadOfMainBranchCount",
+    ):
         if not isinstance(audit.get(key), int) or audit[key] < 0:
             fail(f"branch audit {key}")
     if audit["remoteBranchCount"] != external.get("remote_branch_count"):
