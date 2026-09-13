@@ -10,6 +10,13 @@ import sys
 from pathlib import Path
 from typing import Any
 
+try:
+    from scripts.hepta_module_catalog import has_unique_module_ids
+except ModuleNotFoundError as error:
+    if error.name != "scripts":
+        raise
+    from hepta_module_catalog import has_unique_module_ids
+
 ROOT = Path(__file__).resolve().parents[1]
 DOSSIER_PATH = "qualification/module-execution-dossiers/MODULE_DOSSIERS.json"
 README_PATH = "qualification/module-execution-dossiers/README.md"
@@ -269,7 +276,7 @@ def verify() -> int:
     need(not any(bool(value) for value in authority.values()), "positive authority")
 
     module_ids = [row["id"] for row in modules]
-    need(len(module_ids) == len(set(module_ids)) == 40, "canonical module closure")
+    need(has_unique_module_ids(module_ids), "canonical module closure")
     module_set = set(module_ids)
     module_doc_map = {row["module"]: row for row in module_docs}
     source_map = {row["module"]: row for row in source_bindings}
