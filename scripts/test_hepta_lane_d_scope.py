@@ -7,7 +7,6 @@ import io
 import json
 import os
 import subprocess
-import sys
 import tempfile
 import unittest
 from pathlib import Path
@@ -182,16 +181,160 @@ class LaneDChangeScopeTests(unittest.TestCase):
         with self.assertRaisesRegex(SystemExit, "invalid owner root"):
             self.check()
 
-    def test_cli_retains_real_self_test_entrypoint(self) -> None:
-        result = subprocess.run(
-            [sys.executable, str(SCRIPT), "self-test"],
-            check=True,
-            capture_output=True,
-            text=True,
+    def test_v3_multi_root_delta_uses_every_declared_owner(self) -> None:
+        path = LANE_D.MAPS["utility.ndu"]
+        mapping = json.loads((self.root / path).read_text(encoding="utf-8"))
+        extra = "components/alternate-ndu"
+        roots = [mapping["sourceRoot"], extra]
+        mapping["schema"] = "hepta.module-implementation-map.v3"
+        mapping["sourceRoot"] = roots
+        mapping["declaredRoots"] = roots
+        self.write(f"{extra}/component.rs", "pub fn run() {}\n")
+        mapping["operations"].append(
+            {
+                "sourcePath": f"{extra}/component.rs",
+                "nativeSymbol": "crate::run",
+                "tests": [],
+            }
         )
+        self.write(path, json.dumps(mapping))
+        self.event["pull_request"]["head"]["sha"] = self.commit("v3 owner roots")
+        result = self.check()
         self.assertEqual(
-            json.loads(result.stdout)["status"], "PASS_HEPTA_LANE_D_SELF_TEST"
+            result["laneDChangedPaths"],
+            sorted([
+                "codex-rs/hepta-ndu/src/new_policy.rs",
+                f"{extra}/component.rs",
+                path,
+            ]),
         )
+        self.assertEqual(result["otherLaneChangedPaths"], 1)
+
+
+class LaneDOwnerMapTests(unittest.TestCase):
+    def setUp(self) -> None:
+        directory = tempfile.TemporaryDirectory()
+        self.addCleanup(directory.cleanup)
+        self.root = Path(directory.name) / "repo"
+        self.root.mkdir()
+        self.module = "objective.compiler"
+        self.map_path = self.root / LANE_D.MAPS[self.module]
+        self.map_path.parent.mkdir(parents=True)
+        self.roots = ["components/first", "components/second"]
+        self.operations = []
+        for owner in self.roots:
+            directory = self.root / owner
+            directory.mkdir(parents=True)
+            (directory / "component.rs").write_text("pub fn run() {}\n")
+            (directory / "tests.rs").write_text("fn regression() {}\n")
+            self.operations.append(
+                {
+                    "sourcePath": f"{owner}/component.rs",
+                    "nativeSymbol": "crate::run",
+                    "tests": [{"path": f"{owner}/tests.rs", "symbol": "regression"}],
+                }
+            )
+        self.mapping = {
+            "schema": "hepta.module-implementation-map.v3",
+            "schemaVersion": 3,
+            "module": self.module,
+            "authorityDelta": "none",
+            "sourceRoot": self.roots.copy(),
+            "declaredRoots": self.roots.copy(),
+            "operations": self.operations,
+        }
+        self.patch = mock.patch.object(LANE_D, "ROOT", self.root)
+        self.patch.start()
+        self.addCleanup(self.patch.stop)
+
+    def verify(self) -> tuple[str, ...]:
+        self.map_path.write_text(json.dumps(self.mapping), encoding="utf-8")
+        return LANE_D.verify_map(self.module)
+
+    def test_canonical_v3_roots_admit_sources_in_each_declared_owner(self) -> None:
+        self.assertEqual(self.verify(), tuple(self.roots))
+
+    def test_declared_roots_work_without_legacy_alias(self) -> None:
+        del self.mapping["sourceRoot"]
+        self.assertEqual(self.verify(), tuple(self.roots))
+
+    def test_legacy_scalar_root_preserves_owner_validation(self) -> None:
+        del self.mapping["declaredRoots"]
+        self.mapping["sourceRoot"] = self.roots[0]
+        self.mapping["operations"] = self.operations[:1]
+        self.assertEqual(self.verify(), (self.roots[0],))
+
+    def test_root_alias_drift_is_not_silently_accepted(self) -> None:
+        self.mapping["sourceRoot"] = [self.roots[1]]
+        with self.assertRaisesRegex(SystemExit, "owner root aliases differ"):
+            self.verify()
+
+    def test_invalid_root_lists_and_paths_are_rejected(self) -> None:
+        del self.mapping["declaredRoots"]
+        for roots in (
+            [],
+            None,
+            True,
+            [False],
+            [""],
+            ["."],
+            ["../outside"],
+            [str(self.root)],
+            ["C:\\outside"],
+            ["missing"],
+            [self.roots[0], self.roots[0]],
+            [self.roots[0], self.roots[0] + "/"],
+            [self.roots[0] + "/component.rs"],
+        ):
+            with self.subTest(roots=roots):
+                self.mapping["sourceRoot"] = roots
+                with self.assertRaises(SystemExit):
+                    self.verify()
+
+    def test_owner_symlink_escape_is_rejected(self) -> None:
+        outside = self.root.parent / "outside"
+        outside.mkdir()
+        (self.root / "redirect").symlink_to(outside, target_is_directory=True)
+        del self.mapping["declaredRoots"]
+        self.mapping["sourceRoot"] = ["redirect"]
+        with self.assertRaisesRegex(SystemExit, "owner-root escape"):
+            self.verify()
+
+    def test_sources_and_tests_cannot_escape_through_symlinks(self) -> None:
+        outside = self.root.parent / "outside.rs"
+        outside.write_text("pub fn run() {}\nfn regression() {}\n")
+        for field in ("sourcePath", "test"):
+            with self.subTest(field=field):
+                entry = self.operations[0]
+                path = (
+                    entry["sourcePath"]
+                    if field == "sourcePath"
+                    else entry["tests"][0]["path"]
+                )
+                target = self.root / path
+                original = target.read_text()
+                target.unlink()
+                target.symlink_to(outside)
+                try:
+                    with self.assertRaisesRegex(SystemExit, "escape"):
+                        self.verify()
+                finally:
+                    target.unlink()
+                    target.write_text(original)
+
+    def test_real_json_loader_rejects_ambiguous_or_nonobject_maps(self) -> None:
+        relative = LANE_D.MAPS[self.module]
+        for content in (
+            '{"module":"first","module":"second"}',
+            '{"nested":{"sourceRoot":"a","sourceRoot":"b"}}',
+            "[]",
+            "null",
+            "{",
+        ):
+            with self.subTest(content=content):
+                self.map_path.write_text(content, encoding="utf-8")
+                with self.assertRaises(SystemExit):
+                    LANE_D.load(relative)
 
 
 if __name__ == "__main__":
