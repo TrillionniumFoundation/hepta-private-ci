@@ -1,0 +1,36 @@
+name: Hepta bounded blocker source export
+on:
+  push:
+    branches: [ops/hepta-blocker-source-export-20260913]
+permissions:
+  contents: read
+jobs:
+  export:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Export only fixed tracked source objects
+        shell: bash
+        run: |
+          set -euo pipefail
+          output="$RUNNER_TEMP/blocker-source"
+          mkdir -p "$output"
+          git update-ref refs/heads/export-ranked a40afc0f3afcc4a5c7b73f6d4675243fe1afd8f1
+          git update-ref refs/heads/export-phase5 4b94908166111aab519e5e582675d3d53999a0fe
+          git update-ref refs/heads/export-alias b6a5712f18427db51d603357d79c28a47e1a7d8f
+          git -c pack.threads=2 bundle create "$output/source.bundle" refs/heads/export-ranked refs/heads/export-phase5 refs/heads/export-alias ^afc11afe64f7b5efafd9234b16793e4080b1d296
+          git bundle list-heads "$output/source.bundle" > "$output/heads.txt"
+          (cd "$output" && sha256sum source.bundle > SHA256SUMS)
+          git diff --check
+          git diff --exit-code
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-fixed-blocker-source
+          path: ${{ runner.temp }}/blocker-source
+          if-no-files-found: error
+          retention-days: 1
