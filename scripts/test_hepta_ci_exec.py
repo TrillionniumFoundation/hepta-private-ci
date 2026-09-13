@@ -126,6 +126,68 @@ class ExecutionRecordTests(GitExecutionFixture):
         self.assertEqual(result.returncode, 2)
         self.assertFalse(self.marker.exists())
 
+    def test_matching_parents_with_wrong_tree_reject_before_command(self):
+        base = self.source
+        wrong_tree = self.git("rev-parse", "HEAD^{tree}")
+        (self.repo / "input").write_text("source change\n")
+        self.git("commit", "-qam", "source change")
+        source = self.git("rev-parse", "HEAD")
+        merge = self.git("commit-tree", wrong_tree, "-p", base, "-p", source, "-m", "wrong tree")
+        self.git("checkout", "-q", "--detach", merge)
+        result = self.execute(SOURCE_SHA=source, BASE_SHA=base, TESTED_SHA=merge,
+                              HEPTA_CI_LANE="base-merge")
+        self.assertEqual(result.returncode, 2, result.stderr)
+        self.assertEqual(self.receipt()["status"], "rejected")
+        self.assertIsNone(self.receipt()["command_exit_code"])
+        self.assertIn("recomputed", self.receipt()["error"])
+        self.assertFalse(self.marker.exists())
+
+    def test_divergent_clean_merge_records_recomputed_tree(self):
+        ancestor = self.source
+        (self.repo / "source-only").write_text("source\n")
+        self.git("add", ".")
+        self.git("commit", "-qm", "source change")
+        source = self.git("rev-parse", "HEAD")
+        self.git("checkout", "-q", "--detach", ancestor)
+        (self.repo / "target-only").write_text("target\n")
+        self.git("add", ".")
+        self.git("commit", "-qm", "target change")
+        base = self.git("rev-parse", "HEAD")
+        tree = self.git("merge-tree", "--write-tree", base, source)
+        merge = self.git("commit-tree", tree, "-p", base, "-p", source, "-m", "merge")
+        self.git("checkout", "-q", "--detach", merge)
+        result = self.execute(SOURCE_SHA=source, BASE_SHA=base, TESTED_SHA=merge,
+                              HEPTA_CI_LANE="base-merge")
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(self.receipt()["recomputed_merge_tree"], tree)
+        self.assertEqual(self.receipt()["before"]["tree"], tree)
+        self.assertTrue(self.marker.exists())
+
+    def test_conflicting_merge_never_dispatches_an_arbitrary_resolution(self):
+        ancestor = self.source
+        (self.repo / "input").write_text("source\n")
+        self.git("commit", "-qam", "source change")
+        source = self.git("rev-parse", "HEAD")
+        self.git("checkout", "-q", "--detach", ancestor)
+        (self.repo / "input").write_text("target\n")
+        self.git("commit", "-qam", "target change")
+        base = self.git("rev-parse", "HEAD")
+        tree = self.git("rev-parse", "HEAD^{tree}")
+        merge = self.git("commit-tree", tree, "-p", base, "-p", source, "-m", "arbitrary resolution")
+        self.git("checkout", "-q", "--detach", merge)
+        result = self.execute(SOURCE_SHA=source, BASE_SHA=base, TESTED_SHA=merge,
+                              HEPTA_CI_LANE="base-merge")
+        self.assertEqual(result.returncode, 2, result.stderr)
+        self.assertEqual(self.receipt()["status"], "rejected")
+        self.assertIsNone(self.receipt()["command_exit_code"])
+        self.assertFalse(self.marker.exists())
+
+    def test_merge_lane_rejects_symbolic_base_identity(self):
+        result = self.execute(BASE_SHA="HEAD", HEPTA_CI_LANE="base-merge")
+        self.assertEqual(result.returncode, 2, result.stderr)
+        self.assertEqual(self.receipt()["error"], "invalid base_sha")
+        self.assertFalse(self.marker.exists())
+
     def test_existing_receipt_cannot_be_overwritten_or_reused(self):
         self.result.write_text("prior result\n")
         result = self.execute()

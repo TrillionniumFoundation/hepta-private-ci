@@ -54,7 +54,9 @@ pub(crate) async fn read(
     }
     let access = CognitiveAccess::agent_private(owner.clone());
     let scope = CognitiveScope::AgentPrivate;
-    let cut = store.lane_c_snapshot(&access, &scope, now_seconds()?).await?;
+    let cut = store
+        .lane_c_snapshot(&access, &scope, now_seconds()?)
+        .await?;
     let read = cut
         .read(ReadRequestV2 {
             read_request: ReadRequest {

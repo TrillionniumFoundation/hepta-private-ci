@@ -75,8 +75,17 @@ def run(output: Path, command: list[str]) -> int:
             if record["tested_sha"] != record["source_sha"]:
                 raise ValueError("source lane does not test the source SHA")
         elif record["lane"] == "base-merge":
+            if re.fullmatch(r"[0-9a-f]{40}", record["base_sha"]) is None:
+                raise ValueError("invalid base_sha")
             if before["parents"] != [record["base_sha"], record["source_sha"]]:
                 raise ValueError("merge lane has different base/source parents")
+            # Parent identities alone do not prove what was merged. Recompute
+            # the candidate tree before dispatch, independently of other jobs.
+            # Conflicts or unavailable history reject, never certify a fallback.
+            expected_tree = git("merge-tree", "--write-tree", record["base_sha"], record["source_sha"])
+            if before["tree"] != expected_tree:
+                raise ValueError("merge lane tree differs from the recomputed base/source merge")
+            record["recomputed_merge_tree"] = expected_tree
         else:
             raise ValueError("an explicit source-head or base-merge lane is required")
         completed = subprocess.run(command, check=False)
