@@ -44,12 +44,18 @@ impl TrustedReadOnlyOrganV1 for Driver {
     }
 
     fn start(&mut self) -> Result<(), OrganHandlerFaultV1> {
-        self.events.lock().unwrap().push(format!("start:{}", self.id));
+        self.events
+            .lock()
+            .unwrap()
+            .push(format!("start:{}", self.id));
         Ok(())
     }
 
     fn handle(&mut self, port: usize, payload: &[u8]) -> Result<Vec<u8>, OrganHandlerFaultV1> {
-        self.events.lock().unwrap().push(format!("handle:{}", self.id));
+        self.events
+            .lock()
+            .unwrap()
+            .push(format!("handle:{}", self.id));
         if self.fail || port != 0 {
             return Err(OrganHandlerFaultV1::new(id("driver.failed")));
         }
@@ -59,7 +65,10 @@ impl TrustedReadOnlyOrganV1 for Driver {
     }
 
     fn stop(&mut self) -> Result<(), OrganHandlerFaultV1> {
-        self.events.lock().unwrap().push(format!("stop:{}", self.id));
+        self.events
+            .lock()
+            .unwrap()
+            .push(format!("stop:{}", self.id));
         Ok(())
     }
 }
@@ -74,10 +83,11 @@ struct Fixture {
 
 impl Fixture {
     fn host(self) -> Result<CnsOrganHostV1, CnsHierarchyError> {
-        let bytes =
-            encode_compiled_body_graph_v2(&self.body, &self.graph).map_err(CnsHierarchyError::Wire)?;
+        let bytes = encode_compiled_body_graph_v2(&self.body, &self.graph)
+            .map_err(CnsHierarchyError::Wire)?;
         let admission = CompiledOrganAdmissionV2 {
-            expected_digest: compiled_body_graph_digest_v2(&bytes).map_err(CnsHierarchyError::Wire)?,
+            expected_digest: compiled_body_graph_digest_v2(&bytes)
+                .map_err(CnsHierarchyError::Wire)?,
             generation: self.graph.generation,
             process: id("test.process"),
             host: id("test.host"),
@@ -299,7 +309,10 @@ fn edited_routes_are_rejected_before_any_driver_callback() {
             _ => unreachable!(),
         }
         let before = events.lock().unwrap().clone();
-        assert!(host.dispatch_once(&changed, b"request").is_err(), "case {case}");
+        assert!(
+            host.dispatch_once(&changed, b"request").is_err(),
+            "case {case}"
+        );
         assert_eq!(*events.lock().unwrap(), before);
     }
     assert!(
@@ -438,13 +451,15 @@ fn partial_failure_retains_host_quarantine_and_never_uses_direct_fallback() {
     let route = route(&host);
     assert_eq!(
         host.dispatch_once(&route, b"request"),
-        Err(CnsHierarchyError::Runtime(OrganRuntimeError::HandleFailed {
-            fault: OrganFaultRecordV1 {
-                organ: id("health"),
-                code: id("driver.failed"),
-            },
-            delivered: 1,
-        }))
+        Err(CnsHierarchyError::Runtime(
+            OrganRuntimeError::HandleFailed {
+                fault: OrganFaultRecordV1 {
+                    organ: id("health"),
+                    code: id("driver.failed"),
+                },
+                delivered: 1,
+            }
+        ))
     );
     let before = events.lock().unwrap().clone();
     assert!(host.dispatch_once(&route, b"retry").is_err());
