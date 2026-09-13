@@ -469,14 +469,9 @@ impl OrganHostV1 {
             });
         }
         if let Err(error) = migration.migrate(&snapshot, expected, candidate.generation()) {
-            let rollback_error = migration
-                .rollback(&snapshot, expected, candidate.generation())
-                .err();
-            if rollback_error.is_some() {
-                for slot in &mut self.slots {
-                    slot.state = HostedOrganStateV1::Quarantined;
-                }
-            }
+            // Candidate cleanup must finish before the owner restores predecessor
+            // state. A later stop callback must not observe the restored state as
+            // if it belonged to the failed candidate generation.
             let candidate_cleanup_faults = candidate.stop_indices(
                 candidate
                     .validated
@@ -485,6 +480,14 @@ impl OrganHostV1 {
                     .into_iter()
                     .rev(),
             );
+            let rollback_error = migration
+                .rollback(&snapshot, expected, candidate.generation())
+                .err();
+            if rollback_error.is_some() {
+                for slot in &mut self.slots {
+                    slot.state = HostedOrganStateV1::Quarantined;
+                }
+            }
             return Err(OrganRuntimeError::CandidateMigrationFailed {
                 error,
                 rollback_error,

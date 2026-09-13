@@ -194,6 +194,7 @@ struct MigrationFixture {
     rollbacks: Vec<(Generation, Generation, Vec<u8>)>,
     fail_migrate: bool,
     fail_rollback: bool,
+    events: Option<Arc<Mutex<Vec<String>>>>,
 }
 
 impl OrganStateMigrationV1 for MigrationFixture {
@@ -210,6 +211,9 @@ impl OrganStateMigrationV1 for MigrationFixture {
     ) -> Result<(), OrganMigrationError> {
         self.migrations
             .push((predecessor, candidate, snapshot.to_vec()));
+        if let Some(events) = &self.events {
+            event_log(events).push("migrate".to_owned());
+        }
         if self.fail_migrate {
             Err(OrganMigrationError::Callback(id("migration.failed")))
         } else {
@@ -225,6 +229,9 @@ impl OrganStateMigrationV1 for MigrationFixture {
     ) -> Result<(), OrganMigrationError> {
         self.rollbacks
             .push((predecessor, candidate, snapshot.to_vec()));
+        if let Some(events) = &self.events {
+            event_log(events).push("rollback".to_owned());
+        }
         if self.fail_rollback {
             Err(OrganMigrationError::Callback(id("rollback.failed")))
         } else {
@@ -741,4 +748,174 @@ fn failed_predecessor_stop_preserves_the_rollback_error() {
         host.dispatch_once(generation(7), &id("source"), 0, b"no")
             .is_err()
     );
+}
+
+#[test]
+fn candidate_cleanup_precedes_state_restoration_even_when_callbacks_fail() {
+    for (cleanup_fails, rollback_fails) in
+        [(false, false), (true, false), (false, true), (true, true)]
+    {
+        let predecessor_events = Arc::new(Mutex::new(Vec::new()));
+        let mut host = new_host(graph(), handlers(&predecessor_events));
+        start_host(&mut host);
+        let before = host.statuses();
+        let candidate_events = Arc::new(Mutex::new(Vec::new()));
+        let mut candidate_handlers = handlers(&candidate_events);
+        let mut target = FixtureOrgan::new("target.b", Arc::clone(&candidate_events));
+        target.stop_fault = cleanup_fails;
+        candidate_handlers[2] = Box::new(target);
+        let mut next = graph();
+        next.generation = generation(8);
+        let mut migration = MigrationFixture {
+            fail_migrate: true,
+            fail_rollback: rollback_fails,
+            events: Some(Arc::clone(&candidate_events)),
+            ..MigrationFixture::default()
+        };
+
+        let error = host
+            .replace_read_only_generation_with_migration(
+                generation(7),
+                next,
+                candidate_handlers,
+                &mut migration,
+            )
+            .expect_err("the candidate migration was rejected");
+        assert_eq!(
+            *event_log(&candidate_events),
+            vec![
+                "start:source",
+                "start:target.a",
+                "start:target.b",
+                "migrate",
+                "stop:target.b",
+                "stop:target.a",
+                "stop:source",
+                "rollback",
+            ],
+        );
+        assert_eq!(
+            error,
+            OrganRuntimeError::CandidateMigrationFailed {
+                error: OrganMigrationError::Callback(id("migration.failed")),
+                rollback_error: rollback_fails
+                    .then(|| OrganMigrationError::Callback(id("rollback.failed"))),
+                candidate_cleanup_faults: if cleanup_fails {
+                    vec![OrganFaultRecordV1 {
+                        organ: id("target.b"),
+                        code: id("stop.fault"),
+                    }]
+                } else {
+                    Vec::new()
+                },
+            },
+        );
+        assert_eq!(host.generation(), generation(7));
+        assert_eq!(
+            migration.rollbacks,
+            vec![(generation(7), generation(8), b"state-v1".to_vec())]
+        );
+        if rollback_fails {
+            assert!(
+                host.statuses()
+                    .iter()
+                    .all(|status| status.state == HostedOrganStateV1::Quarantined)
+            );
+        } else {
+            assert_eq!(host.statuses(), before);
+        }
+        drop(host);
+        assert_eq!(event_log(&candidate_events).len(), 8);
+    }
+}
+
+#[test]
+fn repeated_read_only_add_replace_retire_preserves_dispatch_and_generation_fences() {
+    let events = Arc::new(Mutex::new(Vec::new()));
+    let mut host = new_host(graph(), handlers(&events));
+    start_host(&mut host);
+    let mut retired = graph();
+    retired.organs.remove(1);
+    retired.initialization = vec![OrganEdge { from: 0, to: 1 }];
+    retired.runtime = vec![RuntimeLinkV1 {
+        output: OutputPort { organ: 0, port: 0 },
+        input: InputPort { organ: 1, port: 0 },
+        timing: DataflowTiming::Buffered,
+    }];
+    retired.fallback = vec![OrganEdge { from: 0, to: 1 }];
+    retired.failure_domains.remove(1);
+    retired.failure_domains[1].organ = 1;
+
+    for number in 8..18 {
+        let mut next = if number % 2 == 0 {
+            retired.clone()
+        } else {
+            graph()
+        };
+        next.generation = generation(number);
+        let implementations = next
+            .organs
+            .iter()
+            .map(|organ| {
+                let mut implementation = FixtureOrgan::new(organ.id.as_str(), Arc::clone(&events));
+                implementation.output_bytes = number as usize;
+                Box::new(implementation) as Box<dyn TrustedReadOnlyOrganV1>
+            })
+            .collect();
+        host.replace_read_only_generation(generation(number - 1), next, implementations)
+            .expect("compatible read-only topology succeeds");
+        let expected_targets = if number % 2 == 0 {
+            vec![id("target.b")]
+        } else {
+            vec![id("target.a"), id("target.b")]
+        };
+        let deliveries = host
+            .dispatch_once(
+                generation(number),
+                &id("source"),
+                /*output_port*/ 0,
+                b"request",
+            )
+            .expect("current generation dispatches to the exact module set");
+        assert_eq!(
+            deliveries
+                .iter()
+                .map(|item| item.target.clone())
+                .collect::<Vec<_>>(),
+            expected_targets
+        );
+        assert!(
+            deliveries
+                .iter()
+                .all(|item| item.output.len() == number as usize
+                    && item.authority == AuthorityPosture::DENY_ALL)
+        );
+        assert_eq!(host.abi().len(), deliveries.len() + 1);
+        assert_eq!(
+            host.dispatch_once(
+                generation(number - 1),
+                &id("source"),
+                /*output_port*/ 0,
+                b"stale"
+            ),
+            Err(OrganRuntimeError::GenerationMismatch {
+                expected: generation(number),
+                actual: generation(number - 1)
+            }),
+        );
+        if number % 2 == 0 {
+            assert_eq!(
+                host.dispatch_once(
+                    generation(number),
+                    &id("target.a"),
+                    /*output_port*/ 0,
+                    b"retired"
+                ),
+                Err(OrganRuntimeError::UnknownSource {
+                    organ: id("target.a")
+                }),
+            );
+        }
+    }
+    host.stop_all().expect("the final generation drains");
 }
