@@ -73,26 +73,45 @@ def load(path: str) -> dict[str, Any]:
     )
 
 
-def verify_map(module: str) -> str:
+def verify_map(module: str) -> tuple[str, ...]:
     mapping = load(MAPS[module])
     need(mapping.get("module") == module, f"{module} map identity")
     need(mapping.get("authorityDelta") == "none", f"{module} authority delta")
-    owner_root = mapping.get("sourceRoot")
+    roots = mapping.get("sourceRoot")
+    if isinstance(roots, str):
+        roots = [roots]
     need(
-        isinstance(owner_root, str)
-        and owner_root
-        and not Path(owner_root).is_absolute()
-        and ".." not in Path(owner_root).parts
-        and owner_root != ".",
+        isinstance(roots, list)
+        and bool(roots)
+        and all(
+            isinstance(root, str)
+            and bool(root)
+            and not Path(root).is_absolute()
+            and ".." not in Path(root).parts
+            and root != "."
+            for root in roots
+        ),
         f"{module} invalid owner root",
     )
-    resolved_owner = (ROOT / owner_root).resolve()
-    need(resolved_owner.is_relative_to(ROOT.resolve()), f"{module} owner-root escape")
+    need(len(set(roots)) == len(roots), f"{module} invalid owner root duplicates")
+    for alias in ("declaredRoots", "resolvedRoots"):
+        need(
+            alias not in mapping or mapping[alias] == roots,
+            f"{module} owner root aliases differ: {alias}",
+        )
+    resolved_owners = tuple((ROOT / root).resolve() for root in roots)
+    need(
+        all(owner.is_relative_to(ROOT.resolve()) for owner in resolved_owners),
+        f"{module} owner-root escape",
+    )
     need(mapping.get("operations"), f"{module} operations")
     for operation in mapping["operations"]:
         source_path = operation["sourcePath"]
         need(
-            (ROOT / source_path).resolve().is_relative_to(resolved_owner),
+            any(
+                (ROOT / source_path).resolve().is_relative_to(owner)
+                for owner in resolved_owners
+            ),
             f"{module} source escapes owner root: {source_path}",
         )
         need((ROOT / source_path).is_file(), f"missing source {source_path}")
@@ -115,7 +134,7 @@ def verify_map(module: str) -> str:
                     f"missing test symbol {test_symbol}",
                 )
 
-    return owner_root
+    return tuple(roots)
 
 
 def verify() -> int:
@@ -310,7 +329,7 @@ def verify_changes(base: str) -> int:
     # This gate does not approve those other lanes or rescan historical deltas.
     owner_roots = []
     for module in MODULES:
-        owner_roots.append(verify_map(module).rstrip("/"))
+        owner_roots.extend(root.rstrip("/") for root in verify_map(module))
     owned_prefixes = (
         *ALLOWED_PREFIXES,
         *(root + "/" for root in owner_roots),
