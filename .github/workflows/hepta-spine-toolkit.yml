@@ -1,0 +1,97 @@
+name: Hepta pinned qualification tools (no release)
+on:
+  push:
+    branches: [work/spine-toolkit-20260913]
+permissions:
+  contents: read
+jobs:
+  tools:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    env:
+      CARGO_NET_GIT_FETCH_WITH_CLI: 'true'
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+        with:
+          python-version: '3.13.5'
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+      - name: Resolve only existing native qualification dependencies
+        working-directory: codex-rs
+        run: |
+          set -euo pipefail
+          cargo check --locked -p codex-hepta-control-plane -p codex-hepta-runtime -p codex-hepta-intelligence --all-targets
+      - name: Prepare explicit runtime dependencies without host policy changes
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y bubblewrap patchelf
+          mkdir -p "$RUNNER_TEMP/spine-sdk/bin" "$RUNNER_TEMP/spine-sdk/python" "$RUNNER_TEMP/spine-sdk/rust" "$RUNNER_TEMP/spine-sdk/cargo-home" "$RUNNER_TEMP/sqlite-source"
+          curl --fail --location --retry 2 https://www.sqlite.org/2026/sqlite-amalgamation-3510300.zip --output "$RUNNER_TEMP/sqlite-source/source.zip"
+          python3 -S - <<'PY'
+          import hashlib, os, pathlib, zipfile
+          root = pathlib.Path(os.environ['RUNNER_TEMP']) / 'sqlite-source'
+          with zipfile.ZipFile(root / 'source.zip') as archive:
+              info = archive.getinfo('sqlite-amalgamation-3510300/sqlite3.c')
+              if info.file_size > 16000000:
+                  raise SystemExit('unexpected SQLite source size')
+              data = archive.read(info)
+          expected = '32d5424f97e0a7fc5ed2f6335afbb58be4e0298bd7117a34e39d345ff13d859e'
+          if hashlib.sha3_256(data).hexdigest() != expected:
+              raise SystemExit('upstream SQLite source digest mismatch')
+          (root / 'sqlite3.c').write_bytes(data)
+          (root / 'verified-sha3.txt').write_text(expected + '\n')
+          PY
+          cc -O2 -fPIC -shared -DSQLITE_THREADSAFE=1 -DSQLITE_ENABLE_FTS5 -DSQLITE_ENABLE_RTREE -DSQLITE_ENABLE_COLUMN_METADATA -DSQLITE_ENABLE_MATH_FUNCTIONS "$RUNNER_TEMP/sqlite-source/sqlite3.c" -o "$RUNNER_TEMP/sqlite-source/libsqlite3.so.0" -lm -ldl -lpthread
+      - name: Package named public tools and dependency caches only
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          sdk="$RUNNER_TEMP/spine-sdk"
+          sysroot=$(rustc --print sysroot)
+          cp -a "$sysroot/bin" "$sdk/rust/"
+          cp -a "$sysroot/lib" "$sdk/rust/"
+          cp -L "$(command -v just)" "$sdk/bin/just"
+          cp -L "$(command -v cargo-nextest)" "$sdk/bin/cargo-nextest"
+          cp -L "$(command -v bwrap)" "$sdk/bin/bwrap"
+          chmod 0755 "$sdk/bin/"*
+          prefix=$(python3 -S -c 'import sys; print(sys.base_prefix)')
+          cp -a "$prefix/." "$sdk/python/"
+          cp "$RUNNER_TEMP/sqlite-source/libsqlite3.so.0" "$sdk/python/lib/libsqlite3.so.0"
+          patchelf --set-rpath '$ORIGIN/../lib' "$sdk/python/bin/python3.13"
+          for extension in "$sdk"/python/lib/python3.13/lib-dynload/_sqlite3*.so; do
+            patchelf --set-rpath '$ORIGIN/../..' "$extension"
+          done
+          cargo_root="${CARGO_HOME:-$HOME/.cargo}"
+          for section in registry git; do
+            if test -d "$cargo_root/$section"; then cp -a "$cargo_root/$section" "$sdk/cargo-home/"; fi
+          done
+          test ! -e "$sdk/cargo-home/credentials.toml"
+          test ! -e "$sdk/cargo-home/credentials"
+          rustc -vV > "$sdk/rust-version.txt"
+          git rev-parse HEAD HEAD^{tree} > "$sdk/toolkit-source-identity.txt"
+          cp "$RUNNER_TEMP/sqlite-source/verified-sha3.txt" "$sdk/sqlite-source-sha3.txt"
+          "$sdk/python/bin/python3" -S - <<'PY'
+          import json, sqlite3, sys
+          expected = '2026-03-13 10:38:09 737ae4a34738ffa0c3ff7f9bb18df914dd1cad163f28fd6b6e114a344fe6d618'
+          with sqlite3.connect(':memory:') as db:
+              identity = db.execute('select sqlite_source_id()').fetchone()[0]
+          if sqlite3.sqlite_version != '3.51.3' or identity != expected:
+              raise SystemExit('relocated Python does not load verified SQLite')
+          print(json.dumps({'python': sys.version, 'sqlite': sqlite3.sqlite_version, 'source_id': identity}))
+          PY
+          (cd "$sdk" && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+          tar -C "$sdk" -czf "$RUNNER_TEMP/hepta-qualified-tools.tar.gz" .
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-pinned-tools-${{ github.sha }}
+          path: ${{ runner.temp }}/hepta-qualified-tools.tar.gz
+          if-no-files-found: error
+          retention-days: 2
