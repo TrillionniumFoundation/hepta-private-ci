@@ -1,7 +1,7 @@
 # Lane B source contracts and implementation gaps
 
 **Lane:** `LANE-B-RUNTIME`
-**Immutable source base:** `f278a89eea18fccb6d37b876aa5679863a64139d` / tree `5baa144717d4b3e3c596501fb56ce911d009e728`
+**Immutable source base:** `7e8379b3954808d4138a7bd2f3773f75691291a3` / tree `ff9fa6baf95a35fd2f49816e0a80097688f2aeeb`
 **Exact candidate:** derived from Git at verification time; never hard-coded
 **Repository-controlled scope:** documentation, operation inventory and source mapping verified; implementation gaps are reported per module
 **External scope:** product execution, deployment, real effects and independent acceptance remain open
