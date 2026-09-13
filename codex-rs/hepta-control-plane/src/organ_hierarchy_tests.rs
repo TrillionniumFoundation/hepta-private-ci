@@ -469,3 +469,306 @@ fn stopped_and_oversized_requests_preserve_existing_host_checks() {
     assert!(host.dispatch_once(&route, b"after.stop").is_err());
     assert_eq!(*events.lock().unwrap(), stopped);
 }
+
+#[derive(Debug)]
+struct LifecycleDriver {
+    inner: Driver,
+    fail_start: bool,
+    fail_stop: bool,
+}
+
+impl TrustedReadOnlyOrganV1 for LifecycleDriver {
+    fn id(&self) -> &StableId {
+        self.inner.id()
+    }
+
+    fn start(&mut self) -> Result<(), OrganHandlerFaultV1> {
+        self.inner.start()?;
+        if self.fail_start {
+            return Err(OrganHandlerFaultV1::new(id("lifecycle.start.failed")));
+        }
+        Ok(())
+    }
+
+    fn handle(&mut self, port: usize, payload: &[u8]) -> Result<Vec<u8>, OrganHandlerFaultV1> {
+        self.inner.handle(port, payload)
+    }
+
+    fn stop(&mut self) -> Result<(), OrganHandlerFaultV1> {
+        self.inner.stop()?;
+        if self.fail_stop {
+            return Err(OrganHandlerFaultV1::new(id("lifecycle.stop.failed")));
+        }
+        Ok(())
+    }
+}
+
+fn lifecycle_driver(fixture: &mut Fixture, start_fails: bool, stop_fails: bool) {
+    fixture.catalog[1].compiled.handler = Box::new(LifecycleDriver {
+        inner: Driver {
+            id: id("status"),
+            events: Arc::clone(&fixture.events),
+            marker: 1,
+            fail: false,
+        },
+        fail_start: start_fails,
+        fail_stop: stop_fails,
+    });
+}
+
+fn next_fixture(generation: Generation, retire_health: bool) -> Fixture {
+    let mut next = fixture();
+    next.graph.generation = generation;
+    if retire_health {
+        next.graph.organs.pop();
+        next.graph.initialization.pop();
+        next.graph.runtime.pop();
+        next.graph.failure_domains.pop();
+        next.body.organ_manifests.pop();
+        next.body.dependency_edges = next.graph.initialization.clone();
+        next.body.topological_order = next.graph.validate().unwrap().initialization_order;
+        next.hierarchy.systems[1].organs.pop();
+        next.hierarchy.drivers.pop();
+        next.catalog.pop();
+    }
+    next.rebind_graph();
+    next
+}
+
+#[test]
+fn live_hierarchy_replacement_adds_retires_and_fences_routes() {
+    let mut host = fixture().host().unwrap();
+    host.start_all().unwrap();
+    for number in 8..18 {
+        let previous = route(&host);
+        let generation = Generation::new(number).unwrap();
+        let retired = number % 2 == 0;
+        let mut next = next_fixture(generation, retired);
+        let binding = &mut next.hierarchy.drivers[1];
+        binding.driver = id(&format!("driver.status.g{number}"));
+        binding.implementation_digest = Digest32::of_bytes(&number.to_be_bytes());
+        next.catalog[1].binding = binding.clone();
+        next.catalog[1].compiled.handler = Box::new(Driver {
+            id: id("status"),
+            events: Arc::clone(&next.events),
+            marker: u8::try_from(number).unwrap(),
+            fail: false,
+        });
+        let events = Arc::clone(&next.events);
+        host.replace_read_only_generation(previous.generation, next.host().unwrap())
+            .unwrap();
+        assert_eq!(host.generation(), generation);
+        let current = route(&host);
+        assert_eq!(current.generation, generation);
+        assert_ne!(current.hierarchy_digest, previous.hierarchy_digest);
+        assert_eq!(current.targets.len(), if retired { 1 } else { 2 });
+        let before = events.lock().unwrap().clone();
+        assert_eq!(
+            host.dispatch_once(&previous, b"stale"),
+            Err(CnsHierarchyError::RouteMismatch)
+        );
+        assert_eq!(*events.lock().unwrap(), before);
+        let result = host.dispatch_once(&current, b"current").unwrap();
+        assert_eq!(result.len(), current.targets.len());
+        let mut output = vec![u8::try_from(number).unwrap()];
+        output.extend_from_slice(b"current");
+        assert_eq!(
+            result[0],
+            CnsDeliveryV1 {
+                cns: id("test.cns"),
+                generation,
+                hierarchy_digest: current.hierarchy_digest,
+                source: current.source.clone(),
+                target: OrganPathV1 {
+                    system: id("observation"),
+                    organ: id("status"),
+                    driver: id(&format!("driver.status.g{number}")),
+                },
+                execution: OrganDeliveryV1 {
+                    source: id("ingress"),
+                    target: id("status"),
+                    input_port: 0,
+                    output,
+                    authority: AuthorityPosture::DENY_ALL,
+                },
+            }
+        );
+    }
+    host.stop_all().unwrap();
+}
+
+#[test]
+fn invalid_replacement_identity_leaves_predecessor_routes_and_callbacks_unchanged() {
+    for case in 0..4 {
+        let original = fixture();
+        let events = Arc::clone(&original.events);
+        let mut host = original.host().unwrap();
+        host.start_all().unwrap();
+        let previous = route(&host);
+        let before = events.lock().unwrap().clone();
+        let mut next = next_fixture(previous.generation.next().unwrap(), false);
+        let mut expected = previous.generation;
+        match case {
+            0 => expected = expected.next().unwrap(),
+            1 => next.hierarchy.cns = id("another.cns"),
+            2 => {
+                next.graph.generation = previous.generation;
+                next.rebind_graph();
+            }
+            3 => {
+                next.graph.generation = next.graph.generation.next().unwrap();
+                next.rebind_graph();
+            }
+            _ => unreachable!(),
+        }
+        let candidate_events = Arc::clone(&next.events);
+        assert!(
+            host.replace_read_only_generation(expected, next.host().unwrap())
+                .is_err(),
+            "case {case}"
+        );
+        assert_eq!(*events.lock().unwrap(), before);
+        assert!(candidate_events.lock().unwrap().is_empty());
+        assert_eq!(route(&host), previous);
+        assert_eq!(host.generation(), previous.generation);
+        assert!(host.dispatch_once(&previous, b"still.valid").is_ok());
+    }
+}
+
+#[test]
+fn candidate_start_failure_does_not_publish_new_routes() {
+    for cleanup_fails in [false, true] {
+        let original = fixture();
+        let original_events = Arc::clone(&original.events);
+        let mut host = original.host().unwrap();
+        host.start_all().unwrap();
+        let previous = route(&host);
+        let before = original_events.lock().unwrap().clone();
+        let mut next = next_fixture(previous.generation.next().unwrap(), false);
+        lifecycle_driver(&mut next, true, cleanup_fails);
+        let events = Arc::clone(&next.events);
+        assert_eq!(
+            host.replace_read_only_generation(previous.generation, next.host().unwrap()),
+            Err(CnsHierarchyError::Runtime(OrganRuntimeError::StartFailed {
+                fault: OrganFaultRecordV1 {
+                    organ: id("status"),
+                    code: id("lifecycle.start.failed"),
+                },
+                cleanup_faults: if cleanup_fails {
+                    vec![OrganFaultRecordV1 {
+                        organ: id("status"),
+                        code: id("lifecycle.stop.failed"),
+                    }]
+                } else {
+                    vec![]
+                },
+            }))
+        );
+        assert_eq!(
+            *events.lock().unwrap(),
+            vec![
+                "start:ingress",
+                "start:status",
+                "stop:status",
+                "stop:ingress"
+            ]
+        );
+        assert_eq!(*original_events.lock().unwrap(), before);
+        assert_eq!(route(&host), previous);
+        assert_eq!(host.generation(), previous.generation);
+        assert!(host.dispatch_once(&previous, b"retained").is_ok());
+    }
+}
+
+#[test]
+fn predecessor_stop_failure_keeps_old_identity_and_denies_dispatch() {
+    for cleanup_fails in [false, true] {
+        let mut original = fixture();
+        lifecycle_driver(&mut original, false, true);
+        let original_events = Arc::clone(&original.events);
+        let mut host = original.host().unwrap();
+        host.start_all().unwrap();
+        let previous = route(&host);
+        let mut next = next_fixture(previous.generation.next().unwrap(), false);
+        lifecycle_driver(&mut next, false, cleanup_fails);
+        let candidate_events = Arc::clone(&next.events);
+        let fault = OrganFaultRecordV1 {
+            organ: id("status"),
+            code: id("lifecycle.stop.failed"),
+        };
+        assert_eq!(
+            host.replace_read_only_generation(previous.generation, next.host().unwrap()),
+            Err(CnsHierarchyError::Runtime(
+                OrganRuntimeError::ReplacementStopFailed {
+                    predecessor_faults: vec![fault.clone()],
+                    candidate_cleanup_faults: if cleanup_fails { vec![fault] } else { vec![] },
+                }
+            ))
+        );
+        assert_eq!(route(&host), previous);
+        assert_eq!(host.generation(), previous.generation);
+        assert_eq!(
+            host.statuses().iter().map(|s| s.state).collect::<Vec<_>>(),
+            vec![
+                crate::HostedOrganStateV1::Stopped,
+                crate::HostedOrganStateV1::Quarantined,
+                crate::HostedOrganStateV1::Stopped,
+            ]
+        );
+        let before = original_events.lock().unwrap().clone();
+        assert!(host.dispatch_once(&previous, b"must.not.run").is_err());
+        assert_eq!(*original_events.lock().unwrap(), before);
+        assert_eq!(
+            *candidate_events.lock().unwrap(),
+            vec![
+                "start:ingress",
+                "start:status",
+                "start:health",
+                "stop:health",
+                "stop:status",
+                "stop:ingress",
+            ]
+        );
+        drop(host);
+        assert_eq!(*original_events.lock().unwrap(), before);
+        assert_eq!(candidate_events.lock().unwrap().len(), 6);
+    }
+}
+
+#[test]
+fn already_started_candidate_is_not_a_registered_successor() {
+    let mut host = fixture().host().unwrap();
+    host.start_all().unwrap();
+    let previous = route(&host);
+    let mut next = next_fixture(previous.generation.next().unwrap(), false)
+        .host()
+        .unwrap();
+    next.start_all().unwrap();
+    assert!(matches!(
+        host.replace_read_only_generation(previous.generation, next),
+        Err(CnsHierarchyError::Runtime(
+            OrganRuntimeError::InvalidStartState { .. }
+        ))
+    ));
+    assert_eq!(route(&host), previous);
+    assert!(host.dispatch_once(&previous, b"still.valid").is_ok());
+}
+
+#[test]
+fn stopped_predecessor_does_not_start_a_candidate() {
+    let mut host = fixture().host().unwrap();
+    host.start_all().unwrap();
+    let previous = route(&host);
+    host.stop_all().unwrap();
+    let next = next_fixture(previous.generation.next().unwrap(), false);
+    let events = Arc::clone(&next.events);
+    assert!(matches!(
+        host.replace_read_only_generation(previous.generation, next.host().unwrap()),
+        Err(CnsHierarchyError::Runtime(
+            OrganRuntimeError::OrganNotReady { .. }
+        ))
+    ));
+    assert!(events.lock().unwrap().is_empty());
+    assert_eq!(route(&host), previous);
+    assert!(host.dispatch_once(&previous, b"stopped").is_err());
+}

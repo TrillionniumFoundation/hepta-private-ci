@@ -109,11 +109,23 @@ put qualification code on production sensory or control hot paths.
 
 ## Evolution and compatibility
 
-Current compositions are immutable. A replacement body or driver is admitted as
-a new host with its own routes; old routes cannot be applied to a changed body.
-This profile does not yet provide live hierarchy-preserving hot replacement.
-Existing flat-host replacement APIs retain their original scope and are not
-exposed as a mutable escape hatch on `CnsOrganHostV1`.
+Each admitted composition is immutable. `CnsOrganHostV1::replace_read_only_generation`
+accepts a separately admitted, registered successor under the same CNS identity.
+It requires the exact current generation and its immediate successor. Additions,
+retirements, system membership and selected drivers change together with the
+complete graph; the wrapper does not expose a mutable flat-host escape hatch.
+
+Cutover reuses the existing host lifecycle implementation. Candidate validation
+or startup failure leaves the predecessor and its routes unchanged. If stopping
+the predecessor fails, candidate cleanup is attempted and its faults are returned;
+the old identity remains visible with stopped or quarantined organs. Such a host
+cannot dispatch through its retained routes. Only successful cutover publishes
+the new routes, under the same exclusive mutable access as the host replacement.
+Previously cached routes then fail before a handler runs.
+
+This is a process-local read-only replacement, not a crash-durable transaction,
+a data migration, or an autonomous policy selecting which organs should change.
+It does not add a second lifecycle implementation or an authoritative store.
 
 Before a future effectful or stateful profile is admitted, its owner must provide
 final-use authorization, bounded I/O, trustworthy terminal observation, unknown
@@ -136,7 +148,10 @@ cargo fmt --package codex-hepta-control-plane --package codex-hepta-runtime -- -
 
 `organ_hierarchy_tests.rs` exercises actual fixture handlers, cross-system fanout,
 full delivery values, route edits, independent catalog/manifest rejection, graph
-identity, declaration ordering, replacement identity and partial failure.
+identity, declaration ordering, replacement identity and partial failure. It also
+executes repeated live add/retire/driver-replacement cycles and checks wrong CNS,
+stale/skipped generations, already-started candidates, stopped predecessors,
+candidate startup/cleanup faults and predecessor shutdown faults.
 `../../hepta-runtime/src/organs_tests.rs` verifies that the existing consumer
 rejects altered routes without observing its state adapter, then succeeds with
 the restored route. These tests are not a production effect or learning benchmark.

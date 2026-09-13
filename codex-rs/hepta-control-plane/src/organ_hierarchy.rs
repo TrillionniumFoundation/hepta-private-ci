@@ -92,6 +92,7 @@ pub struct CnsDeliveryV1 {
 pub enum CnsHierarchyError {
     Bounds,
     GraphBinding,
+    CnsIdentity,
     Membership,
     DriverBinding,
     UnknownRoute,
@@ -237,6 +238,7 @@ fn append_id(bytes: &mut Vec<u8>, identity: &StableId) {
 /// It adds neither a worker thread, a state store, nor a second effect path.
 #[derive(Debug)]
 pub struct CnsOrganHostV1 {
+    pub(crate) cns: StableId,
     pub(crate) host: OrganHostV1,
     pub(crate) routes: BTreeMap<(StableId, usize), CnsRouteV1>,
 }
@@ -256,6 +258,30 @@ impl CnsOrganHostV1 {
 
     pub fn stop_all(&mut self) -> Result<(), CnsHierarchyError> {
         self.host.stop_all().map_err(CnsHierarchyError::Runtime)
+    }
+
+    /// Replace the composition without giving up its hierarchy binding.
+    /// The candidate must be an independently admitted, registered successor
+    /// under the same CNS identity. No new runtime or effect authority is issued.
+    ///
+    /// Candidate validation/start failure leaves the predecessor and its routes
+    /// unchanged. If predecessor cleanup fails, its stopped/quarantined states
+    /// remain visible under the old identity. Routes advance only after the
+    /// existing host completes cutover successfully, under exclusive access.
+    pub fn replace_read_only_generation(
+        &mut self,
+        expected: Generation,
+        next: Self,
+    ) -> Result<(), CnsHierarchyError> {
+        if self.cns != next.cns {
+            return Err(CnsHierarchyError::CnsIdentity);
+        }
+        let Self { host, routes, .. } = next;
+        self.host
+            .replace_admitted_read_only_generation(expected, host)
+            .map_err(CnsHierarchyError::Runtime)?;
+        self.routes = routes;
+        Ok(())
     }
 
     pub fn route(

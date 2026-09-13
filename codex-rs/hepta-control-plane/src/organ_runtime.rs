@@ -372,22 +372,49 @@ impl OrganHostV1 {
         graph: OrganGraphsV1,
         handlers: Vec<Box<dyn TrustedReadOnlyOrganV1>>,
     ) -> Result<(), OrganRuntimeError> {
+        self.validate_read_only_successor(expected, graph.generation)?;
+        let candidate = Self::new(graph, handlers)?;
+        self.activate_read_only_successor(candidate)
+    }
+
+    /// Accept only an already-validated read-only host. This entry point lets
+    /// hierarchy routing reuse the same lifecycle cutover as the flat API.
+    pub(crate) fn replace_admitted_read_only_generation(
+        &mut self,
+        expected: Generation,
+        candidate: Self,
+    ) -> Result<(), OrganRuntimeError> {
+        self.validate_read_only_successor(expected, candidate.generation())?;
+        self.activate_read_only_successor(candidate)
+    }
+
+    fn validate_read_only_successor(
+        &self,
+        expected: Generation,
+        proposed: Generation,
+    ) -> Result<(), OrganRuntimeError> {
         if self.generation() != expected {
             return Err(OrganRuntimeError::GenerationMismatch {
                 expected: self.generation(),
                 actual: expected,
             });
         }
-        if expected.next().ok() != Some(graph.generation) {
+        if expected.next().ok() != Some(proposed) {
             return Err(OrganRuntimeError::NonSuccessorGeneration {
                 current: expected,
-                proposed: graph.generation,
+                proposed,
             });
         }
         for index in 0..self.slots.len() {
             self.require_ready(index)?;
         }
-        let mut candidate = Self::new(graph, handlers)?;
+        Ok(())
+    }
+
+    fn activate_read_only_successor(
+        &mut self,
+        mut candidate: Self,
+    ) -> Result<(), OrganRuntimeError> {
         candidate.start_all()?;
         let predecessor_faults = self.stop_indices(
             self.validated
@@ -428,21 +455,7 @@ impl OrganHostV1 {
         handlers: Vec<Box<dyn TrustedReadOnlyOrganV1>>,
         migration: &mut M,
     ) -> Result<(), OrganRuntimeError> {
-        if self.generation() != expected {
-            return Err(OrganRuntimeError::GenerationMismatch {
-                expected: self.generation(),
-                actual: expected,
-            });
-        }
-        if expected.next().ok() != Some(graph.generation) {
-            return Err(OrganRuntimeError::NonSuccessorGeneration {
-                current: expected,
-                proposed: graph.generation,
-            });
-        }
-        for index in 0..self.slots.len() {
-            self.require_ready(index)?;
-        }
+        self.validate_read_only_successor(expected, graph.generation)?;
         let mut candidate = Self::new(graph, handlers)?;
         let snapshot = migration
             .snapshot(expected)

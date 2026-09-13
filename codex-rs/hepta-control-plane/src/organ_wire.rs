@@ -323,7 +323,11 @@ impl VerifiedCompiledBodyGraphV2 {
         let host = self
             .into_host(catalog.into_iter().map(|entry| entry.compiled).collect())
             .map_err(crate::CnsHierarchyError::Wire)?;
-        Ok(crate::CnsOrganHostV1 { host, routes })
+        Ok(crate::CnsOrganHostV1 {
+            cns: hierarchy.cns,
+            host,
+            routes,
+        })
     }
 
     /// Consume the verified value and the trusted local catalog. A successful
