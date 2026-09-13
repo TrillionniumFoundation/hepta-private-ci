@@ -64,6 +64,31 @@ jobs:
           git rev-parse HEAD HEAD^{tree}
           printf 'Explicit test owners: %s\n' "$PACKAGES"
 
+      - name: Export tracked source for local reproduction
+        if: matrix.profile.name == 'Hierarchy and live consumer'
+        shell: bash
+        run: |
+          set -euo pipefail
+          snapshot="$RUNNER_TEMP/hepta-organ-source"
+          mkdir -p "$snapshot"
+          git archive --format=tar.gz HEAD > "$snapshot/source.tar.gz"
+          git ls-tree -rz HEAD > "$snapshot/tree.nul"
+          git cat-file commit HEAD > "$snapshot/commit.object"
+          {
+            printf 'source=%s\nbase=%s\n' "$SOURCE_SHA" "$BASE_SHA"
+            git rev-parse HEAD 'HEAD^{tree}'
+          } > "$snapshot/identity.txt"
+          (cd "$snapshot" && sha256sum source.tar.gz tree.nul commit.object identity.txt > SHA256SUMS)
+
+      - name: Retain exact tracked source
+        if: matrix.profile.name == 'Hierarchy and live consumer'
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-organ-source-${{ matrix.lane }}-${{ env.SOURCE_SHA }}
+          path: ${{ runner.temp }}/hepta-organ-source
+          if-no-files-found: error
+          retention-days: 3
+
       - name: Install pinned repository test tools
         uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
         with:
