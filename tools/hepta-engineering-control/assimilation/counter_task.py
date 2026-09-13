@@ -39,38 +39,45 @@ class CounterTask:
 
 
 def run_counter_task(service: DisposableCounterService, task: CounterTask) -> dict:
-    """Reconcile an exact task prefix before issuing only the missing effects.
+    """Reconcile this task's effects without repeating committed operations.
 
-    Unknown outcomes propagate unchanged. The caller must close the poisoned
-    client, establish a current generation/frontier and supply a new client.
-    There is no retry loop, timeout extension or invented recovery generation.
+    Later progress proves historical completion only through this task's exact
+    operation history. It does not mean the current counter equals the old
+    target. Unknown outcomes still propagate; the host supplies a new client
+    and independently retained generation/frontier rather than retrying here.
     """
-    # At most one query, one reconciliation per retained effect, one request per
-    # missing effect, and one terminal query; reserve before any task dispatch.
-    if service.sequence + task.target_counter - task.initial_counter + 2 > 256:
+    effect_count = task.target_counter - task.initial_counter
+    if service.sequence + effect_count + 2 > 256:
         raise ServiceError("task_exceeds_remaining_service_budget")
     observed = service.request("query")["counter"]
-    if not task.initial_counter <= observed <= task.target_counter:
+    if observed < task.initial_counter:
         raise ServiceError("observed_counter_outside_target_snapshot")
-    retained = observed - task.initial_counter
-    for value in range(task.initial_counter + 1, observed + 1):
+    historical_completion = observed > task.target_counter
+    if historical_completion and effect_count == 0:
+        # No operation identity can establish that an empty task ran earlier.
+        raise ServiceError("empty_task_has_no_retained_completion_evidence")
+    retained_end = min(observed, task.target_counter)
+    for value in range(task.initial_counter + 1, retained_end + 1):
         if service.request("reconcile", task.operation_id(value))["value"] != value:
             raise ServiceError("observed_progress_belongs_to_another_task")
     for value in range(observed + 1, task.target_counter + 1):
         if service.request("step", task.operation_id(value))["value"] != value:
             raise ServiceError("task_effect_differs_from_target_snapshot")
     final = service.request("query")["counter"]
-    if final != task.target_counter:
-        raise ServiceError("task_target_not_observed")
-    return {
+    if final != max(observed, task.target_counter):
+        raise ServiceError("task_terminal_counter_changed")
+    result = {
         "task_id": task.task_id,
         "initial_counter": task.initial_counter,
         "target_counter": task.target_counter,
         "observed_counter": final,
-        "reconciled_effects": retained,
-        "new_effects": task.target_counter - observed,
+        "reconciled_effects": retained_end - task.initial_counter,
+        "new_effects": max(0, task.target_counter - observed),
         "generation": service.generation,
     }
+    if historical_completion:
+        result["completion_basis"] = "retained_operation_history"
+    return result
 
 
 def main() -> int:
