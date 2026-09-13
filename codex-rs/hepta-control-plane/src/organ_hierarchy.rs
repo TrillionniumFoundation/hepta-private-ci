@@ -145,7 +145,10 @@ impl CnsHierarchyV1 {
                 return Err(E::Membership);
             }
             for organ in &system.organs {
-                if memberships.insert(organ.clone(), system.id.clone()).is_some() {
+                if memberships
+                    .insert(organ.clone(), system.id.clone())
+                    .is_some()
+                {
                     return Err(E::Membership);
                 }
             }
