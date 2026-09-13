@@ -13,6 +13,9 @@ use codex_hepta_paths::HeptaFleetRoot;
 
 use super::read;
 
+#[path = "cognitive_context_budget_tests.rs"]
+mod budget;
+
 #[tokio::test]
 async fn context_reads_real_owner_content_and_removes_committed_tombstones() {
     let temp = tempfile::tempdir().unwrap();

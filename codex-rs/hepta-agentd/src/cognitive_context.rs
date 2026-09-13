@@ -91,25 +91,16 @@ pub(crate) async fn read(
         if !accepted {
             continue;
         }
-        let item = CognitiveContextItem {
+        response.items.push(CognitiveContextItem {
             memory_id: memory.id.memory_id.as_str().to_string(),
             revision: memory.id.revision,
             content: memory.content,
             content_sha256: memory.content_sha256.as_str().to_string(),
-        };
-        response.items.push(item);
-        // Bound the complete payload, including JSON escaping and envelope.
-        let encoded_bytes = serde_json::to_vec(&response)
-            .map_err(|error| CognitiveStoreError::Invalid(error.to_string()))?
-            .len();
-        if encoded_bytes > MAX_CONTEXT_JSON_BYTES - 1024 {
-            response.items.pop();
-            continue;
-        }
-        if ranker.is_none() && response.items.len() == usize::from(limit) {
-            break;
-        }
+        });
     }
+    // Retrieval already bounds the batch and each stored record. Do not apply
+    // the output byte budget to the legacy order: that could discard a learned
+    // winner or hide an unsupported record before whole-ranking abstention.
     if let Some(ranker) = ranker {
         let ranker = std::sync::Arc::clone(ranker);
         let rank_owner = owner.clone();
@@ -122,7 +113,23 @@ pub(crate) async fn read(
         .await
         .map_err(|_| CognitiveContextError::RankerUnavailable)?
         .map_err(|_| CognitiveContextError::RankerUnavailable)?;
-        response.items.truncate(usize::from(limit));
+    }
+    // Pack only after the complete admitted batch has been ranked (or the
+    // optional model has abstained). An oversized record must not consume a
+    // result slot or prevent a later fitting record from filling that slot.
+    let items = std::mem::take(&mut response.items);
+    for item in items {
+        response.items.push(item);
+        let encoded_bytes = serde_json::to_vec(&response)
+            .map_err(|error| CognitiveStoreError::Invalid(error.to_string()))?
+            .len();
+        if encoded_bytes > MAX_CONTEXT_JSON_BYTES - 1024 {
+            response.items.pop();
+            continue;
+        }
+        if response.items.len() == usize::from(limit) {
+            break;
+        }
     }
     let encoded_context = serde_json::to_vec(&response)
         .map_err(|error| CognitiveStoreError::Invalid(error.to_string()))?;
