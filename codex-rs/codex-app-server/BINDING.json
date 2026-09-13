@@ -7,5 +7,10 @@
   "duplicate_cargo_package_created": false,
   "model_authority": false,
   "provider_authority": false,
-  "interpretation": "the alias binds the plan root to the existing app-server package without creating a second implementation"
+  "interpretation": "the alias binds the plan root to the existing app-server package without creating a second implementation",
+  "source_evidence_paths": [
+    "codex-rs/core/src/tools/router.rs",
+    "codex-rs/core/src/codex_thread.rs"
+  ],
+  "source_evidence_scope": "exact legacy source navigation only; no writer, runtime, model, provider, or release authority is granted"
 }

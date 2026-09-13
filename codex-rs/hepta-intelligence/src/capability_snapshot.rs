@@ -60,6 +60,7 @@ pub struct CapabilitySnapshotV2 {
     objective_digest: Digest32,
     snapshot_digest: Digest32,
     absent_optional: Vec<StableId>,
+    bindings: BTreeMap<StableId, CapabilityBindingV2>,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -173,7 +174,19 @@ impl CapabilitySnapshotV2 {
             objective_digest: request.objective_digest,
             snapshot_digest: Digest32::of_bytes(&bytes),
             absent_optional,
+            bindings: request
+                .bindings
+                .into_iter()
+                .map(|item| (item.capability_id.clone(), item))
+                .collect(),
         })
+    }
+
+    pub(super) fn bound_owner(&self, capability: &str) -> Option<&str> {
+        self.bindings
+            .iter()
+            .find(|(id, _)| id.as_str() == capability)
+            .map(|(_, binding)| binding.owner_id.as_str())
     }
 
     #[must_use]

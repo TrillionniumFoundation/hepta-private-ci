@@ -23,6 +23,13 @@ pub use capability_snapshot::CapabilitySnapshotErrorV2;
 pub use capability_snapshot::CapabilitySnapshotRequestV2;
 pub use capability_snapshot::CapabilitySnapshotV2;
 
+mod pipeline_v2;
+
+pub use pipeline_v2::LaneFRunRequestV2;
+pub use pipeline_v2::LaneFShadowPipelineReceiptV2;
+pub use pipeline_v2::PipelineErrorV2;
+pub use pipeline_v2::run_shadow_pipeline_v2;
+
 mod pipeline;
 
 pub use pipeline::CoherentLaneFSnapshotV1;
