@@ -317,8 +317,8 @@ impl VerifiedCompiledBodyGraphV2 {
     ) -> Result<crate::CnsOrganHostV1, crate::CnsHierarchyError> {
         let bytes = encode_compiled_body_graph_v2(&self.body, &self.graph)
             .map_err(crate::CnsHierarchyError::Wire)?;
-        let graph_digest = compiled_body_graph_digest_v2(&bytes)
-            .map_err(crate::CnsHierarchyError::Wire)?;
+        let graph_digest =
+            compiled_body_graph_digest_v2(&bytes).map_err(crate::CnsHierarchyError::Wire)?;
         let routes = hierarchy.bind(&self.graph, graph_digest, &catalog)?;
         let host = self
             .into_host(catalog.into_iter().map(|entry| entry.compiled).collect())

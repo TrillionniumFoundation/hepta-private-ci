@@ -44,18 +44,12 @@ impl TrustedReadOnlyOrganV1 for Driver {
     }
 
     fn start(&mut self) -> Result<(), OrganHandlerFaultV1> {
-        self.events
-            .lock()
-            .unwrap()
-            .push(format!("start:{}", self.id));
+        self.events.lock().unwrap().push(format!("start:{}", self.id));
         Ok(())
     }
 
     fn handle(&mut self, port: usize, payload: &[u8]) -> Result<Vec<u8>, OrganHandlerFaultV1> {
-        self.events
-            .lock()
-            .unwrap()
-            .push(format!("handle:{}", self.id));
+        self.events.lock().unwrap().push(format!("handle:{}", self.id));
         if self.fail || port != 0 {
             return Err(OrganHandlerFaultV1::new(id("driver.failed")));
         }
@@ -65,10 +59,7 @@ impl TrustedReadOnlyOrganV1 for Driver {
     }
 
     fn stop(&mut self) -> Result<(), OrganHandlerFaultV1> {
-        self.events
-            .lock()
-            .unwrap()
-            .push(format!("stop:{}", self.id));
+        self.events.lock().unwrap().push(format!("stop:{}", self.id));
         Ok(())
     }
 }
@@ -83,11 +74,10 @@ struct Fixture {
 
 impl Fixture {
     fn host(self) -> Result<CnsOrganHostV1, CnsHierarchyError> {
-        let bytes = encode_compiled_body_graph_v2(&self.body, &self.graph)
-            .map_err(CnsHierarchyError::Wire)?;
+        let bytes =
+            encode_compiled_body_graph_v2(&self.body, &self.graph).map_err(CnsHierarchyError::Wire)?;
         let admission = CompiledOrganAdmissionV2 {
-            expected_digest: compiled_body_graph_digest_v2(&bytes)
-                .map_err(CnsHierarchyError::Wire)?,
+            expected_digest: compiled_body_graph_digest_v2(&bytes).map_err(CnsHierarchyError::Wire)?,
             generation: self.graph.generation,
             process: id("test.process"),
             host: id("test.host"),
@@ -179,9 +169,7 @@ fn fixture() -> Fixture {
         .map(|name| OrganDriverBindingV1 {
             organ: id(name),
             driver: id(&format!("driver.{name}")),
-            implementation_digest: Digest32::of_bytes(
-                format!("implementation:{name}").as_bytes(),
-            ),
+            implementation_digest: Digest32::of_bytes(format!("implementation:{name}").as_bytes()),
         })
         .collect();
     let events = Arc::new(Mutex::new(Vec::new()));
@@ -311,10 +299,7 @@ fn edited_routes_are_rejected_before_any_driver_callback() {
             _ => unreachable!(),
         }
         let before = events.lock().unwrap().clone();
-        assert!(
-            host.dispatch_once(&changed, b"request").is_err(),
-            "case {case}"
-        );
+        assert!(host.dispatch_once(&changed, b"request").is_err(), "case {case}");
         assert_eq!(*events.lock().unwrap(), before);
     }
     assert!(

@@ -240,8 +240,7 @@ fn build_host(root: HeptaStateRoot, state: Arc<dyn RuntimeStateAdapter>) -> Resu
         .collect();
     let mut host = verified.into_hierarchical_host(hierarchy, catalog)?;
     let route = host.route(&control_system, &ingress, /*output_port*/ 0)?;
-    host.start_all()
-        .context("start compiled-in status organs")?;
+    host.start_all().context("start compiled-in status organs")?;
     Ok(StatusHost { host, route })
 }
 
