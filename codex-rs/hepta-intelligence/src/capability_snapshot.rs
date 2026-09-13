@@ -82,7 +82,9 @@ impl fmt::Display for CapabilitySnapshotErrorV2 {
 impl StdError for CapabilitySnapshotErrorV2 {}
 
 impl CapabilitySnapshotV2 {
-    pub fn admit(mut request: CapabilitySnapshotRequestV2) -> Result<Self, CapabilitySnapshotErrorV2> {
+    pub fn admit(
+        mut request: CapabilitySnapshotRequestV2,
+    ) -> Result<Self, CapabilitySnapshotErrorV2> {
         if request.authority_epoch == 0
             || request.objective_digest.is_zero()
             || request.configuration_digest.is_zero()
@@ -90,40 +92,59 @@ impl CapabilitySnapshotV2 {
         {
             return Err(CapabilitySnapshotErrorV2::InvalidCoreIdentity);
         }
-        if request.requirements.len() > MAX_CAPABILITIES || request.bindings.len() > MAX_CAPABILITIES {
+        if request.requirements.len() > MAX_CAPABILITIES
+            || request.bindings.len() > MAX_CAPABILITIES
+        {
             return Err(CapabilitySnapshotErrorV2::CapacityExceeded);
         }
-        request.requirements.sort_by(|a, b| a.capability_id.cmp(&b.capability_id));
+        request
+            .requirements
+            .sort_by(|a, b| a.capability_id.cmp(&b.capability_id));
         let mut requirements = BTreeMap::new();
         for requirement in &request.requirements {
             if requirement.contract_digest.is_zero() {
                 return Err(CapabilitySnapshotErrorV2::InvalidRequirement);
             }
-            if requirements.insert(&requirement.capability_id, requirement).is_some() {
-                return Err(CapabilitySnapshotErrorV2::DuplicateRequirement(requirement.capability_id.clone()));
+            if requirements
+                .insert(&requirement.capability_id, requirement)
+                .is_some()
+            {
+                return Err(CapabilitySnapshotErrorV2::DuplicateRequirement(
+                    requirement.capability_id.clone(),
+                ));
             }
         }
         let mut bindings = BTreeMap::new();
         for binding in &request.bindings {
-            let requirement = requirements.get(&binding.capability_id)
-                .ok_or_else(|| CapabilitySnapshotErrorV2::UnknownCapability(binding.capability_id.clone()))?;
+            let requirement = requirements.get(&binding.capability_id).ok_or_else(|| {
+                CapabilitySnapshotErrorV2::UnknownCapability(binding.capability_id.clone())
+            })?;
             if binding.owner_id != requirement.owner_id
                 || binding.contract_digest != requirement.contract_digest
                 || binding.implementation_digest.is_zero()
             {
-                return Err(CapabilitySnapshotErrorV2::BindingMismatch(binding.capability_id.clone()));
+                return Err(CapabilitySnapshotErrorV2::BindingMismatch(
+                    binding.capability_id.clone(),
+                ));
             }
             if bindings.insert(&binding.capability_id, binding).is_some() {
-                return Err(CapabilitySnapshotErrorV2::DuplicateBinding(binding.capability_id.clone()));
+                return Err(CapabilitySnapshotErrorV2::DuplicateBinding(
+                    binding.capability_id.clone(),
+                ));
             }
         }
         let mut bytes = b"hepta.intelligence.capability-snapshot.v2\0".to_vec();
-        for digest in [request.objective_digest, request.configuration_digest, request.revocation_frontier_digest] {
+        for digest in [
+            request.objective_digest,
+            request.configuration_digest,
+            request.revocation_frontier_digest,
+        ] {
             bytes.extend_from_slice(digest.as_array());
         }
         bytes.extend_from_slice(&request.authority_epoch.to_be_bytes());
         bytes.extend_from_slice(&request.body_generation.get().to_be_bytes());
-        let count = u32::try_from(requirements.len()).map_err(|_| CapabilitySnapshotErrorV2::CapacityExceeded)?;
+        let count = u32::try_from(requirements.len())
+            .map_err(|_| CapabilitySnapshotErrorV2::CapacityExceeded)?;
         bytes.extend_from_slice(&count.to_be_bytes());
         let mut absent_optional = Vec::new();
         for requirement in &request.requirements {
@@ -140,13 +161,19 @@ impl CapabilitySnapshotV2 {
                 bytes.extend_from_slice(&binding.generation.get().to_be_bytes());
             } else {
                 if requirement.necessity == CapabilityNecessityV2::Required {
-                    return Err(CapabilitySnapshotErrorV2::MissingRequiredCapability(requirement.capability_id.clone()));
+                    return Err(CapabilitySnapshotErrorV2::MissingRequiredCapability(
+                        requirement.capability_id.clone(),
+                    ));
                 }
                 bytes.push(0);
                 absent_optional.push(requirement.capability_id.clone());
             }
         }
-        Ok(Self { objective_digest: request.objective_digest, snapshot_digest: Digest32::of_bytes(&bytes), absent_optional })
+        Ok(Self {
+            objective_digest: request.objective_digest,
+            snapshot_digest: Digest32::of_bytes(&bytes),
+            absent_optional,
+        })
     }
 
     #[must_use]
@@ -161,8 +188,19 @@ impl CapabilitySnapshotV2 {
 
     /// Use the admitted snapshot in the existing bounded, non-executing composer.
     /// It remains the caller's job to authenticate owner facts and check freshness.
-    pub fn compose_plan(&self, plan_id: StableId, context_digest: Digest32, candidates: Vec<PlanCandidate>) -> Result<IntelligencePlanReceipt, crate::Error> {
-        compose(PlanningRequest { plan_id, objective_digest: self.objective_digest, context_digest, snapshot_digest: self.snapshot_digest, candidates })
+    pub fn compose_plan(
+        &self,
+        plan_id: StableId,
+        context_digest: Digest32,
+        candidates: Vec<PlanCandidate>,
+    ) -> Result<IntelligencePlanReceipt, crate::Error> {
+        compose(PlanningRequest {
+            plan_id,
+            objective_digest: self.objective_digest,
+            context_digest,
+            snapshot_digest: self.snapshot_digest,
+            candidates,
+        })
     }
 }
 
