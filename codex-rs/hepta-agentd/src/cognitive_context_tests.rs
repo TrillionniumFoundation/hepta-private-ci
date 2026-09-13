@@ -19,8 +19,6 @@ use codex_hepta_learning_artifacts::ArtifactRegistry;
 use codex_hepta_learning_artifacts::CreateOnlyArtifactFile;
 use codex_hepta_learning_artifacts::PinnedCandidateSpec;
 use codex_hepta_learning_artifacts::RegistrySnapshotReceipt;
-use codex_hepta_learning_artifacts::write_candidate_payload;
-use codex_hepta_learning_artifacts::write_registry_snapshot;
 use codex_hepta_memory::CognitiveAccess;
 use codex_hepta_memory::CognitiveScope;
 use codex_hepta_memory::CognitiveStore;
@@ -37,6 +35,9 @@ use codex_hepta_types::Digest32;
 use codex_hepta_types::FixedQ32;
 use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
+
+use codex_hepta_learning_artifacts::write_candidate_payload;
+use codex_hepta_learning_artifacts::write_registry_snapshot;
 
 use super::MAX_CONTEXT_JSON_BYTES;
 use super::read;
