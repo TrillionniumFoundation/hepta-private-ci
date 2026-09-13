@@ -1,0 +1,54 @@
+name: Hepta offline remediation reproduction
+
+on:
+  push:
+    branches: [work/hepta-integrated-blocker-closure-20260913]
+    paths: [.github/workflows/hepta-extensibility-reproduce.yml]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-offline-reproduction-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  offline-reproduction:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Install repository-pinned test tools
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+      - name: Export tracked history and public tool binaries only
+        shell: bash
+        env:
+          SOURCE_SHA: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          output="$RUNNER_TEMP/offline-reproduction"
+          mkdir -p "$output/bin"
+          git bundle create "$output/source.bundle" HEAD
+          git rev-parse HEAD HEAD^{tree} > "$output/identity.txt"
+          install -m 0755 "$(command -v just)" "$output/bin/just"
+          install -m 0755 "$(command -v cargo-nextest)" "$output/bin/cargo-nextest"
+          just --version > "$output/test-tools.txt"
+          cargo nextest --version >> "$output/test-tools.txt"
+          tar -C "$output" -czf "$output/test-tools.tar.gz" bin
+          rm -r "$output/bin"
+          (cd "$output" && sha256sum source.bundle test-tools.tar.gz > SHA256SUMS)
+          git diff --check
+          git diff --exit-code
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-offline-reproduction-${{ github.sha }}
+          path: ${{ runner.temp }}/offline-reproduction
+          if-no-files-found: error
+          retention-days: 1
