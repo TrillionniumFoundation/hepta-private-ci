@@ -1,0 +1,35 @@
+name: Hepta exact-source audit bundle
+
+on:
+  push:
+    branches: [codex/evolution-hardening-20260914]
+
+permissions:
+  contents: read
+
+jobs:
+  source-audit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Archive only the exact committed source
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          git diff --exit-code
+          git diff --cached --exit-code
+          mkdir -p "$RUNNER_TEMP/source-audit"
+          git archive --format=tar.gz HEAD > "$RUNNER_TEMP/source-audit/source.tar.gz"
+          git rev-parse HEAD HEAD^{tree} > "$RUNNER_TEMP/source-audit/identity.txt"
+          sha256sum "$RUNNER_TEMP/source-audit/source.tar.gz" > "$RUNNER_TEMP/source-audit/SHA256SUMS"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-exact-source-${{ github.sha }}
+          path: ${{ runner.temp }}/source-audit/
+          if-no-files-found: error
+          retention-days: 1
