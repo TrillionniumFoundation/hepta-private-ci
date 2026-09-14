@@ -1,15 +1,16 @@
-name: Hepta offline remediation reproduction
+name: Hepta offline source reproduction
 
 on:
-  push:
-    branches: [work/hepta-phase5-closure-20260913]
-    paths: [.github/workflows/hepta-extensibility-reproduce.yml]
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - .github/workflows/hepta-extensibility-reproduce.yml
 
 permissions:
   contents: read
 
 concurrency:
-  group: hepta-offline-reproduction-${{ github.ref }}
+  group: hepta-offline-reproduction-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -19,73 +20,31 @@ jobs:
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
-          ref: ${{ github.sha }}
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
           fetch-depth: 0
           persist-credentials: false
-      - name: Install the existing pinned DotSlash transport
-        uses: facebook/install-dotslash@1e4e7b3e07eaca387acb98f1d4720e0bee8dbb6a
-      - name: Resolve the repository-verified V8 archive and binding
-        env:
-          CODEX_REPO_ROOT: ${{ github.workspace }}
-          PYTHONPATH: scripts
-        run: python3 scripts/hepta_ci_v8.py
-      - name: Export exact source and checksum-bound public build inputs
+      - name: Export a self-contained exact-source bundle
         shell: bash
         env:
-          SOURCE_SHA: ${{ github.sha }}
+          SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
           output="$RUNNER_TEMP/offline-reproduction"
-          mkdir -p "$output/tools" "$output/wheels" "$output/v8"
-          git -c pack.threads=2 bundle create "$output/source.bundle" HEAD \
-            ^afc11afe64f7b5efafd9234b16793e4080b1d296
+          mkdir -p "$output"
+          # No historical prerequisite, repair branch, mutable ref or credentials.
+          # This is source transport, not a test or qualification receipt.
+          git -c pack.threads=2 bundle create "$output/source.bundle" HEAD
+          git bundle verify "$output/source.bundle"
           git rev-parse HEAD HEAD^{tree} > "$output/identity.txt"
           git bundle list-heads "$output/source.bundle" > "$output/heads.txt"
-          install -m 0755 "$(command -v dotslash)" "$output/tools/dotslash"
-          cp "$RUSTY_V8_ARCHIVE" "$RUSTY_V8_SRC_BINDING_PATH" "$output/v8/"
-          rustc -vV > "$output/rust-version.txt"
-          python3 - "$output" <<'PY'
-          import hashlib
-          import json
-          import sys
-          import tomllib
-          from pathlib import Path
-          from urllib.request import urlopen
-
-          output = Path(sys.argv[1])
-
-          def download(url, target, expected):
-              with urlopen(url, timeout=120) as response:
-                  payload = response.read()
-              if hashlib.sha256(payload).hexdigest() != expected:
-                  raise RuntimeError(f"checksum mismatch: {target.name}")
-              target.write_bytes(payload)
-
-          for lock_path in (Path("scripts/uv.lock"), Path("sdk/python/uv.lock")):
-              lock = tomllib.loads(lock_path.read_text(encoding="utf-8"))
-              packages = [p for p in lock["package"] if p["name"] == "ruff"]
-              if len(packages) != 1:
-                  raise RuntimeError(f"ambiguous Ruff lock: {lock_path}")
-              wheels = [w for w in packages[0]["wheels"] if "manylinux_2_17_x86_64" in w["url"]]
-              if len(wheels) != 1:
-                  raise RuntimeError(f"ambiguous Ruff wheel: {lock_path}")
-              wheel = wheels[0]
-              download(wheel["url"], output / "wheels" / wheel["url"].rsplit("/", 1)[1], wheel["hash"].removeprefix("sha256:"))
-          manifest_text = Path("tools/buildifier").read_text(encoding="utf-8")
-          manifest = json.loads(manifest_text[manifest_text.index("{"):])
-          entry = manifest["platforms"]["linux-x86_64"]
-          if entry["hash"] != "sha256":
-              raise RuntimeError("unexpected buildifier checksum algorithm")
-          download(entry["providers"][0]["url"], output / "tools" / "buildifier", entry["digest"])
-          PY
-          (cd "$output" && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+          (cd "$output" && sha256sum source.bundle identity.txt heads.txt > SHA256SUMS)
           git diff --check
           git diff --quiet
           git diff --cached --quiet
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: hepta-phase5-reproduction-${{ github.sha }}
+          name: hepta-offline-source-${{ github.event.pull_request.head.sha || github.sha }}
           path: ${{ runner.temp }}/offline-reproduction
           if-no-files-found: error
           retention-days: 2
