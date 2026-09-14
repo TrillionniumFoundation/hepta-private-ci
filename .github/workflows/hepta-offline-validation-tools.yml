@@ -36,19 +36,36 @@ jobs:
           rm -rf "$stage/toolchain/lib/rustlib/src"
           cp -a "$HOME/.cargo/registry" "$stage/cargo-home/"
           if [ -d "$HOME/.cargo/git" ]; then cp -a "$HOME/.cargo/git" "$stage/cargo-home/"; fi
-          # No Cargo credentials, git credentials, home directory, environment,
-          # checkout credentials, or repository .git directory is exported.
+          # Only whitelisted caches and binaries, never home/environment/secrets.
           find "$stage/cargo-home" -type f \( -name credentials -o -name credentials.toml -o -name .git-credentials \) -delete
           find "$stage/cargo-home/git" -type f -name config -delete 2>/dev/null || true
           cp "$(command -v just)" "$(command -v cargo-nextest)" "$stage/tools/"
           rustc -Vv > "$stage/compiler.txt"
           cargo -V >> "$stage/compiler.txt"
           tar -C "$stage" -czf "$RUNNER_TEMP/hepta-offline-validation-tools.tar.gz" .
-          sha256sum "$RUNNER_TEMP/hepta-offline-validation-tools.tar.gz"
+          sha256sum "$RUNNER_TEMP/hepta-offline-validation-tools.tar.gz" > "$RUNNER_TEMP/offline-sha256.txt"
+          split -b 350M "$RUNNER_TEMP/hepta-offline-validation-tools.tar.gz" "$RUNNER_TEMP/offline.part-"
+          cat "$RUNNER_TEMP/offline-sha256.txt"
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: hepta-offline-validation-tools-${{ github.sha }}
-          path: ${{ runner.temp }}/hepta-offline-validation-tools.tar.gz
+          name: hepta-offline-aa-${{ github.sha }}
+          path: |
+            ${{ runner.temp }}/offline.part-aa
+            ${{ runner.temp }}/offline-sha256.txt
           if-no-files-found: error
+          retention-days: 3
+          compression-level: 0
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-offline-ab-${{ github.sha }}
+          path: ${{ runner.temp }}/offline.part-ab
+          if-no-files-found: error
+          retention-days: 3
+          compression-level: 0
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-offline-ac-${{ github.sha }}
+          path: ${{ runner.temp }}/offline.part-ac
+          if-no-files-found: warn
           retention-days: 3
           compression-level: 0
