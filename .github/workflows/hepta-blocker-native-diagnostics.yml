@@ -1,0 +1,51 @@
+name: Hepta blocker native inputs (diagnostic only)
+
+on:
+  push:
+    branches: [codex/blocker-native-diagnostics-20260914]
+    paths: [.github/workflows/hepta-blocker-native-diagnostics.yml]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  native-inputs:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 1
+          persist-credentials: false
+      - name: Verify source and collect public native inputs
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          out="$RUNNER_TEMP/hepta-native-inputs"
+          mkdir -p "$out"
+          git rev-parse HEAD HEAD^{tree} > "$out/source-identity.txt"
+          rustup toolchain install 1.95.0 --profile minimal --component rustfmt,clippy
+          rustc +1.95.0 -Vv > "$out/rustc-version.txt"
+          cargo +1.95.0 --version > "$out/cargo-version.txt"
+          toolchain="$(dirname "$(dirname "$(rustup which --toolchain 1.95.0 cargo)")")"
+          tar -C "$toolchain" -czf "$out/native-binaries.tar.gz" bin/cargo bin/rustc bin/clippy-driver bin/cargo-clippy
+          cargo +1.95.0 fetch --locked --manifest-path codex-rs/Cargo.toml --target x86_64-unknown-linux-gnu
+          cargo_home="${CARGO_HOME:-$HOME/.cargo}"
+          # Retain dependency objects only: no credentials, runner settings,
+          # repository token, SSH state, Cargo config, or repository .git data.
+          parts=()
+          for part in registry/cache registry/src registry/index git/db git/checkouts; do
+            test ! -d "$cargo_home/$part" || parts+=("$part")
+          done
+          tar -C "$cargo_home" -czf "$out/dependency-inputs.tar.gz" "${parts[@]}"
+          (cd "$out" && sha256sum native-binaries.tar.gz dependency-inputs.tar.gz > SHA256SUMS)
+          git diff --exit-code
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: hepta-native-inputs-${{ github.sha }}
+          path: ${{ runner.temp }}/hepta-native-inputs
+          if-no-files-found: error
+          retention-days: 3
