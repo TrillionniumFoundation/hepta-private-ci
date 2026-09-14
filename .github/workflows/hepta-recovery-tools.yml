@@ -8,25 +8,53 @@ permissions:
 jobs:
   tools:
     runs-on: ubuntu-24.04
-    timeout-minutes: 15
+    timeout-minutes: 20
     steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
       - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
         with:
           tool: just@1.51.0,nextest@0.9.103
-      - name: Collect public executable inputs only
+      - name: Collect pinned public executable inputs
         shell: bash
         run: |
           set -euo pipefail
-          mkdir -p "$RUNNER_TEMP/recovery-tools/bin"
+          rustup toolchain install 1.95.0 --profile minimal --component rustfmt,clippy
+          mkdir -p "$RUNNER_TEMP/recovery-tools/bin" "$RUNNER_TEMP/recovery-tools/wheels"
+          cp "$(rustup which --toolchain 1.95.0 cargo-fmt)" "$RUNNER_TEMP/recovery-tools/bin/"
           cp "$(command -v just)" "$RUNNER_TEMP/recovery-tools/bin/"
           cp "$(command -v cargo-nextest)" "$RUNNER_TEMP/recovery-tools/bin/"
-          just --version > "$RUNNER_TEMP/recovery-tools/versions.txt"
-          cargo nextest --version >> "$RUNNER_TEMP/recovery-tools/versions.txt"
+          python3 -m pip download --only-binary=:all: --no-deps ruff==0.15.12 -d "$RUNNER_TEMP/recovery-tools/wheels"
+          rustup run 1.95.0 rustfmt --version > "$RUNNER_TEMP/recovery-tools/versions.txt"
           cd "$RUNNER_TEMP/recovery-tools"
-          sha256sum bin/* > SHA256SUMS
-          tar -czf "$RUNNER_TEMP/recovery-tools.tar.gz" bin versions.txt SHA256SUMS
+          sha256sum bin/* wheels/* > SHA256SUMS
+          tar -czf "$RUNNER_TEMP/recovery-tools.tar.gz" bin wheels versions.txt SHA256SUMS
+      - name: Resolve repository-pinned V8 public inputs
+        env:
+          CODEX_REPO_ROOT: ${{ github.workspace }}
+          PYTHONPATH: scripts
+        run: python3 scripts/hepta_ci_v8.py
+      - name: Collect only the verified public V8 inputs
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/v8-public-inputs"
+          test -f "$RUSTY_V8_ARCHIVE"
+          cp "$RUSTY_V8_ARCHIVE" "$RUNNER_TEMP/v8-public-inputs/"
+          if test -n "${RUSTY_V8_SRC_BINDING_PATH:-}"; then
+            test -f "$RUSTY_V8_SRC_BINDING_PATH"
+            cp "$RUSTY_V8_SRC_BINDING_PATH" "$RUNNER_TEMP/v8-public-inputs/"
+          fi
+          cd "$RUNNER_TEMP/v8-public-inputs"
+          sha256sum * > SHA256SUMS
+          tar -czf "$RUNNER_TEMP/v8-public-inputs.tar.gz" .
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
         with:
-          name: pinned-recovery-tools
-          path: ${{ runner.temp }}/recovery-tools.tar.gz
+          name: pinned-recovery-format-v8
+          path: |
+            ${{ runner.temp }}/recovery-tools.tar.gz
+            ${{ runner.temp }}/v8-public-inputs.tar.gz
+          if-no-files-found: error
           retention-days: 3
