@@ -35,9 +35,39 @@ steps:
             ],
         )
 
+    def test_run_alias_reuses_commands_without_promoting_comments(self):
+        text = """steps:
+  - run: &verify |
+      # git merge-tree is not a command
+      python3 scripts/check.py verify
+  - run: *verify
+"""
+        self.assertEqual(
+            workflow_commands(text),
+            [["python3", "scripts/check.py", "verify"]] * 2,
+        )
+
+    def test_missing_and_duplicate_run_anchors_reject(self):
+        for text in (
+            "run: *missing\n",
+            "run: &same echo one\nrun: &same echo two\n",
+        ):
+            with self.subTest(text=text), self.assertRaises(ValueError):
+                workflow_commands(text)
+
+    def test_anchored_shell_payload_cannot_register_an_action(self):
+        text = "run: &verify |\n  cat <<END\n  uses: ./missing\n  END\n"
+        declared_commands(text, ROOT)
+
     def test_real_workflow_resolves_composite_action(self):
         text = (ROOT / ".github/workflows/hepta-development-docs.yml").read_text()
         verify_synthetic_merge(text, ROOT)
+        self.assertEqual(
+            declared_commands(text, ROOT).count(
+                ["python3", "scripts/hepta-docs.py", "verify"]
+            ),
+            2,
+        )
         with self.assertRaisesRegex(ValueError, "missing executable"):
             verify_synthetic_merge(
                 text.replace(

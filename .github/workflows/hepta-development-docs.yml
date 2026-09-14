@@ -30,9 +30,11 @@ jobs:
       - name: Verify source and emit receipts
         env:
           EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+          RECEIPT_KIND: source-head
         shell: bash
-        run: |
+        run: &verify-development |
           set -euo pipefail
+          case "$RECEIPT_KIND" in source-head|merge-candidate) ;; *) exit 1 ;; esac
           test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
           python3 scripts/hepta_workspace.py
           python3 scripts/hepta-docs.py self-test
@@ -50,9 +52,9 @@ jobs:
           python3 scripts/hepta-cns.py generate-status --check
           python3 scripts/hepta-hnmf.py self-test
           python3 scripts/hepta-docs.py verify
-          python3 scripts/hepta-docs.py cleanup-inventory --output .hepta-evidence/cleanup-source-head.json
-          python3 scripts/hepta-docs.py receipt --kind source-head --expected-sha "$EXPECTED_SHA" --output .hepta-evidence/source-head.json
-          python3 scripts/hepta-docs.py receipt-verify --input .hepta-evidence/source-head.json --kind source-head --expected-sha "$EXPECTED_SHA"
+          python3 scripts/hepta-docs.py cleanup-inventory --output .hepta-evidence/cleanup-${RECEIPT_KIND}.json
+          python3 scripts/hepta-docs.py receipt --kind "$RECEIPT_KIND" --expected-sha "$EXPECTED_SHA" --output .hepta-evidence/${RECEIPT_KIND}.json
+          python3 scripts/hepta-docs.py receipt-verify --input .hepta-evidence/${RECEIPT_KIND}.json --kind "$RECEIPT_KIND" --expected-sha "$EXPECTED_SHA"
           git diff --check
           test -z "$(git status --porcelain --untracked-files=no)"
 
@@ -92,32 +94,9 @@ jobs:
       - name: Verify merge candidate and emit receipts
         env:
           EXPECTED_SHA: ${{ steps.synthetic.outputs.sha }}
+          RECEIPT_KIND: merge-candidate
         shell: bash
-        run: |
-          set -euo pipefail
-          test -n "$EXPECTED_SHA"
-          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
-          python3 scripts/hepta_workspace.py
-          python3 scripts/hepta-docs.py self-test
-          python3 -m unittest discover -v -s scripts -p 'test_hepta_*.py'
-          python3 scripts/hepta-docs.py inventory-legacy
-          python3 scripts/hepta-docs.py generate-status
-          git diff --exit-code -- docs/STATUS.md
-          python3 scripts/hepta-module-docs.py self-test
-          python3 scripts/hepta-algorithm-docs.py self-test
-          python3 scripts/hepta-algorithm-docs.py verify-sources
-          python3 scripts/hepta-algorithm-docs.py generate-status --check
-          python3 scripts/hepta-readiness.py self-test
-          python3 scripts/hepta-readiness.py generate-status --check
-          python3 scripts/hepta-cns.py self-test
-          python3 scripts/hepta-cns.py generate-status --check
-          python3 scripts/hepta-hnmf.py self-test
-          python3 scripts/hepta-docs.py verify
-          python3 scripts/hepta-docs.py cleanup-inventory --output .hepta-evidence/cleanup-merge-candidate.json
-          python3 scripts/hepta-docs.py receipt --kind merge-candidate --expected-sha "$EXPECTED_SHA" --output .hepta-evidence/merge-candidate.json
-          python3 scripts/hepta-docs.py receipt-verify --input .hepta-evidence/merge-candidate.json --kind merge-candidate --expected-sha "$EXPECTED_SHA"
-          git diff --check
-          test -z "$(git status --porcelain --untracked-files=no)"
+        run: *verify-development
 
       - name: Retain exact merge receipts
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
