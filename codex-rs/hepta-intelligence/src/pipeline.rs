@@ -437,6 +437,34 @@ pub fn run_shadow_pipeline<P: LaneFShadowPortsV1>(
     }
     request.budget.validate()?;
     let snapshot_digest = request.snapshot.digest()?;
+    run_admitted_pipeline(
+        PipelineRunInput {
+            run_id: request.run_id,
+            request_digest: request.request_digest,
+            budget: request.budget,
+        },
+        snapshot_digest,
+        ports,
+    )
+}
+
+pub(super) struct PipelineRunInput {
+    pub run_id: StableId,
+    pub request_digest: Digest32,
+    pub budget: LaneFBudgetV1,
+}
+
+/// Shared stage engine. Callers admit a versioned snapshot before entry; the V1
+/// wrapper and its digest/error semantics are unchanged.
+pub(super) fn run_admitted_pipeline<P: LaneFShadowPortsV1>(
+    request: PipelineRunInput,
+    snapshot_digest: Digest32,
+    ports: &mut P,
+) -> Result<LaneFShadowPipelineReceiptV1, PipelineErrorV1> {
+    if request.request_digest.is_zero() || snapshot_digest.is_zero() {
+        return Err(PipelineErrorV1::EmptyDigest("admitted run"));
+    }
+    request.budget.validate()?;
     let mut stages = Vec::with_capacity(8);
     let mut predecessor = request.request_digest;
 
@@ -584,7 +612,7 @@ pub fn run_shadow_pipeline<P: LaneFShadowPortsV1>(
 }
 
 fn required_stage<F>(
-    request: &LaneFRunRequestV1,
+    request: &PipelineRunInput,
     snapshot_digest: Digest32,
     predecessor: Digest32,
     stage: LaneFStageV1,
@@ -623,7 +651,7 @@ where
 }
 
 fn optional_stage<F>(
-    request: &LaneFRunRequestV1,
+    request: &PipelineRunInput,
     snapshot_digest: Digest32,
     predecessor: Digest32,
     stage: LaneFStageV1,
@@ -728,7 +756,7 @@ fn producer_for_stage(stage: LaneFStageV1) -> &'static str {
 }
 
 fn port_input(
-    request: &LaneFRunRequestV1,
+    request: &PipelineRunInput,
     snapshot_digest: Digest32,
     predecessor_digest: Digest32,
     stage: LaneFStageV1,

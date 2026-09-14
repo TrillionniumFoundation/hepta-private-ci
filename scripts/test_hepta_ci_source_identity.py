@@ -271,7 +271,12 @@ class SourceConformanceTests(unittest.TestCase):
         self,
     ) -> None:
         truth = LANE_B.load(LANE_B.TRUTH)
-        maps = LANE_B.module_maps(truth)
+        # This is a semantic claim/anchor test. Historical provenance is tested
+        # against real temporary Git histories by GitSourceIdentityTests above.
+        # Load the retained map fixtures directly so source-only archives can
+        # exercise these assertions without pretending to possess Git ancestry.
+        # Production module_maps and its provenance checks remain unchanged.
+        maps = [LANE_B.load(LANE_B.ROOT / row["mapPath"]) for row in truth["modules"]]
         truth["claimBoundary"]["repositoryControlledSourceBoundaryGapsClosed"] = False
         maps[0]["repositoryControlledGaps"] = [
             "Wire the registered owner to a real observer."

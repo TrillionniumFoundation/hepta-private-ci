@@ -237,6 +237,8 @@ pub struct OrganHostV1 {
     graph: OrganGraphsV1,
     validated: ValidatedOrganGraphsV1,
     slots: Vec<OrganSlotV1>,
+    source_indices: BTreeMap<StableId, usize>,
+    routes: BTreeMap<(usize, usize), Vec<(usize, usize)>>,
 }
 
 impl OrganHostV1 {
@@ -282,10 +284,25 @@ impl OrganHostV1 {
                 handler,
             });
         }
+        let source_indices = graph
+            .organs
+            .iter()
+            .enumerate()
+            .map(|(index, organ)| (organ.id.clone(), index))
+            .collect();
+        let mut routes: BTreeMap<_, Vec<_>> = BTreeMap::new();
+        for link in &graph.runtime {
+            routes
+                .entry((link.output.organ, link.output.port))
+                .or_default()
+                .push((link.input.organ, link.input.port));
+        }
         Ok(Self {
             graph,
             validated,
             slots,
+            source_indices,
+            routes,
         })
     }
 
@@ -594,14 +611,11 @@ impl OrganHostV1 {
                 actual: payload.len(),
             });
         }
-        let source_index = self
-            .graph
-            .organs
-            .iter()
-            .position(|organ| &organ.id == source)
-            .ok_or_else(|| OrganRuntimeError::UnknownSource {
+        let source_index = self.source_indices.get(source).copied().ok_or_else(|| {
+            OrganRuntimeError::UnknownSource {
                 organ: source.clone(),
-            })?;
+            }
+        })?;
         self.require_ready(source_index)?;
         if output_port >= self.graph.organs[source_index].outputs.len() {
             return Err(OrganRuntimeError::InvalidOutputPort {
@@ -610,18 +624,13 @@ impl OrganHostV1 {
             });
         }
         let routes = self
-            .graph
-            .runtime
-            .iter()
-            .filter(|link| link.output.organ == source_index && link.output.port == output_port)
-            .map(|link| (link.input.organ, link.input.port))
-            .collect::<Vec<_>>();
-        if routes.is_empty() {
-            return Err(OrganRuntimeError::UnroutedOutput {
+            .routes
+            .get(&(source_index, output_port))
+            .cloned()
+            .ok_or_else(|| OrganRuntimeError::UnroutedOutput {
                 organ: source.clone(),
                 port: output_port,
-            });
-        }
+            })?;
         for &(target, _) in &routes {
             self.require_ready(target)?;
         }

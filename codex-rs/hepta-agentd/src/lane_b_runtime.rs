@@ -165,6 +165,13 @@ impl AgentRunCoordinator {
             .runs
             .get_mut(&attachment.run_id)
             .ok_or(AgentRunError::RunNotFound)?;
+        if attachment.request_digest != record.snapshot.request_digest
+            || attachment.objective_digest != record.snapshot.objective_digest
+            || attachment.body_digest != record.snapshot.body_digest
+            || attachment.artifact_set_digest != record.snapshot.artifact_set_digest
+        {
+            return Err(AgentRunError::MixedSnapshot);
+        }
         if record.phase == RunPhase::ContextAttached
             && record.context_digest.as_deref() == Some(attachment.context_digest.as_str())
             && record.compilation_receipt_digest.as_deref()
@@ -175,13 +182,6 @@ impl AgentRunCoordinator {
         require_revision(record, expected_revision)?;
         if record.phase != RunPhase::Admitted {
             return Err(AgentRunError::InvalidTransition);
-        }
-        if attachment.request_digest != record.snapshot.request_digest
-            || attachment.objective_digest != record.snapshot.objective_digest
-            || attachment.body_digest != record.snapshot.body_digest
-            || attachment.artifact_set_digest != record.snapshot.artifact_set_digest
-        {
-            return Err(AgentRunError::MixedSnapshot);
         }
         record.context_digest = Some(attachment.context_digest);
         record.compilation_receipt_digest = Some(attachment.compilation_receipt_digest);
@@ -235,10 +235,10 @@ impl AgentRunCoordinator {
                 CancellationDisposition::CancellingAfterDispatch
             }
             RunPhase::Cancelling => CancellationDisposition::CancellingAfterDispatch,
-            RunPhase::Cancelled
-            | RunPhase::Succeeded
-            | RunPhase::Failed
-            | RunPhase::Indeterminate => CancellationDisposition::AlreadyTerminal,
+            RunPhase::Cancelled | RunPhase::Succeeded | RunPhase::Failed => {
+                CancellationDisposition::AlreadyTerminal
+            }
+            RunPhase::Indeterminate => return Err(AgentRunError::TerminalObservationRequired),
         };
         Ok((disposition, receipt(record, /*idempotent*/ false)))
     }
@@ -262,7 +262,12 @@ impl AgentRunCoordinator {
             return Ok(receipt(record, /*idempotent*/ true));
         }
         require_revision(record, expected_revision)?;
-        if !matches!(record.phase, RunPhase::Dispatched | RunPhase::Cancelling) {
+        // An unknown external outcome consumes capacity until its owner reports
+        // a terminal observation. It must be reconcilable without redispatch.
+        if !matches!(
+            record.phase,
+            RunPhase::Dispatched | RunPhase::Cancelling | RunPhase::Indeterminate
+        ) {
             return Err(AgentRunError::InvalidTransition);
         }
         if terminal_observed {

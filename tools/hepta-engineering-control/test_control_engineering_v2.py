@@ -244,7 +244,7 @@ class CandidateTests(unittest.TestCase):
         envelope = CandidateEnvelope(
             "env",
             "a" * 40,
-            ("tools/hepta-engineering-control",),
+            ("src",),
             require_network_isolation=False,
         )
         values = generate_candidates(
@@ -252,12 +252,12 @@ class CandidateTests(unittest.TestCase):
             (
                 Mutation(
                     "add_file",
-                    "tools/hepta-engineering-control/new.txt",
+                    "src/new.txt",
                     replacement_text="hello\n",
                 ),
                 Mutation(
                     "add_file",
-                    "tools/hepta-engineering-control/new.txt",
+                    "src/new.txt",
                     replacement_text="hello\n",
                 ),
             ),
@@ -288,8 +288,8 @@ class CandidateTests(unittest.TestCase):
             run_git(root, "init")
             run_git(root, "config", "user.email", "lane-g@example.invalid")
             run_git(root, "config", "user.name", "Lane G Test")
-            (root / "tools/hepta-engineering-control").mkdir(parents=True)
-            (root / "tools/hepta-engineering-control/base.txt").write_text(
+            (root / "src").mkdir(parents=True)
+            (root / "src/base.txt").write_text(
                 "base\n",
                 encoding="utf-8",
             )
@@ -300,7 +300,7 @@ class CandidateTests(unittest.TestCase):
             envelope = CandidateEnvelope(
                 "env",
                 base,
-                ("tools/hepta-engineering-control",),
+                ("src",),
                 protected_paths=("qualification",),
                 require_network_isolation=False,
             )
@@ -309,7 +309,7 @@ class CandidateTests(unittest.TestCase):
                 (
                     Mutation(
                         "add_file",
-                        "tools/hepta-engineering-control/candidate.txt",
+                        "src/candidate.txt",
                         replacement_text="candidate\n",
                     ),
                 ),
@@ -327,7 +327,7 @@ class CandidateTests(unittest.TestCase):
             self.assertFalse(receipt.authority_delta)
             self.assertEqual(run_git(root, "rev-parse", "HEAD^{tree}"), tree)
             self.assertFalse(
-                (root / "tools/hepta-engineering-control/candidate.txt").exists()
+                (root / "src/candidate.txt").exists()
             )
 
 

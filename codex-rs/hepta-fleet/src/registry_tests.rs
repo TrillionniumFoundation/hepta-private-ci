@@ -259,3 +259,58 @@ fn create_workspace(parent: &Path, name: &str) -> Result<std::path::PathBuf, Fle
     fs::create_dir(&workspace)?;
     Ok(workspace.canonicalize()?)
 }
+
+#[test]
+fn workspace_sweep_agrees_with_pairwise_oracle_for_nested_and_sibling_paths()
+-> Result<(), FleetRegistryError> {
+    let fleet = TestFleet::new()?;
+    let first = fleet.manifest(FIRST_AGENT_ID, &fleet.first_workspace)?;
+    let template = fleet.registry.register(first)?;
+    let names = ["a", "a/b", "a/b/c", "a-b", "aa", "b", "b/a", "b/c"];
+    let paths = names
+        .iter()
+        .map(|name| {
+            let path = fleet._temp.path().join("sweep").join(name);
+            fs::create_dir_all(&path)?;
+            WorkspaceBinding::new(&path, &fleet.root)
+        })
+        .collect::<Result<Vec<_>, FleetRegistryError>>()?;
+    // Every subset and both identity orders exercise parents, descendants,
+    // interleaved siblings and lexical lookalikes without timing assertions.
+    for mask in 0_u16..1 << names.len() {
+        for reverse in [false, true] {
+            let mut agents = std::collections::BTreeMap::new();
+            for (index, workspace) in paths.iter().enumerate() {
+                if mask & (1 << index) == 0 {
+                    continue;
+                }
+                let identity = if reverse { names.len() - index } else { index };
+                let id = AgentId::parse(&format!("019153a4-3088-7e03-a56a-{identity:012x}"))
+                    .map_err(|error| FleetRegistryError::Invalid(error.to_string()))?;
+                let mut record = template.clone();
+                record.manifest.agent_id = id.clone();
+                record.manifest.workspace = workspace.clone();
+                agents.insert(id, record);
+            }
+            let values = agents.values().collect::<Vec<_>>();
+            let overlaps = values.iter().enumerate().any(|(index, left)| {
+                values.iter().skip(index + 1).any(|right| {
+                    left.manifest
+                        .workspace
+                        .as_path()
+                        .starts_with(right.manifest.workspace.as_path())
+                        || right
+                            .manifest
+                            .workspace
+                            .as_path()
+                            .starts_with(left.manifest.workspace.as_path())
+                })
+            });
+            assert_eq!(
+                super::validate_workspace_isolation(&agents).is_err(),
+                overlaps
+            );
+        }
+    }
+    Ok(())
+}

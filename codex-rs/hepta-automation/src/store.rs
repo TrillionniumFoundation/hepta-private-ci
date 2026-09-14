@@ -310,8 +310,11 @@ impl AutomationStore {
         }
         let recovered = sqlx::query(
             "UPDATE automation_runs
-             SET state = 'pending', lease_generation = NULL, lease_token = NULL,
-                 lease_expires_at_ms = NULL
+             SET state = CASE WHEN EXISTS (
+                     SELECT 1 FROM automation_tasks t
+                     WHERE t.task_id = automation_runs.task_id AND t.state = 'enabled'
+                 ) THEN 'pending' ELSE 'cancelled' END,
+                 lease_generation = NULL, lease_token = NULL, lease_expires_at_ms = NULL
              WHERE state = 'leased' AND lease_generation != ?
                AND EXISTS (
                    SELECT 1 FROM automation_tasks t
@@ -586,8 +589,11 @@ impl AutomationStore {
         }
         let released = sqlx::query(
             "UPDATE automation_runs
-             SET state = 'pending', lease_generation = NULL, lease_token = NULL,
-                 lease_expires_at_ms = NULL
+             SET state = CASE WHEN EXISTS (
+                     SELECT 1 FROM automation_tasks t
+                     WHERE t.task_id = automation_runs.task_id AND t.state = 'enabled'
+                 ) THEN 'pending' ELSE 'cancelled' END,
+                 lease_generation = NULL, lease_token = NULL, lease_expires_at_ms = NULL
              WHERE task_id = ? AND occurrence = ? AND state = 'leased'
                AND lease_generation = ? AND lease_token = ?
                AND client_user_message_id = ?",
@@ -620,10 +626,13 @@ impl AutomationStore {
         if receipt.queued_submission_id.is_empty() {
             return Err(AutomationError::Invalid);
         }
+        to_i64(submitted_at_ms)?;
         let mut transaction = self.pool.begin().await.map_err(unavailable)?;
         let row = sqlx::query(
             "SELECT r.scheduled_for_ms, r.state, o.client_user_message_id,
-                    o.outcome
+                    o.outcome, r.client_user_message_id AS run_client_id,
+                    r.queued_submission_id AS run_submission_id,
+                    o.queued_submission_id AS outcome_submission_id
              FROM automation_runs r
              JOIN automation_dispatch_outcomes o
                ON o.task_id = r.task_id AND o.occurrence = r.occurrence
@@ -641,10 +650,33 @@ impl AutomationStore {
         let state: String = row.try_get("state").map_err(unavailable)?;
         let outcome: String = row.try_get("outcome").map_err(unavailable)?;
         let client_id: String = row.try_get("client_user_message_id").map_err(unavailable)?;
-        if state != "leased"
-            || outcome != "uncertain"
-            || client_id != receipt.client_user_message_id
-        {
+        let run_client_id: String = row.try_get("run_client_id").map_err(unavailable)?;
+        if client_id != receipt.client_user_message_id || run_client_id != client_id {
+            return Err(AutomationError::Conflict);
+        }
+        if state == "submitted" && outcome == "submitted" {
+            let run_submission: Option<String> =
+                row.try_get("run_submission_id").map_err(unavailable)?;
+            let outcome_submission: Option<String> =
+                row.try_get("outcome_submission_id").map_err(unavailable)?;
+            if run_submission.as_deref() != Some(receipt.queued_submission_id.as_str())
+                || outcome_submission != run_submission
+            {
+                return Err(AutomationError::Conflict);
+            }
+            // The transaction may have committed before its acknowledgement was
+            // lost. Re-observing that receipt must not advance the schedule or
+            // overwrite a subsequent disable/cancel decision.
+            let current_row = sqlx::query(TASK_SELECT_BY_ID)
+                .bind(task_id.to_string())
+                .fetch_one(&mut *transaction)
+                .await
+                .map_err(unavailable)?;
+            let current = task_from_row(&current_row, &self.owner_agent_id)?;
+            transaction.commit().await.map_err(unavailable)?;
+            return Ok(current);
+        }
+        if state != "leased" || outcome != "uncertain" {
             return Err(AutomationError::Conflict);
         }
 
@@ -709,8 +741,11 @@ impl AutomationStore {
         let mut transaction = self.pool.begin().await.map_err(unavailable)?;
         let updated = sqlx::query(
             "UPDATE automation_runs
-             SET state = 'pending', lease_generation = NULL, lease_token = NULL,
-                 lease_expires_at_ms = NULL
+             SET state = CASE WHEN EXISTS (
+                     SELECT 1 FROM automation_tasks t
+                     WHERE t.task_id = automation_runs.task_id AND t.state = 'enabled'
+                 ) THEN 'pending' ELSE 'cancelled' END,
+                 lease_generation = NULL, lease_token = NULL, lease_expires_at_ms = NULL
              WHERE task_id = ? AND occurrence = ? AND state = 'leased'
                AND client_user_message_id = ?
                AND EXISTS (
@@ -880,15 +915,25 @@ impl AutomationStore {
         }
         let updated = sqlx::query(
             "UPDATE automation_runs
-             SET state = 'pending', lease_generation = NULL, lease_token = NULL,
-                 lease_expires_at_ms = NULL
+             SET state = CASE WHEN EXISTS (
+                     SELECT 1 FROM automation_tasks t
+                     WHERE t.task_id = automation_runs.task_id AND t.state = 'enabled'
+                 ) THEN 'pending' ELSE 'cancelled' END,
+                 lease_generation = NULL, lease_token = NULL, lease_expires_at_ms = NULL
              WHERE task_id = ? AND occurrence = ? AND state = 'leased'
-               AND lease_generation = ? AND lease_token = ?",
+               AND lease_generation = ? AND lease_token = ?
+               AND client_user_message_id = ?
+               AND NOT EXISTS (
+                   SELECT 1 FROM automation_dispatch_outcomes o
+                   WHERE o.task_id = automation_runs.task_id
+                     AND o.occurrence = automation_runs.occurrence
+               )",
         )
         .bind(lease.task.task_id.to_string())
         .bind(to_i64(lease.occurrence)?)
         .bind(to_i64(lease.lease_generation)?)
         .bind(&lease.lease_token)
+        .bind(&lease.client_user_message_id)
         .execute(&self.pool)
         .await
         .map_err(unavailable)?;
@@ -1054,7 +1099,12 @@ async fn verify_store(pool: &SqlitePool, owner_agent_id: &AgentId) -> Result<(),
            AND (r.task_id IS NULL
                 OR (o.outcome = 'uncertain' AND r.state != 'leased')
                 OR (o.outcome = 'submitted' AND r.state != 'submitted')
-                OR (o.outcome = 'submitted' AND o.queued_submission_id IS NULL))",
+                OR o.client_user_message_id != r.client_user_message_id
+                OR (o.outcome = 'submitted' AND (
+                    o.queued_submission_id IS NULL
+                    OR o.queued_submission_id IS NOT r.queued_submission_id
+                    OR o.submitted_at_ms IS NOT r.submitted_at_ms
+                )))",
     )
     .bind(owner_agent_id.as_str())
     .fetch_one(pool)

@@ -137,14 +137,15 @@ impl AgentdState {
     }
 
     pub(crate) fn refresh_generation(&self) -> Result<(), AgentdError> {
+        // Registration/startup retains fleet-wide validation. Serving an
+        // already admitted generation must not scan or depend on peer stores.
         let record = self
             .registry
-            .load()?
-            .agent(&self.identity.agent_id)
-            .cloned()
-            .ok_or_else(|| {
+            .load_agent(&self.identity.agent_id)
+            .map_err(|_| {
+                self.mark_fenced();
                 AgentdError::GenerationFenced(format!(
-                    "agent {} disappeared from fleet registry",
+                    "agent {} control record is unavailable or invalid",
                     self.identity.agent_id
                 ))
             })?;
@@ -844,3 +845,7 @@ fn now_seconds() -> Result<i64, AgentdError> {
 fn poisoned_state<T>(_error: std::sync::PoisonError<T>) -> AgentdError {
     AgentdError::Protocol("agentd control state mutex is poisoned".to_string())
 }
+
+#[cfg(test)]
+#[path = "state_isolation_tests.rs"]
+mod isolation_tests;

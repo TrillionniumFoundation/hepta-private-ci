@@ -156,3 +156,77 @@ fn terminal_observation_is_idempotent_and_only_closed_runs_can_be_removed() {
     assert_eq!(removed.phase, RunPhase::Succeeded);
     assert_eq!(coordinator.run("run.1"), None);
 }
+
+#[test]
+fn identical_context_bytes_do_not_hide_a_changed_run_snapshot() {
+    let mut coordinator = AgentRunCoordinator::compose_runtime(composition()).expect("compose");
+    coordinator
+        .start_run(/*now_ms*/ 100, snapshot())
+        .expect("admit");
+    let original = coordinator
+        .attach_context(/*expected_revision*/ 1, attachment())
+        .expect("attach");
+    let mut mixed = attachment();
+    mixed.objective_digest = digest('9');
+    assert_eq!(
+        coordinator.attach_context(/*expected_revision*/ 1, mixed),
+        Err(AgentRunError::MixedSnapshot)
+    );
+    let current = coordinator.run("run.1").expect("retained run");
+    assert_eq!(current.revision, original.revision);
+    assert_eq!(current.phase, original.phase);
+}
+
+#[test]
+fn indeterminate_outcomes_reconcile_without_redispatch_or_leaked_capacity() {
+    let mut coordinator = AgentRunCoordinator::compose_runtime(composition()).expect("compose");
+    for _ in 0..MAX_RETAINED_RUNS + 1 {
+        coordinator
+            .start_run(/*now_ms*/ 100, snapshot())
+            .expect("admit");
+        coordinator
+            .attach_context(/*expected_revision*/ 1, attachment())
+            .expect("attach");
+        coordinator
+            .mark_dispatched("run.1", /*expected_revision*/ 2)
+            .expect("dispatch");
+        let unknown = coordinator
+            .observe_terminal(
+                "run.1",
+                /*expected_revision*/ 3,
+                RunPhase::Indeterminate,
+                /*terminal_observed*/ false,
+            )
+            .expect("unknown outcome");
+        assert_eq!(
+            coordinator.cancel_run("run.1", unknown.revision),
+            Err(AgentRunError::TerminalObservationRequired)
+        );
+        assert_eq!(
+            coordinator.remove_closed_run("run.1", unknown.revision),
+            Err(AgentRunError::InvalidTransition)
+        );
+        assert_eq!(
+            coordinator.observe_terminal(
+                "run.1",
+                /*expected_revision*/ 3,
+                RunPhase::Succeeded,
+                /*terminal_observed*/ true
+            ),
+            Err(AgentRunError::StaleRevision)
+        );
+        let observed = coordinator
+            .observe_terminal(
+                "run.1",
+                unknown.revision,
+                RunPhase::Succeeded,
+                /*terminal_observed*/ true,
+            )
+            .expect("owner-observed reconciliation");
+        assert!(observed.terminal_observed);
+        coordinator
+            .remove_closed_run("run.1", observed.revision)
+            .expect("release capacity");
+    }
+    assert_eq!(coordinator.run("run.1"), None);
+}

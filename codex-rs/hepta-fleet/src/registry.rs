@@ -244,7 +244,18 @@ impl FleetRegistry {
         sync_directory(staging_root)
     }
 
-    fn load_agent(&self, agent_id: &AgentId) -> Result<AgentRecord, FleetRegistryError> {
+    /// Read and validate one registered Agent without enumerating its peers.
+    ///
+    /// This is a fresh owner-local control read, not a cached grant or a fleet
+    /// admission check. Registration and `load` retain global workspace-isolation
+    /// validation. Runtime callers must additionally compare the returned roots,
+    /// resource budget and lifecycle generation with their immutable launch
+    /// identity. Missing or corrupt local state remains an error; an unrelated
+    /// Agent's state is outside this read's failure domain.
+    ///
+    /// Cost depends on this Agent's retained lifecycle/release history, not on
+    /// fleet size. History compaction is a separate owner-controlled operation.
+    pub fn load_agent(&self, agent_id: &AgentId) -> Result<AgentRecord, FleetRegistryError> {
         let layout = self.layout.agent(agent_id);
         for directory in [
             layout.agent_root(),
@@ -372,17 +383,30 @@ fn load_lifecycle(
 fn validate_workspace_isolation(
     agents: &BTreeMap<AgentId, AgentRecord>,
 ) -> Result<(), FleetRegistryError> {
-    for (agent_id, record) in agents {
-        validate_manifest_workspace(&record.manifest, agents).map_err(|error| match error {
-            FleetRegistryError::WorkspaceConflict {
-                registered_agent_id,
-                ..
-            } => FleetRegistryError::WorkspaceConflict {
-                agent_id: agent_id.clone(),
-                registered_agent_id,
-            },
-            other => other,
-        })?;
+    // Canonical Path ordering groups a directory with all of its descendants.
+    // Any overlapping pair therefore has an adjacent overlapping witness. Keep
+    // the global invariant without comparing every agent with every other one.
+    let mut ordered = agents.values().collect::<Vec<_>>();
+    ordered.sort_unstable_by(|left, right| {
+        left.manifest
+            .workspace
+            .as_path()
+            .cmp(right.manifest.workspace.as_path())
+            .then_with(|| left.manifest.agent_id.cmp(&right.manifest.agent_id))
+    });
+    for pair in ordered.windows(/*size*/ 2) {
+        let parent = &pair[0].manifest;
+        let child = &pair[1].manifest;
+        if child
+            .workspace
+            .as_path()
+            .starts_with(parent.workspace.as_path())
+        {
+            return Err(FleetRegistryError::WorkspaceConflict {
+                agent_id: child.agent_id.clone(),
+                registered_agent_id: parent.agent_id.clone(),
+            });
+        }
     }
     Ok(())
 }
@@ -558,3 +582,7 @@ fn sync_directory(_path: &Path) -> Result<(), FleetRegistryError> {
 #[cfg(test)]
 #[path = "registry_tests.rs"]
 mod tests;
+
+#[cfg(test)]
+#[path = "registry_isolation_tests.rs"]
+mod isolation_tests;

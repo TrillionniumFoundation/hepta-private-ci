@@ -98,7 +98,10 @@ def false_authority(value, label):
         isinstance(value, dict) and set(value) == set(AUTHORITY_KEYS),
         label + " authority key closure",
     )
-    need(not any(value.values()), label + " positive authority")
+    need(
+        all(type(flag) is bool and flag is False for flag in value.values()),
+        label + " positive authority or invalid authority type",
+    )
 
 
 def verify_local_links(path, text):
@@ -183,6 +186,8 @@ def verify():
     need(bool(mids) and len(set(mids)) == len(mids), "module IDs")
     bmap = {b["module"]: b for b in bindings["bindings"]}
     dmap = {d["module"]: d for d in docs["modules"]}
+    need(len(bmap) == len(bindings["bindings"]), "duplicate binding")
+    need(len(dmap) == len(docs["modules"]), "duplicate document")
     need(set(bmap) == set(mids), "binding coverage")
     need(set(dmap) == set(mids), "document coverage")
     pkgids = {p["id"] for p in packages}
@@ -269,8 +274,11 @@ def verify():
         path = ROOT / expected_path
         need(path.is_file(), mid + " guide missing")
         text = path.read_text(encoding="utf-8")
-        need(text.startswith(f"# {mid} technical development guide\n"), mid + " title")
-        need(all(h in text for h in HEADINGS), mid + " required headings")
+        # Prose is navigation, not an authenticated artifact or a second registry.
+        # A normal explanation edit must not require a new word count, digest or
+        # verbatim heading/contract inventory. Machine ownership and coverage
+        # checks below, source existence and local links remain enforced.
+        need(bool(text.strip()), mid + " empty guide")
         produced = sorted(c["id"] for c in contracts if c["producer"] == mid)
         consumed = sorted(c["id"] for c in contracts if mid in c["consumers"])
         touched = set(produced + consumed)
@@ -294,14 +302,6 @@ def verify():
         }
         for key, items in expected.items():
             need(row[key] == items, mid + " index " + key)
-            need(all(item in text for item in items), mid + " guide " + key)
-        words = len(re.findall(r"\b[\w.-]+\b", text))
-        need(
-            row["bytes"] == len(text.encode("utf-8")) and row["words"] == words,
-            mid + " guide metrics",
-        )
-        need(row["sha256"] == sha(text), mid + " guide digest")
-        need(row["requiredSections"] == HEADINGS, mid + " heading index")
         verify_local_links(path, text)
     readme = ROOT / "docs/modules/README.md"
     verify_local_links(readme, readme.read_text(encoding="utf-8"))
@@ -325,7 +325,7 @@ def verify():
                 "modules": len(mods),
                 "technicalDocuments": len(dmap),
                 "sourceBindings": len(bmap),
-                "validationScope": "registry_digests_paths_and_document_navigation",
+                "validationScope": "registry_ownership_paths_and_document_navigation",
                 "productExecutionProved": False,
                 "authorityGranted": False,
             },

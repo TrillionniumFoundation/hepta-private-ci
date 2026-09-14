@@ -49,8 +49,22 @@ MAX_CHECK_OUTPUT_BYTES = 1_048_576
 MAX_GIT_OUTPUT_BYTES = 64 * 1_048_576
 MAX_TREE_ENTRIES = 500_000
 MAX_TREE_BYTES = 4 * 1024**3
+# This is the non-learnable floor for autonomous candidate construction, not a
+# restriction on ordinary owner-reviewed source changes. An envelope may narrow
+# its authority further, but cannot nominate its own verifier or policy for edit.
+CANDIDATE_IDENTITY_PROFILE = "hepta.engineering.candidate.v2"
+MAX_SCOPE_PATHS = 256
 PROTECTED_PREFIXES = (
-    ".github/workflows",
+    ".github",
+    "AGENTS.md",
+    "CODEOWNERS",
+    "CALLERS.toml",
+    "scripts",
+    "tools/hepta-engineering-control",
+    "codex-rs/hepta-contracts",
+    "codex-rs/hepta-evidence",
+    "docs/architecture",
+    "docs/contracts",
     "docs/security",
     "docs/data/DATA_AUTHORITY.json",
     "docs/governance",
@@ -147,10 +161,12 @@ GitTreeEntry = tuple[str, str, str, str]
 
 
 def _resource_limiter(memory_bytes: int, processes: int, wall_time: int):
-    if _resource is None:
-        return None
-
+    # This callback runs before exec. Failure must prevent candidate entry,
+    # never silently downgrade the requested resource envelope. These remain
+    # per-process limits, not a substitute for the strong isolation boundary.
     def apply() -> None:
+        if _resource is None:
+            raise RuntimeError("resource limits are unavailable")
         limits = (
             ("RLIMIT_AS", memory_bytes, memory_bytes),
             ("RLIMIT_NPROC", processes, processes),
@@ -164,7 +180,7 @@ def _resource_limiter(memory_bytes: int, processes: int, wall_time: int):
         )
         for name, requested_soft, requested_hard in limits:
             if not hasattr(_resource, name):
-                continue
+                raise RuntimeError(f"required resource limit is unavailable: {name}")
             resource_id = getattr(_resource, name)
             try:
                 current_soft, current_hard = _resource.getrlimit(resource_id)
@@ -176,8 +192,8 @@ def _resource_limiter(memory_bytes: int, processes: int, wall_time: int):
                 if current_soft != infinity and current_soft < soft:
                     soft = current_soft
                 _resource.setrlimit(resource_id, (soft, hard))
-            except (OSError, ValueError):
-                continue
+            except (OSError, ValueError) as error:
+                raise RuntimeError(f"cannot enforce resource limit: {name}") from error
 
     return apply
 
@@ -229,7 +245,9 @@ def _run_bounded(
                 if os.name == "posix"
                 else None,
             )
-        except OSError:
+        except (OSError, subprocess.SubprocessError):
+            # SubprocessError includes pre-exec resource admission failures.
+            # No candidate instruction ran; keep this a failed check.
             return 127
         timed_out = False
         try:
@@ -352,11 +370,17 @@ def _validate_envelope(
         or type(envelope.require_network_isolation) is not bool
     ):
         raise EngineeringError("invalid_sandbox_budget")
+    for paths in (envelope.allowed_paths, envelope.protected_paths):
+        if not isinstance(paths, (tuple, list)) or len(paths) > MAX_SCOPE_PATHS:
+            raise EngineeringError("invalid_path_scope")
     roots = tuple(
         sorted({canonical_repo_path(value) for value in envelope.allowed_paths})
     )
     protected = tuple(
-        sorted({canonical_repo_path(value) for value in envelope.protected_paths})
+        sorted(
+            set(PROTECTED_PREFIXES)
+            | {canonical_repo_path(value) for value in envelope.protected_paths}
+        )
     )
     if not roots:
         raise EngineeringError("empty_allowed_paths")
@@ -372,10 +396,18 @@ def _validate_envelope(
 def _candidate_identity(
     envelope: CandidateEnvelope, mutation: Mutation
 ) -> tuple[str, str]:
+    roots, protected = _validate_envelope(envelope)
+    # Domain-separated V2 identities bind the entire effective envelope. An old
+    # candidate cannot be replayed with wider scope, weaker isolation or a new
+    # budget merely by retaining its envelope ID. Historical V1 receipts remain
+    # history; they are not admitted for a fresh execution under this profile.
+    policy = asdict(envelope)
+    policy["allowed_paths"] = roots
+    policy["protected_paths"] = protected
     digest = semantic_digest(
         {
-            "envelopeId": envelope.envelope_id,
-            "baseCommit": envelope.base_commit,
+            "profile": CANDIDATE_IDENTITY_PROFILE,
+            "envelope": policy,
             "mutation": asdict(mutation),
         }
     )
@@ -1119,8 +1151,8 @@ def sandbox_candidate(
         return (
             Candidate(
                 candidate.candidate_id,
-                candidate.envelope_id,
-                candidate.base_commit,
+                envelope.envelope_id,
+                envelope.base_commit,
                 mutation,
                 candidate.semantic_digest,
                 state,

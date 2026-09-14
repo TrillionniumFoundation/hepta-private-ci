@@ -3,6 +3,7 @@ use crate::LaneFStageV1;
 use crate::PipelineDispositionV1;
 use codex_hepta_intuition::RiskClass;
 use codex_hepta_learning_ledger::AppendDisposition;
+use codex_hepta_learning_ledger::DurableLedger;
 use codex_hepta_learning_ledger::LedgerAnchor;
 use codex_hepta_learning_ledger::LedgerRecovery;
 use codex_hepta_types::ProbabilityQ32;
@@ -445,3 +446,6 @@ fn abstention_and_slow_path_are_real_decisions_without_dispatch_or_outcome() {
         assert_eq!(decision.selected_propensity, ProbabilityQ32::ONE);
     }
 }
+
+#[path = "evaluated_shadow_segment_tests.rs"]
+mod segmented;

@@ -13,6 +13,13 @@ from collections import defaultdict, deque
 from pathlib import Path
 from typing import Any
 
+try:
+    from scripts.hepta_module_catalog import has_unique_module_ids
+except ModuleNotFoundError as error:
+    if error.name != "scripts":
+        raise
+    from hepta_module_catalog import has_unique_module_ids
+
 ROOT = Path(__file__).resolve().parents[1]
 ARCH_PATH = "docs/cns/CNS_ARCHITECTURE.json"
 PROTOCOL_PATH = "docs/cns/ORGAN_PROTOCOLS.json"
@@ -195,13 +202,12 @@ def validate_module_bindings(
     Every production module must be bound by at least one organ, and every
     binding must resolve either to one of those registered modules or to an
     explicitly declared qualification reference.  Qualification references
-    are intentionally kept separate from the forty production modules so a
+    are intentionally kept separate from the canonical production modules so a
     reference crate cannot acquire production identity by appearing in an
     organ binding.
     """
+    need(has_unique_module_ids(module_ids), "bounded unique registered module IDs")
     registered = set(module_ids)
-    need(len(registered) == len(module_ids), "duplicate registered module IDs")
-    need(len(registered) == 40, "forty-module production registry")
     refs: dict[str, dict[str, Any]] = {}
     for row in qualification_references:
         need(

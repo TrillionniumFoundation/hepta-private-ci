@@ -13,6 +13,13 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+try:
+    from scripts.hepta_module_catalog import has_unique_module_ids
+except ModuleNotFoundError as error:
+    if error.name != "scripts":
+        raise
+    from hepta_module_catalog import has_unique_module_ids
+
 ROOT = Path(__file__).resolve().parents[1]
 PLAN_ID = "HEPTA-GLOBAL-MODULAR-DEVELOPMENT-PLAN"
 PLAN_VERSION = "8.0.0"
@@ -825,7 +832,7 @@ def verify() -> int:
 
     module_ids = [row.get("id") for row in modules.get("modules", [])]
     need(
-        len(module_ids) == 40 and len(module_ids) == len(set(module_ids)),
+        has_unique_module_ids(module_ids),
         "module registry closure",
     )
     critical = registry.get("criticalModules")

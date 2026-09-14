@@ -314,7 +314,7 @@ class CandidateSequenceTests(unittest.TestCase):
 
         envelope = self.fixture.envelope()
         candidate = generate_candidates(envelope, ())[0]
-        relative = "tools/hepta-engineering-control/base file.txt"
+        relative = "src/base file.txt"
         change = self.fixture.success_check(
             f"from pathlib import Path; Path({relative!r}).write_text('changed')"
         )

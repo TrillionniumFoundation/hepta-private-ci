@@ -22,7 +22,10 @@ class ModuleStatusFactsTests(unittest.TestCase):
         by_id = {row["id"]: row for row in modules}
         by_binding = {row["module"]: row for row in bindings}
         by_document = {row["module"]: row for row in documents}
-        self.assertEqual(len(by_id), 40)
+        self.assertTrue(by_id)
+        self.assertEqual(len(by_id), len(modules))
+        self.assertEqual(len(by_binding), len(bindings))
+        self.assertEqual(len(by_document), len(documents))
         self.assertEqual(set(by_id), set(by_binding))
         self.assertEqual(set(by_id), set(by_document))
         for module_id, module in by_id.items():

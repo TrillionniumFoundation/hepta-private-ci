@@ -26,13 +26,14 @@ class CandidateSandboxFixture(unittest.TestCase):
         self._git("config", "core.autocrlf", "false")
         self._git("config", "user.name", "Lane G Test")
         self._git("config", "user.email", "lane-g@example.invalid")
-        source = self.root / "tools/hepta-engineering-control"
+        # Candidate fixtures model product code, not the protected evaluator.
+        source = self.root / "src"
         source.mkdir(parents=True)
         (source / "base file.txt").write_text("base\n", encoding="utf-8")
         (source / "archive-hidden.txt").write_text("must remain\n", encoding="utf-8")
         (self.root / ".gitignore").write_text("*.ignored\n", encoding="utf-8")
         (self.root / ".gitattributes").write_text(
-            "tools/hepta-engineering-control/archive-hidden.txt export-ignore\n",
+            "src/archive-hidden.txt export-ignore\n",
             encoding="utf-8",
         )
         self._git("add", ".")
@@ -55,7 +56,7 @@ class CandidateSandboxFixture(unittest.TestCase):
         return CandidateEnvelope(
             envelope_id="candidate-sandbox-regression",
             base_commit=self.base_commit,
-            allowed_paths=("tools/hepta-engineering-control",),
+            allowed_paths=("src",),
             require_network_isolation=strong,
             wall_time_seconds=30,
             memory_bytes=512 * 1024 * 1024,
@@ -82,7 +83,7 @@ class CandidateSandboxFixture(unittest.TestCase):
             (
                 self.success_check(
                     "from pathlib import Path; "
-                    "assert Path('tools/hepta-engineering-control/archive-hidden.txt').read_text() == 'must remain\\n'"
+                    "assert Path('src/archive-hidden.txt').read_text() == 'must remain\\n'"
                 ),
             ),
         )
@@ -92,7 +93,7 @@ class CandidateSandboxFixture(unittest.TestCase):
         self.assertFalse(receipt.network_isolated)
 
     def test_replace_and_delete_are_path_exact_without_porcelain_parsing(self) -> None:
-        path = "tools/hepta-engineering-control/base file.txt"
+        path = "src/base file.txt"
         replace_envelope = self.envelope()
         replace = generate_candidates(
             replace_envelope,
@@ -105,7 +106,7 @@ class CandidateSandboxFixture(unittest.TestCase):
             (
                 self.success_check(
                     "from pathlib import Path; "
-                    "assert Path('tools/hepta-engineering-control/base file.txt').read_text() == 'next\\n'"
+                    "assert Path('src/base file.txt').read_text() == 'next\\n'"
                 ),
             ),
         )
@@ -132,7 +133,7 @@ class CandidateSandboxFixture(unittest.TestCase):
             (
                 self.success_check(
                     "from pathlib import Path; "
-                    "assert not Path('tools/hepta-engineering-control/base file.txt').exists()"
+                    "assert not Path('src/base file.txt').exists()"
                 ),
             ),
         )
@@ -143,7 +144,7 @@ class CandidateSandboxFixture(unittest.TestCase):
     def test_hostile_but_canonical_filename_is_not_truncated(self) -> None:
         # Use characters legal on POSIX and Win32 while retaining spaces and
         # punctuation that would expose unsafe shell or porcelain parsing.
-        path = "tools/hepta-engineering-control/name - safe (01).txt"
+        path = "src/name - safe (01).txt"
         envelope = self.envelope()
         candidate = generate_candidates(
             envelope,
@@ -156,7 +157,7 @@ class CandidateSandboxFixture(unittest.TestCase):
             (
                 self.success_check(
                     "from pathlib import Path; "
-                    "assert Path('tools/hepta-engineering-control/name - safe (01).txt').read_text() == 'safe\\n'"
+                    "assert Path('src/name - safe (01).txt').read_text() == 'safe\\n'"
                 ),
             ),
         )
@@ -179,7 +180,7 @@ class CandidateSandboxFixture(unittest.TestCase):
     def test_fixture_detects_caller_checkout_tracked_write(self) -> None:
         envelope = self.envelope()
         candidate = generate_candidates(envelope, ())[0]
-        target = self.root / "tools/hepta-engineering-control/base file.txt"
+        target = self.root / "src/base file.txt"
         check = self.success_check(
             "from pathlib import Path; "
             f"Path({str(target)!r}).write_text('mutated\\n', encoding='utf-8')"
@@ -188,7 +189,7 @@ class CandidateSandboxFixture(unittest.TestCase):
             with self.assertRaisesRegex(EngineeringError, "source_tree_mutated"):
                 sandbox_candidate(self.root, envelope, candidate, (check,))
         finally:
-            self._git("checkout", "--", "tools/hepta-engineering-control/base file.txt")
+            self._git("checkout", "--", "src/base file.txt")
         self.assertEqual(self._git("status", "--porcelain").stdout, "")
 
     def test_fixture_detects_caller_checkout_ignored_write(self) -> None:
