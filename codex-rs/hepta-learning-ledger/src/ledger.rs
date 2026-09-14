@@ -24,6 +24,12 @@ const EVENT_DIGEST_DOMAIN: &[u8] = b"hepta.learning-ledger.event.v1";
 const CHAIN_DIGEST_DOMAIN: &[u8] = b"hepta.learning-ledger.chain.v1";
 
 #[derive(Clone, Debug)]
+struct RecordIndex {
+    digest: Digest32,
+    position: usize,
+}
+
+#[derive(Clone, Debug)]
 struct DecisionIndex {
     record_id: StableId,
     policy_id: StableId,
@@ -47,7 +53,7 @@ pub(crate) struct PreparedAppend {
 #[derive(Clone, Debug, Default)]
 pub struct LearningLedger {
     records: Vec<LedgerRecord>,
-    record_digests: BTreeMap<StableId, Digest32>,
+    record_index: BTreeMap<StableId, RecordIndex>,
     record_kinds: BTreeMap<StableId, u8>,
     decisions: BTreeMap<StableId, DecisionIndex>,
     outcomes: BTreeMap<StableId, OutcomeIndex>,
@@ -72,14 +78,13 @@ impl LearningLedger {
         let record_id = event.record_id().clone();
         let event_digest = digest_event(&event);
 
-        if let Some(existing_digest) = self.record_digests.get(&record_id) {
-            if *existing_digest != event_digest {
+        if let Some(existing) = self.record_index.get(&record_id) {
+            if existing.digest != event_digest {
                 return Err(LedgerError::IdentityConflict(record_id.to_string()));
             }
             let record = self
                 .records
-                .iter()
-                .find(|record| record.event.record_id() == &record_id)
+                .get(existing.position)
                 .ok_or(LedgerError::InternalInvariant)?;
             return Ok(PreparedAppend {
                 record: record.clone(),
@@ -308,8 +313,15 @@ impl LearningLedger {
 
     fn index_record(&mut self, record: &LedgerRecord) {
         let record_id = record.event.record_id().clone();
-        self.record_digests
-            .insert(record_id.clone(), record.event_digest);
+        // apply calls this before pushing; recovery rebuilds the same index.
+        // The index is derived state and does not change the durable encoding.
+        self.record_index.insert(
+            record_id.clone(),
+            RecordIndex {
+                digest: record.event_digest,
+                position: self.records.len(),
+            },
+        );
         self.record_kinds
             .insert(record_id, event_kind(&record.event));
         match &record.event {

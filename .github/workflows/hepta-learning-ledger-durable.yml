@@ -1,6 +1,10 @@
 name: Hepta durable causal ledger (read-only)
 
 on:
+  workflow_dispatch:
+  push:
+    paths:
+      - ".github/workflows/hepta-learning-ledger-durable.yml"
   pull_request:
     paths:
       - "codex-rs/hepta-learning-ledger/**"
@@ -10,7 +14,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: hepta-learning-ledger-durable-${{ github.event.pull_request.number }}
+  group: hepta-learning-ledger-durable-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -21,9 +25,9 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        lane: [source-head, synthetic-merge]
+        lane: ${{ github.event_name == 'pull_request' && fromJSON('["source-head", "synthetic-merge"]') || fromJSON('["source-head"]') }}
     env:
-      SOURCE_SHA: ${{ github.event.pull_request.head.sha }}
+      SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
       BASE_SHA: ${{ github.event.pull_request.base.sha }}
       CARGO_NET_GIT_FETCH_WITH_CLI: "true"
     steps:
