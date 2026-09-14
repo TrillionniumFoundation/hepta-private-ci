@@ -1,0 +1,32 @@
+name: Temporary recovery tools
+on:
+  push:
+    branches: [codex/runtime-recovery-20260914]
+    paths: [.github/workflows/hepta-recovery-tools.yml]
+permissions:
+  contents: read
+jobs:
+  tools:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+      - name: Collect public executable inputs only
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/recovery-tools/bin"
+          cp "$(command -v just)" "$RUNNER_TEMP/recovery-tools/bin/"
+          cp "$(command -v cargo-nextest)" "$RUNNER_TEMP/recovery-tools/bin/"
+          just --version > "$RUNNER_TEMP/recovery-tools/versions.txt"
+          cargo nextest --version >> "$RUNNER_TEMP/recovery-tools/versions.txt"
+          cd "$RUNNER_TEMP/recovery-tools"
+          sha256sum bin/* > SHA256SUMS
+          tar -czf "$RUNNER_TEMP/recovery-tools.tar.gz" bin versions.txt SHA256SUMS
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: pinned-recovery-tools
+          path: ${{ runner.temp }}/recovery-tools.tar.gz
+          retention-days: 3
