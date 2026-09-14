@@ -24,7 +24,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          mkdir -p "$RUNNER_TEMP/offline-inputs"
+          mkdir -p "$RUNNER_TEMP/offline-inputs" "$RUNNER_TEMP/input-parts"
           rustc +1.95.0 -Vv > "$RUNNER_TEMP/offline-inputs/identity.txt"
           git rev-parse HEAD HEAD^{tree} >> "$RUNNER_TEMP/offline-inputs/identity.txt"
           sha256sum codex-rs/Cargo.lock codex-rs/rust-toolchain.toml >> "$RUNNER_TEMP/offline-inputs/identity.txt"
@@ -32,9 +32,39 @@ jobs:
           tar -C "$HOME/.cargo" -czf "$RUNNER_TEMP/offline-inputs/cargo-inputs.tar.gz" registry git
           cd "$RUNNER_TEMP/offline-inputs"
           sha256sum *.tar.gz identity.txt > SHA256SUMS
+          tar -cf - rust-toolchain.tar.gz cargo-inputs.tar.gz identity.txt SHA256SUMS | split -b 200M -d - "$RUNNER_TEMP/input-parts/part-"
+          sha256sum "$RUNNER_TEMP"/input-parts/part-*
       - uses: actions/upload-artifact@v4
         with:
-          name: hepta-offline-build-inputs
-          path: ${{ runner.temp }}/offline-inputs/
+          name: hepta-offline-inputs-00
+          path: ${{ runner.temp }}/input-parts/part-00
           retention-days: 3
           compression-level: 0
+      - uses: actions/upload-artifact@v4
+        with:
+          name: hepta-offline-inputs-01
+          path: ${{ runner.temp }}/input-parts/part-01
+          retention-days: 3
+          compression-level: 0
+          if-no-files-found: ignore
+      - uses: actions/upload-artifact@v4
+        with:
+          name: hepta-offline-inputs-02
+          path: ${{ runner.temp }}/input-parts/part-02
+          retention-days: 3
+          compression-level: 0
+          if-no-files-found: ignore
+      - uses: actions/upload-artifact@v4
+        with:
+          name: hepta-offline-inputs-03
+          path: ${{ runner.temp }}/input-parts/part-03
+          retention-days: 3
+          compression-level: 0
+          if-no-files-found: ignore
+      - uses: actions/upload-artifact@v4
+        with:
+          name: hepta-offline-inputs-04
+          path: ${{ runner.temp }}/input-parts/part-04
+          retention-days: 3
+          compression-level: 0
+          if-no-files-found: ignore
