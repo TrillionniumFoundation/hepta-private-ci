@@ -1,6 +1,10 @@
 name: Hepta organ implementation (read-only)
 
 on:
+  workflow_dispatch:
+  push:
+    paths:
+      - ".github/workflows/hepta-organ-implementation.yml"
   pull_request:
     paths:
       - "codex-rs/hepta-neuron/**"
@@ -17,7 +21,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: hepta-organ-implementation-${{ github.event.pull_request.number }}
+  group: hepta-organ-implementation-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -28,14 +32,14 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        lane: [source-head, synthetic-merge]
+        lane: ${{ github.event_name == 'pull_request' && fromJSON('["source-head", "synthetic-merge"]') || fromJSON('["source-head"]') }}
         profile:
           - name: Neuron
             packages: codex-hepta-neuron
-          - name: Hierarchy and live consumer
-            packages: codex-hepta-control-plane codex-hepta-runtime
+          - name: Hierarchy and status adapter
+            packages: codex-hepta-control-plane codex-hepta-runtime codex-hepta-native-gateway codex-hepta-contracts
     env:
-      SOURCE_SHA: ${{ github.event.pull_request.head.sha }}
+      SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
       BASE_SHA: ${{ github.event.pull_request.base.sha }}
       PACKAGES: ${{ matrix.profile.packages }}
       CARGO_NET_GIT_FETCH_WITH_CLI: "true"
@@ -63,34 +67,6 @@ jobs:
           fi
           git rev-parse HEAD HEAD^{tree}
           printf 'Explicit test owners: %s\n' "$PACKAGES"
-
-      - name: Export tracked source for local reproduction
-        if: matrix.profile.name == 'Hierarchy and live consumer'
-        shell: bash
-        run: |
-          set -euo pipefail
-          snapshot="$RUNNER_TEMP/hepta-organ-source"
-          mkdir -p "$snapshot"
-          git archive --format=tar.gz HEAD > "$snapshot/source.tar.gz"
-          git ls-tree -rz HEAD > "$snapshot/tree.nul"
-          git cat-file commit HEAD > "$snapshot/commit.object"
-          # Commit objects preserve ancestry checks without exporting credentials
-          # or every historical source tree. No --revs: pack only the listed IDs.
-          git rev-list HEAD | git pack-objects --stdout > "$snapshot/commits.pack"
-          {
-            printf 'source=%s\nbase=%s\n' "$SOURCE_SHA" "$BASE_SHA"
-            git rev-parse HEAD 'HEAD^{tree}'
-          } > "$snapshot/identity.txt"
-          (cd "$snapshot" && sha256sum source.tar.gz tree.nul commit.object commits.pack identity.txt > SHA256SUMS)
-
-      - name: Retain exact tracked source
-        if: matrix.profile.name == 'Hierarchy and live consumer'
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
-        with:
-          name: hepta-organ-source-${{ matrix.lane }}-${{ env.SOURCE_SHA }}
-          path: ${{ runner.temp }}/hepta-organ-source
-          if-no-files-found: error
-          retention-days: 3
 
       - name: Install pinned repository test tools
         uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532

@@ -86,18 +86,15 @@ product_callers = ["codex-rs/hepta-native-gateway/src/lib.rs"]
 
 [[surface]]
 crate = "codex-hepta-control-plane"
-role = "read_only_compiled_in_organ_composition"
-public_items = ["OrganGraphsV1", "OrganHostV1", "TrustedReadOnlyOrganV1"]
-product_callers = ["codex-rs/hepta-runtime/src/organs.rs"]
+role = "read_only_cognitive_context_planning"
+public_items = ["ObservedContextV1", "plan_observed_context"]
+product_callers = ["codex-rs/hepta-agentd/src/cognitive_context.rs"]
 
 [[surface]]
 crate = "codex-hepta-types"
 role = "authority_free_identity_generation_and_digest_primitives"
-public_items = ["StableId", "Generation", "Digest32", "AuthorityPosture"]
-product_callers = [
-  "codex-rs/hepta-control-plane/src/organ_runtime.rs",
-  "codex-rs/hepta-runtime/src/organs.rs",
-]
+public_items = ["StableId", "Digest32"]
+product_callers = ["codex-rs/hepta-agentd/src/cognitive_ranker.rs"]
 
 [[surface]]
 crate = "codex-hepta-native-gateway"
@@ -625,4 +622,12 @@ old_binary_reopen_after_migration_supported = false
 rollback_requires_pre_migration_database_snapshot = true
 whole_store_historical_reopen_scale_qualified = false
 operator_acceptance_recorded = false
+promotion_eligible = false
+
+[[qualification]]
+slice = "read_only_organ_status_fixture"
+qualification_callers = ["codex-rs/hepta-runtime/src/organs.rs"]
+public_surfaces = ["OrganGraphsV1", "OrganHostV1", "TrustedReadOnlyOrganV1"]
+composition = "cfg_test_only_no_product_status_graph_dependency"
+product_caller_named = false
 promotion_eligible = false

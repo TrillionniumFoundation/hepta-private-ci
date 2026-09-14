@@ -55,11 +55,11 @@ feedback cycles still require an explicit profile; initialization and fallback
 remain acyclic. Binding timing evidence does not implement a periodic scheduler
 or prove the evidence's physical claims.
 
-The live `hepta-runtime` status composition uses the registry-gated
+The qualification-only `hepta-runtime` status fixture uses the registry-gated
 `admit_compiled_body_graph_v2` entry point before constructing or starting its
-compiled handlers. This is the first native producer/consumer vertical slice;
-the resulting receipt remains deny-all and the status graph has no durable
-writer or external effect boundary.
+compiled handlers. It is compiled only in runtime tests; the product status
+endpoint observes its already-open adapter directly. Fixture receipts remain
+deny-all and establish no production graph caller, writer or external effect.
 
 
 ## Owner callback failure semantics

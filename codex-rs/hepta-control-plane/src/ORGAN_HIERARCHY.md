@@ -3,8 +3,8 @@
 ## Implemented profile and authority boundary
 
 `organ_hierarchy.rs` implements the process-local, trusted-compiled, read-only
-profile over the existing `OrganHostV1`. It is used by the live runtime status
-consumer in `../../hepta-runtime/src/organs.rs`. It is not an arbitrary plugin
+profile over the existing `OrganHostV1`. Its qualification-only status consumer
+is `../../hepta-runtime/src/organs.rs`, compiled under `cfg(test)`. It is not an arbitrary plugin
 loader, a distributed scheduler, an effect authority, a model-selection owner,
 or a replacement for the existing Codex execution spine.
 
@@ -61,17 +61,18 @@ Current bounds follow the existing graph (at most 128 organs and 1,024 runtime
 links), with at most 32 nonempty systems. The existing 64 KiB message limit is
 unchanged. Routes are precomputed once; dispatch has no central network RPC.
 
-## Actual first consumer
+## Qualification consumer
 
-The live status path is:
+The test-only status path is:
 
 `hepta.runtime.cns` -> `system.cognition` / `runtime.status.ingress` ->
 `system.homeostasis` / `runtime.status.adapter` -> the selected compiled status
 driver -> the existing `RuntimeStateAdapter` observation.
 
 This is one cross-system graph hop with two compiled organ instances. The
-existing public status JSON remains unchanged. Busy, stopped, invalid-route and
-failed hosts do not bypass hierarchy dispatch. It does not establish that all
+fixture preserves the public status JSON. Busy, stopped, invalid-route and
+failed fixture hosts do not bypass hierarchy dispatch. The actual product status
+endpoint observes its already-open adapter directly without this hierarchy. It does not establish that all
 forty module capabilities have been migrated or that a model/provider C1 is
 complete. The host's compiled driver labels are not binary measurements.
 
@@ -152,7 +153,7 @@ identity, declaration ordering, replacement identity and partial failure. It als
 executes repeated live add/retire/driver-replacement cycles and checks wrong CNS,
 stale/skipped generations, already-started candidates, stopped predecessors,
 candidate startup/cleanup faults and predecessor shutdown faults.
-`../../hepta-runtime/src/organs_tests.rs` verifies that the existing consumer
+`../../hepta-runtime/src/organs_tests.rs` verifies that the qualification consumer
 rejects altered routes without observing its state adapter, then succeeds with
 the restored route. These tests are not a production effect or learning benchmark.
 Exact source and synthetic merge checks run in the existing organ implementation
