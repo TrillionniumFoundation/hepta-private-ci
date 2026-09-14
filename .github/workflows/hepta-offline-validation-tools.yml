@@ -1,0 +1,54 @@
+name: Hepta pinned offline validation tools
+
+on:
+  push:
+    branches: ["work/hepta-longterm-qualification-20260914"]
+    paths: [".github/workflows/hepta-offline-validation-tools.yml"]
+
+permissions:
+  contents: read
+
+jobs:
+  export:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    env:
+      CARGO_NET_GIT_FETCH_WITH_CLI: "true"
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: c4d52b329abd1ba2e3094a61ba92d30e51ef65a6
+          persist-credentials: false
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+      - name: Export only compiler and dependency source caches
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo fetch --locked --target x86_64-unknown-linux-gnu
+          stage="$RUNNER_TEMP/hepta-offline"
+          mkdir -p "$stage/toolchain" "$stage/cargo-home" "$stage/tools"
+          compiler="$(rustup which rustc)"
+          toolchain="$(dirname "$(dirname "$compiler")")"
+          cp -a "$toolchain/bin" "$toolchain/lib" "$stage/toolchain/"
+          rm -rf "$stage/toolchain/lib/rustlib/src"
+          cp -a "$HOME/.cargo/registry" "$stage/cargo-home/"
+          if [ -d "$HOME/.cargo/git" ]; then cp -a "$HOME/.cargo/git" "$stage/cargo-home/"; fi
+          # No Cargo credentials, git credentials, home directory, environment,
+          # checkout credentials, or repository .git directory is exported.
+          find "$stage/cargo-home" -type f \( -name credentials -o -name credentials.toml -o -name .git-credentials \) -delete
+          find "$stage/cargo-home/git" -type f -name config -delete 2>/dev/null || true
+          cp "$(command -v just)" "$(command -v cargo-nextest)" "$stage/tools/"
+          rustc -Vv > "$stage/compiler.txt"
+          cargo -V >> "$stage/compiler.txt"
+          tar -C "$stage" -czf "$RUNNER_TEMP/hepta-offline-validation-tools.tar.gz" .
+          sha256sum "$RUNNER_TEMP/hepta-offline-validation-tools.tar.gz"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-offline-validation-tools-${{ github.sha }}
+          path: ${{ runner.temp }}/hepta-offline-validation-tools.tar.gz
+          if-no-files-found: error
+          retention-days: 3
+          compression-level: 0
