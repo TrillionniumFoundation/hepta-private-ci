@@ -26,7 +26,7 @@ use codex_hepta_learning_ledger::AppendReceipt;
 use codex_hepta_learning_ledger::CandidateSetCompleteness;
 use codex_hepta_learning_ledger::DatasetReceiptError;
 use codex_hepta_learning_ledger::DatasetSnapshotReceiptV3;
-use codex_hepta_learning_ledger::DurableLedger;
+use codex_hepta_learning_ledger::DurableLearningJournal;
 use codex_hepta_learning_ledger::DurableLedgerError;
 use codex_hepta_learning_ledger::EpisodeDecision;
 use codex_hepta_learning_ledger::LearningEvidenceRoleV1;
@@ -132,7 +132,7 @@ pub fn evaluated_candidate_signing_payload_v1(
 pub fn run_evaluated_shadow_v1<P: LaneFShadowPortsV1>(
     request: EvaluatedShadowRequestV1<'_>,
     verifier: &LearningEvidenceVerifierV1,
-    ledger: &mut DurableLedger,
+    ledger: &mut dyn DurableLearningJournal,
     ports: &mut P,
     now: u64,
 ) -> Result<EvaluatedShadowReceiptV1, EvaluatedShadowError> {
@@ -254,7 +254,7 @@ pub fn run_evaluated_shadow_v1<P: LaneFShadowPortsV1>(
 
 struct DurableDecisionPorts<'a, P> {
     host: &'a mut P,
-    ledger: &'a mut DurableLedger,
+    ledger: &'a mut dyn DurableLearningJournal,
     expected_head: Digest32,
     policy_id: StableId,
     episode_id: StableId,

@@ -17,7 +17,9 @@ neural input, prompt, context, model invocation or external dispatch adapters.
 
 The eighth method is implemented here, bypassing the host's `record_learning`.
 It appends exactly one `LedgerEvent::Decision` through the supplied
-`DurableLedger`; `LearningRecorded` carries the actual committed chain digest.
+sealed `DurableLearningJournal` port; both `DurableLedger` and `SegmentedLedger`
+preserve the same event identity. `LearningRecorded` carries the actual committed
+chain digest.
 Abstain and slow-path decisions are recorded without context/dispatch calls.
 No Outcome or Credit is synthesized. A terminal host failure appends nothing;
 append failure returns an error. Fsync is blocking, not preemptively bounded by
@@ -28,7 +30,10 @@ predecessor, episode, decision input and artifact/evaluation bindings. Exact
 retries are idempotent, including after anchored reopen; changed input under one
 record ID conflicts. Host ports may run again during retry and must remain free
 of external effects. The host retains the ledger anchor outside the journal and
-reconciles any indeterminate I/O before retrying.
+reconciles any indeterminate I/O before retrying. A segmented host additionally
+retains the segment/seal checkpoint and publishes directory entries durably, as
+specified in [the existing ledger guide](../hepta-learning-ledger/DURABLE.md).
+The adapter does not create files or rotate them implicitly on capacity errors.
 
 Hosts must supply current trusted keys/controller mappings, revocation and time;
 authenticate raw data, candidate completeness and calibration/OOD measurements;

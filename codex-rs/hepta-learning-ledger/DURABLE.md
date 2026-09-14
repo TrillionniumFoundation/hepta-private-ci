@@ -59,13 +59,13 @@ revocations before exposing active records, including causal descendant exclusio
 Revoked bytes remain in the audit journal: this is NOT physical erasure, backup
 deletion, machine unlearning or evidence of future learning improvement.
 
-Pilot caps are 1..8192 records, 8 MiB per segment, 32 KiB per encoded event,
+The original V1 file profile caps are 1..8192 records, 8 MiB per file, 32 KiB per encoded event,
 128 candidates and 128 bytes per stable identity. Quota exhaustion stops rather
 than dropping history. Replay and indexes are bounded by these caps; equal retry
 lookup is linear in the bounded record count. The synced path has no hard
-real-time or target-host latency claim. Segment rollover, compaction, migration,
-canonical learning protocols, authenticated observer/witness services, and
-production/evaluation/artifact consumers remain separate integration work.
+real-time or target-host latency claim. The V2 rotation and evaluated-shadow
+consumer below do not add compaction, arbitrary owner migration, independent
+witness storage or production enrollment.
 
 ## Verification and rollback
 
@@ -99,3 +99,77 @@ not represented as successful commits, and normal file closure remains the
 fallback. Existing commit synchronization and poison/recovery behavior remain
 unchanged. Process death still requires OS handle closure and does not run Drop;
 this is not a physical power-loss or hostile-writer guarantee.
+
+## Segmented V2 persistence behind the existing consumer port
+
+`DurableLearningJournal` is sealed to the actual `DurableLedger` and
+`SegmentedLedger` implementations. The existing
+[`run_evaluated_shadow_v1`](../hepta-intelligence/EVALUATED_SHADOW.md) consumer
+uses this port without changing its evaluation, signature, eight-stage ordering,
+Decision identity or no-effect semantics. There is no second data owner.
+
+`SegmentedLedger::create(owner_lock, first_segment, binding, limits)` takes only
+host-authorized independent handles. A stable, exclusive owner lock spans all
+rotations. Each segment also has a lock; sealed historical segments can be
+inspected with a shared lock while a successor writer remains active.
+`append` preserves the original global sequence, hash chain, causal indexes and
+idempotency across segments. Outcomes and revocations in later segments continue
+to refer to the original decisions; capacity never resets history.
+
+The 136-byte `HEPTLS02` header binds owner scope, segment index, predecessor
+sequence/digest, per-segment limits and checksum. Existing event frames are
+unchanged. An 80-byte seal binds the exact segment and terminal record.
+All integers are big-endian. Checksums detect corruption, not authorization.
+
+`rotate(empty_successor, expected_head)` validates the candidate file before
+sealing the predecessor, durably seals the old segment, then initializes and
+syncs the successor. Empty segments cannot be sealed or rotated. A failed
+successor initialization never re-enables the predecessor. I/O uncertainty
+poisons the handle and requires recovery, not blind retry or overwriting files.
+
+The host must create and authorize the stable lock and segment directory,
+publish segment names with directory synchronization, retain the ordered series,
+and independently authenticate/persist `LedgerSegmentCheckpoint` before
+acknowledging that frontier externally. The checkpoint includes segment number,
+record anchor and seal state. A record-only anchor cannot detect removal of an
+acknowledged seal or an empty successor. It is a minimum durability frontier,
+**not** a materialized replay checkpoint or an independently implemented witness
+service. Never recreate missing acknowledged history or discard a failed witness.
+
+`recover` validates the complete ordered series under the owner lock. Intermediate
+segments must be sealed. Only an incomplete final tail may be repaired, and only
+after the external minimum checkpoint has been validated. A sealed last segment
+can be rotated after recovery but cannot receive new events. Completed frames
+after a lost acknowledgement survive and reconcile with the same operation ID.
+
+`inspect_ledger_segments` accepts a fully sealed history and an exact external
+record anchor; a later anchor rejects an incomplete prefix. The result is a
+historical snapshot. Readers and artifact consumers must still check current
+revocation before final use. Revocation excludes causal descendants; it does not
+physically erase old segment bytes or authorize restoring a revoked artifact.
+
+The V1 codec remains unchanged and rejects V2 files. Existing V1 callers still
+coerce to the durable port. There is no automatic in-place V1 migration or claim
+that an old binary can read V2. Code rollback must use a compatible backend and
+preserve all acknowledged history, not substitute an older data snapshot.
+
+Per-segment bounds remain 1..8192 records and 4096 bytes..8 MiB. The series has
+at most 1024 segments and retains the pure core's existing one-million-record
+limit. Recovery and in-memory indexes still grow with retained history. This
+implements rotation and cross-segment continuity, not unlimited storage,
+constant-time recovery, compaction, physical erasure or sustained throughput.
+
+The normal owner test inventory includes 8,200 records over 257 bounded segments,
+cross-segment outcomes/revocations/retries, shared historical reads, reordered or
+corrupt series, lost seal/empty successor rejection, partial-tail repair and
+actual child-process exit after seal or successor initialization. The existing
+evaluated-shadow consumer is tested through rotation, reopen and old-run replay;
+invalid signatures still reject before any host port or journal mutation.
+Run the existing entrypoint, without an alternate workspace or lowered gates:
+
+```sh
+just test --locked -p codex-hepta-learning-ledger -p codex-hepta-intelligence
+```
+
+These are local filesystem and synthetic evaluation scenarios, not physical
+power-loss, independent acceptance, production efficacy or hostile-writer proofs.
