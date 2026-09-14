@@ -1,0 +1,70 @@
+name: Hepta isolated lock resolution diagnostic
+
+on:
+  push:
+    branches: [codex/evolution-build-diagnostic-20260914]
+
+permissions:
+  contents: read
+
+jobs:
+  resolution:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      CARGO_INCREMENTAL: "0"
+      CARGO_PROFILE_DEV_DEBUG: "0"
+      CARGO_BUILD_JOBS: "2"
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Bind original reviewed source
+        run: |
+          set -eu
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          git diff --exit-code
+          mkdir -p "$RUNNER_TEMP/resolution"
+          git rev-parse HEAD HEAD^{tree} > "$RUNNER_TEMP/resolution/source-identity.txt"
+          cp codex-rs/Cargo.lock "$RUNNER_TEMP/resolution/Cargo.lock.original"
+      - name: Resolve only workspace drift in an isolated development copy
+        working-directory: codex-rs
+        run: |
+          set -eu
+          rustc --version
+          cargo --version
+          cargo update --workspace
+          cp Cargo.lock "$RUNNER_TEMP/resolution/Cargo.lock.candidate"
+          git diff -- Cargo.lock > "$RUNNER_TEMP/resolution/lock-review.diff"
+          printf '%s\n' 'Resolution proposal only: this modified lockfile is NOT exact-source qualification and is never committed or pushed by this workflow.' > "$RUNNER_TEMP/resolution/BOUNDARY.txt"
+      - name: Populate public dependencies for affected native libraries
+        working-directory: codex-rs
+        run: cargo check --locked -p codex-hepta-control-plane -p codex-hepta-fleet
+      - name: Retain compiler and public dependency sources for offline development
+        if: always()
+        working-directory: codex-rs
+        run: |
+          set -eu
+          sysroot=$(rustc --print sysroot)
+          mkdir -p "$RUNNER_TEMP/tool-bundle/bin"
+          for tool in rustc cargo clippy-driver cargo-clippy; do
+            test ! -f "$sysroot/bin/$tool" || cp "$sysroot/bin/$tool" "$RUNNER_TEMP/tool-bundle/bin/"
+          done
+          rustc -vV > "$RUNNER_TEMP/resolution/compiler-identity.txt"
+          tar -czf "$RUNNER_TEMP/resolution/compiler-bin.tar.gz" -C "$RUNNER_TEMP/tool-bundle" bin
+          # No credentials, configuration, environment files, or runner binaries.
+          paths=""
+          test ! -d "$HOME/.cargo/registry" || paths="$paths registry"
+          test ! -d "$HOME/.cargo/git" || paths="$paths git"
+          if test -n "$paths"; then
+            tar -czf "$RUNNER_TEMP/resolution/public-dependencies.tar.gz" -C "$HOME/.cargo" $paths
+          fi
+          sha256sum "$RUNNER_TEMP/resolution/"*.gz > "$RUNNER_TEMP/resolution/SHA256SUMS"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: hepta-lock-resolution-${{ github.sha }}
+          path: ${{ runner.temp }}/resolution/
+          if-no-files-found: error
+          retention-days: 1
