@@ -1,0 +1,40 @@
+name: Hepta offline build inputs (diagnostic only)
+on:
+  push:
+    branches: [work/hepta-blocker-closure-20260915]
+    paths: [.github/workflows/hepta-offline-toolchain-export.yml]
+permissions:
+  contents: read
+jobs:
+  export:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Fetch exact locked Linux build inputs
+        shell: bash
+        run: |
+          set -euo pipefail
+          rustup toolchain install 1.95.0 --profile minimal --component clippy,rustfmt,rust-src
+          cd codex-rs
+          cargo +1.95.0 fetch --locked --target x86_64-unknown-linux-gnu
+      - name: Pack public toolchain and dependency caches only
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/offline-inputs"
+          rustc +1.95.0 -Vv > "$RUNNER_TEMP/offline-inputs/identity.txt"
+          git rev-parse HEAD HEAD^{tree} >> "$RUNNER_TEMP/offline-inputs/identity.txt"
+          sha256sum codex-rs/Cargo.lock codex-rs/rust-toolchain.toml >> "$RUNNER_TEMP/offline-inputs/identity.txt"
+          tar -C "$HOME/.rustup/toolchains" -czf "$RUNNER_TEMP/offline-inputs/rust-toolchain.tar.gz" 1.95.0-x86_64-unknown-linux-gnu
+          tar -C "$HOME/.cargo" -czf "$RUNNER_TEMP/offline-inputs/cargo-inputs.tar.gz" registry git
+          cd "$RUNNER_TEMP/offline-inputs"
+          sha256sum *.tar.gz identity.txt > SHA256SUMS
+      - uses: actions/upload-artifact@v4
+        with:
+          name: hepta-offline-build-inputs
+          path: ${{ runner.temp }}/offline-inputs/
+          retention-days: 3
+          compression-level: 0
