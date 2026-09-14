@@ -26,8 +26,8 @@ use codex_hepta_types::FixedQ32;
 use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
 
-use super::*;
 use super::super::MAX_CONTEXT_JSON_BYTES;
+use super::*;
 use crate::CognitiveContextItem;
 use crate::CurrentCognitiveRegistry;
 use crate::PinnedCognitiveRanker;
@@ -251,12 +251,7 @@ fn escaping_contents() -> Vec<String> {
 async fn learned_winner_survives_legacy_byte_cut_and_response_stays_bounded() {
     let (_directory, store, owner, items) = stored_candidates(escaping_contents()).await;
     let baseline = read(
-        &store,
-        &owner,
-        /*body_generation*/ 1,
-        "lemon",
-        /*limit*/ 4,
-        /*ranker*/ None,
+        &store, &owner, /*body_generation*/ 1, "lemon", /*limit*/ 4, /*ranker*/ None,
     )
     .await
     .unwrap();
@@ -284,7 +279,10 @@ async fn learned_winner_survives_legacy_byte_cut_and_response_stays_bounded() {
     )
     .await
     .unwrap();
-    assert_eq!(budgeted.items, vec![winner, items[0].clone(), items[1].clone()]);
+    assert_eq!(
+        budgeted.items,
+        vec![winner, items[0].clone(), items[1].clone()]
+    );
     assert!(serde_json::to_vec(&budgeted).unwrap().len() <= MAX_CONTEXT_JSON_BYTES);
 }
 
@@ -330,12 +328,7 @@ async fn oversized_learned_winner_does_not_consume_the_only_result_slot() {
 async fn byte_cut_cannot_hide_an_unsupported_candidate_from_whole_batch_abstention() {
     let (_directory, store, owner, items) = stored_candidates(escaping_contents()).await;
     let baseline = read(
-        &store,
-        &owner,
-        /*body_generation*/ 1,
-        "lemon",
-        /*limit*/ 4,
-        /*ranker*/ None,
+        &store, &owner, /*body_generation*/ 1, "lemon", /*limit*/ 4, /*ranker*/ None,
     )
     .await
     .unwrap();

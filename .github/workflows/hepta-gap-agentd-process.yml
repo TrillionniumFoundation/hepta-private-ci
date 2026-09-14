@@ -7,6 +7,8 @@ on:
   pull_request:
     paths:
       - codex-rs/hepta-agentd/**
+      - codex-rs/hepta-fleet/**
+      - codex-rs/hepta-control-plane/**
       - codex-rs/hepta-supervisor/**
       - codex-rs/hepta-memory/**
       - codex-rs/app-server/**
@@ -50,6 +52,15 @@ jobs:
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "${GITHUB_SHA}"
           git rev-parse HEAD HEAD^{tree}
+
+      - name: Install repository test entry point
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+
+      - name: Exercise local fences, reconciliation and organ lifecycle
+        working-directory: codex-rs
+        run: just test --locked --lib -p codex-hepta-fleet -p codex-hepta-control-plane -p codex-hepta-agentd
 
       - name: Execute local writer qualification
         working-directory: codex-rs
