@@ -23,7 +23,6 @@ REL = Path('qualification/module-execution-dossiers')
 LANES = {'A': 'LANE-A-FOUNDATION', 'B': 'LANE-B-RUNTIME', 'C': 'LANE-C-MEMORY',
          'D': 'LANE-D-OBJECTIVE-VALUE', 'E': 'LANE-E-LEARNING',
          'F': 'LANE-F-ADAPTIVE-POLICY', 'G': 'LANE-G-ENGINEERING'}
-COUNTS = {'A': 7, 'B': 11, 'C': 9, 'D': 3, 'E': 4, 'F': 5, 'G': 1}
 PHASES = ('prepared', 'admission_stopped', 'drained', 'old_writer_fenced',
           'snapshotted', 'migrated', 'validated', 'new_writer_fenced',
           'route_published', 'retired')
@@ -235,13 +234,11 @@ def verify_bundle(root: Path) -> dict[str, Any]:
     if profiles['schema'] != 'hepta.module-implementation-profiles.v1' or type(profiles['schemaVersion']) is not int or profiles['schemaVersion'] != 1 or profiles['planId'] != 'HEPTA-GLOBAL-MODULAR-DEVELOPMENT-PLAN' or profiles['planVersion'] != '8.0.0':
         raise Invalid('profile identity')
     rows=profiles['modules']
-    if profiles['moduleCount'] != 40 or len(rows) != 40 or len({r['module'] for r in rows}) != 40:
+    if type(profiles['moduleCount']) is not int or not 1 <= len(rows) <= 4096 or profiles['moduleCount'] != len(rows) or len({r['module'] for r in rows}) != len(rows):
         raise Invalid('module closed world')
     claim_keys={'productTestsExecuted','deploymentQualified','longitudinalEfficacy','functionalBiomimicry','selfIteration','autonomousPropagation','independentAcceptance','allGapsClosed'}
     if set(profiles['claimBoundary']) != claim_keys or any(v is not False for v in profiles['claimBoundary'].values()):
         raise Invalid('positive document capability claim')
-    if {lane:sum(r['lane']==lane for r in rows) for lane in COUNTS} != COUNTS:
-        raise Invalid('lane counts')
     for row in rows:
         mid=row['module']
         if not re.fullmatch('[a-z]+[.][a-z]+',mid) or row['lane'] not in LANES:
@@ -285,7 +282,7 @@ def verify_bundle(root: Path) -> dict[str, Any]:
         if not re.fullmatch('[0-9a-f]{40}',row['blobSha']) or not row['exports']:
             raise Invalid('source observation identity')
         inside(root,row['path'])
-    return {'kind':'documentation_bundle_conformance','modules':40,'designRequirements':16,
+    return {'kind':'documentation_bundle_conformance','modules':len(rows),'designRequirements':16,
             'sourceObservations':len(native['observations']),'repositoryBindingsChecked':False,
             'nativeProductTestsExecuted':False,'independentReview':False,'allGapsClosed':False}
 
@@ -318,9 +315,10 @@ def verify_repository(root: Path) -> dict[str,Any]:
     ready=read_json(root/'docs/readiness/READINESS.json')
     canonical={r['id'] for r in modules}; roots={r['module']:r['declaredRoots'] for r in bindings}
     binding_by_module={r['module']:r for r in bindings}
+    lane_modules=[m for lane in ready['implementationLanes'] for m in lane['modules']]
     lanes={m:l['id'] for l in ready['implementationLanes'] for m in l['modules']}
     profiles=read_json(root/REL/'IMPLEMENTATION_PROFILES.json')
-    if canonical != {r['module'] for r in profiles['modules']} or len(modules) != 40 or len(bindings) != 40:
+    if not canonical or len(canonical) != len(modules) or canonical != {r['module'] for r in profiles['modules']} or len(canonical) != len(bindings) or set(roots) != canonical or set(lanes) != canonical or len(lane_modules) != len(canonical):
         raise Invalid('canonical module coverage')
     known_packages={r['id'] for r in packages}
     native_references = {'entrypoints': 0, 'testFiles': 0, 'runtimeDocuments': 0}

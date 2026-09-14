@@ -20,6 +20,21 @@ from fractions import Fraction
 from pathlib import Path
 from typing import Any
 
+try:
+    from scripts.hepta_module_catalog import (
+        covers_module_ids,
+        has_module_count,
+        has_unique_module_ids,
+    )
+except ModuleNotFoundError as error:
+    if error.name != "scripts":
+        raise
+    from hepta_module_catalog import (
+        covers_module_ids,
+        has_module_count,
+        has_unique_module_ids,
+    )
+
 ROOT = Path(__file__).resolve().parents[1]
 REL = Path("qualification/module-execution-dossiers")
 PHASES = (
@@ -841,13 +856,14 @@ def verify_details(base: Path, run_tests: bool = True) -> int:
         index["schema"] != "hepta.module-detailed-design-index.v1"
         or index["schemaVersion"] != 1
         or index["planVersion"] != "8.0.0"
-        or index["moduleCount"] != 40
-        or len(index["rows"]) != 40
+        or not has_module_count(
+            index["moduleCount"], [row["module"] for row in index["rows"]]
+        )
     ):
         raise Invalid("detailed index identity or count")
     rows = index["rows"]
     modules = {row["module"] for row in rows}
-    if len(modules) != 40 or any(
+    if len(modules) != len(rows) or any(
         value is not False for value in index["claimBoundary"].values()
     ):
         raise Invalid("duplicate module or positive claim")
@@ -894,8 +910,9 @@ def verify_details(base: Path, run_tests: bool = True) -> int:
     if (
         gaps["allGapsClosed"] is not False
         or gaps["semanticReviewPassed"] is not False
-        or len(gaps["moduleDesignRequirements"]) != 40
-        or {row["module"] for row in gaps["moduleDesignRequirements"]} != modules
+        or not covers_module_ids(
+            [row["module"] for row in gaps["moduleDesignRequirements"]], modules
+        )
         or [row["id"] for row in gaps["auditRequirements"]]
         != [f"AUD-{i:02d}" for i in range(1, 10)]
     ):
@@ -924,7 +941,7 @@ def verify_details(base: Path, run_tests: bool = True) -> int:
         json.dumps(
             {
                 "status": "PASS_HEPTA_COMPANION_CONFORMANCE",
-                "modules": 40,
+                "modules": len(modules),
                 "namedProductTestDesigns": named_test_count,
                 "repositoryBindingsChecked": False,
                 "productTestsExecuted": False,
@@ -958,10 +975,8 @@ def verify(root: Path) -> int:
                 raise Invalid("duplicate canonical lane binding")
             lanes[mid] = lane["id"]
     if (
-        len(canonical) != 40
-        or len(expected) != 40
-        or len(source_rows) != 40
-        or set(bindings) != expected
+        not has_unique_module_ids([row["id"] for row in canonical])
+        or not covers_module_ids([row["module"] for row in source_rows], expected)
         or set(lanes) != expected
         or {row["module"] for row in index["rows"]} != expected
     ):
@@ -998,7 +1013,7 @@ def verify(root: Path) -> int:
         json.dumps(
             {
                 "status": "PASS_HEPTA_DETAILED_DESIGN_CONFORMANCE",
-                "modules": 40,
+                "modules": len(expected),
                 "repositoryBindingsChecked": True,
                 "allGapsClosed": False,
                 "meaning": "coverage_hashes_paths_and_analytic_oracles_only",

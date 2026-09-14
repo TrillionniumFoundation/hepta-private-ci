@@ -9,6 +9,21 @@ from collections import defaultdict, deque
 from pathlib import Path
 from typing import Any
 
+try:
+    from scripts.hepta_module_catalog import (
+        covers_module_ids,
+        has_module_count,
+        has_unique_module_ids,
+    )
+except ModuleNotFoundError as error:
+    if error.name != "scripts":
+        raise
+    from hepta_module_catalog import (
+        covers_module_ids,
+        has_module_count,
+        has_unique_module_ids,
+    )
+
 ROOT = Path(__file__).resolve().parents[1]
 PLAN_ID = "HEPTA-GLOBAL-MODULAR-DEVELOPMENT-PLAN"
 PLAN_VERSION = "8.0.0"
@@ -585,7 +600,7 @@ def verify() -> int:
 
     module_ids = [row["id"] for row in modules]
     module_id_set = set(module_ids)
-    need(len(module_ids) == len(module_id_set) == 40, "module closed world")
+    need(has_unique_module_ids(module_ids), "module closed world")
     package_ids = {row["id"] for row in packages}
 
     protocol_rows = protocols.get("protocols", [])
@@ -804,8 +819,7 @@ def verify() -> int:
         lane_modules.extend(row["modules"])
         dependency_map[row["id"]] = row["dependsOn"]
     need(
-        len(lane_modules) == len(set(lane_modules)) == 40
-        and set(lane_modules) == module_id_set,
+        covers_module_ids(lane_modules, module_ids),
         "exact one-lane module coverage",
     )
     lane_order = acyclic(LANE_IDS, dependency_map, "lane graph")
@@ -973,7 +987,7 @@ def verify() -> int:
     coding_gate = readiness.get("codingEntryGate", {})
     need(
         coding_gate.get("allDocumentationGapsClosed") is True
-        and coding_gate.get("moduleCoverageRequired") == 40
+        and has_module_count(coding_gate.get("moduleCoverageRequired"), module_ids)
         and coding_gate.get("sourceReceiptRequired") is True
         and coding_gate.get("exactSourceAndSyntheticMergeRequired") is True
         and coding_gate.get("deterministicFallbackRequired") is True
@@ -991,7 +1005,7 @@ def verify() -> int:
             "protocolCount": 31,
             "gapCount": 54,
             "externalGateCount": 9,
-            "moduleBindingCount": 40,
+            "moduleBindingCount": len(module_ids),
         },
         "global closure counts",
     )
