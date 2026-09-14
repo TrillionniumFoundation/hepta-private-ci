@@ -14,7 +14,7 @@ INDEX = "docs/modules/MODULE_DOCS.json"
 README = "docs/modules/README.md"
 
 
-def expected_metadata(root: Path) -> dict[Path, str]:
+def expected_metadata(root: Path, *, prose_metrics: bool = False) -> dict[Path, str]:
     modules = json.loads((root / "docs/modules/MODULES.json").read_text())["modules"]
     index = json.loads((root / INDEX).read_text())
     by_id = {module["id"]: module for module in modules}
@@ -35,9 +35,13 @@ def expected_metadata(root: Path) -> dict[Path, str]:
         row["sourceStatus"] = module["sourceStatus"]
         row["source_root_present"] = module["source_root_present"]
         row["production_implementation"] = module["production_implementation"]
-        row["sha256"] = hashlib.sha256(text.encode("utf-8")).hexdigest()
-        row["bytes"] = len(text.encode("utf-8"))
-        row["words"] = len(re.findall(r"\b[\w.-]+\b", text))
+        # Retained V2 presentation fields are an optional generated cache, not
+        # source-selection or product evidence. Ordinary checks only synchronize
+        # machine facts from MODULES.json, their single authoritative source.
+        if prose_metrics:
+            row["sha256"] = hashlib.sha256(text.encode("utf-8")).hexdigest()
+            row["bytes"] = len(text.encode("utf-8"))
+            row["words"] = len(re.findall(r"\b[\w.-]+\b", text))
         pattern = (
             r"(" + re.escape(f"- [`{row['module']}`]") + r".*? — `)[^`]+(`, bootstrap)"
         )
@@ -52,9 +56,11 @@ def expected_metadata(root: Path) -> dict[Path, str]:
     }
 
 
-def synchronize(root: Path, *, write: bool = False) -> list[Path]:
+def synchronize(
+    root: Path, *, write: bool = False, prose_metrics: bool = False
+) -> list[Path]:
     """No authority, source-status, contract or work-package mutations."""
-    expected = expected_metadata(root)
+    expected = expected_metadata(root, prose_metrics=prose_metrics)
     changed = [path for path, text in expected.items() if path.read_text() != text]
     if write:
         for path in changed:
@@ -69,8 +75,13 @@ def main() -> int:
         action="store_true",
         help="explicit developer regeneration; CI must omit",
     )
+    parser.add_argument(
+        "--prose-metrics",
+        action="store_true",
+        help="optionally regenerate presentation counts/digests; not a CI gate",
+    )
     args = parser.parse_args()
-    changed = synchronize(ROOT, write=args.write)
+    changed = synchronize(ROOT, write=args.write, prose_metrics=args.prose_metrics)
     print(
         json.dumps(
             {

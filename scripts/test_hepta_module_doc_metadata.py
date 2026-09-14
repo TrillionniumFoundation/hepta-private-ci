@@ -94,12 +94,15 @@ class ModuleMetadataTests(unittest.TestCase):
             all(row["production_implementation"] is False for row in result["modules"])
         )
 
-    def test_guide_change_is_bound_to_exact_new_digest(self):
+    def test_prose_edit_needs_no_committed_presentation_metadata(self):
         synchronize(self.root, write=True)
         guide = self.root / "docs/modules/module.0/TECHNICAL.md"
         guide.write_text("# Revised\n", encoding="utf-8")
-        self.assertEqual(synchronize(self.root), [self.root / INDEX])
-        synchronize(self.root, write=True)
+        self.assertEqual(synchronize(self.root), [])
+        self.assertEqual(
+            synchronize(self.root, prose_metrics=True), [self.root / INDEX]
+        )
+        synchronize(self.root, write=True, prose_metrics=True)
         row = json.loads((self.root / INDEX).read_text())["modules"][0]
         self.assertEqual(row["sha256"], hashlib.sha256(guide.read_bytes()).hexdigest())
         self.assertEqual(row["bytes"], len(guide.read_bytes()))

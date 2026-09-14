@@ -16,6 +16,8 @@ on:
       - codex-rs/app-server-client/**
       - codex-rs/app-server-transport/**
       - codex-rs/uds/**
+      - scripts/hepta_workspace.py
+      - scripts/test_hepta_workspace.py
       - .github/workflows/hepta-gap-agentd-process.yml
 
 permissions:
@@ -53,6 +55,13 @@ jobs:
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "${GITHUB_SHA}"
           git rev-parse HEAD HEAD^{tree}
+
+      - name: Fail fast on manifest and formatting errors
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_workspace.py
+          cargo fmt --manifest-path codex-rs/Cargo.toml --package codex-hepta-agentd --package codex-hepta-fleet --package codex-hepta-control-plane --package codex-hepta-automation -- --check
 
       - name: Install repository test entry point
         uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
@@ -102,12 +111,11 @@ jobs:
           cargo clippy --locked -p codex-hepta-agentd --no-deps \
             --all-targets --features qualification-cognitive-write -- -D warnings
 
-      - name: Formatting and clean source
+      - name: Clean source after execution
         if: always()
         shell: bash
         run: |
           set -euo pipefail
-          cargo fmt --manifest-path codex-rs/Cargo.toml --package codex-hepta-agentd -- --check
           git diff --check
           git diff --exit-code
           test -z "$(git status --porcelain --untracked-files=no)"
