@@ -49,8 +49,22 @@ MAX_CHECK_OUTPUT_BYTES = 1_048_576
 MAX_GIT_OUTPUT_BYTES = 64 * 1_048_576
 MAX_TREE_ENTRIES = 500_000
 MAX_TREE_BYTES = 4 * 1024**3
+# This is the non-learnable floor for autonomous candidate construction, not a
+# restriction on ordinary owner-reviewed source changes. An envelope may narrow
+# its authority further, but cannot nominate its own verifier or policy for edit.
+CANDIDATE_IDENTITY_PROFILE = "hepta.engineering.candidate.v2"
+MAX_SCOPE_PATHS = 256
 PROTECTED_PREFIXES = (
-    ".github/workflows",
+    ".github",
+    "AGENTS.md",
+    "CODEOWNERS",
+    "CALLERS.toml",
+    "scripts",
+    "tools/hepta-engineering-control",
+    "codex-rs/hepta-contracts",
+    "codex-rs/hepta-evidence",
+    "docs/architecture",
+    "docs/contracts",
     "docs/security",
     "docs/data/DATA_AUTHORITY.json",
     "docs/governance",
@@ -356,11 +370,17 @@ def _validate_envelope(
         or type(envelope.require_network_isolation) is not bool
     ):
         raise EngineeringError("invalid_sandbox_budget")
+    for paths in (envelope.allowed_paths, envelope.protected_paths):
+        if not isinstance(paths, (tuple, list)) or len(paths) > MAX_SCOPE_PATHS:
+            raise EngineeringError("invalid_path_scope")
     roots = tuple(
         sorted({canonical_repo_path(value) for value in envelope.allowed_paths})
     )
     protected = tuple(
-        sorted({canonical_repo_path(value) for value in envelope.protected_paths})
+        sorted(
+            set(PROTECTED_PREFIXES)
+            | {canonical_repo_path(value) for value in envelope.protected_paths}
+        )
     )
     if not roots:
         raise EngineeringError("empty_allowed_paths")
@@ -376,10 +396,18 @@ def _validate_envelope(
 def _candidate_identity(
     envelope: CandidateEnvelope, mutation: Mutation
 ) -> tuple[str, str]:
+    roots, protected = _validate_envelope(envelope)
+    # Domain-separated V2 identities bind the entire effective envelope. An old
+    # candidate cannot be replayed with wider scope, weaker isolation or a new
+    # budget merely by retaining its envelope ID. Historical V1 receipts remain
+    # history; they are not admitted for a fresh execution under this profile.
+    policy = asdict(envelope)
+    policy["allowed_paths"] = roots
+    policy["protected_paths"] = protected
     digest = semantic_digest(
         {
-            "envelopeId": envelope.envelope_id,
-            "baseCommit": envelope.base_commit,
+            "profile": CANDIDATE_IDENTITY_PROFILE,
+            "envelope": policy,
             "mutation": asdict(mutation),
         }
     )
@@ -1123,8 +1151,8 @@ def sandbox_candidate(
         return (
             Candidate(
                 candidate.candidate_id,
-                candidate.envelope_id,
-                candidate.base_commit,
+                envelope.envelope_id,
+                envelope.base_commit,
                 mutation,
                 candidate.semantic_digest,
                 state,

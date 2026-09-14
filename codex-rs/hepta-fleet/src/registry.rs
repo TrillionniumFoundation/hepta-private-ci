@@ -383,17 +383,30 @@ fn load_lifecycle(
 fn validate_workspace_isolation(
     agents: &BTreeMap<AgentId, AgentRecord>,
 ) -> Result<(), FleetRegistryError> {
-    for (agent_id, record) in agents {
-        validate_manifest_workspace(&record.manifest, agents).map_err(|error| match error {
-            FleetRegistryError::WorkspaceConflict {
-                registered_agent_id,
-                ..
-            } => FleetRegistryError::WorkspaceConflict {
-                agent_id: agent_id.clone(),
-                registered_agent_id,
-            },
-            other => other,
-        })?;
+    // Canonical Path ordering groups a directory with all of its descendants.
+    // Any overlapping pair therefore has an adjacent overlapping witness. Keep
+    // the global invariant without comparing every agent with every other one.
+    let mut ordered = agents.values().collect::<Vec<_>>();
+    ordered.sort_unstable_by(|left, right| {
+        left.manifest
+            .workspace
+            .as_path()
+            .cmp(right.manifest.workspace.as_path())
+            .then_with(|| left.manifest.agent_id.cmp(&right.manifest.agent_id))
+    });
+    for pair in ordered.windows(/*size*/ 2) {
+        let parent = &pair[0].manifest;
+        let child = &pair[1].manifest;
+        if child
+            .workspace
+            .as_path()
+            .starts_with(parent.workspace.as_path())
+        {
+            return Err(FleetRegistryError::WorkspaceConflict {
+                agent_id: child.agent_id.clone(),
+                registered_agent_id: parent.agent_id.clone(),
+            });
+        }
     }
     Ok(())
 }
