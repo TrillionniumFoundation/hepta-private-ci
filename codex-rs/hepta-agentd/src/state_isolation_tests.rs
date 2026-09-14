@@ -8,29 +8,26 @@ use codex_hepta_paths::HeptaFleetRoot;
 
 use super::*;
 
-fn fixture() -> (tempfile::TempDir, FleetRegistry, AgentdState) {
-    let temp = tempfile::tempdir().expect("temporary root");
-    let root = temp.path().canonicalize().expect("canonical root");
+fn fixture() -> anyhow::Result<(tempfile::TempDir, FleetRegistry, AgentdState)> {
+    let temp = tempfile::tempdir()?;
+    let root = temp.path().canonicalize()?;
     let fleet_path = root.join("fleet");
-    let fleet_root = HeptaFleetRoot::parse(fleet_path.clone()).expect("fleet root");
-    let registry = FleetRegistry::initialize(fleet_root.clone()).expect("registry");
+    let fleet_root = HeptaFleetRoot::parse(fleet_path.clone())?;
+    let registry = FleetRegistry::initialize(fleet_root.clone())?;
     let workspace = root.join("workspace");
-    fs::create_dir(&workspace).expect("workspace");
-    let agent_id = AgentId::parse("018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12").expect("id");
+    fs::create_dir(&workspace)?;
+    let agent_id = AgentId::parse("018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12")?;
     let manifest = AgentManifest::new(
         agent_id.clone(),
-        WorkspaceBinding::new(&workspace, &fleet_root).expect("binding"),
+        WorkspaceBinding::new(&workspace, &fleet_root)?,
         ResourceBudget::local_default(),
-    )
-    .expect("manifest");
-    let record = registry.register(manifest).expect("register");
-    registry
-        .compare_and_transition(
-            &agent_id,
-            /*expected_generation*/ 0,
-            AgentLifecycle::Starting,
-        )
-        .expect("starting");
+    )?;
+    let record = registry.register(manifest)?;
+    registry.compare_and_transition(
+        &agent_id,
+        /*expected_generation*/ 0,
+        AgentLifecycle::Starting,
+    )?;
     let identity = AgentdIdentity {
         agent_id,
         layout: record.layout.clone(),
@@ -43,23 +40,20 @@ fn fixture() -> (tempfile::TempDir, FleetRegistry, AgentdState) {
         control_socket: record.layout.agentd_control_socket().to_path_buf(),
         app_server_socket: record.layout.app_server_socket().to_path_buf(),
     };
-    let state =
-        AgentdState::new(identity, registry.clone(), /*event_capacity*/ 16).expect("agent state");
-    registry
-        .compare_and_transition(
-            &state.identity.agent_id,
-            /*expected_generation*/ 1,
-            AgentLifecycle::Running,
-        )
-        .expect("running");
-    state.refresh_generation().expect("refresh");
-    state.mark_app_server_ready().expect("ready");
-    (temp, registry, state)
+    let state = AgentdState::new(identity, registry.clone(), /*event_capacity*/ 16)?;
+    registry.compare_and_transition(
+        &state.identity.agent_id,
+        /*expected_generation*/ 1,
+        AgentLifecycle::Running,
+    )?;
+    state.refresh_generation()?;
+    state.mark_app_server_ready()?;
+    Ok((temp, registry, state))
 }
 
 #[tokio::test]
 async fn serving_agent_survives_unrelated_registry_corruption() {
-    let (_temp, registry, state) = fixture();
+    let (_temp, registry, state) = fixture().expect("runtime fixture");
     let peer = registry
         .layout()
         .agents_root()
@@ -90,7 +84,7 @@ async fn serving_agent_survives_unrelated_registry_corruption() {
 
 #[test]
 fn missing_local_record_immediately_fences_the_serving_agent() {
-    let (_temp, _registry, state) = fixture();
+    let (_temp, _registry, state) = fixture().expect("runtime fixture");
     fs::remove_file(state.identity.layout.agent_config()).expect("remove local manifest");
     assert!(matches!(
         state.refresh_generation(),
@@ -101,7 +95,7 @@ fn missing_local_record_immediately_fences_the_serving_agent() {
 
 #[test]
 fn targeted_read_preserves_lifecycle_and_resource_fences() {
-    let (_temp, registry, state) = fixture();
+    let (_temp, registry, state) = fixture().expect("runtime fixture");
     let mut identity = state.identity.clone();
     identity.resources.turn_queue_capacity += 1;
     let changed = AgentdState::new(identity, registry.clone(), /*event_capacity*/ 16)
