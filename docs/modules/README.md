@@ -1,6 +1,6 @@
 # Hepta module technical guides
 
-This directory contains exactly one stable implementation guide for every module registered in `MODULES.json`. Machine-readable coverage and digests are in `MODULE_DOCS.json`; source reality is in `SOURCE_BINDINGS.json`. A guide explains implementation and operations but grants no runtime, acceptance, promotion or release authority.
+This directory contains exactly one stable implementation guide for every module registered in `MODULES.json`. Machine-readable coverage is in `MODULE_DOCS.json`; source reality is in `SOURCE_BINDINGS.json`. Retained guide hashes and word/byte counts are optional generated presentation metadata, not acceptance evidence. Ordinary prose edits need no metadata-only commit. Machine ownership, source reality, authority constraints and local links are still verified. A guide explains implementation and operations but grants no runtime, acceptance, promotion or release authority.
 
 ## Guides
 
@@ -91,7 +91,7 @@ Readiness means required dependencies, schema and integrity are verified; livene
 
 ### Shared verification and qualification
 
-Minimum checks are exact source identity, source inventory, static verification, focused tests, package tests, all-target compilation, strict lint, clean worktree, exact-head execution and synthetic-merge execution. Stateful modules add migration, crash/reopen, corruption, idempotency, conflict and reconciliation. Adapters add revoked/stale grant, payload drift, timeout and indeterminate-outcome tests.
+For implementation changes, minimum checks are exact source identity, source inventory, static verification, focused tests, affected-package tests, applicable all-target compilation, strict lint, clean worktree, exact-head execution and synthetic-merge execution. Ordinary prose-only changes require navigation and affected static checks, not unrelated native builds; the global development plan defines the boundary. Stateful modules add migration, crash/reopen, corruption, idempotency, conflict and reconciliation. Adapters add revoked/stale grant, payload drift, timeout and indeterminate-outcome tests.
 
 The implementing team cannot issue independent acceptance. Fixture success proves only the tested boundary at the exact candidate; it does not prove a production caller, physical effect, operator acceptance, promotion or release.
 
@@ -99,14 +99,18 @@ The implementing team cannot issue independent acceptance. Fixture success prove
 
 Read each guide with its module-specific current native implementation, existing operation map (where present), source-adjacent state/operating notes and named test sources. Target signatures stay explicitly separate from current native exports; unimplemented effects, stores, drivers or consumers remain implementation work even when every document exists. Current test counts and source observations are computed by the existing verifiers, not copied as live facts into prose.
 
-After editing a guide or module detail, run from the repository root:
+For a normal guide prose edit, run from the repository root:
 
 ```sh
-python3 scripts/hepta-module-docs.py refresh-indexes
-python3 scripts/hepta-module-docs.py refresh-indexes --check
 python3 scripts/hepta-module-docs.py verify
-python3 scripts/hepta-readiness.py verify
-python3 scripts/hepta-technical-closure.py verify
 ```
 
-The refresh command updates only derived guide byte/word counts and guide/detail digests in the existing indexes. It does not change module scope, implementation status, authority or acceptance. The module verifier also rejects missing local source/test/operating-document links and Markdown anchors. Structural success still does not prove a compiled API, an executed product test or a deployed consumer.
+Contract, readiness, source-map and qualification-detail changes additionally run their affected existing verifiers. A qualification detail whose digest is consumed as evidence still requires the existing `refresh-indexes` and `hepta-technical-closure.py verify` path; ordinary guide navigation is not such evidence.
+
+Guide presentation metrics may be regenerated explicitly when publishing an index:
+
+```sh
+python3 scripts/hepta_module_doc_metadata.py --write --prose-metrics
+```
+
+This optional command updates presentation metadata, not module scope, implementation status, authority or acceptance. No prose-metric refresh is required in routine CI. The module verifier still rejects missing local source/test/operating-document links and Markdown anchors. Structural success does not prove a compiled API, an executed product test or a deployed consumer.

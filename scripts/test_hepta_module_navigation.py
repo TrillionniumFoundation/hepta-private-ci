@@ -1,4 +1,5 @@
 """Prose-only changes remain cheap without weakening machine ownership or links."""
+
 import contextlib
 import copy
 import importlib.util
@@ -7,7 +8,6 @@ from pathlib import Path
 from types import SimpleNamespace
 import unittest
 from unittest import mock
-
 
 SPEC = importlib.util.spec_from_file_location(
     "module_docs_navigation", Path(__file__).with_name("hepta-module-docs.py")
@@ -39,15 +39,23 @@ class ModuleNavigationTests(unittest.TestCase):
 
         # Implementation-map behavior has its own regression suite. This suite
         # exercises the complete module verifier, without running its child again.
-        with mock.patch.object(DOCS, "load", side_effect=load), mock.patch.object(
-            Path, "read_text", read
-        ), mock.patch.object(
-            DOCS.subprocess, "run", return_value=SimpleNamespace(returncode=0, stderr="", stdout="")
-        ), contextlib.redirect_stdout(io.StringIO()):
+        with (
+            mock.patch.object(DOCS, "load", side_effect=load),
+            mock.patch.object(Path, "read_text", read),
+            mock.patch.object(
+                DOCS.subprocess,
+                "run",
+                return_value=SimpleNamespace(returncode=0, stderr="", stdout=""),
+            ),
+            contextlib.redirect_stdout(io.StringIO()),
+        ):
             return DOCS.verify()
 
     def test_prose_layout_and_cached_metrics_are_not_acceptance_evidence(self):
-        self.assertEqual(self.verify(prose="# Types\n\nOwnership is retained in the registry.\n"), 0)
+        self.assertEqual(
+            self.verify(prose="# Types\n\nOwnership is retained in the registry.\n"),
+            0,
+        )
 
     def test_empty_guide_and_broken_or_escaping_links_still_fail(self):
         for prose in (" ", "[missing](not-present.md)", "[escape](../../../../outside.md)"):
@@ -58,13 +66,35 @@ class ModuleNavigationTests(unittest.TestCase):
         def change(path, document):
             if path == "docs/modules/MODULE_DOCS.json":
                 document["authorityFlags"]["runtimeAuthority"] = True
+
         with self.assertRaisesRegex(SystemExit, "positive authority"):
             self.verify(prose="# Types\n\nNo production authority.\n", transform=change)
+
+    def test_false_like_authority_values_are_not_booleans(self):
+        for flag in (0, "", [], None):
+
+            def change(path, document):
+                if path == "docs/modules/MODULE_DOCS.json":
+                    document["authorityFlags"]["runtimeAuthority"] = flag
+
+            with self.subTest(flag=flag), self.assertRaises(SystemExit):
+                self.verify(transform=change)
+
+    def test_duplicate_projections_cannot_hide_behind_dictionary_conversion(self):
+        for index, key in (("SOURCE_BINDINGS", "bindings"), ("MODULE_DOCS", "modules")):
+
+            def change(path, document):
+                if path == f"docs/modules/{index}.json":
+                    document[key].append(copy.deepcopy(document[key][0]))
+
+            with self.subTest(index=index), self.assertRaisesRegex(SystemExit, "duplicate"):
+                self.verify(transform=change)
 
     def test_machine_contract_inventory_remains_enforced(self):
         def change(path, document):
             if path == "docs/modules/MODULE_DOCS.json":
                 document["modules"][0]["producedContracts"] = ["invented.contract"]
+
         with self.assertRaisesRegex(SystemExit, "index producedContracts"):
             self.verify(transform=change)
 
@@ -73,6 +103,7 @@ class ModuleNavigationTests(unittest.TestCase):
             if path == "docs/modules/MODULE_DOCS.json":
                 row = document["modules"][0]
                 row["production_implementation"] = not row["production_implementation"]
+
         with self.assertRaises(SystemExit):
             self.verify(transform=change)
 
