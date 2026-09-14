@@ -8,63 +8,33 @@ permissions:
 jobs:
   export:
     runs-on: ubuntu-24.04
-    timeout-minutes: 30
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
         with:
           persist-credentials: false
-      - name: Fetch exact locked Linux build inputs
+      - uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b
+        with:
+          version: '0.12.13'
+          enable-cache: false
+      - name: Fetch exact formatter inputs and compatible test runner
         shell: bash
         run: |
           set -euo pipefail
-          rustup toolchain install 1.95.0 --profile minimal --component clippy,rustfmt,rust-src
-          cd codex-rs
-          cargo +1.95.0 fetch --locked --target x86_64-unknown-linux-gnu
-      - name: Pack public toolchain and dependency caches only
-        shell: bash
-        run: |
-          set -euo pipefail
-          mkdir -p "$RUNNER_TEMP/offline-inputs" "$RUNNER_TEMP/input-parts"
-          rustc +1.95.0 -Vv > "$RUNNER_TEMP/offline-inputs/identity.txt"
-          git rev-parse HEAD HEAD^{tree} >> "$RUNNER_TEMP/offline-inputs/identity.txt"
-          sha256sum codex-rs/Cargo.lock codex-rs/rust-toolchain.toml >> "$RUNNER_TEMP/offline-inputs/identity.txt"
-          tar -C "$HOME/.rustup/toolchains" -czf "$RUNNER_TEMP/offline-inputs/rust-toolchain.tar.gz" 1.95.0-x86_64-unknown-linux-gnu
-          tar -C "$HOME/.cargo" -czf "$RUNNER_TEMP/offline-inputs/cargo-inputs.tar.gz" registry git
-          cd "$RUNNER_TEMP/offline-inputs"
-          sha256sum *.tar.gz identity.txt > SHA256SUMS
-          tar -cf - rust-toolchain.tar.gz cargo-inputs.tar.gz identity.txt SHA256SUMS | split -b 200M -d - "$RUNNER_TEMP/input-parts/part-"
-          sha256sum "$RUNNER_TEMP"/input-parts/part-*
+          mkdir -p "$RUNNER_TEMP/tool-export/bin"
+          cp "$(command -v uv)" "$RUNNER_TEMP/tool-export/bin/uv"
+          uv sync --frozen --project sdk/python --only-group format
+          uv sync --frozen --project scripts --only-group format
+          curl --fail --location --retry 3 'https://github.com/nextest-rs/nextest/releases/download/cargo-nextest-0.9.144/cargo-nextest-0.9.144-x86_64-unknown-linux-gnu.tar.gz' -o "$RUNNER_TEMP/nextest.tar.gz"
+          tar -xzf "$RUNNER_TEMP/nextest.tar.gz" -C "$RUNNER_TEMP/tool-export/bin"
+          "$RUNNER_TEMP/tool-export/bin/cargo-nextest" nextest --version
+          uv --version
+          tar -C "$(uv cache dir)" -czf "$RUNNER_TEMP/tool-export/uv-cache.tar.gz" .
+          tar -C "$RUNNER_TEMP/tool-export" -czf "$RUNNER_TEMP/offline-format-inputs.tar.gz" bin uv-cache.tar.gz
+          sha256sum "$RUNNER_TEMP/offline-format-inputs.tar.gz"
       - uses: actions/upload-artifact@v4
         with:
-          name: hepta-offline-inputs-00
-          path: ${{ runner.temp }}/input-parts/part-00
+          name: hepta-offline-format-inputs
+          path: ${{ runner.temp }}/offline-format-inputs.tar.gz
           retention-days: 3
           compression-level: 0
-      - uses: actions/upload-artifact@v4
-        with:
-          name: hepta-offline-inputs-01
-          path: ${{ runner.temp }}/input-parts/part-01
-          retention-days: 3
-          compression-level: 0
-          if-no-files-found: ignore
-      - uses: actions/upload-artifact@v4
-        with:
-          name: hepta-offline-inputs-02
-          path: ${{ runner.temp }}/input-parts/part-02
-          retention-days: 3
-          compression-level: 0
-          if-no-files-found: ignore
-      - uses: actions/upload-artifact@v4
-        with:
-          name: hepta-offline-inputs-03
-          path: ${{ runner.temp }}/input-parts/part-03
-          retention-days: 3
-          compression-level: 0
-          if-no-files-found: ignore
-      - uses: actions/upload-artifact@v4
-        with:
-          name: hepta-offline-inputs-04
-          path: ${{ runner.temp }}/input-parts/part-04
-          retention-days: 3
-          compression-level: 0
-          if-no-files-found: ignore
