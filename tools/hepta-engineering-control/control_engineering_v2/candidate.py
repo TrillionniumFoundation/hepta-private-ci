@@ -147,10 +147,12 @@ GitTreeEntry = tuple[str, str, str, str]
 
 
 def _resource_limiter(memory_bytes: int, processes: int, wall_time: int):
-    if _resource is None:
-        return None
-
+    # This callback runs before exec. Failure must prevent candidate entry,
+    # never silently downgrade the requested resource envelope. These remain
+    # per-process limits, not a substitute for the strong isolation boundary.
     def apply() -> None:
+        if _resource is None:
+            raise RuntimeError("resource limits are unavailable")
         limits = (
             ("RLIMIT_AS", memory_bytes, memory_bytes),
             ("RLIMIT_NPROC", processes, processes),
@@ -164,7 +166,7 @@ def _resource_limiter(memory_bytes: int, processes: int, wall_time: int):
         )
         for name, requested_soft, requested_hard in limits:
             if not hasattr(_resource, name):
-                continue
+                raise RuntimeError(f"required resource limit is unavailable: {name}")
             resource_id = getattr(_resource, name)
             try:
                 current_soft, current_hard = _resource.getrlimit(resource_id)
@@ -176,8 +178,8 @@ def _resource_limiter(memory_bytes: int, processes: int, wall_time: int):
                 if current_soft != infinity and current_soft < soft:
                     soft = current_soft
                 _resource.setrlimit(resource_id, (soft, hard))
-            except (OSError, ValueError):
-                continue
+            except (OSError, ValueError) as error:
+                raise RuntimeError(f"cannot enforce resource limit: {name}") from error
 
     return apply
 
@@ -229,7 +231,9 @@ def _run_bounded(
                 if os.name == "posix"
                 else None,
             )
-        except OSError:
+        except (OSError, subprocess.SubprocessError):
+            # SubprocessError includes pre-exec resource admission failures.
+            # No candidate instruction ran; keep this a failed check.
             return 127
         timed_out = False
         try:
