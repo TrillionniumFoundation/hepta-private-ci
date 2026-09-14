@@ -24,7 +24,7 @@ jobs:
           mkdir -p "$RUNNER_TEMP/tool-export/bin"
           cp "$(command -v uv)" "$RUNNER_TEMP/tool-export/bin/uv"
           uv sync --frozen --project sdk/python --only-group format
-          uv sync --frozen --project scripts --only-group format
+          uv sync --frozen --project scripts
           curl --fail --location --retry 3 'https://github.com/nextest-rs/nextest/releases/download/cargo-nextest-0.9.144/cargo-nextest-0.9.144-x86_64-unknown-linux-gnu.tar.gz' -o "$RUNNER_TEMP/nextest.tar.gz"
           tar -xzf "$RUNNER_TEMP/nextest.tar.gz" -C "$RUNNER_TEMP/tool-export/bin"
           "$RUNNER_TEMP/tool-export/bin/cargo-nextest" nextest --version
