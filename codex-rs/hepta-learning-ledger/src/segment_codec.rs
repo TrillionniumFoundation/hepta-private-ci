@@ -149,7 +149,11 @@ pub(crate) fn replay(
         let mut frame = vec![0; total];
         frame[..8].copy_from_slice(&prefix);
         file.read_exact(&mut frame[8..])?;
-        if Digest32::of_bytes(&frame[..total - 32]).as_array() != &frame[total - 32..] {
+        if Digest32::of_bytes(&frame[..total - 32])
+            .as_array()
+            .as_slice()
+            != &frame[total - 32..]
+        {
             return Err(DurableLedgerError::Corrupt);
         }
         let event = decode_event(&frame[48..48 + size as usize])?;
