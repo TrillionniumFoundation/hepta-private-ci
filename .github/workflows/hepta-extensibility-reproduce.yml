@@ -2,7 +2,7 @@ name: Hepta offline source reproduction
 
 on:
   workflow_dispatch:
-  pull_request:
+  push:
     paths:
       - .github/workflows/hepta-extensibility-reproduce.yml
 
@@ -10,7 +10,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: hepta-offline-reproduction-${{ github.event.pull_request.number || github.ref }}
+  group: hepta-offline-reproduction-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -20,13 +20,13 @@ jobs:
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
-          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          ref: ${{ github.sha }}
           fetch-depth: 0
           persist-credentials: false
       - name: Export a self-contained exact-source bundle
         shell: bash
         env:
-          SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+          SOURCE_SHA: ${{ github.sha }}
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
@@ -44,7 +44,7 @@ jobs:
           git diff --cached --quiet
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: hepta-offline-source-${{ github.event.pull_request.head.sha || github.sha }}
+          name: hepta-offline-source-${{ github.sha }}
           path: ${{ runner.temp }}/offline-reproduction
           if-no-files-found: error
           retention-days: 2
