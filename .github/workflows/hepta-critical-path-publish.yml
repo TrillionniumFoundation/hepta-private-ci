@@ -1,0 +1,50 @@
+name: Temporary critical-path publisher
+
+on:
+  push:
+    branches:
+      - codex/critical-path-publish-20260914
+    paths:
+      - .github/workflows/hepta-critical-path-publish.yml
+
+permissions:
+  contents: write
+
+jobs:
+  publish:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Check out staging branch
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: codex/critical-path-publish-20260914
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Reconstruct and publish exact candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          cat .hepta-publish-xz/chunk-* > /tmp/candidate.patch.xz.b64
+          test "$(wc -c < /tmp/candidate.patch.xz.b64)" -eq 104360
+          base64 -d /tmp/candidate.patch.xz.b64 > /tmp/candidate.patch.xz
+          printf '%s  %s\n' '3c61d4d9ac6c6cf87f959d97d1aa181a0eb4b4a3df82f93129bea5c0440a92d1' /tmp/candidate.patch.xz | sha256sum -c -
+
+          xz -dc /tmp/candidate.patch.xz > /tmp/candidate.patch
+          printf '%s  %s\n' '93e7afa899a5c947c2572075688a0349c4c65295fb087c62b5efb82f578115c2' /tmp/candidate.patch | sha256sum -c -
+
+          git reset --hard 356dd626294f98afcdb78812879fa661a9778605
+          git clean -fdx
+          git apply --index /tmp/candidate.patch
+          test "$(git write-tree)" = '57c9f847036a548544b680c3a048bf131f4a6476'
+          git diff --cached --check
+
+          git config user.name 'hepta-critical-path-publisher'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'fix: integrate verified critical-path runtime candidate'
+          test "$(git rev-parse HEAD^{tree})" = '57c9f847036a548544b680c3a048bf131f4a6476'
+          test "$(git rev-parse HEAD^)" = '356dd626294f98afcdb78812879fa661a9778605'
+
+          git push --force-with-lease origin HEAD:refs/heads/codex/critical-path-publish-20260914
