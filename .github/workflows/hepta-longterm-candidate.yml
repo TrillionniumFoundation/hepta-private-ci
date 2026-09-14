@@ -1,0 +1,107 @@
+name: Hepta exact candidate qualification (read-only)
+
+on:
+  push:
+    branches: ["work/hepta-longterm-qualification-20260914"]
+    paths:
+      - ".github/qualification/hepta-longterm*"
+      - ".github/workflows/hepta-longterm-candidate.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-longterm-candidate-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  native:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    env:
+      CARGO_NET_GIT_FETCH_WITH_CLI: "true"
+    steps:
+      - name: Check out validation envelope without retained credentials
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+          fetch-depth: 0
+
+      - name: Materialize exact candidate tree, never publish or activate
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/hepta-evidence"
+          cp .github/qualification/hepta-longterm.json "$RUNNER_TEMP/hepta-evidence/metadata.json"
+          python3 - <<'PY'
+          import gzip, hashlib, json, os, pathlib, subprocess
+          root = pathlib.Path(os.environ['RUNNER_TEMP']) / 'hepta-evidence'
+          meta = json.loads((root / 'metadata.json').read_text())
+          compressed = pathlib.Path('.github/qualification/hepta-longterm.patch.gz').read_bytes()
+          assert hashlib.sha256(compressed).hexdigest() == meta['gzip_sha256']
+          patch = gzip.decompress(compressed)
+          assert len(patch) <= 10 * 1024 * 1024
+          assert hashlib.sha256(patch).hexdigest() == meta['patch_sha256']
+          (root / 'candidate.patch').write_bytes(patch)
+          subprocess.run(['git', 'checkout', '--detach', meta['base_sha']], check=True)
+          subprocess.run(['git', 'apply', '--index', str(root / 'candidate.patch')], check=True)
+          tree = subprocess.check_output(['git', 'write-tree'], text=True).strip()
+          assert tree == meta['candidate_tree'], (tree, meta['candidate_tree'])
+          (root / 'effective-tree.txt').write_text(tree + '\n')
+          print('EXACT_CANDIDATE_TREE=' + tree)
+          assert all(p.startswith('codex-hepta-') and p.replace('-', '').isalnum() for p in meta['packages'])
+          with open(os.environ['GITHUB_ENV'], 'a') as env:
+              env.write('PACKAGES=' + ' '.join('-p ' + p for p in meta['packages']) + '\n')
+          PY
+
+      - name: Install pinned repository test tools
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+
+      - name: Locked all-target compilation
+        id: check
+        working-directory: codex-rs
+        run: cargo check --locked $PACKAGES --all-targets
+
+      - name: Regression tests on materialized candidate
+        if: success()
+        id: tests
+        working-directory: codex-rs
+        run: just test --locked $PACKAGES
+
+      - name: Strict lint without mutation
+        if: always() && steps.check.outcome == 'success'
+        id: lint
+        working-directory: codex-rs
+        run: cargo clippy --locked $PACKAGES --all-targets -- -D warnings
+
+      - name: Formatting check on the unmodified candidate
+        if: always()
+        working-directory: codex-rs
+        run: cargo fmt $PACKAGES -- --check
+
+      - name: Capture scoped mechanical feedback, not passing-source evidence
+        if: always()
+        shell: bash
+        run: |
+          set +e
+          (cd codex-rs && cargo fmt $PACKAGES -- --config imports_granularity=Item)
+          git diff --binary > "$RUNNER_TEMP/hepta-evidence/mechanical-feedback.patch"
+          python3 - <<'PY'
+          import base64, gzip, os, pathlib
+          p = pathlib.Path(os.environ['RUNNER_TEMP']) / 'hepta-evidence' / 'mechanical-feedback.patch'
+          data = p.read_bytes()
+          if len(data) <= 1024 * 1024:
+              print('MECHANICAL_FEEDBACK_GZIP_BASE64=' + base64.b64encode(gzip.compress(data, mtime=0)).decode())
+          print('Only the pinned effective tree was compiled/tested; formatting feedback is not validated source.')
+          PY
+
+      - name: Preserve candidate identity and feedback
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-longterm-exact-candidate-${{ github.sha }}
+          path: ${{ runner.temp }}/hepta-evidence/
+          if-no-files-found: error
