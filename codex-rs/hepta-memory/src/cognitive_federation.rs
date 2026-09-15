@@ -32,7 +32,7 @@ use crate::cognitive_store::unavailable;
 use crate::framing::frame_part;
 
 pub const MAX_FEDERATION_CAPABILITIES_PER_STORE: u64 = 128;
-pub const MAX_FEDERATION_CAPABILITY_REVISIONS: u64 = 1024;
+pub const MAX_FEDERATION_CAPABILITY_REVISIONS: u64 = 1025;
 pub const MAX_FEDERATION_GRANT_LIFETIME_SECONDS: i64 = 31 * 24 * 60 * 60;
 pub const MAX_FEDERATION_SOURCES_PER_AGENT: usize = 16;
 const MAX_FEDERATION_OWNER_LAYOUTS_PER_AGENT: usize = 128;
@@ -369,8 +369,8 @@ impl CognitiveStore {
                                 "memory federation generation overflow".to_string(),
                             )
                         })?;
-                // Keep the last schema-supported revision for revocation. Existing
-                // already-exhausted legacy grants require an owner migration;
+                // Migration 0011 expands legacy stores to 1025. Keep that final
+                // schema-supported revision exclusively for terminal revocation;
                 // never overwrite immutable events or reset their identities.
                 if revision >= MAX_FEDERATION_CAPABILITY_REVISIONS {
                     return Err(CognitiveStoreError::Conflict(
