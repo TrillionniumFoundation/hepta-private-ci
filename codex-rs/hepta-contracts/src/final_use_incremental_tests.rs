@@ -71,8 +71,8 @@ fn claims_append_fixed_records_without_rewriting_metadata() {
     let issuer = SigningKey::from_bytes(&[47; 32]);
     let directory = private_tempdir();
     let authority = open(directory.path(), &issuer, head(9, 1)).expect("open authority");
-    let metadata_before = std::fs::read(directory.path().join("authority.json"))
-        .expect("read authority metadata");
+    let metadata_before =
+        std::fs::read(directory.path().join("authority.json")).expect("read authority metadata");
 
     let first = signed_grant(&issuer, [5; 32], 9, "claim-one");
     authority
@@ -134,11 +134,10 @@ fn legacy_v1_state_migrates_without_refunding_claimed_nonce() {
         .expect("private lock");
 
     let authority = open(directory.path(), &issuer, head(9, 1)).expect("migrate legacy state");
-    let metadata: serde_json::Value = serde_json::from_slice(
-        &std::fs::read(&metadata_path).expect("read migrated metadata"),
-    )
-    .expect("decode migrated metadata");
-    assert_eq!(metadata["schema"], 2);
+    let metadata: serde_json::Value =
+        serde_json::from_slice(&std::fs::read(&metadata_path).expect("read migrated metadata"))
+            .expect("decode migrated metadata");
+    assert_eq!(metadata["schema"], 3);
     assert!(metadata.get("state").is_none());
     assert_eq!(
         std::fs::metadata(directory.path().join("authority.nonces"))
@@ -208,3 +207,6 @@ fn epoch_advance_rotates_nonce_log_after_head_commit() {
         FinalUseError::EpochMismatch
     );
 }
+
+#[path = "final_use_journal_tests.rs"]
+mod journal_tests;

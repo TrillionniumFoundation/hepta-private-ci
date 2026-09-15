@@ -9,16 +9,18 @@ use serde::Serialize;
 use std::collections::BTreeSet;
 use std::fs::File;
 use std::io::Read;
-use std::io::Seek;
-use std::io::SeekFrom;
 use std::io::Write;
 use std::path::Path;
+use std::sync::Mutex;
+
+#[path = "final_use_journal.rs"]
+mod journal;
+
+use journal::Journal;
+use journal::Recovery;
 
 const METADATA_FILE: &str = "authority.json";
 const METADATA_NEXT_FILE: &str = "authority.next";
-const NONCE_FILE: &str = "authority.nonces";
-const NONCE_NEXT_FILE: &str = "authority.nonces.next";
-const NONCE_RECORD_BYTES: usize = 8 + 32;
 const MAX_METADATA_BYTES: u64 = 8 * 1024 * 1024;
 
 #[derive(Deserialize, Serialize)]
@@ -50,7 +52,8 @@ pub(super) struct Store {
     root: File,
     signer_id: String,
     verifying_key: [u8; 32],
-    _lock: File,
+    lock: File,
+    journal: Mutex<Option<Journal>>,
 }
 
 impl Store {
@@ -62,13 +65,17 @@ impl Store {
     ) -> Result<(Self, State), FinalUseError> {
         let root = prepare_directory(root)?;
         let initialized = entry_exists(&root, "authority.lock")?;
+        if !initialized && entry_exists(&root, METADATA_FILE)? {
+            return Err(FinalUseError::InvalidTrust);
+        }
         let lock = open_private(&root, "authority.lock", Access::Create)?;
         lock.try_lock().map_err(|_| FinalUseError::StateLocked)?;
         let store = Self {
             root,
             signer_id: signer_id.to_owned(),
             verifying_key,
-            _lock: lock,
+            lock,
+            journal: Mutex::new(None),
         };
         if !entry_exists(&store.root, METADATA_FILE)? {
             // Once initialized, absence is data loss, never permission to reset
@@ -101,22 +108,31 @@ impl Store {
                 state.failed = false;
                 reconcile_initial(&mut state, initial)?;
                 // Migration is ordered so authority.json remains a complete V1
-                // recovery anchor until the nonce snapshot is durable. Once V2
+                // recovery anchor until the nonce snapshot is durable. Once V3
                 // metadata is published, a missing/corrupt nonce log fails closed.
                 store.reset_nonce_log(state.head.authority_epoch, &state.used_nonces)?;
                 store.persist_head(&state.head)?;
                 state
             }
             StoredAny::V2(metadata) => {
-                if metadata.schema != 2
+                if !matches!(metadata.schema, 2 | 3)
                     || metadata.signer_id != signer_id
                     || metadata.verifying_key != verifying_key
                     || !valid_head(&metadata.head)
                 {
                     return Err(FinalUseError::InvalidTrust);
                 }
-                let (used_nonces, stale_epoch_records) =
-                    store.load_nonce_log(metadata.head.authority_epoch)?;
+                let recovery = if metadata.schema == 3 {
+                    Recovery::Anchored
+                } else {
+                    Recovery::Legacy
+                };
+                let (journal, used_nonces) =
+                    Journal::open(&store.root, metadata.head.authority_epoch, recovery)?;
+                *store
+                    .journal
+                    .lock()
+                    .map_err(|_| FinalUseError::Unavailable)? = Some(journal);
                 let mut state = State {
                     head: metadata.head,
                     used_nonces,
@@ -124,15 +140,10 @@ impl Store {
                 };
                 let previous_epoch = state.head.authority_epoch;
                 let advanced = reconcile_initial(&mut state, initial)?;
-                if advanced {
+                if advanced || metadata.schema == 2 {
                     store.persist_head(&state.head)?;
                 }
                 if state.head.authority_epoch > previous_epoch {
-                    store.reset_nonce_log(state.head.authority_epoch, &state.used_nonces)?;
-                } else if stale_epoch_records {
-                    // A crash can leave the previous epoch's durable log after the
-                    // newer head is committed. Old-epoch records grant nothing;
-                    // compact them only after the new metadata has been validated.
                     store.reset_nonce_log(state.head.authority_epoch, &state.used_nonces)?;
                 }
                 state
@@ -149,6 +160,7 @@ impl Store {
         previous_epoch: u64,
         state: &State,
     ) -> Result<(), FinalUseError> {
+        self.ensure_live()?;
         self.persist_head(&state.head)?;
         if state.head.authority_epoch > previous_epoch {
             self.reset_nonce_log(state.head.authority_epoch, &state.used_nonces)?;
@@ -163,28 +175,31 @@ impl Store {
         authority_epoch: u64,
         nonce: [u8; 32],
     ) -> Result<(), FinalUseError> {
-        let mut file = open_private(&self.root, NONCE_FILE, Access::Create)?;
-        let length = file
-            .metadata()
+        self.ensure_live()?;
+        self.journal
+            .lock()
             .map_err(|_| FinalUseError::Unavailable)?
-            .len();
-        let maximum = (MAX_CLAIMS * NONCE_RECORD_BYTES) as u64;
-        if length % NONCE_RECORD_BYTES as u64 != 0 || length >= maximum {
+            .as_mut()
+            .ok_or(FinalUseError::InvalidTrust)?
+            .append(&self.root, authority_epoch, nonce)
+    }
+
+    pub(super) fn ensure_live(&self) -> Result<(), FinalUseError> {
+        let lock = open_private(&self.root, "authority.lock", Access::Read)?;
+        if !same_file(&self.lock, &lock)? {
             return Err(FinalUseError::InvalidTrust);
         }
-        file.seek(SeekFrom::End(0))
-            .map_err(|_| FinalUseError::Unavailable)?;
-        let mut record = [0_u8; NONCE_RECORD_BYTES];
-        record[..8].copy_from_slice(&authority_epoch.to_le_bytes());
-        record[8..].copy_from_slice(&nonce);
-        file.write_all(&record)
-            .and_then(|()| file.sync_all())
-            .map_err(|_| FinalUseError::Unavailable)
+        self.journal
+            .lock()
+            .map_err(|_| FinalUseError::Unavailable)?
+            .as_ref()
+            .ok_or(FinalUseError::InvalidTrust)?
+            .ensure_live(&self.root)
     }
 
     fn persist_head(&self, head: &FinalUseRevocations) -> Result<(), FinalUseError> {
         let stored = StoredV2 {
-            schema: 2,
+            schema: 3,
             signer_id: self.signer_id.clone(),
             verifying_key: self.verifying_key,
             head: head.clone(),
@@ -199,67 +214,17 @@ impl Store {
         self.root.sync_all().map_err(|_| FinalUseError::Unavailable)
     }
 
-    fn load_nonce_log(
-        &self,
-        authority_epoch: u64,
-    ) -> Result<(BTreeSet<[u8; 32]>, bool), FinalUseError> {
-        if !entry_exists(&self.root, NONCE_FILE)? {
-            return Err(FinalUseError::InvalidTrust);
-        }
-        let maximum = MAX_CLAIMS * NONCE_RECORD_BYTES;
-        let mut bytes = Vec::new();
-        open_private(&self.root, NONCE_FILE, Access::Read)?
-            .take(maximum as u64 + 1)
-            .read_to_end(&mut bytes)
-            .map_err(|_| FinalUseError::Unavailable)?;
-        if bytes.len() > maximum || bytes.len() % NONCE_RECORD_BYTES != 0 {
-            return Err(FinalUseError::InvalidTrust);
-        }
-        let mut nonces = BTreeSet::new();
-        let mut stale_epoch_records = false;
-        for record in bytes.chunks_exact(NONCE_RECORD_BYTES) {
-            let epoch = u64::from_le_bytes(
-                record[..8]
-                    .try_into()
-                    .map_err(|_| FinalUseError::InvalidTrust)?,
-            );
-            if epoch > authority_epoch {
-                return Err(FinalUseError::InvalidTrust);
-            }
-            if epoch < authority_epoch {
-                stale_epoch_records = true;
-                continue;
-            }
-            let nonce: [u8; 32] = record[8..]
-                .try_into()
-                .map_err(|_| FinalUseError::InvalidTrust)?;
-            if nonce == [0; 32] || !nonces.insert(nonce) {
-                return Err(FinalUseError::InvalidTrust);
-            }
-        }
-        Ok((nonces, stale_epoch_records))
-    }
-
     fn reset_nonce_log(
         &self,
         authority_epoch: u64,
         nonces: &BTreeSet<[u8; 32]>,
     ) -> Result<(), FinalUseError> {
-        if nonces.len() > MAX_CLAIMS {
-            return Err(FinalUseError::InvalidTrust);
-        }
-        let mut file = open_private(&self.root, NONCE_NEXT_FILE, Access::Create)?;
-        file.set_len(0).map_err(|_| FinalUseError::Unavailable)?;
-        for nonce in nonces {
-            let mut record = [0_u8; NONCE_RECORD_BYTES];
-            record[..8].copy_from_slice(&authority_epoch.to_le_bytes());
-            record[8..].copy_from_slice(nonce);
-            file.write_all(&record)
-                .map_err(|_| FinalUseError::Unavailable)?;
-        }
-        file.sync_all().map_err(|_| FinalUseError::Unavailable)?;
-        replace_entry(&self.root, NONCE_NEXT_FILE, NONCE_FILE)?;
-        self.root.sync_all().map_err(|_| FinalUseError::Unavailable)
+        let journal = Journal::reset(&self.root, authority_epoch, nonces)?;
+        *self
+            .journal
+            .lock()
+            .map_err(|_| FinalUseError::Unavailable)? = Some(journal);
+        Ok(())
     }
 }
 
@@ -309,6 +274,7 @@ fn read_metadata(directory: &File) -> Result<StoredAny, FinalUseError> {
 
 enum Access {
     Read,
+    Write,
     Create,
 }
 
@@ -350,6 +316,7 @@ fn open_private(directory: &File, name: &str, access: Access) -> Result<File, Fi
     use std::os::unix::fs::MetadataExt;
     let flags = match access {
         Access::Read => OFlags::RDONLY,
+        Access::Write => OFlags::RDWR,
         Access::Create => OFlags::RDWR | OFlags::CREATE,
     } | OFlags::NOFOLLOW
         | OFlags::CLOEXEC;
@@ -396,5 +363,18 @@ fn entry_exists(_directory: &File, _name: &str) -> Result<bool, FinalUseError> {
 }
 #[cfg(not(unix))]
 fn replace_entry(_directory: &File, _from: &str, _to: &str) -> Result<(), FinalUseError> {
+    Err(FinalUseError::UnsafeStateDirectory)
+}
+
+#[cfg(unix)]
+fn same_file(left: &File, right: &File) -> Result<bool, FinalUseError> {
+    use std::os::unix::fs::MetadataExt;
+    let left = left.metadata().map_err(|_| FinalUseError::Unavailable)?;
+    let right = right.metadata().map_err(|_| FinalUseError::Unavailable)?;
+    Ok(left.dev() == right.dev() && left.ino() == right.ino())
+}
+
+#[cfg(not(unix))]
+fn same_file(_left: &File, _right: &File) -> Result<bool, FinalUseError> {
     Err(FinalUseError::UnsafeStateDirectory)
 }
