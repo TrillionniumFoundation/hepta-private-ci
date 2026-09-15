@@ -116,6 +116,7 @@ pub async fn run(config: AgentdConfig, arg0_paths: Arg0DispatchPaths) -> Result<
     let mut monitor_task = tokio::spawn(monitor_runtime(Arc::clone(&state)));
     let automation_cancellation = cancellation.clone();
     let automation_state = Arc::clone(&state);
+    let optional_state = Arc::clone(&state);
     let mut automation_task = tokio::spawn(supervise_optional_task(
         automation_cancellation.clone(),
         async move {
@@ -123,7 +124,7 @@ pub async fn run(config: AgentdConfig, arg0_paths: Arg0DispatchPaths) -> Result<
                 Some(store) => {
                     run_automation_scheduler(
                         store,
-                        Arc::clone(&automation_state),
+                        automation_state,
                         identity,
                         automation_cancellation,
                     )
@@ -138,7 +139,7 @@ pub async fn run(config: AgentdConfig, arg0_paths: Arg0DispatchPaths) -> Result<
                 }
             }
         },
-        move || state.mark_automation_unavailable(),
+        move || optional_state.mark_automation_unavailable(),
     ));
 
     let mut authbus_task = tokio::spawn(crate::authbus_dispatch::run(
