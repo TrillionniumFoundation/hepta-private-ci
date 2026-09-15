@@ -17,6 +17,42 @@ import sys
 import tempfile
 import time
 
+MAX_OUTPUT_TAIL_BYTES = 65_536
+
+
+def execute(command: list[str], record: dict) -> int:
+    """Stream ordinary CI output and retain a bounded diagnostic tail.
+
+    The tail is diagnostic only: it never substitutes for the process exit code
+    or the before/after source-identity check. No extra checkout files are written.
+    """
+    tail = bytearray()
+    total = 0
+    try:
+        with subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT) as process:
+            try:
+                while chunk := process.stdout.read1(MAX_OUTPUT_TAIL_BYTES):
+                    total += len(chunk)
+                    tail.extend(chunk)
+                    if len(tail) > MAX_OUTPUT_TAIL_BYTES:
+                        del tail[:-MAX_OUTPUT_TAIL_BYTES]
+                    binary_stdout = getattr(sys.stdout, "buffer", None)
+                    if binary_stdout is None:
+                        sys.stdout.write(chunk.decode("utf-8", "replace"))
+                        sys.stdout.flush()
+                    else:
+                        binary_stdout.write(chunk)
+                        binary_stdout.flush()
+                return process.wait()
+            except BaseException:
+                process.kill()
+                process.wait()
+                raise
+    finally:
+        record["output_tail"] = tail.decode("utf-8", "replace")
+        record["output_bytes"] = total
+        record["output_truncated"] = total > MAX_OUTPUT_TAIL_BYTES
+
 
 def git(*args: str) -> str:
     return subprocess.check_output(["git", *args], text=True).strip()
@@ -88,11 +124,11 @@ def run(output: Path, command: list[str]) -> int:
             record["recomputed_merge_tree"] = expected_tree
         else:
             raise ValueError("an explicit source-head or base-merge lane is required")
-        completed = subprocess.run(command, check=False)
-        record["command_exit_code"] = completed.returncode
+        command_exit_code = execute(command, record)
+        record["command_exit_code"] = command_exit_code
         after = identity()
         record["after"] = after
-        exit_code = completed.returncode if completed.returncode >= 0 else 128 - completed.returncode
+        exit_code = command_exit_code if command_exit_code >= 0 else 128 - command_exit_code
         if after != before:
             record["error"] = "source identity or bytes changed during execution"
             exit_code = exit_code or 1
