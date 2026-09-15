@@ -73,7 +73,10 @@ async fn cached_connections_do_not_cache_grants_or_revocations() {
     let consumer = FederationConsumerAccess::new(consumer_id.clone(), scope.clone());
     let set = FederatedRecallSet::discover(consumer_id.clone(), vec![owner_layout], 100).await;
     let request = RetrievalRequest::new("example", 150);
-    let before = set.retrieve(&consumer, &request).await.expect("before grant");
+    let before = set
+        .retrieve(&consumer, &request)
+        .await
+        .expect("before grant");
     assert!(before.discovery_complete);
     assert_eq!(before.queried_sources, 0);
     let grant = owner

@@ -840,7 +840,8 @@ impl FederatedRecallSet {
         owner_layouts.retain(|layout| layout.agent_id() != &consumer_agent_id);
         owner_layouts.sort_by(|left, right| left.agent_id().cmp(right.agent_id()));
         owner_layouts.dedup_by(|left, right| left.agent_id() == right.agent_id());
-        let owner_inventory_truncated = owner_layouts.len() > MAX_FEDERATION_OWNER_LAYOUTS_PER_AGENT;
+        let owner_inventory_truncated =
+            owner_layouts.len() > MAX_FEDERATION_OWNER_LAYOUTS_PER_AGENT;
         owner_layouts.truncate(MAX_FEDERATION_OWNER_LAYOUTS_PER_AGENT);
         Self {
             consumer_agent_id,
@@ -870,7 +871,11 @@ impl FederatedRecallSet {
             ));
         }
         let deadline = tokio::time::Instant::now() + FEDERATION_REFRESH_TIMEOUT;
-        let current = self.current_readers(request.now_unix_seconds(), deadline).await;
+        // A slow discovery must leave time to query sources already discovered.
+        let discovery_deadline = deadline - FEDERATION_REFRESH_TIMEOUT / 2;
+        let current = self
+            .current_readers(request.now_unix_seconds(), discovery_deadline)
+            .await;
         let queried_sources = current.readers.len();
         let batches = runtime::bounded(current.readers, deadline, |reader| {
             let access = access.clone();
@@ -937,11 +942,14 @@ impl FederatedRecallSet {
                 FederationRevalidationDrift::CapabilityMissing,
             ));
         };
-        tokio::time::timeout_at(deadline, reader.revalidate(access, binding, now_unix_seconds))
-            .await
-            .map_err(|_| {
-                CognitiveStoreError::Unavailable("federation revalidation deadline".to_string())
-            })?
+        tokio::time::timeout_at(
+            deadline,
+            reader.revalidate(access, binding, now_unix_seconds),
+        )
+        .await
+        .map_err(|_| {
+            CognitiveStoreError::Unavailable("federation revalidation deadline".to_string())
+        })?
     }
 
     async fn current_readers(

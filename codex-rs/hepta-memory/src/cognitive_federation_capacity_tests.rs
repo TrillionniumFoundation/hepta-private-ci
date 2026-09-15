@@ -85,7 +85,10 @@ async fn exhausted_grant_history_can_still_be_revoked_and_reopened() {
     assert_eq!(status.state, FederationCapabilityState::Revoked);
     assert_eq!(status.capability.revision(), revoked.revision);
     assert_eq!(
-        reopened.list_federation_capabilities(1).await.expect("list"),
+        reopened
+            .list_federation_capabilities(1)
+            .await
+            .expect("list"),
         vec![status]
     );
     assert!(matches!(
