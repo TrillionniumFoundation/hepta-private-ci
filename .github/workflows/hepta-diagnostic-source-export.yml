@@ -47,3 +47,22 @@ jobs:
             ${{ runner.temp }}/source.sha256
           if-no-files-found: error
           retention-days: 1
+      - name: Package pinned offline formatter (tooling only)
+        shell: bash
+        run: |
+          set -euo pipefail
+          rustup toolchain install 1.95.0 --profile minimal --component rustfmt
+          formatter=$(rustup which --toolchain 1.95.0 rustfmt)
+          toolchain=$(dirname "$(dirname "$formatter")")
+          tar -C "$toolchain" -czf "$RUNNER_TEMP/formatter.tar.gz" bin/rustfmt lib
+          cd "$RUNNER_TEMP"
+          sha256sum formatter.tar.gz > formatter.sha256
+      - name: Retain pinned formatter
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-offline-formatter-1.95.0
+          path: |
+            ${{ runner.temp }}/formatter.tar.gz
+            ${{ runner.temp }}/formatter.sha256
+          if-no-files-found: error
+          retention-days: 1
