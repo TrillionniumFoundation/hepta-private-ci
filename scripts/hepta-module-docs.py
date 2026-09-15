@@ -2,6 +2,7 @@
 """Closed-world validator for Hepta module source bindings and technical guides."""
 
 import argparse
+import copy
 import hashlib
 import json
 import re
@@ -27,24 +28,6 @@ AUTHORITY_KEYS = [
     "operatorAcceptance",
     "promotion",
     "release",
-]
-HEADINGS = [
-    "## 1. Identity, mission and ownership",
-    "## 2. Source binding and implementation status",
-    "## 3. Boundary, responsibilities and non-goals",
-    "## 4. Internal architecture and component decomposition",
-    "## 5. Contracts, ports and compatibility",
-    "## 6. Data authority, persistence and migrations",
-    "## 7. Runtime, concurrency and transaction model",
-    "## 8. Failure semantics, recovery and rollback",
-    "## 9. Security, privacy and threat controls",
-    "## 10. Performance, capacity and hot-path policy",
-    "## 11. Observability and operations",
-    "## 12. Verification and qualification",
-    "## 13. Implementation sequence and work packages",
-    "## 14. Activation, compatibility and retirement",
-    "## 15. Definition of module completion",
-    "## 17. Source implementation receipt",
 ]
 ALLOWED_STATUS = {
     "existing_bound",
@@ -159,6 +142,112 @@ def refresh_indexes(check):
                 path.write_text(rendered, encoding="utf-8")
     need(not check or not changed, "derived index drift: " + ", ".join(changed))
     print(json.dumps({"updatedIndexes": changed, "checkOnly": check}))
+    return 0
+
+
+def registry_index(mid, contracts, protocols, domains, packages, threats):
+    """Derive navigation from its owners; shared by generation and verification."""
+    produced = sorted(c["id"] for c in contracts if c["producer"] == mid)
+    consumed = sorted(c["id"] for c in contracts if mid in c["consumers"])
+    touched = set(produced + consumed)
+    proto = sorted(p["id"] for p in protocols if p.get("contractId") in touched)
+    owned = sorted(d["id"] for d in domains if d["authoritativeWriter"] == mid)
+    reads = sorted(d["id"] for d in domains if mid in d.get("readers", []))
+    work = sorted(
+        p["id"]
+        for p in packages
+        if p["module"] == mid or mid in p.get("coOwnerModules", [])
+    )
+    own_threats = sorted(t["id"] for t in threats if t["owner"] == mid)
+    return {
+        "producedContracts": produced,
+        "consumedContracts": consumed,
+        "protocols": proto,
+        "ownedDomains": owned,
+        "readDomains": reads,
+        "workPackages": work,
+        "threats": own_threats,
+    }
+
+
+def sync_registries(check):
+    """Refresh projections, never infer readiness or production implementation.
+
+    MODULES owns declared status and paths. Domain registries own relationships.
+    Root presence is derived from disk. Existing prose caches and authority fields
+    are not rewritten. Run the normal verifier after an intentional registry edit.
+    """
+    paths = (
+        "docs/modules/MODULES.json",
+        "docs/modules/SOURCE_BINDINGS.json",
+        "docs/modules/MODULE_DOCS.json",
+    )
+    documents = [load(path) for path in paths]
+    original = copy.deepcopy(documents)
+    modules, bindings, docs = documents
+    for path, document in zip(paths, documents):
+        false_authority(document.get("authorityFlags"), path)
+    mods = pairs((m["id"], m) for m in modules["modules"])
+    bmap = pairs((b["module"], b) for b in bindings["bindings"])
+    dmap = pairs((d["module"], d) for d in docs["modules"])
+    need(bool(mods) and set(mods) == set(bmap) == set(dmap), "projection coverage")
+    relationships = (
+        load("docs/contracts/CONTRACTS.json")["contracts"],
+        load("docs/contracts/PROTOCOL_SCHEMAS.json")["protocols"],
+        load("docs/data/DATA_AUTHORITY.json")["domains"],
+        load("docs/delivery/WORK_PACKAGES.json")["packages"],
+        load("docs/security/THREAT_MODEL.json")["threats"],
+    )
+    for mid, module in mods.items():
+        need(module.get("sourceStatus") in ALLOWED_STATUS, mid + " source status")
+        need(
+            type(module.get("production_implementation")) is bool,
+            mid + " production fact",
+        )
+        declared = [entry["path"] for entry in module["rootBindings"]]
+        for path in declared:
+            need(
+                not Path(path).is_absolute()
+                and (ROOT / path).resolve().is_relative_to(ROOT),
+                mid + " root outside repository",
+            )
+        existing = [path for path in declared if (ROOT / path).exists()]
+        need(
+            not module["production_implementation"] or bool(existing),
+            mid + " production implementation without source root",
+        )
+        module["source_root_present"] = bool(existing)
+        shared = {
+            key: module[key]
+            for key in (*STATUS_FACT_FIELDS, "sourceStatus", "bootstrapWorkPackage")
+        }
+        binding, guide = bmap[mid], dmap[mid]
+        binding.update(shared)
+        binding.update(
+            technicalDocument=module["technicalDocument"],
+            declaredRoots=declared,
+            existingDeclaredRoots=existing,
+            missingDeclaredRoots=[path for path in declared if path not in existing],
+        )
+        guide.update(shared)
+        guide["path"] = module["technicalDocument"]
+        guide.update(registry_index(mid, *relationships))
+    changed = [
+        path
+        for path, before, after in zip(paths, original, documents)
+        if before != after
+    ]
+    need(not check or not changed, "derived registry drift: " + ", ".join(changed))
+    # Validate and render everything before the first write. A no-op preserves bytes.
+    rendered = {
+        path: json.dumps(document, indent=2, ensure_ascii=False) + "\n"
+        for path, document in zip(paths, documents)
+        if path in changed
+    }
+    if not check:
+        for path, text in rendered.items():
+            (ROOT / path).write_text(text, encoding="utf-8")
+    print(json.dumps({"updatedRegistries": changed, "checkOnly": check}))
     return 0
 
 
@@ -279,27 +368,7 @@ def verify():
         # verbatim heading/contract inventory. Machine ownership and coverage
         # checks below, source existence and local links remain enforced.
         need(bool(text.strip()), mid + " empty guide")
-        produced = sorted(c["id"] for c in contracts if c["producer"] == mid)
-        consumed = sorted(c["id"] for c in contracts if mid in c["consumers"])
-        touched = set(produced + consumed)
-        proto = sorted(p["id"] for p in protocols if p.get("contractId") in touched)
-        owned = sorted(d["id"] for d in domains if d["authoritativeWriter"] == mid)
-        reads = sorted(d["id"] for d in domains if mid in d.get("readers", []))
-        work = sorted(
-            p["id"]
-            for p in packages
-            if p["module"] == mid or mid in p.get("coOwnerModules", [])
-        )
-        own_threats = sorted(t["id"] for t in threats if t["owner"] == mid)
-        expected = {
-            "producedContracts": produced,
-            "consumedContracts": consumed,
-            "protocols": proto,
-            "ownedDomains": owned,
-            "readDomains": reads,
-            "workPackages": work,
-            "threats": own_threats,
-        }
+        expected = registry_index(mid, contracts, protocols, domains, packages, threats)
         for key, items in expected.items():
             need(row[key] == items, mid + " index " + key)
         verify_local_links(path, text)
@@ -356,13 +425,17 @@ def self_test():
 
 def main():
     p = argparse.ArgumentParser()
-    p.add_argument("command", choices=["verify", "self-test", "refresh-indexes"])
+    p.add_argument(
+        "command", choices=["verify", "self-test", "refresh-indexes", "sync-registries"]
+    )
     p.add_argument("--check", action="store_true")
     args = p.parse_args()
     if args.command == "refresh-indexes":
         return refresh_indexes(args.check)
+    if args.command == "sync-registries":
+        return sync_registries(args.check)
     if args.check:
-        p.error("--check applies only to refresh-indexes")
+        p.error("--check applies only to refresh-indexes or sync-registries")
     return verify() if args.command == "verify" else self_test()
 
 
