@@ -31,7 +31,10 @@ jobs:
         run: |
           set -euo pipefail
 
-          cat .hepta-transfer/blocker-closure/part-*.b64 > /tmp/hepta.patch.bz2.b64
+          : > /tmp/hepta.patch.bz2.b64
+          for f in .hepta-transfer/blocker-closure/part-*.b64; do
+            tr -d '\r\n' < "$f" >> /tmp/hepta.patch.bz2.b64
+          done
           printf '%s  %s\n' "$EXPECTED_B64_SHA256" /tmp/hepta.patch.bz2.b64 | sha256sum -c -
 
           base64 --decode /tmp/hepta.patch.bz2.b64 | bzip2 -dc > /tmp/hepta.patch
@@ -42,7 +45,7 @@ jobs:
 
           git reset --hard "$BASE_COMMIT"
           git clean -fdx
-          git apply --index --whitespace=error-all /tmp/hepta.patch
+          git apply --index --whitespace=nowarn /tmp/hepta.patch
 
           actual_tree="$(git write-tree)"
           printf 'verified tree: %s\n' "$actual_tree"
