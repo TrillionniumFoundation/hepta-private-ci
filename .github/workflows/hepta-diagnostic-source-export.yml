@@ -2,6 +2,9 @@ name: Hepta diagnostic source export
 
 on:
   workflow_dispatch:
+  push:
+    branches: [codex/stable-trunk-convergence-20260915]
+    paths: [.github/workflows/hepta-diagnostic-source-export.yml]
 
 permissions:
   contents: read
@@ -45,6 +48,7 @@ jobs:
           retention-days: 1
 
   rust-policy-diagnostics:
+    if: github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-24.04
     timeout-minutes: 30
     steps:
@@ -97,6 +101,7 @@ jobs:
           retention-days: 1
 
   bazel-lock-diagnostics:
+    if: github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-24.04
     timeout-minutes: 30
     steps:
@@ -140,6 +145,7 @@ jobs:
           retention-days: 1
 
   python-sdk-diagnostics:
+    if: github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-24.04
     timeout-minutes: 20
     steps:
@@ -184,6 +190,7 @@ jobs:
           retention-days: 1
 
   python-format-candidate:
+    if: github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-24.04
     timeout-minutes: 15
     steps:
