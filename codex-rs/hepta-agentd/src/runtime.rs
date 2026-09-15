@@ -17,12 +17,11 @@ use codex_hepta_memory::CognitiveRuntime;
 use codex_hepta_memory::CognitiveStore;
 use codex_hepta_memory::FederatedRecallSet;
 use codex_utils_absolute_path::AbsolutePathBuf;
+use optional_runtime::OPTIONAL_JOIN_TIMEOUT;
+use optional_runtime::supervise_optional_task;
 use tokio::task::JoinHandle;
 use tokio::time::timeout;
 use tokio_util::sync::CancellationToken;
-
-use optional_runtime::OPTIONAL_JOIN_TIMEOUT;
-use optional_runtime::supervise_optional_task;
 
 use crate::AgentdConfig;
 use crate::AgentdControlServer;
@@ -255,7 +254,6 @@ async fn attach_federation_after_generation_fence(
     let federation =
         FederatedRecallSet::discover(state.identity().agent_id.clone(), owner_layouts, now).await;
     // Discovery reads other owner stores and can outlive a lifecycle update.
-    // Fence once more before the read-only set reaches App Server.
     state.refresh_generation()?;
     Ok(runtime.with_federation(federation))
 }

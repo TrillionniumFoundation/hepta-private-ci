@@ -103,7 +103,9 @@ async fn owner_degradation_failure_is_returned_to_the_host() {
     )
     .await
     .expect("failed owner boundary must not wait forever");
-    assert!(matches!(result, Err(AgentdError::Protocol(message)) if message == "owner unavailable"));
+    assert!(
+        matches!(result, Err(AgentdError::Protocol(message)) if message == "owner unavailable")
+    );
 }
 
 struct DropSignal(Option<oneshot::Sender<()>>);
