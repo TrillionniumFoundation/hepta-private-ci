@@ -35,7 +35,6 @@ enum CompletedRuntimeTask {
     Control,
     AppServer,
     Monitor,
-    Automation,
     AuthBus,
 }
 
@@ -117,21 +116,30 @@ pub async fn run(config: AgentdConfig, arg0_paths: Arg0DispatchPaths) -> Result<
     let mut monitor_task = tokio::spawn(monitor_runtime(Arc::clone(&state)));
     let automation_cancellation = cancellation.clone();
     let automation_state = Arc::clone(&state);
-    let mut automation_task = tokio::spawn(async move {
-        match automation_store {
-            Some(store) => {
-                run_automation_scheduler(store, automation_state, identity, automation_cancellation)
+    let mut automation_task = tokio::spawn(supervise_optional_task(
+        automation_cancellation.clone(),
+        async move {
+            match automation_store {
+                Some(store) => {
+                    run_automation_scheduler(
+                        store,
+                        Arc::clone(&automation_state),
+                        identity,
+                        automation_cancellation,
+                    )
                     .await
+                }
+                None => {
+                    // An unavailable private store is already represented by the
+                    // typed AgentdState boundary. Keep the optional task alive until
+                    // shutdown without creating a second process failure domain.
+                    automation_cancellation.cancelled().await;
+                    Ok(())
+                }
             }
-            None => {
-                // Automation is an optional per-Agent product plane. A corrupt or
-                // unavailable private store must not create a second failure domain
-                // for Codex sessions, tools, or the App Server.
-                automation_cancellation.cancelled().await;
-                Ok(())
-            }
-        }
-    });
+        },
+        move || state.mark_automation_unavailable(),
+    ));
 
     let mut authbus_task = tokio::spawn(crate::authbus_dispatch::run(
         Arc::clone(&state),
@@ -154,10 +162,6 @@ pub async fn run(config: AgentdConfig, arg0_paths: Arg0DispatchPaths) -> Result<
         result = &mut monitor_task => (
             joined("generation monitor", result),
             Some(CompletedRuntimeTask::Monitor),
-        ),
-        result = &mut automation_task => (
-            joined("automation scheduler", result),
-            Some(CompletedRuntimeTask::Automation),
         ),
         signal = shutdown_signal() => {
             signal?;
@@ -343,6 +347,33 @@ fn joined_io(
     }
 }
 
+/// Keep an optional plane inside the process lifecycle without allowing its
+/// early exit to become a process-wide shutdown signal. The degradation hook
+/// must publish the typed unavailable state at the existing owner boundary.
+async fn supervise_optional_task<Task, Output, Degrade>(
+    cancellation: CancellationToken,
+    task: Task,
+    degrade: Degrade,
+) -> Result<(), AgentdError>
+where
+    Task: Future<Output = Output>,
+    Degrade: FnOnce() -> Result<(), AgentdError>,
+{
+    tokio::pin!(task);
+    tokio::select! {
+        biased;
+        _ = cancellation.cancelled() => Ok(()),
+        _ = &mut task => {
+            if cancellation.is_cancelled() {
+                return Ok(());
+            }
+            degrade()?;
+            cancellation.cancelled().await;
+            Ok(())
+        }
+    }
+}
+
 async fn abort_and_join<T>(task: &mut JoinHandle<T>) {
     if !task.is_finished() {
         task.abort();
@@ -366,9 +397,7 @@ async fn cleanup_runtime_tasks<ControlOutput, AppServerOutput, MonitorOutput, Au
     if completed_task != Some(CompletedRuntimeTask::Monitor) {
         abort_and_join(monitor_task).await;
     }
-    if completed_task != Some(CompletedRuntimeTask::Automation) {
-        abort_and_join(automation_task).await;
-    }
+    abort_and_join(automation_task).await;
 }
 
 #[cfg(unix)]
@@ -387,3 +416,7 @@ async fn shutdown_signal() -> Result<(), AgentdError> {
 #[cfg(test)]
 #[path = "runtime_tests.rs"]
 mod tests;
+
+#[cfg(test)]
+#[path = "optional_task_tests.rs"]
+mod optional_task_tests;
