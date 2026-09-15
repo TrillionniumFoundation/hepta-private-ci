@@ -1,7 +1,7 @@
 """Inspect declared executable workflow scalars, not prose; not a CI pass receipt.
 
-Only plain/literal/folded run scalars and repository-local composite actions are
-supported. Remote actions are opaque. Runtime conditions are not evaluated here.
+Plain/literal/folded run scalars, prior run-scalar aliases and repository-local
+composite actions are supported. Remote actions are opaque. Runtime conditions are not evaluated here.
 """
 
 from pathlib import Path
@@ -17,6 +17,7 @@ def workflow_commands(text: str) -> list[list[str]]:
     """
     lines = text.splitlines()
     commands = []
+    anchors: dict[str, str] = {}
     index = 0
     while index < len(lines):
         match = re.fullmatch(r"(\s*)(?:-\s+)?run:\s*(.*)", lines[index])
@@ -24,6 +25,16 @@ def workflow_commands(text: str) -> list[list[str]]:
         if not match:
             continue
         indent, scalar = match.groups()
+        anchor = re.fullmatch(r"&([A-Za-z_][A-Za-z0-9_-]*)\s+(.+)", scalar)
+        alias = re.fullmatch(r"\*([A-Za-z_][A-Za-z0-9_-]*)", scalar)
+        if alias:
+            if alias[1] not in anchors:
+                raise ValueError("unknown or unsupported run alias")
+            scalar = anchors[alias[1]]
+        elif anchor:
+            if anchor[1] in anchors:
+                raise ValueError("duplicate run anchor")
+            scalar = anchor[2]
         if scalar in ("|", "|-", "|+", ">", ">-", ">+"):
             block = []
             while index < len(lines):
@@ -33,6 +44,8 @@ def workflow_commands(text: str) -> list[list[str]]:
                 block.append(line.strip())
                 index += 1
             scalar = (" " if scalar.startswith(">") else "\n").join(block)
+        if anchor:
+            anchors[anchor[1]] = scalar
         for line in scalar.replace("\\\n", " ").splitlines():
             try:
                 tokens = shlex.split(line, comments=True)
@@ -55,7 +68,9 @@ def declared_commands(
     while index < len(lines):
         line = lines[index]
         index += 1
-        run = re.fullmatch(r"(\s*)(?:-\s+)?run:\s*([|>][-+]?)", line)
+        run = re.fullmatch(
+            r"(\s*)(?:-\s+)?run:\s*(?:&[A-Za-z_][A-Za-z0-9_-]*\s+)?([|>][-+]?)", line
+        )
         if run:
             while index < len(lines):
                 child = lines[index]

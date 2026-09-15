@@ -74,34 +74,62 @@ does not redirect an already opened authority's writes.
 | Entry | Contents and invariant |
 | --- | --- |
 | `authority.lock` | Owner-only regular file; `File::try_lock` held by the shared authority owner |
-| `authority.json` | JSON `{schema:1, signer_id, verifying_key, state:{head, used_nonces}}`; maximum read 8 MiB |
-| `authority.next` | Temporary complete replacement written with owner-only permissions before rename |
+| `authority.json` | V3 JSON `{schema:3, signer_id, verifying_key, head}`; maximum read 8 MiB |
+| `authority.nonces` | At most 16,384 records of eight little-endian epoch bytes followed by 32 nonce bytes; maximum 640 KiB |
+| `authority.nonces.anchor` | At most 1 KiB: schema, epoch, acknowledged record count and SHA-256 prefix-chain digest |
+| `authority.next`, `authority.nonces.next`, `authority.nonces.anchor.next` | Fixed-name private staging entries, fsynced before same-directory publication; not additional authority |
 
 Files must be regular, singly linked, owned by the effective user and have no
 group/world permissions; opens reject symlinks. The lock is held until the
-last authority/token reference disappears. It also releases automatically on
-process death. Concurrent opens fail with `StateLocked`.
+last authority/token reference disappears. It releases on process death.
+Concurrent opens fail with `StateLocked`.
 
-Every successful claim or head update serializes the complete next state,
-truncates and writes `authority.next`, fsyncs that file, renames it over
-`authority.json`, and fsyncs the root directory. The operation is not admitted
-until persistence succeeds. On a storage error, the live authority becomes
-unavailable and stays fenced; callers cannot remove a bad temporary file and
-silently retry through that same instance.
+`final_use_journal.rs` owns the incremental replay log. Each admitted claim
+appends and fsyncs exactly one record, then writes/fsyncs the small prefix
+anchor, atomically renames it and fsyncs the directory. The chain starts with
+32 zero bytes and updates as `SHA256(previous_digest || record)`. Neither the
+complete nonce set nor the revocation metadata is rewritten for each claim.
+Only after both publications complete can the caller receive a use token.
+This is durable replay prevention, not exactly-once external effect execution.
 
-The lock file also records that initialization has begun. If a later open
-finds it but no durable state file, it fails closed instead of resetting the
-nonce registry. Corrupt or oversized JSON and trust-key/schema mismatch also
-fail closed. A crash during first initialization can therefore require owner
-recovery rather than automatic recreation.
+Recovery checks the acknowledged prefix before consuming every complete tail
+record. A complete append whose caller died before acknowledgement remains
+consumed and is anchored before reopening. A partial record, oversized log,
+missing V3 anchor, lost acknowledged record or changed prefix fails closed.
+During live use the owner checks the pinned log inode, exact log length, lock
+inode and anchor contents before append and final consumer entry. A failed
+check or persistence operation permanently fences that live instance. A
+missing log is never recreated by append. Same-inode, same-length data changes
+are detected by recovery hashing, not a full-log rehash on each live call; the
+same-account host and its filesystem remain trusted.
 
-Normal restart loads the persisted nonce set and revocation head automatically.
-An old configuration cannot roll back a stronger stored head. A newer trusted
-startup head can be applied atomically when its revision increases, its epoch
-does not decrease, and same-epoch revocations are a superset. An epoch increase
-fences every old grant and clears the previous nonce set. There is no silent
-nonce eviction: 16,384 claims fill the epoch and reject further claims until a
-trusted epoch transition.
+The lock file also records that initialization has begun. Its absence beside
+existing metadata, or its presence without durable metadata, is a storage
+failure rather than permission to initialize an empty replay registry. A crash
+during first initialization can therefore require explicit owner recovery.
+
+V1 full-state metadata and V2 separate nonce logs migrate in place, preserving
+all current-epoch consumed nonces. Only those legacy schemas permit creating
+the new prefix anchor. V3 metadata is published after the anchor is durable;
+a missing V3 anchor must not be treated as an invitation to repeat migration.
+An old executable that cannot read V3 must reject it; rollback is to a
+V3-compatible binary, not deletion of the anchor or restoration of old state.
+
+A newer trusted head must increase revision, never decrease epoch, and retain
+all same-epoch revocations. Epoch advancement first publishes the new head,
+which fences all predecessor grants, then replaces the old log and anchor.
+Recovery accepts the two interrupted rotation phases only while no new-epoch
+claim was acknowledged. It never restores old grants to make recovery easier.
+
+`capacity()` returns epoch/revision, consumed and remaining nonce capacity,
+remaining revocation capacity and a maintenance recommendation at 75% use.
+It checks live storage but grants no authority. The host/issuer must arrange
+an independently authorized newer epoch through `update_revocations` before
+exhaustion; there is no autonomous epoch minting, timer-based claim refund,
+nonce eviction or retry of an unknown effect. Same-epoch revision advancement
+does not reclaim nonce capacity. Epoch rotation reuses fixed files and bounds
+recovery work independently of the number of previous generations. This is a
+bounded local store, not a measured throughput or distributed-scaling result.
 
 These files are not an external anti-rollback oracle. Deleting the entire
 store, restoring an old filesystem snapshot, or switching its configured
@@ -121,7 +149,7 @@ turn missing/corrupt state into an empty registry.
 4. The adapter performs its bounded asynchronous HTTPS read. It does not hold
    the owner mutex over network awaits, so trusted revocations can progress.
 5. `with_verified_use` checks that token and authority share the same owner,
-   validates the binding/time/epoch/revocation again, and invokes the synchronous
+   checks live storage and the binding/time/epoch/revocation again, and invokes the synchronous
    callback while holding the revocation mutex. A completed revocation cannot
    slip between this final check and callback entry.
 
@@ -141,6 +169,7 @@ or persistence failure refuses further operations.
 | API / result | Host action |
 | --- | --- |
 | `open_state_dir` | Pin trust, validate private storage, acquire the process lock and load/initialize state |
+| `capacity` | Observe bounded capacity and storage health; arrange independently authorized maintenance before exhaustion |
 | `update_revocations` | Apply only a newer trusted revision; same-epoch revocations cannot be removed |
 | `claim` | Burn one valid nonce before effect dispatch; never reuse the grant on retry |
 | `with_verified_use` | Consume that token at the final synchronous secret-use boundary |
@@ -191,21 +220,22 @@ contains 20 checks and metadata only. Full workspace, Bazel, production caller
 composition and release gates remain separate from this bounded integration.
 No legacy `PROVIDER_DISPATCH_ENABLED` flag is enabled by these changes.
 
-The [candidate validation record](../hepta-bao-adapter/qa/evidence/validation-20260908.json)
-marks the initial normal locked workspace test as `blocked_space` (zero tests executed)
-and the normal signer workspace build as not started. The source-linked
-behavioral/Clippy checks and real signer/consumer process fixture remain separate
-passing evidence. The approved-client follow-up ran 243 normal workspace tests:
-237 passed, including all 132 contracts tests and 18 adapter tests; six older
-HTTP TLS tests failed and also failed on an independent prior-source checkout.
-The newly built normal-workspace consumer passed the real 20-scenario
-fixture again. Its [receipt](../hepta-bao-adapter/qa/evidence/real-consumer-http-client-20260908.json)
-identifies the tested tree before final formatting and documentation changes;
-it is not a claim that the retained binary was built from the final commit.
-The local Bazel lock update was blocked by an automatic
-telemetry approval rejection and subsequent privacy-configured extraction /
-network-approval failure. Separate old-source CI diagnostics proved a real
-Bazel check/update/check with zero exits and no lock change; the subsequent
-HTTP dependency migration still requires current-head CI. Document validation
-passed. These recorded limits must not be reported as complete workspace or
-production qualification.
+For current source validation, run the repository entry point from `codex-rs`:
+
+```text
+just test --locked -p codex-hepta-contracts
+just test --locked -p codex-hepta-bao-adapter
+cargo clippy --locked -p codex-hepta-contracts --all-targets -- -D warnings
+```
+
+The incremental journal regressions exercise live/restarted data loss,
+whole-record and partial-record truncation, prefix substitution, replaced log
+identity, missing lock/anchor, complete unacknowledged tails, V1/V2 migration,
+interrupted epoch publication, full-capacity maintenance, independent owner
+failure and repeated epoch/restart cycles. The interrupted-publication cases
+construct the actual on-disk phase states; they are not a hardware power-loss
+or filesystem durability certification. Existing process-death tests remain
+separate. Source test presence and historical fixture evidence are not a
+current-head test pass: use actual command outcomes bound to the current
+source and merge candidate. Workspace, Bazel, cross-platform, product caller
+composition, longitudinal behavior and production admission remain separate.

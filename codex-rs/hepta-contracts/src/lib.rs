@@ -25,6 +25,7 @@ mod stable_id;
 
 pub use final_use::FinalUseAuthority;
 pub use final_use::FinalUseBinding;
+pub use final_use::FinalUseCapacity;
 pub use final_use::FinalUseError;
 pub use final_use::FinalUseGrant;
 pub use final_use::FinalUseRevocations;

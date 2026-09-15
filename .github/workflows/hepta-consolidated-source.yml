@@ -171,7 +171,8 @@ jobs:
       CARGO_BUILD_JOBS: "2"
       CARGO_PROFILE_TEST_DEBUG: "0"
       CARGO_PROFILE_DEV_DEBUG: "0"
-      # Explicit owners: testing a dependency does not execute its own tests.
+      # Explicit test owners. Dependency selection may shrink this list but
+      # uncertainty always falls back to every package below.
       PACKAGES: >-
         codex-hepta-agent-protocol codex-hepta-agentd
         codex-hepta-authbus codex-hepta-authbus-p1-3-qualification
@@ -180,7 +181,7 @@ jobs:
         codex-hepta-cognitive-read codex-hepta-cognitive-store
         codex-hepta-cognitive-types codex-hepta-compact-engine
         codex-hepta-context-compiler codex-hepta-control-plane
-        codex-hepta-evidence codex-hepta-fleet
+        codex-hepta-contracts codex-hepta-evidence codex-hepta-fleet
         codex-hepta-infer-core codex-hepta-infer-worker-host
         codex-hepta-inferd codex-hepta-intelligence
         codex-hepta-intelligence-eval codex-hepta-intuition
@@ -223,19 +224,31 @@ jobs:
           # Global source/merge document and script checks run once in hepta-development-docs.
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/source-owner.json" -- python3 scripts/hepta-gap-closure.py verify
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/ui-test.json" -- node --test apps/hepta-browser/test/*.js apps/hepta-native/test/*.js
+      - name: Select affected native package owners
+        id: selection
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_ci_select.py \
+            --base "$BASE_SHA" \
+            --head "$SOURCE_SHA" \
+            --packages $PACKAGES \
+            --github-output "$GITHUB_OUTPUT"
       - name: Formatting without source mutation
-        if: always()
+        if: always() && steps.selection.outputs.required == 'true'
         env:
           TESTED_SHA: ${{ steps.synthetic.outputs.sha || env.SOURCE_SHA }}
           HEPTA_CI_LANE: ${{ matrix.lane }}
+          SELECTED_PACKAGES: ${{ steps.selection.outputs.packages }}
         working-directory: codex-rs
         shell: bash
         run: |
           set -euo pipefail
           args=()
-          for package in $PACKAGES; do args+=(--package "$package"); done
+          for package in $SELECTED_PACKAGES; do args+=(--package "$package"); done
           python3 ../scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/format.json" -- cargo fmt "${args[@]}" -- --check
       - name: Prepare native owner-test prerequisites
+        if: steps.selection.outputs.required == 'true'
         run: |
           sudo apt-get update
           sudo apt-get install -y build-essential bubblewrap libcap-dev pkg-config
@@ -244,28 +257,35 @@ jobs:
             sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
           fi
       - name: Install DotSlash for shell integration tests
+        if: steps.selection.outputs.required == 'true'
         uses: facebook/install-dotslash@1e4e7b3e07eaca387acb98f1d4720e0bee8dbb6a
       - name: Expose DotSlash at the path used by integration tests
+        if: steps.selection.outputs.required == 'true'
         run: sudo install -m 0755 "$(command -v dotslash)" /usr/local/bin/dotslash
       - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        if: steps.selection.outputs.required == 'true'
         with:
           tool: just@1.51.0,nextest@0.9.103
       - name: Resolve verified sandboxed V8 artifacts for Cargo
+        if: steps.selection.outputs.required == 'true'
         env:
           CODEX_REPO_ROOT: ${{ github.workspace }}
           PYTHONPATH: scripts
         run: python3 scripts/hepta_ci_v8.py
-      - name: Compile and test actual imported packages
+      - name: Compile and test affected imported packages
+        id: native-owner-checks
+        if: steps.selection.outputs.required == 'true'
         working-directory: codex-rs
         env:
           TESTED_SHA: ${{ steps.synthetic.outputs.sha || env.SOURCE_SHA }}
           HEPTA_CI_LANE: ${{ matrix.lane }}
           CARGO_TARGET_DIR: ${{ runner.temp }}/hepta-native-target
+          SELECTED_PACKAGES: ${{ steps.selection.outputs.packages }}
         shell: bash
         run: |
           set -euo pipefail
           args=()
-          for package in $PACKAGES; do args+=(-p "$package"); done
+          for package in $SELECTED_PACKAGES; do args+=(-p "$package"); done
           python3 ../scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/owner-test.json" -- just test --locked "${args[@]}"
           python3 ../scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/clippy.json" -- cargo clippy --locked "${args[@]}" --all-targets -- -D warnings
       - name: Clean tracked source
@@ -273,6 +293,8 @@ jobs:
         env:
           TESTED_SHA: ${{ steps.synthetic.outputs.sha || env.SOURCE_SHA }}
           PRIOR_STATUS: ${{ job.status }}
+          SELECTED_PACKAGES: ${{ steps.selection.outputs.packages }}
+          SELECTION_REASON: ${{ steps.selection.outputs.reason }}
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$TESTED_SHA"
@@ -282,7 +304,8 @@ jobs:
             printf 'Tested tree: `%s`\n\n' "$(git rev-parse HEAD^{tree})"
             printf 'Parents: `%s`\n\n' "$(git show -s --format=%P HEAD)"
             printf 'Prior job status: `%s` (not a deployment qualification)\n\n' "$PRIOR_STATUS"
-            printf 'Targets: `%s`\n' "$PACKAGES"
+            printf 'Selection reason: `%s`\n\n' "$SELECTION_REASON"
+            printf 'Targets: `%s`\n' "$SELECTED_PACKAGES"
           } >> "$GITHUB_STEP_SUMMARY"
           git diff --check
           git diff --exit-code

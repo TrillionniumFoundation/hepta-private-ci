@@ -1,3 +1,6 @@
+#[path = "optional_runtime.rs"]
+mod optional_runtime;
+
 use std::future::Future;
 use std::sync::Arc;
 use std::time::Duration;
@@ -14,6 +17,8 @@ use codex_hepta_memory::CognitiveRuntime;
 use codex_hepta_memory::CognitiveStore;
 use codex_hepta_memory::FederatedRecallSet;
 use codex_utils_absolute_path::AbsolutePathBuf;
+use optional_runtime::OPTIONAL_JOIN_TIMEOUT;
+use optional_runtime::supervise_optional_task;
 use tokio::task::JoinHandle;
 use tokio::time::timeout;
 use tokio_util::sync::CancellationToken;
@@ -35,8 +40,8 @@ enum CompletedRuntimeTask {
     Control,
     AppServer,
     Monitor,
-    Automation,
     AuthBus,
+    OptionalBoundary,
 }
 
 pub async fn run(config: AgentdConfig, arg0_paths: Arg0DispatchPaths) -> Result<(), AgentdError> {
@@ -79,7 +84,7 @@ pub async fn run(config: AgentdConfig, arg0_paths: Arg0DispatchPaths) -> Result<
     })
     .await?;
     // The writer-enabled qualification binary must never start in a
-    // degraded CognitiveRuntime state.  The default/production binary keeps
+    // degraded CognitiveRuntime state. The default/production binary keeps
     // the existing availability-tolerant behavior; only the explicit
     // compile-time qualification profile takes this fail-closed startup gate.
     let cognitive_runtime = require_cognitive_runtime_for_profile(cognitive_runtime)?;
@@ -117,21 +122,31 @@ pub async fn run(config: AgentdConfig, arg0_paths: Arg0DispatchPaths) -> Result<
     let mut monitor_task = tokio::spawn(monitor_runtime(Arc::clone(&state)));
     let automation_cancellation = cancellation.clone();
     let automation_state = Arc::clone(&state);
-    let mut automation_task = tokio::spawn(async move {
-        match automation_store {
-            Some(store) => {
-                run_automation_scheduler(store, automation_state, identity, automation_cancellation)
+    let optional_state = Arc::clone(&state);
+    let mut automation_task = tokio::spawn(supervise_optional_task(
+        automation_cancellation.clone(),
+        async move {
+            match automation_store {
+                Some(store) => {
+                    run_automation_scheduler(
+                        store,
+                        automation_state,
+                        identity,
+                        automation_cancellation,
+                    )
                     .await
+                }
+                None => {
+                    // An unavailable private store is already represented by the
+                    // typed AgentdState boundary. Keep the optional task alive until
+                    // shutdown without creating a second process failure domain.
+                    automation_cancellation.cancelled().await;
+                    Ok(())
+                }
             }
-            None => {
-                // Automation is an optional per-Agent product plane. A corrupt or
-                // unavailable private store must not create a second failure domain
-                // for Codex sessions, tools, or the App Server.
-                automation_cancellation.cancelled().await;
-                Ok(())
-            }
-        }
-    });
+        },
+        move || optional_state.mark_automation_unavailable(),
+    ));
 
     let mut authbus_task = tokio::spawn(crate::authbus_dispatch::run(
         Arc::clone(&state),
@@ -156,15 +171,20 @@ pub async fn run(config: AgentdConfig, arg0_paths: Arg0DispatchPaths) -> Result<
             Some(CompletedRuntimeTask::Monitor),
         ),
         result = &mut automation_task => (
-            joined("automation scheduler", result),
-            Some(CompletedRuntimeTask::Automation),
+            // Ordinary optional failure stays inside its supervisor. Reaching
+            // this branch means the owner boundary itself could not degrade.
+            joined("optional plane boundary", result),
+            Some(CompletedRuntimeTask::OptionalBoundary),
         ),
-        signal = shutdown_signal() => {
-            signal?;
-            state.mark_draining()?;
-            (Ok(()), None)
-        }
+        signal = shutdown_signal() => (
+            signal.and_then(|()| {
+                state.mark_draining()?;
+                Ok(())
+            }),
+            None,
+        ),
     };
+    // Even a signal-listener or mark_draining error must clean up live tasks.
     cancellation.cancel();
     if completed_task != Some(CompletedRuntimeTask::AuthBus) {
         abort_and_join(&mut authbus_task).await;
@@ -234,7 +254,6 @@ async fn attach_federation_after_generation_fence(
     let federation =
         FederatedRecallSet::discover(state.identity().agent_id.clone(), owner_layouts, now).await;
     // Discovery reads other owner stores and can outlive a lifecycle update.
-    // Fence once more before the read-only set reaches App Server.
     state.refresh_generation()?;
     Ok(runtime.with_federation(federation))
 }
@@ -366,7 +385,11 @@ async fn cleanup_runtime_tasks<ControlOutput, AppServerOutput, MonitorOutput, Au
     if completed_task != Some(CompletedRuntimeTask::Monitor) {
         abort_and_join(monitor_task).await;
     }
-    if completed_task != Some(CompletedRuntimeTask::Automation) {
+    if completed_task != Some(CompletedRuntimeTask::OptionalBoundary)
+        && timeout(OPTIONAL_JOIN_TIMEOUT, &mut *automation_task)
+            .await
+            .is_err()
+    {
         abort_and_join(automation_task).await;
     }
 }
@@ -387,3 +410,7 @@ async fn shutdown_signal() -> Result<(), AgentdError> {
 #[cfg(test)]
 #[path = "runtime_tests.rs"]
 mod tests;
+
+#[cfg(test)]
+#[path = "optional_task_tests.rs"]
+mod optional_task_tests;

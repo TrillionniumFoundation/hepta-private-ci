@@ -43,3 +43,33 @@ Readiness requires configuration, dependencies, schema, current frontiers and in
 Repository-controlled completion requires an immutable base/head/tree tuple, closed-world source inventory, public API linkage from another crate, attributed native tests, all-target compilation, strict lint, format cleanliness and an ordered-base synthetic merge repeating the same checks. A mutable branch name cannot be a qualification target.
 
 External product, target-host, future-calendar, consent, hardware, independent-acceptance, canary, selection, promotion and release evidence stays open until its responsible owner issues an immutable receipt for the exact candidate. Repository code and documentation cannot self-issue those receipts.
+
+
+## 8. Executable dependency boundary
+
+`scripts/hepta_workspace.py` derives the execution boundary from real Cargo
+manifests rather than a second manually maintained package graph. Core and the
+extension API cannot depend on product implementations through a helper,
+renamed workspace dependency, optional feature, target-specific dependency or
+local Cargo patch. The diagnostic includes the shortest offending dependency
+path. Normal and build dependencies participate; test-only edges do not enter
+the shipped graph. Shared immutable `codex-hepta-contracts` APIs are permitted
+but remain traversed, so they cannot conceal a downstream product dependency.
+This classification preserves the existing checked provider-effect seam; it is
+not permission to remove authorization or link qualification into production.
+
+Local patch candidates are checked conservatively without choosing versions or
+features. Registry and remote Git package internals still need Cargo/native
+qualification. This preflight is a local structural boundary, not proof of an
+entire resolved external dependency graph, runtime behavior or production safety.
+
+## 9. Concrete owner replacement
+
+The timer schedule/occurrence owner is the concrete local reference for stopping
+admission, resolving in-flight uncertainty, handing state to a newer writer and
+retiring without deleting evidence. Its implementation-level sequence and
+limitations live with the owner in the [timer lifecycle guide](../../codex-rs/hepta-automation/TIMER_LIFECYCLE.md).
+The same transactional store is used by the actual scheduler; adding a second
+lifecycle registry or asserting that every stateful module now supports this
+path would be incorrect. Schema conversion, TaskFlow effects and live fleet
+consumer management still require their own adapters and qualification.

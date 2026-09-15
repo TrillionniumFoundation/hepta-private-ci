@@ -78,7 +78,19 @@ Implement envelope and grammar types, no-change candidate, isolated worktree san
 
 ## 11. Coding-entry checklist
 
-Coding may start when grammar, sandbox and lineage protocols compile, protected paths are frozen, source and lane receipts are current, no-change and rollback fixtures pass, generator/evaluator roles are registered, and the package explicitly denies self-review, self-selection, self-merge, self-promotion and self-release.
+Ordinary owner-authorized repository development follows `docs/DEVELOPMENT.md`:
+name the work package, edit its owned implementation, run the relevant tests and
+request normal review. Coding, local tests and reviewed integration do not require
+a separately handwritten or expiring source/lane receipt, production host binding
+or deployment approval. Git and CI derive the exact source and merge identities.
+
+The following requirements apply before **executing autonomous candidates**, not
+before writing their implementation: validated grammar and lineage protocols,
+isolated bounded sandbox, frozen protected paths, current execution envelope,
+passing no-change and rollback fixtures, and registered generator/evaluator roles.
+Candidate execution continues to deny self-review, self-selection, self-merge,
+self-promotion and self-release. Production transitions still require independent
+evaluation and the actual runtime or deployment boundary's authorization.
 
 ## Appendix A. Closed gap and protocol mapping
 

@@ -9,14 +9,23 @@ import json
 import re
 from pathlib import Path
 
+from hepta_module_projections import BINDINGS, load_registry, project_indexes
+
 ROOT = Path(__file__).resolve().parents[1]
 INDEX = "docs/modules/MODULE_DOCS.json"
 README = "docs/modules/README.md"
 
 
-def expected_metadata(root: Path, *, prose_metrics: bool = False) -> dict[Path, str]:
-    modules = json.loads((root / "docs/modules/MODULES.json").read_text())["modules"]
-    index = json.loads((root / INDEX).read_text())
+def expected_metadata(
+    root: Path, *, prose_metrics: bool = False, registry_projections: bool = False
+) -> dict[Path, str]:
+    modules = load_registry(root, "docs/modules/MODULES.json")["modules"]
+    index = load_registry(root, INDEX)
+    bindings = None
+    if registry_projections:
+        index, bindings, readme = project_indexes(root, modules, index)
+    else:
+        readme = (root / README).read_text()
     by_id = {module["id"]: module for module in modules}
     if (
         not modules
@@ -25,7 +34,6 @@ def expected_metadata(root: Path, *, prose_metrics: bool = False) -> dict[Path, 
         or {row["module"] for row in index["modules"]} != set(by_id)
     ):
         raise ValueError("module coverage mismatch")
-    readme = (root / README).read_text()
     for row in index["modules"]:
         module = by_id[row["module"]]
         expected_path = f"docs/modules/{row['module']}/TECHNICAL.md"
@@ -50,17 +58,26 @@ def expected_metadata(root: Path, *, prose_metrics: bool = False) -> dict[Path, 
         )
         if count != 1:
             raise ValueError("README module coverage mismatch")
-    return {
+    expected = {
         root / INDEX: json.dumps(index, indent=2) + "\n",
         root / README: readme,
     }
+    if bindings is not None:
+        expected[root / BINDINGS] = json.dumps(bindings, indent=2) + "\n"
+    return expected
 
 
 def synchronize(
-    root: Path, *, write: bool = False, prose_metrics: bool = False
+    root: Path,
+    *,
+    write: bool = False,
+    prose_metrics: bool = False,
+    registry_projections: bool = False,
 ) -> list[Path]:
     """No authority, source-status, contract or work-package mutations."""
-    expected = expected_metadata(root, prose_metrics=prose_metrics)
+    expected = expected_metadata(
+        root, prose_metrics=prose_metrics, registry_projections=registry_projections
+    )
     changed = [path for path, text in expected.items() if path.read_text() != text]
     if write:
         for path in changed:
@@ -80,8 +97,18 @@ def main() -> int:
         action="store_true",
         help="optionally regenerate presentation counts/digests; not a CI gate",
     )
+    parser.add_argument(
+        "--registry-projections",
+        action="store_true",
+        help="derive binding, contract/domain and guide indexes from canonical registries",
+    )
     args = parser.parse_args()
-    changed = synchronize(ROOT, write=args.write, prose_metrics=args.prose_metrics)
+    changed = synchronize(
+        ROOT,
+        write=args.write,
+        prose_metrics=args.prose_metrics,
+        registry_projections=args.registry_projections,
+    )
     print(
         json.dumps(
             {

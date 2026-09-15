@@ -208,3 +208,65 @@ fn tampered_snapshot_chain_is_rejected() {
         LedgerError::SnapshotRecordMismatch(1)
     );
 }
+
+#[test]
+fn historical_retries_keep_original_receipts_after_index_recovery() {
+    let mut ledger = LearningLedger::new();
+    let mut history = Vec::new();
+    for number in 0..1024 {
+        let mut value = decision();
+        value.record_id = id(&format!("decision-{number}"));
+        value.episode_id = id(&format!("episode-{number}"));
+        let event = LedgerEvent::Decision(value);
+        let mut expected = must(ledger.append(event.clone()));
+        expected.disposition = AppendDisposition::IdempotentReplay;
+        history.push((event, expected));
+    }
+    let snapshot = ledger.snapshot();
+    let mut recovered = must(LearningLedger::from_snapshot(snapshot.clone()));
+    for (event, expected) in history.iter().rev() {
+        assert_eq!(must(ledger.append(event.clone())), *expected);
+        assert_eq!(must(recovered.append(event.clone())), *expected);
+    }
+    assert_eq!(ledger.snapshot(), snapshot);
+    assert_eq!(recovered.snapshot(), snapshot);
+}
+
+#[test]
+fn indexed_retry_rejects_same_identity_with_different_payload() {
+    let mut ledger = LearningLedger::new();
+    let original = decision();
+    must(ledger.append(LedgerEvent::Decision(original.clone())));
+    let snapshot = ledger.snapshot();
+    let mut changed = original;
+    changed.support_digest = Digest32::of_bytes(b"changed-support");
+    assert_eq!(
+        must_err(ledger.append(LedgerEvent::Decision(changed))),
+        LedgerError::IdentityConflict("record-decision-1".to_owned())
+    );
+    assert_eq!(ledger.snapshot(), snapshot);
+}
+
+#[test]
+fn historical_retry_after_revocation_does_not_resurrect_decision() {
+    let mut ledger = LearningLedger::new();
+    let event = LedgerEvent::Decision(decision());
+    let mut expected = must(ledger.append(event.clone()));
+    expected.disposition = AppendDisposition::IdempotentReplay;
+    must(ledger.append(LedgerEvent::Revocation(Revocation {
+        record_id: id("revoke-decision"),
+        target_record_id: id("record-decision-1"),
+        authority_id: id("deletion-authority"),
+        reason_digest: Digest32::of_bytes(b"delete"),
+    })));
+    let snapshot = ledger.snapshot();
+    let mut recovered = must(LearningLedger::from_snapshot(snapshot.clone()));
+    assert_eq!(must(recovered.append(event)), expected);
+    assert_eq!(recovered.snapshot(), snapshot);
+    let active: Vec<_> = recovered
+        .active_records()
+        .iter()
+        .map(|record| record.event.record_id().to_string())
+        .collect();
+    assert_eq!(active, vec!["revoke-decision"]);
+}

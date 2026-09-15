@@ -25,11 +25,11 @@ impl RuntimeStateAdapter for ObservedAdapter {
 }
 
 #[test]
-fn live_status_request_traverses_the_initialized_graph() -> Result<()> {
+fn qualification_status_route_traverses_the_initialized_graph() -> Result<()> {
     let calls = Arc::new(AtomicUsize::new(0));
     let root = HeptaStateRoot::parse(std::env::temp_dir().join("hepta-organ-request"))?;
-    let runtime =
-        crate::HeptaRuntime::from_adapter(root, Arc::new(ObservedAdapter(Arc::clone(&calls))));
+    let runtime = RuntimeOrgans::new(root, Arc::new(ObservedAdapter(Arc::clone(&calls))));
+    runtime.ensure_ready()?;
     // Opening a host must not pretend to have observed a request or outcome.
     assert_eq!(calls.load(Ordering::SeqCst), 0);
     let report: serde_json::Value = serde_json::from_slice(&runtime.status_json()?)?;
@@ -39,7 +39,7 @@ fn live_status_request_traverses_the_initialized_graph() -> Result<()> {
         report["authority"],
         serde_json::to_value(RuntimeAuthorityStatus::default())?
     );
-    assert_eq!(runtime.clone().status_json()?, runtime.status_json()?);
+    assert_eq!(runtime.status_json()?, runtime.status_json()?);
     assert_eq!(calls.load(Ordering::SeqCst), 3);
     Ok(())
 }

@@ -86,6 +86,17 @@ pub struct FinalUseRevocations {
     pub revoked_grant_ids: BTreeSet<String>,
 }
 
+/// Bounded owner diagnostics, not authorization to rotate an epoch or retry.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct FinalUseCapacity {
+    pub authority_epoch: u64,
+    pub revision: u64,
+    pub claimed_nonces: usize,
+    pub remaining_claims: usize,
+    pub remaining_revocations: usize,
+    pub maintenance_recommended: bool,
+}
+
 #[derive(Clone, Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
 struct State {
@@ -147,6 +158,35 @@ impl FinalUseAuthority {
         })))
     }
 
+    /// Observe capacity before exhaustion. Maintenance is an independently
+    /// supplied newer epoch via `update_revocations`, never nonce eviction,
+    /// local epoch minting or a timer that silently restores authority.
+    pub fn capacity(&self) -> Result<FinalUseCapacity, FinalUseError> {
+        let mut state = self
+            .0
+            .state
+            .lock()
+            .map_err(|_| FinalUseError::Unavailable)?;
+        if state.failed {
+            return Err(FinalUseError::Unavailable);
+        }
+        if self.0.store.ensure_live().is_err() {
+            state.failed = true;
+            return Err(FinalUseError::Unavailable);
+        }
+        let remaining_claims = MAX_CLAIMS - state.used_nonces.len();
+        let remaining_revocations = MAX_CLAIMS - state.head.revoked_grant_ids.len();
+        Ok(FinalUseCapacity {
+            authority_epoch: state.head.authority_epoch,
+            revision: state.head.revision,
+            claimed_nonces: state.used_nonces.len(),
+            remaining_claims,
+            remaining_revocations,
+            maintenance_recommended: remaining_claims <= MAX_CLAIMS / 4
+                || remaining_revocations <= MAX_CLAIMS / 4,
+        })
+    }
+
     /// Called only by the trusted host, not from a provider response or grant.
     /// Revocations are monotonic within an epoch and are never silently dropped.
     pub fn update_revocations(&self, head: FinalUseRevocations) -> Result<(), FinalUseError> {
@@ -168,12 +208,18 @@ impl FinalUseAuthority {
         {
             return Err(FinalUseError::StaleRevocationHead);
         }
+        let previous_epoch = state.head.authority_epoch;
         let mut next = state.clone();
         if head.authority_epoch > next.head.authority_epoch {
             next.used_nonces.clear();
         }
         next.head = head;
-        if self.0.store.persist(&next).is_err() {
+        if self
+            .0
+            .store
+            .persist_revocations(previous_epoch, &next)
+            .is_err()
+        {
             state.failed = true;
             return Err(FinalUseError::Unavailable);
         }
@@ -214,8 +260,19 @@ impl FinalUseAuthority {
         if state.used_nonces.len() >= MAX_CLAIMS {
             return Err(FinalUseError::CapacityExceeded);
         }
-        state.used_nonces.insert(signed.grant.nonce);
-        if self.0.store.persist(&state).is_err() {
+        // Durability comes before the in-memory admission. A crash after this
+        // append and before returning the token consumes the nonce on restart,
+        // which prevents replay admission without promising exactly-once effects.
+        if self
+            .0
+            .store
+            .persist_claim(state.head.authority_epoch, signed.grant.nonce)
+            .is_err()
+        {
+            state.failed = true;
+            return Err(FinalUseError::Unavailable);
+        }
+        if !state.used_nonces.insert(signed.grant.nonce) {
             state.failed = true;
             return Err(FinalUseError::Unavailable);
         }
@@ -240,12 +297,16 @@ impl FinalUseAuthority {
         if !Arc::ptr_eq(&self.0, &token.owner) || &token.grant.binding != expected {
             return Err(FinalUseError::BindingMismatch);
         }
-        let state = self
+        let mut state = self
             .0
             .state
             .lock()
             .map_err(|_| FinalUseError::Unavailable)?;
         if state.failed {
+            return Err(FinalUseError::Unavailable);
+        }
+        if self.0.store.ensure_live().is_err() {
+            state.failed = true;
             return Err(FinalUseError::Unavailable);
         }
         validate_live(&token.grant, &state.head)?;
@@ -318,3 +379,7 @@ impl std::error::Error for FinalUseError {}
 #[cfg(all(test, unix))]
 #[path = "final_use_tests.rs"]
 mod tests;
+
+#[cfg(all(test, unix))]
+#[path = "final_use_incremental_tests.rs"]
+mod incremental_tests;

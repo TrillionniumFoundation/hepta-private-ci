@@ -1,3 +1,6 @@
+#[path = "cognitive_federation_runtime.rs"]
+mod runtime;
+
 use std::path::Path;
 use std::sync::Arc;
 use std::time::Duration;
@@ -29,7 +32,7 @@ use crate::cognitive_store::unavailable;
 use crate::framing::frame_part;
 
 pub const MAX_FEDERATION_CAPABILITIES_PER_STORE: u64 = 128;
-pub const MAX_FEDERATION_CAPABILITY_REVISIONS: u64 = 1024;
+pub const MAX_FEDERATION_CAPABILITY_REVISIONS: u64 = 1025;
 pub const MAX_FEDERATION_GRANT_LIFETIME_SECONDS: i64 = 31 * 24 * 60 * 60;
 pub const MAX_FEDERATION_SOURCES_PER_AGENT: usize = 16;
 const MAX_FEDERATION_OWNER_LAYOUTS_PER_AGENT: usize = 128;
@@ -228,6 +231,11 @@ pub struct FederatedRetrievalCandidate {
 pub struct FederatedRetrievalBatch {
     pub query_sha256: Sha256Digest,
     pub candidates: Vec<FederatedRetrievalCandidate>,
+    /// False means an unavailable, timed-out or bounded-out source may be missing.
+    pub discovery_complete: bool,
+    /// Counts capability-scoped readers, not distinct machines or memories.
+    pub queried_sources: usize,
+    pub unavailable_sources: usize,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq, Serialize)]
@@ -361,7 +369,10 @@ impl CognitiveStore {
                                 "memory federation generation overflow".to_string(),
                             )
                         })?;
-                if revision > MAX_FEDERATION_CAPABILITY_REVISIONS {
+                // Migration 0011 expands legacy stores to 1025. Keep that final
+                // schema-supported revision exclusively for terminal revocation;
+                // never overwrite immutable events or reset their identities.
+                if revision >= MAX_FEDERATION_CAPABILITY_REVISIONS {
                     return Err(CognitiveStoreError::Conflict(
                         "memory federation capability exhausted its revision bound".to_string(),
                     ));
@@ -573,6 +584,17 @@ impl FederatedMemoryReader {
         let database_path = owner_layout.cognitive_root().join(COGNITIVE_DB_FILENAME);
         let pool = open_read_only_pool(&database_path).await?;
         verify_read_only_store(&pool, owner_layout.agent_id()).await?;
+        Self::discover_from_pool(owner_layout, consumer_agent_id, now_unix_seconds, pool).await
+    }
+
+    async fn discover_from_pool(
+        owner_layout: &HeptaAgentLayout,
+        consumer_agent_id: &AgentId,
+        now_unix_seconds: i64,
+        pool: SqlitePool,
+    ) -> Result<Vec<Self>, CognitiveStoreError> {
+        let database_path = owner_layout.cognitive_root().join(COGNITIVE_DB_FILENAME);
+        // Pool reuse never caches a capability decision: read the owner's heads now.
         let rows = sqlx::query(
             "SELECT e.*, e.owner_workspace_sha256 AS workspace_sha256
              FROM memory_federation_heads h JOIN memory_federation_events e
@@ -658,6 +680,9 @@ impl FederatedMemoryReader {
         Ok(FederatedRetrievalBatch {
             query_sha256: batch.query_sha256,
             candidates,
+            discovery_complete: true,
+            queried_sources: 1,
+            unavailable_sources: 0,
         })
     }
 
@@ -766,6 +791,13 @@ pub struct FederatedRecallSet {
     consumer_agent_id: AgentId,
     readers: Vec<FederatedMemoryReader>,
     owner_layouts: Vec<HeptaAgentLayout>,
+    owner_inventory_truncated: bool,
+    directory: Arc<runtime::PoolDirectory>,
+}
+
+struct CurrentReaders {
+    readers: Vec<FederatedMemoryReader>,
+    complete: bool,
 }
 
 impl FederatedRecallSet {
@@ -793,6 +825,8 @@ impl FederatedRecallSet {
             consumer_agent_id,
             readers,
             owner_layouts: Vec::new(),
+            owner_inventory_truncated: false,
+            directory: Arc::new(runtime::PoolDirectory::default()),
         })
     }
 
@@ -803,13 +837,18 @@ impl FederatedRecallSet {
     ) -> Self {
         let _ = now_unix_seconds;
         let mut owner_layouts = owner_layouts.into_iter().collect::<Vec<_>>();
+        owner_layouts.retain(|layout| layout.agent_id() != &consumer_agent_id);
         owner_layouts.sort_by(|left, right| left.agent_id().cmp(right.agent_id()));
         owner_layouts.dedup_by(|left, right| left.agent_id() == right.agent_id());
+        let owner_inventory_truncated =
+            owner_layouts.len() > MAX_FEDERATION_OWNER_LAYOUTS_PER_AGENT;
         owner_layouts.truncate(MAX_FEDERATION_OWNER_LAYOUTS_PER_AGENT);
         Self {
             consumer_agent_id,
             readers: Vec::new(),
             owner_layouts,
+            owner_inventory_truncated,
+            directory: Arc::new(runtime::PoolDirectory::default()),
         }
     }
 
@@ -831,14 +870,26 @@ impl FederatedRecallSet {
                 "memory federation caller does not match the reader set consumer".to_string(),
             ));
         }
-        let readers = self.current_readers(request.now_unix_seconds()).await;
+        let deadline = tokio::time::Instant::now() + FEDERATION_REFRESH_TIMEOUT;
+        // A slow discovery must leave time to query sources already discovered.
+        let discovery_deadline = deadline - FEDERATION_REFRESH_TIMEOUT / 2;
+        let current = self
+            .current_readers(request.now_unix_seconds(), discovery_deadline)
+            .await;
+        let queried_sources = current.readers.len();
+        let batches = runtime::bounded(current.readers, deadline, |reader| {
+            let access = access.clone();
+            let request = request.clone();
+            async move { reader.retrieve(&access, &request).await }
+        })
+        .await;
         let mut candidates = Vec::new();
-        for reader in &readers {
-            let Ok(batch) = reader.retrieve(access, request).await else {
-                continue;
-            };
+        let mut succeeded = 0;
+        for batch in batches.values.into_iter().flatten() {
+            succeeded += 1;
             candidates.extend(batch.candidates);
         }
+        let unavailable_sources = queried_sources - succeeded;
         candidates.sort_by(|left, right| {
             right
                 .candidate
@@ -864,6 +915,9 @@ impl FederatedRecallSet {
         Ok(FederatedRetrievalBatch {
             query_sha256: Sha256Digest::for_bytes(request.query().as_bytes()),
             candidates,
+            discovery_complete: current.complete && !batches.incomplete && unavailable_sources == 0,
+            queried_sources,
+            unavailable_sources,
         })
     }
 
@@ -873,8 +927,14 @@ impl FederatedRecallSet {
         binding: &FederatedMemoryRevalidationBinding,
         now_unix_seconds: i64,
     ) -> Result<FederatedRevalidationStatus, CognitiveStoreError> {
-        let readers = self.current_readers(now_unix_seconds).await;
-        let Some(reader) = readers.iter().find(|reader| {
+        if access.agent_id != self.consumer_agent_id {
+            return Err(CognitiveStoreError::AccessDenied(
+                "memory federation caller does not match the reader set consumer".to_string(),
+            ));
+        }
+        let deadline = tokio::time::Instant::now() + FEDERATION_REFRESH_TIMEOUT;
+        let current = self.current_readers(now_unix_seconds, deadline).await;
+        let Some(reader) = current.readers.iter().find(|reader| {
             reader.capability.owner_agent_id == binding.source_agent_id
                 && reader.capability.id == binding.capability.id
         }) else {
@@ -882,18 +942,44 @@ impl FederatedRecallSet {
                 FederationRevalidationDrift::CapabilityMissing,
             ));
         };
-        reader.revalidate(access, binding, now_unix_seconds).await
-    }
-
-    async fn current_readers(&self, now_unix_seconds: i64) -> Vec<FederatedMemoryReader> {
-        let mut readers = self.readers.clone();
-        let dynamic = tokio::time::timeout(
-            FEDERATION_REFRESH_TIMEOUT,
-            self.discover_dynamic_readers(now_unix_seconds),
+        tokio::time::timeout_at(
+            deadline,
+            reader.revalidate(access, binding, now_unix_seconds),
         )
         .await
-        .unwrap_or_default();
-        readers.extend(dynamic);
+        .map_err(|_| {
+            CognitiveStoreError::Unavailable("federation revalidation deadline".to_string())
+        })?
+    }
+
+    async fn current_readers(
+        &self,
+        now_unix_seconds: i64,
+        deadline: tokio::time::Instant,
+    ) -> CurrentReaders {
+        let mut readers = self.readers.clone();
+        let dynamic = runtime::bounded(self.owner_layouts.clone(), deadline, |layout| {
+            let directory = Arc::clone(&self.directory);
+            let consumer = self.consumer_agent_id.clone();
+            async move {
+                let pool = directory.pool(&layout).await?;
+                FederatedMemoryReader::discover_from_pool(
+                    &layout,
+                    &consumer,
+                    now_unix_seconds,
+                    pool,
+                )
+                .await
+            }
+        })
+        .await;
+        let mut complete = !dynamic.incomplete && !self.owner_inventory_truncated;
+        for result in dynamic.values {
+            match result {
+                Ok(discovered) => readers.extend(discovered),
+                Err(_) => complete = false,
+            }
+        }
         readers.sort_by(|left, right| {
             left.capability
                 .owner_agent_id
@@ -901,32 +987,9 @@ impl FederatedRecallSet {
                 .then_with(|| left.capability.id.cmp(&right.capability.id))
         });
         readers.dedup_by(|left, right| left.capability.id == right.capability.id);
+        complete &= readers.len() <= MAX_FEDERATION_SOURCES_PER_AGENT;
         readers.truncate(MAX_FEDERATION_SOURCES_PER_AGENT);
-        readers
-    }
-
-    async fn discover_dynamic_readers(&self, now_unix_seconds: i64) -> Vec<FederatedMemoryReader> {
-        let mut readers = Vec::new();
-        for owner_layout in &self.owner_layouts {
-            if readers.len() == MAX_FEDERATION_SOURCES_PER_AGENT {
-                break;
-            }
-            let Ok(discovered) = FederatedMemoryReader::discover(
-                owner_layout,
-                &self.consumer_agent_id,
-                now_unix_seconds,
-            )
-            .await
-            else {
-                continue;
-            };
-            readers.extend(
-                discovered
-                    .into_iter()
-                    .take(MAX_FEDERATION_SOURCES_PER_AGENT - readers.len()),
-            );
-        }
-        readers
+        CurrentReaders { readers, complete }
     }
 }
 
@@ -1187,3 +1250,7 @@ fn from_i64(value: i64, label: &str) -> Result<u64, CognitiveStoreError> {
     u64::try_from(value)
         .map_err(|_| CognitiveStoreError::Corrupt(format!("negative federation {label}")))
 }
+
+#[cfg(test)]
+#[path = "cognitive_federation_capacity_tests.rs"]
+mod capacity_tests;

@@ -7,7 +7,12 @@
 
 #![forbid(unsafe_code)]
 
+// The compiled organ host remains a qualification fixture, not a status dependency.
+#[cfg(test)]
 mod organs;
+#[cfg(test)]
+#[path = "status_tests.rs"]
+mod status_tests;
 
 use std::fmt;
 use std::fs::File;
@@ -44,6 +49,7 @@ const KEY_ID_DOMAIN: &[u8] = b"hepta.memory.durable-integrity.key-id.v1";
 const ROW_MAC_DOMAIN: &[u8] = b"hepta.memory.durable-integrity.row-mac.v1";
 const INTEGRITY_TAG_PREFIX: &str = "hmac-sha256:";
 const MAX_DATABASE_ROWS: usize = 100_000;
+const MAX_STATUS_BYTES: usize = 64 * 1024;
 
 type HmacSha256 = Hmac<Sha256>;
 type IntegrityKey = Zeroizing<[u8; 32]>;
@@ -73,34 +79,28 @@ pub trait RuntimeStateAdapter: fmt::Debug + Send + Sync {
 pub struct HeptaRuntime {
     state_root: HeptaStateRoot,
     state: Arc<dyn RuntimeStateAdapter>,
-    organs: Arc<organs::RuntimeOrgans>,
 }
 
 impl HeptaRuntime {
     pub async fn open_existing(state_root: HeptaStateRoot) -> Result<Self> {
         let layout = state_root.layout();
         let adapter = SchemaV5OpenExistingAdapter::open(&layout).await?;
-        let runtime = Self::from_adapter(state_root, Arc::new(adapter));
-        runtime.organs.ensure_ready()?;
-        Ok(runtime)
+        Ok(Self::from_adapter(state_root, Arc::new(adapter)))
     }
 
     pub fn from_adapter(state_root: HeptaStateRoot, state: Arc<dyn RuntimeStateAdapter>) -> Self {
-        let organs = Arc::new(organs::RuntimeOrgans::new(
-            state_root.clone(),
-            Arc::clone(&state),
-        ));
-        Self {
-            state_root,
-            state,
-            organs,
-        }
+        Self { state_root, state }
     }
 
-    /// Query the initialized, generation-fenced, read-only organ graph.
-    /// The wire payload is unchanged; no mutable or external organ is admitted.
+    /// Observe the host-owned read-only adapter once, without a graph dispatch lock.
+    /// The existing wire schema, response bound and closed effects are unchanged.
     pub fn status_json(&self) -> Result<Vec<u8>> {
-        self.organs.status_json()
+        let bytes = serde_json::to_vec(&self.status()).context("encode runtime status")?;
+        anyhow::ensure!(
+            bytes.len() <= MAX_STATUS_BYTES,
+            "runtime status exceeds byte limit"
+        );
+        Ok(bytes)
     }
 
     pub fn status(&self) -> RuntimeStatus {

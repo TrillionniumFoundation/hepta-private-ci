@@ -1,41 +1,29 @@
-# Live-shell organ composition
+# Live-shell status and organ qualification
 
-The existing `hepta --serve-ui` startup opens and verifies the existing schema-v5
-stores, constructs a compiled-in body graph, and starts its handlers in dependency
-order. `GET /api/hepta/runtime` calls `HeptaRuntime::status_json`, which dispatches
-one generation-fenced message from `runtime.status.ingress` to
-`runtime.status.adapter`. The adapter serializes the existing `RuntimeStatus`.
-The JSON schema, route inventory and all eight closed-effect flags are unchanged.
+`hepta --serve-ui` opens and verifies the existing schema-v5 stores before serving.
+`GET /api/hepta/runtime` calls `HeptaRuntime::status_json`, which observes the
+host-owned `RuntimeStateAdapter` once and serializes `RuntimeStatus` directly.
+The existing JSON schema, route inventory, 64 KiB response bound and all eight
+closed-effect flags are unchanged. Store integrity, private-path validation,
+empty-WAL admission and read-only opening are not bypassed.
 
-This is a real native-gateway caller of the control-plane host, not a qualification
-binary or a declaration that all 24 planned organs are running. Both handlers
-share the live-shell process. Body generation 1 identifies this compiled-in graph;
-it is not the memory snapshot generation or a deployable signed body generation.
-The local fallback digest identifies the HTTP-503 software contract, not physical
-safety evidence. The owner is `runtime.hepta-live-shell`, the actual composing
-component; this does not claim that agentd starts the shell today.
+A fixed two-node graph is not needed to observe an already-open state adapter.
+The product path therefore does not initialize a CNS hierarchy, allocate organ
+handlers or acquire a graph-dispatch mutex. Concurrent calls rely on the
+adapter's existing `Send + Sync` contract. Trusted status adapters must return
+promptly and must not create, migrate or mutate stores while being observed.
+`/healthz` remains process liveness, not evidence of learning or effect readiness.
 
-The host admits only empty effect scopes and trusted, compiled-in handlers. The
-handler trait is not a sandbox. No plugin discovery, dynamic code loading, state
-migration, credential, network client, model call, automatic fallback, selection,
-promotion or release is introduced. Future hosts that need any of those capabilities
-require their own contracts and independent admission.
+`src/organs.rs` is retained under `cfg(test)` as a qualification-only consumer of
+the existing control-plane graph. Its generation, route, size, quarantine,
+shutdown and no-direct-fallback checks remain exercised by `organs_tests.rs`.
+It is not a production caller, arbitrary plugin loader or sandbox. Actual
+control-plane product use remains the Agentd cognitive-context planner; removing
+this status wrapper does not remove the planning or organ lifecycle APIs.
 
-An initialization failure is retained and aborts native startup. Busy, poisoned,
-stopped or quarantined hosts cannot bypass dispatch; the gateway returns a generic
-503 without exposing internal errors to the client. The host uses a nonblocking
-lock so concurrent requests cannot queue an unbounded backlog behind a handler.
-Its final owner drop stops started handlers in reverse initialization order.
-`/healthz` remains process liveness, not organ readiness.
-
-The existing infallible `from_adapter` remains available for explicit host adapters.
-Such adapters are trusted synchronous, bounded status providers, not untrusted
-plugins. `status()` retains its legacy direct snapshot API; the network route uses
-only `status_json()`. State adapters must not create or migrate stores while
-observing status.
-
-Qualification targets are `codex-hepta-control-plane`, `codex-hepta-runtime` and
-`codex-hepta-native-gateway`. Tests cover graph lifecycle, bounded dispatch, the
-real adapter call, denied authority, busy/stopped failure and verified-store reopen.
-Tests are not proof of deployment, physical embodiment, artifact activation or
-longitudinal learning; those remain independent work packages.
+`status_tests.rs` covers the product adapter observation, unchanged serialization,
+no state creation, response-size rejection and concurrent requests. Existing
+native-gateway and open-existing tests retain HTTP and verified-store coverage.
+Run `just test --locked -p codex-hepta-runtime -p codex-hepta-control-plane
+-p codex-hepta-native-gateway` from `codex-rs` (as one command).
+Tests do not establish deployment, physical embodiment or longitudinal efficacy.
