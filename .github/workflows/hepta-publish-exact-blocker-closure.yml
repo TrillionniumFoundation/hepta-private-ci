@@ -1,0 +1,54 @@
+name: Hepta publish exact reviewed blocker closure
+
+on:
+  push:
+    branches:
+      - work/hepta-blocker-closure-20260915
+    paths:
+      - ".github/workflows/hepta-publish-exact-blocker-closure.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout transfer branch
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 0
+
+      - name: Rebuild and publish exact reviewed tree
+        shell: bash
+        env:
+          BASE_COMMIT: c4d52b329abd1ba2e3094a61ba92d30e51ef65a6
+          BASE_BRANCH: work/hepta-stable-trunk-simplification-20260914
+          EXPECTED_B64_SHA256: 0d0189e9a4ce9e3a214135c5abb448cf7137945b50d94986f2af021ccfd6b255
+          EXPECTED_PATCH_SHA256: 6b51ee49c74e2441fa52c55bcd06566ce4bc426b918c769e8fe98e4052d960f0
+          EXPECTED_TREE: 146dfcd5d7df6b64e32aacebeb306929d634e5f0
+          PUBLISH_BRANCH: work/hepta-blocker-closure-20260915
+        run: |
+          set -euo pipefail
+
+          cat .hepta-transfer/blocker-closure/part-*.b64 > /tmp/hepta.patch.bz2.b64
+          printf '%s  %s\n' "$EXPECTED_B64_SHA256" /tmp/hepta.patch.bz2.b64 | sha256sum -c -
+
+          base64 --decode /tmp/hepta.patch.bz2.b64 | bzip2 -dc > /tmp/hepta.patch
+          printf '%s  %s\n' "$EXPECTED_PATCH_SHA256" /tmp/hepta.patch | sha256sum -c -
+
+          git fetch --no-tags origin "refs/heads/$BASE_BRANCH:refs/remotes/origin/$BASE_BRANCH"
+          test "$(git rev-parse "refs/remotes/origin/$BASE_BRANCH")" = "$BASE_COMMIT"
+
+          git reset --hard "$BASE_COMMIT"
+          git clean -fdx
+          git apply --index --whitespace=error-all /tmp/hepta.patch
+
+          actual_tree="$(git write-tree)"
+          printf 'verified tree: %s\n' "$actual_tree"
+          test "$actual_tree" = "$EXPECTED_TREE"
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "chore(blockers): publish exact reviewed closure tree"
+          git push --force origin "HEAD:refs/heads/$PUBLISH_BRANCH"
