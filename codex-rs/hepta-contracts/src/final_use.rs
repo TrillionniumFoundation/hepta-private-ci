@@ -168,12 +168,18 @@ impl FinalUseAuthority {
         {
             return Err(FinalUseError::StaleRevocationHead);
         }
+        let previous_epoch = state.head.authority_epoch;
         let mut next = state.clone();
         if head.authority_epoch > next.head.authority_epoch {
             next.used_nonces.clear();
         }
         next.head = head;
-        if self.0.store.persist(&next).is_err() {
+        if self
+            .0
+            .store
+            .persist_revocations(previous_epoch, &next)
+            .is_err()
+        {
             state.failed = true;
             return Err(FinalUseError::Unavailable);
         }
@@ -214,8 +220,19 @@ impl FinalUseAuthority {
         if state.used_nonces.len() >= MAX_CLAIMS {
             return Err(FinalUseError::CapacityExceeded);
         }
-        state.used_nonces.insert(signed.grant.nonce);
-        if self.0.store.persist(&state).is_err() {
+        // Durability comes before the in-memory admission. A crash after this
+        // append and before returning the token consumes the nonce on restart,
+        // which is the conservative exactly-once effect boundary.
+        if self
+            .0
+            .store
+            .persist_claim(state.head.authority_epoch, signed.grant.nonce)
+            .is_err()
+        {
+            state.failed = true;
+            return Err(FinalUseError::Unavailable);
+        }
+        if !state.used_nonces.insert(signed.grant.nonce) {
             state.failed = true;
             return Err(FinalUseError::Unavailable);
         }
@@ -318,3 +335,7 @@ impl std::error::Error for FinalUseError {}
 #[cfg(all(test, unix))]
 #[path = "final_use_tests.rs"]
 mod tests;
+
+#[cfg(all(test, unix))]
+#[path = "final_use_incremental_tests.rs"]
+mod incremental_tests;

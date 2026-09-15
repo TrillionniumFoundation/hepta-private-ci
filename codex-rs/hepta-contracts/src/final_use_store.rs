@@ -6,18 +6,44 @@ use super::State;
 use super::valid_head;
 use serde::Deserialize;
 use serde::Serialize;
+use std::collections::BTreeSet;
 use std::fs::File;
 use std::io::Read;
+use std::io::Seek;
+use std::io::SeekFrom;
 use std::io::Write;
 use std::path::Path;
 
+const METADATA_FILE: &str = "authority.json";
+const METADATA_NEXT_FILE: &str = "authority.next";
+const NONCE_FILE: &str = "authority.nonces";
+const NONCE_NEXT_FILE: &str = "authority.nonces.next";
+const NONCE_RECORD_BYTES: usize = 8 + 32;
+const MAX_METADATA_BYTES: u64 = 8 * 1024 * 1024;
+
 #[derive(Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
-struct Stored {
+struct StoredV1 {
     schema: u32,
     signer_id: String,
     verifying_key: [u8; 32],
     state: State,
+}
+
+#[derive(Deserialize, Serialize)]
+#[serde(deny_unknown_fields)]
+struct StoredV2 {
+    schema: u32,
+    signer_id: String,
+    verifying_key: [u8; 32],
+    head: FinalUseRevocations,
+}
+
+#[derive(Deserialize)]
+#[serde(untagged)]
+enum StoredAny {
+    V2(StoredV2),
+    V1(StoredV1),
 }
 
 pub(super) struct Store {
@@ -44,84 +70,241 @@ impl Store {
             verifying_key,
             _lock: lock,
         };
-        let has_state = entry_exists(&store.root, "authority.json")?;
-        let state = if has_state {
-            let mut bytes = Vec::new();
-            open_private(&store.root, "authority.json", Access::Read)?
-                .take(8 * 1024 * 1024 + 1)
-                .read_to_end(&mut bytes)
-                .map_err(|_| FinalUseError::Unavailable)?;
-            if bytes.len() > 8 * 1024 * 1024 {
-                return Err(FinalUseError::InvalidTrust);
-            }
-            let stored: Stored =
-                serde_json::from_slice(&bytes).map_err(|_| FinalUseError::InvalidTrust)?;
-            if stored.schema != 1
-                || stored.signer_id != signer_id
-                || stored.verifying_key != verifying_key
-                || !valid_head(&stored.state.head)
-                || stored.state.used_nonces.len() > MAX_CLAIMS
-            {
-                return Err(FinalUseError::InvalidTrust);
-            }
-            let mut state = stored.state;
-            if initial.authority_epoch >= state.head.authority_epoch
-                && initial.revision > state.head.revision
-                && (initial.authority_epoch > state.head.authority_epoch
-                    || initial
-                        .revoked_grant_ids
-                        .is_superset(&state.head.revoked_grant_ids))
-            {
-                if initial.authority_epoch > state.head.authority_epoch {
-                    state.used_nonces.clear();
-                }
-                state.head = initial;
-                store.persist(&state)?;
-            } else if state.head.authority_epoch < initial.authority_epoch
-                || state.head.revision < initial.revision
-                || (state.head.authority_epoch == initial.authority_epoch
-                    && !state
-                        .head
-                        .revoked_grant_ids
-                        .is_superset(&initial.revoked_grant_ids))
-            {
-                return Err(FinalUseError::InvalidTrust);
-            }
-            state
-        } else {
-            // Once initialized, absence is data loss, never permission to
-            // reset the replay registry. An interrupted first start also
-            // fails closed and needs explicit owner recovery.
+        if !entry_exists(&store.root, METADATA_FILE)? {
+            // Once initialized, absence is data loss, never permission to reset
+            // the replay registry. An interrupted first start also fails closed.
             if initialized {
                 return Err(FinalUseError::InvalidTrust);
             }
             let state = State {
                 head: initial,
-                used_nonces: Default::default(),
+                used_nonces: BTreeSet::new(),
                 failed: false,
             };
-            store.persist(&state)?;
-            state
+            store.reset_nonce_log(state.head.authority_epoch, &state.used_nonces)?;
+            store.persist_head(&state.head)?;
+            return Ok((store, state));
+        }
+
+        let stored = read_metadata(&store.root)?;
+        let mut state = match stored {
+            StoredAny::V1(legacy) => {
+                if legacy.schema != 1
+                    || legacy.signer_id != signer_id
+                    || legacy.verifying_key != verifying_key
+                    || !valid_head(&legacy.state.head)
+                    || legacy.state.used_nonces.len() > MAX_CLAIMS
+                {
+                    return Err(FinalUseError::InvalidTrust);
+                }
+                let mut state = legacy.state;
+                state.failed = false;
+                reconcile_initial(&mut state, initial)?;
+                // Migration is ordered so authority.json remains a complete V1
+                // recovery anchor until the nonce snapshot is durable. Once V2
+                // metadata is published, a missing/corrupt nonce log fails closed.
+                store.reset_nonce_log(state.head.authority_epoch, &state.used_nonces)?;
+                store.persist_head(&state.head)?;
+                state
+            }
+            StoredAny::V2(metadata) => {
+                if metadata.schema != 2
+                    || metadata.signer_id != signer_id
+                    || metadata.verifying_key != verifying_key
+                    || !valid_head(&metadata.head)
+                {
+                    return Err(FinalUseError::InvalidTrust);
+                }
+                let (used_nonces, stale_epoch_records) =
+                    store.load_nonce_log(metadata.head.authority_epoch)?;
+                let mut state = State {
+                    head: metadata.head,
+                    used_nonces,
+                    failed: false,
+                };
+                let previous_epoch = state.head.authority_epoch;
+                let advanced = reconcile_initial(&mut state, initial)?;
+                if advanced {
+                    store.persist_head(&state.head)?;
+                }
+                if state.head.authority_epoch > previous_epoch {
+                    store.reset_nonce_log(state.head.authority_epoch, &state.used_nonces)?;
+                } else if stale_epoch_records {
+                    // A crash can leave the previous epoch's durable log after the
+                    // newer head is committed. Old-epoch records grant nothing;
+                    // compact them only after the new metadata has been validated.
+                    store.reset_nonce_log(state.head.authority_epoch, &state.used_nonces)?;
+                }
+                state
+            }
         };
+        state.failed = false;
         Ok((store, state))
     }
 
-    pub(super) fn persist(&self, state: &State) -> Result<(), FinalUseError> {
-        let stored = Stored {
-            schema: 1,
+    /// Persist a monotonic revocation head. Same-epoch updates rewrite only the
+    /// bounded metadata object. Epoch changes additionally rotate the nonce log.
+    pub(super) fn persist_revocations(
+        &self,
+        previous_epoch: u64,
+        state: &State,
+    ) -> Result<(), FinalUseError> {
+        self.persist_head(&state.head)?;
+        if state.head.authority_epoch > previous_epoch {
+            self.reset_nonce_log(state.head.authority_epoch, &state.used_nonces)?;
+        }
+        Ok(())
+    }
+
+    /// Append exactly one durable claim. The caller holds the in-process state
+    /// mutex and the store holds an OS owner lock, so there is one append writer.
+    pub(super) fn persist_claim(
+        &self,
+        authority_epoch: u64,
+        nonce: [u8; 32],
+    ) -> Result<(), FinalUseError> {
+        let mut file = open_private(&self.root, NONCE_FILE, Access::Create)?;
+        let length = file
+            .metadata()
+            .map_err(|_| FinalUseError::Unavailable)?
+            .len();
+        let maximum = (MAX_CLAIMS * NONCE_RECORD_BYTES) as u64;
+        if length % NONCE_RECORD_BYTES as u64 != 0 || length >= maximum {
+            return Err(FinalUseError::InvalidTrust);
+        }
+        file.seek(SeekFrom::End(0))
+            .map_err(|_| FinalUseError::Unavailable)?;
+        let mut record = [0_u8; NONCE_RECORD_BYTES];
+        record[..8].copy_from_slice(&authority_epoch.to_le_bytes());
+        record[8..].copy_from_slice(&nonce);
+        file.write_all(&record)
+            .and_then(|()| file.sync_all())
+            .map_err(|_| FinalUseError::Unavailable)
+    }
+
+    fn persist_head(&self, head: &FinalUseRevocations) -> Result<(), FinalUseError> {
+        let stored = StoredV2 {
+            schema: 2,
             signer_id: self.signer_id.clone(),
             verifying_key: self.verifying_key,
-            state: state.clone(),
+            head: head.clone(),
         };
         let bytes = serde_json::to_vec(&stored).map_err(|_| FinalUseError::Unavailable)?;
-        let mut file = open_private(&self.root, "authority.next", Access::Create)?;
+        let mut file = open_private(&self.root, METADATA_NEXT_FILE, Access::Create)?;
         file.set_len(0).map_err(|_| FinalUseError::Unavailable)?;
         file.write_all(&bytes)
             .and_then(|()| file.sync_all())
             .map_err(|_| FinalUseError::Unavailable)?;
-        replace_state(&self.root)?;
+        replace_entry(&self.root, METADATA_NEXT_FILE, METADATA_FILE)?;
         self.root.sync_all().map_err(|_| FinalUseError::Unavailable)
     }
+
+    fn load_nonce_log(
+        &self,
+        authority_epoch: u64,
+    ) -> Result<(BTreeSet<[u8; 32]>, bool), FinalUseError> {
+        if !entry_exists(&self.root, NONCE_FILE)? {
+            return Err(FinalUseError::InvalidTrust);
+        }
+        let maximum = MAX_CLAIMS * NONCE_RECORD_BYTES;
+        let mut bytes = Vec::new();
+        open_private(&self.root, NONCE_FILE, Access::Read)?
+            .take(maximum as u64 + 1)
+            .read_to_end(&mut bytes)
+            .map_err(|_| FinalUseError::Unavailable)?;
+        if bytes.len() > maximum || bytes.len() % NONCE_RECORD_BYTES != 0 {
+            return Err(FinalUseError::InvalidTrust);
+        }
+        let mut nonces = BTreeSet::new();
+        let mut stale_epoch_records = false;
+        for record in bytes.chunks_exact(NONCE_RECORD_BYTES) {
+            let epoch = u64::from_le_bytes(
+                record[..8]
+                    .try_into()
+                    .map_err(|_| FinalUseError::InvalidTrust)?,
+            );
+            if epoch > authority_epoch {
+                return Err(FinalUseError::InvalidTrust);
+            }
+            if epoch < authority_epoch {
+                stale_epoch_records = true;
+                continue;
+            }
+            let nonce: [u8; 32] = record[8..]
+                .try_into()
+                .map_err(|_| FinalUseError::InvalidTrust)?;
+            if nonce == [0; 32] || !nonces.insert(nonce) {
+                return Err(FinalUseError::InvalidTrust);
+            }
+        }
+        Ok((nonces, stale_epoch_records))
+    }
+
+    fn reset_nonce_log(
+        &self,
+        authority_epoch: u64,
+        nonces: &BTreeSet<[u8; 32]>,
+    ) -> Result<(), FinalUseError> {
+        if nonces.len() > MAX_CLAIMS {
+            return Err(FinalUseError::InvalidTrust);
+        }
+        let mut file = open_private(&self.root, NONCE_NEXT_FILE, Access::Create)?;
+        file.set_len(0).map_err(|_| FinalUseError::Unavailable)?;
+        for nonce in nonces {
+            let mut record = [0_u8; NONCE_RECORD_BYTES];
+            record[..8].copy_from_slice(&authority_epoch.to_le_bytes());
+            record[8..].copy_from_slice(nonce);
+            file.write_all(&record)
+                .map_err(|_| FinalUseError::Unavailable)?;
+        }
+        file.sync_all().map_err(|_| FinalUseError::Unavailable)?;
+        replace_entry(&self.root, NONCE_NEXT_FILE, NONCE_FILE)?;
+        self.root.sync_all().map_err(|_| FinalUseError::Unavailable)
+    }
+}
+
+/// Apply the trusted startup head using the same monotonic rules as V1. The
+/// return value says whether durable metadata must be advanced.
+fn reconcile_initial(
+    state: &mut State,
+    initial: FinalUseRevocations,
+) -> Result<bool, FinalUseError> {
+    if initial.authority_epoch >= state.head.authority_epoch
+        && initial.revision > state.head.revision
+        && (initial.authority_epoch > state.head.authority_epoch
+            || initial
+                .revoked_grant_ids
+                .is_superset(&state.head.revoked_grant_ids))
+    {
+        if initial.authority_epoch > state.head.authority_epoch {
+            state.used_nonces.clear();
+        }
+        state.head = initial;
+        Ok(true)
+    } else if state.head.authority_epoch < initial.authority_epoch
+        || state.head.revision < initial.revision
+        || (state.head.authority_epoch == initial.authority_epoch
+            && !state
+                .head
+                .revoked_grant_ids
+                .is_superset(&initial.revoked_grant_ids))
+    {
+        Err(FinalUseError::InvalidTrust)
+    } else {
+        Ok(false)
+    }
+}
+
+fn read_metadata(directory: &File) -> Result<StoredAny, FinalUseError> {
+    let mut bytes = Vec::new();
+    open_private(directory, METADATA_FILE, Access::Read)?
+        .take(MAX_METADATA_BYTES + 1)
+        .read_to_end(&mut bytes)
+        .map_err(|_| FinalUseError::Unavailable)?;
+    if bytes.len() as u64 > MAX_METADATA_BYTES {
+        return Err(FinalUseError::InvalidTrust);
+    }
+    serde_json::from_slice(&bytes).map_err(|_| FinalUseError::InvalidTrust)
 }
 
 enum Access {
@@ -203,9 +386,8 @@ fn entry_exists(directory: &File, name: &str) -> Result<bool, FinalUseError> {
 }
 
 #[cfg(unix)]
-fn replace_state(directory: &File) -> Result<(), FinalUseError> {
-    rustix::fs::renameat(directory, "authority.next", directory, "authority.json")
-        .map_err(|_| FinalUseError::Unavailable)
+fn replace_entry(directory: &File, from: &str, to: &str) -> Result<(), FinalUseError> {
+    rustix::fs::renameat(directory, from, directory, to).map_err(|_| FinalUseError::Unavailable)
 }
 
 #[cfg(not(unix))]
@@ -213,6 +395,6 @@ fn entry_exists(_directory: &File, _name: &str) -> Result<bool, FinalUseError> {
     Err(FinalUseError::UnsafeStateDirectory)
 }
 #[cfg(not(unix))]
-fn replace_state(_directory: &File) -> Result<(), FinalUseError> {
+fn replace_entry(_directory: &File, _from: &str, _to: &str) -> Result<(), FinalUseError> {
     Err(FinalUseError::UnsafeStateDirectory)
 }
