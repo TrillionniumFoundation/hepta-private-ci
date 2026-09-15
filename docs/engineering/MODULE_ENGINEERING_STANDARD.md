@@ -62,3 +62,14 @@ Local patch candidates are checked conservatively without choosing versions or
 features. Registry and remote Git package internals still need Cargo/native
 qualification. This preflight is a local structural boundary, not proof of an
 entire resolved external dependency graph, runtime behavior or production safety.
+
+## 9. Concrete owner replacement
+
+The timer schedule/occurrence owner is the concrete local reference for stopping
+admission, resolving in-flight uncertainty, handing state to a newer writer and
+retiring without deleting evidence. Its implementation-level sequence and
+limitations live with the owner in the [timer lifecycle guide](../../codex-rs/hepta-automation/TIMER_LIFECYCLE.md).
+The same transactional store is used by the actual scheduler; adding a second
+lifecycle registry or asserting that every stateful module now supports this
+path would be incorrect. Schema conversion, TaskFlow effects and live fleet
+consumer management still require their own adapters and qualification.
