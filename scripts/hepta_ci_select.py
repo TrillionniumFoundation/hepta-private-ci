@@ -5,8 +5,8 @@ from __future__ import annotations
 
 import argparse
 import json
-import os
 from pathlib import Path, PurePosixPath
+import re
 import subprocess
 import sys
 from typing import Any, Iterable
@@ -21,12 +21,18 @@ FULL_FALLBACK_PATHS = {
     "rust-toolchain",
     "codex-rs/rust-toolchain.toml",
     "codex-rs/rust-toolchain",
-    ".github/workflows/hepta-consolidated-source.yml",
+    "justfile",
+    "scripts/just-shell.py",
     "scripts/hepta_ci_select.py",
+    "scripts/hepta_ci_exec.py",
+    "scripts/hepta_ci_v8.py",
 }
 FULL_FALLBACK_PREFIXES = (
     "codex-rs/.cargo/",
     ".cargo/",
+    ".github/actions/",
+    ".github/workflows/",
+    "patches/",
 )
 
 
@@ -37,35 +43,39 @@ class SelectionError(RuntimeError):
 def _git(*args: str) -> str:
     process = subprocess.run(
         ["git", "-C", str(ROOT), *args],
-        text=True,
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
         check=False,
     )
     if process.returncode:
-        raise SelectionError(process.stderr.strip() or "git selection query failed")
-    return process.stdout
+        raise SelectionError(process.stderr.decode("utf-8", errors="replace").strip() or "git selection query failed")
+    return process.stdout.decode("utf-8")
 
 
 def changed_paths(base: str, head: str) -> list[str]:
+    """Include both sides of moves and every deletion, without pathname quoting.
+
+    Disabling rename detection represents a move as delete + add. This selects
+    both the old owner's consumers and the new owner's consumers. NUL framing
+    preserves spaces, tabs, Unicode and newlines in legitimate Git filenames.
+    """
     if not base or not head:
         raise SelectionError("base and head are required")
-    return [
-        line.strip()
-        for line in _git("diff", "--name-only", "--diff-filter=ACMRTUXB", base, head).splitlines()
-        if line.strip()
-    ]
+    commits = []
+    for ref in (base, head):
+        commit = _git("rev-parse", "--verify", "--end-of-options", ref + "^{commit}").strip()
+        if re.fullmatch(r"[0-9a-f]{40}|[0-9a-f]{64}", commit) is None:
+            raise SelectionError("invalid resolved commit")
+        commits.append(commit)
+    output = _git("diff", "--no-renames", "--name-only", "-z", *commits, "--")
+    return [path for path in output.split("\0") if path]
 
 
 def cargo_metadata() -> dict[str, Any]:
     process = subprocess.run(
         [
-            "cargo",
-            "metadata",
-            "--format-version=1",
-            "--no-deps",
-            "--manifest-path",
-            str(WORKSPACE_MANIFEST),
+            "cargo", "metadata", "--format-version=1", "--no-deps",
+            "--manifest-path", str(WORKSPACE_MANIFEST),
         ],
         cwd=ROOT / "codex-rs",
         text=True,
@@ -87,7 +97,7 @@ def cargo_metadata() -> dict[str, Any]:
 def _relative_manifest_dir(manifest_path: str) -> PurePosixPath:
     path = Path(manifest_path).resolve().parent
     try:
-        relative = path.relative_to(ROOT)
+        relative = path.relative_to(ROOT.resolve())
     except ValueError as error:
         raise SelectionError(f"workspace package escapes repository: {path}") from error
     return PurePosixPath(relative.as_posix())
@@ -113,18 +123,26 @@ def select_packages(
 ) -> dict[str, Any]:
     candidate_order = list(dict.fromkeys(candidates))
     candidate_set = set(candidate_order)
-    if not candidate_order:
-        raise SelectionError("at least one candidate package is required")
-    normalized = [PurePosixPath(path).as_posix() for path in paths]
+    if not candidate_order or any(
+        not isinstance(name, str) or re.fullmatch(r"[A-Za-z0-9_-]+", name) is None
+        for name in candidate_order
+    ):
+        raise SelectionError("valid candidate package names are required")
+    normalized = []
+    for raw in paths:
+        if not isinstance(raw, str) or not raw or "\0" in raw:
+            raise SelectionError("invalid changed path")
+        path = PurePosixPath(raw)
+        if path.is_absolute() or ".." in path.parts:
+            raise SelectionError("changed path escapes repository")
+        normalized.append(path.as_posix())
     if any(
         path in FULL_FALLBACK_PATHS
         or any(path.startswith(prefix) for prefix in FULL_FALLBACK_PREFIXES)
         for path in normalized
     ):
         return {
-            "required": True,
-            "full": True,
-            "packages": candidate_order,
+            "required": True, "full": True, "packages": candidate_order,
             "reason": "workspace_or_ci_control_changed",
         }
 
@@ -173,17 +191,13 @@ def select_packages(
             changed_packages.add(matched)
         elif raw_path == "codex-rs" or raw_path.startswith("codex-rs/"):
             return {
-                "required": True,
-                "full": True,
-                "packages": candidate_order,
-                "reason": f"unknown_workspace_path:{raw_path}",
+                "required": True, "full": True, "packages": candidate_order,
+                "reason": "unknown_workspace_path",
             }
 
     if not changed_packages:
         return {
-            "required": False,
-            "full": False,
-            "packages": [],
+            "required": False, "full": False, "packages": [],
             "reason": "no_rust_workspace_change",
         }
 
@@ -197,9 +211,7 @@ def select_packages(
                 frontier.append(dependent)
     selected = [name for name in candidate_order if name in affected]
     return {
-        "required": bool(selected),
-        "full": False,
-        "packages": selected,
+        "required": bool(selected), "full": False, "packages": selected,
         "reason": "dependency_closure" if selected else "changed_packages_outside_owner_set",
     }
 
@@ -223,14 +235,15 @@ def main() -> int:
     parser.add_argument("--packages", nargs="+", required=True)
     parser.add_argument("--github-output", type=Path)
     args = parser.parse_args()
+    if any(re.fullmatch(r"[A-Za-z0-9_-]+", name) is None for name in args.packages):
+        parser.error("invalid package name")
     try:
         paths = changed_paths(args.base, args.head)
         metadata = cargo_metadata()
         selection = select_packages(paths, metadata, args.packages)
-    except (OSError, SelectionError, subprocess.SubprocessError) as error:
+    except (OSError, UnicodeError, SelectionError, subprocess.SubprocessError) as error:
         selection = {
-            "required": True,
-            "full": True,
+            "required": True, "full": True,
             "packages": list(dict.fromkeys(args.packages)),
             "reason": f"full_fallback:{type(error).__name__}",
         }
