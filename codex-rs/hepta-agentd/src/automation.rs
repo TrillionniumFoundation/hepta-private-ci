@@ -154,7 +154,9 @@ fn queue_failure_to_automation_error(failure: QueueFailure) -> AutomationError {
             AutomationError::AccessDenied
         }
         QueueFailure::BeforeAdmission(AgentdError::Automation(
-            error @ (AutomationError::Unavailable | AutomationError::Corrupt),
+            error @ (AutomationError::Unavailable
+            | AutomationError::Corrupt
+            | AutomationError::TimerFenced),
         )) => error,
         QueueFailure::BeforeAdmission(_) => AutomationError::Dispatch,
         QueueFailure::OutcomeUnknown => AutomationError::DispatchUnknown,
@@ -419,6 +421,12 @@ mod tests {
                 AgentdError::GenerationFenced("stale generation".to_string()),
             )),
             AutomationError::AccessDenied
+        );
+        assert_eq!(
+            queue_failure_to_automation_error(QueueFailure::BeforeAdmission(
+                AgentdError::Automation(AutomationError::TimerFenced),
+            )),
+            AutomationError::TimerFenced
         );
     }
 }

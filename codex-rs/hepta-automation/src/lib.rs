@@ -18,6 +18,7 @@ mod taskflow_execution_boundary;
 mod taskflow_kernel;
 #[cfg(feature = "taskflow-structural-qualification")]
 mod taskflow_step;
+mod timer_lifecycle;
 
 pub use model::AutomationAdmission;
 pub use model::AutomationDispatchUncertainty;
@@ -99,5 +100,7 @@ pub use taskflow_step::TaskFlowStepObservation;
 pub use taskflow_step::TaskFlowStepReceipt;
 #[cfg(feature = "taskflow-structural-qualification")]
 pub use taskflow_step::TaskFlowStepState;
+pub use timer_lifecycle::TimerDrainStatus;
+pub use timer_lifecycle::TimerPhase;
 
-pub const AUTOMATION_SCHEMA_VERSION: u32 = 3;
+pub const AUTOMATION_SCHEMA_VERSION: u32 = 4;
