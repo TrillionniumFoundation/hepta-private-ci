@@ -150,9 +150,7 @@ async fn all_release_paths_preserve_disable_and_cancel_across_restart() -> TestR
                         1
                     );
                 }
-                ReleasePath::BeforeAdmission => {
-                    store.abort_dispatch_before_admission(&lease).await?
-                }
+                ReleasePath::BeforeAdmission => store.abort_dispatch_before_admission(&lease).await?,
                 ReleasePath::NegativeObservation => {
                     store
                         .release_uncertain_for_retry(
@@ -274,12 +272,19 @@ async fn receipt_replay_retains_later_control_decisions_and_rejects_substitution
     Ok(())
 }
 
+#[derive(Clone, Copy)]
+enum ReceiptCorruption {
+    ClientMessage,
+    QueueReceipt,
+    SubmittedAt,
+}
+
 #[tokio::test]
 async fn reopen_rejects_mismatched_durable_receipt_copies() -> TestResult {
-    for assignment in [
-        "client_user_message_id = 'substituted.client'",
-        "queued_submission_id = 'substituted.queue'",
-        "submitted_at_ms = submitted_at_ms + 1",
+    for corruption in [
+        ReceiptCorruption::ClientMessage,
+        ReceiptCorruption::QueueReceipt,
+        ReceiptCorruption::SubmittedAt,
     ] {
         let (_temp, layout, store, lease) = leased_store().await?;
         store
@@ -300,11 +305,29 @@ async fn reopen_rejects_mismatched_durable_receipt_copies() -> TestResult {
         )?)
         .open_durable_evidence_pool(&path)
         .await?;
-        sqlx::query(&format!(
-            "UPDATE automation_dispatch_outcomes SET {assignment}"
-        ))
-        .execute(&pool)
-        .await?;
+        match corruption {
+            ReceiptCorruption::ClientMessage => {
+                sqlx::query(
+                    "UPDATE automation_dispatch_outcomes SET client_user_message_id = 'substituted.client'",
+                )
+                .execute(&pool)
+                .await?;
+            }
+            ReceiptCorruption::QueueReceipt => {
+                sqlx::query(
+                    "UPDATE automation_dispatch_outcomes SET queued_submission_id = 'substituted.queue'",
+                )
+                .execute(&pool)
+                .await?;
+            }
+            ReceiptCorruption::SubmittedAt => {
+                sqlx::query(
+                    "UPDATE automation_dispatch_outcomes SET submitted_at_ms = submitted_at_ms + 1",
+                )
+                .execute(&pool)
+                .await?;
+            }
+        }
         pool.close().await;
         assert!(matches!(
             AutomationStore::open(&layout).await,
