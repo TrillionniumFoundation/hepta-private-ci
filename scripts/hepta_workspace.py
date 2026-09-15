@@ -3,8 +3,11 @@
 
 This is a read-only structural preflight, not compilation or dependency resolution.
 Walk workspace members and their local dependencies, not unrelated fixture trees.
-Reject direct Hepta product/build dependencies in the execution core and extension
-API. This name-based direct-edge guard is not a complete transitive architecture proof.
+Reject Hepta product dependencies throughout the local normal/build dependency
+closure of the execution core and extension API, including target-specific and
+optional edges. Local patches are conservatively included without resolving
+versions/features. Registry/git dependency internals still require Cargo and
+native qualification; this is not a complete external dependency audit.
 """
 
 from __future__ import annotations
@@ -14,6 +17,48 @@ from collections import deque
 from pathlib import Path
 import sys
 import tomllib
+
+
+EXECUTION_BOUNDARIES = frozenset({"codex-core", "codex-extension-api"})
+# Shared immutable provider/authority contracts already serve the execution spine.
+# This is not a traversal exemption: their implementation dependencies are checked.
+SHARED_KERNEL_CONTRACTS = frozenset({"codex-hepta-contracts"})
+PRODUCT_PREFIXES = ("codex-hepta-", "hepta-", "codex-heptabao")
+
+
+def execution_boundary_errors(
+    package_paths: dict[str, Path],
+    edges: dict[Path, list[tuple[str, Path | None, str]]],
+) -> list[str]:
+    """Report shortest local product paths, without following test-only edges.
+
+    Paths, not package aliases, identify vertices. Each boundary is traversed
+    once, so cycles and shared helpers cannot cause unbounded recursion.
+    """
+    errors = []
+    for name in sorted(EXECUTION_BOUNDARIES & package_paths.keys()):
+        root = package_paths[name]
+        queue = deque([(root, name)])
+        visited = {root}
+        reported: set[str] = set()
+        while queue:
+            source, route = queue.popleft()
+            for target_name, target, kind in sorted(
+                edges.get(source, []), key=lambda edge: (edge[0], str(edge[1]), edge[2])
+            ):
+                if kind == "dev-dependencies":
+                    continue
+                next_route = f"{route} --{kind}--> {target_name}"
+                if target_name.startswith(PRODUCT_PREFIXES) and target_name not in SHARED_KERNEL_CONTRACTS:
+                    if target_name not in reported:
+                        errors.append(
+                            f"{root}: execution boundary: {next_route}; compose it in the host"
+                        )
+                        reported.add(target_name)
+                elif target is not None and target not in visited:
+                    visited.add(target)
+                    queue.append((target, next_route))
+    return errors
 
 
 def verify_workspace(workspace: Path) -> tuple[int, list[str]]:
@@ -41,6 +86,24 @@ def verify_workspace(workspace: Path) -> tuple[int, list[str]]:
         return 0, [f"{workspace}: missing [workspace]"]
     inherited = settings.get("dependencies", {})
     queue: deque[Path] = deque()
+    # An external-looking dependency can be replaced by a local package. Follow
+    # every local candidate: choosing versions would require a Cargo resolver.
+    patches: dict[str, set[Path]] = {}
+    for source in document.get("patch", {}).values():
+        for alias, declaration in source.items():
+            if not isinstance(declaration, dict) or "path" not in declaration:
+                continue
+            target_name = declaration.get("package", alias)
+            if not isinstance(target_name, str):
+                errors.append(f"workspace patch {alias}: invalid package name")
+                continue
+            target = (workspace / declaration["path"] / "Cargo.toml").resolve()
+            patches.setdefault(target_name, set()).add(target)
+            other = load(target)
+            if other is not None and other.get("package", {}).get("name") != target_name:
+                errors.append(f"workspace patch {alias}: {target} must name {target_name}")
+            queue.append(target)
+    edges: dict[Path, list[tuple[str, Path | None, str]]] = {}
     excluded = {
         path.resolve()
         for pattern in settings.get("exclude", [])
@@ -105,19 +168,10 @@ def verify_workspace(workspace: Path) -> tuple[int, list[str]]:
                             f"{path}: {dependency} has an invalid package name"
                         )
                         continue
-                    # Product composition belongs to hosts/extensions, never the
-                    # stable execution core or its shared extension contracts.
-                    # Test-only dependencies do not enter the shipped dependency graph.
-                    if (
-                        name in {"codex-core", "codex-extension-api"}
-                        and kind != "dev-dependencies"
-                        and target_name.startswith(("codex-hepta-", "hepta-"))
-                    ):
-                        errors.append(
-                            f"{path}: execution boundary: {name} must not depend on "
-                            f"{target_name} through {kind}; compose it in the host"
-                        )
+                    edges.setdefault(path, []).append((target_name, None, kind))
                     if not isinstance(declaration, dict) or "path" not in declaration:
+                        for patched in sorted(patches.get(target_name, set())):
+                            edges[path].append((target_name, patched, kind))
                         continue
                     target = (origin / declaration["path"] / "Cargo.toml").resolve()
                     other = load(target)
@@ -129,7 +183,9 @@ def verify_workspace(workspace: Path) -> tuple[int, list[str]]:
                         errors.append(
                             f"{path}: {dependency} expects {expected}, but {target} names {actual}"
                         )
+                    edges[path].append((target_name, target, kind))
                     queue.append(target)
+    errors.extend(execution_boundary_errors(package_paths, edges))
     return len(seen), sorted(set(errors))
 
 
