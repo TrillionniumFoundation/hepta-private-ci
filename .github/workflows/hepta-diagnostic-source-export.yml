@@ -2,66 +2,48 @@ name: Hepta diagnostic source export
 
 on:
   workflow_dispatch:
-  push:
-    branches: [codex/stable-trunk-convergence-20260915]
+  pull_request:
     paths: [.github/workflows/hepta-diagnostic-source-export.yml]
 
 permissions:
   contents: read
 
 concurrency:
-  group: hepta-diagnostic-source-export-${{ github.ref }}
+  group: hepta-diagnostic-source-export-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
 jobs:
-  source-cache:
-    name: Export locked dependency sources (not qualification)
+  source-snapshot:
+    name: Export exact tracked source (not qualification)
     runs-on: ubuntu-24.04
-    timeout-minutes: 20
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
-          ref: ${{ github.sha }}
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
           persist-credentials: false
-      - name: Fetch pinned dependency sources
-        working-directory: codex-rs
+      - name: Record exact checkout without executing or modifying source
+        env:
+          EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
         shell: bash
         run: |
           set -euo pipefail
-          cargo fetch --locked > "$RUNNER_TEMP/cargo-fetch.log" 2>&1
-      - name: Package only dependency sources and checksums
-        shell: bash
-        run: |
-          set -euo pipefail
-          cargo_home=${CARGO_HOME:-$HOME/.cargo}
-          tar -C "$cargo_home" -czf "$RUNNER_TEMP/cache.tar.gz" registry git
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          git rev-parse HEAD HEAD^{tree} > "$RUNNER_TEMP/source-identity.txt"
+          git ls-tree -r --full-tree HEAD > "$RUNNER_TEMP/source-manifest.txt"
+          git archive --format=tar.gz HEAD > "$RUNNER_TEMP/source.tar.gz"
+          git diff --exit-code
+          test -z "$(git status --porcelain --untracked-files=no)"
           cd "$RUNNER_TEMP"
-          split --bytes=300M --numeric-suffixes=0 --suffix-length=2 cache.tar.gz cache.part-
-          sha256sum cache.tar.gz cache.part-* > cache.sha256
-          git -C "$GITHUB_WORKSPACE" diff --exit-code
-      - name: Retain dependency cache first part
+          sha256sum source.tar.gz source-manifest.txt source-identity.txt > source.sha256
+      - name: Retain diagnostic snapshot
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: hepta-offline-cache-part-00-${{ github.sha }}
+          name: hepta-source-snapshot-${{ github.event.pull_request.head.sha || github.sha }}
           path: |
-            ${{ runner.temp }}/cache.part-00
-            ${{ runner.temp }}/cache.sha256
-            ${{ runner.temp }}/cargo-fetch.log
+            ${{ runner.temp }}/source.tar.gz
+            ${{ runner.temp }}/source-manifest.txt
+            ${{ runner.temp }}/source-identity.txt
+            ${{ runner.temp }}/source.sha256
           if-no-files-found: error
-          retention-days: 1
-      - name: Retain dependency cache second part
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
-        with:
-          name: hepta-offline-cache-part-01-${{ github.sha }}
-          path: |
-            ${{ runner.temp }}/cache.part-01
-            ${{ runner.temp }}/cache.sha256
-          if-no-files-found: error
-          retention-days: 1
-      - name: Retain dependency cache overflow part
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
-        with:
-          name: hepta-offline-cache-part-02-${{ github.sha }}
-          path: ${{ runner.temp }}/cache.part-02
-          if-no-files-found: ignore
           retention-days: 1
