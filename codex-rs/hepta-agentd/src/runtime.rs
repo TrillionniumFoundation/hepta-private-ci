@@ -1,3 +1,6 @@
+#[path = "optional_runtime.rs"]
+mod optional_runtime;
+
 use std::future::Future;
 use std::sync::Arc;
 use std::time::Duration;
@@ -18,6 +21,9 @@ use tokio::task::JoinHandle;
 use tokio::time::timeout;
 use tokio_util::sync::CancellationToken;
 
+use optional_runtime::OPTIONAL_JOIN_TIMEOUT;
+use optional_runtime::supervise_optional_task;
+
 use crate::AgentdConfig;
 use crate::AgentdControlServer;
 use crate::AgentdError;
@@ -36,6 +42,7 @@ enum CompletedRuntimeTask {
     AppServer,
     Monitor,
     AuthBus,
+    OptionalBoundary,
 }
 
 pub async fn run(config: AgentdConfig, arg0_paths: Arg0DispatchPaths) -> Result<(), AgentdError> {
@@ -78,7 +85,7 @@ pub async fn run(config: AgentdConfig, arg0_paths: Arg0DispatchPaths) -> Result<
     })
     .await?;
     // The writer-enabled qualification binary must never start in a
-    // degraded CognitiveRuntime state.  The default/production binary keeps
+    // degraded CognitiveRuntime state. The default/production binary keeps
     // the existing availability-tolerant behavior; only the explicit
     // compile-time qualification profile takes this fail-closed startup gate.
     let cognitive_runtime = require_cognitive_runtime_for_profile(cognitive_runtime)?;
@@ -164,12 +171,21 @@ pub async fn run(config: AgentdConfig, arg0_paths: Arg0DispatchPaths) -> Result<
             joined("generation monitor", result),
             Some(CompletedRuntimeTask::Monitor),
         ),
-        signal = shutdown_signal() => {
-            signal?;
-            state.mark_draining()?;
-            (Ok(()), None)
-        }
+        result = &mut automation_task => (
+            // Ordinary optional failure stays inside its supervisor. Reaching
+            // this branch means the owner boundary itself could not degrade.
+            joined("optional plane boundary", result),
+            Some(CompletedRuntimeTask::OptionalBoundary),
+        ),
+        signal = shutdown_signal() => (
+            signal.and_then(|()| {
+                state.mark_draining()?;
+                Ok(())
+            }),
+            None,
+        ),
     };
+    // Even a signal-listener or mark_draining error must clean up live tasks.
     cancellation.cancel();
     if completed_task != Some(CompletedRuntimeTask::AuthBus) {
         abort_and_join(&mut authbus_task).await;
@@ -348,33 +364,6 @@ fn joined_io(
     }
 }
 
-/// Keep an optional plane inside the process lifecycle without allowing its
-/// early exit to become a process-wide shutdown signal. The degradation hook
-/// must publish the typed unavailable state at the existing owner boundary.
-async fn supervise_optional_task<Task, Output, Degrade>(
-    cancellation: CancellationToken,
-    task: Task,
-    degrade: Degrade,
-) -> Result<(), AgentdError>
-where
-    Task: Future<Output = Output>,
-    Degrade: FnOnce() -> Result<(), AgentdError>,
-{
-    tokio::pin!(task);
-    tokio::select! {
-        biased;
-        _ = cancellation.cancelled() => Ok(()),
-        _ = &mut task => {
-            if cancellation.is_cancelled() {
-                return Ok(());
-            }
-            degrade()?;
-            cancellation.cancelled().await;
-            Ok(())
-        }
-    }
-}
-
 async fn abort_and_join<T>(task: &mut JoinHandle<T>) {
     if !task.is_finished() {
         task.abort();
@@ -398,7 +387,13 @@ async fn cleanup_runtime_tasks<ControlOutput, AppServerOutput, MonitorOutput, Au
     if completed_task != Some(CompletedRuntimeTask::Monitor) {
         abort_and_join(monitor_task).await;
     }
-    abort_and_join(automation_task).await;
+    if completed_task != Some(CompletedRuntimeTask::OptionalBoundary)
+        && timeout(OPTIONAL_JOIN_TIMEOUT, &mut *automation_task)
+            .await
+            .is_err()
+    {
+        abort_and_join(automation_task).await;
+    }
 }
 
 #[cfg(unix)]
