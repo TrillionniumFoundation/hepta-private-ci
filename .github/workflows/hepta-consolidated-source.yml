@@ -273,6 +273,7 @@ jobs:
           PYTHONPATH: scripts
         run: python3 scripts/hepta_ci_v8.py
       - name: Compile and test affected imported packages
+        id: native-owner-checks
         if: steps.selection.outputs.required == 'true'
         working-directory: codex-rs
         env:

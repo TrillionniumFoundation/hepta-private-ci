@@ -243,10 +243,10 @@ class WorkflowCommandBindingTests(GitExecutionFixture):
             **os.environ, "PYTHONDONTWRITEBYTECODE": "1", "PATH": str(binaries) + os.pathsep + os.environ["PATH"],
             "SOURCE_SHA": self.source, "TESTED_SHA": self.source, "BASE_SHA": "0" * 40,
             "HEPTA_CI_LANE": "source-head", "RUNNER_TEMP": str(self.root),
-            "PACKAGES": "codex-one codex-two", "CALLS": str(self.root / "calls"),
+            "SELECTED_PACKAGES": "codex-one codex-two", "CALLS": str(self.root / "calls"),
         }
         workflow = (RUNNER.parents[1] / ".github/workflows/hepta-consolidated-source.yml").read_text()
-        block = workflow.split("      - name: Compile and test actual imported packages\n", 1)[1].split("        run: |\n", 1)[1]
+        block = workflow.split("        id: native-owner-checks\n", 1)[1].split("        run: |\n", 1)[1]
         lines = []
         for line in block.splitlines():
             if line and not line.startswith("          "):

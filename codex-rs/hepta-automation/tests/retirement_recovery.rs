@@ -150,7 +150,9 @@ async fn all_release_paths_preserve_disable_and_cancel_across_restart() -> TestR
                         1
                     );
                 }
-                ReleasePath::BeforeAdmission => store.abort_dispatch_before_admission(&lease).await?,
+                ReleasePath::BeforeAdmission => {
+                    store.abort_dispatch_before_admission(&lease).await?
+                }
                 ReleasePath::NegativeObservation => {
                     store
                         .release_uncertain_for_retry(
