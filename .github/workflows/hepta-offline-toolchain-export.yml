@@ -13,66 +13,60 @@ jobs:
       - uses: actions/checkout@v4
         with:
           persist-credentials: false
-      - name: Fetch exact locked Linux build inputs
+      - name: Resolve pinned Bazel inputs
         shell: bash
         run: |
           set -euo pipefail
-          rustup toolchain install 1.95.0 --profile minimal --component clippy,rustfmt,rust-src
-          cd codex-rs
-          cargo +1.95.0 fetch --locked --target x86_64-unknown-linux-gnu
-      - name: Package public toolchain and dependency inputs in bounded archives
+          mkdir -p "$RUNNER_TEMP/bazel-inputs/bin" "$RUNNER_TEMP/bazel-inputs/cache"
+          version="$(cat .bazelversion)"
+          curl --fail --location --retry 3 "https://github.com/bazelbuild/bazel/releases/download/${version}/bazel-${version}-linux-x86_64" -o "$RUNNER_TEMP/bazel-inputs/bin/bazel"
+          curl --fail --location --retry 3 "https://github.com/bazelbuild/bazel/releases/download/${version}/bazel-${version}-linux-x86_64.sha256" -o "$RUNNER_TEMP/bazel-inputs/bin/bazel.sha256"
+          expected="$(cut -d ' ' -f1 "$RUNNER_TEMP/bazel-inputs/bin/bazel.sha256")"
+          echo "$expected  $RUNNER_TEMP/bazel-inputs/bin/bazel" | sha256sum --check
+          chmod +x "$RUNNER_TEMP/bazel-inputs/bin/bazel"
+          "$RUNNER_TEMP/bazel-inputs/bin/bazel" --batch mod deps --lockfile_mode=update --repository_cache="$RUNNER_TEMP/bazel-inputs/cache" 2>&1 | tee "$RUNNER_TEMP/bazel-inputs/resolver.log"
+      - name: Package public resolver artifacts
+        if: always()
         shell: bash
         run: |
           set -euo pipefail
-          mkdir -p "$RUNNER_TEMP/offline-inputs"
-          rustc +1.95.0 -Vv > "$RUNNER_TEMP/offline-inputs/identity.txt"
-          git rev-parse HEAD HEAD^{tree} >> "$RUNNER_TEMP/offline-inputs/identity.txt"
-          sha256sum codex-rs/Cargo.lock codex-rs/rust-toolchain.toml >> "$RUNNER_TEMP/offline-inputs/identity.txt"
-          tar -C "$HOME/.rustup/toolchains" -czf "$RUNNER_TEMP/offline-inputs/rust-toolchain.tar.gz" 1.95.0-x86_64-unknown-linux-gnu
-          tar -C "$HOME/.cargo" -czf "$RUNNER_TEMP/offline-inputs/cargo-inputs.tar.gz" registry git
-          cd "$RUNNER_TEMP/offline-inputs"
-          sha256sum *.tar.gz identity.txt > SHA256SUMS
-          split -b 240M -d rust-toolchain.tar.gz rust-part-
-          split -b 240M -d cargo-inputs.tar.gz cargo-part-
-          sha256sum *-part-* >> SHA256SUMS
+          git rev-parse HEAD HEAD^{tree} > "$RUNNER_TEMP/bazel-inputs/identity.txt"
+          cp MODULE.bazel.lock "$RUNNER_TEMP/bazel-inputs/baseline.MODULE.bazel.lock"
+          tar -C "$RUNNER_TEMP/bazel-inputs" -czf "$RUNNER_TEMP/bazel-tools.tar.gz" bin identity.txt baseline.MODULE.bazel.lock resolver.log
+          tar -C "$RUNNER_TEMP/bazel-inputs" -czf "$RUNNER_TEMP/bazel-cache.tar.gz" cache
+          split -b 240M -d "$RUNNER_TEMP/bazel-cache.tar.gz" "$RUNNER_TEMP/bazel-cache-part-"
+          cd "$RUNNER_TEMP"
+          sha256sum bazel-tools.tar.gz bazel-cache.tar.gz bazel-cache-part-* > bazel-SHA256SUMS
       - uses: actions/upload-artifact@v4
+        if: always()
         with:
-          name: hepta-native-inputs-identity
+          name: hepta-bazel-tools
           path: |
-            ${{ runner.temp }}/offline-inputs/identity.txt
-            ${{ runner.temp }}/offline-inputs/SHA256SUMS
+            ${{ runner.temp }}/bazel-tools.tar.gz
+            ${{ runner.temp }}/bazel-SHA256SUMS
           retention-days: 3
           compression-level: 0
       - uses: actions/upload-artifact@v4
+        if: always()
         with:
-          name: hepta-native-inputs-rust-00
-          path: ${{ runner.temp }}/offline-inputs/rust-part-00
-          retention-days: 3
-          compression-level: 0
-      - uses: actions/upload-artifact@v4
-        with:
-          name: hepta-native-inputs-rust-01
-          path: ${{ runner.temp }}/offline-inputs/rust-part-01
+          name: hepta-bazel-cache-00
+          path: ${{ runner.temp }}/bazel-cache-part-00
           retention-days: 3
           compression-level: 0
           if-no-files-found: ignore
       - uses: actions/upload-artifact@v4
+        if: always()
         with:
-          name: hepta-native-inputs-cargo-00
-          path: ${{ runner.temp }}/offline-inputs/cargo-part-00
-          retention-days: 3
-          compression-level: 0
-      - uses: actions/upload-artifact@v4
-        with:
-          name: hepta-native-inputs-cargo-01
-          path: ${{ runner.temp }}/offline-inputs/cargo-part-01
+          name: hepta-bazel-cache-01
+          path: ${{ runner.temp }}/bazel-cache-part-01
           retention-days: 3
           compression-level: 0
           if-no-files-found: ignore
       - uses: actions/upload-artifact@v4
+        if: always()
         with:
-          name: hepta-native-inputs-cargo-02
-          path: ${{ runner.temp }}/offline-inputs/cargo-part-02
+          name: hepta-bazel-cache-02
+          path: ${{ runner.temp }}/bazel-cache-part-02
           retention-days: 3
           compression-level: 0
           if-no-files-found: ignore
