@@ -14,8 +14,8 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  native-editing-tools:
-    name: Export pinned offline editing prerequisites (not qualification)
+  source-cache:
+    name: Export locked dependency sources (not qualification)
     runs-on: ubuntu-24.04
     timeout-minutes: 20
     steps:
@@ -23,69 +23,45 @@ jobs:
         with:
           ref: ${{ github.sha }}
           persist-credentials: false
-      - name: Install the repository-pinned toolchain
-        shell: bash
-        run: |
-          set -euo pipefail
-          version=$(python3 -c 'import tomllib; print(tomllib.load(open("codex-rs/rust-toolchain.toml", "rb"))["toolchain"]["channel"])')
-          rustup toolchain install "$version" --profile minimal --component rustfmt --component clippy
-          printf 'PINNED_RUST=%s\n' "$version" >> "$GITHUB_ENV"
-      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
-        with:
-          tool: just@1.51.0,nextest@0.9.103
-      - name: Resolve locked dependency source cache
+      - name: Fetch pinned dependency sources
         working-directory: codex-rs
         shell: bash
         run: |
-          set -uo pipefail
+          set -euo pipefail
           cargo fetch --locked > "$RUNNER_TEMP/cargo-fetch.log" 2>&1
-          status=$?
-          printf '%s\n' "$status" > "$RUNNER_TEMP/cargo-fetch.exit"
-          cat "$RUNNER_TEMP/cargo-fetch.log"
-          exit "$status"
-      - name: Package tools and source caches without credentials
-        if: always() && env.PINNED_RUST != ''
+      - name: Package only dependency sources and checksums
         shell: bash
         run: |
           set -euo pipefail
-          sysroot=$(rustup run "$PINNED_RUST" rustc --print sysroot)
-          mkdir -p "$RUNNER_TEMP/editing-tools/bin"
-          install -m 0755 "$(command -v just)" "$RUNNER_TEMP/editing-tools/bin/just"
-          install -m 0755 "$(command -v cargo-nextest)" "$RUNNER_TEMP/editing-tools/bin/cargo-nextest"
-          tar -C "$sysroot" -czf "$RUNNER_TEMP/rust-toolchain.tar.gz" bin lib
-          tar -C "$RUNNER_TEMP/editing-tools" -czf "$RUNNER_TEMP/editing-tools.tar.gz" bin
           cargo_home=${CARGO_HOME:-$HOME/.cargo}
-          paths=()
-          for path in registry git; do
-            if test -d "$cargo_home/$path"; then paths+=("$path"); fi
-          done
-          if test "${#paths[@]}" -gt 0; then
-            tar -C "$cargo_home" -czf "$RUNNER_TEMP/cargo-source-cache.tar.gz" "${paths[@]}"
-          fi
+          tar -C "$cargo_home" -czf "$RUNNER_TEMP/cache.tar.gz" registry git
           cd "$RUNNER_TEMP"
-          sha256sum rust-toolchain.tar.gz editing-tools.tar.gz > native-tools.sha256
-          if test -f cargo-source-cache.tar.gz; then sha256sum cargo-source-cache.tar.gz >> native-tools.sha256; fi
+          split --bytes=300M --numeric-suffixes=0 --suffix-length=2 cache.tar.gz cache.part-
+          sha256sum cache.tar.gz cache.part-* > cache.sha256
           git -C "$GITHUB_WORKSPACE" diff --exit-code
-      - name: Retain pinned editing tools
-        if: always()
+      - name: Retain dependency cache first part
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: hepta-offline-tools-${{ github.sha }}
+          name: hepta-offline-cache-part-00-${{ github.sha }}
           path: |
-            ${{ runner.temp }}/rust-toolchain.tar.gz
-            ${{ runner.temp }}/editing-tools.tar.gz
-            ${{ runner.temp }}/native-tools.sha256
+            ${{ runner.temp }}/cache.part-00
+            ${{ runner.temp }}/cache.sha256
+            ${{ runner.temp }}/cargo-fetch.log
           if-no-files-found: error
           retention-days: 1
-      - name: Retain locked source cache diagnostics
-        if: always()
+      - name: Retain dependency cache second part
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: hepta-offline-cache-${{ github.sha }}
+          name: hepta-offline-cache-part-01-${{ github.sha }}
           path: |
-            ${{ runner.temp }}/cargo-source-cache.tar.gz
-            ${{ runner.temp }}/cargo-fetch.log
-            ${{ runner.temp }}/cargo-fetch.exit
-            ${{ runner.temp }}/native-tools.sha256
+            ${{ runner.temp }}/cache.part-01
+            ${{ runner.temp }}/cache.sha256
           if-no-files-found: error
+          retention-days: 1
+      - name: Retain dependency cache overflow part
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-offline-cache-part-02-${{ github.sha }}
+          path: ${{ runner.temp }}/cache.part-02
+          if-no-files-found: ignore
           retention-days: 1
