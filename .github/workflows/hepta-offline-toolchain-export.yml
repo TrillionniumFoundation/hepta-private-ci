@@ -8,138 +8,33 @@ permissions:
 jobs:
   export:
     runs-on: ubuntu-24.04
-    timeout-minutes: 45
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
         with:
           persist-credentials: false
-      - name: Fetch pinned Linux analysis and toolchain inputs
+      - name: Download the signed-distribution sandbox prerequisite
         shell: bash
         run: |
           set -euo pipefail
-          mkdir -p "$RUNNER_TEMP/bazel-native/bin" "$RUNNER_TEMP/bazel-native/cache"
-          version="$(cat .bazelversion)"
-          curl --fail --location --retry 3 "https://github.com/bazelbuild/bazel/releases/download/${version}/bazel-${version}-linux-x86_64" -o "$RUNNER_TEMP/bazel-native/bin/bazel"
-          curl --fail --location --retry 3 "https://github.com/bazelbuild/bazel/releases/download/${version}/bazel-${version}-linux-x86_64.sha256" -o "$RUNNER_TEMP/bazel-native/bin/bazel.sha256"
-          expected="$(cut -d ' ' -f1 "$RUNNER_TEMP/bazel-native/bin/bazel.sha256")"
-          echo "$expected  $RUNNER_TEMP/bazel-native/bin/bazel" | sha256sum --check
-          chmod +x "$RUNNER_TEMP/bazel-native/bin/bazel"
-          "$RUNNER_TEMP/bazel-native/bin/bazel" --batch fetch --lockfile_mode=error --repository_cache="$RUNNER_TEMP/bazel-native/cache" //codex-rs/hepta-agentd:all //codex-rs/hepta-learning-ledger:all 2>&1 | tee "$RUNNER_TEMP/bazel-native/fetch.log"
-      - name: Package downloaded public dependencies, including partial diagnostic failures
-        if: always()
-        shell: bash
-        run: |
-          set -euo pipefail
-          cd "$RUNNER_TEMP/bazel-native"
-          git -C "$GITHUB_WORKSPACE" rev-parse HEAD HEAD^{tree} > identity.txt
-          tar -czf "$RUNNER_TEMP/bazel-native-cache.tar.gz" cache
-          tar -czf "$RUNNER_TEMP/bazel-native-identity.tar.gz" identity.txt fetch.log
-          cd "$RUNNER_TEMP"
-          split -b 240M -d bazel-native-cache.tar.gz bazel-native-part-
-          sha256sum bazel-native-cache.tar.gz bazel-native-identity.tar.gz bazel-native-part-* > bazel-native-SHA256SUMS
-          test "$(find . -maxdepth 1 -name 'bazel-native-part-*' | wc -l)" -le 12
+          mkdir -p "$RUNNER_TEMP/sandbox-inputs"
+          cd "$RUNNER_TEMP/sandbox-inputs"
+          apt-cache show --no-all-versions bubblewrap > apt-package-identity.txt
+          apt-get download bubblewrap
+          deb="$(find . -maxdepth 1 -name 'bubblewrap_*.deb' -print -quit)"
+          expected="$(sed -n 's/^SHA256: //p' apt-package-identity.txt | head -1)"
+          test -n "$expected"
+          echo "$expected  $deb" | sha256sum --check
+          dpkg-deb --extract "$deb" extracted
+          mkdir bin
+          cp extracted/usr/bin/bwrap bin/bwrap
+          bin/bwrap --version > binary-version.txt
+          git -C "$GITHUB_WORKSPACE" rev-parse HEAD HEAD^{tree} > source-identity.txt
+          sha256sum "$deb" bin/bwrap apt-package-identity.txt binary-version.txt source-identity.txt > SHA256SUMS
+          rm -rf extracted
       - uses: actions/upload-artifact@v4
-        if: always()
         with:
-          name: hepta-bazel-native-identity
-          path: |
-            ${{ runner.temp }}/bazel-native-identity.tar.gz
-            ${{ runner.temp }}/bazel-native-SHA256SUMS
+          name: hepta-native-sandbox-prerequisite
+          path: ${{ runner.temp }}/sandbox-inputs
           retention-days: 3
           compression-level: 0
-      - uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: hepta-bazel-native-00
-          path: ${{ runner.temp }}/bazel-native-part-00
-          retention-days: 3
-          compression-level: 0
-          if-no-files-found: ignore
-      - uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: hepta-bazel-native-01
-          path: ${{ runner.temp }}/bazel-native-part-01
-          retention-days: 3
-          compression-level: 0
-          if-no-files-found: ignore
-      - uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: hepta-bazel-native-02
-          path: ${{ runner.temp }}/bazel-native-part-02
-          retention-days: 3
-          compression-level: 0
-          if-no-files-found: ignore
-      - uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: hepta-bazel-native-03
-          path: ${{ runner.temp }}/bazel-native-part-03
-          retention-days: 3
-          compression-level: 0
-          if-no-files-found: ignore
-      - uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: hepta-bazel-native-04
-          path: ${{ runner.temp }}/bazel-native-part-04
-          retention-days: 3
-          compression-level: 0
-          if-no-files-found: ignore
-      - uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: hepta-bazel-native-05
-          path: ${{ runner.temp }}/bazel-native-part-05
-          retention-days: 3
-          compression-level: 0
-          if-no-files-found: ignore
-      - uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: hepta-bazel-native-06
-          path: ${{ runner.temp }}/bazel-native-part-06
-          retention-days: 3
-          compression-level: 0
-          if-no-files-found: ignore
-      - uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: hepta-bazel-native-07
-          path: ${{ runner.temp }}/bazel-native-part-07
-          retention-days: 3
-          compression-level: 0
-          if-no-files-found: ignore
-      - uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: hepta-bazel-native-08
-          path: ${{ runner.temp }}/bazel-native-part-08
-          retention-days: 3
-          compression-level: 0
-          if-no-files-found: ignore
-      - uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: hepta-bazel-native-09
-          path: ${{ runner.temp }}/bazel-native-part-09
-          retention-days: 3
-          compression-level: 0
-          if-no-files-found: ignore
-      - uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: hepta-bazel-native-10
-          path: ${{ runner.temp }}/bazel-native-part-10
-          retention-days: 3
-          compression-level: 0
-          if-no-files-found: ignore
-      - uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: hepta-bazel-native-11
-          path: ${{ runner.temp }}/bazel-native-part-11
-          retention-days: 3
-          compression-level: 0
-          if-no-files-found: ignore
