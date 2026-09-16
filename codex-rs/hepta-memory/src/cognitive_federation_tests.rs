@@ -5,6 +5,7 @@ use crate::CognitiveAccess;
 use crate::CognitiveScope;
 use crate::CognitiveStore;
 use crate::CognitiveStoreError;
+use crate::FederatedCoverageStatus;
 use crate::FederatedMemoryReader;
 use crate::FederatedRecallSet;
 use crate::FederatedRevalidationStatus;
@@ -144,6 +145,9 @@ async fn explicit_grant_is_owner_written_consumer_read_only_and_scope_exact() {
         .retrieve(&access, &RetrievalRequest::new("orbital", 150))
         .await
         .expect("federated retrieval");
+    assert_eq!(batch.coverage, FederatedCoverageStatus::Complete);
+    assert_eq!(batch.attempted_sources, 1);
+    assert_eq!(batch.completed_sources, 1);
     assert_eq!(batch.candidates.len(), 1);
     assert_eq!(batch.candidates[0].source_agent_id, owner_id);
     assert_eq!(
@@ -414,6 +418,7 @@ async fn five_agents_keep_private_stores_and_only_explicit_consumers_federate() 
             .retrieve(&access, &RetrievalRequest::new("constellation", 150))
             .await
             .expect("set retrieval");
+        assert_eq!(batch.coverage, FederatedCoverageStatus::Complete);
         if [1usize, 3usize].contains(&consumer_index) {
             assert_eq!(batch.candidates.len(), 1);
             assert_eq!(batch.candidates[0].source_agent_id, ids[0]);
@@ -425,4 +430,79 @@ async fn five_agents_keep_private_stores_and_only_explicit_consumers_federate() 
             assert!(batch.candidates.is_empty());
         }
     }
+}
+
+#[tokio::test]
+async fn partial_discovery_preserves_healthy_results_and_reports_incomplete_coverage() {
+    let temp = TempDir::new().expect("temp dir");
+    let owner_id = agent_id(70);
+    let consumer_id = agent_id(71);
+    let missing_owner_id = agent_id(72);
+    let owner_layout = layout(&temp, &owner_id);
+    let missing_layout = layout(&temp, &missing_owner_id);
+    let owner = CognitiveStore::open(&owner_layout)
+        .await
+        .expect("owner store");
+    let owner_access = CognitiveAccess::agent_private(owner_id.clone());
+    let citation = owner
+        .append_source(
+            &owner_access,
+            &source(
+                CognitiveScope::AgentPrivate,
+                "partial-source",
+                "Healthy federated memory survives another source failure.",
+            ),
+        )
+        .await
+        .expect("source");
+    owner
+        .remember_memory(
+            &owner_access,
+            &MemoryDraft {
+                stable_key: "partial-memory".to_string(),
+                revision: memory_revision(
+                    CognitiveScope::AgentPrivate,
+                    "Healthy federated memory survives another source failure.",
+                    citation,
+                ),
+            },
+        )
+        .await
+        .expect("memory");
+    let consumer_workspace = workspace("partial-consumer");
+    owner
+        .grant_federated_recall(
+            &owner_access,
+            &FederationGrantRequest {
+                consumer_agent_id: consumer_id.clone(),
+                scope: FederationGrantScope::new(
+                    CognitiveScope::AgentPrivate,
+                    consumer_workspace.clone(),
+                ),
+                effective_at_unix_seconds: 100,
+                expires_at_unix_seconds: 1_000,
+            },
+        )
+        .await
+        .expect("grant");
+
+    let set = FederatedRecallSet::discover(
+        consumer_id.clone(),
+        vec![owner_layout, missing_layout],
+        150,
+    )
+    .await;
+    let batch = set
+        .retrieve(
+            &FederationConsumerAccess::new(consumer_id, consumer_workspace),
+            &RetrievalRequest::new("Healthy federated", 150),
+        )
+        .await
+        .expect("partial retrieval");
+
+    assert_eq!(batch.coverage, FederatedCoverageStatus::Partial);
+    assert_eq!(batch.attempted_sources, 1);
+    assert_eq!(batch.completed_sources, 1);
+    assert_eq!(batch.candidates.len(), 1);
+    assert_eq!(batch.candidates[0].source_agent_id, owner_id);
 }
