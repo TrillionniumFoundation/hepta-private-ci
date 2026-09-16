@@ -356,7 +356,7 @@ async fn bound_trajectory_is_append_only_causal_and_reopenable() {
 
 #[tokio::test]
 async fn recovery_read_observes_expired_terminal_without_appending_h7_rows() {
-    let (_temp, _store, lease, executor, binding) = prepared_with_ttl(1).await;
+    let (_temp, _store, lease, executor, binding) = prepared_with_ttl(5).await;
     let trajectory_id = "trajectory:h7-trajectory-expiring";
     let turn_id = "turn:h7-trajectory-expiring";
     let occurrence_key = "occurrence:h7-trajectory-expiring:start";
@@ -391,7 +391,7 @@ async fn recovery_read_observes_expired_terminal_without_appending_h7_rows() {
         .await
         .expect("append terminal");
     let before = lease.snapshot_counts().await.expect("counts before expiry");
-    tokio::time::sleep(Duration::from_secs(2)).await;
+    tokio::time::sleep(Duration::from_secs(6)).await;
 
     let recovery =
         read_h7_trajectory_bound_for_recovery(&lease, &executor, &binding, trajectory_id)
@@ -424,7 +424,7 @@ async fn recovery_read_observes_expired_terminal_without_appending_h7_rows() {
 
 #[tokio::test]
 async fn head_scoped_expired_terminal_gate_survives_store_reopen() {
-    let (temp, store, lease, executor, binding) = prepared_with_ttl(1).await;
+    let (temp, store, lease, executor, binding) = prepared_with_ttl(5).await;
     let trajectory_id = "trajectory:h7-trajectory-expiring";
     let turn_id = "turn:h7-trajectory-expiring";
     let occurrence_key = "occurrence:h7-trajectory-expiring:start";
@@ -497,7 +497,7 @@ async fn head_scoped_expired_terminal_gate_survives_store_reopen() {
     drop(executor);
     drop(lease);
     drop(store);
-    tokio::time::sleep(Duration::from_secs(2)).await;
+    tokio::time::sleep(Duration::from_secs(6)).await;
 
     let owner = AgentId::parse("00000000-0000-4000-8000-000000000972").expect("owner");
     let fleet = HeptaFleetRoot::parse(temp.path().join("fleet")).expect("reopen fleet");

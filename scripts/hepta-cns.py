@@ -14,6 +14,13 @@ from pathlib import Path
 from typing import Any
 
 try:
+    from scripts.hepta_metadata import AUTHORITY_KEYS, has_schema_version
+except ModuleNotFoundError as error:
+    if error.name != "scripts":
+        raise
+    from hepta_metadata import AUTHORITY_KEYS, has_schema_version
+
+try:
     from scripts.hepta_module_catalog import has_unique_module_ids
 except ModuleNotFoundError as error:
     if error.name != "scripts":
@@ -27,25 +34,6 @@ GAPS_PATH = "docs/cns/GAPS.json"
 STATUS_PATH = "docs/cns/STATUS.md"
 TECHNICAL_PATH = "docs/cns/TECHNICAL.md"
 REFERENCE_DIR = "qualification/cns-organ-reference"
-AUTHORITY_KEYS = [
-    "runtimeAuthority",
-    "productionCaller",
-    "productionWriter",
-    "modelInvocation",
-    "providerDispatch",
-    "toolExecution",
-    "networkConnect",
-    "externalFilesystemMutation",
-    "secretOperation",
-    "matrixSend",
-    "externalEffect",
-    "fleetMutation",
-    "canonicalSelection",
-    "merge",
-    "operatorAcceptance",
-    "promotion",
-    "release",
-]
 ORGAN_KEYS = [
     "id",
     "anatomicalRole",
@@ -287,7 +275,7 @@ def verify() -> int:
     gaps = load(GAPS_PATH)
     need(
         arch.get("schema") == "hepta.cns-organ-architecture.v1"
-        and arch.get("schemaVersion") == 1,
+        and has_schema_version(arch, 1),
         "architecture schema",
     )
     need(
@@ -297,12 +285,12 @@ def verify() -> int:
     )
     need(
         protocols.get("schema") == "hepta.cns-organ-protocol-registry.v1"
-        and protocols.get("schemaVersion") == 1,
+        and has_schema_version(protocols, 1),
         "protocol schema",
     )
     need(
         gaps.get("schema") == "hepta.cns-organ-gap-ledger.v1"
-        and gaps.get("schemaVersion") == 1,
+        and has_schema_version(gaps, 1),
         "gap schema",
     )
     for label, value in [

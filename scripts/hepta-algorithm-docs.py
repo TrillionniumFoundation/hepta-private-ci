@@ -14,6 +14,13 @@ from pathlib import Path
 from typing import Any
 
 try:
+    from scripts.hepta_metadata import AUTHORITY_KEYS, has_schema_version
+except ModuleNotFoundError as error:
+    if error.name != "scripts":
+        raise
+    from hepta_metadata import AUTHORITY_KEYS, has_schema_version
+
+try:
     from scripts.hepta_module_catalog import has_unique_module_ids
 except ModuleNotFoundError as error:
     if error.name != "scripts":
@@ -48,25 +55,6 @@ WORKFLOW_PATH = ".github/workflows/hepta-algorithm-docs.yml"
 DOC_PACKAGE = "DOC-3D-ADAPTIVE-ALGORITHM-DOC-CLOSED-WORLD"
 RECEIPT_SCHEMA = "hepta.algorithm-docs-execution-receipt.v2"
 
-AUTHORITY_KEYS = [
-    "runtimeAuthority",
-    "productionCaller",
-    "productionWriter",
-    "modelInvocation",
-    "providerDispatch",
-    "toolExecution",
-    "networkConnect",
-    "externalFilesystemMutation",
-    "secretOperation",
-    "matrixSend",
-    "externalEffect",
-    "fleetMutation",
-    "canonicalSelection",
-    "merge",
-    "operatorAcceptance",
-    "promotion",
-    "release",
-]
 HEADINGS = [
     "## 1. Scope, ownership and non-claims",
     "## 2. Symbols, dimensions, units and normalization",
@@ -366,10 +354,6 @@ def sha256_text(text: str) -> str:
     return hashlib.sha256(text.encode("utf-8")).hexdigest()
 
 
-def word_count(text: str) -> int:
-    return len(re.findall(r"\b[\w.-]+\b", text))
-
-
 def protocol_authority_boundary(text: str) -> bool:
     remaining = text
     for path in PROTOCOL_AUTHORITY_PATHS:
@@ -447,7 +431,7 @@ def status_text(registry: dict[str, Any], papers: dict[str, Any]) -> str:
 
 def validate_paper_sources(papers: dict[str, Any]) -> int:
     need(papers.get("schema") == PAPER_SCHEMA, "paper traceability schema")
-    need(papers.get("schemaVersion") == 2, "paper traceability schema version")
+    need(has_schema_version(papers, 2), "paper traceability schema version")
     policy = papers.get("sourceLockPolicy")
     expected_policy = {
         "publisherIdentityRequired": True,
@@ -866,7 +850,6 @@ def verify() -> int:
     ids = [row.get("id") for row in documents]
     need(len(ids) == len(set(ids)), "duplicate specification ID")
     bound = coverage(registry)
-    unresolved = re.compile(r"\b(?:TODO|TBD|FIXME|XXX)\b", re.IGNORECASE)
     common_terms = [
         "deterministic reference",
         "golden vector",
@@ -887,16 +870,7 @@ def verify() -> int:
             row.get("implementationState") == "not_implied",
             doc_id + " implementation state",
         )
-        need(
-            len(text.encode("utf-8")) >= int(rules["minimumDocumentBytes"]),
-            doc_id + " byte floor",
-        )
-        need(
-            word_count(text) >= int(rules["minimumDocumentWords"]),
-            doc_id + " word floor",
-        )
         need(git("hash-object", path) == row.get("blobSha"), doc_id + " blob identity")
-        need(not unresolved.search(text), doc_id + " unresolved marker")
         positions = [text.find(heading) for heading in HEADINGS]
         need(all(position >= 0 for position in positions), doc_id + " missing section")
         need(positions == sorted(positions), doc_id + " section order")

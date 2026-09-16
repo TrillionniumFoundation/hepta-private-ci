@@ -782,7 +782,7 @@ async fn bound_compact_mutation_rejects_lease_expiry_after_open() {
 #[tokio::test]
 async fn compact_rotation_rejects_old_journal_and_accepts_new_journal_id() {
     let (_temp, store, lease, old_executor, old_fence, old_checkpoint) =
-        open_bound_executor(205, 1).await;
+        open_bound_executor(205, 10).await;
     let old_current = snapshot(old_fence.clone());
     old_executor
         .append_intent("op:rotation-old", &old_checkpoint, &old_current)

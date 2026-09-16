@@ -13,6 +13,14 @@ on:
   push:
     branches:
       - main
+    paths:
+      - "codex-rs/hepta-neuron/**"
+      - "codex-rs/hepta-intuition/**"
+      - "codex-rs/hepta-prompt-optimizer/**"
+      - "codex-rs/hepta-plasticity/**"
+      - "codex-rs/hepta-intelligence/**"
+      - "qualification/lane-f-shadow/**"
+      - ".github/workflows/hepta-lane-f-shadow-qualification.yml"
   workflow_dispatch:
 
 permissions:

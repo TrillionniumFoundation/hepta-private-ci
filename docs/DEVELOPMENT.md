@@ -38,6 +38,16 @@ test or merge authorized repository changes. Those records apply when their
 runtime, independent-evaluation or deployment boundary is actually exercised.
 Repository merge does not itself activate that boundary.
 
+The repository has two development paths. The ordinary path is the fast path:
+edit the owned source, run the affected package tests, run the applicable
+review checks and merge through the normal protected branch. The qualification
+path is opt-in and is required only for a runtime boundary, external effect,
+independent evaluation, candidate execution, promotion or release. Readiness
+dossiers, paper locks, synthetic merge receipts and capability evidence must not
+be added to an ordinary source-only change just to satisfy a document gate.
+Path-filtered CI selects the qualification checks from the changed boundary;
+it does not use a global checklist as a proxy for evidence.
+
 ## 2. Canonical document system and historical cleanup
 
 Read in this order:

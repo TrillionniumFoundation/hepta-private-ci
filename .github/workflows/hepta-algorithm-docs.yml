@@ -3,7 +3,7 @@ name: Hepta adaptive algorithm documents
 on:
   pull_request:
     paths:
-      - "docs/algorithms/**"
+      - "docs/learning/**"
       - "docs/modules/**"
       - "scripts/hepta-algorithm-docs.py"
       - ".github/workflows/hepta-algorithm-docs.yml"
@@ -11,6 +11,12 @@ on:
   push:
     branches:
       - main
+    paths:
+      - "docs/learning/**"
+      - "docs/modules/**"
+      - "scripts/hepta-algorithm-docs.py"
+      - ".github/workflows/hepta-algorithm-docs.yml"
+      - ".github/actions/hepta-synthetic-merge/action.yml"
   workflow_dispatch:
 
 permissions:
@@ -93,9 +99,8 @@ jobs:
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
-          python3 scripts/hepta-algorithm-docs.py self-test
-          python3 scripts/hepta-algorithm-docs.py verify-sources
-          python3 scripts/hepta-algorithm-docs.py generate-status --check
+          # The source-head job owns self-tests, source binding and generated
+          # status checks. Keep the merge job focused on merged-tree validity.
           python3 scripts/hepta-algorithm-docs.py verify
           python3 scripts/hepta-algorithm-docs.py receipt \
             --expected-sha "$EXPECTED_SHA" \

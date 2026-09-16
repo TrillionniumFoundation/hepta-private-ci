@@ -16,6 +16,17 @@ on:
   push:
     branches:
       - main
+    paths:
+      - "codex-rs/hepta-memory/**"
+      - "codex-rs/hepta-retrieval/**"
+      - "docs/memory/**"
+      - "docs/modules/**/IMPLEMENTATION_MAP.json"
+      - "docs/readiness/LANE_B_RUNTIME_COMPOSITION.md"
+      - "qualification/**"
+      - "scripts/hepta-lane-b-*.py"
+      - "scripts/test_hepta_lane_b_*.py"
+      - ".github/workflows/hepta-lane-b-truth.yml"
+      - ".github/actions/hepta-synthetic-merge/action.yml"
   workflow_dispatch:
 
 permissions:
@@ -117,21 +128,8 @@ jobs:
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
-          python3 scripts/hepta-lane-b-path-guard.py self-test
           python3 scripts/hepta-lane-b-path-guard.py verify
-          python3 scripts/hepta-lane-b-truth.py self-test
-          python3 -m unittest scripts/test_hepta_lane_b_truth.py
           python3 scripts/hepta-lane-b-truth.py verify
-          node --test apps/hepta-browser/test/runtime.test.js
-          node --test apps/hepta-control-ui/test/runtime-client.test.js
-          node --test apps/hepta-native/test/shell-runtime.test.js
-          cd codex-rs
-          cargo fmt --all -- --check
-          cargo test -p codex-hepta-agentd --lib
-          cargo test -p codex-hepta-fleet --bin hepta-fleet-leased
-          cargo test -p codex-hepta-infer-core --bin hepta-infer-control
-          cargo test -p codex-hepta-infer-worker-host --bin hepta-infer-worker
-          cargo test -p codex-hepta-automation --bin hepta-taskflow-runtime
           cargo test -p codex-hepta-matrixd --bin hepta-matrix-send-observer
           cd ..
           git diff --check

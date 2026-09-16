@@ -10,6 +10,13 @@ from pathlib import Path
 from typing import Any
 
 try:
+    from scripts.hepta_metadata import AUTHORITY_KEYS, has_schema_version
+except ModuleNotFoundError as error:
+    if error.name != "scripts":
+        raise
+    from hepta_metadata import AUTHORITY_KEYS, has_schema_version
+
+try:
     from scripts.hepta_module_catalog import (
         covers_module_ids,
         has_module_count,
@@ -40,25 +47,6 @@ MODULES_PATH = "docs/modules/MODULES.json"
 PACKAGES_PATH = "docs/delivery/WORK_PACKAGES.json"
 MODULE_DOCS_PATH = "docs/modules/MODULE_DOCS.json"
 
-AUTHORITY_KEYS = [
-    "runtimeAuthority",
-    "productionCaller",
-    "productionWriter",
-    "modelInvocation",
-    "providerDispatch",
-    "toolExecution",
-    "networkConnect",
-    "externalFilesystemMutation",
-    "secretOperation",
-    "matrixSend",
-    "externalEffect",
-    "fleetMutation",
-    "canonicalSelection",
-    "merge",
-    "operatorAcceptance",
-    "promotion",
-    "release",
-]
 
 DOCUMENT_IDS = [
     "RDY-SRC",
@@ -411,7 +399,7 @@ def validate_status_model(model: dict[str, Any]) -> None:
     """Validate the one vocabulary shared by readiness and dossier projections."""
     need(
         model.get("schema") == "hepta.qualification-readiness-status.v1"
-        and model.get("schemaVersion") == 1,
+        and has_schema_version(model, 1),
         "status model identity",
     )
     expected = [
@@ -558,17 +546,17 @@ def verify() -> int:
 
     need(
         readiness.get("schema") == "hepta.implementation-readiness-registry.v1"
-        and readiness.get("schemaVersion") == 1,
+        and has_schema_version(readiness, 1),
         "readiness schema",
     )
     need(
         protocols.get("schema") == "hepta.implementation-readiness-protocol-registry.v1"
-        and protocols.get("schemaVersion") == 1,
+        and has_schema_version(protocols, 1),
         "protocol schema",
     )
     need(
         gaps.get("schema") == "hepta.implementation-readiness-gap-ledger.v1"
-        and gaps.get("schemaVersion") == 1,
+        and has_schema_version(gaps, 1),
         "gap schema",
     )
     for label, value in [

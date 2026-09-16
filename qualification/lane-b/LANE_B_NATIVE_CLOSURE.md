@@ -80,8 +80,8 @@ The App Server observes admission and streaming state; external tool/provider te
 |---|---|---|
 | `open_thread` | `resolved_alias_native` | `codex-rs/app-server/src/request_processors/thread_processor.rs` — `pub(crate) async fn thread_start(` |
 | `submit_turn` | `resolved_alias_native` | `codex-rs/app-server/src/request_processors/turn_processor.rs` — `pub(crate) async fn turn_start(` |
-| `dispatch_tool` | `resolved_alias_native` | `codex-rs/core/src/tools/router.rs` — `pub async fn dispatch_tool_call_with_code_mode_result(` |
-| `observe_delivery` | `resolved_alias_native` | `codex-rs/core/src/codex_thread.rs` — `pub(crate) async fn submit_turn_input_and_wait_for_exact_admission(` |
+| `dispatch_tool` | `owner_boundary` | `codex-rs/app-server/src/request_processors/turn_processor.rs` — `pub(crate) async fn turn_start(` |
+| `observe_delivery` | `owner_boundary` | `codex-rs/app-server/src/request_processors/turn_processor.rs` — `pub(crate) async fn turn_start(` |
 
 External evidence gates:
 

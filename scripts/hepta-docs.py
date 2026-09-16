@@ -11,6 +11,17 @@ import os
 import re
 import subprocess
 import sys
+
+try:
+    from scripts.hepta_metadata import (
+        AUTHORITY_KEYS,
+        authority_fixture,
+        has_schema_version,
+    )
+except ModuleNotFoundError as error:
+    if error.name != "scripts":
+        raise
+    from hepta_metadata import AUTHORITY_KEYS, authority_fixture, has_schema_version
 from collections import Counter, defaultdict, deque
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
@@ -43,25 +54,6 @@ WORKFLOW_REFERENCE_SCRIPTS = (
 WORKFLOW_REFERENCE_RE = re.compile(
     r"(?<![A-Za-z0-9_.-])(?P<path>\.github/workflows/[A-Za-z0-9_.-]+\.ya?ml)(?![A-Za-z0-9_.-])"
 )
-AUTHORITY_KEYS = [
-    "runtimeAuthority",
-    "productionCaller",
-    "productionWriter",
-    "modelInvocation",
-    "providerDispatch",
-    "toolExecution",
-    "networkConnect",
-    "externalFilesystemMutation",
-    "secretOperation",
-    "matrixSend",
-    "externalEffect",
-    "fleetMutation",
-    "canonicalSelection",
-    "merge",
-    "operatorAcceptance",
-    "promotion",
-    "release",
-]
 FILES = {
     "current": "docs/CURRENT.json",
     "system": "docs/governance/DOCUMENT_SYSTEM.json",
@@ -461,7 +453,7 @@ def lease_path_set_sha(paths):
 def validate_path_leases(path_registry, packages, dev, act, changed_paths=None):
     need(
         path_registry.get("schema") == "hepta.path-ownership.v3"
-        and path_registry.get("schemaVersion") == 3,
+        and has_schema_version(path_registry, 3),
         "path lease schema version",
     )
     need(
@@ -2027,7 +2019,7 @@ def self_test():
     need(shape_sha({"a": 1}) != shape_sha({"a": "1"}), "shape fixture")
     cases.append("shape")
     need(
-        list({k: False for k in AUTHORITY_KEYS}) == AUTHORITY_KEYS, "authority fixture"
+        list(authority_fixture()) == AUTHORITY_KEYS, "authority fixture"
     )
     cases.append("authority")
     fixture_name = "hepta-cleanup-fixture-7c3d.json"

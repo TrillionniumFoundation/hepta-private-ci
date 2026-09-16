@@ -155,21 +155,9 @@ jobs:
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
-          python3 -m unittest discover -s scripts -p test_hepta_paper_evidence.py -v
           python3 scripts/hepta-paper-evidence.py verify
-          python3 scripts/hepta-hnmf.py self-test
           python3 scripts/hepta-hnmf.py verify
-          python3 scripts/hepta-cns.py self-test
-          python3 scripts/hepta-cns.py generate-status --check
           python3 scripts/hepta-cns.py verify
-          for manifest in \
-            qualification/hnmf-reference/Cargo.toml \
-            qualification/hnmf-contract-reference/Cargo.toml \
-            qualification/hnmf-adversarial-reference/Cargo.toml; do
-            cargo fmt --manifest-path "$manifest" -- --check
-            cargo check --manifest-path "$manifest" --all-targets --locked
-            cargo test --manifest-path "$manifest" --locked
-          done
 
       - name: Emit exact merge receipt
         env:

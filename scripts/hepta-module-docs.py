@@ -1,6 +1,13 @@
 #!/usr/bin/env python3
 """Closed-world validator for Hepta module source bindings and technical guides."""
 
+try:
+    from scripts.hepta_metadata import AUTHORITY_KEYS
+except ModuleNotFoundError as error:
+    if error.name != "scripts":
+        raise
+    from hepta_metadata import AUTHORITY_KEYS
+
 import argparse
 import hashlib
 import json
@@ -9,25 +16,6 @@ import subprocess
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-AUTHORITY_KEYS = [
-    "runtimeAuthority",
-    "productionCaller",
-    "productionWriter",
-    "modelInvocation",
-    "providerDispatch",
-    "toolExecution",
-    "networkConnect",
-    "externalFilesystemMutation",
-    "secretOperation",
-    "matrixSend",
-    "externalEffect",
-    "fleetMutation",
-    "canonicalSelection",
-    "merge",
-    "operatorAcceptance",
-    "promotion",
-    "release",
-]
 HEADINGS = [
     "## 1. Identity, mission and ownership",
     "## 2. Source binding and implementation status",

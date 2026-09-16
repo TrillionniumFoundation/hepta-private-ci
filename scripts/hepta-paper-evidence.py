@@ -12,27 +12,15 @@ import unicodedata
 from pathlib import Path
 from typing import Any
 
+try:
+    from scripts.hepta_metadata import AUTHORITY_KEYS, has_schema_version
+except ModuleNotFoundError as error:
+    if error.name != "scripts":
+        raise
+    from hepta_metadata import AUTHORITY_KEYS, has_schema_version
+
 ROOT = Path(__file__).resolve().parents[1]
 BINDING_PATH = ROOT / "docs/learning/PAPER_EVIDENCE_BINDINGS.json"
-AUTHORITY_KEYS = [
-    "runtimeAuthority",
-    "productionCaller",
-    "productionWriter",
-    "modelInvocation",
-    "providerDispatch",
-    "toolExecution",
-    "networkConnect",
-    "externalFilesystemMutation",
-    "secretOperation",
-    "matrixSend",
-    "externalEffect",
-    "fleetMutation",
-    "canonicalSelection",
-    "merge",
-    "operatorAcceptance",
-    "promotion",
-    "release",
-]
 
 
 class DuplicateKey(ValueError):
@@ -189,7 +177,7 @@ def verify() -> int:
     binding = load_path(BINDING_PATH)
     need(
         binding.get("schema") == "hepta.paper-evidence-binding.v2"
-        and binding.get("schemaVersion") == 2,
+        and has_schema_version(binding, 2),
         "binding schema",
     )
     need(binding.get("planVersion") == "8.1.0-cns-organ", "binding plan")

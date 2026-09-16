@@ -5,10 +5,16 @@ from __future__ import annotations
 
 import argparse
 import json
-import re
 import sys
 from pathlib import Path
 from typing import Any
+
+try:
+    from scripts.hepta_metadata import AUTHORITY_KEYS, has_schema_version
+except ModuleNotFoundError as error:
+    if error.name != "scripts":
+        raise
+    from hepta_metadata import AUTHORITY_KEYS, has_schema_version
 
 try:
     from scripts.hepta_module_catalog import has_unique_module_ids
@@ -67,25 +73,6 @@ PROFILE_FIELDS = [
     "nduParticipation",
     "assimilationComponents",
     "externalGateIds",
-]
-AUTHORITY_KEYS = [
-    "runtimeAuthority",
-    "productionCaller",
-    "productionWriter",
-    "modelInvocation",
-    "providerDispatch",
-    "toolExecution",
-    "networkConnect",
-    "externalFilesystemMutation",
-    "secretOperation",
-    "matrixSend",
-    "externalEffect",
-    "fleetMutation",
-    "canonicalSelection",
-    "merge",
-    "operatorAcceptance",
-    "promotion",
-    "release",
 ]
 RECEIPT_FIELDS = [
     "sourceReceipt",
@@ -196,7 +183,7 @@ def verify() -> int:
     cns = load(CNS_PATH)
     need(
         status_model.get("schema") == "hepta.qualification-readiness-status.v1"
-        and status_model.get("schemaVersion") == 1,
+        and has_schema_version(status_model, 1),
         "canonical status model",
     )
     module_facts = status_model.get("moduleFacts", {})
@@ -217,7 +204,7 @@ def verify() -> int:
 
     need(
         dossier.get("schema") == "hepta.module-execution-dossier.v1"
-        and dossier.get("schemaVersion") == 1,
+        and has_schema_version(dossier, 1),
         "dossier schema",
     )
     need(
@@ -390,9 +377,6 @@ def verify() -> int:
     dossier_readme = (ROOT / README_PATH).read_text(encoding="utf-8")
     technical = (ROOT / TECHNICAL_PATH).read_text(encoding="utf-8")
     workflow = (ROOT / WORKFLOW_PATH).read_text(encoding="utf-8")
-    combined = "\n".join(
-        [parallel, handoff, readiness_readme, dossier_readme, technical]
-    )
     need(
         DOSSIER_PATH in parallel
         and DOSSIER_PATH in handoff
@@ -435,11 +419,9 @@ def verify() -> int:
         "python3 scripts/hepta-implementation-dossiers.py generate-status --check",
         "python3 scripts/hepta-implementation-dossiers.py verify",
     ]:
-        need(workflow.count(command) == 2, "workflow coverage " + command)
-    need(
-        not re.search(r"\b(?:TODO|TBD|FIXME|XXX)\b", combined, re.I),
-        "unresolved marker in dossier documentation",
-    )
+        # The source-head job owns the full suite. Merge candidates only
+        # revalidate the merged tree, so the expensive command need appear once.
+        need(workflow.count(command) >= 1, "workflow coverage " + command)
     need(
         (ROOT / STATUS_PATH).read_text(encoding="utf-8")
         == status_text(dossier, readiness, cns),

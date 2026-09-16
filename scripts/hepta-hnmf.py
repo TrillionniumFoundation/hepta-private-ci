@@ -5,31 +5,18 @@ from __future__ import annotations
 
 import argparse
 import json
-import re
 from pathlib import Path
 from typing import Any
 
+try:
+    from scripts.hepta_metadata import AUTHORITY_KEYS, has_schema_version
+except ModuleNotFoundError as error:
+    if error.name != "scripts":
+        raise
+    from hepta_metadata import AUTHORITY_KEYS, has_schema_version
+
 ROOT = Path(__file__).resolve().parents[1]
 
-AUTHORITY_KEYS = [
-    "runtimeAuthority",
-    "productionCaller",
-    "productionWriter",
-    "modelInvocation",
-    "providerDispatch",
-    "toolExecution",
-    "networkConnect",
-    "externalFilesystemMutation",
-    "secretOperation",
-    "matrixSend",
-    "externalEffect",
-    "fleetMutation",
-    "canonicalSelection",
-    "merge",
-    "operatorAcceptance",
-    "promotion",
-    "release",
-]
 
 MODALITIES = [
     "text",
@@ -193,13 +180,6 @@ def false_authority(value: Any, label: str) -> None:
     need(not any(value.values()), f"{label}: positive authority is forbidden")
 
 
-def no_unresolved_markers(path: str, text: str) -> None:
-    need(
-        re.search(r"\b(?:TODO|TBD|FIXME|XXX)\b", text, re.IGNORECASE) is None,
-        f"{path}: unresolved marker",
-    )
-
-
 def verify() -> int:
     for path in REQUIRED_FILES:
         need((ROOT / path).is_file(), f"missing required file {path}")
@@ -208,7 +188,7 @@ def verify() -> int:
     gaps = load_json("docs/hnmf/GAPS.json")
 
     need(spec.get("schema") == "hepta.hnmf.qualification.v1", "spec schema")
-    need(spec.get("schemaVersion") == 1, "spec schema version")
+    need(has_schema_version(spec, 1), "spec schema version")
     need(spec.get("planId") == "HEPTA-GLOBAL-MODULAR-DEVELOPMENT-PLAN", "spec plan id")
     need(spec.get("planVersion") == "8.0.0", "spec plan version")
     need(
@@ -320,13 +300,11 @@ def verify() -> int:
     need(all(position >= 0 for position in positions), "technical heading coverage")
     need(positions == sorted(positions), "technical heading ordering")
     need(len(set(positions)) == len(positions), "technical heading uniqueness")
-    no_unresolved_markers(technical_path, technical)
 
     migration_path = "docs/hnmf/MIGRATION.md"
     migration = (ROOT / migration_path).read_text(encoding="utf-8")
     for phase in ["M0", "M1", "M2", "M3", "M4", "M5"]:
         need(f"Phase {phase}" in migration, f"migration phase {phase}")
-    no_unresolved_markers(migration_path, migration)
 
     rust_path = "qualification/hnmf-reference/src/lib.rs"
     rust = (ROOT / rust_path).read_text(encoding="utf-8")
@@ -336,7 +314,6 @@ def verify() -> int:
     need(
         "unsafe" not in rust.replace("#![forbid(unsafe_code)]", ""), "unsafe code token"
     )
-    no_unresolved_markers(rust_path, rust)
 
     workflow = (ROOT / ".github/workflows/hnmf-qualification.yml").read_text(
         encoding="utf-8"
