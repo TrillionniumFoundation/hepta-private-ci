@@ -11,8 +11,6 @@ use codex_hepta_contracts::Sha256Digest;
 use codex_hepta_paths::HeptaAgentLayout;
 use codex_state::SqliteConfig;
 use codex_utils_absolute_path::AbsolutePathBuf;
-use futures::StreamExt;
-use futures::stream;
 use serde::Serialize;
 use sha2::Digest;
 use sha2::Sha256;
@@ -867,21 +865,16 @@ impl FederatedRecallSet {
         }
         let current = self.current_readers(request.now_unix_seconds()).await;
         let attempted_sources = current.readers.len();
-        let outcomes = stream::iter(current.readers.iter())
-            .map(|reader| async move {
-                tokio::time::timeout(
-                    FEDERATION_SOURCE_TIMEOUT,
-                    reader.retrieve(access, request),
-                )
-                .await
-            })
-            .buffer_unordered(MAX_FEDERATION_CONCURRENT_SOURCES)
-            .collect::<Vec<_>>()
-            .await;
         let mut candidates = Vec::new();
         let mut completed_sources = 0usize;
-        for outcome in outcomes {
-            if let Ok(Ok(batch)) = outcome {
+        for readers in current.readers.chunks(MAX_FEDERATION_CONCURRENT_SOURCES) {
+            let (first, second, third, fourth) = tokio::join!(
+                retrieve_source(readers.first(), access, request),
+                retrieve_source(readers.get(1), access, request),
+                retrieve_source(readers.get(2), access, request),
+                retrieve_source(readers.get(3), access, request),
+            );
+            for batch in [first, second, third, fourth].into_iter().flatten() {
                 completed_sources += 1;
                 candidates.extend(batch.candidates);
             }
@@ -988,33 +981,23 @@ impl FederatedRecallSet {
         &self,
         now_unix_seconds: i64,
     ) -> (Vec<FederatedMemoryReader>, bool) {
-        let outcomes = stream::iter(self.owner_layouts.iter().cloned())
-            .map(|owner_layout| {
-                let consumer_agent_id = self.consumer_agent_id.clone();
-                async move {
-                    match tokio::time::timeout(
-                        FEDERATION_SOURCE_TIMEOUT,
-                        FederatedMemoryReader::discover(
-                            &owner_layout,
-                            &consumer_agent_id,
-                            now_unix_seconds,
-                        ),
-                    )
-                    .await
-                    {
-                        Ok(Ok(readers)) => (true, readers),
-                        Ok(Err(_)) | Err(_) => (false, Vec::new()),
-                    }
-                }
-            })
-            .buffer_unordered(MAX_FEDERATION_CONCURRENT_SOURCES)
-            .collect::<Vec<_>>()
-            .await;
-        let discovery_complete = outcomes.iter().all(|(completed, _)| *completed);
-        let mut readers = outcomes
-            .into_iter()
-            .flat_map(|(_, readers)| readers)
-            .collect::<Vec<_>>();
+        let mut discovery_complete = true;
+        let mut readers = Vec::new();
+        for layouts in self
+            .owner_layouts
+            .chunks(MAX_FEDERATION_CONCURRENT_SOURCES)
+        {
+            let (first, second, third, fourth) = tokio::join!(
+                discover_source(layouts.first(), &self.consumer_agent_id, now_unix_seconds),
+                discover_source(layouts.get(1), &self.consumer_agent_id, now_unix_seconds),
+                discover_source(layouts.get(2), &self.consumer_agent_id, now_unix_seconds),
+                discover_source(layouts.get(3), &self.consumer_agent_id, now_unix_seconds),
+            );
+            for (completed, discovered) in [first, second, third, fourth].into_iter().flatten() {
+                discovery_complete &= completed;
+                readers.extend(discovered);
+            }
+        }
         readers.sort_by(|left, right| {
             left.capability
                 .owner_agent_id
@@ -1025,6 +1008,37 @@ impl FederatedRecallSet {
         readers.truncate(MAX_FEDERATION_SOURCES_PER_AGENT);
         (readers, discovery_complete)
     }
+}
+
+async fn retrieve_source(
+    reader: Option<&FederatedMemoryReader>,
+    access: &FederationConsumerAccess,
+    request: &RetrievalRequest,
+) -> Option<FederatedRetrievalBatch> {
+    let reader = reader?;
+    tokio::time::timeout(FEDERATION_SOURCE_TIMEOUT, reader.retrieve(access, request))
+        .await
+        .ok()?
+        .ok()
+}
+
+async fn discover_source(
+    owner_layout: Option<&HeptaAgentLayout>,
+    consumer_agent_id: &AgentId,
+    now_unix_seconds: i64,
+) -> Option<(bool, Vec<FederatedMemoryReader>)> {
+    let owner_layout = owner_layout?;
+    Some(
+        match tokio::time::timeout(
+            FEDERATION_SOURCE_TIMEOUT,
+            FederatedMemoryReader::discover(owner_layout, consumer_agent_id, now_unix_seconds),
+        )
+        .await
+        {
+            Ok(Ok(readers)) => (true, readers),
+            Ok(Err(_)) | Err(_) => (false, Vec::new()),
+        },
+    )
 }
 
 async fn insert_event(
