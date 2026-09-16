@@ -56,13 +56,11 @@ jobs:
 
           callers = Path("codex-rs/hepta-contracts/CALLERS.toml")
           text = callers.read_text()
-          old = '''  "codex-rs/app-server/src/extensions.rs",
-            "codex-rs/mcp-server/src/message_processor.rs",'''
-          new = '''  "codex-rs/hepta-codex-adapter/src/app_server_embedding.rs",
-            "codex-rs/mcp-server/src/message_processor.rs",'''
+          old = '"codex-rs/app-server/src/extensions.rs"'
+          new = '"codex-rs/hepta-codex-adapter/src/app_server_embedding.rs"'
           if text.count(old) != 2:
               raise SystemExit(f"expected exactly two app-server Hepta installer caller entries, got {text.count(old)}")
-          callers.write_text(text.replace(old, new, 2))
+          callers.write_text(text.replace(old, new))
 
           segments = Path("codex-rs/hepta-learning-ledger/src/segments.rs")
           text = segments.read_text()
