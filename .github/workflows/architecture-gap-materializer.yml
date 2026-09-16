@@ -1,0 +1,137 @@
+name: Architecture gap materializer
+
+on:
+  push:
+    branches:
+      - architecture/close-priority-scaleability-gaps-20260916
+    paths:
+      - codex-rs/hepta-learning-ledger/**
+      - codex-rs/hepta-codex-adapter/**
+      - codex-rs/app-server/**
+      - codex-rs/hepta-contracts/CALLERS.toml
+      - codex-rs/Cargo.lock
+      - .github/workflows/architecture-gap-materializer.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: architecture-gap-materializer-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  materialize:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+          ref: ${{ github.sha }}
+
+      - name: Bind exact source
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${GITHUB_SHA}"
+
+      - name: Apply deterministic composition metadata cleanup
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+
+          callers = Path("codex-rs/hepta-contracts/CALLERS.toml")
+          text = callers.read_text()
+          old = '''  "codex-rs/app-server/src/extensions.rs",
+            "codex-rs/mcp-server/src/message_processor.rs",'''
+          new = '''  "codex-rs/hepta-codex-adapter/src/app_server_embedding.rs",
+            "codex-rs/mcp-server/src/message_processor.rs",'''
+          if text.count(old) != 2:
+              raise SystemExit(f"expected exactly two app-server Hepta installer caller entries, got {text.count(old)}")
+          callers.write_text(text.replace(old, new, 2))
+
+          segments = Path("codex-rs/hepta-learning-ledger/src/segments.rs")
+          text = segments.read_text()
+          old = '''        if archives.last().copied()
+              != Some(LedgerArchiveRange {
+                  segment: witness.segment,
+                  predecessor: archives
+                      .last()
+                      .map_or(empty_anchor(), |range| range.predecessor),
+                  anchor: witness.anchor,
+              })
+          {
+              // The equality expression above deliberately checks the checkpoint
+              // head while `validate_archive_ranges` already checked continuity.
+              if archives.last().map(|range| (range.segment, range.anchor))
+                  != Some((witness.segment, witness.anchor))
+              {
+                  return Err(DurableLedgerError::Corrupt);
+              }
+          }'''
+          new = '''        if archives.last().map(|range| (range.segment, range.anchor))
+              != Some((witness.segment, witness.anchor))
+          {
+              return Err(DurableLedgerError::Corrupt);
+          }'''
+          if old not in text:
+              raise SystemExit("checkpoint archive-head cleanup source did not match")
+          segments.write_text(text.replace(old, new, 1))
+          PY
+
+      - name: Format affected Rust packages
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo fmt --package codex-hepta-learning-ledger --package codex-hepta-codex-adapter --package codex-app-server
+
+      - name: Resolve dependency graph and compile affected packages
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo check -p codex-hepta-learning-ledger --all-targets
+          cargo check -p codex-hepta-codex-adapter --all-targets
+          cargo check -p codex-app-server --all-targets
+
+      - name: Run focused tests
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo test -p codex-hepta-learning-ledger
+          cargo test -p codex-hepta-codex-adapter
+
+      - name: Verify locked graph and formatting
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo check --locked -p codex-hepta-learning-ledger -p codex-hepta-codex-adapter -p codex-app-server --all-targets
+          cargo fmt --package codex-hepta-learning-ledger --package codex-hepta-codex-adapter --package codex-app-server -- --check
+
+      - name: Commit deterministic materialization
+        shell: bash
+        run: |
+          set -euo pipefail
+          git diff --check
+          if test -z "$(git status --porcelain)"; then
+            exit 0
+          fi
+          git config user.name hepta-architecture-materializer
+          git config user.email qualification@invalid
+          git add \
+            codex-rs/Cargo.lock \
+            codex-rs/hepta-contracts/CALLERS.toml \
+            codex-rs/hepta-learning-ledger/src \
+            codex-rs/hepta-codex-adapter/src \
+            codex-rs/app-server/src \
+            codex-rs/hepta-codex-adapter/Cargo.toml \
+            codex-rs/app-server/Cargo.toml
+          git diff --cached --check
+          git commit -m "chore: materialize architecture gap qualification"
+          git push origin "HEAD:${GITHUB_REF_NAME}"
