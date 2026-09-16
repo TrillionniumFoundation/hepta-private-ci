@@ -140,24 +140,16 @@ where
         git_attribution_base_url,
         http_client_factory,
     );
-    codex_hepta_governance::install(&mut builder, state_db.clone(), |config: &Config| {
-        config
-            .features
-            .enabled(codex_features::Feature::HeptaGovernance)
-    });
-    codex_hepta_memory_extension::install_with_turn_writer(
+    codex_hepta_codex_adapter::install_app_server_extensions(
         &mut builder,
         state_db,
-        hepta_cognitive_runtime,
-        hepta_local_turn_lifecycle_enabled,
-        hepta_local_development_policy,
-        hepta_qualification_turn_writer_enabled,
-        hepta_qualification_turn_writer,
-        |config: &Config| {
-            codex_hepta_memory_extension::HeptaMemoryThreadConfig::for_features(
-                hepta_memory_feature_flags(&config.features),
-            )
-        },
+        codex_hepta_codex_adapter::HeptaAppServerEmbedding::new(
+            hepta_cognitive_runtime,
+            hepta_local_turn_lifecycle_enabled,
+            hepta_local_development_policy,
+            hepta_qualification_turn_writer_enabled,
+            hepta_qualification_turn_writer,
+        ),
     );
     codex_guardian_v2::install(
         &mut builder,
@@ -196,6 +188,7 @@ where
     Arc::new(builder.build())
 }
 
+#[cfg(test)]
 fn hepta_memory_feature_flags(
     features: &codex_features::Features,
 ) -> codex_hepta_memory_extension::HeptaMemoryFeatureFlags {
