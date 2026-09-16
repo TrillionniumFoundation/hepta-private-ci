@@ -10,25 +10,36 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   refresh:
+    if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-24.04
     steps:
-      - name: Check out candidate
+      - name: Check out exact PR head
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
-          persist-credentials: false
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: true
+          fetch-depth: 0
       - name: Install Rust toolchain
         uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
       - name: Resolve workspace lockfile
         working-directory: codex-rs
         run: cargo metadata --format-version=1 --all-features >/dev/null
-      - name: Upload resolved lockfile
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
-        with:
-          name: hepta-resolved-cargo-lock-${{ github.event.pull_request.head.sha || github.sha }}
-          path: codex-rs/Cargo.lock
-          if-no-files-found: error
-          retention-days: 1
+      - name: Commit only the resolved lockfile
+        shell: bash
+        env:
+          HEAD_REF: ${{ github.event.pull_request.head.ref }}
+        run: |
+          set -euo pipefail
+          if git diff --quiet -- codex-rs/Cargo.lock; then
+            echo "Cargo.lock already current"
+            exit 0
+          fi
+          git config user.name "Hepta CI"
+          git config user.email "hepta-ci@users.noreply.github.com"
+          git add -- codex-rs/Cargo.lock
+          git commit -m "build: refresh Cargo lockfile"
+          git push origin "HEAD:${HEAD_REF}"
