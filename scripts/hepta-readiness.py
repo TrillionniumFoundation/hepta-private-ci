@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Closed-world verifier for Hepta V8 pre-coding implementation readiness."""
+"""Registry-invariant verifier for Hepta V8 implementation readiness."""
 
 import argparse
 import hashlib
@@ -58,40 +58,6 @@ DOCUMENT_IDS = [
     "RDY-EMB",
     "RDY-ASM",
     "RDY-PAR",
-]
-
-PROTOCOL_IDS = [
-    "BranchPurposeManifestV1",
-    "CanonicalSourceReceiptV1",
-    "ParallelLaneEnvelopeV1",
-    "IntegrationCheckpointV1",
-    "ObjectiveSourceEnvelopeV1",
-    "ObjectiveConstraintSetV1",
-    "ObjectiveConflictReceiptV1",
-    "ObjectiveCompileReceiptV1",
-    "UtilityContributionV1",
-    "NduIterationReceiptV1",
-    "NduConvergenceCertificateV1",
-    "NeuronRuntimeConfigV1",
-    "NeuronTickInputV1",
-    "NeuronTickReceiptV1",
-    "EvaluationPlanV1",
-    "EvaluatorIndependenceReceiptV1",
-    "RetentionSliceReceiptV1",
-    "MutationGrammarManifestV1",
-    "SandboxExecutionReceiptV1",
-    "CandidateLineageV1",
-    "SensorCalibrationManifestV1",
-    "RealTimeLoopProfileV1",
-    "EmergencyStopReceiptV1",
-    "ActuatorReconciliationReceiptV1",
-    "ExternalSystemManifestV1",
-    "ServiceGraphV1",
-    "CapabilityBoundaryV1",
-    "AssimilationProposalV1",
-    "MigrationPlanV1",
-    "AssimilationQualificationReceiptV1",
-    "RollbackPointV1",
 ]
 
 LANE_IDS = [
@@ -603,7 +569,11 @@ def verify() -> int:
 
     protocol_rows = protocols.get("protocols", [])
     actual_protocol_ids = [row["id"] for row in protocol_rows]
-    need(actual_protocol_ids == PROTOCOL_IDS, "protocol closed world/order")
+    protocol_id_set = set(actual_protocol_ids)
+    need(
+        actual_protocol_ids and len(actual_protocol_ids) == len(protocol_id_set),
+        "protocol registry ids",
+    )
     need(
         protocols.get("defaults")
         == {
@@ -681,13 +651,13 @@ def verify() -> int:
         for consumer in row["consumers"]:
             consumer_projection[consumer].append(pid)
     need(
-        registry_bounded_object_schemas == 46,
-        "protocol bounded-object schema count",
+        registry_bounded_object_schemas > 0,
+        "protocol bounded-object schemas",
     )
 
     gap_rows = gaps.get("gaps", [])
     gap_ids = [row["id"] for row in gap_rows]
-    need(len(gap_ids) == len(set(gap_ids)) == 54, "gap closed world")
+    need(gap_ids and len(gap_ids) == len(set(gap_ids)), "gap registry ids")
     need(
         gaps.get("allDocumentationGapsClosed") is True
         and gaps.get("sourceImplementationClaimed") is False,
@@ -714,17 +684,17 @@ def verify() -> int:
                 (ROOT / evidence_path).is_file(),
                 row["id"] + " missing evidence " + evidence_path,
             )
-        need(set(row["protocols"]) <= set(PROTOCOL_IDS), row["id"] + " protocols")
+        need(set(row["protocols"]) <= protocol_id_set, row["id"] + " protocols")
         need(
             row["boundModules"] and set(row["boundModules"]) <= module_id_set,
             row["id"] + " modules",
         )
     external = gaps.get("externalCapabilityGates", [])
     need(
-        len(external) == 9
-        and [row["id"] for row in external]
-        == [f"RDY-EXT-{number:03d}" for number in range(1, 10)],
-        "external gate closed world/order",
+        external
+        and len({row.get("id") for row in external}) == len(external)
+        and all(str(row.get("id", "")).startswith("RDY-EXT-") for row in external),
+        "external gate registry",
     )
     need(
         all(
@@ -768,7 +738,7 @@ def verify() -> int:
             row["id"] + " bound modules",
         )
         need(
-            set(row["protocols"]) <= set(PROTOCOL_IDS), row["id"] + " protocol bindings"
+            set(row["protocols"]) <= protocol_id_set, row["id"] + " protocol bindings"
         )
         need(
             row["gapIds"] and set(row["gapIds"]) <= set(gap_ids),
@@ -779,10 +749,10 @@ def verify() -> int:
             row["id"] + " work packages",
         )
         need(row["requiredSections"], row["id"] + " required sections")
-        validate_markdown_document(row, set(PROTOCOL_IDS), set(gap_ids))
+        validate_markdown_document(row, protocol_id_set, set(gap_ids))
         mapped_gap_ids.extend(row["gapIds"])
     need(
-        len(mapped_gap_ids) == len(set(mapped_gap_ids)) == 54
+        len(mapped_gap_ids) == len(set(mapped_gap_ids)) == len(gap_ids)
         and set(mapped_gap_ids) == set(gap_ids),
         "document-to-gap exact projection",
     )
@@ -975,9 +945,9 @@ def verify() -> int:
         == {
             "documentationGapState": "closed",
             "state": "closed",
-            "protocolCount": 31,
-            "gapCount": 54,
-            "externalGateCount": 9,
+            "protocolCount": len(protocol_rows),
+            "gapCount": len(gap_rows),
+            "externalGateCount": len(external),
             "moduleBindingCount": len(module_ids),
         },
         "global closure counts",

@@ -9,6 +9,8 @@ mod admission_v3;
 mod closure_v2;
 mod dataset_revocation;
 mod error;
+mod iteration;
+mod iteration_ledger;
 mod lifecycle_journal;
 mod model;
 mod pinned;
@@ -44,6 +46,14 @@ pub use dataset_revocation::DatasetRevocationSummary;
 pub use dataset_revocation::PreparedDatasetRevocation;
 pub use dataset_revocation::prepare_dataset_revocation;
 pub use error::ArtifactRegistryError;
+pub use iteration::IterationCandidateStateV1;
+pub use iteration::IterationCandidateV1;
+pub use iteration::IterationEnvelopeV1;
+pub use iteration::validate_iteration_transition;
+pub use iteration_ledger::{
+    IterationEvidenceKindV1, IterationEvidenceV1, IterationLedgerError, IterationLedgerEventV1,
+    IterationLedgerSnapshotV1, IterationLedgerV1, MAX_ITERATION_EVENTS,
+};
 pub use lifecycle_journal::ArtifactLifecycleJournalError;
 pub use lifecycle_journal::ArtifactLifecycleJournalReceiptV2;
 pub use lifecycle_journal::ArtifactLifecycleJournalRecordV2;

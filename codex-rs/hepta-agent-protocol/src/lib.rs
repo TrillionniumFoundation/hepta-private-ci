@@ -3,10 +3,16 @@
 #![forbid(unsafe_code)]
 
 mod authbus;
+mod capabilities;
 pub use authbus::AuthBusTextBody;
 pub use authbus::AuthBusTextIngress;
 pub use authbus::AuthBusTextState;
 pub use authbus::AuthBusTextStatus;
+pub use capabilities::AGENTD_CAPABILITY_SCHEMA_VERSION;
+pub use capabilities::AgentdCapability;
+pub use capabilities::AgentdCapabilitySet;
+pub use capabilities::NegotiatedAgentdCapabilities;
+pub use capabilities::negotiate_capabilities;
 
 use std::path::PathBuf;
 
@@ -96,6 +102,15 @@ pub struct AgentdRequest {
 }
 
 impl AgentdRequest {
+    pub fn capabilities(request_id: u64, spawn_generation: u64) -> Self {
+        Self {
+            schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
+            request_id,
+            spawn_generation,
+            method: AgentdMethod::Capabilities,
+        }
+    }
+
     pub fn health(request_id: u64, spawn_generation: u64) -> Self {
         Self {
             schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
@@ -247,6 +262,7 @@ impl AgentdRequest {
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(tag = "type", rename_all = "snake_case", deny_unknown_fields)]
 pub enum AgentdMethod {
+    Capabilities,
     Health,
     Lifecycle,
     SessionIngress,
@@ -308,6 +324,7 @@ pub struct AgentdResponse {
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(tag = "type", rename_all = "snake_case", deny_unknown_fields)]
 pub enum AgentdPayload {
+    Capabilities(AgentdCapabilitySet),
     Health(HealthSnapshot),
     Lifecycle(LifecycleSnapshot),
     SessionIngress(SessionIngress),
@@ -546,6 +563,23 @@ fn validate_protocol_text(value: &str, label: &str, max_bytes: usize) -> Result<
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn capabilities_endpoint_is_additive_and_bounded() {
+        let request = AgentdRequest::capabilities(1, 1);
+        let bytes = serde_json::to_vec(&request).expect("serialize capabilities request");
+        assert!(bytes.len() as u64 <= MAX_CONTROL_FRAME_BYTES);
+        assert_eq!(
+            serde_json::from_slice::<AgentdRequest>(&bytes).unwrap(),
+            request
+        );
+        let payload = AgentdPayload::Capabilities(AgentdCapabilitySet::empty());
+        let payload_bytes = serde_json::to_vec(&payload).expect("serialize capabilities payload");
+        assert_eq!(
+            serde_json::from_slice::<AgentdPayload>(&payload_bytes).unwrap(),
+            payload
+        );
+    }
 
     #[test]
     fn health_wire_round_trip_is_strict_and_bounded() {

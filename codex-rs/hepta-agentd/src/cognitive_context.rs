@@ -78,6 +78,10 @@ pub(crate) async fn read(
         items: Vec::new(),
         plan: None,
     };
+    // Admit the whole bounded owner cut before applying the response byte
+    // budget.  Ranking must see every admitted candidate; otherwise a large
+    // low-ranked record can hide the learned winner before the ranker runs.
+    let mut admitted_items = Vec::new();
     for candidate in candidates.candidates {
         let memory = candidate.memory;
         // The legacy search ranks candidates; the new owner cut admits only
@@ -97,8 +101,31 @@ pub(crate) async fn read(
             content: memory.content,
             content_sha256: memory.content_sha256.as_str().to_string(),
         };
+        admitted_items.push(item);
+    }
+    if let Some(ranker) = ranker {
+        let ranker = std::sync::Arc::clone(ranker);
+        let rank_owner = owner.clone();
+        let rank_query = query.to_string();
+        admitted_items = tokio::task::spawn_blocking(move || {
+            ranker.rank(
+                &rank_owner,
+                body_generation,
+                &rank_query,
+                &mut admitted_items,
+            )?;
+            Ok::<_, String>(admitted_items)
+        })
+        .await
+        .map_err(|_| CognitiveContextError::RankerUnavailable)?
+        .map_err(|_| CognitiveContextError::RankerUnavailable)?;
+    }
+    // Bound the complete payload, including JSON escaping and envelope, only
+    // after ranking.  This preserves the highest-ranked item when the legacy
+    // byte cut would otherwise discard it.  Oversized winners are skipped so
+    // they cannot consume the only result slot.
+    for item in admitted_items {
         response.items.push(item);
-        // Bound the complete payload, including JSON escaping and envelope.
         let encoded_bytes = serde_json::to_vec(&response)
             .map_err(|error| CognitiveStoreError::Invalid(error.to_string()))?
             .len();
@@ -106,23 +133,9 @@ pub(crate) async fn read(
             response.items.pop();
             continue;
         }
-        if ranker.is_none() && response.items.len() == usize::from(limit) {
+        if response.items.len() == usize::from(limit) {
             break;
         }
-    }
-    if let Some(ranker) = ranker {
-        let ranker = std::sync::Arc::clone(ranker);
-        let rank_owner = owner.clone();
-        let rank_query = query.to_string();
-        let mut items = std::mem::take(&mut response.items);
-        response.items = tokio::task::spawn_blocking(move || {
-            ranker.rank(&rank_owner, body_generation, &rank_query, &mut items)?;
-            Ok::<_, String>(items)
-        })
-        .await
-        .map_err(|_| CognitiveContextError::RankerUnavailable)?
-        .map_err(|_| CognitiveContextError::RankerUnavailable)?;
-        response.items.truncate(usize::from(limit));
     }
     let encoded_context = serde_json::to_vec(&response)
         .map_err(|error| CognitiveStoreError::Invalid(error.to_string()))?;

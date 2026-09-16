@@ -25,6 +25,7 @@ mod state;
 pub use authbus_ingress::authbus_text_claims;
 pub use client::AgentdClient;
 pub use codex_hepta_agent_protocol::AGENTD_CONTROL_SCHEMA_VERSION;
+pub use codex_hepta_agent_protocol::AgentdCapabilitySet;
 pub use codex_hepta_agent_protocol::AgentdEvent;
 pub use codex_hepta_agent_protocol::AgentdEventKind;
 pub use codex_hepta_agent_protocol::AgentdMethod;

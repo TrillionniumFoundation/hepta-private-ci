@@ -2,6 +2,18 @@
 
 This directory contains exactly one stable implementation guide for every module registered in `MODULES.json`. Machine-readable coverage is in `MODULE_DOCS.json`; source reality is in `SOURCE_BINDINGS.json`. Retained guide hashes and word/byte counts are optional generated presentation metadata, not acceptance evidence. Ordinary prose edits need no metadata-only commit. Machine ownership, source reality, authority constraints and local links are still verified. A guide explains implementation and operations but grants no runtime, acceptance, promotion or release authority.
 
+## Cargo registry closure
+
+`MODULES.json` is the canonical module identity registry. Compiled Rust package
+identity is discovered from `codex-rs/**/Cargo.toml` and must be explicitly
+bound by `CARGO_BINDINGS.json`; source roots in `MODULES.json` remain the
+documentation and implementation roots. Run
+`python3 scripts/hepta_module_registry.py --pretty` to emit a deterministic
+JSON drift report. An unclaimed `codex-hepta-*` package is a registry error;
+non-Rust roots (UI, tools and external systems) are reported separately as
+expected missing Cargo packages. Use `--strict` in a qualification job once
+every support package has an explicit ownership decision.
+
 ## Guides
 
 - [`platform.types`](platform.types/TECHNICAL.md) — `existing_bound`, bootstrap `PLATFORM-0-TYPE-BOUNDARY`.

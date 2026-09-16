@@ -15,6 +15,7 @@ use tokio::io::BufReader;
 use tokio::time::timeout;
 
 use crate::AGENTD_CONTROL_SCHEMA_VERSION;
+use crate::AgentdCapabilitySet;
 use crate::AgentdError;
 use crate::AgentdPayload;
 use crate::AgentdRequest;
@@ -55,6 +56,20 @@ impl AgentdClient {
             next_request_id: AtomicU64::new(1),
             timeout: Duration::from_secs(2),
         })
+    }
+
+    pub async fn capabilities(&self) -> Result<AgentdCapabilitySet, AgentdError> {
+        match self
+            .send(AgentdRequest::capabilities(
+                self.request_id(),
+                self.spawn_generation,
+            ))
+            .await?
+            .payload
+        {
+            AgentdPayload::Capabilities(capabilities) => Ok(capabilities),
+            payload => unexpected(payload),
+        }
     }
 
     pub async fn health(&self) -> Result<HealthSnapshot, AgentdError> {

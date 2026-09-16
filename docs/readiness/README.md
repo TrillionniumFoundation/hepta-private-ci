@@ -32,6 +32,11 @@ This directory closes the registered pre-coding documentation requirements for t
 
 ## Validation
 
+The readiness verifier derives protocol, gap and external-gate cardinalities
+from the JSON registries. Adding or retiring an entry does not require editing
+a second list of numbers; uniqueness, ownership, schema and cross-reference
+invariants remain enforced.
+
 `PROTOCOLS.json` uses a closed, recursively validated field-schema grammar. Every
 enum declares its complete allowed-value set; every bounded array declares item
 schema, count limits and uniqueness semantics; fixed-point vectors bind Q24 or Q32

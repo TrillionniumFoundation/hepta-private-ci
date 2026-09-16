@@ -4,6 +4,19 @@ on:
   push:
     branches: [main]
   pull_request:
+    paths:
+      - "codex-rs/**"
+      - "apps/**"
+      - "tools/hepta-engineering-control/**"
+      - "tools/hepta-os-evidence/**"
+      - "scripts/hepta_ci_v8.py"
+      - "scripts/hepta_ci_exec.py"
+      - "scripts/hepta-gap-closure.py"
+      - "scripts/verify_cargo_lock.py"
+      - "justfile"
+      - "codex-rs/justfile"
+      - ".github/workflows/hepta-consolidated-source.yml"
+      - ".github/actions/hepta-synthetic-merge/**"
 
 permissions:
   contents: read
