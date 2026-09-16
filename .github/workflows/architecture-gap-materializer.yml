@@ -58,8 +58,8 @@ jobs:
           text = callers.read_text()
           old = '"codex-rs/app-server/src/extensions.rs"'
           new = '"codex-rs/hepta-codex-adapter/src/app_server_embedding.rs"'
-          if text.count(old) != 2:
-              raise SystemExit(f"expected exactly two app-server Hepta installer caller entries, got {text.count(old)}")
+          if text.count(old) != 3:
+              raise SystemExit(f"expected exactly three App Server Hepta composition caller entries, got {text.count(old)}")
           callers.write_text(text.replace(old, new))
 
           segments = Path("codex-rs/hepta-learning-ledger/src/segments.rs")
