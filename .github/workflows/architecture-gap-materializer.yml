@@ -6,16 +6,24 @@ on:
       - architecture/close-priority-scaleability-gaps-20260916
     paths:
       - codex-rs/hepta-learning-ledger/**
+      - codex-rs/hepta-supervisor/**
+      - codex-rs/hepta-control-plane/**
+      - codex-rs/hepta-runtime/**
       - codex-rs/hepta-codex-adapter/**
       - codex-rs/app-server/**
+      - codex-rs/hepta-agentd/**
       - codex-rs/hepta-contracts/CALLERS.toml
       - codex-rs/Cargo.lock
       - .github/workflows/architecture-gap-materializer.yml
   pull_request:
     paths:
       - codex-rs/hepta-learning-ledger/**
+      - codex-rs/hepta-supervisor/**
+      - codex-rs/hepta-control-plane/**
+      - codex-rs/hepta-runtime/**
       - codex-rs/hepta-codex-adapter/**
       - codex-rs/app-server/**
+      - codex-rs/hepta-agentd/**
       - codex-rs/hepta-contracts/CALLERS.toml
       - codex-rs/Cargo.lock
       - .github/workflows/architecture-gap-materializer.yml
@@ -47,7 +55,7 @@ jobs:
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "${SOURCE_SHA}"
 
-      - name: Apply deterministic composition metadata cleanup
+      - name: Apply canonical source corrections
         shell: bash
         run: |
           set -euo pipefail
@@ -65,8 +73,7 @@ jobs:
                   raise SystemExit(
                       f"unexpected App Server caller state: old={old_count} new={new_count}"
                   )
-              text = text.replace(old, new)
-              callers.write_text(text)
+              callers.write_text(text.replace(old, new))
           elif new_count != 3:
               raise SystemExit(
                   f"expected exactly three adapter caller entries after migration, got {new_count}"
@@ -74,8 +81,6 @@ jobs:
 
           segments = Path("codex-rs/hepta-learning-ledger/src/segments.rs")
           text = segments.read_text()
-          start_marker = "        if archives.last().copied()\n"
-          end_marker = "        validate_minimum_anchor(&core, minimum)?;\n"
           canonical = '''        if archives.last().map(|range| (range.segment, range.anchor))
               != Some((witness.segment, witness.anchor))
           {
@@ -83,29 +88,37 @@ jobs:
           }
 '''
           if canonical not in text:
+              start_marker = "        if archives.last().copied()\n"
+              end_marker = "        validate_minimum_anchor(&core, minimum)?;\n"
               start = text.find(start_marker)
               end = text.find(end_marker, start if start >= 0 else 0)
               if start < 0 or end < 0 or end <= start:
                   raise SystemExit("checkpoint archive-head cleanup source did not match")
-              text = text[:start] + canonical + text[end:]
-              segments.write_text(text)
+              segments.write_text(text[:start] + canonical + text[end:])
           PY
 
-      - name: Format affected Rust packages
+      - name: Rustfmt workspace
         working-directory: codex-rs
         shell: bash
         run: |
           set -euo pipefail
-          cargo fmt --package codex-hepta-learning-ledger --package codex-hepta-codex-adapter --package codex-app-server
+          cargo fmt --all
+          cargo fmt --all -- --check
 
-      - name: Resolve dependency graph and compile affected packages
+      - name: Compile affected packages
         working-directory: codex-rs
         shell: bash
         run: |
           set -euo pipefail
-          cargo check -p codex-hepta-learning-ledger --all-targets
-          cargo check -p codex-hepta-codex-adapter --all-targets
-          cargo check -p codex-app-server --all-targets
+          cargo check \
+            -p codex-hepta-learning-ledger \
+            -p codex-hepta-supervisor \
+            -p codex-hepta-control-plane \
+            -p codex-hepta-runtime \
+            -p codex-hepta-codex-adapter \
+            -p codex-app-server \
+            -p codex-hepta-agentd \
+            --all-targets
 
       - name: Run focused tests
         working-directory: codex-rs
@@ -113,17 +126,20 @@ jobs:
         run: |
           set -euo pipefail
           cargo test -p codex-hepta-learning-ledger
+          cargo test -p codex-hepta-supervisor
+          cargo test -p codex-hepta-control-plane
+          cargo test -p codex-hepta-runtime
           cargo test -p codex-hepta-codex-adapter
 
-      - name: Verify locked graph and formatting
+      - name: Verify locked workspace
         working-directory: codex-rs
         shell: bash
         run: |
           set -euo pipefail
-          cargo check --locked -p codex-hepta-learning-ledger -p codex-hepta-codex-adapter -p codex-app-server --all-targets
-          cargo fmt --package codex-hepta-learning-ledger --package codex-hepta-codex-adapter --package codex-app-server -- --check
+          cargo check --locked --workspace --all-targets
+          cargo fmt --all -- --check
 
-      - name: Commit deterministic materialization
+      - name: Commit tested canonical source
         shell: bash
         run: |
           set -euo pipefail
@@ -136,11 +152,13 @@ jobs:
           git add \
             codex-rs/Cargo.lock \
             codex-rs/hepta-contracts/CALLERS.toml \
-            codex-rs/hepta-learning-ledger/src \
-            codex-rs/hepta-codex-adapter/src \
-            codex-rs/app-server/src \
-            codex-rs/hepta-codex-adapter/Cargo.toml \
-            codex-rs/app-server/Cargo.toml
+            codex-rs/hepta-learning-ledger \
+            codex-rs/hepta-supervisor \
+            codex-rs/hepta-control-plane \
+            codex-rs/hepta-runtime \
+            codex-rs/hepta-codex-adapter \
+            codex-rs/app-server \
+            codex-rs/hepta-agentd
           git diff --cached --check
-          git commit -m "chore: materialize architecture gap qualification"
+          git commit -m "chore: materialize tested architecture canonical source"
           git push origin "HEAD:${SOURCE_BRANCH}"
