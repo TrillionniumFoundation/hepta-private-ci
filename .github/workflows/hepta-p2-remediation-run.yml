@@ -1,0 +1,60 @@
+name: Hepta P2 remediation runner
+
+on:
+  pull_request:
+    paths:
+      - "codex-rs/**/Cargo.toml"
+      - "scripts/hepta-p2-remediation-apply.py"
+      - ".github/workflows/hepta-p2-remediation-run.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  apply-and-test:
+    if: github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - name: Check out exact PR head
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: true
+          fetch-depth: 0
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          components: rustfmt
+      - name: Apply deterministic remediation
+        run: python3 scripts/hepta-p2-remediation-apply.py
+      - name: Refresh Cargo lockfile
+        working-directory: codex-rs
+        run: cargo metadata --format-version=1 --all-features >/dev/null
+      - name: Format changed Rust packages
+        working-directory: codex-rs
+        run: cargo fmt -p codex-hepta-memory -p codex-hepta-memory-extension -- --config imports_granularity=Item
+      - name: Test memory federation package
+        working-directory: codex-rs
+        run: cargo test --locked -p codex-hepta-memory cognitive_federation
+      - name: Compile memory extension tests
+        working-directory: codex-rs
+        run: cargo test --locked -p codex-hepta-memory-extension --no-run
+      - name: Commit tested remediation
+        env:
+          HEAD_REF: ${{ github.event.pull_request.head.ref }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "Hepta CI"
+          git config user.email "hepta-ci@users.noreply.github.com"
+          git add -- \
+            codex-rs/Cargo.lock \
+            codex-rs/hepta-memory/Cargo.toml \
+            codex-rs/hepta-memory/src/cognitive_federation.rs \
+            codex-rs/hepta-memory/src/cognitive_federation_tests.rs \
+            codex-rs/hepta-memory/src/lib.rs \
+            codex-rs/ext/hepta-memory/src/cognitive/federation.rs
+          git diff --cached --check
+          git commit -m "perf(memory): bound federated recall and expose partial coverage"
+          git push origin "HEAD:${HEAD_REF}"
