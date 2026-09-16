@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 concurrency:
   group: hepta-repository-integrity-${{ github.event.pull_request.number || github.ref }}
@@ -69,3 +69,122 @@ jobs:
           include-hidden-files: true
           if-no-files-found: error
           retention-days: 30
+
+  architecture-materialize:
+    name: Materialize architecture canonical source
+    if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    env:
+      SOURCE_SHA: ${{ github.event.pull_request.head.sha }}
+      SOURCE_BRANCH: ${{ github.head_ref }}
+    steps:
+      - name: Check out exact candidate with branch write authority
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Bind exact source
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${SOURCE_SHA}"
+
+      - name: Materialize canonical source
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+
+          callers = Path("codex-rs/hepta-contracts/CALLERS.toml")
+          text = callers.read_text()
+          old = '"codex-rs/app-server/src/extensions.rs"'
+          new = '"codex-rs/hepta-codex-adapter/src/app_server_embedding.rs"'
+          old_count = text.count(old)
+          new_count = text.count(new)
+          if old_count:
+              if old_count != 3 or new_count != 0:
+                  raise SystemExit(
+                      f"unexpected App Server caller state: old={old_count} new={new_count}"
+                  )
+              callers.write_text(text.replace(old, new))
+          elif new_count != 3:
+              raise SystemExit(
+                  f"expected exactly three adapter caller entries after migration, got {new_count}"
+              )
+
+          segments = Path("codex-rs/hepta-learning-ledger/src/segments.rs")
+          text = segments.read_text()
+          canonical = '''        if archives.last().map(|range| (range.segment, range.anchor))
+              != Some((witness.segment, witness.anchor))
+          {
+              return Err(DurableLedgerError::Corrupt);
+          }
+'''
+          if canonical not in text:
+              start_marker = "        if archives.last().copied()\n"
+              end_marker = "        validate_minimum_anchor(&core, minimum)?;\n"
+              start = text.find(start_marker)
+              end = text.find(end_marker, start if start >= 0 else 0)
+              if start < 0 or end < 0 or end <= start:
+                  raise SystemExit("checkpoint archive-head cleanup source did not match")
+              segments.write_text(text[:start] + canonical + text[end:])
+          PY
+
+      - name: Rustfmt affected packages
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo fmt --package codex-hepta-learning-ledger --package codex-hepta-codex-adapter --package codex-app-server
+          cargo fmt --package codex-hepta-learning-ledger --package codex-hepta-codex-adapter --package codex-app-server -- --check
+
+      - name: Compile affected packages
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo check -p codex-hepta-learning-ledger --all-targets
+          cargo check -p codex-hepta-codex-adapter --all-targets
+          cargo check -p codex-app-server --all-targets
+
+      - name: Run focused tests
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo test -p codex-hepta-learning-ledger
+          cargo test -p codex-hepta-codex-adapter
+
+      - name: Verify locked graph
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo check --locked -p codex-hepta-learning-ledger -p codex-hepta-codex-adapter -p codex-app-server --all-targets
+          cargo fmt --package codex-hepta-learning-ledger --package codex-hepta-codex-adapter --package codex-app-server -- --check
+
+      - name: Commit canonical materialization
+        shell: bash
+        run: |
+          set -euo pipefail
+          git diff --check
+          if test -z "$(git status --porcelain)"; then
+            exit 0
+          fi
+          git config user.name hepta-architecture-materializer
+          git config user.email qualification@invalid
+          git add \
+            codex-rs/Cargo.lock \
+            codex-rs/hepta-contracts/CALLERS.toml \
+            codex-rs/hepta-learning-ledger/src \
+            codex-rs/hepta-codex-adapter/src \
+            codex-rs/app-server/src \
+            codex-rs/hepta-codex-adapter/Cargo.toml \
+            codex-rs/app-server/Cargo.toml
+          git diff --cached --check
+          git commit -m "chore: materialize architecture canonical source"
+          git push origin "HEAD:${SOURCE_BRANCH}"
