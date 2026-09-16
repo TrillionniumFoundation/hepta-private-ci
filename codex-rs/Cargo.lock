@@ -2130,9 +2130,9 @@ dependencies = [
  "codex-git-utils",
  "codex-goal-extension",
  "codex-guardian-v2",
+ "codex-hepta-codex-adapter",
  "codex-hepta-contracts",
  "codex-hepta-evidence",
- "codex-hepta-governance",
  "codex-hepta-memory",
  "codex-hepta-memory-extension",
  "codex-hepta-paths",
@@ -3573,7 +3573,14 @@ dependencies = [
 name = "codex-hepta-codex-adapter"
 version = "0.0.0"
 dependencies = [
+ "codex-core",
+ "codex-extension-api",
+ "codex-features",
+ "codex-hepta-governance",
+ "codex-hepta-memory",
+ "codex-hepta-memory-extension",
  "codex-hepta-types",
+ "codex-state",
 ]
 
 [[package]]
@@ -4074,6 +4081,7 @@ dependencies = [
  "codex-hepta-matrix-protocol",
  "codex-hepta-memory",
  "codex-hepta-paths",
+ "codex-hepta-types",
  "codex-uds",
  "constant_time_eq",
  "ed25519-dalek",
