@@ -43,11 +43,8 @@ fn real_hanging_child_is_killed_and_observed_exited() {
             run_root: run_root.clone(),
             control_socket: run_root.join("never-created-control.sock"),
             logs_root,
-            command: AgentCommand::new(
-                "/bin/sleep",
-                vec![OsString::from("60")],
-            )
-            .expect("bounded command"),
+            command: AgentCommand::new("/bin/sleep", vec![OsString::from("60")])
+                .expect("bounded command"),
         })
         .expect("spawn real child");
     let mut process = spawned.process;
@@ -66,11 +63,17 @@ fn real_hanging_child_is_killed_and_observed_exited() {
 
     let mut exited = false;
     for _ in 0..100 {
-        if matches!(process.poll(8).expect("poll after kill").state, ProcessState::Exited(_)) {
+        if matches!(
+            process.poll(8).expect("poll after kill").state,
+            ProcessState::Exited(_)
+        ) {
             exited = true;
             break;
         }
         thread::sleep(Duration::from_millis(2));
     }
-    assert!(exited, "SIGKILL must terminate the managed child within the bounded observation window");
+    assert!(
+        exited,
+        "SIGKILL must terminate the managed child within the bounded observation window"
+    );
 }
