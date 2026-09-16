@@ -1,5 +1,7 @@
 name: Hepta P2 remediation apply
 
+# Temporary one-shot migration helper. This workflow must be deleted after the
+# tested source patch lands; normal CI must never mutate or push source.
 on:
   pull_request:
     paths:
@@ -142,41 +144,29 @@ jobs:
 
 #[tokio::test]
 async fn partial_discovery_preserves_healthy_results_and_reports_incomplete_coverage() {
-    let temp = TempDir::new().expect("temp dir");
-    let owner_id = agent_id(70);
-    let consumer_id = agent_id(71);
-    let missing_owner_id = agent_id(72);
-    let owner_layout = layout(&temp, &owner_id);
-    let missing_layout = layout(&temp, &missing_owner_id);
-    let owner = CognitiveStore::open(&owner_layout)
-        .await
-        .expect("owner store");
+    let owner_id = agent("partial-owner");
+    let consumer_id = agent("partial-consumer");
+    let owner_temp = tempfile::tempdir().expect("owner tempdir");
+    let owner_layout = test_agent_layout(owner_temp.path(), &owner_id);
+    let missing_temp = tempfile::tempdir().expect("missing tempdir");
+    let missing_layout = test_agent_layout(missing_temp.path(), &agent("missing-owner"));
+    let owner = open_store(&owner_layout).await;
     let owner_access = CognitiveAccess::agent_private(owner_id.clone());
-    let citation = owner
-        .append_source(
-            &owner_access,
-            &source(
-                CognitiveScope::AgentPrivate,
-                "partial-source",
-                "healthy federated source survives another unavailable owner",
-            ),
-        )
-        .await
-        .expect("source");
     owner
-        .remember_memory(
+        .append_verified_memory(
             &owner_access,
-            &MemoryDraft {
-                stable_key: "partial-memory".to_string(),
-                revision: memory_revision(
-                    CognitiveScope::AgentPrivate,
-                    "healthy federated source survives another unavailable owner",
-                    citation,
-                ),
+            CognitiveScope::AgentPrivate,
+            AppendVerifiedMemoryRequest {
+                content: "healthy federated memory".to_string(),
+                provenance_sha256: digest("healthy provenance"),
+                evidence_sha256: digest("healthy evidence"),
+                idempotency_key: "healthy-memory".to_string(),
+                created_at_unix_seconds: 100,
+                lifecycle: MemoryLifecycleState::Active,
             },
         )
         .await
-        .expect("memory");
+        .expect("append memory");
     let consumer_workspace = workspace("partial-consumer");
     owner
         .grant_federated_recall(
