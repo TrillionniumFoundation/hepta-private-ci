@@ -81,12 +81,13 @@ jobs:
 
           segments = Path("codex-rs/hepta-learning-ledger/src/segments.rs")
           text = segments.read_text()
-          canonical = '''        if archives.last().map(|range| (range.segment, range.anchor))
-              != Some((witness.segment, witness.anchor))
-          {
-              return Err(DurableLedgerError::Corrupt);
-          }
-'''
+          canonical = (
+              "        if archives.last().map(|range| (range.segment, range.anchor))\n"
+              "            != Some((witness.segment, witness.anchor))\n"
+              "        {\n"
+              "            return Err(DurableLedgerError::Corrupt);\n"
+              "        }\n"
+          )
           if canonical not in text:
               start_marker = "        if archives.last().copied()\n"
               end_marker = "        validate_minimum_anchor(&core, minimum)?;\n"
