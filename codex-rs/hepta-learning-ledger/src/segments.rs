@@ -192,22 +192,10 @@ impl SegmentedLedger {
         }
         let owner = LockedFile::acquire(owner_lock)?;
         let (mut core, mut archives) = read_state_checkpoint(checkpoint_file, binding, witness)?;
-        if archives.last().copied()
-            != Some(LedgerArchiveRange {
-                segment: witness.segment,
-                predecessor: archives
-                    .last()
-                    .map_or(empty_anchor(), |range| range.predecessor),
-                anchor: witness.anchor,
-            })
+        if archives.last().map(|range| (range.segment, range.anchor))
+            != Some((witness.segment, witness.anchor))
         {
-            // The equality expression above deliberately checks the checkpoint
-            // head while `validate_archive_ranges` already checked continuity.
-            if archives.last().map(|range| (range.segment, range.anchor))
-                != Some((witness.segment, witness.anchor))
-            {
-                return Err(DurableLedgerError::Corrupt);
-            }
+            return Err(DurableLedgerError::Corrupt);
         }
         validate_minimum_anchor(&core, minimum)?;
         if minimum.sealed && minimum.segment <= witness.segment {
