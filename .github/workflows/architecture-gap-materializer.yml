@@ -58,37 +58,37 @@ jobs:
           text = callers.read_text()
           old = '"codex-rs/app-server/src/extensions.rs"'
           new = '"codex-rs/hepta-codex-adapter/src/app_server_embedding.rs"'
-          if text.count(old) != 3:
-              raise SystemExit(f"expected exactly three App Server Hepta composition caller entries, got {text.count(old)}")
-          callers.write_text(text.replace(old, new))
+          old_count = text.count(old)
+          new_count = text.count(new)
+          if old_count:
+              if old_count != 3 or new_count != 0:
+                  raise SystemExit(
+                      f"unexpected App Server caller state: old={old_count} new={new_count}"
+                  )
+              text = text.replace(old, new)
+              callers.write_text(text)
+          elif new_count != 3:
+              raise SystemExit(
+                  f"expected exactly three adapter caller entries after migration, got {new_count}"
+              )
 
           segments = Path("codex-rs/hepta-learning-ledger/src/segments.rs")
           text = segments.read_text()
-          old = '''        if archives.last().copied()
-              != Some(LedgerArchiveRange {
-                  segment: witness.segment,
-                  predecessor: archives
-                      .last()
-                      .map_or(empty_anchor(), |range| range.predecessor),
-                  anchor: witness.anchor,
-              })
-          {
-              // The equality expression above deliberately checks the checkpoint
-              // head while `validate_archive_ranges` already checked continuity.
-              if archives.last().map(|range| (range.segment, range.anchor))
-                  != Some((witness.segment, witness.anchor))
-              {
-                  return Err(DurableLedgerError::Corrupt);
-              }
-          }'''
-          new = '''        if archives.last().map(|range| (range.segment, range.anchor))
+          start_marker = "        if archives.last().copied()\n"
+          end_marker = "        validate_minimum_anchor(&core, minimum)?;\n"
+          canonical = '''        if archives.last().map(|range| (range.segment, range.anchor))
               != Some((witness.segment, witness.anchor))
           {
               return Err(DurableLedgerError::Corrupt);
-          }'''
-          if old not in text:
-              raise SystemExit("checkpoint archive-head cleanup source did not match")
-          segments.write_text(text.replace(old, new, 1))
+          }
+'''
+          if canonical not in text:
+              start = text.find(start_marker)
+              end = text.find(end_marker, start if start >= 0 else 0)
+              if start < 0 or end < 0 or end <= start:
+                  raise SystemExit("checkpoint archive-head cleanup source did not match")
+              text = text[:start] + canonical + text[end:]
+              segments.write_text(text)
           PY
 
       - name: Format affected Rust packages
