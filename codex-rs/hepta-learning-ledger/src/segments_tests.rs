@@ -153,28 +153,127 @@ fn cross_segment_causality_revocation_and_historical_retry_keep_one_identity() {
     let original = append(&mut ledger, decision(0));
     let anchor = must(ledger.anchor());
     must(ledger.rotate(f.new_file("1"), anchor));
+    assert_eq!(must(ledger.retained_record_count()), 0);
     append(&mut ledger, outcome());
     append(&mut ledger, revoke());
     let checkpoint = must(ledger.checkpoint());
-    let snapshot = must(ledger.snapshot());
+    assert!(matches!(
+        ledger.snapshot(),
+        Err(DurableLedgerError::AcknowledgedHistoryMissing)
+    ));
+    let snapshot = must(ledger.snapshot_with_archives(f.files(1)));
     let mut expected = LearningLedger::new();
     for event in [decision(0), outcome(), revoke()] {
         must(expected.append(event));
     }
     assert_eq!(snapshot, expected.snapshot());
-    assert_eq!(must(ledger.active_records()).len(), 1);
+    let expected_active: Vec<LedgerRecord> =
+        expected.active_records().into_iter().cloned().collect();
+    assert_eq!(
+        must(ledger.active_records_with_archives(f.files(1))),
+        expected_active
+    );
+    let range = must(ledger.archive_range(&id("decision-0"))).expect("archived decision range");
+    assert_eq!(range.segment, 0);
+    let archived = must(ledger.archived_record(f.file("0"), &id("decision-0")))
+        .expect("archived decision payload");
+    assert_eq!(archived.event, decision(0));
     drop(ledger);
+
     let mut reopened = must(f.recover(2, checkpoint));
+    assert_eq!(must(reopened.retained_record_count()), 2);
     let retry = must(reopened.append(Digest32::ZERO, decision(0)));
     assert_eq!(retry.chain_digest, original.chain_digest);
     assert_eq!(retry.disposition, AppendDisposition::IdempotentReplay);
-    assert_eq!(must(reopened.snapshot()), snapshot);
-    assert_eq!(must(reopened.active_records()), expected.active_records());
+    assert_eq!(must(reopened.snapshot_with_archives(f.files(1))), snapshot);
+    assert_eq!(
+        must(reopened.active_records_with_archives(f.files(1))),
+        expected_active
+    );
     let mut changed = decision(0);
     if let LedgerEvent::Decision(ref mut row) = changed {
         row.support_digest = Digest32::of_bytes(b"substituted");
     }
     assert!(reopened.append(Digest32::ZERO, changed).is_err());
+}
+
+#[test]
+fn state_checkpoint_recovery_replays_only_the_tail_and_pages_archive_on_demand() {
+    let f = Fixture::new();
+    let mut ledger = f.create();
+    let original = append(&mut ledger, decision(0));
+    let archived_anchor = must(ledger.anchor());
+    let witness = must(ledger.rotate_with_state_checkpoint(
+        f.new_file("state-checkpoint"),
+        f.new_file("1"),
+        archived_anchor,
+    ));
+    assert_eq!(witness.segment, 0);
+    assert_eq!(witness.anchor, archived_anchor);
+    assert_eq!(must(ledger.retained_record_count()), 0);
+    append(&mut ledger, outcome());
+    let final_anchor = must(ledger.anchor());
+    let minimum = LedgerSegmentCheckpoint {
+        segment: witness.segment,
+        anchor: witness.anchor,
+        sealed: true,
+    };
+    drop(ledger);
+
+    let mut reopened = must(SegmentedLedger::recover_from_state_checkpoint(
+        f.file("owner"),
+        f.file("state-checkpoint"),
+        vec![f.file("1")],
+        binding(),
+        limits(),
+        witness,
+        minimum,
+    ));
+    assert_eq!(must(reopened.anchor()), final_anchor);
+    assert_eq!(must(reopened.retained_record_count()), 1);
+    assert_eq!(reopened.archive_ranges().len(), 1);
+    let retry = must(reopened.append(Digest32::ZERO, decision(0)));
+    assert_eq!(retry.disposition, AppendDisposition::IdempotentReplay);
+    assert_eq!(retry.chain_digest, original.chain_digest);
+    let range = must(reopened.archive_range(&id("decision-0"))).expect("archive range");
+    assert_eq!(range.segment, 0);
+    let archived = must(reopened.archived_record(f.file("0"), &id("decision-0")))
+        .expect("archived decision");
+    assert_eq!(archived.sequence.get(), 1);
+    assert_eq!(archived.chain_digest, original.chain_digest);
+    assert_eq!(archived.event, decision(0));
+}
+
+#[test]
+fn checkpoint_digest_is_independently_witnessed() {
+    let f = Fixture::new();
+    let mut ledger = f.create();
+    append(&mut ledger, decision(0));
+    let archived_anchor = must(ledger.anchor());
+    let witness = must(ledger.rotate_with_state_checkpoint(
+        f.new_file("state-checkpoint"),
+        f.new_file("1"),
+        archived_anchor,
+    ));
+    drop(ledger);
+    let mut wrong = witness;
+    wrong.state_digest = Digest32::of_bytes(b"wrong-checkpoint-witness");
+    assert!(matches!(
+        SegmentedLedger::recover_from_state_checkpoint(
+            f.file("owner"),
+            f.file("state-checkpoint"),
+            vec![f.file("1")],
+            binding(),
+            limits(),
+            wrong,
+            LedgerSegmentCheckpoint {
+                segment: witness.segment,
+                anchor: witness.anchor,
+                sealed: true,
+            },
+        ),
+        Err(DurableLedgerError::Corrupt)
+    ));
 }
 
 #[test]
@@ -406,19 +505,31 @@ fn history_exceeds_v1_record_capacity_without_resetting_chain_or_limits() {
             count += 1;
         }
         append(&mut ledger, decision(number));
+        assert!(must(ledger.retained_record_count()) <= configured.records);
     }
     let checkpoint = must(ledger.checkpoint());
-    let snapshot = must(ledger.snapshot());
+    let head = must(ledger.anchor());
     assert_eq!(checkpoint.anchor.sequence, 8200);
+    assert_eq!(head, checkpoint.anchor);
+    assert!(must(ledger.retained_record_count()) <= configured.records);
+    let oldest_range = must(ledger.archive_range(&id("decision-0"))).expect("oldest archive range");
+    assert_eq!(oldest_range.segment, 0);
+    let oldest = must(ledger.archived_record(f.file("0"), &id("decision-0")))
+        .expect("oldest archived record");
+    assert_eq!(oldest.sequence.get(), 1);
     drop(ledger);
-    let reopened = must(SegmentedLedger::recover(
+
+    let mut reopened = must(SegmentedLedger::recover(
         f.file("owner"),
         f.files(count),
         binding(),
         configured,
         checkpoint,
     ));
-    assert_eq!(must(reopened.snapshot()), snapshot);
+    assert_eq!(must(reopened.anchor()), head);
+    assert!(must(reopened.retained_record_count()) <= configured.records);
+    let replay = must(reopened.append(Digest32::ZERO, decision(0)));
+    assert_eq!(replay.disposition, AppendDisposition::IdempotentReplay);
 }
 
 #[test]
