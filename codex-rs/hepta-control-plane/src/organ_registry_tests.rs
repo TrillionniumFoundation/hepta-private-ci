@@ -137,6 +137,34 @@ fn creates_only_selected_handlers_from_a_superset_registry() {
 }
 
 #[test]
+fn one_driver_implementation_can_back_multiple_organ_instances() {
+    let mut registry = OrganHandlerRegistryV1::new();
+    registry
+        .register(id("driver.shared"), digest("shared"), fixture_factory)
+        .expect("register shared implementation");
+    let bindings = vec![
+        OrganDriverBindingV1 {
+            organ: id("source"),
+            driver: id("driver.shared"),
+            implementation_digest: digest("shared"),
+        },
+        OrganDriverBindingV1 {
+            organ: id("target"),
+            driver: id("driver.shared"),
+            implementation_digest: digest("shared"),
+        },
+    ];
+
+    let host = registry
+        .create_host(graph(), &bindings)
+        .expect("create host from one implementation and two instances");
+    assert_eq!(host.statuses().len(), 2);
+    assert_eq!(registry.len(), 1);
+    assert_eq!(host.statuses()[0].id, id("source"));
+    assert_eq!(host.statuses()[1].id, id("target"));
+}
+
+#[test]
 fn rejects_duplicate_or_unknown_bindings_before_factory_calls() {
     let mut registry = OrganHandlerRegistryV1::new();
     registry
