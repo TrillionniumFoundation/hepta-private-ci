@@ -11,30 +11,41 @@ on:
       - codex-rs/hepta-contracts/CALLERS.toml
       - codex-rs/Cargo.lock
       - .github/workflows/architecture-gap-materializer.yml
+  pull_request:
+    paths:
+      - codex-rs/hepta-learning-ledger/**
+      - codex-rs/hepta-codex-adapter/**
+      - codex-rs/app-server/**
+      - codex-rs/hepta-contracts/CALLERS.toml
+      - codex-rs/Cargo.lock
+      - .github/workflows/architecture-gap-materializer.yml
 
 permissions:
   contents: write
 
 concurrency:
-  group: architecture-gap-materializer-${{ github.ref }}
+  group: architecture-gap-materializer-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
 jobs:
   materialize:
     runs-on: ubuntu-24.04
     timeout-minutes: 60
+    env:
+      SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+      SOURCE_BRANCH: ${{ github.head_ref || github.ref_name }}
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           fetch-depth: 0
           persist-credentials: true
-          ref: ${{ github.sha }}
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
 
       - name: Bind exact source
         shell: bash
         run: |
           set -euo pipefail
-          test "$(git rev-parse HEAD)" = "${GITHUB_SHA}"
+          test "$(git rev-parse HEAD)" = "${SOURCE_SHA}"
 
       - name: Apply deterministic composition metadata cleanup
         shell: bash
@@ -134,4 +145,4 @@ jobs:
             codex-rs/app-server/Cargo.toml
           git diff --cached --check
           git commit -m "chore: materialize architecture gap qualification"
-          git push origin "HEAD:${GITHUB_REF_NAME}"
+          git push origin "HEAD:${SOURCE_BRANCH}"
