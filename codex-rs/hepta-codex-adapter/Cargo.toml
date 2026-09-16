@@ -14,4 +14,11 @@ doctest = false
 workspace = true
 
 [dependencies]
+codex-core = { workspace = true }
+codex-extension-api = { workspace = true }
+codex-features = { workspace = true }
+codex-hepta-governance = { workspace = true }
+codex-hepta-memory = { workspace = true }
+codex-hepta-memory-extension = { workspace = true }
 codex-hepta-types = { path = "../hepta-types" }
+codex-state = { workspace = true }
