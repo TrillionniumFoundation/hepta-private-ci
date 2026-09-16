@@ -47,6 +47,10 @@ pub(crate) struct PreparedAppend {
 #[derive(Clone, Debug, Default)]
 pub struct LearningLedger {
     records: Vec<LedgerRecord>,
+    /// Exact record identity to its immutable position in `records`. Keeping
+    /// this separate from event digests makes idempotent retries O(log n)
+    /// without scanning the complete historical vector after identity lookup.
+    record_positions: BTreeMap<StableId, usize>,
     record_digests: BTreeMap<StableId, Digest32>,
     record_kinds: BTreeMap<StableId, u8>,
     decisions: BTreeMap<StableId, DecisionIndex>,
@@ -76,10 +80,15 @@ impl LearningLedger {
             if *existing_digest != event_digest {
                 return Err(LedgerError::IdentityConflict(record_id.to_string()));
             }
+            let position = self
+                .record_positions
+                .get(&record_id)
+                .copied()
+                .ok_or(LedgerError::InternalInvariant)?;
             let record = self
                 .records
-                .iter()
-                .find(|record| record.event.record_id() == &record_id)
+                .get(position)
+                .filter(|record| record.event.record_id() == &record_id)
                 .ok_or(LedgerError::InternalInvariant)?;
             return Ok(PreparedAppend {
                 record: record.clone(),
@@ -142,6 +151,47 @@ impl LearningLedger {
         &self.records
     }
 
+    /// Resolve one historical record through the durable identity index rather
+    /// than scanning the history vector.
+    #[must_use]
+    pub fn record(&self, record_id: &StableId) -> Option<&LedgerRecord> {
+        self.record_positions
+            .get(record_id)
+            .and_then(|position| self.records.get(*position))
+            .filter(|record| record.event.record_id() == record_id)
+    }
+
+    /// Current committed sequence without cloning historical records.
+    #[must_use]
+    pub fn head_sequence(&self) -> Option<LogicalSequence> {
+        self.records.last().map(|record| record.sequence)
+    }
+
+    /// Current causal chain head without cloning historical records.
+    #[must_use]
+    pub fn head_digest(&self) -> Digest32 {
+        self.records
+            .last()
+            .map_or(Digest32::ZERO, |record| record.chain_digest)
+    }
+
+    /// Borrow a bounded incremental range after `sequence`. This is the
+    /// preferred API for streaming consumers and checkpoints that do not need
+    /// a full historical clone. `None` starts at the first record.
+    #[must_use]
+    pub fn records_after(
+        &self,
+        sequence: Option<LogicalSequence>,
+        limit: usize,
+    ) -> &[LedgerRecord] {
+        let start = sequence.map_or(0, |sequence| {
+            usize::try_from(sequence.get()).unwrap_or(usize::MAX)
+        });
+        let start = start.min(self.records.len());
+        let end = start.saturating_add(limit).min(self.records.len());
+        &self.records[start..end]
+    }
+
     /// Returns facts that remain causally effective after applying revocation
     /// edges. Outcomes and credit disappear when their decision ancestor is
     /// revoked, preventing restore-time resurrection.
@@ -157,10 +207,7 @@ impl LearningLedger {
     pub fn snapshot(&self) -> LedgerSnapshot {
         LedgerSnapshot {
             records: self.records.clone(),
-            head_digest: self
-                .records
-                .last()
-                .map_or(Digest32::ZERO, |record| record.chain_digest),
+            head_digest: self.head_digest(),
         }
     }
 
@@ -177,11 +224,7 @@ impl LearningLedger {
                 return Err(LedgerError::SnapshotRecordMismatch(expected.sequence.get()));
             }
         }
-        let actual_head = ledger
-            .records
-            .last()
-            .map_or(Digest32::ZERO, |record| record.chain_digest);
-        if actual_head != expected_head {
+        if ledger.head_digest() != expected_head {
             return Err(LedgerError::SnapshotHeadMismatch);
         }
         Ok(ledger)
@@ -308,6 +351,8 @@ impl LearningLedger {
 
     fn index_record(&mut self, record: &LedgerRecord) {
         let record_id = record.event.record_id().clone();
+        let position = self.records.len();
+        self.record_positions.insert(record_id.clone(), position);
         self.record_digests
             .insert(record_id.clone(), record.event_digest);
         self.record_kinds
