@@ -16,6 +16,23 @@
 
 This stable document is the implementation guide for `platform.wire`. Normative identity, ownership, contract, data-authority and delivery facts remain in the canonical JSON registries. This guide explains how those facts are implemented and operated. Documentation readiness is not source implementation, activation, operator acceptance, promotion or release.
 
+## Current implementation status
+
+This table is intentionally first. It separates the currently promoted executable contract from source-complete candidate work and from production/acceptance claims.
+
+| Capability | Source state | Current executable contract | Activation / acceptance |
+|---|---|---|---|
+| HPTA V1 fixed envelope | implemented and frozen | **current**; `WIRE_V1.md` remains immutable | library-only; no production claim |
+| HPTA V2 full-frame integrity | implemented candidate | not a reinterpretation of V1; candidate contract in `WIRE_V2.md` | exact-candidate qualification required |
+| Version/capability negotiation | implemented candidate | separate from V1 decoding; unknown versions still reject | secure-session composition required |
+| Schema admission + typed payload codec | implemented candidate | domain-owned schemas register explicitly | product schema owners must opt in |
+| Incremental bounded decoder | implemented candidate | supports V1/V2 source candidate and admits header before body buffering | transport deadline policy remains external |
+| `runtime.codex` typed source composition | implemented candidate | named source caller exists in `hepta-codex-adapter` | not deployment or external acceptance |
+| Rust↔Python live process qualification | source test present | raw V2 bytes, independent digest/schema load and fault rejection | exact-head/merge-candidate receipt still required |
+| Production activation | not claimed | none | **false until separate gates pass** |
+
+The canonical Lane A truth matrix may continue to describe the promoted current contract as `fixed_v1_codec` until the candidate receives the repository's exact-head, merge-candidate and independent acceptance evidence. Source implementation and claim promotion are deliberately separate.
+
 ## 1. Identity, mission and ownership
 
 Provide bounded, versioned wire representations while remaining transport and domain-runtime neutral.
@@ -42,11 +59,22 @@ Declared roots not yet present:
 
 None.
 
-`existing_bound` is a source-location fact: the declared target root now contains a bounded implementation and focused tests. It does not imply activation, operator acceptance, promotion or release. Source moves must update `MODULES.json`, `SOURCE_BINDINGS.json`, the Cargo/Bazel workspace and this guide in one exact candidate.
+`existing_bound` is a source-location fact. It does not imply activation, operator acceptance, promotion or release. Source moves must update `MODULES.json`, `SOURCE_BINDINGS.json`, the Cargo/Bazel workspace and this guide in one exact candidate.
 
 ### Native source and scope
 
-The registered primary source is [codex-rs/hepta-wire/src/envelope.rs](../../../codex-rs/hepta-wire/src/envelope.rs); observed identifiers include `WireEnvelope`, `WireError`, `MAX_WIRE_PAYLOAD_BYTES`, `encode`, `decode`. This is a source navigation binding, not proof that every target operation or production consumer exists. Read the [current native implementation](../../../qualification/module-execution-dossiers/detail/platform.wire.md#8-current-native-implementation) alongside the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/platform.wire.md) for the implemented subset and remaining product work.
+The immutable V1 codec remains in [codex-rs/hepta-wire/src/envelope.rs](../../../codex-rs/hepta-wire/src/envelope.rs). Candidate protocol-layer sources are:
+
+- [v2.rs](../../../codex-rs/hepta-wire/src/v2.rs) — HPTA V2 metadata+payload integrity and transport-binding digest.
+- [negotiation.rs](../../../codex-rs/hepta-wire/src/negotiation.rs) — explicit version/capability negotiation and downgrade transcript digest.
+- [schema.rs](../../../codex-rs/hepta-wire/src/schema.rs) — runtime schema admission and domain-owned typed payload codec boundary.
+- [stream.rs](../../../codex-rs/hepta-wire/src/stream.rs) — bounded incremental frame decoder.
+- [property_tests.rs](../../../codex-rs/hepta-wire/src/property_tests.rs) — deterministic property/arbitrary-byte regression coverage.
+
+The first named product-source composition is
+[codex-rs/hepta-codex-adapter/src/wire.rs](../../../codex-rs/hepta-codex-adapter/src/wire.rs). It requires negotiated HPTA V2 full-frame integrity plus schema admission before serializing or loading `CodexOperationIntent`. This is source composition evidence, not deployment authority.
+
+Read the [current native implementation](../../../qualification/module-execution-dossiers/detail/platform.wire.md#8-current-native-implementation) and the V1/V2 executable specifications together. Target architecture text never overrides the explicit status table above.
 
 ## 3. Boundary, responsibilities and non-goals
 
@@ -64,24 +92,32 @@ Explicitly denied capabilities:
 - `domain_runtime`
 - `daemon`
 
-The module accepts only registered, bounded, versioned inputs. It rejects unknown critical fields and treats missing authority, stale revisions, scope mismatch and digest mismatch as hard failures. It never directly writes another owner's store. Cross-owner mutation follows local transaction, durable intent, outbox, destination deduplication, acknowledgement and fenced reconciliation.
+The framing layer validates magic, version, identity bounds, generation, lengths and digest before returning a frame. The schema layer separately admits an exact registered schema and domain-owned typed decoder. Version negotiation is a separate session concern and never makes the raw frame decoder accept unknown versions.
 
-Non-goals include becoming a general state store, bypassing the Codex execution spine, interpreting model prose as authority, minting an authority consumed by the same component, or converting qualification evidence into deployment authority. A façade may sequence modules but may not own their facts.
+The module never directly writes another owner's store. It never treats serialization, decoding, schema admission, queue acceptance or handler return as authority or external effect acknowledgement.
+
+Non-goals include becoming a general state store, bypassing the Codex execution spine, interpreting model prose as authority, minting an authority consumed by the same component, or converting qualification evidence into deployment authority.
 
 ## 4. Internal architecture and component decomposition
 
 The bounded components are:
 
-- `framing and codec boundary`
-- `version negotiation`
-- `bounded decoder`
+- `V1 immutable framing and codec boundary`
+- `V2 full-frame integrity codec`
+- `version/capability negotiation`
+- `schema registry and typed payload admission`
+- `bounded incremental decoder`
 - `transport-neutral error mapping`
 
-Ingress validates identity, version, size, scope and revision before domain logic. The deterministic core receives typed values and is testable without network, filesystem or process-global state unless the module owns that boundary. State-bearing components use one transaction boundary per logical mutation. Publication occurs only after invariants and lineage checks pass.
+V1 remains payload-digest compatible forever. V2 keeps a compact length-delimited layout but its embedded digest binds magic, version, lengths, generation, schema, producer and payload. The V2 digest is unkeyed and is not authentication; secure transports authenticate the complete encoded frame or the domain-separated transport-binding digest.
 
-Adapters translate one registered contract, verify final payload and grant immediately before the boundary, invoke one downstream capability, and map the observed terminal outcome. Queue acceptance or handler completion is never inferred as external success. Component interfaces support deterministic fixtures and fault injection.
+Negotiation selects the highest explicitly common version whose capability intersection satisfies both sides' required capabilities. Its canonical transcript digest must be authenticated by the secure session when downgrade resistance is required.
 
-Configuration is immutable for one process generation. Changes affecting authority, schema, compatibility, model identity, objective semantics or resource policy create a new revision or generation. Hidden mutable singletons, unbounded queues and implicit store fallback are prohibited.
+Schema registration binds an exact `StableId`, allowed wire versions, a stricter per-schema payload bound and a validator. Domain owners implement `WirePayload`; they must reject missing required fields, unknown critical fields and non-canonical values.
+
+The incremental decoder buffers only the fixed header until all declared resource bounds pass, then buffers at most the exact single-frame body. One call completes at most one frame and returns a consumed byte count so it never turns a large input chunk into an implicit unbounded frame queue.
+
+Configuration is immutable for one process generation. Hidden mutable singletons, unbounded queues and implicit store fallback are prohibited.
 
 ## 5. Contracts, ports and compatibility
 
@@ -94,13 +130,17 @@ Consumed contracts:
 
 - `ModulePort::platform.types::platform.wire`
 
-Critical protocol schemas:
+Critical protocol schemas in the canonical registry:
 
 None.
 
-Every producer validates output before publication and binds semantic fields into the declared digest scope. Every consumer validates version, bounds, producer identity, scope and digest before use. Compatibility is additive only where registered; unknown critical fields are rejected. Contract identifiers, meaning and authority interpretation cannot change in place.
+Repository executable format references are:
 
-Rust types and canonical JSON represent identical semantics. Tests cover round trips, maximum bounds, missing fields, unknown fields, invalid enums, canonical ordering and digest stability. Error mapping preserves rejected, unavailable, timed out, indeterminate, quarantined and terminally failed outcomes.
+- [WIRE_V1.md](../../lane-a-foundation/platform.wire/WIRE_V1.md) — immutable promoted V1 contract.
+- [WIRE_V2.md](../../lane-a-foundation/platform.wire/WIRE_V2.md) — source-complete V2 candidate contract.
+- `HPTA_V1_CONFORMANCE.json` and `HPTA_V2_CONFORMANCE.json` — frozen independent vectors.
+
+Compatibility is versioned, never reinterpretive. V1 bytes and meanings cannot change in place. V2 uses version value `2`. Unknown versions reject. Required capabilities prevent silent downgrade. Unknown schemas reject before typed values are returned.
 
 ## 6. Data authority, persistence and migrations
 
@@ -112,60 +152,78 @@ Read-only data dependencies:
 
 None.
 
-For every owned domain, this module is the only authoritative writer. Mutations are revision- or generation-bound, idempotent for identical semantics and conflicting for a reused identity with different content. Records bind source identity, schema revision, logical sequence and lineage sufficient for correction, deletion and revocation.
-
-Migrations are deterministic and checksum-bound. Store open verifies required schema objects and integrity constraints before reads or writes. Migration failure leaves a recoverable predecessor. Rollback across a schema boundary restores compatible state with the binary.
-
-Projection domains rebuild from declared sources and publish complete generations atomically. Projections never become sources of truth. Retention and deletion preserve lineage and prevent resurrection through indexes, caches, artifacts or backup restore.
+The codec, negotiator, schema registry and decoder are process-local/stateless protocol components. No durable domain writer or migration is introduced. A product owner that persists frames remains responsible for retention, authentication context and replay semantics.
 
 ## 7. Runtime, concurrency and transaction model
 
-The [current native implementation](../../../qualification/module-execution-dossiers/detail/platform.wire.md#8-current-native-implementation) identifies the actual state owner, in-memory versus persistent surfaces, and lock/transaction boundary. Use that implementation scope when composing the module; target state-machine operations are identified in the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/platform.wire.md).
+No domain transaction exists inside `platform.wire`. A `WireFrameDecoder` owns only connection-local buffered bytes and an expected frame length. Disconnect, timeout or protocol error discards that state. A connection restart negotiates again.
+
+The schema registry is explicitly constructed and passed by the caller; no process-global mutable registry is introduced.
 
 [Shared concurrency and transaction requirements](../README.md#shared-concurrency-and-transactions) apply at the corresponding owner boundary.
 
 ## 8. Failure semantics, recovery and rollback
 
-Use the error/recovery path linked by the [current native implementation](../../../qualification/module-execution-dossiers/detail/platform.wire.md#8-current-native-implementation) and the module-specific fault cases in the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/platform.wire.md). A source library or fixture cannot stand in for an unimplemented durable recovery or external reconciler.
+Malformed magic/version/length/generation/identity/digest fails closed. Unknown schema, disallowed schema version, schema-specific oversize payload and typed validation failure fail closed before the typed value is returned.
 
-[Shared failure, recovery and rollback requirements](../README.md#shared-failure-and-recovery) remain mandatory.
+Negotiation fails if either side's required capabilities cannot be satisfied. A caller requiring `FULL_FRAME_INTEGRITY` cannot fall back to V1.
+
+Codec recovery never retries an external effect. Transport restart discards decoder state and renegotiates. Rollback may continue reading immutable V1; no release may reinterpret a V1 frame as V2.
 
 ## 9. Security, privacy and threat controls
 
-Owned threat entries:
+The security boundary is explicit:
 
-None.
+- V1 payload SHA-256 detects payload corruption only.
+- V2 embedded SHA-256 detects stale/accidental mutation across metadata and payload but remains unkeyed.
+- active-attacker protection requires a secure channel, MAC or signature authenticating the complete V2 frame (or `transport_binding_digest`).
+- downgrade protection requires the secure session to authenticate `NegotiatedWire::transcript_digest()`.
+- serialized DTOs never become permission-bearing in-process authority tokens.
 
-The posture is least authority, bounded input, typed contracts, digest binding and independent evidence. Sensitive values are redacted or represented by digests at evidence boundaries. Credentials never enter general logs, learning datasets, prompt factors or cross-module receipts. Authority is operation-bound, final-payload-bound, short-lived and revocation-aware.
-
-Negative tests cover denied capabilities, cross-owner writes, stale or revoked grants, replay with payload drift, unknown fields, oversize input, scope escape, untrusted instruction escalation and secret/provider leakage. Security review is mandatory for new effect boundaries, persistence, network, model invocation or authority semantics.
+Sensitive values remain outside general wire evidence unless the owning schema explicitly permits them. Security review remains mandatory for new effect boundaries, persistence, network, model invocation or authority semantics.
 
 ## 10. Performance, capacity and hot-path policy
 
-The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/platform.wire.md) specifies this module's algorithm, pilot ceilings and capacity fixtures. Those target ceilings are not measurements and must not be reported as enforcement of an unimplemented API. Current native limits belong to [codex-rs/hepta-wire/src/envelope.rs](../../../codex-rs/hepta-wire/src/envelope.rs) and the linked implementation components.
+Global payload bound remains 1,048,576 bytes; identity bounds remain 1..128 bytes. The maximum current HPTA frame is therefore bounded by the fixed header plus two maximum identities and the maximum payload.
 
-[Shared performance and capacity requirements](../README.md#shared-performance-and-capacity) define the measurement/overload obligations for a selected host.
+The incremental decoder admits the 54-byte header before reserving the body and consumes at most one frame per call. Schema registrations may impose a stricter payload ceiling.
+
+These are enforced source limits, not throughput/latency measurements. Host-specific measurements remain required before activation.
 
 ## 11. Observability and operations
 
-Transport-neutral codec library, embedded by the actual transport owner. Recreate connection-local decoder state after disconnect and renegotiate version; never replay an uncertain owner effect as a codec recovery action. No standalone wire daemon or durable domain store exists.
+`platform.wire` remains a transport-neutral library. The transport owner decides how negotiation offers are exchanged, how transcript/frame authentication is carried, and what incomplete-frame deadline applies.
 
 Current operating and state-format references:
 
-- [codex-rs/hepta-wire/src/envelope.rs](../../../codex-rs/hepta-wire/src/envelope.rs).
+- [envelope.rs](../../../codex-rs/hepta-wire/src/envelope.rs)
+- [v2.rs](../../../codex-rs/hepta-wire/src/v2.rs)
+- [negotiation.rs](../../../codex-rs/hepta-wire/src/negotiation.rs)
+- [schema.rs](../../../codex-rs/hepta-wire/src/schema.rs)
+- [stream.rs](../../../codex-rs/hepta-wire/src/stream.rs)
 
-[Shared observability and operations requirements](../README.md#shared-observability-and-operations) specify safe events and alert classes; concrete deployment thresholds require the selected host profile.
+No standalone wire daemon or durable domain store exists.
 
 ## 12. Verification and qualification
 
-Current focused test sources (source references, not pass receipts):
+Current focused source tests include:
 
-- [codex-rs/hepta-wire/src/boundary_tests.rs](../../../codex-rs/hepta-wire/src/boundary_tests.rs); named case: `every_truncation_rejects_without_reconstructing_an_envelope`.
-- [codex-rs/hepta-wire/src/envelope_tests.rs](../../../codex-rs/hepta-wire/src/envelope_tests.rs); named case: `envelope_round_trip_is_exact`.
+- V1 exact round trip, truncation sweep, bounds and frozen vector in `envelope_tests.rs` and `boundary_tests.rs`.
+- V2 metadata/payload integrity mutation tests in `v2.rs`.
+- highest-common negotiation and required-capability downgrade rejection in `negotiation.rs`.
+- typed schema round trip, unknown schema and non-canonical payload rejection in `schema.rs`.
+- incremental header admission, exact single-frame consumption and oversized advertised payload rejection in `stream.rs`.
+- 512 generated V1/V2 round trips, 2,048 deterministic arbitrary-byte no-panic cases, metadata mutation checks and every chunk size 1..97 in `property_tests.rs`.
+- raw Rust↔Python V2 process-pipe schema loading and metadata/payload fault rejection in `hepta-shadow-qualification/tests/cross_language_wire_fault.rs`.
+- named `runtime.codex` typed source composition tests in `hepta-codex-adapter/src/wire.rs`.
 
-In `codex-rs`, run `just test -p codex-hepta-wire`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/platform.wire.md) separately labels target acceptance designs.
+In `codex-rs`, run at minimum:
 
-[Shared verification and qualification requirements](../README.md#shared-verification-and-qualification) retain the source/merge, failure, compilation and independent-evidence obligations.
+- `just test -p codex-hepta-wire`
+- `just test -p codex-hepta-codex-adapter`
+- the focused `codex-hepta-shadow-qualification` cross-language wire test
+
+Commands are invocations, not stored pass receipts. Exact-head and deterministic merge-candidate results remain required before claim promotion.
 
 ## 13. Implementation sequence and work packages
 
@@ -173,19 +231,23 @@ Applicable work packages:
 
 - `P0.7E-DEPENDENCY-INVERSION`
 
-The bootstrap package is `P0.7E-DEPENDENCY-INVERSION`. Development, activation and evidence predecessor graphs are distinct and all are enforced. Contract-first work may run in parallel only with non-overlapping write paths and frozen semantics. Each PR records its bounded contracts, domains, denied authorities, resources, rollback and stop conditions. A coordinator-issued envelope is required only at the coordination boundary that consumes it; it is not additional permission for ordinary authorized repository work.
+The bootstrap package remains `P0.7E-DEPENDENCY-INVERSION`. Development, activation and evidence predecessor graphs are distinct. Contract-first source work may be complete while activation remains false.
 
-Source implementation completes only when the declared target root exists, public surfaces match registries, tests pass and exact-head plus merge-candidate evidence is current. Later planned packages may remain without invalidating documentation closure.
+Required deliverables remain exact source identity, source inventory, static verification, focused/package tests, all-target check, strict lint, clean worktree, exact-head execution and merge-candidate execution. Stop conditions remain authority violation, base drift, claim/evidence mismatch, cross-owner write and unbounded resource/retry behavior.
 
 ## 14. Activation, compatibility and retirement
 
-Activation composes a named product caller through registered ports and verifies authority, configuration, resource and failure behavior. Shadow and qualification callers are not production callers. Source-complete modules remain inactive until activation predecessors and evidence gates pass.
+V1 remains readable and immutable. V2 activation requires named callers to negotiate required capabilities, authenticate the negotiation transcript, use registered schemas and authenticate complete frames at the selected secure transport.
 
-Compatibility adapters are temporary. Retirement requires all named callers migrated, no old-path use, oracle parity where required, rehearsed rollback and independent acceptance. Retirement preserves historical evidence and durable-record interpretability.
+The `runtime.codex` adapter is a named **source composition**. It does not by itself establish deployed production use. Shadow/qualification callers likewise do not grant production activation.
+
+Retirement of any older version requires all named callers migrated, no old-path use, contract parity where required, rehearsed rollback and independent acceptance.
 
 ## 15. Definition of module completion
 
 Documentation completion requires this guide, exact registry references and closed-world validation. Source completion requires code in the declared root and candidate tests. Composition requires a named caller. Qualification requires current exact-candidate evidence. Acceptance, selection, promotion and release are separate externally governed states.
+
+For the V2 candidate, source implementation now covers full-frame integrity, explicit negotiation, schema admission/typed serialization, incremental decoding, property-style robustness testing and a named product-source composition. Remaining claim-boundary work is execution evidence and externally governed activation/acceptance, not an unimplemented codec API.
 
 For `platform.wire`, this document grants no runtime, production, model, provider, tool, network, filesystem, secret, Matrix, fleet, acceptance, promotion or release authority.
 
@@ -195,43 +257,13 @@ For `platform.wire`, this document grants no runtime, production, model, provide
 
 - State: `source_implemented_execution_pending`; priority: `1`; parallel class: `contract_coordinated`.
 - Owner/deputy: `kernel-contracts` / `integration`.
-- Allowed write paths:
-- `codex-rs/hepta-wire/**`
-- `codex-rs/hepta-types/**`
-- `codex-rs/Cargo.toml`
-- Development predecessors:
-- `MEM-0-TYPES`
-- `P0.7B-B4-CALLSITE-PROOF`
-- `OBJ-0-OBJECTIVE-CONTRACTS`
-- `LRN-0-CAUSAL-LEARNING-CONTRACTS`
-- `NDU-0-PREFERENCE-UTILITY-CONTRACTS`
-- `PIM-0-PROMPT-INTERVENTION-CONTRACTS`
-- `HBO-0-BELLMAN-OPERATOR-CONTRACTS`
-- `BIO-0-NEURON-INTUITION-CONTRACTS`
-- Activation predecessors:
-- `P0.7B-B4-CALLSITE-PROOF`
-- `MEM-0-TYPES`
-- Required deliverables:
-- `exact_source_identity`
-- `source_inventory`
-- `static_verification`
-- `focused_tests`
-- `package_tests`
-- `all_target_check`
-- `strict_lint`
-- `clean_worktree`
-- `exact_head_execution`
-- `merge_candidate_execution`
-- Stop conditions:
-- `authority_violation`
-- `base_drift`
-- `claim_evidence_mismatch`
-- `cross_owner_write`
-- `unbounded_resource_or_retry`
+- Allowed owner write paths remain `codex-rs/hepta-wire/**`, `codex-rs/hepta-types/**`, and `codex-rs/Cargo.toml`; the `runtime.codex` adapter composition is a cross-owner integration change and must be reviewed as such.
+- Activation predecessors remain `P0.7B-B4-CALLSITE-PROOF` and `MEM-0-TYPES`.
+- Exact-head plus merge-candidate verification remains mandatory before promotion.
 
 ## 16. V8.2 pre-coding implementation-readiness overlay
 
-The canonical readiness overlay binds `platform.wire` to primary lane `LANE-A-FOUNDATION`. The following implementation-level specifications are mandatory alongside Sections 1–15:
+The canonical readiness overlay binds `platform.wire` to primary lane `LANE-A-FOUNDATION`. Mandatory implementation-level references remain:
 
 - [`RDY-SRC`](../../readiness/SOURCE_BASELINE_AND_BRANCH_POLICY.md)
 - [`RDY-PAR`](../../readiness/PARALLEL_DEVELOPMENT.md)
@@ -246,24 +278,23 @@ Consumed readiness protocols:
 
 - None.
 
-Ordinary authorized coding identifies the Git baseline, relevant contracts, owned paths, mandatory fixtures, deterministic fallback and rollback. A runtime coordinator admitting an envelope still verifies its current `CanonicalSourceReceiptV1`, frozen contract/readiness digest, expiry and zero authority delta; manually issuing an envelope is not a separate permission gate for ordinary repository work. This overlay does not change activation, acceptance, selection, promotion or release.
-
-### Readiness implementation work packages
-
-The following additional work packages are source-planning envelopes introduced by the readiness overlay; they do not imply implementation or activation:
-
-- `ASM-0-EXTERNAL-SYSTEM-CONTRACTS`
-- `ASM-1-DISCOVERY-MANIFEST`
-- `EMB-0-EMBODIED-CONTRACTS`
+This overlay does not change activation, acceptance, selection, promotion or release.
 
 ## 17. Source implementation receipt
 
-This receipt records repository source bindings for the current documentation candidate. It is navigation evidence only; it does not claim product composition, deployment, or external effect authority.
+This receipt is navigation evidence for the candidate and does not claim deployment or external effect authority.
 
-| Operation | Native symbol | Source path | Tests |
+| Operation | Native symbol | Source path | Test evidence source |
 |---|---|---|---|
-| `wireenvelope` | `WireEnvelope` | `codex-rs/hepta-wire/src/envelope.rs` | `pending` |
+| V1 codec | `WireEnvelope` | `codex-rs/hepta-wire/src/envelope.rs` | `envelope_tests.rs`, `boundary_tests.rs` |
+| V2 codec | `WireEnvelopeV2` | `codex-rs/hepta-wire/src/v2.rs` | inline V2 integrity tests + frozen V2 vector |
+| negotiation | `negotiate` | `codex-rs/hepta-wire/src/negotiation.rs` | negotiation downgrade tests |
+| schema admission | `SchemaRegistry`, `WirePayload` | `codex-rs/hepta-wire/src/schema.rs` | typed/unknown/non-canonical tests |
+| incremental decode | `WireFrameDecoder` | `codex-rs/hepta-wire/src/stream.rs` | header/body bound tests |
+| property robustness | module test | `codex-rs/hepta-wire/src/property_tests.rs` | generated round trips + arbitrary bytes |
+| runtime.codex composition | `encode_codex_intent_frame`, `decode_codex_intent_frame` | `codex-rs/hepta-codex-adapter/src/wire.rs` | typed product-source round trip |
+| cross-runtime loading | Rust producer + Python parser | `codex-rs/hepta-shadow-qualification/tests/cross_language_wire_fault.rs` | raw process-pipe V2 test |
 
-- Source identity: `sourceBase` is recorded in `IMPLEMENTATION_MAP.json`.
-- Consumer callsites and durable owner stores remain an explicit follow-up when not listed above.
-- Production implementation, runtime composition, independent acceptance, activation, and release remain false until their separate evidence gates pass.
+- Current promoted V1 contract remains frozen until candidate claim promotion completes.
+- Source composition is present; deployed product execution remains a separate gate.
+- Independent acceptance, activation and release remain false until their separate evidence gates pass.

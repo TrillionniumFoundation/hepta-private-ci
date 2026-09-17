@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "protocol": "HPTA",
+  "version": 2,
+  "description": "schema=s, producer=p, generation=1, payload=010203; digest binds metadata and payload",
+  "frameLength": 59,
+  "frameHex": "485054410002000100010000000000000001ae97bbd5c03eb411c94ae697a4773142646b0d23faf48cf7d875304e7a5b45e1000000037370010203",
+  "frameSha256": "bba343598cdf190545d2d5227d3fdd7729a72a2dd2ff7540772464aa5431d8f3",
+  "digestDomainHex": "68657074612e687074612e76322e6672616d6500",
+  "fields": {
+    "schema": "s",
+    "producer": "p",
+    "generation": 1,
+    "payloadHex": "010203",
+    "frameDigest": "ae97bbd5c03eb411c94ae697a4773142646b0d23faf48cf7d875304e7a5b45e1"
+  },
+  "negativeCases": [
+    "changing schema bytes without recomputing frameDigest rejects",
+    "changing producer bytes without recomputing frameDigest rejects",
+    "changing generation without recomputing frameDigest rejects",
+    "changing payload bytes without recomputing frameDigest rejects",
+    "unknown version rejects before body interpretation"
+  ]
+}

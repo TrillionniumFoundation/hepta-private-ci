@@ -20,6 +20,7 @@
   ],
   "stateOwnerDisposition": "The existing App Server and Codex core remain the sole thread, turn, model, and tool execution spine.",
   "terminalObserverDisposition": "The App Server observes admission and streaming state; external tool/provider terminality remains with its effect owner.",
+  "wireCompositionState": "HPTA V2 typed intent framing is source-composed in hepta-codex-adapter but is not a deployed transport or production activation claim.",
   "operations": [
     {
       "designOperation": "open_thread",
@@ -127,6 +128,42 @@
       "operation": "observe_delivery",
       "nativeSymbol": "pub(crate) async fn turn_start(",
       "sourcePath": "codex-rs/app-server/src/request_processors/turn_processor.rs",
+      "sourcePathExists": true
+    },
+    {
+      "designOperation": "wire_intent",
+      "mappingClass": "owner_native",
+      "ownerEntrypoint": {
+        "role": "owner_entrypoint",
+        "path": "codex-rs/hepta-codex-adapter/src/wire.rs",
+        "symbol": "encode_codex_intent_frame",
+        "buildTarget": "codex-hepta-codex-adapter"
+      },
+      "delegatedCallees": [
+        {
+          "role": "delegated_callee",
+          "path": "codex-rs/hepta-wire/src/schema.rs",
+          "symbol": "SchemaRegistry",
+          "buildTarget": "codex-hepta-wire",
+          "ownerModule": "platform.wire"
+        }
+      ],
+      "tests": [
+        {
+          "path": "codex-rs/hepta-codex-adapter/src/wire.rs",
+          "kind": "typed_wire_source_composition",
+          "command": "just test -p codex-hepta-codex-adapter"
+        },
+        {
+          "path": "codex-rs/hepta-shadow-qualification/tests/cross_language_wire_fault.rs",
+          "kind": "cross_runtime_wire_qualification",
+          "command": "cargo test --locked -p codex-hepta-shadow-qualification --test cross_language_wire_fault"
+        }
+      ],
+      "sourceSemantics": "Serializes and admits CodexOperationIntent through negotiated HPTA V2 full-frame integrity and the exact registered runtime.codex.operation-intent.v1 schema. This is source composition only and does not create effect authority or deployment activation.",
+      "operation": "wire_intent",
+      "nativeSymbol": "encode_codex_intent_frame/decode_codex_intent_frame",
+      "sourcePath": "codex-rs/hepta-codex-adapter/src/wire.rs",
       "sourcePathExists": true
     }
   ],
