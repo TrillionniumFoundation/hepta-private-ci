@@ -29,9 +29,11 @@ use crate::signed_authority::H7H89ProductionGrant;
 use crate::signed_authority::H7H89ProductionGrantVerifier;
 use crate::signed_authority::H7H89ProductionTransition;
 use crate::signed_authority::ProductionMutationReceipt;
+use crate::signed_intent::SignedIntentRecoveryAction;
 use crate::signed_intent::SignedIntentStatus;
 use crate::signed_intent::SignedSupervisorIntent;
 use crate::signed_intent::read_intent;
+use crate::signed_intent::read_recovery_directive;
 use crate::signed_intent::write_intent;
 
 /// Lifecycle-only controller with one process handle and bounded buffers per agent.
@@ -518,17 +520,28 @@ impl<D: ProcessDriver> Supervisor<D> {
                     now_unix_seconds,
                 )
                 .map_err(|error| SupervisorError::ProductionAuthority(error.to_string()))?;
-            supervisor.preflight_upgrade(agent_id, &target)?;
+            // `with_slot` removes this agent from `self.slots` for the duration
+            // of the mutation.  Revision arithmetic must therefore use the
+            // borrowed slot directly; calling next_control_revision() here
+            // would incorrectly report UnknownAgent.
+            let next_control_revision = slot
+                .control_revision
+                .checked_add(1)
+                .ok_or_else(|| SupervisorError::Invalid("control revision overflow".to_string()))?;
             if slot
                 .signed_intent
                 .as_ref()
-                .is_some_and(|intent| !matches!(intent.status, SignedIntentStatus::Committed))
+                .is_some_and(|intent| {
+                    !matches!(
+                        intent.status,
+                        SignedIntentStatus::Committed | SignedIntentStatus::Aborted
+                    )
+                })
             {
                 return Err(SupervisorError::SignedIntentRecoveryRequired(
                     agent_id.clone(),
                 ));
             }
-            let next_control_revision = supervisor.next_control_revision(agent_id)?;
             let intent = SignedSupervisorIntent::new(
                 grant.digest().clone(),
                 agent_id.to_string(),
@@ -541,32 +554,74 @@ impl<D: ProcessDriver> Supervisor<D> {
                 SignedIntentStatus::Prepared,
             )
             .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
-            write_intent(record.layout.run_root(), &intent)
-                .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
-            supervisor.set_control_revision(agent_id, next_control_revision)?;
+
+            // The Prepared publication is the effect boundary.  From this
+            // point onward no error is safe to report as a pre-mutation
+            // rejection: callers must reconcile the durable intent instead
+            // of blindly retrying the grant.
             slot.signed_intent = Some(intent.clone());
-            let explicit_rollback = grant.transition == H7H89ProductionTransition::Rollback;
-            if let Err(error) =
-                supervisor.upgrade_slot(agent_id, slot, target, now, explicit_rollback)
-            {
-                let recovery = intent
-                    .with_status(SignedIntentStatus::RecoveryRequired)
-                    .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
-                let _ = write_intent(record.layout.run_root(), &recovery);
-                slot.signed_intent = Some(recovery);
-                return Err(error);
+            if write_intent(record.layout.run_root(), &intent).is_err() {
+                return Err(supervisor.mark_signed_intent_recovery_required(
+                    agent_id,
+                    slot,
+                    &record,
+                    &intent,
+                ));
             }
-            let queued = intent
-                .with_status(SignedIntentStatus::Queued)
-                .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
-            write_intent(record.layout.run_root(), &queued)
-                .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
+            slot.control_revision = next_control_revision;
+
+            let explicit_rollback = grant.transition == H7H89ProductionTransition::Rollback;
+            if supervisor
+                .upgrade_slot(agent_id, slot, target, now, explicit_rollback)
+                .is_err()
+            {
+                return Err(supervisor.mark_signed_intent_recovery_required(
+                    agent_id,
+                    slot,
+                    &record,
+                    &intent,
+                ));
+            }
+            let queued = match intent.with_status(SignedIntentStatus::Queued) {
+                Ok(queued) => queued,
+                Err(_) => {
+                    return Err(supervisor.mark_signed_intent_recovery_required(
+                        agent_id,
+                        slot,
+                        &record,
+                        &intent,
+                    ));
+                }
+            };
+            if write_intent(record.layout.run_root(), &queued).is_err() {
+                return Err(supervisor.mark_signed_intent_recovery_required(
+                    agent_id,
+                    slot,
+                    &record,
+                    &queued,
+                ));
+            }
             slot.signed_intent = Some(queued);
             Ok(ProductionMutationReceipt::queued(
                 grant,
                 next_control_revision,
             ))
         })
+    }
+
+    fn mark_signed_intent_recovery_required(
+        &self,
+        agent_id: &AgentId,
+        slot: &mut AgentSlot<D::Process>,
+        record: &AgentRecord,
+        intent: &SignedSupervisorIntent,
+    ) -> SupervisorError {
+        let recovery = intent
+            .with_status(SignedIntentStatus::RecoveryRequired)
+            .unwrap_or_else(|_| intent.clone());
+        let _ = write_intent(record.layout.run_root(), &recovery);
+        slot.signed_intent = Some(recovery);
+        SupervisorError::SignedIntentRecoveryRequired(agent_id.clone())
     }
 
     pub(crate) fn commit_signed_intent_if_target(
@@ -616,9 +671,51 @@ impl<D: ProcessDriver> Supervisor<D> {
             ));
         }
         slot.signed_intent = Some(intent.clone());
-        if matches!(intent.status, SignedIntentStatus::Committed) {
+        if matches!(
+            intent.status,
+            SignedIntentStatus::Committed | SignedIntentStatus::Aborted
+        ) {
             return Ok(());
         }
+
+        let directive = read_recovery_directive(record.layout.run_root())
+            .map_err(|_| SupervisorError::SignedIntentRecoveryRequired(agent_id.clone()))?;
+        if let Some(directive) = directive
+            && directive.intent_sha256 == intent.intent_sha256
+            && matches!(directive.action, SignedIntentRecoveryAction::Abort)
+        {
+            // The operator may terminate an ambiguous grant, but never infer
+            // success from current release/liveness.  Terminalize only after
+            // there is no adopted process left whose effects could still be
+            // progressing.  If a child is still present, fence/kill it and
+            // fail startup once more; the next recovery can persist Aborted
+            // after exact adoption reports it gone.
+            if slot.matrix.runtime.is_some() {
+                let _ = self.kill_matrix_now(agent_id, slot);
+            }
+            if let Some(runtime) = slot.runtime.as_mut() {
+                let _ = runtime.process.kill();
+                runtime.fenced = true;
+                runtime.phase = RuntimePhase::Killing;
+            }
+            if slot.runtime.is_some() || slot.matrix.runtime.is_some() {
+                return Err(SupervisorError::SignedIntentRecoveryRequired(
+                    agent_id.clone(),
+                ));
+            }
+            let aborted = intent
+                .with_status(SignedIntentStatus::Aborted)
+                .map_err(|_| SupervisorError::SignedIntentRecoveryRequired(agent_id.clone()))?;
+            write_intent(record.layout.run_root(), &aborted)
+                .map_err(|_| SupervisorError::SignedIntentRecoveryRequired(agent_id.clone()))?;
+            slot.signed_intent = Some(aborted);
+            slot.restart_pending = false;
+            slot.restart_retry_at = None;
+            slot.restart_automatic = false;
+            slot.restart_after_exit = false;
+            return Ok(());
+        }
+
         // A restart has no durable proof that an apparently matching target
         // was produced by this exact signed mutation.  In particular, the
         // one-file intent does not carry an independently committed source /
@@ -632,6 +729,9 @@ impl<D: ProcessDriver> Supervisor<D> {
         // Fence and kill any adopted child before surfacing the recovery
         // requirement; normal ticking must not continue an ambiguous
         // external transition.
+        if slot.matrix.runtime.is_some() {
+            let _ = self.kill_matrix_now(agent_id, slot);
+        }
         if let Some(runtime) = slot.runtime.as_mut() {
             // A failed fence/kill is still an unresolved signed intent.  Do
             // not downgrade it to a recoverable driver fault: the caller
