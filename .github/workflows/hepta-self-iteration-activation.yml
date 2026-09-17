@@ -1,0 +1,26 @@
+name: Hepta self-iteration activation gate
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  repository-controls:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Verify canonical repository controls
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          HEPTA_CANONICAL_BRANCH: main
+        run: python3 scripts/verify_self_iteration_repository_controls.py
+      - name: Record activation boundary
+        run: |
+          echo 'Repository controls are necessary but do not grant activation, promotion, merge, or release authority.'
