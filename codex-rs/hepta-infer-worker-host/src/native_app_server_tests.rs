@@ -3,6 +3,8 @@ use codex_app_server_protocol::AgentMessageDeltaNotification;
 use codex_app_server_protocol::Turn;
 use codex_app_server_protocol::TurnCompletedNotification;
 use codex_app_server_protocol::TurnItemsView;
+use codex_hepta_agentd::CognitiveContextItem;
+use codex_hepta_agentd::CognitiveContextPlan;
 
 fn output() -> NativeRunOutput {
     NativeRunOutput {
@@ -294,4 +296,82 @@ async fn success_requires_both_matching_completion_and_final_ready_owner() {
     assert!(output.succeeded());
     output.status = NativeRunStatus::Interrupted;
     assert!(!output.succeeded());
+}
+
+fn cognitive_context_snapshot(
+    snapshot_digest: &str,
+    read_digest: &str,
+    items: Vec<CognitiveContextItem>,
+    read_allowed: bool,
+    plan_receipt_digest: &str,
+) -> CognitiveContextSnapshot {
+    CognitiveContextSnapshot {
+        snapshot_digest: snapshot_digest.to_string(),
+        read_digest: read_digest.to_string(),
+        omitted_records: 0,
+        items,
+        plan: Some(CognitiveContextPlan {
+            evaluated_context_digest: "evaluated".to_string(),
+            plan_receipt_digest: plan_receipt_digest.to_string(),
+            read_allowed,
+        }),
+    }
+}
+
+fn context_item(revision: u64, content: &str, digest: &str) -> CognitiveContextItem {
+    CognitiveContextItem {
+        memory_id: "memory-a".to_string(),
+        revision,
+        content: content.to_string(),
+        content_sha256: digest.to_string(),
+    }
+}
+
+#[test]
+fn final_context_gate_rejects_tombstone_or_exact_revision_race_before_turn_start() {
+    let expected = cognitive_context_snapshot(
+        "snapshot-before",
+        "read-before",
+        vec![context_item(1, "old text", "content-before")],
+        true,
+        "plan-before",
+    );
+    let tombstoned = cognitive_context_snapshot(
+        "snapshot-after",
+        "read-after",
+        Vec::new(),
+        false,
+        "plan-after",
+    );
+    assert!(verify_cognitive_context_unchanged(&expected, &tombstoned).is_err());
+
+    // Defense in depth: even a malformed producer that reused its receipt
+    // digests cannot swap the exact revision/content admitted to the model.
+    let changed_revision = cognitive_context_snapshot(
+        "snapshot-before",
+        "read-before",
+        vec![context_item(2, "corrected text", "content-after")],
+        true,
+        "plan-changed",
+    );
+    assert!(verify_cognitive_context_unchanged(&expected, &changed_revision).is_err());
+}
+
+#[test]
+fn final_context_gate_allows_only_ephemeral_plan_receipt_churn() {
+    let expected = cognitive_context_snapshot(
+        "snapshot-stable",
+        "read-stable",
+        vec![context_item(1, "stable text", "content-stable")],
+        true,
+        "plan-observed-at-t0",
+    );
+    let current = cognitive_context_snapshot(
+        "snapshot-stable",
+        "read-stable",
+        vec![context_item(1, "stable text", "content-stable")],
+        true,
+        "plan-observed-at-t1",
+    );
+    assert!(verify_cognitive_context_unchanged(&expected, &current).is_ok());
 }
