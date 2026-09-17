@@ -11,6 +11,7 @@
 pub mod effect_executor;
 
 mod automation_taskflow;
+mod dispatch_recovery;
 mod lifecycle;
 mod model;
 mod scheduler;
