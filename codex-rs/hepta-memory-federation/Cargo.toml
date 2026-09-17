@@ -15,3 +15,6 @@ workspace = true
 
 [dependencies]
 codex-hepta-types = { path = "../hepta-types" }
+ed25519-dalek = { workspace = true }
+tokio = { workspace = true, features = ["macros", "rt-multi-thread", "sync", "time"] }
+tokio-util = { workspace = true, features = ["rt"] }
