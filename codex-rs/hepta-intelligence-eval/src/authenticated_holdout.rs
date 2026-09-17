@@ -2,9 +2,9 @@
 //!
 //! The durable journal prevents semantic reuse and detects rollback only as far
 //! as the minimum anchor supplied by its host. This layer authenticates that
-//! minimum anchor against host-owned trust state and a host-owned freshness
-//! watermark. It does not persist the anchor, choose the current witness, or
-//! authorize release of confirmatory labels.
+//! minimum anchor against host-owned trust state, a separately retained host
+//! anchor and a host-owned freshness watermark. It does not persist the anchor,
+//! choose the current witness, or authorize release of confirmatory labels.
 
 use std::error::Error as StdError;
 use std::fmt;
@@ -27,7 +27,7 @@ pub struct SignedHoldoutAnchorV1 {
     pub binding: Digest32,
     /// Minimum acknowledged journal state retained outside the journal.
     pub anchor: HoldoutAnchorV1,
-    /// Independent trusted observer attestation over the exact anchor payload.
+    /// Trusted observer attestation over the exact anchor payload.
     pub observer: SignedLearningEvidenceV1,
 }
 
@@ -45,6 +45,7 @@ pub enum AuthenticatedHoldoutError {
     InvalidBinding,
     InvalidAnchor,
     BootstrapAnchor,
+    CurrentAnchorMismatch,
     StaleWitness,
     Evidence(SignedEvidenceError),
     Durable(DurableHoldoutError),
@@ -67,7 +68,7 @@ impl From<DurableHoldoutError> for AuthenticatedHoldoutError {
     }
 }
 
-/// Canonical bytes signed by the independent anchor observer.
+/// Canonical bytes signed by the holdout-anchor observer.
 ///
 /// Trust scope, objective and authority epoch are bound by
 /// `SignedLearningEvidenceV1` and `LearningEvidenceVerifierV1`; these bytes bind
@@ -89,19 +90,25 @@ pub fn holdout_anchor_signing_payload_v1(
     Ok(bytes)
 }
 
-/// Verify a host-supplied anchor witness against immutable host-owned trust.
+/// Verify a host-supplied anchor witness against immutable host-owned trust and
+/// the minimum anchor separately retained by the host.
 ///
-/// `minimum_issued_at` is a monotonic freshness watermark retained by the host
-/// outside the journal and outside the submitted witness. It prevents an older,
-/// still-cryptographically-valid anchor attestation from being replayed after a
-/// newer witness has been acknowledged. The verifier still enforces signer
-/// role, trust digest, objective, authority epoch, validity and revocation.
+/// `minimum_issued_at` is a monotonic freshness watermark retained outside the
+/// journal and outside the submitted witness. The exact `minimum_anchor` is also
+/// supplied from that independent currentness store. Together they prevent an
+/// older or forked, still-cryptographically-valid attestation from selecting its
+/// own rollback boundary. The verifier additionally enforces signer role, trust
+/// digest, objective, authority epoch, validity and revocation.
 pub fn authenticate_holdout_anchor_v1(
     witness: &SignedHoldoutAnchorV1,
     verifier: &LearningEvidenceVerifierV1,
+    minimum_anchor: HoldoutAnchorV1,
     minimum_issued_at: u64,
     now: u64,
 ) -> Result<AuthenticatedHoldoutAnchorV1, AuthenticatedHoldoutError> {
+    if witness.anchor != minimum_anchor {
+        return Err(AuthenticatedHoldoutError::CurrentAnchorMismatch);
+    }
     if witness.observer.issued_at < minimum_issued_at {
         return Err(AuthenticatedHoldoutError::StaleWitness);
     }
@@ -114,7 +121,9 @@ pub fn authenticate_holdout_anchor_v1(
     )?;
     let mut authentication = b"hepta.intelligence-eval.authenticated-holdout-anchor.v1\0".to_vec();
     authentication.extend_from_slice(verifier.trust_digest().as_array());
-    authentication.extend_from_slice(Digest32::of_bytes(&witness.observer.signing_bytes()).as_array());
+    authentication.extend_from_slice(
+        Digest32::of_bytes(&witness.observer.signing_bytes()).as_array(),
+    );
     authentication.extend_from_slice(&witness.observer.signature);
     Ok(AuthenticatedHoldoutAnchorV1 {
         binding: witness.binding,
@@ -125,25 +134,31 @@ pub fn authenticate_holdout_anchor_v1(
     })
 }
 
-/// Recover the durable journal only after authenticating its independently
-/// retained minimum anchor. A zero anchor is intentionally rejected here:
-/// bootstrap must use `DurableFinalHoldoutJournalV1::create`, then persist and
-/// attest the first nonzero anchor before any recovery path is trusted.
+/// Recover the durable journal only after authenticating its separately retained
+/// minimum anchor. A zero anchor is intentionally rejected here: bootstrap must
+/// use `DurableFinalHoldoutJournalV1::create`, then persist and attest the first
+/// nonzero anchor before any recovery path is trusted.
 pub fn recover_with_authenticated_holdout_anchor_v1(
     file: File,
     witness: &SignedHoldoutAnchorV1,
     verifier: &LearningEvidenceVerifierV1,
+    minimum_anchor: HoldoutAnchorV1,
     minimum_issued_at: u64,
     now: u64,
 ) -> Result<
     (DurableFinalHoldoutJournalV1, AuthenticatedHoldoutAnchorV1),
     AuthenticatedHoldoutError,
 > {
-    if witness.anchor.sequence == 0 {
+    if minimum_anchor.sequence == 0 {
         return Err(AuthenticatedHoldoutError::BootstrapAnchor);
     }
-    let authenticated =
-        authenticate_holdout_anchor_v1(witness, verifier, minimum_issued_at, now)?;
+    let authenticated = authenticate_holdout_anchor_v1(
+        witness,
+        verifier,
+        minimum_anchor,
+        minimum_issued_at,
+        now,
+    )?;
     let journal = DurableFinalHoldoutJournalV1::recover(
         file,
         authenticated.binding,
@@ -230,7 +245,7 @@ mod tests {
             head: digest(9),
         };
         let (witness, verifier) = signed_witness(anchor);
-        let admitted = authenticate_holdout_anchor_v1(&witness, &verifier, 20, 30)
+        let admitted = authenticate_holdout_anchor_v1(&witness, &verifier, anchor, 20, 30)
             .expect("current signed anchor");
         assert_eq!(admitted.anchor, anchor);
         assert_eq!(admitted.binding, witness.binding);
@@ -239,19 +254,27 @@ mod tests {
     }
 
     #[test]
-    fn stale_or_mutated_anchor_witness_is_rejected() {
+    fn stale_forked_or_mutated_anchor_witness_is_rejected() {
         let anchor = HoldoutAnchorV1 {
             sequence: 3,
             head: digest(9),
         };
         let (mut witness, verifier) = signed_witness(anchor);
         assert_eq!(
-            authenticate_holdout_anchor_v1(&witness, &verifier, 21, 30),
+            authenticate_holdout_anchor_v1(&witness, &verifier, anchor, 21, 30),
             Err(AuthenticatedHoldoutError::StaleWitness)
         );
-        witness.anchor.head = digest(10);
+        let fork = HoldoutAnchorV1 {
+            sequence: 3,
+            head: digest(10),
+        };
+        assert_eq!(
+            authenticate_holdout_anchor_v1(&witness, &verifier, fork, 20, 30),
+            Err(AuthenticatedHoldoutError::CurrentAnchorMismatch)
+        );
+        witness.anchor = fork;
         assert!(matches!(
-            authenticate_holdout_anchor_v1(&witness, &verifier, 20, 30),
+            authenticate_holdout_anchor_v1(&witness, &verifier, fork, 20, 30),
             Err(AuthenticatedHoldoutError::Evidence(
                 SignedEvidenceError::PayloadMismatch
             ))
@@ -277,6 +300,6 @@ mod tests {
         let (witness, verifier) = signed_witness(zero);
         // Authentication can audit a signed bootstrap statement, but recovery
         // never accepts it as rollback protection for an existing journal.
-        assert!(authenticate_holdout_anchor_v1(&witness, &verifier, 20, 30).is_ok());
+        assert!(authenticate_holdout_anchor_v1(&witness, &verifier, zero, 20, 30).is_ok());
     }
 }
