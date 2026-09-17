@@ -219,6 +219,85 @@ impl SegmentedLedger {
         Ok(receipt)
     }
 
+    /// Commit one validated ordered batch entirely inside the active segment.
+    /// The method does not rotate implicitly: if the complete new suffix plus
+    /// seal footer cannot fit, it fails before any byte is written. A recovered
+    /// committed prefix may be replayed before a missing suffix on exact retry.
+    pub fn append_batch(
+        &mut self,
+        expected_predecessor: Digest32,
+        events: Vec<LedgerEvent>,
+    ) -> Result<Vec<AppendReceipt>, DurableLedgerError> {
+        self.ready()?;
+        if events.is_empty() {
+            return Err(DurableLedgerError::InvalidBatch);
+        }
+        let mut staging = self.core.clone();
+        let mut expected_chain = expected_predecessor;
+        let mut frames = Vec::new();
+        let mut receipts = Vec::with_capacity(events.len());
+        let mut saw_new = false;
+
+        for event in events {
+            let prepared = staging
+                .prepare(event)
+                .map_err(DurableLedgerError::Semantic)?;
+            if prepared.record.predecessor_chain_digest != expected_chain {
+                return Err(DurableLedgerError::Conflict);
+            }
+            expected_chain = prepared.record.chain_digest;
+            match prepared.disposition {
+                AppendDisposition::IdempotentReplay if saw_new => {
+                    return Err(DurableLedgerError::Conflict);
+                }
+                AppendDisposition::IdempotentReplay => {}
+                AppendDisposition::Appended => {
+                    saw_new = true;
+                    frames.extend_from_slice(&encode_frame(&prepared.record)?);
+                }
+            }
+            receipts.push(
+                staging
+                    .apply(prepared)
+                    .map_err(DurableLedgerError::Semantic)?,
+            );
+        }
+
+        if !saw_new {
+            return Ok(receipts);
+        }
+        let retained_in_segment = (staging.records().len() as u64)
+            .checked_sub(self.predecessor.sequence)
+            .ok_or(DurableLedgerError::Corrupt)?;
+        let frame_bytes = u64::try_from(frames.len()).map_err(|_| DurableLedgerError::Capacity)?;
+        let next_length = self
+            .length
+            .checked_add(frame_bytes)
+            .ok_or(DurableLedgerError::Capacity)?;
+        let with_footer = next_length
+            .checked_add(segment_codec::FOOTER as u64)
+            .ok_or(DurableLedgerError::Capacity)?;
+        if self.sealed
+            || retained_in_segment > self.limits.records as u64
+            || with_footer > self.limits.bytes
+        {
+            return Err(DurableLedgerError::Capacity);
+        }
+
+        self.poisoned = true;
+        if self.active.seek(SeekFrom::End(0))? != self.length {
+            return Err(DurableLedgerError::Corrupt);
+        }
+        self.active
+            .write_all(&frames)
+            .and_then(|()| self.active.sync_all())
+            .map_err(|_| DurableLedgerError::Indeterminate)?;
+        self.core = staging;
+        self.length = next_length;
+        self.poisoned = false;
+        Ok(receipts)
+    }
+
     /// Seal before exposing a historical segment to an independent reader.
     /// Empty segments cannot be sealed or rotated. The seal survives restart.
     pub fn seal(&mut self, expected: LedgerAnchor) -> Result<(), DurableLedgerError> {
