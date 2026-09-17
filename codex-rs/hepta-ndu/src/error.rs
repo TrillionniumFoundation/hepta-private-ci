@@ -31,6 +31,11 @@ pub enum NduError {
     InvalidEta,
     DimensionMismatch,
     StateDigestMismatch,
+    InvalidSolverReceipt(&'static str),
+    IterationBoundReached {
+        iterations: u32,
+        terminal_residual_raw: i64,
+    },
     SimultaneousHierarchyUpdate(u64),
     Arithmetic,
 }
@@ -64,7 +69,11 @@ impl NduError {
             Self::AbstainInfeasible => "NDU-E005",
             Self::MissingAbstainCandidate => "NDU-E006",
             Self::IncompleteScalarization | Self::InvalidWeight(_) => "NDU-E007",
-            Self::InvalidEta | Self::DimensionMismatch | Self::StateDigestMismatch => "NDU-E008",
+            Self::InvalidEta
+            | Self::DimensionMismatch
+            | Self::StateDigestMismatch
+            | Self::InvalidSolverReceipt(_)
+            | Self::IterationBoundReached { .. } => "NDU-E008",
             Self::SimultaneousHierarchyUpdate(_) => "NDU-E009",
             Self::Arithmetic => "NDU-E010",
         }
@@ -148,9 +157,19 @@ impl fmt::Display for NduError {
             }
             Self::DimensionMismatch => formatter.write_str("preference dimensions do not match"),
             Self::StateDigestMismatch => formatter.write_str("preference state digest mismatch"),
+            Self::InvalidSolverReceipt(field) => {
+                write!(formatter, "invalid local solver receipt field: {field}")
+            }
+            Self::IterationBoundReached {
+                iterations,
+                terminal_residual_raw,
+            } => write!(
+                formatter,
+                "preference solver exhausted {iterations} iterations with residual {terminal_residual_raw}; result unavailable"
+            ),
             Self::SimultaneousHierarchyUpdate(generation) => write!(
                 formatter,
-                "multiple hierarchy levels update in generation {generation}"
+                "related hierarchy levels update in generation {generation}"
             ),
             Self::Arithmetic => formatter.write_str("deterministic Q32 arithmetic failed"),
         }
