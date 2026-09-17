@@ -10,7 +10,7 @@ const GENERATED_RISK_CONSTRAINTS: usize = 4;
 const MAX_SOURCE_CONSTRAINTS: usize =
     NATIVE_MAX_CONSTRAINTS - GENERATED_RESOURCE_CONSTRAINTS - GENERATED_RISK_CONSTRAINTS;
 const MAX_AGGREGATE_SUCCESS_PREDICATES: usize = 128;
-const MAX_CALLER_ACTIONS_WITHOUT_INTRINSIC_ABSTAIN: usize = 127;
+const MAX_SOURCE_ACTIONS: usize = 128;
 
 /// Structural errors contain field paths/counts, never unrestricted source text.
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -71,8 +71,10 @@ impl ObjectiveSourceEnvelopeV1 {
     ///
     /// Structural ceilings are admission-safe, not merely per-field maxima:
     /// source constraints reserve ten native slots for generated resource/risk
-    /// constraints, success/terminal/evidence predicates share the native 128
-    /// slot aggregate, and caller actions reserve the intrinsic abstain slot.
+    /// constraints and success/terminal/evidence predicates share the native
+    /// 128-slot aggregate. Source actions may contain up to 128 entries because
+    /// one can be an explicit intrinsic `abstain`; native compile enforces the
+    /// 127-entry ceiling only when it must inject abstain itself.
     ///
     /// This is deliberately not wire validation: JSON escaping/framing and
     /// aggregate encoded-byte limits, duplicate/unknown JSON fields, ID/time
@@ -113,19 +115,19 @@ impl ObjectiveSourceEnvelopeV1 {
                 &intent.legal_action_classes,
                 "legalActionClasses",
                 0,
-                MAX_CALLER_ACTIONS_WITHOUT_INTRINSIC_ABSTAIN,
+                MAX_SOURCE_ACTIONS,
             ),
             (
                 &intent.forbidden_action_classes,
                 "forbiddenActionClasses",
                 0,
-                128,
+                MAX_SOURCE_ACTIONS,
             ),
             (
                 &intent.confirmation_action_classes,
                 "confirmationActionClasses",
                 0,
-                MAX_CALLER_ACTIONS_WITHOUT_INTRINSIC_ABSTAIN,
+                MAX_SOURCE_ACTIONS,
             ),
         ] {
             collection(actions, field, minimum, maximum, String::as_str)?;
