@@ -1,6 +1,7 @@
 import { createHash } from "node:crypto";
-import { mkdir, open, readFile, lstat } from "node:fs/promises";
-import { dirname, isAbsolute } from "node:path";
+import { constants } from "node:fs";
+import { mkdir, open, realpath } from "node:fs/promises";
+import { dirname, isAbsolute, resolve } from "node:path";
 
 const SCHEMA = "hepta.browser.operation-journal.v1";
 const MAX_LINE_BYTES = 262_144;
@@ -28,6 +29,15 @@ function keyOf(record) {
 
 function freezeRecord(record) {
   return Object.freeze({ ...record });
+}
+
+async function ensureCanonicalPrivateParent(path) {
+  const parent = dirname(path);
+  await mkdir(parent, { recursive: true, mode: 0o700 });
+  const actual = await realpath(parent);
+  if (actual !== resolve(parent)) {
+    throw new TypeError("browser journal parent path contains a symlink");
+  }
 }
 
 export class MemoryBrowserOperationJournal {
@@ -116,19 +126,27 @@ export class FileBrowserOperationJournal {
   }
 
   async #load() {
+    const noFollow = constants.O_NOFOLLOW ?? 0;
+    let handle;
+    try {
+      await ensureCanonicalPrivateParent(this.#path);
+      handle = await open(this.#path, constants.O_RDONLY | noFollow);
+    } catch (error) {
+      if (error?.code === "ENOENT") return new Map();
+      throw error;
+    }
     let bytes;
     try {
-      const info = await lstat(this.#path);
-      if (!info.isFile() || info.isSymbolicLink() || info.size > MAX_FILE_BYTES) {
+      const info = await handle.stat();
+      if (!info.isFile() || info.size > MAX_FILE_BYTES) {
         throw new TypeError("browser journal is not a bounded regular file");
       }
       if (process.platform !== "win32" && (info.mode & 0o077) !== 0) {
         throw new TypeError("browser journal permissions are too broad");
       }
-      bytes = await readFile(this.#path, "utf8");
-    } catch (error) {
-      if (error?.code === "ENOENT") return new Map();
-      throw error;
+      bytes = await handle.readFile({ encoding: "utf8" });
+    } finally {
+      await handle.close();
     }
     const records = new Map();
     const lines = bytes.length === 0 ? [] : bytes.split("\n");
@@ -179,14 +197,23 @@ export class FileBrowserOperationJournal {
   async #append({ type, record }) {
     const unsigned = { schema: SCHEMA, version: 1, type, record };
     const line = canonical({ ...unsigned, checksum: checksum(unsigned) }) + "\n";
-    if (UTF8.encode(line).byteLength > MAX_LINE_BYTES) {
+    const lineBytes = UTF8.encode(line).byteLength;
+    if (lineBytes > MAX_LINE_BYTES) {
       throw new TypeError("browser journal record exceeds line limit");
     }
-    await mkdir(dirname(this.#path), { recursive: true, mode: 0o700 });
-    const handle = await open(this.#path, "a", 0o600);
+    await ensureCanonicalPrivateParent(this.#path);
+    const noFollow = constants.O_NOFOLLOW ?? 0;
+    const flags = constants.O_WRONLY | constants.O_APPEND | constants.O_CREAT | noFollow;
+    const handle = await open(this.#path, flags, 0o600);
     try {
       const info = await handle.stat();
-      if (info.size + UTF8.encode(line).byteLength > MAX_FILE_BYTES) {
+      if (!info.isFile()) {
+        throw new TypeError("browser journal is not a regular file");
+      }
+      if (process.platform !== "win32" && (info.mode & 0o077) !== 0) {
+        throw new TypeError("browser journal permissions are too broad");
+      }
+      if (info.size + lineBytes > MAX_FILE_BYTES) {
         throw new TypeError("browser journal capacity exhausted");
       }
       await handle.writeFile(line, "utf8");
