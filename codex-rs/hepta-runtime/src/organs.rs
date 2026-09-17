@@ -22,6 +22,7 @@ use codex_hepta_control_plane::FallbackTerminal;
 use codex_hepta_control_plane::InputPort;
 use codex_hepta_control_plane::NativeHandoffProtocolAdmissionV1;
 use codex_hepta_control_plane::NativeHandoffProtocolRegistryV1;
+use codex_hepta_control_plane::OrganCapabilityDescriptorV1;
 use codex_hepta_control_plane::OrganDriverBindingV1;
 use codex_hepta_control_plane::OrganEdge;
 use codex_hepta_control_plane::OrganExecutionBudgetV1;
@@ -191,6 +192,11 @@ fn build_host(root: HeptaStateRoot, state: Arc<dyn RuntimeStateAdapter>) -> Resu
     )
     .context("admit compiled-in status body through protocol registry")?;
     let control_system = StableId::new("system.cognition")?;
+    let status_capability = OrganCapabilityDescriptorV1::trusted_short_read_only(
+        StableId::new("driver.runtime.status")?,
+        1,
+        Digest32::of_bytes(b"hepta.runtime.status.compiled-driver.v1"),
+    );
     let hierarchy = CnsHierarchyV1 {
         cns: StableId::new("hepta.runtime.cns")?,
         generation,
@@ -205,19 +211,18 @@ fn build_host(root: HeptaStateRoot, state: Arc<dyn RuntimeStateAdapter>) -> Resu
                 organs: vec![status.clone()],
             },
         ],
+        // The descriptor names the reviewed implementation once. Both graph
+        // organs are instances of that implementation, so adding/removing an
+        // instance cannot create a second driver identity/version/digest source.
         drivers: body
             .organ_manifests
             .iter()
-            .map(|manifest| {
-                Ok(OrganDriverBindingV1 {
-                    organ: manifest.organ_id.clone(),
-                    driver: StableId::new(format!("driver.{}", manifest.organ_id))?,
-                    implementation_digest: Digest32::of_bytes(
-                        format!("hepta.status.compiled-driver.v1:{}", manifest.organ_id).as_bytes(),
-                    ),
-                })
+            .map(|manifest| OrganDriverBindingV1 {
+                organ: manifest.organ_id.clone(),
+                driver: status_capability.driver.clone(),
+                implementation_digest: status_capability.implementation_digest,
             })
-            .collect::<Result<Vec<_>>>()?,
+            .collect(),
     };
     let budget = OrganExecutionBudgetV1::new(Duration::from_millis(250))?;
     let handlers: Vec<Box<dyn TrustedReadOnlyOrganV1>> = vec![
