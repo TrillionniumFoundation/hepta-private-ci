@@ -115,7 +115,7 @@ impl DurableOperationState {
 
     #[must_use]
     pub const fn is_terminal(self) -> bool {
-        matches!(Self::Applied | Self::NotApplied | Self::Quarantined, self)
+        matches!(self, Self::Applied | Self::NotApplied | Self::Quarantined)
     }
 }
 
