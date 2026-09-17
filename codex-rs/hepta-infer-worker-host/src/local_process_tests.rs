@@ -126,14 +126,14 @@ fn verifies_artifacts_and_round_trips_load_infer_unload() {
                         "error": null,
                         "handle_id": "loaded.model.1",
                         "observed_memory_bytes": 1024,
-                        "model_digest": server_manifest.model_digest,
-                        "weights_digest": server_manifest.weights_digest,
-                        "tokenizer_digest": server_manifest.tokenizer_digest,
-                        "preprocessor_digest": server_manifest.preprocessor_digest,
-                        "quantization_digest": server_manifest.quantization_digest,
-                        "runtime_digest": server_manifest.runtime_digest,
-                        "device_digest": server_manifest.device_digest,
-                        "isolation_digest": server_manifest.isolation_digest
+                        "model_digest": server_manifest.model_digest.clone(),
+                        "weights_digest": server_manifest.weights_digest.clone(),
+                        "tokenizer_digest": server_manifest.tokenizer_digest.clone(),
+                        "preprocessor_digest": server_manifest.preprocessor_digest.clone(),
+                        "quantization_digest": server_manifest.quantization_digest.clone(),
+                        "runtime_digest": server_manifest.runtime_digest.clone(),
+                        "device_digest": server_manifest.device_digest.clone(),
+                        "isolation_digest": server_manifest.isolation_digest.clone()
                     })
                 }
                 "infer" => {
