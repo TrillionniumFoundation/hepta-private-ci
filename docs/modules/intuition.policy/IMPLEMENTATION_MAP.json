@@ -39,16 +39,35 @@
       "sourcePath": "codex-rs/hepta-intuition/src/calibrated_binding.rs",
       "state": "source_implemented_not_product_composed",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-intuition/tests/frozen_qualification.rs"
+      ],
       "sourcePathExists": true,
       "designOperation": "decide_calibrated_v2",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "decide_qualified_v3",
+      "nativeSymbol": "qualification::decide_qualified_v3",
+      "sourcePath": "codex-rs/hepta-intuition/src/qualification.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-intuition/tests/frozen_qualification.rs",
+        "codex-rs/hepta-intuition/benches/fast_policy.rs",
+        ".github/workflows/hepta-intuition-policy.yml"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "decide_qualified_v3",
       "mappingClass": "owner_native",
       "delegatedCallees": []
     }
   ],
   "repositoryControlledGaps": [
-    "Bind every operation to an authenticated consumer callsite and owner store.",
-    "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary."
+    "Compose decide_qualified_v3 into the effect-adjacent product consumer instead of the V1/V2 compatibility surfaces.",
+    "Provision and rotate the production QualificationVerifierV1 trust anchor from the named authority store.",
+    "Retain target-host benchmark, operator acceptance and deployment qualification evidence for the exact promoted model/profile generation."
   ],
   "externalEvidenceGates": [
     "independent semantic review",
