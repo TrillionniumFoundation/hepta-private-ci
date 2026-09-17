@@ -2,9 +2,11 @@ use std::fmt::Debug;
 
 use codex_hepta_types::Digest32;
 
+use super::MAGIC;
 use super::NduProjectionJournalError;
 use super::NduProjectionJournalV1;
 use super::NduProjectionKindV1;
+use super::digest_entry;
 
 fn must<T, E: Debug>(result: Result<T, E>) -> T {
     match result {
@@ -15,6 +17,41 @@ fn must<T, E: Debug>(result: Result<T, E>) -> T {
 
 fn digest(value: &str) -> Digest32 {
     Digest32::of_bytes(value.as_bytes())
+}
+
+fn serialize_hash_valid_entries(
+    entries: &[(NduProjectionKindV1, Digest32, Digest32, Digest32, Digest32)],
+) -> Vec<u8> {
+    let mut bytes = Vec::new();
+    bytes.extend_from_slice(MAGIC);
+    bytes.extend_from_slice(
+        &u32::try_from(entries.len())
+            .expect("small fixture")
+            .to_be_bytes(),
+    );
+    let mut predecessor = Digest32::ZERO;
+    for (index, (kind, identity, objective, subject, payload)) in entries.iter().enumerate() {
+        let sequence = u64::try_from(index + 1).expect("small fixture");
+        let entry_digest = digest_entry(
+            sequence,
+            *kind,
+            *identity,
+            *objective,
+            *subject,
+            *payload,
+            predecessor,
+        );
+        bytes.extend_from_slice(&sequence.to_be_bytes());
+        bytes.push(kind.tag());
+        bytes.extend_from_slice(identity.as_array());
+        bytes.extend_from_slice(objective.as_array());
+        bytes.extend_from_slice(subject.as_array());
+        bytes.extend_from_slice(payload.as_array());
+        bytes.extend_from_slice(predecessor.as_array());
+        bytes.extend_from_slice(entry_digest.as_array());
+        predecessor = entry_digest;
+    }
+    bytes
 }
 
 #[test]
@@ -104,6 +141,62 @@ fn revocation_prevents_projection_resurrection() {
         journal
             .select_projection(digest("second-selection"), objective, subject, projection,)
             .expect_err("revoked projection must not be reselected"),
+        NduProjectionJournalError::RevokedProjection
+    );
+}
+
+#[test]
+fn reopen_rejects_hash_valid_selection_without_recorded_projection() {
+    let objective = digest("objective");
+    let subject = digest("subject");
+    let projection = digest("projection");
+    let bytes = serialize_hash_valid_entries(&[(
+        NduProjectionKindV1::SelectedProjection,
+        digest("selection-identity"),
+        objective,
+        subject,
+        projection,
+    )]);
+
+    assert_eq!(
+        NduProjectionJournalV1::reopen(&bytes)
+            .expect_err("semantic replay must reject unrecorded selection"),
+        NduProjectionJournalError::ProjectionNotRecorded
+    );
+}
+
+#[test]
+fn reopen_rejects_hash_valid_reselection_after_revocation() {
+    let objective = digest("objective");
+    let subject = digest("subject");
+    let projection = digest("projection");
+    let bytes = serialize_hash_valid_entries(&[
+        (
+            NduProjectionKindV1::Preference,
+            digest("projection-identity"),
+            objective,
+            subject,
+            projection,
+        ),
+        (
+            NduProjectionKindV1::Revocation,
+            digest("revocation-identity"),
+            objective,
+            subject,
+            projection,
+        ),
+        (
+            NduProjectionKindV1::SelectedProjection,
+            digest("selection-after-revocation"),
+            objective,
+            subject,
+            projection,
+        ),
+    ]);
+
+    assert_eq!(
+        NduProjectionJournalV1::reopen(&bytes)
+            .expect_err("semantic replay must preserve revocation"),
         NduProjectionJournalError::RevokedProjection
     );
 }
