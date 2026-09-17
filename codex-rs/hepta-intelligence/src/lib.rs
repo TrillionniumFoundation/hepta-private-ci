@@ -62,9 +62,11 @@ use codex_hepta_types::StableId;
 
 pub use vertical::ReadOnlyUtilityContribution;
 pub use vertical::ReadOnlyVerticalError;
+pub use vertical::ReadOnlyVerticalOutcome;
 pub use vertical::ReadOnlyVerticalReceipt;
 pub use vertical::ReadOnlyVerticalRequest;
 pub use vertical::run_read_only_vertical;
+pub use vertical::run_read_only_vertical_outcome;
 
 const MAX_CANDIDATES: usize = 128;
 
