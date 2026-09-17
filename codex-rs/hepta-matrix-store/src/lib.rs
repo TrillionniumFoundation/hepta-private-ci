@@ -7,6 +7,7 @@
 #![forbid(unsafe_code)]
 
 mod dispatch_ledger;
+mod dispatch_lookup;
 mod model;
 mod store;
 
