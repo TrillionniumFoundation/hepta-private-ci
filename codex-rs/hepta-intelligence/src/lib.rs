@@ -15,6 +15,7 @@ pub use evaluated_shadow::evaluated_candidate_signing_payload_v1;
 pub use evaluated_shadow::run_evaluated_shadow_v1;
 
 mod plasticity_product;
+mod plasticity_selection;
 
 pub use plasticity_product::AnchoredPlasticityWriterErrorV1;
 pub use plasticity_product::AnchoredPlasticityWriterV1;
@@ -26,6 +27,12 @@ pub use plasticity_product::PlasticityAdmissionEvidenceV1;
 pub use plasticity_product::PlasticityAnchorCommitterV1;
 pub use plasticity_product::plasticity_admission_signing_payload_v1;
 pub use plasticity_product::propose_authenticated_parameter_plasticity_v1;
+pub use plasticity_selection::PlasticitySelectionCandidateV1;
+pub use plasticity_selection::PlasticitySelectionDecisionV1;
+pub use plasticity_selection::PlasticitySelectionErrorV1;
+pub use plasticity_selection::PlasticitySelectionReceiptV1;
+pub use plasticity_selection::PlasticitySelectionRequestV1;
+pub use plasticity_selection::select_plasticity_candidate_v1;
 
 mod capability_snapshot;
 
