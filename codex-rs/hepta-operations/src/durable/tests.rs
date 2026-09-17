@@ -1,19 +1,31 @@
-use std::collections::BTreeSet;
-use std::os::unix::fs::PermissionsExt;
 use std::time::Duration;
-use std::time::SystemTime;
-use std::time::UNIX_EPOCH;
 
-use codex_hepta_contracts::FinalUseAuthority;
-use codex_hepta_contracts::FinalUseGrant;
-use codex_hepta_contracts::FinalUseRevocations;
-use codex_hepta_contracts::SignedFinalUseGrant;
 use codex_utils_absolute_path::AbsolutePathBuf;
-use ed25519_dalek::Signer;
-use ed25519_dalek::SigningKey;
 use tempfile::TempDir;
 
 use super::*;
+use crate::ReconciliationOutcome;
+
+#[cfg(unix)]
+use std::collections::BTreeSet;
+#[cfg(unix)]
+use std::os::unix::fs::PermissionsExt;
+#[cfg(unix)]
+use std::time::SystemTime;
+#[cfg(unix)]
+use std::time::UNIX_EPOCH;
+#[cfg(unix)]
+use codex_hepta_contracts::FinalUseAuthority;
+#[cfg(unix)]
+use codex_hepta_contracts::FinalUseGrant;
+#[cfg(unix)]
+use codex_hepta_contracts::FinalUseRevocations;
+#[cfg(unix)]
+use codex_hepta_contracts::SignedFinalUseGrant;
+#[cfg(unix)]
+use ed25519_dalek::Signer;
+#[cfg(unix)]
+use ed25519_dalek::SigningKey;
 
 fn stable_id(value: &str) -> StableId {
     match StableId::new(value) {
@@ -176,9 +188,7 @@ async fn expired_lease_can_be_taken_over_by_higher_generation() {
         .expect("operation");
     assert_eq!(record.owner_generation, generation(4));
     assert!(matches!(
-        store
-            .renew_outbox_lease(&first, 100)
-            .await,
+        store.renew_outbox_lease(&first, 100).await,
         Err(DurableOperationError::StaleLease)
     ));
 }
@@ -222,13 +232,11 @@ async fn dispatch_ack_is_not_terminal_and_blind_retry_is_rejected() {
 #[tokio::test]
 async fn indeterminate_effect_reconciles_from_destination_dedup() {
     let source_temp = tempfile::tempdir().expect("source tempdir");
-    let source_sqlite = config(&source_temp);
-    let source = DurableOperationStore::open(&source_sqlite)
+    let source = DurableOperationStore::open(&config(&source_temp))
         .await
         .expect("source store");
     let destination_temp = tempfile::tempdir().expect("destination tempdir");
-    let destination_sqlite = config(&destination_temp);
-    let destination = DurableOperationStore::open(&destination_sqlite)
+    let destination = DurableOperationStore::open(&config(&destination_temp))
         .await
         .expect("destination store");
     let request = request("operation:reconcile", b"payload");

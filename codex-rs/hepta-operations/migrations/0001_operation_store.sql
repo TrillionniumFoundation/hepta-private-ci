@@ -5,7 +5,7 @@ CREATE TABLE operations_meta (
 );
 
 INSERT INTO operations_meta(singleton, schema_version, created_at_ms)
-VALUES (1, 1, CAST(unixepoch('subsec') * 1000 AS INTEGER));
+VALUES (1, 1, CAST(strftime('%s', 'now') AS INTEGER) * 1000);
 
 CREATE TRIGGER operations_meta_no_update
 BEFORE UPDATE ON operations_meta
