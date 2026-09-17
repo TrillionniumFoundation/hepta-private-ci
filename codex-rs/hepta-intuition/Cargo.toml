@@ -10,8 +10,15 @@ name = "codex_hepta_intuition"
 path = "src/lib.rs"
 doctest = false
 
+[[bench]]
+name = "intuition_fast"
+harness = false
+
 [lints]
 workspace = true
 
 [dependencies]
 codex-hepta-types = { path = "../hepta-types" }
+
+[dev-dependencies]
+divan.workspace = true
