@@ -51,7 +51,7 @@ Activation requires protected host configuration, provider token, pinned issuer
 current signed revocation data, target-host qualification and operator
 acceptance. Source composition alone does not satisfy those gates.
 
-## Target-only / external deployment work
+## Target-only design
 
 Secret mutation, durable operations/evidence composition, quota settlement and
 automatic product enrollment remain outside this slice. Fleet revocation
@@ -66,12 +66,17 @@ Revocation cannot retroactively undo an effect that has already crossed the
 final synchronous entry linearization point. The current error surface does not
 return the precomputed metadata receipt when the callback reports failure.
 
+The registered host is source-composed but not product-process activated;
+source implementation and tests do not grant operator acceptance, promotion or
+release.
+
 ## Verification
 
 Tests and the isolated real-service fixture cover pinned TLS, exact
 headers/version, forged/replayed grants, revocation during network wait,
 provider denial, response bounds, digest mismatch, timeout and consumer
-uncertainty. Registered-host tests cover closed/unique consumer identities;
+uncertainty. Registered-host tests cover closed/unique consumer identities and
+deny unregistered identities or forged approvals before network dispatch;
 kernel control tests cover independent grant approval, signed monotonic
 revocation ingestion and forged-feed rejection.
 
