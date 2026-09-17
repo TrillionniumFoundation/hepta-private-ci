@@ -18,53 +18,147 @@
   ],
   "sourceRootPresent": true,
   "productionImplementation": false,
-  "productCallerState": "not_composed",
-  "productionWriterState": "not_established",
+  "productCallerState": "read_only_product_composed_write_not_production_composed",
+  "productionWriterState": "durable_sqlite_owner_implemented_recovery_admission_incomplete",
   "operations": [
     {
-      "operation": "cognitivestore",
+      "operation": "cognitivestore_semantic_oracle",
       "nativeSymbol": "CognitiveStore",
       "sourcePath": "codex-rs/hepta-cognitive-store/src/lib.rs",
-      "state": "source_implemented_not_product_composed",
+      "state": "source_implemented_semantic_oracle_not_durable_backend",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-cognitive-store/src/lib_tests.rs",
+        "codex-rs/hepta-cognitive-store/src/v2_tests.rs",
+        "codex-rs/hepta-cognitive-store/src/hardening_tests.rs"
+      ],
       "sourcePathExists": true,
       "designOperation": "cognitivestore",
       "mappingClass": "owner_native",
       "delegatedCallees": []
     },
     {
-      "operation": "cognitivestore",
+      "operation": "durable_cognitive_owner",
       "nativeSymbol": "CognitiveStore",
       "sourcePath": "codex-rs/hepta-memory/src/cognitive_store.rs",
-      "state": "source_implemented_not_product_composed",
-      "authority": "none",
-      "tests": [],
+      "state": "source_implemented_durable_sqlite_owner",
+      "authority": "host_scope_bound",
+      "tests": [
+        "codex-rs/hepta-memory/src/cognitive_store_tests.rs",
+        "codex-rs/hepta-memory/src/lane_c_snapshot_tests.rs",
+        "codex-rs/hepta-memory/tests/lane_c_paging.rs"
+      ],
       "sourcePathExists": true,
       "designOperation": "cognitivestore",
       "mappingClass": "owner_native",
       "delegatedCallees": []
+    },
+    {
+      "operation": "durable_memory_admission",
+      "nativeSymbol": "admit_memory_candidate",
+      "sourcePath": "codex-rs/hepta-memory/src/memory_admission.rs",
+      "state": "source_implemented_provisional_verify_tombstone_state_machine",
+      "authority": "host_scope_bound",
+      "tests": [
+        "codex-rs/hepta-memory/src/memory_admission.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "append_event",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [
+        "codex-rs/hepta-memory/src/cognitive_intelligence_writer.rs"
+      ]
     },
     {
       "operation": "lane_c_snapshot",
       "nativeSymbol": "lane_c_snapshot",
       "sourcePath": "codex-rs/hepta-memory/src/lane_c_snapshot.rs",
-      "state": "source_implemented_not_product_composed",
+      "state": "source_implemented_durable_read_provider",
+      "authority": "read_only_deny_all",
+      "tests": [
+        "codex-rs/hepta-memory/src/lane_c_snapshot_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "open_snapshot",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [
+        "codex-rs/hepta-cognitive-read/src/authoritative.rs"
+      ]
+    },
+    {
+      "operation": "lane_c_lineage_page",
+      "nativeSymbol": "lane_c_lineage_page",
+      "sourcePath": "codex-rs/hepta-memory/src/lane_c_paging.rs",
+      "state": "source_implemented_exact_cut_whole_history_paging",
+      "authority": "read_only",
+      "tests": [
+        "codex-rs/hepta-memory/tests/lane_c_paging.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "open_snapshot",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [
+        "codex-rs/hepta-memory/src/cognitive_store_recovery.rs"
+      ]
+    },
+    {
+      "operation": "product_cognitive_context_read",
+      "nativeSymbol": "read",
+      "sourcePath": "codex-rs/hepta-agentd/src/cognitive_context.rs",
+      "state": "named_product_read_caller_composed",
+      "authority": "read_only_deny_all",
+      "tests": [
+        "codex-rs/hepta-agentd/src/cognitive_context_tests.rs",
+        "codex-rs/hepta-agentd/tests/cognitive_product_e2e.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "open_snapshot",
+      "mappingClass": "delegated_product_caller",
+      "delegatedCallees": [
+        "codex-rs/hepta-memory/src/lane_c_snapshot.rs",
+        "codex-rs/hepta-memory-retrieval/src/lib.rs"
+      ]
+    },
+    {
+      "operation": "model_context_consumer",
+      "nativeSymbol": "AppServerModelDriver::run_once",
+      "sourcePath": "codex-rs/hepta-infer-worker-host/src/native_app_server.rs",
+      "state": "named_model_host_consumes_owner_verified_context",
+      "authority": "consumer_only",
+      "tests": [],
+      "sourcePathExists": true,
+      "designOperation": "open_snapshot",
+      "mappingClass": "delegated_product_consumer",
+      "delegatedCallees": [
+        "codex-rs/hepta-agentd/src/client.rs"
+      ]
+    },
+    {
+      "operation": "perf_durable_measurement",
+      "nativeSymbol": "main",
+      "sourcePath": "codex-rs/hepta-memory/examples/cognitive_store_perf.rs",
+      "state": "source_implemented_measurement_harness_no_target_measurement_claim",
       "authority": "none",
       "tests": [],
       "sourcePathExists": true,
-      "designOperation": "lane_c_snapshot",
-      "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "designOperation": "performance_qualification",
+      "mappingClass": "qualification_measurement",
+      "delegatedCallees": [
+        "codex-rs/hepta-memory/src/cognitive_store.rs",
+        "codex-rs/hepta-memory/src/lane_c_snapshot.rs"
+      ]
     }
   ],
   "repositoryControlledGaps": [
-    "Bind every operation to an authenticated consumer callsite and owner store.",
-    "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary."
+    "Complete descriptor-safe writable SQLite recovery with an independently retained current-cut witness and current writer fence; ordinary reopen must remain insufficient.",
+    "Physical pruning/archive retention remains blocked until predecessor anchors and tombstone-frontier continuity survive removal; exact-cut whole-history paging is source-implemented without deleting authoritative rows.",
+    "Converge V2 and durable mutation contracts before production write composition: persist/define MemoryKind semantics, bind global snapshot CAS in the write transaction, and add a durable intent-identity journal rather than routing writes through the in-memory oracle.",
+    "Compose the durable cognitive write/admission state machine through an authenticated production caller; the existing product read path is already named and composed.",
+    "Run exact-head and deterministic synthetic-merge tests before changing productExecutionProved or any activation claim."
   ],
   "externalEvidenceGates": [
     "independent semantic review",
-    "product execution and target-host qualification",
+    "target-host PERF-DURABLE measurements and recovery qualification",
     "operator acceptance, canary, promotion and release"
   ],
   "claimBoundary": {
