@@ -80,7 +80,11 @@ pub fn propose_authenticated_v1(
     evidence_verifier: &impl EvidenceVerifier,
     evaluator_verifier: &impl IndependentEvaluatorVerifier,
 ) -> Result<ParameterProposalV2, Error> {
-    validate_evaluator_claim(&authenticated.request, &authenticated.evaluator)?;
+    validate_evaluator_claim(
+        &authenticated.request,
+        &authenticated.evaluator,
+        authenticated.now_ms,
+    )?;
     evaluator_verifier.verify_independent_evaluator(&authenticated.evaluator, authenticated.now_ms)?;
     validate_evidence_set(
         &authenticated.request,
@@ -94,6 +98,7 @@ pub fn propose_authenticated_v1(
 fn validate_evaluator_claim(
     request: &ParameterProposalRequestV2,
     claim: &EvaluatorClaimV1,
+    now_ms: u64,
 ) -> Result<(), Error> {
     if claim.proposer_id != request.proposer_id
         || claim.evaluator_id != request.evaluator_id
@@ -104,6 +109,9 @@ fn validate_evaluator_claim(
         return Err(Error::EvaluatorAttestationMismatch);
     }
     validate_time_window(claim.issued_at_ms, claim.expires_at_ms)?;
+    if now_ms < claim.issued_at_ms || now_ms > claim.expires_at_ms {
+        return Err(Error::StaleIndependentEvaluator);
+    }
     if claim.attestation_digest.is_zero() {
         return Err(Error::EmptyDigest("evaluator attestation"));
     }
