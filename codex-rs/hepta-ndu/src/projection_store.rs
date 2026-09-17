@@ -39,8 +39,9 @@ pub enum NduProjectionStoreError {
     BackupRegression,
     Journal(NduProjectionJournalError),
     Io(io::ErrorKind),
-    /// The committed rename may have happened but its directory durability
-    /// could not be acknowledged. Reopen/reconcile before retrying.
+    /// A rename may have committed but directory durability was not
+    /// acknowledged. The open handle is poisoned and must be reopened before
+    /// authoritative reads, backup export, restore or further mutation.
     Indeterminate,
 }
 
@@ -73,6 +74,7 @@ pub struct NduProjectionStoreV1 {
     root: PathBuf,
     lock: File,
     journal: NduProjectionJournalV1,
+    indeterminate: bool,
 }
 
 impl NduProjectionStoreV1 {
@@ -100,7 +102,7 @@ impl NduProjectionStoreV1 {
         if !lock.metadata()?.is_file() {
             return Err(NduProjectionStoreError::NotRegular);
         }
-        match lock.try_lock() {
+        match File::try_lock(&lock) {
             Ok(()) => {}
             Err(TryLockError::WouldBlock) => return Err(NduProjectionStoreError::Busy),
             Err(TryLockError::Error(error)) => return Err(error.into()),
@@ -138,29 +140,36 @@ impl NduProjectionStoreV1 {
             root,
             lock,
             journal,
+            indeterminate: false,
         })
     }
 
     #[must_use]
-    pub fn entries(&self) -> &[NduProjectionEntryV1] {
-        self.journal.entries()
+    pub const fn is_indeterminate(&self) -> bool {
+        self.indeterminate
     }
 
-    #[must_use]
+    pub fn entries(&self) -> Result<&[NduProjectionEntryV1], NduProjectionStoreError> {
+        self.ensure_authoritative()?;
+        Ok(self.journal.entries())
+    }
+
     pub fn selected_projection_digest(
         &self,
         objective_digest: Digest32,
         subject_digest: Digest32,
-    ) -> Option<Digest32> {
-        self.journal
-            .selected_projection_digest(objective_digest, subject_digest)
+    ) -> Result<Option<Digest32>, NduProjectionStoreError> {
+        self.ensure_authoritative()?;
+        Ok(self
+            .journal
+            .selected_projection_digest(objective_digest, subject_digest))
     }
 
     /// Returns a complete, self-validating backup image. The caller owns backup
     /// transport, encryption, retention and external acknowledgement.
-    #[must_use]
-    pub fn backup_bytes(&self) -> Vec<u8> {
-        self.journal.export_bytes()
+    pub fn backup_bytes(&self) -> Result<Vec<u8>, NduProjectionStoreError> {
+        self.ensure_authoritative()?;
+        Ok(self.journal.export_bytes())
     }
 
     pub fn append_projection(
@@ -221,10 +230,8 @@ impl NduProjectionStoreV1 {
     /// monotonic: the current committed history must be an exact prefix of the
     /// backup. This prevents an older valid backup from deleting a later
     /// revocation or otherwise resurrecting stale selected state.
-    pub fn restore_backup(
-        &mut self,
-        bytes: &[u8],
-    ) -> Result<(), NduProjectionStoreError> {
+    pub fn restore_backup(&mut self, bytes: &[u8]) -> Result<(), NduProjectionStoreError> {
+        self.ensure_authoritative()?;
         if bytes.len() > MAX_BACKUP_BYTES {
             return Err(NduProjectionStoreError::BackupTooLarge);
         }
@@ -235,25 +242,47 @@ impl NduProjectionStoreV1 {
         {
             return Err(NduProjectionStoreError::BackupRegression);
         }
-        persist_image(&self.root, &restored)?;
-        self.journal = restored;
-        Ok(())
+        match persist_image(&self.root, &restored) {
+            Ok(()) => {
+                self.journal = restored;
+                Ok(())
+            }
+            Err(NduProjectionStoreError::Indeterminate) => {
+                self.indeterminate = true;
+                Err(NduProjectionStoreError::Indeterminate)
+            }
+            Err(error) => Err(error),
+        }
     }
 
-    fn commit<F>(
-        &mut self,
-        mutation: F,
-    ) -> Result<NduProjectionEntryV1, NduProjectionStoreError>
+    fn ensure_authoritative(&self) -> Result<(), NduProjectionStoreError> {
+        if self.indeterminate {
+            Err(NduProjectionStoreError::Indeterminate)
+        } else {
+            Ok(())
+        }
+    }
+
+    fn commit<F>(&mut self, mutation: F) -> Result<NduProjectionEntryV1, NduProjectionStoreError>
     where
         F: FnOnce(
             &mut NduProjectionJournalV1,
         ) -> Result<NduProjectionEntryV1, NduProjectionJournalError>,
     {
+        self.ensure_authoritative()?;
         let mut candidate = self.journal.clone();
         let entry = mutation(&mut candidate)?;
-        persist_image(&self.root, &candidate)?;
-        self.journal = candidate;
-        Ok(entry)
+        match persist_image(&self.root, &candidate) {
+            Ok(()) => {
+                self.journal = candidate;
+                Ok(entry)
+            }
+            Err(NduProjectionStoreError::Indeterminate) => {
+                self.indeterminate = true;
+                Err(NduProjectionStoreError::Indeterminate)
+            }
+            Err(error) => Err(error),
+        }
     }
 }
 
@@ -261,7 +290,7 @@ impl Drop for NduProjectionStoreV1 {
     fn drop(&mut self) {
         // Mutation methods already synchronize before acknowledgement. Unlocking
         // here is only ownership cleanup, never a durability acknowledgement.
-        let _ = self.lock.unlock();
+        let _ = File::unlock(&self.lock);
     }
 }
 
