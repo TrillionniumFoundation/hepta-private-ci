@@ -4,7 +4,7 @@
 //! The native control journal is the source of the frozen request payload and
 //! dispatch identity. This module never creates provider/model authority. It
 //! converts an already-observed, journal-bound run into the exact
-//! `runtime.codex` receipt and fails closed on identity drift.
+//! `runtime.codex` boundary result and fails closed on identity drift.
 
 use std::error::Error as StdError;
 use std::fmt;
@@ -25,12 +25,18 @@ use codex_hepta_types::StableId;
 
 const APP_SERVER_PROTOCOL_VERSION: u32 = 2;
 const TURN_START_METHOD_ID: &str = "app-server.v2.turn-start";
+pub(crate) const TURN_START_REJECTED: &str = "runtime.codex:turn-start-rejected";
+pub(crate) const TURN_START_OVERLOADED: &str = "runtime.codex:turn-start-overloaded";
+pub(crate) const TURN_START_OUTCOME_UNKNOWN: &str = "runtime.codex:turn-start-outcome-unknown";
 
 /// Sealed product result. Only the native driver can construct this from the
-/// same durable record that fenced the provider dispatch.
+/// same durable record that fenced the provider dispatch. A known pre-turn
+/// rejection has a boundary status but deliberately has no terminal turn
+/// receipt because no turn identity was admitted.
 pub struct RuntimeCodexRun {
     output: NativeRunOutput,
     receipt: Option<CodexAdapterReceipt>,
+    status: AdapterStatus,
 }
 
 impl RuntimeCodexRun {
@@ -42,8 +48,13 @@ impl RuntimeCodexRun {
         self.receipt.as_ref()
     }
 
+    pub fn status(&self) -> AdapterStatus {
+        self.status
+    }
+
     pub fn succeeded(&self) -> bool {
         self.output.succeeded()
+            && self.status == AdapterStatus::Succeeded
             && self
                 .receipt
                 .as_ref()
@@ -85,7 +96,19 @@ pub(crate) fn bind_runtime_codex_run(
     deadline_ms: u64,
 ) -> Result<RuntimeCodexRun, BindError> {
     let receipt = bind_receipt(record, &output, admitted_at_ms, deadline_ms)?;
-    Ok(RuntimeCodexRun { output, receipt })
+    let status = match &receipt {
+        Some(receipt) => receipt.status,
+        None if output.stop_reason.as_deref() == Some(TURN_START_OVERLOADED) => {
+            AdapterStatus::Overloaded
+        }
+        None if output.stop_reason.as_deref() == Some(TURN_START_REJECTED) => AdapterStatus::Rejected,
+        None => AdapterStatus::Indeterminate,
+    };
+    Ok(RuntimeCodexRun {
+        output,
+        receipt,
+        status,
+    })
 }
 
 fn bind_receipt(
@@ -267,6 +290,7 @@ mod tests {
             NativeOwnerAuthority::ObservedReady,
         ));
         assert!(bound.succeeded());
+        assert_eq!(bound.status(), AdapterStatus::Succeeded);
         assert_eq!(bound.receipt().unwrap().status, AdapterStatus::Succeeded);
     }
 
@@ -277,6 +301,7 @@ mod tests {
             NativeOwnerAuthority::Unverified,
         ));
         assert!(!bound.succeeded());
+        assert_eq!(bound.status(), AdapterStatus::Quarantined);
         assert_eq!(bound.receipt().unwrap().status, AdapterStatus::Quarantined);
     }
 
@@ -287,7 +312,29 @@ mod tests {
             (NativeRunStatus::Interrupted, AdapterStatus::Interrupted),
         ] {
             let bound = bind(output(status, NativeOwnerAuthority::ObservedReady));
+            assert_eq!(bound.status(), expected);
             assert_eq!(bound.receipt().unwrap().status, expected);
+            assert!(!bound.succeeded());
+        }
+    }
+
+    #[test]
+    fn explicit_pre_turn_rejection_is_typed_without_forging_a_turn_receipt() {
+        for (reason, expected) in [
+            (TURN_START_REJECTED, AdapterStatus::Rejected),
+            (TURN_START_OVERLOADED, AdapterStatus::Overloaded),
+        ] {
+            let mut rejected = output(
+                NativeRunStatus::Indeterminate,
+                NativeOwnerAuthority::Unverified,
+            );
+            rejected.turn_id.clear();
+            rejected.output.clear();
+            rejected.observed_output_tokens = None;
+            rejected.stop_reason = Some(reason.to_string());
+            let bound = bind_runtime_codex_run(&record(), rejected, 1_000, 2_000).unwrap();
+            assert_eq!(bound.status(), expected);
+            assert!(bound.receipt().is_none());
             assert!(!bound.succeeded());
         }
     }
@@ -298,7 +345,9 @@ mod tests {
         unknown.turn_id.clear();
         unknown.output.clear();
         unknown.observed_output_tokens = None;
+        unknown.stop_reason = Some(TURN_START_OUTCOME_UNKNOWN.to_string());
         let bound = bind_runtime_codex_run(&record(), unknown, 1_000, 2_000).unwrap();
+        assert_eq!(bound.status(), AdapterStatus::Indeterminate);
         assert!(bound.receipt().is_none());
         assert!(!bound.succeeded());
     }
