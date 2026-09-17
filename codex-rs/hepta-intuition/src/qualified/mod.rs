@@ -17,6 +17,7 @@ pub use auth::issue_qualification_mac_v1;
 pub use auth::ood_scope_digest_v1;
 pub use auth::policy_profile_scope_digest_v1;
 pub use auth::scorer_output_scope_digest_v1;
+#[cfg(test)]
 pub(crate) use auth::hmac_sha256;
 pub use decision::decide_qualified_v1;
 pub use digest::canonical_calibration_artifact_digest_v1;
