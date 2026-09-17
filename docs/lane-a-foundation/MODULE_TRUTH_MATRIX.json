@@ -380,47 +380,69 @@
     },
     {
       "module": "secrets.heptabao",
-      "profile": "bounded_external_secret_reader",
+      "profile": "external_secret_reader_and_lease_manager",
       "formalGuide": "docs/modules/secrets.heptabao/TECHNICAL.md",
       "formalGuideRole": "target_architecture",
       "currentSpecification": "docs/lane-a-foundation/secrets.heptabao/CURRENT_IMPLEMENTATION.md",
       "currentSpecificationRole": "current_executable_contract",
-      "implementationDetail": "docs/lane-a-foundation/secrets.heptabao/KV_V2_READ_V1.md",
+      "implementationDetail": "docs/lane-a-foundation/secrets.heptabao/LEASE_LIFECYCLE_V1.md",
       "states": {
         "source": "implemented",
-        "implementation": "bounded_kv_v2_reader",
-        "durability": "external_authority_plus_local_final_use_state",
-        "qualification": "partial_bounded_evidence",
+        "implementation": "kv_v2_and_dynamic_lease_manager",
+        "durability": "external_authority_plus_local_lease_and_final_use_journals",
+        "qualification": "source_tests_and_exact_candidate_workflow",
         "activation": "host_composition_required",
         "acceptance": "not_granted"
       },
       "currentCapabilities": [
         "pinned-CA HTTPS read of one exact KV-v2 string field",
-        "final-use grant binding and single-use dispatch",
-        "metadata-only receipt without raw secret value"
+        "durable final-use and dynamic lease lifecycle with explicit indeterminate reconciliation",
+        "metadata-only secret boundary with replica-bound authority sharding"
       ],
       "targetOnlyCapabilities": [
-        "secret mutation",
-        "generic lease renewal API",
-        "generic revoke API",
-        "durable operation and evidence composition",
-        "automatic production enrollment"
+        "secret mutation outside bounded dynamic issue and lease administration",
+        "same-authority-id distributed multi-writer replay backend",
+        "provider-independent recovery of lost issuance credential bytes",
+        "untrusted in-process callback sandbox",
+        "quota settlement and automatic production enrollment"
       ],
       "sourceAnchors": [
         {
           "path": "codex-rs/hepta-bao-adapter/src/https_consumer.rs",
           "mustContain": [
             "pub struct BaoClient",
+            "pub fn new_for_destination",
             "consume_kv_v2",
             "MAX_RESPONSE_BYTES",
             "with_verified_use"
           ]
         },
         {
+          "path": "codex-rs/hepta-bao-adapter/src/lease.rs",
+          "mustContain": [
+            "pub struct BaoLeaseManager",
+            "pub async fn request_secret_lease",
+            "pub async fn renew_secret_lease",
+            "pub async fn revoke_secret_lease",
+            "pub async fn reconcile_secret_lease",
+            "IndeterminateIssue",
+            "Orphaned"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-bao-adapter/src/lease_store.rs",
+          "mustContain": [
+            "leases.events",
+            "sync_data",
+            "destination_id"
+          ]
+        },
+        {
           "path": "codex-rs/hepta-bao-adapter/README.md",
           "mustContain": [
-            "Authorized HeptaBao HTTPS consumer",
-            "Only read operations exist here"
+            "Authorized HeptaBao HTTPS consumer and lease manager",
+            "IndeterminateIssue",
+            "authority sharding"
           ]
         }
       ]
