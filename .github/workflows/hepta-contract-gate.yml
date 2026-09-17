@@ -46,6 +46,7 @@ jobs:
         run: |
           set -euo pipefail
           python3 scripts/hepta-implementation-maps.py verify
+          python3 scripts/verify_cognitive_read_evidence.py
           python3 scripts/hepta-technical-receipts.py verify
           python3 scripts/hepta-implementation-dossiers.py verify
           # Includes module, algorithm, readiness, CNS and HNMF checks.
