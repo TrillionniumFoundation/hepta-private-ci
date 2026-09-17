@@ -179,15 +179,14 @@ impl<S: HoldoutAnchorStoreV1> DurableFinalHoldoutOwnerV1<S> {
         }
         let receipt = self.journal.consume(expected, plan)?;
         let next = self.journal.anchor();
-        if next != expected
-            && let Err(error) = self.anchors.compare_and_store(
-                self.binding,
-                Some(expected),
-                next,
-            )
-        {
-            self.poisoned = true;
-            return Err(DurableHoldoutOwnerErrorV1::AnchorCommit(error));
+        if next != expected {
+            if let Err(error) =
+                self.anchors
+                    .compare_and_store(self.binding, Some(expected), next)
+            {
+                self.poisoned = true;
+                return Err(DurableHoldoutOwnerErrorV1::AnchorCommit(error));
+            }
         }
         Ok(receipt)
     }
@@ -199,8 +198,8 @@ impl<S: HoldoutAnchorStoreV1> DurableFinalHoldoutOwnerV1<S> {
 
 #[cfg(test)]
 mod tests {
+    use std::fs;
     use std::fs::OpenOptions;
-    use std::fs::{self};
     use std::path::PathBuf;
     use std::sync::Arc;
     use std::sync::Mutex;
