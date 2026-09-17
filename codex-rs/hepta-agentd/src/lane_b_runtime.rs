@@ -74,6 +74,12 @@ pub enum CancellationDisposition {
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
+pub struct LifecycleAction {
+    pub disposition: CancellationDisposition,
+    pub receipt: RunReceipt,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub enum AgentRunError {
     InvalidIdentity(&'static str),
     InvalidDigest(&'static str),
@@ -243,6 +249,71 @@ impl AgentRunCoordinator {
         Ok((disposition, receipt(record, /*idempotent*/ false)))
     }
 
+    /// Convert every locally actionable non-terminal run into its safe drain
+    /// state. Pre-dispatch work becomes provably cancelled; dispatched work
+    /// becomes `Cancelling` and must still be interrupted and terminally
+    /// observed by the delegated Codex owner. `Indeterminate` runs are left
+    /// untouched because their dispatch-boundary uncertainty cannot be erased
+    /// by a local shutdown.
+    pub fn begin_drain(&mut self) -> Result<Vec<LifecycleAction>, AgentRunError> {
+        let actionable = self
+            .runs
+            .iter()
+            .filter(|(_, record)| {
+                matches!(
+                    record.phase,
+                    RunPhase::Admitted
+                        | RunPhase::ContextAttached
+                        | RunPhase::Dispatched
+                        | RunPhase::Cancelling
+                )
+            })
+            .map(|(run_id, record)| (run_id.clone(), record.revision))
+            .collect::<Vec<_>>();
+        let mut actions = Vec::with_capacity(actionable.len());
+        for (run_id, revision) in actionable {
+            let (disposition, receipt) = self.cancel_run(&run_id, revision)?;
+            actions.push(LifecycleAction {
+                disposition,
+                receipt,
+            });
+        }
+        Ok(actions)
+    }
+
+    /// Apply the same fail-closed cancellation transition only to runs whose
+    /// immutable deadline has elapsed. The returned actions tell the product
+    /// caller which runs still require a delegated `turn_interrupt`.
+    pub fn expire_due_runs(
+        &mut self,
+        now_ms: u64,
+    ) -> Result<Vec<LifecycleAction>, AgentRunError> {
+        let due = self
+            .runs
+            .iter()
+            .filter(|(_, record)| {
+                record.snapshot.deadline_ms <= now_ms
+                    && matches!(
+                        record.phase,
+                        RunPhase::Admitted
+                            | RunPhase::ContextAttached
+                            | RunPhase::Dispatched
+                            | RunPhase::Cancelling
+                    )
+            })
+            .map(|(run_id, record)| (run_id.clone(), record.revision))
+            .collect::<Vec<_>>();
+        let mut actions = Vec::with_capacity(due.len());
+        for (run_id, revision) in due {
+            let (disposition, receipt) = self.cancel_run(&run_id, revision)?;
+            actions.push(LifecycleAction {
+                disposition,
+                receipt,
+            });
+        }
+        Ok(actions)
+    }
+
     pub fn observe_terminal(
         &mut self,
         run_id: &str,
@@ -307,11 +378,19 @@ impl AgentRunCoordinator {
             .map(|record| receipt(record, /*idempotent*/ false))
     }
 
-    fn active_run_count(&self) -> usize {
+    pub fn snapshot(&self, run_id: &str) -> Option<&RunSnapshot> {
+        self.runs.get(run_id).map(|record| &record.snapshot)
+    }
+
+    pub fn active_run_count(&self) -> usize {
         self.runs
             .values()
             .filter(|record| !record.phase.closed())
             .count()
+    }
+
+    pub fn retained_run_count(&self) -> usize {
+        self.runs.len()
     }
 }
 

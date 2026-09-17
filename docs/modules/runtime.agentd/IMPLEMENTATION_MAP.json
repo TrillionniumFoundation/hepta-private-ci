@@ -5,6 +5,17 @@
     "commit": "7e8379b3954808d4138a7bd2f3773f75691291a3",
     "tree": "ff9fa6baf95a35fd2f49816e0a80097688f2aeeb"
   },
+  "evidenceModel": {
+    "sourceBaseSemantics": "historical_implementation_receipt",
+    "testDefinitionSemantics": "declared commands and source mappings are definitions, not proof that the current candidate passed",
+    "currentCandidateReceipt": {
+      "binding": "github.sha",
+      "workflow": ".github/workflows/hepta-gap-agentd-process.yml",
+      "requiredForProductionClaim": true,
+      "status": "execution_required",
+      "note": "The current release candidate is the exact GitHub Actions checkout identified by GITHUB_SHA. Do not infer current-candidate execution from sourceBase."
+    }
+  },
   "laneId": "LANE-B-RUNTIME",
   "module": "runtime.agentd",
   "sourceMaturity": "native_composition_host",
