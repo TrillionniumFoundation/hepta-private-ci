@@ -316,7 +316,6 @@ fn retains_structural_count_text_and_semantic_key_checks_after_decoding() {
     let original: Value = serde_json::from_str(SOURCE).unwrap();
     for (pointer, invalid) in [
         ("/locale", json!("é".repeat(17))),
-        ("/structuredIntent/legalActionClasses", json!([])),
         (
             "/structuredIntent/legalActionClasses",
             json!(vec!["read"; 129]),
@@ -346,6 +345,24 @@ fn retains_structural_count_text_and_semantic_key_checks_after_decoding() {
             ObjectiveStructureError::DuplicateSemanticKey { .. }
         ))
     ));
+}
+
+#[test]
+fn zero_caller_actions_decode_for_explicit_abstain() {
+    let mut source: Value = serde_json::from_str(SOURCE).unwrap();
+    source["structuredIntent"]["legalActionClasses"] = json!([]);
+    source["structuredIntent"]["forbiddenActionClasses"] = json!([]);
+    source["structuredIntent"]["confirmationActionClasses"] = json!([]);
+
+    let decoded = decode_source_envelope_json_v1(&serde_json::to_vec(&source).unwrap()).unwrap();
+    assert!(decoded.structured_intent.legal_action_classes.is_empty());
+    assert!(decoded.structured_intent.forbidden_action_classes.is_empty());
+    assert!(
+        decoded
+            .structured_intent
+            .confirmation_action_classes
+            .is_empty()
+    );
 }
 
 #[test]

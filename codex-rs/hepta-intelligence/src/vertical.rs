@@ -92,10 +92,29 @@ pub struct ReadOnlyVerticalReceipt {
     pub authority: AuthorityPosture,
 }
 
+/// Non-error read-only vertical outcomes.
+///
+/// `ExplicitAbstain` terminates the composition before cognitive/context/NDU
+/// work because the objective compiler has already determined that intrinsic
+/// abstain is the sole legal action. It is intentionally distinct from a
+/// system failure or retry signal.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub enum ReadOnlyVerticalOutcome {
+    Completed(ReadOnlyVerticalReceipt),
+    ExplicitAbstain {
+        objective_admission: ObjectiveAdmissionReceiptV1,
+        objective: ObjectiveCompileReceipt,
+        authority: AuthorityPosture,
+    },
+}
+
 #[derive(Debug)]
 pub enum ReadOnlyVerticalError {
     ObjectiveAdmission(ObjectiveAdmissionError),
     ObjectiveConflict(Digest32),
+    /// Compatibility-only projection used by `run_read_only_vertical`.
+    /// New callers should use `run_read_only_vertical_outcome` so objective
+    /// abstention remains a successful typed outcome.
     ObjectiveExplicitAbstain,
     Snapshot(CognitiveSnapshotError),
     CognitiveRead(CognitiveReadError),
@@ -139,9 +158,23 @@ impl StdError for ReadOnlyVerticalError {
     }
 }
 
+/// Compatibility wrapper for callers that still expect only a completed
+/// vertical receipt. Migrate to `run_read_only_vertical_outcome` to preserve
+/// `CompileDisposition::ExplicitAbstain` as a successful non-error outcome.
 pub fn run_read_only_vertical(
     request: ReadOnlyVerticalRequest,
 ) -> Result<ReadOnlyVerticalReceipt, ReadOnlyVerticalError> {
+    match run_read_only_vertical_outcome(request)? {
+        ReadOnlyVerticalOutcome::Completed(receipt) => Ok(receipt),
+        ReadOnlyVerticalOutcome::ExplicitAbstain { .. } => {
+            Err(ReadOnlyVerticalError::ObjectiveExplicitAbstain)
+        }
+    }
+}
+
+pub fn run_read_only_vertical_outcome(
+    request: ReadOnlyVerticalRequest,
+) -> Result<ReadOnlyVerticalOutcome, ReadOnlyVerticalError> {
     let ReadOnlyVerticalRequest {
         plan_id,
         objective_envelope,
@@ -169,11 +202,15 @@ pub fn run_read_only_vertical(
     let objective = objective_outcome
         .compile_result
         .map_err(|conflict| ReadOnlyVerticalError::ObjectiveConflict(conflict.conflict_digest))?;
-    if objective.disposition != CompileDisposition::Compiled {
-        return Err(ReadOnlyVerticalError::ObjectiveExplicitAbstain);
-    }
     let objective_digest = objective.objective.semantic_digest;
     ensure_digest("compiled objective", objective_digest)?;
+    if objective.disposition == CompileDisposition::ExplicitAbstain {
+        return Ok(ReadOnlyVerticalOutcome::ExplicitAbstain {
+            objective_admission,
+            objective,
+            authority: AuthorityPosture::DENY_ALL,
+        });
+    }
 
     if read_request.snapshot_digest != cognitive_snapshot.snapshot_digest {
         return Err(ReadOnlyVerticalError::DigestMismatch(
@@ -299,7 +336,7 @@ pub fn run_read_only_vertical(
     bytes.extend_from_slice(ndu.evaluation_digest_v2.as_array());
     bytes.extend_from_slice(plan.plan_digest.as_array());
 
-    Ok(ReadOnlyVerticalReceipt {
+    Ok(ReadOnlyVerticalOutcome::Completed(ReadOnlyVerticalReceipt {
         objective_admission,
         objective,
         cognitive_read,
@@ -309,7 +346,7 @@ pub fn run_read_only_vertical(
         plan,
         vertical_digest: Digest32::of_bytes(&bytes),
         authority: AuthorityPosture::DENY_ALL,
-    })
+    }))
 }
 
 fn validate_read_evidence_item(
