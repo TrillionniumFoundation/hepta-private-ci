@@ -21,52 +21,23 @@ leases are safe to requeue only while the source operation is still `prepared`.
 If dispatch admission may have crossed the effect boundary, recovery changes the
 operation to `indeterminate` and does not blindly retry it.
 
-## Final-use authority and effect entry
-
 `authorize_dispatch` consumes a real `kernel.authority` `SignedFinalUseGrant`
 and persists a `dispatching` write-ahead state before the adapter entry.
 `AuthorizedDispatch::enter` consumes the non-serializable `VerifiedUseToken`
 through `FinalUseAuthority::with_verified_use` immediately around the effect
-entry. A final-use rejection before callback entry is classified as
-not-dispatched; it does not manufacture a remote outcome.
+entry. Transport dispatch and acknowledgement remain distinct from terminal
+effect observation. Missing acknowledgement moves the source operation to
+`indeterminate`; `observe_terminal` requires a current-generation observer and
+an evidence digest before settlement.
 
-Transport dispatch and acknowledgement remain distinct from terminal effect
-observation. Missing acknowledgement moves the source operation to
-`indeterminate`. `observe_terminal` requires a current-generation observer and
-an evidence digest before it can settle `Applied`, `NotApplied` or
-`Quarantined`.
-
-## Destination deduplication
-
-`DestinationDedupeStore` supplies the destination half of the protocol. In
-product composition the destination owner installs the exact dedupe schema in
-its own database lineage and calls `from_migrated_pool`. `begin_apply` holds the
-destination write transaction open so owner-domain SQL and the immutable dedupe
-receipt commit atomically. An exact repeated operation returns the stored
-receipt; payload drift conflicts.
-
-The standalone destination database exists only for qualification. It is not a
-new cross-owner source of truth and must not replace a destination owner's own
-transaction boundary.
-
-## Persistence, recovery and retention
-
-The durable owner uses SQLite WAL mode, `synchronous=FULL`, foreign keys and a
-bounded busy timeout. Store open runs `PRAGMA quick_check`, the checksum-bound
-SQLx migration lineage, required-table verification and foreign-key validation
-before recovery. Unknown/incomplete/drifted migration state fails closed.
-
-Terminal source rows can be compacted only after writing an immutable semantic
-tombstone in the same transaction. Tombstones prevent an old operation identity
-from being resurrected after pruning or backup restoration.
-
-## Public source bindings
+## Public symbols and source bindings
 
 Durable implementation:
 
 - `OperationIntentV1`, durable state/receipt/error types: `src/durable_model.rs`;
 - `DurableOperationStore`, claim/lease/dispatch/reconcile/metrics/GC:
   `src/durable_store.rs`;
+- `DurableDispatcher`: `src/dispatcher.rs`;
 - `DestinationDedupeStore`: `src/destination_dedupe.rs`;
 - source schema: `migrations/0001_durable_operations.sql`;
 - destination-owner schema reference:
@@ -78,26 +49,86 @@ Reference oracle:
 - `Outbox`: `src/outbox.rs`;
 - reference state/witness types: `src/model.rs`.
 
-## Verification in this candidate
+## Durability and activation
+
+The durable owner uses SQLite WAL mode, `synchronous=FULL`, foreign keys and a
+bounded busy timeout. Store open runs `PRAGMA quick_check`, the checksum-bound
+SQLx migration lineage, required-table verification and foreign-key validation
+before recovery. Unknown, incomplete or checksum-drifted migration state fails
+closed.
+
+`DestinationDedupeStore` supplies the destination half of the protocol. In
+product composition the destination owner installs the exact dedupe schema in
+its own database lineage and calls `from_migrated_pool`. `begin_apply` holds the
+destination write transaction open so owner-domain SQL and the immutable dedupe
+receipt commit atomically. The standalone destination database is
+qualification-only and is not a new authoritative cross-owner store.
+
+Terminal source rows can be compacted only after writing an immutable semantic
+tombstone in the same transaction. Tombstones prevent an old operation identity
+from being resurrected after pruning or backup restoration.
+
+Source durability is implemented in this candidate; product activation is not.
+No named production caller, selected target host, operator acceptance, canary,
+promotion or release is claimed by source presence.
+
+## Target-only design
+
+The remaining target-only capabilities are product composition rather than a
+second durability implementation: a named product caller, installation of the
+destination dedupe table in each selected destination owner's own migration
+lineage, a continuously hosted reconciler backed by a trusted terminal observer,
+and selected-host measurements/qualification including real power-loss and
+disk-exhaustion behavior.
+
+A product adapter must continue consuming a fresh final-use authority token at
+the effect boundary. Destination dedupe must remain destination-owned; source
+outbox acknowledgement alone never proves terminal effect success.
+
+## Known limits and non-claims
+
+The in-memory reference witness remains test-only and must never be treated as a
+production credential. The durable SQLite owner is not a distributed
+anti-rollback oracle and does not manufacture trusted time. Clock rollback
+against active durable state fails closed, but trusted-time provisioning remains
+a host concern.
+
+A `NotDispatched` classification is eligible for automatic requeue only when the
+adapter can prove callback entry produced no downstream effect. Unknown effect,
+acknowledgement loss, or crash after durable dispatch admission becomes
+`indeterminate`. Compensation is a new authorized operation, never implicit
+rollback.
+
+The destination standalone store demonstrates the transaction protocol but may
+not replace an owner's real durable domain transaction. Qualification fixtures,
+source tests and documentation grant no runtime, operator, promotion or release
+authority.
+
+## Verification
 
 Focused durable tests cover atomic prepare/reopen, exact concurrent prepare,
 payload conflict, lease takeover, stale fencing, crash/reopen after dispatch
 admission, acknowledgement loss, explicit not-dispatched retry, terminal
-reconciliation, migration-checksum drift, corruption failure and tombstone
+reconciliation, migration-checksum drift, database corruption and tombstone
 anti-resurrection. Destination tests prove that a domain mutation and dedupe
 receipt share one transaction and roll back together.
 
+The retained reference tests continue to exercise deterministic transition
+parity, idempotent replay, generation fencing and the distinction between
+transport dispatch and terminal success.
+
 These test sources are not a claim that an exact GitHub candidate passed until
-the applicable Lane A/source workflows reach terminal success.
+the applicable Lane A source-head and synthetic-merge workflows reach terminal
+success.
 
-## Remaining integration boundary
+## Integration prerequisites
 
-The durable source implementation does **not** by itself activate a product.
-A named destination owner must install the dedupe migration in its own lineage,
-a named product caller must construct `OperationIntentV1`, and the host must
-supply current final-use grants and a trusted terminal observer. Activation,
-operator acceptance, canary, promotion and release remain separate gates.
+Before activation, at least one named destination owner must install the dedupe
+schema in its own migration lineage, a named product caller must construct and
+persist `OperationIntentV1`, the host must supply current final-use grants, and a
+trusted terminal observer must settle unknown effects. The selected host must
+also provide commit/fsync, backlog, contention, power-loss and real
+disk-exhaustion qualification evidence.
 
-The in-memory reference witness remains test-only and must never be treated as a
-production credential. Compensation remains a new authorized operation, never
-implicit rollback.
+Activation, operator acceptance, canary, promotion and release remain separate
+gates even after all source-level tests pass.
