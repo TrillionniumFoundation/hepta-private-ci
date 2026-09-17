@@ -1,4 +1,5 @@
 use std::io::Write;
+use std::path::Path;
 use std::path::PathBuf;
 use std::process::Command;
 use std::process::Stdio;
@@ -199,7 +200,7 @@ fn linux_delete(service: &str, account: &str) -> Result<bool> {
     Ok(status.success())
 }
 
-fn windows_load(path: &PathBuf) -> Result<Option<String>> {
+fn windows_load(path: &Path) -> Result<Option<String>> {
     if !path.exists() {
         return Ok(None);
     }
@@ -209,14 +210,14 @@ $bytes=[IO.File]::ReadAllBytes($args[0])
 $plain=[Security.Cryptography.ProtectedData]::Unprotect($bytes,$null,[Security.Cryptography.DataProtectionScope]::CurrentUser)
 [Console]::Out.Write([Text.Encoding]::UTF8.GetString($plain))
 "#;
-    let output = powershell_with_path(SCRIPT, path)?.output()?;
+    let output = powershell_with_path(SCRIPT, path).output()?;
     if !output.status.success() {
         bail!("Windows DPAPI rejected native session load");
     }
     Ok(Some(trim_secret_output(output.stdout)?))
 }
 
-fn windows_save(path: &PathBuf, value: &str) -> Result<()> {
+fn windows_save(path: &Path, value: &str) -> Result<()> {
     if let Some(parent) = path.parent() {
         std::fs::create_dir_all(parent).context("create Windows DPAPI session parent")?;
     }
@@ -227,7 +228,7 @@ $plain=[Text.Encoding]::UTF8.GetBytes($value)
 $protected=[Security.Cryptography.ProtectedData]::Protect($plain,$null,[Security.Cryptography.DataProtectionScope]::CurrentUser)
 [IO.File]::WriteAllBytes($args[0],$protected)
 "#;
-    let mut child = powershell_with_path(SCRIPT, path)?
+    let mut child = powershell_with_path(SCRIPT, path)
         .stdin(Stdio::piped())
         .stdout(Stdio::null())
         .stderr(Stdio::null())
@@ -243,7 +244,7 @@ $protected=[Security.Cryptography.ProtectedData]::Protect($plain,$null,[Security
     Ok(())
 }
 
-fn windows_delete(path: &PathBuf) -> Result<bool> {
+fn windows_delete(path: &Path) -> Result<bool> {
     if !path.exists() {
         return Ok(false);
     }
@@ -251,18 +252,25 @@ fn windows_delete(path: &PathBuf) -> Result<bool> {
     Ok(true)
 }
 
-fn powershell_with_path(script: &str, path: &PathBuf) -> Result<Command> {
+fn powershell_with_path(script: &str, path: &Path) -> Command {
     let mut command = Command::new("powershell.exe");
     command
-        .args(["-NoLogo", "-NoProfile", "-NonInteractive", "-Command", script, "--"])
+        .args([
+            "-NoLogo",
+            "-NoProfile",
+            "-NonInteractive",
+            "-Command",
+            script,
+            "--",
+        ])
         .arg(path)
         .stdin(Stdio::null());
-    Ok(command)
+    command
 }
 
 fn trim_secret_output(bytes: Vec<u8>) -> Result<String> {
     let value = String::from_utf8(bytes).context("native session reference is not UTF-8")?;
-    Ok(value.trim_end_matches(['\r', '\n']).to_string())
+    Ok(value.trim_end_matches(&['\r', '\n'][..]).to_string())
 }
 
 fn validate_reference(value: &str) -> Result<()> {
