@@ -115,8 +115,9 @@ impl AppServerModelDriver {
             None => None,
         };
         let additional_context = context
+            .as_ref()
             .map(|snapshot| -> Result<_> {
-                let value = serde_json::to_string(&snapshot)?;
+                let value = serde_json::to_string(snapshot)?;
                 if value.len() > MAX_MODEL_CONTEXT_BYTES {
                     return Err("verified context exceeds the model attachment byte limit".into());
                 }
@@ -173,6 +174,21 @@ impl AppServerModelDriver {
         }
         // Recheck the actual generation after acquiring context and connecting.
         owner.session_ingress().await?;
+        if cancellation.is_cancelled() {
+            let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
+            return Err("cancelled before model dispatch".into());
+        }
+        // The original context receipt is only a historical observation. Ask the
+        // owning Agent to reacquire the canonical Lane C cut and reproduce both
+        // digests immediately before TurnStart. Failure is fail-closed: stale
+        // context is never attached to a model turn. This observation is still
+        // not a lease over writes that happen after finalization returns.
+        if let Some(snapshot) = context.as_ref() {
+            if let Err(error) = owner.finalize_cognitive_context(snapshot).await {
+                let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
+                return Err(error.into());
+            }
+        }
         if cancellation.is_cancelled() {
             let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
             return Err("cancelled before model dispatch".into());
