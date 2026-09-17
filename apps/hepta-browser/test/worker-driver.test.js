@@ -30,6 +30,7 @@ function fakeLauncher() {
       externalNetworkDenied: true,
       ambientEnvironmentDenied: true,
       userHomeHidden: true,
+      hostFilesystemRestricted: true,
       parentDeathCleanup: true,
     },
     spawn() {
@@ -157,7 +158,7 @@ test("subprocess driver fails closed on worker artifact digest drift", async () 
 });
 
 test(
-  "Linux bubblewrap launcher denies ambient network and home visibility by construction",
+  "Linux bubblewrap launcher denies ambient network and host credential stores by construction",
   { skip: process.platform !== "linux" },
   () => {
     const launcher = new LinuxBubblewrapLauncher({ bwrapPath: "/usr/bin/bwrap" });
@@ -168,16 +169,25 @@ test(
     assert.equal(argv.includes("--unshare-all"), true);
     assert.equal(argv.includes("--share-net"), false);
     assert.equal(argv.includes("--clearenv"), true);
-    assert.deepEqual(
-      argv.slice(argv.indexOf("--tmpfs"), argv.indexOf("--proc")),
-      [
-        "--tmpfs", "/home",
-        "--tmpfs", "/root",
-        "--tmpfs", "/run",
-        "--tmpfs", "/tmp",
-      ],
-    );
+    assert.deepEqual(argv.slice(4, 6), ["--tmpfs", "/"]);
+    assert.equal(argv.includes("/usr"), true);
+    for (let index = 0; index < argv.length - 2; index += 1) {
+      assert.equal(
+        argv[index] === "--ro-bind" && argv[index + 1] === "/" && argv[index + 2] === "/",
+        false,
+      );
+    }
+    const mountedSources = [];
+    for (let index = 0; index < argv.length - 2; index += 1) {
+      if (argv[index] === "--ro-bind" || argv[index] === "--ro-bind-try") {
+        mountedSources.push(argv[index + 1]);
+      }
+    }
+    assert.equal(mountedSources.some((path) => path === "/var" || path.startsWith("/var/")), false);
+    assert.equal(mountedSources.some((path) => path === "/home" || path.startsWith("/home/")), false);
+    assert.equal(mountedSources.some((path) => path === "/root" || path.startsWith("/root/")), false);
     assert.equal(argv.at(-1), "/hepta-worker");
+    assert.equal(launcher.posture.hostFilesystemRestricted, true);
   },
 );
 
@@ -191,5 +201,26 @@ test("subprocess driver rejects launchers that do not enforce the isolation post
         launcher: { posture: {}, spawn() {} },
       }),
     /does not enforce/,
+  );
+
+  assert.throws(
+    () =>
+      new SubprocessBrowserDriver({
+        workerPath: "/worker",
+        workerDigest: D1,
+        profileRoot: "/profiles",
+        launcher: {
+          posture: {
+            inheritedPrivateChannel: true,
+            externalNetworkDenied: true,
+            ambientEnvironmentDenied: true,
+            userHomeHidden: true,
+            hostFilesystemRestricted: false,
+            parentDeathCleanup: true,
+          },
+          spawn() {},
+        },
+      }),
+    /hostFilesystemRestricted/,
   );
 });
