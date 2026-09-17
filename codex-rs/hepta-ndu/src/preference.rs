@@ -342,7 +342,7 @@ fn digest_state(
     values: &[AxisValue],
 ) -> Digest32 {
     let mut bytes = Vec::new();
-    push_id(bytes: &mut bytes, subject_id);
+    push_id(&mut bytes, subject_id);
     bytes.push(subject_class.tag());
     bytes.extend_from_slice(&revision.get().to_be_bytes());
     bytes.extend_from_slice(predecessor_digest.as_array());
