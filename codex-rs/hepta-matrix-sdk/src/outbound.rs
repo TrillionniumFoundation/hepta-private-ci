@@ -19,6 +19,20 @@ use tokio_util::sync::CancellationToken;
 pub type MatrixSendFuture<'a> =
     Pin<Box<dyn Future<Output = Result<MatrixEventId, MatrixTransportError>> + Send + 'a>>;
 
+pub type MatrixObserveFuture<'a> = Pin<
+    Box<
+        dyn Future<Output = Result<Option<MatrixServerObservation>, MatrixTransportError>>
+            + Send
+            + 'a,
+    >,
+>;
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct MatrixServerObservation {
+    pub event_id: MatrixEventId,
+    pub observation_digest: String,
+}
+
 pub trait MatrixOutboundTransport: Send + Sync {
     /// Bind transport/session identity to the durable dispatch record. The
     /// default keeps deterministic test transports source-compatible while
@@ -28,6 +42,18 @@ pub trait MatrixOutboundTransport: Send + Sync {
     }
 
     fn send<'a>(&'a self, record: &'a OutboxRecord) -> MatrixSendFuture<'a>;
+}
+
+/// Independent homeserver observer used to settle a transport-accepted send.
+/// Implementations must not infer success from the preceding send response.
+pub trait MatrixOutboundObserver: Send + Sync {
+    fn observe_server_event<'a>(
+        &'a self,
+        _record: &'a OutboxRecord,
+        _event_id: &'a MatrixEventId,
+    ) -> MatrixObserveFuture<'a> {
+        Box::pin(async { Ok(None) })
+    }
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq, thiserror::Error)]
@@ -79,8 +105,8 @@ impl OutboxDispatchConfig {
 #[derive(Clone, Copy, Debug, Default, Eq, PartialEq)]
 pub struct OutboxDispatchStats {
     pub claimed: u64,
-    /// Count of claims whose terminal state was already established by the
-    /// independent Matrix observer while this sender was reconciling.
+    /// Count of claims whose terminal state was established by an independent
+    /// Matrix observation while this sender was reconciling.
     pub sent: u64,
     pub accepted_pending_observation: u64,
     pub retry_scheduled: u64,
@@ -97,7 +123,9 @@ pub enum OutboxDispatchError {
     Store,
 }
 
-pub async fn dispatch_outbox_once<T: MatrixOutboundTransport + ?Sized>(
+pub async fn dispatch_outbox_once<
+    T: MatrixOutboundTransport + MatrixOutboundObserver + ?Sized,
+>(
     store: &MatrixDurableStore,
     transport: &T,
     config: &OutboxDispatchConfig,
@@ -157,10 +185,10 @@ pub async fn dispatch_outbox_once<T: MatrixOutboundTransport + ?Sized>(
         match result {
             Ok(event_id) => {
                 // SDK/HTTP acknowledgement is evidence of transport acceptance,
-                // not terminal delivery. Keep the outbox claim non-terminal
-                // until /sync or another trusted server observer sees the
-                // matching transaction/event identity.
-                match store
+                // not terminal delivery. First bind the returned event id to the
+                // durable transaction, then obtain a separate authenticated
+                // homeserver observation (or wait for /sync) before settling.
+                let acceptance = match store
                     .record_matrix_transport_acceptance(
                         &record.stable_txn_id,
                         record.attempts,
@@ -169,8 +197,59 @@ pub async fn dispatch_outbox_once<T: MatrixOutboundTransport + ?Sized>(
                     )
                     .await
                 {
-                    Ok(receipt) if account_terminal(&mut stats, &receipt) => {}
-                    Ok(_) => stats.accepted_pending_observation += 1,
+                    Ok(receipt) => receipt,
+                    Err(MatrixDurableError::Conflict) => {
+                        if account_current_terminal(store, &record, &mut stats).await? {
+                            continue;
+                        }
+                        return Err(OutboxDispatchError::Store);
+                    }
+                    Err(error) => return Err(store_error(error)),
+                };
+                if account_terminal(&mut stats, &acceptance) {
+                    continue;
+                }
+
+                let observation = tokio::select! {
+                    biased;
+                    _ = cancel.cancelled() => {
+                        stats.cancelled = true;
+                        None
+                    }
+                    result = transport.observe_server_event(&record, &event_id) => {
+                        match result {
+                            Ok(observation) => observation,
+                            Err(MatrixTransportError::Retryable) => None,
+                            Err(MatrixTransportError::Permanent) => {
+                                return Err(OutboxDispatchError::Store);
+                            }
+                        }
+                    }
+                };
+                if stats.cancelled {
+                    break;
+                }
+                let Some(observation) = observation else {
+                    stats.accepted_pending_observation += 1;
+                    continue;
+                };
+                if observation.event_id != event_id {
+                    return Err(OutboxDispatchError::Store);
+                }
+                match store
+                    .observe_matrix_server_event(
+                        Some(&record.stable_txn_id),
+                        &event_id,
+                        &record.room_id,
+                        record.binding_revision,
+                        record.generation,
+                        &observation.observation_digest,
+                        now_ms,
+                    )
+                    .await
+                {
+                    Ok(Some(receipt)) if account_terminal(&mut stats, &receipt) => {}
+                    Ok(Some(_)) | Ok(None) => return Err(OutboxDispatchError::Store),
                     Err(MatrixDurableError::Conflict) => {
                         if !account_current_terminal(store, &record, &mut stats).await? {
                             return Err(OutboxDispatchError::Store);
@@ -231,7 +310,9 @@ pub async fn dispatch_outbox_once<T: MatrixOutboundTransport + ?Sized>(
     Ok(stats)
 }
 
-pub async fn run_outbox_sender<T: MatrixOutboundTransport + ?Sized>(
+pub async fn run_outbox_sender<
+    T: MatrixOutboundTransport + MatrixOutboundObserver + ?Sized,
+>(
     store: &MatrixDurableStore,
     transport: &T,
     config: &OutboxDispatchConfig,
