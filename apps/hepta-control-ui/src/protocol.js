@@ -145,7 +145,7 @@ function snapshotValue(value, name, state, depth) {
   if (!state.allowEmptyObject && depth === 0 && stringKeys.length === 0) {
     fail(ERROR_CODES.INVALID_INPUT, `${name} must not be empty`);
   }
-  const result = {};
+  const entries = [];
   for (const key of stringKeys) {
     const descriptor = descriptors[key];
     if (
@@ -156,10 +156,15 @@ function snapshotValue(value, name, state, depth) {
     ) {
       fail(ERROR_CODES.INVALID_INPUT, `${name}.${key} must be an enumerable data field`);
     }
-    result[key] = snapshotValue(descriptor.value, `${name}.${key}`, state, depth + 1);
+    entries.push([
+      key,
+      snapshotValue(descriptor.value, `${name}.${key}`, state, depth + 1),
+    ]);
   }
   state.seen.delete(value);
-  return Object.freeze(result);
+  // Object.fromEntries uses data-property creation, so hostile keys such as
+  // `__proto__` remain ordinary own fields instead of invoking inherited setters.
+  return Object.freeze(Object.fromEntries(entries));
 }
 
 export function snapshotCanonical(
