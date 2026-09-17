@@ -276,9 +276,9 @@ impl FederationTransportV2 for FixtureTransport {
                     FederationTransportOutcomeV2::Unavailable,
                 ));
             }
-            Ok(FederationTransportResultV2::Terminal(
+            Ok(FederationTransportResultV2::Terminal(Box::new(
                 self.response(query, capability),
-            ))
+            )))
         })
     }
 }
