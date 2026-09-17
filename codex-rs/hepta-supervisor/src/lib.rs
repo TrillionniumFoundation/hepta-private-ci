@@ -14,6 +14,7 @@ mod matrix;
 mod model;
 mod recovery;
 mod release;
+mod restart_journal;
 mod restart_policy;
 mod robrix_projection;
 mod robrix_protocol;
