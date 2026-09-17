@@ -650,7 +650,7 @@ pub fn select_portfolio_audited(
         return Err(PolicyError::InvalidValidityWindow);
     }
     let receipt = PromptPortfolioReceiptV1 {
-        portfolio_id: input.portfolio_id,
+        portfolio_id: input.portfolio_id.clone(),
         candidate_set_digest: input.candidate_set.receipt.digest(),
         factor_ids,
         interaction_digest: interactions.digest,
