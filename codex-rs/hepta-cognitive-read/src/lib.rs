@@ -31,7 +31,6 @@ pub use v2::ReadResultV2;
 pub use v2::ReadV2Error;
 /// Lower-level caller-supplied snapshot projection. Product callers must use
 /// `read_authoritative` so source authority can be reacquired before delivery.
-#[deprecated(note = "lower-level snapshot primitive; product callers must use read_authoritative")]
 pub use v2::read_v2;
 
 const MAX_RESULTS: usize = 1_024;
