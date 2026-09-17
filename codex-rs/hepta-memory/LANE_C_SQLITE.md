@@ -76,14 +76,24 @@ primitive. It reads from the same SQLite owner and:
   memory's predecessor chain is never split across page boundaries;
 - returns the durable `MemoryRevisionRecord` values rather than laundering
   provisional/verification state into a visible fact;
-- carries the global owner frontiers, including the tombstone frontier, on every
-  page;
-- sandwiches each page between two exact logical `CognitiveRecoveryAnchor`
-  captures and rejects the page if any owner state changed during acquisition;
-- lets the caller pass the previous page's exact state digest into the next
-  request, so pages from different cuts cannot be silently combined;
+- carries the scoped monotonic owner frontiers, including the tombstone frontier,
+  on every page;
+- computes a scope-local cut digest from owner identity, scope identity, memory,
+  source, tombstone and fact frontiers plus KG generation;
+- reads each page inside one SQLite snapshot, then re-observes the same scoped
+  frontiers after releasing that snapshot and rejects a mutation that raced page
+  acquisition;
+- lets the caller pass the previous page's cut digest into the next request, so
+  pages from different scoped cuts cannot be silently combined;
+- avoids the full-database `CognitiveRecoveryAnchor` row/byte scan, so paging is
+  not capped by the recovery-inspection budget;
 - bounds one page to 256 memory identities and 4,096 immutable revisions and
   fails rather than emitting a partial ancestry chain.
+
+The cut digest is an integrity cursor, not authentication that the caller retained
+the newest cut and not writer/recovery authority. It relies on the canonical
+single-writer append/CAS invariants: source, memory, fact and tombstone mutations
+advance a scoped count, and KG projection mutation advances its generation.
 
 This paging API does **not** authorize physical pruning. Immutable source,
 memory, citation, fact and tombstone rows remain authoritative until a future
