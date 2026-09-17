@@ -1,10 +1,11 @@
 //! Product-side composition for governed plasticity proposal persistence.
 //!
 //! This adapter is deliberately proposal-only. It authenticates and constructs
-//! a governed parameter proposal in `learning.plasticity`, then appends the
-//! authority-free V2 record through the production anchor gate. The returned
-//! anchor must be retained by the host in an independent rollback domain before
-//! the append is treated as externally acknowledged.
+//! a governed parameter proposal in `learning.plasticity`, actively resolves all
+//! owner evidence through a host adapter, then appends the authority-free V2
+//! record through the production anchor gate. The returned anchor must be
+//! retained by the host in an independent rollback domain before the append is
+//! treated as externally acknowledged.
 
 use std::error::Error as StdError;
 use std::fmt;
@@ -14,7 +15,8 @@ use codex_hepta_learning_ledger::LearningEvidenceVerifierV1;
 use codex_hepta_plasticity::{
     DurableProposalAppendReceiptV1, DurableRegistryAnchorV1,
     GovernedParameterProposalRequestV3, GovernedParameterProposalV3, GovernedProposalError,
-    ProductionProposalRegistry, ProductionProposalRegistryError, propose_governed_v3,
+    PlasticityEvidencePortV3, ProductionProposalRegistry, ProductionProposalRegistryError,
+    propose_governed_v3,
 };
 use codex_hepta_types::Digest32;
 
@@ -52,20 +54,23 @@ impl From<ProductionProposalRegistryError> for PlasticityHostErrorV3 {
 
 /// Construct and durably append one governed plasticity proposal.
 ///
-/// `expected_predecessor_frame_digest` must be the exact local durable head.
-/// The registry must be a `ProductionProposalRegistry`, which rejects non-empty
-/// bootstrap files and requires an externally retained anchor on acknowledged
-/// reopens. This function never activates, selects, promotes, releases, or
-/// installs the proposal.
+/// `evidence_port` must resolve every update-rule/modulator/eligibility/parameter
+/// evidence digest against its authoritative owner store; there is no no-op
+/// production path. `expected_predecessor_frame_digest` must be the exact local
+/// durable head. The registry must be a `ProductionProposalRegistry`, which
+/// rejects non-empty bootstrap files and requires an externally retained anchor
+/// on acknowledged reopens. This function never activates, selects, promotes,
+/// releases, or installs the proposal.
 pub fn propose_and_persist_plasticity_v3(
     request: GovernedParameterProposalRequestV3<'_>,
     verifier: &LearningEvidenceVerifierV1,
     artifacts: &ArtifactRegistry,
+    evidence_port: &dyn PlasticityEvidencePortV3,
     registry: &mut ProductionProposalRegistry,
     expected_predecessor_frame_digest: Digest32,
     now: u64,
 ) -> Result<DurableGovernedPlasticityReceiptV3, PlasticityHostErrorV3> {
-    let governed = propose_governed_v3(request, verifier, artifacts, now)?;
+    let governed = propose_governed_v3(request, verifier, artifacts, evidence_port, now)?;
     let durable = registry.append_v2(
         expected_predecessor_frame_digest,
         governed.proposal.clone(),
