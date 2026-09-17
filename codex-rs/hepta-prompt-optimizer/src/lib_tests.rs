@@ -2,15 +2,13 @@ use super::*;
 
 fn id(value: &str) -> StableId {
     let Ok(value) = StableId::new(value) else {
-        panic!("test identifier must be valid");
+        panic!("valid test id")
     };
     value
 }
-
 fn digest(value: &[u8]) -> Digest32 {
     Digest32::of_bytes(value)
 }
-
 fn candidate(name: &str, gain: i64, cost: u64) -> PromptCandidate {
     PromptCandidate {
         candidate_id: id(name),
@@ -24,7 +22,6 @@ fn candidate(name: &str, gain: i64, cost: u64) -> PromptCandidate {
         support_digest: digest(name.as_bytes()),
     }
 }
-
 fn request(candidates: Vec<PromptCandidate>) -> OptimizationRequest {
     OptimizationRequest {
         decision_id: id("decision:1"),
@@ -44,12 +41,11 @@ fn illegal_and_unadmitted_candidates_are_never_selected() {
     unadmitted.admitted = false;
     let allowed = candidate("allowed", 10, 1);
     let Ok(receipt) = optimize(request(vec![illegal, unadmitted, allowed])) else {
-        panic!("optimization must succeed");
+        panic!("optimization must succeed")
     };
     assert_eq!(receipt.selected, vec![id("allowed")]);
     assert!(!receipt.authority.grants_any());
 }
-
 #[test]
 fn budget_and_selection_limits_are_enforced() {
     let value = request(vec![
@@ -58,25 +54,21 @@ fn budget_and_selection_limits_are_enforced() {
         candidate("c", 10, 3),
     ]);
     let Ok(receipt) = optimize(value) else {
-        panic!("optimization must succeed");
+        panic!("optimization must succeed")
     };
     assert_eq!(receipt.selected, vec![id("a"), id("c")]);
     assert_eq!(receipt.total_cost, 10);
     assert_eq!(receipt.unspent_budget, 0);
 }
-
 #[test]
 fn canonical_tie_breaking_uses_identifier_order() {
-    let left = candidate("b", 10, 1);
-    let right = candidate("a", 10, 1);
-    let mut value = request(vec![left, right]);
+    let mut value = request(vec![candidate("b", 10, 1), candidate("a", 10, 1)]);
     value.maximum_selected = 1;
     let Ok(receipt) = optimize(value) else {
-        panic!("optimization must succeed");
+        panic!("optimization must succeed")
     };
     assert_eq!(receipt.selected, vec![id("a")]);
 }
-
 #[test]
 fn registry_snapshot_drift_is_rejected() {
     let mut value = candidate("a", 10, 1);
@@ -85,4 +77,17 @@ fn registry_snapshot_drift_is_rejected() {
         optimize(request(vec![value])),
         Err(Error::RegistrySnapshotMismatch("a".to_string()))
     );
+}
+#[test]
+fn legacy_optimize_is_explicitly_gain_first_not_the_v1_portfolio_selector() {
+    let value = request(vec![
+        candidate("a", 100, 10),
+        candidate("b", 60, 5),
+        candidate("c", 60, 5),
+    ]);
+    let Ok(receipt) = optimize(value) else {
+        panic!("legacy heuristic must succeed")
+    };
+    assert_eq!(receipt.selected, vec![id("a")]);
+    assert_eq!(receipt.total_expected_gain, FixedQ32::from_raw(100));
 }

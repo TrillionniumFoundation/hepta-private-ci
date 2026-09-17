@@ -1,24 +1,6 @@
-use std::collections::BTreeSet;
-
+use super::*;
 use codex_hepta_types::StableId;
-
-use super::ArithmeticInvariant;
-use super::InsufficientEvidence;
-use super::IntegrityMismatch;
-use super::InvalidInput;
-use super::LOCAL_MAX_TOKEN_BUDGET;
-use super::LOCAL_NO_INTERVENTION_ID;
-use super::LocalHardConstraint;
-use super::LocalShadowError;
-use super::LocalShadowInput;
-use super::MAX_HARD_CONSTRAINT_EDGES;
-use super::MAX_INTERACTION_EDGES;
-use super::MAX_SELECTED_FACTORS;
-use super::MAX_TOTAL_CANDIDATES;
-use super::arithmetic;
-use super::insufficient;
-use super::integrity;
-use super::invalid;
+use std::collections::{BTreeMap, BTreeSet};
 
 pub(super) fn validate_input_structure(input: &LocalShadowInput) -> Result<u32, LocalShadowError> {
     let total_candidate_count = input
@@ -137,18 +119,17 @@ pub(super) fn validate_input_structure(input: &LocalShadowInput) -> Result<u32, 
     {
         return Err(invalid(InvalidInput::NonCanonicalCandidateOrder));
     }
-
-    let interaction_pairs = validate_interactions(input, &candidate_ids)?;
+    validate_interactions(input, &candidate_ids)?;
     validate_hard_constraints(input, &candidate_ids)?;
-    require_complete_pair_interactions(input, &interaction_pairs)?;
+    validate_constraint_satisfiability(input)?;
     Ok(total_candidate_count)
 }
 
-fn validate_interactions<'a>(
-    input: &'a LocalShadowInput,
+fn validate_interactions(
+    input: &LocalShadowInput,
     candidate_ids: &BTreeSet<StableId>,
-) -> Result<BTreeSet<(&'a StableId, &'a StableId)>, LocalShadowError> {
-    let mut interaction_pairs = BTreeSet::new();
+) -> Result<(), LocalShadowError> {
+    let mut pairs = BTreeSet::new();
     for edge in &input.interaction_edges {
         if edge.left_candidate_id >= edge.right_candidate_id {
             return Err(invalid(InvalidInput::InvalidInteractionEndpoints));
@@ -167,7 +148,7 @@ fn validate_interactions<'a>(
                 "pair interaction",
             )));
         }
-        if !interaction_pairs.insert((&edge.left_candidate_id, &edge.right_candidate_id)) {
+        if !pairs.insert((&edge.left_candidate_id, &edge.right_candidate_id)) {
             return Err(invalid(InvalidInput::DuplicateInteractionEdge(
                 edge.left_candidate_id.to_string(),
                 edge.right_candidate_id.to_string(),
@@ -180,14 +161,14 @@ fn validate_interactions<'a>(
     }) {
         return Err(invalid(InvalidInput::NonCanonicalInteractionOrder));
     }
-    Ok(interaction_pairs)
+    Ok(())
 }
 
 fn validate_hard_constraints(
     input: &LocalShadowInput,
     candidate_ids: &BTreeSet<StableId>,
 ) -> Result<(), LocalShadowError> {
-    let mut constraint_keys = BTreeSet::new();
+    let mut keys = BTreeSet::new();
     for constraint in &input.hard_constraints {
         let (kind, left, right) = hard_constraint_key(constraint);
         if left == right
@@ -204,7 +185,7 @@ fn validate_hard_constraints(
                 )));
             }
         }
-        let (constraint_name, support_reference_digest) = match constraint {
+        let (name, support) = match constraint {
             LocalHardConstraint::Conflict {
                 support_reference_digest,
                 ..
@@ -214,14 +195,14 @@ fn validate_hard_constraints(
                 ..
             } => ("requires", support_reference_digest),
         };
-        if support_reference_digest.is_zero() {
+        if support.is_zero() {
             return Err(insufficient(InsufficientEvidence::EmptySupportReference(
                 "hard constraint",
             )));
         }
-        if !constraint_keys.insert((kind, left, right)) {
+        if !keys.insert((kind, left, right)) {
             return Err(invalid(InvalidInput::DuplicateHardConstraint(
-                constraint_name,
+                name,
                 left.to_string(),
                 right.to_string(),
             )));
@@ -237,26 +218,73 @@ fn validate_hard_constraints(
     Ok(())
 }
 
-fn require_complete_pair_interactions(
-    input: &LocalShadowInput,
-    interaction_pairs: &BTreeSet<(&StableId, &StableId)>,
-) -> Result<(), LocalShadowError> {
-    if input.maximum_selected_factors <= 1 {
-        return Ok(());
+fn validate_constraint_satisfiability(input: &LocalShadowInput) -> Result<(), LocalShadowError> {
+    let mut requires: BTreeMap<StableId, Vec<StableId>> = BTreeMap::new();
+    let mut conflicts = BTreeSet::new();
+    for constraint in &input.hard_constraints {
+        match constraint {
+            LocalHardConstraint::Requires {
+                candidate_id,
+                prerequisite_candidate_id,
+                ..
+            } => requires
+                .entry(candidate_id.clone())
+                .or_default()
+                .push(prerequisite_candidate_id.clone()),
+            LocalHardConstraint::Conflict {
+                left_candidate_id,
+                right_candidate_id,
+                ..
+            } => {
+                conflicts.insert((left_candidate_id.clone(), right_candidate_id.clone()));
+            }
+        }
     }
-    for (left_index, left) in input.factor_candidates.iter().enumerate() {
-        for right in input.factor_candidates.iter().skip(left_index + 1) {
-            if !interaction_pairs.contains(&(&left.candidate_id, &right.candidate_id)) {
-                return Err(insufficient(InsufficientEvidence::MissingPairInteraction(
-                    left.candidate_id.to_string(),
-                    right.candidate_id.to_string(),
+    for prerequisites in requires.values_mut() {
+        prerequisites.sort();
+    }
+    for candidate in &input.factor_candidates {
+        let mut visiting = BTreeSet::new();
+        let mut closure = BTreeSet::new();
+        collect_requires(
+            &candidate.candidate_id,
+            &requires,
+            &mut visiting,
+            &mut closure,
+        )?;
+        closure.insert(candidate.candidate_id.clone());
+        for (left, right) in &conflicts {
+            if closure.contains(left) && closure.contains(right) {
+                return Err(invalid(InvalidInput::UnsatisfiableConstraintGraph(
+                    candidate.candidate_id.to_string(),
                 )));
             }
         }
     }
     Ok(())
 }
-
+fn collect_requires(
+    node: &StableId,
+    requires: &BTreeMap<StableId, Vec<StableId>>,
+    visiting: &mut BTreeSet<StableId>,
+    closure: &mut BTreeSet<StableId>,
+) -> Result<(), LocalShadowError> {
+    if closure.contains(node) {
+        return Ok(());
+    }
+    if !visiting.insert(node.clone()) {
+        return Err(invalid(InvalidInput::RequiresCycle(node.to_string())));
+    }
+    if let Some(prereqs) = requires.get(node) {
+        for prereq in prereqs {
+            collect_requires(prereq, requires, visiting, closure)?;
+            closure.insert(prereq.clone());
+        }
+    }
+    visiting.remove(node);
+    closure.insert(node.clone());
+    Ok(())
+}
 fn hard_constraint_key(constraint: &LocalHardConstraint) -> (u8, &StableId, &StableId) {
     match constraint {
         LocalHardConstraint::Conflict {

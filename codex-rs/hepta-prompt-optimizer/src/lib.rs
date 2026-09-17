@@ -1,7 +1,9 @@
-//! Bounded prompt-intervention portfolio optimizer for shadow evaluation.
+//! Bounded prompt-intervention portfolio policy primitives.
 //!
-//! The optimizer is read-only with respect to registries and objectives. Its
-//! receipt is a proposal and grants no activation, dispatch or promotion power.
+//! The registered V1 pipeline lives in [`pipeline`]. The historical [`optimize`]
+//! entrypoint is retained for source compatibility and is intentionally a
+//! gain-first heuristic over caller-supplied scores; it is not the registered
+//! prompt optimization policy pipeline.
 
 #![forbid(unsafe_code)]
 
@@ -15,6 +17,8 @@ use codex_hepta_types::FixedQ32;
 use codex_hepta_types::StableId;
 
 pub mod local_shadow;
+pub mod pipeline;
+pub use pipeline::*;
 
 const MAX_CANDIDATES: usize = 4_096;
 const MAX_SELECTED: usize = 128;
@@ -89,9 +93,14 @@ impl fmt::Display for Error {
         write!(formatter, "{self:?}")
     }
 }
-
 impl StdError for Error {}
 
+/// Historical caller-score heuristic retained for compatibility.
+///
+/// New code must use [`select_portfolio`] after [`enumerate_factors`] and
+/// [`price_factors`]. This function sorts by raw expected gain, not by a
+/// certificate-producing portfolio objective, and therefore makes no optimality
+/// claim.
 pub fn optimize(mut request: OptimizationRequest) -> Result<PromptPortfolioReceipt, Error> {
     validate_request(&request)?;
     request.candidates.sort_by(|left, right| {
