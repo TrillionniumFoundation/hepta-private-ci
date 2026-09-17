@@ -140,6 +140,47 @@ async fn reopened_dispatch_and_completed_duplicate_never_connect_to_provider() {
 }
 
 #[tokio::test]
+async fn lost_ack_reopen_through_product_boundary_stays_indeterminate_without_a_receipt() {
+    let (driver, path) = fixture("bound-reopen");
+    let mut control = DurableInferenceControl::open(&path, 8).unwrap();
+    control.reserve_native(request(&driver), 1).unwrap();
+    control
+        .dispatch_native(
+            "r1",
+            NativeDispatch {
+                thread_id: "thread-1".to_string(),
+                model_provider: "provider".to_string(),
+                context_digest: "a".repeat(64),
+            },
+        )
+        .unwrap();
+    drop(control);
+
+    let mut control = DurableInferenceControl::open(&path, 8).unwrap();
+    let bound = driver
+        .run_bound(
+            &mut control,
+            admission(),
+            "prompt".to_string(),
+            None,
+            &CancellationToken::new(),
+        )
+        .await
+        .unwrap();
+    assert_eq!(bound.output().status, NativeRunStatus::Indeterminate);
+    assert!(!bound.output().terminal_observed);
+    assert!(bound.receipt().is_none());
+    assert!(!bound.succeeded());
+    assert_eq!(
+        control.native_record("r1").unwrap().state,
+        NativeReservationState::Indeterminate
+    );
+
+    drop(control);
+    std::fs::remove_file(path).unwrap();
+}
+
+#[tokio::test]
 async fn pre_dispatch_cancellation_and_connection_failure_release_without_usage_claims() {
     for cancelled in [true, false] {
         let (driver, path) = fixture(if cancelled { "cancel" } else { "connection" });
