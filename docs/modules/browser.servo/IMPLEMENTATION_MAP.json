@@ -8,38 +8,19 @@
   "laneId": "LANE-B-RUNTIME",
   "module": "browser.servo",
   "sourceMaturity": "native_servo_worker_source_and_private_agentd_boundary",
-  "declaredRoots": [
-    "apps/hepta-browser",
-    "third_party/servo-patches"
-  ],
-  "resolvedRoots": [
-    "apps/hepta-browser",
-    "third_party/servo-patches"
-  ],
+  "declaredRoots": ["apps/hepta-browser", "third_party/servo-patches"],
+  "resolvedRoots": ["apps/hepta-browser", "third_party/servo-patches"],
   "stateOwnerDisposition": "Owns serialized profile/session/page state plus a strict durable operation journal; a fresh principal-bound private profile directory is created for each worker generation and raw credentials remain external references.",
   "terminalObserverDisposition": "The current-pin Servo worker source supplies bounded semantic page observations and local action observations; durable reconciliation owns unknown dispatches, while remote business terminality and target-host enforcement still require independent evidence.",
   "operations": [
     {
       "designOperation": "open_profile",
       "mappingClass": "owner_boundary",
-      "ownerEntrypoint": {
-        "role": "owner_entrypoint",
-        "path": "apps/hepta-browser/src/runtime.js",
-        "symbol": "async openProfile(",
-        "buildTarget": "hepta-browser"
-      },
+      "ownerEntrypoint": {"role": "owner_entrypoint", "path": "apps/hepta-browser/src/runtime.js", "symbol": "async openProfile(", "buildTarget": "hepta-browser"},
       "delegatedCallees": [],
       "tests": [
-        {
-          "path": "apps/hepta-browser/test/runtime.test.js",
-          "kind": "node_product_boundary",
-          "command": "node --test apps/hepta-browser/test/runtime.test.js"
-        },
-        {
-          "path": "apps/hepta-browser/test/worker-driver.test.js",
-          "kind": "node_private_worker_boundary",
-          "command": "node --test apps/hepta-browser/test/worker-driver.test.js"
-        }
+        {"path": "apps/hepta-browser/test/runtime.test.js", "kind": "node_product_boundary", "command": "node --test apps/hepta-browser/test/runtime.test.js"},
+        {"path": "apps/hepta-browser/test/worker-driver.test.js", "kind": "node_private_worker_boundary", "command": "node --test apps/hepta-browser/test/worker-driver.test.js"}
       ],
       "sourceSemantics": "Admits a profile/principal/generation, verifies the exact worker artifact, creates a fresh private principal-bound profile directory and starts one private worker process.",
       "operation": "open_profile",
@@ -50,26 +31,13 @@
     {
       "designOperation": "observe_page",
       "mappingClass": "owner_boundary",
-      "ownerEntrypoint": {
-        "role": "owner_entrypoint",
-        "path": "apps/hepta-browser/src/runtime.js",
-        "symbol": "async observePage(",
-        "buildTarget": "hepta-browser"
-      },
+      "ownerEntrypoint": {"role": "owner_entrypoint", "path": "apps/hepta-browser/src/runtime.js", "symbol": "async observePage(", "buildTarget": "hepta-browser"},
       "delegatedCallees": [],
       "tests": [
-        {
-          "path": "apps/hepta-browser/test/runtime.test.js",
-          "kind": "node_product_boundary",
-          "command": "node --test apps/hepta-browser/test/runtime.test.js"
-        },
-        {
-          "path": "apps/hepta-browser/servo-worker/src/main.rs",
-          "kind": "current_pin_servo_worker_source",
-          "command": "cargo check --manifest-path apps/hepta-browser/servo-worker/Cargo.toml --locked"
-        }
+        {"path": "apps/hepta-browser/test/runtime.test.js", "kind": "node_product_boundary", "command": "node --test apps/hepta-browser/test/runtime.test.js"},
+        {"path": "apps/hepta-browser/servo-worker/src/main.rs", "kind": "current_pin_servo_worker_source", "command": "cargo check --manifest-path apps/hepta-browser/servo-worker/Cargo.toml --locked"}
       ],
-      "sourceSemantics": "Publishes page-generation-fenced origin plus digest-bound bounded semantic observations (title, visible text, links, forms and page-local selectors) from the current-pin Servo WebView.",
+      "sourceSemantics": "Publishes page-generation-fenced origin plus digest-bound bounded semantic observations from the current-pin Servo WebView.",
       "operation": "observe_page",
       "nativeSymbol": "async observePage(",
       "sourcePath": "apps/hepta-browser/src/runtime.js",
@@ -78,35 +46,14 @@
     {
       "designOperation": "navigate_or_act",
       "mappingClass": "owner_boundary",
-      "ownerEntrypoint": {
-        "role": "owner_entrypoint",
-        "path": "apps/hepta-browser/src/runtime.js",
-        "symbol": "async navigateOrAct(",
-        "buildTarget": "hepta-browser"
-      },
+      "ownerEntrypoint": {"role": "owner_entrypoint", "path": "apps/hepta-browser/src/runtime.js", "symbol": "async navigateOrAct(", "buildTarget": "hepta-browser"},
       "delegatedCallees": [
-        {
-          "role": "final_use_authority_owner",
-          "path": "codex-rs/hepta-agentd/src/browser_servo.rs",
-          "symbol": "FinalUseAuthority::with_verified_use"
-        }
+        {"role": "final_use_authority_owner", "path": "codex-rs/hepta-agentd/src/browser_servo.rs", "symbol": "FinalUseAuthority::with_verified_use"}
       ],
       "tests": [
-        {
-          "path": "apps/hepta-browser/test/runtime.test.js",
-          "kind": "node_product_boundary",
-          "command": "node --test apps/hepta-browser/test/runtime.test.js"
-        },
-        {
-          "path": "apps/hepta-browser/test/agentd-service.test.js",
-          "kind": "node_private_parent_boundary",
-          "command": "node --test apps/hepta-browser/test/agentd-service.test.js"
-        },
-        {
-          "path": "codex-rs/hepta-agentd/src/browser_servo.rs",
-          "kind": "rust_final_use_linearization",
-          "command": "cd codex-rs && cargo test --locked -p codex-hepta-agentd browser_servo --lib"
-        }
+        {"path": "apps/hepta-browser/test/runtime.test.js", "kind": "node_product_boundary", "command": "node --test apps/hepta-browser/test/runtime.test.js"},
+        {"path": "apps/hepta-browser/test/agentd-service.test.js", "kind": "node_private_parent_boundary", "command": "node --test apps/hepta-browser/test/agentd-service.test.js"},
+        {"path": "codex-rs/hepta-agentd/src/browser_servo.rs", "kind": "rust_final_use_linearization", "command": "cd codex-rs && cargo test --locked -p codex-hepta-agentd browser_servo --lib"}
       ],
       "sourceSemantics": "Binds proposal provenance, typed payload, page generation, grant and live VerifiedUse authority; holds the revocation fence through durable intent fsync and the successful local worker-pipe dispatch boundary, then reconciles remote terminality separately.",
       "operation": "navigate_or_act",
@@ -144,8 +91,5 @@
   "owner": "browser-platform",
   "deputy": "security-authority",
   "technicalGuide": "docs/modules/browser.servo/TECHNICAL.md",
-  "sourceRoot": [
-    "apps/hepta-browser",
-    "third_party/servo-patches"
-  ]
+  "sourceRoot": ["apps/hepta-browser", "third_party/servo-patches"]
 }
