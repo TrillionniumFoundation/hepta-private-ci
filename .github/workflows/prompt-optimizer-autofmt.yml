@@ -1,0 +1,141 @@
+name: Prompt optimizer temporary autofmt
+
+on:
+  push:
+    branches: [work/prompt-optimizer-v1-pipeline-20260917]
+    paths:
+      - "codex-rs/hepta-prompt-optimizer/**"
+      - ".github/workflows/prompt-optimizer-autofmt.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  validate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: work/prompt-optimizer-v1-pipeline-20260917
+          persist-credentials: true
+          fetch-depth: 0
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: 1.95.0
+          components: rustfmt,clippy
+      - name: Finalize digest regression and technical guide
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+
+          tests = Path("codex-rs/hepta-prompt-optimizer/src/local_shadow_tests.rs")
+          source = tests.read_text(encoding="utf-8")
+          old_digest = "44ab529afe66c7062695a029ee5ca76eac29278b4a765aab9a6c4d55f18bf7d1"
+          new_digest = "38062d5a9b90f59c0bcb1b01e2c18c6a18ba5ffb6a510935a7f285df22e35509"
+          if old_digest in source:
+              source = source.replace(old_digest, new_digest, 1)
+          elif new_digest not in source:
+              raise RuntimeError("unexpected strict-shadow digest fixture")
+          tests.write_text(source, encoding="utf-8")
+
+          guide = Path("docs/modules/prompt.optimizer/TECHNICAL.md")
+          source = guide.read_text(encoding="utf-8")
+
+          old_components = '''The bounded components are:
+
+          - `snapshot loader`
+          - `candidate builder`
+          - `bounded solver`
+          - `decision receipt emitter`
+          '''
+          new_components = '''The bounded components are:
+
+          - `registry/model snapshot validator`
+          - `candidate enumerator`
+          - `causal and resource-cost pricer`
+          - `interaction and requirement-graph validator`
+          - `bounded requirement-closure portfolio solver`
+          - `registered-boundary exercise validator`
+          - `V1 receipt and companion audit emitter`
+          '''
+          if old_components in source:
+              source = source.replace(old_components, new_components, 1)
+
+          compatibility_marker = '''Rust types and canonical JSON represent identical semantics. Tests cover round trips, maximum bounds, missing fields, unknown fields, invalid enums, canonical ordering and digest stability. Error mapping preserves rejected, unavailable, timed out, indeterminate, quarantined and terminally failed outcomes.
+          '''
+          compatibility_addition = '''Rust types and canonical JSON represent identical semantics. Tests cover round trips, maximum bounds, missing fields, unknown fields, invalid enums, canonical ordering and digest stability. Error mapping preserves rejected, unavailable, timed out, indeterminate, quarantined and terminally failed outcomes.
+
+          The native policy surface in `codex-rs/hepta-prompt-optimizer/src/policy.rs` now defines the four registered V1 receipt shapes and the `enumerate_factors`, `price_factors`, `select_portfolio` and `exercise` entrypoints. Information that is intentionally outside the registered V1 schemas—candidate completeness, omitted count, pricing decomposition, solver/optimality disclosure, binding digests and per-candidate disposition—is carried in companion authority-free audit wrappers rather than injected as unknown critical fields.
+          '''
+          if "The native policy surface in `codex-rs/hepta-prompt-optimizer/src/policy.rs`" not in source:
+              if compatibility_marker not in source:
+                  raise RuntimeError("technical compatibility marker moved")
+              source = source.replace(compatibility_marker, compatibility_addition, 1)
+
+          old_capacity = '''The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/prompt.optimizer.md) specifies this module's algorithm, pilot ceilings and capacity fixtures. Those target ceilings are not measurements and must not be reported as enforcement of an unimplemented API. Current native limits belong to [codex-rs/hepta-prompt-optimizer/src/lib.rs](../../../codex-rs/hepta-prompt-optimizer/src/lib.rs) and the linked implementation components.
+
+          [Shared performance and capacity requirements](../README.md#shared-performance-and-capacity) define the measurement/overload obligations for a selected host.
+          '''
+          new_capacity = '''The registered policy surface enforces the pilot structural ceilings of 128 factors, 512 explicit interaction edges, 512 hard-constraint edges, 16 selected factors and a 1,000,000-token local safety ceiling. Multi-factor selection does not require a complete `C(n,2)` graph: missing pair effects are either rejected as unknown or treated as zero only under an explicit evidence-bound `SupportedZero` policy. The strict `calculate_local_shadow` compatibility surface deliberately retains complete-pair fail-closed semantics and therefore reaches at most 32 factor candidates in multi-select mode under its 512-edge ceiling.
+
+          These ceilings are enforcement limits, not latency or throughput measurements. [Shared performance and capacity requirements](../README.md#shared-performance-and-capacity) define the measurement/overload obligations for a selected host.
+          '''
+          if old_capacity in source:
+              source = source.replace(old_capacity, new_capacity, 1)
+
+          old_refs = '''- [codex-rs/hepta-prompt-optimizer/src/lib.rs](../../../codex-rs/hepta-prompt-optimizer/src/lib.rs).
+          - [codex-rs/hepta-prompt-optimizer/src/local_shadow.rs](../../../codex-rs/hepta-prompt-optimizer/src/local_shadow.rs).
+          '''
+          new_refs = '''- [codex-rs/hepta-prompt-optimizer/src/lib.rs](../../../codex-rs/hepta-prompt-optimizer/src/lib.rs).
+          - [codex-rs/hepta-prompt-optimizer/src/local_shadow.rs](../../../codex-rs/hepta-prompt-optimizer/src/local_shadow.rs).
+          - [codex-rs/hepta-prompt-optimizer/src/policy.rs](../../../codex-rs/hepta-prompt-optimizer/src/policy.rs).
+          '''
+          if old_refs in source:
+              source = source.replace(old_refs, new_refs, 1)
+
+          test_marker = '''- [codex-rs/hepta-prompt-optimizer/src/local_shadow_tests.rs](../../../codex-rs/hepta-prompt-optimizer/src/local_shadow_tests.rs); named case: `legacy_v1_surface_keeps_its_original_selection_limit`.
+          '''
+          test_addition = '''- [codex-rs/hepta-prompt-optimizer/src/local_shadow_tests.rs](../../../codex-rs/hepta-prompt-optimizer/src/local_shadow_tests.rs); named case: `legacy_v1_surface_keeps_its_original_selection_limit`.
+          - [codex-rs/hepta-prompt-optimizer/src/policy_tests.rs](../../../codex-rs/hepta-prompt-optimizer/src/policy_tests.rs); named cases cover registered V1 enumeration/pricing/exercise, the knapsack counterexample, prerequisite-closure bundles, 128-factor sparse interaction policy and unsatisfiable requirement graphs.
+          '''
+          if "src/policy_tests.rs" not in source:
+              if test_marker not in source:
+                  raise RuntimeError("technical test marker moved")
+              source = source.replace(test_marker, test_addition, 1)
+
+          guide.write_text(source, encoding="utf-8")
+          PY
+
+          cd codex-rs
+          cargo fmt --package codex-hepta-prompt-optimizer
+          cd ..
+          git diff --check
+          if ! git diff --quiet -- codex-rs/hepta-prompt-optimizer docs/modules/prompt.optimizer/TECHNICAL.md; then
+            git config user.name 'hepta-prompt-optimizer-autofmt'
+            git config user.email 'hepta-prompt-optimizer-autofmt@users.noreply.github.com'
+            git add codex-rs/hepta-prompt-optimizer docs/modules/prompt.optimizer/TECHNICAL.md
+            git commit -m 'test(prompt-optimizer): finalize v3 digest and technical guide'
+            git push origin HEAD:work/prompt-optimizer-v1-pipeline-20260917
+          fi
+      - name: Run prompt optimizer package tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd codex-rs
+          cargo test -p codex-hepta-prompt-optimizer
+      - name: Run prompt optimizer clippy
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd codex-rs
+          cargo clippy -p codex-hepta-prompt-optimizer --all-targets -- -D warnings
+      - name: Verify implementation maps and documentation
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta-implementation-maps.py verify
+          python3 scripts/hepta-module-docs.py verify
+          python3 scripts/hepta-docs.py verify

@@ -8,7 +8,12 @@
 //! ledger owners; establish realization-context compatibility or causal
 //! support; authorize selection or activation; or represent the learning-ledger
 //! canonical abstain arm.
+//!
+//! The strict shadow surface deliberately requires complete pair evidence when
+//! more than one factor may be selected. The registered `policy` surface owns
+//! the scalable sparse-interaction semantics for the full 128-factor target.
 
+use std::collections::BTreeMap;
 use std::collections::BTreeSet;
 use std::error::Error as StdError;
 use std::fmt;
@@ -39,9 +44,11 @@ pub const MAX_FACTOR_CANDIDATES: usize = MAX_TOTAL_CANDIDATES - 1;
 pub const MAX_SELECTED_FACTORS: usize = 16;
 /// Maximum caller-supplied pairwise interaction edges.
 ///
-/// A request permitting multi-factor selection is therefore limited to 32
-/// factor candidates by the pair-completeness rule (33 would require 528
-/// edges). Single-factor shadow selection can still use all 127 factor slots.
+/// The strict shadow calculator requires pair completeness whenever multi-factor
+/// selection is enabled, so this surface reaches 32 factor candidates at most
+/// in that mode. The registered policy surface supports the 128-factor target
+/// through an explicit sparse missing-interaction policy instead of silently
+/// treating unknown pair effects as zero.
 pub const MAX_INTERACTION_EDGES: usize = 512;
 /// Maximum caller-supplied hard constraint edges.
 pub const MAX_HARD_CONSTRAINT_EDGES: usize = 512;
@@ -86,7 +93,7 @@ pub enum LocalHardConstraint {
         right_candidate_id: StableId,
         support_reference_digest: Digest32,
     },
-    /// `candidate_id` is unavailable until `prerequisite_candidate_id` is selected.
+    /// Selecting `candidate_id` requires selecting `prerequisite_candidate_id`.
     Requires {
         candidate_id: StableId,
         prerequisite_candidate_id: StableId,
@@ -119,7 +126,9 @@ pub enum LocalCandidateScope {
 /// Deterministic local selection method.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum LocalSelectionMethod {
-    GreedyMarginalV1,
+    /// Greedy marginal selection where each root is evaluated together with its
+    /// transitive prerequisite closure.
+    GreedyRequirementClosureV2,
 }
 
 /// Explicit absence of an optimality guarantee.
@@ -186,6 +195,8 @@ pub enum InvalidInput {
     UnknownHardConstraintEndpoint(String),
     DuplicateHardConstraint(&'static str, String, String),
     NonCanonicalHardConstraintOrder,
+    RequiresCycle(String),
+    UnsatisfiableRequirementConflict(String),
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -238,7 +249,9 @@ impl StdError for LocalShadowError {}
 /// Factor candidates, interactions, and hard constraints must already be in
 /// canonical order. If `maximum_selected_factors` is greater than one, every
 /// unordered factor pair needs an explicit interaction edge, including pairs
-/// whose caller-supplied marginal is zero.
+/// whose caller-supplied marginal is zero. A candidate with prerequisites is
+/// evaluated as one transitive requirement package, so a negative prerequisite
+/// may be selected when the complete package has positive marginal gain.
 pub fn calculate_local_shadow(
     input: LocalShadowInput,
 ) -> Result<LocalShadowProposal, LocalShadowError> {
@@ -247,54 +260,82 @@ pub fn calculate_local_shadow(
     let interaction_graph_digest = digest_interactions(&input.interaction_edges);
     let hard_constraint_digest = digest_hard_constraints(&input.hard_constraints);
 
+    let candidates_by_id = input
+        .factor_candidates
+        .iter()
+        .map(|candidate| (candidate.candidate_id.clone(), candidate))
+        .collect::<BTreeMap<_, _>>();
     let mut selections = Vec::new();
     let mut selected_candidate_ids = BTreeSet::new();
     let mut remaining = input.token_budget;
     let mut total_caller_supplied_gain = FixedQ32::ZERO;
 
     while selections.len() < input.maximum_selected_factors {
-        let mut best: Option<(&PromptCandidate, FixedQ32)> = None;
-        for candidate in &input.factor_candidates {
-            if selected_candidate_ids.contains(&candidate.candidate_id)
-                || candidate.cost > remaining
-                || !hard_constraints_allow(
-                    &candidate.candidate_id,
-                    &selected_candidate_ids,
-                    &input.hard_constraints,
-                )
+        let mut best: Option<(&PromptCandidate, Vec<&PromptCandidate>, u64, FixedQ32)> = None;
+        for root in &input.factor_candidates {
+            if selected_candidate_ids.contains(&root.candidate_id) {
+                continue;
+            }
+            let package = requirement_package(
+                &root.candidate_id,
+                &candidates_by_id,
+                &input.hard_constraints,
+            )?;
+            let additions = package
+                .into_iter()
+                .filter(|candidate| !selected_candidate_ids.contains(&candidate.candidate_id))
+                .collect::<Vec<_>>();
+            if additions.is_empty()
+                || selections.len().saturating_add(additions.len()) > input.maximum_selected_factors
+                || package_conflicts(&selected_candidate_ids, &additions, &input.hard_constraints)
             {
                 continue;
             }
-            let marginal =
-                marginal_gain(candidate, &selected_candidate_ids, &input.interaction_edges)?;
+            let package_cost = additions.iter().try_fold(0_u64, |sum, candidate| {
+                sum.checked_add(candidate.cost)
+                    .ok_or(arithmetic(ArithmeticInvariant::TokenAccounting))
+            })?;
+            if package_cost > remaining {
+                continue;
+            }
+            let marginal = package_marginal_gain(
+                &additions,
+                &selected_candidate_ids,
+                &input.interaction_edges,
+            )?;
             if marginal <= FixedQ32::ZERO {
                 continue;
             }
-            let is_better = best.as_ref().is_none_or(|(current, current_gain)| {
-                marginal > *current_gain
-                    || (marginal == *current_gain
-                        && (candidate.cost < current.cost
-                            || (candidate.cost == current.cost
-                                && candidate.candidate_id < current.candidate_id)))
-            });
+            let is_better =
+                best.as_ref()
+                    .is_none_or(|(current_root, _, current_cost, current_gain)| {
+                        marginal > *current_gain
+                            || (marginal == *current_gain
+                                && (package_cost < *current_cost
+                                    || (package_cost == *current_cost
+                                        && root.candidate_id < current_root.candidate_id)))
+                    });
             if is_better {
-                best = Some((candidate, marginal));
+                best = Some((root, additions, package_cost, marginal));
             }
         }
-        let Some((candidate, marginal)) = best else {
+        let Some((_, additions, package_cost, marginal)) = best else {
             break;
         };
         remaining = remaining
-            .checked_sub(candidate.cost)
+            .checked_sub(package_cost)
             .ok_or(arithmetic(ArithmeticInvariant::TokenAccounting))?;
         total_caller_supplied_gain = total_caller_supplied_gain
             .checked_add(marginal)
             .map_err(|_| arithmetic(ArithmeticInvariant::FixedPointOverflow))?;
-        selected_candidate_ids.insert(candidate.candidate_id.clone());
-        selections.push(LocalShadowSelection {
-            candidate_id: candidate.candidate_id.clone(),
-            factor_id: candidate.factor_id.clone(),
-        });
+        for candidate in additions {
+            if selected_candidate_ids.insert(candidate.candidate_id.clone()) {
+                selections.push(LocalShadowSelection {
+                    candidate_id: candidate.candidate_id.clone(),
+                    factor_id: candidate.factor_id.clone(),
+                });
+            }
+        }
     }
 
     let total_token_cost = input
@@ -324,62 +365,145 @@ pub fn calculate_local_shadow(
         candidate_input_digest,
         interaction_graph_digest,
         hard_constraint_digest,
-        selection_method: LocalSelectionMethod::GreedyMarginalV1,
+        selection_method: LocalSelectionMethod::GreedyRequirementClosureV2,
         optimality: LocalOptimalityDisclosure::HeuristicNoCertificate,
         proposal_digest,
     })
 }
 
-fn marginal_gain(
-    candidate: &PromptCandidate,
-    selected: &BTreeSet<StableId>,
-    interactions: &[LocalPairInteraction],
-) -> Result<FixedQ32, LocalShadowError> {
-    let mut marginal = candidate.expected_gain;
-    for selected_peer in selected {
-        let (left, right) = if candidate.candidate_id.as_str() < selected_peer.as_str() {
-            (&candidate.candidate_id, selected_peer)
-        } else {
-            (selected_peer, &candidate.candidate_id)
-        };
-        let Some(edge) = interactions.iter().find(|edge| {
-            edge.left_candidate_id.as_str() == left.as_str()
-                && edge.right_candidate_id.as_str() == right.as_str()
-        }) else {
-            return Err(insufficient(InsufficientEvidence::MissingPairInteraction(
-                left.to_string(),
-                right.to_string(),
-            )));
-        };
-        marginal = marginal
-            .checked_add(edge.caller_supplied_marginal_gain)
-            .map_err(|_| arithmetic(ArithmeticInvariant::FixedPointOverflow))?;
-    }
-    Ok(marginal)
+fn requirement_package<'a>(
+    root: &StableId,
+    candidates: &BTreeMap<StableId, &'a PromptCandidate>,
+    constraints: &[LocalHardConstraint],
+) -> Result<Vec<&'a PromptCandidate>, LocalShadowError> {
+    let mut visiting = BTreeSet::new();
+    let mut visited = BTreeSet::new();
+    let mut output = Vec::new();
+    collect_requirement_package(
+        root,
+        candidates,
+        constraints,
+        &mut visiting,
+        &mut visited,
+        &mut output,
+    )?;
+    Ok(output)
 }
 
-fn hard_constraints_allow(
+fn collect_requirement_package<'a>(
     candidate_id: &StableId,
+    candidates: &BTreeMap<StableId, &'a PromptCandidate>,
+    constraints: &[LocalHardConstraint],
+    visiting: &mut BTreeSet<StableId>,
+    visited: &mut BTreeSet<StableId>,
+    output: &mut Vec<&'a PromptCandidate>,
+) -> Result<(), LocalShadowError> {
+    if visited.contains(candidate_id) {
+        return Ok(());
+    }
+    if !visiting.insert(candidate_id.clone()) {
+        return Err(invalid(InvalidInput::RequiresCycle(
+            candidate_id.to_string(),
+        )));
+    }
+    let mut prerequisites = constraints
+        .iter()
+        .filter_map(|constraint| match constraint {
+            LocalHardConstraint::Requires {
+                candidate_id: constrained_candidate_id,
+                prerequisite_candidate_id,
+                ..
+            } if constrained_candidate_id == candidate_id => Some(prerequisite_candidate_id),
+            _ => None,
+        })
+        .collect::<Vec<_>>();
+    prerequisites.sort();
+    for prerequisite in prerequisites {
+        collect_requirement_package(
+            prerequisite,
+            candidates,
+            constraints,
+            visiting,
+            visited,
+            output,
+        )?;
+    }
+    visiting.remove(candidate_id);
+    visited.insert(candidate_id.clone());
+    let Some(candidate) = candidates.get(candidate_id).copied() else {
+        return Err(invalid(InvalidInput::UnknownHardConstraintEndpoint(
+            candidate_id.to_string(),
+        )));
+    };
+    output.push(candidate);
+    Ok(())
+}
+
+fn package_conflicts(
     selected: &BTreeSet<StableId>,
+    additions: &[&PromptCandidate],
     constraints: &[LocalHardConstraint],
 ) -> bool {
-    constraints.iter().all(|constraint| match constraint {
+    let additions = additions
+        .iter()
+        .map(|candidate| candidate.candidate_id.clone())
+        .collect::<BTreeSet<_>>();
+    constraints.iter().any(|constraint| match constraint {
         LocalHardConstraint::Conflict {
             left_candidate_id,
             right_candidate_id,
             ..
         } => {
-            !((candidate_id == left_candidate_id && selected.contains(right_candidate_id))
-                || (candidate_id == right_candidate_id && selected.contains(left_candidate_id)))
+            (selected.contains(left_candidate_id) && additions.contains(right_candidate_id))
+                || (selected.contains(right_candidate_id) && additions.contains(left_candidate_id))
+                || (additions.contains(left_candidate_id) && additions.contains(right_candidate_id))
         }
-        LocalHardConstraint::Requires {
-            candidate_id: constrained_candidate_id,
-            prerequisite_candidate_id,
-            ..
-        } => {
-            candidate_id != constrained_candidate_id || selected.contains(prerequisite_candidate_id)
-        }
+        LocalHardConstraint::Requires { .. } => false,
     })
+}
+
+fn package_marginal_gain(
+    additions: &[&PromptCandidate],
+    selected: &BTreeSet<StableId>,
+    interactions: &[LocalPairInteraction],
+) -> Result<FixedQ32, LocalShadowError> {
+    let mut marginal = FixedQ32::ZERO;
+    let mut package_selected = selected.clone();
+    for candidate in additions {
+        marginal = marginal
+            .checked_add(candidate.expected_gain)
+            .map_err(|_| arithmetic(ArithmeticInvariant::FixedPointOverflow))?;
+        for selected_peer in &package_selected {
+            let edge_gain = interaction_gain(&candidate.candidate_id, selected_peer, interactions)?;
+            marginal = marginal
+                .checked_add(edge_gain)
+                .map_err(|_| arithmetic(ArithmeticInvariant::FixedPointOverflow))?;
+        }
+        package_selected.insert(candidate.candidate_id.clone());
+    }
+    Ok(marginal)
+}
+
+fn interaction_gain(
+    left_candidate_id: &StableId,
+    right_candidate_id: &StableId,
+    interactions: &[LocalPairInteraction],
+) -> Result<FixedQ32, LocalShadowError> {
+    let (left, right) = if left_candidate_id < right_candidate_id {
+        (left_candidate_id, right_candidate_id)
+    } else {
+        (right_candidate_id, left_candidate_id)
+    };
+    let Some(edge) = interactions
+        .iter()
+        .find(|edge| edge.left_candidate_id == *left && edge.right_candidate_id == *right)
+    else {
+        return Err(insufficient(InsufficientEvidence::MissingPairInteraction(
+            left.to_string(),
+            right.to_string(),
+        )));
+    };
+    Ok(edge.caller_supplied_marginal_gain)
 }
 
 fn invalid(reason: InvalidInput) -> LocalShadowError {

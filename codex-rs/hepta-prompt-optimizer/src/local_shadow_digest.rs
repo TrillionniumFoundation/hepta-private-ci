@@ -97,7 +97,7 @@ pub(super) fn digest_hard_constraints(constraints: &[LocalHardConstraint]) -> Di
 
 pub(super) fn digest_proposal(parts: ProposalDigestInput<'_>) -> Digest32 {
     let mut bytes = Vec::new();
-    bytes.extend_from_slice(b"hepta.prompt-optimizer.local-shadow-proposal.v2");
+    bytes.extend_from_slice(b"hepta.prompt-optimizer.local-shadow-proposal.v3");
     push_id(&mut bytes, &parts.input.decision_id);
     bytes.extend_from_slice(parts.input.objective_digest.as_array());
     bytes.extend_from_slice(parts.input.state_digest.as_array());
@@ -114,7 +114,7 @@ pub(super) fn digest_proposal(parts: ProposalDigestInput<'_>) -> Digest32 {
     bytes.extend_from_slice(parts.candidate_input_digest.as_array());
     bytes.extend_from_slice(parts.interaction_graph_digest.as_array());
     bytes.extend_from_slice(parts.hard_constraint_digest.as_array());
-    bytes.push(0); // LocalSelectionMethod::GreedyMarginalV1.
+    bytes.push(1); // LocalSelectionMethod::GreedyRequirementClosureV2.
     bytes.push(0); // LocalOptimalityDisclosure::HeuristicNoCertificate.
     bytes.extend_from_slice(
         &u32::try_from(parts.selections.len())

@@ -161,7 +161,7 @@ fn result_discloses_local_scope_heuristic_status_and_no_authority() {
     );
     assert_eq!(
         proposal.selection_method,
-        LocalSelectionMethod::GreedyMarginalV1
+        LocalSelectionMethod::GreedyRequirementClosureV2
     );
     assert_eq!(
         proposal.optimality,
@@ -396,7 +396,7 @@ fn prerequisite_must_be_selected_before_dependent_factor() {
 }
 
 #[test]
-fn unavailable_prerequisite_blocks_high_gain_dependent_factor() {
+fn positive_requirement_bundle_can_carry_negative_prerequisite() {
     let mut input = local_input(vec![
         factor(/*index*/ 0, /*gain*/ 100, /*cost*/ 1),
         factor(/*index*/ 1, /*gain*/ -1, /*cost*/ 1),
@@ -410,8 +410,75 @@ fn unavailable_prerequisite_blocks_high_gain_dependent_factor() {
     });
 
     let proposal = calculate(input);
-    assert!(proposal.selections.is_empty());
-    assert_eq!(proposal.total_caller_supplied_gain, FixedQ32::ZERO);
+    assert_eq!(
+        proposal.selections,
+        vec![
+            LocalShadowSelection {
+                candidate_id: id("candidate:001"),
+                factor_id: id("factor:001"),
+            },
+            LocalShadowSelection {
+                candidate_id: id("candidate:000"),
+                factor_id: id("factor:000"),
+            },
+        ]
+    );
+    assert_eq!(
+        proposal.total_caller_supplied_gain,
+        FixedQ32::from_raw(/*raw*/ 99)
+    );
+}
+
+#[test]
+fn requires_cycle_is_rejected_explicitly() {
+    let mut input = local_input(vec![
+        factor(/*index*/ 0, /*gain*/ 2, /*cost*/ 1),
+        factor(/*index*/ 1, /*gain*/ 1, /*cost*/ 1),
+    ]);
+    input.hard_constraints = vec![
+        LocalHardConstraint::Requires {
+            candidate_id: id("candidate:000"),
+            prerequisite_candidate_id: id("candidate:001"),
+            support_reference_digest: test_digest(b"a-requires-b"),
+        },
+        LocalHardConstraint::Requires {
+            candidate_id: id("candidate:001"),
+            prerequisite_candidate_id: id("candidate:000"),
+            support_reference_digest: test_digest(b"b-requires-a"),
+        },
+    ];
+    assert!(matches!(
+        calculate_local_shadow(input),
+        Err(LocalShadowError::InvalidInput(InvalidInput::RequiresCycle(
+            _
+        )))
+    ));
+}
+
+#[test]
+fn requirement_conflict_is_rejected_as_unsatisfiable() {
+    let mut input = local_input(vec![
+        factor(/*index*/ 0, /*gain*/ 2, /*cost*/ 1),
+        factor(/*index*/ 1, /*gain*/ 1, /*cost*/ 1),
+    ]);
+    input.hard_constraints = vec![
+        LocalHardConstraint::Conflict {
+            left_candidate_id: id("candidate:000"),
+            right_candidate_id: id("candidate:001"),
+            support_reference_digest: test_digest(b"conflict-reference"),
+        },
+        LocalHardConstraint::Requires {
+            candidate_id: id("candidate:000"),
+            prerequisite_candidate_id: id("candidate:001"),
+            support_reference_digest: test_digest(b"requires-reference"),
+        },
+    ];
+    assert_eq!(
+        calculate_local_shadow(input),
+        Err(LocalShadowError::InvalidInput(
+            InvalidInput::UnsatisfiableRequirementConflict("candidate:000".to_string())
+        ))
+    );
 }
 
 #[test]
@@ -625,7 +692,7 @@ fn local_shadow_digest_domains_are_stable() {
             "17dfcc5cc35662286aeace12e035d7442c3fd1d8c2bc233cc815d10a758565d8".to_string(),
             "1482cabda467e78ba783e93b24392c2c42cf42919db888e5e8153e3ecd9f473d".to_string(),
             "803a05bd96f1e3c10aed15a8e62b374578571909c7cedd77bf65f7275791108c".to_string(),
-            "44ab529afe66c7062695a029ee5ca76eac29278b4a765aab9a6c4d55f18bf7d1".to_string(),
+            "38062d5a9b90f59c0bcb1b01e2c18c6a18ba5ffb6a510935a7f285df22e35509".to_string(),
         )
     );
 }
