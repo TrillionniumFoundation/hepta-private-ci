@@ -14,7 +14,7 @@
 
 **Bootstrap work package:** `OBJ-0-OBJECTIVE-CONTRACTS`
 
-This stable document is the implementation guide for `objective.compiler`. Normative identity, ownership, contract, data-authority and delivery facts remain in the canonical JSON registries. This guide explains how those facts are implemented and operated. Documentation readiness is not source implementation, activation, operator acceptance, promotion or release.
+This stable document is the implementation guide for `objective.compiler`. Normative identity, ownership, contract, data-authority and delivery facts remain in the canonical JSON registries. This guide explains how those facts are implemented and operated. Documentation readiness is not source implementation, exact-head qualification, activation, operator acceptance, promotion or release.
 
 ## 1. Identity, mission and ownership
 
@@ -30,19 +30,15 @@ Declared exclusive target roots:
 
 - `codex-rs/hepta-objective`
 
-Existing declared roots at this exact source snapshot:
+Existing declared roots at this source candidate:
 
 - `codex-rs/hepta-objective`
 
-Non-authoritative implementation evidence roots:
+Non-authoritative implementation evidence roots: none. Declared roots not yet present: none.
 
-None.
+`existing_bound` is a source-location fact. The source root is materialized and has focused tests and dedicated qualification workflows. It does **not** mean the current exact head or synthetic merge has passed every required workflow. Current readiness must be read from `docs/readiness/LANE_D_MATURITY.json` and exact-candidate CI; source completion cannot be inferred from historical PRs or an earlier sealed source receipt.
 
-Declared roots not yet present:
-
-None.
-
-`existing_bound` is a source-location fact. The declared roots above are materialized in the bounded V8 source candidate and are covered by the dedicated closed-world inventory, focused tests, all-target compilation, strict lint and exact-head qualification. This status does not activate `objective.compiler`, create a production caller, grant runtime or effect authority, issue independent acceptance, select or promote a candidate, or authorize release. Any later source move updates `MODULES.json`, `SOURCE_BINDINGS.json` and this guide in one candidate.
+This status does not activate `objective.compiler`, create a production caller, materialize the canonical wire adapter, grant runtime or effect authority, issue independent acceptance, select or promote a candidate, or authorize release.
 
 ## 3. Boundary, responsibilities and non-goals
 
@@ -51,16 +47,14 @@ Direct dependencies:
 - `platform.types`
 - `cognitive.read`
 
-Authoritative write domains:
-
-None.
+Authoritative write domains: none.
 
 Explicitly denied capabilities:
 
 - `runtime_objective_rewrite`
 - `hard_constraint_mutation`
 
-The module accepts only registered, bounded, versioned inputs. It rejects unknown critical fields and treats missing authority, stale revisions, scope mismatch and digest mismatch as hard failures. It never directly writes another owner's store. Cross-owner mutation follows local transaction, durable intent, outbox, destination deduplication, acknowledgement and fenced reconciliation.
+The module accepts only registered, bounded, versioned inputs. It rejects unknown critical fields and treats missing authority, stale revisions, scope mismatch and digest mismatch as hard failures. It never directly writes another owner's store.
 
 Non-goals include becoming a general state store, bypassing the Codex execution spine, interpreting model prose as authority, minting an authority consumed by the same component, or converting qualification evidence into deployment authority. A façade may sequence modules but may not own their facts.
 
@@ -68,20 +62,34 @@ Non-goals include becoming a general state store, bypassing the Codex execution 
 
 The bounded components are:
 
-- `input normalizer`
-- `constraint validator`
-- `deterministic compiler`
-- `digest and receipt emitter`
+- bounded JSON decoder and structural validator;
+- authenticated admission/profile mapper;
+- native feasibility projection;
+- registered feasibility engine and conflict minimizer;
+- deterministic compiler and intrinsic-abstain grammar;
+- digest and native receipt emitter.
 
-Ingress validates identity, version, size, scope and revision before domain logic. The deterministic core receives typed values and is testable without network, filesystem or process-global state unless the module owns that boundary. State-bearing components use one transaction boundary per logical mutation. Publication occurs only after invariants and lineage checks pass.
+The current source call graph is:
 
-Adapters translate one registered contract, verify final payload and grant immediately before the boundary, invoke one downstream capability, and map the observed terminal outcome. Queue acceptance or handler completion is never inferred as external success. Component interfaces support deterministic fixtures and fault injection.
+```text
+ObjectiveSourceEnvelopeV1
+-> admit_and_compile_objective_v1
+-> adapt/map executable V1 semantics into ObjectiveSourceEnvelope
+-> compile
+   -> native_feasibility::check_native_feasibility_v1
+   -> check_feasibility_v1
+   -> freeze objective or emit conflict
+```
 
-Configuration is immutable for one process generation. Changes affecting authority, schema, compatibility, model identity, objective semantics or resource policy create a new revision or generation. Hidden mutable singletons, unbounded queues and implicit store fallback are prohibited.
+`compile` owns the mandatory feasibility stage for the native IR. There is no independent pre-compile rich-feasibility pass in `admit_and_compile_objective_v1`.
 
-## 5. Contracts, ports and compatibility
+The general registered feasibility engine supports scalar intervals, bounded enum include/exclude sets, positive action implications and immutable identity equality. The current `ObjectiveSourceEnvelopeV1` payload does not expose all of those semantics: a source constraint has only one scalar `boundQ32`, and V1 admission faithfully maps only `eq`, `lte` and `gte`. Strict/not-equal operators, `in`/`not_in`, and terminal hard constraints fail closed rather than being approximated. Rich feasibility capability must not be confused with rich source-admission capability.
 
-Produced contracts:
+Configuration is immutable for one process generation. Changes affecting authority, schema, compatibility, objective semantics or resource policy create a new revision or generation. Hidden mutable singletons, unbounded queues and implicit store fallback are prohibited.
+
+## 5. Contracts, native outputs and compatibility
+
+Produced target contracts:
 
 - `ModulePort::objective.compiler::intelligence.control`
 - `ObjectiveFunctionV1`
@@ -92,42 +100,38 @@ Consumed contracts:
 - `ModulePort::cognitive.read::objective.compiler`
 - `ModulePort::platform.types::objective.compiler`
 
-Critical protocol schemas:
+Critical target protocol schemas:
 
 - `ObjectiveFunctionV1`
 - `RunStartSnapshotV1`
 
-Every producer validates output before publication and binds semantic fields into the declared digest scope. Every consumer validates version, bounds, producer identity, scope and digest before use. Compatibility is additive only where registered; unknown critical fields are rejected. Contract identifiers, meaning and authority interpretation cannot change in place.
+The current Rust source candidate emits native `ObjectiveFunction`, `ObjectiveCompileReceipt` and `ObjectiveConflictReceipt`. Admission folds terminal/evidence predicates into the native success-predicate collection and resource/risk policy into generated native constraints. Forbidden actions participate in conflict construction rather than being retained as a distinct native output collection.
 
-Rust types and canonical JSON represent identical semantics. Tests cover round trips, maximum bounds, missing fields, unknown fields, invalid enums, canonical ordering and digest stability. Error mapping preserves rejected, unavailable, timed out, indeterminate, quarantined and terminally failed outcomes.
+Therefore the native structs are **not yet the canonical `ObjectiveFunctionV1` / `ObjectiveCompileReceiptV1` wire representation** required for product publication. The canonical output adapter must explicitly materialize the immutable core and bounded adaptive surface, validate the final payload, bind the canonical digest scope and reject unknown critical fields. Digest binding inside the native compiler is necessary but is not a substitute for that adapter.
 
-## 6. Data authority, persistence and migrations
+Compatibility is additive only where registered. Contract identifiers, meaning and authority interpretation cannot change in place. A future source grammar that makes enum-set or implication semantics executable must be versioned rather than silently changing V1 interpretation.
 
-Owned authoritative or rebuildable domains:
+## 6. Data authority, persistence and publication
 
-None.
+Owned authoritative or rebuildable domains: none. Read-only data dependencies: none.
 
-Read-only data dependencies:
+`objective.compiler` is stateless. The owning product caller is responsible for atomically publishing the canonical `ObjectiveFunctionV1`, `RunStartSnapshotV1` and associated admission/compile receipts after all source, intent, profile, constraint and objective bindings agree. That product caller and durable owner-store composition are not established by the current source candidate.
 
-None.
-
-For every owned domain, this module is the only authoritative writer. Mutations are revision- or generation-bound, idempotent for identical semantics and conflicting for a reused identity with different content. Records bind source identity, schema revision, logical sequence and lineage sufficient for correction, deletion and revocation.
-
-Migrations are deterministic and checksum-bound. Store open verifies required schema objects and integrity constraints before reads or writes. Migration failure leaves a recoverable predecessor. Rollback across a schema boundary restores compatible state with the binary.
-
-Projection domains rebuild from declared sources and publish complete generations atomically. Projections never become sources of truth. Retention and deletion preserve lineage and prevent resurrection through indexes, caches, artifacts or backup restore.
+A read-only vertical or qualification façade is useful integration evidence but is not a production writer. Durable identity reuse with different semantics is a caller/store conflict; the stateless compiler does not invent persistence or reconciliation authority.
 
 ## 7. Runtime, concurrency and transaction model
 
-The [current native implementation](../../../qualification/module-execution-dossiers/detail/objective.compiler.md#8-current-native-implementation) identifies the actual state owner, in-memory versus persistent surfaces, and lock/transaction boundary. Use that implementation scope when composing the module; target state-machine operations are identified in the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/objective.compiler.md).
+The [current native implementation](../../../qualification/module-execution-dossiers/detail/objective.compiler.md#8-current-native-implementation) identifies the actual state owner, in-memory versus persistent surfaces, and transaction boundary. Use that implementation scope when composing the module; do not infer a durable store from the existence of source structs.
 
 [Shared concurrency and transaction requirements](../README.md#shared-concurrency-and-transactions) apply at the corresponding owner boundary.
 
-## 8. Failure semantics, recovery and rollback
+## 8. Failure semantics, abstention and retry
 
-Use the error/recovery path linked by the [current native implementation](../../../qualification/module-execution-dossiers/detail/objective.compiler.md#8-current-native-implementation) and the module-specific fault cases in the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/objective.compiler.md). A source library or fixture cannot stand in for an unimplemented durable recovery or external reconciler.
+`ObjectiveConflictReceipt` and `CompileDisposition::ExplicitAbstain` are non-error outcomes. The bounded source structure permits zero caller legal actions; compilation then injects intrinsic `abstain` and returns `ExplicitAbstain`. Downstream integrations must preserve that as a safe outcome rather than converting it into a generic system error or blind retry signal.
 
-[Shared failure, recovery and rollback requirements](../README.md#shared-failure-and-recovery) remain mandatory.
+`OBJ-E007` is a stable code family with variant-specific retry semantics. Feasibility-budget exhaustion and a source slightly ahead of local time may become admissible when transient state changes. Locale rejection, stale source, missing/before-observation/expired deadlines require new input or configuration. Rust callers use the variant-level `retryable()` policy rather than the code alone.
+
+Use the error/recovery path linked by the [current native implementation](../../../qualification/module-execution-dossiers/detail/objective.compiler.md#8-current-native-implementation). A source library or fixture cannot stand in for an unimplemented durable recovery or external reconciler.
 
 ## 9. Security, privacy and threat controls
 
@@ -140,17 +144,25 @@ The posture is least authority, bounded input, typed contracts, digest binding a
 
 Negative tests cover denied capabilities, cross-owner writes, stale or revoked grants, replay with payload drift, unknown fields, oversize input, scope escape, untrusted instruction escalation and secret/provider leakage. Security review is mandatory for new effect boundaries, persistence, network, model invocation or authority semantics.
 
-## 10. Performance, capacity and hot-path policy
+## 10. Performance, capacity and bounds
 
-The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/objective.compiler.md) specifies this module's algorithm, pilot ceilings and capacity fixtures. Those target ceilings are not measurements and must not be reported as enforcement of an unimplemented API. Current native limits belong to [codex-rs/hepta-objective/src/objective_admission.rs](../../../codex-rs/hepta-objective/src/objective_admission.rs) and the linked implementation components.
+Admission-safe source ceilings are derived from the final native aggregate:
 
-[Shared performance and capacity requirements](../README.md#shared-performance-and-capacity) define the measurement/overload obligations for a selected host.
+- source hard constraints: `<=246`; six resource constraints and four risk/rollback/compensation/abstention constraints reserve the remaining native slots up to `256`;
+- `successPredicates + terminalConditions + evidenceRequirements <=128` in aggregate;
+- caller legal actions: `<=127` when intrinsic abstain is implicit; compiled actions `<=128`;
+- soft dimensions: `<=64`;
+- feasibility conflict extraction: `<=257` oracle calls.
+
+The admission profile currently has a 256 KiB guard implemented by `profile_encoded_size()`. That helper is a conservative parallel byte-accounting estimate, not a byte-for-byte canonical wire encoding. If the 256 KiB value is promoted to a protocol-hard canonical encoded-size requirement, the implementation must measure the actual canonical serialized bytes and eliminate the parallel estimator.
+
+[Shared performance and capacity requirements](../README.md#shared-performance-and-capacity) define measurement/overload obligations for a selected host.
 
 ## 11. Observability and operations
 
-Stateless compiler/admission library; embed it at a request boundary and preserve its immutable objective/run snapshot in the owning caller. No compiler daemon or private objective database is needed. Unsupported language, resource exhaustion and infeasibility remain different outcomes; changing goal semantics requires a new authorized revision.
+Stateless compiler/admission library; embed it at a request boundary and preserve its immutable canonical objective/run snapshot in the owning caller. No compiler daemon or private objective database is needed. Unsupported language, resource exhaustion, infeasibility and explicit abstain remain distinct outcomes; changing goal semantics requires a new authorized revision.
 
-Current operating and state-format references:
+Current operating and state-format reference:
 
 - [docs/readiness/OBJECTIVE_COMPILER_EXECUTION.md](../../readiness/OBJECTIVE_COMPILER_EXECUTION.md).
 
@@ -158,14 +170,16 @@ Current operating and state-format references:
 
 ## 12. Verification and qualification
 
-Current focused test sources (source references, not pass receipts):
+Focused source references include:
 
-- [codex-rs/hepta-objective/src/compiler_tests.rs](../../../codex-rs/hepta-objective/src/compiler_tests.rs); named case: `compilation_is_permutation_invariant`.
-- [codex-rs/hepta-objective/src/feasibility_exhaustive_tests.rs](../../../codex-rs/hepta-objective/src/feasibility_exhaustive_tests.rs); named case: `all_three_action_graphs_match_truth_table_and_have_minimal_conflicts`.
+- [codex-rs/hepta-objective/src/compiler_tests.rs](../../../codex-rs/hepta-objective/src/compiler_tests.rs): permutation invariance, conflict minimization, intrinsic abstain and action-slot reservation;
+- [codex-rs/hepta-objective/src/feasibility_exhaustive_tests.rs](../../../codex-rs/hepta-objective/src/feasibility_exhaustive_tests.rs): bounded exhaustive Horn feasibility fixtures;
+- [codex-rs/hepta-objective/src/source_envelope_v1_tests.rs](../../../codex-rs/hepta-objective/src/source_envelope_v1_tests.rs): UTF-8 bounds, generated-slot reservation, aggregate predicate ceilings and empty caller-action structure;
+- `error_policy.rs`: variant-specific retry classification.
 
-In `codex-rs`, run `just test -p codex-hepta-objective`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/objective.compiler.md) separately labels target acceptance designs.
+In `codex-rs`, run `just test -p codex-hepta-objective`. The command is a test invocation, not a stored result. Exact-head and deterministic synthetic-merge qualification must be current for the candidate being claimed; closed/unmerged historical PR evidence cannot satisfy that gate.
 
-[Shared verification and qualification requirements](../README.md#shared-verification-and-qualification) retain the source/merge, failure, compilation and independent-evidence obligations.
+[Shared verification and qualification requirements](../README.md#shared-verification-and-qualification) retain source/merge, failure, compilation and independent-evidence obligations.
 
 ## 13. Implementation sequence and work packages
 
@@ -174,82 +188,21 @@ Applicable work packages:
 - `OBJ-0-OBJECTIVE-CONTRACTS`
 - `OBJ-1-OBJECTIVE-COMPILER`
 
-The bootstrap package is `OBJ-0-OBJECTIVE-CONTRACTS`. Development, activation and evidence predecessor graphs are distinct and all are enforced. Contract-first work may run in parallel only with non-overlapping write paths and frozen semantics. Each PR records its bounded contracts, domains, denied authorities, resources, rollback and stop conditions. A coordinator-issued envelope is required only at the coordination boundary that consumes it; it is not additional permission for ordinary authorized repository work.
+The bootstrap package is `OBJ-0-OBJECTIVE-CONTRACTS`. Development, activation and evidence predecessor graphs are distinct and all are enforced. Contract-first work may run in parallel only with non-overlapping write paths and frozen semantics.
 
-Source implementation completes only when the declared target root exists, public surfaces match registries, tests pass and exact-head plus merge-candidate evidence is current. Later planned packages may remain without invalidating documentation closure.
+The implementation sequence is: bounded decoder -> admission-safe structure -> authenticated/profile-bound mapping -> native feasibility projection -> general feasibility/conflict extraction -> intrinsic abstain/legal-action freeze -> native digests/receipts -> canonical output adapter -> product caller/durable atomic publication -> exact-head/synthetic-merge qualification -> independent acceptance and activation gates.
 
 ## 14. Activation, compatibility and retirement
 
-Activation composes a named product caller through registered ports and verifies authority, configuration, resource and failure behavior. Shadow and qualification callers are not production callers. Source-complete modules remain inactive until activation predecessors and evidence gates pass.
+Activation composes a named product caller through registered ports and verifies authority, configuration, resource and failure behavior. Shadow and qualification callers are not production callers. Source candidates remain inactive until activation predecessors and evidence gates pass.
 
 Compatibility adapters are temporary. Retirement requires all named callers migrated, no old-path use, oracle parity where required, rehearsed rollback and independent acceptance. Retirement preserves historical evidence and durable-record interpretability.
 
 ## 15. Definition of module completion
 
-Documentation completion requires this guide, exact registry references and closed-world validation. Source completion requires code in the declared root and candidate tests. Composition requires a named caller. Qualification requires current exact-candidate evidence. Acceptance, selection, promotion and release are separate externally governed states.
+Documentation completion requires this guide, exact registry references and closed-world validation. Native source-candidate implementation requires code in the declared root and candidate tests. Canonical source completion additionally requires the declared public protocol surface, canonical output adapter and exact-head plus merge-candidate evidence. Composition requires a named product caller and durable publication boundary. Qualification, acceptance, activation, selection, promotion and release are separate states.
 
 For `objective.compiler`, this document grants no runtime, production, model, provider, tool, network, filesystem, secret, Matrix, fleet, acceptance, promotion or release authority.
-
-### Work-package execution envelopes
-
-#### `OBJ-0-OBJECTIVE-CONTRACTS`
-
-- State: `planned`; priority: `1`; parallel class: `contract_first_parallel`.
-- Owner/deputy: `intelligence-platform` / `kernel-contracts`.
-- Allowed write paths:
-- `codex-rs/hepta-objective/**`
-- `codex-rs/hepta-types/**`
-- Development predecessors:
-- `DOC-1-V8-SEMANTIC-UPGRADE`
-- Activation predecessors:
-- `DOC-2-DEFAULT-BRANCH-SELECTION`
-- Required deliverables:
-- `exact_source_identity`
-- `source_inventory`
-- `static_verification`
-- `focused_tests`
-- `package_tests`
-- `all_target_check`
-- `strict_lint`
-- `clean_worktree`
-- `exact_head_execution`
-- `merge_candidate_execution`
-- Stop conditions:
-- `authority_violation`
-- `base_drift`
-- `claim_evidence_mismatch`
-- `cross_owner_write`
-- `unbounded_resource_or_retry`
-
-#### `OBJ-1-OBJECTIVE-COMPILER`
-
-- State: `planned`; priority: `1`; parallel class: `contract_coordinated`.
-- Owner/deputy: `intelligence-platform` / `kernel-contracts`.
-- Allowed write paths:
-- `codex-rs/hepta-objective/**`
-- Development predecessors:
-- `OBJ-0-OBJECTIVE-CONTRACTS`
-- `MEM-0-TYPES`
-- Activation predecessors:
-- `P0.7B-B4-CALLSITE-PROOF`
-- `OBJ-0-OBJECTIVE-CONTRACTS`
-- Required deliverables:
-- `exact_source_identity`
-- `source_inventory`
-- `static_verification`
-- `focused_tests`
-- `package_tests`
-- `all_target_check`
-- `strict_lint`
-- `clean_worktree`
-- `exact_head_execution`
-- `merge_candidate_execution`
-- Stop conditions:
-- `authority_violation`
-- `base_drift`
-- `claim_evidence_mismatch`
-- `cross_owner_write`
-- `unbounded_resource_or_retry`
 
 ## 16. V8.2 pre-coding implementation-readiness overlay
 
@@ -271,12 +224,12 @@ Consumed readiness protocols:
 
 - `ParallelLaneEnvelopeV1`
 
-Ordinary authorized coding identifies the Git baseline, relevant contracts, owned paths, mandatory fixtures, deterministic fallback and rollback. A runtime coordinator admitting an envelope still verifies its current `CanonicalSourceReceiptV1`, frozen contract/readiness digest, expiry and zero authority delta; manually issuing an envelope is not a separate permission gate for ordinary repository work. This overlay does not change activation, acceptance, selection, promotion or release.
+Ordinary authorized coding identifies the Git baseline, relevant contracts, owned paths, mandatory fixtures, deterministic fallback and rollback. This overlay does not change activation, acceptance, selection, promotion or release.
 
-## 17. Source implementation receipt
+## 17. Current source-candidate receipt boundary
 
-The bootstrap source-location obligation for `objective.compiler` is implemented by work package `OBJ-0-OBJECTIVE-CONTRACTS` in:
+The source location for `objective.compiler` is materialized at:
 
 - `codex-rs/hepta-objective`
 
-The source candidate is checked by `.github/workflows/hepta-consolidated-source.yml`, including closed-world inventory, package tests, all-target compilation, strict Clippy and clean tracked state. This receipt is source implementation evidence only. It grants no runtime, production-writer, model-provider, external-effect, independent-acceptance, selection, promotion, merge or release authority.
+Dedicated workflows and repository-wide gates provide candidate evidence. Their status must be read from the exact PR/head under review. This section records no evergreen pass claim. In particular, it does not establish canonical wire-output completion, a production caller/writer, independent acceptance, selection, promotion, merge or release authority.
