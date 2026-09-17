@@ -11,10 +11,16 @@ use codex_hepta_types::StableId;
 
 mod closure;
 mod durable_holdout;
+mod fenced_holdout;
 mod holdout_journal;
 pub use durable_holdout::DurableFinalHoldoutJournalV1;
 pub use durable_holdout::DurableHoldoutError;
 pub use durable_holdout::HoldoutAnchorV1;
+pub use fenced_holdout::FencedFinalHoldoutOwnerV1;
+pub use fenced_holdout::FencedFinalHoldoutStoreV1;
+pub use fenced_holdout::FencedHoldoutOwnerError;
+pub use fenced_holdout::FencedHoldoutStateV1;
+pub use fenced_holdout::FencedHoldoutStoreError;
 mod ope;
 mod sequential;
 mod signed_evaluation;
@@ -159,7 +165,15 @@ impl fmt::Display for Error {
 }
 impl StdError for Error {}
 
-pub fn evaluate(mut request: EvaluationRequest) -> Result<EvaluationReceipt, Error> {
+/// Legacy scalar comparator retained only for crate-internal compatibility tests.
+///
+/// This function does not authenticate an evaluator, freeze a preregistered
+/// metric-role plan, consume a durable final holdout, or produce production-
+/// admissible signed evidence. External qualification must use the signed
+/// admission APIs documented in `PRODUCTION_CONTRACT.md`.
+pub(crate) fn evaluate_legacy_inprocess(
+    mut request: EvaluationRequest,
+) -> Result<EvaluationReceipt, Error> {
     if request.evaluator_id == request.candidate_producer_id {
         return Err(Error::SelfEvaluation);
     }
