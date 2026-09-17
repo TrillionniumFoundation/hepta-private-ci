@@ -1,0 +1,75 @@
+{
+  "schema": "hepta.objective-wire-contract.v2",
+  "schemaVersion": 2,
+  "documentClass": "canonical_protocol_extension",
+  "authorityScope": "objective_source_and_compiled_objective_wire_semantics",
+  "planId": "HEPTA-GLOBAL-MODULAR-DEVELOPMENT-PLAN",
+  "planVersion": "8.0.0",
+  "sourceProtocol": {
+    "id": "ObjectiveSourceEnvelopeV2",
+    "wireShapeCompatibility": "same_field_shape_as_ObjectiveSourceEnvelopeV1",
+    "newProductCallersMustUseVersion": 2,
+    "maximumEncodedBytes": 262144,
+    "bounds": {
+      "sourceHardConstraintsMax": 246,
+      "generatedHardConstraintReserve": 10,
+      "aggregateSuccessTerminalEvidenceMax": 128,
+      "callerLegalActionClassesMin": 0,
+      "callerLegalActionClassesMax": 127,
+      "intrinsicAbstainSlots": 1,
+      "nativeLegalActionCapacity": 128
+    },
+    "reasonForVersion": "V1 registry bounds did not reserve generated hard rows or the intrinsic abstain action and required at least one caller legal action. V2 preserves the field shape but makes the enforced source semantics canonical."
+  },
+  "compiledProtocol": {
+    "id": "ObjectiveFunctionV2",
+    "canonicalEncoding": "serde_struct_ordered_json_utf8",
+    "denyUnknownCriticalFields": true,
+    "immutableCoreFields": [
+      "principalScope",
+      "successPredicates",
+      "terminalConditions",
+      "hardConstraints",
+      "evidenceRequirements",
+      "allowedActionClasses",
+      "forbiddenActionClasses",
+      "resourceEndowment",
+      "risk"
+    ],
+    "adaptiveFields": [
+      "softUtilityDimensions"
+    ],
+    "bindingFields": [
+      "intentDigest",
+      "admittedSourceDigest",
+      "compiledHardConstraintDigest",
+      "compiledSemanticDigest",
+      "revision"
+    ],
+    "deadlineField": "deadlineUnixMicros",
+    "projectionRule": "Publication is valid only after authenticated admission and successful compilation. Every immutable source semantic is represented explicitly; generated/native hard constraints are serialized and also digest-bound. Projection failure is a separate publication error and never a successful compile result."
+  },
+  "legacyV1": {
+    "ObjectiveSourceEnvelopeV1": "read_only_compatibility; not authoritative for new capacity semantics",
+    "ObjectiveFunctionV1": "read_only_compatibility; incomplete immutable-core field set; never publish for new product composition"
+  },
+  "authorityFlags": {
+    "runtimeAuthority": false,
+    "productionCaller": false,
+    "productionWriter": false,
+    "modelInvocation": false,
+    "providerDispatch": false,
+    "toolExecution": false,
+    "networkConnect": false,
+    "externalFilesystemMutation": false,
+    "secretOperation": false,
+    "matrixSend": false,
+    "externalEffect": false,
+    "fleetMutation": false,
+    "canonicalSelection": false,
+    "merge": false,
+    "operatorAcceptance": false,
+    "promotion": false,
+    "release": false
+  }
+}

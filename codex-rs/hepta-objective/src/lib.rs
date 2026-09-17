@@ -13,6 +13,7 @@ mod feasibility_model;
 mod model;
 mod objective_admission;
 mod objective_admission_gate;
+mod objective_function_v2;
 mod retry_policy;
 mod scalar_adapter;
 mod source_envelope_json;
@@ -76,6 +77,21 @@ pub use objective_admission::ObjectiveSoftDimensionProfileV1;
 pub use objective_admission::ObjectiveSourceAuthenticationV1;
 pub use objective_admission::canonical_objective_intent_digest_v1;
 pub use objective_admission_gate::admit_and_compile_objective_v1;
+pub use objective_function_v2::OBJECTIVE_FUNCTION_WIRE_SCHEMA_V2;
+pub use objective_function_v2::OBJECTIVE_SOURCE_WIRE_SCHEMA_V2;
+pub use objective_function_v2::ObjectiveActionWireV2;
+pub use objective_function_v2::ObjectiveEvidenceRequirementWireV2;
+pub use objective_function_v2::ObjectiveFunctionV2;
+pub use objective_function_v2::ObjectiveHardConstraintWireV2;
+pub use objective_function_v2::ObjectivePredicateWireV2;
+pub use objective_function_v2::ObjectivePrincipalScopeV2;
+pub use objective_function_v2::ObjectiveProjectionErrorV2;
+pub use objective_function_v2::ObjectiveResourcesWireV2;
+pub use objective_function_v2::ObjectiveRiskWireV2;
+pub use objective_function_v2::ObjectiveSoftDimensionWireV2;
+pub use objective_function_v2::ObjectiveSourceEnvelopeV2;
+pub use objective_function_v2::objective_function_v2_digest;
+pub use objective_function_v2::project_objective_function_v2;
 pub use retry_policy::ObjectiveRetryDirectiveV1;
 pub use retry_policy::objective_admission_blind_retry_safe_v1;
 pub use retry_policy::objective_admission_retry_directive_v1;
@@ -101,3 +117,52 @@ pub use source_envelope_validation::MAX_OBJECTIVE_AGGREGATE_PREDICATES;
 pub use source_envelope_validation::MAX_OBJECTIVE_CALLER_ACTIONS;
 pub use source_envelope_validation::MAX_OBJECTIVE_SOURCE_CONSTRAINTS;
 pub use source_envelope_validation::ObjectiveStructureError;
+
+#[derive(Debug)]
+pub enum ObjectiveAdmissionV2Error {
+    Admission(ObjectiveAdmissionError),
+    Projection(ObjectiveProjectionErrorV2),
+}
+
+impl std::fmt::Display for ObjectiveAdmissionV2Error {
+    fn fmt(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(formatter, "{self:?}")
+    }
+}
+
+impl std::error::Error for ObjectiveAdmissionV2Error {}
+
+impl From<ObjectiveAdmissionError> for ObjectiveAdmissionV2Error {
+    fn from(value: ObjectiveAdmissionError) -> Self {
+        Self::Admission(value)
+    }
+}
+
+impl From<ObjectiveProjectionErrorV2> for ObjectiveAdmissionV2Error {
+    fn from(value: ObjectiveProjectionErrorV2) -> Self {
+        Self::Projection(value)
+    }
+}
+
+/// V2 keeps the structurally compatible source JSON but publishes the corrected
+/// capacity contract and requires V2 objective projection before cross-module
+/// publication. Historical V1 APIs remain available only for compatibility.
+pub fn decode_source_envelope_json_v2(
+    input: &[u8],
+) -> Result<ObjectiveSourceEnvelopeV2, ObjectiveSourceJsonError> {
+    decode_source_envelope_json_v1(input)
+}
+
+pub fn admit_and_compile_objective_v2(
+    envelope: &ObjectiveSourceEnvelopeV2,
+    profile: &ObjectiveAdmissionProfileV1,
+    context: &ObjectiveAdmissionContextV1,
+) -> Result<(ObjectiveAdmissionOutcomeV1, Option<ObjectiveFunctionV2>), ObjectiveAdmissionV2Error> {
+    let outcome = admit_and_compile_objective_v1(envelope, profile, context)?;
+    let wire = if outcome.compile_result.is_ok() {
+        Some(project_objective_function_v2(envelope, &outcome)?)
+    } else {
+        None
+    };
+    Ok((outcome, wire))
+}
