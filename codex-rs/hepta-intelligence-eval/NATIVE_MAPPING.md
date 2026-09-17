@@ -2,7 +2,9 @@
 
 This file maps point, sequential, temporal and independent evaluation design to
 concrete Rust symbols. Estimation, evidence eligibility and artifact selection
-remain separate authorities.
+remain separate authorities. The canonical current-state projection is
+[`docs/modules/learning.eval/STATUS.json`](../../docs/modules/learning.eval/STATUS.json);
+this mapping explains implementation mechanics and does not widen that status.
 
 ## Existing estimator primitives
 
@@ -28,86 +30,87 @@ efficacy.
 | Design operation | Native symbol | Source | Status |
 |---|---|---|---|
 | freeze complete cross-fold lineage | `freeze_cross_fold_plan` | `src/closure.rs` | implemented |
-| record final holdout use | `FinalHoldoutRegistry::consume` | `src/closure.rs` | implemented |
-| issue independent eligibility decision | `decide_independently` | `src/closure.rs` | implemented |
+| semantic final-holdout registry | `FinalHoldoutRegistry::consume` | `src/closure.rs` | implemented |
+| durable final-holdout journal | `DurableFinalHoldoutJournalV1::consume` | `src/durable_holdout.rs` | implemented |
+| product-composed temporal execution | `ProductEvaluationRunnerV1::evaluate_temporal_candidate` | `src/product_runner.rs` | implemented, target host unproved |
+| product-composed signed qualification | `ProductEvaluationRunnerV1::qualify_candidate` | `src/product_runner.rs` | implemented, target host unproved |
+| independent eligibility decision | `decide_independently` / signed V2/V3 adapters | `src/closure.rs`, `src/signed_evaluation.rs`, `src/longitudinal_time.rs` | implemented |
 
 `freeze_cross_fold_plan` requires two to thirty-two folds. It canonicalizes and
 deduplicates every principal, episode and window set; rejects training/holdout
 leakage within a fold; prevents the final holdout from entering any training
 set; prevents a holdout lineage from appearing in multiple folds; and requires
-the final holdout window to be covered exactly once. The frozen receipt also
-binds claim scope, candidate and baseline identities, objective, dataset,
-estimand, metric direction and safety-floor contract, multiplicity profile,
+the final holdout window to be covered exactly once. The frozen receipt binds
+claim scope, candidate and baseline identities, objective, dataset, estimand,
+metric direction and safety-floor contract, multiplicity profile,
 final-holdout window and final-holdout bytes. Its deterministic integrity seal
 detects post-freeze field mutation; it is not a signature or issuer credential.
 
-`FinalHoldoutRegistry::consume` accepts only the typed sealed frozen-plan
-receipt. An exact retry of the identical plan is idempotent. Reusing the same
-plan identity with changed semantics conflicts, while a different plan using
-either the same final-holdout digest or the same final-holdout window is
-rejected. The emitted holdout-use receipt binds the complete plan semantics,
-registry state and use digest and carries its own deterministic integrity seal.
-A future persistent host adapter must retain this registry under a single
-writer; the pure type and unkeyed seals alone do not prove durable exclusivity
-or authenticated origin.
+`DurableFinalHoldoutJournalV1` persists the semantic registry under an advisory
+exclusive lock and synchronized journal. `ProductEvaluationRunnerV1` composes
+that journal with the host-owned `HoldoutAnchorStoreV1` currentness contract.
+The confirmatory execution order is fixed:
 
-`decide_independently` consumes authenticated generator and evaluator identities
-from `learning.ledger`. It rejects shared principal, credential-chain or
-signing-key identity and validates expiry and authority epoch. It then
-intersects:
+1. validate frozen-plan, observed holdout, objective, multiplicity and window binding;
+2. require the independently retained anchor to equal the journal anchor;
+3. durably consume and synchronize the final-holdout use receipt;
+4. compare-and-swap the independently retained current anchor;
+5. only then evaluate held-out outcomes;
+6. poison the runner after an indeterminate anchor commit until explicit recovery.
 
-- an integrity-checked frozen-plan receipt and the exact consumed
-  holdout-use receipt bound to it;
-- estimate, support-audit and confidence receipt digests;
-- candidate lower confidence bound versus baseline upper bound;
-- every metric safety floor;
-- multiplicity profile;
-- snapshot and future-window coverage;
-- retention receipts and unlearning receipt for system-longitudinal claims.
+An exact retry of an identical consumed plan is idempotent. Semantic mutation,
+holdout digest/window reuse and stale external currentness are rejected. The
+test-only in-memory anchor implementation is not production evidence. A target
+host must provide an independently retained `HoldoutAnchorStoreV1`; a witness
+colocated with a restorable journal backup does not establish independent
+currentness merely because it implements the trait.
 
-The output is one of:
-
-```text
-EligibleForIndependentSelection
-Ineligible
-InsufficientEvidence
-```
-
-Even the first state has `DENY_ALL` authority. A separate selector must consume
-it together with all other gates.
+`ProductEvaluationRunnerV1::qualify_candidate` binds the exact frozen plan,
+consumed holdout-use receipt, temporal evaluation identity, estimate/support/
+confidence evidence and multiplicity to signed independent evidence. Ordinary
+qualification uses the signed V2 path. A system-longitudinal claim can only use
+the V3 observed-time path; synthetic timestamps cannot substitute for real
+future-calendar evidence. All resulting product evaluation and qualification
+receipts retain `DENY_ALL` authority.
 
 ## Identity, causal and statistical obligations
 
 The native closure verifies authenticated identity fields but cannot create the
-underlying trust. A product adapter must verify signatures and credential chains
-against the current trust root before constructing `AuthenticatedPrincipalV1`.
+underlying trust. A product host must verify signatures and credential chains
+against the current trust root before constructing authenticated principals.
+The host must also prove scheduler/access separation: library ordering cannot
+prove that a malicious process with direct access to final outcomes did not
+inspect them before invoking the runner.
 
 Causal identification remains conditional on the frozen plan's assumptions:
 consistency, support, correct propensity, appropriate cluster independence and
 absence or bounded treatment of confounding. Unsupported assumptions produce
 insufficient evidence; an outcome model cannot repair zero support.
 
-Intervals and point estimates do not by themselves implement family-wide alpha
-allocation, privacy review, change-point admission or future-window scheduling.
-The independent decision requires their receipt digests, while the responsible
-owners must provide the actual evidence.
+Intervals and point estimates do not by themselves implement privacy review,
+change-point admission, external future-window scheduling or independent
+operator acceptance. The responsible owners must supply those facts.
 
 ## Product integration obligations
 
-A product receipt must name:
+The source-composed runner closes the repository-owned sequencing and durable
+anchor contract, but production target-host evidence must still name and prove:
 
-1. the scheduler and immutable evaluation plan store;
-2. the durable final-holdout-use registry, single-writer fence and
-   canonical persistence/reload of frozen-plan and holdout-use receipts;
-3. the authenticated dataset, outcome-observer and candidate manifests;
-4. the exact fold assignments and nuisance-model runtime;
-5. the target host, resource measurements and incomplete/censored counts;
-6. future calendar windows and independently identified snapshots;
+1. the scheduler, immutable evaluation-plan store and access boundary;
+2. the concrete independently retained `HoldoutAnchorStoreV1` implementation,
+   its single-writer/CAS fence and backup independence;
+3. authenticated dataset, outcome-observer and candidate manifests;
+4. exact fold assignments and nuisance-model runtime;
+5. target-host resource measurements and incomplete/censored counts;
+6. real future calendar windows and independently identified snapshots;
 7. retention, subgroup/privacy and unlearning evidence;
-8. the distinct selector, operator and release principals.
+8. distinct selector, operator and release principals.
 
-A fixture using synthetic future timestamps cannot satisfy the future-calendar
-or longitudinal claim.
+The Lane-E workflow emits exact-head and synthetic-merge JSON evidence artifacts
+only after its preceding source checks pass. Those artifacts prove source and
+product-adapter execution in CI; they explicitly set production target-host,
+future-calendar, independent acceptance, activation and release claims to
+false.
 
 ## Qualification mapping
 
@@ -117,9 +120,12 @@ Focused tests live in:
 - `src/ope_tests.rs` and `src/ope_confidence_tests.rs`;
 - `src/sequential_tests.rs`;
 - `src/temporal_fold_tests.rs` and `src/temporal_evaluation_tests.rs`;
-- `src/closure_tests.rs`.
+- `src/closure_tests.rs`;
+- `src/product_runner_tests.rs`.
 
 Cross-crate composition is exercised by
 `../hepta-shadow-qualification/src/lane_e_closure_tests.rs`. Exact dossier IDs,
 test functions and CI jobs are registered in
-`../../qualification/lane-e/TEST_TRACEABILITY.json`.
+`../../qualification/lane-e/TEST_TRACEABILITY.json`. Current status and the
+remaining external evidence gates are canonicalized in
+`../../docs/modules/learning.eval/STATUS.json`.
