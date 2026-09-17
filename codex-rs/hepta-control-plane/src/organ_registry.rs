@@ -25,6 +25,76 @@ use crate::OrganRuntimeError;
 use crate::TrustedReadOnlyOrganV1;
 
 const MAX_REGISTERED_FACTORIES: usize = 256;
+pub const ORGAN_DRIVER_ABI_V1: u16 = 1;
+
+/// Execution boundary declared once by the reviewed capability descriptor.
+///
+/// Only `TrustedShortReadOnly` is admissible to the synchronous in-process
+/// `OrganHostV1`. Anything that may block, hang, invoke external code, or be
+/// generated at runtime must use the supervisor-owned killable process path.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum OrganExecutionClassV1 {
+    TrustedShortReadOnly,
+    IsolatedProcessReadOnly,
+}
+
+/// Authority class declared once alongside the implementation identity.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum OrganAuthorityClassV1 {
+    ReadOnlyNoEffects,
+}
+
+/// Canonical reviewed capability metadata for one driver implementation.
+///
+/// Registration, digest admission, execution-boundary selection, ABI version,
+/// and authority posture all derive from this value instead of parallel string
+/// tables or scheduler branches.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct OrganCapabilityDescriptorV1 {
+    pub driver: StableId,
+    pub driver_version: u32,
+    pub abi_version: u16,
+    pub implementation_digest: Digest32,
+    pub execution_class: OrganExecutionClassV1,
+    pub authority: OrganAuthorityClassV1,
+}
+
+impl OrganCapabilityDescriptorV1 {
+    pub fn trusted_short_read_only(
+        driver: StableId,
+        driver_version: u32,
+        implementation_digest: Digest32,
+    ) -> Self {
+        Self {
+            driver,
+            driver_version,
+            abi_version: ORGAN_DRIVER_ABI_V1,
+            implementation_digest,
+            execution_class: OrganExecutionClassV1::TrustedShortReadOnly,
+            authority: OrganAuthorityClassV1::ReadOnlyNoEffects,
+        }
+    }
+
+    fn validate(&self) -> Result<(), OrganHandlerRegistryError> {
+        if self.driver_version == 0 {
+            return Err(OrganHandlerRegistryError::ZeroDriverVersion(
+                self.driver.clone(),
+            ));
+        }
+        if self.abi_version != ORGAN_DRIVER_ABI_V1 {
+            return Err(OrganHandlerRegistryError::UnsupportedAbiVersion {
+                driver: self.driver.clone(),
+                abi_version: self.abi_version,
+            });
+        }
+        if self.implementation_digest.is_zero() {
+            return Err(OrganHandlerRegistryError::EmptyImplementationDigest(
+                self.driver.clone(),
+            ));
+        }
+        Ok(())
+    }
+}
 
 /// A reviewed, compiled-in constructor for one organ driver implementation.
 ///
@@ -35,9 +105,9 @@ const MAX_REGISTERED_FACTORIES: usize = 256;
 pub type OrganHandlerFactoryV1 =
     fn(&StableId) -> Result<Box<dyn TrustedReadOnlyOrganV1>, OrganHandlerFaultV1>;
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Debug)]
 struct RegisteredFactoryV1 {
-    implementation_digest: Digest32,
+    descriptor: OrganCapabilityDescriptorV1,
     factory: OrganHandlerFactoryV1,
 }
 
@@ -52,6 +122,12 @@ pub enum OrganHandlerRegistryError {
     Capacity,
     DuplicateDriver(StableId),
     EmptyImplementationDigest(StableId),
+    ZeroDriverVersion(StableId),
+    UnsupportedAbiVersion {
+        driver: StableId,
+        abi_version: u16,
+    },
+    InProcessExecutionClassRequired(StableId),
     Runtime(OrganRuntimeError),
     BindingCount {
         expected: usize,
@@ -102,30 +178,52 @@ impl OrganHandlerRegistryV1 {
         self.factories.is_empty()
     }
 
-    /// Registers one reviewed implementation factory under an immutable driver identity.
+    /// Backward-compatible registration for a V1 trusted short read-only driver.
+    /// New code should prefer `register_descriptor` so metadata has one owner.
     pub fn register(
         &mut self,
         driver: StableId,
         implementation_digest: Digest32,
         factory: OrganHandlerFactoryV1,
     ) -> Result<(), OrganHandlerRegistryError> {
-        if implementation_digest.is_zero() {
-            return Err(OrganHandlerRegistryError::EmptyImplementationDigest(driver));
-        }
+        self.register_descriptor(
+            OrganCapabilityDescriptorV1::trusted_short_read_only(
+                driver,
+                1,
+                implementation_digest,
+            ),
+            factory,
+        )
+    }
+
+    /// Registers one reviewed implementation from its canonical descriptor.
+    pub fn register_descriptor(
+        &mut self,
+        descriptor: OrganCapabilityDescriptorV1,
+        factory: OrganHandlerFactoryV1,
+    ) -> Result<(), OrganHandlerRegistryError> {
+        descriptor.validate()?;
         if self.factories.len() >= MAX_REGISTERED_FACTORIES {
             return Err(OrganHandlerRegistryError::Capacity);
         }
-        if self.factories.contains_key(&driver) {
-            return Err(OrganHandlerRegistryError::DuplicateDriver(driver));
+        if self.factories.contains_key(&descriptor.driver) {
+            return Err(OrganHandlerRegistryError::DuplicateDriver(
+                descriptor.driver.clone(),
+            ));
         }
         self.factories.insert(
-            driver,
+            descriptor.driver.clone(),
             RegisteredFactoryV1 {
-                implementation_digest,
+                descriptor,
                 factory,
             },
         );
         Ok(())
+    }
+
+    #[must_use]
+    pub fn descriptor(&self, driver: &StableId) -> Option<&OrganCapabilityDescriptorV1> {
+        self.factories.get(driver).map(|entry| &entry.descriptor)
     }
 
     /// Builds a read-only host for exactly the organ instances in `graph`.
@@ -183,10 +281,17 @@ impl OrganHandlerRegistryV1 {
                     binding.driver.clone(),
                 ));
             };
-            if registered.implementation_digest != binding.implementation_digest {
+            if registered.descriptor.implementation_digest != binding.implementation_digest {
                 return Err(OrganHandlerRegistryError::DriverDigestMismatch {
                     driver: binding.driver.clone(),
                 });
+            }
+            if registered.descriptor.execution_class
+                != OrganExecutionClassV1::TrustedShortReadOnly
+            {
+                return Err(OrganHandlerRegistryError::InProcessExecutionClassRequired(
+                    binding.driver.clone(),
+                ));
             }
         }
 
