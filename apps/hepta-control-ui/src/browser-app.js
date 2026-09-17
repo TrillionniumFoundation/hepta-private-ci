@@ -214,11 +214,11 @@ export class ControlPlaneApp {
     }
     try {
       const acknowledgement = await execute();
+      this.render();
       this.#announce(
         `Request ${acknowledgement.operationId} is ${acknowledgement.status}.`,
         acknowledgement.status === "indeterminate",
       );
-      this.render();
     } catch (error) {
       this.#announce(
         `${error?.code ?? "ERROR"}: ${error?.message ?? "request failed"}`,

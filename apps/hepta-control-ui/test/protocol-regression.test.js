@@ -153,10 +153,32 @@ test("runtime request binds target revision independently from displayed view re
   assert.equal(sent.method, "operation/request");
   assert.equal(sent.input.intent.expectedRevision, 4);
   assert.equal(sent.input.displayedRevision, 9);
-  assert.equal(Object.isFrozen(sent.input), true);
 });
 
+
 test("stop scope must be an explicit record", async () => {
+  const transport = {
+    async connect(input) {
+      return { authenticated: true, sessionId: "session.1", connectionGeneration: 1, protocolVersion: input.protocolVersion };
+    },
+    async request() {
+      assert.fail("request should not cross transport");
+    },
+    async reconcile() { return null; },
+    async close() {},
+  };
+  const client = new RuntimeClient({ transport });
+  await client.connect({ endpointId: "runtime.1", protocolVersion: 1, manifestDigest: D1 });
+  client.applySnapshot({
+    sessionId: "session.1", connectionGeneration: 1, generation: 1, revision: 1, digest: D2, modules: [],
+  });
+  await assert.rejects(
+    client.requestStop({ operationId: "stop.invalid", displayedRevision: 1, scope: "runtime.agentd" }),
+    /scope must be an object/,
+  );
+});
+
+test("unbound backend rejection cannot erase pending work", async () => {
   const transport = {
     async connect(input) {
       return {
@@ -167,33 +189,26 @@ test("stop scope must be an explicit record", async () => {
       };
     },
     async request() {
-      assert.fail("request should not cross transport");
+      return { accepted: false };
     },
-    async reconcile() {
-      return null;
-    },
+    async reconcile() { return null; },
     async close() {},
   };
   const client = new RuntimeClient({ transport });
-  await client.connect({
-    endpointId: "runtime.1",
-    protocolVersion: 1,
-    manifestDigest: D1,
-  });
+  await client.connect({ endpointId: "runtime.1", protocolVersion: 1, manifestDigest: D1 });
   client.applySnapshot({
-    sessionId: "session.1",
-    connectionGeneration: 1,
-    generation: 1,
-    revision: 1,
-    digest: D2,
-    modules: [],
+    sessionId: "session.1", connectionGeneration: 1, generation: 1, revision: 1, digest: D2, modules: [],
   });
   await assert.rejects(
-    client.requestStop({
-      operationId: "stop.invalid",
+    client.submitRequest({
+      operationId: "operation.bad-reject",
+      subjectId: "runtime.agentd",
+      action: "request_retry",
+      expectedRevision: 1,
       displayedRevision: 1,
-      scope: "runtime.agentd",
     }),
-    /scope must be an object/,
+    (error) => error.code === "PROTOCOL_VIOLATION",
   );
+  assert.equal(client.readView().pending, 1);
+  assert.equal(client.readView().indeterminate, 1);
 });

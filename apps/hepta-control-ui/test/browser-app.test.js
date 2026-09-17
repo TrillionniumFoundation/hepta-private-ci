@@ -130,3 +130,34 @@ test("confirmed module action binds target revision and displayed revision separ
     displayedRevision: 9,
   });
 });
+
+test("indeterminate acknowledgement remains announced after rerender", async () => {
+  const document = new FakeDocument();
+  const root = new FakeElement("div", document);
+  const client = {
+    readView: () => sampleView(),
+    async submitRequest(request) {
+      return { operationId: request.operationId, status: "indeterminate" };
+    },
+    async requestStop() {
+      assert.fail("requestStop should not run");
+    },
+  };
+  const app = new ControlPlaneApp({
+    root,
+    client,
+    operationIdFactory: () => "operation.browser.indeterminate",
+    confirmAction: async () => true,
+  });
+  app.render();
+  const retry = allElements(root).find(
+    (element) => element.tagName === "button" && element.textContent.startsWith("Retry "),
+  );
+  retry.listeners.get("click")();
+  await new Promise((resolve) => setImmediate(resolve));
+  const alert = allElements(root).find(
+    (element) => element.attributes.get("role") === "alert",
+  );
+  assert.ok(alert);
+  assert.match(alert.textContent, /indeterminate/);
+});

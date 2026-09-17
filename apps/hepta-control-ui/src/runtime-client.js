@@ -406,13 +406,6 @@ export class RuntimeClient {
       );
     }
 
-    if (response.accepted !== true) {
-      this.#pending.delete(operationId);
-      fail(ERROR_CODES.REQUEST_REJECTED, "backend rejected the request", {
-        operationId,
-        semanticDigest,
-      });
-    }
     if (
       response.operationId !== operationId ||
       response.semanticDigest !== semanticDigest ||
@@ -428,6 +421,24 @@ export class RuntimeClient {
       fail(
         ERROR_CODES.PROTOCOL_VIOLATION,
         "backend acknowledgement provenance mismatch",
+        { operationId, semanticDigest },
+      );
+    }
+    if (response.accepted === false) {
+      this.#pending.delete(operationId);
+      fail(ERROR_CODES.REQUEST_REJECTED, "backend rejected the request", {
+        operationId,
+        semanticDigest,
+      });
+    }
+    if (response.accepted !== true) {
+      cloneAcknowledgement(entry, "indeterminate", {
+        accepted: null,
+        errorCode: ERROR_CODES.PROTOCOL_VIOLATION,
+      });
+      fail(
+        ERROR_CODES.PROTOCOL_VIOLATION,
+        "backend acknowledgement accepted flag is invalid",
         { operationId, semanticDigest },
       );
     }
