@@ -76,22 +76,66 @@ fn damped_preference_update_emits_local_solver_receipts() {
 }
 
 #[test]
-fn parent_and_child_updates_cannot_share_generation() {
+fn iteration_bound_exhaustion_is_unavailable() {
+    let initial = must(PreferenceState::genesis(
+        id("agent-slow"),
+        SubjectClass::Agent,
+        vec![AxisValue {
+            axis: id("utility"),
+            value: FixedQ32::ZERO,
+        }],
+    ));
+    let error = must_err(solve_preference_target(
+        initial,
+        vec![AxisValue {
+            axis: id("utility"),
+            value: FixedQ32::ONE,
+        }],
+        FixedQ32::from_raw(1_i64 << 28),
+    ));
+    assert_eq!(error, NduError::PreferenceSolverUnavailable);
+    assert_eq!(error.code(), "NDU-E008");
+}
+
+#[test]
+fn parent_and_child_updates_cannot_share_generation_within_one_hierarchy() {
     let generation = must(Generation::new(7));
+    let hierarchy = id("root-a");
     let error = must_err(validate_staged_updates(&[
         UpdateGeneration {
             generation,
+            hierarchy_id: hierarchy.clone(),
             subject_class: SubjectClass::Domain,
             artifact_id: id("domain-candidate"),
         },
         UpdateGeneration {
             generation,
+            hierarchy_id: hierarchy,
             subject_class: SubjectClass::Agent,
             artifact_id: id("agent-candidate"),
         },
     ]));
 
     assert_eq!(error, NduError::SimultaneousHierarchyUpdate(7));
+}
+
+#[test]
+fn unrelated_hierarchies_may_advance_different_levels_in_same_generation() {
+    let generation = must(Generation::new(7));
+    must(validate_staged_updates(&[
+        UpdateGeneration {
+            generation,
+            hierarchy_id: id("root-a"),
+            subject_class: SubjectClass::Domain,
+            artifact_id: id("domain-candidate"),
+        },
+        UpdateGeneration {
+            generation,
+            hierarchy_id: id("root-b"),
+            subject_class: SubjectClass::Agent,
+            artifact_id: id("agent-candidate"),
+        },
+    ]));
 }
 
 #[test]
