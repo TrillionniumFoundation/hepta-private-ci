@@ -70,7 +70,7 @@ impl<D: ProcessDriver> Supervisor<D> {
         slot: &mut AgentSlot<D::Process>,
         now: Instant,
     ) -> Result<(), SupervisorError> {
-        slot.restart_pending = false;
+        cancel_pending_restart(slot);
         if self.defer_agent_action_for_matrix(agent_id, slot, DeferredAgentActionKind::Stop, now)? {
             return Ok(());
         }
@@ -96,7 +96,7 @@ impl<D: ProcessDriver> Supervisor<D> {
         agent_id: &AgentId,
         slot: &mut AgentSlot<D::Process>,
     ) -> Result<(), SupervisorError> {
-        slot.restart_pending = false;
+        cancel_pending_restart(slot);
         slot.deferred_agent_action = None;
         self.kill_matrix_now(agent_id, slot)?;
         self.prepare_termination(agent_id, slot)?;
@@ -130,8 +130,15 @@ impl<D: ProcessDriver> Supervisor<D> {
         let release =
             release.ok_or_else(|| SupervisorError::NoPreviousCommand(agent_id.clone()))?;
         if slot.runtime.is_none() {
+            // start_release_slot performs the durable restart-budget reset for
+            // a fresh explicit start.
             return self.start_release_slot(agent_id, slot, release, now);
         }
+        self.reset_restart_budget_for_release(
+            agent_id,
+            slot,
+            release.release_id().clone(),
+        )?;
         let lifecycle = self.record(agent_id)?.lifecycle.lifecycle;
         let result = if matches!(
             lifecycle,
@@ -143,6 +150,9 @@ impl<D: ProcessDriver> Supervisor<D> {
         };
         result?;
         slot.restart_pending = true;
+        slot.restart_retry_at = None;
+        slot.restart_automatic = false;
+        slot.restart_after_exit = false;
         let generation = active_runtime(agent_id, slot)?.generation;
         slot.event(generation, SupervisorEventKind::RestartQueued);
         Ok(())
@@ -208,6 +218,13 @@ impl<D: ProcessDriver> Supervisor<D> {
             registry,
         })
     }
+}
+
+fn cancel_pending_restart<P>(slot: &mut AgentSlot<P>) {
+    slot.restart_pending = false;
+    slot.restart_retry_at = None;
+    slot.restart_automatic = false;
+    slot.restart_after_exit = false;
 }
 
 fn active_runtime<'a, P>(
