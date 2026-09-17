@@ -1,9 +1,9 @@
 //! Governed plasticity proposal records.
 //!
-//! New writes are parameter-only V2 candidate sets. Historical parameter and
-//! topology V1 records are read-only. Proposals are next-generation,
-//! qualification-only artifacts; this crate has no API for runtime mutation,
-//! authority mutation, self-promotion or release.
+//! New writes are bounded parameter and topology candidate sets. Historical V1
+//! records remain read-only. Proposals are next-generation, qualification-only
+//! artifacts; this crate has no API for runtime mutation, authority mutation,
+//! self-promotion or release.
 
 #![forbid(unsafe_code)]
 
@@ -13,6 +13,7 @@ mod generator;
 mod legacy;
 mod parameter_v2;
 mod registry;
+mod topology_v2;
 mod trusted;
 mod types;
 
@@ -29,6 +30,14 @@ pub use parameter_v2::propose_v2;
 pub use parameter_v2::verify_parameter_proposal_v2;
 pub use registry::ProposalRegistry;
 pub use registry::ProposalRegistrySlotV2;
+pub use topology_v2::TopologyCandidateKindV2;
+pub use topology_v2::TopologyCandidateRequestV2;
+pub use topology_v2::TopologyCandidateV2;
+pub use topology_v2::TopologyDeltaV2;
+pub use topology_v2::TopologyProposalRequestV2;
+pub use topology_v2::TopologyProposalV2;
+pub use topology_v2::propose_topology_v2;
+pub use topology_v2::verify_topology_proposal_v2;
 pub use trusted::AuthenticatedParameterProposalRequestV1;
 pub use trusted::EvaluatorClaimV1;
 pub use trusted::EvidenceClaimV1;
