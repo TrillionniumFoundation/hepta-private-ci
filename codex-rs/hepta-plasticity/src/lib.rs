@@ -1,24 +1,29 @@
 //! Governed plasticity proposal records.
 //!
-//! New writes are parameter-only V2 candidate sets. Historical parameter and
-//! topology V1 records are read-only. Proposals are next-generation,
-//! qualification-only artifacts; this crate has no API for runtime mutation,
-//! authority mutation, self-promotion or release.
+//! V2 preserves the supplied-candidate compatibility surface. V3 adds a
+//! deterministic generator and authenticated admission without granting runtime
+//! mutation, self-promotion, selection, activation or release authority.
 
 #![forbid(unsafe_code)]
 
 mod durable_registry;
-
-pub use durable_registry::DurableProposalAppendReceiptV1;
-pub use durable_registry::DurableProposalRegistry;
-pub use durable_registry::DurableProposalRegistryError;
-pub use durable_registry::DurableRegistryAnchorV1;
-
+mod generator_v3;
 mod legacy;
 mod parameter_v2;
 mod registry;
 mod types;
 
+pub use durable_registry::DurableProposalAppendReceiptV1;
+pub use durable_registry::DurableProposalRegistry;
+pub use durable_registry::DurableProposalRegistryError;
+pub use durable_registry::DurableRegistryAnchorV1;
+pub use generator_v3::GeneratedParameterCandidateSetV3;
+pub use generator_v3::ParameterGeneratorErrorV3;
+pub use generator_v3::ParameterGeneratorRequestV3;
+pub use generator_v3::ParameterGeneratorSignalV3;
+pub use generator_v3::generate_parameter_candidates_v3;
+pub use generator_v3::generator_attestation_payload_v3;
+pub use generator_v3::verify_generated_parameter_candidates_v3;
 pub use parameter_v2::propose_v2;
 pub use parameter_v2::verify_parameter_proposal_v2;
 pub use registry::ProposalRegistry;
