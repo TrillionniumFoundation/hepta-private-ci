@@ -33,6 +33,7 @@ pub use contracts_v1::LegalActionCandidateSetV1;
 pub use contracts_v1::LegalActionCandidateV1;
 
 mod composition_v3;
+mod composition_v3_control;
 mod composition_v3_validate;
 
 pub use composition_v3::CompositionDispositionV3;
@@ -47,6 +48,10 @@ pub use composition_v3::PortInputV3;
 pub use composition_v3::PortReceiptV3;
 pub use composition_v3::StageOutcomeV3;
 pub use composition_v3::StageTraceV3;
+pub use composition_v3_control::CompositionCancellationV3;
+pub use composition_v3_control::CompositionClockV3;
+pub use composition_v3_control::NeverCancelledV3;
+pub use composition_v3_control::SystemCompositionClockV3;
 
 mod pipeline_v2;
 
