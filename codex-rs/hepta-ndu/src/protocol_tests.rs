@@ -35,7 +35,10 @@ fn valid_context(subject_id: &str, subject_class: SubjectClass) -> NduIterationC
     }
 }
 
-fn first_receipt(subject_id: &str, subject_class: SubjectClass) -> crate::NduSolverIterationReceipt {
+fn first_receipt(
+    subject_id: &str,
+    subject_class: SubjectClass,
+) -> crate::NduSolverIterationReceipt {
     let initial = must(PreferenceState::genesis(
         id(subject_id),
         subject_class,
