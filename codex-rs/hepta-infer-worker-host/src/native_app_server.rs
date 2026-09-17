@@ -30,6 +30,7 @@ use codex_app_server_protocol::TurnStatus;
 use codex_app_server_protocol::UserInput;
 use codex_hepta_agentd::AgentdClient;
 use codex_hepta_agentd::AgentdError;
+use codex_hepta_agentd::CognitiveContextSnapshot;
 use codex_hepta_agentd::HealthSnapshot;
 use codex_hepta_contracts::AgentId;
 use codex_hepta_infer_core::durable_control::DurableInferenceControl;
@@ -110,25 +111,10 @@ impl AppServerModelDriver {
         if !health.ready || health.fenced {
             return Err("Agent is not ready".into());
         }
-        let context = match context_query {
-            Some(query) => Some(owner.cognitive_context(query, /*limit*/ 4).await?),
+        let context = match context_query.as_deref() {
+            Some(query) => Some(owner.cognitive_context(query.to_string(), /*limit*/ 4).await?),
             None => None,
         };
-        let additional_context = context
-            .map(|snapshot| -> Result<_> {
-                let value = serde_json::to_string(&snapshot)?;
-                if value.len() > MAX_MODEL_CONTEXT_BYTES {
-                    return Err("verified context exceeds the model attachment byte limit".into());
-                }
-                Ok(HashMap::from([(
-                    "hepta-cognitive-owner".to_string(),
-                    AdditionalContextEntry {
-                        value,
-                        kind: AdditionalContextKind::Untrusted,
-                    },
-                )]))
-            })
-            .transpose()?;
         let ingress = owner.session_ingress().await?;
         let socket_path = AbsolutePathBuf::from_absolute_path(ingress.socket_path)?;
         let mut client = timeout(
@@ -173,6 +159,43 @@ impl AppServerModelDriver {
         }
         // Recheck the actual generation after acquiring context and connecting.
         owner.session_ingress().await?;
+        // A cognitive snapshot is an observed historical cut, not a freshness
+        // lease. Re-read it after provider thread creation and immediately before
+        // durable dispatch/turn-start. Both reads are generation/lifecycle fenced
+        // by Agentd. Any changed owner cut, read receipt, admitted item, ranker
+        // ordering or read/abstain decision closes the model dispatch rather than
+        // attaching the stale first read. The refreshed snapshot also replaces
+        // the older one so short-lived planner metadata is current at final use.
+        let finalized_context = match (context_query.as_deref(), context.as_ref()) {
+            (Some(query), Some(initial)) => {
+                let refreshed = match owner.cognitive_context(query.to_string(), /*limit*/ 4).await {
+                    Ok(snapshot) => snapshot,
+                    Err(error) => {
+                        let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
+                        return Err(error.into());
+                    }
+                };
+                match finalize_cognitive_context(initial, refreshed) {
+                    Ok(snapshot) => Some(snapshot),
+                    Err(error) => {
+                        let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
+                        return Err(error);
+                    }
+                }
+            }
+            (None, None) => None,
+            _ => {
+                let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
+                return Err("cognitive context query/read state is inconsistent".into());
+            }
+        };
+        let additional_context = match finalized_context.map(encode_cognitive_context).transpose() {
+            Ok(context) => context,
+            Err(error) => {
+                let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
+                return Err(error);
+            }
+        };
         if cancellation.is_cancelled() {
             let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
             return Err("cancelled before model dispatch".into());
@@ -351,6 +374,47 @@ impl AppServerModelDriver {
             }
         }
     }
+}
+
+fn finalize_cognitive_context(
+    initial: &CognitiveContextSnapshot,
+    refreshed: CognitiveContextSnapshot,
+) -> Result<CognitiveContextSnapshot> {
+    let plan_semantics_match = match (&initial.plan, &refreshed.plan) {
+        (Some(left), Some(right)) => {
+            left.evaluated_context_digest == right.evaluated_context_digest
+                && left.read_allowed == right.read_allowed
+        }
+        (None, None) => true,
+        _ => false,
+    };
+    if initial.snapshot_digest != refreshed.snapshot_digest
+        || initial.read_digest != refreshed.read_digest
+        || initial.omitted_records != refreshed.omitted_records
+        || initial.items != refreshed.items
+        || !plan_semantics_match
+    {
+        return Err(
+            "cognitive context changed after acquisition; refusing stale model dispatch".into(),
+        );
+    }
+    Ok(refreshed)
+}
+
+fn encode_cognitive_context(
+    snapshot: CognitiveContextSnapshot,
+) -> Result<HashMap<String, AdditionalContextEntry>> {
+    let value = serde_json::to_string(&snapshot)?;
+    if value.len() > MAX_MODEL_CONTEXT_BYTES {
+        return Err("verified context exceeds the model attachment byte limit".into());
+    }
+    Ok(HashMap::from([(
+        "hepta-cognitive-owner".to_string(),
+        AdditionalContextEntry {
+            value,
+            kind: AdditionalContextKind::Untrusted,
+        },
+    )]))
 }
 
 async fn verify_owner_health(

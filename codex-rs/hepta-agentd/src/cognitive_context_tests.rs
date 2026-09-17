@@ -76,10 +76,14 @@ async fn context_reads_real_owner_content_and_removes_committed_tombstones() {
         )
         .await
         .unwrap();
+    // This models the race between the worker's first context acquisition and
+    // its final-use refresh immediately before turn/start. The second canonical
+    // read must no longer carry either the old snapshot or its read receipt.
     let withdrawn = read(&store, &owner, 1, "lemon", 4, None).await.unwrap();
     assert!(withdrawn.items.is_empty());
     assert!(!withdrawn.plan.as_ref().unwrap().read_allowed);
     assert_ne!(withdrawn.snapshot_digest, context.snapshot_digest);
+    assert_ne!(withdrawn.read_digest, context.read_digest);
     let other = AgentId::parse("00000000-0000-4000-8000-000000000120").unwrap();
     assert!(read(&store, &other, 1, "lemon", 4, None).await.is_err());
 }

@@ -3,6 +3,8 @@ use codex_app_server_protocol::AgentMessageDeltaNotification;
 use codex_app_server_protocol::Turn;
 use codex_app_server_protocol::TurnCompletedNotification;
 use codex_app_server_protocol::TurnItemsView;
+use codex_hepta_agentd::CognitiveContextItem;
+use codex_hepta_agentd::CognitiveContextPlan;
 
 fn output() -> NativeRunOutput {
     NativeRunOutput {
@@ -33,6 +35,67 @@ fn terminal(thread: &str, turn: &str, status: TurnStatus) -> ServerNotification 
             duration_ms: None,
         },
     })
+}
+
+fn cognitive_context() -> CognitiveContextSnapshot {
+    CognitiveContextSnapshot {
+        snapshot_digest: "snapshot-a".to_string(),
+        read_digest: "read-a".to_string(),
+        omitted_records: 0,
+        items: vec![CognitiveContextItem {
+            memory_id: "memory-a".to_string(),
+            revision: 1,
+            content: "verified memory".to_string(),
+            content_sha256: "content-a".to_string(),
+        }],
+        plan: Some(CognitiveContextPlan {
+            evaluated_context_digest: "context-a".to_string(),
+            plan_receipt_digest: "plan-old".to_string(),
+            read_allowed: true,
+        }),
+    }
+}
+
+#[test]
+fn final_use_revalidation_accepts_fresh_planner_receipt_for_same_context() {
+    let initial = cognitive_context();
+    let mut refreshed = initial.clone();
+    refreshed.plan.as_mut().unwrap().plan_receipt_digest = "plan-fresh".to_string();
+
+    let finalized = finalize_cognitive_context(&initial, refreshed).unwrap();
+    assert_eq!(
+        finalized.plan.unwrap().plan_receipt_digest,
+        "plan-fresh".to_string()
+    );
+}
+
+#[test]
+fn final_use_revalidation_rejects_snapshot_read_or_item_races() {
+    let initial = cognitive_context();
+
+    let mut changed_snapshot = initial.clone();
+    changed_snapshot.snapshot_digest = "snapshot-b".to_string();
+    assert!(finalize_cognitive_context(&initial, changed_snapshot).is_err());
+
+    let mut changed_read = initial.clone();
+    changed_read.read_digest = "read-b".to_string();
+    assert!(finalize_cognitive_context(&initial, changed_read).is_err());
+
+    let mut changed_item = initial.clone();
+    changed_item.items[0].revision = 2;
+    assert!(finalize_cognitive_context(&initial, changed_item).is_err());
+
+    let mut changed_ranked_context = initial.clone();
+    changed_ranked_context
+        .plan
+        .as_mut()
+        .unwrap()
+        .evaluated_context_digest = "context-b".to_string();
+    assert!(finalize_cognitive_context(&initial, changed_ranked_context).is_err());
+
+    let mut changed_decision = initial.clone();
+    changed_decision.plan.as_mut().unwrap().read_allowed = false;
+    assert!(finalize_cognitive_context(&initial, changed_decision).is_err());
 }
 
 #[test]

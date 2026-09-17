@@ -7,6 +7,7 @@
 use std::collections::BTreeMap;
 
 use codex_hepta_cognitive_read::AuthoritativeSnapshotV1;
+use codex_hepta_cognitive_read::ReadRequest;
 use codex_hepta_cognitive_read::ReadRequestV2;
 use codex_hepta_cognitive_read::ReadResultV2;
 use codex_hepta_cognitive_read::SnapshotProviderError;
@@ -93,6 +94,29 @@ impl DurableCognitiveSnapshot {
     /// Consume the new read module against an owner-acquired SQLite cut.
     pub fn read(&self, request: ReadRequestV2) -> Result<ReadResultV2, SnapshotProviderError> {
         read_v2(&self.snapshot, request).map_err(SnapshotProviderError::Read)
+    }
+
+    /// Construct the product read request from this owner-acquired cut instead
+    /// of accepting a caller-supplied snapshot digest. This is the canonical
+    /// SQLite production seam; `authoritative.rs` remains the host-composed
+    /// generation-vector contract for callers that actually own every external
+    /// generation input.
+    pub fn read_current(
+        &self,
+        allowed_kinds: Vec<MemoryKind>,
+        maximum_results: usize,
+        include_tombstones: bool,
+        maximum_encoded_bytes: usize,
+    ) -> Result<ReadResultV2, SnapshotProviderError> {
+        self.read(ReadRequestV2 {
+            read_request: ReadRequest {
+                snapshot_digest: self.snapshot.snapshot_digest,
+                allowed_kinds,
+                maximum_results,
+                include_tombstones,
+            },
+            maximum_encoded_bytes,
+        })
     }
 
     /// Attach a host-frozen external context without inventing other owners'
@@ -182,9 +206,13 @@ impl CognitiveStore {
              WHERE r.owner_agent_id = ? AND r.scope_kind = ? AND r.workspace_sha256 IS ?
              ORDER BY c.memory_id, c.memory_revision, c.ordinal LIMIT ?",
         )
-        .bind(self.owner_agent_id.as_str()).bind(scope_kind).bind(workspace)
+        .bind(self.owner_agent_id.as_str())
+        .bind(scope_kind)
+        .bind(workspace)
         .bind((MAX_CITATIONS + 1) as i64)
-        .fetch_all(&mut *transaction).await.map_err(unavailable)?;
+        .fetch_all(&mut *transaction)
+        .await
+        .map_err(unavailable)?;
         if citation_rows.len() > MAX_CITATIONS {
             return Err(CognitiveStoreError::Unavailable(
                 "Lane C citation capacity exceeded".to_string(),
@@ -205,8 +233,13 @@ impl CognitiveStore {
         }
         let source_count: i64 = sqlx::query_scalar(
             "SELECT count(*) FROM (SELECT 1 FROM source_ledger WHERE owner_agent_id = ? AND scope_kind = ? AND workspace_sha256 IS ? LIMIT 65537)",
-        ).bind(self.owner_agent_id.as_str()).bind(scope_kind).bind(workspace)
-            .fetch_one(&mut *transaction).await.map_err(unavailable)?;
+        )
+        .bind(self.owner_agent_id.as_str())
+        .bind(scope_kind)
+        .bind(workspace)
+        .fetch_one(&mut *transaction)
+        .await
+        .map_err(unavailable)?;
         if source_count > MAX_SOURCES {
             return Err(CognitiveStoreError::Unavailable(
                 "Lane C source capacity exceeded".to_string(),
@@ -396,6 +429,31 @@ impl CognitiveStore {
             ));
         }
         Ok(current)
+    }
+
+    /// Revalidate both the owner cut and the exact module-native read receipt.
+    /// This is the production SQLite final-use seam. A receipt from another cut
+    /// or any authority-bearing read fails closed before the owner is reacquired.
+    pub async fn revalidate_lane_c_read(
+        &self,
+        access: &CognitiveAccess,
+        scope: &CognitiveScope,
+        expected: &DurableCognitiveSnapshot,
+        read: &ReadResultV2,
+        now_unix_seconds: i64,
+    ) -> Result<DurableCognitiveSnapshot, CognitiveStoreError> {
+        if read.snapshot_digest() != expected.snapshot.snapshot_digest {
+            return Err(CognitiveStoreError::Invalid(
+                "cognitive read receipt does not belong to the expected snapshot".to_string(),
+            ));
+        }
+        if read.authority().grants_any() {
+            return Err(CognitiveStoreError::Corrupt(
+                "Lane C read unexpectedly grants effect authority".to_string(),
+            ));
+        }
+        self.revalidate_lane_c_snapshot(access, scope, expected, now_unix_seconds)
+            .await
     }
 }
 
