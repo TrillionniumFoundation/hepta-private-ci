@@ -1,14 +1,14 @@
 //! Production-only durable registry gate with mandatory external anchor state.
 //!
-//! A bootstrap open is allowed only for a physically empty file. Every reopen
-//! after the host has acknowledged at least one append requires the exact
-//! externally retained anchor and delegates to `open_anchored`. This makes the
-//! anti-rollback host responsibility executable instead of advisory.
+//! A bootstrap open is allowed only for a physically empty file and that check
+//! is performed after the durable registry has acquired its exclusive file lock.
+//! Every reopen after the host has acknowledged at least one append requires the
+//! exact externally retained anchor and delegates to `open_anchored`. This makes
+//! the anti-rollback host responsibility executable instead of advisory.
 
 use std::error::Error as StdError;
 use std::fmt;
 use std::fs::File;
-use std::io;
 
 use codex_hepta_types::Digest32;
 
@@ -27,9 +27,7 @@ pub enum ProductionAnchorStateV1 {
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum ProductionProposalRegistryError {
-    BootstrapRequiresEmptyFile,
     MissingAnchorAfterAppend,
-    Io(io::ErrorKind),
     Durable(DurableProposalRegistryError),
 }
 
@@ -39,11 +37,6 @@ impl fmt::Display for ProductionProposalRegistryError {
     }
 }
 impl StdError for ProductionProposalRegistryError {}
-impl From<io::Error> for ProductionProposalRegistryError {
-    fn from(value: io::Error) -> Self {
-        Self::Io(value.kind())
-    }
-}
 impl From<DurableProposalRegistryError> for ProductionProposalRegistryError {
     fn from(value: DurableProposalRegistryError) -> Self {
         Self::Durable(value)
@@ -66,17 +59,12 @@ impl ProductionProposalRegistry {
         anchor_state: ProductionAnchorStateV1,
     ) -> Result<Self, ProductionProposalRegistryError> {
         let inner = match anchor_state {
-            ProductionAnchorStateV1::BootstrapEmpty => {
-                if file.metadata()?.len() != 0 {
-                    return Err(ProductionProposalRegistryError::BootstrapRequiresEmptyFile);
-                }
-                DurableProposalRegistry::open(
-                    file,
-                    registry_scope_digest,
-                    writer_fence,
-                    maximum_records,
-                )?
-            }
+            ProductionAnchorStateV1::BootstrapEmpty => DurableProposalRegistry::open_bootstrap_empty(
+                file,
+                registry_scope_digest,
+                writer_fence,
+                maximum_records,
+            )?,
             ProductionAnchorStateV1::Acknowledged(anchor) => DurableProposalRegistry::open_anchored(
                 file,
                 registry_scope_digest,
