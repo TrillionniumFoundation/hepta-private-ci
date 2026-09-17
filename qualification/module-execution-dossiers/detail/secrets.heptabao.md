@@ -71,6 +71,7 @@ Secret-derived response/value SHA-256 fields used by the KV path are excluded fr
 
 ## 8. Current native implementation
 
+- **Implemented entrypoints:** `consume_kv_v2` in [codex-rs/hepta-bao-adapter/src/https_consumer.rs](../../../codex-rs/hepta-bao-adapter/src/https_consumer.rs); `BaoLeaseManager::request_secret_lease` in [codex-rs/hepta-bao-adapter/src/lease.rs](../../../codex-rs/hepta-bao-adapter/src/lease.rs); `BaoLeaseManager::renew_secret_lease` in [codex-rs/hepta-bao-adapter/src/lease.rs](../../../codex-rs/hepta-bao-adapter/src/lease.rs); `BaoLeaseManager::revoke_secret_lease` in [codex-rs/hepta-bao-adapter/src/lease.rs](../../../codex-rs/hepta-bao-adapter/src/lease.rs); `BaoLeaseManager::reconcile_secret_lease` in [codex-rs/hepta-bao-adapter/src/lease.rs](../../../codex-rs/hepta-bao-adapter/src/lease.rs); `BaoLeaseManager::reconcile_indeterminate_issue` in [codex-rs/hepta-bao-adapter/src/lease.rs](../../../codex-rs/hepta-bao-adapter/src/lease.rs).
 - **Exact KV path:** `BaoClient`, `binding`, `consume_kv_v2` in [`https_consumer.rs`](../../../codex-rs/hepta-bao-adapter/src/https_consumer.rs). `BaoClient::new_for_destination` adds replica-bound destination identity.
 - **Dynamic lifecycle:** `BaoLeaseManager` and the public request/metadata/state types in [`lease.rs`](../../../codex-rs/hepta-bao-adapter/src/lease.rs).
 - **Durable lease metadata:** [`lease_store.rs`](../../../codex-rs/hepta-bao-adapter/src/lease_store.rs), with a private destination-bound lifecycle journal and single local owner lock.
