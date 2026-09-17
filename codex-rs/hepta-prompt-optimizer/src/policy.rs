@@ -1,9 +1,8 @@
-//! Typed prompt-selection policy pipeline.
+//! Canonical V1 prompt-selection policy plus richer authority-free audit wrappers.
 //!
-//! This module closes the contract-to-code gap above the legacy `optimize`
-//! primitive. It remains authority-free: callers supply authenticated registry,
-//! causal-support, and compatibility facts; the module validates and binds them
-//! into deterministic V1 receipts but never mints runtime authority.
+//! Registered `Prompt*V1` receipt structs mirror `PROTOCOL_SCHEMAS.json`.
+//! Extra optimizer diagnostics live in `*AuditV1` wrappers so the V1 wire
+//! meaning is not widened in place.
 
 use std::collections::{BTreeMap, BTreeSet};
 use std::error::Error as StdError;
@@ -26,17 +25,30 @@ pub struct RegisteredPromptFactorV1 {
     pub registry_digest: Digest32,
     pub support_digest: Digest32,
     pub model_profile_digest: Digest32,
-    pub token_cost: u64,
+    pub token_cost: u32,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct EnumerateFactorsRequestV1 {
-    pub decision_id: StableId,
+    pub set_id: StableId,
     pub objective_digest: Digest32,
-    pub registry_snapshot_digest: Digest32,
+    pub state_digest: Digest32,
+    pub registry_digest: Digest32,
     pub model_profile_digest: Digest32,
+    pub selection_grammar_digest: Digest32,
     pub maximum_candidates: usize,
     pub factors: Vec<RegisteredPromptFactorV1>,
+}
+
+/// Canonical `PromptCandidateSetReceiptV1` field shape.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct PromptCandidateSetReceiptV1 {
+    pub set_id: StableId,
+    pub objective_digest: Digest32,
+    pub state_digest: Digest32,
+    pub registry_digest: Digest32,
+    pub candidate_factor_ids: Vec<StableId>,
+    pub selection_grammar_digest: Digest32,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -44,28 +56,33 @@ pub struct PromptCandidateV1 {
     pub candidate_id: StableId,
     pub factor_id: StableId,
     pub realization_id: StableId,
-    pub token_cost: u64,
+    pub token_cost: u32,
     pub support_digest: Digest32,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
-pub struct PromptCandidateSetReceiptV1 {
-    pub decision_id: StableId,
-    pub objective_digest: Digest32,
-    pub registry_snapshot_digest: Digest32,
-    pub model_profile_digest: Digest32,
+pub struct PromptCandidateSetAuditV1 {
+    pub receipt: PromptCandidateSetReceiptV1,
     pub candidates: Vec<PromptCandidateV1>,
     pub omitted_count: u32,
     pub complete: bool,
+    pub model_profile_digest: Digest32,
     pub candidate_set_digest: Digest32,
     pub authority: AuthorityPosture,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
+pub struct PromptConfidenceIntervalV1 {
+    pub lower_q32: FixedQ32,
+    pub upper_q32: FixedQ32,
+    pub confidence_ppm: u32,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub struct PromptCausalEstimateV1 {
     pub candidate_id: StableId,
-    pub incremental_recursive_utility: FixedQ32,
-    pub confidence_ppm: u32,
+    pub expected_utility_q32: FixedQ32,
+    pub confidence_interval: PromptConfidenceIntervalV1,
     pub support_digest: Digest32,
     pub scope_digest: Digest32,
 }
@@ -73,39 +90,54 @@ pub struct PromptCausalEstimateV1 {
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct PromptCostComponentsV1 {
     pub candidate_id: StableId,
-    pub token_cost: FixedQ32,
-    pub latency_cost: FixedQ32,
-    pub interference_cost: FixedQ32,
-    pub resource_cost: FixedQ32,
+    pub downside_q32: FixedQ32,
+    pub token_cost: u32,
+    pub latency_cost_micros: u64,
+    pub interference_ppm: u32,
+    pub token_penalty_q32: FixedQ32,
+    pub latency_penalty_q32: FixedQ32,
+    pub interference_penalty_q32: FixedQ32,
+    pub resource_penalty_q32: FixedQ32,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct PriceFactorsRequestV1 {
-    pub candidate_set: PromptCandidateSetReceiptV1,
+    pub candidate_set: PromptCandidateSetAuditV1,
     pub estimates: Vec<PromptCausalEstimateV1>,
     pub costs: Vec<PromptCostComponentsV1>,
 }
 
+/// Canonical `PromptPricingReceiptV1` field shape; one receipt prices one factor.
 #[derive(Clone, Debug, Eq, PartialEq)]
-pub struct PromptPriceV1 {
+pub struct PromptPricingReceiptV1 {
+    pub factor_id: StableId,
+    pub state_digest: Digest32,
+    pub expected_utility_q32: FixedQ32,
+    pub downside_q32: FixedQ32,
+    pub token_cost: u32,
+    pub latency_cost_micros: u64,
+    pub interference_ppm: u32,
+    pub confidence_interval: PromptConfidenceIntervalV1,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct PromptPriceAuditV1 {
     pub candidate: PromptCandidateV1,
-    pub causal_utility: FixedQ32,
-    pub costs: PromptCostComponentsV1,
-    pub net_gain: FixedQ32,
-    pub confidence_ppm: u32,
+    pub receipt: PromptPricingReceiptV1,
+    pub net_gain_q32: FixedQ32,
     pub causal_support_digest: Digest32,
     pub scope_digest: Digest32,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
-pub struct PromptPricingReceiptV1 {
-    pub decision_id: StableId,
+pub struct PromptPricingSetAuditV1 {
+    pub set_id: StableId,
     pub candidate_set_digest: Digest32,
-    pub registry_snapshot_digest: Digest32,
+    pub registry_digest: Digest32,
     pub model_profile_digest: Digest32,
     pub omitted_count: u32,
     pub candidate_set_complete: bool,
-    pub prices: Vec<PromptPriceV1>,
+    pub prices: Vec<PromptPriceAuditV1>,
     pub pricing_digest: Digest32,
     pub authority: AuthorityPosture,
 }
@@ -114,7 +146,7 @@ pub struct PromptPricingReceiptV1 {
 pub struct PromptPairInteractionV1 {
     pub left_candidate_id: StableId,
     pub right_candidate_id: StableId,
-    pub marginal_gain: FixedQ32,
+    pub marginal_gain_q32: FixedQ32,
     pub support_digest: Digest32,
 }
 
@@ -140,12 +172,26 @@ pub enum UnknownInteractionPolicyV1 {
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct SelectPortfolioRequestV1 {
-    pub pricing: PromptPricingReceiptV1,
+    pub portfolio_id: StableId,
+    pub pricing: PromptPricingSetAuditV1,
     pub interactions: Vec<PromptPairInteractionV1>,
     pub hard_constraints: Vec<PromptHardConstraintV1>,
     pub unknown_interaction_policy: UnknownInteractionPolicyV1,
     pub token_budget: u64,
     pub maximum_selected: usize,
+    pub valid_until_unix_ms: u64,
+}
+
+/// Canonical `PromptPortfolioReceiptV1` field shape.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct PromptPortfolioReceiptV1 {
+    pub portfolio_id: StableId,
+    pub candidate_set_digest: Digest32,
+    pub factor_ids: Vec<StableId>,
+    pub interaction_digest: Digest32,
+    pub expected_utility_q32: FixedQ32,
+    pub total_token_upper_bound: u32,
+    pub valid_until_unix_ms: u64,
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -169,19 +215,15 @@ pub enum PromptOptimalityV1 {
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
-pub struct PromptPortfolioReceiptV1 {
-    pub decision_id: StableId,
-    pub candidate_set_digest: Digest32,
-    pub pricing_digest: Digest32,
-    pub registry_snapshot_digest: Digest32,
-    pub model_profile_digest: Digest32,
-    pub selected: Vec<StableId>,
+pub struct PromptPortfolioAuditV1 {
+    pub receipt: PromptPortfolioReceiptV1,
+    pub selected_candidate_ids: Vec<StableId>,
     pub candidate_audit: Vec<PromptCandidateAuditV1>,
     pub omitted_count: u32,
     pub candidate_set_complete: bool,
-    pub total_token_cost: u64,
-    pub total_net_gain: FixedQ32,
-    pub interaction_graph_digest: Digest32,
+    pub registry_digest: Digest32,
+    pub model_profile_digest: Digest32,
+    pub pricing_digest: Digest32,
     pub hard_constraint_digest: Digest32,
     pub unknown_interaction_policy: UnknownInteractionPolicyV1,
     pub optimality: PromptOptimalityV1,
@@ -189,31 +231,63 @@ pub struct PromptPortfolioReceiptV1 {
     pub authority: AuthorityPosture,
 }
 
+#[derive(Clone, Copy, Debug, Eq, Ord, PartialEq, PartialOrd)]
+pub enum PromptDecisionBoundaryV1 {
+    RequestAccepted,
+    ObjectiveCompiled,
+    BeforePlanning,
+    BeforeCandidateGeneration,
+    BeforeModelOrToolDispatch,
+    AfterObservation,
+    AfterFailureOrUncertaintySpike,
+    BeforeIrreversibleMutation,
+    BeforeVerification,
+    BeforeFinalResponse,
+    BeforeCompactOrHandoff,
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum PromptExerciseActionV1 {
+    Exercise,
+    Wait,
+}
+
+/// Canonical `PromptExerciseDecisionV1` field shape.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct PromptExerciseDecisionV1 {
+    pub factor_or_portfolio_id: StableId,
+    pub decision_boundary: PromptDecisionBoundaryV1,
+    pub exercise_now_value_q32: FixedQ32,
+    pub wait_value_q32: FixedQ32,
+    pub decision: PromptExerciseActionV1,
+    pub policy_digest: Digest32,
+}
+
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct ExerciseRequestV1 {
-    pub portfolio: PromptPortfolioReceiptV1,
-    pub registered_boundary: StableId,
-    pub allowed_boundaries: BTreeSet<StableId>,
+    pub portfolio: PromptPortfolioAuditV1,
+    pub decision_boundary: PromptDecisionBoundaryV1,
+    pub allowed_boundaries: BTreeSet<PromptDecisionBoundaryV1>,
     pub state_digest: Digest32,
     pub current_registry_digest: Digest32,
     pub current_model_profile_digest: Digest32,
+    pub wait_value_q32: FixedQ32,
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum PromptExerciseDispositionV1 {
     Exercise,
+    WaitForHigherValue,
     RejectBoundary,
     RejectRegistryDrift,
     RejectModelProfileDrift,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
-pub struct PromptExerciseDecisionV1 {
-    pub decision_id: StableId,
-    pub portfolio_digest: Digest32,
-    pub registered_boundary: StableId,
-    pub state_digest: Digest32,
+pub struct PromptExerciseAuditV1 {
+    pub receipt: PromptExerciseDecisionV1,
     pub disposition: PromptExerciseDispositionV1,
+    pub state_digest: Digest32,
     pub exercise_digest: Digest32,
     pub authority: AuthorityPosture,
 }
@@ -227,6 +301,7 @@ pub enum PolicyError {
     DuplicateCost(String),
     RegistryMismatch(String),
     ModelProfileMismatch(String),
+    CandidateSetMismatch,
     MissingEstimate(String),
     MissingCost(String),
     InvalidConfidence(String),
@@ -248,15 +323,26 @@ impl fmt::Display for PolicyError {
 impl StdError for PolicyError {}
 
 pub fn enumerate_factors(
-    mut request: EnumerateFactorsRequestV1,
+    request: EnumerateFactorsRequestV1,
 ) -> Result<PromptCandidateSetReceiptV1, PolicyError> {
+    Ok(enumerate_factors_with_audit(request)?.receipt)
+}
+
+pub fn enumerate_factors_with_audit(
+    mut request: EnumerateFactorsRequestV1,
+) -> Result<PromptCandidateSetAuditV1, PolicyError> {
     if request.maximum_candidates == 0 || request.maximum_candidates > MAX_FACTORS {
         return Err(PolicyError::InvalidLimit("maximum_candidates"));
     }
-    require_digest(request.objective_digest, "objective")?;
-    require_digest(request.registry_snapshot_digest, "registry snapshot")?;
-    require_digest(request.model_profile_digest, "model profile")?;
-
+    for (digest, label) in [
+        (request.objective_digest, "objective"),
+        (request.state_digest, "state"),
+        (request.registry_digest, "registry"),
+        (request.model_profile_digest, "model profile"),
+        (request.selection_grammar_digest, "selection grammar"),
+    ] {
+        require_digest(digest, label)?;
+    }
     request
         .factors
         .sort_by(|left, right| left.candidate_id.cmp(&right.candidate_id));
@@ -268,7 +354,7 @@ pub fn enumerate_factors(
                 factor.candidate_id.to_string(),
             ));
         }
-        if factor.registry_digest != request.registry_snapshot_digest {
+        if factor.registry_digest != request.registry_digest {
             return Err(PolicyError::RegistryMismatch(
                 factor.candidate_id.to_string(),
             ));
@@ -293,38 +379,48 @@ pub fn enumerate_factors(
             });
         }
     }
-
     let omitted = candidates.len().saturating_sub(request.maximum_candidates);
     candidates.truncate(request.maximum_candidates);
     let omitted_count = u32::try_from(omitted).map_err(|_| PolicyError::Arithmetic)?;
-    let complete = omitted_count == 0;
-    let candidate_set_digest = digest_candidates(
-        &request.decision_id,
-        request.objective_digest,
-        request.registry_snapshot_digest,
-        request.model_profile_digest,
-        &candidates,
-        omitted_count,
-    );
-
-    Ok(PromptCandidateSetReceiptV1 {
-        decision_id: request.decision_id,
+    let receipt = PromptCandidateSetReceiptV1 {
+        set_id: request.set_id,
         objective_digest: request.objective_digest,
-        registry_snapshot_digest: request.registry_snapshot_digest,
-        model_profile_digest: request.model_profile_digest,
+        state_digest: request.state_digest,
+        registry_digest: request.registry_digest,
+        candidate_factor_ids: candidates
+            .iter()
+            .map(|candidate| candidate.factor_id.clone())
+            .collect(),
+        selection_grammar_digest: request.selection_grammar_digest,
+    };
+    let candidate_set_digest = digest_candidate_set(&receipt, &candidates, omitted_count);
+    Ok(PromptCandidateSetAuditV1 {
+        receipt,
         candidates,
         omitted_count,
-        complete,
+        complete: omitted_count == 0,
+        model_profile_digest: request.model_profile_digest,
         candidate_set_digest,
         authority: AuthorityPosture::DENY_ALL,
     })
 }
 
-pub fn price_factors(request: PriceFactorsRequestV1) -> Result<PromptPricingReceiptV1, PolicyError> {
+pub fn price_factors(
+    request: PriceFactorsRequestV1,
+) -> Result<Vec<PromptPricingReceiptV1>, PolicyError> {
+    Ok(price_factors_with_audit(request)?
+        .prices
+        .into_iter()
+        .map(|price| price.receipt)
+        .collect())
+}
+
+pub fn price_factors_with_audit(
+    request: PriceFactorsRequestV1,
+) -> Result<PromptPricingSetAuditV1, PolicyError> {
     let estimates = collect_estimates(request.estimates)?;
     let costs = collect_costs(request.costs)?;
     let mut prices = Vec::with_capacity(request.candidate_set.candidates.len());
-
     for candidate in &request.candidate_set.candidates {
         let estimate = estimates.get(&candidate.candidate_id).ok_or_else(|| {
             PolicyError::MissingEstimate(candidate.candidate_id.to_string())
@@ -332,7 +428,9 @@ pub fn price_factors(request: PriceFactorsRequestV1) -> Result<PromptPricingRece
         let cost = costs
             .get(&candidate.candidate_id)
             .ok_or_else(|| PolicyError::MissingCost(candidate.candidate_id.to_string()))?;
-        if estimate.confidence_ppm > 1_000_000 {
+        if estimate.confidence_interval.confidence_ppm > 1_000_000
+            || estimate.confidence_interval.lower_q32 > estimate.confidence_interval.upper_q32
+        {
             return Err(PolicyError::InvalidConfidence(
                 candidate.candidate_id.to_string(),
             ));
@@ -342,32 +440,40 @@ pub fn price_factors(request: PriceFactorsRequestV1) -> Result<PromptPricingRece
                 candidate.candidate_id.to_string(),
             ));
         }
-        let total_cost = cost
-            .token_cost
-            .checked_add(cost.latency_cost)
-            .and_then(|value| value.checked_add(cost.interference_cost))
-            .and_then(|value| value.checked_add(cost.resource_cost))
+        let normalized_cost = cost
+            .downside_q32
+            .checked_add(cost.token_penalty_q32)
+            .and_then(|value| value.checked_add(cost.latency_penalty_q32))
+            .and_then(|value| value.checked_add(cost.interference_penalty_q32))
+            .and_then(|value| value.checked_add(cost.resource_penalty_q32))
             .map_err(|_| PolicyError::Arithmetic)?;
-        let net_gain = estimate
-            .incremental_recursive_utility
-            .checked_sub(total_cost)
+        let net_gain_q32 = estimate
+            .expected_utility_q32
+            .checked_sub(normalized_cost)
             .map_err(|_| PolicyError::Arithmetic)?;
-        prices.push(PromptPriceV1 {
+        let receipt = PromptPricingReceiptV1 {
+            factor_id: candidate.factor_id.clone(),
+            state_digest: request.candidate_set.receipt.state_digest,
+            expected_utility_q32: estimate.expected_utility_q32,
+            downside_q32: cost.downside_q32,
+            token_cost: cost.token_cost,
+            latency_cost_micros: cost.latency_cost_micros,
+            interference_ppm: cost.interference_ppm,
+            confidence_interval: estimate.confidence_interval.clone(),
+        };
+        prices.push(PromptPriceAuditV1 {
             candidate: candidate.clone(),
-            causal_utility: estimate.incremental_recursive_utility,
-            costs: cost.clone(),
-            net_gain,
-            confidence_ppm: estimate.confidence_ppm,
+            receipt,
+            net_gain_q32,
             causal_support_digest: estimate.support_digest,
             scope_digest: estimate.scope_digest,
         });
     }
-
-    let pricing_digest = digest_prices(request.candidate_set.candidate_set_digest, &prices);
-    Ok(PromptPricingReceiptV1 {
-        decision_id: request.candidate_set.decision_id,
+    let pricing_digest = digest_pricing(request.candidate_set.candidate_set_digest, &prices);
+    Ok(PromptPricingSetAuditV1 {
+        set_id: request.candidate_set.receipt.set_id,
         candidate_set_digest: request.candidate_set.candidate_set_digest,
-        registry_snapshot_digest: request.candidate_set.registry_snapshot_digest,
+        registry_digest: request.candidate_set.receipt.registry_digest,
         model_profile_digest: request.candidate_set.model_profile_digest,
         omitted_count: request.candidate_set.omitted_count,
         candidate_set_complete: request.candidate_set.complete,
@@ -380,6 +486,12 @@ pub fn price_factors(request: PriceFactorsRequestV1) -> Result<PromptPricingRece
 pub fn select_portfolio(
     request: SelectPortfolioRequestV1,
 ) -> Result<PromptPortfolioReceiptV1, PolicyError> {
+    Ok(select_portfolio_with_audit(request)?.receipt)
+}
+
+pub fn select_portfolio_with_audit(
+    request: SelectPortfolioRequestV1,
+) -> Result<PromptPortfolioAuditV1, PolicyError> {
     if request.maximum_selected == 0 || request.maximum_selected > MAX_SELECTED {
         return Err(PolicyError::InvalidLimit("maximum_selected"));
     }
@@ -390,7 +502,6 @@ pub fn select_portfolio(
         return Err(PolicyError::InvalidLimit("portfolio resources"));
     }
     validate_relations(&request)?;
-
     let gain = solve(&request, SolveOrder::Gain)?;
     let density = solve(&request, SolveOrder::Density)?;
     let chosen = if portfolio_better(&density, &gain) {
@@ -398,7 +509,22 @@ pub fn select_portfolio(
     } else {
         gain
     };
-    let selected_set: BTreeSet<_> = chosen.selected.iter().cloned().collect();
+    let selected_set: BTreeSet<_> = chosen.candidate_ids.iter().cloned().collect();
+    let interaction_digest =
+        digest_interactions(&request.interactions, request.unknown_interaction_policy);
+    let hard_constraint_digest = digest_constraints(&request.hard_constraints);
+    let total_token_upper_bound =
+        u32::try_from(chosen.token_cost).map_err(|_| PolicyError::Arithmetic)?;
+    let receipt = PromptPortfolioReceiptV1 {
+        portfolio_id: request.portfolio_id,
+        candidate_set_digest: request.pricing.candidate_set_digest,
+        factor_ids: chosen.factor_ids,
+        interaction_digest,
+        expected_utility_q32: chosen.total_gain,
+        total_token_upper_bound,
+        valid_until_unix_ms: request.valid_until_unix_ms,
+    };
+    let portfolio_digest = digest_portfolio(&receipt, request.pricing.pricing_digest);
     let candidate_audit = request
         .pricing
         .prices
@@ -408,31 +534,15 @@ pub fn select_portfolio(
             disposition: disposition_for(price, &selected_set, &request),
         })
         .collect();
-    let interaction_graph_digest =
-        digest_interactions(&request.interactions, request.unknown_interaction_policy);
-    let hard_constraint_digest = digest_constraints(&request.hard_constraints);
-    let portfolio_digest = digest_portfolio(
-        request.pricing.pricing_digest,
-        &chosen.selected,
-        chosen.total_token_cost,
-        chosen.total_gain,
-        interaction_graph_digest,
-        hard_constraint_digest,
-    );
-
-    Ok(PromptPortfolioReceiptV1 {
-        decision_id: request.pricing.decision_id,
-        candidate_set_digest: request.pricing.candidate_set_digest,
-        pricing_digest: request.pricing.pricing_digest,
-        registry_snapshot_digest: request.pricing.registry_snapshot_digest,
-        model_profile_digest: request.pricing.model_profile_digest,
-        selected: chosen.selected,
+    Ok(PromptPortfolioAuditV1 {
+        receipt,
+        selected_candidate_ids: chosen.candidate_ids,
         candidate_audit,
         omitted_count: request.pricing.omitted_count,
         candidate_set_complete: request.pricing.candidate_set_complete,
-        total_token_cost: chosen.total_token_cost,
-        total_net_gain: chosen.total_gain,
-        interaction_graph_digest,
+        registry_digest: request.pricing.registry_digest,
+        model_profile_digest: request.pricing.model_profile_digest,
+        pricing_digest: request.pricing.pricing_digest,
         hard_constraint_digest,
         unknown_interaction_policy: request.unknown_interaction_policy,
         optimality: PromptOptimalityV1::HeuristicBestOfGainAndDensityNoCertificate,
@@ -442,30 +552,48 @@ pub fn select_portfolio(
 }
 
 pub fn exercise(request: ExerciseRequestV1) -> Result<PromptExerciseDecisionV1, PolicyError> {
+    Ok(exercise_with_audit(request)?.receipt)
+}
+
+pub fn exercise_with_audit(
+    request: ExerciseRequestV1,
+) -> Result<PromptExerciseAuditV1, PolicyError> {
     require_digest(request.state_digest, "state")?;
-    let disposition = if request.current_registry_digest != request.portfolio.registry_snapshot_digest
-    {
+    let disposition = if request.current_registry_digest != request.portfolio.registry_digest {
         PromptExerciseDispositionV1::RejectRegistryDrift
     } else if request.current_model_profile_digest != request.portfolio.model_profile_digest {
         PromptExerciseDispositionV1::RejectModelProfileDrift
-    } else if !request.allowed_boundaries.contains(&request.registered_boundary) {
+    } else if !request.allowed_boundaries.contains(&request.decision_boundary) {
         PromptExerciseDispositionV1::RejectBoundary
+    } else if request.portfolio.receipt.expected_utility_q32 <= request.wait_value_q32 {
+        PromptExerciseDispositionV1::WaitForHigherValue
     } else {
         PromptExerciseDispositionV1::Exercise
     };
-    let exercise_digest = digest_exercise(
+    let decision = if disposition == PromptExerciseDispositionV1::Exercise {
+        PromptExerciseActionV1::Exercise
+    } else {
+        PromptExerciseActionV1::Wait
+    };
+    let policy_digest = digest_exercise_policy(
         request.portfolio.portfolio_digest,
-        &request.registered_boundary,
         request.state_digest,
+        request.decision_boundary,
         disposition,
     );
-
-    Ok(PromptExerciseDecisionV1 {
-        decision_id: request.portfolio.decision_id,
-        portfolio_digest: request.portfolio.portfolio_digest,
-        registered_boundary: request.registered_boundary,
-        state_digest: request.state_digest,
+    let receipt = PromptExerciseDecisionV1 {
+        factor_or_portfolio_id: request.portfolio.receipt.portfolio_id,
+        decision_boundary: request.decision_boundary,
+        exercise_now_value_q32: request.portfolio.receipt.expected_utility_q32,
+        wait_value_q32: request.wait_value_q32,
+        decision,
+        policy_digest,
+    };
+    let exercise_digest = digest_exercise(&receipt, request.state_digest);
+    Ok(PromptExerciseAuditV1 {
+        receipt,
         disposition,
+        state_digest: request.state_digest,
         exercise_digest,
         authority: AuthorityPosture::DENY_ALL,
     })
@@ -478,8 +606,9 @@ enum SolveOrder {
 }
 
 struct SolvedPortfolio {
-    selected: Vec<StableId>,
-    total_token_cost: u64,
+    candidate_ids: Vec<StableId>,
+    factor_ids: Vec<StableId>,
+    token_cost: u64,
     total_gain: FixedQ32,
 }
 
@@ -497,7 +626,6 @@ fn solve(
     let mut selected = BTreeSet::new();
     let mut token_cost = 0_u64;
     let mut total_gain = FixedQ32::ZERO;
-
     while selected.len() < request.maximum_selected {
         let mut best: Option<(Vec<StableId>, FixedQ32, u64)> = None;
         for candidate_id in price_by_id.keys() {
@@ -509,7 +637,7 @@ fn solve(
                 continue;
             }
             let bundle_cost = bundle.iter().try_fold(0_u64, |sum, id| {
-                sum.checked_add(price_by_id[id].candidate.token_cost)
+                sum.checked_add(u64::from(price_by_id[id].candidate.token_cost))
                     .ok_or(PolicyError::Arithmetic)
             })?;
             if token_cost
@@ -524,7 +652,7 @@ fn solve(
             if marginal <= FixedQ32::ZERO {
                 continue;
             }
-            let is_better = best
+            let better = best
                 .as_ref()
                 .is_none_or(|(best_bundle, best_gain, best_cost)| match order {
                     SolveOrder::Gain => {
@@ -540,11 +668,10 @@ fn solve(
                                 && bundle < *best_bundle)
                     }
                 });
-            if is_better {
+            if better {
                 best = Some((bundle, marginal, bundle_cost));
             }
         }
-
         let Some((bundle, marginal, cost)) = best else {
             break;
         };
@@ -558,10 +685,15 @@ fn solve(
             .checked_add(marginal)
             .map_err(|_| PolicyError::Arithmetic)?;
     }
-
+    let candidate_ids: Vec<_> = selected.into_iter().collect();
+    let factor_ids = candidate_ids
+        .iter()
+        .map(|id| price_by_id[id].candidate.factor_id.clone())
+        .collect();
     Ok(SolvedPortfolio {
-        selected: selected.into_iter().collect(),
-        total_token_cost: token_cost,
+        candidate_ids,
+        factor_ids,
+        token_cost,
         total_gain,
     })
 }
@@ -573,7 +705,7 @@ fn validate_relations(request: &SelectPortfolioRequestV1) -> Result<(), PolicyEr
         .iter()
         .map(|price| price.candidate.candidate_id.clone())
         .collect();
-    let mut interaction_pairs = BTreeSet::new();
+    let mut pairs = BTreeSet::new();
     for edge in &request.interactions {
         if edge.left_candidate_id >= edge.right_candidate_id
             || !ids.contains(&edge.left_candidate_id)
@@ -588,14 +720,10 @@ fn validate_relations(request: &SelectPortfolioRequestV1) -> Result<(), PolicyEr
                 edge.left_candidate_id.to_string(),
             ));
         }
-        if !interaction_pairs.insert((
-            edge.left_candidate_id.clone(),
-            edge.right_candidate_id.clone(),
-        )) {
+        if !pairs.insert((edge.left_candidate_id.clone(), edge.right_candidate_id.clone())) {
             return Err(PolicyError::DuplicateRelation);
         }
     }
-
     let mut hard_keys = BTreeSet::new();
     for constraint in &request.hard_constraints {
         let (kind, left, right, support) = match constraint {
@@ -620,7 +748,6 @@ fn validate_relations(request: &SelectPortfolioRequestV1) -> Result<(), PolicyEr
             return Err(PolicyError::DuplicateRelation);
         }
     }
-
     let requires = requires_map(&request.hard_constraints);
     for id in &ids {
         let bundle = prerequisite_bundle_checked(id, &requires)?;
@@ -636,11 +763,9 @@ fn collect_estimates(
 ) -> Result<BTreeMap<StableId, PromptCausalEstimateV1>, PolicyError> {
     let mut result = BTreeMap::new();
     for value in values {
-        if result
-            .insert(value.candidate_id.clone(), value)
-            .is_some()
-        {
-            return Err(PolicyError::DuplicateEstimate("candidate".to_string()));
+        let id = value.candidate_id.clone();
+        if result.insert(id.clone(), value).is_some() {
+            return Err(PolicyError::DuplicateEstimate(id.to_string()));
         }
     }
     Ok(result)
@@ -651,11 +776,9 @@ fn collect_costs(
 ) -> Result<BTreeMap<StableId, PromptCostComponentsV1>, PolicyError> {
     let mut result = BTreeMap::new();
     for value in values {
-        if result
-            .insert(value.candidate_id.clone(), value)
-            .is_some()
-        {
-            return Err(PolicyError::DuplicateCost("candidate".to_string()));
+        let id = value.candidate_id.clone();
+        if result.insert(id.clone(), value).is_some() {
+            return Err(PolicyError::DuplicateCost(id.to_string()));
         }
     }
     Ok(result)
@@ -710,7 +833,6 @@ fn prerequisite_bundle_checked(
         done.insert(id.clone());
         Ok(())
     }
-
     let mut done = BTreeSet::new();
     visit(candidate, requires, &mut BTreeSet::new(), &mut done)?;
     Ok(done.into_iter().collect())
@@ -747,13 +869,13 @@ fn bundle_conflicts(
 fn bundle_gain(
     bundle: &[StableId],
     selected: &BTreeSet<StableId>,
-    prices: &BTreeMap<StableId, &PromptPriceV1>,
+    prices: &BTreeMap<StableId, &PromptPriceAuditV1>,
     request: &SelectPortfolioRequestV1,
 ) -> Result<FixedQ32, PolicyError> {
     let mut gain = FixedQ32::ZERO;
     for (index, id) in bundle.iter().enumerate() {
         gain = gain
-            .checked_add(prices[id].net_gain)
+            .checked_add(prices[id].net_gain_q32)
             .map_err(|_| PolicyError::Arithmetic)?;
         for peer in selected {
             gain = gain
@@ -782,7 +904,7 @@ fn interaction_gain(
     if let Some(edge) = request.interactions.iter().find(|edge| {
         &edge.left_candidate_id == a && &edge.right_candidate_id == b
     }) {
-        return Ok(edge.marginal_gain);
+        return Ok(edge.marginal_gain_q32);
     }
     match request.unknown_interaction_policy {
         UnknownInteractionPolicyV1::AssumeZero => Ok(FixedQ32::ZERO),
@@ -794,15 +916,15 @@ fn interaction_gain(
 }
 
 fn disposition_for(
-    price: &PromptPriceV1,
+    price: &PromptPriceAuditV1,
     selected: &BTreeSet<StableId>,
     request: &SelectPortfolioRequestV1,
 ) -> PromptCandidateDispositionV1 {
     if selected.contains(&price.candidate.candidate_id) {
         PromptCandidateDispositionV1::Selected
-    } else if price.net_gain <= FixedQ32::ZERO {
+    } else if price.net_gain_q32 <= FixedQ32::ZERO {
         PromptCandidateDispositionV1::NonPositivePortfolioGain
-    } else if price.candidate.token_cost > request.token_budget {
+    } else if u64::from(price.candidate.token_cost) > request.token_budget {
         PromptCandidateDispositionV1::OverBudget
     } else if !candidate_can_ever_fit(&price.candidate.candidate_id, request) {
         PromptCandidateDispositionV1::ConstraintBlocked
@@ -831,9 +953,9 @@ fn density_better(
 fn portfolio_better(left: &SolvedPortfolio, right: &SolvedPortfolio) -> bool {
     left.total_gain > right.total_gain
         || (left.total_gain == right.total_gain
-            && (left.total_token_cost < right.total_token_cost
-                || (left.total_token_cost == right.total_token_cost
-                    && left.selected < right.selected)))
+            && (left.token_cost < right.token_cost
+                || (left.token_cost == right.token_cost
+                    && left.candidate_ids < right.candidate_ids)))
 }
 
 fn require_digest(digest: Digest32, label: &'static str) -> Result<(), PolicyError> {
@@ -850,19 +972,17 @@ fn push_id(bytes: &mut Vec<u8>, id: &StableId) {
     bytes.extend_from_slice(raw);
 }
 
-fn digest_candidates(
-    decision: &StableId,
-    objective: Digest32,
-    registry: Digest32,
-    model: Digest32,
+fn digest_candidate_set(
+    receipt: &PromptCandidateSetReceiptV1,
     candidates: &[PromptCandidateV1],
     omitted: u32,
 ) -> Digest32 {
-    let mut bytes = b"hepta.prompt-candidate-set.v1".to_vec();
-    push_id(&mut bytes, decision);
-    bytes.extend_from_slice(objective.as_array());
-    bytes.extend_from_slice(registry.as_array());
-    bytes.extend_from_slice(model.as_array());
+    let mut bytes = b"hepta.prompt-candidate-set.audit.v1".to_vec();
+    push_id(&mut bytes, &receipt.set_id);
+    bytes.extend_from_slice(receipt.objective_digest.as_array());
+    bytes.extend_from_slice(receipt.state_digest.as_array());
+    bytes.extend_from_slice(receipt.registry_digest.as_array());
+    bytes.extend_from_slice(receipt.selection_grammar_digest.as_array());
     bytes.extend_from_slice(&omitted.to_be_bytes());
     for candidate in candidates {
         push_id(&mut bytes, &candidate.candidate_id);
@@ -874,14 +994,15 @@ fn digest_candidates(
     Digest32::of_bytes(&bytes)
 }
 
-fn digest_prices(candidate_set: Digest32, prices: &[PromptPriceV1]) -> Digest32 {
-    let mut bytes = b"hepta.prompt-pricing.v1".to_vec();
+fn digest_pricing(candidate_set: Digest32, prices: &[PromptPriceAuditV1]) -> Digest32 {
+    let mut bytes = b"hepta.prompt-pricing-set.audit.v1".to_vec();
     bytes.extend_from_slice(candidate_set.as_array());
     for price in prices {
         push_id(&mut bytes, &price.candidate.candidate_id);
-        bytes.extend_from_slice(&price.causal_utility.raw().to_be_bytes());
-        bytes.extend_from_slice(&price.net_gain.raw().to_be_bytes());
-        bytes.extend_from_slice(&price.confidence_ppm.to_be_bytes());
+        push_id(&mut bytes, &price.receipt.factor_id);
+        bytes.extend_from_slice(&price.receipt.expected_utility_q32.raw().to_be_bytes());
+        bytes.extend_from_slice(&price.receipt.downside_q32.raw().to_be_bytes());
+        bytes.extend_from_slice(&price.net_gain_q32.raw().to_be_bytes());
         bytes.extend_from_slice(price.causal_support_digest.as_array());
         bytes.extend_from_slice(price.scope_digest.as_array());
     }
@@ -900,7 +1021,7 @@ fn digest_interactions(
     for edge in edges {
         push_id(&mut bytes, &edge.left_candidate_id);
         push_id(&mut bytes, &edge.right_candidate_id);
-        bytes.extend_from_slice(&edge.marginal_gain.raw().to_be_bytes());
+        bytes.extend_from_slice(&edge.marginal_gain_q32.raw().to_be_bytes());
         bytes.extend_from_slice(edge.support_digest.as_array());
     }
     Digest32::of_bytes(&bytes)
@@ -935,42 +1056,44 @@ fn digest_constraints(constraints: &[PromptHardConstraintV1]) -> Digest32 {
     Digest32::of_bytes(&bytes)
 }
 
-fn digest_portfolio(
-    pricing: Digest32,
-    selected: &[StableId],
-    cost: u64,
-    gain: FixedQ32,
-    interactions: Digest32,
-    constraints: Digest32,
-) -> Digest32 {
-    let mut bytes = b"hepta.prompt-portfolio.v1".to_vec();
+fn digest_portfolio(receipt: &PromptPortfolioReceiptV1, pricing: Digest32) -> Digest32 {
+    let mut bytes = b"hepta.prompt-portfolio.audit.v1".to_vec();
+    push_id(&mut bytes, &receipt.portfolio_id);
+    bytes.extend_from_slice(receipt.candidate_set_digest.as_array());
     bytes.extend_from_slice(pricing.as_array());
-    for id in selected {
-        push_id(&mut bytes, id);
+    bytes.extend_from_slice(receipt.interaction_digest.as_array());
+    bytes.extend_from_slice(&receipt.expected_utility_q32.raw().to_be_bytes());
+    bytes.extend_from_slice(&receipt.total_token_upper_bound.to_be_bytes());
+    bytes.extend_from_slice(&receipt.valid_until_unix_ms.to_be_bytes());
+    for factor_id in &receipt.factor_ids {
+        push_id(&mut bytes, factor_id);
     }
-    bytes.extend_from_slice(&cost.to_be_bytes());
-    bytes.extend_from_slice(&gain.raw().to_be_bytes());
-    bytes.extend_from_slice(interactions.as_array());
-    bytes.extend_from_slice(constraints.as_array());
     Digest32::of_bytes(&bytes)
 }
 
-fn digest_exercise(
+fn digest_exercise_policy(
     portfolio: Digest32,
-    boundary: &StableId,
     state: Digest32,
+    boundary: PromptDecisionBoundaryV1,
     disposition: PromptExerciseDispositionV1,
 ) -> Digest32 {
-    let mut bytes = b"hepta.prompt-exercise.v1".to_vec();
+    let mut bytes = b"hepta.prompt-exercise-policy.v1".to_vec();
     bytes.extend_from_slice(portfolio.as_array());
-    push_id(&mut bytes, boundary);
     bytes.extend_from_slice(state.as_array());
-    bytes.push(match disposition {
-        PromptExerciseDispositionV1::Exercise => 0,
-        PromptExerciseDispositionV1::RejectBoundary => 1,
-        PromptExerciseDispositionV1::RejectRegistryDrift => 2,
-        PromptExerciseDispositionV1::RejectModelProfileDrift => 3,
-    });
+    bytes.push(boundary as u8);
+    bytes.push(disposition as u8);
+    Digest32::of_bytes(&bytes)
+}
+
+fn digest_exercise(receipt: &PromptExerciseDecisionV1, state: Digest32) -> Digest32 {
+    let mut bytes = b"hepta.prompt-exercise.audit.v1".to_vec();
+    push_id(&mut bytes, &receipt.factor_or_portfolio_id);
+    bytes.push(receipt.decision_boundary as u8);
+    bytes.extend_from_slice(&receipt.exercise_now_value_q32.raw().to_be_bytes());
+    bytes.extend_from_slice(&receipt.wait_value_q32.raw().to_be_bytes());
+    bytes.push(receipt.decision as u8);
+    bytes.extend_from_slice(receipt.policy_digest.as_array());
+    bytes.extend_from_slice(state.as_array());
     Digest32::of_bytes(&bytes)
 }
 
