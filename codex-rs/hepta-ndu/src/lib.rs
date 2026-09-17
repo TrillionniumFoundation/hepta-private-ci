@@ -4,8 +4,8 @@
 //!
 //! This crate is authority-free: an advisory recommendation or local solver
 //! receipt is never an operation, independent convergence certificate,
-//! selection, promotion, release or external effect. The projection journal is
-//! an owner-local durability reference, not a production writer activation.
+//! selection, promotion, release or external effect. The projection store is a
+//! crash-durable owner-local candidate, not a production-writer activation.
 
 #![forbid(unsafe_code)]
 
@@ -19,6 +19,7 @@ mod fixed;
 mod model;
 mod preference;
 mod projection_journal;
+mod projection_store;
 mod protocol;
 mod recursive;
 mod scoring;
@@ -71,6 +72,9 @@ pub use projection_journal::NduProjectionEntryV1;
 pub use projection_journal::NduProjectionJournalError;
 pub use projection_journal::NduProjectionJournalV1;
 pub use projection_journal::NduProjectionKindV1;
+pub use projection_store::NduProjectionBackupV1;
+pub use projection_store::NduProjectionStoreError;
+pub use projection_store::NduProjectionStoreV1;
 pub use protocol::NduIterationContextV1;
 pub use protocol::NduIterationReceiptV1;
 pub use protocol::bind_solver_iteration_receipt_v1;
