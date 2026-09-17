@@ -1,3 +1,13 @@
+import {
+  ERROR_CODES,
+  fail,
+  positiveInteger,
+  requireDigest,
+  requireRecord,
+  stableId,
+  utf8Bytes,
+} from "./protocol.js";
+
 const RUNTIME_STATUSES = new Set([
   "ready",
   "degraded",
@@ -13,11 +23,7 @@ const OPERATION_ACTIONS = new Set([
   "request_rollback",
 ]);
 
-const STABLE_ID = /^[A-Za-z0-9._:-]{1,128}$/;
-const DIGEST = /^[0-9a-f]{64}$/;
-const ZERO_DIGEST = "0".repeat(64);
 const MAX_CANONICAL_INPUT_BYTES = 4096;
-const UTF8 = new TextEncoder();
 const LOCAL_RUNTIME_OBSERVATION_SCHEMA =
   "hepta.ui-control.local-runtime-observation.v1";
 const LOCAL_RUNTIME_PROJECTION_SCHEMA =
@@ -27,58 +33,22 @@ const LOCAL_OPERATION_PROPOSAL_INPUT_SCHEMA =
 const LOCAL_OPERATION_PROPOSAL_SCHEMA =
   "hepta.ui-control.local-operation-proposal.v1";
 
-function requireRecord(value, name) {
-  if (value === null || typeof value !== "object" || Array.isArray(value)) {
-    throw new TypeError(`${name} must be an object`);
-  }
-}
-
-function requireStableId(value, name) {
-  if (typeof value !== "string" || !STABLE_ID.test(value)) {
-    throw new TypeError(`${name} must be a bounded stable identifier`);
-  }
-  return value;
-}
-
-function requireRevision(value) {
-  if (!Number.isSafeInteger(value) || value < 1) {
-    throw new TypeError("revision must be a positive safe integer");
-  }
-  return value;
-}
-
-function requireDigest(value) {
-  if (typeof value !== "string" || !DIGEST.test(value)) {
-    throw new TypeError("digest must contain 64 lowercase hexadecimal characters");
-  }
-  return value;
-}
-
-function requireNonzeroDigest(value) {
-  const digest = requireDigest(value);
-  if (digest === ZERO_DIGEST) {
-    throw new TypeError("digest must be non-zero");
-  }
-  return digest;
-}
-
 function parseCanonicalInput(encoded, expectedKeys, name) {
   if (
     typeof encoded !== "string" ||
     encoded.length === 0 ||
     encoded.length > MAX_CANONICAL_INPUT_BYTES
   ) {
-    throw new TypeError(`${name} must be bounded canonical JSON`);
+    fail(ERROR_CODES.INVALID_INPUT, `${name} must be bounded canonical JSON`);
   }
-  const byteLength = UTF8.encode(encoded).byteLength;
-  if (byteLength > MAX_CANONICAL_INPUT_BYTES) {
-    throw new TypeError(`${name} exceeds the canonical JSON byte limit`);
+  if (utf8Bytes(encoded) > MAX_CANONICAL_INPUT_BYTES) {
+    fail(ERROR_CODES.INVALID_INPUT, `${name} exceeds the canonical JSON byte limit`);
   }
   let value;
   try {
     value = JSON.parse(encoded);
   } catch {
-    throw new TypeError(`${name} must be valid canonical JSON`);
+    fail(ERROR_CODES.INVALID_INPUT, `${name} must be valid canonical JSON`);
   }
   requireRecord(value, name);
   const canonicalKeys = [...expectedKeys].sort();
@@ -87,25 +57,28 @@ function parseCanonicalInput(encoded, expectedKeys, name) {
     keys.length !== canonicalKeys.length ||
     keys.some((key, index) => key !== canonicalKeys[index])
   ) {
-    throw new TypeError(`${name} contains missing, unknown, or unordered fields`);
+    fail(
+      ERROR_CODES.INVALID_INPUT,
+      `${name} contains missing, unknown, or unordered fields`,
+    );
   }
   const snapshot = Object.fromEntries(
     canonicalKeys.map((key) => [key, value[key]]),
   );
   if (JSON.stringify(snapshot) !== encoded) {
-    throw new TypeError(`${name} is not in canonical JSON form`);
+    fail(ERROR_CODES.INVALID_INPUT, `${name} is not in canonical JSON form`);
   }
   return Object.freeze(snapshot);
 }
 
 export function projectRuntime(observation) {
   requireRecord(observation, "observation");
-  const moduleId = requireStableId(observation.moduleId, "moduleId");
+  const moduleId = stableId(observation.moduleId, "moduleId");
   if (!RUNTIME_STATUSES.has(observation.status)) {
-    throw new TypeError("status is not a registered runtime state");
+    fail(ERROR_CODES.INVALID_INPUT, "status is not a registered runtime state");
   }
-  const revision = requireRevision(observation.revision);
-  const digest = requireDigest(observation.digest);
+  const revision = positiveInteger(observation.revision, "revision");
+  const digest = requireDigest(observation.digest, "digest");
 
   return Object.freeze({
     moduleId,
@@ -118,17 +91,17 @@ export function projectRuntime(observation) {
   });
 }
 
-export function buildOperationIntent(input) {
+export function buildOperationProposal(input) {
   requireRecord(input, "input");
-  const operationId = requireStableId(input.operationId, "operationId");
-  const subjectId = requireStableId(input.subjectId, "subjectId");
+  const operationId = stableId(input.operationId, "operationId");
+  const subjectId = stableId(input.subjectId, "subjectId");
   if (!OPERATION_ACTIONS.has(input.action)) {
-    throw new TypeError("action is not a registered operator request");
+    fail(ERROR_CODES.INVALID_INPUT, "action is not a registered operator request");
   }
-  const expectedRevision = requireRevision(input.expectedRevision);
+  const expectedRevision = positiveInteger(input.expectedRevision, "expectedRevision");
 
   return Object.freeze({
-    kind: "OperationIntentV1",
+    kind: "UiOperationProposalV1",
     operationId,
     subjectId,
     action: input.action,
@@ -136,6 +109,14 @@ export function buildOperationIntent(input) {
     authorityGranted: false,
     directStoreWrite: false,
   });
+}
+
+/**
+ * Compatibility alias. ui.control does not own or mint kernel.operations' OperationIntentV1.
+ * @deprecated Use buildOperationProposal.
+ */
+export function buildOperationIntent(input) {
+  return buildOperationProposal(input);
 }
 
 /**
@@ -151,9 +132,8 @@ export function projectRuntimeFromLocalCanonicalJson(encoded) {
     "local runtime observation",
   );
   if (observation.schema !== LOCAL_RUNTIME_OBSERVATION_SCHEMA) {
-    throw new TypeError("local runtime observation schema is unsupported");
+    fail(ERROR_CODES.INVALID_INPUT, "local runtime observation schema is unsupported");
   }
-  requireNonzeroDigest(observation.digest);
   return Object.freeze({
     localSchema: LOCAL_RUNTIME_PROJECTION_SCHEMA,
     ...projectRuntime(observation),
@@ -173,20 +153,15 @@ export function buildLocalOperationProposalFromCanonicalJson(encoded) {
     "local operation proposal",
   );
   if (input.schema !== LOCAL_OPERATION_PROPOSAL_INPUT_SCHEMA) {
-    throw new TypeError("local operation proposal schema is unsupported");
+    fail(ERROR_CODES.INVALID_INPUT, "local operation proposal schema is unsupported");
   }
-  const operationId = requireStableId(input.operationId, "operationId");
-  const subjectId = requireStableId(input.subjectId, "subjectId");
-  if (!OPERATION_ACTIONS.has(input.action)) {
-    throw new TypeError("action is not a registered operator request");
-  }
-  const expectedRevision = requireRevision(input.expectedRevision);
+  const proposal = buildOperationProposal(input);
   return Object.freeze({
     localSchema: LOCAL_OPERATION_PROPOSAL_SCHEMA,
-    operationId,
-    subjectId,
-    action: input.action,
-    expectedRevision,
+    operationId: proposal.operationId,
+    subjectId: proposal.subjectId,
+    action: proposal.action,
+    expectedRevision: proposal.expectedRevision,
     authorityGranted: false,
     directStoreWrite: false,
   });
