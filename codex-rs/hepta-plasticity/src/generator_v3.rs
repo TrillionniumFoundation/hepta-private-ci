@@ -106,7 +106,7 @@ pub fn generate_parameter_candidates_v3(
     })?;
 
     let mut candidates = vec![ParameterCandidateRequestV2 {
-        candidate_id: stable_id("candidate:no-change")?,
+        candidate_id: context_no_change_id(profile.selected_artifact_digest, &profile.window)?,
         kind: ParameterCandidateKindV2::NoChange,
         parameter_deltas: Vec::new(),
     }];
@@ -141,7 +141,11 @@ pub fn generate_parameter_candidates_v3(
         {
             continue;
         }
-        let candidate_id = content_candidate_id(&deltas)?;
+        let candidate_id = content_candidate_id(
+            profile.selected_artifact_digest,
+            &profile.window,
+            &deltas,
+        )?;
         if !seen_candidate_ids.insert(candidate_id.clone()) {
             continue;
         }
@@ -331,15 +335,35 @@ fn within_relative_limit(
     Ok(left <= right)
 }
 
+fn context_no_change_id(
+    selected_artifact_digest: Digest32,
+    window: &ProposalWindowV2,
+) -> Result<StableId, ParameterGeneratorErrorV3> {
+    let mut bytes = b"hepta.plasticity.parameter-candidate.no-change.v3\0".to_vec();
+    push_candidate_context(&mut bytes, selected_artifact_digest, window)?;
+    stable_id(&format!("candidate:no-change:{}", Digest32::of_bytes(&bytes)))
+}
+
 fn content_candidate_id(
+    selected_artifact_digest: Digest32,
+    window: &ProposalWindowV2,
     deltas: &[ParameterDeltaV2],
 ) -> Result<StableId, ParameterGeneratorErrorV3> {
-    let mut bytes = b"hepta.plasticity.parameter-candidate.v3\0".to_vec();
+    let mut bytes = b"hepta.plasticity.parameter-candidate.update.v3\0".to_vec();
+    push_candidate_context(&mut bytes, selected_artifact_digest, window)?;
     push_deltas(&mut bytes, deltas)?;
-    stable_id(&format!(
-        "candidate:update:{}",
-        Digest32::of_bytes(&bytes)
-    ))
+    stable_id(&format!("candidate:update:{}", Digest32::of_bytes(&bytes)))
+}
+
+fn push_candidate_context(
+    bytes: &mut Vec<u8>,
+    selected_artifact_digest: Digest32,
+    window: &ProposalWindowV2,
+) -> Result<(), ParameterGeneratorErrorV3> {
+    bytes.extend_from_slice(selected_artifact_digest.as_array());
+    push_id(bytes, &window.window_id)?;
+    bytes.extend_from_slice(window.window_digest.as_array());
+    Ok(())
 }
 
 fn digest_generated_set(
@@ -461,16 +485,58 @@ mod tests {
         let second = generate_parameter_candidates_v3(profile()).expect("generate again");
         assert_eq!(first, second);
         assert_eq!(first.candidates.len(), 3);
-        assert!(matches!(
-            first.candidates[0].kind,
-            ParameterCandidateKindV2::NoChange
-        ));
-        for candidate in first.candidates.iter().skip(1) {
+        assert_eq!(
+            first
+                .candidates
+                .iter()
+                .filter(|candidate| candidate.kind == ParameterCandidateKindV2::NoChange)
+                .count(),
+            1
+        );
+        for candidate in first
+            .candidates
+            .iter()
+            .filter(|candidate| candidate.kind == ParameterCandidateKindV2::Update)
+        {
             assert!(candidate.candidate_id.as_str().starts_with("candidate:update:"));
             assert_eq!(candidate.parameter_deltas.len(), 1);
         }
         verify_generated_parameter_candidates_v3(profile(), &first).expect("verify");
         assert!(!first.generator_digest.is_zero());
+    }
+
+    #[test]
+    fn candidate_identity_changes_with_artifact_or_window_context() {
+        let base = generate_parameter_candidates_v3(profile()).expect("base");
+        let base_update = base
+            .candidates
+            .iter()
+            .find(|candidate| candidate.kind == ParameterCandidateKindV2::Update)
+            .expect("base update")
+            .candidate_id
+            .clone();
+
+        let mut artifact = profile();
+        artifact.selected_artifact_digest = digest(b"other-artifact");
+        let artifact_update = generate_parameter_candidates_v3(artifact)
+            .expect("artifact")
+            .candidates
+            .into_iter()
+            .find(|candidate| candidate.kind == ParameterCandidateKindV2::Update)
+            .expect("artifact update")
+            .candidate_id;
+        assert_ne!(base_update, artifact_update);
+
+        let mut window = profile();
+        window.window.window_digest = digest(b"other-window");
+        let window_update = generate_parameter_candidates_v3(window)
+            .expect("window")
+            .candidates
+            .into_iter()
+            .find(|candidate| candidate.kind == ParameterCandidateKindV2::Update)
+            .expect("window update")
+            .candidate_id;
+        assert_ne!(base_update, window_update);
     }
 
     #[test]
