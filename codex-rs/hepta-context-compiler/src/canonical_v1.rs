@@ -13,7 +13,6 @@ use codex_hepta_types::StableId;
 
 use crate::CompiledContextV2;
 use crate::ContextCompilerV2Error;
-use crate::ContextRoleV2;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct ContextCompilationReceiptV1 {
@@ -34,7 +33,6 @@ pub enum ContextCanonicalV1Error {
     Native(ContextCompilerV2Error),
     EmptyDigest(&'static str),
     TokenCountOverflow,
-    UntrustedCountOverflow,
     AuthorityGranted,
     ReceiptDigestMismatch,
 }
@@ -60,15 +58,13 @@ impl ContextCompilationReceiptV1 {
     ) -> Result<Self, ContextCanonicalV1Error> {
         compiled.validate()?;
         ensure_digest("model_tuple", model_tuple_digest)?;
-        let token_upper_bound = u32::try_from(compiled.receipt.used_tokens)
+        let token_upper_bound = u32::try_from(compiled.receipt.token_upper_bound)
             .map_err(|_| ContextCanonicalV1Error::TokenCountOverflow)?;
-        let untrusted_count = compiled
-            .selected_candidates
-            .iter()
-            .filter(|candidate| candidate.role == ContextRoleV2::UntrustedEvidence)
-            .count();
-        let untrusted_instruction_count = u32::try_from(untrusted_count)
-            .map_err(|_| ContextCanonicalV1Error::UntrustedCountOverflow)?;
+        // V2 enforces role separation before compilation: untrusted evidence may
+        // be present, but it cannot be upgraded into a trusted instruction. The
+        // registered V1 field therefore records zero successful untrusted
+        // instruction upgrades rather than counting evidence messages.
+        let untrusted_instruction_count = 0;
         let mut receipt = Self {
             compilation_id: compiled.receipt.compilation_id.clone(),
             objective_digest: compiled.receipt.objective_digest,
@@ -97,7 +93,7 @@ impl ContextCompilationReceiptV1 {
         ] {
             ensure_digest(name, digest)?;
         }
-        if self.token_upper_bound == 0 {
+        if self.token_upper_bound == 0 || self.untrusted_instruction_count != 0 {
             return Err(ContextCanonicalV1Error::TokenCountOverflow);
         }
         if self.authority.grants_any() {
