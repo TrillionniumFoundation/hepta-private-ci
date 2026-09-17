@@ -1,10 +1,12 @@
 //! Owner-local representation of the `ObjectiveSourceEnvelopeV1` field grammar
-//! in `docs/readiness/PROTOCOLS.json`. This is not its admitted wire type.
+//! in `docs/readiness/PROTOCOLS.json`. This is not by itself an admitted wire
+//! objective.
 //!
-//! The separate `decode_source_envelope_json_v1` entrypoint checks JSON shape;
-//! no canonical encoder/digest, trust conversion or compiler adapter is provided.
-//! Strings preserve source spelling: identifier/timestamp syntax, NFC, canonical
-//! ordering and registered profiles require later admission.
+//! `decode_source_envelope_json_v1` checks bounded JSON shape. Canonical intent
+//! digesting, source authentication, profile binding and native compiler mapping
+//! are performed by `objective_admission`. Strings preserve source spelling:
+//! identifier/timestamp syntax, NFC, canonical ordering and registered semantics
+//! are admission responsibilities.
 
 use codex_hepta_types::Digest32;
 
@@ -27,6 +29,14 @@ pub enum ObjectivePredicateComparatorV1 {
     GreaterThanOrEqual,
 }
 
+/// Source spelling accepted by the bounded V1 decoder.
+///
+/// The V1 payload below carries one scalar `bound_q32`, so admission can
+/// faithfully execute only `Equal`, `LessThanOrEqual` and
+/// `GreaterThanOrEqual`. Strict/not-equal operators and the set operators are
+/// retained for shape compatibility but fail closed at admission. In
+/// particular, `In`/`NotInSet` are not executable until a versioned source
+/// contract carries an explicit bounded set payload.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum ObjectiveConstraintComparatorV1 {
     Equal,
@@ -124,8 +134,14 @@ pub struct ObjectiveProvenanceV1 {
     pub normalization_profile_digest: Digest32,
 }
 
-/// All eleven required structured-intent fields, including fields that the
-/// existing scalar compiler cannot yet represent or enforce.
+/// All eleven required structured-intent fields.
+///
+/// Structural representation is intentionally broader than executable V1
+/// admission semantics. Unsupported comparators or terminal hard constraints
+/// are preserved by decode/structure validation and rejected by admission rather
+/// than approximated. Rich enum/action-implication feasibility remains available
+/// through the direct registered-feasibility API, not through this scalar-bound
+/// source contract.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct ObjectiveStructuredIntentV1 {
     pub success_predicates: Vec<ObjectiveSourcePredicateV1>,
@@ -144,9 +160,9 @@ pub struct ObjectiveStructuredIntentV1 {
 /// Native source fields only. Even a structurally valid instance is neither
 /// authenticated nor eligible for publication or effect authorization.
 ///
-/// Digest fields retain supplied values; no bytes/profile are available here
-/// to verify their bindings. `observed_at` and `deadline` retain source text;
-/// UTC syntax, freshness and deadline enforcement are admission responsibilities.
+/// Digest fields retain supplied values until admission verifies their bindings.
+/// `observed_at` and `deadline` retain source text; UTC syntax, freshness and
+/// deadline enforcement are admission responsibilities.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct ObjectiveSourceEnvelopeV1 {
     pub request_id: String,
