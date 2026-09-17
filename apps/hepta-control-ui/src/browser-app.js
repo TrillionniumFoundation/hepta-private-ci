@@ -171,13 +171,22 @@ export class ControlPlaneApp {
     if (!view?.canMutate) {
       return;
     }
-    const request = Object.freeze({
-      operationId: this.#operationIdFactory(),
-      subjectId: module.moduleId,
-      action,
-      expectedRevision: module.revision,
-      displayedRevision: view.revision,
-    });
+    let request;
+    try {
+      request = Object.freeze({
+        operationId: this.#operationIdFactory(),
+        subjectId: module.moduleId,
+        action,
+        expectedRevision: module.revision,
+        displayedRevision: view.revision,
+      });
+    } catch (error) {
+      this.#announce(
+        `Request construction failed: ${error?.message ?? "unknown error"}`,
+        true,
+      );
+      return;
+    }
     await this.#executeConfirmed("operation", request, () =>
       this.#client.submitRequest(request),
     );
@@ -188,13 +197,22 @@ export class ControlPlaneApp {
     if (!view?.canMutate) {
       return;
     }
-    const rawScope = requireRecord(this.#stopScopeFactory(view), "stop scope");
-    const scope = snapshotCanonical(rawScope, "stop scope");
-    const request = Object.freeze({
-      operationId: this.#operationIdFactory(),
-      displayedRevision: view.revision,
-      scope,
-    });
+    let request;
+    try {
+      const rawScope = requireRecord(this.#stopScopeFactory(view), "stop scope");
+      const scope = snapshotCanonical(rawScope, "stop scope");
+      request = Object.freeze({
+        operationId: this.#operationIdFactory(),
+        displayedRevision: view.revision,
+        scope,
+      });
+    } catch (error) {
+      this.#announce(
+        `Request construction failed: ${error?.message ?? "unknown error"}`,
+        true,
+      );
+      return;
+    }
     await this.#executeConfirmed("stop", request, () => this.#client.requestStop(request));
   }
 
