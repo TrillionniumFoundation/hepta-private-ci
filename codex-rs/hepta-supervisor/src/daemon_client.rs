@@ -4,6 +4,7 @@ use std::sync::atomic::Ordering;
 use std::time::Duration;
 
 use codex_hepta_contracts::AgentId;
+use codex_hepta_contracts::Sha256Digest;
 use codex_hepta_fleet::ReleaseId;
 use codex_uds::UnixStream;
 use tokio::io::AsyncBufReadExt;
@@ -23,6 +24,8 @@ use crate::daemon_protocol::SupervisordMutationAccepted;
 use crate::daemon_protocol::SupervisordPayload;
 use crate::daemon_protocol::SupervisordRequest;
 use crate::daemon_protocol::SupervisordResponse;
+use crate::daemon_protocol::SupervisordSignedIntent;
+use crate::daemon_protocol::SupervisordSignedIntentResolution;
 
 pub struct SupervisordClient {
     socket_path: PathBuf,
@@ -63,6 +66,49 @@ impl SupervisordClient {
         agent_id: AgentId,
     ) -> Result<SupervisordAgentStatus, SupervisorError> {
         self.agent(SupervisordMethod::Snapshot { agent_id }).await
+    }
+
+    pub async fn inspect_signed_intent(
+        &self,
+        agent_id: AgentId,
+    ) -> Result<Option<SupervisordSignedIntent>, SupervisorError> {
+        match self
+            .send(SupervisordMethod::InspectSignedIntent { agent_id })
+            .await?
+        {
+            SupervisordPayload::SignedIntent { intent } => Ok(intent),
+            payload => unexpected(payload),
+        }
+    }
+
+    pub async fn resolve_signed_intent(
+        &self,
+        fence: SupervisordControlFence,
+        intent_sha256: Sha256Digest,
+        resolution: SupervisordSignedIntentResolution,
+    ) -> Result<
+        (
+            SupervisordSignedIntentResolution,
+            SupervisordSignedIntent,
+            SupervisordAgentStatus,
+        ),
+        SupervisorError,
+    > {
+        match self
+            .send(SupervisordMethod::ResolveSignedIntent {
+                fence,
+                intent_sha256,
+                resolution,
+            })
+            .await?
+        {
+            SupervisordPayload::SignedIntentResolved {
+                resolution,
+                intent,
+                agent,
+            } => Ok((resolution, intent, agent)),
+            payload => unexpected(payload),
+        }
     }
 
     pub async fn start(
