@@ -232,12 +232,39 @@ impl FinalUseAuthority {
         })
     }
 
-    /// Revalidate live authority after asynchronous work and linearize final
-    /// consumer entry. The mutex is released before running user code: a slow,
-    /// panicking or re-entrant callback cannot block future revocation updates.
-    /// A revocation that commits after this validation is ordered after entry
-    /// and cannot retroactively cancel an already-entered synchronous effect.
+    /// Revalidate live authority and hold the revocation fence through one
+    /// bounded local irreversible-entry boundary. The callback must not perform
+    /// remote work, wait for business terminality, or re-enter this authority.
+    /// This is the primitive used by effect adapters that must prevent a
+    /// revocation from committing between final validation and local dispatch.
     pub fn with_verified_use<T>(
+        &self,
+        token: VerifiedUseToken,
+        expected: &FinalUseBinding,
+        consumer: impl FnOnce() -> T,
+    ) -> Result<T, FinalUseError> {
+        if !Arc::ptr_eq(&self.0, &token.owner) || &token.grant.binding != expected {
+            return Err(FinalUseError::BindingMismatch);
+        }
+        let state = self
+            .0
+            .state
+            .lock()
+            .map_err(|_| FinalUseError::Unavailable)?;
+        if state.failed {
+            return Err(FinalUseError::Unavailable);
+        }
+        validate_live(&token.grant, &state.head)?;
+        let result = consumer();
+        drop(state);
+        Ok(result)
+    }
+
+    /// Revalidate live authority and linearize ordinary synchronous consumer
+    /// entry without holding the revocation mutex across consumer code. This is
+    /// intentionally separate from the irreversible-dispatch primitive above:
+    /// re-entrant or slow local consumers cannot stall revocation progress.
+    fn consume_verified_use<T>(
         &self,
         token: VerifiedUseToken,
         expected: &FinalUseBinding,
@@ -271,14 +298,17 @@ pub fn claim_final_use(
     authority.claim(signed, expected)
 }
 
-/// Closed-world B4 entrypoint for the final synchronous effect boundary.
+/// Closed-world B4 entrypoint for an ordinary final synchronous consumer. The
+/// authority is revalidated immediately before entry, but the consumer runs
+/// without holding the revocation mutex. Adapters that must fence an actual
+/// local irreversible dispatch use `FinalUseAuthority::with_verified_use`.
 pub fn deliver_final_use<T>(
     authority: &FinalUseAuthority,
     token: VerifiedUseToken,
     expected: &FinalUseBinding,
     consumer: impl FnOnce() -> T,
 ) -> Result<T, FinalUseError> {
-    authority.with_verified_use(token, expected, consumer)
+    authority.consume_verified_use(token, expected, consumer)
 }
 
 fn valid_head(head: &FinalUseRevocations) -> bool {
