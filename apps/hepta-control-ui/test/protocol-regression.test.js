@@ -6,6 +6,7 @@ import {
   projectRuntimeFromLocalCanonicalJson,
 } from "../src/control.js";
 import { RuntimeClient } from "../src/runtime-client.js";
+import { snapshotCanonical } from "../src/protocol.js";
 
 const D1 = "1".repeat(64);
 const D2 = "2".repeat(64);
@@ -211,4 +212,19 @@ test("unbound backend rejection cannot erase pending work", async () => {
   );
   assert.equal(client.readView().pending, 1);
   assert.equal(client.readView().indeterminate, 1);
+});
+
+
+test("canonical snapshot treats __proto__ as data instead of mutating prototypes", () => {
+  const input = JSON.parse('{"__proto__":{"polluted":true},"safe":1}');
+  const snapshot = snapshotCanonical(input, "prototype-safe input");
+
+  assert.equal(Object.getPrototypeOf(snapshot), Object.prototype);
+  assert.equal(Object.hasOwn(snapshot, "__proto__"), true);
+  assert.equal(snapshot.__proto__.polluted, true);
+  assert.equal(Object.prototype.polluted, undefined);
+  assert.equal(
+    JSON.stringify(snapshot),
+    '{"__proto__":{"polluted":true},"safe":1}',
+  );
 });
