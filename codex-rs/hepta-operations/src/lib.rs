@@ -24,6 +24,7 @@ mod error;
 mod ledger;
 mod model;
 mod outbox;
+mod worker;
 
 pub use destination_dedupe::DESTINATION_DEDUPE_SCHEMA_V1;
 pub use destination_dedupe::DestinationDedupeKey;
@@ -67,6 +68,11 @@ pub use outbox::MAX_MODEL_OUTBOX_RECORDS;
 pub use outbox::Outbox;
 pub use outbox::OutboxIntent;
 pub use outbox::OutboxState;
+pub use worker::DispatchRunReport;
+pub use worker::DurableDispatcher;
+pub use worker::DurableDispatcherConfig;
+pub use worker::FinalUseGrantProvider;
+pub use worker::dispatch_attempt_digest;
 
 #[cfg(test)]
 #[path = "destination_dedupe_tests.rs"]
