@@ -77,14 +77,14 @@ impl AuthoritativeCognitiveSnapshotProvider for AgentdAuthoritativeSnapshotProvi
     }
 }
 
-/// `body_generation` is the process launch identity. `authority_epoch` is the
-/// separately fenced current fleet lifecycle generation and must be rechecked by
-/// the product caller after this async read returns.
+/// The caller admits this method only while the Agent is Running and ready.
+/// `AgentdState::refresh_generation` defines that state as exactly
+/// `spawn_generation + 1`; state_control refreshes and rechecks readiness after
+/// this async call, independently fencing the authority epoch at final use.
 pub(crate) async fn read(
     store: &CognitiveStore,
     owner: &AgentId,
     body_generation: u64,
-    authority_epoch: u64,
     query: &str,
     limit: u16,
     ranker: Option<&std::sync::Arc<crate::PinnedCognitiveRanker>>,
@@ -95,12 +95,9 @@ pub(crate) async fn read(
         )
         .into());
     }
-    if authority_epoch == 0 {
-        return Err(CognitiveStoreError::Invalid(
-            "cognitive context requires a non-zero host authority epoch".to_string(),
-        )
-        .into());
-    }
+    let authority_epoch = body_generation.checked_add(1).ok_or_else(|| {
+        CognitiveStoreError::Invalid("cognitive authority epoch overflow".to_string())
+    })?;
     if let Some(ranker) = ranker {
         ranker
             .require_identity(owner, body_generation)
@@ -263,8 +260,8 @@ pub(crate) async fn read(
 
     // Final-use fence: reacquire a new single-transaction SQLite cut, rebuild
     // the same host vector, and require provider/vector/snapshot/lease equality.
-    // The outer Agentd caller independently refreshes the fleet lifecycle and
-    // compares `authority_epoch` after this async boundary returns.
+    // The outer Agentd caller independently refreshes the Running lifecycle
+    // generation after this async boundary returns.
     let final_now_unix_ms = now_millis()?;
     let current_cut = store
         .lane_c_snapshot(
