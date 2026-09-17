@@ -100,20 +100,20 @@ pub struct LeaseLedger {
     grants: BTreeMap<String, AllocationGrant>,
 }
 
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub(crate) struct LeaseLedgerStateV1 {
+    hosts: BTreeMap<String, HostObservation>,
+    grants: BTreeMap<String, AllocationGrant>,
+}
+
 impl LeaseLedger {
     pub fn new() -> Self {
         Self::default()
     }
 
     pub fn admit_host(&mut self, observation: HostObservation) -> Result<(), Error> {
-        validate_identity(&observation.host_id, "host")?;
-        validate_identity(&observation.failure_domain_id, "failure domain")?;
-        if observation.generation == 0
-            || observation.observed_at_ms >= observation.valid_until_ms
-            || observation.capacity.is_zero()
-        {
-            return Err(Error::HostCapacity);
-        }
+        validate_host(&observation)?;
         if let Some(current) = self.hosts.get(&observation.host_id) {
             if observation.generation < current.generation {
                 return Err(Error::InvalidGeneration);
@@ -123,6 +123,9 @@ impl LeaseLedger {
             }
             if observation == *current {
                 return Ok(());
+            }
+            if observation.generation > current.generation {
+                self.fence_host_generation(&observation.host_id)?;
             }
         } else if self.hosts.len() >= MAX_HOSTS {
             return Err(Error::CapacityExceeded);
@@ -253,12 +256,95 @@ impl LeaseLedger {
         self.grants.get(allocation_id)
     }
 
-    /// Drop retained terminal entries. This never changes live resource accounting.
     pub fn prune_terminal(&mut self, now_ms: u64) -> usize {
         let before = self.grants.len();
         self.grants
             .retain(|_, grant| !grant.revoked && grant.expires_at_ms > now_ms);
         before - self.grants.len()
+    }
+
+    pub(crate) fn snapshot_state(&self) -> LeaseLedgerStateV1 {
+        LeaseLedgerStateV1 {
+            hosts: self.hosts.clone(),
+            grants: self.grants.clone(),
+        }
+    }
+
+    pub(crate) fn restore_state(state: LeaseLedgerStateV1, now_ms: u64) -> Result<Self, Error> {
+        let ledger = Self {
+            hosts: state.hosts,
+            grants: state.grants,
+        };
+        ledger.validate_recovered(now_ms)?;
+        Ok(ledger)
+    }
+
+    pub(crate) fn validate_recovered(&self, now_ms: u64) -> Result<(), Error> {
+        if self.hosts.len() > MAX_HOSTS {
+            return Err(Error::CapacityExceeded);
+        }
+        if self.grants.len() > MAX_RETAINED_GRANTS {
+            return Err(Error::GrantCapacityExceeded);
+        }
+        for host in self.hosts.values() {
+            validate_host(host)?;
+        }
+        for grant in self.grants.values() {
+            validate_grant(grant)?;
+            let host = self.hosts.get(&grant.host_id).ok_or(Error::HostNotFound)?;
+            if grant.failure_domain_id != host.failure_domain_id
+                || grant.host_generation > host.generation
+            {
+                return Err(Error::StaleHost);
+            }
+            if !grant.revoked && grant.expires_at_ms > now_ms {
+                if grant.host_generation != host.generation
+                    || now_ms < host.observed_at_ms
+                    || now_ms >= host.valid_until_ms
+                    || grant.expires_at_ms > host.valid_until_ms
+                {
+                    return Err(Error::StaleHost);
+                }
+            }
+        }
+        if self.active_grant_count(now_ms) > MAX_ACTIVE_GRANTS {
+            return Err(Error::GrantCapacityExceeded);
+        }
+        for host_id in self.hosts.keys() {
+            let committed = self.committed_resources(host_id, now_ms)?;
+            let capacity = self.hosts.get(host_id).ok_or(Error::HostNotFound)?.capacity;
+            if !committed.fits(capacity) {
+                return Err(Error::CapacityExceeded);
+            }
+        }
+        Ok(())
+    }
+
+    pub(crate) fn hosts(&self) -> &BTreeMap<String, HostObservation> {
+        &self.hosts
+    }
+
+    pub(crate) fn grants(&self) -> &BTreeMap<String, AllocationGrant> {
+        &self.grants
+    }
+
+    fn fence_host_generation(&mut self, host_id: &str) -> Result<(), Error> {
+        if self
+            .grants
+            .values()
+            .any(|grant| grant.host_id == host_id && !grant.revoked && grant.lease_generation == u64::MAX)
+        {
+            return Err(Error::ArithmeticOverflow);
+        }
+        for grant in self
+            .grants
+            .values_mut()
+            .filter(|grant| grant.host_id == host_id && !grant.revoked)
+        {
+            grant.revoked = true;
+            grant.lease_generation += 1;
+        }
+        Ok(())
     }
 
     fn active_grant_count(&self, now_ms: u64) -> usize {
@@ -279,6 +365,18 @@ impl LeaseLedger {
                     .ok_or(Error::ArithmeticOverflow)
             })
     }
+}
+
+fn validate_host(observation: &HostObservation) -> Result<(), Error> {
+    validate_identity(&observation.host_id, "host")?;
+    validate_identity(&observation.failure_domain_id, "failure domain")?;
+    if observation.generation == 0
+        || observation.observed_at_ms >= observation.valid_until_ms
+        || observation.capacity.is_zero()
+    {
+        return Err(Error::HostCapacity);
+    }
+    Ok(())
 }
 
 fn validate_identity(value: &str, field: &'static str) -> Result<(), Error> {
