@@ -7,6 +7,7 @@
 
 // Retain the historical module path as well as explicit root exports.
 pub mod calibrated;
+pub mod qualified;
 
 pub use calibrated::AbstentionReasonV1;
 pub use calibrated::AssignmentModeV1;
