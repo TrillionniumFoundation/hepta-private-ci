@@ -2,6 +2,7 @@ use codex_hepta_contracts::Sha256Digest;
 use codex_hepta_matrix_protocol::MatrixEventId;
 use codex_hepta_matrix_protocol::MatrixRoomId;
 use codex_hepta_matrix_protocol::MatrixTransactionId;
+use codex_hepta_matrix_store::MatrixDispatchState;
 use codex_hepta_matrix_store::MatrixDurableStore;
 use matrix_sdk::ruma::RoomId;
 use matrix_sdk::ruma::events::AnySyncTimelineEvent;
@@ -13,8 +14,9 @@ use crate::MatrixSdkError;
 
 /// Reconcile transport-accepted or transport-unknown sends only after the
 /// homeserver exposes a matching event through the authenticated sync stream.
-/// This runs after the durable ingress transaction has committed so a process
-/// crash can replay the same response without inventing a second send.
+/// This runs before advancing the authoritative Hepta sync cursor. If a crash
+/// occurs between the observation write and the ingress commit, replay of the
+/// same event is idempotent and cannot invent a second send.
 pub(crate) async fn reconcile_sync_dispatches(
     store: &MatrixDurableStore,
     response: &SyncResponse,
@@ -35,7 +37,8 @@ pub(crate) async fn reconcile_sync_dispatches(
                 .map(|(room_id, room)| (room_id, &room.timeline)),
         )
     {
-        let room_id = MatrixRoomId::parse(native_room_id.as_str()).map_err(|_| MatrixSdkError::Sync)?;
+        let room_id =
+            MatrixRoomId::parse(native_room_id.as_str()).map_err(|_| MatrixSdkError::Sync)?;
         for event in &timeline.events {
             reconcile_raw_event(
                 store,
@@ -86,18 +89,39 @@ async fn reconcile_raw_event(
         .transpose()
         .map_err(|_| MatrixSdkError::Sync)?;
     let raw_digest = Sha256Digest::for_bytes(raw.json().get().as_bytes());
-    store
-        .observe_matrix_server_event(
-            txn_hint.as_ref(),
-            &event_id,
-            room_id,
-            binding_revision,
-            generation,
-            raw_digest.as_str(),
-            observed_at_ms,
-        )
-        .await
-        .map_err(|_| MatrixSdkError::Store)?;
+
+    let existing = match txn_hint.as_ref() {
+        Some(txn_id) => store
+            .matrix_dispatch_receipt(txn_id)
+            .await
+            .map_err(|_| MatrixSdkError::Store)?,
+        None => store
+            .matrix_dispatch_receipt_for_event(&event_id)
+            .await
+            .map_err(|_| MatrixSdkError::Store)?,
+    };
+    let already_observed = existing.as_ref().is_some_and(|receipt| {
+        receipt.archived
+            && matches!(
+                receipt.state,
+                MatrixDispatchState::ObservedSucceeded | MatrixDispatchState::Redacted
+            )
+            && receipt.observed_event_id.as_ref() == Some(&event_id)
+    });
+    if !already_observed {
+        store
+            .observe_matrix_server_event(
+                txn_hint.as_ref(),
+                &event_id,
+                room_id,
+                binding_revision,
+                generation,
+                raw_digest.as_str(),
+                observed_at_ms,
+            )
+            .await
+            .map_err(|_| MatrixSdkError::Store)?;
+    }
 
     if raw
         .get_field::<String>("type")
@@ -145,7 +169,8 @@ async fn reconcile_raw_event(
             .and_then(Value::as_str)
             .ok_or(MatrixSdkError::Sync)
             .and_then(|value| MatrixEventId::parse(value).map_err(|_| MatrixSdkError::Sync))?;
-        let redaction_bytes = serde_json::to_vec(redacted_because).map_err(|_| MatrixSdkError::Sync)?;
+        let redaction_bytes =
+            serde_json::to_vec(redacted_because).map_err(|_| MatrixSdkError::Sync)?;
         let redaction_digest = Sha256Digest::for_bytes(&redaction_bytes);
         store
             .observe_matrix_redaction(
