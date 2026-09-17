@@ -210,3 +210,38 @@ fn rejects_handler_identity_drift() {
             if expected == id("source") && actual == id("wrong")
     ));
 }
+
+#[test]
+fn descriptor_is_the_single_registration_source_and_isolation_is_enforced() {
+    let descriptor = OrganCapabilityDescriptorV1 {
+        driver: id("driver.source"),
+        driver_version: 7,
+        abi_version: ORGAN_DRIVER_ABI_V1,
+        implementation_digest: digest("source"),
+        execution_class: OrganExecutionClassV1::TrustedShortReadOnly,
+        authority: OrganAuthorityClassV1::ReadOnlyNoEffects,
+    };
+    let mut registry = OrganHandlerRegistryV1::new();
+    registry
+        .register_descriptor(descriptor.clone(), fixture_factory)
+        .expect("register descriptor");
+    assert_eq!(registry.descriptor(&id("driver.source")), Some(&descriptor));
+
+    let isolated = OrganCapabilityDescriptorV1 {
+        driver: id("driver.target"),
+        driver_version: 3,
+        abi_version: ORGAN_DRIVER_ABI_V1,
+        implementation_digest: digest("target"),
+        execution_class: OrganExecutionClassV1::IsolatedProcessReadOnly,
+        authority: OrganAuthorityClassV1::ReadOnlyNoEffects,
+    };
+    registry
+        .register_descriptor(isolated, fixture_factory)
+        .expect("registry can catalog isolated implementations");
+
+    assert!(matches!(
+        registry.create_host(graph(), &bindings()),
+        Err(OrganHandlerRegistryError::InProcessExecutionClassRequired(driver))
+            if driver == id("driver.target")
+    ));
+}
