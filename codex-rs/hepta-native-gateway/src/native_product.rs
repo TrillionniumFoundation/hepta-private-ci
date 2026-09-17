@@ -1,3 +1,4 @@
+use std::path::Path;
 use std::path::PathBuf;
 use std::sync::Arc;
 
@@ -26,6 +27,7 @@ use crate::shell_runtime::PlatformStatus;
 use crate::shell_runtime::SessionKey;
 use crate::shell_runtime::ViewInput;
 use crate::updater::SystemArtifactDigest;
+use crate::updater::SystemPlatformArtifactVerifier;
 use crate::updater::TransactionalUpdater;
 use crate::updater::UpdateCandidate;
 use crate::updater::UpdateDisposition;
@@ -42,6 +44,7 @@ type ProductUpdateVerifier = UpdateVerifier<
     SystemDetachedSignatureVerifier,
     SystemDetachedSignatureVerifier,
     SystemArtifactDigest,
+    SystemPlatformArtifactVerifier,
 >;
 
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
@@ -71,6 +74,7 @@ pub struct NativeProductConfig {
     pub grant_public_key: PathBuf,
     pub release_public_key: PathBuf,
     pub selection_public_key: PathBuf,
+    pub update_channel: String,
     pub effect_journal: PathBuf,
     pub update_journal: PathBuf,
     pub active_artifact: PathBuf,
@@ -148,6 +152,7 @@ pub struct NativeUpdateRequest {
     pub evidence_digest: String,
     pub producer_id: String,
     pub selector_id: String,
+    pub channel: String,
     pub release_signature_path: PathBuf,
     pub selection_signature_path: PathBuf,
 }
@@ -175,13 +180,15 @@ pub struct NativeProduct {
 impl NativeProduct {
     pub async fn open_from_env(config: NativeProductConfig) -> Result<Self> {
         validate_digest(&config.manifest_digest, "manifest digest")?;
+        validate_id(&config.update_channel, "update channel")?;
         let platform = NativePlatform::current();
         if platform == NativePlatform::Unsupported {
             bail!("ui.native supports Windows, macOS and Linux only");
         }
         let state_root = HeptaStateRoot::from_env()?;
         let runtime = Arc::new(HeptaRuntime::open_existing(state_root).await?);
-        let backend = LocalRuntimeBackend::new(Arc::clone(&runtime), config.manifest_digest.clone())?;
+        let backend =
+            LocalRuntimeBackend::new(Arc::clone(&runtime), config.manifest_digest.clone())?;
         let platform_adapter = DurablePlatformAdapter::open(
             platform,
             PlatformPolicy::allow(config.capabilities.actions()),
@@ -206,7 +213,10 @@ impl NativeProduct {
             config.windows_dpapi_session_path,
         )?;
         if config.persist_session_reference {
-            session_store.save(&format!("{}:{}", session.session_id, session.generation))?;
+            let current_reference = format!("{}:{}", session.session_id, session.generation);
+            if session_store.load()?.as_deref() != Some(current_reference.as_str()) {
+                session_store.save(&current_reference)?;
+            }
         }
 
         let release_signatures =
@@ -217,6 +227,8 @@ impl NativeProduct {
             release_signatures,
             selection_signatures,
             SystemArtifactDigest,
+            SystemPlatformArtifactVerifier,
+            config.update_channel,
             platform,
             std::env::consts::ARCH.to_string(),
             NATIVE_PROTOCOL_VERSION,
@@ -322,6 +334,7 @@ impl NativeProduct {
             evidence_digest: request.evidence_digest,
             producer_id: request.producer_id,
             selector_id: request.selector_id,
+            channel: request.channel,
             platform: NativePlatform::current(),
             architecture: std::env::consts::ARCH.to_string(),
             backend_protocol_version: NATIVE_PROTOCOL_VERSION,
@@ -355,7 +368,7 @@ fn map_update_status(value: UpdateDisposition) -> NativeUpdateStatus {
     }
 }
 
-fn read_bounded_signature(path: &PathBuf) -> Result<Vec<u8>> {
+fn read_bounded_signature(path: &Path) -> Result<Vec<u8>> {
     if !path.is_absolute() {
         bail!("native update signature path must be absolute");
     }
@@ -378,9 +391,23 @@ fn platform_name(platform: NativePlatform) -> &'static str {
 fn validate_digest(value: &str, name: &str) -> Result<()> {
     if value.len() != 64
         || value.bytes().all(|byte| byte == b'0')
-        || !value.bytes().all(|byte| byte.is_ascii_digit() || matches!(byte, b'a'..=b'f'))
+        || !value
+            .bytes()
+            .all(|byte| byte.is_ascii_digit() || matches!(byte, b'a'..=b'f'))
     {
         bail!("native {name} must be a non-zero lowercase SHA-256 digest");
+    }
+    Ok(())
+}
+
+fn validate_id(value: &str, name: &str) -> Result<()> {
+    if value.is_empty()
+        || value.len() > 128
+        || !value
+            .bytes()
+            .all(|byte| byte.is_ascii_alphanumeric() || matches!(byte, b'.' | b'_' | b':' | b'-'))
+    {
+        bail!("native {name} must be a bounded stable identifier");
     }
     Ok(())
 }
