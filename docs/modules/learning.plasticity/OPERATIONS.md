@@ -1,31 +1,34 @@
 # learning.plasticity production operating profile
 
-This is the concrete host profile for the authenticated plasticity proposal writer.
+This is the concrete host profile for the authenticated plasticity proposal adapter.
 The numbers below are operational stop/alert thresholds, not measured performance
 claims. A deployment may be stricter but must not silently relax them.
 
 ## Authority and ownership
 
-The product caller is `codex-rs/hepta-intelligence::propose_authenticated_parameter_plasticity_v1`.
+The product-workspace adapter entrypoint is
+`codex-rs/hepta-intelligence::propose_authenticated_parameter_plasticity_v1`.
 It can construct and persist a proposal only. It has no selection, training,
-installation, runtime-topology, promotion or release authority.
+installation, runtime-topology, promotion or release authority. No selected production
+host callsite is currently claimed; a host must explicitly invoke this adapter before
+product execution can be asserted.
 
-The host owns three independent facts: current learning-evidence trust state, current
-artifact/evidence frontier witness, and the proposal-registry anchor/fence. The
+The selected host owns three independent facts: current learning-evidence trust state,
+current artifact/evidence frontier witness, and the proposal-registry anchor/fence. The
 proposal registry file MUST NOT be the only copy of its acknowledged anchor. Writer
 fence issuance and anchor persistence MUST be serialized by the host.
 
-A product append is acknowledged only after `PlasticityAnchorCommitterV1` durably
+An adapter append is acknowledged only after `PlasticityAnchorCommitterV1` durably
 persists the resulting current registry anchor in that independent rollback domain.
-If the anchor commit fails after the registry append, the product writer is poisoned,
+If the anchor commit fails after the registry append, the adapter writer is poisoned,
 returns `AnchorPersistenceFailed`, and MUST NOT perform another operation until an
 anchored reopen reconciles the durable file with previously acknowledged history.
 
 ## Required events
 
-The host MUST emit one bounded event for: `proposal_attempt`, `generator_rejected`,
-`evidence_rejected`, `evaluation_rejected`, `registry_conflict`, `registry_busy`,
-`registry_indeterminate`, `registry_poisoned`, `anchor_commit_failed`,
+A selected host MUST emit one bounded event for: `proposal_attempt`,
+`generator_rejected`, `evidence_rejected`, `evaluation_rejected`, `registry_conflict`,
+`registry_busy`, `registry_indeterminate`, `registry_poisoned`, `anchor_commit_failed`,
 `anchor_mismatch`, `acknowledged_history_missing`, and `proposal_appended`.
 
 Events contain digests/IDs and numeric counts only. Raw model parameters, signatures,
@@ -53,6 +56,9 @@ credentials, dataset records and payload bytes are prohibited from logs.
   for the bounded profile. Exceeding this for 15 minutes disables new plasticity
   attempts but does not affect the currently selected runtime artifact.
 
+These thresholds are the required operating profile for a future selected host. They
+are not measured SLO evidence until a real host callsite and telemetry stream exist.
+
 ## Recovery runbook
 
 1. Freeze new plasticity attempts; do not modify the selected runtime artifact.
@@ -75,10 +81,11 @@ credentials, dataset records and payload bytes are prohibited from logs.
 
 ## Canary and qualification
 
-A production activation claim requires an exact-head and synthetic-merge run covering:
-V3 deterministic generation, trust-region rejection, signature expiry/revocation,
-generator/evaluator controller collision, missing evaluation, stale/frontier witness,
-anchored reopen, failed external-anchor commit and poisoned-writer behavior, old-prefix
-rollback, incomplete-tail recovery, writer-fence mismatch, and topology self-activation
-denial. Until those receipts exist, activation and release remain false even when
-source compilation/tests pass.
+A production activation claim requires an actual selected-host callsite plus an
+exact-head and synthetic-merge run covering: V3 deterministic generation, trust-region
+rejection, signature expiry/revocation, generator/evaluator controller collision,
+missing evaluation, stale/frontier witness, anchored reopen, failed external-anchor
+commit and poisoned-writer behavior, old-prefix rollback, incomplete-tail recovery,
+writer-fence mismatch, and topology self-activation denial. Until those receipts
+exist, product execution, activation and release remain false even when source
+compilation/tests pass.
