@@ -10,7 +10,17 @@ const D2 = "2".repeat(64);
 const D3 = "3".repeat(64);
 const D5 = "5".repeat(64);
 const W1 = "a".repeat(64);
-const NAV = Object.freeze({ kind: "navigate", url: "https://example.com/path" });
+
+function navigationAction(url = "https://example.com/path") {
+  return Object.freeze({
+    kind: "navigate",
+    url,
+    policyDigest: D1,
+    expectedRevision: 7,
+  });
+}
+
+const NAV = navigationAction();
 const NAV_DIGEST = browserActionDigest(NAV);
 
 function input(overrides = {}) {
@@ -211,10 +221,10 @@ test("reconciliation and cleanup remain available after grant and deadline expir
 test("typed action bytes are bound to final payload digest and destination", async () => {
   const { host, fakeDriver } = await preparedHost();
   await assert.rejects(
-    host.navigateOrAct(operation({ typedAction: { kind: "navigate", url: "https://example.com/other" } })),
+    host.navigateOrAct(operation({ typedAction: navigationAction("https://example.com/other") })),
     /does not bind typedAction/,
   );
-  const evil = { kind: "navigate", url: "https://other.example/path" };
+  const evil = navigationAction("https://other.example/path");
   await assert.rejects(
     host.navigateOrAct(operation({ typedAction: evil, finalPayloadDigest: browserActionDigest(evil) })),
     /does not match destinationOrigin/,
@@ -275,7 +285,7 @@ test("driver timeout aborts the call and preserves an indeterminate operation", 
 test("replay rejects immutable semantic substitution", async () => {
   const { host } = await preparedHost({ driver: driver({ terminalOnReconcile: false }) });
   await host.navigateOrAct(operation());
-  const changed = { kind: "navigate", url: "https://example.com/changed" };
+  const changed = navigationAction("https://example.com/changed");
   await assert.rejects(
     host.navigateOrAct(operation({
       typedAction: changed,
