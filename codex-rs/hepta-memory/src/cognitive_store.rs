@@ -28,6 +28,7 @@ use crate::cognitive_kg_store::ProjectionHead;
 use crate::cognitive_kg_store::ProjectionNode;
 use crate::cognitive_kg_store::input_heads_digest;
 use crate::cognitive_kg_store::output_digest;
+use crate::cognitive_kg_store::v2;
 use crate::cognitive_model::COGNITIVE_SCHEMA_VERSION;
 use crate::cognitive_model::CognitiveAccess;
 use crate::cognitive_model::CognitiveScope;
@@ -1099,11 +1100,23 @@ async fn verify_current_projection_contents(
             )));
         }
 
-        let expected_output = output_digest(&projection_scope, &expected_nodes, &expected_edges);
+        let expected_legacy_output = output_digest(&projection_scope, &expected_nodes, &expected_edges);
+        let expected_v2_output = v2::generation_digest(
+            &projection_scope,
+            u64::try_from(generation).map_err(|_| {
+                CognitiveStoreError::Corrupt("negative KG generation".to_string())
+            })?,
+            &expected_input,
+            &heads,
+            &expected_nodes,
+            &expected_edges,
+        )?;
         let stored_output: String = current.try_get("output_sha256").map_err(unavailable)?;
-        if expected_output.as_str() != stored_output {
+        if expected_legacy_output.as_str() != stored_output
+            && expected_v2_output.as_str() != stored_output
+        {
             return Err(CognitiveStoreError::Corrupt(format!(
-                "KG current projection `{projection_scope}` output digest failed canonical recomputation"
+                "KG current projection `{projection_scope}` output digest failed legacy and V2 canonical recomputation"
             )));
         }
     }
