@@ -1,5 +1,25 @@
 use super::*;
+use crate::ProductionAuthorityLease;
+use crate::ProductionAuthorityToken;
 use pretty_assertions::assert_eq;
+
+fn recovery_authority(owner: &AgentId) -> ProductionAuthorityLease {
+    let token = ProductionAuthorityToken::from_verified_bytes(b"recovery-fence-token".to_vec())
+        .expect("authority token");
+    let now = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .expect("clock")
+        .as_secs();
+    ProductionAuthorityLease::from_verified_parts(
+        owner.clone(),
+        Sha256Digest::for_bytes(b"recovery-grant"),
+        17,
+        23,
+        now + 3_600,
+        token,
+    )
+    .expect("recovery authority")
+}
 
 #[tokio::test]
 async fn cold_reopen_reads_canonical_snapshot_without_mutating_source() {
@@ -41,6 +61,81 @@ async fn cold_reopen_reads_canonical_snapshot_without_mutating_source() {
         ));
         assert_eq!(capture_recovery_tree(&root), before);
     }
+}
+
+#[tokio::test]
+async fn admitted_cold_image_promotes_to_fresh_inode_under_external_fence() {
+    let temp = TempDir::new().expect("temp");
+    let owner = agent_id(104);
+    let agent_layout = layout(&temp, &owner);
+    let (store, _, _) = seeded(&temp, &owner).await;
+    let anchor = store.recovery_anchor().await.expect("current witness");
+    let canonical = store.path().to_path_buf();
+    let old_inode = std::fs::metadata(&canonical).expect("metadata").ino();
+    store.pool.close().await;
+
+    let admitted = CognitiveStore::open_read_only_recovery(
+        &agent_layout,
+        CognitiveRecoveryRequirement::ExactCurrentCut(&anchor),
+    )
+    .await
+    .expect("admit exact cold image");
+    let authority = recovery_authority(&owner);
+    let verifier = |lease: &ProductionAuthorityLease, expected: &AgentId| {
+        if &lease.agent_id == expected {
+            Ok(())
+        } else {
+            Err("owner mismatch".to_string())
+        }
+    };
+    let recovered = admitted
+        .promote_to_fresh_owner(&agent_layout, &authority, &verifier)
+        .await
+        .expect("promote verified image");
+    let new_inode = std::fs::metadata(&canonical).expect("new metadata").ino();
+    assert_ne!(new_inode, old_inode, "recovery must publish a fresh inode");
+    assert_eq!(
+        recovered.recovery_anchor().await.expect("reopened cut"),
+        anchor
+    );
+    let root = canonical.parent().expect("cognitive root");
+    assert!(std::fs::read_dir(root).expect("entries").any(|entry| {
+        entry
+            .expect("entry")
+            .file_name()
+            .to_string_lossy()
+            .ends_with(".quarantine")
+    }));
+    recovered.pool.close().await;
+}
+
+#[tokio::test]
+async fn rejected_external_fence_cannot_publish_or_quarantine_recovery_image() {
+    let temp = TempDir::new().expect("temp");
+    let owner = agent_id(105);
+    let agent_layout = layout(&temp, &owner);
+    let (store, _, _) = seeded(&temp, &owner).await;
+    let anchor = store.recovery_anchor().await.expect("current witness");
+    let root = store.path().parent().expect("root").to_path_buf();
+    store.pool.close().await;
+    let before = capture_recovery_tree(&root);
+    let admitted = CognitiveStore::open_read_only_recovery(
+        &agent_layout,
+        CognitiveRecoveryRequirement::ExactCurrentCut(&anchor),
+    )
+    .await
+    .expect("admit exact cold image");
+    let authority = recovery_authority(&owner);
+    let denied = |_lease: &ProductionAuthorityLease, _expected: &AgentId| {
+        Err("supervisor fence is not current".to_string())
+    };
+    assert!(matches!(
+        admitted
+            .promote_to_fresh_owner(&agent_layout, &authority, &denied)
+            .await,
+        Err(CognitiveRecoveryError::AccessDenied(_))
+    ));
+    assert_eq!(capture_recovery_tree(&root), before);
 }
 
 #[tokio::test]
