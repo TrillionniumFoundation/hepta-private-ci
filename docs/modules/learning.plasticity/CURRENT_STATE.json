@@ -69,6 +69,7 @@
       "surface": "propose_topology_v2",
       "source": "codex-rs/hepta-plasticity/src/topology_v2.rs",
       "tests": [
+        "codex-rs/hepta-intelligence/src/plasticity_topology_product_tests.rs",
         "qualification/lane-f-shadow/tests/plasticity_structural_canary.rs"
       ]
     },
@@ -79,6 +80,7 @@
       "source": "codex-rs/hepta-plasticity/src/topology_governance_v1.rs",
       "tests": [
         "codex-rs/hepta-plasticity/src/topology_governance_v1.rs",
+        "codex-rs/hepta-intelligence/src/plasticity_topology_product_tests.rs",
         "qualification/lane-f-shadow/tests/plasticity_structural_canary.rs"
       ]
     },
@@ -88,6 +90,7 @@
       "surface": "DurableTopologyProposalRegistryV2",
       "source": "codex-rs/hepta-plasticity/src/durable_topology_registry_v2.rs",
       "tests": [
+        "codex-rs/hepta-intelligence/src/plasticity_topology_product_tests.rs",
         "qualification/lane-f-shadow/tests/plasticity_structural_canary.rs"
       ]
     },
@@ -97,7 +100,7 @@
       "surface": "propose_authenticated_topology_plasticity_v1",
       "source": "codex-rs/hepta-intelligence/src/plasticity_topology_product.rs",
       "tests": [
-        "qualification/lane-f-shadow/tests/plasticity_structural_canary.rs"
+        "codex-rs/hepta-intelligence/src/plasticity_topology_product_tests.rs"
       ]
     },
     {
