@@ -6,11 +6,11 @@
 //! module authenticates the complete logical cut against an independently held
 //! CURRENT anchor before the candidate can replace the canonical pathname.
 
+use super::super::CognitiveRecoveryError;
+use super::super::CognitiveRecoveryRequirement;
 use super::super::capture;
 use super::super::recovery_error;
 use super::super::validate_requirement;
-use super::super::CognitiveRecoveryError;
-use super::super::CognitiveRecoveryRequirement;
 use crate::COGNITIVE_DB_FILENAME;
 use crate::CognitiveStore;
 use codex_hepta_paths::HeptaAgentLayout;
@@ -203,7 +203,9 @@ fn cleanup_stage(database: &Path) {
 fn require_checkpointed_stage(database: &Path) -> Result<(), CognitiveRecoveryError> {
     let wal = sidecar(database, "-wal");
     match std::fs::symlink_metadata(&wal) {
-        Ok(metadata) if metadata.is_file() && metadata.len() == 0 => {
+        Ok(metadata)
+            if metadata.is_file() && !metadata.file_type().is_symlink() && metadata.len() == 0 =>
+        {
             std::fs::remove_file(&wal)
                 .map_err(|error| CognitiveRecoveryError::Indeterminate(error.to_string()))?;
         }
@@ -217,7 +219,7 @@ fn require_checkpointed_stage(database: &Path) -> Result<(), CognitiveRecoveryEr
     }
     let shm = sidecar(database, "-shm");
     match std::fs::symlink_metadata(&shm) {
-        Ok(metadata) if metadata.is_file() => {
+        Ok(metadata) if metadata.is_file() && !metadata.file_type().is_symlink() => {
             std::fs::remove_file(&shm)
                 .map_err(|error| CognitiveRecoveryError::Indeterminate(error.to_string()))?;
         }
@@ -229,11 +231,15 @@ fn require_checkpointed_stage(database: &Path) -> Result<(), CognitiveRecoveryEr
             ));
         }
     }
-    if sidecar(database, "-journal").exists() {
-        cleanup_stage(database);
-        return Err(CognitiveRecoveryError::Indeterminate(
-            "recovery staging rollback journal is unexpected".to_string(),
-        ));
+    let journal = sidecar(database, "-journal");
+    match std::fs::symlink_metadata(&journal) {
+        Err(error) if error.kind() == std::io::ErrorKind::NotFound => {}
+        Ok(_) | Err(_) => {
+            cleanup_stage(database);
+            return Err(CognitiveRecoveryError::Indeterminate(
+                "recovery staging rollback journal is unexpected".to_string(),
+            ));
+        }
     }
     sync_file(database)
 }
@@ -245,21 +251,16 @@ fn quarantine_source(
     let name = database.file_name().ok_or_else(|| {
         CognitiveRecoveryError::Indeterminate("cognitive database filename missing".to_string())
     })?;
+    let components = [
+        (database.to_path_buf(), ""),
+        (sidecar(database, "-wal"), "-wal"),
+        (sidecar(database, "-shm"), "-shm"),
+        (sidecar(database, "-journal"), "-journal"),
+    ];
     let mut moved = Vec::with_capacity(MAX_QUARANTINE_COMPONENTS);
-    for source in [
-        database.to_path_buf(),
-        sidecar(database, "-wal"),
-        sidecar(database, "-shm"),
-        sidecar(database, "-journal"),
-    ] {
+    for (source, suffix) in components {
         match std::fs::symlink_metadata(&source) {
             Ok(metadata) if metadata.is_file() && !metadata.file_type().is_symlink() => {
-                let suffix = source
-                    .as_os_str()
-                    .to_string_lossy()
-                    .strip_prefix(&database.as_os_str().to_string_lossy().to_string())
-                    .unwrap_or("")
-                    .to_string();
                 let mut destination_name = name.to_os_string();
                 destination_name.push(suffix);
                 let destination = quarantine.join(destination_name);
