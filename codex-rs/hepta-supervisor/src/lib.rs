@@ -17,6 +17,7 @@ mod recovery;
 mod release;
 mod restart_journal;
 mod restart_policy;
+mod restart_state;
 mod robrix_projection;
 mod robrix_protocol;
 mod runtime;
