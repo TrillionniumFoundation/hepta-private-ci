@@ -144,7 +144,6 @@ pub struct DurableOperationRecord {
     pub state: DurableOperationState,
     pub dispatch_digest: Option<Digest32>,
     pub terminal_digest: Option<Digest32>,
-    pub terminal_observer_id: Option<StableId>,
     pub created_at_ms: i64,
     pub updated_at_ms: i64,
     pub terminal_at_ms: Option<i64>,
