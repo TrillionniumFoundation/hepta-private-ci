@@ -1,3 +1,7 @@
+use codex_app_server_protocol::JSONRPCErrorError;
+use codex_app_server_protocol::Turn;
+use codex_app_server_protocol::TurnItemsView;
+
 use super::*;
 
 fn id(value: &str) -> StableId {
@@ -22,6 +26,10 @@ fn intent() -> CodexOperationIntent {
     }
 }
 
+fn prepared() -> PreparedCodexRequest {
+    prepare(1_000, intent()).expect("prepared request")
+}
+
 fn terminal(outcome: TerminalOutcome) -> AppServerObservation {
     AppServerObservation::terminal(
         id("thread:1"),
@@ -30,6 +38,33 @@ fn terminal(outcome: TerminalOutcome) -> AppServerObservation {
         digest(b"response"),
     )
     .expect("terminal observation")
+}
+
+fn completed_notification(thread: &str, turn: &str, status: TurnStatus) -> ServerNotification {
+    ServerNotification::TurnCompleted(TurnCompletedNotification {
+        thread_id: thread.to_string(),
+        turn: Turn {
+            id: turn.to_string(),
+            items: Vec::new(),
+            items_view: TurnItemsView::Full,
+            status,
+            error: None,
+            started_at: None,
+            completed_at: None,
+            duration_ms: None,
+        },
+    })
+}
+
+fn server_error(code: i64, message: &str) -> TypedRequestError {
+    TypedRequestError::Server {
+        method: TURN_START_METHOD.to_string(),
+        source: JSONRPCErrorError {
+            code,
+            message: message.to_string(),
+            data: None,
+        },
+    }
 }
 
 #[test]
@@ -63,6 +98,109 @@ fn terminal_failure_is_never_collapsed_into_success() {
     assert_eq!(interrupted.status, AdapterStatus::Interrupted);
     assert_eq!(interrupted.retry, RetryDisposition::DoNotRetry);
     assert_ne!(failed.receipt_digest, interrupted.receipt_digest);
+}
+
+#[test]
+fn v2_turn_completed_notification_is_the_terminal_source_of_truth() {
+    for (turn_status, expected) in [
+        (TurnStatus::Completed, AdapterStatus::Succeeded),
+        (TurnStatus::Failed, AdapterStatus::Failed),
+        (TurnStatus::Interrupted, AdapterStatus::Interrupted),
+    ] {
+        let notification = completed_notification("thread:1", "turn:protocol", turn_status);
+        let receipt = observe_server_notification(&prepared(), &notification)
+            .expect("protocol event should map")
+            .expect("matching terminal event must produce a receipt");
+        assert_eq!(receipt.status, expected);
+        assert_eq!(receipt.retry, RetryDisposition::DoNotRetry);
+        assert_eq!(receipt.thread_id, id("thread:1"));
+        assert_eq!(receipt.turn_id, Some(id("turn:protocol")));
+        assert!(receipt.response_digest.is_some());
+        assert!(!receipt.model_authority);
+        assert!(!receipt.provider_authority);
+        assert!(!receipt.authority.grants_any());
+    }
+}
+
+#[test]
+fn unrelated_and_nonterminal_protocol_notifications_fail_closed() {
+    let unrelated = completed_notification("thread:other", "turn:1", TurnStatus::Completed);
+    assert_eq!(
+        observe_server_notification(&prepared(), &unrelated).expect("unrelated event"),
+        None
+    );
+
+    let in_progress = completed_notification("thread:1", "turn:1", TurnStatus::InProgress);
+    assert_eq!(
+        observe_server_notification(&prepared(), &in_progress),
+        Err(Error::NonTerminalCompletion)
+    );
+}
+
+#[test]
+fn lost_or_disconnected_event_stream_requires_reconciliation() {
+    for event in [
+        AppServerEvent::Lagged { skipped: 3 },
+        AppServerEvent::Disconnected {
+            message: "connection lost".to_string(),
+        },
+    ] {
+        let receipt = observe_app_server_event(&prepared(), &event)
+            .expect("uncertain stream event should classify")
+            .expect("uncertain stream event must produce receipt");
+        assert_eq!(receipt.status, AdapterStatus::Indeterminate);
+        assert_eq!(receipt.retry, RetryDisposition::ReconcileBeforeRetry);
+        assert_eq!(receipt.turn_id, None);
+        assert_eq!(receipt.response_digest, None);
+    }
+}
+
+#[test]
+fn turn_start_overload_and_closed_validation_errors_are_retry_safe() {
+    let overloaded = observe_turn_start_error(
+        &prepared(),
+        &server_error(JSON_RPC_OVERLOADED, "Server overloaded; retry later."),
+    )
+    .expect("overload response");
+    assert_eq!(overloaded.status, AdapterStatus::Overloaded);
+    assert_eq!(overloaded.retry, RetryDisposition::RetrySafe);
+    assert!(overloaded.response_digest.is_some());
+
+    for code in [JSON_RPC_INVALID_REQUEST, JSON_RPC_INVALID_PARAMS] {
+        let rejected = observe_turn_start_error(
+            &prepared(),
+            &server_error(code, "turn/start rejected before admission"),
+        )
+        .expect("closed validation response");
+        assert_eq!(rejected.status, AdapterStatus::Rejected);
+        assert_eq!(rejected.retry, RetryDisposition::RetrySafe);
+        assert!(rejected.response_digest.is_some());
+    }
+}
+
+#[test]
+fn unclassified_server_error_is_not_blindly_retryable() {
+    let receipt = observe_turn_start_error(
+        &prepared(),
+        &server_error(-32_000, "server failed after request handling began"),
+    )
+    .expect("generic server failure");
+    assert_eq!(receipt.status, AdapterStatus::Indeterminate);
+    assert_eq!(receipt.retry, RetryDisposition::ReconcileBeforeRetry);
+    assert!(receipt.response_digest.is_some());
+
+    let wrong_method = TypedRequestError::Server {
+        method: "thread/start".to_string(),
+        source: JSONRPCErrorError {
+            code: JSON_RPC_INVALID_REQUEST,
+            message: "wrong method".to_string(),
+            data: None,
+        },
+    };
+    assert_eq!(
+        observe_turn_start_error(&prepared(), &wrong_method),
+        Err(Error::UnexpectedMethod)
+    );
 }
 
 #[test]
@@ -124,6 +262,21 @@ fn uncertain_timeout_requires_reconciliation_and_cancel_is_not_terminal_success(
     assert_eq!(cancelled.status, AdapterStatus::Cancelled);
     assert_eq!(cancelled.retry, RetryDisposition::DoNotRetry);
     assert_eq!(cancelled.response_digest, None);
+}
+
+#[test]
+fn quarantine_is_terminal_for_the_operation_identity() {
+    let receipt = adapt(
+        1_000,
+        intent(),
+        Some(AppServerObservation::quarantined(
+            id("thread:1"),
+            Some(id("turn:1")),
+        )),
+    )
+    .expect("quarantine observation");
+    assert_eq!(receipt.status, AdapterStatus::Quarantined);
+    assert_eq!(receipt.retry, RetryDisposition::DoNotRetry);
 }
 
 #[test]
