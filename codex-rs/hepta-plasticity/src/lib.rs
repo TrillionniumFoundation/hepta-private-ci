@@ -8,6 +8,7 @@
 
 mod durable_registry;
 mod generator_v3;
+mod governed_v3;
 mod legacy;
 mod parameter_v2;
 mod registry;
@@ -24,6 +25,16 @@ pub use generator_v3::ParameterGeneratorSignalV3;
 pub use generator_v3::generate_parameter_candidates_v3;
 pub use generator_v3::generator_attestation_payload_v3;
 pub use generator_v3::verify_generated_parameter_candidates_v3;
+pub use governed_v3::GovernedParameterProposalAttestationsV3;
+pub use governed_v3::GovernedParameterProposalErrorV3;
+pub use governed_v3::GovernedParameterProposalRequestV3;
+pub use governed_v3::GovernedParameterProposalV3;
+pub use governed_v3::PlasticityEvidenceResolveErrorV3;
+pub use governed_v3::PlasticityEvidenceResolverV3;
+pub use governed_v3::PreparedGovernedParameterProposalV3;
+pub use governed_v3::admit_governed_parameter_proposal_v3;
+pub use governed_v3::artifact_norm_profile_payload_v3;
+pub use governed_v3::prepare_governed_parameter_proposal_v3;
 pub use parameter_v2::propose_v2;
 pub use parameter_v2::verify_parameter_proposal_v2;
 pub use registry::ProposalRegistry;
