@@ -1,15 +1,11 @@
 use std::path::PathBuf;
 use std::time::Duration;
-use std::time::SystemTime;
-use std::time::UNIX_EPOCH;
 
-use codex_hepta_codex_adapter::AdapterStatus;
 use codex_hepta_contracts::AgentId;
 use codex_hepta_infer_core::durable_control::DurableInferenceControl;
 use codex_hepta_infer_worker_host::native_app_server::AppServerModelDriver;
 use codex_hepta_infer_worker_host::native_app_server::NativeAdmission;
 use codex_hepta_infer_worker_host::native_app_server::NativeWorkerConfig;
-use codex_hepta_infer_worker_host::runtime_codex::bind_runtime_codex_receipt;
 use tokio::io::AsyncReadExt;
 use tokio_util::sync::CancellationToken;
 
@@ -64,10 +60,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
         return Err("--journal must be absolute".into());
     }
     let mut control = DurableInferenceControl::open(journal, /*capacity*/ 16_384)?;
-    let request_id = request_id.ok_or("--request-id is required")?;
-    let receipt_request_id = request_id.clone();
     let admission = NativeAdmission {
-        request_id,
+        request_id: request_id.ok_or("--request-id is required")?,
         maximum_in_flight: maximum_in_flight.ok_or("--maximum-in-flight is required")?,
     };
     let mut prompt = String::new();
@@ -82,12 +76,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
             signal.cancel();
         }
     });
-    let admitted_at_ms = u64::try_from(SystemTime::now().duration_since(UNIX_EPOCH)?.as_millis())?;
-    let deadline_ms = admitted_at_ms
-        .checked_add(timeout_ms)
-        .ok_or("native App Server deadline overflow")?;
     let result = driver
-        .run(
+        .run_bound(
             &mut control,
             admission,
             prompt,
@@ -96,21 +86,12 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
         )
         .await;
     signal_task.abort();
-    let output = result?;
-    let record = control
-        .native_record(&receipt_request_id)
-        .ok_or("native run record disappeared before runtime.codex binding")?;
-    let codex_receipt =
-        bind_runtime_codex_receipt(record, &output, admitted_at_ms, deadline_ms)?;
-
-    println!("{}", serde_json::to_string(&output)?);
-    if !output.terminal_observed {
+    let bound = result?;
+    println!("{}", serde_json::to_string(bound.output())?);
+    if !bound.output().terminal_observed {
         return Err("model outcome is indeterminate; this request was not replayed".into());
     }
-    let codex_receipt = codex_receipt.ok_or(
-        "terminal model outcome lacks a correlated runtime.codex thread/turn receipt",
-    )?;
-    if !output.succeeded() || codex_receipt.status != AdapterStatus::Succeeded {
+    if !bound.succeeded() {
         return Err(
             "model run lacks successful completion with verified owner and runtime.codex receipt"
                 .into(),
