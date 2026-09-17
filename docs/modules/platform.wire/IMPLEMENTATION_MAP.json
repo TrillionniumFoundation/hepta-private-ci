@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "8e99e19a1e9192f67fa7b56983ee8df443dd6ded",
-    "tree": "907ca759dc2c3c53664d1d7d86bb271b57b906a8"
+    "commit": "7e8379b3954808d4138a7bd2f3773f75691291a3",
+    "tree": "ff9fa6baf95a35fd2f49816e0a80097688f2aeeb"
   },
   "laneId": "LANE-A-FOUNDATION",
   "module": "platform.wire",
@@ -14,9 +14,7 @@
     "codex-rs/hepta-wire"
   ],
   "resolvedRoots": [
-    "codex-rs/hepta-wire",
-    "codex-rs/hepta-codex-adapter/src/wire.rs",
-    "codex-rs/hepta-shadow-qualification/tests/cross_language_wire_fault.rs"
+    "codex-rs/hepta-wire"
   ],
   "sourceRootPresent": true,
   "productionImplementation": false,
@@ -59,7 +57,8 @@
       "authority": "none",
       "tests": [
         "codex-rs/hepta-wire/src/v2.rs",
-        "codex-rs/hepta-wire/src/property_tests.rs"
+        "codex-rs/hepta-wire/src/property_tests.rs",
+        "codex-rs/hepta-wire/src/v2_conformance_tests.rs"
       ],
       "sourcePathExists": true,
       "designOperation": "encode_envelope/decode_envelope",
