@@ -1,5 +1,6 @@
 //! Connect the canonical SQLite owner to the bounded memory.retrieval product path.
 
+use std::future::Future;
 use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
 
@@ -66,6 +67,35 @@ pub(crate) async fn read(
     limit: u16,
     ranker: Option<&std::sync::Arc<crate::PinnedCognitiveRanker>>,
 ) -> Result<CognitiveContextSnapshot, CognitiveContextError> {
+    read_with_after_product_rank(
+        store,
+        owner,
+        body_generation,
+        query,
+        limit,
+        ranker,
+        || async {},
+    )
+    .await
+}
+
+/// Testable implementation seam between deterministic product ranking and the
+/// owner revalidation transaction. Production callers always use [`read`],
+/// whose hook is a no-op. Tests use this seam to prove that a correction or
+/// deletion committed after ranking cannot be attached from the stale result.
+async fn read_with_after_product_rank<F, Fut>(
+    store: &CognitiveStore,
+    owner: &AgentId,
+    body_generation: u64,
+    query: &str,
+    limit: u16,
+    ranker: Option<&std::sync::Arc<crate::PinnedCognitiveRanker>>,
+    after_product_rank: F,
+) -> Result<CognitiveContextSnapshot, CognitiveContextError>
+where
+    F: FnOnce() -> Fut,
+    Fut: Future<Output = ()>,
+{
     if query.is_empty() || query.len() > 2048 || !(1..=4).contains(&limit) {
         return Err(CognitiveStoreError::Invalid(
             "context requires a 1..2048 byte query and a 1..4 result limit".to_string(),
@@ -91,7 +121,7 @@ pub(crate) async fn read(
         .map_err(|error| CognitiveStoreError::Corrupt(error.to_string()))?;
 
     // Observe the owner's complete bounded generator output before the legacy
-    // top-four truncation.  The observation digest binds owner-side channel
+    // top-four truncation. The observation digest binds owner-side channel
     // limits, scores and revalidation bindings; memory.retrieval binds that
     // digest together with every Lane-C-admitted candidate.
     let observation = store
@@ -170,7 +200,12 @@ pub(crate) async fn read(
         selected_bindings.push(binding.clone());
     }
 
-    // Revalidate the complete selected set in one owner transaction.  A
+    // Deliberate race seam: if an owner update commits here, the batch
+    // revalidation below must observe it and the final Lane-C cut revalidation
+    // must fail closed instead of publishing stale ranked content.
+    after_product_rank().await;
+
+    // Revalidate the complete selected set in one owner transaction. A
     // correction, tombstone, citation drift, expiry or KG generation change
     // after ranking cannot be attached as if it were current.
     let statuses = store
@@ -187,7 +222,7 @@ pub(crate) async fn read(
     let mut admitted_items = Vec::new();
     for status in statuses {
         let RevalidationStatus::Current(explanation) = status else {
-            // Fail closed for this candidate.  Final Lane-C revalidation below
+            // Fail closed for this candidate. Final Lane-C revalidation below
             // still protects the complete response from a concurrent owner cut.
             continue;
         };
@@ -201,7 +236,7 @@ pub(crate) async fn read(
     }
 
     // Learned ranking is subordinate to the owner + memory.retrieval admission
-    // path.  It may reorder verified items but cannot resurrect a candidate that
+    // path. It may reorder verified items but cannot resurrect a candidate that
     // the deterministic product path omitted or rejected.
     if let Some(ranker) = ranker {
         let ranker = std::sync::Arc::clone(ranker);
@@ -222,7 +257,7 @@ pub(crate) async fn read(
     }
 
     // Bound the complete payload, including JSON escaping and envelope, only
-    // after all ranking.  Oversized winners are omitted rather than truncated.
+    // after all ranking. Oversized winners are omitted rather than truncated.
     for item in admitted_items {
         response.items.push(item);
         let encoded_bytes = serde_json::to_vec(&response)
