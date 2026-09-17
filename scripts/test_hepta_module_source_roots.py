@@ -68,9 +68,10 @@ class SourceRootTests(unittest.TestCase):
             {"owner": "owner", "deputy": "deputy", "technicalDocument": "guide"}
         )
         source_base = {"commit": "a" * 40, "tree": "b" * 40}
+        stale_source_base = {"commit": "c" * 40, "tree": "d" * 40}
         row = {
             "module": self.module["id"],
-            "sourceBase": source_base,
+            "sourceBase": stale_source_base,
             "operations": [
                 {
                     "operation": "run",
@@ -102,7 +103,10 @@ class SourceRootTests(unittest.TestCase):
         self.assertEqual(
             result["operations"][0]["tests"], row["operations"][0]["tests"]
         )
+        # Migration binds the map to the candidate being inspected; it must not
+        # preserve an arbitrarily old sourceBase from the previous map.
         self.assertEqual(result["sourceBase"], source_base)
+        self.assertNotEqual(result["sourceBase"], stale_source_base)
         self.assertFalse(result["claimBoundary"]["activation"])
 
     def test_identity_version_and_authority_mismatches_reject(self):
