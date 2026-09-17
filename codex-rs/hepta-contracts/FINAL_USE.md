@@ -9,152 +9,159 @@ projection keep their existing semantics.
 ## Ownership and trust
 
 `final_use.rs` owns validation and the non-constructible `VerifiedUseToken`.
-`final_use_store.rs` owns durable nonce/revocation state. The host supplies one
+`final_use_store.rs` owns durable replay/revocation state. The host supplies one
 pinned Ed25519 public key, signer identity, initial revocation head and private
 state directory through its protected configuration channel. There is no
 permissive default, signing key in the verifier, or conversion from a boolean,
 `Granted` projection or unsigned proposal to a verified token.
 
 The separately invoked supervisor binary `hepta-final-use-signer` owns the
-explicit signing operation. The adapter must not invoke it to authorize its
-own requests. A trusted owner reviews the complete proposed binding and
-chooses the subject, epoch, nonce and time window before invoking the command.
-This utility does not implement an identity provider or an approval policy
-engine; access to its signing key is the issuer's authority boundary.
+explicit signing operation. The adapter must not invoke it to authorize its own
+requests. A trusted owner reviews the complete proposed binding and chooses the
+subject, destination, epoch, nonce and time window before invoking the command.
+Access to the signing key is the issuer authority boundary.
 
-The Rust callback, public-key configuration and state location are trusted host
-inputs. This library is not a sandbox for untrusted code in the same process
-or Unix account. A host selects the callback from its own consumer registry;
-a signed consumer-name string cannot authenticate a closure supplied by a
-plugin. Protect the configuration, directory ancestors, clock and issuer key.
+The Rust callback, public-key configuration, destination enrollment and state
+location are trusted host inputs. This library is not a sandbox for untrusted
+code in the same process or Unix account. Protect configuration, directory
+ancestors, clock and issuer key.
 
 ## Wire and signing schemas
 
 All grants use `schema_version = 1`, deny unknown JSON fields, and serialize
-integer byte arrays. The signing preimage is the byte string
-`hepta.kernel.authority.final-use.v1\0` followed by the compact JSON encoding
-of the validated Rust `FinalUseGrant` struct in its declared field order.
-Use `FinalUseGrant::signing_bytes()` as the reference encoder; this is not a
-claim that arbitrary JSON serializations are interchangeable. Changing field
-order, encoding or semantics requires a new version and signing domain.
+integer byte arrays. The signing preimage is
+`hepta.kernel.authority.final-use.v1\0` followed by compact JSON encoding of the
+validated `FinalUseGrant` in declared field order. Changing field order,
+encoding or semantics requires a new version/signing domain.
 
 | Type / field | Meaning and bound |
 | --- | --- |
-| `FinalUseBinding.subject_id`, `destination_id` | Exact principal and effect destination; 1–128 ASCII identifier bytes |
-| `request_sha256` | Nonzero 32-byte digest of the complete adapter operation |
-| `scope_sha256` | Nonzero 32-byte digest of destination/resource/consumer scope |
-| `payload_sha256` | Nonzero 32-byte digest of the expected material |
+| `FinalUseBinding.subject_id`, `destination_id` | Exact principal and effect destination; bounded ASCII identifier |
+| `request_sha256` | Nonzero digest of the complete adapter operation |
+| `scope_sha256` | Nonzero digest of destination/resource/consumer scope |
+| `payload_sha256` | Nonzero digest of the expected payload/operation parameters |
 | `FinalUseGrant.signer_id`, `grant_id` | Bounded owner and revocation identifiers |
-| `authority_epoch` | Nonzero epoch; must exactly match the current durable head |
-| `nonce` | Nonzero 32-byte random value; unique across that authority epoch |
-| `binding` | The complete operation binding above |
-| `not_before_unix_ms`, `expires_at_unix_ms` | Host clock bounds; positive interval no longer than 300,000 ms |
+| `authority_epoch` | Nonzero epoch; exactly equals the current durable head |
+| `nonce` | Nonzero 32-byte single-use value, unique within an authority epoch |
+| `not_before_unix_ms`, `expires_at_unix_ms` | Host-clock bounds; positive interval <= 300,000 ms |
 | `SignedFinalUseGrant.signature` | Exactly 64 raw Ed25519 signature bytes |
-| `FinalUseRevocations` | Epoch, nonzero monotonically increasing revision and at most 16,384 revoked grant IDs |
+| `FinalUseRevocations` | Epoch, monotonic revision and at most 16,384 revoked grant IDs |
 
-For Bao, the request digest binds the HTTPS origin, CA bytes, namespace, mount,
-path, field, exact KV v2 version, expected secret digest, subject and consumer.
-The destination is `provider:heptabao`. Signature validation uses Ed25519
-`verify_strict`; weak trust keys, malformed signatures and changed bindings
-are rejected before dispatch.
+For HeptaBao, operation bindings include the enrolled HTTPS origin, CA digest,
+provider namespace/resource, consumer and destination identity. A replica-aware
+destination such as `provider:heptabao:node-a` makes the signed grant non-portable
+to another replica.
 
 ## Durable schema and storage protocol
 
 The supported store is an owner-controlled local Unix filesystem providing
 process locks, atomic same-directory rename and file/directory fsync. Other
-platforms reject configuration until an equivalent ACL and durability backend
-exists. Distributed/NFS lock behavior is not qualified by the local tests.
+platforms reject configuration until an equivalent backend exists. Distributed
+or NFS lock behavior is not qualified by the local tests.
 
 The root directory must belong to the effective user and have no group/world
-permission bits. Creation requests mode 0700. The directory is opened with
-`DIRECTORY | NOFOLLOW | CLOEXEC`; subsequent operations use that directory
-file descriptor, `openat`, `statat` and `renameat`. Replacing an ancestor path
-does not redirect an already opened authority's writes.
+permission bits. Directory/file opens use `NOFOLLOW`; regular-file ownership,
+link count and permissions are checked.
+
+### State entries
 
 | Entry | Contents and invariant |
 | --- | --- |
-| `authority.lock` | Owner-only regular file; `File::try_lock` held by the shared authority owner |
-| `authority.json` | JSON `{schema:1, signer_id, verifying_key, state:{head, used_nonces}}`; maximum read 8 MiB |
-| `authority.next` | Temporary complete replacement written with owner-only permissions before rename |
+| `authority.lock` | Owner-only regular file; exclusive OS lock held by the shared authority owner |
+| `authority.json` | Schema 2 trust/revocation snapshot: signer ID, verifying key and revocation head only |
+| `authority.next` | Temporary complete metadata replacement used before atomic rename |
+| `authority.claims` | Append-only fixed-width replay journal; each record is 8-byte epoch + 32-byte nonce |
 
-Files must be regular, singly linked, owned by the effective user and have no
-group/world permissions; opens reject symlinks. The lock is held until the
-last authority/token reference disappears. It also releases automatically on
-process death. Concurrent opens fail with `StateLocked`.
+A successful claim appends exactly one 40-byte record to `authority.claims` and
+calls `sync_data` before dispatch. Steady-state claim persistence therefore does
+not serialize or rewrite the complete replay set. Restart scans the journal,
+loads only records for the current epoch, rejects zero/future-epoch malformed
+records and reconstructs the current replay set in memory.
 
-Every successful claim or head update serializes the complete next state,
-truncates and writes `authority.next`, fsyncs that file, renames it over
-`authority.json`, and fsyncs the root directory. The operation is not admitted
-until persistence succeeds. On a storage error, the live authority becomes
-unavailable and stays fenced; callers cannot remove a bad temporary file and
-silently retry through that same instance.
+The journal has a 1 GiB fail-closed local resource/corruption guard. This is not
+the former 16,384-claim semantic limit: an epoch can exceed 16,384 admitted
+claims while storage remains within the qualified resource envelope. A resource
+failure makes the live authority unavailable rather than evicting old replay
+facts.
 
-The lock file also records that initialization has begun. If a later open
-finds it but no durable state file, it fails closed instead of resetting the
-nonce registry. Corrupt or oversized JSON and trust-key/schema mismatch also
-fail closed. A crash during first initialization can therefore require owner
-recovery rather than automatic recreation.
+Revocation/trust updates serialize the small schema-2 metadata snapshot to
+`authority.next`, fsync it, rename over `authority.json` and fsync the directory.
+An epoch increase fences all old grants and clears the current in-memory nonce
+set; old journal records remain durable but no longer collide with the new
+epoch.
 
-Normal restart loads the persisted nonce set and revocation head automatically.
-An old configuration cannot roll back a stronger stored head. A newer trusted
-startup head can be applied atomically when its revision increases, its epoch
-does not decrease, and same-epoch revocations are a superset. An epoch increase
-fences every old grant and clears the previous nonce set. There is no silent
-nonce eviction: 16,384 claims fill the epoch and reject further claims until a
-trusted epoch transition.
+### Legacy migration
 
-These files are not an external anti-rollback oracle. Deleting the entire
-store, restoring an old filesystem snapshot, or switching its configured
-location is an authority reset. Recovery must independently rotate issuer
-trust or advance the authoritative epoch before accepting new grants; do not
-restore a former epoch alongside still-valid grants. No automatic repair may
-turn missing/corrupt state into an empty registry.
+A schema-1 `authority.json` containing `used_nonces` is accepted only when its
+trust/head data is valid. Missing legacy nonce records are first appended to the
+new replay journal and fsynced; only then is the metadata snapshot replaced by
+schema 2. Migration failure fails closed and never resets replay history.
+
+The lock file records that initialization began. If a later open finds the
+initialized lock but no durable state metadata, it fails closed instead of
+creating an empty authority. Corrupt, oversized or trust-mismatched state also
+fails closed.
+
+These files are not an external anti-rollback oracle. Deleting/restoring the
+entire store or switching its configured location is an authority reset and
+requires independent trust/epoch recovery.
 
 ## Admission, concurrency and recovery
 
 1. `claim(signed, expected)` validates the exact binding, signer and signature.
-2. Under the owner mutex it checks the current clock, epoch and revocations,
-   rejects a consumed nonce or full registry, and persists the nonce claim.
-3. It samples time again after disk I/O, then returns a private, non-cloneable,
-   non-serializable `VerifiedUseToken`. The claim is the dispatch admission
-   point; rejection or expiry after persistence does not refund the nonce.
-4. The adapter performs its bounded asynchronous HTTPS read. It does not hold
-   the owner mutex over network awaits, so trusted revocations can progress.
-5. `with_verified_use` checks that token and authority share the same owner,
-   validates the binding/time/epoch/revocation again, and invokes the synchronous
-   callback while holding the revocation mutex. A completed revocation cannot
-   slip between this final check and callback entry.
+2. Under the owner mutex it validates time/epoch/revocations and rejects a
+   replayed nonce.
+3. The nonce is fsync-appended to `authority.claims`; dispatch is not admitted
+   until this succeeds.
+4. Time is sampled again after durable I/O; expiry does not refund the nonce.
+5. The adapter performs bounded asynchronous external work without holding the
+   authority mutex, so revocation updates can progress.
+6. `with_verified_use` verifies owner/binding/time/epoch/revocation again and
+   invokes the synchronous consumer while holding the revocation fence.
 
-The callback must be bounded and must not reenter the authority. Revocation
-waits for an already entered synchronous callback to return; it cannot undo a
-completed effect. A dispatch failure, cancellation or timeout retains the
-claim. If a process dies after claiming, the new process rejects that nonce.
-If it dies after consumer entry but before recording a receipt, the host must
-treat the effect as uncertain and reconcile it before issuing another grant.
+The callback must be bounded and must not reenter the authority. Revocation can
+wait for an already-entered synchronous callback; it cannot undo a completed
+effect. A dispatch failure, cancellation or timeout retains the claim. Process
+death after claim does not make the nonce reusable.
 
-`VerifiedUseToken` has no public constructor and cannot be cloned. Keeping an
-outstanding token also keeps its owner and process lock alive. Mutex poisoning
-or persistence failure refuses further operations.
+`VerifiedUseToken` has no public constructor and cannot be cloned. An
+outstanding token keeps its owner and process lock alive. Mutex poisoning or
+persistence failure refuses further operations.
+
+## Active-active boundary
+
+One local state directory remains **single active owner**. The exclusive lock is
+intentional and is not a distributed multi-writer mechanism.
+
+For HeptaBao active-active composition, the implemented safe mode is authority
+sharding: each replica uses a distinct signed `destination_id` and its own
+private final-use state. A grant for replica A fails binding validation on
+replica B, so there is no shared replay namespace that two local stores can
+silently diverge on.
+
+If multiple writers must share the same `destination_id`/authority identity, a
+separately qualified strongly consistent shared replay/revocation backend is
+required. This local store does not claim that capability.
 
 ## APIs and failure semantics
 
 | API / result | Host action |
 | --- | --- |
-| `open_state_dir` | Pin trust, validate private storage, acquire the process lock and load/initialize state |
+| `open_state_dir` | Pin trust, validate private storage, acquire local owner lock and load/migrate state |
 | `update_revocations` | Apply only a newer trusted revision; same-epoch revocations cannot be removed |
-| `claim` | Burn one valid nonce before effect dispatch; never reuse the grant on retry |
-| `with_verified_use` | Consume that token at the final synchronous secret-use boundary |
-| `InvalidGrant`, `InvalidSignature`, `BindingMismatch` | Reject the proposal; do not dispatch |
-| `EpochMismatch`, `Revoked`, `NotYetValid`, `Expired` | Reject stale or currently unauthorized use |
-| `AlreadyClaimed`, `CapacityExceeded` | Require owner reconciliation/new authorization or an epoch transition |
-| `InvalidTrust`, `UnsafeStateDirectory`, `StateLocked`, `Unavailable` | Fail closed; repair owner configuration/storage without resetting authority implicitly |
-| `StaleRevocationHead` | Reject a rollback/inconsistent host update |
+| `claim` | Durably burn one valid nonce before effect dispatch; never reuse the grant on retry |
+| `with_verified_use` | Consume the verified token at the final synchronous secret-use boundary |
+| `InvalidGrant`, `InvalidSignature`, `BindingMismatch` | Reject; do not dispatch |
+| `EpochMismatch`, `Revoked`, `NotYetValid`, `Expired` | Reject stale/currently unauthorized use |
+| `AlreadyClaimed` | Require owner reconciliation/new authorization |
+| `CapacityExceeded` | Compatibility error variant; no longer emitted at 16,384 replay claims |
+| `InvalidTrust`, `UnsafeStateDirectory`, `StateLocked`, `Unavailable` | Fail closed; repair owner configuration/storage without implicit reset |
+| `StaleRevocationHead` | Reject rollback/inconsistent host update |
 
-Bao additionally distinguishes provider denial, missing data, transport failure,
-timeout, malformed/oversized replies, version mismatch and digest mismatch.
-None invokes the consumer. A callback that reports failure after entry returns
-`ConsumerIndeterminate`; it is not proof that no effect occurred. Receipts
-contain only request/body/secret digests, version and byte count.
+HeptaBao additionally distinguishes provider denial/not-found, definite client
+rejection, transport/timeout, malformed/oversized replies and indeterminate
+provider effects. A callback failure after entry is uncertain; it is not proof
+that no effect occurred.
 
 ## Independent signer operations
 
@@ -165,47 +172,23 @@ cargo build -p codex-hepta-supervisor --features production-authority --bin hept
 hepta-final-use-signer sign --key OWNER_ONLY_SEED_FILE < complete-grant-proposal.json
 ```
 
-The file contains exactly 32 raw Ed25519 seed bytes, provisioned separately by
-the authority owner. The signer rejects symlink opens, non-regular/multiply
-linked files, other owners and group/world permissions. It reads at most
-33 bytes, zeroizes temporary seed buffers, and accepts at most 16 KiB of grant
-JSON on stdin. There is no implicit sign command, default wildcard scope or
-adapter-owned key generation. Stdout contains the public signed grant only.
-The existing H7 signer has a separate protocol and is not widened by this tool.
+The seed file contains exactly 32 raw Ed25519 bytes and is provisioned
+separately by the authority owner. The signer rejects symlink/non-regular/shared
+or unsafe key files, bounds input and zeroizes temporary seed buffers. There is
+no default wildcard scope or adapter-owned signing-key generation.
 
 ## Verification and rollout boundary
 
-Kernel tests cover field/key substitution, expiry, epoch fences, monotonic
-revocation, cross-restart replay rejection, concurrent owners, missing state,
-unsafe permissions/symlinks, newer startup heads, and SIGKILL of a lock holder
-while retaining its persisted claim. Adapter tests cover real loopback TLS,
-exact headers/version, bad trust, forged/denied grants, response bounds,
-revocation during network wait, timeout and consumer uncertainty. Test fixtures
-explicitly create private directories; timeout cleanup cancels its local test
-server even when cancellation happened before TCP accept.
+Kernel source tests cover signature/binding substitution, expiry, epoch fences,
+monotonic revocation, cross-restart replay rejection, concurrent owners,
+unsafe/missing state, process death and journal behavior beyond the former
+16,384-claim cap. The HeptaBao adapter separately covers real loopback TLS,
+exact KV reads, dynamic issue/renew/revoke, uncertainty/reconciliation and
+replica destination binding.
 
-The runnable [real service fixture](../hepta-bao-adapter/qa/real_service_smoke.py)
-uses independent signer and consumer processes against the actual Bao TLS
-server. [Recorded evidence](../hepta-bao-adapter/qa/evidence/real-consumer-20260908.json)
-contains 20 checks and metadata only. Full workspace, Bazel, production caller
-composition and release gates remain separate from this bounded integration.
-No legacy `PROVIDER_DISPATCH_ENABLED` flag is enabled by these changes.
-
-The [candidate validation record](../hepta-bao-adapter/qa/evidence/validation-20260908.json)
-marks the initial normal locked workspace test as `blocked_space` (zero tests executed)
-and the normal signer workspace build as not started. The source-linked
-behavioral/Clippy checks and real signer/consumer process fixture remain separate
-passing evidence. The approved-client follow-up ran 243 normal workspace tests:
-237 passed, including all 132 contracts tests and 18 adapter tests; six older
-HTTP TLS tests failed and also failed on an independent prior-source checkout.
-The newly built normal-workspace consumer passed the real 20-scenario
-fixture again. Its [receipt](../hepta-bao-adapter/qa/evidence/real-consumer-http-client-20260908.json)
-identifies the tested tree before final formatting and documentation changes;
-it is not a claim that the retained binary was built from the final commit.
-The local Bazel lock update was blocked by an automatic
-telemetry approval rejection and subsequent privacy-configured extraction /
-network-approval failure. Separate old-source CI diagnostics proved a real
-Bazel check/update/check with zero exits and no lock change; the subsequent
-HTTP dependency migration still requires current-head CI. Document validation
-passed. These recorded limits must not be reported as complete workspace or
-production qualification.
+The focused exact-candidate workflow is
+`/.github/workflows/heptabao-lease-qualification.yml`. It executes format,
+owner tests and strict Clippy for `codex-hepta-contracts` and
+`codex-hepta-bao-adapter` and emits a receipt binding the tested SHA/tree and
+executed command-record digests. Full workspace, target-host production
+composition, operator acceptance, promotion and release remain separate gates.
