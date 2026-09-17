@@ -5,6 +5,15 @@
     "commit": "7e8379b3954808d4138a7bd2f3773f75691291a3",
     "tree": "ff9fa6baf95a35fd2f49816e0a80097688f2aeeb"
   },
+  "sourceBaseSemantics": "global implementation-map generation baseline shared by every module map; current cognitive.store candidate identity is recorded separately in candidateEvidence",
+  "candidateEvidence": {
+    "baseBranch": "main",
+    "baseCommit": "d7af096f28fa9989388939efa0e6600b52a43952",
+    "branch": "fix/cognitive-store-authority-closure",
+    "pullRequest": 574,
+    "codeHeadBeforeStatusRefresh": "3850f9c0b60a53153bdf16170a20aa2c7c5ecb26",
+    "status": "production_path_implemented_candidate_pending_exact_head_qualification"
+  },
   "laneId": "LANE-C-MEMORY",
   "module": "cognitive.store",
   "owner": "cognitive-platform",
@@ -17,61 +26,89 @@
     "codex-rs/hepta-cognitive-store"
   ],
   "sourceRootPresent": true,
-  "productionImplementation": false,
-  "productCallerState": "not_composed",
-  "productionWriterState": "not_established",
+  "productionImplementation": true,
+  "productCallerState": "composed_candidate",
+  "productionWriterState": "single_agentd_owner_writer_fenced_candidate",
   "operations": [
     {
-      "operation": "cognitivestore",
-      "nativeSymbol": "CognitiveStore",
-      "sourcePath": "codex-rs/hepta-cognitive-store/src/lib.rs",
-      "state": "source_implemented_not_product_composed",
-      "authority": "none",
-      "tests": [],
+      "operation": "authoritative_cognitive_store",
+      "nativeSymbol": "AuthoritativeCognitiveStore",
+      "sourcePath": "codex-rs/hepta-memory/src/authoritative_store.rs",
+      "state": "production_composed_candidate",
+      "authority": "agentd_owner_writer_lock_and_external_production_authority_verifier",
+      "tests": [
+        "authoritative_open_reopens_real_sqlite_state",
+        "authoritative_writer_fails_closed_on_second_live_owner"
+      ],
       "sourcePathExists": true,
-      "designOperation": "cognitivestore",
-      "mappingClass": "owner_native",
+      "designOperation": "authoritative_cognitive_store",
+      "mappingClass": "delegated_durable_owner",
+      "delegatedCallees": [
+        "hepta-memory::CognitiveStore",
+        "hepta-memory::ProductionDurableWriter"
+      ]
+    },
+    {
+      "operation": "cognitive_store_backend",
+      "nativeSymbol": "CognitiveStore",
+      "sourcePath": "codex-rs/hepta-memory/src/cognitive_store.rs",
+      "state": "durable_backend_behind_authoritative_facade",
+      "authority": "owner_scoped_sqlite_backend",
+      "tests": [
+        "codex-rs/hepta-memory/src/cognitive_store_tests.rs",
+        "codex-rs/hepta-memory/src/cognitive_memory_store_tests.rs",
+        "codex-rs/hepta-memory/src/cognitive_intelligence_writer_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "cognitive_store_backend",
+      "mappingClass": "delegated_durable_owner",
       "delegatedCallees": []
     },
     {
-      "operation": "cognitivestore",
-      "nativeSymbol": "CognitiveStore",
-      "sourcePath": "codex-rs/hepta-memory/src/cognitive_store.rs",
-      "state": "source_implemented_not_product_composed",
+      "operation": "cognitive_store_conformance_model",
+      "nativeSymbol": "AdmittedCognitiveStoreConformanceModelV2",
+      "sourcePath": "codex-rs/hepta-cognitive-store/src/lib.rs",
+      "state": "semantic_conformance_model_not_production_authority",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-cognitive-store/src/v2_tests.rs"
+      ],
       "sourcePathExists": true,
-      "designOperation": "cognitivestore",
-      "mappingClass": "owner_native",
+      "designOperation": "cognitive_store_conformance_model",
+      "mappingClass": "owner_native_semantic_oracle",
       "delegatedCallees": []
     },
     {
       "operation": "lane_c_snapshot",
       "nativeSymbol": "lane_c_snapshot",
       "sourcePath": "codex-rs/hepta-memory/src/lane_c_snapshot.rs",
-      "state": "source_implemented_not_product_composed",
-      "authority": "none",
-      "tests": [],
+      "state": "durable_snapshot_adapter_composed_candidate",
+      "authority": "read_only_owner_snapshot",
+      "tests": [
+        "codex-rs/hepta-memory/src/lane_c_snapshot_tests.rs"
+      ],
       "sourcePathExists": true,
       "designOperation": "lane_c_snapshot",
-      "mappingClass": "owner_native",
+      "mappingClass": "delegated_durable_owner",
       "delegatedCallees": []
     }
   ],
   "repositoryControlledGaps": [
-    "Bind every operation to an authenticated consumer callsite and owner store.",
-    "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary."
+    "Complete descriptor-backed SQLite/VFS writable recovery with an independently authenticated current writer-fence witness; until then writable recovery remains fail-closed.",
+    "Complete exact-head and deterministic synthetic-merge qualification for PR 574 and retain the receipts.",
+    "Retain closed-world CALLERS enforcement so Agentd product code cannot restore raw CognitiveStore::open or direct ProductionDurableWriter::open paths."
   ],
   "externalEvidenceGates": [
     "independent semantic review",
-    "product execution and target-host qualification",
+    "target-host durability and power-loss qualification",
     "operator acceptance, canary, promotion and release"
   ],
   "claimBoundary": {
     "nativeSourceMappingComplete": true,
     "sourceRootPresent": true,
-    "productionImplementation": false,
+    "productionImplementation": true,
     "productExecutionProved": false,
+    "writableRecoveryQualified": false,
     "independentAcceptance": false,
     "activation": false,
     "release": false
