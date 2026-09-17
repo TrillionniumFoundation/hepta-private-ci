@@ -325,35 +325,37 @@ def verify_cognitive_read_evidence(row: dict, failures: list[str]) -> None:
             if symbol not in (ROOT / path).read_text(encoding="utf-8"):
                 failures.append(f"{mid}: missing caller symbol {symbol} in {path}")
 
-    source_base = row.get("sourceBase") or {}
-    commit = source_base.get("commit")
-    tree = source_base.get("tree")
-    if commit and tree:
-        try:
-            if git("rev-parse", f"{commit}^{{tree}}") != tree:
-                failures.append(f"{mid}: source base tree mismatch")
-            subprocess.run(
-                ["git", "merge-base", "--is-ancestor", commit, "HEAD"],
-                cwd=ROOT,
-                capture_output=True,
-                text=True,
-                check=True,
+    evidence_base = row.get("deliveryEvidenceBase") or {}
+    commit = evidence_base.get("commit")
+    tree = evidence_base.get("tree")
+    if not commit or not tree:
+        failures.append(f"{mid}: delivery evidence base")
+        return
+    try:
+        if git("rev-parse", f"{commit}^{{tree}}") != tree:
+            failures.append(f"{mid}: delivery evidence tree mismatch")
+        subprocess.run(
+            ["git", "merge-base", "--is-ancestor", commit, "HEAD"],
+            cwd=ROOT,
+            capture_output=True,
+            text=True,
+            check=True,
+        )
+        evidence_paths = [
+            "codex-rs/hepta-cognitive-read",
+            "codex-rs/hepta-memory/src/lane_c_snapshot.rs",
+            "codex-rs/hepta-agentd/src/cognitive_context.rs",
+            "codex-rs/hepta-agentd/tests/cognitive_dispatch_receipt_race.rs",
+            "codex-rs/hepta-infer-worker-host/src/native_app_server.rs",
+            "codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs",
+        ]
+        changed = git("diff", "--name-only", f"{commit}..HEAD", "--", *evidence_paths)
+        if changed:
+            failures.append(
+                f"{mid}: delivery evidence is stale ({changed.replace(chr(10), ', ')})"
             )
-            evidence_paths = [
-                "codex-rs/hepta-cognitive-read",
-                "codex-rs/hepta-memory/src/lane_c_snapshot.rs",
-                "codex-rs/hepta-agentd/src/cognitive_context.rs",
-                "codex-rs/hepta-agentd/tests/cognitive_dispatch_receipt_race.rs",
-                "codex-rs/hepta-infer-worker-host/src/native_app_server.rs",
-                "codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs",
-            ]
-            changed = git("diff", "--name-only", f"{commit}..HEAD", "--", *evidence_paths)
-            if changed:
-                failures.append(
-                    f"{mid}: source base is stale for delivery evidence ({changed.replace(chr(10), ', ')})"
-                )
-        except subprocess.CalledProcessError:
-            failures.append(f"{mid}: source base is not an ancestor of HEAD")
+    except subprocess.CalledProcessError:
+        failures.append(f"{mid}: delivery evidence base is not an ancestor of HEAD")
 
 
 def verify():
