@@ -20,6 +20,7 @@ mod segment_codec;
 mod segments;
 mod shadow;
 mod signed_evidence;
+mod witness;
 
 pub use causal_v2::AuthenticatedOutcomeV1;
 pub use causal_v2::AuthenticatedPrincipalV1;
@@ -80,6 +81,7 @@ pub use signed_evidence::SignedLearningEvidenceV1;
 pub use signed_evidence::TrustedLearningSignerV1;
 pub use signed_evidence::VerifiedLearningEvidenceV1;
 pub use signed_evidence::verify_signed_role_separation;
+pub use witness::LedgerWitnessStore;
 
 #[cfg(test)]
 #[path = "shadow_tests.rs"]
