@@ -11,6 +11,7 @@
 #![forbid(unsafe_code)]
 
 mod destination_dedupe;
+mod dispatcher;
 mod durable_model;
 mod durable_store;
 mod error;
@@ -21,6 +22,7 @@ mod outbox;
 pub use destination_dedupe::DestinationApplyStart;
 pub use destination_dedupe::DestinationApplyTransaction;
 pub use destination_dedupe::DestinationDedupeStore;
+pub use dispatcher::DurableDispatcher;
 pub use durable_model::DestinationApplyDisposition;
 pub use durable_model::DestinationApplyReceipt;
 pub use durable_model::DestinationOperationIdentity;
