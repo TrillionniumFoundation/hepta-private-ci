@@ -7,6 +7,8 @@ Canonical repository-controlled current status: [`docs/modules/cognitive.store/S
 
 Root: `codex-rs/hepta-cognitive-store`. Packages: `MEM-1-STORE`, `MEM-8-PRODUCTION-WRITER`.
 
+**Implemented entrypoints:** `open_authoritative` in [../../../codex-rs/hepta-cognitive-store/src/lib.rs](../../../codex-rs/hepta-cognitive-store/src/lib.rs); `CognitiveStore` in [../../../codex-rs/hepta-memory/src/cognitive_store.rs](../../../codex-rs/hepta-memory/src/cognitive_store.rs); `lane_c_snapshot` in [../../../codex-rs/hepta-memory/src/lane_c_snapshot.rs](../../../codex-rs/hepta-memory/src/lane_c_snapshot.rs).
+
 The module owns the product ingress while delegating SQLite persistence mechanics to the existing `hepta-memory::CognitiveStore`. That delegation must never become a second product-open API. Qualification semantic stores in `hepta-cognitive-store` are not production writers.
 
 ## 2. Public operations and contract details
