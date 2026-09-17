@@ -11,6 +11,7 @@ use codex_hepta_contracts::FinalUseRevocations;
 use ed25519_dalek::Signer;
 use ed25519_dalek::SigningKey;
 use pretty_assertions::assert_eq;
+use tokio::io::AsyncRead;
 use tokio::io::AsyncReadExt;
 use tokio::io::AsyncWriteExt;
 use tokio::net::TcpListener;
@@ -80,8 +81,7 @@ async fn server(
         for response in responses {
             let (socket, _) = listener.accept().await?;
             let mut stream = acceptor.accept(socket).await?;
-            let request = read_request(&mut stream).await?;
-            requests.push(request);
+            requests.push(read_request(&mut stream).await?);
             let reason = match response.status {
                 200 => "OK",
                 204 => "No Content",
@@ -112,7 +112,7 @@ async fn server(
 
 async fn read_request<S>(stream: &mut S) -> Result<String, TestError>
 where
-    S: AsyncReadExt + Unpin,
+    S: AsyncRead + Unpin,
 {
     let mut bytes = Vec::new();
     while !bytes.ends_with(b"\r\n\r\n") && bytes.len() < 32 * 1024 {
@@ -303,6 +303,7 @@ async fn issue_timeout_is_durable_unknown_and_duplicate_operation_is_blocked() {
         2,
     )
     .unwrap();
+
     assert_eq!(
         client
             .request_secret_lease(&registry, &authority, &first, &request, |_| {
@@ -311,8 +312,10 @@ async fn issue_timeout_is_durable_unknown_and_duplicate_operation_is_blocked() {
             .await,
         Err(SecretLeaseError::OutcomeIndeterminate)
     );
-    let observation = registry.operation("issue-timeout").unwrap().unwrap();
-    assert_eq!(observation.state, LeaseOperationState::OutcomeUnknown);
+    assert_eq!(
+        registry.operation("issue-timeout").unwrap().unwrap().state,
+        LeaseOperationState::OutcomeUnknown
+    );
 
     let second = grant(
         &issuer,
@@ -428,9 +431,9 @@ async fn renew_and_revoke_use_provider_lease_endpoints_and_persist_terminal_stat
 
     let requests = task.await.unwrap().unwrap();
     assert_eq!(requests.len(), 3);
-    assert!(requests[0].to_ascii_lowercase().starts_with(
-        "get /v1/database/creds/readonly http/1.1\r\n"
-    ));
+    assert!(requests[0]
+        .to_ascii_lowercase()
+        .starts_with("get /v1/database/creds/readonly http/1.1\r\n"));
     assert!(requests[1]
         .to_ascii_lowercase()
         .starts_with("post /v1/sys/leases/renew http/1.1\r\n"));
@@ -544,6 +547,7 @@ async fn renew_timeout_requires_lookup_reconciliation_before_further_mutation() 
         subject_id: issue.subject_id,
         consumer_id: issue.consumer_id,
         operation_id: "lookup-1".into(),
+        target_operation_id: "renew-timeout".into(),
         namespace: issue.namespace,
         lease_id: lease_id.into(),
     };
@@ -561,6 +565,18 @@ async fn renew_timeout_requires_lookup_reconciliation_before_further_mutation() 
     assert_eq!(reconciled.state, SecretLeaseState::Active);
     assert_eq!(reconciled.lease_duration_seconds, 45);
     assert_eq!(reconciled.last_operation_id, "lookup-1");
+    assert_eq!(
+        registry
+            .operation("renew-timeout")
+            .unwrap()
+            .unwrap()
+            .state,
+        LeaseOperationState::Reconciled
+    );
+    assert_eq!(
+        registry.operation("lookup-1").unwrap().unwrap().state,
+        LeaseOperationState::Completed
+    );
 
     let requests = task.await.unwrap().unwrap();
     assert_eq!(requests.len(), 3, "renew was never retried automatically");
@@ -570,7 +586,7 @@ async fn renew_timeout_requires_lookup_reconciliation_before_further_mutation() 
 }
 
 #[tokio::test]
-async fn independently_observed_unknown_issue_is_adopted_revoke_required_never_active() {
+async fn independently_observed_unknown_issue_is_revoke_required_and_not_lookup_activatable() {
     let lease_id = "database/creds/readonly/lost-ack";
     let (endpoint, ca, task) = server(vec![TestResponse::delayed(
         200,
@@ -614,9 +630,9 @@ async fn independently_observed_unknown_issue_is_adopted_revoke_required_never_a
     task.await.unwrap().unwrap();
 
     let resolution = UnknownIssueResolutionRequest {
-        subject_id: issue.subject_id,
-        consumer_id: issue.consumer_id,
-        issue_operation_id: issue.operation_id,
+        subject_id: issue.subject_id.clone(),
+        consumer_id: issue.consumer_id.clone(),
+        issue_operation_id: issue.operation_id.clone(),
         resolution_operation_id: "resolve-lost-ack".into(),
         resolution: UnknownIssueResolution::LeaseObserved {
             lease_id: lease_id.into(),
@@ -646,5 +662,31 @@ async fn independently_observed_unknown_issue_is_adopted_revoke_required_never_a
             .unwrap()
             .state,
         LeaseOperationState::Completed
+    );
+
+    let illegal_lookup = LeaseReconcileRequest {
+        subject_id: issue.subject_id,
+        consumer_id: issue.consumer_id,
+        operation_id: "illegal-orphan-lookup".into(),
+        target_operation_id: "issue-lost-ack".into(),
+        namespace: issue.namespace,
+        lease_id: lease_id.into(),
+    };
+    let illegal_grant = grant(
+        &issuer,
+        client.lease_reconcile_binding(&illegal_lookup).unwrap(),
+        "illegal-orphan-lookup-grant",
+        13,
+    )
+    .unwrap();
+    assert_eq!(
+        client
+            .reconcile_secret_lease(&registry, &authority, &illegal_grant, &illegal_lookup)
+            .await,
+        Err(SecretLeaseError::ReconciliationRequired)
+    );
+    assert_eq!(
+        registry.lease(lease_id).unwrap().unwrap().state,
+        SecretLeaseState::RevokeRequired
     );
 }
