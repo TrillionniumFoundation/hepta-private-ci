@@ -303,6 +303,7 @@ pub enum Error {
     InvalidAuthenticatedEvidenceProducer,
     InvalidAuthenticatedEvidenceWindow,
     EvaluatorAttestationMismatch,
+    StaleIndependentEvaluator,
     EvidenceVerificationFailed(String),
     IndependentEvaluatorVerificationFailed(String),
     TopologyNoChangeHasDelta(String),
