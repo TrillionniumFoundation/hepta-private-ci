@@ -153,7 +153,11 @@ where
             )
             .await
             .map_err(|_| AutomationError::Unavailable)?;
-        Ok(AutomationTick::Admitted {
+
+        // Preserve the public v1 tick variant for compatibility. `Submitted`
+        // now means only durable Core queue admission; it is explicitly not an
+        // automation-occurrence terminal state.
+        Ok(AutomationTick::Submitted {
             task_id: lease.task.task_id,
             occurrence: lease.occurrence,
             queued_submission_id: receipt.queued_submission_id,
