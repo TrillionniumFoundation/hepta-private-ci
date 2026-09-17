@@ -2,7 +2,9 @@
 
 This file maps point, sequential, temporal and independent evaluation design to
 concrete Rust symbols. Estimation, evidence eligibility and artifact selection
-remain separate authorities.
+remain separate authorities. Repository-controlled qualification status is owned
+by `../../docs/lane-e/LANE_E_IMPLEMENTATION_MATRIX.json`; this mapping cannot
+upgrade product composition, future-calendar evidence, acceptance or release.
 
 ## Existing estimator primitives
 
@@ -27,9 +29,13 @@ efficacy.
 
 | Design operation | Native symbol | Source | Status |
 |---|---|---|---|
-| freeze complete cross-fold lineage | `freeze_cross_fold_plan` | `src/closure.rs` | implemented |
-| record final holdout use | `FinalHoldoutRegistry::consume` | `src/closure.rs` | implemented |
-| issue independent eligibility decision | `decide_independently` | `src/closure.rs` | implemented |
+| freeze complete cross-fold lineage | `freeze_cross_fold_plan` / `freeze_cross_fold_plan_v2` | `src/closure.rs` | implemented |
+| record in-memory final holdout use | `FinalHoldoutRegistry::consume` | `src/closure.rs` | implemented |
+| persist final holdout semantic journal | `DurableFinalHoldoutJournalV1` | `src/durable_holdout.rs` | implemented |
+| couple journal success to independent durable anchor | `DurableFinalHoldoutOwnerV1<S>` | `src/host_holdout.rs` | implemented source contract |
+| issue independent eligibility decision | `decide_independently` / `decide_independently_v2` | `src/closure.rs` | implemented |
+| authenticate observed longitudinal timing | `decide_with_signed_longitudinal_evidence_v3` | `src/longitudinal_time.rs` | implemented |
+| bind external preregistration/collection/clock provenance | `decide_with_signed_longitudinal_evidence_v4` | `src/longitudinal_provenance.rs` | implemented source contract |
 
 `freeze_cross_fold_plan` requires two to thirty-two folds. It canonicalizes and
 deduplicates every principal, episode and window set; rejects training/holdout
@@ -47,9 +53,21 @@ plan identity with changed semantics conflicts, while a different plan using
 either the same final-holdout digest or the same final-holdout window is
 rejected. The emitted holdout-use receipt binds the complete plan semantics,
 registry state and use digest and carries its own deterministic integrity seal.
-A future persistent host adapter must retain this registry under a single
-writer; the pure type and unkeyed seals alone do not prove durable exclusivity
-or authenticated origin.
+The pure type and unkeyed seals alone do not prove durable exclusivity or
+authenticated origin.
+
+`DurableFinalHoldoutJournalV1` persists the semantic journal under a locked,
+synced append protocol and recovers only against an independently retained
+minimum anchor. `DurableFinalHoldoutOwnerV1<S>` strengthens the product-facing
+composition contract: the host provides a `HoldoutAnchorStoreV1`, and a newly
+recorded consume is not exposed as successful until that independent store
+advances from the expected anchor to the next anchor with durable compare-and-
+store semantics. An unavailable, conflicting or indeterminate anchor commit
+fences the owner. Recovery may advance an acknowledged prefix to the replayed
+head, but a nonempty journal with no independently retained anchor is not
+silently adopted. This source contract still cannot prove that a concrete host
+anchor store is independent, authenticated, durable or current; those facts are
+qualification evidence supplied by the product host.
 
 `decide_independently` consumes authenticated generator and evaluator identities
 from `learning.ledger`. It rejects shared principal, credential-chain or
@@ -76,6 +94,15 @@ InsufficientEvidence
 Even the first state has `DENY_ALL` authority. A separate selector must consume
 it together with all other gates.
 
+V3 longitudinal admission authenticates exact observed-window bytes, an
+independent observer and trusted current-time bounds. V4 additionally requires
+three distinct nonzero external receipt digests: frozen-plan preregistration,
+actual outcome collection provenance and trusted-clock attestation. Those
+digests enter both observer/evaluator signing paths and the final authentication
+digest. V4 gives the qualification plane concrete references to check; it does
+not let a repository fixture certify that wall-clock time elapsed or that a live
+collector was independent.
+
 ## Identity, causal and statistical obligations
 
 The native closure verifies authenticated identity fields but cannot create the
@@ -97,17 +124,22 @@ owners must provide the actual evidence.
 A product receipt must name:
 
 1. the scheduler and immutable evaluation plan store;
-2. the durable final-holdout-use registry, single-writer fence and
-   canonical persistence/reload of frozen-plan and holdout-use receipts;
+2. the `DurableFinalHoldoutOwnerV1` caller, the concrete independent
+   `HoldoutAnchorStoreV1`, its single-writer/CAS fence, authenticated namespace,
+   directory durability and canonical persistence/reload of frozen-plan and
+   holdout-use receipts;
 3. the authenticated dataset, outcome-observer and candidate manifests;
 4. the exact fold assignments and nuisance-model runtime;
 5. the target host, resource measurements and incomplete/censored counts;
-6. future calendar windows and independently identified snapshots;
+6. real future calendar windows and independently identified snapshots;
 7. retention, subgroup/privacy and unlearning evidence;
-8. the distinct selector, operator and release principals.
+8. distinct preregistration, collection and trusted-clock receipts for V4
+   longitudinal admission;
+9. the distinct selector, operator and release principals.
 
 A fixture using synthetic future timestamps cannot satisfy the future-calendar
-or longitudinal claim.
+or longitudinal claim. The source can validate the shape and signatures of V4
+provenance references but cannot self-issue production provenance.
 
 ## Qualification mapping
 
@@ -117,9 +149,15 @@ Focused tests live in:
 - `src/ope_tests.rs` and `src/ope_confidence_tests.rs`;
 - `src/sequential_tests.rs`;
 - `src/temporal_fold_tests.rs` and `src/temporal_evaluation_tests.rs`;
-- `src/closure_tests.rs`.
+- `src/closure_tests.rs`;
+- `src/durable_holdout_tests.rs` and `src/host_holdout.rs`;
+- `src/longitudinal_time_tests.rs` and `src/longitudinal_provenance.rs`.
 
 Cross-crate composition is exercised by
 `../hepta-shadow-qualification/src/lane_e_closure_tests.rs`. Exact dossier IDs,
 test functions and CI jobs are registered in
-`../../qualification/lane-e/TEST_TRACEABILITY.json`.
+`../../qualification/lane-e/TEST_TRACEABILITY.json`. Exact-head and ordered-
+parent synthetic-merge runs retain source-only qualification receipts from
+`.github/workflows/hepta-lane-e-gap-closure.yml`; those artifacts explicitly do
+not prove product execution, future-calendar evidence, independent acceptance
+or release.

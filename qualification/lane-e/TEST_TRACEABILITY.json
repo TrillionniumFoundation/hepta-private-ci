@@ -122,13 +122,17 @@
     {
       "id": "EVAL-04",
       "module": "learning.eval",
-      "requirement": "Future leakage, holdout reuse by digest or window, same-plan semantic mutation, altered plan/use receipts, role collision, retention failure and deleted-lineage restoration invalidate the claim.",
+      "requirement": "Future leakage, holdout reuse by digest or window, same-plan semantic mutation, altered plan/use receipts, role collision, retention failure, deleted-lineage restoration, unanchored durable reuse and incomplete external longitudinal provenance invalidate the claim.",
       "tests": [
         {"source": "codex-rs/hepta-intelligence-eval/src/closure_tests.rs", "function": "eval_04_rejects_role_collision_and_missing_future_windows"},
         {"source": "codex-rs/hepta-intelligence-eval/src/closure_tests.rs", "function": "eval_cross_fold_plan_binds_disjoint_lineage_and_final_holdout"},
         {"source": "codex-rs/hepta-intelligence-eval/src/closure_tests.rs", "function": "final_holdout_registry_allows_exact_retry_but_blocks_adaptive_reuse"},
         {"source": "codex-rs/hepta-intelligence-eval/src/closure_tests.rs", "function": "final_holdout_replay_receipt_is_stable_after_unrelated_registry_growth"},
         {"source": "codex-rs/hepta-intelligence-eval/src/closure_tests.rs", "function": "independent_decision_consumes_bound_holdout_receipt"},
+        {"source": "codex-rs/hepta-intelligence-eval/src/host_holdout.rs", "function": "owner_commits_anchor_before_returning_receipt_and_retry_is_read_only"},
+        {"source": "codex-rs/hepta-intelligence-eval/src/host_holdout.rs", "function": "failed_anchor_commit_fences_owner_and_recovery_fast_forwards_prefix"},
+        {"source": "codex-rs/hepta-intelligence-eval/src/host_holdout.rs", "function": "nonempty_journal_without_independent_anchor_is_not_adopted"},
+        {"source": "codex-rs/hepta-intelligence-eval/src/longitudinal_provenance.rs", "function": "external_provenance_is_domain_bound_and_complete"},
         {"source": "codex-rs/hepta-learning-artifacts/src/closure_v2_tests.rs", "function": "art_02_persistent_withdrawal_blocks_future_admission_and_replays"}
       ],
       "status": "native_test_mapped"

@@ -14,6 +14,7 @@ on:
       - docs/lane-e/**
       - qualification/lane-e/**
       - scripts/hepta-lane-e-closure.py
+      - scripts/hepta-learning-eval-status.py
       - .github/workflows/hepta-lane-e-gap-closure.yml
 
 permissions:
@@ -25,7 +26,7 @@ concurrency:
 
 env:
   SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
-  BASE_SHA: ${{ github.event.pull_request.base.sha }}
+  BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
 
 jobs:
   rust-closure:
@@ -62,6 +63,7 @@ jobs:
           set -euo pipefail
           python3 scripts/hepta-lane-e-closure.py self-test
           python3 scripts/hepta-lane-e-closure.py verify
+          python3 scripts/hepta-learning-eval-status.py
 
       - name: Locked all-target compilation
         working-directory: codex-rs
@@ -99,16 +101,30 @@ jobs:
           --test cross_language_wire_fault
           -- --test-threads=1
 
-      - name: Strict Lane E lint
+      - name: Strict learning.eval lint
+        if: always()
         working-directory: codex-rs
-        run: >-
-          cargo clippy --locked
-          -p codex-hepta-learning-ledger
-          -p codex-hepta-learning-artifacts
-          -p codex-hepta-bellman-operator
-          -p codex-hepta-intelligence-eval
-          -p codex-hepta-shadow-qualification
-          --all-targets -- -D warnings
+        run: cargo clippy --locked -p codex-hepta-intelligence-eval --all-targets -- -D warnings
+
+      - name: Strict learning.ledger lint
+        if: always()
+        working-directory: codex-rs
+        run: cargo clippy --locked -p codex-hepta-learning-ledger --all-targets -- -D warnings
+
+      - name: Strict learning.artifacts lint
+        if: always()
+        working-directory: codex-rs
+        run: cargo clippy --locked -p codex-hepta-learning-artifacts --all-targets -- -D warnings
+
+      - name: Strict learning.operator lint
+        if: always()
+        working-directory: codex-rs
+        run: cargo clippy --locked -p codex-hepta-bellman-operator --all-targets -- -D warnings
+
+      - name: Strict shadow qualification lint
+        if: always()
+        working-directory: codex-rs
+        run: cargo clippy --locked -p codex-hepta-shadow-qualification --all-targets -- -D warnings
 
       - name: Formatting and clean source
         if: always()
@@ -125,6 +141,56 @@ jobs:
           git diff --check
           git diff --exit-code
           test -z "$(git status --porcelain --untracked-files=no)"
+
+      - name: Write exact-head qualification receipt
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p .hepta-evidence
+          python3 - <<'PY'
+          import json
+          import os
+          import subprocess
+          from pathlib import Path
+
+          def git(*args: str) -> str:
+              return subprocess.check_output(["git", *args], text=True).strip()
+
+          source = git("rev-parse", "HEAD")
+          expected = os.environ["SOURCE_SHA"]
+          if source != expected:
+              raise SystemExit(f"source drift: {source} != {expected}")
+          receipt = {
+              "schema": "hepta.lane-e.exact-head-qualification-receipt.v1",
+              "claimBoundary": "repository_source_qualification_only",
+              "sourceSha": source,
+              "sourceTree": git("rev-parse", "HEAD^{tree}"),
+              "laneMatrixBlob": git("hash-object", "docs/lane-e/LANE_E_IMPLEMENTATION_MATRIX.json"),
+              "traceabilityBlob": git("hash-object", "qualification/lane-e/TEST_TRACEABILITY.json"),
+              "statusGuardBlob": git("hash-object", "scripts/hepta-learning-eval-status.py"),
+              "workflow": os.environ.get("GITHUB_WORKFLOW"),
+              "workflowRunId": os.environ.get("GITHUB_RUN_ID"),
+              "workflowRunAttempt": os.environ.get("GITHUB_RUN_ATTEMPT"),
+              "event": os.environ.get("GITHUB_EVENT_NAME"),
+              "productionExecutionProved": False,
+              "futureCalendarEvidenceProved": False,
+              "independentAcceptanceProved": False,
+              "releaseProved": False,
+          }
+          Path(".hepta-evidence/lane-e-exact-head.json").write_text(
+              json.dumps(receipt, indent=2, sort_keys=True) + "\n",
+              encoding="utf-8",
+          )
+          PY
+
+      - name: Retain exact-head qualification receipt
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: lane-e-exact-head-${{ env.SOURCE_SHA }}
+          path: .hepta-evidence/lane-e-exact-head.json
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 90
 
   synthetic-merge:
     runs-on: ubuntu-24.04
@@ -182,6 +248,7 @@ jobs:
         run: |
           set -euo pipefail
           python3 scripts/hepta-lane-e-closure.py verify
+          python3 scripts/hepta-learning-eval-status.py
 
       - name: Compile merged candidate
         working-directory: codex-rs
@@ -234,3 +301,63 @@ jobs:
           git diff --exit-code
           test "$(git write-tree)" = "${MERGE_TREE}"
           test "$(git rev-parse "${MERGE_COMMIT}^{tree}")" = "${MERGE_TREE}"
+
+      - name: Write synthetic-merge qualification receipt
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p .hepta-evidence
+          python3 - <<'PY'
+          import json
+          import os
+          import subprocess
+          from pathlib import Path
+
+          def git(*args: str) -> str:
+              return subprocess.check_output(["git", *args], text=True).strip()
+
+          source = os.environ["SOURCE_SHA"]
+          base = os.environ["BASE_SHA"]
+          merge_commit = os.environ["MERGE_COMMIT"]
+          merge_tree = os.environ["MERGE_TREE"]
+          if git("rev-parse", f"{merge_commit}^1") != base:
+              raise SystemExit("synthetic merge first-parent drift")
+          if git("rev-parse", f"{merge_commit}^2") != source:
+              raise SystemExit("synthetic merge second-parent drift")
+          if git("rev-parse", f"{merge_commit}^{{tree}}") != merge_tree:
+              raise SystemExit("synthetic merge tree drift")
+          if git("write-tree") != merge_tree:
+              raise SystemExit("qualified index no longer matches merge tree")
+          receipt = {
+              "schema": "hepta.lane-e.synthetic-merge-qualification-receipt.v1",
+              "claimBoundary": "repository_source_qualification_only",
+              "baseSha": base,
+              "sourceSha": source,
+              "mergeCommit": merge_commit,
+              "mergeTree": merge_tree,
+              "laneMatrixBlob": git("hash-object", "docs/lane-e/LANE_E_IMPLEMENTATION_MATRIX.json"),
+              "traceabilityBlob": git("hash-object", "qualification/lane-e/TEST_TRACEABILITY.json"),
+              "statusGuardBlob": git("hash-object", "scripts/hepta-learning-eval-status.py"),
+              "workflow": os.environ.get("GITHUB_WORKFLOW"),
+              "workflowRunId": os.environ.get("GITHUB_RUN_ID"),
+              "workflowRunAttempt": os.environ.get("GITHUB_RUN_ATTEMPT"),
+              "event": os.environ.get("GITHUB_EVENT_NAME"),
+              "productionExecutionProved": False,
+              "futureCalendarEvidenceProved": False,
+              "independentAcceptanceProved": False,
+              "releaseProved": False,
+          }
+          Path(".hepta-evidence/lane-e-synthetic-merge.json").write_text(
+              json.dumps(receipt, indent=2, sort_keys=True) + "\n",
+              encoding="utf-8",
+          )
+          PY
+
+      - name: Retain synthetic-merge qualification receipt
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: lane-e-synthetic-merge-${{ env.SOURCE_SHA }}
+          path: .hepta-evidence/lane-e-synthetic-merge.json
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 90
