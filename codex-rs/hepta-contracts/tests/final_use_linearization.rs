@@ -12,6 +12,7 @@ mod unix {
     use codex_hepta_contracts::FinalUseGrant;
     use codex_hepta_contracts::FinalUseRevocations;
     use codex_hepta_contracts::SignedFinalUseGrant;
+    use codex_hepta_contracts::deliver_final_use;
     use ed25519_dalek::Signer;
     use ed25519_dalek::SigningKey;
 
@@ -61,7 +62,7 @@ mod unix {
         let grant_id = signed.grant.grant_id.clone();
         let (tx, rx) = mpsc::channel();
         std::thread::spawn(move || {
-            let result = callback_authority.with_verified_use(token, &binding, || {
+            let result = deliver_final_use(&callback_authority, token, &binding, || {
                 callback_authority
                     .update_revocations(FinalUseRevocations {
                         authority_epoch: 17,
