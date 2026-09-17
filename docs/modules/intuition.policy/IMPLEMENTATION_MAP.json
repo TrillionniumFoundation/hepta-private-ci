@@ -39,21 +39,39 @@
       "sourcePath": "codex-rs/hepta-intuition/src/calibrated_binding.rs",
       "state": "source_implemented_not_product_composed",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-intuition/src/qualified_tests.rs::current_v2_rejects_any_omitted_candidate_bound"
+      ],
       "sourcePathExists": true,
       "designOperation": "decide_calibrated_v2",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "decide_calibrated_v3",
+      "nativeSymbol": "decide_calibrated_v3",
+      "sourcePath": "codex-rs/hepta-intuition/src/qualified.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-intuition/src/qualified_tests.rs",
+        "codex-rs/hepta-intelligence/tests/intuition_frozen_qualification.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "decide_calibrated",
       "mappingClass": "owner_native",
       "delegatedCallees": []
     }
   ],
   "repositoryControlledGaps": [
-    "Bind every operation to an authenticated consumer callsite and owner store.",
-    "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary."
+    "Bind CounterBased assignment to the eventual owner-supplied authenticated random-stream draw.",
+    "Compose stricter V3 risk profiles through a native V3 host port instead of the HighOnlySlowPath compatibility wrapper.",
+    "Run exact-head and deterministic synthetic-merge qualification before changing the claim boundary."
   ],
   "externalEvidenceGates": [
     "independent semantic review",
-    "product execution and target-host qualification",
-    "operator acceptance, canary, promotion and release"
+    "production-selected model calibration and target-host qualification",
+    "product execution, operator acceptance, canary, promotion and release"
   ],
   "claimBoundary": {
     "nativeSourceMappingComplete": true,
