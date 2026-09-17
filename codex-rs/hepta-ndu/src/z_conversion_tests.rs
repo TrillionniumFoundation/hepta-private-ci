@@ -68,7 +68,7 @@ fn whitened_head_is_converted_back_to_original_increment_coordinates() {
 }
 
 #[test]
-fn profile_admission_rejects_ambiguous_or_singular_coordinate_conventions() {
+fn profile_admission_rejects_ambiguous_singular_and_inexact_q24_profiles() {
     let base = NduZConversionProfileV1 {
         units_digest: Digest32::of_bytes(b"z-units"),
         driver_dimension: 2,
@@ -93,12 +93,19 @@ fn profile_admission_rejects_ambiguous_or_singular_coordinate_conventions() {
         Err(ZConversionError::InvalidProfile)
     );
 
-    let mut singular = base;
+    let mut singular = base.clone();
     singular.source_coordinates = ZCoordinateConventionV1::WhitenedIncrement;
     singular.whitening_lower = vec![vec![1.0, 0.0], vec![0.0, 0.0]];
     assert_eq!(
         admit_z_conversion_profile(singular),
         Err(ZConversionError::SingularTransform)
+    );
+
+    let mut inexact = base;
+    inexact.maximum_absolute_z = 536_870_912.0 + 1.0;
+    assert_eq!(
+        admit_z_conversion_profile(inexact),
+        Err(ZConversionError::InvalidProfile)
     );
 }
 
