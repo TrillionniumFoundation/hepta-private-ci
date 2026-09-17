@@ -299,6 +299,9 @@ impl fmt::Display for BaoClientError {
 }
 impl std::error::Error for BaoClientError {}
 
+#[path = "lease_client.rs"]
+mod lease_client;
+
 #[cfg(all(test, unix))]
 #[path = "https_consumer_tests.rs"]
 mod tests;
