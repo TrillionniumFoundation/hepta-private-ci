@@ -35,6 +35,7 @@ pub use model::QueuedClientBindingFinalizeRequest;
 pub use model::QueuedClientBindingLease;
 pub use model::QueuedClientBindingReserveOutcome;
 pub use model::QueuedClientBindingState;
+pub use model::QueuedClientBindingStatus;
 pub use model::QueuedClientDispatchClaimOutcome;
 pub use model::QueuedClientDispatchLease;
 pub use model::QueuedClientExpiredDispatch;
@@ -45,6 +46,7 @@ pub use model::RolloutMigrationState;
 /// Preferred entrypoint: owns configuration and metrics.
 pub use runtime::StateRuntime;
 pub use sqlite::SqliteConfig;
+pub use sqlite_recovery::ColdSqliteRecoveryImage;
 pub use sqlite_recovery::ExistingSqliteRecoveryGuard;
 pub use sqlite_recovery::SqliteRecoveryError;
 
