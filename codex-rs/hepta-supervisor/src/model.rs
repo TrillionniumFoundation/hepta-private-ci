@@ -230,6 +230,8 @@ pub enum SupervisorEventKind {
     StopRequested,
     KillRequested,
     RestartQueued,
+    AutomaticRestartScheduled { attempt: u32, delay_ms: u64 },
+    AutomaticRestartExhausted { attempts: u32 },
     UpgradeQueued { previous: String, target: String },
     UpgradeCommitted { previous: String, target: String },
     AutomaticRollbackQueued { failed: String, target: String },
