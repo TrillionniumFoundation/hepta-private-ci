@@ -38,6 +38,7 @@ pub enum NduProjectionStoreError {
     NotDirectory,
     NotRegular,
     BackupTooLarge,
+    BackupRegression,
     Journal(NduProjectionJournalError),
     Io(io::ErrorKind),
     /// The committed rename may have happened but its directory durability
@@ -213,8 +214,10 @@ impl NduProjectionStoreV1 {
     }
 
     /// Replaces the current state from a complete backup only after validating
-    /// the whole hash chain and semantic transition history. The validated image
-    /// is synchronized before this method updates the in-memory state.
+    /// the whole hash chain and semantic transition history. Restore is
+    /// monotonic: the current committed history must be an exact prefix of the
+    /// backup. This prevents an older valid backup from deleting a later
+    /// revocation or otherwise resurrecting stale selected state.
     pub fn restore_backup(
         &mut self,
         bytes: &[u8],
@@ -223,6 +226,11 @@ impl NduProjectionStoreV1 {
             return Err(NduProjectionStoreError::BackupTooLarge);
         }
         let restored = NduProjectionJournalV1::reopen(bytes)?;
+        if restored.entries().len() < self.journal.entries().len()
+            || restored.entries()[..self.journal.entries().len()] != *self.journal.entries()
+        {
+            return Err(NduProjectionStoreError::BackupRegression);
+        }
         persist_image(&self.root, &restored)?;
         self.journal = restored;
         Ok(())
