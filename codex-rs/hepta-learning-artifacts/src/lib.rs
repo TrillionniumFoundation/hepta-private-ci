@@ -18,6 +18,7 @@ mod pinned;
 mod publication;
 mod registry;
 mod storage;
+mod storage_hygiene;
 
 pub use admission_v3::ArtifactAdmissionError;
 pub use admission_v3::WithdrawalAuthorityDomainV1;
@@ -105,3 +106,7 @@ pub use storage::read_registry_snapshot;
 pub use storage::write_candidate_payload;
 pub use storage::write_registry_head_witness;
 pub use storage::write_registry_snapshot;
+pub use storage_hygiene::ArtifactStorageAdminV1;
+pub use storage_hygiene::OrphanCleanupDispositionV1;
+pub use storage_hygiene::StorageEntryInspectionV1;
+pub use storage_hygiene::StorageHygieneError;
