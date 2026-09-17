@@ -127,6 +127,7 @@ jobs:
           test -z "$(git status --porcelain --untracked-files=no)"
 
   synthetic-merge:
+    if: github.event_name == 'pull_request'
     runs-on: ubuntu-24.04
     timeout-minutes: 120
     steps:
