@@ -139,6 +139,13 @@ enum Event {
         request_id: String,
         reason: String,
     },
+    /// The server returned an explicit error response to turn/start. This is
+    /// stronger than transport loss: no turn identity was admitted, so local
+    /// capacity may be released without claiming a provider terminal event.
+    Reject {
+        request_id: String,
+        output: NativeRunOutput,
+    },
     Observe {
         request_id: String,
         output: NativeRunOutput,
@@ -250,6 +257,34 @@ impl DurableInferenceControl {
             Event::Stop {
                 request_id: request_id.to_string(),
                 reason,
+            },
+        )
+    }
+
+    /// The exact App Server returned a JSON-RPC error for turn/start. Unlike a
+    /// timeout/disconnect, that response proves this attempt did not receive a
+    /// turn identity. Persist the rejection and release the local slot while
+    /// retaining request-id deduplication.
+    pub fn reject_native_after_dispatch(
+        &mut self,
+        request_id: &str,
+        output: NativeRunOutput,
+    ) -> Result<NativeRunRecord, Error> {
+        let record = self
+            .native
+            .records
+            .get(request_id)
+            .ok_or(Error::RequestNotFound)?;
+        if record.observation.as_ref() == Some(&output)
+            && record.state == NativeReservationState::Released
+        {
+            return Ok(record.clone());
+        }
+        self.commit_native(
+            request_id,
+            Event::Reject {
+                request_id: request_id.to_string(),
+                output,
             },
         )
     }
@@ -372,6 +407,7 @@ impl NativeJournal {
             | Event::Started { request_id, .. }
             | Event::Cancel { request_id }
             | Event::Stop { request_id, .. }
+            | Event::Reject { request_id, .. }
             | Event::Observe { request_id, .. } => request_id,
         };
         let record = self.records.get_mut(id).ok_or(Error::RequestNotFound)?;
@@ -414,6 +450,9 @@ impl NativeJournal {
                 record.pre_dispatch_stop = Some(reason);
                 record.state = NativeReservationState::Released;
             }
+            Event::Reject { output, .. } => {
+                apply_explicit_rejection(record, output)?;
+            }
             Event::Observe { output, .. } => {
                 apply_observation(record, output)?;
             }
@@ -426,7 +465,10 @@ impl NativeJournal {
     }
 }
 
-fn apply_observation(record: &mut NativeRunRecord, output: NativeRunOutput) -> Result<(), Error> {
+fn validate_observation_assignment(
+    record: &NativeRunRecord,
+    output: &NativeRunOutput,
+) -> Result<(), Error> {
     let dispatch = record.dispatch.as_ref().ok_or(Error::AssignmentMismatch)?;
     if output.thread_id != dispatch.thread_id
         || output.model_provider != dispatch.model_provider
@@ -451,6 +493,32 @@ fn apply_observation(record: &mut NativeRunRecord, output: NativeRunOutput) -> R
     {
         return Err(Error::InvalidIdentity("owner authority loss reason"));
     }
+    Ok(())
+}
+
+fn apply_explicit_rejection(
+    record: &mut NativeRunRecord,
+    output: NativeRunOutput,
+) -> Result<(), Error> {
+    if record.state != NativeReservationState::Dispatching
+        || record.turn_id.is_some()
+        || !output.turn_id.is_empty()
+        || output.status != NativeRunStatus::Indeterminate
+        || output.terminal_observed
+        || output.observed_output_tokens.is_some()
+        || !output.output.is_empty()
+        || output.stop_reason.as_ref().is_none_or(String::is_empty)
+    {
+        return Err(Error::InvalidTransition);
+    }
+    validate_observation_assignment(record, &output)?;
+    record.observation = Some(output);
+    record.state = NativeReservationState::Released;
+    Ok(())
+}
+
+fn apply_observation(record: &mut NativeRunRecord, output: NativeRunOutput) -> Result<(), Error> {
+    validate_observation_assignment(record, &output)?;
     if output.terminal_observed == (output.status == NativeRunStatus::Indeterminate)
         || (output.turn_id.is_empty()
             && (output.terminal_observed
