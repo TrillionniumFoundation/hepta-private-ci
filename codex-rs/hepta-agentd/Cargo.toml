@@ -77,6 +77,8 @@ tokio-util = { workspace = true }
 
 [dev-dependencies]
 app_test_support = { workspace = true }
+codex-hepta-intelligence-eval = { path = "../hepta-intelligence-eval" }
+codex-hepta-plasticity = { path = "../hepta-plasticity" }
 codex-hepta-supervisor = { workspace = true }
 codex-utils-cargo-bin = { workspace = true }
 core_test_support = { workspace = true }
