@@ -1,7 +1,7 @@
 # kernel.operations: implementation design
 
 Parent: `docs/modules/kernel.operations/TECHNICAL.md`. Lane: `LANE-A-FOUNDATION`.
-Status: bounded operation transition reference and outbox components implemented; remaining target capabilities and independent acceptance are listed in section 8. Common requirements: `../EXECUTION_SEMANTICS.md` and `../TECHNICAL.md`. Canonical ownership and package predecessors are unchanged.
+Status: transactional durable ledger/outbox source implementation and bounded reference oracle implemented; named product composition, target-host qualification and independent acceptance remain separate gates. Common requirements: `../EXECUTION_SEMANTICS.md` and `../TECHNICAL.md`. Canonical ownership and package predecessors are unchanged.
 
 ## 1. Source and work envelope
 
@@ -26,7 +26,7 @@ Local transaction -> durable intent/outbox -> fenced claim -> authorized adapter
 
 Pilot pending intents <= 100000 per configured shard; claim batch <= 256; attempt counters bounded by operation profile; queue saturation rejects new work before mutation. Benchmark commit/fsync, outbox age and reconciliation backlog rather than only dispatch throughput.
 
-Pilot ceilings are design targets, not measurements. Stricter canonical limits prevail. Bind actual schema/migration, host and measurements before composition; stateless modules prove absence rather than inventing state.
+Pilot ceilings are design targets until target-host measurements are retained. The native implementation enforces the declared 100000 active-operation/outbox ceilings, batch <=256, bounded attempts, lease duration and retry delay. Bind the selected host and measurements before activation.
 
 ## 6. Concrete verification cases
 
@@ -35,7 +35,7 @@ Pilot ceilings are design targets, not measurements. Stricter canonical limits p
 - OPS-03: changed retry digest and stale writer fence conflict.
 - OPS-04: disk-full/corrupt-frame/reopen and every handoff interruption preserve one authoritative writer and no duplicate terminal effect.
 
-These are required product test designs, not executed-test receipts. Each implementation supplies native test identity, exact input/output and independent oracle evidence.
+Repository tests now execute the atomic rollback, close/reopen, stale-fence/multi-handle, acknowledgement-loss, corrupt-store and destination-dedupe portions. Real process kill/power interruption, real ENOSPC and selected target-host filesystem behavior remain product qualification evidence, not documentation claims.
 
 ## 7. Integration, rollback and capability ceiling
 
@@ -45,8 +45,10 @@ Use all eighteen dossier receipt fields. Immediate revocation/stop remains effec
 
 ## 8. Current native implementation
 
-- **Implemented entrypoints:** `OperationLedger` in [codex-rs/hepta-operations/src/ledger.rs](../../../codex-rs/hepta-operations/src/ledger.rs); `Outbox` in [codex-rs/hepta-operations/src/outbox.rs](../../../codex-rs/hepta-operations/src/outbox.rs). Bounded operation transition reference and outbox components implemented.
-- **State and recovery:** OperationLedger is a BTreeMap reference model capped at 16384 records, with semantic duplicate checks, generation/revision transitions and explicit indeterminate state. Cloning or reopening a caller copy is not durable recovery.
-- **Source tests:** [codex-rs/hepta-operations/src/ledger_tests.rs](../../../codex-rs/hepta-operations/src/ledger_tests.rs), [codex-rs/hepta-operations/src/outbox_tests.rs](../../../codex-rs/hepta-operations/src/outbox_tests.rs). These are test identities, not execution receipts for this documentation revision.
-- **Implementation and operating references:** [docs/lane-a-foundation/kernel.operations/REFERENCE_MODEL_V1.md](../../../docs/lane-a-foundation/kernel.operations/REFERENCE_MODEL_V1.md).
-- **Remaining work:** Bind these transitions to the existing durable effect owner and final-use authority; this reference model does not implement the target transactional production operation ledger.
+- **Implemented entrypoints:** `DurableOperationStore` in [codex-rs/hepta-operations/src/durable.rs](../../../codex-rs/hepta-operations/src/durable.rs); `DurableDispatcher` in [codex-rs/hepta-operations/src/dispatcher.rs](../../../codex-rs/hepta-operations/src/dispatcher.rs); `OperationLedger` in [codex-rs/hepta-operations/src/ledger.rs](../../../codex-rs/hepta-operations/src/ledger.rs); `Outbox` in [codex-rs/hepta-operations/src/outbox.rs](../../../codex-rs/hepta-operations/src/outbox.rs).
+- **State and recovery:** the durable owner uses a migrated SQLite WAL database with `synchronous=FULL`, one `BEGIN IMMEDIATE` transaction for operation+outbox publication, bounded leased claims, monotonically increasing fences/owner generations, open-time integrity checks and crash/reopen recovery. Expired pre-dispatch leases may be reclaimed; any expired post-dispatch lease becomes `Indeterminate` and cannot be resent without reconciliation.
+- **Authority boundary:** [codex-rs/hepta-operations/src/dispatcher.rs](../../../codex-rs/hepta-operations/src/dispatcher.rs) consumes the real `kernel.authority` `SignedFinalUseGrant` and executes the adapter through `FinalUseAuthority::with_verified_use` immediately at the final-use boundary. The reference witness remains test-only.
+- **Destination dedupe:** [codex-rs/hepta-operations/src/destination_dedupe.rs](../../../codex-rs/hepta-operations/src/destination_dedupe.rs) exports a destination-owned schema/helper pair that runs inside the destination owner's transaction; `kernel.operations` still never directly writes another owner's domain store.
+- **Source tests:** [codex-rs/hepta-operations/src/durable_tests.rs](../../../codex-rs/hepta-operations/src/durable_tests.rs), [codex-rs/hepta-operations/src/ledger_tests.rs](../../../codex-rs/hepta-operations/src/ledger_tests.rs), [codex-rs/hepta-operations/src/outbox_tests.rs](../../../codex-rs/hepta-operations/src/outbox_tests.rs). These are source test identities; exact-candidate workflow execution remains the evidence gate.
+- **Implementation and operating references:** [docs/lane-a-foundation/kernel.operations/DURABLE_STORE_V1.md](../../../docs/lane-a-foundation/kernel.operations/DURABLE_STORE_V1.md) and [docs/lane-a-foundation/kernel.operations/REFERENCE_MODEL_V1.md](../../../docs/lane-a-foundation/kernel.operations/REFERENCE_MODEL_V1.md).
+- **Remaining work:** choose and compose a named product caller/destination, add the dedupe migration to that destination owner, run real kill/power-loss/disk-full target-host qualification, bind operational deployment metrics, then obtain independent acceptance/canary/promotion/release decisions. Source durability no longer depends on the in-memory reference model.
