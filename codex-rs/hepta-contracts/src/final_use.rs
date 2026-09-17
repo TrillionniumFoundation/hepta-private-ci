@@ -90,6 +90,35 @@ pub struct FinalUseRevocations {
     pub revoked_grant_ids: BTreeSet<String>,
 }
 
+/// Read-only capacity/frontier snapshot for host alerting and epoch rollover.
+/// This is observability only: it grants no authority and does not mutate state.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub struct FinalUseCapacity {
+    pub authority_epoch: u64,
+    pub revision: u64,
+    pub used_nonces: usize,
+    pub revoked_grants: usize,
+    pub max_claims: usize,
+    pub max_revocations: usize,
+}
+
+impl FinalUseCapacity {
+    pub fn remaining_claims(self) -> usize {
+        self.max_claims.saturating_sub(self.used_nonces)
+    }
+
+    pub fn remaining_revocations(self) -> usize {
+        self.max_revocations.saturating_sub(self.revoked_grants)
+    }
+
+    /// Hosts can reserve a bounded safety margin before requesting a signed
+    /// epoch-transition head. The caller chooses the reserve according to its
+    /// deployment/fanout SLA; this method itself is not rollover authority.
+    pub fn rollover_required_with_reserve(self, reserve: usize) -> bool {
+        self.remaining_claims() <= reserve || self.remaining_revocations() <= reserve
+    }
+}
+
 #[derive(Clone, Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
 struct State {
@@ -149,6 +178,29 @@ impl FinalUseAuthority {
             state: Mutex::new(state),
             store,
         })))
+    }
+
+    /// Return a coherent read-only snapshot that lets the trusted host alert
+    /// before either bounded registry reaches fail-closed capacity. An epoch
+    /// transition is still accepted only through `update_revocations` (or the
+    /// independently authenticated revocation-feed wrapper).
+    pub fn capacity(&self) -> Result<FinalUseCapacity, FinalUseError> {
+        let state = self
+            .0
+            .state
+            .lock()
+            .map_err(|_| FinalUseError::Unavailable)?;
+        if state.failed {
+            return Err(FinalUseError::Unavailable);
+        }
+        Ok(FinalUseCapacity {
+            authority_epoch: state.head.authority_epoch,
+            revision: state.head.revision,
+            used_nonces: state.used_nonces.len(),
+            revoked_grants: state.head.revoked_grant_ids.len(),
+            max_claims: MAX_CLAIMS,
+            max_revocations: MAX_CLAIMS,
+        })
     }
 
     /// Called only by the trusted host, not from a provider response or grant.
