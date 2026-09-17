@@ -40,12 +40,29 @@ jobs:
           sudo apt-get install -y --no-install-recommends \
             build-essential cmake curl git libdbus-1-dev libfreetype6-dev \
             libfontconfig1-dev libgl1-mesa-dev libglib2.0-dev libssl-dev \
-            libx11-dev libxcb1-dev libxkbcommon-dev pkg-config python3
+            libx11-dev libxcb1-dev libxkbcommon-dev llvm pkg-config python3
+          command -v llvm-objdump
+          llvm-objdump --version | head -n 1
+      - name: Resolve exact worker dependency lock
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo generate-lockfile --manifest-path apps/hepta-browser/servo-worker/Cargo.toml
+          test -s apps/hepta-browser/servo-worker/Cargo.lock
+          grep -F '84bcc9ac701874fa9819e5cdee06356b961d736c' apps/hepta-browser/servo-worker/Cargo.lock
       - name: Check exact current-pin worker
         shell: bash
         run: |
           set -euo pipefail
-          cargo check --manifest-path apps/hepta-browser/servo-worker/Cargo.toml
+          cargo check --locked --manifest-path apps/hepta-browser/servo-worker/Cargo.toml
+      - name: Preserve exact worker dependency lock
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-browser-servo-worker-lock-${{ github.sha }}
+          path: apps/hepta-browser/servo-worker/Cargo.lock
+          if-no-files-found: error
+          retention-days: 2
       - name: Verify source remains clean
         if: always()
         shell: bash
