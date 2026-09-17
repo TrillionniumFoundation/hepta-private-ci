@@ -11,15 +11,26 @@ The native supervisor applies one bounded automatic restart policy to the main a
 - exponential delay: 250 ms, 500 ms, 1 s for attempts 1-3;
 - the delay function is capped at 30 seconds if the fixed budget is changed in a future reviewed revision;
 - a fourth restart request inside the active window is not executed. The main agent records `AutomaticRestartBudgetExhausted`; Matrix records `MatrixRestartBudgetExhausted` and remains degraded;
-- explicit operator restart/new release start resets the in-memory recovery budget;
+- explicit operator restart/new release start resets the recovery budget for that release;
 - explicit stop/kill never schedules an automatic restart;
 - an unexpected main-process exit while Starting/AwaitingHealth or Running schedules restart; a health-deadline failure schedules restart after the failed child exits;
 - a missing/rejected live child discovered during supervisor recovery enters the same bounded restart path;
 - Matrix readiness recovery does not immediately zero the flap counter, preventing short healthy intervals from bypassing the fixed budget.
 
-### Persistence boundary
+### Durable restart counter
 
-The restart-window counter is currently supervisor-process memory. A supervisord process restart reconstructs process/release state from FleetRegistry and leases, but does not yet reconstruct the prior restart-window counter. Therefore the source now enforces the dossier budget during one supervisord lifetime, while a host-level crash/restart can reset the counter. Treat durable cross-supervisord restart budgeting as an open crash-consistency qualification item; do not claim the recovery-window budget is host-crash durable until a durable counter witness is implemented and exercised.
+The restart counter is persisted in the agent run root as `supervisor-restart-budget.json`. The journal:
+
+- is bound to the exact `agent_id` and active `release_id`;
+- stores independent main-agent and Matrix restart windows;
+- is bounded in size and digest-protected;
+- is written to a same-directory staging file, file-synchronized, and atomically published with a durable same-directory replacement;
+- is restored before daemon recovery decides whether a missing/rejected live child may consume another automatic attempt;
+- is reset when an explicit start/restart begins a new operator-directed recovery sequence or when the active release identity changes;
+- treats wall-clock rollback conservatively: rollback cannot buy additional attempts and restores the affected window as exhausted;
+- fails safe on journal persistence failure: the automatic retry is disabled/exhausted rather than proceeding without a durable counter witness.
+
+The restart-attempt count therefore survives supervisord process restart. The exact pending retry timer is intentionally not a durable command queue: a supervisord crash may lose a future retry deadline and therefore perform **fewer** automatic restarts, but it must not gain an additional attempt. Target-host SIGKILL/fault-injection evidence is still required before claiming this behavior is deployment-qualified.
 
 ## 2. Signed production mutation effect boundary
 
@@ -98,18 +109,21 @@ The following are required target-host tests. Source/unit tests are not substitu
 | after spawn, before process-lease publication | orphan cannot be silently treated as the authorized current child |
 | after lease publication | exact identity/generation adoption or rejection is deterministic |
 | before/after release-state CAS | current/previous release pair never becomes an unverified mixed state |
+| before/after restart-budget journal publication | automatic recovery never gains an attempt because the daemon crashed between counter mutation and durable publication |
 | during drain deadline | stop escalation is bounded and lifecycle remains generation-fenced |
 | during stop deadline | kill escalation is bounded; later PID reuse cannot satisfy the old lease identity |
 | after kill request | restart does not occur for explicit stop/kill; automatic paths still obey budget |
 | lease corruption/truncation | fail closed; no blind adoption or deletion of an unverifiable live process |
+| restart-journal corruption/truncation | fail closed or disable automatic restart; do not reset silently to a fresh budget |
 | intent corruption/truncation | fail closed; no signed transition resumes from guessed state |
 | disk full / write failure | no successful receipt unless the required durable state is published |
-| fsync failure | ambiguous signed mutation is recovery-required, not safe rejection |
-| atomic rename/replace failure | prior valid journal remains authoritative or startup fails closed |
-| supervisord SIGKILL | process/lease/release/intent reconciliation satisfies the same invariants after daemon restart |
-| repeated child flapping | no more than three automatic restarts per in-memory recovery window; durable host-restart behavior remains an explicit open item until persisted |
+| fsync failure | ambiguous signed mutation is recovery-required; automatic restart proceeds only with a durable counter witness |
+| atomic rename/replace failure | prior valid journal remains authoritative or startup/retry fails closed |
+| supervisord SIGKILL | process/lease/release/intent/restart-budget reconciliation satisfies the same invariants after daemon restart |
+| repeated child flapping | no more than three automatic restarts per recovery window, including across supervisord SIGKILL/restart |
+| wall-clock rollback | rollback never yields a fresh restart budget; the window is conservatively exhausted |
 
-Each receipt must include commit SHA, binary digest, target host identity, OS/kernel/runtime versions, exact fault injection point, before/after durable files, lifecycle/release generations, process identity, elapsed timings and final operator-visible outcome.
+Each receipt must include commit SHA, binary digest, target host identity, OS/kernel/runtime versions, exact fault injection point, before/after durable files, lifecycle/release generations, process identity, restart-journal contents, elapsed timings and final operator-visible outcome.
 
 ## 5. 256-instance HOL/load qualification
 
@@ -136,14 +150,25 @@ The supervisor implements release transition, rollback and reconciliation. It is
 
 Production completion still requires an independently composed caller/writer/authority path that produces the signed grant consumed by the supervisor. Until that composition has its own execution receipts and independent acceptance, describe this module as having a **native release transition engine**, not a completed production release-selection path.
 
-## 7. Current claim boundary
+## 7. Source verification identities
+
+Repository-controlled verification for this change includes at least:
+
+- `restart_policy` unit tests for exponential delay, fixed budget and window reset;
+- `restart_journal` unit tests for durable round-trip and conservative clock rollback handling;
+- `tests/restart_budget.rs` for real supervisor crash/restart scheduling behavior inside one daemon lifetime;
+- `tests/signed_intent_recovery.rs` for fail-closed unresolved intent and exact-digest abort terminalization;
+- the existing release-transition, Matrix companion, lease/adoption, daemon protocol and production-authority tests.
+
+These are test identities, not target-host deployment receipts. CI must pass on the final source commit, and the target-host matrix in section 4 remains required.
+
+## 8. Current claim boundary
 
 This source change can close repository-controlled implementation gaps only after CI passes. It does not by itself close:
 
 - deployed executable qualification;
-- target-host crash/fault-injection receipts;
+- target-host crash/fault-injection receipts, including proof of restart-journal durability under real SIGKILL/filesystem faults;
 - 256-instance latency/HOL qualification;
-- durable restart-budget continuity across supervisord process restart;
 - independent operational acceptance;
 - production caller/writer composition;
 - activation, promotion or release.
