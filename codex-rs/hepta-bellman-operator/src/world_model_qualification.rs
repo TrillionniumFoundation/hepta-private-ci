@@ -16,6 +16,7 @@ use codex_hepta_types::StableId;
 const CANONICAL_MIN_EFFECTIVE_SAMPLES: u32 = 200;
 const CANONICAL_MIN_INDEPENDENT_SNAPSHOTS: u16 = 3;
 const CANONICAL_MIN_FUTURE_WINDOWS: u16 = 2;
+const PROFILE_DOMAIN: &[u8] = b"hepta.bellman-operator.world-model-qualification-profile.v1";
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct WorldModelQualificationProfileV1 {
@@ -83,6 +84,31 @@ impl fmt::Display for WorldModelQualificationError {
 }
 
 impl StdError for WorldModelQualificationError {}
+
+/// Compute the canonical identity of the qualification policy fields.
+///
+/// The caller-populated `profile_digest` field is deliberately excluded from
+/// its own digest. Admission recomputes this value and rejects a profile whose
+/// thresholds were changed while retaining an older reviewed identity.
+#[must_use]
+pub fn world_model_qualification_profile_digest(
+    profile: &WorldModelQualificationProfileV1,
+) -> Digest32 {
+    let mut bytes = PROFILE_DOMAIN.to_vec();
+    bytes.extend_from_slice(&profile.minimum_effective_samples.to_be_bytes());
+    bytes.extend_from_slice(&profile.minimum_heldout_samples.to_be_bytes());
+    bytes.extend_from_slice(&profile.minimum_independent_snapshots.to_be_bytes());
+    bytes.extend_from_slice(&profile.minimum_future_windows.to_be_bytes());
+    for value in [
+        profile.maximum_heldout_mae,
+        profile.maximum_temporal_calibration_error,
+        profile.maximum_drift_score,
+        profile.maximum_confidence_half_width,
+    ] {
+        bytes.extend_from_slice(&value.raw().to_be_bytes());
+    }
+    Digest32::of_bytes(&bytes)
+}
 
 /// Admit frozen statistical evidence for continued shadow qualification.
 ///
@@ -155,7 +181,8 @@ pub fn admit_world_model_qualification(
 fn validate_profile(
     profile: &WorldModelQualificationProfileV1,
 ) -> Result<(), WorldModelQualificationError> {
-    if profile.minimum_effective_samples < CANONICAL_MIN_EFFECTIVE_SAMPLES
+    if profile.profile_digest != world_model_qualification_profile_digest(profile)
+        || profile.minimum_effective_samples < CANONICAL_MIN_EFFECTIVE_SAMPLES
         || profile.minimum_heldout_samples < CANONICAL_MIN_EFFECTIVE_SAMPLES
         || profile.minimum_independent_snapshots < CANONICAL_MIN_INDEPENDENT_SNAPSHOTS
         || profile.minimum_future_windows < CANONICAL_MIN_FUTURE_WINDOWS
@@ -237,22 +264,28 @@ mod tests {
         FixedQ32::from_raw((FixedQ32::ONE.raw() / denominator) * numerator)
     }
 
+    fn profile() -> WorldModelQualificationProfileV1 {
+        let mut profile = WorldModelQualificationProfileV1 {
+            profile_digest: Digest32::ZERO,
+            minimum_effective_samples: 200,
+            minimum_heldout_samples: 200,
+            minimum_independent_snapshots: 3,
+            minimum_future_windows: 2,
+            maximum_heldout_mae: q32_ratio(1, 10),
+            maximum_temporal_calibration_error: q32_ratio(1, 10),
+            maximum_drift_score: q32_ratio(1, 5),
+            maximum_confidence_half_width: q32_ratio(1, 20),
+        };
+        profile.profile_digest = world_model_qualification_profile_digest(&profile);
+        profile
+    }
+
     fn assessment() -> WorldModelQualificationAssessmentV1 {
         WorldModelQualificationAssessmentV1 {
             model_id: id("world-model"),
             model_digest: digest("model"),
             dataset_digest: digest("dataset"),
-            profile: WorldModelQualificationProfileV1 {
-                profile_digest: digest("profile"),
-                minimum_effective_samples: 200,
-                minimum_heldout_samples: 200,
-                minimum_independent_snapshots: 3,
-                minimum_future_windows: 2,
-                maximum_heldout_mae: q32_ratio(1, 10),
-                maximum_temporal_calibration_error: q32_ratio(1, 10),
-                maximum_drift_score: q32_ratio(1, 5),
-                maximum_confidence_half_width: q32_ratio(1, 20),
-            },
+            profile: profile(),
             effective_sample_size: 240,
             heldout_sample_count: 240,
             independent_snapshot_count: 3,
@@ -292,6 +325,16 @@ mod tests {
         assert_eq!(
             admit_world_model_qualification(value),
             Err(WorldModelQualificationError::DriftExceeded)
+        );
+    }
+
+    #[test]
+    fn qualification_admission_rejects_relabelled_profile_thresholds() {
+        let mut value = assessment();
+        value.profile.maximum_drift_score = FixedQ32::ONE;
+        assert_eq!(
+            admit_world_model_qualification(value),
+            Err(WorldModelQualificationError::InvalidProfile)
         );
     }
 }
