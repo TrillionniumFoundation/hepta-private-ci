@@ -101,5 +101,9 @@ pub use signed_evidence::verify_signed_role_separation;
 mod persistent_index_integration_tests;
 
 #[cfg(test)]
+#[path = "persistent_index_reconcile_tests.rs"]
+mod persistent_index_reconcile_tests;
+
+#[cfg(test)]
 #[path = "shadow_tests.rs"]
 mod shadow_tests;
