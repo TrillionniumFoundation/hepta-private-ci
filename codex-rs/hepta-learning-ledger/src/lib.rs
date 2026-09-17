@@ -9,6 +9,7 @@
 
 mod acknowledged;
 mod causal_v2;
+mod composed;
 mod credit_commit;
 mod dataset_from_ledger;
 mod dataset_receipt_v3;
@@ -43,6 +44,15 @@ pub use causal_v2::freeze_dataset;
 pub use causal_v2::validate_authenticated_outcome;
 pub use causal_v2::validate_candidate_set_completeness;
 pub use causal_v2::verify_independent_roles;
+pub use composed::AuthenticatedDecisionCommitV1;
+pub use composed::AuthenticatedOutcomeCommitV1;
+pub use composed::CausalLearningWriterV1;
+pub use composed::ComposedLearningError;
+pub use composed::credit_evidence_payload_v1;
+pub use composed::dataset_evidence_payload_v1;
+pub use composed::decision_evidence_payload_v1;
+pub use composed::episode_role_payload_v1;
+pub use composed::outcome_evidence_payload_v1;
 pub use credit_commit::DurableCreditBatchError;
 pub use credit_commit::DurableCreditBatchReceiptV1;
 pub use credit_commit::append_conserved_credit_batch_v1;
