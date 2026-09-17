@@ -9,6 +9,7 @@
 #![forbid(unsafe_code)]
 
 mod durable_registry;
+mod durable_topology_registry_v2;
 mod generator_v3;
 mod legacy;
 mod mutation_grammar_v1;
@@ -22,6 +23,9 @@ pub use durable_registry::DurableProposalAppendReceiptV1;
 pub use durable_registry::DurableProposalRegistry;
 pub use durable_registry::DurableProposalRegistryError;
 pub use durable_registry::DurableRegistryAnchorV1;
+pub use durable_topology_registry_v2::DurableTopologyProposalAppendReceiptV1;
+pub use durable_topology_registry_v2::DurableTopologyProposalRegistryError;
+pub use durable_topology_registry_v2::DurableTopologyProposalRegistryV2;
 pub use generator_v3::GeneratedParameterCandidateSetV3;
 pub use generator_v3::ParameterGeneratorErrorV3;
 pub use generator_v3::ParameterGeneratorProfileV3;
