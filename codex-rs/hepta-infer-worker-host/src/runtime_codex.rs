@@ -25,6 +25,7 @@ use codex_hepta_types::StableId;
 
 const APP_SERVER_PROTOCOL_VERSION: u32 = 2;
 const TURN_START_METHOD_ID: &str = "app-server.v2.turn-start";
+const DEADLINE_ELAPSED: &str = "deadline elapsed";
 pub(crate) const TURN_START_REJECTED: &str = "runtime.codex:turn-start-rejected";
 pub(crate) const TURN_START_OVERLOADED: &str = "runtime.codex:turn-start-overloaded";
 pub(crate) const TURN_START_OUTCOME_UNKNOWN: &str = "runtime.codex:turn-start-outcome-unknown";
@@ -151,7 +152,7 @@ fn bind_receipt(
     let method_id = stable_id(TURN_START_METHOD_ID, "method")?;
     let payload_digest = digest32_from_hex(&record.request.payload_digest)?;
 
-    let outcome = map_outcome(output)?;
+    let outcome = map_outcome(record, output)?;
     let response_digest = if output.terminal_observed {
         let encoded = serde_json::to_vec(output).map_err(|_| BindError::EncodeObservation)?;
         Some(Digest32::of_bytes(&encoded))
@@ -189,10 +190,19 @@ fn bind_receipt(
     {
         return Err(BindError::InvalidTerminalState);
     }
+    if record.cancel_requested
+        && output.status == NativeRunStatus::Completed
+        && receipt.status == AdapterStatus::Succeeded
+    {
+        return Err(BindError::InvalidTerminalState);
+    }
     Ok(Some(receipt))
 }
 
-fn map_outcome(output: &NativeRunOutput) -> Result<AppServerOutcome, BindError> {
+fn map_outcome(
+    record: &NativeRunRecord,
+    output: &NativeRunOutput,
+) -> Result<AppServerOutcome, BindError> {
     if output.terminal_observed && output.status == NativeRunStatus::Indeterminate {
         return Err(BindError::InvalidTerminalState);
     }
@@ -206,6 +216,12 @@ fn map_outcome(output: &NativeRunOutput) -> Result<AppServerOutcome, BindError> 
         {
             AppServerOutcome::Quarantined
         }
+        NativeRunStatus::Completed
+            if record.cancel_requested && output.stop_reason.as_deref() == Some(DEADLINE_ELAPSED) =>
+        {
+            AppServerOutcome::TimedOut
+        }
+        NativeRunStatus::Completed if record.cancel_requested => AppServerOutcome::Quarantined,
         NativeRunStatus::Completed => AppServerOutcome::Completed,
         NativeRunStatus::Failed => AppServerOutcome::Failed,
         NativeRunStatus::Interrupted => AppServerOutcome::Interrupted,
@@ -303,6 +319,29 @@ mod tests {
         assert!(!bound.succeeded());
         assert_eq!(bound.status(), AdapterStatus::Quarantined);
         assert_eq!(bound.receipt().unwrap().status, AdapterStatus::Quarantined);
+    }
+
+    #[test]
+    fn completion_after_stop_boundary_cannot_reupgrade_to_success() {
+        let mut cancelled = record();
+        cancelled.cancel_requested = true;
+        let mut completed = output(
+            NativeRunStatus::Completed,
+            NativeOwnerAuthority::ObservedReady,
+        );
+        completed.stop_reason = Some("cancelled".to_string());
+        let bound = bind_runtime_codex_run(&cancelled, completed, 1_000, 2_000).unwrap();
+        assert_eq!(bound.status(), AdapterStatus::Quarantined);
+        assert!(!bound.succeeded());
+
+        let mut timed_out = output(
+            NativeRunStatus::Completed,
+            NativeOwnerAuthority::ObservedReady,
+        );
+        timed_out.stop_reason = Some(DEADLINE_ELAPSED.to_string());
+        let bound = bind_runtime_codex_run(&cancelled, timed_out, 1_000, 2_000).unwrap();
+        assert_eq!(bound.status(), AdapterStatus::TimedOut);
+        assert!(!bound.succeeded());
     }
 
     #[test]
