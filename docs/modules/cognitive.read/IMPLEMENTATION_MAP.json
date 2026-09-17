@@ -5,11 +5,17 @@
     "commit": "7e8379b3954808d4138a7bd2f3773f75691291a3",
     "tree": "ff9fa6baf95a35fd2f49816e0a80097688f2aeeb"
   },
+  "evidenceBase": {
+    "commit": "9e712cefce45d7078a3784dacce1918a760d3ae4",
+    "tree": "561c359d24ec01d87aab10267d96a9331d60ac2d",
+    "meaning": "last commit before this map refresh; composition truth is enforced by evidenceBlobs rather than repository-wide HEAD equality"
+  },
   "laneId": "LANE-C-MEMORY",
   "module": "cognitive.read",
   "owner": "cognitive-platform",
   "deputy": "agent-runtime",
   "technicalGuide": "docs/modules/cognitive.read/TECHNICAL.md",
+  "productionStatusDocument": "docs/modules/cognitive.read/PRODUCTION_STATUS.md",
   "declaredRoots": [
     "codex-rs/hepta-cognitive-read"
   ],
@@ -17,17 +23,46 @@
     "codex-rs/hepta-cognitive-read"
   ],
   "sourceRootPresent": true,
-  "productionImplementation": false,
-  "productCallerState": "not_composed",
-  "productionWriterState": "not_established",
+  "productionImplementation": true,
+  "productCallerState": "composed",
+  "productionWriterState": "not_applicable_read_only",
+  "lifecycleStatus": {
+    "implemented": true,
+    "composed": true,
+    "qualified": false
+  },
+  "authorityModel": {
+    "productionPath": "durable_owner_snapshot",
+    "authoritativeProviderRole": "qualification_conformance",
+    "finalEffectGate": "owner_reread_before_turn_start",
+    "futureFreshnessLeaseClaimed": false
+  },
+  "productCallers": [
+    {
+      "component": "hepta-agentd",
+      "nativeSymbol": "cognitive_context::read",
+      "sourcePath": "codex-rs/hepta-agentd/src/cognitive_context.rs",
+      "role": "owner-bound durable Lane C read, exact revision/content admission and pre-response revalidation"
+    },
+    {
+      "component": "hepta-infer-worker-host",
+      "nativeSymbol": "AppServerModelDriver::run_once",
+      "sourcePath": "codex-rs/hepta-infer-worker-host/src/native_app_server.rs",
+      "role": "final owner re-read and exact context comparison before durable dispatch and App Server TurnStart"
+    }
+  ],
   "operations": [
     {
       "operation": "read_v2",
       "nativeSymbol": "read_v2",
       "sourcePath": "codex-rs/hepta-cognitive-read/src/v2.rs",
-      "state": "source_implemented_not_product_composed",
+      "state": "product_composed_read_only",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-cognitive-read/src/v2_tests.rs",
+        "codex-rs/hepta-cognitive-read/src/lib_tests.rs",
+        "codex-rs/hepta-cognitive-read/src/tombstone_resurrection_tests.rs"
+      ],
       "sourcePathExists": true,
       "designOperation": "read_v2",
       "mappingClass": "owner_native",
@@ -37,18 +72,54 @@
       "operation": "durablecognitivesnapshot",
       "nativeSymbol": "DurableCognitiveSnapshot",
       "sourcePath": "codex-rs/hepta-memory/src/lane_c_snapshot.rs",
-      "state": "source_implemented_not_product_composed",
+      "state": "product_composed_read_only",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-memory/src/lane_c_snapshot_tests.rs",
+        "codex-rs/hepta-agentd/src/cognitive_context_tests.rs"
+      ],
       "sourcePathExists": true,
       "designOperation": "durablecognitivesnapshot",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [
+        "read_v2"
+      ]
+    },
+    {
+      "operation": "final_model_context_gate",
+      "nativeSymbol": "verify_cognitive_context_unchanged",
+      "sourcePath": "codex-rs/hepta-infer-worker-host/src/native_app_server.rs",
+      "state": "product_composed_effect_boundary_gate",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "revalidate_before_delivery",
+      "mappingClass": "consumer_effect_gate",
+      "delegatedCallees": [
+        "AgentdClient::cognitive_context"
+      ]
     }
   ],
+  "evidenceBlobs": {
+    ".github/workflows/hepta-contract-gate.yml": "1fbc63bb0961a97ab3cc433e02d315fc5267760d",
+    "codex-rs/hepta-agentd/src/cognitive_context.rs": "33466a724e6d20c00f1843d513caf942b8a42f9a",
+    "codex-rs/hepta-agentd/src/cognitive_context_tests.rs": "abad1ab045c774d93251d794fc1b6f7e075da317",
+    "codex-rs/hepta-cognitive-read/src/authoritative.rs": "cfa2c39c32555483a7c829dcc75bc6cc567910d4",
+    "codex-rs/hepta-cognitive-read/src/lib.rs": "d45f3ad94daf980367079481ef9d2837711eabe2",
+    "codex-rs/hepta-cognitive-read/src/v2.rs": "67135f3f56c4779fbd27568ee69c389a38522e5c",
+    "codex-rs/hepta-infer-worker-host/src/native_app_server.rs": "caa94042c585fb522550e3869f7ed4202ee03226",
+    "codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs": "4ee96d3631295a99e2ede1ece71ba97cf855b998",
+    "codex-rs/hepta-memory/src/lane_c_snapshot.rs": "290ebf4d7642f268bd689ebfbd1ee26dd4a32c1d",
+    "docs/modules/cognitive.read/PRODUCTION_STATUS.md": "f8952cf5723a77d7b296ea0438807791e0222d66",
+    "docs/modules/cognitive.read/TECHNICAL.md": "f3e232dbd6f6d79b9661a16865b5098f355cb715",
+    "qualification/module-execution-dossiers/detail/cognitive.read.md": "b7ed2e6710882476c5a436114a1fa8d1c7f24a6c",
+    "scripts/verify_cognitive_read_evidence.py": "5162ec1ea366be063f4d9b4db6b54f0a7efedabd"
+  },
   "repositoryControlledGaps": [
-    "Bind every operation to an authenticated consumer callsite and owner store.",
-    "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary."
+    "A single monolithic process-level race harness that pauses after the first Agentd response and mutates memory before App Server TurnStart remains qualification evidence; the owner-side real-memory tombstone test and host-side final-gate regression cover the seam separately.",
+    "Independent semantic acceptance, activation, canary, promotion and release remain external gates and are not inferred from source composition."
   ],
   "externalEvidenceGates": [
     "independent semantic review",
@@ -58,7 +129,7 @@
   "claimBoundary": {
     "nativeSourceMappingComplete": true,
     "sourceRootPresent": true,
-    "productionImplementation": false,
+    "productionImplementation": true,
     "productExecutionProved": false,
     "independentAcceptance": false,
     "activation": false,
