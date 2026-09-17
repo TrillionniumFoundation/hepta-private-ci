@@ -1,0 +1,55 @@
+name: Prompt optimizer branch lock refresh
+
+on:
+  push:
+    branches:
+      - work/prompt-optimizer-canonical-pipeline-20260917
+    paths:
+      - .github/workflows/prompt-optimizer-lock-refresh.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: prompt-optimizer-lock-refresh
+  cancel-in-progress: true
+
+jobs:
+  refresh-and-check:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - name: Check out exact branch head
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+
+      - name: Refresh only the workspace lock
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -z "$(git status --porcelain)"
+          (cd codex-rs && cargo metadata --format-version 1 >/dev/null)
+          git diff --check
+          changed="$(git diff --name-only)"
+          test "$changed" = "codex-rs/Cargo.lock"
+          git add codex-rs/Cargo.lock
+          git config user.name 'Hepta prompt lock refresh'
+          git config user.email 'hepta-prompt-lock-refresh@users.noreply.github.com'
+          git commit -m 'chore(prompt): refresh workspace lock for canonical pipeline'
+          branch="${GITHUB_REF#refs/heads/}"
+          git push origin "HEAD:$branch"
+
+      - name: Compile affected canonical pipeline crates with refreshed lock
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd codex-rs
+          cargo check --locked \
+            -p codex-hepta-prompt-optimizer \
+            -p codex-hepta-context-compiler \
+            -p codex-hepta-codex-adapter \
+            -p codex-hepta-intelligence \
+            -p codex-hepta-learning-ledger \
+            -p codex-hepta-agentd
