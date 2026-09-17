@@ -12,15 +12,22 @@ required_boundary_ids = [
   "agentd_production_writer_host",
   "provider_effect_coordinator",
   "http_provider_effect_adapter",
+  "final_use_open_state",
   "final_use_claim",
   "final_use_claim_raw",
   "final_use_delivery",
   "final_use_delivery_raw",
   "final_use_revocation_update",
+  "final_use_approval_trust",
   "final_use_approval_verify",
+  "final_use_revocation_feed_trust",
   "final_use_revocation_feed_apply",
   "bao_final_use_consumer",
+  "bao_registered_consumer_new",
+  "bao_final_use_host_new",
+  "bao_registered_revocation_update",
   "bao_registered_final_use_host",
+  "authority_lease_open_state",
   "authority_lease_put",
   "authority_lease_revoke",
   "authority_lease_epoch_advance",
@@ -69,6 +76,14 @@ product_callers = []
 caller_markers = []
 
 [[boundary]]
+id = "final_use_open_state"
+symbol = "FinalUseAuthority::open_state_dir"
+definition_path = "codex-rs/hepta-contracts/src/final_use.rs"
+definition_markers = ["pub fn open_state_dir(", "InvalidTrust", "Store::open"]
+product_callers = []
+caller_markers = []
+
+[[boundary]]
 id = "final_use_claim"
 symbol = "claim_final_use"
 definition_path = "codex-rs/hepta-contracts/src/final_use.rs"
@@ -112,6 +127,14 @@ product_callers = ["codex-rs/hepta-contracts/src/final_use_control.rs"]
 caller_markers = ["FinalUseAuthority", ".update_revocations(signed.update.head.clone())", "FinalUseRevocationFeedVerifier"]
 
 [[boundary]]
+id = "final_use_approval_trust"
+symbol = "FinalUseApprovalVerifier::new"
+definition_path = "codex-rs/hepta-contracts/src/final_use_control.rs"
+definition_markers = ["impl FinalUseApprovalVerifier", "pub fn new(", "InvalidTrust"]
+product_callers = []
+caller_markers = []
+
+[[boundary]]
 id = "final_use_approval_verify"
 symbol = "FinalUseApprovalVerifier::verify"
 call_pattern = "approval_verifier\\s*\\.\\s*verify\\s*\\("
@@ -119,6 +142,14 @@ definition_path = "codex-rs/hepta-contracts/src/final_use_control.rs"
 definition_markers = ["pub struct FinalUseApprovalVerifier", "pub fn verify(", "verify_strict"]
 product_callers = ["codex-rs/hepta-bao-adapter/src/final_use_host.rs"]
 caller_markers = ["approval_verifier", ".verify(grant, approval)", "BaoFinalUseHostError::Control"]
+
+[[boundary]]
+id = "final_use_revocation_feed_trust"
+symbol = "FinalUseRevocationFeedVerifier::new"
+definition_path = "codex-rs/hepta-contracts/src/final_use_control.rs"
+definition_markers = ["impl FinalUseRevocationFeedVerifier", "pub fn new(", "InvalidTrust"]
+product_callers = []
+caller_markers = []
 
 [[boundary]]
 id = "final_use_revocation_feed_apply"
@@ -139,11 +170,44 @@ product_callers = ["codex-rs/hepta-bao-adapter/src/final_use_host.rs"]
 caller_markers = ["client", ".consume_kv_v2(&self.authority", "UnregisteredConsumer"]
 
 [[boundary]]
+id = "bao_registered_consumer_new"
+symbol = "RegisteredBaoConsumer::new"
+definition_path = "codex-rs/hepta-bao-adapter/src/final_use_host.rs"
+definition_markers = ["impl RegisteredBaoConsumer", "pub fn new(", "ConsumerId"]
+product_callers = []
+caller_markers = []
+
+[[boundary]]
+id = "bao_final_use_host_new"
+symbol = "BaoFinalUseHost::new"
+definition_path = "codex-rs/hepta-bao-adapter/src/final_use_host.rs"
+definition_markers = ["impl BaoFinalUseHost", "pub fn new(", "DuplicateConsumer"]
+product_callers = []
+caller_markers = []
+
+[[boundary]]
+id = "bao_registered_revocation_update"
+symbol = "BaoFinalUseHost::apply_revocation_update"
+call_pattern = "\\.\\s*apply_revocation_update\\s*\\("
+definition_path = "codex-rs/hepta-bao-adapter/src/final_use_host.rs"
+definition_markers = ["pub fn apply_revocation_update", "revocation_verifier", ".apply(&self.authority, update)"]
+product_callers = []
+caller_markers = []
+
+[[boundary]]
 id = "bao_registered_final_use_host"
 symbol = "BaoFinalUseHost::consume_kv_v2"
 call_pattern = "\\.\\s*consume_kv_v2\\s*\\("
 definition_path = "codex-rs/hepta-bao-adapter/src/final_use_host.rs"
 definition_markers = ["pub struct BaoFinalUseHost", "pub async fn consume_kv_v2", "approval_verifier", "consumers"]
+product_callers = []
+caller_markers = []
+
+[[boundary]]
+id = "authority_lease_open_state"
+symbol = "AuthorityLeaseRegistry::open_state_dir"
+definition_path = "codex-rs/hepta-contracts/src/authority_lease.rs"
+definition_markers = ["pub fn open_state_dir(", "trusted_frontier", "Store::open"]
 product_callers = []
 caller_markers = []
 
@@ -204,7 +268,7 @@ forbidden = ["impl Default for HttpProviderEffectAdapter"]
 
 [[protected_file]]
 path = "codex-rs/hepta-contracts/src/final_use.rs"
-required = ["pub fn claim_final_use(", "pub fn deliver_final_use", "pub fn claim(", "pub fn with_verified_use", "verify_strict", "validate_live"]
+required = ["pub fn open_state_dir(", "pub fn claim_final_use(", "pub fn deliver_final_use", "pub fn claim(", "pub fn with_verified_use", "verify_strict", "validate_live"]
 forbidden = ["impl Default for FinalUseAuthority", "pub fn permit_all"]
 
 [[protected_file]]
@@ -214,7 +278,7 @@ forbidden = ["impl Default for FinalUseApprovalVerifier", "impl Default for Fina
 
 [[protected_file]]
 path = "codex-rs/hepta-contracts/src/authority_lease.rs"
-required = ["pub struct AuthorityLeaseRegistry", "pub fn verify_use(", "pub fn revoke(", "AntiRollbackViolation", "pub fn advance_epoch("]
+required = ["pub struct AuthorityLeaseRegistry", "pub fn open_state_dir(", "pub fn verify_use(", "pub fn revoke(", "AntiRollbackViolation", "pub fn advance_epoch("]
 forbidden = ["impl Default for AuthorityLeaseRegistry", "permit_all"]
 
 [[protected_file]]
@@ -224,7 +288,7 @@ forbidden = ["impl Default for BaoClient", ".claim(grant, &binding)", ".with_ver
 
 [[protected_file]]
 path = "codex-rs/hepta-bao-adapter/src/final_use_host.rs"
-required = ["pub struct BaoFinalUseHost", "pub async fn consume_kv_v2", "UnregisteredConsumer", "approval_verifier", "revocation_verifier"]
+required = ["pub struct RegisteredBaoConsumer", "pub struct BaoFinalUseHost", "pub fn apply_revocation_update", "pub async fn consume_kv_v2", "UnregisteredConsumer", "approval_verifier", "revocation_verifier"]
 forbidden = ["impl Default for BaoFinalUseHost", "permit_all"]
 
 [authority]
