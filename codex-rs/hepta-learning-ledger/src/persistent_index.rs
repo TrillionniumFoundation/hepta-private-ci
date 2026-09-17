@@ -2,9 +2,15 @@
 //!
 //! The append-only event payload remains owned by the durable ledger/archive.
 //! This sidecar moves immutable identity and causal lookup state off the heap so
-//! restart cost and hot memory do not grow with total history.  Every lookup is
+//! restart cost and hot memory do not grow with total history. Every lookup is
 //! addressed directly by a digest of its logical key; no global in-memory
 //! directory is reconstructed at startup.
+//!
+//! Durable payload owners use the crate-private prepare/commit seam: semantic
+//! validation happens before payload I/O, payload bytes are synced by the owner,
+//! and only then are immutable index rows published. Recovery can reconcile a
+//! durable frame whose sidecar publication was interrupted; existing immutable
+//! rows must match exactly and missing rows are filled idempotently.
 
 use std::collections::BTreeMap;
 use std::collections::VecDeque;
@@ -13,7 +19,6 @@ use std::fs::File;
 use std::fs::OpenOptions;
 use std::io::Read;
 use std::io::Write;
-use std::path::Path;
 use std::path::PathBuf;
 
 use codex_hepta_types::Digest32;
@@ -30,10 +35,13 @@ use crate::LearningLedger;
 use crate::LedgerAnchor;
 use crate::LedgerError;
 use crate::LedgerEvent;
+use crate::LedgerRecord;
 use crate::OutcomeFinality;
 use crate::OutcomeIndex;
 use crate::OutcomeObservation;
 use crate::Revocation;
+use crate::ledger::PreparedAppend;
+use crate::ledger::event_kind;
 
 const MAX_INDEX_VALUE_BYTES: usize = 4 * 1024;
 const MAX_CACHE_ENTRIES: usize = 4096;
@@ -102,9 +110,9 @@ impl From<LedgerError> for PersistentIndexedLedgerErrorV1 {
 
 /// Immutable history index persisted as content-addressed key files.
 ///
-/// The filesystem directory itself is the persistent lookup structure.  A
+/// The filesystem directory itself is the persistent lookup structure. A
 /// process starts with an empty cache and opens only the exact key files needed
-/// by current work.  Cache memory is therefore bounded by `cache_limit`, not by
+/// by current work. Cache memory is therefore bounded by `cache_limit`, not by
 /// the number of historical records.
 #[derive(Debug)]
 pub struct PersistentHistoricalIndexV1 {
@@ -321,8 +329,8 @@ impl PersistentHistoricalIndexV1 {
         if stored_key != logical_key {
             return Err(PersistentIndexErrorV1::HashCollision);
         }
-        self.cache_insert(cache_key, value.clone());
-        Ok(Some(value))
+        self.cache_insert(cache_key, value.to_vec());
+        Ok(Some(value.to_vec()))
     }
 
     fn put(
@@ -385,6 +393,23 @@ impl PersistentHistoricalIndexV1 {
     }
 }
 
+/// A semantically validated append whose durable payload has not yet been
+/// published by the owning journal. This type never escapes the crate.
+pub(crate) struct PersistentPreparedAppendV1 {
+    event: LedgerEvent,
+    prepared: PreparedAppend,
+}
+
+impl PersistentPreparedAppendV1 {
+    pub(crate) fn record(&self) -> &LedgerRecord {
+        &self.prepared.record
+    }
+
+    pub(crate) const fn disposition(&self) -> AppendDisposition {
+        self.prepared.disposition
+    }
+}
+
 /// Pure semantic core backed by `PersistentHistoricalIndexV1` for historical
 /// lookups. The hot core keeps only resident payloads and transient lookup rows.
 ///
@@ -422,6 +447,16 @@ impl PersistentIndexedLearningLedgerV1 {
         &mut self,
         event: LedgerEvent,
     ) -> Result<AppendReceipt, PersistentIndexedLedgerErrorV1> {
+        let prepared = self.prepare_event(event)?;
+        self.commit_prepared(prepared)
+    }
+
+    /// Validate against exact-key historical state without publishing any new
+    /// immutable sidecar rows. Durable owners call this before syncing payload.
+    pub(crate) fn prepare_event(
+        &mut self,
+        event: LedgerEvent,
+    ) -> Result<PersistentPreparedAppendV1, PersistentIndexedLedgerErrorV1> {
         self.ready()?;
         self.hydrate_for_event(&event)?;
         let prepared = match self.core.prepare(event.clone()) {
@@ -431,12 +466,79 @@ impl PersistentIndexedLearningLedgerV1 {
                 return Err(error.into());
             }
         };
+        Ok(PersistentPreparedAppendV1 { event, prepared })
+    }
+
+    /// Publish a prepared event after its durable owner has synced the exact
+    /// payload frame. Index writes are immutable and idempotent. Any uncertain
+    /// index error poisons the handle; recovery must reconcile the durable frame.
+    pub(crate) fn commit_prepared(
+        &mut self,
+        prepared: PersistentPreparedAppendV1,
+    ) -> Result<AppendReceipt, PersistentIndexedLedgerErrorV1> {
+        self.ready()?;
+        let PersistentPreparedAppendV1 { event, prepared } = prepared;
         let disposition = prepared.disposition;
         self.poisoned = true;
         let receipt = self.core.apply(prepared)?;
         if disposition == AppendDisposition::Appended {
             self.persist_event_indexes(&event, receipt.sequence.get(), receipt.chain_digest)?;
         }
+        self.evict_transient_semantic_indexes();
+        self.poisoned = false;
+        Ok(receipt)
+    }
+
+    /// Discard transient rows loaded during validation when the durable payload
+    /// owner fails before a frame is synced. No persistent history was changed.
+    pub(crate) fn cancel_prepared(&mut self, _prepared: PersistentPreparedAppendV1) {
+        self.evict_transient_semantic_indexes();
+    }
+
+    /// Reconcile one already durable canonical frame after an interrupted
+    /// sidecar publication. Existing immutable rows belonging to this event are
+    /// verified but deliberately not hydrated as duplicate constraints; missing
+    /// rows are then filled after the event is revalidated against its true
+    /// historical dependencies.
+    pub(crate) fn reconcile_durable_record(
+        &mut self,
+        expected: &LedgerRecord,
+    ) -> Result<AppendReceipt, PersistentIndexedLedgerErrorV1> {
+        self.ready()?;
+        let record_id = expected.event.record_id();
+        let existing = self.history.record(record_id)?;
+        let self_indexed = existing.is_some();
+        if let Some(index) = existing {
+            if index.sequence != expected.sequence
+                || index.predecessor_chain_digest != expected.predecessor_chain_digest
+                || index.event_digest != expected.event_digest
+                || index.chain_digest != expected.chain_digest
+                || index.kind != event_kind(&expected.event)
+            {
+                return Err(PersistentIndexErrorV1::Corrupt.into());
+            }
+        }
+
+        self.hydrate_for_recovery(&expected.event, self_indexed)?;
+        let prepared = match self.core.prepare(expected.event.clone()) {
+            Ok(prepared) => prepared,
+            Err(error) => {
+                self.evict_transient_semantic_indexes();
+                return Err(error.into());
+            }
+        };
+        if prepared.disposition != AppendDisposition::Appended || prepared.record != *expected {
+            self.evict_transient_semantic_indexes();
+            return Err(PersistentIndexErrorV1::Corrupt.into());
+        }
+
+        self.poisoned = true;
+        let receipt = self.core.apply(prepared)?;
+        self.persist_event_indexes(
+            &expected.event,
+            receipt.sequence.get(),
+            receipt.chain_digest,
+        )?;
         self.evict_transient_semantic_indexes();
         self.poisoned = false;
         Ok(receipt)
@@ -470,6 +572,10 @@ impl PersistentIndexedLearningLedgerV1 {
         self.core.retained_record_count()
     }
 
+    pub(crate) fn retained_records(&self) -> &[LedgerRecord] {
+        self.core.records()
+    }
+
     #[must_use]
     pub fn historical_cache_len(&self) -> usize {
         self.history.cache_len()
@@ -486,6 +592,14 @@ impl PersistentIndexedLearningLedgerV1 {
     ) -> Result<Option<Digest32>, PersistentIndexedLedgerErrorV1> {
         self.ready()?;
         self.history.sequence_digest(sequence).map_err(Into::into)
+    }
+
+    pub(crate) fn historical_record_index(
+        &mut self,
+        record_id: &StableId,
+    ) -> Result<Option<HistoricalRecordIndex>, PersistentIndexedLedgerErrorV1> {
+        self.ready()?;
+        self.history.record(record_id).map_err(Into::into)
     }
 
     fn ready(&self) -> Result<(), PersistentIndexedLedgerErrorV1> {
@@ -513,6 +627,71 @@ impl PersistentIndexedLearningLedgerV1 {
         Ok(())
     }
 
+    fn hydrate_for_recovery(
+        &mut self,
+        event: &LedgerEvent,
+        self_indexed: bool,
+    ) -> Result<(), PersistentIndexedLedgerErrorV1> {
+        match event {
+            LedgerEvent::Decision(value) => {
+                if let Some(index) = self.history.decision(&value.episode_id)? {
+                    if self_indexed {
+                        if index.record_id != value.record_id || index.policy_id != value.policy_id {
+                            return Err(PersistentIndexErrorV1::Corrupt.into());
+                        }
+                    } else {
+                        self.core.decisions.insert(value.episode_id.clone(), index);
+                    }
+                }
+            }
+            LedgerEvent::Outcome(value) => {
+                if let Some(index) = self.history.outcome(&value.outcome_id)? {
+                    if self_indexed {
+                        if index.record_id != value.record_id
+                            || index.episode_id != value.episode_id
+                            || index.finality != value.finality
+                        {
+                            return Err(PersistentIndexErrorV1::Corrupt.into());
+                        }
+                    } else {
+                        self.core.outcomes.insert(value.outcome_id.clone(), index);
+                    }
+                }
+                self.hydrate_outcome_dependencies(value)?;
+            }
+            LedgerEvent::Credit(value) => {
+                if !self_indexed {
+                    if self.history.has_credit_id(&value.credit_id)? {
+                        self.core.credit_ids.insert(value.credit_id.clone());
+                    }
+                    if self.history.has_credit_key(
+                        &value.episode_id,
+                        &value.outcome_id,
+                        &value.target_artifact_id,
+                    )? {
+                        self.core.credit_keys.insert((
+                            value.episode_id.clone(),
+                            value.outcome_id.clone(),
+                            value.target_artifact_id.clone(),
+                        ));
+                    }
+                }
+                self.hydrate_credit_dependencies(value)?;
+            }
+            LedgerEvent::Revocation(value) => {
+                if let Some(index) = self.history.record(&value.target_record_id)? {
+                    self.core
+                        .record_index
+                        .insert(value.target_record_id.clone(), index);
+                }
+                if !self_indexed && self.history.is_revoked(&value.target_record_id)? {
+                    self.core.revoked.insert(value.target_record_id.clone());
+                }
+            }
+        }
+        Ok(())
+    }
+
     fn hydrate_decision(
         &mut self,
         value: &EpisodeDecision,
@@ -530,6 +709,13 @@ impl PersistentIndexedLearningLedgerV1 {
         if let Some(index) = self.history.outcome(&value.outcome_id)? {
             self.core.outcomes.insert(value.outcome_id.clone(), index);
         }
+        self.hydrate_outcome_dependencies(value)
+    }
+
+    fn hydrate_outcome_dependencies(
+        &mut self,
+        value: &OutcomeObservation,
+    ) -> Result<(), PersistentIndexedLedgerErrorV1> {
         if let Some(decision) = self.history.decision(&value.episode_id)? {
             if self.history.is_revoked(&decision.record_id)? {
                 self.core.revoked.insert(decision.record_id.clone());
@@ -559,6 +745,13 @@ impl PersistentIndexedLearningLedgerV1 {
                 value.target_artifact_id.clone(),
             ));
         }
+        self.hydrate_credit_dependencies(value)
+    }
+
+    fn hydrate_credit_dependencies(
+        &mut self,
+        value: &CreditAssignment,
+    ) -> Result<(), PersistentIndexedLedgerErrorV1> {
         if let Some(decision) = self.history.decision(&value.episode_id)? {
             if self.history.is_revoked(&decision.record_id)? {
                 self.core.revoked.insert(decision.record_id.clone());
