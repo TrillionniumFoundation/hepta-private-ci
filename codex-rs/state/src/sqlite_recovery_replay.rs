@@ -13,7 +13,6 @@ use sqlx::sqlite::SqliteConnectOptions;
 use sqlx::sqlite::SqliteJournalMode;
 use sqlx::sqlite::SqlitePoolOptions;
 use sqlx::sqlite::SqliteSynchronous;
-use std::fs::File;
 use std::fs::OpenOptions;
 use std::io::Write;
 use std::os::unix::fs::FileExt;
@@ -69,19 +68,38 @@ impl SqliteConfig {
 
         guard.revalidate_for(self)?;
         if matches!(
-            guard.inner.sidecars[2],
+            &guard.inner.sidecars[2],
             RetainedOptionalObject::Present(_)
         ) {
             return Err(SqliteRecoveryError::Indeterminate);
         }
 
-        let mut copied = copy_retained(&guard.inner.database, isolated_database)?;
+        let mut copied = match copy_retained(&guard.inner.database, isolated_database) {
+            Ok(value) => value,
+            Err(error) => {
+                cleanup_copy(isolated_database);
+                return Err(error);
+            }
+        };
         if let RetainedOptionalObject::Present(wal) = &guard.inner.sidecars[0] {
             let wal_path = sqlite_sidecar_path(isolated_database, "-wal");
-            copied = copied
-                .checked_add(copy_retained(wal, &wal_path)?)
+            let wal_bytes = match copy_retained(wal, &wal_path) {
+                Ok(value) => value,
+                Err(error) => {
+                    cleanup_copy(isolated_database);
+                    return Err(error);
+                }
+            };
+            copied = match copied
+                .checked_add(wal_bytes)
                 .filter(|value| *value <= MAX_TOTAL_COPY_BYTES)
-                .ok_or(SqliteRecoveryError::Indeterminate)?;
+            {
+                Some(value) => value,
+                None => {
+                    cleanup_copy(isolated_database);
+                    return Err(SqliteRecoveryError::Indeterminate);
+                }
+            };
         }
         if copied > MAX_TOTAL_COPY_BYTES {
             cleanup_copy(isolated_database);
@@ -127,7 +145,7 @@ impl SqliteConfig {
                 .fetch_all(&pool)
                 .await
                 .map_err(|_| SqliteRecoveryError::Indeterminate)?;
-            if integrity != ["ok"] {
+            if integrity.as_slice() != ["ok"] {
                 return Err(SqliteRecoveryError::Indeterminate);
             }
             guard.revalidate_for(self)?;
