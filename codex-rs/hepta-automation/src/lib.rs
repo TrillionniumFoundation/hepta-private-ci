@@ -10,6 +10,7 @@
 /// Reusable reference state machine; does not install a second runtime owner.
 pub mod effect_executor;
 
+mod authorized_effect;
 mod automation_taskflow;
 mod dispatch_recovery;
 mod lifecycle;
@@ -22,6 +23,12 @@ mod taskflow_execution_boundary;
 mod taskflow_kernel;
 mod taskflow_step;
 
+pub use authorized_effect::AuthorizedEffectDriver;
+pub use authorized_effect::AuthorizedEffectDriverError;
+pub use authorized_effect::AuthorizedEffectError;
+pub use authorized_effect::AuthorizedEffectOutcome;
+pub use authorized_effect::AuthorizedEffectProviderReceipt;
+pub use authorized_effect::AuthorizedEffectRequest;
 pub use automation_taskflow::AutomationTaskFlowDispatch;
 pub use automation_taskflow::admission_receipt_digest;
 pub use lifecycle::AutomationMissedRunPolicy;
