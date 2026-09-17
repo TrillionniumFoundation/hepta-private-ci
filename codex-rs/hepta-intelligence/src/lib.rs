@@ -242,3 +242,7 @@ mod vertical_tests;
 #[cfg(test)]
 #[path = "plasticity_product_tests.rs"]
 mod plasticity_product_tests;
+
+#[cfg(test)]
+#[path = "plasticity_topology_product_tests.rs"]
+mod plasticity_topology_product_tests;
