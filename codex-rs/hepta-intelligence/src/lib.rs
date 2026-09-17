@@ -50,6 +50,7 @@ pub use pipeline::StageTraceV1;
 pub use pipeline::run_shadow_pipeline;
 
 mod vertical;
+mod vertical_outcome;
 
 use std::collections::BTreeSet;
 use std::error::Error as StdError;
@@ -65,6 +66,8 @@ pub use vertical::ReadOnlyVerticalError;
 pub use vertical::ReadOnlyVerticalReceipt;
 pub use vertical::ReadOnlyVerticalRequest;
 pub use vertical::run_read_only_vertical;
+pub use vertical_outcome::ReadOnlyVerticalOutcomeV1;
+pub use vertical_outcome::run_read_only_vertical_outcome_v1;
 
 const MAX_CANDIDATES: usize = 128;
 
