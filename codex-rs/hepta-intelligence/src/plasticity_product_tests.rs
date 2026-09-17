@@ -20,6 +20,7 @@ struct Fixture {
     keys: [SigningKey; 3],
     principals: Vec<AuthenticatedPrincipalV1>,
     verifier: LearningEvidenceVerifierV1,
+    grammar: MutationGrammarManifestV1,
     profile: ParameterGeneratorProfileV3,
     generated: GeneratedParameterCandidateSetV3,
     admission: PlasticityAdmissionEvidenceV1,
@@ -98,6 +99,22 @@ impl Fixture {
                 evidence_digest: digest("parameter-evidence"),
             }],
         };
+        let grammar = build_mutation_grammar_manifest_v1(
+            id("plasticity-grammar:1"),
+            selected_artifact_digest,
+            1,
+            vec![ParameterMutationRuleV1 {
+                layer_id: id("layer:1"),
+                parameter_id: id("parameter:1"),
+                minimum_delta: FixedQ32::from_raw(-(1_i64 << 24)),
+                maximum_delta: FixedQ32::from_raw(1_i64 << 24),
+            }],
+            vec![ProtectedParameterV1 {
+                parameter_id: id("parameter:authority"),
+                class: ProtectedParameterClassV1::Authority,
+            }],
+        )
+        .expect("grammar");
         let generated = generate_parameter_candidates_v3(profile.clone()).expect("generate");
         let update_id = generated
             .candidates
@@ -114,6 +131,7 @@ impl Fixture {
             artifact_registry_binding: digest("artifact-registry-binding"),
             artifact_registry_head_digest: digest("artifact-registry-head"),
             qualification_evidence_head_digest: digest("qualification-evidence-head"),
+            mutation_grammar_digest: grammar.manifest_digest,
             window,
             baseline_generation: generation(10),
             candidate_generation: generation(11),
@@ -209,6 +227,7 @@ impl Fixture {
             keys,
             principals,
             verifier,
+            grammar,
             profile,
             generated,
             admission,
@@ -267,6 +286,7 @@ impl Fixture {
         );
         ParameterPlasticityProductRequestV1 {
             proposal_id: id("plasticity-proposal:1"),
+            mutation_grammar: self.grammar.clone(),
             generator_profile: self.profile.clone(),
             generated: self.generated.clone(),
             generator_attestation,
@@ -339,6 +359,7 @@ fn authenticated_product_path_generates_evaluates_appends_and_commits_anchor() {
     assert_eq!(receipt.proposal.proposer_id, fixture.principals[0].principal_id);
     assert_eq!(receipt.proposal.evaluator_id, fixture.principals[2].principal_id);
     assert!(!receipt.proposal.authority.grants_any());
+    assert_eq!(writer.state(), PlasticityWriterStateV1::Healthy);
     assert_eq!(writer.record_count().expect("count"), 1);
     assert_eq!(anchor_committer.scope, Some(digest("plasticity-registry-scope")));
     assert_eq!(anchor_committer.fence, Some(17));
@@ -366,6 +387,34 @@ fn product_path_rejects_tampered_frontier_witness() {
         result,
         Err(ParameterPlasticityProductErrorV1::AdmissionEvidence(
             SignedEvidenceError::PayloadMismatch
+        ))
+    ));
+    assert_eq!(writer.record_count().expect("count"), 0);
+}
+
+#[test]
+fn product_path_rejects_protected_parameter_even_with_valid_generator_bytes() {
+    let fixture = Fixture::new(false);
+    let mut request = fixture.request();
+    request.generator_profile.signals[0].parameter_id = id("parameter:authority");
+    request.generated = generate_parameter_candidates_v3(request.generator_profile.clone())
+        .expect("raw generator can construct compatibility set");
+    request.admission.generator_digest = request.generated.generator_digest;
+    let mut writer = writer();
+    let mut anchor_committer = AnchorCommitter {
+        accept: true,
+        ..AnchorCommitter::default()
+    };
+    assert!(matches!(
+        propose_authenticated_parameter_plasticity_v1(
+            request,
+            &fixture.verifier,
+            &mut writer,
+            &mut anchor_committer,
+            50,
+        ),
+        Err(ParameterPlasticityProductErrorV1::Grammar(
+            MutationGrammarErrorV1::ProtectedParameterAllowed(_)
         ))
     ));
     assert_eq!(writer.record_count().expect("count"), 0);
@@ -411,5 +460,6 @@ fn anchor_commit_failure_poison_writer_after_durable_append() {
         result,
         Err(ParameterPlasticityProductErrorV1::AnchorPersistenceFailed)
     ));
+    assert_eq!(writer.state(), PlasticityWriterStateV1::Poisoned);
     assert_eq!(writer.record_count(), Err(DurableProposalRegistryError::Poisoned));
 }
