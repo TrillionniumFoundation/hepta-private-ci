@@ -5,6 +5,7 @@
 mod v2;
 pub mod v3;
 mod v3_ext;
+mod v3_orchestrator;
 
 use std::error::Error as StdError;
 use std::fmt;
@@ -62,6 +63,9 @@ pub use v3::VerifiedCapabilityV3;
 pub use v3::execute_federation_v3;
 pub use v3::execute_once_v3;
 pub use v3_ext::execute_once_v3_async;
+pub use v3_orchestrator::FederatedOrchestrationV3;
+pub use v3_orchestrator::FederatedPeerFailureV3;
+pub use v3_orchestrator::execute_federation_resilient_v3;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct FederatedReadRequest {
