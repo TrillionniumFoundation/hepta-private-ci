@@ -22,6 +22,7 @@ fn lane_e_public_operation_surface_is_linkable() {
     let _ = codex_hepta_bellman_operator::fit_transition_model;
     let _ = codex_hepta_bellman_operator::LoadedWorldModelV1::from_pinned_payload;
     let _ = codex_hepta_bellman_operator::LoadedWorldModelV1::predict;
+    let _ = codex_hepta_bellman_operator::world_model_qualification_profile_digest;
     let _ = codex_hepta_bellman_operator::admit_world_model_qualification;
     let _ = codex_hepta_bellman_operator::fit_tabular_operator;
     let _ = codex_hepta_bellman_operator::fit_tabular_operator_strict_v2;
