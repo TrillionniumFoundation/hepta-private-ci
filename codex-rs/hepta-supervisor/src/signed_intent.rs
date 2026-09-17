@@ -42,7 +42,7 @@ pub enum SignedIntentStatus {
 
 impl SignedIntentStatus {
     pub(crate) fn is_terminal(self) -> bool {
-        matches!(Self::Committed | Self::ReconciledSource, self)
+        matches!(self, Self::Committed | Self::ReconciledSource)
     }
 
     pub(crate) fn is_unresolved(self) -> bool {
