@@ -1,7 +1,14 @@
-//! Append-only cognitive ledger with correction and tombstone lineage.
+//! Canonical product-facing owner for cognitive memory and knowledge facts.
 //!
-//! The store is the only writer of its in-memory qualification ledger. It does
-//! not perform federation, model calls, learning-policy writes or effects.
+//! Production callers import [`CognitiveStore`] and the production writer
+//! boundary from this crate. The durable SQLite implementation currently lives
+//! in `codex-hepta-memory`, but it is a backend implementation detail rather
+//! than a second product authority. Repository architecture checks prevent
+//! product crates from opening that backend directly.
+//!
+//! The small in-memory ledger below and the V2 admitted ledger are retained as
+//! qualification/semantic-oracle implementations. They are deliberately named
+//! as such and must not be composed as a production persistence owner.
 
 #![forbid(unsafe_code)]
 
@@ -17,6 +24,36 @@ use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::LogicalSequence;
 use codex_hepta_types::StableId;
+
+// Canonical production-facing durable owner surface. Keeping the concrete
+// backend type identical avoids a second copy of persistence invariants while
+// moving product composition to one import boundary.
+pub use codex_hepta_memory::CognitiveRecoveryAnchor;
+pub use codex_hepta_memory::CognitiveRecoveryError;
+pub use codex_hepta_memory::CognitiveRecoveryRequirement;
+pub use codex_hepta_memory::CognitiveStore;
+pub use codex_hepta_memory::CognitiveStoreError;
+pub use codex_hepta_memory::DurableCognitiveSnapshot;
+pub use codex_hepta_memory::ProductionAuthorityLease;
+pub use codex_hepta_memory::ProductionAuthorityToken;
+pub use codex_hepta_memory::ProductionAuthorityVerifier;
+pub use codex_hepta_memory::ProductionDispatchFuture;
+pub use codex_hepta_memory::ProductionDispatchReceipt;
+pub use codex_hepta_memory::ProductionDispatchRequest;
+pub use codex_hepta_memory::ProductionDurableWriter;
+pub use codex_hepta_memory::ProductionLeaseReceipt;
+pub use codex_hepta_memory::ProductionOutboxDispatcher;
+pub use codex_hepta_memory::ProductionOutboxTarget;
+pub use codex_hepta_memory::ProductionOutcomeReceipt;
+pub use codex_hepta_memory::ProductionQueuedReceipt;
+pub use codex_hepta_memory::ProductionRecoveryReceipt;
+pub use codex_hepta_memory::ProductionTargetOutcome;
+pub use codex_hepta_memory::ProductionWriterError;
+pub use codex_hepta_memory::RecoveredCognitiveReadOnly;
+pub use codex_hepta_memory::PRODUCTION_DURABLE_WRITER_JOURNAL_MODE;
+pub use codex_hepta_memory::PRODUCTION_DURABLE_WRITER_NAMESPACE;
+pub use codex_hepta_memory::PRODUCTION_DURABLE_WRITER_SCHEMA_VERSION;
+pub use codex_hepta_memory::PRODUCTION_DURABLE_WRITER_SYNCHRONOUS_FULL;
 
 pub use v2::AdmittedCognitiveStoreV2;
 pub use v2::CognitiveStoreImageV2;
@@ -73,14 +110,16 @@ struct StoredRecord {
     sequence: LogicalSequence,
 }
 
+/// Qualification-only current-head ledger retained for semantic regression
+/// tests. This is not the product cognitive store and owns no durable files.
 #[derive(Clone, Debug, Eq, PartialEq)]
-pub struct CognitiveStore {
+pub struct QualificationCognitiveStoreV1 {
     records: BTreeMap<StableId, StoredRecord>,
     sequence: LogicalSequence,
     maximum_records: usize,
 }
 
-impl CognitiveStore {
+impl QualificationCognitiveStoreV1 {
     pub fn new(maximum_records: usize) -> Result<Self, Error> {
         if maximum_records == 0 {
             return Err(Error::ZeroCapacity);
