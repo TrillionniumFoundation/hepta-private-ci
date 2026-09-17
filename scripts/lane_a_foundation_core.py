@@ -249,8 +249,31 @@ def validate_source_specific(root: Path = ROOT) -> None:
         "codex-rs/hepta-types/src/lib.rs": ["pub use identity::IdentityError;"],
         "codex-rs/hepta-wire/src/envelope.rs": ["const WIRE_VERSION: u16 = 1;"],
         "codex-rs/hepta-operations/src/lib.rs": [
-            "In-memory reference model",
-            "does not provide durable storage",
+            "FULL-synchronous SQLite ledger/outbox aggregate",
+            "Destination deduplication helpers",
+            "kernel.authority",
+        ],
+        "codex-rs/hepta-operations/src/durable_store.rs": [
+            "pub struct DurableOperationStore",
+            'begin_with("BEGIN IMMEDIATE")',
+            "pub async fn prepare_intent(",
+            "pub async fn arm_dispatch(",
+            "pub async fn observe_terminal(",
+        ],
+        "codex-rs/hepta-operations/migrations/0001_durable_operations.sql": [
+            "CREATE TABLE operation_records",
+            "CREATE TABLE cross_owner_outbox",
+            "CREATE TABLE operation_tombstones",
+        ],
+        "codex-rs/hepta-operations/src/dispatcher.rs": [
+            "dispatch_with_final_use",
+            "with_verified_use",
+            "reconcile_with",
+        ],
+        "codex-rs/hepta-operations/src/destination_dedupe.rs": [
+            "DESTINATION_DEDUPE_SCHEMA_V1",
+            "reserve_destination_effect",
+            "record_destination_terminal",
         ],
         "codex-rs/hepta-operations/src/model.rs": [
             "pub struct ReferenceAuthorityWitness",
