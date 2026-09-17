@@ -21,6 +21,7 @@ mod taskflow;
 mod taskflow_execution_boundary;
 #[cfg(feature = "taskflow-structural-qualification")]
 mod taskflow_kernel;
+mod taskflow_recovery;
 mod taskflow_step;
 
 pub use authorized_effect::AuthorizedEffectDriver;
