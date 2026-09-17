@@ -224,11 +224,26 @@ async fn run_supervisord_inner(
             tokio::select! {
                 _ = tick_cancellation.cancelled() => return,
                 _ = interval.tick() => {
-                    // Ticking remains active in signed-recovery mode only so
-                    // fenced children can be reaped and their exact leases
-                    // removed. Ordinary mutations stay globally frozen.
-                    let faults = tick_state.supervisor.lock().await.tick(Instant::now()).faults;
-                    tick_state.observed_faults.fetch_add(faults.len() as u64, Ordering::Relaxed);
+                    // Copy the bounded fleet identity list under one short
+                    // lock, then release the mutex between Agent ticks. This
+                    // prevents a 256-Agent sweep from becoming one monolithic
+                    // head-of-line critical section while preserving each
+                    // Agent's generation/release serialization.
+                    let agent_ids = tick_state.supervisor.lock().await.agent_ids();
+                    let mut fault_count = 0_u64;
+                    for agent_id in agent_ids {
+                        let faults = tick_state
+                            .supervisor
+                            .lock()
+                            .await
+                            .tick_agent(&agent_id, Instant::now())
+                            .faults;
+                        fault_count = fault_count.saturating_add(faults.len() as u64);
+                        tokio::task::yield_now().await;
+                    }
+                    tick_state
+                        .observed_faults
+                        .fetch_add(fault_count, Ordering::Relaxed);
                 }
             }
         }
