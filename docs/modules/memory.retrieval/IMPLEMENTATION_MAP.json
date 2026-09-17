@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "7e8379b3954808d4138a7bd2f3773f75691291a3",
-    "tree": "ff9fa6baf95a35fd2f49816e0a80097688f2aeeb"
+    "commit": "fd194a6999108bf98e1f2aab114a9dd3a4bbff65",
+    "tree": "1b9576c6d74f6cb3e3ff8c664c57c3f9ca20abd6"
   },
   "laneId": "LANE-C-MEMORY",
   "module": "memory.retrieval",
@@ -18,16 +18,92 @@
   ],
   "sourceRootPresent": true,
   "productionImplementation": false,
-  "productCallerState": "not_composed",
-  "productionWriterState": "not_established",
+  "productCallerState": "composed_owner_backed_subset",
+  "productionWriterState": "not_applicable_read_only",
+  "productCallers": [
+    {
+      "path": "codex-rs/hepta-agentd/src/cognitive_context.rs",
+      "symbol": "read",
+      "ownerModule": "runtime.agentd",
+      "operation": "retrieve_product_v1",
+      "state": "source_composed_pending_exact_candidate_evidence"
+    }
+  ],
   "operations": [
+    {
+      "operation": "compile_cue",
+      "nativeSymbol": "compile_cue",
+      "sourcePath": "codex-rs/hepta-memory-retrieval/src/product.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-memory-retrieval/src/product_tests.rs",
+          "kind": "native_unit",
+          "command": "just test -p codex-hepta-memory-retrieval"
+        }
+      ],
+      "sourcePathExists": true,
+      "designOperation": "compile_cue",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "retrieve_product_v1",
+      "nativeSymbol": "retrieve_product_v1",
+      "sourcePath": "codex-rs/hepta-memory-retrieval/src/product.rs",
+      "state": "source_implemented_product_composed_pending_evidence",
+      "authority": "none",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-memory-retrieval/src/product_tests.rs",
+          "kind": "native_unit",
+          "command": "just test -p codex-hepta-memory-retrieval"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/cognitive_context_tests.rs",
+          "kind": "owner_product_composition",
+          "command": "just test -p codex-hepta-agentd --lib"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/cognitive_context_budget_tests.rs",
+          "kind": "ranking_precedence_and_budget",
+          "command": "just test -p codex-hepta-agentd --lib"
+        }
+      ],
+      "sourcePathExists": true,
+      "designOperation": "retrieve",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [
+        {
+          "role": "owner_generator",
+          "path": "codex-rs/hepta-memory/src/cognitive_retrieval_observation.rs",
+          "symbol": "observe_memory_retrieval",
+          "buildTarget": "codex-hepta-memory",
+          "ownerModule": "cognitive.store"
+        },
+        {
+          "role": "product_caller",
+          "path": "codex-rs/hepta-agentd/src/cognitive_context.rs",
+          "symbol": "read",
+          "buildTarget": "codex-hepta-agentd",
+          "ownerModule": "runtime.agentd"
+        }
+      ]
+    },
     {
       "operation": "retrieve_v2",
       "nativeSymbol": "retrieve_v2",
       "sourcePath": "codex-rs/hepta-memory-retrieval/src/v2.rs",
-      "state": "source_implemented_not_product_composed",
+      "state": "source_implemented_compatibility_only",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        {
+          "path": "codex-rs/hepta-memory-retrieval/src/v2_tests.rs",
+          "kind": "compatibility_and_complete_input_binding",
+          "command": "just test -p codex-hepta-memory-retrieval"
+        }
+      ],
       "sourcePathExists": true,
       "designOperation": "retrieve_v2",
       "mappingClass": "owner_native",
@@ -39,9 +115,33 @@
       "sourcePath": "codex-rs/hepta-memory-retrieval/src/generation_bound.rs",
       "state": "source_implemented_not_product_composed",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        {
+          "path": "codex-rs/hepta-memory-retrieval/src/generation_bound_tests.rs",
+          "kind": "determinism_and_fail_closed",
+          "command": "just test -p codex-hepta-memory-retrieval"
+        }
+      ],
       "sourcePathExists": true,
       "designOperation": "build_candidate_union",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "recall_v2",
+      "nativeSymbol": "recall_v2",
+      "sourcePath": "codex-rs/hepta-memory-retrieval/src/recall_v2.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-memory-retrieval/src/recall_v2_tests.rs",
+          "kind": "risk_horizon_and_product_limits",
+          "command": "just test -p codex-hepta-memory-retrieval"
+        }
+      ],
+      "sourcePathExists": true,
+      "designOperation": "recall",
       "mappingClass": "owner_native",
       "delegatedCallees": []
     },
@@ -49,27 +149,35 @@
       "operation": "recall",
       "nativeSymbol": "recall",
       "sourcePath": "codex-rs/hepta-memory-retrieval/src/generation_bound.rs",
-      "state": "source_implemented_not_product_composed",
+      "state": "source_implemented_compatibility_only",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        {
+          "path": "codex-rs/hepta-memory-retrieval/src/generation_bound_tests.rs",
+          "kind": "legacy_recall_compatibility",
+          "command": "just test -p codex-hepta-memory-retrieval"
+        }
+      ],
       "sourcePathExists": true,
-      "designOperation": "recall",
+      "designOperation": "recall_v1_compatibility",
       "mappingClass": "owner_native",
       "delegatedCallees": []
     }
   ],
   "repositoryControlledGaps": [
-    "Bind every operation to an authenticated consumer callsite and owner store.",
-    "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary."
+    "Compose compile_cue/recall_v2 with the actual model-turn tuple and real vector/causal/procedural/contradiction/HNMF generators rather than fixtures.",
+    "Run exact-head and deterministic synthetic-merge tests before changing productExecutionProved or the broader activation claim."
   ],
   "externalEvidenceGates": [
     "independent semantic review",
-    "product execution and target-host qualification",
+    "target-host/product execution and RET-04 longitudinal or ablation evidence",
     "operator acceptance, canary, promotion and release"
   ],
   "claimBoundary": {
     "nativeSourceMappingComplete": true,
     "sourceRootPresent": true,
+    "ownerBackedProductSubsetComposed": true,
+    "fullTargetRetrievalEngineComposed": false,
     "productionImplementation": false,
     "productExecutionProved": false,
     "independentAcceptance": false,
