@@ -348,6 +348,15 @@ impl<D: ProcessDriver> Supervisor<D> {
             .slots
             .get(agent_id)
             .ok_or_else(|| SupervisorError::UnknownAgent(agent_id.clone()))?;
+        Self::preflight_upgrade_slot(agent_id, slot, &record, target)
+    }
+
+    fn preflight_upgrade_slot(
+        agent_id: &AgentId,
+        slot: &AgentSlot<D::Process>,
+        record: &AgentRecord,
+        target: &AgentRelease,
+    ) -> Result<(), SupervisorError> {
         if slot.release_change.is_some() || slot.restart_pending {
             return Err(SupervisorError::ReleaseChangePending(agent_id.clone()));
         }
@@ -520,10 +529,12 @@ impl<D: ProcessDriver> Supervisor<D> {
                     now_unix_seconds,
                 )
                 .map_err(|error| SupervisorError::ProductionAuthority(error.to_string()))?;
-            // `with_slot` removes this agent from `self.slots` for the duration
-            // of the mutation.  Revision arithmetic must therefore use the
-            // borrowed slot directly; calling next_control_revision() here
-            // would incorrectly report UnknownAgent.
+            // The signed path executes inside `with_slot`, so preflight must
+            // validate the borrowed slot directly rather than looking it up
+            // in `self.slots` after it has temporarily been removed.
+            Self::preflight_upgrade_slot(agent_id, slot, &record, &target)?;
+            // Revision arithmetic has the same requirement: use the borrowed
+            // slot directly or the nested lookup would report UnknownAgent.
             let next_control_revision = slot
                 .control_revision
                 .checked_add(1)
@@ -680,40 +691,41 @@ impl<D: ProcessDriver> Supervisor<D> {
 
         let directive = read_recovery_directive(record.layout.run_root())
             .map_err(|_| SupervisorError::SignedIntentRecoveryRequired(agent_id.clone()))?;
-        if let Some(directive) = directive
-            && directive.intent_sha256 == intent.intent_sha256
-            && matches!(directive.action, SignedIntentRecoveryAction::Abort)
-        {
-            // The operator may terminate an ambiguous grant, but never infer
-            // success from current release/liveness.  Terminalize only after
-            // there is no adopted process left whose effects could still be
-            // progressing.  If a child is still present, fence/kill it and
-            // fail startup once more; the next recovery can persist Aborted
-            // after exact adoption reports it gone.
-            if slot.matrix.runtime.is_some() {
-                let _ = self.kill_matrix_now(agent_id, slot);
+        if let Some(directive) = directive {
+            if directive.intent_sha256 == intent.intent_sha256
+                && matches!(directive.action, SignedIntentRecoveryAction::Abort)
+            {
+                // The operator may terminate an ambiguous grant, but never infer
+                // success from current release/liveness.  Terminalize only after
+                // there is no adopted process left whose effects could still be
+                // progressing.  If a child is still present, fence/kill it and
+                // fail startup once more; the next recovery can persist Aborted
+                // after exact adoption reports it gone.
+                if slot.matrix.runtime.is_some() {
+                    let _ = self.kill_matrix_now(agent_id, slot);
+                }
+                if let Some(runtime) = slot.runtime.as_mut() {
+                    let _ = runtime.process.kill();
+                    runtime.fenced = true;
+                    runtime.phase = RuntimePhase::Killing;
+                }
+                if slot.runtime.is_some() || slot.matrix.runtime.is_some() {
+                    return Err(SupervisorError::SignedIntentRecoveryRequired(
+                        agent_id.clone(),
+                    ));
+                }
+                let aborted = intent
+                    .with_status(SignedIntentStatus::Aborted)
+                    .map_err(|_| SupervisorError::SignedIntentRecoveryRequired(agent_id.clone()))?;
+                write_intent(record.layout.run_root(), &aborted)
+                    .map_err(|_| SupervisorError::SignedIntentRecoveryRequired(agent_id.clone()))?;
+                slot.signed_intent = Some(aborted);
+                slot.restart_pending = false;
+                slot.restart_retry_at = None;
+                slot.restart_automatic = false;
+                slot.restart_after_exit = false;
+                return Ok(());
             }
-            if let Some(runtime) = slot.runtime.as_mut() {
-                let _ = runtime.process.kill();
-                runtime.fenced = true;
-                runtime.phase = RuntimePhase::Killing;
-            }
-            if slot.runtime.is_some() || slot.matrix.runtime.is_some() {
-                return Err(SupervisorError::SignedIntentRecoveryRequired(
-                    agent_id.clone(),
-                ));
-            }
-            let aborted = intent
-                .with_status(SignedIntentStatus::Aborted)
-                .map_err(|_| SupervisorError::SignedIntentRecoveryRequired(agent_id.clone()))?;
-            write_intent(record.layout.run_root(), &aborted)
-                .map_err(|_| SupervisorError::SignedIntentRecoveryRequired(agent_id.clone()))?;
-            slot.signed_intent = Some(aborted);
-            slot.restart_pending = false;
-            slot.restart_retry_at = None;
-            slot.restart_automatic = false;
-            slot.restart_after_exit = false;
-            return Ok(());
         }
 
         // A restart has no durable proof that an apparently matching target
