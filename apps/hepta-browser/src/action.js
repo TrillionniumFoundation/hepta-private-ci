@@ -8,6 +8,9 @@ const MAX_SCROLL_DELTA = 1_000_000;
 const UTF8 = new TextEncoder();
 const ASCII_CONTROL = /[\u0000-\u001f\u007f]/;
 const ENCODED_ASCII_CONTROL = /%(?:0[0-9a-f]|1[0-9a-f]|7f)/i;
+const STABLE_ID = /^[A-Za-z0-9._:-]{1,128}$/;
+const DIGEST = /^[0-9a-f]{64}$/;
+const ZERO_DIGEST = "0".repeat(64);
 
 function requireRecord(value, name) {
   if (value === null || typeof value !== "object" || Array.isArray(value)) {
@@ -30,6 +33,20 @@ function boundedString(value, name, maxBytes, { allowEmpty = false } = {}) {
   }
   if (UTF8.encode(value).byteLength > maxBytes) {
     throw new TypeError(`${name} exceeds the byte limit`);
+  }
+  return value;
+}
+
+function stableId(value, name) {
+  if (typeof value !== "string" || !STABLE_ID.test(value)) {
+    throw new TypeError(`${name} must be a bounded stable identifier`);
+  }
+  return value;
+}
+
+function digest(value, name) {
+  if (typeof value !== "string" || !DIGEST.test(value) || value === ZERO_DIGEST) {
+    throw new TypeError(`${name} must be a non-zero lowercase SHA-256 digest`);
   }
   return value;
 }
@@ -96,8 +113,13 @@ export function normalizeBrowserAction(value) {
   }
   switch (action.kind) {
     case "navigate": {
-      exactKeys(action, ["kind", "url"], "navigate action");
-      return Object.freeze({ kind: "navigate", url: webUrl(action.url) });
+      exactKeys(action, ["kind", "url", "policyDigest", "expectedRevision"], "navigate action");
+      return Object.freeze({
+        kind: "navigate",
+        url: webUrl(action.url),
+        policyDigest: digest(action.policyDigest, "typedAction.policyDigest"),
+        expectedRevision: positiveInteger(action.expectedRevision, "typedAction.expectedRevision"),
+      });
     }
     case "click": {
       exactKeys(action, ["kind", "selector"], "click action");
@@ -112,6 +134,24 @@ export function normalizeBrowserAction(value) {
         kind: "type",
         selector: boundedString(action.selector, "typedAction.selector", MAX_SELECTOR_BYTES),
         text: boundedString(action.text, "typedAction.text", MAX_TEXT_BYTES, { allowEmpty: true }),
+      });
+    }
+    case "credential": {
+      exactKeys(action, ["kind", "selector", "credentialRef"], "credential action");
+      return Object.freeze({
+        kind: "credential",
+        selector: boundedString(action.selector, "typedAction.selector", MAX_SELECTOR_BYTES),
+        credentialRef: stableId(action.credentialRef, "typedAction.credentialRef"),
+      });
+    }
+    case "upload": {
+      exactKeys(action, ["kind", "selector", "fileRef", "fileDigest", "maxBytes"], "upload action");
+      return Object.freeze({
+        kind: "upload",
+        selector: boundedString(action.selector, "typedAction.selector", MAX_SELECTOR_BYTES),
+        fileRef: stableId(action.fileRef, "typedAction.fileRef"),
+        fileDigest: digest(action.fileDigest, "typedAction.fileDigest"),
+        maxBytes: positiveInteger(action.maxBytes, "typedAction.maxBytes", 1_073_741_824),
       });
     }
     case "focus": {
