@@ -9,8 +9,12 @@ introduced by `hepta-validation-scope.py` for this source change.
 A rejected fan-in is still an evidence result. The builder therefore writes one
 digest-bound bundle before returning failure so CI retains the exact missing or
 failed checks instead of scattering rejection state across transient log lines.
-Identity or scope-schema failures still abort before issuance because no trusted
-candidate evidence can be produced from an invalid binding.
+Identity or scope-structure failures still abort before issuance because no
+trusted candidate evidence can be produced from an invalid binding.
+
+The embedded validation scope is the single applicability/path authority. Its
+`paths_sha256` is recomputed before build and verify; the delivery bundle does not
+copy that digest into a second top-level field that could drift independently.
 """
 
 from __future__ import annotations
@@ -82,16 +86,30 @@ def _validate_identity(tested_sha: str, source_head_sha: str) -> tuple[str, str]
     return tree, head
 
 
-def build(
-    tested_sha: str, source_head_sha: str, base_sha: str, needs: dict, scope: dict
-) -> dict:
-    tree, _ = _validate_identity(tested_sha, source_head_sha)
+def _validate_scope(scope: dict) -> dict:
     if scope.get("schema") != SCOPE_SCHEMA:
         raise SystemExit("E_SCOPE_SCHEMA: invalid or missing validation scope schema")
 
     applicability = scope.get("jobs")
     if not isinstance(applicability, dict):
         raise SystemExit("E_SCOPE_JOBS: validation scope has no jobs object")
+
+    paths = scope.get("paths")
+    if not isinstance(paths, list) or not all(
+        isinstance(path, str) and path for path in paths
+    ):
+        raise SystemExit("E_SCOPE_PATHS: validation scope has invalid changed paths")
+    expected_paths_digest = _sha256("\n".join(paths).encode())
+    if scope.get("paths_sha256") != expected_paths_digest:
+        raise SystemExit("E_SCOPE_PATH_DIGEST: validation scope path digest mismatch")
+    return applicability
+
+
+def build(
+    tested_sha: str, source_head_sha: str, base_sha: str, needs: dict, scope: dict
+) -> dict:
+    tree, _ = _validate_identity(tested_sha, source_head_sha)
+    applicability = _validate_scope(scope)
 
     results: dict[str, dict[str, str]] = {}
     failures: list[str] = []
@@ -137,7 +155,6 @@ def build(
         failures.append("missing fan-in results: " + ", ".join(missing_jobs))
 
     failures = sorted(set(failures))
-    changed = "\n".join(scope.get("paths", []))
     payload: dict[str, Any] = {
         "schema": SCHEMA,
         "tested_commit_sha": tested_sha,
@@ -145,7 +162,6 @@ def build(
         "source_head_commit_sha": source_head_sha,
         "base_commit_sha": base_sha,
         "validation_scope": scope,
-        "changed_paths_sha256": _sha256(changed.encode()),
         "results": results,
         "acceptance": "rejected" if failures else "accepted",
         "failures": failures,
@@ -185,8 +201,15 @@ def verify(
     _validate_identity(expected_sha, expected_source)
 
     scope = bundle.get("validation_scope")
-    if not isinstance(scope, dict) or scope.get("schema") != SCOPE_SCHEMA:
+    if not isinstance(scope, dict):
         raise SystemExit("E_SCOPE_SCHEMA: evidence has invalid validation scope")
+    _validate_scope(scope)
+
+    # V2 deliberately has no duplicate top-level path digest. Reject one if a
+    # producer reintroduces it instead of using validation_scope as the owner.
+    if "changed_paths_sha256" in bundle:
+        raise SystemExit("E_EVIDENCE_DUPLICATE_PATH_DIGEST: duplicate scope digest")
+
     results = bundle.get("results")
     if not isinstance(results, dict):
         raise SystemExit("E_RESULTS: evidence has no result aggregation")
@@ -209,6 +232,18 @@ def verify(
         raise SystemExit("E_RESULTS: blocking evidence rejected:\n" + "\n".join(detail))
 
 
+def _empty_scope() -> dict:
+    return {
+        "schema": SCOPE_SCHEMA,
+        "profile": "fast",
+        "profile_reason": "empty_diff",
+        "paths": [],
+        "paths_sha256": _sha256(b""),
+        "critical_paths": [],
+        "jobs": {},
+    }
+
+
 def _self_test() -> None:
     # Digest and acceptance state are exercised without depending on repository state.
     accepted = {
@@ -217,8 +252,7 @@ def _self_test() -> None:
         "tested_tree_sha": "b" * 40,
         "source_head_commit_sha": "d" * 40,
         "base_commit_sha": "c" * 40,
-        "validation_scope": {"schema": SCOPE_SCHEMA, "jobs": {}},
-        "changed_paths_sha256": _sha256(b""),
+        "validation_scope": _empty_scope(),
         "results": {},
         "acceptance": "accepted",
         "failures": [],
@@ -227,6 +261,8 @@ def _self_test() -> None:
     unsigned = dict(accepted)
     digest = unsigned.pop("evidence_digest_sha256")
     assert digest == _sha256(_canonical(unsigned))
+    assert "changed_paths_sha256" not in accepted
+    assert _validate_scope(accepted["validation_scope"]) == {}
 
     rejected = dict(accepted)
     rejected.pop("evidence_digest_sha256")
@@ -235,6 +271,15 @@ def _self_test() -> None:
     rejected["evidence_digest_sha256"] = _sha256(_canonical(rejected))
     assert rejected["acceptance"] == "rejected"
     assert rejected["failures"]
+
+    bad_scope = _empty_scope()
+    bad_scope["paths"] = ["codex-rs/example.rs"]
+    try:
+        _validate_scope(bad_scope)
+    except SystemExit as error:
+        assert str(error).startswith("E_SCOPE_PATH_DIGEST:")
+    else:
+        raise AssertionError("scope path digest drift must reject")
 
 
 def main() -> int:
