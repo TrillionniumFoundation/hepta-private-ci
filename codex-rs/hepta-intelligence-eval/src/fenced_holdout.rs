@@ -41,6 +41,13 @@ impl FencedHoldoutStateV1 {
     }
 }
 
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct FencedFinalHoldoutReceiptV1 {
+    pub journal_receipt: FinalHoldoutJournalReceiptV1,
+    pub generation: u64,
+    pub fencing_token: u64,
+}
+
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum FencedHoldoutStoreError {
     Binding,
@@ -61,14 +68,23 @@ impl StdError for FencedHoldoutStoreError {}
 /// Durable store contract required for multi-host final-holdout ownership.
 ///
 /// `claim_fence` must atomically reject fencing tokens that are not newer than
-/// the active token for `binding`. `compare_and_swap` must atomically require
-/// all of `expected_generation`, `expected_head_digest`, and `fencing_token`
-/// before replacing the snapshot. Backends must durably commit the replacement
-/// before returning success.
+/// the active token for `binding`. `validate_fence` must atomically reject a
+/// stale owner without changing state. `compare_and_swap` must atomically
+/// require all of `expected_generation`, `expected_head_digest`, and
+/// `fencing_token` before replacing the snapshot. Backends must durably commit
+/// the replacement before returning success.
 pub trait FencedFinalHoldoutStoreV1 {
     fn load(&mut self, binding: Digest32) -> Result<FencedHoldoutStateV1, FencedHoldoutStoreError>;
 
     fn claim_fence(
+        &mut self,
+        binding: Digest32,
+        expected_generation: u64,
+        expected_head_digest: Digest32,
+        fencing_token: u64,
+    ) -> Result<FencedHoldoutStateV1, FencedHoldoutStoreError>;
+
+    fn validate_fence(
         &mut self,
         binding: Digest32,
         expected_generation: u64,
@@ -183,12 +199,28 @@ impl<S: FencedFinalHoldoutStoreV1> FencedFinalHoldoutOwnerV1<S> {
     pub fn consume(
         &mut self,
         plan: &CrossFoldPlanReceiptV1,
-    ) -> Result<FinalHoldoutJournalReceiptV1, FencedHoldoutOwnerError> {
+    ) -> Result<FencedFinalHoldoutReceiptV1, FencedHoldoutOwnerError> {
         let expected_head = self.journal.head_digest();
         let mut candidate = self.journal.clone();
         let receipt = candidate.consume(expected_head, plan)?;
         if receipt.disposition == HoldoutUseDispositionV1::IdempotentReplay {
-            return Ok(receipt);
+            let current = self.store.validate_fence(
+                self.binding,
+                self.generation,
+                expected_head,
+                self.fencing_token,
+            )?;
+            if current.generation != self.generation
+                || current.fencing_token != self.fencing_token
+                || current.snapshot != self.journal.snapshot()
+            {
+                return Err(FencedHoldoutOwnerError::Protocol);
+            }
+            return Ok(FencedFinalHoldoutReceiptV1 {
+                journal_receipt: receipt,
+                generation: self.generation,
+                fencing_token: self.fencing_token,
+            });
         }
         let replacement = candidate.snapshot();
         let committed = self.store.compare_and_swap(
@@ -210,7 +242,11 @@ impl<S: FencedFinalHoldoutStoreV1> FencedFinalHoldoutOwnerV1<S> {
         }
         self.generation = committed.generation;
         self.journal = candidate;
-        Ok(receipt)
+        Ok(FencedFinalHoldoutReceiptV1 {
+            journal_receipt: receipt,
+            generation: self.generation,
+            fencing_token: self.fencing_token,
+        })
     }
 
     #[must_use]
@@ -292,6 +328,28 @@ mod tests {
             }
             state.binding = Some(binding);
             state.state.fencing_token = fencing_token;
+            Ok(state.state.clone())
+        }
+
+        fn validate_fence(
+            &mut self,
+            binding: Digest32,
+            expected_generation: u64,
+            expected_head_digest: Digest32,
+            fencing_token: u64,
+        ) -> Result<FencedHoldoutStateV1, FencedHoldoutStoreError> {
+            let state = self.inner.lock().map_err(|_| FencedHoldoutStoreError::Backend)?;
+            if state.binding != Some(binding) {
+                return Err(FencedHoldoutStoreError::Binding);
+            }
+            if state.state.fencing_token != fencing_token {
+                return Err(FencedHoldoutStoreError::StaleFence);
+            }
+            if state.state.generation != expected_generation
+                || state.state.snapshot.head_digest != expected_head_digest
+            {
+                return Err(FencedHoldoutStoreError::Conflict);
+            }
             Ok(state.state.clone())
         }
 
@@ -398,7 +456,11 @@ mod tests {
         let receipt = active
             .consume(&frozen_plan("active-plan"))
             .expect("active owner commits");
-        assert_eq!(receipt.disposition, HoldoutUseDispositionV1::Recorded);
+        assert_eq!(
+            receipt.journal_receipt.disposition,
+            HoldoutUseDispositionV1::Recorded
+        );
+        assert_eq!(receipt.fencing_token, 2);
         assert_eq!(active.generation(), 1);
     }
 
@@ -414,5 +476,31 @@ mod tests {
         assert!(owner.consume(&frozen_plan("blocked-plan")).is_err());
         assert_eq!(owner.head_digest(), before);
         assert_eq!(owner.generation(), 0);
+    }
+
+    #[test]
+    fn stale_owner_cannot_return_idempotent_replay_after_fence_takeover() {
+        let store = MemoryStore::new();
+        let binding = digest("replay-holdout");
+        let mut stale = FencedFinalHoldoutOwnerV1::open(store.clone(), binding, 10)
+            .expect("first owner claims fence");
+        let plan = frozen_plan("plan-1");
+        let recorded = stale.consume(&plan).expect("first consume");
+        assert_eq!(recorded.generation, 1);
+        let mut active = FencedFinalHoldoutOwnerV1::open(store, binding, 11)
+            .expect("new owner advances fence");
+        assert!(matches!(
+            stale.consume(&plan),
+            Err(FencedHoldoutOwnerError::Store(
+                FencedHoldoutStoreError::StaleFence
+            ))
+        ));
+        let replay = active.consume(&plan).expect("active replay");
+        assert_eq!(
+            replay.journal_receipt.disposition,
+            HoldoutUseDispositionV1::IdempotentReplay
+        );
+        assert_eq!(replay.fencing_token, 11);
+        assert_eq!(replay.generation, 1);
     }
 }
