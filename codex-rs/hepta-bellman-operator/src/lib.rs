@@ -76,6 +76,7 @@ pub use world_model_qualification::WorldModelQualificationAssessmentV1;
 pub use world_model_qualification::WorldModelQualificationError;
 pub use world_model_qualification::WorldModelQualificationProfileV1;
 pub use world_model_qualification::admit_world_model_qualification;
+pub use world_model_qualification::world_model_qualification_profile_digest;
 
 const MAX_SAMPLES: usize = 16_384;
 const SCALE: i128 = 1_i128 << 32;
