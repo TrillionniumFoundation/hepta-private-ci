@@ -215,9 +215,8 @@ pub struct AutomationQueueReceipt {
 }
 
 /// Durable evidence that the provider outcome for one occurrence is not yet
-/// known.  The scheduler must not blindly re-submit this occurrence until an
-/// operator or a provider-specific reconciler supplies a terminal receipt (or
-/// explicitly confirms that no admission was accepted).
+/// known. The scheduler must not blindly re-submit this occurrence until an
+/// exact provider-specific reconciler settles the stable client identity.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct AutomationDispatchUncertainty {
     pub task_id: AutomationTaskId,
@@ -230,6 +229,15 @@ pub struct AutomationDispatchUncertainty {
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum AutomationTick {
     Idle,
+    /// Durable Core queue admission. This is intentionally non-terminal for
+    /// the automation occurrence.
+    Admitted {
+        task_id: AutomationTaskId,
+        occurrence: u64,
+        queued_submission_id: String,
+    },
+    /// Compatibility-only legacy semantic. New scheduler code must emit
+    /// `Admitted` and wait for occurrence terminalization separately.
     Submitted {
         task_id: AutomationTaskId,
         occurrence: u64,
