@@ -146,7 +146,7 @@ async fn lineage_pages_keep_whole_histories_and_one_exact_cut() {
             if first_record.id.memory_id == first_id {
                 assert_eq!(page.records.len(), 3);
                 assert!(matches!(
-                    page.records.last().expect("last").lifecycle,
+                    &page.records.last().expect("last").lifecycle,
                     MemoryLifecycleState::Tombstoned { .. }
                 ));
                 saw_tombstoned_history = true;
