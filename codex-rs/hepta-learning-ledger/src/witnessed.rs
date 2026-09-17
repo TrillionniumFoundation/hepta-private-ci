@@ -52,12 +52,16 @@ impl<J: DurableLearningJournal> WitnessedLearningJournal<J> {
     pub fn new(journal: J, witness: LedgerWitnessStore) -> Result<Self, WitnessedAppendError> {
         let journal_anchor = journal.anchor()?;
         match witness.latest() {
-            None if journal_anchor.sequence == 0 => {}
+            None if journal_anchor.sequence <= 1 => {}
             Some(anchor) if anchor == journal_anchor => {}
-            // A recovered ledger may be one or more complete frames ahead only when
-            // recovery was itself anchored to this independently retained prefix.
-            // Do not silently bless that suffix here; reconciliation must replay the
-            // original operations so each missing witness is persisted in order.
+            Some(anchor)
+                if journal_anchor.sequence == anchor.sequence + 1
+                    && journal.contains_anchor(anchor)? =>
+            {
+                // Exactly one complete journal frame may be ahead after a crash
+                // between journal sync and witness sync. The original operation
+                // must be replayed before any later append can be acknowledged.
+            }
             _ => return Err(WitnessedAppendError::Journal(DurableLedgerError::AnchorMismatch)),
         }
         Ok(Self { journal, witness })
