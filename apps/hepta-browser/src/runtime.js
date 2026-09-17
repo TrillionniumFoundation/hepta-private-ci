@@ -1,398 +1,458 @@
-import { createHash } from "node:crypto";
+import {
+  DEFAULT_DRIVER_TIMEOUT_MS,
+  MAX_ACTIVE_OPERATIONS,
+  MAX_EFFECT_GRANTS,
+  MAX_ORIGINS,
+  MAX_RETIRED_OPERATIONS,
+  assertAuthority,
+  assertDriver,
+  assertStore,
+  browserTypedActionDigest,
+  canonicalOrigin,
+  deadline,
+  digest,
+  freezeResult,
+  parseEffectGrant,
+  positiveInteger,
+  requireRecord,
+  stableId,
+} from "./runtime-primitives.js";
+import {
+  admitOperation,
+  assertReplayMatches,
+  compactTerminalOperations,
+  finalUseBinding,
+} from "./runtime-operation.js";
+import {
+  activeOperationCount,
+  decodeState,
+  effectReceipt,
+  encodeState,
+  indeterminateReceipt,
+} from "./runtime-state.js";
+import {
+  ProfileLockTable,
+  callDriver,
+  driverDeadline,
+  recoveryDeadline,
+} from "./runtime-support.js";
 
-const STABLE_ID = /^[A-Za-z0-9._:-]{1,128}$/;
-const DIGEST = /^[0-9a-f]{64}$/;
-const ZERO_DIGEST = "0".repeat(64);
-const MAX_ORIGINS = 128;
-const MAX_EFFECT_GRANTS = 1024;
-const MAX_OUTSTANDING_OPERATIONS = 1024;
-
-function requireRecord(value, name) {
-  if (value === null || typeof value !== "object" || Array.isArray(value)) {
-    throw new TypeError(`${name} must be an object`);
-  }
-  return value;
-}
-
-function stableId(value, name) {
-  if (typeof value !== "string" || !STABLE_ID.test(value)) {
-    throw new TypeError(`${name} must be a bounded stable identifier`);
-  }
-  return value;
-}
-
-function digest(value, name) {
-  if (typeof value !== "string" || !DIGEST.test(value) || value === ZERO_DIGEST) {
-    throw new TypeError(`${name} must be a non-zero lowercase SHA-256 digest`);
-  }
-  return value;
-}
-
-function positiveInteger(value, name) {
-  if (!Number.isSafeInteger(value) || value < 1) {
-    throw new TypeError(`${name} must be a positive safe integer`);
-  }
-  return value;
-}
-
-function deadline(value, now, name = "deadlineMs") {
-  const deadlineMs = positiveInteger(value, name);
-  if (deadlineMs <= now) {
-    throw new TypeError(`${name} has expired`);
-  }
-  return deadlineMs;
-}
-
-function canonicalOrigin(value) {
-  const url = new URL(value);
-  if (url.protocol !== "https:" && url.protocol !== "http:") {
-    throw new TypeError("origin must use HTTP or HTTPS");
-  }
-  if (url.username || url.password || url.pathname !== "/" || url.search || url.hash) {
-    throw new TypeError("origin must not contain credentials, path, query, or fragment");
-  }
-  return url.origin;
-}
-
-function canonicalDigest(value) {
-  return createHash("sha256").update(JSON.stringify(value)).digest("hex");
-}
-
-function freezeResult(value) {
-  return Object.freeze({
-    ...value,
-    networkAuthority: false,
-    filesystemAuthority: false,
-    credentialExportAuthority: false,
-  });
-}
-
-function parseEffectGrant(value, now, allowedOrigins) {
-  const grant = requireRecord(value, "effectGrant");
-  const grantDigest = digest(grant.grantDigest, "effectGrant.grantDigest");
-  const action = stableId(grant.action, "effectGrant.action");
-  const destinationOrigin = canonicalOrigin(grant.destinationOrigin);
-  if (!allowedOrigins.has(destinationOrigin)) {
-    throw new TypeError("effect grant destination is outside the profile grant");
-  }
-  const finalPayloadDigest = digest(
-    grant.finalPayloadDigest,
-    "effectGrant.finalPayloadDigest",
-  );
-  const authorityEpoch = positiveInteger(grant.authorityEpoch, "effectGrant.authorityEpoch");
-  const expiresAtMs = deadline(grant.expiresAtMs, now, "effectGrant.expiresAtMs");
-  return Object.freeze({
-    grantDigest,
-    action,
-    destinationOrigin,
-    finalPayloadDigest,
-    authorityEpoch,
-    expiresAtMs,
-  });
-}
+export { browserTypedActionDigest };
 
 export class BrowserProfileHost {
   #driver;
+  #authority;
+  #store;
   #clock;
+  #defaultDriverTimeoutMs;
   #profiles = new Map();
+  #locks = new ProfileLockTable();
 
-  constructor({ driver, clock = () => Date.now() }) {
-    requireRecord(driver, "driver");
-    for (const method of ["start", "observe", "act", "reconcile", "stop"]) {
-      if (typeof driver[method] !== "function") {
-        throw new TypeError(`driver.${method} must be a function`);
-      }
-    }
-    if (typeof clock !== "function") {
-      throw new TypeError("clock must be a function");
-    }
-    this.#driver = driver;
+  constructor({
+    driver,
+    authority,
+    store,
+    clock = () => Date.now(),
+    defaultDriverTimeoutMs = DEFAULT_DRIVER_TIMEOUT_MS,
+    allowVolatileStore = false,
+  }) {
+    this.#driver = assertDriver(driver);
+    this.#authority = assertAuthority(authority);
+    this.#store = assertStore(store, allowVolatileStore);
+    if (typeof clock !== "function") throw new TypeError("clock must be a function");
     this.#clock = clock;
+    this.#defaultDriverTimeoutMs = positiveInteger(defaultDriverTimeoutMs, "defaultDriverTimeoutMs");
+  }
+
+  async listRecoverableProfiles() {
+    return (await this.#store.listProfiles()).map((record) => ({
+      profileId: record.profileId,
+      principalId: record.principalId,
+      generation: record.generation,
+      lifecycle: record.lifecycle,
+      pendingOperationCount: (record.operations ?? []).filter(
+        (entry) => entry.receipt?.terminalObserved !== true,
+      ).length,
+    }));
+  }
+
+  async recoverProfile(input) {
+    requireRecord(input, "input");
+    const profileId = stableId(input.profileId, "profileId");
+    return this.#locks.run(profileId, async () => {
+      if (this.#profiles.has(profileId)) return this.#sessionReceipt(this.#profiles.get(profileId), true);
+      const persisted = await this.#store.loadProfile(profileId);
+      if (!persisted) throw new TypeError("profile has no durable recovery state");
+      const state = decodeState(persisted);
+      if (input.principalId !== state.principalId || input.generation !== state.generation) {
+        throw new TypeError("persisted profile identity mismatch");
+      }
+      this.#profiles.set(profileId, state);
+      return this.#sessionReceipt(state, true);
+    });
   }
 
   async openProfile(input) {
     requireRecord(input, "input");
     const profileId = stableId(input.profileId, "profileId");
-    const principalId = stableId(input.principalId, "principalId");
-    const manifestDigest = digest(input.manifestDigest, "manifestDigest");
-    const grantDigest = digest(input.grantDigest, "grantDigest");
-    const generation = positiveInteger(input.generation, "generation");
-    const expiresAtMs = deadline(input.expiresAtMs, this.#clock(), "expiresAtMs");
-    if (!Array.isArray(input.allowedOrigins) || input.allowedOrigins.length > MAX_ORIGINS) {
-      throw new TypeError("allowedOrigins is not a bounded array");
-    }
-    const allowedOrigins = new Set(input.allowedOrigins.map(canonicalOrigin));
-    if (allowedOrigins.size !== input.allowedOrigins.length) {
-      throw new TypeError("allowedOrigins contains duplicates");
-    }
-    if (
-      !Array.isArray(input.effectGrants) ||
-      input.effectGrants.length === 0 ||
-      input.effectGrants.length > MAX_EFFECT_GRANTS
-    ) {
-      throw new TypeError("effectGrants must be a non-empty bounded array");
-    }
-    const effectGrants = new Map();
-    for (const rawGrant of input.effectGrants) {
-      const grant = parseEffectGrant(rawGrant, this.#clock(), allowedOrigins);
-      if (effectGrants.has(grant.grantDigest)) {
-        throw new TypeError("effectGrants contains duplicate grantDigest");
+    return this.#locks.run(profileId, async () => {
+      const now = this.#clock();
+      const principalId = stableId(input.principalId, "principalId");
+      const manifestDigest = digest(input.manifestDigest, "manifestDigest");
+      const grantDigest = digest(input.grantDigest, "grantDigest");
+      const generation = positiveInteger(input.generation, "generation");
+      const expiresAtMs = deadline(input.expiresAtMs, now, "expiresAtMs");
+      if (!Array.isArray(input.allowedOrigins) || input.allowedOrigins.length > MAX_ORIGINS) {
+        throw new TypeError("allowedOrigins is not a bounded array");
       }
-      effectGrants.set(grant.grantDigest, grant);
-    }
-    if (this.#profiles.has(profileId)) {
-      throw new TypeError("profile is already open");
-    }
+      const allowedOrigins = new Set(input.allowedOrigins.map(canonicalOrigin));
+      if (allowedOrigins.size !== input.allowedOrigins.length) {
+        throw new TypeError("allowedOrigins contains duplicates");
+      }
+      if (
+        !Array.isArray(input.effectGrants)
+        || input.effectGrants.length === 0
+        || input.effectGrants.length > MAX_EFFECT_GRANTS
+      ) {
+        throw new TypeError("effectGrants must be a non-empty bounded array");
+      }
+      const effectGrants = new Map();
+      for (const rawGrant of input.effectGrants) {
+        const grant = parseEffectGrant(rawGrant, now, allowedOrigins);
+        if (effectGrants.has(grant.grantDigest)) {
+          throw new TypeError("effectGrants contains duplicate grantDigest");
+        }
+        effectGrants.set(grant.grantDigest, grant);
+      }
+      if (this.#profiles.has(profileId)) throw new TypeError("profile is already open");
+      if (await this.#store.loadProfile(profileId)) {
+        throw new TypeError("profile has durable state requiring recovery");
+      }
 
-    const observed = requireRecord(
-      await this.#driver.start({
+      const state = {
         profileId,
         principalId,
         manifestDigest,
         grantDigest,
         generation,
-        allowedOrigins: [...allowedOrigins],
-      }),
-      "driver start observation",
-    );
-    if (observed.started !== true) {
-      throw new TypeError("driver did not observe profile start");
-    }
-    const processId = stableId(observed.processId, "processId");
-    const state = {
-      profileId,
-      principalId,
-      manifestDigest,
-      grantDigest,
-      generation,
-      expiresAtMs,
-      processId,
-      pageGeneration: 0,
-      documentDigest: null,
-      allowedOrigins,
-      effectGrants,
-      operations: new Map(),
-    };
-    this.#profiles.set(profileId, state);
-    return freezeResult({
-      kind: "BrowserSessionV1",
-      profileId,
-      principalId,
-      processId,
-      generation,
-      manifestDigest,
-      grantDigest,
-      expiresAtMs,
-      effectGrantCount: effectGrants.size,
+        expiresAtMs,
+        processId: null,
+        lifecycle: "starting",
+        pageGeneration: 0,
+        documentDigest: null,
+        origin: null,
+        quarantinedReason: null,
+        allowedOrigins,
+        effectGrants,
+        operations: new Map(),
+        retiredOperations: new Map(),
+        nextOperationSequence: 1,
+      };
+      this.#profiles.set(profileId, state);
+      await this.#persist(state);
+
+      const startDeadlineMs = driverDeadline(
+        this.#clock,
+        this.#defaultDriverTimeoutMs,
+        input.startDeadlineMs,
+        expiresAtMs,
+      );
+      let observed;
+      try {
+        observed = requireRecord(
+          await callDriver(this.#driver, this.#clock, "start", {
+            profileId,
+            principalId,
+            manifestDigest,
+            grantDigest,
+            generation,
+            allowedOrigins: [...allowedOrigins],
+          }, startDeadlineMs),
+          "driver start observation",
+        );
+      } catch (error) {
+        state.lifecycle = "start_indeterminate";
+        await this.#persist(state);
+        throw error;
+      }
+      if (observed.started !== true) {
+        this.#profiles.delete(profileId);
+        await this.#store.deleteProfile(profileId);
+        throw new TypeError("driver did not observe profile start");
+      }
+      state.processId = stableId(observed.processId, "processId");
+      state.lifecycle = "open";
+      await this.#persist(state);
+      return this.#sessionReceipt(state, false);
     });
   }
 
   async observePage(input) {
-    const state = this.#profile(input);
-    const observationBudget = positiveInteger(input.observationBudget, "observationBudget");
-    if (observationBudget > 1_000_000) {
-      throw new TypeError("observationBudget exceeds profile limit");
-    }
-    const observed = requireRecord(
-      await this.#driver.observe({
+    requireRecord(input, "input");
+    const profileId = stableId(input.profileId, "profileId");
+    return this.#locks.run(profileId, async () => {
+      const state = await this.#activeProfile(input);
+      const observationBudget = positiveInteger(input.observationBudget, "observationBudget");
+      if (observationBudget > 1_000_000) {
+        throw new TypeError("observationBudget exceeds profile limit");
+      }
+      const observed = requireRecord(
+        await callDriver(this.#driver, this.#clock, "observe", {
+          profileId: state.profileId,
+          processId: state.processId,
+          generation: state.generation,
+          observationBudget,
+        }, driverDeadline(
+          this.#clock,
+          this.#defaultDriverTimeoutMs,
+          input.deadlineMs,
+          state.expiresAtMs,
+        )),
+        "driver page observation",
+      );
+      const pageGeneration = positiveInteger(observed.pageGeneration, "pageGeneration");
+      if (pageGeneration <= state.pageGeneration) {
+        throw new TypeError("page generation did not advance");
+      }
+      const documentDigest = digest(observed.documentDigest, "documentDigest");
+      const origin = canonicalOrigin(observed.origin);
+      state.pageGeneration = pageGeneration;
+      state.documentDigest = documentDigest;
+      state.origin = origin;
+      if (!state.allowedOrigins.has(origin)) {
+        state.lifecycle = "quarantined";
+        state.quarantinedReason = "observed_ungranted_origin";
+        await this.#persist(state);
+        throw new TypeError("observed origin is outside the profile grant; profile quarantined");
+      }
+      await this.#persist(state);
+      return freezeResult({
+        kind: "PageObservationV1",
         profileId: state.profileId,
         processId: state.processId,
-        generation: state.generation,
-        observationBudget,
-      }),
-      "driver page observation",
-    );
-    const pageGeneration = positiveInteger(observed.pageGeneration, "pageGeneration");
-    if (pageGeneration <= state.pageGeneration) {
-      throw new TypeError("page generation did not advance");
-    }
-    const documentDigest = digest(observed.documentDigest, "documentDigest");
-    const origin = canonicalOrigin(observed.origin);
-    state.pageGeneration = pageGeneration;
-    state.documentDigest = documentDigest;
-    return freezeResult({
-      kind: "PageObservationV1",
-      profileId: state.profileId,
-      processId: state.processId,
-      profileGeneration: state.generation,
-      pageGeneration,
-      documentDigest,
-      origin,
-      originAllowed: state.allowedOrigins.has(origin),
-      terminalObserved: true,
+        profileGeneration: state.generation,
+        pageGeneration,
+        documentDigest,
+        origin,
+        originAllowed: true,
+        terminalObserved: true,
+      });
     });
   }
 
   async navigateOrAct(input) {
-    const admitted = this.#admitOperation(input);
-    const { state, operationId, semantics, semanticDigest } = admitted;
-    const prior = state.operations.get(operationId);
-    if (prior) {
-      if (prior.semanticDigest !== semanticDigest) {
-        throw new TypeError("operation identity was reused with changed semantics");
+    requireRecord(input, "input");
+    const profileId = stableId(input.profileId, "profileId");
+    return this.#locks.run(profileId, async () => {
+      const state = await this.#profileForIdentity(input);
+      const operationId = stableId(input.operationId, "operationId");
+      const prior = state.operations.get(operationId) ?? state.retiredOperations.get(operationId);
+      if (prior) {
+        assertReplayMatches(input, prior);
+        return prior.receipt;
       }
-      return prior.receipt;
-    }
-    if (state.operations.size >= MAX_OUTSTANDING_OPERATIONS) {
-      throw new TypeError("profile operation capacity is exhausted");
-    }
 
-    const observed = requireRecord(
-      await this.#driver.act(semantics),
-      "driver effect observation",
-    );
-    const receipt = this.#effectReceipt(state.profileId, operationId, semanticDigest, observed);
-    state.operations.set(operationId, { semanticDigest, semantics, receipt });
-    return receipt;
+      const admitted = admitOperation(input, state, this.#clock());
+      const { semantics, semanticDigest, typedAction, grant } = admitted;
+      if (activeOperationCount(state) >= MAX_ACTIVE_OPERATIONS) {
+        throw new TypeError("profile active operation capacity is exhausted");
+      }
+      compactTerminalOperations(state);
+
+      const binding = finalUseBinding(state, grant, semantics, semanticDigest);
+      const token = await this.#authority.claim(binding);
+      const unknown = indeterminateReceipt(state.profileId, operationId, semanticDigest);
+      const entry = {
+        sequence: state.nextOperationSequence,
+        semanticDigest,
+        semantics,
+        receipt: unknown,
+        phase: "dispatching",
+      };
+      state.nextOperationSequence += 1;
+      state.operations.set(operationId, entry);
+      await this.#persist(state);
+
+      let effectBoundaryEntered = false;
+      try {
+        const observed = requireRecord(
+          await this.#authority.withVerifiedUse(token, binding, async () => {
+            const finalNow = this.#clock();
+            if (
+              finalNow >= state.expiresAtMs
+              || finalNow >= grant.expiresAtMs
+              || finalNow >= semantics.deadlineMs
+            ) {
+              throw new TypeError("browser effect authority expired before final dispatch");
+            }
+            effectBoundaryEntered = true;
+            return callDriver(
+              this.#driver,
+              this.#clock,
+              "act",
+              { ...semantics, typedAction },
+              semantics.deadlineMs,
+            );
+          }),
+          "driver effect observation",
+        );
+        const terminal = effectReceipt(state.profileId, operationId, semanticDigest, observed);
+        entry.receipt = terminal;
+        entry.phase = terminal.terminalObserved ? "terminal" : "indeterminate";
+        await this.#persist(state);
+        return terminal;
+      } catch (error) {
+        if (!effectBoundaryEntered) {
+          state.operations.delete(operationId);
+          await this.#persist(state);
+          throw error;
+        }
+        entry.receipt = unknown;
+        entry.phase = "indeterminate";
+        await this.#persist(state);
+        return unknown;
+      }
+    });
   }
 
   async reconcileOperation(input) {
-    const admitted = this.#admitOperation(input);
-    const { state, operationId, semantics, semanticDigest } = admitted;
-    const prior = state.operations.get(operationId);
-    if (!prior) {
-      throw new TypeError("operation has not crossed the browser effect boundary");
-    }
-    if (prior.semanticDigest !== semanticDigest) {
-      throw new TypeError("operation reconciliation changed immutable semantics");
-    }
-    if (prior.receipt.terminalObserved === true) {
-      return prior.receipt;
-    }
-    const observed = requireRecord(
-      await this.#driver.reconcile(semantics),
-      "driver reconciliation observation",
-    );
-    const receipt = this.#effectReceipt(state.profileId, operationId, semanticDigest, observed);
-    if (receipt.terminalObserved === true) {
+    requireRecord(input, "input");
+    const profileId = stableId(input.profileId, "profileId");
+    return this.#locks.run(profileId, async () => {
+      const state = await this.#profileForIdentity(input);
+      const operationId = stableId(input.operationId, "operationId");
+      const semanticDigest = digest(input.semanticDigest, "semanticDigest");
+      const retired = state.retiredOperations.get(operationId);
+      if (retired) {
+        if (retired.semanticDigest !== semanticDigest) {
+          throw new TypeError("operation reconciliation changed immutable semantics");
+        }
+        return retired.receipt;
+      }
+      const prior = state.operations.get(operationId);
+      if (!prior) throw new TypeError("operation has not crossed the browser effect boundary");
+      if (prior.semanticDigest !== semanticDigest) {
+        throw new TypeError("operation reconciliation changed immutable semantics");
+      }
+      if (prior.receipt.terminalObserved === true) return prior.receipt;
+      const observed = requireRecord(
+        await callDriver(
+          this.#driver,
+          this.#clock,
+          "reconcile",
+          prior.semantics,
+          recoveryDeadline(this.#clock, this.#defaultDriverTimeoutMs, input.deadlineMs),
+        ),
+        "driver reconciliation observation",
+      );
+      const receipt = effectReceipt(state.profileId, operationId, semanticDigest, observed);
       prior.receipt = receipt;
-    }
-    return receipt;
+      prior.phase = receipt.terminalObserved ? "terminal" : "indeterminate";
+      await this.#persist(state);
+      return receipt;
+    });
+  }
+
+  async acknowledgeTerminalOperation(input) {
+    requireRecord(input, "input");
+    const profileId = stableId(input.profileId, "profileId");
+    return this.#locks.run(profileId, async () => {
+      const state = await this.#profileForIdentity(input);
+      const operationId = stableId(input.operationId, "operationId");
+      const semanticDigest = digest(input.semanticDigest, "semanticDigest");
+      const entry = state.operations.get(operationId);
+      if (!entry || entry.receipt.terminalObserved !== true) {
+        throw new TypeError("operation is not terminal and cannot be compacted");
+      }
+      if (entry.semanticDigest !== semanticDigest) {
+        throw new TypeError("operation acknowledgement changed immutable semantics");
+      }
+      if (state.retiredOperations.size >= MAX_RETIRED_OPERATIONS) {
+        throw new TypeError("retired operation capacity is exhausted");
+      }
+      state.operations.delete(operationId);
+      state.retiredOperations.set(operationId, {
+        semanticDigest: entry.semanticDigest,
+        semantics: entry.semantics,
+        receipt: entry.receipt,
+      });
+      await this.#persist(state);
+      return entry.receipt;
+    });
   }
 
   async closeProfile(input) {
-    const state = this.#profile(input);
-    if ([...state.operations.values()].some((entry) => entry.receipt.terminalObserved !== true)) {
-      throw new TypeError("profile has indeterminate browser effects requiring reconciliation");
-    }
-    const observed = requireRecord(
-      await this.#driver.stop({
+    requireRecord(input, "input");
+    const profileId = stableId(input.profileId, "profileId");
+    return this.#locks.run(profileId, async () => {
+      const state = await this.#profileForIdentity(input);
+      if ([...state.operations.values()].some((entry) => entry.receipt.terminalObserved !== true)) {
+        throw new TypeError("profile has indeterminate browser effects requiring reconciliation");
+      }
+      state.lifecycle = "closing";
+      await this.#persist(state);
+      const observed = requireRecord(
+        await callDriver(
+          this.#driver,
+          this.#clock,
+          "stop",
+          { profileId: state.profileId, processId: state.processId, generation: state.generation },
+          recoveryDeadline(this.#clock, this.#defaultDriverTimeoutMs, input.deadlineMs),
+        ),
+        "driver stop observation",
+      );
+      if (observed.stopped !== true) throw new TypeError("driver did not observe profile stop");
+      this.#profiles.delete(state.profileId);
+      await this.#store.deleteProfile(state.profileId);
+      return freezeResult({
+        kind: "BrowserProfileClosedV1",
         profileId: state.profileId,
         processId: state.processId,
         generation: state.generation,
-      }),
-      "driver stop observation",
-    );
-    if (observed.stopped !== true) {
-      throw new TypeError("driver did not observe profile stop");
-    }
-    this.#profiles.delete(state.profileId);
-    return freezeResult({
-      kind: "BrowserProfileClosedV1",
-      profileId: state.profileId,
-      processId: state.processId,
-      generation: state.generation,
-      terminalObserved: true,
+        terminalObserved: true,
+      });
     });
   }
 
-  #admitOperation(input) {
-    const state = this.#profile(input);
-    const operationId = stableId(input.operationId, "operationId");
-    const pageGeneration = positiveInteger(input.pageGeneration, "pageGeneration");
-    if (pageGeneration !== state.pageGeneration || state.documentDigest === null) {
-      throw new TypeError("stale page generation");
+  async #activeProfile(input) {
+    const state = await this.#profileForIdentity(input);
+    if (state.lifecycle !== "open") throw new TypeError(`profile is not active: ${state.lifecycle}`);
+    if (this.#clock() >= state.expiresAtMs) throw new TypeError("profile grant has expired");
+    return state;
+  }
+
+  async #profileForIdentity(input) {
+    requireRecord(input, "input");
+    const profileId = stableId(input.profileId, "profileId");
+    let state = this.#profiles.get(profileId);
+    if (!state) {
+      const persisted = await this.#store.loadProfile(profileId);
+      if (!persisted) throw new TypeError("profile is not open and has no durable recovery state");
+      state = decodeState(persisted);
+      this.#profiles.set(profileId, state);
     }
-    const action = stableId(input.action, "action");
-    const destinationOrigin = canonicalOrigin(input.destinationOrigin);
-    if (!state.allowedOrigins.has(destinationOrigin)) {
-      throw new TypeError("destination origin is outside the profile grant");
-    }
-    const finalPayloadDigest = digest(input.finalPayloadDigest, "finalPayloadDigest");
-    const effectGrantDigest = digest(input.effectGrantDigest, "effectGrantDigest");
-    const authorityEpoch = positiveInteger(input.authorityEpoch, "authorityEpoch");
-    const deadlineMs = deadline(input.deadlineMs, this.#clock());
-    const grant = state.effectGrants.get(effectGrantDigest);
-    if (!grant) {
-      throw new TypeError("effect grant is not registered for this profile");
-    }
-    if (this.#clock() >= grant.expiresAtMs) {
-      throw new TypeError("effect grant has expired");
-    }
-    if (
-      grant.action !== action ||
-      grant.destinationOrigin !== destinationOrigin ||
-      grant.finalPayloadDigest !== finalPayloadDigest ||
-      grant.authorityEpoch !== authorityEpoch
-    ) {
-      throw new TypeError("effect grant does not bind the final browser operation");
-    }
-    const semantics = Object.freeze({
+    if (input.principalId !== state.principalId) throw new TypeError("principal does not own the profile");
+    if (input.generation !== state.generation) throw new TypeError("profile generation mismatch");
+    return state;
+  }
+
+  #sessionReceipt(state, recovered) {
+    return freezeResult({
+      kind: "BrowserSessionV1",
       profileId: state.profileId,
       principalId: state.principalId,
       processId: state.processId,
-      profileGeneration: state.generation,
-      pageGeneration,
-      documentDigest: state.documentDigest,
-      operationId,
-      action,
-      destinationOrigin,
-      finalPayloadDigest,
-      profileGrantDigest: state.grantDigest,
-      effectGrantDigest,
-      authorityEpoch,
-      deadlineMs,
-    });
-    return {
-      state,
-      operationId,
-      semantics,
-      semanticDigest: canonicalDigest(semantics),
-    };
-  }
-
-  #effectReceipt(profileId, operationId, semanticDigest, observed) {
-    if (observed.terminalObserved !== true) {
-      return freezeResult({
-        kind: "BrowserEffectObservationV1",
-        profileId,
-        operationId,
-        semanticDigest,
-        status: "indeterminate",
-        outcomeDigest: null,
-        terminalObserved: false,
-      });
-    }
-    if (observed.status !== "succeeded" && observed.status !== "failed") {
-      throw new TypeError("terminal browser status is not registered");
-    }
-    return freezeResult({
-      kind: "BrowserEffectObservationV1",
-      profileId,
-      operationId,
-      semanticDigest,
-      status: observed.status,
-      outcomeDigest: digest(observed.outcomeDigest, "outcomeDigest"),
-      terminalObserved: true,
+      generation: state.generation,
+      manifestDigest: state.manifestDigest,
+      grantDigest: state.grantDigest,
+      expiresAtMs: state.expiresAtMs,
+      effectGrantCount: state.effectGrants.size,
+      lifecycle: state.lifecycle,
+      recovered,
     });
   }
 
-  #profile(input) {
-    requireRecord(input, "input");
-    const profileId = stableId(input.profileId, "profileId");
-    const state = this.#profiles.get(profileId);
-    if (!state) {
-      throw new TypeError("profile is not open");
-    }
-    if (input.principalId !== state.principalId) {
-      throw new TypeError("principal does not own the profile");
-    }
-    if (input.generation !== state.generation) {
-      throw new TypeError("profile generation mismatch");
-    }
-    if (this.#clock() >= state.expiresAtMs) {
-      throw new TypeError("profile grant has expired");
-    }
-    return state;
+  async #persist(state) {
+    await this.#store.saveProfile(encodeState(state));
   }
 }

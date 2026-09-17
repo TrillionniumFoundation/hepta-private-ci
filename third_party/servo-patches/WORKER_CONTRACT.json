@@ -1,0 +1,40 @@
+{
+  "schema": "hepta.servo.worker-contract.v1",
+  "schemaVersion": 1,
+  "upstreamRepository": "servo/servo",
+  "upstreamCommit": "84bcc9ac701874fa9819e5cdee06356b961d736c",
+  "implementationStatus": "contract_only",
+  "authority": {
+    "runtime": false,
+    "productionCaller": false,
+    "effect": false,
+    "externalNetwork": false,
+    "credentialExport": false,
+    "release": false
+  },
+  "processModel": {
+    "oneWorkerPerSession": true,
+    "oneWebView": true,
+    "privateInheritedControlChannel": true,
+    "publicControlListener": false,
+    "rawWebDriver": false
+  },
+  "requiredHostClaims": [
+    "abort_signal",
+    "isolated_process",
+    "private_control_channel",
+    "network_policy_enforced",
+    "profile_isolation_enforced",
+    "credential_boundary_enforced"
+  ],
+  "remainingEvidence": [
+    "real_worker_artifact_and_digest",
+    "source_tree_and_patch_binding",
+    "linux_macos_windows_sandbox",
+    "no_control_listener",
+    "egress_and_redirect_containment",
+    "profile_cookie_cache_isolation",
+    "real_webview_navigation_and_download_terminal_observation",
+    "parent_death_and_descendant_cleanup"
+  ]
+}
