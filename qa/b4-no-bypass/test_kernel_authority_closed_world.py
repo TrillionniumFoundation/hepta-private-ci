@@ -75,7 +75,9 @@ class KernelAuthorityClosedWorldTests(unittest.TestCase):
                 # `.revoke`, or `.consume_kv_v2` call in the workspace as authority.
                 if type_marker not in raw:
                     continue
-                code = CALLER_PROOF._strip_rust_non_code(raw)
+                code = CALLER_PROOF._strip_cfg_test_items(
+                    CALLER_PROOF._strip_rust_non_code(raw)
+                )
                 if any(pattern.search(code) for pattern in patterns):
                     observed.add(relative)
             self.assertEqual(
