@@ -3,9 +3,9 @@
 //! The automation owner never mints authority. A step must already be durably
 //! claimed in the TaskFlow outbox. Immediately before the registered effect
 //! driver is called, the kernel-owned [`FinalUseAuthority`] verifies an
-//! independently signed, short-lived, single-use binding over the exact payload
-//! and destination. The driver's terminal/indeterminate observation is then
-//! appended to the same durable step chain.
+//! independently signed, short-lived, single-use binding over the exact intent,
+//! payload and destination. The driver's terminal/indeterminate observation is
+//! then appended to the same durable step chain.
 
 use codex_hepta_contracts::FinalUseAuthority;
 use codex_hepta_contracts::FinalUseBinding;
@@ -81,8 +81,8 @@ pub enum AuthorizedEffectError {
     TaskFlow(#[from] TaskFlowError),
     #[error("final-use authority rejected the effect: {0}")]
     FinalUse(FinalUseError),
-    #[error("final-use binding payload does not match the durable TaskFlow payload")]
-    PayloadBindingMismatch,
+    #[error("final-use binding does not match the durable TaskFlow intent/payload")]
+    BindingMismatch,
     #[error(transparent)]
     Driver(#[from] AuthorizedEffectDriverError),
 }
@@ -127,8 +127,10 @@ impl AutomationStore {
             )
             .into());
         }
-        if expected_binding.payload_sha256 != digest_bytes(payload_digest)? {
-            return Err(AuthorizedEffectError::PayloadBindingMismatch);
+        if expected_binding.request_sha256 != digest_bytes(intent_digest)?
+            || expected_binding.payload_sha256 != digest_bytes(payload_digest)?
+        {
+            return Err(AuthorizedEffectError::BindingMismatch);
         }
 
         // `claim` durably burns the grant nonce. If the driver returns a
@@ -171,14 +173,14 @@ impl AutomationStore {
 fn digest_bytes(digest: &Sha256Digest) -> Result<[u8; 32], AuthorizedEffectError> {
     let value = digest.as_str().as_bytes();
     if value.len() != 64 {
-        return Err(AuthorizedEffectError::PayloadBindingMismatch);
+        return Err(AuthorizedEffectError::BindingMismatch);
     }
     let mut output = [0_u8; 32];
     for (index, pair) in value.chunks_exact(2).enumerate() {
         output[index] = (hex(pair[0])? << 4) | hex(pair[1])?;
     }
     if output == [0; 32] {
-        return Err(AuthorizedEffectError::PayloadBindingMismatch);
+        return Err(AuthorizedEffectError::BindingMismatch);
     }
     Ok(output)
 }
@@ -187,7 +189,7 @@ fn hex(value: u8) -> Result<u8, AuthorizedEffectError> {
     match value {
         b'0'..=b'9' => Ok(value - b'0'),
         b'a'..=b'f' => Ok(value - b'a' + 10),
-        _ => Err(AuthorizedEffectError::PayloadBindingMismatch),
+        _ => Err(AuthorizedEffectError::BindingMismatch),
     }
 }
 
