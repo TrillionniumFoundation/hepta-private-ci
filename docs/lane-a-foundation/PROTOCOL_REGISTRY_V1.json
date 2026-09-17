@@ -63,14 +63,40 @@
       "source": [
         "codex-rs/hepta-operations/src/model.rs",
         "codex-rs/hepta-operations/src/ledger.rs",
-        "codex-rs/hepta-operations/src/outbox.rs"
+        "codex-rs/hepta-operations/src/outbox.rs",
+        "docs/lane-a-foundation/kernel.operations/REFERENCE_MODEL_V1.md"
       ],
       "invariants": [
         "reference witness digest binds operation payload generation and expiry",
         "authorization replay revalidates the complete live witness",
         "terminal observation is owner-generation fenced",
         "acknowledged outbox state retains owner generation and acknowledgement digest",
-        "the model provides no durability or production authority"
+        "this oracle remains process-local and grants no production authority"
+      ]
+    },
+    {
+      "protocolId": "hepta.kernel.operations.durable-ledger-outbox.v1",
+      "module": "kernel.operations",
+      "kind": "sqlite_transactional_operation_ledger_outbox",
+      "source": [
+        "codex-rs/hepta-operations/src/durable_store.rs",
+        "codex-rs/hepta-operations/src/durable_model.rs",
+        "codex-rs/hepta-operations/src/dispatcher.rs",
+        "codex-rs/hepta-operations/src/destination_dedupe.rs",
+        "codex-rs/hepta-operations/migrations/0001_durable_operations.sql",
+        "docs/lane-a-foundation/kernel.operations/DURABLE_STORE_V1.md"
+      ],
+      "invariants": [
+        "operation intent and local outbox identity commit in one BEGIN IMMEDIATE transaction",
+        "WAL plus FULL synchronous local durability is verified before service",
+        "pre-dispatch claims are bounded by generation fence attempt and lease deadline",
+        "arming a dispatch removes it from the retryable lease set before adapter entry",
+        "transport acknowledgement never implies terminal external success",
+        "terminal settlement is generation fenced and evidence-digest bound",
+        "final-use authority is consumed immediately around the adapter boundary",
+        "destination dedupe executes only inside a destination-owned transaction",
+        "terminal pruning writes an anti-resurrection tombstone before deletion",
+        "source durability does not grant product activation canary promotion or release"
       ]
     },
     {
@@ -83,7 +109,7 @@
         "docs/lane-a-foundation/kernel.evidence/STORE_V1.md"
       ],
       "invariants": [
-        "migration lineage is exactly 0001 through 0009",
+        "migration lineage is exactly 0001 through 0010",
         "unknown incomplete failed or checksum-mismatched migration rows fail closed",
         "same identity and equal content is idempotent",
         "same identity and different content conflicts",

@@ -19,45 +19,99 @@
   "sourceRootPresent": true,
   "productionImplementation": false,
   "productCallerState": "not_composed",
-  "productionWriterState": "not_established",
+  "productionWriterState": "source_owner_store_implemented_not_product_composed",
   "operations": [
     {
-      "operation": "operationledger",
-      "nativeSymbol": "OperationLedger",
-      "sourcePath": "codex-rs/hepta-operations/src/ledger.rs",
+      "operation": "durable_operation_store",
+      "nativeSymbol": "DurableOperationStore",
+      "sourcePath": "codex-rs/hepta-operations/src/durable_store.rs",
       "state": "source_implemented_not_product_composed",
-      "authority": "none",
-      "tests": [],
+      "authority": "kernel.authority final-use required at effect entry",
+      "tests": [
+        "codex-rs/hepta-operations/src/durable_tests.rs",
+        "codex-rs/hepta-operations/src/fault_tests.rs"
+      ],
       "sourcePathExists": true,
-      "designOperation": "operationledger",
+      "designOperation": "prepare_intent/claim_outbox/observe_terminal",
       "mappingClass": "owner_native",
       "delegatedCallees": []
     },
     {
-      "operation": "outbox",
+      "operation": "destination_dedupe",
+      "nativeSymbol": "reserve_destination_effect",
+      "sourcePath": "codex-rs/hepta-operations/src/destination_dedupe.rs",
+      "state": "source_implemented_destination_install_pending",
+      "authority": "destination transaction owner",
+      "tests": [
+        "codex-rs/hepta-operations/src/destination_dedupe_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "destination_deduplication",
+      "mappingClass": "owner_native_transaction_helper",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "final_use_dispatch",
+      "nativeSymbol": "dispatch_with_final_use",
+      "sourcePath": "codex-rs/hepta-operations/src/dispatcher.rs",
+      "state": "source_implemented_product_adapter_pending",
+      "authority": "kernel.authority",
+      "tests": [
+        "codex-rs/hepta-operations/src/durable_tests.rs",
+        "codex-rs/hepta-operations/src/fault_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "authorized_adapter_entry",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [
+        "kernel.authority"
+      ]
+    },
+    {
+      "operation": "operationledger_reference_oracle",
+      "nativeSymbol": "OperationLedger",
+      "sourcePath": "codex-rs/hepta-operations/src/ledger.rs",
+      "state": "reference_oracle_retained",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-operations/src/ledger_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "operationledger_reference_oracle",
+      "mappingClass": "owner_native_reference",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "outbox_reference_oracle",
       "nativeSymbol": "Outbox",
       "sourcePath": "codex-rs/hepta-operations/src/outbox.rs",
-      "state": "source_implemented_not_product_composed",
+      "state": "reference_oracle_retained",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-operations/src/outbox_tests.rs"
+      ],
       "sourcePathExists": true,
-      "designOperation": "outbox",
-      "mappingClass": "owner_native",
+      "designOperation": "outbox_reference_oracle",
+      "mappingClass": "owner_native_reference",
       "delegatedCallees": []
     }
   ],
   "repositoryControlledGaps": [
-    "Bind every operation to an authenticated consumer callsite and owner store.",
-    "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary."
+    "Compose a named product caller through a registered kernel.operations port.",
+    "Install destination-owned dedupe schema and domain mutation in each selected owner store.",
+    "Bind a destination-authoritative terminal observer and reconciliation scheduler.",
+    "Run exact-head and deterministic synthetic-merge qualification for the durable source candidate."
   ],
   "externalEvidenceGates": [
     "independent semantic review",
-    "product execution and target-host qualification",
-    "operator acceptance, canary, promotion and release"
+    "target-host process-kill, disk-exhaustion and corruption qualification",
+    "product execution and operator acceptance",
+    "canary, promotion and release"
   ],
   "claimBoundary": {
     "nativeSourceMappingComplete": true,
     "sourceRootPresent": true,
+    "durableSourceImplementation": true,
     "productionImplementation": false,
     "productExecutionProved": false,
     "independentAcceptance": false,

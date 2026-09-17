@@ -2,69 +2,112 @@
 
 ## Current executable contract
 
-`codex-rs/hepta-operations` is a bounded **in-memory reference model**, not a
-durable operation service. It models pending, authorized, dispatched,
-indeterminate and terminal states; exact operation/payload identity; monotonic
-revisions; generation-fenced terminal observation; and a bounded in-memory
-outbox.
+`codex-rs/hepta-operations` now contains two deliberately separate surfaces:
 
-All evidence digests required by transitions are nonzero. Exact command replay
-is idempotent; identity reuse with changed semantics conflicts. The
-`ReferenceAuthorityWitness` is intentionally not a cryptographic credential and
-must never be accepted by a production effect adapter. Its reference digest is
-canonically derived from operation identity, final payload digest, authority
-generation and expiry. Construction rejects a digest for any other semantic
-tuple, and authorization replay revalidates the complete binding and current
-expiry before it is treated as idempotent.
+1. the bounded in-memory `OperationLedger`/`Outbox` reference oracle used for
+   deterministic state-machine semantics; and
+2. `DurableOperationStore`, the SQLite-backed owner of the local operation
+   journal and transactional cross-owner outbox.
 
-Acknowledged outbox state retains both the claiming owner generation and the
-acknowledgement digest. A terminal replay is idempotent only for that exact
-tuple; a different generation remains stale and a different digest conflicts.
+The durable intent binds scope, operation identity, scope/request/final-payload
+digests, destination, predecessor, writer generation and authority epoch. Exact
+semantic replay is idempotent; identity reuse with changed semantics conflicts.
+`prepare_intent` inserts the operation record and local outbox row in one
+`BEGIN IMMEDIATE` transaction.
+
+Pre-dispatch claims are bounded by worker identity, writer generation, monotonic
+fence, attempt count and lease deadline. An expired pre-dispatch lease may be
+taken over by the same or a higher generation. `arm_dispatch` durably removes
+the attempt from the retryable lease set before an external adapter can be
+entered. A crash after arming therefore leaves a non-retryable unknown-effect
+record that must reconcile instead of being blindly resent.
+
+Transport acknowledgement remains distinct from terminal effect observation.
+Only trusted terminal evidence settles an operation as `Applied`, `NotApplied`
+or `Quarantined`.
 
 ## Public symbols and source bindings
 
-- `OperationKey`, `OperationState`, `OperationRecord`,
-  `ReconciliationOutcome`, `ReferenceAuthorityWitness`: `src/model.rs`;
-- `OperationLedger`, `MAX_MODEL_OPERATION_RECORDS`: `src/ledger.rs`;
-- `Outbox`, `OutboxIntent`, `OutboxState`,
-  `MAX_MODEL_OUTBOX_RECORDS`: `src/outbox.rs`;
-- stable errors, including reference-witness semantic mismatch:
-  `src/error.rs`.
+- `DurableOperationStore`: `src/durable_store.rs`;
+- durable intent/record/outbox/claim/metric types: `src/durable_model.rs`;
+- `EffectAdapter`, `TerminalObserver`, `dispatch_with_final_use`,
+  `reconcile_with`: `src/dispatcher.rs`;
+- destination-owned transaction helpers `reserve_destination_effect` and
+  `record_destination_terminal`: `src/destination_dedupe.rs`;
+- durable schema lineage: `migrations/0001_durable_operations.sql`;
+- deterministic reference oracle: `src/model.rs`, `src/ledger.rs`,
+  `src/outbox.rs`;
+- stable errors: `src/error.rs`.
+
+The V1 operating/schema reference is `DURABLE_STORE_V1.md`.
 
 ## Durability and activation
 
-Durability is **not implemented**. Process exit loses every record and claim.
-There is no database, journal, fsync, interprocess lock, claim lease, dispatcher
-or product caller. The module is inactive.
+The local operation journal and outbox are durably implemented with the shared
+SQLite WAL/FULL-synchronous profile. Store open runs quick/integrity checks,
+applies the migration lineage and verifies required schema objects. Process
+reopen preserves operation/outbox state, leases, fences, acknowledgement state,
+terminal state and anti-resurrection tombstones.
+
+Durability does not imply product activation. No named production caller is
+claimed by this document. Destination owners must install their own dedupe table
+and execute dedupe + domain mutation in one destination-owned transaction. A
+trusted terminal observer is also required for each composed destination.
 
 ## Target-only design
 
-The target is a transactional durable ledger/outbox with atomic intent
-publication, destination deduplication, bounded claim leases, crash/reopen
-takeover, reconciliation, migrations, corruption handling and rollback.
+The remaining target work is product composition rather than a replacement
+ledger backend:
+
+- bind a named production caller through a registered `kernel.operations` port;
+- install destination-specific dedupe migration/domain-mutation adapters;
+- bind a destination-authoritative terminal observer;
+- execute target-host crash/disk-full/corruption qualification;
+- complete independent acceptance, activation, canary, promotion and release.
 
 ## Known limits and non-claims
 
-Cloning a model is not reopen recovery. An outbox claim has no lease expiry and
-cannot be taken over inside this model. Caller-provided reference time is a test
-input, not trusted production time. A semantically bound reference digest is
-not authentication or a signature. Compensation is a new authorized operation,
-never implicit rollback.
+SQLite durability is local to the selected host and does not provide an external
+anti-rollback oracle. Wall-clock lease deadlines assume the host clock does not
+move behind a persisted watermark; backward movement is fail-closed where it is
+observed. The destination dedupe helpers intentionally do not open or commit
+another owner's database; correct exactly-once logical effect semantics require
+the destination to put reservation, domain mutation and terminal receipt in the
+same transaction.
 
-The reference ledger does not itself enforce final-use authority at an external
-adapter. Product composition must consume the non-serializable token owned by
-`kernel.authority` immediately before the effect boundary.
+`ReferenceAuthorityWitness` remains reference-only. The durable dispatcher uses
+the real `FinalUseAuthority`/`SignedFinalUseGrant` path and validates the durable
+operation's epoch, destination, request, scope and final payload before the
+non-serializable token is consumed immediately around adapter entry.
+
+Compensation remains a new authorized operation, never implicit rollback.
 
 ## Verification
 
-The shared model tests cover invalid/zero digests, capacity, idempotent replay,
-payload and operation drift, stale/expired reference witnesses, authority
-generation and expiry digest binding, stale outbox acknowledgement generations,
-changed acknowledgement digests, stale terminal generations, dispatch not being
-terminal success and indeterminate reconciliation.
+Reference-model tests continue to cover invalid digests, capacity, exact replay,
+payload/operation drift, authority expiry/binding, generation fencing and the
+rule that dispatch acknowledgement is not terminal success.
+
+Durable tests additionally cover atomic intent+outbox publication across reopen,
+durable semantic conflicts, expired-lease higher-generation takeover, stale
+lease rejection, armed-dispatch non-retryability, transport acknowledgement
+remaining nonterminal, terminal reopen, tombstone anti-resurrection, concurrent
+independent SQLite handles, destination-owned transaction rollback/deduplication
+and real final-use token consumption at the dispatch boundary.
+
+These are source tests, not target-host or independent-acceptance receipts.
 
 ## Integration prerequisites
 
-No production binary may use this crate as a durability or authority boundary.
-A future backend must execute the same transition suite plus crash, disk-full,
-corruption, migration, multi-writer and claim-takeover tests before activation.
+Before activation, the selected product caller must bind:
+
+- one configured `DurableOperationStore` owner path;
+- current `kernel.authority` final-use state;
+- a destination-owned dedupe migration and atomic domain mutation;
+- a trusted terminal observer and reconciliation scheduling policy;
+- operational thresholds for outbox age, indeterminate backlog and store
+  capacity; and
+- target-host fault evidence including process kill/reopen, disk exhaustion,
+  corruption response and multi-writer fencing.
+
+Repository source completion cannot grant canary, promotion or release.
