@@ -226,8 +226,9 @@ impl NduProjectionStoreV1 {
             return Err(NduProjectionStoreError::BackupTooLarge);
         }
         let restored = NduProjectionJournalV1::reopen(bytes)?;
-        if restored.entries().len() < self.journal.entries().len()
-            || restored.entries()[..self.journal.entries().len()] != *self.journal.entries()
+        let current_len = self.journal.entries().len();
+        if restored.entries().len() < current_len
+            || &restored.entries()[..current_len] != self.journal.entries()
         {
             return Err(NduProjectionStoreError::BackupRegression);
         }
