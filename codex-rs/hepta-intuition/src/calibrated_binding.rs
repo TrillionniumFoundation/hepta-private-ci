@@ -2,8 +2,8 @@
 //!
 //! Artifact digests retain their meaning as references to external artifacts.
 //! Binding their supplied metadata prevents substitution under one V2 receipt;
-//! it does not establish that metadata matches the artifact bytes. The host
-//! must authenticate those artifacts and the random source independently.
+//! it does not establish that metadata matches the artifact bytes. V3 adds
+//! independently authenticated qualification artifacts and a canonical profile.
 
 use super::*;
 
@@ -97,10 +97,16 @@ pub fn canonical_calibrated_request_digest_v1(
 
 /// Apply the existing calibrated policy with a receipt bound to the complete
 /// request. Output fields retain the V1 shape; the receipt uses a V2 domain.
-/// [`decide_calibrated`] remains available for replaying historical V1 receipts.
+///
+/// V2 is the current structural boundary and rejects any candidate-set receipt
+/// that admits an omitted candidate. [`decide_calibrated`] remains available
+/// only for replaying historical V1 receipts.
 pub fn decide_calibrated_v2(
     request: CalibratedDecisionRequestV1,
 ) -> Result<CalibratedIntuitionReceiptV1, CalibratedError> {
+    if request.completeness.omitted_count_bound != 0 {
+        return Err(CalibratedError::CandidateSetMismatch);
+    }
     let request_digest = canonical_calibrated_request_digest_v1(&request)?;
     let mut receipt = decide_calibrated(request)?;
     let mut bytes = b"hepta.intuition.calibrated-decision.v2".to_vec();
