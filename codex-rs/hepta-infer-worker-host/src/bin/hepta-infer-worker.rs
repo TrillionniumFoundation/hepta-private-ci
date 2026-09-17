@@ -1,11 +1,17 @@
+#[path = "hepta-infer-worker/concurrent_control.rs"]
+mod concurrent_control;
+
 use std::path::PathBuf;
 use std::time::Duration;
 
 use codex_hepta_contracts::AgentId;
 use codex_hepta_infer_core::durable_control::DurableInferenceControl;
+use codex_hepta_infer_core::durable_control::native::NativeRunOutput;
 use codex_hepta_infer_worker_host::native_app_server::AppServerModelDriver;
 use codex_hepta_infer_worker_host::native_app_server::NativeAdmission;
 use codex_hepta_infer_worker_host::native_app_server::NativeWorkerConfig;
+use concurrent_control::BudgetAdmission;
+use concurrent_control::ConcurrentBudgetOwner;
 use tokio::io::AsyncReadExt;
 use tokio_util::sync::CancellationToken;
 
@@ -25,7 +31,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
     while let Some(flag) = args.next() {
         if flag == "--help" {
             println!(
-                "hepta-infer-worker --profile native-app-server --agentd-socket PATH --agent-id ID --generation N --model MODEL --journal PATH --request-id ID --maximum-in-flight N [--context-query TEXT] [--timeout-ms N]\nReads one prompt from stdin; executes through the owning Agent's configured model provider."
+                "hepta-infer-worker --profile native-app-server --agentd-socket PATH --agent-id ID --generation N --model MODEL --journal PATH --request-id ID --maximum-in-flight N [--context-query TEXT] [--timeout-ms N]\nReads one prompt from stdin; executes through the owning Agent's configured model provider. The journal argument names the shared durable budget domain; individual requests use isolated crash-recoverable journals so unrelated model calls can run concurrently."
             );
             return Ok(());
         }
@@ -59,34 +65,84 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
     if !journal.is_absolute() {
         return Err("--journal must be absolute".into());
     }
-    let mut control = DurableInferenceControl::open(journal, /*capacity*/ 16_384)?;
-    let admission = NativeAdmission {
-        request_id: request_id.ok_or("--request-id is required")?,
-        maximum_in_flight: maximum_in_flight.ok_or("--maximum-in-flight is required")?,
-    };
+    let request_id = request_id.ok_or("--request-id is required")?;
+    let maximum_in_flight = maximum_in_flight.ok_or("--maximum-in-flight is required")?;
+
     let mut prompt = String::new();
     tokio::io::stdin()
         .take(32 * 1024 + 1)
         .read_to_string(&mut prompt)
         .await?;
-    let cancellation = CancellationToken::new();
-    let signal = cancellation.clone();
-    let signal_task = tokio::spawn(async move {
-        if tokio::signal::ctrl_c().await.is_ok() {
-            signal.cancel();
+
+    let owner = ConcurrentBudgetOwner::open(&journal, maximum_in_flight)?;
+    let output = match owner.admit(&request_id)? {
+        BudgetAdmission::Archived(record) => record.observation.ok_or(
+            "request is durably archived as pre-dispatch stopped; use a new request id to retry",
+        )?,
+        BudgetAdmission::Execute(reservation) => {
+            let cancellation = CancellationToken::new();
+            let signal = cancellation.clone();
+            let signal_task = tokio::spawn(async move {
+                if tokio::signal::ctrl_c().await.is_ok() {
+                    signal.cancel();
+                }
+            });
+            let run_result = {
+                // The exclusive writer lock is per request, not per budget domain.
+                // The short-lived shared budget owner above is the only global
+                // serialization point, so unrelated requests may execute together.
+                let mut control = DurableInferenceControl::open(
+                    reservation.journal_path(),
+                    /*per-request record capacity*/ 8,
+                )?;
+                driver
+                    .run(
+                        &mut control,
+                        NativeAdmission {
+                            request_id: reservation.request_id().to_string(),
+                            maximum_in_flight,
+                        },
+                        prompt,
+                        context_query,
+                        &cancellation,
+                    )
+                    .await
+            };
+            signal_task.abort();
+
+            // Reconcile while the per-request execution lease is still held.
+            // A pre-dispatch crash-safe stop or post-dispatch indeterminate
+            // quarantine is archived before shared capacity is released.
+            let reconciled = owner.finalize(&reservation)?;
+            match run_result {
+                Ok(output) => {
+                    if reconciled.observation.as_ref() != Some(&output) {
+                        return Err(
+                            "durable inference archive drifted from returned observation".into()
+                        );
+                    }
+                    output
+                }
+                Err(error) => {
+                    if let Some(output) = reconciled.observation {
+                        println!("{}", serde_json::to_string(&output)?);
+                        return Err(format!(
+                            "model run failed after possible dispatch and was quarantined without replay: {error}"
+                        )
+                        .into());
+                    }
+                    return Err(error);
+                }
+            }
         }
-    });
-    let result = driver
-        .run(
-            &mut control,
-            admission,
-            prompt,
-            context_query,
-            &cancellation,
-        )
-        .await;
-    signal_task.abort();
-    let output = result?;
+    };
+
+    finish_output(output)
+}
+
+fn finish_output(
+    output: NativeRunOutput,
+) -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
     println!("{}", serde_json::to_string(&output)?);
     if !output.terminal_observed {
         return Err("model outcome is indeterminate; this request was not replayed".into());

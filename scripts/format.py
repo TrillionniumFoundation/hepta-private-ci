@@ -128,7 +128,8 @@ def python_scripts_formatter_group(*, check: bool) -> FormatterGroup:
         "format",
     ]
     if check:
-        args.append("--check")
+        # `--diff` is the non-mutating formatter check with actionable output.
+        args.append("--diff")
     args.append("scripts")
     return FormatterGroup("Python scripts", (Command(tuple(args)),))
 

@@ -1,0 +1,43 @@
+name: Hepta Objective V2 contract
+
+on:
+  pull_request:
+    paths:
+      - "codex-rs/hepta-objective/**"
+      - "docs/contracts/OBJECTIVE_V2.json"
+      - "docs/contracts/PROTOCOL_SCHEMAS.json"
+      - "docs/control-plane/OBJECTIVES.json"
+      - "docs/readiness/PROTOCOLS.json"
+      - "scripts/verify_objective_v2.py"
+      - ".github/workflows/hepta-objective-v2.yml"
+  push:
+    branches: [main, architecture/full-scalability-closure-20260917]
+    paths:
+      - "codex-rs/hepta-objective/**"
+      - "docs/contracts/OBJECTIVE_V2.json"
+      - "docs/contracts/PROTOCOL_SCHEMAS.json"
+      - "docs/control-plane/OBJECTIVES.json"
+      - "docs/readiness/PROTOCOLS.json"
+      - "scripts/verify_objective_v2.py"
+      - ".github/workflows/hepta-objective-v2.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  objective-v2:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Verify canonical objective contract
+        run: python3 scripts/verify_objective_v2.py
+      - name: Compile and test objective owner
+        working-directory: codex-rs
+        run: |
+          cargo fmt --check --package codex-hepta-objective
+          cargo test -p codex-hepta-objective
+          cargo clippy -p codex-hepta-objective --all-targets -- -D warnings

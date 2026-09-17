@@ -16,4 +16,16 @@ runs:
 
         echo "::error::CI job left tracked changes or untracked files in the repository worktree"
         printf '%s\n' "${status}"
+
+        # A dirty-worktree gate is actionable only when it shows developers what
+        # changed. Keep the check fail-closed, but emit the bounded tracked diff
+        # instead of forcing a second diagnostic run just to discover the drift.
+        echo "::group::Tracked worktree diff"
+        git -C "${GITHUB_WORKSPACE}" --no-pager diff --no-ext-diff --stat || true
+        git -C "${GITHUB_WORKSPACE}" --no-pager diff --no-ext-diff -- ':!Cargo.lock' || true
+        if git -C "${GITHUB_WORKSPACE}" status --porcelain=v1 -- codex-rs/Cargo.lock | grep -q .; then
+          echo "--- codex-rs/Cargo.lock diff ---"
+          git -C "${GITHUB_WORKSPACE}" --no-pager diff --no-ext-diff -- codex-rs/Cargo.lock || true
+        fi
+        echo "::endgroup::"
         exit 1

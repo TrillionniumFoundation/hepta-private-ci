@@ -1,0 +1,125 @@
+{
+  "schema": "hepta.kernel-authority-privileged-boundaries.v1",
+  "boundaries": [
+    {
+      "id": "final_use_claim",
+      "typeMarker": "FinalUseAuthority",
+      "definitionPath": "codex-rs/hepta-contracts/src/final_use.rs",
+      "callPatterns": [
+        "\\.\\s*claim\\s*\\(",
+        "FinalUseAuthority\\s*::\\s*claim\\s*\\("
+      ],
+      "allowedCallers": [
+        "codex-rs/hepta-bao-adapter/src/https_consumer.rs"
+      ]
+    },
+    {
+      "id": "final_use_delivery",
+      "typeMarker": "FinalUseAuthority",
+      "definitionPath": "codex-rs/hepta-contracts/src/final_use.rs",
+      "callPatterns": [
+        "\\.\\s*with_verified_use\\s*\\(",
+        "FinalUseAuthority\\s*::\\s*with_verified_use\\s*\\("
+      ],
+      "allowedCallers": [
+        "codex-rs/hepta-bao-adapter/src/https_consumer.rs"
+      ]
+    },
+    {
+      "id": "final_use_approval_verify",
+      "typeMarker": "FinalUseApprovalVerifier",
+      "definitionPath": "codex-rs/hepta-contracts/src/final_use_control.rs",
+      "callPatterns": [
+        "\\.\\s*verify\\s*\\(",
+        "FinalUseApprovalVerifier\\s*::\\s*verify\\s*\\("
+      ],
+      "allowedCallers": [
+        "codex-rs/hepta-bao-adapter/src/final_use_host.rs"
+      ]
+    },
+    {
+      "id": "final_use_revocation_feed_apply",
+      "typeMarker": "FinalUseRevocationFeedVerifier",
+      "definitionPath": "codex-rs/hepta-contracts/src/final_use_control.rs",
+      "callPatterns": [
+        "\\.\\s*apply\\s*\\(",
+        "FinalUseRevocationFeedVerifier\\s*::\\s*apply\\s*\\("
+      ],
+      "allowedCallers": [
+        "codex-rs/hepta-bao-adapter/src/final_use_host.rs"
+      ]
+    },
+    {
+      "id": "bao_final_use_consumer",
+      "typeMarker": "BaoClient",
+      "definitionPath": "codex-rs/hepta-bao-adapter/src/https_consumer.rs",
+      "callPatterns": [
+        "\\.\\s*consume_kv_v2\\s*\\(",
+        "BaoClient\\s*::\\s*consume_kv_v2\\s*\\("
+      ],
+      "allowedCallers": [
+        "codex-rs/hepta-bao-adapter/src/final_use_host.rs"
+      ]
+    },
+    {
+      "id": "bao_registered_final_use_host",
+      "typeMarker": "BaoFinalUseHost",
+      "definitionPath": "codex-rs/hepta-bao-adapter/src/final_use_host.rs",
+      "callPatterns": [
+        "\\.\\s*consume_kv_v2\\s*\\(",
+        "BaoFinalUseHost\\s*::\\s*consume_kv_v2\\s*\\("
+      ],
+      "allowedCallers": []
+    },
+    {
+      "id": "authority_lease_put",
+      "typeMarker": "AuthorityLeaseRegistry",
+      "definitionPath": "codex-rs/hepta-contracts/src/authority_lease.rs",
+      "callPatterns": [
+        "\\.\\s*put_lease\\s*\\(",
+        "AuthorityLeaseRegistry\\s*::\\s*put_lease\\s*\\("
+      ],
+      "allowedCallers": []
+    },
+    {
+      "id": "authority_lease_revoke",
+      "typeMarker": "AuthorityLeaseRegistry",
+      "definitionPath": "codex-rs/hepta-contracts/src/authority_lease.rs",
+      "callPatterns": [
+        "\\.\\s*revoke\\s*\\(",
+        "AuthorityLeaseRegistry\\s*::\\s*revoke\\s*\\("
+      ],
+      "allowedCallers": []
+    },
+    {
+      "id": "authority_lease_epoch_advance",
+      "typeMarker": "AuthorityLeaseRegistry",
+      "definitionPath": "codex-rs/hepta-contracts/src/authority_lease.rs",
+      "callPatterns": [
+        "\\.\\s*advance_epoch\\s*\\(",
+        "AuthorityLeaseRegistry\\s*::\\s*advance_epoch\\s*\\("
+      ],
+      "allowedCallers": []
+    },
+    {
+      "id": "authority_lease_verify_use",
+      "typeMarker": "AuthorityLeaseRegistry",
+      "definitionPath": "codex-rs/hepta-contracts/src/authority_lease.rs",
+      "callPatterns": [
+        "\\.\\s*verify_use\\s*\\(",
+        "AuthorityLeaseRegistry\\s*::\\s*verify_use\\s*\\("
+      ],
+      "allowedCallers": []
+    },
+    {
+      "id": "authority_lease_delivery",
+      "typeMarker": "AuthorityLeaseRegistry",
+      "definitionPath": "codex-rs/hepta-contracts/src/authority_lease.rs",
+      "callPatterns": [
+        "\\.\\s*with_verified_use\\s*\\(",
+        "AuthorityLeaseRegistry\\s*::\\s*with_verified_use\\s*\\("
+      ],
+      "allowedCallers": []
+    }
+  ]
+}

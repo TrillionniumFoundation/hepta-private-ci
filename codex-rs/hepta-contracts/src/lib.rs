@@ -1,6 +1,7 @@
 #![forbid(unsafe_code)]
 
 mod agent_id;
+pub mod authority_lease;
 mod authbus;
 #[cfg(feature = "authbus-local-qualification")]
 pub mod authbus_b3_adapter;
@@ -15,6 +16,7 @@ mod authbus_tests;
 mod callers_manifest_tests;
 mod canonical;
 mod final_use;
+mod final_use_control;
 mod identity;
 mod memory;
 mod provider;
@@ -30,6 +32,15 @@ pub use final_use::FinalUseGrant;
 pub use final_use::FinalUseRevocations;
 pub use final_use::SignedFinalUseGrant;
 pub use final_use::VerifiedUseToken;
+pub use final_use::claim_final_use;
+pub use final_use::deliver_final_use;
+pub use final_use_control::FinalUseApproval;
+pub use final_use_control::FinalUseApprovalVerifier;
+pub use final_use_control::FinalUseControlError;
+pub use final_use_control::FinalUseRevocationFeedVerifier;
+pub use final_use_control::FinalUseRevocationUpdate;
+pub use final_use_control::SignedFinalUseApproval;
+pub use final_use_control::SignedFinalUseRevocationUpdate;
 
 pub use agent_id::AgentId;
 pub use agent_id::AgentIdParseError;

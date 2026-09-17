@@ -80,7 +80,9 @@
     }
   ],
   "objectiveFunctionContract": {
-    "schema": "ObjectiveFunctionV1",
+    "schema": "ObjectiveFunctionV2",
+    "canonicalRegistry": "docs/contracts/OBJECTIVE_V2.json",
+    "legacySchema": "ObjectiveFunctionV1_read_only_compatibility",
     "immutableCore": [
       "principalScope",
       "successPredicates",
@@ -88,97 +90,47 @@
       "hardConstraints",
       "evidenceRequirements",
       "allowedActionClasses",
-      "forbiddenActionClasses"
+      "forbiddenActionClasses",
+      "resourceEndowment",
+      "risk"
     ],
     "boundedAdaptiveSurface": [
-      "softUtilityDimensions",
-      "resourceAllocation",
-      "explorationBudget",
-      "evidenceEffort",
-      "abstentionThreshold"
+      "softUtilityDimensions"
+    ],
+    "bindingFields": [
+      "intentDigest",
+      "admittedSourceDigest",
+      "compiledHardConstraintDigest",
+      "compiledSemanticDigest",
+      "revision"
     ],
     "ambiguityPolicy": "emit_bounded_interpretation_set_or_request_clarification",
-    "feasibilityPolicy": "do_not_lower_success_predicate_to_claim_success"
+    "feasibilityPolicy": "do_not_lower_success_predicate_to_claim_success",
+    "publicationPolicy": "new_product_composition_requires_ObjectiveFunctionV2_and_must_not_drop_immutable_core_fields"
   },
   "baselineProfiles": [
     {
       "id": "runtime.default.v2",
       "dimensions": [
-        {
-          "id": "task_success",
-          "direction": "maximize",
-          "baselineWeight": 0.3
-        },
-        {
-          "id": "quality",
-          "direction": "maximize",
-          "baselineWeight": 0.2
-        },
-        {
-          "id": "latency_p95",
-          "direction": "minimize",
-          "baselineWeight": 0.15
-        },
-        {
-          "id": "resource_cost",
-          "direction": "minimize",
-          "baselineWeight": 0.1
-        },
-        {
-          "id": "fairness",
-          "direction": "maximize",
-          "baselineWeight": 0.1
-        },
-        {
-          "id": "recovery_risk",
-          "direction": "minimize",
-          "baselineWeight": 0.1
-        },
-        {
-          "id": "plan_churn",
-          "direction": "minimize",
-          "baselineWeight": 0.05
-        }
+        {"id": "task_success", "direction": "maximize", "baselineWeight": 0.3},
+        {"id": "quality", "direction": "maximize", "baselineWeight": 0.2},
+        {"id": "latency_p95", "direction": "minimize", "baselineWeight": 0.15},
+        {"id": "resource_cost", "direction": "minimize", "baselineWeight": 0.1},
+        {"id": "fairness", "direction": "maximize", "baselineWeight": 0.1},
+        {"id": "recovery_risk", "direction": "minimize", "baselineWeight": 0.1},
+        {"id": "plan_churn", "direction": "minimize", "baselineWeight": 0.05}
       ]
     },
     {
       "id": "engineering.default.v2",
       "dimensions": [
-        {
-          "id": "critical_path_reduction",
-          "direction": "maximize",
-          "baselineWeight": 0.25
-        },
-        {
-          "id": "delivered_value",
-          "direction": "maximize",
-          "baselineWeight": 0.2
-        },
-        {
-          "id": "merge_conflict_risk",
-          "direction": "minimize",
-          "baselineWeight": 0.15
-        },
-        {
-          "id": "ci_pressure",
-          "direction": "minimize",
-          "baselineWeight": 0.1
-        },
-        {
-          "id": "architecture_debt",
-          "direction": "minimize",
-          "baselineWeight": 0.1
-        },
-        {
-          "id": "rollback_cost",
-          "direction": "minimize",
-          "baselineWeight": 0.1
-        },
-        {
-          "id": "review_load_imbalance",
-          "direction": "minimize",
-          "baselineWeight": 0.1
-        }
+        {"id": "critical_path_reduction", "direction": "maximize", "baselineWeight": 0.25},
+        {"id": "delivered_value", "direction": "maximize", "baselineWeight": 0.2},
+        {"id": "merge_conflict_risk", "direction": "minimize", "baselineWeight": 0.15},
+        {"id": "ci_pressure", "direction": "minimize", "baselineWeight": 0.1},
+        {"id": "architecture_debt", "direction": "minimize", "baselineWeight": 0.1},
+        {"id": "rollback_cost", "direction": "minimize", "baselineWeight": 0.1},
+        {"id": "review_load_imbalance", "direction": "minimize", "baselineWeight": 0.1}
       ]
     }
   ],

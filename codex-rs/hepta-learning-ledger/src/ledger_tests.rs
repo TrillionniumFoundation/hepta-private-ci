@@ -2,6 +2,7 @@ use std::fmt::Debug;
 
 use codex_hepta_types::Digest32;
 use codex_hepta_types::FixedQ32;
+use codex_hepta_types::LogicalSequence;
 use codex_hepta_types::ProbabilityQ32;
 use codex_hepta_types::StableId;
 use pretty_assertions::assert_eq;
@@ -86,6 +87,31 @@ fn append_is_deterministic_and_idempotent() {
     assert_eq!(first_receipt, second_receipt);
     assert_eq!(replay.disposition, AppendDisposition::IdempotentReplay);
     assert_eq!(first.snapshot(), second.snapshot());
+    assert_eq!(
+        first.record(&id("record-decision-1")),
+        first.records().first()
+    );
+}
+
+#[test]
+fn incremental_reader_borrows_bounded_ranges_without_snapshot_clone() {
+    let mut ledger = LearningLedger::new();
+    must(ledger.append(LedgerEvent::Decision(decision())));
+    must(ledger.append(LedgerEvent::Outcome(outcome())));
+    must(ledger.append(LedgerEvent::Credit(credit())));
+
+    assert_eq!(ledger.head_sequence(), Some(must(LogicalSequence::new(3))));
+    assert_eq!(ledger.head_digest(), ledger.records()[2].chain_digest);
+    assert_eq!(ledger.records_after(None, 2), &ledger.records()[0..2]);
+    assert_eq!(
+        ledger.records_after(Some(must(LogicalSequence::new(1))), 1),
+        &ledger.records()[1..2]
+    );
+    assert!(
+        ledger
+            .records_after(Some(must(LogicalSequence::new(3))), 10)
+            .is_empty()
+    );
 }
 
 #[test]

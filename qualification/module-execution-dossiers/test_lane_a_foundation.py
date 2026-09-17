@@ -22,6 +22,7 @@ class LaneAFoundationTruthTests(unittest.TestCase):
     def setUpClass(cls) -> None:
         cls.matrix = verify.read_json(verify.MATRIX_PATH)
         cls.capability_map = verify.read_json(verify.CAPABILITY_MAP_PATH)
+        cls.operations_capability_map = verify.read_json(verify.OPS_CAPABILITY_MAP_PATH)
 
     def test_exact_repository_truth_is_valid(self) -> None:
         verify.validate_matrix(self.matrix)
@@ -43,11 +44,22 @@ class LaneAFoundationTruthTests(unittest.TestCase):
         mapped = [
             (entry["module"], entry["summary"])
             for entry in self.capability_map["entries"]
+            if entry["module"] != "kernel.operations"
         ]
+        mapped.extend(
+            ("kernel.operations", entry["summary"])
+            for entry in self.operations_capability_map["entries"]
+        )
+        mapped.append(
+            ("kernel.operations", verify.REFERENCE_OPERATIONS_SUMMARY)
+        )
         self.assertEqual(len(declared), len(set(declared)))
         self.assertEqual(len(mapped), len(set(mapped)))
         self.assertCountEqual(mapped, declared)
-        self.assertEqual(self.capability_map["entryCount"], len(mapped))
+        self.assertEqual(
+            self.operations_capability_map["entryCount"],
+            len(self.operations_capability_map["entries"]),
+        )
 
     def test_operations_cannot_claim_unimplemented_durability(self) -> None:
         value = deepcopy(self.matrix)
@@ -121,12 +133,11 @@ class LaneAFoundationTruthTests(unittest.TestCase):
             verify.write_source_receipt(output, verify.git_value("rev-parse", "HEAD"))
             receipt = json.loads(output.read_text(encoding="utf-8"))
         self.assertEqual(receipt["moduleCoverage"], 7)
-        declared = {
-            (row["module"], capability)
-            for row in self.matrix["modules"]
-            for capability in row["currentCapabilities"]
-        }
-        self.assertEqual(receipt["capabilityCoverage"], len(declared))
+        self.assertEqual(
+            receipt["capabilityCoverage"],
+            self.capability_map["entryCount"]
+            + self.operations_capability_map["entryCount"],
+        )
         self.assertEqual(
             receipt["currentImplementationTruth"], "source_and_test_anchored"
         )
@@ -164,6 +175,23 @@ class LaneAFoundationTruthTests(unittest.TestCase):
         self.assertIn("owner_generation: Generation", outbox)
         self.assertIn("acknowledged_replay_retains_generation_fence", outbox_tests)
 
+    def test_operations_durable_recovery_guards_are_source_pinned(self) -> None:
+        store = (ROOT / "codex-rs/hepta-operations/src/durable_store.rs").read_text(
+            encoding="utf-8"
+        )
+        tests = (
+            ROOT / "codex-rs/hepta-operations/src/durable_store_tests.rs"
+        ).read_text(encoding="utf-8")
+        self.assertIn('begin_with("BEGIN IMMEDIATE")', store)
+        self.assertIn("recover_expired_leases_tx", store)
+        self.assertIn("authority.claim(signed, &binding)?", store)
+        self.assertIn(".with_verified_use(token, &self.binding", store)
+        self.assertIn(
+            "crash_after_dispatch_admission_recovers_as_indeterminate_not_retryable",
+            tests,
+        )
+        self.assertIn("migration_checksum_tamper_fails_reopen", tests)
+
     def test_evidence_migration_contract_is_fail_closed(self) -> None:
         store = (ROOT / "docs/lane-a-foundation/kernel.evidence/STORE_V1.md").read_text(
             encoding="utf-8"
@@ -191,6 +219,15 @@ class LaneAFoundationTruthTests(unittest.TestCase):
             self.assertTrue(row["protocolId"].startswith("hepta."))
             self.assertTrue(row["source"])
             self.assertTrue(row["invariants"])
+        operations = registry["protocols"][3]
+        self.assertEqual(
+            operations["protocolId"],
+            "hepta.kernel.operations.durable-ledger-outbox.v1",
+        )
+        self.assertEqual(
+            operations["legacyProtocolId"],
+            "hepta.kernel.operations.reference-model.v1",
+        )
 
     def test_native_observation_manifest_binds_current_candidate_blobs(self) -> None:
         bindings = json.loads(

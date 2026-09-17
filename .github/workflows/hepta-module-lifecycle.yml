@@ -1,0 +1,55 @@
+name: Hepta module lifecycle qualification
+
+on:
+  pull_request:
+    paths:
+      - "codex-rs/hepta-control-plane/**"
+      - "codex-rs/hepta-supervisor/**"
+      - "codex-rs/hepta-operations/**"
+      - "codex-rs/hepta-automation/**"
+      - "codex-rs/hepta-agentd/**"
+      - "apps/hepta-browser/**"
+      - ".github/workflows/hepta-module-lifecycle.yml"
+  push:
+    branches: [main, architecture/full-scalability-closure-20260917]
+    paths:
+      - "codex-rs/hepta-control-plane/**"
+      - "codex-rs/hepta-supervisor/**"
+      - "codex-rs/hepta-operations/**"
+      - "codex-rs/hepta-automation/**"
+      - "codex-rs/hepta-agentd/**"
+      - "apps/hepta-browser/**"
+      - ".github/workflows/hepta-module-lifecycle.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  lifecycle:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Stateless generation replacement
+        working-directory: codex-rs
+        run: cargo test -p codex-hepta-control-plane organ_runtime -- --nocapture
+      - name: Stateful migration and writer handoff
+        working-directory: codex-rs
+        run: |
+          cargo test -p codex-hepta-control-plane organ_runtime -- --nocapture
+          cargo test -p codex-hepta-supervisor writer_handoff -- --nocapture
+      - name: Effectful durability, dedupe, and reconciliation
+        working-directory: codex-rs
+        run: |
+          cargo test -p codex-hepta-operations -- --nocapture
+          cargo test -p codex-hepta-automation -- --nocapture
+      - name: Final-use and Browser composition
+        working-directory: codex-rs
+        run: |
+          cargo test -p codex-hepta-contracts final_use -- --nocapture
+          cargo test -p codex-hepta-agentd browser_servo -- --nocapture
+      - name: No source mutation during qualification
+        run: git diff --exit-code

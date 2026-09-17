@@ -4,10 +4,12 @@
 use std::collections::BTreeSet;
 use std::sync::Arc;
 use std::sync::Mutex;
+use std::time::Duration;
 
 use anyhow::Context;
 use anyhow::Result;
 use codex_hepta_control_plane::BodyGraphBindingV1;
+use codex_hepta_control_plane::BudgetedReadOnlyOrganV1;
 use codex_hepta_control_plane::CnsHierarchyV1;
 use codex_hepta_control_plane::CnsOrganHostV1;
 use codex_hepta_control_plane::CnsRouteV1;
@@ -20,8 +22,10 @@ use codex_hepta_control_plane::FallbackTerminal;
 use codex_hepta_control_plane::InputPort;
 use codex_hepta_control_plane::NativeHandoffProtocolAdmissionV1;
 use codex_hepta_control_plane::NativeHandoffProtocolRegistryV1;
+use codex_hepta_control_plane::OrganCapabilityDescriptorV1;
 use codex_hepta_control_plane::OrganDriverBindingV1;
 use codex_hepta_control_plane::OrganEdge;
+use codex_hepta_control_plane::OrganExecutionBudgetV1;
 use codex_hepta_control_plane::OrganGraphsV1;
 use codex_hepta_control_plane::OrganHandlerFaultV1;
 use codex_hepta_control_plane::OrganManifestBindingV1;
@@ -188,6 +192,11 @@ fn build_host(root: HeptaStateRoot, state: Arc<dyn RuntimeStateAdapter>) -> Resu
     )
     .context("admit compiled-in status body through protocol registry")?;
     let control_system = StableId::new("system.cognition")?;
+    let status_capability = OrganCapabilityDescriptorV1::trusted_short_read_only(
+        StableId::new("driver.runtime.status")?,
+        1,
+        Digest32::of_bytes(b"hepta.runtime.status.compiled-driver.v1"),
+    );
     let hierarchy = CnsHierarchyV1 {
         cns: StableId::new("hepta.runtime.cns")?,
         generation,
@@ -202,30 +211,36 @@ fn build_host(root: HeptaStateRoot, state: Arc<dyn RuntimeStateAdapter>) -> Resu
                 organs: vec![status.clone()],
             },
         ],
+        // The descriptor names the reviewed implementation once. Both graph
+        // organs are instances of that implementation, so adding/removing an
+        // instance cannot create a second driver identity/version/digest source.
         drivers: body
             .organ_manifests
             .iter()
-            .map(|manifest| {
-                Ok(OrganDriverBindingV1 {
-                    organ: manifest.organ_id.clone(),
-                    driver: StableId::new(format!("driver.{}", manifest.organ_id))?,
-                    implementation_digest: Digest32::of_bytes(
-                        format!("hepta.status.compiled-driver.v1:{}", manifest.organ_id).as_bytes(),
-                    ),
-                })
+            .map(|manifest| OrganDriverBindingV1 {
+                organ: manifest.organ_id.clone(),
+                driver: status_capability.driver.clone(),
+                implementation_digest: status_capability.implementation_digest,
             })
-            .collect::<Result<Vec<_>>>()?,
+            .collect(),
     };
+    let budget = OrganExecutionBudgetV1::new(Duration::from_millis(250))?;
     let handlers: Vec<Box<dyn TrustedReadOnlyOrganV1>> = vec![
         Box::new(StatusOrgan {
             id: ingress.clone(),
             data: None,
-        }),
+        }) as Box<dyn TrustedReadOnlyOrganV1>,
         Box::new(StatusOrgan {
             id: status,
             data: Some((root, state)),
-        }),
-    ];
+        }) as Box<dyn TrustedReadOnlyOrganV1>,
+    ]
+    .into_iter()
+    .map(|handler| {
+        BudgetedReadOnlyOrganV1::new(handler, budget)
+            .map(|handler| Box::new(handler) as Box<dyn TrustedReadOnlyOrganV1>)
+    })
+    .collect::<Result<Vec<_>, _>>()?;
     let catalog = handlers
         .into_iter()
         .zip(body.organ_manifests.iter())

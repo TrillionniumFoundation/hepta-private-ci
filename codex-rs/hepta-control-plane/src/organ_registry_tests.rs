@@ -137,6 +137,34 @@ fn creates_only_selected_handlers_from_a_superset_registry() {
 }
 
 #[test]
+fn one_driver_implementation_can_back_multiple_organ_instances() {
+    let mut registry = OrganHandlerRegistryV1::new();
+    registry
+        .register(id("driver.shared"), digest("shared"), fixture_factory)
+        .expect("register shared implementation");
+    let bindings = vec![
+        OrganDriverBindingV1 {
+            organ: id("source"),
+            driver: id("driver.shared"),
+            implementation_digest: digest("shared"),
+        },
+        OrganDriverBindingV1 {
+            organ: id("target"),
+            driver: id("driver.shared"),
+            implementation_digest: digest("shared"),
+        },
+    ];
+
+    let host = registry
+        .create_host(graph(), &bindings)
+        .expect("create host from one implementation and two instances");
+    assert_eq!(host.statuses().len(), 2);
+    assert_eq!(registry.len(), 1);
+    assert_eq!(host.statuses()[0].id, id("source"));
+    assert_eq!(host.statuses()[1].id, id("target"));
+}
+
+#[test]
 fn rejects_duplicate_or_unknown_bindings_before_factory_calls() {
     let mut registry = OrganHandlerRegistryV1::new();
     registry
@@ -180,5 +208,61 @@ fn rejects_handler_identity_drift() {
         registry.create_host(graph(), &bindings()),
         Err(OrganHandlerRegistryError::HandlerIdentityMismatch { expected, actual })
             if expected == id("source") && actual == id("wrong")
+    ));
+}
+
+#[test]
+fn descriptor_is_the_single_registration_source_and_isolation_is_enforced() {
+    let descriptor = OrganCapabilityDescriptorV1::trusted_short_read_only(
+        id("driver.source"),
+        7,
+        digest("source"),
+    );
+    let mut registry = OrganHandlerRegistryV1::new();
+    registry
+        .register_descriptor(descriptor.clone(), fixture_factory)
+        .expect("register descriptor");
+    assert_eq!(registry.descriptor(&id("driver.source")), Some(&descriptor));
+
+    let isolated = OrganCapabilityDescriptorV1::isolated_process_read_only(
+        id("driver.target"),
+        3,
+        digest("target"),
+    );
+    registry
+        .register_isolated_descriptor(isolated.clone())
+        .expect("catalog isolated implementation without a fake factory");
+    assert_eq!(registry.descriptor(&id("driver.target")), Some(&isolated));
+
+    assert!(matches!(
+        registry.create_host(graph(), &bindings()),
+        Err(OrganHandlerRegistryError::InProcessExecutionClassRequired(driver))
+            if driver == id("driver.target")
+    ));
+}
+
+#[test]
+fn registration_api_cannot_misclassify_an_execution_boundary() {
+    let mut registry = OrganHandlerRegistryV1::new();
+    let isolated = OrganCapabilityDescriptorV1::isolated_process_read_only(
+        id("driver.isolated"),
+        1,
+        digest("isolated"),
+    );
+    assert!(matches!(
+        registry.register_descriptor(isolated, fixture_factory),
+        Err(OrganHandlerRegistryError::InProcessExecutionClassRequired(driver))
+            if driver == id("driver.isolated")
+    ));
+
+    let trusted = OrganCapabilityDescriptorV1::trusted_short_read_only(
+        id("driver.trusted"),
+        1,
+        digest("trusted"),
+    );
+    assert!(matches!(
+        registry.register_isolated_descriptor(trusted),
+        Err(OrganHandlerRegistryError::IsolatedExecutionClassRequired(driver))
+            if driver == id("driver.trusted")
     ));
 }

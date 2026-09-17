@@ -45,6 +45,21 @@ fn live_status_request_traverses_the_initialized_graph() -> Result<()> {
 }
 
 #[test]
+fn status_instances_share_one_canonical_driver_identity() -> Result<()> {
+    let calls = Arc::new(AtomicUsize::new(0));
+    let root = HeptaStateRoot::parse(std::env::temp_dir().join("hepta-shared-driver"))?;
+    let organs = RuntimeOrgans::new(root, Arc::new(ObservedAdapter(calls)));
+    let guard = organs
+        .host
+        .lock()
+        .map_err(|_| anyhow::anyhow!("test host poisoned"))?;
+    let host = guard.as_ref().map_err(|error| anyhow::anyhow!("{error}"))?;
+    assert_eq!(host.route.source.driver, host.route.targets[0].driver);
+    assert_eq!(host.route.source.driver, StableId::new("driver.runtime.status")?);
+    Ok(())
+}
+
+#[test]
 fn busy_or_stopped_hosts_never_bypass_dispatch() -> Result<()> {
     let calls = Arc::new(AtomicUsize::new(0));
     let root = HeptaStateRoot::parse(std::env::temp_dir().join("hepta-organ-stopped"))?;

@@ -1,6 +1,8 @@
 use std::path::Path;
 use std::sync::Arc;
+use std::sync::Mutex;
 use std::time::Duration;
+use std::time::Instant;
 use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
 
@@ -33,7 +35,9 @@ pub const MAX_FEDERATION_CAPABILITY_REVISIONS: u64 = 1024;
 pub const MAX_FEDERATION_GRANT_LIFETIME_SECONDS: i64 = 31 * 24 * 60 * 60;
 pub const MAX_FEDERATION_SOURCES_PER_AGENT: usize = 16;
 const MAX_FEDERATION_OWNER_LAYOUTS_PER_AGENT: usize = 128;
-const FEDERATION_REFRESH_TIMEOUT: Duration = Duration::from_secs(2);
+const MAX_FEDERATION_CONCURRENT_SOURCES: usize = 4;
+const FEDERATION_SOURCE_TIMEOUT: Duration = Duration::from_millis(750);
+const FEDERATION_REFRESH_CACHE_TTL: Duration = Duration::from_secs(5);
 
 const COGNITIVE_DB_FILENAME: &str = "cognitive_1.sqlite3";
 const CAPABILITY_ID_PREFIX: &str = "federation:v1:";
@@ -224,10 +228,20 @@ pub struct FederatedRetrievalCandidate {
     pub revalidation: FederatedMemoryRevalidationBinding,
 }
 
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Serialize)]
+#[serde(rename_all = "snake_case")]
+pub enum FederatedCoverageStatus {
+    Complete,
+    Partial,
+}
+
 #[derive(Clone, Debug, Eq, PartialEq, Serialize)]
 pub struct FederatedRetrievalBatch {
     pub query_sha256: Sha256Digest,
     pub candidates: Vec<FederatedRetrievalCandidate>,
+    pub coverage: FederatedCoverageStatus,
+    pub attempted_sources: usize,
+    pub completed_sources: usize,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq, Serialize)]
@@ -658,6 +672,9 @@ impl FederatedMemoryReader {
         Ok(FederatedRetrievalBatch {
             query_sha256: batch.query_sha256,
             candidates,
+            coverage: FederatedCoverageStatus::Complete,
+            attempted_sources: 1,
+            completed_sources: 1,
         })
     }
 
@@ -761,11 +778,24 @@ impl FederatedMemoryReader {
     }
 }
 
+#[derive(Clone, Default)]
+struct FederationDiscoveryCache {
+    refreshed_at: Option<Instant>,
+    readers: Vec<FederatedMemoryReader>,
+    discovery_complete: bool,
+}
+
+struct CurrentFederationReaders {
+    readers: Vec<FederatedMemoryReader>,
+    discovery_complete: bool,
+}
+
 #[derive(Clone)]
 pub struct FederatedRecallSet {
     consumer_agent_id: AgentId,
     readers: Vec<FederatedMemoryReader>,
     owner_layouts: Vec<HeptaAgentLayout>,
+    dynamic_cache: Arc<Mutex<FederationDiscoveryCache>>,
 }
 
 impl FederatedRecallSet {
@@ -793,6 +823,7 @@ impl FederatedRecallSet {
             consumer_agent_id,
             readers,
             owner_layouts: Vec::new(),
+            dynamic_cache: Arc::new(Mutex::new(FederationDiscoveryCache::default())),
         })
     }
 
@@ -810,6 +841,7 @@ impl FederatedRecallSet {
             consumer_agent_id,
             readers: Vec::new(),
             owner_layouts,
+            dynamic_cache: Arc::new(Mutex::new(FederationDiscoveryCache::default())),
         }
     }
 
@@ -831,13 +863,21 @@ impl FederatedRecallSet {
                 "memory federation caller does not match the reader set consumer".to_string(),
             ));
         }
-        let readers = self.current_readers(request.now_unix_seconds()).await;
+        let current = self.current_readers(request.now_unix_seconds()).await;
+        let attempted_sources = current.readers.len();
         let mut candidates = Vec::new();
-        for reader in &readers {
-            let Ok(batch) = reader.retrieve(access, request).await else {
-                continue;
-            };
-            candidates.extend(batch.candidates);
+        let mut completed_sources = 0usize;
+        for readers in current.readers.chunks(MAX_FEDERATION_CONCURRENT_SOURCES) {
+            let (first, second, third, fourth) = tokio::join!(
+                retrieve_source(readers.first(), access, request),
+                retrieve_source(readers.get(1), access, request),
+                retrieve_source(readers.get(2), access, request),
+                retrieve_source(readers.get(3), access, request),
+            );
+            for batch in [first, second, third, fourth].into_iter().flatten() {
+                completed_sources += 1;
+                candidates.extend(batch.candidates);
+            }
         }
         candidates.sort_by(|left, right| {
             right
@@ -861,9 +901,17 @@ impl FederatedRecallSet {
                 })
         });
         candidates.truncate(crate::MAX_RETRIEVAL_RESULTS);
+        let coverage = if current.discovery_complete && completed_sources == attempted_sources {
+            FederatedCoverageStatus::Complete
+        } else {
+            FederatedCoverageStatus::Partial
+        };
         Ok(FederatedRetrievalBatch {
             query_sha256: Sha256Digest::for_bytes(request.query().as_bytes()),
             candidates,
+            coverage,
+            attempted_sources,
+            completed_sources,
         })
     }
 
@@ -873,8 +921,8 @@ impl FederatedRecallSet {
         binding: &FederatedMemoryRevalidationBinding,
         now_unix_seconds: i64,
     ) -> Result<FederatedRevalidationStatus, CognitiveStoreError> {
-        let readers = self.current_readers(now_unix_seconds).await;
-        let Some(reader) = readers.iter().find(|reader| {
+        let current = self.current_readers(now_unix_seconds).await;
+        let Some(reader) = current.readers.iter().find(|reader| {
             reader.capability.owner_agent_id == binding.source_agent_id
                 && reader.capability.id == binding.capability.id
         }) else {
@@ -885,14 +933,18 @@ impl FederatedRecallSet {
         reader.revalidate(access, binding, now_unix_seconds).await
     }
 
-    async fn current_readers(&self, now_unix_seconds: i64) -> Vec<FederatedMemoryReader> {
+    async fn current_readers(&self, now_unix_seconds: i64) -> CurrentFederationReaders {
+        let (dynamic, discovery_complete) = self
+            .cached_dynamic_readers()
+            .unwrap_or_else(|| (Vec::new(), false));
+        let (dynamic, discovery_complete) = if dynamic.is_empty() && !discovery_complete {
+            let refreshed = self.discover_dynamic_readers(now_unix_seconds).await;
+            self.store_dynamic_readers(&refreshed.0, refreshed.1);
+            refreshed
+        } else {
+            (dynamic, discovery_complete)
+        };
         let mut readers = self.readers.clone();
-        let dynamic = tokio::time::timeout(
-            FEDERATION_REFRESH_TIMEOUT,
-            self.discover_dynamic_readers(now_unix_seconds),
-        )
-        .await
-        .unwrap_or_default();
         readers.extend(dynamic);
         readers.sort_by(|left, right| {
             left.capability
@@ -902,32 +954,88 @@ impl FederatedRecallSet {
         });
         readers.dedup_by(|left, right| left.capability.id == right.capability.id);
         readers.truncate(MAX_FEDERATION_SOURCES_PER_AGENT);
-        readers
+        CurrentFederationReaders {
+            readers,
+            discovery_complete,
+        }
     }
 
-    async fn discover_dynamic_readers(&self, now_unix_seconds: i64) -> Vec<FederatedMemoryReader> {
-        let mut readers = Vec::new();
-        for owner_layout in &self.owner_layouts {
-            if readers.len() == MAX_FEDERATION_SOURCES_PER_AGENT {
-                break;
-            }
-            let Ok(discovered) = FederatedMemoryReader::discover(
-                owner_layout,
-                &self.consumer_agent_id,
-                now_unix_seconds,
-            )
-            .await
-            else {
-                continue;
-            };
-            readers.extend(
-                discovered
-                    .into_iter()
-                    .take(MAX_FEDERATION_SOURCES_PER_AGENT - readers.len()),
-            );
+    fn cached_dynamic_readers(&self) -> Option<(Vec<FederatedMemoryReader>, bool)> {
+        let cache = self.dynamic_cache.lock().ok()?;
+        let refreshed_at = cache.refreshed_at?;
+        if refreshed_at.elapsed() > FEDERATION_REFRESH_CACHE_TTL {
+            return None;
         }
-        readers
+        Some((cache.readers.clone(), cache.discovery_complete))
     }
+
+    fn store_dynamic_readers(&self, readers: &[FederatedMemoryReader], discovery_complete: bool) {
+        if let Ok(mut cache) = self.dynamic_cache.lock() {
+            cache.refreshed_at = Some(Instant::now());
+            cache.readers = readers.to_vec();
+            cache.discovery_complete = discovery_complete;
+        }
+    }
+
+    async fn discover_dynamic_readers(
+        &self,
+        now_unix_seconds: i64,
+    ) -> (Vec<FederatedMemoryReader>, bool) {
+        let mut discovery_complete = true;
+        let mut readers = Vec::new();
+        for layouts in self.owner_layouts.chunks(MAX_FEDERATION_CONCURRENT_SOURCES) {
+            let (first, second, third, fourth) = tokio::join!(
+                discover_source(layouts.first(), &self.consumer_agent_id, now_unix_seconds),
+                discover_source(layouts.get(1), &self.consumer_agent_id, now_unix_seconds),
+                discover_source(layouts.get(2), &self.consumer_agent_id, now_unix_seconds),
+                discover_source(layouts.get(3), &self.consumer_agent_id, now_unix_seconds),
+            );
+            for (completed, discovered) in [first, second, third, fourth].into_iter().flatten() {
+                discovery_complete &= completed;
+                readers.extend(discovered);
+            }
+        }
+        readers.sort_by(|left, right| {
+            left.capability
+                .owner_agent_id
+                .cmp(&right.capability.owner_agent_id)
+                .then_with(|| left.capability.id.cmp(&right.capability.id))
+        });
+        readers.dedup_by(|left, right| left.capability.id == right.capability.id);
+        readers.truncate(MAX_FEDERATION_SOURCES_PER_AGENT);
+        (readers, discovery_complete)
+    }
+}
+
+async fn retrieve_source(
+    reader: Option<&FederatedMemoryReader>,
+    access: &FederationConsumerAccess,
+    request: &RetrievalRequest,
+) -> Option<FederatedRetrievalBatch> {
+    let reader = reader?;
+    tokio::time::timeout(FEDERATION_SOURCE_TIMEOUT, reader.retrieve(access, request))
+        .await
+        .ok()?
+        .ok()
+}
+
+async fn discover_source(
+    owner_layout: Option<&HeptaAgentLayout>,
+    consumer_agent_id: &AgentId,
+    now_unix_seconds: i64,
+) -> Option<(bool, Vec<FederatedMemoryReader>)> {
+    let owner_layout = owner_layout?;
+    Some(
+        match tokio::time::timeout(
+            FEDERATION_SOURCE_TIMEOUT,
+            FederatedMemoryReader::discover(owner_layout, consumer_agent_id, now_unix_seconds),
+        )
+        .await
+        {
+            Ok(Ok(readers)) => (true, readers),
+            Ok(Err(_)) | Err(_) => (false, Vec::new()),
+        },
+    )
 }
 
 async fn insert_event(

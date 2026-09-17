@@ -14,6 +14,26 @@ pub use evaluated_shadow::EvaluatedShadowRequestV1;
 pub use evaluated_shadow::evaluated_candidate_signing_payload_v1;
 pub use evaluated_shadow::run_evaluated_shadow_v1;
 
+mod plasticity_product;
+mod plasticity_selection;
+
+pub use plasticity_product::AnchoredPlasticityWriterErrorV1;
+pub use plasticity_product::AnchoredPlasticityWriterV1;
+pub use plasticity_product::CandidateEvaluationAdmissionV1;
+pub use plasticity_product::ParameterPlasticityProductErrorV1;
+pub use plasticity_product::ParameterPlasticityProductReceiptV1;
+pub use plasticity_product::ParameterPlasticityProductRequestV1;
+pub use plasticity_product::PlasticityAdmissionEvidenceV1;
+pub use plasticity_product::PlasticityAnchorCommitterV1;
+pub use plasticity_product::plasticity_admission_signing_payload_v1;
+pub use plasticity_product::propose_authenticated_parameter_plasticity_v1;
+pub use plasticity_selection::PlasticitySelectionCandidateV1;
+pub use plasticity_selection::PlasticitySelectionDecisionV1;
+pub use plasticity_selection::PlasticitySelectionErrorV1;
+pub use plasticity_selection::PlasticitySelectionReceiptV1;
+pub use plasticity_selection::PlasticitySelectionRequestV1;
+pub use plasticity_selection::select_plasticity_candidate_v1;
+
 mod capability_snapshot;
 
 pub use capability_snapshot::CapabilityBindingV2;
@@ -50,6 +70,7 @@ pub use pipeline::StageTraceV1;
 pub use pipeline::run_shadow_pipeline;
 
 mod vertical;
+mod vertical_outcome;
 
 use std::collections::BTreeSet;
 use std::error::Error as StdError;
@@ -65,6 +86,8 @@ pub use vertical::ReadOnlyVerticalError;
 pub use vertical::ReadOnlyVerticalReceipt;
 pub use vertical::ReadOnlyVerticalRequest;
 pub use vertical::run_read_only_vertical;
+pub use vertical_outcome::ReadOnlyVerticalOutcomeV1;
+pub use vertical_outcome::run_read_only_vertical_outcome_v1;
 
 const MAX_CANDIDATES: usize = 128;
 
@@ -204,3 +227,7 @@ mod tests;
 #[cfg(test)]
 #[path = "vertical_tests.rs"]
 mod vertical_tests;
+
+#[cfg(test)]
+#[path = "plasticity_product_tests.rs"]
+mod plasticity_product_tests;

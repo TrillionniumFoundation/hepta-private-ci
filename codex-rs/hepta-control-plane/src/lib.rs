@@ -11,6 +11,7 @@
 mod cart;
 #[path = "embodiment/io.rs"]
 mod io;
+mod organ_budget;
 mod organ_graph;
 mod organ_hierarchy;
 mod organ_registry;
@@ -38,6 +39,9 @@ pub use io::SyntheticActuatorReceiptV1;
 pub use io::SyntheticCartIoV1;
 pub use io::TypedActuatorDispatchV1;
 pub use io::TypedSensorReadingV1;
+pub use organ_budget::BudgetedReadOnlyOrganV1;
+pub use organ_budget::OrganExecutionBudgetErrorV1;
+pub use organ_budget::OrganExecutionBudgetV1;
 pub use organ_graph::DataflowTiming;
 pub use organ_graph::FailureDomainV1;
 pub use organ_graph::FallbackTerminal;
@@ -60,6 +64,10 @@ pub use organ_hierarchy::CompiledOrganDriverV1;
 pub use organ_hierarchy::OrganDriverBindingV1;
 pub use organ_hierarchy::OrganPathV1;
 pub use organ_hierarchy::OrganSystemV1;
+pub use organ_registry::ORGAN_DRIVER_ABI_V1;
+pub use organ_registry::OrganAuthorityClassV1;
+pub use organ_registry::OrganCapabilityDescriptorV1;
+pub use organ_registry::OrganExecutionClassV1;
 pub use organ_registry::OrganHandlerFactoryV1;
 pub use organ_registry::OrganHandlerRegistryError;
 pub use organ_registry::OrganHandlerRegistryV1;

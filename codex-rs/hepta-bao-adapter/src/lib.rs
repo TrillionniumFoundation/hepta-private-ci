@@ -14,9 +14,14 @@ use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
 
+mod final_use_host;
 mod https_consumer;
 mod secret_boundary_v1;
 
+pub use final_use_host::BaoConsumerCallback;
+pub use final_use_host::BaoFinalUseHost;
+pub use final_use_host::BaoFinalUseHostError;
+pub use final_use_host::RegisteredBaoConsumer;
 pub use https_consumer::BaoClient;
 pub use https_consumer::BaoClientError;
 pub use https_consumer::BaoReadRequest;
