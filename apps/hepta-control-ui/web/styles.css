@@ -1,0 +1,42 @@
+:root {
+  color-scheme: light dark;
+  font-family: system-ui, sans-serif;
+  line-height: 1.5;
+}
+
+body {
+  margin: 0;
+  padding: 1.5rem;
+}
+
+main {
+  max-width: 90rem;
+  margin: 0 auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+caption,
+th,
+td {
+  text-align: left;
+  padding: 0.5rem;
+}
+
+th,
+td {
+  border-bottom: 1px solid currentColor;
+}
+
+button {
+  margin: 0.125rem;
+  min-height: 2.75rem;
+}
+
+button:focus-visible {
+  outline: 0.2rem solid currentColor;
+  outline-offset: 0.15rem;
+}
