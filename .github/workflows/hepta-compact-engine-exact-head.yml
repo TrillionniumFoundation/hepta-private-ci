@@ -1,0 +1,115 @@
+name: compact.engine exact-head qualification
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "codex-rs/hepta-compact-engine/**"
+      - "codex-rs/hepta-memory/**"
+      - "docs/modules/compact.engine/**"
+      - "qualification/module-execution-dossiers/detail/compact.engine.md"
+      - "scripts/hepta-compact-engine-exact-head.py"
+      - "scripts/test_hepta_compact_engine_exact_head.py"
+      - ".github/workflows/hepta-compact-engine-exact-head.yml"
+  pull_request:
+    paths:
+      - "codex-rs/hepta-compact-engine/**"
+      - "codex-rs/hepta-memory/**"
+      - "docs/modules/compact.engine/**"
+      - "qualification/module-execution-dossiers/detail/compact.engine.md"
+      - "scripts/hepta-compact-engine-exact-head.py"
+      - "scripts/test_hepta_compact_engine_exact_head.py"
+      - ".github/workflows/hepta-compact-engine-exact-head.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: compact-engine-exact-head-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+env:
+  SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+  PYTHONDONTWRITEBYTECODE: "1"
+
+jobs:
+  exact-head:
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 45
+    env:
+      CARGO_INCREMENTAL: "0"
+      CARGO_BUILD_JOBS: "2"
+      CARGO_PROFILE_TEST_DEBUG: "0"
+      CARGO_PROFILE_DEV_DEBUG: "0"
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Bind checkout to the exact candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          git diff --quiet
+          git diff --cached --quiet
+
+      - name: Prepare native prerequisites
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential bubblewrap libcap-dev pkg-config
+          sudo sysctl -w kernel.unprivileged_userns_clone=1
+          if sysctl kernel.apparmor_restrict_unprivileged_userns >/dev/null 2>&1; then
+            sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
+          fi
+
+      - name: Install DotSlash for workspace artifact resolution
+        uses: facebook/install-dotslash@1e4e7b3e07eaca387acb98f1d4720e0bee8dbb6a
+
+      - name: Resolve verified sandboxed V8 artifacts for Cargo
+        env:
+          CODEX_REPO_ROOT: ${{ github.workspace }}
+          PYTHONPATH: scripts
+        run: python3 scripts/hepta_ci_v8.py
+
+      - name: Verify exact-head evidence generator
+        run: python3 -m unittest -v scripts/test_hepta_compact_engine_exact_head.py
+
+      - name: Run compact.engine and owner-store focused tests
+        working-directory: codex-rs
+        env:
+          CARGO_TARGET_DIR: ${{ runner.temp }}/hepta-compact-target
+        run: |
+          python3 ../scripts/hepta_ci_exec.py \
+            --output "$RUNNER_TEMP/hepta-command-records/compact-engine-focused.json" \
+            -- cargo test --locked -p codex-hepta-compact-engine -p codex-hepta-memory
+
+      - name: Generate exact-head implementation map and test evidence
+        run: |
+          python3 scripts/hepta-compact-engine-exact-head.py \
+            --expected-sha "$SOURCE_SHA" \
+            --test-status passed \
+            --output "$RUNNER_TEMP/compact-engine-exact-head.json"
+          python3 - "$RUNNER_TEMP/compact-engine-exact-head.json" "$SOURCE_SHA" <<'PY'
+          import json
+          import pathlib
+          import sys
+          row = json.loads(pathlib.Path(sys.argv[1]).read_text(encoding="utf-8"))
+          assert row["sourceBase"]["commit"] == sys.argv[2]
+          assert row["exactHeadEvidence"]["sourceSha"] == sys.argv[2]
+          assert row["exactHeadEvidence"]["focusedTestStatus"] == "passed"
+          assert row["productionCaller"]["sourcePathExists"] is True
+          assert row["productionImplementation"] is True
+          PY
+
+      - name: Retain exact-head implementation and command evidence
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: compact-engine-exact-head-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            ${{ runner.temp }}/compact-engine-exact-head.json
+            ${{ runner.temp }}/hepta-command-records/compact-engine-focused.json
+          if-no-files-found: error
+          retention-days: 30

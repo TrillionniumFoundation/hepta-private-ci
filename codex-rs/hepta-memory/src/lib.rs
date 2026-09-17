@@ -11,6 +11,7 @@ mod cognitive_retrieval;
 mod cognitive_runtime;
 mod cognitive_store;
 mod compact_persistence;
+mod canonical_compaction_store;
 mod framing;
 mod h7_feedback;
 mod h7_runtime;

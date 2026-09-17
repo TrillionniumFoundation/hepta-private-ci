@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "7e8379b3954808d4138a7bd2f3773f75691291a3",
-    "tree": "ff9fa6baf95a35fd2f49816e0a80097688f2aeeb"
+    "commit": "610f26a34229b7fb23a00ea1e9fbf54ce5d65808",
+    "tree": "5095aa8272b80d7eef2b3ed8566a8c7eb7c436f6"
   },
   "laneId": "LANE-C-MEMORY",
   "module": "compact.engine",
@@ -17,29 +17,52 @@
     "codex-rs/hepta-compact-engine"
   ],
   "sourceRootPresent": true,
-  "productionImplementation": false,
-  "productCallerState": "not_composed",
-  "productionWriterState": "not_established",
+  "productionImplementation": true,
+  "productCallerState": "composed_owner_store",
+  "productionWriterState": "established_owner_store",
+  "productionCaller": {
+    "symbol": "compact_and_publish_authorized",
+    "sourcePath": "codex-rs/hepta-memory/src/canonical_compaction_store.rs",
+    "sourcePathExists": true,
+    "ownerStore": "codex-hepta-memory/CognitiveStore",
+    "authorityBoundary": "ProductionAuthorityVerifier",
+    "state": "product_composed_owner_store",
+    "tests": [
+      {
+        "path": "codex-rs/hepta-memory/src/canonical_compaction_store.rs",
+        "cases": [
+          "authorized_publish_reload_and_restart_revalidate_complete_bundle",
+          "crash_before_head_cas_rolls_back_inserted_generation",
+          "competing_generation_publications_have_one_cas_winner",
+          "corrupted_selected_head_fails_closed_on_reload",
+          "large_batch_build_publish_and_reload_is_bounded",
+          "legacy_resurrection_cannot_reappear_through_public_compact_api"
+        ]
+      }
+    ]
+  },
   "operations": [
-    {
-      "operation": "compact",
-      "nativeSymbol": "compact",
-      "sourcePath": "codex-rs/hepta-compact-engine/src/lib.rs",
-      "state": "source_implemented_not_product_composed",
-      "authority": "none",
-      "tests": [],
-      "sourcePathExists": true,
-      "designOperation": "compact",
-      "mappingClass": "owner_native",
-      "delegatedCallees": []
-    },
     {
       "operation": "build_qualified_candidate",
       "nativeSymbol": "build_qualified_candidate",
       "sourcePath": "codex-rs/hepta-compact-engine/src/qualified.rs",
-      "state": "source_implemented_not_product_composed",
+      "state": "source_implemented_product_composed",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        {
+          "path": "codex-rs/hepta-compact-engine/src/qualified_tests.rs",
+          "cases": [
+            "protected_live_reference_is_retained_before_higher_priority_optional_record",
+            "tombstoned_head_is_never_replayed_or_retained",
+            "explicit_resurrection_after_tombstone_is_rejected",
+            "candidate_is_order_independent",
+            "protected_set_cannot_exceed_checkpoint_capacity",
+            "protected_reference_missing_from_snapshot_is_rejected",
+            "semantic_payload_must_fit_byte_and_token_budgets",
+            "semantic_payload_is_bound_to_snapshot_model_and_tokenizer"
+          ]
+        }
+      ],
       "sourcePathExists": true,
       "designOperation": "build_qualified_candidate",
       "mappingClass": "owner_native",
@@ -49,9 +72,16 @@
       "operation": "prove_compaction",
       "nativeSymbol": "prove_compaction",
       "sourcePath": "codex-rs/hepta-compact-engine/src/qualified.rs",
-      "state": "source_implemented_not_product_composed",
+      "state": "source_implemented_product_composed",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        {
+          "path": "codex-rs/hepta-compact-engine/src/qualified_tests.rs",
+          "cases": [
+            "proof_binds_evaluator_attestation_and_all_obligations"
+          ]
+        }
+      ],
       "sourcePathExists": true,
       "designOperation": "prove_compaction",
       "mappingClass": "owner_native",
@@ -59,18 +89,17 @@
     }
   ],
   "repositoryControlledGaps": [
-    "Bind every operation to an authenticated consumer callsite and owner store.",
-    "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary."
+    "Run exact-head and deterministic synthetic-merge tests before changing the execution-proof claim boundary."
   ],
   "externalEvidenceGates": [
-    "independent semantic review",
+    "independent semantic review and attestation verification",
     "product execution and target-host qualification",
     "operator acceptance, canary, promotion and release"
   ],
   "claimBoundary": {
     "nativeSourceMappingComplete": true,
     "sourceRootPresent": true,
-    "productionImplementation": false,
+    "productionImplementation": true,
     "productExecutionProved": false,
     "independentAcceptance": false,
     "activation": false,

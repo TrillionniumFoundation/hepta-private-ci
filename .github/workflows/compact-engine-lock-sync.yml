@@ -1,0 +1,47 @@
+name: compact.engine lock sync
+
+on:
+  push:
+    branches: [codex/compact-engine-r1-r7]
+    paths:
+      - "codex-rs/hepta-memory/Cargo.toml"
+      - ".github/workflows/compact-engine-lock-sync.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: codex/compact-engine-r1-r7
+          fetch-depth: 0
+          persist-credentials: true
+      - name: Resolve only the manifest change into Cargo.lock
+        working-directory: codex-rs
+        run: cargo metadata --format-version=1 --no-deps >/dev/null
+      - name: Require the expected lock delta and commit it
+        shell: bash
+        run: |
+          set -euo pipefail
+          git diff --exit-code -- codex-rs/Cargo.toml || true
+          git diff --check -- codex-rs/Cargo.lock
+          git diff --quiet -- codex-rs/Cargo.lock && {
+            echo 'Cargo.lock did not change; nothing to sync'
+            exit 0
+          }
+          python3 - <<'PY'
+          from pathlib import Path
+          text = Path('codex-rs/Cargo.lock').read_text(encoding='utf-8')
+          block = text.split('name = "codex-hepta-memory"', 1)[1].split('[[package]]', 1)[0]
+          if '"codex-hepta-compact-engine"' not in block:
+              raise SystemExit('lock sync did not add codex-hepta-compact-engine to codex-hepta-memory')
+          PY
+          git config user.name 'Hepta lock sync'
+          git config user.email 'hepta-lock-sync@users.noreply.github.com'
+          git add codex-rs/Cargo.lock
+          git commit -m 'build: sync compact-engine memory dependency lock'
+          git push origin HEAD:codex/compact-engine-r1-r7
