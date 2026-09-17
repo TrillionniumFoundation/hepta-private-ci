@@ -1,0 +1,152 @@
+{
+  "schema": "hepta.browser.servo-current-pin-topology.v2",
+  "schemaVersion": 2,
+  "source": {
+    "repository": "servo/servo",
+    "commit": "84bcc9ac701874fa9819e5cdee06356b961d736c"
+  },
+  "decision": {
+    "embedderStrategy": "out_of_tree_hepta_worker_using_public_servo_embedding_api",
+    "servoshellBuildRoot": false,
+    "webdriverServerDependency": false,
+    "servoDefaultFeatures": false,
+    "requiredServoFeatures": [
+      "background_hang_monitor",
+      "bundled"
+    ],
+    "conditionallyPermittedServoFeatures": [
+      "js_jit"
+    ],
+    "initiallyForbiddenServoFeatures": [
+      "bluetooth",
+      "clipboard",
+      "default",
+      "default_web_features",
+      "gamepad",
+      "media-gstreamer",
+      "native-bluetooth",
+      "testbinding",
+      "webgl",
+      "webgpu",
+      "webxr"
+    ]
+  },
+  "workerImplementation": {
+    "sourcePath": "apps/hepta-browser/servo-worker",
+    "manifestPath": "apps/hepta-browser/servo-worker/Cargo.toml",
+    "oneProcess": true,
+    "oneWebView": true,
+    "softwareRenderingContext": true,
+    "networkControlListener": false,
+    "rawWebDriver": false,
+    "callerProvidedJavaScript": false,
+    "credentialExport": false,
+    "profileExport": false,
+    "credentialActionConnected": false,
+    "uploadActionConnected": false,
+    "downloadActionConnected": false
+  },
+  "browserOwnerBoundary": {
+    "typedActions": "apps/hepta-browser/src/action.js",
+    "durableJournal": "apps/hepta-browser/src/journal.js",
+    "serializedHost": "apps/hepta-browser/src/runtime-host.js",
+    "workerProtocol": "apps/hepta-browser/src/worker-protocol.js",
+    "workerDriver": "apps/hepta-browser/src/worker-driver.js",
+    "agentdParentProtocol": "apps/hepta-browser/src/agentd-protocol.js",
+    "agentdParentService": "apps/hepta-browser/src/agentd-service.js",
+    "agentdParentExecutable": "apps/hepta-browser/src/agentd-service-main.js",
+    "publicBrowserListener": false,
+    "verifiedUseTokenSerialized": false,
+    "finalUseFenceEndsAt": "durable_intent_plus_local_worker_pipe_write",
+    "remoteEffectTerminalitySeparate": true
+  },
+  "linuxHostIsolation": {
+    "launcher": "apps/hepta-browser/src/worker-driver.js::LinuxBubblewrapLauncher",
+    "networkNamespace": "unshare_all_without_share_net",
+    "ambientEnvironment": "cleared",
+    "hostRootBind": false,
+    "hostUsrRootBind": false,
+    "hostGeneralBinariesVisible": false,
+    "hostFilesystemPolicy": "empty_tmpfs_root_plus_dynamic_library_font_tls_fontconfig_allowlist",
+    "admittedReadOnlyRuntimeRoots": [
+      "/usr/lib",
+      "/usr/lib64",
+      "/usr/share/fonts",
+      "/usr/share/fontconfig",
+      "/etc/ld.so.cache",
+      "/etc/fonts",
+      "/etc/ssl",
+      "/var/cache/fontconfig"
+    ],
+    "explicitlyAbsentClasses": [
+      "/usr/bin",
+      "/usr/local",
+      "/var/lib",
+      "service_roots",
+      "ambient_user_homes"
+    ],
+    "writableHostSurface": "one_private_profile_bind",
+    "parentDeathCleanup": true,
+    "realProbe": "apps/hepta-browser/scripts/linux-sandbox-probe.js"
+  },
+  "buildEvidenceGate": {
+    "workflow": ".github/workflows/hepta-browser-servo-worker-dev.yml",
+    "exactToolchain": "rustc-1.88.0",
+    "requiresLockedResolution": true,
+    "independentReleaseBuildCount": 2,
+    "requiresByteIdenticalArtifacts": true,
+    "requiresDynamicLibraryClosure": true,
+    "requiresSpdx23Sbom": true,
+    "requiresAllBrowserNodeTests": true,
+    "requiresRealSandboxProbe": true,
+    "requiresRealWorkerSmoke": true,
+    "sourcePresenceIsPassEvidence": false
+  },
+  "deploymentEvidenceGate": {
+    "workflow": ".github/workflows/hepta-browser-servo-deployment-qualification.yml",
+    "mainOnly": true,
+    "requiresExactSourceSha": true,
+    "requiresExactBuildRun": true,
+    "requiresReviewedWorkerDigest": true,
+    "selfIssuesOperatorAcceptance": false,
+    "selfIssuesPromotion": false,
+    "selfIssuesRelease": false
+  },
+  "crossOwnerComposition": {
+    "browserSidePrivateHandoffImplemented": true,
+    "agentdCallerStack": "PR #611 / codex/browser-servo-agentd-composition-20260917",
+    "liveFinalUseChallengeRequired": true,
+    "dispatchBoundaryAcknowledgementRequired": true,
+    "longRunningAuthorityOwnerActivated": false
+  },
+  "evidencePaths": [
+    "third_party/servo-patches/MANIFEST.json",
+    "apps/hepta-browser/servo-worker/Cargo.toml",
+    "apps/hepta-browser/servo-worker/src/main.rs",
+    "apps/hepta-browser/src/runtime-host.js",
+    "apps/hepta-browser/src/worker-driver.js",
+    "apps/hepta-browser/src/agentd-protocol.js",
+    "apps/hepta-browser/src/agentd-service.js",
+    "apps/hepta-browser/src/agentd-service-main.js",
+    "apps/hepta-browser/test/agentd-service.test.js",
+    "apps/hepta-browser/test/worker-driver.test.js",
+    "apps/hepta-browser/scripts/linux-sandbox-probe.js",
+    "apps/hepta-browser/scripts/real-worker-smoke.js",
+    "apps/hepta-browser/scripts/spdx-sbom.py",
+    ".github/workflows/hepta-browser-servo-worker-dev.yml",
+    ".github/workflows/hepta-browser-servo-deployment-qualification.yml"
+  ],
+  "openEvidence": [
+    "terminal-success exact-SHA current-pin compile and locked dependency receipt",
+    "reviewed committed Cargo.lock for selected artifact",
+    "terminal-success reproducible worker artifact and SPDX-2.3 SBOM receipt",
+    "target-host Linux namespace listener egress and host-filesystem qualification",
+    "cross-profile cookie cache storage isolation",
+    "macOS and Windows isolation equivalents when targeted",
+    "credential-reference secret-delivery broker when credential use is enabled",
+    "terminal-success stacked Agentd final-use composition qualification",
+    "trusted live authority and revocation owner for long-running Agentd activation",
+    "real remote effect terminal reconciliation",
+    "independent deployment operator promotion and release acceptance"
+  ]
+}
