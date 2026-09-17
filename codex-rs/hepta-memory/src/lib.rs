@@ -1,5 +1,6 @@
 #![forbid(unsafe_code)]
 
+mod authoritative_store;
 mod cognitive_compact;
 mod cognitive_federation;
 mod cognitive_intelligence_writer;
@@ -37,6 +38,7 @@ mod shadow_model_runtime;
 pub use lane_c_snapshot::CognitiveOwnerFrontiers;
 pub use lane_c_snapshot::DurableCognitiveSnapshot;
 
+pub use authoritative_store::AuthoritativeCognitiveStore;
 pub use cognitive_compact::COGNITIVE_COMPACT_HOOK_NAMESPACE;
 pub use cognitive_compact::COGNITIVE_COMPACT_HOOK_SCHEMA_VERSION;
 pub use cognitive_compact::CognitiveCompactError;
