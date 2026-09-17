@@ -12,11 +12,11 @@ permissions:
 
 jobs:
   apply:
-    if: github.event.head_commit.message == 'ci: add one-shot rustfmt executor'
+    if: "${{ github.event.head_commit.message == 'ci: add one-shot rustfmt executor' }}"
     runs-on: ubuntu-24.04
     timeout-minutes: 20
     env:
-      EXPECTED_PARENT: cc74a45306475f66bd1130daaa584b019d2f02d2
+      EXPECTED_PARENT: 84ad13a9ced531ad8a04b483309ab5b6220b90e1
       TARGET_BRANCH: architecture/close-priority-scaleability-gaps-20260916
       PACKAGES: >-
         codex-hepta-agent-protocol codex-hepta-agentd
@@ -40,7 +40,7 @@ jobs:
         codex-hepta-neuron codex-hepta-prompt-registry
         codex-hepta-supervisor codex-hepta-runtime
     steps:
-      - name: Check out exact branch
+      - name: Check out exact candidate
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           ref: ${{ github.sha }}
@@ -51,7 +51,7 @@ jobs:
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD^)" = "$EXPECTED_PARENT"
-          test "$(git branch --show-current)" = "$TARGET_BRANCH"
+          test "$GITHUB_REF_NAME" = "$TARGET_BRANCH"
 
       - name: Materialize canonical rustfmt
         working-directory: codex-rs
