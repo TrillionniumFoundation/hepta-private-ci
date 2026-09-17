@@ -233,6 +233,10 @@
         },
         {
           "path": "codex-rs/hepta-ndu/src/projection_journal_tests.rs",
+          "symbol": "revocation_is_scoped_to_objective_and_subject"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/projection_journal_tests.rs",
           "symbol": "live_selection_and_revocation_require_a_recorded_projection"
         },
         {
@@ -286,6 +290,10 @@
         {
           "path": "codex-rs/hepta-ndu/src/projection_store_tests.rs",
           "symbol": "concurrent_writer_is_rejected_while_owner_lock_is_live"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/projection_store_tests.rs",
+          "symbol": "indeterminate_handle_fails_closed_until_reopen"
         }
       ],
       "designOperation": "NduProjectionStoreV1",
