@@ -4,19 +4,36 @@ on:
   pull_request:
     paths:
       - "codex-rs/hepta-ndu/**"
+      - "docs/modules/utility.ndu/**"
+      - "docs/readiness/NDU_SYSTEM_EXECUTION.md"
+      - "docs/readiness/LANE_D_MATURITY.json"
+      - "qualification/module-execution-dossiers/detail/utility.ndu.md"
       - "scripts/verify_cargo_lock.py"
       - "scripts/test_verify_cargo_lock.py"
       - ".github/workflows/hepta-ndu-recursion.yml"
+  push:
+    branches: [main]
+    paths:
+      - "codex-rs/hepta-ndu/**"
+      - "docs/modules/utility.ndu/**"
+      - "docs/readiness/NDU_SYSTEM_EXECUTION.md"
+      - "docs/readiness/LANE_D_MATURITY.json"
+      - "qualification/module-execution-dossiers/detail/utility.ndu.md"
+      - "scripts/verify_cargo_lock.py"
+      - "scripts/test_verify_cargo_lock.py"
+      - ".github/workflows/hepta-ndu-recursion.yml"
+  workflow_dispatch:
 
 permissions:
   contents: read
 
 concurrency:
-  group: hepta-ndu-recursion-${{ github.event.pull_request.number }}
+  group: hepta-ndu-recursion-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
 jobs:
   ndu:
+    if: matrix.lane == 'source-head' || github.event_name == 'pull_request'
     name: NDU (${{ matrix.lane }})
     runs-on: ubuntu-24.04
     timeout-minutes: 35
@@ -25,8 +42,8 @@ jobs:
       matrix:
         lane: [source-head, synthetic-merge]
     env:
-      SOURCE_SHA: ${{ github.event.pull_request.head.sha }}
-      BASE_SHA: ${{ github.event.pull_request.base.sha }}
+      SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+      BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
       CARGO_NET_GIT_FETCH_WITH_CLI: "true"
     steps:
       - name: Check out exact source without credentials
@@ -42,6 +59,7 @@ jobs:
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
           if [ '${{ matrix.lane }}' = synthetic-merge ]; then
+            test '${{ github.event_name }}' = pull_request
             TREE=$(git merge-tree --write-tree "$BASE_SHA" "$SOURCE_SHA")
             export GIT_AUTHOR_NAME=hepta-qualification GIT_COMMITTER_NAME=hepta-qualification
             export GIT_AUTHOR_EMAIL=qualification@invalid GIT_COMMITTER_EMAIL=qualification@invalid
