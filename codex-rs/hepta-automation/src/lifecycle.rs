@@ -1,10 +1,10 @@
 //! Durable schedule revision and automation-occurrence lifecycle.
 //!
-//! This module deliberately composes the existing timer store instead of
-//! replacing it. `automation_runs` remains the compatibility record for due
-//! work and Core queue admission; this layer binds that record to an immutable
-//! schedule revision and deterministic occurrence identity, then keeps queue
-//! admission distinct from terminal execution.
+//! This module composes the existing timer store instead of replacing it.
+//! `automation_runs` remains the compatibility record for due work and Core
+//! queue admission; this layer binds that record to an immutable schedule
+//! revision and deterministic occurrence identity, then keeps queue admission
+//! distinct from terminal execution.
 
 use codex_hepta_contracts::Sha256Digest;
 use serde::Serialize;
@@ -14,12 +14,10 @@ use crate::AutomationAdmission;
 use crate::AutomationError;
 use crate::AutomationLease;
 use crate::AutomationQueueReceipt;
-use crate::AutomationSchedule;
 use crate::AutomationStore;
 use crate::AutomationTaskId;
 
 const ZERO_DIGEST: &str = "0000000000000000000000000000000000000000000000000000000000000000";
-const DEFAULT_MAX_CATCH_UP: u16 = 32;
 const MAX_CATCH_UP: u16 = 1_024;
 const MAX_RECOVERY_SCAN: usize = 1_024;
 
@@ -138,7 +136,7 @@ impl AutomationOccurrenceState {
     }
 
     fn terminal(self) -> bool {
-        matches!(Self::Succeeded | Self::Failed | Self::Cancelled, self)
+        matches!(self, Self::Succeeded | Self::Failed | Self::Cancelled)
     }
 }
 
@@ -171,6 +169,7 @@ pub struct AutomationOccurrence {
     pub state: AutomationOccurrenceState,
     pub overlap: AutomationOverlapPolicy,
     pub claim_generation: u64,
+    pub step_attempt: u32,
     pub taskflow_run_id: String,
     pub queued_submission_id: Option<String>,
     pub provider_payload_sha256: Option<String>,
@@ -222,9 +221,9 @@ impl AutomationStore {
         Ok(policy)
     }
 
-    /// Revision-bumps recurrence policy without rewriting the timer row.  An
-    /// already-materialized occurrence keeps the revision and overlap policy it
-    /// was born with; the next occurrence observes the new revision.
+    /// Revision-bump recurrence policy. A materialized occurrence owns its
+    /// schedule revision; policy mutation therefore conflicts while any
+    /// occurrence for the task is non-terminal.
     pub async fn set_schedule_policy(
         &self,
         task_id: AutomationTaskId,
@@ -242,11 +241,25 @@ impl AutomationStore {
             .ok_or(AutomationError::Invalid)?;
         let mut transaction = self.taskflow_pool().begin().await.map_err(unavailable)?;
         ensure_schedule_metadata(&mut transaction, self, task_id).await?;
+        let active: i64 = sqlx::query_scalar(
+            "SELECT COUNT(*) FROM automation_occurrence_lifecycle
+             WHERE task_id = ? AND owner_agent_id = ?
+               AND state IN ('claimed', 'admitted', 'running', 'indeterminate')",
+        )
+        .bind(task_id.to_string())
+        .bind(self.taskflow_owner_agent_id().as_str())
+        .fetch_one(&mut *transaction)
+        .await
+        .map_err(unavailable)?;
+        if active != 0 {
+            return Err(AutomationError::Conflict);
+        }
         let (kind, maximum) = missed_run.db_parts();
         let changed = sqlx::query(
             "UPDATE automation_schedule_metadata
              SET revision = ?, missed_run_policy = ?, max_catch_up_occurrences = ?,
-                 catch_up_remaining = 0, overlap_policy = ?, updated_at_ms = ?
+                 catch_up_remaining = 0, catch_up_active = 0,
+                 overlap_policy = ?, updated_at_ms = ?
              WHERE task_id = ? AND owner_agent_id = ? AND revision = ?",
         )
         .bind(to_i64(next_revision)?)
@@ -259,7 +272,7 @@ impl AutomationStore {
         .bind(to_i64(expected_revision)?)
         .execute(&mut *transaction)
         .await
-        .map_err(unavailable)?;
+        .map_err(constraint_or_unavailable)?;
         if changed.rows_affected() != 1 {
             return Err(AutomationError::Conflict);
         }
@@ -283,27 +296,16 @@ impl AutomationStore {
         }
         let mut transaction = self.taskflow_pool().begin().await.map_err(unavailable)?;
         ensure_schedule_metadata(&mut transaction, self, lease.task.task_id).await?;
-        let policy = load_schedule_policy(&mut transaction, self, lease.task.task_id).await?;
-        let occurrence_id = deterministic_occurrence_id(
-            self.taskflow_owner_agent_id().as_str(),
-            lease.task.task_id,
-            policy.revision,
-            lease.scheduled_for_ms,
-        );
-        let taskflow_run_id = format!("automation-run:{}", digest_suffix(&occurrence_id));
-        let existing = load_occurrence_row(
+        if let Some(current) = load_occurrence_row(
             &mut transaction,
             self,
             lease.task.task_id,
             lease.occurrence,
         )
-        .await?;
-        if let Some(mut current) = existing {
-            if current.occurrence_id != occurrence_id
-                || current.schedule_revision != policy.revision
-                || current.scheduled_for_ms != lease.scheduled_for_ms
+        .await?
+        {
+            if current.scheduled_for_ms != lease.scheduled_for_ms
                 || current.client_user_message_id != lease.client_user_message_id
-                || current.taskflow_run_id != taskflow_run_id
             {
                 return Err(AutomationError::Conflict);
             }
@@ -312,7 +314,7 @@ impl AutomationStore {
                 return Ok(current);
             }
             if current.claim_generation != lease.lease_generation {
-                sqlx::query(
+                let changed = sqlx::query(
                     "UPDATE automation_occurrence_lifecycle
                      SET claim_generation = ?, claim_token = ?, updated_at_ms = ?
                      WHERE task_id = ? AND occurrence = ? AND state = 'claimed'",
@@ -325,6 +327,9 @@ impl AutomationStore {
                 .execute(&mut *transaction)
                 .await
                 .map_err(unavailable)?;
+                if changed.rows_affected() != 1 {
+                    return Err(AutomationError::Conflict);
+                }
                 append_occurrence_event(
                     &mut transaction,
                     lease.task.task_id,
@@ -341,13 +346,27 @@ impl AutomationStore {
                     now_ms,
                 )
                 .await?;
-                current.claim_generation = lease.lease_generation;
-                current.updated_at_ms = now_ms;
             }
+            let current = load_occurrence_row(
+                &mut transaction,
+                self,
+                lease.task.task_id,
+                lease.occurrence,
+            )
+            .await?
+            .ok_or(AutomationError::Corrupt)?;
             transaction.commit().await.map_err(unavailable)?;
             return Ok(current);
         }
 
+        let policy = load_schedule_policy(&mut transaction, self, lease.task.task_id).await?;
+        let occurrence_id = deterministic_occurrence_id(
+            self.taskflow_owner_agent_id().as_str(),
+            lease.task.task_id,
+            policy.revision,
+            lease.scheduled_for_ms,
+        );
+        let taskflow_run_id = format!("automation-run:{}", digest_suffix(&occurrence_id));
         sqlx::query(
             "INSERT INTO automation_occurrence_lifecycle (
                 task_id, occurrence, occurrence_id, owner_agent_id, schedule_revision,
@@ -401,7 +420,7 @@ impl AutomationStore {
     }
 
     /// Persist Core admission without declaring the automation occurrence
-    /// complete.  With overlap forbidden, the timer is parked until the
+    /// complete. With overlap forbidden, the timer is parked until the
     /// occurrence's terminal observation advances it.
     pub async fn record_occurrence_admitted(
         &self,
@@ -482,7 +501,7 @@ impl AutomationStore {
             .await
             .map_err(constraint_or_unavailable)?;
         }
-        sqlx::query(
+        let lifecycle = sqlx::query(
             "UPDATE automation_occurrence_lifecycle
              SET state = 'admitted', queued_submission_id = ?,
                  recovery_phase = 'awaiting_turn', updated_at_ms = ?
@@ -498,6 +517,9 @@ impl AutomationStore {
         .execute(&mut *transaction)
         .await
         .map_err(unavailable)?;
+        if lifecycle.rows_affected() != 1 {
+            return Err(AutomationError::Conflict);
+        }
         append_occurrence_event(
             &mut transaction,
             lease.task.task_id,
@@ -517,8 +539,6 @@ impl AutomationStore {
 
         match current.overlap {
             AutomationOverlapPolicy::Forbid => {
-                // The task stays enabled, but no next occurrence is due until
-                // this one reaches a terminal state.
                 sqlx::query(
                     "UPDATE automation_tasks SET next_run_at_ms = NULL, updated_at_ms = ?
                      WHERE task_id = ? AND owner_agent_id = ? AND state = 'enabled'",
@@ -585,7 +605,7 @@ impl AutomationStore {
         if current.state != AutomationOccurrenceState::Admitted {
             return Err(AutomationError::Conflict);
         }
-        sqlx::query(
+        let changed = sqlx::query(
             "UPDATE automation_occurrence_lifecycle
              SET state = 'running', turn_id = ?, provider_payload_sha256 = ?,
                  recovery_phase = 'awaiting_terminal', updated_at_ms = ?
@@ -599,6 +619,9 @@ impl AutomationStore {
         .execute(&mut *transaction)
         .await
         .map_err(unavailable)?;
+        if changed.rows_affected() != 1 {
+            return Err(AutomationError::Conflict);
+        }
         append_occurrence_event(
             &mut transaction,
             task_id,
@@ -641,7 +664,7 @@ impl AutomationStore {
             transaction.commit().await.map_err(unavailable)?;
             return Ok(current);
         }
-        sqlx::query(
+        let changed = sqlx::query(
             "UPDATE automation_occurrence_lifecycle
              SET state = 'indeterminate', terminal_receipt_digest = ?,
                  recovery_phase = 'reconciliation_required', updated_at_ms = ?
@@ -655,6 +678,9 @@ impl AutomationStore {
         .execute(&mut *transaction)
         .await
         .map_err(unavailable)?;
+        if changed.rows_affected() != 1 {
+            return Err(AutomationError::Conflict);
+        }
         append_occurrence_event(
             &mut transaction,
             task_id,
@@ -679,7 +705,7 @@ impl AutomationStore {
     }
 
     /// Terminalize one occurrence after a trusted terminal observation or
-    /// explicit reconciliation.  Only this boundary advances a forbidden-
+    /// explicit reconciliation. Only this boundary advances a forbidden-
     /// overlap schedule.
     pub async fn complete_occurrence(
         &self,
@@ -713,7 +739,7 @@ impl AutomationStore {
             return Err(AutomationError::Conflict);
         }
         let event_kind = terminal_state.as_str();
-        sqlx::query(
+        let changed = sqlx::query(
             "UPDATE automation_occurrence_lifecycle
              SET state = ?, terminal_receipt_digest = ?, recovery_phase = 'terminal',
                  updated_at_ms = ?, terminal_at_ms = ?
@@ -729,6 +755,9 @@ impl AutomationStore {
         .execute(&mut *transaction)
         .await
         .map_err(unavailable)?;
+        if changed.rows_affected() != 1 {
+            return Err(AutomationError::Conflict);
+        }
         append_occurrence_event(
             &mut transaction,
             task_id,
@@ -843,12 +872,12 @@ async fn ensure_schedule_metadata(
         "INSERT OR IGNORE INTO automation_schedule_metadata (
             task_id, owner_agent_id, revision, missed_run_policy,
             max_catch_up_occurrences, catch_up_remaining, overlap_policy,
-            created_at_ms, updated_at_ms
+            created_at_ms, updated_at_ms, catch_up_active
          )
-         SELECT task_id, owner_agent_id, 1, 'skip', ?, 0, 'forbid', created_at_ms, updated_at_ms
+         SELECT task_id, owner_agent_id, 1, 'skip', 0, 0, 'allow',
+                created_at_ms, updated_at_ms, 0
          FROM automation_tasks WHERE task_id = ? AND owner_agent_id = ?",
     )
-    .bind(i64::from(DEFAULT_MAX_CATCH_UP))
     .bind(task_id.to_string())
     .bind(store.taskflow_owner_agent_id().as_str())
     .execute(&mut **tx)
@@ -943,7 +972,7 @@ fn occurrence_from_row(
     let terminal_receipt_digest = terminal_raw
         .map(|value| {
             validate_digest_text(&value)?;
-            Sha256Digest::parse(&value).map_err(|_| AutomationError::Corrupt)
+            Sha256Digest::parse(value).map_err(|_| AutomationError::Corrupt)
         })
         .transpose()?;
     Ok(AutomationOccurrence {
@@ -969,6 +998,11 @@ fn occurrence_from_row(
             row.try_get("claim_generation")
                 .map_err(|_| AutomationError::Corrupt)?,
         )?,
+        step_attempt: u32::try_from(
+            row.try_get::<i64, _>("step_attempt")
+                .map_err(|_| AutomationError::Corrupt)?,
+        )
+        .map_err(|_| AutomationError::Corrupt)?,
         taskflow_run_id: row
             .try_get("taskflow_run_id")
             .map_err(|_| AutomationError::Corrupt)?,
@@ -1112,16 +1146,7 @@ async fn advance_schedule(
     .ok_or(AutomationError::AccessDenied)?;
     let state: String = row.try_get("state").map_err(|_| AutomationError::Corrupt)?;
     if state != "enabled" {
-        sqlx::query(
-            "UPDATE automation_schedule_metadata SET catch_up_remaining = 0, updated_at_ms = ?
-             WHERE task_id = ? AND owner_agent_id = ?",
-        )
-        .bind(to_i64(observed_at_ms)?)
-        .bind(task_id.to_string())
-        .bind(store.taskflow_owner_agent_id().as_str())
-        .execute(&mut **tx)
-        .await
-        .map_err(unavailable)?;
+        reset_catch_up(tx, store, task_id, observed_at_ms).await?;
         return Ok(());
     }
     let schedule_kind: String = row
@@ -1153,6 +1178,7 @@ async fn advance_schedule(
     let baseline = scheduled_for_ms
         .checked_add(interval)
         .ok_or(AutomationError::Invalid)?;
+
     let next = if baseline > observed_at_ms {
         reset_catch_up(tx, store, task_id, observed_at_ms).await?;
         baseline
@@ -1167,23 +1193,40 @@ async fn advance_schedule(
                 latest_not_after(baseline, interval, observed_at_ms)?
             }
             AutomationMissedRunPolicy::CatchUp { max_occurrences } => {
-                let remaining = catch_up_remaining(tx, store, task_id).await?;
-                if remaining == 0 {
-                    set_catch_up_remaining(
-                        tx,
-                        store,
-                        task_id,
-                        max_occurrences.saturating_sub(1),
-                        observed_at_ms,
-                    )
-                    .await?;
-                    baseline
+                let (active, remaining) = catch_up_state(tx, store, task_id).await?;
+                if active {
+                    if remaining == 0 {
+                        reset_catch_up(tx, store, task_id, observed_at_ms).await?;
+                        first_after(baseline, interval, observed_at_ms)?
+                    } else {
+                        set_catch_up_state(
+                            tx,
+                            store,
+                            task_id,
+                            true,
+                            remaining - 1,
+                            observed_at_ms,
+                        )
+                        .await?;
+                        baseline
+                    }
                 } else {
-                    set_catch_up_remaining(
+                    let overdue_count = observed_at_ms
+                        .checked_sub(baseline)
+                        .ok_or(AutomationError::Invalid)?
+                        .checked_div(interval)
+                        .ok_or(AutomationError::Invalid)?
+                        .checked_add(1)
+                        .ok_or(AutomationError::Invalid)?;
+                    let allowed = overdue_count.min(u64::from(max_occurrences));
+                    let remaining = u16::try_from(allowed.saturating_sub(1))
+                        .map_err(|_| AutomationError::Invalid)?;
+                    set_catch_up_state(
                         tx,
                         store,
                         task_id,
-                        remaining.saturating_sub(1),
+                        true,
+                        remaining,
                         observed_at_ms,
                     )
                     .await?;
@@ -1192,17 +1235,7 @@ async fn advance_schedule(
             }
         }
     };
-    // When the catch-up budget has just been exhausted, the *next terminal
-    // completion* skips remaining historical instants. This preserves exactly
-    // max_occurrences bounded catch-up executions per detected backlog window.
-    let next = if matches!(policy.missed_run, AutomationMissedRunPolicy::CatchUp { .. })
-        && baseline <= observed_at_ms
-        && catch_up_remaining(tx, store, task_id).await? == 0
-    {
-        first_after(baseline, interval, observed_at_ms)?
-    } else {
-        next
-    };
+
     sqlx::query(
         "UPDATE automation_tasks
          SET next_run_at_ms = ?, updated_at_ms = ?
@@ -1254,13 +1287,14 @@ fn latest_not_after(
         .ok_or(AutomationError::Invalid)
 }
 
-async fn catch_up_remaining(
+async fn catch_up_state(
     tx: &mut sqlx::Transaction<'_, sqlx::Sqlite>,
     store: &AutomationStore,
     task_id: AutomationTaskId,
-) -> Result<u16, AutomationError> {
-    let value: i64 = sqlx::query_scalar(
-        "SELECT catch_up_remaining FROM automation_schedule_metadata
+) -> Result<(bool, u16), AutomationError> {
+    let row = sqlx::query(
+        "SELECT catch_up_active, catch_up_remaining
+         FROM automation_schedule_metadata
          WHERE task_id = ? AND owner_agent_id = ?",
     )
     .bind(task_id.to_string())
@@ -1268,21 +1302,34 @@ async fn catch_up_remaining(
     .fetch_one(&mut **tx)
     .await
     .map_err(unavailable)?;
-    to_u16(value)
+    let active: i64 = row
+        .try_get("catch_up_active")
+        .map_err(|_| AutomationError::Corrupt)?;
+    let remaining = to_u16(
+        row.try_get("catch_up_remaining")
+            .map_err(|_| AutomationError::Corrupt)?,
+    )?;
+    match active {
+        0 => Ok((false, remaining)),
+        1 => Ok((true, remaining)),
+        _ => Err(AutomationError::Corrupt),
+    }
 }
 
-async fn set_catch_up_remaining(
+async fn set_catch_up_state(
     tx: &mut sqlx::Transaction<'_, sqlx::Sqlite>,
     store: &AutomationStore,
     task_id: AutomationTaskId,
+    active: bool,
     remaining: u16,
     now_ms: u64,
 ) -> Result<(), AutomationError> {
     sqlx::query(
         "UPDATE automation_schedule_metadata
-         SET catch_up_remaining = ?, updated_at_ms = ?
+         SET catch_up_active = ?, catch_up_remaining = ?, updated_at_ms = ?
          WHERE task_id = ? AND owner_agent_id = ?",
     )
+    .bind(if active { 1_i64 } else { 0_i64 })
     .bind(i64::from(remaining))
     .bind(to_i64(now_ms)?)
     .bind(task_id.to_string())
@@ -1299,7 +1346,7 @@ async fn reset_catch_up(
     task_id: AutomationTaskId,
     now_ms: u64,
 ) -> Result<(), AutomationError> {
-    set_catch_up_remaining(tx, store, task_id, 0, now_ms).await
+    set_catch_up_state(tx, store, task_id, false, 0, now_ms).await
 }
 
 fn digest_suffix(value: &str) -> String {
