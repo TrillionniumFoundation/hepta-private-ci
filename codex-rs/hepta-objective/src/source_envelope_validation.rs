@@ -4,20 +4,19 @@ use std::fmt;
 
 use crate::ObjectiveSourceEnvelopeV1;
 
-/// The native compiler admits at most 256 hard constraints. Admission always
-/// materializes six resource ceilings and four risk constraints, so bounded
-/// source JSON must reserve those ten slots instead of exposing the native
-/// aggregate ceiling as a per-source-array ceiling.
-pub const MAX_OBJECTIVE_SOURCE_CONSTRAINTS: usize = 246;
+/// Canonical ObjectiveSourceEnvelopeV1 permits 256 source hard constraints.
+/// The native compiler and feasibility gate reserve their own ten generated
+/// resource/risk rows instead of shrinking this public wire bound.
+pub const MAX_OBJECTIVE_SOURCE_CONSTRAINTS: usize = 256;
 
-/// Success predicates, terminal conditions and evidence requirements are
-/// currently lowered into one native success-predicate vector. Bound the three
-/// source arrays by the actual aggregate native ceiling.
-pub const MAX_OBJECTIVE_AGGREGATE_PREDICATES: usize = 128;
+/// The wire independently permits 128 success predicates, 128 terminal
+/// conditions and 128 evidence requirements. All three are bounded separately
+/// and may lower into one 384-row native predicate vector.
+pub const MAX_OBJECTIVE_AGGREGATE_PREDICATES: usize = 384;
 
-/// The compiler injects the intrinsic `abstain` action. Reserve one native
-/// action slot for it at the bounded source boundary.
-pub const MAX_OBJECTIVE_CALLER_ACTIONS: usize = 127;
+/// Canonical source grammar permits 128 caller action classes. Native compile
+/// reserves an additional slot for intrinsic abstain when the source omitted it.
+pub const MAX_OBJECTIVE_CALLER_ACTIONS: usize = 128;
 
 /// Structural errors contain field paths/counts, never unrestricted source text.
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -81,8 +80,7 @@ impl ObjectiveSourceEnvelopeV1 {
     /// syntax, NFC, canonical ordering, digest bindings, profile semantics,
     /// freshness and source authority are established by later admission.
     /// Cross-array semantic conflicts and unsupported operators are never
-    /// rewritten here; the count checks below only reserve the native aggregate
-    /// capacity that deterministic admission is guaranteed to consume.
+    /// rewritten here.
     pub fn validate_structure(&self) -> Result<(), ObjectiveStructureError> {
         text_bytes(&self.request_id, "requestId", /*maximum*/ 128)?;
         text_bytes(&self.locale, "locale", /*maximum*/ 32)?;
@@ -99,7 +97,7 @@ impl ObjectiveSourceEnvelopeV1 {
                 predicates,
                 field,
                 /*minimum*/ 1,
-                /*maximum*/ MAX_OBJECTIVE_AGGREGATE_PREDICATES,
+                /*maximum*/ 128,
                 |value| &value.predicate_id,
             )?;
             for predicate in predicates {
@@ -112,27 +110,22 @@ impl ObjectiveSourceEnvelopeV1 {
                 )?;
             }
         }
-        for (actions, field, minimum, maximum) in [
-            (
-                &intent.legal_action_classes,
-                "legalActionClasses",
-                0,
-                MAX_OBJECTIVE_CALLER_ACTIONS,
-            ),
-            (
-                &intent.forbidden_action_classes,
-                "forbiddenActionClasses",
-                0,
-                128,
-            ),
+        for (actions, field, minimum) in [
+            (&intent.legal_action_classes, "legalActionClasses", 1),
+            (&intent.forbidden_action_classes, "forbiddenActionClasses", 0),
             (
                 &intent.confirmation_action_classes,
                 "confirmationActionClasses",
                 0,
-                MAX_OBJECTIVE_CALLER_ACTIONS,
             ),
         ] {
-            collection(actions, field, minimum, maximum, String::as_str)?;
+            collection(
+                actions,
+                field,
+                minimum,
+                MAX_OBJECTIVE_CALLER_ACTIONS,
+                String::as_str,
+            )?;
             for action in actions {
                 text_bytes(action, field, /*maximum*/ 128)?;
             }
@@ -172,7 +165,7 @@ impl ObjectiveSourceEnvelopeV1 {
             &intent.evidence_requirements,
             "evidenceRequirements",
             /*minimum*/ 1,
-            /*maximum*/ MAX_OBJECTIVE_AGGREGATE_PREDICATES,
+            /*maximum*/ 128,
             |value| &value.requirement_id,
         )?;
         for requirement in &intent.evidence_requirements {
