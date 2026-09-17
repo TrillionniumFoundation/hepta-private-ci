@@ -105,8 +105,9 @@ pub struct NativeRunRecord {
     pub dispatch: Option<NativeDispatch>,
     pub turn_id: Option<String>,
     pub cancel_requested: bool,
-    /// A locally proven pre-dispatch stop releases a slot without pretending
-    /// to have observed a provider terminal event or zero token consumption.
+    /// A locally proven stop before provider `turn/start` releases a slot
+    /// without pretending to have observed a provider terminal event or zero
+    /// token consumption.
     pub pre_dispatch_stop: Option<String>,
     pub observation: Option<NativeRunOutput>,
 }
@@ -245,6 +246,40 @@ impl DurableInferenceControl {
         request_id: &str,
         reason: String,
     ) -> Result<NativeRunRecord, Error> {
+        let record = self
+            .native
+            .records
+            .get(request_id)
+            .ok_or(Error::RequestNotFound)?;
+        if record.state != NativeReservationState::Reserved {
+            return Err(Error::InvalidTransition);
+        }
+        self.commit_native(
+            request_id,
+            Event::Stop {
+                request_id: request_id.to_string(),
+                reason,
+            },
+        )
+    }
+
+    /// Release a synced dispatch intent only when the trusted host can prove it
+    /// has not sent provider `turn/start` yet. This lets a final authority or
+    /// cognitive-receipt check sit after durable dispatch and immediately before
+    /// the external effect without leaking the local slot on a fail-closed stop.
+    pub fn stop_native_before_turn_start(
+        &mut self,
+        request_id: &str,
+        reason: String,
+    ) -> Result<NativeRunRecord, Error> {
+        let record = self
+            .native
+            .records
+            .get(request_id)
+            .ok_or(Error::RequestNotFound)?;
+        if record.state != NativeReservationState::Dispatching || record.turn_id.is_some() {
+            return Err(Error::InvalidTransition);
+        }
         self.commit_native(
             request_id,
             Event::Stop {
@@ -405,7 +440,10 @@ impl NativeJournal {
                 record.state = NativeReservationState::Cancelling;
             }
             Event::Stop { reason, .. } => {
-                if record.state != NativeReservationState::Reserved
+                if !matches!(
+                    record.state,
+                    NativeReservationState::Reserved | NativeReservationState::Dispatching
+                ) || record.turn_id.is_some()
                     || reason.is_empty()
                     || reason.len() > 4096
                 {
@@ -501,3 +539,62 @@ fn apply_observation(record: &mut NativeRunRecord, output: NativeRunOutput) -> R
 #[cfg(test)]
 #[path = "native_control_tests.rs"]
 mod tests;
+
+#[cfg(test)]
+mod pre_turn_stop_tests {
+    use super::*;
+    use std::time::SystemTime;
+    use std::time::UNIX_EPOCH;
+
+    #[test]
+    fn synced_dispatch_can_stop_before_turn_start_and_release_slot() {
+        let nonce = SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .unwrap()
+            .as_nanos();
+        let path = std::env::temp_dir().join(format!("hepta-native-pre-turn-stop-{nonce}.journal"));
+        let mut control = DurableInferenceControl::open(&path, 8).unwrap();
+        control
+            .reserve_native(
+                NativeRequest {
+                    request_id: "r1".to_string(),
+                    principal_id: "agent-1".to_string(),
+                    worker_generation: 4,
+                    model: "actual-model".to_string(),
+                    payload_digest: "a".repeat(64),
+                },
+                1,
+            )
+            .unwrap();
+        control
+            .dispatch_native(
+                "r1",
+                NativeDispatch {
+                    thread_id: "thread-1".to_string(),
+                    model_provider: "provider".to_string(),
+                    context_digest: "b".repeat(64),
+                },
+            )
+            .unwrap();
+        let stopped = control
+            .stop_native_before_turn_start("r1", "stale cognitive receipt".to_string())
+            .unwrap();
+        assert_eq!(stopped.state, NativeReservationState::Released);
+        assert_eq!(stopped.turn_id, None);
+        assert_eq!(
+            stopped.pre_dispatch_stop.as_deref(),
+            Some("stale cognitive receipt")
+        );
+        assert_eq!(stopped.observation, None);
+        assert!(stopped.dispatch.is_some());
+        assert_eq!(
+            control.native_started("r1", "turn-1".to_string()),
+            Err(Error::InvalidTransition)
+        );
+        drop(control);
+        let reopened = DurableInferenceControl::open(&path, 8).unwrap();
+        assert_eq!(reopened.native_record("r1"), Some(&stopped));
+        drop(reopened);
+        std::fs::remove_file(path).unwrap();
+    }
+}
