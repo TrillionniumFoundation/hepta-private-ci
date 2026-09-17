@@ -92,6 +92,13 @@ impl<D: ProcessDriver> Supervisor<D> {
                 record.lifecycle.lifecycle
             )));
         }
+        if !slot.restart_pending {
+            self.reset_restart_budget_for_release(
+                agent_id,
+                slot,
+                release.release_id().clone(),
+            )?;
+        }
         let starting = self.registry.compare_and_transition(
             agent_id,
             record.lifecycle.generation,
@@ -167,6 +174,7 @@ impl<D: ProcessDriver> Supervisor<D> {
         now: Instant,
     ) -> Result<(), SupervisorError> {
         let Some(lease) = read_lease(record.layout.run_root())? else {
+            self.restore_restart_budget(agent_id, slot, record, now)?;
             if is_live_lifecycle(record.lifecycle.lifecycle) {
                 let generation = self.transition_without_runtime(
                     agent_id,
@@ -175,6 +183,7 @@ impl<D: ProcessDriver> Supervisor<D> {
                     AgentLifecycle::Failed,
                 )?;
                 slot.event(generation, SupervisorEventKind::OrphanMissing);
+                self.schedule_automatic_restart(agent_id, slot, generation, now)?;
             }
             self.recover_matrix_companion(agent_id, slot, record, now)?;
             return Ok(());
@@ -199,6 +208,7 @@ impl<D: ProcessDriver> Supervisor<D> {
                 slot.active_release = Some(leased);
             }
         }
+        self.restore_restart_budget(agent_id, slot, record, now)?;
         let spec = AdoptSpec {
             agent_id: agent_id.clone(),
             registry_generation: record.lifecycle.generation,
@@ -261,7 +271,8 @@ impl<D: ProcessDriver> Supervisor<D> {
             }
             Adoption::Missing => {
                 remove_lease(record.layout.run_root(), &lease)?;
-                let generation = if is_live_lifecycle(record.lifecycle.lifecycle) {
+                let was_live = is_live_lifecycle(record.lifecycle.lifecycle);
+                let generation = if was_live {
                     self.transition_without_runtime(
                         agent_id,
                         slot,
@@ -272,10 +283,14 @@ impl<D: ProcessDriver> Supervisor<D> {
                     record.lifecycle.generation
                 };
                 slot.event(generation, SupervisorEventKind::OrphanMissing);
+                if was_live {
+                    self.schedule_automatic_restart(agent_id, slot, generation, now)?;
+                }
             }
             Adoption::Rejected => {
                 remove_lease(record.layout.run_root(), &lease)?;
-                let generation = if is_live_lifecycle(record.lifecycle.lifecycle) {
+                let was_live = is_live_lifecycle(record.lifecycle.lifecycle);
+                let generation = if was_live {
                     self.transition_without_runtime(
                         agent_id,
                         slot,
@@ -286,6 +301,9 @@ impl<D: ProcessDriver> Supervisor<D> {
                     record.lifecycle.generation
                 };
                 slot.event(generation, SupervisorEventKind::OrphanRejected);
+                if was_live {
+                    self.schedule_automatic_restart(agent_id, slot, generation, now)?;
+                }
             }
         }
         self.recover_matrix_companion(agent_id, slot, record, now)?;
