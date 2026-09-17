@@ -1,7 +1,7 @@
 # cognitive.store: implementation design
 
 Parent: `docs/modules/cognitive.store/TECHNICAL.md`. Lane: `LANE-C-MEMORY`.
-Status: the in-memory semantic store, the existing SQLite authoritative owner, durable provisional/verified/tombstone admission, and the named Agentd product read path are source-implemented. Production write composition, descriptor-safe writable recovery, longitudinal paging/retention and independent acceptance remain separate gaps. Common requirements: `../EXECUTION_SEMANTICS.md` and `../TECHNICAL.md`. Canonical ownership and package predecessors are unchanged.
+Status: the in-memory semantic store, the existing SQLite authoritative owner, durable provisional/verified/tombstone admission, exact-cut whole-history paging, and the named Agentd product read path are source-implemented. Production write composition, descriptor-safe writable recovery, physical archive/pruning retention, target-host performance qualification and independent acceptance remain separate gaps. Common requirements: `../EXECUTION_SEMANTICS.md` and `../TECHNICAL.md`. Canonical ownership and package predecessors are unchanged.
 
 ## 1. Source and work envelope
 
@@ -31,7 +31,9 @@ The hardened V2 semantic boundary rejects contradicted candidates and rejects an
 
 ## 5. Capacity and performance profile
 
-Pilot event metadata <= 256 KiB, transaction batch <= 256, bounded snapshot readers and retention per policy. Segment/rotation limits must preserve continuity and acknowledged-history anchors. The existing full Lane-C snapshot remains bounded to 16,384 immutable revisions, 65,536 citations and 65,536 source rows in one exact scope. Raising those ceilings requires a paged lineage format that never splits predecessor proof or loses the current tombstone frontier.
+Pilot event metadata <= 256 KiB, transaction batch <= 256, bounded snapshot readers and retention per policy. Segment/rotation limits must preserve continuity and acknowledged-history anchors. The existing full Lane-C snapshot remains bounded to 16,384 immutable revisions, 65,536 citations and 65,536 source rows in one exact scope.
+
+`CognitiveStore::lane_c_lineage_page` is the source-implemented long-history traversal path. It pages only whole memory histories, never splits one predecessor chain across pages, carries global owner/tombstone frontiers, binds consecutive pages to an exact logical owner-state digest and fails if the owner mutates between page acquisitions. One page is bounded to 256 memory identities and 4,096 revisions. This closes the bounded traversal gap; it does not authorize physical pruning or archive deletion. Removing authoritative rows still requires a durable predecessor anchor and deletion-frontier continuity format.
 
 `codex-rs/hepta-memory/examples/cognitive_store_perf.rs` is the executable PERF-DURABLE measurement source. It exercises real durable writes, SQLite-family byte growth, owner snapshot materialization, reopen and exact-cut revalidation and emits machine-readable measurements. Checked-in source is not a target-host measurement receipt; retain exact source/binary/host identity with every run.
 
@@ -46,7 +48,7 @@ Pilot ceilings are design targets, not measurements. Stricter canonical limits p
 - STORE-05: unverified inference and contradicted candidate cannot become a live fact/record.
 - STORE-06: ordinary record or retry-journal saturation cannot block a terminal forget.
 - STORE-07: a checksum-valid image with receipt/record/frontier cross-link drift is rejected on reopen.
-- STORE-08: every page of a future retained lineage is bound to one exact owner cut and carries the global tombstone frontier without splitting one record's ancestry.
+- STORE-08: each lineage page is bound to one exact owner cut, carries the global tombstone frontier, contains complete per-memory ancestry and rejects a stale cursor after an owner mutation.
 
 These are required product test designs unless a current exact-candidate receipt proves the named source test. A source file or historical workflow run is not itself a pass receipt.
 
@@ -56,6 +58,8 @@ The read side already has a named product composition: `codex-rs/hepta-agentd/sr
 
 The write side remains narrower. The real App Server cognitive product E2E exercises remember/correct/forget only under the explicit `qualification-cognitive-write` profile, and the local memory saga explicitly denies production-caller authority. Do not relabel those paths as an activated production writer. A production write adapter must reuse the existing SQLite writer plus externally verified authority/fence; it must not route durable facts through the in-memory V2 store.
 
+The semantic/durable write contracts are not yet identical: V2 distinguishes `Episode`, `Fact`, `Preference` and `Procedure`, while the current durable `memory_revisions` schema does not persist that kind and the Lane-C owner projection currently exposes eligible durable memories as `Fact`. Production write convergence therefore requires an explicit compatible schema/contract decision, global snapshot CAS in the same durable mutation, and a durable intent-identity journal. The recovery schema oracle must be regenerated and independently verified with any schema migration.
+
 Rollback must validate the current tombstone frontier and compatible readers; it must not revive earlier acknowledged deleted content. Immediate revocation/stop remains effective across frozen snapshots. Preserve every applicable external gate; no generator self-acceptance, self-merge or self-release.
 
 ## 8. Current native implementation
@@ -63,9 +67,10 @@ Rollback must validate the current tombstone frontier and compatible readers; it
 - **Implemented semantic entrypoints:** `CognitiveStore` / hardened `AdmittedCognitiveStoreV2` in [codex-rs/hepta-cognitive-store/src/lib.rs](../../../codex-rs/hepta-cognitive-store/src/lib.rs). These are in-memory semantic components and are not the physical database.
 - **Implemented durable owner:** `CognitiveStore` in [codex-rs/hepta-memory/src/cognitive_store.rs](../../../codex-rs/hepta-memory/src/cognitive_store.rs), durable memory/KG writes in [cognitive_intelligence_writer.rs](../../../codex-rs/hepta-memory/src/cognitive_intelligence_writer.rs), and provisional/verified/tombstone admission in [memory_admission.rs](../../../codex-rs/hepta-memory/src/memory_admission.rs).
 - **Implemented read provider:** `lane_c_snapshot` plus revalidation in [codex-rs/hepta-memory/src/lane_c_snapshot.rs](../../../codex-rs/hepta-memory/src/lane_c_snapshot.rs). It reads one authorized SQLite transaction and compares exact cuts including corrections/tombstones.
+- **Implemented lineage pager:** [codex-rs/hepta-memory/src/lane_c_paging.rs](../../../codex-rs/hepta-memory/src/lane_c_paging.rs), with real SQLite tests in [codex-rs/hepta-memory/tests/lane_c_paging.rs](../../../codex-rs/hepta-memory/tests/lane_c_paging.rs).
 - **Named product read caller:** [codex-rs/hepta-agentd/src/cognitive_context.rs](../../../codex-rs/hepta-agentd/src/cognitive_context.rs), consumed by [codex-rs/hepta-infer-worker-host/src/native_app_server.rs](../../../codex-rs/hepta-infer-worker-host/src/native_app_server.rs).
-- **Source tests:** [codex-rs/hepta-cognitive-store/src/v2_tests.rs](../../../codex-rs/hepta-cognitive-store/src/v2_tests.rs), [codex-rs/hepta-cognitive-store/src/hardening_tests.rs](../../../codex-rs/hepta-cognitive-store/src/hardening_tests.rs), [codex-rs/hepta-memory/src/lane_c_snapshot_tests.rs](../../../codex-rs/hepta-memory/src/lane_c_snapshot_tests.rs), [codex-rs/hepta-agentd/src/cognitive_context_tests.rs](../../../codex-rs/hepta-agentd/src/cognitive_context_tests.rs), and [codex-rs/hepta-agentd/tests/cognitive_product_e2e.rs](../../../codex-rs/hepta-agentd/tests/cognitive_product_e2e.rs). These are source identities, not a claim that the current PR candidate has passed them.
+- **Source tests:** [codex-rs/hepta-cognitive-store/src/v2_tests.rs](../../../codex-rs/hepta-cognitive-store/src/v2_tests.rs), [codex-rs/hepta-cognitive-store/src/hardening_tests.rs](../../../codex-rs/hepta-cognitive-store/src/hardening_tests.rs), [codex-rs/hepta-memory/src/lane_c_snapshot_tests.rs](../../../codex-rs/hepta-memory/src/lane_c_snapshot_tests.rs), [codex-rs/hepta-memory/tests/lane_c_paging.rs](../../../codex-rs/hepta-memory/tests/lane_c_paging.rs), [codex-rs/hepta-agentd/src/cognitive_context_tests.rs](../../../codex-rs/hepta-agentd/src/cognitive_context_tests.rs), and [codex-rs/hepta-agentd/tests/cognitive_product_e2e.rs](../../../codex-rs/hepta-agentd/tests/cognitive_product_e2e.rs). These are source identities, not a claim that the current PR candidate has passed them.
 - **Operating reference:** [codex-rs/hepta-memory/LANE_C_SQLITE.md](../../../codex-rs/hepta-memory/LANE_C_SQLITE.md).
 - **Performance source:** [codex-rs/hepta-memory/examples/cognitive_store_perf.rs](../../../codex-rs/hepta-memory/examples/cognitive_store_perf.rs).
 - **Recovery blocker:** the retained recovery guard can bind DB/WAL/SHM identities and compare an independently retained exact logical cut, but writable `open_with_recovery` still lacks a descriptor-backed SQLite VFS/equivalent, current writer-fence input and reconnect-proof ownership. It must remain fail-closed; ordinary reopen plus cut comparison is not full recovery admission.
-- **Remaining repository work:** implement bounded lineage paging/retention without breaking ancestry or deletion frontiers; converge the semantic and durable APIs without a second writer; compose authenticated production memory writes; execute PERF-DURABLE on target hosts; obtain exact-head/synthetic-merge and independent acceptance evidence.
+- **Remaining repository work:** physical archive/pruning retention with durable predecessor/deletion anchors; V2/durable write-contract convergence; authenticated production memory writes; descriptor-safe writable recovery; target-host PERF-DURABLE execution; exact-head/synthetic-merge and independent acceptance evidence.
