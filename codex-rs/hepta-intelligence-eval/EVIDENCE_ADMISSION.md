@@ -112,24 +112,26 @@ records. Unknown/truncated/corrupt bytes reject. No implicit migration is allowe
 `SignedHoldoutAnchorV1` and `authenticate_holdout_anchor_v1` add cryptographic
 admission for the independently retained minimum anchor without changing that
 journal format. A trusted `Observer` signs the exact namespace binding, sequence
-and head. Admission verifies the signature against host-owned trust and also
-requires a host-owned `minimum_issued_at` freshness watermark; an older witness
-cannot select its own watermark from the request. `recover_with_authenticated_holdout_anchor_v1`
-then authenticates first and calls durable recovery. It deliberately refuses a
-zero bootstrap anchor, so initialization cannot be confused with rollback-safe
-recovery.
+and head. Admission verifies the signature against host-owned trust, requires the
+witness anchor to equal the exact `minimum_anchor` loaded from the host's separate
+currentness store, and also requires a host-owned `minimum_issued_at` freshness
+watermark. Neither rollback boundary can be selected by the submitted witness.
+`recover_with_authenticated_holdout_anchor_v1` authenticates these bindings first
+and then calls durable recovery. It deliberately refuses a zero bootstrap anchor,
+so initialization cannot be confused with rollback-safe recovery.
 
 Before releasing confirmatory labels or acknowledging consumption externally,
 the host must durably retain the returned anchor independently of this journal,
-obtain/store its observer attestation, and advance the freshness watermark in an
-independent monotonic store. A backup cannot manufacture its own expected anchor
-or choose an older accepted watermark. The host still owns current trust/revocation
+obtain/store its observer attestation, and atomically or monotonically advance the
+host currentness record used to supply both `minimum_anchor` and
+`minimum_issued_at`. A backup cannot manufacture its own expected anchor or choose
+an older accepted watermark. The host still owns current trust/revocation
 distribution, directory durability, retention and the production scheduler.
 Locks exclude cooperating writers, not hostile filesystem mutation. Tests in
 `src/durable_holdout_tests.rs` cover a different loading process, idempotent
 retries, acknowledged-history truncation, corruption, writer collision and write
-uncertainty; `src/authenticated_holdout.rs` tests signed-anchor tamper/freshness
-admission. They are not production-caller or future-window receipts.
+uncertainty; `src/authenticated_holdout.rs` tests signed-anchor fork, tamper and
+freshness admission. They are not production-caller or future-window receipts.
 
 ## Observed-time longitudinal admission
 
