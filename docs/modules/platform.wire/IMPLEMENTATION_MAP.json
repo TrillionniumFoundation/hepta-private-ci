@@ -41,8 +41,14 @@
       "state": "source_implemented_current_v1_contract",
       "authority": "none",
       "tests": [
-        "codex-rs/hepta-wire/src/envelope_tests.rs",
-        "codex-rs/hepta-wire/src/boundary_tests.rs"
+        {
+          "path": "codex-rs/hepta-wire/src/envelope_tests.rs",
+          "kind": "unit_roundtrip"
+        },
+        {
+          "path": "codex-rs/hepta-wire/src/boundary_tests.rs",
+          "kind": "boundary_and_frozen_vector"
+        }
       ],
       "sourcePathExists": true,
       "designOperation": "wireenvelope",
@@ -56,9 +62,18 @@
       "state": "source_implemented_candidate",
       "authority": "none",
       "tests": [
-        "codex-rs/hepta-wire/src/v2.rs",
-        "codex-rs/hepta-wire/src/property_tests.rs",
-        "codex-rs/hepta-wire/src/v2_conformance_tests.rs"
+        {
+          "path": "codex-rs/hepta-wire/src/v2.rs",
+          "kind": "unit_integrity"
+        },
+        {
+          "path": "codex-rs/hepta-wire/src/property_tests.rs",
+          "kind": "property_robustness"
+        },
+        {
+          "path": "codex-rs/hepta-wire/src/v2_conformance_tests.rs",
+          "kind": "independent_frozen_vector"
+        }
       ],
       "sourcePathExists": true,
       "designOperation": "encode_envelope/decode_envelope",
@@ -72,7 +87,10 @@
       "state": "source_implemented_candidate",
       "authority": "none",
       "tests": [
-        "codex-rs/hepta-wire/src/negotiation.rs"
+        {
+          "path": "codex-rs/hepta-wire/src/negotiation.rs",
+          "kind": "negotiation_and_downgrade"
+        }
       ],
       "sourcePathExists": true,
       "designOperation": "negotiate",
@@ -86,7 +104,10 @@
       "state": "source_implemented_candidate",
       "authority": "none",
       "tests": [
-        "codex-rs/hepta-wire/src/schema.rs"
+        {
+          "path": "codex-rs/hepta-wire/src/schema.rs",
+          "kind": "typed_schema_and_canonicalization"
+        }
       ],
       "sourcePathExists": true,
       "designOperation": "typed_schema_admission",
@@ -100,8 +121,14 @@
       "state": "source_implemented_candidate",
       "authority": "none",
       "tests": [
-        "codex-rs/hepta-wire/src/stream.rs",
-        "codex-rs/hepta-wire/src/property_tests.rs"
+        {
+          "path": "codex-rs/hepta-wire/src/stream.rs",
+          "kind": "incremental_resource_bounds"
+        },
+        {
+          "path": "codex-rs/hepta-wire/src/property_tests.rs",
+          "kind": "chunking_and_arbitrary_bytes"
+        }
       ],
       "sourcePathExists": true,
       "designOperation": "bounded_decoder",
@@ -115,8 +142,14 @@
       "state": "source_composed_candidate",
       "authority": "none",
       "tests": [
-        "codex-rs/hepta-codex-adapter/src/wire.rs",
-        "codex-rs/hepta-shadow-qualification/tests/cross_language_wire_fault.rs"
+        {
+          "path": "codex-rs/hepta-codex-adapter/src/wire.rs",
+          "kind": "typed_product_source_roundtrip"
+        },
+        {
+          "path": "codex-rs/hepta-shadow-qualification/tests/cross_language_wire_fault.rs",
+          "kind": "live_cross_runtime_process_pipe"
+        }
       ],
       "sourcePathExists": true,
       "designOperation": "product_source_composition",
