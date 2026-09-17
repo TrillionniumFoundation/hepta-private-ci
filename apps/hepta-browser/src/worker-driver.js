@@ -69,19 +69,25 @@ export class LinuxBubblewrapLauncher {
       "--new-session",
       "--die-with-parent",
       "--clearenv",
-      // Start from an empty filesystem view. Only immutable runtime paths
-      // required by the dynamically linked worker are admitted below. In
-      // particular, /var, service homes and arbitrary host mounts are absent,
-      // so a compromised browser cannot read ambient credential stores merely
-      // because they are read-only.
+      // Start from an empty root and expose only the immutable runtime closure
+      // needed by a dynamically linked worker. General host executables,
+      // /usr/local, service data and credential roots are deliberately absent.
       "--tmpfs", "/",
-      "--ro-bind", "/usr", "/usr",
-      "--ro-bind-try", "/bin", "/bin",
-      "--ro-bind-try", "/lib", "/lib",
-      "--ro-bind-try", "/lib64", "/lib64",
+      "--dir", "/usr",
+      "--ro-bind-try", "/usr/lib", "/usr/lib",
+      "--ro-bind-try", "/usr/lib64", "/usr/lib64",
+      "--dir", "/usr/share",
+      "--ro-bind-try", "/usr/share/fonts", "/usr/share/fonts",
+      "--ro-bind-try", "/usr/share/fontconfig", "/usr/share/fontconfig",
+      "--symlink", "usr/lib", "/lib",
+      "--symlink", "usr/lib64", "/lib64",
       "--dir", "/etc",
+      "--ro-bind-try", "/etc/ld.so.cache", "/etc/ld.so.cache",
       "--ro-bind-try", "/etc/fonts", "/etc/fonts",
       "--ro-bind-try", "/etc/ssl", "/etc/ssl",
+      "--dir", "/var",
+      "--dir", "/var/cache",
+      "--ro-bind-try", "/var/cache/fontconfig", "/var/cache/fontconfig",
       "--tmpfs", "/home",
       "--tmpfs", "/root",
       "--tmpfs", "/run",
