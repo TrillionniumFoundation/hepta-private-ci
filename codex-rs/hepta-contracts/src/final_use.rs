@@ -295,21 +295,58 @@ impl FinalUseAuthority {
         expected: &FinalUseBinding,
         consumer: impl FnOnce() -> T,
     ) -> Result<T, FinalUseError> {
+        self.validate_token_live(&token, expected)?;
+        Ok(consumer())
+    }
+
+    /// Revalidate live authority and hold the revocation linearization fence
+    /// only while the caller crosses its local irreversible dispatch boundary.
+    ///
+    /// The callback must synchronously publish durable intent and/or cross the
+    /// already-selected local adapter/worker boundary, then return immediately.
+    /// It must not wait for remote execution, provider terminality,
+    /// reconciliation, or arbitrary user code. Revocation updates that start
+    /// after this validation are ordered after the local dispatch boundary.
+    pub fn with_dispatch_boundary<T>(
+        &self,
+        token: VerifiedUseToken,
+        expected: &FinalUseBinding,
+        dispatch_boundary: impl FnOnce() -> T,
+    ) -> Result<T, FinalUseError> {
         if !Arc::ptr_eq(&self.0, &token.owner) || &token.grant.binding != expected {
             return Err(FinalUseError::BindingMismatch);
         }
-        {
-            let state = self
-                .0
-                .state
-                .lock()
-                .map_err(|_| FinalUseError::Unavailable)?;
-            if state.failed {
-                return Err(FinalUseError::Unavailable);
-            }
-            validate_live(&token.grant, &state.head)?;
+        let state = self
+            .0
+            .state
+            .lock()
+            .map_err(|_| FinalUseError::Unavailable)?;
+        if state.failed {
+            return Err(FinalUseError::Unavailable);
         }
-        Ok(consumer())
+        validate_live(&token.grant, &state.head)?;
+        let result = dispatch_boundary();
+        drop(state);
+        Ok(result)
+    }
+
+    fn validate_token_live(
+        &self,
+        token: &VerifiedUseToken,
+        expected: &FinalUseBinding,
+    ) -> Result<(), FinalUseError> {
+        if !Arc::ptr_eq(&self.0, &token.owner) || &token.grant.binding != expected {
+            return Err(FinalUseError::BindingMismatch);
+        }
+        let state = self
+            .0
+            .state
+            .lock()
+            .map_err(|_| FinalUseError::Unavailable)?;
+        if state.failed {
+            return Err(FinalUseError::Unavailable);
+        }
+        validate_live(&token.grant, &state.head)
     }
 }
 
