@@ -2,69 +2,102 @@
 
 ## Current executable contract
 
-`codex-rs/hepta-operations` is a bounded **in-memory reference model**, not a
-durable operation service. It models pending, authorized, dispatched,
-indeterminate and terminal states; exact operation/payload identity; monotonic
-revisions; generation-fenced terminal observation; and a bounded in-memory
-outbox.
+`codex-rs/hepta-operations` now contains two deliberately separate surfaces:
 
-All evidence digests required by transitions are nonzero. Exact command replay
-is idempotent; identity reuse with changed semantics conflicts. The
-`ReferenceAuthorityWitness` is intentionally not a cryptographic credential and
-must never be accepted by a production effect adapter. Its reference digest is
-canonically derived from operation identity, final payload digest, authority
-generation and expiry. Construction rejects a digest for any other semantic
-tuple, and authorization replay revalidates the complete binding and current
-expiry before it is treated as idempotent.
+1. the existing bounded in-memory reference model (`OperationLedger` and
+   `Outbox`), retained as a deterministic transition oracle; and
+2. `DurableOperationStore`, a SQLite/WAL durable owner for the production target
+   semantics.
 
-Acknowledged outbox state retains both the claiming owner generation and the
-acknowledgement digest. A terminal replay is idempotent only for that exact
-tuple; a different generation remains stale and a different digest conflicts.
+The durable store owns `operation_ledger` and `cross_owner_outbox` in one schema
+lineage. `prepare_intent` creates both rows in one `BEGIN IMMEDIATE` transaction,
+so a committed operation cannot exist without its source outbox. Operation
+identity binds scope, operation ID, predecessor, destination and exact payload
+digest. Reusing that identity with different semantics conflicts.
 
-## Public symbols and source bindings
+The source outbox has bounded attempts, next-eligible time, worker identity,
+lease expiry, owner generation and a monotonically increasing fence. Expired
+leases are safe to requeue only while the source operation is still `prepared`.
+If dispatch admission may have crossed the effect boundary, recovery changes the
+operation to `indeterminate` and does not blindly retry it.
 
-- `OperationKey`, `OperationState`, `OperationRecord`,
-  `ReconciliationOutcome`, `ReferenceAuthorityWitness`: `src/model.rs`;
-- `OperationLedger`, `MAX_MODEL_OPERATION_RECORDS`: `src/ledger.rs`;
-- `Outbox`, `OutboxIntent`, `OutboxState`,
-  `MAX_MODEL_OUTBOX_RECORDS`: `src/outbox.rs`;
-- stable errors, including reference-witness semantic mismatch:
-  `src/error.rs`.
+## Final-use authority and effect entry
 
-## Durability and activation
+`authorize_dispatch` consumes a real `kernel.authority` `SignedFinalUseGrant`
+and persists a `dispatching` write-ahead state before the adapter entry.
+`AuthorizedDispatch::enter` consumes the non-serializable `VerifiedUseToken`
+through `FinalUseAuthority::with_verified_use` immediately around the effect
+entry. A final-use rejection before callback entry is classified as
+not-dispatched; it does not manufacture a remote outcome.
 
-Durability is **not implemented**. Process exit loses every record and claim.
-There is no database, journal, fsync, interprocess lock, claim lease, dispatcher
-or product caller. The module is inactive.
+Transport dispatch and acknowledgement remain distinct from terminal effect
+observation. Missing acknowledgement moves the source operation to
+`indeterminate`. `observe_terminal` requires a current-generation observer and
+an evidence digest before it can settle `Applied`, `NotApplied` or
+`Quarantined`.
 
-## Target-only design
+## Destination deduplication
 
-The target is a transactional durable ledger/outbox with atomic intent
-publication, destination deduplication, bounded claim leases, crash/reopen
-takeover, reconciliation, migrations, corruption handling and rollback.
+`DestinationDedupeStore` supplies the destination half of the protocol. In
+product composition the destination owner installs the exact dedupe schema in
+its own database lineage and calls `from_migrated_pool`. `begin_apply` holds the
+destination write transaction open so owner-domain SQL and the immutable dedupe
+receipt commit atomically. An exact repeated operation returns the stored
+receipt; payload drift conflicts.
 
-## Known limits and non-claims
+The standalone destination database exists only for qualification. It is not a
+new cross-owner source of truth and must not replace a destination owner's own
+transaction boundary.
 
-Cloning a model is not reopen recovery. An outbox claim has no lease expiry and
-cannot be taken over inside this model. Caller-provided reference time is a test
-input, not trusted production time. A semantically bound reference digest is
-not authentication or a signature. Compensation is a new authorized operation,
-never implicit rollback.
+## Persistence, recovery and retention
 
-The reference ledger does not itself enforce final-use authority at an external
-adapter. Product composition must consume the non-serializable token owned by
-`kernel.authority` immediately before the effect boundary.
+The durable owner uses SQLite WAL mode, `synchronous=FULL`, foreign keys and a
+bounded busy timeout. Store open runs `PRAGMA quick_check`, the checksum-bound
+SQLx migration lineage, required-table verification and foreign-key validation
+before recovery. Unknown/incomplete/drifted migration state fails closed.
 
-## Verification
+Terminal source rows can be compacted only after writing an immutable semantic
+tombstone in the same transaction. Tombstones prevent an old operation identity
+from being resurrected after pruning or backup restoration.
 
-The shared model tests cover invalid/zero digests, capacity, idempotent replay,
-payload and operation drift, stale/expired reference witnesses, authority
-generation and expiry digest binding, stale outbox acknowledgement generations,
-changed acknowledgement digests, stale terminal generations, dispatch not being
-terminal success and indeterminate reconciliation.
+## Public source bindings
 
-## Integration prerequisites
+Durable implementation:
 
-No production binary may use this crate as a durability or authority boundary.
-A future backend must execute the same transition suite plus crash, disk-full,
-corruption, migration, multi-writer and claim-takeover tests before activation.
+- `OperationIntentV1`, durable state/receipt/error types: `src/durable_model.rs`;
+- `DurableOperationStore`, claim/lease/dispatch/reconcile/metrics/GC:
+  `src/durable_store.rs`;
+- `DestinationDedupeStore`: `src/destination_dedupe.rs`;
+- source schema: `migrations/0001_durable_operations.sql`;
+- destination-owner schema reference:
+  `destination_migrations/0001_operation_dedupe.sql`.
+
+Reference oracle:
+
+- `OperationLedger`: `src/ledger.rs`;
+- `Outbox`: `src/outbox.rs`;
+- reference state/witness types: `src/model.rs`.
+
+## Verification in this candidate
+
+Focused durable tests cover atomic prepare/reopen, exact concurrent prepare,
+payload conflict, lease takeover, stale fencing, crash/reopen after dispatch
+admission, acknowledgement loss, explicit not-dispatched retry, terminal
+reconciliation, migration-checksum drift, corruption failure and tombstone
+anti-resurrection. Destination tests prove that a domain mutation and dedupe
+receipt share one transaction and roll back together.
+
+These test sources are not a claim that an exact GitHub candidate passed until
+the applicable Lane A/source workflows reach terminal success.
+
+## Remaining integration boundary
+
+The durable source implementation does **not** by itself activate a product.
+A named destination owner must install the dedupe migration in its own lineage,
+a named product caller must construct `OperationIntentV1`, and the host must
+supply current final-use grants and a trusted terminal observer. Activation,
+operator acceptance, canary, promotion and release remain separate gates.
+
+The in-memory reference witness remains test-only and must never be treated as a
+production credential. Compensation remains a new authorized operation, never
+implicit rollback.
