@@ -1,0 +1,84 @@
+name: Hepta intuition policy qualification
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - codex-rs/hepta-intuition/**
+      - codex-rs/hepta-types/**
+      - qualification/intuition-policy-v3/**
+      - docs/modules/intuition.policy/**
+      - .github/workflows/hepta-intuition-policy.yml
+  pull_request:
+    paths:
+      - codex-rs/hepta-intuition/**
+      - codex-rs/hepta-types/**
+      - qualification/intuition-policy-v3/**
+      - docs/modules/intuition.policy/**
+      - .github/workflows/hepta-intuition-policy.yml
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-intuition-policy-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  qualify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Bind exact source
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${GITHUB_SHA}"
+          git rev-parse HEAD HEAD^{tree}
+
+      - name: Intuition unit and frozen-data qualification tests
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo test --locked -p codex-hepta-intuition -- --nocapture
+
+      - name: Strict intuition lint
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo clippy --locked -p codex-hepta-intuition --all-targets -- -D warnings
+
+      - name: Fast policy benchmark gate
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo bench --locked -p codex-hepta-intuition --bench fast_policy 2>&1 \
+            | tee "${RUNNER_TEMP}/intuition-fast-policy.txt"
+
+      - name: Formatting and clean source
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo fmt --manifest-path codex-rs/Cargo.toml --package codex-hepta-intuition -- --check
+          git diff --check
+          git diff --exit-code
+          test -z "$(git status --porcelain --untracked-files=no)"
+
+      - name: Retain benchmark receipt
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-intuition-fast-policy-${{ github.sha }}
+          path: ${{ runner.temp }}/intuition-fast-policy.txt
+          if-no-files-found: warn
+          retention-days: 30
