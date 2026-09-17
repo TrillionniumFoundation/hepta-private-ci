@@ -82,7 +82,9 @@ export class RuntimeClient {
     let observed;
     try {
       observed = requireRecord(
-        await this.#transport.connect({ endpointId, protocolVersion, manifestDigest }),
+        await this.#transport.connect(
+          Object.freeze({ endpointId, protocolVersion, manifestDigest }),
+        ),
         "connection observation",
       );
     } catch (error) {
@@ -95,10 +97,7 @@ export class RuntimeClient {
       fail(ERROR_CODES.UNAUTHENTICATED, "runtime connection is not authenticated");
     }
     if (observed.protocolVersion !== protocolVersion) {
-      fail(ERROR_CODES.INCOMPATIBLE_PROTOCOL, "runtime protocol version mismatch", {
-        expected: protocolVersion,
-        observed: observed.protocolVersion,
-      });
+      fail(ERROR_CODES.INCOMPATIBLE_PROTOCOL, "runtime protocol version mismatch");
     }
 
     this.#session = {
@@ -231,6 +230,7 @@ export class RuntimeClient {
       input.displayedRevision,
       "displayedRevision",
     );
+    requireRecord(input.scope, "scope");
     const scope = snapshotCanonical(input.scope, "scope", {
       maxBytes: MAX_REQUEST_BYTES,
     });
@@ -371,7 +371,7 @@ export class RuntimeClient {
     cloneAcknowledgement(entry, "pending", { accepted: null });
     this.#pending.set(operationId, entry);
 
-    const request = {
+    const request = Object.freeze({
       schema: TRANSPORT_REQUEST_SCHEMA,
       sessionId: this.#session.sessionId,
       connectionGeneration: this.#session.connectionGeneration,
@@ -380,7 +380,7 @@ export class RuntimeClient {
       operationId,
       semanticDigest,
       [input.payloadName]: payload,
-    };
+    });
 
     let rawResponse;
     try {
@@ -484,7 +484,7 @@ export class RuntimeClient {
     for (const entry of [...this.#pending.values()]) {
       let observation;
       try {
-        observation = await this.#transport.reconcile({
+        observation = await this.#transport.reconcile(Object.freeze({
           sessionId: this.#session.sessionId,
           connectionGeneration: this.#session.connectionGeneration,
           method: entry.method,
@@ -493,7 +493,7 @@ export class RuntimeClient {
           originSessionId: entry.originSessionId,
           originConnectionGeneration: entry.originConnectionGeneration,
           runtimeGeneration: entry.runtimeGeneration,
-        });
+        }));
       } catch {
         continue;
       }

@@ -188,7 +188,8 @@ export class ControlPlaneApp {
     if (!view?.canMutate) {
       return;
     }
-    const scope = snapshotCanonical(this.#stopScopeFactory(view), "stop scope");
+    const rawScope = requireRecord(this.#stopScopeFactory(view), "stop scope");
+    const scope = snapshotCanonical(rawScope, "stop scope");
     const request = Object.freeze({
       operationId: this.#operationIdFactory(),
       displayedRevision: view.revision,
