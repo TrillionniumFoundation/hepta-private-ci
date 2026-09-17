@@ -112,4 +112,4 @@ pub use taskflow_step::TaskFlowStepObservation;
 pub use taskflow_step::TaskFlowStepReceipt;
 pub use taskflow_step::TaskFlowStepState;
 
-pub const AUTOMATION_SCHEMA_VERSION: u32 = 7;
+pub const AUTOMATION_SCHEMA_VERSION: u32 = 8;
