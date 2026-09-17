@@ -18,6 +18,7 @@ use codex_hepta_matrix_store::OutboxKind;
 use codex_hepta_matrix_store::OutboxState;
 use codex_hepta_matrix_store::RoomBindingDraft;
 use codex_hepta_matrix_store::matrix_dispatch_operation_id;
+use codex_hepta_paths::HeptaAgentLayout;
 use codex_hepta_paths::HeptaFleetRoot;
 use tempfile::TempDir;
 
@@ -25,12 +26,22 @@ const AGENT: &str = "018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12";
 
 type TestResult<T = ()> = Result<T, Box<dyn Error>>;
 
-async fn prepared_store(temp: &TempDir) -> TestResult<(MatrixDurableStore, AgentId, MatrixRoomId)> {
+fn agent_layout(temp: &TempDir) -> TestResult<(AgentId, HeptaAgentLayout)> {
     let agent_id = AgentId::parse(AGENT)?;
     let fleet_root = temp.path().join("fleet");
     fs::create_dir_all(&fleet_root)?;
     let root = HeptaFleetRoot::parse(fleet_root.canonicalize()?)?;
     let layout = root.layout().agent(&agent_id);
+    Ok((agent_id, layout))
+}
+
+async fn reopen_store(temp: &TempDir) -> TestResult<MatrixDurableStore> {
+    let (_, layout) = agent_layout(temp)?;
+    Ok(MatrixDurableStore::open(&layout, MatrixDurableConfig::default()).await?)
+}
+
+async fn prepared_store(temp: &TempDir) -> TestResult<(MatrixDurableStore, AgentId, MatrixRoomId)> {
+    let (agent_id, layout) = agent_layout(temp)?;
     let store = MatrixDurableStore::open(&layout, MatrixDurableConfig::default()).await?;
     let room_id = MatrixRoomId::parse("!dispatch:example.test")?;
     store
@@ -125,7 +136,7 @@ async fn accepted_send_stays_indeterminate_until_server_observation_and_survives
     assert!(still_in_flight.is_empty());
     store.close().await;
 
-    let (reopened, _, reopened_room) = prepared_store(&temp).await?;
+    let reopened = reopen_store(&temp).await?;
     let pending = reopened
         .matrix_dispatch_receipt(&claimed.stable_txn_id)
         .await?
@@ -137,7 +148,7 @@ async fn accepted_send_stays_indeterminate_until_server_observation_and_survives
         .observe_matrix_server_event(
             Some(&claimed.stable_txn_id),
             &accepted_event,
-            &reopened_room,
+            &room_id,
             1,
             1,
             &"b".repeat(64),
@@ -147,7 +158,7 @@ async fn accepted_send_stays_indeterminate_until_server_observation_and_survives
         .expect("matching server event");
     assert_eq!(settled.state, MatrixDispatchState::ObservedSucceeded);
     assert!(settled.archived);
-    assert_eq!(settled.send_observation_digest.as_deref(), Some("b".repeat(64).as_str()));
+    assert_eq!(settled.send_observation_digest, Some("b".repeat(64)));
 
     let snapshot = reopened.snapshot(32).await?;
     let sent = snapshot
@@ -181,7 +192,7 @@ async fn ack_loss_retries_same_transaction_after_reopen() -> TestResult {
         .await?;
     store.close().await;
 
-    let (reopened, _, _) = prepared_store(&temp).await?;
+    let reopened = reopen_store(&temp).await?;
     assert!(reopened.claim_outbox(24, 5, 1).await?.is_empty());
     let retried = reopened.claim_outbox(25, 5, 1).await?;
     assert_eq!(retried.len(), 1);
@@ -236,10 +247,10 @@ async fn redaction_preserves_original_send_evidence_and_terminal_rows_leave_acti
         .await?
         .expect("redaction observation");
     assert_eq!(redacted.state, MatrixDispatchState::Redacted);
-    assert_eq!(redacted.send_observation_digest.as_deref(), Some("b".repeat(64).as_str()));
+    assert_eq!(redacted.send_observation_digest, Some("b".repeat(64)));
     assert_eq!(
-        redacted.redaction_observation_digest.as_deref(),
-        Some("c".repeat(64).as_str())
+        redacted.redaction_observation_digest,
+        Some("c".repeat(64))
     );
     let replay = store
         .observe_matrix_redaction(&event_id, &redaction_event, &"c".repeat(64), 14)
