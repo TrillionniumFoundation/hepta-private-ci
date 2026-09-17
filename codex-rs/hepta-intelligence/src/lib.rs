@@ -2,7 +2,8 @@
 //!
 //! The output is a plan receipt. It cannot invoke a model, tool or provider,
 //! execute an effect, activate a learned artifact, promote or release. The opt-in
-//! evaluated shadow adapter can append Decisions to a host-owned durable ledger.
+//! evaluated shadow adapter can append Decisions to a host-owned durable ledger,
+//! and the plasticity host can append authenticated proposal-only records.
 
 #![forbid(unsafe_code)]
 
@@ -13,6 +14,12 @@ pub use evaluated_shadow::EvaluatedShadowReceiptV1;
 pub use evaluated_shadow::EvaluatedShadowRequestV1;
 pub use evaluated_shadow::evaluated_candidate_signing_payload_v1;
 pub use evaluated_shadow::run_evaluated_shadow_v1;
+
+mod plasticity_host;
+
+pub use plasticity_host::DurableGovernedPlasticityReceiptV3;
+pub use plasticity_host::PlasticityHostErrorV3;
+pub use plasticity_host::propose_and_persist_plasticity_v3;
 
 mod capability_snapshot;
 
