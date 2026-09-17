@@ -6,6 +6,10 @@ use codex_hepta_types::Digest32;
 
 const Q24_SCALE: f64 = 16_777_216.0;
 const Q24_HALF_ULP: f64 = 0.5 / Q24_SCALE;
+/// Keep `value * 2^24` within the exact-integer range of binary64 so midpoint
+/// parity for nearest/ties-to-even is reproducible rather than inferred after
+/// integer spacing has already exceeded one raw Q24 unit.
+const MAX_EXACT_Q24_Z: f64 = 536_870_912.0; // 2^29; scaled magnitude is 2^53.
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum ZCoordinateConventionV1 {
@@ -80,7 +84,7 @@ pub fn admit_z_conversion_profile(
         || !(1..=8).contains(&specification.utility_dimension)
         || !specification.maximum_absolute_z.is_finite()
         || specification.maximum_absolute_z <= 0.0
-        || specification.maximum_absolute_z > 1e12
+        || specification.maximum_absolute_z > MAX_EXACT_Q24_Z
     {
         return Err(ZConversionError::InvalidProfile);
     }
@@ -173,7 +177,10 @@ pub fn convert_z_to_original_q24(
         let mut encoded = Vec::with_capacity(row.len());
         for value in row {
             let scaled = *value * Q24_SCALE;
-            if !scaled.is_finite() || scaled < i64::MIN as f64 || scaled > i64::MAX as f64 {
+            if !scaled.is_finite()
+                || scaled < -(1_u64 << 53) as f64
+                || scaled > (1_u64 << 53) as f64
+            {
                 return Err(ZConversionError::Q24Overflow);
             }
             let rounded = round_ties_even(scaled);
