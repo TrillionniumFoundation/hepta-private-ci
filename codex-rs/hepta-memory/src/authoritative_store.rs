@@ -32,8 +32,9 @@ use crate::RecoveredCognitiveReadOnly;
 ///
 /// The contained backend is intentionally not exposed publicly. Read/runtime
 /// composition inside this crate can consume it, while production writer
-/// construction remains bound to this façade.
-#[derive(Clone)]
+/// construction remains bound to this façade. The façade is deliberately not
+/// `Clone`: opening a production writer consumes it, so one authority handle
+/// cannot fan out into multiple independent writer constructions.
 pub struct AuthoritativeCognitiveStore {
     backend: CognitiveStore,
 }
@@ -108,14 +109,50 @@ impl AuthoritativeCognitiveStore {
 
 #[cfg(test)]
 mod tests {
+    use std::time::SystemTime;
+    use std::time::UNIX_EPOCH;
+
+    use codex_hepta_contracts::Sha256Digest;
     use tempfile::TempDir;
 
     use super::*;
     use crate::CognitiveAccess;
     use crate::CognitiveScope;
+    use crate::ProductionAuthorityToken;
     use crate::cognitive_test_support::agent_id;
     use crate::cognitive_test_support::layout;
     use crate::cognitive_test_support::source;
+
+    struct AllowVerifier;
+
+    impl ProductionAuthorityVerifier for AllowVerifier {
+        fn verify(
+            &self,
+            _authority: &ProductionAuthorityLease,
+            _expected_agent: &AgentId,
+        ) -> Result<(), String> {
+            Ok(())
+        }
+    }
+
+    fn authority(owner: AgentId) -> ProductionAuthorityLease {
+        let now = SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .expect("clock")
+            .as_secs();
+        ProductionAuthorityLease::from_verified_parts(
+            owner,
+            Sha256Digest::for_bytes(b"authoritative-store-test-grant"),
+            7,
+            3,
+            now + 3_600,
+            ProductionAuthorityToken::from_verified_bytes(
+                b"authoritative-store-test-token".to_vec(),
+            )
+            .expect("token"),
+        )
+        .expect("authority")
+    }
 
     #[tokio::test]
     async fn authoritative_open_reopens_real_sqlite_state() {
@@ -155,5 +192,40 @@ mod tests {
         // keep the typed citation alive so an optimizer/test refactor cannot
         // accidentally turn this into an empty-database reopen test.
         assert_eq!(citation.revision, 1);
+    }
+
+    #[tokio::test]
+    async fn authoritative_writer_fails_closed_on_second_live_owner() {
+        let temp = TempDir::new().expect("tempdir");
+        let owner = agent_id(242);
+        let layout = layout(&temp, &owner);
+        let authority = authority(owner);
+
+        let first = AuthoritativeCognitiveStore::open(&layout)
+            .await
+            .expect("first authoritative store")
+            .open_production_writer(
+                authority.clone(),
+                &AllowVerifier,
+                "production:cognitive-authority:test",
+                1,
+            )
+            .await
+            .expect("first production writer");
+
+        let second = AuthoritativeCognitiveStore::open(&layout)
+            .await
+            .expect("second authoritative store")
+            .open_production_writer(
+                authority,
+                &AllowVerifier,
+                "production:cognitive-authority:test",
+                1,
+            )
+            .await
+            .expect_err("a second live production writer must be fenced");
+
+        assert!(matches!(second, ProductionWriterError::WriterBusy));
+        drop(first);
     }
 }
