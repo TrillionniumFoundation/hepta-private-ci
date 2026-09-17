@@ -1,7 +1,7 @@
 import { spawn } from "node:child_process";
-import { constants as fsConstants, createHash, randomUUID } from "node:crypto";
-import { lstat, mkdir, open, readFile, rm } from "node:fs/promises";
+import { createHash, randomUUID } from "node:crypto";
 import { constants } from "node:fs";
+import { mkdir, open, rm } from "node:fs/promises";
 import { isAbsolute, join } from "node:path";
 
 import {
@@ -213,9 +213,7 @@ class PrivateWorkerClient {
       }
       const pending = this.#pending.get(frame.requestId);
       if (!pending) {
-        if (this.#abandoned.delete(frame.requestId)) {
-          continue;
-        }
+        if (this.#abandoned.delete(frame.requestId)) continue;
         this.#failAll(new TypeError("browser worker response has no pending request"));
         this.#child.kill("SIGKILL");
         return;
@@ -280,10 +278,7 @@ export class SubprocessBrowserDriver {
     if (this.#child) throw new TypeError("browser worker is already started");
     const verifiedWorkerBytes = await this.#readVerifiedWorkerArtifact();
     await mkdir(this.#profileRoot, { recursive: true, mode: 0o700 });
-    this.#profileDir = join(
-      this.#profileRoot,
-      `${input.profileId}.${input.generation}.${randomUUID()}`,
-    );
+    this.#profileDir = join(this.#profileRoot, `${input.profileId}.${input.generation}.${randomUUID()}`);
     await mkdir(this.#profileDir, { mode: 0o700 });
     this.#verifiedWorkerPath = join(this.#profileDir, ".verified-worker");
     await this.#writePrivateVerifiedWorker(verifiedWorkerBytes);
