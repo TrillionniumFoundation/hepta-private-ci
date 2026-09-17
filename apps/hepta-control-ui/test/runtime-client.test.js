@@ -138,7 +138,7 @@ test("submitRequest transmits the proposal and computes semantic digest internal
     operationId: "operation.1",
     subjectId: "runtime.agentd",
     action: "request_retry",
-    expectedRevision: 9,
+    expectedRevision: 4,
     displayedRevision: 9,
     semanticDigest: "f".repeat(64),
   });
@@ -149,6 +149,7 @@ test("submitRequest transmits the proposal and computes semantic digest internal
   const [, request] = io.calls.find(([method]) => method === "operation/request");
   assert.equal(request.intent.kind, "UiOperationProposalV1");
   assert.equal(request.intent.action, "request_retry");
+  assert.equal(request.intent.expectedRevision, 4);
   assert.equal(request.intent.authorityGranted, false);
   assert.equal(request.semanticDigest, acknowledgement.semanticDigest);
   assert.equal(request.schema, "hepta.ui-control.transport-request.v1");
@@ -168,6 +169,7 @@ test("requestStop transmits a deeply frozen scope bound into semantic digest", a
   scope.target.moduleId = "mutated";
 
   const [, request] = io.calls.find(([method]) => method === "runtime/stop");
+  assert.equal(Object.isFrozen(request), true);
   assert.equal(request.scope.target.moduleId, "runtime.agentd");
   assert.equal(Object.isFrozen(request.scope), true);
   assert.equal(Object.isFrozen(request.scope.target), true);
@@ -436,4 +438,60 @@ test("backend rejection clears local pending identity", async () => {
     (error) => error.code === ERROR_CODES.REQUEST_REJECTED,
   );
   assert.equal(client.readView().pending, 0);
+});
+
+test("connect maps arbitrary transport error codes to stable BACKEND_UNAVAILABLE", async () => {
+  const io = makeTransport();
+  io.connect = async () => {
+    const error = new Error("connection reset");
+    error.code = "ECONNRESET";
+    throw error;
+  };
+  const client = new RuntimeClient({ transport: io });
+  await assert.rejects(
+    client.connect({
+      endpointId: "runtime.1",
+      protocolVersion: 1,
+      manifestDigest: D1,
+    }),
+    (error) =>
+      error instanceof UiControlError && error.code === ERROR_CODES.BACKEND_UNAVAILABLE,
+  );
+});
+
+test("close clears local session and maps raw transport failure to typed error", async () => {
+  const io = makeTransport();
+  const { client } = await connectedClient(io);
+  io.close = async () => {
+    throw new Error("close response lost");
+  };
+
+  await assert.rejects(
+    client.close(),
+    (error) =>
+      error instanceof UiControlError && error.code === ERROR_CODES.BACKEND_UNAVAILABLE,
+  );
+  assert.throws(
+    () => client.readView(),
+    (error) => error instanceof UiControlError && error.code === ERROR_CODES.NOT_CONNECTED,
+  );
+});
+
+test("snapshot module array must be dense indexed data", async () => {
+  const io = makeTransport();
+  const client = new RuntimeClient({ transport: io });
+  await client.connect({ endpointId: "runtime.1", protocolVersion: 1, manifestDigest: D1 });
+  const modules = new Array(1);
+  assert.throws(
+    () =>
+      client.applySnapshot({
+        sessionId: "session.1",
+        connectionGeneration: 1,
+        generation: 1,
+        revision: 1,
+        digest: D2,
+        modules,
+      }),
+    (error) => error instanceof UiControlError && error.code === ERROR_CODES.INVALID_INPUT,
+  );
 });
