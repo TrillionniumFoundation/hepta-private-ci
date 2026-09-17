@@ -39,6 +39,24 @@
       ]
     },
     {
+      "operation": "cognitive_store_recovery",
+      "nativeSymbol": "open_authoritative_with_recovery",
+      "sourcePath": "codex-rs/hepta-cognitive-store/src/lib.rs",
+      "state": "externally_fenced_fresh_owner_recovery_implemented",
+      "authority": "exact_current_cut_plus_external_production_fence",
+      "tests": [
+        "codex-rs/hepta-memory/src/cognitive_store_recovery_read_only_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "cognitive_store_recovery",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [
+        "hepta-memory::CognitiveStore::open_read_only_recovery",
+        "hepta-memory::RecoveredCognitiveReadOnly::promote_to_fresh_owner",
+        "codex-state::ColdSqliteRecoveryImage"
+      ]
+    },
+    {
       "operation": "durable_backend",
       "nativeSymbol": "CognitiveStore",
       "sourcePath": "codex-rs/hepta-memory/src/cognitive_store.rs",
@@ -69,8 +87,8 @@
     }
   ],
   "repositoryControlledGaps": [
-    "Implement a descriptor-bound SQLite writer VFS plus independently current writer fence before writable recovery of a suspect database can be enabled.",
-    "Obtain exact-head and synthetic-merge CI receipts for this candidate.",
+    "Obtain exact-head and synthetic-merge CI receipts for this candidate, including the fresh-owner recovery tests.",
+    "Obtain target-host filesystem/power-loss qualification for fresh-owner publication and SQLite WAL/FULL durability.",
     "Obtain independent target-host acceptance before activation, promotion or release claims."
   ],
   "externalEvidenceGates": [
@@ -83,7 +101,7 @@
     "productRuntimeOpenComposed": true,
     "productionSingleWriterMechanismImplemented": true,
     "durableReopenExercisedBySourceTest": true,
-    "writableSuspectImageRecoveryImplemented": false,
+    "writableSuspectImageRecoveryImplemented": true,
     "nativeSourceMappingComplete": true,
     "sourceRootPresent": true,
     "productionImplementation": true,
