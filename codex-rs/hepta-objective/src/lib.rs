@@ -8,11 +8,12 @@
 
 mod compiler;
 mod error;
+mod error_policy;
 mod feasibility;
 mod feasibility_model;
 mod model;
+mod native_feasibility;
 mod objective_admission;
-mod scalar_adapter;
 mod source_envelope_json;
 mod source_envelope_json_dto;
 mod source_envelope_json_shape;
