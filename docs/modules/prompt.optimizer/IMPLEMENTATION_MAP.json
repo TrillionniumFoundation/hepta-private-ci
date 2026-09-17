@@ -44,11 +44,68 @@
       "designOperation": "calculate_local_shadow",
       "mappingClass": "owner_native",
       "delegatedCallees": []
+    },
+    {
+      "operation": "enumerate_factors",
+      "nativeSymbol": "policy::enumerate_factors",
+      "sourcePath": "codex-rs/hepta-prompt-optimizer/src/policy.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-prompt-optimizer/src/policy_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "enumerate_factors",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "price_factors",
+      "nativeSymbol": "policy::price_factors",
+      "sourcePath": "codex-rs/hepta-prompt-optimizer/src/policy.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-prompt-optimizer/src/policy_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "price_factors",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "select_portfolio",
+      "nativeSymbol": "policy::select_portfolio",
+      "sourcePath": "codex-rs/hepta-prompt-optimizer/src/policy.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-prompt-optimizer/src/policy_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "select_portfolio",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "exercise",
+      "nativeSymbol": "policy::exercise",
+      "sourcePath": "codex-rs/hepta-prompt-optimizer/src/policy.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-prompt-optimizer/src/policy_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "exercise",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
     }
   ],
   "repositoryControlledGaps": [
-    "Bind every operation to an authenticated consumer callsite and owner store.",
-    "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary."
+    "Bind policy inputs to authenticated prompt.registry, knowledge.graph and learning.ledger owner adapters.",
+    "Compose a named product caller and prove delivery-time registry/model compatibility.",
+    "Run exact-head and deterministic synthetic-merge tests before changing the production claim boundary."
   ],
   "externalEvidenceGates": [
     "independent semantic review",
