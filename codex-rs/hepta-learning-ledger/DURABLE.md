@@ -104,11 +104,15 @@ this is not a physical power-loss or hostile-writer guarantee.
 
 ## Segmented V2 compatibility profile
 
-`DurableLearningJournal` is sealed to the actual `DurableLedger` and
-`SegmentedLedger` implementations. The existing
-[`run_evaluated_shadow_v1`](../hepta-intelligence/EVALUATED_SHADOW.md) consumer
-uses this port without changing its evaluation, signature, eight-stage ordering,
-Decision identity or no-effect semantics. There is no second data owner.
+`DurableLearningJournal` is sealed to the actual `DurableLedger`,
+`SegmentedLedger`, and `LongHorizonSegmentedLedgerV1` implementations. The
+existing [`run_evaluated_shadow_v1`](../hepta-intelligence/EVALUATED_SHADOW.md)
+consumer uses this one stable append port without changing its evaluation,
+signature, eight-stage ordering, Decision identity, no-effect semantics, or
+branching on the selected storage backend. Backend-specific long-horizon
+index/catalog failures are translated into the existing operational
+`DurableLedgerError` taxonomy at the port boundary. There is no second data
+owner.
 
 `SegmentedLedger::create(owner_lock, first_segment, binding, limits)` takes only
 host-authorized independent handles. A stable, exclusive owner lock spans all
@@ -255,7 +259,10 @@ reconciles it. A third truncates an independently acknowledged active tail and
 requires `AcknowledgedHistoryMissing`. A separate partial-index regression writes
 only the first immutable semantic row, reconciles the durable frame, then appends
 a dependent outcome; that dependent append proves the missing event-specific row
-was actually repaired.
+was actually repaired. The evaluated-shadow regression also sends the existing
+consumer through this backend directly, rotates once, reopens only the active
+segment plus persistent semantic sidecar, and replays the first run without a
+consumer-side storage branch or adapter.
 
 The compatibility `SegmentedLedger` remains supported for existing consumers and
 full-history/state-checkpoint workflows. Long-lived hosts that require hot memory
@@ -269,9 +276,10 @@ The segmented-owner inventory also covers cross-segment
 outcomes/revocations/retries, shared historical reads, reordered or corrupt
 series, lost seal/empty successor rejection, partial-tail repair and actual
 child-process exit after seal or successor initialization. The existing
-evaluated-shadow consumer is tested through rotation, reopen and old-run replay;
-invalid signatures still reject before any host port or journal mutation.
-Run the existing entrypoint, without an alternate workspace or lowered gates:
+evaluated-shadow consumer is tested through compatibility and long-horizon
+rotation, reopen and old-run replay; invalid signatures still reject before any
+host port or journal mutation. Run the existing entrypoint, without an alternate
+workspace or lowered gates:
 
 ```sh
 just test --locked -p codex-hepta-learning-ledger -p codex-hepta-intelligence
