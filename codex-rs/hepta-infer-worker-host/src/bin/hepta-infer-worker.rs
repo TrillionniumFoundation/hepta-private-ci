@@ -1,6 +1,7 @@
 use std::path::PathBuf;
 use std::time::Duration;
 
+use codex_hepta_codex_adapter::AdapterStatus;
 use codex_hepta_contracts::AgentId;
 use codex_hepta_infer_core::durable_control::DurableInferenceControl;
 use codex_hepta_infer_worker_host::native_app_server::AppServerModelDriver;
@@ -88,14 +89,24 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
     signal_task.abort();
     let bound = result?;
     println!("{}", serde_json::to_string(bound.output())?);
-    if !bound.output().terminal_observed {
-        return Err("model outcome is indeterminate; this request was not replayed".into());
-    }
-    if !bound.succeeded() {
-        return Err(
+
+    match bound.status() {
+        AdapterStatus::Succeeded if bound.succeeded() => Ok(()),
+        AdapterStatus::Overloaded => Err("App Server overloaded before turn admission".into()),
+        AdapterStatus::Rejected => Err("App Server rejected turn/start before admission".into()),
+        AdapterStatus::Indeterminate => {
+            Err("model outcome is indeterminate; this request was not replayed".into())
+        }
+        AdapterStatus::Failed => Err("model turn failed".into()),
+        AdapterStatus::Interrupted => Err("model turn was interrupted".into()),
+        AdapterStatus::Quarantined => {
+            Err("model completed but owner authority was not verified".into())
+        }
+        AdapterStatus::Unavailable => Err("model boundary unavailable".into()),
+        AdapterStatus::TimedOut => Err("model boundary timed out".into()),
+        AdapterStatus::Succeeded => Err(
             "model run lacks successful completion with verified owner and runtime.codex receipt"
                 .into(),
-        );
+        ),
     }
-    Ok(())
 }
