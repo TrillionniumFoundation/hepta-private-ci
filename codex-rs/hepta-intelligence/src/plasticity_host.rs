@@ -2,9 +2,9 @@
 //!
 //! This adapter is deliberately proposal-only. It authenticates and constructs
 //! a governed parameter proposal in `learning.plasticity`, then appends the
-//! authority-free V2 record to the host-opened durable proposal registry. The
-//! returned anchor must be retained by the host in an independent rollback
-//! domain before the append is treated as externally acknowledged.
+//! authority-free V2 record through the production anchor gate. The returned
+//! anchor must be retained by the host in an independent rollback domain before
+//! the append is treated as externally acknowledged.
 
 use std::error::Error as StdError;
 use std::fmt;
@@ -12,9 +12,9 @@ use std::fmt;
 use codex_hepta_learning_artifacts::ArtifactRegistry;
 use codex_hepta_learning_ledger::LearningEvidenceVerifierV1;
 use codex_hepta_plasticity::{
-    DurableProposalAppendReceiptV1, DurableProposalRegistry, DurableProposalRegistryError,
-    DurableRegistryAnchorV1, GovernedParameterProposalRequestV3, GovernedParameterProposalV3,
-    GovernedProposalError, propose_governed_v3,
+    DurableProposalAppendReceiptV1, DurableRegistryAnchorV1,
+    GovernedParameterProposalRequestV3, GovernedParameterProposalV3, GovernedProposalError,
+    ProductionProposalRegistry, ProductionProposalRegistryError, propose_governed_v3,
 };
 use codex_hepta_types::Digest32;
 
@@ -29,8 +29,7 @@ pub struct DurableGovernedPlasticityReceiptV3 {
 #[derive(Debug)]
 pub enum PlasticityHostErrorV3 {
     Governed(GovernedProposalError),
-    Durable(DurableProposalRegistryError),
-    MissingAnchorAfterAppend,
+    Durable(ProductionProposalRegistryError),
     AnchorReceiptMismatch,
 }
 
@@ -45,8 +44,8 @@ impl From<GovernedProposalError> for PlasticityHostErrorV3 {
         Self::Governed(value)
     }
 }
-impl From<DurableProposalRegistryError> for PlasticityHostErrorV3 {
-    fn from(value: DurableProposalRegistryError) -> Self {
+impl From<ProductionProposalRegistryError> for PlasticityHostErrorV3 {
+    fn from(value: ProductionProposalRegistryError) -> Self {
         Self::Durable(value)
     }
 }
@@ -54,14 +53,15 @@ impl From<DurableProposalRegistryError> for PlasticityHostErrorV3 {
 /// Construct and durably append one governed plasticity proposal.
 ///
 /// `expected_predecessor_frame_digest` must be the exact local durable head.
-/// The registry itself must have been opened under the host's production anchor
-/// policy. This function never activates, selects, promotes, releases, or
+/// The registry must be a `ProductionProposalRegistry`, which rejects non-empty
+/// bootstrap files and requires an externally retained anchor on acknowledged
+/// reopens. This function never activates, selects, promotes, releases, or
 /// installs the proposal.
 pub fn propose_and_persist_plasticity_v3(
     request: GovernedParameterProposalRequestV3<'_>,
     verifier: &LearningEvidenceVerifierV1,
     artifacts: &ArtifactRegistry,
-    registry: &mut DurableProposalRegistry,
+    registry: &mut ProductionProposalRegistry,
     expected_predecessor_frame_digest: Digest32,
     now: u64,
 ) -> Result<DurableGovernedPlasticityReceiptV3, PlasticityHostErrorV3> {
@@ -70,9 +70,7 @@ pub fn propose_and_persist_plasticity_v3(
         expected_predecessor_frame_digest,
         governed.proposal.clone(),
     )?;
-    let next_anchor = registry
-        .current_anchor()?
-        .ok_or(PlasticityHostErrorV3::MissingAnchorAfterAppend)?;
+    let next_anchor = registry.acknowledged_anchor_after_append()?;
     if next_anchor.sequence != durable.sequence || next_anchor.frame_digest != durable.frame_digest {
         return Err(PlasticityHostErrorV3::AnchorReceiptMismatch);
     }
