@@ -188,7 +188,10 @@ fn validate_complete_histories(records: &[MemoryRevisionRecord]) -> Result<(), C
                 "lineage page contains tombstone resurrection".to_string(),
             ));
         }
-        tombstoned = matches!(record.lifecycle, MemoryLifecycleState::Tombstoned { .. });
+        tombstoned = matches!(
+            &record.lifecycle,
+            MemoryLifecycleState::Tombstoned { .. }
+        );
         previous_revision = record.id.revision;
     }
     Ok(())
