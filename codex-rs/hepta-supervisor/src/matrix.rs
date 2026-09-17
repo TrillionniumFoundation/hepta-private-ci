@@ -26,6 +26,7 @@ use crate::lease::MatrixProcessLease;
 use crate::lease::read_matrix_lease;
 use crate::lease::remove_matrix_lease;
 use crate::lease::write_matrix_lease;
+use crate::restart_journal::unix_millis_now;
 use crate::restart_policy::RestartSchedule;
 use crate::restart_policy::clear_restart_budget;
 use crate::restart_policy::schedule_restart;
@@ -58,6 +59,7 @@ impl<D: ProcessDriver> Supervisor<D> {
             slot.matrix.degraded = false;
             slot.matrix.last_error = None;
             reset_matrix_restart_budget(slot);
+            let _ = self.persist_restart_budget(agent_id, slot);
             return;
         };
         slot.matrix.configured = true;
@@ -79,7 +81,13 @@ impl<D: ProcessDriver> Supervisor<D> {
         let record = match self.record(agent_id) {
             Ok(record) => record,
             Err(error) => {
-                self.degrade_matrix(slot, attached_agent_generation, error.to_string(), now);
+                self.degrade_matrix(
+                    agent_id,
+                    slot,
+                    attached_agent_generation,
+                    error.to_string(),
+                    now,
+                );
                 return;
             }
         };
@@ -87,6 +95,7 @@ impl<D: ProcessDriver> Supervisor<D> {
             Ok(Some(binding)) => binding,
             Ok(None) => {
                 self.degrade_matrix(
+                    agent_id,
                     slot,
                     attached_agent_generation,
                     "Matrix release is configured but public binding is absent".to_string(),
@@ -95,14 +104,26 @@ impl<D: ProcessDriver> Supervisor<D> {
                 return;
             }
             Err(error) => {
-                self.degrade_matrix(slot, attached_agent_generation, error.to_string(), now);
+                self.degrade_matrix(
+                    agent_id,
+                    slot,
+                    attached_agent_generation,
+                    error.to_string(),
+                    now,
+                );
                 return;
             }
         };
         let binding_digest = match matrix_binding_digest(&binding) {
             Ok(digest) => digest,
             Err(error) => {
-                self.degrade_matrix(slot, attached_agent_generation, error.to_string(), now);
+                self.degrade_matrix(
+                    agent_id,
+                    slot,
+                    attached_agent_generation,
+                    error.to_string(),
+                    now,
+                );
                 return;
             }
         };
@@ -110,7 +131,13 @@ impl<D: ProcessDriver> Supervisor<D> {
             match next_matrix_incarnation(agent_id, attached_agent_generation, &binding_digest) {
                 Ok(identity) => identity,
                 Err(error) => {
-                    self.degrade_matrix(slot, attached_agent_generation, error.to_string(), now);
+                    self.degrade_matrix(
+                        agent_id,
+                        slot,
+                        attached_agent_generation,
+                        error.to_string(),
+                        now,
+                    );
                     return;
                 }
             };
@@ -118,6 +145,7 @@ impl<D: ProcessDriver> Supervisor<D> {
             Ok(None) => {}
             Ok(Some(_)) => {
                 self.degrade_matrix(
+                    agent_id,
                     slot,
                     attached_agent_generation,
                     "unresolved Matrix process lease".to_string(),
@@ -126,7 +154,13 @@ impl<D: ProcessDriver> Supervisor<D> {
                 return;
             }
             Err(error) => {
-                self.degrade_matrix(slot, attached_agent_generation, error.to_string(), now);
+                self.degrade_matrix(
+                    agent_id,
+                    slot,
+                    attached_agent_generation,
+                    error.to_string(),
+                    now,
+                );
                 return;
             }
         }
@@ -150,6 +184,7 @@ impl<D: ProcessDriver> Supervisor<D> {
             Ok(spawned) => spawned,
             Err(error) => {
                 self.degrade_matrix(
+                    agent_id,
                     slot,
                     attached_agent_generation,
                     driver_error(agent_id, error).to_string(),
@@ -171,7 +206,13 @@ impl<D: ProcessDriver> Supervisor<D> {
         };
         if let Err(error) = write_matrix_lease(record.layout.matrixd_process_lease(), &lease) {
             let _ = spawned.process.kill();
-            self.degrade_matrix(slot, attached_agent_generation, error.to_string(), now);
+            self.degrade_matrix(
+                agent_id,
+                slot,
+                attached_agent_generation,
+                error.to_string(),
+                now,
+            );
             return;
         }
         let health_deadline = match deadline(now, self.config.health_timeout) {
@@ -179,7 +220,13 @@ impl<D: ProcessDriver> Supervisor<D> {
             Err(error) => {
                 let _ = spawned.process.kill();
                 let _ = remove_matrix_lease(record.layout.matrixd_process_lease(), &lease);
-                self.degrade_matrix(slot, attached_agent_generation, error.to_string(), now);
+                self.degrade_matrix(
+                    agent_id,
+                    slot,
+                    attached_agent_generation,
+                    error.to_string(),
+                    now,
+                );
                 return;
             }
         };
@@ -299,6 +346,7 @@ impl<D: ProcessDriver> Supervisor<D> {
                     .map_err(|error| driver_error(agent_id, error))?;
                 remove_matrix_lease(record.layout.matrixd_process_lease(), &lease)?;
                 self.degrade_matrix(
+                    agent_id,
                     slot,
                     record.lifecycle.generation,
                     "Matrix orphan was attached to a non-running agent generation".to_string(),
@@ -312,6 +360,7 @@ impl<D: ProcessDriver> Supervisor<D> {
             Adoption::Missing => {
                 remove_matrix_lease(record.layout.matrixd_process_lease(), &lease)?;
                 self.degrade_matrix(
+                    agent_id,
                     slot,
                     record.lifecycle.generation,
                     "Matrix companion orphan is missing".to_string(),
@@ -325,6 +374,7 @@ impl<D: ProcessDriver> Supervisor<D> {
             Adoption::Rejected => {
                 remove_matrix_lease(record.layout.matrixd_process_lease(), &lease)?;
                 self.degrade_matrix(
+                    agent_id,
                     slot,
                     record.lifecycle.generation,
                     "Matrix companion orphan failed exact adoption".to_string(),
@@ -472,6 +522,7 @@ impl<D: ProcessDriver> Supervisor<D> {
                 slot.matrix.restart_after_exit = false;
                 if should_restart {
                     self.degrade_matrix(
+                        agent_id,
                         slot,
                         runtime.attached_agent_generation,
                         "Matrix companion exited while its agent remained healthy".to_string(),
@@ -605,6 +656,7 @@ impl<D: ProcessDriver> Supervisor<D> {
 
     fn degrade_matrix(
         &self,
+        agent_id: &AgentId,
         slot: &mut AgentSlot<D::Process>,
         generation: u64,
         message: String,
@@ -614,12 +666,28 @@ impl<D: ProcessDriver> Supervisor<D> {
         slot.matrix.degraded = true;
         slot.matrix.last_error = Some(message.clone());
         slot.event(generation, SupervisorEventKind::MatrixDegraded(message));
+        let wall_now = match unix_millis_now() {
+            Ok(wall_now) => wall_now,
+            Err(error) => {
+                let message = bounded_message(format!(
+                    "Matrix restart budget could not read wall clock: {error}"
+                ));
+                slot.matrix.retry_at = None;
+                slot.matrix.restart_exhausted = true;
+                slot.matrix.last_error = Some(message.clone());
+                slot.event(generation, SupervisorEventKind::MatrixDegraded(message));
+                return;
+            }
+        };
         match schedule_restart(
             &mut slot.matrix.restart_attempt,
             &mut slot.matrix.restart_window_started_at,
             now,
         ) {
-            RestartSchedule::Retry { retry_at, .. } => {
+            RestartSchedule::Retry { attempt, retry_at } => {
+                if attempt == 1 || slot.matrix.restart_window_started_unix_millis.is_none() {
+                    slot.matrix.restart_window_started_unix_millis = Some(wall_now);
+                }
                 slot.matrix.retry_at = Some(retry_at);
                 slot.matrix.restart_exhausted = false;
             }
@@ -632,6 +700,15 @@ impl<D: ProcessDriver> Supervisor<D> {
                 );
             }
         }
+        if let Err(error) = self.persist_restart_budget(agent_id, slot) {
+            let message = bounded_message(format!(
+                "Matrix restart budget could not be persisted: {error}"
+            ));
+            slot.matrix.retry_at = None;
+            slot.matrix.restart_exhausted = true;
+            slot.matrix.last_error = Some(message.clone());
+            slot.event(generation, SupervisorEventKind::MatrixDegraded(message));
+        }
     }
 }
 
@@ -640,6 +717,7 @@ fn reset_matrix_restart_budget<P>(slot: &mut AgentSlot<P>) {
         &mut slot.matrix.restart_attempt,
         &mut slot.matrix.restart_window_started_at,
     );
+    slot.matrix.restart_window_started_unix_millis = None;
     slot.matrix.retry_at = None;
     slot.matrix.restart_after_exit = false;
     slot.matrix.restart_exhausted = false;
