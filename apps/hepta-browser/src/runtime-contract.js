@@ -8,6 +8,7 @@ import {
 export const MAX_ORIGINS = 128;
 export const MAX_EFFECT_GRANTS = 1024;
 export const MAX_OUTSTANDING_OPERATIONS = 1024;
+export const MAX_RETAINED_TERMINAL_OPERATIONS = 256;
 export const DEFAULT_DRIVER_CALL_TIMEOUT_MS = 30_000;
 
 const STABLE_ID = /^[A-Za-z0-9._:-]{1,128}$/;
@@ -85,7 +86,14 @@ export function parseEffectGrant(value, now, allowedOrigins) {
   const finalPayloadDigest = digest(grant.finalPayloadDigest, "effectGrant.finalPayloadDigest");
   const authorityEpoch = positiveInteger(grant.authorityEpoch, "effectGrant.authorityEpoch");
   const expiresAtMs = futureDeadline(grant.expiresAtMs, now, "effectGrant.expiresAtMs");
-  return Object.freeze({ grantDigest, action, destinationOrigin, finalPayloadDigest, authorityEpoch, expiresAtMs });
+  return Object.freeze({
+    grantDigest,
+    action,
+    destinationOrigin,
+    finalPayloadDigest,
+    authorityEpoch,
+    expiresAtMs,
+  });
 }
 
 export function indeterminateReceipt(profileId, operationId, semanticDigest, reason) {
@@ -152,7 +160,11 @@ export function admitNewOperation(state, input, now) {
     authorityEpoch,
     deadlineMs,
   });
-  return { operationId, requestSemantics, requestDigest: canonicalDigest(requestSemantics) };
+  return {
+    operationId,
+    requestSemantics,
+    requestDigest: canonicalDigest(requestSemantics),
+  };
 }
 
 export function reconciliationRequestDigest(state, input, stored) {
