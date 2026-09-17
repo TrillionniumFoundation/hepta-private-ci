@@ -68,21 +68,14 @@ The Bao registered host is source-composed and B4-protected, but there is still
 no selected production process caller in this candidate. Source composition is
 not activation, target-host qualification or operator acceptance.
 
-## Implemented control separation
+A production-capable final-use host can pin three independent roles: grant
+issuer, operator approver and revocation distributor. The explicit supervisor
+utilities do not generate keys. Access to each private key remains an external
+key-custody boundary. A host may therefore require both a valid grant signature
+and an independent approval signature before dispatch, and accepts revocation
+heads only after validating a separately pinned feed signature.
 
-A production-capable final-use host can pin three independent roles:
-
-1. grant issuer;
-2. operator approver;
-3. revocation distributor.
-
-The explicit supervisor utilities do not generate keys. Access to each private
-key remains an external key-custody boundary. A host may therefore require both
-a valid grant signature and an independent approval signature before dispatch,
-and accepts revocation heads only after validating a separately pinned feed
-signature.
-
-## Remaining external / activation work
+## Target-only design
 
 The repository does not implement or claim a general identity provider, a full
 approval-policy engine, fleet revocation transport/consensus, an HSM/KMS
@@ -94,13 +87,24 @@ freshness SLA and stop-on-stale deployment policy remain target-host
 responsibilities. Likewise, the general lease API accepts trusted time/frontier
 inputs but does not manufacture those trust facts.
 
-## Capacity lifecycle
-
 Both authority stores are bounded. The general lease registry exposes current
 and maximum lease/revocation counts and provides an explicit durable epoch
 rollover that fences old authority before clearing bounded history. Deployment
 must alert before exhaustion and coordinate the trusted new epoch/frontier; no
 implicit eviction or history reset is allowed.
+
+## Known limits and non-claims
+
+The local authority filesystem is not an external rollback oracle and the
+repository does not attest host time. The registered Bao host has no selected
+production-process caller in this candidate. Signed revocation ingestion does
+not itself prove fleet delivery freshness. The library is not a sandbox against
+code running with the same process/account authority, and a revocation cannot
+retroactively undo an effect that already crossed the final synchronous entry
+linearization point.
+
+Source implementation, tests and exact-candidate receipts do not grant operator
+acceptance, activation, canary, promotion or release.
 
 ## Verification
 
@@ -113,7 +117,9 @@ the final-use mutex.
 Lease-registry tests cover durable verification/revocation, stale CAS and binding
 mismatch, external-frontier rollback detection, missing-store reset denial and
 durable epoch rollover. Control tests cover exact independent approval,
-authenticated monotonic revocation updates and forged-feed rejection.
+authenticated monotonic revocation updates and forged-feed rejection. Bao host
+integration tests deny unregistered consumer identities and forged independent
+approvals before any network dispatch.
 
 These test identities are source evidence. Exact-head and deterministic
 synthetic-merge workflow receipts remain the qualification evidence for one
