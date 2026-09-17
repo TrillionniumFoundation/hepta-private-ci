@@ -291,6 +291,20 @@ pub enum Error {
     RegistryCapacityExceeded,
     ProposalConflict(String),
     RegistrySlotConflict(String),
+    GeneratorCandidatesMustBeEmpty,
+    InvalidGeneratorConfig,
+    GeneratorSignalCountOutOfRange,
+    ZeroGeneratorSignal(String),
+    GeneratorSignalClampedToZero(String),
+    MissingAuthenticatedEvidence(String),
+    DuplicateAuthenticatedEvidence(String),
+    StaleAuthenticatedEvidence(String),
+    AuthenticatedEvidenceScopeMismatch,
+    InvalidAuthenticatedEvidenceProducer,
+    InvalidAuthenticatedEvidenceWindow,
+    EvaluatorAttestationMismatch,
+    EvidenceVerificationFailed(String),
+    IndependentEvaluatorVerificationFailed(String),
 }
 
 impl fmt::Display for Error {
