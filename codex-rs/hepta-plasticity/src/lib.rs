@@ -135,5 +135,9 @@ pub fn read_versioned_proposal(
 }
 
 #[cfg(test)]
+#[path = "governed_v3_tests.rs"]
+mod governed_v3_tests;
+
+#[cfg(test)]
 #[path = "lib_tests.rs"]
 mod tests;
