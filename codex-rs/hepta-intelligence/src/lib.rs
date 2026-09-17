@@ -32,6 +32,22 @@ pub use contracts_v1::LegalActionCandidateSetInputV1;
 pub use contracts_v1::LegalActionCandidateSetV1;
 pub use contracts_v1::LegalActionCandidateV1;
 
+mod composition_v3;
+mod composition_v3_validate;
+
+pub use composition_v3::CompositionDispositionV3;
+pub use composition_v3::CompositionErrorV3;
+pub use composition_v3::LaneFCompositionBudgetV3;
+pub use composition_v3::LaneFCompositionPortsV3;
+pub use composition_v3::LaneFCompositionReceiptV3;
+pub use composition_v3::LaneFCompositionRequestV3;
+pub use composition_v3::LaneFStageV3;
+pub use composition_v3::PortFailureV3;
+pub use composition_v3::PortInputV3;
+pub use composition_v3::PortReceiptV3;
+pub use composition_v3::StageOutcomeV3;
+pub use composition_v3::StageTraceV3;
+
 mod pipeline_v2;
 
 pub use pipeline_v2::LaneFRunRequestV2;
