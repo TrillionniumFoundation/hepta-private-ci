@@ -99,3 +99,7 @@ impl<J: DurableLearningJournal> WitnessedLearningJournal<J> {
         (self.journal, self.witness)
     }
 }
+
+#[cfg(test)]
+#[path = "witnessed_tests.rs"]
+mod tests;
