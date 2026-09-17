@@ -138,7 +138,7 @@ impl CognitiveStore {
         };
 
         let frontiers = read_frontiers(
-            &mut transaction,
+            &mut *transaction,
             self.owner_agent_id.as_str(),
             scope,
             scope_kind,
