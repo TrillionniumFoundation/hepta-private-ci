@@ -71,18 +71,32 @@ impl RetrievalRelationSignal {
             _ => None,
         }
     }
+
+    const fn as_str(self) -> &'static str {
+        match self {
+            Self::Supports => "supports",
+            Self::Contradicts => "contradicts",
+            Self::TemporalBefore => "temporal_before",
+            Self::TemporalAfter => "temporal_after",
+            Self::Causes => "causes",
+            Self::Enables => "enables",
+            Self::ProcedureStep => "procedure_step",
+        }
+    }
 }
 
 /// Relation evidence for one graph-reached candidate. The candidate and the
 /// memory revision that materialized the edge remain separately resolvable.
-/// `support_sha256` binds the exact projection generation, edge identity,
-/// relation token and both memory revisions; it is not a confidence score.
+/// `support_sha256` binds the candidate-relative support while
+/// `relation_group_sha256` identifies the same edge independent of which
+/// endpoint was the query seed, allowing contradiction evidence to be grouped.
 #[derive(Clone, Debug, Eq, PartialEq, Serialize)]
 pub(crate) struct ObservedRetrievalRelation {
     pub(crate) candidate: MemoryRevisionId,
     pub(crate) support_memory: MemoryRevisionId,
     pub(crate) signal: RetrievalRelationSignal,
     pub(crate) support_sha256: Sha256Digest,
+    pub(crate) relation_group_sha256: Sha256Digest,
 }
 
 /// Digest-only source and scoring facts; raw memory/citation content is absent.
@@ -116,14 +130,39 @@ impl RetrievalObservation {
     pub fn channels(&self) -> &[RetrievalChannelObservation] {
         &self.channels
     }
-    /// Owner-internal typed KG relation facts reached from the same bounded
-    /// entity seeds. They are bound into `observation_sha256` but are not yet a
-    /// registered cross-module contract; external callers consume the digest.
+    /// Cross-crate read-only view of registered KG semantics. The owner keeps
+    /// its internal relation enum private; callers receive only canonical tokens
+    /// plus exact revision/digest identities. This is still a native owner read,
+    /// not a registered wire contract or confidence/OOD assertion.
+    pub fn relation_signals(
+        &self,
+    ) -> impl ExactSizeIterator<
+        Item = (
+            &MemoryRevisionId,
+            &MemoryRevisionId,
+            &'static str,
+            &Sha256Digest,
+            &Sha256Digest,
+        ),
+    > + '_ {
+        self.relations.iter().map(|relation| {
+            (
+                &relation.candidate,
+                &relation.support_memory,
+                relation.signal.as_str(),
+                &relation.support_sha256,
+                &relation.relation_group_sha256,
+            )
+        })
+    }
+    /// Relation evidence is bounded separately from the four legacy RRF
+    /// channels and does not modify their completion/limit observations.
+    pub const fn relation_limit(&self) -> RetrievalLimitObservation {
+        self.relation_limit
+    }
+    /// Owner-internal typed view used by source tests.
     pub(crate) fn relations(&self) -> &[ObservedRetrievalRelation] {
         &self.relations
-    }
-    pub(crate) const fn relation_limit(&self) -> RetrievalLimitObservation {
-        self.relation_limit
     }
     /// Exact final top-four omission count, not omissions before channel limits.
     pub fn omitted_count(&self) -> usize {
@@ -409,14 +448,19 @@ impl CognitiveStore {
                 if !seen.insert((candidate.clone(), support.clone(), signal)) {
                     continue;
                 }
-                let bytes = serde_json::to_vec(&(
-                    "hepta:cognitive:retrieval-relation-support:v1",
+                let group_bytes = serde_json::to_vec(&(
+                    "hepta:cognitive:retrieval-relation-group:v1",
                     &seed.projection_scope,
                     seed.generation,
                     &edge_id,
-                    &relation,
+                    signal.as_str(),
                     &support.memory_id,
                     support.revision,
+                ))
+                .map_err(|error| CognitiveStoreError::Invalid(error.to_string()))?;
+                let support_bytes = serde_json::to_vec(&(
+                    "hepta:cognitive:retrieval-relation-support:v2",
+                    &group_bytes,
                     &candidate.memory_id,
                     candidate.revision,
                 ))
@@ -433,7 +477,8 @@ impl CognitiveStore {
                         revision: support.revision,
                     },
                     signal,
-                    support_sha256: Sha256Digest::for_bytes(&bytes),
+                    support_sha256: Sha256Digest::for_bytes(&support_bytes),
+                    relation_group_sha256: Sha256Digest::for_bytes(&group_bytes),
                 });
                 if result.len() >= MAX_RETRIEVAL_CHANNEL_CANDIDATES {
                     limit = RetrievalLimitObservation::LimitReached;
