@@ -1,0 +1,10 @@
+{
+  "schema_version": 1,
+  "model_id": "intuition.frozen.linear.v1",
+  "feature_schema": "margin_i64,novelty_i64",
+  "weights": [3, -2],
+  "bias": 0,
+  "confidence_floor_ppm": 600000,
+  "confidence_step_ppm": 50000,
+  "ood_novelty_abs_threshold": 4
+}
