@@ -59,4 +59,7 @@ pub(crate) fn unavailable(error: impl std::fmt::Display) -> DurableOperationErro
 }
 
 #[cfg(test)]
+#[path = "fault_tests.rs"]
+mod fault_tests;
+#[cfg(test)]
 mod tests;
