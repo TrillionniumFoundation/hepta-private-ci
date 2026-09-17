@@ -43,6 +43,13 @@ export function positiveInteger(value, name) {
   return value;
 }
 
+export function nonNegativeInteger(value, name) {
+  if (!Number.isSafeInteger(value) || value < 0) {
+    throw new TypeError(`${name} must be a non-negative safe integer`);
+  }
+  return value;
+}
+
 export function futureDeadline(value, now, name = "deadlineMs") {
   const deadlineMs = positiveInteger(value, name);
   if (deadlineMs <= now) {
@@ -111,12 +118,20 @@ export function indeterminateReceipt(profileId, operationId, semanticDigest, rea
 
 export function admitNewOperation(state, input, now) {
   const operationId = stableId(input.operationId, "operationId");
-  const pageGeneration = positiveInteger(input.pageGeneration, "pageGeneration");
-  if (pageGeneration !== state.pageGeneration || state.documentDigest === null) {
-    throw new TypeError("stale page generation");
-  }
   const typedAction = normalizeBrowserAction(input.typedAction);
   const action = stableId(typedAction.kind, "typedAction.kind");
+  const pageGeneration = nonNegativeInteger(input.pageGeneration, "pageGeneration");
+  const bootstrapNavigation =
+    action === "navigate" &&
+    pageGeneration === 0 &&
+    state.pageGeneration === 0 &&
+    state.documentDigest === null;
+  if (
+    !bootstrapNavigation &&
+    (pageGeneration === 0 || pageGeneration !== state.pageGeneration || state.documentDigest === null)
+  ) {
+    throw new TypeError("stale page generation");
+  }
   const destinationOrigin = canonicalOrigin(input.destinationOrigin);
   if (!state.allowedOrigins.has(destinationOrigin)) {
     throw new TypeError("destination origin is outside the profile grant");
@@ -149,7 +164,7 @@ export function admitNewOperation(state, input, now) {
     processId: state.processId,
     profileGeneration: state.generation,
     pageGeneration,
-    documentDigest: state.documentDigest,
+    documentDigest: bootstrapNavigation ? null : state.documentDigest,
     operationId,
     action,
     typedAction,
@@ -174,7 +189,7 @@ export function reconciliationRequestDigest(state, input, stored) {
     principalId: state.principalId,
     processId: state.processId,
     profileGeneration: state.generation,
-    pageGeneration: positiveInteger(input.pageGeneration, "pageGeneration"),
+    pageGeneration: nonNegativeInteger(input.pageGeneration, "pageGeneration"),
     documentDigest: stored.documentDigest,
     operationId: stableId(input.operationId, "operationId"),
     action: stableId(typedAction.kind, "typedAction.kind"),
