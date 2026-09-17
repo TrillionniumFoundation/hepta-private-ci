@@ -236,6 +236,7 @@ jobs:
           # Global source/merge document and script checks run once in hepta-development-docs.
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/source-owner.json" -- python3 scripts/hepta-gap-closure.py verify
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/ui-test.json" -- node --test apps/hepta-browser/test/*.js apps/hepta-native/test/*.js
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/ui-control-check.json" -- npm --prefix apps/hepta-control-ui run check
       - name: Formatting without source mutation
         if: always()
         env:
