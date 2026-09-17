@@ -2,10 +2,10 @@
 """Verify the closed set of privileged Hepta product call sites.
 
 This is a source proof, not a runtime or production-authority receipt. It uses a
-small lexical Rust scanner so comments and string literals cannot manufacture a
-fake call site. The manifest intentionally distinguishes product code from
-examples and tests; ignored paths remain covered by ordinary compiler and test
-checks but cannot satisfy a product-caller requirement.
+small lexical Rust scanner so comments, string literals and cfg-test-only items
+cannot manufacture a product call site. The manifest intentionally distinguishes
+product code from examples and tests; ignored paths remain covered by ordinary
+compiler and test checks but cannot satisfy a product-caller requirement.
 
 B4 has two independent closed sets:
 1. every privileged boundary in the inventory must have a boundary row; and
@@ -13,9 +13,9 @@ B4 has two independent closed sets:
    one of the explicitly declared product callers.
 
 The optional ``call_pattern`` is a Python regular expression over Rust code with
-comments and literals stripped. It exists for method syntax such as
-``authority.claim(...)`` where a fully-qualified symbol does not appear at the
-call site. Rows without it retain the original exact-symbol behavior.
+comments, literals and cfg-test items stripped. It exists for method syntax such
+as ``authority.claim(...)`` where a fully-qualified symbol does not appear at
+the call site. Rows without it retain the original exact-symbol behavior.
 """
 
 from __future__ import annotations
@@ -253,6 +253,99 @@ def _strip_rust_non_code(source: str) -> str:
     return "".join(output)
 
 
+def _strip_cfg_test_items(code: str) -> str:
+    """Blank Rust items guarded by a cfg expression containing the `test` atom.
+
+    The input has already had comments and literals blanked, so bracket/brace
+    matching cannot be confused by braces inside strings. Newlines are retained
+    to keep diagnostics stable. This intentionally removes both `cfg(test)` and
+    compound forms such as `cfg(all(test, unix))`.
+    """
+
+    output = list(code)
+    index = 0
+    while index < len(code):
+        start = code.find("#[", index)
+        if start < 0:
+            break
+        attr_end = _matching_delimiter(code, start + 1, "[", "]")
+        if attr_end is None:
+            break
+        attribute = code[start : attr_end + 1]
+        if re.search(r"\bcfg\b", attribute) is None or re.search(
+            r"\btest\b", attribute
+        ) is None:
+            index = attr_end + 1
+            continue
+
+        cursor = attr_end + 1
+        # Rust permits additional attributes between cfg(test) and the item.
+        while True:
+            cursor = _skip_space(code, cursor)
+            if not code.startswith("#[", cursor):
+                break
+            extra_end = _matching_delimiter(code, cursor + 1, "[", "]")
+            if extra_end is None:
+                return "".join(output)
+            cursor = extra_end + 1
+
+        item_end = _rust_item_end(code, cursor)
+        if item_end is None:
+            item_end = len(code) - 1
+        for offset in range(start, item_end + 1):
+            if output[offset] != "\n":
+                output[offset] = " "
+        index = item_end + 1
+    return "".join(output)
+
+
+def _matching_delimiter(
+    source: str, open_index: int, opener: str, closer: str
+) -> int | None:
+    if open_index >= len(source) or source[open_index] != opener:
+        return None
+    depth = 0
+    for index in range(open_index, len(source)):
+        char = source[index]
+        if char == opener:
+            depth += 1
+        elif char == closer:
+            depth -= 1
+            if depth == 0:
+                return index
+    return None
+
+
+def _skip_space(source: str, index: int) -> int:
+    while index < len(source) and source[index].isspace():
+        index += 1
+    return index
+
+
+def _rust_item_end(source: str, start: int) -> int | None:
+    """Find the end of one already-lexed Rust item conservatively."""
+
+    paren = 0
+    bracket = 0
+    index = start
+    while index < len(source):
+        char = source[index]
+        if char == "(":
+            paren += 1
+        elif char == ")" and paren:
+            paren -= 1
+        elif char == "[":
+            bracket += 1
+        elif char == "]" and bracket:
+            bracket -= 1
+        elif paren == 0 and bracket == 0 and char == ";":
+            return index
+        elif paren == 0 and bracket == 0 and char == "{":
+            return _matching_delimiter(source, index, "{", "}")
+        index += 1
+    return None
+
+
 def _looks_like_char_literal(source: str, index: int) -> bool:
     if index + 2 >= len(source):
         return False
@@ -377,7 +470,8 @@ def verify(root: Path = ROOT, manifest_path: Path | None = None) -> dict[str, An
     source_index: dict[str, str] = {}
     for source_path in files:
         raw = source_path.read_text(encoding="utf-8")
-        source_index[source_path.relative_to(root).as_posix()] = _strip_rust_non_code(raw)
+        code = _strip_rust_non_code(raw)
+        source_index[source_path.relative_to(root).as_posix()] = _strip_cfg_test_items(code)
     results = [
         _verify_boundary(root, boundary, source_index, ignored)
         for boundary in boundaries
@@ -410,6 +504,11 @@ def main() -> int:
             raise VerificationFailure("lexical scanner self-test failed")
         if re.search(r"authority\s*\.\s*claim\s*\(", "authority\n  .claim(x)") is None:
             raise VerificationFailure("method call-pattern self-test failed")
+        cfg_code = _strip_cfg_test_items(
+            "#[cfg(all(test, unix))]\nmod tests { fn x() { authority.claim(x); } }\nauthority.claim(y);\n"
+        )
+        if cfg_code.count("authority.claim") != 1 or "authority.claim(y)" not in cfg_code:
+            raise VerificationFailure("cfg-test stripping self-test failed")
         print(
             json.dumps({"status": "PASS_HEPTA_CALLER_PROOF_SELF_TEST"}, sort_keys=True)
         )
