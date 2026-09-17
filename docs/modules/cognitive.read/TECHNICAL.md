@@ -54,7 +54,7 @@ The machine-readable source of this split is [IMPLEMENTATION_MAP.json](IMPLEMENT
 
 ### Native source and scope
 
-The registered primary source is [codex-rs/hepta-cognitive-read/src/v2.rs](../../../codex-rs/hepta-cognitive-read/src/v2.rs); observed identifiers include `ReadRequestV2`, `ReadResultV2`, `read_v2`, `binding_digest`. The durable adapter is [codex-rs/hepta-memory/src/lane_c_snapshot.rs](../../../codex-rs/hepta-memory/src/lane_c_snapshot.rs). The production owner consumer and exact receipt finalizer are [codex-rs/hepta-agentd/src/cognitive_context.rs](../../../codex-rs/hepta-agentd/src/cognitive_context.rs), and the final model-effect consumer is [codex-rs/hepta-infer-worker-host/src/native_app_server.rs](../../../codex-rs/hepta-infer-worker-host/src/native_app_server.rs). Read the [current native implementation](../../../qualification/module-execution-dossiers/detail/cognitive.read.md#8-current-native-implementation) alongside the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/cognitive.read.md) for the implemented subset and remaining qualification work.
+The registered primary source is [codex-rs/hepta-cognitive-read/src/v2.rs](../../../codex-rs/hepta-cognitive-read/src/v2.rs); observed identifiers include `ReadRequestV2`, `ReadResultV2`, `read_v2`, `binding_digest`. The durable adapter is [codex-rs/hepta-memory/src/lane_c_snapshot.rs](../../../codex-rs/hepta-memory/src/lane_c_snapshot.rs). The production owner consumer and exact receipt finalizer are [codex-rs/hepta-agentd/src/cognitive_context.rs](../../../codex-rs/hepta-agentd/src/cognitive_context.rs). The durable pre-effect journal transition is in [codex-rs/hepta-infer-core/src/native_control.rs](../../../codex-rs/hepta-infer-core/src/native_control.rs), and the final model-effect consumer is [codex-rs/hepta-infer-worker-host/src/native_app_server.rs](../../../codex-rs/hepta-infer-worker-host/src/native_app_server.rs). Read the [current native implementation](../../../qualification/module-execution-dossiers/detail/cognitive.read.md#8-current-native-implementation) alongside the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/cognitive.read.md) for the implemented subset and remaining qualification work.
 
 ## 3. Boundary, responsibilities and non-goals
 
@@ -67,22 +67,29 @@ revision/content digests and calls `revalidate_lane_c_snapshot` before publishin
 its cognitive-context response.
 
 That response is still only an observed historical cut. For model execution the
-infer worker retains `snapshot_digest` and `read_digest` and, after establishing
-the exact App Server thread but before `TurnStart`, calls
-`AgentdClient::finalize_cognitive_context`. The owner reacquires the canonical
-Lane C cut, exact-compares the snapshot digest, reproduces the same bounded V2
-read receipt, exact-compares the read digest, and revalidates the cut again. Any
-correction, delete/tombstone, validity change, citation/frontier change or owner
-conflict observed before finalization fails closed and the stale context is not
-sent to the model. A successful finalization is still an observation, not a
-freshness/revocation lease over writes that occur after it returns.
+infer worker retains `snapshot_digest` and `read_digest`. After establishing the
+exact App Server thread and rechecking the Agent lifecycle generation, it first
+syncs the exact thread/provider/context dispatch intent to the existing durable
+native journal, then calls `AgentdClient::finalize_cognitive_context` immediately
+before `TurnStart`. The owner reacquires the canonical Lane C cut, exact-compares
+the snapshot digest, reproduces the same bounded V2 read receipt, exact-compares
+the read digest, and revalidates the cut again. Any correction,
+delete/tombstone, validity change, citation/frontier change or owner conflict
+observed before finalization fails closed and the stale context is not sent to
+the model. If finalization or cancellation fails after the synced dispatch intent
+but before `TurnStart`, durable control records a proven pre-turn stop and
+releases the local slot without fabricating provider terminality or token usage.
+A successful finalization is still an observation, not a freshness/revocation
+lease over writes that occur after it returns.
 
-`AuthoritativeCognitiveSnapshotProvider` and `read_authoritative` remain internal
-qualification/compatibility machinery for the host-vector envelope. They are not
-exported as a second production acquisition path. Production authority semantics
-are the durable Lane C cut plus explicit owner revalidation/finalization. The
-public `AuthoritativeSnapshotV1` envelope remains available where Lane C
-qualification needs to bind an externally frozen generation vector.
+`AuthoritativeCognitiveSnapshotProvider`, `SnapshotAcquisitionRequestV1`,
+`AuthoritativeReadResultV1` and `read_authoritative` remain source-compatible
+exports for qualification/compatibility, but are explicitly deprecated as
+production entrypoints. They are not a second supported or composed acquisition
+path. Production authority semantics are the durable Lane C cut plus explicit
+owner revalidation/finalization. The public `AuthoritativeSnapshotV1` envelope
+remains available where Lane C qualification needs to bind an externally frozen
+generation vector.
 
 Snapshot generation alone does not detect validity expiry without a write. See
 `codex-rs/hepta-memory/LANE_C_SQLITE.md`; neither the owner-local V2 encoding nor
@@ -162,7 +169,7 @@ The module introduces no independent database schema or migration. SQLite migrat
 
 ## 7. Runtime, concurrency and transaction model
 
-The [current native implementation](../../../qualification/module-execution-dossiers/detail/cognitive.read.md#8-current-native-implementation) identifies the actual state owner, in-memory versus persistent surfaces, and lock/transaction boundary. One Lane C snapshot is read from one SQLite read transaction. Agentd revalidates that cut before response publication; the infer worker invokes owner finalization again immediately before model dispatch. Neither observation establishes a lock or lease against future owner writes.
+The [current native implementation](../../../qualification/module-execution-dossiers/detail/cognitive.read.md#8-current-native-implementation) identifies the actual state owner, in-memory versus persistent surfaces, and lock/transaction boundary. One Lane C snapshot is read from one SQLite read transaction. Agentd revalidates that cut before response publication. For model execution the native worker syncs its dispatch intent, then invokes owner finalization again before `TurnStart`; a proven local stop before `TurnStart` is durably releasable. Neither observation establishes a lock or lease against future owner writes.
 
 [Shared concurrency and transaction requirements](../README.md#shared-concurrency-and-transactions) apply at the corresponding owner boundary.
 
@@ -170,7 +177,7 @@ The [current native implementation](../../../qualification/module-execution-doss
 
 Use the error/recovery path linked by the [current native implementation](../../../qualification/module-execution-dossiers/detail/cognitive.read.md#8-current-native-implementation) and the module-specific fault cases in the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/cognitive.read.md). A source library or fixture cannot stand in for an unimplemented durable recovery or external reconciler.
 
-Finalization is fail-closed. Invalid digests are invalid input; changed snapshot/read receipts are conflicts; owner unavailability/corruption does not silently fall back to the previously returned context. The infer worker shuts down the App Server connection and does not journal/send `TurnStart` with stale context when finalization fails.
+Finalization is fail-closed. Invalid digests are invalid input; changed snapshot/read receipts are conflicts; owner unavailability/corruption does not silently fall back to the previously returned context. The infer worker does not send `TurnStart` with stale context when finalization fails. Because the exact dispatch intent is synced first, a finalization/cancellation failure is followed by a durable `stop_native_before_turn_start` transition that proves no provider turn was sent, releases the local slot, and preserves the dispatch identity for replay/audit.
 
 [Shared failure, recovery and rollback requirements](../README.md#shared-failure-and-recovery) remain mandatory.
 
@@ -190,13 +197,13 @@ Negative tests cover denied capabilities, cross-owner writes, stale or revoked g
 
 The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/cognitive.read.md) specifies this module's algorithm, pilot ceilings and capacity fixtures. Those target ceilings are not measurements and must not be reported as enforcement of an unimplemented API. Current native limits belong to [codex-rs/hepta-cognitive-read/src/v2.rs](../../../codex-rs/hepta-cognitive-read/src/v2.rs), Agentd's bounded cognitive-context response, and the native host model-attachment limit.
 
-Finalization intentionally pays for one additional owner cut plus deterministic bounded V2 read immediately before model dispatch. This cost is part of the correctness boundary; it must not be removed or replaced by a time-based cache without a separately proven owner lease/revocation mechanism.
+Finalization intentionally pays for one additional owner cut plus deterministic bounded V2 read after the exact dispatch intent has been synced and immediately before model `TurnStart`. This cost is part of the correctness boundary; it must not be removed or replaced by a time-based cache without a separately proven owner lease/revocation mechanism.
 
 [Shared performance and capacity requirements](../README.md#shared-performance-and-capacity) define the measurement/overload obligations for a selected host.
 
 ## 11. Observability and operations
 
-Acquire a cut through the existing SQLite owner, then call the crate-native `ReadRequestV2` reader. Agentd compares exact revision/content digests and revalidates time/frontiers before response publication. A downstream model consumer must retain the returned `snapshot_digest`/`read_digest` and invoke `CognitiveContextFinalize` immediately before `TurnStart`; the owner must reproduce those exact digests or reject the effect. Release snapshot handles on completion/cancel. Neither the historical cut nor a successful finalization leases future external effects.
+Acquire a cut through the existing SQLite owner, then call the crate-native `ReadRequestV2` reader. Agentd compares exact revision/content digests and revalidates time/frontiers before response publication. A downstream model consumer must retain the returned `snapshot_digest`/`read_digest`, sync the exact durable dispatch intent, and invoke `CognitiveContextFinalize` immediately before `TurnStart`; the owner must reproduce those exact digests or reject the effect. A proven failure before `TurnStart` must durably stop/release the synced dispatch rather than fabricate provider completion. Neither the historical cut nor a successful finalization leases future external effects.
 
 Current operating and state-format references:
 
@@ -213,11 +220,12 @@ Current focused test sources (source references, not pass receipts):
 - [codex-rs/hepta-memory/src/lane_c_snapshot_tests.rs](../../../codex-rs/hepta-memory/src/lane_c_snapshot_tests.rs); named case: `existing_sqlite_writes_are_readable_by_new_lane_c_after_reopen`.
 - [codex-rs/hepta-agentd/src/cognitive_context_tests.rs](../../../codex-rs/hepta-agentd/src/cognitive_context_tests.rs); named case: `finalization_rejects_context_tombstoned_after_agentd_read`, which fixes the deterministic sequence `Lane C read -> Agentd receipt -> tombstone -> finalization deny`.
 - [codex-rs/hepta-agent-protocol/src/lib.rs](../../../codex-rs/hepta-agent-protocol/src/lib.rs); named case: `cognitive_context_finalize_wire_round_trip_is_strict_and_bounded`.
-- [codex-rs/hepta-cognitive-read/src/authoritative_tests.rs](../../../codex-rs/hepta-cognitive-read/src/authoritative_tests.rs) remains qualification coverage for the non-production host-vector compatibility envelope.
+- [codex-rs/hepta-infer-core/src/native_control.rs](../../../codex-rs/hepta-infer-core/src/native_control.rs); named case: `synced_dispatch_can_stop_before_turn_start_and_release_slot`, which persists and reopens a proven pre-turn stop after synced dispatch intent.
+- [codex-rs/hepta-cognitive-read/src/authoritative_tests.rs](../../../codex-rs/hepta-cognitive-read/src/authoritative_tests.rs) remains qualification coverage for the deprecated non-production host-vector compatibility surface.
 
-In `codex-rs`, run focused tests for `codex-hepta-memory`, `codex-hepta-cognitive-read`, `codex-hepta-agent-protocol`, `codex-hepta-agentd` and `codex-hepta-infer-worker-host`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/cognitive.read.md) separately labels target acceptance designs.
+In `codex-rs`, run focused tests for `codex-hepta-memory`, `codex-hepta-cognitive-read`, `codex-hepta-agent-protocol`, `codex-hepta-agentd`, `codex-hepta-infer-core` and `codex-hepta-infer-worker-host`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/cognitive.read.md) separately labels target acceptance designs.
 
-A remaining qualification obligation is a full transport-level deterministic regression that drives a real/mocked Agentd control socket and App Server boundary through `CognitiveContext -> owner mutation -> CognitiveContextFinalize -> no TurnStart`. The owner-level race is now covered, and production wiring invokes the gate, but that wider transport orchestration must not be claimed as passed until an exact-candidate receipt exists.
+A remaining qualification obligation is a full transport-level deterministic regression that drives a real/mocked Agentd control socket and App Server boundary through `CognitiveContext -> owner mutation -> CognitiveContextFinalize -> no TurnStart`. The owner-level race and the durable pre-turn stop are now covered separately, and production wiring invokes both boundaries, but that wider transport orchestration must not be claimed as passed until an exact-candidate receipt exists.
 
 [Shared verification and qualification requirements](../README.md#shared-verification-and-qualification) retain the source/merge, failure, compilation and independent-evidence obligations.
 
@@ -235,9 +243,9 @@ Source implementation completes only when the declared target root exists, publi
 
 Activation composes a named product caller through registered ports and verifies authority, configuration, resource and failure behavior. `cognitive.read` now has named source-level product callers in Agentd and the native infer worker, so the implementation map records composition; this does not by itself establish independent qualification, operator acceptance, promotion or release.
 
-The synchronous `AuthoritativeCognitiveSnapshotProvider`/`read_authoritative` helper is retired from the public production API and retained only as private qualification/compatibility machinery. New production code must use the durable owner cut and explicit revalidation/finalization path rather than create a second provider semantics layer.
+The synchronous `AuthoritativeCognitiveSnapshotProvider`/`read_authoritative` surface remains source-compatible but is deprecated for production use and retained for qualification/compatibility. New production code must use the durable owner cut and explicit revalidation/finalization path rather than create a second provider semantics layer.
 
-Compatibility adapters are temporary. Retirement requires all named callers migrated, no old-path use, oracle parity where required, rehearsed rollback and independent acceptance. Retirement preserves historical evidence and durable-record interpretability.
+Compatibility adapters are temporary. Retirement requires all named callers migrated, no old-path production use, oracle parity where required, rehearsed rollback and independent acceptance. Retirement preserves historical evidence and durable-record interpretability.
 
 ## 15. Definition of module completion
 
