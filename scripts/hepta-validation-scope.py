@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
-"""Classify one exact candidate into fast, impacted, or critical validation.
+"""Classify one source candidate into risk-proportional blocking validation.
 
-The classifier is intentionally conservative.  It is the only source of
-`not_applicable` decisions consumed by the blocking CI fan-in; a skipped job
-without a matching classifier decision is therefore a failure, not a green
-result inherited from another commit or workflow.
+The classifier is the only source of not-applicable decisions consumed by the
+blocking fan-in. A skipped job without a same-candidate decision is a failure.
+The scope binds the immutable source candidate; the delivery bundle separately
+binds the integration artifact that GitHub Actions actually tested.
 """
 
 from __future__ import annotations
@@ -16,7 +16,8 @@ import subprocess
 from pathlib import Path
 from typing import Iterable
 
-SCHEMA = "hepta.validation-scope.v1"
+SCHEMA = "hepta.validation-scope.v2"
+POLICY_SOURCE = "scripts/hepta-validation-scope.py"
 
 JOBS = (
     "hepta-contract-gate",
@@ -37,12 +38,17 @@ ALWAYS_JOBS = {
 }
 
 CRITICAL_PREFIXES = (
+    "codex-rs/hepta-agentd/",
     "codex-rs/hepta-authbus/",
+    "codex-rs/hepta-contracts/",
     "codex-rs/hepta-control-plane/",
+    "codex-rs/hepta-learning-artifacts/",
     "codex-rs/hepta-learning-ledger/",
+    "codex-rs/hepta-learning-plasticity/",
     "codex-rs/hepta-memory/",
     "codex-rs/hepta-runtime/",
     "codex-rs/hepta-supervisor/",
+    "codex-rs/model-provider/",
     "codex-rs/state/",
     "codex-rs/core/",
     "codex-rs/app-server/",
@@ -83,8 +89,12 @@ def _run_git(*args: str) -> str:
     return subprocess.check_output(("git", *args), text=True).strip()
 
 
-def changed_paths(base: str, head: str) -> tuple[list[str], str | None]:
-    """Return changed paths, or a fail-closed reason when base is unavailable."""
+def _commit_tree(commit_sha: str) -> str:
+    return _run_git("rev-parse", f"{commit_sha}^{{tree}}")
+
+
+def changed_paths(base: str, source: str) -> tuple[list[str], str | None]:
+    """Return source-candidate paths or a fail-closed reason."""
     try:
         subprocess.run(
             ("git", "cat-file", "-e", f"{base}^{{commit}}"),
@@ -93,14 +103,14 @@ def changed_paths(base: str, head: str) -> tuple[list[str], str | None]:
             stderr=subprocess.DEVNULL,
         )
         subprocess.run(
-            ("git", "cat-file", "-e", f"{head}^{{commit}}"),
+            ("git", "cat-file", "-e", f"{source}^{{commit}}"),
             check=True,
             stdout=subprocess.DEVNULL,
             stderr=subprocess.DEVNULL,
         )
     except subprocess.CalledProcessError:
-        return [], "base_or_head_unavailable"
-    output = _run_git("diff", "--name-only", "--diff-filter=ACMR", base, head)
+        return [], "base_or_source_unavailable"
+    output = _run_git("diff", "--name-only", "--diff-filter=ACMR", base, source)
     paths = sorted({line for line in output.splitlines() if line})
     return paths, None
 
@@ -124,6 +134,7 @@ def _is_critical(path: str) -> bool:
             "writer",
             "handoff",
             "recovery",
+            "execution",
         )
     )
 
@@ -138,8 +149,7 @@ def _touches_bazel(path: str) -> bool:
 
 
 def _touches_dependencies(path: str) -> bool:
-    name = Path(path).name
-    return name in {"Cargo.toml", "Cargo.lock", "deny.toml"}
+    return Path(path).name in {"Cargo.toml", "Cargo.lock", "deny.toml"}
 
 
 def _touches_rust(path: str) -> bool:
@@ -184,8 +194,6 @@ def classify(paths: Iterable[str], unavailable_reason: str | None = None) -> dic
             required["rust-ci"] = any(_touches_rust(path) for path in paths)
             required["sdk"] = any(_touches_sdk(path) for path in paths)
 
-        # Unknown non-document source must never silently become N/A.  It is
-        # cheaper to run the complete gate once than to create a validation hole.
         recognized = all(
             _is_docs_only(path)
             or _touches_bazel(path)
@@ -210,7 +218,11 @@ def classify(paths: Iterable[str], unavailable_reason: str | None = None) -> dic
             )
         else:
             reason = f"not_applicable_under_{profile}_profile"
-        jobs[job] = {"required": required[job], "reason": reason}
+        jobs[job] = {
+            "required": required[job],
+            "reason": reason,
+            "source": POLICY_SOURCE,
+        }
 
     canonical_paths = "\n".join(paths).encode()
     return {
@@ -224,10 +236,21 @@ def classify(paths: Iterable[str], unavailable_reason: str | None = None) -> dic
     }
 
 
+def bind_source_identity(result: dict, base: str, source: str) -> dict:
+    bound = dict(result)
+    bound["source_candidate"] = {
+        "commit_sha": source,
+        "tree_sha": _commit_tree(source),
+    }
+    bound["base_commit_sha"] = base
+    return bound
+
+
 def _self_test() -> None:
     docs = classify(["docs/DEVELOPMENT.md"])
     assert docs["profile"] == "fast"
     assert docs["jobs"]["rust-ci"]["required"] is False
+    assert docs["jobs"]["rust-ci"]["source"] == POLICY_SOURCE
 
     rust = classify(["codex-rs/hepta-intuition/src/lib.rs"])
     assert rust["profile"] == "impacted"
@@ -238,17 +261,25 @@ def _self_test() -> None:
     assert critical["profile"] == "critical"
     assert all(value["required"] for value in critical["jobs"].values())
 
+    authority = classify(["codex-rs/model-provider/src/provider_effect.rs"])
+    assert authority["profile"] == "critical"
+
+    learning_artifact = classify(
+        ["codex-rs/hepta-learning-artifacts/src/iteration_ledger.rs"]
+    )
+    assert learning_artifact["profile"] == "critical"
+
     unknown = classify(["mystery/new-format.bin"])
     assert unknown["profile"] == "critical"
 
-    missing = classify([], "base_or_head_unavailable")
+    missing = classify([], "base_or_source_unavailable")
     assert missing["profile"] == "critical"
 
 
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--base")
-    parser.add_argument("--head")
+    parser.add_argument("--source")
     parser.add_argument("--paths-file")
     parser.add_argument("--output")
     parser.add_argument("--github-output")
@@ -268,11 +299,14 @@ def main() -> int:
         ]
         unavailable = None
     else:
-        if not args.base or not args.head:
-            parser.error("--base and --head are required without --paths-file")
-        paths, unavailable = changed_paths(args.base, args.head)
+        if not args.base or not args.source:
+            parser.error("--base and --source are required without --paths-file")
+        paths, unavailable = changed_paths(args.base, args.source)
 
     result = classify(paths, unavailable)
+    if args.base and args.source and unavailable is None:
+        result = bind_source_identity(result, args.base, args.source)
+
     payload = json.dumps(result, sort_keys=True, separators=(",", ":"))
     if args.output:
         Path(args.output).write_text(payload + "\n", encoding="utf-8")
@@ -282,7 +316,8 @@ def main() -> int:
             handle.write(f"scope_json={payload}\n")
             for job, applicability in result["jobs"].items():
                 handle.write(
-                    f"{job.replace('-', '_')}={'true' if applicability['required'] else 'false'}\n"
+                    f"{job.replace('-', '_')}="
+                    f"{'true' if applicability['required'] else 'false'}\n"
                 )
     print(payload)
     return 0
