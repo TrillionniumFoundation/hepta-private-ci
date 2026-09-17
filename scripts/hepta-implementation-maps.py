@@ -99,6 +99,9 @@ def map_for(module: dict, source_base: dict, lanes: dict):
         "declaredRoots": roots,
         "resolvedRoots": resolve_source_roots(ROOT, module),
         "sourceRootPresent": all((ROOT / x).exists() for x in roots),
+        "implementationState": "source_implemented",
+        "compositionState": "not_composed",
+        "qualificationState": "not_qualified",
         "productionImplementation": False,
         "productCallerState": "not_composed",
         "productionWriterState": "not_established",
@@ -118,6 +121,7 @@ def map_for(module: dict, source_base: dict, lanes: dict):
             ),
             "sourceRootPresent": all((ROOT / x).exists() for x in roots),
             "productionImplementation": False,
+            "productCompositionImplemented": False,
             "productExecutionProved": False,
             "independentAcceptance": False,
             "activation": False,
@@ -200,6 +204,17 @@ def migrate_map(row: dict, module: dict, lanes: dict, source_base: dict) -> dict
             "operations": operations,
         }
     )
+    migrated.setdefault(
+        "implementationState",
+        "implemented" if migrated["sourceRootPresent"] else "source_missing",
+    )
+    migrated.setdefault(
+        "compositionState",
+        "product_composed"
+        if migrated["productCallerState"] == "composed"
+        else "not_composed",
+    )
+    migrated.setdefault("qualificationState", "not_qualified")
     boundary = migrated.get("claimBoundary") or migrated.get("completion")
     if not isinstance(boundary, dict):
         boundary = {}
@@ -211,6 +226,12 @@ def migrate_map(row: dict, module: dict, lanes: dict, source_base: dict) -> dict
         ),
         "sourceRootPresent": migrated["sourceRootPresent"],
         "productionImplementation": migrated["productionImplementation"],
+        "productCompositionImplemented": bool(
+            boundary.get(
+                "productCompositionImplemented",
+                migrated["productCallerState"] == "composed",
+            )
+        ),
         "productExecutionProved": bool(boundary.get("productExecutionProved", False)),
         "independentAcceptance": bool(boundary.get("independentAcceptance", False)),
         "activation": bool(boundary.get("activation", False)),
@@ -283,6 +304,50 @@ def generate():
     print(json.dumps({"generated": len(written), "maps": written}, ensure_ascii=False))
 
 
+def verify_composed_callers(mid: str, row: dict, failures: list[str]) -> None:
+    caller_state = row.get("productCallerState", "not_composed")
+    boundary = row.get("claimBoundary") or row.get("completion") or {}
+    production = bool(row.get("productionImplementation", False))
+    boundary_production = bool(boundary.get("productionImplementation", False))
+    if production != boundary_production:
+        failures.append(f"{mid}: production implementation boundary drift")
+
+    composed = caller_state == "composed"
+    boundary_composed = bool(boundary.get("productCompositionImplemented", False))
+    if composed != boundary_composed:
+        failures.append(f"{mid}: product composition boundary drift")
+    if production and not composed:
+        failures.append(f"{mid}: production implementation without composed caller")
+    if not composed:
+        return
+
+    callers = row.get("productCallers")
+    if not isinstance(callers, list) or not callers:
+        failures.append(f"{mid}: composed state requires product callers")
+        return
+    for index, caller in enumerate(callers):
+        if not isinstance(caller, dict):
+            failures.append(f"{mid}: invalid product caller {index}")
+            continue
+        rel = caller.get("path")
+        symbol = caller.get("symbol")
+        role = caller.get("role")
+        if not rel or not symbol or not role:
+            failures.append(f"{mid}: incomplete product caller {index}")
+            continue
+        path = ROOT / rel
+        if not path.is_file():
+            failures.append(f"{mid}: missing product caller {rel}")
+            continue
+        try:
+            source = path.read_text(encoding="utf-8")
+        except (OSError, UnicodeError) as exc:
+            failures.append(f"{mid}: unreadable product caller {rel}: {exc}")
+            continue
+        if symbol not in source:
+            failures.append(f"{mid}: product caller symbol missing {rel}:{symbol}")
+
+
 def verify():
     modules = load("docs/modules/MODULES.json")["modules"]
     lanes = lane_by_module()
@@ -345,6 +410,8 @@ def verify():
         boundary = row.get("claimBoundary") or row.get("completion")
         if not isinstance(boundary, dict):
             failures.append(f"{mid}: claim boundary")
+        else:
+            verify_composed_callers(mid, row, failures)
     if len(source_bases) != 1:
         failures.append(f"maps: source base drift ({len(source_bases)} identities)")
     if failures:
