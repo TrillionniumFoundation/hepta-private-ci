@@ -1,8 +1,9 @@
 //! Governed plasticity proposal records.
 //!
 //! V2 preserves the supplied-candidate compatibility surface. V3 adds a
-//! deterministic generator and authenticated admission without granting runtime
-//! mutation, self-promotion, selection, activation or release authority.
+//! deterministic generator and authenticated admission. Topology V2 emits one
+//! bounded structural candidate. No API here grants runtime mutation,
+//! self-promotion, selection, activation or release authority.
 
 #![forbid(unsafe_code)]
 
@@ -13,6 +14,7 @@ mod legacy;
 mod parameter_v2;
 mod production_registry;
 mod registry;
+mod topology_v2;
 mod types;
 
 pub use durable_registry::DurableProposalAppendReceiptV1;
@@ -45,6 +47,11 @@ pub use production_registry::ProductionProposalRegistryErrorV1;
 pub use production_registry::ProductionProposalRegistryV1;
 pub use registry::ProposalRegistry;
 pub use registry::ProposalRegistrySlotV2;
+pub use topology_v2::TopologyProposalErrorV2;
+pub use topology_v2::TopologyProposalRequestV2;
+pub use topology_v2::TopologyProposalV2;
+pub use topology_v2::propose_topology_v2;
+pub use topology_v2::verify_topology_proposal_v2;
 pub use types::AppendDisposition;
 pub use types::CandidateNormMetricsV2;
 pub use types::Error;
