@@ -200,10 +200,52 @@
       "tests": [
         {
           "path": "codex-rs/hepta-ndu/src/covariance_tests.rs",
-          "symbol": "scaled, correlated, singular and whitening analytic fixtures"
+          "symbol": "scaled, correlated, singular and covariance analytic fixtures"
         }
       ],
       "designOperation": "solve_backward_regression",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [],
+      "sourcePathExists": true
+    },
+    {
+      "operation": "convert_z_to_original_q24",
+      "nativeSymbol": "codex_hepta_ndu::convert_z_to_original_q24",
+      "sourcePath": "codex-rs/hepta-ndu/src/z_conversion.rs",
+      "inputs": [
+        "Z head values",
+        "source digest",
+        "admitted coordinate/Q24 profile"
+      ],
+      "outputs": [
+        "ZQ24ConversionReceiptV1"
+      ],
+      "state": "source_implemented_shadow_conversion_admission",
+      "authority": "deny_all",
+      "nonClaim": "coordinate and Q24 conversion evidence is not coefficient provenance, conditional identification, learned FBSDE qualification or production selection",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-ndu/src/z_conversion_tests.rs",
+          "symbol": "original_coordinates_quantize_q24_with_nearest_ties_even"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/z_conversion_tests.rs",
+          "symbol": "whitened_head_is_converted_back_to_original_increment_coordinates"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/z_conversion_tests.rs",
+          "symbol": "profile_admission_rejects_ambiguous_or_singular_coordinate_conventions"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/z_conversion_tests.rs",
+          "symbol": "conversion_rejects_wrong_shape_nonfinite_bound_and_missing_source_identity"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/z_conversion_tests.rs",
+          "symbol": "coordinate_profile_digest_binds_transform_and_convention"
+        }
+      ],
+      "designOperation": "convert_z_to_original_q24",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
       "sourcePathExists": true
@@ -315,6 +357,7 @@
     "specification": "complete",
     "deterministicKernel": "candidate_implemented",
     "ownerLocalDurabilityReference": "candidate_implemented",
+    "stochasticCoordinateQ24Conversion": "candidate_implemented",
     "canonicalExternalV2Admission": "not_established",
     "productionWriter": "not_established",
     "exactHeadQualification": "required",
@@ -347,7 +390,7 @@
   "repositoryControlledGaps": [
     "Promote the existing control-plane and intelligence read-only callsites only after product authentication and selected-writer composition are qualified.",
     "Compose and target-host qualify NduProjectionStoreV1 before changing productionWriterState; source existence is not activation.",
-    "Complete native coefficient-profile and coordinate/Q24 conversion admission required by a stochastic consumer.",
+    "Register and compose a production stochastic coefficient profile/consumer; native coordinate/Q24 conversion is now source-implemented but not production-admitted.",
     "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary."
   ],
   "externalEvidenceGates": [
