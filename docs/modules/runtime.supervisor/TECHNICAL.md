@@ -357,3 +357,8 @@ This receipt records repository source bindings for the current documentation ca
 - Source identity: `sourceBase` is recorded in `IMPLEMENTATION_MAP.json`.
 - Consumer callsites and durable owner stores remain an explicit follow-up when not listed above.
 - Production implementation, runtime composition, independent acceptance, activation, and release remain false until their separate evidence gates pass.
+
+
+## Signed production mutation recovery
+
+A non-terminal `supervisor-signed-intent.json` remains fail-closed across daemon restart. Operators must use the pre-start ceremony in [SIGNED_INTENT_RECOVERY.md](./SIGNED_INTENT_RECOVERY.md); the daemon does not infer commit from liveness or from merely observing the target release. The ceremony fences exact main/Matrix leases first and requires explicit grant, old-epoch control-revision successor acknowledgement, current lifecycle/release generations and authority-epoch witnesses before a terminal `committed` or `aborted` journal state is written. `control_revision` is supervisor-epoch memory state rather than a restart-persistent fact; the recovery CLI therefore validates the acknowledged successor against the signed intent instead of claiming to re-read it from disk.

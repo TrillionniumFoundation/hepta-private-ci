@@ -131,8 +131,8 @@ pub fn fence_signed_recovery<D: ProcessDriver>(
 
     // Adoption rejection means the durable identity cannot be proven. Refuse
     // before sending a kill to either child so the ceremony remains fail closed.
-    if matches!(main_adoption, Some(Adoption::Rejected))
-        || matches!(matrix_adoption, Some(Adoption::Rejected))
+    if matches!(main_adoption.as_ref(), Some(Adoption::Rejected))
+        || matches!(matrix_adoption.as_ref(), Some(Adoption::Rejected))
     {
         return Err(SupervisorError::Invalid(format!(
             "signed recovery cannot prove the exact child identity for {agent_id}"
@@ -164,7 +164,7 @@ pub fn resolve_signed_recovery(
     registry: &FleetRegistry,
     agent_id: &AgentId,
     expected_grant_sha256: &Sha256Digest,
-    expected_control_revision: u64,
+    expected_control_revision_successor: u64,
     expected_lifecycle_generation: u64,
     expected_release_state_generation: u64,
     expected_authority_epoch: u64,
@@ -182,8 +182,14 @@ pub fn resolve_signed_recovery(
     }
     ensure_unresolved(&intent)?;
 
+    let required_control_revision_successor = intent
+        .expected_control_revision
+        .checked_add(1)
+        .ok_or_else(|| {
+            SupervisorError::Invalid("signed recovery control revision overflow".to_string())
+        })?;
     if &intent.grant_sha256 != expected_grant_sha256
-        || intent.expected_control_revision != expected_control_revision
+        || required_control_revision_successor != expected_control_revision_successor
         || intent.expected_lifecycle_generation > expected_lifecycle_generation
         || intent.authority_epoch != expected_authority_epoch
         || record.lifecycle.generation != expected_lifecycle_generation
@@ -237,10 +243,7 @@ pub fn resolve_signed_recovery(
     inspect_signed_recovery(registry, agent_id)
 }
 
-fn main_adopt_spec(
-    record: &codex_hepta_fleet::AgentRecord,
-    lease: &ProcessLease,
-) -> AdoptSpec {
+fn main_adopt_spec(record: &codex_hepta_fleet::AgentRecord, lease: &ProcessLease) -> AdoptSpec {
     AdoptSpec {
         agent_id: record.manifest.agent_id.clone(),
         registry_generation: record.lifecycle.generation,
@@ -288,7 +291,9 @@ fn apply_main_fence<P: ManagedProcess>(
                 .map_err(|error| driver_error(agent_id, error))?;
             Ok(SignedRecoveryFenceOutcome::KillRequested)
         }
-        (_, Some(Adoption::Rejected)) => unreachable!("rejected adoption is checked before effects"),
+        (_, Some(Adoption::Rejected)) => {
+            unreachable!("rejected adoption is checked before effects")
+        }
         _ => Err(SupervisorError::Invalid(
             "signed recovery main adoption state is inconsistent".to_string(),
         )),
@@ -313,7 +318,9 @@ fn apply_matrix_fence<P: ManagedProcess>(
                 .map_err(|error| driver_error(agent_id, error))?;
             Ok(SignedRecoveryFenceOutcome::KillRequested)
         }
-        (_, Some(Adoption::Rejected)) => unreachable!("rejected adoption is checked before effects"),
+        (_, Some(Adoption::Rejected)) => {
+            unreachable!("rejected adoption is checked before effects")
+        }
         _ => Err(SupervisorError::Invalid(
             "signed recovery Matrix adoption state is inconsistent".to_string(),
         )),

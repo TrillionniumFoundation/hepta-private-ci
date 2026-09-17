@@ -22,9 +22,11 @@ fn main() -> anyhow::Result<()> {
         .and_then(|value| value.into_string().ok())
         .ok_or_else(|| anyhow::anyhow!(usage()))?;
     let flags = parse_flags(args)?;
-    let fleet_root = HeptaFleetRoot::parse(PathBuf::from(required(&flags, "--fleet-root")?))?;
+    let fleet_root =
+        HeptaFleetRoot::parse(PathBuf::from(required(&flags, "--fleet-root")?.as_os_str()))?;
     let registry = FleetRegistry::open_existing(fleet_root)?;
-    let agent_id = AgentId::parse(os_text(required(&flags, "--agent-id")?, "--agent-id")?)?;
+    let agent_id = AgentId::parse(os_text(required(&flags, "--agent-id")?, "--agent-id")?)
+        .map_err(|error| anyhow::anyhow!("invalid --agent-id: {error}"))?;
 
     match command.as_str() {
         "inspect" => print_json(&inspect_signed_recovery(&registry, &agent_id)?)?,
@@ -33,10 +35,11 @@ fn main() -> anyhow::Result<()> {
             let grant = Sha256Digest::parse(os_text(
                 required(&flags, "--grant-sha256")?,
                 "--grant-sha256",
-            )?)?;
-            let control_revision = parse_u64(
-                required(&flags, "--control-revision")?,
-                "--control-revision",
+            )?)
+            .map_err(|error| anyhow::anyhow!("invalid --grant-sha256: {error}"))?;
+            let control_revision_successor = parse_u64(
+                required(&flags, "--control-revision-successor")?,
+                "--control-revision-successor",
             )?;
             let lifecycle_generation = parse_u64(
                 required(&flags, "--lifecycle-generation")?,
@@ -46,10 +49,8 @@ fn main() -> anyhow::Result<()> {
                 required(&flags, "--release-state-generation")?,
                 "--release-state-generation",
             )?;
-            let authority_epoch = parse_u64(
-                required(&flags, "--authority-epoch")?,
-                "--authority-epoch",
-            )?;
+            let authority_epoch =
+                parse_u64(required(&flags, "--authority-epoch")?, "--authority-epoch")?;
             let resolution = match os_text(required(&flags, "--outcome")?, "--outcome")?.as_str() {
                 "commit" => SignedRecoveryResolution::Commit,
                 "abort" => SignedRecoveryResolution::Abort,
@@ -59,7 +60,7 @@ fn main() -> anyhow::Result<()> {
                 &registry,
                 &agent_id,
                 &grant,
-                control_revision,
+                control_revision_successor,
                 lifecycle_generation,
                 release_state_generation,
                 authority_epoch,
@@ -127,5 +128,5 @@ fn print_json(value: &impl serde::Serialize) -> anyhow::Result<()> {
 }
 
 fn usage() -> &'static str {
-    "usage:\n  hepta-supervisor-recovery inspect --fleet-root ABSOLUTE_PATH --agent-id UUID\n  hepta-supervisor-recovery fence --fleet-root ABSOLUTE_PATH --agent-id UUID\n  hepta-supervisor-recovery resolve --fleet-root ABSOLUTE_PATH --agent-id UUID --outcome commit|abort --grant-sha256 HEX --control-revision N --lifecycle-generation N --release-state-generation N --authority-epoch N"
+    "usage:\n  hepta-supervisor-recovery inspect --fleet-root ABSOLUTE_PATH --agent-id UUID\n  hepta-supervisor-recovery fence --fleet-root ABSOLUTE_PATH --agent-id UUID\n  hepta-supervisor-recovery resolve --fleet-root ABSOLUTE_PATH --agent-id UUID --outcome commit|abort --grant-sha256 HEX --control-revision-successor N --lifecycle-generation N --release-state-generation N --authority-epoch N"
 }

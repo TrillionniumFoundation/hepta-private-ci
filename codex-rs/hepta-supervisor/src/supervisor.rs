@@ -23,6 +23,7 @@ use crate::SupervisorError;
 use crate::SupervisorEventKind;
 use crate::TickReport;
 use crate::runtime::AgentSlot;
+use crate::runtime::MatrixRuntimePhase;
 use crate::runtime::RuntimePhase;
 use crate::runtime::bounded_message;
 use crate::signed_authority::H7H89ProductionGrant;
@@ -519,11 +520,12 @@ impl<D: ProcessDriver> Supervisor<D> {
                 )
                 .map_err(|error| SupervisorError::ProductionAuthority(error.to_string()))?;
             supervisor.preflight_upgrade(agent_id, &target)?;
-            if slot
-                .signed_intent
-                .as_ref()
-                .is_some_and(|intent| !matches!(intent.status, SignedIntentStatus::Committed))
-            {
+            if slot.signed_intent.as_ref().is_some_and(|intent| {
+                !matches!(
+                    intent.status,
+                    SignedIntentStatus::Committed | SignedIntentStatus::Aborted
+                )
+            }) {
                 return Err(SupervisorError::SignedIntentRecoveryRequired(
                     agent_id.clone(),
                 ));
@@ -616,7 +618,10 @@ impl<D: ProcessDriver> Supervisor<D> {
             ));
         }
         slot.signed_intent = Some(intent.clone());
-        if matches!(intent.status, SignedIntentStatus::Committed) {
+        if matches!(
+            intent.status,
+            SignedIntentStatus::Committed | SignedIntentStatus::Aborted
+        ) {
             return Ok(());
         }
         // A restart has no durable proof that an apparently matching target
@@ -640,6 +645,11 @@ impl<D: ProcessDriver> Supervisor<D> {
             let _ = runtime.process.kill();
             runtime.fenced = true;
             runtime.phase = RuntimePhase::Killing;
+        }
+        if let Some(runtime) = slot.matrix.runtime.as_mut() {
+            let _ = runtime.process.kill();
+            runtime.fenced = true;
+            runtime.phase = MatrixRuntimePhase::Killing;
         }
         Err(SupervisorError::SignedIntentRecoveryRequired(
             agent_id.clone(),
