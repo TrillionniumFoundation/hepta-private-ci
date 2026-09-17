@@ -23,6 +23,15 @@ pub use capability_snapshot::CapabilitySnapshotErrorV2;
 pub use capability_snapshot::CapabilitySnapshotRequestV2;
 pub use capability_snapshot::CapabilitySnapshotV2;
 
+mod contracts_v1;
+
+pub use contracts_v1::IntelligenceContractErrorV1;
+pub use contracts_v1::IntelligenceHostEnvelopeInputV1;
+pub use contracts_v1::IntelligenceHostEnvelopeV1;
+pub use contracts_v1::LegalActionCandidateSetInputV1;
+pub use contracts_v1::LegalActionCandidateSetV1;
+pub use contracts_v1::LegalActionCandidateV1;
+
 mod pipeline_v2;
 
 pub use pipeline_v2::LaneFRunRequestV2;
