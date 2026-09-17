@@ -8,6 +8,7 @@ use crate::ActionClass;
 use crate::CompileDisposition;
 use crate::ConfirmationPolicy;
 use crate::Constraint;
+use crate::FeasibilityOutcomeV1;
 use crate::ObjectiveCompileReceipt;
 use crate::ObjectiveConflictReceipt;
 use crate::ObjectiveError;
@@ -28,6 +29,11 @@ const CONSTRAINT_DIGEST_DOMAIN: &[u8] = b"hepta.objective.constraints.v1";
 /// Compiles a typed source envelope into an immutable objective or an explicit
 /// inclusion-minimal conflict receipt.
 ///
+/// Feasibility is checked through the general registered-grammar engine before
+/// objective freezing. The native V1 IR currently projects scalar hard
+/// constraints into that engine; richer enum/action/identity domains remain
+/// available to direct feasibility callers and are not silently claimed here.
+///
 /// `abstain` is an intrinsic, confirmation-free safety action. Callers may
 /// include it explicitly, but cannot forbid it or consume its reserved slot
 /// with another action.
@@ -43,18 +49,31 @@ pub fn compile(
     source.forbidden_actions.dedup();
     source.soft_preferences.sort_by(preference_order);
 
-    if let Some(conflicting_ids) = crate::scalar_adapter::scalar_conflict(&source)? {
-        return Ok(Err(conflict_receipt(&source, conflicting_ids)));
+    let feasibility = crate::native_feasibility::check_native_feasibility_v1(&source)?;
+    match feasibility.outcome {
+        FeasibilityOutcomeV1::Feasible(_) => {}
+        FeasibilityOutcomeV1::Infeasible {
+            inclusion_minimal_conflicting_ids,
+        } => {
+            return Ok(Err(conflict_receipt(
+                &source,
+                inclusion_minimal_conflicting_ids,
+            )));
+        }
+        FeasibilityOutcomeV1::Unsupported { .. } => {
+            return Err(ObjectiveError::UnsupportedConstraintLanguage);
+        }
+        FeasibilityOutcomeV1::Exhausted => {
+            return Err(ObjectiveError::FeasibilityBudgetExhausted);
+        }
     }
 
     let forbidden: BTreeSet<_> = source.forbidden_actions.iter().cloned().collect();
-    let mut removed_action_ids = Vec::new();
     let mut legal_actions = Vec::new();
     let mut requested_forbidden = Vec::new();
     let allowed_actions = std::mem::take(&mut source.allowed_actions);
     for action in allowed_actions {
         if forbidden.contains(&action.id) {
-            removed_action_ids.push(action.id.clone());
             requested_forbidden.push(action.id);
         } else {
             legal_actions.push(action);
@@ -98,7 +117,10 @@ pub fn compile(
     Ok(Ok(ObjectiveCompileReceipt {
         objective,
         disposition,
-        removed_action_ids,
+        // V1 never silently removes a requested action: requested ∩ forbidden
+        // is a typed conflict above. Retain the field only for receipt ABI
+        // compatibility and make its successful-state meaning explicit.
+        removed_action_ids: Vec::new(),
     }))
 }
 
