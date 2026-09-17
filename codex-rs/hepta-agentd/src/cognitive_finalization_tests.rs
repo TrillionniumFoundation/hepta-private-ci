@@ -99,13 +99,11 @@ async fn control_socket_receipts_change_after_post_read_tombstone() {
         .unwrap();
     state.mark_app_server_ready().unwrap();
     let cancellation = CancellationToken::new();
-    let server = crate::AgentdControlServer::bind(
-        socket.clone(),
-        Arc::clone(&state),
-        cancellation.clone(),
-    )
-    .await
-    .unwrap();
+    let _cancel_on_drop = cancellation.clone().drop_guard();
+    let server =
+        crate::AgentdControlServer::bind(socket.clone(), Arc::clone(&state), cancellation.clone())
+            .await
+            .unwrap();
     let task = tokio::spawn(server.run());
     let client = crate::AgentdClient::new(socket, owner(), 1).unwrap();
 
