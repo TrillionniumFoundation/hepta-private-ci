@@ -218,12 +218,9 @@ mod tests {
             ProcessDeadlinePolicyV1::new(Duration::from_millis(2), Duration::from_millis(1), 8)
                 .expect("policy");
 
-        let outcome = enforce_process_termination_deadline_v1(
-            &mut child,
-            policy,
-            Duration::from_millis(3),
-        )
-        .expect("termination outcome");
+        let outcome =
+            enforce_process_termination_deadline_v1(&mut child, policy, Duration::from_millis(3))
+                .expect("termination outcome");
         assert_eq!(outcome, ProcessTerminationOutcomeV1::KilledAndReaped);
         assert_eq!(child.kill_calls, 1);
     }
@@ -239,12 +236,9 @@ mod tests {
             ProcessDeadlinePolicyV1::new(Duration::from_millis(2), Duration::from_millis(1), 8)
                 .expect("policy");
 
-        let outcome = enforce_process_termination_deadline_v1(
-            &mut child,
-            policy,
-            Duration::from_millis(2),
-        )
-        .expect("termination outcome");
+        let outcome =
+            enforce_process_termination_deadline_v1(&mut child, policy, Duration::from_millis(2))
+                .expect("termination outcome");
         assert_eq!(outcome, ProcessTerminationOutcomeV1::KillUnconfirmed);
         assert_eq!(child.kill_calls, 1);
     }
