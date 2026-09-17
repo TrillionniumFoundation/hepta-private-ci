@@ -77,40 +77,36 @@ impl<J: DurableLearningJournal> WitnessedLearningLedger<J> {
         event: LedgerEvent,
     ) -> Result<AppendReceipt, DurableLedgerError> {
         self.ready()?;
-        let journal_before = self.journal.anchor()?;
-        let witness_before = self.witness.current_anchor();
-        if journal_before != witness_before {
-            self.poisoned = true;
-            return Err(DurableLedgerError::AnchorMismatch);
-        }
-
+        let witness_before = self.require_aligned_head()?;
         let receipt = match self.journal.append(expected_predecessor, event) {
             Ok(receipt) => receipt,
             Err(error) => {
-                if matches!(
-                    &error,
-                    DurableLedgerError::Indeterminate | DurableLedgerError::Poisoned
-                ) {
-                    self.poisoned = true;
-                }
+                self.poison_if_indeterminate(&error);
                 return Err(error);
             }
         };
-
-        let journal_after = match self.journal.anchor() {
-            Ok(anchor) => anchor,
-            Err(error) => {
-                self.poisoned = true;
-                return Err(error);
-            }
-        };
-        if journal_after != witness_before
-            && let Err(error) = self.witness.advance(witness_before, journal_after)
-        {
-            self.poisoned = true;
-            return Err(error);
-        }
+        self.advance_witness_from(witness_before)?;
         Ok(receipt)
+    }
+
+    /// Commit one ordered journal batch and witness its terminal head before
+    /// returning any successful batch receipt.
+    pub fn append_batch(
+        &mut self,
+        expected_predecessor: Digest32,
+        events: Vec<LedgerEvent>,
+    ) -> Result<Vec<AppendReceipt>, DurableLedgerError> {
+        self.ready()?;
+        let witness_before = self.require_aligned_head()?;
+        let receipts = match self.journal.append_batch(expected_predecessor, events) {
+            Ok(receipts) => receipts,
+            Err(error) => {
+                self.poison_if_indeterminate(&error);
+                return Err(error);
+            }
+        };
+        self.advance_witness_from(witness_before)?;
+        Ok(receipts)
     }
 
     pub fn anchor(&self) -> Result<LedgerAnchor, DurableLedgerError> {
@@ -132,6 +128,45 @@ impl<J: DurableLearningJournal> WitnessedLearningLedger<J> {
     #[must_use]
     pub const fn witness_anchor(&self) -> LedgerAnchor {
         self.witness.current_anchor()
+    }
+
+    fn require_aligned_head(&mut self) -> Result<LedgerAnchor, DurableLedgerError> {
+        let journal = self.journal.anchor()?;
+        let witness = self.witness.current_anchor();
+        if journal != witness {
+            self.poisoned = true;
+            return Err(DurableLedgerError::AnchorMismatch);
+        }
+        Ok(witness)
+    }
+
+    fn advance_witness_from(
+        &mut self,
+        witness_before: LedgerAnchor,
+    ) -> Result<(), DurableLedgerError> {
+        let journal_after = match self.journal.anchor() {
+            Ok(anchor) => anchor,
+            Err(error) => {
+                self.poisoned = true;
+                return Err(error);
+            }
+        };
+        if journal_after != witness_before
+            && let Err(error) = self.witness.advance(witness_before, journal_after)
+        {
+            self.poisoned = true;
+            return Err(error);
+        }
+        Ok(())
+    }
+
+    fn poison_if_indeterminate(&mut self, error: &DurableLedgerError) {
+        if matches!(
+            error,
+            DurableLedgerError::Indeterminate | DurableLedgerError::Poisoned
+        ) {
+            self.poisoned = true;
+        }
     }
 
     fn ready(&self) -> Result<(), DurableLedgerError> {
@@ -159,6 +194,12 @@ pub trait AcknowledgedLearningJournal: sealed::Acknowledged {
         event: LedgerEvent,
     ) -> Result<AppendReceipt, DurableLedgerError>;
 
+    fn append_batch(
+        &mut self,
+        expected_predecessor: Digest32,
+        events: Vec<LedgerEvent>,
+    ) -> Result<Vec<AppendReceipt>, DurableLedgerError>;
+
     fn anchor(&self) -> Result<LedgerAnchor, DurableLedgerError>;
 
     fn snapshot(&self) -> Result<LedgerSnapshot, DurableLedgerError>;
@@ -171,6 +212,14 @@ impl<J: DurableLearningJournal> AcknowledgedLearningJournal for WitnessedLearnin
         event: LedgerEvent,
     ) -> Result<AppendReceipt, DurableLedgerError> {
         WitnessedLearningLedger::append(self, expected_predecessor, event)
+    }
+
+    fn append_batch(
+        &mut self,
+        expected_predecessor: Digest32,
+        events: Vec<LedgerEvent>,
+    ) -> Result<Vec<AppendReceipt>, DurableLedgerError> {
+        WitnessedLearningLedger::append_batch(self, expected_predecessor, events)
     }
 
     fn anchor(&self) -> Result<LedgerAnchor, DurableLedgerError> {
@@ -276,6 +325,36 @@ mod tests {
         .expect("recover witness");
         assert_eq!(recovered.current_anchor().chain_digest, receipt.chain_digest);
         drop(recovered);
+        std::fs::remove_dir_all(root).expect("remove test root");
+    }
+
+    #[test]
+    fn acknowledged_batch_witnesses_only_the_terminal_head() {
+        let root = temp_root("batch");
+        let binding = digest("ledger-binding");
+        let witness_binding = digest("witness-binding");
+        let journal = DurableLedger::create(file(&root, "ledger", true), binding, 16)
+            .expect("create ledger");
+        let witness = LedgerWitnessStore::create(
+            file(&root, "witness", true),
+            witness_binding,
+        )
+        .expect("create witness");
+        let mut acknowledged =
+            WitnessedLearningLedger::attach(journal, witness).expect("attach witness");
+        let receipts = acknowledged
+            .append_batch(
+                Digest32::ZERO,
+                vec![
+                    decision("record-1", "episode-1"),
+                    decision("record-2", "episode-2"),
+                ],
+            )
+            .expect("append acknowledged batch");
+        let terminal = receipts.last().expect("terminal receipt");
+        assert_eq!(acknowledged.witness_anchor().sequence, terminal.sequence.get());
+        assert_eq!(acknowledged.witness_anchor().chain_digest, terminal.chain_digest);
+        drop(acknowledged);
         std::fs::remove_dir_all(root).expect("remove test root");
     }
 
