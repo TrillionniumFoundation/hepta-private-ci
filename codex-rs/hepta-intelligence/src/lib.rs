@@ -16,6 +16,7 @@ pub use evaluated_shadow::run_evaluated_shadow_v1;
 
 mod plasticity_product;
 mod plasticity_selection;
+mod plasticity_topology_product;
 
 pub use codex_hepta_plasticity::DurableRegistryAnchorV1;
 pub use plasticity_product::AnchoredPlasticityWriterErrorV1;
@@ -35,6 +36,14 @@ pub use plasticity_selection::PlasticitySelectionErrorV1;
 pub use plasticity_selection::PlasticitySelectionReceiptV1;
 pub use plasticity_selection::PlasticitySelectionRequestV1;
 pub use plasticity_selection::select_plasticity_candidate_v1;
+pub use plasticity_topology_product::AnchoredTopologyPlasticityWriterV1;
+pub use plasticity_topology_product::TopologyPlasticityAdmissionEvidenceV1;
+pub use plasticity_topology_product::TopologyPlasticityProductErrorV1;
+pub use plasticity_topology_product::TopologyPlasticityProductReceiptV1;
+pub use plasticity_topology_product::TopologyPlasticityProductRequestV1;
+pub use plasticity_topology_product::propose_authenticated_topology_plasticity_v1;
+pub use plasticity_topology_product::topology_admission_signing_payload_v1;
+pub use plasticity_topology_product::topology_generation_signing_payload_v1;
 
 mod capability_snapshot;
 
