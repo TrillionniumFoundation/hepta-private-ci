@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "7e8379b3954808d4138a7bd2f3773f75691291a3",
-    "tree": "ff9fa6baf95a35fd2f49816e0a80097688f2aeeb"
+    "commit": "bc03f37338a1acbdf5889fb1a30f958d0133558c",
+    "tree": "bd25a51c46c932e9826a541815cbadd39dec91ed"
   },
   "laneId": "LANE-F-ADAPTIVE-POLICY",
   "module": "prompt.optimizer",
@@ -22,14 +22,72 @@
   "productionWriterState": "not_established",
   "operations": [
     {
+      "operation": "enumerate_factors",
+      "nativeSymbol": "enumerate_factors",
+      "sourcePath": "codex-rs/hepta-prompt-optimizer/src/pipeline.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-prompt-optimizer/src/pipeline_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "enumerate_factors",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "price_factors",
+      "nativeSymbol": "price_factors",
+      "sourcePath": "codex-rs/hepta-prompt-optimizer/src/pipeline.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-prompt-optimizer/src/pipeline_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "price_factors",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "select_portfolio",
+      "nativeSymbol": "select_portfolio",
+      "sourcePath": "codex-rs/hepta-prompt-optimizer/src/pipeline.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-prompt-optimizer/src/pipeline_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "select_portfolio",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "exercise",
+      "nativeSymbol": "exercise",
+      "sourcePath": "codex-rs/hepta-prompt-optimizer/src/pipeline.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-prompt-optimizer/src/pipeline_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "exercise",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
       "operation": "optimize",
       "nativeSymbol": "optimize",
       "sourcePath": "codex-rs/hepta-prompt-optimizer/src/lib.rs",
-      "state": "source_implemented_not_product_composed",
+      "state": "legacy_source_implemented_not_product_composed",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-prompt-optimizer/src/lib_tests.rs"
+      ],
       "sourcePathExists": true,
-      "designOperation": "optimize",
+      "designOperation": "legacy_gain_first_heuristic",
       "mappingClass": "owner_native",
       "delegatedCallees": []
     },
@@ -39,15 +97,18 @@
       "sourcePath": "codex-rs/hepta-prompt-optimizer/src/local_shadow.rs",
       "state": "source_implemented_not_product_composed",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-prompt-optimizer/src/local_shadow_tests.rs"
+      ],
       "sourcePathExists": true,
-      "designOperation": "calculate_local_shadow",
+      "designOperation": "authority_free_shadow_calculator",
       "mappingClass": "owner_native",
       "delegatedCallees": []
     }
   ],
   "repositoryControlledGaps": [
-    "Bind every operation to an authenticated consumer callsite and owner store.",
+    "Implement and qualify canonical JSON wire codecs/round-trip validation for the registered prompt V1 protocols without changing their field meaning in place.",
+    "Bind formal operations to authenticated prompt.registry, knowledge.graph and learning.ledger adapters plus a named product caller.",
     "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary."
   ],
   "externalEvidenceGates": [
