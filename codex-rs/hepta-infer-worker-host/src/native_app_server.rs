@@ -192,14 +192,24 @@ impl AppServerModelDriver {
             let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
             return Err("cancelled before model dispatch".into());
         }
-        control.dispatch_native(
+        let context_digest = match serde_json::to_vec(&additional_context) {
+            Ok(bytes) => control::digest(&bytes),
+            Err(error) => {
+                let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
+                return Err(error.into());
+            }
+        };
+        if let Err(error) = control.dispatch_native(
             request_id,
             NativeDispatch {
                 thread_id: started.thread.id.clone(),
                 model_provider: started.model_provider.clone(),
-                context_digest: control::digest(&serde_json::to_vec(&additional_context)?),
+                context_digest,
             },
-        )?;
+        ) {
+            let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
+            return Err(error.into());
+        }
         let response = timeout(
             RPC_TIMEOUT,
             client.request_typed::<TurnStartResponse>(ClientRequest::TurnStart {
