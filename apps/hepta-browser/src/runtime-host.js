@@ -37,14 +37,14 @@ export class BrowserProfileHost {
     driverCallTimeoutMs = DEFAULT_DRIVER_CALL_TIMEOUT_MS,
   }) {
     requireRecord(driver, "driver");
-    for (const method of ["start", "observe", "act", "reconcile", "stop"]) {
+    for (const method of ["start", "observe", "dispatch", "reconcile", "stop"]) {
       if (typeof driver[method] !== "function") {
         throw new TypeError(`driver.${method} must be a function`);
       }
     }
     requireRecord(authority, "authority");
-    if (typeof authority.verifyFinalUse !== "function") {
-      throw new TypeError("authority.verifyFinalUse must be a function");
+    if (typeof authority.withVerifiedUse !== "function") {
+      throw new TypeError("authority.withVerifiedUse must be a function");
     }
     requireRecord(journal, "journal");
     for (const method of ["recordDispatch", "recordObservation", "getOperation", "listOperations"]) {
@@ -82,12 +82,8 @@ export class BrowserProfileHost {
         if (allowedOrigins.size !== input.allowedOrigins.length) {
           throw new TypeError("allowedOrigins contains duplicates");
         }
-        if (
-          !Array.isArray(input.effectGrants) ||
-          input.effectGrants.length === 0 ||
-          input.effectGrants.length > MAX_EFFECT_GRANTS
-        ) {
-          throw new TypeError("effectGrants must be a non-empty bounded array");
+        if (!Array.isArray(input.effectGrants) || input.effectGrants.length > MAX_EFFECT_GRANTS) {
+          throw new TypeError("effectGrants must be a bounded array");
         }
         const effectGrants = new Map();
         for (const rawGrant of input.effectGrants) {
@@ -143,6 +139,30 @@ export class BrowserProfileHost {
       } finally {
         this.#openingProfiles.delete(profileId);
       }
+    });
+  }
+
+  async admitEffectGrant(input) {
+    requireRecord(input, "input");
+    const profileId = stableId(input.profileId, "profileId");
+    return exclusive(this.#locks, profileId, async () => {
+      const state = this.#profile(input, true);
+      const grant = parseEffectGrant(input.effectGrant, this.#clock(), state.allowedOrigins);
+      const prior = state.effectGrants.get(grant.grantDigest);
+      if (prior && canonicalDigest(prior) !== canonicalDigest(grant)) {
+        throw new TypeError("effect grant identity was reused with changed semantics");
+      }
+      if (!prior && state.effectGrants.size >= MAX_EFFECT_GRANTS) {
+        throw new TypeError("profile effect grant capacity is exhausted");
+      }
+      state.effectGrants.set(grant.grantDigest, grant);
+      return freezeResult({
+        kind: "BrowserEffectGrantAdmittedV1",
+        profileId: state.profileId,
+        generation: state.generation,
+        effectGrantDigest: grant.grantDigest,
+        effectGrantCount: state.effectGrants.size,
+      });
     });
   }
 
@@ -224,65 +244,71 @@ export class BrowserProfileHost {
         throw new TypeError("profile operation capacity is exhausted");
       }
 
-      const verified = requireRecord(
-        await this.#callAuthority(
-          Object.freeze({ ...requestSemantics, requestDigest }),
-          requestSemantics.deadlineMs,
-        ),
-        "final-use authority observation",
-      );
-      if (verified.authorized !== true) throw new TypeError("final-use authority was denied");
-      const witnessDigest = digest(
-        verified.witnessDigest,
-        "verifiedUseTokenWitnessDigest",
-      );
-      if (digest(verified.requestDigest, "verified requestDigest") !== requestDigest) {
-        throw new TypeError("final-use authority did not bind the admitted request");
-      }
-      if (
-        positiveInteger(verified.authorityEpoch, "verified authorityEpoch") !==
-        requestSemantics.authorityEpoch
-      ) {
-        throw new TypeError("final-use authority epoch changed before dispatch");
-      }
-      const semantics = Object.freeze({
-        ...requestSemantics,
-        verifiedUseTokenWitnessDigest: witnessDigest,
-      });
-      const semanticDigest = canonicalDigest(semantics);
-      const entry = {
-        requestDigest,
-        semanticDigest,
-        semantics,
-        phase: "dispatching",
-        receipt: indeterminateReceipt(
-          state.profileId,
-          operationId,
-          semanticDigest,
-          "dispatching",
-        ),
-      };
-      // Durably reserve identity before the first effectful await.
-      await this.#journal.recordDispatch(this.#durableRecord(state, entry));
-      state.operations.set(operationId, entry);
+      let entry = null;
       try {
         const observed = requireRecord(
-          await this.#callDriver("act", semantics, requestSemantics.deadlineMs),
-          "driver effect observation",
+          await this.#withVerifiedUse(
+            Object.freeze({ ...requestSemantics, requestDigest }),
+            requestSemantics.deadlineMs,
+            async (verified) => {
+              requireRecord(verified, "verified-use witness");
+              if (verified.authorized !== true) {
+                throw new TypeError("final-use authority was denied");
+              }
+              const witnessDigest = digest(
+                verified.witnessDigest,
+                "verifiedUseTokenWitnessDigest",
+              );
+              if (digest(verified.requestDigest, "verified requestDigest") !== requestDigest) {
+                throw new TypeError("final-use authority did not bind the admitted request");
+              }
+              if (
+                positiveInteger(verified.authorityEpoch, "verified authorityEpoch") !==
+                requestSemantics.authorityEpoch
+              ) {
+                throw new TypeError("final-use authority epoch changed before dispatch");
+              }
+              const semantics = Object.freeze({
+                ...requestSemantics,
+                verifiedUseTokenWitnessDigest: witnessDigest,
+              });
+              const semanticDigest = canonicalDigest(semantics);
+              entry = {
+                requestDigest,
+                semanticDigest,
+                semantics,
+                phase: "dispatching",
+                receipt: indeterminateReceipt(
+                  state.profileId,
+                  operationId,
+                  semanticDigest,
+                  "dispatching",
+                ),
+              };
+              // This fsync and the local worker dispatch execute inside the
+              // final-use fence. A successful revocation update therefore
+              // cannot slip between final validation and effect dispatch.
+              await this.#journal.recordDispatch(this.#durableRecord(state, entry));
+              state.operations.set(operationId, entry);
+              return this.#callDriver("dispatch", semantics, requestSemantics.deadlineMs);
+            },
+          ),
+          "driver dispatch observation",
         );
         entry.receipt = this.#effectReceipt(
           state.profileId,
           operationId,
-          semanticDigest,
+          entry.semanticDigest,
           observed,
         );
         entry.phase = entry.receipt.terminalObserved ? "terminal" : "indeterminate";
       } catch (error) {
+        if (!entry) throw error;
         entry.phase = "indeterminate";
         entry.receipt = indeterminateReceipt(
           state.profileId,
           operationId,
-          semanticDigest,
+          entry.semanticDigest,
           error?.name === "BrowserDriverTimeoutError"
             ? "driver_timeout"
             : "driver_error_after_dispatch_boundary",
@@ -554,7 +580,6 @@ export class BrowserProfileHost {
         entry.semanticDigest,
         "journal_observation_write_failed",
       );
-      // The durable dispatch intent remains authoritative; never redispatch.
     }
   }
 
@@ -608,21 +633,15 @@ export class BrowserProfileHost {
         ],
       ]),
     };
-    const normalizedInput = {
-      ...input,
-      deadlineMs: Number.MAX_SAFE_INTEGER,
-    };
+    const normalizedInput = { ...input, deadlineMs: Number.MAX_SAFE_INTEGER };
     const admitted = admitNewOperation(typedState, normalizedInput, 1);
-    return Object.freeze({
-      ...admitted.requestSemantics,
-      deadlineMs: durable.deadlineMs,
-    });
+    return Object.freeze({ ...admitted.requestSemantics, deadlineMs: durable.deadlineMs });
   }
 
-  #callAuthority(payload, deadlineMs) {
+  #withVerifiedUse(request, deadlineMs, consumer) {
     return callWithDeadline({
-      call: (value) => this.#authority.verifyFinalUse(value),
-      payload,
+      call: () => this.#authority.withVerifiedUse(request, consumer),
+      payload: null,
       now: this.#clock,
       deadlineMs,
       timeoutCapMs: this.#driverCallTimeoutMs,
