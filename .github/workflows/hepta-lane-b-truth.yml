@@ -3,6 +3,7 @@ name: Hepta Lane B source closure
 on:
   pull_request:
     paths:
+      - "codex-rs/hepta-supervisor/**"
       - "codex-rs/hepta-memory/**"
       - "codex-rs/hepta-retrieval/**"
       - "docs/memory/**"
@@ -17,6 +18,7 @@ on:
     branches:
       - main
     paths:
+      - "codex-rs/hepta-supervisor/**"
       - "codex-rs/hepta-memory/**"
       - "codex-rs/hepta-retrieval/**"
       - "docs/memory/**"
@@ -81,6 +83,7 @@ jobs:
         run: |
           set -euo pipefail
           cargo test -p codex-hepta-supervisor --lib
+          cargo test -p codex-hepta-supervisor --features production-authority --test production_authority_protocol
           cargo test -p codex-hepta-agentd --lib
           cargo test -p codex-hepta-fleet --bin hepta-fleet-leased
           cargo test -p codex-hepta-infer-core --bin hepta-infer-control
@@ -130,6 +133,8 @@ jobs:
           test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
           python3 scripts/hepta-lane-b-path-guard.py verify
           python3 scripts/hepta-lane-b-truth.py verify
+          cd codex-rs
+          cargo test -p codex-hepta-supervisor --features production-authority --test production_authority_protocol
           cargo test -p codex-hepta-matrixd --bin hepta-matrix-send-observer
           cd ..
           git diff --check
