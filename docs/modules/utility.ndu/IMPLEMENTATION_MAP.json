@@ -13,8 +13,26 @@
     "codex-rs/hepta-ndu"
   ],
   "authorityDelta": "none",
-  "productCallerState": "not_composed",
-  "productionWriterState": "not_composed",
+  "productCallerState": "composed_read_only_product_path_pending_exact_head_qualification",
+  "productionWriterState": "not_established",
+  "productCallers": [
+    {
+      "host": "runtime.agentd",
+      "entrypoint": "codex_hepta_agentd::cognitive_context::read",
+      "sourcePath": "codex-rs/hepta-agentd/src/cognitive_context.rs",
+      "delegation": [
+        "codex_hepta_control_plane::plan_observed_context",
+        "codex_hepta_control_plane::evaluate_prepared_plan_with_ndu",
+        "codex_hepta_ndu::evaluate_candidates_with_policy"
+      ],
+      "effectPosture": "read_only_deny_all",
+      "tests": [
+        "codex-rs/hepta-control-plane/src/planner_context_tests.rs",
+        "codex-rs/hepta-control-plane/src/planner_ndu_tests.rs",
+        "codex-rs/hepta-agentd/src/cognitive_context_tests.rs"
+      ]
+    }
+  ],
   "operations": [
     {
       "operation": "evaluate_candidates",
@@ -59,7 +77,7 @@
       "outputs": [
         "NduEvaluationReceiptV2"
       ],
-      "state": "source_implemented_owner_local_v2",
+      "state": "source_implemented_owner_local_v2_with_read_only_product_caller",
       "authority": "none",
       "tests": [
         {
@@ -81,6 +99,10 @@
         {
           "path": "codex-rs/hepta-ndu/src/evaluator_tests.rs",
           "symbol": "candidate_support_digest_binds_organ_and_contribution_semantics"
+        },
+        {
+          "path": "codex-rs/hepta-control-plane/src/planner_ndu_tests.rs",
+          "symbol": "owner_evaluation_composes_into_real_planner_without_self_reported_selection"
         }
       ],
       "designOperation": "evaluate_candidates_with_policy",
@@ -126,7 +148,7 @@
         "NduSolverTerminationReceipt",
         "NduSolverIterationReceipt list"
       ],
-      "state": "source_implemented_local_solver",
+      "state": "source_implemented_local_solver_fail_closed_on_iteration_exhaustion",
       "authority": "none",
       "nonClaim": "local termination is not NduConvergenceCertificateV1",
       "tests": [
@@ -136,7 +158,15 @@
         },
         {
           "path": "codex-rs/hepta-ndu/src/preference_tests.rs",
+          "symbol": "iteration_bound_reports_unavailable_instead_of_returning_terminal_state"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/preference_tests.rs",
           "symbol": "parent_and_child_updates_cannot_share_generation"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/preference_tests.rs",
+          "symbol": "unrelated_hierarchy_updates_may_share_generation"
         }
       ],
       "designOperation": "solve_preference_target",
@@ -155,12 +185,16 @@
       "outputs": [
         "owner-local NduIterationReceiptV1"
       ],
-      "state": "source_implemented_protocol_adapter",
+      "state": "source_implemented_protocol_adapter_with_local_receipt_validation",
       "authority": "deny_all",
       "tests": [
         {
           "path": "codex-rs/hepta-ndu/src/protocol_tests.rs",
           "symbol": "local_step_requires_complete_context_before_protocol_publication"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/protocol_tests.rs",
+          "symbol": "malformed_local_step_rejects_before_protocol_publication"
         },
         {
           "path": "codex-rs/hepta-ndu/src/protocol_tests.rs",
@@ -185,6 +219,7 @@
       ],
       "state": "source_implemented_shadow_numeric_kernel",
       "authority": "none",
+      "nonClaim": "numeric shadow regression is not a learned FBSDE production policy or independent convergence proof",
       "tests": [
         {
           "path": "codex-rs/hepta-ndu/src/covariance_tests.rs",
@@ -207,7 +242,7 @@
         "bounded hash-chain journal bytes",
         "selected projection view"
       ],
-      "state": "source_implemented_owner_local_durability_reference",
+      "state": "source_implemented_owner_local_durability_reference_with_semantic_replay",
       "authority": "none",
       "nonClaim": "not an activated production writer or fsync profile",
       "tests": [
@@ -218,6 +253,14 @@
         {
           "path": "codex-rs/hepta-ndu/src/projection_journal_tests.rs",
           "symbol": "revocation_prevents_projection_resurrection"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/projection_journal_tests.rs",
+          "symbol": "reopen_rejects_hash_valid_selection_without_recorded_projection"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/projection_journal_tests.rs",
+          "symbol": "reopen_rejects_hash_valid_reselection_after_revocation"
         },
         {
           "path": "codex-rs/hepta-ndu/src/projection_journal_tests.rs",
@@ -243,6 +286,7 @@
     "specification": "complete",
     "deterministicKernel": "candidate_implemented",
     "ownerLocalDurabilityReference": "candidate_implemented",
+    "readOnlyProductCaller": "candidate_composed_pending_exact_head_qualification",
     "canonicalExternalV2Admission": "not_established",
     "productionWriter": "not_established",
     "exactHeadQualification": "required",
@@ -273,12 +317,12 @@
     "tree": "ff9fa6baf95a35fd2f49816e0a80097688f2aeeb"
   },
   "repositoryControlledGaps": [
-    "Bind every operation to an authenticated consumer callsite and owner store.",
-    "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary."
+    "Select and qualify a crash-durable production projection writer with migration, fsync, retention and backup/restore behavior.",
+    "Run current exact-head and deterministic synthetic-merge tests before changing productionImplementation or productExecutionProved."
   ],
   "externalEvidenceGates": [
-    "independent semantic review",
-    "product execution and target-host qualification",
+    "independent semantic review and NduConvergenceCertificateV1 decision",
+    "target-host qualification and learned FBSDE efficacy/identification evidence",
     "operator acceptance, canary, promotion and release"
   ]
 }
