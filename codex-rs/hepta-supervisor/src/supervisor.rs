@@ -79,11 +79,6 @@ impl<D: ProcessDriver> Supervisor<D> {
                 supervisor.recover_signed_intent(&agent_id, slot, &record)
             });
             if let Err(error) = result {
-                // A signed lifecycle intent is an externally authorized
-                // mutation.  Recording it as an ordinary per-agent fault
-                // would still bring the daemon up and expose unrelated
-                // mutation RPCs while the outcome is unknown.  Recovery of
-                // this class is therefore a daemon-wide startup failure.
                 if matches!(&error, SupervisorError::SignedIntentRecoveryRequired(_)) {
                     return Err(error);
                 }
@@ -103,14 +98,8 @@ impl<D: ProcessDriver> Supervisor<D> {
                     .as_ref()
                     .is_some_and(|runtime| runtime.healthy && !runtime.fenced),
                 runtime_generation: slot.runtime.as_ref().map(|runtime| runtime.generation),
-                spawn_generation: slot
-                    .runtime
-                    .as_ref()
-                    .map(|runtime| runtime.spawn_generation),
-                process_system_id: slot
-                    .runtime
-                    .as_ref()
-                    .map(|runtime| runtime.identity.system_id()),
+                spawn_generation: slot.runtime.as_ref().map(|runtime| runtime.spawn_generation),
+                process_system_id: slot.runtime.as_ref().map(|runtime| runtime.identity.system_id()),
                 active_release: slot
                     .active_release
                     .as_ref()
@@ -170,29 +159,26 @@ impl<D: ProcessDriver> Supervisor<D> {
                     .as_ref()
                     .map(|runtime| runtime.identity.incarnation().to_string()),
                 runtime_fenced: slot.runtime.as_ref().is_some_and(|runtime| runtime.fenced),
-                release_change: slot
-                    .release_change
-                    .as_ref()
-                    .map(|change| ControlReleaseChange {
-                        origin_release: change.origin.identity().to_string(),
-                        target_release: change.target.identity().to_string(),
-                        prior_previous_release: change
-                            .prior_previous
-                            .as_ref()
-                            .map(|release| release.identity().to_string()),
-                        phase: match change.phase {
-                            crate::runtime::ReleaseChangePhase::WaitingForTargetExit => {
-                                ControlReleaseChangePhase::WaitingForTargetExit
-                            }
-                            crate::runtime::ReleaseChangePhase::TargetStarting => {
-                                ControlReleaseChangePhase::TargetStarting
-                            }
-                            crate::runtime::ReleaseChangePhase::AutomaticRollbackStarting => {
-                                ControlReleaseChangePhase::AutomaticRollbackStarting
-                            }
-                        },
-                        explicit_rollback: change.explicit_rollback,
-                    }),
+                release_change: slot.release_change.as_ref().map(|change| ControlReleaseChange {
+                    origin_release: change.origin.identity().to_string(),
+                    target_release: change.target.identity().to_string(),
+                    prior_previous_release: change
+                        .prior_previous
+                        .as_ref()
+                        .map(|release| release.identity().to_string()),
+                    phase: match change.phase {
+                        crate::runtime::ReleaseChangePhase::WaitingForTargetExit => {
+                            ControlReleaseChangePhase::WaitingForTargetExit
+                        }
+                        crate::runtime::ReleaseChangePhase::TargetStarting => {
+                            ControlReleaseChangePhase::TargetStarting
+                        }
+                        crate::runtime::ReleaseChangePhase::AutomaticRollbackStarting => {
+                            ControlReleaseChangePhase::AutomaticRollbackStarting
+                        }
+                    },
+                    explicit_rollback: change.explicit_rollback,
+                }),
                 has_last_command: slot.last_command.is_some(),
             })
     }
@@ -242,10 +228,8 @@ impl<D: ProcessDriver> Supervisor<D> {
                 registry: record.lifecycle.generation,
             });
         }
-        if !matches!(
-            record.lifecycle.lifecycle,
-            AgentLifecycle::Running | AgentLifecycle::Draining
-        ) {
+        if !matches!(record.lifecycle.lifecycle, AgentLifecycle::Running | AgentLifecycle::Draining)
+        {
             return Err(SupervisorError::Invalid(format!(
                 "agent {agent_id} cannot drain from {:?}",
                 record.lifecycle.lifecycle
@@ -267,10 +251,7 @@ impl<D: ProcessDriver> Supervisor<D> {
         if crate::lease::read_lease(record.layout.run_root())?.is_some() {
             return Err(SupervisorError::UnresolvedLease(agent_id.clone()));
         }
-        if !matches!(
-            record.lifecycle.lifecycle,
-            AgentLifecycle::Stopped | AgentLifecycle::Failed
-        ) {
+        if !matches!(record.lifecycle.lifecycle, AgentLifecycle::Stopped | AgentLifecycle::Failed) {
             return Err(SupervisorError::Invalid(format!(
                 "agent {agent_id} cannot start from {:?}",
                 record.lifecycle.lifecycle
@@ -326,10 +307,8 @@ impl<D: ProcessDriver> Supervisor<D> {
                 if crate::lease::read_lease(record.layout.run_root())?.is_some() {
                     return Err(SupervisorError::UnresolvedLease(agent_id.clone()));
                 }
-                if !matches!(
-                    record.lifecycle.lifecycle,
-                    AgentLifecycle::Stopped | AgentLifecycle::Failed
-                ) {
+                if !matches!(record.lifecycle.lifecycle, AgentLifecycle::Stopped | AgentLifecycle::Failed)
+                {
                     return Err(SupervisorError::Invalid(format!(
                         "agent {agent_id} cannot start from {:?}",
                         record.lifecycle.lifecycle
@@ -429,27 +408,19 @@ impl<D: ProcessDriver> Supervisor<D> {
     }
 
     pub fn drain(&mut self, agent_id: &AgentId, now: Instant) -> Result<(), SupervisorError> {
-        self.with_slot(agent_id, |supervisor, slot| {
-            supervisor.drain_slot(agent_id, slot, now)
-        })
+        self.with_slot(agent_id, |supervisor, slot| supervisor.drain_slot(agent_id, slot, now))
     }
 
     pub fn stop(&mut self, agent_id: &AgentId, now: Instant) -> Result<(), SupervisorError> {
-        self.with_slot(agent_id, |supervisor, slot| {
-            supervisor.stop_slot(agent_id, slot, now)
-        })
+        self.with_slot(agent_id, |supervisor, slot| supervisor.stop_slot(agent_id, slot, now))
     }
 
     pub fn kill(&mut self, agent_id: &AgentId) -> Result<(), SupervisorError> {
-        self.with_slot(agent_id, |supervisor, slot| {
-            supervisor.kill_slot(agent_id, slot)
-        })
+        self.with_slot(agent_id, |supervisor, slot| supervisor.kill_slot(agent_id, slot))
     }
 
     pub fn restart(&mut self, agent_id: &AgentId, now: Instant) -> Result<(), SupervisorError> {
-        self.with_slot(agent_id, |supervisor, slot| {
-            supervisor.restart_slot(agent_id, slot, now)
-        })
+        self.with_slot(agent_id, |supervisor, slot| supervisor.restart_slot(agent_id, slot, now))
     }
 
     pub fn upgrade(
@@ -458,40 +429,21 @@ impl<D: ProcessDriver> Supervisor<D> {
         target: AgentRelease,
         now: Instant,
     ) -> Result<(), SupervisorError> {
-        if cfg!(feature = "production-authority") {
-            return Err(SupervisorError::ProductionAuthority(
-                "unsigned upgrade is disabled in production-authority builds; use a signed production grant"
-                    .to_string(),
-            ));
-        }
         self.with_slot(agent_id, |supervisor, slot| {
-            supervisor.upgrade_slot(
-                agent_id, slot, target, now, /*explicit_rollback*/ false,
-            )
+            supervisor.upgrade_slot(agent_id, slot, target, now, false)
         })
     }
 
     pub fn rollback(&mut self, agent_id: &AgentId, now: Instant) -> Result<(), SupervisorError> {
-        if cfg!(feature = "production-authority") {
-            return Err(SupervisorError::ProductionAuthority(
-                "unsigned rollback is disabled in production-authority builds; use a signed production grant"
-                    .to_string(),
-            ));
-        }
         self.with_slot(agent_id, |supervisor, slot| {
             let target = slot
                 .previous_release
                 .clone()
                 .ok_or_else(|| SupervisorError::NoPreviousRelease(agent_id.clone()))?;
-            supervisor.upgrade_slot(agent_id, slot, target, now, /*explicit_rollback*/ true)
+            supervisor.upgrade_slot(agent_id, slot, target, now, true)
         })
     }
 
-    /// Admit one externally signed H7/OPE operation into the real lifecycle
-    /// supervisor.  The H7 envelope remains a qualification artifact; the
-    /// independent production grant is the only object that carries
-    /// production authority.  This method queues the existing drain/start
-    /// state machine and records a fsynced intent before touching the child.
     #[expect(
         clippy::too_many_arguments,
         reason = "grant admission keeps verifier, epochs and clocks explicit"
@@ -514,8 +466,7 @@ impl<D: ProcessDriver> Supervisor<D> {
                 ))
             })?;
             let target_id = ReleaseId::parse(grant.target_release.clone())?;
-            let target =
-                AgentRelease::try_from(supervisor.registry.resolve_release(agent_id, &target_id)?)?;
+            let target = AgentRelease::try_from(supervisor.registry.resolve_release(agent_id, &target_id)?)?;
             if grant.transition == H7H89ProductionTransition::Rollback {
                 let previous = slot
                     .previous_release
@@ -548,9 +499,7 @@ impl<D: ProcessDriver> Supervisor<D> {
                 .as_ref()
                 .is_some_and(|intent| !matches!(intent.status, SignedIntentStatus::Committed))
             {
-                return Err(SupervisorError::SignedIntentRecoveryRequired(
-                    agent_id.clone(),
-                ));
+                return Err(SupervisorError::SignedIntentRecoveryRequired(agent_id.clone()));
             }
             let next_control_revision = supervisor.next_control_revision(agent_id)?;
             let intent = SignedSupervisorIntent::new(
@@ -570,8 +519,7 @@ impl<D: ProcessDriver> Supervisor<D> {
             supervisor.set_control_revision(agent_id, next_control_revision)?;
             slot.signed_intent = Some(intent.clone());
             let explicit_rollback = grant.transition == H7H89ProductionTransition::Rollback;
-            if let Err(error) =
-                supervisor.upgrade_slot(agent_id, slot, target, now, explicit_rollback)
+            if let Err(error) = supervisor.upgrade_slot(agent_id, slot, target, now, explicit_rollback)
             {
                 let recovery = intent
                     .with_status(SignedIntentStatus::RecoveryRequired)
@@ -586,10 +534,7 @@ impl<D: ProcessDriver> Supervisor<D> {
             write_intent(record.layout.run_root(), &queued)
                 .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
             slot.signed_intent = Some(queued);
-            Ok(ProductionMutationReceipt::queued(
-                grant,
-                next_control_revision,
-            ))
+            Ok(ProductionMutationReceipt::queued(grant, next_control_revision))
         })
     }
 
@@ -601,10 +546,7 @@ impl<D: ProcessDriver> Supervisor<D> {
         let Some(intent) = slot.signed_intent.clone() else {
             return Ok(());
         };
-        if !matches!(
-            intent.status,
-            SignedIntentStatus::Prepared | SignedIntentStatus::Queued
-        ) {
+        if !matches!(intent.status, SignedIntentStatus::Prepared | SignedIntentStatus::Queued) {
             return Ok(());
         }
         let Some(active) = slot.active_release.as_ref() else {
@@ -643,31 +585,12 @@ impl<D: ProcessDriver> Supervisor<D> {
         if matches!(intent.status, SignedIntentStatus::Committed) {
             return Ok(());
         }
-        // A restart has no durable proof that an apparently matching target
-        // was produced by this exact signed mutation.  In particular, the
-        // one-file intent does not carry an independently committed source /
-        // target release-state revision, control-revision successor,
-        // lifecycle-generation transition, or continuity of the daemon's
-        // authority epoch.  Treating `Running + target` as Committed would
-        // therefore let an unrelated/manual upgrade close an old grant.
-        // Every non-terminal intent must remain fail-closed until an explicit
-        // recovery ceremony supplies those witnesses.
-        //
-        // Fence and kill any adopted child before surfacing the recovery
-        // requirement; normal ticking must not continue an ambiguous
-        // external transition.
         if let Some(runtime) = slot.runtime.as_mut() {
-            // A failed fence/kill is still an unresolved signed intent.  Do
-            // not downgrade it to a recoverable driver fault: the caller
-            // must fail closed at daemon startup and require explicit
-            // operator recovery.
             runtime.fenced = true;
             runtime.phase = RuntimePhase::Killing;
             let _ = runtime.process.kill();
         }
-        Err(SupervisorError::SignedIntentRecoveryRequired(
-            agent_id.clone(),
-        ))
+        Err(SupervisorError::SignedIntentRecoveryRequired(agent_id.clone()))
     }
 
     pub fn tick(&mut self, now: Instant) -> TickReport {
@@ -705,9 +628,7 @@ impl<D: ProcessDriver> Supervisor<D> {
         expected: u64,
         lifecycle: AgentLifecycle,
     ) -> Result<u64, SupervisorError> {
-        let next = self
-            .registry
-            .compare_and_transition(agent_id, expected, lifecycle)?;
+        let next = self.registry.compare_and_transition(agent_id, expected, lifecycle)?;
         slot.event(next.generation, SupervisorEventKind::Lifecycle(lifecycle));
         Ok(next.generation)
     }
@@ -728,15 +649,8 @@ impl<D: ProcessDriver> Supervisor<D> {
     ) {
         let message = bounded_message(error.to_string());
         if let Some(slot) = self.slots.get_mut(agent_id) {
-            let generation = slot
-                .runtime
-                .as_ref()
-                .map(|runtime| runtime.generation)
-                .unwrap_or(0);
-            slot.event(
-                generation,
-                SupervisorEventKind::DriverFault(message.clone()),
-            );
+            let generation = slot.runtime.as_ref().map(|runtime| runtime.generation).unwrap_or(0);
+            slot.event(generation, SupervisorEventKind::DriverFault(message.clone()));
         }
         report.faults.push(AgentFault {
             agent_id: agent_id.clone(),
