@@ -143,7 +143,11 @@ pub trait LaneFCompositionPortsV3 {
     ) -> Result<PortReceiptV3, PortFailureV3>;
     fn decide_intuition(&mut self, input: &PortInputV3) -> Result<PortReceiptV3, PortFailureV3>;
     fn compile_context(&mut self, input: &PortInputV3) -> Result<PortReceiptV3, PortFailureV3>;
-    fn propose_dispatch(&mut self, input: &PortInputV3) -> Result<PortReceiptV3, PortFailureV3>;
+    fn propose_dispatch(
+        &mut self,
+        input: &PortInputV3,
+        envelope: &IntelligenceHostEnvelopeV1,
+    ) -> Result<PortReceiptV3, PortFailureV3>;
     fn record_learning(&mut self, input: &PortInputV3) -> Result<PortReceiptV3, PortFailureV3>;
 }
 
