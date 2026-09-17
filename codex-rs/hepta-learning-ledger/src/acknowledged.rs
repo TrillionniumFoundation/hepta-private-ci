@@ -88,7 +88,7 @@ impl<J: DurableLearningJournal> WitnessedLearningLedger<J> {
             Ok(receipt) => receipt,
             Err(error) => {
                 if matches!(
-                    error,
+                    &error,
                     DurableLedgerError::Indeterminate | DurableLedgerError::Poisoned
                 ) {
                     self.poisoned = true;
@@ -125,7 +125,7 @@ impl<J: DurableLearningJournal> WitnessedLearningLedger<J> {
 
     pub fn snapshot(&self) -> Result<LedgerSnapshot, DurableLedgerError> {
         self.ready()?;
-        let _ = self.anchor()?;
+        self.anchor()?;
         self.journal.snapshot()
     }
 
