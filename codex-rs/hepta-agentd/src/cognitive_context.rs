@@ -12,7 +12,9 @@ use codex_hepta_memory::CognitiveAccess;
 use codex_hepta_memory::CognitiveScope;
 use codex_hepta_memory::CognitiveStore;
 use codex_hepta_memory::CognitiveStoreError;
+use codex_hepta_memory::DurableCognitiveSnapshot;
 use codex_hepta_memory::RetrievalRequest;
+use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
 
@@ -58,15 +60,7 @@ pub(crate) async fn read(
         .lane_c_snapshot(&access, &scope, now_seconds()?)
         .await?;
     let read = cut
-        .read(ReadRequestV2 {
-            read_request: ReadRequest {
-                snapshot_digest: cut.snapshot().snapshot_digest,
-                allowed_kinds: Vec::new(),
-                maximum_results: 1024,
-                include_tombstones: false,
-            },
-            maximum_encoded_bytes: 1024 * 1024,
-        })
+        .read(bounded_read_request(&cut))
         .map_err(|error| CognitiveStoreError::Corrupt(error.to_string()))?;
     let candidates = store
         .retrieve_memory_candidates(&access, &RetrievalRequest::new(query, now_seconds()?))
@@ -79,7 +73,7 @@ pub(crate) async fn read(
         plan: None,
     };
     // Admit the whole bounded owner cut before applying the response byte
-    // budget.  Ranking must see every admitted candidate; otherwise a large
+    // budget. Ranking must see every admitted candidate; otherwise a large
     // low-ranked record can hide the learned winner before the ranker runs.
     let mut admitted_items = Vec::new();
     for candidate in candidates.candidates {
@@ -121,8 +115,8 @@ pub(crate) async fn read(
         .map_err(|_| CognitiveContextError::RankerUnavailable)?;
     }
     // Bound the complete payload, including JSON escaping and envelope, only
-    // after ranking.  This preserves the highest-ranked item when the legacy
-    // byte cut would otherwise discard it.  Oversized winners are skipped so
+    // after ranking. This preserves the highest-ranked item when the legacy
+    // byte cut would otherwise discard it. Oversized winners are skipped so
     // they cannot consume the only result slot.
     for item in admitted_items {
         response.items.push(item);
@@ -193,6 +187,59 @@ pub(crate) async fn read(
             .map_err(|_| CognitiveContextError::RankerUnavailable)?;
     }
     Ok(response)
+}
+
+/// Revalidate the exact owner cut and deterministic V2 read receipt immediately
+/// before a downstream effect boundary. A successful call is an observation at
+/// finalization time, not a lease over writes that happen after it returns.
+pub(crate) async fn finalize(
+    store: &CognitiveStore,
+    owner: &AgentId,
+    expected_snapshot_digest: &str,
+    expected_read_digest: &str,
+) -> Result<(), CognitiveContextError> {
+    let expected_snapshot_digest = expected_snapshot_digest
+        .parse::<Digest32>()
+        .map_err(|error| CognitiveStoreError::Invalid(format!("invalid snapshot digest: {error}")))?;
+    let expected_read_digest = expected_read_digest
+        .parse::<Digest32>()
+        .map_err(|error| CognitiveStoreError::Invalid(format!("invalid read digest: {error}")))?;
+    let access = CognitiveAccess::agent_private(owner.clone());
+    let scope = CognitiveScope::AgentPrivate;
+    let cut = store
+        .lane_c_snapshot(&access, &scope, now_seconds()?)
+        .await?;
+    if cut.snapshot().snapshot_digest != expected_snapshot_digest {
+        return Err(CognitiveStoreError::Conflict(
+            "cognitive context snapshot is no longer current".to_string(),
+        )
+        .into());
+    }
+    let read = cut
+        .read(bounded_read_request(&cut))
+        .map_err(|error| CognitiveStoreError::Corrupt(error.to_string()))?;
+    if read.receipt_digest() != expected_read_digest {
+        return Err(CognitiveStoreError::Conflict(
+            "cognitive context read receipt is no longer current".to_string(),
+        )
+        .into());
+    }
+    store
+        .revalidate_lane_c_snapshot(&access, &scope, &cut, now_seconds()?)
+        .await?;
+    Ok(())
+}
+
+fn bounded_read_request(cut: &DurableCognitiveSnapshot) -> ReadRequestV2 {
+    ReadRequestV2 {
+        read_request: ReadRequest {
+            snapshot_digest: cut.snapshot().snapshot_digest,
+            allowed_kinds: Vec::new(),
+            maximum_results: 1024,
+            include_tombstones: false,
+        },
+        maximum_encoded_bytes: 1024 * 1024,
+    }
 }
 
 fn now_seconds() -> Result<i64, CognitiveStoreError> {
