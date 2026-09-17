@@ -18,17 +18,15 @@ CREATE TABLE operation_records (
     )),
     dispatch_digest BLOB CHECK (dispatch_digest IS NULL OR length(dispatch_digest) = 32),
     terminal_digest BLOB CHECK (terminal_digest IS NULL OR length(terminal_digest) = 32),
-    terminal_observer_id TEXT,
     created_at_ms INTEGER NOT NULL CHECK (created_at_ms >= 0),
     updated_at_ms INTEGER NOT NULL CHECK (updated_at_ms >= created_at_ms),
     terminal_at_ms INTEGER,
     PRIMARY KEY (scope_id, operation_id),
     CHECK ((state IN ('applied', 'not_applied', 'quarantined')
             AND terminal_at_ms IS NOT NULL AND terminal_at_ms = updated_at_ms
-            AND terminal_digest IS NOT NULL AND terminal_observer_id IS NOT NULL)
+            AND terminal_digest IS NOT NULL)
         OR (state NOT IN ('applied', 'not_applied', 'quarantined')
-            AND terminal_at_ms IS NULL AND terminal_digest IS NULL
-            AND terminal_observer_id IS NULL)),
+            AND terminal_at_ms IS NULL AND terminal_digest IS NULL)),
     CHECK ((state IN ('dispatched', 'indeterminate', 'applied', 'not_applied')
             AND dispatch_digest IS NOT NULL)
         OR (state = 'pending' AND dispatch_digest IS NULL)
@@ -82,7 +80,6 @@ CREATE TABLE operation_tombstones (
     destination_id TEXT NOT NULL,
     terminal_state TEXT NOT NULL CHECK (terminal_state IN ('applied', 'not_applied', 'quarantined')),
     terminal_digest BLOB NOT NULL CHECK (length(terminal_digest) = 32),
-    terminal_observer_id TEXT NOT NULL,
     terminal_at_ms INTEGER NOT NULL CHECK (terminal_at_ms >= 0),
     pruned_at_ms INTEGER NOT NULL CHECK (pruned_at_ms >= terminal_at_ms),
     PRIMARY KEY (scope_id, operation_id)
