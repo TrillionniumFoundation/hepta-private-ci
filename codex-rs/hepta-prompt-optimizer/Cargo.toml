@@ -14,4 +14,10 @@ doctest = false
 workspace = true
 
 [dependencies]
+codex-hepta-prompt-registry = { path = "../hepta-prompt-registry" }
 codex-hepta-types = { path = "../hepta-types" }
+
+[dev-dependencies]
+codex-hepta-contracts = { path = "../hepta-contracts" }
+ed25519-dalek = { workspace = true }
+tempfile = { workspace = true }
