@@ -286,13 +286,8 @@ pub fn calculate_local_shadow(
                 .filter(|candidate| !selected_candidate_ids.contains(&candidate.candidate_id))
                 .collect::<Vec<_>>();
             if additions.is_empty()
-                || selections.len().saturating_add(additions.len())
-                    > input.maximum_selected_factors
-                || package_conflicts(
-                    &selected_candidate_ids,
-                    &additions,
-                    &input.hard_constraints,
-                )
+                || selections.len().saturating_add(additions.len()) > input.maximum_selected_factors
+                || package_conflicts(&selected_candidate_ids, &additions, &input.hard_constraints)
             {
                 continue;
             }
@@ -311,15 +306,15 @@ pub fn calculate_local_shadow(
             if marginal <= FixedQ32::ZERO {
                 continue;
             }
-            let is_better = best.as_ref().is_none_or(
-                |(current_root, _, current_cost, current_gain)| {
-                    marginal > *current_gain
-                        || (marginal == *current_gain
-                            && (package_cost < *current_cost
-                                || (package_cost == *current_cost
-                                    && root.candidate_id < current_root.candidate_id)))
-                },
-            );
+            let is_better =
+                best.as_ref()
+                    .is_none_or(|(current_root, _, current_cost, current_gain)| {
+                        marginal > *current_gain
+                            || (marginal == *current_gain
+                                && (package_cost < *current_cost
+                                    || (package_cost == *current_cost
+                                        && root.candidate_id < current_root.candidate_id)))
+                    });
             if is_better {
                 best = Some((root, additions, package_cost, marginal));
             }
@@ -499,9 +494,10 @@ fn interaction_gain(
     } else {
         (right_candidate_id, left_candidate_id)
     };
-    let Some(edge) = interactions.iter().find(|edge| {
-        edge.left_candidate_id == *left && edge.right_candidate_id == *right
-    }) else {
+    let Some(edge) = interactions
+        .iter()
+        .find(|edge| edge.left_candidate_id == *left && edge.right_candidate_id == *right)
+    else {
         return Err(insufficient(InsufficientEvidence::MissingPairInteraction(
             left.to_string(),
             right.to_string(),
