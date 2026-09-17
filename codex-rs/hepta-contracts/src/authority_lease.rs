@@ -714,7 +714,7 @@ fn entry_exists(_directory: &File, _name: &str) -> Result<bool, AuthorityLeaseEr
     Err(AuthorityLeaseError::UnsafeStateDirectory)
 }
 #[cfg(not(unix))]
-fn replace_state(_directory: &File, _name: &str) -> Result<(), AuthorityLeaseError> {
+fn replace_state(_directory: &File) -> Result<(), AuthorityLeaseError> {
     Err(AuthorityLeaseError::UnsafeStateDirectory)
 }
 
