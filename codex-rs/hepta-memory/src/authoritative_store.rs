@@ -154,6 +154,6 @@ mod tests {
         // The durable row must still participate in the current-cut witness;
         // keep the typed citation alive so an optimizer/test refactor cannot
         // accidentally turn this into an empty-database reopen test.
-        assert_eq!(citation.source_revision(), 1);
+        assert_eq!(citation.revision, 1);
     }
 }
