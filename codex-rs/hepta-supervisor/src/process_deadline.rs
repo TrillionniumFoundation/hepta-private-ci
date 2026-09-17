@@ -72,6 +72,13 @@ pub enum ProcessDeadlineOutcomeV1 {
     KillRequestedAtDeadline,
 }
 
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum ProcessTerminationOutcomeV1 {
+    Exited,
+    KilledAndReaped,
+    KillUnconfirmed,
+}
+
 /// Observe an already isolated process until it exits or its deadline expires.
 ///
 /// `ManagedProcess` requires `poll` and `kill` to return promptly. This function
@@ -101,23 +108,69 @@ pub fn enforce_process_deadline_v1<P: ManagedProcess>(
     }
 }
 
+/// Enforce a hard work deadline and bound the post-kill confirmation window.
+///
+/// A kill request is not itself proof that the old execution boundary is gone.
+/// Callers that intend to restart or hand off work should use this stricter
+/// helper and quarantine an unconfirmed child rather than waiting without a
+/// bound or admitting a replacement into the same authority slot.
+pub fn enforce_process_termination_deadline_v1<P: ManagedProcess>(
+    process: &mut P,
+    policy: ProcessDeadlinePolicyV1,
+    kill_confirmation_grace: Duration,
+) -> Result<ProcessTerminationOutcomeV1, ProcessDriverError> {
+    match enforce_process_deadline_v1(process, policy)? {
+        ProcessDeadlineOutcomeV1::Exited => Ok(ProcessTerminationOutcomeV1::Exited),
+        ProcessDeadlineOutcomeV1::KillRequestedAtDeadline => {
+            if kill_confirmation_grace.is_zero() {
+                return Ok(ProcessTerminationOutcomeV1::KillUnconfirmed);
+            }
+            let started = Instant::now();
+            loop {
+                if matches!(
+                    process.poll(policy.max_logs_per_poll)?.state,
+                    ProcessState::Exited(_)
+                ) {
+                    return Ok(ProcessTerminationOutcomeV1::KilledAndReaped);
+                }
+                let elapsed = started.elapsed();
+                if elapsed >= kill_confirmation_grace {
+                    return Ok(ProcessTerminationOutcomeV1::KillUnconfirmed);
+                }
+                let remaining = kill_confirmation_grace.saturating_sub(elapsed);
+                thread::sleep(min(policy.poll_interval, remaining));
+            }
+        }
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::ProcessExit;
     use crate::ProcessObservation;
 
     struct HangingChild {
         killed: bool,
         kill_calls: usize,
+        exit_after_kill: bool,
     }
 
     impl ManagedProcess for HangingChild {
         fn poll(&mut self, _max_logs: usize) -> Result<ProcessObservation, ProcessDriverError> {
-            Ok(ProcessObservation {
-                state: ProcessState::Running {
+            let state = if self.killed && self.exit_after_kill {
+                ProcessState::Exited(ProcessExit {
+                    success: false,
+                    code: None,
+                })
+            } else {
+                ProcessState::Running {
                     healthy: true,
                     drained: false,
-                },
+                }
+            };
+            Ok(ProcessObservation {
+                state,
                 logs: Vec::new(),
             })
         }
@@ -142,6 +195,7 @@ mod tests {
         let mut child = HangingChild {
             killed: false,
             kill_calls: 0,
+            exit_after_kill: false,
         };
         let policy =
             ProcessDeadlinePolicyV1::new(Duration::from_millis(3), Duration::from_millis(1), 8)
@@ -150,6 +204,48 @@ mod tests {
         let outcome = enforce_process_deadline_v1(&mut child, policy).expect("deadline outcome");
         assert_eq!(outcome, ProcessDeadlineOutcomeV1::KillRequestedAtDeadline);
         assert!(child.killed);
+        assert_eq!(child.kill_calls, 1);
+    }
+
+    #[test]
+    fn strict_deadline_confirms_termination_before_reuse() {
+        let mut child = HangingChild {
+            killed: false,
+            kill_calls: 0,
+            exit_after_kill: true,
+        };
+        let policy =
+            ProcessDeadlinePolicyV1::new(Duration::from_millis(2), Duration::from_millis(1), 8)
+                .expect("policy");
+
+        let outcome = enforce_process_termination_deadline_v1(
+            &mut child,
+            policy,
+            Duration::from_millis(3),
+        )
+        .expect("termination outcome");
+        assert_eq!(outcome, ProcessTerminationOutcomeV1::KilledAndReaped);
+        assert_eq!(child.kill_calls, 1);
+    }
+
+    #[test]
+    fn strict_deadline_never_waits_forever_for_a_stuck_boundary() {
+        let mut child = HangingChild {
+            killed: false,
+            kill_calls: 0,
+            exit_after_kill: false,
+        };
+        let policy =
+            ProcessDeadlinePolicyV1::new(Duration::from_millis(2), Duration::from_millis(1), 8)
+                .expect("policy");
+
+        let outcome = enforce_process_termination_deadline_v1(
+            &mut child,
+            policy,
+            Duration::from_millis(2),
+        )
+        .expect("termination outcome");
+        assert_eq!(outcome, ProcessTerminationOutcomeV1::KillUnconfirmed);
         assert_eq!(child.kill_calls, 1);
     }
 
