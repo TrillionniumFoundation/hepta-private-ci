@@ -20,7 +20,7 @@ use crate::ReadRequest;
 use crate::ReadRequestV2;
 use crate::ReadResultV2;
 use crate::ReadV2Error;
-use crate::read_v2;
+use crate::v2::read_v2;
 
 const SNAPSHOT_RECEIPT_DOMAIN: &[u8] = b"hepta.cognitive.authoritative-snapshot.v1";
 const AUTHORITATIVE_READ_DOMAIN: &[u8] = b"hepta.cognitive.authoritative-read.v1";
