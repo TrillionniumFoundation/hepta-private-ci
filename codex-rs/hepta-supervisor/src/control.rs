@@ -8,6 +8,7 @@ use crate::ProcessDriver;
 use crate::Supervisor;
 use crate::SupervisorError;
 use crate::SupervisorEventKind;
+use crate::restart_policy::clear_restart_budget;
 use crate::runtime::AgentRuntime;
 use crate::runtime::AgentSlot;
 use crate::runtime::DeferredAgentActionKind;
@@ -70,7 +71,7 @@ impl<D: ProcessDriver> Supervisor<D> {
         slot: &mut AgentSlot<D::Process>,
         now: Instant,
     ) -> Result<(), SupervisorError> {
-        slot.restart_pending = false;
+        cancel_pending_restart(slot);
         if self.defer_agent_action_for_matrix(agent_id, slot, DeferredAgentActionKind::Stop, now)? {
             return Ok(());
         }
@@ -96,7 +97,7 @@ impl<D: ProcessDriver> Supervisor<D> {
         agent_id: &AgentId,
         slot: &mut AgentSlot<D::Process>,
     ) -> Result<(), SupervisorError> {
-        slot.restart_pending = false;
+        cancel_pending_restart(slot);
         slot.deferred_agent_action = None;
         self.kill_matrix_now(agent_id, slot)?;
         self.prepare_termination(agent_id, slot)?;
@@ -122,6 +123,7 @@ impl<D: ProcessDriver> Supervisor<D> {
         if slot.release_change.is_some() {
             return Err(SupervisorError::ReleaseChangePending(agent_id.clone()));
         }
+        reset_restart_budgets(slot);
         let release = slot.active_release.clone().or_else(|| {
             slot.last_command
                 .clone()
@@ -143,6 +145,9 @@ impl<D: ProcessDriver> Supervisor<D> {
         };
         result?;
         slot.restart_pending = true;
+        slot.restart_retry_at = None;
+        slot.restart_automatic = false;
+        slot.restart_after_exit = false;
         let generation = active_runtime(agent_id, slot)?.generation;
         slot.event(generation, SupervisorEventKind::RestartQueued);
         Ok(())
@@ -208,6 +213,29 @@ impl<D: ProcessDriver> Supervisor<D> {
             registry,
         })
     }
+}
+
+fn cancel_pending_restart<P>(slot: &mut AgentSlot<P>) {
+    slot.restart_pending = false;
+    slot.restart_retry_at = None;
+    slot.restart_automatic = false;
+    slot.restart_after_exit = false;
+}
+
+fn reset_restart_budgets<P>(slot: &mut AgentSlot<P>) {
+    cancel_pending_restart(slot);
+    clear_restart_budget(
+        &mut slot.restart_attempt,
+        &mut slot.restart_window_started_at,
+    );
+    slot.restart_exhausted = false;
+    clear_restart_budget(
+        &mut slot.matrix.restart_attempt,
+        &mut slot.matrix.restart_window_started_at,
+    );
+    slot.matrix.retry_at = None;
+    slot.matrix.restart_after_exit = false;
+    slot.matrix.restart_exhausted = false;
 }
 
 fn active_runtime<'a, P>(
