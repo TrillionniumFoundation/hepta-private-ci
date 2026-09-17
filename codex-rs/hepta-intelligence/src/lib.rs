@@ -217,3 +217,7 @@ mod tests;
 #[cfg(test)]
 #[path = "vertical_tests.rs"]
 mod vertical_tests;
+
+#[cfg(test)]
+#[path = "plasticity_product_tests.rs"]
+mod plasticity_product_tests;
