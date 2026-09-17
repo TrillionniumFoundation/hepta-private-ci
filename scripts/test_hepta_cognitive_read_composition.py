@@ -42,16 +42,16 @@ class CognitiveReadCompositionMapTests(unittest.TestCase):
         self.assertFalse(self.row["claimBoundary"]["activation"])
         self.assertFalse(self.row["claimBoundary"]["release"])
 
-    def test_reviewed_source_base_is_exact_and_ancestral(self) -> None:
+    def test_shared_map_generation_base_is_exact_and_ancestral(self) -> None:
         source = self.row["sourceBase"]
-        self.assertEqual(self.row["sourceBaseRole"], "reviewed_parent")
+        self.assertEqual(self.row["sourceBaseRole"], "shared_map_generation_base")
         tree = git("rev-parse", f"{source['commit']}^{{tree}}").stdout.strip()
         self.assertEqual(tree, source["tree"])
         ancestor = git("merge-base", "--is-ancestor", source["commit"], "HEAD", check=False)
         self.assertEqual(
             ancestor.returncode,
             0,
-            msg=f"cognitive.read reviewed source base is not an ancestor of HEAD: {ancestor.stderr}",
+            msg=f"cognitive.read shared map base is not an ancestor of HEAD: {ancestor.stderr}",
         )
 
     def test_product_callers_are_real_and_symbol_bound(self) -> None:
