@@ -204,6 +204,14 @@ impl DurableInferenceControlHandle {
         self.transaction(|control| control.stop_native_before_dispatch(request_id, reason))
     }
 
+    pub fn stop_native_before_turn_start(
+        &self,
+        request_id: &str,
+        reason: String,
+    ) -> Result<NativeRunRecord, Error> {
+        self.transaction(|control| control.stop_native_before_turn_start(request_id, reason))
+    }
+
     pub fn settle_native(
         &self,
         request_id: &str,
@@ -229,8 +237,6 @@ impl DurableInferenceControlHandle {
         };
         let digest = native_request_digest(request)?;
         if existing == &digest {
-            // Exact historical replay is intentionally denied rather than
-            // redispatched. The immutable archive remains the audit response.
             return Err(Error::Conflict);
         }
         Err(Error::Conflict)
@@ -267,9 +273,7 @@ impl DurableInferenceControlHandle {
     }
 
     fn rollover_quiescent_unlocked(&self) -> Result<bool, Error> {
-        let mut current = self.open_current_with_retry()?;
-        // Keep the journal's own exclusive lock while scanning bytes so no
-        // direct compatibility writer can race a rollover.
+        let current = self.open_current_with_retry()?;
         let scanned = scan_native_journal(&self.path)?;
         if scanned.is_empty() || scanned.values().any(|record| !record.released) {
             return Ok(false);
@@ -307,10 +311,6 @@ impl DurableInferenceControlHandle {
         }
         fs::rename(&self.path, &archive_path)?;
         sync_parent(&self.path)?;
-
-        // A crash after rename but before this open is recoverable: tombstones
-        // are already durable and the next handle can create a fresh current
-        // segment without replaying the immutable archive.
         drop(self.open_current_with_retry()?);
         let receipt = ArchiveReceipt {
             archive_file: archive_path
@@ -594,5 +594,28 @@ mod tests {
             Error::CapacityExceeded
         );
         assert!(!handle.rollover_if_quiescent().unwrap());
+    }
+
+    #[test]
+    fn proven_pre_turn_stop_releases_slot_and_allows_rollover() {
+        let directory = tempfile::tempdir().unwrap();
+        let path = directory.path().join("inference.journal");
+        let handle = DurableInferenceControlHandle::new(&path, 1).unwrap();
+        handle.reserve_native(request("r1"), 1).unwrap();
+        handle
+            .dispatch_native(
+                "r1",
+                NativeDispatch {
+                    thread_id: "thread-one".to_string(),
+                    model_provider: "provider-one".to_string(),
+                    context_digest: "2".repeat(64),
+                },
+            )
+            .unwrap();
+        handle
+            .stop_native_before_turn_start("r1", "freshness rejected".to_string())
+            .unwrap();
+        handle.reserve_native(request("r2"), 1).unwrap();
+        assert!(handle.native_record("r2").unwrap().is_some());
     }
 }
