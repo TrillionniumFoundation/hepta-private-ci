@@ -80,6 +80,22 @@ fn request() -> ProductRetrievalRequestV1 {
     }
 }
 
+fn relation(
+    candidate_number: usize,
+    support_number: usize,
+    kind: ProductRelationKindV1,
+) -> ProductRelationEvidenceV1 {
+    ProductRelationEvidenceV1 {
+        candidate_record_id: id(&format!("memory:{candidate_number}")),
+        candidate_revision: revision(1),
+        support_record_id: id(&format!("memory:{support_number}")),
+        support_revision: revision(1),
+        relation: kind,
+        support_digest: digest(&format!("support:{candidate_number}:{support_number}:{kind:?}")),
+        relation_group_digest: digest(&format!("group:{support_number}:{kind:?}")),
+    }
+}
+
 #[test]
 fn compile_cue_validates_the_generation_bound_input() {
     let cue = compile_cue(CueCompileRequestV1 {
@@ -128,6 +144,73 @@ fn product_receipt_binds_owner_observation_and_complete_candidate_set() {
         changed_omitted.retrieval.request_binding_digest
     );
     assert_ne!(baseline.receipt_digest, changed_omitted.receipt_digest);
+}
+
+#[test]
+fn product_v2_binds_typed_relation_evidence_without_changing_rrf_order() {
+    let evidence = vec![
+        relation(1, 2, ProductRelationKindV1::Causes),
+        relation(3, 2, ProductRelationKindV1::Contradicts),
+    ];
+    let baseline = retrieve_product_v2(ProductRetrievalRequestV2 {
+        retrieval: request(),
+        relation_evidence: evidence.clone(),
+    })
+    .expect("product v2 succeeds");
+    assert_eq!(baseline.retrieval.retrieval.retrieval.results[0].record_id, id("memory:1"));
+    assert_eq!(baseline.relation_evidence, evidence);
+    assert_eq!(
+        baseline.relation_evidence[0].retrieval_channel(),
+        RetrievalChannelV1::Causal
+    );
+    assert_eq!(
+        baseline.relation_evidence[1].retrieval_channel(),
+        RetrievalChannelV1::ContradictionSupport
+    );
+    assert_eq!(
+        baseline.relation_evidence[1].contradiction_group_digest(),
+        Some(evidence[1].relation_group_digest)
+    );
+    assert_eq!(baseline.authority, AuthorityPosture::DENY_ALL);
+
+    let changed = retrieve_product_v2(ProductRetrievalRequestV2 {
+        retrieval: request(),
+        relation_evidence: vec![
+            relation(1, 2, ProductRelationKindV1::TemporalBefore),
+            evidence[1].clone(),
+        ],
+    })
+    .expect("changed semantics still form a receipt");
+    assert_eq!(
+        baseline.retrieval.retrieval.retrieval.results,
+        changed.retrieval.retrieval.retrieval.results
+    );
+    assert_ne!(baseline.receipt_digest, changed.receipt_digest);
+}
+
+#[test]
+fn product_v2_relation_evidence_cannot_widen_the_admitted_set() {
+    let missing_candidate = retrieve_product_v2(ProductRetrievalRequestV2 {
+        retrieval: request(),
+        relation_evidence: vec![relation(99, 2, ProductRelationKindV1::Causes)],
+    });
+    assert_eq!(
+        missing_candidate,
+        Err(ProductRetrievalError::RelationCandidateNotAdmitted(
+            "memory:99".to_string()
+        ))
+    );
+
+    let missing_support = retrieve_product_v2(ProductRetrievalRequestV2 {
+        retrieval: request(),
+        relation_evidence: vec![relation(1, 99, ProductRelationKindV1::Causes)],
+    });
+    assert_eq!(
+        missing_support,
+        Err(ProductRetrievalError::RelationSupportNotAdmitted(
+            "memory:99".to_string()
+        ))
+    );
 }
 
 #[test]
