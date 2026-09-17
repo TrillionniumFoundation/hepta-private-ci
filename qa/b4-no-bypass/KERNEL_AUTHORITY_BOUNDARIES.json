@@ -1,5 +1,15 @@
 {
   "schema": "hepta.kernel-authority-privileged-boundaries.v2",
+  "freeFunctions": [
+    {
+      "sourcePath": "codex-rs/hepta-contracts/src/final_use.rs",
+      "privilegedFunctions": {
+        "claim_final_use": "final_use_claim",
+        "deliver_final_use": "final_use_delivery"
+      },
+      "nonPrivilegedFunctions": []
+    }
+  ],
   "types": [
     {
       "typeName": "FinalUseAuthority",
@@ -42,6 +52,14 @@
         "apply": "final_use_revocation_feed_apply"
       },
       "nonPrivilegedMethods": []
+    },
+    {
+      "typeName": "BaoClient",
+      "sourcePath": "codex-rs/hepta-bao-adapter/src/https_consumer.rs",
+      "privilegedMethods": {
+        "consume_kv_v2": "bao_final_use_consumer"
+      },
+      "nonPrivilegedMethods": ["new", "binding"]
     },
     {
       "typeName": "RegisteredBaoConsumer",
