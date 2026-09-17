@@ -32,12 +32,15 @@ pub use learned_scorer::LearnedScorerContractError;
 pub use learned_scorer::LearnedScorerContractV1;
 pub use learned_scorer::canonical_learned_scorer_contract_digest_v1;
 pub use learned_scorer::validate_learned_scorer_contract_v1;
+pub use qualified::AuthenticatedQualificationV1;
 pub use qualified::CanonicalPolicyProfileV1;
-pub use qualified::QualificationAuthorityVerifier;
+pub use qualified::PinnedQualificationVerifierV1;
 pub use qualified::QualificationManifestV1;
 pub use qualified::QualifiedDecisionRequestV1;
 pub use qualified::QualifiedError;
+pub use qualified::SignedQualificationEnvelopeV1;
 pub use qualified::canonical_policy_profile_digest_v1;
+pub use qualified::canonical_qualification_envelope_signing_bytes_v1;
 pub use qualified::canonical_qualification_manifest_digest_v1;
 pub use qualified::decide_qualified;
 
