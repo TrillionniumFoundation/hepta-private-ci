@@ -127,6 +127,7 @@ impl AdmittedCognitiveStoreV2 {
             .validate()
             .map_err(CognitiveStoreV2Error::Contract)?;
         enforce_admission_verification(&candidate)?;
+        let known_intent = self.intent_ids.contains(&intent.intent_id);
         self.ensure_ordinary_journal_capacity(&intent.intent_id)?;
         let will_insert = self.candidate_will_insert(&intent.intent_id, &candidate)?;
         if will_insert && self.admitted_revisions >= self.maximum_admitted_revisions {
@@ -134,7 +135,7 @@ impl AdmittedCognitiveStoreV2 {
         }
         let intent_id = intent.intent_id.clone();
         let receipt = self.inner.append_admitted(verifier, candidate, intent)?;
-        if receipt.disposition == MemoryWriteDisposition::Inserted {
+        if !known_intent && receipt.disposition == MemoryWriteDisposition::Inserted {
             self.admitted_revisions = self
                 .admitted_revisions
                 .checked_add(1)
@@ -421,6 +422,11 @@ fn validate_hardened_image(
                     .find(|record| record.record_digest() == entry.receipt.record_digest)
             })
             .ok_or_else(|| image_state_error("store_image_receipt_record_binding"))?;
+        if entry.receipt.disposition == MemoryWriteDisposition::Unchanged
+            && record.state == RecordState::Tombstone
+        {
+            return Err(image_state_error("store_image_unchanged_tombstone_receipt"));
+        }
         if record.state != RecordState::Tombstone {
             ordinary_intent_ids.insert(entry.intent_id.clone());
         }
