@@ -23,7 +23,7 @@ function digest(bytes) {
   return createHash("sha256").update(bytes).digest("hex");
 }
 
-function fakeLauncher() {
+function fakeLauncher({ holdDispatchResponse = null } = {}) {
   return {
     posture: {
       inheritedPrivateChannel: true,
@@ -72,18 +72,22 @@ function fakeLauncher() {
             default:
               throw new Error(`unexpected fake worker request ${request.kind}`);
           }
-          child.stdout.write(
-            encodeWorkerFrame(
-              buildWorkerFrame({
-                sessionId: request.sessionId,
-                generation: request.generation,
-                sequence: sequence++,
-                kind: "response",
-                requestId: request.requestId,
-                payload: { ok: true, observation },
-              }),
-            ),
+          const encoded = encodeWorkerFrame(
+            buildWorkerFrame({
+              sessionId: request.sessionId,
+              generation: request.generation,
+              sequence: sequence++,
+              kind: "response",
+              requestId: request.requestId,
+              payload: { ok: true, observation },
+            }),
           );
+          if (request.kind === "dispatch" && holdDispatchResponse) {
+            holdDispatchResponse.release = () => child.stdout.write(encoded);
+            holdDispatchResponse.requestId = request.requestId;
+          } else {
+            child.stdout.write(encoded);
+          }
         }
       });
       return child;
@@ -91,7 +95,7 @@ function fakeLauncher() {
   };
 }
 
-test("artifact-bound subprocess driver uses only the private framed channel", async () => {
+async function preparedDriver({ launcher = fakeLauncher() } = {}) {
   const root = await mkdtemp(join(tmpdir(), "hepta-worker-driver-"));
   const workerPath = join(root, "worker.bin");
   const workerBytes = Buffer.from("fake-qualified-worker", "utf8");
@@ -100,7 +104,7 @@ test("artifact-bound subprocess driver uses only the private framed channel", as
     workerPath,
     workerDigest: digest(workerBytes),
     profileRoot: join(root, "profiles"),
-    launcher: fakeLauncher(),
+    launcher,
   });
   const started = await driver.start({
     profileId: "profile.1",
@@ -110,6 +114,11 @@ test("artifact-bound subprocess driver uses only the private framed channel", as
     generation: 1,
     allowedOrigins: ["https://example.com"],
   });
+  return { driver, started };
+}
+
+test("artifact-bound subprocess driver uses only the private framed channel", async () => {
+  const { driver, started } = await preparedDriver();
   assert.equal(started.processId, "servo.pid.4242");
   const observed = await driver.observe({
     profileId: "profile.1",
@@ -139,6 +148,41 @@ test("artifact-bound subprocess driver uses only the private framed channel", as
     generation: 1,
   });
   assert.equal(stopped.stopped, true);
+});
+
+test("dispatch returns at local pipe write without waiting for worker execution response", async () => {
+  const held = {};
+  const { driver, started } = await preparedDriver({
+    launcher: fakeLauncher({ holdDispatchResponse: held }),
+  });
+  const timeout = Symbol("timeout");
+  const dispatched = await Promise.race([
+    driver.dispatch({
+      profileId: "profile.1",
+      processId: started.processId,
+      profileGeneration: 1,
+      operationId: "operation.boundary",
+    }),
+    new Promise((resolve) => setTimeout(() => resolve(timeout), 100)),
+  ]);
+  assert.notEqual(dispatched, timeout);
+  assert.equal(dispatched.terminalObserved, false);
+  assert.equal(typeof held.release, "function");
+
+  // Only after the authority/local-dispatch boundary has returned do we allow
+  // the worker's execution response to arrive. Reconciliation then observes
+  // terminality through a distinct request.
+  held.release();
+  await new Promise((resolve) => setImmediate(resolve));
+  const terminal = await driver.reconcile({
+    profileId: "profile.1",
+    processId: started.processId,
+    profileGeneration: 1,
+    generation: 1,
+    operationId: "operation.boundary",
+  });
+  assert.equal(terminal.terminalObserved, true);
+  assert.equal(terminal.status, "succeeded");
 });
 
 test("subprocess driver fails closed on worker artifact digest drift", async () => {
