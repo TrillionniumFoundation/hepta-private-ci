@@ -14,6 +14,7 @@ required_boundary_ids = [
   "http_provider_effect_adapter",
   "final_use_claim",
   "final_use_delivery",
+  "final_use_revocation_update",
   "final_use_approval_verify",
   "final_use_revocation_feed_apply",
   "bao_final_use_consumer",
@@ -82,6 +83,15 @@ definition_path = "codex-rs/hepta-contracts/src/final_use.rs"
 definition_markers = ["pub fn with_verified_use", "Arc::ptr_eq", "validate_live"]
 product_callers = ["codex-rs/hepta-bao-adapter/src/https_consumer.rs"]
 caller_markers = ["authority", ".with_verified_use(verified", "ConsumerIndeterminate"]
+
+[[boundary]]
+id = "final_use_revocation_update"
+symbol = "FinalUseAuthority::update_revocations"
+call_pattern = "authority\\s*\\.\\s*update_revocations\\s*\\("
+definition_path = "codex-rs/hepta-contracts/src/final_use.rs"
+definition_markers = ["pub fn update_revocations", "StaleRevocationHead", "store.persist"]
+product_callers = ["codex-rs/hepta-contracts/src/final_use_control.rs"]
+caller_markers = ["FinalUseAuthority", ".update_revocations(signed.update.head.clone())", "FinalUseRevocationFeedVerifier"]
 
 [[boundary]]
 id = "final_use_approval_verify"
