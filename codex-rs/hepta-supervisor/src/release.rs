@@ -167,6 +167,20 @@ impl<D: ProcessDriver> Supervisor<D> {
                 slot.active_release = None;
                 match self.start_release_slot(agent_id, slot, target, now) {
                     Ok(()) => Ok(true),
+                    Err(error)
+                        if slot
+                            .runtime
+                            .as_ref()
+                            .is_some_and(|runtime| runtime.fenced) =>
+                    {
+                        // Spawn succeeded but durable launch publication or
+                        // cleanup did not. Keep the TargetStarting transition
+                        // intact until the owned fenced process is observed
+                        // exited; only then may automatic rollback spawn its
+                        // predecessor. This preserves one-process-at-a-time.
+                        let _ = error;
+                        Ok(true)
+                    }
                     Err(_) => self.start_automatic_rollback(agent_id, slot, now),
                 }
             }
