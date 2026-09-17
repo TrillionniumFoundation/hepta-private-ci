@@ -7,6 +7,7 @@
 
 #![forbid(unsafe_code)]
 
+mod acknowledged;
 mod causal_v2;
 mod dataset_receipt_v3;
 mod durable;
@@ -22,6 +23,8 @@ mod shadow;
 mod signed_evidence;
 mod witness;
 
+pub use acknowledged::AcknowledgedLearningJournal;
+pub use acknowledged::WitnessedLearningLedger;
 pub use causal_v2::AuthenticatedOutcomeV1;
 pub use causal_v2::AuthenticatedPrincipalV1;
 pub use causal_v2::CandidateSetCompletenessReceiptV1;
