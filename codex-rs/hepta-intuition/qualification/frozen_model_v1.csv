@@ -1,0 +1,9 @@
+# hepta.intuition.empirical-scorer.v1
+# generation=7
+# feature_schema=action_id,segment
+# score_semantics=utility_q32_raw,confidence_ppm,ood_score_ppm
+action_id,segment,utility_raw,confidence_ppm,ood_score_ppm
+candidate:a,in,3000000000,750000,100000
+candidate:b,in,2000000000,500000,150000
+candidate:a,out,1000000000,500000,900000
+candidate:b,out,800000000,250000,850000
