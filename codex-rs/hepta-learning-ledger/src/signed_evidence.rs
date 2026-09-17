@@ -111,13 +111,42 @@ impl VerifiedLearningEvidenceV1 {
     pub fn principal(&self) -> &AuthenticatedPrincipalV1 {
         &self.principal
     }
+
+    /// Host-controlled identity class used to prevent apparent independence by
+    /// key rotation or alternate credentials under the same controller.
+    #[must_use]
+    pub fn controller_id(&self) -> &StableId {
+        &self.controller_id
+    }
+
     #[must_use]
     pub fn role(&self) -> LearningEvidenceRoleV1 {
         self.role
     }
+
+    #[must_use]
+    pub fn trust_digest(&self) -> Digest32 {
+        self.trust_digest
+    }
+
+    #[must_use]
+    pub fn objective_digest(&self) -> Digest32 {
+        self.objective_digest
+    }
+
     #[must_use]
     pub fn payload_digest(&self) -> Digest32 {
         self.payload_digest
+    }
+
+    #[must_use]
+    pub fn issued_at(&self) -> u64 {
+        self.issued_at
+    }
+
+    #[must_use]
+    pub fn expires_at(&self) -> u64 {
+        self.expires_at
     }
 }
 
