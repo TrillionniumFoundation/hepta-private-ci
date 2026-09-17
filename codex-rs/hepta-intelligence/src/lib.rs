@@ -30,6 +30,14 @@ pub use pipeline_v2::LaneFShadowPipelineReceiptV2;
 pub use pipeline_v2::PipelineErrorV2;
 pub use pipeline_v2::run_shadow_pipeline_v2;
 
+mod prompt_policy;
+
+pub use prompt_policy::CanonicalPromptPolicyReceiptV1;
+pub use prompt_policy::CanonicalPromptPolicyRequestV1;
+pub use prompt_policy::PromptPolicyContextRequestV1;
+pub use prompt_policy::PromptPolicyErrorV1;
+pub use prompt_policy::run_canonical_prompt_policy_v1;
+
 mod pipeline;
 
 pub use pipeline::CoherentLaneFSnapshotV1;
