@@ -7,7 +7,7 @@ export const MAX_OPERATION_RECORDS = 4096;
 export const MAX_RETIRED_OPERATIONS = 32768;
 export const DEFAULT_DRIVER_TIMEOUT_MS = 30_000;
 
-const STABLE_ID = /^[A-Za-z0-9._:/-]{1,128}$/;
+const STABLE_ID = /^[A-Za-z0-9._:-]{1,128}$/;
 const DIGEST = /^[0-9a-f]{64}$/;
 const ZERO_DIGEST = "0".repeat(64);
 const MAX_TYPED_ACTION_BYTES = 64 * 1024;

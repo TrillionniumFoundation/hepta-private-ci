@@ -137,11 +137,13 @@ export class FileBrowserStateStore {
     }
     try {
       renameSync(temporary, this.#path);
-      const directoryDescriptor = openSync(this.#directory, "r");
-      try {
-        fsyncSync(directoryDescriptor);
-      } finally {
-        closeSync(directoryDescriptor);
+      if (process.platform !== "win32") {
+        const directoryDescriptor = openSync(this.#directory, "r");
+        try {
+          fsyncSync(directoryDescriptor);
+        } finally {
+          closeSync(directoryDescriptor);
+        }
       }
     } catch (error) {
       try {
