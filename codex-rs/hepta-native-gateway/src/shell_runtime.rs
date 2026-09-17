@@ -1,5 +1,4 @@
 use std::collections::HashMap;
-use std::hash::Hash;
 
 use anyhow::Context;
 use anyhow::Result;
@@ -122,11 +121,15 @@ pub(crate) struct PlatformReceipt {
     pub(crate) outcome_digest: Option<String>,
 }
 
+/// Opens and closes the selected backend session. Implementations must
+/// authenticate the exact endpoint manifest and return a generation fence.
 pub(crate) trait BackendConnector: Send + Sync {
     fn connect(&self, manifest: &EndpointManifest) -> Result<BackendSession>;
     fn close(&self, session: &SessionKey) -> Result<()>;
 }
 
+/// Owns the narrow operating-system effect boundary. Reconciliation must be
+/// safe after process restart and must never replay an indeterminate effect.
 pub(crate) trait PlatformAdapter: Send + Sync {
     fn permission(&self, request: &PlatformRequest) -> Result<PermissionDecision>;
     fn reconcile(
@@ -137,9 +140,14 @@ pub(crate) trait PlatformAdapter: Send + Sync {
     fn invoke(&self, session: &SessionKey, request: &PlatformRequest) -> Result<InvokeObservation>;
 }
 
+/// Verifies a trusted, short-lived grant bound to the exact session,
+/// generation, operation, action and final payload before adapter entry.
 pub(crate) trait GrantVerifier: Send + Sync {
-    fn verify(&self, session: &SessionKey, request: &PlatformRequest)
-    -> Result<VerifiedPlatformGrant>;
+    fn verify(
+        &self,
+        session: &SessionKey,
+        request: &PlatformRequest,
+    ) -> Result<VerifiedPlatformGrant>;
 }
 
 #[derive(Clone, Debug, PartialEq, Eq, Hash)]
@@ -241,7 +249,10 @@ where
         request: PlatformRequest,
     ) -> Result<PlatformReceipt> {
         let session = self.require_session()?.clone();
-        let view = self.view.as_ref().context("platform request requires a coherent runtime view")?;
+        let view = self
+            .view
+            .as_ref()
+            .context("platform request requires a coherent runtime view")?;
         validate_stable_id(&request.operation_id, "operation_id")?;
         validate_bounded_text(&request.resource, "resource")?;
         validate_digest(&request.payload_digest, "payload_digest")?;
@@ -362,7 +373,9 @@ where
     }
 
     fn require_session(&self) -> Result<&SessionKey> {
-        self.session.as_ref().context("native shell is not connected")
+        self.session
+            .as_ref()
+            .context("native shell is not connected")
     }
 }
 
@@ -418,7 +431,9 @@ fn validate_stable_id(value: &str, name: &str) -> Result<()> {
 fn validate_digest(value: &str, name: &str) -> Result<()> {
     if value.len() != 64
         || value == ZERO_DIGEST
-        || !value.bytes().all(|byte| byte.is_ascii_digit() || matches!(byte, b'a'..=b'f'))
+        || !value
+            .bytes()
+            .all(|byte| byte.is_ascii_digit() || matches!(byte, b'a'..=b'f'))
     {
         bail!("{name} must be a non-zero lowercase SHA-256 digest");
     }
