@@ -11,7 +11,7 @@ activation, acceptance, promotion or release claim.
 | --- | --- | --- |
 | Parameter V2 canonical proposal envelope | **Implemented** | `codex-rs/hepta-plasticity/src/parameter_v2.rs` |
 | Deterministic generator-relative candidate completeness | **Implemented** | `generate_parameter_candidates_v3` in `generator_v3.rs` |
-| Content-derived update candidate identity | **Implemented** | `generator_v3.rs` |
+| Artifact/window-bound content candidate identity | **Implemented** | `generator_v3.rs` and `topology_v2.rs` |
 | Per-layer/global parameter trust regions | **Implemented** | V2 verifier and V3 generator |
 | Durable append-only proposal registry | **Implemented** | `DurableProposalRegistry` |
 | Production-path anchored reopen | **Implemented seam** | `AnchoredPlasticityWriterV1` in `codex-rs/hepta-intelligence` |
@@ -20,12 +20,30 @@ activation, acceptance, promotion or release claim.
 | Signed current artifact/evidence-frontier witness | **Implemented composition** | `PlasticityAdmissionEvidenceV1` |
 | Cryptographically independent evaluator admission | **Implemented composition** | existing `LearningEvidenceVerifierV1` + signed evaluation path |
 | Evaluation coverage for every generated update | **Implemented composition** | product adapter rejects missing/duplicate/unexpected evaluations |
-| Product-workspace proposal writer | **Implemented composition** | `codex-rs/hepta-intelligence/src/plasticity_product.rs` |
+| Product-workspace proposal caller/writer | **Implemented, not host-activated** | `codex-rs/hepta-intelligence/src/plasticity_product.rs` |
 | Typed topology proposal generation | **Implemented, proposal-only** | `propose_topology_v2` in `topology_v2.rs` |
 | Topology application / writer handoff execution | **Target / not implemented** | intentionally no apply API |
 | Weight training / installation | **Target outside this proposal engine** | no authority granted |
 | Selection / activation / promotion / release | **External gate / not implemented** | explicitly denied |
 | Host deployment qualification and canary | **External evidence required** | no source-only claim |
+
+## Dependency placement
+
+The target guide names `learning.eval`, `learning.artifacts` and `kernel.evidence` as
+module-level dependencies. They are not all native Rust dependencies of the small
+proposal crate, and that distinction is intentional and now explicit:
+
+| Boundary | Implemented dependency / responsibility |
+| --- | --- |
+| `codex-rs/hepta-plasticity` native crate | `codex-hepta-types` only; deterministic proposal/generator/topology/registry mechanics stay authority-free |
+| product-workspace composition | `codex-hepta-intelligence-eval` and `codex-hepta-learning-ledger` authenticate generator/evaluator evidence and independent decisions |
+| selected host | MUST read the current `learning.artifacts` and qualification/evidence frontiers, then issue the short-lived trusted Observer attestation bound by `PlasticityAdmissionEvidenceV1` |
+| selected host rollback domain | MUST implement `PlasticityAnchorCommitterV1` and monotonic writer-fence issuance outside the registry rollback domain |
+
+Therefore the current source does **not** claim that `codex-hepta-plasticity` itself
+queries the artifact or evidence stores. The authenticated host witness is the trust
+boundary. A future direct store adapter may replace that host seam, but documentation
+must not describe it as present until an actual caller and store binding exist.
 
 ## Parameter generator semantics
 
@@ -39,9 +57,9 @@ signal/scale evaluations and 256 norm layers. For every declared scale, it compu
 `eligibility * modulator * learning_rate * scale` using checked Q32 arithmetic, clamps
 to explicit parameter bounds, removes zero deltas, applies the same 0.5% per-layer and
 0.25% global relative-L2 trust regions, then emits every unique admissible result plus
-one explicit no-change candidate. Update candidate IDs are derived from canonical
-candidate content. Therefore an evaluator's candidate ID binds the exact generated
-parameter change rather than an arbitrary caller label.
+one explicit no-change candidate. Parameter and topology candidate IDs bind the
+selected artifact and exact window as well as canonical candidate content, preventing
+a same-delta ID from being replayed across artifact/window contexts.
 
 This proves completeness only relative to the declared V3 generator profile. It does
 not claim that the profile spans every useful update in the model's full search space.
