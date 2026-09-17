@@ -75,6 +75,7 @@ pub struct ParameterPlasticityProductReceiptV1 {
     pub generator_authentication_digest: Digest32,
     pub admission_authentication_digest: Digest32,
     pub evaluation_digest: Digest32,
+    pub committed_registry_anchor: DurableRegistryAnchorV1,
     pub composition_digest: Digest32,
 }
 
@@ -91,6 +92,7 @@ pub enum ParameterPlasticityProductErrorV1 {
     UnexpectedEvaluation(String),
     EvaluatorMismatch,
     NoUpdateCandidate,
+    AnchorPersistenceFailed,
     Proposal(codex_hepta_plasticity::Error),
     Registry(DurableProposalRegistryError),
 }
@@ -136,16 +138,34 @@ impl From<DurableProposalRegistryError> for AnchoredPlasticityWriterErrorV1 {
     }
 }
 
+/// Host-owned sink for an independently retained rollback anchor.
+///
+/// Returning `true` means the anchor is durably committed in a rollback domain
+/// independent from the proposal registry file. A `false` result poisons the
+/// product writer and prevents any further append through that handle.
+pub trait PlasticityAnchorCommitterV1 {
+    fn persist_anchor(
+        &mut self,
+        registry_scope_digest: Digest32,
+        writer_fence: u64,
+        anchor: DurableRegistryAnchorV1,
+    ) -> bool;
+}
+
 /// Product writer that cannot reopen acknowledged history without a host-retained
 /// external anchor. Raw `DurableProposalRegistry::open` remains available to the
 /// proposal crate for isolated/bootstrap use, but cannot enter this product path.
 pub struct AnchoredPlasticityWriterV1 {
     registry: DurableProposalRegistry,
+    registry_scope_digest: Digest32,
+    writer_fence: u64,
+    poisoned: bool,
 }
 
 impl AnchoredPlasticityWriterV1 {
-    /// Enroll a brand-new empty registry. The host must persist the returned anchor
-    /// outside this file immediately after every successful append.
+    /// Enroll a brand-new empty registry. After the first append the caller cannot
+    /// observe success unless the newly acknowledged anchor is also committed via
+    /// [`PlasticityAnchorCommitterV1`].
     pub fn bootstrap_new(
         file: File,
         registry_scope_digest: Digest32,
@@ -165,6 +185,9 @@ impl AnchoredPlasticityWriterV1 {
                 writer_fence,
                 maximum_records,
             )?,
+            registry_scope_digest,
+            writer_fence,
+            poisoned: false,
         })
     }
 
@@ -184,16 +207,25 @@ impl AnchoredPlasticityWriterV1 {
                 maximum_records,
                 anchor,
             )?,
+            registry_scope_digest,
+            writer_fence,
+            poisoned: false,
         })
     }
 
     pub fn current_anchor(
         &self,
     ) -> Result<Option<DurableRegistryAnchorV1>, DurableProposalRegistryError> {
+        if self.poisoned {
+            return Err(DurableProposalRegistryError::Poisoned);
+        }
         self.registry.current_anchor()
     }
 
     pub fn record_count(&self) -> Result<usize, DurableProposalRegistryError> {
+        if self.poisoned {
+            return Err(DurableProposalRegistryError::Poisoned);
+        }
         self.registry.record_count()
     }
 }
@@ -236,10 +268,14 @@ pub fn propose_authenticated_parameter_plasticity_v1(
     request: ParameterPlasticityProductRequestV1,
     verifier: &LearningEvidenceVerifierV1,
     writer: &mut AnchoredPlasticityWriterV1,
+    anchor_committer: &mut impl PlasticityAnchorCommitterV1,
     now: u64,
 ) -> Result<ParameterPlasticityProductReceiptV1, ParameterPlasticityProductErrorV1> {
     use ParameterPlasticityProductErrorV1 as E;
 
+    if writer.poisoned {
+        return Err(E::Registry(DurableProposalRegistryError::Poisoned));
+    }
     verify_generated_parameter_candidates_v3(
         request.generator_profile.clone(),
         &request.generated,
@@ -364,12 +400,26 @@ pub fn propose_authenticated_parameter_plasticity_v1(
     let registry = writer
         .registry
         .append_v2(request.expected_registry_predecessor, proposal.clone())?;
+    let committed_registry_anchor = writer
+        .registry
+        .current_anchor()?
+        .ok_or(E::Registry(DurableProposalRegistryError::Corrupt))?;
+    if !anchor_committer.persist_anchor(
+        writer.registry_scope_digest,
+        writer.writer_fence,
+        committed_registry_anchor,
+    ) {
+        writer.poisoned = true;
+        return Err(E::AnchorPersistenceFailed);
+    }
+
     let generator_authentication_digest = attestation_digest(&request.generator_attestation);
     let admission_authentication_digest = attestation_digest(&request.admission_attestation);
     let mut composition = b"hepta.intelligence.plasticity-composition.v1\0".to_vec();
     for digest in [
         proposal.proposal_digest,
         registry.frame_digest,
+        committed_registry_anchor.frame_digest,
         request.generated.generator_digest,
         generator_authentication_digest,
         admission_authentication_digest,
@@ -383,6 +433,7 @@ pub fn propose_authenticated_parameter_plasticity_v1(
         generator_authentication_digest,
         admission_authentication_digest,
         evaluation_digest,
+        committed_registry_anchor,
         composition_digest: Digest32::of_bytes(&composition),
     })
 }
