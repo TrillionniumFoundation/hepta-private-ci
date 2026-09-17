@@ -89,12 +89,7 @@ impl AutomationStore {
             return Err(AutomationError::AccessDenied);
         }
 
-        let identity = DestinationOperationIdentity {
-            destination: operation.destination.clone(),
-            scope_id: operation.scope_id.clone(),
-            operation_id: operation.operation_id.clone(),
-            payload_digest: operation.payload_digest,
-        };
+        let identity = destination_identity(operation)?;
         let dedupe = DestinationDedupeStore::from_migrated_pool(self.taskflow_pool().clone())
             .await
             .map_err(map_operation_error)?;
@@ -158,6 +153,36 @@ impl AutomationStore {
             }
         }
     }
+
+    /// Authoritative terminal observer for the local automation destination.
+    /// A stored receipt proves the task-create mutation committed. `None` proves
+    /// no dedupe/domain transaction committed for this exact operation identity
+    /// at the moment of observation; the caller decides whether that absence is
+    /// sufficient to conclude `NotApplied` for its failure domain.
+    pub async fn observe_task_operation(
+        &self,
+        operation: &OperationIntentV1,
+    ) -> Result<Option<DestinationApplyReceipt>, AutomationError> {
+        let identity = destination_identity(operation)?;
+        let dedupe = DestinationDedupeStore::from_migrated_pool(self.taskflow_pool().clone())
+            .await
+            .map_err(map_operation_error)?;
+        dedupe.observe(&identity).await.map_err(map_operation_error)
+    }
+}
+
+fn destination_identity(
+    operation: &OperationIntentV1,
+) -> Result<DestinationOperationIdentity, AutomationError> {
+    if operation.destination.as_str() != AUTOMATION_OPERATION_DESTINATION {
+        return Err(AutomationError::AccessDenied);
+    }
+    Ok(DestinationOperationIdentity {
+        destination: operation.destination.clone(),
+        scope_id: operation.scope_id.clone(),
+        operation_id: operation.operation_id.clone(),
+        payload_digest: operation.payload_digest,
+    })
 }
 
 #[must_use]
