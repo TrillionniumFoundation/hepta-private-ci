@@ -20,6 +20,8 @@ mod segment_codec;
 mod segments;
 mod shadow;
 mod signed_evidence;
+mod witness;
+mod witnessed;
 
 pub use causal_v2::AuthenticatedOutcomeV1;
 pub use causal_v2::AuthenticatedPrincipalV1;
@@ -39,7 +41,9 @@ pub use causal_v2::validate_candidate_set_completeness;
 pub use causal_v2::verify_independent_roles;
 pub use dataset_receipt_v3::DatasetReceiptError;
 pub use dataset_receipt_v3::DatasetSnapshotReceiptV3;
+pub use dataset_receipt_v3::freeze_dataset_receipt_from_ledger_v3;
 pub use dataset_receipt_v3::freeze_dataset_receipt_v3;
+pub use dataset_receipt_v3::verify_dataset_snapshot_receipt_against_ledger_v3;
 pub use dataset_receipt_v3::verify_dataset_snapshot_receipt_v3;
 pub use durable::DurableLedger;
 pub use durable::DurableLedgerError;
@@ -80,6 +84,10 @@ pub use signed_evidence::SignedLearningEvidenceV1;
 pub use signed_evidence::TrustedLearningSignerV1;
 pub use signed_evidence::VerifiedLearningEvidenceV1;
 pub use signed_evidence::verify_signed_role_separation;
+pub use witness::LedgerWitnessStore;
+pub use witness::WitnessStoreError;
+pub use witnessed::WitnessedAppendError;
+pub use witnessed::WitnessedLearningJournal;
 
 #[cfg(test)]
 #[path = "shadow_tests.rs"]
