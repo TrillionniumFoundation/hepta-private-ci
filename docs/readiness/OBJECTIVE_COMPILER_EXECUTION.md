@@ -127,7 +127,9 @@ emit deny-all admission receipt and compile/conflict outcome
 
 Compilation is a pure function of the authenticated source envelope, selected admission profile and registered schema revisions. Retry with identical semantic inputs yields identical objective semantics. Reuse of a durable request/revision identity with different semantics is handled by the owning durable caller as conflict; the stateless compiler does not invent persistence.
 
-## 5. Native output versus canonical product contract
+## 5. State machine and persistence
+
+### 5.1 Native output versus canonical product contract
 
 The current Rust source candidate emits native `ObjectiveFunction`, `ObjectiveCompileReceipt` and `ObjectiveConflictReceipt` types. Admission preserves represented source meaning through profile mapping and digest binding, but the native objective intentionally flattens several canonical categories into `constraints` and `success_predicates`:
 
@@ -137,7 +139,7 @@ The current Rust source candidate emits native `ObjectiveFunction`, `ObjectiveCo
 
 That native representation is **not yet the canonical `ObjectiveFunctionV1` wire/output adapter** declared by the control-plane contract. Materializing the canonical wire shape, including explicit immutable-core/adaptive-surface fields and `ObjectiveCompileReceiptV1`, remains a product-integration gap. Digest binding is not a substitute for that adapter, and documentation/readiness must not claim otherwise.
 
-## 6. State machine and persistence
+### 5.2 Publication state machine
 
 The compiler owns no domain-fact store. The owning product caller must atomically persist/publish the canonical `ObjectiveFunctionV1`, `RunStartSnapshotV1` and admission/compile receipts only after source, intent, profile, constraint and objective digests agree.
 
@@ -153,9 +155,9 @@ received
 -> canonicalized and published atomically by owning caller
 ```
 
-The current read-only intelligence vertical is an integration harness, not proof of that durable product writer. A crash before caller publication leaves no selected objective. A crash after durable publication must be reconciled by an identity that includes request, principal scope, source digest, schema digest and selected profile digest. A changed success predicate, hard constraint, legal effect, evidence requirement, resource/risk rule, principal scope or rollback class creates a new objective revision and run snapshot.
+The current read-only intelligence vertical is an integration harness, not proof of that durable product writer. Its typed outcome API preserves `ExplicitAbstain` as a non-error result; the older receipt-only wrapper remains compatibility behavior. A crash before caller publication leaves no selected objective. A crash after durable publication must be reconciled by an identity that includes request, principal scope, source digest, schema digest and selected profile digest. A changed success predicate, hard constraint, legal effect, evidence requirement, resource/risk rule, principal scope or rollback class creates a new objective revision and run snapshot.
 
-## 7. Error taxonomy and retry policy
+## 6. Error taxonomy and retry policy
 
 The canonical definitions are in `docs/contracts/OBJECTIVE_ERRORS.json`:
 
@@ -177,13 +179,13 @@ The canonical definitions are in `docs/contracts/OBJECTIVE_ERRORS.json`:
 
 Fallback may reuse a previously selected immutable objective only when the owning caller proves equal request identity, principal scope, compatibility and current revocation frontier. Otherwise it asks for clarification or abstains. It never substitutes an easier goal.
 
-## 8. Security and adversarial inputs
+## 7. Security and adversarial inputs
 
 Untrusted pages, emails, files, tool output and model prose remain evidence. They cannot create P0-P2 constraints, legalize an effect, change principal scope or weaken evidence requirements. Negative fixtures include prompt injection, hidden HTML instructions, homograph identifiers, duplicate JSON keys, oversized arrays, NaN/infinity equivalents, conflicting time units, path traversal, embedded secrets, forged trust labels and stale/future observations.
 
 The compiler records safe identifiers and digests rather than unrestricted source text. It has no model, tool, network, filesystem, secret, Matrix, fleet or external-effect authority. Every admission receipt embeds `AuthorityPosture::DENY_ALL`.
 
-## 9. Performance envelope
+## 8. Performance envelope
 
 The following paths are measured separately:
 
@@ -197,9 +199,9 @@ The following paths are measured separately:
 
 Pilot ceilings are `<=246` source constraints plus exactly ten generated resource/risk constraints for `<=256` native hard constraints, `<=128` aggregate success/terminal/evidence predicates, `<=127` caller actions when abstain is implicit, `<=128` compiled actions including abstain, `<=64` soft dimensions and `<=257` conflict-oracle calls. Exceeding a bound rejects or returns unavailable; input is never truncated after semantic analysis.
 
-The p95/p99 targets apply only to a named path, fixture and host. A normal-path latency measurement cannot be reused as a conflict-extraction measurement. No network or synchronous central RPC is permitted on the deterministic compiler path.
+The admission profile's current 256 KiB guard uses `profile_encoded_size()`, a conservative parallel estimator rather than byte-for-byte canonical serialized length. If the profile byte ceiling is promoted to a protocol-hard canonical encoding boundary, actual canonical encoded bytes must replace that estimator.
 
-## 10. Golden fixtures and tests
+## 9. Golden fixtures and tests
 
 - `OBJ-GV-001`: reordered equivalent input produces identical objective semantics.
 - `OBJ-GV-002`: a principal network prohibition dominates task text requesting network access.
@@ -217,13 +219,13 @@ The p95/p99 targets apply only to a named path, fixture and host. A normal-path 
 
 Tests cover structural round trips, canonical ordering, unit conversion, conflict minimization, stale/future time, deadline handling, source authentication, resource overflow, action-slot reservation, aggregate-bound hostility, retry classification, redaction and property-based permutation invariance.
 
-## 11. Implementation and qualification sequence
+## 10. Implementation sequence
 
 Implement and maintain, in order: strict JSON decoder; owner-local source type; admission-safe structural validator; authenticated admission context; frozen profile mapping; deterministic feasibility grammar; native feasibility projection; conflict minimizer; intrinsic legal-action grammar; native digests/receipts; canonical output adapter; durable caller adapter; faults; benchmarks; exact-source and merge-candidate qualification.
 
 Coding entry requires a current `CanonicalSourceReceiptV1`, frozen contract/readiness/error-registry digests, a bounded work-package envelope, mandatory fixtures, deterministic fallback and zero authority delta. Source candidate completion still does not establish a production caller, canonical durable writer, activation, independent acceptance, promotion or release.
 
-## 12. Coding-entry checklist
+## 11. Coding-entry checklist
 
 - exact canonical source receipt and immutable profile digest are current;
 - every profile collection and admission aggregate is within its enforced bound;
