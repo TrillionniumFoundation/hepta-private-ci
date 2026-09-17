@@ -162,38 +162,89 @@
     },
     {
       "module": "kernel.operations",
-      "profile": "bounded_operation_reference_model",
+      "profile": "durable_operation_store_with_reference_oracle",
       "formalGuide": "docs/modules/kernel.operations/TECHNICAL.md",
       "formalGuideRole": "target_architecture",
       "currentSpecification": "docs/lane-a-foundation/kernel.operations/CURRENT_IMPLEMENTATION.md",
       "currentSpecificationRole": "current_executable_contract",
-      "implementationDetail": "docs/lane-a-foundation/kernel.operations/REFERENCE_MODEL_V1.md",
+      "implementationDetail": "docs/lane-a-foundation/kernel.operations/DURABLE_STORE_V1.md",
       "states": {
         "source": "implemented",
-        "implementation": "bounded_reference_model",
-        "durability": "not_implemented",
-        "qualification": "model_tests_present",
-        "activation": "inactive",
+        "implementation": "durable_sqlite_ledger_outbox_with_reference_oracle",
+        "durability": "sqlite_wal_full_sync_atomic_ledger_outbox",
+        "qualification": "durable_source_tests_present",
+        "activation": "host_composition_required",
         "acceptance": "not_granted"
       },
       "currentCapabilities": [
-        "bounded deterministic operation-state reference model",
-        "bounded in-memory outbox claim and acknowledgement model",
-        "generation-fenced idempotent terminal observation"
+        "bounded deterministic operation-state reference oracle",
+        "FULL-synchronous SQLite operation journal and transactional local outbox",
+        "atomic intent plus outbox publication with crash-reopen persistence",
+        "bounded fenced pre-dispatch leases with higher-generation takeover",
+        "non-retryable armed dispatch and terminal reconciliation",
+        "real final-use authority token binding at adapter entry",
+        "destination-owned transactional deduplication helpers",
+        "bounded terminal retention with anti-resurrection tombstones"
       ],
       "targetOnlyCapabilities": [
-        "durable operation ledger",
-        "transactional durable outbox",
-        "claim lease expiry and crash-reopen takeover",
-        "background reconciliation service"
+        "named production caller composition",
+        "installed destination-specific dedupe migrations and domain mutations",
+        "target-host fault qualification and independent acceptance",
+        "operator activation, canary, promotion and release"
       ],
       "sourceAnchors": [
         {
           "path": "codex-rs/hepta-operations/src/lib.rs",
           "mustContain": [
-            "In-memory reference model",
-            "does not provide durable storage",
-            "ReferenceAuthorityWitness"
+            "FULL-synchronous SQLite ledger/outbox aggregate",
+            "Destination deduplication helpers",
+            "kernel.authority"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-operations/src/durable_store.rs",
+          "mustContain": [
+            "pub struct DurableOperationStore",
+            "BEGIN IMMEDIATE",
+            "pub async fn prepare_intent(",
+            "pub async fn arm_dispatch(",
+            "pub async fn observe_terminal(",
+            "pub async fn prune_terminal("
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-operations/migrations/0001_durable_operations.sql",
+          "mustContain": [
+            "CREATE TABLE operation_records",
+            "CREATE TABLE cross_owner_outbox",
+            "CREATE TABLE operation_tombstones",
+            "cross_owner_outbox_fence_monotonic"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-operations/src/dispatcher.rs",
+          "mustContain": [
+            "dispatch_with_final_use",
+            "with_verified_use",
+            "reconcile_with"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-operations/src/destination_dedupe.rs",
+          "mustContain": [
+            "DESTINATION_DEDUPE_SCHEMA_V1",
+            "reserve_destination_effect",
+            "record_destination_terminal",
+            "same transaction"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-operations/src/durable_tests.rs",
+          "mustContain": [
+            "atomic_intent_and_outbox_survive_reopen",
+            "expired_pre_dispatch_lease_allows_higher_generation_takeover",
+            "armed_dispatch_is_never_reclaimed_after_lease_expiry",
+            "final_use_token_is_consumed_at_durable_dispatch_boundary"
           ]
         },
         {
@@ -203,14 +254,6 @@
             "pub struct OperationLedger",
             "pub fn observe_terminal",
             "terminal_matches"
-          ]
-        },
-        {
-          "path": "codex-rs/hepta-operations/src/outbox.rs",
-          "mustContain": [
-            "MAX_MODEL_OUTBOX_RECORDS",
-            "InvalidDigest(\"outbox payload\")",
-            "InvalidDigest(\"outbox acknowledgement\")"
           ]
         },
         {
