@@ -187,11 +187,7 @@ impl OrganHandlerRegistryV1 {
         factory: OrganHandlerFactoryV1,
     ) -> Result<(), OrganHandlerRegistryError> {
         self.register_descriptor(
-            OrganCapabilityDescriptorV1::trusted_short_read_only(
-                driver,
-                1,
-                implementation_digest,
-            ),
+            OrganCapabilityDescriptorV1::trusted_short_read_only(driver, 1, implementation_digest),
             factory,
         )
     }
@@ -286,8 +282,7 @@ impl OrganHandlerRegistryV1 {
                     driver: binding.driver.clone(),
                 });
             }
-            if registered.descriptor.execution_class
-                != OrganExecutionClassV1::TrustedShortReadOnly
+            if registered.descriptor.execution_class != OrganExecutionClassV1::TrustedShortReadOnly
             {
                 return Err(OrganHandlerRegistryError::InProcessExecutionClassRequired(
                     binding.driver.clone(),
