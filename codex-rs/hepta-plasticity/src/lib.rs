@@ -143,3 +143,7 @@ pub fn read_versioned_proposal(
 #[cfg(test)]
 #[path = "lib_tests.rs"]
 mod tests;
+
+#[cfg(test)]
+#[path = "v3_tests.rs"]
+mod v3_tests;
