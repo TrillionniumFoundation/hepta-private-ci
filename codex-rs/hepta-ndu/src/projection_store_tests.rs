@@ -65,7 +65,7 @@ fn durable_writer_round_trips_selected_and_revoked_state() {
         ));
         must(store.select_projection(digest("selection-id"), objective, subject, projection));
         assert_eq!(
-            store.selected_projection_digest(objective, subject),
+            must(store.selected_projection_digest(objective, subject)),
             Some(projection)
         );
     }
@@ -73,16 +73,22 @@ fn durable_writer_round_trips_selected_and_revoked_state() {
     {
         let mut store = must(NduProjectionStoreV1::open(&root.0));
         assert_eq!(
-            store.selected_projection_digest(objective, subject),
+            must(store.selected_projection_digest(objective, subject)),
             Some(projection)
         );
         must(store.revoke_projection(digest("revocation-id"), objective, subject, projection));
-        assert_eq!(store.selected_projection_digest(objective, subject), None);
+        assert_eq!(
+            must(store.selected_projection_digest(objective, subject)),
+            None
+        );
     }
 
     let store = must(NduProjectionStoreV1::open(&root.0));
-    assert_eq!(store.selected_projection_digest(objective, subject), None);
-    assert_eq!(store.entries().len(), 3);
+    assert_eq!(
+        must(store.selected_projection_digest(objective, subject)),
+        None
+    );
+    assert_eq!(must(store.entries()).len(), 3);
 }
 
 #[test]
@@ -103,13 +109,13 @@ fn backup_restore_is_validated_before_replacing_live_state() {
             projection,
         ));
         must(source.select_projection(digest("selection-id"), objective, subject, projection));
-        source.backup_bytes()
+        must(source.backup_bytes())
     };
 
     let mut target = must(NduProjectionStoreV1::open(&target_root.0));
     must(target.restore_backup(&backup));
     assert_eq!(
-        target.selected_projection_digest(objective, subject),
+        must(target.selected_projection_digest(objective, subject)),
         Some(projection)
     );
 
@@ -123,7 +129,7 @@ fn backup_restore_is_validated_before_replacing_live_state() {
         NduProjectionStoreError::Journal(NduProjectionJournalError::CorruptEntryDigest)
     );
     assert_eq!(
-        target.selected_projection_digest(objective, subject),
+        must(target.selected_projection_digest(objective, subject)),
         Some(projection)
     );
 }
@@ -143,9 +149,12 @@ fn older_valid_backup_cannot_remove_a_later_revocation() {
         projection,
     ));
     must(store.select_projection(digest("selection-id"), objective, subject, projection));
-    let old_backup = store.backup_bytes();
+    let old_backup = must(store.backup_bytes());
     must(store.revoke_projection(digest("revocation-id"), objective, subject, projection));
-    assert_eq!(store.selected_projection_digest(objective, subject), None);
+    assert_eq!(
+        must(store.selected_projection_digest(objective, subject)),
+        None
+    );
 
     assert_eq!(
         store
@@ -153,7 +162,10 @@ fn older_valid_backup_cannot_remove_a_later_revocation() {
             .expect_err("backup rollback must not resurrect selection"),
         NduProjectionStoreError::BackupRegression
     );
-    assert_eq!(store.selected_projection_digest(objective, subject), None);
+    assert_eq!(
+        must(store.selected_projection_digest(objective, subject)),
+        None
+    );
 }
 
 #[test]
@@ -166,7 +178,7 @@ fn stale_uncommitted_temp_image_is_discarded_before_recovery() {
     drop(temp);
 
     let store = must(NduProjectionStoreV1::open(&root.0));
-    assert!(store.entries().is_empty());
+    assert!(must(store.entries()).is_empty());
     assert!(!root.0.join(TEMP_FILE).exists());
 }
 
@@ -180,4 +192,49 @@ fn concurrent_writer_is_rejected_while_owner_lock_is_live() {
     assert_eq!(error, NduProjectionStoreError::Busy);
     drop(owner);
     must(NduProjectionStoreV1::open(&root.0));
+}
+
+#[test]
+fn indeterminate_handle_fails_closed_until_reopen() {
+    let root = TempRoot::new("indeterminate");
+    let objective = digest("objective");
+    let subject = digest("subject");
+    let projection = digest("projection");
+    let mut store = must(NduProjectionStoreV1::open(&root.0));
+
+    store.indeterminate = true;
+    assert!(store.is_indeterminate());
+    assert_eq!(
+        store.entries().expect_err("poisoned entries must fail closed"),
+        NduProjectionStoreError::Indeterminate
+    );
+    assert_eq!(
+        store
+            .selected_projection_digest(objective, subject)
+            .expect_err("poisoned selection read must fail closed"),
+        NduProjectionStoreError::Indeterminate
+    );
+    assert_eq!(
+        store
+            .backup_bytes()
+            .expect_err("poisoned backup export must fail closed"),
+        NduProjectionStoreError::Indeterminate
+    );
+    assert_eq!(
+        store
+            .append_projection(
+                NduProjectionKindV1::Preference,
+                digest("projection-id"),
+                objective,
+                subject,
+                projection,
+            )
+            .expect_err("poisoned mutation must fail closed"),
+        NduProjectionStoreError::Indeterminate
+    );
+
+    drop(store);
+    let reopened = must(NduProjectionStoreV1::open(&root.0));
+    assert!(!reopened.is_indeterminate());
+    assert!(must(reopened.entries()).is_empty());
 }
