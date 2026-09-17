@@ -1,7 +1,7 @@
-//! Minimal loopback-only Hepta live shell.
+//! Hepta native gateway and all-Rust shell composition boundaries.
 //!
-//! The gateway has no outbound, model, Telegram, operator-mutation, Enforce,
-//! promotion, or retirement path. Those remain separate gates.
+//! The loopback gateway remains read-only. Native OS effects and updater
+//! activation are separately fenced by the product modules exported here.
 
 #![forbid(unsafe_code)]
 
@@ -11,6 +11,7 @@ mod platform_adapter;
 mod security;
 mod session_store;
 mod shell_runtime;
+pub mod update_activation;
 mod updater;
 
 use std::env;
