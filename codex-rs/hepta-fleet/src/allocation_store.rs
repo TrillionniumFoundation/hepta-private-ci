@@ -33,6 +33,12 @@ static STAGING_SEQUENCE: AtomicU64 = AtomicU64::new(1);
 pub enum FleetAllocationStoreError {
     #[error("fleet allocation store I/O failed: {0}")]
     Io(#[from] std::io::Error),
+    #[error("fleet allocation store publication for generation {generation} is indeterminate: {source}")]
+    PublicationIndeterminate {
+        generation: u64,
+        #[source]
+        source: std::io::Error,
+    },
     #[error("fleet allocation store is corrupt: {0}")]
     Corrupt(String),
     #[error("fleet allocation generation is stale: expected {expected}, current {current}")]
@@ -257,7 +263,12 @@ impl FleetAllocationStore {
             }
         }
         let _ = std::fs::remove_file(temp_path);
-        sync_directory(&self.root)?;
+        if let Err(source) = sync_directory_io(&self.root) {
+            return Err(FleetAllocationStoreError::PublicationIndeterminate {
+                generation,
+                source,
+            });
+        }
         Ok(())
     }
 
@@ -368,14 +379,17 @@ fn validate_physical_directory(path: &Path) -> Result<(), FleetAllocationStoreEr
 }
 
 #[cfg(unix)]
-fn sync_directory(path: &Path) -> Result<(), FleetAllocationStoreError> {
-    File::open(path)?.sync_all()?;
-    Ok(())
+fn sync_directory_io(path: &Path) -> std::io::Result<()> {
+    File::open(path)?.sync_all()
 }
 
 #[cfg(not(unix))]
-fn sync_directory(_path: &Path) -> Result<(), FleetAllocationStoreError> {
+fn sync_directory_io(_path: &Path) -> std::io::Result<()> {
     Ok(())
+}
+
+fn sync_directory(path: &Path) -> Result<(), FleetAllocationStoreError> {
+    sync_directory_io(path).map_err(Into::into)
 }
 
 #[cfg(test)]
