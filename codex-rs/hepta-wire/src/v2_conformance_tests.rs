@@ -1,0 +1,27 @@
+use codex_hepta_types::Generation;
+use codex_hepta_types::StableId;
+
+use crate::WireEnvelopeV2;
+
+#[test]
+fn v2_frame_matches_independent_frozen_bytes() -> Result<(), Box<dyn std::error::Error>> {
+    // Independent HPTA V2 vector: schema=s, producer=p, generation=1,
+    // payload=010203. The frame digest was frozen outside the Rust codec and is
+    // also recorded in docs/lane-a-foundation/platform.wire/HPTA_V2_CONFORMANCE.json.
+    let golden: [u8; 59] = [
+        0x48, 0x50, 0x54, 0x41, 0x00, 0x02, 0x00, 0x01, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00,
+        0x00, 0x00, 0x00, 0x01, 0xae, 0x97, 0xbb, 0xd5, 0xc0, 0x3e, 0xb4, 0x11, 0xc9, 0x4a,
+        0xe6, 0x97, 0xa4, 0x77, 0x31, 0x42, 0x64, 0x6b, 0x0d, 0x23, 0xfa, 0xf4, 0x8c, 0xf7,
+        0xd8, 0x75, 0x30, 0x4e, 0x7a, 0x5b, 0x45, 0xe1, 0x00, 0x00, 0x00, 0x03, b's', b'p',
+        0x01, 0x02, 0x03,
+    ];
+    let expected = WireEnvelopeV2::new(
+        StableId::new("s")?,
+        StableId::new("p")?,
+        Generation::new(1)?,
+        vec![1, 2, 3],
+    )?;
+    assert_eq!(expected.encode(), golden);
+    assert_eq!(WireEnvelopeV2::decode(&golden)?, expected);
+    Ok(())
+}
