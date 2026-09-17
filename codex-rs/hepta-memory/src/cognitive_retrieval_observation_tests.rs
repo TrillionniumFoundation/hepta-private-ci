@@ -2,6 +2,7 @@ use super::*;
 use crate::ForgetMemoryDraft;
 use crate::KgEntityFactDraft;
 use crate::KgFactSetDraft;
+use crate::KgRelationFactDraft;
 use crate::MemoryDraft;
 use crate::MemoryRevisionDraft;
 use crate::cognitive_test_support::agent_id;
@@ -126,6 +127,11 @@ async fn saturated_channels_observe_limits_before_dedup_and_preserve_top_four() 
             },
         ]
     );
+    assert!(observation.relations().is_empty());
+    assert_eq!(
+        observation.relation_limit(),
+        RetrievalLimitObservation::Exhausted
+    );
     assert_eq!(
         observation,
         store
@@ -133,6 +139,85 @@ async fn saturated_channels_observe_limits_before_dedup_and_preserve_top_four() 
             .await
             .expect("repeat")
     );
+}
+
+#[tokio::test]
+async fn registered_kg_relations_are_typed_and_bound_without_changing_legacy_ranking() {
+    let temp = TempDir::new().expect("temp");
+    let owner = agent_id(/*suffix*/ 46);
+    let store = CognitiveStore::open(&layout(&temp, &owner))
+        .await
+        .expect("store");
+    let access = CognitiveAccess::agent_private(owner);
+    let scope = CognitiveScope::AgentPrivate;
+    let memory = store
+        .remember_with_kg(
+            &access,
+            &source(scope.clone(), "causal-source", "Beacon causes rain."),
+            &MemoryDraft {
+                stable_key: "causal".to_string(),
+                revision: revision(scope, "Beacon causes rain."),
+            },
+            &KgFactSetDraft {
+                entities: vec![
+                    KgEntityFactDraft {
+                        key: "beacon".to_string(),
+                        entity_type: "topic".to_string(),
+                        label: "Beacon".to_string(),
+                    },
+                    KgEntityFactDraft {
+                        key: "rain".to_string(),
+                        entity_type: "event".to_string(),
+                        label: "Rain".to_string(),
+                    },
+                ],
+                relations: vec![
+                    KgRelationFactDraft {
+                        key: "causes-rain".to_string(),
+                        from_entity_key: "beacon".to_string(),
+                        to_entity_key: "rain".to_string(),
+                        relation: "causes".to_string(),
+                    },
+                    KgRelationFactDraft {
+                        key: "free-form".to_string(),
+                        from_entity_key: "beacon".to_string(),
+                        to_entity_key: "rain".to_string(),
+                        relation: "loosely related to".to_string(),
+                    },
+                ],
+            },
+        )
+        .await
+        .expect("causal memory");
+
+    let request = RetrievalRequest::new("Beacon", /*now_unix_seconds*/ 200);
+    let observation = store
+        .observe_memory_retrieval(&access, &request)
+        .await
+        .expect("observation");
+    let legacy = store
+        .retrieve_memory_candidates(&access, &request)
+        .await
+        .expect("legacy");
+    assert_eq!(observation.batch(), &legacy);
+    assert_eq!(observation.relations().len(), 1);
+    let relation = &observation.relations()[0];
+    assert_eq!(relation.candidate, memory.id);
+    assert_eq!(relation.support_memory, memory.id);
+    assert_eq!(relation.signal, RetrievalRelationSignal::Causes);
+    assert_ne!(relation.support_sha256, Sha256Digest::for_bytes(b""));
+    assert_eq!(
+        observation.relation_limit(),
+        RetrievalLimitObservation::Exhausted
+    );
+
+    // Relation evidence participates in the owner observation digest, but does
+    // not mutate the established SQLite RRF ranking result.
+    let repeated = store
+        .observe_memory_retrieval(&access, &request)
+        .await
+        .expect("repeat");
+    assert_eq!(observation, repeated);
 }
 
 #[tokio::test]
