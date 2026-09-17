@@ -7,13 +7,16 @@
 //! terminal retention. Queue acknowledgement is deliberately separate from
 //! terminal effect observation.
 //!
-//! Product activation still requires a named caller, destination-owned durable
-//! deduplication and a trusted terminal observer. The final-use dispatcher binds
-//! the non-serializable token owned by `kernel.authority` immediately around the
-//! adapter entry; this crate does not mint authority.
+//! Destination deduplication helpers operate only on a destination-owned SQLite
+//! transaction; they never open or commit another owner's store. Product
+//! activation still requires a named caller and trusted terminal observer. The
+//! final-use dispatcher binds the non-serializable token owned by
+//! `kernel.authority` immediately around adapter entry; this crate does not mint
+//! authority.
 
 #![forbid(unsafe_code)]
 
+mod destination_dedupe;
 mod dispatcher;
 mod durable_model;
 mod durable_store;
@@ -22,6 +25,14 @@ mod ledger;
 mod model;
 mod outbox;
 
+pub use destination_dedupe::DESTINATION_DEDUPE_SCHEMA_V1;
+pub use destination_dedupe::DestinationDedupeKey;
+pub use destination_dedupe::DestinationDedupeRecord;
+pub use destination_dedupe::DestinationDedupeState;
+pub use destination_dedupe::DestinationReserveDisposition;
+pub use destination_dedupe::load_destination_record;
+pub use destination_dedupe::record_destination_terminal;
+pub use destination_dedupe::reserve_destination_effect;
 pub use dispatcher::EffectAdapter;
 pub use dispatcher::ReconciliationObservation;
 pub use dispatcher::TerminalObserver;
