@@ -1,0 +1,38 @@
+name: memory.federation lockfile diagnostic
+
+on:
+  pull_request:
+    paths:
+      - "codex-rs/hepta-memory-federation/**"
+      - "codex-rs/Cargo.lock"
+      - ".github/workflows/memory-federation-lockfile-diagnostic.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: memory-federation-lockfile-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  generate-and-check:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - name: Update lock metadata and compile memory.federation
+        working-directory: codex-rs
+        run: |
+          set -euo pipefail
+          cargo metadata --no-deps --format-version 1 >/dev/null
+          cargo check -p codex-hepta-memory-federation --all-targets
+      - name: Upload generated lockfile
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: memory-federation-generated-lockfile-${{ github.event.pull_request.head.sha }}
+          path: codex-rs/Cargo.lock
+          if-no-files-found: error
+          retention-days: 1
