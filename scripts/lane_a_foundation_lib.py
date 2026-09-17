@@ -92,8 +92,14 @@ def validate_matrix(matrix: dict[str, Any], root: Path = ROOT) -> dict[str, Any]
             validate_anchor(module, anchor, root)
     by_name = {row["module"]: row for row in modules}
     exact = {
-        ("kernel.operations", "implementation"): "bounded_reference_model",
-        ("kernel.operations", "durability"): "not_implemented",
+        (
+            "kernel.operations",
+            "implementation",
+        ): "sqlite_durable_operations_with_reference_oracle",
+        (
+            "kernel.operations",
+            "durability",
+        ): "sqlite_wal_full_transactional",
         ("auth.authbus", "implementation"): "signed_admission_with_legacy_replay",
         (
             "auth.authbus",
@@ -231,7 +237,7 @@ def self_test() -> None:
     validate_matrix(matrix)
     for mutation in (
         lambda value: value["modules"][3]["states"].__setitem__(
-            "durability", "durable"
+            "durability", "not_implemented"
         ),
         lambda value: value["closure"].__setitem__("externalAcceptance", "closed"),
     ):
