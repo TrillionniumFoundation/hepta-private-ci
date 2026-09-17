@@ -155,20 +155,27 @@ impl ProductRelationEvidenceV1 {
 }
 
 /// V2 product request adds typed owner relation evidence without changing the
-/// deterministic owner RRF score. Relation evidence is provenance/risk input;
-/// learned or calibrated weighting remains a separately qualified capability.
+/// deterministic owner RRF score. `owner_relation_evidence_count` and the limit
+/// bit describe the owner's complete bounded observation before Lane-C cut
+/// intersection; `relation_evidence` contains the subset whose candidate and
+/// support revisions were both admitted by that cut.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct ProductRetrievalRequestV2 {
     pub retrieval: ProductRetrievalRequestV1,
+    pub owner_relation_evidence_count: usize,
+    pub owner_relation_limit_reached: bool,
     pub relation_evidence: Vec<ProductRelationEvidenceV1>,
 }
 
 /// V2 product receipt binds all admitted typed KG relation evidence, including
-/// evidence for candidates omitted from the final top-k.
+/// explicit coverage/omission facts for owner relation enumeration.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct ProductRetrievalReceiptV2 {
     pub receipt_version: u32,
     pub retrieval: ProductRetrievalReceiptV1,
+    pub owner_relation_evidence_count: usize,
+    pub owner_relation_limit_reached: bool,
+    pub omitted_relation_evidence_count: usize,
     pub relation_evidence: Vec<ProductRelationEvidenceV1>,
     pub receipt_digest: Digest32,
     pub authority: AuthorityPosture,
@@ -180,6 +187,7 @@ pub enum ProductRetrievalError {
     InvalidMaximumResults,
     CandidateLimitExceeded,
     RelationEvidenceLimitExceeded,
+    RelationEvidenceCountMismatch,
     RelationCandidateNotAdmitted(String),
     RelationSupportNotAdmitted(String),
     EmptyRelationDigest(&'static str),
@@ -253,8 +261,13 @@ pub fn retrieve_product_v1(
 pub fn retrieve_product_v2(
     request: ProductRetrievalRequestV2,
 ) -> Result<ProductRetrievalReceiptV2, ProductRetrievalError> {
-    if request.relation_evidence.len() > MAX_PRODUCT_RELATION_EVIDENCE {
+    if request.owner_relation_evidence_count > MAX_PRODUCT_RELATION_EVIDENCE
+        || request.relation_evidence.len() > MAX_PRODUCT_RELATION_EVIDENCE
+    {
         return Err(ProductRetrievalError::RelationEvidenceLimitExceeded);
+    }
+    if request.relation_evidence.len() > request.owner_relation_evidence_count {
+        return Err(ProductRetrievalError::RelationEvidenceCountMismatch);
     }
     let admitted = request
         .retrieval
@@ -316,11 +329,17 @@ pub fn retrieve_product_v2(
             .then_with(|| left.relation_group_digest.cmp(&right.relation_group_digest))
     });
 
+    let owner_relation_evidence_count = request.owner_relation_evidence_count;
+    let owner_relation_limit_reached = request.owner_relation_limit_reached;
+    let omitted_relation_evidence_count = owner_relation_evidence_count - relation_evidence.len();
     let retrieval = retrieve_product_v1(request.retrieval)?;
     let receipt_version = 2_u32;
     let mut bytes = PRODUCT_RECEIPT_V2_DOMAIN.to_vec();
     bytes.extend_from_slice(&receipt_version.to_be_bytes());
     bytes.extend_from_slice(retrieval.receipt_digest.as_array());
+    push_count(&mut bytes, owner_relation_evidence_count);
+    bytes.push(u8::from(owner_relation_limit_reached));
+    push_count(&mut bytes, omitted_relation_evidence_count);
     push_count(&mut bytes, relation_evidence.len());
     for evidence in &relation_evidence {
         push_id(&mut bytes, &evidence.candidate_record_id);
@@ -337,6 +356,9 @@ pub fn retrieve_product_v2(
     Ok(ProductRetrievalReceiptV2 {
         receipt_version,
         retrieval,
+        owner_relation_evidence_count,
+        owner_relation_limit_reached,
+        omitted_relation_evidence_count,
         relation_evidence,
         receipt_digest: Digest32::of_bytes(&bytes),
         authority: AuthorityPosture::DENY_ALL,
