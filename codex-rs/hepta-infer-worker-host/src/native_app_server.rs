@@ -12,6 +12,7 @@ use codex_app_server_client::AppServerEvent;
 use codex_app_server_client::RemoteAppServerClient;
 use codex_app_server_client::RemoteAppServerConnectArgs;
 use codex_app_server_client::RemoteAppServerEndpoint;
+use codex_app_server_client::TypedRequestError;
 use codex_app_server_protocol::AdditionalContextEntry;
 use codex_app_server_protocol::AdditionalContextKind;
 use codex_app_server_protocol::AskForApproval;
@@ -39,6 +40,10 @@ pub use codex_hepta_infer_core::durable_control::native::NativeRunOutput;
 pub use codex_hepta_infer_core::durable_control::native::NativeRunStatus;
 use codex_utils_absolute_path::AbsolutePathBuf;
 
+use crate::runtime_codex::TURN_START_OUTCOME_UNKNOWN;
+use crate::runtime_codex::TURN_START_OVERLOADED;
+use crate::runtime_codex::TURN_START_REJECTED;
+
 #[path = "native_run_control.rs"]
 mod control;
 pub use control::NativeAdmission;
@@ -52,6 +57,7 @@ const MAX_OUTPUT_BYTES: usize = 1024 * 1024;
 const MAX_MODEL_CONTEXT_BYTES: usize = 8 * 1024;
 const RPC_TIMEOUT: Duration = Duration::from_secs(5);
 const INTERRUPT_GRACE: Duration = Duration::from_secs(3);
+const APP_SERVER_OVERLOADED_ERROR_CODE: i64 = -32001;
 
 type Result<T> = std::result::Result<T, Box<dyn std::error::Error + Send + Sync>>;
 
@@ -205,6 +211,26 @@ impl AppServerModelDriver {
         .await;
         let turn = match response {
             Ok(Ok(response)) => response.turn,
+            Ok(Err(TypedRequestError::Server { code, .. })) => {
+                let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
+                let reason = if code == APP_SERVER_OVERLOADED_ERROR_CODE {
+                    TURN_START_OVERLOADED
+                } else {
+                    TURN_START_REJECTED
+                };
+                return Ok(NativeRunOutput {
+                    thread_id: started.thread.id,
+                    turn_id: String::new(),
+                    model: started.model,
+                    model_provider: started.model_provider,
+                    status: NativeRunStatus::Indeterminate,
+                    output: String::new(),
+                    observed_output_tokens: None,
+                    terminal_observed: false,
+                    owner_authority: NativeOwnerAuthority::Unverified,
+                    stop_reason: Some(reason.to_string()),
+                });
+            }
             _ => {
                 let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
                 return Ok(NativeRunOutput {
@@ -217,7 +243,7 @@ impl AppServerModelDriver {
                     observed_output_tokens: None,
                     terminal_observed: false,
                     owner_authority: NativeOwnerAuthority::Unverified,
-                    stop_reason: Some("turn/start outcome unknown; do not replay".to_string()),
+                    stop_reason: Some(TURN_START_OUTCOME_UNKNOWN.to_string()),
                 });
             }
         };
