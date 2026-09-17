@@ -15,12 +15,18 @@ artifact/evidence frontier witness, and the proposal-registry anchor/fence. The
 proposal registry file MUST NOT be the only copy of its acknowledged anchor. Writer
 fence issuance and anchor persistence MUST be serialized by the host.
 
+A product append is acknowledged only after `PlasticityAnchorCommitterV1` durably
+persists the resulting current registry anchor in that independent rollback domain.
+If the anchor commit fails after the registry append, the product writer is poisoned,
+returns `AnchorPersistenceFailed`, and MUST NOT perform another operation until an
+anchored reopen reconciles the durable file with previously acknowledged history.
+
 ## Required events
 
 The host MUST emit one bounded event for: `proposal_attempt`, `generator_rejected`,
 `evidence_rejected`, `evaluation_rejected`, `registry_conflict`, `registry_busy`,
-`registry_indeterminate`, `registry_poisoned`, `anchor_mismatch`,
-`acknowledged_history_missing`, and `proposal_appended`.
+`registry_indeterminate`, `registry_poisoned`, `anchor_commit_failed`,
+`anchor_mismatch`, `acknowledged_history_missing`, and `proposal_appended`.
 
 Events contain digests/IDs and numeric counts only. Raw model parameters, signatures,
 credentials, dataset records and payload bytes are prohibited from logs.
@@ -28,8 +34,9 @@ credentials, dataset records and payload bytes are prohibited from logs.
 ## SLO and stop thresholds
 
 - **Integrity:** any `anchor_mismatch`, `acknowledged_history_missing`, corrupt frame,
-  authority-granted condition, or signature/trust-context mismatch is an immediate
-  stop and page. No automatic fallback to unanchored open is permitted.
+  authority-granted condition, signature/trust-context mismatch, or failed external
+  anchor commit is an immediate stop and page. No automatic fallback to unanchored
+  open is permitted.
 - **Indeterminate durability:** any write/sync `Indeterminate` or poisoned writer is an
   immediate stop for that handle. Reopen only after reconciling an independently
   retained anchor. Blind retry is prohibited.
@@ -42,31 +49,36 @@ credentials, dataset records and payload bytes are prohibited from logs.
   evaluator identities do not satisfy the existing signed-role separation checks;
   the implementation is expected to make this state unreachable.
 - **Latency target:** host p99 for authenticated generation + evidence/evaluation
-  admission + durable append should remain below 2 seconds for the bounded profile.
-  Exceeding this for 15 minutes disables new plasticity attempts but does not affect
-  the currently selected runtime artifact.
+  admission + durable append + external anchor commit should remain below 2 seconds
+  for the bounded profile. Exceeding this for 15 minutes disables new plasticity
+  attempts but does not affect the currently selected runtime artifact.
 
 ## Recovery runbook
 
 1. Freeze new plasticity attempts; do not modify the selected runtime artifact.
-2. Retain the suspect registry bytes, current external anchor, writer fence, trust
-   snapshot and artifact/evidence frontier receipts.
-3. On `Indeterminate`/`Poisoned`, discard the in-process writer handle.
+2. Retain the suspect registry bytes, last externally acknowledged anchor, writer
+   fence, trust snapshot and artifact/evidence frontier receipts.
+3. On `Indeterminate`, `Poisoned` or `AnchorPersistenceFailed`, discard the in-process
+   writer handle. Do not convert a failed anchor commit into success based only on the
+   registry file.
 4. Reopen only with `AnchoredPlasticityWriterV1::reopen_anchored` and the independently
-   retained anchor. Anchor mismatch or missing acknowledged history requires operator
-   recovery; never truncate first.
+   retained last acknowledged anchor. A valid file may contain later unacknowledged
+   frames; reconciliation may inspect them because `open_anchored` proves the trusted
+   prefix before any repair. Anchor mismatch or missing acknowledged history requires
+   operator recovery; never truncate first.
 5. Reverify current trust/revocation and artifact/evidence frontiers before retrying
    proposal construction.
 6. An identical proposal retry may return the original record. Semantic drift in an
    occupied artifact/window slot remains a conflict.
 7. Resume only after the new current anchor is durably retained outside the registry
-   rollback domain.
+   rollback domain. A same-domain copy does not satisfy the external commit.
 
 ## Canary and qualification
 
 A production activation claim requires an exact-head and synthetic-merge run covering:
 V3 deterministic generation, trust-region rejection, signature expiry/revocation,
 generator/evaluator controller collision, missing evaluation, stale/frontier witness,
-anchored reopen, old-prefix rollback, incomplete-tail recovery, writer-fence mismatch,
-and topology self-activation denial. Until those receipts exist, activation and
-release remain false even when source compilation/tests pass.
+anchored reopen, failed external-anchor commit and poisoned-writer behavior, old-prefix
+rollback, incomplete-tail recovery, writer-fence mismatch, and topology self-activation
+denial. Until those receipts exist, activation and release remain false even when
+source compilation/tests pass.
