@@ -3,6 +3,7 @@ import test from "node:test";
 
 import { buildNavigationIntent } from "../src/browser.js";
 import {
+  buildInitialNavigationEffectRequest,
   buildNavigationEffectRequest,
   navigationGrantBinding,
 } from "../src/bridge.js";
@@ -48,6 +49,22 @@ function page(overrides = {}) {
   };
 }
 
+test("initial navigation is a page-generation-zero authorized effect", () => {
+  const source = intent();
+  const binding = navigationGrantBinding(source);
+  const request = buildInitialNavigationEffectRequest({
+    session: session(),
+    intent: source,
+    effectGrantDigest: D2,
+    authorityEpoch: 11,
+    deadlineMs: 50_000,
+  });
+  assert.equal(request.pageGeneration, 0);
+  assert.equal(request.operationId, "navigation.1");
+  assert.equal(request.destinationOrigin, binding.destinationOrigin);
+  assert.equal(request.finalPayloadDigest, binding.finalPayloadDigest);
+});
+
 test("navigation intent becomes the exact typed runtime payload and grant binding", () => {
   const source = intent();
   const binding = navigationGrantBinding(source);
@@ -74,10 +91,7 @@ test("navigation intent becomes the exact typed runtime payload and grant bindin
 
 test("bridge refuses authority-bearing intents and mismatched session/page generations", () => {
   const source = { ...intent(), effectAuthority: true };
-  assert.throws(
-    () => navigationGrantBinding(source),
-    /authority-free/,
-  );
+  assert.throws(() => navigationGrantBinding(source), /authority-free/);
   assert.throws(
     () =>
       buildNavigationEffectRequest({
