@@ -2,53 +2,34 @@
 
 Current executable behavior, component owners and implementation gaps: [Lane B native host](../../readiness/LANE_B_NATIVE_HOST.md).
 
-**Plan:** `HEPTA-GLOBAL-MODULAR-DEVELOPMENT-PLAN` v8.0.0
-
-**Module:** `automation.taskflow`
-
-**Owner:** `automation-platform`
-
-**Deputy:** `agent-runtime`
-
-**Lifecycle:** `existing`
-
-**Source status:** `existing_bound`
-
+**Plan:** `HEPTA-GLOBAL-MODULAR-DEVELOPMENT-PLAN` v8.0.0  
+**Module:** `automation.taskflow`  
+**Owner:** `automation-platform`  
+**Deputy:** `agent-runtime`  
+**Lifecycle:** `existing`  
+**Source status:** `existing_bound`  
 **Bootstrap work package:** `TASKFLOW-1-EXECUTION-BOUNDARY`
 
-This stable document is the implementation guide for `automation.taskflow`. Normative identity, ownership, contract, data-authority and delivery facts remain in the canonical JSON registries. This guide explains how those facts are implemented and operated. Documentation readiness is not source implementation, activation, operator acceptance, promotion or release.
+This stable document is the implementation guide for `automation.taskflow`. Normative identity, ownership, contract, data-authority and delivery facts remain in the canonical JSON registries. This guide explains how those facts are implemented and operated. Documentation/source closure never implies deployment, independent acceptance, activation, promotion or release.
 
 ## 1. Identity, mission and ownership
 
-Own schedules and occurrences while routing effects through Codex and the operation ledger.
+Own schedules and occurrences while routing orchestration through the existing Agentd/Codex spine and routing external effects through their registered owners. `automation-platform` owns `codex-rs/hepta-automation`; `agent-runtime` owns the existing Agentd composition caller. Cross-owner facts remain in their owner stores.
 
-The primary owner `automation-platform` controls changes inside the declared target roots and is accountable for correctness, backward compatibility, test evidence and rollback. The deputy `agent-runtime` independently reviews public contracts, authority checks, persistence, migrations, concurrency, resource limits and activation behavior. A work package may narrow this scope but may not widen it. Cross-owner changes require an explicit co-owner or a separate integration package.
-
-Plane `domain`, kind `service`, state model `stateful` and architecture role `execution_plant` define placement. The module may optimize locally, but cannot claim global optimality or absorb another module's durable facts.
+The module is a stateful domain service/execution plant. It may coordinate an operation but does not become the authority issuer, downstream domain writer, provider terminality oracle or fleet owner.
 
 ## 2. Source binding and implementation status
 
-Declared exclusive target roots:
+Declared primary target root:
 
 - `codex-rs/hepta-automation`
 
-Existing declared roots at this exact source snapshot:
+Existing owning runtime composition:
 
-- `codex-rs/hepta-automation`
+- `codex-rs/hepta-agentd/src/automation.rs`
+- `codex-rs/hepta-agentd/src/automation_recovery.rs`
 
-Non-authoritative implementation evidence roots:
-
-- `codex-rs/hepta-automation`
-
-Declared roots not yet present:
-
-None.
-
-`existing_bound` is a source-location fact: the declared roots exist. The source and test references below identify what can be inspected and invoked; only exact-candidate execution receipts establish that the checks passed. This status does not establish runtime composition, operator acceptance, selection, promotion or release. Any source move updates `MODULES.json`, `SOURCE_BINDINGS.json` and this guide together.
-
-### Native source and scope
-
-The registered primary source is [codex-rs/hepta-automation/src/taskflow_execution_boundary.rs](../../../codex-rs/hepta-automation/src/taskflow_execution_boundary.rs); observed identifiers include `LocalTaskFlowBoundaryRequestV1`, `TaskFlowBoundaryScope`, `TaskFlowBoundaryAuthority`, `TaskFlowExecutionUnavailableV1`, `assess_local_taskflow_boundary`. This is a source navigation binding, not proof that every target operation or production consumer exists. Read the [current native implementation](../../../qualification/module-execution-dossiers/detail/automation.taskflow.md#8-current-native-implementation) alongside the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/automation.taskflow.md) for the implemented subset and remaining product work.
+The durable causal-chain implementation is described in the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/automation.taskflow.md). The legacy local execution-boundary calculator in `src/taskflow_execution_boundary.rs` remains a deny-all structural assessment and is **not** the positive provider dispatcher. Positive external effect dispatch is the separately bounded `src/authorized_effect.rs` seam consuming kernel-owned final-use authority.
 
 ## 3. Boundary, responsibilities and non-goals
 
@@ -67,25 +48,32 @@ Explicitly denied capabilities:
 - `direct_session_store_write`
 - `blind_effect_retry`
 
-The module accepts only registered, bounded, versioned inputs. It rejects unknown critical fields and treats missing authority, stale revisions, scope mismatch and digest mismatch as hard failures. It never directly writes another owner's store. Cross-owner mutation follows local transaction, durable intent, outbox, destination deduplication, acknowledgement and fenced reconciliation.
-
-Non-goals include becoming a general state store, bypassing the Codex execution spine, interpreting model prose as authority, minting an authority consumed by the same component, or converting qualification evidence into deployment authority. A façade may sequence modules but may not own their facts.
+The module accepts registered, bounded, versioned inputs, freezes schedule/occurrence identity before provider contact, persists pre-dispatch intent, and never converts queue acceptance into external success. Unknown/ambiguous provider outcomes remain durable and block unsafe retry. Automation does not mint the final-use authority consumed by an external effect adapter.
 
 ## 4. Internal architecture and component decomposition
 
-The bounded components are:
+The active implementation is one composed owner path, not parallel engines:
 
-- `typed ingress`
-- `policy core`
-- `transactional writer`
-- `bounded read projection`
-- `outbox adapter`
+```text
+AutomationScheduler (existing wake-up owner)
+  -> AutomationStore timer lease
+  -> schedule revision + deterministic occurrence
+  -> existing TaskFlow run/event ledger
+  -> durable taskflow_step_outbox
+  -> Agentd App Server thread/queue/reconcile for Codex activity
+  -> persisted turn terminal observer
+  -> TaskFlow reconciliation
+  -> automation occurrence terminalization
 
-Ingress validates identity, version, size, scope and revision before domain logic. The deterministic core receives typed values and is testable without network, filesystem or process-global state unless the module owns that boundary. State-bearing components use one transaction boundary per logical mutation. Publication occurs only after invariants and lineage checks pass.
+External TaskFlow effect
+  -> durable claimed step
+  -> kernel FinalUseAuthority exact intent/payload binding
+  -> registered effect-owner driver
+  -> durable succeeded/failed/indeterminate observation
+  -> provider-specific reconciliation when required
+```
 
-Adapters translate one registered contract, verify final payload and grant immediately before the boundary, invoke one downstream capability, and map the observed terminal outcome. Queue acceptance or handler completion is never inferred as external success. Component interfaces support deterministic fixtures and fault injection.
-
-Configuration is immutable for one process generation. Changes affecting authority, schema, compatibility, model identity, objective semantics or resource policy create a new revision or generation. Hidden mutable singletons, unbounded queues and implicit store fallback are prohibited.
+The old `effect_executor.rs` remains a bounded reference state machine/test component; it is not a second durable runtime owner.
 
 ## 5. Contracts, ports and compatibility
 
@@ -102,158 +90,138 @@ Consumed contracts:
 - `ModulePort::kernel.operations::automation.taskflow`
 - `ModulePort::runtime.codex::automation.taskflow`
 - `OperationIntentV1`
+- kernel final-use authority/grant binding at the registered effect seam
 
-Critical protocol schemas:
-
-None.
-
-Every producer validates output before publication and binds semantic fields into the declared digest scope. Every consumer validates version, bounds, producer identity, scope and digest before use. Compatibility is additive only where registered; unknown critical fields are rejected. Contract identifiers, meaning and authority interpretation cannot change in place.
-
-Rust types and canonical JSON represent identical semantics. Tests cover round trips, maximum bounds, missing fields, unknown fields, invalid enums, canonical ordering and digest stability. Error mapping preserves rejected, unavailable, timed out, indeterminate, quarantined and terminally failed outcomes.
+The compatibility timer API keeps `AutomationTick::Submitted`; its meaning is explicitly narrowed to **durable Core queue admission**, not occurrence or effect completion. Existing `Once`/`FixedInterval` callers keep their historical overlap behavior through an explicit default `overlap=allow`; callers requiring serial execution set `overlap=forbid` before the first occurrence is materialized.
 
 ## 6. Data authority, persistence and migrations
 
-Owned authoritative or rebuildable domains:
+Schema v8 retains the original `automation_tasks`, `automation_runs` and dispatch-outcome tables and adds:
 
-- `automation_occurrence`
-- `automation_schedule`
+- `automation_schedule_metadata`: revision, missed-run policy, bounded catch-up state and overlap policy.
+- `automation_occurrence_lifecycle`: deterministic occurrence identity, frozen schedule revision, claim generation/token, TaskFlow run ID, queue/turn identity, recovery phase and terminal receipt.
+- `automation_occurrence_events`: append-only hash-chained occurrence history.
+- `taskflow_step_outbox`: normal-schema durable `prepared -> claimed -> recorded -> reconciled` per-step receipt chain.
+- `automation_schedule` / `automation_occurrence` read views for canonical domain naming.
 
-Read-only data dependencies:
+`taskflow_definitions`, `taskflow_runs` and `taskflow_events` remain the durable TaskFlow ledger. A materialized occurrence freezes its schedule revision until it becomes terminal. Safe generation reclaim preserves occurrence/client identity and allocates a new step attempt; an indeterminate provider outcome does not.
 
-- `cross_owner_outbox`
-- `operation_ledger`
-- `thread_session`
-
-For every owned domain, this module is the only authoritative writer. Mutations are revision- or generation-bound, idempotent for identical semantics and conflicting for a reused identity with different content. Records bind source identity, schema revision, logical sequence and lineage sufficient for correction, deletion and revocation.
-
-Migrations are deterministic and checksum-bound. Store open verifies required schema objects and integrity constraints before reads or writes. Migration failure leaves a recoverable predecessor. Rollback across a schema boundary restores compatible state with the binary.
-
-Projection domains rebuild from declared sources and publish complete generations atomically. Projections never become sources of truth. Retention and deletion preserve lineage and prevent resurrection through indexes, caches, artifacts or backup restore.
+Migrations are additive from v3 through v8. An older binary that only understands automation schema v3 must not be started against a v8 owner store.
 
 ## 7. Runtime, concurrency and transaction model
 
-The [current native implementation](../../../qualification/module-execution-dossiers/detail/automation.taskflow.md#8-current-native-implementation) identifies the actual state owner, in-memory versus persistent surfaces, and lock/transaction boundary. Use that implementation scope when composing the module; target state-machine operations are identified in the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/automation.taskflow.md).
+One Agent generation owns the per-Agent writer. Scheduler lease generation/token becomes the TaskFlow run/step fence. Pre-dispatch intent is durable before App Server contact. App Server admission uses `thread/queue/reconcile` with stable `client_user_message_id` and canonical payload digest, eliminating a separate lookup/add race.
 
-[Shared concurrency and transaction requirements](../README.md#shared-concurrency-and-transactions) apply at the corresponding owner boundary.
+`DispatchUnknown` no longer authorizes retry or permanently kills the scheduler. The next tick first performs bounded `ReconcileOnly` recovery for the same identity. Only an explicit `Missing` result releases that same occurrence/client identity for a safe retry.
+
+For external effects, `FinalUseAuthority::claim` durably consumes the signed grant nonce and `with_verified_use` revalidates current authority while the registered driver crosses the provider boundary. Driver errors are allowed only before provider contact; ambiguous contact must return `Indeterminate` so the outbox can quarantine the step.
 
 ## 8. Failure semantics, recovery and rollback
 
-Use the error/recovery path linked by the [current native implementation](../../../qualification/module-execution-dossiers/detail/automation.taskflow.md#8-current-native-implementation) and the module-specific fault cases in the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/automation.taskflow.md). A source library or fixture cannot stand in for an unimplemented durable recovery or external reconciler.
+Crash boundaries are explicit:
 
-[Shared failure, recovery and rollback requirements](../README.md#shared-failure-and-recovery) remain mandatory.
+- before durable intent: no provider claim exists;
+- after intent/claim but before proven provider contact: retry may reuse the same occurrence/attempt when the provider owner proves absence;
+- after possible App Server admission: stable-id `ReconcileOnly`; no blind duplicate;
+- after persisted turn: store turn identity, then observe terminal status from persisted turn history;
+- after terminal provider observation but before run projection settlement: reconcile the historical step first, then a newer Agent generation may re-fence only the TaskFlow run projection for `Indeterminate -> Reconcile`; it does not replay the effect;
+- indeterminate external effect: dependent mutation remains blocked until the effect owner supplies reconciliation.
+
+Rollback preserves schedule revision, deterministic occurrence identity, stable queue identity and provider reconciliation state.
 
 ## 9. Security, privacy and threat controls
 
-Owned threat entries:
+Authority is operation-bound, payload-bound, destination-bound, short-lived and revocation-aware. `authorized_effect.rs` verifies that the signed final-use binding's `request_sha256` matches the durable TaskFlow intent digest and `payload_sha256` matches the durable payload before the effect driver can run. Automation never owns the signing key.
 
-None.
-
-The posture is least authority, bounded input, typed contracts, digest binding and independent evidence. Sensitive values are redacted or represented by digests at evidence boundaries. Credentials never enter general logs, learning datasets, prompt factors or cross-module receipts. Authority is operation-bound, final-payload-bound, short-lived and revocation-aware.
-
-Negative tests cover denied capabilities, cross-owner writes, stale or revoked grants, replay with payload drift, unknown fields, oversize input, scope escape, untrusted instruction escalation and secret/provider leakage. Security review is mandatory for new effect boundaries, persistence, network, model invocation or authority semantics.
+Credentials and provider secrets remain outside general TaskFlow receipts; durable records carry stable identifiers and digests. Stale generation, changed payload, changed stable-client input, reused final-use nonce and revoked grant fail closed.
 
 ## 10. Performance, capacity and hot-path policy
 
-The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/automation.taskflow.md) specifies this module's algorithm, pilot ceilings and capacity fixtures. Those target ceilings are not measurements and must not be reported as enforcement of an unimplemented API. Current native limits belong to [codex-rs/hepta-automation/src/taskflow_execution_boundary.rs](../../../codex-rs/hepta-automation/src/taskflow_execution_boundary.rs) and the linked implementation components.
+Current source bounds include:
 
-[Shared performance and capacity requirements](../README.md#shared-performance-and-capacity) define the measurement/overload obligations for a selected host.
+- schedule catch-up ceiling <=1024 occurrences;
+- occurrence recovery query <=1024 rows;
+- Agentd terminal scan <=16 pages × 100 persisted turns per recovery pass;
+- one historical occurrence reconciliation plus at most one new scheduler admission per Agentd tick;
+- TaskFlow graph/step bounds inherited from the existing TaskFlow ledger/outbox.
+
+These are source limits, not deployment measurements. Target-host latency, backlog and restore evidence remain activation gates.
 
 ## 11. Observability and operations
 
-Use Agentd AutomationScheduler and AutomationStore as the existing durable owners. The effect_executor component is in-memory; route its effects through the durable step outbox and final-use provider before claiming a live end-to-end TaskFlow. Unknown steps block dependent mutation and are not safely rerunnable by default.
+Operate the existing Agentd `AutomationScheduler` and `AutomationStore`. Treat the compatibility task state as schedule-control state, not execution terminality. The authoritative execution status is the durable occurrence/TaskFlow chain.
 
-Current operating and state-format references:
-
-- [docs/readiness/LANE_B_NATIVE_HOST.md](../../readiness/LANE_B_NATIVE_HOST.md).
-- [codex-rs/hepta-automation/src/effect_executor.rs](../../../codex-rs/hepta-automation/src/effect_executor.rs).
-
-[Shared observability and operations requirements](../README.md#shared-observability-and-operations) specify safe events and alert classes; concrete deployment thresholds require the selected host profile.
+Important operator classes include aged `indeterminate`, queue-reconcile mismatch, persisted turn not found within bounded history, schedule parked by `overlap=forbid`, catch-up saturation and run-recovery re-fencing. An unknown effect is not safely rerunnable by default.
 
 ## 12. Verification and qualification
 
-Current focused test sources (source references, not pass receipts):
+Focused source tests include:
 
-- [codex-rs/hepta-automation/src/effect_executor_tests.rs](../../../codex-rs/hepta-automation/src/effect_executor_tests.rs); named case: `current_fence_executes_once`.
+- `codex-rs/hepta-automation/tests/durable_causal_chain.rs`
+- `codex-rs/hepta-automation/tests/automation.rs`
+- `codex-rs/hepta-automation/tests/taskflow.rs`
+- `codex-rs/hepta-automation/tests/taskflow_kernel.rs`
+- `codex-rs/hepta-automation/tests/taskflow_step.rs`
+- `codex-rs/hepta-automation/src/effect_executor_tests.rs`
+- Agentd automation/recovery unit and process qualification paths.
 
-In `codex-rs`, run `just test -p codex-hepta-automation`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/automation.taskflow.md) separately labels target acceptance designs.
-
-[Shared verification and qualification requirements](../README.md#shared-verification-and-qualification) retain the source/merge, failure, compilation and independent-evidence obligations.
+In `codex-rs`, the focused package command remains `just test -p codex-hepta-automation`; exact-head CI output is the result receipt. Documentation, source mapping and fixture presence are not substitutes for an executed provider/host qualification.
 
 ## 13. Implementation sequence and work packages
 
-Applicable work packages:
+Applicable package: `TASKFLOW-1-EXECUTION-BOUNDARY`.
 
-- `TASKFLOW-1-EXECUTION-BOUNDARY`
+Implemented convergence sequence:
 
-The bootstrap package is `TASKFLOW-1-EXECUTION-BOUNDARY`. Development, activation and evidence predecessor graphs are distinct and all are enforced. Contract-first work may run in parallel only with non-overlapping write paths and frozen semantics. Each PR records its bounded contracts, domains, denied authorities, resources, rollback and stop conditions. A coordinator-issued envelope is required only at the coordination boundary that consumes it; it is not additional permission for ordinary authorized repository work.
+1. preserve existing scheduler/store;
+2. add schedule revision and deterministic occurrence identity;
+3. compose occurrence into existing durable TaskFlow run/events;
+4. promote the qualified step outbox into normal schema;
+5. replace ordinary queue-add with stable-id reconcile semantics;
+6. add bounded lost-reply and persisted-turn terminal reconciliation;
+7. propagate TaskFlow terminal state before occurrence terminal state;
+8. expose final-use-authorized external-effect driver seam;
+9. keep product activation/evidence gates independent.
 
-Source implementation completes only when the declared target root exists, public surfaces match registries, tests pass and exact-head plus merge-candidate evidence is current. Later planned packages may remain without invalidating documentation closure.
+No second TaskFlow engine or scheduler is admitted by this work package.
 
 ## 14. Activation, compatibility and retirement
 
-Activation composes a named product caller through registered ports and verifies authority, configuration, resource and failure behavior. Shadow and qualification callers are not production callers. Source-complete modules remain inactive until activation predecessors and evidence gates pass.
+The existing Agentd -> App Server automation activity now has a repository source composition path. This does not activate arbitrary external effects: each concrete effect owner/terminal observer still requires its own registered adapter, authority configuration, target-host qualification and acceptance evidence.
 
-Compatibility adapters are temporary. Retirement requires all named callers migrated, no old-path use, oracle parity where required, rehearsed rollback and independent acceptance. Retirement preserves historical evidence and durable-record interpretability.
+Compatibility adapters and the legacy `Submitted` tick can be retired only after all callers move to occurrence-terminal semantics. Historical v8 records remain interpretable during retirement.
 
 ## 15. Definition of module completion
 
-Documentation completion requires this guide, exact registry references and closed-world validation. Source completion requires code in the declared root and candidate tests. Composition requires a named caller. Qualification requires current exact-candidate evidence. Acceptance, selection, promotion and release are separate externally governed states.
-
-For `automation.taskflow`, this document grants no runtime, production, model, provider, tool, network, filesystem, secret, Matrix, fleet, acceptance, promotion or release authority.
-
-### Work-package execution envelopes
-
-#### `TASKFLOW-1-EXECUTION-BOUNDARY`
-
-- State: `planned`; priority: `2`; parallel class: `contract_coordinated`.
-- Owner/deputy: `automation-platform` / `agent-runtime`.
-- Allowed write paths:
-- `codex-rs/hepta-automation/**`
-- Development predecessors:
-- `P0.7B-B4-CALLSITE-PROOF`
-- Activation predecessors:
-- `P0.7B-B4-CALLSITE-PROOF`
-- Required deliverables:
-- `exact_source_identity`
-- `static_verification`
-- `focused_tests`
-- `clean_worktree`
-- Stop conditions:
-- `authority_violation`
-- `base_drift`
-- `claim_evidence_mismatch`
-- `cross_owner_write`
-- `unbounded_resource_or_retry`
+For this source candidate, repository completion means the causal state chain is present, bounded and connected to its existing owner caller; documentation/source mapping then must match exact candidate tests. Product completion additionally requires concrete provider composition where applicable, deployment qualification, independent acceptance and activation evidence. Promotion/release remain separate externally governed states.
 
 ## 16. V8.2 pre-coding implementation-readiness overlay
 
-The canonical readiness overlay binds `automation.taskflow` to primary lane `LANE-B-RUNTIME`. The following implementation-level specifications are mandatory alongside Sections 1–15:
+The canonical readiness overlay binds `automation.taskflow` to `LANE-B-RUNTIME` and continues to require:
 
 - [`RDY-SRC`](../../readiness/SOURCE_BASELINE_AND_BRANCH_POLICY.md)
 - [`RDY-PAR`](../../readiness/PARALLEL_DEVELOPMENT.md)
 - [`RDY-EMB`](../../readiness/EMBODIED_RUNTIME_EXECUTION.md)
 
-Owned readiness protocols:
-
-- None.
-
-Consumed readiness protocols:
+Consumed readiness protocol:
 
 - `ActuatorReconciliationReceiptV1`
 
-Ordinary authorized coding identifies the Git baseline, relevant contracts, owned paths, mandatory fixtures, deterministic fallback and rollback. A runtime coordinator admitting an envelope still verifies its current `CanonicalSourceReceiptV1`, frozen contract/readiness digest, expiry and zero authority delta; manually issuing an envelope is not a separate permission gate for ordinary repository work. This overlay does not change activation, acceptance, selection, promotion or release.
+This overlay changes no acceptance, activation, promotion or release authority.
 
 ## 17. Source implementation receipt
 
-This receipt records repository source bindings for the current documentation candidate. It is navigation evidence only; it does not claim product composition, deployment, or external effect authority.
+| Operation | Native source | Composition / observation |
+|---|---|---|
+| `register_schedule` | `codex-rs/hepta-automation/src/store.rs`, `src/lifecycle.rs` | durable revision/policy metadata |
+| `materialize_due` | `codex-rs/hepta-automation/src/scheduler.rs` | deterministic occurrence before provider contact |
+| `claim_occurrence` | `src/lifecycle.rs` | Agent generation/token + durable occurrence event |
+| `taskflow_run` | `src/automation_taskflow.rs`, `src/taskflow.rs` | deterministic durable run and transition ledger |
+| `step_outbox` | `src/taskflow_step.rs` | durable prepare/claim/observe/reconcile chain |
+| `queue_dispatch` | `codex-rs/hepta-agentd/src/automation.rs` | App Server `thread/queue/reconcile(AllowIfAbsent)` |
+| `queue_recovery` | `codex-rs/hepta-agentd/src/automation_recovery.rs` | `ReconcileOnly`, bounded persisted-turn terminal observer |
+| `run_recovery` | `src/taskflow_recovery.rs` | historical-step-first, projection-only re-fence |
+| `external_effect` | `src/authorized_effect.rs` | kernel final-use verification + registered driver + durable observation |
+| `occurrence_terminal` | `src/lifecycle.rs` | occurs after TaskFlow reconciliation; advances forbidden-overlap recurrence |
 
-| Operation | Native symbol | Source path | Tests |
-|---|---|---|---|
-| `register_schedule` | `pub async fn create_task(` | `codex-rs/hepta-automation/src/store.rs` | `codex-rs/hepta-automation/src/store.rs` |
-| `materialize_due` | `pub async fn tick(` | `codex-rs/hepta-automation/src/scheduler.rs` | `codex-rs/hepta-automation/src/scheduler.rs` |
-| `claim_occurrence` | `pub fn claim_occurrence(` | `codex-rs/hepta-automation/src/effect_executor.rs` | `codex-rs/hepta-automation/src/effect_executor_tests.rs` |
-| `execute_step` | `pub fn execute_step(` | `codex-rs/hepta-automation/src/effect_executor.rs` | `codex-rs/hepta-automation/src/effect_executor_tests.rs` |
-
-- Source identity: `sourceBase` is recorded in `IMPLEMENTATION_MAP.json`.
-- Consumer callsites and durable owner stores remain an explicit follow-up when not listed above.
-- Production implementation, runtime composition, independent acceptance, activation, and release remain false until their separate evidence gates pass.
+Current repository source work still does **not** claim calendar/IANA-timezone recurrence support, a concrete arbitrary downstream effect provider, deployment, independent acceptance, activation or release. Those claims remain false until their own evidence gates close.
