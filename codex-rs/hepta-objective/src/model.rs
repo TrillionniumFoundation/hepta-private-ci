@@ -157,6 +157,13 @@ pub struct ObjectiveSourceEnvelope {
     pub soft_preferences: Vec<SoftPreference>,
 }
 
+/// Owner-local deterministic compiled IR.
+///
+/// This is not the registered canonical `ObjectiveFunctionV1` wire projection.
+/// V1 admission currently lowers terminal/evidence/resource/risk semantics into
+/// these native rows and binds them into the semantic digests. A separate
+/// contract-reconciled projection is required before publishing a canonical
+/// `ObjectiveFunctionV1` to another module or durable owner store.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct ObjectiveFunction {
     pub request_id: StableId,
@@ -182,6 +189,11 @@ pub enum CompileDisposition {
 pub struct ObjectiveCompileReceipt {
     pub objective: ObjectiveFunction,
     pub disposition: CompileDisposition,
+    /// Legacy V1 compatibility field. Current compiler semantics treat any
+    /// requested+forbidden action as a typed conflict and return before a
+    /// successful receipt is built, so this vector is empty on every current
+    /// successful path. Keep it stable for V1 callers; remove or version it only
+    /// through a deliberate receipt-contract revision.
     pub removed_action_ids: Vec<StableId>,
 }
 
