@@ -25,7 +25,7 @@
       "operation": "decide_calibrated",
       "nativeSymbol": "decide_calibrated",
       "sourcePath": "codex-rs/hepta-intuition/src/calibrated.rs",
-      "state": "source_implemented_not_product_composed",
+      "state": "legacy_replay_source_implemented_not_product_composed",
       "authority": "none",
       "tests": [],
       "sourcePathExists": true,
@@ -37,17 +37,45 @@
       "operation": "decide_calibrated_v2",
       "nativeSymbol": "decide_calibrated_v2",
       "sourcePath": "codex-rs/hepta-intuition/src/calibrated_binding.rs",
-      "state": "source_implemented_not_product_composed",
+      "state": "source_implemented_not_product_composed_fail_closed_completeness",
       "authority": "none",
       "tests": [],
       "sourcePathExists": true,
       "designOperation": "decide_calibrated_v2",
       "mappingClass": "owner_native",
       "delegatedCallees": []
+    },
+    {
+      "operation": "decide_qualified",
+      "nativeSymbol": "decide_qualified",
+      "sourcePath": "codex-rs/hepta-intuition/src/qualified.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "external_qualification_authority_verifier_required",
+      "tests": [
+        "codex-rs/hepta-intuition/tests/frozen_qualification.rs",
+        "codex-rs/hepta-intuition/tests/fast_gate.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "decide_qualified",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "validate_learned_scorer_contract_v1",
+      "nativeSymbol": "validate_learned_scorer_contract_v1",
+      "sourcePath": "codex-rs/hepta-intuition/src/learned_scorer.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [],
+      "sourcePathExists": true,
+      "designOperation": "consume_upstream_learned_scores",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
     }
   ],
   "repositoryControlledGaps": [
-    "Bind every operation to an authenticated consumer callsite and owner store.",
+    "Compose decide_qualified with the repository signed-artifact authority and current qualification registry in a named product caller.",
+    "Replace the frozen reference model/data fixtures with independently retained production-candidate model and validation artifacts before changing production claims.",
     "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary."
   ],
   "externalEvidenceGates": [
