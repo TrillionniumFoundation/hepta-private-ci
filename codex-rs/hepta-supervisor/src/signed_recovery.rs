@@ -114,33 +114,9 @@ impl<D: ProcessDriver> Supervisor<D> {
                 ));
             }
 
-            // Recovery may have fenced and killed an adopted child after the
-            // registry already advertised a live lifecycle. Once the exact
-            // child/lease is absent, move only to the normal terminal failure
-            // state; never invent successful process readiness.
-            let lifecycle_record = match record.lifecycle.lifecycle {
-                AgentLifecycle::Starting | AgentLifecycle::Running => Some(
-                    supervisor.registry.compare_and_transition(
-                        agent_id,
-                        record.lifecycle.generation,
-                        AgentLifecycle::Failed,
-                    )?,
-                ),
-                AgentLifecycle::Draining => Some(supervisor.registry.compare_and_transition(
-                    agent_id,
-                    record.lifecycle.generation,
-                    AgentLifecycle::Stopped,
-                )?),
-                AgentLifecycle::Failed | AgentLifecycle::Stopped => None,
-            };
-            if let Some(next) = lifecycle_record {
-                slot.event(
-                    next.generation,
-                    crate::SupervisorEventKind::Lifecycle(next.lifecycle),
-                );
-            }
-
-            let record = supervisor.record(agent_id)?;
+            // Validate the requested terminal fact before performing even a
+            // lifecycle cleanup transition. A stale/wrong recovery request is
+            // therefore a pure rejection rather than a partial mutation.
             let source = ReleaseId::parse(intent.source_release.clone())?;
             let target = ReleaseId::parse(intent.target_release.clone())?;
             let current = record.release_state.current.as_ref().ok_or_else(|| {
@@ -169,6 +145,33 @@ impl<D: ProcessDriver> Supervisor<D> {
                 }
             };
 
+            // Recovery may have fenced and killed an adopted child after the
+            // registry already advertised a live lifecycle. Once the exact
+            // child/lease is absent, move only to the normal terminal failure
+            // state; never invent successful process readiness.
+            let lifecycle_record = match record.lifecycle.lifecycle {
+                AgentLifecycle::Starting | AgentLifecycle::Running => Some(
+                    supervisor.registry.compare_and_transition(
+                        agent_id,
+                        record.lifecycle.generation,
+                        AgentLifecycle::Failed,
+                    )?,
+                ),
+                AgentLifecycle::Draining => Some(supervisor.registry.compare_and_transition(
+                    agent_id,
+                    record.lifecycle.generation,
+                    AgentLifecycle::Stopped,
+                )?),
+                AgentLifecycle::Failed | AgentLifecycle::Stopped => None,
+            };
+            if let Some(next) = lifecycle_record {
+                slot.event(
+                    next.generation,
+                    crate::SupervisorEventKind::Lifecycle(next.lifecycle),
+                );
+            }
+
+            let record = supervisor.record(agent_id)?;
             let terminal = intent
                 .with_status(terminal_status)
                 .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
