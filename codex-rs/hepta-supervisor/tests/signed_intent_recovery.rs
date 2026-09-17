@@ -120,7 +120,8 @@ fn write_intent_raw(
 
 #[test]
 fn exact_digest_abort_terminalizes_unresolved_intent_without_inferring_success()
--> Result<(), SupervisorError> {
+-> Result<(), SupervisorError>
+{
     let fleet = fleet()?;
     let starting = fleet.registry.compare_and_transition(
         &fleet.agent_id,
