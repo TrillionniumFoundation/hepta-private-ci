@@ -112,6 +112,34 @@ fn identity_replay_is_idempotent_and_drift_conflicts() {
 }
 
 #[test]
+fn same_scoped_payload_cannot_be_registered_as_both_preference_and_utility() {
+    let objective = digest("objective");
+    let subject = digest("subject");
+    let projection = digest("shared-projection-payload");
+    let mut journal = NduProjectionJournalV1::new();
+
+    must(journal.append_projection(
+        NduProjectionKindV1::Preference,
+        digest("preference-id"),
+        objective,
+        subject,
+        projection,
+    ));
+    assert_eq!(
+        journal
+            .append_projection(
+                NduProjectionKindV1::Utility,
+                digest("utility-id"),
+                objective,
+                subject,
+                projection,
+            )
+            .expect_err("selection by digest cannot disambiguate projection kind"),
+        NduProjectionJournalError::ProjectionKindConflict
+    );
+}
+
+#[test]
 fn revocation_prevents_projection_resurrection() {
     let objective = digest("objective");
     let subject = digest("subject");
