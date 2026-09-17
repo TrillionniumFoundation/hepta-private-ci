@@ -1,12 +1,9 @@
 //! Crash-bounded durable writer candidate for NDU projection state.
 //!
-//! The host supplies a private local directory. This module owns only files
-//! inside that directory, takes an advisory single-writer lock, validates the
-//! complete journal before exposing it, writes a synchronized temporary image,
-//! atomically replaces the committed image, and synchronizes the parent
-//! directory on Unix before acknowledging a mutation. External enrollment,
-//! filesystem trust, backup transport, retention policy, activation and release
-//! remain host/governance responsibilities.
+//! The V1 durability profile is Unix-only because it requires atomic replacement
+//! of an existing path plus parent-directory synchronization before success is
+//! acknowledged. Other platforms fail closed until an equivalent reviewed
+//! persistence profile exists.
 
 use std::error::Error as StdError;
 use std::fmt;
@@ -34,6 +31,7 @@ const MAX_BACKUP_BYTES: usize = 12 + 4096 * (8 + 1 + 32 + 32 + 32 + 32 + 32 + 32
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum NduProjectionStoreError {
+    UnsupportedPlatform,
     Busy,
     NotDirectory,
     NotRegular,
@@ -79,8 +77,13 @@ pub struct NduProjectionStoreV1 {
 
 impl NduProjectionStoreV1 {
     /// Opens or initializes the V1 store. The directory must already exist so
-    /// repository code cannot silently widen filesystem authority.
+    /// repository code cannot silently widen filesystem authority. V1 is
+    /// deliberately unavailable on non-Unix targets rather than silently using
+    /// weaker replacement or directory-durability semantics.
     pub fn open(root: impl AsRef<Path>) -> Result<Self, NduProjectionStoreError> {
+        if !cfg!(unix) {
+            return Err(NduProjectionStoreError::UnsupportedPlatform);
+        }
         let root = root.as_ref().to_path_buf();
         let metadata = fs::metadata(&root)?;
         if !metadata.is_dir() {
@@ -266,6 +269,9 @@ fn persist_image(
     root: &Path,
     journal: &NduProjectionJournalV1,
 ) -> Result<(), NduProjectionStoreError> {
+    if !cfg!(unix) {
+        return Err(NduProjectionStoreError::UnsupportedPlatform);
+    }
     let temp_path = root.join(TEMP_FILE);
     let journal_path = root.join(JOURNAL_FILE);
     let bytes = journal.export_bytes();
@@ -309,9 +315,10 @@ fn sync_parent(root: &Path) -> io::Result<()> {
 
 #[cfg(not(unix))]
 fn sync_parent(_root: &Path) -> io::Result<()> {
-    // The V1 repository qualification profile is Unix. Other platforms must
-    // supply equivalent directory-durability evidence before activation.
-    Ok(())
+    Err(io::Error::new(
+        io::ErrorKind::Unsupported,
+        "NDU durable writer V1 requires Unix directory durability semantics",
+    ))
 }
 
 #[cfg(test)]
