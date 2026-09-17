@@ -19,3 +19,6 @@ codex-hepta-prompt-registry = { path = "../hepta-prompt-registry" }
 codex-hepta-types = { path = "../hepta-types" }
 serde = { workspace = true, features = ["derive"] }
 serde_json = { workspace = true }
+
+[dev-dependencies]
+ed25519-dalek = { workspace = true }
