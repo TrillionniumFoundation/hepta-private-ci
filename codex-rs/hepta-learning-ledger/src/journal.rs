@@ -24,6 +24,8 @@ pub trait DurableLearningJournal: sealed::Journal {
     ) -> Result<AppendReceipt, DurableLedgerError>;
 
     fn anchor(&self) -> Result<LedgerAnchor, DurableLedgerError>;
+
+    fn contains_anchor(&self, anchor: LedgerAnchor) -> Result<bool, DurableLedgerError>;
 }
 
 impl DurableLearningJournal for DurableLedger {
@@ -48,6 +50,16 @@ impl DurableLearningJournal for DurableLedger {
             },
         ))
     }
+
+    fn contains_anchor(&self, anchor: LedgerAnchor) -> Result<bool, DurableLedgerError> {
+        if anchor.sequence == 0 {
+            return Ok(anchor.chain_digest.is_zero());
+        }
+        let records = self.records()?;
+        Ok(records
+            .get((anchor.sequence - 1) as usize)
+            .is_some_and(|record| record.chain_digest == anchor.chain_digest))
+    }
 }
 
 impl DurableLearningJournal for SegmentedLedger {
@@ -61,5 +73,16 @@ impl DurableLearningJournal for SegmentedLedger {
 
     fn anchor(&self) -> Result<LedgerAnchor, DurableLedgerError> {
         SegmentedLedger::anchor(self)
+    }
+
+    fn contains_anchor(&self, anchor: LedgerAnchor) -> Result<bool, DurableLedgerError> {
+        if anchor.sequence == 0 {
+            return Ok(anchor.chain_digest.is_zero());
+        }
+        let snapshot = SegmentedLedger::snapshot(self)?;
+        Ok(snapshot
+            .records()
+            .get((anchor.sequence - 1) as usize)
+            .is_some_and(|record| record.chain_digest == anchor.chain_digest))
     }
 }
