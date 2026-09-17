@@ -68,7 +68,6 @@ mod tests {
     use crate::MatrixAdoptSpec;
     use crate::MatrixSpawnSpec;
     use crate::ProcessDriverError;
-    use crate::ProcessIdentity;
     use crate::ProcessObservation;
     use crate::SpawnSpec;
     use crate::SpawnedProcess;
@@ -78,10 +77,6 @@ mod tests {
     struct NoopProcess;
 
     impl ManagedProcess for NoopProcess {
-        fn identity(&self) -> &ProcessIdentity {
-            panic!("no process is created in sliced-tick qualification")
-        }
-
         fn poll(&mut self, _max_logs: usize) -> Result<ProcessObservation, ProcessDriverError> {
             panic!("no process is created in sliced-tick qualification")
         }
