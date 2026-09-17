@@ -486,10 +486,7 @@ impl SegmentedLedger {
             let receipt = full
                 .append(expected.event.clone())
                 .map_err(DurableLedgerError::Semantic)?;
-            let actual = full
-                .records()
-                .last()
-                .ok_or(DurableLedgerError::Corrupt)?;
+            let actual = full.records().last().ok_or(DurableLedgerError::Corrupt)?;
             if actual != expected || receipt.disposition != AppendDisposition::Appended {
                 return Err(DurableLedgerError::Corrupt);
             }
@@ -610,12 +607,7 @@ impl SegmentedLedger {
         Ok(next)
     }
 
-    fn publish_successor(
-        &mut self,
-        next: LockedFile,
-        next_index: usize,
-        expected: LedgerAnchor,
-    ) {
+    fn publish_successor(&mut self, next: LockedFile, next_index: usize, expected: LedgerAnchor) {
         let current_range = LedgerArchiveRange {
             segment: self.index,
             predecessor: self.predecessor,
@@ -671,10 +663,11 @@ pub fn inspect_ledger_segments(
 }
 
 pub(crate) fn current_anchor(core: &LearningLedger) -> LedgerAnchor {
-    core.head_sequence().map_or_else(empty_anchor, |sequence| LedgerAnchor {
-        sequence: sequence.get(),
-        chain_digest: core.head_digest(),
-    })
+    core.head_sequence()
+        .map_or_else(empty_anchor, |sequence| LedgerAnchor {
+            sequence: sequence.get(),
+            chain_digest: core.head_digest(),
+        })
 }
 
 fn empty_anchor() -> LedgerAnchor {

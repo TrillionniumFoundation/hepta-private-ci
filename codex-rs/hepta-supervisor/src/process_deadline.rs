@@ -143,12 +143,9 @@ mod tests {
             killed: false,
             kill_calls: 0,
         };
-        let policy = ProcessDeadlinePolicyV1::new(
-            Duration::from_millis(3),
-            Duration::from_millis(1),
-            8,
-        )
-        .expect("policy");
+        let policy =
+            ProcessDeadlinePolicyV1::new(Duration::from_millis(3), Duration::from_millis(1), 8)
+                .expect("policy");
 
         let outcome = enforce_process_deadline_v1(&mut child, policy).expect("deadline outcome");
         assert_eq!(outcome, ProcessDeadlineOutcomeV1::KillRequestedAtDeadline);
@@ -163,11 +160,7 @@ mod tests {
             Err(ProcessDeadlinePolicyErrorV1::ZeroWallTime)
         );
         assert_eq!(
-            ProcessDeadlinePolicyV1::new(
-                Duration::from_millis(1),
-                Duration::from_millis(2),
-                1,
-            ),
+            ProcessDeadlinePolicyV1::new(Duration::from_millis(1), Duration::from_millis(2), 1,),
             Err(ProcessDeadlinePolicyErrorV1::InvalidPollInterval)
         );
     }

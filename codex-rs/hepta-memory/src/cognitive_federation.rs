@@ -983,10 +983,7 @@ impl FederatedRecallSet {
     ) -> (Vec<FederatedMemoryReader>, bool) {
         let mut discovery_complete = true;
         let mut readers = Vec::new();
-        for layouts in self
-            .owner_layouts
-            .chunks(MAX_FEDERATION_CONCURRENT_SOURCES)
-        {
+        for layouts in self.owner_layouts.chunks(MAX_FEDERATION_CONCURRENT_SOURCES) {
             let (first, second, third, fourth) = tokio::join!(
                 discover_source(layouts.first(), &self.consumer_agent_id, now_unix_seconds),
                 discover_source(layouts.get(1), &self.consumer_agent_id, now_unix_seconds),

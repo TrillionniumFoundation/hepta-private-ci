@@ -218,11 +218,14 @@ impl LearningLedger {
     /// Current committed sequence without cloning historical records.
     #[must_use]
     pub fn head_sequence(&self) -> Option<LogicalSequence> {
-        self.records.last().map(|record| record.sequence).or_else(|| {
-            LogicalSequence::new(self.archived_through_sequence)
-                .ok()
-                .filter(|_| self.archived_through_sequence != 0)
-        })
+        self.records
+            .last()
+            .map(|record| record.sequence)
+            .or_else(|| {
+                LogicalSequence::new(self.archived_through_sequence)
+                    .ok()
+                    .filter(|_| self.archived_through_sequence != 0)
+            })
     }
 
     /// Current causal chain head without cloning historical records.

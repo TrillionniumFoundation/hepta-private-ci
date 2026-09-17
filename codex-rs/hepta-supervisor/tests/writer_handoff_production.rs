@@ -106,15 +106,10 @@ async fn recovered_handoff_physically_fences_old_writer_before_successor_admissi
     let owner = store.owner_agent_id().clone();
     let lease_id = "production:handoff:memory";
     let old_authority = authority(owner.clone(), 4, "old");
-    let old = ProductionDurableWriter::open(
-        store.clone(),
-        old_authority,
-        &AllowVerifier,
-        lease_id,
-        1,
-    )
-    .await
-    .expect("old writer");
+    let old =
+        ProductionDurableWriter::open(store.clone(), old_authority, &AllowVerifier, lease_id, 1)
+            .await
+            .expect("old writer");
 
     old.admit("occurrence:before-handoff", "memory.write", "payload-v1")
         .await
@@ -177,11 +172,7 @@ async fn recovered_handoff_physically_fences_old_writer_before_successor_admissi
     assert!(!recovered.checkpoint().new_writer_admission_open());
 
     recovered
-        .advance(step(
-            WriterHandoffPhaseV1::Snapshotted,
-            "snapshot",
-            None,
-        ))
+        .advance(step(WriterHandoffPhaseV1::Snapshotted, "snapshot", None))
         .expect("snapshot");
     recovered
         .advance(step(WriterHandoffPhaseV1::Migrated, "migrated", None))
