@@ -9,6 +9,7 @@
 
 mod causal_v2;
 mod dataset_receipt_v3;
+mod decision_v1;
 mod durable;
 mod durable_codec;
 mod durable_lock;
@@ -41,6 +42,15 @@ pub use dataset_receipt_v3::DatasetReceiptError;
 pub use dataset_receipt_v3::DatasetSnapshotReceiptV3;
 pub use dataset_receipt_v3::freeze_dataset_receipt_v3;
 pub use dataset_receipt_v3::verify_dataset_snapshot_receipt_v3;
+pub use decision_v1::LearningDecisionV1;
+pub use decision_v1::LearningDecisionV1Error;
+pub use decision_v1::PromptCausalSupportV1;
+pub use decision_v1::PromptLearningAppendReceiptV1;
+pub use decision_v1::PromptLearningDecisionArtifactV1;
+pub use decision_v1::PromptLearningDecisionRequestV1;
+pub use decision_v1::append_prompt_learning_decision_v1;
+pub use decision_v1::canonical_prompt_action_set_digest;
+pub use decision_v1::prepare_prompt_learning_decision_v1;
 pub use durable::DurableLedger;
 pub use durable::DurableLedgerError;
 pub use durable::LedgerAnchor;

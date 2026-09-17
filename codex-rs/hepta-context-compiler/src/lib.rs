@@ -14,12 +14,15 @@ use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
 
 mod candidate_bound;
+mod canonical_v1;
 mod requirements;
 mod v2;
 
 pub use candidate_bound::CandidateBoundContextCompilationReceipt;
 pub use candidate_bound::compile_candidate_bound;
 pub use candidate_bound::compile_candidate_bound_with_requirements;
+pub use canonical_v1::ContextCanonicalV1Error;
+pub use canonical_v1::ContextCompilationReceiptV1;
 pub use requirements::CompilationRequirementsV1;
 pub use requirements::MandatoryContextGroup;
 pub use requirements::compile_with_requirements;
