@@ -48,9 +48,9 @@ Free text is evidence for intent extraction, never the final authority represent
 
 `ObjectiveConstraintComparatorV1` preserves protocol spellings `eq`, `ne`, `lt`, `lte`, `gt`, `gte`, `in` and `not_in` so unknown/unrepresentable semantics fail closed instead of being rewritten. The V1 row has only `bound_q32`; it has no set payload. The native V1 adapter therefore accepts only `eq`, `lte` and `gte`. `ne`, strict inequalities, `in` and `not_in` return `UnsupportedComparator`. A terminal hard constraint remains unrepresentable by the native `Constraint` type and returns `TerminalConstraintUnsupported`.
 
-The owner-local native `ObjectiveFunction` deliberately remains smaller than the target canonical `ObjectiveFunctionV1` wire contract. Success predicates, terminal conditions and evidence requirements are currently lowered into one native success-predicate vector; resource/risk fields are lowered into native constraints; action allow/forbid semantics are lowered into the native action grammar. Their meaning remains digest-bound, but this lowering is **not** a canonical wire projection. The crate now exports the Rust name `ObjectiveCompileReceiptV1` as a stable alias for the native receipt; an exact canonical `ObjectiveFunctionV1` wire adapter is still a product-integration gap and must not be inferred from that alias.
+The owner-local native `ObjectiveFunction` deliberately remains smaller than the target canonical `ObjectiveFunctionV1` wire contract. Success predicates, terminal conditions and evidence requirements are currently lowered into one native success-predicate vector; resource/risk fields are lowered into native constraints; action allow/forbid semantics are lowered into the native action grammar. Their meaning remains digest-bound, but this lowering is **not** a canonical wire projection. The crate exports the Rust name `ObjectiveCompileReceiptV1` as a stable alias for the native receipt; an exact canonical `ObjectiveFunctionV1` wire adapter remains a product-integration gap and must not be inferred from that alias.
 
-Admission profiles are bounded to 256 constraint mappings, 128 predicate mappings, 128 action mappings, 64 soft dimensions, 128 evidence mappings, 64 abstention rules and 256 KiB of encoded profile semantics; risk and rollback levels must be monotone. V1 source bounds are intentionally tighter where admission adds native rows:
+Admission profiles are bounded to 256 constraint mappings, 128 predicate mappings, 128 action mappings, 64 soft dimensions, 128 evidence mappings, 64 abstention rules and a nominal 256 KiB profile-size guard. V1 source bounds are intentionally tighter where admission adds native rows:
 
 ```text
 source hard constraints: <=246
@@ -63,7 +63,7 @@ caller legalActionClasses when abstain is implicit: 0..=127
 compiled legal actions including intrinsic abstain: <=128
 ```
 
-These are semantic-capacity bounds, not post-hoc truncation rules.
+These are semantic-capacity bounds, not post-hoc truncation rules. The canonical readiness protocol registry must match these enforced source bounds, or the source protocol must be versioned, before this candidate may be merged as a coherent V1 contract.
 
 ## 3. Constraint precedence and conflict resolution
 
@@ -119,7 +119,7 @@ emit deny-all admission receipt and compile/conflict outcome
 
 Compilation is a pure function of the authenticated source envelope, selected admission profile and registered schema revisions. Retry with identical inputs yields identical semantic bytes. Reuse of a durable request/revision identity with different semantics is handled by the owning durable caller as conflict; the stateless compiler does not invent persistence.
 
-## 5. State machine, persistence and current product boundary
+## 5. State machine and persistence
 
 The compiler owns no domain-fact store. The target product contract requires the owning caller to persist the canonical `ObjectiveFunctionV1`, `RunStartSnapshotV1` and admission/compile receipts atomically enough that no run can observe an objective revision without its matching run-start snapshot.
 
@@ -188,6 +188,8 @@ Pilot ceilings for bounded V1 admission are `<=246` source hard constraints plus
 
 The p95/p99 targets apply only to a named path, fixture and host. A normal-path latency measurement cannot be reused as a conflict-extraction measurement. No network or synchronous central RPC is permitted on the deterministic compiler path.
 
+The current `profile_encoded_size()` guard is owner-local manual byte accounting rather than measurement of an exact canonical profile wire encoding. If 256 KiB remains a protocol-hard profile boundary, the exact canonical encoding must be defined and its actual byte length enforced before that boundary is called canonical.
+
 ## 9. Golden fixtures and tests
 
 - `OBJ-GV-001`: reordered equivalent input produces identical objective semantics.
@@ -202,9 +204,9 @@ The p95/p99 targets apply only to a named path, fixture and host. A normal-path 
 - `OBJ-GV-010`: unsupported or exhausted feasibility never weakens the original legal set.
 - `OBJ-GV-011`: 247 source constraints reject structurally because admission must reserve ten generated hard-constraint slots.
 - `OBJ-GV-012`: individually valid success/terminal/evidence arrays reject when their native aggregate exceeds 128.
-- `OBJ-GV-013`: a profile-bound contradictory scalar pair returns the same inclusion-minimal typed conflict at the public admission boundary.
+- `OBJ-GV-013`: a profile-bound contradictory scalar pair returns an inclusion-minimal typed conflict at the public admission boundary.
 
-Tests cover structural decoding, canonical ordering, unit conversion, conflict minimization, idempotent retry, stale/future time, deadline handling, source authentication, resource overflow, aggregate hostile bounds, action-slot reservation, zero-action abstention, redaction and permutation invariance.
+Tests cover structural decoding, canonical ordering, unit conversion, conflict minimization, stale/future time, deadline handling, source authentication, resource overflow, aggregate hostile bounds, action-slot reservation, zero-action abstention, redaction and retry classification.
 
 ## 10. Implementation sequence and remaining architecture work
 
@@ -212,15 +214,16 @@ Implemented/maintained V1 sequence: strict JSON decoder; owner-local source type
 
 Remaining work must be kept separate instead of implied by solver capability:
 
-1. define a versioned source grammar that actually carries finite-enum set payloads and positive action implications before routing those domains from source to the general solver;
-2. implement an exact canonical `ObjectiveFunctionV1` wire projection rather than treating native lowering as the wire shape;
-3. bind the operations to a named authenticated production consumer and owner store;
-4. atomically persist/reconcile `ObjectiveFunctionV1 + RunStartSnapshotV1` with admission/compile receipts;
-5. replace manual profile-size estimation with an enforced byte count over the exact canonical profile encoding if the 256 KiB profile limit remains protocol-hard;
-6. remove or explicitly deprecate the success-path `removed_action_ids` field if no future successful disposition can populate it;
-7. complete exact-head, synthetic-merge and independent acceptance qualification before source completion/activation is claimed.
+1. align `PROTOCOLS.json` and any generated protocol schema projection with the enforced V1 source/aggregate bounds, or introduce a versioned source protocol before merge;
+2. define a versioned source grammar that actually carries finite-enum set payloads and positive action implications before routing those domains from source to the general solver;
+3. implement an exact canonical `ObjectiveFunctionV1` wire projection rather than treating native lowering as the wire shape;
+4. bind the operations to a named authenticated production consumer and owner store;
+5. atomically persist/reconcile `ObjectiveFunctionV1 + RunStartSnapshotV1` with admission/compile receipts;
+6. replace manual profile-size estimation with an exact canonical encoded-byte bound if 256 KiB remains protocol-hard;
+7. remove or explicitly deprecate the success-path `removed_action_ids` field if no future successful disposition can populate it;
+8. complete exact-head, synthetic-merge and independent acceptance qualification before source completion/activation is claimed.
 
-Coding entry still requires a current `CanonicalSourceReceiptV1`, frozen contract/readiness/error-registry digests, a bounded work-package envelope, mandatory fixtures, deterministic fallback and zero authority delta. Source completion does not establish activation, independent acceptance, promotion or release.
+Coding entry still requires a current `CanonicalSourceReceiptV1`, frozen contract/readiness/error-registry digests, bounded work-package scope, mandatory fixtures, deterministic fallback and zero authority delta. Source completion does not establish activation, independent acceptance, promotion or release.
 
 ## 11. Coding-entry checklist
 
@@ -229,22 +232,23 @@ Coding entry still requires a current `CanonicalSourceReceiptV1`, frozen contrac
 - every V1-representable source semantic maps without truncation or guessing;
 - unsupported V1 comparators fail closed instead of being described as implemented rich wire semantics;
 - intrinsic `abstain`, hard-feasibility, aggregate-bound and conflict fixtures pass;
+- `PROTOCOLS.json`/schema projections match the enforced source contract or the protocol is versioned before merge;
 - outputs remain deny-all and the durable caller boundary is named rather than inferred;
 - canonical wire projection and production snapshot persistence are proven separately;
 - exact-head and synthetic-merge checks pass before source completion is claimed.
 
 ## Appendix A. Closed gap and protocol mapping
 
-This appendix is a closed-world traceability projection. Each identifier remains normative in `READINESS.json`, `PROTOCOLS.json`, `GAPS.json` or `OBJECTIVE_ERRORS.json`; this Markdown file does not redefine the registry record.
+This appendix is a traceability projection. Normative identifiers remain in `READINESS.json`, `PROTOCOLS.json`, `GAPS.json` and `OBJECTIVE_ERRORS.json`; this Markdown file does not override a registry record.
 
-Protocols:
+Readiness protocols bound to this work include:
 
 - `ObjectiveSourceEnvelopeV1`
 - `ObjectiveConstraintSetV1`
 - `ObjectiveConflictReceiptV1`
 - `ObjectiveCompileReceiptV1`
 
-Closed documentation gaps:
+Documentation/readiness gap identifiers already represented in the canonical readiness registries include:
 
 - `RDY-GAP-OBJ-001`
 - `RDY-GAP-OBJ-002`
@@ -253,18 +257,4 @@ Closed documentation gaps:
 - `RDY-GAP-OBJ-005`
 - `RDY-GAP-OBJ-006`
 
-Bound work packages:
-
-- `C1-PROMPTED-MEMORY-RETRIEVAL-RANK`
-- `DOC-3E-PRECODING-READINESS-CLOSED-WORLD`
-- `INT-2-AGENTD-CODEX-COMPOSITION`
-- `INTELLIGENCE-A0-Q0.63`
-- `LRN-0-CAUSAL-LEARNING-CONTRACTS`
-- `LRN-1-DURABLE-EPISODE-LEDGER`
-- `OBJ-0-OBJECTIVE-CONTRACTS`
-- `OBJ-1-OBJECTIVE-COMPILER`
-- `P0.7B-B0-VERIFIED-USE`
-- `P0.7B-B2-TOOL-NET-FS`
-- `P0.7B-B3-BOUNDARIES`
-- `P0.7B-B4-CALLSITE-PROOF`
-- `P0.8A-AST-RATCHET`
+Bound work packages include `OBJ-0-OBJECTIVE-CONTRACTS` and `OBJ-1-OBJECTIVE-COMPILER`. This candidate does not convert their documentation closure into production caller, independent acceptance, activation, promotion or release authority.
