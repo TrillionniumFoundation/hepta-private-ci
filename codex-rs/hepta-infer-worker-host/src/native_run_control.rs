@@ -16,6 +16,8 @@ use super::NativeRunOutput;
 use super::NativeRunStatus;
 use super::Result;
 use crate::runtime_codex::RuntimeCodexRun;
+use crate::runtime_codex::TURN_START_OVERLOADED;
+use crate::runtime_codex::TURN_START_REJECTED;
 use crate::runtime_codex::bind_runtime_codex_run;
 
 /// Explicit local capacity policy; the first request pins the journal's limit.
@@ -125,7 +127,11 @@ impl AppServerModelDriver {
                 if !output.terminal_observed && cancellation.is_cancelled() {
                     control.cancel_native(&request_id)?;
                 }
-                control.settle_native(&request_id, output.clone())?;
+                if is_explicit_turn_start_rejection(&output) {
+                    control.reject_native_after_dispatch(&request_id, output.clone())?;
+                } else {
+                    control.settle_native(&request_id, output.clone())?;
+                }
                 Ok(output)
             }
             Err(error) => {
@@ -141,6 +147,15 @@ impl AppServerModelDriver {
             }
         }
     }
+}
+
+fn is_explicit_turn_start_rejection(output: &NativeRunOutput) -> bool {
+    output.turn_id.is_empty()
+        && !output.terminal_observed
+        && matches!(
+            output.stop_reason.as_deref(),
+            Some(TURN_START_REJECTED | TURN_START_OVERLOADED)
+        )
 }
 
 fn unix_time_ms() -> Result<u64> {
