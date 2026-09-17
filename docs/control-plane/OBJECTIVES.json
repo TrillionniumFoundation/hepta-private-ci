@@ -81,22 +81,31 @@
   ],
   "objectiveFunctionContract": {
     "schema": "ObjectiveFunctionV1",
-    "immutableCore": [
+    "wireRegistry": "docs/contracts/PROTOCOL_SCHEMAS.json",
+    "wireFields": [
+      "objectiveId",
+      "requestDigest",
       "principalScope",
       "successPredicates",
       "terminalConditions",
       "hardConstraints",
-      "evidenceRequirements",
-      "allowedActionClasses",
-      "forbiddenActionClasses"
-    ],
-    "boundedAdaptiveSurface": [
       "softUtilityDimensions",
-      "resourceAllocation",
-      "explorationBudget",
-      "evidenceEffort",
-      "abstentionThreshold"
+      "resourceEndowment",
+      "deadlineUnixMs",
+      "revision"
     ],
+    "sourceSemanticsLoweredIntoWire": {
+      "evidenceRequirements": "compiled_into_successPredicates_and_hardConstraints_and_bound_by_requestDigest",
+      "allowedActionClasses": "admission_and_compile_constraint_not_a_top_level_ObjectiveFunctionV1_field",
+      "forbiddenActionClasses": "admission_and_compile_constraint_not_a_top_level_ObjectiveFunctionV1_field",
+      "resourceAllocation": "represented_by_resourceEndowment_and_downstream_plan_receipts",
+      "explorationBudget": "represented_by_softUtilityDimensions_and_downstream_policy_receipts",
+      "evidenceEffort": "represented_by_successPredicates_hardConstraints_and_downstream_evidence_receipts",
+      "abstentionThreshold": "represented_by_compiled_policy_semantics_and_downstream_decision_receipts"
+    },
+    "ownerLocalCompiledIr": "codex_hepta_objective::ObjectiveFunction",
+    "ownerLocalIrIsCanonicalWire": false,
+    "projectionPolicy": "publish_only_the_registered_ObjectiveFunctionV1_field_set; preserve additional source semantics through compiled rows and bound receipts rather than inventing new wire fields",
     "ambiguityPolicy": "emit_bounded_interpretation_set_or_request_clarification",
     "feasibilityPolicy": "do_not_lower_success_predicate_to_claim_success"
   },
