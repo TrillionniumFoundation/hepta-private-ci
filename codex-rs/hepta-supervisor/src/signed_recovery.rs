@@ -18,8 +18,9 @@ use crate::signed_intent::write_intent;
 
 impl<D: ProcessDriver> Supervisor<D> {
     /// Any unresolved externally-authorized mutation freezes every ordinary
-    /// lifecycle mutation in the daemon. Read-only status/inspection and the
-    /// explicit recovery ceremony remain available.
+    /// lifecycle mutation in the daemon and in direct library callers.
+    /// Read-only status/inspection and the explicit recovery ceremony remain
+    /// available.
     pub(crate) fn has_unresolved_signed_intents(&self) -> bool {
         !self.recovery_blocked.is_empty()
             || self.slots.values().any(|slot| {
@@ -27,6 +28,24 @@ impl<D: ProcessDriver> Supervisor<D> {
                     .as_ref()
                     .is_some_and(|intent| intent.status.is_unresolved())
             })
+    }
+
+    pub(crate) fn ensure_mutations_unfrozen(&self) -> Result<(), SupervisorError> {
+        if let Some(agent_id) = self.recovery_blocked.iter().next() {
+            return Err(SupervisorError::SignedIntentRecoveryRequired(
+                agent_id.clone(),
+            ));
+        }
+        if let Some((agent_id, _)) = self.slots.iter().find(|(_, slot)| {
+            slot.signed_intent
+                .as_ref()
+                .is_some_and(|intent| intent.status.is_unresolved())
+        }) {
+            return Err(SupervisorError::SignedIntentRecoveryRequired(
+                agent_id.clone(),
+            ));
+        }
+        Ok(())
     }
 
     pub(crate) fn inspect_signed_intent(
