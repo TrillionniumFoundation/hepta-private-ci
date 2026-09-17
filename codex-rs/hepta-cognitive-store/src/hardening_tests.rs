@@ -206,7 +206,7 @@ fn forget_succeeds_after_ordinary_admission_capacity_is_full() {
 }
 
 #[test]
-fn intent_journal_is_bounded_even_for_unchanged_retries_with_new_ids() {
+fn ordinary_intent_journal_is_bounded_but_forget_keeps_terminal_reserve() {
     let mut store = store(1);
     let candidate = candidate(
         "memory:1",
@@ -242,11 +242,35 @@ fn intent_journal_is_bounded_even_for_unchanged_retries_with_new_ids() {
         result,
         Err(CognitiveStoreV2Error::Contract(
             LaneCContractError::LimitExceeded {
-                field: "cognitive_store_intent_journal",
+                field: "cognitive_store_ordinary_intent_journal",
                 actual: 5,
                 maximum: 4,
             }
         ))
+    );
+
+    store
+        .forget(
+            &Verifier,
+            ForgetIntentV2 {
+                intent_id: id("forget:reserved"),
+                record_id: id("memory:1"),
+                expected_snapshot: store.snapshot_key().clone(),
+                writer_fence_digest: digest("writer-fence"),
+                authorization_digest: digest("authorization"),
+                reason_digest: digest("privacy-delete"),
+            },
+        )
+        .unwrap_or_else(|error| panic!("terminal journal reserve: {error}"));
+
+    let image = store
+        .export_image()
+        .unwrap_or_else(|error| panic!("export after journal saturation: {error}"));
+    let reopened = AdmittedCognitiveStoreV2::reopen(image, 1)
+        .unwrap_or_else(|error| panic!("reopen after journal saturation: {error}"));
+    assert_eq!(
+        reopened.current_head(&id("memory:1")).expect("head").state,
+        RecordState::Tombstone
     );
 }
 
