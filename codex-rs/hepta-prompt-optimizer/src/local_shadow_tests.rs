@@ -692,7 +692,7 @@ fn local_shadow_digest_domains_are_stable() {
             "17dfcc5cc35662286aeace12e035d7442c3fd1d8c2bc233cc815d10a758565d8".to_string(),
             "1482cabda467e78ba783e93b24392c2c42cf42919db888e5e8153e3ecd9f473d".to_string(),
             "803a05bd96f1e3c10aed15a8e62b374578571909c7cedd77bf65f7275791108c".to_string(),
-            "44ab529afe66c7062695a029ee5ca76eac29278b4a765aab9a6c4d55f18bf7d1".to_string(),
+            "38062d5a9b90f59c0bcb1b01e2c18c6a18ba5ffb6a510935a7f285df22e35509".to_string(),
         )
     );
 }

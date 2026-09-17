@@ -72,10 +72,13 @@ Non-goals include becoming a general state store, bypassing the Codex execution 
 
 The bounded components are:
 
-- `snapshot loader`
-- `candidate builder`
-- `bounded solver`
-- `decision receipt emitter`
+- `registry/model snapshot validator`
+- `candidate enumerator`
+- `causal and resource-cost pricer`
+- `interaction and requirement-graph validator`
+- `bounded requirement-closure portfolio solver`
+- `registered-boundary exercise validator`
+- `V1 receipt and companion audit emitter`
 
 Ingress validates identity, version, size, scope and revision before domain logic. The deterministic core receives typed values and is testable without network, filesystem or process-global state unless the module owns that boundary. State-bearing components use one transaction boundary per logical mutation. Publication occurs only after invariants and lineage checks pass.
 
@@ -128,6 +131,8 @@ Every producer validates output before publication and binds semantic fields int
 
 Rust types and canonical JSON represent identical semantics. Tests cover round trips, maximum bounds, missing fields, unknown fields, invalid enums, canonical ordering and digest stability. Error mapping preserves rejected, unavailable, timed out, indeterminate, quarantined and terminally failed outcomes.
 
+The native policy surface in `codex-rs/hepta-prompt-optimizer/src/policy.rs` now defines the four registered V1 receipt shapes and the `enumerate_factors`, `price_factors`, `select_portfolio` and `exercise` entrypoints. Information that is intentionally outside the registered V1 schemas—candidate completeness, omitted count, pricing decomposition, solver/optimality disclosure, binding digests and per-candidate disposition—is carried in companion authority-free audit wrappers rather than injected as unknown critical fields.
+
 ## 6. Data authority, persistence and migrations
 
 Owned authoritative or rebuildable domains:
@@ -175,9 +180,9 @@ Negative tests cover denied capabilities, cross-owner writes, stale or revoked g
 
 ## 10. Performance, capacity and hot-path policy
 
-The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/prompt.optimizer.md) specifies this module's algorithm, pilot ceilings and capacity fixtures. Those target ceilings are not measurements and must not be reported as enforcement of an unimplemented API. Current native limits belong to [codex-rs/hepta-prompt-optimizer/src/lib.rs](../../../codex-rs/hepta-prompt-optimizer/src/lib.rs) and the linked implementation components.
+The registered policy surface enforces the pilot structural ceilings of 128 factors, 512 explicit interaction edges, 512 hard-constraint edges, 16 selected factors and a 1,000,000-token local safety ceiling. Multi-factor selection does not require a complete `C(n,2)` graph: missing pair effects are either rejected as unknown or treated as zero only under an explicit evidence-bound `SupportedZero` policy. The strict `calculate_local_shadow` compatibility surface deliberately retains complete-pair fail-closed semantics and therefore reaches at most 32 factor candidates in multi-select mode under its 512-edge ceiling.
 
-[Shared performance and capacity requirements](../README.md#shared-performance-and-capacity) define the measurement/overload obligations for a selected host.
+These ceilings are enforcement limits, not latency or throughput measurements. [Shared performance and capacity requirements](../README.md#shared-performance-and-capacity) define the measurement/overload obligations for a selected host.
 
 ## 11. Observability and operations
 
@@ -187,6 +192,7 @@ Current operating and state-format references:
 
 - [codex-rs/hepta-prompt-optimizer/src/lib.rs](../../../codex-rs/hepta-prompt-optimizer/src/lib.rs).
 - [codex-rs/hepta-prompt-optimizer/src/local_shadow.rs](../../../codex-rs/hepta-prompt-optimizer/src/local_shadow.rs).
+- [codex-rs/hepta-prompt-optimizer/src/policy.rs](../../../codex-rs/hepta-prompt-optimizer/src/policy.rs).
 
 [Shared observability and operations requirements](../README.md#shared-observability-and-operations) specify safe events and alert classes; concrete deployment thresholds require the selected host profile.
 
@@ -196,6 +202,7 @@ Current focused test sources (source references, not pass receipts):
 
 - [codex-rs/hepta-prompt-optimizer/src/lib_tests.rs](../../../codex-rs/hepta-prompt-optimizer/src/lib_tests.rs); named case: `illegal_and_unadmitted_candidates_are_never_selected`.
 - [codex-rs/hepta-prompt-optimizer/src/local_shadow_tests.rs](../../../codex-rs/hepta-prompt-optimizer/src/local_shadow_tests.rs); named case: `legacy_v1_surface_keeps_its_original_selection_limit`.
+- [codex-rs/hepta-prompt-optimizer/src/policy_tests.rs](../../../codex-rs/hepta-prompt-optimizer/src/policy_tests.rs); named cases cover registered V1 enumeration/pricing/exercise, the knapsack counterexample, prerequisite-closure bundles, 128-factor sparse interaction policy and unsatisfiable requirement graphs.
 
 In `codex-rs`, run `just test -p codex-hepta-prompt-optimizer`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/prompt.optimizer.md) separately labels target acceptance designs.
 
