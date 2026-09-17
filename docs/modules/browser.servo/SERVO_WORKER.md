@@ -105,18 +105,9 @@ Stale cookie/cache/profile bytes are not implicitly reopened by reusing `${profi
 
 ## 6. Semantic page observation
 
-The real worker `observe` path executes one fixed worker-owned script through Servo's public embedding API and returns `hepta.browser.semantic-observation.v1`. The bounded observation may contain:
+The real worker `observe` path executes one fixed worker-owned script through Servo's public embedding API and returns `hepta.browser.semantic-observation.v1`. The bounded observation may contain title, visible text, HTTP(S) links, forms, page-local CSS selectors for actionable controls, non-secret control metadata and viewport dimensions. Password inputs and control values are not exported.
 
-- title;
-- visible text;
-- HTTP(S) links and bounded link text;
-- forms with method/action and count metadata;
-- page-local CSS selectors for actionable controls;
-- non-secret control metadata such as tag/role/type/name/aria-label/placeholder/disabled/checked;
-- viewport dimensions;
-- a truncation bit.
-
-Password inputs and control values are not exported. The worker canonicalizes the observation, computes `semanticDigest`, and incorporates that digest into the document digest. `BrowserProfileHost` rechecks both the digest and the caller's observation budget before publishing the observation.
+The worker canonicalizes the observation, computes `semanticDigest`, and incorporates that digest into the document digest. `BrowserProfileHost` rechecks both the digest and the caller's observation budget before publishing the observation.
 
 Each admitted observation advances page generation. A selector/action from an earlier observation therefore becomes stale even if page script changed the DOM without a navigation.
 
@@ -124,12 +115,7 @@ Each admitted observation advances page generation. A selector/action from an ea
 
 `hepta.browser.worker-frame.v1` uses a four-byte big-endian length prefix followed by <=1 MiB canonical JSON. Every frame binds protocol version, session, generation, monotonic sequence, request identity and canonical payload digest.
 
-Responses must also carry inside their payload:
-
-- `requestKind` equal to the original request kind;
-- `requestPayloadDigest` equal to the original request payload digest.
-
-The Browser client rejects and kills/fails the channel on cross-session/generation response, sequence drift, unexpected non-response frames, unknown request identity or response-request binding drift. This prevents a valid-looking response for one request from being accepted as the observation for another.
+Responses must also carry inside their payload `requestKind` equal to the original request kind and `requestPayloadDigest` equal to the original request payload digest. The Browser client rejects and kills/fails the channel on cross-session/generation response, sequence drift, unexpected non-response frames, unknown request identity or response-request binding drift.
 
 Worker stderr is always drained so a full pipe cannot deadlock the process. Stderr is deliberately not retained in Browser journals/receipts because page and worker logs may contain sensitive data.
 
@@ -137,17 +123,7 @@ Worker stderr is always drained so a full pipe cannot deadlock the process. Stde
 
 `LinuxBubblewrapLauncher` exposes a **source launch contract**. Its posture fields describe the intended command construction; they are not treated as an independent observation that an arbitrary target kernel enforced namespaces or filesystem denial.
 
-The launcher starts from an empty tmpfs root and does not bind host `/` or `/usr` wholesale. The allowlist is restricted to the worker's runtime closure and rendering data:
-
-- `/usr/lib`, optional `/usr/lib64`;
-- fonts/fontconfig data;
-- loader/TLS configuration;
-- fontconfig cache;
-- private `/proc`, `/dev`, `/tmp`, `/run`, `/home`, `/root` views;
-- one private writable profile;
-- one exact verified worker artifact.
-
-General `/usr/bin`, `/usr/local`, `/var/lib`, service roots and ambient user homes are absent. The environment is cleared, `--unshare-all` is used without `--share-net`, a new session is created and parent-death cleanup is required.
+The launcher starts from an empty tmpfs root and does not bind host `/` or `/usr` wholesale. The allowlist is restricted to the worker's runtime closure and rendering data: runtime libraries, fonts/fontconfig data, loader/TLS configuration, fontconfig cache, private proc/dev/tmp/run/home/root views, one private writable profile and one exact verified worker artifact. General `/usr/bin`, `/usr/local`, `/var/lib`, service roots and ambient user homes are absent.
 
 `scripts/linux-sandbox-probe.js` compiles a tiny host-side C probe and executes it through the same production launcher. Inside the sandbox it requires host-secret invisibility, absence of `/usr/bin/sh` and `/usr/bin/python3`, denied direct external IPv4 connect, and writable/fsynced private profile state. Only that execution receipt on an exact host is enforcement evidence.
 
@@ -159,19 +135,7 @@ Independent hard bounds cover origins, admitted grants, nonterminal operations, 
 
 ## 10. Reproducible worker artifact and composition gates
 
-`.github/workflows/hepta-browser-servo-worker-dev.yml` runs on exact Browser/Servo candidate changes and requires:
-
-- pinned Rust/toolchain and Servo prerequisites;
-- exact current Servo pin in the dependency graph;
-- rejection of `webdriver_server` from the worker graph;
-- current-pin `cargo check --locked`;
-- complete Browser Node tests;
-- the real Bubblewrap isolation probe;
-- two independent release builds with deterministic source date/path remapping;
-- byte-for-byte worker equality;
-- dynamic library closure inspection;
-- real worker start/stop through Bubblewrap and the private protocol;
-- worker SHA-256, deterministic SPDX 2.3 SBOM and checksum-bound build receipt.
+`.github/workflows/hepta-browser-servo-worker-dev.yml` runs on exact Browser/Servo candidate changes and requires pinned Rust/toolchain and Servo prerequisites, exact current Servo pin, rejection of `webdriver_server`, current-pin `cargo check --locked`, complete Browser Node tests, real Bubblewrap isolation probe, two independent release builds with byte equality, dynamic library closure, real worker start/stop, worker SHA-256, deterministic SPDX 2.3 SBOM and a build receipt.
 
 `.github/workflows/hepta-browser-agentd-composition.yml` binds the exact Browser+Agentd source and runs full Browser tests, real `FinalUseAuthority` handoff tests, named caller compilation and Clippy.
 
@@ -181,17 +145,7 @@ A generated `Cargo.lock` is a candidate until reviewed/committed. A successful s
 
 `.github/workflows/hepta-browser-servo-deployment-qualification.yml` remains manual and main-only. It revalidates exact source/build/artifact identity, records kernel/Bubblewrap identity, reruns sandbox/worker checks and emits target execution evidence without self-issuing operator acceptance, promotion or release.
 
-Still separately required where applicable:
-
-- reviewed exact `Cargo.lock` and terminal-success reproducible worker artifact/SBOM receipt;
-- independent Linux no-listener/no-egress/descendant/profile isolation evidence on the selected host;
-- macOS/Windows equivalent isolation if targeted;
-- functional credential-reference broker if credential use is enabled;
-- real upload/download terminal observers if enabled;
-- real remote business terminal reconciliation;
-- target resource/soak measurements;
-- trusted long-running authority/revocation feed for default daemon activation;
-- independent operator acceptance, promotion and release.
+Still separately required where applicable: reviewed exact `Cargo.lock` and terminal-success reproducible worker artifact/SBOM receipt; independent Linux no-listener/no-egress/descendant/profile isolation evidence; macOS/Windows equivalent isolation if targeted; functional credential-reference broker if credential use is enabled; real upload/download terminal observers if enabled; real remote business terminal reconciliation; target resource/soak measurements; trusted long-running authority/revocation feed for default daemon activation; and independent operator acceptance/promotion/release.
 
 ## 12. Claim boundary
 
