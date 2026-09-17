@@ -10,7 +10,10 @@ The final-use slice is implemented in `src/final_use.rs` and specified in
 short-lived operation binding. `FinalUseAuthority` pins the signer and public
 key, verifies the signature and exact binding, durably burns a single-use nonce,
 applies monotonic revocation and returns a non-cloneable, non-serializable
-`VerifiedUseToken`.
+`VerifiedUseToken`. It also exposes a read-only `FinalUseCapacity` snapshot so a
+host can alert on nonce/revocation headroom before fail-closed exhaustion; epoch
+rollover still requires a stronger trusted revocation head and grants no local
+self-reset authority.
 
 The general capability slice is implemented in `src/authority_lease.rs`.
 `AuthorityLeaseRegistry` is the native owner for the documented
@@ -37,8 +40,8 @@ already-entered synchronous effect.
 ## Public symbols and source bindings
 
 - grant/binding schemas, signing preimage, `FinalUseAuthority`,
-  `VerifiedUseToken`, `claim_final_use`, `deliver_final_use` and errors:
-  `src/final_use.rs`;
+  `FinalUseCapacity`, `VerifiedUseToken`, `claim_final_use`, `deliver_final_use`
+  and errors: `src/final_use.rs`;
 - private Unix final-use nonce/revocation store, process lock and fsync protocol:
   `src/final_use_store.rs`;
 - general durable capability leases/revocations, trusted frontier/time and epoch
@@ -89,9 +92,15 @@ inputs but does not manufacture those trust facts.
 
 Both authority stores are bounded. The general lease registry exposes current
 and maximum lease/revocation counts and provides an explicit durable epoch
-rollover that fences old authority before clearing bounded history. Deployment
-must alert before exhaustion and coordinate the trusted new epoch/frontier; no
-implicit eviction or history reset is allowed.
+rollover that fences old authority before clearing bounded history. The
+signed-final-use owner exposes current epoch/revision plus used-nonce and revoked
+grant counts, maximums and remaining capacity; its `rollover_required_with_reserve`
+helper lets the host apply a deployment-specific reserve without hard-coding an
+alert policy into authority. A signed higher-epoch revocation head performs the
+actual final-use rollover and clears old nonce history only after monotonic trust
+validation and durable persistence. Deployment must alert before exhaustion and
+coordinate the trusted new epoch/frontier; no implicit eviction or history reset
+is allowed.
 
 ## Known limits and non-claims
 
@@ -110,9 +119,9 @@ acceptance, activation, canary, promotion or release.
 
 Final-use tests cover signed-field/key substitution, expiry, epoch changes,
 monotonic revocation, replay across restart, unsafe storage, process locking,
-missing state and final-use delivery fencing. A dedicated integration test
-proves that a callback may perform a revocation update without deadlocking on
-the final-use mutex.
+missing state, capacity/frontier observability and final-use delivery fencing. A
+dedicated integration test proves that a callback may perform a revocation
+update without deadlocking on the final-use mutex.
 
 Lease-registry tests cover durable verification/revocation, stale CAS and binding
 mismatch, external-frontier rollback detection, missing-store reset denial and
@@ -120,6 +129,13 @@ durable epoch rollover. Control tests cover exact independent approval,
 authenticated monotonic revocation updates and forged-feed rejection. Bao host
 integration tests deny unregistered consumer identities and forged independent
 approvals before any network dispatch.
+
+The B4 source proof now has two layers: `CALLERS.toml` classifies every declared
+privileged boundary, while `qa/b4-no-bypass/KERNEL_AUTHORITY_BOUNDARIES.json`
+independently freezes the canonical `kernel.authority` inventory and expected
+product caller set. The scanner strips comments, literals and `cfg(test)` items
+before matching, so test-only calls neither satisfy nor violate product caller
+closure.
 
 These test identities are source evidence. Exact-head and deterministic
 synthetic-merge workflow receipts remain the qualification evidence for one
