@@ -1,61 +1,40 @@
 # Hepta browser
 
-This root contains the `browser.servo` owner boundary. It keeps authority-free
-navigation proposals separate from final-use browser effects, binds every effect
-to a typed payload digest, and never treats a driver acknowledgement as authority.
-The current Servo source identity remains pinned separately under
-`third_party/servo-patches`.
+This root contains the repository-owned `browser.servo` boundary. It now has two deliberately separated layers:
 
-## Current source surfaces
+1. authority-free browser presentation/proposal helpers in `src/browser.js`;
+2. a stateful effect owner in `src/runtime.js` / `src/runtime-host.js`, with typed actions, final-use authority fencing, durable operation recovery and an optional isolated subprocess driver.
 
-- `src/browser.js` — authority-free navigation proposals and page projections.
-- `src/actions.js` — closed typed browser-action vocabulary and canonical payload
-  digesting for navigation, click, type, scroll, focus, wait, upload, download,
-  and credential-reference fill.
-- `src/runtime.js` — serialized profile owner, page-generation fencing,
-  final-use authority verification, durable pre-dispatch intent, indeterminate
-  effect reconciliation, timeout/AbortSignal handling, quarantine, and bounded
-  in-memory terminal receipt retention.
-- `src/journal.js` — mode-0600 atomic durable operation journal. Once an effect
-  intent is durable, the same operation identity is never eligible for a fresh
-  dispatch after a throw, timeout, replay, or process restart.
-- `src/adapter.js` — bridge from the local authority-free navigation proposal to
-  a typed digest-bound effect request. It does not mint a grant or VerifiedUse
-  witness.
-- `src/servo-process-driver.js` — host-side private worker protocol plus the
-  Linux bubblewrap launch contract. It verifies launcher/worker SHA-256 digests,
-  uses inherited control fd 3 instead of a network listener, clears the child
-  environment, binds a private profile directory, and uses a network namespace
-  with external egress denied for the C1/local-fixture posture.
+The code in this package does **not** by itself prove that a Servo artifact exists or has passed deployment qualification. `third_party/servo-patches/MANIFEST.json` remains the canonical upstream source pin; a worker executable must additionally be artifact-digest bound before `SubprocessBrowserDriver` will launch it.
 
-The legacy object entrypoints in `src/browser.js` remain compatibility surfaces.
-The additive `Local` JSON entrypoints are versioned, private-workspace internal
-exports for shadow qualification, not registered module ingress or egress and
-not production callers. The export is a repository convention, not JavaScript
-enforcement. These entrypoints bound the encoded envelope before parsing,
-require the repository's lexicographic object-key order, and reject duplicate,
-missing, unknown or otherwise non-canonical fields.
+## Proposal to effect path
 
-## Authority and recovery boundary
+`buildNavigationIntent()` remains authority-free. `src/bridge.js` converts an admitted `BrowserNavigationIntentV1` plus a matching `BrowserSessionV1` / `PageObservationV1` into the exact typed `navigate` payload used at the effect boundary. The payload digest binds the normalized URL, policy digest and expected revision. The bridge never mints authority; an effect grant and final-use authority check remain mandatory.
 
-`BrowserProfileHost` requires an injected final-use authority port and a durable
-operation journal. The authority port must verify the current lease/revocation
-frontier and consume/verify the supplied VerifiedUse witness immediately before
-dispatch. A successful final-use check is still not external-effect evidence.
+Typed runtime actions are closed-world and bounded. Current action kinds are `navigate`, `click`, `type`, `credential`, `upload`, `focus`, `scroll`, `wait` and `download`. Credential and upload actions carry only `credentialRef` / `fileRef` plus bounded metadata; raw secret bytes and ambient filesystem paths are rejected as unknown fields.
 
-Effects are journaled as `indeterminate` before `driver.act` is entered. If the
-driver throws, times out, or the host crashes after the effect may have crossed
-the boundary, replay returns the same durable receipt and reconciliation is the
-only admissible path. Reconciliation and cleanup remain available after the old
-effect grant, VerifiedUse witness, profile lease, or action deadline expires;
-expiry blocks new effects, not observation of an already-dispatched identity.
+## Effect correctness
 
-## Servo execution status
+`BrowserProfileHost` serializes profile mutations and reserves an operation identity before dispatch. Final-use authority is expressed as `authority.withVerifiedUse(request, callback)`: durable intent fsync and local worker dispatch execute inside that fence. A concurrent retry therefore cannot race a revocation or dispatch the same operation twice.
 
-The repository still does **not** contain a qualified `hepta-servo-worker`
-artifact or a reproducibly built Servo binary. `src/servo-process-driver.js`
-implements the host-side launch/protocol boundary; it is not evidence that the
-pinned Servo source has been built, that the worker implements the protocol, or
-that Linux/macOS/Windows sandbox behavior has passed independent qualification.
-See `docs/modules/browser.servo/SERVO_WORKER.md` for the current implementation
-contract and remaining gates.
+After a dispatch may have crossed the worker boundary, exceptions and timeouts become `indeterminate`. They never delete the operation identity and never authorize redispatch. Reconciliation observes the original identity and is intentionally allowed after the original profile/effect deadline has expired; expiry prevents a new effect, not recovery of an old one.
+
+`FileBrowserOperationJournal` is append-only, checksum-bound, size-bounded, fsynced and mode-0600 on Unix. A process restart can use `reconcilePersistedOperation()` without issuing another effect. Terminal operations are bounded in memory while durable tombstones remain available for replay.
+
+## Worker boundary
+
+`src/worker-protocol.js` implements the private protocol: four-byte big-endian length prefix, at most 1 MiB canonical JSON, payload digest, session ID, generation, monotonic sequence and request identity. Unknown/non-canonical frames fail closed.
+
+`SubprocessBrowserDriver` launches only an exact SHA-256-bound worker artifact through a launcher that declares and enforces the required isolation posture. The supplied Linux launcher uses Bubblewrap with `--unshare-all`, no `--share-net`, a cleared environment, hidden ambient home/run/tmp state, a private profile bind, an inherited pipe control channel and parent-death cleanup. This is a concrete Linux isolation path, but it is not evidence that the pinned Servo worker artifact has been built or independently qualified.
+
+## Verification
+
+Run from the repository root:
+
+```sh
+node --test apps/hepta-browser/test/*.test.js
+```
+
+The focused suite covers canonical URL/proposal parsing, typed actions, proposal-to-effect bridging, duplicate-dispatch exclusion, post-dispatch failures, deadline-expired reconciliation, final-use fencing, durable recovery, journal tamper rejection, bounded retention, private framing, artifact binding and the Linux sandbox command posture.
+
+For the module completion boundary and remaining Servo artifact gates, see `docs/modules/browser.servo/TECHNICAL.md`, `docs/modules/browser.servo/SERVO_WORKER.md` and `qualification/module-execution-dossiers/detail/browser.servo.md`.

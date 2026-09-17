@@ -1,9 +1,12 @@
-import { mkdir, open, readFile, rename, stat, chmod, lstat } from "node:fs/promises";
+import { createHash } from "node:crypto";
+import { constants } from "node:fs";
+import { mkdir, open, realpath } from "node:fs/promises";
 import { dirname, isAbsolute, resolve } from "node:path";
 
-const JOURNAL_SCHEMA = "hepta.browser.operation-journal.v1";
-const MAX_JOURNAL_BYTES = 16 * 1024 * 1024;
-const MAX_OPERATION_RECORDS = 16_384;
+const SCHEMA = "hepta.browser.operation-journal.v1";
+const MAX_LINE_BYTES = 262_144;
+const MAX_FILE_BYTES = 64 * 1024 * 1024;
+const UTF8 = new TextEncoder();
 
 function requireRecord(value, name) {
   if (value === null || typeof value !== "object" || Array.isArray(value)) {
@@ -12,173 +15,217 @@ function requireRecord(value, name) {
   return value;
 }
 
-function clone(value) {
-  return structuredClone(value);
+function canonical(value) {
+  return JSON.stringify(value);
 }
 
-function profileKey(profileId, generation) {
-  return `${encodeURIComponent(profileId)}#${generation}`;
+function checksum(value) {
+  return createHash("sha256").update(canonical(value)).digest("hex");
 }
 
-function emptyState() {
-  return {
-    schema: JOURNAL_SCHEMA,
-    revision: 0,
-    profiles: {},
-  };
+function keyOf(record) {
+  return `${record.profileId}\u0000${record.generation}\u0000${record.operationId}`;
+}
+
+function freezeRecord(record) {
+  return Object.freeze({ ...record });
+}
+
+async function ensureCanonicalPrivateParent(path) {
+  const parent = dirname(path);
+  await mkdir(parent, { recursive: true, mode: 0o700 });
+  const actual = await realpath(parent);
+  if (actual !== resolve(parent)) {
+    throw new TypeError("browser journal parent path contains a symlink");
+  }
+}
+
+export class MemoryBrowserOperationJournal {
+  #records = new Map();
+
+  async recordDispatch(record) {
+    const snapshot = freezeRecord(requireRecord(record, "dispatch record"));
+    const key = keyOf(snapshot);
+    const prior = this.#records.get(key);
+    if (prior && prior.requestDigest !== snapshot.requestDigest) {
+      throw new TypeError("journal operation identity was reused with changed semantics");
+    }
+    this.#records.set(key, snapshot);
+  }
+
+  async recordObservation(record) {
+    const snapshot = freezeRecord(requireRecord(record, "observation record"));
+    const key = keyOf(snapshot);
+    const prior = this.#records.get(key);
+    if (!prior) throw new TypeError("journal observation has no dispatch intent");
+    if (prior.requestDigest !== snapshot.requestDigest || prior.semanticDigest !== snapshot.semanticDigest) {
+      throw new TypeError("journal observation changed immutable semantics");
+    }
+    this.#records.set(key, freezeRecord({ ...prior, ...snapshot }));
+  }
+
+  async getOperation(profileId, generation, operationId) {
+    return this.#records.get(`${profileId}\u0000${generation}\u0000${operationId}`) ?? null;
+  }
+
+  async listOperations(profileId, generation) {
+    const prefix = `${profileId}\u0000${generation}\u0000`;
+    return [...this.#records.entries()]
+      .filter(([key]) => key.startsWith(prefix))
+      .map(([, value]) => value);
+  }
 }
 
 export class FileBrowserOperationJournal {
-  durable = true;
   #path;
-  #state = null;
-  #writeTail = Promise.resolve();
-  #counter = 0;
+  #tail = Promise.resolve();
 
   constructor(path) {
     if (typeof path !== "string" || !isAbsolute(path)) {
-      throw new TypeError("browser operation journal path must be absolute");
+      throw new TypeError("browser journal path must be absolute");
     }
-    this.#path = resolve(path);
+    this.#path = path;
   }
 
-  async loadOutstandingOperations({ profileId, generation }) {
-    const state = await this.#load();
-    const profile = state.profiles[profileKey(profileId, generation)];
-    if (!profile) {
-      return [];
-    }
-    return Object.values(profile.operations)
-      .filter((operation) => operation.receipt?.terminalObserved !== true)
-      .map(clone);
-  }
-
-  async findOperation({ profileId, generation, operationId }) {
-    const state = await this.#load();
-    const operation =
-      state.profiles[profileKey(profileId, generation)]?.operations?.[operationId];
-    return operation ? clone(operation) : null;
-  }
-
-  async recordIntent(record) {
-    return this.#mutate((state) => {
-      requireRecord(record, "journal intent");
-      const key = profileKey(record.profileId, record.generation);
-      const profile = (state.profiles[key] ??= { operations: {} });
-      const existing = profile.operations[record.operationId];
-      if (existing) {
-        if (existing.semanticDigest !== record.semanticDigest) {
-          throw new TypeError("journal operation identity conflicts with durable semantics");
-        }
-        return;
+  async recordDispatch(record) {
+    return this.#serialize(async () => {
+      const prior = await this.#getOperationUnlocked(record.profileId, record.generation, record.operationId);
+      if (prior && prior.requestDigest !== record.requestDigest) {
+        throw new TypeError("journal operation identity was reused with changed semantics");
       }
-      if (this.#operationCount(state) >= MAX_OPERATION_RECORDS) {
-        throw new TypeError("browser operation journal capacity is exhausted");
-      }
-      profile.operations[record.operationId] = clone(record);
+      await this.#append({ type: "dispatch", record: requireRecord(record, "dispatch record") });
     });
   }
 
-  async recordObservation({ profileId, generation, operationId, receipt }) {
-    return this.#mutate((state) => {
-      const key = profileKey(profileId, generation);
-      const operation = state.profiles[key]?.operations?.[operationId];
-      if (!operation) {
-        throw new TypeError("cannot observe an operation without a durable intent");
+  async recordObservation(record) {
+    return this.#serialize(async () => {
+      const prior = await this.#getOperationUnlocked(record.profileId, record.generation, record.operationId);
+      if (!prior) throw new TypeError("journal observation has no dispatch intent");
+      if (prior.requestDigest !== record.requestDigest || prior.semanticDigest !== record.semanticDigest) {
+        throw new TypeError("journal observation changed immutable semantics");
       }
-      operation.receipt = clone(receipt);
-      operation.updatedAtMs = Date.now();
+      await this.#append({ type: "observation", record: requireRecord(record, "observation record") });
     });
   }
 
-  async #mutate(mutator) {
-    const run = async () => {
-      const state = await this.#load();
-      mutator(state);
-      state.revision += 1;
-      await this.#persist(state);
-    };
-    const result = this.#writeTail.then(run, run);
-    this.#writeTail = result.catch(() => {});
-    return result;
+  async getOperation(profileId, generation, operationId) {
+    return this.#serialize(() => this.#getOperationUnlocked(profileId, generation, operationId));
+  }
+
+  async listOperations(profileId, generation) {
+    return this.#serialize(async () => {
+      const records = await this.#load();
+      const prefix = `${profileId}\u0000${generation}\u0000`;
+      return [...records.entries()].filter(([key]) => key.startsWith(prefix)).map(([, value]) => value);
+    });
+  }
+
+  async #getOperationUnlocked(profileId, generation, operationId) {
+    const records = await this.#load();
+    return records.get(`${profileId}\u0000${generation}\u0000${operationId}`) ?? null;
   }
 
   async #load() {
-    if (this.#state) {
-      return this.#state;
-    }
-    await mkdir(dirname(this.#path), { recursive: true, mode: 0o700 });
-    let payload;
+    const noFollow = constants.O_NOFOLLOW ?? 0;
+    let handle;
     try {
-      const linkMetadata = await lstat(this.#path);
-      if (linkMetadata.isSymbolicLink() || !linkMetadata.isFile() || linkMetadata.nlink !== 1) {
-        throw new TypeError("browser operation journal must be one regular non-symlink file");
-      }
-      payload = await readFile(this.#path);
+      await ensureCanonicalPrivateParent(this.#path);
+      handle = await open(this.#path, constants.O_RDONLY | noFollow);
     } catch (error) {
-      if (error?.code === "ENOENT") {
-        this.#state = emptyState();
-        return this.#state;
-      }
+      if (error?.code === "ENOENT") return new Map();
       throw error;
     }
-    if (payload.byteLength > MAX_JOURNAL_BYTES) {
-      throw new TypeError("browser operation journal exceeds its byte limit");
-    }
-    let parsed;
+    let bytes;
     try {
-      parsed = JSON.parse(payload.toString("utf8"));
-    } catch {
-      throw new TypeError("browser operation journal is malformed");
+      const info = await handle.stat();
+      if (!info.isFile() || info.size > MAX_FILE_BYTES) {
+        throw new TypeError("browser journal is not a bounded regular file");
+      }
+      if (process.platform !== "win32" && (info.mode & 0o077) !== 0) {
+        throw new TypeError("browser journal permissions are too broad");
+      }
+      bytes = await handle.readFile({ encoding: "utf8" });
+    } finally {
+      await handle.close();
     }
-    requireRecord(parsed, "browser operation journal");
-    if (parsed.schema !== JOURNAL_SCHEMA || !Number.isSafeInteger(parsed.revision)) {
-      throw new TypeError("browser operation journal schema is unsupported");
-    }
-    requireRecord(parsed.profiles, "browser operation journal profiles");
-    if (this.#operationCount(parsed) > MAX_OPERATION_RECORDS) {
-      throw new TypeError("browser operation journal exceeds its operation limit");
-    }
-    if (process.platform !== "win32") {
-      const metadata = await stat(this.#path);
-      if ((metadata.mode & 0o077) !== 0) {
-        throw new TypeError("browser operation journal must not be group/world accessible");
+    const records = new Map();
+    const lines = bytes.length === 0 ? [] : bytes.split("\n");
+    if (lines.at(-1) === "") lines.pop();
+    for (const line of lines) {
+      if (UTF8.encode(line).byteLength > MAX_LINE_BYTES) {
+        throw new TypeError("browser journal line exceeds limit");
+      }
+      let envelope;
+      try {
+        envelope = JSON.parse(line);
+      } catch {
+        throw new TypeError("browser journal contains malformed JSON");
+      }
+      if (envelope.schema !== SCHEMA || envelope.version !== 1 || typeof envelope.checksum !== "string") {
+        throw new TypeError("browser journal envelope is unsupported");
+      }
+      const unsigned = {
+        schema: envelope.schema,
+        version: envelope.version,
+        type: envelope.type,
+        record: envelope.record,
+      };
+      if (checksum(unsigned) !== envelope.checksum) {
+        throw new TypeError("browser journal checksum mismatch");
+      }
+      const record = freezeRecord(requireRecord(envelope.record, "journal record"));
+      const key = keyOf(record);
+      const prior = records.get(key);
+      if (envelope.type === "dispatch") {
+        if (prior && prior.requestDigest !== record.requestDigest) {
+          throw new TypeError("browser journal contains conflicting dispatch identity");
+        }
+        records.set(key, record);
+      } else if (envelope.type === "observation") {
+        if (!prior) throw new TypeError("browser journal observation precedes dispatch");
+        if (prior.requestDigest !== record.requestDigest || prior.semanticDigest !== record.semanticDigest) {
+          throw new TypeError("browser journal observation changed semantics");
+        }
+        records.set(key, freezeRecord({ ...prior, ...record }));
+      } else {
+        throw new TypeError("browser journal record type is unsupported");
       }
     }
-    this.#state = parsed;
-    return this.#state;
+    return records;
   }
 
-  #operationCount(state) {
-    return Object.values(state.profiles).reduce(
-      (count, profile) => count + Object.keys(profile.operations ?? {}).length,
-      0,
-    );
-  }
-
-  async #persist(state) {
-    const encoded = Buffer.from(JSON.stringify(state), "utf8");
-    if (encoded.byteLength > MAX_JOURNAL_BYTES) {
-      throw new TypeError("browser operation journal exceeds its byte limit");
+  async #append({ type, record }) {
+    const unsigned = { schema: SCHEMA, version: 1, type, record };
+    const line = canonical({ ...unsigned, checksum: checksum(unsigned) }) + "\n";
+    const lineBytes = UTF8.encode(line).byteLength;
+    if (lineBytes > MAX_LINE_BYTES) {
+      throw new TypeError("browser journal record exceeds line limit");
     }
-    const parent = dirname(this.#path);
-    await mkdir(parent, { recursive: true, mode: 0o700 });
-    const temporary = `${this.#path}.tmp-${process.pid}-${this.#counter++}`;
-    const handle = await open(temporary, "wx", 0o600);
+    await ensureCanonicalPrivateParent(this.#path);
+    const noFollow = constants.O_NOFOLLOW ?? 0;
+    const flags = constants.O_WRONLY | constants.O_APPEND | constants.O_CREAT | noFollow;
+    const handle = await open(this.#path, flags, 0o600);
     try {
-      await handle.writeFile(encoded);
+      const info = await handle.stat();
+      if (!info.isFile()) {
+        throw new TypeError("browser journal is not a regular file");
+      }
+      if (process.platform !== "win32" && (info.mode & 0o077) !== 0) {
+        throw new TypeError("browser journal permissions are too broad");
+      }
+      if (info.size + lineBytes > MAX_FILE_BYTES) {
+        throw new TypeError("browser journal capacity exhausted");
+      }
+      await handle.writeFile(line, "utf8");
       await handle.sync();
     } finally {
       await handle.close();
     }
-    await chmod(temporary, 0o600);
-    await rename(temporary, this.#path);
-    const parentHandle = await open(parent, "r");
-    try {
-      await parentHandle.sync();
-    } finally {
-      await parentHandle.close();
-    }
-    this.#state = state;
+  }
+
+  #serialize(operation) {
+    const run = this.#tail.catch(() => {}).then(operation);
+    this.#tail = run.catch(() => {});
+    return run;
   }
 }
