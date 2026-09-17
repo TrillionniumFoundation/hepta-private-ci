@@ -94,6 +94,34 @@ impl<D: ProcessDriver> Supervisor<D> {
             });
             if let Err(error) = result {
                 if matches!(&error, SupervisorError::SignedIntentRecoveryRequired(_)) {
+                    // A plausible interrupted transition enters operator
+                    // recovery mode. A journal whose target already became
+                    // current but whose recorded source contradicts the
+                    // durable release predecessor is not merely ambiguous:
+                    // it cannot have been produced by the observed release
+                    // lineage, so preserve the historical strict-recovery
+                    // behavior and refuse to construct a supervisor.
+                    let contradictory_lineage = supervisor
+                        .slots
+                        .get(&agent_id)
+                        .and_then(|slot| slot.signed_intent.as_ref())
+                        .is_some_and(|intent| {
+                            record
+                                .release_state
+                                .current
+                                .as_ref()
+                                .is_some_and(|current| current.as_str() == intent.target_release)
+                                && record
+                                    .release_state
+                                    .previous
+                                    .as_ref()
+                                    .is_some_and(|previous| {
+                                        previous.as_str() != intent.source_release
+                                    })
+                        });
+                    if contradictory_lineage {
+                        return Err(error);
+                    }
                     supervisor.recovery_blocked.insert(agent_id.clone());
                 }
                 supervisor.record_fault(&agent_id, &error, &mut report);
