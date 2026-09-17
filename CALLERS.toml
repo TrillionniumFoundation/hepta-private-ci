@@ -5,6 +5,26 @@ source_roots = ["codex-rs"]
 ignored_path_fragments = ["/tests/", "/examples/", "_tests.rs"]
 rule = "Every privileged Hepta boundary has an exact closed set of product call sites. Test, example and definition-only uses do not grant production authority."
 
+[privileged_inventory]
+required_boundary_ids = [
+  "supervisor_authorized_boot",
+  "memory_production_writer_open",
+  "agentd_production_writer_host",
+  "provider_effect_coordinator",
+  "http_provider_effect_adapter",
+  "final_use_claim",
+  "final_use_delivery",
+  "final_use_approval_verify",
+  "final_use_revocation_feed_apply",
+  "bao_final_use_consumer",
+  "bao_registered_final_use_host",
+  "authority_lease_put",
+  "authority_lease_revoke",
+  "authority_lease_epoch_advance",
+  "authority_lease_verify_use",
+  "authority_lease_delivery",
+]
+
 [[boundary]]
 id = "supervisor_authorized_boot"
 symbol = "run_supervisord_with_grant_verifier"
@@ -45,6 +65,100 @@ definition_markers = ["pub struct HttpProviderEffectAdapter", "pub fn new", "Pro
 product_callers = []
 caller_markers = []
 
+[[boundary]]
+id = "final_use_claim"
+symbol = "FinalUseAuthority::claim"
+call_pattern = "authority\\s*\\.\\s*claim\\s*\\("
+definition_path = "codex-rs/hepta-contracts/src/final_use.rs"
+definition_markers = ["pub fn claim(", "verify_strict", "used_nonces"]
+product_callers = ["codex-rs/hepta-bao-adapter/src/https_consumer.rs"]
+caller_markers = ["authority", ".claim(grant, &binding)", "BaoClientError::Authority"]
+
+[[boundary]]
+id = "final_use_delivery"
+symbol = "FinalUseAuthority::with_verified_use"
+call_pattern = "authority\\s*\\.\\s*with_verified_use\\s*\\("
+definition_path = "codex-rs/hepta-contracts/src/final_use.rs"
+definition_markers = ["pub fn with_verified_use", "Arc::ptr_eq", "validate_live"]
+product_callers = ["codex-rs/hepta-bao-adapter/src/https_consumer.rs"]
+caller_markers = ["authority", ".with_verified_use(verified", "ConsumerIndeterminate"]
+
+[[boundary]]
+id = "final_use_approval_verify"
+symbol = "FinalUseApprovalVerifier::verify"
+call_pattern = "approval_verifier\\s*\\.\\s*verify\\s*\\("
+definition_path = "codex-rs/hepta-contracts/src/final_use_control.rs"
+definition_markers = ["pub struct FinalUseApprovalVerifier", "pub fn verify(", "verify_strict"]
+product_callers = ["codex-rs/hepta-bao-adapter/src/final_use_host.rs"]
+caller_markers = ["approval_verifier", ".verify(grant, approval)", "BaoFinalUseHostError::Control"]
+
+[[boundary]]
+id = "final_use_revocation_feed_apply"
+symbol = "FinalUseRevocationFeedVerifier::apply"
+call_pattern = "revocation_verifier\\s*\\.\\s*apply\\s*\\("
+definition_path = "codex-rs/hepta-contracts/src/final_use_control.rs"
+definition_markers = ["pub struct FinalUseRevocationFeedVerifier", "pub fn apply(", "update_revocations"]
+product_callers = ["codex-rs/hepta-bao-adapter/src/final_use_host.rs"]
+caller_markers = ["revocation_verifier", ".apply(&self.authority, update)", "apply_revocation_update"]
+
+[[boundary]]
+id = "bao_final_use_consumer"
+symbol = "BaoClient::consume_kv_v2"
+call_pattern = "\\.\\s*consume_kv_v2\\s*\\("
+definition_path = "codex-rs/hepta-bao-adapter/src/https_consumer.rs"
+definition_markers = ["pub async fn consume_kv_v2", "authority.claim", "authority", ".with_verified_use"]
+product_callers = ["codex-rs/hepta-bao-adapter/src/final_use_host.rs"]
+caller_markers = ["client", ".consume_kv_v2(&self.authority", "UnregisteredConsumer"]
+
+[[boundary]]
+id = "bao_registered_final_use_host"
+symbol = "BaoFinalUseHost::consume_kv_v2"
+call_pattern = "\\.\\s*consume_kv_v2\\s*\\("
+definition_path = "codex-rs/hepta-bao-adapter/src/final_use_host.rs"
+definition_markers = ["pub struct BaoFinalUseHost", "pub async fn consume_kv_v2", "approval_verifier", "consumers"]
+product_callers = []
+caller_markers = []
+
+[[boundary]]
+id = "authority_lease_put"
+symbol = "AuthorityLeaseRegistry::put_lease"
+definition_path = "codex-rs/hepta-contracts/src/authority_lease.rs"
+definition_markers = ["pub struct AuthorityLeaseRegistry", "pub fn put_lease(", "expected_revision"]
+product_callers = []
+caller_markers = []
+
+[[boundary]]
+id = "authority_lease_revoke"
+symbol = "AuthorityLeaseRegistry::revoke"
+definition_path = "codex-rs/hepta-contracts/src/authority_lease.rs"
+definition_markers = ["pub fn revoke(", "RevocationReceipt", "reason_sha256"]
+product_callers = []
+caller_markers = []
+
+[[boundary]]
+id = "authority_lease_epoch_advance"
+symbol = "AuthorityLeaseRegistry::advance_epoch"
+definition_path = "codex-rs/hepta-contracts/src/authority_lease.rs"
+definition_markers = ["pub fn advance_epoch(", "new_authority_epoch", "next.leases.clear()"]
+product_callers = []
+caller_markers = []
+
+[[boundary]]
+id = "authority_lease_verify_use"
+symbol = "AuthorityLeaseRegistry::verify_use"
+definition_path = "codex-rs/hepta-contracts/src/authority_lease.rs"
+definition_markers = ["pub fn verify_use(", "LeaseVerifiedUseToken", "now_unix_ms"]
+product_callers = []
+caller_markers = []
+
+[[boundary]]
+id = "authority_lease_delivery"
+symbol = "AuthorityLeaseRegistry::with_verified_use"
+definition_path = "codex-rs/hepta-contracts/src/authority_lease.rs"
+definition_markers = ["pub fn with_verified_use", "Arc::ptr_eq", "drop(state)"]
+product_callers = []
+caller_markers = []
+
 [[protected_file]]
 path = "codex-rs/hepta-supervisor/src/main.rs"
 required = ["run_supervisord_with_grant_verifier", "H7H89ProductionGrantVerifier", "run_supervisord"]
@@ -59,6 +173,31 @@ forbidden = ["AllowVerifier", "permit_all"]
 path = "codex-rs/model-provider/src/provider_effect.rs"
 required = ["impl ProviderEffectAdapter for HttpProviderEffectAdapter"]
 forbidden = ["impl Default for HttpProviderEffectAdapter"]
+
+[[protected_file]]
+path = "codex-rs/hepta-contracts/src/final_use.rs"
+required = ["pub fn claim(", "pub fn with_verified_use", "verify_strict", "validate_live"]
+forbidden = ["impl Default for FinalUseAuthority", "pub fn permit_all"]
+
+[[protected_file]]
+path = "codex-rs/hepta-contracts/src/final_use_control.rs"
+required = ["pub struct FinalUseApprovalVerifier", "pub struct FinalUseRevocationFeedVerifier", "verify_strict", "update_revocations"]
+forbidden = ["impl Default for FinalUseApprovalVerifier", "impl Default for FinalUseRevocationFeedVerifier", "permit_all"]
+
+[[protected_file]]
+path = "codex-rs/hepta-contracts/src/authority_lease.rs"
+required = ["pub struct AuthorityLeaseRegistry", "pub fn verify_use(", "pub fn revoke(", "AntiRollbackViolation", "pub fn advance_epoch("]
+forbidden = ["impl Default for AuthorityLeaseRegistry", "permit_all"]
+
+[[protected_file]]
+path = "codex-rs/hepta-bao-adapter/src/https_consumer.rs"
+required = ["pub async fn consume_kv_v2", "authority", ".claim(grant, &binding)", ".with_verified_use(verified"]
+forbidden = ["impl Default for BaoClient"]
+
+[[protected_file]]
+path = "codex-rs/hepta-bao-adapter/src/final_use_host.rs"
+required = ["pub struct BaoFinalUseHost", "pub async fn consume_kv_v2", "UnregisteredConsumer", "approval_verifier", "revocation_verifier"]
+forbidden = ["impl Default for BaoFinalUseHost", "permit_all"]
 
 [authority]
 runtime_authority = false
