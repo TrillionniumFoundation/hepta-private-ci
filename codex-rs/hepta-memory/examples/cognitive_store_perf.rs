@@ -96,7 +96,10 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     commits.sort_unstable();
     let total_commit_nanos = commits.iter().map(Duration::as_nanos).sum::<u128>();
-    let mean_commit_nanos = total_commit_nanos / u128::try_from(commits.len())?;
+    let commit_count = u128::from(u64::try_from(commits.len())?);
+    let mean_commit_nanos = total_commit_nanos / commit_count;
+    let commit_min = commits[0];
+    let commit_max = commits[commits.len() - 1];
 
     println!(
         "{}",
@@ -109,11 +112,11 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             },
             "durations_us": {
                 "cold_open": micros(cold_open),
-                "commit_min": micros(commits[0]),
+                "commit_min": micros(commit_min),
                 "commit_p50": micros(percentile(&commits, 50)),
                 "commit_p95": micros(percentile(&commits, 95)),
                 "commit_p99": micros(percentile(&commits, 99)),
-                "commit_max": micros(*commits.last().expect("non-empty commits")),
+                "commit_max": micros(commit_max),
                 "commit_mean": mean_commit_nanos / 1_000,
                 "snapshot": micros(snapshot_duration),
                 "reopen": micros(reopen_duration),
