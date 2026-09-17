@@ -29,10 +29,6 @@ impl LocalRuntimeBackend {
             expected_manifest_digest,
         })
     }
-
-    pub(crate) fn runtime(&self) -> &Arc<HeptaRuntime> {
-        &self.runtime
-    }
 }
 
 impl BackendConnector for LocalRuntimeBackend {
@@ -68,7 +64,9 @@ impl BackendConnector for LocalRuntimeBackend {
 fn validate_digest(value: &str) -> Result<()> {
     if value.len() != 64
         || value.bytes().all(|byte| byte == b'0')
-        || !value.bytes().all(|byte| byte.is_ascii_digit() || matches!(byte, b'a'..=b'f'))
+        || !value
+            .bytes()
+            .all(|byte| byte.is_ascii_digit() || matches!(byte, b'a'..=b'f'))
     {
         bail!("native runtime manifest digest must be a non-zero lowercase SHA-256 digest");
     }
