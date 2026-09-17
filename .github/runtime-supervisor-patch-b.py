@@ -13,19 +13,14 @@ def one(s,old,new,label):
 p="codex-rs/hepta-supervisor/src/matrix.rs"; s=read(p)
 s=s.replace("                        slot.matrix.degraded = false;\n                        slot.matrix.restart_attempt = 0;\n                        slot.matrix.retry_at = None;\n                        slot.matrix.last_error = None;","                        slot.matrix.degraded = false;\n                        slot.matrix.retry_at = None;\n                        slot.matrix.restart_exhausted = false;\n                        slot.matrix.last_error = None;")
 s=one(s,"            let retry_due = slot.matrix.retry_at.is_none_or(|retry_at| now >= retry_at);\n            if retry_due {","            let retry_due = !slot.matrix.restart_exhausted\n                && slot.matrix.retry_at.is_none_or(|retry_at| now >= retry_at);\n            if retry_due {","matrix retry gate")
-old='''        let message = bounded_message(message);
-        slot.matrix.degraded = true;
-        slot.matrix.last_error = Some(message.clone());
-        slot.matrix.restart_attempt = slot.matrix.restart_attempt.saturating_add(1);
-        let shift = slot.matrix.restart_attempt.saturating_sub(1).min(7);
-        let delay = MATRIX_RESTART_MIN
-            .checked_mul(1_u32 << shift)
-            .unwrap_or(MATRIX_RESTART_MAX)
-            .min(MATRIX_RESTART_MAX);
-        slot.matrix.retry_at = now.checked_add(delay);
-        slot.event(generation, SupervisorEventKind::MatrixDegraded(message));
-'''
-new='''        let message = bounded_message(message);
+new_fn='''    fn degrade_matrix(
+        &self,
+        slot: &mut AgentSlot<D::Process>,
+        generation: u64,
+        message: String,
+        now: Instant,
+    ) {
+        let message = bounded_message(message);
         slot.matrix.degraded = true;
         let expired = slot.matrix.restart_window_started_at.is_some_and(|started| {
             now.checked_duration_since(started)
@@ -59,8 +54,11 @@ new='''        let message = bounded_message(message);
         slot.matrix.retry_at = now.checked_add(delay);
         slot.matrix.restart_exhausted = false;
         slot.event(generation, SupervisorEventKind::MatrixDegraded(message));
+    }
 '''
-s=one(s,old,new,"matrix degrade")
+pat=re.compile(r"    fn degrade_matrix\(\n.*?\n    \}\n(?=\}\n\nfn load_binding\()", re.S)
+s,n=pat.subn(new_fn,s,count=1)
+if n != 1: raise SystemExit(f"matrix degrade function: expected 1 occurrence, got {n}")
 write(p,s)
 
 # Supervisor: explicit starts reset automatic budget; signed intent becomes an
