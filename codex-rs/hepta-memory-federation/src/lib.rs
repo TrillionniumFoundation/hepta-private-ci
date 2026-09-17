@@ -3,6 +3,7 @@
 #![forbid(unsafe_code)]
 
 mod v2;
+pub mod v3;
 
 use std::error::Error as StdError;
 use std::fmt;
@@ -28,6 +29,37 @@ pub use v2::MAX_FEDERATED_RESULTS_V2;
 pub use v2::RemoteFederatedResponseV2;
 pub use v2::execute_once;
 pub use v2::observe_cancellation;
+
+pub use v3::AsyncFederationTransportV3;
+pub use v3::CapabilityAuthorityEnvelopeV3;
+pub use v3::CapabilityRevocationObservationV3;
+pub use v3::CapabilityRevocationSourceV3;
+pub use v3::CapabilityVerifierV3;
+pub use v3::FederatedAggregateV3;
+pub use v3::FederatedCacheEntryV3;
+pub use v3::FederatedCompletenessV3;
+pub use v3::FederatedCoverageV3;
+pub use v3::FederatedEvidenceItemV3;
+pub use v3::FederatedQueryV3;
+pub use v3::FederatedResultCacheV3;
+pub use v3::FederatedResultV3;
+pub use v3::FederatedValidityV3;
+pub use v3::FederationCancellationTokenV3;
+pub use v3::FederationClockV3;
+pub use v3::FederationKeyResolverV3;
+pub use v3::FederationServiceV3;
+pub use v3::FederationTransportOutcomeV3;
+pub use v3::FederationTransportResultV3;
+pub use v3::FederationTransportV3;
+pub use v3::FederationV3Error;
+pub use v3::MAX_FEDERATED_RESULTS_V3;
+pub use v3::MAX_FEDERATION_PEERS_V3;
+pub use v3::PeerEnrollmentRegistryV3;
+pub use v3::RemoteFederatedResponseV3;
+pub use v3::SignedCapabilityVerifierV3;
+pub use v3::VerifiedCapabilityV3;
+pub use v3::execute_federation_v3;
+pub use v3::execute_once_v3;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct FederatedReadRequest {
