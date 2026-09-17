@@ -9,6 +9,8 @@ use std::fmt;
 
 use codex_hepta_context_compiler::CompiledContextV2;
 use codex_hepta_context_compiler::ContextCandidateV2;
+use codex_hepta_context_compiler::ContextCanonicalV1Error;
+use codex_hepta_context_compiler::ContextCompilationReceiptV1;
 use codex_hepta_context_compiler::ContextCompilationRequestV2;
 use codex_hepta_context_compiler::ContextCompilerV2Error;
 use codex_hepta_context_compiler::ContextModelProfileV2;
@@ -66,6 +68,7 @@ pub struct CanonicalPromptPolicyReceiptV1 {
     pub portfolio: PromptPortfolioBundleV1,
     pub exercise: PromptExerciseResultV1,
     pub compiled_context: Option<CompiledContextV2>,
+    pub canonical_context: Option<ContextCompilationReceiptV1>,
     pub trace_digest: Digest32,
     pub authority: AuthorityPosture,
 }
@@ -74,6 +77,7 @@ pub struct CanonicalPromptPolicyReceiptV1 {
 pub enum PromptPolicyErrorV1 {
     Optimizer(CanonicalPromptError),
     Context(ContextCompilerV2Error),
+    ContextCanonical(ContextCanonicalV1Error),
     ContextModelTupleMismatch,
     MissingSelectedPrice(String),
     Arithmetic,
@@ -99,9 +103,15 @@ impl From<ContextCompilerV2Error> for PromptPolicyErrorV1 {
     }
 }
 
+impl From<ContextCanonicalV1Error> for PromptPolicyErrorV1 {
+    fn from(value: ContextCanonicalV1Error) -> Self {
+        Self::ContextCanonical(value)
+    }
+}
+
 /// Run the canonical prompt policy and, unless delivery-boundary revalidation
 /// rejects the proposal, compile the selected prompt realizations into the
-/// existing Context V2 chain.
+/// existing Context V2 chain plus its registered V1 cross-module receipt.
 ///
 /// A `Wait` decision still compiles the caller's non-prompt context with no
 /// prompt realization added. A `Reject` decision does not compile at all: the
@@ -155,6 +165,15 @@ pub fn run_canonical_prompt_policy_v1(
             mandatory_groups: context.mandatory_groups,
         })?)
     };
+    let canonical_context = compiled_context
+        .as_ref()
+        .map(|compiled| {
+            ContextCompilationReceiptV1::from_compiled_v2(
+                compiled,
+                candidates.model_tuple.digest(),
+            )
+        })
+        .transpose()?;
 
     let mut bytes = b"hepta.intelligence.canonical-prompt-policy.v1".to_vec();
     for digest in [
@@ -166,10 +185,10 @@ pub fn run_canonical_prompt_policy_v1(
     ] {
         bytes.extend_from_slice(digest.as_array());
     }
-    match &compiled_context {
-        Some(compiled) => {
+    match &canonical_context {
+        Some(receipt) => {
             bytes.push(1);
-            bytes.extend_from_slice(compiled.receipt.receipt_digest.as_array());
+            bytes.extend_from_slice(receipt.receipt_digest.as_array());
         }
         None => bytes.push(0),
     }
@@ -180,6 +199,7 @@ pub fn run_canonical_prompt_policy_v1(
         portfolio,
         exercise,
         compiled_context,
+        canonical_context,
         trace_digest: Digest32::of_bytes(&bytes),
         authority: AuthorityPosture::DENY_ALL,
     })
