@@ -162,55 +162,67 @@
     },
     {
       "module": "kernel.operations",
-      "profile": "bounded_operation_reference_model",
+      "profile": "durable_operation_store_with_reference_oracle",
       "formalGuide": "docs/modules/kernel.operations/TECHNICAL.md",
       "formalGuideRole": "target_architecture",
       "currentSpecification": "docs/lane-a-foundation/kernel.operations/CURRENT_IMPLEMENTATION.md",
       "currentSpecificationRole": "current_executable_contract",
-      "implementationDetail": "docs/lane-a-foundation/kernel.operations/REFERENCE_MODEL_V1.md",
+      "implementationDetail": "docs/lane-a-foundation/kernel.operations/DURABLE_STORE_V1.md",
       "states": {
         "source": "implemented",
-        "implementation": "bounded_reference_model",
-        "durability": "not_implemented",
-        "qualification": "model_tests_present",
-        "activation": "inactive",
+        "implementation": "sqlite_durable_store_with_reference_model",
+        "durability": "sqlite_wal_full_sync",
+        "qualification": "durable_fault_and_model_tests_present",
+        "activation": "host_composition_required",
         "acceptance": "not_granted"
       },
       "currentCapabilities": [
         "bounded deterministic operation-state reference model",
-        "bounded in-memory outbox claim and acknowledgement model",
-        "generation-fenced idempotent terminal observation"
+        "atomic SQLite durable operation ledger and transactional cross-owner outbox",
+        "lease-fenced crash-reopen recovery that blocks blind retry after unknown effects",
+        "final-use authority dispatch with generation-fenced terminal reconciliation",
+        "destination-owned transactional effect deduplication"
       ],
       "targetOnlyCapabilities": [
-        "durable operation ledger",
-        "transactional durable outbox",
-        "claim lease expiry and crash-reopen takeover",
-        "background reconciliation service"
+        "named production caller and selected host lifecycle",
+        "target-host power-loss and real disk-full qualification",
+        "host-owned background dispatcher and reconciler process",
+        "asynchronous final-use authority boundary",
+        "external monotonic anti-rollback checkpoint when required by product policy"
       ],
       "sourceAnchors": [
         {
-          "path": "codex-rs/hepta-operations/src/lib.rs",
+          "path": "codex-rs/hepta-operations/src/durable.rs",
           "mustContain": [
-            "In-memory reference model",
-            "does not provide durable storage",
-            "ReferenceAuthorityWitness"
+            "pub struct DurableOperationStore",
+            "SqliteJournalMode::Wal",
+            "SqliteSynchronous::Full",
+            "begin_with(\"BEGIN IMMEDIATE\")",
+            "RequiresReconciliation"
           ]
         },
         {
-          "path": "codex-rs/hepta-operations/src/ledger.rs",
+          "path": "codex-rs/hepta-operations/src/dispatcher.rs",
           "mustContain": [
-            "MAX_MODEL_OPERATION_RECORDS",
-            "pub struct OperationLedger",
-            "pub fn observe_terminal",
-            "terminal_matches"
+            "pub struct DurableDispatcher",
+            "DestinationEffectAdapter",
+            "with_verified_use"
           ]
         },
         {
-          "path": "codex-rs/hepta-operations/src/outbox.rs",
+          "path": "codex-rs/hepta-operations/src/destination_dedupe.rs",
           "mustContain": [
-            "MAX_MODEL_OUTBOX_RECORDS",
-            "InvalidDigest(\"outbox payload\")",
-            "InvalidDigest(\"outbox acknowledgement\")"
+            "DESTINATION_DEDUPE_SCHEMA_V1",
+            "reserve_destination_effect",
+            "finish_destination_effect"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-operations/migrations/0001_durable_operations.sql",
+          "mustContain": [
+            "CREATE TABLE operation_ledger",
+            "CREATE TABLE cross_owner_outbox",
+            "FOREIGN KEY(scope_id, operation_id)"
           ]
         },
         {

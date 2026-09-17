@@ -82,7 +82,9 @@ impl std::fmt::Display for DurableDispatchError {
     fn fmt(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             Self::Store(error) => write!(formatter, "{error}"),
-            Self::Authority(error) => write!(formatter, "final-use authority rejected dispatch: {error}"),
+            Self::Authority(error) => {
+                write!(formatter, "final-use authority rejected dispatch: {error}")
+            }
         }
     }
 }
@@ -135,8 +137,10 @@ impl<'a> DurableDispatcher<'a> {
         // failure after this point consumes the grant but does not permit an
         // unrecorded retry with the same authority.
         let token = self.authority.claim(signed_grant, &binding)?;
-        let authority_epoch = Generation::new(signed_grant.grant.authority_epoch)
-            .map_err(|_| DurableOperationError::InvalidRequest("invalid final-use authority epoch"))?;
+        let authority_epoch =
+            Generation::new(signed_grant.grant.authority_epoch).map_err(|_| {
+                DurableOperationError::InvalidRequest("invalid final-use authority epoch")
+            })?;
         self.store
             .bind_authority_epoch(identity, authority_epoch)
             .await?;
@@ -170,11 +174,7 @@ impl<'a> DurableDispatcher<'a> {
                 acknowledgement_watermark,
             } => {
                 self.store
-                    .record_transport_ack(
-                        &lease,
-                        acknowledgement_digest,
-                        acknowledgement_watermark,
-                    )
+                    .record_transport_ack(&lease, acknowledgement_digest, acknowledgement_watermark)
                     .await?;
             }
             DispatchResult::Terminal {

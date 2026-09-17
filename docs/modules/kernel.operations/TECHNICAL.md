@@ -46,13 +46,14 @@ None.
 
 ### Native source and scope
 
-The registered primary source is [codex-rs/hepta-operations/src/ledger.rs](../../../codex-rs/hepta-operations/src/ledger.rs); observed identifiers include `MAX_MODEL_OPERATION_RECORDS`, `OperationLedger`, `begin`, `authorize`, `record_dispatch`, `mark_indeterminate`. This is a source navigation binding, not proof that every target operation or production consumer exists. Read the [current native implementation](../../../qualification/module-execution-dossiers/detail/kernel.operations.md#8-current-native-implementation) alongside the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/kernel.operations.md) for the implemented subset and remaining product work.
+The registered durable source is [codex-rs/hepta-operations/src/durable.rs](../../../codex-rs/hepta-operations/src/durable.rs); observed identifiers include `DurableOperationStore`, `prepare_intent`, `claim_outbox`, `recover_expired_leases` and `observe_terminal`. The final-use adapter is [src/dispatcher.rs](../../../codex-rs/hepta-operations/src/dispatcher.rs), while `OperationLedger`/`Outbox` remain deterministic reference oracles. This is source implementation evidence, not proof of a product caller, activation or external acceptance. Read the [current native implementation](../../../qualification/module-execution-dossiers/detail/kernel.operations.md#8-current-native-implementation) and [durable store reference](../../lane-a-foundation/kernel.operations/DURABLE_STORE_V1.md) together.
 
 ## 3. Boundary, responsibilities and non-goals
 
 Direct dependencies:
 
 - `platform.types`
+- `kernel.authority`
 
 Authoritative write domains:
 
@@ -140,7 +141,7 @@ The [current native implementation](../../../qualification/module-execution-doss
 
 ## 8. Failure semantics, recovery and rollback
 
-Use the error/recovery path linked by the [current native implementation](../../../qualification/module-execution-dossiers/detail/kernel.operations.md#8-current-native-implementation) and the module-specific fault cases in the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/kernel.operations.md). A source library or fixture cannot stand in for an unimplemented durable recovery or external reconciler.
+Use the error/recovery path linked by the [current native implementation](../../../qualification/module-execution-dossiers/detail/kernel.operations.md#8-current-native-implementation) and the module-specific fault cases in the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/kernel.operations.md). The checked-in SQLite owner supplies durable recovery; target-host process/power-loss evidence and each actual external terminal observer remain separate composition and qualification obligations.
 
 [Shared failure, recovery and rollback requirements](../README.md#shared-failure-and-recovery) remain mandatory.
 
@@ -157,18 +158,20 @@ Negative tests cover denied capabilities, cross-owner writes, stale or revoked g
 
 ## 10. Performance, capacity and hot-path policy
 
-The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/kernel.operations.md) specifies this module's algorithm, pilot ceilings and capacity fixtures. Those target ceilings are not measurements and must not be reported as enforcement of an unimplemented API. Current native limits belong to [codex-rs/hepta-operations/src/ledger.rs](../../../codex-rs/hepta-operations/src/ledger.rs) and the linked implementation components.
+The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/kernel.operations.md) specifies this module's algorithm, pilot ceilings and capacity fixtures. Those target ceilings are not measurements and must not be reported as enforcement of an unimplemented API. Current durable limits are enforced by `MAX_DURABLE_OPERATION_ROWS`, `MAX_DURABLE_OUTBOX_ROWS`, `MAX_DURABLE_CLAIM_BATCH`, bounded attempts, lease duration and retry delay in [src/durable.rs](../../../codex-rs/hepta-operations/src/durable.rs); the 16,384-record reference limits remain oracle-only.
 
 [Shared performance and capacity requirements](../README.md#shared-performance-and-capacity) define the measurement/overload obligations for a selected host.
 
 ## 11. Observability and operations
 
-OperationLedger and outbox types are embedded owner components. Their state transition result is not a remote effect observation. The host must bind each durable destination/outbox and current-fence reconciler; an in-memory ledger does not supply crash durability by itself.
+`DurableOperationStore` is the authoritative local owner for the operation ledger and source outbox. Its state transition is still not a remote-effect observation: the host must bind the actual destination-owned dedupe transaction and trusted terminal observer. `OperationLedger` and `Outbox` remain in-memory reference oracles only.
 
 Current operating and state-format references:
 
-- [codex-rs/hepta-operations/src/ledger.rs](../../../codex-rs/hepta-operations/src/ledger.rs).
-- [codex-rs/hepta-operations/src/outbox.rs](../../../codex-rs/hepta-operations/src/outbox.rs).
+- [codex-rs/hepta-operations/src/durable.rs](../../../codex-rs/hepta-operations/src/durable.rs).
+- [codex-rs/hepta-operations/src/dispatcher.rs](../../../codex-rs/hepta-operations/src/dispatcher.rs).
+- [codex-rs/hepta-operations/migrations/0001_durable_operations.sql](../../../codex-rs/hepta-operations/migrations/0001_durable_operations.sql).
+- [docs/lane-a-foundation/kernel.operations/DURABLE_STORE_V1.md](../../lane-a-foundation/kernel.operations/DURABLE_STORE_V1.md).
 
 [Shared observability and operations requirements](../README.md#shared-observability-and-operations) specify safe events and alert classes; concrete deployment thresholds require the selected host profile.
 
@@ -176,6 +179,7 @@ Current operating and state-format references:
 
 Current focused test sources (source references, not pass receipts):
 
+- [codex-rs/hepta-operations/src/durable_tests.rs](../../../codex-rs/hepta-operations/src/durable_tests.rs); named cases: `prepare_commits_ledger_and_outbox_atomically`, `reopen_after_dispatch_never_blindly_requeues_unknown_effect`, `dispatcher_consumes_real_final_use_authority_at_effect_boundary`.
 - [codex-rs/hepta-operations/src/ledger_tests.rs](../../../codex-rs/hepta-operations/src/ledger_tests.rs); named case: `dispatch_ack_is_not_terminal_success`.
 - [codex-rs/hepta-operations/src/outbox_tests.rs](../../../codex-rs/hepta-operations/src/outbox_tests.rs); named case: `claim_and_ack_are_generation_fenced`.
 
@@ -308,9 +312,11 @@ This receipt records repository source bindings for the current documentation ca
 
 | Operation | Native symbol | Source path | Tests |
 |---|---|---|---|
-| `operationledger` | `OperationLedger` | `codex-rs/hepta-operations/src/ledger.rs` | `pending` |
-| `outbox` | `Outbox` | `codex-rs/hepta-operations/src/outbox.rs` | `pending` |
+| `durableoperationstore` | `DurableOperationStore` | `codex-rs/hepta-operations/src/durable.rs` | `durable_tests.rs` |
+| `durabledispatcher` | `DurableDispatcher` | `codex-rs/hepta-operations/src/dispatcher.rs` | `durable_tests.rs` |
+| `operationledger_reference_oracle` | `OperationLedger` | `codex-rs/hepta-operations/src/ledger.rs` | `ledger_tests.rs` |
+| `outbox_reference_oracle` | `Outbox` | `codex-rs/hepta-operations/src/outbox.rs` | `outbox_tests.rs` |
 
 - Source identity: `sourceBase` is recorded in `IMPLEMENTATION_MAP.json`.
-- Consumer callsites and durable owner stores remain an explicit follow-up when not listed above.
-- Production implementation, runtime composition, independent acceptance, activation, and release remain false until their separate evidence gates pass.
+- The durable owner store is implemented; a named product caller and destination-owned dedupe migration remain explicit composition follow-ups.
+- Product execution, independent acceptance, activation, and release remain false until their separate evidence gates pass.

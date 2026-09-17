@@ -75,7 +75,10 @@ async fn prepare_commits_ledger_and_outbox_atomically() {
         store.operation_status(&identity()).await.expect("status"),
         None
     );
-    assert_eq!(store.outbox_status(&identity()).await.expect("status"), None);
+    assert_eq!(
+        store.outbox_status(&identity()).await.expect("status"),
+        None
+    );
 
     sqlx::query("DROP TRIGGER test_fail_outbox")
         .execute(&store.pool)
@@ -129,10 +132,7 @@ async fn expired_pre_dispatch_lease_can_be_taken_over_by_new_generation() {
         .await
         .expect("claim");
     tokio::time::sleep(Duration::from_millis(5)).await;
-    let report = store
-        .recover_expired_leases()
-        .await
-        .expect("recover lease");
+    let report = store.recover_expired_leases().await.expect("recover lease");
     assert_eq!(report.requeued_before_dispatch, 1);
     let second = store
         .claim_outbox(&identity(), &stable_id("worker:two"), generation(2), 1_000)
@@ -271,7 +271,10 @@ async fn destination_dedupe_commits_with_destination_transaction() {
         semantic_digest: intent(b"payload").semantic_digest(),
     };
     let receipt = Digest32::of_bytes(b"receipt");
-    let mut tx = pool.begin_with("BEGIN IMMEDIATE").await.expect("transaction");
+    let mut tx = pool
+        .begin_with("BEGIN IMMEDIATE")
+        .await
+        .expect("transaction");
     assert_eq!(
         reserve_destination_effect(&mut tx, &key, 1)
             .await
@@ -299,6 +302,20 @@ async fn destination_dedupe_commits_with_destination_transaction() {
         }
     );
     replay.commit().await.expect("replay commit");
+
+    let changed = DestinationDedupeKey {
+        semantic_digest: Digest32::of_bytes(b"changed-semantics"),
+        ..key.clone()
+    };
+    let mut conflict = pool
+        .begin_with("BEGIN IMMEDIATE")
+        .await
+        .expect("conflict tx");
+    assert!(matches!(
+        reserve_destination_effect(&mut conflict, &changed, 4).await,
+        Err(DurableOperationError::Conflict(_))
+    ));
+    conflict.rollback().await.expect("rollback conflict");
 }
 
 #[tokio::test]
@@ -313,10 +330,7 @@ async fn terminal_outbox_gc_never_resurrects_operation_identity() {
         .claim_outbox(&identity(), &stable_id("worker:one"), generation(1), 1_000)
         .await
         .expect("claim");
-    store
-        .mark_dispatch_started(&lease)
-        .await
-        .expect("dispatch");
+    store.mark_dispatch_started(&lease).await.expect("dispatch");
     let evidence = Digest32::of_bytes(b"terminal");
     store
         .observe_terminal(
@@ -329,7 +343,13 @@ async fn terminal_outbox_gc_never_resurrects_operation_identity() {
         .await
         .expect("terminal");
     assert!(store.prune_terminal_outbox(0, 0).await.expect("prune") <= 1);
-    assert!(store.outbox_status(&identity()).await.expect("status").is_none());
+    assert!(
+        store
+            .outbox_status(&identity())
+            .await
+            .expect("status")
+            .is_none()
+    );
     let operation = store
         .operation_status(&identity())
         .await

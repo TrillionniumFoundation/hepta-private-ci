@@ -57,20 +57,25 @@
       ]
     },
     {
-      "protocolId": "hepta.kernel.operations.reference-model.v1",
+      "protocolId": "hepta.kernel.operations.durable-store.v1",
       "module": "kernel.operations",
-      "kind": "bounded_in_memory_reference_state_machine",
+      "kind": "sqlite_durable_operation_ledger_transactional_outbox",
       "source": [
-        "codex-rs/hepta-operations/src/model.rs",
-        "codex-rs/hepta-operations/src/ledger.rs",
-        "codex-rs/hepta-operations/src/outbox.rs"
+        "codex-rs/hepta-operations/src/durable.rs",
+        "codex-rs/hepta-operations/src/dispatcher.rs",
+        "codex-rs/hepta-operations/src/destination_dedupe.rs",
+        "codex-rs/hepta-operations/migrations/0001_durable_operations.sql",
+        "codex-rs/hepta-operations/src/ledger.rs"
       ],
       "invariants": [
-        "reference witness digest binds operation payload generation and expiry",
-        "authorization replay revalidates the complete live witness",
-        "terminal observation is owner-generation fenced",
-        "acknowledged outbox state retains owner generation and acknowledgement digest",
-        "the model provides no durability or production authority"
+        "operation intent and local outbox publication commit in one SQLite IMMEDIATE transaction",
+        "WAL FULL-sync store open verifies migration objects quick-check and foreign keys",
+        "claims are bounded by monotonic fence attempt owner-generation and lease deadline",
+        "expired pre-dispatch claims may be taken over but post-dispatch uncertainty becomes indeterminate",
+        "transport acknowledgement is never terminal success and terminal observation is generation fenced",
+        "real final-use authority is consumed immediately at synchronous adapter entry",
+        "destination dedupe runs inside the destination owner's transaction and kernel.operations never directly writes its domain store",
+        "the bounded in-memory reference model remains an independent transition oracle"
       ]
     },
     {

@@ -343,7 +343,9 @@ impl DurableOperationStore {
         .map_err(classify_sqlx_error)?;
         let status = load_operation(&mut tx, &intent.identity)
             .await?
-            .ok_or_else(|| DurableOperationError::Corrupt("inserted operation is missing".into()))?;
+            .ok_or_else(|| {
+                DurableOperationError::Corrupt("inserted operation is missing".into())
+            })?;
         tx.commit().await.map_err(classify_sqlx_error)?;
         Ok(status)
     }
@@ -384,9 +386,9 @@ impl DurableOperationStore {
         .execute(&mut *tx)
         .await
         .map_err(classify_sqlx_error)?;
-        let status = load_operation(&mut tx, identity)
-            .await?
-            .ok_or_else(|| DurableOperationError::Corrupt("operation disappeared during authority rebind".into()))?;
+        let status = load_operation(&mut tx, identity).await?.ok_or_else(|| {
+            DurableOperationError::Corrupt("operation disappeared during authority rebind".into())
+        })?;
         tx.commit().await.map_err(classify_sqlx_error)?;
         Ok(status)
     }
@@ -610,7 +612,9 @@ impl DurableOperationStore {
         .map_err(classify_sqlx_error)?;
         let status = load_operation(&mut tx, &lease.identity)
             .await?
-            .ok_or_else(|| DurableOperationError::Corrupt("dispatched operation disappeared".into()))?;
+            .ok_or_else(|| {
+                DurableOperationError::Corrupt("dispatched operation disappeared".into())
+            })?;
         tx.commit().await.map_err(classify_sqlx_error)?;
         Ok(status)
     }
@@ -711,7 +715,8 @@ impl DurableOperationStore {
                 "indeterminate reason digest must be nonzero",
             ));
         }
-        self.mark_indeterminate_internal(lease, reason_digest, None).await
+        self.mark_indeterminate_internal(lease, reason_digest, None)
+            .await
     }
 
     async fn mark_indeterminate_internal(
@@ -857,9 +862,9 @@ impl DurableOperationStore {
         .execute(&mut *tx)
         .await
         .map_err(classify_sqlx_error)?;
-        let status = load_operation(&mut tx, identity)
-            .await?
-            .ok_or_else(|| DurableOperationError::Corrupt("terminal operation disappeared".into()))?;
+        let status = load_operation(&mut tx, identity).await?.ok_or_else(|| {
+            DurableOperationError::Corrupt("terminal operation disappeared".into())
+        })?;
         tx.commit().await.map_err(classify_sqlx_error)?;
         Ok(status)
     }
@@ -984,7 +989,9 @@ impl DurableOperationStore {
             terminal_operations: row.try_get::<Option<i64>, _>("terminal")?.unwrap_or(0),
             queued_outbox: outbox.try_get::<Option<i64>, _>("queued")?.unwrap_or(0),
             leased_outbox: outbox.try_get::<Option<i64>, _>("leased")?.unwrap_or(0),
-            indeterminate_outbox: outbox.try_get::<Option<i64>, _>("indeterminate")?.unwrap_or(0),
+            indeterminate_outbox: outbox
+                .try_get::<Option<i64>, _>("indeterminate")?
+                .unwrap_or(0),
             terminal_outbox: outbox.try_get::<Option<i64>, _>("terminal")?.unwrap_or(0),
             oldest_ready_age_ms: oldest.map(|value| now.saturating_sub(value)),
         })
@@ -1199,8 +1206,14 @@ fn decode_operation(
         .map(stable_id)
         .transpose()?;
     let destination_id = stable_id(row.try_get::<String, _>("destination_id")?)?;
-    let payload_digest = digest(row.try_get::<Vec<u8>, _>("payload_digest")?, "payload_digest")?;
-    let semantic_digest = digest(row.try_get::<Vec<u8>, _>("semantic_digest")?, "semantic_digest")?;
+    let payload_digest = digest(
+        row.try_get::<Vec<u8>, _>("payload_digest")?,
+        "payload_digest",
+    )?;
+    let semantic_digest = digest(
+        row.try_get::<Vec<u8>, _>("semantic_digest")?,
+        "semantic_digest",
+    )?;
     let owner_generation = generation_from_blob(row.try_get::<Vec<u8>, _>("owner_generation")?)?;
     let authority_epoch = generation_from_blob(row.try_get::<Vec<u8>, _>("authority_epoch")?)?;
     let revision = revision_from_blob(row.try_get::<Vec<u8>, _>("revision")?)?;
@@ -1247,8 +1260,14 @@ fn decode_outbox(
             operation_id: stable_id(row.try_get::<String, _>("operation_id")?)?,
         },
         destination_id: stable_id(row.try_get::<String, _>("destination_id")?)?,
-        payload_digest: digest(row.try_get::<Vec<u8>, _>("payload_digest")?, "payload_digest")?,
-        semantic_digest: digest(row.try_get::<Vec<u8>, _>("semantic_digest")?, "semantic_digest")?,
+        payload_digest: digest(
+            row.try_get::<Vec<u8>, _>("payload_digest")?,
+            "payload_digest",
+        )?,
+        semantic_digest: digest(
+            row.try_get::<Vec<u8>, _>("semantic_digest")?,
+            "semantic_digest",
+        )?,
         state: DurableOutboxState::parse(row.try_get("state")?)?,
         fence: u64_from_i64(row.try_get("fence")?, "fence")?,
         attempts: u32::try_from(row.try_get::<i64, _>("attempts")?)
@@ -1350,8 +1369,9 @@ fn push_id(bytes: &mut Vec<u8>, value: &StableId) {
 }
 
 fn stable_id(value: String) -> Result<StableId, DurableOperationError> {
-    StableId::new(value)
-        .map_err(|error| DurableOperationError::Corrupt(format!("invalid stored identifier: {error}")))
+    StableId::new(value).map_err(|error| {
+        DurableOperationError::Corrupt(format!("invalid stored identifier: {error}"))
+    })
 }
 
 fn digest(value: Vec<u8>, field: &'static str) -> Result<Digest32, DurableOperationError> {
@@ -1401,12 +1421,15 @@ fn revision(value: u64) -> Result<Revision, DurableOperationError> {
 }
 
 fn next_revision(value: Revision) -> Result<Revision, DurableOperationError> {
-    value.next().map_err(|_| DurableOperationError::RevisionOverflow)
+    value
+        .next()
+        .map_err(|_| DurableOperationError::RevisionOverflow)
 }
 
 fn i64_from_u64(value: u64, field: &'static str) -> Result<i64, DurableOperationError> {
-    i64::try_from(value)
-        .map_err(|_| DurableOperationError::Corrupt(format!("{field} exceeds sqlite integer range")))
+    i64::try_from(value).map_err(|_| {
+        DurableOperationError::Corrupt(format!("{field} exceeds sqlite integer range"))
+    })
 }
 
 fn u64_from_i64(value: i64, field: &'static str) -> Result<u64, DurableOperationError> {
@@ -1468,15 +1491,25 @@ pub enum DurableOperationError {
 impl fmt::Display for DurableOperationError {
     fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
-            Self::InvalidRequest(message) => write!(formatter, "invalid durable operation request: {message}"),
+            Self::InvalidRequest(message) => {
+                write!(formatter, "invalid durable operation request: {message}")
+            }
             Self::Missing(id) => write!(formatter, "durable operation is missing: {id}"),
             Self::Conflict(id) => write!(formatter, "durable operation identity conflicts: {id}"),
-            Self::DatabaseConflict(message) => write!(formatter, "durable store conflict: {message}"),
+            Self::DatabaseConflict(message) => {
+                write!(formatter, "durable store conflict: {message}")
+            }
             Self::CapacityExceeded { resource, maximum } => {
-                write!(formatter, "{resource} capacity exceeded; maximum is {maximum}")
+                write!(
+                    formatter,
+                    "{resource} capacity exceeded; maximum is {maximum}"
+                )
             }
             Self::InvalidTransition { from, to } => {
-                write!(formatter, "invalid durable operation transition from {from} to {to}")
+                write!(
+                    formatter,
+                    "invalid durable operation transition from {from} to {to}"
+                )
             }
             Self::StaleGeneration => formatter.write_str("durable operation generation is stale"),
             Self::StaleLease => formatter.write_str("durable outbox lease is stale or expired"),
@@ -1490,8 +1523,12 @@ impl fmt::Display for DurableOperationError {
             Self::TerminalConflict => formatter.write_str("terminal durable operation conflicts"),
             Self::Database(message) => write!(formatter, "durable sqlite error: {message}"),
             Self::Migration(message) => write!(formatter, "durable migration error: {message}"),
-            Self::Corrupt(message) => write!(formatter, "durable operation store is corrupt: {message}"),
-            Self::Unavailable(message) => write!(formatter, "durable operation store unavailable: {message}"),
+            Self::Corrupt(message) => {
+                write!(formatter, "durable operation store is corrupt: {message}")
+            }
+            Self::Unavailable(message) => {
+                write!(formatter, "durable operation store unavailable: {message}")
+            }
         }
     }
 }

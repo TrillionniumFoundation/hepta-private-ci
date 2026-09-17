@@ -19,35 +19,68 @@
   "sourceRootPresent": true,
   "productionImplementation": false,
   "productCallerState": "not_composed",
-  "productionWriterState": "not_established",
+  "productionWriterState": "durable_store_implemented_not_product_composed",
   "operations": [
     {
-      "operation": "operationledger",
-      "nativeSymbol": "OperationLedger",
-      "sourcePath": "codex-rs/hepta-operations/src/ledger.rs",
+      "operation": "durableoperationstore",
+      "nativeSymbol": "DurableOperationStore",
+      "sourcePath": "codex-rs/hepta-operations/src/durable.rs",
       "state": "source_implemented_not_product_composed",
-      "authority": "none",
-      "tests": [],
+      "authority": "kernel.authority_final_use_required_at_dispatch",
+      "tests": [
+        "codex-rs/hepta-operations/src/durable_tests.rs"
+      ],
       "sourcePathExists": true,
       "designOperation": "operationledger",
       "mappingClass": "owner_native",
       "delegatedCallees": []
     },
     {
-      "operation": "outbox",
+      "operation": "durabledispatcher",
+      "nativeSymbol": "DurableDispatcher",
+      "sourcePath": "codex-rs/hepta-operations/src/dispatcher.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "kernel.authority_final_use",
+      "tests": [
+        "codex-rs/hepta-operations/src/durable_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "claim_outbox",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "operationledger_reference_oracle",
+      "nativeSymbol": "OperationLedger",
+      "sourcePath": "codex-rs/hepta-operations/src/ledger.rs",
+      "state": "reference_oracle_implemented",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-operations/src/ledger_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "operationledger",
+      "mappingClass": "owner_native_reference",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "outbox_reference_oracle",
       "nativeSymbol": "Outbox",
       "sourcePath": "codex-rs/hepta-operations/src/outbox.rs",
-      "state": "source_implemented_not_product_composed",
+      "state": "reference_oracle_implemented",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-operations/src/outbox_tests.rs"
+      ],
       "sourcePathExists": true,
       "designOperation": "outbox",
-      "mappingClass": "owner_native",
+      "mappingClass": "owner_native_reference",
       "delegatedCallees": []
     }
   ],
   "repositoryControlledGaps": [
-    "Bind every operation to an authenticated consumer callsite and owner store.",
+    "Bind a named authenticated product caller and selected durable-store path.",
+    "Install the destination dedupe table/helper in the actual destination owner's transaction.",
     "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary."
   ],
   "externalEvidenceGates": [
