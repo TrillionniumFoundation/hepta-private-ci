@@ -30,15 +30,33 @@ use codex_hepta_types::Digest32;
 use codex_hepta_types::LogicalSequence;
 use codex_hepta_types::StableId;
 
-// Canonical production-facing durable owner surface. Keeping the concrete
-// store type identical avoids a second copy of persistence invariants while
-// moving product composition to one import boundary.
+// Canonical product-facing durable owner surface. Keeping the concrete store
+// type identical avoids a second copy of persistence invariants while moving
+// product composition to one import boundary.
+pub use codex_hepta_memory::CognitiveAccess;
+pub use codex_hepta_memory::CognitiveOwnerFrontiers;
+pub use codex_hepta_memory::CognitiveProjectionReceipt;
 pub use codex_hepta_memory::CognitiveRecoveryAnchor;
 pub use codex_hepta_memory::CognitiveRecoveryError;
 pub use codex_hepta_memory::CognitiveRecoveryRequirement;
+pub use codex_hepta_memory::CognitiveScope;
 pub use codex_hepta_memory::CognitiveStore;
 pub use codex_hepta_memory::CognitiveStoreError;
+pub use codex_hepta_memory::CognitiveWriteReceipt;
 pub use codex_hepta_memory::DurableCognitiveSnapshot;
+pub use codex_hepta_memory::ForgetMemoryDraft;
+pub use codex_hepta_memory::KgEdge;
+pub use codex_hepta_memory::KgEntityFactDraft;
+pub use codex_hepta_memory::KgFactSetDraft;
+pub use codex_hepta_memory::KgNode;
+pub use codex_hepta_memory::KgRelationFactDraft;
+pub use codex_hepta_memory::LedgerSourceKind;
+pub use codex_hepta_memory::MemoryDraft;
+pub use codex_hepta_memory::MemoryLifecycleState;
+pub use codex_hepta_memory::MemoryRevisionDraft;
+pub use codex_hepta_memory::MemoryRevisionId;
+pub use codex_hepta_memory::MemoryRevisionRecord;
+pub use codex_hepta_memory::MemoryVerification;
 pub use codex_hepta_memory::ProductionAuthorityLease;
 pub use codex_hepta_memory::ProductionAuthorityToken;
 pub use codex_hepta_memory::ProductionAuthorityVerifier;
@@ -53,7 +71,12 @@ pub use codex_hepta_memory::ProductionQueuedReceipt;
 pub use codex_hepta_memory::ProductionRecoveryReceipt;
 pub use codex_hepta_memory::ProductionTargetOutcome;
 pub use codex_hepta_memory::ProductionWriterError;
+pub use codex_hepta_memory::ProjectionGeneration;
 pub use codex_hepta_memory::RecoveredCognitiveReadOnly;
+pub use codex_hepta_memory::SourceDraft;
+pub use codex_hepta_memory::SourceEventId;
+pub use codex_hepta_memory::SourceRevisionId;
+pub use codex_hepta_memory::StableMemoryId;
 pub use codex_hepta_memory::PRODUCTION_DURABLE_WRITER_JOURNAL_MODE;
 pub use codex_hepta_memory::PRODUCTION_DURABLE_WRITER_NAMESPACE;
 pub use codex_hepta_memory::PRODUCTION_DURABLE_WRITER_SCHEMA_VERSION;
