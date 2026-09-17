@@ -27,9 +27,9 @@ impl AgentdOperationsHost {
         let sqlite_home = AbsolutePathBuf::from_absolute_path(&identity.home_root)
             .map_err(|error| AgentdError::Invalid(error.to_string()))?;
         let sqlite = SqliteConfig::from_sqlite_home(sqlite_home);
-        let store = DurableOperationStore::open(&sqlite)
-            .await
-            .map_err(|error| AgentdError::Protocol(format!("open kernel.operations store: {error}")))?;
+        let store = DurableOperationStore::open(&sqlite).await.map_err(|error| {
+            AgentdError::Protocol(format!("open kernel.operations store: {error}"))
+        })?;
         Ok(Self {
             store: Arc::new(store),
         })
