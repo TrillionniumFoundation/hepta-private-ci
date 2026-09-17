@@ -13,6 +13,7 @@ use crate::SupervisorEventKind;
 use crate::lease::PROCESS_LEASE_SCHEMA_VERSION;
 use crate::lease::ProcessLease;
 use crate::lease::remove_lease;
+use crate::restart_journal::unix_millis_now;
 use crate::restart_policy::RestartSchedule;
 use crate::restart_policy::schedule_restart;
 use crate::runtime::AgentRuntime;
@@ -42,7 +43,7 @@ impl<D: ProcessDriver> Supervisor<D> {
                 if slot.restart_after_exit {
                     slot.restart_after_exit = false;
                     let generation = self.record(agent_id)?.lifecycle.generation;
-                    self.schedule_automatic_restart(slot, generation, now);
+                    self.schedule_automatic_restart(agent_id, slot, generation, now)?;
                 }
                 self.start_pending_restart(agent_id, slot, now)?;
             }
@@ -86,7 +87,7 @@ impl<D: ProcessDriver> Supervisor<D> {
                 slot.restart_retry_at = None;
                 slot.restart_automatic = false;
                 let generation = self.record(agent_id)?.lifecycle.generation;
-                self.schedule_automatic_restart(slot, generation, now);
+                self.schedule_automatic_restart(agent_id, slot, generation, now)?;
                 Err(error)
             }
             Err(error) => {
@@ -98,18 +99,23 @@ impl<D: ProcessDriver> Supervisor<D> {
         }
     }
 
-    fn schedule_automatic_restart(
+    pub(crate) fn schedule_automatic_restart(
         &self,
+        agent_id: &AgentId,
         slot: &mut AgentSlot<D::Process>,
         generation: u64,
         now: Instant,
-    ) {
+    ) -> Result<(), SupervisorError> {
+        let wall_now = unix_millis_now()?;
         match schedule_restart(
             &mut slot.restart_attempt,
             &mut slot.restart_window_started_at,
             now,
         ) {
             RestartSchedule::Retry { attempt, retry_at } => {
+                if attempt == 1 || slot.restart_window_started_unix_millis.is_none() {
+                    slot.restart_window_started_unix_millis = Some(wall_now);
+                }
                 slot.restart_pending = true;
                 slot.restart_retry_at = Some(retry_at);
                 slot.restart_automatic = true;
@@ -118,6 +124,13 @@ impl<D: ProcessDriver> Supervisor<D> {
                     generation,
                     SupervisorEventKind::AutomaticRestartQueued { attempt },
                 );
+                if let Err(error) = self.persist_restart_budget(agent_id, slot) {
+                    slot.restart_pending = false;
+                    slot.restart_retry_at = None;
+                    slot.restart_automatic = false;
+                    slot.restart_exhausted = true;
+                    return Err(error);
+                }
             }
             RestartSchedule::Exhausted { attempts } => {
                 slot.restart_pending = false;
@@ -128,8 +141,10 @@ impl<D: ProcessDriver> Supervisor<D> {
                     generation,
                     SupervisorEventKind::AutomaticRestartBudgetExhausted { attempts },
                 );
+                self.persist_restart_budget(agent_id, slot)?;
             }
         }
+        Ok(())
     }
 
     fn tick_runtime(
