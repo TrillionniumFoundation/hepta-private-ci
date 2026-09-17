@@ -27,9 +27,10 @@ CREATE TABLE operation_records (
             AND terminal_digest IS NOT NULL)
         OR (state NOT IN ('applied', 'not_applied', 'quarantined')
             AND terminal_at_ms IS NULL AND terminal_digest IS NULL)),
-    CHECK ((state IN ('dispatched', 'indeterminate', 'applied', 'not_applied', 'quarantined')
+    CHECK ((state IN ('dispatched', 'indeterminate', 'applied', 'not_applied')
             AND dispatch_digest IS NOT NULL)
-        OR (state = 'pending' AND dispatch_digest IS NULL))
+        OR (state = 'pending' AND dispatch_digest IS NULL)
+        OR state = 'quarantined')
 ) WITHOUT ROWID;
 
 CREATE TABLE cross_owner_outbox (
