@@ -1,6 +1,7 @@
 #![forbid(unsafe_code)]
 
 mod agent_id;
+mod authority_lease;
 mod authbus;
 #[cfg(feature = "authbus-local-qualification")]
 pub mod authbus_b3_adapter;
@@ -23,6 +24,13 @@ mod qualification_receipt;
 mod receipt;
 mod stable_id;
 
+pub use authority_lease::AuthorityFrontier;
+pub use authority_lease::AuthorityLease;
+pub use authority_lease::AuthorityLeaseError;
+pub use authority_lease::AuthorityLeaseRead;
+pub use authority_lease::AuthorityLeaseRegistry;
+pub use authority_lease::CapabilityRevocation;
+pub use authority_lease::LeaseVerifiedUse;
 pub use final_use::FinalUseAuthority;
 pub use final_use::FinalUseBinding;
 pub use final_use::FinalUseError;
