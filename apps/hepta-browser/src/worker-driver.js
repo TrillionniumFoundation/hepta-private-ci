@@ -343,7 +343,8 @@ export class SubprocessBrowserDriver {
 
   #requireSession(input) {
     if (!this.#child || !this.#client) throw new TypeError("browser worker is not started");
-    if (input.profileId !== this.#sessionId || input.generation !== this.#generation) {
+    const generation = input.generation ?? input.profileGeneration;
+    if (input.profileId !== this.#sessionId || generation !== this.#generation) {
       throw new TypeError("browser worker session or generation mismatch");
     }
     if (input.processId !== undefined && input.processId !== this.#processId) {
