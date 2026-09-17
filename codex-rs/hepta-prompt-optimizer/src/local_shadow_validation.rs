@@ -308,13 +308,7 @@ fn collect_requirement_closure(
     }
     if let Some(prerequisites) = requires.get(candidate_id) {
         for prerequisite in prerequisites {
-            collect_requirement_closure(
-                prerequisite,
-                requires,
-                visiting,
-                visited,
-                closure,
-            )?;
+            collect_requirement_closure(prerequisite, requires, visiting, visited, closure)?;
         }
     }
     visiting.remove(candidate_id);
