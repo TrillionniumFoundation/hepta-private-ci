@@ -76,12 +76,7 @@ fn rust_python_v2_frame_schema_load_and_fault_reject() {
     let schema = StableId::new("hepta.integration.v2").unwrap();
     let producer = StableId::new("hepta-shadow-qualification").unwrap();
     let generation = Generation::new(7).unwrap();
-    let payload = br#"{"objective":"ndu","authority":"deny_all","step":1}"#;
-    let payload = payload
-        .strip_prefix(br#"\""#)
-        .and_then(|value| value.strip_suffix(br#"\""#))
-        .unwrap_or(payload);
-    let payload = payload.to_vec();
+    let payload = br#"{"objective":"ndu","authority":"deny_all","step":1}"#.to_vec();
     let envelope = WireEnvelopeV2::new(
         schema.clone(),
         producer.clone(),
