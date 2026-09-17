@@ -19,8 +19,14 @@ pub enum OperationError {
     },
     AuthorityRejected,
     StaleGeneration,
+    StaleLease,
+    LeaseUnavailable,
     Terminal,
+    TerminalPruned(StableId),
     NotClaimed,
+    Storage(String),
+    Corrupt(String),
+    Unavailable(String),
 }
 
 impl fmt::Display for OperationError {
@@ -45,11 +51,19 @@ impl fmt::Display for OperationError {
                 )
             }
             Self::AuthorityRejected => {
-                formatter.write_str("reference operation authority witness rejected")
+                formatter.write_str("operation authority rejected")
             }
             Self::StaleGeneration => formatter.write_str("operation generation fence is stale"),
+            Self::StaleLease => formatter.write_str("outbox lease fence is stale"),
+            Self::LeaseUnavailable => formatter.write_str("outbox lease is not currently available"),
             Self::Terminal => formatter.write_str("operation is already terminal"),
+            Self::TerminalPruned(id) => {
+                write!(formatter, "operation terminal identity was retained after pruning: {id}")
+            }
             Self::NotClaimed => formatter.write_str("outbox intent is not claimed"),
+            Self::Storage(message) => write!(formatter, "durable operation storage error: {message}"),
+            Self::Corrupt(message) => write!(formatter, "durable operation store is corrupt: {message}"),
+            Self::Unavailable(message) => write!(formatter, "durable operation service unavailable: {message}"),
         }
     }
 }
