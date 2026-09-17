@@ -131,14 +131,7 @@ impl NduProjectionJournalV1 {
         subject_digest: Digest32,
         projection_digest: Digest32,
     ) -> Result<NduProjectionEntryV1, NduProjectionJournalError> {
-        if !self.entries.iter().any(|entry| {
-            entry.kind.is_projection()
-                && entry.objective_digest == objective_digest
-                && entry.subject_digest == subject_digest
-                && entry.payload_digest == projection_digest
-        }) {
-            return Err(NduProjectionJournalError::ProjectionNotRecorded);
-        }
+        self.require_recorded_projection(objective_digest, subject_digest, projection_digest)?;
         if self.revoked_digests().contains(&projection_digest) {
             return Err(NduProjectionJournalError::RevokedProjection);
         }
@@ -158,6 +151,7 @@ impl NduProjectionJournalV1 {
         subject_digest: Digest32,
         projection_digest: Digest32,
     ) -> Result<NduProjectionEntryV1, NduProjectionJournalError> {
+        self.require_recorded_projection(objective_digest, subject_digest, projection_digest)?;
         self.append(
             NduProjectionKindV1::Revocation,
             revocation_identity_digest,
@@ -192,6 +186,46 @@ impl NduProjectionJournalV1 {
             }
         }
         selected.filter(|digest| !revoked.contains(digest))
+    }
+
+    fn require_recorded_projection(
+        &self,
+        objective_digest: Digest32,
+        subject_digest: Digest32,
+        projection_digest: Digest32,
+    ) -> Result<(), NduProjectionJournalError> {
+        if self.entries.iter().any(|entry| {
+            entry.kind.is_projection()
+                && entry.objective_digest == objective_digest
+                && entry.subject_digest == subject_digest
+                && entry.payload_digest == projection_digest
+        }) {
+            Ok(())
+        } else {
+            Err(NduProjectionJournalError::ProjectionNotRecorded)
+        }
+    }
+
+    fn validate_transition(
+        &self,
+        kind: NduProjectionKindV1,
+        objective_digest: Digest32,
+        subject_digest: Digest32,
+        payload_digest: Digest32,
+    ) -> Result<(), NduProjectionJournalError> {
+        match kind {
+            NduProjectionKindV1::Preference | NduProjectionKindV1::Utility => Ok(()),
+            NduProjectionKindV1::SelectedProjection => {
+                self.require_recorded_projection(objective_digest, subject_digest, payload_digest)?;
+                if self.revoked_digests().contains(&payload_digest) {
+                    return Err(NduProjectionJournalError::RevokedProjection);
+                }
+                Ok(())
+            }
+            NduProjectionKindV1::Revocation => {
+                self.require_recorded_projection(objective_digest, subject_digest, payload_digest)
+            }
+        }
     }
 
     fn append(
@@ -361,6 +395,13 @@ impl NduProjectionJournalV1 {
             if journal.identities.contains_key(&identity_digest) {
                 return Err(NduProjectionJournalError::DuplicateSerializedIdentity);
             }
+
+            // Hash validity is necessary but not sufficient. Reapply the same
+            // state-machine admission used by live mutation so a recomputed,
+            // cryptographically consistent but semantically impossible record
+            // cannot be resurrected during recovery.
+            journal.validate_transition(kind, objective_digest, subject_digest, payload_digest)?;
+
             journal.identities.insert(
                 identity_digest,
                 (kind, objective_digest, subject_digest, payload_digest),
