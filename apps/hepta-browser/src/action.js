@@ -11,6 +11,7 @@ const ENCODED_ASCII_CONTROL = /%(?:0[0-9a-f]|1[0-9a-f]|7f)/i;
 const STABLE_ID = /^[A-Za-z0-9._:-]{1,128}$/;
 const DIGEST = /^[0-9a-f]{64}$/;
 const ZERO_DIGEST = "0".repeat(64);
+const WAIT_CONDITIONS = new Set(["load-complete"]);
 
 function requireRecord(value, name) {
   if (value === null || typeof value !== "object" || Array.isArray(value)) {
@@ -171,9 +172,13 @@ export function normalizeBrowserAction(value) {
     }
     case "wait": {
       exactKeys(action, ["kind", "condition", "timeoutMs"], "wait action");
+      const condition = boundedString(action.condition, "typedAction.condition", 128);
+      if (!WAIT_CONDITIONS.has(condition)) {
+        throw new TypeError("typedAction.condition is not registered");
+      }
       return Object.freeze({
         kind: "wait",
-        condition: boundedString(action.condition, "typedAction.condition", 128),
+        condition,
         timeoutMs: positiveInteger(action.timeoutMs, "typedAction.timeoutMs", MAX_WAIT_MS),
       });
     }
