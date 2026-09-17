@@ -27,6 +27,7 @@ pub(crate) struct UpdateCandidate {
     pub(crate) evidence_digest: String,
     pub(crate) producer_id: String,
     pub(crate) selector_id: String,
+    pub(crate) channel: String,
     pub(crate) platform: NativePlatform,
     pub(crate) architecture: String,
     pub(crate) backend_protocol_version: u64,
@@ -45,6 +46,12 @@ pub(crate) trait ArtifactDigest: Send + Sync {
     fn sha256(&self, path: &Path) -> Result<String>;
 }
 
+/// Verifies the operating-system release trust attached to the exact artifact.
+/// This is in addition to Hepta's detached release and selection signatures.
+pub(crate) trait PlatformArtifactVerifier: Send + Sync {
+    fn verify(&self, platform: NativePlatform, path: &Path) -> Result<()>;
+}
+
 #[derive(Clone, Copy, Debug, Default)]
 pub(crate) struct SystemArtifactDigest;
 
@@ -57,34 +64,61 @@ impl ArtifactDigest for SystemArtifactDigest {
             NativePlatform::Windows => windows_digest(path),
             NativePlatform::Macos => unix_digest("shasum", &["-a", "256"], path),
             NativePlatform::Linux => unix_digest("sha256sum", &[], path),
-            NativePlatform::Unsupported => bail!("native update digest is unsupported on this OS"),
+            NativePlatform::Unsupported => {
+                bail!("native update digest is unsupported on this OS")
+            }
         }
     }
 }
 
-pub(crate) struct UpdateVerifier<R, S, D> {
+#[derive(Clone, Copy, Debug, Default)]
+pub(crate) struct SystemPlatformArtifactVerifier;
+
+impl PlatformArtifactVerifier for SystemPlatformArtifactVerifier {
+    fn verify(&self, platform: NativePlatform, path: &Path) -> Result<()> {
+        if !path.is_absolute() || !path.is_file() {
+            bail!("native platform-signing verification requires an absolute artifact file");
+        }
+        match platform {
+            NativePlatform::Windows => verify_windows_authenticode(path),
+            NativePlatform::Macos => verify_macos_codesign_and_gatekeeper(path),
+            NativePlatform::Linux => Ok(()),
+            NativePlatform::Unsupported => {
+                bail!("native platform-signing verification is unsupported on this OS")
+            }
+        }
+    }
+}
+
+pub(crate) struct UpdateVerifier<R, S, D, C> {
     release_signatures: R,
     selection_signatures: S,
     digests: D,
+    platform_artifacts: C,
+    expected_channel: String,
     expected_platform: NativePlatform,
     expected_architecture: String,
     expected_backend_protocol: u64,
 }
 
-impl<R, S, D> UpdateVerifier<R, S, D>
+impl<R, S, D, C> UpdateVerifier<R, S, D, C>
 where
     R: DetachedSignatureVerifier,
     S: DetachedSignatureVerifier,
     D: ArtifactDigest,
+    C: PlatformArtifactVerifier,
 {
     pub(crate) fn new(
         release_signatures: R,
         selection_signatures: S,
         digests: D,
+        platform_artifacts: C,
+        expected_channel: String,
         expected_platform: NativePlatform,
         expected_architecture: String,
         expected_backend_protocol: u64,
     ) -> Result<Self> {
+        validate_id(&expected_channel, "update channel")?;
         validate_id(&expected_architecture, "architecture")?;
         if expected_backend_protocol == 0 {
             bail!("backend protocol version must be positive");
@@ -93,6 +127,8 @@ where
             release_signatures,
             selection_signatures,
             digests,
+            platform_artifacts,
+            expected_channel,
             expected_platform,
             expected_architecture,
             expected_backend_protocol,
@@ -105,9 +141,13 @@ where
         validate_digest(&candidate.evidence_digest, "evidence digest")?;
         validate_id(&candidate.producer_id, "producer id")?;
         validate_id(&candidate.selector_id, "selector id")?;
+        validate_id(&candidate.channel, "update channel")?;
         validate_id(&candidate.architecture, "architecture")?;
         if candidate.producer_id == candidate.selector_id {
             bail!("native update selector must be independent from the producer");
+        }
+        if candidate.channel != self.expected_channel {
+            bail!("native update channel is not selected for this application instance");
         }
         if candidate.platform != self.expected_platform
             || candidate.architecture != self.expected_architecture
@@ -134,6 +174,9 @@ where
         {
             bail!("native update independent selection signature is invalid");
         }
+        self.platform_artifacts
+            .verify(candidate.platform, &candidate.package_path)
+            .context("native update OS signing/notarization verification failed")?;
         Ok(VerifiedUpdateCandidate { candidate })
     }
 }
@@ -153,13 +196,7 @@ enum UpdateState {
         package_digest: String,
         predecessor_digest: String,
     },
-    Confirmed {
-        package_digest: String,
-    },
-    RolledBack {
-        package_digest: String,
-        predecessor_digest: String,
-    },
+    Settled,
 }
 
 pub(crate) struct TransactionalUpdater<D> {
@@ -192,6 +229,7 @@ where
                 bail!("native updater {name} must be absolute");
             }
         }
+        validate_journal_permissions(&journal_path)?;
         let state = read_update_state(&journal_path)?;
         Ok(Self {
             digests,
@@ -232,10 +270,7 @@ where
                     candidate.package_digest, candidate.predecessor_digest
                 ),
             )?;
-            *state = UpdateState::RolledBack {
-                package_digest: candidate.package_digest.clone(),
-                predecessor_digest: candidate.predecessor_digest.clone(),
-            };
+            *state = UpdateState::Settled;
             return Ok(UpdateDisposition::Quarantined);
         }
         append_state(
@@ -269,9 +304,7 @@ where
             && self.digests.sha256(&self.active_path)? == *package_digest
         {
             append_state(&self.journal_path, &format!("C|{package_digest}"))?;
-            *state = UpdateState::Confirmed {
-                package_digest: package_digest.clone(),
-            };
+            *state = UpdateState::Settled;
             let _ = std::fs::remove_file(&self.rollback_path);
             return Ok(UpdateDisposition::Confirmed);
         }
@@ -286,20 +319,18 @@ where
             &self.journal_path,
             &format!("R|{package_digest}|{predecessor_digest}"),
         )?;
-        *state = UpdateState::RolledBack {
-            package_digest,
-            predecessor_digest,
-        };
+        *state = UpdateState::Settled;
         Ok(UpdateDisposition::RolledBack)
     }
 }
 
 fn release_message(candidate: &UpdateCandidate) -> String {
     format!(
-        "{UPDATE_SCHEMA}|{}|{}|{}|{}|{}|{}|{}",
+        "{UPDATE_SCHEMA}|{}|{}|{}|{}|{}|{}|{}|{}",
         candidate.package_digest,
         candidate.predecessor_digest,
         candidate.evidence_digest,
+        candidate.channel,
         platform_name(candidate.platform),
         candidate.architecture,
         candidate.backend_protocol_version,
@@ -308,10 +339,7 @@ fn release_message(candidate: &UpdateCandidate) -> String {
 }
 
 fn selection_message(candidate: &UpdateCandidate) -> String {
-    format!(
-        "{}|{}",
-        release_message(candidate), candidate.selector_id
-    )
+    format!("{}|{}", release_message(candidate), candidate.selector_id)
 }
 
 fn platform_name(platform: NativePlatform) -> &'static str {
@@ -321,6 +349,60 @@ fn platform_name(platform: NativePlatform) -> &'static str {
         NativePlatform::Linux => "linux",
         NativePlatform::Unsupported => "unsupported",
     }
+}
+
+fn verify_windows_authenticode(path: &Path) -> Result<()> {
+    const SCRIPT: &str = r#"
+$ErrorActionPreference='Stop'
+$sig=Get-AuthenticodeSignature -LiteralPath $args[0]
+if ($sig.Status -ne [System.Management.Automation.SignatureStatus]::Valid) { exit 3 }
+"#;
+    let status = Command::new("powershell.exe")
+        .args([
+            "-NoLogo",
+            "-NoProfile",
+            "-NonInteractive",
+            "-Command",
+            SCRIPT,
+            "--",
+        ])
+        .arg(path)
+        .stdin(Stdio::null())
+        .stdout(Stdio::null())
+        .stderr(Stdio::null())
+        .status()
+        .context("verify Windows Authenticode signature")?;
+    if status.success() {
+        Ok(())
+    } else {
+        bail!("Windows Authenticode signature is not valid")
+    }
+}
+
+fn verify_macos_codesign_and_gatekeeper(path: &Path) -> Result<()> {
+    let codesign = Command::new("codesign")
+        .args(["--verify", "--deep", "--strict", "--verbose=2"])
+        .arg(path)
+        .stdin(Stdio::null())
+        .stdout(Stdio::null())
+        .stderr(Stdio::null())
+        .status()
+        .context("verify macOS code signature")?;
+    if !codesign.success() {
+        bail!("macOS code signature is not valid");
+    }
+    let gatekeeper = Command::new("spctl")
+        .args(["--assess", "--type", "execute", "--verbose=2"])
+        .arg(path)
+        .stdin(Stdio::null())
+        .stdout(Stdio::null())
+        .stderr(Stdio::null())
+        .status()
+        .context("verify macOS Gatekeeper/notarization acceptance")?;
+    if !gatekeeper.success() {
+        bail!("macOS Gatekeeper/notarization assessment rejected the artifact");
+    }
+    Ok(())
 }
 
 fn unix_digest(command: &str, args: &[&str], path: &Path) -> Result<String> {
@@ -337,9 +419,17 @@ fn unix_digest(command: &str, args: &[&str], path: &Path) -> Result<String> {
 }
 
 fn windows_digest(path: &Path) -> Result<String> {
-    const SCRIPT: &str = "(Get-FileHash -Algorithm SHA256 -LiteralPath $args[0]).Hash.ToLowerInvariant()";
+    const SCRIPT: &str =
+        "(Get-FileHash -Algorithm SHA256 -LiteralPath $args[0]).Hash.ToLowerInvariant()";
     let output = Command::new("powershell.exe")
-        .args(["-NoLogo", "-NoProfile", "-NonInteractive", "-Command", SCRIPT, "--"])
+        .args([
+            "-NoLogo",
+            "-NoProfile",
+            "-NonInteractive",
+            "-Command",
+            SCRIPT,
+            "--",
+        ])
         .arg(path)
         .stdin(Stdio::null())
         .output()
@@ -397,7 +487,9 @@ fn restore_file(rollback: &Path, active: &Path) -> Result<()> {
 }
 
 fn append_state(path: &Path, line: &str) -> Result<()> {
-    if path.metadata().map(|metadata| metadata.len()).unwrap_or(0) > MAX_UPDATE_JOURNAL_BYTES {
+    let current = path.metadata().map(|metadata| metadata.len()).unwrap_or(0);
+    let added = u64::try_from(line.len() + 1).context("native update journal line too large")?;
+    if current.saturating_add(added) > MAX_UPDATE_JOURNAL_BYTES {
         bail!("native update journal exceeds its byte budget");
     }
     if let Some(parent) = path.parent() {
@@ -441,17 +533,12 @@ fn read_update_state(path: &Path) -> Result<UpdateState> {
             }
             ["C", package] => {
                 validate_digest(package, "journal package digest")?;
-                UpdateState::Confirmed {
-                    package_digest: (*package).to_string(),
-                }
+                UpdateState::Settled
             }
             ["R", package, predecessor] => {
                 validate_digest(package, "journal package digest")?;
                 validate_digest(predecessor, "journal predecessor digest")?;
-                UpdateState::RolledBack {
-                    package_digest: (*package).to_string(),
-                    predecessor_digest: (*predecessor).to_string(),
-                }
+                UpdateState::Settled
             }
             _ => bail!("native update journal contains a malformed record"),
         };
@@ -459,10 +546,26 @@ fn read_update_state(path: &Path) -> Result<UpdateState> {
     Ok(state)
 }
 
+fn validate_journal_permissions(path: &Path) -> Result<()> {
+    if !path.exists() {
+        return Ok(());
+    }
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::PermissionsExt;
+        if path.metadata()?.permissions().mode() & 0o077 != 0 {
+            bail!("native update journal must not be group/world accessible");
+        }
+    }
+    Ok(())
+}
+
 fn validate_digest(value: &str, name: &str) -> Result<()> {
     if value.len() != 64
         || value.bytes().all(|byte| byte == b'0')
-        || !value.bytes().all(|byte| byte.is_ascii_digit() || matches!(byte, b'a'..=b'f'))
+        || !value
+            .bytes()
+            .all(|byte| byte.is_ascii_digit() || matches!(byte, b'a'..=b'f'))
     {
         bail!("{name} must be a non-zero lowercase SHA-256 digest");
     }
