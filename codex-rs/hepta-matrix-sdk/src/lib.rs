@@ -15,6 +15,7 @@ mod outbound;
 #[cfg(feature = "qualification-failpoints")]
 mod qualification;
 mod sdk;
+mod server_observer;
 mod sync;
 
 pub use config::MatrixSdkPaths;
@@ -29,8 +30,11 @@ pub use ingress::MatrixTimelineEvent;
 pub use matrix_sdk::SessionMeta;
 pub use matrix_sdk::SessionTokens;
 pub use matrix_sdk::authentication::matrix::MatrixSession;
+pub use outbound::MatrixObserveFuture;
+pub use outbound::MatrixOutboundObserver;
 pub use outbound::MatrixOutboundTransport;
 pub use outbound::MatrixSendFuture;
+pub use outbound::MatrixServerObservation;
 pub use outbound::MatrixTransportError;
 pub use outbound::OutboxDispatchConfig;
 pub use outbound::OutboxDispatchError;
