@@ -1,28 +1,45 @@
 //! Governed plasticity proposal records.
 //!
-//! New writes are parameter-only V2 candidate sets. Historical parameter and
-//! topology V1 records are read-only. Proposals are next-generation,
-//! qualification-only artifacts; this crate has no API for runtime mutation,
-//! authority mutation, self-promotion or release.
+//! Parameter V2 remains the stable proposal envelope. Parameter V3 adds a
+//! deterministic generator-complete search profile, and topology V2 adds typed
+//! structural proposal construction. Historical V1 records remain read-only.
+//! Every surface is proposal-only: this crate has no API for runtime mutation,
+//! authority mutation, self-promotion, selection, activation or release.
 
 #![forbid(unsafe_code)]
 
 mod durable_registry;
+mod generator_v3;
+mod legacy;
+mod parameter_v2;
+mod registry;
+mod topology_v2;
+mod types;
 
 pub use durable_registry::DurableProposalAppendReceiptV1;
 pub use durable_registry::DurableProposalRegistry;
 pub use durable_registry::DurableProposalRegistryError;
 pub use durable_registry::DurableRegistryAnchorV1;
-
-mod legacy;
-mod parameter_v2;
-mod registry;
-mod types;
-
+pub use generator_v3::GeneratedParameterCandidateSetV3;
+pub use generator_v3::ParameterGeneratorErrorV3;
+pub use generator_v3::ParameterGeneratorProfileV3;
+pub use generator_v3::ParameterPlasticitySignalV3;
+pub use generator_v3::generate_parameter_candidates_v3;
+pub use generator_v3::parameter_generator_signing_payload_v3;
+pub use generator_v3::verify_generated_parameter_candidates_v3;
 pub use parameter_v2::propose_v2;
 pub use parameter_v2::verify_parameter_proposal_v2;
 pub use registry::ProposalRegistry;
 pub use registry::ProposalRegistrySlotV2;
+pub use topology_v2::TopologyCandidateKindV2;
+pub use topology_v2::TopologyCandidateV2;
+pub use topology_v2::TopologyChangeV2;
+pub use topology_v2::TopologyOperationV2;
+pub use topology_v2::TopologyProposalErrorV2;
+pub use topology_v2::TopologyProposalRequestV2;
+pub use topology_v2::TopologyProposalV2;
+pub use topology_v2::propose_topology_v2;
+pub use topology_v2::verify_topology_proposal_v2;
 pub use types::AppendDisposition;
 pub use types::CandidateNormMetricsV2;
 pub use types::Error;
