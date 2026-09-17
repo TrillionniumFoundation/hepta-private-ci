@@ -129,6 +129,34 @@ fn backup_restore_is_validated_before_replacing_live_state() {
 }
 
 #[test]
+fn older_valid_backup_cannot_remove_a_later_revocation() {
+    let root = TempRoot::new("backup-regression");
+    let objective = digest("objective");
+    let subject = digest("subject");
+    let projection = digest("projection");
+    let mut store = must(NduProjectionStoreV1::open(&root.0));
+    must(store.append_projection(
+        NduProjectionKindV1::Preference,
+        digest("projection-id"),
+        objective,
+        subject,
+        projection,
+    ));
+    must(store.select_projection(digest("selection-id"), objective, subject, projection));
+    let old_backup = store.backup_bytes();
+    must(store.revoke_projection(digest("revocation-id"), objective, subject, projection));
+    assert_eq!(store.selected_projection_digest(objective, subject), None);
+
+    assert_eq!(
+        store
+            .restore_backup(&old_backup)
+            .expect_err("backup rollback must not resurrect selection"),
+        NduProjectionStoreError::BackupRegression
+    );
+    assert_eq!(store.selected_projection_digest(objective, subject), None);
+}
+
+#[test]
 fn stale_uncommitted_temp_image_is_discarded_before_recovery() {
     let root = TempRoot::new("stale-temp");
     let mut temp = File::create(root.0.join(TEMP_FILE)).expect("create stale temp image");
