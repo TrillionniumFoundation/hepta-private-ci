@@ -4,10 +4,16 @@
 //! Nothing in Agentd startup installs this capability automatically; the
 //! default runtime remains read-only. A dispatcher target is likewise an
 //! explicit attachment and dispatch fails closed while it is absent.
+//!
+//! Production store ownership is intentionally composed through
+//! `codex_hepta_cognitive_store::ProductionCognitiveStore`. `hepta-memory`
+//! remains the durability engine, not a second product-facing cognitive-store
+//! authority.
 
 use std::fmt;
 use std::sync::Arc;
 
+use codex_hepta_cognitive_store::ProductionCognitiveStore;
 use codex_hepta_memory::CognitiveStore;
 use codex_hepta_memory::ProductionAuthorityLease;
 use codex_hepta_memory::ProductionAuthorityVerifier;
@@ -42,6 +48,9 @@ impl fmt::Debug for AgentdProductionWriterHost {
 impl AgentdProductionWriterHost {
     /// Open the writer against Agentd's exact private cognitive store. The
     /// verifier is mandatory and runs before any lease/event/outbox mutation.
+    ///
+    /// This is the canonical product path: the durable backend is opened by the
+    /// `cognitive.store` owner façade and never handed back to Agentd.
     pub async fn open<V>(
         config: &AgentdConfig,
         authority: ProductionAuthorityLease,
@@ -52,23 +61,29 @@ impl AgentdProductionWriterHost {
     where
         V: ProductionAuthorityVerifier + ?Sized,
     {
-        let store = CognitiveStore::open(&config.identity().layout)
+        let store = ProductionCognitiveStore::open(&config.identity().layout)
             .await
             .map_err(|error| {
-                AgentdError::Protocol(format!("open production cognitive store: {error}"))
+                AgentdError::Protocol(format!("open authoritative cognitive store: {error}"))
             })?;
-        let writer =
-            ProductionDurableWriter::open(store, authority, verifier, lease_id, lease_generation)
-                .await?;
+        let writer = store
+            .open_writer(authority, verifier, lease_id, lease_generation)
+            .await
+            .map_err(|error| {
+                AgentdError::Protocol(format!("open production cognitive writer: {error}"))
+            })?;
         Ok(Self {
             writer: Arc::new(writer),
             dispatcher: None,
         })
     }
 
-    /// Build a host handle around an already-open Agentd-owned store. This is
-    /// useful when the runtime has already attached a CognitiveStore and keeps
-    /// the same mandatory external verifier contract.
+    /// Build a host handle around an already-open Agentd-owned store.
+    ///
+    /// This remains an explicitly registered qualification boundary for the H4
+    /// persistent-writer fixtures. It has no product callers. Product
+    /// composition must use [`Self::open`] so a raw backend cannot become an
+    /// alternate authority seam.
     pub async fn open_with_store<V>(
         store: CognitiveStore,
         authority: ProductionAuthorityLease,
