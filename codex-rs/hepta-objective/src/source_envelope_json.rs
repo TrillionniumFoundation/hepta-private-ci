@@ -52,7 +52,8 @@ impl Error for ObjectiveSourceJsonError {}
 /// Integer widths, enum spellings and lowercase hex digest syntax are exact.
 /// No digest is recomputed or authenticated. Identifier/time syntax, NFC,
 /// canonical bytes, profile semantics, freshness and authority remain unverified.
-/// A successful decode is not an admitted input to the existing scalar compiler.
+/// A successful decode is only a bounded owner-local source value; authenticated
+/// profile-bound semantic admission is still required before native compilation.
 pub fn decode_source_envelope_json_v1(
     input: &[u8],
 ) -> Result<ObjectiveSourceEnvelopeV1, ObjectiveSourceJsonError> {
