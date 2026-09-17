@@ -324,8 +324,13 @@
     "learnedFbsdeProductionPolicy": false
   },
   "sourceBase": {
+    "commit": "7e8379b3954808d4138a7bd2f3773f75691291a3",
+    "tree": "ff9fa6baf95a35fd2f49816e0a80097688f2aeeb"
+  },
+  "hardeningSourceEvidence": {
     "commit": "7c87d98f0e2ed39dcea8269c5d4d24cdbc3b8505",
-    "tree": "ab7be70d50c9548daa243d8f0d7332072e3cd5a8"
+    "tree": "ab7be70d50c9548daa243d8f0d7332072e3cd5a8",
+    "scope": "utility.ndu solver, protocol, hierarchy, and projection-journal semantic hardening before workflow/documentation-only commits"
   },
   "repositoryControlledGaps": [
     "Bind every operation to an authenticated production consumer callsite and selected owner store before changing the production claim boundary.",
