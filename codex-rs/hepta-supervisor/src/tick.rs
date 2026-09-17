@@ -72,7 +72,7 @@ impl<D: ProcessDriver> Supervisor<D> {
             let release =
                 release.ok_or_else(|| SupervisorError::NoPreviousCommand(agent_id.clone()))?;
             if let Err(error) = self.start_release_slot(agent_id, slot, release, now) {
-                let generation = self.record(agent_id)?.lifecycle.generation;
+                let generation = self.hot_record(agent_id)?.lifecycle.generation;
                 self.schedule_automatic_restart(slot, generation, now);
                 return Err(error);
             }
@@ -88,7 +88,7 @@ impl<D: ProcessDriver> Supervisor<D> {
         runtime: &mut AgentRuntime<D::Process>,
         now: Instant,
     ) -> Result<bool, SupervisorError> {
-        let registry_generation = self.record(agent_id)?.lifecycle.generation;
+        let registry_generation = self.hot_record(agent_id)?.lifecycle.generation;
         if registry_generation != runtime.generation && !runtime.fenced {
             self.kill_matrix_now(agent_id, slot)?;
             runtime
@@ -235,7 +235,7 @@ impl<D: ProcessDriver> Supervisor<D> {
         runtime: &AgentRuntime<D::Process>,
         exit: crate::ProcessExit,
     ) -> Result<(), SupervisorError> {
-        let record = self.record(agent_id)?;
+        let record = self.hot_record(agent_id)?;
         let fenced = runtime.fenced || record.lifecycle.generation != runtime.generation;
         let lease = ProcessLease {
             schema_version: PROCESS_LEASE_SCHEMA_VERSION,
