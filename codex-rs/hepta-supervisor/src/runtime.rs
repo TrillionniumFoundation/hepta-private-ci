@@ -19,6 +19,10 @@ use crate::SupervisorEventKind;
 use crate::signed_intent::SignedSupervisorIntent;
 
 pub(crate) const MAX_FAULT_BYTES: usize = 512;
+pub(crate) const AGENT_RESTART_MIN: Duration = Duration::from_millis(250);
+pub(crate) const AGENT_RESTART_MAX: Duration = Duration::from_secs(30);
+pub(crate) const AGENT_RESTART_MAX_ATTEMPTS: u32 = 3;
+pub(crate) const AGENT_RESTART_RECOVERY_WINDOW: Duration = Duration::from_secs(60);
 
 #[derive(Clone, Copy, Debug)]
 pub(crate) enum RuntimePhase {
@@ -38,6 +42,10 @@ pub(crate) struct AgentRuntime<P> {
     pub phase: RuntimePhase,
     pub healthy: bool,
     pub fenced: bool,
+    /// True only after the process identity was durably published in the
+    /// supervisor process lease. A spawned process remains tracked in memory
+    /// even when lease publication fails so cleanup cannot orphan the handle.
+    pub lease_persisted: bool,
 }
 
 #[derive(Clone, Copy, Debug)]
@@ -141,6 +149,9 @@ pub(crate) struct AgentSlot<P> {
     pub deferred_agent_action: Option<DeferredAgentAction>,
     pub last_command: Option<AgentCommand>,
     pub restart_pending: bool,
+    pub automatic_restart_attempt: u32,
+    pub automatic_retry_at: Option<Instant>,
+    pub automatic_restart_window_started_at: Option<Instant>,
     pub active_release: Option<AgentRelease>,
     pub previous_release: Option<AgentRelease>,
     pub release_change: Option<ReleaseChange>,
@@ -161,6 +172,9 @@ impl<P> AgentSlot<P> {
             deferred_agent_action: None,
             last_command: None,
             restart_pending: false,
+            automatic_restart_attempt: 0,
+            automatic_retry_at: None,
+            automatic_restart_window_started_at: None,
             active_release: None,
             previous_release: None,
             release_change: None,
@@ -174,6 +188,59 @@ impl<P> AgentSlot<P> {
 
     pub fn event(&mut self, generation: u64, kind: SupervisorEventKind) {
         self.events.push(SupervisorEvent { generation, kind });
+    }
+
+    pub fn cancel_automatic_restart(&mut self) {
+        self.automatic_retry_at = None;
+    }
+
+    pub fn reset_automatic_restart(&mut self) {
+        self.automatic_restart_attempt = 0;
+        self.automatic_retry_at = None;
+        self.automatic_restart_window_started_at = None;
+    }
+
+    pub fn refresh_automatic_restart_window(&mut self, now: Instant) {
+        let expired = self
+            .automatic_restart_window_started_at
+            .and_then(|started| now.checked_duration_since(started))
+            .is_some_and(|elapsed| elapsed >= AGENT_RESTART_RECOVERY_WINDOW);
+        if expired && self.automatic_retry_at.is_none() {
+            self.reset_automatic_restart();
+        }
+    }
+
+    pub fn schedule_automatic_restart(
+        &mut self,
+        now: Instant,
+    ) -> Result<Option<(u32, Duration)>, SupervisorError> {
+        let window_expired = self
+            .automatic_restart_window_started_at
+            .and_then(|started| now.checked_duration_since(started))
+            .is_some_and(|elapsed| elapsed >= AGENT_RESTART_RECOVERY_WINDOW);
+        if self.automatic_restart_window_started_at.is_none() || window_expired {
+            self.automatic_restart_window_started_at = Some(now);
+            self.automatic_restart_attempt = 0;
+        }
+        if self.automatic_restart_attempt >= AGENT_RESTART_MAX_ATTEMPTS {
+            self.automatic_retry_at = None;
+            return Ok(None);
+        }
+        self.automatic_restart_attempt += 1;
+        let shift = self.automatic_restart_attempt.saturating_sub(1).min(31);
+        let delay = AGENT_RESTART_MIN
+            .checked_mul(1_u32 << shift)
+            .unwrap_or(AGENT_RESTART_MAX)
+            .min(AGENT_RESTART_MAX);
+        self.automatic_retry_at = Some(
+            now.checked_add(delay)
+                .ok_or_else(|| SupervisorError::Invalid("automatic restart deadline overflow".to_string()))?,
+        );
+        Ok(Some((self.automatic_restart_attempt, delay)))
+    }
+
+    pub fn automatic_restart_due(&self, now: Instant) -> bool {
+        self.automatic_retry_at.is_some_and(|retry_at| now >= retry_at)
     }
 }
 
