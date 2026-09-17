@@ -138,7 +138,7 @@ class PrivateWorkerClient {
     });
   }
 
-  request(kind, semanticId, payload, { signal } = {}) {
+  request(kind, semanticId, payload, { signal, onDispatched } = {}) {
     if (this.#closed) return Promise.reject(new Error("browser worker channel is closed"));
     if (signal?.aborted) return Promise.reject(abortError());
     const sequence = this.#nextOutgoingSequence++;
@@ -182,10 +182,20 @@ class PrivateWorkerClient {
       }
       writeStarted = true;
       this.#child.stdin.write(encoded, (error) => {
-        if (!error) return;
-        if (this.#pending.delete(id)) {
-          entry.cleanup?.();
-          reject(error);
+        if (error) {
+          if (this.#pending.delete(id)) {
+            entry.cleanup?.();
+            reject(error);
+          }
+          return;
+        }
+        try {
+          onDispatched?.();
+        } catch (callbackError) {
+          if (this.#pending.delete(id)) {
+            entry.cleanup?.();
+            reject(callbackError);
+          }
         }
       });
     });
@@ -336,7 +346,42 @@ export class SubprocessBrowserDriver {
 
   async dispatch(input, { signal } = {}) {
     this.#requireSession(input);
-    return this.#client.request("dispatch", input.operationId, input, { signal });
+    let crossed = false;
+    let resolveBoundary;
+    const boundary = new Promise((resolve) => { resolveBoundary = resolve; });
+    const response = this.#client.request("dispatch", input.operationId, input, {
+      signal,
+      onDispatched: () => {
+        if (crossed) return;
+        crossed = true;
+        resolveBoundary();
+      },
+    });
+    let earlyError = null;
+    const settled = response.then(
+      () => "resolved",
+      (error) => {
+        earlyError = error;
+        return "rejected";
+      },
+    );
+    const first = await Promise.race([
+      boundary.then(() => "boundary"),
+      settled,
+    ]);
+    if (first === "rejected" && !crossed) throw earlyError;
+    // A complete response necessarily proves the request bytes crossed the
+    // local worker channel even if a stream implementation delivered the
+    // response before invoking the write callback.
+    if (first === "resolved" && !crossed) {
+      crossed = true;
+      resolveBoundary();
+    }
+    // Keep the private response handler alive so a late worker reply cannot
+    // become an unhandled rejection or poison the framed channel. External
+    // terminality is intentionally obtained through reconcile().
+    response.catch(() => {});
+    return { terminalObserved: false };
   }
 
   async reconcile(input, { signal } = {}) {
