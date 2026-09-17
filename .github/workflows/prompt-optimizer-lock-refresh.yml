@@ -1,9 +1,9 @@
 name: Prompt optimizer branch lock refresh
 
 on:
-  push:
+  pull_request:
     branches:
-      - work/prompt-optimizer-canonical-pipeline-20260917
+      - main
     paths:
       - .github/workflows/prompt-optimizer-lock-refresh.yml
 
@@ -11,21 +11,24 @@ permissions:
   contents: write
 
 concurrency:
-  group: prompt-optimizer-lock-refresh
+  group: prompt-optimizer-lock-refresh-${{ github.event.pull_request.number }}
   cancel-in-progress: true
 
 jobs:
   refresh-and-check:
+    if: github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-24.04
     timeout-minutes: 45
     steps:
       - name: Check out exact branch head
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
-          ref: ${{ github.sha }}
+          ref: ${{ github.event.pull_request.head.sha }}
           fetch-depth: 0
 
       - name: Refresh only the workspace lock
+        env:
+          HEAD_BRANCH: ${{ github.event.pull_request.head.ref }}
         shell: bash
         run: |
           set -euo pipefail
@@ -38,8 +41,7 @@ jobs:
           git config user.name 'Hepta prompt lock refresh'
           git config user.email 'hepta-prompt-lock-refresh@users.noreply.github.com'
           git commit -m 'chore(prompt): refresh workspace lock for canonical pipeline'
-          branch="${GITHUB_REF#refs/heads/}"
-          git push origin "HEAD:$branch"
+          git push origin "HEAD:$HEAD_BRANCH"
 
       - name: Compile affected canonical pipeline crates with refreshed lock
         shell: bash
