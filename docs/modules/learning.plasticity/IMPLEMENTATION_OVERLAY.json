@@ -1,0 +1,68 @@
+{
+  "schema": "hepta.module-implementation-overlay.v1",
+  "schemaVersion": 1,
+  "module": "learning.plasticity",
+  "base": {
+    "branch": "main",
+    "commit": "d7af096f28fa9989388939efa0e6600b52a43952"
+  },
+  "sourceCodeOverlay": {
+    "branch": "codex/plasticity-governed-engine-closure",
+    "commit": "0941c20155b0f51af273e78211f237f66e61adbb",
+    "pullRequest": 624
+  },
+  "publishedImplementationMapRemainsAuthoritativeForReleasedClaims": true,
+  "productionImplementation": false,
+  "productExecutionProved": false,
+  "independentAcceptance": false,
+  "activation": false,
+  "release": false,
+  "sourceChanges": [
+    {
+      "operation": "generate_parameter_candidates_v3",
+      "nativeSymbol": "generate_parameter_candidates_v3",
+      "sourcePath": "codex-rs/hepta-plasticity/src/governed_v3.rs",
+      "state": "source_implemented_internal_generator",
+      "authority": "none"
+    },
+    {
+      "operation": "propose_governed_v3",
+      "nativeSymbol": "propose_governed_v3",
+      "sourcePath": "codex-rs/hepta-plasticity/src/governed_v3.rs",
+      "state": "source_implemented_authenticated_admission",
+      "authority": "none"
+    },
+    {
+      "operation": "propose_topology_v2",
+      "nativeSymbol": "propose_topology_v2",
+      "sourcePath": "codex-rs/hepta-plasticity/src/topology_v2.rs",
+      "state": "source_implemented_proposal_only",
+      "authority": "none"
+    },
+    {
+      "operation": "production_registry_open",
+      "nativeSymbol": "ProductionProposalRegistry::open",
+      "sourcePath": "codex-rs/hepta-plasticity/src/production_registry.rs",
+      "state": "source_implemented_anchor_gated",
+      "authority": "none"
+    },
+    {
+      "operation": "propose_and_persist_plasticity_v3",
+      "nativeSymbol": "propose_and_persist_plasticity_v3",
+      "sourcePath": "codex-rs/hepta-intelligence/src/plasticity_host.rs",
+      "state": "source_composed_non_test_product_caller",
+      "authority": "none"
+    }
+  ],
+  "repositoryControlledGaps": [
+    "Run exact-head formatting, build, tests and clippy for the overlay commit and its final documentation head.",
+    "Record target-host product execution receipts before changing productionImplementation.",
+    "Add durable/authenticated topology composition and PLS-3 structural canary evidence before claiming topology closure."
+  ],
+  "externalEvidenceGates": [
+    "independent semantic and security review",
+    "target-host product execution and qualification",
+    "operator acceptance and incident recovery exercise",
+    "canary, promotion, activation and release"
+  ]
+}
