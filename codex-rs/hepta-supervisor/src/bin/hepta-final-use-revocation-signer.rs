@@ -5,14 +5,14 @@
 //! heads to their durable `FinalUseAuthority` owner.
 
 use std::io::Read;
-use std::path::Path;
 use std::process::ExitCode;
 
 use codex_hepta_contracts::FinalUseRevocationUpdate;
 use codex_hepta_contracts::FinalUseRevocations;
 use codex_hepta_contracts::SignedFinalUseRevocationUpdate;
-use codex_hepta_supervisor::load_signing_key_from_path;
 use ed25519_dalek::Signer;
+use ed25519_dalek::SigningKey;
+use zeroize::Zeroizing;
 
 const MAX_HEAD_BYTES: u64 = 8 * 1024 * 1024;
 
@@ -34,7 +34,7 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
         || args[3] != "--key"
     {
         return Err(
-            "usage: hepta-final-use-revocation-signer sign --distributor-id ID --key ABSOLUTE_OWNER_ONLY_SEED_FILE < revocations.json"
+            "usage: hepta-final-use-revocation-signer sign --distributor-id ID --key OWNER_ONLY_RAW_SEED_FILE < revocations.json"
                 .into(),
         );
     }
@@ -47,7 +47,7 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
     }
     let head: FinalUseRevocations = serde_json::from_slice(&bytes)?;
     let update = FinalUseRevocationUpdate::new(args[2].clone(), head);
-    let signing_key = load_signing_key_from_path(Path::new(&args[4]))?;
+    let signing_key = load_private_seed(&args[4])?;
     let signature = signing_key
         .sign(&update.signing_bytes()?)
         .to_bytes()
@@ -58,4 +58,36 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
     )?;
     println!();
     Ok(())
+}
+
+#[cfg(unix)]
+fn load_private_seed(path: &str) -> Result<SigningKey, Box<dyn std::error::Error>> {
+    use std::os::unix::fs::MetadataExt;
+    use std::os::unix::fs::OpenOptionsExt;
+
+    let mut file = std::fs::OpenOptions::new()
+        .read(true)
+        .custom_flags(libc::O_NOFOLLOW)
+        .open(path)?;
+    let metadata = file.metadata()?;
+    if !metadata.is_file()
+        || metadata.mode() & 0o077 != 0
+        || metadata.nlink() != 1
+        || metadata.uid() != rustix::process::geteuid().as_raw()
+    {
+        return Err("revocation seed must be a regular, singly linked owner-only file".into());
+    }
+    let mut seed = Zeroizing::new(Vec::new());
+    file.by_ref().take(33).read_to_end(&mut seed)?;
+    if seed.len() != 32 {
+        return Err("revocation seed must be exactly 32 raw bytes".into());
+    }
+    let mut key_bytes = Zeroizing::new([0_u8; 32]);
+    key_bytes.copy_from_slice(&seed);
+    Ok(SigningKey::from_bytes(&key_bytes))
+}
+
+#[cfg(not(unix))]
+fn load_private_seed(_path: &str) -> Result<SigningKey, Box<dyn std::error::Error>> {
+    Err("revocation signing requires an approved platform-specific key-custody backend".into())
 }
