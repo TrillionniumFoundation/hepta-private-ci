@@ -186,7 +186,12 @@ impl AppServerModelDriver {
         // owner-side drift therefore fails while the durable run is still in the
         // Reserved state and cannot reach turn/start.
         if let (Some(query), Some(expected)) = (context_query.as_deref(), context.as_ref()) {
-            revalidate_cognitive_context_before_dispatch(&owner, query, expected).await?;
+            if let Err(error) =
+                revalidate_cognitive_context_before_dispatch(&owner, query, expected).await
+            {
+                let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
+                return Err(error);
+            }
         }
         control.dispatch_native(
             request_id,
