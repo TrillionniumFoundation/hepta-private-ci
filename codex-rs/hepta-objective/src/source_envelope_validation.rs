@@ -30,6 +30,11 @@ pub enum ObjectiveStructureError {
         field: &'static str,
         index: usize,
     },
+    MissingSemanticReference {
+        field: &'static str,
+        index: usize,
+        target: &'static str,
+    },
 }
 
 impl fmt::Display for ObjectiveStructureError {
@@ -59,6 +64,16 @@ impl fmt::Display for ObjectiveStructureError {
             Self::DuplicateSemanticKey { field, index } => {
                 write!(formatter, "{field} repeats a semantic key at index {index}")
             }
+            Self::MissingSemanticReference {
+                field,
+                index,
+                target,
+            } => {
+                write!(
+                    formatter,
+                    "{field} references a missing {target} item at index {index}"
+                )
+            }
         }
     }
 }
@@ -66,8 +81,9 @@ impl fmt::Display for ObjectiveStructureError {
 impl Error for ObjectiveStructureError {}
 
 impl ObjectiveSourceEnvelopeV1 {
-    /// Check declared raw UTF-8 field byte limits, array count bounds and
-    /// within-array semantic-key uniqueness without changing any source value.
+    /// Check declared raw UTF-8 field byte limits, array count bounds,
+    /// within-array semantic-key uniqueness and bounded action references
+    /// without changing any source value.
     ///
     /// Structural ceilings are admission-safe, not merely per-field maxima:
     /// source constraints reserve ten native slots for generated resource/risk
@@ -76,8 +92,12 @@ impl ObjectiveSourceEnvelopeV1 {
     /// one can be an explicit intrinsic `abstain`; native compile enforces the
     /// 127-entry ceiling only when it must inject abstain itself.
     ///
-    /// This is deliberately not wire validation: JSON escaping/framing and
-    /// aggregate encoded-byte limits, duplicate/unknown JSON fields, ID/time
+    /// Confirmation actions are references to legal action classes, so a
+    /// missing legal target is rejected here. Forbidden actions are independent
+    /// policy constraints and need not appear in the caller legal set.
+    ///
+    /// This is deliberately not full semantic admission: JSON escaping/framing
+    /// and aggregate encoded-byte limits, duplicate/unknown JSON fields, ID/time
     /// syntax, NFC, canonical ordering, digest bindings, profile semantics,
     /// freshness and source authority are not established here. No unsupported
     /// operator or trust label is rewritten.
@@ -133,6 +153,20 @@ impl ObjectiveSourceEnvelopeV1 {
             collection(actions, field, minimum, maximum, String::as_str)?;
             for action in actions {
                 text_bytes(action, field, /*maximum*/ 128)?;
+            }
+        }
+        let legal_actions = intent
+            .legal_action_classes
+            .iter()
+            .map(String::as_str)
+            .collect::<BTreeSet<_>>();
+        for (index, action) in intent.confirmation_action_classes.iter().enumerate() {
+            if !legal_actions.contains(action.as_str()) {
+                return Err(ObjectiveStructureError::MissingSemanticReference {
+                    field: "confirmationActionClasses",
+                    index,
+                    target: "legalActionClasses",
+                });
             }
         }
         collection(
