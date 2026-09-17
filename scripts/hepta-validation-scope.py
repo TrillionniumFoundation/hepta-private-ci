@@ -10,6 +10,10 @@ Only source families with an explicit impacted-check mapping are eligible for
 the impacted profile. Workflow, action, script, app, tool, and other unmapped
 surfaces fail closed to the critical profile until their validation ownership is
 declared here. This keeps faster feedback from becoming a coverage hole.
+
+Every Git diff status participates in classification. In particular, deleting a
+critical authority/state/execution file must not disappear from the path set and
+accidentally become an empty-diff fast validation.
 """
 
 from __future__ import annotations
@@ -83,13 +87,17 @@ BAZEL_MARKERS = (
 
 SDK_PREFIXES = ("sdk/", "codex-rs/codex-api/", "codex-rs/codex-client/")
 
+# Deliberately no --diff-filter: deletions, type changes and every other committed
+# status are validation inputs just like additions/modifications/renames.
+DIFF_NAME_ONLY_ARGS = ("diff", "--name-only")
+
 
 def _run_git(*args: str) -> str:
     return subprocess.check_output(("git", *args), text=True).strip()
 
 
 def changed_paths(base: str, head: str) -> tuple[list[str], str | None]:
-    """Return changed paths, or a fail-closed reason when base is unavailable."""
+    """Return all changed paths, or fail closed when either commit is unavailable."""
     try:
         subprocess.run(
             ("git", "cat-file", "-e", f"{base}^{{commit}}"),
@@ -105,7 +113,7 @@ def changed_paths(base: str, head: str) -> tuple[list[str], str | None]:
         )
     except subprocess.CalledProcessError:
         return [], "base_or_head_unavailable"
-    output = _run_git("diff", "--name-only", "--diff-filter=ACMR", base, head)
+    output = _run_git(*DIFF_NAME_ONLY_ARGS, base, head)
     paths = sorted({line for line in output.splitlines() if line})
     return paths, None
 
@@ -231,6 +239,9 @@ def classify(paths: Iterable[str], unavailable_reason: str | None = None) -> dic
 
 
 def _self_test() -> None:
+    # Path discovery itself must not suppress deletions/type changes.
+    assert DIFF_NAME_ONLY_ARGS == ("diff", "--name-only")
+
     docs = classify(["docs/DEVELOPMENT.md"])
     assert docs["profile"] == "fast"
     assert docs["jobs"]["rust-ci"]["required"] is False
@@ -243,6 +254,12 @@ def _self_test() -> None:
     critical = classify(["codex-rs/hepta-supervisor/src/lib.rs"])
     assert critical["profile"] == "critical"
     assert all(value["required"] for value in critical["jobs"].values())
+
+    # The classifier is status-agnostic once Git supplies a path. This fixture
+    # represents a deleted critical source file and must still require all jobs.
+    deleted_critical = classify(["codex-rs/hepta-supervisor/src/deleted.rs"])
+    assert deleted_critical["profile"] == "critical"
+    assert all(value["required"] for value in deleted_critical["jobs"].values())
 
     workflow = classify([".github/workflows/ordinary.yml"])
     assert workflow["profile"] == "critical"
