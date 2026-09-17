@@ -3,7 +3,7 @@
   "schemaVersion": 1,
   "lane": "LANE-D-OBJECTIVE-VALUE",
   "authorityDelta": "none",
-  "interpretation": "Each dimension is independent. A materialized source root or bounded product caller does not imply production writing, independent qualification, activation or release.",
+  "interpretation": "Each dimension is independent. A materialized source root or bounded read-only caller does not imply a promotion-eligible product caller, production writing, independent qualification, activation or release.",
   "modules": [
     {
       "module": "objective.compiler",
@@ -246,11 +246,17 @@
           "state": "pending_closure_branch_workflows",
           "evidence": []
         },
-        "productCaller": {
-          "state": "bounded_read_only_agentd_context_composed_global_plane_not_activated",
+        "boundedReadOnlyCaller": {
+          "state": "agentd_context_composed",
           "evidence": [
             "codex-rs/hepta-agentd/src/cognitive_context.rs",
             "plan_observed_context"
+          ]
+        },
+        "productCaller": {
+          "state": "not_established",
+          "evidence": [
+            "global planning caller is not activated or promotion-eligible"
           ]
         },
         "productionWriter": {
@@ -289,7 +295,7 @@
           ]
         },
         "plannerClockDomain": {
-          "state": "narrow_agentd_caller_uses_process_monotonic_clock",
+          "state": "bounded_agentd_caller_uses_process_monotonic_clock",
           "evidence": [
             "codex-rs/hepta-agentd/src/cognitive_context.rs::monotonic_micros"
           ]
