@@ -18,6 +18,11 @@ required_boundary_ids = [
   "final_use_revocation_feed_apply",
   "bao_final_use_consumer",
   "bao_registered_final_use_host",
+  "authority_lease_put",
+  "authority_lease_revoke",
+  "authority_lease_epoch_advance",
+  "authority_lease_verify_use",
+  "authority_lease_delivery",
 ]
 
 [[boundary]]
@@ -111,6 +116,46 @@ symbol = "BaoFinalUseHost::consume_kv_v2"
 call_pattern = "\\.\\s*consume_kv_v2\\s*\\("
 definition_path = "codex-rs/hepta-bao-adapter/src/final_use_host.rs"
 definition_markers = ["pub struct BaoFinalUseHost", "pub async fn consume_kv_v2", "approval_verifier", "consumers"]
+product_callers = []
+caller_markers = []
+
+[[boundary]]
+id = "authority_lease_put"
+symbol = "AuthorityLeaseRegistry::put_lease"
+definition_path = "codex-rs/hepta-contracts/src/authority_lease.rs"
+definition_markers = ["pub struct AuthorityLeaseRegistry", "pub fn put_lease(", "expected_revision"]
+product_callers = []
+caller_markers = []
+
+[[boundary]]
+id = "authority_lease_revoke"
+symbol = "AuthorityLeaseRegistry::revoke"
+definition_path = "codex-rs/hepta-contracts/src/authority_lease.rs"
+definition_markers = ["pub fn revoke(", "RevocationReceipt", "reason_sha256"]
+product_callers = []
+caller_markers = []
+
+[[boundary]]
+id = "authority_lease_epoch_advance"
+symbol = "AuthorityLeaseRegistry::advance_epoch"
+definition_path = "codex-rs/hepta-contracts/src/authority_lease.rs"
+definition_markers = ["pub fn advance_epoch(", "new_authority_epoch", "next.leases.clear()"]
+product_callers = []
+caller_markers = []
+
+[[boundary]]
+id = "authority_lease_verify_use"
+symbol = "AuthorityLeaseRegistry::verify_use"
+definition_path = "codex-rs/hepta-contracts/src/authority_lease.rs"
+definition_markers = ["pub fn verify_use(", "LeaseVerifiedUseToken", "now_unix_ms"]
+product_callers = []
+caller_markers = []
+
+[[boundary]]
+id = "authority_lease_delivery"
+symbol = "AuthorityLeaseRegistry::with_verified_use"
+definition_path = "codex-rs/hepta-contracts/src/authority_lease.rs"
+definition_markers = ["pub fn with_verified_use", "Arc::ptr_eq", "drop(state)"]
 product_callers = []
 caller_markers = []
 
