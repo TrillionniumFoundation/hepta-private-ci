@@ -5,6 +5,7 @@
 //! Consumers must authenticate the evidence and perform those decisions in an
 //! independent control plane before recording them here.
 
+use std::collections::btree_map::Entry;
 use std::collections::{BTreeMap, BTreeSet};
 use std::error::Error;
 use std::fmt;
@@ -134,27 +135,29 @@ impl IterationLedgerV1 {
         if self.candidates.len() >= self.envelope.maximum_candidates as usize {
             return Err(IterationLedgerError::CandidateLimitExceeded);
         }
-        if self.candidates.contains_key(&candidate.candidate_id) {
-            return Err(IterationLedgerError::CandidateAlreadyExists(
-                candidate.candidate_id.to_string(),
-            ));
+        let candidate_id = candidate.candidate_id.clone();
+        match self.candidates.entry(candidate_id.clone()) {
+            Entry::Occupied(_) => Err(IterationLedgerError::CandidateAlreadyExists(
+                candidate_id.to_string(),
+            )),
+            Entry::Vacant(entry) => {
+                if candidate.state != IterationCandidateStateV1::Drafted {
+                    return Err(IterationLedgerError::InvalidCandidate(
+                        "new candidates must start drafted".into(),
+                    ));
+                }
+                candidate
+                    .validate(&self.envelope)
+                    .map_err(IterationLedgerError::InvalidCandidate)?;
+                if candidate.predecessor.as_ref() == Some(&candidate.candidate_id) {
+                    return Err(IterationLedgerError::InvalidCandidate(
+                        "candidate cannot roll back to itself".into(),
+                    ));
+                }
+                entry.insert(candidate);
+                Ok(())
+            }
         }
-        if candidate.state != IterationCandidateStateV1::Drafted {
-            return Err(IterationLedgerError::InvalidCandidate(
-                "new candidates must start drafted".into(),
-            ));
-        }
-        candidate
-            .validate(&self.envelope)
-            .map_err(IterationLedgerError::InvalidCandidate)?;
-        if candidate.predecessor.as_ref() == Some(&candidate.candidate_id) {
-            return Err(IterationLedgerError::InvalidCandidate(
-                "candidate cannot roll back to itself".into(),
-            ));
-        }
-        self.candidates
-            .insert(candidate.candidate_id.clone(), candidate);
-        Ok(())
     }
 
     /// Record one state transition with its externally produced receipt. This

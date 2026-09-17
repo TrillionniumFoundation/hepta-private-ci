@@ -123,14 +123,21 @@
       "stableGuide": "docs/modules/learning.eval/TECHNICAL.md",
       "dossier": "qualification/module-execution-dossiers/detail/learning.eval.md",
       "nativeMapping": "codex-rs/hepta-intelligence-eval/NATIVE_MAPPING.md",
-      "implementationState": "source_implemented_ci_pending",
-      "compatibility": "existing_estimators_retained_complete_plan_receipt_sealed_holdout_use_and_independent_decision_additive",
+      "implementationState": "source_implemented_exact_head_ci_required",
+      "compatibility": "existing_estimators_retained_complete_plan_receipt_sealed_and_durable_holdout_use_signed_evidence_and_longitudinal_admission_additive",
       "operations": [
         {"operation": "estimate_ope", "nativeSymbol": "codex_hepta_intelligence_eval::estimate_ope", "source": "codex-rs/hepta-intelligence-eval/src/ope.rs", "status": "implemented_existing"},
         {"operation": "estimate_sequential", "nativeSymbol": "codex_hepta_intelligence_eval::estimate_sequential", "source": "codex-rs/hepta-intelligence-eval/src/sequential.rs", "status": "implemented_existing"},
         {"operation": "freeze_cross_fold_plan", "nativeSymbol": "codex_hepta_intelligence_eval::freeze_cross_fold_plan", "source": "codex-rs/hepta-intelligence-eval/src/closure.rs", "status": "implemented"},
         {"operation": "FinalHoldoutRegistry::consume", "nativeSymbol": "codex_hepta_intelligence_eval::FinalHoldoutRegistry::consume", "source": "codex-rs/hepta-intelligence-eval/src/closure.rs", "status": "implemented"},
         {"operation": "decide_independently", "nativeSymbol": "codex_hepta_intelligence_eval::decide_independently", "source": "codex-rs/hepta-intelligence-eval/src/closure.rs", "status": "implemented"}
+      ],
+      "supplementalOperations": [
+        {"operation": "evaluate_temporal_holdout", "nativeSymbol": "codex_hepta_intelligence_eval::evaluate_temporal_holdout", "source": "codex-rs/hepta-intelligence-eval/src/temporal_evaluation.rs", "status": "implemented_existing", "claim": "source_only"},
+        {"operation": "DurableFinalHoldoutJournalV1::recover", "nativeSymbol": "codex_hepta_intelligence_eval::DurableFinalHoldoutJournalV1::recover", "source": "codex-rs/hepta-intelligence-eval/src/durable_holdout.rs", "status": "implemented", "claim": "host_store_binding_required"},
+        {"operation": "authenticate_holdout_anchor_v1", "nativeSymbol": "codex_hepta_intelligence_eval::authenticate_holdout_anchor_v1", "source": "codex-rs/hepta-intelligence-eval/src/authenticated_holdout.rs", "status": "implemented", "claim": "host_currentness_store_required"},
+        {"operation": "decide_with_signed_evidence_v2", "nativeSymbol": "codex_hepta_intelligence_eval::decide_with_signed_evidence_v2", "source": "codex-rs/hepta-intelligence-eval/src/signed_evaluation.rs", "status": "implemented", "claim": "host_trust_state_required"},
+        {"operation": "decide_with_signed_longitudinal_evidence_v3", "nativeSymbol": "codex_hepta_intelligence_eval::decide_with_signed_longitudinal_evidence_v3", "source": "codex-rs/hepta-intelligence-eval/src/longitudinal_time.rs", "status": "implemented", "claim": "real_future_calendar_evidence_required"}
       ],
       "tests": [
         "eval_03_intersects_superiority_safety_retention_and_unlearning",
@@ -140,6 +147,10 @@
         "final_holdout_registry_allows_exact_retry_but_blocks_adaptive_reuse",
         "final_holdout_replay_receipt_is_stable_after_unrelated_registry_growth",
         "independent_decision_consumes_bound_holdout_receipt",
+        "independent_anchor_rejects_old_backup_and_partial_tail",
+        "stale_or_mutated_anchor_witness_is_rejected",
+        "valid_signatures_do_not_hide_unobserved_overlapping_or_wrong_source_windows",
+        "time_policy_observer_and_future_collection_cannot_be_substituted",
         "op_03_high_fit_without_retention_is_insufficient"
       ],
       "stageResourceBounds": {
@@ -148,11 +159,14 @@
         "composedTemporalHoldoutRows": 16384,
         "sequentialTrajectories": 4096,
         "sequentialSteps": 65536,
-        "sequentialHorizon": 128
+        "sequentialHorizon": 128,
+        "durableHoldoutRecords": 8192,
+        "durableHoldoutBytes": 16777216,
+        "durableHoldoutFrameBytes": 2048
       },
       "remainingRepositoryGaps": [],
       "remainingExternalEvidence": [
-        "authenticated_live_input_adapters_and_durable_product_scheduler",
+        "product_binding_of_authorized_holdout_namespace_signed_anchor_currentness_store_and_scheduler",
         "real_future_calendar_windows_and_independent_snapshots",
         "retention_change_point_privacy_power_and_unlearning_receipts",
         "separate_selector_operator_canary_promotion_and_release_decisions"

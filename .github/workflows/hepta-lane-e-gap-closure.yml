@@ -12,7 +12,9 @@ on:
       - codex-rs/hepta-intelligence-eval/**
       - codex-rs/hepta-shadow-qualification/**
       - docs/lane-e/**
+      - docs/modules/learning.eval/**
       - qualification/lane-e/**
+      - qualification/module-execution-dossiers/detail/learning.eval.md
       - scripts/hepta-lane-e-closure.py
       - .github/workflows/hepta-lane-e-gap-closure.yml
 
@@ -25,7 +27,6 @@ concurrency:
 
 env:
   SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
-  BASE_SHA: ${{ github.event.pull_request.base.sha }}
 
 jobs:
   rust-closure:
@@ -126,9 +127,74 @@ jobs:
           git diff --exit-code
           test -z "$(git status --porcelain --untracked-files=no)"
 
+      - name: Write exact-head source qualification receipt
+        shell: bash
+        env:
+          RECEIPT_PATH: .hepta-evidence/lane-e-exact-head.json
+        run: |
+          set -euo pipefail
+          mkdir -p .hepta-evidence
+          python3 - <<'PY'
+          import hashlib
+          import json
+          import os
+          import pathlib
+          import subprocess
+
+          def git(*args: str) -> str:
+              return subprocess.check_output(["git", *args], text=True).strip()
+
+          receipt = {
+              "schema": "hepta.lane-e.source-qualification-receipt.v1",
+              "claimBoundary": "source_qualification_only",
+              "sourceCommit": os.environ["SOURCE_SHA"],
+              "sourceTree": git("rev-parse", "HEAD^{tree}"),
+              "workflow": ".github/workflows/hepta-lane-e-gap-closure.yml",
+              "run": {
+                  "id": os.environ["GITHUB_RUN_ID"],
+                  "attempt": os.environ["GITHUB_RUN_ATTEMPT"],
+                  "event": os.environ["GITHUB_EVENT_NAME"],
+              },
+              "checks": [
+                  "closed_world",
+                  "locked_all_targets",
+                  "owner_regressions",
+                  "cross_crate_causal_closure",
+                  "cross_language_wire_fault",
+                  "strict_clippy",
+                  "rustfmt_and_clean_tree",
+              ],
+              "explicitNonClaims": [
+                  "product_execution",
+                  "future_calendar_efficacy",
+                  "independent_acceptance",
+                  "selection",
+                  "promotion",
+                  "release",
+              ],
+          }
+          canonical = json.dumps(receipt, sort_keys=True, separators=(",", ":")).encode()
+          receipt["receiptDigestSha256"] = hashlib.sha256(canonical).hexdigest()
+          pathlib.Path(os.environ["RECEIPT_PATH"]).write_text(
+              json.dumps(receipt, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+          )
+          PY
+
+      - name: Retain exact-head source qualification receipt
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: lane-e-exact-head-${{ env.SOURCE_SHA }}
+          path: .hepta-evidence/lane-e-exact-head.json
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 90
+
   synthetic-merge:
+    if: github.event_name == 'pull_request'
     runs-on: ubuntu-24.04
     timeout-minutes: 120
+    env:
+      BASE_SHA: ${{ github.event.pull_request.base.sha }}
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
@@ -145,7 +211,7 @@ jobs:
         uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
         with:
           toolchain: 1.95.0
-          components: rustfmt
+          components: clippy,rustfmt
 
       - name: Materialize ordered-parent synthetic merge
         shell: bash
@@ -219,6 +285,17 @@ jobs:
           --test cross_language_wire_fault
           -- --test-threads=1
 
+      - name: Strict merged Lane E lint
+        working-directory: codex-rs
+        run: >-
+          cargo clippy --locked
+          -p codex-hepta-learning-ledger
+          -p codex-hepta-learning-artifacts
+          -p codex-hepta-bellman-operator
+          -p codex-hepta-intelligence-eval
+          -p codex-hepta-shadow-qualification
+          --all-targets -- -D warnings
+
       - name: Verify merged formatting and index stability
         shell: bash
         run: |
@@ -234,3 +311,64 @@ jobs:
           git diff --exit-code
           test "$(git write-tree)" = "${MERGE_TREE}"
           test "$(git rev-parse "${MERGE_COMMIT}^{tree}")" = "${MERGE_TREE}"
+
+      - name: Write synthetic-merge source qualification receipt
+        shell: bash
+        env:
+          RECEIPT_PATH: .hepta-evidence/lane-e-synthetic-merge.json
+        run: |
+          set -euo pipefail
+          mkdir -p .hepta-evidence
+          python3 - <<'PY'
+          import hashlib
+          import json
+          import os
+          import pathlib
+
+          receipt = {
+              "schema": "hepta.lane-e.synthetic-merge-qualification-receipt.v1",
+              "claimBoundary": "source_qualification_only",
+              "baseCommit": os.environ["BASE_SHA"],
+              "sourceCommit": os.environ["SOURCE_SHA"],
+              "mergeCommit": os.environ["MERGE_COMMIT"],
+              "mergeTree": os.environ["MERGE_TREE"],
+              "workflow": ".github/workflows/hepta-lane-e-gap-closure.yml",
+              "run": {
+                  "id": os.environ["GITHUB_RUN_ID"],
+                  "attempt": os.environ["GITHUB_RUN_ATTEMPT"],
+                  "event": os.environ["GITHUB_EVENT_NAME"],
+              },
+              "checks": [
+                  "ordered_parent_merge",
+                  "closed_world",
+                  "locked_all_targets",
+                  "owner_regressions",
+                  "cross_crate_causal_closure",
+                  "cross_language_wire_fault",
+                  "strict_clippy",
+                  "rustfmt_and_index_stability",
+              ],
+              "explicitNonClaims": [
+                  "product_execution",
+                  "future_calendar_efficacy",
+                  "independent_acceptance",
+                  "selection",
+                  "promotion",
+                  "release",
+              ],
+          }
+          canonical = json.dumps(receipt, sort_keys=True, separators=(",", ":")).encode()
+          receipt["receiptDigestSha256"] = hashlib.sha256(canonical).hexdigest()
+          pathlib.Path(os.environ["RECEIPT_PATH"]).write_text(
+              json.dumps(receipt, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+          )
+          PY
+
+      - name: Retain synthetic-merge source qualification receipt
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: lane-e-synthetic-merge-${{ env.SOURCE_SHA }}
+          path: .hepta-evidence/lane-e-synthetic-merge.json
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 90

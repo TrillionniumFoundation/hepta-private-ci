@@ -19,17 +19,21 @@ must not be presented as the composed temporal pipeline capacity.
 
 Existing primitives validate deterministic arithmetic, probability support,
 outcome watermarks, weight limits, per-depth ESS, lineage separation and exact
-plan digests. They deliberately do not authenticate caller-supplied identities,
-prove causal exchangeability, select a candidate or establish future-calendar
+plan digests. They deliberately do not create trusted caller identities, prove
+causal exchangeability, select a candidate or establish future-calendar
 efficacy.
 
-## Added implementation closure
+## Implemented closure and evidence admission
 
 | Design operation | Native symbol | Source | Status |
 |---|---|---|---|
-| freeze complete cross-fold lineage | `freeze_cross_fold_plan` | `src/closure.rs` | implemented |
-| record final holdout use | `FinalHoldoutRegistry::consume` | `src/closure.rs` | implemented |
-| issue independent eligibility decision | `decide_independently` | `src/closure.rs` | implemented |
+| freeze complete cross-fold lineage | `freeze_cross_fold_plan` / `freeze_cross_fold_plan_v2` | `src/closure.rs` | implemented |
+| record semantic final-holdout use | `FinalHoldoutRegistry::consume` / `FinalHoldoutJournalV1::consume` | `src/closure.rs`, `src/holdout_journal.rs` | implemented |
+| persist/recover final-holdout use | `DurableFinalHoldoutJournalV1::{create,recover,consume}` | `src/durable_holdout.rs` | implemented owner adapter |
+| authenticate independently retained holdout anchor | `authenticate_holdout_anchor_v1` / `recover_with_authenticated_holdout_anchor_v1` | `src/authenticated_holdout.rs` | implemented admission boundary |
+| issue independent eligibility decision | `decide_independently` / `decide_independently_v2` | `src/closure.rs` | implemented |
+| authenticate generator/evaluator decision evidence | `decide_with_signed_evidence_v1` / `decide_with_signed_evidence_v2` | `src/signed_evaluation.rs` | implemented |
+| admit observed future-calendar windows | `decide_with_signed_longitudinal_evidence_v3` | `src/longitudinal_time.rs` | implemented evidence gate |
 
 `freeze_cross_fold_plan` requires two to thirty-two folds. It canonicalizes and
 deduplicates every principal, episode and window set; rejects training/holdout
@@ -41,15 +45,32 @@ estimand, metric direction and safety-floor contract, multiplicity profile,
 final-holdout window and final-holdout bytes. Its deterministic integrity seal
 detects post-freeze field mutation; it is not a signature or issuer credential.
 
-`FinalHoldoutRegistry::consume` accepts only the typed sealed frozen-plan
-receipt. An exact retry of the identical plan is idempotent. Reusing the same
-plan identity with changed semantics conflicts, while a different plan using
-either the same final-holdout digest or the same final-holdout window is
-rejected. The emitted holdout-use receipt binds the complete plan semantics,
-registry state and use digest and carries its own deterministic integrity seal.
-A future persistent host adapter must retain this registry under a single
-writer; the pure type and unkeyed seals alone do not prove durable exclusivity
-or authenticated origin.
+`FinalHoldoutRegistry::consume` and `FinalHoldoutJournalV1::consume` enforce the
+semantic one-use rule. An exact retry of the identical plan is idempotent.
+Reusing the same plan identity with changed semantics conflicts, while a
+different plan using either the same final-holdout digest or the same
+final-holdout window is rejected.
+
+`DurableFinalHoldoutJournalV1` is now the repository-owned durable adapter. It
+requires an authorized regular file, a nonzero namespace binding, exclusive
+cooperating-writer file locking, bounded deterministic frames, replay validation
+and synchronous writes. Recovery never silently recreates or truncates damaged
+state and requires an independently retained minimum anchor. The host still owns
+directory durability, the independently retained current anchor, trust and
+revocation distribution, and the product scheduler. A file lock cannot protect
+against a hostile filesystem or a copied store plus a rolled-back external
+anchor.
+
+`authenticate_holdout_anchor_v1` closes the source-level authenticated-origin
+edge for that external anchor: a trusted `Observer` signs the exact storage
+binding, sequence and head. Admission verifies the signature against host-owned
+`LearningEvidenceVerifierV1` trust, requires the signed anchor to equal the exact
+`minimum_anchor` independently loaded from the host currentness store, and
+requires a host-owned `minimum_issued_at` watermark. Neither currentness boundary
+is derived from the submitted witness. `recover_with_authenticated_holdout_anchor_v1`
+refuses a zero bootstrap anchor; initialization stays explicit. The host must
+still persist the latest anchor witness and advance the external anchor/freshness
+record before releasing confirmatory labels or acknowledging use externally.
 
 `decide_independently` consumes authenticated generator and evaluator identities
 from `learning.ledger`. It rejects shared principal, credential-chain or
@@ -65,7 +86,17 @@ intersects:
 - snapshot and future-window coverage;
 - retention receipts and unlearning receipt for system-longitudinal claims.
 
-The output is one of:
+Qualification-scoped external calls use the signed admission surfaces.
+`decide_with_signed_evidence_v1/v2` verifies generator and evaluator signatures
+against host-owned trust state. `decide_with_signed_longitudinal_evidence_v3`
+additionally requires an independent trusted observer to sign exact observed
+Unix-microsecond windows, source cuts, frozen plan, objective, dataset and the
+host-preregistered minimum duration. Windows must occur after freezing, be
+non-overlapping, have observations, use distinct source cuts and end before both
+the observer attestation and trusted current time. A virtual-clock fixture can
+test these rules but cannot establish that real calendar time elapsed.
+
+The output of independent evaluation is one of:
 
 ```text
 EligibleForIndependentSelection
@@ -78,9 +109,11 @@ it together with all other gates.
 
 ## Identity, causal and statistical obligations
 
-The native closure verifies authenticated identity fields but cannot create the
-underlying trust. A product adapter must verify signatures and credential chains
-against the current trust root before constructing `AuthenticatedPrincipalV1`.
+The native signed-admission code authenticates evidence against a host-supplied
+trust snapshot; it does not create that trust snapshot. The product owner must
+load current keys, controller relationships, scopes, epochs and revocations from
+an authority store that is independent of the submitted request. Cached verified
+objects must be reverified after trust rotation or revocation.
 
 Causal identification remains conditional on the frozen plan's assumptions:
 consistency, support, correct propensity, appropriate cluster independence and
@@ -94,20 +127,46 @@ owners must provide the actual evidence.
 
 ## Product integration obligations
 
-A product receipt must name:
+Repository source now provides the evaluator, signed evidence admission, durable
+holdout journal and signed observed-time gate. A product receipt still has to
+name and prove:
 
-1. the scheduler and immutable evaluation plan store;
-2. the durable final-holdout-use registry, single-writer fence and
-   canonical persistence/reload of frozen-plan and holdout-use receipts;
+1. the scheduler and immutable evaluation-plan store;
+2. the authorized durable final-holdout file namespace, single-writer domain,
+   independently persisted signed anchor plus exact host currentness anchor and
+   monotonic freshness watermark;
 3. the authenticated dataset, outcome-observer and candidate manifests;
 4. the exact fold assignments and nuisance-model runtime;
 5. the target host, resource measurements and incomplete/censored counts;
-6. future calendar windows and independently identified snapshots;
+6. actual future calendar windows and independently identified snapshots;
 7. retention, subgroup/privacy and unlearning evidence;
 8. the distinct selector, operator and release principals.
 
-A fixture using synthetic future timestamps cannot satisfy the future-calendar
-or longitudinal claim.
+A fixture using synthetic or virtual-clock future timestamps cannot satisfy the
+future-calendar or longitudinal efficacy claim. Passing native tests proves the
+admission logic, not the external event.
+
+## Status truth hierarchy
+
+Do not infer one lifecycle state by combining unrelated status words from several
+files. For this module the authorities are deliberately separated:
+
+- `NATIVE_MAPPING.md` describes source capabilities present in the checked-out
+  candidate and the host obligations they leave open.
+- `docs/modules/learning.eval/IMPLEMENTATION_MAP.json` is source-navigation and
+  claim-boundary metadata. Its `sourceBase` is a frozen generation baseline,
+  not an exact-HEAD execution receipt.
+- `.github/workflows/hepta-lane-e-gap-closure.yml` produces retained exact-HEAD
+  and pull-request synthetic-merge **source qualification** receipts only after
+  closed-world verification, compilation, native/cross-crate/cross-language
+  tests, strict lint and formatting succeed.
+- `EVIDENCE_ADMISSION.md` defines the authenticated runtime evidence boundary.
+  A source receipt does not become product execution, real future-calendar
+  efficacy, independent acceptance, selection, promotion or release evidence.
+
+This hierarchy is the tie-breaker if a planning label such as `planned` appears
+beside a source label such as `existing_bound`: package lifecycle and source
+presence are different dimensions.
 
 ## Qualification mapping
 
@@ -117,9 +176,15 @@ Focused tests live in:
 - `src/ope_tests.rs` and `src/ope_confidence_tests.rs`;
 - `src/sequential_tests.rs`;
 - `src/temporal_fold_tests.rs` and `src/temporal_evaluation_tests.rs`;
-- `src/closure_tests.rs`.
+- `src/closure_tests.rs`;
+- `src/durable_holdout_tests.rs`;
+- `src/longitudinal_time_tests.rs`;
+- inline tests in `src/authenticated_holdout.rs`.
 
 Cross-crate composition is exercised by
 `../hepta-shadow-qualification/src/lane_e_closure_tests.rs`. Exact dossier IDs,
 test functions and CI jobs are registered in
-`../../qualification/lane-e/TEST_TRACEABILITY.json`.
+`../../qualification/lane-e/TEST_TRACEABILITY.json`. The CI workflow retains
+machine-readable receipts for the exact source head and, on pull requests, the
+ordered-parent synthetic merge. Those artifacts explicitly carry source-only
+nonclaims.

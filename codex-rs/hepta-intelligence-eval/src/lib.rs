@@ -9,9 +9,16 @@ use codex_hepta_types::Digest32;
 use codex_hepta_types::FixedQ32;
 use codex_hepta_types::StableId;
 
+mod authenticated_holdout;
 mod closure;
 mod durable_holdout;
 mod holdout_journal;
+pub use authenticated_holdout::AuthenticatedHoldoutAnchorV1;
+pub use authenticated_holdout::AuthenticatedHoldoutError;
+pub use authenticated_holdout::SignedHoldoutAnchorV1;
+pub use authenticated_holdout::authenticate_holdout_anchor_v1;
+pub use authenticated_holdout::holdout_anchor_signing_payload_v1;
+pub use authenticated_holdout::recover_with_authenticated_holdout_anchor_v1;
 pub use durable_holdout::DurableFinalHoldoutJournalV1;
 pub use durable_holdout::DurableHoldoutError;
 pub use durable_holdout::HoldoutAnchorV1;

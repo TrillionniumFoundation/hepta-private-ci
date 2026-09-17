@@ -163,9 +163,11 @@ pub fn validate_iteration_transition(
             | (_, IterationCandidateStateV1::Quarantined)
             | (_, IterationCandidateStateV1::Superseded)
     );
-    valid
-        .then_some(())
-        .ok_or_else(|| "invalid iteration candidate transition".to_string())
+    if valid {
+        Ok(())
+    } else {
+        Err("invalid iteration candidate transition".to_string())
+    }
 }
 
 #[cfg(test)]
