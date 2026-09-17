@@ -122,13 +122,18 @@
     {
       "id": "EVAL-04",
       "module": "learning.eval",
-      "requirement": "Future leakage, holdout reuse by digest or window, same-plan semantic mutation, altered plan/use receipts, role collision, retention failure and deleted-lineage restoration invalidate the claim.",
+      "requirement": "Future leakage, semantic or durable holdout reuse/rollback, stale or mutated signed anchors, substituted or unobserved future windows, altered plan/use receipts, role collision, retention failure and deleted-lineage restoration invalidate the claim.",
       "tests": [
         {"source": "codex-rs/hepta-intelligence-eval/src/closure_tests.rs", "function": "eval_04_rejects_role_collision_and_missing_future_windows"},
         {"source": "codex-rs/hepta-intelligence-eval/src/closure_tests.rs", "function": "eval_cross_fold_plan_binds_disjoint_lineage_and_final_holdout"},
         {"source": "codex-rs/hepta-intelligence-eval/src/closure_tests.rs", "function": "final_holdout_registry_allows_exact_retry_but_blocks_adaptive_reuse"},
         {"source": "codex-rs/hepta-intelligence-eval/src/closure_tests.rs", "function": "final_holdout_replay_receipt_is_stable_after_unrelated_registry_growth"},
         {"source": "codex-rs/hepta-intelligence-eval/src/closure_tests.rs", "function": "independent_decision_consumes_bound_holdout_receipt"},
+        {"source": "codex-rs/hepta-intelligence-eval/src/durable_holdout_tests.rs", "function": "independent_anchor_rejects_old_backup_and_partial_tail"},
+        {"source": "codex-rs/hepta-intelligence-eval/src/durable_holdout_tests.rs", "function": "lock_binding_cas_and_invalid_plan_do_not_mutate_storage"},
+        {"source": "codex-rs/hepta-intelligence-eval/src/authenticated_holdout.rs", "function": "stale_or_mutated_anchor_witness_is_rejected"},
+        {"source": "codex-rs/hepta-intelligence-eval/src/longitudinal_time_tests.rs", "function": "valid_signatures_do_not_hide_unobserved_overlapping_or_wrong_source_windows"},
+        {"source": "codex-rs/hepta-intelligence-eval/src/longitudinal_time_tests.rs", "function": "time_policy_observer_and_future_collection_cannot_be_substituted"},
         {"source": "codex-rs/hepta-learning-artifacts/src/closure_v2_tests.rs", "function": "art_02_persistent_withdrawal_blocks_future_admission_and_replays"}
       ],
       "status": "native_test_mapped"
