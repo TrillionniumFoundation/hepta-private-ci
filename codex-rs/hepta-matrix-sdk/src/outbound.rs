@@ -8,6 +8,8 @@ use codex_hepta_contracts::Sha256Digest;
 use codex_hepta_matrix_protocol::MatrixEventId;
 use codex_hepta_matrix_store::MatrixDispatchContext;
 use codex_hepta_matrix_store::MatrixDispatchIntent;
+use codex_hepta_matrix_store::MatrixDispatchReceipt;
+use codex_hepta_matrix_store::MatrixDispatchState;
 use codex_hepta_matrix_store::MatrixDurableError;
 use codex_hepta_matrix_store::MatrixDurableStore;
 use codex_hepta_matrix_store::OutboxRecord;
@@ -77,8 +79,8 @@ impl OutboxDispatchConfig {
 #[derive(Clone, Copy, Debug, Default, Eq, PartialEq)]
 pub struct OutboxDispatchStats {
     pub claimed: u64,
-    /// Retained for API compatibility. Terminal sends are now settled by a
-    /// trusted Matrix server observation, never by this transport call.
+    /// Count of claims whose terminal state was already established by the
+    /// independent Matrix observer while this sender was reconciling.
     pub sent: u64,
     pub accepted_pending_observation: u64,
     pub retry_scheduled: u64,
@@ -122,14 +124,27 @@ pub async fn dispatch_outbox_once<T: MatrixOutboundTransport + ?Sized>(
             payload_digest,
             context: transport.dispatch_context(&record),
         };
-        store
+        let prepared = store
             .prepare_matrix_dispatch(now_ms, &intent)
             .await
             .map_err(store_error)?;
-        store
+        if account_terminal(&mut stats, &prepared) {
+            continue;
+        }
+        match store
             .record_matrix_dispatch_attempt(&record.stable_txn_id, record.attempts, now_ms)
             .await
-            .map_err(store_error)?;
+        {
+            Ok(receipt) if account_terminal(&mut stats, &receipt) => continue,
+            Ok(_) => {}
+            Err(MatrixDurableError::Conflict) => {
+                if account_current_terminal(store, &record, &mut stats).await? {
+                    continue;
+                }
+                return Err(OutboxDispatchError::Store);
+            }
+            Err(error) => return Err(store_error(error)),
+        }
 
         let result = tokio::select! {
             biased;
@@ -145,7 +160,7 @@ pub async fn dispatch_outbox_once<T: MatrixOutboundTransport + ?Sized>(
                 // not terminal delivery. Keep the outbox claim non-terminal
                 // until /sync or another trusted server observer sees the
                 // matching transaction/event identity.
-                store
+                match store
                     .record_matrix_transport_acceptance(
                         &record.stable_txn_id,
                         record.attempts,
@@ -153,14 +168,22 @@ pub async fn dispatch_outbox_once<T: MatrixOutboundTransport + ?Sized>(
                         now_ms,
                     )
                     .await
-                    .map_err(store_error)?;
-                stats.accepted_pending_observation += 1;
+                {
+                    Ok(receipt) if account_terminal(&mut stats, &receipt) => {}
+                    Ok(_) => stats.accepted_pending_observation += 1,
+                    Err(MatrixDurableError::Conflict) => {
+                        if !account_current_terminal(store, &record, &mut stats).await? {
+                            return Err(OutboxDispatchError::Store);
+                        }
+                    }
+                    Err(error) => return Err(store_error(error)),
+                }
             }
             Err(MatrixTransportError::Retryable) => {
                 let next_attempt_at_ms = now_ms
                     .checked_add(retry_delay_ms(config, record.attempts)?)
                     .ok_or(OutboxDispatchError::Invalid)?;
-                store
+                match store
                     .record_matrix_transport_indeterminate_and_retry(
                         &record.stable_txn_id,
                         record.attempts,
@@ -168,22 +191,40 @@ pub async fn dispatch_outbox_once<T: MatrixOutboundTransport + ?Sized>(
                         next_attempt_at_ms,
                     )
                     .await
-                    .map_err(store_error)?;
-                stats.retry_scheduled += 1;
-                if record.attempts >= config.max_attempts {
-                    stats.indeterminate_held += 1;
+                {
+                    Ok(receipt) if account_terminal(&mut stats, &receipt) => {}
+                    Ok(_) => {
+                        stats.retry_scheduled += 1;
+                        if record.attempts >= config.max_attempts {
+                            stats.indeterminate_held += 1;
+                        }
+                    }
+                    Err(MatrixDurableError::Conflict) => {
+                        if !account_current_terminal(store, &record, &mut stats).await? {
+                            return Err(OutboxDispatchError::Store);
+                        }
+                    }
+                    Err(error) => return Err(store_error(error)),
                 }
             }
             Err(MatrixTransportError::Permanent) => {
-                store
+                match store
                     .record_matrix_transport_rejection(
                         &record.stable_txn_id,
                         record.attempts,
                         now_ms,
                     )
                     .await
-                    .map_err(store_error)?;
-                stats.permanent_failure += 1;
+                {
+                    Ok(receipt) if account_terminal(&mut stats, &receipt) => {}
+                    Ok(_) => return Err(OutboxDispatchError::Store),
+                    Err(MatrixDurableError::Conflict) => {
+                        if !account_current_terminal(store, &record, &mut stats).await? {
+                            return Err(OutboxDispatchError::Store);
+                        }
+                    }
+                    Err(error) => return Err(store_error(error)),
+                }
             }
         }
     }
@@ -211,6 +252,38 @@ pub async fn run_outbox_sender<T: MatrixOutboundTransport + ?Sized>(
                 _ = tokio::time::sleep(config.idle_poll) => {}
             }
         }
+    }
+}
+
+async fn account_current_terminal(
+    store: &MatrixDurableStore,
+    record: &OutboxRecord,
+    stats: &mut OutboxDispatchStats,
+) -> Result<bool, OutboxDispatchError> {
+    Ok(store
+        .matrix_dispatch_receipt(&record.stable_txn_id)
+        .await
+        .map_err(store_error)?
+        .as_ref()
+        .is_some_and(|receipt| account_terminal(stats, receipt)))
+}
+
+fn account_terminal(stats: &mut OutboxDispatchStats, receipt: &MatrixDispatchReceipt) -> bool {
+    if !receipt.archived {
+        return false;
+    }
+    match receipt.state {
+        MatrixDispatchState::ObservedSucceeded | MatrixDispatchState::Redacted => {
+            stats.sent += 1;
+            true
+        }
+        MatrixDispatchState::Rejected => {
+            stats.permanent_failure += 1;
+            true
+        }
+        MatrixDispatchState::Prepared
+        | MatrixDispatchState::Dispatched
+        | MatrixDispatchState::Indeterminate => false,
     }
 }
 
