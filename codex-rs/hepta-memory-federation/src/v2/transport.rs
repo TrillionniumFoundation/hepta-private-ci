@@ -17,7 +17,7 @@ pub enum FederationTransportOutcomeV2 {
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum FederationTransportResultV2 {
-    Terminal(RemoteFederatedResponseV2),
+    Terminal(Box<RemoteFederatedResponseV2>),
     NonTerminal(FederationTransportOutcomeV2),
 }
 
