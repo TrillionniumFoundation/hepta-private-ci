@@ -74,3 +74,6 @@ mod destination_dedupe_tests;
 #[cfg(test)]
 #[path = "durable_tests.rs"]
 mod durable_tests;
+#[cfg(test)]
+#[path = "fault_tests.rs"]
+mod fault_tests;
