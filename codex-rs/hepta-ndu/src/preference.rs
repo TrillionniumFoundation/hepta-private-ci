@@ -15,7 +15,7 @@ use crate::mul_q32_ties_even;
 const ETA_MIN_RAW: i64 = 1_i64 << 28;
 const ETA_MAX_RAW: i64 = 1_i64 << 30;
 const RESIDUAL_TOLERANCE_RAW: i64 = 1_i64 << 12;
-const MAX_ITERATIONS: u32 = 64;
+pub(crate) const MAX_ITERATIONS: u32 = 64;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct PreferenceState {
@@ -60,23 +60,31 @@ pub struct NduSolverTerminationReceipt {
     pub terminal_state_digest: Digest32,
 }
 
+/// One staged artifact selection inside an explicit NDU hierarchy.
+///
+/// `hierarchy_id` is the stable root/scope identity used to decide whether two
+/// level updates can chase one another. Updates from unrelated hierarchies may
+/// share a generation without being rejected.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct UpdateGeneration {
     pub generation: Generation,
+    pub hierarchy_id: StableId,
     pub subject_class: SubjectClass,
     pub artifact_id: StableId,
 }
 
-/// Rejects parent and child hierarchy updates in one generation.
+/// Rejects parent and child hierarchy-level updates in one generation, scoped
+/// to one explicit hierarchy. Unrelated hierarchy roots may advance in the same
+/// generation.
 pub fn validate_staged_updates(updates: &[UpdateGeneration]) -> Result<(), NduError> {
-    let mut classes: BTreeMap<u64, BTreeSet<SubjectClass>> = BTreeMap::new();
+    let mut classes: BTreeMap<(u64, StableId), BTreeSet<SubjectClass>> = BTreeMap::new();
     for update in updates {
         classes
-            .entry(update.generation.get())
+            .entry((update.generation.get(), update.hierarchy_id.clone()))
             .or_default()
             .insert(update.subject_class);
     }
-    for (generation, values) in classes {
+    for ((generation, _hierarchy_id), values) in classes {
         if values.len() > 1 {
             return Err(NduError::SimultaneousHierarchyUpdate(generation));
         }
@@ -86,6 +94,8 @@ pub fn validate_staged_updates(updates: &[UpdateGeneration]) -> Result<(), NduEr
 
 /// Iterates a bounded damped preference update toward a deterministic target.
 /// The previous state remains immutable and every step emits a new revision.
+/// Exhausting the registered 64-step bound is unavailable, not a successful
+/// terminal state.
 pub fn solve_preference_target(
     initial: PreferenceState,
     mut target: Vec<AxisValue>,
@@ -151,19 +161,23 @@ pub fn solve_preference_target(
         }
     }
 
-    let terminal_residual_raw = receipts
-        .last()
-        .map_or(i64::MAX, |receipt| receipt.residual_raw);
-    let termination = NduSolverTerminationReceipt {
-        disposition: SolveDisposition::IterationBoundReached,
-        iterations: MAX_ITERATIONS,
-        terminal_residual_raw,
-        maximum_residual_raw,
-        projection_count: total_projection_count,
-        predecessor_digest,
-        terminal_state_digest: state.state_digest,
-    };
-    Ok((state, termination, receipts))
+    Err(NduError::PreferenceSolverUnavailable)
+}
+
+pub(crate) fn validate_solver_iteration_receipt(
+    receipt: &NduSolverIterationReceipt,
+) -> Result<(), NduError> {
+    if !(1..=MAX_ITERATIONS).contains(&receipt.iteration) || receipt.residual_raw < 0 {
+        return Err(NduError::InvalidSolverReceipt);
+    }
+    let expected_next = receipt
+        .predecessor_revision
+        .next()
+        .map_err(|_| NduError::InvalidSolverReceipt)?;
+    if expected_next != receipt.next_revision || receipt.state_digest.is_zero() {
+        return Err(NduError::InvalidSolverReceipt);
+    }
+    Ok(())
 }
 
 fn update_once(
