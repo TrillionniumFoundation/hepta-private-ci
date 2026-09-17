@@ -14,12 +14,16 @@ use codex_hepta_memory::CognitiveScope;
 use codex_hepta_memory::CognitiveStore;
 use codex_hepta_memory::CognitiveStoreError;
 use codex_hepta_memory::MemoryRevalidationBinding;
+use codex_hepta_memory::RetrievalLimitObservation;
 use codex_hepta_memory::RetrievalRequest;
 use codex_hepta_memory::RevalidationStatus;
 use codex_hepta_memory_retrieval::MAX_PRODUCT_RETRIEVAL_RESULTS;
+use codex_hepta_memory_retrieval::ProductRelationEvidenceV1;
+use codex_hepta_memory_retrieval::ProductRelationKindV1;
 use codex_hepta_memory_retrieval::ProductRetrievalRequestV1;
+use codex_hepta_memory_retrieval::ProductRetrievalRequestV2;
 use codex_hepta_memory_retrieval::RetrievalCandidate;
-use codex_hepta_memory_retrieval::retrieve_product_v1;
+use codex_hepta_memory_retrieval::retrieve_product_v2;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::FixedQ32;
 use codex_hepta_types::Generation;
@@ -52,10 +56,10 @@ impl From<CognitiveStoreError> for CognitiveContextError {
 /// Canonical ranking precedence is:
 ///
 /// 1. the SQLite owner enumerates bounded MemoryFts/EntityFts/GraphOneHop/
-///    Recency candidates and emits one observation digest;
+///    Recency candidates and typed registered KG relation evidence;
 /// 2. the Lane-C read cut admits only exact live revision/content matches;
-/// 3. memory.retrieval binds the complete admitted owner observation and applies
-///    the product 512-candidate/16-result ceiling;
+/// 3. memory.retrieval binds the complete admitted owner observation, typed
+///    relation subset/coverage and the product 512-candidate/16-result ceiling;
 /// 4. selected bindings are revalidated in one SQLite transaction;
 /// 5. an explicitly configured learned ranker may reorder only that verified
 ///    product set before the caller's 1..=4 limit and byte budget are applied.
@@ -122,8 +126,7 @@ where
 
     // Observe the owner's complete bounded generator output before the legacy
     // top-four truncation. The observation digest binds owner-side channel
-    // limits, scores and revalidation bindings; memory.retrieval binds that
-    // digest together with every Lane-C-admitted candidate.
+    // limits, typed relation provenance, scores and revalidation bindings.
     let observation = store
         .observe_memory_retrieval(&access, &RetrievalRequest::new(query, snapshot_time))
         .await?;
@@ -160,9 +163,9 @@ where
             RetrievalCandidate {
                 record: record.clone(),
                 snapshot_digest: read.snapshot_digest(),
-                // The SQLite owner has already fused channel ranks with RRF.
-                // Preserve that owner score as one scalar rather than inventing
-                // per-channel values that the observation did not emit.
+                // The SQLite owner has already fused legacy channel ranks with
+                // RRF. Preserve that owner score rather than inventing weights
+                // for typed KG relation evidence that is not yet calibrated.
                 lexical_score: FixedQ32::from_raw(owner_score),
                 graph_score: FixedQ32::ZERO,
                 freshness_score: FixedQ32::ZERO,
@@ -171,23 +174,80 @@ where
         ));
     }
 
-    let product = retrieve_product_v1(ProductRetrievalRequestV1 {
-        query_id,
-        query_digest,
-        snapshot_digest: read.snapshot_digest(),
-        owner_observation_digest,
-        maximum_results: MAX_PRODUCT_RETRIEVAL_RESULTS,
-        candidates: admitted
-            .iter()
-            .map(|(candidate, _)| candidate.clone())
-            .collect(),
+    let owner_relation_evidence_count = observation.relation_signals().len();
+    let owner_relation_limit_reached = matches!(
+        observation.relation_limit(),
+        RetrievalLimitObservation::LimitReached
+    );
+    let mut relation_evidence = Vec::new();
+    for (candidate_id, support_id, relation_token, support_digest, group_digest) in
+        observation.relation_signals()
+    {
+        // Relation evidence may not widen the Lane-C admitted product set. If
+        // either endpoint/support falls outside the bounded read prefix, omit
+        // the typed evidence and record that omission in the Product V2 receipt.
+        let Some((candidate, _)) = admitted.iter().find(|(_, binding)| {
+            binding.memory.memory_id == candidate_id.memory_id
+                && binding.memory.revision == candidate_id.revision
+        }) else {
+            continue;
+        };
+        let Some((support, _)) = admitted.iter().find(|(_, binding)| {
+            binding.memory.memory_id == support_id.memory_id
+                && binding.memory.revision == support_id.revision
+        }) else {
+            continue;
+        };
+        let relation = ProductRelationKindV1::from_owner_token(relation_token).ok_or_else(|| {
+            CognitiveStoreError::Corrupt(format!(
+                "owner emitted unregistered retrieval relation token {relation_token}"
+            ))
+        })?;
+        let support_digest: Digest32 = support_digest.as_str().parse().map_err(|error| {
+            CognitiveStoreError::Corrupt(format!(
+                "owner relation support digest is not a Digest32: {error}"
+            ))
+        })?;
+        let relation_group_digest: Digest32 =
+            group_digest.as_str().parse().map_err(|error| {
+                CognitiveStoreError::Corrupt(format!(
+                    "owner relation group digest is not a Digest32: {error}"
+                ))
+            })?;
+        relation_evidence.push(ProductRelationEvidenceV1 {
+            candidate_record_id: candidate.record.record_id.clone(),
+            candidate_revision: candidate.record.revision,
+            support_record_id: support.record.record_id.clone(),
+            support_revision: support.record.revision,
+            relation,
+            support_digest,
+            relation_group_digest,
+        });
+    }
+
+    let product = retrieve_product_v2(ProductRetrievalRequestV2 {
+        retrieval: ProductRetrievalRequestV1 {
+            query_id,
+            query_digest,
+            snapshot_digest: read.snapshot_digest(),
+            owner_observation_digest,
+            maximum_results: MAX_PRODUCT_RETRIEVAL_RESULTS,
+            candidates: admitted
+                .iter()
+                .map(|(candidate, _)| candidate.clone())
+                .collect(),
+        },
+        owner_relation_evidence_count,
+        owner_relation_limit_reached,
+        relation_evidence,
     })
     .map_err(|error| {
         CognitiveStoreError::Corrupt(format!("memory.retrieval product ranking rejected: {error}"))
     })?;
 
-    let mut selected_bindings = Vec::with_capacity(product.retrieval.retrieval.results.len());
-    for result in &product.retrieval.retrieval.results {
+    let product_results = &product.retrieval.retrieval.retrieval.results;
+    let mut selected_bindings = Vec::with_capacity(product_results.len());
+    for result in product_results {
         let Some((_, binding)) = admitted.iter().find(|(candidate, _)| {
             candidate.record.record_id == result.record_id
                 && candidate.record.record_digest() == result.record_digest
