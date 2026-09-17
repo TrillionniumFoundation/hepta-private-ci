@@ -2,14 +2,15 @@ name: Runtime Codex closure helper
 
 on:
   push:
-    branches: [work/runtime-codex-production-closure-20260917]
+    branches:
+      - work/runtime-codex-production-closure-20260917
 
 permissions:
   contents: write
 
 jobs:
   materialize:
-    if: github.actor != 'github-actions[bot]'
+    if: ${{ github.actor != 'github-actions[bot]' }}
     runs-on: ubuntu-24.04
     timeout-minutes: 45
     steps:
@@ -17,161 +18,9 @@ jobs:
         with:
           ref: work/runtime-codex-production-closure-20260917
           fetch-depth: 0
-      - name: Patch the existing native App Server caller through runtime.codex
-        shell: bash
-        run: |
-          set -euo pipefail
-          python3 - <<'PY'
-          from pathlib import Path
-
-          path = Path('codex-rs/hepta-infer-worker-host/src/native_app_server.rs')
-          source = path.read_text(encoding='utf-8')
-
-          old = 'use std::time::Duration;\n'
-          new = 'use std::time::Duration;\nuse std::time::SystemTime;\nuse std::time::UNIX_EPOCH;\n'
-          if source.count(old) != 1:
-              raise RuntimeError('unexpected Duration import context')
-          source = source.replace(old, new)
-
-          old = '''use codex_hepta_agentd::AgentdClient;\n'''
-          new = '''use codex_hepta_codex_adapter::AdapterStatus as CodexAdapterStatus;\nuse codex_hepta_codex_adapter::AppServerObservation;\nuse codex_hepta_codex_adapter::CodexAdapterReceipt;\nuse codex_hepta_codex_adapter::CodexOperationIntent;\nuse codex_hepta_codex_adapter::PreparedCodexRequest;\nuse codex_hepta_codex_adapter::RetryDisposition;\nuse codex_hepta_codex_adapter::TerminalOutcome;\nuse codex_hepta_codex_adapter::prepare as prepare_codex_request;\nuse codex_hepta_agentd::AgentdClient;\n'''
-          if source.count(old) != 1:
-              raise RuntimeError('unexpected Agentd import context')
-          source = source.replace(old, new)
-
-          old = '''use codex_hepta_contracts::AgentId;\n'''
-          new = '''use codex_hepta_contracts::AgentId;\nuse codex_hepta_types::Digest32;\nuse codex_hepta_types::StableId;\n'''
-          if source.count(old) != 1:
-              raise RuntimeError('unexpected AgentId import context')
-          source = source.replace(old, new)
-
-          old = '''        control.dispatch_native(\n            request_id,\n            NativeDispatch {\n                thread_id: started.thread.id.clone(),\n                model_provider: started.model_provider.clone(),\n                context_digest: control::digest(&serde_json::to_vec(&additional_context)?),\n            },\n        )?;\n        let response = timeout(\n            RPC_TIMEOUT,\n            client.request_typed::<TurnStartResponse>(ClientRequest::TurnStart {\n                request_id: RequestId::Integer(2),\n                params: TurnStartParams {\n                    thread_id: started.thread.id.clone(),\n                    client_user_message_id: Some(request_id.to_string()),\n                    input: vec![UserInput::Text {\n                        text: prompt,\n                        text_elements: Vec::new(),\n                    }],\n                    additional_context,\n                    environments: Some(Vec::new()),\n                    ..Default::default()\n                },\n            }),\n        )\n        .await;\n'''
-          new = '''        let turn_params = TurnStartParams {\n            thread_id: started.thread.id.clone(),\n            client_user_message_id: Some(request_id.to_string()),\n            input: vec![UserInput::Text {\n                text: prompt,\n                text_elements: Vec::new(),\n            }],\n            additional_context,\n            environments: Some(Vec::new()),\n            ..Default::default()\n        };\n        let payload_digest = Digest32::of_bytes(&serde_json::to_vec(&turn_params)?);\n        let now_ms = unix_time_ms()?;\n        let deadline_ms = now_ms\n            .checked_add(u64::try_from(RPC_TIMEOUT.as_millis())?)\n            .ok_or("runtime.codex admission deadline overflow")?;\n        // This host proves exact-payload stability at the runtime.codex seam.\n        // The adapter remains DENY_ALL and does not authenticate the source of\n        // this binding; an independently issued final-use grant is a separate\n        // activation gate rather than authority minted by this worker.\n        let prepared_codex = prepare_codex_request(\n            now_ms,\n            CodexOperationIntent {\n                operation_id: codex_operation_id(request_id)?,\n                thread_id: codex_id(&started.thread.id, "thread")?,\n                method_id: codex_id("app-server.turn-start.v2", "method")?,\n                payload_digest,\n                lease_payload_digest: payload_digest,\n                deadline_ms,\n            },\n        )?;\n        control.dispatch_native(\n            request_id,\n            NativeDispatch {\n                thread_id: started.thread.id.clone(),\n                model_provider: started.model_provider.clone(),\n                context_digest: control::digest(&serde_json::to_vec(&turn_params.additional_context)?),\n            },\n        )?;\n        let response = timeout(\n            RPC_TIMEOUT,\n            client.request_typed::<TurnStartResponse>(ClientRequest::TurnStart {\n                request_id: RequestId::Integer(2),\n                params: turn_params,\n            }),\n        )\n        .await;\n'''
-          if source.count(old) != 1:
-              raise RuntimeError('unexpected turn/start dispatch context')
-          source = source.replace(old, new)
-
-          old = '''            _ => {\n                let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;\n                return Ok(NativeRunOutput {\n'''
-          new = '''            _ => {\n                let uncertain = prepared_codex\n                    .clone()\n                    .observe(Some(AppServerObservation::indeterminate(\n                        prepared_codex.thread_id().clone(),\n                        None,\n                    )))?;\n                if uncertain.status != CodexAdapterStatus::Indeterminate\n                    || uncertain.retry != RetryDisposition::ReconcileBeforeRetry\n                {\n                    return Err("runtime.codex lost-ack classification drifted".into());\n                }\n                let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;\n                return Ok(NativeRunOutput {\n'''
-          if source.count(old) != 1:
-              raise RuntimeError('unexpected turn/start unknown context')
-          source = source.replace(old, new)
-
-          old = '''                cancellation,\n                Some(&owner),\n            )\n'''
-          new = '''                cancellation,\n                &prepared_codex,\n                Some(&owner),\n            )\n'''
-          if source.count(old) != 1:
-              raise RuntimeError('unexpected primary observe context')
-          source = source.replace(old, new)
-
-          old = '''                    &grace,\n                    /*owner*/ None,\n                )\n'''
-          new = '''                    &grace,\n                    &prepared_codex,\n                    /*owner*/ None,\n                )\n'''
-          if source.count(old) != 1:
-              raise RuntimeError('unexpected grace observe context')
-          source = source.replace(old, new)
-
-          old = '''        cancellation: &CancellationToken,\n        owner: Option<&AgentdClient>,\n    ) -> std::result::Result<(), String> {\n'''
-          new = '''        cancellation: &CancellationToken,\n        prepared_codex: &PreparedCodexRequest,\n        owner: Option<&AgentdClient>,\n    ) -> std::result::Result<(), String> {\n'''
-          if source.count(old) != 1:
-              raise RuntimeError('unexpected observe signature')
-          source = source.replace(old, new)
-
-          old = '''                AppServerEvent::ServerNotification(notification) => {\n                    if observe_notification(output, *notification)? {\n                        return Ok(());\n                    }\n                }\n'''
-          new = '''                AppServerEvent::ServerNotification(notification) => {\n                    let codex_receipt = codex_receipt_for_notification(\n                        prepared_codex,\n                        output,\n                        notification.as_ref(),\n                    )?;\n                    if observe_notification(output, *notification)? {\n                        let receipt = codex_receipt.ok_or_else(|| {\n                            "terminal App Server event lacked runtime.codex receipt".to_string()\n                        })?;\n                        verify_codex_receipt(output, &receipt)?;\n                        return Ok(());\n                    }\n                }\n'''
-          if source.count(old) != 1:
-              raise RuntimeError('unexpected server notification context')
-          source = source.replace(old, new)
-
-          marker = '''async fn verify_owner_health(\n'''
-          addition = r'''fn codex_receipt_for_notification(
-    prepared: &PreparedCodexRequest,
-    output: &NativeRunOutput,
-    notification: &ServerNotification,
-) -> std::result::Result<Option<CodexAdapterReceipt>, String> {
-    let ServerNotification::TurnCompleted(completed) = notification else {
-        return Ok(None);
-    };
-    if completed.thread_id != output.thread_id || completed.turn.id != output.turn_id {
-        return Ok(None);
-    }
-    let outcome = match completed.turn.status {
-        TurnStatus::Completed => TerminalOutcome::Completed,
-        TurnStatus::Failed => TerminalOutcome::Failed,
-        TurnStatus::Interrupted => TerminalOutcome::Interrupted,
-        TurnStatus::InProgress => return Err("nonterminal completion event".to_string()),
-    };
-    let response = serde_json::to_vec(completed)
-        .map_err(|error| format!("failed to bind terminal App Server event: {error}"))?;
-    let observation = AppServerObservation::terminal(
-        codex_id_string(&completed.thread_id, "thread")?,
-        codex_id_string(&completed.turn.id, "turn")?,
-        outcome,
-        Digest32::of_bytes(&response),
-    )
-    .map_err(|error| format!("invalid runtime.codex terminal observation: {error}"))?;
-    prepared
-        .clone()
-        .observe(Some(observation))
-        .map(Some)
-        .map_err(|error| format!("runtime.codex receipt rejected terminal event: {error}"))
-}
-
-fn verify_codex_receipt(
-    output: &NativeRunOutput,
-    receipt: &CodexAdapterReceipt,
-) -> std::result::Result<(), String> {
-    let status_matches = matches!(
-        (receipt.status, output.status),
-        (CodexAdapterStatus::Succeeded, NativeRunStatus::Completed)
-            | (CodexAdapterStatus::Failed, NativeRunStatus::Failed)
-            | (CodexAdapterStatus::Interrupted, NativeRunStatus::Interrupted)
-    );
-    let turn_matches = receipt
-        .turn_id
-        .as_ref()
-        .is_some_and(|turn| turn.as_str() == output.turn_id);
-    if receipt.thread_id.as_str() != output.thread_id
-        || !turn_matches
-        || !status_matches
-        || receipt.retry != RetryDisposition::DoNotRetry
-        || receipt.model_authority
-        || receipt.provider_authority
-        || receipt.authority.grants_any()
-    {
-        return Err("runtime.codex terminal receipt does not match native execution".to_string());
-    }
-    Ok(())
-}
-
-fn codex_operation_id(request_id: &str) -> Result<StableId> {
-    codex_id(
-        &format!("operation:{}", Digest32::of_bytes(request_id.as_bytes())),
-        "operation",
-    )
-}
-
-fn codex_id(value: &str, kind: &'static str) -> Result<StableId> {
-    StableId::new(value.to_string())
-        .map_err(|_| format!("invalid runtime.codex {kind} identifier").into())
-}
-
-fn codex_id_string(value: &str, kind: &'static str) -> std::result::Result<StableId, String> {
-    StableId::new(value.to_string())
-        .map_err(|_| format!("invalid runtime.codex {kind} identifier"))
-}
-
-fn unix_time_ms() -> Result<u64> {
-    let millis = SystemTime::now().duration_since(UNIX_EPOCH)?.as_millis();
-    Ok(u64::try_from(millis)?)
-}
-
-'''
-          if source.count(marker) != 1:
-              raise RuntimeError('unexpected helper insertion point')
-          source = source.replace(marker, addition + marker)
-
-          path.write_text(source, encoding='utf-8')
-          PY
-      - name: Format and update the workspace lock
+      - name: Materialize caller integration
+        run: python3 scripts/runtime_codex_closure_materialize.py
+      - name: Format, refresh lock, and test focused packages
         shell: bash
         run: |
           set -euo pipefail
@@ -180,14 +29,13 @@ fn unix_time_ms() -> Result<u64> {
           cargo check -p codex-hepta-codex-adapter -p codex-hepta-infer-worker-host
           cargo test -p codex-hepta-codex-adapter
           cargo test -p codex-hepta-infer-worker-host --lib
-      - name: Commit the materialized integration
+      - name: Commit materialized integration
         shell: bash
         run: |
           set -euo pipefail
-          git status --short
           git add codex-rs/Cargo.lock \
-                  codex-rs/hepta-infer-worker-host/Cargo.toml \
                   codex-rs/hepta-infer-worker-host/src/native_app_server.rs \
+                  codex-rs/hepta-infer-worker-host/Cargo.toml \
                   codex-rs/hepta-codex-adapter/src/lib.rs \
                   codex-rs/hepta-codex-adapter/src/lib_tests.rs \
                   codex-rs/hepta-codex-adapter/src/deadline_digest_tests.rs
