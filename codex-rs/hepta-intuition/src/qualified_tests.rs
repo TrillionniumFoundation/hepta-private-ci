@@ -3,6 +3,7 @@ use crate::calibrated::AssignmentModeV1;
 use crate::calibrated::CalibratedActionCandidateV1;
 use crate::calibrated::CalibratedDecisionRequestV1;
 use crate::calibrated::CalibratedDispositionV1;
+use crate::calibrated::CalibratedError;
 use crate::calibrated::CalibrationArtifactV1;
 use crate::calibrated::CandidateSetCompletenessBindingV1;
 use crate::calibrated::OodArtifactV1;
