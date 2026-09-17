@@ -1,0 +1,54 @@
+name: plasticity closure probe
+
+on:
+  push:
+    branches:
+      - codex/plasticity-governed-engine-closure
+    paths:
+      - codex-rs/hepta-plasticity/**
+      - codex-rs/hepta-intelligence/**
+      - codex-rs/Cargo.lock
+      - .github/workflows/plasticity-closure-probe.yml
+
+permissions:
+  contents: write
+
+jobs:
+  probe:
+    if: ${{ !contains(github.event.head_commit.message, '[skip-probe]') }}
+    timeout-minutes: 30
+    runs-on: ubuntu-24.04
+    defaults:
+      run:
+        working-directory: codex-rs
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: codex/plasticity-governed-engine-closure
+          fetch-depth: 0
+          persist-credentials: true
+      - uses: ./.github/actions/setup-ci
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0
+        with:
+          components: rustfmt,clippy
+      - name: Refresh workspace path dependencies and compile
+        run: cargo check -p codex-hepta-plasticity -p codex-hepta-intelligence
+      - name: Format check
+        run: cargo fmt -- --config imports_granularity=Item --check
+      - name: Unit tests
+        run: cargo test -p codex-hepta-plasticity -p codex-hepta-intelligence --lib
+      - name: Clippy
+        run: cargo clippy -p codex-hepta-plasticity -p codex-hepta-intelligence --all-targets -- -D warnings
+      - name: Commit refreshed lockfile
+        shell: bash
+        run: |
+          set -euo pipefail
+          if git diff --quiet -- Cargo.lock; then
+            echo 'Cargo.lock already current.'
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add Cargo.lock
+          git commit -m 'chore: refresh plasticity lockfile [skip-probe]'
+          git push origin HEAD:codex/plasticity-governed-engine-closure
