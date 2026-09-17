@@ -1,4 +1,3 @@
-use std::fs::File;
 use std::io::Write;
 use std::path::Path;
 use std::path::PathBuf;
@@ -63,16 +62,12 @@ impl DetachedSignatureVerifier for SystemDetachedSignatureVerifier {
         write_private_file(&message_path, message)?;
         write_private_file(&signature_path, signature)?;
         let result = match self.platform {
-            NativePlatform::Windows => verify_windows(
-                &self.public_key,
-                &message_path,
-                &signature_path,
-            ),
-            NativePlatform::Macos | NativePlatform::Linux => verify_openssl(
-                &self.public_key,
-                &message_path,
-                &signature_path,
-            ),
+            NativePlatform::Windows => {
+                verify_windows(&self.public_key, &message_path, &signature_path)
+            }
+            NativePlatform::Macos | NativePlatform::Linux => {
+                verify_openssl(&self.public_key, &message_path, &signature_path)
+            }
             NativePlatform::Unsupported => Ok(false),
         };
         let _ = std::fs::remove_file(&message_path);
@@ -195,7 +190,14 @@ try {
 } finally { $rsa.Dispose() }
 "#;
     let status = Command::new("powershell.exe")
-        .args(["-NoLogo", "-NoProfile", "-NonInteractive", "-Command", SCRIPT, "--"])
+        .args([
+            "-NoLogo",
+            "-NoProfile",
+            "-NonInteractive",
+            "-Command",
+            SCRIPT,
+            "--",
+        ])
         .arg(public_key)
         .arg(message)
         .arg(signature)
@@ -227,8 +229,11 @@ fn write_private_file(path: &Path, bytes: &[u8]) -> Result<()> {
         use std::os::unix::fs::OpenOptionsExt;
         options.mode(0o600);
     }
-    let mut file = options.open(path).context("create signature verification input")?;
-    file.write_all(bytes).context("write signature verification input")?;
+    let mut file = options
+        .open(path)
+        .context("create signature verification input")?;
+    file.write_all(bytes)
+        .context("write signature verification input")?;
     file.sync_all().context("sync signature verification input")
 }
 
@@ -240,7 +245,9 @@ fn now_millis() -> Result<u128> {
 }
 
 fn millis_to_duration(value: &str, name: &str) -> Result<Duration> {
-    let millis = value.parse::<u64>().with_context(|| format!("parse {name}"))?;
+    let millis = value
+        .parse::<u64>()
+        .with_context(|| format!("parse {name}"))?;
     Ok(Duration::from_millis(millis))
 }
 
@@ -269,7 +276,9 @@ fn validate_id(value: &str, name: &str) -> Result<()> {
 fn validate_digest(value: &str) -> Result<()> {
     if value.len() != 64
         || value.bytes().all(|byte| byte == b'0')
-        || !value.bytes().all(|byte| byte.is_ascii_digit() || matches!(byte, b'a'..=b'f'))
+        || !value
+            .bytes()
+            .all(|byte| byte.is_ascii_digit() || matches!(byte, b'a'..=b'f'))
     {
         bail!("native platform grant payload digest is invalid");
     }
@@ -277,7 +286,7 @@ fn validate_digest(value: &str) -> Result<()> {
 }
 
 fn decode_hex(value: &str) -> Result<Vec<u8>> {
-    if value.is_empty() || value.len() > 16 * 1024 || !value.len().is_multiple_of(2) {
+    if value.is_empty() || value.len() > 16 * 1024 || value.len() % 2 != 0 {
         bail!("native platform grant signature encoding is invalid");
     }
     value
