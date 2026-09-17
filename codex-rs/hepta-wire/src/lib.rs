@@ -40,3 +40,5 @@ pub use v2::WireV2Error;
 
 #[cfg(test)]
 mod property_tests;
+#[cfg(test)]
+mod v2_conformance_tests;
