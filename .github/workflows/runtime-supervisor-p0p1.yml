@@ -7,6 +7,7 @@ on:
     paths:
       - .github/runtime-supervisor-patch-a.py
       - .github/runtime-supervisor-patch-b.py
+      - .github/runtime-supervisor-patch-c.py
       - .github/workflows/runtime-supervisor-p0p1.yml
 
 permissions:
@@ -26,10 +27,12 @@ jobs:
         run: |
           python3 .github/runtime-supervisor-patch-a.py
           python3 .github/runtime-supervisor-patch-b.py
+          python3 .github/runtime-supervisor-patch-c.py
       - name: Remove one-shot patch machinery
         run: |
           rm .github/runtime-supervisor-patch-a.py
           rm .github/runtime-supervisor-patch-b.py
+          rm .github/runtime-supervisor-patch-c.py
           rm .github/workflows/runtime-supervisor-p0p1.yml
       - name: Format supervisor crate
         working-directory: codex-rs
