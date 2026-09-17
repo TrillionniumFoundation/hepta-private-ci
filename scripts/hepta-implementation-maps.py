@@ -1,9 +1,16 @@
 #!/usr/bin/env python3
 """Generate and verify one implementation map for every registered module.
 
-Maps are source-navigation evidence.  They deliberately distinguish a native
+Maps are source-navigation evidence. They deliberately distinguish a native
 entrypoint from a composed production caller; an entrypoint never grants
 runtime, effect, acceptance, promotion, or release authority.
+
+A tracked map cannot safely contain the commit/tree identity of the commit that
+contains the map itself without becoming self-referential. ``sourceBase`` is
+therefore a review/generation baseline. Maps that make current composition
+claims bind those claims to exact Git blob identities in ``sourceEvidence`` and
+``productCallers``; verification recomputes those blobs from the current
+working tree so code drift fails closed.
 """
 
 from __future__ import annotations
@@ -20,7 +27,7 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 def current_source_base() -> dict[str, str]:
-    """Return the immutable source identity used by generated maps."""
+    """Return the immutable source identity used by newly generated maps."""
     return {"commit": git("rev-parse", "HEAD"), "tree": git("rev-parse", "HEAD^{tree}")}
 
 
@@ -33,6 +40,11 @@ def git(*args: str) -> str:
         ["git", *args], cwd=ROOT, text=True, capture_output=True, check=True
     )
     return p.stdout.strip()
+
+
+def working_blob_sha(rel: str) -> str:
+    """Hash current file bytes using Git's canonical blob identity."""
+    return git("hash-object", rel)
 
 
 def lane_by_module():
@@ -75,7 +87,7 @@ def map_for(module: dict, source_base: dict, lanes: dict):
     operations = parse_entrypoints(mid)
     if not operations:
         # Keep the map explicit even where the dossier has not named a native
-        # entrypoint.  This is a handoff blocker, not a production claim.
+        # entrypoint. This is a handoff blocker, not a production claim.
         operations = [
             {
                 "operation": "native_mapping_pending",
@@ -231,7 +243,7 @@ def migrate_map(row: dict, module: dict, lanes: dict, source_base: dict) -> dict
             "operator acceptance, canary, promotion and release",
         ],
     )
-    # ``sourceRoot`` is a v1 spelling.  Retain it as a compatibility alias so
+    # ``sourceRoot`` is a v1 spelling. Retain it as a compatibility alias so
     # downstream readers can migrate independently; v3 readers use roots.
     migrated["sourceRoot"] = declared
     return migrated
@@ -248,14 +260,7 @@ def migrate():
         module = by_id.get(row.get("module") or path.parent.name)
         if module is None:
             continue
-        if (
-            row.get("schema") == "hepta.module-implementation-map.v3"
-            and row.get("schemaVersion") == 3
-        ):
-            # Normalize existing v3 operations with compatibility aliases.
-            migrated = migrate_map(row, module, lanes, source_base)
-        else:
-            migrated = migrate_map(row, module, lanes, source_base)
+        migrated = migrate_map(row, module, lanes, source_base)
         path.write_text(
             json.dumps(migrated, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"
         )
@@ -266,10 +271,7 @@ def migrate():
 def generate():
     modules = load("docs/modules/MODULES.json")["modules"]
     lanes = lane_by_module()
-    source_base = {
-        "commit": git("rev-parse", "HEAD"),
-        "tree": git("rev-parse", "HEAD^{tree}"),
-    }
+    source_base = current_source_base()
     written = []
     for module in modules:
         path = ROOT / f"docs/modules/{module['id']}/IMPLEMENTATION_MAP.json"
@@ -281,6 +283,45 @@ def generate():
         )
         written.append(str(path.relative_to(ROOT)))
     print(json.dumps({"generated": len(written), "maps": written}, ensure_ascii=False))
+
+
+def verify_bound_files(mid: str, label: str, entries, failures: list[str]) -> None:
+    if not isinstance(entries, list) or not entries:
+        failures.append(f"{mid}: {label} must be a non-empty list")
+        return
+    seen = set()
+    for entry in entries:
+        if not isinstance(entry, dict):
+            failures.append(f"{mid}: invalid {label} entry")
+            continue
+        rel = entry.get("path")
+        expected_blob = entry.get("blobSha")
+        symbol = entry.get("symbol")
+        if not isinstance(rel, str) or not rel or rel in seen:
+            failures.append(f"{mid}: invalid/duplicate {label} path")
+            continue
+        seen.add(rel)
+        path = ROOT / rel
+        if not path.is_file():
+            failures.append(f"{mid}: missing {label} file {rel}")
+            continue
+        if not isinstance(expected_blob, str) or not re.fullmatch(r"[0-9a-f]{40}", expected_blob):
+            failures.append(f"{mid}: invalid {label} blob for {rel}")
+        else:
+            try:
+                actual_blob = working_blob_sha(rel)
+            except subprocess.CalledProcessError as exc:
+                failures.append(f"{mid}: cannot hash {label} file {rel}: {exc}")
+            else:
+                if actual_blob != expected_blob:
+                    failures.append(
+                        f"{mid}: stale {label} blob {rel} ({expected_blob} != {actual_blob})"
+                    )
+        if symbol is not None:
+            if not isinstance(symbol, str) or not symbol:
+                failures.append(f"{mid}: invalid {label} symbol for {rel}")
+            elif symbol not in path.read_text(encoding="utf-8"):
+                failures.append(f"{mid}: missing {label} symbol {symbol!r} in {rel}")
 
 
 def verify():
@@ -345,6 +386,43 @@ def verify():
         boundary = row.get("claimBoundary") or row.get("completion")
         if not isinstance(boundary, dict):
             failures.append(f"{mid}: claim boundary")
+            boundary = {}
+
+        source_evidence = row.get("sourceEvidence")
+        if source_evidence is not None:
+            verify_bound_files(mid, "source evidence", source_evidence, failures)
+        product_callers = row.get("productCallers")
+        if product_callers is not None:
+            verify_bound_files(mid, "product caller", product_callers, failures)
+
+        implementation_state = row.get("implementationState")
+        if implementation_state is not None:
+            if not isinstance(implementation_state, dict) or any(
+                key not in implementation_state
+                for key in ("implemented", "composed", "qualified")
+            ):
+                failures.append(f"{mid}: invalid implementationState")
+            else:
+                implemented = all(
+                    bool(op.get("sourcePathExists") and op.get("nativeSymbol"))
+                    for op in ops
+                )
+                composed = row.get("productCallerState") == "composed"
+                if bool(implementation_state["implemented"]) != implemented:
+                    failures.append(f"{mid}: implemented status/evidence mismatch")
+                if bool(implementation_state["composed"]) != composed:
+                    failures.append(f"{mid}: composed status/evidence mismatch")
+                if composed and not product_callers:
+                    failures.append(f"{mid}: composed state lacks productCaller evidence")
+                if bool(row.get("productionImplementation")) != (implemented and composed):
+                    failures.append(f"{mid}: legacy productionImplementation alias mismatch")
+                if bool(boundary.get("productionImplementation")) != (
+                    implemented and composed
+                ):
+                    failures.append(f"{mid}: claimBoundary implementation mismatch")
+                qualified = bool(implementation_state["qualified"])
+                if qualified and not bool(boundary.get("productExecutionProved")):
+                    failures.append(f"{mid}: qualified state lacks product execution proof")
     if len(source_bases) != 1:
         failures.append(f"maps: source base drift ({len(source_bases)} identities)")
     if failures:
