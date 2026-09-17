@@ -31,19 +31,62 @@ pub struct PreferenceState {
 /// `NduIterationReceiptV1` until bound through the protocol adapter with the
 /// frozen objective, subject, event, coefficient and generation context.
 ///
-/// Subject identity is carried explicitly so the protocol adapter can prove a
-/// valid local step is not rebound to a different subject merely because its
-/// opaque state digest is nonzero.
+/// Fields are externally read-only. That prevents a downstream caller from
+/// constructing or mutating a structurally valid-looking local step and then
+/// rebinding it into canonical context. The crate keeps mutation visibility for
+/// invariant tests and the solver is the production constructor.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct NduSolverIterationReceipt {
-    pub subject_id: StableId,
-    pub subject_class: SubjectClass,
-    pub iteration: u32,
-    pub predecessor_revision: Revision,
-    pub next_revision: Revision,
-    pub residual_raw: i64,
-    pub projection_count: u32,
-    pub state_digest: Digest32,
+    pub(crate) subject_id: StableId,
+    pub(crate) subject_class: SubjectClass,
+    pub(crate) iteration: u32,
+    pub(crate) predecessor_revision: Revision,
+    pub(crate) next_revision: Revision,
+    pub(crate) residual_raw: i64,
+    pub(crate) projection_count: u32,
+    pub(crate) state_digest: Digest32,
+}
+
+impl NduSolverIterationReceipt {
+    #[must_use]
+    pub fn subject_id(&self) -> &StableId {
+        &self.subject_id
+    }
+
+    #[must_use]
+    pub const fn subject_class(&self) -> SubjectClass {
+        self.subject_class
+    }
+
+    #[must_use]
+    pub const fn iteration(&self) -> u32 {
+        self.iteration
+    }
+
+    #[must_use]
+    pub const fn predecessor_revision(&self) -> Revision {
+        self.predecessor_revision
+    }
+
+    #[must_use]
+    pub const fn next_revision(&self) -> Revision {
+        self.next_revision
+    }
+
+    #[must_use]
+    pub const fn residual_raw(&self) -> i64 {
+        self.residual_raw
+    }
+
+    #[must_use]
+    pub const fn projection_count(&self) -> u32 {
+        self.projection_count
+    }
+
+    #[must_use]
+    pub const fn state_digest(&self) -> Digest32 {
+        self.state_digest
+    }
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -299,7 +342,7 @@ fn digest_state(
     values: &[AxisValue],
 ) -> Digest32 {
     let mut bytes = Vec::new();
-    push_id(&mut bytes, subject_id);
+    push_id(bytes: &mut bytes, subject_id);
     bytes.push(subject_class.tag());
     bytes.extend_from_slice(&revision.get().to_be_bytes());
     bytes.extend_from_slice(predecessor_digest.as_array());
