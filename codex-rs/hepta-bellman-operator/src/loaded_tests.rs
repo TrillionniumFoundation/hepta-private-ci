@@ -140,6 +140,16 @@ fn invalid_statistics_grid_and_authority_cannot_be_encoded() {
 }
 
 #[test]
+fn loaded_grid_rejects_single_action_even_if_artifact_was_hand_built() {
+    let mut artifact = fitted(2, 7);
+    artifact.cells.retain(|cell| cell.action_id == id("read"));
+    assert_eq!(
+        encode_tabular_payload_v1(&artifact),
+        Err(TabularPayloadError::Grid)
+    );
+}
+
+#[test]
 fn loaded_process_predicts_only_the_host_pinned_candidate() {
     if let Some(path) = std::env::var_os("HEPTA_TEST_TABULAR_PAYLOAD") {
         let bytes = fs::read(path).expect("candidate payload");
