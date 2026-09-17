@@ -15,6 +15,7 @@ mod error;
 mod model;
 mod registry;
 mod release;
+mod resource_model;
 
 pub use allocation::calculate_local_allocation_v1;
 pub use allocation_model::LOCAL_ALLOCATION_CALCULATOR_VERSION;
@@ -50,7 +51,15 @@ pub use release::RegisteredRelease;
 pub use release::ReleaseId;
 pub use release::ReleaseMetadata;
 pub use release::ReleaseProgramMetadata;
+pub use resource_model::FleetResourceAxisV1;
+pub use resource_model::FleetResourceLimitClassV1;
+pub use resource_model::FleetResourceUnitV1;
+pub use resource_model::FleetResourceVectorV1;
 
 #[cfg(test)]
 #[path = "allocation_tests.rs"]
 mod allocation_tests;
+
+#[cfg(test)]
+#[path = "resource_model_tests.rs"]
+mod resource_model_tests;
