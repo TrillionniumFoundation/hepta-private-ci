@@ -1,5 +1,5 @@
-#[derive(Clone, Debug, Serialize)]
-#[serde(rename_all = "camelCase")]
+#[derive(Clone, Debug, Deserialize, Serialize)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
 struct FederationWireRequestV3 {
     schema_version: u32,
     query_id: String,
@@ -14,8 +14,7 @@ struct FederationWireRequestV3 {
     maximum_results: u32,
     deadline_unix_ms: u64,
     authority_epoch: u64,
-    authority_issuer_id: String,
-    grant_id: String,
+    signed_grant: SignedFinalUseGrant,
 }
 
 impl FederationWireRequestV3 {
@@ -34,13 +33,12 @@ impl FederationWireRequestV3 {
             maximum_results: attempt.query.maximum_results,
             deadline_unix_ms: attempt.query.deadline_unix_ms,
             authority_epoch: attempt.query.authority_epoch,
-            authority_issuer_id: attempt.grant.grant.signer_id.clone(),
-            grant_id: attempt.grant.grant.grant_id.clone(),
+            signed_grant: attempt.grant.clone(),
         }
     }
 }
 
-#[derive(Clone, Debug, Deserialize)]
+#[derive(Clone, Debug, Deserialize, Serialize)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 struct RemoteFederatedEnvelopeWireV3 {
     schema_version: u32,
@@ -66,6 +64,35 @@ struct RemoteFederatedEnvelopeWireV3 {
 }
 
 impl RemoteFederatedEnvelopeWireV3 {
+    fn from_domain(value: &RemoteFederatedEnvelopeV3) -> Self {
+        Self {
+            schema_version: 3,
+            query_id: value.query_id.as_str().to_owned(),
+            peer_id: value.peer_id.as_str().to_owned(),
+            principal_id: value.principal_id.as_str().to_owned(),
+            scope_sha256: value.scope_digest.into_array(),
+            purpose_sha256: value.purpose_digest.into_array(),
+            generation_vector_sha256: value.generation_vector_digest.into_array(),
+            query_binding_sha256: value.query_binding_digest.into_array(),
+            request_nonce_sha256: value.request_nonce_digest.into_array(),
+            authority_epoch: value.authority_epoch,
+            grant_id: value.grant_id.clone(),
+            response_nonce_sha256: value.response_nonce_digest.into_array(),
+            key_id: value.key_id.clone(),
+            observed_frontier: value.observed_frontier,
+            expires_unix_ms: value.expires_unix_ms,
+            items: value
+                .items
+                .iter()
+                .map(FederatedEvidenceItemWireV3::from_domain)
+                .collect(),
+            completeness: completeness_code(value.completeness),
+            terminal_observed: value.terminal_observed,
+            payload_sha256: value.payload_digest.into_array(),
+            signature: value.signature.clone(),
+        }
+    }
+
     fn try_into_domain(self) -> Result<RemoteFederatedEnvelopeV3, FederationV3Error> {
         if self.schema_version != 3 {
             return Err(FederationV3Error::InvalidRemoteEnvelope);
@@ -98,7 +125,7 @@ impl RemoteFederatedEnvelopeWireV3 {
     }
 }
 
-#[derive(Clone, Debug, Deserialize)]
+#[derive(Clone, Debug, Deserialize, Serialize)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 struct FederatedEvidenceItemWireV3 {
     source_owner_id: String,
@@ -110,6 +137,17 @@ struct FederatedEvidenceItemWireV3 {
 }
 
 impl FederatedEvidenceItemWireV3 {
+    fn from_domain(value: &FederatedEvidenceItemV2) -> Self {
+        Self {
+            source_owner_id: value.source_owner_id.as_str().to_owned(),
+            record_id: value.record_id.as_str().to_owned(),
+            record_revision: value.record_revision.get(),
+            record_sha256: value.record_digest.into_array(),
+            support_sha256: value.support_digest.into_array(),
+            validity_sha256: value.validity_digest.into_array(),
+        }
+    }
+
     fn try_into_domain(self) -> Result<FederatedEvidenceItemV2, FederationV3Error> {
         Ok(FederatedEvidenceItemV2 {
             source_owner_id: parse_id(self.source_owner_id)?,
