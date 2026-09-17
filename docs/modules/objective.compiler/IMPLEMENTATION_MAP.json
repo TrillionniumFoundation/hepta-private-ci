@@ -13,6 +13,8 @@
   "authorityDelta": "none",
   "productCallerState": "not_composed",
   "productionWriterState": "not_applicable_stateless",
+  "canonicalOutputAdapterState": "not_implemented",
+  "durablePublicationState": "not_composed",
   "operations": [
     {
       "operation": "decode_source_envelope_json_v1",
@@ -45,7 +47,7 @@
         "ObjectiveSourceEnvelopeV1"
       ],
       "outputs": [
-        "validated owner-local structure"
+        "admission-safe validated owner-local structure"
       ],
       "state": "source_implemented",
       "authority": "none",
@@ -53,6 +55,18 @@
         {
           "path": "codex-rs/hepta-objective/src/source_envelope_v1_tests.rs",
           "symbol": "text_limits_count_utf8_bytes_for_every_source_field"
+        },
+        {
+          "path": "codex-rs/hepta-objective/src/source_envelope_v1_tests.rs",
+          "symbol": "source_constraint_bound_reserves_generated_native_slots"
+        },
+        {
+          "path": "codex-rs/hepta-objective/src/source_envelope_v1_tests.rs",
+          "symbol": "predicate_families_share_the_native_aggregate_ceiling"
+        },
+        {
+          "path": "codex-rs/hepta-objective/src/source_envelope_v1_tests.rs",
+          "symbol": "empty_caller_action_set_is_structurally_valid_for_intrinsic_abstain"
         }
       ],
       "designOperation": "validate_structure",
@@ -119,7 +133,39 @@
       ],
       "designOperation": "admit_and_compile_objective_v1",
       "mappingClass": "owner_native",
-      "delegatedCallees": [],
+      "delegatedCallees": [
+        "compile"
+      ],
+      "sourcePathExists": true
+    },
+    {
+      "operation": "native_feasibility_projection",
+      "nativeSymbol": "codex_hepta_objective::native_feasibility::check_native_feasibility_v1",
+      "sourcePath": "codex-rs/hepta-objective/src/native_feasibility.rs",
+      "inputs": [
+        "ObjectiveSourceEnvelope"
+      ],
+      "outputs": [
+        "FeasibilityReceiptV1"
+      ],
+      "state": "source_implemented",
+      "authority": "none",
+      "capabilityBoundary": "V1 native hard constraints are scalar; rich enum/action/identity domains remain direct feasibility API capabilities",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-objective/src/compiler_tests.rs",
+          "symbol": "contradictory_hard_bounds_return_inclusion_minimal_pair"
+        },
+        {
+          "path": "codex-rs/hepta-objective/src/compiler_tests.rs",
+          "symbol": "maximum_scalar_conflict_is_deterministic_at_numeric_extremes"
+        }
+      ],
+      "designOperation": "check_feasibility_v1",
+      "mappingClass": "owner_native_delegating",
+      "delegatedCallees": [
+        "check_feasibility_v1"
+      ],
       "sourcePathExists": true
     },
     {
@@ -171,6 +217,10 @@
         },
         {
           "path": "codex-rs/hepta-objective/src/compiler_tests.rs",
+          "symbol": "empty_caller_action_set_still_has_explicit_abstain"
+        },
+        {
+          "path": "codex-rs/hepta-objective/src/compiler_tests.rs",
           "symbol": "intrinsic_abstain_cannot_be_forbidden"
         },
         {
@@ -179,8 +229,11 @@
         }
       ],
       "designOperation": "compile",
-      "mappingClass": "owner_native",
-      "delegatedCallees": [],
+      "mappingClass": "owner_native_delegating",
+      "delegatedCallees": [
+        "native_feasibility_projection",
+        "check_feasibility_v1"
+      ],
       "sourcePathExists": true
     }
   ],
@@ -193,6 +246,7 @@
   "completion": {
     "specification": "complete",
     "source": "candidate_implemented",
+    "canonicalOutputAdapter": "not_implemented",
     "exactHeadQualification": "required",
     "productComposition": "not_established",
     "independentAcceptance": "not_established",
@@ -210,6 +264,8 @@
   "productionImplementation": false,
   "claimBoundary": {
     "nativeSourceMappingComplete": true,
+    "richSourceGrammarComplete": false,
+    "canonicalWireOutputComplete": false,
     "sourceRootPresent": true,
     "productionImplementation": false,
     "productExecutionProved": false,
@@ -222,7 +278,9 @@
     "tree": "ff9fa6baf95a35fd2f49816e0a80097688f2aeeb"
   },
   "repositoryControlledGaps": [
-    "Bind every operation to an authenticated consumer callsite and owner store.",
+    "Materialize and validate the canonical ObjectiveFunctionV1 / ObjectiveCompileReceiptV1 wire output adapter instead of treating native flattened structs as the canonical protocol.",
+    "Bind admission/compile output to an authenticated production consumer and atomically publish ObjectiveFunctionV1 + RunStartSnapshotV1 in the owning store.",
+    "Version the source grammar before enabling enum-set, strict/not-equal or positive action-implication semantics through ObjectiveSourceEnvelopeV1.",
     "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary."
   ],
   "externalEvidenceGates": [
