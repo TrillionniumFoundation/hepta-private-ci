@@ -23,6 +23,7 @@ impl WirePayload for CodexOperationIntent {
     const SCHEMA_ID: &'static str = CODEX_OPERATION_INTENT_SCHEMA;
 
     fn encode_payload(&self) -> Result<Vec<u8>, PayloadCodecError> {
+        validate_intent_digests(self.payload_digest, self.lease_payload_digest)?;
         let mut bytes = Vec::with_capacity(MAX_CODEX_INTENT_PAYLOAD_BYTES);
         push_id(&mut bytes, &self.operation_id)?;
         push_id(&mut bytes, &self.thread_id)?;
@@ -44,9 +45,7 @@ impl WirePayload for CodexOperationIntent {
         if cursor != payload.len() {
             return Err(PayloadCodecError::new("codex intent trailing bytes"));
         }
-        if payload_digest.is_zero() || lease_payload_digest.is_zero() {
-            return Err(PayloadCodecError::new("codex intent zero payload digest"));
-        }
+        validate_intent_digests(payload_digest, lease_payload_digest)?;
         Ok(Self {
             operation_id,
             thread_id,
@@ -105,6 +104,21 @@ fn require_v2_protocol(negotiated: NegotiatedWire) -> Result<(), WireIntegration
     Ok(())
 }
 
+fn validate_intent_digests(
+    payload_digest: Digest32,
+    lease_payload_digest: Digest32,
+) -> Result<(), PayloadCodecError> {
+    if payload_digest.is_zero() || lease_payload_digest.is_zero() {
+        return Err(PayloadCodecError::new("codex intent zero payload digest"));
+    }
+    if payload_digest != lease_payload_digest {
+        return Err(PayloadCodecError::new(
+            "codex intent payload binding mismatch",
+        ));
+    }
+    Ok(())
+}
+
 fn push_id(bytes: &mut Vec<u8>, value: &StableId) -> Result<(), PayloadCodecError> {
     let raw = value.as_str().as_bytes();
     let length = u16::try_from(raw.len())
@@ -121,10 +135,10 @@ fn read_id(payload: &[u8], cursor: &mut usize) -> Result<StableId, PayloadCodecE
     }
     let end = cursor
         .checked_add(length)
-        .ok_or_else(|| PayloadCodecError::new("codex intent id overflow"))?;
+        .ok_or(PayloadCodecError::new("codex intent id overflow"))?;
     let raw = payload
         .get(*cursor..end)
-        .ok_or_else(|| PayloadCodecError::new("codex intent id truncated"))?;
+        .ok_or(PayloadCodecError::new("codex intent id truncated"))?;
     let value = std::str::from_utf8(raw)
         .map_err(|_| PayloadCodecError::new("codex intent id utf8"))?;
     let value = StableId::new(value)
@@ -136,10 +150,10 @@ fn read_id(payload: &[u8], cursor: &mut usize) -> Result<StableId, PayloadCodecE
 fn read_digest(payload: &[u8], cursor: &mut usize) -> Result<Digest32, PayloadCodecError> {
     let end = cursor
         .checked_add(32)
-        .ok_or_else(|| PayloadCodecError::new("codex intent digest overflow"))?;
+        .ok_or(PayloadCodecError::new("codex intent digest overflow"))?;
     let raw: [u8; 32] = payload
         .get(*cursor..end)
-        .ok_or_else(|| PayloadCodecError::new("codex intent digest truncated"))?
+        .ok_or(PayloadCodecError::new("codex intent digest truncated"))?
         .try_into()
         .map_err(|_| PayloadCodecError::new("codex intent digest width"))?;
     *cursor = end;
@@ -149,10 +163,10 @@ fn read_digest(payload: &[u8], cursor: &mut usize) -> Result<Digest32, PayloadCo
 fn read_u16(payload: &[u8], cursor: &mut usize) -> Result<u16, PayloadCodecError> {
     let end = cursor
         .checked_add(2)
-        .ok_or_else(|| PayloadCodecError::new("codex intent u16 overflow"))?;
+        .ok_or(PayloadCodecError::new("codex intent u16 overflow"))?;
     let raw: [u8; 2] = payload
         .get(*cursor..end)
-        .ok_or_else(|| PayloadCodecError::new("codex intent u16 truncated"))?
+        .ok_or(PayloadCodecError::new("codex intent u16 truncated"))?
         .try_into()
         .map_err(|_| PayloadCodecError::new("codex intent u16 width"))?;
     *cursor = end;
@@ -162,10 +176,10 @@ fn read_u16(payload: &[u8], cursor: &mut usize) -> Result<u16, PayloadCodecError
 fn read_u64(payload: &[u8], cursor: &mut usize) -> Result<u64, PayloadCodecError> {
     let end = cursor
         .checked_add(8)
-        .ok_or_else(|| PayloadCodecError::new("codex intent u64 overflow"))?;
+        .ok_or(PayloadCodecError::new("codex intent u64 overflow"))?;
     let raw: [u8; 8] = payload
         .get(*cursor..end)
-        .ok_or_else(|| PayloadCodecError::new("codex intent u64 truncated"))?
+        .ok_or(PayloadCodecError::new("codex intent u64 truncated"))?
         .try_into()
         .map_err(|_| PayloadCodecError::new("codex intent u64 width"))?;
     *cursor = end;
@@ -257,5 +271,20 @@ mod tests {
             ),
             Err(WireIntegrationError::NegotiationMismatch)
         );
+    }
+
+    #[test]
+    fn typed_schema_rejects_payload_digest_binding_drift() {
+        let mut invalid = intent();
+        invalid.lease_payload_digest = Digest32::of_bytes(b"different");
+        assert!(matches!(
+            encode_codex_intent_frame(
+                negotiated_v2(),
+                StableId::new("runtime.codex").expect("producer"),
+                Generation::new(1).expect("generation"),
+                &invalid,
+            ),
+            Err(WireIntegrationError::Schema(SchemaError::PayloadRejected(_)))
+        ));
     }
 }
