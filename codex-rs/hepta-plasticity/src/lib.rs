@@ -32,6 +32,7 @@ pub use governed_v3::ParameterEvidenceBindingV3;
 pub use governed_v3::ParameterGenerationPolicyV3;
 pub use governed_v3::ParameterOpportunityV3;
 pub use governed_v3::candidate_completeness_signing_payload_v3;
+pub use governed_v3::candidate_set_id_v3;
 pub use governed_v3::evidence_binding_signing_payload_v3;
 pub use governed_v3::generate_parameter_candidates_v3;
 pub use governed_v3::propose_governed_v3;
