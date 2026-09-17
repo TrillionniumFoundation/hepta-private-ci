@@ -83,18 +83,30 @@ fn renewal_and_revocation_are_generation_fenced() {
 }
 
 #[test]
-fn terminal_history_does_not_consume_the_active_grant_limit() {
+fn released_terminal_history_does_not_consume_active_or_retained_capacity() {
     let mut ledger = LeaseLedger::new();
     ledger.admit_host(host()).expect("host");
     for index in 0..MAX_ACTIVE_GRANTS {
         let id = format!("grant.{index}");
         let mut terminal = grant(&id, 1);
         terminal.revoked = true;
-        ledger.grants.insert(id, terminal);
+        ledger.grants.insert(id.clone(), terminal.clone());
+        ledger.holder_observations.insert(
+            id.clone(),
+            FleetConsumptionObservationV1 {
+                allocation_id: id,
+                lease_generation: terminal.lease_generation,
+                authority_epoch: terminal.authority_epoch,
+                semantic_digest: terminal.semantic_digest,
+                observed_at_ms: 200,
+                holder_present: false,
+                resources_in_use: Resources::default(),
+            },
+        );
     }
     assert_eq!(ledger.active_grant_count(200), 0);
     ledger
         .issue(200, grant("after-terminal-history", 1))
-        .expect("terminal history must not exhaust live admission");
+        .expect("released history must not exhaust live admission");
     assert_eq!(ledger.prune_terminal(200), MAX_ACTIVE_GRANTS);
 }

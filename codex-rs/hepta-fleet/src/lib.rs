@@ -18,6 +18,7 @@ mod placement;
 mod registry;
 mod release;
 mod resource_model;
+mod runtime_use;
 
 pub use allocation::calculate_local_allocation_v1;
 pub use allocation_model::LOCAL_ALLOCATION_CALCULATOR_VERSION;
@@ -38,6 +39,8 @@ pub use allocation_store::FleetAllocationSnapshot;
 pub use allocation_store::FleetAllocationStore;
 pub use allocation_store::FleetAllocationStoreError;
 pub use error::FleetRegistryError;
+pub use lease_ledger::FleetConsumptionObservationV1;
+pub use lease_ledger::FleetReconciliationOutcomeV1;
 pub use model::AGENT_MANIFEST_SCHEMA_VERSION;
 pub use model::AGENT_STATE_SCHEMA_VERSION;
 pub use model::AgentLifecycle;
@@ -70,6 +73,14 @@ pub use resource_model::FleetResourceAxisV1;
 pub use resource_model::FleetResourceLimitClassV1;
 pub use resource_model::FleetResourceUnitV1;
 pub use resource_model::FleetResourceVectorV1;
+pub use runtime_use::FleetAllocationGrantV1;
+pub use runtime_use::FleetAllocationUseV1;
+pub use runtime_use::FleetReconciliationCommitV1;
+pub use runtime_use::FleetRuntimeUseError;
+pub use runtime_use::admit_runtime_use_v1;
+pub use runtime_use::consumption_observation_binding;
+pub use runtime_use::read_active_grants_v1;
+pub use runtime_use::reconcile_consumption_with_authority;
 
 #[cfg(test)]
 #[path = "allocation_tests.rs"]

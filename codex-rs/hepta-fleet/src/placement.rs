@@ -40,7 +40,6 @@ pub struct FleetPlacementRequestV1 {
     pub weight: u32,
     pub minimum: FleetResourceVectorV1,
     pub desired: FleetResourceVectorV1,
-    /// Digest of the upstream request semantics before placement.
     pub request_semantic_digest: String,
 }
 
@@ -104,9 +103,6 @@ pub enum FleetPlacementError {
     Authority(#[from] FinalUseError),
 }
 
-/// Build the exact final-use binding required to admit a host-capacity observation.
-/// The authority authenticates permission to publish this exact observation; the
-/// trusted host observer remains responsible for the physical measurement itself.
 pub fn capacity_observation_binding(
     observer_id: &str,
     expected_generation: u64,
@@ -140,9 +136,6 @@ pub fn capacity_observation_binding(
     })
 }
 
-/// Final-authority-gated admission of one exact host observation into durable
-/// Fleet state. A claimed nonce is never refunded after a stale/indeterminate
-/// durable commit; the caller must reconcile before requesting new authority.
 pub fn admit_host_with_authority(
     store: &FleetAllocationStore,
     authority: &FinalUseAuthority,
@@ -160,9 +153,6 @@ pub fn admit_host_with_authority(
     result.map_err(Into::into)
 }
 
-/// Calculate deterministic placement and weighted allocation from the current
-/// durable Fleet generation. This operation is authority-free and has no effect;
-/// the returned plan must be independently authorized before commit.
 pub fn plan_placement_v1(
     store: &FleetAllocationStore,
     now_ms: u64,
@@ -191,7 +181,6 @@ pub fn plan_placement_v1(
     )
 }
 
-/// Build the exact final-use binding for a previously calculated plan.
 pub fn placement_authority_binding(
     actor_id: &str,
     plan: &FleetPlacementPlanV1,
@@ -214,11 +203,6 @@ pub fn placement_authority_binding(
     }
 }
 
-/// Revalidate final-use authority immediately before one atomic durable commit.
-/// All grants are applied to a cloned ledger first; either the complete generation
-/// is published or none of the plan becomes visible. Store publication may still
-/// be reported as indeterminate after the create-only generation is linked but
-/// before the directory fsync is observed; callers must reconcile that generation.
 pub fn commit_placement_with_authority(
     store: &FleetAllocationStore,
     authority: &FinalUseAuthority,
@@ -277,7 +261,7 @@ fn plan_from_ledger(
             .then_with(|| left.agent_id.cmp(&right.agent_id))
             .then_with(|| left.allocation_id.cmp(&right.allocation_id))
     });
-    validate_requests(ledger, &ordered)?;
+    validate_requests(ledger, &ordered, now_ms)?;
     let request_sha256 = digest_json(b"hepta.runtime-fleet.placement-requests.v1\0", &ordered)?;
 
     let mut available = BTreeMap::new();
@@ -289,10 +273,10 @@ fn plan_from_ledger(
         {
             continue;
         }
-        let committed = committed_resources(ledger, host_id, now_ms)?;
+        let reserved = ledger.reserved_resources_for_placement(host_id, now_ms)?;
         let remaining = host
             .capacity
-            .checked_sub(committed)
+            .checked_sub(reserved)
             .ok_or(FleetPlacementError::ArithmeticOverflow)?;
         if !remaining.is_zero() {
             available.insert(host_id.clone(), remaining);
@@ -418,24 +402,39 @@ fn plan_from_ledger(
 fn validate_requests(
     ledger: &LeaseLedger,
     requests: &[FleetPlacementRequestV1],
+    now_ms: u64,
 ) -> Result<(), FleetPlacementError> {
     let mut allocation_ids = BTreeSet::new();
     let mut request_ids = BTreeSet::new();
+    let mut agents = BTreeSet::new();
     for request in requests {
         if !allocation_ids.insert(request.allocation_id.as_str()) {
-            return Err(FleetPlacementError::Invalid(
-                "duplicate allocation identity".into(),
-            ));
+            return Err(FleetPlacementError::Invalid("duplicate allocation identity".into()));
         }
         if !request_ids.insert(request.request_id.as_str()) {
             return Err(FleetPlacementError::Invalid(
                 "duplicate placement request identity".into(),
             ));
         }
+        if !agents.insert(request.agent_id.clone()) {
+            return Err(FleetPlacementError::Invalid(
+                "one placement batch cannot create multiple grants for one Agent".into(),
+            ));
+        }
         if ledger.grants().contains_key(&request.allocation_id) {
             return Err(FleetPlacementError::AllocationExists(
                 request.allocation_id.clone(),
             ));
+        }
+        if ledger.grants().values().any(|grant| {
+            !grant.revoked
+                && grant.expires_at_ms > now_ms
+                && grant.principal_id == request.agent_id.as_str()
+        }) {
+            return Err(FleetPlacementError::Invalid(format!(
+                "Agent {} already has an active allocation",
+                request.agent_id
+            )));
         }
         if !(1..=MAX_LOCAL_ALLOCATION_WEIGHT).contains(&request.weight)
             || !valid_digest(&request.request_semantic_digest)
@@ -456,23 +455,6 @@ fn validate_requests(
         }
     }
     Ok(())
-}
-
-fn committed_resources(
-    ledger: &LeaseLedger,
-    host_id: &str,
-    now_ms: u64,
-) -> Result<FleetResourceVectorV1, FleetPlacementError> {
-    ledger
-        .grants()
-        .values()
-        .filter(|grant| {
-            grant.host_id == host_id && !grant.revoked && grant.expires_at_ms > now_ms
-        })
-        .try_fold(FleetResourceVectorV1::default(), |sum, grant| {
-            sum.checked_add(grant.resources)
-                .ok_or(FleetPlacementError::ArithmeticOverflow)
-        })
 }
 
 fn grant_semantic_digest(
@@ -508,8 +490,8 @@ fn digest_parts(domain: &[u8], parts: &[&[u8]]) -> [u8; 32] {
     let mut hasher = Sha256::new();
     hasher.update(domain);
     for part in parts {
-        hasher.update((*part).len().to_be_bytes());
-        hasher.update(part);
+        hasher.update((part.len() as u64).to_be_bytes());
+        hasher.update(*part);
     }
     hasher.finalize().into()
 }
