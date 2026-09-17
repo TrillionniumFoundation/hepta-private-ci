@@ -1,6 +1,7 @@
 use std::time::Instant;
 
 use codex_hepta_contracts::AgentId;
+use codex_hepta_fleet::AgentRecord;
 
 use crate::AgentFault;
 use crate::ProcessDriver;
@@ -11,6 +12,13 @@ use crate::TickReport;
 use crate::runtime::bounded_message;
 
 impl<D: ProcessDriver> Supervisor<D> {
+    /// Read exactly one Agent's durable registry state for tick/status hot paths.
+    /// Unlike FleetRegistry::load(), this does not enumerate every owner-local
+    /// Agent on every process observation.
+    pub(crate) fn hot_record(&self, agent_id: &AgentId) -> Result<AgentRecord, SupervisorError> {
+        self.registry.load_agent(agent_id).map_err(Into::into)
+    }
+
     /// Advance exactly one Agent supervision slot.
     ///
     /// The public/library `tick()` continues to provide deterministic
