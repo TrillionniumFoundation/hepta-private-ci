@@ -27,6 +27,8 @@ pub use codex_hepta_memory::CognitiveRecoveryError;
 pub use codex_hepta_memory::CognitiveRecoveryRequirement;
 pub use codex_hepta_memory::CognitiveStore;
 pub use codex_hepta_memory::CognitiveStoreError;
+pub use codex_hepta_memory::ProductionAuthorityLease;
+pub use codex_hepta_memory::ProductionAuthorityVerifier;
 pub use codex_hepta_memory::RecoveredCognitiveReadOnly;
 pub use v2::AdmittedCognitiveStoreV2;
 pub use v2::CognitiveStoreImageV2;
@@ -45,8 +47,8 @@ const MAX_RECORDS: usize = 16_384;
 ///
 /// Product/runtime code should call this function rather than opening the
 /// persistence engine directly. Recovery of a suspect/rollback-capable image
-/// is intentionally a separate fail-closed path because it requires an
-/// independently authenticated current-cut witness.
+/// is a separate, externally fenced path because it requires an independently
+/// authenticated current-cut witness.
 pub async fn open_authoritative(
     layout: &HeptaAgentLayout,
 ) -> Result<CognitiveStore, CognitiveStoreError> {
@@ -56,13 +58,32 @@ pub async fn open_authoritative(
 /// Canonical recovery-read admission for an independently witnessed cold image.
 ///
 /// This returns a read-only historical owner and never falls back to ordinary
-/// path-based opening. Writable recovery remains unavailable until the state
-/// layer has a descriptor-bound writer VFS and a current writer fence.
+/// path-based opening.
 pub async fn open_authoritative_read_only_recovery(
     layout: &HeptaAgentLayout,
     requirement: CognitiveRecoveryRequirement<'_>,
 ) -> Result<RecoveredCognitiveReadOnly, CognitiveRecoveryError> {
     CognitiveStore::open_read_only_recovery(layout, requirement).await
+}
+
+/// Canonical writable recovery path for a suspect/rollback-capable current
+/// owner. The source file is admitted as an immutable exact-current-cut image,
+/// then those same verified bytes are published as a fresh inode only after an
+/// external production-authority verifier establishes a current writer fence.
+/// The suspect source is quarantined; it is never repaired or opened writable.
+pub async fn open_authoritative_with_recovery<V>(
+    layout: &HeptaAgentLayout,
+    requirement: CognitiveRecoveryRequirement<'_>,
+    authority: &ProductionAuthorityLease,
+    verifier: &V,
+) -> Result<CognitiveStore, CognitiveRecoveryError>
+where
+    V: ProductionAuthorityVerifier + ?Sized,
+{
+    CognitiveStore::open_read_only_recovery(layout, requirement)
+        .await?
+        .promote_to_fresh_owner(layout, authority, verifier)
+        .await
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
