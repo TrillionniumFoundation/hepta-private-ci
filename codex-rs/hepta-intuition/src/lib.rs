@@ -7,6 +7,8 @@
 
 // Retain the historical module path as well as explicit root exports.
 pub mod calibrated;
+pub mod learned_scorer;
+pub mod qualified;
 
 pub use calibrated::AbstentionReasonV1;
 pub use calibrated::AssignmentModeV1;
@@ -26,6 +28,18 @@ pub use calibrated::canonical_candidate_order_digest_v1;
 pub use calibrated::canonical_candidate_set_digest_v1;
 pub use calibrated::decide_calibrated;
 pub use calibrated::decide_calibrated_v2;
+pub use learned_scorer::LearnedScorerContractError;
+pub use learned_scorer::LearnedScorerContractV1;
+pub use learned_scorer::canonical_learned_scorer_contract_digest_v1;
+pub use learned_scorer::validate_learned_scorer_contract_v1;
+pub use qualified::CanonicalPolicyProfileV1;
+pub use qualified::QualificationAuthorityVerifier;
+pub use qualified::QualificationManifestV1;
+pub use qualified::QualifiedDecisionRequestV1;
+pub use qualified::QualifiedError;
+pub use qualified::canonical_policy_profile_digest_v1;
+pub use qualified::canonical_qualification_manifest_digest_v1;
+pub use qualified::decide_qualified;
 
 use std::collections::BTreeSet;
 use std::error::Error as StdError;
