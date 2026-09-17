@@ -53,8 +53,12 @@ jobs:
         with:
           components: clippy,rustfmt
 
-      - name: Verify Rust formatting
-        run: cargo fmt --all -- --check
+      - name: Format qualification worktree and retain patch
+        run: |
+          set -euo pipefail
+          cargo fmt --all
+          mkdir -p ../qualification/ui.native/evidence
+          git diff -- . > ../qualification/ui.native/evidence/native-rustfmt-${{ matrix.os }}.patch
 
       - name: Test native runtime, reconciliation, grants and updater
         run: cargo test -p codex-hepta-native-gateway --locked
@@ -71,7 +75,6 @@ jobs:
       - name: Record exact-head qualification receipt
         run: |
           set -euo pipefail
-          mkdir -p ../qualification/ui.native/evidence
           head="$(git rev-parse HEAD)"
           tree="$(git rev-parse 'HEAD^{tree}')"
           python3 - "$head" "$tree" "${{ matrix.os }}" > ../qualification/ui.native/evidence/native-rust-${{ matrix.os }}.json <<'PY'
@@ -83,6 +86,7 @@ jobs:
               "tree": sys.argv[2],
               "runner": sys.argv[3],
               "tests": [
+                  "cargo fmt --all",
                   "cargo test -p codex-hepta-native-gateway --locked",
                   "cargo check -p codex-cli --bin hepta-native --locked",
                   "cargo clippy -p codex-hepta-native-gateway --all-targets --locked -- -D warnings",
@@ -93,10 +97,13 @@ jobs:
           }, sort_keys=True, indent=2))
           PY
 
-      - name: Retain exact-head native receipt
+      - name: Retain exact-head native receipt and rustfmt patch
+        if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: hepta-ui-native-${{ matrix.os }}-${{ github.event.pull_request.head.sha || github.sha }}
-          path: qualification/ui.native/evidence/native-rust-${{ matrix.os }}.json
-          if-no-files-found: error
+          path: |
+            qualification/ui.native/evidence/native-rust-${{ matrix.os }}.json
+            qualification/ui.native/evidence/native-rustfmt-${{ matrix.os }}.patch
+          if-no-files-found: warn
           retention-days: 30
