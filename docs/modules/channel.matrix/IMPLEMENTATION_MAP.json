@@ -16,8 +16,8 @@
     "codex-rs/hepta-matrix-sdk",
     "codex-rs/hepta-matrixd"
   ],
-  "stateOwnerDisposition": "Owns Matrix ingress projection, sync frontier, dispatch ledger, outbox, and transaction identities.",
-  "terminalObserverDisposition": "A homeserver event observation settles send terminality; App Server turn completion and HTTP acceptance cannot substitute.",
+  "stateOwnerDisposition": "Owns Matrix ingress projection, sync frontier, durable dispatch ledger, outbox, append-only send/redaction observations, and transaction identities in the existing MatrixDurableStore owner.",
+  "terminalObserverDisposition": "Authenticated homeserver sync observation settles send terminality; SDK/HTTP event-id acknowledgement records transport acceptance only and cannot substitute for terminal observation.",
   "operations": [
     {
       "designOperation": "admit_event",
@@ -48,20 +48,25 @@
       "ownerEntrypoint": {
         "role": "owner_entrypoint",
         "path": "codex-rs/hepta-matrixd/src/send_observer.rs",
-        "symbol": "pub fn prepare_send(",
+        "symbol": "pub async fn prepare_send(",
         "buildTarget": "codex-hepta-matrixd::send_observer"
       },
       "delegatedCallees": [],
       "tests": [
         {
           "path": "codex-rs/hepta-matrixd/src/send_observer_tests.rs",
-          "kind": "send_identity",
+          "kind": "durable_send_identity",
           "command": "just test -p codex-hepta-matrixd --lib"
+        },
+        {
+          "path": "codex-rs/hepta-matrix-store/tests/dispatch_ledger.rs",
+          "kind": "durable_dispatch_restart",
+          "command": "cargo test -p codex-hepta-matrix-store --test dispatch_ledger"
         }
       ],
-      "sourceSemantics": "Binds room, session, payload, authority epoch, and one Matrix transaction identity before dispatch.",
+      "sourceSemantics": "The matrixd façade delegates preparation to MatrixDurableStore, binding one stable Matrix transaction to room, generation, payload digest and any verified authority/grant identity without creating a second sender or ledger.",
       "operation": "prepare_send",
-      "nativeSymbol": "pub fn prepare_send(",
+      "nativeSymbol": "pub async fn prepare_send(",
       "sourcePath": "codex-rs/hepta-matrixd/src/send_observer.rs",
       "sourcePathExists": true
     },
@@ -71,37 +76,44 @@
       "ownerEntrypoint": {
         "role": "owner_entrypoint",
         "path": "codex-rs/hepta-matrixd/src/send_observer.rs",
-        "symbol": "pub fn observe_send(",
+        "symbol": "pub async fn observe_send(",
         "buildTarget": "codex-hepta-matrixd::send_observer"
       },
       "delegatedCallees": [],
       "tests": [
         {
           "path": "codex-rs/hepta-matrixd/src/send_observer_tests.rs",
-          "kind": "acknowledgement_and_reconciliation",
+          "kind": "server_observation_and_redaction",
           "command": "just test -p codex-hepta-matrixd --lib"
+        },
+        {
+          "path": "codex-rs/hepta-matrix-sdk/tests/durable_transport.rs",
+          "kind": "ack_loss_and_nonterminal_transport_acceptance",
+          "command": "cargo test -p codex-hepta-matrix-sdk --test durable_transport"
+        },
+        {
+          "path": "codex-rs/hepta-matrix-store/tests/dispatch_ledger.rs",
+          "kind": "crash_safe_terminal_reconciliation",
+          "command": "cargo test -p codex-hepta-matrix-store --test dispatch_ledger"
         }
       ],
-      "sourceSemantics": "Records trusted server-event acknowledgement or preserves the same transaction as indeterminate for reconciliation.",
+      "sourceSemantics": "The authenticated sync path records a matching homeserver event as terminal under the same stable transaction; transport acknowledgement and retryable loss remain indeterminate, terminal rows archive out of the bounded active set, and redaction evidence is append-only and separate from original send evidence.",
       "operation": "observe_send",
-      "nativeSymbol": "pub fn observe_send(",
+      "nativeSymbol": "pub async fn observe_send(",
       "sourcePath": "codex-rs/hepta-matrixd/src/send_observer.rs",
       "sourcePathExists": true
     }
   ],
-  "repositoryControlledGaps": [
-    "Integrate any new send-observer state with the existing MatrixDurableStore transaction identity; the component alone is not a second durable sender."
-  ],
+  "repositoryControlledGaps": [],
   "externalEvidenceGates": [
-    "real enrolled homeserver/user/device/encryption identity",
-    "live sync and send transport callsites",
-    "rate-limit/reconnect/redaction/restore target qualification"
+    "exact-candidate real Synapse/E2EE qualification receipt bound to enrolled homeserver/user/device identities",
+    "rate-limit/reconnect/redaction/restore target qualification and independent operational acceptance"
   ],
   "claimBoundary": {
     "nativeSourceMappingComplete": true,
     "repositoryControlledDocumentationGapsClosed": true,
     "repositoryControlledMappingGapsClosed": true,
-    "repositoryControlledSourceBoundaryGapsClosed": false,
+    "repositoryControlledSourceBoundaryGapsClosed": true,
     "productExecutionComplete": false,
     "deploymentQualificationComplete": false,
     "independentAcceptanceComplete": false,
@@ -114,8 +126,8 @@
   },
   "sourceRootPresent": true,
   "productionImplementation": false,
-  "productCallerState": "not_composed",
-  "productionWriterState": "not_established",
+  "productCallerState": "native_matrixd_source_composed",
+  "productionWriterState": "matrix_durable_store_single_writer_source_established",
   "owner": "channels-platform",
   "deputy": "security-authority",
   "technicalGuide": "docs/modules/channel.matrix/TECHNICAL.md",
