@@ -275,3 +275,10 @@ pub use longitudinal_time::ObservedFutureWindowV1;
 pub use longitudinal_time::decide_with_signed_longitudinal_evidence_v3;
 pub use longitudinal_time::future_window_signing_payload_v1;
 pub use longitudinal_time::longitudinal_evaluation_signing_payload_v3;
+
+mod longitudinal_provenance;
+pub use longitudinal_provenance::LongitudinalEvidenceProvenanceV1;
+pub use longitudinal_provenance::decide_with_signed_longitudinal_evidence_v4;
+pub use longitudinal_provenance::future_window_signing_payload_v2;
+pub use longitudinal_provenance::longitudinal_evaluation_signing_payload_v4;
+pub use longitudinal_provenance::longitudinal_provenance_signing_bytes_v1;
