@@ -1,4 +1,4 @@
-#![allow(clippy::expect_used)]
+#![allow(clippy::arithmetic_side_effects, clippy::expect_used)]
 
 use std::collections::BTreeMap;
 use std::path::PathBuf;
