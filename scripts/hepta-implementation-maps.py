@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
 """Generate and verify one implementation map for every registered module.
 
-Maps are source-navigation evidence.  They deliberately distinguish a native
+Maps are source-navigation evidence. They deliberately distinguish a native
 entrypoint from a composed production caller; an entrypoint never grants
-runtime, effect, acceptance, promotion, or release authority.
+runtime, effect, acceptance, promotion, or release authority. Each map carries
+its own immutable source snapshot so an independently changed module can refresh
+its evidence without pretending that every unrelated module was requalified.
 """
 
 from __future__ import annotations
@@ -75,7 +77,7 @@ def map_for(module: dict, source_base: dict, lanes: dict):
     operations = parse_entrypoints(mid)
     if not operations:
         # Keep the map explicit even where the dossier has not named a native
-        # entrypoint.  This is a handoff blocker, not a production claim.
+        # entrypoint. This is a handoff blocker, not a production claim.
         operations = [
             {
                 "operation": "native_mapping_pending",
@@ -231,7 +233,7 @@ def migrate_map(row: dict, module: dict, lanes: dict, source_base: dict) -> dict
             "operator acceptance, canary, promotion and release",
         ],
     )
-    # ``sourceRoot`` is a v1 spelling.  Retain it as a compatibility alias so
+    # ``sourceRoot`` is a v1 spelling. Retain it as a compatibility alias so
     # downstream readers can migrate independently; v3 readers use roots.
     migrated["sourceRoot"] = declared
     return migrated
@@ -266,10 +268,7 @@ def migrate():
 def generate():
     modules = load("docs/modules/MODULES.json")["modules"]
     lanes = lane_by_module()
-    source_base = {
-        "commit": git("rev-parse", "HEAD"),
-        "tree": git("rev-parse", "HEAD^{tree}"),
-    }
+    source_base = current_source_base()
     written = []
     for module in modules:
         path = ROOT / f"docs/modules/{module['id']}/IMPLEMENTATION_MAP.json"
@@ -283,11 +282,38 @@ def generate():
     print(json.dumps({"generated": len(written), "maps": written}, ensure_ascii=False))
 
 
+def validate_source_base(mid: str, source_base: object, failures: list[str]) -> None:
+    if (
+        not isinstance(source_base, dict)
+        or not source_base.get("commit")
+        or not source_base.get("tree")
+    ):
+        failures.append(f"{mid}: source base")
+        return
+    commit = source_base["commit"]
+    tree = source_base["tree"]
+    try:
+        actual_tree = git("rev-parse", f"{commit}^{{tree}}")
+    except subprocess.CalledProcessError:
+        failures.append(f"{mid}: source base commit unavailable")
+        return
+    if actual_tree != tree:
+        failures.append(f"{mid}: source base tree mismatch")
+    ancestor = subprocess.run(
+        ["git", "merge-base", "--is-ancestor", commit, "HEAD"],
+        cwd=ROOT,
+        text=True,
+        capture_output=True,
+        check=False,
+    )
+    if ancestor.returncode != 0:
+        failures.append(f"{mid}: source base is not an ancestor of HEAD")
+
+
 def verify():
     modules = load("docs/modules/MODULES.json")["modules"]
     lanes = lane_by_module()
     failures = []
-    source_bases = set()
     for module in modules:
         mid = module["id"]
         path = ROOT / f"docs/modules/{mid}/IMPLEMENTATION_MAP.json"
@@ -308,15 +334,7 @@ def verify():
             failures.append(f"{mid}: identity")
         if row.get("laneId") != lanes.get(mid):
             failures.append(f"{mid}: lane")
-        source_base = row.get("sourceBase")
-        if (
-            not isinstance(source_base, dict)
-            or not source_base.get("commit")
-            or not source_base.get("tree")
-        ):
-            failures.append(f"{mid}: source base")
-        else:
-            source_bases.add((source_base["commit"], source_base["tree"]))
+        validate_source_base(mid, row.get("sourceBase"), failures)
         roots = [x["path"] for x in module["rootBindings"]]
         declared = row.get("declaredRoots", row.get("sourceRoot", []))
         if isinstance(declared, str):
@@ -345,8 +363,6 @@ def verify():
         boundary = row.get("claimBoundary") or row.get("completion")
         if not isinstance(boundary, dict):
             failures.append(f"{mid}: claim boundary")
-    if len(source_bases) != 1:
-        failures.append(f"maps: source base drift ({len(source_bases)} identities)")
     if failures:
         raise SystemExit("FAIL_HEPTA_IMPLEMENTATION_MAPS: " + "; ".join(failures))
     print(
@@ -355,6 +371,7 @@ def verify():
                 "status": "PASS_HEPTA_IMPLEMENTATION_MAPS",
                 "modules": len(modules),
                 "maps": len(modules),
+                "sourceBasePolicy": "per_module_immutable_ancestral_snapshot",
                 "productionImplementationProved": False,
             },
             sort_keys=True,
