@@ -49,12 +49,23 @@ jobs:
           fetch-depth: 0
           persist-credentials: false
 
-      - name: Bind exact source
+      - name: Bind exact source and candidate receipt
         shell: bash
         run: |
           set -euo pipefail
-          test "$(git rev-parse HEAD)" = "${GITHUB_SHA}"
-          git rev-parse HEAD HEAD^{tree}
+          actual_sha="$(git rev-parse HEAD)"
+          actual_tree="$(git rev-parse HEAD^{tree})"
+          test "${actual_sha}" = "${GITHUB_SHA}"
+          printf 'candidate_sha=%s\ncandidate_tree=%s\n' "${actual_sha}" "${actual_tree}"
+          {
+            echo '### runtime.agentd current candidate receipt'
+            echo
+            echo '| field | value |'
+            echo '| --- | --- |'
+            printf '| candidate SHA | `%s` |\n' "${actual_sha}"
+            printf '| candidate tree | `%s` |\n' "${actual_tree}"
+            printf '| runner | `%s` |\n' "${RUNNER_OS}"
+          } >> "${GITHUB_STEP_SUMMARY}"
 
       - name: Fail fast on manifest and formatting errors
         shell: bash
@@ -74,9 +85,20 @@ jobs:
           PYTHONPATH: scripts
         run: python3 scripts/hepta_ci_v8.py
 
-      - name: Exercise local fences, reconciliation and organ lifecycle
+      # Keep these packages as separate receipts. A combined cargo invocation
+      # made a deterministic cross-platform failure look like an opaque Agentd
+      # gate failure and prevented later qualification stages from running.
+      - name: Exercise fleet lifecycle fences
         working-directory: codex-rs
-        run: just test --locked --lib -p codex-hepta-fleet -p codex-hepta-control-plane -p codex-hepta-agentd
+        run: just test --locked --lib -p codex-hepta-fleet
+
+      - name: Exercise control-plane reconciliation
+        working-directory: codex-rs
+        run: just test --locked --lib -p codex-hepta-control-plane
+
+      - name: Exercise Agentd local fences and lifecycle
+        working-directory: codex-rs
+        run: just test --locked --lib -p codex-hepta-agentd
 
       - name: Exercise durable retirement and reconciliation
         working-directory: codex-rs

@@ -132,6 +132,11 @@ impl AgentdState {
             || record.manifest.workspace.as_path() != self.identity.workspace
             || record.manifest.resources != self.identity.resources
         {
+            // Immutable launch identity drift is a process-fatal ownership
+            // violation. Latch the fence before returning so every later
+            // readiness/control path fails closed even if the caller catches
+            // this particular refresh error.
+            self.mark_fenced();
             return Err(AgentdError::GenerationFenced(
                 "registered agent roots or resource budget changed while agentd was running"
                     .to_string(),
@@ -148,6 +153,10 @@ impl AgentdState {
                 | (AgentLifecycle::Draining, Some(2))
         );
         if !accepted {
+            // A stale/advanced generation must be sticky. Returning a fence
+            // error without latching runtime.fenced leaves a catch-and-retry
+            // caller with a misleading local readiness snapshot.
+            self.mark_fenced();
             return Err(AgentdError::GenerationFenced(format!(
                 "agent {} spawn generation {} cannot serve {:?} generation {}",
                 self.identity.agent_id,
