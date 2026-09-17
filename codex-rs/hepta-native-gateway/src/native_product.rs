@@ -34,6 +34,7 @@ use crate::updater::UpdateDisposition;
 use crate::updater::UpdateVerifier;
 
 const PRODUCT_MODULES: &[&str] = &["runtime.agentd", "ui.control", "ui.native"];
+const PRODUCT_UPDATE_CHANNEL: &str = "stable";
 
 type ProductShell = NativeShellRuntime<
     LocalRuntimeBackend,
@@ -74,7 +75,6 @@ pub struct NativeProductConfig {
     pub grant_public_key: PathBuf,
     pub release_public_key: PathBuf,
     pub selection_public_key: PathBuf,
-    pub update_channel: String,
     pub effect_journal: PathBuf,
     pub update_journal: PathBuf,
     pub active_artifact: PathBuf,
@@ -152,7 +152,6 @@ pub struct NativeUpdateRequest {
     pub evidence_digest: String,
     pub producer_id: String,
     pub selector_id: String,
-    pub channel: String,
     pub release_signature_path: PathBuf,
     pub selection_signature_path: PathBuf,
 }
@@ -180,7 +179,6 @@ pub struct NativeProduct {
 impl NativeProduct {
     pub async fn open_from_env(config: NativeProductConfig) -> Result<Self> {
         validate_digest(&config.manifest_digest, "manifest digest")?;
-        validate_id(&config.update_channel, "update channel")?;
         let platform = NativePlatform::current();
         if platform == NativePlatform::Unsupported {
             bail!("ui.native supports Windows, macOS and Linux only");
@@ -228,7 +226,7 @@ impl NativeProduct {
             selection_signatures,
             SystemArtifactDigest,
             SystemPlatformArtifactVerifier,
-            config.update_channel,
+            PRODUCT_UPDATE_CHANNEL.to_string(),
             platform,
             std::env::consts::ARCH.to_string(),
             NATIVE_PROTOCOL_VERSION,
@@ -334,7 +332,7 @@ impl NativeProduct {
             evidence_digest: request.evidence_digest,
             producer_id: request.producer_id,
             selector_id: request.selector_id,
-            channel: request.channel,
+            channel: PRODUCT_UPDATE_CHANNEL.to_string(),
             platform: NativePlatform::current(),
             architecture: std::env::consts::ARCH.to_string(),
             backend_protocol_version: NATIVE_PROTOCOL_VERSION,
@@ -396,18 +394,6 @@ fn validate_digest(value: &str, name: &str) -> Result<()> {
             .all(|byte| byte.is_ascii_digit() || matches!(byte, b'a'..=b'f'))
     {
         bail!("native {name} must be a non-zero lowercase SHA-256 digest");
-    }
-    Ok(())
-}
-
-fn validate_id(value: &str, name: &str) -> Result<()> {
-    if value.is_empty()
-        || value.len() > 128
-        || !value
-            .bytes()
-            .all(|byte| byte.is_ascii_alphanumeric() || matches!(byte, b'.' | b'_' | b':' | b'-'))
-    {
-        bail!("native {name} must be a bounded stable identifier");
     }
     Ok(())
 }
