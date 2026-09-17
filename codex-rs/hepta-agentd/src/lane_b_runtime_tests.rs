@@ -26,6 +26,14 @@ fn snapshot() -> RunSnapshot {
     }
 }
 
+fn snapshot_for(run_id: impl Into<String>, deadline_ms: u64) -> RunSnapshot {
+    RunSnapshot {
+        run_id: run_id.into(),
+        deadline_ms,
+        ..snapshot()
+    }
+}
+
 fn attachment() -> ContextAttachment {
     ContextAttachment {
         run_id: "run.1".to_string(),
@@ -35,6 +43,13 @@ fn attachment() -> ContextAttachment {
         artifact_set_digest: digest('6'),
         context_digest: digest('7'),
         compilation_receipt_digest: digest('8'),
+    }
+}
+
+fn attachment_for(run_id: impl Into<String>) -> ContextAttachment {
+    ContextAttachment {
+        run_id: run_id.into(),
+        ..attachment()
     }
 }
 
@@ -229,4 +244,89 @@ fn indeterminate_outcomes_reconcile_without_redispatch_or_leaked_capacity() {
             .expect("release capacity");
     }
     assert_eq!(coordinator.run("run.1"), None);
+}
+
+#[test]
+fn deadline_expiry_only_cancels_due_runs_and_requires_interrupt_after_dispatch() {
+    let mut coordinator = AgentRunCoordinator::compose_runtime(composition()).expect("compose");
+    coordinator
+        .start_run(100, snapshot_for("run.pre", 500))
+        .expect("admit pre-dispatch run");
+    coordinator
+        .start_run(100, snapshot_for("run.live", 5_000))
+        .expect("admit live run");
+    coordinator
+        .start_run(100, snapshot_for("run.sent", 500))
+        .expect("admit dispatched run");
+    coordinator
+        .attach_context(1, attachment_for("run.sent"))
+        .expect("attach dispatched run context");
+    coordinator
+        .mark_dispatched("run.sent", 2)
+        .expect("mark dispatched");
+
+    let actions = coordinator.expire_due_runs(500).expect("expire due runs");
+    assert_eq!(actions.len(), 2);
+    assert_eq!(
+        coordinator.run("run.pre").expect("pre run").phase,
+        RunPhase::Cancelled
+    );
+    assert_eq!(
+        coordinator.run("run.sent").expect("sent run").phase,
+        RunPhase::Cancelling
+    );
+    assert_eq!(
+        coordinator.run("run.live").expect("live run").phase,
+        RunPhase::Admitted
+    );
+    assert!(actions.iter().any(|action| {
+        action.receipt.run_id == "run.sent"
+            && action.disposition == CancellationDisposition::CancellingAfterDispatch
+    }));
+}
+
+#[test]
+fn drain_never_erases_indeterminate_dispatch_uncertainty() {
+    let mut coordinator = AgentRunCoordinator::compose_runtime(composition()).expect("compose");
+    coordinator
+        .start_run(100, snapshot_for("run.pre", 10_000))
+        .expect("admit pre-dispatch run");
+    coordinator
+        .start_run(100, snapshot_for("run.sent", 10_000))
+        .expect("admit dispatched run");
+    coordinator
+        .attach_context(1, attachment_for("run.sent"))
+        .expect("attach dispatched context");
+    coordinator
+        .mark_dispatched("run.sent", 2)
+        .expect("dispatch run");
+    coordinator
+        .start_run(100, snapshot_for("run.unknown", 10_000))
+        .expect("admit unknown run");
+    coordinator
+        .attach_context(1, attachment_for("run.unknown"))
+        .expect("attach unknown context");
+    coordinator
+        .mark_dispatched("run.unknown", 2)
+        .expect("dispatch unknown run");
+    coordinator
+        .observe_terminal("run.unknown", 3, RunPhase::Indeterminate, false)
+        .expect("record unknown outcome");
+
+    let actions = coordinator.begin_drain().expect("begin drain");
+    assert_eq!(actions.len(), 2);
+    assert_eq!(
+        coordinator.run("run.pre").expect("pre run").phase,
+        RunPhase::Cancelled
+    );
+    assert_eq!(
+        coordinator.run("run.sent").expect("sent run").phase,
+        RunPhase::Cancelling
+    );
+    assert_eq!(
+        coordinator.run("run.unknown").expect("unknown run").phase,
+        RunPhase::Indeterminate
+    );
+    assert_eq!(coordinator.active_run_count(), 2);
+    assert_eq!(coordinator.retained_run_count(), 3);
 }
