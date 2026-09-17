@@ -2,21 +2,25 @@
 //!
 //! Artifact digests retain their meaning as references to external artifacts.
 //! Binding their supplied metadata prevents substitution under one V2 receipt;
-//! it does not establish that metadata matches the artifact bytes. The host
-//! must authenticate those artifacts and the random source independently.
+//! it does not establish that metadata matches the artifact bytes. Production
+//! callers should use the authenticated qualification API in `qualified`.
 
 use super::*;
 
 /// Commit to every supplied request field, including the ordered candidates,
 /// artifact metadata, assignment mode, random stream and exact draw.
 ///
-/// This is a bounded encoding for host signatures and replay. Decision-time
-/// validation still checks canonical order, artifact windows and probabilities.
+/// V2 refuses candidate sets whose completeness receipt admits any omission.
+/// The historical V1 decision function remains available only for receipt
+/// replay compatibility.
 pub fn canonical_calibrated_request_digest_v1(
     request: &CalibratedDecisionRequestV1,
 ) -> Result<Digest32, CalibratedError> {
     if !(1..=MAX_CANDIDATES).contains(&request.candidates.len()) {
         return Err(CalibratedError::CandidateCountOutOfRange);
+    }
+    if request.completeness.omitted_count_bound != 0 {
+        return Err(CalibratedError::CandidateSetMismatch);
     }
     let mut bytes = b"hepta.intuition.calibrated-request.v1".to_vec();
     push_id(&mut bytes, &request.decision_id)?;
