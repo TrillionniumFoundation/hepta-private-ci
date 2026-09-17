@@ -128,7 +128,7 @@ impl AdmittedCognitiveStoreV2 {
             .map_err(CognitiveStoreV2Error::Contract)?;
         enforce_admission_verification(&candidate)?;
         self.ensure_ordinary_journal_capacity(&intent.intent_id)?;
-        let will_insert = self.candidate_will_insert(&candidate)?;
+        let will_insert = self.candidate_will_insert(&intent.intent_id, &candidate)?;
         if will_insert && self.admitted_revisions >= self.maximum_admitted_revisions {
             return Err(CognitiveStoreV2Error::CapacityExceeded);
         }
@@ -257,8 +257,16 @@ impl AdmittedCognitiveStoreV2 {
 
     fn candidate_will_insert(
         &self,
+        intent_id: &StableId,
         candidate: &MemoryAdmissionCandidateV1,
     ) -> Result<bool, CognitiveStoreV2Error> {
+        // The raw ledger journals terminal receipts by intent identity before it
+        // inspects the current head. Preserve that contract here: an exact retry
+        // must return its original receipt even after a later correction or
+        // tombstone made the current head differ from the retried candidate.
+        if self.intent_ids.contains(intent_id) {
+            return Ok(false);
+        }
         let Some(head) = self.inner.current_head(&candidate.candidate_id) else {
             return Ok(true);
         };
