@@ -4,6 +4,7 @@
   "module": "cognitive.store",
   "statusClass": "canonical_repository_status",
   "canonicalProductionIngress": "codex_hepta_cognitive_store::open_authoritative",
+  "canonicalRecoveryIngress": "codex_hepta_cognitive_store::open_authoritative_with_recovery",
   "durableBackend": "hepta-memory::CognitiveStore/cognitive_1.sqlite3",
   "qualificationOracles": [
     "codex_hepta_cognitive_store::QualificationSemanticStore",
@@ -19,21 +20,24 @@
   "productionImplementation": true,
   "productCallerState": "agentd_composed_through_cognitive_store_facade",
   "productionWriterState": "externally_authorized_single_writer_with_lifetime_os_lock",
-  "runtimeRecoveryState": "normal_open_canonical; cold_exact-cut_read_recovery_canonical; writable_suspect-image_recovery_fail_closed",
-  "migrationState": "facade_cutover_no_physical_data_copy",
+  "runtimeRecoveryState": "normal_open_canonical; cold_exact-cut_read_recovery_canonical; externally_fenced_fresh-owner_writable_recovery_canonical",
+  "migrationState": "facade_cutover_no_physical_data_copy; recovery_promotion_uses_verified_fresh_inode_and_quarantine",
   "repositoryEvidence": {
     "canonicalRuntimeOpen": "codex-rs/hepta-agentd/src/runtime.rs",
     "canonicalProductionWriterOpen": "codex-rs/hepta-agentd/src/production_writer_host.rs",
     "facade": "codex-rs/hepta-cognitive-store/src/lib.rs",
     "durableReopenTest": "codex-rs/hepta-cognitive-store/tests/durable_authority.rs",
+    "writableRecoveryImplementation": "codex-rs/hepta-memory/src/cognitive_store_recovery_read_only.rs",
+    "writableRecoveryTests": "codex-rs/hepta-memory/src/cognitive_store_recovery_read_only_tests.rs",
+    "retainedColdImage": "codex-rs/state/src/sqlite_recovery_image.rs",
     "singleWriterAndCrashTests": "codex-rs/hepta-memory/src/production_writer.rs",
     "durableFactProjection": "codex-rs/hepta-memory/src/lane_c_snapshot.rs",
     "authorityDriftGate": "scripts/hepta_cognitive_store_authority.py",
     "cutoverRunbook": "docs/modules/cognitive.store/MIGRATION.md"
   },
   "repositoryControlledGaps": [
-    "Implement a descriptor-bound SQLite writer VFS plus independently current writer fence before writable recovery of a suspect database can be enabled.",
-    "Obtain exact-head and synthetic-merge CI receipts for this candidate.",
+    "Obtain exact-head and synthetic-merge CI receipts for this candidate, including the fresh-owner recovery tests.",
+    "Obtain target-host filesystem/power-loss qualification for fresh-owner publication and SQLite WAL/FULL durability.",
     "Obtain independent target-host acceptance before activation, promotion or release claims."
   ],
   "claimBoundary": {
@@ -42,7 +46,7 @@
     "productRuntimeOpenComposed": true,
     "productionSingleWriterMechanismImplemented": true,
     "durableReopenExercisedBySourceTest": true,
-    "writableSuspectImageRecoveryImplemented": false,
+    "writableSuspectImageRecoveryImplemented": true,
     "productExecutionProved": false,
     "independentAcceptance": false,
     "activation": false,
