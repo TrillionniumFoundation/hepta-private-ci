@@ -186,7 +186,7 @@ fn every_collection_enforces_counts_and_duplicate_keys_before_semantic_compilati
             s.terminal_conditions
                 .resize(n, s.terminal_conditions[0].clone())
         }),
-        ("legalActionClasses", 0, 127, |s, n| {
+        ("legalActionClasses", 0, 128, |s, n| {
             s.legal_action_classes
                 .resize(n, s.legal_action_classes[0].clone())
         }),
@@ -194,7 +194,7 @@ fn every_collection_enforces_counts_and_duplicate_keys_before_semantic_compilati
             s.forbidden_action_classes
                 .resize(n, s.forbidden_action_classes[0].clone())
         }),
-        ("confirmationActionClasses", 0, 127, |s, n| {
+        ("confirmationActionClasses", 0, 128, |s, n| {
             s.confirmation_action_classes
                 .resize(n, s.confirmation_action_classes[0].clone())
         }),
