@@ -173,7 +173,7 @@ impl fmt::Display for BaoFinalUseHostError {
 }
 impl std::error::Error for BaoFinalUseHostError {}
 
-#[cfg(test)]
+#[cfg(all(test, unix))]
 mod tests {
     use super::*;
     use ed25519_dalek::SigningKey;
@@ -195,15 +195,12 @@ mod tests {
     #[test]
     fn host_rejects_duplicate_consumer_identity() {
         let directory = tempfile::tempdir().unwrap();
-        #[cfg(unix)]
-        {
-            use std::os::unix::fs::PermissionsExt;
-            std::fs::set_permissions(
-                directory.path(),
-                std::fs::Permissions::from_mode(0o700),
-            )
-            .unwrap();
-        }
+        use std::os::unix::fs::PermissionsExt;
+        std::fs::set_permissions(
+            directory.path(),
+            std::fs::Permissions::from_mode(0o700),
+        )
+        .unwrap();
         let issuer = SigningKey::from_bytes(&[31; 32]);
         let approver = SigningKey::from_bytes(&[32; 32]);
         let distributor = SigningKey::from_bytes(&[33; 32]);
