@@ -82,8 +82,9 @@ pub trait HoldoutAnchorStoreV1 {
 pub struct ProductTemporalEvaluationReceiptV1 {
     pub holdout: FinalHoldoutJournalReceiptV1,
     pub evaluation: TemporalEvaluationReceipt,
-    pub frozen_plan_digest: Digest32,
+    pub frozen_plan: CrossFoldPlanReceiptV1,
     pub observed_holdout_digest: Digest32,
+    pub objective_digest: Digest32,
     pub family_alpha_ppm: u32,
     pub simultaneous_comparisons: u32,
     pub execution_digest: Digest32,
@@ -106,7 +107,7 @@ pub enum ProductTimingEvidenceV1<'a> {
     },
 }
 
-#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub enum ProductEvaluationError {
     Binding(&'static str),
     Holdout(DurableHoldoutError),
@@ -198,8 +199,8 @@ impl ProductEvaluationRunnerV1 {
         let actual = holdout.anchor();
         match retained {
             Some(previous) if previous != actual => {
-                // This is the conservative recovery path for a crash after the
-                // journal fsync but before the independent anchor commit.
+                // Conservative recovery for a crash after journal fsync but
+                // before the independently retained anchor commit.
                 anchor_store.compare_and_swap(binding, previous, actual)?;
             }
             None if actual.sequence == 0 && actual.head.is_zero() => {
@@ -253,14 +254,12 @@ impl ProductEvaluationRunnerV1 {
         }
 
         // Persist holdout use first. Any later estimator failure still burns the
-        // holdout, which is conservative once the product execution has crossed
-        // the confirmatory-data boundary.
+        // holdout, which is conservative once execution has crossed the
+        // confirmatory-data boundary.
         let holdout = self.holdout.consume(retained, frozen_plan)?;
         let next = self.holdout.anchor();
         if next != retained {
-            if let Err(error) =
-                anchor_store.compare_and_swap(self.binding, retained, next)
-            {
+            if let Err(error) = anchor_store.compare_and_swap(self.binding, retained, next) {
                 self.poisoned = true;
                 return Err(ProductEvaluationError::Anchor(error));
             }
@@ -296,8 +295,9 @@ impl ProductEvaluationRunnerV1 {
         Ok(ProductTemporalEvaluationReceiptV1 {
             holdout,
             evaluation,
-            frozen_plan_digest: frozen_plan.plan_digest,
+            frozen_plan: frozen_plan.clone(),
             observed_holdout_digest,
+            objective_digest: temporal_plan.objective_digest,
             family_alpha_ppm: temporal_plan.confidence.family_alpha_ppm,
             simultaneous_comparisons: temporal_plan.confidence.simultaneous_comparisons,
             execution_digest: Digest32::of_bytes(&bytes),
@@ -305,9 +305,9 @@ impl ProductEvaluationRunnerV1 {
         })
     }
 
-    /// Authenticate the generator/evaluator evidence and qualify the exact
-    /// temporal execution receipt. Caller-supplied estimate/support/confidence
-    /// digests cannot be substituted for another evaluation run.
+    /// Authenticate generator/evaluator evidence and qualify the exact temporal
+    /// execution receipt. Caller-supplied estimate/support/confidence digests
+    /// cannot be substituted for another evaluation run.
     pub fn qualify_candidate(
         &self,
         temporal: &ProductTemporalEvaluationReceiptV1,
@@ -399,17 +399,14 @@ fn validate_qualification_binding(
     temporal: &ProductTemporalEvaluationReceiptV1,
     bundle: &IndependentEvaluationBundleV1,
 ) -> Result<(), ProductEvaluationError> {
-    if bundle.frozen_plan.plan_digest != temporal.frozen_plan_digest
-        || bundle.frozen_plan.final_holdout_digest != temporal.observed_holdout_digest
+    if bundle.frozen_plan != temporal.frozen_plan
         || bundle.holdout_use != temporal.holdout.use_receipt
         || bundle.evaluation_id != temporal.evaluation.evaluation_id
-        || bundle.objective_digest != temporal.evaluation.plan_digest
-            && bundle.objective_digest != bundle.frozen_plan.objective_digest
+        || bundle.objective_digest != temporal.objective_digest
     {
         return Err(ProductEvaluationError::Binding("evaluation identity"));
     }
-    if bundle.objective_digest != bundle.frozen_plan.objective_digest
-        || bundle.estimate_receipt_digest != temporal.evaluation.evidence_digest
+    if bundle.estimate_receipt_digest != temporal.evaluation.evidence_digest
         || bundle.support_audit_digest != temporal.evaluation.estimate.point.evidence_digest
         || bundle.confidence_receipt_digest != temporal.evaluation.estimate.evidence_digest
         || bundle.family_alpha_ppm != temporal.family_alpha_ppm
