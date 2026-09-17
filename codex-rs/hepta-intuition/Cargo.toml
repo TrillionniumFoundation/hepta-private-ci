@@ -18,7 +18,9 @@ harness = false
 workspace = true
 
 [dependencies]
+base64.workspace = true
 codex-hepta-types = { path = "../hepta-types" }
+ed25519-dalek.workspace = true
 
 [dev-dependencies]
 divan.workspace = true
