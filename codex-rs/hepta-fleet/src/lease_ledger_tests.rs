@@ -8,14 +8,15 @@ fn host() -> HostObservation {
         observed_at_ms: 100,
         valid_until_ms: 1_000,
         capacity: Resources {
-            cpu_millis: 1_000,
-            memory_bytes: 4_096,
-            accelerator_millis: 0,
+            concurrent_turns: 1_000,
+            memory_mib: 4_096,
+            tool_processes: 128,
+            turn_queue_slots: 4_096,
         },
     }
 }
 
-fn grant(id: &str, cpu: u64) -> AllocationGrant {
+fn grant(id: &str, turns: u64) -> AllocationGrant {
     AllocationGrant {
         allocation_id: id.to_string(),
         request_id: format!("request.{id}"),
@@ -27,9 +28,10 @@ fn grant(id: &str, cpu: u64) -> AllocationGrant {
         lease_generation: 1,
         expires_at_ms: 800,
         resources: Resources {
-            cpu_millis: cpu,
-            memory_bytes: 1_024,
-            accelerator_millis: 0,
+            concurrent_turns: turns,
+            memory_mib: 1,
+            tool_processes: 0,
+            turn_queue_slots: 0,
         },
         semantic_digest: "1".repeat(64),
         revoked: false,
@@ -78,4 +80,21 @@ fn renewal_and_revocation_are_generation_fenced() {
         ),
         Err(Error::Revoked)
     );
+}
+
+#[test]
+fn terminal_history_does_not_consume_the_active_grant_limit() {
+    let mut ledger = LeaseLedger::new();
+    ledger.admit_host(host()).expect("host");
+    for index in 0..MAX_ACTIVE_GRANTS {
+        let id = format!("grant.{index}");
+        let mut terminal = grant(&id, 1);
+        terminal.revoked = true;
+        ledger.grants.insert(id, terminal);
+    }
+    assert_eq!(ledger.active_grant_count(200), 0);
+    ledger
+        .issue(200, grant("after-terminal-history", 1))
+        .expect("terminal history must not exhaust live admission");
+    assert_eq!(ledger.prune_terminal(200), MAX_ACTIVE_GRANTS);
 }

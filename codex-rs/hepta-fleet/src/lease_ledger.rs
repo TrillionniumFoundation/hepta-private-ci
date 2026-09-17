@@ -4,42 +4,20 @@ use std::collections::BTreeMap;
 use std::error::Error as StdError;
 use std::fmt;
 
+use serde::Deserialize;
+use serde::Serialize;
+
+use crate::FleetResourceVectorV1;
+
 const MAX_HOSTS: usize = 256;
 const MAX_ACTIVE_GRANTS: usize = 16_384;
+const MAX_RETAINED_GRANTS: usize = 32_768;
 
-#[derive(Clone, Copy, Debug, Default, Eq, PartialEq)]
-pub struct Resources {
-    pub cpu_millis: u64,
-    pub memory_bytes: u64,
-    pub accelerator_millis: u64,
-}
+/// Compatibility name retained for existing lease-ledger callers.
+pub type Resources = FleetResourceVectorV1;
 
-impl Resources {
-    pub fn checked_add(self, other: Self) -> Result<Self, Error> {
-        Ok(Self {
-            cpu_millis: self
-                .cpu_millis
-                .checked_add(other.cpu_millis)
-                .ok_or(Error::ArithmeticOverflow)?,
-            memory_bytes: self
-                .memory_bytes
-                .checked_add(other.memory_bytes)
-                .ok_or(Error::ArithmeticOverflow)?,
-            accelerator_millis: self
-                .accelerator_millis
-                .checked_add(other.accelerator_millis)
-                .ok_or(Error::ArithmeticOverflow)?,
-        })
-    }
-
-    pub fn fits(self, capacity: Self) -> bool {
-        self.cpu_millis <= capacity.cpu_millis
-            && self.memory_bytes <= capacity.memory_bytes
-            && self.accelerator_millis <= capacity.accelerator_millis
-    }
-}
-
-#[derive(Clone, Debug, Eq, PartialEq)]
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
 pub struct HostObservation {
     pub host_id: String,
     pub failure_domain_id: String,
@@ -49,7 +27,8 @@ pub struct HostObservation {
     pub capacity: Resources,
 }
 
-#[derive(Clone, Debug, Eq, PartialEq)]
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
 pub struct AllocationGrant {
     pub allocation_id: String,
     pub request_id: String,
@@ -115,24 +94,15 @@ impl fmt::Display for Error {
 
 impl StdError for Error {}
 
-#[derive(Debug)]
+#[derive(Clone, Debug, Default)]
 pub struct LeaseLedger {
     hosts: BTreeMap<String, HostObservation>,
     grants: BTreeMap<String, AllocationGrant>,
 }
 
-impl Default for LeaseLedger {
-    fn default() -> Self {
-        Self::new()
-    }
-}
-
 impl LeaseLedger {
     pub fn new() -> Self {
-        Self {
-            hosts: BTreeMap::new(),
-            grants: BTreeMap::new(),
-        }
+        Self::default()
     }
 
     pub fn admit_host(&mut self, observation: HostObservation) -> Result<(), Error> {
@@ -140,7 +110,7 @@ impl LeaseLedger {
         validate_identity(&observation.failure_domain_id, "failure domain")?;
         if observation.generation == 0
             || observation.observed_at_ms >= observation.valid_until_ms
-            || observation.capacity == Resources::default()
+            || observation.capacity.is_zero()
         {
             return Err(Error::HostCapacity);
         }
@@ -167,7 +137,11 @@ impl LeaseLedger {
         mut grant: AllocationGrant,
     ) -> Result<LeaseReceipt, Error> {
         validate_grant(&grant)?;
-        let host = self.hosts.get(&grant.host_id).ok_or(Error::HostNotFound)?;
+        let host = self
+            .hosts
+            .get(&grant.host_id)
+            .cloned()
+            .ok_or(Error::HostNotFound)?;
         if now_ms < host.observed_at_ms || now_ms >= host.valid_until_ms {
             return Err(Error::StaleHost);
         }
@@ -185,11 +159,20 @@ impl LeaseLedger {
             }
             return Err(Error::Conflict);
         }
-        if self.grants.len() >= MAX_ACTIVE_GRANTS {
+        if self.active_grant_count(now_ms) >= MAX_ACTIVE_GRANTS {
             return Err(Error::GrantCapacityExceeded);
         }
+        if self.grants.len() >= MAX_RETAINED_GRANTS {
+            self.prune_terminal(now_ms);
+            if self.grants.len() >= MAX_RETAINED_GRANTS {
+                return Err(Error::GrantCapacityExceeded);
+            }
+        }
         let committed = self.committed_resources(&grant.host_id, now_ms)?;
-        if !committed.checked_add(grant.resources)?.fits(host.capacity) {
+        let total = committed
+            .checked_add(grant.resources)
+            .ok_or(Error::ArithmeticOverflow)?;
+        if !total.fits(host.capacity) {
             return Err(Error::CapacityExceeded);
         }
         grant.revoked = false;
@@ -270,6 +253,21 @@ impl LeaseLedger {
         self.grants.get(allocation_id)
     }
 
+    /// Drop retained terminal entries. This never changes live resource accounting.
+    pub fn prune_terminal(&mut self, now_ms: u64) -> usize {
+        let before = self.grants.len();
+        self.grants
+            .retain(|_, grant| !grant.revoked && grant.expires_at_ms > now_ms);
+        before - self.grants.len()
+    }
+
+    fn active_grant_count(&self, now_ms: u64) -> usize {
+        self.grants
+            .values()
+            .filter(|grant| !grant.revoked && grant.expires_at_ms > now_ms)
+            .count()
+    }
+
     fn committed_resources(&self, host_id: &str, now_ms: u64) -> Result<Resources, Error> {
         self.grants
             .values()
@@ -278,6 +276,7 @@ impl LeaseLedger {
             })
             .try_fold(Resources::default(), |sum, grant| {
                 sum.checked_add(grant.resources)
+                    .ok_or(Error::ArithmeticOverflow)
             })
     }
 }
@@ -320,7 +319,7 @@ fn validate_grant(grant: &AllocationGrant) -> Result<(), Error> {
     if grant.host_generation == 0 || grant.authority_epoch == 0 || grant.lease_generation == 0 {
         return Err(Error::InvalidGeneration);
     }
-    if grant.resources == Resources::default() {
+    if grant.resources.is_zero() {
         return Err(Error::HostCapacity);
     }
     Ok(())
