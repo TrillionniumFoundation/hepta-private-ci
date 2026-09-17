@@ -1,3 +1,5 @@
+use std::fmt::Debug;
+
 use super::*;
 use codex_hepta_learning_ledger::AuthenticatedPrincipalV1;
 use codex_hepta_learning_ledger::LearningEvidenceTrustV1;
@@ -11,8 +13,15 @@ use codex_hepta_prompt_registry::PromptRoleV2;
 use ed25519_dalek::Signer;
 use ed25519_dalek::SigningKey;
 
+fn must<T, E: Debug>(result: Result<T, E>) -> T {
+    match result {
+        Ok(value) => value,
+        Err(error) => panic!("unexpected fixture error: {error:?}"),
+    }
+}
+
 fn id(value: &str) -> StableId {
-    StableId::new(value.to_string()).expect("valid test id")
+    must(StableId::new(value.to_string()))
 }
 
 fn digest(value: &str) -> Digest32 {
@@ -30,44 +39,38 @@ fn model_tuple() -> PromptModelTupleV2 {
 }
 
 fn registry_with_factors(factors: &[(&str, u32)]) -> PromptRegistry {
-    let mut registry = PromptRegistry::new(64).expect("registry");
+    let mut registry = must(PromptRegistry::new(64));
     let model = model_tuple();
     for (name, token_cost) in factors {
         let factor_id = id(&format!("factor:{name}"));
-        registry
-            .register_factor(PromptFactor {
-                factor_id: factor_id.clone(),
-                proposer_id: id(&format!("proposer:{name}")),
-                semantic_version: id("v1"),
-                content_digest: digest(&format!("factor-content:{name}")),
-                source: FactorSource::GovernedInternal,
-                lifecycle: Lifecycle::Draft,
-            })
-            .expect("register factor");
-        registry
-            .admit_factor(&factor_id, &id("reviewer"), digest("admission"))
-            .expect("admit factor");
-        registry
-            .register_realization_v2(PromptRealizationBindingV2 {
-                realization_id: id(&format!("realization:{name}")),
-                factor_id,
-                model_digest: model.model_digest,
-                tokenizer_digest: model.tokenizer_digest,
-                template_digest: model.template_digest,
-                tool_schema_digest: model.tool_schema_digest,
-                locale_id: model.locale_id.clone(),
-                role: PromptRoleV2::DeveloperInstruction,
-                payload_digest: digest(&format!("payload:{name}")),
-                token_cost: *token_cost,
-                expires_unix_ms: Some(90),
-            })
-            .expect("register realization");
+        must(registry.register_factor(PromptFactor {
+            factor_id: factor_id.clone(),
+            proposer_id: id(&format!("proposer:{name}")),
+            semantic_version: id("v1"),
+            content_digest: digest(&format!("factor-content:{name}")),
+            source: FactorSource::GovernedInternal,
+            lifecycle: Lifecycle::Draft,
+        }));
+        must(registry.admit_factor(&factor_id, &id("reviewer"), digest("admission")));
+        must(registry.register_realization_v2(PromptRealizationBindingV2 {
+            realization_id: id(&format!("realization:{name}")),
+            factor_id,
+            model_digest: model.model_digest,
+            tokenizer_digest: model.tokenizer_digest,
+            template_digest: model.template_digest,
+            tool_schema_digest: model.tool_schema_digest,
+            locale_id: model.locale_id.clone(),
+            role: PromptRoleV2::DeveloperInstruction,
+            payload_digest: digest(&format!("payload:{name}")),
+            token_cost: *token_cost,
+            expires_unix_ms: Some(90),
+        }));
     }
     registry
 }
 
 fn enumerate(registry: &PromptRegistry) -> EnumeratedPromptCandidatesV1 {
-    enumerate_factors_v1(
+    must(enumerate_factors_v1(
         registry,
         CandidateEnumerationRequestV1 {
             set_id: id("candidate-set"),
@@ -82,8 +85,7 @@ fn enumerate(registry: &PromptRegistry) -> EnumeratedPromptCandidatesV1 {
             now_unix_ms: 50,
             maximum_results: 128,
         },
-    )
-    .expect("enumeration")
+    ))
 }
 
 fn trusted_signer(role: LearningEvidenceRoleV1, seed: u8) -> TrustedLearningSignerV1 {
@@ -120,7 +122,7 @@ fn trusted_signer(role: LearningEvidenceRoleV1, seed: u8) -> TrustedLearningSign
 }
 
 fn verifier() -> LearningEvidenceVerifierV1 {
-    LearningEvidenceVerifierV1::new(LearningEvidenceTrustV1 {
+    must(LearningEvidenceVerifierV1::new(LearningEvidenceTrustV1 {
         scope_digest: digest("scope"),
         objective_digest: digest("objective"),
         authority_epoch: 7,
@@ -128,8 +130,7 @@ fn verifier() -> LearningEvidenceVerifierV1 {
             trusted_signer(LearningEvidenceRoleV1::Generator, 1),
             trusted_signer(LearningEvidenceRoleV1::Evaluator, 2),
         ],
-    })
-    .expect("trust")
+    }))
 }
 
 fn pricing_payload(evidence: &PromptPricingEvidenceV1) -> Vec<u8> {
@@ -185,10 +186,7 @@ fn verified_pricing(
         future_context_option_cost_q32: FixedQ32::ZERO,
     };
     let payload = pricing_payload(&evidence);
-    assert_eq!(
-        Digest32::of_bytes(&payload),
-        evidence.payload_digest().expect("payload digest")
-    );
+    assert_eq!(Digest32::of_bytes(&payload), must(evidence.payload_digest()));
     let verifier = verifier();
     let (principal, seed) = match role {
         LearningEvidenceRoleV1::Generator => ("generator", 1),
@@ -211,9 +209,7 @@ fn verified_pricing(
     signed.signature = SigningKey::from_bytes(&[seed; 32])
         .sign(&signed.signing_bytes())
         .to_bytes();
-    let verification = verifier
-        .verify(role, &signed, &payload, 50)
-        .expect("verified evidence");
+    let verification = must(verifier.verify(role, &signed, &payload, 50));
     VerifiedPromptPricingEvidenceV1 {
         evidence,
         verification,
@@ -221,13 +217,12 @@ fn verified_pricing(
 }
 
 fn zero_cost_policy() -> PromptPricingPolicyV1 {
-    PromptPricingPolicyV1::new(
+    must(PromptPricingPolicyV1::new(
         FixedQ32::ZERO,
         FixedQ32::ZERO,
         FixedQ32::ZERO,
         FixedQ32::ZERO,
-    )
-    .expect("pricing policy")
+    ))
 }
 
 #[test]
@@ -239,26 +234,23 @@ fn canonical_pipeline_selects_profitable_prerequisite_bundle_and_revalidates_reg
         vec![id("factor:a"), id("factor:b")]
     );
     assert!(!enumerated.receipt.authority.grants_any());
-    let candidate_json = enumerated
-        .receipt
-        .to_canonical_json()
-        .expect("candidate json");
+    let candidate_json = must(enumerated.receipt.to_canonical_json());
     assert_eq!(
-        PromptCandidateSetReceiptV1::from_canonical_json(&candidate_json)
-            .expect("candidate round trip"),
+        must(PromptCandidateSetReceiptV1::from_canonical_json(
+            &candidate_json
+        )),
         enumerated.receipt
     );
 
-    let pricing = price_factors_v1(
+    let pricing = must(price_factors_v1(
         &enumerated,
         vec![
             verified_pricing("a", 100, 90, 110, LearningEvidenceRoleV1::Evaluator),
             verified_pricing("b", -1, -2, 0, LearningEvidenceRoleV1::Evaluator),
         ],
         &zero_cost_policy(),
-    )
-    .expect("pricing");
-    let portfolio = select_portfolio_v1(
+    ));
+    let portfolio = must(select_portfolio_v1(
         &pricing,
         PortfolioSelectionRequestV1 {
             portfolio_id: id("portfolio"),
@@ -277,8 +269,7 @@ fn canonical_pipeline_selects_profitable_prerequisite_bundle_and_revalidates_reg
                 support_digest: digest("requires:a:b"),
             }],
         },
-    )
-    .expect("portfolio");
+    ));
     assert_eq!(
         portfolio.receipt.factor_ids,
         vec![id("factor:a"), id("factor:b")]
@@ -287,7 +278,7 @@ fn canonical_pipeline_selects_profitable_prerequisite_bundle_and_revalidates_reg
     assert_eq!(portfolio.receipt.total_token_upper_bound, 3);
     assert!(!portfolio.receipt.authority.grants_any());
 
-    let exercise = exercise_v1(
+    let exercise = must(exercise_v1(
         &registry,
         &enumerated,
         &pricing,
@@ -302,16 +293,13 @@ fn canonical_pipeline_selects_profitable_prerequisite_bundle_and_revalidates_reg
             wait_value_q32: FixedQ32::ZERO,
             policy_digest: digest("exercise-policy"),
         },
-    )
-    .expect("exercise");
+    ));
     assert_eq!(exercise.receipt.decision, ExerciseDispositionV1::Exercise);
     assert_eq!(exercise.reason, ExerciseReasonV1::CurrentAndPreferred);
     assert!(!exercise.receipt.authority.grants_any());
 
-    registry
-        .revoke_factor(&id("factor:a"))
-        .expect("revoke selected factor");
-    let rejected = exercise_v1(
+    must(registry.revoke_factor(&id("factor:a")));
+    let rejected = must(exercise_v1(
         &registry,
         &enumerated,
         &pricing,
@@ -326,8 +314,7 @@ fn canonical_pipeline_selects_profitable_prerequisite_bundle_and_revalidates_reg
             wait_value_q32: FixedQ32::ZERO,
             policy_digest: digest("exercise-policy"),
         },
-    )
-    .expect("reject receipt");
+    ));
     assert_eq!(rejected.receipt.decision, ExerciseDispositionV1::Reject);
     assert_eq!(rejected.reason, ExerciseReasonV1::RegistryDrift);
 }
@@ -336,16 +323,15 @@ fn canonical_pipeline_selects_profitable_prerequisite_bundle_and_revalidates_reg
 fn missing_pair_support_never_becomes_zero_interaction() {
     let registry = registry_with_factors(&[("a", 1), ("b", 1)]);
     let enumerated = enumerate(&registry);
-    let pricing = price_factors_v1(
+    let pricing = must(price_factors_v1(
         &enumerated,
         vec![
             verified_pricing("a", 10, 9, 11, LearningEvidenceRoleV1::Evaluator),
             verified_pricing("b", 9, 8, 10, LearningEvidenceRoleV1::Evaluator),
         ],
         &zero_cost_policy(),
-    )
-    .expect("pricing");
-    let portfolio = select_portfolio_v1(
+    ));
+    let portfolio = must(select_portfolio_v1(
         &pricing,
         PortfolioSelectionRequestV1 {
             portfolio_id: id("sparse-portfolio"),
@@ -355,8 +341,7 @@ fn missing_pair_support_never_becomes_zero_interaction() {
             interactions: Vec::new(),
             hard_constraints: Vec::new(),
         },
-    )
-    .expect("sparse portfolio");
+    ));
     assert_eq!(portfolio.receipt.factor_ids, vec![id("factor:a")]);
     assert_eq!(portfolio.receipt.expected_utility_q32, FixedQ32::from_raw(10));
 }
@@ -388,10 +373,7 @@ fn pricing_rejects_a_cryptographically_valid_generator_as_an_evaluator() {
 fn canonical_json_rejects_unknown_fields_and_noncanonical_whitespace() {
     let registry = registry_with_factors(&[("a", 1)]);
     let enumerated = enumerate(&registry);
-    let bytes = enumerated
-        .receipt
-        .to_canonical_json()
-        .expect("canonical bytes");
+    let bytes = must(enumerated.receipt.to_canonical_json());
     let mut spaced = b" ".to_vec();
     spaced.extend_from_slice(&bytes);
     assert_eq!(
@@ -399,9 +381,9 @@ fn canonical_json_rejects_unknown_fields_and_noncanonical_whitespace() {
         Err(CanonicalPromptError::NonCanonicalEncoding)
     );
 
-    let mut value: serde_json::Value = serde_json::from_slice(&bytes).expect("json value");
+    let mut value: serde_json::Value = must(serde_json::from_slice(&bytes));
     value["unexpectedCriticalField"] = serde_json::Value::Bool(true);
-    let edited = serde_json::to_vec(&value).expect("edited json");
+    let edited = must(serde_json::to_vec(&value));
     assert!(matches!(
         PromptCandidateSetReceiptV1::from_canonical_json(&edited),
         Err(CanonicalPromptError::Json(_))
