@@ -61,6 +61,7 @@ const FEDERATION_QUERY_PATH_V3: &str = "v1/memory/federation/query";
 include!("v3/protocol.rs");
 include!("v3/transport.rs");
 include!("v3/results_cache.rs");
+include!("v3/aggregate.rs");
 include!("v3/client.rs");
 include!("v3/wire_helpers.rs");
 
