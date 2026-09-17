@@ -7,6 +7,7 @@ mod control;
 mod daemon;
 mod daemon_client;
 mod daemon_protocol;
+mod daemon_tick;
 mod driver;
 mod error;
 mod lease;
