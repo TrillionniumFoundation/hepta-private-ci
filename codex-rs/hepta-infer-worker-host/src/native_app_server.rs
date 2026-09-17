@@ -30,6 +30,7 @@ use codex_app_server_protocol::TurnStatus;
 use codex_app_server_protocol::UserInput;
 use codex_hepta_agentd::AgentdClient;
 use codex_hepta_agentd::AgentdError;
+use codex_hepta_agentd::CognitiveContextSnapshot;
 use codex_hepta_agentd::HealthSnapshot;
 use codex_hepta_contracts::AgentId;
 use codex_hepta_infer_core::durable_control::DurableInferenceControl;
@@ -110,13 +111,14 @@ impl AppServerModelDriver {
         if !health.ready || health.fenced {
             return Err("Agent is not ready".into());
         }
-        let context = match context_query {
-            Some(query) => Some(owner.cognitive_context(query, /*limit*/ 4).await?),
+        let context = match context_query.as_ref() {
+            Some(query) => Some(owner.cognitive_context(query.clone(), /*limit*/ 4).await?),
             None => None,
         };
         let additional_context = context
+            .as_ref()
             .map(|snapshot| -> Result<_> {
-                let value = serde_json::to_string(&snapshot)?;
+                let value = serde_json::to_string(snapshot)?;
                 if value.len() > MAX_MODEL_CONTEXT_BYTES {
                     return Err("verified context exceeds the model attachment byte limit".into());
                 }
@@ -176,6 +178,20 @@ impl AppServerModelDriver {
         if cancellation.is_cancelled() {
             let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
             return Err("cancelled before model dispatch".into());
+        }
+        // The first Agentd response is only an observed historical cut. Re-read
+        // the exact owner immediately before committing provider dispatch and
+        // require the snapshot/read receipts plus selected projection to remain
+        // identical. A correction, deletion, expiry, ranker revocation or other
+        // owner-side drift therefore fails while the durable run is still in the
+        // Reserved state and cannot reach turn/start.
+        if let (Some(query), Some(expected)) = (context_query.as_deref(), context.as_ref()) {
+            if let Err(error) =
+                revalidate_cognitive_context_before_dispatch(&owner, query, expected).await
+            {
+                let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
+                return Err(error);
+            }
         }
         control.dispatch_native(
             request_id,
@@ -351,6 +367,46 @@ impl AppServerModelDriver {
             }
         }
     }
+}
+
+async fn revalidate_cognitive_context_before_dispatch(
+    owner: &AgentdClient,
+    query: &str,
+    expected: &CognitiveContextSnapshot,
+) -> Result<()> {
+    let current = owner
+        .cognitive_context(query.to_string(), /*limit*/ 4)
+        .await?;
+    validate_cognitive_context_before_dispatch(expected, &current)
+}
+
+fn validate_cognitive_context_before_dispatch(
+    expected: &CognitiveContextSnapshot,
+    current: &CognitiveContextSnapshot,
+) -> Result<()> {
+    if current.snapshot_digest != expected.snapshot_digest
+        || current.read_digest != expected.read_digest
+    {
+        return Err("cognitive context snapshot changed before model dispatch".into());
+    }
+    if current.omitted_records != expected.omitted_records || current.items != expected.items {
+        return Err("cognitive context projection changed before model dispatch".into());
+    }
+    let expected_plan = expected
+        .plan
+        .as_ref()
+        .map(|plan| (&plan.evaluated_context_digest, plan.read_allowed));
+    let current_plan = current
+        .plan
+        .as_ref()
+        .map(|plan| (&plan.evaluated_context_digest, plan.read_allowed));
+    if current_plan != expected_plan {
+        return Err("cognitive context plan changed before model dispatch".into());
+    }
+    // plan_receipt_digest is intentionally not compared: Agentd issues a new
+    // request-local planning receipt on each validation. The evaluated context
+    // digest and read_allowed decision above must remain stable.
+    Ok(())
 }
 
 async fn verify_owner_health(

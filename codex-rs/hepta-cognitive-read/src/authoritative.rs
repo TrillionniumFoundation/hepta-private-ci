@@ -1,9 +1,12 @@
-//! Authoritative snapshot acquisition boundary for `cognitive.read`.
+//! Compatibility authoritative-snapshot contract harness for `cognitive.read`.
 //!
 //! The legacy read functions intentionally validate only caller-supplied bytes.
-//! This module adds the missing provider boundary: a product adapter must acquire
-//! one coherent, scope-bound generation vector from an authoritative owner before
-//! any read result can be attached to downstream context.
+//! This module models the stronger scope/frontier/receipt invariants used by
+//! deterministic contract tests and compatibility callers. Product runtime does
+//! not implement this synchronous provider trait: canonical production
+//! acquisition and freshness are owned by the async SQLite path in
+//! `hepta-memory::DurableCognitiveSnapshot`, followed by final-use revalidation
+//! at the consuming model-dispatch boundary.
 
 use std::error::Error as StdError;
 use std::fmt;
@@ -59,10 +62,13 @@ impl SnapshotAcquisitionRequestV1 {
     }
 }
 
-/// Product adapters implement this trait against the canonical cognitive owner.
+/// Compatibility/test adapters may implement this synchronous contract against
+/// one coherent cognitive-owner cut.
 ///
 /// Implementations must not manufacture a snapshot from independent reads. They
-/// acquire one owner-defined cut and return it with a lease and receipt.
+/// acquire one owner-defined cut and return it with a lease and receipt. Product
+/// runtime uses the async `hepta-memory::DurableCognitiveSnapshot` owner path
+/// instead; this trait does not establish a second production authority.
 pub trait AuthoritativeCognitiveSnapshotProvider {
     fn acquire(
         &self,
