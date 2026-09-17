@@ -23,6 +23,7 @@ mod projection_store;
 mod protocol;
 mod recursive;
 mod scoring;
+mod z_conversion;
 
 pub use conditional_moments::ConditionalMomentSampleV1;
 pub use conditional_moments::ConditionalMomentsV1;
@@ -82,3 +83,10 @@ pub use recursive::RecursiveUtilityPath;
 pub use recursive::RecursiveUtilityReceipt;
 pub use recursive::UtilityEvent;
 pub use recursive::evaluate_recursive_utility;
+pub use z_conversion::AdmittedZConversionProfileV1;
+pub use z_conversion::NduZConversionProfileV1;
+pub use z_conversion::ZConversionError;
+pub use z_conversion::ZCoordinateConventionV1;
+pub use z_conversion::ZQ24ConversionReceiptV1;
+pub use z_conversion::admit_z_conversion_profile;
+pub use z_conversion::convert_z_to_original_q24;
