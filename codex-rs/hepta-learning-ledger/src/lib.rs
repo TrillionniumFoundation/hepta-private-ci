@@ -92,5 +92,9 @@ pub use signed_evidence::VerifiedLearningEvidenceV1;
 pub use signed_evidence::verify_signed_role_separation;
 
 #[cfg(test)]
+#[path = "persistent_index_integration_tests.rs"]
+mod persistent_index_integration_tests;
+
+#[cfg(test)]
 #[path = "shadow_tests.rs"]
 mod shadow_tests;
