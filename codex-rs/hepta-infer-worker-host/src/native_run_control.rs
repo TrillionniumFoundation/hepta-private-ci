@@ -1,5 +1,8 @@
 //! Local durable admission around the actual App Server driver.
 
+use std::time::SystemTime;
+use std::time::UNIX_EPOCH;
+
 use codex_hepta_infer_core::durable_control::DurableInferenceControl;
 use codex_hepta_infer_core::durable_control::native::NativeRequest;
 use codex_hepta_infer_core::durable_control::native::NativeReservationState;
@@ -12,6 +15,8 @@ use super::NativeOwnerAuthority;
 use super::NativeRunOutput;
 use super::NativeRunStatus;
 use super::Result;
+use crate::runtime_codex::RuntimeCodexRun;
+use crate::runtime_codex::bind_runtime_codex_run;
 
 /// Explicit local capacity policy; the first request pins the journal's limit.
 /// This limits admitted runs, not provider tokens, billing or device memory.
@@ -21,6 +26,37 @@ pub struct NativeAdmission {
 }
 
 impl AppServerModelDriver {
+    /// Product entrypoint. The returned value can only be constructed after the
+    /// exact durable reservation/dispatch record has been reconciled with the
+    /// real App Server observation and the runtime.codex adapter.
+    pub async fn run_bound(
+        &self,
+        control: &mut DurableInferenceControl,
+        admission: NativeAdmission,
+        prompt: String,
+        context_query: Option<String>,
+        cancellation: &CancellationToken,
+    ) -> Result<RuntimeCodexRun> {
+        let request_id = admission.request_id.clone();
+        let admitted_at_ms = unix_time_ms()?;
+        let timeout_ms = u64::try_from(self.config.timeout.as_millis())?;
+        let deadline_ms = admitted_at_ms
+            .checked_add(timeout_ms)
+            .ok_or("native App Server deadline overflow")?;
+        let output = self
+            .run(control, admission, prompt, context_query, cancellation)
+            .await?;
+        let record = control
+            .native_record(&request_id)
+            .ok_or("native run record disappeared before runtime.codex binding")?;
+        Ok(bind_runtime_codex_run(
+            record,
+            output,
+            admitted_at_ms,
+            deadline_ms,
+        )?)
+    }
+
     /// Reserves before any provider call, journals dispatch before `turn/start`,
     /// and commits real observations before returning them to the caller.
     /// Reopening a possibly dispatched run never invokes a model again.
@@ -105,6 +141,12 @@ impl AppServerModelDriver {
             }
         }
     }
+}
+
+fn unix_time_ms() -> Result<u64> {
+    Ok(u64::try_from(
+        SystemTime::now().duration_since(UNIX_EPOCH)?.as_millis(),
+    )?)
 }
 
 pub(super) fn digest(bytes: &[u8]) -> String {
