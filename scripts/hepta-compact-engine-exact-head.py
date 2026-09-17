@@ -58,6 +58,9 @@ def discover_tests(source: str | None, symbol: str | None) -> list[dict[str, obj
         return []
     crate_root = source_path.parent.parent if source_path.parent.name == "src" else source_path.parent
     candidates = set(source_path.parent.glob("*_tests.rs"))
+    source_text = source_path.read_text(encoding="utf-8")
+    if "#[cfg(test)]" in source_text:
+        candidates.add(source_path)
     tests_dir = crate_root / "tests"
     if tests_dir.is_dir():
         candidates.update(tests_dir.rglob("*.rs"))
