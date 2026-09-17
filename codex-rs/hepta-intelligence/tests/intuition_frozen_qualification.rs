@@ -65,8 +65,9 @@ fn probability_ppm(ppm: u32) -> ProbabilityQ32 {
 fn parse_model() -> LinearScorer {
     let text = std::str::from_utf8(MODEL_BYTES).unwrap();
     let get = |key: &str| -> i64 {
+        let prefix = format!("{key}=");
         text.lines()
-            .find_map(|line| line.strip_prefix(&format!("{key}=")))
+            .find_map(|line| line.strip_prefix(prefix.as_str()))
             .unwrap_or_else(|| panic!("missing {key}"))
             .parse()
             .unwrap()
@@ -390,6 +391,22 @@ fn frozen_model_and_data_produce_signed_current_generation_policy_decision() {
         "evidence:intuition-qualification",
         objective_digest,
         &qualification_payload,
+    );
+
+    let mut tampered_qualification = qualification_evidence.clone();
+    tampered_qualification.signature[0] ^= 1;
+    assert!(
+        decide_authenticated_intuition_v1(
+            request.clone(),
+            profile.clone(),
+            IntuitionQualificationEvidenceV1 {
+                completeness: &completeness_evidence,
+                qualification: &tampered_qualification,
+            },
+            &verifier,
+            150,
+        )
+        .is_err()
     );
 
     let receipt = decide_authenticated_intuition_v1(
