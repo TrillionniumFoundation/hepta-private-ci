@@ -49,10 +49,10 @@ Two layers jointly cover the historical-cut race:
 1. Agentd's cognitive-context tests create real canonical memory, read it, commit a tombstone and prove the next owner read removes the old item and changes the snapshot receipt.
 2. The native-host regression proves that a post-response tombstone / revision-content change causes the final gate to reject before `TurnStart`, including a defense-in-depth case where receipt strings are incorrectly reused but exact item revision/content changed.
 
-Together these tests cover the seam that was previously missing: a context that was valid when Agentd first returned it cannot silently cross the final host dispatch boundary after the owner has observed a conflicting cut.
+Together these tests cover the previously missing seam at the owner/host boundary. They are intentionally separate tests: repository qualification still does not claim one monolithic process-level E2E harness that pauses between the Agentd response and App Server `TurnStart`. That stronger harness remains qualification evidence, not a prerequisite for representing the source composition truthfully.
 
 ## Implementation-map source identity
 
-`IMPLEMENTATION_MAP.json` carries a scoped evidence-input list and a generated evidence-tree digest. The implementation-map verifier recomputes that digest from the checked-out file contents. A change to any bound owner implementation, product caller, regression test, technical/status document, or dossier therefore makes the map stale even when its JSON shape remains valid.
+`IMPLEMENTATION_MAP.json` records exact Git blob identities for the owner implementation, product callers, regression tests, technical/status documents and the verifier/workflow that enforce those claims. `scripts/verify_cognitive_read_evidence.py` recomputes each blob identity from the checked-out files and fails closed on any mismatch; the contract-gate workflow invokes that verifier.
 
-This scoped evidence tree is intentionally stronger for module truth than a repository-wide commit equality check: unrelated repository commits do not invalidate the module map, while any relevant source/caller/document change does.
+This scoped evidence binding is stronger for module truth than requiring every module map to equal the repository-wide HEAD: unrelated repository commits do not invalidate `cognitive.read`, while any relevant source/caller/test/document change forces an explicit map refresh. The map still retains `sourceBase` for historical traceability, but composition truth is verified from the bound blobs rather than inferred from that historical baseline alone.
