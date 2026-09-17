@@ -1,0 +1,131 @@
+{
+  "schema": "hepta.learning-plasticity-current-state.v1",
+  "schemaVersion": 1,
+  "module": "learning.plasticity",
+  "architectureBoundary": "deterministic_core__authenticated_product_adapter__agentd_host",
+  "stableRecord": {
+    "id": "ParameterProposalV2",
+    "wireAndDigestStable": true,
+    "source": "codex-rs/hepta-plasticity/src/parameter_v2.rs"
+  },
+  "capabilities": [
+    {
+      "id": "typed_mutation_grammar",
+      "status": "source_implemented",
+      "surface": "MutationGrammarManifestV1",
+      "source": "codex-rs/hepta-plasticity/src/mutation_grammar_v1.rs",
+      "tests": [
+        "codex-rs/hepta-plasticity/src/mutation_grammar_v1.rs"
+      ]
+    },
+    {
+      "id": "parameter_v3_generation",
+      "status": "source_implemented",
+      "surface": "generate_parameter_candidates_v3",
+      "source": "codex-rs/hepta-plasticity/src/generator_v3.rs",
+      "tests": [
+        "codex-rs/hepta-plasticity/src/generator_v3.rs"
+      ]
+    },
+    {
+      "id": "parameter_authenticated_admission",
+      "status": "source_implemented",
+      "surface": "propose_authenticated_parameter_plasticity_v1",
+      "source": "codex-rs/hepta-intelligence/src/plasticity_product.rs",
+      "tests": [
+        "codex-rs/hepta-intelligence/src/plasticity_product_tests.rs"
+      ]
+    },
+    {
+      "id": "parameter_anchor_state_machine",
+      "status": "source_implemented",
+      "surface": "PlasticityWriterStateV1",
+      "source": "codex-rs/hepta-intelligence/src/plasticity_product.rs",
+      "tests": [
+        "codex-rs/hepta-intelligence/src/plasticity_product_tests.rs"
+      ]
+    },
+    {
+      "id": "agentd_selected_host_surface",
+      "status": "source_implemented_not_runtime_enrolled",
+      "surface": "AgentdPlasticityHostV1",
+      "source": "codex-rs/hepta-agentd/src/plasticity_host.rs",
+      "tests": [
+        "codex-rs/hepta-agentd/tests/plasticity_host.rs"
+      ]
+    },
+    {
+      "id": "agentd_anchor_fence_store",
+      "status": "source_implemented_not_deployment_bound",
+      "surface": "AgentdPlasticityAnchorFenceStoreV1",
+      "source": "codex-rs/hepta-agentd/src/plasticity_host.rs",
+      "tests": [
+        "codex-rs/hepta-agentd/tests/plasticity_host.rs"
+      ]
+    },
+    {
+      "id": "topology_v2_proposal",
+      "status": "source_implemented_proposal_only",
+      "surface": "propose_topology_v2",
+      "source": "codex-rs/hepta-plasticity/src/topology_v2.rs",
+      "tests": [
+        "qualification/lane-f-shadow/tests/plasticity_structural_canary.rs"
+      ]
+    },
+    {
+      "id": "topology_writer_handoff",
+      "status": "source_implemented_validation_only",
+      "surface": "TopologyWriterHandoffV1",
+      "source": "codex-rs/hepta-plasticity/src/topology_governance_v1.rs",
+      "tests": [
+        "codex-rs/hepta-plasticity/src/topology_governance_v1.rs",
+        "qualification/lane-f-shadow/tests/plasticity_structural_canary.rs"
+      ]
+    },
+    {
+      "id": "topology_durable_registry",
+      "status": "source_implemented_proposal_only",
+      "surface": "DurableTopologyProposalRegistryV2",
+      "source": "codex-rs/hepta-plasticity/src/durable_topology_registry_v2.rs",
+      "tests": [
+        "qualification/lane-f-shadow/tests/plasticity_structural_canary.rs"
+      ]
+    },
+    {
+      "id": "topology_authenticated_admission",
+      "status": "source_implemented_not_runtime_enrolled",
+      "surface": "propose_authenticated_topology_plasticity_v1",
+      "source": "codex-rs/hepta-intelligence/src/plasticity_topology_product.rs",
+      "tests": [
+        "qualification/lane-f-shadow/tests/plasticity_structural_canary.rs"
+      ]
+    },
+    {
+      "id": "pls3_bounded_structural_canary",
+      "status": "source_fixture_implemented_exact_ci_required",
+      "surface": "plasticity_structural_canary",
+      "source": "qualification/lane-f-shadow/tests/plasticity_structural_canary.rs",
+      "tests": [
+        "qualification/lane-f-shadow/tests/plasticity_structural_canary.rs"
+      ]
+    }
+  ],
+  "claims": {
+    "productionImplementation": false,
+    "targetHostExecutionProved": false,
+    "independentAcceptance": false,
+    "topologyApplicationImplemented": false,
+    "weightInstallationImplemented": false,
+    "activation": false,
+    "promotion": false,
+    "release": false
+  },
+  "remainingGates": [
+    "exact-head and deterministic synthetic-merge CI must pass for the final candidate",
+    "selected deployment must bind concrete owner-evidence adapters and place the anchor/fence journal in an independent rollback domain",
+    "independent semantic and security review",
+    "operator recovery exercise and target-host telemetry/SLO evidence",
+    "independent acceptance before any topology application or parameter installation",
+    "activation, promotion and release remain separate external decisions"
+  ]
+}
