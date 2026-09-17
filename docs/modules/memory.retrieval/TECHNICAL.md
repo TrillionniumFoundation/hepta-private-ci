@@ -157,7 +157,7 @@ Focused source tests include:
 - `src/generation_bound_tests.rs`: deterministic channel union, stale generation, contradiction/OOD/coverage fail-closed behavior;
 - `src/recall_v2_tests.rs`: low-ranked unrelated OOD/contradiction poisoning resistance, top-k contradiction protection, top-k coverage semantics and strict limits;
 - `hepta-memory/src/cognitive_retrieval_tests.rs`: real owner retrieval/revalidation behavior and coherent batch revalidation under concurrent writes;
-- `hepta-agentd/src/cognitive_context_tests.rs` and `cognitive_context_budget_tests.rs`: real SQLite context path, withdrawal behavior, byte-budget ordering and learned-ranker composition.
+- `hepta-agentd/src/cognitive_context_tests.rs` and `cognitive_context_budget_tests.rs`: real SQLite context path, committed withdrawal behavior, exact post-rank withdrawal race protection, byte-budget ordering and learned-ranker composition.
 
 Run `just test -p codex-hepta-memory-retrieval` in `codex-rs` plus the affected Agentd/owner tests, all-target compilation, strict Clippy and merge-candidate checks. File existence is not a pass receipt. Exact PR/head workflow results are the repository evidence for this candidate.
 
@@ -165,7 +165,7 @@ RET status at source-design level:
 
 - RET-01: native regression exists.
 - RET-02: V1 and V2 native regressions exist.
-- RET-03: product revalidation mechanism exists and owner coherent-batch concurrency coverage exists; an exact Agentd between-ranking-and-revalidation injected-race regression is still desirable.
+- RET-03: owner coherent-batch coverage exists and Agentd regression `post_rank_withdrawal_cannot_attach_stale_memory` injects a tombstone after deterministic ranking but before owner revalidation; exact-candidate workflow execution is still required before claiming a pass receipt.
 - RET-04: longitudinal/ablation experiment evidence remains open.
 
 ## 13. Implementation sequence and work packages
