@@ -57,9 +57,8 @@ fn policy(learning_rate_raw: i64) -> ParameterGenerationPolicyV3 {
 }
 
 #[test]
-fn governed_generator_builds_complete_internal_candidate_set() {
+fn governed_generator_builds_complete_content_addressed_candidate_set() {
     let generated = generate_parameter_candidates_v3(
-        id("candidate-set:8"),
         &binding(1_000_000_000_000),
         &policy(100),
         digest("state"),
@@ -70,7 +69,19 @@ fn governed_generator_builds_complete_internal_candidate_set() {
     assert_eq!(generated.completeness.candidate_count, 3);
     assert_eq!(generated.completeness.omitted_count_bound, 0);
     assert!(generated.completeness.complete_for_generator);
+    assert_eq!(
+        generated.completeness.set_id,
+        candidate_set_id_v3(generated.candidate_set_digest).expect("content-addressed id")
+    );
     assert_eq!(generated.candidates[0].kind, ParameterCandidateKindV2::NoChange);
+    assert_eq!(
+        generated.candidates[1].candidate_id,
+        id("plasticity:update:0500000")
+    );
+    assert_eq!(
+        generated.candidates[2].candidate_id,
+        id("plasticity:update:1000000")
+    );
     assert_eq!(generated.candidates[1].parameter_deltas[0].delta.raw(), 50);
     assert_eq!(generated.candidates[2].parameter_deltas[0].delta.raw(), 100);
 }
@@ -78,7 +89,6 @@ fn governed_generator_builds_complete_internal_candidate_set() {
 #[test]
 fn governed_generator_projects_large_updates_into_trust_region() {
     let generated = generate_parameter_candidates_v3(
-        id("candidate-set:projected"),
         &binding(1_000_000_000_000),
         &policy(100_000),
         digest("state"),
@@ -91,6 +101,56 @@ fn governed_generator_projects_large_updates_into_trust_region() {
         .filter(|candidate| candidate.kind == ParameterCandidateKindV2::Update)
     {
         let raw = candidate.parameter_deltas[0].delta.raw().unsigned_abs();
-        assert!(raw <= 5_000, "per-layer trust projection must be conservative");
+        assert!(
+            raw <= 5_000,
+            "per-layer trust projection must be conservative"
+        );
     }
+}
+
+#[test]
+fn source_binding_payload_is_order_invariant() {
+    let mut left = binding(1_000_000_000_000);
+    left.norm_layers.push(LayerNormDenominatorV2 {
+        layer_id: id("layer:b"),
+        baseline_squared_l2_raw_q64: 2_000_000_000_000,
+    });
+    left.opportunities.push(ParameterOpportunityV3 {
+        layer_id: id("layer:b"),
+        parameter_id: id("parameter:b"),
+        eligibility: FixedQ32::ONE,
+        projected_modulator: FixedQ32::ONE,
+        lower_bound: FixedQ32::from_raw(-1_000_000),
+        upper_bound: FixedQ32::from_raw(1_000_000),
+        evidence_digest: digest("parameter-evidence-b"),
+    });
+    let mut right = left.clone();
+    right.norm_layers.reverse();
+    right.opportunities.reverse();
+
+    let left_payload = evidence_binding_signing_payload_v3(
+        &left,
+        digest("artifact-registry-head"),
+        &id("dataset-snapshot"),
+    )
+    .expect("left payload");
+    let right_payload = evidence_binding_signing_payload_v3(
+        &right,
+        digest("artifact-registry-head"),
+        &id("dataset-snapshot"),
+    )
+    .expect("right payload");
+    assert_eq!(left_payload, right_payload);
+}
+
+#[test]
+fn governed_generator_rejects_duplicate_parameter_opportunities() {
+    let mut value = binding(1_000_000_000_000);
+    value.opportunities.push(value.opportunities[0].clone());
+    assert!(matches!(
+        generate_parameter_candidates_v3(&value, &policy(100), digest("state")),
+        Err(GovernedProposalError::Generator(
+            "duplicate parameter opportunity"
+        ))
+    ));
 }
