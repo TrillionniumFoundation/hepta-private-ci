@@ -395,12 +395,19 @@ test("profile serialization prevents close racing an in-flight effect", async ()
   assert.equal(fakeDriver.stopCalls, 0);
 });
 
-test("driver timeout aborts dispatch and preserves an indeterminate operation", async () => {
+test("driver timeout aborts dispatch, waits for abort settlement, and preserves an indeterminate operation", async () => {
   let aborted = false;
   const fakeDriver = driver({
     dispatchImpl: async (_semantics, { signal }) =>
-      new Promise(() => {
-        signal.addEventListener("abort", () => { aborted = true; }, { once: true });
+      new Promise((_resolve, reject) => {
+        signal.addEventListener(
+          "abort",
+          () => {
+            aborted = true;
+            reject(signal.reason);
+          },
+          { once: true },
+        );
       }),
   });
   const { host } = await preparedHost({ driver: fakeDriver, driverCallTimeoutMs: 10 });
