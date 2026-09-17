@@ -5,6 +5,8 @@
 CREATE TABLE operation_records (
     scope_id TEXT NOT NULL,
     operation_id TEXT NOT NULL,
+    scope_digest BLOB NOT NULL CHECK (length(scope_digest) = 32),
+    request_digest BLOB NOT NULL CHECK (length(request_digest) = 32),
     payload_digest BLOB NOT NULL CHECK (length(payload_digest) = 32),
     destination_id TEXT NOT NULL,
     predecessor_operation_id TEXT,
@@ -71,6 +73,8 @@ CREATE INDEX cross_owner_outbox_ready ON cross_owner_outbox
 CREATE TABLE operation_tombstones (
     scope_id TEXT NOT NULL,
     operation_id TEXT NOT NULL,
+    scope_digest BLOB NOT NULL CHECK (length(scope_digest) = 32),
+    request_digest BLOB NOT NULL CHECK (length(request_digest) = 32),
     payload_digest BLOB NOT NULL CHECK (length(payload_digest) = 32),
     destination_id TEXT NOT NULL,
     terminal_state TEXT NOT NULL CHECK (terminal_state IN ('applied', 'not_applied', 'quarantined')),
@@ -81,8 +85,8 @@ CREATE TABLE operation_tombstones (
 ) WITHOUT ROWID;
 
 CREATE TRIGGER operation_records_identity_immutable BEFORE UPDATE OF
-    scope_id, operation_id, payload_digest, destination_id,
-    predecessor_operation_id, authority_epoch, created_at_ms
+    scope_id, operation_id, scope_digest, request_digest, payload_digest,
+    destination_id, predecessor_operation_id, authority_epoch, created_at_ms
     ON operation_records
 BEGIN
     SELECT RAISE(ABORT, 'operation identity is immutable');
