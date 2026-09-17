@@ -8,6 +8,7 @@ mod daemon;
 mod daemon_client;
 mod daemon_protocol;
 mod driver;
+mod durable_publish;
 mod error;
 mod lease;
 mod matrix;
