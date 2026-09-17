@@ -1,7 +1,10 @@
-//! Bounded prompt-intervention portfolio optimizer for shadow evaluation.
+//! Bounded prompt-intervention portfolio optimizer.
 //!
-//! The optimizer is read-only with respect to registries and objectives. Its
-//! receipt is a proposal and grants no activation, dispatch or promotion power.
+//! `policy` exposes the registered candidate-enumeration, pricing, portfolio,
+//! and exercise pipeline. The legacy `optimize` and `local_shadow` surfaces are
+//! retained for compatibility and shadow evaluation. Every surface is read-only
+//! with respect to registries and objectives and grants no activation, dispatch,
+//! promotion, or release authority.
 
 #![forbid(unsafe_code)]
 
@@ -15,6 +18,12 @@ use codex_hepta_types::FixedQ32;
 use codex_hepta_types::StableId;
 
 pub mod local_shadow;
+pub mod policy;
+
+pub use policy::enumerate_factors;
+pub use policy::exercise;
+pub use policy::price_factors;
+pub use policy::select_portfolio;
 
 const MAX_CANDIDATES: usize = 4_096;
 const MAX_SELECTED: usize = 128;
@@ -92,6 +101,11 @@ impl fmt::Display for Error {
 
 impl StdError for Error {}
 
+/// Legacy V1 shadow optimizer retained for compatibility.
+///
+/// New policy integrations should use `policy::select_portfolio`, which binds
+/// registered receipts, explicit pricing evidence, constraint closure, sparse
+/// interaction policy, and audit disclosure.
 pub fn optimize(mut request: OptimizationRequest) -> Result<PromptPortfolioReceipt, Error> {
     validate_request(&request)?;
     request.candidates.sort_by(|left, right| {
