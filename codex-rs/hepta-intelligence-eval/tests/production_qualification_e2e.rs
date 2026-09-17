@@ -159,11 +159,8 @@ fn bundle() -> IndependentEvaluationBundleV1 {
             }],
             family_alpha_ppm: 50_000,
             simultaneous_comparisons: 1,
-            folds: vec![
-                fold("fold-a", "b", "a"),
-                fold("fold-b", "a", "final-holdout"),
-            ],
-            final_holdout_window_id: id("final-holdout"),
+            folds: vec![fold("fold-a", "b", "a"), fold("fold-b", "a", "b")],
+            final_holdout_window_id: id("b"),
             final_holdout_digest: digest("final-holdout-bytes"),
         },
         roles(),
@@ -289,7 +286,8 @@ fn shared_controller_is_not_independent_even_with_distinct_keys() {
             ),
         ],
     };
-    trust.signers.sort_by_key(|signer| signer.principal.principal_id.clone());
+    trust.signers
+        .sort_by_key(|signer| signer.principal.principal_id.clone());
     let verifier = LearningEvidenceVerifierV1::new(trust).expect("valid trust snapshot");
     let bundle = bundle();
     let evidence = signed_evidence(&bundle, &verifier);
