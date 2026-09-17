@@ -5,6 +5,7 @@ use codex_hepta_types::Digest32;
 use super::NduProjectionJournalError;
 use super::NduProjectionJournalV1;
 use super::NduProjectionKindV1;
+use super::digest_entry;
 
 fn must<T, E: Debug>(result: Result<T, E>) -> T {
     match result {
@@ -15,6 +16,37 @@ fn must<T, E: Debug>(result: Result<T, E>) -> T {
 
 fn digest(value: &str) -> Digest32 {
     Digest32::of_bytes(value.as_bytes())
+}
+
+fn forged_single_transition(kind: NduProjectionKindV1) -> Vec<u8> {
+    let sequence = 1_u64;
+    let identity = digest("forged-identity");
+    let objective = digest("objective");
+    let subject = digest("subject");
+    let projection = digest("projection-never-recorded");
+    let predecessor = Digest32::ZERO;
+    let entry_digest = digest_entry(
+        sequence,
+        kind,
+        identity,
+        objective,
+        subject,
+        projection,
+        predecessor,
+    );
+
+    let mut bytes = Vec::new();
+    bytes.extend_from_slice(b"HNDUPJ01");
+    bytes.extend_from_slice(&1_u32.to_be_bytes());
+    bytes.extend_from_slice(&sequence.to_be_bytes());
+    bytes.push(kind.tag());
+    bytes.extend_from_slice(identity.as_array());
+    bytes.extend_from_slice(objective.as_array());
+    bytes.extend_from_slice(subject.as_array());
+    bytes.extend_from_slice(projection.as_array());
+    bytes.extend_from_slice(predecessor.as_array());
+    bytes.extend_from_slice(entry_digest.as_array());
+    bytes
 }
 
 #[test]
@@ -106,6 +138,42 @@ fn revocation_prevents_projection_resurrection() {
             .expect_err("revoked projection must not be reselected"),
         NduProjectionJournalError::RevokedProjection
     );
+}
+
+#[test]
+fn live_selection_and_revocation_require_a_recorded_projection() {
+    let objective = digest("objective");
+    let subject = digest("subject");
+    let missing = digest("missing-projection");
+    let mut journal = NduProjectionJournalV1::new();
+
+    assert_eq!(
+        journal
+            .select_projection(digest("selection"), objective, subject, missing)
+            .expect_err("selection without projection must reject"),
+        NduProjectionJournalError::ProjectionNotRecorded
+    );
+    assert_eq!(
+        journal
+            .revoke_projection(digest("revocation"), objective, subject, missing)
+            .expect_err("revocation without projection must reject"),
+        NduProjectionJournalError::ProjectionNotRecorded
+    );
+}
+
+#[test]
+fn hash_valid_but_semantically_impossible_recovery_rejects() {
+    for kind in [
+        NduProjectionKindV1::SelectedProjection,
+        NduProjectionKindV1::Revocation,
+    ] {
+        let bytes = forged_single_transition(kind);
+        assert_eq!(
+            NduProjectionJournalV1::reopen(&bytes)
+                .expect_err("semantic transition without a recorded projection must reject"),
+            NduProjectionJournalError::ProjectionNotRecorded
+        );
+    }
 }
 
 #[test]
