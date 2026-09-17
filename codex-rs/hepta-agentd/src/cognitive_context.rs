@@ -1,4 +1,4 @@
-//! Connect the canonical SQLite owner to the newer bounded cognitive read port.
+//! Connect the canonical SQLite owner to the bounded memory.retrieval product path.
 
 use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
@@ -12,7 +12,15 @@ use codex_hepta_memory::CognitiveAccess;
 use codex_hepta_memory::CognitiveScope;
 use codex_hepta_memory::CognitiveStore;
 use codex_hepta_memory::CognitiveStoreError;
+use codex_hepta_memory::MemoryRevalidationBinding;
 use codex_hepta_memory::RetrievalRequest;
+use codex_hepta_memory::RevalidationStatus;
+use codex_hepta_memory_retrieval::MAX_PRODUCT_RETRIEVAL_RESULTS;
+use codex_hepta_memory_retrieval::ProductRetrievalRequestV1;
+use codex_hepta_memory_retrieval::RetrievalCandidate;
+use codex_hepta_memory_retrieval::retrieve_product_v1;
+use codex_hepta_types::Digest32;
+use codex_hepta_types::FixedQ32;
 use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
 
@@ -23,7 +31,8 @@ use crate::CognitiveContextSnapshot;
 const MAX_CONTEXT_JSON_BYTES: usize = 24 * 1024;
 
 /// Only storage failures may invalidate the canonical SQLite owner. A revoked
-/// or unavailable optional ranker closes the ranked read, not other store ports.
+/// or unavailable optional learned ranker closes the ranked read, not other
+/// store ports.
 #[derive(Debug)]
 pub(crate) enum CognitiveContextError {
     Store(CognitiveStoreError),
@@ -38,6 +47,17 @@ impl From<CognitiveStoreError> for CognitiveContextError {
 
 /// `body_generation` is the process launch identity, not the separately fenced
 /// fleet lifecycle epoch (Starting -> Running advances that epoch).
+///
+/// Canonical ranking precedence is:
+///
+/// 1. the SQLite owner enumerates bounded MemoryFts/EntityFts/GraphOneHop/
+///    Recency candidates and emits one observation digest;
+/// 2. the Lane-C read cut admits only exact live revision/content matches;
+/// 3. memory.retrieval binds the complete admitted owner observation and applies
+///    the product 512-candidate/16-result ceiling;
+/// 4. selected bindings are revalidated in one SQLite transaction;
+/// 5. an explicitly configured learned ranker may reorder only that verified
+///    product set before the caller's 1..=4 limit and byte budget are applied.
 pub(crate) async fn read(
     store: &CognitiveStore,
     owner: &AgentId,
@@ -54,8 +74,9 @@ pub(crate) async fn read(
     }
     let access = CognitiveAccess::agent_private(owner.clone());
     let scope = CognitiveScope::AgentPrivate;
+    let snapshot_time = now_seconds()?;
     let cut = store
-        .lane_c_snapshot(&access, &scope, now_seconds()?)
+        .lane_c_snapshot(&access, &scope, snapshot_time)
         .await?;
     let read = cut
         .read(ReadRequestV2 {
@@ -68,9 +89,94 @@ pub(crate) async fn read(
             maximum_encoded_bytes: 1024 * 1024,
         })
         .map_err(|error| CognitiveStoreError::Corrupt(error.to_string()))?;
-    let candidates = store
-        .retrieve_memory_candidates(&access, &RetrievalRequest::new(query, now_seconds()?))
+
+    // Observe the owner's complete bounded generator output before the legacy
+    // top-four truncation.  The observation digest binds owner-side channel
+    // limits, scores and revalidation bindings; memory.retrieval binds that
+    // digest together with every Lane-C-admitted candidate.
+    let observation = store
+        .observe_memory_retrieval(&access, &RetrievalRequest::new(query, snapshot_time))
         .await?;
+    let owner_observation_digest: Digest32 = observation
+        .observation_sha256()
+        .as_str()
+        .parse()
+        .map_err(|error| {
+            CognitiveStoreError::Corrupt(format!(
+                "owner retrieval observation digest is not a Digest32: {error}"
+            ))
+        })?;
+    let query_digest = Digest32::of_bytes(query.as_bytes());
+    let query_id = StableId::new(format!("memory-query:{query_digest}"))
+        .map_err(|error| CognitiveStoreError::Invalid(error.to_string()))?;
+
+    let mut admitted = Vec::<(RetrievalCandidate, MemoryRevalidationBinding)>::new();
+    for observed in observation.candidates() {
+        if observed.revalidation.scope != scope {
+            continue;
+        }
+        let Some(record) = read.records().iter().find(|record| {
+            record.record_id.as_str() == observed.revalidation.memory.memory_id.as_str()
+                && record.revision.get() == observed.revalidation.memory.revision
+                && record.content_digest.to_string()
+                    == observed.revalidation.content_sha256.as_str()
+        }) else {
+            continue;
+        };
+        let owner_score = i64::try_from(observed.reciprocal_rank_score).map_err(|_| {
+            CognitiveStoreError::Corrupt("owner retrieval score exceeds i64".to_string())
+        })?;
+        admitted.push((
+            RetrievalCandidate {
+                record: record.clone(),
+                snapshot_digest: read.snapshot_digest(),
+                // The SQLite owner has already fused channel ranks with RRF.
+                // Preserve that owner score as one scalar rather than inventing
+                // per-channel values that the observation did not emit.
+                lexical_score: FixedQ32::from_raw(owner_score),
+                graph_score: FixedQ32::ZERO,
+                freshness_score: FixedQ32::ZERO,
+            },
+            observed.revalidation.clone(),
+        ));
+    }
+
+    let product = retrieve_product_v1(ProductRetrievalRequestV1 {
+        query_id,
+        query_digest,
+        snapshot_digest: read.snapshot_digest(),
+        owner_observation_digest,
+        maximum_results: MAX_PRODUCT_RETRIEVAL_RESULTS,
+        candidates: admitted
+            .iter()
+            .map(|(candidate, _)| candidate.clone())
+            .collect(),
+    })
+    .map_err(|error| {
+        CognitiveStoreError::Corrupt(format!("memory.retrieval product ranking rejected: {error}"))
+    })?;
+
+    let mut selected_bindings = Vec::with_capacity(product.retrieval.retrieval.results.len());
+    for result in &product.retrieval.retrieval.results {
+        let Some((_, binding)) = admitted.iter().find(|(candidate, _)| {
+            candidate.record.record_id == result.record_id
+                && candidate.record.record_digest() == result.record_digest
+        }) else {
+            return Err(CognitiveStoreError::Corrupt(
+                "memory.retrieval returned a record outside the admitted owner cut".to_string(),
+            )
+            .into());
+        };
+        selected_bindings.push(binding.clone());
+    }
+
+    // Revalidate the complete selected set in one owner transaction.  A
+    // correction, tombstone, citation drift, expiry or KG generation change
+    // after ranking cannot be attached as if it were current.
+    let statuses = store
+        .revalidate_memory_candidates(&access, &selected_bindings, now_seconds()?)
+        .await?;
+
     let mut response = CognitiveContextSnapshot {
         snapshot_digest: read.snapshot_digest().to_string(),
         read_digest: read.receipt_digest().to_string(),
@@ -78,31 +184,25 @@ pub(crate) async fn read(
         items: Vec::new(),
         plan: None,
     };
-    // Admit the whole bounded owner cut before applying the response byte
-    // budget.  Ranking must see every admitted candidate; otherwise a large
-    // low-ranked record can hide the learned winner before the ranker runs.
     let mut admitted_items = Vec::new();
-    for candidate in candidates.candidates {
-        let memory = candidate.memory;
-        // The legacy search ranks candidates; the new owner cut admits only
-        // the exact verified revision and content bound by the read port.
-        let accepted = read.records().iter().any(|record| {
-            record.record_id.as_str() == memory.id.memory_id.as_str()
-                && record.revision.get() == memory.id.revision
-                && record.content_digest.to_string() == memory.content_sha256.as_str()
-                && memory.scope == scope
-        });
-        if !accepted {
+    for status in statuses {
+        let RevalidationStatus::Current(explanation) = status else {
+            // Fail closed for this candidate.  Final Lane-C revalidation below
+            // still protects the complete response from a concurrent owner cut.
             continue;
-        }
-        let item = CognitiveContextItem {
+        };
+        let memory = explanation.memory;
+        admitted_items.push(CognitiveContextItem {
             memory_id: memory.id.memory_id.as_str().to_string(),
             revision: memory.id.revision,
             content: memory.content,
             content_sha256: memory.content_sha256.as_str().to_string(),
-        };
-        admitted_items.push(item);
+        });
     }
+
+    // Learned ranking is subordinate to the owner + memory.retrieval admission
+    // path.  It may reorder verified items but cannot resurrect a candidate that
+    // the deterministic product path omitted or rejected.
     if let Some(ranker) = ranker {
         let ranker = std::sync::Arc::clone(ranker);
         let rank_owner = owner.clone();
@@ -120,10 +220,9 @@ pub(crate) async fn read(
         .map_err(|_| CognitiveContextError::RankerUnavailable)?
         .map_err(|_| CognitiveContextError::RankerUnavailable)?;
     }
+
     // Bound the complete payload, including JSON escaping and envelope, only
-    // after ranking.  This preserves the highest-ranked item when the legacy
-    // byte cut would otherwise discard it.  Oversized winners are skipped so
-    // they cannot consume the only result slot.
+    // after all ranking.  Oversized winners are omitted rather than truncated.
     for item in admitted_items {
         response.items.push(item);
         let encoded_bytes = serde_json::to_vec(&response)
