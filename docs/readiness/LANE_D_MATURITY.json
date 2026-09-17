@@ -3,7 +3,7 @@
   "schemaVersion": 1,
   "lane": "LANE-D-OBJECTIVE-VALUE",
   "authorityDelta": "none",
-  "interpretation": "Each dimension is independent. A materialized source root does not imply a production caller, independent qualification, activation or release.",
+  "interpretation": "Each dimension is independent. A materialized source root or durable writer candidate does not imply a production caller, independent qualification, activation or release.",
   "modules": [
     {
       "module": "objective.compiler",
@@ -120,9 +120,12 @@
           ]
         },
         "durability": {
-          "state": "owner_local_reference_implemented_not_production_writer",
+          "state": "durable_writer_candidate_implemented_not_activated",
           "evidence": [
-            "NduProjectionJournalV1"
+            "NduProjectionJournalV1",
+            "NduProjectionStoreV1",
+            "durable_writer_round_trips_selected_and_revoked_state",
+            "older_valid_backup_cannot_remove_a_later_revocation"
           ]
         },
         "independentConvergenceDecision": {
@@ -136,12 +139,17 @@
           "evidence": []
         },
         "productCaller": {
-          "state": "not_established",
-          "evidence": []
+          "state": "bounded_repository_callsites_present_not_production_composed",
+          "evidence": [
+            "codex-rs/hepta-control-plane/src/planner_ndu.rs",
+            "codex-rs/hepta-intelligence/src/vertical.rs"
+          ]
         },
         "productionWriter": {
           "state": "not_established",
-          "evidence": []
+          "evidence": [
+            "NduProjectionStoreV1 source candidate is not activation evidence"
+          ]
         },
         "independentAcceptance": {
           "state": "not_established",
@@ -273,11 +281,11 @@
   },
   "externalGates": [
     "independent non-author review",
-    "production caller and production writer composition",
-    "named-host resource and recovery measurements",
+    "authenticated production caller and selected production writer composition",
+    "named-host resource, filesystem and recovery measurements",
     "operator acceptance",
     "deployment and activation",
-    "future-window efficacy",
+    "future-window efficacy and conditional identification",
     "promotion, signing and release"
   ]
 }
