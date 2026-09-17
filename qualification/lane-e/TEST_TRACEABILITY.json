@@ -67,6 +67,7 @@
         {"source": "codex-rs/hepta-bellman-operator/src/reference_tests.rs", "function": "op_02_regularity_admission_enforces_gain_shape_ood_and_error_budget"},
         {"source": "codex-rs/hepta-bellman-operator/src/admitted.rs", "function": "public_tabular_fit_rejects_relabelled_evidence"},
         {"source": "codex-rs/hepta-bellman-operator/src/admitted.rs", "function": "public_tabular_fit_matches_reference_action_domain_floor"},
+        {"source": "codex-rs/hepta-bellman-operator/src/loaded_tests.rs", "function": "loaded_grid_rejects_single_action_even_if_artifact_was_hand_built"},
         {"source": "codex-rs/hepta-bellman-operator/src/loaded_tests.rs", "function": "independent_pin_and_all_truncations_are_checked"}
       ],
       "status": "native_test_mapped"
@@ -79,7 +80,8 @@
         {"source": "codex-rs/hepta-intelligence-eval/tests/operator_claim.rs", "function": "op_03_high_fit_without_retention_is_insufficient"},
         {"source": "codex-rs/hepta-intelligence-eval/src/temporal_fold_tests.rs", "function": "rejects_all_training_validation_lineage_overlaps"},
         {"source": "codex-rs/hepta-bellman-operator/src/world_model_qualification.rs", "function": "qualification_admission_fails_closed_without_future_window_support"},
-        {"source": "codex-rs/hepta-bellman-operator/src/world_model_qualification.rs", "function": "qualification_admission_rejects_drift_beyond_profile"}
+        {"source": "codex-rs/hepta-bellman-operator/src/world_model_qualification.rs", "function": "qualification_admission_rejects_drift_beyond_profile"},
+        {"source": "codex-rs/hepta-bellman-operator/src/world_model_qualification.rs", "function": "qualification_admission_rejects_relabelled_profile_thresholds"}
       ],
       "status": "native_test_mapped"
     },
