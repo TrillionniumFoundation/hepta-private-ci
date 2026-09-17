@@ -10,10 +10,16 @@ on:
       - codex-rs/hepta-learning-artifacts/**
       - codex-rs/hepta-bellman-operator/**
       - codex-rs/hepta-intelligence-eval/**
+      - codex-rs/hepta-intelligence/src/evaluated_shadow.rs
+      - codex-rs/hepta-intelligence/src/evaluated_shadow_tests.rs
+      - codex-rs/hepta-intelligence/src/evaluated_shadow_segment_tests.rs
+      - codex-rs/hepta-intelligence/src/evaluated_shadow_test_support.rs
       - codex-rs/hepta-shadow-qualification/**
       - docs/lane-e/**
       - qualification/lane-e/**
+      - qualification/module-verification/detail/learning.eval-verification.md
       - scripts/hepta-lane-e-closure.py
+      - scripts/hepta-learning-eval-production.py
       - .github/workflows/hepta-lane-e-gap-closure.yml
 
 permissions:
@@ -28,6 +34,126 @@ env:
   BASE_SHA: ${{ github.event.pull_request.base.sha }}
 
 jobs:
+  learning-eval-production:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+          ref: ${{ env.SOURCE_SHA }}
+
+      - name: Install production qualification tools
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: cargo-llvm-cov@0.9.0
+
+      - name: Install pinned Rust toolchain
+        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: 1.95.0
+          components: clippy,llvm-tools-preview
+
+      - name: Bind exact source and production contract
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${SOURCE_SHA}"
+          git rev-parse HEAD HEAD^{tree}
+          python3 scripts/hepta-learning-eval-production.py verify
+
+      - name: Signed V2 qualification E2E
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p _hepta-evidence/learning-eval
+          cargo test --manifest-path codex-rs/Cargo.toml --locked \
+            -p codex-hepta-intelligence-eval \
+            --test production_qualification_e2e \
+            -- --test-threads=1 \
+            2>&1 | tee _hepta-evidence/learning-eval/qualification-e2e.log
+
+      - name: Evaluated-shadow runtime admission E2E
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo test --manifest-path codex-rs/Cargo.toml --locked \
+            -p codex-hepta-intelligence \
+            evaluated_shadow \
+            -- --test-threads=1 \
+            2>&1 | tee _hepta-evidence/learning-eval/evaluated-shadow-runtime.log
+
+      - name: Adversarial qualification stress
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p _hepta-evidence/learning-eval
+          : > _hepta-evidence/learning-eval/stress.log
+          for iteration in $(seq 1 8); do
+            printf 'iteration=%s\n' "${iteration}" >> _hepta-evidence/learning-eval/stress.log
+            cargo test --manifest-path codex-rs/Cargo.toml --locked \
+              -p codex-hepta-intelligence-eval \
+              --test production_qualification_e2e \
+              -- --test-threads=1 \
+              >> _hepta-evidence/learning-eval/stress.log 2>&1
+          done
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          Path('_hepta-evidence/learning-eval/stress.json').write_text(
+              json.dumps({
+                  'schema': 'hepta.learning-eval.stress.v1',
+                  'iterations': 8,
+                  'signed_qualification_suites_passed': 8,
+                  'incomplete_admissions': 0,
+                  'tamper_fail_closed': True,
+                  'shared_controller_fail_closed': True,
+              }, sort_keys=True, indent=2) + '\n',
+              encoding='utf-8',
+          )
+          PY
+
+      - name: Evaluator coverage threshold
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo llvm-cov --manifest-path codex-rs/Cargo.toml --locked \
+            -p codex-hepta-intelligence-eval \
+            --all-features \
+            --fail-under-lines 85 \
+            --json \
+            --output-path _hepta-evidence/learning-eval/coverage.json
+
+      - name: Production boundary strict lint
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo clippy --manifest-path codex-rs/Cargo.toml --locked \
+            -p codex-hepta-intelligence-eval \
+            -p codex-hepta-intelligence \
+            --all-targets -- -D warnings
+
+      - name: Emit commit-addressed provenance
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta-learning-eval-production.py provenance \
+            --source-sha "${SOURCE_SHA}" \
+            --evidence _hepta-evidence/learning-eval \
+            --output _hepta-evidence/learning-eval/provenance.json
+          python3 -m json.tool _hepta-evidence/learning-eval/provenance.json >/dev/null
+          git diff --check
+          git diff --exit-code
+
+      - name: Upload learning.eval qualification evidence
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: learning-eval-qualification-${{ env.SOURCE_SHA }}
+          path: _hepta-evidence/learning-eval/
+          if-no-files-found: error
+          retention-days: 30
+
   rust-closure:
     runs-on: ubuntu-24.04
     timeout-minutes: 120
@@ -62,6 +188,7 @@ jobs:
           set -euo pipefail
           python3 scripts/hepta-lane-e-closure.py self-test
           python3 scripts/hepta-lane-e-closure.py verify
+          python3 scripts/hepta-learning-eval-production.py verify
 
       - name: Locked all-target compilation
         working-directory: codex-rs
@@ -182,6 +309,7 @@ jobs:
         run: |
           set -euo pipefail
           python3 scripts/hepta-lane-e-closure.py verify
+          python3 scripts/hepta-learning-eval-production.py verify
 
       - name: Compile merged candidate
         working-directory: codex-rs
@@ -191,6 +319,7 @@ jobs:
           -p codex-hepta-learning-artifacts
           -p codex-hepta-bellman-operator
           -p codex-hepta-intelligence-eval
+          -p codex-hepta-intelligence
           -p codex-hepta-shadow-qualification
           --all-targets
 
@@ -202,6 +331,14 @@ jobs:
           -p codex-hepta-learning-artifacts
           -p codex-hepta-bellman-operator
           -p codex-hepta-intelligence-eval
+
+      - name: Test merged evaluated-shadow production consumer
+        working-directory: codex-rs
+        run: >-
+          cargo test --locked
+          -p codex-hepta-intelligence
+          evaluated_shadow
+          -- --test-threads=1
 
       - name: Test merged cross-crate closure
         working-directory: codex-rs
@@ -228,6 +365,7 @@ jobs:
             --package codex-hepta-learning-artifacts \
             --package codex-hepta-bellman-operator \
             --package codex-hepta-intelligence-eval \
+            --package codex-hepta-intelligence \
             --package codex-hepta-shadow-qualification \
             -- --check
           git diff --cached --check
