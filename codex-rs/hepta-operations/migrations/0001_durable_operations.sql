@@ -8,7 +8,7 @@ CREATE TABLE operation_records (
     payload_digest BLOB NOT NULL CHECK (length(payload_digest) = 32),
     destination_id TEXT NOT NULL,
     predecessor_operation_id TEXT,
-    owner_generation BLOB NOT NULL CHECK (length(owner_generation) = 8),
+    writer_generation BLOB NOT NULL CHECK (length(writer_generation) = 8),
     authority_epoch BLOB NOT NULL CHECK (length(authority_epoch) = 8),
     revision BLOB NOT NULL CHECK (length(revision) = 8),
     state TEXT NOT NULL CHECK (state IN (
@@ -82,10 +82,17 @@ CREATE TABLE operation_tombstones (
 
 CREATE TRIGGER operation_records_identity_immutable BEFORE UPDATE OF
     scope_id, operation_id, payload_digest, destination_id,
-    predecessor_operation_id, owner_generation, authority_epoch, created_at_ms
+    predecessor_operation_id, authority_epoch, created_at_ms
     ON operation_records
 BEGIN
     SELECT RAISE(ABORT, 'operation identity is immutable');
+END;
+
+CREATE TRIGGER operation_records_transition_fenced BEFORE UPDATE ON operation_records
+WHEN NEW.writer_generation < OLD.writer_generation
+    OR NEW.revision <= OLD.revision
+BEGIN
+    SELECT RAISE(ABORT, 'stale operation writer generation or revision');
 END;
 
 CREATE TRIGGER operation_records_terminal_immutable BEFORE UPDATE ON operation_records
@@ -115,6 +122,8 @@ END;
 
 CREATE TRIGGER cross_owner_outbox_fence_monotonic BEFORE UPDATE ON cross_owner_outbox
 WHEN NEW.fence <= OLD.fence
+    OR (OLD.claim_generation IS NOT NULL AND NEW.claim_generation IS NOT NULL
+        AND NEW.claim_generation < OLD.claim_generation)
     OR NEW.attempts < OLD.attempts
     OR (NEW.attempts != OLD.attempts AND NOT
         (NEW.state = 'leased' AND NEW.attempts = OLD.attempts + 1))
