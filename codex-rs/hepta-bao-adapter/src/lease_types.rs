@@ -59,7 +59,10 @@ pub struct LeaseRevokeRequest {
 pub struct LeaseReconcileRequest {
     pub subject_id: String,
     pub consumer_id: String,
+    /// New read-only reconciliation operation.
     pub operation_id: String,
+    /// Previously admitted renew/revoke operation whose result was uncertain.
+    pub target_operation_id: String,
     pub namespace: String,
     pub lease_id: String,
 }
@@ -145,6 +148,7 @@ pub enum LeaseOperationKind {
 pub enum LeaseOperationState {
     OutcomeUnknown,
     Completed,
+    Reconciled,
     Rejected,
     ResolvedNoLease,
 }
@@ -275,9 +279,7 @@ pub(crate) fn valid_operation_id(value: &str) -> bool {
 pub(crate) fn valid_lease_id(value: &str) -> bool {
     !value.is_empty()
         && value.len() <= MAX_PROVIDER_LEASE_ID_BYTES
-        && value
-            .bytes()
-            .all(|byte| byte.is_ascii_graphic() && !byte.is_ascii_control())
+        && value.bytes().all(|byte| byte.is_ascii_graphic())
 }
 
 pub(crate) fn normalized_secret_fields(fields: &[String]) -> Option<Vec<String>> {
