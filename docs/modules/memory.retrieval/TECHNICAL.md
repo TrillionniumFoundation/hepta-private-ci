@@ -14,237 +14,210 @@
 
 **Bootstrap work package:** `MEM-2-RETRIEVAL`
 
-This stable document is the implementation guide for `memory.retrieval`. Normative identity, ownership, contract, data-authority and delivery facts remain in the canonical JSON registries. This guide explains how those facts are implemented and operated. Documentation readiness is not source implementation, activation, operator acceptance, promotion or release.
+This stable document is the implementation guide for `memory.retrieval`. Normative identity, ownership, contract, data-authority and delivery facts remain in the canonical JSON registries. This guide explains how those facts are implemented and operated. Documentation readiness, source composition, exact-candidate execution, independent acceptance, promotion and release remain distinct claims.
 
 ## 1. Identity, mission and ownership
 
-Produce explainable, revalidated retrieval results on the local hot path without central synchronous RPC.
+Produce explainable, bounded, owner-backed and revalidated retrieval results on the local hot path without central synchronous RPC.
 
-The primary owner `cognitive-platform` controls changes inside the declared target roots and is accountable for correctness, backward compatibility, test evidence and rollback. The deputy `performance` independently reviews public contracts, authority checks, persistence, migrations, concurrency, resource limits and activation behavior. A work package may narrow this scope but may not widen it. Cross-owner changes require an explicit co-owner or a separate integration package.
-
-Plane `domain`, kind `engine`, state model `read_only` and architecture role `execution_plant` define placement. The module may optimize locally, but cannot claim global optimality or absorb another module's durable facts.
+The primary owner `cognitive-platform` controls changes inside the declared target root and is accountable for correctness, backward compatibility, evidence and rollback. The deputy `performance` reviews public contracts, resource limits, determinism, concurrency and activation behavior. The module is read-only and may optimize locally, but cannot own the SQLite memory facts/indexes, mint authority, infer external completeness from a digest, or claim global optimality.
 
 ## 2. Source binding and implementation status
 
-Declared exclusive target roots:
+Declared and resolved target root:
 
 - `codex-rs/hepta-memory-retrieval`
 
-Existing declared roots at this exact source snapshot:
+Current native product surfaces are:
 
-- `codex-rs/hepta-memory-retrieval`
+- `compile_cue` and `retrieve_product_v1` in `src/product.rs`;
+- complete-input compatibility `retrieve_v2` in `src/v2.rs`;
+- generation-bound `build_candidate_union` and compatibility `recall` in `src/generation_bound.rs`;
+- strict product `recall_v2` in `src/recall_v2.rs`.
 
-Non-authoritative implementation evidence roots:
+The named product caller is `codex-rs/hepta-agentd/src/cognitive_context.rs::read`. It composes the canonical SQLite owner observation through `retrieve_product_v1`, batch-revalidates selected owner bindings and revalidates the complete Lane-C cut before response publication.
 
-None.
-
-Declared roots not yet present:
-
-None.
-
-`existing_bound` is a source-location fact: the declared roots exist. The source and test references below identify what can be inspected and invoked; only exact-candidate execution receipts establish that the checks passed. This status does not establish runtime composition, operator acceptance, selection, promotion or release. Any source move updates `MODULES.json`, `SOURCE_BINDINGS.json` and this guide together.
-
-### Native source and scope
-
-The registered primary source is [codex-rs/hepta-memory-retrieval/src/v2.rs](../../../codex-rs/hepta-memory-retrieval/src/v2.rs); observed identifiers include `RetrievalReceiptV2`, `retrieve_v2`, `binding_digest_v2`. This is a source navigation binding, not proof that every target operation or production consumer exists. Read the [current native implementation](../../../qualification/module-execution-dossiers/detail/memory.retrieval.md#8-current-native-implementation) alongside the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/memory.retrieval.md) for the implemented subset and remaining product work.
+This closes the earlier repository-controlled “no product caller / caller-supplied-only product admission” gap for the existing SQLite retrieval provider. It does **not** prove the complete target HNMF pipeline: vector/causal/procedural generators, calibrated contradiction/OOD producers, engram settling, actual model-turn consumption and independent qualification remain open. See the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/memory.retrieval.md).
 
 ## 3. Boundary, responsibilities and non-goals
 
-Direct dependencies:
+Direct dependencies remain:
 
 - `cognitive.read`
 - `knowledge.graph`
 
-Authoritative write domains:
+The current physical owner dependency is the existing `hepta-memory::CognitiveStore`; it is an implementation integration, not a transfer of authoritative write ownership.
 
-None.
+Authoritative write domains: none.
 
 Explicitly denied capabilities:
 
 - `write_authority`
 - `central_rpc_hot_path`
+- implicit model/provider authority
+- second memory/index database
 
-The module accepts only registered, bounded, versioned inputs. It rejects unknown critical fields and treats missing authority, stale revisions, scope mismatch and digest mismatch as hard failures. It never directly writes another owner's store. Cross-owner mutation follows local transaction, durable intent, outbox, destination deduplication, acknowledgement and fenced reconciliation.
+The module validates bounded typed inputs and content bindings. Owner authentication/freshness comes from the owner read path and explicit revalidation, not from constructing native Rust values. A receipt can bind what was supplied; it cannot by itself prove that an external generator was complete or current.
 
-Non-goals include becoming a general state store, bypassing the Codex execution spine, interpreting model prose as authority, minting an authority consumed by the same component, or converting qualification evidence into deployment authority. A façade may sequence modules but may not own their facts.
+## 4. Internal architecture and canonical ranking topology
 
-## 4. Internal architecture and component decomposition
+The composed product path is deliberately single-spined:
 
-The bounded components are:
+1. `CognitiveStore::observe_memory_retrieval` executes the existing bounded SQLite generator in one owner read transaction. Current real channels are Memory FTS, entity FTS, graph one-hop and recency; the owner observation binds channel limits, scores and revalidation facts.
+2. Agentd obtains a coherent Lane-C read cut and admits only exact live record ID/revision/content-digest matches from that same owner surface.
+3. `retrieve_product_v1` binds the owner-observation digest plus the complete admitted candidate set, enforces the product 512-candidate/16-result ceiling and performs deterministic pre-admission ranking.
+4. The selected `MemoryRevalidationBinding` set is revalidated together in one SQLite transaction. Stale/corrected/tombstoned/citation-drifted/expired/KG-drifted entries are not attached.
+5. An explicitly configured `PinnedCognitiveRanker` may reorder only the already admitted and revalidated product set. It cannot resurrect a record that the owner/Lane-C/product admission rejected.
+6. The caller applies its smaller response count/byte budget, runs context planning and finally revalidates the complete Lane-C cut before publishing the response.
 
-- `bounded input stage`
-- `deterministic algorithm core`
-- `generation publisher`
-- `checkpoint and recovery layer`
+This ordering is the canonical precedence among the previous three ranking semantics: owner retrieval first, deterministic `memory.retrieval` admission second, optional learned reordering third.
 
-Ingress validates identity, version, size, scope and revision before domain logic. The deterministic core receives typed values and is testable without network, filesystem or process-global state unless the module owns that boundary. State-bearing components use one transaction boundary per logical mutation. Publication occurs only after invariants and lineage checks pass.
-
-Adapters translate one registered contract, verify final payload and grant immediately before the boundary, invoke one downstream capability, and map the observed terminal outcome. Queue acceptance or handler completion is never inferred as external success. Component interfaces support deterministic fixtures and fault injection.
-
-Configuration is immutable for one process generation. Changes affecting authority, schema, compatibility, model identity, objective semantics or resource policy create a new revision or generation. Hidden mutable singletons, unbounded queues and implicit store fallback are prohibited.
+The fuller target architecture additionally includes cue compilation from the actual objective/context/model tuple, vector/causal/procedural/contradiction generation, bounded local engram expansion, <=4 settling steps and population competition. Missing components must be added through their real owners; no channel may be fabricated by relabeling another score.
 
 ## 5. Contracts, ports and compatibility
 
-Produced contracts:
+Produced registered contract:
 
 - `ModulePort::memory.retrieval::prompt.optimizer`
 
-Consumed contracts:
+Consumed registered contracts:
 
 - `DomainRead::knowledge_graph_projectionV1`
 - `DomainRead::prompt_factor_graph_projectionV1`
 - `ModulePort::cognitive.read::memory.retrieval`
 - `ModulePort::knowledge.graph::memory.retrieval`
 
-Critical protocol schemas:
+The native product types are not automatically wire/ModulePort contracts. `retrieve_product_v1` is the required native product admission surface for the current owner-backed path. Legacy `retrieve` remains only for compatibility and is deprecated for product callers because its V1 digest binds the returned top-k rather than the complete input. `retrieve_v2` preserves the historical ranking bytes while binding the complete caller-supplied input. `ProductRetrievalReceiptV1` adds the owner-observation digest and strict product limits.
 
-None.
-
-Every producer validates output before publication and binds semantic fields into the declared digest scope. Every consumer validates version, bounds, producer identity, scope and digest before use. Compatibility is additive only where registered; unknown critical fields are rejected. Contract identifiers, meaning and authority interpretation cannot change in place.
-
-Rust types and canonical JSON represent identical semantics. Tests cover round trips, maximum bounds, missing fields, unknown fields, invalid enums, canonical ordering and digest stability. Error mapping preserves rejected, unavailable, timed out, indeterminate, quarantined and terminally failed outcomes.
+Compatibility `recall` remains available for prior native fixtures. Product generation-bound callers use `recall_v2`; V2 has a separate receipt domain because its risk aggregation semantics intentionally differ from V1.
 
 ## 6. Data authority, persistence and migrations
 
-Owned authoritative or rebuildable domains:
+`memory.retrieval` owns no authoritative or rebuildable database. The existing `hepta-memory` SQLite owner remains the sole physical content/index owner. Ranking and recall receipts are stateless values.
 
-None.
+A future cache, if admitted, is rebuildable only and must bind the full read snapshot key, cue digest, retrieval/encoder profile, quotas, truncation policy and current revocation/tombstone frontier. Cache restore can never override a newer correction or deletion. Candidate/propensity facts used for causal evaluation must flow through the learning ledger owner instead of becoming hidden mutable retrieval state.
 
-Read-only data dependencies:
-
-- `knowledge_graph_projection`
-- `prompt_factor_graph_projection`
-
-For every owned domain, this module is the only authoritative writer. Mutations are revision- or generation-bound, idempotent for identical semantics and conflicting for a reused identity with different content. Records bind source identity, schema revision, logical sequence and lineage sufficient for correction, deletion and revocation.
-
-Migrations are deterministic and checksum-bound. Store open verifies required schema objects and integrity constraints before reads or writes. Migration failure leaves a recoverable predecessor. Rollback across a schema boundary restores compatible state with the binary.
-
-Projection domains rebuild from declared sources and publish complete generations atomically. Projections never become sources of truth. Retention and deletion preserve lineage and prevent resurrection through indexes, caches, artifacts or backup restore.
+Because the current product integration adds no schema, rollback does not require a data migration: remove the product composition and return to the predecessor read path while preserving owner facts and compatibility receipt interpretation.
 
 ## 7. Runtime, concurrency and transaction model
 
-The [current native implementation](../../../qualification/module-execution-dossiers/detail/memory.retrieval.md#8-current-native-implementation) identifies the actual state owner, in-memory versus persistent surfaces, and lock/transaction boundary. Use that implementation scope when composing the module; target state-machine operations are identified in the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/memory.retrieval.md).
+Owner generation and owner revalidation each execute inside bounded SQLite read transactions. `memory.retrieval` itself performs no I/O and has no lock or mutable singleton. The product caller may perform work between those owner transactions, so freshness is established by the selected-binding batch revalidation and the final complete-cut revalidation rather than by assuming a historical snapshot is a future lease.
 
-[Shared concurrency and transaction requirements](../README.md#shared-concurrency-and-transactions) apply at the corresponding owner boundary.
+The exact final local-check-to-network-send window remains a host concern. The current Agentd context path returns a revalidated context; physical model dispatch has its own owner/generation checks and does not become atomic with SQLite mutation merely because retrieval succeeded.
 
 ## 8. Failure semantics, recovery and rollback
 
-Use the error/recovery path linked by the [current native implementation](../../../qualification/module-execution-dossiers/detail/memory.retrieval.md#8-current-native-implementation) and the module-specific fault cases in the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/memory.retrieval.md). A source library or fixture cannot stand in for an unimplemented durable recovery or external reconciler.
+Fail closed on malformed digests, duplicate identities, tombstones, snapshot mismatch, invalid limits, owner-observation absence, arithmetic overflow or a result that cannot be mapped back to the admitted owner cut.
 
-[Shared failure, recovery and rollback requirements](../README.md#shared-failure-and-recovery) remain mandatory.
+A stale selected owner binding is omitted from the candidate attachment set; the final Lane-C cut revalidation rejects a response assembled across a changed/rolled-back cut. An unavailable/revoked learned ranker closes the learned-ranked read rather than silently using a stale model. No retry may reinterpret an uncertain external effect as retrieval success.
+
+Compatibility rollback preserves V1/V2 bytes. Product callers must not downgrade provenance semantics by treating an old V1 receipt as evidence that omitted candidates or owner provenance were bound.
 
 ## 9. Security, privacy and threat controls
 
-Owned threat entries:
+The module remains deny-all for runtime/effect authority. Product receipts contain digests, IDs, counts and scores, not credentials or unrestricted source payloads. The real owner authorizes scope before generating candidates. Lane-C admission and revalidation prevent a caller from turning an arbitrary candidate into an attached memory merely by constructing a native retrieval struct.
 
-None.
-
-The posture is least authority, bounded input, typed contracts, digest binding and independent evidence. Sensitive values are redacted or represented by digests at evidence boundaries. Credentials never enter general logs, learning datasets, prompt factors or cross-module receipts. Authority is operation-bound, final-payload-bound, short-lived and revocation-aware.
-
-Negative tests cover denied capabilities, cross-owner writes, stale or revoked grants, replay with payload drift, unknown fields, oversize input, scope escape, untrusted instruction escalation and secret/provider leakage. Security review is mandatory for new effect boundaries, persistence, network, model invocation or authority semantics.
+Threat tests include tombstones, duplicate candidates, stale generations, complete-input binding, owner-observation binding, oversize inputs and low-ranked risk-poisoning cases. New network/model/effect boundaries require their owning authority and separate review.
 
 ## 10. Performance, capacity and hot-path policy
 
-The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/memory.retrieval.md) specifies this module's algorithm, pilot ceilings and capacity fixtures. Those target ceilings are not measurements and must not be reported as enforcement of an unimplemented API. Current native limits belong to [codex-rs/hepta-memory-retrieval/src/v2.rs](../../../codex-rs/hepta-memory-retrieval/src/v2.rs) and the linked implementation components.
+The product admission ceiling is now source-enforced:
 
-[Shared performance and capacity requirements](../README.md#shared-performance-and-capacity) define the measurement/overload obligations for a selected host.
+- <=512 product candidates;
+- <=16 product retrieval/recall results.
+
+Compatibility V1/V2 ranking retains the historical <=16,384 candidates / <=256 results so existing native digest semantics are not silently changed; that surface is not the product hot path.
+
+Remaining target HNMF ceilings are:
+
+- <=4096 nodes;
+- <=32768 synapses;
+- <=4 settling steps;
+- <=64 active units per population.
+
+Those HNMF ceilings are not yet execution measurements because that engine is not yet composed. Qualification must report owner channel-limit observations, product omission counts, latency distribution, revalidation cost, graph expansion and any learned-ranker cost. No full-store scan or central synchronous RPC is permitted.
 
 ## 11. Observability and operations
 
-Embed retrieval against an authorized coherent read cut. The current host intersects SQLite search with an admitted bounded prefix and reports omitted_records; it does not promise complete recall outside that prefix. Revalidate source revisions before context delivery; missing support and revoked top results require omission or abstention.
+The SQLite owner exposes per-channel candidate counts and `LimitReached`/`Exhausted` observations plus an observation digest. Product retrieval binds that observation digest, making the exact bounded owner enumeration distinguishable from an arbitrary caller candidate list.
 
-Current operating and state-format references:
+The Agentd response continues to report Lane-C read truncation through `omitted_records`; that field does not claim global recall completeness. Retrieval outside the admitted bounded owner/read surface may exist. Operators must distinguish owner-channel truncation, Lane-C read truncation, product top-k omission, response byte-budget omission and explicit abstention.
 
-- [codex-rs/hepta-memory/LANE_C_SQLITE.md](../../../codex-rs/hepta-memory/LANE_C_SQLITE.md).
-- [docs/readiness/LANE_B_NATIVE_HOST.md](../../readiness/LANE_B_NATIVE_HOST.md).
+Current operating references:
 
-[Shared observability and operations requirements](../README.md#shared-observability-and-operations) specify safe events and alert classes; concrete deployment thresholds require the selected host profile.
+- [codex-rs/hepta-memory/LANE_C_SQLITE.md](../../../codex-rs/hepta-memory/LANE_C_SQLITE.md)
+- [docs/readiness/LANE_B_NATIVE_HOST.md](../../readiness/LANE_B_NATIVE_HOST.md)
 
 ## 12. Verification and qualification
 
-Current focused test sources (source references, not pass receipts):
+Focused source tests include:
 
-- [codex-rs/hepta-memory-retrieval/src/generation_bound_tests.rs](../../../codex-rs/hepta-memory-retrieval/src/generation_bound_tests.rs); named case: `channel_completion_order_cannot_change_union_or_recall`.
-- [codex-rs/hepta-memory-retrieval/src/lib_tests.rs](../../../codex-rs/hepta-memory-retrieval/src/lib_tests.rs); named case: `ranking_is_deterministic_and_explainable`.
+- `src/product_tests.rs`: cue construction, owner-observation binding, complete-input binding and 512/16 product limits;
+- `src/v2_tests.rs`: V1 compatibility and complete supplied-input binding;
+- `src/generation_bound_tests.rs`: deterministic channel union, stale generation, contradiction/OOD/coverage fail-closed behavior;
+- `src/recall_v2_tests.rs`: low-ranked unrelated OOD/contradiction poisoning resistance, top-k contradiction protection, top-k coverage semantics and strict limits;
+- `hepta-memory/src/cognitive_retrieval_tests.rs`: real owner retrieval/revalidation behavior and coherent batch revalidation under concurrent writes;
+- `hepta-agentd/src/cognitive_context_tests.rs` and `cognitive_context_budget_tests.rs`: real SQLite context path, withdrawal behavior, byte-budget ordering and learned-ranker composition.
 
-In `codex-rs`, run `just test -p codex-hepta-memory-retrieval`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/memory.retrieval.md) separately labels target acceptance designs.
+Run `just test -p codex-hepta-memory-retrieval` in `codex-rs` plus the affected Agentd/owner tests, all-target compilation, strict Clippy and merge-candidate checks. File existence is not a pass receipt. Exact PR/head workflow results are the repository evidence for this candidate.
 
-[Shared verification and qualification requirements](../README.md#shared-verification-and-qualification) retain the source/merge, failure, compilation and independent-evidence obligations.
+RET status at source-design level:
+
+- RET-01: native regression exists.
+- RET-02: V1 and V2 native regressions exist.
+- RET-03: product revalidation mechanism exists and owner coherent-batch concurrency coverage exists; an exact Agentd between-ranking-and-revalidation injected-race regression is still desirable.
+- RET-04: longitudinal/ablation experiment evidence remains open.
 
 ## 13. Implementation sequence and work packages
 
-Applicable work packages:
+Applicable work package: `MEM-2-RETRIEVAL`.
 
-- `MEM-2-RETRIEVAL`
+Repository work proceeds in this order: owner-backed product composition; strict product limits and provenance binding; canonical ranking precedence; generation-bound V2 risk semantics; machine-readable map/evidence refresh; exact-head/merge qualification; then missing target channels/HNMF/model-turn integration and external acceptance.
 
-The bootstrap package is `MEM-2-RETRIEVAL`. Development, activation and evidence predecessor graphs are distinct and all are enforced. Contract-first work may run in parallel only with non-overlapping write paths and frozen semantics. Each PR records its bounded contracts, domains, denied authorities, resources, rollback and stop conditions. A coordinator-issued envelope is required only at the coordination boundary that consumes it; it is not additional permission for ordinary authorized repository work.
-
-Source implementation completes only when the declared target root exists, public surfaces match registries, tests pass and exact-head plus merge-candidate evidence is current. Later planned packages may remain without invalidating documentation closure.
+The canonical registry may continue to describe the package conservatively until the exact candidate evidence updates its claim boundary. Source existence or a draft PR alone does not authorize activation/release.
 
 ## 14. Activation, compatibility and retirement
 
-Activation composes a named product caller through registered ports and verifies authority, configuration, resource and failure behavior. Shadow and qualification callers are not production callers. Source-complete modules remain inactive until activation predecessors and evidence gates pass.
+A named source-level product caller now exists in Agentd, but module-wide activation remains broader than that fact. The current composed path is a read-only local context path. Full target activation still requires the actual model-turn consumer/model tuple, remaining generator/HNMF capabilities, target-host measurements and evidence gates.
 
-Compatibility adapters are temporary. Retirement requires all named callers migrated, no old-path use, oracle parity where required, rehearsed rollback and independent acceptance. Retirement preserves historical evidence and durable-record interpretability.
+V1 retrieval and V1 recall are compatibility surfaces. New product code uses `retrieve_product_v1` and, when generation-bound recall is composed, `recall_v2`. Retirement of compatibility APIs requires repository-wide caller migration, receipt/oracle compatibility review and independent acceptance; removal is not implied by deprecation.
 
 ## 15. Definition of module completion
 
-Documentation completion requires this guide, exact registry references and closed-world validation. Source completion requires code in the declared root and candidate tests. Composition requires a named caller. Qualification requires current exact-candidate evidence. Acceptance, selection, promotion and release are separate externally governed states.
+Documentation completion: this guide, canonical registries, current implementation map and closed-world validation.
 
-For `memory.retrieval`, this document grants no runtime, production, model, provider, tool, network, filesystem, secret, Matrix, fleet, acceptance, promotion or release authority.
+Source/product-composition completion for the **currently implemented SQLite-backed subset**: native product API, named owner-backed caller, strict resource bounds, source revalidation and passing exact-candidate tests.
 
-### Work-package execution envelopes
+Full target module completion additionally requires the missing real channel generators, calibrated risk production, bounded engram/HNMF execution, model-turn consumption, RET-04 outcome evidence, target-host qualification and independent acceptance.
+
+Selection, promotion and release remain separate externally governed states. This document grants no model/provider/effect/release authority.
+
+### Work-package execution envelope
 
 #### `MEM-2-RETRIEVAL`
 
-- State: `planned`; priority: `2`; parallel class: `contract_first_parallel`.
-- Owner/deputy: `cognitive-platform` / `performance`.
-- Allowed write paths:
-- `codex-rs/hepta-memory-retrieval/**`
-- Development predecessors:
-- `MEM-0-TYPES`
-- Activation predecessors:
-- `MEM-1-STORE`
-- Required deliverables:
-- `exact_source_identity`
-- `source_inventory`
-- `static_verification`
-- `focused_tests`
-- `package_tests`
-- `all_target_check`
-- `strict_lint`
-- `clean_worktree`
-- `exact_head_execution`
-- `merge_candidate_execution`
-- Stop conditions:
-- `authority_violation`
-- `base_drift`
-- `claim_evidence_mismatch`
-- `cross_owner_write`
-- `unbounded_resource_or_retry`
+- Owner/deputy: `cognitive-platform` / `performance`
+- Allowed primary write path: `codex-rs/hepta-memory-retrieval/**`
+- Integration changes to the owner/caller require their normal cross-owner review.
+- Development predecessor: `MEM-0-TYPES`
+- Activation predecessor: `MEM-1-STORE`
+- Required evidence includes source identity, source inventory, focused/package tests, all-target check, strict lint, clean state, exact-head execution and deterministic merge-candidate execution.
+- Stop on authority violation, base drift, claim/evidence mismatch, cross-owner write or unbounded resource/retry behavior.
 
 ## 16. V8.2 pre-coding implementation-readiness overlay
 
-The canonical readiness overlay binds `memory.retrieval` to primary lane `LANE-C-MEMORY`. The following implementation-level specifications are mandatory alongside Sections 1–15:
+Primary lane: `LANE-C-MEMORY`.
+
+Mandatory readiness references remain:
 
 - [`RDY-SRC`](../../readiness/SOURCE_BASELINE_AND_BRANCH_POLICY.md)
 - [`RDY-PAR`](../../readiness/PARALLEL_DEVELOPMENT.md)
 - [`RDY-EMB`](../../readiness/EMBODIED_RUNTIME_EXECUTION.md)
 
-Owned readiness protocols:
-
-- None.
-
-Consumed readiness protocols:
-
-- None.
-
-Ordinary authorized coding identifies the Git baseline, relevant contracts, owned paths, mandatory fixtures, deterministic fallback and rollback. A runtime coordinator admitting an envelope still verifies its current `CanonicalSourceReceiptV1`, frozen contract/readiness digest, expiry and zero authority delta; manually issuing an envelope is not a separate permission gate for ordinary repository work. This overlay does not change activation, acceptance, selection, promotion or release.
+No new authority is created by owner-backed composition. Runtime admission still verifies current source/configuration/authority identities at the boundary that consumes them. This overlay does not imply independent acceptance, selection, promotion or release.
 
 ## 17. Source implementation receipt
 
-The bootstrap source-location obligation for `memory.retrieval` is implemented by work package `MEM-2-RETRIEVAL` in:
+The declared source root exists at `codex-rs/hepta-memory-retrieval`. The current source candidate additionally changes the named caller in `codex-rs/hepta-agentd` to consume the product retrieval admission API and the canonical owner observation/revalidation APIs.
 
-- `codex-rs/hepta-memory-retrieval`
-
-The source candidate is checked by `.github/workflows/hepta-consolidated-source.yml`, including closed-world inventory, package tests, all-target compilation, strict Clippy and clean tracked state. This receipt is source implementation evidence only. It grants no runtime, production-writer, model-provider, external-effect, independent-acceptance, selection, promotion, merge or release authority.
+`.github/workflows/hepta-consolidated-source.yml` and the affected Agentd/repository workflows are the execution gates for this candidate. Until those exact-candidate runs pass, this section records source intent and inspectable implementation only. Even after source qualification passes, independent semantic review, target-host/product execution evidence, operator acceptance, promotion and release remain separate gates.
