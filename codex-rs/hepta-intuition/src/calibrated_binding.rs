@@ -3,7 +3,7 @@
 //! Artifact digests retain their meaning as references to external artifacts.
 //! Binding their supplied metadata prevents substitution under one V2 receipt;
 //! it does not establish that metadata matches the artifact bytes. Production
-//! qualification is provided by [`super::qualification`] V3. V2 remains a
+//! qualification is provided by [`crate::qualification`] V3. V2 remains a
 //! compatibility/replay boundary, but now fails closed on an incomplete
 //! candidate set instead of relying on a downstream consumer to do so.
 
