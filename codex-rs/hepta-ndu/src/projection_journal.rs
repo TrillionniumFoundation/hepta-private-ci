@@ -286,6 +286,8 @@ impl NduProjectionJournalV1 {
         bytes
     }
 
+    /// Reopens a journal by validating both its byte-level hash chain and the
+    /// same semantic transitions enforced by live append/select/revoke calls.
     pub fn reopen(bytes: &[u8]) -> Result<Self, NduProjectionJournalError> {
         if bytes.len() < 12 {
             return Err(NduProjectionJournalError::Truncated);
@@ -361,11 +363,8 @@ impl NduProjectionJournalV1 {
             if journal.identities.contains_key(&identity_digest) {
                 return Err(NduProjectionJournalError::DuplicateSerializedIdentity);
             }
-            journal.identities.insert(
-                identity_digest,
-                (kind, objective_digest, subject_digest, payload_digest),
-            );
-            journal.entries.push(NduProjectionEntryV1 {
+
+            let serialized = NduProjectionEntryV1 {
                 sequence,
                 kind,
                 identity_digest,
@@ -374,7 +373,32 @@ impl NduProjectionJournalV1 {
                 payload_digest,
                 predecessor_entry_digest,
                 entry_digest,
-            });
+            };
+            let replayed = match kind {
+                NduProjectionKindV1::Preference | NduProjectionKindV1::Utility => journal
+                    .append_projection(
+                        kind,
+                        identity_digest,
+                        objective_digest,
+                        subject_digest,
+                        payload_digest,
+                    )?,
+                NduProjectionKindV1::SelectedProjection => journal.select_projection(
+                    identity_digest,
+                    objective_digest,
+                    subject_digest,
+                    payload_digest,
+                )?,
+                NduProjectionKindV1::Revocation => journal.revoke_projection(
+                    identity_digest,
+                    objective_digest,
+                    subject_digest,
+                    payload_digest,
+                )?,
+            };
+            if replayed != serialized {
+                return Err(NduProjectionJournalError::CorruptEntryDigest);
+            }
         }
         Ok(journal)
     }
