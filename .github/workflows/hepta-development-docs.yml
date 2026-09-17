@@ -68,6 +68,7 @@ jobs:
           python3 scripts/hepta-cns.py self-test
           python3 scripts/hepta-cns.py generate-status --check
           python3 scripts/hepta-hnmf.py self-test
+          python3 scripts/hepta-plasticity-status.py verify
           python3 scripts/hepta-docs.py verify
           python3 scripts/hepta-docs.py cleanup-inventory --output .hepta-evidence/cleanup-source-head.json
           python3 scripts/hepta-docs.py receipt --kind source-head --expected-sha "$EXPECTED_SHA" --output .hepta-evidence/source-head.json
@@ -119,6 +120,7 @@ jobs:
           # Source-head performs the full static suite. The merge job only
           # revalidates the merged tree and receipt identity, so every PR does
           # not pay for the same document suite twice.
+          python3 scripts/hepta-plasticity-status.py verify
           python3 scripts/hepta-docs.py verify
           python3 scripts/hepta-docs.py receipt --kind merge-candidate --expected-sha "$EXPECTED_SHA" --output .hepta-evidence/merge-candidate.json
           python3 scripts/hepta-docs.py receipt-verify --input .hepta-evidence/merge-candidate.json --kind merge-candidate --expected-sha "$EXPECTED_SHA"
