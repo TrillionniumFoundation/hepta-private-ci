@@ -53,6 +53,11 @@ pub(super) trait NativeControlPort {
         request_id: &str,
         reason: String,
     ) -> std::result::Result<NativeRunRecord, DurableError>;
+    fn stop_native_before_turn_start(
+        &mut self,
+        request_id: &str,
+        reason: String,
+    ) -> std::result::Result<NativeRunRecord, DurableError>;
     fn settle_native(
         &mut self,
         request_id: &str,
@@ -102,6 +107,14 @@ impl NativeControlPort for DurableInferenceControl {
         reason: String,
     ) -> std::result::Result<NativeRunRecord, DurableError> {
         DurableInferenceControl::stop_native_before_dispatch(self, request_id, reason)
+    }
+
+    fn stop_native_before_turn_start(
+        &mut self,
+        request_id: &str,
+        reason: String,
+    ) -> std::result::Result<NativeRunRecord, DurableError> {
+        DurableInferenceControl::stop_native_before_turn_start(self, request_id, reason)
     }
 
     fn settle_native(
@@ -160,6 +173,14 @@ impl NativeControlPort for DurableInferenceControlHandle {
         DurableInferenceControlHandle::stop_native_before_dispatch(self, request_id, reason)
     }
 
+    fn stop_native_before_turn_start(
+        &mut self,
+        request_id: &str,
+        reason: String,
+    ) -> std::result::Result<NativeRunRecord, DurableError> {
+        DurableInferenceControlHandle::stop_native_before_turn_start(self, request_id, reason)
+    }
+
     fn settle_native(
         &mut self,
         request_id: &str,
@@ -213,7 +234,7 @@ impl AppServerModelDriver {
         .await
     }
 
-    async fn run_with_control<C: NativeControlPort + ?Sized>(
+    async fn run_with_control<C: NativeControlPort>(
         &self,
         control: &mut C,
         admission: NativeAdmission,
@@ -286,7 +307,6 @@ impl AppServerModelDriver {
                     .native_record(&request_id)?
                     .is_some_and(|record| record.state == NativeReservationState::Reserved)
                 {
-                    // Only Reserved proves turn/start could not have happened.
                     let reason: String = error.to_string().chars().take(1024).collect();
                     control.stop_native_before_dispatch(&request_id, reason)?;
                 }
