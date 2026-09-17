@@ -1,0 +1,96 @@
+name: Objective compiler rich admission closure
+
+on:
+  push:
+    branches:
+      - codex/objective-compiler-production-closure-20260917
+    paths:
+      - scripts/objective_compiler_closure_stage1.py
+      - scripts/objective_compiler_closure_stage1_fix.py
+      - .github/workflows/objective-compiler-closure-stage1.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: objective-compiler-rich-admission-closure
+  cancel-in-progress: true
+
+jobs:
+  repair-test-publish:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: codex/objective-compiler-production-closure-20260917
+          fetch-depth: 0
+
+      - name: Bind exact source
+        shell: bash
+        env:
+          EXPECTED_SHA: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          git rev-parse HEAD HEAD^{tree}
+
+      - name: Apply rich admission closure
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/objective_compiler_closure_stage1.py
+          python3 scripts/objective_compiler_closure_stage1_fix.py
+          git diff --check
+
+      - name: Canonical Rust formatting
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo fmt --all
+
+      - name: Compile affected packages
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo check --locked -p codex-hepta-objective -p codex-hepta-intelligence --all-targets
+
+      - name: Test objective compiler
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo test --locked -p codex-hepta-objective
+
+      - name: Test integration facade
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo test --locked -p codex-hepta-intelligence
+
+      - name: Strict lint
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo clippy --locked -p codex-hepta-objective -p codex-hepta-intelligence --all-targets -- -D warnings
+
+      - name: Publish source result on the same review branch
+        shell: bash
+        env:
+          BRANCH: codex/objective-compiler-production-closure-20260917
+        run: |
+          set -euo pipefail
+          rm -f scripts/objective_compiler_closure_stage1.py
+          rm -f scripts/objective_compiler_closure_stage1_fix.py
+          rm -f .github/workflows/objective-compiler-closure-stage1.yml
+          git add -A
+          git diff --check --cached
+          git config user.name "Objective compiler closure"
+          git config user.email "noreply@openai.com"
+          git commit -m "feat(objective): route admission through rich bounded feasibility"
+          git push origin "HEAD:refs/heads/$BRANCH"
