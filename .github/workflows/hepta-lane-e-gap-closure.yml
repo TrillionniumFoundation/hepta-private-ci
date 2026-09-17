@@ -12,7 +12,9 @@ on:
       - codex-rs/hepta-intelligence-eval/**
       - codex-rs/hepta-shadow-qualification/**
       - docs/lane-e/**
+      - docs/modules/learning.eval/**
       - qualification/lane-e/**
+      - qualification/module-execution-dossiers/detail/learning.eval.md
       - scripts/hepta-lane-e-closure.py
       - .github/workflows/hepta-lane-e-gap-closure.yml
 
@@ -83,6 +85,14 @@ jobs:
           -p codex-hepta-bellman-operator
           -p codex-hepta-intelligence-eval
 
+      - name: Product-composed evaluation durability tests
+        working-directory: codex-rs
+        run: >-
+          just test --locked
+          -p codex-hepta-intelligence-eval
+          product_runner
+          --test-threads=1
+
       - name: Cross-crate causal learning closure
         working-directory: codex-rs
         run: >-
@@ -125,6 +135,60 @@ jobs:
           git diff --check
           git diff --exit-code
           test -z "$(git status --porcelain --untracked-files=no)"
+
+      - name: Emit exact-head Lane E qualification receipt
+        shell: bash
+        env:
+          RECEIPT_PATH: qualification/lane-e/run-artifacts/exact-head.json
+        run: |
+          set -euo pipefail
+          mkdir -p "$(dirname "${RECEIPT_PATH}")"
+          SOURCE_TREE="$(git rev-parse HEAD^{tree})" python3 - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          path = Path(os.environ["RECEIPT_PATH"])
+          receipt = {
+              "schema": "hepta.lane-e.exact-head-evidence.v1",
+              "sourceSha": os.environ["SOURCE_SHA"],
+              "sourceTree": os.environ["SOURCE_TREE"],
+              "workflow": os.environ["GITHUB_WORKFLOW"],
+              "runId": os.environ["GITHUB_RUN_ID"],
+              "runAttempt": os.environ["GITHUB_RUN_ATTEMPT"],
+              "job": os.environ["GITHUB_JOB"],
+              "event": os.environ["GITHUB_EVENT_NAME"],
+              "checks": [
+                  "closed_world_lane_e",
+                  "locked_all_target_compilation",
+                  "owner_regression_tests",
+                  "product_composed_evaluation_durability_tests",
+                  "cross_crate_causal_closure",
+                  "cross_language_wire_fault",
+                  "strict_clippy",
+                  "rustfmt_and_clean_source",
+              ],
+              "claimBoundary": {
+                  "sourceQualification": True,
+                  "productAdapterExecution": True,
+                  "productionTargetHost": False,
+                  "futureCalendarEvidence": False,
+                  "independentAcceptance": False,
+                  "activation": False,
+                  "release": False,
+              },
+          }
+          path.write_text(json.dumps(receipt, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+          PY
+          python3 -m json.tool "${RECEIPT_PATH}" >/dev/null
+
+      - name: Retain exact-head Lane E qualification receipt
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-lane-e-exact-head-${{ env.SOURCE_SHA }}
+          path: qualification/lane-e/run-artifacts/exact-head.json
+          if-no-files-found: error
+          retention-days: 30
 
   synthetic-merge:
     runs-on: ubuntu-24.04
@@ -203,6 +267,14 @@ jobs:
           -p codex-hepta-bellman-operator
           -p codex-hepta-intelligence-eval
 
+      - name: Test merged product-composed evaluation durability
+        working-directory: codex-rs
+        run: >-
+          just test --locked
+          -p codex-hepta-intelligence-eval
+          product_runner
+          --test-threads=1
+
       - name: Test merged cross-crate closure
         working-directory: codex-rs
         run: >-
@@ -234,3 +306,59 @@ jobs:
           git diff --exit-code
           test "$(git write-tree)" = "${MERGE_TREE}"
           test "$(git rev-parse "${MERGE_COMMIT}^{tree}")" = "${MERGE_TREE}"
+
+      - name: Emit synthetic-merge Lane E qualification receipt
+        shell: bash
+        env:
+          RECEIPT_PATH: qualification/lane-e/run-artifacts/synthetic-merge.json
+        run: |
+          set -euo pipefail
+          mkdir -p "$(dirname "${RECEIPT_PATH}")"
+          python3 - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          path = Path(os.environ["RECEIPT_PATH"])
+          receipt = {
+              "schema": "hepta.lane-e.synthetic-merge-evidence.v1",
+              "sourceSha": os.environ["SOURCE_SHA"],
+              "baseSha": os.environ["BASE_SHA"],
+              "mergeCommit": os.environ["MERGE_COMMIT"],
+              "mergeTree": os.environ["MERGE_TREE"],
+              "workflow": os.environ["GITHUB_WORKFLOW"],
+              "runId": os.environ["GITHUB_RUN_ID"],
+              "runAttempt": os.environ["GITHUB_RUN_ATTEMPT"],
+              "job": os.environ["GITHUB_JOB"],
+              "event": os.environ["GITHUB_EVENT_NAME"],
+              "checks": [
+                  "merged_closed_world_lane_e",
+                  "merged_all_target_compilation",
+                  "merged_owner_regression_tests",
+                  "merged_product_composed_evaluation_durability_tests",
+                  "merged_cross_crate_causal_closure",
+                  "merged_cross_language_wire_fault",
+                  "merged_rustfmt_and_index_stability",
+              ],
+              "claimBoundary": {
+                  "sourceQualification": True,
+                  "mergeCandidateQualification": True,
+                  "productAdapterExecution": True,
+                  "productionTargetHost": False,
+                  "futureCalendarEvidence": False,
+                  "independentAcceptance": False,
+                  "activation": False,
+                  "release": False,
+              },
+          }
+          path.write_text(json.dumps(receipt, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+          PY
+          python3 -m json.tool "${RECEIPT_PATH}" >/dev/null
+
+      - name: Retain synthetic-merge Lane E qualification receipt
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-lane-e-synthetic-merge-${{ env.SOURCE_SHA }}
+          path: qualification/lane-e/run-artifacts/synthetic-merge.json
+          if-no-files-found: error
+          retention-days: 30
