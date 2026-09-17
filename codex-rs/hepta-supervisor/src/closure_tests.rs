@@ -149,9 +149,9 @@ impl Control {
             .find(|record| &record.agent_id == agent_id)
             .expect("process")
             .exit = Some(ProcessExit {
-            success: false,
-            code: Some(1),
-        });
+                success: false,
+                code: Some(1),
+            });
     }
 
     fn spawn_count(&self, agent_id: &AgentId) -> usize {
