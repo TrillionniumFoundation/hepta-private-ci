@@ -8,7 +8,10 @@ on:
       - 'apps/hepta-browser/src/**'
       - 'apps/hepta-browser/test/**'
       - 'apps/hepta-browser/scripts/**'
+      - 'third_party/servo-patches/**'
+      - 'docs/modules/browser.servo/**'
       - '.github/workflows/hepta-browser-servo-worker-dev.yml'
+      - '.github/workflows/hepta-browser-servo-deployment-qualification.yml'
   workflow_dispatch:
 
 permissions:
