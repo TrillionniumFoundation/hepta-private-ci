@@ -7,6 +7,7 @@
 #![forbid(unsafe_code)]
 
 mod config;
+mod dispatch_reconcile;
 #[cfg(test)]
 mod gap_fill;
 mod ingress;
