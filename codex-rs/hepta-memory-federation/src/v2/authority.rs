@@ -50,12 +50,24 @@ impl VerifiedCapabilityReceiptV2 {
         }
         require_nonzero("revocation_epoch", self.revocation_epoch)?;
         for (name, left, right) in [
-            ("issuer_id", self.issuer_id.as_str(), lease.issuer_id.as_str()),
-            ("issuer_key_id", self.issuer_key_id.as_str(), lease.issuer_key_id.as_str()),
+            (
+                "issuer_id",
+                self.issuer_id.as_str(),
+                lease.issuer_id.as_str(),
+            ),
+            (
+                "issuer_key_id",
+                self.issuer_key_id.as_str(),
+                lease.issuer_key_id.as_str(),
+            ),
             ("grant_id", self.grant_id.as_str(), query.grant_id.as_str()),
             ("lease_id", self.lease_id.as_str(), lease.lease_id.as_str()),
             ("peer_id", self.peer_id.as_str(), query.peer_id.as_str()),
-            ("principal_id", self.principal_id.as_str(), query.principal_id.as_str()),
+            (
+                "principal_id",
+                self.principal_id.as_str(),
+                query.principal_id.as_str(),
+            ),
         ] {
             if left != right {
                 return Err(FederationV2Error::CapabilityReceiptMismatch(name));
@@ -64,8 +76,16 @@ impl VerifiedCapabilityReceiptV2 {
         for (name, left, right) in [
             ("scope", self.scope_digest, query.scope_digest),
             ("purpose", self.purpose_digest, query.purpose_digest),
-            ("generation_vector", self.generation_vector_digest, query.generation_vector_digest),
-            ("query_binding", self.query_binding_digest, query.binding_digest()),
+            (
+                "generation_vector",
+                self.generation_vector_digest,
+                query.generation_vector_digest,
+            ),
+            (
+                "query_binding",
+                self.query_binding_digest,
+                query.binding_digest(),
+            ),
         ] {
             ensure_digest(name, left)?;
             if left != right {
@@ -198,12 +218,36 @@ pub(crate) fn ensure_same_capability(
     refreshed: &VerifiedCapabilityReceiptV2,
 ) -> Result<(), FederationV2Error> {
     for (name, left, right) in [
-        ("issuer_id", previous.issuer_id.as_str(), refreshed.issuer_id.as_str()),
-        ("issuer_key_id", previous.issuer_key_id.as_str(), refreshed.issuer_key_id.as_str()),
-        ("grant_id", previous.grant_id.as_str(), refreshed.grant_id.as_str()),
-        ("lease_id", previous.lease_id.as_str(), refreshed.lease_id.as_str()),
-        ("peer_id", previous.peer_id.as_str(), refreshed.peer_id.as_str()),
-        ("principal_id", previous.principal_id.as_str(), refreshed.principal_id.as_str()),
+        (
+            "issuer_id",
+            previous.issuer_id.as_str(),
+            refreshed.issuer_id.as_str(),
+        ),
+        (
+            "issuer_key_id",
+            previous.issuer_key_id.as_str(),
+            refreshed.issuer_key_id.as_str(),
+        ),
+        (
+            "grant_id",
+            previous.grant_id.as_str(),
+            refreshed.grant_id.as_str(),
+        ),
+        (
+            "lease_id",
+            previous.lease_id.as_str(),
+            refreshed.lease_id.as_str(),
+        ),
+        (
+            "peer_id",
+            previous.peer_id.as_str(),
+            refreshed.peer_id.as_str(),
+        ),
+        (
+            "principal_id",
+            previous.principal_id.as_str(),
+            refreshed.principal_id.as_str(),
+        ),
     ] {
         if left != right {
             return Err(FederationV2Error::CapabilityReceiptMismatch(name));
@@ -212,8 +256,16 @@ pub(crate) fn ensure_same_capability(
     for (name, left, right) in [
         ("scope", previous.scope_digest, refreshed.scope_digest),
         ("purpose", previous.purpose_digest, refreshed.purpose_digest),
-        ("generation_vector", previous.generation_vector_digest, refreshed.generation_vector_digest),
-        ("query_binding", previous.query_binding_digest, refreshed.query_binding_digest),
+        (
+            "generation_vector",
+            previous.generation_vector_digest,
+            refreshed.generation_vector_digest,
+        ),
+        (
+            "query_binding",
+            previous.query_binding_digest,
+            refreshed.query_binding_digest,
+        ),
     ] {
         if left != right {
             return Err(FederationV2Error::DigestMismatch(name));

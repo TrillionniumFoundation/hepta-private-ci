@@ -57,7 +57,12 @@ impl FederatedQueryV2 {
     pub fn binding_digest(&self) -> Digest32 {
         let mut bytes = Vec::with_capacity(640);
         bytes.extend_from_slice(QUERY_DOMAIN);
-        for value in [&self.query_id, &self.peer_id, &self.principal_id, &self.grant_id] {
+        for value in [
+            &self.query_id,
+            &self.peer_id,
+            &self.principal_id,
+            &self.grant_id,
+        ] {
             push_id(&mut bytes, value);
         }
         for digest in [
@@ -116,7 +121,11 @@ impl FederatedLeaseV2 {
         for (name, left, right) in [
             ("query_id", self.query_id.as_str(), query.query_id.as_str()),
             ("peer_id", self.peer_id.as_str(), query.peer_id.as_str()),
-            ("principal_id", self.principal_id.as_str(), query.principal_id.as_str()),
+            (
+                "principal_id",
+                self.principal_id.as_str(),
+                query.principal_id.as_str(),
+            ),
             ("grant_id", self.grant_id.as_str(), query.grant_id.as_str()),
         ] {
             if left != right {
@@ -126,8 +135,16 @@ impl FederatedLeaseV2 {
         for (name, left, right) in [
             ("scope", self.scope_digest, query.scope_digest),
             ("purpose", self.purpose_digest, query.purpose_digest),
-            ("generation_vector", self.generation_vector_digest, query.generation_vector_digest),
-            ("query_binding", self.query_binding_digest, query.binding_digest()),
+            (
+                "generation_vector",
+                self.generation_vector_digest,
+                query.generation_vector_digest,
+            ),
+            (
+                "query_binding",
+                self.query_binding_digest,
+                query.binding_digest(),
+            ),
         ] {
             ensure_digest(name, left)?;
             if left != right {
@@ -245,8 +262,10 @@ impl FederatedResultV2 {
         {
             return Err(FederationV2Error::InvalidCompleteness);
         }
-        if matches!(self.validity, FederatedValidityV2::StaleGeneration | FederatedValidityV2::Revoked)
-            && !self.items.is_empty()
+        if matches!(
+            self.validity,
+            FederatedValidityV2::StaleGeneration | FederatedValidityV2::Revoked
+        ) && !self.items.is_empty()
         {
             return Err(FederationV2Error::StaleEvidenceExposed);
         }
@@ -266,7 +285,12 @@ impl FederatedResultV2 {
         items.sort_by_key(|item| evidence_identity(item));
         let mut bytes = Vec::with_capacity(1024);
         bytes.extend_from_slice(RESULT_DOMAIN);
-        for value in [&self.query_id, &self.peer_id, &self.grant_id, &self.lease_id] {
+        for value in [
+            &self.query_id,
+            &self.peer_id,
+            &self.grant_id,
+            &self.lease_id,
+        ] {
             push_id(&mut bytes, value);
         }
         for digest in [
@@ -319,10 +343,15 @@ impl FederatedBatchResultV2 {
     pub fn validate(&self) -> Result<(), FederationV2Error> {
         self.coverage.validate()?;
         let requested = usize::try_from(self.coverage.requested_peers).unwrap_or(usize::MAX);
-        if requested > MAX_FEDERATED_PEERS_V2 || requested != self.results.len() + self.failures.len() {
+        if requested > MAX_FEDERATED_PEERS_V2
+            || requested != self.results.len() + self.failures.len()
+        {
             return Err(FederationV2Error::InvalidPeerCount);
         }
-        if self.coverage.completed_peers.saturating_add(self.coverage.failed_peers)
+        if self
+            .coverage
+            .completed_peers
+            .saturating_add(self.coverage.failed_peers)
             != self.coverage.requested_peers
         {
             return Err(FederationV2Error::InvalidCoverage);
@@ -331,7 +360,9 @@ impl FederatedBatchResultV2 {
             return Err(FederationV2Error::ResultLimitExceeded);
         }
         if matches!(self.completeness, FederatedCompletenessV2::Complete)
-            && (self.items.is_empty() || self.coverage.failed_peers != 0 || self.coverage.truncated_items != 0)
+            && (self.items.is_empty()
+                || self.coverage.failed_peers != 0
+                || self.coverage.truncated_items != 0)
         {
             return Err(FederationV2Error::InvalidCompleteness);
         }
@@ -360,13 +391,21 @@ impl FederatedBatchResultV2 {
         let mut bytes = Vec::with_capacity(1024);
         bytes.extend_from_slice(BATCH_DOMAIN);
         let mut results = self.results.iter().collect::<Vec<_>>();
-        results.sort_by(|a, b| a.peer_id.cmp(&b.peer_id).then_with(|| a.query_id.cmp(&b.query_id)));
+        results.sort_by(|a, b| {
+            a.peer_id
+                .cmp(&b.peer_id)
+                .then_with(|| a.query_id.cmp(&b.query_id))
+        });
         push_len(&mut bytes, results.len());
         for result in results {
             push_digest(&mut bytes, result.result_digest);
         }
         let mut failures = self.failures.iter().collect::<Vec<_>>();
-        failures.sort_by(|a, b| a.peer_id.cmp(&b.peer_id).then_with(|| a.query_id.cmp(&b.query_id)));
+        failures.sort_by(|a, b| {
+            a.peer_id
+                .cmp(&b.peer_id)
+                .then_with(|| a.query_id.cmp(&b.query_id))
+        });
         push_len(&mut bytes, failures.len());
         for failure in failures {
             push_id(&mut bytes, &failure.peer_id);
@@ -483,7 +522,8 @@ pub(crate) fn normalize_completeness(
     items_empty: bool,
     truncated_items: usize,
 ) -> FederatedCompletenessV2 {
-    if stale_generation || truncated_items > 0 || matches!(remote, FederatedCompletenessV2::Partial) {
+    if stale_generation || truncated_items > 0 || matches!(remote, FederatedCompletenessV2::Partial)
+    {
         return FederatedCompletenessV2::Partial;
     }
     if items_empty {
@@ -493,7 +533,9 @@ pub(crate) fn normalize_completeness(
     }
 }
 
-pub(crate) fn ensure_unique_items(items: &[FederatedEvidenceItemV2]) -> Result<(), FederationV2Error> {
+pub(crate) fn ensure_unique_items(
+    items: &[FederatedEvidenceItemV2],
+) -> Result<(), FederationV2Error> {
     let mut identities = BTreeSet::new();
     for item in items {
         item.validate()?;
@@ -505,7 +547,11 @@ pub(crate) fn ensure_unique_items(items: &[FederatedEvidenceItemV2]) -> Result<(
 }
 
 pub(crate) fn evidence_identity(item: &FederatedEvidenceItemV2) -> (StableId, StableId, Revision) {
-    (item.source_owner_id.clone(), item.record_id.clone(), item.record_revision)
+    (
+        item.source_owner_id.clone(),
+        item.record_id.clone(),
+        item.record_revision,
+    )
 }
 
 pub(crate) fn ensure_digest(name: &'static str, digest: Digest32) -> Result<(), FederationV2Error> {

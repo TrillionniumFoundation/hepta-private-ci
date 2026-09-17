@@ -63,7 +63,12 @@ impl RemoteFederatedResponseV2 {
     pub fn compute_response_digest(&self) -> Digest32 {
         let mut bytes = Vec::with_capacity(1024);
         bytes.extend_from_slice(RESPONSE_DOMAIN);
-        for value in [&self.peer_id, &self.peer_key_id, &self.grant_id, &self.lease_id] {
+        for value in [
+            &self.peer_id,
+            &self.peer_key_id,
+            &self.grant_id,
+            &self.lease_id,
+        ] {
             push_id(&mut bytes, value);
         }
         push_u64(&mut bytes, self.peer_key_epoch);
@@ -155,10 +160,26 @@ impl RemoteFederatedResponseV2 {
     ) -> Result<(), FederationV2Error> {
         self.validate_shape()?;
         for (name, left, right) in [
-            ("response_peer", self.peer_id.as_str(), query.peer_id.as_str()),
-            ("response_peer_key", self.peer_key_id.as_str(), peer.key_id.as_str()),
-            ("response_grant", self.grant_id.as_str(), query.grant_id.as_str()),
-            ("response_lease", self.lease_id.as_str(), lease.lease_id.as_str()),
+            (
+                "response_peer",
+                self.peer_id.as_str(),
+                query.peer_id.as_str(),
+            ),
+            (
+                "response_peer_key",
+                self.peer_key_id.as_str(),
+                peer.key_id.as_str(),
+            ),
+            (
+                "response_grant",
+                self.grant_id.as_str(),
+                query.grant_id.as_str(),
+            ),
+            (
+                "response_lease",
+                self.lease_id.as_str(),
+                lease.lease_id.as_str(),
+            ),
         ] {
             if left != right {
                 return Err(FederationV2Error::IdentityMismatch(name));
@@ -177,10 +198,22 @@ impl RemoteFederatedResponseV2 {
             return Err(FederationV2Error::RevocationEpochRegressed);
         }
         for (name, left, right) in [
-            ("response_query_binding", self.query_binding_digest, query.binding_digest()),
-            ("response_request_nonce", self.request_nonce_digest, query.nonce_digest),
+            (
+                "response_query_binding",
+                self.query_binding_digest,
+                query.binding_digest(),
+            ),
+            (
+                "response_request_nonce",
+                self.request_nonce_digest,
+                query.nonce_digest,
+            ),
             ("response_scope", self.scope_digest, query.scope_digest),
-            ("response_purpose", self.purpose_digest, query.purpose_digest),
+            (
+                "response_purpose",
+                self.purpose_digest,
+                query.purpose_digest,
+            ),
         ] {
             if left != right {
                 return Err(FederationV2Error::DigestMismatch(name));

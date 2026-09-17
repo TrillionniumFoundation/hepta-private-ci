@@ -11,11 +11,10 @@ use super::authority::{
     FederationAuthorityV2, FederationClockV2, FederationPeerDirectoryV2, ensure_same_capability,
 };
 use super::model::{
-    FederatedBatchResultV2, FederatedCompletenessV2, FederatedCoverageV2,
-    FederatedEvidenceItemV2, FederatedResultV2, FederatedValidityV2, FederationAttemptV2,
-    FederationPeerFailureV2, FederationV2Error, MAX_FEDERATED_PEERS_V2,
-    MAX_FEDERATED_RESULTS_V2, MAX_FEDERATION_CONCURRENCY_V2, evidence_identity,
-    normalize_completeness,
+    FederatedBatchResultV2, FederatedCompletenessV2, FederatedCoverageV2, FederatedEvidenceItemV2,
+    FederatedResultV2, FederatedValidityV2, FederationAttemptV2, FederationPeerFailureV2,
+    FederationV2Error, MAX_FEDERATED_PEERS_V2, MAX_FEDERATED_RESULTS_V2,
+    MAX_FEDERATION_CONCURRENCY_V2, evidence_identity, normalize_completeness,
 };
 use super::transport::{
     FederationTransportOutcomeV2, FederationTransportResultV2, FederationTransportV2,
@@ -42,7 +41,9 @@ where
     let pre_send_now = clock.now_unix_ms()?;
     query.validate(pre_send_now)?;
     lease.validate_claims_for_query(pre_send_now, &query)?;
-    let capability = authority.verify_for_query(pre_send_now, &query, lease).await?;
+    let capability = authority
+        .verify_for_query(pre_send_now, &query, lease)
+        .await?;
     capability.validate_for_query(pre_send_now, &query, lease)?;
     let peer = peers.resolve_peer(&query.peer_id)?;
     let hard_deadline = query
@@ -120,15 +121,21 @@ where
             if post_send_now >= response.expires_unix_ms {
                 return Err(FederationV2Error::ResponseExpired);
             }
-            let stale_generation = response.generation_vector_digest != query.generation_vector_digest;
-            let maximum = usize::try_from(query.maximum_results).unwrap_or(MAX_FEDERATED_RESULTS_V2);
+            let stale_generation =
+                response.generation_vector_digest != query.generation_vector_digest;
+            let maximum =
+                usize::try_from(query.maximum_results).unwrap_or(MAX_FEDERATED_RESULTS_V2);
             let remote_count = response.items.len();
             let remote_completeness = response.completeness;
             let remote_digest = response.response_digest;
             let response_nonce = response.response_nonce_digest;
             let observed_frontier = response.observed_frontier;
             let response_expiry = response.expires_unix_ms;
-            let mut items = if stale_generation { Vec::new() } else { response.items };
+            let mut items = if stale_generation {
+                Vec::new()
+            } else {
+                response.items
+            };
             items.truncate(maximum);
             let truncated = remote_count.saturating_sub(items.len());
             let completeness = normalize_completeness(
@@ -206,7 +213,8 @@ where
         }
     }
 
-    let requested = u32::try_from(attempts.len()).map_err(|_| FederationV2Error::InvalidPeerCount)?;
+    let requested =
+        u32::try_from(attempts.len()).map_err(|_| FederationV2Error::InvalidPeerCount)?;
     let semaphore = Arc::new(Semaphore::new(concurrency_limit));
     let mut tasks = JoinSet::new();
     for attempt in attempts {
@@ -252,8 +260,16 @@ where
             Err(_) => return Err(FederationV2Error::TransportRejected),
         }
     }
-    results.sort_by(|a, b| a.peer_id.cmp(&b.peer_id).then_with(|| a.query_id.cmp(&b.query_id)));
-    failures.sort_by(|a, b| a.peer_id.cmp(&b.peer_id).then_with(|| a.query_id.cmp(&b.query_id)));
+    results.sort_by(|a, b| {
+        a.peer_id
+            .cmp(&b.peer_id)
+            .then_with(|| a.query_id.cmp(&b.query_id))
+    });
+    failures.sort_by(|a, b| {
+        a.peer_id
+            .cmp(&b.peer_id)
+            .then_with(|| a.query_id.cmp(&b.query_id))
+    });
 
     aggregate(requested, results, failures)
 }
@@ -275,14 +291,18 @@ fn aggregate(
         truncated = truncated.saturating_add(u64::from(result.coverage.truncated_items));
         completed = completed.saturating_add(u64::from(result.coverage.completed_peers));
         failed = failed.saturating_add(u64::from(result.coverage.failed_peers));
-        if result.coverage.completed_peers > 0 && matches!(result.validity, FederatedValidityV2::Valid) {
+        if result.coverage.completed_peers > 0
+            && matches!(result.validity, FederatedValidityV2::Valid)
+        {
             usable_terminal = true;
         }
         if !matches!(result.completeness, FederatedCompletenessV2::Empty) {
             all_empty = false;
         }
-        if matches!(result.completeness, FederatedCompletenessV2::Partial | FederatedCompletenessV2::Indeterminate)
-            || !matches!(result.validity, FederatedValidityV2::Valid)
+        if matches!(
+            result.completeness,
+            FederatedCompletenessV2::Partial | FederatedCompletenessV2::Indeterminate
+        ) || !matches!(result.validity, FederatedValidityV2::Valid)
         {
             partial = true;
         }

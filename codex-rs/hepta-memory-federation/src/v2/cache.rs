@@ -61,7 +61,10 @@ impl FederationCacheV2 {
             return Err(FederationV2Error::InvalidCacheEntry);
         }
         let key = result.query_binding_digest;
-        let mut state = self.state.lock().map_err(|_| FederationV2Error::CachePoisoned)?;
+        let mut state = self
+            .state
+            .lock()
+            .map_err(|_| FederationV2Error::CachePoisoned)?;
         remove_cache_key(&mut state, key);
         state.entries.insert(
             key,
@@ -72,9 +75,21 @@ impl FederationCacheV2 {
                 result: result.clone(),
             },
         );
-        state.by_grant.entry(capability.grant_id.clone()).or_default().insert(key);
-        state.by_key.entry(capability.issuer_key_id.clone()).or_default().insert(key);
-        state.by_peer.entry(result.peer_id.clone()).or_default().insert(key);
+        state
+            .by_grant
+            .entry(capability.grant_id.clone())
+            .or_default()
+            .insert(key);
+        state
+            .by_key
+            .entry(capability.issuer_key_id.clone())
+            .or_default()
+            .insert(key);
+        state
+            .by_peer
+            .entry(result.peer_id.clone())
+            .or_default()
+            .insert(key);
         Ok(())
     }
 
@@ -83,7 +98,10 @@ impl FederationCacheV2 {
         now_unix_ms: u64,
         query_binding_digest: Digest32,
     ) -> Result<Option<FederatedResultV2>, FederationV2Error> {
-        let mut state = self.state.lock().map_err(|_| FederationV2Error::CachePoisoned)?;
+        let mut state = self
+            .state
+            .lock()
+            .map_err(|_| FederationV2Error::CachePoisoned)?;
         if state
             .entries
             .get(&query_binding_digest)
@@ -92,7 +110,10 @@ impl FederationCacheV2 {
             remove_cache_key(&mut state, query_binding_digest);
             return Ok(None);
         }
-        Ok(state.entries.get(&query_binding_digest).map(|entry| entry.result.clone()))
+        Ok(state
+            .entries
+            .get(&query_binding_digest)
+            .map(|entry| entry.result.clone()))
     }
 
     pub async fn revalidate_remote<A, C>(
@@ -106,7 +127,10 @@ impl FederationCacheV2 {
         C: FederationClockV2 + ?Sized,
     {
         let entry = {
-            let state = self.state.lock().map_err(|_| FederationV2Error::CachePoisoned)?;
+            let state = self
+                .state
+                .lock()
+                .map_err(|_| FederationV2Error::CachePoisoned)?;
             state
                 .entries
                 .get(&query_binding_digest)
@@ -146,7 +170,10 @@ impl FederationCacheV2 {
     }
 
     pub fn purge_query(&self, digest: Digest32) -> Result<usize, FederationV2Error> {
-        let mut state = self.state.lock().map_err(|_| FederationV2Error::CachePoisoned)?;
+        let mut state = self
+            .state
+            .lock()
+            .map_err(|_| FederationV2Error::CachePoisoned)?;
         Ok(usize::from(remove_cache_key(&mut state, digest)))
     }
 
@@ -163,11 +190,16 @@ impl FederationCacheV2 {
     }
 
     pub fn purge_expired(&self, now_unix_ms: u64) -> Result<usize, FederationV2Error> {
-        let mut state = self.state.lock().map_err(|_| FederationV2Error::CachePoisoned)?;
+        let mut state = self
+            .state
+            .lock()
+            .map_err(|_| FederationV2Error::CachePoisoned)?;
         let keys = state
             .entries
             .iter()
-            .filter_map(|(key, entry)| (now_unix_ms >= entry.result.expires_unix_ms).then_some(*key))
+            .filter_map(|(key, entry)| {
+                (now_unix_ms >= entry.result.expires_unix_ms).then_some(*key)
+            })
             .collect::<Vec<_>>();
         let count = keys.len();
         for key in keys {
@@ -176,8 +208,15 @@ impl FederationCacheV2 {
         Ok(count)
     }
 
-    fn purge_indexed(&self, id: &StableId, index: CacheIndexV2) -> Result<usize, FederationV2Error> {
-        let mut state = self.state.lock().map_err(|_| FederationV2Error::CachePoisoned)?;
+    fn purge_indexed(
+        &self,
+        id: &StableId,
+        index: CacheIndexV2,
+    ) -> Result<usize, FederationV2Error> {
+        let mut state = self
+            .state
+            .lock()
+            .map_err(|_| FederationV2Error::CachePoisoned)?;
         let keys = match index {
             CacheIndexV2::Grant => state.by_grant.get(id),
             CacheIndexV2::Key => state.by_key.get(id),
