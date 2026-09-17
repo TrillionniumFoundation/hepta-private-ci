@@ -8,21 +8,31 @@
 #![forbid(unsafe_code)]
 
 mod durable_registry;
+mod generator;
+mod legacy;
+mod parameter_v2;
+mod registry;
+mod trusted;
+mod types;
 
 pub use durable_registry::DurableProposalAppendReceiptV1;
 pub use durable_registry::DurableProposalRegistry;
 pub use durable_registry::DurableProposalRegistryError;
 pub use durable_registry::DurableRegistryAnchorV1;
-
-mod legacy;
-mod parameter_v2;
-mod registry;
-mod types;
-
+pub use generator::CandidateGeneratorConfigV1;
+pub use generator::ParameterLearningSignalV1;
+pub use generator::generate_parameter_proposal_v2;
 pub use parameter_v2::propose_v2;
 pub use parameter_v2::verify_parameter_proposal_v2;
 pub use registry::ProposalRegistry;
 pub use registry::ProposalRegistrySlotV2;
+pub use trusted::AuthenticatedParameterProposalRequestV1;
+pub use trusted::EvaluatorClaimV1;
+pub use trusted::EvidenceClaimV1;
+pub use trusted::EvidenceKindV1;
+pub use trusted::EvidenceVerifier;
+pub use trusted::IndependentEvaluatorVerifier;
+pub use trusted::propose_authenticated_v1;
 pub use types::AppendDisposition;
 pub use types::CandidateNormMetricsV2;
 pub use types::Error;
@@ -114,3 +124,7 @@ pub fn read_versioned_proposal(
 #[cfg(test)]
 #[path = "lib_tests.rs"]
 mod tests;
+
+#[cfg(test)]
+#[path = "closeout_tests.rs"]
+mod closeout_tests;
