@@ -23,6 +23,18 @@ function navigationAction(url = "https://example.com/path") {
 const NAV = navigationAction();
 const NAV_DIGEST = browserActionDigest(NAV);
 
+function effectGrant(overrides = {}) {
+  return {
+    grantDigest: D5,
+    action: "navigate",
+    destinationOrigin: "https://example.com",
+    finalPayloadDigest: NAV_DIGEST,
+    authorityEpoch: 7,
+    expiresAtMs: 9_500,
+    ...overrides,
+  };
+}
+
 function input(overrides = {}) {
   return {
     profileId: "profile.1",
@@ -32,16 +44,7 @@ function input(overrides = {}) {
     generation: 1,
     expiresAtMs: 10_000,
     allowedOrigins: ["https://example.com"],
-    effectGrants: [
-      {
-        grantDigest: D5,
-        action: "navigate",
-        destinationOrigin: "https://example.com",
-        finalPayloadDigest: NAV_DIGEST,
-        authorityEpoch: 7,
-        expiresAtMs: 9_500,
-      },
-    ],
+    effectGrants: [effectGrant()],
     ...overrides,
   };
 }
@@ -52,25 +55,29 @@ function authority({ authorized = true, witnessDigest = W1, delay = 0 } = {}) {
     get calls() {
       return calls;
     },
-    async verifyFinalUse(request) {
+    async withVerifiedUse(request, consumer) {
       calls += 1;
       if (delay) await new Promise((resolve) => setTimeout(resolve, delay));
-      return {
-        authorized,
+      if (!authorized) throw new TypeError("final-use authority was denied");
+      return consumer({
+        authorized: true,
         witnessDigest,
         authorityEpoch: request.authorityEpoch,
         requestDigest: request.requestDigest,
-      };
+      });
     },
   };
 }
 
-function driver({ terminalOnReconcile = true, actImpl } = {}) {
-  let actCalls = 0;
+function driver({ terminalOnReconcile = true, dispatchImpl } = {}) {
+  let dispatchCalls = 0;
   let stopCalls = 0;
   return {
     get actCalls() {
-      return actCalls;
+      return dispatchCalls;
+    },
+    get dispatchCalls() {
+      return dispatchCalls;
     },
     get stopCalls() {
       return stopCalls;
@@ -85,9 +92,9 @@ function driver({ terminalOnReconcile = true, actImpl } = {}) {
         origin: "https://example.com",
       };
     },
-    async act(semantics, context) {
-      actCalls += 1;
-      if (actImpl) return actImpl(semantics, context);
+    async dispatch(semantics, context) {
+      dispatchCalls += 1;
+      if (dispatchImpl) return dispatchImpl(semantics, context);
       return { terminalObserved: false };
     },
     async reconcile() {
@@ -166,7 +173,7 @@ test("same operation is single-flight and never double-dispatches", async () => 
   let release;
   const gate = new Promise((resolve) => { release = resolve; });
   const fakeDriver = driver({
-    actImpl: async () => {
+    dispatchImpl: async () => {
       await gate;
       return { terminalObserved: false };
     },
@@ -175,17 +182,17 @@ test("same operation is single-flight and never double-dispatches", async () => 
   const first = host.navigateOrAct(operation());
   const second = host.navigateOrAct(operation());
   await new Promise((resolve) => setTimeout(resolve, 5));
-  assert.equal(fakeDriver.actCalls, 1);
+  assert.equal(fakeDriver.dispatchCalls, 1);
   assert.equal(finalAuthority.calls, 1);
   release();
   const [left, right] = await Promise.all([first, second]);
-  assert.equal(fakeDriver.actCalls, 1);
+  assert.equal(fakeDriver.dispatchCalls, 1);
   assert.equal(left.semanticDigest, right.semanticDigest);
 });
 
 test("driver throw after dispatch boundary becomes indeterminate and retry never redispatches", async () => {
   const fakeDriver = driver({
-    actImpl: async () => {
+    dispatchImpl: async () => {
       throw new Error("connection lost after submit");
     },
   });
@@ -195,7 +202,7 @@ test("driver throw after dispatch boundary becomes indeterminate and retry never
   assert.equal(first.observationReason, "driver_error_after_dispatch_boundary");
   const replay = await host.navigateOrAct(operation());
   assert.equal(replay.semanticDigest, first.semanticDigest);
-  assert.equal(fakeDriver.actCalls, 1);
+  assert.equal(fakeDriver.dispatchCalls, 1);
 });
 
 test("reconciliation and cleanup remain available after grant and deadline expiry", async () => {
@@ -229,22 +236,67 @@ test("typed action bytes are bound to final payload digest and destination", asy
     host.navigateOrAct(operation({ typedAction: evil, finalPayloadDigest: browserActionDigest(evil) })),
     /does not match destinationOrigin/,
   );
-  assert.equal(fakeDriver.actCalls, 0);
+  assert.equal(fakeDriver.dispatchCalls, 0);
 });
 
-test("final-use authority is rechecked immediately before the effect boundary", async () => {
+test("final-use authority denial cannot reach the driver", async () => {
   const denied = authority({ authorized: false });
   const { host, fakeDriver } = await preparedHost({ authority: denied });
   await assert.rejects(host.navigateOrAct(operation()), /final-use authority was denied/);
   assert.equal(denied.calls, 1);
-  assert.equal(fakeDriver.actCalls, 0);
+  assert.equal(fakeDriver.dispatchCalls, 0);
+});
+
+test("durable intent and local dispatch occur inside the final-use fence", async () => {
+  let insideFence = false;
+  const baseJournal = new MemoryBrowserOperationJournal();
+  const journal = {
+    ...baseJournal,
+    async recordDispatch(record) {
+      assert.equal(insideFence, true);
+      return baseJournal.recordDispatch(record);
+    },
+    async recordObservation(record) {
+      return baseJournal.recordObservation(record);
+    },
+    async getOperation(...args) {
+      return baseJournal.getOperation(...args);
+    },
+    async listOperations(...args) {
+      return baseJournal.listOperations(...args);
+    },
+  };
+  const finalAuthority = {
+    async withVerifiedUse(request, consumer) {
+      insideFence = true;
+      try {
+        return await consumer({
+          authorized: true,
+          witnessDigest: W1,
+          authorityEpoch: request.authorityEpoch,
+          requestDigest: request.requestDigest,
+        });
+      } finally {
+        insideFence = false;
+      }
+    },
+  };
+  const fakeDriver = driver({
+    dispatchImpl: async () => {
+      assert.equal(insideFence, true);
+      return { terminalObserved: false };
+    },
+  });
+  const { host } = await preparedHost({ driver: fakeDriver, authority: finalAuthority, journal });
+  await host.navigateOrAct(operation());
+  assert.equal(insideFence, false);
 });
 
 test("profile serialization prevents close racing an in-flight effect", async () => {
   let release;
   const gate = new Promise((resolve) => { release = resolve; });
   const fakeDriver = driver({
-    actImpl: async () => {
+    dispatchImpl: async () => {
       await gate;
       return { terminalObserved: false };
     },
@@ -264,10 +316,10 @@ test("profile serialization prevents close racing an in-flight effect", async ()
   assert.equal(fakeDriver.stopCalls, 0);
 });
 
-test("driver timeout aborts the call and preserves an indeterminate operation", async () => {
+test("driver timeout aborts dispatch and preserves an indeterminate operation", async () => {
   let aborted = false;
   const fakeDriver = driver({
-    actImpl: async (_semantics, { signal }) =>
+    dispatchImpl: async (_semantics, { signal }) =>
       new Promise(() => {
         signal.addEventListener("abort", () => { aborted = true; }, { once: true });
       }),
@@ -279,7 +331,7 @@ test("driver timeout aborts the call and preserves an indeterminate operation", 
   assert.equal(aborted, true);
   const replay = await host.navigateOrAct(operation());
   assert.equal(replay.semanticDigest, first.semanticDigest);
-  assert.equal(fakeDriver.actCalls, 1);
+  assert.equal(fakeDriver.dispatchCalls, 1);
 });
 
 test("replay rejects immutable semantic substitution", async () => {
@@ -320,20 +372,20 @@ test("disallowed observed origin is quarantined and cannot authorize an action",
   assert.equal(page.originAllowed, false);
   assert.equal(page.quarantined, true);
   await assert.rejects(host.navigateOrAct(operation()), /stale page generation/);
-  assert.equal(fakeDriver.actCalls, 0);
+  assert.equal(fakeDriver.dispatchCalls, 0);
 });
 
 test("persisted indeterminate operation reconciles after host process loss without redispatch", async () => {
   const journal = new MemoryBrowserOperationJournal();
   const firstDriver = driver({
-    actImpl: async () => {
+    dispatchImpl: async () => {
       throw new Error("process lost after submit");
     },
   });
   const first = await preparedHost({ driver: firstDriver, journal });
   const unknown = await first.host.navigateOrAct(operation());
   assert.equal(unknown.status, "indeterminate");
-  assert.equal(firstDriver.actCalls, 1);
+  assert.equal(firstDriver.dispatchCalls, 1);
 
   const secondDriver = driver();
   const recoveredHost = new BrowserProfileHost({
@@ -346,12 +398,12 @@ test("persisted indeterminate operation reconciles after host process loss witho
   const recovered = await recoveredHost.reconcilePersistedOperation(operation());
   assert.equal(recovered.status, "succeeded");
   assert.equal(recovered.terminalObserved, true);
-  assert.equal(secondDriver.actCalls, 0);
+  assert.equal(secondDriver.dispatchCalls, 0);
 });
 
 test("terminal operation retention uses durable tombstones instead of exhausting active capacity", async () => {
   const fakeDriver = driver({
-    actImpl: async () => ({
+    dispatchImpl: async () => ({
       terminalObserved: true,
       status: "succeeded",
       outcomeDigest: D1,
@@ -359,13 +411,38 @@ test("terminal operation retention uses durable tombstones instead of exhausting
   });
   const { host } = await preparedHost({ driver: fakeDriver });
   for (let index = 0; index < 300; index += 1) {
-    const receipt = await host.navigateOrAct(
-      operation({ operationId: `operation.${index}` }),
-    );
+    const receipt = await host.navigateOrAct(operation({ operationId: `operation.${index}` }));
     assert.equal(receipt.terminalObserved, true);
   }
-  assert.equal(fakeDriver.actCalls, 300);
+  assert.equal(fakeDriver.dispatchCalls, 300);
   const replay = await host.navigateOrAct(operation({ operationId: "operation.0" }));
   assert.equal(replay.terminalObserved, true);
-  assert.equal(fakeDriver.actCalls, 300);
+  assert.equal(fakeDriver.dispatchCalls, 300);
+});
+
+test("effect grants can be admitted after profile open without widening final-use authority", async () => {
+  const fakeDriver = driver();
+  const host = new BrowserProfileHost({
+    driver: fakeDriver,
+    authority: authority(),
+    journal: new MemoryBrowserOperationJournal(),
+    clock: () => 1_000,
+    driverCallTimeoutMs: 50,
+  });
+  await host.openProfile(input({ effectGrants: [] }));
+  const admitted = await host.admitEffectGrant({
+    profileId: "profile.1",
+    principalId: "principal.1",
+    generation: 1,
+    effectGrant: effectGrant(),
+  });
+  assert.equal(admitted.effectGrantCount, 1);
+  await host.observePage({
+    profileId: "profile.1",
+    principalId: "principal.1",
+    generation: 1,
+    observationBudget: 128,
+  });
+  const result = await host.navigateOrAct(operation());
+  assert.equal(result.status, "indeterminate");
 });
