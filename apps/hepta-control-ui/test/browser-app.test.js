@@ -161,3 +161,40 @@ test("indeterminate acknowledgement remains announced after rerender", async () 
   assert.ok(alert);
   assert.match(alert.textContent, /indeterminate/);
 });
+
+test("browser request-construction failures are announced instead of escaping click handlers", async () => {
+  const document = new FakeDocument();
+  const root = new FakeElement("div", document);
+  let submissions = 0;
+  const client = {
+    readView: () => sampleView(),
+    async submitRequest() {
+      submissions += 1;
+      return { operationId: "unexpected", status: "pending" };
+    },
+    async requestStop() {
+      submissions += 1;
+      return { operationId: "unexpected-stop", status: "pending" };
+    },
+  };
+  const app = new ControlPlaneApp({
+    root,
+    client,
+    operationIdFactory: () => {
+      throw new Error("random source unavailable");
+    },
+    confirmAction: async () => true,
+  });
+  app.render();
+  const retry = allElements(root).find(
+    (element) => element.tagName === "button" && element.textContent.startsWith("Retry "),
+  );
+  retry.listeners.get("click")();
+  await new Promise((resolve) => setImmediate(resolve));
+  const alert = allElements(root).find(
+    (element) => element.attributes.get("role") === "alert",
+  );
+  assert.ok(alert);
+  assert.match(alert.textContent, /Request construction failed/);
+  assert.equal(submissions, 0);
+});
