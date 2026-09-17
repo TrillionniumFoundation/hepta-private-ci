@@ -31,7 +31,8 @@ use ed25519_dalek::Signer as _;
 use ed25519_dalek::SigningKey;
 use serde::Deserialize;
 
-const MODEL_JSON: &str = include_str!("../../../qualification/intuition-policy-v3/frozen_model_v1.json");
+const MODEL_JSON: &str =
+    include_str!("../../../qualification/intuition-policy-v3/frozen_model_v1.json");
 const VALIDATION_JSON: &str =
     include_str!("../../../qualification/intuition-policy-v3/frozen_validation_v1.json");
 
@@ -159,11 +160,8 @@ fn build_fixture() -> QualifiedFixture {
         .collect::<Vec<_>>();
     let measured_ece_ppm = expected_calibration_error_ppm(&dataset.rows, &scored);
     let maximum_in_domain_ood_ppm = 250_000;
-    let measured_ood_far_ppm = ood_false_acceptance_ppm(
-        &dataset.rows,
-        &scored,
-        maximum_in_domain_ood_ppm,
-    );
+    let measured_ood_far_ppm =
+        ood_false_acceptance_ppm(&dataset.rows, &scored, maximum_in_domain_ood_ppm);
 
     let policy_digest = digest(b"intuition-policy:v3:frozen-qualification");
     let objective_class_digest = digest(b"objective-class:adaptive-intervention");
@@ -379,7 +377,7 @@ fn expected_calibration_error_ppm(rows: &[FrozenRow], scored: &[ScoredRow]) -> u
             .min(9);
         count[bin] += 1;
         confidence_sum[bin] += u64::from(score.confidence_ppm);
-        correct[bin] += u64::from(score.predicted_label == row.label);
+        correct[bin] += if score.predicted_label == row.label { 1 } else { 0 };
         total += 1;
     }
     let mut weighted_error = 0u64;
@@ -391,8 +389,7 @@ fn expected_calibration_error_ppm(rows: &[FrozenRow], scored: &[ScoredRow]) -> u
         let accuracy_ppm = correct[bin] * 1_000_000 / count[bin];
         weighted_error += average_confidence.abs_diff(accuracy_ppm) * count[bin];
     }
-    u32::try_from(weighted_error / total)
-        .unwrap_or_else(|_| panic!("ECE must fit in ppm"))
+    u32::try_from(weighted_error / total).unwrap_or_else(|_| panic!("ECE must fit in ppm"))
 }
 
 fn ood_false_acceptance_ppm(
@@ -407,7 +404,11 @@ fn ood_false_acceptance_ppm(
             continue;
         }
         ood_rows += 1;
-        accepted += u64::from(score.ood_score_ppm <= maximum_in_domain_ood_ppm);
+        accepted += if score.ood_score_ppm <= maximum_in_domain_ood_ppm {
+            1
+        } else {
+            0
+        };
     }
     if ood_rows == 0 {
         return 0;
