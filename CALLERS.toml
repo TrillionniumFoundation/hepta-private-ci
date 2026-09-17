@@ -13,7 +13,9 @@ required_boundary_ids = [
   "provider_effect_coordinator",
   "http_provider_effect_adapter",
   "final_use_claim",
+  "final_use_claim_raw",
   "final_use_delivery",
+  "final_use_delivery_raw",
   "final_use_approval_verify",
   "final_use_revocation_feed_apply",
   "bao_final_use_consumer",
@@ -62,21 +64,37 @@ caller_markers = []
 
 [[boundary]]
 id = "final_use_claim"
+symbol = "claim_final_use"
+definition_path = "codex-rs/hepta-contracts/src/final_use.rs"
+definition_markers = ["pub fn claim_final_use(", "authority.claim(signed, expected)"]
+product_callers = ["codex-rs/hepta-bao-adapter/src/https_consumer.rs"]
+caller_markers = ["claim_final_use", "claim_final_use(authority, grant, &binding)", "BaoClientError::Authority"]
+
+[[boundary]]
+id = "final_use_claim_raw"
 symbol = "FinalUseAuthority::claim"
 call_pattern = "authority\\s*\\.\\s*claim\\s*\\("
 definition_path = "codex-rs/hepta-contracts/src/final_use.rs"
 definition_markers = ["pub fn claim(", "verify_strict", "used_nonces"]
-product_callers = ["codex-rs/hepta-bao-adapter/src/https_consumer.rs"]
-caller_markers = ["authority", ".claim(grant, &binding)", "BaoClientError::Authority"]
+product_callers = ["codex-rs/hepta-agentd/src/browser_servo.rs"]
+caller_markers = ["self.authority", ".claim(&invocation.signed_grant", "authority_challenge"]
 
 [[boundary]]
 id = "final_use_delivery"
+symbol = "deliver_final_use"
+definition_path = "codex-rs/hepta-contracts/src/final_use.rs"
+definition_markers = ["pub fn deliver_final_use", "authority.consume_verified_use(token, expected, consumer)"]
+product_callers = ["codex-rs/hepta-bao-adapter/src/https_consumer.rs"]
+caller_markers = ["deliver_final_use", "deliver_final_use(authority, verified, &binding", "ConsumerIndeterminate"]
+
+[[boundary]]
+id = "final_use_delivery_raw"
 symbol = "FinalUseAuthority::with_verified_use"
 call_pattern = "authority\\s*\\.\\s*with_verified_use\\s*\\("
 definition_path = "codex-rs/hepta-contracts/src/final_use.rs"
-definition_markers = ["pub fn with_verified_use", "Arc::ptr_eq", "validate_live"]
-product_callers = ["codex-rs/hepta-bao-adapter/src/https_consumer.rs"]
-caller_markers = ["authority", ".with_verified_use(verified", "ConsumerIndeterminate"]
+definition_markers = ["pub fn with_verified_use", "bounded local irreversible-entry boundary", "drop(state)"]
+product_callers = ["codex-rs/hepta-agentd/src/browser_servo.rs"]
+caller_markers = ["self.authority", ".with_verified_use(token, &invocation.binding", "dispatch_boundary"]
 
 [[boundary]]
 id = "final_use_approval_verify"
@@ -101,7 +119,7 @@ id = "bao_final_use_consumer"
 symbol = "BaoClient::consume_kv_v2"
 call_pattern = "\\.\\s*consume_kv_v2\\s*\\("
 definition_path = "codex-rs/hepta-bao-adapter/src/https_consumer.rs"
-definition_markers = ["pub async fn consume_kv_v2", "authority.claim", "authority", ".with_verified_use"]
+definition_markers = ["pub async fn consume_kv_v2", "claim_final_use", "deliver_final_use"]
 product_callers = ["codex-rs/hepta-bao-adapter/src/final_use_host.rs"]
 caller_markers = ["client", ".consume_kv_v2(&self.authority", "UnregisteredConsumer"]
 
@@ -131,7 +149,7 @@ forbidden = ["impl Default for HttpProviderEffectAdapter"]
 
 [[protected_file]]
 path = "codex-rs/hepta-contracts/src/final_use.rs"
-required = ["pub fn claim(", "pub fn with_verified_use", "verify_strict", "validate_live"]
+required = ["pub fn claim_final_use(", "pub fn deliver_final_use", "pub fn claim(", "pub fn with_verified_use", "verify_strict", "validate_live"]
 forbidden = ["impl Default for FinalUseAuthority", "pub fn permit_all"]
 
 [[protected_file]]
@@ -146,8 +164,8 @@ forbidden = ["impl Default for AuthorityLeaseRegistry", "permit_all"]
 
 [[protected_file]]
 path = "codex-rs/hepta-bao-adapter/src/https_consumer.rs"
-required = ["pub async fn consume_kv_v2", "authority", ".claim(grant, &binding)", ".with_verified_use(verified"]
-forbidden = ["impl Default for BaoClient"]
+required = ["pub async fn consume_kv_v2", "claim_final_use(authority, grant, &binding)", "deliver_final_use(authority, verified, &binding"]
+forbidden = ["impl Default for BaoClient", ".claim(grant, &binding)", ".with_verified_use(verified"]
 
 [[protected_file]]
 path = "codex-rs/hepta-bao-adapter/src/final_use_host.rs"
