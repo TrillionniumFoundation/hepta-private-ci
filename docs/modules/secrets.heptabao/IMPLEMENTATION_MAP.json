@@ -2,14 +2,15 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "7e8379b3954808d4138a7bd2f3773f75691291a3",
-    "tree": "ff9fa6baf95a35fd2f49816e0a80097688f2aeeb"
+    "commit": "d7af096f28fa9989388939efa0e6600b52a43952",
+    "tree": "789fa2ea88e8a6e787a0fb838a8dda3cf2e20701"
   },
   "laneId": "LANE-A-FOUNDATION",
   "module": "secrets.heptabao",
   "owner": "secrets-platform",
   "deputy": "security-authority",
   "technicalGuide": "docs/modules/secrets.heptabao/TECHNICAL.md",
+  "currentImplementation": "docs/modules/secrets.heptabao/CURRENT_IMPLEMENTATION.md",
   "declaredRoots": [
     "external/HeptaBao",
     "codex-rs/hepta-bao-adapter"
@@ -18,45 +19,122 @@
     "external/HeptaBao",
     "codex-rs/hepta-bao-adapter"
   ],
+  "sharedDependencies": [
+    "codex-rs/hepta-contracts/src/final_use.rs",
+    "codex-rs/hepta-contracts/src/final_use_store.rs"
+  ],
   "sourceRootPresent": true,
   "productionImplementation": false,
   "productCallerState": "not_composed",
-  "productionWriterState": "not_established",
+  "productionWriterState": "source_implemented_not_product_composed",
   "operations": [
     {
       "operation": "consume_kv_v2",
-      "nativeSymbol": "consume_kv_v2",
+      "nativeSymbol": "BaoClient::consume_kv_v2",
       "sourcePath": "codex-rs/hepta-bao-adapter/src/https_consumer.rs",
       "state": "source_implemented_not_product_composed",
-      "authority": "none",
-      "tests": [],
+      "authority": "kernel_final_use",
+      "tests": ["real_tls_read_uses_headers_exact_version_and_secret_only_consumer"],
       "sourcePathExists": true,
       "designOperation": "consume_kv_v2",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": ["FinalUseAuthority::claim", "FinalUseAuthority::with_verified_use"]
     },
     {
-      "operation": "binding",
-      "nativeSymbol": "binding",
-      "sourcePath": "codex-rs/hepta-bao-adapter/src/https_consumer.rs",
+      "operation": "request_secret_lease",
+      "nativeSymbol": "BaoLeaseManager::request_secret_lease",
+      "sourcePath": "codex-rs/hepta-bao-adapter/src/lease.rs",
       "state": "source_implemented_not_product_composed",
-      "authority": "none",
-      "tests": [],
+      "authority": "kernel_final_use",
+      "tests": [
+        "dynamic_issue_delivers_only_through_enrolled_borrowed_view_and_persists_metadata",
+        "lost_issue_ack_is_indeterminate_and_same_operation_never_blindly_reissues"
+      ],
       "sourcePathExists": true,
-      "designOperation": "binding",
+      "designOperation": "request_secret_lease",
       "mappingClass": "owner_native",
+      "delegatedCallees": ["FinalUseAuthority::claim", "FinalUseAuthority::with_verified_use"]
+    },
+    {
+      "operation": "renew_secret_lease",
+      "nativeSymbol": "BaoLeaseManager::renew_secret_lease",
+      "sourcePath": "codex-rs/hepta-bao-adapter/src/lease.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "kernel_final_use",
+      "tests": ["renew_and_revoke_uncertainty_reconcile_against_provider_truth"],
+      "sourcePathExists": true,
+      "designOperation": "renew",
+      "mappingClass": "owner_native",
+      "delegatedCallees": ["FinalUseAuthority::claim"]
+    },
+    {
+      "operation": "revoke_secret_lease",
+      "nativeSymbol": "BaoLeaseManager::revoke_secret_lease",
+      "sourcePath": "codex-rs/hepta-bao-adapter/src/lease.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "kernel_final_use",
+      "tests": ["renew_and_revoke_uncertainty_reconcile_against_provider_truth"],
+      "sourcePathExists": true,
+      "designOperation": "revoke",
+      "mappingClass": "owner_native",
+      "delegatedCallees": ["FinalUseAuthority::claim"]
+    },
+    {
+      "operation": "reconcile_secret_lease",
+      "nativeSymbol": "BaoLeaseManager::reconcile_secret_lease",
+      "sourcePath": "codex-rs/hepta-bao-adapter/src/lease.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "kernel_final_use",
+      "tests": ["renew_and_revoke_uncertainty_reconcile_against_provider_truth"],
+      "sourcePathExists": true,
+      "designOperation": "reconcile",
+      "mappingClass": "owner_native",
+      "delegatedCallees": ["FinalUseAuthority::claim"]
+    },
+    {
+      "operation": "reconcile_indeterminate_issue",
+      "nativeSymbol": "BaoLeaseManager::reconcile_indeterminate_issue",
+      "sourcePath": "codex-rs/hepta-bao-adapter/src/lease.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "kernel_final_use",
+      "tests": ["lost_issue_response_can_only_be_adopted_as_orphaned_after_explicit_provider_lookup"],
+      "sourcePathExists": true,
+      "designOperation": "reconcile_lost_issue_ack",
+      "mappingClass": "owner_native",
+      "delegatedCallees": ["FinalUseAuthority::claim"]
+    },
+    {
+      "operation": "final_use_claim",
+      "nativeSymbol": "FinalUseAuthority::claim",
+      "sourcePath": "codex-rs/hepta-contracts/src/final_use.rs",
+      "state": "shared_source_implemented",
+      "authority": "kernel_authority",
+      "tests": [
+        "claim_journal_exceeds_legacy_16384_limit_without_snapshot_growth",
+        "replay_journal_survives_restart_without_rewriting_head_snapshot"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "replay_admission",
+      "mappingClass": "shared_dependency",
       "delegatedCallees": []
     }
   ],
   "repositoryControlledGaps": [
-    "Bind every operation to an authenticated consumer callsite and owner store.",
-    "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary."
+    "Bind the lifecycle API to every intended authenticated product caller and owner store.",
+    "Qualify a concrete target host and provider policy before production activation.",
+    "A deployment requiring concurrent writers for one shared authority identity still needs a separately qualified strongly consistent shared backend.",
+    "Generic provider-independent issuance reconciliation cannot recover a lost credential response without an externally observed provider lease identity or a provider-specific idempotency contract."
   ],
   "externalEvidenceGates": [
-    "independent semantic review",
+    "independent semantic and security review",
     "product execution and target-host qualification",
     "operator acceptance, canary, promotion and release"
   ],
+  "verification": {
+    "workflow": ".github/workflows/heptabao-lease-qualification.yml",
+    "receiptGenerator": "codex-rs/hepta-bao-adapter/qa/emit_verification_receipt.py",
+    "receiptBindsExactCandidate": true
+  },
   "claimBoundary": {
     "nativeSourceMappingComplete": true,
     "sourceRootPresent": true,
