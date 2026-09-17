@@ -1,8 +1,9 @@
 //! Backend-owned, read-only projection of the supervisord control protocol.
 //!
-//! The administrator protocol deliberately retains lifecycle mutations.  This
+//! The administrator protocol deliberately retains lifecycle mutations. This
 //! projection is a separate capability surface for Robrix and therefore has no
-//! mutation request constructor and no mutation-success response variant.
+//! mutation or signed-recovery request constructor and no privileged response
+//! variant.
 
 use codex_hepta_contracts::AgentId;
 use codex_hepta_fleet::AgentLifecycle;
@@ -134,7 +135,9 @@ impl TryFrom<SupervisordResponse> for RobrixSupervisordResponse {
                 message,
                 actual,
             },
-            SupervisordPayload::MutationAccepted { .. } => {
+            SupervisordPayload::MutationAccepted { .. }
+            | SupervisordPayload::SignedIntent { .. }
+            | SupervisordPayload::SignedIntentResolved { .. } => {
                 return Err(RobrixProtocolError::MutationPayloadForbidden);
             }
         };
@@ -173,7 +176,7 @@ pub enum RobrixProtocolError {
     InvalidAgentStatus,
     #[error("unsafe Robrix control error")]
     UnsafeError,
-    #[error("supervisord mutation payload is outside the Robrix projection")]
+    #[error("supervisord mutation or recovery payload is outside the Robrix projection")]
     MutationPayloadForbidden,
 }
 

@@ -28,6 +28,8 @@ impl<D: ProcessDriver> Supervisor<D> {
             DeferredAgentActionKind::Drain,
             now,
         )? {
+            slot.reset_automatic_restart_policy();
+            slot.matrix.reset_restart_policy();
             return Ok(());
         }
         self.fence_runtime(agent_id, slot)?;
@@ -49,6 +51,8 @@ impl<D: ProcessDriver> Supervisor<D> {
                 lifecycle.lifecycle
             )));
         }
+        slot.reset_automatic_restart_policy();
+        slot.matrix.reset_restart_policy();
         let generation = {
             let runtime = active_runtime(agent_id, slot)?;
             runtime.phase = RuntimePhase::Draining {
@@ -72,10 +76,14 @@ impl<D: ProcessDriver> Supervisor<D> {
     ) -> Result<(), SupervisorError> {
         slot.restart_pending = false;
         if self.defer_agent_action_for_matrix(agent_id, slot, DeferredAgentActionKind::Stop, now)? {
+            slot.reset_automatic_restart_policy();
+            slot.matrix.reset_restart_policy();
             return Ok(());
         }
         slot.deferred_agent_action = None;
         self.prepare_termination(agent_id, slot)?;
+        slot.reset_automatic_restart_policy();
+        slot.matrix.reset_restart_policy();
         let generation = {
             let runtime = active_runtime(agent_id, slot)?;
             runtime.phase = RuntimePhase::Stopping {
@@ -100,6 +108,8 @@ impl<D: ProcessDriver> Supervisor<D> {
         slot.deferred_agent_action = None;
         self.kill_matrix_now(agent_id, slot)?;
         self.prepare_termination(agent_id, slot)?;
+        slot.reset_automatic_restart_policy();
+        slot.matrix.reset_restart_policy();
         let generation = {
             let runtime = active_runtime(agent_id, slot)?;
             runtime.phase = RuntimePhase::Killing;
@@ -129,6 +139,8 @@ impl<D: ProcessDriver> Supervisor<D> {
         });
         let release =
             release.ok_or_else(|| SupervisorError::NoPreviousCommand(agent_id.clone()))?;
+        slot.reset_automatic_restart_policy();
+        slot.matrix.reset_restart_policy();
         if slot.runtime.is_none() {
             return self.start_release_slot(agent_id, slot, release, now);
         }

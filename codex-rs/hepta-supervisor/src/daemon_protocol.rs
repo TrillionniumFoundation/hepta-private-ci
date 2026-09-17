@@ -1,6 +1,7 @@
 use std::fmt;
 
 use codex_hepta_contracts::AgentId;
+use codex_hepta_contracts::Sha256Digest;
 use codex_hepta_fleet::AgentLifecycle;
 use codex_hepta_fleet::ReleaseId;
 use codex_hepta_memory::H7SignedArtifactEnvelope;
@@ -11,6 +12,7 @@ use serde::Serializer;
 use serde::de::Error as _;
 
 use crate::H7H89ProductionGrant;
+use crate::H7H89ProductionTransition;
 use crate::ProductionMutationReceipt;
 
 pub const SUPERVISORD_CONTROL_SCHEMA_VERSION: u32 = 2;
@@ -42,7 +44,9 @@ impl SupervisordRequest {
             return Err(SupervisordRequestValidationError::InvalidRequest);
         }
         match &self.method {
-            SupervisordMethod::Health | SupervisordMethod::Snapshot { .. } => Ok(()),
+            SupervisordMethod::Health
+            | SupervisordMethod::Snapshot { .. }
+            | SupervisordMethod::InspectSignedIntent { .. } => Ok(()),
             SupervisordMethod::Roster { limit } => {
                 if (1..=MAX_SUPERVISORD_ROSTER).contains(limit) {
                     Ok(())
@@ -58,7 +62,8 @@ impl SupervisordRequest {
             | SupervisordMethod::Upgrade { fence, .. }
             | SupervisordMethod::Rollback { fence }
             | SupervisordMethod::SignedUpgrade { fence, .. }
-            | SupervisordMethod::SignedRollback { fence, .. } => fence.validate(),
+            | SupervisordMethod::SignedRollback { fence, .. }
+            | SupervisordMethod::ResolveSignedIntent { fence, .. } => fence.validate(),
         }
     }
 }
@@ -81,6 +86,11 @@ pub enum SupervisordMethod {
         limit: u16,
     },
     Snapshot {
+        agent_id: AgentId,
+    },
+    /// Read-only inspection of the one durable signed transition witness for
+    /// an Agent. This remains available while ordinary mutations are frozen.
+    InspectSignedIntent {
         agent_id: AgentId,
     },
     Start {
@@ -107,8 +117,8 @@ pub enum SupervisordMethod {
         fence: SupervisordControlFence,
     },
     /// A production mutation must carry both the H7 envelope and an
-    /// independent authority grant.  The daemon's verifier is injected out
-    /// of band; no request can choose its own trust root.
+    /// independent authority grant. The daemon's verifier is injected out of
+    /// band; no request can choose its own trust root.
     SignedUpgrade {
         fence: SupervisordControlFence,
         grant: H7H89ProductionGrant,
@@ -118,6 +128,14 @@ pub enum SupervisordMethod {
         fence: SupervisordControlFence,
         grant: H7H89ProductionGrant,
         h7_envelope: H7SignedArtifactEnvelope,
+    },
+    /// Explicit recovery of an already-persisted ambiguous signed mutation.
+    /// The caller must bind both the current control fence and exact durable
+    /// intent digest; this RPC never launches a new target release.
+    ResolveSignedIntent {
+        fence: SupervisordControlFence,
+        intent_sha256: Sha256Digest,
+        resolution: SupervisordSignedIntentResolution,
     },
 }
 
@@ -145,6 +163,42 @@ impl fmt::Display for SupervisordMutation {
             Self::Rollback => "rollback",
         })
     }
+}
+
+#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(rename_all = "snake_case")]
+pub enum SupervisordSignedIntentResolution {
+    /// The durable release state still names the source release. Abandon the
+    /// ambiguous transition without launching any process.
+    ReconcileSource,
+    /// The durable release state names the exact authorized target. Accept
+    /// that already-committed state without launching any process.
+    AcceptTarget,
+}
+
+#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(rename_all = "snake_case")]
+pub enum SupervisordSignedIntentStatus {
+    Prepared,
+    Queued,
+    Committed,
+    RecoveryRequired,
+    ReconciledSource,
+}
+
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct SupervisordSignedIntent {
+    pub grant_sha256: Sha256Digest,
+    pub agent_id: AgentId,
+    pub transition: H7H89ProductionTransition,
+    pub source_release: ReleaseId,
+    pub target_release: ReleaseId,
+    pub expected_control_revision: u64,
+    pub expected_lifecycle_generation: u64,
+    pub authority_epoch: u64,
+    pub status: SupervisordSignedIntentStatus,
+    pub intent_sha256: Sha256Digest,
 }
 
 #[derive(Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
@@ -313,13 +367,21 @@ pub enum SupervisordPayload {
         agents: Vec<SupervisordAgentStatus>,
     },
     Agent(SupervisordAgentStatus),
+    SignedIntent {
+        intent: Option<SupervisordSignedIntent>,
+    },
+    SignedIntentResolved {
+        resolution: SupervisordSignedIntentResolution,
+        intent: SupervisordSignedIntent,
+        agent: SupervisordAgentStatus,
+    },
     MutationAccepted {
         operation: SupervisordMutation,
         accepted_state_digest: ControlStateDigest,
         agent: SupervisordAgentStatus,
-        /// Present only for an externally signed lifecycle mutation.  The
+        /// Present only for an externally signed lifecycle mutation. The
         /// ordinary local-control mutations deliberately carry no authority
-        /// receipt.  When present, the grant digest is the durable
+        /// receipt. When present, the grant digest is the durable
         /// `supervisor-signed-intent.json` witness for this operation.
         #[serde(default, skip_serializing_if = "Option::is_none")]
         production_receipt: Option<ProductionMutationReceipt>,
@@ -405,9 +467,7 @@ pub struct SupervisordMatrixStatus {
 
 #[cfg(test)]
 mod tests {
-    use crate::H7H89ProductionTransition;
     use crate::ProductionMutationStatus;
-    use codex_hepta_contracts::Sha256Digest;
     use pretty_assertions::assert_eq;
     use serde_json::json;
 
@@ -539,6 +599,28 @@ mod tests {
         ] {
             assert_eq!(json["payload"]["production_receipt"][field], true);
         }
+    }
+
+    #[test]
+    fn signed_intent_recovery_request_binds_fence_digest_and_resolution() {
+        let intent_sha256 = Sha256Digest::for_bytes(b"intent");
+        let request = SupervisordRequest::new(
+            46,
+            SupervisordMethod::ResolveSignedIntent {
+                fence: fence(),
+                intent_sha256: intent_sha256.clone(),
+                resolution: SupervisordSignedIntentResolution::ReconcileSource,
+            },
+        );
+        assert_eq!(request.validate(), Ok(()));
+        let value = serde_json::to_value(&request).expect("serialize recovery request");
+        assert_eq!(value["method"]["type"], "resolve_signed_intent");
+        assert_eq!(value["method"]["intent_sha256"], intent_sha256.as_str());
+        assert_eq!(value["method"]["resolution"], "reconcile_source");
+        assert_eq!(
+            serde_json::from_value::<SupervisordRequest>(value).expect("round trip"),
+            request
+        );
     }
 
     #[test]

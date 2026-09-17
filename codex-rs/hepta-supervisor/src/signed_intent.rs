@@ -1,8 +1,8 @@
 //! Durable supervisor-side journal for externally signed release mutations.
 //!
-//! The journal is intentionally tiny and one-file-per-agent.  It is written
+//! The journal is intentionally tiny and one-file-per-agent. It is written
 //! before a process transition is queued and updated only after the existing
-//! release-state CAS commits.  A restart therefore has a durable witness for
+//! release-state CAS commits. A restart therefore has a durable witness for
 //! an in-flight operation and can fail closed instead of guessing.
 
 use std::fs::OpenOptions;
@@ -34,6 +34,20 @@ pub enum SignedIntentStatus {
     Queued,
     Committed,
     RecoveryRequired,
+    /// An operator recovery ceremony proved that the durable release state is
+    /// still the exact source release and explicitly abandoned the ambiguous
+    /// transition. This is terminal and permits a later independent grant.
+    ReconciledSource,
+}
+
+impl SignedIntentStatus {
+    pub(crate) fn is_terminal(self) -> bool {
+        matches!(self, Self::Committed | Self::ReconciledSource)
+    }
+
+    pub(crate) fn is_unresolved(self) -> bool {
+        !self.is_terminal()
+    }
 }
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
@@ -170,19 +184,15 @@ pub fn read_intent(run_root: &Path) -> Result<Option<SignedSupervisorIntent>, Si
 
 /// Atomically publishes one intent after synchronizing its file. Unix fsyncs
 /// the containing directory; Windows uses a same-directory write-through
-/// replacement. An unresolved non-terminal intent cannot be overwritten.
+/// replacement. An unresolved non-terminal intent cannot be overwritten by a
+/// different grant.
 pub fn write_intent(
     run_root: &Path,
     intent: &SignedSupervisorIntent,
 ) -> Result<(), SignedIntentError> {
     intent.validate()?;
     if let Some(existing) = read_intent(run_root)?
-        && matches!(
-            existing.status,
-            SignedIntentStatus::Prepared
-                | SignedIntentStatus::Queued
-                | SignedIntentStatus::RecoveryRequired
-        )
+        && existing.status.is_unresolved()
         && existing.grant_sha256 != intent.grant_sha256
     {
         return Err(SignedIntentError::Invalid(
@@ -213,12 +223,9 @@ pub fn write_intent(
 mod tests {
     use super::*;
 
-    #[test]
-    fn intent_round_trips_and_rejects_unresolved_overwrite() -> Result<(), SignedIntentError> {
-        let dir = tempfile::tempdir().expect("temp");
-        let grant = Sha256Digest::for_bytes(b"grant");
-        let first = SignedSupervisorIntent::new(
-            grant,
+    fn intent(grant: &[u8], status: SignedIntentStatus) -> SignedSupervisorIntent {
+        SignedSupervisorIntent::new(
+            Sha256Digest::for_bytes(grant),
             "agent",
             H7H89ProductionTransition::Upgrade,
             "v1",
@@ -226,9 +233,15 @@ mod tests {
             0,
             1,
             1,
-            SignedIntentStatus::Queued,
+            status,
         )
-        .expect("first");
+        .expect("fixed intent")
+    }
+
+    #[test]
+    fn intent_round_trips_and_rejects_unresolved_overwrite() -> Result<(), SignedIntentError> {
+        let dir = tempfile::tempdir().expect("temp");
+        let first = intent(b"grant", SignedIntentStatus::Queued);
         write_intent(dir.path(), &first).expect("write");
         assert_eq!(read_intent(dir.path()).expect("read"), Some(first.clone()));
         let other = SignedSupervisorIntent::new(
@@ -247,14 +260,58 @@ mod tests {
             write_intent(dir.path(), &other),
             Err(SignedIntentError::Invalid(message)) if message.contains("unresolved")
         ));
-        let committed = SignedSupervisorIntent {
-            status: SignedIntentStatus::Committed,
-            ..first
-        };
-        let mut committed = committed;
-        committed.intent_sha256 = committed.compute_digest()?;
+        let committed = first
+            .with_status(SignedIntentStatus::Committed)
+            .expect("commit status");
         write_intent(dir.path(), &committed).expect("terminal replacement");
         Ok(())
+    }
+
+    #[test]
+    fn reconciled_source_is_terminal_and_allows_a_new_grant() {
+        let dir = tempfile::tempdir().expect("temp");
+        let first = intent(b"grant", SignedIntentStatus::RecoveryRequired);
+        write_intent(dir.path(), &first).expect("recovery intent");
+        let reconciled = first
+            .with_status(SignedIntentStatus::ReconciledSource)
+            .expect("reconciled status");
+        write_intent(dir.path(), &reconciled).expect("terminal reconciliation");
+
+        let next = SignedSupervisorIntent::new(
+            Sha256Digest::for_bytes(b"next"),
+            "agent",
+            H7H89ProductionTransition::Upgrade,
+            "v2",
+            "v3",
+            1,
+            2,
+            2,
+            SignedIntentStatus::Prepared,
+        )
+        .expect("next intent");
+        write_intent(dir.path(), &next).expect("new grant after terminal recovery");
+        assert_eq!(read_intent(dir.path()).expect("read"), Some(next));
+    }
+
+    #[test]
+    fn truncated_or_tampered_intent_fails_closed() {
+        let dir = tempfile::tempdir().expect("temp");
+        std::fs::write(dir.path().join(SIGNED_INTENT_FILE), b"{\"schema_version\":1")
+            .expect("write truncated");
+        assert!(matches!(
+            read_intent(dir.path()),
+            Err(SignedIntentError::Serialization(_))
+        ));
+
+        let good = intent(b"grant", SignedIntentStatus::Prepared);
+        let mut value = serde_json::to_value(good).expect("encode");
+        value["target_release"] = serde_json::Value::String("v9".to_string());
+        std::fs::write(
+            dir.path().join(SIGNED_INTENT_FILE),
+            serde_json::to_vec(&value).expect("json"),
+        )
+        .expect("write tampered");
+        assert!(matches!(read_intent(dir.path()), Err(SignedIntentError::DigestMismatch)));
     }
 }
 

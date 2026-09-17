@@ -151,6 +151,26 @@ impl SupervisorConfig {
         }
     }
 
+    /// Pilot automatic-recovery policy. Keep these accessors internal so the
+    /// existing public config literal remains source compatible. Deployment
+    /// composition can promote this policy into a versioned host-profile
+    /// contract without silently changing the current public API.
+    pub(crate) fn restart_min_backoff(&self) -> Duration {
+        Duration::from_millis(250)
+    }
+
+    pub(crate) fn restart_max_backoff(&self) -> Duration {
+        Duration::from_secs(30)
+    }
+
+    pub(crate) fn restart_recovery_window(&self) -> Duration {
+        Duration::from_secs(5 * 60)
+    }
+
+    pub(crate) fn restart_attempt_budget(&self) -> u32 {
+        3
+    }
+
     pub(crate) fn validate(&self) -> Result<(), SupervisorError> {
         if self.health_timeout.is_zero()
             || self.drain_timeout.is_zero()
@@ -230,6 +250,8 @@ pub enum SupervisorEventKind {
     StopRequested,
     KillRequested,
     RestartQueued,
+    AutomaticRestartScheduled { attempt: u32, delay_ms: u64 },
+    RestartBudgetExhausted { attempts: u32 },
     UpgradeQueued { previous: String, target: String },
     UpgradeCommitted { previous: String, target: String },
     AutomaticRollbackQueued { failed: String, target: String },
@@ -250,6 +272,7 @@ pub enum SupervisorEventKind {
     MatrixOrphanMissing,
     MatrixOrphanRejected,
     MatrixDegraded(String),
+    MatrixRestartBudgetExhausted { attempts: u32 },
     GenerationFenced { runtime: u64, registry: u64 },
     DriverFault(String),
 }

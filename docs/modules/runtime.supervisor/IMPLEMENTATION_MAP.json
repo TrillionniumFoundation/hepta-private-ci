@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "7e8379b3954808d4138a7bd2f3773f75691291a3",
-    "tree": "ff9fa6baf95a35fd2f49816e0a80097688f2aeeb"
+    "commit": "505e05666122b7d31b9f7ca333e899dcfb556829",
+    "tree": "c4975dbd798171748d0bb360707b85a5764156b8"
   },
   "laneId": "LANE-B-RUNTIME",
   "module": "runtime.supervisor",
@@ -32,9 +32,14 @@
           "path": "codex-rs/hepta-supervisor/src/supervisor_tests.rs",
           "kind": "native_unit",
           "command": "just test -p codex-hepta-supervisor --lib"
+        },
+        {
+          "path": "codex-rs/hepta-supervisor/src/restart_qualification_tests.rs",
+          "kind": "automatic_restart_budget",
+          "command": "just test -p codex-hepta-supervisor --lib"
         }
       ],
-      "sourceSemantics": "Creates a generation-fenced managed process from a registered agent and bounded configuration.",
+      "sourceSemantics": "Creates a generation-fenced managed process from a registered Agent and participates in bounded automatic restart recovery.",
       "operation": "start_instance",
       "nativeSymbol": "pub fn start(",
       "sourcePath": "codex-rs/hepta-supervisor/src/supervisor.rs",
@@ -55,9 +60,19 @@
           "path": "codex-rs/hepta-supervisor/src/supervisor_tests.rs",
           "kind": "fault_and_lifecycle",
           "command": "just test -p codex-hepta-supervisor --lib"
+        },
+        {
+          "path": "codex-rs/hepta-supervisor/src/restart_qualification_tests.rs",
+          "kind": "bounded_restart_and_flap",
+          "command": "just test -p codex-hepta-supervisor --lib"
+        },
+        {
+          "path": "codex-rs/hepta-supervisor/src/daemon_tick.rs",
+          "kind": "per_agent_tick_isolation",
+          "command": "just test -p codex-hepta-supervisor --lib"
         }
       ],
-      "sourceSemantics": "Consumes process observations under the active generation and advances readiness, drain, stop, restart, and rollback state.",
+      "sourceSemantics": "Consumes process observations under the active generation, advances readiness/drain/stop/restart/rollback state, and enforces bounded automatic restart with a fixed attempt budget.",
       "operation": "observe_health",
       "nativeSymbol": "pub fn tick(",
       "sourcePath": "codex-rs/hepta-supervisor/src/supervisor.rs",
@@ -80,7 +95,7 @@
           "command": "just test -p codex-hepta-supervisor --lib"
         }
       ],
-      "sourceSemantics": "Stops admission and requests bounded drain without inventing completion.",
+      "sourceSemantics": "Stops admission and requests bounded drain without inventing completion; explicit operator control cancels pending automatic restart.",
       "operation": "drain",
       "nativeSymbol": "pub fn drain(",
       "sourcePath": "codex-rs/hepta-supervisor/src/supervisor.rs",
@@ -101,9 +116,14 @@
           "path": "codex-rs/hepta-supervisor/src/supervisor_tests.rs",
           "kind": "upgrade_and_rollback",
           "command": "just test -p codex-hepta-supervisor --lib"
+        },
+        {
+          "path": "codex-rs/hepta-supervisor/src/daemon.rs",
+          "kind": "signed_mutation_indeterminate_and_recovery_protocol",
+          "command": "just test -p codex-hepta-supervisor --lib"
         }
       ],
-      "sourceSemantics": "Transitions through an exact release predecessor and new process generation with rollback support.",
+      "sourceSemantics": "Transitions through an exact release predecessor and new process generation with rollback support; signed production transitions publish durable intent before mutation and require explicit reconciliation after ambiguous failure.",
       "operation": "load_next",
       "nativeSymbol": "pub fn upgrade(",
       "sourcePath": "codex-rs/hepta-supervisor/src/supervisor.rs",
@@ -112,8 +132,11 @@
   ],
   "repositoryControlledGaps": [],
   "externalEvidenceGates": [
-    "deployed binary and host identity",
-    "target-host watchdog/start/drain measurements",
+    "exact-candidate package, strict-lint and synthetic-merge CI receipts",
+    "deployed binary and selected-host identity",
+    "selected-host SIGKILL, ENOSPC, fsync/rename, PID-reuse and timeout fault injection",
+    "1/64/128/256-Agent watchdog, drain and head-of-line latency measurements",
+    "named independent production release-selection caller and writer composition",
     "independent operational acceptance"
   ],
   "claimBoundary": {

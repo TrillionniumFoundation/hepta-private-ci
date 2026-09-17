@@ -75,12 +75,72 @@ pub(crate) struct DeferredAgentAction {
     pub spawn_generation: u64,
 }
 
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub(crate) enum RestartSchedule {
+    Scheduled { attempt: u32, delay: Duration },
+    Exhausted { attempts: u32 },
+}
+
+/// Advances one automatic restart budget. The counter is retained after a
+/// successful restart so a rapidly flapping process cannot regain a fresh
+/// budget merely by becoming healthy briefly. A new window is opened only
+/// when the previous recovery window has elapsed before the next failure.
+pub(crate) fn schedule_restart(
+    attempt: &mut u32,
+    window_started_at: &mut Option<Instant>,
+    retry_at: &mut Option<Instant>,
+    exhausted: &mut bool,
+    config: &SupervisorConfig,
+    now: Instant,
+) -> RestartSchedule {
+    let window_elapsed = window_started_at
+        .and_then(|started| now.checked_duration_since(started))
+        .is_some_and(|elapsed| elapsed >= config.restart_recovery_window());
+    if window_started_at.is_none() || window_elapsed {
+        *window_started_at = Some(now);
+        *attempt = 0;
+        *retry_at = None;
+        *exhausted = false;
+    }
+
+    if *attempt >= config.restart_attempt_budget() {
+        *exhausted = true;
+        *retry_at = None;
+        return RestartSchedule::Exhausted { attempts: *attempt };
+    }
+
+    *attempt = attempt.saturating_add(1);
+    let shift = attempt.saturating_sub(1).min(30);
+    let max_backoff = config.restart_max_backoff();
+    let delay = config
+        .restart_min_backoff()
+        .checked_mul(1_u32 << shift)
+        .unwrap_or(max_backoff)
+        .min(max_backoff);
+    let Some(next_retry) = now.checked_add(delay) else {
+        *exhausted = true;
+        *retry_at = None;
+        return RestartSchedule::Exhausted { attempts: *attempt };
+    };
+    *retry_at = Some(next_retry);
+    RestartSchedule::Scheduled {
+        attempt: *attempt,
+        delay,
+    }
+}
+
+pub(crate) fn restart_due(retry_at: Option<Instant>, exhausted: bool, now: Instant) -> bool {
+    !exhausted && retry_at.is_some_and(|retry_at| now >= retry_at)
+}
+
 pub(crate) struct MatrixCompanionSlot<P> {
     pub runtime: Option<MatrixRuntime<P>>,
     pub configured: bool,
     pub degraded: bool,
     pub restart_attempt: u32,
+    pub restart_window_started_at: Option<Instant>,
     pub retry_at: Option<Instant>,
+    pub restart_exhausted: bool,
     pub restart_after_exit: bool,
     pub last_error: Option<String>,
 }
@@ -92,10 +152,20 @@ impl<P> MatrixCompanionSlot<P> {
             configured: false,
             degraded: false,
             restart_attempt: 0,
+            restart_window_started_at: None,
             retry_at: None,
+            restart_exhausted: false,
             restart_after_exit: false,
             last_error: None,
         }
+    }
+
+    pub fn reset_restart_policy(&mut self) {
+        self.restart_attempt = 0;
+        self.restart_window_started_at = None;
+        self.retry_at = None;
+        self.restart_exhausted = false;
+        self.restart_after_exit = false;
     }
 }
 
@@ -141,6 +211,10 @@ pub(crate) struct AgentSlot<P> {
     pub deferred_agent_action: Option<DeferredAgentAction>,
     pub last_command: Option<AgentCommand>,
     pub restart_pending: bool,
+    pub automatic_restart_attempt: u32,
+    pub automatic_restart_window_started_at: Option<Instant>,
+    pub automatic_restart_retry_at: Option<Instant>,
+    pub automatic_restart_exhausted: bool,
     pub active_release: Option<AgentRelease>,
     pub previous_release: Option<AgentRelease>,
     pub release_change: Option<ReleaseChange>,
@@ -161,6 +235,10 @@ impl<P> AgentSlot<P> {
             deferred_agent_action: None,
             last_command: None,
             restart_pending: false,
+            automatic_restart_attempt: 0,
+            automatic_restart_window_started_at: None,
+            automatic_restart_retry_at: None,
+            automatic_restart_exhausted: false,
             active_release: None,
             previous_release: None,
             release_change: None,
@@ -174,6 +252,13 @@ impl<P> AgentSlot<P> {
 
     pub fn event(&mut self, generation: u64, kind: SupervisorEventKind) {
         self.events.push(SupervisorEvent { generation, kind });
+    }
+
+    pub fn reset_automatic_restart_policy(&mut self) {
+        self.automatic_restart_attempt = 0;
+        self.automatic_restart_window_started_at = None;
+        self.automatic_restart_retry_at = None;
+        self.automatic_restart_exhausted = false;
     }
 }
 
@@ -205,4 +290,114 @@ pub(crate) fn bounded_message(mut message: String) -> String {
         message.truncate(boundary);
     }
     message
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn restart_config() -> SupervisorConfig {
+        SupervisorConfig {
+            health_timeout: Duration::from_secs(1),
+            drain_timeout: Duration::from_secs(1),
+            stop_grace: Duration::from_secs(1),
+            event_capacity: 4,
+            log_capacity: 4,
+            max_log_bytes: 64,
+            driver_poll_batch: 4,
+        }
+    }
+
+    #[test]
+    fn restart_schedule_is_exponential_and_stops_at_budget() {
+        let config = restart_config();
+        let now = Instant::now();
+        let mut attempt = 0;
+        let mut window = None;
+        let mut retry = None;
+        let mut exhausted = false;
+
+        assert_eq!(
+            schedule_restart(
+                &mut attempt,
+                &mut window,
+                &mut retry,
+                &mut exhausted,
+                &config,
+                now,
+            ),
+            RestartSchedule::Scheduled {
+                attempt: 1,
+                delay: Duration::from_millis(250),
+            }
+        );
+        assert_eq!(
+            schedule_restart(
+                &mut attempt,
+                &mut window,
+                &mut retry,
+                &mut exhausted,
+                &config,
+                now,
+            ),
+            RestartSchedule::Scheduled {
+                attempt: 2,
+                delay: Duration::from_millis(500),
+            }
+        );
+        assert_eq!(
+            schedule_restart(
+                &mut attempt,
+                &mut window,
+                &mut retry,
+                &mut exhausted,
+                &config,
+                now,
+            ),
+            RestartSchedule::Scheduled {
+                attempt: 3,
+                delay: Duration::from_secs(1),
+            }
+        );
+        assert_eq!(
+            schedule_restart(
+                &mut attempt,
+                &mut window,
+                &mut retry,
+                &mut exhausted,
+                &config,
+                now,
+            ),
+            RestartSchedule::Exhausted { attempts: 3 }
+        );
+        assert!(exhausted);
+        assert_eq!(retry, None);
+    }
+
+    #[test]
+    fn restart_schedule_opens_a_fresh_budget_after_window_elapsed() {
+        let config = restart_config();
+        let now = Instant::now();
+        let mut attempt = 3;
+        let mut window = Some(now);
+        let mut retry = None;
+        let mut exhausted = true;
+        let later = now + config.restart_recovery_window() + Duration::from_millis(1);
+
+        assert_eq!(
+            schedule_restart(
+                &mut attempt,
+                &mut window,
+                &mut retry,
+                &mut exhausted,
+                &config,
+                later,
+            ),
+            RestartSchedule::Scheduled {
+                attempt: 1,
+                delay: Duration::from_millis(250),
+            }
+        );
+        assert!(!exhausted);
+    }
 }

@@ -116,6 +116,8 @@ use crate::daemon_protocol::SupervisordRequestValidationError;
 #[cfg(unix)]
 use crate::daemon_protocol::SupervisordResponse;
 #[cfg(unix)]
+use crate::daemon_protocol::SupervisordSignedIntentResolution;
+#[cfg(unix)]
 use crate::signed_authority::authority_epoch_for_supervisor_epoch;
 
 #[cfg(unix)]
@@ -160,7 +162,7 @@ pub async fn run_supervisord(
 }
 
 /// Production entry point for a daemon whose trust root was pinned by an
-/// external authority/configuration ceremony.  The verifier is intentionally
+/// external authority/configuration ceremony. The verifier is intentionally
 /// a parameter: the daemon never reads a public key from a mutation request
 /// and the legacy entry point keeps signed mutations disabled.
 /// After the feature gate, non-Unix hosts return an unsupported-platform I/O
@@ -222,8 +224,26 @@ async fn run_supervisord_inner(
             tokio::select! {
                 _ = tick_cancellation.cancelled() => return,
                 _ = interval.tick() => {
-                    let faults = tick_state.supervisor.lock().await.tick(Instant::now()).faults;
-                    tick_state.observed_faults.fetch_add(faults.len() as u64, Ordering::Relaxed);
+                    // Copy the bounded fleet identity list under one short
+                    // lock, then release the mutex between Agent ticks. This
+                    // prevents a 256-Agent sweep from becoming one monolithic
+                    // head-of-line critical section while preserving each
+                    // Agent's generation/release serialization.
+                    let agent_ids = tick_state.supervisor.lock().await.agent_ids();
+                    let mut fault_count = 0_u64;
+                    for agent_id in agent_ids {
+                        let faults = tick_state
+                            .supervisor
+                            .lock()
+                            .await
+                            .tick_agent(&agent_id, Instant::now())
+                            .faults;
+                        fault_count = fault_count.saturating_add(faults.len() as u64);
+                        tokio::task::yield_now().await;
+                    }
+                    tick_state
+                        .observed_faults
+                        .fetch_add(fault_count, Ordering::Relaxed);
                 }
             }
         }
@@ -384,6 +404,7 @@ async fn handle_request<D: ProcessDriver>(
 ) -> SupervisordPayload {
     match method {
         SupervisordMethod::Health => {
+            let recovery_required = state.supervisor.lock().await.has_unresolved_signed_intents();
             let registered_agents = match state.registry.load() {
                 Ok(snapshot) => snapshot.agents.len(),
                 Err(error) => {
@@ -405,7 +426,7 @@ async fn handle_request<D: ProcessDriver>(
                 }
             };
             SupervisordPayload::Health(SupervisordHealth {
-                ready: true,
+                ready: !recovery_required,
                 supervisor_epoch: state.supervisor_epoch.clone(),
                 process_id: std::process::id(),
                 registered_agents,
@@ -458,6 +479,16 @@ async fn handle_request<D: ProcessDriver>(
                 safe_rejection(error, /*actual*/ None, /*mutation_started*/ false)
             }
         },
+        SupervisordMethod::InspectSignedIntent { agent_id } => {
+            let supervisor = state.supervisor.lock().await;
+            match supervisor.inspect_signed_intent(&agent_id) {
+                Ok(intent) => SupervisordPayload::SignedIntent { intent },
+                Err(error) => {
+                    let actual = agent_status_locked(&state, &supervisor, &agent_id).ok();
+                    safe_rejection(error, actual, /*mutation_started*/ false)
+                }
+            }
+        }
         SupervisordMethod::Start { fence, release_id } => {
             let target = match resolve_release_outside_lock(
                 Arc::clone(&state),
@@ -563,6 +594,11 @@ async fn handle_request<D: ProcessDriver>(
             )
             .await
         }
+        SupervisordMethod::ResolveSignedIntent {
+            fence,
+            intent_sha256,
+            resolution,
+        } => handle_signed_intent_resolution(state, fence, intent_sha256, resolution).await,
     }
 }
 
@@ -611,6 +647,9 @@ async fn handle_signed_mutation<D: ProcessDriver>(
             Some(actual),
         );
     }
+    if let Err(error) = supervisor.ensure_mutations_unfrozen() {
+        return safe_rejection(error, Some(actual), /*mutation_started*/ false);
+    }
     let authority_epoch = authority_epoch_for_supervisor_epoch(state.supervisor_epoch.as_str());
     let receipt = match supervisor.apply_production_grant(
         &agent_id,
@@ -624,11 +663,16 @@ async fn handle_signed_mutation<D: ProcessDriver>(
         Ok(receipt) => receipt,
         Err(error) => {
             let post = agent_status_locked(&state, &supervisor, &agent_id).ok();
-            return safe_rejection(
-                error,
-                post.or(Some(actual)),
-                /*mutation_started*/ false,
-            );
+            // The durable intent publication is the exact point at which an
+            // external-authority mutation starts. If this grant is now in the
+            // journal, all later failures are indeterminate rather than safe
+            // preflight rejections.
+            let mutation_started = supervisor
+                .inspect_signed_intent(&agent_id)
+                .ok()
+                .flatten()
+                .is_some_and(|intent| intent.grant_sha256.as_str() == grant.digest().as_str());
+            return safe_rejection(error, post.or(Some(actual)), mutation_started);
         }
     };
     let post = agent_status_locked(&state, &supervisor, &agent_id).ok();
@@ -647,6 +691,56 @@ async fn handle_signed_mutation<D: ProcessDriver>(
         accepted_state_digest,
         agent,
         production_receipt: Some(receipt),
+    }
+}
+
+#[cfg(unix)]
+async fn handle_signed_intent_resolution<D: ProcessDriver>(
+    state: Arc<DaemonState<D>>,
+    fence: SupervisordControlFence,
+    intent_sha256: codex_hepta_contracts::Sha256Digest,
+    resolution: SupervisordSignedIntentResolution,
+) -> SupervisordPayload {
+    let agent_id = fence.agent_id.clone();
+    let mut supervisor = state.supervisor.lock().await;
+    let actual = match agent_status_locked(&state, &supervisor, &agent_id) {
+        Ok(actual) => actual,
+        Err(error) => {
+            return safe_rejection(error, /*actual*/ None, /*mutation_started*/ false);
+        }
+    };
+    if !control_fence_matches(&fence, &actual.control_fence) {
+        return error_payload(
+            "stale_control_fence",
+            "selected Agent changed; refresh before retry",
+            Some(actual),
+        );
+    }
+    let resolved = supervisor.resolve_signed_intent(&agent_id, &intent_sha256, resolution);
+    let post = agent_status_locked(&state, &supervisor, &agent_id).ok();
+    let intent = match resolved {
+        Ok(intent) => intent,
+        Err(error) => {
+            // Validation failures leave the fence unchanged. If lifecycle
+            // cleanup started before a later durable write failed, the state
+            // digest changes and the recovery result is necessarily unknown.
+            let mutation_started = post.as_ref().is_some_and(|status| {
+                !control_fence_matches(&actual.control_fence, &status.control_fence)
+            });
+            return safe_rejection(error, post.or(Some(actual)), mutation_started);
+        }
+    };
+    let Some(agent) = post else {
+        return error_payload(
+            "operation_indeterminate",
+            "signed intent recovery outcome is indeterminate; refresh before retry",
+            /*actual*/ None,
+        );
+    };
+    SupervisordPayload::SignedIntentResolved {
+        resolution,
+        intent,
+        agent,
     }
 }
 
@@ -680,6 +774,9 @@ async fn handle_mutation<D: ProcessDriver>(
             "selected Agent changed; refresh before retry",
             Some(actual),
         );
+    }
+    if let Err(error) = supervisor.ensure_mutations_unfrozen() {
+        return safe_rejection(error, Some(actual), /*mutation_started*/ false);
     }
 
     let prepared = match (operation, target) {
@@ -1496,9 +1593,35 @@ mod tests {
         }
     }
 
+    #[test]
+    fn any_failure_after_mutation_start_is_indeterminate() {
+        let agent_id = AgentId::parse(AGENT_ID).expect("fixed AgentId");
+        let payload = safe_rejection(
+            SupervisorError::Invalid("post-intent injected failure".to_string()),
+            /*actual*/ None,
+            /*mutation_started*/ true,
+        );
+        assert!(matches!(
+            payload,
+            SupervisordPayload::Error { code, .. } if code == "operation_indeterminate"
+        ));
+        let payload = safe_rejection(
+            SupervisorError::Driver {
+                agent_id,
+                message: "driver failure after durable intent".to_string(),
+            },
+            /*actual*/ None,
+            /*mutation_started*/ true,
+        );
+        assert!(matches!(
+            payload,
+            SupervisordPayload::Error { code, .. } if code == "operation_indeterminate"
+        ));
+    }
+
     #[cfg(unix)]
-    #[tokio::test(flavor = "current_thread")]
-    async fn unresolved_signed_intent_blocks_daemon_startup_before_socket_bind() {
+    #[test]
+    fn unresolved_signed_intent_enters_recovery_mode_instead_of_fail_stuck() {
         let temp = tempfile::tempdir().expect("create temporary fleet");
         let fleet_root = HeptaFleetRoot::parse(temp.path().join("fleet")).expect("fleet root");
         let registry = FleetRegistry::initialize(fleet_root.clone()).expect("initialize registry");
@@ -1519,19 +1642,6 @@ mod tests {
                 .expect("agent manifest"),
             )
             .expect("register agent");
-        registry
-            .compare_and_transition(
-                &agent_id,
-                record.lifecycle.generation,
-                AgentLifecycle::Starting,
-            )
-            .expect("advance lifecycle generation");
-        let record = registry
-            .load()
-            .expect("reload transitioned agent")
-            .agent(&agent_id)
-            .cloned()
-            .expect("registered agent");
         let intent = crate::signed_intent::SignedSupervisorIntent::new(
             codex_hepta_contracts::Sha256Digest::for_bytes(b"unresolved-grant"),
             agent_id.to_string(),
@@ -1547,19 +1657,28 @@ mod tests {
         crate::signed_intent::write_intent(record.layout.run_root(), &intent)
             .expect("persist signed intent");
 
-        let error =
-            match run_supervisord_inner(fleet_root.clone(), CancellationToken::new(), None).await {
-                Ok(_) => panic!("unresolved signed intent must stop daemon startup"),
-                Err(error) => error,
-            };
+        let driver = UnixProcessDriver::new(256).expect("driver");
+        let (supervisor, recovery) = Supervisor::recover(
+            registry,
+            driver,
+            SupervisorConfig::local_default(),
+            Instant::now(),
+        )
+        .expect("recovery-mode supervisor must start");
+        assert!(supervisor.has_unresolved_signed_intents());
         assert!(matches!(
-            error,
-            SupervisorError::SignedIntentRecoveryRequired(id) if id == agent_id
+            supervisor.ensure_mutations_unfrozen(),
+            Err(SupervisorError::SignedIntentRecoveryRequired(id)) if id == agent_id
         ));
         assert!(
-            !registry.layout().supervisor_socket().exists(),
-            "daemon must not bind a control socket after fail-closed recovery"
+            recovery.faults.iter().any(|fault| fault.agent_id == agent_id),
+            "recovery mode must remain observable"
         );
+        let inspected = supervisor
+            .inspect_signed_intent(&agent_id)
+            .expect("inspect recovery intent")
+            .expect("intent exists");
+        assert_eq!(inspected.intent_sha256, intent.intent_sha256);
     }
 }
 
