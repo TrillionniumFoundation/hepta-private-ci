@@ -1,0 +1,102 @@
+name: Hepta native Rust shell qualification
+
+on:
+  pull_request:
+    paths:
+      - "codex-rs/hepta-native-gateway/**"
+      - "codex-rs/cli/src/bin/hepta-native.rs"
+      - ".github/workflows/hepta-native-rust.yml"
+      - "docs/modules/ui.native/**"
+      - "qualification/ui.native/**"
+  push:
+    branches:
+      - main
+    paths:
+      - "codex-rs/hepta-native-gateway/**"
+      - "codex-rs/cli/src/bin/hepta-native.rs"
+      - ".github/workflows/hepta-native-rust.yml"
+      - "docs/modules/ui.native/**"
+      - "qualification/ui.native/**"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-native-rust-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  native-rust:
+    name: native-rust (${{ matrix.os }})
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, macos-15, windows-2025]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 90
+    defaults:
+      run:
+        working-directory: codex-rs
+        shell: bash
+    steps:
+      - name: Check out exact source head
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+
+      - uses: ./.github/actions/setup-ci
+
+      - name: Install pinned Rust toolchain
+        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0
+        with:
+          components: clippy,rustfmt
+
+      - name: Verify Rust formatting
+        run: cargo fmt --all -- --check
+
+      - name: Test native runtime, reconciliation, grants and updater
+        run: cargo test -p codex-hepta-native-gateway --locked
+
+      - name: Compile all-Rust native application shell
+        run: cargo check -p codex-cli --bin hepta-native --locked
+
+      - name: Clippy native gateway
+        run: cargo clippy -p codex-hepta-native-gateway --all-targets --locked -- -D warnings
+
+      - name: Clippy native application shell
+        run: cargo clippy -p codex-cli --bin hepta-native --locked -- -D warnings
+
+      - name: Record exact-head qualification receipt
+        run: |
+          set -euo pipefail
+          mkdir -p ../qualification/ui.native/evidence
+          head="$(git rev-parse HEAD)"
+          tree="$(git rev-parse 'HEAD^{tree}')"
+          python3 - "$head" "$tree" "${{ matrix.os }}" > ../qualification/ui.native/evidence/native-rust-${{ matrix.os }}.json <<'PY'
+          import json
+          import sys
+          print(json.dumps({
+              "schema": "hepta.ui-native-rust-qualification.v1",
+              "head": sys.argv[1],
+              "tree": sys.argv[2],
+              "runner": sys.argv[3],
+              "tests": [
+                  "cargo test -p codex-hepta-native-gateway --locked",
+                  "cargo check -p codex-cli --bin hepta-native --locked",
+                  "cargo clippy -p codex-hepta-native-gateway --all-targets --locked -- -D warnings",
+                  "cargo clippy -p codex-cli --bin hepta-native --locked -- -D warnings"
+              ],
+              "result": "passed",
+              "authority_delta": "none"
+          }, sort_keys=True, indent=2))
+          PY
+
+      - name: Retain exact-head native receipt
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-ui-native-${{ matrix.os }}-${{ github.event.pull_request.head.sha || github.sha }}
+          path: qualification/ui.native/evidence/native-rust-${{ matrix.os }}.json
+          if-no-files-found: error
+          retention-days: 30
