@@ -20,9 +20,6 @@ use crate::lease::read_lease;
 use crate::lease::remove_lease;
 use crate::lease::validate_lease;
 use crate::lease::write_lease;
-use crate::restart_policy::RestartSchedule;
-use crate::restart_policy::clear_restart_budget;
-use crate::restart_policy::schedule_restart;
 use crate::runtime::AgentRuntime;
 use crate::runtime::AgentSlot;
 use crate::runtime::RuntimePhase;
@@ -82,9 +79,6 @@ impl<D: ProcessDriver> Supervisor<D> {
         if slot.runtime.is_some() {
             return Err(SupervisorError::AlreadyActive(agent_id.clone()));
         }
-        if !slot.restart_pending {
-            reset_restart_budgets(slot);
-        }
         let record = self.record(agent_id)?;
         if read_lease(record.layout.run_root())?.is_some() {
             return Err(SupervisorError::UnresolvedLease(agent_id.clone()));
@@ -97,6 +91,13 @@ impl<D: ProcessDriver> Supervisor<D> {
                 "agent {agent_id} cannot start from {:?}",
                 record.lifecycle.lifecycle
             )));
+        }
+        if !slot.restart_pending {
+            self.reset_restart_budget_for_release(
+                agent_id,
+                slot,
+                release.release_id().clone(),
+            )?;
         }
         let starting = self.registry.compare_and_transition(
             agent_id,
@@ -173,6 +174,7 @@ impl<D: ProcessDriver> Supervisor<D> {
         now: Instant,
     ) -> Result<(), SupervisorError> {
         let Some(lease) = read_lease(record.layout.run_root())? else {
+            self.restore_restart_budget(agent_id, slot, record, now)?;
             if is_live_lifecycle(record.lifecycle.lifecycle) {
                 let generation = self.transition_without_runtime(
                     agent_id,
@@ -181,7 +183,7 @@ impl<D: ProcessDriver> Supervisor<D> {
                     AgentLifecycle::Failed,
                 )?;
                 slot.event(generation, SupervisorEventKind::OrphanMissing);
-                queue_recovered_restart(slot, generation, now);
+                self.schedule_automatic_restart(agent_id, slot, generation, now)?;
             }
             self.recover_matrix_companion(agent_id, slot, record, now)?;
             return Ok(());
@@ -206,6 +208,7 @@ impl<D: ProcessDriver> Supervisor<D> {
                 slot.active_release = Some(leased);
             }
         }
+        self.restore_restart_budget(agent_id, slot, record, now)?;
         let spec = AdoptSpec {
             agent_id: agent_id.clone(),
             registry_generation: record.lifecycle.generation,
@@ -281,7 +284,7 @@ impl<D: ProcessDriver> Supervisor<D> {
                 };
                 slot.event(generation, SupervisorEventKind::OrphanMissing);
                 if was_live {
-                    queue_recovered_restart(slot, generation, now);
+                    self.schedule_automatic_restart(agent_id, slot, generation, now)?;
                 }
             }
             Adoption::Rejected => {
@@ -299,58 +302,11 @@ impl<D: ProcessDriver> Supervisor<D> {
                 };
                 slot.event(generation, SupervisorEventKind::OrphanRejected);
                 if was_live {
-                    queue_recovered_restart(slot, generation, now);
+                    self.schedule_automatic_restart(agent_id, slot, generation, now)?;
                 }
             }
         }
         self.recover_matrix_companion(agent_id, slot, record, now)?;
         Ok(())
     }
-}
-
-fn queue_recovered_restart<P>(slot: &mut AgentSlot<P>, generation: u64, now: Instant) {
-    match schedule_restart(
-        &mut slot.restart_attempt,
-        &mut slot.restart_window_started_at,
-        now,
-    ) {
-        RestartSchedule::Retry { attempt, retry_at } => {
-            slot.restart_pending = true;
-            slot.restart_retry_at = Some(retry_at);
-            slot.restart_automatic = true;
-            slot.restart_exhausted = false;
-            slot.event(
-                generation,
-                SupervisorEventKind::AutomaticRestartQueued { attempt },
-            );
-        }
-        RestartSchedule::Exhausted { attempts } => {
-            slot.restart_pending = false;
-            slot.restart_retry_at = None;
-            slot.restart_automatic = false;
-            slot.restart_exhausted = true;
-            slot.event(
-                generation,
-                SupervisorEventKind::AutomaticRestartBudgetExhausted { attempts },
-            );
-        }
-    }
-}
-
-fn reset_restart_budgets<P>(slot: &mut AgentSlot<P>) {
-    clear_restart_budget(
-        &mut slot.restart_attempt,
-        &mut slot.restart_window_started_at,
-    );
-    slot.restart_retry_at = None;
-    slot.restart_automatic = false;
-    slot.restart_after_exit = false;
-    slot.restart_exhausted = false;
-    clear_restart_budget(
-        &mut slot.matrix.restart_attempt,
-        &mut slot.matrix.restart_window_started_at,
-    );
-    slot.matrix.retry_at = None;
-    slot.matrix.restart_after_exit = false;
-    slot.matrix.restart_exhausted = false;
 }
