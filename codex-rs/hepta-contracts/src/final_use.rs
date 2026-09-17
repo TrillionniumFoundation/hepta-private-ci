@@ -16,7 +16,7 @@ use serde::Serialize;
 #[path = "final_use_store.rs"]
 mod store;
 
-const MAX_CLAIMS: usize = 16_384;
+const MAX_REVOKED_GRANTS: usize = 16_384;
 const MAX_LIFETIME_MS: u64 = 300_000;
 
 /// Exact operation identity signed by the authority owner. Digests must bind
@@ -86,12 +86,10 @@ pub struct FinalUseRevocations {
     pub revoked_grant_ids: BTreeSet<String>,
 }
 
-#[derive(Clone, Deserialize, Serialize)]
-#[serde(deny_unknown_fields)]
+#[derive(Clone)]
 struct State {
     head: FinalUseRevocations,
     used_nonces: BTreeSet<[u8; 32]>,
-    #[serde(skip)]
     failed: bool,
 }
 
@@ -170,6 +168,8 @@ impl FinalUseAuthority {
         }
         let mut next = state.clone();
         if head.authority_epoch > next.head.authority_epoch {
+            // Claims are journaled with their epoch. Old records remain durable
+            // for audit/recovery but cannot collide with a new epoch.
             next.used_nonces.clear();
         }
         next.head = head;
@@ -211,14 +211,19 @@ impl FinalUseAuthority {
         if state.used_nonces.contains(&signed.grant.nonce) {
             return Err(FinalUseError::AlreadyClaimed);
         }
-        if state.used_nonces.len() >= MAX_CLAIMS {
-            return Err(FinalUseError::CapacityExceeded);
-        }
-        state.used_nonces.insert(signed.grant.nonce);
-        if self.0.store.persist(&state).is_err() {
+        // Persist one fixed-size journal record instead of serializing the
+        // entire replay set. This removes the former 16,384-claim epoch cap
+        // and keeps steady-state claim I/O O(1).
+        if self
+            .0
+            .store
+            .persist_claim(signed.grant.authority_epoch, signed.grant.nonce)
+            .is_err()
+        {
             state.failed = true;
             return Err(FinalUseError::Unavailable);
         }
+        state.used_nonces.insert(signed.grant.nonce);
         // Persistence can outlast a short grant. Never admit a dispatch using
         // the time sampled before that I/O; its nonce stays consumed on expiry.
         validate_live(&signed.grant, &state.head)?;
@@ -258,7 +263,7 @@ impl FinalUseAuthority {
 fn valid_head(head: &FinalUseRevocations) -> bool {
     head.authority_epoch > 0
         && head.revision > 0
-        && head.revoked_grant_ids.len() <= MAX_CLAIMS
+        && head.revoked_grant_ids.len() <= MAX_REVOKED_GRANTS
         && head.revoked_grant_ids.iter().all(|id| identifier(id))
 }
 
@@ -302,6 +307,8 @@ pub enum FinalUseError {
     NotYetValid,
     Expired,
     AlreadyClaimed,
+    /// Retained for wire/API compatibility. The local journal no longer emits
+    /// this at 16,384 claims; bounded storage exhaustion is reported unavailable.
     CapacityExceeded,
     Unavailable,
     UnsafeStateDirectory,
