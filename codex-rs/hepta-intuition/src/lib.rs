@@ -7,6 +7,8 @@
 
 // Retain the historical module path as well as explicit root exports.
 pub mod calibrated;
+/// Authenticated current-generation production qualification boundary.
+pub mod qualification;
 
 pub use calibrated::AbstentionReasonV1;
 pub use calibrated::AssignmentModeV1;
