@@ -1,10 +1,13 @@
 # Learning evaluation admission after consolidation
 
 The restored Lane E source includes strict learned-operator fitting, immutable
-dataset/admission receipts, and replayable final-holdout/lifecycle journals. The
-journals implement semantic replay and expected-head checks; the host still owns
-exclusive writing, fsync, crash recovery and a trusted persisted head. Their
-existence is not evidence of a running long-term learner.
+dataset/admission receipts, replayable final-holdout/lifecycle journals and a
+durable final-holdout owner adapter. The durable adapter implements cooperating
+writer locking, bounded replay, synchronous writes and recovery against an
+independently retained anchor. The host still owns the authorized file namespace,
+directory durability, independently persisted signed anchor/currentness state and
+production scheduler. Source existence is not evidence of a running long-term
+learner.
 
 ## Authenticated evidence boundary
 
@@ -89,7 +92,6 @@ changes neither journal nor registry digest. Snapshots keep their existing wire
 shape. Hosts retaining a lower limit reopen through
 `from_snapshot_with_record_limit`; the legacy constructor uses the original cap.
 
-
 ## Durable final-holdout owner adapter
 
 `DurableFinalHoldoutJournalV1` wraps the existing semantic journal, not another
@@ -107,14 +109,27 @@ plan payloads and their checksums. Integers are big-endian, IDs are bounded ASCI
 frames are at most 2,048 bytes, files at most 16 MiB and journals at most 8,192
 records. Unknown/truncated/corrupt bytes reject. No implicit migration is allowed.
 
+`SignedHoldoutAnchorV1` and `authenticate_holdout_anchor_v1` add cryptographic
+admission for the independently retained minimum anchor without changing that
+journal format. A trusted `Observer` signs the exact namespace binding, sequence
+and head. Admission verifies the signature against host-owned trust and also
+requires a host-owned `minimum_issued_at` freshness watermark; an older witness
+cannot select its own watermark from the request. `recover_with_authenticated_holdout_anchor_v1`
+then authenticates first and calls durable recovery. It deliberately refuses a
+zero bootstrap anchor, so initialization cannot be confused with rollback-safe
+recovery.
+
 Before releasing confirmatory labels or acknowledging consumption externally,
-the host must durably retain the returned anchor independently of this journal.
-A backup cannot manufacture its own expected anchor. The host still owns current
-trust/revocation distribution, directory durability, retention and the production
-scheduler. Locks exclude cooperating writers, not hostile filesystem mutation.
-Tests in `src/durable_holdout_tests.rs` cover a different loading process,
-idempotent retries, acknowledged-history truncation, corruption, writer collision
-and write uncertainty. They are not production-caller or future-window receipts.
+the host must durably retain the returned anchor independently of this journal,
+obtain/store its observer attestation, and advance the freshness watermark in an
+independent monotonic store. A backup cannot manufacture its own expected anchor
+or choose an older accepted watermark. The host still owns current trust/revocation
+distribution, directory durability, retention and the production scheduler.
+Locks exclude cooperating writers, not hostile filesystem mutation. Tests in
+`src/durable_holdout_tests.rs` cover a different loading process, idempotent
+retries, acknowledged-history truncation, corruption, writer collision and write
+uncertainty; `src/authenticated_holdout.rs` tests signed-anchor tamper/freshness
+admission. They are not production-caller or future-window receipts.
 
 ## Observed-time longitudinal admission
 
@@ -135,3 +150,15 @@ checks still run. The host must authenticate durable preregistration and the
 observer's actual collection/clock provenance; signatures alone do not prove the
 calendar elapsed or that measurements are honest. Native virtual-clock tests are
 explicitly **not** future-calendar efficacy evidence. No capability level changes.
+
+## Qualification/status evidence hierarchy
+
+The repository deliberately keeps lifecycle dimensions separate. `NATIVE_MAPPING.md`
+describes source capability. `docs/modules/learning.eval/IMPLEMENTATION_MAP.json`
+is navigation and claim-boundary metadata; its `sourceBase` is a frozen generation
+baseline, not an exact-HEAD execution result. The Lane E gap-closure workflow
+retains exact-head and pull-request synthetic-merge **source qualification**
+receipts only after the registered compile/test/lint/format checks pass. Product
+execution, actual future-calendar observations, independent acceptance, selection,
+promotion and release require their own evidence and are explicit nonclaims of
+those CI artifacts.
