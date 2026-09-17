@@ -2,8 +2,10 @@
 //!
 //! Artifact digests retain their meaning as references to external artifacts.
 //! Binding their supplied metadata prevents substitution under one V2 receipt;
-//! it does not establish that metadata matches the artifact bytes. The host
-//! must authenticate those artifacts and the random source independently.
+//! it does not establish that metadata matches the artifact bytes. Production
+//! qualification is provided by [`super::qualification`] V3. V2 remains a
+//! compatibility/replay boundary, but now fails closed on an incomplete
+//! candidate set instead of relying on a downstream consumer to do so.
 
 use super::*;
 
@@ -97,10 +99,21 @@ pub fn canonical_calibrated_request_digest_v1(
 
 /// Apply the existing calibrated policy with a receipt bound to the complete
 /// request. Output fields retain the V1 shape; the receipt uses a V2 domain.
-/// [`decide_calibrated`] remains available for replaying historical V1 receipts.
+///
+/// V2 fails closed when the completeness receipt admits any omitted candidate.
+/// This keeps the completeness invariant inside `codex-hepta-intuition`; a
+/// consumer may repeat the guard for defense in depth, but correctness no
+/// longer depends on that external check. `CandidateSetMismatch` is retained as
+/// the compatibility error for this V2 guard so historical error enums remain
+/// source-compatible. [`decide_calibrated`] remains available for replaying
+/// historical V1 receipts and must not be used as a production qualification
+/// boundary.
 pub fn decide_calibrated_v2(
     request: CalibratedDecisionRequestV1,
 ) -> Result<CalibratedIntuitionReceiptV1, CalibratedError> {
+    if request.completeness.omitted_count_bound != 0 {
+        return Err(CalibratedError::CandidateSetMismatch);
+    }
     let request_digest = canonical_calibrated_request_digest_v1(&request)?;
     let mut receipt = decide_calibrated(request)?;
     let mut bytes = b"hepta.intuition.calibrated-decision.v2".to_vec();
