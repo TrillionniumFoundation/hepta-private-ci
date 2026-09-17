@@ -54,6 +54,8 @@ pub struct PromptRuntimeBindingV1 {
     pub deadline_ms: u64,
     pub adapter_now_ms: u64,
     pub delivery_observation_id: StableId,
+    pub observed_payload_digest: Option<Digest32>,
+    pub delivery_terminal_observed: bool,
     pub delivery_disposition: ContextDeliveryDispositionV2,
     pub delivery_observed_unix_ms: u64,
     pub app_server_observation: Option<AppServerObservation>,
@@ -145,10 +147,11 @@ impl From<LearningDecisionV1Error> for PromptPolicyTurnErrorV1 {
 /// owner-native modules and append the resulting decision lineage to the
 /// in-memory learning ledger.
 ///
-/// The caller supplies the actual serialized payload digest and app-server
-/// observation; this function never fabricates provider success. An exercise
-/// rejection fails before serialization so stale context cannot enter the Codex
-/// request path.
+/// The caller supplies the actual serialized payload digest, app-server
+/// terminal observation and the runtime-observed payload digest. This function
+/// never substitutes the expected payload for a missing observation. An
+/// exercise rejection fails before serialization so stale context cannot enter
+/// the Codex request path.
 pub fn run_prompt_policy_turn_v1(
     registry: &PromptRegistry,
     ledger: &mut LearningLedger,
@@ -188,16 +191,11 @@ pub fn run_prompt_policy_turn_v1(
         intent,
         request.runtime.app_server_observation,
     )?;
-    let (observed_payload_digest, terminal_observed) = match request.runtime.delivery_disposition {
-        ContextDeliveryDispositionV2::Delivered => (Some(attachment.payload_digest), true),
-        ContextDeliveryDispositionV2::Rejected => (None, true),
-        ContextDeliveryDispositionV2::Indeterminate => (None, false),
-    };
     let native_delivery = observe_delivery(
         &attachment,
         request.runtime.delivery_observation_id,
-        observed_payload_digest,
-        terminal_observed,
+        request.runtime.observed_payload_digest,
+        request.runtime.delivery_terminal_observed,
         request.runtime.delivery_disposition,
         request.runtime.delivery_observed_unix_ms,
     )?;
@@ -259,7 +257,7 @@ pub fn run_prompt_policy_turn_v1(
         native_delivery.observation_digest,
         delivery.receipt_digest,
         learning.artifact.learning_decision.receipt_digest,
-        learning.ledger_receipt.record_digest,
+        learning.ledger_receipt.chain_digest,
     ] {
         bytes.extend_from_slice(digest.as_array());
     }
@@ -280,9 +278,7 @@ fn validate_bindings(
     runtime: &PromptRuntimeBindingV1,
     learning: &PromptLearningBindingV1,
 ) -> Result<(), PromptPolicyTurnErrorV1> {
-    if runtime.serialized_payload_digest.is_zero()
-        || learning.policy_digest.is_zero()
-    {
+    if runtime.serialized_payload_digest.is_zero() || learning.policy_digest.is_zero() {
         return Err(PromptPolicyTurnErrorV1::InvalidLearningDigest);
     }
     if runtime.deadline_ms == 0
@@ -292,13 +288,33 @@ fn validate_bindings(
     {
         return Err(PromptPolicyTurnErrorV1::InvalidRuntimeTime);
     }
+    match runtime.delivery_disposition {
+        ContextDeliveryDispositionV2::Delivered => {
+            let Some(payload) = runtime.observed_payload_digest else {
+                return Err(PromptPolicyTurnErrorV1::InvalidDeliveryObservation);
+            };
+            if payload.is_zero() || !runtime.delivery_terminal_observed {
+                return Err(PromptPolicyTurnErrorV1::InvalidDeliveryObservation);
+            }
+        }
+        ContextDeliveryDispositionV2::Rejected => {
+            if !runtime.delivery_terminal_observed {
+                return Err(PromptPolicyTurnErrorV1::InvalidDeliveryObservation);
+            }
+        }
+        ContextDeliveryDispositionV2::Indeterminate => {
+            if runtime.delivery_terminal_observed || runtime.observed_payload_digest.is_some() {
+                return Err(PromptPolicyTurnErrorV1::InvalidDeliveryObservation);
+            }
+        }
+    }
     match (
         runtime.delivery_disposition,
         runtime.app_server_observation.as_ref(),
     ) {
         (ContextDeliveryDispositionV2::Delivered, Some(observation))
         | (ContextDeliveryDispositionV2::Rejected, Some(observation)) => {
-            if !observation.terminal_observed {
+            if !observation.terminal_observed || observation.response_digest.is_zero() {
                 return Err(PromptPolicyTurnErrorV1::InvalidDeliveryObservation);
             }
         }
