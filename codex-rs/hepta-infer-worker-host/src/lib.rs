@@ -11,6 +11,7 @@
 pub mod model_worker;
 
 pub mod native_app_server;
+pub mod runtime_codex;
 
 use std::error::Error as StdError;
 use std::fmt;
