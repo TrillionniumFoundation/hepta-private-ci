@@ -128,7 +128,7 @@
       ],
       "state": "source_implemented_local_solver",
       "authority": "none",
-      "nonClaim": "local termination is not NduConvergenceCertificateV1",
+      "nonClaim": "local termination is not NduConvergenceCertificateV1; iteration exhaustion is unavailable",
       "tests": [
         {
           "path": "codex-rs/hepta-ndu/src/preference_tests.rs",
@@ -136,7 +136,15 @@
         },
         {
           "path": "codex-rs/hepta-ndu/src/preference_tests.rs",
-          "symbol": "parent_and_child_updates_cannot_share_generation"
+          "symbol": "iteration_bound_exhaustion_is_unavailable"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/preference_tests.rs",
+          "symbol": "parent_and_child_updates_cannot_share_generation_within_one_hierarchy"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/preference_tests.rs",
+          "symbol": "unrelated_hierarchies_may_advance_different_levels_in_same_generation"
         }
       ],
       "designOperation": "solve_preference_target",
@@ -165,6 +173,10 @@
         {
           "path": "codex-rs/hepta-ndu/src/protocol_tests.rs",
           "symbol": "zero_context_digest_rejects_before_protocol_publication"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/protocol_tests.rs",
+          "symbol": "malformed_local_solver_receipts_reject_before_protocol_publication"
         }
       ],
       "designOperation": "bind_solver_iteration_receipt_v1",
@@ -221,6 +233,14 @@
         },
         {
           "path": "codex-rs/hepta-ndu/src/projection_journal_tests.rs",
+          "symbol": "live_selection_and_revocation_require_a_recorded_projection"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/projection_journal_tests.rs",
+          "symbol": "hash_valid_but_semantically_impossible_recovery_rejects"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/projection_journal_tests.rs",
           "symbol": "truncation_and_tampering_fail_closed"
         }
       ],
@@ -273,7 +293,8 @@
     "tree": "ff9fa6baf95a35fd2f49816e0a80097688f2aeeb"
   },
   "repositoryControlledGaps": [
-    "Bind every operation to an authenticated consumer callsite and owner store.",
+    "Promote the existing control-plane and intelligence read-only callsites only after product authentication and owner-store composition are qualified.",
+    "Select and qualify a crash-durable production projection store with migration, fsync, retention and backup/restore semantics.",
     "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary."
   ],
   "externalEvidenceGates": [
