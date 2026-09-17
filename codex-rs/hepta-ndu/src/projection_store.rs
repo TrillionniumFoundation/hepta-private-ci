@@ -35,6 +35,7 @@ pub enum NduProjectionStoreError {
     Busy,
     NotDirectory,
     NotRegular,
+    Symlink,
     BackupTooLarge,
     BackupRegression,
     Journal(NduProjectionJournalError),
@@ -68,8 +69,9 @@ impl From<NduProjectionJournalError> for NduProjectionStoreError {
 /// Exclusive writer over one host-authorized projection directory.
 ///
 /// Locks are advisory and therefore assume the directory is private to the
-/// authenticated owner. A hostile process that ignores the lock is outside this
-/// mechanism's threat model.
+/// authenticated owner. A hostile process that races path replacement after
+/// admission or ignores the lock is outside this mechanism's threat model.
+/// Existing symlinked root/lock/journal paths are rejected before use.
 pub struct NduProjectionStoreV1 {
     root: PathBuf,
     lock: File,
@@ -87,12 +89,16 @@ impl NduProjectionStoreV1 {
             return Err(NduProjectionStoreError::UnsupportedPlatform);
         }
         let root = root.as_ref().to_path_buf();
-        let metadata = fs::metadata(&root)?;
+        let metadata = fs::symlink_metadata(&root)?;
+        if metadata.file_type().is_symlink() {
+            return Err(NduProjectionStoreError::Symlink);
+        }
         if !metadata.is_dir() {
             return Err(NduProjectionStoreError::NotDirectory);
         }
 
         let lock_path = root.join(LOCK_FILE);
+        reject_existing_symlink(&lock_path)?;
         let lock = OpenOptions::new()
             .read(true)
             .write(true)
@@ -116,6 +122,7 @@ impl NduProjectionStoreV1 {
         }
 
         let journal_path = root.join(JOURNAL_FILE);
+        reject_existing_symlink(&journal_path)?;
         let journal = match File::open(&journal_path) {
             Ok(mut file) => {
                 if !file.metadata()?.is_file() {
@@ -291,6 +298,15 @@ impl Drop for NduProjectionStoreV1 {
         // Mutation methods already synchronize before acknowledgement. Unlocking
         // here is only ownership cleanup, never a durability acknowledgement.
         let _ = File::unlock(&self.lock);
+    }
+}
+
+fn reject_existing_symlink(path: &Path) -> Result<(), NduProjectionStoreError> {
+    match fs::symlink_metadata(path) {
+        Ok(metadata) if metadata.file_type().is_symlink() => Err(NduProjectionStoreError::Symlink),
+        Ok(_) => Ok(()),
+        Err(error) if error.kind() == io::ErrorKind::NotFound => Ok(()),
+        Err(error) => Err(error.into()),
     }
 }
 
