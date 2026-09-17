@@ -6,6 +6,15 @@ ALTER TABLE automation_occurrence_lifecycle
 ADD COLUMN step_attempt INTEGER NOT NULL DEFAULT 1
     CHECK (step_attempt > 0 AND step_attempt <= 1000000);
 
+CREATE TRIGGER automation_occurrence_step_attempt_on_reclaim
+AFTER UPDATE OF claim_generation ON automation_occurrence_lifecycle
+WHEN NEW.claim_generation != OLD.claim_generation
+BEGIN
+    UPDATE automation_occurrence_lifecycle
+       SET step_attempt = OLD.step_attempt + 1
+     WHERE task_id = NEW.task_id AND occurrence = NEW.occurrence;
+END;
+
 DROP TRIGGER automation_meta_no_update;
 UPDATE automation_meta SET schema_version = 5 WHERE singleton = 1;
 CREATE TRIGGER automation_meta_no_update
