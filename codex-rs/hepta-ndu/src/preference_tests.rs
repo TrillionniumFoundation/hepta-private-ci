@@ -63,35 +63,130 @@ fn damped_preference_update_emits_local_solver_receipts() {
     );
     assert_eq!(
         termination.terminal_residual_raw,
-        receipts.last().expect("terminal receipt").residual_raw
+        receipts.last().expect("terminal receipt").residual_raw()
     );
     assert_eq!(
         termination.maximum_residual_raw,
         receipts
             .iter()
-            .map(|receipt| receipt.residual_raw)
+            .map(|receipt| receipt.residual_raw())
             .max()
             .expect("maximum residual")
     );
 }
 
 #[test]
+fn iteration_bound_reports_unavailable_instead_of_returning_terminal_state() {
+    let initial = must(PreferenceState::genesis(
+        id("agent-slow"),
+        SubjectClass::Agent,
+        vec![AxisValue {
+            axis: id("quality"),
+            value: FixedQ32::from_raw(-FixedQ32::ONE.raw()),
+        }],
+    ));
+    let error = must_err(solve_preference_target(
+        initial,
+        vec![AxisValue {
+            axis: id("quality"),
+            value: FixedQ32::ONE,
+        }],
+        FixedQ32::from_raw(1_i64 << 28),
+    ));
+
+    match error {
+        NduError::IterationBoundReached {
+            iterations,
+            terminal_residual_raw,
+        } => {
+            assert_eq!(iterations, 64);
+            assert!(terminal_residual_raw > 1_i64 << 12);
+        }
+        other => panic!("unexpected error: {other:?}"),
+    }
+}
+
+#[test]
 fn parent_and_child_updates_cannot_share_generation() {
     let generation = must(Generation::new(7));
+    let parent = id("domain-candidate");
     let error = must_err(validate_staged_updates(&[
         UpdateGeneration {
             generation,
             subject_class: SubjectClass::Domain,
-            artifact_id: id("domain-candidate"),
+            artifact_id: parent.clone(),
+            parent_artifact_id: None,
         },
         UpdateGeneration {
             generation,
             subject_class: SubjectClass::Agent,
             artifact_id: id("agent-candidate"),
+            parent_artifact_id: Some(parent),
         },
     ]));
 
     assert_eq!(error, NduError::SimultaneousHierarchyUpdate(7));
+}
+
+#[test]
+fn unrelated_hierarchy_updates_may_share_generation() {
+    let generation = must(Generation::new(8));
+    must(validate_staged_updates(&[
+        UpdateGeneration {
+            generation,
+            subject_class: SubjectClass::Domain,
+            artifact_id: id("domain-a-candidate"),
+            parent_artifact_id: None,
+        },
+        UpdateGeneration {
+            generation,
+            subject_class: SubjectClass::Agent,
+            artifact_id: id("agent-b-candidate"),
+            parent_artifact_id: Some(id("domain-b-current")),
+        },
+    ]));
+}
+
+#[test]
+fn local_solver_receipt_invariants_reject_fabricated_fields() {
+    let initial = must(PreferenceState::genesis(
+        id("agent-receipt"),
+        SubjectClass::Agent,
+        vec![AxisValue {
+            axis: id("quality"),
+            value: FixedQ32::ZERO,
+        }],
+    ));
+    let (_, _, receipts) = must(solve_preference_target(
+        initial,
+        vec![AxisValue {
+            axis: id("quality"),
+            value: FixedQ32::ONE,
+        }],
+        FixedQ32::from_raw(1_i64 << 30),
+    ));
+    let valid = receipts.first().expect("solver receipt").clone();
+
+    let mut invalid = valid.clone();
+    invalid.iteration = 0;
+    assert_eq!(
+        invalid.validate_protocol_invariants(),
+        Err(NduError::InvalidSolverReceipt("iteration"))
+    );
+
+    let mut invalid = valid.clone();
+    invalid.next_revision = invalid.predecessor_revision;
+    assert_eq!(
+        invalid.validate_protocol_invariants(),
+        Err(NduError::InvalidSolverReceipt("revision"))
+    );
+
+    let mut invalid = valid;
+    invalid.residual_raw = -1;
+    assert_eq!(
+        invalid.validate_protocol_invariants(),
+        Err(NduError::InvalidSolverReceipt("residual"))
+    );
 }
 
 #[test]
