@@ -5,6 +5,26 @@
     "commit": "7e8379b3954808d4138a7bd2f3773f75691291a3",
     "tree": "ff9fa6baf95a35fd2f49816e0a80097688f2aeeb"
   },
+  "headAttestation": {
+    "candidateBranch": "fix/memory-federation-v2-hardening",
+    "baseCommit": "d7af096f28fa9989388939efa0e6600b52a43952",
+    "candidateHead": "8888ebe1a02e811ad6a3ff4366b89168ad529785",
+    "status": "pending_exact_candidate_execution",
+    "scope": [
+      "remote_response_field_binding",
+      "authority_lifetime_ceiling",
+      "post_io_authority_revalidation",
+      "interruptible_single_attempt_transport",
+      "product_runtime_candidate",
+      "adversarial_and_product_composition_tests"
+    ],
+    "evidencePaths": [
+      "codex-rs/hepta-memory-federation/src/v2_tests.rs",
+      "codex-rs/hepta-memory/src/cognitive_runtime_tests.rs",
+      "docs/modules/memory.federation/V2_HARDENING.md"
+    ],
+    "note": "sourceBase is the shared historical implementation-map baseline across all modules; this module-specific attestation tracks the current candidate without creating global sourceBase drift"
+  },
   "laneId": "LANE-C-MEMORY",
   "module": "memory.federation",
   "owner": "cognitive-platform",
@@ -25,9 +45,12 @@
       "operation": "execute_once",
       "nativeSymbol": "execute_once",
       "sourcePath": "codex-rs/hepta-memory-federation/src/v2.rs",
-      "state": "source_implemented_not_product_composed",
+      "state": "source_hardened_candidate_pending_execution",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-memory-federation/src/v2_tests.rs",
+        "codex-rs/hepta-memory/src/cognitive_runtime_tests.rs"
+      ],
       "sourcePathExists": true,
       "designOperation": "execute_once",
       "mappingClass": "owner_native",
@@ -37,9 +60,11 @@
       "operation": "observe_cancellation",
       "nativeSymbol": "observe_cancellation",
       "sourcePath": "codex-rs/hepta-memory-federation/src/v2.rs",
-      "state": "source_implemented_not_product_composed",
+      "state": "source_hardened_candidate_pending_execution",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-memory-federation/src/v2_tests.rs"
+      ],
       "sourcePathExists": true,
       "designOperation": "observe_cancellation",
       "mappingClass": "owner_native",
@@ -47,11 +72,12 @@
     }
   ],
   "repositoryControlledGaps": [
-    "Bind every operation to an authenticated consumer callsite and owner store.",
-    "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary."
+    "Complete and verify the Agentd/extension product-host composition for the hardened V2 runtime candidate.",
+    "Run exact-head and deterministic synthetic-merge tests before changing productExecutionProved or activation claims."
   ],
   "externalEvidenceGates": [
-    "independent semantic review",
+    "independent semantic and security review",
+    "multi-host authenticated transport qualification when federation crosses a process or host boundary",
     "product execution and target-host qualification",
     "operator acceptance, canary, promotion and release"
   ],
