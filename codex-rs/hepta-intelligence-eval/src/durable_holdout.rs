@@ -7,11 +7,11 @@ use std::error::Error;
 use std::fmt;
 use std::fs::File;
 use std::fs::TryLockError;
+use std::io;
 use std::io::Read;
 use std::io::Seek;
 use std::io::SeekFrom;
 use std::io::Write;
-use std::io::{self};
 
 use crate::CrossFoldPlanReceiptV1;
 use crate::FinalHoldoutJournalReceiptV1;
