@@ -154,3 +154,7 @@ impl ProductionCognitiveStore {
         &self.backend
     }
 }
+
+#[cfg(test)]
+#[path = "production_tests.rs"]
+mod tests;
