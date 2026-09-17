@@ -23,6 +23,37 @@ pub struct CodexOperationIntent {
     pub deadline_ms: u64,
 }
 
+/// Result of the synchronous checked gate immediately before the asynchronous
+/// App Server effect seam. A prepared request can be observed later without
+/// incorrectly re-applying its admission deadline to terminal settlement.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct PreparedCodexRequest {
+    operation_id: StableId,
+    thread_id: StableId,
+    request_digest: Digest32,
+}
+
+impl PreparedCodexRequest {
+    pub fn operation_id(&self) -> &StableId {
+        &self.operation_id
+    }
+
+    pub fn thread_id(&self) -> &StableId {
+        &self.thread_id
+    }
+
+    pub fn request_digest(&self) -> Digest32 {
+        self.request_digest
+    }
+
+    pub fn observe(
+        self,
+        observation: Option<AppServerObservation>,
+    ) -> Result<CodexAdapterReceipt, Error> {
+        observe(self, observation)
+    }
+}
+
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum TerminalOutcome {
     Completed,
@@ -201,11 +232,12 @@ impl fmt::Display for Error {
 
 impl StdError for Error {}
 
-pub fn adapt(
+/// Validate the final request binding and admission deadline immediately before
+/// dispatch. This is the only API that evaluates `deadline_ms`.
+pub fn prepare(
     now_ms: u64,
     intent: CodexOperationIntent,
-    observation: Option<AppServerObservation>,
-) -> Result<CodexAdapterReceipt, Error> {
+) -> Result<PreparedCodexRequest, Error> {
     if intent.payload_digest.is_zero() {
         return Err(Error::EmptyDigest("payload"));
     }
@@ -219,17 +251,30 @@ pub fn adapt(
         return Err(Error::DeadlineExpired);
     }
 
-    let request_digest = request_digest(&intent);
+    Ok(PreparedCodexRequest {
+        operation_id: intent.operation_id,
+        thread_id: intent.thread_id,
+        request_digest: request_digest(&intent),
+    })
+}
+
+/// Settle a request from an exact App Server observation. Settlement does not
+/// re-run the pre-dispatch clock gate; terminal events can legitimately arrive
+/// after the original admission deadline.
+pub fn observe(
+    prepared: PreparedCodexRequest,
+    observation: Option<AppServerObservation>,
+) -> Result<CodexAdapterReceipt, Error> {
     let (thread_id, turn_id, status, retry, response_digest) = match observation {
         None => (
-            intent.thread_id.clone(),
+            prepared.thread_id.clone(),
             None,
             AdapterStatus::Indeterminate,
             RetryDisposition::ReconcileBeforeRetry,
             None,
         ),
         Some(value) => {
-            if value.thread_id != intent.thread_id {
+            if value.thread_id != prepared.thread_id {
                 return Err(Error::ThreadBindingMismatch);
             }
             let (status, retry) = match value.kind {
@@ -274,19 +319,19 @@ pub fn adapt(
     };
 
     let receipt_digest = receipt_digest(
-        &intent.operation_id,
+        &prepared.operation_id,
         &thread_id,
         turn_id.as_ref(),
-        request_digest,
+        prepared.request_digest,
         status,
         retry,
         response_digest,
     );
     Ok(CodexAdapterReceipt {
-        operation_id: intent.operation_id,
+        operation_id: prepared.operation_id,
         thread_id,
         turn_id,
-        request_digest,
+        request_digest: prepared.request_digest,
         status,
         retry,
         response_digest,
@@ -295,6 +340,17 @@ pub fn adapt(
         provider_authority: false,
         authority: AuthorityPosture::DENY_ALL,
     })
+}
+
+/// Compatibility convenience for synchronous callers and tests. Production
+/// asynchronous execution should use `prepare` before dispatch and `observe`
+/// after the exact event is received.
+pub fn adapt(
+    now_ms: u64,
+    intent: CodexOperationIntent,
+    observation: Option<AppServerObservation>,
+) -> Result<CodexAdapterReceipt, Error> {
+    observe(prepare(now_ms, intent)?, observation)
 }
 
 fn request_digest(intent: &CodexOperationIntent) -> Digest32 {
