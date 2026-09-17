@@ -21,7 +21,6 @@ use codex_app_server_protocol::Turn;
 use codex_app_server_protocol::TurnItemsView;
 use codex_app_server_protocol::TurnStatus;
 use codex_app_server_protocol::UserInput;
-use codex_hepta_automation::AutomationOccurrenceState;
 use codex_hepta_automation::AutomationOccurrenceTerminalState;
 use codex_hepta_automation::AutomationOccurrenceWork;
 use codex_hepta_automation::AutomationQueueReceipt;
@@ -36,6 +35,7 @@ use crate::AgentdState;
 
 const TURN_PAGE_SIZE: u32 = 100;
 const MAX_TURN_PAGES: usize = 16;
+const RECOVERY_RUN_LEASE_MS: u64 = 30_000;
 
 pub(crate) async fn reconcile_one(
     store: &AutomationStore,
@@ -155,25 +155,14 @@ async fn reconcile_one_unknown_dispatch(
                     now_ms,
                 )
                 .await?;
-            let work = store
-                .pending_occurrence_work(1)
-                .await?
-                .into_iter()
-                .find(|work| {
-                    work.occurrence.task_id == occurrence.task_id
-                        && work.occurrence.occurrence == occurrence.occurrence
-                })
-                .ok_or_else(|| {
-                    AgentdError::Protocol(
-                        "cancelled automation occurrence is not recoverable".to_string(),
-                    )
-                })?;
+            let work = pending_exact(store, occurrence.task_id, occurrence.occurrence).await?;
             complete_work(
                 store,
                 &work,
                 AutomationOccurrenceTerminalState::Cancelled,
                 observation_digest(&response)?,
                 now_ms,
+                identity.spawn_generation,
             )
             .await?;
         }
@@ -213,6 +202,7 @@ async fn reconcile_work(
                     AutomationOccurrenceTerminalState::Succeeded,
                     observation_digest(&turn)?,
                     now_ms,
+                    identity.spawn_generation,
                 )
                 .await
             }
@@ -223,6 +213,7 @@ async fn reconcile_work(
                     AutomationOccurrenceTerminalState::Failed,
                     observation_digest(&turn)?,
                     now_ms,
+                    identity.spawn_generation,
                 )
                 .await
             }
@@ -233,6 +224,7 @@ async fn reconcile_work(
                     AutomationOccurrenceTerminalState::Cancelled,
                     observation_digest(&turn)?,
                     now_ms,
+                    identity.spawn_generation,
                 )
                 .await
             }
@@ -303,6 +295,7 @@ async fn reconcile_admitted_without_turn(
                 AutomationOccurrenceTerminalState::Cancelled,
                 observation_digest(&response)?,
                 now_ms,
+                identity.spawn_generation,
             )
             .await
         }
@@ -330,9 +323,17 @@ async fn complete_work(
     terminal: AutomationOccurrenceTerminalState,
     receipt_digest: Sha256Digest,
     now_ms: u64,
+    recovery_generation: u64,
 ) -> Result<(), AgentdError> {
     store
-        .reconcile_occurrence_taskflow_terminal(work, terminal, &receipt_digest, now_ms)
+        .reconcile_occurrence_taskflow_terminal_with_recovery(
+            work,
+            terminal,
+            &receipt_digest,
+            now_ms,
+            recovery_generation,
+            RECOVERY_RUN_LEASE_MS,
+        )
         .await
         .map_err(taskflow_error)?;
     store
@@ -347,6 +348,23 @@ async fn complete_work(
     Ok(())
 }
 
+async fn pending_exact(
+    store: &AutomationStore,
+    task_id: codex_hepta_automation::AutomationTaskId,
+    occurrence: u64,
+) -> Result<AutomationOccurrenceWork, AgentdError> {
+    store
+        .pending_occurrence_work(1024)
+        .await?
+        .into_iter()
+        .find(|work| {
+            work.occurrence.task_id == task_id && work.occurrence.occurrence == occurrence
+        })
+        .ok_or_else(|| {
+            AgentdError::Protocol("automation occurrence is not in the recovery frontier".to_string())
+        })
+}
+
 async fn connect(
     state: &AgentdState,
     identity: &AgentdIdentity,
@@ -356,7 +374,8 @@ async fn connect(
             "automation recovery requires a ready owning Agent generation".to_string(),
         ));
     }
-    let socket_path = AbsolutePathBuf::from_absolute_path(&identity.app_server_socket)?;
+    let socket_path = AbsolutePathBuf::from_absolute_path(&identity.app_server_socket)
+        .map_err(|error| AgentdError::Protocol(format!("automation socket path invalid: {error}")))?;
     let client = RemoteAppServerClient::connect_with_bounded_events(
         RemoteAppServerConnectArgs {
             endpoint: RemoteAppServerEndpoint::UnixSocket { socket_path },
@@ -369,7 +388,8 @@ async fn connect(
         },
         16,
     )
-    .await?;
+    .await
+    .map_err(|error| AgentdError::Protocol(format!("automation recovery connect failed: {error}")))?;
     let expected_home = identity.home_root.to_string_lossy();
     if client.codex_home() != Some(expected_home.as_ref()) {
         let _ = client.shutdown().await;
