@@ -3,6 +3,8 @@ use codex_app_server_protocol::AgentMessageDeltaNotification;
 use codex_app_server_protocol::Turn;
 use codex_app_server_protocol::TurnCompletedNotification;
 use codex_app_server_protocol::TurnItemsView;
+use codex_hepta_agentd::CognitiveContextItem;
+use codex_hepta_agentd::CognitiveContextPlan;
 
 fn output() -> NativeRunOutput {
     NativeRunOutput {
@@ -294,4 +296,51 @@ async fn success_requires_both_matching_completion_and_final_ready_owner() {
     assert!(output.succeeded());
     output.status = NativeRunStatus::Interrupted;
     assert!(!output.succeeded());
+}
+
+fn cognitive_snapshot() -> CognitiveContextSnapshot {
+    CognitiveContextSnapshot {
+        snapshot_digest: "snapshot-a".to_string(),
+        read_digest: "read-a".to_string(),
+        omitted_records: 0,
+        items: vec![CognitiveContextItem {
+            memory_id: "memory-a".to_string(),
+            revision: 1,
+            content: "verified lemon orchard".to_string(),
+            content_sha256: "content-a".to_string(),
+        }],
+        plan: Some(CognitiveContextPlan {
+            evaluated_context_digest: "context-a".to_string(),
+            plan_receipt_digest: "plan-receipt-a".to_string(),
+            read_allowed: true,
+        }),
+    }
+}
+
+#[test]
+fn final_context_gate_rejects_snapshot_read_projection_and_plan_drift() {
+    let expected = cognitive_snapshot();
+    let mut same = expected.clone();
+    same.plan.as_mut().unwrap().plan_receipt_digest = "fresh-receipt".to_string();
+    validate_cognitive_context_before_dispatch(&expected, &same).unwrap();
+
+    let mut changed = expected.clone();
+    changed.snapshot_digest = "snapshot-b".to_string();
+    assert!(validate_cognitive_context_before_dispatch(&expected, &changed).is_err());
+
+    let mut changed = expected.clone();
+    changed.read_digest = "read-b".to_string();
+    assert!(validate_cognitive_context_before_dispatch(&expected, &changed).is_err());
+
+    let mut changed = expected.clone();
+    changed.items[0].revision = 2;
+    assert!(validate_cognitive_context_before_dispatch(&expected, &changed).is_err());
+
+    let mut changed = expected.clone();
+    changed.plan.as_mut().unwrap().evaluated_context_digest = "context-b".to_string();
+    assert!(validate_cognitive_context_before_dispatch(&expected, &changed).is_err());
+
+    let mut changed = expected.clone();
+    changed.plan.as_mut().unwrap().read_allowed = false;
+    assert!(validate_cognitive_context_before_dispatch(&expected, &changed).is_err());
 }
