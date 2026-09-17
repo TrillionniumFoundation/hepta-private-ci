@@ -1,10 +1,11 @@
 //! Bounded lineage paging over the existing cognitive SQLite owner.
 //!
 //! Pages contain whole memory histories: a single memory ID is never split
-//! across page boundaries. Each page is sandwiched between two exact logical
-//! recovery anchors so a concurrent owner mutation invalidates the acquisition.
-//! A caller carrying the returned state digest into the next request therefore
-//! cannot silently mix pages from different owner cuts.
+//! across page boundaries. Each page is read in one SQLite snapshot and bound
+//! to a scope-local monotonic frontier digest. A second frontier observation
+//! after the read rejects an owner mutation that raced page acquisition, while
+//! the caller carries the digest into the next page so different cuts cannot be
+//! silently combined.
 //!
 //! This is a traversal primitive, not physical retention or erasure. Immutable
 //! authoritative rows remain in the owner until an archive/pruning format can
@@ -12,6 +13,8 @@
 
 use codex_hepta_contracts::Sha256Digest;
 use codex_hepta_types::Generation;
+use sha2::Digest;
+use sha2::Sha256;
 use sqlx::Row;
 
 use crate::CognitiveAccess;
@@ -24,14 +27,18 @@ use crate::MemoryRevisionRecord;
 use crate::StableMemoryId;
 use crate::cognitive_memory_store::decode_revision;
 use crate::cognitive_store::unavailable;
+use crate::framing::frame_part;
 
 pub const MAX_LANE_C_LINEAGE_PAGE_MEMORY_IDS: u16 = 256;
 pub const MAX_LANE_C_LINEAGE_PAGE_REVISIONS: usize = 4_096;
+const LINEAGE_CUT_DOMAIN: &[u8] = b"hepta:cognitive:lane-c-lineage-cut:v1";
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct DurableCognitiveLineagePage {
     pub frontiers: CognitiveOwnerFrontiers,
-    pub cut_state_digest: Sha256Digest,
+    /// Integrity binding for this exact scoped frontier vector. This is not a
+    /// signature or proof that the caller retained the newest cut.
+    pub cut_digest: Sha256Digest,
     pub records: Vec<MemoryRevisionRecord>,
     /// Present only when another complete memory history remains after this
     /// page. Supply this value as `after_memory_id` for the next page.
@@ -39,18 +46,18 @@ pub struct DurableCognitiveLineagePage {
 }
 
 impl CognitiveStore {
-    /// Read complete immutable histories from one exact logical database cut.
+    /// Read complete immutable histories from one exact scoped owner cut.
     ///
-    /// `expected_cut_state_digest` is optional for the first page and mandatory
-    /// for a caller that wants a coherent multi-page traversal. A later page
-    /// fails closed if the owner changed between pages. The digest is an
-    /// integrity fence, not authentication that the host retained the newest
-    /// witness.
+    /// `expected_cut_digest` is optional for the first page and mandatory for a
+    /// caller that wants a coherent multi-page traversal. A later page fails
+    /// closed if the scope frontiers changed between pages. The digest binds
+    /// owner, scope, memory/source/tombstone/fact frontiers and KG generation;
+    /// it is an integrity cursor, not host authentication or recovery authority.
     pub async fn lane_c_lineage_page(
         &self,
         access: &CognitiveAccess,
         scope: &CognitiveScope,
-        expected_cut_state_digest: Option<&Sha256Digest>,
+        expected_cut_digest: Option<&Sha256Digest>,
         after_memory_id: Option<&StableMemoryId>,
         maximum_memory_ids: u16,
     ) -> Result<DurableCognitiveLineagePage, CognitiveStoreError> {
@@ -61,16 +68,24 @@ impl CognitiveStore {
             )));
         }
 
-        let before = self.recovery_anchor().await?;
-        if expected_cut_state_digest.is_some_and(|expected| expected != &before.state_digest) {
+        let (scope_kind, workspace) = scope.database_parts();
+        let cursor = after_memory_id.map(StableMemoryId::as_str);
+        let mut transaction = self.pool.begin().await.map_err(unavailable)?;
+        let frontiers = read_frontiers(
+            &mut *transaction,
+            self.owner_agent_id.as_str(),
+            scope,
+            scope_kind,
+            workspace,
+        )
+        .await?;
+        let cut_digest = lineage_cut_digest(self.owner_agent_id.as_str(), scope, &frontiers);
+        if expected_cut_digest.is_some_and(|expected| expected != &cut_digest) {
             return Err(CognitiveStoreError::Conflict(
                 "cognitive lineage cursor belongs to a different owner cut".to_string(),
             ));
         }
 
-        let (scope_kind, workspace) = scope.database_parts();
-        let cursor = after_memory_id.map(StableMemoryId::as_str);
-        let mut transaction = self.pool.begin().await.map_err(unavailable)?;
         let id_limit = i64::from(maximum_memory_ids) + 1;
         let id_rows = sqlx::query(
             "SELECT DISTINCT memory_id FROM memory_revisions
@@ -136,19 +151,23 @@ impl CognitiveStore {
         } else {
             None
         };
+        transaction.commit().await.map_err(unavailable)?;
 
-        let frontiers = read_frontiers(
-            &mut *transaction,
+        // Observe the same scoped monotonic frontiers after releasing the read
+        // snapshot. Any committed source/memory/fact/tombstone/KG mutation in
+        // this scope changes at least one component under the single-writer
+        // owner invariants and therefore invalidates the acquired page.
+        let mut after_transaction = self.pool.begin().await.map_err(unavailable)?;
+        let after_frontiers = read_frontiers(
+            &mut *after_transaction,
             self.owner_agent_id.as_str(),
             scope,
             scope_kind,
             workspace,
         )
         .await?;
-        transaction.commit().await.map_err(unavailable)?;
-
-        let after = self.recovery_anchor().await?;
-        if before != after {
+        after_transaction.commit().await.map_err(unavailable)?;
+        if after_frontiers != frontiers {
             return Err(CognitiveStoreError::Conflict(
                 "cognitive owner changed while lineage page was acquired".to_string(),
             ));
@@ -156,11 +175,32 @@ impl CognitiveStore {
 
         Ok(DurableCognitiveLineagePage {
             frontiers,
-            cut_state_digest: before.state_digest,
+            cut_digest,
             records,
             next_after_memory_id,
         })
     }
+}
+
+fn lineage_cut_digest(
+    owner: &str,
+    scope: &CognitiveScope,
+    frontiers: &CognitiveOwnerFrontiers,
+) -> Sha256Digest {
+    let mut hasher = Sha256::new();
+    frame_part(&mut hasher, LINEAGE_CUT_DOMAIN);
+    frame_part(&mut hasher, owner.as_bytes());
+    frame_part(&mut hasher, scope.projection_key().as_bytes());
+    for value in [
+        frontiers.memory,
+        frontiers.source,
+        frontiers.tombstone,
+        frontiers.knowledge_facts,
+        frontiers.knowledge_graph.get(),
+    ] {
+        frame_part(&mut hasher, &value.to_be_bytes());
+    }
+    Sha256Digest::for_bytes(&hasher.finalize())
 }
 
 fn validate_complete_histories(records: &[MemoryRevisionRecord]) -> Result<(), CognitiveStoreError> {
