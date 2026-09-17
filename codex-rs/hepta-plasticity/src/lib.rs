@@ -147,3 +147,7 @@ mod tests;
 #[cfg(test)]
 #[path = "v3_tests.rs"]
 mod v3_tests;
+
+#[cfg(test)]
+#[path = "governed_v3_tests.rs"]
+mod governed_v3_tests;
