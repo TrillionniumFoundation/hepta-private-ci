@@ -241,3 +241,17 @@ fn receipt_digest_binds_turn_status_and_response() {
     assert_ne!(completed.receipt_digest, other_turn.receipt_digest);
     assert_ne!(completed.receipt_digest, other_response.receipt_digest);
 }
+
+#[test]
+fn settlement_does_not_reapply_the_pre_dispatch_deadline() {
+    let mut value = intent();
+    value.deadline_ms = 1_001;
+    let prepared = prepare(1_000, value).expect("request admitted before its deadline");
+
+    // No current-time input exists at settlement: a terminal event received
+    // later remains an exact fact instead of becoming DeadlineExpired.
+    let receipt = prepared
+        .observe(Some(terminal(TerminalOutcome::Completed)))
+        .expect("late terminal settlement");
+    assert_eq!(receipt.status, AdapterStatus::Succeeded);
+}
