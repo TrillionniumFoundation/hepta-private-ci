@@ -157,6 +157,12 @@ pub struct ObjectiveSourceEnvelope {
     pub soft_preferences: Vec<SoftPreference>,
 }
 
+/// Native immutable compiler IR.
+///
+/// This type is intentionally not named `ObjectiveFunctionV1`: the registered
+/// canonical wire contract currently has a different field shape and still
+/// requires a versioned materialization decision. Product callers must not
+/// serialize this struct as if it were that protocol.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct ObjectiveFunction {
     pub request_id: StableId,
@@ -178,10 +184,15 @@ pub enum CompileDisposition {
     ExplicitAbstain,
 }
 
+/// Native compile receipt, not the registered canonical
+/// `ObjectiveCompileReceiptV1` wire representation.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct ObjectiveCompileReceipt {
     pub objective: ObjectiveFunction,
     pub disposition: CompileDisposition,
+    /// ABI-compatibility field. Successful V1 compilation never silently drops
+    /// a requested action: requested ∩ forbidden yields a conflict receipt.
+    /// Therefore this vector is empty for every successful native receipt.
     pub removed_action_ids: Vec<StableId>,
 }
 
