@@ -3,6 +3,7 @@ import test from "node:test";
 
 import {
   buildOperationIntent,
+  buildOperationProposal,
   buildLocalOperationProposalFromCanonicalJson,
   projectRuntime,
   projectRuntimeFromLocalCanonicalJson,
@@ -44,23 +45,59 @@ test("runtime projection exposes only registered safe fields", () => {
   assert.equal("providerPayload" in projection, false);
 });
 
-test("operation intent cannot issue authority or write a store", () => {
-  const intent = buildOperationIntent({
+test("operation proposal cannot mint canonical OperationIntentV1", () => {
+  const proposal = buildOperationProposal({
     operationId: "operation:1",
     subjectId: "module:1",
     action: "request_quarantine",
     expectedRevision: 3,
   });
 
-  assert.equal(intent.authorityGranted, false);
-  assert.equal(intent.directStoreWrite, false);
-  assert.equal(intent.kind, "OperationIntentV1");
+  assert.equal(proposal.authorityGranted, false);
+  assert.equal(proposal.directStoreWrite, false);
+  assert.equal(proposal.kind, "UiControlOperationProposalV1");
+  assert.notEqual(proposal.kind, "OperationIntentV1");
+
+  const compatibility = buildOperationIntent({
+    operationId: "operation:2",
+    subjectId: "module:1",
+    action: "request_retry",
+    expectedRevision: 3,
+  });
+  assert.equal(compatibility.kind, "UiControlOperationProposalV1");
+});
+
+test("operation proposal rejects unknown fields and accessors", () => {
+  assert.throws(
+    () =>
+      buildOperationProposal({
+        operationId: "operation:1",
+        subjectId: "module:1",
+        action: "request_retry",
+        expectedRevision: 3,
+        authorityGranted: true,
+      }),
+    /missing or unknown/,
+  );
+
+  const input = {
+    operationId: "operation:1",
+    subjectId: "module:1",
+    action: "request_retry",
+  };
+  Object.defineProperty(input, "expectedRevision", {
+    enumerable: true,
+    get() {
+      throw new Error("must not execute");
+    },
+  });
+  assert.throws(() => buildOperationProposal(input), /own data property/);
 });
 
 test("unknown actions fail closed", () => {
   assert.throws(
     () =>
-      buildOperationIntent({
+      buildOperationProposal({
         operationId: "operation:1",
         subjectId: "module:1",
         action: "merge_and_release",
@@ -70,7 +107,7 @@ test("unknown actions fail closed", () => {
   );
 });
 
-test("invalid digest is rejected", () => {
+test("invalid or zero digest is rejected", () => {
   assert.throws(
     () =>
       projectRuntime({
@@ -81,16 +118,32 @@ test("invalid digest is rejected", () => {
       }),
     /64 lowercase hexadecimal/,
   );
+  assert.throws(
+    () =>
+      projectRuntime({
+        moduleId: "runtime.agentd",
+        status: "ready",
+        revision: 7,
+        digest: "0".repeat(64),
+      }),
+    /non-zero/,
+  );
 });
 
-test("legacy V1 projection continues to ignore additional presentation data", () => {
-  const projection = projectRuntime({
+test("legacy projection ignores additional presentation data without reading it", () => {
+  const observation = {
     moduleId: "runtime.agentd",
     status: "ready",
     revision: 7,
     digest,
-    providerPayload: { token: "must-not-leak" },
+  };
+  Object.defineProperty(observation, "providerPayload", {
+    enumerable: true,
+    get() {
+      throw new Error("secret getter must not run");
+    },
   });
+  const projection = projectRuntime(observation);
   assert.equal(projection.status, "ready");
   assert.equal("providerPayload" in projection, false);
 });
@@ -148,19 +201,6 @@ test("canonical runtime projection rejects ambiguous encodings", () => {
         }),
       ),
     /missing, unknown, or unordered fields/,
-  );
-  assert.throws(
-    () =>
-      projectRuntimeFromLocalCanonicalJson(
-        canonicalJson({
-          schema: runtimeSchema,
-          moduleId: "runtime.agentd",
-          status: "ready",
-          revision: 7,
-          digest: "0".repeat(64),
-        }),
-      ),
-    /non-zero/,
   );
 });
 
