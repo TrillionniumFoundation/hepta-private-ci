@@ -70,10 +70,22 @@
       "delegatedCallees": ["CapabilityVerifierV3", "AsyncFederationTransportV3", "FederationKeyResolverV3"]
     },
     {
+      "operation": "execute_federation_resilient_v3",
+      "nativeSymbol": "execute_federation_resilient_v3",
+      "sourcePath": "codex-rs/hepta-memory-federation/src/v3_orchestrator.rs",
+      "state": "candidate_source_implemented_not_host_qualified",
+      "authority": "deny_all_aggregate",
+      "tests": ["codex-rs/hepta-memory-federation/src/v3_orchestrator_tests.rs"],
+      "sourcePathExists": true,
+      "designOperation": "query_peer",
+      "mappingClass": "owner_native",
+      "delegatedCallees": ["execute_once_v3"]
+    },
+    {
       "operation": "execute_federation_v3",
       "nativeSymbol": "execute_federation_v3",
       "sourcePath": "codex-rs/hepta-memory-federation/src/v3.rs",
-      "state": "candidate_source_implemented_not_host_qualified",
+      "state": "strict_candidate_helper_source_implemented",
       "authority": "deny_all_aggregate",
       "tests": ["codex-rs/hepta-memory-federation/src/v3_tests.rs"],
       "sourcePathExists": true,
