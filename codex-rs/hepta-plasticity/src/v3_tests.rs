@@ -235,7 +235,10 @@ fn production_registry_requires_and_advances_external_anchor() {
     let receipt = registry
         .append_v2(valid_v2_proposal("proposal:production:1"))
         .expect("anchored append");
-    assert_eq!(registry.current_anchor().expect("anchor"), Some(receipt.acknowledged_anchor));
+    assert_eq!(
+        registry.current_anchor().expect("anchor"),
+        Some(receipt.acknowledged_anchor)
+    );
     assert_eq!(*shared.borrow(), Some(receipt.acknowledged_anchor));
     drop(registry);
 
@@ -261,14 +264,16 @@ fn production_registry_requires_and_advances_external_anchor() {
         .write(true)
         .open(&path)
         .expect("reopen without anchor");
-    let error = ProductionProposalRegistryV1::open(
+    let error = match ProductionProposalRegistryV1::open(
         handle,
         scope,
         7,
         16,
         MemoryAnchorStore::default(),
-    )
-    .expect_err("existing history without independent anchor must reject");
+    ) {
+        Ok(_) => panic!("existing history without independent anchor must reject"),
+        Err(error) => error,
+    };
     assert!(matches!(
         error,
         ProductionProposalRegistryErrorV1::AnchorRequiredForExistingHistory
