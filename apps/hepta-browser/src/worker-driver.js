@@ -55,6 +55,7 @@ export class LinuxBubblewrapLauncher {
       externalNetworkDenied: true,
       ambientEnvironmentDenied: true,
       userHomeHidden: true,
+      hostFilesystemRestricted: true,
       parentDeathCleanup: true,
     });
   }
@@ -68,7 +69,19 @@ export class LinuxBubblewrapLauncher {
       "--new-session",
       "--die-with-parent",
       "--clearenv",
-      "--ro-bind", "/", "/",
+      // Start from an empty filesystem view. Only immutable runtime paths
+      // required by the dynamically linked worker are admitted below. In
+      // particular, /var, service homes and arbitrary host mounts are absent,
+      // so a compromised browser cannot read ambient credential stores merely
+      // because they are read-only.
+      "--tmpfs", "/",
+      "--ro-bind", "/usr", "/usr",
+      "--ro-bind-try", "/bin", "/bin",
+      "--ro-bind-try", "/lib", "/lib",
+      "--ro-bind-try", "/lib64", "/lib64",
+      "--dir", "/etc",
+      "--ro-bind-try", "/etc/fonts", "/etc/fonts",
+      "--ro-bind-try", "/etc/ssl", "/etc/ssl",
       "--tmpfs", "/home",
       "--tmpfs", "/root",
       "--tmpfs", "/run",
@@ -263,6 +276,7 @@ export class SubprocessBrowserDriver {
       "externalNetworkDenied",
       "ambientEnvironmentDenied",
       "userHomeHidden",
+      "hostFilesystemRestricted",
       "parentDeathCleanup",
     ]) {
       if (posture[key] !== true) throw new TypeError(`launcher posture does not enforce ${key}`);
