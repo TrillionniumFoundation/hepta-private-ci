@@ -2,6 +2,8 @@
 
 #![forbid(unsafe_code)]
 
+mod secure_v2;
+#[allow(dead_code)]
 mod v2;
 
 use std::error::Error as StdError;
@@ -11,22 +13,30 @@ use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
 
+pub use secure_v2::FederatedResultV2;
+pub use secure_v2::FederationAuthorityVerifierV2;
+pub use secure_v2::FederationClockV2;
+pub use secure_v2::FederationPeerSignatureVerifierV2;
+pub use secure_v2::FederationTransportRequestV2;
+pub use secure_v2::FederationTransportResultV2;
+pub use secure_v2::FederationTransportV2;
+pub use secure_v2::FederationV2Error;
+pub use secure_v2::PeerAuthenticationReceiptV2;
+pub use secure_v2::RemoteFederatedResponseV2;
+pub use secure_v2::SystemFederationClockV2;
+pub use secure_v2::VerifiedFederationAuthorityV2;
+pub use secure_v2::execute_once;
 pub use v2::FederatedCompletenessV2;
 pub use v2::FederatedCoverageV2;
 pub use v2::FederatedEvidenceItemV2;
 pub use v2::FederatedLeaseV2;
 pub use v2::FederatedQueryV2;
-pub use v2::FederatedResultV2;
 pub use v2::FederatedValidityV2;
 pub use v2::FederationCancellationReceiptV2;
 pub use v2::FederationCancellationRequestV2;
 pub use v2::FederationTransportOutcomeV2;
-pub use v2::FederationTransportResultV2;
-pub use v2::FederationTransportV2;
-pub use v2::FederationV2Error;
+pub use v2::FederationV2Error as LegacyFederationV2Error;
 pub use v2::MAX_FEDERATED_RESULTS_V2;
-pub use v2::RemoteFederatedResponseV2;
-pub use v2::execute_once;
 pub use v2::observe_cancellation;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
