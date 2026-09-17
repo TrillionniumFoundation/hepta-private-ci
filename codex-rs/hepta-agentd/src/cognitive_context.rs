@@ -3,8 +3,6 @@
 use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
 
-use codex_hepta_cognitive_read::ReadRequest;
-use codex_hepta_cognitive_read::ReadRequestV2;
 use codex_hepta_contracts::AgentId;
 use codex_hepta_control_plane::ObservedContextV1;
 use codex_hepta_control_plane::plan_observed_context;
@@ -57,16 +55,17 @@ pub(crate) async fn read(
     let cut = store
         .lane_c_snapshot(&access, &scope, now_seconds()?)
         .await?;
+    // Let the durable owner construct the snapshot-bound request. Product code
+    // never supplies its own expected snapshot digest for the canonical SQLite
+    // path; the lower-level ReadRequestV2 API remains available to fixtures and
+    // host-composed callers that already own an exact snapshot.
     let read = cut
-        .read(ReadRequestV2 {
-            read_request: ReadRequest {
-                snapshot_digest: cut.snapshot().snapshot_digest,
-                allowed_kinds: Vec::new(),
-                maximum_results: 1024,
-                include_tombstones: false,
-            },
-            maximum_encoded_bytes: 1024 * 1024,
-        })
+        .read_current(
+            Vec::new(),
+            /*maximum_results*/ 1024,
+            /*include_tombstones*/ false,
+            /*maximum_encoded_bytes*/ 1024 * 1024,
+        )
         .map_err(|error| CognitiveStoreError::Corrupt(error.to_string()))?;
     let candidates = store
         .retrieve_memory_candidates(&access, &RetrievalRequest::new(query, now_seconds()?))
@@ -181,9 +180,11 @@ pub(crate) async fn read(
         .into());
     }
     // A concurrent correction, deletion, changed citation, expiry or restored
-    // older database must not leak a stale projection into the response.
+    // older database must not leak a stale projection into the response. Bind
+    // that final owner reacquisition to the exact read receipt as well as the
+    // historical cut so a receipt cannot be replayed against another snapshot.
     store
-        .revalidate_lane_c_snapshot(&access, &scope, &cut, now_seconds()?)
+        .revalidate_lane_c_read(&access, &scope, &cut, &read, now_seconds()?)
         .await?;
     if let Some(ranker) = ranker {
         let ranker = std::sync::Arc::clone(ranker);
