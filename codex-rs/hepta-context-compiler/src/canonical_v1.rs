@@ -33,6 +33,7 @@ pub enum ContextCanonicalV1Error {
     Native(ContextCompilerV2Error),
     EmptyDigest(&'static str),
     TokenCountOverflow,
+    UntrustedInstructionUpgrade,
     AuthorityGranted,
     ReceiptDigestMismatch,
 }
@@ -93,8 +94,11 @@ impl ContextCompilationReceiptV1 {
         ] {
             ensure_digest(name, digest)?;
         }
-        if self.token_upper_bound == 0 || self.untrusted_instruction_count != 0 {
+        if self.token_upper_bound == 0 {
             return Err(ContextCanonicalV1Error::TokenCountOverflow);
+        }
+        if self.untrusted_instruction_count != 0 {
+            return Err(ContextCanonicalV1Error::UntrustedInstructionUpgrade);
         }
         if self.authority.grants_any() {
             return Err(ContextCanonicalV1Error::AuthorityGranted);
