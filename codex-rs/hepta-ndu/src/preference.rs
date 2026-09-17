@@ -30,8 +30,14 @@ pub struct PreferenceState {
 /// Local deterministic solver step. This is not the canonical
 /// `NduIterationReceiptV1` until bound through the protocol adapter with the
 /// frozen objective, subject, event, coefficient and generation context.
+///
+/// Subject identity is carried explicitly so the protocol adapter can prove a
+/// valid local step is not rebound to a different subject merely because its
+/// opaque state digest is nonzero.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct NduSolverIterationReceipt {
+    pub subject_id: StableId,
+    pub subject_class: SubjectClass,
     pub iteration: u32,
     pub predecessor_revision: Revision,
     pub next_revision: Revision,
@@ -237,6 +243,8 @@ fn update_once(
         state_digest,
     };
     let receipt = NduSolverIterationReceipt {
+        subject_id: state.subject_id.clone(),
+        subject_class: state.subject_class,
         iteration,
         predecessor_revision: state.revision,
         next_revision,
