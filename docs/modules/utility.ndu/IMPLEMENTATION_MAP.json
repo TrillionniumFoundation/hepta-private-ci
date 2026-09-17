@@ -221,7 +221,7 @@
       ],
       "state": "source_implemented_owner_local_durability_reference",
       "authority": "none",
-      "nonClaim": "not an activated production writer or fsync profile",
+      "nonClaim": "semantic journal is not by itself an activated production writer",
       "tests": [
         {
           "path": "codex-rs/hepta-ndu/src/projection_journal_tests.rs",
@@ -245,6 +245,50 @@
         }
       ],
       "designOperation": "NduProjectionJournalV1",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [],
+      "sourcePathExists": true
+    },
+    {
+      "operation": "NduProjectionStoreV1",
+      "nativeSymbol": "codex_hepta_ndu::NduProjectionStoreV1",
+      "sourcePath": "codex-rs/hepta-ndu/src/projection_store.rs",
+      "inputs": [
+        "host-authorized private local directory",
+        "projection mutations",
+        "validated backup image"
+      ],
+      "outputs": [
+        "synchronized projection journal image",
+        "selected projection view",
+        "validated backup image"
+      ],
+      "state": "source_implemented_durable_writer_candidate",
+      "authority": "none",
+      "nonClaim": "not production-activated; target-host filesystem, retention, backup transport and non-Unix durability remain qualification boundaries",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-ndu/src/projection_store_tests.rs",
+          "symbol": "durable_writer_round_trips_selected_and_revoked_state"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/projection_store_tests.rs",
+          "symbol": "backup_restore_is_validated_before_replacing_live_state"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/projection_store_tests.rs",
+          "symbol": "older_valid_backup_cannot_remove_a_later_revocation"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/projection_store_tests.rs",
+          "symbol": "stale_uncommitted_temp_image_is_discarded_before_recovery"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/projection_store_tests.rs",
+          "symbol": "concurrent_writer_is_rejected_while_owner_lock_is_live"
+        }
+      ],
+      "designOperation": "NduProjectionStoreV1",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
       "sourcePathExists": true
@@ -293,13 +337,15 @@
     "tree": "ff9fa6baf95a35fd2f49816e0a80097688f2aeeb"
   },
   "repositoryControlledGaps": [
-    "Promote the existing control-plane and intelligence read-only callsites only after product authentication and owner-store composition are qualified.",
-    "Select and qualify a crash-durable production projection store with migration, fsync, retention and backup/restore semantics.",
+    "Promote the existing control-plane and intelligence read-only callsites only after product authentication and selected-writer composition are qualified.",
+    "Compose and target-host qualify NduProjectionStoreV1 before changing productionWriterState; source existence is not activation.",
+    "Complete native coefficient-profile and coordinate/Q24 conversion admission required by a stochastic consumer.",
     "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary."
   ],
   "externalEvidenceGates": [
     "independent semantic review",
     "product execution and target-host qualification",
+    "conditional identification and longitudinal efficacy",
     "operator acceptance, canary, promotion and release"
   ]
 }
