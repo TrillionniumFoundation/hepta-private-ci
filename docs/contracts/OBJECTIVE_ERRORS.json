@@ -86,9 +86,21 @@
     },
     {
       "code": "OBJ-E007",
-      "stableMeaning": "freshness, deadline or bounded feasibility budget is unavailable",
+      "stableMeaning": "time-state, deadline or bounded feasibility availability prevents admission",
       "outcomeClass": "unavailable",
-      "retryable": true,
+      "retryable": false,
+      "retryPolicy": "variant_specific_same_semantic_input",
+      "retryableVariants": [
+        "ObjectiveError::FeasibilityBudgetExhausted",
+        "ObjectiveAdmissionError::SourceFromFuture"
+      ],
+      "requiresNewInputOrConfigurationVariants": [
+        "ObjectiveAdmissionError::LocaleNotAllowed",
+        "ObjectiveAdmissionError::SourceStale",
+        "ObjectiveAdmissionError::DeadlineMissing",
+        "ObjectiveAdmissionError::DeadlineBeforeObservation",
+        "ObjectiveAdmissionError::DeadlineExpired"
+      ],
       "rustVariants": [
         "ObjectiveError::FeasibilityBudgetExhausted",
         "ObjectiveAdmissionError::LocaleNotAllowed",
