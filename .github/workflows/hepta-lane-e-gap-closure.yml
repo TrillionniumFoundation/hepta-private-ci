@@ -14,6 +14,7 @@ on:
       - docs/lane-e/**
       - qualification/lane-e/**
       - scripts/hepta-lane-e-closure.py
+      - scripts/hepta-learning-eval-status.py
       - .github/workflows/hepta-lane-e-gap-closure.yml
 
 permissions:
@@ -62,6 +63,7 @@ jobs:
           set -euo pipefail
           python3 scripts/hepta-lane-e-closure.py self-test
           python3 scripts/hepta-lane-e-closure.py verify
+          python3 scripts/hepta-learning-eval-status.py
 
       - name: Locked all-target compilation
         working-directory: codex-rs
@@ -99,16 +101,30 @@ jobs:
           --test cross_language_wire_fault
           -- --test-threads=1
 
-      - name: Strict Lane E lint
+      - name: Strict learning.eval lint
+        if: always()
         working-directory: codex-rs
-        run: >-
-          cargo clippy --locked
-          -p codex-hepta-learning-ledger
-          -p codex-hepta-learning-artifacts
-          -p codex-hepta-bellman-operator
-          -p codex-hepta-intelligence-eval
-          -p codex-hepta-shadow-qualification
-          --all-targets -- -D warnings
+        run: cargo clippy --locked -p codex-hepta-intelligence-eval --all-targets -- -D warnings
+
+      - name: Strict learning.ledger lint
+        if: always()
+        working-directory: codex-rs
+        run: cargo clippy --locked -p codex-hepta-learning-ledger --all-targets -- -D warnings
+
+      - name: Strict learning.artifacts lint
+        if: always()
+        working-directory: codex-rs
+        run: cargo clippy --locked -p codex-hepta-learning-artifacts --all-targets -- -D warnings
+
+      - name: Strict learning.operator lint
+        if: always()
+        working-directory: codex-rs
+        run: cargo clippy --locked -p codex-hepta-bellman-operator --all-targets -- -D warnings
+
+      - name: Strict shadow qualification lint
+        if: always()
+        working-directory: codex-rs
+        run: cargo clippy --locked -p codex-hepta-shadow-qualification --all-targets -- -D warnings
 
       - name: Formatting and clean source
         if: always()
@@ -182,6 +198,7 @@ jobs:
         run: |
           set -euo pipefail
           python3 scripts/hepta-lane-e-closure.py verify
+          python3 scripts/hepta-learning-eval-status.py
 
       - name: Compile merged candidate
         working-directory: codex-rs
