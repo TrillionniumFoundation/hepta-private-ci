@@ -211,9 +211,9 @@ impl AppServerModelDriver {
         .await;
         let turn = match response {
             Ok(Ok(response)) => response.turn,
-            Ok(Err(TypedRequestError::Server { code, .. })) => {
+            Ok(Err(TypedRequestError::Server { source, .. })) => {
                 let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
-                let reason = if code == APP_SERVER_OVERLOADED_ERROR_CODE {
+                let reason = if source.code == APP_SERVER_OVERLOADED_ERROR_CODE {
                     TURN_START_OVERLOADED
                 } else {
                     TURN_START_REJECTED
