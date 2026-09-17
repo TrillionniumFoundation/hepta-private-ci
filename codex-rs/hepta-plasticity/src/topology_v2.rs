@@ -199,6 +199,7 @@ pub fn verify_topology_proposal_v2(
             "no-change".to_string(),
         ));
     }
+    let mut change_identities = BTreeSet::new();
     for candidate in proposal
         .candidates
         .iter()
@@ -216,7 +217,14 @@ pub fn verify_topology_proposal_v2(
                 candidate.candidate_id.to_string(),
             ));
         }
-        validate_change(&candidate.changes[0])?;
+        let change = &candidate.changes[0];
+        let identity = (change.module_id.clone(), change.operation);
+        if !change_identities.insert(identity) {
+            return Err(TopologyProposalErrorV2::DuplicateChange(
+                change.module_id.to_string(),
+            ));
+        }
+        validate_change(change)?;
     }
     if proposal.proposal_digest.is_zero()
         || proposal.proposal_digest != digest_topology_proposal_v2(proposal)?
@@ -522,6 +530,38 @@ mod tests {
             .expect("window update")
             .candidate_id;
         assert_ne!(base_update, window_update);
+    }
+
+    #[test]
+    fn topology_verifier_rejects_duplicate_module_operation_with_drift() {
+        let mut proposal = propose_topology_v2(request()).expect("proposal");
+        let mut drift = proposal
+            .candidates
+            .iter()
+            .find(|candidate| candidate.kind == TopologyCandidateKindV2::Update)
+            .expect("update")
+            .changes[0]
+            .clone();
+        drift.candidate_digest = Some(digest(b"new-drift"));
+        drift.evidence_digest = digest(b"evidence-drift");
+        proposal.candidates.push(TopologyCandidateV2 {
+            candidate_id: content_candidate_id(
+                proposal.selected_artifact_digest,
+                &proposal.window,
+                &drift,
+            )
+            .expect("candidate id"),
+            kind: TopologyCandidateKindV2::Update,
+            changes: vec![drift],
+        });
+        proposal
+            .candidates
+            .sort_by(|left, right| left.candidate_id.cmp(&right.candidate_id));
+        proposal.proposal_digest = digest_topology_proposal_v2(&proposal).expect("digest");
+        assert!(matches!(
+            verify_topology_proposal_v2(&proposal),
+            Err(TopologyProposalErrorV2::DuplicateChange(_))
+        ));
     }
 
     #[test]
