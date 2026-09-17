@@ -1,0 +1,40 @@
+{
+  "schema": "hepta.development-execution-policy.v1",
+  "schemaVersion": 1,
+  "planId": "HEPTA-GLOBAL-MODULAR-DEVELOPMENT-PLAN",
+  "planVersion": "8.0.0",
+  "ordinaryDevelopment": {
+    "ownerAuthorized": true,
+    "enforceWorkPackageMaxChangedPaths": false,
+    "enforceWorkPackageMaxCiMinutes": false,
+    "enforceWorkPackageMaxParallelAgents": false,
+    "scopeRule": "one_semantically_coherent_change_with_explicit_owner_or_coowner_for_each_durable_domain",
+    "crossOwnerSinglePullRequestAllowed": true,
+    "reviewRule": "all_changed_owner_boundaries_require_their_designated_review",
+    "qualificationReceiptsRequired": false,
+    "deploymentApprovalRequired": false
+  },
+  "boundedAutonomousExecution": {
+    "enforceWorkPackageMaxChangedPaths": true,
+    "enforceWorkPackageMaxCiMinutes": true,
+    "enforceWorkPackageMaxParallelAgents": true,
+    "reason": "untrusted_or_autonomous_candidate_generation_must_remain_resource_bounded"
+  },
+  "qualificationAndActivation": {
+    "pathFilteredByAffectedBoundary": true,
+    "globalChecklistForOrdinarySourceChange": false,
+    "exactCandidateRequired": true,
+    "independentDecisionRequiredWhenDeclaredByBoundary": true
+  },
+  "derivedRegistryPolicy": {
+    "humanMaintainedSourceOfTruth": "docs/modules/MODULES.json",
+    "duplicatedPresentationFactsMustBeGeneratedOrVerifiedFromSource": true,
+    "proseDigestWordCountIsAcceptanceEvidence": false
+  },
+  "forbidden": [
+    "split_a_semantically_single_change_only_to_satisfy_maxChangedPaths",
+    "require_deployment_receipts_for_pure_source_or_prose_change",
+    "treat_documentation_closure_as_product_execution",
+    "self_review_self_merge_or_self_release"
+  ]
+}
