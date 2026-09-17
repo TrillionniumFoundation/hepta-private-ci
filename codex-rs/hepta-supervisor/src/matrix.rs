@@ -1,7 +1,6 @@
 use std::io::ErrorKind;
 use std::sync::atomic::AtomicU64;
 use std::sync::atomic::Ordering;
-use std::time::Duration;
 use std::time::Instant;
 use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
@@ -32,13 +31,13 @@ use crate::runtime::DeferredAgentAction;
 use crate::runtime::DeferredAgentActionKind;
 use crate::runtime::MatrixRuntime;
 use crate::runtime::MatrixRuntimePhase;
+use crate::runtime::RestartSchedule;
 use crate::runtime::bounded_message;
 use crate::runtime::deadline;
 use crate::runtime::driver_error;
+use crate::runtime::schedule_restart;
 
 const MAX_MATRIX_BINDING_BYTES: u64 = 65_536;
-const MATRIX_RESTART_MIN: Duration = Duration::from_millis(250);
-const MATRIX_RESTART_MAX: Duration = Duration::from_secs(30);
 static MATRIX_INCARNATION_SEQUENCE: AtomicU64 = AtomicU64::new(1);
 
 impl<D: ProcessDriver> Supervisor<D> {
@@ -50,12 +49,14 @@ impl<D: ProcessDriver> Supervisor<D> {
     ) {
         let Some(release) = slot.active_release.clone() else {
             slot.matrix.configured = false;
+            slot.matrix.reset_restart_policy();
             return;
         };
         let Some(command) = release.matrixd_command().cloned() else {
             slot.matrix.configured = false;
             slot.matrix.degraded = false;
             slot.matrix.last_error = None;
+            slot.matrix.reset_restart_policy();
             return;
         };
         slot.matrix.configured = true;
@@ -483,7 +484,6 @@ impl<D: ProcessDriver> Supervisor<D> {
                     MatrixRuntimePhase::AwaitingHealth { .. } if healthy => {
                         runtime.phase = MatrixRuntimePhase::Running;
                         slot.matrix.degraded = false;
-                        slot.matrix.restart_attempt = 0;
                         slot.matrix.retry_at = None;
                         slot.matrix.last_error = None;
                         slot.event(
@@ -508,7 +508,6 @@ impl<D: ProcessDriver> Supervisor<D> {
                     MatrixRuntimePhase::Unhealthy { .. } if healthy => {
                         runtime.phase = MatrixRuntimePhase::Running;
                         slot.matrix.degraded = false;
-                        slot.matrix.restart_attempt = 0;
                         slot.matrix.retry_at = None;
                         slot.matrix.last_error = None;
                         slot.event(
@@ -590,7 +589,8 @@ impl<D: ProcessDriver> Supervisor<D> {
                     return Ok(());
                 }
             }
-            let retry_due = slot.matrix.retry_at.is_none_or(|retry_at| now >= retry_at);
+            let retry_due = !slot.matrix.restart_exhausted
+                && slot.matrix.retry_at.is_none_or(|retry_at| now >= retry_at);
             if retry_due {
                 self.start_matrix_companion(agent_id, slot, now);
             }
@@ -608,14 +608,21 @@ impl<D: ProcessDriver> Supervisor<D> {
         let message = bounded_message(message);
         slot.matrix.degraded = true;
         slot.matrix.last_error = Some(message.clone());
-        slot.matrix.restart_attempt = slot.matrix.restart_attempt.saturating_add(1);
-        let shift = slot.matrix.restart_attempt.saturating_sub(1).min(7);
-        let delay = MATRIX_RESTART_MIN
-            .checked_mul(1_u32 << shift)
-            .unwrap_or(MATRIX_RESTART_MAX)
-            .min(MATRIX_RESTART_MAX);
-        slot.matrix.retry_at = now.checked_add(delay);
+        let schedule = schedule_restart(
+            &mut slot.matrix.restart_attempt,
+            &mut slot.matrix.restart_window_started_at,
+            &mut slot.matrix.retry_at,
+            &mut slot.matrix.restart_exhausted,
+            &self.config,
+            now,
+        );
         slot.event(generation, SupervisorEventKind::MatrixDegraded(message));
+        if let RestartSchedule::Exhausted { attempts } = schedule {
+            slot.event(
+                generation,
+                SupervisorEventKind::MatrixRestartBudgetExhausted { attempts },
+            );
+        }
     }
 }
 
