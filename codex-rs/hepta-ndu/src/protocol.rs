@@ -48,6 +48,9 @@ pub fn bind_solver_iteration_receipt_v1(
     require_digest(context.event_digest, "event")?;
     require_digest(context.coefficient_digest, "coefficient")?;
     validate_solver_iteration_receipt(receipt)?;
+    if context.subject_id != receipt.subject_id || context.subject_class != receipt.subject_class {
+        return Err(NduError::InvalidSolverReceipt);
+    }
 
     let receipt_digest = digest_receipt(context, receipt);
     Ok(NduIterationReceiptV1 {
