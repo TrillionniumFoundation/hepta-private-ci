@@ -9,6 +9,7 @@ use std::fmt;
 use std::sync::Arc;
 
 use codex_hepta_memory::AuthoritativeCognitiveStore;
+use codex_hepta_memory::CognitiveStore;
 use codex_hepta_memory::ProductionAuthorityLease;
 use codex_hepta_memory::ProductionAuthorityVerifier;
 use codex_hepta_memory::ProductionDispatchReceipt;
@@ -67,11 +68,11 @@ impl AgentdProductionWriterHost {
         })
     }
 
-    /// Build a host handle around an already-open canonical authority façade.
-    /// Qualification/examples may use this form to control restart timing while
-    /// preserving the same production ownership boundary.
+    /// Qualification-only seam for harnesses that must control the exact
+    /// SQLite pool lifetime across a simulated crash/restart. Repository
+    /// CALLERS policy requires zero product callers of this method.
     pub async fn open_with_store<V>(
-        store: AuthoritativeCognitiveStore,
+        store: CognitiveStore,
         authority: ProductionAuthorityLease,
         verifier: &V,
         lease_id: impl Into<String>,
@@ -80,7 +81,7 @@ impl AgentdProductionWriterHost {
     where
         V: ProductionAuthorityVerifier + ?Sized,
     {
-        let writer = store
+        let writer = AuthoritativeCognitiveStore::from_qualification_backend(store)
             .open_production_writer(authority, verifier, lease_id, lease_generation)
             .await?;
         Ok(Self {
