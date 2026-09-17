@@ -27,6 +27,7 @@ use codex_hepta_matrix_sdk::MatrixTransportError;
 use codex_hepta_matrix_sdk::OutboxDispatchConfig;
 use codex_hepta_matrix_sdk::dispatch_outbox_once;
 use codex_hepta_matrix_sdk::run_outbox_sender;
+use codex_hepta_matrix_store::MatrixDispatchState;
 use codex_hepta_matrix_store::MatrixDurableConfig;
 use codex_hepta_matrix_store::MatrixDurableStore;
 use codex_hepta_matrix_store::OutboxDisposition;
@@ -152,6 +153,29 @@ async fn enqueue_final(
     }
 }
 
+async fn observe_success(
+    store: &MatrixDurableStore,
+    record: &OutboxRecord,
+    event_id: &MatrixEventId,
+    observed_at_ms: u64,
+) -> TestResult {
+    let receipt = store
+        .observe_matrix_server_event(
+            Some(&record.stable_txn_id),
+            event_id,
+            &record.room_id,
+            record.binding_revision,
+            record.generation,
+            &"d".repeat(64),
+            observed_at_ms,
+        )
+        .await?
+        .ok_or("server observation did not match the durable dispatch")?;
+    assert_eq!(receipt.state, MatrixDispatchState::ObservedSucceeded);
+    assert!(receipt.archived);
+    Ok(())
+}
+
 struct FakeTransport {
     results: Mutex<VecDeque<Result<MatrixEventId, MatrixTransportError>>>,
     txn_ids: Mutex<Vec<MatrixTransactionId>>,
@@ -159,7 +183,7 @@ struct FakeTransport {
 
 /// Models the exact response-loss window qualified against real Synapse: the
 /// first PUT is accepted under the stable transaction ID, but its successful
-/// response is hidden from the dispatcher before `mark_outbox_sent`.
+/// response is hidden before durable transport acceptance can be recorded.
 struct PostSendAckLossTransport {
     accepted_event_id: MatrixEventId,
     txn_ids: Mutex<Vec<MatrixTransactionId>>,
@@ -192,7 +216,7 @@ impl MatrixOutboundTransport for PostSendAckLossTransport {
             txn_ids.push(record.stable_txn_id.clone());
             if txn_ids.len() == 1 {
                 // The fake Synapse accepted `accepted_event_id`; only its
-                // response is lost before the caller can mark the row sent.
+                // response is lost, forcing reconciliation with the same txn.
                 Err(MatrixTransportError::Retryable)
             } else {
                 Ok(self.accepted_event_id.clone())
@@ -369,8 +393,22 @@ async fn expired_crash_lease_reuses_the_stable_transaction_after_reopen() -> Tes
         31,
     )
     .await?;
-    assert_eq!(stats.sent, 1);
+    assert_eq!(stats.sent, 0);
+    assert_eq!(stats.accepted_pending_observation, 1);
     assert_eq!(transport.txn_ids()?, vec![original.stable_txn_id.clone()]);
+    let pending = reopened
+        .outbox_for_txn(&original.stable_txn_id)
+        .await?
+        .ok_or("accepted outbox record disappeared")?;
+    assert_eq!(pending.state, OutboxState::InFlight);
+    assert_eq!(pending.sent_event_id, None);
+    let receipt = reopened
+        .matrix_dispatch_receipt(&original.stable_txn_id)
+        .await?
+        .ok_or("dispatch receipt disappeared")?;
+    assert_eq!(receipt.state, MatrixDispatchState::Indeterminate);
+    assert_eq!(receipt.accepted_event_id.as_ref(), Some(&sent_event));
+    observe_success(&reopened, &pending, &sent_event, 32).await?;
     let stored = reopened
         .outbox_for_txn(&original.stable_txn_id)
         .await?
@@ -388,9 +426,10 @@ async fn retry_preserves_stable_transaction_and_shutdown_is_bounded() -> TestRes
     let layout = layout(&temp, &agent_id)?;
     let store = prepared_store(&layout).await?;
     let original = enqueue_final(&store, &agent_id, 10).await?;
+    let sent_event = event("$sent-after-retry")?;
     let transport = FakeTransport::new([
         Err(MatrixTransportError::Retryable),
-        Ok(event("$sent-after-retry")?),
+        Ok(sent_event.clone()),
     ]);
     let config = OutboxDispatchConfig {
         lease_ms: 20,
@@ -408,12 +447,9 @@ async fn retry_preserves_stable_transaction_and_shutdown_is_bounded() -> TestRes
             .retry_scheduled,
         1
     );
-    assert_eq!(
-        dispatch_outbox_once(&store, &transport, &config, &cancel, 20)
-            .await?
-            .sent,
-        1
-    );
+    let second = dispatch_outbox_once(&store, &transport, &config, &cancel, 20).await?;
+    assert_eq!(second.sent, 0);
+    assert_eq!(second.accepted_pending_observation, 1);
     assert_eq!(
         transport.txn_ids()?,
         vec![
@@ -421,6 +457,12 @@ async fn retry_preserves_stable_transaction_and_shutdown_is_bounded() -> TestRes
             original.stable_txn_id.clone()
         ]
     );
+    let pending = store
+        .outbox_for_txn(&original.stable_txn_id)
+        .await?
+        .ok_or("accepted retry record disappeared")?;
+    assert_eq!(pending.state, OutboxState::InFlight);
+    observe_success(&store, &pending, &sent_event, 21).await?;
 
     cancel.cancel();
     tokio::time::timeout(
@@ -433,7 +475,7 @@ async fn retry_preserves_stable_transaction_and_shutdown_is_bounded() -> TestRes
 }
 
 #[tokio::test]
-async fn post_send_ack_loss_reuses_txn_and_commits_same_synapse_event_id() -> TestResult {
+async fn post_send_ack_loss_reuses_txn_and_waits_for_server_observation() -> TestResult {
     let temp = TempDir::new()?;
     let agent_id = agent(FIRST_AGENT)?;
     let layout = layout(&temp, &agent_id)?;
@@ -461,7 +503,8 @@ async fn post_send_ack_loss_reuses_txn_and_commits_same_synapse_event_id() -> Te
     assert_eq!(after_response_loss.sent_event_id, None);
 
     let second = dispatch_outbox_once(&store, &transport, &config, &cancel, 20).await?;
-    assert_eq!(second.sent, 1);
+    assert_eq!(second.sent, 0);
+    assert_eq!(second.accepted_pending_observation, 1);
     assert_eq!(
         transport.txn_ids()?,
         vec![
@@ -469,10 +512,18 @@ async fn post_send_ack_loss_reuses_txn_and_commits_same_synapse_event_id() -> Te
             original.stable_txn_id.clone(),
         ]
     );
+    let pending = store
+        .outbox_for_txn(&original.stable_txn_id)
+        .await?
+        .ok_or("accepted outbox row disappeared")?;
+    assert_eq!(pending.state, OutboxState::InFlight);
+    assert_eq!(pending.attempts, 2);
+    assert_eq!(pending.sent_event_id, None);
+    observe_success(&store, &pending, &accepted_event_id, 21).await?;
     let committed = store
         .outbox_for_txn(&original.stable_txn_id)
         .await?
-        .ok_or("sent outbox row disappeared")?;
+        .ok_or("observed sent outbox row disappeared")?;
     assert_eq!(committed.state, OutboxState::Sent);
     assert_eq!(committed.attempts, 2);
     assert_eq!(committed.sent_event_id, Some(accepted_event_id));
@@ -481,7 +532,7 @@ async fn post_send_ack_loss_reuses_txn_and_commits_same_synapse_event_id() -> Te
 }
 
 #[tokio::test]
-async fn transient_failures_use_bounded_backoff_and_then_become_terminal() -> TestResult {
+async fn transient_failures_use_bounded_backoff_and_remain_indeterminate() -> TestResult {
     let temp = TempDir::new()?;
     let agent_id = agent(FIRST_AGENT)?;
     let layout = layout(&temp, &agent_id)?;
@@ -524,18 +575,22 @@ async fn transient_failures_use_bounded_backoff_and_then_become_terminal() -> Te
         .await?
         .ok_or("second retry record disappeared")?;
     assert_eq!(second_retry.next_attempt_at_ms, 40);
-    assert_eq!(
-        dispatch_outbox_once(&store, &transport, &config, &cancel, 40)
-            .await?
-            .permanent_failure,
-        1
-    );
-    let terminal = store
+    let third = dispatch_outbox_once(&store, &transport, &config, &cancel, 40).await?;
+    assert_eq!(third.permanent_failure, 0);
+    assert_eq!(third.retry_scheduled, 1);
+    assert_eq!(third.indeterminate_held, 1);
+    let pending = store
         .outbox_for_txn(&original.stable_txn_id)
         .await?
-        .ok_or("terminal outbox record disappeared")?;
-    assert_eq!(terminal.state, OutboxState::PermanentFailure);
-    assert_eq!(terminal.attempts, 3);
+        .ok_or("indeterminate outbox record disappeared")?;
+    assert_eq!(pending.state, OutboxState::RetryScheduled);
+    assert_eq!(pending.attempts, 3);
+    assert_eq!(pending.next_attempt_at_ms, 65);
+    let receipt = store
+        .matrix_dispatch_receipt(&original.stable_txn_id)
+        .await?
+        .ok_or("dispatch receipt disappeared")?;
+    assert_eq!(receipt.state, MatrixDispatchState::Indeterminate);
     assert_eq!(
         transport.txn_ids()?,
         vec![
