@@ -13,6 +13,8 @@ pub mod model_worker;
 
 #[cfg(unix)]
 pub mod local_process;
+#[cfg(unix)]
+pub mod local_product;
 pub mod native_app_server;
 
 use std::error::Error as StdError;
