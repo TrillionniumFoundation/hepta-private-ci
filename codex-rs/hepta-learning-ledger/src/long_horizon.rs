@@ -97,6 +97,12 @@ impl From<DurableLedgerError> for LongHorizonLedgerErrorV1 {
     }
 }
 
+impl From<std::io::Error> for LongHorizonLedgerErrorV1 {
+    fn from(error: std::io::Error) -> Self {
+        Self::Durable(DurableLedgerError::from(error))
+    }
+}
+
 impl From<PersistentIndexedLedgerErrorV1> for LongHorizonLedgerErrorV1 {
     fn from(error: PersistentIndexedLedgerErrorV1) -> Self {
         Self::Index(error)
@@ -708,8 +714,12 @@ fn verify_profile(
     if bytes != profile_bytes(binding, limits) {
         return Err(LongHorizonLedgerErrorV1::CatalogCorrupt);
     }
-    fs::create_dir_all(root.join(RECORD_LOCATION_DIR)).map_err(PersistentIndexErrorV1::from)?;
-    fs::create_dir_all(root.join(ARCHIVE_RANGE_DIR)).map_err(PersistentIndexErrorV1::from)?;
+    for directory in [RECORD_LOCATION_DIR, ARCHIVE_RANGE_DIR] {
+        let metadata = fs::metadata(root.join(directory)).map_err(PersistentIndexErrorV1::from)?;
+        if !metadata.is_dir() {
+            return Err(LongHorizonLedgerErrorV1::CatalogCorrupt);
+        }
+    }
     Ok(())
 }
 
@@ -752,7 +762,10 @@ fn persist_archive_catalog(
         predecessor,
         anchor,
     };
-    write_immutable(&archive_range_path(&range_dir, segment), &archive_range_bytes(binding, range)?)?;
+    write_immutable(
+        &archive_range_path(&range_dir, segment),
+        &archive_range_bytes(binding, range)?,
+    )?;
     File::open(&location_dir)
         .and_then(|directory| directory.sync_all())
         .map_err(PersistentIndexErrorV1::from)?;
@@ -866,7 +879,8 @@ fn archive_range_bytes(
     binding: Digest32,
     range: LedgerArchiveRange,
 ) -> Result<Vec<u8>, LongHorizonLedgerErrorV1> {
-    let segment = u64::try_from(range.segment).map_err(|_| LongHorizonLedgerErrorV1::CatalogCorrupt)?;
+    let segment =
+        u64::try_from(range.segment).map_err(|_| LongHorizonLedgerErrorV1::CatalogCorrupt)?;
     let mut bytes = Vec::new();
     bytes.extend_from_slice(&segment.to_be_bytes());
     bytes.extend_from_slice(&range.predecessor.sequence.to_be_bytes());
