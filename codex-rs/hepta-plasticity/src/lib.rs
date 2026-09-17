@@ -16,6 +16,7 @@ pub use durable_registry::DurableProposalRegistry;
 pub use durable_registry::DurableProposalRegistryError;
 pub use durable_registry::DurableRegistryAnchorV1;
 
+mod evidence_v3;
 mod governed_v3;
 mod legacy;
 mod parameter_v2;
@@ -24,6 +25,12 @@ mod registry;
 mod topology_v2;
 mod types;
 
+pub use evidence_v3::PlasticityEvidenceKindV3;
+pub use evidence_v3::PlasticityEvidencePortErrorV3;
+pub use evidence_v3::PlasticityEvidencePortV3;
+pub use evidence_v3::PlasticityEvidenceQueryV3;
+pub use evidence_v3::VerifiedPlasticityEvidenceV3;
+pub use evidence_v3::verify_plasticity_evidence_v3;
 pub use governed_v3::GeneratedParameterCandidateSetV3;
 pub use governed_v3::GovernedParameterProposalRequestV3;
 pub use governed_v3::GovernedParameterProposalV3;
