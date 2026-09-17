@@ -1,446 +1,340 @@
 # learning.artifacts technical development guide
 
-**Plan:** `HEPTA-GLOBAL-MODULAR-DEVELOPMENT-PLAN` v8.0.0
+**Module:** `learning.artifacts`  
+**Owner:** `learning-platform`  
+**Deputy:** `durability-kernel`  
+**Source root:** `codex-rs/hepta-learning-artifacts`  
+**Architecture role:** authoritative immutable learning-artifact registry and bounded governance bookkeeping  
+**Current source state:** implemented candidate; product activation, operator acceptance, promotion and release remain external
 
-**Module:** `learning.artifacts`
+This document is the current implementation guide for the native `learning.artifacts` crate. It describes the source that exists now, the durable boundaries it actually enforces, and the host obligations that remain outside the crate. It must not be read as an activation or release receipt.
 
-**Owner:** `learning-platform`
+## 1. Mission and authority boundary
 
-**Deputy:** `durability-kernel`
+`learning.artifacts` owns immutable artifact identity, lineage, registry eligibility, current withdrawal checks, lifecycle bookkeeping, bounded governed-iteration records, pinned artifact loading, and create-only persistence primitives.
 
-**Lifecycle:** `target`
+The crate is deliberately **authority-free** with respect to selection, activation, promotion and release. Successful validation, persistence, replay, qualification or publication-plan sealing never grants those powers. Public receipt types that carry an `AuthorityPosture` use `DENY_ALL`.
 
-**Source status:** `existing_bound`
+The module does not authenticate signatures by itself. Hosts must authenticate signer/credential evidence before constructing typed inputs such as lifecycle actor evidence, withdrawal authority domains and current-head witnesses.
 
-**Bootstrap work package:** `ART-1-LEARNING-ARTIFACT-REGISTRY`
+The module also does not own a product-global filesystem transaction. Where several immutable files participate in one generation, the host owns the independently authenticated current pointer and parent-directory durability. The crate supplies exact receipts and a fail-closed publication transaction contract so a partially durable generation cannot be represented as a committed publication.
 
-This stable document is the implementation guide for `learning.artifacts`. Normative identity, ownership, contract, data-authority and delivery facts remain in the canonical JSON registries. This guide explains how those facts are implemented and operated. Documentation readiness is not source implementation, activation, operator acceptance, promotion or release.
+## 2. Native source decomposition
 
-## 1. Identity, mission and ownership
+| Source | Responsibility |
+| --- | --- |
+| `src/model.rs` | V1 artifact manifest, registry event and state types |
+| `src/registry.rs` | append-only V1 artifact registry, lineage eligibility and exact replay |
+| `src/closure_v2.rs` | complete V2 manifest validation, dataset withdrawal registry, current registry-head witness and lifecycle transition semantics |
+| `src/admission_v3.rs` | V3 admission bound to exact withdrawal frontier **and** authenticated withdrawal authority domain |
+| `src/lifecycle_journal.rs` | predecessor-bound lifecycle journal with actor-role separation and exact historical replay |
+| `src/dataset_revocation.rs` | staged dataset-driven V1 registry revocation without mutating the caller's current registry |
+| `src/storage.rs` | create-only V1 registry snapshots, current-head witness files and candidate payload IO |
+| `src/durable_authority.rs` | create-only durable withdrawal/lifecycle snapshots with exact receipt and semantic replay |
+| `src/publication.rs` | V2-admission-to-durable-generation publication plan/transaction/commit contract |
+| `src/pinned.rs` | pinned candidate load and current revalidation boundary |
+| `src/iteration.rs` | bounded, authority-free self-iteration envelope/candidate state machine |
+| `src/iteration_ledger.rs` | bounded append-only iteration evidence bookkeeping and exact replay |
+| `src/storage_hygiene.rs` | enrolled-root path containment, storage inspection and conservative zero-length orphan cleanup |
+| `src/error.rs` | V1 registry error vocabulary |
+| `src/lib.rs` | public source surface |
 
-Own immutable create-only learning artifacts, sensor cores, lineage and rollback predecessors.
+The crate currently has no production service daemon and no API that performs a product deployment. A product host composes these primitives under its own authenticated writer fence and current-generation pointer.
 
-The primary owner `learning-platform` controls changes inside the declared target roots and is accountable for correctness, backward compatibility, test evidence and rollback. The deputy `durability-kernel` independently reviews public contracts, authority checks, persistence, migrations, concurrency, resource limits and activation behavior. A work package may narrow this scope but may not widen it. Cross-owner changes require an explicit co-owner or a separate integration package.
+## 3. Core invariants
 
-Plane `domain`, kind `store`, state model `stateful_create_only` and architecture role `authoritative_store` define placement. The module may optimize locally, but cannot claim global optimality or absorb another module's durable facts.
+### 3.1 Immutable V1 registry
 
-## 2. Source binding and implementation status
+`ArtifactRegistry` is an append-only event chain. Registration, quarantine and revocation are new records; existing records are never rewritten. Event identity is idempotent only for identical semantics. Reusing an event identity with changed content fails closed.
 
-Declared exclusive target roots:
+Every record binds sequence, predecessor chain digest and event digest. Snapshot reconstruction replays the semantic events and checks that the reconstructed records and head match exactly.
 
-- `codex-rs/hepta-learning-artifacts`
+Eligibility is lineage-sensitive. A candidate is eligible only while it and every predecessor remain in `Candidate`; quarantine or revocation of an ancestor therefore invalidates descendants without mutating descendant records.
 
-Existing declared roots at this exact source snapshot:
+### 3.2 Complete V2 manifest
 
-- `codex-rs/hepta-learning-artifacts`
+`LearningArtifactManifestV2` keeps independent fields for artifact bytes, training code, runtime tuple, device profile, objective class, compatibility, schema profile, normalization, source datasets, lineage digests, predecessors and rollback predecessor.
 
-Non-authoritative implementation evidence roots:
+Validation is bounded and canonicalizes sortable collections before computing the manifest digest. Dataset-derived manifests require explicit source dataset digests; dataset-independent manifests must not carry dataset provenance. Expiry is checked at the validation time.
 
-None.
+V2 is richer than the stable V1 registry manifest. A V1 registry entry is therefore a durable registry projection, not a lossless replacement for the V2 manifest.
 
-Declared roots not yet present:
+### 3.3 Withdrawal authority domain binding
 
-None.
+A withdrawal frontier digest alone is not sufficient domain identity: two independent empty registries have the same zero head, and two independent registries can in principle share the same event history.
 
-`existing_bound` is a source-location fact. The declared roots above are materialized in the bounded V8 source candidate and are covered by the dedicated closed-world inventory, focused tests, all-target compilation, strict lint and exact-head qualification. This status does not activate `learning.artifacts`, create a production caller, grant runtime or effect authority, issue independent acceptance, select or promote a candidate, or authorize release. Any later source move updates `MODULES.json`, `SOURCE_BINDINGS.json` and this guide in one candidate.
+`WithdrawalAuthorityDomainV1` therefore binds:
 
-## 3. Boundary, responsibilities and non-goals
+- `registry_id`;
+- `scope_digest`;
+- `authority_id`;
+- `authority_epoch`.
 
-Direct dependencies:
+`WithdrawalBoundArtifactAdmissionV3` binds the validated V2 manifest to both the exact withdrawal head and the digest of this authority domain. Publication revalidation requires the same current domain and the same current head. A receipt produced under one domain cannot be replayed under another even when both heads are zero.
 
-- `platform.types`
-- `kernel.operations`
+The domain digest is separated with `hepta.learning-artifacts.withdrawal-authority-domain.v1`; the admission digest is separated with `hepta.learning-artifacts.withdrawal-bound-admission.v3`.
 
-Authoritative write domains:
+### 3.4 Lifecycle historical recovery versus fresh authorization
 
-- `learning_artifact_registry`
-- `operator_sensor_core_registry`
+Fresh lifecycle mutation requires actor evidence to be valid at `now`, and the event occurrence time must fall inside the actor's verified validity window.
 
-Explicitly denied capabilities:
+Historical recovery has different semantics. A credential that was valid when a persisted event occurred does **not** make the historical event invalid merely because that credential has since expired. `ArtifactLifecycleJournalV2::from_snapshot` therefore reconstructs each immutable record at its recorded `event.occurred_at`, while fresh `append` continues to enforce current-time authorization.
 
-- `self_promotion`
-- `mutable_artifact_bytes`
+This separation is a durability invariant: a service can restart after credential expiry and recover a valid historical journal, but the expired actor still cannot publish a new mutation.
 
-The module accepts only registered, bounded, versioned inputs. It rejects unknown critical fields and treats missing authority, stale revisions, scope mismatch and digest mismatch as hard failures. It never directly writes another owner's store. Cross-owner mutation follows local transaction, durable intent, outbox, destination deduplication, acknowledgement and fenced reconciliation.
+### 3.5 Deny-all authority
 
-Non-goals include becoming a general state store, bypassing the Codex execution spine, interpreting model prose as authority, minting an authority consumed by the same component, or converting qualification evidence into deployment authority. A façade may sequence modules but may not own their facts.
+The registry, admission, lifecycle, durable-authority and publication receipts do not grant selection, activation, promotion or release. These decisions require an independent control plane. Iteration states named `Selected`, `Promoted` and `Released` are bookkeeping states whose evidence must have been produced and authenticated externally; recording the state is not the source of the authority.
 
-## 4. Internal architecture and component decomposition
+## 4. Registry and withdrawal state machines
 
-The bounded components are:
+### 4.1 Artifact registry
 
-- `schema and migration owner`
-- `transactional writer`
-- `snapshot read port`
-- `integrity and lineage verifier`
+The stable registry accepts:
 
-Ingress validates identity, version, size, scope and revision before domain logic. The deterministic core receives typed values and is testable without network, filesystem or process-global state unless the module owns that boundary. State-bearing components use one transaction boundary per logical mutation. Publication occurs only after invariants and lineage checks pass.
+- `Register` with immutable manifest projection;
+- `Quarantine` with independent evaluator and non-zero reason digest;
+- `Revoke` with independent evaluator and non-zero reason digest.
 
-Adapters translate one registered contract, verify final payload and grant immediately before the boundary, invoke one downstream capability, and map the observed terminal outcome. Queue acceptance or handler completion is never inferred as external success. Component interfaces support deterministic fixtures and fault injection.
+Derived registration requires an existing eligible predecessor, strictly advanced generation, identical objective digest and identical artifact kind.
 
-Configuration is immutable for one process generation. Changes affecting authority, schema, compatibility, model identity, objective semantics or resource policy create a new revision or generation. Hidden mutable singletons, unbounded queues and implicit store fallback are prohibited.
+### 4.2 Dataset withdrawal registry
 
-## 5. Contracts, ports and compatibility
+`DatasetWithdrawalRegistry` is a separate append-only digest chain. A notice binds notice identity, dataset digest, source tombstone digest, authority identity, credential-chain digest, signing-key digest, authority epoch and issue time.
 
-Produced contracts:
+Exact notice retry is idempotent; reused notice identity with changed semantics conflicts. Current admission checks every V2 source dataset against the current withdrawal registry and rejects any withdrawn source.
 
-- `DomainRead::learning_artifact_registryV1`
-- `DomainRead::operator_sensor_core_registryV1`
-- `LearningArtifactManifestV1`
-- `ModulePort::learning.artifacts::intuition.policy`
-- `ModulePort::learning.artifacts::learning.eval`
-- `ModulePort::learning.artifacts::learning.operator`
-- `ModulePort::learning.artifacts::learning.plasticity`
-- `ModulePort::learning.artifacts::neuron.runtime`
-- `ModulePort::learning.artifacts::prompt.optimizer`
-- `ModulePort::learning.artifacts::utility.ndu`
-- `OperatorSensorCoreManifestV1`
+The registry is semantically replayable from `DatasetWithdrawalRegistrySnapshotV1`. Durable file placement is provided by `durable_authority.rs` and remains scoped by an externally authenticated `WithdrawalAuthorityDomainV1`.
 
-Consumed contracts:
+## 5. Lifecycle journal
 
-- `BellmanOperatorArtifactV1`
-- `DatasetSnapshotV1`
-- `DomainRead::cross_owner_outboxV1`
-- `DomainRead::operation_ledgerV1`
-- `EvaluationReceiptV1`
-- `LongitudinalEvaluationReceiptV1`
-- `ModulePort::kernel.operations::learning.artifacts`
-- `ModulePort::platform.types::learning.artifacts`
-- `PlasticityProposalV1`
-- `RegularityProfileV1`
-- `UnlearningComplianceReceiptV1`
+`ArtifactLifecycleJournalV2` records exact predecessor head, sequence, producer, actor evidence, event digest, chain digest and lifecycle event.
 
-Critical protocol schemas:
+The journal checks:
 
-- `DatasetSnapshotV1`
-- `EvaluationReceiptV1`
-- `LearningArtifactManifestV1`
-- `LongitudinalEvaluationReceiptV1`
-- `OperatorSensorCoreManifestV1`
-- `RegularityProfileV1`
-- `UnlearningComplianceReceiptV1`
+1. exact expected current head;
+2. actor evidence shape and time window for new mutations;
+3. event/actor/credential/epoch binding;
+4. stable lifecycle transition validity;
+5. event identity conflict/idempotence;
+6. current per-artifact predecessor state;
+7. role separation for producer, evaluator, shadow/canary/human operators, selector, quarantine authority, revocation authority and retirement authority;
+8. bounded record count;
+9. exact snapshot replay and head equality.
 
-Every producer validates output before publication and binds semantic fields into the declared digest scope. Every consumer validates version, bounds, producer identity, scope and digest before use. Compatibility is additive only where registered; unknown critical fields are rejected. Contract identifiers, meaning and authority interpretation cannot change in place.
+Snapshot recovery intentionally validates historical records at their immutable event time rather than the service restart time. That rule is also used by durable lifecycle-file reconstruction.
 
-Rust types and canonical JSON represent identical semantics. Tests cover round trips, maximum bounds, missing fields, unknown fields, invalid enums, canonical ordering and digest stability. Error mapping preserves rejected, unavailable, timed out, indeterminate, quarantined and terminally failed outcomes.
+## 6. Governed iteration and iteration ledger
 
-## 6. Data authority, persistence and migrations
+`iteration.rs` provides bounded native records for self-iteration without granting execution or release authority.
 
-Owned authoritative or rebuildable domains:
+`IterationEnvelopeV1` binds base commit/tree, objective, grammar and hard ceilings for files, diff bytes, candidate count and parallel sandboxes. `IterationCandidateV1` binds generator identity, semantic diff, test plan, rollback digest and exact predecessor.
 
-- `learning_artifact_registry`
-- `operator_sensor_core_registry`
+The state machine is monotonic:
 
-Read-only data dependencies:
+`Drafted -> StaticallyValidated -> SandboxTested -> IndependentlyEvaluated -> ReviewRequested -> AcceptedCandidate -> Selected -> Promoted -> Released`
 
-- `cross_owner_outbox`
-- `operation_ledger`
+At any non-terminal stage a candidate may instead become `Rejected`, `Quarantined` or `Superseded`. Terminal states cannot transition further.
 
-For every owned domain, this module is the only authoritative writer. Mutations are revision- or generation-bound, idempotent for identical semantics and conflicting for a reused identity with different content. Records bind source identity, schema revision, logical sequence and lineage sufficient for correction, deletion and revocation.
+`IterationLedgerV1` records typed external evidence for transitions. It does not execute a sandbox, evaluate code, select a winner or perform release. Evidence IDs are single-use; changed content under a reused evidence identity conflicts. Independent stages reject evidence supplied by the generator identity. Snapshot restoration rebuilds candidate state only by replaying the recorded events, preventing a snapshot from smuggling in an unreceipted state.
 
-Migrations are deterministic and checksum-bound. Store open verifies required schema objects and integrity constraints before reads or writes. Migration failure leaves a recoverable predecessor. Rollback across a schema boundary restores compatible state with the binary.
+## 7. Durable storage formats
 
-Projection domains rebuild from declared sources and publish complete generations atomically. Projections never become sources of truth. Retention and deletion preserve lineage and prevent resurrection through indexes, caches, artifacts or backup restore.
+### 7.1 Stable artifact registry and payload storage
 
-## 7. Runtime, concurrency and transaction model
+`storage.rs` owns create-only registry snapshots, current-head witness files and candidate payload files. Files are created with `create_new`; Unix files use mode `0600`. Reads are length-bounded, locked, digest-checked and semantically reconstructed.
 
-The [current native implementation](../../../qualification/module-execution-dossiers/detail/learning.artifacts.md#8-current-native-implementation) identifies the actual state owner, in-memory versus persistent surfaces, and lock/transaction boundary. Use that implementation scope when composing the module; target state-machine operations are identified in the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/learning.artifacts.md).
+The registry snapshot receipt independently carries binding, head digest, file digest, record count and encoded length. The caller must retain/authenticate the receipt independently of the suspect file.
 
-[Shared concurrency and transaction requirements](../README.md#shared-concurrency-and-transactions) apply at the corresponding owner boundary.
+Candidate payload loading requires a current authenticated registry snapshot and exact manifest digest/length match. A successful load does not grant execution or selection authority.
 
-## 8. Failure semantics, recovery and rollback
+### 7.2 Withdrawal and lifecycle authority snapshots
 
-Use the error/recovery path linked by the [current native implementation](../../../qualification/module-execution-dossiers/detail/learning.artifacts.md#8-current-native-implementation) and the module-specific fault cases in the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/learning.artifacts.md). A source library or fixture cannot stand in for an unimplemented durable recovery or external reconciler.
+`durable_authority.rs` adds equivalent create-only durability for authority state.
 
-[Shared failure, recovery and rollback requirements](../README.md#shared-failure-and-recovery) remain mandatory.
+Current binary magics:
 
-## 9. Security, privacy and threat controls
+- withdrawal registry: `HPTWDR01`;
+- lifecycle journal: `HPTLCJ02`.
 
-Owned threat entries:
+Each file is bounded to 64 MiB and at most 1,000,000 records. `AuthoritySnapshotReceiptV1` independently binds kind, authority/scope binding digest, semantic head, file digest, record count and encoded length.
 
-- `artifact_lineage_break`
-- `current_run_artifact_swap`
-- `operator_sensor_clustering`
+Readback requires exact file size and file digest, decodes bounded fields, reconstructs the semantic state using the normal validators, rejects trailing bytes, and requires the reconstructed head to equal the independently supplied receipt.
 
-The posture is least authority, bounded input, typed contracts, digest binding and independent evidence. Sensitive values are redacted or represented by digests at evidence boundaries. Credentials never enter general logs, learning datasets, prompt factors or cross-module receipts. Authority is operation-bound, final-payload-bound, short-lived and revocation-aware.
+Withdrawal files are domain-bound. Lifecycle files preserve historical validity across actor credential expiry while still replaying the same transition/role/digest semantics.
 
-Negative tests cover denied capabilities, cross-owner writes, stale or revoked grants, replay with payload drift, unknown fields, oversize input, scope escape, untrusted instruction escalation and secret/provider leakage. Security review is mandatory for new effect boundaries, persistence, network, model invocation or authority semantics.
+### 7.3 Filesystem obligations left to the host
 
-## 10. Performance, capacity and hot-path policy
+Create-only file creation proves the final path did not already exist at the open operation. It does not by itself make arbitrary ancestor directories immutable. The selected host must enroll/protect storage roots, own directory permissions and ensure containing-directory durability.
 
-The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/learning.artifacts.md) specifies this module's algorithm, pilot ceilings and capacity fixtures. Those target ceilings are not measurements and must not be reported as enforcement of an unimplemented API. Current native limits belong to [codex-rs/hepta-learning-artifacts/src/lib.rs](../../../codex-rs/hepta-learning-artifacts/src/lib.rs) and the linked implementation components.
+No code in this crate claims a cross-filesystem transaction.
 
-[Shared performance and capacity requirements](../README.md#shared-performance-and-capacity) define the measurement/overload obligations for a selected host.
+## 8. V2 admission to durable publication contract
 
-## 11. Observability and operations
+`publication.rs` makes the previously implicit host composition explicit.
 
-Operate create-only candidate storage under one owner, with pinned read bounds and current revocation/head witnesses. Sync bytes before registry publication; incomplete/orphan payloads remain unselected. Reload an exact independently selected compatible tuple; restoring an older registry must not resurrect withdrawn datasets or artifacts.
+`prepare_artifact_publication_v1` requires:
 
-Current operating and state-format references:
+1. a current V3 admission whose withdrawal authority domain and head still match;
+2. a currently eligible V1 registry projection for the same artifact;
+3. exact equality for V2/V1 fields that the V1 projection can represent: artifact identity, kind, generation, bytes digest, objective digest, producer, compatibility and encoded size;
+4. exact registry snapshot head/count and external registry binding;
+5. exact withdrawal domain binding/head/count;
+6. exact lifecycle binding/head/count;
+7. publication scope, generation and predecessor publication digest.
 
-- [codex-rs/hepta-learning-artifacts/STORAGE.md](../../../codex-rs/hepta-learning-artifacts/STORAGE.md).
-- [codex-rs/hepta-learning-artifacts/READ_BOUNDARY.md](../../../codex-rs/hepta-learning-artifacts/READ_BOUNDARY.md).
-- [codex-rs/hepta-learning-artifacts/PINNED_LOAD.md](../../../codex-rs/hepta-learning-artifacts/PINNED_LOAD.md).
-- [codex-rs/hepta-learning-artifacts/DATASET_REVOCATION.md](../../../codex-rs/hepta-learning-artifacts/DATASET_REVOCATION.md).
+The resulting `ArtifactPublicationPlanV1` hashes all these facts into a plan digest.
 
-[Shared observability and operations requirements](../README.md#shared-observability-and-operations) specify safe events and alert classes; concrete deployment thresholds require the selected host profile.
+`ArtifactPublicationTransactionV1` then accepts durable receipts for exactly three immutable state files:
 
-## 12. Verification and qualification
+- the V1 artifact registry snapshot;
+- the withdrawal registry snapshot;
+- the lifecycle journal snapshot.
 
-Current focused test sources (source references, not pass receipts):
+A receipt whose binding, head, kind or record count differs from the plan is rejected. `seal()` fails with `DurabilityIncomplete` until all three exact durable receipts have been acknowledged.
 
-- [codex-rs/hepta-learning-artifacts/src/closure_v2_tests.rs](../../../codex-rs/hepta-learning-artifacts/src/closure_v2_tests.rs); named case: `art_01_manifest_v2_normalizes_complete_lineage`.
-- [codex-rs/hepta-learning-artifacts/src/dataset_revocation_tests.rs](../../../codex-rs/hepta-learning-artifacts/src/dataset_revocation_tests.rs); named case: `batch_revokes_direct_targets_and_blocks_descendants_without_mutating_input`.
+Once complete, `ArtifactPublicationCommitV1` binds the plan digest plus the three file bindings, semantic heads, file digests, record counts and lengths into one commit digest.
 
-In `codex-rs`, run `just test -p codex-hepta-learning-artifacts`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/learning.artifacts.md) separately labels target acceptance designs.
+### Required host publication sequence
 
-[Shared verification and qualification requirements](../README.md#shared-verification-and-qualification) retain the source/merge, failure, compilation and independent-evidence obligations.
+A product host MUST use the following order under one exclusive writer fence:
 
-## 13. Implementation sequence and work packages
+1. authenticate all external authority evidence;
+2. obtain/revalidate V3 admission against the current withdrawal domain/head;
+3. stage the V1 registry successor and lifecycle/withdrawal states;
+4. prepare the publication plan against those exact states;
+5. create, write and `fsync` the registry snapshot;
+6. create, write and `fsync` the withdrawal snapshot;
+7. create, write and `fsync` the lifecycle snapshot;
+8. acknowledge the three exact receipts in the publication transaction;
+9. seal and verify the publication commit;
+10. persist that commit in the host's generation record and make it durable;
+11. only then atomically publish the independently authenticated current-generation pointer;
+12. sync the containing directory as required by the selected host filesystem contract.
 
-Applicable work packages:
+Dropping or crashing an incomplete transaction produces **no sealed publication commit**. Orphan immutable files may remain, but the old authenticated current pointer remains authoritative. The host must never infer publication from the mere presence of one or more generation files.
 
-- `ART-1-LEARNING-ARTIFACT-REGISTRY`
-- `ART-2-NEXT-SNAPSHOT-RELOAD-ROLLBACK`
-- `HBO-1-OPERATOR-SENSOR-CORE`
+This is a hard composition contract, not a claim that Rust can atomically commit independent filesystem files.
 
-The bootstrap package is `ART-1-LEARNING-ARTIFACT-REGISTRY`. Development, activation and evidence predecessor graphs are distinct and all are enforced. Contract-first work may run in parallel only with non-overlapping write paths and frozen semantics. Each PR records its bounded contracts, domains, denied authorities, resources, rollback and stop conditions. A coordinator-issued envelope is required only at the coordination boundary that consumes it; it is not additional permission for ordinary authorized repository work.
+## 9. Read, pinned-load and recovery boundary
 
-Source implementation completes only when the declared target root exists, public surfaces match registries, tests pass and exact-head plus merge-candidate evidence is current. Later planned packages may remain without invalidating documentation closure.
+Read selection is external and authenticated. The crate validates the supplied current-head witness and snapshot receipt; it does not silently search older snapshots or choose a fallback generation.
 
-## 14. Activation, compatibility and retirement
+Pinned loading binds exact artifact identity/content and revalidates current registry eligibility. Current withdrawal/lifecycle checks remain separate freshness authorities where required by the caller. Restoring an older but internally valid file is insufficient when the host's independent current-generation witness requires a newer predecessor/generation.
 
-Activation composes a named product caller through registered ports and verifies authority, configuration, resource and failure behavior. Shadow and qualification callers are not production callers. Source-complete modules remain inactive until activation predecessors and evidence gates pass.
+Recovery rules are fail-closed:
 
-Compatibility adapters are temporary. Retirement requires all named callers migrated, no old-path use, oracle parity where required, rehearsed rollback and independent acceptance. Retirement preserves historical evidence and durable-record interpretability.
+- corrupt/truncated/digest-mismatched files are rejected;
+- semantic replay mismatch is rejected;
+- current-head rollback or predecessor mismatch is rejected;
+- stale V3 withdrawal head/domain is rejected;
+- incomplete publication transactions cannot seal;
+- lifecycle recovery survives normal expiry of credentials that were valid at event time.
 
-## 15. Definition of module completion
+## 10. Storage path and orphan hardening
 
-Documentation completion requires this guide, exact registry references and closed-world validation. Source completion requires code in the declared root and candidate tests. Composition requires a named caller. Qualification requires current exact-candidate evidence. Acceptance, selection, promotion and release are separate externally governed states.
-
-For `learning.artifacts`, this document grants no runtime, production, model, provider, tool, network, filesystem, secret, Matrix, fleet, acceptance, promotion or release authority.
-
-### Work-package execution envelopes
-
-#### `ART-1-LEARNING-ARTIFACT-REGISTRY`
-
-- State: `planned`; priority: `1`; parallel class: `contract_coordinated`.
-- Owner/deputy: `learning-platform` / `durability-kernel`.
-- Allowed write paths:
-- `codex-rs/hepta-learning-artifacts/**`
-- `codex-rs/hepta-shadow-qualification/tests/durable_learning_roundtrip.rs`
-- Development predecessors:
-- `LRN-0-CAUSAL-LEARNING-CONTRACTS`
-- `MEM-1-STORE`
-- Activation predecessors:
-- `MEM-1-STORE`
-- Required deliverables:
-- `exact_source_identity`
-- `source_inventory`
-- `static_verification`
-- `focused_tests`
-- `package_tests`
-- `all_target_check`
-- `strict_lint`
-- `clean_worktree`
-- `exact_head_execution`
-- `merge_candidate_execution`
-- Stop conditions:
-- `authority_violation`
-- `base_drift`
-- `claim_evidence_mismatch`
-- `cross_owner_write`
-- `unbounded_resource_or_retry`
-
-#### `ART-2-NEXT-SNAPSHOT-RELOAD-ROLLBACK`
-
-- State: `planned`; priority: `1`; parallel class: `contract_coordinated`.
-- Owner/deputy: `learning-platform` / `durability-kernel`.
-- Allowed write paths:
-- `codex-rs/hepta-learning-artifacts/**`
-- `qa/learning/reload-rollback/**`
-- Development predecessors:
-- `LRN-2-CAUSAL-EVALUATION`
-- `HBO-1-OPERATOR-SENSOR-CORE`
-- `ART-1-LEARNING-ARTIFACT-REGISTRY`
-- Activation predecessors:
-- `LRN-2-CAUSAL-EVALUATION`
-- `HBO-1-OPERATOR-SENSOR-CORE`
-- Required deliverables:
-- `exact_source_identity`
-- `source_inventory`
-- `static_verification`
-- `focused_tests`
-- `package_tests`
-- `all_target_check`
-- `strict_lint`
-- `clean_worktree`
-- `exact_head_execution`
-- `merge_candidate_execution`
-- `current_snapshot_immutable`
-- `signed_next_snapshot`
-- `exact_reload`
-- `rollback_predecessor`
-- `crash_reopen`
-- Stop conditions:
-- `authority_violation`
-- `base_drift`
-- `claim_evidence_mismatch`
-- `cross_owner_write`
-- `unbounded_resource_or_retry`
-
-#### `HBO-1-OPERATOR-SENSOR-CORE`
-
-- State: `planned`; priority: `2`; parallel class: `contract_coordinated`.
-- Owner/deputy: `learning-platform` / `durability-kernel`.
-- Allowed write paths:
-- `codex-rs/hepta-learning-artifacts/**`
-- `codex-rs/hepta-bellman-operator/**`
-- Development predecessors:
-- `HBO-0-BELLMAN-OPERATOR-CONTRACTS`
-- `LRN-1-DURABLE-EPISODE-LEDGER`
-- `ART-1-LEARNING-ARTIFACT-REGISTRY`
-- Activation predecessors:
-- `HBO-0-BELLMAN-OPERATOR-CONTRACTS`
-- `ART-1-LEARNING-ARTIFACT-REGISTRY`
-- Required deliverables:
-- `exact_source_identity`
-- `source_inventory`
-- `static_verification`
-- `focused_tests`
-- `package_tests`
-- `all_target_check`
-- `strict_lint`
-- `clean_worktree`
-- `exact_head_execution`
-- `merge_candidate_execution`
-- Stop conditions:
-- `authority_violation`
-- `base_drift`
-- `claim_evidence_mismatch`
-- `cross_owner_write`
-- `unbounded_resource_or_retry`
-
-<!-- BEGIN GENERATED EXACT REGISTRY PROJECTION -->
-### Exact closed-world registry projection
-
-This generated projection binds `learning.artifacts` to the current canonical contract, protocol, data, delivery and threat registries. The registries remain authoritative; this block is a digest-checked documentation projection.
-
-**Produced contracts:**
-- `DomainRead::learning_artifact_registryV1`
-- `DomainRead::operator_sensor_core_registryV1`
-- `LearningArtifactManifestV1`
-- `ModulePort::learning.artifacts::intuition.policy`
-- `ModulePort::learning.artifacts::learning.eval`
-- `ModulePort::learning.artifacts::learning.operator`
-- `ModulePort::learning.artifacts::learning.plasticity`
-- `ModulePort::learning.artifacts::neuron.runtime`
-- `ModulePort::learning.artifacts::prompt.optimizer`
-- `ModulePort::learning.artifacts::utility.ndu`
-- `OperatorSensorCoreManifestV1`
-
-**Consumed contracts:**
-- `AlgorithmFaultReceiptV1`
-- `BellmanOperatorArtifactV1`
-- `CandidateEvaluationReceiptV1`
-- `ConformanceReceiptV1`
-- `DatasetSnapshotV1`
-- `DomainRead::cross_owner_outboxV1`
-- `DomainRead::operation_ledgerV1`
-- `EvaluationReceiptV1`
-- `IndependentDecisionReceiptV1`
-- `IterationCandidateV1`
-- `LongitudinalEvaluationReceiptV1`
-- `ModulePort::kernel.operations::learning.artifacts`
-- `ModulePort::platform.types::learning.artifacts`
-- `NduCoefficientManifestV1`
-- `NduWellPosednessCertificateV1`
-- `OperatorApplicabilityCertificateV1`
-- `PlasticityProposalV1`
-- `RegularityProfileV1`
-- `SupportAuditReceiptV1`
-- `TopologyProposalV1`
-- `UnlearningComplianceReceiptV1`
-
-**Typed protocols:**
-- `AlgorithmFaultReceiptV1`
-- `CandidateEvaluationReceiptV1`
-- `ConformanceReceiptV1`
-- `DatasetSnapshotV1`
-- `EvaluationReceiptV1`
-- `IndependentDecisionReceiptV1`
-- `IterationCandidateV1`
-- `LearningArtifactManifestV1`
-- `LongitudinalEvaluationReceiptV1`
-- `NduCoefficientManifestV1`
-- `NduWellPosednessCertificateV1`
-- `OperatorApplicabilityCertificateV1`
-- `OperatorSensorCoreManifestV1`
-- `PlasticityProposalV1`
-- `RegularityProfileV1`
-- `SupportAuditReceiptV1`
-- `TopologyProposalV1`
-- `UnlearningComplianceReceiptV1`
-
-**Owned data domains:**
-- `learning_artifact_registry`
-- `operator_sensor_core_manifest_v1`
-- `operator_sensor_core_registry`
-
-**Read data domains:**
-- `algorithm_fault_receipt_v1`
-- `candidate_evaluation_receipt_v1`
-- `conformance_receipt_v1`
-- `cross_owner_outbox`
-- `independent_decision_receipt_v1`
-- `iteration_candidate_v1`
-- `ndu_coefficient_manifest_v1`
-- `ndu_well_posedness_certificate_v1`
-- `operation_ledger`
-- `operator_applicability_certificate_v1`
-- `plasticity_proposal_v1`
-- `regularity_profile_v1`
-- `support_audit_receipt_v1`
-- `topology_proposal_v1`
-
-**Work packages:**
-- `ART-1-LEARNING-ARTIFACT-REGISTRY`
-- `ART-2-NEXT-SNAPSHOT-RELOAD-ROLLBACK`
-- `HBO-1-OPERATOR-SENSOR-CORE`
-
-**Owned threats:**
-- `artifact_lineage_break`
-- `current_run_artifact_swap`
-- `operator_sensor_clustering`
-
-<!-- END GENERATED EXACT REGISTRY PROJECTION -->
-
-## 16. V8.2 pre-coding implementation-readiness overlay
-
-The canonical readiness overlay binds `learning.artifacts` to primary lane `LANE-E-LEARNING`. The following implementation-level specifications are mandatory alongside Sections 1–15:
-
-- [`RDY-SRC`](../../readiness/SOURCE_BASELINE_AND_BRANCH_POLICY.md)
-- [`RDY-PAR`](../../readiness/PARALLEL_DEVELOPMENT.md)
-- [`RDY-NEU`](../../readiness/NEURON_RUNTIME_EXECUTION.md)
-- [`RDY-LRN`](../../readiness/LEARNING_EVALUATION_EXECUTION.md)
-- [`RDY-SI`](../../readiness/SELF_ITERATION_EXECUTION.md)
-
-Owned readiness protocols:
-
-- `CandidateLineageV1`
-
-Consumed readiness protocols:
-
-- `EvaluationPlanV1`
-- `NduConvergenceCertificateV1`
-- `RetentionSliceReceiptV1`
-
-Ordinary authorized coding identifies the Git baseline, relevant contracts, owned paths, mandatory fixtures, deterministic fallback and rollback. A runtime coordinator admitting an envelope still verifies its current `CanonicalSourceReceiptV1`, frozen contract/readiness digest, expiry and zero authority delta; manually issuing an envelope is not a separate permission gate for ordinary repository work. This overlay does not change activation, acceptance, selection, promotion or release.
-
-## 17. Source implementation receipt
-
-The bootstrap source-location obligation for `learning.artifacts` is implemented by work package `ART-1-LEARNING-ARTIFACT-REGISTRY` in:
-
-- `codex-rs/hepta-learning-artifacts`
-
-The source candidate is checked by `.github/workflows/hepta-consolidated-source.yml`, including closed-world inventory, package tests, all-target compilation, strict Clippy and clean tracked state. This receipt is source implementation evidence only. It grants no runtime, production-writer, model-provider, external-effect, independent-acceptance, selection, promotion, merge or release authority.
+`ArtifactStorageAdminV1` is a narrow administration helper around an enrolled canonical root.
+
+It accepts only relative paths composed of normal path components. Absolute paths, `.`/`..`, platform prefixes and root components are rejected. The existing parent directory is canonicalized and must remain beneath the enrolled root before a target leaf is resolved.
+
+The host must still prevent concurrent replacement of enrolled ancestor directories; without an OS-specific descriptor-walking API this crate does not claim to close that race universally.
+
+`cleanup_zero_length_orphan` is intentionally conservative. It may remove only an existing regular, non-symlink, zero-length file and syncs the containing directory afterward. Non-empty files, directories, symbolic links and special files are left untouched. There is no recursive or pattern-based delete API.
+
+## 11. Dataset-driven revocation
+
+`prepare_dataset_revocation` is a staging operation. It clones the current V1 registry, verifies the expected predecessor head, finds directly dataset-bound registrations, applies stable revoke events to the clone and returns a `PreparedDatasetRevocation` plus summary.
+
+The caller's current registry is not mutated. The host must durably publish the prepared successor under the same generation/publication discipline before acknowledging completion. Existing lineage eligibility propagates ancestor revocation to descendants.
+
+## 12. Test and fault matrix
+
+The focused crate tests now cover at least the following closure properties:
+
+- `art_05_admission_binds_exact_withdrawal_head_and_domain`;
+- `art_05_cross_domain_zero_head_is_rejected`;
+- `art_05_withdrawal_race_invalidates_admission`;
+- `art_06_lifecycle_journal_enforces_head_state_and_role`;
+- `art_06_lifecycle_journal_replays_exact_snapshot`;
+- `art_06_historical_replay_survives_actor_expiry_but_new_append_does_not`;
+- `art_07_withdrawal_registry_durable_roundtrip_rebuilds_exact_head`;
+- `art_07_lifecycle_durable_roundtrip_survives_actor_expiry`;
+- `art_08_publication_transaction_is_unsealable_after_partial_durability`;
+- `art_08_publication_commit_binds_all_durable_receipts`;
+- `art_09_storage_admin_rejects_parent_escape`;
+- `art_09_storage_admin_removes_only_zero_length_orphan`;
+- iteration candidate predecessor/budget/state tests;
+- iteration-ledger external-evidence, actor separation, duplicate evidence and snapshot replay tests;
+- existing registry, storage, pinned-load, closure V2 and dataset-revocation suites.
+
+From `codex-rs`, the focused crate command is:
+
+```bash
+just test --locked -p codex-hepta-learning-artifacts
+```
+
+Compilation and lint qualification must use the workspace-pinned toolchain and lockfile.
+
+## 13. Lane E exact-head and synthetic-merge qualification
+
+`.github/workflows/hepta-lane-e-gap-closure.yml` separates two different proofs:
+
+- `rust-closure` qualifies the exact PR head (and remains valid on a `main` push);
+- `synthetic-merge` qualifies the ordered base+source merge candidate and therefore runs only for `pull_request`, where GitHub supplies an exact PR base SHA.
+
+The workflow checks closed-world inventory, locked all-target compilation, owner regression tests, cross-crate causal closure, cross-language wire/fault tests, strict `clippy -D warnings`, formatting and a clean source/index.
+
+A green source test alone is not module closure. The candidate is source-qualified only when the exact-head and PR synthetic-merge evidence for that same candidate are current and green.
+
+## 14. Host/service boundary
+
+Repository source now contains the durable primitives and transaction contract needed to compose a product writer, but it still does not establish a product production writer by itself.
+
+The selected product host must own and qualify:
+
+- authenticated writer fencing;
+- signer/credential authentication;
+- enrolled/protected storage directories;
+- generation naming and retention;
+- durable publication-commit placement;
+- authenticated atomic current-pointer publication;
+- reconciliation of unreferenced immutable files after crashes;
+- observability and bounded operational tooling;
+- activation, canary, rollback, operator acceptance and release policy.
+
+Those responsibilities must not be silently moved into a library call that lacks the required authority context.
+
+## 15. Completion and claim boundary
+
+The native crate now has source implementations for:
+
+- immutable V1 registry and lineage;
+- V2 manifest validation;
+- withdrawal registry and V3 authority-domain/head-bound admission;
+- lifecycle journal with historical replay semantics;
+- durable withdrawal/lifecycle snapshots;
+- pinned candidate loading;
+- dataset-driven staged revocation;
+- governed iteration and append-only iteration evidence ledger;
+- publication plan/transaction/commit contract joining V2 admission to durable state;
+- enrolled-root storage path validation and conservative orphan cleanup.
+
+The correct repository claim is therefore **source implemented, product composition/activation not established**. Completion of this source package requires current exact-head and synthetic-merge CI evidence. Product execution, independent semantic acceptance, activation, promotion and release remain separate external gates.
+
+### Work-package status
+
+- `ART-1-LEARNING-ARTIFACT-REGISTRY`: `source_implemented_qualification_pending` until the current exact-head and synthetic-merge candidate are green.
+- `ART-2-NEXT-SNAPSHOT-RELOAD-ROLLBACK`: native source primitives implemented; product current-pointer/reload/rollback composition remains host qualification work.
+- `HBO-1-OPERATOR-SENSOR-CORE`: remains a separate cross-module/product-composition work package; nothing in this crate claims its activation.
+
+## 16. Related references
+
+- `codex-rs/hepta-learning-artifacts/STORAGE.md`
+- `codex-rs/hepta-learning-artifacts/READ_BOUNDARY.md`
+- `codex-rs/hepta-learning-artifacts/PINNED_LOAD.md`
+- `codex-rs/hepta-learning-artifacts/DATASET_REVOCATION.md`
+- `codex-rs/hepta-learning-artifacts/NATIVE_MAPPING.md`
+- `qualification/module-execution-dossiers/detail/learning.artifacts.md`
+- `docs/lane-e/END_TO_END_LEARNING_SEQUENCE.md`
+
+When these references conflict with the native source, the discrepancy is a documentation defect; do not reinterpret a stale document as implementation authority.
