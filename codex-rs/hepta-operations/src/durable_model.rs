@@ -133,7 +133,7 @@ impl DurableOperationState {
     }
 
     pub const fn is_terminal(self) -> bool {
-        matches!(Self::Applied | Self::NotApplied | Self::Quarantined, self)
+        matches!(self, Self::Applied | Self::NotApplied | Self::Quarantined)
     }
 }
 
@@ -184,7 +184,7 @@ impl DurableOutboxState {
     }
 
     pub const fn is_terminal(self) -> bool {
-        matches!(Self::Settled | Self::Quarantined, self)
+        matches!(self, Self::Settled | Self::Quarantined)
     }
 }
 
@@ -270,15 +270,15 @@ impl DispatchObservation {
         if digest.is_zero() {
             return Err(OperationError::InvalidDigest("dispatch observation"));
         }
-        if let Self::Terminal {
-            acknowledgement_digest: Some(acknowledgement_digest),
-            ..
-        } = self
-            && acknowledgement_digest.is_zero()
-        {
-            return Err(OperationError::InvalidDigest("outbox acknowledgement"));
+        match self {
+            Self::Terminal {
+                acknowledgement_digest: Some(acknowledgement_digest),
+                ..
+            } if acknowledgement_digest.is_zero() => {
+                Err(OperationError::InvalidDigest("outbox acknowledgement"))
+            }
+            _ => Ok(self),
         }
-        Ok(self)
     }
 }
 
