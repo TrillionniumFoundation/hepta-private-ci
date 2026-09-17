@@ -398,7 +398,8 @@ impl AuthorityLeaseRegistry {
     /// Consume a verified lease under the same owner/revocation linearization
     /// rule as final-use grants. The callback must be host-registered and
     /// bounded; callers that need asynchronous work must perform it before this
-    /// final synchronous entry.
+    /// final synchronous entry. The successful live check is the entry
+    /// linearization point; the owner mutex is released before consumer code.
     pub fn with_verified_use<T>(
         &self,
         token: LeaseVerifiedUseToken,
@@ -417,9 +418,8 @@ impl AuthorityLeaseRegistry {
             expected,
             now_unix_ms,
         )?;
-        let result = consumer();
         drop(state);
-        Ok(result)
+        Ok(consumer())
     }
 
     fn lock_state(&self) -> Result<std::sync::MutexGuard<'_, State>, AuthorityLeaseError> {
@@ -714,7 +714,7 @@ fn entry_exists(_directory: &File, _name: &str) -> Result<bool, AuthorityLeaseEr
     Err(AuthorityLeaseError::UnsafeStateDirectory)
 }
 #[cfg(not(unix))]
-fn replace_state(_directory: &File) -> Result<(), AuthorityLeaseError> {
+fn replace_state(_directory: &File, _name: &str) -> Result<(), AuthorityLeaseError> {
     Err(AuthorityLeaseError::UnsafeStateDirectory)
 }
 
@@ -749,6 +749,8 @@ impl std::error::Error for AuthorityLeaseError {}
 mod tests {
     use super::*;
     use std::os::unix::fs::PermissionsExt;
+    use std::sync::mpsc;
+    use std::time::Duration;
 
     fn fixture() -> (AuthorityLeaseRegistry, tempfile::TempDir) {
         let directory = tempfile::tempdir().unwrap();
@@ -816,6 +818,32 @@ mod tests {
         )
         .unwrap();
         assert!(reopened.read_revocation("lease-one").unwrap().is_some());
+    }
+
+    #[test]
+    fn verified_use_releases_owner_lock_before_consumer_code() {
+        let (registry, _directory) = fixture();
+        registry.put_lease(lease(), 0).unwrap();
+        let token = registry
+            .verify_use("lease-one", 1, &binding(), 2_000)
+            .unwrap();
+        let callback_registry = registry.clone();
+        let (tx, rx) = mpsc::channel();
+        let expected = binding();
+        std::thread::spawn(move || {
+            let result = registry.with_verified_use(token, &expected, 2_001, || {
+                callback_registry
+                    .revoke("lease-one", 1, [8; 32], 2_002)
+                    .unwrap();
+                7
+            });
+            let _ = tx.send(result);
+        });
+        assert_eq!(
+            rx.recv_timeout(Duration::from_secs(2))
+                .expect("lease consumer remained blocked on the owner mutex"),
+            Ok(7)
+        );
     }
 
     #[test]
