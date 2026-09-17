@@ -1,5 +1,7 @@
 #![forbid(unsafe_code)]
 
+use std::future::Future;
+
 use codex_hepta_matrix_store::MatrixDispatchIntent;
 use codex_hepta_matrix_store::MatrixDispatchReceipt;
 use codex_hepta_matrix_store::MatrixDurableError;
@@ -37,29 +39,27 @@ impl<'a> MatrixSendObserver<'a> {
         Self { store }
     }
 
-    pub async fn prepare_send(
-        &self,
+    pub fn prepare_send<'b>(
+        &'b self,
         now_ms: u64,
-        intent: &SendIntent,
-    ) -> Result<SendReceipt, MatrixDurableError> {
-        self.store.prepare_matrix_dispatch(now_ms, intent).await
+        intent: &'b SendIntent,
+    ) -> impl Future<Output = Result<SendReceipt, MatrixDurableError>> + 'b {
+        self.store.prepare_matrix_dispatch(now_ms, intent)
     }
 
-    pub async fn observe_send(
-        &self,
-        observation: &ServerObservation,
-    ) -> Result<Option<SendReceipt>, MatrixDurableError> {
-        self.store
-            .observe_matrix_server_event(
-                Some(&observation.transaction_id),
-                &observation.server_event_id,
-                &observation.room_id,
-                observation.binding_revision,
-                observation.session_generation,
-                &observation.observation_digest,
-                observation.observed_at_ms,
-            )
-            .await
+    pub fn observe_send<'b>(
+        &'b self,
+        observation: &'b ServerObservation,
+    ) -> impl Future<Output = Result<Option<SendReceipt>, MatrixDurableError>> + 'b {
+        self.store.observe_matrix_server_event(
+            Some(&observation.transaction_id),
+            &observation.server_event_id,
+            &observation.room_id,
+            observation.binding_revision,
+            observation.session_generation,
+            &observation.observation_digest,
+            observation.observed_at_ms,
+        )
     }
 
     pub async fn apply_redaction(
