@@ -85,7 +85,7 @@ def lane_by_module():
 def parse_entrypoints(module: str):
     path = ROOT / f"qualification/module-execution-dossiers/detail/{module}.md"
     text = path.read_text(encoding="utf-8") if path.exists() else ""
-    match = re.search(r"\*\*Implemented entrypoints:\*\s*(.*)", text)
+    match = re.search(r"\*\*Implemented entrypoints:\*\*\s*(.*)", text)
     if not match:
         return []
     entries = []
