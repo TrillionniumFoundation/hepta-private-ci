@@ -19,6 +19,22 @@ import {
 } from "./runtime-contract.js";
 import { callWithDeadline, exclusive } from "./runtime-boundary.js";
 
+const UTF8 = new TextEncoder();
+const MAX_SEMANTIC_OBSERVATION_BYTES = 262_144;
+
+function boundedSemanticObservation(value, observationBudget) {
+  requireRecord(value, "semanticObservation");
+  const encoded = JSON.stringify(value);
+  const limit = Math.min(observationBudget, MAX_SEMANTIC_OBSERVATION_BYTES);
+  if (UTF8.encode(encoded).byteLength > limit) {
+    throw new TypeError("semanticObservation exceeds the admitted observation budget");
+  }
+  // Reparse so accessors/prototypes from an injected driver can never cross the
+  // owner boundary. Worker protocol decoding already supplies plain canonical
+  // data; this also protects alternate qualified drivers.
+  return Object.freeze(JSON.parse(encoded));
+}
+
 export class BrowserProfileHost {
   #driver;
   #authority;
@@ -47,7 +63,13 @@ export class BrowserProfileHost {
       throw new TypeError("authority.withVerifiedUse must be a function");
     }
     requireRecord(journal, "journal");
-    for (const method of ["recordDispatch", "recordObservation", "getOperation", "listOperations"]) {
+    for (const method of [
+      "recordDispatch",
+      "recordObservation",
+      "getOperation",
+      "listOperations",
+      "retireProfile",
+    ]) {
       if (typeof journal[method] !== "function") {
         throw new TypeError(`journal.${method} must be a function`);
       }
@@ -110,6 +132,7 @@ export class BrowserProfileHost {
         );
         if (observed.started !== true) throw new TypeError("driver did not observe profile start");
         const processId = stableId(observed.processId, "processId");
+        const profileOwnerDigest = digest(observed.profileOwnerDigest, "profileOwnerDigest");
         const state = {
           profileId,
           principalId,
@@ -118,6 +141,7 @@ export class BrowserProfileHost {
           generation,
           expiresAtMs,
           processId,
+          profileOwnerDigest,
           pageGeneration: 0,
           documentDigest: null,
           allowedOrigins,
@@ -133,6 +157,7 @@ export class BrowserProfileHost {
           generation,
           manifestDigest,
           grantDigest,
+          profileOwnerDigest,
           expiresAtMs,
           effectGrantCount: effectGrants.size,
         });
@@ -192,6 +217,14 @@ export class BrowserProfileHost {
       if (pageGeneration <= state.pageGeneration) {
         throw new TypeError("page generation did not advance");
       }
+      const semanticObservation = boundedSemanticObservation(
+        observed.semanticObservation,
+        observationBudget,
+      );
+      const semanticDigest = digest(observed.semanticDigest, "semanticDigest");
+      if (canonicalDigest(semanticObservation) !== semanticDigest) {
+        throw new TypeError("semantic observation digest mismatch");
+      }
       const documentDigest = digest(observed.documentDigest, "documentDigest");
       const origin = canonicalOrigin(observed.origin);
       const originAllowed = state.allowedOrigins.has(origin);
@@ -204,6 +237,8 @@ export class BrowserProfileHost {
         profileGeneration: state.generation,
         pageGeneration,
         documentDigest,
+        semanticDigest,
+        semanticObservation,
         origin,
         originAllowed,
         quarantined: !originAllowed,
@@ -285,9 +320,10 @@ export class BrowserProfileHost {
                   "dispatching",
                 ),
               };
-              // This fsync and the local worker dispatch execute inside the
-              // final-use fence. A successful revocation update therefore
-              // cannot slip between final validation and effect dispatch.
+              // The live revocation fence is held across both durable intent
+              // fsync and the successful local worker-pipe write. Only that
+              // local dispatch boundary releases final-use authority; remote
+              // page execution remains a separate reconciliation observation.
               await this.#journal.recordDispatch(this.#durableRecord(state, entry));
               state.operations.set(operationId, entry);
               return this.#callDriver("dispatch", semantics, requestSemantics.deadlineMs);
@@ -474,6 +510,15 @@ export class BrowserProfileHost {
       );
       if (observed.stopped !== true) throw new TypeError("driver did not observe profile stop");
       this.#profiles.delete(state.profileId);
+      try {
+        await this.#journal.retireProfile(state.profileId, state.generation);
+      } catch (cause) {
+        const error = new Error("browser profile stopped but durable journal retirement failed", {
+          cause,
+        });
+        error.name = "BrowserJournalRetirementError";
+        throw error;
+      }
       return freezeResult({
         kind: "BrowserProfileClosedV1",
         profileId: state.profileId,

@@ -36,10 +36,14 @@ function record(overrides = {}) {
   };
 }
 
-test("file journal fsyncs dispatch intent and restores latest observation", async () => {
+async function journalFixture() {
   const root = await mkdtemp(join(tmpdir(), "hepta-browser-journal-"));
   const path = join(root, "operations.jsonl");
-  const journal = new FileBrowserOperationJournal(path);
+  return { root, path, journal: new FileBrowserOperationJournal(path) };
+}
+
+test("file journal fsyncs dispatch intent and restores latest observation", async () => {
+  const { path, journal } = await journalFixture();
   await journal.recordDispatch(record());
   await journal.recordObservation(record({
     status: "succeeded",
@@ -57,10 +61,8 @@ test("file journal fsyncs dispatch intent and restores latest observation", asyn
   }
 });
 
-test("file journal fails closed on tampering", async () => {
-  const root = await mkdtemp(join(tmpdir(), "hepta-browser-journal-"));
-  const path = join(root, "operations.jsonl");
-  const journal = new FileBrowserOperationJournal(path);
+test("file journal fails closed on checksum tampering", async () => {
+  const { path, journal } = await journalFixture();
   await journal.recordDispatch(record());
   const source = await readFile(path, "utf8");
   await writeFile(path, source.replace("dispatching", "tampered___"), { mode: 0o600 });
@@ -69,4 +71,66 @@ test("file journal fails closed on tampering", async () => {
     reopened.getOperation("profile.1", 1, "operation.1"),
     /checksum mismatch/,
   );
+});
+
+test("journal validates every hydrated record and rejects secret-bearing unknown fields", async () => {
+  const { journal } = await journalFixture();
+  await assert.rejects(
+    journal.recordDispatch({
+      ...record(),
+      typedAction: { kind: "type", selector: "#password", text: "do-not-persist" },
+    }),
+    /missing or unknown fields/,
+  );
+  await assert.rejects(
+    journal.recordDispatch(record({ requestDigest: "0".repeat(64) })),
+    /non-zero lowercase SHA-256 digest/,
+  );
+  await assert.rejects(
+    journal.recordDispatch(record({ terminalObserved: true })),
+    /indeterminate journal record cannot claim a terminal outcome/,
+  );
+});
+
+test("explicit compaction preserves latest immutable operations", async () => {
+  const { path, journal } = await journalFixture();
+  for (let index = 0; index < 25; index += 1) {
+    const operationId = `operation.${index}`;
+    await journal.recordDispatch(record({ operationId }));
+    await journal.recordObservation(record({
+      operationId,
+      status: "succeeded",
+      outcomeDigest: D1,
+      terminalObserved: true,
+      observationReason: "terminal_observed",
+    }));
+  }
+  const before = (await readFile(path, "utf8")).split("\n").filter(Boolean).length;
+  assert.equal(before, 50);
+  await journal.compact();
+  const after = (await readFile(path, "utf8")).split("\n").filter(Boolean).length;
+  assert.equal(after, 25);
+  const reopened = new FileBrowserOperationJournal(path);
+  assert.equal((await reopened.listOperations("profile.1", 1)).length, 25);
+  assert.equal((await reopened.getOperation("profile.1", 1, "operation.0")).status, "succeeded");
+});
+
+test("profile retirement removes closed generation records atomically", async () => {
+  const { path, journal } = await journalFixture();
+  await journal.recordDispatch(record({ operationId: "operation.old" }));
+  await journal.recordObservation(record({
+    operationId: "operation.old",
+    status: "failed",
+    outcomeDigest: D2,
+    terminalObserved: true,
+    observationReason: "terminal_observed",
+  }));
+  await journal.recordDispatch(record({
+    profileId: "profile.2",
+    operationId: "operation.keep",
+  }));
+  await journal.retireProfile("profile.1", 1);
+  const reopened = new FileBrowserOperationJournal(path);
+  assert.equal(await reopened.getOperation("profile.1", 1, "operation.old"), null);
+  assert.notEqual(await reopened.getOperation("profile.2", 1, "operation.keep"), null);
 });

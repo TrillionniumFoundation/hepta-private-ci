@@ -3,13 +3,26 @@ import test from "node:test";
 
 import { browserActionDigest } from "../src/action.js";
 import { BrowserProfileHost } from "../src/runtime.js";
+import { canonicalDigest } from "../src/runtime-contract.js";
 import { MemoryBrowserOperationJournal } from "../src/journal.js";
 
 const D1 = "1".repeat(64);
 const D2 = "2".repeat(64);
 const D3 = "3".repeat(64);
+const D4 = "4".repeat(64);
 const D5 = "5".repeat(64);
 const W1 = "a".repeat(64);
+const SEMANTIC = Object.freeze({
+  controls: [],
+  forms: [],
+  links: [],
+  schema: "hepta.browser.semantic-observation.v1",
+  title: "Example",
+  truncated: false,
+  viewport: { height: 720, width: 1280 },
+  visibleText: "hello",
+});
+const SEMANTIC_DIGEST = canonicalDigest(SEMANTIC);
 
 function navigationAction(url = "https://example.com/path") {
   return Object.freeze({
@@ -69,7 +82,7 @@ function authority({ authorized = true, witnessDigest = W1, delay = 0 } = {}) {
   };
 }
 
-function driver({ terminalOnReconcile = true, dispatchImpl } = {}) {
+function driver({ terminalOnReconcile = true, dispatchImpl, observeImpl } = {}) {
   let dispatchCalls = 0;
   let stopCalls = 0;
   return {
@@ -83,12 +96,19 @@ function driver({ terminalOnReconcile = true, dispatchImpl } = {}) {
       return stopCalls;
     },
     async start() {
-      return { started: true, processId: "servo.process.1" };
+      return {
+        started: true,
+        processId: "servo.process.1",
+        profileOwnerDigest: D4,
+      };
     },
-    async observe() {
+    async observe(payload) {
+      if (observeImpl) return observeImpl(payload);
       return {
         pageGeneration: 1,
         documentDigest: D3,
+        semanticDigest: SEMANTIC_DIGEST,
+        semanticObservation: SEMANTIC,
         origin: "https://example.com",
       };
     },
@@ -138,18 +158,21 @@ async function preparedHost(options = {}) {
     clock,
     driverCallTimeoutMs: options.driverCallTimeoutMs ?? 50,
   });
-  await host.openProfile(input());
-  await host.observePage({
+  const session = await host.openProfile(options.profileInput ?? input());
+  const page = await host.observePage({
     profileId: "profile.1",
     principalId: "principal.1",
     generation: 1,
-    observationBudget: 2048,
+    observationBudget: options.observationBudget ?? 2048,
   });
-  return { host, fakeDriver, finalAuthority, journal };
+  return { host, fakeDriver, finalAuthority, journal, session, page };
 }
 
-test("opens, observes, reconciles indeterminate action, and closes", async () => {
-  const { host } = await preparedHost();
+test("opens, publishes bounded semantic observation, reconciles, retires journal, and closes", async () => {
+  const { host, journal, session, page } = await preparedHost();
+  assert.equal(session.profileOwnerDigest, D4);
+  assert.equal(page.semanticDigest, SEMANTIC_DIGEST);
+  assert.deepEqual(page.semanticObservation, SEMANTIC);
   const effect = await host.navigateOrAct(operation());
   assert.equal(effect.status, "indeterminate");
   await assert.rejects(
@@ -167,6 +190,36 @@ test("opens, observes, reconciles indeterminate action, and closes", async () =>
     generation: 1,
   });
   assert.equal(closed.terminalObserved, true);
+  assert.deepEqual(await journal.listOperations("profile.1", 1), []);
+});
+
+test("semantic observation digest and budget fail closed", async () => {
+  const badDigest = driver({
+    observeImpl: async () => ({
+      pageGeneration: 1,
+      documentDigest: D3,
+      semanticDigest: D1,
+      semanticObservation: SEMANTIC,
+      origin: "https://example.com",
+    }),
+  });
+  const host = new BrowserProfileHost({
+    driver: badDigest,
+    authority: authority(),
+    journal: new MemoryBrowserOperationJournal(),
+    clock: () => 1_000,
+    driverCallTimeoutMs: 50,
+  });
+  await host.openProfile(input());
+  await assert.rejects(
+    host.observePage({
+      profileId: "profile.1",
+      principalId: "principal.1",
+      generation: 1,
+      observationBudget: 2048,
+    }),
+    /semantic observation digest mismatch/,
+  );
 });
 
 test("same operation is single-flight and never double-dispatches", async () => {
@@ -251,7 +304,6 @@ test("durable intent and local dispatch occur inside the final-use fence", async
   let insideFence = false;
   const baseJournal = new MemoryBrowserOperationJournal();
   const journal = {
-    ...baseJournal,
     async recordDispatch(record) {
       assert.equal(insideFence, true);
       return baseJournal.recordDispatch(record);
@@ -264,6 +316,9 @@ test("durable intent and local dispatch occur inside the final-use fence", async
     },
     async listOperations(...args) {
       return baseJournal.listOperations(...args);
+    },
+    async retireProfile(...args) {
+      return baseJournal.retireProfile(...args);
     },
   };
   const finalAuthority = {
@@ -290,6 +345,30 @@ test("durable intent and local dispatch occur inside the final-use fence", async
   const { host } = await preparedHost({ driver: fakeDriver, authority: finalAuthority, journal });
   await host.navigateOrAct(operation());
   assert.equal(insideFence, false);
+});
+
+test("generic type text never enters the durable operation journal", async () => {
+  const secret = "p@ssword-do-not-persist";
+  const typedAction = Object.freeze({ kind: "type", selector: "#password", text: secret });
+  const typedDigest = browserActionDigest(typedAction);
+  const grant = effectGrant({
+    action: "type",
+    finalPayloadDigest: typedDigest,
+  });
+  const journal = new MemoryBrowserOperationJournal();
+  const { host } = await preparedHost({
+    journal,
+    profileInput: input({ effectGrants: [grant] }),
+  });
+  await host.navigateOrAct(operation({
+    operationId: "operation.type",
+    typedAction,
+    finalPayloadDigest: typedDigest,
+  }));
+  const durable = await journal.getOperation("profile.1", 1, "operation.type");
+  assert.equal(JSON.stringify(durable).includes(secret), false);
+  assert.equal("typedAction" in durable, false);
+  assert.equal(durable.finalPayloadDigest, typedDigest);
 });
 
 test("profile serialization prevents close racing an in-flight effect", async () => {
@@ -348,11 +427,14 @@ test("replay rejects immutable semantic substitution", async () => {
 });
 
 test("disallowed observed origin is quarantined and cannot authorize an action", async () => {
-  const fakeDriver = driver();
-  fakeDriver.observe = async () => ({
-    pageGeneration: 1,
-    documentDigest: D3,
-    origin: "https://other.example",
+  const fakeDriver = driver({
+    observeImpl: async () => ({
+      pageGeneration: 1,
+      documentDigest: D3,
+      semanticDigest: SEMANTIC_DIGEST,
+      semanticObservation: SEMANTIC,
+      origin: "https://other.example",
+    }),
   });
   const finalAuthority = authority();
   const host = new BrowserProfileHost({
@@ -367,7 +449,7 @@ test("disallowed observed origin is quarantined and cannot authorize an action",
     profileId: "profile.1",
     principalId: "principal.1",
     generation: 1,
-    observationBudget: 128,
+    observationBudget: 2048,
   });
   assert.equal(page.originAllowed, false);
   assert.equal(page.quarantined, true);
@@ -441,7 +523,7 @@ test("effect grants can be admitted after profile open without widening final-us
     profileId: "profile.1",
     principalId: "principal.1",
     generation: 1,
-    observationBudget: 128,
+    observationBudget: 2048,
   });
   const result = await host.navigateOrAct(operation());
   assert.equal(result.status, "indeterminate");

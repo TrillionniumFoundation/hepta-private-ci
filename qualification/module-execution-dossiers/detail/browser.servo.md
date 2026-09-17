@@ -1,92 +1,133 @@
 # browser.servo: implementation design
 
 Parent: `docs/modules/browser.servo/TECHNICAL.md`. Lane: `LANE-B-RUNTIME`.
-Status: hardened durable browser effect owner and isolated-worker host boundary implemented; the current-pin Servo worker artifact and independent target qualification remain open. Common requirements: `../EXECUTION_SEMANTICS.md` and `../TECHNICAL.md`. Canonical ownership and package predecessors are unchanged.
+Status: durable Browser effect owner, current-pin Servo worker source, bounded semantic observation, private Browser/Servo protocol, Linux sandbox/probe source and real Agentd final-use handoff are implemented in this candidate; exact artifact/target qualification and independent acceptance remain open. Common requirements: `../EXECUTION_SEMANTICS.md` and `../TECHNICAL.md`.
 
 ## 1. Source and work envelope
 
 Roots: `apps/hepta-browser`, `third_party/servo-patches`.
 Package: `BROWSER-WEB-C1`.
+Current Servo pin: `84bcc9ac701874fa9819e5cdee06356b961d736c`.
 
-Current Servo source identity is declared by `third_party/servo-patches/MANIFEST.json`. The deeper historical WEB-C1 design used older Servo trees; current source/API and feature assertions must be revalidated against the present pin before build admission. See `docs/modules/browser.servo/SERVO_WORKER.md`.
+Cross-owner Agentd composition is source-present in `codex-rs/hepta-agentd` and remains owned/reviewed by `runtime.agentd`. Browser ownership is not widened by the private caller.
 
 ## 2. Public operations and contract details
 
-The design operations remain:
+The canonical Browser design operations remain:
 
 `open_profile(profile_id, grant, browser_manifest) -> BrowserSession`; `observe_page(session, page_generation, observation_budget) -> PageObservation`; `navigate_or_act(session, typed_action, final_payload, grant) -> BrowserEffectObservation`.
 
-The stable JavaScript owner entrypoints remain `openProfile`, `observePage` and `navigateOrAct` in `apps/hepta-browser/src/runtime.js`; additional recovery/grant operations are `admitEffectGrant`, `reconcileOperation`, `reconcilePersistedOperation` and `closeProfile`.
+Stable owner entrypoints remain `openProfile`, `observePage` and `navigateOrAct` in `apps/hepta-browser/src/runtime.js`. Additional owner/recovery methods are `admitEffectGrant`, `reconcileOperation`, `reconcilePersistedOperation` and `closeProfile`.
 
-Typed action payloads are closed-world. Navigation binds normalized URL, policy digest and expected revision. Credential/upload actions carry references rather than raw secret bytes or ambient host paths. `src/bridge.js` maps authority-free navigation intents into the exact runtime payload but does not mint an effect grant.
+Navigation proposal provenance is part of the final effect semantics: `navigationId` becomes operation identity; `policyDigest` and `expectedRevision` are fields of the typed navigate action and therefore participate in the payload/request digest. The bridge never mints authority.
 
-## 3. State records and transaction design
+## 3. State, profile ownership and transaction design
 
-`browser_profile_state` owns profile/principal/process/page generations, allowed origins, admitted effect grants and operation identities. A profile is a single-writer serialization domain.
+`browser_profile_state` owns profile/principal/process/page generations, allowed origins, admitted grants and browser-effect operation identities.
 
-Before a browser effect can cross the worker boundary:
+Each worker generation receives a fresh random private profile directory plus a mode-0600 `hepta.browser.profile-owner.v1` manifest binding profile ID, principal ID, generation, Browser manifest digest and profile grant digest. A stale `${profileId}.${generation}` directory is never silently reused under another principal.
 
-1. current page/document generation, destination, typed payload digest, grant, epoch and deadline are checked;
-2. the final-use authority gate is entered;
-3. inside that gate the VerifiedUse witness is bound, the operation dispatch identity is fsynced to the browser journal and one local worker dispatch is issued;
-4. any later exception/timeout is represented as `indeterminate`, never as permission to redispatch.
+A new browser effect linearizes as:
 
-`FileBrowserOperationJournal` is append-only, checksum-bound, bounded and fsynced. Terminal operations may be evicted from the in-memory cache after a bounded retention window because their durable tombstones remain authoritative for replay. A reused operation ID with changed immutable semantics is rejected.
+1. validate current profile/page/document generation, typed action, provenance, destination, payload digest, grant, epoch and deadline;
+2. challenge Agentd with the exact request digest;
+3. Agentd enters real `FinalUseAuthority::with_verified_use` and holds the live revocation mutex;
+4. Browser binds the current witness and fsyncs an indeterminate dispatch record;
+5. Browser performs exactly one local private-worker pipe write;
+6. Browser reports `dispatch_boundary`; Agentd may then release final-use authority;
+7. remote/page/business terminality is observed/reconciled separately.
 
-## 4. Deterministic algorithm and scheduling
+A timeout/error after durable dispatch never makes the operation identity fresh and never authorizes redispatch.
 
-Profile `open/observe/grant/act/reconcile/close` transitions serialize by profile identity. Concurrent calls for one operation cannot both enter worker dispatch.
+## 4. Durable recovery and secret boundary
 
-New effects require live profile/effect authority. Reconciliation is observational and deliberately remains available after the original grant or action deadline expires; expiry/revocation denies a new effect but does not erase the owner obligation to settle an already-dispatched one.
+`FileBrowserOperationJournal` now validates exact fields on every hydrated record, rejects unknown fields, validates checksum envelopes, fsyncs before dispatch, uses private non-symlink paths, rejects semantic identity conflicts, atomically compacts the live snapshot before capacity exhaustion and retires a clean terminal profile generation after close.
 
-A page observed outside the allowed-origin set is quarantined and its document digest is removed from the actionable state, so a later action cannot treat it as the current admitted document.
+The durable record intentionally omits the complete `typedAction`. `type.text`, credential bytes, upload content/host paths, page HTML and worker stderr do not enter the journal. Durable identity stores the final payload digest and immutable effect semantics required for replay/reconciliation.
 
-All driver calls have bounded host deadlines. Dispatch receives an AbortSignal; a timeout after durable dispatch becomes an indeterminate operation retained for reconciliation.
+Terminal identities may leave the bounded in-memory cache while remaining durable until profile-generation retirement. Persisted indeterminate identities reconcile without rerunning final-use authority or dispatch.
 
-## 5. Private worker boundary and isolation
+## 5. Semantic observe -> reason -> act loop
 
-`apps/hepta-browser/src/worker-protocol.js` implements the current Hepta-owned private worker protocol: four-byte big-endian length prefix, <=1 MiB canonical JSON, protocol/session/generation/sequence/request/payload-digest binding and fail-closed decoding.
+The current-pin Servo worker implements a bounded semantic observation through a fixed worker-owned script. `hepta.browser.semantic-observation.v1` includes bounded title, visible text, HTTP(S) links, forms, page-local CSS selectors for actionable controls and viewport metadata. Password inputs and control values are excluded.
 
-`apps/hepta-browser/src/worker-driver.js` implements an exact-artifact-digest-bound subprocess driver. It has no TCP/WebDriver control API. The supplied Linux launcher uses Bubblewrap with `--unshare-all`, no `--share-net`, a cleared environment, hidden ambient home/run/tmp state, a private writable profile mount and parent-death cleanup.
+The worker canonicalizes the observation, emits `semanticDigest`, and includes that digest in `documentDigest`. `BrowserProfileHost` rechecks the semantic digest and caller observation budget before publication.
 
-This is a concrete host path, not a claim that the pinned Servo artifact exists. The repository still lacks the current-pin Hepta-owned Servo worker executable and its independent runtime evidence.
+Each admitted semantic observation advances page generation. An action derived from an earlier observation therefore fails the stale page-generation fence even if page script changed DOM without navigation.
 
-## 6. Capacity and performance profile
+## 6. Private worker protocol and Linux isolation
 
-Current hard source bounds include bounded origins/effect grants, maximum outstanding nonterminal operations, bounded terminal in-memory retention, bounded action fields, <=1 MiB worker frames, <=64 MiB operation journal and per-call deadlines.
+`apps/hepta-browser/src/worker-protocol.js` implements `hepta.browser.worker-frame.v1`: four-byte big-endian framing, <=1 MiB canonical JSON, protocol/session/generation/monotonic sequence/request ID/payload digest binding.
 
-The dossier's pilot `<=16` concurrent-tab target remains a target, not a measured/fully implemented tab scheduler. Real worker RSS, descriptors, renderer descendants, frame cost, reconciliation latency and download limits require target-host qualification.
+Responses additionally echo the original request kind and request payload digest. The host fails/kills the channel on cross-session/generation frames, sequence drift, unexpected frame kind, unknown request identity or request/response binding mismatch. Worker stderr is continuously drained without entering durable receipts.
 
-## 7. Concrete verification cases
+`LinuxBubblewrapLauncher` is a source launch contract, not self-issued target enforcement evidence. It starts from an empty root; exposes selected runtime libraries/fonts/TLS data rather than host `/` or whole `/usr`; clears environment; uses `--unshare-all` without network sharing; hides general host binaries, user homes and service roots; mounts one private profile and exact worker; and uses parent-death containment.
 
-- **BROWSER-01:** stale page generation rejects before dispatch; off-origin observations are quarantined. Real element-generation identity in a Servo DOM observation remains a worker-level acceptance gate.
-- **BROWSER-02:** typed action schemas reject ambient secret/path fields; Linux host path denies external network by namespace construction. Real worker/no-egress and credential-broker evidence remain required.
-- **BROWSER-03:** the host allocates a private per-session profile root and isolates the process namespace. Real Servo cookie/cache cross-principal qualification remains required.
-- **BROWSER-04:** durable intent is recorded before dispatch; post-dispatch driver error/timeout becomes indeterminate; process-loss recovery uses `reconcilePersistedOperation` without redispatch.
+`scripts/linux-sandbox-probe.js` executes the same launcher and tests host-secret invisibility, denied external IPv4 connection, absence of general shell/Python binaries and private-profile write/fsync. The receipt qualifies only the exact host/kernel/Bubblewrap tuple that ran it.
 
-Focused source tests additionally cover concurrent duplicate dispatch, final-use fencing, grant expiry recovery, journal tamper rejection, 300-terminal-operation retention/replay, proposal-to-effect bridging, private frame canonicalization, worker artifact digest drift and sandbox argv posture.
+## 7. Resource/capacity model
 
-These source tests establish repository semantics only. The real Servo artifact, actual target namespace behavior and remote terminal outcomes remain separate evidence.
+Current source ceilings include:
+
+- <=128 origins/profile;
+- <=1024 admitted effect grants/profile;
+- <=1024 nonterminal effects/profile;
+- <=256 terminal operations retained in host memory;
+- <=64 queued mutations per serialization key by default;
+- <=1 MiB host observation request;
+- <=256 KiB real worker semantic observation;
+- <=1 MiB private worker frame;
+- <=64 MiB file journal with compaction starting at 48 MiB;
+- bounded typed-action fields and driver/authority deadlines.
+
+The current worker is one Servo / one WebView per profile generation. The pilot <=16-tabs target is not claimed by this candidate and requires a later measured scheduler/profile.
 
 ## 8. Current native implementation
 
-- **Owner entrypoints:** `openProfile`, `observePage`, `navigateOrAct` remain explicit methods in [apps/hepta-browser/src/runtime.js](../../../apps/hepta-browser/src/runtime.js), preserving the implementation-map source anchors.
-- **State machine:** [apps/hepta-browser/src/runtime-host.js](../../../apps/hepta-browser/src/runtime-host.js) owns profile serialization, final-use linearization, dynamic grant admission, no-redispatch semantics and recovery.
-- **Typed payloads:** [apps/hepta-browser/src/action.js](../../../apps/hepta-browser/src/action.js) and [apps/hepta-browser/src/bridge.js](../../../apps/hepta-browser/src/bridge.js).
-- **Durability:** [apps/hepta-browser/src/journal.js](../../../apps/hepta-browser/src/journal.js) provides memory and private file journals; persisted indeterminate effects can be reconciled after host loss.
-- **Worker boundary:** [apps/hepta-browser/src/worker-protocol.js](../../../apps/hepta-browser/src/worker-protocol.js) and [apps/hepta-browser/src/worker-driver.js](../../../apps/hepta-browser/src/worker-driver.js) provide private framed transport, artifact binding and the Linux Bubblewrap host path.
-- **Focused tests:** `apps/hepta-browser/test/browser.test.js`, `action.test.js`, `bridge.test.js`, `runtime.test.js`, `journal.test.js`, `worker-protocol.test.js`, `worker-driver.test.js`.
-- **Operating references:** [apps/hepta-browser/README.md](../../../apps/hepta-browser/README.md), [docs/modules/browser.servo/SERVO_WORKER.md](../../../docs/modules/browser.servo/SERVO_WORKER.md), [docs/modules/browser.servo/IMPLEMENTATION_MAP.json](../../../docs/modules/browser.servo/IMPLEMENTATION_MAP.json).
+- **Owner facade:** [apps/hepta-browser/src/runtime.js](../../../apps/hepta-browser/src/runtime.js) — `openProfile`, `observePage`, `navigateOrAct`.
+- **Owner state machine:** [apps/hepta-browser/src/runtime-host.js](../../../apps/hepta-browser/src/runtime-host.js).
+- **Typed actions/provenance:** [apps/hepta-browser/src/action.js](../../../apps/hepta-browser/src/action.js), [apps/hepta-browser/src/bridge.js](../../../apps/hepta-browser/src/bridge.js).
+- **Durability:** [apps/hepta-browser/src/journal.js](../../../apps/hepta-browser/src/journal.js).
+- **Bounded concurrency:** [apps/hepta-browser/src/runtime-boundary.js](../../../apps/hepta-browser/src/runtime-boundary.js).
+- **Private worker transport:** [apps/hepta-browser/src/worker-protocol.js](../../../apps/hepta-browser/src/worker-protocol.js), [apps/hepta-browser/src/worker-driver.js](../../../apps/hepta-browser/src/worker-driver.js).
+- **Current-pin Servo worker:** `apps/hepta-browser/servo-worker/`.
+- **Private Agentd parent service:** `apps/hepta-browser/src/agentd-protocol.js`, `agentd-service.js`, `agentd-service-main.js`.
+- **Real Agentd final-use handoff / named caller:** `codex-rs/hepta-agentd/src/browser_servo.rs`, `codex-rs/hepta-agentd/src/bin/hepta-agentd-browser.rs`.
+- **Focused Browser tests:** `browser.test.js`, `action.test.js`, `bridge.test.js`, `runtime.test.js`, `runtime-boundary.test.js`, `journal.test.js`, `worker-protocol.test.js`, `worker-driver.test.js`, `agentd-service.test.js`.
 
-### Remaining implementation and external evidence
+## 9. Concrete verification cases
 
-The following are still open and must not be represented as completed by this source change:
+- **BROWSER-01:** stale page/observation generation cannot authorize an action; every semantic observation advances generation.
+- **BROWSER-02:** page content cannot widen authority; typed action/worker protocol are closed-world; target Linux isolation probe denies direct external egress.
+- **BROWSER-03:** source allocates a fresh principal-bound private profile directory; real cross-principal cookie/cache/storage isolation remains a target-host Servo evidence gate.
+- **BROWSER-04:** durable intent precedes local dispatch; concurrent duplicates dispatch once; post-boundary timeout/error remains indeterminate; process-loss recovery reconciles without redispatch.
+- **BROWSER-05:** proposal navigation ID/policy digest/expected revision are bound into the final effect identity.
+- **BROWSER-06:** `type.text`/credential bytes are absent from the durable journal.
+- **BROWSER-07:** worker response must echo exact request kind and payload digest; protocol drift fails the channel.
+- **BROWSER-08:** bounded mutation queue rejects overload instead of accumulating unbounded waiters.
+- **BROWSER-09:** journal hydration rejects malformed/unknown records; compaction preserves latest immutable identities and profile retirement removes closed generations.
 
-1. build the Hepta-owned Servo worker against the exact current pin and independently verify its source/topology/features;
-2. produce reproducible build/toolchain receipts, worker digest, symbols and SBOM;
-3. connect the real Servo WebView/event/render loop to the private protocol;
-4. implement final credential-reference resolution without logging/exporting raw credential bytes;
-5. qualify real Linux namespace/no-egress/listener/descendant cleanup behavior, then provide equivalent macOS and Windows isolation;
-6. prove real cross-profile cookie/cache/storage isolation;
-7. prove real stale-element behavior and terminal navigation/download/business reconciliation;
-8. compose a named non-test `runtime.agentd`/product caller and obtain the separate activation/deployment/independent-acceptance evidence.
+## 10. Qualification gates and remaining evidence
+
+Repository/source gates include:
+
+- complete Browser Node tests and JS syntax checks;
+- exact current-pin worker `cargo check --locked`;
+- real Bubblewrap sandbox probe;
+- two deterministic release builds with byte equality;
+- dynamic-library closure, worker smoke, worker SHA-256 and deterministic SPDX SBOM;
+- real Agentd `FinalUseAuthority` handoff test, named caller compile and Clippy;
+- Lane-B exact-source and deterministic synthetic-merge checks.
+
+Still separately open until exact receipts exist:
+
+1. reviewed committed worker `Cargo.lock` and terminal-success exact-SHA reproducible worker artifact/SBOM;
+2. independent Linux target-host no-listener/no-egress/descendant/profile isolation evidence;
+3. macOS/Windows isolation equivalents if targeted;
+4. functional credential broker and upload/download terminal observers if enabled;
+5. real remote business terminal observations/reconciliation;
+6. target resource/soak measurements;
+7. trusted long-running authority/revocation feed for default daemon activation;
+8. independent operator acceptance, promotion and release.
+
+These are evidence/activation gates, not permission to weaken source semantics. The repository candidate must remain truthful while they are open.

@@ -3,7 +3,7 @@ import test from "node:test";
 import { EventEmitter } from "node:events";
 import { PassThrough } from "node:stream";
 import { createHash } from "node:crypto";
-import { mkdtemp, writeFile } from "node:fs/promises";
+import { mkdtemp, readFile, stat, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 
@@ -18,14 +18,44 @@ import {
 } from "../src/worker-protocol.js";
 
 const D1 = "1".repeat(64);
+const SEMANTIC = {
+  controls: [],
+  forms: [],
+  links: [],
+  schema: "hepta.browser.semantic-observation.v1",
+  title: "Example",
+  truncated: false,
+  viewport: { height: 720, width: 1280 },
+  visibleText: "hello",
+};
+const SEMANTIC_DIGEST = createHash("sha256")
+  .update(JSON.stringify(SEMANTIC))
+  .digest("hex");
 
 function digest(bytes) {
   return createHash("sha256").update(bytes).digest("hex");
 }
 
-function fakeLauncher({ holdDispatchResponse = null } = {}) {
+function startInput(overrides = {}) {
+  return {
+    profileId: "profile.1",
+    principalId: "principal.1",
+    manifestDigest: D1,
+    grantDigest: D1,
+    generation: 1,
+    allowedOrigins: ["https://example.com"],
+    ...overrides,
+  };
+}
+
+function fakeLauncher({
+  holdDispatchResponse = null,
+  capture = null,
+  corruptResponseBinding = false,
+} = {}) {
   return {
     posture: {
+      sourceContractOnly: true,
       inheritedPrivateChannel: true,
       externalNetworkDenied: true,
       ambientEnvironmentDenied: true,
@@ -33,13 +63,21 @@ function fakeLauncher({ holdDispatchResponse = null } = {}) {
       hostFilesystemRestricted: true,
       parentDeathCleanup: true,
     },
-    spawn() {
+    spawn(spec) {
       const child = new EventEmitter();
       child.pid = 4242;
       child.stdin = new PassThrough();
       child.stdout = new PassThrough();
       child.stderr = new PassThrough();
-      child.kill = () => true;
+      child.killed = false;
+      child.kill = () => {
+        child.killed = true;
+        return true;
+      };
+      if (capture) {
+        capture.child = child;
+        capture.spec = spec;
+      }
       const decoder = new WorkerFrameDecoder();
       let sequence = 1;
       child.stdin.on("data", (chunk) => {
@@ -53,6 +91,8 @@ function fakeLauncher({ holdDispatchResponse = null } = {}) {
               observation = {
                 pageGeneration: 1,
                 documentDigest: D1,
+                semanticDigest: SEMANTIC_DIGEST,
+                semanticObservation: SEMANTIC,
                 origin: "https://example.com",
               };
               break;
@@ -79,7 +119,12 @@ function fakeLauncher({ holdDispatchResponse = null } = {}) {
               sequence: sequence++,
               kind: "response",
               requestId: request.requestId,
-              payload: { ok: true, observation },
+              payload: {
+                ok: true,
+                requestKind: request.kind,
+                requestPayloadDigest: corruptResponseBinding ? D1 : request.payloadDigest,
+                observation,
+              },
             }),
           );
           if (request.kind === "dispatch" && holdDispatchResponse) {
@@ -106,20 +151,14 @@ async function preparedDriver({ launcher = fakeLauncher() } = {}) {
     profileRoot: join(root, "profiles"),
     launcher,
   });
-  const started = await driver.start({
-    profileId: "profile.1",
-    principalId: "principal.1",
-    manifestDigest: D1,
-    grantDigest: D1,
-    generation: 1,
-    allowedOrigins: ["https://example.com"],
-  });
-  return { driver, started };
+  const started = await driver.start(startInput());
+  return { driver, started, root };
 }
 
 test("artifact-bound subprocess driver uses only the private framed channel", async () => {
   const { driver, started } = await preparedDriver();
   assert.equal(started.processId, "servo.pid.4242");
+  assert.match(started.profileOwnerDigest, /^[0-9a-f]{64}$/);
   const observed = await driver.observe({
     profileId: "profile.1",
     processId: started.processId,
@@ -127,6 +166,7 @@ test("artifact-bound subprocess driver uses only the private framed channel", as
     observationBudget: 1024,
   });
   assert.equal(observed.origin, "https://example.com");
+  assert.equal(observed.semanticDigest, SEMANTIC_DIGEST);
   const dispatched = await driver.dispatch({
     profileId: "profile.1",
     processId: started.processId,
@@ -150,6 +190,32 @@ test("artifact-bound subprocess driver uses only the private framed channel", as
   assert.equal(stopped.stopped, true);
 });
 
+test("profile directory carries a private principal-bound owner manifest and stderr is drained", async () => {
+  const capture = {};
+  const { driver, started } = await preparedDriver({
+    launcher: fakeLauncher({ capture }),
+  });
+  const ownerPath = join(capture.spec.profileDir, ".hepta-profile-owner.json");
+  const owner = JSON.parse(await readFile(ownerPath, "utf8"));
+  assert.deepEqual(owner, {
+    schema: "hepta.browser.profile-owner.v1",
+    profileId: "profile.1",
+    principalId: "principal.1",
+    generation: 1,
+    manifestDigest: D1,
+    grantDigest: D1,
+  });
+  if (process.platform !== "win32") {
+    assert.equal((await stat(ownerPath)).mode & 0o077, 0);
+  }
+  assert.equal(capture.child.stderr.readableFlowing, true);
+  await driver.stop({
+    profileId: "profile.1",
+    processId: started.processId,
+    generation: 1,
+  });
+});
+
 test("dispatch returns at local pipe write without waiting for worker execution response", async () => {
   const held = {};
   const { driver, started } = await preparedDriver({
@@ -169,9 +235,6 @@ test("dispatch returns at local pipe write without waiting for worker execution 
   assert.equal(dispatched.terminalObserved, false);
   assert.equal(typeof held.release, "function");
 
-  // Only after the authority/local-dispatch boundary has returned do we allow
-  // the worker's execution response to arrive. Reconciliation then observes
-  // terminality through a distinct request.
   held.release();
   await new Promise((resolve) => setImmediate(resolve));
   const terminal = await driver.reconcile({
@@ -185,6 +248,22 @@ test("dispatch returns at local pipe write without waiting for worker execution 
   assert.equal(terminal.status, "succeeded");
 });
 
+test("worker response must echo exact request kind and payload digest", async () => {
+  const capture = {};
+  const root = await mkdtemp(join(tmpdir(), "hepta-worker-driver-"));
+  const workerPath = join(root, "worker.bin");
+  const workerBytes = Buffer.from("fake-qualified-worker", "utf8");
+  await writeFile(workerPath, workerBytes, { mode: 0o700 });
+  const driver = new SubprocessBrowserDriver({
+    workerPath,
+    workerDigest: digest(workerBytes),
+    profileRoot: join(root, "profiles"),
+    launcher: fakeLauncher({ capture, corruptResponseBinding: true }),
+  });
+  await assert.rejects(driver.start(startInput()), /did not bind the exact request/);
+  assert.equal(capture.child.killed, true);
+});
+
 test("subprocess driver fails closed on worker artifact digest drift", async () => {
   const root = await mkdtemp(join(tmpdir(), "hepta-worker-driver-"));
   const workerPath = join(root, "worker.bin");
@@ -196,13 +275,13 @@ test("subprocess driver fails closed on worker artifact digest drift", async () 
     launcher: fakeLauncher(),
   });
   await assert.rejects(
-    driver.start({ profileId: "profile.1", generation: 1 }),
+    driver.start(startInput()),
     /artifact digest mismatch/,
   );
 });
 
 test(
-  "Linux bubblewrap launcher exposes only the explicit runtime closure",
+  "Linux bubblewrap source contract exposes only the explicit runtime closure",
   { skip: process.platform !== "linux" },
   () => {
     const launcher = new LinuxBubblewrapLauncher({ bwrapPath: "/usr/bin/bwrap" });
@@ -236,11 +315,12 @@ test(
     assert.equal(mountedSources.includes("/usr/lib"), true);
     assert.equal(mountedSources.includes("/var/cache/fontconfig"), true);
     assert.equal(argv.at(-1), "/hepta-worker");
+    assert.equal(launcher.posture.sourceContractOnly, true);
     assert.equal(launcher.posture.hostFilesystemRestricted, true);
   },
 );
 
-test("subprocess driver rejects launchers that do not enforce the isolation posture", () => {
+test("subprocess driver rejects launchers without the complete source isolation contract", () => {
   assert.throws(
     () =>
       new SubprocessBrowserDriver({
@@ -249,7 +329,7 @@ test("subprocess driver rejects launchers that do not enforce the isolation post
         profileRoot: "/profiles",
         launcher: { posture: {}, spawn() {} },
       }),
-    /does not enforce/,
+    /source-contract-only/,
   );
 
   assert.throws(
@@ -260,6 +340,7 @@ test("subprocess driver rejects launchers that do not enforce the isolation post
         profileRoot: "/profiles",
         launcher: {
           posture: {
+            sourceContractOnly: true,
             inheritedPrivateChannel: true,
             externalNetworkDenied: true,
             ambientEnvironmentDenied: true,

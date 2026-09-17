@@ -21,6 +21,8 @@ const SCHEMA: &str = "hepta.browser.worker-frame.v1";
 const PROTOCOL_VERSION: u32 = 1;
 const MAX_FRAME_BYTES: usize = 1_048_576;
 const MAX_SAFE_INTEGER: u64 = 9_007_199_254_740_991;
+const MIN_SEMANTIC_OBSERVATION_BYTES: usize = 512;
+const MAX_SEMANTIC_OBSERVATION_BYTES: usize = 262_144;
 
 #[derive(Debug, Deserialize, Serialize)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
@@ -147,20 +149,57 @@ impl Browser {
             .ok_or_else(|| "WebView has no current URL".to_string())
     }
 
-    fn observe(&mut self) -> Result<Value, String> {
+    fn observe(&mut self, observation_budget: usize) -> Result<Value, String> {
         self.pump();
         if self.page_generation == 0 {
             return Err("no authorized web document has been loaded".to_string());
         }
+        if observation_budget < MIN_SEMANTIC_OBSERVATION_BYTES {
+            return Err(format!(
+                "observationBudget must be at least {MIN_SEMANTIC_OBSERVATION_BYTES} bytes for semantic observation"
+            ));
+        }
+        let budget = observation_budget.min(MAX_SEMANTIC_OBSERVATION_BYTES);
         let url = self.current_url()?;
         let current_origin = origin(&url)
             .ok_or_else(|| "current document has no HTTP(S) origin".to_string())?;
+        if !self.allowed_origins.contains(&current_origin) {
+            return Err("current document origin is outside the admitted set".to_string());
+        }
+
+        // Every admitted observation advances the generation. This makes all
+        // selectors/handles from an older observation stale even when the URL
+        // did not change but page script mutated the DOM.
+        self.page_generation = self
+            .page_generation
+            .checked_add(1)
+            .ok_or_else(|| "page generation exhausted".to_string())?;
+
+        let semantic_observation = self.evaluate_json(
+            semantic_snapshot_script(budget),
+            Duration::from_secs(5),
+        )?;
+        validate_safe_json(&semantic_observation, 0)?;
+        let semantic_json = canonical_json(&semantic_observation);
+        if semantic_json.as_bytes().len() > budget {
+            return Err("semantic observation exceeded observationBudget".to_string());
+        }
+        let semantic_digest = sha256_hex(semantic_json.as_bytes());
+        let document_digest = sha256_hex(
+            format!(
+                "{}\0{:?}\0{}\0{}",
+                url,
+                self.webview.load_status(),
+                self.page_generation,
+                semantic_digest
+            )
+            .as_bytes(),
+        );
         Ok(json!({
             "pageGeneration": self.page_generation,
-            "documentDigest": sha256_hex(
-                format!("{}\0{:?}\0{}", url, self.webview.load_status(), self.page_generation)
-                    .as_bytes(),
-            ),
+            "documentDigest": document_digest,
+            "semanticDigest": semantic_digest,
+            "semanticObservation": semantic_observation,
             "origin": current_origin,
         }))
     }
@@ -299,6 +338,30 @@ impl Browser {
         }
     }
 
+    fn evaluate_json(&mut self, script: String, timeout: Duration) -> Result<Value, String> {
+        let result = Rc::new(RefCell::new(None));
+        let callback_result = result.clone();
+        self.webview.evaluate_javascript(script, move |value| {
+            *callback_result.borrow_mut() = Some(value);
+        });
+        let deadline = Instant::now() + timeout;
+        loop {
+            self.pump();
+            if let Some(value) = result.borrow_mut().take() {
+                return match value {
+                    Ok(JSValue::String(value)) => serde_json::from_str(&value)
+                        .map_err(|error| format!("semantic observation JSON invalid: {error}")),
+                    Ok(_) => Err("semantic observation script returned an unexpected value".to_string()),
+                    Err(error) => Err(format!("semantic observation evaluation failed: {error:?}")),
+                };
+            }
+            if Instant::now() >= deadline {
+                return Err("semantic observation evaluation timed out".to_string());
+            }
+            thread::sleep(Duration::from_millis(2));
+        }
+    }
+
     fn reconcile(&mut self, frame: &Frame) -> Result<Value, String> {
         let operation_id = string_field(&frame.payload, "operationId")?;
         let prior = self
@@ -410,10 +473,20 @@ fn run() -> Result<(), String> {
                             Ok(json!({"started": true}))
                         }
                     }
-                    "observe" => browser
-                        .as_mut()
-                        .ok_or_else(|| "worker is not started".to_string())?
-                        .observe(),
+                    "observe" => {
+                        let budget = frame
+                            .payload
+                            .get("observationBudget")
+                            .and_then(Value::as_u64)
+                            .ok_or_else(|| "observe.observationBudget must be a positive integer".to_string())?;
+                        if budget == 0 || budget > MAX_SAFE_INTEGER {
+                            return Err("observe.observationBudget is outside the safe range".to_string());
+                        }
+                        browser
+                            .as_mut()
+                            .ok_or_else(|| "worker is not started".to_string())?
+                            .observe(budget as usize)
+                    }
                     "dispatch" => browser
                         .as_mut()
                         .ok_or_else(|| "worker is not started".to_string())?
@@ -426,8 +499,18 @@ fn run() -> Result<(), String> {
                     _ => Err("host sent a non-command frame".to_string()),
                 };
                 let payload = match result {
-                    Ok(observation) => json!({"ok": true, "observation": observation}),
-                    Err(error) => json!({"ok": false, "error": error}),
+                    Ok(observation) => json!({
+                        "ok": true,
+                        "requestKind": frame.kind,
+                        "requestPayloadDigest": frame.payload_digest,
+                        "observation": observation,
+                    }),
+                    Err(error) => json!({
+                        "ok": false,
+                        "requestKind": frame.kind,
+                        "requestPayloadDigest": frame.payload_digest,
+                        "error": error,
+                    }),
                 };
                 write_response(&mut output, &frame, response_sequence, payload)?;
                 response_sequence = response_sequence
@@ -557,6 +640,75 @@ fn write_response(
         .and_then(|_| output.write_all(body.as_bytes()))
         .and_then(|_| output.flush())
         .map_err(|error| format!("private channel response failed: {error}"))
+}
+
+fn semantic_snapshot_script(budget: usize) -> String {
+    let script = r#"(()=>{
+const budget=__BUDGET__;
+const enc=new TextEncoder();
+const clean=(value,max)=>String(value??"").replace(/\s+/g," ").trim().slice(0,max);
+const selectorFor=(el)=>{
+  const parts=[];
+  let node=el;
+  for(let depth=0;node&&node.nodeType===1&&depth<8;depth+=1,node=node.parentElement){
+    const tag=node.tagName.toLowerCase();
+    let index=1;
+    for(let sibling=node.previousElementSibling;sibling;sibling=sibling.previousElementSibling){
+      if(sibling.tagName===node.tagName) index+=1;
+    }
+    parts.push(`${tag}:nth-of-type(${index})`);
+  }
+  return parts.reverse().join(">").slice(0,2048);
+};
+const links=[];
+for(const a of Array.from(document.querySelectorAll("a[href]")).slice(0,128)){
+  try{
+    const u=new URL(a.href,document.baseURI);
+    if(u.protocol!=="http:"&&u.protocol!=="https:") continue;
+    links.push({text:clean(a.innerText||a.textContent,512),href:u.href.slice(0,4096),selector:selectorFor(a)});
+  }catch{}
+}
+const controls=[];
+const nodes=document.querySelectorAll("a[href],button,input:not([type=password]),textarea,select,[role=button],[tabindex]");
+for(const el of Array.from(nodes).slice(0,256)){
+  const type=clean(el.getAttribute("type"),64).toLowerCase();
+  if(type==="password") continue;
+  controls.push({
+    selector:selectorFor(el),
+    tag:clean(el.tagName,32).toLowerCase(),
+    role:clean(el.getAttribute("role"),64),
+    type,
+    name:clean(el.getAttribute("name"),128),
+    ariaLabel:clean(el.getAttribute("aria-label"),512),
+    placeholder:clean(el.getAttribute("placeholder"),512),
+    disabled:Boolean(el.disabled),
+    checked:Boolean(el.checked)
+  });
+}
+const forms=[];
+for(const form of Array.from(document.forms).slice(0,64)){
+  let action="";
+  try{const u=new URL(form.action||document.URL,document.baseURI);if(u.protocol==="http:"||u.protocol==="https:") action=u.href.slice(0,4096);}catch{}
+  forms.push({method:clean(form.method||"get",16).toLowerCase(),action,controlCount:Math.min(form.elements?.length||0,4096),selector:selectorFor(form)});
+}
+const out={
+  schema:"hepta.browser.semantic-observation.v1",
+  title:clean(document.title,1024),
+  visibleText:clean(document.body?.innerText||"",Math.min(65536,Math.max(0,Math.floor(budget/2)))),
+  links,
+  controls,
+  forms,
+  viewport:{width:Math.max(0,Math.floor(innerWidth||0)),height:Math.max(0,Math.floor(innerHeight||0))},
+  truncated:false
+};
+const bytes=()=>enc.encode(JSON.stringify(out)).byteLength;
+if(bytes()>budget){out.forms=[];out.truncated=true;}
+if(bytes()>budget){out.links=out.links.slice(0,32);out.controls=out.controls.slice(0,64);out.truncated=true;}
+while(bytes()>budget&&out.visibleText.length>0){out.visibleText=out.visibleText.slice(0,Math.floor(out.visibleText.length/2));out.truncated=true;}
+if(bytes()>budget){out.links=[];out.controls=[];out.forms=[];out.title="";out.visibleText="";out.truncated=true;}
+return JSON.stringify(out);
+})()"#;
+    script.replace("__BUDGET__", &budget.to_string())
 }
 
 fn parse_allowed_origins(payload: &Value) -> Result<HashSet<String>, String> {

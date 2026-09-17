@@ -11,6 +11,7 @@ import {
 } from "./worker-protocol.js";
 
 const DIGEST = /^[0-9a-f]{64}$/;
+const STABLE_ID = /^[A-Za-z0-9._:-]{1,128}$/;
 const MAX_WORKER_ARTIFACT_BYTES = 512 * 1024 * 1024;
 const MAX_ABANDONED_RESPONSES = 1024;
 
@@ -26,8 +27,22 @@ function sha256(bytes) {
 }
 
 function expectedDigest(value, name) {
-  if (typeof value !== "string" || !DIGEST.test(value)) {
-    throw new TypeError(`${name} must be a lowercase SHA-256 digest`);
+  if (typeof value !== "string" || !DIGEST.test(value) || /^0+$/.test(value)) {
+    throw new TypeError(`${name} must be a non-zero lowercase SHA-256 digest`);
+  }
+  return value;
+}
+
+function stableId(value, name) {
+  if (typeof value !== "string" || !STABLE_ID.test(value)) {
+    throw new TypeError(`${name} must be a bounded stable identifier`);
+  }
+  return value;
+}
+
+function positiveInteger(value, name) {
+  if (!Number.isSafeInteger(value) || value < 1) {
+    throw new TypeError(`${name} must be a positive safe integer`);
   }
   return value;
 }
@@ -50,7 +65,11 @@ export class LinuxBubblewrapLauncher {
     }
     if (!isAbsolute(bwrapPath)) throw new TypeError("bwrapPath must be absolute");
     this.bwrapPath = bwrapPath;
+    // These fields describe the source-level launch contract. They are not an
+    // independent observation that a target kernel actually enforced it. The
+    // real sandbox probe / deployment qualification supplies that evidence.
     this.posture = Object.freeze({
+      sourceContractOnly: true,
       inheritedPrivateChannel: true,
       externalNetworkDenied: true,
       ambientEnvironmentDenied: true,
@@ -137,6 +156,10 @@ class PrivateWorkerClient {
         this.#failAll(error);
       }
     });
+    // Servo and the worker may be noisy. Always drain stderr so an unconsumed
+    // pipe cannot deadlock browser execution. Diagnostics are intentionally not
+    // copied into receipts because page/worker logs can contain sensitive data.
+    child.stderr?.resume?.();
     child.on("error", (error) => this.#failAll(error));
     child.on("exit", (code, signal) => {
       this.#closed = true;
@@ -163,7 +186,13 @@ class PrivateWorkerClient {
     const encoded = encodeWorkerFrame(frame);
     return new Promise((resolve, reject) => {
       let writeStarted = false;
-      const entry = { resolve, reject, cleanup: null };
+      const entry = {
+        resolve,
+        reject,
+        cleanup: null,
+        requestKind: kind,
+        requestPayloadDigest: frame.payloadDigest,
+      };
       const abort = () => {
         if (!this.#pending.delete(id)) return;
         entry.cleanup?.();
@@ -247,9 +276,17 @@ class PrivateWorkerClient {
         this.#child.kill("SIGKILL");
         return;
       }
+      const payload = requireRecord(frame.payload, "worker response payload");
+      if (
+        payload.requestKind !== pending.requestKind ||
+        payload.requestPayloadDigest !== pending.requestPayloadDigest
+      ) {
+        this.#failAll(new TypeError("browser worker response did not bind the exact request"));
+        this.#child.kill("SIGKILL");
+        return;
+      }
       this.#pending.delete(frame.requestId);
       pending.cleanup?.();
-      const payload = requireRecord(frame.payload, "worker response payload");
       if (payload.ok === true) {
         pending.resolve(requireRecord(payload.observation, "worker observation"));
       } else if (payload.ok === false && typeof payload.error === "string") {
@@ -277,6 +314,7 @@ export class SubprocessBrowserDriver {
   #child = null;
   #client = null;
   #profileDir = null;
+  #profileOwnerPath = null;
   #verifiedWorkerPath = null;
   #sessionId = null;
   #generation = null;
@@ -287,6 +325,9 @@ export class SubprocessBrowserDriver {
     if (!isAbsolute(profileRoot)) throw new TypeError("profileRoot must be absolute");
     requireRecord(launcher, "launcher");
     const posture = requireRecord(launcher.posture, "launcher.posture");
+    if (posture.sourceContractOnly !== true) {
+      throw new TypeError("launcher posture must be explicitly source-contract-only");
+    }
     for (const key of [
       "inheritedPrivateChannel",
       "externalNetworkDenied",
@@ -295,7 +336,7 @@ export class SubprocessBrowserDriver {
       "hostFilesystemRestricted",
       "parentDeathCleanup",
     ]) {
-      if (posture[key] !== true) throw new TypeError(`launcher posture does not enforce ${key}`);
+      if (posture[key] !== true) throw new TypeError(`launcher source contract does not declare ${key}`);
     }
     if (typeof launcher.spawn !== "function") throw new TypeError("launcher.spawn must be a function");
     this.#workerPath = workerPath;
@@ -306,14 +347,30 @@ export class SubprocessBrowserDriver {
 
   async start(input, { signal } = {}) {
     if (this.#child) throw new TypeError("browser worker is already started");
+    requireRecord(input, "browser worker start input");
+    const profileId = stableId(input.profileId, "profileId");
+    const principalId = stableId(input.principalId, "principalId");
+    const generation = positiveInteger(input.generation, "generation");
+    const manifestDigest = expectedDigest(input.manifestDigest, "manifestDigest");
+    const grantDigest = expectedDigest(input.grantDigest, "grantDigest");
     const verifiedWorkerBytes = await this.#readVerifiedWorkerArtifact();
     await mkdir(this.#profileRoot, { recursive: true, mode: 0o700 });
-    this.#profileDir = join(this.#profileRoot, `${input.profileId}.${input.generation}.${randomUUID()}`);
+    // Each process generation gets a fresh private directory. Stale profile
+    // bytes are therefore never implicitly reused by a different principal.
+    this.#profileDir = join(this.#profileRoot, `${profileId}.${generation}.${randomUUID()}`);
     await mkdir(this.#profileDir, { mode: 0o700 });
+    this.#profileOwnerPath = join(this.#profileDir, ".hepta-profile-owner.json");
+    await this.#writeProfileOwnerManifest({
+      profileId,
+      principalId,
+      generation,
+      manifestDigest,
+      grantDigest,
+    });
     this.#verifiedWorkerPath = join(this.#profileDir, ".verified-worker");
     await this.#writePrivateVerifiedWorker(verifiedWorkerBytes);
-    this.#sessionId = input.profileId;
-    this.#generation = input.generation;
+    this.#sessionId = profileId;
+    this.#generation = generation;
     try {
       this.#child = this.#launcher.spawn({
         workerPath: this.#verifiedWorkerPath,
@@ -330,12 +387,22 @@ export class SubprocessBrowserDriver {
       });
       const observed = await this.#client.request(
         "start",
-        `${input.profileId}.${input.generation}`,
+        `${profileId}.${generation}`,
         input,
         { signal },
       );
       if (observed.started !== true) throw new TypeError("worker did not acknowledge start");
-      return { started: true, processId: this.#processId };
+      return {
+        started: true,
+        processId: this.#processId,
+        profileOwnerDigest: sha256(Buffer.from(JSON.stringify({
+          profileId,
+          principalId,
+          generation,
+          manifestDigest,
+          grantDigest,
+        }), "utf8")),
+      };
     } catch (error) {
       this.#child?.kill?.("SIGKILL");
       await this.#cleanupProfile();
@@ -376,16 +443,10 @@ export class SubprocessBrowserDriver {
       settled,
     ]);
     if (first === "rejected" && !crossed) throw earlyError;
-    // A complete response necessarily proves the request bytes crossed the
-    // local worker channel even if a stream implementation delivered the
-    // response before invoking the write callback.
     if (first === "resolved" && !crossed) {
       crossed = true;
       resolveBoundary();
     }
-    // Keep the private response handler alive so a late worker reply cannot
-    // become an unhandled rejection or poison the framed channel. External
-    // terminality is intentionally obtained through reconcile().
     response.catch(() => {});
     return { terminalObserved: false };
   }
@@ -433,6 +494,26 @@ export class SubprocessBrowserDriver {
     }
   }
 
+  async #writeProfileOwnerManifest(identity) {
+    const body = Buffer.from(JSON.stringify({
+      schema: "hepta.browser.profile-owner.v1",
+      ...identity,
+    }) + "\n", "utf8");
+    const noFollow = constants.O_NOFOLLOW ?? 0;
+    const flags = constants.O_WRONLY | constants.O_CREAT | constants.O_EXCL | noFollow;
+    const handle = await open(this.#profileOwnerPath, flags, 0o600);
+    try {
+      await handle.writeFile(body);
+      await handle.sync();
+      const info = await handle.stat();
+      if (!info.isFile() || info.size !== body.length) {
+        throw new TypeError("profile owner manifest is not a regular exact-length file");
+      }
+    } finally {
+      await handle.close();
+    }
+  }
+
   async #writePrivateVerifiedWorker(bytes) {
     const noFollow = constants.O_NOFOLLOW ?? 0;
     const flags = constants.O_WRONLY | constants.O_CREAT | constants.O_EXCL | noFollow;
@@ -464,6 +545,7 @@ export class SubprocessBrowserDriver {
     if (!this.#profileDir) return;
     const profileDir = this.#profileDir;
     this.#profileDir = null;
+    this.#profileOwnerPath = null;
     this.#verifiedWorkerPath = null;
     await rm(profileDir, { recursive: true, force: true });
   }

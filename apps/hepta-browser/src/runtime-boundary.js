@@ -1,3 +1,6 @@
+const DEFAULT_MAX_QUEUED_PER_KEY = 64;
+const QUEUE_DEPTHS = new WeakMap();
+
 export async function callWithDeadline({ call, payload, now, deadlineMs, timeoutCapMs, abortable, timeoutName }) {
   const remaining = Math.max(1, deadlineMs - now());
   const timeoutMs = Math.min(timeoutCapMs, remaining);
@@ -21,7 +24,37 @@ export async function callWithDeadline({ call, payload, now, deadlineMs, timeout
   }
 }
 
-export async function exclusive(lockMap, key, operation) {
+function queueDepthMap(lockMap) {
+  let depths = QUEUE_DEPTHS.get(lockMap);
+  if (!depths) {
+    depths = new Map();
+    QUEUE_DEPTHS.set(lockMap, depths);
+  }
+  return depths;
+}
+
+export async function exclusive(
+  lockMap,
+  key,
+  operation,
+  { maxQueued = DEFAULT_MAX_QUEUED_PER_KEY } = {},
+) {
+  if (!(lockMap instanceof Map)) throw new TypeError("exclusive lockMap must be a Map");
+  if (typeof operation !== "function") throw new TypeError("exclusive operation must be a function");
+  if (!Number.isSafeInteger(maxQueued) || maxQueued < 1 || maxQueued > 4096) {
+    throw new TypeError("exclusive maxQueued must be a bounded positive safe integer");
+  }
+
+  const depths = queueDepthMap(lockMap);
+  const depth = depths.get(key) ?? 0;
+  if (depth >= maxQueued) {
+    const error = new Error("browser mutation queue capacity is exhausted");
+    error.name = "BrowserBackpressureError";
+    error.code = "BROWSER_BACKPRESSURE";
+    throw error;
+  }
+  depths.set(key, depth + 1);
+
   const prior = lockMap.get(key) ?? Promise.resolve();
   let release;
   const current = new Promise((resolve) => { release = resolve; });
@@ -33,5 +66,8 @@ export async function exclusive(lockMap, key, operation) {
   } finally {
     release();
     if (lockMap.get(key) === tail) lockMap.delete(key);
+    const nextDepth = (depths.get(key) ?? 1) - 1;
+    if (nextDepth <= 0) depths.delete(key);
+    else depths.set(key, nextDepth);
   }
 }

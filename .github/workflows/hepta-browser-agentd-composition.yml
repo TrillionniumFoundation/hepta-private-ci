@@ -1,13 +1,26 @@
 name: Hepta Browser Agentd composition
 
 on:
-  push:
-    branches: [codex/browser-servo-agentd-composition-20260917]
+  pull_request:
     paths:
       - 'codex-rs/hepta-agentd/**'
       - 'codex-rs/hepta-agent-protocol/**'
-      - 'apps/hepta-browser/src/agentd-*.js'
-      - 'apps/hepta-browser/test/agentd-service.test.js'
+      - 'apps/hepta-browser/**'
+      - 'third_party/servo-patches/**'
+      - 'docs/modules/browser.servo/**'
+      - 'qualification/module-execution-dossiers/detail/browser.servo.md'
+      - '.github/workflows/hepta-browser-agentd-composition.yml'
+  push:
+    branches:
+      - main
+      - codex/browser-servo-effect-closure-20260917
+    paths:
+      - 'codex-rs/hepta-agentd/**'
+      - 'codex-rs/hepta-agent-protocol/**'
+      - 'apps/hepta-browser/**'
+      - 'third_party/servo-patches/**'
+      - 'docs/modules/browser.servo/**'
+      - 'qualification/module-execution-dossiers/detail/browser.servo.md'
       - '.github/workflows/hepta-browser-agentd-composition.yml'
   workflow_dispatch:
 
@@ -15,17 +28,19 @@ permissions:
   contents: read
 
 concurrency:
-  group: hepta-browser-agentd-composition-${{ github.ref }}
+  group: hepta-browser-agentd-composition-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
 jobs:
   exact-composition:
     runs-on: ubuntu-24.04
     timeout-minutes: 45
+    env:
+      SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
-          ref: ${{ github.sha }}
+          ref: ${{ env.SOURCE_SHA }}
           fetch-depth: 1
           persist-credentials: false
 
@@ -33,14 +48,15 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
           git rev-parse HEAD HEAD^{tree}
 
-      - name: Verify Browser private-parent protocol tests
+      - name: Verify complete Browser owner boundary
         shell: bash
         run: |
           set -euo pipefail
-          node --test apps/hepta-browser/test/agentd-service.test.js apps/hepta-browser/test/worker-driver.test.js
+          node --test apps/hepta-browser/test/*.test.js
+          node --check apps/hepta-browser/src/*.js
 
       - name: Verify Agentd Browser formatting
         shell: bash
@@ -74,6 +90,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
           git diff --check
           git diff --exit-code
           test -z "$(git status --porcelain --untracked-files=no)"

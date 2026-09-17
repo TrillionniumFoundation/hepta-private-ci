@@ -1,8 +1,7 @@
 name: Hepta Browser Servo worker dev
 
 on:
-  push:
-    branches: [codex/browser-servo-effect-correctness-20260917]
+  pull_request:
     paths:
       - 'apps/hepta-browser/servo-worker/**'
       - 'apps/hepta-browser/src/**'
@@ -10,6 +9,21 @@ on:
       - 'apps/hepta-browser/scripts/**'
       - 'third_party/servo-patches/**'
       - 'docs/modules/browser.servo/**'
+      - 'qualification/module-execution-dossiers/detail/browser.servo.md'
+      - '.github/workflows/hepta-browser-servo-worker-dev.yml'
+      - '.github/workflows/hepta-browser-servo-deployment-qualification.yml'
+  push:
+    branches:
+      - main
+      - codex/browser-servo-effect-closure-20260917
+    paths:
+      - 'apps/hepta-browser/servo-worker/**'
+      - 'apps/hepta-browser/src/**'
+      - 'apps/hepta-browser/test/**'
+      - 'apps/hepta-browser/scripts/**'
+      - 'third_party/servo-patches/**'
+      - 'docs/modules/browser.servo/**'
+      - 'qualification/module-execution-dossiers/detail/browser.servo.md'
       - '.github/workflows/hepta-browser-servo-worker-dev.yml'
       - '.github/workflows/hepta-browser-servo-deployment-qualification.yml'
   workflow_dispatch:
@@ -18,13 +32,14 @@ permissions:
   contents: read
 
 concurrency:
-  group: hepta-browser-servo-worker-dev-${{ github.ref }}
+  group: hepta-browser-servo-worker-dev-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
 env:
   SERVO_PIN: 84bcc9ac701874fa9819e5cdee06356b961d736c
   WORKER_MANIFEST: apps/hepta-browser/servo-worker/Cargo.toml
   WORKER_LOCK: apps/hepta-browser/servo-worker/Cargo.lock
+  SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
 
 jobs:
   worker-evidence:
@@ -33,7 +48,7 @@ jobs:
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
-          ref: ${{ github.sha }}
+          ref: ${{ env.SOURCE_SHA }}
           fetch-depth: 1
           persist-credentials: false
 
@@ -41,7 +56,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
           git rev-parse HEAD HEAD^{tree} | tee source-identity.txt
 
       - name: Install Rust 1.88.0
@@ -110,6 +125,7 @@ jobs:
           set -euo pipefail
           node --test apps/hepta-browser/test/*.test.js 2>&1 \
             | tee worker-evidence/node-tests.log
+          node --check apps/hepta-browser/src/*.js
 
       - name: Probe real Bubblewrap namespace and egress denial
         shell: bash
@@ -165,7 +181,7 @@ jobs:
             --metadata worker-evidence/cargo-metadata.json \
             --lock worker-evidence/Cargo.lock \
             --binary worker-evidence/hepta-servo-worker \
-            --source-sha "$GITHUB_SHA" \
+            --source-sha "$SOURCE_SHA" \
             --source-date-epoch "$source_date_epoch" \
             --servo-pin "$SERVO_PIN" \
             --output worker-evidence/hepta-servo-worker.spdx.json
@@ -178,12 +194,13 @@ jobs:
               return hashlib.sha256(path.read_bytes()).hexdigest()
           receipt = {
               'schema': 'hepta.browser.servo-worker-build-receipt.v1',
-              'sourceSha': os.environ['GITHUB_SHA'],
+              'sourceSha': os.environ['SOURCE_SHA'],
               'sourceTree': subprocess.check_output(['git', 'rev-parse', 'HEAD^{tree}'], text=True).strip(),
               'servoPin': os.environ['SERVO_PIN'],
               'cargoLockSha256': digest(root / 'Cargo.lock'),
               'workerSha256': digest(root / 'hepta-servo-worker'),
               'sbomSha256': digest(root / 'hepta-servo-worker.spdx.json'),
+              'cargoLockCommitted': (root / 'cargo-lock-source.txt').read_text().strip() == 'committed',
               'reproducibleIndependentBuilds': True,
               'linuxSandboxProbe': json.loads((root / 'linux-sandbox-probe.json').read_text()),
               'realWorkerSmoke': json.loads((root / 'real-worker-smoke.json').read_text()),
@@ -200,7 +217,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: hepta-browser-servo-worker-evidence-${{ github.sha }}
+          name: hepta-browser-servo-worker-evidence-${{ env.SOURCE_SHA }}
           path: worker-evidence
           if-no-files-found: error
           retention-days: 7
@@ -210,6 +227,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
           git diff --check
           git diff --exit-code
           test -z "$(git status --porcelain --untracked-files=no)"

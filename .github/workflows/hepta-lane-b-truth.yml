@@ -3,29 +3,39 @@ name: Hepta Lane B source closure
 on:
   pull_request:
     paths:
+      - "apps/hepta-browser/**"
+      - "third_party/servo-patches/**"
+      - "codex-rs/hepta-agentd/**"
       - "codex-rs/hepta-memory/**"
       - "codex-rs/hepta-retrieval/**"
       - "docs/memory/**"
+      - "docs/modules/browser.servo/**"
       - "docs/modules/**/IMPLEMENTATION_MAP.json"
       - "docs/readiness/LANE_B_RUNTIME_COMPOSITION.md"
       - "qualification/**"
       - "scripts/hepta-lane-b-*.py"
       - "scripts/test_hepta_lane_b_*.py"
       - ".github/workflows/hepta-lane-b-truth.yml"
+      - ".github/workflows/hepta-browser-agentd-composition.yml"
       - ".github/actions/hepta-synthetic-merge/action.yml"
   push:
     branches:
       - main
     paths:
+      - "apps/hepta-browser/**"
+      - "third_party/servo-patches/**"
+      - "codex-rs/hepta-agentd/**"
       - "codex-rs/hepta-memory/**"
       - "codex-rs/hepta-retrieval/**"
       - "docs/memory/**"
+      - "docs/modules/browser.servo/**"
       - "docs/modules/**/IMPLEMENTATION_MAP.json"
       - "docs/readiness/LANE_B_RUNTIME_COMPOSITION.md"
       - "qualification/**"
       - "scripts/hepta-lane-b-*.py"
       - "scripts/test_hepta_lane_b_*.py"
       - ".github/workflows/hepta-lane-b-truth.yml"
+      - ".github/workflows/hepta-browser-agentd-composition.yml"
       - ".github/actions/hepta-synthetic-merge/action.yml"
   workflow_dispatch:
 
@@ -67,7 +77,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          node --test apps/hepta-browser/test/runtime.test.js
+          node --test apps/hepta-browser/test/*.test.js
           node --test apps/hepta-control-ui/test/runtime-client.test.js
           node --test apps/hepta-native/test/shell-runtime.test.js
 
@@ -120,7 +130,7 @@ jobs:
           author-email: hepta-lane-b-ci@users.noreply.github.com
           message: Synthetic Lane B merge
 
-      - name: Verify synthetic merge truth and tests
+      - name: Verify synthetic merge truth and Browser/Agentd boundaries
         env:
           EXPECTED_SHA: ${{ steps.merge.outputs.sha }}
           HEPTA_SYNTHETIC_MERGE: "1"
@@ -130,7 +140,8 @@ jobs:
           test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
           python3 scripts/hepta-lane-b-path-guard.py verify
           python3 scripts/hepta-lane-b-truth.py verify
-          cargo test -p codex-hepta-matrixd --bin hepta-matrix-send-observer
-          cd ..
+          node --test apps/hepta-browser/test/*.test.js
+          (cd codex-rs && cargo test -p codex-hepta-agentd --lib browser_servo)
+          (cd codex-rs && cargo test -p codex-hepta-matrixd --bin hepta-matrix-send-observer)
           git diff --check
           test -z "$(git status --porcelain --untracked-files=no)"

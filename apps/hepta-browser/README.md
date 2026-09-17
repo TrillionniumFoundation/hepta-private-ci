@@ -1,40 +1,63 @@
 # Hepta browser
 
-This root contains the repository-owned `browser.servo` boundary. It now has two deliberately separated layers:
+This root contains the repository-owned `browser.servo` boundary. The current candidate contains the authority-free proposal layer, the durable effect owner, a current-pin Servo worker source, the private Browser/Servo protocol and the private Agentd/Browser final-use handoff. None of those source facts are by themselves deployment, operator-acceptance or release evidence.
 
-1. authority-free browser presentation/proposal helpers in `src/browser.js`;
-2. a stateful effect owner in `src/runtime.js` / `src/runtime-host.js`, with typed actions, final-use authority fencing, durable operation recovery and an optional isolated subprocess driver.
+## Source surfaces
 
-The code in this package does **not** by itself prove that a Servo artifact exists or has passed deployment qualification. `third_party/servo-patches/MANIFEST.json` remains the canonical upstream source pin; a worker executable must additionally be artifact-digest bound before `SubprocessBrowserDriver` will launch it.
+- `src/browser.js` — authority-free navigation and page-projection helpers.
+- `src/action.js` — closed bounded typed browser effects.
+- `src/bridge.js` — provenance-preserving proposal -> effect bridge.
+- `src/runtime.js` / `src/runtime-host.js` — serialized profile owner, live final-use fence, durable no-redispatch recovery and semantic page observations.
+- `src/runtime-boundary.js` — bounded per-profile serialization queue and deadlines.
+- `src/journal.js` — strict private durable operation journal with compaction and clean-generation retirement.
+- `src/worker-protocol.js` — canonical bounded private Browser/Servo frames.
+- `src/worker-driver.js` — exact-artifact subprocess driver, principal-bound fresh profile roots, response-request binding and Linux Bubblewrap source contract.
+- `src/agentd-protocol.js`, `src/agentd-service.js`, `src/agentd-service-main.js` — private Agentd parent handoff.
+- `servo-worker/` — Hepta-owned current-pin Servo worker source with one Servo / one WebView and fixed worker-owned semantic/action scripts.
 
-## Proposal to effect path
+The canonical upstream pin remains `third_party/servo-patches/MANIFEST.json`. A source tree is not a qualified worker binary; the exact-SHA reproducible build/SBOM and target-host gates remain separate.
 
-`buildNavigationIntent()` remains authority-free. `src/bridge.js` converts an admitted `BrowserNavigationIntentV1` plus a matching `BrowserSessionV1` / `PageObservationV1` into the exact typed `navigate` payload used at the effect boundary. The payload digest binds the normalized URL, policy digest and expected revision. The bridge never mints authority; an effect grant and final-use authority check remain mandatory.
+## Proposal, provenance and final-use authority
 
-Typed runtime actions are closed-world and bounded. Current action kinds are `navigate`, `click`, `type`, `credential`, `upload`, `focus`, `scroll`, `wait` and `download`. Credential and upload actions carry only `credentialRef` / `fileRef` plus bounded metadata; raw secret bytes and ambient filesystem paths are rejected as unknown fields.
+`buildNavigationIntent()` is authority-free. `src/bridge.js` preserves the proposal `navigationId` as the effect operation identity and includes the proposal `policyDigest` and `expectedRevision` in the typed `navigate` payload. The final payload digest and request digest therefore bind the exact proposal provenance rather than only the URL.
 
-## Effect correctness
+The Browser service does not accept a reusable serialized `VerifiedUseToken`. Agentd receives an exact Browser `authority_challenge`, enters real `FinalUseAuthority::with_verified_use`, sends `authority_enter`, and keeps the live revocation fence through Browser journal fsync and the successful local worker-pipe write. Browser then emits `dispatch_boundary`; remote page/business completion is reconciled separately.
 
-`BrowserProfileHost` serializes profile mutations and reserves an operation identity before dispatch. Final-use authority is expressed as `authority.withVerifiedUse(request, callback)`: durable intent fsync and local worker dispatch execute inside that fence. A concurrent retry therefore cannot race a revocation or dispatch the same operation twice.
+## Secret and durability boundary
 
-After a dispatch may have crossed the worker boundary, exceptions and timeouts become `indeterminate`. They never delete the operation identity and never authorize redispatch. Reconciliation observes the original identity and is intentionally allowed after the original profile/effect deadline has expired; expiry prevents a new effect, not recovery of an old one.
+Typed actions are closed-world: `navigate`, `click`, `type`, `credential`, `upload`, `focus`, `scroll`, `wait`, `download`. Credential/upload actions carry references rather than raw secret bytes or ambient host paths. `type.text` exists only in the live action payload; the durable operation journal does **not** store `typedAction` or raw text. It stores the final payload digest plus immutable effect semantics.
 
-`FileBrowserOperationJournal` is append-only, checksum-bound, size-bounded, fsynced and mode-0600 on Unix. A process restart can use `reconcilePersistedOperation()` without issuing another effect. Terminal operations are bounded in memory while durable tombstones remain available for replay.
+The file journal validates every hydrated field, rejects unknown fields, checks canonical checksum envelopes, fsyncs dispatch intent before the effect boundary, compacts atomically before the file ceiling and retires a fully terminal profile generation after clean close.
 
-## Worker boundary
+Each worker generation receives a fresh random private profile directory and a mode-0600 `hepta.browser.profile-owner.v1` manifest binding profile ID, principal ID, generation, Browser manifest digest and profile grant digest. Stale profile bytes are not silently reopened for another principal.
 
-`src/worker-protocol.js` implements the private protocol: four-byte big-endian length prefix, at most 1 MiB canonical JSON, payload digest, session ID, generation, monotonic sequence and request identity. Unknown/non-canonical frames fail closed.
+## Semantic observe -> reason -> act loop
 
-`SubprocessBrowserDriver` launches only an exact SHA-256-bound worker artifact through a launcher that declares and enforces the required isolation posture. The supplied Linux launcher uses Bubblewrap with `--unshare-all`, no `--share-net`, a cleared environment, hidden ambient home/run/tmp state, a private profile bind, an inherited pipe control channel and parent-death cleanup. This is a concrete Linux isolation path, but it is not evidence that the pinned Servo worker artifact has been built or independently qualified.
+The current-pin worker's `observe` path emits bounded `hepta.browser.semantic-observation.v1` data rather than only URL/digests. It includes title, bounded visible text, HTTP(S) links, forms, page-local selectors for actionable controls and viewport metadata. Password controls and control values are excluded. The semantic value is canonical-digest-bound by the worker and rechecked by `BrowserProfileHost` against the caller's observation budget.
+
+Every admitted semantic observation advances page generation. An action prepared from an earlier observation therefore fails the host's stale-generation check even when page script changed the DOM without a navigation.
+
+## Worker and sandbox boundary
+
+The private worker protocol uses a four-byte length prefix plus <=1 MiB canonical JSON. Frames bind protocol version, session, generation, monotonic sequence, request identity and payload digest. Responses must additionally echo the original request kind and request payload digest; mismatches terminate/fail the private channel.
+
+Worker stderr is always drained but is not copied into receipts or journals, avoiding both pipe deadlock and accidental persistence of page/worker secrets.
+
+`LinuxBubblewrapLauncher` describes a source launch contract: empty tmpfs root, selected read-only runtime libraries/data, cleared environment, hidden ambient homes/service roots, no network sharing, one private writable profile and one exact worker. `scripts/linux-sandbox-probe.js` executes that same launcher to test host-secret invisibility, denied external IPv4 egress, absence of general shell/Python binaries and private-profile durability. Only execution on an exact host proves enforcement.
+
+## Capacity and backpressure
+
+Profile mutations use a bounded serialization queue (64 queued operations per key by default) and fail with `BrowserBackpressureError` on overload. Separate ceilings cover origins, grants, active operations, terminal in-memory replay cache, action fields, semantic observations, frames, journal size and call deadlines.
 
 ## Verification
 
-Run from the repository root:
+From the repository root:
 
 ```sh
 node --test apps/hepta-browser/test/*.test.js
+node --check apps/hepta-browser/src/*.js
 ```
 
-The focused suite covers canonical URL/proposal parsing, typed actions, proposal-to-effect bridging, duplicate-dispatch exclusion, post-dispatch failures, deadline-expired reconciliation, final-use fencing, durable recovery, journal tamper rejection, bounded retention, private framing, artifact binding and the Linux sandbox command posture.
+Cross-owner Agentd qualification additionally runs the real `FinalUseAuthority` Browser handoff tests and compiles/lints the named `hepta-agentd-browser` caller. The current-pin worker gate runs `cargo check --locked`, the full Browser tests, the real Bubblewrap probe, two release builds, byte equality, dynamic-library closure, real worker smoke, deterministic SPDX SBOM and a checksum-bound build receipt.
 
-For the module completion boundary and remaining Servo artifact gates, see `docs/modules/browser.servo/TECHNICAL.md`, `docs/modules/browser.servo/SERVO_WORKER.md` and `qualification/module-execution-dossiers/detail/browser.servo.md`.
+For the exact completion boundary see `docs/modules/browser.servo/TECHNICAL.md`, `docs/modules/browser.servo/SERVO_WORKER.md`, `docs/modules/browser.servo/IMPLEMENTATION_MAP.json` and `qualification/module-execution-dossiers/detail/browser.servo.md`.
