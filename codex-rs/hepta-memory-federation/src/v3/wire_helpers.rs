@@ -64,6 +64,7 @@ struct RemoteFederatedEnvelopeWireV3 {
 }
 
 impl RemoteFederatedEnvelopeWireV3 {
+    #[cfg(test)]
     fn from_domain(value: &RemoteFederatedEnvelopeV3) -> Self {
         Self {
             schema_version: 3,
@@ -137,6 +138,7 @@ struct FederatedEvidenceItemWireV3 {
 }
 
 impl FederatedEvidenceItemWireV3 {
+    #[cfg(test)]
     fn from_domain(value: &FederatedEvidenceItemV2) -> Self {
         Self {
             source_owner_id: value.source_owner_id.as_str().to_owned(),
