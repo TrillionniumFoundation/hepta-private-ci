@@ -46,7 +46,8 @@ pub fn bind_solver_iteration_receipt_v1(
     require_digest(context.objective_digest, "objective")?;
     require_digest(context.event_digest, "event")?;
     require_digest(context.coefficient_digest, "coefficient")?;
-    require_digest(receipt.state_digest, "state")?;
+    receipt.validate_protocol_invariants()?;
+    require_digest(receipt.state_digest(), "state")?;
 
     let receipt_digest = digest_receipt(context, receipt);
     Ok(NduIterationReceiptV1 {
@@ -56,12 +57,12 @@ pub fn bind_solver_iteration_receipt_v1(
         generation: context.generation,
         event_digest: context.event_digest,
         coefficient_digest: context.coefficient_digest,
-        iteration: receipt.iteration,
-        predecessor_revision: receipt.predecessor_revision,
-        next_revision: receipt.next_revision,
-        residual_raw: receipt.residual_raw,
-        projection_count: receipt.projection_count,
-        state_digest: receipt.state_digest,
+        iteration: receipt.iteration(),
+        predecessor_revision: receipt.predecessor_revision(),
+        next_revision: receipt.next_revision(),
+        residual_raw: receipt.residual_raw(),
+        projection_count: receipt.projection_count(),
+        state_digest: receipt.state_digest(),
         receipt_digest,
         authority: AuthorityPosture::DENY_ALL,
     })
@@ -86,12 +87,12 @@ fn digest_receipt(
     bytes.extend_from_slice(&context.generation.get().to_be_bytes());
     bytes.extend_from_slice(context.event_digest.as_array());
     bytes.extend_from_slice(context.coefficient_digest.as_array());
-    bytes.extend_from_slice(&receipt.iteration.to_be_bytes());
-    bytes.extend_from_slice(&receipt.predecessor_revision.get().to_be_bytes());
-    bytes.extend_from_slice(&receipt.next_revision.get().to_be_bytes());
-    bytes.extend_from_slice(&receipt.residual_raw.to_be_bytes());
-    bytes.extend_from_slice(&receipt.projection_count.to_be_bytes());
-    bytes.extend_from_slice(receipt.state_digest.as_array());
+    bytes.extend_from_slice(&receipt.iteration().to_be_bytes());
+    bytes.extend_from_slice(&receipt.predecessor_revision().get().to_be_bytes());
+    bytes.extend_from_slice(&receipt.next_revision().get().to_be_bytes());
+    bytes.extend_from_slice(&receipt.residual_raw().to_be_bytes());
+    bytes.extend_from_slice(&receipt.projection_count().to_be_bytes());
+    bytes.extend_from_slice(receipt.state_digest().as_array());
     Digest32::of_bytes(&bytes)
 }
 
