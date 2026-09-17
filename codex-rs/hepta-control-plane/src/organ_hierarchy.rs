@@ -30,8 +30,9 @@ pub struct OrganSystemV1 {
     pub organs: Vec<StableId>,
 }
 
-/// A selected driver instance for one organ; implementations may be shared,
-/// but instance identities are unique within this process-local host.
+/// A selected driver implementation for one organ instance. Multiple organ
+/// instances may share a reviewed stateless implementation; organ identities
+/// remain unique within the process-local host.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct OrganDriverBindingV1 {
     pub organ: StableId,
@@ -102,7 +103,7 @@ pub enum CnsHierarchyError {
 }
 
 impl fmt::Display for CnsHierarchyError {
-    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
+    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> std::fmt::Result {
         write!(formatter, "{self:?}")
     }
 }
@@ -162,11 +163,9 @@ impl CnsHierarchyV1 {
             return Err(E::Membership);
         }
         let mut bindings = BTreeMap::new();
-        let mut driver_ids = BTreeSet::new();
         for binding in &self.drivers {
             if binding.implementation_digest.is_zero()
                 || !memberships.contains_key(&binding.organ)
-                || !driver_ids.insert(&binding.driver)
                 || bindings.insert(binding.organ.clone(), binding).is_some()
             {
                 return Err(E::DriverBinding);
