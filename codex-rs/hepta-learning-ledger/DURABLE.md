@@ -64,24 +64,25 @@ encoded event, 128 candidates and 128 bytes per stable identity. Quota exhaustio
 stops rather than dropping history. Replay and indexes are bounded by these caps;
 equal retry lookup is linear in the bounded record count. The synced path has no
 hard real-time or target-host latency claim. V2 rotation and the long-horizon
-index adapter below preserve the same causal semantics; they do not add physical
+profiles below preserve the same causal semantics; they do not add physical
 erasure, arbitrary owner migration, independent witness storage or production
 enrollment.
 
 ## Verification and rollback
 
-The existing eight core tests remain unchanged. Sixteen durable-file tests cover
-actual file recovery, all four event types, revocation descendants,
-acknowledged-history loss at final-frame cuts, canonical retry after later events,
-stale CAS, corruption, malformed lengths and variants, quota, writer fencing,
-failed writes, unacknowledged complete frames, and an independent byte-level
-golden vector. The one-event golden file is 362 bytes with SHA256
+The existing core and V1 durable-file tests cover actual file recovery, all four
+event types, revocation descendants, acknowledged-history loss at final-frame
+cuts, canonical retry after later events, stale CAS, corruption, malformed
+lengths and variants, quota, writer fencing, failed writes, unacknowledged
+complete frames, and an independent byte-level golden vector. The one-event
+golden file is 362 bytes with SHA256
 `eba8162e7d3f4e8eb26babe2552731774ee9c6cd04facf81a3bb2a004eefbfcf`.
 Native filesystem and physical power-loss qualification are not implied by a
 Linux test result. The dedicated read-only CI checks exact source and actual-base
 synthetic merge independently. No parent work-package or capability status is
-advanced merely by creating this code. Rollback leaves the new file inert; never
-read an older snapshot as if it included later revocations or confirmed results.
+advanced merely by creating this code. Rollback leaves a newer-format file inert;
+never read an older snapshot as if it included later revocations or confirmed
+results.
 
 ## Normal owner-drop lock lifetime
 
@@ -101,7 +102,7 @@ fallback. Existing commit synchronization and poison/recovery behavior remain
 unchanged. Process death still requires OS handle closure and does not run Drop;
 this is not a physical power-loss or hostile-writer guarantee.
 
-## Segmented V2 persistence behind the existing consumer port
+## Segmented V2 compatibility profile
 
 `DurableLearningJournal` is sealed to the actual `DurableLedger` and
 `SegmentedLedger` implementations. The existing
@@ -172,43 +173,99 @@ preserve all acknowledged history, not substitute an older data snapshot.
 Per-segment bounds remain 1..8192 records and 4096 bytes..8 MiB. The V2 type no
 longer imposes the former fixed 1024-segment ceiling; segment numbering is checked
 for integer overflow and host storage/witness policy remains authoritative. The
-live writer retains one `LedgerArchiveRange` descriptor per sealed segment and,
-in the plain segmented profile, compact causal indexes for logical history.
-Consequently the plain V2/state-checkpoint profiles must not be described as
-history-independent hot-memory storage. They solve payload rotation, archive
-paging and bounded-tail recovery, not every long-horizon metadata-growth problem.
+compatibility writer retains one `LedgerArchiveRange` descriptor per sealed
+segment and compact causal indexes for logical history. Consequently the plain
+V2/state-checkpoint profiles must not be described as history-independent
+hot-memory storage. They solve payload rotation, archive paging and bounded-tail
+recovery, not every long-horizon metadata-growth problem.
 
-## Long-horizon persistent semantic index
+## Persistent semantic index primitive
 
-`PersistentHistoricalIndexV1` is the explicit path for semantic history that must
-remain queryable without reconstructing the complete index in RAM. Immutable
-record, sequence, decision, outcome, credit and revocation keys are stored in a
-host-selected sidecar root and addressed directly by digest. `open` starts with
-an empty cache; lookups hydrate only exact keys. The cache limit is explicit and
-bounded to 1..4096 entries. Existing keys are immutable: a different value under
-the same logical key fails closed rather than becoming last-write-wins.
+`PersistentHistoricalIndexV1` stores immutable record, sequence, decision,
+outcome, credit and revocation keys in a host-selected sidecar root addressed
+directly by digest. `open` starts with an empty cache; lookups hydrate only exact
+keys. The cache limit is explicit and bounded to 1..4096 entries. Existing keys
+are immutable: a different value under the same logical key fails closed rather
+than becoming last-write-wins.
 
 `PersistentIndexedLearningLedgerV1` composes that index with the same
 `LearningLedger` semantic validator. Before each event it hydrates only the
-historical rows needed by that event, persists newly committed semantic rows,
-then evicts the transient semantic maps. Full event payloads remain resident
-until the host supplies the exact authenticated archive head to
-`confirm_payload_archive_and_compact`; compaction is never inferred merely from
-age or a counter. A restart receives the independently retained archive anchor,
-opens with zero historical cache entries, supports exact historical idempotent
-replay, and continues the global sequence without loading total history.
+historical rows needed by that event, then evicts transient semantic maps. It now
+also exposes an internal prepare/commit seam for a durable payload owner:
+semantic validation occurs first, payload durability is established by that
+owner, and only then are immutable semantic rows published. If publication is
+interrupted after payload fsync, `reconcile_durable_record` revalidates the exact
+durable frame and idempotently fills missing rows. A partial multi-key sidecar is
+therefore a recovery condition, not a new source of truth.
 
-This is deliberately a separate storage profile rather than a claim that every
-`SegmentedLedger` caller has already migrated to it. Long-lived hosts that require
-hot semantic memory and startup work independent of total history must compose
-the persistent-index profile with their payload archive/witness owner; using the
-plain state-checkpoint profile does not satisfy that stronger bound. The
-integration regression grows 512 decisions, archives every 32 records, enforces
-an eight-entry historical cache, reopens from the exact frontier with an empty
-cache, replays the first historical identity idempotently, and continues at the
-next global sequence. Those numbers are regression bounds, not performance SLOs.
+The primitive remains useful independently, but it is no longer the endpoint for
+the long-lived writer. The canonical bounded-hot composition is below.
 
-The normal segmented-owner inventory also covers cross-segment
+## Long-horizon bounded-hot segmented profile
+
+`LongHorizonSegmentedLedgerV1` composes the existing `HEPTLS02` payload format
+with `PersistentIndexedLearningLedgerV1`. The process keeps one bounded active
+segment tail and an explicitly bounded exact-key semantic cache. It does not keep
+a process-lifetime vector of every archive range. When a segment is sealed,
+immutable `record_id -> segment` entries and per-segment range descriptors are
+written into a disk-backed archive catalog; explicit historical reads page only
+the selected host-opened sealed segment.
+
+The write ordering is fixed:
+
+1. prepare and fully validate the event against the required exact-key semantic
+   history without publishing new sidecar rows;
+2. encode, append and `sync_all` the exact canonical payload frame;
+3. apply the prepared semantic event and publish its immutable sidecar rows.
+
+A payload frame can therefore exist ahead of its semantic sidecar during a crash,
+but semantic history cannot authorize a payload frame that was never first
+synced by this writer. The handle is poisoned on uncertain I/O. Recovery receives
+an independently retained `LongHorizonLedgerCheckpointV1`, validates the active
+segment against its archived predecessor, scans only that bounded segment, and
+reconciles every complete frame into the persistent semantic index. It truncates
+only an incomplete final frame/footer. An acknowledged active-tail rollback is an
+error; it is never silently reconstructed from sidecar state.
+
+Rotation seals and syncs the current segment, persists its immutable archive
+catalog entries, initializes and syncs the successor, then releases the sealed
+payload tail from process memory. Missing or conflicting catalog entries fail
+closed. The host still owns segment naming, containing-directory durability,
+archive retention, checkpoint authentication and independent checkpoint storage.
+No local sidecar file is promoted to an independent witness merely because it is
+persistent.
+
+`LongHorizonLedgerMetricsV1` exposes the active segment bytes, retained payload
+record count, semantic cache occupancy/limit, and configured segment record/byte
+limits. These are structural resource bounds: total historical payload count can
+grow while the hot payload tail remains at most one configured segment and the
+semantic cache remains at most its explicit cache limit. Startup scans only the
+active segment supplied by the authenticated checkpoint; an append touches one
+bounded event frame plus a constant event-specific set of exact semantic keys.
+These are executable storage bounds, not wall-clock performance SLOs.
+
+The long-horizon regressions exercise the actual composition rather than only its
+pieces. One test writes 64 decisions across eight sealed archive segments, keeps
+a four-entry semantic cache, adds a three-record active tail, reopens from the
+exact checkpoint, confirms the same three-record hot tail, replays the first
+historical identity idempotently, reads that archived record by direct catalog
+lookup, and continues the global sequence. A second test crashes after the
+payload frame is synced but before sidecar commit and proves bounded-tail recovery
+reconciles it. A third truncates an independently acknowledged active tail and
+requires `AcknowledgedHistoryMissing`. A separate partial-index regression writes
+only the first immutable semantic row, reconciles the durable frame, then appends
+a dependent outcome; that dependent append proves the missing event-specific row
+was actually repaired.
+
+The compatibility `SegmentedLedger` remains supported for existing consumers and
+full-history/state-checkpoint workflows. Long-lived hosts that require hot memory
+and normal restart work to stay independent of total logical history should use
+`LongHorizonSegmentedLedgerV1` instead of representing the compatibility profile
+as if it had the stronger bound.
+
+## Verification entrypoint
+
+The segmented-owner inventory also covers cross-segment
 outcomes/revocations/retries, shared historical reads, reordered or corrupt
 series, lost seal/empty successor rejection, partial-tail repair and actual
 child-process exit after seal or successor initialization. The existing
