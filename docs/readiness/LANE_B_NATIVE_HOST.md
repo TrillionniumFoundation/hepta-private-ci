@@ -6,7 +6,7 @@ This page describes executable behavior in the source, including gaps that requi
 
 | Function | Runtime owner | New component disposition |
 | --- | --- | --- |
-| Agent admission and private memory context | `hepta-agentd` | `CognitiveContext` uses the attached canonical SQLite `CognitiveStore` |
+| Agent admission and private memory context | `hepta-agentd` | `CognitiveContext` uses the attached canonical SQLite `CognitiveStore` plus the read-only `memory.retrieval` product admission API |
 | Hosted model execution | `hepta-infer-worker --profile native-app-server` | Calls the owning Agent's existing App Server provider |
 | Local model driver contract | Host still required | `codex_hepta_infer_worker_host::model_worker` exposes the manifest/grant state machine |
 | Inference reservation and settlement | The native worker calls `DurableInferenceControl` | One journal and lock own local slot admission, dispatch identity and real observed settlement; economic quota remains external |
@@ -20,12 +20,21 @@ The standalone `hepta-taskflow-runtime`, `hepta-fleet-leased`, `hepta-infer-cont
 
 `AgentdMethod::CognitiveContext { query, limit }` and `AgentdClient::cognitive_context` use the normal owner/generation-fenced local protocol. The host selects its own Agent identity and private scope; callers cannot supply another scope or a success receipt.
 
-1. Obtain a read transaction cut through `CognitiveStore::lane_c_snapshot`.
-2. Execute the new bounded `ReadRequestV2` port on that cut.
-3. Rank with the existing SQLite retrieval provider and accept only exact record ID, revision and content digest matches admitted by the cut.
-4. Return the original verified memory text, then revalidate the owner cut and runtime generation before response publication.
+The current read-only vertical follows one explicit ranking/admission order:
 
-The query is 1–2048 bytes and the requested result limit is 1–4. The Lane C read admits at most 1024 records and 1 MiB of canonical encoding. Intersecting that bounded record prefix with search candidates can omit relevant records outside the prefix; `omitted_records` reports the read truncation. The complete context payload is bounded to 24 KiB of JSON encoding, including escaping and its envelope. Oversized items are omitted, not silently truncated. This is verified memory retrieval, not evidence of learned model weights or complete recall.
+1. Obtain a coherent read transaction cut through `CognitiveStore::lane_c_snapshot` and execute bounded `ReadRequestV2` on that cut.
+2. Ask the same canonical SQLite owner for `observe_memory_retrieval`. The owner executes its bounded Memory FTS, entity FTS, graph one-hop and recency generator before legacy top-four truncation and emits an observation digest plus revalidation bindings.
+3. Intersect that owner observation with the Lane-C cut by exact memory ID, revision and content digest. A search result outside the admitted cut is not a product candidate.
+4. Pass every admitted candidate plus the owner observation digest to `codex_hepta_memory_retrieval::retrieve_product_v1`. This deterministic admission binds the complete supplied set and enforces the product ceiling of at most 512 candidates and 16 results.
+5. Map selected results back to the owner's `MemoryRevalidationBinding` values and revalidate the complete selected set in one SQLite transaction. A correction, tombstone, citation change, validity change or KG generation drift committed after ranking cannot be attached as current.
+6. If an externally selected `PinnedCognitiveRanker` is configured, it may reorder only this already admitted and revalidated set. It cannot resurrect a candidate rejected by the owner cut or `memory.retrieval`.
+7. Apply the caller's 1–4 result limit and 24 KiB response budget, execute context planning, then revalidate the complete Lane-C owner cut and learned artifact view before response publication.
+
+This establishes the canonical precedence among the former ranking paths: the SQLite owner is the physical candidate generator and RRF source, `memory.retrieval` is the deterministic owner-bound product admission/binding layer, and the learned ranker is an optional subordinate reorderer. No second memory/index owner is introduced.
+
+The query is 1–2048 bytes and the requested result limit is 1–4. The Lane C read admits at most 1024 records and 1 MiB of canonical encoding. Intersecting that bounded record prefix with owner search candidates can omit relevant records outside the prefix; `omitted_records` reports the read truncation. The owner observation separately reports whether its per-channel bounds were exhausted or hit. `memory.retrieval` then has its own 512/16 product limits. These omission classes are distinct and none claims global recall completeness. The complete context payload is bounded to 24 KiB of JSON encoding, including escaping and its envelope. Oversized items are omitted, not silently truncated.
+
+The product admission path is verified memory retrieval, not evidence of a complete HNMF/embedding engine. The current real owner supplies four channels; vector, causal, procedural and explicit contradiction generators plus bounded engram settling remain separate target work. The qualification-only HNMF reference is not silently promoted into the product path.
 
 The worker uses this context as **untrusted additional context** on the actual App Server turn. The model attachment has an additional 8 KiB encoded byte limit and larger attachments reject before model dispatch. This new fragment can exceed 1,000 tokens; the repository's P0 context review checked its byte limit, untrusted classification, private scope, exact content/revision matching, cut revalidation and absence of history rewriting. No attachment is unbounded. It checks ready/fenced state and generation through Agentd, verifies the App Server's owning home, requests the exact configured model without fallback, creates a fresh ephemeral read-only thread, and declines approval requests. During execution it monitors owner readiness. It observes matching thread/turn output and usage events; only a matching terminal notification can establish completion.
 
@@ -66,8 +75,9 @@ The journal has a 64 MiB total byte budget, an 8 MiB encoded-line budget and at 
 - Keep Matrix send state in the existing durable outbox with its stable transaction identity. Do not introduce a second writer around the in-memory observer.
 - Supply the actual Servo/browser host, UI service integration, physical embodiment drivers and measured hardware qualification where absent.
 - Wire F pipeline stages only when each stage calls its actual owner. Hashes of fabricated port receipts would not constitute learning, calibration or dispatch.
+- For full memory C1/HNMF, provide the missing real vector/causal/procedural/contradiction generators and engram/synapse projection owner, compose `compile_cue`/`recall_v2` into the exact model-turn tuple, capture independent outcomes/propensities, and qualify the bounded settling engine rather than treating the reference implementation as deployed evidence.
 
-Source checks exercise real SQLite memory retrieval and withdrawal, event identity, terminality, output bounds and journal ownership/rejection. They do not establish a paid provider run, local GPU behavior, launchd deployment, homeserver behavior or long-term learning benefit. The six restored cutover/watchdog scripts pass shell syntax checks; their macOS physical scenarios require that target environment.
+Source checks exercise real SQLite memory retrieval and withdrawal, event identity, terminality, output bounds and journal ownership/rejection. The memory product path additionally has a controlled post-ranking withdrawal regression: a tombstone committed between deterministic ranking and owner batch revalidation makes the context request fail closed and cannot attach the stale text. These tests do not establish a paid provider run, local GPU behavior, launchd deployment, homeserver behavior or long-term learning benefit. The six restored cutover/watchdog scripts pass shell syntax checks; their macOS physical scenarios require that target environment.
 
 ## Validation result for this change
 
@@ -77,25 +87,14 @@ The subsequent native reservation/run/settlement increment passed all 31 inferen
 
 The owner-authority correction passed all 36 tests in the two inference libraries. New regressions cover readiness loss, fencing, generation/protocol errors, transport failure, health timeout, completion winning the health-tick race, late completion with retained usage, sticky journal replay and historical observations lacking authority fields. These exercise the production health/notification reducers and real journal files; they do not claim a paid-provider end-to-end run.
 
+The memory-retrieval composition in the current PR is newer than those historical validation paragraphs. Its exact-head Agentd, memory-retrieval and repository qualification results must be taken from the current PR workflows; this document does not predeclare them as passing.
+
 ## Explicit learned read ranking
 
-`AgentdConfig::with_cognitive_ranker` attaches an externally selected
-`PinnedCognitiveRanker` to the existing `cognitive_context` control read path.
-The host supplies owner/body generation, complete artifact and model pins,
-read-only files, and a `CurrentCognitiveRegistry` implementation. There is no
-implicit CLI selection, trusted file generator or evaluator self-authorization.
-The operator and artifact registry retain their existing owners.
+`AgentdConfig::with_cognitive_ranker` attaches an externally selected `PinnedCognitiveRanker` to the existing `cognitive_context` control read path. The host supplies owner/body generation, complete artifact and model pins, read-only files, and a `CurrentCognitiveRegistry` implementation. There is no implicit CLI selection, trusted file generator or evaluator self-authorization. The operator and artifact registry retain their existing owners.
 
-The consumer ranks only records admitted by the same SQLite snapshot. Query
-sensors are exact query hashes; actions bind memory ID, revision and content
-hash. It scores before the result limit, keeps original order for ties, and
-abstains for the entire ranking when any cell is unsupported. A missing or
-revoked current view closes the consumer instead of falling back to a stale
-model. Registry I/O runs on the blocking pool; the trusted host must bound it.
-The memory cut and artifact view are rechecked before returning context.
+The learned consumer sees only records that have already passed the SQLite owner observation, Lane-C exact-cut admission, `memory.retrieval` product admission and selected-binding owner revalidation described above. Query sensors are exact query hashes; actions bind memory ID, revision and content hash. It scores before the final caller 1–4 result limit, keeps original order for ties, and abstains for the entire learned ranking when any cell is unsupported. A missing or revoked current view closes the consumer instead of falling back to a stale model. Registry I/O runs on the blocking pool; the trusted host must bound it. The memory cut and artifact view are rechecked before returning context.
 
-The fitted-model/SQLite tests prove changed control-read ordering, not improved
-task utility. This control port is not the App Server's automatic memory tool
-path. Full C1 still needs the actual prompt/turn consumer, externally observed
-outcomes, the durable causal-learning path, independent selection, and a new
-process using the selected tuple. No production or longitudinal gate changes.
+The learned ranker is therefore a subordinate reorderer, not a second candidate generator or provenance authority. It cannot make an owner-rejected, product-omitted or stale memory reappear.
+
+The fitted-model/SQLite tests prove changed control-read ordering, not improved task utility. This control port is not the App Server's automatic memory tool path. Full C1 still needs the exact prompt/turn consumer for the selected memory tuple, externally observed outcomes, the durable causal-learning path, independent selection, and a new process using the selected tuple. No production or longitudinal gate changes.
