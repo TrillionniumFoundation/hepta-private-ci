@@ -105,7 +105,10 @@ fn app_server_runtime_options_with_writer(
     })?;
     Ok(AppServerRuntimeOptions {
         remote_control_startup_mode: RemoteControlStartupMode::DisabledEphemeral,
-        install_shutdown_signal_handler: false,
+        // Agentd owns the outer process lifecycle, but the embedded App Server
+        // must still observe SIGTERM so it can execute its native running-turn
+        // drain instead of being aborted beneath active turns.
+        install_shutdown_signal_handler: true,
         turn_queue_capacity: Some(turn_queue_capacity),
         required_sqlite_home: Some(AbsolutePathBuf::from_absolute_path(&identity.home_root)?),
         required_thread_store_mode: Some(ThreadStoreConfig::Local),
@@ -207,6 +210,7 @@ mod tests {
             Some(&codex_app_server::ThreadStoreConfig::Local),
             options.required_thread_store_mode.as_ref()
         );
+        assert!(options.install_shutdown_signal_handler);
         assert!(!options.hepta_local_turn_lifecycle_enabled);
         assert_eq!(
             Some(codex_hepta_memory::LocalDevelopmentLifecyclePolicy::qualification_only()),
