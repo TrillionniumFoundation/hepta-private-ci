@@ -2,6 +2,7 @@ use super::*;
 use ed25519_dalek::Signer;
 use ed25519_dalek::SigningKey;
 use pretty_assertions::assert_eq;
+use std::io::Write;
 use std::os::unix::fs::PermissionsExt;
 
 fn fixture()
@@ -42,6 +43,16 @@ fn fixture()
         SignedFinalUseGrant { grant, signature },
         directory,
     ))
+}
+
+fn resign(mut signed: SignedFinalUseGrant, nonce: [u8; 32], grant_id: String) -> SignedFinalUseGrant {
+    signed.grant.nonce = nonce;
+    signed.grant.grant_id = grant_id;
+    signed.signature = SigningKey::from_bytes(&[47; 32])
+        .sign(&signed.grant.signing_bytes().unwrap())
+        .to_bytes()
+        .to_vec();
+    signed
 }
 
 #[test]
@@ -281,5 +292,65 @@ fn startup_trusted_head_can_advance_but_cannot_rollback_persisted_revocations() 
             .claim(&signed, &signed.grant.binding)
             .unwrap_err(),
         FinalUseError::Revoked
+    );
+}
+
+#[test]
+fn claim_journal_exceeds_legacy_16384_limit_without_snapshot_growth() {
+    let (authority, signed, directory) = fixture().unwrap();
+    drop(authority);
+
+    let claims_path = directory.path().join("authority.claims");
+    let mut claims = std::fs::OpenOptions::new()
+        .write(true)
+        .truncate(true)
+        .open(&claims_path)
+        .unwrap();
+    for index in 0_u64..16_385 {
+        let mut nonce = [0_u8; 32];
+        nonce[..8].copy_from_slice(&(index + 1).to_be_bytes());
+        claims.write_all(&9_u64.to_be_bytes()).unwrap();
+        claims.write_all(&nonce).unwrap();
+    }
+    claims.sync_all().unwrap();
+    drop(claims);
+
+    let authority = reopen(directory.path()).unwrap();
+    let state_size_before = std::fs::metadata(directory.path().join("authority.json"))
+        .unwrap()
+        .len();
+    let fresh = resign(signed, [250; 32], "after-legacy-cap".into());
+    let token = authority.claim(&fresh, &fresh.grant.binding).unwrap();
+    drop(token);
+    let state_size_after = std::fs::metadata(directory.path().join("authority.json"))
+        .unwrap()
+        .len();
+    assert_eq!(state_size_before, state_size_after);
+    assert_eq!(
+        std::fs::metadata(claims_path).unwrap().len(),
+        16_386_u64 * 40
+    );
+}
+
+#[test]
+fn replay_journal_survives_restart_without_rewriting_head_snapshot() {
+    let (authority, signed, directory) = fixture().unwrap();
+    let state_size = std::fs::metadata(directory.path().join("authority.json"))
+        .unwrap()
+        .len();
+    let claimed = resign(signed, [99; 32], "journal-replay".into());
+    let token = authority.claim(&claimed, &claimed.grant.binding).unwrap();
+    drop(token);
+    assert_eq!(
+        std::fs::metadata(directory.path().join("authority.json"))
+            .unwrap()
+            .len(),
+        state_size
+    );
+    drop(authority);
+    let reopened = reopen(directory.path()).unwrap();
+    assert_eq!(
+        reopened.claim(&claimed, &claimed.grant.binding).unwrap_err(),
+        FinalUseError::AlreadyClaimed
     );
 }
