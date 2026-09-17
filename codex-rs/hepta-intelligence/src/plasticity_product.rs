@@ -2,10 +2,10 @@
 //!
 //! This adapter closes the gap between the authority-free proposal crate and the
 //! existing signed learning-evidence/evaluation boundary. It authenticates a
-//! deterministic generator-complete candidate set, a current lineage/evidence
-//! witness, and an independent signed evaluation for every update candidate before
-//! writing one proposal record. It still cannot select, apply, activate, train,
-//! promote or release any candidate.
+//! deterministic generator-complete candidate set, a typed mutation grammar, a
+//! current lineage/evidence witness, and an independent signed evaluation for
+//! every update candidate before writing one proposal record. It still cannot
+//! select, apply, activate, train, promote or release any candidate.
 
 use std::collections::BTreeMap;
 use std::error::Error as StdError;
@@ -23,10 +23,12 @@ use codex_hepta_learning_ledger::{
 };
 use codex_hepta_plasticity::{
     DurableProposalAppendReceiptV1, DurableProposalRegistry, DurableProposalRegistryError,
-    DurableRegistryAnchorV1, GeneratedParameterCandidateSetV3, ParameterCandidateKindV2,
-    ParameterGeneratorErrorV3, ParameterGeneratorProfileV3, ParameterProposalRequestV2,
-    ParameterProposalV2, ProposalWindowV2, parameter_generator_signing_payload_v3, propose_v2,
-    verify_generated_parameter_candidates_v3,
+    DurableRegistryAnchorV1, GeneratedParameterCandidateSetV3, MutationGrammarErrorV1,
+    MutationGrammarManifestV1, ParameterCandidateKindV2, ParameterGeneratorErrorV3,
+    ParameterGeneratorProfileV3, ParameterProposalRequestV2, ParameterProposalV2,
+    ProposalWindowV2, parameter_generator_signing_payload_v3, propose_v2,
+    verify_generated_parameter_candidates_v3, verify_generator_profile_against_mutation_grammar_v1,
+    verify_mutation_grammar_manifest_v1,
 };
 use codex_hepta_types::{Digest32, Generation, StableId};
 
@@ -38,6 +40,7 @@ pub struct PlasticityAdmissionEvidenceV1 {
     pub artifact_registry_binding: Digest32,
     pub artifact_registry_head_digest: Digest32,
     pub qualification_evidence_head_digest: Digest32,
+    pub mutation_grammar_digest: Digest32,
     pub window: ProposalWindowV2,
     pub baseline_generation: Generation,
     pub candidate_generation: Generation,
@@ -59,6 +62,7 @@ pub struct CandidateEvaluationAdmissionV1 {
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct ParameterPlasticityProductRequestV1 {
     pub proposal_id: StableId,
+    pub mutation_grammar: MutationGrammarManifestV1,
     pub generator_profile: ParameterGeneratorProfileV3,
     pub generated: GeneratedParameterCandidateSetV3,
     pub generator_attestation: SignedLearningEvidenceV1,
@@ -82,6 +86,7 @@ pub struct ParameterPlasticityProductReceiptV1 {
 #[derive(Debug)]
 pub enum ParameterPlasticityProductErrorV1 {
     Binding(&'static str),
+    Grammar(MutationGrammarErrorV1),
     Generator(ParameterGeneratorErrorV3),
     GeneratorEvidence(SignedEvidenceError),
     AdmissionEvidence(SignedEvidenceError),
@@ -104,6 +109,11 @@ impl fmt::Display for ParameterPlasticityProductErrorV1 {
 }
 impl StdError for ParameterPlasticityProductErrorV1 {}
 
+impl From<MutationGrammarErrorV1> for ParameterPlasticityProductErrorV1 {
+    fn from(value: MutationGrammarErrorV1) -> Self {
+        Self::Grammar(value)
+    }
+}
 impl From<ParameterGeneratorErrorV3> for ParameterPlasticityProductErrorV1 {
     fn from(value: ParameterGeneratorErrorV3) -> Self {
         Self::Generator(value)
@@ -142,7 +152,7 @@ impl From<DurableProposalRegistryError> for AnchoredPlasticityWriterErrorV1 {
 ///
 /// Returning `true` means the anchor is durably committed in a rollback domain
 /// independent from the proposal registry file. A `false` result poisons the
-/// product writer and prevents any further append through that handle.
+/// product writer and prevents any further operation through that handle.
 pub trait PlasticityAnchorCommitterV1 {
     fn persist_anchor(
         &mut self,
@@ -152,6 +162,17 @@ pub trait PlasticityAnchorCommitterV1 {
     ) -> bool;
 }
 
+/// Explicit lifecycle for a product writer. `AppendPendingAnchor` is entered
+/// only after the proposal frame is durable and before its external rollback
+/// anchor is acknowledged. It is intentionally observable for diagnostics but
+/// no public read/append operation is allowed in that state.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum PlasticityWriterStateV1 {
+    Healthy,
+    AppendPendingAnchor,
+    Poisoned,
+}
+
 /// Product writer that cannot reopen acknowledged history without a host-retained
 /// external anchor. Raw `DurableProposalRegistry::open` remains available to the
 /// proposal crate for isolated/bootstrap use, but cannot enter this product path.
@@ -159,7 +180,7 @@ pub struct AnchoredPlasticityWriterV1 {
     registry: DurableProposalRegistry,
     registry_scope_digest: Digest32,
     writer_fence: u64,
-    poisoned: bool,
+    state: PlasticityWriterStateV1,
 }
 
 impl AnchoredPlasticityWriterV1 {
@@ -187,7 +208,7 @@ impl AnchoredPlasticityWriterV1 {
             )?,
             registry_scope_digest,
             writer_fence,
-            poisoned: false,
+            state: PlasticityWriterStateV1::Healthy,
         })
     }
 
@@ -209,30 +230,53 @@ impl AnchoredPlasticityWriterV1 {
             )?,
             registry_scope_digest,
             writer_fence,
-            poisoned: false,
+            state: PlasticityWriterStateV1::Healthy,
         })
+    }
+
+    #[must_use]
+    pub const fn state(&self) -> PlasticityWriterStateV1 {
+        self.state
     }
 
     pub fn current_anchor(
         &self,
     ) -> Result<Option<DurableRegistryAnchorV1>, DurableProposalRegistryError> {
-        if self.poisoned {
-            return Err(DurableProposalRegistryError::Poisoned);
-        }
+        self.require_healthy()?;
         self.registry.current_anchor()
     }
 
     pub fn record_count(&self) -> Result<usize, DurableProposalRegistryError> {
-        if self.poisoned {
-            return Err(DurableProposalRegistryError::Poisoned);
-        }
+        self.require_healthy()?;
         self.registry.record_count()
+    }
+
+    fn require_healthy(&self) -> Result<(), DurableProposalRegistryError> {
+        match self.state {
+            PlasticityWriterStateV1::Healthy => Ok(()),
+            PlasticityWriterStateV1::AppendPendingAnchor | PlasticityWriterStateV1::Poisoned => {
+                Err(DurableProposalRegistryError::Poisoned)
+            }
+        }
+    }
+
+    fn mark_pending_anchor(&mut self) {
+        self.state = PlasticityWriterStateV1::AppendPendingAnchor;
+    }
+
+    fn mark_anchor_committed(&mut self) {
+        debug_assert_eq!(self.state, PlasticityWriterStateV1::AppendPendingAnchor);
+        self.state = PlasticityWriterStateV1::Healthy;
+    }
+
+    fn poison(&mut self) {
+        self.state = PlasticityWriterStateV1::Poisoned;
     }
 }
 
 /// Canonical bytes attested by the trusted Observer evidence role. The verifier's
 /// own validity/revocation window provides freshness; the payload binds the exact
-/// artifact/evidence frontiers and all proposal lineage digests.
+/// artifact/evidence frontiers, typed mutation grammar and proposal lineage digests.
 pub fn plasticity_admission_signing_payload_v1(
     evidence: &PlasticityAdmissionEvidenceV1,
 ) -> Vec<u8> {
@@ -244,6 +288,7 @@ pub fn plasticity_admission_signing_payload_v1(
         evidence.artifact_registry_binding,
         evidence.artifact_registry_head_digest,
         evidence.qualification_evidence_head_digest,
+        evidence.mutation_grammar_digest,
     ] {
         bytes.extend_from_slice(digest.as_array());
     }
@@ -273,9 +318,12 @@ pub fn propose_authenticated_parameter_plasticity_v1(
 ) -> Result<ParameterPlasticityProductReceiptV1, ParameterPlasticityProductErrorV1> {
     use ParameterPlasticityProductErrorV1 as E;
 
-    if writer.poisoned {
-        return Err(E::Registry(DurableProposalRegistryError::Poisoned));
-    }
+    writer.require_healthy()?;
+    verify_mutation_grammar_manifest_v1(&request.mutation_grammar)?;
+    verify_generator_profile_against_mutation_grammar_v1(
+        &request.generator_profile,
+        &request.mutation_grammar,
+    )?;
     verify_generated_parameter_candidates_v3(
         request.generator_profile.clone(),
         &request.generated,
@@ -397,21 +445,45 @@ pub fn propose_authenticated_parameter_plasticity_v1(
         candidates: request.generated.candidates.clone(),
     })?;
 
-    let registry = writer
+    let registry = match writer
         .registry
-        .append_v2(request.expected_registry_predecessor, proposal.clone())?;
-    let committed_registry_anchor = writer
-        .registry
-        .current_anchor()?
-        .ok_or(E::Registry(DurableProposalRegistryError::Corrupt))?;
+        .append_v2(request.expected_registry_predecessor, proposal.clone())
+    {
+        Ok(receipt) => {
+            writer.mark_pending_anchor();
+            receipt
+        }
+        Err(error) => {
+            if matches!(
+                error,
+                DurableProposalRegistryError::Indeterminate
+                    | DurableProposalRegistryError::Poisoned
+            ) {
+                writer.poison();
+            }
+            return Err(E::Registry(error));
+        }
+    };
+    let committed_registry_anchor = match writer.registry.current_anchor() {
+        Ok(Some(anchor)) => anchor,
+        Ok(None) => {
+            writer.poison();
+            return Err(E::Registry(DurableProposalRegistryError::Corrupt));
+        }
+        Err(error) => {
+            writer.poison();
+            return Err(E::Registry(error));
+        }
+    };
     if !anchor_committer.persist_anchor(
         writer.registry_scope_digest,
         writer.writer_fence,
         committed_registry_anchor,
     ) {
-        writer.poisoned = true;
+        writer.poison();
         return Err(E::AnchorPersistenceFailed);
     }
+    writer.mark_anchor_committed();
 
     let generator_authentication_digest = attestation_digest(&request.generator_attestation);
     let admission_authentication_digest = attestation_digest(&request.admission_attestation);
@@ -420,6 +492,7 @@ pub fn propose_authenticated_parameter_plasticity_v1(
         proposal.proposal_digest,
         registry.frame_digest,
         committed_registry_anchor.frame_digest,
+        request.mutation_grammar.manifest_digest,
         request.generated.generator_digest,
         generator_authentication_digest,
         admission_authentication_digest,
@@ -452,6 +525,7 @@ fn validate_admission_binding(
             "qualification evidence head",
             evidence.qualification_evidence_head_digest,
         ),
+        ("mutation grammar", evidence.mutation_grammar_digest),
         ("dataset", evidence.dataset_digest),
         ("update rule", evidence.update_rule_digest),
         ("modulator", evidence.modulator_digest),
@@ -469,6 +543,9 @@ fn validate_admission_binding(
     if evidence.selected_artifact_digest != request.generated.selected_artifact_digest
         || evidence.window != request.generated.window
         || evidence.generator_digest != request.generated.generator_digest
+        || evidence.mutation_grammar_digest != request.mutation_grammar.manifest_digest
+        || request.mutation_grammar.selected_artifact_digest
+            != request.generated.selected_artifact_digest
         || request.generator_profile.selected_artifact_digest
             != request.generated.selected_artifact_digest
         || request.generator_profile.window != request.generated.window
@@ -492,6 +569,10 @@ fn push_id(bytes: &mut Vec<u8>, value: &StableId) {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use codex_hepta_plasticity::{
+        ParameterMutationRuleV1, ProtectedParameterClassV1, ProtectedParameterV1,
+        build_mutation_grammar_manifest_v1,
+    };
     use std::io::{Seek, SeekFrom, Write};
     use tempfile::tempfile;
 
@@ -513,9 +594,25 @@ mod tests {
     }
 
     #[test]
-    fn admission_payload_binds_current_frontiers_and_generator() {
+    fn admission_payload_binds_current_frontiers_generator_and_grammar() {
         let id = |value: &str| StableId::new(value).expect("id");
         let generation = |value| Generation::new(value).expect("generation");
+        let grammar = build_mutation_grammar_manifest_v1(
+            id("grammar:1"),
+            Digest32::of_bytes(b"artifact"),
+            1,
+            vec![ParameterMutationRuleV1 {
+                layer_id: id("layer:1"),
+                parameter_id: id("parameter:1"),
+                minimum_delta: codex_hepta_types::FixedQ32::from_raw(-10),
+                maximum_delta: codex_hepta_types::FixedQ32::from_raw(10),
+            }],
+            vec![ProtectedParameterV1 {
+                parameter_id: id("parameter:authority"),
+                class: ProtectedParameterClassV1::Authority,
+            }],
+        )
+        .expect("grammar");
         let evidence = PlasticityAdmissionEvidenceV1 {
             baseline_id: id("artifact:baseline"),
             objective_digest: Digest32::of_bytes(b"objective"),
@@ -523,6 +620,7 @@ mod tests {
             artifact_registry_binding: Digest32::of_bytes(b"binding"),
             artifact_registry_head_digest: Digest32::of_bytes(b"artifact-head"),
             qualification_evidence_head_digest: Digest32::of_bytes(b"evidence-head"),
+            mutation_grammar_digest: grammar.manifest_digest,
             window: ProposalWindowV2 {
                 window_id: id("window:1"),
                 window_digest: Digest32::of_bytes(b"window"),
@@ -538,7 +636,7 @@ mod tests {
         };
         let first = plasticity_admission_signing_payload_v1(&evidence);
         let mut changed = evidence.clone();
-        changed.artifact_registry_head_digest = Digest32::of_bytes(b"new-head");
+        changed.mutation_grammar_digest = Digest32::of_bytes(b"other-grammar");
         assert_ne!(first, plasticity_admission_signing_payload_v1(&changed));
     }
 }
