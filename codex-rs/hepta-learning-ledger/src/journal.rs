@@ -1,11 +1,15 @@
-//! The durable Decision append port used by existing learning consumers.
-//! Sealed to the two actual journals; a fixture cannot assert durability by
-//! implementing this port. Hosts still authorize files, observations and scope.
+//! The durable append port used by learning consumers.
+//! Raw journals remain sealed to the two actual persistence implementations;
+//! witness-gated consumers use `AcknowledgedLearningJournal` instead of this
+//! low-level maintenance surface. Hosts still authorize files, observations and
+//! scope.
 
 use crate::AppendReceipt;
 use crate::DurableLedger;
 use crate::DurableLedgerError;
+use crate::LedgerAnchor;
 use crate::LedgerEvent;
+use crate::LedgerSnapshot;
 use crate::SegmentedLedger;
 use codex_hepta_types::Digest32;
 
@@ -21,6 +25,10 @@ pub trait DurableLearningJournal: sealed::Journal {
         expected_predecessor: Digest32,
         event: LedgerEvent,
     ) -> Result<AppendReceipt, DurableLedgerError>;
+
+    fn anchor(&self) -> Result<LedgerAnchor, DurableLedgerError>;
+
+    fn snapshot(&self) -> Result<LedgerSnapshot, DurableLedgerError>;
 }
 
 impl DurableLearningJournal for DurableLedger {
@@ -31,6 +39,24 @@ impl DurableLearningJournal for DurableLedger {
     ) -> Result<AppendReceipt, DurableLedgerError> {
         DurableLedger::append(self, predecessor, event)
     }
+
+    fn anchor(&self) -> Result<LedgerAnchor, DurableLedgerError> {
+        let snapshot = DurableLedger::snapshot(self)?;
+        Ok(snapshot.records().last().map_or(
+            LedgerAnchor {
+                sequence: 0,
+                chain_digest: Digest32::ZERO,
+            },
+            |record| LedgerAnchor {
+                sequence: record.sequence.get(),
+                chain_digest: record.chain_digest,
+            },
+        ))
+    }
+
+    fn snapshot(&self) -> Result<LedgerSnapshot, DurableLedgerError> {
+        DurableLedger::snapshot(self)
+    }
 }
 
 impl DurableLearningJournal for SegmentedLedger {
@@ -40,5 +66,13 @@ impl DurableLearningJournal for SegmentedLedger {
         event: LedgerEvent,
     ) -> Result<AppendReceipt, DurableLedgerError> {
         SegmentedLedger::append(self, predecessor, event)
+    }
+
+    fn anchor(&self) -> Result<LedgerAnchor, DurableLedgerError> {
+        SegmentedLedger::anchor(self)
+    }
+
+    fn snapshot(&self) -> Result<LedgerSnapshot, DurableLedgerError> {
+        SegmentedLedger::snapshot(self)
     }
 }
