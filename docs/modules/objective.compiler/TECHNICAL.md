@@ -87,7 +87,7 @@ The general registered feasibility engine supports scalar intervals, bounded enu
 
 Configuration is immutable for one process generation. Changes affecting authority, schema, compatibility, objective semantics or resource policy create a new revision or generation. Hidden mutable singletons, unbounded queues and implicit store fallback are prohibited.
 
-## 5. Contracts, native outputs and compatibility
+## 5. Contracts, ports and compatibility
 
 Produced target contracts:
 
@@ -111,13 +111,13 @@ Therefore the native structs are **not yet the canonical `ObjectiveFunctionV1` /
 
 Compatibility is additive only where registered. Contract identifiers, meaning and authority interpretation cannot change in place. A future source grammar that makes enum-set or implication semantics executable must be versioned rather than silently changing V1 interpretation.
 
-## 6. Data authority, persistence and publication
+## 6. Data authority, persistence and migrations
 
 Owned authoritative or rebuildable domains: none. Read-only data dependencies: none.
 
 `objective.compiler` is stateless. The owning product caller is responsible for atomically publishing the canonical `ObjectiveFunctionV1`, `RunStartSnapshotV1` and associated admission/compile receipts after all source, intent, profile, constraint and objective bindings agree. That product caller and durable owner-store composition are not established by the current source candidate.
 
-A read-only vertical or qualification façade is useful integration evidence but is not a production writer. Durable identity reuse with different semantics is a caller/store conflict; the stateless compiler does not invent persistence or reconciliation authority.
+A read-only vertical or qualification façade is useful integration evidence but is not a production writer. Durable identity reuse with different semantics is a caller/store conflict; the stateless compiler does not invent persistence or reconciliation authority. No compiler-owned data migration is required; any durable schema migration belongs to the owner store and must preserve historical objective interpretation.
 
 ## 7. Runtime, concurrency and transaction model
 
@@ -125,13 +125,13 @@ The [current native implementation](../../../qualification/module-execution-doss
 
 [Shared concurrency and transaction requirements](../README.md#shared-concurrency-and-transactions) apply at the corresponding owner boundary.
 
-## 8. Failure semantics, abstention and retry
+## 8. Failure semantics, recovery and rollback
 
 `ObjectiveConflictReceipt` and `CompileDisposition::ExplicitAbstain` are non-error outcomes. The bounded source structure permits zero caller legal actions; compilation then injects intrinsic `abstain` and returns `ExplicitAbstain`. Downstream integrations must preserve that as a safe outcome rather than converting it into a generic system error or blind retry signal.
 
 `OBJ-E007` is a stable code family with variant-specific retry semantics. Feasibility-budget exhaustion and a source slightly ahead of local time may become admissible when transient state changes. Locale rejection, stale source, missing/before-observation/expired deadlines require new input or configuration. Rust callers use the variant-level `retryable()` policy rather than the code alone.
 
-Use the error/recovery path linked by the [current native implementation](../../../qualification/module-execution-dossiers/detail/objective.compiler.md#8-current-native-implementation). A source library or fixture cannot stand in for an unimplemented durable recovery or external reconciler.
+Use the error/recovery path linked by the [current native implementation](../../../qualification/module-execution-dossiers/detail/objective.compiler.md#8-current-native-implementation). A source library or fixture cannot stand in for an unimplemented durable recovery or external reconciler. Rollback never mutates a frozen objective; the owner caller must select a previously authorized compatible revision or compile a new authorized revision.
 
 ## 9. Security, privacy and threat controls
 
@@ -144,13 +144,13 @@ The posture is least authority, bounded input, typed contracts, digest binding a
 
 Negative tests cover denied capabilities, cross-owner writes, stale or revoked grants, replay with payload drift, unknown fields, oversize input, scope escape, untrusted instruction escalation and secret/provider leakage. Security review is mandatory for new effect boundaries, persistence, network, model invocation or authority semantics.
 
-## 10. Performance, capacity and bounds
+## 10. Performance, capacity and hot-path policy
 
 Admission-safe source ceilings are derived from the final native aggregate:
 
 - source hard constraints: `<=246`; six resource constraints and four risk/rollback/compensation/abstention constraints reserve the remaining native slots up to `256`;
 - `successPredicates + terminalConditions + evidenceRequirements <=128` in aggregate;
-- caller legal actions: `<=127` when intrinsic abstain is implicit; compiled actions `<=128`;
+- caller legal actions: `<=127` when intrinsic abstain is implicit, or `<=128` when the caller explicitly supplies intrinsic abstain; compiled actions remain `<=128`;
 - soft dimensions: `<=64`;
 - feasibility conflict extraction: `<=257` oracle calls.
 
@@ -226,7 +226,7 @@ Consumed readiness protocols:
 
 Ordinary authorized coding identifies the Git baseline, relevant contracts, owned paths, mandatory fixtures, deterministic fallback and rollback. This overlay does not change activation, acceptance, selection, promotion or release.
 
-## 17. Current source-candidate receipt boundary
+## 17. Source implementation receipt
 
 The source location for `objective.compiler` is materialized at:
 
