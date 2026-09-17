@@ -12,7 +12,9 @@ on:
       - codex-rs/hepta-intelligence-eval/**
       - codex-rs/hepta-shadow-qualification/**
       - docs/lane-e/**
+      - docs/modules/learning.ledger/**
       - qualification/lane-e/**
+      - qualification/module-execution-dossiers/detail/learning.ledger.md
       - scripts/hepta-lane-e-closure.py
       - .github/workflows/hepta-lane-e-gap-closure.yml
 
@@ -25,7 +27,7 @@ concurrency:
 
 env:
   SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
-  BASE_SHA: ${{ github.event.pull_request.base.sha }}
+  BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
 
 jobs:
   rust-closure:
@@ -154,6 +156,7 @@ jobs:
           SOURCE_COMMIT="$(git rev-parse HEAD)"
           test "${SOURCE_COMMIT}" = "${SOURCE_SHA}"
           test -n "${BASE_SHA}"
+          test "${BASE_SHA}" != "0000000000000000000000000000000000000000"
           git cat-file -e "${BASE_SHA}^{commit}"
           BASE_COMMIT="${BASE_SHA}"
           git checkout --detach "${BASE_COMMIT}"
