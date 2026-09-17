@@ -3,13 +3,16 @@
   "schemaVersion": 3,
   "sourceBase": {
     "commit": "7e8379b3954808d4138a7bd2f3773f75691291a3",
-    "tree": "ff9fa6baf95a35fd2f49816e0a80097688f2aeeb"
+    "tree": "ff9fa6baf95a35fd2f49816e0a80097688f2aeeb",
+    "semantics": "registry_generation_base_not_candidate_head"
   },
+  "sourceIdentityPolicy": "dynamic_exact_pr_head_and_ordered_parent_synthetic_merge_ci",
   "laneId": "LANE-E-LEARNING",
   "module": "learning.ledger",
   "owner": "learning-platform",
   "deputy": "cognitive-platform",
   "technicalGuide": "docs/modules/learning.ledger/TECHNICAL.md",
+  "productionGuide": "codex-rs/hepta-learning-ledger/PRODUCTION.md",
   "declaredRoots": [
     "codex-rs/hepta-learning-ledger"
   ],
@@ -18,8 +21,8 @@
   ],
   "sourceRootPresent": true,
   "productionImplementation": false,
-  "productCallerState": "not_composed",
-  "productionWriterState": "not_established",
+  "productCallerState": "composition_api_implemented_named_deployed_caller_pending",
+  "productionWriterState": "authenticated_writer_and_witness_mechanics_implemented_host_exclusivity_pending",
   "operations": [
     {
       "operation": "durableledger",
@@ -46,20 +49,51 @@
       "delegatedCallees": []
     }
   ],
+  "supplementalOperations": [
+    {
+      "operation": "authenticated_production_composition",
+      "nativeSymbol": "ProductionLearningLedger",
+      "sourcePath": "codex-rs/hepta-learning-ledger/src/production.rs",
+      "state": "source_implemented_deployment_binding_pending",
+      "authority": "none"
+    },
+    {
+      "operation": "independent_acknowledgement_witness_mechanics",
+      "nativeSymbol": "FileLearningWitnessStore",
+      "sourcePath": "codex-rs/hepta-learning-ledger/src/witness.rs",
+      "state": "source_implemented_administrative_independence_pending",
+      "authority": "none"
+    },
+    {
+      "operation": "ledger_derived_dataset_freeze",
+      "nativeSymbol": "ProductionLearningLedger::freeze_dataset",
+      "sourcePath": "codex-rs/hepta-learning-ledger/src/production.rs",
+      "state": "source_implemented_live_product_evidence_pending",
+      "authority": "none"
+    }
+  ],
   "repositoryControlledGaps": [
-    "Bind every operation to an authenticated consumer callsite and owner store.",
-    "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary."
+    "Run exact-head and deterministic synthetic-merge tests for the final candidate before changing source qualification."
   ],
   "externalEvidenceGates": [
+    "named deployed product caller and exclusive physical writer",
+    "current production signer and trust-root distribution",
+    "administratively independent witness placement",
     "independent semantic review",
-    "product execution and target-host qualification",
+    "product execution and target-host crash power-loss latency storage and throughput qualification",
+    "physical erasure model-unlearning and backup non-resurrection evidence where claimed",
     "operator acceptance, canary, promotion and release"
   ],
   "claimBoundary": {
     "nativeSourceMappingComplete": true,
+    "authenticatedCompositionSourceImplemented": true,
+    "witnessMechanicsSourceImplemented": true,
+    "ledgerDerivedFreezeSourceImplemented": true,
     "sourceRootPresent": true,
     "productionImplementation": false,
     "productExecutionProved": false,
+    "exclusivePhysicalWriterProved": false,
+    "independentWitnessPlacementProved": false,
     "independentAcceptance": false,
     "activation": false,
     "release": false
