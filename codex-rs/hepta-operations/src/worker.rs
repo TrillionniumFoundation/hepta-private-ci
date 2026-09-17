@@ -12,8 +12,6 @@ use crate::EffectAdapter;
 use crate::MAX_DURABLE_CLAIM_BATCH;
 use crate::MAX_DURABLE_LEASE_MS;
 use crate::OperationError;
-use crate::ReconciliationObservation;
-use crate::TerminalObserver;
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub struct DurableDispatcherConfig {
@@ -74,14 +72,8 @@ pub struct DispatchRunReport {
     pub stale_or_unavailable: u32,
 }
 
-#[derive(Clone, Copy, Debug, Default, Eq, PartialEq)]
-pub struct ReconciliationRunReport {
-    pub discovered: u32,
-    pub terminal: u32,
-    pub still_unknown: u32,
-    pub stale_or_unavailable: u32,
-}
-
+/// Host-driven bounded dispatcher. It has no hidden daemon/global singleton.
+/// The host decides cadence and separately schedules terminal reconciliation.
 pub struct DurableDispatcher<'a> {
     store: &'a DurableOperationStore,
     authority: &'a FinalUseAuthority,
@@ -186,50 +178,6 @@ impl<'a> DurableDispatcher<'a> {
                 | Err(OperationError::LeaseUnavailable) => {
                     report.pre_dispatch_deferred =
                         report.pre_dispatch_deferred.saturating_add(1);
-                }
-                Err(error) => return Err(error),
-            }
-        }
-        Ok(report)
-    }
-
-    /// Reconcile a bounded set of non-retryable operations for one destination.
-    /// This loop never calls the effect adapter and therefore cannot resend.
-    pub async fn reconcile_once<O: TerminalObserver>(
-        &self,
-        destination_id: &StableId,
-        observer_generation: Generation,
-        observer: &mut O,
-    ) -> Result<ReconciliationRunReport, OperationError> {
-        let operations = self
-            .store
-            .reconciliation_backlog(destination_id, self.config.batch_limit)
-            .await?;
-        let mut report = ReconciliationRunReport {
-            discovered: u32::try_from(operations.len()).unwrap_or(u32::MAX),
-            ..ReconciliationRunReport::default()
-        };
-        for operation in operations {
-            match self
-                .store
-                .reconcile_with(
-                    &operation.intent.scope_id,
-                    &operation.intent.operation_id,
-                    observer_generation,
-                    observer,
-                )
-                .await
-            {
-                Ok(ReconciliationObservation::Terminal { .. }) => {
-                    report.terminal = report.terminal.saturating_add(1);
-                }
-                Ok(ReconciliationObservation::Unknown { .. }) => {
-                    report.still_unknown = report.still_unknown.saturating_add(1);
-                }
-                Err(OperationError::StaleGeneration)
-                | Err(OperationError::Terminal)
-                | Err(OperationError::Unavailable(_)) => {
-                    report.stale_or_unavailable = report.stale_or_unavailable.saturating_add(1);
                 }
                 Err(error) => return Err(error),
             }
