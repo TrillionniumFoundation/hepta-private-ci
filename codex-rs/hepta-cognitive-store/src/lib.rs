@@ -1,4 +1,12 @@
-//! Append-only cognitive ledger with correction and tombstone lineage.
+//! Semantic/conformance model for the cognitive revision ledger.
+//!
+//! This crate deliberately does **not** own production persistence. Its stores
+//! are bounded in-memory models used to qualify append/revision/tombstone,
+//! authorization, writer-fence, intent-idempotency and snapshot semantics.
+//! The canonical production authority is the SQLite-backed
+//! `codex_hepta_memory::AuthoritativeCognitiveStore`; product code must not use
+//! this crate as a second durable writer or treat `export_image`/`reopen` as a
+//! process/disk durability guarantee.
 //!
 //! The store is the only writer of its in-memory qualification ledger. It does
 //! not perform federation, model calls, learning-policy writes or effects.
@@ -28,6 +36,10 @@ pub use v2::SnapshotOpenRequestV2;
 pub use v2::StoreAuthorityVerifierV2;
 pub use v2::StoreIntentImageEntryV2;
 pub use v2::StoreSnapshotV2;
+
+/// Explicit name for callers that want the V2 semantic oracle without
+/// implying that its in-memory state is the production authority.
+pub type AdmittedCognitiveStoreConformanceModelV2 = AdmittedCognitiveStoreV2;
 
 const MAX_RECORDS: usize = 16_384;
 
@@ -79,6 +91,9 @@ pub struct CognitiveStore {
     sequence: LogicalSequence,
     maximum_records: usize,
 }
+
+/// Explicit name for the legacy/current-head conformance model.
+pub type CognitiveStoreConformanceModel = CognitiveStore;
 
 impl CognitiveStore {
     pub fn new(maximum_records: usize) -> Result<Self, Error> {
