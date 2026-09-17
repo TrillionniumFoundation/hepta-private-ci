@@ -71,6 +71,17 @@ class CallerProofTests(unittest.TestCase):
         receipt = MODULE.verify(root, root / "CALLERS.toml")
         self.assertEqual(receipt["boundaries"][0]["productCallers"], ["codex-rs/caller/src/lib.rs"])
 
+    def test_cfg_test_callsite_does_not_manufacture_product_caller(self) -> None:
+        root = self.make_fixture()
+        extra = root / "codex-rs/extra/src"
+        extra.mkdir(parents=True)
+        (extra / "lib.rs").write_text(
+            "#[cfg(all(test, unix))]\nmod tests { fn only_test() { Gate::enter(); } }\n",
+            encoding="utf-8",
+        )
+        receipt = MODULE.verify(root, root / "CALLERS.toml")
+        self.assertEqual(receipt["boundaries"][0]["productCallers"], ["codex-rs/caller/src/lib.rs"])
+
     def test_inventory_omission_fails(self) -> None:
         root = self.make_fixture()
         manifest = root / "CALLERS.toml"
