@@ -68,7 +68,7 @@ fn whitened_head_is_converted_back_to_original_increment_coordinates() {
 }
 
 #[test]
-fn profile_admission_rejects_ambiguous_singular_and_inexact_q24_profiles() {
+fn profile_admission_rejects_ambiguous_or_singular_coordinate_conventions() {
     let base = NduZConversionProfileV1 {
         units_digest: Digest32::of_bytes(b"z-units"),
         driver_dimension: 2,
@@ -101,6 +101,8 @@ fn profile_admission_rejects_ambiguous_singular_and_inexact_q24_profiles() {
         Err(ZConversionError::SingularTransform)
     );
 
+    // Q24 ties-to-even is admitted only while value*2^24 remains within the
+    // exact integer range of binary64; this is a numerical convention failure.
     let mut inexact = base;
     inexact.maximum_absolute_z = 536_870_912.0 + 1.0;
     assert_eq!(
