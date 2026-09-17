@@ -9,6 +9,7 @@
 
 mod acknowledged;
 mod causal_v2;
+mod dataset_from_ledger;
 mod dataset_receipt_v3;
 mod durable;
 mod durable_codec;
@@ -41,6 +42,9 @@ pub use causal_v2::freeze_dataset;
 pub use causal_v2::validate_authenticated_outcome;
 pub use causal_v2::validate_candidate_set_completeness;
 pub use causal_v2::verify_independent_roles;
+pub use dataset_from_ledger::LedgerDerivedDatasetError;
+pub use dataset_from_ledger::LedgerDerivedDatasetPlanV1;
+pub use dataset_from_ledger::freeze_dataset_from_ledger_v3;
 pub use dataset_receipt_v3::DatasetReceiptError;
 pub use dataset_receipt_v3::DatasetSnapshotReceiptV3;
 pub use dataset_receipt_v3::freeze_dataset_receipt_v3;
