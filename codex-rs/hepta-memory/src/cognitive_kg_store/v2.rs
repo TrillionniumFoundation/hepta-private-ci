@@ -465,7 +465,10 @@ fn adapt_edge(
     Ok(KnowledgeEdgeV2 {
         identity: KnowledgeEdgeIdentityV2 {
             source_node_id: stable_id(&edge.from_node_id, "KG edge source", failure_class)?,
-            relation: KnowledgeRelationKindV2::named(edge.relation.as_bytes()),
+            relation: KnowledgeRelationKindV2::named_instance(
+                edge.relation.as_bytes(),
+                edge.edge_id.as_bytes(),
+            ),
             target_node_id: stable_id(&edge.to_node_id, "KG edge target", failure_class)?,
         },
         confidence: ProbabilityQ32::ONE,
