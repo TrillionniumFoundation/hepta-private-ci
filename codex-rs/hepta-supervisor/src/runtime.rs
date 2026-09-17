@@ -95,7 +95,7 @@ pub(crate) fn schedule_restart(
 ) -> RestartSchedule {
     let window_elapsed = window_started_at
         .and_then(|started| now.checked_duration_since(started))
-        .is_some_and(|elapsed| elapsed >= config.restart_recovery_window);
+        .is_some_and(|elapsed| elapsed >= config.restart_recovery_window());
     if window_started_at.is_none() || window_elapsed {
         *window_started_at = Some(now);
         *attempt = 0;
@@ -103,7 +103,7 @@ pub(crate) fn schedule_restart(
         *exhausted = false;
     }
 
-    if *attempt >= config.restart_attempt_budget {
+    if *attempt >= config.restart_attempt_budget() {
         *exhausted = true;
         *retry_at = None;
         return RestartSchedule::Exhausted { attempts: *attempt };
@@ -111,11 +111,12 @@ pub(crate) fn schedule_restart(
 
     *attempt = attempt.saturating_add(1);
     let shift = attempt.saturating_sub(1).min(30);
+    let max_backoff = config.restart_max_backoff();
     let delay = config
-        .restart_min_backoff
+        .restart_min_backoff()
         .checked_mul(1_u32 << shift)
-        .unwrap_or(config.restart_max_backoff)
-        .min(config.restart_max_backoff);
+        .unwrap_or(max_backoff)
+        .min(max_backoff);
     let Some(next_retry) = now.checked_add(delay) else {
         *exhausted = true;
         *retry_at = None;
@@ -300,10 +301,6 @@ mod tests {
             health_timeout: Duration::from_secs(1),
             drain_timeout: Duration::from_secs(1),
             stop_grace: Duration::from_secs(1),
-            restart_min_backoff: Duration::from_millis(10),
-            restart_max_backoff: Duration::from_millis(40),
-            restart_recovery_window: Duration::from_secs(1),
-            restart_attempt_budget: 3,
             event_capacity: 4,
             log_capacity: 4,
             max_log_bytes: 64,
@@ -331,7 +328,7 @@ mod tests {
             ),
             RestartSchedule::Scheduled {
                 attempt: 1,
-                delay: Duration::from_millis(10),
+                delay: Duration::from_millis(250),
             }
         );
         assert_eq!(
@@ -345,7 +342,7 @@ mod tests {
             ),
             RestartSchedule::Scheduled {
                 attempt: 2,
-                delay: Duration::from_millis(20),
+                delay: Duration::from_millis(500),
             }
         );
         assert_eq!(
@@ -359,7 +356,7 @@ mod tests {
             ),
             RestartSchedule::Scheduled {
                 attempt: 3,
-                delay: Duration::from_millis(40),
+                delay: Duration::from_secs(1),
             }
         );
         assert_eq!(
@@ -385,7 +382,7 @@ mod tests {
         let mut window = Some(now);
         let mut retry = None;
         let mut exhausted = true;
-        let later = now + config.restart_recovery_window + Duration::from_millis(1);
+        let later = now + config.restart_recovery_window() + Duration::from_millis(1);
 
         assert_eq!(
             schedule_restart(
@@ -398,7 +395,7 @@ mod tests {
             ),
             RestartSchedule::Scheduled {
                 attempt: 1,
-                delay: Duration::from_millis(10),
+                delay: Duration::from_millis(250),
             }
         );
         assert!(!exhausted);
