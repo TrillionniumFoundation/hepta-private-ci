@@ -20,13 +20,22 @@ jobs:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           fetch-depth: 0
-      - name: Refresh lockfile format and run focused checks
+      - name: Apply branch-only mechanical fixes, refresh lockfile and format
         working-directory: codex-rs
         shell: bash
         run: |
-          set +e
+          python - <<'PY'
+          from pathlib import Path
+          path = Path("hepta-memory-federation/src/v2_tests/support.inc.rs")
+          text = path.read_text()
+          old = """            Ok(FederationTransportResultV2::Terminal(\n                self.response(query, capability),\n            ))\n"""
+          new = """            Ok(FederationTransportResultV2::Terminal(Box::new(\n                self.response(query, capability),\n            )))\n"""
+          if old in text:
+              path.write_text(text.replace(old, new))
+          elif new not in text:
+              raise SystemExit("expected terminal fixture construction not found")
+          PY
           cargo check -p codex-hepta-memory-federation --tests
-          status=$?
           cargo fmt --package codex-hepta-memory-federation
           git add Cargo.lock hepta-memory-federation
           if ! git diff --cached --quiet; then
@@ -35,7 +44,6 @@ jobs:
             git commit -m "chore(memory.federation): refresh lockfile and formatting"
             git push origin HEAD:codex/memory-federation-hardening
           fi
-          exit "$status"
       - name: Test hardened federation crate
         working-directory: codex-rs
         run: cargo test --locked -p codex-hepta-memory-federation
