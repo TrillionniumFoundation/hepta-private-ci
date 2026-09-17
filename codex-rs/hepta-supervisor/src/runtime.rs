@@ -226,16 +226,22 @@ impl<P> AgentSlot<P> {
             self.automatic_retry_at = None;
             return Ok(None);
         }
-        self.automatic_restart_attempt += 1;
-        let shift = self.automatic_restart_attempt.saturating_sub(1).min(31);
+        self.automatic_restart_attempt = self
+            .automatic_restart_attempt
+            .checked_add(1)
+            .ok_or_else(|| SupervisorError::Invalid("automatic restart attempt overflow".to_string()))?;
+        let multiplier = match self.automatic_restart_attempt {
+            1 => 1,
+            2 => 2,
+            _ => 4,
+        };
         let delay = AGENT_RESTART_MIN
-            .checked_mul(1_u32 << shift)
+            .checked_mul(multiplier)
             .unwrap_or(AGENT_RESTART_MAX)
             .min(AGENT_RESTART_MAX);
-        self.automatic_retry_at = Some(
-            now.checked_add(delay)
-                .ok_or_else(|| SupervisorError::Invalid("automatic restart deadline overflow".to_string()))?,
-        );
+        self.automatic_retry_at = Some(now.checked_add(delay).ok_or_else(|| {
+            SupervisorError::Invalid("automatic restart deadline overflow".to_string())
+        })?);
         Ok(Some((self.automatic_restart_attempt, delay)))
     }
 
