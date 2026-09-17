@@ -26,13 +26,15 @@ use crate::OwnerSummaryV1;
 use crate::PlanCandidateV1;
 use crate::PlannerAxisValueV1;
 use crate::PlannerError;
+use crate::PlannerHardeningError;
 use crate::PlanningRequestV1;
 use crate::ResourceReservationV1;
 use crate::SnapshotRequestV1;
 use crate::canonical_ndu_planning_policy_digest;
+use crate::canonical_resource_profile_digest;
 use crate::collect_snapshot;
 use crate::evaluate_prepared_plan_with_ndu;
-use crate::prepare_plan;
+use crate::prepare_plan_hardened;
 
 /// Host-only measurements after verifying the canonical read and local scope.
 /// `encoded_context` excludes planning metadata to avoid self-referential
@@ -63,6 +65,13 @@ pub fn plan_observed_context(
     observed: ObservedContextV1<'_>,
 ) -> Result<ObservedContextPlanV1, NduPlanningError> {
     use NduPlanningError as E;
+    let map_hardening = |error: PlannerHardeningError| match error {
+        PlannerHardeningError::Planner(error) => E::Planner(error),
+        PlannerHardeningError::ResourceProfileBindingMismatch
+        | PlannerHardeningError::InvalidResourceProfile => {
+            E::Planner(PlannerError::PreparedPlanMismatch)
+        }
+    };
     if observed.verified_item_count > 4
         || observed.encoded_context.len() > 24 * 1024
         || observed.maximum_context_bytes > 24 * 1024
@@ -159,23 +168,26 @@ pub fn plan_observed_context(
             }
         })
         .collect();
-    let prepared = prepare_plan(
+    let resource_reservations = vec![ResourceReservationV1 {
+        axis: bytes_axis.clone(),
+        endowment: budget,
+        essential_floor: FixedQ32::ZERO,
+    }];
+    let resource_profile_digest =
+        canonical_resource_profile_digest(&resource_reservations).map_err(map_hardening)?;
+    let prepared = prepare_plan_hardened(
         &snapshot,
         PlanningRequestV1 {
             plan_id: id("context-delivery")?,
             now_micros: observed.observed_at_micros,
             deadline_micros: observed.expires_at_micros,
             evaluation_policy_digest: configuration_digest,
-            resource_profile_digest: objective_digest,
+            resource_profile_digest,
             candidates,
-            resource_reservations: vec![ResourceReservationV1 {
-                axis: bytes_axis.clone(),
-                endowment: budget,
-                essential_floor: FixedQ32::ZERO,
-            }],
+            resource_reservations,
         },
     )
-    .map_err(E::Planner)?;
+    .map_err(map_hardening)?;
     input.contributions.contributions = prepared
         .feasible_candidates()
         .iter()
