@@ -154,7 +154,7 @@ fn is_explicit_turn_start_rejection(output: &NativeRunOutput) -> bool {
         && !output.terminal_observed
         && matches!(
             output.stop_reason.as_deref(),
-            Some(TURN_START_REJECTED | TURN_START_OVERLOADED)
+            Some(TURN_START_REJECTED) | Some(TURN_START_OVERLOADED)
         )
 }
 
