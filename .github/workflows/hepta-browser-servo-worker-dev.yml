@@ -1,0 +1,55 @@
+name: Hepta Browser Servo worker dev
+
+on:
+  push:
+    branches: [codex/browser-servo-effect-correctness-20260917]
+    paths:
+      - 'apps/hepta-browser/servo-worker/**'
+      - '.github/workflows/hepta-browser-servo-worker-dev.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-browser-servo-worker-dev-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  cargo-check:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Install Rust 1.88.0
+        shell: bash
+        run: |
+          set -euo pipefail
+          rustup toolchain install 1.88.0 --profile minimal
+          rustup override set 1.88.0
+          rustc -vV
+          cargo -vV
+      - name: Install Servo build prerequisites
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            build-essential cmake curl git libdbus-1-dev libfreetype6-dev \
+            libfontconfig1-dev libgl1-mesa-dev libglib2.0-dev libssl-dev \
+            libx11-dev libxcb1-dev libxkbcommon-dev pkg-config python3
+      - name: Check exact current-pin worker
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo check --manifest-path apps/hepta-browser/servo-worker/Cargo.toml
+      - name: Verify source remains clean
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          git diff --check
+          test -z "$(git status --porcelain --untracked-files=no)"
