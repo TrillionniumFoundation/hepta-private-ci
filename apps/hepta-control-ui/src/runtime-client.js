@@ -2,6 +2,7 @@ import { buildOperationProposal, projectRuntime } from "./control.js";
 import {
   ERROR_CODES,
   MAX_REQUEST_BYTES,
+  UiControlError,
   MAX_VIEW_BYTES,
   canonicalSha256,
   fail,
@@ -88,7 +89,7 @@ export class RuntimeClient {
         "connection observation",
       );
     } catch (error) {
-      if (error?.code) {
+      if (error instanceof UiControlError) {
         throw error;
       }
       fail(ERROR_CODES.BACKEND_UNAVAILABLE, "runtime backend is unavailable");
@@ -149,15 +150,40 @@ export class RuntimeClient {
       }
     }
 
+    const moduleDescriptors = Object.getOwnPropertyDescriptors(snapshot.modules);
+    const expectedModuleKeys = new Set(
+      [...Array(snapshot.modules.length).keys()].map(String).concat("length"),
+    );
+    for (const key of Reflect.ownKeys(moduleDescriptors)) {
+      if (typeof key !== "string" || !expectedModuleKeys.has(key)) {
+        fail(
+          ERROR_CODES.INVALID_INPUT,
+          "snapshot.modules must contain only dense indexed data",
+        );
+      }
+    }
+
     const moduleIds = new Set();
-    const modules = snapshot.modules.map((module) => {
-      const projection = projectRuntime(module);
+    const modules = [];
+    for (let index = 0; index < snapshot.modules.length; index += 1) {
+      const descriptor = moduleDescriptors[String(index)];
+      if (
+        !descriptor ||
+        !Object.hasOwn(descriptor, "value") ||
+        descriptor.enumerable !== true
+      ) {
+        fail(
+          ERROR_CODES.INVALID_INPUT,
+          "snapshot.modules must contain only dense indexed data",
+        );
+      }
+      const projection = projectRuntime(descriptor.value);
       if (moduleIds.has(projection.moduleId)) {
         fail(ERROR_CODES.PROTOCOL_VIOLATION, "snapshot contains duplicate module identity");
       }
       moduleIds.add(projection.moduleId);
-      return projection;
-    });
+      modules.push(projection);
+    }
     Object.freeze(modules);
 
     const candidate = Object.freeze({
@@ -166,7 +192,17 @@ export class RuntimeClient {
       digest: snapshotDigest,
       modules,
     });
-    const projectedBytes = utf8Bytes(JSON.stringify(candidate));
+    const maximumView = freezeResult({
+      kind: "RuntimeViewV1",
+      sessionId: this.#session.sessionId,
+      connectionGeneration: this.#session.connectionGeneration,
+      stale: false,
+      ...candidate,
+      pending: MAX_PENDING,
+      indeterminate: MAX_PENDING,
+      previousSnapshotRetained: true,
+    });
+    const projectedBytes = utf8Bytes(JSON.stringify(maximumView));
     if (projectedBytes > MAX_VIEW_BYTES) {
       fail(ERROR_CODES.VIEW_TOO_LARGE, "projected runtime view exceeds 1 MiB", {
         projectedBytes,
@@ -304,12 +340,23 @@ export class RuntimeClient {
     }
     const closingSession = this.#session;
     this.#markPendingIndeterminate();
+    let closeError = null;
     try {
-      await this.#transport.close({ sessionId: closingSession.sessionId });
+      await this.#transport.close(
+        Object.freeze({ sessionId: closingSession.sessionId }),
+      );
+    } catch (error) {
+      closeError = error;
     } finally {
       this.#session = null;
       this.#snapshot = null;
       this.#previousSnapshot = null;
+    }
+    if (closeError instanceof UiControlError) {
+      throw closeError;
+    }
+    if (closeError !== null) {
+      fail(ERROR_CODES.BACKEND_UNAVAILABLE, "runtime close acknowledgement is unavailable");
     }
   }
 
