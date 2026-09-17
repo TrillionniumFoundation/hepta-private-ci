@@ -22,6 +22,7 @@ impl<D: ProcessDriver> Supervisor<D> {
         slot: &mut AgentSlot<D::Process>,
         now: Instant,
     ) -> Result<(), SupervisorError> {
+        slot.cancel_automatic_restart();
         if self.defer_agent_action_for_matrix(
             agent_id,
             slot,
@@ -71,6 +72,7 @@ impl<D: ProcessDriver> Supervisor<D> {
         now: Instant,
     ) -> Result<(), SupervisorError> {
         slot.restart_pending = false;
+        slot.cancel_automatic_restart();
         if self.defer_agent_action_for_matrix(agent_id, slot, DeferredAgentActionKind::Stop, now)? {
             return Ok(());
         }
@@ -97,6 +99,7 @@ impl<D: ProcessDriver> Supervisor<D> {
         slot: &mut AgentSlot<D::Process>,
     ) -> Result<(), SupervisorError> {
         slot.restart_pending = false;
+        slot.cancel_automatic_restart();
         slot.deferred_agent_action = None;
         self.kill_matrix_now(agent_id, slot)?;
         self.prepare_termination(agent_id, slot)?;
@@ -122,6 +125,7 @@ impl<D: ProcessDriver> Supervisor<D> {
         if slot.release_change.is_some() {
             return Err(SupervisorError::ReleaseChangePending(agent_id.clone()));
         }
+        slot.reset_automatic_restart();
         let release = slot.active_release.clone().or_else(|| {
             slot.last_command
                 .clone()
@@ -189,10 +193,6 @@ impl<D: ProcessDriver> Supervisor<D> {
             .runtime
             .as_mut()
             .ok_or_else(|| SupervisorError::Invalid(format!("agent {agent_id} is not active")))?;
-        runtime
-            .process
-            .kill()
-            .map_err(|error| driver_error(agent_id, error))?;
         runtime.fenced = true;
         runtime.phase = RuntimePhase::Killing;
         slot.event(
@@ -202,6 +202,10 @@ impl<D: ProcessDriver> Supervisor<D> {
                 registry,
             },
         );
+        runtime
+            .process
+            .kill()
+            .map_err(|error| driver_error(agent_id, error))?;
         Err(SupervisorError::GenerationFence {
             agent_id: agent_id.clone(),
             runtime: runtime_generation,
