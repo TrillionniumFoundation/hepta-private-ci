@@ -50,10 +50,13 @@ pub use iteration::IterationCandidateStateV1;
 pub use iteration::IterationCandidateV1;
 pub use iteration::IterationEnvelopeV1;
 pub use iteration::validate_iteration_transition;
-pub use iteration_ledger::{
-    IterationEvidenceKindV1, IterationEvidenceV1, IterationLedgerError, IterationLedgerEventV1,
-    IterationLedgerSnapshotV1, IterationLedgerV1, MAX_ITERATION_EVENTS,
-};
+pub use iteration_ledger::IterationEvidenceKindV1;
+pub use iteration_ledger::IterationEvidenceV1;
+pub use iteration_ledger::IterationLedgerError;
+pub use iteration_ledger::IterationLedgerEventV1;
+pub use iteration_ledger::IterationLedgerSnapshotV1;
+pub use iteration_ledger::IterationLedgerV1;
+pub use iteration_ledger::MAX_ITERATION_EVENTS;
 pub use lifecycle_journal::ArtifactLifecycleJournalError;
 pub use lifecycle_journal::ArtifactLifecycleJournalReceiptV2;
 pub use lifecycle_journal::ArtifactLifecycleJournalRecordV2;

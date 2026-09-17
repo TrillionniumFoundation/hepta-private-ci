@@ -12,6 +12,7 @@ mod error;
 mod lease;
 mod matrix;
 mod model;
+mod process_deadline;
 mod recovery;
 mod release;
 mod robrix_projection;
@@ -22,6 +23,7 @@ mod signed_intent;
 mod supervisor;
 mod supervisor_qualification;
 mod tick;
+mod writer_handoff;
 
 #[cfg(unix)]
 mod unix;
@@ -82,6 +84,10 @@ pub use model::SupervisorConfig;
 pub use model::SupervisorEvent;
 pub use model::SupervisorEventKind;
 pub use model::TickReport;
+pub use process_deadline::ProcessDeadlineOutcomeV1;
+pub use process_deadline::ProcessDeadlinePolicyErrorV1;
+pub use process_deadline::ProcessDeadlinePolicyV1;
+pub use process_deadline::enforce_process_deadline_v1;
 pub use robrix_projection::CORPUS_FILE;
 pub use robrix_projection::GENERATED_CONSTANTS_FILE;
 pub use robrix_projection::MANIFEST_FILE;
@@ -129,6 +135,12 @@ pub use supervisor_qualification::H8H9SupervisorState;
 pub use supervisor_qualification::H8ShadowSupervisor;
 pub use supervisor_qualification::H9ShadowRollbackMachine;
 pub use supervisor_qualification::QualificationSupervisor;
+pub use writer_handoff::DurableWriterHandoffJournalV1;
+pub use writer_handoff::WriterHandoffAdvanceV1;
+pub use writer_handoff::WriterHandoffCheckpointV1;
+pub use writer_handoff::WriterHandoffErrorV1;
+pub use writer_handoff::WriterHandoffPhaseV1;
+pub use writer_handoff::WriterHandoffPlanV1;
 
 #[cfg(unix)]
 pub use unix::UnixManagedProcess;

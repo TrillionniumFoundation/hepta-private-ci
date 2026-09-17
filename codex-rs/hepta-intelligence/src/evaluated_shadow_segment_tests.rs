@@ -57,7 +57,9 @@ fn existing_consumer_continues_after_rotation_and_replays_old_run_after_recovery
     .unwrap();
     assert_eq!(second.learning.unwrap().sequence.get(), 2);
     let checkpoint = journal.checkpoint().unwrap();
-    let snapshot = journal.snapshot().unwrap();
+    let snapshot = journal
+        .snapshot_with_archives(vec![open(root, "0", false)])
+        .unwrap();
     drop(journal);
     let before = fs::read(root.join("1")).unwrap();
     let mut recovered = SegmentedLedger::recover(
@@ -81,7 +83,12 @@ fn existing_consumer_continues_after_rotation_and_replays_old_run_after_recovery
         AppendDisposition::IdempotentReplay
     );
     assert_eq!(replay.pipeline, first.pipeline);
-    assert_eq!(recovered.snapshot().unwrap(), snapshot);
+    assert_eq!(
+        recovered
+            .snapshot_with_archives(vec![open(root, "0", false)])
+            .unwrap(),
+        snapshot
+    );
     drop(recovered);
     assert_eq!(fs::read(root.join("1")).unwrap(), before);
 }

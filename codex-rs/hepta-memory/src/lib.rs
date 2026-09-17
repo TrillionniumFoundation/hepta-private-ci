@@ -52,6 +52,7 @@ pub use cognitive_compact::CompactRejectReason;
 pub use cognitive_compact::CompactSummaryReceipt;
 pub use cognitive_compact::RehydrationPlan;
 pub use cognitive_compact::RehydrationStatus;
+pub use cognitive_federation::FederatedCoverageStatus;
 pub use cognitive_federation::FederatedMemoryExplanation;
 pub use cognitive_federation::FederatedMemoryReader;
 pub use cognitive_federation::FederatedMemoryRevalidationBinding;

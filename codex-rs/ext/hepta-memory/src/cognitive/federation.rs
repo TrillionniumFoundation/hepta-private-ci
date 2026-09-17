@@ -572,6 +572,9 @@ fn compile_retrieval_batch(
     max_bytes: usize,
     max_item_bytes: usize,
 ) -> Option<(Vec<FederatedMemoryRevalidationBinding>, String)> {
+    if batch.coverage != codex_hepta_memory::FederatedCoverageStatus::Complete {
+        return None;
+    }
     let max_bytes = max_bytes
         .min(EPHEMERAL_MODEL_INPUT_MAX_CONTENT_BYTES as usize)
         .min(EPHEMERAL_MODEL_INPUT_MAX_CONTENT_TOKENS as usize);

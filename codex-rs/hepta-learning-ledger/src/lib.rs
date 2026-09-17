@@ -2,12 +2,13 @@
 //! lineage.
 //!
 //! The pure core owns no ambient I/O or execution authority. An opt-in durable
-//! adapter writes only learning facts through a host-authorized file handle;
-//! it grants no model, tool, network, selection, promotion or release authority.
+//! adapter writes only learning facts through host-authorized file handles; it
+//! grants no model, tool, network, selection, promotion or release authority.
 
 #![forbid(unsafe_code)]
 
 mod causal_v2;
+mod checkpoint;
 mod dataset_receipt_v3;
 mod durable;
 mod durable_codec;
@@ -37,6 +38,8 @@ pub use causal_v2::freeze_dataset;
 pub use causal_v2::validate_authenticated_outcome;
 pub use causal_v2::validate_candidate_set_completeness;
 pub use causal_v2::verify_independent_roles;
+pub use checkpoint::LedgerArchiveRange;
+pub use checkpoint::LedgerStateCheckpoint;
 pub use dataset_receipt_v3::DatasetReceiptError;
 pub use dataset_receipt_v3::DatasetSnapshotReceiptV3;
 pub use dataset_receipt_v3::freeze_dataset_receipt_v3;
@@ -48,7 +51,10 @@ pub use durable::LedgerRecovery;
 pub use durable::inspect_ledger;
 pub use error::LedgerError;
 pub use journal::DurableLearningJournal;
+pub(crate) use ledger::DecisionIndex;
+pub(crate) use ledger::HistoricalRecordIndex;
 pub use ledger::LearningLedger;
+pub(crate) use ledger::OutcomeIndex;
 pub use model::AppendDisposition;
 pub use model::AppendReceipt;
 pub use model::CandidateSetCompleteness;
@@ -62,7 +68,6 @@ pub use model::OutcomeObservation;
 pub use model::Revocation;
 pub use segments::LedgerSegmentCheckpoint;
 pub use segments::LedgerSegmentLimits;
-pub use segments::MAX_LEDGER_SEGMENTS;
 pub use segments::SegmentedLedger;
 pub use segments::inspect_ledger_segments;
 pub use shadow::ShadowAppendReceipt;

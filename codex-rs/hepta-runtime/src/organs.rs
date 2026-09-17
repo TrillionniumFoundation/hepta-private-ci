@@ -4,10 +4,12 @@
 use std::collections::BTreeSet;
 use std::sync::Arc;
 use std::sync::Mutex;
+use std::time::Duration;
 
 use anyhow::Context;
 use anyhow::Result;
 use codex_hepta_control_plane::BodyGraphBindingV1;
+use codex_hepta_control_plane::BudgetedReadOnlyOrganV1;
 use codex_hepta_control_plane::CnsHierarchyV1;
 use codex_hepta_control_plane::CnsOrganHostV1;
 use codex_hepta_control_plane::CnsRouteV1;
@@ -22,6 +24,7 @@ use codex_hepta_control_plane::NativeHandoffProtocolAdmissionV1;
 use codex_hepta_control_plane::NativeHandoffProtocolRegistryV1;
 use codex_hepta_control_plane::OrganDriverBindingV1;
 use codex_hepta_control_plane::OrganEdge;
+use codex_hepta_control_plane::OrganExecutionBudgetV1;
 use codex_hepta_control_plane::OrganGraphsV1;
 use codex_hepta_control_plane::OrganHandlerFaultV1;
 use codex_hepta_control_plane::OrganManifestBindingV1;
@@ -216,16 +219,23 @@ fn build_host(root: HeptaStateRoot, state: Arc<dyn RuntimeStateAdapter>) -> Resu
             })
             .collect::<Result<Vec<_>>>()?,
     };
+    let budget = OrganExecutionBudgetV1::new(Duration::from_millis(250))?;
     let handlers: Vec<Box<dyn TrustedReadOnlyOrganV1>> = vec![
         Box::new(StatusOrgan {
             id: ingress.clone(),
             data: None,
-        }),
+        }) as Box<dyn TrustedReadOnlyOrganV1>,
         Box::new(StatusOrgan {
             id: status,
             data: Some((root, state)),
-        }),
-    ];
+        }) as Box<dyn TrustedReadOnlyOrganV1>,
+    ]
+    .into_iter()
+    .map(|handler| {
+        BudgetedReadOnlyOrganV1::new(handler, budget)
+            .map(|handler| Box::new(handler) as Box<dyn TrustedReadOnlyOrganV1>)
+    })
+    .collect::<Result<Vec<_>, _>>()?;
     let catalog = handlers
         .into_iter()
         .zip(body.organ_manifests.iter())

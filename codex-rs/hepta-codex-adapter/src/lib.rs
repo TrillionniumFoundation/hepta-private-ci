@@ -1,9 +1,13 @@
-//! Exact-bound Codex app-server request adapter.
+//! Exact-bound Codex app-server request adapter and Hepta composition seam.
 //!
-//! The adapter translates an already-authorized intent and observes a terminal
-//! app-server outcome. It does not mint model/provider authority.
+//! The request adapter translates an already-authorized intent and observes a
+//! terminal app-server outcome. The embedding module owns concrete Hepta
+//! extension composition so App Server does not accumulate implementation
+//! installers as Hepta evolves. Neither surface mints model/provider authority.
 
 #![forbid(unsafe_code)]
+
+mod app_server_embedding;
 
 use std::error::Error as StdError;
 use std::fmt;
@@ -11,6 +15,9 @@ use std::fmt;
 use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
+
+pub use app_server_embedding::HeptaAppServerEmbedding;
+pub use app_server_embedding::install_app_server_extensions;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct CodexOperationIntent {

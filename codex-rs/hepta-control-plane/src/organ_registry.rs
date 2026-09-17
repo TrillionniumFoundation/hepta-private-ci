@@ -1,10 +1,15 @@
 //! Bounded registry of reviewed, compiled-in read-only organ factories.
 //!
-//! A registry may contain more drivers than a graph selects.  Construction
+//! A registry may contain more drivers than a graph selects. Construction
 //! validates the complete graph and binding set before invoking any factory,
-//! then creates exactly one handler for each graph organ.  Factories are
+//! then creates exactly one handler for each graph organ. Factories are
 //! trusted product code: this registry does not load code, sandbox callbacks,
 //! start handlers, or grant authority.
+//!
+//! Driver identity names an implementation, while organ identity names one
+//! concrete graph instance. A single reviewed stateless implementation may be
+//! bound to multiple organ instances in the same graph; each factory call still
+//! receives and must return the exact organ instance identity.
 
 use std::collections::BTreeMap;
 use std::collections::BTreeSet;
@@ -55,7 +60,6 @@ pub enum OrganHandlerRegistryError {
     DuplicateOrgan(StableId),
     UnknownOrgan(StableId),
     MissingBinding(StableId),
-    DuplicateDriverBinding(StableId),
     UnknownDriver(StableId),
     DriverDigestMismatch {
         driver: StableId,
@@ -98,7 +102,7 @@ impl OrganHandlerRegistryV1 {
         self.factories.is_empty()
     }
 
-    /// Registers one reviewed factory under an immutable driver identity.
+    /// Registers one reviewed implementation factory under an immutable driver identity.
     pub fn register(
         &mut self,
         driver: StableId,
@@ -124,12 +128,13 @@ impl OrganHandlerRegistryV1 {
         Ok(())
     }
 
-    /// Builds a read-only host for exactly the organs in `graph`.
+    /// Builds a read-only host for exactly the organ instances in `graph`.
     ///
     /// Every graph organ must have one binding, while unselected registered
-    /// drivers are ignored and their factories are never called. All graph,
-    /// binding, driver and digest checks complete before the first factory is
-    /// invoked. The returned host is registered but not started.
+    /// drivers are ignored and their factories are never called. Multiple organ
+    /// instances may bind the same driver implementation. All graph, binding,
+    /// driver and digest checks complete before the first factory is invoked.
+    /// The returned host is registered but not started.
     pub fn create_host(
         &self,
         graph: OrganGraphsV1,
@@ -159,7 +164,6 @@ impl OrganHandlerRegistryV1 {
             .map(|organ| organ.id.clone())
             .collect::<BTreeSet<_>>();
         let mut by_organ = BTreeMap::new();
-        let mut drivers = BTreeSet::new();
         for binding in bindings {
             if !organ_ids.contains(&binding.organ) {
                 return Err(OrganHandlerRegistryError::UnknownOrgan(
@@ -172,11 +176,6 @@ impl OrganHandlerRegistryV1 {
             {
                 return Err(OrganHandlerRegistryError::DuplicateOrgan(
                     binding.organ.clone(),
-                ));
-            }
-            if !drivers.insert(binding.driver.clone()) {
-                return Err(OrganHandlerRegistryError::DuplicateDriverBinding(
-                    binding.driver.clone(),
                 ));
             }
             let Some(registered) = self.factories.get(&binding.driver) else {
@@ -199,7 +198,7 @@ impl OrganHandlerRegistryV1 {
             let registered = self
                 .factories
                 .get(&binding.driver)
-                .expect("driver was validated above");
+                .ok_or_else(|| OrganHandlerRegistryError::UnknownDriver(binding.driver.clone()))?;
             let handler = (registered.factory)(&organ.id).map_err(|fault| {
                 OrganHandlerRegistryError::Factory {
                     driver: binding.driver.clone(),

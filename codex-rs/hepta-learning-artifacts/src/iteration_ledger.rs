@@ -5,16 +5,19 @@
 //! Consumers must authenticate the evidence and perform those decisions in an
 //! independent control plane before recording them here.
 
-use std::collections::{BTreeMap, BTreeSet};
+use std::collections::BTreeMap;
+use std::collections::BTreeSet;
 use std::error::Error;
 use std::fmt;
 
-use codex_hepta_types::{Digest32, LogicalSequence, StableId};
+use codex_hepta_types::Digest32;
+use codex_hepta_types::LogicalSequence;
+use codex_hepta_types::StableId;
 
-use crate::{
-    IterationCandidateStateV1, IterationCandidateV1, IterationEnvelopeV1,
-    validate_iteration_transition,
-};
+use crate::IterationCandidateStateV1;
+use crate::IterationCandidateV1;
+use crate::IterationEnvelopeV1;
+use crate::validate_iteration_transition;
 
 pub const MAX_ITERATION_EVENTS: usize = 384;
 
