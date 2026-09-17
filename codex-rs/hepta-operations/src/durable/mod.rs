@@ -1,4 +1,5 @@
 mod codec;
+mod dispatcher;
 mod model;
 mod reconcile;
 mod store;
@@ -12,6 +13,8 @@ use codex_hepta_types::Generation;
 #[cfg(test)]
 use codex_state::SqliteConfig;
 
+pub use dispatcher::DispatchBoundaryResult;
+pub use dispatcher::DurableDispatcher;
 pub use model::DestinationReceipt;
 pub use model::DispatchLease;
 pub use model::DurableOperationRecord;

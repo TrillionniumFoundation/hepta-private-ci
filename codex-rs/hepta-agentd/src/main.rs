@@ -1,4 +1,5 @@
 use codex_hepta_agentd::AgentdConfig;
+use codex_hepta_agentd::AgentdOperationsHost;
 use codex_utils_absolute_path::AbsolutePathBuf;
 
 fn main() -> anyhow::Result<()> {
@@ -16,6 +17,10 @@ fn main() -> anyhow::Result<()> {
             anyhow::ensure!(args.next().is_none(), "unexpected Agentd arguments");
             config = config.with_authbus_trust_file(path.into());
         }
+        // This is the named product composition point for kernel.operations.
+        // Opening the durable owner does not dispatch an effect or mint authority;
+        // the handle remains alive for the lifetime of this Agentd generation.
+        let _operations_host = AgentdOperationsHost::open(config.identity()).await?;
         codex_hepta_agentd::run(config, arg0_paths).await?;
         Ok(())
     })

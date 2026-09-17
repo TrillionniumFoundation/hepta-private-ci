@@ -16,7 +16,9 @@ mod model;
 mod outbox;
 
 pub use durable::DestinationReceipt;
+pub use durable::DispatchBoundaryResult;
 pub use durable::DispatchLease;
+pub use durable::DurableDispatcher;
 pub use durable::DurableOperationError;
 pub use durable::DurableOperationRecord;
 pub use durable::DurableOperationState;
