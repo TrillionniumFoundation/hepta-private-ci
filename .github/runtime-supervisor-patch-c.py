@@ -8,6 +8,12 @@ def one(s,old,new,label):
     if n != 1: raise SystemExit(f"{label}: expected 1 occurrence, got {n}")
     return s.replace(old,new,1)
 
+# The dossier contract is <=3 attempts per recovery window, not merely a
+# default of three. Reject any configuration that could silently exceed it.
+p="codex-rs/hepta-supervisor/src/model.rs"; s=read(p)
+s=one(s,"            || !(1..=32).contains(&self.restart_max_attempts)\n","            || !(1..=3).contains(&self.restart_max_attempts)\n","restart contract hard cap")
+write(p,s)
+
 # apply_production_grant runs inside with_slot(), which removes the agent slot
 # from self.slots for the duration of the closure. Any map-based revision lookup
 # from inside that closure therefore reports UnknownAgent. Resolve the successor
@@ -26,8 +32,8 @@ s=one(s,"            let next_control_revision = supervisor.next_control_revisio
 s=one(s,"            slot.signed_intent = Some(intent.clone());\n            supervisor.set_control_revision(agent_id, next_control_revision)?;","            slot.signed_intent = Some(intent.clone());\n            if next_control_revision != slot.control_revision.saturating_add(1) {\n                return Err(SupervisorError::Invalid(\n                    \"signed mutation control revision successor drifted\".to_string(),\n                ));\n            }\n            slot.control_revision = next_control_revision;","advance detached slot revision")
 write(p,s)
 
-# Add a narrow structural regression that specifically protects this ownership
-# invariant even before the heavier signed-authority product test executes.
+# Add narrow regressions for detached-slot revision ownership and the hard
+# restart-budget contract.
 p="codex-rs/hepta-supervisor/src/supervisor_tests.rs"; s=read(p)
 if "signed_control_revision_advances_on_detached_slot" not in s:
     s += r'''
@@ -50,6 +56,16 @@ fn signed_control_revision_advances_on_detached_slot() -> Result<(), SupervisorE
     })?;
     assert_eq!(supervisor.next_control_revision(&fleet.first)?, 2);
     Ok(())
+}
+'''
+if "supervisor_config_rejects_restart_budget_above_three" not in s:
+    s += r'''
+
+#[test]
+fn supervisor_config_rejects_restart_budget_above_three() {
+    let mut invalid = config();
+    invalid.restart_max_attempts = 4;
+    assert!(invalid.validate().is_err());
 }
 '''
 write(p,s)
