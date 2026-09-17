@@ -34,9 +34,10 @@ impl Error for PayloadCodecError {}
 
 /// Typed payload contract owned by the domain that defines the schema.
 ///
-/// Implementations are responsible for canonical serialization and must reject
-/// missing required fields, unknown critical fields and non-canonical values.
-/// `platform.wire` owns only registration/admission and envelope framing.
+/// Decoders must reject missing required fields and unknown critical fields.
+/// The registry additionally enforces canonical serialization by requiring a
+/// successfully decoded value to re-encode to the exact admitted bytes.
+/// `platform.wire` owns registration/admission and framing, not domain meaning.
 pub trait WirePayload: Sized {
     const SCHEMA_ID: &'static str;
 
@@ -193,7 +194,12 @@ impl SchemaRegistry {
 }
 
 fn validate_typed<T: WirePayload>(payload: &[u8]) -> Result<(), PayloadCodecError> {
-    T::decode_payload(payload).map(|_| ())
+    let value = T::decode_payload(payload)?;
+    let canonical = value.encode_payload()?;
+    if canonical != payload {
+        return Err(PayloadCodecError::new("wire payload is not canonical"));
+    }
+    Ok(())
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -224,9 +230,15 @@ impl fmt::Display for SchemaError {
     fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
             Self::InvalidSchemaId => formatter.write_str("wire schema id is not canonical"),
-            Self::DuplicateSchema(schema) => write!(formatter, "wire schema {schema} is already registered"),
-            Self::NoWireVersions => formatter.write_str("wire schema must allow at least one wire version"),
-            Self::InvalidPayloadLimit => formatter.write_str("wire schema payload limit is outside global bounds"),
+            Self::DuplicateSchema(schema) => {
+                write!(formatter, "wire schema {schema} is already registered")
+            }
+            Self::NoWireVersions => {
+                formatter.write_str("wire schema must allow at least one wire version")
+            }
+            Self::InvalidPayloadLimit => {
+                formatter.write_str("wire schema payload limit is outside global bounds")
+            }
             Self::UnknownSchema(schema) => write!(formatter, "wire schema {schema} is not registered"),
             Self::VersionNotAllowed { schema, version } => write!(
                 formatter,
@@ -245,7 +257,9 @@ impl fmt::Display for SchemaError {
                 formatter,
                 "typed wire schema mismatch: expected {expected}, observed {observed}"
             ),
-            Self::PayloadRejected(error) => write!(formatter, "wire payload rejected by schema: {error}"),
+            Self::PayloadRejected(error) => {
+                write!(formatter, "wire payload rejected by schema: {error}")
+            }
             Self::EnvelopeRejected => formatter.write_str("typed wire payload could not be framed"),
         }
     }
@@ -289,6 +303,24 @@ mod tests {
                 step,
                 accepted: payload[4] == 1,
             })
+        }
+    }
+
+    #[derive(Clone, Debug, Eq, PartialEq)]
+    struct LenientBoolean(bool);
+
+    impl WirePayload for LenientBoolean {
+        const SCHEMA_ID: &'static str = "hepta.wire.lenient-bool.v1";
+
+        fn encode_payload(&self) -> Result<Vec<u8>, PayloadCodecError> {
+            Ok(vec![u8::from(self.0)])
+        }
+
+        fn decode_payload(payload: &[u8]) -> Result<Self, PayloadCodecError> {
+            if payload.len() != 1 {
+                return Err(PayloadCodecError::new("lenient boolean length"));
+            }
+            Ok(Self(payload[0] != 0))
         }
     }
 
@@ -345,5 +377,26 @@ mod tests {
             registry.admit_v2(&invalid),
             Err(SchemaError::PayloadRejected(_))
         ));
+    }
+
+    #[test]
+    fn registry_rejects_bytes_a_lenient_decoder_would_normalize() {
+        let mut registry = SchemaRegistry::new();
+        registry
+            .register::<LenientBoolean>(&[WireVersion::V2], 1)
+            .expect("register schema");
+        let noncanonical = WireEnvelopeV2::new(
+            StableId::new(LenientBoolean::SCHEMA_ID).expect("schema"),
+            StableId::new("producer").expect("producer"),
+            Generation::new(1).expect("generation"),
+            vec![2],
+        )
+        .expect("frame");
+        assert_eq!(
+            registry.admit_v2(&noncanonical),
+            Err(SchemaError::PayloadRejected(PayloadCodecError::new(
+                "wire payload is not canonical"
+            )))
+        );
     }
 }
