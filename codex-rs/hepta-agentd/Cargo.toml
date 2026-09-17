@@ -20,6 +20,11 @@ name = "codex-hepta-agentd"
 path = "src/main.rs"
 test = false
 
+[[bin]]
+name = "hepta-agentd-browser"
+path = "src/bin/hepta-agentd-browser.rs"
+test = false
+
 [lints]
 workspace = true
 
