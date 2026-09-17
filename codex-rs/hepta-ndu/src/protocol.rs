@@ -7,6 +7,7 @@ use codex_hepta_types::StableId;
 use crate::NduError;
 use crate::NduSolverIterationReceipt;
 use crate::SubjectClass;
+use crate::preference::validate_solver_iteration_receipt;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct NduIterationContextV1 {
@@ -46,7 +47,7 @@ pub fn bind_solver_iteration_receipt_v1(
     require_digest(context.objective_digest, "objective")?;
     require_digest(context.event_digest, "event")?;
     require_digest(context.coefficient_digest, "coefficient")?;
-    require_digest(receipt.state_digest, "state")?;
+    validate_solver_iteration_receipt(receipt)?;
 
     let receipt_digest = digest_receipt(context, receipt);
     Ok(NduIterationReceiptV1 {
