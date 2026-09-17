@@ -42,11 +42,14 @@ class KernelAuthorityClosedWorldTests(unittest.TestCase):
     def rust_sources(self) -> list[Path]:
         return sorted((ROOT / "codex-rs").rglob("*.rs"))
 
-    def public_methods(self, source_path: str, type_name: str) -> set[str]:
+    def lexical_code(self, source_path: str) -> str:
         raw = (ROOT / source_path).read_text(encoding="utf-8")
-        code = CALLER_PROOF._strip_cfg_test_items(
+        return CALLER_PROOF._strip_cfg_test_items(
             CALLER_PROOF._strip_rust_non_code(raw)
         )
+
+    def public_methods(self, source_path: str, type_name: str) -> set[str]:
+        code = self.lexical_code(source_path)
         match = re.search(rf"\bimpl\s+{re.escape(type_name)}\s*\{{", code)
         self.assertIsNotNone(match, f"missing impl block for {type_name}")
         assert match is not None
@@ -56,12 +59,66 @@ class KernelAuthorityClosedWorldTests(unittest.TestCase):
         assert end is not None
         block = code[brace + 1 : end]
         methods: set[str] = set()
-        for method in re.finditer(r"\bpub\s+(?:async\s+)?fn\s+([A-Za-z_][A-Za-z0-9_]*)", block):
+        for method in re.finditer(
+            r"\bpub\s+(?:async\s+)?fn\s+([A-Za-z_][A-Za-z0-9_]*)", block
+        ):
             prefix = block[: method.start()]
             depth = prefix.count("{") - prefix.count("}")
             if depth == 0:
                 methods.add(method.group(1))
         return methods
+
+    def public_free_functions(self, source_path: str) -> set[str]:
+        code = self.lexical_code(source_path)
+        functions: set[str] = set()
+        for function in re.finditer(
+            r"\bpub\s+(?:async\s+)?fn\s+([A-Za-z_][A-Za-z0-9_]*)", code
+        ):
+            prefix = code[: function.start()]
+            depth = prefix.count("{") - prefix.count("}")
+            if depth == 0:
+                functions.add(function.group(1))
+        return functions
+
+    def test_every_public_authority_free_function_is_explicitly_classified(self) -> None:
+        data = self.data()
+        rows = data.get("freeFunctions")
+        self.assertIsInstance(rows, list)
+        assert isinstance(rows, list)
+        boundary_ids = {str(row["id"]) for row in self.inventory()}
+        seen_paths: set[str] = set()
+        for row in rows:
+            self.assertIsInstance(row, dict)
+            assert isinstance(row, dict)
+            source_path = str(row["sourcePath"])
+            self.assertNotIn(
+                source_path, seen_paths, f"duplicate free-function policy: {source_path}"
+            )
+            seen_paths.add(source_path)
+            privileged = row.get("privilegedFunctions")
+            non_privileged = row.get("nonPrivilegedFunctions")
+            self.assertIsInstance(privileged, dict)
+            self.assertIsInstance(non_privileged, list)
+            assert isinstance(privileged, dict)
+            assert isinstance(non_privileged, list)
+            privileged_functions = {str(name) for name in privileged}
+            non_privileged_functions = {str(name) for name in non_privileged}
+            self.assertFalse(
+                privileged_functions & non_privileged_functions,
+                f"{source_path}: function cannot be both privileged and non-privileged",
+            )
+            for function, boundary_id in privileged.items():
+                self.assertIn(
+                    str(boundary_id),
+                    boundary_ids,
+                    f"{source_path}::{function}: missing canonical privileged boundary",
+                )
+            observed = self.public_free_functions(source_path)
+            self.assertEqual(
+                observed,
+                privileged_functions | non_privileged_functions,
+                f"{source_path}: public free-function classification drifted",
+            )
 
     def test_every_public_authority_method_is_explicitly_classified(self) -> None:
         data = self.data()
