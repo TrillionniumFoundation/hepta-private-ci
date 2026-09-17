@@ -1,8 +1,9 @@
 //! Runtime-owned `PromptDeliveryObservationV1` projection.
 //!
-//! The context compiler proves compilation/attachment integrity. The Codex
-//! adapter owns observation of the request boundary and therefore is the only
-//! layer in this chain that may publish the registered delivery observation.
+//! The context compiler proves compilation/serialization/attachment integrity.
+//! The Codex adapter owns observation of the request boundary and therefore is
+//! the only layer in this chain that may publish the registered delivery
+//! observation.
 
 use std::error::Error as StdError;
 use std::fmt;
@@ -14,12 +15,14 @@ use codex_hepta_context_compiler::ContextCompilationReceiptV1;
 use codex_hepta_context_compiler::ContextCompilerV2Error;
 use codex_hepta_context_compiler::ContextDeliveryDispositionV2;
 use codex_hepta_context_compiler::ContextDeliveryObservationV2;
+use codex_hepta_context_compiler::ContextSerializationReceiptV2;
 use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
 
 use crate::AdapterStatus;
 use crate::CodexAdapterReceipt;
+use crate::CodexOperationIntent;
 
 const MAX_OBSERVED_TOKEN_POSITIONS: usize = 4_096;
 
@@ -60,6 +63,7 @@ pub enum PromptDeliveryErrorV1 {
     EmptyProviderRequestDigest,
     AdapterOperationMismatch,
     AdapterTerminalMismatch,
+    InvalidDeadline,
     TokenPositionLimitExceeded,
     NonCanonicalTokenPositions,
     DeliveryStateMismatch,
@@ -121,36 +125,55 @@ impl PromptDeliveryObservationV1 {
     }
 
     fn semantic_json_bytes(&self) -> Vec<u8> {
-        let rejected_reason = self.rejected_reason.map_or_else(
-            || "null".to_string(),
-            |reason| format!("\"{}\"", reason.as_str()),
+        let mut text = format!(
+            "{{\"compilationId\":\"{}\",\"providerRequestDigest\":\"{}\",\"delivered\":{}",
+            self.compilation_id, self.provider_request_digest, self.delivered,
         );
-        let observed_positions = self.observed_token_positions.as_ref().map_or_else(
-            || "null".to_string(),
-            |positions| {
-                let values = positions
-                    .iter()
-                    .map(u32::to_string)
-                    .collect::<Vec<_>>()
-                    .join(",");
-                format!("[{values}]")
-            },
-        );
-        format!(
-            "{{\"compilationId\":\"{}\",\"providerRequestDigest\":\"{}\",\"delivered\":{},\"rejectedReason\":{},\"observedTokenPositions\":{},\"truncationObserved\":{}}}",
-            self.compilation_id,
-            self.provider_request_digest,
-            self.delivered,
-            rejected_reason,
-            observed_positions,
-            self.truncation_observed,
-        )
-        .into_bytes()
+        if let Some(reason) = self.rejected_reason {
+            text.push_str(&format!(",\"rejectedReason\":\"{}\"", reason.as_str()));
+        }
+        if let Some(positions) = &self.observed_token_positions {
+            let values = positions
+                .iter()
+                .map(u32::to_string)
+                .collect::<Vec<_>>()
+                .join(",");
+            text.push_str(&format!(",\"observedTokenPositions\":[{values}]"));
+        }
+        text.push_str(&format!(
+            ",\"truncationObserved\":{}}}",
+            self.truncation_observed
+        ));
+        text.into_bytes()
     }
 }
 
+/// Build the only adapter intent shape accepted for a compiled context
+/// attachment. The request payload and lease payload are bound to the same
+/// serialized payload digest and the operation identity is the attachment
+/// identity, so the observation cannot later be spliced onto another attachment.
+pub fn intent_for_context_attachment_v1(
+    attachment: &ContextAttachmentV2,
+    thread_id: StableId,
+    method_id: StableId,
+    deadline_ms: u64,
+) -> Result<CodexOperationIntent, PromptDeliveryErrorV1> {
+    if deadline_ms == 0 {
+        return Err(PromptDeliveryErrorV1::InvalidDeadline);
+    }
+    Ok(CodexOperationIntent {
+        operation_id: attachment.attachment_id.clone(),
+        thread_id,
+        method_id,
+        payload_digest: attachment.payload_digest,
+        lease_payload_digest: attachment.payload_digest,
+        deadline_ms,
+    })
+}
+
 /// Bind a terminal/indeterminate Codex adapter observation to the exact context
-/// attachment and project it into the registered delivery protocol.
+/// compilation → serialization → attachment chain and project it into the
+/// registered delivery protocol.
 ///
 /// `observed_token_positions` is optional runtime instrumentation. When present,
 /// positions must be strictly increasing and bounded; missing instrumentation is
@@ -158,20 +181,15 @@ impl PromptDeliveryObservationV1 {
 pub fn observe_prompt_delivery_v1(
     compiled: &CompiledContextV2,
     canonical_context: &ContextCompilationReceiptV1,
+    serialization: &ContextSerializationReceiptV2,
     attachment: &ContextAttachmentV2,
     native_observation: &ContextDeliveryObservationV2,
     adapter_receipt: &CodexAdapterReceipt,
     observed_token_positions: Option<Vec<u32>>,
 ) -> Result<PromptDeliveryObservationV1, PromptDeliveryErrorV1> {
     compiled.validate()?;
-    attachment.validate(
-        compiled,
-        &codex_hepta_context_compiler::record_serialization(
-            compiled,
-            attachment.attachment_id.clone(),
-            attachment.payload_digest,
-        )?,
-    )?;
+    serialization.validate_for(compiled)?;
+    attachment.validate(compiled, serialization)?;
     native_observation.validate_for(attachment)?;
     canonical_context.validate()?;
     let recomputed = ContextCompilationReceiptV1::from_compiled_v2(
