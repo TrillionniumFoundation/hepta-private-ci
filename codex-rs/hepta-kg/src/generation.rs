@@ -37,15 +37,32 @@ pub enum KnowledgeRelationKindV2 {
     PromptComplements,
     PromptSubstitutes,
     PromptConflicts,
-    /// A bounded domain predicate whose exact UTF-8 spelling is represented by
-    /// its content digest. This preserves arbitrary owner predicates without
-    /// collapsing them into one of the semantic built-ins.
-    Named(Digest32),
+    /// A bounded domain predicate. `predicate_digest` carries semantic query
+    /// identity, while `identity_digest` distinguishes independently persisted
+    /// occurrences of the same predicate between the same endpoints.
+    Named {
+        predicate_digest: Digest32,
+        identity_digest: Digest32,
+    },
 }
 
 impl KnowledgeRelationKindV2 {
     pub fn named(value: impl AsRef<[u8]>) -> Self {
-        Self::Named(Digest32::of_bytes(value.as_ref()))
+        let digest = Digest32::of_bytes(value.as_ref());
+        Self::Named {
+            predicate_digest: digest,
+            identity_digest: digest,
+        }
+    }
+
+    pub fn named_instance(
+        predicate: impl AsRef<[u8]>,
+        identity: impl AsRef<[u8]>,
+    ) -> Self {
+        Self::Named {
+            predicate_digest: Digest32::of_bytes(predicate.as_ref()),
+            identity_digest: Digest32::of_bytes(identity.as_ref()),
+        }
     }
 }
 
@@ -350,7 +367,10 @@ pub fn query_relations(
         .filter(|edge| {
             (seeds.contains(&edge.identity.source_node_id)
                 || seeds.contains(&edge.identity.target_node_id))
-                && (relation_kinds.is_empty() || relation_kinds.contains(&edge.identity.relation))
+                && (relation_kinds.is_empty()
+                    || relation_kinds
+                        .iter()
+                        .any(|kind| relation_matches(*kind, edge.identity.relation)))
         })
         .cloned()
         .collect::<Vec<_>>();
@@ -599,10 +619,30 @@ fn push_relation(bytes: &mut Vec<u8>, value: KnowledgeRelationKindV2) {
         KnowledgeRelationKindV2::PromptComplements => bytes.push(7),
         KnowledgeRelationKindV2::PromptSubstitutes => bytes.push(8),
         KnowledgeRelationKindV2::PromptConflicts => bytes.push(9),
-        KnowledgeRelationKindV2::Named(digest) => {
+        KnowledgeRelationKindV2::Named {
+            predicate_digest,
+            identity_digest,
+        } => {
             bytes.push(10);
-            push_digest(bytes, digest);
+            push_digest(bytes, predicate_digest);
+            push_digest(bytes, identity_digest);
         }
+    }
+}
+
+fn relation_matches(filter: KnowledgeRelationKindV2, value: KnowledgeRelationKindV2) -> bool {
+    match (filter, value) {
+        (
+            KnowledgeRelationKindV2::Named {
+                predicate_digest: left,
+                ..
+            },
+            KnowledgeRelationKindV2::Named {
+                predicate_digest: right,
+                ..
+            },
+        ) => left == right,
+        _ => filter == value,
     }
 }
 
@@ -681,8 +721,13 @@ fn ensure_digest(name: &'static str, digest: Digest32) -> Result<(), KnowledgeGe
 }
 
 fn validate_relation(value: KnowledgeRelationKindV2) -> Result<(), KnowledgeGenerationErrorV2> {
-    if let KnowledgeRelationKindV2::Named(digest) = value {
-        ensure_digest("named_relation", digest)?;
+    if let KnowledgeRelationKindV2::Named {
+        predicate_digest,
+        identity_digest,
+    } = value
+    {
+        ensure_digest("named_relation_predicate", predicate_digest)?;
+        ensure_digest("named_relation_identity", identity_digest)?;
     }
     Ok(())
 }
