@@ -1,0 +1,44 @@
+name: Memory federation hardening dev
+
+on:
+  push:
+    branches:
+      - codex/memory-federation-hardening
+
+permissions:
+  contents: write
+
+concurrency:
+  group: memory-federation-hardening-dev
+  cancel-in-progress: true
+
+jobs:
+  crate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 0
+      - name: Refresh lockfile format and run focused checks
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set +e
+          cargo check -p codex-hepta-memory-federation --tests
+          status=$?
+          cargo fmt --package codex-hepta-memory-federation
+          git add Cargo.lock hepta-memory-federation
+          if ! git diff --cached --quiet; then
+            git config user.name hepta-ci-bot
+            git config user.email hepta-ci-bot@users.noreply.github.com
+            git commit -m "chore(memory.federation): refresh lockfile and formatting"
+            git push origin HEAD:codex/memory-federation-hardening
+          fi
+          exit "$status"
+      - name: Test hardened federation crate
+        working-directory: codex-rs
+        run: cargo test --locked -p codex-hepta-memory-federation
+      - name: Clippy hardened federation crate
+        working-directory: codex-rs
+        run: cargo clippy --locked -p codex-hepta-memory-federation --all-targets -- -D warnings
