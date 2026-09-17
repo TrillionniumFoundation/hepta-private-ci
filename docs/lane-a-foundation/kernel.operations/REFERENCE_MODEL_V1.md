@@ -1,5 +1,9 @@
 # Kernel operations bounded reference model V1
 
+The reference model remains the deterministic transition oracle for the durable
+implementation described in `DURABLE_STORE_V1.md`. It is intentionally smaller
+than the SQLite owner and must not be substituted for durable storage.
+
 ## Reference witness binding
 
 `ReferenceAuthorityWitness::expected_digest` uses the domain
@@ -40,11 +44,15 @@ stale and a changed digest conflicts.
 
 ## Bounds
 
-Both ledgers default to at most 16,384 records and clamp configured model
-capacity to that ceiling. Capacity rejection happens before visible mutation.
+Both reference ledgers default to at most 16,384 records and clamp configured
+model capacity to that ceiling. Capacity rejection happens before visible
+mutation. These are oracle bounds, not the durable store's production limits.
 
-## Explicit omissions
+## Explicit oracle omissions
 
-There is no persistence, claim expiry, higher-generation takeover, background
-worker, atomic co-commit with a domain store or external terminal observer.
-Those are durable-backend requirements, not properties of this oracle.
+This oracle deliberately has no persistence, claim expiry, higher-generation
+takeover, dispatcher, migration or destination transaction. Those properties
+are implemented and tested separately by `DurableOperationStore`,
+`DurableDispatcher` and the destination-dedupe helpers. Keeping the oracle
+in-memory prevents a persistence implementation from being its own only test
+oracle and preserves deterministic transition fixtures.
