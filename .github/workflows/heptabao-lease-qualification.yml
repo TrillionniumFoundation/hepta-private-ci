@@ -1,0 +1,110 @@
+name: HeptaBao secret lease qualification
+
+on:
+  pull_request:
+    paths:
+      - "codex-rs/hepta-bao-adapter/**"
+      - "codex-rs/hepta-contracts/**"
+      - "docs/modules/secrets.heptabao/**"
+      - "qualification/module-execution-dossiers/detail/secrets.heptabao.md"
+      - ".github/workflows/heptabao-lease-qualification.yml"
+  push:
+    branches: [main]
+    paths:
+      - "codex-rs/hepta-bao-adapter/**"
+      - "codex-rs/hepta-contracts/**"
+      - "docs/modules/secrets.heptabao/**"
+      - "qualification/module-execution-dossiers/detail/secrets.heptabao.md"
+      - ".github/workflows/heptabao-lease-qualification.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: heptabao-lease-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+env:
+  SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+  TESTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+  HEPTA_CI_LANE: source-head
+  CARGO_INCREMENTAL: "0"
+  CARGO_PROFILE_TEST_DEBUG: "0"
+  CARGO_PROFILE_DEV_DEBUG: "0"
+
+jobs:
+  lease-boundary:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Bind exact source identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          git diff --quiet
+          git diff --cached --quiet
+      - name: Prepare native test prerequisites
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential libcap-dev pkg-config
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+      - name: Resolve verified workspace prerequisites
+        env:
+          CODEX_REPO_ROOT: ${{ github.workspace }}
+          PYTHONPATH: scripts
+        run: python3 scripts/hepta_ci_v8.py
+      - name: Check formatting
+        working-directory: codex-rs
+        run: >-
+          python3 ../scripts/hepta_ci_exec.py
+          --output "$RUNNER_TEMP/hepta-command-records/format.json"
+          -- cargo fmt
+          --package codex-hepta-contracts
+          --package codex-hepta-bao-adapter
+          -- --check
+      - name: Run focused owner tests
+        working-directory: codex-rs
+        run: >-
+          python3 ../scripts/hepta_ci_exec.py
+          --output "$RUNNER_TEMP/hepta-command-records/owner-test.json"
+          -- just test --locked
+          -p codex-hepta-contracts
+          -p codex-hepta-bao-adapter
+      - name: Run strict Clippy
+        working-directory: codex-rs
+        run: >-
+          python3 ../scripts/hepta_ci_exec.py
+          --output "$RUNNER_TEMP/hepta-command-records/clippy.json"
+          -- cargo clippy --locked
+          -p codex-hepta-contracts
+          -p codex-hepta-bao-adapter
+          --all-targets -- -D warnings
+      - name: Emit exact-candidate verification receipt
+        run: >-
+          python3 codex-rs/hepta-bao-adapter/qa/emit_verification_receipt.py
+          --records-dir "$RUNNER_TEMP/hepta-command-records"
+          --output "$RUNNER_TEMP/hepta-command-records/secrets-heptabao-receipt.json"
+      - name: Confirm tracked candidate stayed clean
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$TESTED_SHA"
+          git diff --check
+          git diff --exit-code
+          test -z "$(git status --porcelain --untracked-files=no)"
+      - name: Retain exact-candidate command records and receipt
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: heptabao-lease-${{ github.run_id }}-${{ github.run_attempt }}-${{ env.SOURCE_SHA }}
+          path: ${{ runner.temp }}/hepta-command-records/*.json
+          if-no-files-found: error
+          retention-days: 30
