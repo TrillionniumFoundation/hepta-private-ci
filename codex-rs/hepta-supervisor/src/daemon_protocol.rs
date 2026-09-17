@@ -41,6 +41,18 @@ impl SupervisordRequest {
         if self.request_id == 0 {
             return Err(SupervisordRequestValidationError::InvalidRequest);
         }
+        // Production binaries admit release selection changes only through
+        // SignedUpgrade/SignedRollback, whose independent verifier is pinned
+        // outside the request. Unit tests retain the unsigned methods so the
+        // underlying lifecycle state machine can be exercised directly.
+        if cfg!(all(feature = "production-authority", not(test)))
+            && matches!(
+                &self.method,
+                SupervisordMethod::Upgrade { .. } | SupervisordMethod::Rollback { .. }
+            )
+        {
+            return Err(SupervisordRequestValidationError::InvalidRequest);
+        }
         match &self.method {
             SupervisordMethod::Health | SupervisordMethod::Snapshot { .. } => Ok(()),
             SupervisordMethod::Roster { limit } => {

@@ -111,7 +111,7 @@ impl ManagedProcess for UnixManagedProcess {
                 }
                 None => ProcessState::Running {
                     healthy: self.health_probe.ready(),
-                    drained: false,
+                    drained: self.health_probe.drained(),
                 },
             },
             UnixProcessHandle::Adopted { process_id } => {
@@ -121,7 +121,7 @@ impl ManagedProcess for UnixManagedProcess {
                 } else {
                     ProcessState::Running {
                         healthy: self.health_probe.ready(),
-                        drained: false,
+                        drained: self.health_probe.drained(),
                     }
                 }
             }
@@ -324,29 +324,43 @@ impl ProcessDriver for UnixProcessDriver {
 
 struct HealthProbe {
     ready: Arc<AtomicBool>,
+    drained: Arc<AtomicBool>,
     shutdown: Arc<AtomicBool>,
 }
 
 impl HealthProbe {
     fn spawn(identity: HealthProbeIdentity) -> Result<Self, ProcessDriverError> {
         let ready = Arc::new(AtomicBool::new(false));
+        let drained = Arc::new(AtomicBool::new(false));
         let shutdown = Arc::new(AtomicBool::new(false));
         let worker_ready = Arc::clone(&ready);
+        let worker_drained = Arc::clone(&drained);
         let worker_shutdown = Arc::clone(&shutdown);
         std::thread::Builder::new()
             .name(format!("hepta-health-{}", identity.agent_id()))
-            .spawn(move || run_health_probe(identity, worker_ready, worker_shutdown))
+            .spawn(move || {
+                run_health_probe(identity, worker_ready, worker_drained, worker_shutdown)
+            })
             .map_err(ProcessDriverError::from)?;
-        Ok(Self { ready, shutdown })
+        Ok(Self {
+            ready,
+            drained,
+            shutdown,
+        })
     }
 
     fn ready(&self) -> bool {
         self.ready.load(Ordering::Acquire)
     }
 
+    fn drained(&self) -> bool {
+        self.drained.load(Ordering::Acquire)
+    }
+
     fn shutdown(&self) {
         self.shutdown.store(true, Ordering::Release);
         self.ready.store(false, Ordering::Release);
+        self.drained.store(false, Ordering::Release);
     }
 }
 
@@ -451,31 +465,32 @@ impl MatrixHealthProbeIdentity {
 fn run_health_probe(
     identity: HealthProbeIdentity,
     ready: Arc<AtomicBool>,
+    drained: Arc<AtomicBool>,
     shutdown: Arc<AtomicBool>,
 ) {
     let mut request_id = 1_u64;
     while !shutdown.load(Ordering::Acquire) {
+        let observation = query_health_once(&identity, request_id).ok();
         ready.store(
-            probe_health_once(&identity, request_id).unwrap_or(false),
+            observation.is_some_and(|observation| observation.ready),
+            Ordering::Release,
+        );
+        drained.store(
+            observation.is_some_and(|observation| observation.drained),
             Ordering::Release,
         );
         request_id = request_id.wrapping_add(1).max(1);
         std::thread::sleep(HEALTH_PROBE_INTERVAL);
     }
     ready.store(false, Ordering::Release);
-}
-
-fn probe_health_once(
-    identity: &HealthProbeIdentity,
-    request_id: u64,
-) -> Result<bool, ProcessDriverError> {
-    Ok(query_health_once(identity, request_id)?.ready)
+    drained.store(false, Ordering::Release);
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 struct HealthProbeObservation {
     exact_identity: bool,
     ready: bool,
+    drained: bool,
 }
 
 fn prove_adoption_identity(identity: &HealthProbeIdentity) -> bool {
@@ -513,6 +528,7 @@ fn query_agent_health_once(
         return Ok(HealthProbeObservation {
             exact_identity: false,
             ready: false,
+            drained: false,
         });
     }
 
@@ -529,6 +545,7 @@ fn query_agent_health_once(
         return Ok(HealthProbeObservation {
             exact_identity: false,
             ready: false,
+            drained: false,
         });
     }
     let response: AgentdResponse = serde_json::from_slice(&response_bytes)?;
@@ -540,6 +557,7 @@ fn query_agent_health_once(
         return Ok(HealthProbeObservation {
             exact_identity: false,
             ready: false,
+            drained: false,
         });
     };
     let generation_matches = match health.lifecycle {
@@ -569,6 +587,7 @@ fn query_agent_health_once(
     Ok(HealthProbeObservation {
         exact_identity,
         ready: exact_identity && readiness_matches,
+        drained: exact_identity && health.lifecycle == AgentLifecycle::Draining,
     })
 }
 
@@ -589,6 +608,7 @@ fn query_matrix_health_once(
         return Ok(HealthProbeObservation {
             exact_identity: false,
             ready: false,
+            drained: false,
         });
     }
 
@@ -608,6 +628,7 @@ fn query_matrix_health_once(
         return Ok(HealthProbeObservation {
             exact_identity: false,
             ready: false,
+            drained: false,
         });
     }
     let response: MatrixdResponse = serde_json::from_slice(&response_bytes)?;
@@ -615,6 +636,7 @@ fn query_matrix_health_once(
         return Ok(HealthProbeObservation {
             exact_identity: false,
             ready: false,
+            drained: false,
         });
     }
     let exact_envelope = response.schema_version == MATRIXD_CONTROL_SCHEMA_VERSION
@@ -637,6 +659,7 @@ fn query_matrix_health_once(
         return Ok(HealthProbeObservation {
             exact_identity: false,
             ready: false,
+            drained: false,
         });
     };
     let exact_identity = exact_envelope && process_id == identity.process_id && !fenced;
@@ -647,6 +670,7 @@ fn query_matrix_health_once(
     Ok(HealthProbeObservation {
         exact_identity,
         ready,
+        drained: false,
     })
 }
 

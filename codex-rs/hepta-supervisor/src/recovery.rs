@@ -112,7 +112,7 @@ impl<D: ProcessDriver> Supervisor<D> {
             logs_root: record.layout.logs_root().to_path_buf(),
             command: release.command().clone(),
         };
-        let mut spawned = match self.driver.spawn(&spec) {
+        let spawned = match self.driver.spawn(&spec) {
             Ok(spawned) => spawned,
             Err(error) => {
                 self.transition_without_runtime(
@@ -131,31 +131,55 @@ impl<D: ProcessDriver> Supervisor<D> {
             release_id: release.release_id().clone(),
             identity: spawned.identity.clone(),
         };
-        if let Err(error) = write_lease(record.layout.run_root(), &lease) {
-            let _ = spawned.process.kill();
-            self.transition_without_runtime(
-                agent_id,
-                slot,
-                starting.generation,
-                AgentLifecycle::Failed,
-            )?;
-            return Err(error);
-        }
+
+        // Keep ownership of the process handle before the first fallible lease
+        // publication. If durable publication fails, the process remains fenced
+        // and observable until an exit is actually seen; dropping the handle
+        // here would create an untracked live-process window.
         slot.last_command = Some(release.command().clone());
         slot.active_release = Some(release);
         slot.runtime = Some(AgentRuntime {
             process: spawned.process,
             identity: spawned.identity,
             spawn_generation: starting.generation,
-            release_id: lease.release_id,
+            release_id: lease.release_id.clone(),
             generation: starting.generation,
             phase: RuntimePhase::AwaitingHealth {
                 deadline: health_deadline,
             },
             healthy: false,
             fenced: false,
+            lease_persisted: false,
         });
         slot.event(starting.generation, SupervisorEventKind::Spawned);
+
+        if let Err(lease_error) = write_lease(record.layout.run_root(), &lease) {
+            let kill_error = if let Some(runtime) = slot.runtime.as_mut() {
+                runtime.fenced = true;
+                runtime.phase = RuntimePhase::Killing;
+                runtime.process.kill().err()
+            } else {
+                None
+            };
+            let failed_generation = self.transition_without_runtime(
+                agent_id,
+                slot,
+                starting.generation,
+                AgentLifecycle::Failed,
+            )?;
+            if let Some(runtime) = slot.runtime.as_mut() {
+                runtime.generation = failed_generation;
+            }
+            if let Some(kill_error) = kill_error {
+                return Err(SupervisorError::Invalid(format!(
+                    "process lease publication failed ({lease_error}); cleanup kill also failed ({kill_error})"
+                )));
+            }
+            return Err(lease_error);
+        }
+        if let Some(runtime) = slot.runtime.as_mut() {
+            runtime.lease_persisted = true;
+        }
         Ok(())
     }
 
@@ -247,6 +271,7 @@ impl<D: ProcessDriver> Supervisor<D> {
                     phase,
                     healthy: false,
                     fenced: false,
+                    lease_persisted: true,
                 });
                 slot.event(
                     record.lifecycle.generation,

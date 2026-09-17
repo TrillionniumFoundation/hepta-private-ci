@@ -46,6 +46,10 @@ pub struct Supervisor<D: ProcessDriver> {
 #[path = "supervisor_tests.rs"]
 mod tests;
 
+#[cfg(test)]
+#[path = "closure_tests.rs"]
+mod closure_tests;
+
 impl<D: ProcessDriver> Supervisor<D> {
     pub fn recover(
         registry: FleetRegistry,
@@ -354,7 +358,10 @@ impl<D: ProcessDriver> Supervisor<D> {
                 "agent {agent_id} has no explicit active release identity"
             ))
         })?;
-        if current.identity() == target.identity() || current.command() == target.command() {
+        if current.identity() == target.identity()
+            || (current.command() == target.command()
+                && current.matrixd_command() == target.matrixd_command())
+        {
             return Err(SupervisorError::TargetReleaseUnchanged(agent_id.clone()));
         }
         if record.lifecycle.lifecycle != AgentLifecycle::Running {
@@ -383,11 +390,14 @@ impl<D: ProcessDriver> Supervisor<D> {
             .slots
             .get(agent_id)
             .ok_or_else(|| SupervisorError::UnknownAgent(agent_id.clone()))?;
-        let target = slot
+        let target_id = slot
             .previous_release
             .as_ref()
-            .ok_or_else(|| SupervisorError::NoPreviousRelease(agent_id.clone()))?;
-        self.preflight_upgrade(agent_id, target)
+            .ok_or_else(|| SupervisorError::NoPreviousRelease(agent_id.clone()))?
+            .release_id()
+            .clone();
+        let target = AgentRelease::try_from(self.registry.resolve_release(agent_id, &target_id)?)?;
+        self.preflight_upgrade(agent_id, &target)
     }
 
     pub fn agent_ids(&self) -> Vec<AgentId> {
@@ -401,6 +411,7 @@ impl<D: ProcessDriver> Supervisor<D> {
         now: Instant,
     ) -> Result<(), SupervisorError> {
         self.with_slot(agent_id, |supervisor, slot| {
+            slot.reset_automatic_restart();
             supervisor.start_slot(agent_id, slot, command, now)
         })
     }
@@ -412,6 +423,7 @@ impl<D: ProcessDriver> Supervisor<D> {
         now: Instant,
     ) -> Result<(), SupervisorError> {
         self.with_slot(agent_id, |supervisor, slot| {
+            slot.reset_automatic_restart();
             supervisor.start_release_slot(agent_id, slot, release, now)
         })
     }
@@ -637,9 +649,9 @@ impl<D: ProcessDriver> Supervisor<D> {
             // not downgrade it to a recoverable driver fault: the caller
             // must fail closed at daemon startup and require explicit
             // operator recovery.
-            let _ = runtime.process.kill();
             runtime.fenced = true;
             runtime.phase = RuntimePhase::Killing;
+            let _ = runtime.process.kill();
         }
         Err(SupervisorError::SignedIntentRecoveryRequired(
             agent_id.clone(),
