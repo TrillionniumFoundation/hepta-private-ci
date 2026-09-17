@@ -1,58 +1,53 @@
-name: rust-release-prepare
+name: platform-wire-candidate-bootstrap
 on:
-  workflow_dispatch:
-  schedule:
-    - cron: "0 */4 * * *"
+  push:
+    branches:
+      - fix/platform-wire-protocol-completion-20260917
 
 concurrency:
-  group: ${{ github.workflow }}
-  cancel-in-progress: false
+  group: platform-wire-candidate-bootstrap
+  cancel-in-progress: true
 
 permissions:
   contents: write
-  pull-requests: write
 
 jobs:
-  prepare:
+  bootstrap:
+    runs-on: ubuntu-24.04
     timeout-minutes: 30
-    # Prevent scheduled runs on forks (no secrets, wastes Actions minutes)
-    if: vars.ENABLE_UPSTREAM_AUTOMATION == 'true' && github.repository == 'TrillionniumFoundation/hepta-private-ci'
-    environment:
-      name: rust-release-prepare
-      deployment: false
-    runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
-          ref: main
+          ref: fix/platform-wire-protocol-completion-20260917
           fetch-depth: 0
-          persist-credentials: false
-
-      - name: Update models.json
-        env:
-          OPENAI_API_KEY: ${{ secrets.CODEX_OPENAI_API_KEY }}
+      - name: Configure commit identity
+        run: |
+          git config user.name "Hepta Wire Candidate Bot"
+          git config user.email "hepta-wire-candidate@users.noreply.github.com"
+      - name: Generate minimal Cargo.lock delta and format
+        working-directory: codex-rs
         run: |
           set -euo pipefail
-
-          client_version="99.99.99"
-          terminal_info="github-actions"
-          user_agent="codex_cli_rs/99.99.99 (Linux $(uname -r); $(uname -m)) ${terminal_info}"
-          base_url="${OPENAI_BASE_URL:-https://chatgpt.com/backend-api/codex}"
-
-          headers=(
-            -H "Authorization: Bearer ${OPENAI_API_KEY}"
-            -H "User-Agent: ${user_agent}"
-          )
-
-          url="${base_url%/}/models?client_version=${client_version}"
-          curl --http1.1 --fail --show-error --location "${headers[@]}" "${url}" | jq '.' > codex-rs/models-manager/models.json
-
-      - name: Open pull request (if changed)
-        uses: peter-evans/create-pull-request@c0f553fe549906ede9cf27b5156039d195d2ece0 # v8.1.0
-        with:
-          commit-message: "Update models.json"
-          title: "Update models.json"
-          body: "Automated update of models.json."
-          branch: "bot/update-models-json"
-          reviewers: "pakrym-oai,aibrahim-oai"
-          delete-branch: true
+          cargo check -p codex-hepta-wire -p codex-hepta-codex-adapter
+          cargo fmt --package codex-hepta-wire --package codex-hepta-codex-adapter
+      - name: Run focused tests
+        working-directory: codex-rs
+        run: |
+          set -euo pipefail
+          cargo test --locked -p codex-hepta-wire
+          cargo test --locked -p codex-hepta-codex-adapter
+          cargo test --locked -p codex-hepta-shadow-qualification --test cross_language_wire_fault
+      - name: Run focused clippy
+        working-directory: codex-rs
+        run: |
+          set -euo pipefail
+          cargo clippy --locked -p codex-hepta-wire -p codex-hepta-codex-adapter --all-targets -- -D warnings
+      - name: Commit generated files
+        run: |
+          set -euo pipefail
+          git diff --check
+          if ! git diff --quiet -- codex-rs/Cargo.lock codex-rs/hepta-wire codex-rs/hepta-codex-adapter codex-rs/hepta-shadow-qualification/tests/cross_language_wire_fault.rs; then
+            git add codex-rs/Cargo.lock codex-rs/hepta-wire codex-rs/hepta-codex-adapter codex-rs/hepta-shadow-qualification/tests/cross_language_wire_fault.rs
+            git commit -m "chore(platform.wire): refresh lockfile and formatting"
+            git push origin HEAD:fix/platform-wire-protocol-completion-20260917
+          fi
