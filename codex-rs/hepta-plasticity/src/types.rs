@@ -305,6 +305,9 @@ pub enum Error {
     EvaluatorAttestationMismatch,
     EvidenceVerificationFailed(String),
     IndependentEvaluatorVerificationFailed(String),
+    TopologyNoChangeHasDelta(String),
+    TopologyMutationMissingDelta(String),
+    TopologyProposalMismatch,
 }
 
 impl fmt::Display for Error {
