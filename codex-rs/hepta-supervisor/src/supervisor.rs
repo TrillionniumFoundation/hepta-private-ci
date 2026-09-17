@@ -479,15 +479,10 @@ impl<D: ProcessDriver> Supervisor<D> {
             ));
         }
         self.with_slot(agent_id, |supervisor, slot| {
-            let target_id = slot
+            let target = slot
                 .previous_release
-                .as_ref()
-                .ok_or_else(|| SupervisorError::NoPreviousRelease(agent_id.clone()))?
-                .release_id()
-                .clone();
-            let target = AgentRelease::try_from(
-                supervisor.registry.resolve_release(agent_id, &target_id)?,
-            )?;
+                .clone()
+                .ok_or_else(|| SupervisorError::NoPreviousRelease(agent_id.clone()))?;
             supervisor.upgrade_slot(agent_id, slot, target, now, /*explicit_rollback*/ true)
         })
     }
