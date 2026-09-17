@@ -80,13 +80,10 @@ impl AgentdProductionWriterHost {
 
     /// Build a host handle around an already-open Agentd-owned store.
     ///
-    /// Kept for compatibility with qualification fixtures that explicitly test
-    /// the lower-level durability engine. Product composition must use
-    /// [`Self::open`] so a raw backend cannot become an alternate authority
-    /// seam.
-    #[deprecated(
-        note = "qualification-only escape hatch; product code must use AgentdProductionWriterHost::open"
-    )]
+    /// This remains an explicitly registered qualification boundary for the H4
+    /// persistent-writer fixtures. It has no product callers. Product
+    /// composition must use [`Self::open`] so a raw backend cannot become an
+    /// alternate authority seam.
     pub async fn open_with_store<V>(
         store: CognitiveStore,
         authority: ProductionAuthorityLease,
