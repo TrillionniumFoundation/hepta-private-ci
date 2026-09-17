@@ -7,7 +7,11 @@
 
 #![forbid(unsafe_code)]
 
+mod acknowledged;
 mod causal_v2;
+mod composed;
+mod credit_commit;
+mod dataset_from_ledger;
 mod dataset_receipt_v3;
 mod durable;
 mod durable_codec;
@@ -20,7 +24,10 @@ mod segment_codec;
 mod segments;
 mod shadow;
 mod signed_evidence;
+mod witness;
 
+pub use acknowledged::AcknowledgedLearningJournal;
+pub use acknowledged::WitnessedLearningLedger;
 pub use causal_v2::AuthenticatedOutcomeV1;
 pub use causal_v2::AuthenticatedPrincipalV1;
 pub use causal_v2::CandidateSetCompletenessReceiptV1;
@@ -37,6 +44,21 @@ pub use causal_v2::freeze_dataset;
 pub use causal_v2::validate_authenticated_outcome;
 pub use causal_v2::validate_candidate_set_completeness;
 pub use causal_v2::verify_independent_roles;
+pub use composed::AuthenticatedDecisionCommitV1;
+pub use composed::AuthenticatedOutcomeCommitV1;
+pub use composed::CausalLearningWriterV1;
+pub use composed::ComposedLearningError;
+pub use composed::credit_evidence_payload_v1;
+pub use composed::dataset_evidence_payload_v1;
+pub use composed::decision_evidence_payload_v1;
+pub use composed::episode_role_payload_v1;
+pub use composed::outcome_evidence_payload_v1;
+pub use credit_commit::DurableCreditBatchError;
+pub use credit_commit::DurableCreditBatchReceiptV1;
+pub use credit_commit::append_conserved_credit_batch_v1;
+pub use dataset_from_ledger::LedgerDerivedDatasetError;
+pub use dataset_from_ledger::LedgerDerivedDatasetPlanV1;
+pub use dataset_from_ledger::freeze_dataset_from_ledger_v3;
 pub use dataset_receipt_v3::DatasetReceiptError;
 pub use dataset_receipt_v3::DatasetSnapshotReceiptV3;
 pub use dataset_receipt_v3::freeze_dataset_receipt_v3;
@@ -80,6 +102,7 @@ pub use signed_evidence::SignedLearningEvidenceV1;
 pub use signed_evidence::TrustedLearningSignerV1;
 pub use signed_evidence::VerifiedLearningEvidenceV1;
 pub use signed_evidence::verify_signed_role_separation;
+pub use witness::LedgerWitnessStore;
 
 #[cfg(test)]
 #[path = "shadow_tests.rs"]

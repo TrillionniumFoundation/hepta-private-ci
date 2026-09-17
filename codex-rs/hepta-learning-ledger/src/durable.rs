@@ -50,6 +50,7 @@ pub enum DurableLedgerError {
     InvalidBinding,
     InvalidLimit,
     InvalidAnchor,
+    InvalidBatch,
     Busy,
     NotRegular,
     AlreadyInitialized,
@@ -198,6 +199,82 @@ impl DurableLedger {
         self.durable_length = next_length;
         self.poisoned = false;
         Ok(receipt)
+    }
+
+    /// Stage one ordered event batch against a cloned core, write every new
+    /// canonical frame contiguously, synchronize once, then publish the complete
+    /// staged core. A retry may contain an already committed prefix followed by
+    /// a missing suffix after recovery from an indeterminate write; any other
+    /// replay/new interleaving conflicts.
+    pub fn append_batch(
+        &mut self,
+        expected_predecessor: Digest32,
+        events: Vec<LedgerEvent>,
+    ) -> Result<Vec<AppendReceipt>, DurableLedgerError> {
+        if self.poisoned {
+            return Err(DurableLedgerError::Poisoned);
+        }
+        if events.is_empty() {
+            return Err(DurableLedgerError::InvalidBatch);
+        }
+        let mut staging = self.core.clone();
+        let mut expected_chain = expected_predecessor;
+        let mut frames = Vec::new();
+        let mut receipts = Vec::with_capacity(events.len());
+        let mut saw_new = false;
+
+        for event in events {
+            let prepared = staging
+                .prepare(event)
+                .map_err(DurableLedgerError::Semantic)?;
+            if prepared.record.predecessor_chain_digest != expected_chain {
+                return Err(DurableLedgerError::Conflict);
+            }
+            expected_chain = prepared.record.chain_digest;
+            match prepared.disposition {
+                AppendDisposition::IdempotentReplay if saw_new => {
+                    return Err(DurableLedgerError::Conflict);
+                }
+                AppendDisposition::IdempotentReplay => {}
+                AppendDisposition::Appended => {
+                    saw_new = true;
+                    frames.extend_from_slice(&encode_frame(&prepared.record)?);
+                }
+            }
+            receipts.push(
+                staging
+                    .apply(prepared)
+                    .map_err(DurableLedgerError::Semantic)?,
+            );
+        }
+
+        if staging.records().len() > self.max_records {
+            return Err(DurableLedgerError::Capacity);
+        }
+        if !saw_new {
+            return Ok(receipts);
+        }
+        let frame_bytes = u64::try_from(frames.len()).map_err(|_| DurableLedgerError::Capacity)?;
+        let next_length = self
+            .durable_length
+            .checked_add(frame_bytes)
+            .ok_or(DurableLedgerError::Capacity)?;
+        if next_length > MAX_BYTES {
+            return Err(DurableLedgerError::Capacity);
+        }
+
+        self.poisoned = true;
+        if self.file.seek(SeekFrom::End(0))? != self.durable_length {
+            return Err(DurableLedgerError::Corrupt);
+        }
+        self.file
+            .write_all(&frames)
+            .and_then(|()| self.file.sync_all())
+            .map_err(|_| DurableLedgerError::Indeterminate)?;
+        self.core = staging;
+        self.durable_length = next_length;
+        self.poisoned = false;
+        Ok(receipts)
     }
 
     pub fn records(&self) -> Result<&[LedgerRecord], DurableLedgerError> {

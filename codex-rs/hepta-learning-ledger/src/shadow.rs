@@ -51,7 +51,7 @@ pub struct ShadowAppendReceipt {
     pub ledger_receipt: AppendReceipt,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub enum ShadowDecisionError {
     CandidateLimitExceeded,
     CandidateSetDigestMismatch {
