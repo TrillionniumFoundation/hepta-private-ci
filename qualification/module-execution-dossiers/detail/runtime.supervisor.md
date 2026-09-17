@@ -1,7 +1,7 @@
 # runtime.supervisor: implementation design
 
 Parent: `docs/modules/runtime.supervisor/TECHNICAL.md`. Lane: `LANE-B-RUNTIME`.
-Status: native process lifecycle and release transition supervisor implemented; remaining deployment qualification and independent acceptance are listed in section 8. Common requirements: `../EXECUTION_SEMANTICS.md` and `../TECHNICAL.md`. Canonical ownership and package predecessors are unchanged.
+Status: native process lifecycle and release transition supervisor implemented; remaining target capabilities and independent acceptance are listed in section 8. Common requirements: `../EXECUTION_SEMANTICS.md` and `../TECHNICAL.md`. Canonical ownership and package predecessors are unchanged.
 
 ## 1. Source and work envelope
 
@@ -39,17 +39,14 @@ These are required product test designs, not executed-test receipts. Each implem
 
 ## 7. Integration, rollback and capability ceiling
 
-Agentd remains a composition host; durable domain ownership does not move into the supervisor. The CNS brainstem and local controller schedules stay separate. Rollback consumes an independently authorized compatible predecessor and checks current revocations, not an old release-selection backup. The daemon re-resolves the recorded predecessor through the current Fleet release allowlist before admitting an unsigned local-control rollback; production-authority builds reject unsigned `Upgrade` and `Rollback` protocol requests so release changes enter through the signed mutation methods.
+Agentd remains a composition host; durable domain ownership does not move into the supervisor. The CNS brainstem and local controller schedules stay separate. Rollback consumes an independently authorized compatible predecessor and checks current revocations, not an old release-selection backup.
 
 Use all eighteen dossier receipt fields. Immediate revocation/stop remains effective across frozen snapshots. Preserve every applicable external gate; no generator self-acceptance, self-merge or self-release.
 
 ## 8. Current native implementation
 
 - **Implemented entrypoints:** `start` in [codex-rs/hepta-supervisor/src/supervisor.rs](../../../codex-rs/hepta-supervisor/src/supervisor.rs); `tick` in [codex-rs/hepta-supervisor/src/supervisor.rs](../../../codex-rs/hepta-supervisor/src/supervisor.rs); `upgrade` in [codex-rs/hepta-supervisor/src/supervisor.rs](../../../codex-rs/hepta-supervisor/src/supervisor.rs). Native process lifecycle and release transition supervisor implemented.
-- **State and recovery:** Supervisor keeps managed-process phases in memory and uses FleetRegistry lifecycle/release facts for recovery. Generation and release predecessor checks govern drain/restart/upgrade/rollback; process liveness alone is not full readiness. Unexpected main-Agent exit and health-start failure use a bounded three-attempt exponential recovery sequence beginning at 250 ms inside a 60-second recovery window; a process that remains healthy for the recovery window clears that failure budget. Manual drain/stop/kill cancels a queued automatic retry and manual restart begins a fresh recovery window.
-- **Launch cleanup:** A spawned process is retained as an in-memory fenced runtime before process-lease publication. If lease publication fails, cleanup failure cannot drop the only owned process handle; the supervisor keeps the runtime fenced, retries kill while it remains observable, and never removes an unrelated or unpublished lease on exit.
-- **Drain observation:** On Unix, the process driver still initiates Agentd drain with `SIGTERM`, but the health probe now observes the exact Agentd identity and `Draining` lifecycle and exposes that as `drained=true`; stop escalation therefore need not rely only on the drain deadline when the child reports its drain transition.
-- **Release admission:** Matrix-only release bundle changes are not collapsed into “unchanged” when the Agentd command is identical but the Matrix companion differs. The daemon's rollback preflight re-resolves the predecessor through the current Fleet release allowance. A non-test `production-authority` build rejects unsigned Upgrade/Rollback wire requests; `SignedUpgrade`/`SignedRollback` retain the independently pinned grant-verifier path.
-- **Source tests:** [codex-rs/hepta-supervisor/src/supervisor_tests.rs](../../../codex-rs/hepta-supervisor/src/supervisor_tests.rs), [codex-rs/hepta-supervisor/src/closure_tests.rs](../../../codex-rs/hepta-supervisor/src/closure_tests.rs), [codex-rs/hepta-supervisor/src/unix_tests.rs](../../../codex-rs/hepta-supervisor/src/unix_tests.rs). These are test identities, not execution receipts for this documentation revision.
+- **State and recovery:** Supervisor keeps managed-process phases in memory and uses FleetRegistry lifecycle/release facts for recovery. Generation and release predecessor checks govern drain/restart/upgrade/rollback; process liveness alone is not full readiness.
+- **Source tests:** [codex-rs/hepta-supervisor/src/supervisor_tests.rs](../../../codex-rs/hepta-supervisor/src/supervisor_tests.rs), [codex-rs/hepta-supervisor/src/unix_tests.rs](../../../codex-rs/hepta-supervisor/src/unix_tests.rs). These are test identities, not execution receipts for this documentation revision.
 - **Implementation and operating references:** [docs/readiness/LANE_B_NATIVE_HOST.md](../../../docs/readiness/LANE_B_NATIVE_HOST.md), [docs/modules/runtime.supervisor/IMPLEMENTATION_MAP.json](../../../docs/modules/runtime.supervisor/IMPLEMENTATION_MAP.json).
-- **Remaining work:** Qualify the actual deployed executable and host watchdog/drain timing, bind host-profile measurements, and obtain independently accepted release-transition evidence. Source tests do not prove target-host process lifecycle, deployment identity, operator acceptance, promotion or release.
+- **Remaining work:** Qualify the actual deployed executable, host watchdog/drain behavior and independently accepted release transition; source tests do not prove the target host process lifecycle.
