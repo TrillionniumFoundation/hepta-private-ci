@@ -17,14 +17,19 @@ use codex_hepta_cognitive_types::RecordState;
 use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
 
-// The synchronous AuthoritativeCognitiveSnapshotProvider/read_authoritative
-// harness remains crate-local for deterministic contract tests. Production
-// acquisition is the async canonical-owner path in hepta-memory via
-// DurableCognitiveSnapshot; exposing both as peer public provider surfaces let
-// authority/freshness semantics drift apart.
+// The synchronous provider/read harness is retained as a hidden compatibility
+// and deterministic-test surface. Production acquisition is the async canonical
+// owner path in hepta-memory via DurableCognitiveSnapshot; it is the only path
+// that may establish current SQLite-owner freshness for product delivery.
+#[doc(hidden)]
+pub use authoritative::AuthoritativeCognitiveSnapshotProvider;
+#[doc(hidden)]
+pub use authoritative::AuthoritativeReadResultV1;
 pub use authoritative::AuthoritativeSnapshotV1;
 pub use authoritative::SnapshotAcquisitionRequestV1;
 pub use authoritative::SnapshotProviderError;
+#[doc(hidden)]
+pub use authoritative::read_authoritative;
 pub use v2::MAX_ENCODED_READ_RESULT_BYTES_V2;
 pub use v2::ReadRequestV2;
 pub use v2::ReadResultV2;
