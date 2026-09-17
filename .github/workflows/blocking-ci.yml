@@ -23,10 +23,15 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 5
     env:
-      HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+      # On pull_request, github.sha is the exact synthetic merge object that all
+      # reusable workflows test by default. Keep the source head separately for
+      # change classification and provenance; never call it the tested commit.
+      TESTED_SHA: ${{ github.sha }}
+      SOURCE_HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
       BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
     outputs:
-      head_sha: ${{ steps.identity.outputs.head_sha }}
+      tested_sha: ${{ steps.identity.outputs.tested_sha }}
+      source_head_sha: ${{ steps.identity.outputs.source_head_sha }}
       base_sha: ${{ steps.identity.outputs.base_sha }}
       scope_json: ${{ steps.classify.outputs.scope_json }}
       bazel: ${{ steps.classify.outputs.bazel }}
@@ -36,25 +41,28 @@ jobs:
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
-          ref: ${{ env.HEAD_SHA }}
+          ref: ${{ env.TESTED_SHA }}
           fetch-depth: 0
           persist-credentials: false
-      - name: Bind exact candidate identity
+      - name: Bind tested and source identities
         id: identity
         shell: bash
         run: |
           set -euo pipefail
-          test "$(git rev-parse HEAD)" = "$HEAD_SHA"
-          echo "head_sha=$HEAD_SHA" >> "$GITHUB_OUTPUT"
+          test "$(git rev-parse HEAD)" = "$TESTED_SHA"
+          test "$(git rev-parse "$SOURCE_HEAD_SHA^{commit}")" = "$SOURCE_HEAD_SHA"
+          git merge-base --is-ancestor "$SOURCE_HEAD_SHA" "$TESTED_SHA"
+          echo "tested_sha=$TESTED_SHA" >> "$GITHUB_OUTPUT"
+          echo "source_head_sha=$SOURCE_HEAD_SHA" >> "$GITHUB_OUTPUT"
           echo "base_sha=$BASE_SHA" >> "$GITHUB_OUTPUT"
       - name: Self-test validation policy
         run: python3 scripts/hepta-validation-scope.py --self-test
-      - name: Classify this candidate once
+      - name: Classify the source change once
         id: classify
         run: >-
           python3 scripts/hepta-validation-scope.py
           --base "$BASE_SHA"
-          --head "$HEAD_SHA"
+          --head "$SOURCE_HEAD_SHA"
           --output "$RUNNER_TEMP/hepta-validation-scope.json"
           --github-output "$GITHUB_OUTPUT"
 
@@ -64,7 +72,7 @@ jobs:
     uses: ./.github/workflows/hepta-contract-gate.yml
     secrets: inherit
 
-  # Heavy jobs are only skipped when the same-sha classifier marks them N/A.
+  # Heavy jobs are only skipped when the same-source classifier marks them N/A.
   # Unknown paths and authority/state/execution/promotion changes fail closed to
   # the complete suite.
   bazel:
@@ -117,7 +125,7 @@ jobs:
     timeout-minutes: 30
     name: CI required
     # This job is the only blocking fan-in. It consumes the concrete results
-    # from this exact candidate and emits one immutable evidence bundle.
+    # from this exact tested object and emits one immutable evidence bundle.
     if: ${{ always() }}
     needs:
       - scope
@@ -131,33 +139,37 @@ jobs:
       - sdk
     runs-on: ubuntu-24.04
     env:
-      TESTED_SHA: ${{ needs.scope.outputs.head_sha }}
+      TESTED_SHA: ${{ needs.scope.outputs.tested_sha }}
+      SOURCE_HEAD_SHA: ${{ needs.scope.outputs.source_head_sha }}
       BASE_SHA: ${{ needs.scope.outputs.base_sha }}
       HEPTA_SCOPE_JSON: ${{ needs.scope.outputs.scope_json }}
       NEEDS: ${{ toJSON(needs) }}
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
-          ref: ${{ needs.scope.outputs.head_sha }}
+          ref: ${{ needs.scope.outputs.tested_sha }}
           fetch-depth: 0
           persist-credentials: false
 
       - name: Self-test evidence verifier
         run: python3 scripts/hepta-delivery-evidence.py self-test
 
-      - name: Build exact-candidate delivery evidence
+      - name: Build exact-tested-object delivery evidence
         shell: bash
         run: |
           set -euo pipefail
           test -n "$TESTED_SHA"
+          test -n "$SOURCE_HEAD_SHA"
           test "$(git rev-parse HEAD)" = "$TESTED_SHA"
           python3 scripts/hepta-delivery-evidence.py build \
             --tested-sha "$TESTED_SHA" \
+            --source-head-sha "$SOURCE_HEAD_SHA" \
             --base-sha "$BASE_SHA" \
             --output "$RUNNER_TEMP/hepta-delivery-evidence.json"
           python3 scripts/hepta-delivery-evidence.py verify \
             --input "$RUNNER_TEMP/hepta-delivery-evidence.json" \
-            --tested-sha "$TESTED_SHA"
+            --tested-sha "$TESTED_SHA" \
+            --source-head-sha "$SOURCE_HEAD_SHA"
 
       - name: Retain the single blocking evidence bundle
         if: always() && env.TESTED_SHA != ''
