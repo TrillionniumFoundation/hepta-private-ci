@@ -8,8 +8,10 @@ use codex_app_server_client::RemoteAppServerConnectArgs;
 use codex_app_server_client::RemoteAppServerEndpoint;
 use codex_app_server_protocol::ClientRequest;
 use codex_app_server_protocol::RequestId;
-use codex_app_server_protocol::ThreadQueueAddParams;
-use codex_app_server_protocol::ThreadQueueAddResponse;
+use codex_app_server_protocol::ThreadQueueReconcileMode;
+use codex_app_server_protocol::ThreadQueueReconcileOutcome;
+use codex_app_server_protocol::ThreadQueueReconcileParams;
+use codex_app_server_protocol::ThreadQueueReconcileResponse;
 use codex_app_server_protocol::UserInput;
 use codex_hepta_automation::AutomationAdmission;
 use codex_hepta_automation::AutomationError;
@@ -24,6 +26,7 @@ use tokio_util::sync::CancellationToken;
 use crate::AgentdError;
 use crate::AgentdIdentity;
 use crate::AgentdState;
+use crate::automation_recovery;
 
 const AUTOMATION_TICK_INTERVAL: Duration = Duration::from_millis(250);
 const AUTOMATION_LEASE_DURATION: Duration = Duration::from_secs(30);
@@ -39,12 +42,11 @@ pub(crate) struct AgentdAutomationQueue {
 
 #[derive(Debug)]
 enum QueueFailure {
-    /// The request has not crossed the App Server admission seam.  These
+    /// The request has not crossed the App Server admission seam. These
     /// failures may be retried with the existing bounded dispatch budget.
     BeforeAdmission(AgentdError),
-    /// The request may have crossed the seam, but no reliable terminal receipt
-    /// was returned.  Retrying would be a blind duplicate, so the occurrence
-    /// must be durably quarantined instead.
+    /// The request may have crossed the seam, but no reliable identity-bound
+    /// receipt was returned. Recovery must use the same stable client id.
     OutcomeUnknown,
 }
 
@@ -108,17 +110,28 @@ impl AgentdAutomationQueue {
                 ),
             ));
         }
-        let request = automation_queue_request(&admission);
-        let response: ThreadQueueAddResponse = client
+        let input = automation_input(&admission);
+        let expected_payload_sha256 = automation_recovery::input_digest(&input)
+            .map_err(QueueFailure::BeforeAdmission)?;
+        let response: ThreadQueueReconcileResponse = client
             .request_handle()
-            .request_typed(request)
+            .request_typed(ClientRequest::ThreadQueueReconcile {
+                request_id: RequestId::Integer(1),
+                params: ThreadQueueReconcileParams {
+                    thread_id: admission.thread_id.clone(),
+                    input,
+                    client_user_message_id: admission.client_user_message_id.clone(),
+                    expected_payload_sha256: expected_payload_sha256.clone(),
+                    mode: ThreadQueueReconcileMode::AllowIfAbsent,
+                },
+            })
             .await
             .map_err(|_| QueueFailure::OutcomeUnknown)?;
         let _ = client.shutdown().await;
-        // The response proves only what the App Server returned.  Any state
-        // transition observed after the request is still an uncertain local
-        // outcome: preserve the occurrence for explicit reconciliation rather
-        // than handing it to a retry path.
+
+        // A transport-success response is still not enough by itself: retain
+        // the exact owner generation and payload/client identity before the
+        // durable occurrence is allowed to record Core admission.
         self.state
             .refresh_generation()
             .map_err(|_| QueueFailure::OutcomeUnknown)?;
@@ -126,24 +139,46 @@ impl AgentdAutomationQueue {
             .state
             .automation_is_available()
             .map_err(|_| QueueFailure::OutcomeUnknown)?
+            || !self
+                .state
+                .automation_admission_ready()
+                .map_err(|_| QueueFailure::OutcomeUnknown)?
         {
             return Err(QueueFailure::OutcomeUnknown);
         }
-        if !self
-            .state
-            .automation_admission_ready()
-            .map_err(|_| QueueFailure::OutcomeUnknown)?
-        {
-            return Err(QueueFailure::OutcomeUnknown);
-        }
-        if response.queued_submission.client_user_message_id != admission.client_user_message_id
-            || response.queued_submission.id.is_empty()
-        {
-            return Err(QueueFailure::OutcomeUnknown);
-        }
+        automation_recovery::validate_reconcile_identity(
+            &response,
+            &admission.client_user_message_id,
+            &expected_payload_sha256,
+        )
+        .map_err(|_| QueueFailure::OutcomeUnknown)?;
+        let queued_submission_id = match response.outcome {
+            ThreadQueueReconcileOutcome::Queued {
+                queued_submission,
+                ..
+            } => {
+                if queued_submission.client_user_message_id != admission.client_user_message_id
+                    || queued_submission.id.is_empty()
+                    || automation_recovery::input_digest(&queued_submission.input)
+                        .map_err(|_| QueueFailure::OutcomeUnknown)?
+                        != expected_payload_sha256
+                {
+                    return Err(QueueFailure::OutcomeUnknown);
+                }
+                queued_submission.id
+            }
+            ThreadQueueReconcileOutcome::Persisted { turn_id } if !turn_id.is_empty() => {
+                format!("persisted:{turn_id}")
+            }
+            ThreadQueueReconcileOutcome::Cancelled => "cancelled-before-turn".to_string(),
+            ThreadQueueReconcileOutcome::Missing
+            | ThreadQueueReconcileOutcome::Persisted { .. } => {
+                return Err(QueueFailure::OutcomeUnknown);
+            }
+        };
         Ok(AutomationQueueReceipt {
-            queued_submission_id: response.queued_submission.id,
-            client_user_message_id: response.queued_submission.client_user_message_id,
+            queued_submission_id,
+            client_user_message_id: admission.client_user_message_id,
         })
     }
 }
@@ -225,6 +260,21 @@ pub(crate) async fn run_automation_scheduler(
             Ok(now_ms) => now_ms,
             Err(error) => return stop_after_automation_error(error, &state, &cancellation).await,
         };
+
+        // Reconcile one durable historical occurrence before admitting new
+        // work. This is bounded to one item/turn-page chain per tick and does
+        // not prevent an overlap-allowed scheduler from also making progress.
+        if let Err(error) = automation_recovery::reconcile_one(
+            scheduler.store(),
+            &state,
+            &identity,
+            now_ms,
+        )
+        .await
+        {
+            return stop_after_recovery_error(error, &state);
+        }
+
         tokio::select! {
             _ = cancellation.cancelled() => return Ok(()),
             result = scheduler.tick(now_ms) => {
@@ -250,21 +300,20 @@ pub(crate) async fn run_automation_scheduler(
     }
 }
 
-/// Applies the scheduler's fail-stop policy to one tick.  A `true` result
-/// means the caller should terminate its scheduler task after cancellation
-/// has been observed; the Agent itself remains alive for normal turns.
+/// Applies the scheduler's fail-stop policy to one tick. A durable unknown
+/// dispatch no longer kills the scheduler: the next tick first enters the
+/// exact-client-id reconciliation path above. Only repeated proven
+/// pre-admission failures exhaust the bounded retry budget.
 pub(crate) async fn handle_automation_tick(
     tick: codex_hepta_automation::AutomationTick,
     retry_budget: &mut DispatchRetryBudget,
     state: &AgentdState,
     cancellation: &CancellationToken,
 ) -> Result<bool, AgentdError> {
-    let stop_error = match tick {
-        codex_hepta_automation::AutomationTick::DispatchUncertain { .. } => {
-            Some(AutomationError::DispatchUnknown)
-        }
-        tick if retry_budget.observe(&tick) => Some(AutomationError::Dispatch),
-        _ => None,
+    let stop_error = if retry_budget.observe(&tick) {
+        Some(AutomationError::Dispatch)
+    } else {
+        None
     };
     let Some(error) = stop_error else {
         return Ok(false);
@@ -279,15 +328,13 @@ pub(crate) struct DispatchRetryBudget {
 }
 
 impl DispatchRetryBudget {
-    /// Returns true once a bounded run of dispatch retries is exhausted.
-    /// Any idle or successful submission proves the queue is making progress
-    /// and resets the consecutive-failure counter.
     fn observe(&mut self, tick: &codex_hepta_automation::AutomationTick) -> bool {
         match tick {
             codex_hepta_automation::AutomationTick::RetryScheduled { .. } => {
                 self.consecutive_retries = self.consecutive_retries.saturating_add(1);
             }
             codex_hepta_automation::AutomationTick::Idle
+            | codex_hepta_automation::AutomationTick::Admitted { .. }
             | codex_hepta_automation::AutomationTick::Submitted { .. }
             | codex_hepta_automation::AutomationTick::DispatchUncertain { .. } => {
                 self.consecutive_retries = 0;
@@ -312,23 +359,25 @@ async fn stop_after_automation_error(
     wait_for_cancellation(cancellation).await
 }
 
+fn stop_after_recovery_error(error: AgentdError, state: &AgentdState) -> Result<(), AgentdError> {
+    if matches!(error, AgentdError::GenerationFenced(_)) {
+        state.mark_fenced();
+    } else {
+        state.mark_automation_unavailable()?;
+    }
+    Err(error)
+}
+
 async fn wait_for_cancellation(cancellation: &CancellationToken) -> Result<(), AgentdError> {
     cancellation.cancelled().await;
     Ok(())
 }
 
-fn automation_queue_request(admission: &AutomationAdmission) -> ClientRequest {
-    ClientRequest::ThreadQueueAdd {
-        request_id: RequestId::Integer(1),
-        params: ThreadQueueAddParams {
-            thread_id: admission.thread_id.clone(),
-            input: vec![UserInput::Text {
-                text: admission.prompt.clone(),
-                text_elements: Vec::new(),
-            }],
-            client_user_message_id: admission.client_user_message_id.clone(),
-        },
-    }
+fn automation_input(admission: &AutomationAdmission) -> Vec<UserInput> {
+    vec![UserInput::Text {
+        text: admission.prompt.clone(),
+        text_elements: Vec::new(),
+    }]
 }
 
 fn unix_time_ms() -> Result<u64, AutomationError> {
@@ -348,7 +397,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn automation_has_only_normal_app_server_queue_admission() {
+    fn automation_reconcile_payload_uses_stable_client_identity() {
         let admission = AutomationAdmission {
             agent_id: AgentId::parse("018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12").expect("agent id"),
             task_id: AutomationTaskId::parse("019153a4-3088-7000-a56a-9b1964f75007")
@@ -359,17 +408,11 @@ mod tests {
             prompt: "run through governance".to_string(),
             client_user_message_id: "hepta.automation.test".to_string(),
         };
-        let ClientRequest::ThreadQueueAdd { params, .. } = automation_queue_request(&admission)
-        else {
-            panic!("automation must only enter via thread/queue/add");
-        };
-        assert_eq!(params.thread_id, admission.thread_id);
+        let input = automation_input(&admission);
+        let digest = automation_recovery::input_digest(&input).expect("input digest");
+        assert!(!digest.is_empty());
         assert_eq!(
-            params.client_user_message_id,
-            admission.client_user_message_id
-        );
-        assert_eq!(
-            params.input,
+            input,
             vec![UserInput::Text {
                 text: admission.prompt,
                 text_elements: Vec::new(),
@@ -385,7 +428,7 @@ mod tests {
             task_id,
             occurrence: 1,
         };
-        let submitted = AutomationTick::Submitted {
+        let admitted = AutomationTick::Admitted {
             task_id,
             occurrence: 1,
             queued_submission_id: "queue-1".to_string(),
@@ -396,7 +439,7 @@ mod tests {
         assert!(!budget.observe(&retry));
         assert!(budget.observe(&retry));
 
-        assert!(!budget.observe(&submitted));
+        assert!(!budget.observe(&admitted));
         assert!(!budget.observe(&retry));
         assert!(!budget.observe(&AutomationTick::Idle));
         assert!(!budget.observe(&retry));
