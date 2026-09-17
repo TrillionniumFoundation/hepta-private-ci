@@ -134,6 +134,17 @@
       "status": "native_test_mapped"
     },
     {
+      "id": "EVAL-05",
+      "module": "learning.eval",
+      "requirement": "Product composition durably records final-holdout use and commits the independently retained current anchor before held-out evaluation; an indeterminate anchor commit poisons the runner until recovery, while binding drift fails before holdout consumption.",
+      "tests": [
+        {"source": "codex-rs/hepta-intelligence-eval/src/product_runner_tests.rs", "function": "product_runner_commits_anchor_and_exact_retry_is_idempotent"},
+        {"source": "codex-rs/hepta-intelligence-eval/src/product_runner_tests.rs", "function": "indeterminate_anchor_commit_poison_requires_recovery"},
+        {"source": "codex-rs/hepta-intelligence-eval/src/product_runner_tests.rs", "function": "product_binding_drift_rejects_before_holdout_is_burned"}
+      ],
+      "status": "native_test_mapped"
+    },
+    {
       "id": "ART-01",
       "module": "learning.artifacts",
       "requirement": "Create-only identity reuse with changed bytes conflicts and an exact retry is idempotent.",
@@ -188,5 +199,5 @@
   "productBoundaryCases": [
     {"id": "WIRE-PRODUCT-01", "requirement": "A real Python consumer must decode the Rust HPTA frame and reject payload tampering before any product boundary accepts it.", "source": "codex-rs/hepta-shadow-qualification/tests/cross_language_wire_fault.rs", "function": "rust_python_wire_roundtrip_and_payload_fault_reject", "status": "native_test_mapped"}
   ],
-  "closureRule": "Every listed function must exist in the listed source file and pass at the exact candidate head. This registry does not convert source tests into production, future-calendar, independent-acceptance or release evidence."
+  "closureRule": "Every listed function must exist in the listed source file and pass at the exact candidate head. This registry does not convert source tests into production target-host, future-calendar, independent-acceptance or release evidence."
 }
