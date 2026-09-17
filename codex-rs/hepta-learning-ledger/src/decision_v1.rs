@@ -90,7 +90,6 @@ pub enum LearningDecisionV1Error {
     DuplicateAction(String),
     ChosenActionMissing(String),
     CandidateSetDigestMismatch,
-    EpisodeMismatch,
     Ledger(LedgerError),
     Arithmetic,
 }
@@ -272,9 +271,6 @@ pub fn prepare_prompt_learning_decision_v1(
 ) -> Result<PromptLearningDecisionArtifactV1, LearningDecisionV1Error> {
     request.decision.validate()?;
     require_digest("objective", request.objective_digest)?;
-    if request.decision.episode_id != request.decision.episode_id {
-        return Err(LearningDecisionV1Error::EpisodeMismatch);
-    }
     request.action_ids.sort();
     for pair in request.action_ids.windows(2) {
         if pair[0] == pair[1] {
