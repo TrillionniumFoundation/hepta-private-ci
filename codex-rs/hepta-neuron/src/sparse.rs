@@ -173,6 +173,14 @@ impl SparseCheckpoint {
         self.digest
     }
 
+    pub fn sequence(&self) -> u64 {
+        self.sequence
+    }
+
+    pub fn monotonic_micros(&self) -> u64 {
+        self.monotonic_micros
+    }
+
     /// Diagonal local-head eligibility sufficient statistics, not model weights.
     pub fn eligibility_q24(&self) -> &[i64] {
         &self.eligibility
@@ -180,6 +188,26 @@ impl SparseCheckpoint {
 
     pub fn thresholds_q24(&self) -> &[i64] {
         &self.threshold
+    }
+
+    pub(crate) fn config_digest(&self) -> Digest32 {
+        self.config
+    }
+
+    pub(crate) fn scope_digest(&self) -> Digest32 {
+        self.scope
+    }
+
+    pub(crate) fn objective_digest(&self) -> Digest32 {
+        self.objective
+    }
+
+    pub(crate) fn body_digest(&self) -> Digest32 {
+        self.body
+    }
+
+    pub(crate) fn integrity_valid(&self) -> bool {
+        self.calculate_digest() == self.digest
     }
 
     fn calculate_digest(&self) -> Digest32 {
