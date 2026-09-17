@@ -55,7 +55,7 @@ These ceilings are source-enforced only where named above. HNMF ceilings remain 
 
 - RET-01: channel completion order/permutation yields an identical canonical candidate union. Native regression: `channel_completion_order_cannot_change_union_or_recall`.
 - RET-02: high-risk contradictory support touching a potential selection forces abstention. Native regressions cover V1 contradiction handling and V2 selected-horizon contradiction handling.
-- RET-03: revoked/stale source after ranking cannot be attached to a model/context request. The product path batch-revalidates selected owner bindings and then revalidates the complete Lane-C cut; owner tests exercise coherent batch revalidation under a concurrent write. Exact Agentd rank-to-revalidation race injection remains qualification work.
+- RET-03: revoked/stale source after ranking cannot be attached to a model/context request. The product path batch-revalidates selected owner bindings and then revalidates the complete Lane-C cut. Native Agentd regression `post_rank_withdrawal_cannot_attach_stale_memory` commits a tombstone in the deterministic rank-to-owner-revalidation window and requires the request to fail closed; owner tests separately exercise coherent batch revalidation under concurrent writes. These are source test identities until the exact candidate workflow records their execution.
 - RET-04: no-intervention, lexical-only, no-recurrence and no-inhibition baselines measure independent utility and resource cost. This remains an experiment/qualification requirement and is not claimed by repository unit tests.
 
 These cases distinguish executable regressions from product/independent evidence. A source test identity is not an execution receipt.
