@@ -64,6 +64,8 @@ pub enum SupervisorError {
     ProductionAuthorityFeatureDisabled,
     #[error("agent {0} has an unresolved signed supervisor intent after recovery")]
     SignedIntentRecoveryRequired(AgentId),
+    #[error("signed mutation for agent {0} crossed its durable effect boundary and is indeterminate")]
+    SignedMutationIndeterminate(AgentId),
     #[error(transparent)]
     Io(#[from] std::io::Error),
 }
