@@ -1,12 +1,17 @@
+use std::ffi::OsString;
 use std::fs;
 use std::io::Read;
 use std::io::Write;
 use std::io::stdout;
+use std::path::Path;
 use std::path::PathBuf;
+use std::process::Command;
+use std::process::Stdio;
 use std::time::Duration;
 
 use anyhow::Context;
 use anyhow::Result;
+use anyhow::bail;
 use clap::Parser;
 use codex_hepta_native_gateway::native_product::NativeAction;
 use codex_hepta_native_gateway::native_product::NativeActionReceipt;
@@ -16,6 +21,8 @@ use codex_hepta_native_gateway::native_product::NativeProduct;
 use codex_hepta_native_gateway::native_product::NativeProductConfig;
 use codex_hepta_native_gateway::native_product::NativeSnapshot;
 use codex_hepta_native_gateway::native_product::NativeUpdateRequest;
+use codex_hepta_native_gateway::native_product::NativeUpdateStatus;
+use codex_hepta_native_gateway::update_activation::artifact_digest;
 use crossterm::cursor::Hide;
 use crossterm::cursor::MoveTo;
 use crossterm::cursor::Show;
@@ -39,7 +46,10 @@ use serde::Deserialize;
 const MAX_UPDATE_MANIFEST_BYTES: u64 = 64 * 1024;
 
 #[derive(Debug, Parser)]
-#[command(name = "hepta-native", about = "Hepta all-Rust native application shell")]
+#[command(
+    name = "hepta-native",
+    about = "Hepta all-Rust native application shell"
+)]
 struct Args {
     #[arg(long, env = "HEPTA_NATIVE_MANIFEST_DIGEST")]
     manifest_digest: String,
@@ -71,6 +81,10 @@ struct Args {
     no_session_persistence: bool,
     #[arg(long)]
     accessible: bool,
+    #[arg(long, hide = true)]
+    update_confirm_file: Option<PathBuf>,
+    #[arg(long, hide = true)]
+    update_expected_digest: Option<String>,
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -145,6 +159,9 @@ impl Drop for TerminalGuard {
 #[tokio::main]
 async fn main() -> Result<()> {
     let args = Args::parse();
+    if args.update_confirm_file.is_some() != args.update_expected_digest.is_some() {
+        bail!("native update confirmation requires both hidden confirmation arguments");
+    }
     let state_root = absolute_state_root()?;
     let native_root = state_root.join("native-shell");
     fs::create_dir_all(&native_root).context("create native shell state directory")?;
@@ -160,7 +177,7 @@ async fn main() -> Result<()> {
         update_journal: args
             .update_journal
             .unwrap_or_else(|| native_root.join("updates.journal")),
-        active_artifact: active_artifact.clone(),
+        active_artifact,
         rollback_artifact: args
             .rollback_artifact
             .unwrap_or_else(|| native_root.join("hepta-native.rollback")),
@@ -178,7 +195,14 @@ async fn main() -> Result<()> {
         },
         persist_session_reference: !args.no_session_persistence,
     };
+    let restart_config = config.clone();
     let mut product = NativeProduct::open_from_env(config).await?;
+    confirm_restarted_update(
+        &product,
+        &restart_config.active_artifact,
+        args.update_confirm_file.as_deref(),
+        args.update_expected_digest.as_deref(),
+    )?;
     let snapshot = product.refresh()?;
     let locale = sys_locale::get_locale().unwrap_or_else(|| "en-US".to_string());
     if args.accessible {
@@ -186,12 +210,59 @@ async fn main() -> Result<()> {
         product.close()?;
         return result;
     }
-    let result = run_full_screen(&mut product, snapshot, locale);
+    let result = run_full_screen(&mut product, snapshot, locale, &restart_config);
     product.close()?;
     result
 }
 
-fn run_full_screen(product: &mut NativeProduct, snapshot: NativeSnapshot, locale: String) -> Result<()> {
+fn confirm_restarted_update(
+    product: &NativeProduct,
+    active_artifact: &Path,
+    confirm_file: Option<&Path>,
+    expected_digest: Option<&str>,
+) -> Result<()> {
+    let (Some(confirm_file), Some(expected_digest)) = (confirm_file, expected_digest) else {
+        return Ok(());
+    };
+    if !confirm_file.is_absolute() {
+        bail!("native update confirmation path must be absolute");
+    }
+    let running_digest = artifact_digest(active_artifact)?;
+    if running_digest != expected_digest {
+        bail!("restarted native artifact does not match the staged package digest");
+    }
+    let status = product.recover_or_confirm_update(&running_digest)?;
+    if status != NativeUpdateStatus::Confirmed {
+        bail!("restarted native artifact was not confirmed: {status:?}");
+    }
+    write_confirmation(confirm_file, &running_digest)
+}
+
+fn write_confirmation(path: &Path, digest: &str) -> Result<()> {
+    if let Some(parent) = path.parent() {
+        fs::create_dir_all(parent).context("create native update confirmation parent")?;
+    }
+    let mut options = fs::OpenOptions::new();
+    options.create_new(true).write(true);
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::OpenOptionsExt;
+        options.mode(0o600);
+    }
+    let mut file = options
+        .open(path)
+        .context("create native update confirmation")?;
+    writeln!(file, "{digest}").context("write native update confirmation")?;
+    file.flush().context("flush native update confirmation")?;
+    file.sync_all().context("sync native update confirmation")
+}
+
+fn run_full_screen(
+    product: &mut NativeProduct,
+    snapshot: NativeSnapshot,
+    locale: String,
+    restart_config: &NativeProductConfig,
+) -> Result<()> {
     let _guard = TerminalGuard::enter()?;
     let mut app = AppState {
         page: Page::Overview,
@@ -234,12 +305,20 @@ fn run_full_screen(product: &mut NativeProduct, snapshot: NativeSnapshot, locale
                         let count = focus_count(app.page);
                         app.focus = (app.focus + count - 1) % count;
                     }
-                    KeyCode::Left | KeyCode::Right if app.page == Page::Operations && app.focus == 0 => {
+                    KeyCode::Left | KeyCode::Right
+                        if app.page == Page::Operations && app.focus == 0 =>
+                    {
                         app.action = next_action(app.action);
                     }
                     KeyCode::Enter => begin_edit(&mut app),
-                    KeyCode::Char('x') if app.page == Page::Operations => execute_action(product, &mut app),
-                    KeyCode::Char('u') if app.page == Page::Update => execute_update(product, &mut app),
+                    KeyCode::Char('x') if app.page == Page::Operations => {
+                        execute_action(product, &mut app)
+                    }
+                    KeyCode::Char('u') if app.page == Page::Update => {
+                        if execute_update(product, &mut app, restart_config)? {
+                            return Ok(());
+                        }
+                    }
                     KeyCode::Char('r') => match product.refresh() {
                         Ok(snapshot) => {
                             app.snapshot = snapshot;
@@ -259,18 +338,29 @@ fn render(app: &AppState) -> Result<()> {
     let (width, height) = terminal::size()?;
     let mut out = stdout();
     queue!(out, MoveTo(0, 0), Clear(ClearType::All))?;
-    line(&mut out, 0, width, "Hepta Native — Rust / Win + macOS + Linux")?;
+    line(
+        &mut out,
+        0,
+        width,
+        "Hepta Native — Rust / Win + macOS + Linux",
+    )?;
     line(
         &mut out,
         1,
         width,
         &format!(
             "[1 Overview] [2 Operations] [3 Update] [4 Help]  page={}  locale={}",
-            page_name(app.page), app.locale
+            page_name(app.page),
+            app.locale
         ),
     )?;
     line(&mut out, 2, width, &format!("Status: {}", app.message))?;
-    line(&mut out, 3, width, "────────────────────────────────────────────────")?;
+    line(
+        &mut out,
+        3,
+        width,
+        "────────────────────────────────────────────────",
+    )?;
     match app.page {
         Page::Overview => render_overview(&mut out, app, width, height)?,
         Page::Operations => render_operations(&mut out, app, width, height)?,
@@ -283,13 +373,24 @@ fn render(app: &AppState) -> Result<()> {
     Ok(())
 }
 
-fn render_overview(out: &mut impl Write, app: &AppState, width: u16, _height: u16) -> Result<()> {
+fn render_overview(
+    out: &mut impl Write,
+    app: &AppState,
+    width: u16,
+    _height: u16,
+) -> Result<()> {
     let snapshot = &app.snapshot;
     for (row, text) in [
         format!("Platform             {}", snapshot.platform),
         format!("Runtime              {}", snapshot.runtime_status),
-        format!("Session              {} / gen {}", snapshot.session_id, snapshot.session_generation),
-        format!("View                 gen {} / rev {}", snapshot.view_generation, snapshot.view_revision),
+        format!(
+            "Session              {} / gen {}",
+            snapshot.session_id, snapshot.session_generation
+        ),
+        format!(
+            "View                 gen {} / rev {}",
+            snapshot.view_generation, snapshot.view_revision
+        ),
         format!("Schema               v{}", snapshot.schema_version),
         format!("Integrity verified   {}", snapshot.integrity_verified),
         format!("Authority closed     {}", snapshot.authority_closed),
@@ -303,18 +404,34 @@ fn render_overview(out: &mut impl Write, app: &AppState, width: u16, _height: u1
     Ok(())
 }
 
-fn render_operations(out: &mut impl Write, app: &AppState, width: u16, _height: u16) -> Result<()> {
+fn render_operations(
+    out: &mut impl Write,
+    app: &AppState,
+    width: u16,
+    _height: u16,
+) -> Result<()> {
     let fields = [
         format!("Action          {:?}", app.action),
-        format!("Operation ID    {}", value_or_empty(&app.operation_id)),
+        format!(
+            "Operation ID    {}",
+            value_or_empty(&app.operation_id)
+        ),
         format!("Resource        {}", value_or_empty(&app.resource)),
-        format!("Payload digest  {}", compact_secret(&app.payload_digest)),
+        format!(
+            "Payload digest  {}",
+            compact_secret(&app.payload_digest)
+        ),
         format!("Signed grant    {}", hidden_value(&app.signed_grant)),
     ];
     for (index, text) in fields.into_iter().enumerate() {
         focus_line(out, 5 + index as u16, width, index == app.focus, &text)?;
     }
-    line(out, 11, width, "Press x to execute/reconcile the operation. Indeterminate is never replayed.")?;
+    line(
+        out,
+        11,
+        width,
+        "Press x to execute/reconcile the operation. Indeterminate is never replayed.",
+    )?;
     if let Some(receipt) = &app.last_action {
         line(
             out,
@@ -325,24 +442,51 @@ fn render_operations(out: &mut impl Write, app: &AppState, width: u16, _height: 
                 receipt.operation_id,
                 receipt.status,
                 receipt.terminal_observed,
-                receipt.outcome_digest.as_deref().map(compact_secret).unwrap_or_else(|| "—".to_string())
+                receipt
+                    .outcome_digest
+                    .as_deref()
+                    .map(compact_secret)
+                    .unwrap_or_else(|| "—".to_string())
             ),
         )?;
     }
     render_editor(out, app, width, 15)
 }
 
-fn render_update(out: &mut impl Write, app: &AppState, width: u16, _height: u16) -> Result<()> {
+fn render_update(
+    out: &mut impl Write,
+    app: &AppState,
+    width: u16,
+    _height: u16,
+) -> Result<()> {
     focus_line(
         out,
         5,
         width,
         app.focus == 0,
-        &format!("Signed update manifest  {}", value_or_empty(&app.update_manifest)),
+        &format!(
+            "Signed update manifest  {}",
+            value_or_empty(&app.update_manifest)
+        ),
     )?;
-    line(out, 7, width, "Manifest fields: package/digests/evidence/producer/selector/release+selection signatures.")?;
-    line(out, 8, width, "Press u to verify both trust roots and stage a transactional update.")?;
-    line(out, 9, width, "The running binary confirms after restart; mismatch restores predecessor.")?;
+    line(
+        out,
+        7,
+        width,
+        "Manifest fields: package/digests/evidence/producer/selector/release+selection signatures.",
+    )?;
+    line(
+        out,
+        8,
+        width,
+        "Press u to verify, stage, hand off to helper and exit.",
+    )?;
+    line(
+        out,
+        9,
+        width,
+        "Helper activates after exit; unconfirmed restart restores predecessor.",
+    )?;
     render_editor(out, app, width, 12)
 }
 
@@ -371,7 +515,12 @@ fn render_editor(out: &mut impl Write, app: &AppState, width: u16, row: u16) -> 
             app.edit_buffer.clone()
         };
         line(out, row, width, &format!("Editing {field:?}: {value}"))?;
-        line(out, row + 1, width, "Enter save  Esc cancel  Backspace delete")?;
+        line(
+            out,
+            row + 1,
+            width,
+            "Enter save  Esc cancel  Backspace delete",
+        )?;
     }
     Ok(())
 }
@@ -452,31 +601,125 @@ fn execute_action(product: &mut NativeProduct, app: &mut AppState) {
     }
 }
 
-fn execute_update(product: &NativeProduct, app: &mut AppState) {
-    let result = (|| -> Result<_> {
+fn execute_update(
+    product: &NativeProduct,
+    app: &mut AppState,
+    restart_config: &NativeProductConfig,
+) -> Result<bool> {
+    let result = (|| -> Result<()> {
         let path = absolute(PathBuf::from(&app.update_manifest), "update manifest")?;
         let metadata = path.metadata().context("inspect native update manifest")?;
         if !metadata.is_file() || metadata.len() > MAX_UPDATE_MANIFEST_BYTES {
-            anyhow::bail!("update manifest must be a file <= {MAX_UPDATE_MANIFEST_BYTES} bytes");
+            bail!("update manifest must be a file <= {MAX_UPDATE_MANIFEST_BYTES} bytes");
         }
         let mut text = String::new();
         fs::File::open(&path)?.read_to_string(&mut text)?;
         let manifest: UpdateManifest = serde_json::from_str(&text)?;
-        product.apply_update(NativeUpdateRequest {
+        let package_digest = manifest.package_digest.clone();
+        let predecessor_digest = manifest.predecessor_digest.clone();
+        let status = product.apply_update(NativeUpdateRequest {
             package_path: absolute(manifest.package_path, "update package")?,
             package_digest: manifest.package_digest,
             predecessor_digest: manifest.predecessor_digest,
             evidence_digest: manifest.evidence_digest,
             producer_id: manifest.producer_id,
             selector_id: manifest.selector_id,
-            release_signature_path: absolute(manifest.release_signature_path, "release signature")?,
-            selection_signature_path: absolute(manifest.selection_signature_path, "selection signature")?,
-        })
+            release_signature_path: absolute(
+                manifest.release_signature_path,
+                "release signature",
+            )?,
+            selection_signature_path: absolute(
+                manifest.selection_signature_path,
+                "selection signature",
+            )?,
+        })?;
+        if status != NativeUpdateStatus::RestartRequired {
+            bail!("native update staging returned unexpected status {status:?}");
+        }
+        spawn_update_helper(restart_config, &predecessor_digest, &package_digest)?;
+        Ok(())
     })();
-    app.message = match result {
-        Ok(status) => format!("Update {status:?}; restart required before confirmation"),
-        Err(error) => format!("Update rejected: {error:#}"),
-    };
+    match result {
+        Ok(()) => {
+            app.message = "Update staged; helper will activate after this process exits".to_string();
+            Ok(true)
+        }
+        Err(error) => {
+            app.message = format!("Update rejected: {error:#}");
+            Ok(false)
+        }
+    }
+}
+
+fn spawn_update_helper(
+    config: &NativeProductConfig,
+    predecessor_digest: &str,
+    expected_package_digest: &str,
+) -> Result<()> {
+    let helper = updater_helper_path(&config.active_artifact)?;
+    if !helper.is_file() {
+        bail!("native updater helper is missing at {}", helper.display());
+    }
+    let confirm_file = config.update_journal.with_extension("restart-confirmed");
+    let mut command = Command::new(helper);
+    command
+        .arg("--parent-pid")
+        .arg(std::process::id().to_string())
+        .arg("--active-artifact")
+        .arg(&config.active_artifact)
+        .arg("--rollback-artifact")
+        .arg(&config.rollback_artifact)
+        .arg("--stage-artifact")
+        .arg(&config.stage_artifact)
+        .arg("--update-journal")
+        .arg(&config.update_journal)
+        .arg("--predecessor-digest")
+        .arg(predecessor_digest)
+        .arg("--expected-package-digest")
+        .arg(expected_package_digest)
+        .arg("--confirm-file")
+        .arg(&confirm_file)
+        .arg("--manifest-digest")
+        .arg(&config.manifest_digest)
+        .arg("--grant-public-key")
+        .arg(&config.grant_public_key)
+        .arg("--release-public-key")
+        .arg(&config.release_public_key)
+        .arg("--selection-public-key")
+        .arg(&config.selection_public_key)
+        .arg("--effect-journal")
+        .arg(&config.effect_journal)
+        .arg("--windows-dpapi-session-path")
+        .arg(&config.windows_dpapi_session_path)
+        .stdin(Stdio::null())
+        .stdout(Stdio::null())
+        .stderr(Stdio::null());
+    if config.capabilities.open_path {
+        command.arg("--allow-open-path");
+    }
+    if config.capabilities.reveal_path {
+        command.arg("--allow-reveal-path");
+    }
+    if config.capabilities.copy_text {
+        command.arg("--allow-copy-text");
+    }
+    if config.capabilities.notify {
+        command.arg("--allow-notify");
+    }
+    if !config.persist_session_reference {
+        command.arg("--no-session-persistence");
+    }
+    command.spawn().context("start native updater helper")?;
+    Ok(())
+}
+
+fn updater_helper_path(active_artifact: &Path) -> Result<PathBuf> {
+    let parent = active_artifact
+        .parent()
+        .context("native application executable has no parent directory")?;
+    let mut name = OsString::from("hepta-native-updater");
+    name.push(std::env::consts::EXE_SUFFIX);
+    Ok(parent.join(name))
 }
 
 fn run_accessible(
@@ -487,9 +730,18 @@ fn run_accessible(
     let stdin = std::io::stdin();
     loop {
         println!("Hepta Native accessible mode — {locale}");
-        println!("Runtime: {} / platform: {}", snapshot.runtime_status, snapshot.platform);
-        println!("Session: {} generation {}", snapshot.session_id, snapshot.session_generation);
-        println!("View revision: {} / integrity: {} / authority closed: {}", snapshot.view_revision, snapshot.integrity_verified, snapshot.authority_closed);
+        println!(
+            "Runtime: {} / platform: {}",
+            snapshot.runtime_status, snapshot.platform
+        );
+        println!(
+            "Session: {} generation {}",
+            snapshot.session_id, snapshot.session_generation
+        );
+        println!(
+            "View revision: {} / integrity: {} / authority closed: {}",
+            snapshot.view_revision, snapshot.integrity_verified, snapshot.authority_closed
+        );
         println!("Commands: refresh, quit");
         print!("> ");
         stdout().flush()?;
@@ -541,14 +793,23 @@ fn line(out: &mut impl Write, row: u16, width: u16, text: &str) -> Result<()> {
     Ok(())
 }
 
-fn focus_line(out: &mut impl Write, row: u16, width: u16, focused: bool, text: &str) -> Result<()> {
+fn focus_line(
+    out: &mut impl Write,
+    row: u16,
+    width: u16,
+    focused: bool,
+    text: &str,
+) -> Result<()> {
     queue!(out, MoveTo(0, row))?;
     if focused {
         queue!(out, SetAttribute(Attribute::Bold), Print("> "))?;
     } else {
         queue!(out, Print("  "))?;
     }
-    queue!(out, Print(truncate(text, width.saturating_sub(2) as usize)))?;
+    queue!(
+        out,
+        Print(truncate(text, width.saturating_sub(2) as usize))
+    )?;
     if focused {
         queue!(out, SetAttribute(Attribute::Reset))?;
     }
@@ -597,7 +858,7 @@ fn absolute_state_root() -> Result<PathBuf> {
     let root = std::env::var_os("HEPTA_STATE_ROOT").context("HEPTA_STATE_ROOT is required")?;
     let root = PathBuf::from(root);
     if !root.is_absolute() {
-        anyhow::bail!("HEPTA_STATE_ROOT must be absolute");
+        bail!("HEPTA_STATE_ROOT must be absolute");
     }
     Ok(root)
 }
