@@ -9,6 +9,7 @@
 
 mod acknowledged;
 mod causal_v2;
+mod credit_commit;
 mod dataset_from_ledger;
 mod dataset_receipt_v3;
 mod durable;
@@ -42,6 +43,9 @@ pub use causal_v2::freeze_dataset;
 pub use causal_v2::validate_authenticated_outcome;
 pub use causal_v2::validate_candidate_set_completeness;
 pub use causal_v2::verify_independent_roles;
+pub use credit_commit::DurableCreditBatchError;
+pub use credit_commit::DurableCreditBatchReceiptV1;
+pub use credit_commit::append_conserved_credit_batch_v1;
 pub use dataset_from_ledger::LedgerDerivedDatasetError;
 pub use dataset_from_ledger::LedgerDerivedDatasetPlanV1;
 pub use dataset_from_ledger::freeze_dataset_from_ledger_v3;
