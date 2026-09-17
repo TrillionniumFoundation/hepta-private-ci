@@ -7,6 +7,7 @@
 
 // Retain the historical module path as well as explicit root exports.
 pub mod calibrated;
+pub mod qualified;
 
 pub use calibrated::AbstentionReasonV1;
 pub use calibrated::AssignmentModeV1;
@@ -26,6 +27,36 @@ pub use calibrated::canonical_candidate_order_digest_v1;
 pub use calibrated::canonical_candidate_set_digest_v1;
 pub use calibrated::decide_calibrated;
 pub use calibrated::decide_calibrated_v2;
+pub use qualified::AuthenticatedCalibratedDecisionRequestV1;
+pub use qualified::CalibrationObservationV1;
+pub use qualified::CalibrationQualificationPayloadV1;
+pub use qualified::CanonicalPolicyProfileV1;
+pub use qualified::CompletenessQualificationPayloadV1;
+pub use qualified::LearnedScorerDescriptorV1;
+pub use qualified::LearnedScorerOutputBindingV1;
+pub use qualified::OodObservationV1;
+pub use qualified::OodQualificationPayloadV1;
+pub use qualified::QualificationArtifactKindV1;
+pub use qualified::QualificationArtifactVerifierV1;
+pub use qualified::QualificationError;
+pub use qualified::QualificationSignatureV1;
+pub use qualified::QualifiedCalibratedError;
+pub use qualified::QualifiedCalibratedIntuitionReceiptV1;
+pub use qualified::SignedCalibrationQualificationV1;
+pub use qualified::SignedCompletenessQualificationV1;
+pub use qualified::SignedOodQualificationV1;
+pub use qualified::SignedPolicyProfileV1;
+pub use qualified::canonical_authenticated_request_digest_v1;
+pub use qualified::canonical_calibration_qualification_digest_v1;
+pub use qualified::canonical_completeness_qualification_digest_v1;
+pub use qualified::canonical_learned_scorer_descriptor_digest_v1;
+pub use qualified::canonical_ood_qualification_digest_v1;
+pub use qualified::canonical_policy_profile_artifact_digest_v1;
+pub use qualified::canonical_scorer_predictions_digest_v1;
+pub use qualified::decide_calibrated_v3;
+pub use qualified::expected_calibration_error_ppm_v1;
+pub use qualified::ood_false_acceptance_ppm_v1;
+pub use qualified::qualification_signature_message_v1;
 
 use std::collections::BTreeSet;
 use std::error::Error as StdError;
