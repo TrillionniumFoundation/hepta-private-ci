@@ -1,3 +1,4 @@
+#[path = "hepta-infer-worker/concurrent_control.rs"]
 mod concurrent_control;
 
 use std::path::PathBuf;
@@ -116,7 +117,9 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
             match run_result {
                 Ok(output) => {
                     if reconciled.observation.as_ref() != Some(&output) {
-                        return Err("durable inference archive drifted from returned observation".into());
+                        return Err(
+                            "durable inference archive drifted from returned observation".into()
+                        );
                     }
                     output
                 }
