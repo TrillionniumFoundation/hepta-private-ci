@@ -1,217 +1,228 @@
 # HeptaBao SecretLease lifecycle
 
-This document describes the executable SecretLease lifecycle implemented by
-`codex-hepta-bao-adapter`. It is the current implementation contract for
-provider-native dynamic secrets, lease renewal, revocation, and reconciliation.
-It supplements the exact-version KV v2 consumer documented in `README.md`; the
-two paths share the enrolled pinned-HTTPS client and independent final-use
-authority but have different external-effect semantics.
+This document is the executable implementation contract for provider-native
+dynamic secret issuance, lease renewal, synchronous revocation and
+reconciliation in `codex-hepta-bao-adapter`. It supplements the exact-version
+KV v2 consumer documented in `README.md`.
 
-## Scope
+## Executable operations
 
-The lifecycle exposes these `BaoClient` operations:
+`BaoClient` exposes:
 
 - `request_secret_lease` — issue one provider-native dynamic secret through a
-  configured `GET /v1/{mount}/{path}` endpoint, persist lease metadata, and
-  release only explicitly named string fields to one trusted synchronous
-  consumer callback.
-- `renew_secret_lease` — renew one known lease using
-  `POST /v1/sys/leases/renew`.
-- `revoke_secret_lease` — synchronously revoke one known lease using
-  `POST /v1/sys/leases/revoke` with `sync=true`.
-- `reconcile_secret_lease` — query `POST /v1/sys/leases/lookup` to resolve a
-  known lease whose prior renew/revoke result is uncertain.
+  configured `GET /v1/{mount}/{path}`, persist lease metadata, and release only
+  explicitly requested string fields to one trusted synchronous callback;
+- `renew_secret_lease` — renew one known lease through
+  `POST /v1/sys/leases/renew`;
+- `revoke_secret_lease` — synchronously revoke one known lease through
+  `POST /v1/sys/leases/revoke` with `sync=true`;
+- `reconcile_secret_lease` — query `POST /v1/sys/leases/lookup` to resolve one
+  specifically named uncertain renew/revoke operation;
 - `resolve_unknown_secret_issue` — apply an independently established result
-  for an issuance whose acknowledgement was lost before a provider lease ID
-  was observed locally.
+  for an issuance whose acknowledgement was lost before the provider lease ID
+  became durable locally.
 
-The provider remains authoritative for dynamic secret values and external lease
-existence. The local registry is authoritative only for Hepta's operation
-admission history, local consumer binding, observed lease metadata and local
-reconciliation state.
+The provider remains authoritative for dynamic values and provider lease
+existence. The local registry is authoritative for Hepta operation admission,
+local consumer/scope binding, observed lease metadata and reconciliation state.
 
-## Authority and final-use boundary
+## Authority binding
 
-Every public operation has a deterministic binding method:
+Every operation has a deterministic binding helper:
 
-- `dynamic_secret_lease_binding`
-- `lease_renew_binding`
-- `lease_revoke_binding`
-- `lease_reconcile_binding`
-- `unknown_issue_resolution_binding`
+- `dynamic_secret_lease_binding`;
+- `lease_renew_binding`;
+- `lease_revoke_binding`;
+- `lease_reconcile_binding`;
+- `unknown_issue_resolution_binding`.
 
-The binding covers subject, consumer, enrolled HTTPS origin, pinned CA digest,
-namespace, operation ID and the complete operation-specific payload. Provider
-mutation is never authorized by a boolean or by the adapter itself. The host
-obtains an independently signed `SignedFinalUseGrant` for the exact binding.
+Bindings cover the subject, consumer, enrolled HTTPS origin, pinned CA digest,
+namespace, operation ID and operation-specific payload. Reconciliation also
+binds `target_operation_id`, the exact previously admitted renew/revoke whose
+outcome is being resolved. A lookup cannot be used as a generic mechanism to
+reactivate another local lease state.
 
-Issuance claims the grant before the provider request, then revalidates the live
-authority through `with_verified_use` after the provider response and before
-secret bytes enter the callback. If the grant is revoked while the provider is
-running, the dynamic values are not delivered and the observed lease is fenced
-as `RevokeRequired` so the host can clean it up.
+The adapter owns no signing key. The host obtains an independently signed
+`SignedFinalUseGrant` for the exact binding.
 
-Renew, revoke and lookup do not expose secret material. Their final-use claim is
-the external-dispatch admission point; a consumed nonce is never refunded when
-the provider call later fails or becomes uncertain.
+Issuance claims the grant before provider dispatch and calls
+`with_verified_use` after the provider response and immediately before secret
+values enter the trusted callback. Renewal, revocation and lookup carry no
+secret bytes; their one-time grant claim is the external-dispatch admission
+point.
 
-## Dynamic secret exposure
+## Dynamic value boundary
 
-A `DynamicSecretLeaseRequest` names the exact string fields that may cross the
-trusted consumer boundary. The response body and decoded field strings are held
-in zeroizing application-owned buffers. `DynamicSecretValues` is deliberately
-non-cloneable and non-serializable, and its `Debug` implementation prints field
-names plus `[REDACTED]`, never values.
+`DynamicSecretLeaseRequest` lists the exact string fields that may cross the
+trusted consumer boundary. The complete response body and selected strings are
+held in zeroizing application-owned buffers. `DynamicSecretValues` is
+non-cloneable and non-serializable; its `Debug` implementation prints only
+field names and `[REDACTED]`.
 
-Fields that were not requested are never copied into `DynamicSecretValues`.
-Missing requested fields deny delivery and fence an otherwise valid observed
-lease as `RevokeRequired`.
+Unrequested fields never enter `DynamicSecretValues`. Missing requested fields
+deny delivery and fence an otherwise observed lease as `RevokeRequired`.
 
 Zeroization applies to adapter-owned buffers only. TLS, HTTP, JSON and allocator
-implementations may have internal transient plaintext copies. This module does
-not claim locked-memory or process-memory secrecy.
+implementations may keep transient plaintext copies. This module does not claim
+locked-memory or complete process-memory secrecy.
 
-## Durable local registry
+## Durable registry
 
-`SecretLeaseRegistry::open_state_dir` owns a local registry directory with:
+`SecretLeaseRegistry::open_state_dir` owns a local registry containing:
 
-- `lease-registry.lock` — process exclusion lock;
+- `lease-registry.lock` — process exclusion;
 - `lease-registry.json` — committed metadata/operation state;
-- `lease-registry.next` — complete replacement written and synced before rename.
+- `lease-registry.next` — complete replacement written and synced before
+  rename.
 
-On Unix, the directory must have no group/world permission bits and files are
-created owner-only. Writes use a complete temporary snapshot, file `fsync`,
-rename and directory `fsync`. A persistence error fences the live registry. A
-pre-existing lock marker without committed state is treated as corrupt rather
-than silently reinitializing admission history.
+On Unix the directory must have no group/world permission bits, files are
+created owner-only, and successful mutation uses file sync, atomic replacement
+and directory sync. A persistence error fences the live registry.
 
-The registry intentionally contains no provider token and no raw secret value.
-It also avoids storing a digest of dynamic secret values, because long-lived
-unkeyed fingerprints can leak information about low-entropy credentials.
+The registry intentionally stores no provider token, no raw dynamic value and
+no long-lived unkeyed dynamic-secret fingerprint. Current bounds are 4,096
+lease records, 8,192 operation records and an 8 MiB serialized registry.
+Exhaustion fails closed. This is a bounded single-active local backend, not a
+distributed active-active state authority.
 
-Current bounded limits are 4,096 lease records, 8,192 operation records and an
-8 MiB serialized registry. Exhaustion fails closed. This local backend is a
-single-active owner, not an active-active distributed authority.
+## Write-ahead uncertainty fence
 
-## Operation idempotency and the write-ahead uncertainty fence
-
-Each external-effect request supplies a bounded `operation_id`. Reusing one ID
-with different request semantics is `OperationConflict`. A completed or
-terminal operation cannot be silently replayed.
+Each external-effect request supplies a bounded `operation_id`. Reusing an ID
+with different request semantics is `OperationConflict`.
 
 Before a request that can create, renew or revoke a provider lease is sent, the
-registry durably writes `OutcomeUnknown`. Therefore a process crash after local
-admission but before receiving a response cannot make the next process believe
-that the operation never happened.
+registry durably records `OutcomeUnknown`. Therefore a crash after local
+admission but before acknowledgement cannot make a later process believe the
+mutation never happened.
 
-A definitive provider-side client rejection can move the operation to
-`Rejected` and, for renew/revoke, restore the prior local lease state. Transport
-loss, timeout, server-side uncertainty, oversized/incomplete success bodies, or
-malformed success bodies do **not** become a retryable failure: they remain
-`OutcomeUnknown` and return `OutcomeIndeterminate`.
+A definitive provider-side client rejection may move the operation to
+`Rejected`; for renew/revoke the prior local lease state is restored. Transport
+loss, timeout, server-side uncertainty, oversized/incomplete success bodies or
+malformed success bodies stay `OutcomeUnknown` and return
+`OutcomeIndeterminate`.
 
-No mutating operation has an automatic retry loop.
+There is no automatic retry loop for provider mutations.
+
+## Issuance activation ordering
+
+A provider lease is **not** made locally `Active` merely because the provider
+returned credentials. Until final-use delivery succeeds and the terminal local
+write completes, the recoverable state remains the pre-dispatch
+`OutcomeUnknown` record.
+
+If final-use authorization is revoked after network I/O, the callback reports
+an indeterminate effect, required fields are missing, or the provider TTL
+violates the local ceiling, a known observed lease is persisted as
+`RevokeRequired` instead of `Active`.
+
+Only a successful trusted callback followed by successful durable completion
+commits the lease as `Active`. If the process dies before that durable
+completion, restart sees the uncertainty fence and requires reconciliation; it
+does not infer successful secret delivery.
 
 ## Lease state machine
 
 The locally observed lease states are:
 
-- `Active` — the provider lease was observed and is eligible for normal renew or
-  revoke under a new exact grant.
-- `RenewOutcomeUnknown` — a renew was durably admitted but its terminal provider
-  result was not observed. Further renew is blocked until lookup reconciliation.
-- `RevokeOutcomeUnknown` — revoke was admitted but its terminal result was not
-  observed. Further mutation is blocked until lookup reconciliation.
+- `Active` — final-use delivery completed and the provider lease is eligible for
+  normal renewal/revocation;
+- `RenewOutcomeUnknown` — renewal was durably admitted but its terminal provider
+  result was not observed;
+- `RevokeOutcomeUnknown` — revocation was durably admitted but its terminal
+  provider result was not observed;
 - `RevokeRequired` — the provider lease is known but local policy refuses normal
-  use, for example because the provider TTL exceeded the requested ceiling, a
-  required secret field was absent, final-use authorization was revoked before
-  delivery, the consumer reported an indeterminate effect, or an orphaned
-  issuance was independently discovered after lost acknowledgement.
-- `Revoked` — synchronous provider revoke completed.
-- `ProviderAbsent` — provider lookup/revoke establishes that the lease is no
-  longer present. This is terminal locally.
+  use and cleanup is required;
+- `Revoked` — synchronous provider revocation completed;
+- `ProviderAbsent` — provider observation established that the lease no longer
+  exists.
 
-Each successful renew/reconciliation/revocation transition advances
-`rotation_generation`; rollback must not resurrect an earlier generation.
+Operation records use `OutcomeUnknown`, `Completed`, `Reconciled`, `Rejected`
+and `ResolvedNoLease`. `Reconciled` means the original mutation was not
+retroactively declared a direct success; a later provider observation resolved
+its uncertainty.
 
-## Issuance ambiguity and orphan handling
+## Lost issuance acknowledgement
 
-Dynamic issuance has an asymmetric failure mode: the provider may create a
-lease and generate credentials, while the HTTP acknowledgement carrying the
-new `lease_id` is lost. A generic retry of the original read endpoint may create
-a second independent credential lease, so the adapter never performs that
-retry.
+Dynamic issuance is asymmetric: the provider may create credentials while the
+HTTP acknowledgement carrying the new `lease_id` is lost. Repeating the
+original dynamic endpoint could create a second independent credential lease,
+so the adapter never retries it automatically.
 
-If issuance becomes `OutcomeUnknown` before the lease ID is known, a repeated
-`operation_id` returns `ReconciliationRequired`. The host must independently
-inspect provider/audit state and then submit one exact signed
+If the acknowledgement is lost before the lease ID becomes durable locally, a
+repeated operation ID returns `ReconciliationRequired`. Independent
+provider/audit inspection must then submit one signed
 `UnknownIssueResolutionRequest`:
 
-- `NoLeaseObserved` means independent reconciliation established that no lease
-  was created. The original operation becomes terminal `ResolvedNoLease`.
-- `LeaseObserved { lease_id, ... }` adopts the observed external lease only as
-  `RevokeRequired`. It is never promoted to `Active`, because the raw dynamic
-  values associated with that issuance were not durably delivered through this
-  process. The safe next external action is revoke.
+- `NoLeaseObserved` marks the original issue operation `ResolvedNoLease`;
+- `LeaseObserved { lease_id, ... }` adopts the observed orphan only as
+  `RevokeRequired`.
 
-This design deliberately prefers a leaked-but-fenced provider lease requiring
-operator reconciliation over duplicate unrestricted credential issuance.
+An adopted orphan is never promoted to `Active` by `reconcile_secret_lease`.
+Its generated secret values were not durably delivered through this process;
+the safe next external mutation is revocation under a new exact grant.
 
-## Renew and revoke reconciliation
+## Renew/revoke reconciliation
 
-Renew and revoke start from a known provider `lease_id`, so an uncertain result
-can be reconciled without repeating the mutation. `reconcile_secret_lease`
-performs the provider lookup under a fresh exact final-use grant:
+Renewal and revocation start with a known provider lease ID, so an uncertain
+result can be resolved without repeating the mutation.
 
-- a present lease updates its observed TTL/renewability and returns it to
-  `Active` unless the observed TTL exceeds the locally configured ceiling, in
-  which case it becomes `RevokeRequired`;
-- a provider `404` becomes `ProviderAbsent`;
-- transport or malformed lookup failures do not alter the local lease record.
+`LeaseReconcileRequest` includes both:
 
-A later mutation requires a new operation ID and a new signed grant.
+- `operation_id` — the new read-only lookup operation; and
+- `target_operation_id` — the exact previous `Renew` or `Revoke` operation that
+  is still `OutcomeUnknown`.
+
+The registry requires the target operation, lease ID and current local unknown
+state to agree. A `RenewOutcomeUnknown` lease may reconcile only a matching
+unknown `Renew`; a `RevokeOutcomeUnknown` lease may reconcile only a matching
+unknown `Revoke`. `RevokeRequired`, `Active` and terminal leases are not lookup
+reactivation candidates.
+
+A successful lookup:
+
+- marks the target mutation `Reconciled`;
+- records the new lookup operation `Completed`;
+- if the provider lease exists, refreshes observed TTL/renewability and returns
+  it to `Active` unless the TTL violates the local ceiling, in which case it is
+  `RevokeRequired`;
+- if the provider reports the lease absent, moves it to `ProviderAbsent`.
+
+A failed lookup itself does not rewrite the local lease state and may be retried
+under a new lookup operation ID and a fresh exact grant.
 
 ## TTL semantics
 
-`LeaseRenewRequest::increment_seconds` follows OpenBao lease semantics: it asks
-for the desired remaining TTL from the current time and is not interpreted as
-an amount to add to the old TTL. Zero requests the provider default. The
-provider may cap the result according to its role/mount/system maximum TTL.
+`LeaseRenewRequest::increment_seconds` follows OpenBao semantics: it requests
+the desired remaining TTL from the current time; it is not an amount to add to
+the old TTL. Zero asks for the provider default. Provider policy may cap the
+result.
 
-Issuance includes `max_lease_duration_seconds` as a local policy ceiling. A
-provider response above that ceiling is persisted as `RevokeRequired` and is
-never delivered to the trusted secret consumer. Renewal and reconciliation use
-the same ceiling retained on the lease record.
+Issuance carries `max_lease_duration_seconds` as a local policy ceiling. A
+provider result above that ceiling is never delivered to the secret consumer.
+Renewal and reconciliation retain and enforce the same ceiling.
 
-## Failure classification
+## Required caller behavior
 
-Important caller actions:
-
-| Error/state | Required caller behavior |
+| Error/state | Required action |
 | --- | --- |
-| `OutcomeIndeterminate` | Do not repeat the mutation. Inspect the registry and reconcile. |
-| `ReconciliationRequired` | Resolve the existing unknown operation instead of creating another one. |
-| `OperationConflict` | Reject the caller: the operation ID was reused with different semantics. |
-| `LeaseNotActive` | Reconcile or clean up the recorded lease state; do not bypass the state machine. |
-| `LeaseDurationExceeded` | Treat the observed lease as `RevokeRequired` and revoke it. |
-| `ConsumerIndeterminate` | Treat consumer effect as uncertain and revoke the associated lease before reissuing. |
-| `StateUnavailable` / `StateCorrupt` | Fail closed and repair the registry without clearing history implicitly. |
+| `OutcomeIndeterminate` | Do not repeat the mutation; inspect registry and reconcile. |
+| `ReconciliationRequired` | Resolve the existing unknown operation instead of creating a duplicate mutation. |
+| `OperationConflict` | Reject reuse of the operation ID with changed semantics. |
+| `LeaseNotActive` | Reconcile or clean up the recorded state; do not bypass the state machine. |
+| `LeaseDurationExceeded` | Treat the lease as `RevokeRequired` and revoke it. |
+| `ConsumerIndeterminate` | Treat consumer effect as uncertain and clean up the associated lease before reissuing. |
+| `StateUnavailable` / `StateCorrupt` | Fail closed and repair storage without clearing history implicitly. |
 
-## Verification requirements
+## Verification boundary
 
-Focused native tests cover:
+Focused native tests cover real pinned loopback TLS dynamic issuance,
+requested-field-only delivery, absence of raw values from persistent state,
+registry reopen, durable issuance timeout, duplicate-operation rejection,
+exact renew/revoke endpoints, renew-timeout lookup reconciliation, explicit
+transition of the original mutation to `Reconciled`, and proof that an adopted
+orphan `RevokeRequired` lease cannot be lookup-promoted to `Active`.
 
-- real pinned loopback TLS dynamic issuance;
-- requested-field-only delivery and absence of raw values from persistent state;
-- registry persistence across process-style reopen;
-- issuance timeout leaving durable `OutcomeUnknown` and blocking duplicate use;
-- exact renew/revoke provider endpoints and request bodies;
-- renew timeout followed by provider lookup reconciliation without automatic
-  renew retry;
-- independently observed lost-ack issuance adopted only as `RevokeRequired`.
-
-Before production composition, keep the existing exact-head workspace/lint
-qualification requirements. The local registry remains a single-active pilot
-backend; active-active/distributed replay and lease-state ownership is a
-separate production architecture decision rather than an implicit property of
-this implementation.
+The existing real-service fixture is KV-focused. A production dynamic-engine
+qualification receipt, named production caller and production HA/state-owner
+architecture remain separate work. Source tests and this document are not an
+independent production-acceptance claim.
