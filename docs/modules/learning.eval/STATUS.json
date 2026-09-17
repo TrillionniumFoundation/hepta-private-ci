@@ -1,0 +1,65 @@
+{
+  "schema": "hepta.learning-eval-status.v1",
+  "schemaVersion": 1,
+  "module": "learning.eval",
+  "canonicalCurrentStatus": true,
+  "sourceBase": {
+    "commit": "7b3681d2a55291b0bacefdf96da05c2d867b1244",
+    "tree": "dedaa5e8f7baf29441f8142b70ded684bf32b500"
+  },
+  "statusSemantics": "This file is the canonical current-state projection for learning.eval. MODULES.json, SOURCE_BINDINGS.json and contract/protocol registries remain normative for identity, ownership, roots and contract semantics.",
+  "currentState": {
+    "documentation": "complete",
+    "nativeSource": "implemented",
+    "productAdapter": "composed_source_implemented",
+    "productionTargetHost": "not_proved",
+    "sourceQualification": "requires_successful_exact_candidate_ci_artifacts",
+    "mergeCandidateQualification": "requires_successful_synthetic_merge_ci_artifact",
+    "independentAcceptance": "external_required",
+    "activation": false,
+    "release": false
+  },
+  "composition": {
+    "runner": "codex-rs/hepta-intelligence-eval/src/product_runner.rs",
+    "entrypoints": [
+      "ProductEvaluationRunnerV1::evaluate_temporal_candidate",
+      "ProductEvaluationRunnerV1::qualify_candidate"
+    ],
+    "temporalEvaluator": "codex-rs/hepta-intelligence-eval/src/temporal_evaluation.rs",
+    "holdoutJournal": "codex-rs/hepta-intelligence-eval/src/durable_holdout.rs",
+    "anchorContract": "HoldoutAnchorStoreV1",
+    "signedQualification": "codex-rs/hepta-intelligence-eval/src/signed_evaluation.rs",
+    "longitudinalGate": "codex-rs/hepta-intelligence-eval/src/longitudinal_time.rs",
+    "authority": "deny_all"
+  },
+  "holdoutOrdering": [
+    "validate frozen plan, observed holdout digest, objective, multiplicity and final-holdout window",
+    "verify independently retained anchor equals the journal current anchor",
+    "durably consume and fsync the final-holdout use receipt",
+    "commit the new independently retained anchor with compare-and-swap",
+    "evaluate held-out outcomes only after durable use and anchor commit",
+    "poison the runner after an indeterminate anchor commit until explicit recovery"
+  ],
+  "ciEvidence": {
+    "workflow": ".github/workflows/hepta-lane-e-gap-closure.yml",
+    "exactHeadArtifactPattern": "hepta-lane-e-exact-head-<SOURCE_SHA>",
+    "syntheticMergeArtifactPattern": "hepta-lane-e-synthetic-merge-<SOURCE_SHA>",
+    "retentionDays": 30,
+    "claim": "The evidence JSON artifacts are emitted only after all preceding exact-head or synthetic-merge checks in their job pass.",
+    "productionTargetHostEvidence": false
+  },
+  "externalEvidenceGates": [
+    "production target-host implementation and independent retention of HoldoutAnchorStoreV1 currentness state",
+    "scheduler and access-control evidence showing final outcomes are not inspected before durable holdout consumption",
+    "authenticated live dataset, outcome-observer and candidate manifests",
+    "target-host scheduling, resource, incomplete-row and censoring measurements",
+    "real future-calendar windows and independently identified snapshots",
+    "retention, subgroup/privacy and unlearning evidence",
+    "independent semantic/operator acceptance, selection, canary, promotion and release"
+  ],
+  "forbiddenClaims": [
+    "CI fixtures or the in-memory anchor test double are production target-host evidence",
+    "synthetic timestamps establish future-calendar efficacy",
+    "source qualification or eligibility implies independent acceptance, activation, selection, promotion or release"
+  ]
+}
