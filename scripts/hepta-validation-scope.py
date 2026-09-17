@@ -1,10 +1,15 @@
 #!/usr/bin/env python3
 """Classify one exact candidate into fast, impacted, or critical validation.
 
-The classifier is intentionally conservative.  It is the only source of
+The classifier is intentionally conservative. It is the only source of
 `not_applicable` decisions consumed by the blocking CI fan-in; a skipped job
 without a matching classifier decision is therefore a failure, not a green
 result inherited from another commit or workflow.
+
+Only source families with an explicit impacted-check mapping are eligible for
+the impacted profile. Workflow, action, script, app, tool, and other unmapped
+surfaces fail closed to the critical profile until their validation ownership is
+declared here. This keeps faster feedback from becoming a coverage hole.
 """
 
 from __future__ import annotations
@@ -153,6 +158,16 @@ def _touches_sdk(path: str) -> bool:
     return path.startswith(SDK_PREFIXES)
 
 
+def _has_explicit_impacted_mapping(path: str) -> bool:
+    return (
+        _is_docs_only(path)
+        or _touches_bazel(path)
+        or _touches_dependencies(path)
+        or _touches_rust(path)
+        or _touches_sdk(path)
+    )
+
+
 def classify(paths: Iterable[str], unavailable_reason: str | None = None) -> dict:
     paths = sorted(set(paths))
     critical_paths = [path for path in paths if _is_critical(path)]
@@ -184,18 +199,9 @@ def classify(paths: Iterable[str], unavailable_reason: str | None = None) -> dic
             required["rust-ci"] = any(_touches_rust(path) for path in paths)
             required["sdk"] = any(_touches_sdk(path) for path in paths)
 
-        # Unknown non-document source must never silently become N/A.  It is
-        # cheaper to run the complete gate once than to create a validation hole.
-        recognized = all(
-            _is_docs_only(path)
-            or _touches_bazel(path)
-            or _touches_dependencies(path)
-            or _touches_rust(path)
-            or _touches_sdk(path)
-            or path.startswith((".github/", "scripts/", "apps/", "tools/"))
-            for path in paths
-        )
-        if paths and not recognized:
+        # Unknown non-document source must never silently become N/A. Only
+        # explicitly mapped families are eligible for impacted validation.
+        if paths and not all(_has_explicit_impacted_mapping(path) for path in paths):
             profile = "critical"
             profile_reason = "unclassified_path_fail_closed"
             required = {job: True for job in JOBS}
@@ -237,6 +243,13 @@ def _self_test() -> None:
     critical = classify(["codex-rs/hepta-supervisor/src/lib.rs"])
     assert critical["profile"] == "critical"
     assert all(value["required"] for value in critical["jobs"].values())
+
+    workflow = classify([".github/workflows/ordinary.yml"])
+    assert workflow["profile"] == "critical"
+    assert workflow["profile_reason"] == "unclassified_path_fail_closed"
+
+    script = classify(["scripts/ordinary-maintenance.py"])
+    assert script["profile"] == "critical"
 
     unknown = classify(["mystery/new-format.bin"])
     assert unknown["profile"] == "critical"
