@@ -5,10 +5,10 @@
 //! deployment or issue effect authority. One rollback checkpoint is retained
 //! until the host explicitly confirms the adopted generation.
 
-use codex_hepta_intelligence_eval::SelfEvolutionSelectionReceiptV1;
 use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
+use codex_hepta_types::SelfEvolutionSelectionWitnessV1;
 use codex_hepta_types::StableId;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -100,11 +100,9 @@ impl SelfEvolutionRuntimeV1 {
         self.rollback.is_some()
     }
 
-    /// Stage exactly one independently selected successor. The prior generation
-    /// remains available as a bounded rollback checkpoint until confirmation.
     pub fn adopt(
         &mut self,
-        selection: &SelfEvolutionSelectionReceiptV1,
+        selection: &SelfEvolutionSelectionWitnessV1,
     ) -> Result<SelfEvolutionAdoptionReceiptV1, SelfEvolutionRuntimeError> {
         if selection.authority != AuthorityPosture::DENY_ALL {
             return Err(SelfEvolutionRuntimeError::SelectionAuthority);
@@ -151,8 +149,6 @@ impl SelfEvolutionRuntimeV1 {
         Ok(receipt)
     }
 
-    /// Confirm the canaried/adopted generation locally and discard the one-step
-    /// rollback checkpoint. Promotion/release remains a separate external gate.
     pub fn confirm_adoption(
         &mut self,
         selection_digest: Digest32,
@@ -168,12 +164,9 @@ impl SelfEvolutionRuntimeV1 {
         Ok(())
     }
 
-    /// Restore the exact predecessor after independently observed regression.
-    /// A non-zero regression digest is mandatory so rollback cannot be used as
-    /// an unrecorded arbitrary generation switch.
     pub fn rollback(
         &mut self,
-        selection: &SelfEvolutionSelectionReceiptV1,
+        selection: &SelfEvolutionSelectionWitnessV1,
         regression_evidence_digest: Digest32,
     ) -> Result<SelfEvolutionRollbackReceiptV1, SelfEvolutionRuntimeError> {
         require_digest(regression_evidence_digest)?;
@@ -213,7 +206,7 @@ impl SelfEvolutionRuntimeV1 {
     }
 }
 
-fn adoption_digest(selection: &SelfEvolutionSelectionReceiptV1, predecessor: Digest32) -> Digest32 {
+fn adoption_digest(selection: &SelfEvolutionSelectionWitnessV1, predecessor: Digest32) -> Digest32 {
     let mut bytes = b"hepta.control.self-evolution-adoption.v1".to_vec();
     push_id(&mut bytes, &selection.predecessor_id);
     push_id(&mut bytes, &selection.candidate_id);
@@ -237,4 +230,101 @@ fn push_id(bytes: &mut Vec<u8>, id: &StableId) {
     let raw = id.as_str().as_bytes();
     bytes.extend_from_slice(&(raw.len() as u64).to_be_bytes());
     bytes.extend_from_slice(raw);
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn id(value: &str) -> StableId {
+        StableId::new(value).unwrap()
+    }
+
+    fn generation(value: u64) -> Generation {
+        Generation::new(value).unwrap()
+    }
+
+    fn witness() -> SelfEvolutionSelectionWitnessV1 {
+        SelfEvolutionSelectionWitnessV1 {
+            selection_id: id("selection-1"),
+            predecessor_id: id("baseline"),
+            predecessor_generation: generation(4),
+            candidate_id: id("candidate"),
+            candidate_generation: generation(5),
+            candidate_artifact_digest: Digest32::of_bytes(b"candidate-artifact"),
+            rollback_digest: Digest32::of_bytes(b"rollback-plan"),
+            no_change_baseline_id: id("baseline"),
+            dataset_digest: Digest32::of_bytes(b"dataset"),
+            ledger_head_digest: Digest32::of_bytes(b"ledger"),
+            evaluation_evidence_digest: Digest32::of_bytes(b"evaluation"),
+            evaluation_authentication_digest: Digest32::of_bytes(b"eval-auth"),
+            selector_id: id("selector"),
+            selector_evidence_digest: Digest32::of_bytes(b"selector-evidence"),
+            selection_digest: Digest32::of_bytes(b"selection"),
+            authority: AuthorityPosture::DENY_ALL,
+        }
+    }
+
+    #[test]
+    fn adopts_exact_successor_and_rolls_back_after_regression() {
+        let baseline_digest = Digest32::of_bytes(b"baseline-artifact");
+        let mut runtime = SelfEvolutionRuntimeV1::new(
+            id("baseline"),
+            generation(4),
+            baseline_digest,
+        )
+        .unwrap();
+        let selection = witness();
+        let adopted = runtime.adopt(&selection).unwrap();
+        assert_eq!(adopted.candidate_generation, generation(5));
+        assert!(runtime.adoption_pending_confirmation());
+
+        let rollback = runtime
+            .rollback(&selection, Digest32::of_bytes(b"observed-regression"))
+            .unwrap();
+        assert_eq!(rollback.restored_candidate_id, id("baseline"));
+        assert_eq!(runtime.generation(), generation(4));
+        assert_eq!(runtime.artifact_digest(), baseline_digest);
+    }
+
+    #[test]
+    fn refuses_skipped_or_unrelated_generation() {
+        let mut runtime = SelfEvolutionRuntimeV1::new(
+            id("baseline"),
+            generation(4),
+            Digest32::of_bytes(b"baseline-artifact"),
+        )
+        .unwrap();
+        let mut selection = witness();
+        selection.candidate_generation = generation(6);
+        assert_eq!(
+            runtime.adopt(&selection),
+            Err(SelfEvolutionRuntimeError::GenerationMismatch)
+        );
+        selection = witness();
+        selection.predecessor_id = id("other-baseline");
+        assert_eq!(
+            runtime.adopt(&selection),
+            Err(SelfEvolutionRuntimeError::PredecessorMismatch)
+        );
+    }
+
+    #[test]
+    fn confirmation_drops_rollback_checkpoint_without_granting_release() {
+        let mut runtime = SelfEvolutionRuntimeV1::new(
+            id("baseline"),
+            generation(4),
+            Digest32::of_bytes(b"baseline-artifact"),
+        )
+        .unwrap();
+        let selection = witness();
+        let receipt = runtime.adopt(&selection).unwrap();
+        assert_eq!(receipt.authority, AuthorityPosture::DENY_ALL);
+        runtime.confirm_adoption(selection.selection_digest).unwrap();
+        assert!(!runtime.adoption_pending_confirmation());
+        assert_eq!(
+            runtime.rollback(&selection, Digest32::of_bytes(b"late-regression")),
+            Err(SelfEvolutionRuntimeError::NoRollbackCheckpoint)
+        );
+    }
 }
