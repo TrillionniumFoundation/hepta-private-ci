@@ -225,3 +225,42 @@ fn supports_and_contradicts_remain_distinct_edges() {
     assert_eq!(generation.edges.len(), 2);
     assert_ne!(generation.edges[0].identity, generation.edges[1].identity);
 }
+
+#[test]
+fn named_predicates_are_stable_and_do_not_collapse() {
+    let collaborated = KnowledgeRelationKindV2::named("collaborated_with");
+    assert_eq!(collaborated, KnowledgeRelationKindV2::named("collaborated_with"));
+    assert_ne!(collaborated, KnowledgeRelationKindV2::named("references"));
+
+    let generation = build_complete_generation(
+        generation(1),
+        input(
+            vec![node("a", "a"), node("b", "b")],
+            vec![
+                edge("a", "b", collaborated, "collaboration"),
+                edge(
+                    "a",
+                    "b",
+                    KnowledgeRelationKindV2::named("references"),
+                    "reference",
+                ),
+            ],
+        ),
+    )
+    .unwrap_or_else(|error| panic!("named predicates must build: {error}"));
+    assert_eq!(generation.edges.len(), 2);
+
+    let result = query_relations(
+        &generation,
+        KnowledgeRelationQueryV2 {
+            query_id: id("query:named"),
+            generation_digest: generation.generation_digest,
+            seed_node_ids: vec![id("node:a")],
+            relation_kinds: vec![collaborated],
+            maximum_edges: 8,
+        },
+    )
+    .unwrap_or_else(|error| panic!("named predicate query must work: {error}"));
+    assert_eq!(result.edges.len(), 1);
+    assert_eq!(result.edges[0].identity.relation, collaborated);
+}
