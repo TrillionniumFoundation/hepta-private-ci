@@ -19,11 +19,23 @@ jobs:
   qualify-real-synapse:
     name: Qualify exact Matrix candidate against pinned Synapse
     # The checked-in hermetic runner intentionally binds macOS/Xcode, Docker,
-    # Homebrew Python/Bash, and the pinned Synapse image. Do not silently
-    # substitute a generic hosted runner for this evidence boundary.
-    runs-on: [self-hosted, macOS, hepta-matrix-synapse]
+    # Homebrew Python/Bash, and the pinned Synapse image. Use the already
+    # registered MacBook Pro integration runner; never auto-run PR code on it.
+    runs-on: [self-hosted, macOS, ARM64, macbook]
     timeout-minutes: 90
     steps:
+      - name: Verify trusted Matrix qualification runner
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$GITHUB_EVENT_NAME" = workflow_dispatch
+          test "$RUNNER_NAME" = macbook-pro
+          test "$RUNNER_OS" = macOS
+          test "$RUNNER_ARCH" = ARM64
+          command -v docker >/dev/null
+          command -v /opt/homebrew/bin/python3 >/dev/null
+          command -v /opt/homebrew/bin/bash >/dev/null
+
       - name: Check out exact candidate
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
