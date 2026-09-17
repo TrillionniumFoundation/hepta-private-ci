@@ -202,7 +202,7 @@ test("subprocess driver fails closed on worker artifact digest drift", async () 
 });
 
 test(
-  "Linux bubblewrap launcher denies ambient network and host credential stores by construction",
+  "Linux bubblewrap launcher exposes only the explicit runtime closure",
   { skip: process.platform !== "linux" },
   () => {
     const launcher = new LinuxBubblewrapLauncher({ bwrapPath: "/usr/bin/bwrap" });
@@ -214,7 +214,6 @@ test(
     assert.equal(argv.includes("--share-net"), false);
     assert.equal(argv.includes("--clearenv"), true);
     assert.deepEqual(argv.slice(4, 6), ["--tmpfs", "/"]);
-    assert.equal(argv.includes("/usr"), true);
     for (let index = 0; index < argv.length - 2; index += 1) {
       assert.equal(
         argv[index] === "--ro-bind" && argv[index + 1] === "/" && argv[index + 2] === "/",
@@ -227,9 +226,15 @@ test(
         mountedSources.push(argv[index + 1]);
       }
     }
-    assert.equal(mountedSources.some((path) => path === "/var" || path.startsWith("/var/")), false);
+    assert.equal(mountedSources.includes("/usr"), false);
+    assert.equal(mountedSources.some((path) => path.startsWith("/usr/bin")), false);
+    assert.equal(mountedSources.some((path) => path.startsWith("/usr/local")), false);
     assert.equal(mountedSources.some((path) => path === "/home" || path.startsWith("/home/")), false);
     assert.equal(mountedSources.some((path) => path === "/root" || path.startsWith("/root/")), false);
+    assert.equal(mountedSources.some((path) => path.startsWith("/var/lib")), false);
+    assert.equal(mountedSources.some((path) => path.startsWith("/var/run")), false);
+    assert.equal(mountedSources.includes("/usr/lib"), true);
+    assert.equal(mountedSources.includes("/var/cache/fontconfig"), true);
     assert.equal(argv.at(-1), "/hepta-worker");
     assert.equal(launcher.posture.hostFilesystemRestricted, true);
   },
