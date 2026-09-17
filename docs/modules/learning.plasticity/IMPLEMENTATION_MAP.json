@@ -10,6 +10,8 @@
   "owner": "learning-platform",
   "deputy": "architecture",
   "technicalGuide": "docs/modules/learning.plasticity/TECHNICAL.md",
+  "currentState": "docs/modules/learning.plasticity/CURRENT_STATE.json",
+  "currentImplementation": "docs/modules/learning.plasticity/CURRENT_IMPLEMENTATION.md",
   "declaredRoots": [
     "codex-rs/hepta-plasticity"
   ],
@@ -18,16 +20,18 @@
   ],
   "sourceRootPresent": true,
   "productionImplementation": false,
-  "productCallerState": "product_workspace_adapter_implemented_not_host_called",
-  "productionWriterState": "anchored_writer_adapter_implemented_not_host_established",
+  "productCallerState": "agentd_selected_host_surface_implemented_not_runtime_enrolled",
+  "productionWriterState": "host_anchor_fence_store_implemented_not_deployment_bound",
   "operations": [
     {
       "operation": "propose_v2",
       "nativeSymbol": "propose_v2",
       "sourcePath": "codex-rs/hepta-plasticity/src/parameter_v2.rs",
-      "state": "source_implemented_product_adapter_available_not_host_called",
+      "state": "source_implemented_stable_record_boundary",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-plasticity/src/lib_tests.rs"
+      ],
       "sourcePathExists": true,
       "designOperation": "propose_v2",
       "mappingClass": "owner_native",
@@ -37,11 +41,28 @@
       "operation": "verify_parameter_proposal_v2",
       "nativeSymbol": "verify_parameter_proposal_v2",
       "sourcePath": "codex-rs/hepta-plasticity/src/parameter_v2.rs",
-      "state": "source_implemented_product_adapter_available_not_host_called",
+      "state": "source_implemented_stable_record_boundary",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-plasticity/src/lib_tests.rs"
+      ],
       "sourcePathExists": true,
       "designOperation": "verify_parameter_proposal_v2",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "mutation_grammar_manifest_v1",
+      "nativeSymbol": "MutationGrammarManifestV1",
+      "sourcePath": "codex-rs/hepta-plasticity/src/mutation_grammar_v1.rs",
+      "state": "source_implemented_typed_policy",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-plasticity/src/mutation_grammar_v1.rs",
+        "codex-rs/hepta-intelligence/src/plasticity_product_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "typed_mutation_grammar",
       "mappingClass": "owner_native",
       "delegatedCallees": []
     },
@@ -49,9 +70,12 @@
       "operation": "generate_parameter_candidates_v3",
       "nativeSymbol": "generate_parameter_candidates_v3",
       "sourcePath": "codex-rs/hepta-plasticity/src/generator_v3.rs",
-      "state": "source_implemented_product_adapter_available_not_host_called",
+      "state": "source_implemented_generator_relative_complete",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-plasticity/src/generator_v3.rs",
+        "codex-rs/hepta-intelligence/src/plasticity_product_tests.rs"
+      ],
       "sourcePathExists": true,
       "designOperation": "generate_parameter_candidates_v3",
       "mappingClass": "owner_native",
@@ -61,12 +85,93 @@
       "operation": "verify_generated_parameter_candidates_v3",
       "nativeSymbol": "verify_generated_parameter_candidates_v3",
       "sourcePath": "codex-rs/hepta-plasticity/src/generator_v3.rs",
-      "state": "source_implemented_product_adapter_available_not_host_called",
+      "state": "source_implemented_generator_relative_complete",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-intelligence/src/plasticity_product_tests.rs"
+      ],
       "sourcePathExists": true,
       "designOperation": "verify_generated_parameter_candidates_v3",
       "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "durable_parameter_registry",
+      "nativeSymbol": "DurableProposalRegistry",
+      "sourcePath": "codex-rs/hepta-plasticity/src/durable_registry.rs",
+      "state": "source_implemented_proposal_registry",
+      "authority": "proposal_registry_only",
+      "tests": [
+        "codex-rs/hepta-plasticity/src/durable_registry_tests.rs",
+        "codex-rs/hepta-intelligence/src/plasticity_product_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "durableproposalregistry",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "authenticated_parameter_product_composition",
+      "nativeSymbol": "propose_authenticated_parameter_plasticity_v1",
+      "sourcePath": "codex-rs/hepta-intelligence/src/plasticity_product.rs",
+      "state": "source_implemented_authenticated_admission",
+      "authority": "proposal_append_only",
+      "tests": [
+        "codex-rs/hepta-intelligence/src/plasticity_product_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "authenticated_parameter_product_composition",
+      "mappingClass": "delegated_composition",
+      "delegatedCallees": [
+        "learning.eval",
+        "learning.ledger"
+      ]
+    },
+    {
+      "operation": "parameter_writer_state_machine",
+      "nativeSymbol": "PlasticityWriterStateV1",
+      "sourcePath": "codex-rs/hepta-intelligence/src/plasticity_product.rs",
+      "state": "source_implemented_anchor_acknowledgement_state_machine",
+      "authority": "proposal_registry_only",
+      "tests": [
+        "codex-rs/hepta-intelligence/src/plasticity_product_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "parameter_writer_state_machine",
+      "mappingClass": "delegated_composition",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "agentd_parameter_host",
+      "nativeSymbol": "AgentdPlasticityHostV1",
+      "sourcePath": "codex-rs/hepta-agentd/src/plasticity_host.rs",
+      "state": "selected_host_surface_implemented_not_runtime_enrolled",
+      "authority": "composition_only",
+      "tests": [
+        "codex-rs/hepta-agentd/tests/plasticity_host.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "selected_host_artifact_and_evidence_frontier",
+      "mappingClass": "delegated_composition",
+      "delegatedCallees": [
+        "learning.artifacts",
+        "learning.eval",
+        "learning.ledger",
+        "kernel.evidence"
+      ]
+    },
+    {
+      "operation": "agentd_anchor_fence_store",
+      "nativeSymbol": "AgentdPlasticityAnchorFenceStoreV1",
+      "sourcePath": "codex-rs/hepta-agentd/src/plasticity_host.rs",
+      "state": "host_anti_rollback_store_implemented_not_deployment_bound",
+      "authority": "anchor_and_fence_only",
+      "tests": [
+        "codex-rs/hepta-agentd/tests/plasticity_host.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "external_anchor_and_monotonic_fence",
+      "mappingClass": "delegated_composition",
       "delegatedCallees": []
     },
     {
@@ -75,7 +180,9 @@
       "sourcePath": "codex-rs/hepta-plasticity/src/topology_v2.rs",
       "state": "source_implemented_proposal_only_not_applied",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "qualification/lane-f-shadow/tests/plasticity_structural_canary.rs"
+      ],
       "sourcePathExists": true,
       "designOperation": "propose_topology_v2",
       "mappingClass": "owner_native",
@@ -87,33 +194,54 @@
       "sourcePath": "codex-rs/hepta-plasticity/src/topology_v2.rs",
       "state": "source_implemented_proposal_only_not_applied",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "qualification/lane-f-shadow/tests/plasticity_structural_canary.rs"
+      ],
       "sourcePathExists": true,
       "designOperation": "verify_topology_proposal_v2",
       "mappingClass": "owner_native",
       "delegatedCallees": []
     },
     {
-      "operation": "durableproposalregistry",
-      "nativeSymbol": "DurableProposalRegistry",
-      "sourcePath": "codex-rs/hepta-plasticity/src/durable_registry.rs",
-      "state": "source_implemented_product_adapter_available_not_host_called",
+      "operation": "topology_writer_handoff_v1",
+      "nativeSymbol": "TopologyWriterHandoffV1",
+      "sourcePath": "codex-rs/hepta-plasticity/src/topology_governance_v1.rs",
+      "state": "source_implemented_validation_only",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-plasticity/src/topology_governance_v1.rs",
+        "qualification/lane-f-shadow/tests/plasticity_structural_canary.rs"
+      ],
       "sourcePathExists": true,
-      "designOperation": "durableproposalregistry",
+      "designOperation": "topology_writer_handoff_validation",
       "mappingClass": "owner_native",
       "delegatedCallees": []
     },
     {
-      "operation": "authenticated_product_composition",
-      "nativeSymbol": "propose_authenticated_parameter_plasticity_v1",
-      "sourcePath": "codex-rs/hepta-intelligence/src/plasticity_product.rs",
-      "state": "adapter_implemented_not_host_qualified",
-      "authority": "proposal_append_only",
-      "tests": [],
+      "operation": "durable_topology_registry_v2",
+      "nativeSymbol": "DurableTopologyProposalRegistryV2",
+      "sourcePath": "codex-rs/hepta-plasticity/src/durable_topology_registry_v2.rs",
+      "state": "source_implemented_proposal_registry_not_applied",
+      "authority": "proposal_registry_only",
+      "tests": [
+        "qualification/lane-f-shadow/tests/plasticity_structural_canary.rs"
+      ],
       "sourcePathExists": true,
-      "designOperation": "authenticated_product_composition",
+      "designOperation": "durable_topology_proposal_registry",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "authenticated_topology_product_composition",
+      "nativeSymbol": "propose_authenticated_topology_plasticity_v1",
+      "sourcePath": "codex-rs/hepta-intelligence/src/plasticity_topology_product.rs",
+      "state": "source_implemented_authenticated_admission_not_runtime_enrolled",
+      "authority": "proposal_append_only",
+      "tests": [
+        "qualification/lane-f-shadow/tests/plasticity_structural_canary.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "authenticated_topology_product_composition",
       "mappingClass": "delegated_composition",
       "delegatedCallees": [
         "learning.eval",
@@ -121,26 +249,36 @@
       ]
     },
     {
-      "operation": "anchored_product_writer",
-      "nativeSymbol": "AnchoredPlasticityWriterV1",
-      "sourcePath": "codex-rs/hepta-intelligence/src/plasticity_product.rs",
-      "state": "adapter_implemented_not_host_qualified",
-      "authority": "proposal_registry_only",
-      "tests": [],
+      "operation": "pls3_bounded_structural_canary",
+      "nativeSymbol": "pls3_structural_canary_persists_candidate_without_runtime_mutation",
+      "sourcePath": "qualification/lane-f-shadow/tests/plasticity_structural_canary.rs",
+      "state": "qualification_fixture_implemented_exact_candidate_receipt_required",
+      "authority": "none",
+      "tests": [
+        "qualification/lane-f-shadow/tests/plasticity_structural_canary.rs"
+      ],
       "sourcePathExists": true,
-      "designOperation": "anchored_product_writer",
-      "mappingClass": "delegated_composition",
+      "designOperation": "bounded_structural_canary",
+      "mappingClass": "qualification_fixture",
       "delegatedCallees": []
     }
   ],
+  "receiptProducers": [
+    ".github/workflows/hepta-lane-f-shadow-qualification.yml",
+    ".github/workflows/hepta-gap-agentd-process.yml",
+    ".github/workflows/hepta-consolidated-source.yml",
+    ".github/workflows/hepta-development-docs.yml"
+  ],
+  "receiptState": "dynamic_exact_candidate_only_not_cached_in_map",
   "repositoryControlledGaps": [
-    "Run exact-head and deterministic synthetic-merge tests for the generator, authenticated product adapter, anchored writer and topology proposal surfaces.",
-    "Bind the product adapter to an actual selected-host callsite and independently retained anchor/fence service before claiming product composition or changing productionImplementation."
+    "Run exact-head and deterministic synthetic-merge tests for the final candidate and fix any source-specific failures.",
+    "Bind AgentdPlasticityHostV1 owner-evidence resolver adapters and AgentdPlasticityAnchorFenceStoreV1 to a selected deployment before changing productionImplementation.",
+    "Keep topology application and parameter installation outside this proposal-only source until independent acceptance and activation gates exist."
   ],
   "externalEvidenceGates": [
-    "independent semantic review",
-    "product execution and target-host qualification",
-    "operator acceptance, canary, promotion and release"
+    "independent semantic and security review",
+    "target-host execution, recovery exercise and telemetry qualification",
+    "operator acceptance, parameter/topology canary acceptance, promotion and release"
   ],
   "claimBoundary": {
     "nativeSourceMappingComplete": true,
