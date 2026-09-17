@@ -98,7 +98,9 @@ impl SecretLeaseRegistry {
 
         let lock_path = root.join(LOCK_FILE);
         let lock_preexisted = lock_path.exists();
-        if lock_preexisted && fs::symlink_metadata(&lock_path).is_ok_and(|m| m.file_type().is_symlink()) {
+        if lock_preexisted
+            && fs::symlink_metadata(&lock_path).is_ok_and(|metadata| metadata.file_type().is_symlink())
+        {
             return Err(SecretLeaseError::StateDirectoryUnsafe);
         }
         let lock = open_private_file(&lock_path, true, false)?;
@@ -178,9 +180,7 @@ impl SecretLeaseRegistry {
     ) -> Result<(), SecretLeaseError> {
         self.mutate(|state| {
             check_operation_slot(state, &request.operation_id, binding.request_sha256)?;
-            if state.operations.len() >= MAX_LEASE_OPERATIONS {
-                return Err(SecretLeaseError::CapacityExceeded);
-            }
+            ensure_operation_capacity(state)?;
             state.operations.insert(
                 request.operation_id.clone(),
                 OperationRecord {
@@ -251,7 +251,7 @@ impl SecretLeaseRegistry {
             }
             let operation = state
                 .operations
-                .get_mut(&metadata.issued_operation_id)
+                .get(&metadata.issued_operation_id)
                 .ok_or(SecretLeaseError::StateCorrupt)?;
             if operation.kind != LeaseOperationKind::Issue
                 || operation.state != LeaseOperationState::OutcomeUnknown
@@ -259,34 +259,22 @@ impl SecretLeaseRegistry {
             {
                 return Err(SecretLeaseError::StateCorrupt);
             }
-            if let Some(existing) = state.leases.get(&metadata.lease_id)
-                && existing != &metadata
+            if state
+                .leases
+                .get(&metadata.lease_id)
+                .is_some_and(|existing| existing != &metadata)
             {
                 return Err(SecretLeaseError::OperationConflict);
             }
+            let operation = state
+                .operations
+                .get_mut(&metadata.issued_operation_id)
+                .ok_or(SecretLeaseError::StateCorrupt)?;
             operation.state = LeaseOperationState::Completed;
             operation.lease_id = Some(metadata.lease_id.clone());
             operation.updated_at_unix_ms = now_ms;
             state.leases.insert(metadata.lease_id.clone(), metadata);
             Ok(())
-        })
-    }
-
-    pub(crate) fn mark_revoke_required(
-        &self,
-        lease_id: &str,
-        last_operation_id: &str,
-        now_ms: u64,
-    ) -> Result<SecretLeaseMetadata, SecretLeaseError> {
-        self.mutate(|state| {
-            let lease = state
-                .leases
-                .get_mut(lease_id)
-                .ok_or(SecretLeaseError::LeaseNotFound)?;
-            lease.state = SecretLeaseState::RevokeRequired;
-            lease.last_operation_id = last_operation_id.to_owned();
-            lease.observed_at_unix_ms = now_ms;
-            Ok(lease.clone())
         })
     }
 
@@ -308,7 +296,7 @@ impl SecretLeaseRegistry {
             subject_id,
             consumer_id,
             now_ms,
-            |state| matches!(state, SecretLeaseState::Active),
+            |state| state == SecretLeaseState::Active,
         )
     }
 
@@ -355,27 +343,33 @@ impl SecretLeaseRegistry {
     ) -> Result<SecretLeaseMetadata, SecretLeaseError> {
         self.mutate(|state| {
             check_operation_slot(state, operation_id, request_sha256)?;
-            if state.operations.len() >= MAX_LEASE_OPERATIONS {
-                return Err(SecretLeaseError::CapacityExceeded);
-            }
-            let lease = state
-                .leases
-                .get_mut(lease_id)
-                .ok_or(SecretLeaseError::LeaseNotFound)?;
-            if lease.subject_id != subject_id || lease.consumer_id != consumer_id {
-                return Err(SecretLeaseError::LeaseIdentityMismatch);
-            }
-            if !allowed(lease.state) {
-                return Err(SecretLeaseError::LeaseNotActive);
-            }
-            if kind == LeaseOperationKind::Renew && !lease.renewable {
-                return Err(SecretLeaseError::LeaseNotRenewable);
-            }
-            let prior = lease.state;
-            lease.state = in_flight_state;
-            lease.last_operation_id = operation_id.to_owned();
-            lease.observed_at_unix_ms = now_ms;
-            let current = lease.clone();
+            ensure_operation_capacity(state)?;
+            let prior = {
+                let lease = state
+                    .leases
+                    .get(lease_id)
+                    .ok_or(SecretLeaseError::LeaseNotFound)?;
+                if lease.subject_id != subject_id || lease.consumer_id != consumer_id {
+                    return Err(SecretLeaseError::LeaseIdentityMismatch);
+                }
+                if !allowed(lease.state) {
+                    return Err(SecretLeaseError::LeaseNotActive);
+                }
+                if kind == LeaseOperationKind::Renew && !lease.renewable {
+                    return Err(SecretLeaseError::LeaseNotRenewable);
+                }
+                lease.state
+            };
+            let current = {
+                let lease = state
+                    .leases
+                    .get_mut(lease_id)
+                    .ok_or(SecretLeaseError::StateCorrupt)?;
+                lease.state = in_flight_state;
+                lease.last_operation_id = operation_id.to_owned();
+                lease.observed_at_unix_ms = now_ms;
+                lease.clone()
+            };
             state.operations.insert(
                 operation_id.to_owned(),
                 OperationRecord {
@@ -399,37 +393,23 @@ impl SecretLeaseRegistry {
         now_ms: u64,
     ) -> Result<SecretLeaseMetadata, SecretLeaseError> {
         self.mutate(|state| {
-            let (lease_id, prior) = {
-                let operation = state
-                    .operations
-                    .get(operation_id)
+            let (lease_id, prior) = mutation_context(state, operation_id)?;
+            let current = {
+                let lease = state
+                    .leases
+                    .get_mut(&lease_id)
                     .ok_or(SecretLeaseError::StateCorrupt)?;
-                if operation.state != LeaseOperationState::OutcomeUnknown {
-                    return Err(SecretLeaseError::StateCorrupt);
-                }
-                (
-                    operation
-                        .lease_id
-                        .clone()
-                        .ok_or(SecretLeaseError::StateCorrupt)?,
-                    operation
-                        .prior_lease_state
-                        .ok_or(SecretLeaseError::StateCorrupt)?,
-                )
+                lease.state = prior;
+                lease.observed_at_unix_ms = now_ms;
+                lease.clone()
             };
-            let lease = state
-                .leases
-                .get_mut(&lease_id)
-                .ok_or(SecretLeaseError::StateCorrupt)?;
-            lease.state = prior;
-            lease.observed_at_unix_ms = now_ms;
             let operation = state
                 .operations
                 .get_mut(operation_id)
                 .ok_or(SecretLeaseError::StateCorrupt)?;
             operation.state = LeaseOperationState::Rejected;
             operation.updated_at_unix_ms = now_ms;
-            Ok(lease.clone())
+            Ok(current)
         })
     }
 
@@ -442,33 +422,30 @@ impl SecretLeaseRegistry {
     ) -> Result<SecretLeaseMetadata, SecretLeaseError> {
         self.mutate(|state| {
             let lease_id = operation_lease_id(state, operation_id, LeaseOperationKind::Renew)?;
-            let lease = state
-                .leases
-                .get_mut(&lease_id)
-                .ok_or(SecretLeaseError::StateCorrupt)?;
-            if lease_duration_seconds == 0
-                || lease_duration_seconds > lease.max_lease_duration_seconds
-            {
-                lease.state = SecretLeaseState::RevokeRequired;
-            } else {
-                lease.state = SecretLeaseState::Active;
-            }
-            lease.renewable = renewable;
-            lease.lease_duration_seconds = lease_duration_seconds;
-            lease.observed_at_unix_ms = now_ms;
-            lease.expires_at_unix_ms = expiry(now_ms, lease_duration_seconds)?;
-            lease.rotation_generation = lease
-                .rotation_generation
-                .checked_add(1)
-                .ok_or(SecretLeaseError::StateCorrupt)?;
-            lease.last_operation_id = operation_id.to_owned();
-            let current = lease.clone();
-            let operation = state
-                .operations
-                .get_mut(operation_id)
-                .ok_or(SecretLeaseError::StateCorrupt)?;
-            operation.state = LeaseOperationState::Completed;
-            operation.updated_at_unix_ms = now_ms;
+            let current = {
+                let lease = state
+                    .leases
+                    .get_mut(&lease_id)
+                    .ok_or(SecretLeaseError::StateCorrupt)?;
+                lease.state = if lease_duration_seconds == 0
+                    || lease_duration_seconds > lease.max_lease_duration_seconds
+                {
+                    SecretLeaseState::RevokeRequired
+                } else {
+                    SecretLeaseState::Active
+                };
+                lease.renewable = renewable;
+                lease.lease_duration_seconds = lease_duration_seconds;
+                lease.observed_at_unix_ms = now_ms;
+                lease.expires_at_unix_ms = expiry(now_ms, lease_duration_seconds)?;
+                lease.rotation_generation = lease
+                    .rotation_generation
+                    .checked_add(1)
+                    .ok_or(SecretLeaseError::StateCorrupt)?;
+                lease.last_operation_id = operation_id.to_owned();
+                lease.clone()
+            };
+            complete_operation(state, operation_id, LeaseOperationState::Completed, now_ms)?;
             Ok(current)
         })
     }
@@ -479,46 +456,27 @@ impl SecretLeaseRegistry {
         now_ms: u64,
     ) -> Result<SecretLeaseMetadata, SecretLeaseError> {
         self.mutate(|state| {
-            let (lease_id, kind) = {
-                let operation = state
-                    .operations
-                    .get(operation_id)
-                    .ok_or(SecretLeaseError::StateCorrupt)?;
-                if operation.state != LeaseOperationState::OutcomeUnknown
-                    || !matches!(operation.kind, LeaseOperationKind::Renew | LeaseOperationKind::Revoke)
-                {
-                    return Err(SecretLeaseError::StateCorrupt);
-                }
-                (
-                    operation
-                        .lease_id
-                        .clone()
-                        .ok_or(SecretLeaseError::StateCorrupt)?,
-                    operation.kind,
-                )
-            };
-            let lease = state
-                .leases
-                .get_mut(&lease_id)
-                .ok_or(SecretLeaseError::StateCorrupt)?;
-            lease.state = SecretLeaseState::ProviderAbsent;
-            lease.renewable = false;
-            lease.lease_duration_seconds = 0;
-            lease.observed_at_unix_ms = now_ms;
-            lease.expires_at_unix_ms = now_ms;
-            lease.rotation_generation = lease
-                .rotation_generation
-                .checked_add(1)
-                .ok_or(SecretLeaseError::StateCorrupt)?;
-            lease.last_operation_id = operation_id.to_owned();
-            let current = lease.clone();
             let operation = state
                 .operations
-                .get_mut(operation_id)
+                .get(operation_id)
                 .ok_or(SecretLeaseError::StateCorrupt)?;
-            debug_assert_eq!(operation.kind, kind);
-            operation.state = LeaseOperationState::Completed;
-            operation.updated_at_unix_ms = now_ms;
+            if operation.state != LeaseOperationState::OutcomeUnknown
+                || !matches!(operation.kind, LeaseOperationKind::Renew | LeaseOperationKind::Revoke)
+            {
+                return Err(SecretLeaseError::StateCorrupt);
+            }
+            let lease_id = operation
+                .lease_id
+                .clone()
+                .ok_or(SecretLeaseError::StateCorrupt)?;
+            let current = terminalize_lease(
+                state,
+                &lease_id,
+                operation_id,
+                SecretLeaseState::ProviderAbsent,
+                now_ms,
+            )?;
+            complete_operation(state, operation_id, LeaseOperationState::Completed, now_ms)?;
             Ok(current)
         })
     }
@@ -530,27 +488,14 @@ impl SecretLeaseRegistry {
     ) -> Result<SecretLeaseMetadata, SecretLeaseError> {
         self.mutate(|state| {
             let lease_id = operation_lease_id(state, operation_id, LeaseOperationKind::Revoke)?;
-            let lease = state
-                .leases
-                .get_mut(&lease_id)
-                .ok_or(SecretLeaseError::StateCorrupt)?;
-            lease.state = SecretLeaseState::Revoked;
-            lease.renewable = false;
-            lease.lease_duration_seconds = 0;
-            lease.observed_at_unix_ms = now_ms;
-            lease.expires_at_unix_ms = now_ms;
-            lease.rotation_generation = lease
-                .rotation_generation
-                .checked_add(1)
-                .ok_or(SecretLeaseError::StateCorrupt)?;
-            lease.last_operation_id = operation_id.to_owned();
-            let current = lease.clone();
-            let operation = state
-                .operations
-                .get_mut(operation_id)
-                .ok_or(SecretLeaseError::StateCorrupt)?;
-            operation.state = LeaseOperationState::Completed;
-            operation.updated_at_unix_ms = now_ms;
+            let current = terminalize_lease(
+                state,
+                &lease_id,
+                operation_id,
+                SecretLeaseState::Revoked,
+                now_ms,
+            )?;
+            complete_operation(state, operation_id, LeaseOperationState::Completed, now_ms)?;
             Ok(current)
         })
     }
@@ -558,6 +503,7 @@ impl SecretLeaseRegistry {
     pub(crate) fn reconcile_active(
         &self,
         operation_id: &str,
+        target_operation_id: &str,
         request_sha256: [u8; 32],
         lease_id: &str,
         subject_id: &str,
@@ -568,48 +514,46 @@ impl SecretLeaseRegistry {
     ) -> Result<SecretLeaseMetadata, SecretLeaseError> {
         self.mutate(|state| {
             check_operation_slot(state, operation_id, request_sha256)?;
-            if state.operations.len() >= MAX_LEASE_OPERATIONS {
-                return Err(SecretLeaseError::CapacityExceeded);
-            }
-            let lease = state
-                .leases
-                .get_mut(lease_id)
-                .ok_or(SecretLeaseError::LeaseNotFound)?;
-            if lease.subject_id != subject_id || lease.consumer_id != consumer_id {
-                return Err(SecretLeaseError::LeaseIdentityMismatch);
-            }
-            if lease.state.is_terminal() {
-                return Err(SecretLeaseError::LeaseNotActive);
-            }
-            if lease_duration_seconds == 0
-                || lease_duration_seconds > lease.max_lease_duration_seconds
-            {
-                lease.state = SecretLeaseState::RevokeRequired;
-            } else {
-                lease.state = SecretLeaseState::Active;
-            }
-            lease.renewable = renewable;
-            lease.lease_duration_seconds = lease_duration_seconds;
-            lease.observed_at_unix_ms = now_ms;
-            lease.expires_at_unix_ms = expiry(now_ms, lease_duration_seconds)?;
-            lease.rotation_generation = lease
-                .rotation_generation
-                .checked_add(1)
-                .ok_or(SecretLeaseError::StateCorrupt)?;
-            lease.last_operation_id = operation_id.to_owned();
-            let current = lease.clone();
-            state.operations.insert(
-                operation_id.to_owned(),
-                OperationRecord {
-                    operation_id: operation_id.to_owned(),
-                    kind: LeaseOperationKind::Reconcile,
-                    state: LeaseOperationState::Completed,
-                    lease_id: Some(lease_id.to_owned()),
-                    request_sha256,
-                    updated_at_unix_ms: now_ms,
-                    prior_lease_state: None,
-                    issue_context: None,
-                },
+            ensure_operation_capacity(state)?;
+            validate_reconciliation_target(state, target_operation_id, lease_id)?;
+            validate_reconcilable_lease(state, target_operation_id, lease_id, subject_id, consumer_id)?;
+
+            let current = {
+                let lease = state
+                    .leases
+                    .get_mut(lease_id)
+                    .ok_or(SecretLeaseError::LeaseNotFound)?;
+                lease.state = if lease_duration_seconds == 0
+                    || lease_duration_seconds > lease.max_lease_duration_seconds
+                {
+                    SecretLeaseState::RevokeRequired
+                } else {
+                    SecretLeaseState::Active
+                };
+                lease.renewable = renewable;
+                lease.lease_duration_seconds = lease_duration_seconds;
+                lease.observed_at_unix_ms = now_ms;
+                lease.expires_at_unix_ms = expiry(now_ms, lease_duration_seconds)?;
+                lease.rotation_generation = lease
+                    .rotation_generation
+                    .checked_add(1)
+                    .ok_or(SecretLeaseError::StateCorrupt)?;
+                lease.last_operation_id = operation_id.to_owned();
+                lease.clone()
+            };
+            complete_operation(
+                state,
+                target_operation_id,
+                LeaseOperationState::Reconciled,
+                now_ms,
+            )?;
+            insert_reconcile_operation(
+                state,
+                operation_id,
+                target_operation_id,
+                lease_id,
+                request_sha256,
+                now_ms,
             );
             Ok(current)
         })
@@ -618,6 +562,7 @@ impl SecretLeaseRegistry {
     pub(crate) fn reconcile_absent(
         &self,
         operation_id: &str,
+        target_operation_id: &str,
         request_sha256: [u8; 32],
         lease_id: &str,
         subject_id: &str,
@@ -626,39 +571,30 @@ impl SecretLeaseRegistry {
     ) -> Result<SecretLeaseMetadata, SecretLeaseError> {
         self.mutate(|state| {
             check_operation_slot(state, operation_id, request_sha256)?;
-            if state.operations.len() >= MAX_LEASE_OPERATIONS {
-                return Err(SecretLeaseError::CapacityExceeded);
-            }
-            let lease = state
-                .leases
-                .get_mut(lease_id)
-                .ok_or(SecretLeaseError::LeaseNotFound)?;
-            if lease.subject_id != subject_id || lease.consumer_id != consumer_id {
-                return Err(SecretLeaseError::LeaseIdentityMismatch);
-            }
-            lease.state = SecretLeaseState::ProviderAbsent;
-            lease.renewable = false;
-            lease.lease_duration_seconds = 0;
-            lease.observed_at_unix_ms = now_ms;
-            lease.expires_at_unix_ms = now_ms;
-            lease.rotation_generation = lease
-                .rotation_generation
-                .checked_add(1)
-                .ok_or(SecretLeaseError::StateCorrupt)?;
-            lease.last_operation_id = operation_id.to_owned();
-            let current = lease.clone();
-            state.operations.insert(
-                operation_id.to_owned(),
-                OperationRecord {
-                    operation_id: operation_id.to_owned(),
-                    kind: LeaseOperationKind::Reconcile,
-                    state: LeaseOperationState::Completed,
-                    lease_id: Some(lease_id.to_owned()),
-                    request_sha256,
-                    updated_at_unix_ms: now_ms,
-                    prior_lease_state: None,
-                    issue_context: None,
-                },
+            ensure_operation_capacity(state)?;
+            validate_reconciliation_target(state, target_operation_id, lease_id)?;
+            validate_reconcilable_lease(state, target_operation_id, lease_id, subject_id, consumer_id)?;
+
+            let current = terminalize_lease(
+                state,
+                lease_id,
+                operation_id,
+                SecretLeaseState::ProviderAbsent,
+                now_ms,
+            )?;
+            complete_operation(
+                state,
+                target_operation_id,
+                LeaseOperationState::Reconciled,
+                now_ms,
+            )?;
+            insert_reconcile_operation(
+                state,
+                operation_id,
+                target_operation_id,
+                lease_id,
+                request_sha256,
+                now_ms,
             );
             Ok(current)
         })
@@ -713,9 +649,7 @@ impl SecretLeaseRegistry {
                 &request.resolution_operation_id,
                 resolution_request_sha256,
             )?;
-            if state.operations.len() >= MAX_LEASE_OPERATIONS {
-                return Err(SecretLeaseError::CapacityExceeded);
-            }
+            ensure_operation_capacity(state)?;
             let context = {
                 let issue = state
                     .operations
@@ -737,15 +671,15 @@ impl SecretLeaseRegistry {
                 return Err(SecretLeaseError::LeaseIdentityMismatch);
             }
 
-            let mut adopted = None;
-            match &request.resolution {
+            let adopted = match &request.resolution {
                 UnknownIssueResolution::NoLeaseObserved => {
-                    let issue = state
-                        .operations
-                        .get_mut(&request.issue_operation_id)
-                        .ok_or(SecretLeaseError::StateCorrupt)?;
-                    issue.state = LeaseOperationState::ResolvedNoLease;
-                    issue.updated_at_unix_ms = now_ms;
+                    complete_operation(
+                        state,
+                        &request.issue_operation_id,
+                        LeaseOperationState::ResolvedNoLease,
+                        now_ms,
+                    )?;
+                    None
                 }
                 UnknownIssueResolution::LeaseObserved {
                     lease_id,
@@ -760,6 +694,11 @@ impl SecretLeaseRegistry {
                     {
                         return Err(SecretLeaseError::CapacityExceeded);
                     }
+                    let issue_request_sha256 = state
+                        .operations
+                        .get(&request.issue_operation_id)
+                        .ok_or(SecretLeaseError::StateCorrupt)?
+                        .request_sha256;
                     let metadata = SecretLeaseMetadata {
                         schema_version: SECRET_LEASE_SCHEMA_VERSION,
                         lease_id: lease_id.clone(),
@@ -778,15 +717,13 @@ impl SecretLeaseRegistry {
                         expires_at_unix_ms: expiry(now_ms, *lease_duration_seconds)?,
                         rotation_generation: 1,
                         state: SecretLeaseState::RevokeRequired,
-                        request_sha256: state
-                            .operations
-                            .get(&request.issue_operation_id)
-                            .ok_or(SecretLeaseError::StateCorrupt)?
-                            .request_sha256,
+                        request_sha256: issue_request_sha256,
                         scope_sha256: context.scope_sha256,
                     };
-                    if let Some(existing) = state.leases.get(lease_id)
-                        && existing != &metadata
+                    if state
+                        .leases
+                        .get(lease_id)
+                        .is_some_and(|existing| existing != &metadata)
                     {
                         return Err(SecretLeaseError::OperationConflict);
                     }
@@ -798,9 +735,10 @@ impl SecretLeaseRegistry {
                     issue.state = LeaseOperationState::Completed;
                     issue.lease_id = Some(lease_id.clone());
                     issue.updated_at_unix_ms = now_ms;
-                    adopted = Some(metadata);
+                    Some(metadata)
                 }
-            }
+            };
+
             state.operations.insert(
                 request.resolution_operation_id.clone(),
                 OperationRecord {
@@ -871,6 +809,14 @@ fn observation(record: &OperationRecord) -> LeaseOperationObservation {
     }
 }
 
+fn ensure_operation_capacity(state: &RegistryState) -> Result<(), SecretLeaseError> {
+    if state.operations.len() >= MAX_LEASE_OPERATIONS {
+        Err(SecretLeaseError::CapacityExceeded)
+    } else {
+        Ok(())
+    }
+}
+
 fn check_operation_slot(
     state: &RegistryState,
     operation_id: &str,
@@ -888,10 +834,34 @@ fn check_operation_slot(
     match existing.state {
         LeaseOperationState::OutcomeUnknown => Err(SecretLeaseError::ReconciliationRequired),
         LeaseOperationState::Completed => Err(SecretLeaseError::OperationAlreadyCompleted),
-        LeaseOperationState::Rejected | LeaseOperationState::ResolvedNoLease => {
-            Err(SecretLeaseError::OperationAlreadyTerminal)
-        }
+        LeaseOperationState::Reconciled
+        | LeaseOperationState::Rejected
+        | LeaseOperationState::ResolvedNoLease => Err(SecretLeaseError::OperationAlreadyTerminal),
     }
+}
+
+fn mutation_context(
+    state: &RegistryState,
+    operation_id: &str,
+) -> Result<(String, SecretLeaseState), SecretLeaseError> {
+    let operation = state
+        .operations
+        .get(operation_id)
+        .ok_or(SecretLeaseError::StateCorrupt)?;
+    if operation.state != LeaseOperationState::OutcomeUnknown
+        || !matches!(operation.kind, LeaseOperationKind::Renew | LeaseOperationKind::Revoke)
+    {
+        return Err(SecretLeaseError::StateCorrupt);
+    }
+    Ok((
+        operation
+            .lease_id
+            .clone()
+            .ok_or(SecretLeaseError::StateCorrupt)?,
+        operation
+            .prior_lease_state
+            .ok_or(SecretLeaseError::StateCorrupt)?,
+    ))
 }
 
 fn operation_lease_id(
@@ -910,6 +880,115 @@ fn operation_lease_id(
         .lease_id
         .clone()
         .ok_or(SecretLeaseError::StateCorrupt)
+}
+
+fn complete_operation(
+    state: &mut RegistryState,
+    operation_id: &str,
+    terminal_state: LeaseOperationState,
+    now_ms: u64,
+) -> Result<(), SecretLeaseError> {
+    let operation = state
+        .operations
+        .get_mut(operation_id)
+        .ok_or(SecretLeaseError::StateCorrupt)?;
+    operation.state = terminal_state;
+    operation.updated_at_unix_ms = now_ms;
+    Ok(())
+}
+
+fn terminalize_lease(
+    state: &mut RegistryState,
+    lease_id: &str,
+    operation_id: &str,
+    terminal_state: SecretLeaseState,
+    now_ms: u64,
+) -> Result<SecretLeaseMetadata, SecretLeaseError> {
+    let lease = state
+        .leases
+        .get_mut(lease_id)
+        .ok_or(SecretLeaseError::StateCorrupt)?;
+    lease.state = terminal_state;
+    lease.renewable = false;
+    lease.lease_duration_seconds = 0;
+    lease.observed_at_unix_ms = now_ms;
+    lease.expires_at_unix_ms = now_ms;
+    lease.rotation_generation = lease
+        .rotation_generation
+        .checked_add(1)
+        .ok_or(SecretLeaseError::StateCorrupt)?;
+    lease.last_operation_id = operation_id.to_owned();
+    Ok(lease.clone())
+}
+
+fn validate_reconciliation_target(
+    state: &RegistryState,
+    target_operation_id: &str,
+    lease_id: &str,
+) -> Result<LeaseOperationKind, SecretLeaseError> {
+    let operation = state
+        .operations
+        .get(target_operation_id)
+        .ok_or(SecretLeaseError::ReconciliationRequired)?;
+    if operation.state != LeaseOperationState::OutcomeUnknown
+        || !matches!(operation.kind, LeaseOperationKind::Renew | LeaseOperationKind::Revoke)
+        || operation.lease_id.as_deref() != Some(lease_id)
+    {
+        return Err(SecretLeaseError::ReconciliationRequired);
+    }
+    Ok(operation.kind)
+}
+
+fn validate_reconcilable_lease(
+    state: &RegistryState,
+    target_operation_id: &str,
+    lease_id: &str,
+    subject_id: &str,
+    consumer_id: &str,
+) -> Result<(), SecretLeaseError> {
+    let target_kind = validate_reconciliation_target(state, target_operation_id, lease_id)?;
+    let lease = state
+        .leases
+        .get(lease_id)
+        .ok_or(SecretLeaseError::LeaseNotFound)?;
+    if lease.subject_id != subject_id || lease.consumer_id != consumer_id {
+        return Err(SecretLeaseError::LeaseIdentityMismatch);
+    }
+    let expected = match target_kind {
+        LeaseOperationKind::Renew => SecretLeaseState::RenewOutcomeUnknown,
+        LeaseOperationKind::Revoke => SecretLeaseState::RevokeOutcomeUnknown,
+        _ => return Err(SecretLeaseError::StateCorrupt),
+    };
+    if lease.state != expected {
+        return Err(SecretLeaseError::ReconciliationRequired);
+    }
+    Ok(())
+}
+
+fn insert_reconcile_operation(
+    state: &mut RegistryState,
+    operation_id: &str,
+    target_operation_id: &str,
+    lease_id: &str,
+    request_sha256: [u8; 32],
+    now_ms: u64,
+) {
+    state.operations.insert(
+        operation_id.to_owned(),
+        OperationRecord {
+            operation_id: operation_id.to_owned(),
+            kind: LeaseOperationKind::Reconcile,
+            state: LeaseOperationState::Completed,
+            lease_id: Some(lease_id.to_owned()),
+            request_sha256,
+            updated_at_unix_ms: now_ms,
+            prior_lease_state: None,
+            // Reconcile operations are linked through the binding and the target
+            // operation's transition to `Reconciled`; no secret/request body is stored.
+            issue_context: None,
+        },
+    );
+    debug_assert!(state.operations.contains_key(target_operation_id));
 }
 
 fn expiry(now_ms: u64, ttl_seconds: u64) -> Result<u64, SecretLeaseError> {
@@ -960,7 +1039,7 @@ fn open_private_file(
 }
 
 fn load_state(path: &Path) -> Result<RegistryState, SecretLeaseError> {
-    if fs::symlink_metadata(path).is_ok_and(|m| m.file_type().is_symlink()) {
+    if fs::symlink_metadata(path).is_ok_and(|metadata| metadata.file_type().is_symlink()) {
         return Err(SecretLeaseError::StateDirectoryUnsafe);
     }
     let mut file = open_private_file(path, false, false)?;
@@ -983,7 +1062,7 @@ fn persist_state(root: &Path, state: &RegistryState) -> Result<(), SecretLeaseEr
         return Err(SecretLeaseError::CapacityExceeded);
     }
     let next = root.join(NEXT_FILE);
-    if fs::symlink_metadata(&next).is_ok_and(|m| m.file_type().is_symlink()) {
+    if fs::symlink_metadata(&next).is_ok_and(|metadata| metadata.file_type().is_symlink()) {
         return Err(SecretLeaseError::StateDirectoryUnsafe);
     }
     let mut file = open_private_file(&next, true, true)?;
@@ -1022,7 +1101,12 @@ fn validate_state(state: &RegistryState) -> Result<(), SecretLeaseError> {
         if operation_id != &operation.operation_id
             || !valid_operation_id(operation_id)
             || operation.request_sha256 == [0; 32]
-            || operation.lease_id.as_ref().is_some_and(|id| !valid_lease_id(id))
+            || operation
+                .lease_id
+                .as_ref()
+                .is_some_and(|lease_id| !valid_lease_id(lease_id))
+            || (operation.state == LeaseOperationState::Reconciled
+                && !matches!(operation.kind, LeaseOperationKind::Renew | LeaseOperationKind::Revoke))
         {
             return Err(SecretLeaseError::StateCorrupt);
         }
