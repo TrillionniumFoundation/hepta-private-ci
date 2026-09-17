@@ -1,0 +1,100 @@
+{
+  "schema": "hepta.browser.servo-current-pin-topology.v1",
+  "schemaVersion": 1,
+  "source": {
+    "repository": "servo/servo",
+    "commit": "84bcc9ac701874fa9819e5cdee06356b961d736c"
+  },
+  "decision": {
+    "embedderStrategy": "out_of_tree_hepta_worker_using_public_servo_embedding_api",
+    "servoshellBuildRoot": false,
+    "webdriverServerDependency": false,
+    "servoDefaultFeatures": false,
+    "requiredServoFeatures": [
+      "background_hang_monitor",
+      "bundled"
+    ],
+    "conditionallyPermittedServoFeatures": [
+      "js_jit"
+    ],
+    "initiallyForbiddenServoFeatures": [
+      "bluetooth",
+      "clipboard",
+      "default",
+      "default_web_features",
+      "gamepad",
+      "media-gstreamer",
+      "native-bluetooth",
+      "testbinding",
+      "webgl",
+      "webgpu",
+      "webxr"
+    ]
+  },
+  "verifiedPublicEmbeddingSurface": {
+    "types": [
+      "EventLoopWaker",
+      "RenderingContext",
+      "Servo",
+      "ServoBuilder",
+      "SoftwareRenderingContext",
+      "WebView",
+      "WebViewBuilder",
+      "WebViewDelegate",
+      "WindowRenderingContext"
+    ],
+    "methods": [
+      "RenderingContext::present",
+      "Servo::spin_event_loop",
+      "WebView::evaluate_javascript",
+      "WebView::load",
+      "WebView::load_status",
+      "WebView::notify_input_event",
+      "WebView::paint",
+      "WebView::url",
+      "WebViewBuilder::build",
+      "WebViewBuilder::delegate",
+      "WebViewBuilder::new"
+    ],
+    "internalJavaScriptPolicy": "Only fixed worker-owned templates parameterized by bounded typed fields may use evaluate_javascript; no caller-provided script is a registered action."
+  },
+  "servoshellRejectionEvidence": {
+    "unconditionalServoFeatures": [
+      "background_hang_monitor",
+      "bluetooth",
+      "testbinding"
+    ],
+    "unconditionalDependencies": [
+      "webdriver_server"
+    ],
+    "webdriverListener": "0.0.0.0"
+  },
+  "evidencePaths": [
+    "components/servo/lib.rs",
+    "components/servo/Cargo.toml",
+    "components/servo/examples/winit_minimal.rs",
+    "components/shared/paint/rendering_context.rs",
+    "ports/servoshell/Cargo.toml",
+    "components/webdriver_server/lib.rs"
+  ],
+  "workerTarget": {
+    "oneProcess": true,
+    "oneWebView": true,
+    "networkControlListener": false,
+    "rawWebDriver": false,
+    "callerProvidedJavaScript": false,
+    "credentialExport": false,
+    "profileExport": false
+  },
+  "openEvidence": [
+    "exact worker crate compilation against current pin",
+    "transitive Cargo feature graph receipt",
+    "reproducible worker artifact and SBOM",
+    "real local-fixture WebView smoke",
+    "real Linux namespace listener and egress probes",
+    "cross-profile cookie cache storage isolation",
+    "macOS and Windows isolation equivalents",
+    "credential-reference final-use broker",
+    "real effect terminal reconciliation"
+  ]
+}
