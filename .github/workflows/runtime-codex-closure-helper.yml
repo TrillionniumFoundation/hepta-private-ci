@@ -9,7 +9,7 @@ permissions:
   contents: write
 
 jobs:
-  materialize:
+  focused-qualification:
     if: ${{ github.actor != 'github-actions[bot]' }}
     runs-on: ubuntu-24.04
     timeout-minutes: 45
@@ -18,8 +18,6 @@ jobs:
         with:
           ref: work/runtime-codex-production-closure-20260917
           fetch-depth: 0
-      - name: Materialize caller integration
-        run: python3 scripts/runtime_codex_closure_materialize.py
       - name: Format, refresh lock, and test focused packages
         shell: bash
         run: |
@@ -29,22 +27,25 @@ jobs:
           cargo check -p codex-hepta-codex-adapter -p codex-hepta-infer-worker-host
           cargo test -p codex-hepta-codex-adapter
           cargo test -p codex-hepta-infer-worker-host --lib
-      - name: Commit materialized integration
+          cargo clippy -p codex-hepta-codex-adapter -p codex-hepta-infer-worker-host --all-targets --no-deps -- -D warnings
+      - name: Commit generated lock or formatter changes
         shell: bash
         run: |
           set -euo pipefail
           git add codex-rs/Cargo.lock \
                   codex-rs/hepta-infer-worker-host/src/native_app_server.rs \
+                  codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs \
                   codex-rs/hepta-infer-worker-host/Cargo.toml \
+                  codex-rs/hepta-codex-adapter/Cargo.toml \
                   codex-rs/hepta-codex-adapter/src/lib.rs \
                   codex-rs/hepta-codex-adapter/src/lib_tests.rs \
                   codex-rs/hepta-codex-adapter/src/deadline_digest_tests.rs
           git diff --cached --check
           if git diff --cached --quiet; then
-            echo 'No materialized changes to commit.'
+            echo 'No generated changes to commit.'
             exit 0
           fi
           git config user.name 'Hepta runtime.codex closure'
           git config user.email 'hepta-runtime-codex@users.noreply.github.com'
-          git commit -m 'runtime.codex: compose real App Server terminal receipts'
+          git commit -m 'runtime.codex: apply focused qualification outputs'
           git push origin HEAD:work/runtime-codex-production-closure-20260917
