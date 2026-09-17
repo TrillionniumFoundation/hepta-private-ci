@@ -8,7 +8,6 @@ use crate::ProcessDriver;
 use crate::Supervisor;
 use crate::SupervisorError;
 use crate::SupervisorEventKind;
-use crate::restart_policy::clear_restart_budget;
 use crate::runtime::AgentRuntime;
 use crate::runtime::AgentSlot;
 use crate::runtime::DeferredAgentActionKind;
@@ -123,7 +122,6 @@ impl<D: ProcessDriver> Supervisor<D> {
         if slot.release_change.is_some() {
             return Err(SupervisorError::ReleaseChangePending(agent_id.clone()));
         }
-        reset_restart_budgets(slot);
         let release = slot.active_release.clone().or_else(|| {
             slot.last_command
                 .clone()
@@ -132,8 +130,15 @@ impl<D: ProcessDriver> Supervisor<D> {
         let release =
             release.ok_or_else(|| SupervisorError::NoPreviousCommand(agent_id.clone()))?;
         if slot.runtime.is_none() {
+            // start_release_slot performs the durable restart-budget reset for
+            // a fresh explicit start.
             return self.start_release_slot(agent_id, slot, release, now);
         }
+        self.reset_restart_budget_for_release(
+            agent_id,
+            slot,
+            release.release_id().clone(),
+        )?;
         let lifecycle = self.record(agent_id)?.lifecycle.lifecycle;
         let result = if matches!(
             lifecycle,
@@ -220,22 +225,6 @@ fn cancel_pending_restart<P>(slot: &mut AgentSlot<P>) {
     slot.restart_retry_at = None;
     slot.restart_automatic = false;
     slot.restart_after_exit = false;
-}
-
-fn reset_restart_budgets<P>(slot: &mut AgentSlot<P>) {
-    cancel_pending_restart(slot);
-    clear_restart_budget(
-        &mut slot.restart_attempt,
-        &mut slot.restart_window_started_at,
-    );
-    slot.restart_exhausted = false;
-    clear_restart_budget(
-        &mut slot.matrix.restart_attempt,
-        &mut slot.matrix.restart_window_started_at,
-    );
-    slot.matrix.retry_at = None;
-    slot.matrix.restart_after_exit = false;
-    slot.matrix.restart_exhausted = false;
 }
 
 fn active_runtime<'a, P>(
