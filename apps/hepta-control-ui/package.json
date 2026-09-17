@@ -4,6 +4,8 @@
   "type": "module",
   "scripts": {
     "test": "node --test test/*.test.js",
-    "check": "node --check src/*.js && node --test test/*.test.js"
-  }
+    "check": "node --check src/*.js && node --test test/*.test.js",
+    "build": "node scripts/build.mjs && node --check dist/*.js"
+  },
+  "exports": "./src/index.js"
 }

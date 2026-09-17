@@ -216,12 +216,6 @@ export class RuntimeClient {
       input.displayedRevision,
       "displayedRevision",
     );
-    if (proposal.expectedRevision !== displayedRevision) {
-      fail(
-        ERROR_CODES.STALE_SNAPSHOT,
-        "operation expected revision does not match the displayed revision",
-      );
-    }
     return this.#submit("operation/request", {
       operationId: proposal.operationId,
       displayedRevision,
