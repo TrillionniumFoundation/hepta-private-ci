@@ -39,20 +39,26 @@ pub use generation_bound::build_candidate_union;
 )]
 pub use generation_bound::recall;
 pub use product::CueCompileRequestV1;
+pub use product::MAX_PRODUCT_RELATION_EVIDENCE;
 pub use product::MAX_PRODUCT_RETRIEVAL_CANDIDATES;
 pub use product::MAX_PRODUCT_RETRIEVAL_RESULTS;
+pub use product::ProductRelationEvidenceV1;
+pub use product::ProductRelationKindV1;
 pub use product::ProductRetrievalError;
 pub use product::ProductRetrievalReceiptV1;
+pub use product::ProductRetrievalReceiptV2;
 pub use product::ProductRetrievalRequestV1;
+pub use product::ProductRetrievalRequestV2;
 pub use product::compile_cue;
 pub use product::retrieve_product_v1;
+pub use product::retrieve_product_v2;
 pub use recall_v2::RecallPacketV2;
 pub use recall_v2::recall_v2;
 pub use v2::RetrievalReceiptV2;
 pub use v2::retrieve_v2;
 
-// Compatibility-only bounds. Product callers must use `retrieve_product_v1`,
-// which enforces the target hot-path ceilings exported above.
+// Compatibility-only bounds. Product callers must use `retrieve_product_v1` or
+// `retrieve_product_v2`, which enforce the target hot-path ceilings above.
 const MAX_CANDIDATES: usize = 16_384;
 const MAX_RESULTS: usize = 256;
 
@@ -116,11 +122,12 @@ impl StdError for Error {}
 
 /// Compatibility-only V1 ranking surface.
 ///
-/// Product callers must use [`retrieve_product_v1`] so the complete candidate
-/// set, owner observation and target 512/16 hot-path ceilings are bound.
+/// Product callers must use [`retrieve_product_v2`] when typed owner relation
+/// evidence is available, or [`retrieve_product_v1`] for a digest-only owner
+/// observation. V1 does not bind the complete input.
 #[deprecated(
     since = "0.0.0",
-    note = "product callers must use retrieve_product_v1; V1 does not bind the complete input"
+    note = "product callers must use retrieve_product_v1/v2; V1 does not bind the complete input"
 )]
 pub fn retrieve(request: RetrievalRequest) -> Result<RetrievalReceipt, Error> {
     retrieve_request(&request)
