@@ -127,9 +127,9 @@ async fn lineage_pages_keep_whole_histories_and_one_exact_cut() {
         assert_eq!(page.frontiers.memory, 5);
         assert_eq!(page.frontiers.tombstone, 1);
         if let Some(expected) = &cut {
-            assert_eq!(&page.cut_state_digest, expected);
+            assert_eq!(&page.cut_digest, expected);
         } else {
-            cut = Some(page.cut_state_digest.clone());
+            cut = Some(page.cut_digest.clone());
         }
         if let Some(first_record) = page.records.first() {
             assert!(page
@@ -212,7 +212,7 @@ async fn lineage_cursor_fails_closed_after_owner_mutation() {
         .lane_c_lineage_page(
             &access,
             &scope,
-            Some(&first.cut_state_digest),
+            Some(&first.cut_digest),
             Some(&cursor),
             1,
         )
