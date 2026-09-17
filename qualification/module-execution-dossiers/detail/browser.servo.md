@@ -67,18 +67,7 @@ Responses additionally echo the original request kind and request payload digest
 
 ## 7. Resource/capacity model
 
-Current source ceilings include:
-
-- <=128 origins/profile;
-- <=1024 admitted effect grants/profile;
-- <=1024 nonterminal effects/profile;
-- <=256 terminal operations retained in host memory;
-- <=64 queued mutations per serialization key by default;
-- <=1 MiB host observation request;
-- <=256 KiB real worker semantic observation;
-- <=1 MiB private worker frame;
-- <=64 MiB file journal with compaction starting at 48 MiB;
-- bounded typed-action fields and driver/authority deadlines.
+Current source ceilings include <=128 origins/profile, <=1024 admitted effect grants/profile, <=1024 nonterminal effects/profile, <=256 terminal operations retained in host memory, <=64 queued mutations per serialization key by default, <=1 MiB host observation request, <=256 KiB real worker semantic observation, <=1 MiB private worker frame, <=64 MiB file journal with compaction starting at 48 MiB, bounded typed-action fields and driver/authority deadlines.
 
 The current worker is one Servo / one WebView per profile generation. The pilot <=16-tabs target is not claimed by this candidate and requires a later measured scheduler/profile.
 
@@ -109,25 +98,8 @@ The current worker is one Servo / one WebView per profile generation. The pilot 
 
 ## 10. Qualification gates and remaining evidence
 
-Repository/source gates include:
+Repository/source gates include complete Browser Node tests and JS syntax checks; exact current-pin worker `cargo check --locked`; real Bubblewrap sandbox probe; two deterministic release builds with byte equality; dynamic-library closure, worker smoke, worker SHA-256 and deterministic SPDX SBOM; real Agentd `FinalUseAuthority` handoff test, named caller compile and Clippy; and Lane-B exact-source and deterministic synthetic-merge checks.
 
-- complete Browser Node tests and JS syntax checks;
-- exact current-pin worker `cargo check --locked`;
-- real Bubblewrap sandbox probe;
-- two deterministic release builds with byte equality;
-- dynamic-library closure, worker smoke, worker SHA-256 and deterministic SPDX SBOM;
-- real Agentd `FinalUseAuthority` handoff test, named caller compile and Clippy;
-- Lane-B exact-source and deterministic synthetic-merge checks.
-
-Still separately open until exact receipts exist:
-
-1. reviewed committed worker `Cargo.lock` and terminal-success exact-SHA reproducible worker artifact/SBOM;
-2. independent Linux target-host no-listener/no-egress/descendant/profile isolation evidence;
-3. macOS/Windows isolation equivalents if targeted;
-4. functional credential broker and upload/download terminal observers if enabled;
-5. real remote business terminal observations/reconciliation;
-6. target resource/soak measurements;
-7. trusted long-running authority/revocation feed for default daemon activation;
-8. independent operator acceptance, promotion and release.
+Still separately open until exact receipts exist: reviewed committed worker `Cargo.lock` and terminal-success exact-SHA reproducible worker artifact/SBOM; independent Linux target-host no-listener/no-egress/descendant/profile isolation evidence; macOS/Windows isolation equivalents if targeted; functional credential broker and upload/download terminal observers if enabled; real remote business terminal observations/reconciliation; target resource/soak measurements; trusted long-running authority/revocation feed for default daemon activation; independent operator acceptance, promotion and release.
 
 These are evidence/activation gates, not permission to weaken source semantics. The repository candidate must remain truthful while they are open.
