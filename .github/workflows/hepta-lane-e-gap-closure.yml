@@ -125,16 +125,33 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          cargo fmt --manifest-path codex-rs/Cargo.toml \
-            --package codex-hepta-learning-ledger \
-            --package codex-hepta-learning-artifacts \
-            --package codex-hepta-bellman-operator \
-            --package codex-hepta-intelligence-eval \
-            --package codex-hepta-shadow-qualification \
-            -- --check
+          FMT_ARGS=(
+            --manifest-path codex-rs/Cargo.toml
+            --package codex-hepta-learning-ledger
+            --package codex-hepta-learning-artifacts
+            --package codex-hepta-bellman-operator
+            --package codex-hepta-intelligence-eval
+            --package codex-hepta-shadow-qualification
+          )
+          if ! cargo fmt "${FMT_ARGS[@]}" -- --check; then
+            cargo fmt "${FMT_ARGS[@]}"
+            mkdir -p qualification/lane-e/run-artifacts
+            git diff -- codex-rs/hepta-intelligence-eval/src > \
+              qualification/lane-e/run-artifacts/rustfmt.patch
+            exit 1
+          fi
           git diff --check
           git diff --exit-code
           test -z "$(git status --porcelain --untracked-files=no)"
+
+      - name: Retain rustfmt diagnostic
+        if: failure()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-lane-e-rustfmt-${{ env.SOURCE_SHA }}
+          path: qualification/lane-e/run-artifacts/rustfmt.patch
+          if-no-files-found: ignore
+          retention-days: 7
 
       - name: Emit exact-head Lane E qualification receipt
         shell: bash
@@ -191,6 +208,7 @@ jobs:
           retention-days: 30
 
   synthetic-merge:
+    if: github.event_name == 'pull_request'
     runs-on: ubuntu-24.04
     timeout-minutes: 120
     steps:
