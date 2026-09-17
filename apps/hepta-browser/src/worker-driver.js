@@ -48,7 +48,9 @@ function positiveInteger(value, name) {
 }
 
 function requestId(kind, semanticId) {
-  const digest = createHash("sha256").update(`${kind}\u0000${semanticId}`).digest("hex");
+  const digest = createHash("sha256")
+    .update(`${kind}\u0000${semanticId}`)
+    .digest("hex");
   return `browser.${kind}.${digest.slice(0, 32)}`;
 }
 
@@ -65,9 +67,6 @@ export class LinuxBubblewrapLauncher {
     }
     if (!isAbsolute(bwrapPath)) throw new TypeError("bwrapPath must be absolute");
     this.bwrapPath = bwrapPath;
-    // These fields describe the source-level launch contract. They are not an
-    // independent observation that a target kernel actually enforced it. The
-    // real sandbox probe / deployment qualification supplies that evidence.
     this.posture = Object.freeze({
       sourceContractOnly: true,
       inheritedPrivateChannel: true,
@@ -88,37 +87,77 @@ export class LinuxBubblewrapLauncher {
       "--new-session",
       "--die-with-parent",
       "--clearenv",
-      // Start from an empty root and expose only the immutable runtime closure
-      // needed by a dynamically linked worker. General host executables,
-      // /usr/local, service data and credential roots are deliberately absent.
-      "--tmpfs", "/",
-      "--dir", "/usr",
-      "--ro-bind-try", "/usr/lib", "/usr/lib",
-      "--ro-bind-try", "/usr/lib64", "/usr/lib64",
-      "--dir", "/usr/share",
-      "--ro-bind-try", "/usr/share/fonts", "/usr/share/fonts",
-      "--ro-bind-try", "/usr/share/fontconfig", "/usr/share/fontconfig",
-      "--symlink", "usr/lib", "/lib",
-      "--symlink", "usr/lib64", "/lib64",
-      "--dir", "/etc",
-      "--ro-bind-try", "/etc/ld.so.cache", "/etc/ld.so.cache",
-      "--ro-bind-try", "/etc/fonts", "/etc/fonts",
-      "--ro-bind-try", "/etc/ssl", "/etc/ssl",
-      "--dir", "/var",
-      "--dir", "/var/cache",
-      "--ro-bind-try", "/var/cache/fontconfig", "/var/cache/fontconfig",
-      "--tmpfs", "/home",
-      "--tmpfs", "/root",
-      "--tmpfs", "/run",
-      "--tmpfs", "/tmp",
-      "--proc", "/proc",
-      "--dev", "/dev",
-      "--bind", profileDir, "/hepta-profile",
-      "--ro-bind", workerPath, "/hepta-worker",
-      "--chdir", "/hepta-profile",
-      "--setenv", "HOME", "/hepta-profile",
-      "--setenv", "TMPDIR", "/tmp",
-      "--setenv", "HEPTA_BROWSER_WORKER_PROTOCOL", "1",
+      "--tmpfs",
+      "/",
+      "--dir",
+      "/usr",
+      "--ro-bind-try",
+      "/usr/lib",
+      "/usr/lib",
+      "--ro-bind-try",
+      "/usr/lib64",
+      "/usr/lib64",
+      "--dir",
+      "/usr/share",
+      "--ro-bind-try",
+      "/usr/share/fonts",
+      "/usr/share/fonts",
+      "--ro-bind-try",
+      "/usr/share/fontconfig",
+      "/usr/share/fontconfig",
+      "--symlink",
+      "usr/lib",
+      "/lib",
+      "--symlink",
+      "usr/lib64",
+      "/lib64",
+      "--dir",
+      "/etc",
+      "--ro-bind-try",
+      "/etc/ld.so.cache",
+      "/etc/ld.so.cache",
+      "--ro-bind-try",
+      "/etc/fonts",
+      "/etc/fonts",
+      "--ro-bind-try",
+      "/etc/ssl",
+      "/etc/ssl",
+      "--dir",
+      "/var",
+      "--dir",
+      "/var/cache",
+      "--ro-bind-try",
+      "/var/cache/fontconfig",
+      "/var/cache/fontconfig",
+      "--tmpfs",
+      "/home",
+      "--tmpfs",
+      "/root",
+      "--tmpfs",
+      "/run",
+      "--tmpfs",
+      "/tmp",
+      "--proc",
+      "/proc",
+      "--dev",
+      "/dev",
+      "--bind",
+      profileDir,
+      "/hepta-profile",
+      "--ro-bind",
+      workerPath,
+      "/hepta-worker",
+      "--chdir",
+      "/hepta-profile",
+      "--setenv",
+      "HOME",
+      "/hepta-profile",
+      "--setenv",
+      "TMPDIR",
+      "/tmp",
+      "--setenv",
+      "HEPTA_BROWSER_WORKER_PROTOCOL",
+      "1",
       "/hepta-worker",
     ];
   }
@@ -156,24 +195,29 @@ class PrivateWorkerClient {
         this.#failAll(error);
       }
     });
-    // Servo and the worker may be noisy. Always drain stderr so an unconsumed
-    // pipe cannot deadlock browser execution. Diagnostics are intentionally not
-    // copied into receipts because page/worker logs can contain sensitive data.
     child.stderr?.resume?.();
     child.on("error", (error) => this.#failAll(error));
     child.on("exit", (code, signal) => {
       this.#closed = true;
-      this.#failAll(new Error(`browser worker exited before response: code=${code} signal=${signal}`));
+      this.#failAll(
+        new Error(
+          `browser worker exited before response: code=${code} signal=${signal}`,
+        ),
+      );
     });
   }
 
   request(kind, semanticId, payload, { signal, onDispatched } = {}) {
-    if (this.#closed) return Promise.reject(new Error("browser worker channel is closed"));
+    if (this.#closed) {
+      return Promise.reject(new Error("browser worker channel is closed"));
+    }
     if (signal?.aborted) return Promise.reject(abortError());
     const sequence = this.#nextOutgoingSequence++;
     const id = requestId(kind, semanticId);
     if (this.#pending.has(id) || this.#abandoned.has(id)) {
-      return Promise.reject(new TypeError("browser worker request identity is already live"));
+      return Promise.reject(
+        new TypeError("browser worker request identity is already live"),
+      );
     }
     const frame = buildWorkerFrame({
       sessionId: this.#sessionId,
@@ -198,7 +242,9 @@ class PrivateWorkerClient {
         entry.cleanup?.();
         if (writeStarted) {
           if (this.#abandoned.size >= MAX_ABANDONED_RESPONSES) {
-            this.#failAll(new Error("browser worker abandoned-response capacity exhausted"));
+            this.#failAll(
+              new Error("browser worker abandoned-response capacity exhausted"),
+            );
             this.#child.kill("SIGKILL");
           } else {
             this.#abandoned.add(id);
@@ -253,42 +299,60 @@ class PrivateWorkerClient {
       return;
     }
     for (const frame of frames) {
-      if (frame.sessionId !== this.#sessionId || frame.generation !== this.#generation) {
-        this.#failAll(new TypeError("browser worker response crossed session or generation"));
+      if (
+        frame.sessionId !== this.#sessionId ||
+        frame.generation !== this.#generation
+      ) {
+        this.#failAll(
+          new TypeError("browser worker response crossed session or generation"),
+        );
         this.#child.kill("SIGKILL");
         return;
       }
       if (frame.sequence !== this.#lastIncomingSequence + 1) {
-        this.#failAll(new TypeError("browser worker response sequence is not monotonic"));
+        this.#failAll(
+          new TypeError("browser worker response sequence is not monotonic"),
+        );
         this.#child.kill("SIGKILL");
         return;
       }
       this.#lastIncomingSequence = frame.sequence;
       if (frame.kind !== "response") {
-        this.#failAll(new TypeError("browser worker emitted an unexpected non-response frame"));
+        this.#failAll(
+          new TypeError("browser worker emitted an unexpected non-response frame"),
+        );
         this.#child.kill("SIGKILL");
         return;
       }
       const pending = this.#pending.get(frame.requestId);
       if (!pending) {
         if (this.#abandoned.delete(frame.requestId)) continue;
-        this.#failAll(new TypeError("browser worker response has no pending request"));
+        this.#failAll(
+          new TypeError("browser worker response has no pending request"),
+        );
         this.#child.kill("SIGKILL");
         return;
       }
-      const payload = requireRecord(frame.payload, "worker response payload");
+      const payload = requireRecord(
+        frame.payload,
+        "worker response payload",
+      );
       if (
         payload.requestKind !== pending.requestKind ||
         payload.requestPayloadDigest !== pending.requestPayloadDigest
       ) {
-        this.#failAll(new TypeError("browser worker response did not bind the exact request"));
+        this.#failAll(
+          new TypeError("browser worker response did not bind the exact request"),
+        );
         this.#child.kill("SIGKILL");
         return;
       }
       this.#pending.delete(frame.requestId);
       pending.cleanup?.();
       if (payload.ok === true) {
-        pending.resolve(requireRecord(payload.observation, "worker observation"));
+        pending.resolve(
+          requireRecord(payload.observation, "worker observation"),
+        );
       } else if (payload.ok === false && typeof payload.error === "string") {
         pending.reject(new Error(`browser worker rejected request: ${payload.error}`));
       } else {
@@ -336,9 +400,13 @@ export class SubprocessBrowserDriver {
       "hostFilesystemRestricted",
       "parentDeathCleanup",
     ]) {
-      if (posture[key] !== true) throw new TypeError(`launcher source contract does not declare ${key}`);
+      if (posture[key] !== true) {
+        throw new TypeError(`launcher source contract does not declare ${key}`);
+      }
     }
-    if (typeof launcher.spawn !== "function") throw new TypeError("launcher.spawn must be a function");
+    if (typeof launcher.spawn !== "function") {
+      throw new TypeError("launcher.spawn must be a function");
+    }
     this.#workerPath = workerPath;
     this.#workerDigest = expectedDigest(workerDigest, "workerDigest");
     this.#profileRoot = profileRoot;
@@ -355,18 +423,24 @@ export class SubprocessBrowserDriver {
     const grantDigest = expectedDigest(input.grantDigest, "grantDigest");
     const verifiedWorkerBytes = await this.#readVerifiedWorkerArtifact();
     await mkdir(this.#profileRoot, { recursive: true, mode: 0o700 });
-    // Each process generation gets a fresh private directory. Stale profile
-    // bytes are therefore never implicitly reused by a different principal.
-    this.#profileDir = join(this.#profileRoot, `${profileId}.${generation}.${randomUUID()}`);
+    this.#profileDir = join(
+      this.#profileRoot,
+      `${profileId}.${generation}.${randomUUID()}`,
+    );
     await mkdir(this.#profileDir, { mode: 0o700 });
-    this.#profileOwnerPath = join(this.#profileDir, ".hepta-profile-owner.json");
-    await this.#writeProfileOwnerManifest({
+    this.#profileOwnerPath = join(
+      this.#profileDir,
+      ".hepta-profile-owner.json",
+    );
+    const ownerIdentity = {
+      schema: "hepta.browser.profile-owner.v1",
       profileId,
       principalId,
       generation,
       manifestDigest,
       grantDigest,
-    });
+    };
+    await this.#writeProfileOwnerManifest(ownerIdentity);
     this.#verifiedWorkerPath = join(this.#profileDir, ".verified-worker");
     await this.#writePrivateVerifiedWorker(verifiedWorkerBytes);
     this.#sessionId = profileId;
@@ -376,8 +450,14 @@ export class SubprocessBrowserDriver {
         workerPath: this.#verifiedWorkerPath,
         profileDir: this.#profileDir,
       });
-      if (!this.#child?.stdin || !this.#child?.stdout || typeof this.#child.on !== "function") {
-        throw new TypeError("launcher did not return a pipe-connected child process");
+      if (
+        !this.#child?.stdin ||
+        !this.#child?.stdout ||
+        typeof this.#child.on !== "function"
+      ) {
+        throw new TypeError(
+          "launcher did not return a pipe-connected child process",
+        );
       }
       this.#processId = `servo.pid.${this.#child.pid}`;
       this.#client = new PrivateWorkerClient({
@@ -391,17 +471,13 @@ export class SubprocessBrowserDriver {
         input,
         { signal },
       );
-      if (observed.started !== true) throw new TypeError("worker did not acknowledge start");
+      if (observed.started !== true) {
+        throw new TypeError("worker did not acknowledge start");
+      }
       return {
         started: true,
         processId: this.#processId,
-        profileOwnerDigest: sha256(Buffer.from(JSON.stringify({
-          profileId,
-          principalId,
-          generation,
-          manifestDigest,
-          grantDigest,
-        }), "utf8")),
+        profileOwnerDigest: sha256(Buffer.from(JSON.stringify(ownerIdentity), "utf8")),
       };
     } catch (error) {
       this.#child?.kill?.("SIGKILL");
@@ -414,14 +490,18 @@ export class SubprocessBrowserDriver {
 
   async observe(input, { signal } = {}) {
     this.#requireSession(input);
-    return this.#client.request("observe", `page.${input.profileId}`, input, { signal });
+    return this.#client.request("observe", `page.${input.profileId}`, input, {
+      signal,
+    });
   }
 
   async dispatch(input, { signal } = {}) {
     this.#requireSession(input);
     let crossed = false;
     let resolveBoundary;
-    const boundary = new Promise((resolve) => { resolveBoundary = resolve; });
+    const boundary = new Promise((resolve) => {
+      resolveBoundary = resolve;
+    });
     const response = this.#client.request("dispatch", input.operationId, input, {
       signal,
       onDispatched: () => {
@@ -465,7 +545,9 @@ export class SubprocessBrowserDriver {
         input,
         { signal },
       );
-      if (observed.stopped !== true) throw new TypeError("worker did not acknowledge stop");
+      if (observed.stopped !== true) {
+        throw new TypeError("worker did not acknowledge stop");
+      }
       return { stopped: true };
     } finally {
       this.#client?.close();
@@ -481,7 +563,11 @@ export class SubprocessBrowserDriver {
     const handle = await open(this.#workerPath, constants.O_RDONLY | noFollow);
     try {
       const info = await handle.stat();
-      if (!info.isFile() || info.size < 1 || info.size > MAX_WORKER_ARTIFACT_BYTES) {
+      if (
+        !info.isFile() ||
+        info.size < 1 ||
+        info.size > MAX_WORKER_ARTIFACT_BYTES
+      ) {
         throw new TypeError("browser worker artifact must be a bounded regular file");
       }
       const bytes = await handle.readFile();
@@ -495,19 +581,19 @@ export class SubprocessBrowserDriver {
   }
 
   async #writeProfileOwnerManifest(identity) {
-    const body = Buffer.from(JSON.stringify({
-      schema: "hepta.browser.profile-owner.v1",
-      ...identity,
-    }) + "\n", "utf8");
+    const body = Buffer.from(`${JSON.stringify(identity)}\n`, "utf8");
     const noFollow = constants.O_NOFOLLOW ?? 0;
-    const flags = constants.O_WRONLY | constants.O_CREAT | constants.O_EXCL | noFollow;
+    const flags =
+      constants.O_WRONLY | constants.O_CREAT | constants.O_EXCL | noFollow;
     const handle = await open(this.#profileOwnerPath, flags, 0o600);
     try {
       await handle.writeFile(body);
       await handle.sync();
       const info = await handle.stat();
       if (!info.isFile() || info.size !== body.length) {
-        throw new TypeError("profile owner manifest is not a regular exact-length file");
+        throw new TypeError(
+          "profile owner manifest is not a regular exact-length file",
+        );
       }
     } finally {
       await handle.close();
@@ -516,14 +602,17 @@ export class SubprocessBrowserDriver {
 
   async #writePrivateVerifiedWorker(bytes) {
     const noFollow = constants.O_NOFOLLOW ?? 0;
-    const flags = constants.O_WRONLY | constants.O_CREAT | constants.O_EXCL | noFollow;
+    const flags =
+      constants.O_WRONLY | constants.O_CREAT | constants.O_EXCL | noFollow;
     const handle = await open(this.#verifiedWorkerPath, flags, 0o500);
     try {
       await handle.writeFile(bytes);
       await handle.sync();
       const info = await handle.stat();
       if (!info.isFile() || info.size !== bytes.length) {
-        throw new TypeError("verified browser worker copy is not a regular exact-length file");
+        throw new TypeError(
+          "verified browser worker copy is not a regular exact-length file",
+        );
       }
     } finally {
       await handle.close();
@@ -531,7 +620,9 @@ export class SubprocessBrowserDriver {
   }
 
   #requireSession(input) {
-    if (!this.#child || !this.#client) throw new TypeError("browser worker is not started");
+    if (!this.#child || !this.#client) {
+      throw new TypeError("browser worker is not started");
+    }
     const generation = input.generation ?? input.profileGeneration;
     if (input.profileId !== this.#sessionId || generation !== this.#generation) {
       throw new TypeError("browser worker session or generation mismatch");
