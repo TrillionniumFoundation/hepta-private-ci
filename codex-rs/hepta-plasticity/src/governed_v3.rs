@@ -79,6 +79,7 @@ pub struct ParameterEvidenceBindingV3 {
     pub modulator_broadcast_digest: Digest32,
     pub eligibility_digest: Digest32,
     pub norm_layers: Vec<LayerNormDenominatorV2>,
+    /// Complete parameter opportunity snapshot attested by the Observer.
     pub opportunities: Vec<ParameterOpportunityV3>,
 }
 
@@ -92,7 +93,6 @@ pub struct GeneratedParameterCandidateSetV3 {
 
 pub struct GovernedParameterProposalRequestV3<'a> {
     pub proposal_id: StableId,
-    pub set_id: StableId,
     pub binding: ParameterEvidenceBindingV3,
     pub generation_policy: ParameterGenerationPolicyV3,
     /// Generator signature over `candidate_completeness_signing_payload_v3`.
@@ -169,9 +169,9 @@ impl From<SignedEvaluationError> for GovernedProposalError {
 /// candidate scale, per-parameter bounds, and a conservative deterministic
 /// projection into the V2 per-layer/global trust region. Exactly one no-change
 /// candidate is always present. This function never reads caller-supplied delta
-/// candidates.
+/// candidates. Its set identity is derived from the generated candidate bytes,
+/// so an evaluator cannot reuse an arbitrary caller-selected set identifier.
 pub fn generate_parameter_candidates_v3(
-    set_id: StableId,
     binding: &ParameterEvidenceBindingV3,
     policy: &ParameterGenerationPolicyV3,
     state_digest: Digest32,
@@ -193,12 +193,6 @@ pub fn generate_parameter_candidates_v3(
     for scale in scales {
         let mut deltas = Vec::with_capacity(binding.opportunities.len());
         for opportunity in &binding.opportunities {
-            if opportunity.lower_bound > opportunity.upper_bound {
-                return Err(GovernedProposalError::Generator("inverted opportunity bounds"));
-            }
-            if opportunity.evidence_digest.is_zero() {
-                return Err(GovernedProposalError::Generator("empty opportunity evidence"));
-            }
             let local = opportunity
                 .eligibility
                 .checked_mul(opportunity.projected_modulator)
@@ -228,7 +222,8 @@ pub fn generate_parameter_candidates_v3(
             continue;
         }
         candidates.push(ParameterCandidateRequestV2 {
-            candidate_id: stable_id(&format!("plasticity:update:{scale}"))?,
+            // Fixed-width decimal keeps generator order identical to V2 lexical canonicalization.
+            candidate_id: stable_id(&format!("plasticity:update:{scale:07}"))?,
             kind: ParameterCandidateKindV2::Update,
             parameter_deltas: deltas,
         });
@@ -250,7 +245,7 @@ pub fn generate_parameter_candidates_v3(
     let candidate_set_digest = digest_candidate_set(&candidates)?;
     let canonical_order_digest = digest_candidate_order(&candidates)?;
     let completeness = CandidateSetCompletenessReceiptV1 {
-        set_id,
+        set_id: candidate_set_id_v3(candidate_set_digest)?,
         state_digest,
         generator_id: policy.generator_id.clone(),
         generator_code_digest: policy.generator_code_digest,
@@ -276,6 +271,16 @@ pub fn generate_parameter_candidates_v3(
     })
 }
 
+/// Content-addressed stable identity used by evaluation and completeness.
+pub fn candidate_set_id_v3(
+    candidate_set_digest: Digest32,
+) -> Result<StableId, GovernedProposalError> {
+    if candidate_set_digest.is_zero() {
+        return Err(GovernedProposalError::Generator("empty candidate-set digest"));
+    }
+    stable_id(&format!("plasticity:set:{candidate_set_digest}"))
+}
+
 /// Canonical payload an independent source/observer signs after verifying the
 /// current artifact/window and every supplied lineage/evidence fact.
 pub fn evidence_binding_signing_payload_v3(
@@ -283,6 +288,7 @@ pub fn evidence_binding_signing_payload_v3(
     artifact_registry_head_digest: Digest32,
     dataset_snapshot_id: &StableId,
 ) -> Result<Vec<u8>, GovernedProposalError> {
+    validate_binding_shape(binding)?;
     if artifact_registry_head_digest.is_zero() {
         return Err(GovernedProposalError::Binding("empty artifact registry head"));
     }
@@ -303,18 +309,25 @@ pub fn evidence_binding_signing_payload_v3(
         binding.modulator_broadcast_digest,
         binding.eligibility_digest,
     ] {
-        if digest.is_zero() {
-            return Err(GovernedProposalError::Binding("empty evidence binding digest"));
-        }
         bytes.extend_from_slice(digest.as_array());
     }
-    push_len(&mut bytes, binding.norm_layers.len())?;
-    for layer in &binding.norm_layers {
+
+    let mut norm_layers = binding.norm_layers.iter().collect::<Vec<_>>();
+    norm_layers.sort_by(|left, right| left.layer_id.cmp(&right.layer_id));
+    push_len(&mut bytes, norm_layers.len())?;
+    for layer in norm_layers {
         push_id(&mut bytes, &layer.layer_id)?;
         bytes.extend_from_slice(&layer.baseline_squared_l2_raw_q64.to_be_bytes());
     }
-    push_len(&mut bytes, binding.opportunities.len())?;
-    for opportunity in &binding.opportunities {
+
+    let mut opportunities = binding.opportunities.iter().collect::<Vec<_>>();
+    opportunities.sort_by(|left, right| {
+        left.layer_id
+            .cmp(&right.layer_id)
+            .then_with(|| left.parameter_id.cmp(&right.parameter_id))
+    });
+    push_len(&mut bytes, opportunities.len())?;
+    for opportunity in opportunities {
         push_id(&mut bytes, &opportunity.layer_id)?;
         push_id(&mut bytes, &opportunity.parameter_id)?;
         bytes.extend_from_slice(&opportunity.eligibility.raw().to_be_bytes());
@@ -340,9 +353,10 @@ pub fn candidate_completeness_signing_payload_v3(
 /// Produce one governed, authority-free parameter proposal.
 ///
 /// All authentication happens before construction of the V2 record. The
-/// independently evaluated object is the complete generated candidate set,
-/// identified by `set_id`; evaluation eligibility is not selection or runtime
-/// activation.
+/// independently evaluated object is the complete generated candidate set;
+/// its evaluation identity is content-addressed from the generated candidate
+/// bytes, so evaluation eligibility is not transferable to a different set.
+/// Eligibility remains neither selection nor runtime activation.
 pub fn propose_governed_v3(
     request: GovernedParameterProposalRequestV3<'_>,
     verifier: &LearningEvidenceVerifierV1,
@@ -350,11 +364,14 @@ pub fn propose_governed_v3(
     now: u64,
 ) -> Result<GovernedParameterProposalV3, GovernedProposalError> {
     let binding = &request.binding;
+    validate_binding_shape(binding)?;
     let manifest = artifacts
         .manifest(&binding.selected_artifact_id)
         .ok_or(GovernedProposalError::Artifact("selected artifact missing"))?;
     if !artifacts.is_eligible(&binding.selected_artifact_id) {
-        return Err(GovernedProposalError::Artifact("selected artifact lineage unavailable"));
+        return Err(GovernedProposalError::Artifact(
+            "selected artifact lineage unavailable",
+        ));
     }
     if !matches!(manifest.kind, ArtifactKind::Parameters | ArtifactKind::Model) {
         return Err(GovernedProposalError::Artifact("selected artifact kind"));
@@ -366,7 +383,9 @@ pub fn propose_governed_v3(
         return Err(GovernedProposalError::Artifact("selected artifact binding"));
     }
     if binding.baseline_generation.next() != Ok(binding.candidate_generation) {
-        return Err(GovernedProposalError::Binding("candidate generation is not exact successor"));
+        return Err(GovernedProposalError::Binding(
+            "candidate generation is not exact successor",
+        ));
     }
 
     verify_dataset_snapshot_receipt_v3(request.dataset, now)?;
@@ -394,7 +413,6 @@ pub fn propose_governed_v3(
     let source_authentication_digest = attestation_digest(request.source_evidence);
 
     let generated = generate_parameter_candidates_v3(
-        request.set_id.clone(),
         binding,
         &request.generation_policy,
         Digest32::of_bytes(&source_payload),
@@ -404,7 +422,9 @@ pub fn propose_governed_v3(
             != u32::try_from(generated.candidates.len())
                 .map_err(|_| GovernedProposalError::Arithmetic)?
     {
-        return Err(GovernedProposalError::Generator("candidate completeness mismatch"));
+        return Err(GovernedProposalError::Generator(
+            "candidate completeness mismatch",
+        ));
     }
     let completeness_digest = validate_candidate_set_completeness(&generated.completeness)?;
     let generator_payload = candidate_completeness_signing_payload_v3(&generated.completeness)?;
@@ -422,13 +442,15 @@ pub fn propose_governed_v3(
 
     let evaluation_bundle = &request.evaluation;
     let evaluator_id = evaluation_bundle.evaluator.principal_id.clone();
-    if evaluation_bundle.candidate_id != request.set_id
+    if evaluation_bundle.candidate_id != generated.completeness.set_id
         || evaluation_bundle.baseline_id != binding.selected_artifact_id
         || evaluation_bundle.objective_digest != binding.objective_digest
         || evaluation_bundle.dataset_digest != binding.dataset_digest
         || &evaluation_bundle.generator != generator.principal()
     {
-        return Err(GovernedProposalError::Binding("independent evaluation binding"));
+        return Err(GovernedProposalError::Binding(
+            "independent evaluation binding",
+        ));
     }
     let evaluation = decide_with_signed_evidence_v2(
         request.evaluation,
@@ -484,13 +506,10 @@ pub fn propose_governed_v3(
     })
 }
 
-fn validate_generation_inputs(
+fn validate_binding_shape(
     binding: &ParameterEvidenceBindingV3,
-    policy: &ParameterGenerationPolicyV3,
-    state_digest: Digest32,
 ) -> Result<(), GovernedProposalError> {
-    if state_digest.is_zero()
-        || binding.selected_artifact_digest.is_zero()
+    if binding.selected_artifact_digest.is_zero()
         || binding.objective_digest.is_zero()
         || binding.window.window_digest.is_zero()
         || binding.dataset_digest.is_zero()
@@ -499,13 +518,61 @@ fn validate_generation_inputs(
         || binding.modulator_broadcast_digest.is_zero()
         || binding.eligibility_digest.is_zero()
     {
-        return Err(GovernedProposalError::Binding("empty generator input digest"));
+        return Err(GovernedProposalError::Binding(
+            "empty generator input digest",
+        ));
     }
     if binding.opportunities.len() > MAX_PARAMETER_DELTAS {
         return Err(GovernedProposalError::Generator("opportunity limit"));
     }
     if !(1..=MAX_NORM_LAYERS).contains(&binding.norm_layers.len()) {
         return Err(GovernedProposalError::Generator("norm layer limit"));
+    }
+
+    let mut norm_layers = BTreeSet::new();
+    for layer in &binding.norm_layers {
+        if layer.baseline_squared_l2_raw_q64 == 0 {
+            return Err(GovernedProposalError::Generator(
+                "zero norm denominator",
+            ));
+        }
+        if !norm_layers.insert(layer.layer_id.clone()) {
+            return Err(GovernedProposalError::Generator("duplicate norm layer"));
+        }
+    }
+
+    let mut parameters = BTreeSet::new();
+    for opportunity in &binding.opportunities {
+        if !norm_layers.contains(&opportunity.layer_id) {
+            return Err(GovernedProposalError::Generator("missing norm layer"));
+        }
+        if !parameters.insert(opportunity.parameter_id.clone()) {
+            return Err(GovernedProposalError::Generator(
+                "duplicate parameter opportunity",
+            ));
+        }
+        if opportunity.lower_bound > opportunity.upper_bound {
+            return Err(GovernedProposalError::Generator(
+                "inverted opportunity bounds",
+            ));
+        }
+        if opportunity.evidence_digest.is_zero() {
+            return Err(GovernedProposalError::Generator(
+                "empty opportunity evidence",
+            ));
+        }
+    }
+    Ok(())
+}
+
+fn validate_generation_inputs(
+    binding: &ParameterEvidenceBindingV3,
+    policy: &ParameterGenerationPolicyV3,
+    state_digest: Digest32,
+) -> Result<(), GovernedProposalError> {
+    validate_binding_shape(binding)?;
+    if state_digest.is_zero() {
+        return Err(GovernedProposalError::Binding("empty generator state"));
     }
     if policy.learning_rate == FixedQ32::ZERO
         || policy.generator_code_digest.is_zero()
@@ -522,7 +589,9 @@ fn validate_generation_inputs(
             .iter()
             .any(|scale| *scale == 0 || *scale > 1_000_000)
     {
-        return Err(GovernedProposalError::Generator("candidate scale profile"));
+        return Err(GovernedProposalError::Generator(
+            "candidate scale profile",
+        ));
     }
     Ok(())
 }
@@ -582,7 +651,9 @@ fn candidate_within_trust_region(
     let mut parameters = BTreeSet::new();
     for delta in deltas {
         if !parameters.insert(delta.parameter_id.clone()) {
-            return Err(GovernedProposalError::Generator("duplicate parameter opportunity"));
+            return Err(GovernedProposalError::Generator(
+                "duplicate parameter opportunity",
+            ));
         }
         let Some(total) = squared_by_layer.get_mut(&delta.layer_id) else {
             return Err(GovernedProposalError::Generator("missing norm layer"));
