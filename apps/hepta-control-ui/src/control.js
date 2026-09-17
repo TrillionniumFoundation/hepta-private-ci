@@ -33,6 +33,48 @@ function requireRecord(value, name) {
   }
 }
 
+function ownData(value, key, name) {
+  const descriptor = Object.getOwnPropertyDescriptor(value, key);
+  if (
+    !descriptor ||
+    !Object.hasOwn(descriptor, "value") ||
+    descriptor.enumerable !== true
+  ) {
+    throw new TypeError(
+      `${name}.${key} must be an enumerable own data property`,
+    );
+  }
+  return descriptor.value;
+}
+
+function exactDataRecord(value, expectedKeys, name) {
+  requireRecord(value, name);
+  const prototype = Object.getPrototypeOf(value);
+  if (prototype !== Object.prototype && prototype !== null) {
+    throw new TypeError(`${name} must be a plain object`);
+  }
+  const descriptors = Object.getOwnPropertyDescriptors(value);
+  const keys = Reflect.ownKeys(descriptors);
+  if (
+    keys.length !== expectedKeys.length ||
+    keys.some((key) => typeof key !== "string") ||
+    expectedKeys.some((key) => !Object.hasOwn(descriptors, key))
+  ) {
+    throw new TypeError(`${name} contains missing or unknown fields`);
+  }
+  const result = Object.create(null);
+  for (const key of expectedKeys) {
+    const descriptor = descriptors[key];
+    if (!Object.hasOwn(descriptor, "value") || descriptor.enumerable !== true) {
+      throw new TypeError(
+        `${name}.${key} must be an enumerable own data property`,
+      );
+    }
+    result[key] = descriptor.value;
+  }
+  return Object.freeze(result);
+}
+
 function requireStableId(value, name) {
   if (typeof value !== "string" || !STABLE_ID.test(value)) {
     throw new TypeError(`${name} must be a bounded stable identifier`);
@@ -40,26 +82,28 @@ function requireStableId(value, name) {
   return value;
 }
 
-function requireRevision(value) {
+function requireRevision(value, name = "revision") {
   if (!Number.isSafeInteger(value) || value < 1) {
-    throw new TypeError("revision must be a positive safe integer");
+    throw new TypeError(`${name} must be a positive safe integer`);
   }
   return value;
 }
 
-function requireDigest(value) {
+function requireDigest(value, name = "digest") {
   if (typeof value !== "string" || !DIGEST.test(value)) {
-    throw new TypeError("digest must contain 64 lowercase hexadecimal characters");
+    throw new TypeError(
+      `${name} must contain 64 lowercase hexadecimal characters`,
+    );
   }
   return value;
 }
 
-function requireNonzeroDigest(value) {
-  const digest = requireDigest(value);
-  if (digest === ZERO_DIGEST) {
-    throw new TypeError("digest must be non-zero");
+function requireNonzeroDigest(value, name = "digest") {
+  const checked = requireDigest(value, name);
+  if (checked === ZERO_DIGEST) {
+    throw new TypeError(`${name} must be non-zero`);
   }
-  return digest;
+  return checked;
 }
 
 function parseCanonicalInput(encoded, expectedKeys, name) {
@@ -87,7 +131,9 @@ function parseCanonicalInput(encoded, expectedKeys, name) {
     keys.length !== canonicalKeys.length ||
     keys.some((key, index) => key !== canonicalKeys[index])
   ) {
-    throw new TypeError(`${name} contains missing, unknown, or unordered fields`);
+    throw new TypeError(
+      `${name} contains missing, unknown, or unordered fields`,
+    );
   }
   const snapshot = Object.fromEntries(
     canonicalKeys.map((key) => [key, value[key]]),
@@ -98,44 +144,76 @@ function parseCanonicalInput(encoded, expectedKeys, name) {
   return Object.freeze(snapshot);
 }
 
+/**
+ * Project an untrusted runtime observation into the only fields that are
+ * allowed to cross the presentation boundary. Unknown source fields are
+ * deliberately never read, so provider payloads and secrets are dropped.
+ */
 export function projectRuntime(observation) {
   requireRecord(observation, "observation");
-  const moduleId = requireStableId(observation.moduleId, "moduleId");
-  if (!RUNTIME_STATUSES.has(observation.status)) {
+  const moduleId = requireStableId(
+    ownData(observation, "moduleId", "observation"),
+    "moduleId",
+  );
+  const status = ownData(observation, "status", "observation");
+  if (!RUNTIME_STATUSES.has(status)) {
     throw new TypeError("status is not a registered runtime state");
   }
-  const revision = requireRevision(observation.revision);
-  const digest = requireDigest(observation.digest);
+  const revision = requireRevision(
+    ownData(observation, "revision", "observation"),
+  );
+  const digest = requireNonzeroDigest(
+    ownData(observation, "digest", "observation"),
+  );
 
   return Object.freeze({
     moduleId,
-    status: observation.status,
+    status,
     revision,
     digest,
-    ready: observation.status === "ready",
+    ready: status === "ready",
     authorityGranted: false,
     directStoreWrite: false,
   });
 }
 
-export function buildOperationIntent(input) {
-  requireRecord(input, "input");
-  const operationId = requireStableId(input.operationId, "operationId");
-  const subjectId = requireStableId(input.subjectId, "subjectId");
-  if (!OPERATION_ACTIONS.has(input.action)) {
+/**
+ * Build an authority-free UI proposal. `OperationIntentV1` is owned by
+ * `kernel.operations`; this package must never mint that canonical contract.
+ */
+export function buildOperationProposal(input) {
+  const record = exactDataRecord(
+    input,
+    ["operationId", "subjectId", "action", "expectedRevision"],
+    "input",
+  );
+  const operationId = requireStableId(record.operationId, "operationId");
+  const subjectId = requireStableId(record.subjectId, "subjectId");
+  if (!OPERATION_ACTIONS.has(record.action)) {
     throw new TypeError("action is not a registered operator request");
   }
-  const expectedRevision = requireRevision(input.expectedRevision);
+  const expectedRevision = requireRevision(
+    record.expectedRevision,
+    "expectedRevision",
+  );
 
   return Object.freeze({
-    kind: "OperationIntentV1",
+    kind: "UiControlOperationProposalV1",
     operationId,
     subjectId,
-    action: input.action,
+    action: record.action,
     expectedRevision,
     authorityGranted: false,
     directStoreWrite: false,
   });
+}
+
+/**
+ * @deprecated Use `buildOperationProposal`. Kept as a compatibility export;
+ * it intentionally does not produce `OperationIntentV1`.
+ */
+export function buildOperationIntent(input) {
+  return buildOperationProposal(input);
 }
 
 /**
@@ -175,18 +253,18 @@ export function buildLocalOperationProposalFromCanonicalJson(encoded) {
   if (input.schema !== LOCAL_OPERATION_PROPOSAL_INPUT_SCHEMA) {
     throw new TypeError("local operation proposal schema is unsupported");
   }
-  const operationId = requireStableId(input.operationId, "operationId");
-  const subjectId = requireStableId(input.subjectId, "subjectId");
-  if (!OPERATION_ACTIONS.has(input.action)) {
-    throw new TypeError("action is not a registered operator request");
-  }
-  const expectedRevision = requireRevision(input.expectedRevision);
+  const proposal = buildOperationProposal({
+    operationId: input.operationId,
+    subjectId: input.subjectId,
+    action: input.action,
+    expectedRevision: input.expectedRevision,
+  });
   return Object.freeze({
     localSchema: LOCAL_OPERATION_PROPOSAL_SCHEMA,
-    operationId,
-    subjectId,
-    action: input.action,
-    expectedRevision,
+    operationId: proposal.operationId,
+    subjectId: proposal.subjectId,
+    action: proposal.action,
+    expectedRevision: proposal.expectedRevision,
     authorityGranted: false,
     directStoreWrite: false,
   });
