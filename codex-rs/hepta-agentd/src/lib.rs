@@ -80,3 +80,7 @@ pub use runtime::run;
 use control::AgentdControlServer;
 use event_buffer::EventBuffer;
 use state::AgentdState;
+
+#[cfg(test)]
+#[path = "cognitive_finalization_tests.rs"]
+mod cognitive_finalization_tests;
