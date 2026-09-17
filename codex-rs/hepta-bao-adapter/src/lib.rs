@@ -1,9 +1,8 @@
-//! Opaque HeptaBao secret-reference boundary.
+//! Opaque HeptaBao secret-reference and dynamic lease boundary.
 //!
-//! The boundary exposes no raw-secret payload field: V1 accepts only bounded
-//! reference identifiers, digests and permission observations. It cannot
-//! dispatch. The separate HTTPS consumer requires kernel-owned, independently
-//! signed final-use authority; permission projections never enable it.
+//! The boundary exposes no raw-secret payload field in ordinary receipts. The
+//! HTTPS consumers require kernel-owned, independently signed final-use
+//! authority; permission projections never enable provider dispatch.
 
 #![forbid(unsafe_code)]
 
@@ -15,6 +14,7 @@ use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
 
 mod https_consumer;
+mod lease;
 mod secret_boundary_v1;
 
 pub use https_consumer::BaoClient;
@@ -22,6 +22,23 @@ pub use https_consumer::BaoClientError;
 pub use https_consumer::BaoReadRequest;
 pub use https_consumer::BaoSecretReceipt;
 pub use https_consumer::BaoToken;
+
+pub use lease::BaoDynamicMethod;
+pub use lease::BaoLeaseManager;
+pub use lease::EnrolledSecretConsumer;
+pub use lease::IndeterminateCause;
+pub use lease::ReconcileIndeterminateIssueRequest;
+pub use lease::ReconcileSecretLeaseRequest;
+pub use lease::ReconciliationObservation;
+pub use lease::RenewSecretLeaseRequest;
+pub use lease::RevokeSecretLeaseRequest;
+pub use lease::RevocationObservation;
+pub use lease::SecretLeaseError;
+pub use lease::SecretLeaseMetadata;
+pub use lease::SecretLeaseReceipt;
+pub use lease::SecretLeaseRequest;
+pub use lease::SecretLeaseState;
+pub use lease::SecretLeaseView;
 
 pub use secret_boundary_v1::AUTHBUS_POLICY_PRODUCER_ID;
 pub use secret_boundary_v1::HEPTABAO_BACKEND_ID;
@@ -48,6 +65,8 @@ pub struct SecretReference {
     pub secret_digest: Digest32,
 }
 
+/// Legacy V1 metadata projection. This is not the dynamic-provider
+/// [`SecretLeaseMetadata`] record and is retained for compatibility only.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct SecretLease {
     pub lease_id: StableId,
