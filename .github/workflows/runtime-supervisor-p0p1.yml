@@ -1,0 +1,51 @@
+name: runtime supervisor p0 p1 closure
+
+on:
+  push:
+    branches:
+      - fix/runtime-supervisor-p0-p1-closure
+    paths:
+      - .github/runtime-supervisor-patch-a.py
+      - .github/runtime-supervisor-patch-b.py
+      - .github/workflows/runtime-supervisor-p0p1.yml
+
+permissions:
+  contents: write
+
+jobs:
+  apply-and-verify:
+    if: ${{ !contains(github.event.head_commit.message, '[runtime-supervisor-applied]') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: fix/runtime-supervisor-p0-p1-closure
+          fetch-depth: 0
+      - name: Apply source patch
+        run: |
+          python3 .github/runtime-supervisor-patch-a.py
+          python3 .github/runtime-supervisor-patch-b.py
+      - name: Remove one-shot patch machinery
+        run: |
+          rm .github/runtime-supervisor-patch-a.py
+          rm .github/runtime-supervisor-patch-b.py
+          rm .github/workflows/runtime-supervisor-p0p1.yml
+      - name: Format supervisor crate
+        working-directory: codex-rs
+        run: cargo fmt --package codex-hepta-supervisor
+      - name: Test supervisor crate
+        working-directory: codex-rs
+        run: cargo test -p codex-hepta-supervisor --all-features
+      - name: Check downstream supervisor consumers
+        working-directory: codex-rs
+        run: cargo check -p codex-hepta-agentd -p codex-hepta-matrixd
+      - name: Check patch whitespace
+        run: git diff --check
+      - name: Commit verified patch
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "fix(runtime.supervisor): close restart and signed mutation gaps [runtime-supervisor-applied]"
+          git push origin HEAD:fix/runtime-supervisor-p0-p1-closure
