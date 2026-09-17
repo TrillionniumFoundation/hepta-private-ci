@@ -6,8 +6,13 @@ use std::path::PathBuf;
 use std::sync::atomic::AtomicU64;
 use std::sync::atomic::Ordering;
 
+#[cfg(unix)]
+use std::os::unix::fs::symlink;
+
 use codex_hepta_types::Digest32;
 
+use super::JOURNAL_FILE;
+use super::LOCK_FILE;
 use super::NduProjectionStoreError;
 use super::NduProjectionStoreV1;
 use super::TEMP_FILE;
@@ -237,4 +242,49 @@ fn indeterminate_handle_fails_closed_until_reopen() {
     let reopened = must(NduProjectionStoreV1::open(&root.0));
     assert!(!reopened.is_indeterminate());
     assert!(must(reopened.entries()).is_empty());
+}
+
+#[cfg(unix)]
+#[test]
+fn symlinked_root_lock_and_journal_paths_fail_closed() {
+    let target_root = TempRoot::new("symlink-target");
+    let target_file = target_root.0.join("outside-file");
+    File::create(&target_file).expect("create symlink target");
+
+    let root_link = std::env::temp_dir().join(format!(
+        "hepta-ndu-root-link-{}-{}",
+        std::process::id(),
+        NONCE.fetch_add(1, Ordering::Relaxed)
+    ));
+    symlink(&target_root.0, &root_link).expect("create root symlink");
+    assert_eq!(
+        NduProjectionStoreV1::open(&root_link)
+            .err()
+            .expect("symlinked root must reject"),
+        NduProjectionStoreError::Symlink
+    );
+    fs::remove_file(&root_link).expect("remove root symlink");
+
+    let lock_root = TempRoot::new("symlink-lock");
+    symlink(&target_file, lock_root.0.join(LOCK_FILE)).expect("create lock symlink");
+    assert_eq!(
+        NduProjectionStoreV1::open(&lock_root.0)
+            .err()
+            .expect("symlinked lock must reject"),
+        NduProjectionStoreError::Symlink
+    );
+
+    let journal_root = TempRoot::new("symlink-journal");
+    {
+        let store = must(NduProjectionStoreV1::open(&journal_root.0));
+        drop(store);
+    }
+    fs::remove_file(journal_root.0.join(JOURNAL_FILE)).expect("remove journal fixture");
+    symlink(&target_file, journal_root.0.join(JOURNAL_FILE)).expect("create journal symlink");
+    assert_eq!(
+        NduProjectionStoreV1::open(&journal_root.0)
+            .err()
+            .expect("symlinked journal must reject"),
+        NduProjectionStoreError::Symlink
+    );
 }
