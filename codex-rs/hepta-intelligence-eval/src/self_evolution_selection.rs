@@ -2,7 +2,7 @@
 //!
 //! This module does not activate, promote, merge or release anything. It turns
 //! authenticated held-out evaluation into a selector-signed, authority-free
-//! receipt that a separate runtime control owner can consume for an exact
+//! witness that a separate runtime control owner can consume for an exact
 //! next-generation adoption. The no-change baseline is host policy, never a
 //! candidate-supplied convenience baseline.
 
@@ -21,6 +21,7 @@ use codex_hepta_learning_ledger::verify_verified_role_separation;
 use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
+use codex_hepta_types::SelfEvolutionSelectionWitnessV1;
 use codex_hepta_types::StableId;
 
 use crate::IndependentEvaluationBundleV1;
@@ -34,11 +35,11 @@ use crate::evaluation_signing_payload_v2;
 
 const MAX_DATASET_RECORDS: u32 = 1_000_000;
 
+pub type SelfEvolutionSelectionReceiptV1 = SelfEvolutionSelectionWitnessV1;
+
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct SelfEvolutionSelectionPolicyV1 {
-    /// Registered incumbent/no-change candidate for this evaluation scope.
     pub no_change_baseline_id: StableId,
-    /// Refuse statistically tiny snapshots even when every other receipt exists.
     pub minimum_dataset_records: u32,
 }
 
@@ -51,26 +52,6 @@ pub struct SelfEvolutionSelectionRequestV1 {
     pub candidate_generation: Generation,
     pub candidate_artifact_digest: Digest32,
     pub rollback_digest: Digest32,
-}
-
-#[derive(Clone, Debug, Eq, PartialEq)]
-pub struct SelfEvolutionSelectionReceiptV1 {
-    pub selection_id: StableId,
-    pub predecessor_id: StableId,
-    pub predecessor_generation: Generation,
-    pub candidate_id: StableId,
-    pub candidate_generation: Generation,
-    pub candidate_artifact_digest: Digest32,
-    pub rollback_digest: Digest32,
-    pub no_change_baseline_id: StableId,
-    pub dataset_digest: Digest32,
-    pub ledger_head_digest: Digest32,
-    pub evaluation_evidence_digest: Digest32,
-    pub evaluation_authentication_digest: Digest32,
-    pub selector_id: StableId,
-    pub selector_evidence_digest: Digest32,
-    pub selection_digest: Digest32,
-    pub authority: AuthorityPosture,
 }
 
 pub fn selection_signing_payload_v1(
@@ -167,7 +148,8 @@ pub fn select_self_evolution_v1(
         evaluation_bundle.frozen_plan.plan_digest.as_array(),
         now,
     )?;
-    let evaluator_payload = evaluation_signing_payload_v2(&evaluation_bundle, &metric_roles)?;
+    let evaluator_payload = evaluation_signing_payload_v2(&evaluation_bundle, &metric_roles)
+        .map_err(SignedEvaluationError::Evaluation)?;
     let evaluator = verifier.verify(
         LearningEvidenceRoleV1::Evaluator,
         &evaluation_evidence.evaluator_bundle,
@@ -197,7 +179,7 @@ pub fn select_self_evolution_v1(
     receipt_bytes.extend_from_slice(&selector_evidence.signature);
     let selection_digest = Digest32::of_bytes(&receipt_bytes);
 
-    Ok(SelfEvolutionSelectionReceiptV1 {
+    Ok(SelfEvolutionSelectionWitnessV1 {
         selection_id: request.selection_id,
         predecessor_id: request.predecessor_id,
         predecessor_generation: request.predecessor_generation,
