@@ -31,6 +31,8 @@ pub enum NduError {
     InvalidEta,
     DimensionMismatch,
     StateDigestMismatch,
+    InvalidSolverReceipt,
+    PreferenceSolverUnavailable,
     SimultaneousHierarchyUpdate(u64),
     Arithmetic,
 }
@@ -64,7 +66,11 @@ impl NduError {
             Self::AbstainInfeasible => "NDU-E005",
             Self::MissingAbstainCandidate => "NDU-E006",
             Self::IncompleteScalarization | Self::InvalidWeight(_) => "NDU-E007",
-            Self::InvalidEta | Self::DimensionMismatch | Self::StateDigestMismatch => "NDU-E008",
+            Self::InvalidEta
+            | Self::DimensionMismatch
+            | Self::StateDigestMismatch
+            | Self::InvalidSolverReceipt
+            | Self::PreferenceSolverUnavailable => "NDU-E008",
             Self::SimultaneousHierarchyUpdate(_) => "NDU-E009",
             Self::Arithmetic => "NDU-E010",
         }
@@ -148,6 +154,10 @@ impl fmt::Display for NduError {
             }
             Self::DimensionMismatch => formatter.write_str("preference dimensions do not match"),
             Self::StateDigestMismatch => formatter.write_str("preference state digest mismatch"),
+            Self::InvalidSolverReceipt => formatter.write_str("local solver receipt violates NDU invariants"),
+            Self::PreferenceSolverUnavailable => formatter.write_str(
+                "preference solver exhausted the registered iteration bound and is unavailable",
+            ),
             Self::SimultaneousHierarchyUpdate(generation) => write!(
                 formatter,
                 "multiple hierarchy levels update in generation {generation}"
