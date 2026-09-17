@@ -1,9 +1,11 @@
 //! Governed plasticity proposal records.
 //!
-//! New writes are parameter-only V2 candidate sets. Historical parameter and
-//! topology V1 records are read-only. Proposals are next-generation,
-//! qualification-only artifacts; this crate has no API for runtime mutation,
-//! authority mutation, self-promotion or release.
+//! The native parameter V2 record remains the durable compatibility shape.
+//! Governed V3 adds in-crate candidate generation, authenticated evidence and
+//! independent evaluation admission before that record is written. Topology V2
+//! provides an authority-free next-snapshot structural proposal path. Historical
+//! V1 records remain read-only. No API in this crate activates, selects,
+//! self-promotes, releases, or mutates the selected runtime artifact.
 
 #![forbid(unsafe_code)]
 
@@ -14,15 +16,32 @@ pub use durable_registry::DurableProposalRegistry;
 pub use durable_registry::DurableProposalRegistryError;
 pub use durable_registry::DurableRegistryAnchorV1;
 
+mod governed_v3;
 mod legacy;
 mod parameter_v2;
 mod registry;
+mod topology_v2;
 mod types;
 
+pub use governed_v3::GeneratedParameterCandidateSetV3;
+pub use governed_v3::GovernedParameterProposalRequestV3;
+pub use governed_v3::GovernedParameterProposalV3;
+pub use governed_v3::GovernedProposalError;
+pub use governed_v3::ParameterEvidenceBindingV3;
+pub use governed_v3::ParameterGenerationPolicyV3;
+pub use governed_v3::ParameterOpportunityV3;
+pub use governed_v3::candidate_completeness_signing_payload_v3;
+pub use governed_v3::evidence_binding_signing_payload_v3;
+pub use governed_v3::generate_parameter_candidates_v3;
+pub use governed_v3::propose_governed_v3;
 pub use parameter_v2::propose_v2;
 pub use parameter_v2::verify_parameter_proposal_v2;
 pub use registry::ProposalRegistry;
 pub use registry::ProposalRegistrySlotV2;
+pub use topology_v2::TopologyProposalRequestV2;
+pub use topology_v2::TopologyProposalV2;
+pub use topology_v2::propose_topology_v2;
+pub use topology_v2::verify_topology_proposal_v2;
 pub use types::AppendDisposition;
 pub use types::CandidateNormMetricsV2;
 pub use types::Error;
