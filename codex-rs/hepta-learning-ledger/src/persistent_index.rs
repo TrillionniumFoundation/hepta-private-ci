@@ -363,7 +363,9 @@ impl PersistentHistoricalIndexV1 {
     }
 
     fn path(&self, namespace: &str, logical_key: &[u8]) -> PathBuf {
-        self.root.join(namespace).join(key_digest_hex(namespace, logical_key))
+        self.root
+            .join(namespace)
+            .join(key_digest_hex(namespace, logical_key))
     }
 
     fn cache_insert(&mut self, key: String, value: Vec<u8>) {
@@ -532,7 +534,9 @@ impl PersistentIndexedLearningLedgerV1 {
             if self.history.is_revoked(&decision.record_id)? {
                 self.core.revoked.insert(decision.record_id.clone());
             }
-            self.core.decisions.insert(value.episode_id.clone(), decision);
+            self.core
+                .decisions
+                .insert(value.episode_id.clone(), decision);
         }
         Ok(())
     }
@@ -559,7 +563,9 @@ impl PersistentIndexedLearningLedgerV1 {
             if self.history.is_revoked(&decision.record_id)? {
                 self.core.revoked.insert(decision.record_id.clone());
             }
-            self.core.decisions.insert(value.episode_id.clone(), decision);
+            self.core
+                .decisions
+                .insert(value.episode_id.clone(), decision);
         }
         if let Some(outcome) = self.history.outcome(&value.outcome_id)? {
             if self.history.is_revoked(&outcome.record_id)? {
@@ -746,7 +752,8 @@ fn decode_record_index(bytes: &[u8]) -> Result<HistoricalRecordIndex, Persistent
             .try_into()
             .map_err(|_| PersistentIndexErrorV1::Corrupt)?,
     );
-    let sequence = LogicalSequence::new(sequence_value).map_err(|_| PersistentIndexErrorV1::Corrupt)?;
+    let sequence =
+        LogicalSequence::new(sequence_value).map_err(|_| PersistentIndexErrorV1::Corrupt)?;
     Ok(HistoricalRecordIndex {
         sequence,
         predecessor_chain_digest: digest_from(&bytes[8..40])?,
@@ -938,7 +945,9 @@ mod tests {
         let root = temp_root();
         let mut store = PersistentHistoricalIndexV1::open(&root, 1).expect("open store");
         let record_id = id("record");
-        store.put_record(&record_id, &index(1)).expect("first write");
+        store
+            .put_record(&record_id, &index(1))
+            .expect("first write");
         assert!(matches!(
             store.put_record(&record_id, &index(2)),
             Err(PersistentIndexErrorV1::Corrupt)
