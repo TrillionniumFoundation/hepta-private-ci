@@ -18,6 +18,8 @@ use super::MAX_RESPONSE_BYTES;
 use crate::lease_registry::SecretLeaseRegistry;
 use crate::lease_types::DynamicSecretLeaseRequest;
 use crate::lease_types::DynamicSecretValues;
+use crate::lease_types::LeaseOperationKind;
+use crate::lease_types::LeaseOperationState;
 use crate::lease_types::LeaseReconcileRequest;
 use crate::lease_types::LeaseRenewRequest;
 use crate::lease_types::LeaseRevokeRequest;
@@ -37,8 +39,6 @@ use crate::lease_types::valid_operation_id;
 use crate::lease_types::valid_segmented;
 
 impl BaoClient {
-    /// Bind one provider-native dynamic-secret issuance. The external issuer
-    /// signs this exact operation before any provider request occurs.
     pub fn dynamic_secret_lease_binding(
         &self,
         request: &DynamicSecretLeaseRequest,
@@ -120,13 +120,7 @@ impl BaoClient {
         &self,
         request: &LeaseReconcileRequest,
     ) -> Result<FinalUseBinding, SecretLeaseError> {
-        validate_common_lease_request(
-            &request.subject_id,
-            &request.consumer_id,
-            &request.operation_id,
-            &request.namespace,
-            &request.lease_id,
-        )?;
+        validate_reconcile_request(request)?;
         operation_binding(
             self,
             "hepta.bao.lease.lookup.v1",
@@ -135,7 +129,7 @@ impl BaoClient {
             &request.namespace,
             &request.operation_id,
             &request.lease_id,
-            &(),
+            &(request.target_operation_id.as_str(),),
         )
     }
 
@@ -173,9 +167,8 @@ impl BaoClient {
         ))
     }
 
-    /// Issue one provider-native dynamic secret, durably record its operation
-    /// before dispatch, and deliver only the requested string fields to the
-    /// trusted final consumer. The provider request is never retried here.
+    /// Issue one provider-native dynamic secret. The operation is durably
+    /// fenced as uncertain before dispatch and is never retried automatically.
     pub async fn request_secret_lease(
         &self,
         registry: &SecretLeaseRegistry,
@@ -201,7 +194,6 @@ impl BaoClient {
                 return Err(SecretLeaseError::OutcomeIndeterminate);
             }
         };
-
         if response.status().is_client_error() {
             let status = response.status();
             registry.reject_issue(&normalized.operation_id, now_ms()?)?;
@@ -252,8 +244,6 @@ impl BaoClient {
             observed_at_unix_ms: observed_at,
             expires_at_unix_ms: expiry(observed_at, decoded.lease_duration)?,
             rotation_generation: 1,
-            // Until final-use delivery finishes and its success is durably
-            // recorded, the safest recoverable state is cleanup-required.
             state: SecretLeaseState::RevokeRequired,
             request_sha256: binding.request_sha256,
             scope_sha256: binding.scope_sha256,
@@ -277,9 +267,6 @@ impl BaoClient {
         match authority.with_verified_use(verified, &binding, || consumer(&values)) {
             Ok(Ok(())) => {
                 metadata.state = SecretLeaseState::Active;
-                // The callback may already have produced an effect. If this
-                // final durable write fails, surface consumer uncertainty;
-                // the last committed registry state remains OutcomeUnknown.
                 registry
                     .complete_issue(metadata.clone(), now_ms()?)
                     .map_err(|_| SecretLeaseError::ConsumerIndeterminate)?;
@@ -298,8 +285,6 @@ impl BaoClient {
         }
     }
 
-    /// Renew one known lease. Transport loss or a non-definitive response
-    /// leaves `RenewOutcomeUnknown`; callers reconcile instead of retrying.
     pub async fn renew_secret_lease(
         &self,
         registry: &SecretLeaseRegistry,
@@ -336,17 +321,18 @@ impl BaoClient {
             now_ms()?,
         )?;
 
-        let url = system_url(self, &["sys", "leases", "renew"])?;
-        let network_request = authenticated_post(
+        let response = authenticated_post(
             self,
-            url,
+            system_url(self, &["sys", "leases", "renew"] )?,
             &request.namespace,
             &serde_json::json!({
                 "lease_id": request.lease_id.as_str(),
                 "increment": request.increment_seconds,
             }),
-        )?;
-        let response = match network_request.send().await {
+        )?
+        .send()
+        .await;
+        let response = match response {
             Ok(response) => response,
             Err(_) => {
                 registry.touch_unknown(&request.operation_id, now_ms()?)?;
@@ -400,8 +386,6 @@ impl BaoClient {
         }
     }
 
-    /// Synchronously revoke one known provider lease. An uncertain result is
-    /// never treated as success or automatically retried.
     pub async fn revoke_secret_lease(
         &self,
         registry: &SecretLeaseRegistry,
@@ -441,17 +425,18 @@ impl BaoClient {
             now_ms()?,
         )?;
 
-        let url = system_url(self, &["sys", "leases", "revoke"])?;
-        let network_request = authenticated_post(
+        let response = authenticated_post(
             self,
-            url,
+            system_url(self, &["sys", "leases", "revoke"] )?,
             &request.namespace,
             &serde_json::json!({
                 "lease_id": request.lease_id.as_str(),
                 "sync": true,
             }),
-        )?;
-        let response = match network_request.send().await {
+        )?
+        .send()
+        .await;
+        let response = match response {
             Ok(response) => response,
             Err(_) => {
                 registry.touch_unknown(&request.operation_id, now_ms()?)?;
@@ -476,9 +461,6 @@ impl BaoClient {
         Ok(revocation_observation(&metadata))
     }
 
-    /// Resolve a known renew/revoke ambiguity through the provider lease lookup
-    /// endpoint. Lookup is read-only and therefore is safe to repeat under a
-    /// fresh operation ID/grant if the lookup itself fails.
     pub async fn reconcile_secret_lease(
         &self,
         registry: &SecretLeaseRegistry,
@@ -486,37 +468,48 @@ impl BaoClient {
         grant: &SignedFinalUseGrant,
         request: &LeaseReconcileRequest,
     ) -> Result<SecretLeaseMetadata, SecretLeaseError> {
-        validate_common_lease_request(
-            &request.subject_id,
-            &request.consumer_id,
-            &request.operation_id,
-            &request.namespace,
-            &request.lease_id,
-        )?;
-        require_matching_lease(
+        validate_reconcile_request(request)?;
+        let current = require_matching_lease(
             registry,
             &request.lease_id,
             &request.subject_id,
             &request.consumer_id,
             &request.namespace,
         )?;
+        let expected_kind = match current.state {
+            SecretLeaseState::RenewOutcomeUnknown => LeaseOperationKind::Renew,
+            SecretLeaseState::RevokeOutcomeUnknown => LeaseOperationKind::Revoke,
+            _ => return Err(SecretLeaseError::ReconciliationRequired),
+        };
+        let target = registry
+            .operation(&request.target_operation_id)?
+            .ok_or(SecretLeaseError::ReconciliationRequired)?;
+        if target.kind != expected_kind
+            || target.state != LeaseOperationState::OutcomeUnknown
+            || target.lease_id.as_deref() != Some(request.lease_id.as_str())
+        {
+            return Err(SecretLeaseError::ReconciliationRequired);
+        }
 
         let binding = self.lease_reconcile_binding(request)?;
         registry.preflight_operation(&request.operation_id, binding.request_sha256)?;
         let _verified = authority
             .claim(grant, &binding)
             .map_err(SecretLeaseError::Authority)?;
-        let url = system_url(self, &["sys", "leases", "lookup"])?;
-        let network_request = authenticated_post(
+        let response = authenticated_post(
             self,
-            url,
+            system_url(self, &["sys", "leases", "lookup"] )?,
             &request.namespace,
             &serde_json::json!({"lease_id": request.lease_id.as_str()}),
-        )?;
-        let response = network_request.send().await.map_err(transport_error)?;
+        )?
+        .send()
+        .await
+        .map_err(transport_error)?;
+
         if response.status() == StatusCode::NOT_FOUND {
             return registry.reconcile_absent(
                 &request.operation_id,
+                &request.target_operation_id,
                 binding.request_sha256,
                 &request.lease_id,
                 &request.subject_id,
@@ -541,6 +534,7 @@ impl BaoClient {
         }
         registry.reconcile_active(
             &request.operation_id,
+            &request.target_operation_id,
             binding.request_sha256,
             &request.lease_id,
             &request.subject_id,
@@ -551,9 +545,6 @@ impl BaoClient {
         )
     }
 
-    /// Resolve an issuance whose HTTP acknowledgement was lost before a lease
-    /// ID became durable locally. The supplied resolution is itself a signed
-    /// exact operation and must come from independent provider/audit inspection.
     pub fn resolve_unknown_secret_issue(
         &self,
         registry: &SecretLeaseRegistry,
@@ -660,6 +651,22 @@ fn validate_renew_request(request: &LeaseRenewRequest) -> Result<(), SecretLease
         &request.lease_id,
     )?;
     if request.increment_seconds > MAX_LEASE_TTL_SECONDS {
+        return Err(SecretLeaseError::InvalidRequest);
+    }
+    Ok(())
+}
+
+fn validate_reconcile_request(request: &LeaseReconcileRequest) -> Result<(), SecretLeaseError> {
+    validate_common_lease_request(
+        &request.subject_id,
+        &request.consumer_id,
+        &request.operation_id,
+        &request.namespace,
+        &request.lease_id,
+    )?;
+    if !valid_operation_id(&request.target_operation_id)
+        || request.target_operation_id == request.operation_id
+    {
         return Err(SecretLeaseError::InvalidRequest);
     }
     Ok(())
