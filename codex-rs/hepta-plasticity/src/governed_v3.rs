@@ -1,11 +1,11 @@
 //! Authenticated, generator-complete parameter proposal admission.
 //!
 //! This layer turns the parameter-only V2 record into a governed proposal path:
-//! candidates are generated inside this crate, dataset/artifact lineage is
-//! checked against owner receipts, generator/source/evaluator identities are
-//! authenticated by a host-owned trust snapshot, and only independently
-//! eligible candidate sets can be persisted. The result remains authority-free;
-//! it does not select, activate, promote, release, or mutate the selected model.
+//! candidates are generated inside this crate, owner evidence is actively
+//! resolved, dataset/artifact lineage is checked, and generator/source/evaluator
+//! identities are authenticated by a host-owned trust snapshot. The result
+//! remains authority-free; it does not select, activate, promote, release, or
+//! mutate the selected model.
 
 use std::collections::{BTreeMap, BTreeSet};
 use std::error::Error as StdError;
@@ -25,6 +25,10 @@ use codex_hepta_learning_ledger::{
 };
 use codex_hepta_types::{Digest32, FixedQ32, Generation, StableId};
 
+use crate::evidence_v3::{
+    PlasticityEvidenceKindV3, PlasticityEvidencePortErrorV3, PlasticityEvidencePortV3,
+    PlasticityEvidenceQueryV3, verify_plasticity_evidence_v3,
+};
 use crate::parameter_v2::within_relative_limit;
 use crate::types::{
     GLOBAL_MAX_RELATIVE_PPM, MAX_CANDIDATES, MAX_NORM_LAYERS, MAX_PARAMETER_DELTAS,
@@ -111,6 +115,7 @@ pub struct GovernedParameterProposalV3 {
     pub completeness: CandidateSetCompletenessReceiptV1,
     pub completeness_digest: Digest32,
     pub artifact_registry_head_digest: Digest32,
+    pub evidence_verification_digest: Digest32,
     pub source_authentication_digest: Digest32,
     pub generator_authentication_digest: Digest32,
     pub evaluation: SignedEvaluationDecisionV1,
@@ -127,6 +132,7 @@ pub enum GovernedProposalError {
     Dataset(DatasetReceiptError),
     Completeness(CausalV2Error),
     Evidence(SignedEvidenceError),
+    EvidencePort(PlasticityEvidencePortErrorV3),
     Evaluation(SignedEvaluationError),
     EvaluationIneligible(IndependentEvaluationDispositionV1),
 }
@@ -155,6 +161,11 @@ impl From<CausalV2Error> for GovernedProposalError {
 impl From<SignedEvidenceError> for GovernedProposalError {
     fn from(value: SignedEvidenceError) -> Self {
         Self::Evidence(value)
+    }
+}
+impl From<PlasticityEvidencePortErrorV3> for GovernedProposalError {
+    fn from(value: PlasticityEvidencePortErrorV3) -> Self {
+        Self::EvidencePort(value)
     }
 }
 impl From<SignedEvaluationError> for GovernedProposalError {
@@ -218,7 +229,12 @@ pub fn generate_parameter_candidates_v3(
                 .then_with(|| left.parameter_id.cmp(&right.parameter_id))
         });
         deltas = project_into_trust_region(deltas, &binding.norm_layers)?;
-        if deltas.is_empty() {
+        if deltas.is_empty()
+            || candidates.iter().any(|candidate| {
+                candidate.kind == ParameterCandidateKindV2::Update
+                    && candidate.parameter_deltas == deltas
+            })
+        {
             continue;
         }
         candidates.push(ParameterCandidateRequestV2 {
@@ -361,10 +377,19 @@ pub fn propose_governed_v3(
     request: GovernedParameterProposalRequestV3<'_>,
     verifier: &LearningEvidenceVerifierV1,
     artifacts: &ArtifactRegistry,
+    evidence_port: &dyn PlasticityEvidencePortV3,
     now: u64,
 ) -> Result<GovernedParameterProposalV3, GovernedProposalError> {
     let binding = &request.binding;
     validate_binding_shape(binding)?;
+    if request.source_evidence.objective_digest != binding.objective_digest
+        || request.generator_evidence.objective_digest != binding.objective_digest
+    {
+        return Err(GovernedProposalError::Binding(
+            "signed learning evidence objective",
+        ));
+    }
+
     let manifest = artifacts
         .manifest(&binding.selected_artifact_id)
         .ok_or(GovernedProposalError::Artifact("selected artifact missing"))?;
@@ -399,6 +424,7 @@ pub fn propose_governed_v3(
         .records()
         .last()
         .map_or(Digest32::ZERO, |record| record.chain_digest);
+    let evidence_verification_digest = verify_required_evidence_v3(binding, evidence_port, now)?;
     let source_payload = evidence_binding_signing_payload_v3(
         binding,
         artifact_registry_head_digest,
@@ -412,10 +438,13 @@ pub fn propose_governed_v3(
     )?;
     let source_authentication_digest = attestation_digest(request.source_evidence);
 
+    let mut generator_state = b"hepta.plasticity.generator-state.v3\0".to_vec();
+    generator_state.extend_from_slice(Digest32::of_bytes(&source_payload).as_array());
+    generator_state.extend_from_slice(evidence_verification_digest.as_array());
     let generated = generate_parameter_candidates_v3(
         binding,
         &request.generation_policy,
-        Digest32::of_bytes(&source_payload),
+        Digest32::of_bytes(&generator_state),
     )?;
     if generated.completeness.omitted_count_bound != 0
         || generated.completeness.candidate_count
@@ -469,6 +498,7 @@ pub fn propose_governed_v3(
 
     let admission_digest = digest_admission(
         artifact_registry_head_digest,
+        evidence_verification_digest,
         completeness_digest,
         source_authentication_digest,
         generator_authentication_digest,
@@ -499,11 +529,84 @@ pub fn propose_governed_v3(
         completeness: generated.completeness,
         completeness_digest,
         artifact_registry_head_digest,
+        evidence_verification_digest,
         source_authentication_digest,
         generator_authentication_digest,
         evaluation,
         admission_digest,
     })
+}
+
+fn verify_required_evidence_v3(
+    binding: &ParameterEvidenceBindingV3,
+    evidence_port: &dyn PlasticityEvidencePortV3,
+    now: u64,
+) -> Result<Digest32, GovernedProposalError> {
+    let mut verification_digests = Vec::with_capacity(4 + binding.opportunities.len());
+    for (kind, evidence_digest) in [
+        (PlasticityEvidenceKindV3::UpdateRule, binding.update_rule_digest),
+        (PlasticityEvidenceKindV3::Modulator, binding.modulator_digest),
+        (
+            PlasticityEvidenceKindV3::ModulatorBroadcast,
+            binding.modulator_broadcast_digest,
+        ),
+        (PlasticityEvidenceKindV3::Eligibility, binding.eligibility_digest),
+    ] {
+        verification_digests.push(verify_plasticity_evidence_v3(
+            evidence_port,
+            &evidence_query(binding, kind, evidence_digest, None, None, now),
+        )?);
+    }
+
+    let mut opportunities = binding.opportunities.iter().collect::<Vec<_>>();
+    opportunities.sort_by(|left, right| {
+        left.layer_id
+            .cmp(&right.layer_id)
+            .then_with(|| left.parameter_id.cmp(&right.parameter_id))
+    });
+    for opportunity in opportunities {
+        verification_digests.push(verify_plasticity_evidence_v3(
+            evidence_port,
+            &evidence_query(
+                binding,
+                PlasticityEvidenceKindV3::ParameterOpportunity,
+                opportunity.evidence_digest,
+                Some(opportunity.layer_id.clone()),
+                Some(opportunity.parameter_id.clone()),
+                now,
+            ),
+        )?);
+    }
+
+    let mut bytes = b"hepta.plasticity.evidence-verification-set.v3\0".to_vec();
+    push_len(&mut bytes, verification_digests.len())?;
+    for digest in verification_digests {
+        bytes.extend_from_slice(digest.as_array());
+    }
+    Ok(Digest32::of_bytes(&bytes))
+}
+
+fn evidence_query(
+    binding: &ParameterEvidenceBindingV3,
+    kind: PlasticityEvidenceKindV3,
+    evidence_digest: Digest32,
+    layer_id: Option<StableId>,
+    parameter_id: Option<StableId>,
+    now: u64,
+) -> PlasticityEvidenceQueryV3 {
+    PlasticityEvidenceQueryV3 {
+        kind,
+        evidence_digest,
+        objective_digest: binding.objective_digest,
+        selected_artifact_digest: binding.selected_artifact_digest,
+        window_id: binding.window.window_id.clone(),
+        window_digest: binding.window.window_digest,
+        dataset_digest: binding.dataset_digest,
+        baseline_generation: binding.baseline_generation,
+        layer_id,
+        parameter_id,
+        now,
+    }
 }
 
 fn validate_binding_shape(
@@ -574,7 +677,7 @@ fn validate_generation_inputs(
     if state_digest.is_zero() {
         return Err(GovernedProposalError::Binding("empty generator state"));
     }
-    if policy.learning_rate == FixedQ32::ZERO
+    if policy.learning_rate <= FixedQ32::ZERO
         || policy.generator_code_digest.is_zero()
         || policy.grammar_digest.is_zero()
         || policy.hard_filter_digest.is_zero()
@@ -617,7 +720,11 @@ fn project_into_trust_region(
         for delta in &mut deltas {
             delta.delta = FixedQ32::from_raw(delta.delta.raw() / 2);
         }
-        deltas.retain(|delta| delta.delta != FixedQ32::ZERO);
+        deltas.retain(|delta| {
+            delta.delta != FixedQ32::ZERO
+                && delta.delta >= delta.lower_bound
+                && delta.delta <= delta.upper_bound
+        });
         if deltas.is_empty() {
             return Ok(deltas);
         }
@@ -722,6 +829,7 @@ fn attestation_digest(evidence: &SignedLearningEvidenceV1) -> Digest32 {
 
 fn digest_admission(
     artifact_registry_head_digest: Digest32,
+    evidence_verification_digest: Digest32,
     completeness_digest: Digest32,
     source_authentication_digest: Digest32,
     generator_authentication_digest: Digest32,
@@ -731,6 +839,7 @@ fn digest_admission(
     let mut bytes = b"hepta.plasticity.governed-admission.v3\0".to_vec();
     for digest in [
         artifact_registry_head_digest,
+        evidence_verification_digest,
         completeness_digest,
         source_authentication_digest,
         generator_authentication_digest,
