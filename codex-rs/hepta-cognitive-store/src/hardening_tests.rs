@@ -206,6 +206,40 @@ fn forget_succeeds_after_ordinary_admission_capacity_is_full() {
 }
 
 #[test]
+fn original_intent_retry_survives_later_correction_and_full_capacity() {
+    let mut store = store(2);
+    let first = candidate(
+        "memory:1",
+        "content:v1",
+        MemoryAdmissionKind::Observation,
+        MemoryVerificationState::Verified,
+    );
+    let first_intent = intent(&store, "intent:1", &first);
+    let original = store
+        .append_admitted(&Verifier, first.clone(), first_intent.clone())
+        .unwrap_or_else(|error| panic!("first admission: {error}"));
+
+    let correction = candidate(
+        "memory:1",
+        "content:v2",
+        MemoryAdmissionKind::Observation,
+        MemoryVerificationState::Verified,
+    );
+    store
+        .append_admitted(
+            &Verifier,
+            correction.clone(),
+            intent(&store, "intent:2", &correction),
+        )
+        .unwrap_or_else(|error| panic!("correction: {error}"));
+
+    let retry = store
+        .append_admitted(&Verifier, first, first_intent)
+        .unwrap_or_else(|error| panic!("retry original intent: {error}"));
+    assert_eq!(retry, original);
+}
+
+#[test]
 fn ordinary_intent_journal_is_bounded_but_forget_keeps_terminal_reserve() {
     let mut store = store(1);
     let candidate = candidate(
