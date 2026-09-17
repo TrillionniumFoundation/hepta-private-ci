@@ -4,16 +4,27 @@ use std::time::Duration;
 use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
 
+use codex_hepta_contracts::Sha256Digest;
 use codex_hepta_matrix_protocol::MatrixEventId;
+use codex_hepta_matrix_store::MatrixDispatchContext;
+use codex_hepta_matrix_store::MatrixDispatchIntent;
 use codex_hepta_matrix_store::MatrixDurableError;
 use codex_hepta_matrix_store::MatrixDurableStore;
 use codex_hepta_matrix_store::OutboxRecord;
+use codex_hepta_matrix_store::matrix_dispatch_operation_id;
 use tokio_util::sync::CancellationToken;
 
 pub type MatrixSendFuture<'a> =
     Pin<Box<dyn Future<Output = Result<MatrixEventId, MatrixTransportError>> + Send + 'a>>;
 
 pub trait MatrixOutboundTransport: Send + Sync {
+    /// Bind transport/session identity to the durable dispatch record. The
+    /// default keeps deterministic test transports source-compatible while
+    /// making the absence of an external final-use grant explicit.
+    fn dispatch_context(&self, record: &OutboxRecord) -> MatrixDispatchContext {
+        MatrixDispatchContext::local_unverified(record.binding_revision, record.generation)
+    }
+
     fn send<'a>(&'a self, record: &'a OutboxRecord) -> MatrixSendFuture<'a>;
 }
 
@@ -30,6 +41,9 @@ pub struct OutboxDispatchConfig {
     pub lease_ms: u64,
     pub retry_delay_ms: u64,
     pub max_retry_delay_ms: u64,
+    /// Number of fast retries before reconciliation uses the bounded maximum
+    /// delay. It is not permission to turn an unknown external effect into a
+    /// terminal failure.
     pub max_attempts: u64,
     pub claim_limit: usize,
     pub idle_poll: Duration,
@@ -63,8 +77,12 @@ impl OutboxDispatchConfig {
 #[derive(Clone, Copy, Debug, Default, Eq, PartialEq)]
 pub struct OutboxDispatchStats {
     pub claimed: u64,
+    /// Retained for API compatibility. Terminal sends are now settled by a
+    /// trusted Matrix server observation, never by this transport call.
     pub sent: u64,
+    pub accepted_pending_observation: u64,
     pub retry_scheduled: u64,
+    pub indeterminate_held: u64,
     pub permanent_failure: u64,
     pub cancelled: bool,
 }
@@ -96,6 +114,23 @@ pub async fn dispatch_outbox_once<T: MatrixOutboundTransport + ?Sized>(
         ..OutboxDispatchStats::default()
     };
     for record in records {
+        let payload_digest = Sha256Digest::for_bytes(&record.payload).as_str().to_string();
+        let intent = MatrixDispatchIntent {
+            operation_id: matrix_dispatch_operation_id(&record.stable_txn_id),
+            stable_txn_id: record.stable_txn_id.clone(),
+            room_id: record.room_id.clone(),
+            payload_digest,
+            context: transport.dispatch_context(&record),
+        };
+        store
+            .prepare_matrix_dispatch(now_ms, &intent)
+            .await
+            .map_err(store_error)?;
+        store
+            .record_matrix_dispatch_attempt(&record.stable_txn_id, record.attempts, now_ms)
+            .await
+            .map_err(store_error)?;
+
         let result = tokio::select! {
             biased;
             _ = cancel.cancelled() => {
@@ -106,42 +141,46 @@ pub async fn dispatch_outbox_once<T: MatrixOutboundTransport + ?Sized>(
         };
         match result {
             Ok(event_id) => {
+                // SDK/HTTP acknowledgement is evidence of transport acceptance,
+                // not terminal delivery. Keep the outbox claim non-terminal
+                // until /sync or another trusted server observer sees the
+                // matching transaction/event identity.
                 store
-                    .mark_outbox_sent(&record.stable_txn_id, record.attempts, &event_id, now_ms)
+                    .record_matrix_transport_acceptance(
+                        &record.stable_txn_id,
+                        record.attempts,
+                        &event_id,
+                        now_ms,
+                    )
                     .await
                     .map_err(store_error)?;
-                stats.sent += 1;
+                stats.accepted_pending_observation += 1;
             }
             Err(MatrixTransportError::Retryable) => {
+                let next_attempt_at_ms = now_ms
+                    .checked_add(retry_delay_ms(config, record.attempts)?)
+                    .ok_or(OutboxDispatchError::Invalid)?;
+                store
+                    .record_matrix_transport_indeterminate_and_retry(
+                        &record.stable_txn_id,
+                        record.attempts,
+                        now_ms,
+                        next_attempt_at_ms,
+                    )
+                    .await
+                    .map_err(store_error)?;
+                stats.retry_scheduled += 1;
                 if record.attempts >= config.max_attempts {
-                    store
-                        .mark_outbox_permanent_failure(
-                            &record.stable_txn_id,
-                            record.attempts,
-                            now_ms,
-                        )
-                        .await
-                        .map_err(store_error)?;
-                    stats.permanent_failure += 1;
-                } else {
-                    let next_attempt_at_ms = now_ms
-                        .checked_add(retry_delay_ms(config, record.attempts)?)
-                        .ok_or(OutboxDispatchError::Invalid)?;
-                    store
-                        .mark_outbox_retry(
-                            &record.stable_txn_id,
-                            record.attempts,
-                            now_ms,
-                            next_attempt_at_ms,
-                        )
-                        .await
-                        .map_err(store_error)?;
-                    stats.retry_scheduled += 1;
+                    stats.indeterminate_held += 1;
                 }
             }
             Err(MatrixTransportError::Permanent) => {
                 store
-                    .mark_outbox_permanent_failure(&record.stable_txn_id, record.attempts, now_ms)
+                    .record_matrix_transport_rejection(
+                        &record.stable_txn_id,
+                        record.attempts,
+                        now_ms,
+                    )
                     .await
                     .map_err(store_error)?;
                 stats.permanent_failure += 1;
