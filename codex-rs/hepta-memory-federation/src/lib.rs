@@ -216,3 +216,7 @@ fn push_id(bytes: &mut Vec<u8>, value: &StableId) {
 #[cfg(test)]
 #[path = "lib_tests.rs"]
 mod tests;
+
+#[cfg(test)]
+#[path = "v3_orchestrator_tests.rs"]
+mod v3_orchestrator_tests;
