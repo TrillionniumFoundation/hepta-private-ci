@@ -26,6 +26,12 @@ pub trait DurableLearningJournal: sealed::Journal {
         event: LedgerEvent,
     ) -> Result<AppendReceipt, DurableLedgerError>;
 
+    fn append_batch(
+        &mut self,
+        expected_predecessor: Digest32,
+        events: Vec<LedgerEvent>,
+    ) -> Result<Vec<AppendReceipt>, DurableLedgerError>;
+
     fn anchor(&self) -> Result<LedgerAnchor, DurableLedgerError>;
 
     fn snapshot(&self) -> Result<LedgerSnapshot, DurableLedgerError>;
@@ -38,6 +44,14 @@ impl DurableLearningJournal for DurableLedger {
         event: LedgerEvent,
     ) -> Result<AppendReceipt, DurableLedgerError> {
         DurableLedger::append(self, predecessor, event)
+    }
+
+    fn append_batch(
+        &mut self,
+        predecessor: Digest32,
+        events: Vec<LedgerEvent>,
+    ) -> Result<Vec<AppendReceipt>, DurableLedgerError> {
+        DurableLedger::append_batch(self, predecessor, events)
     }
 
     fn anchor(&self) -> Result<LedgerAnchor, DurableLedgerError> {
@@ -66,6 +80,14 @@ impl DurableLearningJournal for SegmentedLedger {
         event: LedgerEvent,
     ) -> Result<AppendReceipt, DurableLedgerError> {
         SegmentedLedger::append(self, predecessor, event)
+    }
+
+    fn append_batch(
+        &mut self,
+        predecessor: Digest32,
+        events: Vec<LedgerEvent>,
+    ) -> Result<Vec<AppendReceipt>, DurableLedgerError> {
+        SegmentedLedger::append_batch(self, predecessor, events)
     }
 
     fn anchor(&self) -> Result<LedgerAnchor, DurableLedgerError> {
