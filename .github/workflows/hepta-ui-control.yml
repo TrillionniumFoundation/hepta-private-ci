@@ -1,0 +1,80 @@
+name: Hepta ui.control qualification
+
+on:
+  pull_request:
+    paths:
+      - "apps/hepta-control-ui/**"
+      - "docs/modules/ui.control/**"
+      - "qualification/module-execution-dossiers/detail/ui.control.md"
+      - ".github/workflows/hepta-ui-control.yml"
+  push:
+    branches: [main]
+    paths:
+      - "apps/hepta-control-ui/**"
+      - "docs/modules/ui.control/**"
+      - "qualification/module-execution-dossiers/detail/ui.control.md"
+      - ".github/workflows/hepta-ui-control.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-ui-control-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  source-head:
+    name: Verify ui.control exact source
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Bind exact source identity
+        env:
+          EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+      - name: Check and test ui.control
+        run: npm --prefix apps/hepta-control-ui run check
+      - name: Build browser package
+        run: npm --prefix apps/hepta-control-ui run build
+      - name: Verify clean source
+        run: |
+          git diff --check
+          test -z "$(git status --porcelain --untracked-files=no)"
+
+  merge-candidate:
+    name: Verify ui.control synthetic merge
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Construct deterministic synthetic merge
+        id: merge
+        uses: ./.github/actions/hepta-synthetic-merge
+        with:
+          base-sha: ${{ github.event.pull_request.base.sha }}
+          source-sha: ${{ github.event.pull_request.head.sha }}
+          pr-number: ${{ github.event.pull_request.number }}
+          author-name: Hepta ui.control CI
+          author-email: hepta-ui-control-ci@users.noreply.github.com
+          message: Synthetic ui.control merge
+      - name: Check merged ui.control
+        env:
+          EXPECTED_SHA: ${{ steps.merge.outputs.sha }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          npm --prefix apps/hepta-control-ui run check
+          npm --prefix apps/hepta-control-ui run build
+          git diff --check
+          test -z "$(git status --porcelain --untracked-files=no)"
