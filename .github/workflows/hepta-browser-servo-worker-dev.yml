@@ -102,10 +102,8 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          cargo metadata --locked --format-version 1 --manifest-path "$WORKER_MANIFEST" \
-            > worker-evidence/cargo-metadata.json
-          cargo tree --locked --manifest-path "$WORKER_MANIFEST" -e features \
-            > worker-evidence/cargo-tree-features.txt
+          cargo metadata --locked --format-version 1 --manifest-path "$WORKER_MANIFEST" > worker-evidence/cargo-metadata.json
+          cargo tree --locked --manifest-path "$WORKER_MANIFEST" -e features > worker-evidence/cargo-tree-features.txt
           if grep -Eq '(^|[[:space:]])webdriver_server([[:space:]]|$)' worker-evidence/cargo-tree-features.txt; then
             echo 'webdriver_server entered the worker dependency graph' >&2
             exit 1
@@ -116,23 +114,20 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          cargo check --locked --manifest-path "$WORKER_MANIFEST" 2>&1 \
-            | tee worker-evidence/cargo-check.log
+          cargo check --locked --manifest-path "$WORKER_MANIFEST" 2>&1 | tee worker-evidence/cargo-check.log
 
       - name: Exercise Browser owner, protocol and isolation tests
         shell: bash
         run: |
           set -euo pipefail
-          node --test apps/hepta-browser/test/*.test.js 2>&1 \
-            | tee worker-evidence/node-tests.log
+          node --test apps/hepta-browser/test/*.test.js 2>&1 | tee worker-evidence/node-tests.log
           node --check apps/hepta-browser/src/*.js
 
       - name: Probe real Bubblewrap namespace and egress denial
         shell: bash
         run: |
           set -euo pipefail
-          node apps/hepta-browser/scripts/linux-sandbox-probe.js \
-            | tee worker-evidence/linux-sandbox-probe.json
+          node apps/hepta-browser/scripts/linux-sandbox-probe.js | tee worker-evidence/linux-sandbox-probe.json
 
       - name: Build worker twice from the same exact inputs
         shell: bash
@@ -143,24 +138,16 @@ jobs:
           export RUSTFLAGS="--remap-path-prefix=${GITHUB_WORKSPACE}=/src -C debuginfo=0"
           export CARGO_TERM_COLOR=never
           printf '%s\n' "$SOURCE_DATE_EPOCH" > worker-evidence/source-date-epoch.txt
-          CARGO_TARGET_DIR="$RUNNER_TEMP/servo-worker-build-a" \
-            cargo build --release --locked --manifest-path "$WORKER_MANIFEST" 2>&1 \
-            | tee worker-evidence/build-a.log
-          CARGO_TARGET_DIR="$RUNNER_TEMP/servo-worker-build-b" \
-            cargo build --release --locked --manifest-path "$WORKER_MANIFEST" 2>&1 \
-            | tee worker-evidence/build-b.log
+          CARGO_TARGET_DIR="$RUNNER_TEMP/servo-worker-build-a" cargo build --release --locked --manifest-path "$WORKER_MANIFEST" 2>&1 | tee worker-evidence/build-a.log
+          CARGO_TARGET_DIR="$RUNNER_TEMP/servo-worker-build-b" cargo build --release --locked --manifest-path "$WORKER_MANIFEST" 2>&1 | tee worker-evidence/build-b.log
           first="$RUNNER_TEMP/servo-worker-build-a/release/hepta-servo-worker"
           second="$RUNNER_TEMP/servo-worker-build-b/release/hepta-servo-worker"
           test -x "$first"
           test -x "$second"
           sha256sum "$first" "$second" | tee worker-evidence/reproducible-sha256.txt
-          cmp --silent "$first" "$second" || {
-            echo 'independent release builds are not byte-identical' >&2
-            exit 1
-          }
+          cmp --silent "$first" "$second" || { echo 'independent release builds are not byte-identical' >&2; exit 1; }
           install -m 0555 "$first" worker-evidence/hepta-servo-worker
-          sha256sum worker-evidence/hepta-servo-worker \
-            | tee worker-evidence/hepta-servo-worker.sha256
+          sha256sum worker-evidence/hepta-servo-worker | tee worker-evidence/hepta-servo-worker.sha256
           ldd worker-evidence/hepta-servo-worker | tee worker-evidence/hepta-servo-worker.ldd.txt
           ! grep -F 'not found' worker-evidence/hepta-servo-worker.ldd.txt
 
@@ -168,9 +155,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          node apps/hepta-browser/scripts/real-worker-smoke.js \
-            worker-evidence/hepta-servo-worker \
-            | tee worker-evidence/real-worker-smoke.json
+          node apps/hepta-browser/scripts/real-worker-smoke.js worker-evidence/hepta-servo-worker | tee worker-evidence/real-worker-smoke.json
 
       - name: Generate deterministic SPDX 2.3 SBOM and build receipt
         shell: bash
@@ -185,13 +170,11 @@ jobs:
             --source-date-epoch "$source_date_epoch" \
             --servo-pin "$SERVO_PIN" \
             --output worker-evidence/hepta-servo-worker.spdx.json
-          sha256sum worker-evidence/hepta-servo-worker.spdx.json \
-            | tee worker-evidence/hepta-servo-worker.spdx.json.sha256
+          sha256sum worker-evidence/hepta-servo-worker.spdx.json | tee worker-evidence/hepta-servo-worker.spdx.json.sha256
           python3 - <<'PY'
           import hashlib, json, os, pathlib, subprocess
           root = pathlib.Path('worker-evidence')
-          def digest(path):
-              return hashlib.sha256(path.read_bytes()).hexdigest()
+          def digest(path): return hashlib.sha256(path.read_bytes()).hexdigest()
           receipt = {
               'schema': 'hepta.browser.servo-worker-build-receipt.v1',
               'sourceSha': os.environ['SOURCE_SHA'],
@@ -205,13 +188,9 @@ jobs:
               'linuxSandboxProbe': json.loads((root / 'linux-sandbox-probe.json').read_text()),
               'realWorkerSmoke': json.loads((root / 'real-worker-smoke.json').read_text()),
           }
-          (root / 'build-receipt.json').write_text(
-              json.dumps(receipt, sort_keys=True, separators=(',', ':')) + '\n',
-              encoding='utf-8',
-          )
+          (root / 'build-receipt.json').write_text(json.dumps(receipt, sort_keys=True, separators=(',', ':')) + '\n', encoding='utf-8')
           PY
-          sha256sum worker-evidence/build-receipt.json \
-            | tee worker-evidence/build-receipt.json.sha256
+          sha256sum worker-evidence/build-receipt.json | tee worker-evidence/build-receipt.json.sha256
 
       - name: Preserve worker evidence
         if: always()
