@@ -1,4 +1,5 @@
 use std::collections::BTreeMap;
+use std::collections::BTreeSet;
 use std::time::Instant;
 
 use codex_hepta_contracts::AgentId;
@@ -39,12 +40,16 @@ pub struct Supervisor<D: ProcessDriver> {
     pub(crate) registry: FleetRegistry,
     pub(crate) driver: D,
     pub(crate) config: SupervisorConfig,
-    slots: BTreeMap<AgentId, AgentSlot<D::Process>>,
+    pub(crate) slots: BTreeMap<AgentId, AgentSlot<D::Process>>,
+    pub(crate) recovery_blocked: BTreeSet<AgentId>,
 }
 
 #[cfg(test)]
 #[path = "supervisor_tests.rs"]
 mod tests;
+
+#[path = "signed_recovery.rs"]
+mod signed_recovery;
 
 impl<D: ProcessDriver> Supervisor<D> {
     pub fn recover(
@@ -66,22 +71,30 @@ impl<D: ProcessDriver> Supervisor<D> {
             driver,
             config,
             slots,
+            recovery_blocked: BTreeSet::new(),
         };
         let mut report = TickReport::default();
         for (agent_id, record) in snapshot.agents {
             let result = supervisor.with_slot(&agent_id, |supervisor, slot| {
                 supervisor.restore_release_state(&agent_id, slot, &record)?;
-                supervisor.recover_slot(&agent_id, slot, &record, now)?;
-                supervisor.recover_signed_intent(&agent_id, slot, &record)
+                // Always inspect the durable signed intent even when process
+                // adoption/recovery failed. Otherwise a driver fault could
+                // accidentally hide an externally-authorized ambiguous
+                // mutation and leave ordinary lifecycle mutations enabled.
+                let process_recovery = supervisor.recover_slot(&agent_id, slot, &record, now);
+                let signed_recovery = supervisor.recover_signed_intent(&agent_id, slot, &record);
+                match (process_recovery, signed_recovery) {
+                    (_, Err(error @ SupervisorError::SignedIntentRecoveryRequired(_))) => {
+                        Err(error)
+                    }
+                    (Err(error), _) => Err(error),
+                    (_, Err(error)) => Err(error),
+                    (Ok(()), Ok(())) => Ok(()),
+                }
             });
             if let Err(error) = result {
-                // A signed lifecycle intent is an externally authorized
-                // mutation.  Recording it as an ordinary per-agent fault
-                // would still bring the daemon up and expose unrelated
-                // mutation RPCs while the outcome is unknown.  Recovery of
-                // this class is therefore a daemon-wide startup failure.
                 if matches!(&error, SupervisorError::SignedIntentRecoveryRequired(_)) {
-                    return Err(error);
+                    supervisor.recovery_blocked.insert(agent_id.clone());
                 }
                 supervisor.record_fault(&agent_id, &error, &mut report);
             }
@@ -400,6 +413,7 @@ impl<D: ProcessDriver> Supervisor<D> {
         command: AgentCommand,
         now: Instant,
     ) -> Result<(), SupervisorError> {
+        self.ensure_mutations_unfrozen()?;
         self.with_slot(agent_id, |supervisor, slot| {
             supervisor.start_slot(agent_id, slot, command, now)
         })
@@ -411,30 +425,35 @@ impl<D: ProcessDriver> Supervisor<D> {
         release: AgentRelease,
         now: Instant,
     ) -> Result<(), SupervisorError> {
+        self.ensure_mutations_unfrozen()?;
         self.with_slot(agent_id, |supervisor, slot| {
             supervisor.start_release_slot(agent_id, slot, release, now)
         })
     }
 
     pub fn drain(&mut self, agent_id: &AgentId, now: Instant) -> Result<(), SupervisorError> {
+        self.ensure_mutations_unfrozen()?;
         self.with_slot(agent_id, |supervisor, slot| {
             supervisor.drain_slot(agent_id, slot, now)
         })
     }
 
     pub fn stop(&mut self, agent_id: &AgentId, now: Instant) -> Result<(), SupervisorError> {
+        self.ensure_mutations_unfrozen()?;
         self.with_slot(agent_id, |supervisor, slot| {
             supervisor.stop_slot(agent_id, slot, now)
         })
     }
 
     pub fn kill(&mut self, agent_id: &AgentId) -> Result<(), SupervisorError> {
+        self.ensure_mutations_unfrozen()?;
         self.with_slot(agent_id, |supervisor, slot| {
             supervisor.kill_slot(agent_id, slot)
         })
     }
 
     pub fn restart(&mut self, agent_id: &AgentId, now: Instant) -> Result<(), SupervisorError> {
+        self.ensure_mutations_unfrozen()?;
         self.with_slot(agent_id, |supervisor, slot| {
             supervisor.restart_slot(agent_id, slot, now)
         })
@@ -446,6 +465,7 @@ impl<D: ProcessDriver> Supervisor<D> {
         target: AgentRelease,
         now: Instant,
     ) -> Result<(), SupervisorError> {
+        self.ensure_mutations_unfrozen()?;
         self.with_slot(agent_id, |supervisor, slot| {
             supervisor.upgrade_slot(
                 agent_id, slot, target, now, /*explicit_rollback*/ false,
@@ -454,6 +474,7 @@ impl<D: ProcessDriver> Supervisor<D> {
     }
 
     pub fn rollback(&mut self, agent_id: &AgentId, now: Instant) -> Result<(), SupervisorError> {
+        self.ensure_mutations_unfrozen()?;
         self.with_slot(agent_id, |supervisor, slot| {
             let target = slot
                 .previous_release
@@ -464,9 +485,9 @@ impl<D: ProcessDriver> Supervisor<D> {
     }
 
     /// Admit one externally signed H7/OPE operation into the real lifecycle
-    /// supervisor.  The H7 envelope remains a qualification artifact; the
+    /// supervisor. The H7 envelope remains a qualification artifact; the
     /// independent production grant is the only object that carries
-    /// production authority.  This method queues the existing drain/start
+    /// production authority. This method queues the existing drain/start
     /// state machine and records a fsynced intent before touching the child.
     #[expect(
         clippy::too_many_arguments,
@@ -482,6 +503,7 @@ impl<D: ProcessDriver> Supervisor<D> {
         now_unix_seconds: u64,
         now: Instant,
     ) -> Result<ProductionMutationReceipt, SupervisorError> {
+        self.ensure_mutations_unfrozen()?;
         self.with_slot(agent_id, |supervisor, slot| {
             let record = supervisor.record(agent_id)?;
             let current = slot.active_release.as_ref().ok_or_else(|| {
@@ -522,7 +544,7 @@ impl<D: ProcessDriver> Supervisor<D> {
             if slot
                 .signed_intent
                 .as_ref()
-                .is_some_and(|intent| !matches!(intent.status, SignedIntentStatus::Committed))
+                .is_some_and(|intent| intent.status.is_unresolved())
             {
                 return Err(SupervisorError::SignedIntentRecoveryRequired(
                     agent_id.clone(),
@@ -543,8 +565,11 @@ impl<D: ProcessDriver> Supervisor<D> {
             .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
             write_intent(record.layout.run_root(), &intent)
                 .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
-            supervisor.set_control_revision(agent_id, next_control_revision)?;
+            // From this line onward a durable external-authority mutation has
+            // started. Even if later queueing fails, the intent remains the
+            // recovery witness and callers must treat the outcome as unknown.
             slot.signed_intent = Some(intent.clone());
+            supervisor.set_control_revision(agent_id, next_control_revision)?;
             let explicit_rollback = grant.transition == H7H89ProductionTransition::Rollback;
             if let Err(error) =
                 supervisor.upgrade_slot(agent_id, slot, target, now, explicit_rollback)
@@ -605,38 +630,42 @@ impl<D: ProcessDriver> Supervisor<D> {
         slot: &mut AgentSlot<D::Process>,
         record: &AgentRecord,
     ) -> Result<(), SupervisorError> {
-        let intent = read_intent(record.layout.run_root())
-            .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
+        let intent = match read_intent(record.layout.run_root()) {
+            Ok(intent) => intent,
+            Err(_) => {
+                // A corrupt/truncated authority journal is itself unresolved
+                // authority state. Do not downgrade it to an ordinary I/O or
+                // serialization fault that would leave mutations enabled.
+                return Err(SupervisorError::SignedIntentRecoveryRequired(
+                    agent_id.clone(),
+                ));
+            }
+        };
         let Some(intent) = intent else {
             return Ok(());
         };
         if intent.agent_id != agent_id.to_string() {
-            return Err(SupervisorError::Invalid(
-                "signed supervisor intent agent binding mismatch".to_string(),
+            return Err(SupervisorError::SignedIntentRecoveryRequired(
+                agent_id.clone(),
             ));
         }
         slot.signed_intent = Some(intent.clone());
-        if matches!(intent.status, SignedIntentStatus::Committed) {
+        if intent.status.is_terminal() {
             return Ok(());
         }
         // A restart has no durable proof that an apparently matching target
-        // was produced by this exact signed mutation.  In particular, the
+        // was produced by this exact signed mutation. In particular, the
         // one-file intent does not carry an independently committed source /
         // target release-state revision, control-revision successor,
         // lifecycle-generation transition, or continuity of the daemon's
-        // authority epoch.  Treating `Running + target` as Committed would
+        // authority epoch. Treating `Running + target` as Committed would
         // therefore let an unrelated/manual upgrade close an old grant.
-        // Every non-terminal intent must remain fail-closed until an explicit
-        // recovery ceremony supplies those witnesses.
+        // Every non-terminal intent remains fail-closed until an explicit
+        // recovery ceremony binds the durable intent digest and current state.
         //
         // Fence and kill any adopted child before surfacing the recovery
-        // requirement; normal ticking must not continue an ambiguous
-        // external transition.
+        // requirement; normal ticking may only reap this exact child.
         if let Some(runtime) = slot.runtime.as_mut() {
-            // A failed fence/kill is still an unresolved signed intent.  Do
-            // not downgrade it to a recoverable driver fault: the caller
-            // must fail closed at daemon startup and require explicit
-            // operator recovery.
             let _ = runtime.process.kill();
             runtime.fenced = true;
             runtime.phase = RuntimePhase::Killing;
