@@ -8,10 +8,10 @@ This root contains the repository-owned `browser.servo` boundary. The current ca
 - `src/action.js` — closed bounded typed browser effects.
 - `src/bridge.js` — provenance-preserving proposal -> effect bridge.
 - `src/runtime.js` / `src/runtime-host.js` — serialized profile owner, live final-use fence, durable no-redispatch recovery and semantic page observations.
-- `src/runtime-boundary.js` — bounded per-profile serialization queue and deadlines.
+- `src/runtime-boundary.js` — bounded per-profile serialization queue plus safe abort settlement; an effect-capable driver timeout is not reported until the abort/containment path itself has settled.
 - `src/journal.js` — strict private durable operation journal with compaction and clean-generation retirement.
 - `src/worker-protocol.js` — canonical bounded private Browser/Servo frames.
-- `src/worker-driver.js` — exact-artifact subprocess driver, principal-bound fresh profile roots, response-request binding and Linux Bubblewrap source contract.
+- `src/worker-driver.js` — exact-artifact subprocess driver, principal-bound fresh profile roots, response-request binding, stderr drain and Linux Bubblewrap source contract. If an abort races a private pipe write, the worker is contained and the request is not reported timed out while the write can still complete in background.
 - `src/agentd-protocol.js`, `src/agentd-service.js`, `src/agentd-service-main.js` — private Agentd parent handoff.
 - `servo-worker/` — Hepta-owned current-pin Servo worker source with one Servo / one WebView and fixed worker-owned semantic/action scripts.
 
@@ -21,7 +21,7 @@ The canonical upstream pin remains `third_party/servo-patches/MANIFEST.json`. A 
 
 `buildNavigationIntent()` is authority-free. `src/bridge.js` preserves the proposal `navigationId` as the effect operation identity and includes the proposal `policyDigest` and `expectedRevision` in the typed `navigate` payload. The final payload digest and request digest therefore bind the exact proposal provenance rather than only the URL.
 
-The Browser service does not accept a reusable serialized `VerifiedUseToken`. Agentd receives an exact Browser `authority_challenge`, enters real `FinalUseAuthority::with_verified_use`, sends `authority_enter`, and keeps the live revocation fence through Browser journal fsync and the successful local worker-pipe write. Browser then emits `dispatch_boundary`; remote page/business completion is reconciled separately.
+The Browser service does not accept a reusable serialized `VerifiedUseToken`. Agentd receives an exact Browser `authority_challenge`, enters real `FinalUseAuthority::with_verified_use`, sends `authority_enter`, and keeps the live revocation fence through Browser journal fsync and the successful local worker-pipe write. Browser then emits `dispatch_boundary`; remote page/business completion is reconciled separately. Browser no longer wraps this non-cancelable fence in an outer Promise timeout that could return failure while a late dispatch continues in background.
 
 ## Secret and durability boundary
 
