@@ -204,9 +204,16 @@ impl ArtifactLifecycleJournalV2 {
         }
     }
 
+    /// Rebuild an immutable historical journal from its exact snapshot.
+    ///
+    /// `now` is intentionally not used to re-authorize historical mutations:
+    /// credential expiry gates new appends, not recovery of records that were
+    /// valid at their recorded occurrence time. Every record is still replayed
+    /// through the full transition, actor-binding, role, sequence and digest
+    /// checks using the record's immutable `occurred_at` value.
     pub fn from_snapshot(
         snapshot: ArtifactLifecycleJournalSnapshotV2,
-        now: u64,
+        _now: u64,
     ) -> Result<Self, ArtifactLifecycleJournalError> {
         let expected_head = snapshot.head_digest;
         let mut journal = Self::new();
@@ -219,7 +226,7 @@ impl ArtifactLifecycleJournalV2 {
                 &expected.producer_id,
                 expected.actor.clone(),
                 expected.event.clone(),
-                now,
+                expected.event.occurred_at,
             )?;
             let actual = journal
                 .records
@@ -500,5 +507,53 @@ mod tests {
             .expect("snapshot replays");
         assert_eq!(reopened.head_digest(), journal.head_digest());
         assert_eq!(reopened.records(), journal.records());
+    }
+
+    #[test]
+    fn art_06_historical_replay_survives_actor_expiry_but_new_append_does_not() {
+        let producer_id = id("producer");
+        let artifact_id = id("artifact");
+        let producer = actor("producer", LifecycleActorRoleV2::Producer);
+        let mut journal = ArtifactLifecycleJournalV2::new();
+        journal
+            .append(
+                Digest32::ZERO,
+                &producer_id,
+                producer.clone(),
+                event(
+                    "trained",
+                    &artifact_id,
+                    &producer,
+                    ArtifactLifecycleStateV1::Proposed,
+                    ArtifactLifecycleStateV1::Trained,
+                    20,
+                ),
+                20,
+            )
+            .expect("historical append succeeds while credential is current");
+
+        let reopened = ArtifactLifecycleJournalV2::from_snapshot(journal.snapshot(), 101)
+            .expect("historical snapshot remains replayable after credential expiry");
+        assert_eq!(reopened.head_digest(), journal.head_digest());
+        assert_eq!(reopened.records(), journal.records());
+
+        let new_artifact_id = id("artifact-after-expiry");
+        assert_eq!(
+            journal.append(
+                journal.head_digest(),
+                &producer_id,
+                producer.clone(),
+                event(
+                    "trained-after-expiry",
+                    &new_artifact_id,
+                    &producer,
+                    ArtifactLifecycleStateV1::Proposed,
+                    ArtifactLifecycleStateV1::Trained,
+                    100,
+                ),
+                101,
+            ),
+            Err(ArtifactLifecycleJournalError::InvalidActorEvidence)
+        );
     }
 }
