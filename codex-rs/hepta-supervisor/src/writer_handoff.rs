@@ -220,10 +220,7 @@ pub struct DurableWriterHandoffJournalV1 {
 
 impl DurableWriterHandoffJournalV1 {
     /// Create a new journal on an explicitly supplied, exclusively owned file.
-    pub fn create(
-        mut file: File,
-        plan: WriterHandoffPlanV1,
-    ) -> Result<Self, WriterHandoffErrorV1> {
+    pub fn create(mut file: File, plan: WriterHandoffPlanV1) -> Result<Self, WriterHandoffErrorV1> {
         plan.validate()?;
         if file.metadata()?.len() != 0 {
             return Err(WriterHandoffErrorV1::AlreadyInitialized);
@@ -380,7 +377,8 @@ fn next_checkpoint(
             ));
         }
         outbox_watermark = Some(watermark);
-    } else if current.phase.at_or_after_drained() && step.phase != WriterHandoffPhaseV1::Quarantined {
+    } else if current.phase.at_or_after_drained() && step.phase != WriterHandoffPhaseV1::Quarantined
+    {
         if step.unknown_effect_count != 0 {
             return Err(WriterHandoffErrorV1::UnknownEffectsRemain(
                 step.unknown_effect_count,
@@ -693,8 +691,8 @@ mod tests {
     #[test]
     fn durable_handoff_reopens_at_exact_committed_phase() {
         let temp = TempDir::new().expect("temp");
-        let mut journal = DurableWriterHandoffJournalV1::create(file(&temp), plan())
-            .expect("create journal");
+        let mut journal =
+            DurableWriterHandoffJournalV1::create(file(&temp), plan()).expect("create journal");
         journal
             .advance(step(
                 WriterHandoffPhaseV1::AdmissionStopped,
@@ -723,13 +721,10 @@ mod tests {
     #[test]
     fn handoff_refuses_to_fence_before_drain_and_unknown_effects() {
         let temp = TempDir::new().expect("temp");
-        let mut journal = DurableWriterHandoffJournalV1::create(file(&temp), plan())
-            .expect("create journal");
+        let mut journal =
+            DurableWriterHandoffJournalV1::create(file(&temp), plan()).expect("create journal");
         assert!(matches!(
-            journal.advance(step(
-                WriterHandoffPhaseV1::OldWriterFenced,
-                "illegal-fence",
-            )),
+            journal.advance(step(WriterHandoffPhaseV1::OldWriterFenced, "illegal-fence",)),
             Err(WriterHandoffErrorV1::InvalidTransition { .. })
         ));
         journal
@@ -750,8 +745,8 @@ mod tests {
     #[test]
     fn torn_tail_is_removed_before_resume() {
         let temp = TempDir::new().expect("temp");
-        let journal = DurableWriterHandoffJournalV1::create(file(&temp), plan())
-            .expect("create journal");
+        let journal =
+            DurableWriterHandoffJournalV1::create(file(&temp), plan()).expect("create journal");
         let expected = journal.checkpoint().clone();
         drop(journal);
 
@@ -770,8 +765,8 @@ mod tests {
     #[test]
     fn full_handoff_has_no_dual_writer_window() {
         let temp = TempDir::new().expect("temp");
-        let mut journal = DurableWriterHandoffJournalV1::create(file(&temp), plan())
-            .expect("create journal");
+        let mut journal =
+            DurableWriterHandoffJournalV1::create(file(&temp), plan()).expect("create journal");
         for phase in [
             WriterHandoffPhaseV1::AdmissionStopped,
             WriterHandoffPhaseV1::Drained,
@@ -790,10 +785,7 @@ mod tests {
             let checkpoint = journal.advance(next).expect("advance");
             assert!(!(checkpoint.old_writer_valid() && checkpoint.new_writer_valid()));
         }
-        assert_eq!(
-            journal.checkpoint().phase,
-            WriterHandoffPhaseV1::Retired
-        );
+        assert_eq!(journal.checkpoint().phase, WriterHandoffPhaseV1::Retired);
         assert!(journal.checkpoint().new_writer_admission_open());
     }
 }

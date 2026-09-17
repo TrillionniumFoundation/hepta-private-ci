@@ -486,12 +486,9 @@ async fn partial_discovery_preserves_healthy_results_and_reports_incomplete_cove
         .await
         .expect("grant");
 
-    let set = FederatedRecallSet::discover(
-        consumer_id.clone(),
-        vec![owner_layout, missing_layout],
-        150,
-    )
-    .await;
+    let set =
+        FederatedRecallSet::discover(consumer_id.clone(), vec![owner_layout, missing_layout], 150)
+            .await;
     let batch = set
         .retrieve(
             &FederationConsumerAccess::new(consumer_id, consumer_workspace),

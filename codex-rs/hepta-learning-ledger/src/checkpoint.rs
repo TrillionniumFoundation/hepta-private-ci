@@ -221,9 +221,7 @@ pub(crate) fn read_state_checkpoint(
         }
     }
     if sequence_digests.len() != record_count
-        || sequence_digests
-            .get(&witness.anchor.sequence)
-            .copied()
+        || sequence_digests.get(&witness.anchor.sequence).copied()
             != Some(witness.anchor.chain_digest)
     {
         return Err(DurableLedgerError::Corrupt);

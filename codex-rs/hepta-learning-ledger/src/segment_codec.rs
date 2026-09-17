@@ -246,9 +246,7 @@ pub(crate) fn read_record_at_sequence(
             return Err(DurableLedgerError::Capacity);
         }
         let total = size as usize + FRAME_OVERHEAD;
-        if length - cursor < total as u64
-            || cursor + total as u64 + FOOTER as u64 > limits.bytes
-        {
+        if length - cursor < total as u64 || cursor + total as u64 + FOOTER as u64 > limits.bytes {
             return Err(DurableLedgerError::IncompleteTail);
         }
         let mut frame = vec![0; total];

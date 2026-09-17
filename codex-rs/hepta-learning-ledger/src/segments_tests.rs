@@ -237,8 +237,8 @@ fn state_checkpoint_recovery_replays_only_the_tail_and_pages_archive_on_demand()
     assert_eq!(retry.chain_digest, original.chain_digest);
     let range = must(reopened.archive_range(&id("decision-0"))).expect("archive range");
     assert_eq!(range.segment, 0);
-    let archived = must(reopened.archived_record(f.file("0"), &id("decision-0")))
-        .expect("archived decision");
+    let archived =
+        must(reopened.archived_record(f.file("0"), &id("decision-0"))).expect("archived decision");
     assert_eq!(archived.sequence.get(), 1);
     assert_eq!(archived.chain_digest, original.chain_digest);
     assert_eq!(archived.event, decision(0));

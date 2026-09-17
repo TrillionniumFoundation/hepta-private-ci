@@ -51,12 +51,8 @@ fn real_hanging_child_is_killed_and_observed_exited() {
 
     let outcome = enforce_process_deadline_v1(
         &mut process,
-        ProcessDeadlinePolicyV1::new(
-            Duration::from_millis(25),
-            Duration::from_millis(2),
-            8,
-        )
-        .expect("deadline policy"),
+        ProcessDeadlinePolicyV1::new(Duration::from_millis(25), Duration::from_millis(2), 8)
+            .expect("deadline policy"),
     )
     .expect("deadline enforcement");
     assert_eq!(outcome, ProcessDeadlineOutcomeV1::KillRequestedAtDeadline);
