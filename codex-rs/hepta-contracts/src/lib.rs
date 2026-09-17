@@ -1,6 +1,7 @@
 #![forbid(unsafe_code)]
 
 mod agent_id;
+pub mod authority_lease;
 mod authbus;
 #[cfg(feature = "authbus-local-qualification")]
 pub mod authbus_b3_adapter;
