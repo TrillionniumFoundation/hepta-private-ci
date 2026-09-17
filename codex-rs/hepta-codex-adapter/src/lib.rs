@@ -12,6 +12,14 @@ use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
 
+mod prompt_delivery;
+
+pub use prompt_delivery::PromptDeliveryErrorV1;
+pub use prompt_delivery::PromptDeliveryObservationV1;
+pub use prompt_delivery::PromptDeliveryRejectedReasonV1;
+pub use prompt_delivery::intent_for_context_attachment_v1;
+pub use prompt_delivery::observe_prompt_delivery_v1;
+
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct CodexOperationIntent {
     pub operation_id: StableId,
