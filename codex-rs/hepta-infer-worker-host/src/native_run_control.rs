@@ -1,15 +1,19 @@
 //! Local durable admission around the actual App Server driver.
 
 use codex_hepta_infer_core::durable_control::DurableInferenceControl;
+use codex_hepta_infer_core::durable_control::Error as DurableError;
+use codex_hepta_infer_core::durable_control::native::NativeDispatch;
 use codex_hepta_infer_core::durable_control::native::NativeRequest;
+use codex_hepta_infer_core::durable_control::native::NativeRunOutput;
+use codex_hepta_infer_core::durable_control::native::NativeRunRecord;
 use codex_hepta_infer_core::durable_control::native::NativeReservationState;
+use codex_hepta_infer_core::durable_handle::DurableInferenceControlHandle;
 use sha2::Digest;
 use sha2::Sha256;
 use tokio_util::sync::CancellationToken;
 
 use super::AppServerModelDriver;
 use super::NativeOwnerAuthority;
-use super::NativeRunOutput;
 use super::NativeRunStatus;
 use super::Result;
 
@@ -20,13 +24,198 @@ pub struct NativeAdmission {
     pub maximum_in_flight: usize,
 }
 
+/// Small synchronous port used around durable transitions. The production
+/// handle reopens the journal for each call so model/network awaits never retain
+/// the exclusive writer lock; direct `DurableInferenceControl` remains useful
+/// for deterministic tests and compatibility callers.
+pub(super) trait NativeControlPort {
+    fn reserve_native(
+        &mut self,
+        request: NativeRequest,
+        maximum_in_flight: usize,
+    ) -> std::result::Result<NativeRunRecord, DurableError>;
+    fn dispatch_native(
+        &mut self,
+        request_id: &str,
+        dispatch: NativeDispatch,
+    ) -> std::result::Result<NativeRunRecord, DurableError>;
+    fn native_started(
+        &mut self,
+        request_id: &str,
+        turn_id: String,
+    ) -> std::result::Result<NativeRunRecord, DurableError>;
+    fn cancel_native(
+        &mut self,
+        request_id: &str,
+    ) -> std::result::Result<NativeRunRecord, DurableError>;
+    fn stop_native_before_dispatch(
+        &mut self,
+        request_id: &str,
+        reason: String,
+    ) -> std::result::Result<NativeRunRecord, DurableError>;
+    fn settle_native(
+        &mut self,
+        request_id: &str,
+        output: NativeRunOutput,
+    ) -> std::result::Result<NativeRunRecord, DurableError>;
+    fn native_record(
+        &mut self,
+        request_id: &str,
+    ) -> std::result::Result<Option<NativeRunRecord>, DurableError>;
+}
+
+impl NativeControlPort for DurableInferenceControl {
+    fn reserve_native(
+        &mut self,
+        request: NativeRequest,
+        maximum_in_flight: usize,
+    ) -> std::result::Result<NativeRunRecord, DurableError> {
+        DurableInferenceControl::reserve_native(self, request, maximum_in_flight)
+    }
+
+    fn dispatch_native(
+        &mut self,
+        request_id: &str,
+        dispatch: NativeDispatch,
+    ) -> std::result::Result<NativeRunRecord, DurableError> {
+        DurableInferenceControl::dispatch_native(self, request_id, dispatch)
+    }
+
+    fn native_started(
+        &mut self,
+        request_id: &str,
+        turn_id: String,
+    ) -> std::result::Result<NativeRunRecord, DurableError> {
+        DurableInferenceControl::native_started(self, request_id, turn_id)
+    }
+
+    fn cancel_native(
+        &mut self,
+        request_id: &str,
+    ) -> std::result::Result<NativeRunRecord, DurableError> {
+        DurableInferenceControl::cancel_native(self, request_id)
+    }
+
+    fn stop_native_before_dispatch(
+        &mut self,
+        request_id: &str,
+        reason: String,
+    ) -> std::result::Result<NativeRunRecord, DurableError> {
+        DurableInferenceControl::stop_native_before_dispatch(self, request_id, reason)
+    }
+
+    fn settle_native(
+        &mut self,
+        request_id: &str,
+        output: NativeRunOutput,
+    ) -> std::result::Result<NativeRunRecord, DurableError> {
+        DurableInferenceControl::settle_native(self, request_id, output)
+    }
+
+    fn native_record(
+        &mut self,
+        request_id: &str,
+    ) -> std::result::Result<Option<NativeRunRecord>, DurableError> {
+        Ok(DurableInferenceControl::native_record(self, request_id).cloned())
+    }
+}
+
+impl NativeControlPort for DurableInferenceControlHandle {
+    fn reserve_native(
+        &mut self,
+        request: NativeRequest,
+        maximum_in_flight: usize,
+    ) -> std::result::Result<NativeRunRecord, DurableError> {
+        DurableInferenceControlHandle::reserve_native(self, request, maximum_in_flight)
+    }
+
+    fn dispatch_native(
+        &mut self,
+        request_id: &str,
+        dispatch: NativeDispatch,
+    ) -> std::result::Result<NativeRunRecord, DurableError> {
+        DurableInferenceControlHandle::dispatch_native(self, request_id, dispatch)
+    }
+
+    fn native_started(
+        &mut self,
+        request_id: &str,
+        turn_id: String,
+    ) -> std::result::Result<NativeRunRecord, DurableError> {
+        DurableInferenceControlHandle::native_started(self, request_id, turn_id)
+    }
+
+    fn cancel_native(
+        &mut self,
+        request_id: &str,
+    ) -> std::result::Result<NativeRunRecord, DurableError> {
+        DurableInferenceControlHandle::cancel_native(self, request_id)
+    }
+
+    fn stop_native_before_dispatch(
+        &mut self,
+        request_id: &str,
+        reason: String,
+    ) -> std::result::Result<NativeRunRecord, DurableError> {
+        DurableInferenceControlHandle::stop_native_before_dispatch(self, request_id, reason)
+    }
+
+    fn settle_native(
+        &mut self,
+        request_id: &str,
+        output: NativeRunOutput,
+    ) -> std::result::Result<NativeRunRecord, DurableError> {
+        DurableInferenceControlHandle::settle_native(self, request_id, output)
+    }
+
+    fn native_record(
+        &mut self,
+        request_id: &str,
+    ) -> std::result::Result<Option<NativeRunRecord>, DurableError> {
+        DurableInferenceControlHandle::native_record(self, request_id)
+    }
+}
+
 impl AppServerModelDriver {
-    /// Reserves before any provider call, journals dispatch before `turn/start`,
-    /// and commits real observations before returning them to the caller.
-    /// Reopening a possibly dispatched run never invokes a model again.
+    /// Compatibility/test entrypoint. Holding this concrete value across the
+    /// await intentionally retains its existing exclusive lock semantics.
     pub async fn run(
         &self,
         control: &mut DurableInferenceControl,
+        admission: NativeAdmission,
+        prompt: String,
+        context_query: Option<String>,
+        cancellation: &CancellationToken,
+    ) -> Result<NativeRunOutput> {
+        self.run_with_control(control, admission, prompt, context_query, cancellation)
+            .await
+    }
+
+    /// Production entrypoint. Every durable transition is a short exclusive
+    /// transaction; provider execution and observation happen after the lock is
+    /// released, allowing multiple requests in one budget/journal domain.
+    pub async fn run_managed(
+        &self,
+        control: &DurableInferenceControlHandle,
+        admission: NativeAdmission,
+        prompt: String,
+        context_query: Option<String>,
+        cancellation: &CancellationToken,
+    ) -> Result<NativeRunOutput> {
+        let mut control = control.clone();
+        self.run_with_control(
+            &mut control,
+            admission,
+            prompt,
+            context_query,
+            cancellation,
+        )
+        .await
+    }
+
+    async fn run_with_control<C: NativeControlPort + ?Sized>(
+        &self,
+        control: &mut C,
         admission: NativeAdmission,
         prompt: String,
         context_query: Option<String>,
@@ -94,7 +283,7 @@ impl AppServerModelDriver {
             }
             Err(error) => {
                 if control
-                    .native_record(&request_id)
+                    .native_record(&request_id)?
                     .is_some_and(|record| record.state == NativeReservationState::Reserved)
                 {
                     // Only Reserved proves turn/start could not have happened.
