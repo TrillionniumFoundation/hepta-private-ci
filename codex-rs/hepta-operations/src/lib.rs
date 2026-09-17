@@ -69,5 +69,8 @@ pub use outbox::OutboxIntent;
 pub use outbox::OutboxState;
 
 #[cfg(test)]
+#[path = "destination_dedupe_tests.rs"]
+mod destination_dedupe_tests;
+#[cfg(test)]
 #[path = "durable_tests.rs"]
 mod durable_tests;
