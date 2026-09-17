@@ -208,7 +208,30 @@ fn update_requires_selected_channel_and_os_signing_gate() -> Result<()> {
 }
 
 #[test]
-fn update_is_confirmed_only_by_the_restarted_selected_binary() -> Result<()> {
+fn stage_does_not_replace_running_artifact_before_helper_activation() -> Result<()> {
+    let (active, rollback, stage, journal, package) = layout("stage-only")?;
+    let verified = verifier(FixtureSignatures::accepting(), FixtureSignatures::accepting())?
+        .verify(candidate(package))?;
+    let updater = TransactionalUpdater::open(
+        FixtureDigest,
+        active.clone(),
+        rollback.clone(),
+        stage.clone(),
+        journal,
+    )?;
+    assert_eq!(
+        updater.apply(&verified)?,
+        UpdateDisposition::RestartRequired
+    );
+    assert_eq!(std::fs::read(&active)?, b"old");
+    assert_eq!(std::fs::read(&rollback)?, b"old");
+    assert_eq!(std::fs::read(&stage)?, b"new");
+    std::fs::remove_dir_all(active.parent().expect("fixture root"))?;
+    Ok(())
+}
+
+#[test]
+fn update_is_confirmed_only_after_helper_activation_and_new_process_identity() -> Result<()> {
     let (active, rollback, stage, journal, package) = layout("confirm")?;
     let verified = verifier(FixtureSignatures::accepting(), FixtureSignatures::accepting())?
         .verify(candidate(package))?;
@@ -216,26 +239,38 @@ fn update_is_confirmed_only_by_the_restarted_selected_binary() -> Result<()> {
         FixtureDigest,
         active.clone(),
         rollback.clone(),
-        stage,
+        stage.clone(),
         journal.clone(),
     )?;
     assert_eq!(
         updater.apply(&verified)?,
         UpdateDisposition::RestartRequired
     );
-    assert_eq!(std::fs::read(&active)?, b"new");
-    assert_eq!(std::fs::read(&rollback)?, b"old");
     drop(updater);
 
-    let reopened = TransactionalUpdater::open(
+    let helper = TransactionalUpdater::open(
         FixtureDigest,
         active.clone(),
         rollback.clone(),
-        active.with_extension("stage2"),
+        stage,
+        journal.clone(),
+    )?;
+    assert_eq!(
+        helper.activate_staged()?,
+        UpdateDisposition::RestartRequired
+    );
+    assert_eq!(std::fs::read(&active)?, b"new");
+    drop(helper);
+
+    let restarted = TransactionalUpdater::open(
+        FixtureDigest,
+        active.clone(),
+        rollback.clone(),
+        active.with_extension("unused-stage"),
         journal,
     )?;
     assert_eq!(
-        reopened.recover_or_confirm(D2)?,
+        restarted.recover_or_confirm(D2)?,
         UpdateDisposition::Confirmed
     );
     assert_eq!(std::fs::read(&active)?, b"new");
@@ -253,7 +288,7 @@ fn failed_restart_identity_rolls_back_predecessor() -> Result<()> {
         FixtureDigest,
         active.clone(),
         rollback.clone(),
-        stage,
+        stage.clone(),
         journal.clone(),
     )?;
     assert_eq!(
@@ -262,15 +297,25 @@ fn failed_restart_identity_rolls_back_predecessor() -> Result<()> {
     );
     drop(updater);
 
-    let reopened = TransactionalUpdater::open(
+    let helper = TransactionalUpdater::open(
+        FixtureDigest,
+        active.clone(),
+        rollback.clone(),
+        stage,
+        journal.clone(),
+    )?;
+    helper.activate_staged()?;
+    drop(helper);
+
+    let restarted = TransactionalUpdater::open(
         FixtureDigest,
         active.clone(),
         rollback,
-        active.with_extension("stage2"),
+        active.with_extension("unused-stage"),
         journal,
     )?;
     assert_eq!(
-        reopened.recover_or_confirm(D1)?,
+        restarted.recover_or_confirm(D1)?,
         UpdateDisposition::RolledBack
     );
     assert_eq!(std::fs::read(&active)?, b"old");
