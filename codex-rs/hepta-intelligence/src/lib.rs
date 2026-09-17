@@ -17,6 +17,7 @@ pub use evaluated_shadow::run_evaluated_shadow_v1;
 mod plasticity_product;
 mod plasticity_selection;
 
+pub use codex_hepta_plasticity::DurableRegistryAnchorV1;
 pub use plasticity_product::AnchoredPlasticityWriterErrorV1;
 pub use plasticity_product::AnchoredPlasticityWriterV1;
 pub use plasticity_product::CandidateEvaluationAdmissionV1;
