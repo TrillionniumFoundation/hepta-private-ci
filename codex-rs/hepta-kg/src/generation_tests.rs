@@ -227,7 +227,7 @@ fn supports_and_contradicts_remain_distinct_edges() {
 }
 
 #[test]
-fn named_predicates_are_stable_and_do_not_collapse() {
+fn named_predicates_preserve_semantics_and_occurrence_identity() {
     let collaborated = KnowledgeRelationKindV2::named("collaborated_with");
     assert_eq!(collaborated, KnowledgeRelationKindV2::named("collaborated_with"));
     assert_ne!(collaborated, KnowledgeRelationKindV2::named("references"));
@@ -237,18 +237,30 @@ fn named_predicates_are_stable_and_do_not_collapse() {
         input(
             vec![node("a", "a"), node("b", "b")],
             vec![
-                edge("a", "b", collaborated, "collaboration"),
                 edge(
                     "a",
                     "b",
-                    KnowledgeRelationKindV2::named("references"),
+                    KnowledgeRelationKindV2::named_instance("collaborated_with", "relation:1"),
+                    "collaboration-1",
+                ),
+                edge(
+                    "a",
+                    "b",
+                    KnowledgeRelationKindV2::named_instance("collaborated_with", "relation:2"),
+                    "collaboration-2",
+                ),
+                edge(
+                    "a",
+                    "b",
+                    KnowledgeRelationKindV2::named_instance("references", "relation:3"),
                     "reference",
                 ),
             ],
         ),
     )
     .unwrap_or_else(|error| panic!("named predicates must build: {error}"));
-    assert_eq!(generation.edges.len(), 2);
+    assert_eq!(generation.edges.len(), 3);
+    assert_ne!(generation.edges[0].identity, generation.edges[1].identity);
 
     let result = query_relations(
         &generation,
@@ -261,6 +273,5 @@ fn named_predicates_are_stable_and_do_not_collapse() {
         },
     )
     .unwrap_or_else(|error| panic!("named predicate query must work: {error}"));
-    assert_eq!(result.edges.len(), 1);
-    assert_eq!(result.edges[0].identity.relation, collaborated);
+    assert_eq!(result.edges.len(), 2);
 }
