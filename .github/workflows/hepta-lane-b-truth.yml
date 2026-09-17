@@ -3,6 +3,7 @@ name: Hepta Lane B source closure
 on:
   pull_request:
     paths:
+      - "apps/hepta-control-ui/**"
       - "codex-rs/hepta-memory/**"
       - "codex-rs/hepta-retrieval/**"
       - "docs/memory/**"
@@ -17,6 +18,7 @@ on:
     branches:
       - main
     paths:
+      - "apps/hepta-control-ui/**"
       - "codex-rs/hepta-memory/**"
       - "codex-rs/hepta-retrieval/**"
       - "docs/memory/**"
@@ -68,7 +70,7 @@ jobs:
         run: |
           set -euo pipefail
           node --test apps/hepta-browser/test/runtime.test.js
-          node --test apps/hepta-control-ui/test/runtime-client.test.js
+          npm --prefix apps/hepta-control-ui run check
           node --test apps/hepta-native/test/shell-runtime.test.js
 
       - name: Verify Rust formatting
@@ -130,6 +132,7 @@ jobs:
           test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
           python3 scripts/hepta-lane-b-path-guard.py verify
           python3 scripts/hepta-lane-b-truth.py verify
+          npm --prefix apps/hepta-control-ui run check
           cargo test -p codex-hepta-matrixd --bin hepta-matrix-send-observer
           cd ..
           git diff --check
