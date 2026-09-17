@@ -16,10 +16,17 @@ use crate::ObjectiveSourceEnvelope;
 use crate::SoftPreference;
 use crate::SuccessPredicate;
 
-const MAX_CONSTRAINTS: usize = 256;
-const MAX_SUCCESS_PREDICATES: usize = 128;
-const MAX_ACTIONS: usize = 128;
-const MAX_CALLER_ACTIONS_WITHOUT_ABSTAIN: usize = MAX_ACTIONS - 1;
+// ObjectiveSourceEnvelopeV1 admits 256 caller constraints and compilation adds
+// six resource ceilings plus four risk rows. Keep the native IR large enough
+// for every canonical V1 envelope rather than shrinking the wire contract.
+const MAX_CONSTRAINTS: usize = 266;
+// The wire grammar independently permits 128 success predicates, 128 terminal
+// predicates and 128 evidence requirements; all three lower into this vector.
+const MAX_SUCCESS_PREDICATES: usize = 384;
+// The wire admits 128 caller legal actions. Native compilation additionally
+// guarantees an intrinsic abstain action when the caller did not name it.
+const MAX_ACTIONS: usize = 129;
+const MAX_CALLER_ACTIONS_WITHOUT_ABSTAIN: usize = 128;
 const MAX_SOFT_DIMENSIONS: usize = 64;
 const OBJECTIVE_DIGEST_DOMAIN: &[u8] = b"hepta.objective.v1";
 const CONFLICT_DIGEST_DOMAIN: &[u8] = b"hepta.objective.conflict.v1";
@@ -112,7 +119,7 @@ fn validate_source(source: &ObjectiveSourceEnvelope) -> Result<(), ObjectiveErro
     validate_count(
         "forbidden actions",
         source.forbidden_actions.len(),
-        MAX_ACTIONS,
+        128,
     )?;
     validate_count(
         "soft dimensions",
@@ -136,7 +143,7 @@ fn validate_source(source: &ObjectiveSourceEnvelope) -> Result<(), ObjectiveErro
             validate_count(
                 "caller allowed actions",
                 source.allowed_actions.len(),
-                MAX_ACTIONS,
+                128,
             )?;
         }
         None => validate_count(
