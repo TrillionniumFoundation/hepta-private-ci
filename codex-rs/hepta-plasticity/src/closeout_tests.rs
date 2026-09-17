@@ -117,7 +117,10 @@ fn claim(kind: EvidenceKindV1, subject_digest: Digest32) -> EvidenceClaimV1 {
 fn evidence() -> Vec<EvidenceClaimV1> {
     let request = empty_request();
     let mut claims = vec![
-        claim(EvidenceKindV1::SelectedArtifact, request.selected_artifact_digest),
+        claim(
+            EvidenceKindV1::SelectedArtifact,
+            request.selected_artifact_digest,
+        ),
         claim(EvidenceKindV1::Window, request.window.window_digest),
         claim(EvidenceKindV1::Dataset, request.dataset_digest),
         claim(EvidenceKindV1::UpdateRule, request.update_rule_digest),
@@ -162,11 +165,20 @@ fn native_generator_builds_ranked_bounded_candidates() {
     .expect("generation must succeed");
 
     assert_eq!(proposal.candidates.len(), 3);
-    assert_eq!(proposal.candidates[0].kind, ParameterCandidateKindV2::NoChange);
+    assert_eq!(
+        proposal.candidates[0].kind,
+        ParameterCandidateKindV2::NoChange
+    );
     assert_eq!(proposal.candidates[1].parameter_deltas.len(), 1);
     assert_eq!(proposal.candidates[2].parameter_deltas.len(), 2);
-    assert_eq!(proposal.candidates[1].parameter_deltas[0].parameter_id, id("parameter:a"));
-    assert_eq!(proposal.candidates[1].parameter_deltas[0].delta, FixedQ32::from_raw(2));
+    assert_eq!(
+        proposal.candidates[1].parameter_deltas[0].parameter_id,
+        id("parameter:a")
+    );
+    assert_eq!(
+        proposal.candidates[1].parameter_deltas[0].delta,
+        FixedQ32::from_raw(2)
+    );
     assert!(!proposal.authority.grants_any());
 }
 
@@ -240,6 +252,51 @@ fn authenticated_path_rejects_missing_or_stale_evidence() {
 }
 
 #[test]
+fn topology_v2_is_bounded_candidate_only_and_deny_all() {
+    let graph = digest(b"graph");
+    let proposal = propose_topology_v2(TopologyProposalRequestV2 {
+        proposal_id: id("topology:proposal"),
+        proposer_id: id("topology:proposer"),
+        evaluator_id: id("topology:evaluator"),
+        selected_graph_digest: graph,
+        window: ProposalWindowV2 {
+            window_id: id("topology:window"),
+            window_digest: digest(b"topology-window"),
+        },
+        baseline_generation: generation(20),
+        candidate_generation: generation(21),
+        evaluation_digest: digest(b"topology-evaluation"),
+        rollback_predecessor_digest: graph,
+        candidates: vec![
+            TopologyCandidateRequestV2 {
+                candidate_id: id("topology:no-change"),
+                kind: TopologyCandidateKindV2::NoChange,
+                delta: None,
+            },
+            TopologyCandidateRequestV2 {
+                candidate_id: id("topology:replace"),
+                kind: TopologyCandidateKindV2::Mutation,
+                delta: Some(TopologyDeltaV2 {
+                    module_id: id("module:slow-learner"),
+                    operation: TopologyOperation::Replace,
+                    predecessor_digest: digest(b"module-old"),
+                    candidate_digest: digest(b"module-new"),
+                    migration_digest: digest(b"migration"),
+                    rollback_digest: digest(b"rollback"),
+                    evidence_digest: digest(b"topology-evidence"),
+                }),
+            },
+        ],
+    })
+    .expect("topology proposal");
+
+    assert_eq!(proposal.candidates.len(), 2);
+    assert_eq!(proposal.status, ProposalStatus::RequiresIndependentAcceptance);
+    assert!(!proposal.authority.grants_any());
+    verify_topology_proposal_v2(&proposal).expect("verify topology proposal");
+}
+
+#[test]
 fn composed_engine_generates_authenticates_and_durably_appends() {
     let nonce = SystemTime::now()
         .duration_since(UNIX_EPOCH)
@@ -253,7 +310,8 @@ fn composed_engine_generates_authenticates_and_durably_appends() {
         .open(&path)
         .expect("create registry");
     let scope = digest(b"registry-scope");
-    let mut registry = DurableProposalRegistry::open(file, scope, 1, 16).expect("open registry");
+    let mut registry =
+        ProductionProposalRegistry::initialize_new(file, scope, 1, 16).expect("open registry");
 
     let receipt = generate_authenticate_and_append_v1(
         &mut registry,
@@ -278,6 +336,20 @@ fn composed_engine_generates_authenticates_and_durably_appends() {
     assert_eq!(receipt.disposition, AppendDisposition::Inserted);
     assert!(!receipt.authority.grants_any());
     assert_eq!(registry.record_count().expect("count"), 1);
+    let anchor = registry
+        .current_anchor()
+        .expect("anchor")
+        .expect("non-empty anchor");
     drop(registry);
+
+    let file = OpenOptions::new()
+        .read(true)
+        .write(true)
+        .open(&path)
+        .expect("reopen registry");
+    let reopened =
+        ProductionProposalRegistry::open_anchored(file, scope, 1, 16, anchor).expect("anchored");
+    assert_eq!(reopened.record_count().expect("count"), 1);
+    drop(reopened);
     let _ = std::fs::remove_file(path);
 }
