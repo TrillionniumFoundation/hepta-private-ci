@@ -42,11 +42,16 @@ impl LaneFCompositionReceiptV3 {
                 LaneFStageV3::EvaluationAdmitted => evaluation = Some(trace.output_digest),
                 LaneFStageV3::IntuitionDecided => intuition = Some(trace.output_digest),
                 LaneFStageV3::ContextCompiled => context = Some(trace.output_digest),
-                LaneFStageV3::HostEnvelopePrepared => host_index = Some(index),
+                LaneFStageV3::HostEnvelopePrepared
+                    if trace.outcome == StageOutcomeV3::Completed =>
+                {
+                    host_index = Some(index);
+                }
                 LaneFStageV3::ObjectiveValidated
                 | LaneFStageV3::LegalSetBuilt
                 | LaneFStageV3::NeuralSignalCollected
                 | LaneFStageV3::PromptPortfolioBuilt
+                | LaneFStageV3::HostEnvelopePrepared
                 | LaneFStageV3::DispatchProposed
                 | LaneFStageV3::LearningRecorded => {}
             }
