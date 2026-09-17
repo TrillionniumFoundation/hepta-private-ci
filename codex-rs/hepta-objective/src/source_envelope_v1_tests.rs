@@ -1,6 +1,9 @@
 use pretty_assertions::assert_eq;
 
 use super::*;
+use crate::MAX_OBJECTIVE_AGGREGATE_PREDICATES;
+use crate::MAX_OBJECTIVE_CALLER_ACTIONS;
+use crate::MAX_OBJECTIVE_SOURCE_CONSTRAINTS;
 use crate::ObjectiveStructureError;
 
 fn envelope() -> ObjectiveSourceEnvelopeV1 {
@@ -186,7 +189,7 @@ fn every_collection_enforces_counts_and_duplicate_keys_before_semantic_compilati
             s.terminal_conditions
                 .resize(n, s.terminal_conditions[0].clone())
         }),
-        ("legalActionClasses", 1, 128, |s, n| {
+        ("legalActionClasses", 0, MAX_OBJECTIVE_CALLER_ACTIONS, |s, n| {
             s.legal_action_classes
                 .resize(n, s.legal_action_classes[0].clone())
         }),
@@ -194,11 +197,16 @@ fn every_collection_enforces_counts_and_duplicate_keys_before_semantic_compilati
             s.forbidden_action_classes
                 .resize(n, s.forbidden_action_classes[0].clone())
         }),
-        ("confirmationActionClasses", 0, 128, |s, n| {
-            s.confirmation_action_classes
-                .resize(n, s.confirmation_action_classes[0].clone())
-        }),
-        ("constraints", 1, 256, |s, n| {
+        (
+            "confirmationActionClasses",
+            0,
+            MAX_OBJECTIVE_CALLER_ACTIONS,
+            |s, n| {
+                s.confirmation_action_classes
+                    .resize(n, s.confirmation_action_classes[0].clone())
+            },
+        ),
+        ("constraints", 1, MAX_OBJECTIVE_SOURCE_CONSTRAINTS, |s, n| {
             s.constraints.resize(n, s.constraints[0].clone())
         }),
         ("softDimensions", 0, 64, |s, n| {
@@ -241,6 +249,35 @@ fn every_collection_enforces_counts_and_duplicate_keys_before_semantic_compilati
             Err(ObjectiveStructureError::DuplicateSemanticKey { field, index: 1 })
         );
     }
+}
+
+#[test]
+fn predicate_arrays_share_the_native_aggregate_capacity() {
+    let mut source = envelope();
+    let template = source.structured_intent.success_predicates[0].clone();
+    source.structured_intent.success_predicates = (0..126)
+        .map(|index| {
+            let mut predicate = template.clone();
+            predicate.predicate_id = format!("success-{index:03}");
+            predicate
+        })
+        .collect();
+    // Fixture still has one terminal condition and one evidence requirement:
+    // 126 + 1 + 1 = 128 is accepted.
+    assert_eq!(source.validate_structure(), Ok(()));
+
+    let mut extra = template;
+    extra.predicate_id = "success-overflow".into();
+    source.structured_intent.success_predicates.push(extra);
+    assert_eq!(
+        source.validate_structure(),
+        Err(ObjectiveStructureError::CollectionCount {
+            field: "successPredicates+terminalConditions+evidenceRequirements",
+            actual: MAX_OBJECTIVE_AGGREGATE_PREDICATES + 1,
+            minimum: 0,
+            maximum: MAX_OBJECTIVE_AGGREGATE_PREDICATES,
+        })
+    );
 }
 
 #[test]
