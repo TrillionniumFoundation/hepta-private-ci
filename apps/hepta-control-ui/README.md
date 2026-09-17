@@ -22,6 +22,13 @@ A request is recorded before transport I/O; response loss therefore remains
 `indeterminate` and is reconciled by operation identity on reconnect instead of
 being silently forgotten or blindly duplicated.
 
+The `hepta.ui-control.transport-request.v1` and request-semantics labels used by
+`runtime-client.js` identify a **package-local transport-adapter envelope**.
+They are not new registered cross-module contracts and do not replace
+`ModulePort::runtime.agentd::ui.control`; the injected transport remains
+responsible for mapping this bounded client envelope onto the existing
+registered backend boundary.
+
 `buildOperationProposal()` returns `UiOperationProposalV1`. The historical
 `buildOperationIntent()` export is a compatibility alias and deliberately does
 **not** mint or impersonate `kernel.operations`' `OperationIntentV1`. A
