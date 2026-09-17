@@ -87,7 +87,10 @@ fn config() -> SupervisorConfig {
 }
 
 fn command(name: &str) -> Result<AgentCommand, SupervisorError> {
-    AgentCommand::new(std::env::temp_dir().join("hepta-closure").join(name), Vec::new())
+    AgentCommand::new(
+        std::env::temp_dir().join("hepta-closure").join(name),
+        Vec::new(),
+    )
 }
 
 #[derive(Clone, Default)]
@@ -289,7 +292,11 @@ fn unexpected_exit_restarts_with_bounded_exponential_backoff() -> Result<(), Sup
     control.set_healthy(&fixture.agent_id);
     supervisor.tick(base);
 
-    let delays = [AGENT_RESTART_MIN, AGENT_RESTART_MIN * 2, AGENT_RESTART_MIN * 4];
+    let delays = [
+        AGENT_RESTART_MIN,
+        AGENT_RESTART_MIN * 2,
+        AGENT_RESTART_MIN * 4,
+    ];
     let mut now = base + Duration::from_millis(1);
     for (index, delay) in delays.into_iter().enumerate() {
         control.set_exit(&fixture.agent_id);
@@ -311,7 +318,7 @@ fn unexpected_exit_restarts_with_bounded_exponential_backoff() -> Result<(), Sup
     assert_eq!(control.spawn_count(&fixture.agent_id), 4);
     let snapshot = supervisor.snapshot(&fixture.agent_id).expect("slot");
     assert!(snapshot.events.iter().any(|event| matches!(
-        event.kind,
+        &event.kind,
         SupervisorEventKind::AutomaticRestartExhausted { attempts: 3 }
     )));
     Ok(())
