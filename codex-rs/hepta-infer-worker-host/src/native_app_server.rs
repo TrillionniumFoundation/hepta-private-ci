@@ -156,7 +156,10 @@ impl AppServerModelDriver {
         // Recheck the actual generation after connecting. Cognitive context is
         // intentionally acquired after this point so its owner cut is as close
         // as possible to the effect boundary.
-        owner.session_ingress().await?;
+        if let Err(error) = owner.session_ingress().await {
+            let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
+            return Err(error.into());
+        }
         if cancellation.is_cancelled() {
             let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
             return Err("cancelled before model dispatch".into());
@@ -168,10 +171,20 @@ impl AppServerModelDriver {
                 // dispatch boundary. Exact snapshot/read receipt equality is
                 // required; these digests are therefore an active consumer
                 // freshness gate rather than provenance-only metadata.
-                let observed = owner.cognitive_context(query.clone(), /*limit*/ 4).await?;
-                let current = owner.cognitive_context(query, /*limit*/ 4).await?;
-                confirm_cognitive_receipts(&observed, &current)?;
-                Some(cognitive_additional_context(&current)?)
+                let context_result: Result<HashMap<String, AdditionalContextEntry>> = async {
+                    let observed = owner.cognitive_context(query.clone(), /*limit*/ 4).await?;
+                    let current = owner.cognitive_context(query, /*limit*/ 4).await?;
+                    confirm_cognitive_receipts(&observed, &current)?;
+                    cognitive_additional_context(&current)
+                }
+                .await;
+                match context_result {
+                    Ok(context) => Some(context),
+                    Err(error) => {
+                        let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
+                        return Err(error);
+                    }
+                }
             }
             None => None,
         };
