@@ -1,52 +1,112 @@
 # ui.control: implementation design
 
-Parent: `docs/modules/ui.control/TECHNICAL.md`. Lane: `LANE-B-RUNTIME`.
-Status: coherent-view and authenticated-transport client boundary implemented; remaining target capabilities and independent acceptance are listed in section 8. Common requirements: `../EXECUTION_SEMANTICS.md` and `../TECHNICAL.md`. Canonical ownership and package predecessors are unchanged.
+Parent: `docs/modules/ui.control/TECHNICAL.md`. Implementation guide:
+`docs/modules/ui.control/DEVELOPMENT.md`. Lane: `LANE-B-RUNTIME`.
+Status: coherent-view, authenticated runtime client and source browser shell
+implemented; deployment security topology, real backend authority and
+independent product acceptance remain external gates. Common requirements:
+`../EXECUTION_SEMANTICS.md` and `../TECHNICAL.md`. Canonical ownership and
+package predecessors are unchanged.
 
 ## 1. Source and work envelope
 
 Roots: `apps/hepta-control-ui`.
 Packages: `UI-V5`.
 
-Operation signatures below describe the target contract. Section 8 identifies the implemented native subset and remaining integration; names in section 2 are not automatically native API symbols. Preserve existing stores and APIs; do not create another authority or execution spine.
+Operation signatures below describe the target contract. Section 8 identifies
+the implemented native subset and remaining deployment integration. Preserve
+existing stores and APIs; do not create another authority or execution spine.
 
 ## 2. Public operations and contract details
 
-`read_view(snapshot_cursor) -> RuntimeView`; `submit_request(intent, displayed_revision, session) -> RequestAcknowledgement`; `request_stop(scope, session) -> StopAcknowledgement`. Use generated protocol clients and backend-authenticated operations. The UI may request or display a decision but cannot issue capabilities, select its own displayed candidate or directly mutate domain stores.
+`read_view(snapshot_cursor) -> RuntimeView`;
+`submit_request(intent, displayed_revision, session) -> RequestAcknowledgement`;
+`request_stop(scope, session) -> StopAcknowledgement`.
+
+The source client now carries the final authority-free proposal/stop scope over
+the transport and computes its semantic digest locally. The UI may request or
+display a decision but cannot issue capabilities, select its own authoritative
+candidate or directly mutate domain stores. `UiOperationProposalV1` is not
+`kernel.operations`' `OperationIntentV1`.
 
 ## 3. State records and transaction design
 
-Only presentation/session-local state: connection generation, current view revision, pending request IDs, accessibility focus and explicitly scoped preferences. Server facts remain authoritative. A stale view is visibly marked stale; optimistic presentation never becomes a terminal-effect record. Sensitive action confirmation binds the final displayed target/payload/revision.
+Only presentation/session-local state: current authenticated connection,
+coherent current/prior snapshot, bounded pending operation identities and
+browser presentation state. Server facts remain authoritative. A stale view is
+visibly marked stale and mutating browser controls are disabled. Sensitive
+action confirmation binds the exact final target, target revision, displayed
+revision and scope/payload before submission.
+
+Pending work is inserted before transport I/O. A response-loss or backend
+transport failure therefore leaves an `indeterminate` local operation instead of
+erasing it. Reconnect queries the injected backend reconciler by immutable
+operation identity/digest/provenance; it does not re-submit the operation.
 
 ## 4. Deterministic algorithm and scheduling
 
-Negotiate client/backend version; subscribe to bounded snapshots; reject mixed generations; render state with pending/indeterminate/failed distinctions; route authenticated user intents to the owner; reconcile responses by request ID. Disconnect cancels pending UI affordances but does not assume an external action was cancelled. Emergency controls remain usable without model cooperation.
+Negotiate client/backend version; accept only session/generation-bound bounded
+snapshots; project every module through the display allowlist; reject mixed or
+regressing generations/revisions; render stale/pending/indeterminate/failed
+states; submit the final bounded proposal/scope; reconcile by request identity
+and full session/origin provenance. Queue acknowledgement never establishes a
+terminal external effect.
 
 ## 5. Capacity and performance profile
 
-Pilot view <= 1 MiB subject to backend limits, retained events <= 1000 per view, rendering work scheduled in bounded batches. Measure interaction/stop request latency, disconnected behavior and keyboard/screen-reader paths; UI timing is not hardware-stop timing.
-
-Pilot ceilings are design targets, not measurements. Stricter canonical limits prevail. Bind actual schema/migration, host and measurements before composition; stateless modules prove absence rather than inventing state.
+Current source limits are enforced in `apps/hepta-control-ui/src/protocol.js` and
+`runtime-client.js`: projected view <= 1 MiB, request/scope <= 64 KiB,
+canonical depth <= 32, canonical nodes <= 4096, modules <= 4096 and pending
+operations <= 1024. These are client limits, not host-performance measurements.
+UI timing is not hardware-stop timing.
 
 ## 6. Concrete verification cases
 
-- UI-01: incompatible protocol version blocks mutating controls with an explicit explanation.
-- UI-02: stale confirmation cannot authorize a changed target or payload.
-- UI-03: reconnect reconciles pending IDs without duplicate requests.
-- UI-04: keyboard-only and screen-reader users can inspect uncertainty, request stop and recover focus after errors.
+- UI-01: incompatible protocol version returns `INCOMPATIBLE_PROTOCOL` and
+  prevents mutation.
+- UI-02: stale displayed revision fails closed; target revision and displayed
+  revision remain separately bound.
+- UI-03: response-loss-after-accept remains indeterminate and reconnect
+  reconciles the retained ID without duplicate submission.
+- UI-04: the source browser shell exposes live status/alert semantics and stale
+  controls are disabled; full keyboard/screen-reader product acceptance remains
+  an external gate.
+- UI-05: secret/provider fields are eliminated before `readView()` and are
+  re-projected at the browser view-model boundary.
+- UI-06: observation provenance mismatch cannot settle pending work.
 
-These are required product test designs, not executed-test receipts. Each implementation supplies native test identity, exact input/output and independent oracle evidence.
+These source tests are not independent deployment-acceptance receipts.
 
 ## 7. Integration, rollback and capability ceiling
 
-Web and native clients share the same runtime contracts and state meanings. Human override is authenticated and scoped; hardware emergency stop remains independent. Rollback preserves compatible client/backend versions and does not downgrade authentication.
-
-Use all eighteen dossier receipt fields. Immediate revocation/stop remains effective across frozen snapshots. Preserve every applicable external gate; no generator self-acceptance, self-merge or self-release.
+Web and native clients share authority-free request semantics. Human override
+must be authenticated and scoped; hardware emergency stop remains independent.
+Rollback preserves compatible client/backend versions and does not downgrade
+authentication. No source test, generated dossier or UI acknowledgement grants
+activation, acceptance, merge, promotion or release authority.
 
 ## 8. Current native implementation
 
-- **Implemented entrypoints:** `readView` in [apps/hepta-control-ui/src/runtime-client.js](../../../apps/hepta-control-ui/src/runtime-client.js); `submitRequest` in [apps/hepta-control-ui/src/runtime-client.js](../../../apps/hepta-control-ui/src/runtime-client.js); `requestStop` in [apps/hepta-control-ui/src/runtime-client.js](../../../apps/hepta-control-ui/src/runtime-client.js). Coherent-view and authenticated-transport client boundary implemented.
-- **State and recovery:** The client retains session, coherent generation/revision snapshot and at most 1024 pending requests in memory; stale revisions reject and terminal statuses require terminal observations from the injected transport.
-- **Source tests:** [apps/hepta-control-ui/test/runtime-client.test.js](../../../apps/hepta-control-ui/test/runtime-client.test.js), [apps/hepta-control-ui/test/control.test.js](../../../apps/hepta-control-ui/test/control.test.js). These are test identities, not execution receipts for this documentation revision.
-- **Implementation and operating references:** [apps/hepta-control-ui/README.md](../../../apps/hepta-control-ui/README.md), [docs/modules/ui.control/IMPLEMENTATION_MAP.json](../../../docs/modules/ui.control/IMPLEMENTATION_MAP.json).
-- **Remaining work:** Package the chosen web framework and deployed authentication/CSP/CSRF topology; verify actual backend authority and accessible end-to-end behavior.
+- **Implemented runtime entrypoints:** `readView`, `submitRequest`,
+  `requestStop`, reconnect reconciliation and typed error mapping in
+  `apps/hepta-control-ui/src/runtime-client.js`.
+- **Protocol boundary:** bounded canonical snapshots, client-owned semantic
+  SHA-256 and stable `UiControlError` codes in `src/protocol.js`.
+- **Projection boundary:** `projectRuntime` and authority-free
+  `buildOperationProposal` in `src/control.js`; the compatibility
+  `buildOperationIntent` name no longer emits `OperationIntentV1`.
+- **Browser source shell:** `ControlPlaneApp` in `src/browser-app.js`, with
+  stale-view mutation blocking, final immutable confirmation and text-only DOM
+  rendering.
+- **State/recovery:** authenticated session, current/prior coherent snapshot,
+  maximum 1024 pending requests, indeterminate retention and provenance-bound
+  reconnect reconciliation.
+- **Source tests:** `test/control.test.js`, `test/runtime-client.test.js` and
+  `test/browser-app.test.js`; package commands are `npm run check` and
+  `npm run build` from `apps/hepta-control-ui`.
+- **CI:** `.github/workflows/hepta-ui-control.yml` verifies exact source and a
+  deterministic synthetic merge; Lane-B also invokes the package check/build.
+- **Remaining work:** deploy the selected hosting/transport topology, bind real
+  backend authentication/authority, qualify CSP/CSRF/CORS/WebSocket behavior,
+  perform full keyboard/screen-reader E2E acceptance and collect independent
+  deployment/performance evidence.
