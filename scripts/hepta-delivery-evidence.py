@@ -5,6 +5,12 @@ The bundle distinguishes the source head being proposed from the exact object
 that the CI matrix executed. On pull requests the latter is GitHub's synthetic
 merge commit; on pushes they are the same commit. `not_applicable` can only be
 introduced by `hepta-validation-scope.py` for this source change.
+
+A rejected fan-in is still an evidence result. The builder therefore writes one
+digest-bound bundle before returning failure so CI retains the exact missing or
+failed checks instead of scattering rejection state across transient log lines.
+Identity or scope-schema failures still abort before issuance because no trusted
+candidate evidence can be produced from an invalid binding.
 """
 
 from __future__ import annotations
@@ -14,10 +20,11 @@ import hashlib
 import json
 import os
 import subprocess
+import sys
 from pathlib import Path
 from typing import Any
 
-SCHEMA = "hepta.delivery-evidence.v1"
+SCHEMA = "hepta.delivery-evidence.v2"
 SCOPE_SCHEMA = "hepta.validation-scope.v1"
 
 
@@ -89,6 +96,7 @@ def build(
     results: dict[str, dict[str, str]] = {}
     failures: list[str] = []
     for job, dependency in sorted(needs.items()):
+        result = str(dependency.get("result") or "missing")
         if job == "scope":
             required = True
             reason = "validation_scope_is_always_required"
@@ -97,12 +105,17 @@ def build(
             if not isinstance(decision, dict) or not isinstance(
                 decision.get("required"), bool
             ):
-                failures.append(f"{job}: missing structured applicability decision")
+                reason = "missing_structured_applicability_decision"
+                failures.append(f"{job}: {reason}")
+                results[job] = {
+                    "result": result,
+                    "disposition": "failed",
+                    "applicability_reason": reason,
+                }
                 continue
             required = decision["required"]
             reason = str(decision.get("reason") or "missing_reason")
 
-        result = str(dependency.get("result") or "missing")
         if result == "success":
             disposition = "passed"
         elif result == "skipped" and not required:
@@ -123,6 +136,7 @@ def build(
     if missing_jobs:
         failures.append("missing fan-in results: " + ", ".join(missing_jobs))
 
+    failures = sorted(set(failures))
     changed = "\n".join(scope.get("paths", []))
     payload: dict[str, Any] = {
         "schema": SCHEMA,
@@ -133,11 +147,10 @@ def build(
         "validation_scope": scope,
         "changed_paths_sha256": _sha256(changed.encode()),
         "results": results,
+        "acceptance": "rejected" if failures else "accepted",
+        "failures": failures,
     }
     payload["evidence_digest_sha256"] = _sha256(_canonical(payload))
-
-    if failures:
-        raise SystemExit("blocking evidence rejected:\n" + "\n".join(failures))
     return payload
 
 
@@ -177,18 +190,28 @@ def verify(
     results = bundle.get("results")
     if not isinstance(results, dict):
         raise SystemExit("E_RESULTS: evidence has no result aggregation")
+    failures = bundle.get("failures")
+    if not isinstance(failures, list) or not all(
+        isinstance(failure, str) for failure in failures
+    ):
+        raise SystemExit("E_RESULTS: evidence has invalid failure aggregation")
     bad = [
         name
         for name, result in results.items()
-        if result.get("disposition") not in {"passed", "not_applicable"}
+        if not isinstance(result, dict)
+        or result.get("disposition") not in {"passed", "not_applicable"}
     ]
-    if bad:
-        raise SystemExit("E_RESULTS: failed results present: " + ", ".join(sorted(bad)))
+    expected_acceptance = "rejected" if failures or bad else "accepted"
+    if bundle.get("acceptance") != expected_acceptance:
+        raise SystemExit("E_RESULTS: acceptance does not match aggregated results")
+    if expected_acceptance != "accepted":
+        detail = sorted({*failures, *(f"{name}: failed disposition" for name in bad)})
+        raise SystemExit("E_RESULTS: blocking evidence rejected:\n" + "\n".join(detail))
 
 
 def _self_test() -> None:
-    # Digest verification is exercised without depending on a repository state.
-    sample = {
+    # Digest and acceptance state are exercised without depending on repository state.
+    accepted = {
         "schema": SCHEMA,
         "tested_commit_sha": "a" * 40,
         "tested_tree_sha": "b" * 40,
@@ -197,11 +220,21 @@ def _self_test() -> None:
         "validation_scope": {"schema": SCOPE_SCHEMA, "jobs": {}},
         "changed_paths_sha256": _sha256(b""),
         "results": {},
+        "acceptance": "accepted",
+        "failures": [],
     }
-    sample["evidence_digest_sha256"] = _sha256(_canonical(sample))
-    unsigned = dict(sample)
+    accepted["evidence_digest_sha256"] = _sha256(_canonical(accepted))
+    unsigned = dict(accepted)
     digest = unsigned.pop("evidence_digest_sha256")
     assert digest == _sha256(_canonical(unsigned))
+
+    rejected = dict(accepted)
+    rejected.pop("evidence_digest_sha256")
+    rejected["acceptance"] = "rejected"
+    rejected["failures"] = ["rust-ci: result=failure required=true reason=test"]
+    rejected["evidence_digest_sha256"] = _sha256(_canonical(rejected))
+    assert rejected["acceptance"] == "rejected"
+    assert rejected["failures"]
 
 
 def main() -> int:
@@ -242,17 +275,29 @@ def main() -> int:
         output.write_text(
             json.dumps(bundle, indent=2, sort_keys=True) + "\n", encoding="utf-8"
         )
+        accepted = bundle["acceptance"] == "accepted"
         print(
             json.dumps(
                 {
-                    "status": "PASS_HEPTA_DELIVERY_EVIDENCE_BUILD",
+                    "status": (
+                        "PASS_HEPTA_DELIVERY_EVIDENCE_BUILD"
+                        if accepted
+                        else "REJECT_HEPTA_DELIVERY_EVIDENCE_BUILD"
+                    ),
                     "tested_sha": args.tested_sha,
                     "source_head_sha": args.source_head_sha,
+                    "acceptance": bundle["acceptance"],
+                    "failure_count": len(bundle["failures"]),
                     "evidence_digest_sha256": bundle["evidence_digest_sha256"],
                 },
                 sort_keys=True,
             )
         )
+        if not accepted:
+            print("blocking evidence rejected:", file=sys.stderr)
+            for failure in bundle["failures"]:
+                print(f"- {failure}", file=sys.stderr)
+            return 1
         return 0
 
     bundle = _load_json(Path(args.input).read_text(encoding="utf-8"), "evidence")
