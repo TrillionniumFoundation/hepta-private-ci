@@ -254,7 +254,7 @@ mod tests {
     }
 
     #[test]
-    fn stale_forked_or_mutated_anchor_witness_is_rejected() {
+    fn stale_or_mutated_anchor_witness_is_rejected() {
         let anchor = HoldoutAnchorV1 {
             sequence: 3,
             head: digest(9),
