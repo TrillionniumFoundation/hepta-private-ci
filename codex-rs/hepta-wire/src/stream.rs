@@ -95,9 +95,7 @@ impl WireFrameDecoder {
             }
         }
 
-        let expected_len = self
-            .expected_len
-            .ok_or(FrameDecodeError::InternalState)?;
+        let expected_len = self.expected_len.ok_or(FrameDecodeError::InternalState)?;
         if self.buffer.len() < expected_len && consumed < input.len() {
             let needed = expected_len - self.buffer.len();
             let remaining = &input[consumed..];
@@ -112,10 +110,7 @@ impl WireFrameDecoder {
             });
         }
 
-        let encoded = std::mem::replace(
-            &mut self.buffer,
-            Vec::with_capacity(HEADER_FIXED_BYTES),
-        );
+        let encoded = std::mem::replace(&mut self.buffer, Vec::with_capacity(HEADER_FIXED_BYTES));
         self.expected_len = None;
         let version = read_u16(&encoded, 4).map_err(|_| FrameDecodeError::TruncatedHeader)?;
         let frame = match version {
@@ -145,12 +140,10 @@ fn inspect_header(header: &[u8]) -> Result<usize, FrameDecodeError> {
     if version != V1_WIRE_VERSION && version != V2_WIRE_VERSION {
         return Err(FrameDecodeError::UnsupportedVersion(version));
     }
-    let schema_length = usize::from(
-        read_u16(header, 6).map_err(|_| FrameDecodeError::TruncatedHeader)?,
-    );
-    let producer_length = usize::from(
-        read_u16(header, 8).map_err(|_| FrameDecodeError::TruncatedHeader)?,
-    );
+    let schema_length =
+        usize::from(read_u16(header, 6).map_err(|_| FrameDecodeError::TruncatedHeader)?);
+    let producer_length =
+        usize::from(read_u16(header, 8).map_err(|_| FrameDecodeError::TruncatedHeader)?);
     if !(1..=MAX_ID_BYTES).contains(&schema_length)
         || !(1..=MAX_ID_BYTES).contains(&producer_length)
     {
@@ -160,10 +153,9 @@ fn inspect_header(header: &[u8]) -> Result<usize, FrameDecodeError> {
     if generation == 0 {
         return Err(FrameDecodeError::Generation);
     }
-    let payload_length = usize::try_from(
-        read_u32(header, 50).map_err(|_| FrameDecodeError::TruncatedHeader)?,
-    )
-    .map_err(|_| FrameDecodeError::PayloadLength)?;
+    let payload_length =
+        usize::try_from(read_u32(header, 50).map_err(|_| FrameDecodeError::TruncatedHeader)?)
+            .map_err(|_| FrameDecodeError::PayloadLength)?;
     if payload_length == 0 || payload_length > crate::MAX_WIRE_PAYLOAD_BYTES {
         return Err(FrameDecodeError::PayloadLength);
     }
@@ -180,19 +172,31 @@ fn inspect_header(header: &[u8]) -> Result<usize, FrameDecodeError> {
 
 fn read_u16(bytes: &[u8], start: usize) -> Result<u16, ()> {
     let end = start.checked_add(2).ok_or(())?;
-    let raw: [u8; 2] = bytes.get(start..end).ok_or(())?.try_into().map_err(|_| ())?;
+    let raw: [u8; 2] = bytes
+        .get(start..end)
+        .ok_or(())?
+        .try_into()
+        .map_err(|_| ())?;
     Ok(u16::from_be_bytes(raw))
 }
 
 fn read_u32(bytes: &[u8], start: usize) -> Result<u32, ()> {
     let end = start.checked_add(4).ok_or(())?;
-    let raw: [u8; 4] = bytes.get(start..end).ok_or(())?.try_into().map_err(|_| ())?;
+    let raw: [u8; 4] = bytes
+        .get(start..end)
+        .ok_or(())?
+        .try_into()
+        .map_err(|_| ())?;
     Ok(u32::from_be_bytes(raw))
 }
 
 fn read_u64(bytes: &[u8], start: usize) -> Result<u64, ()> {
     let end = start.checked_add(8).ok_or(())?;
-    let raw: [u8; 8] = bytes.get(start..end).ok_or(())?.try_into().map_err(|_| ())?;
+    let raw: [u8; 8] = bytes
+        .get(start..end)
+        .ok_or(())?
+        .try_into()
+        .map_err(|_| ())?;
     Ok(u64::from_be_bytes(raw))
 }
 
@@ -216,13 +220,24 @@ impl fmt::Display for FrameDecodeError {
             Self::TruncatedHeader => formatter.write_str("HPTA streaming header is truncated"),
             Self::Magic => formatter.write_str("HPTA streaming header magic mismatch"),
             Self::UnsupportedVersion(version) => {
-                write!(formatter, "HPTA streaming decoder does not support version {version}")
+                write!(
+                    formatter,
+                    "HPTA streaming decoder does not support version {version}"
+                )
             }
-            Self::IdentityLength => formatter.write_str("HPTA streaming identity length is outside bounds"),
+            Self::IdentityLength => {
+                formatter.write_str("HPTA streaming identity length is outside bounds")
+            }
             Self::Generation => formatter.write_str("HPTA streaming generation must be non-zero"),
-            Self::PayloadLength => formatter.write_str("HPTA streaming payload length is outside bounds"),
-            Self::FrameLengthOverflow => formatter.write_str("HPTA streaming frame length overflow"),
-            Self::InternalState => formatter.write_str("HPTA streaming decoder internal state error"),
+            Self::PayloadLength => {
+                formatter.write_str("HPTA streaming payload length is outside bounds")
+            }
+            Self::FrameLengthOverflow => {
+                formatter.write_str("HPTA streaming frame length overflow")
+            }
+            Self::InternalState => {
+                formatter.write_str("HPTA streaming decoder internal state error")
+            }
             Self::V1(error) => write!(formatter, "HPTA V1 frame rejected: {error}"),
             Self::V2(error) => write!(formatter, "HPTA V2 frame rejected: {error}"),
         }

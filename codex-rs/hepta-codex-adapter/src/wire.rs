@@ -60,10 +60,7 @@ impl WirePayload for CodexOperationIntent {
 pub fn codex_wire_schema_registry() -> Result<SchemaRegistry, WireIntegrationError> {
     let mut registry = SchemaRegistry::new();
     registry
-        .register::<CodexOperationIntent>(
-            &[WireVersion::V2],
-            MAX_CODEX_INTENT_PAYLOAD_BYTES,
-        )
+        .register::<CodexOperationIntent>(&[WireVersion::V2], MAX_CODEX_INTENT_PAYLOAD_BYTES)
         .map_err(WireIntegrationError::Schema)?;
     Ok(registry)
 }
@@ -96,9 +93,7 @@ pub fn decode_codex_intent_frame(
 
 fn require_v2_protocol(negotiated: NegotiatedWire) -> Result<(), WireIntegrationError> {
     let required = CapabilitySet::FULL_FRAME_INTEGRITY.union(CapabilitySet::SCHEMA_ADMISSION);
-    if negotiated.version() != WireVersion::V2
-        || !negotiated.capabilities().contains(required)
-    {
+    if negotiated.version() != WireVersion::V2 || !negotiated.capabilities().contains(required) {
         return Err(WireIntegrationError::NegotiationMismatch);
     }
     Ok(())
@@ -121,8 +116,8 @@ fn validate_intent_digests(
 
 fn push_id(bytes: &mut Vec<u8>, value: &StableId) -> Result<(), PayloadCodecError> {
     let raw = value.as_str().as_bytes();
-    let length = u16::try_from(raw.len())
-        .map_err(|_| PayloadCodecError::new("codex intent id length"))?;
+    let length =
+        u16::try_from(raw.len()).map_err(|_| PayloadCodecError::new("codex intent id length"))?;
     bytes.extend_from_slice(&length.to_be_bytes());
     bytes.extend_from_slice(raw);
     Ok(())
@@ -139,8 +134,8 @@ fn read_id(payload: &[u8], cursor: &mut usize) -> Result<StableId, PayloadCodecE
     let raw = payload
         .get(*cursor..end)
         .ok_or(PayloadCodecError::new("codex intent id truncated"))?;
-    let value = std::str::from_utf8(raw)
-        .map_err(|_| PayloadCodecError::new("codex intent id utf8"))?;
+    let value =
+        std::str::from_utf8(raw).map_err(|_| PayloadCodecError::new("codex intent id utf8"))?;
     let value = StableId::new(value)
         .map_err(|_| PayloadCodecError::new("codex intent id canonicalization"))?;
     *cursor = end;
@@ -284,7 +279,9 @@ mod tests {
                 Generation::new(1).expect("generation"),
                 &invalid,
             ),
-            Err(WireIntegrationError::Schema(SchemaError::PayloadRejected(_)))
+            Err(WireIntegrationError::Schema(SchemaError::PayloadRejected(
+                _
+            )))
         ));
     }
 }

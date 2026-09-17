@@ -71,12 +71,7 @@ impl SchemaRegistry {
         max_payload_bytes: usize,
     ) -> Result<(), SchemaError> {
         let schema = StableId::new(T::SCHEMA_ID).map_err(|_| SchemaError::InvalidSchemaId)?;
-        self.register_validator(
-            schema,
-            versions,
-            max_payload_bytes,
-            validate_typed::<T>,
-        )
+        self.register_validator(schema, versions, max_payload_bytes, validate_typed::<T>)
     }
 
     pub fn register_validator(
@@ -114,19 +109,11 @@ impl SchemaRegistry {
     }
 
     pub fn admit_v1(&self, envelope: &WireEnvelope) -> Result<(), SchemaError> {
-        self.admit(
-            WireVersion::V1,
-            envelope.schema(),
-            envelope.payload(),
-        )
+        self.admit(WireVersion::V1, envelope.schema(), envelope.payload())
     }
 
     pub fn admit_v2(&self, envelope: &WireEnvelopeV2) -> Result<(), SchemaError> {
-        self.admit(
-            WireVersion::V2,
-            envelope.schema(),
-            envelope.payload(),
-        )
+        self.admit(WireVersion::V2, envelope.schema(), envelope.payload())
     }
 
     pub fn encode_v2<T: WirePayload>(
@@ -136,7 +123,9 @@ impl SchemaRegistry {
         value: &T,
     ) -> Result<WireEnvelopeV2, SchemaError> {
         let schema = StableId::new(T::SCHEMA_ID).map_err(|_| SchemaError::InvalidSchemaId)?;
-        let payload = value.encode_payload().map_err(SchemaError::PayloadRejected)?;
+        let payload = value
+            .encode_payload()
+            .map_err(SchemaError::PayloadRejected)?;
         self.admit(WireVersion::V2, &schema, &payload)?;
         WireEnvelopeV2::new(schema, producer, generation, payload)
             .map_err(|_| SchemaError::EnvelopeRejected)
@@ -239,7 +228,9 @@ impl fmt::Display for SchemaError {
             Self::InvalidPayloadLimit => {
                 formatter.write_str("wire schema payload limit is outside global bounds")
             }
-            Self::UnknownSchema(schema) => write!(formatter, "wire schema {schema} is not registered"),
+            Self::UnknownSchema(schema) => {
+                write!(formatter, "wire schema {schema} is not registered")
+            }
             Self::VersionNotAllowed { schema, version } => write!(
                 formatter,
                 "wire schema {schema} does not allow HPTA version {}",
@@ -341,10 +332,7 @@ mod tests {
                 &value,
             )
             .expect("encode typed payload");
-        assert_eq!(
-            registry.decode_v2::<ExamplePayload>(&envelope),
-            Ok(value)
-        );
+        assert_eq!(registry.decode_v2::<ExamplePayload>(&envelope), Ok(value));
     }
 
     #[test]

@@ -26,9 +26,8 @@ impl CapabilitySet {
     pub const FULL_FRAME_INTEGRITY: Self = Self(1 << 0);
     pub const SCHEMA_ADMISSION: Self = Self(1 << 1);
     pub const STREAMING_DECODE: Self = Self(1 << 2);
-    pub const SUPPORTED: Self = Self(
-        Self::FULL_FRAME_INTEGRITY.0 | Self::SCHEMA_ADMISSION.0 | Self::STREAMING_DECODE.0,
-    );
+    pub const SUPPORTED: Self =
+        Self(Self::FULL_FRAME_INTEGRITY.0 | Self::SCHEMA_ADMISSION.0 | Self::STREAMING_DECODE.0);
 
     pub const fn from_bits(bits: u64) -> Self {
         Self(bits)
@@ -231,14 +230,20 @@ impl fmt::Display for NegotiationError {
         match self {
             Self::EmptyOffer => formatter.write_str("wire negotiation offer is empty"),
             Self::DuplicateVersion(version) => {
-                write!(formatter, "wire negotiation repeats version {}", version.as_u16())
+                write!(
+                    formatter,
+                    "wire negotiation repeats version {}",
+                    version.as_u16()
+                )
             }
             Self::UnknownCapabilityBits(bits) => {
-                write!(formatter, "wire negotiation contains unknown capability bits 0x{bits:x}")
+                write!(
+                    formatter,
+                    "wire negotiation contains unknown capability bits 0x{bits:x}"
+                )
             }
-            Self::RequiredCapabilitiesUnavailable => formatter.write_str(
-                "wire negotiation offer cannot satisfy its own required capabilities",
-            ),
+            Self::RequiredCapabilitiesUnavailable => formatter
+                .write_str("wire negotiation offer cannot satisfy its own required capabilities"),
             Self::Incompatible => formatter.write_str("wire negotiation has no compatible version"),
         }
     }
@@ -288,10 +293,7 @@ mod tests {
         let local = NegotiationOffer::new(
             vec![
                 VersionOffer::new(WireVersion::V1, CapabilitySet::NONE),
-                VersionOffer::new(
-                    WireVersion::V2,
-                    CapabilitySet::FULL_FRAME_INTEGRITY,
-                ),
+                VersionOffer::new(WireVersion::V2, CapabilitySet::FULL_FRAME_INTEGRITY),
             ],
             CapabilitySet::FULL_FRAME_INTEGRITY,
         )
@@ -301,7 +303,10 @@ mod tests {
             CapabilitySet::NONE,
         )
         .expect("remote offer");
-        assert_eq!(negotiate(&local, &remote), Err(NegotiationError::Incompatible));
+        assert_eq!(
+            negotiate(&local, &remote),
+            Err(NegotiationError::Incompatible)
+        );
     }
 
     #[test]
@@ -315,10 +320,7 @@ mod tests {
             Err(NegotiationError::UnknownCapabilityBits(1_u64 << 63))
         );
         assert_eq!(
-            NegotiationOffer::new(
-                vec![VersionOffer::new(WireVersion::V2, full_v2())],
-                unknown,
-            ),
+            NegotiationOffer::new(vec![VersionOffer::new(WireVersion::V2, full_v2())], unknown,),
             Err(NegotiationError::UnknownCapabilityBits(1_u64 << 63))
         );
     }

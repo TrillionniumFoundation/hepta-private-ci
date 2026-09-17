@@ -265,7 +265,9 @@ impl fmt::Display for WireV2Error {
             Self::Truncated => formatter.write_str("HPTA V2 envelope is truncated"),
             Self::Magic => formatter.write_str("HPTA V2 envelope magic mismatch"),
             Self::Version(version) => write!(formatter, "unsupported HPTA V2 version {version}"),
-            Self::IdentityLength => formatter.write_str("HPTA V2 identity length is outside bounds"),
+            Self::IdentityLength => {
+                formatter.write_str("HPTA V2 identity length is outside bounds")
+            }
             Self::IdentityEncoding => formatter.write_str("HPTA V2 identity is not canonical"),
             Self::Generation => formatter.write_str("HPTA V2 generation must be non-zero"),
             Self::PayloadLength => formatter.write_str("HPTA V2 payload length is outside bounds"),

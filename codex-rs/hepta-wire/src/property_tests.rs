@@ -45,20 +45,15 @@ fn deterministic_property_round_trips_cover_many_payloads() {
         rng.fill(&mut payload);
         let generation = Generation::new(iteration + 1).expect("generation");
 
-        let v1 = WireEnvelope::new(
-            schema(),
-            producer(),
-            generation,
-            payload.clone(),
-        )
-        .expect("V1 envelope");
+        let v1 = WireEnvelope::new(schema(), producer(), generation, payload.clone())
+            .expect("V1 envelope");
         let v1_bytes = v1.encode();
         let v1_decoded = WireEnvelope::decode(&v1_bytes).expect("V1 decode");
         assert_eq!(v1_decoded, v1);
         assert_eq!(v1_decoded.encode(), v1_bytes);
 
-        let v2 = WireEnvelopeV2::new(schema(), producer(), generation, payload)
-            .expect("V2 envelope");
+        let v2 =
+            WireEnvelopeV2::new(schema(), producer(), generation, payload).expect("V2 envelope");
         let v2_bytes = v2.encode();
         let v2_decoded = WireEnvelopeV2::decode(&v2_bytes).expect("V2 decode");
         assert_eq!(v2_decoded, v2);
