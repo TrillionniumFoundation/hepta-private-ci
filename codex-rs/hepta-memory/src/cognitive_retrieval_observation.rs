@@ -43,7 +43,7 @@ pub struct RetrievalChannelObservation {
 /// classified into one of these signals.
 #[derive(Clone, Copy, Debug, Eq, Ord, PartialEq, PartialOrd, Serialize)]
 #[serde(rename_all = "snake_case")]
-pub enum RetrievalRelationSignal {
+pub(crate) enum RetrievalRelationSignal {
     Supports,
     Contradicts,
     TemporalBefore,
@@ -58,7 +58,8 @@ impl RetrievalRelationSignal {
         let normalized = value
             .trim()
             .to_ascii_lowercase()
-            .replace([' ', '-'], "_");
+            .replace(' ', "_")
+            .replace('-', "_");
         match normalized.as_str() {
             "supports" => Some(Self::Supports),
             "contradicts" => Some(Self::Contradicts),
@@ -77,11 +78,11 @@ impl RetrievalRelationSignal {
 /// `support_sha256` binds the exact projection generation, edge identity,
 /// relation token and both memory revisions; it is not a confidence score.
 #[derive(Clone, Debug, Eq, PartialEq, Serialize)]
-pub struct ObservedRetrievalRelation {
-    pub candidate: MemoryRevisionId,
-    pub support_memory: MemoryRevisionId,
-    pub signal: RetrievalRelationSignal,
-    pub support_sha256: Sha256Digest,
+pub(crate) struct ObservedRetrievalRelation {
+    pub(crate) candidate: MemoryRevisionId,
+    pub(crate) support_memory: MemoryRevisionId,
+    pub(crate) signal: RetrievalRelationSignal,
+    pub(crate) support_sha256: Sha256Digest,
 }
 
 /// Digest-only source and scoring facts; raw memory/citation content is absent.
@@ -115,13 +116,13 @@ impl RetrievalObservation {
     pub fn channels(&self) -> &[RetrievalChannelObservation] {
         &self.channels
     }
-    /// Typed KG relation facts reached from the same bounded entity seeds.
-    /// They are provenance/risk signals only and do not silently add a second
-    /// RRF channel or change legacy ranking.
-    pub fn relations(&self) -> &[ObservedRetrievalRelation] {
+    /// Owner-internal typed KG relation facts reached from the same bounded
+    /// entity seeds. They are bound into `observation_sha256` but are not yet a
+    /// registered cross-module contract; external callers consume the digest.
+    pub(crate) fn relations(&self) -> &[ObservedRetrievalRelation] {
         &self.relations
     }
-    pub const fn relation_limit(&self) -> RetrievalLimitObservation {
+    pub(crate) const fn relation_limit(&self) -> RetrievalLimitObservation {
         self.relation_limit
     }
     /// Exact final top-four omission count, not omissions before channel limits.
@@ -136,8 +137,7 @@ impl RetrievalObservation {
 pub(super) struct GeneratedRetrieval {
     pub(super) ranked: Vec<(MemoryKey, AggregatedRank)>,
     channels: Vec<RetrievalChannelObservation>,
-    relations: Vec<ObservedRetrievalRelation>,
-    relation_limit: RetrievalLimitObservation,
+    seeds: Vec<EntitySeed>,
 }
 
 impl CognitiveStore {
@@ -153,6 +153,11 @@ impl CognitiveStore {
         let mut transaction = self.pool.begin().await.map_err(unavailable)?;
         let generated = self
             .generate_retrieval_tx(&mut transaction, access, request, &fts_query)
+            .await?;
+        // Relation semantics are observation-only and therefore do not add SQL
+        // work to the legacy `retrieve_memory_candidates` hot path.
+        let relation_evidence = self
+            .relation_evidence_tx(&mut transaction, &generated.seeds, request.now_unix_seconds)
             .await?;
         let mut candidates = self
             .resolve_retrieval_tx(
@@ -198,8 +203,8 @@ impl CognitiveStore {
             MAX_RETRIEVAL_CHANNEL_CANDIDATES,
             MAX_RETRIEVAL_RESULTS,
             &generated.channels,
-            &generated.relations,
-            generated.relation_limit,
+            &relation_evidence.values,
+            relation_evidence.limit,
             &observed,
             observed.len() - batch.candidates.len(),
         ))
@@ -208,8 +213,8 @@ impl CognitiveStore {
             batch,
             candidates: observed,
             channels: generated.channels,
-            relations: generated.relations,
-            relation_limit: generated.relation_limit,
+            relations: relation_evidence.values,
+            relation_limit: relation_evidence.limit,
             observation_sha256: Sha256Digest::for_bytes(&bytes),
         };
         transaction.commit().await.map_err(unavailable)?;
@@ -254,9 +259,6 @@ impl CognitiveStore {
         let graph = self
             .graph_channel_tx(transaction, &seeds.values, now)
             .await?;
-        let relation_evidence = self
-            .relation_evidence_tx(transaction, &seeds.values, now)
-            .await?;
         let recency = self
             .recency_channel_tx(
                 transaction,
@@ -290,8 +292,7 @@ impl CognitiveStore {
         Ok(GeneratedRetrieval {
             ranked,
             channels,
-            relations: relation_evidence.values,
-            relation_limit: relation_evidence.limit,
+            seeds: seeds.values,
         })
     }
 
