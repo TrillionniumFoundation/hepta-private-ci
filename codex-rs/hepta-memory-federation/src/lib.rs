@@ -11,6 +11,7 @@ use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
 
+pub use v2::FederatedBatchResultV2;
 pub use v2::FederatedCompletenessV2;
 pub use v2::FederatedCoverageV2;
 pub use v2::FederatedEvidenceItemV2;
@@ -18,17 +19,34 @@ pub use v2::FederatedLeaseV2;
 pub use v2::FederatedQueryV2;
 pub use v2::FederatedResultV2;
 pub use v2::FederatedValidityV2;
+pub use v2::FederationAttemptV2;
+pub use v2::FederationAuthorityFutureV2;
+pub use v2::FederationAuthorityV2;
+pub use v2::FederationCacheV2;
 pub use v2::FederationCancellationReceiptV2;
 pub use v2::FederationCancellationRequestV2;
+pub use v2::FederationClockV2;
+pub use v2::FederationPeerDirectoryV2;
+pub use v2::FederationPeerFailureV2;
+pub use v2::FederationTransportFutureV2;
 pub use v2::FederationTransportOutcomeV2;
 pub use v2::FederationTransportResultV2;
 pub use v2::FederationTransportV2;
 pub use v2::FederationV2Error;
+pub use v2::MAX_FEDERATED_PEERS_V2;
 pub use v2::MAX_FEDERATED_RESULTS_V2;
+pub use v2::MAX_FEDERATION_CONCURRENCY_V2;
+pub use v2::PeerTrustV2;
 pub use v2::RemoteFederatedResponseV2;
+pub use v2::SystemFederationClockV2;
+pub use v2::TrustedPeerSnapshotV2;
+pub use v2::VerifiedCapabilityReceiptV2;
+pub use v2::execute_federated;
 pub use v2::execute_once;
 pub use v2::observe_cancellation;
 
+/// Legacy observation-only surface. New federation callers should use the V2
+/// verified capability and signed-response boundary above.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct FederatedReadRequest {
     pub request_id: StableId,
@@ -39,6 +57,8 @@ pub struct FederatedReadRequest {
     pub deadline_ms: u64,
 }
 
+/// Legacy observation-only surface retained for compatibility. It is not a
+/// substitute for `VerifiedCapabilityReceiptV2`.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct FederatedReadLease {
     pub lease_id: StableId,
@@ -92,6 +112,9 @@ impl fmt::Display for Error {
 
 impl StdError for Error {}
 
+/// Legacy receipt observer retained for compatibility. Product federation code
+/// must use the V2 authority verifier and must not treat this function as an
+/// authorization boundary.
 pub fn observe(
     now_ms: u64,
     request: FederatedReadRequest,
