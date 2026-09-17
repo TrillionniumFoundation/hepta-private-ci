@@ -1,0 +1,31 @@
+name: memory federation v2 core verify macos
+
+on:
+  push:
+    branches:
+      - fix/memory-federation-v2-hardening
+    paths:
+      - .github/workflows/memory-federation-v2-core-verify-macos.yml
+
+permissions:
+  contents: read
+
+jobs:
+  core:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: fix/memory-federation-v2-hardening
+      - name: Format check
+        working-directory: codex-rs
+        run: cargo fmt -p codex-hepta-memory-federation -p codex-hepta-memory -- --check
+      - name: Test canonical federation contract
+        working-directory: codex-rs
+        run: cargo test -p codex-hepta-memory-federation --lib
+      - name: Test memory product adapter
+        working-directory: codex-rs
+        run: cargo test -p codex-hepta-memory --lib cognitive_runtime_tests
+      - name: Test existing federation owner suite
+        working-directory: codex-rs
+        run: cargo test -p codex-hepta-memory --lib cognitive_federation_tests
