@@ -34,33 +34,33 @@ Existing declared roots at this exact source snapshot:
 
 - `codex-rs/hepta-cognitive-store`
 
-Non-authoritative implementation evidence roots:
+The declared root remains the semantic/conformance owner. The current production integration deliberately reuses cross-owner durable/runtime components rather than creating a second database:
 
-None.
+- `codex-rs/hepta-memory/src/authoritative_store.rs` — canonical production authority façade over the existing SQLite backend.
+- `codex-rs/hepta-memory/src/cognitive_store.rs` — durable `cognitive_1.sqlite3` backend.
+- `codex-rs/hepta-agentd/src/runtime.rs` — named product/runtime open caller.
+- `codex-rs/hepta-agentd/src/production_writer_host.rs` — externally-authorized production-writer caller.
+- root `CALLERS.toml` — closed-world callsite policy for those privileged boundaries.
 
-Declared roots not yet present:
+These are integration evidence roots, not a silent expansion of the declared module root. The module registry remains authoritative for root ownership.
 
-None.
-
-`existing_bound` is a source-location fact: the declared roots exist. The source and test references below identify what can be inspected and invoked; only exact-candidate execution receipts establish that the checks passed. This status does not establish runtime composition, operator acceptance, selection, promotion or release. Any source move updates `MODULES.json`, `SOURCE_BINDINGS.json` and this guide together.
+`existing_bound` is a source-location fact: the declared roots exist. The source and test references below identify what can be inspected and invoked; only exact-candidate execution receipts establish that the checks passed. This status does not establish operator acceptance, selection, promotion or release. Any declared source move updates `MODULES.json`, `SOURCE_BINDINGS.json` and this guide together.
 
 ### Native source and scope
 
-The registered primary source is [codex-rs/hepta-cognitive-store/src/lib.rs](../../../codex-rs/hepta-cognitive-store/src/lib.rs); observed identifiers include `CognitiveStore`, `append`, `get`, `snapshot_records`, `StoreReceipt`. This is a source navigation binding, not proof that every target operation or production consumer exists. Read the [current native implementation](../../../qualification/module-execution-dossiers/detail/cognitive.store.md#8-current-native-implementation) alongside the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/cognitive.store.md) for the implemented subset and remaining product work.
+The registered primary source is [codex-rs/hepta-cognitive-store/src/lib.rs](../../../codex-rs/hepta-cognitive-store/src/lib.rs). It is now explicitly documented as a bounded in-memory semantic/conformance model rather than production persistence. Its V2 authorization, writer-fence, intent-idempotency, revision, tombstone, snapshot and image-reopen semantics remain useful as a deterministic oracle.
+
+The canonical production entry point is [AuthoritativeCognitiveStore](../../../codex-rs/hepta-memory/src/authoritative_store.rs), which wraps the existing SQLite `hepta-memory::CognitiveStore`. Product code must not treat the V2 `BTreeMap` state or `export_image`/`reopen` helpers as a second durable authority.
+
+Read the [current native implementation](../../../qualification/module-execution-dossiers/detail/cognitive.store.md#8-current-native-implementation) and the [implementation map](./IMPLEMENTATION_MAP.json) for the current candidate claim boundary.
 
 ## 3. Boundary, responsibilities and non-goals
 
-Current durable integration: the physical memory/source writer remains the
-existing SQLx `hepta-memory::CognitiveStore`. Its
-`codex-rs/hepta-memory/src/lane_c_snapshot.rs` adapter projects one authorized
-SQLite transaction into the new cognitive snapshot and read types; it does not
-add a second writer or synchronize a second database. The in-memory V2 store in
-this module is not a durable backend. See
-`codex-rs/hepta-memory/LANE_C_SQLITE.md` for exact ID/frontier mapping, bounded
-materialization, correction/deletion propagation, and reopen/rollback-witness
-behavior. The separate descriptor-safe `open_with_recovery` prerequisites
-remain unresolved; an ordinary reopen plus independently retained cut comparison
-must not be reported as full recovery admission.
+Current durable integration has one physical owner database: `hepta-memory::CognitiveStore` and `cognitive_1.sqlite3`. `AuthoritativeCognitiveStore` is the canonical product/runtime façade over that database. `codex-rs/hepta-memory/src/lane_c_snapshot.rs` projects one authorized SQLite transaction into cognitive snapshot/read types; it does not synchronize a second database. The in-memory V2 store is a conformance model only.
+
+Agentd startup holds its per-Agent writer lock for the process lifetime. `AgentdConfig::load` fails closed if another Agentd already owns the registered Agent writer lock. The production outbox/effect writer has an additional externally-authorized lease and OS writer lock. SQLite revision/predecessor CAS remains the mutation-level conflict boundary. Together these prevent a second product runtime from becoming a parallel cognitive writer while preserving deterministic retry/conflict semantics.
+
+See `codex-rs/hepta-memory/LANE_C_SQLITE.md` for exact ID/frontier mapping, bounded materialization, correction/deletion propagation and reopen/rollback-witness behavior.
 
 Direct dependencies:
 
@@ -78,24 +78,24 @@ Explicitly denied capabilities:
 - `model_call`
 - `learning_policy_write`
 
-The module accepts only registered, bounded, versioned inputs. It rejects unknown critical fields and treats missing authority, stale revisions, scope mismatch and digest mismatch as hard failures. It never directly writes another owner's store. Cross-owner mutation follows local transaction, durable intent, outbox, destination deduplication, acknowledgement and fenced reconciliation.
+The module accepts only registered, bounded, versioned inputs. It rejects unknown critical fields and treats missing authority, stale revisions, scope mismatch and digest mismatch as hard failures. It never creates a second durable store to mirror the SQLite authority. Cross-owner mutation follows local transaction, durable intent, destination deduplication, acknowledgement and fenced reconciliation where the owning protocol requires it.
 
-Non-goals include becoming a general state store, bypassing the Codex execution spine, interpreting model prose as authority, minting an authority consumed by the same component, or converting qualification evidence into deployment authority. A façade may sequence modules but may not own their facts.
+Non-goals include becoming a general state store, bypassing the Codex execution spine, interpreting model prose as authority, minting an authority consumed by the same component, treating an in-memory image as disk durability, or converting qualification evidence into deployment authority.
 
 ## 4. Internal architecture and component decomposition
 
 The bounded components are:
 
-- `schema and migration owner`
-- `transactional writer`
-- `snapshot read port`
-- `integrity and lineage verifier`
+- `semantic/conformance model` — `hepta-cognitive-store` V1/V2; no production persistence.
+- `authoritative production façade` — `hepta-memory::AuthoritativeCognitiveStore`.
+- `SQLite schema and migration owner` — existing `hepta-memory::CognitiveStore`.
+- `transactional writer` — revision/source/fact/tombstone mutations in one SQLite boundary.
+- `snapshot read port` — `lane_c_snapshot` and retrieval/read adapters.
+- `integrity and lineage verifier` — schema/object checks, revision/citation constraints, current-cut witness and read-only recovery admission.
 
-Ingress validates identity, version, size, scope and revision before domain logic. The deterministic core receives typed values and is testable without network, filesystem or process-global state unless the module owns that boundary. State-bearing components use one transaction boundary per logical mutation. Publication occurs only after invariants and lineage checks pass.
+Ingress validates identity, version, size, scope and revision before domain logic. State-bearing components use one transaction boundary per logical mutation. Publication occurs only after invariants and lineage checks pass.
 
-Adapters translate one registered contract, verify final payload and grant immediately before the boundary, invoke one downstream capability, and map the observed terminal outcome. Queue acceptance or handler completion is never inferred as external success. Component interfaces support deterministic fixtures and fault injection.
-
-Configuration is immutable for one process generation. Changes affecting authority, schema, compatibility, model identity, objective semantics or resource policy create a new revision or generation. Hidden mutable singletons, unbounded queues and implicit store fallback are prohibited.
+Configuration is immutable for one process generation. Changes affecting authority, schema, compatibility, objective semantics or resource policy create a new revision or generation. Hidden mutable singletons, unbounded queues, implicit store fallback and dual writes into the V2 conformance model are prohibited.
 
 ## 5. Contracts, ports and compatibility
 
@@ -119,37 +119,64 @@ None.
 
 Every producer validates output before publication and binds semantic fields into the declared digest scope. Every consumer validates version, bounds, producer identity, scope and digest before use. Compatibility is additive only where registered; unknown critical fields are rejected. Contract identifiers, meaning and authority interpretation cannot change in place.
 
-Rust types and canonical JSON represent identical semantics. Tests cover round trips, maximum bounds, missing fields, unknown fields, invalid enums, canonical ordering and digest stability. Error mapping preserves rejected, unavailable, timed out, indeterminate, quarantined and terminally failed outcomes.
+Rust types and canonical JSON represent identical semantics. Tests cover round trips, maximum bounds, missing fields, invalid enums, canonical ordering and digest stability. Error mapping preserves rejected, unavailable, timed out, indeterminate, quarantined and terminally failed outcomes.
 
 ## 6. Data authority, persistence and migrations
 
 Owned authoritative or rebuildable domains:
 
-- `knowledge_fact_ledger`
 - `memory_ledger`
+- `knowledge_fact_ledger`
 
 Read-only data dependencies:
 
 - `cross_owner_outbox`
 - `operation_ledger`
 
-For every owned domain, this module is the only authoritative writer. Mutations are revision- or generation-bound, idempotent for identical semantics and conflicting for a reused identity with different content. Records bind source identity, schema revision, logical sequence and lineage sufficient for correction, deletion and revocation.
+### Memory authority
 
-Migrations are deterministic and checksum-bound. Store open verifies required schema objects and integrity constraints before reads or writes. Migration failure leaves a recoverable predecessor. Rollback across a schema boundary restores compatible state with the binary.
+Memory/source revisions, corrections and tombstones are durable SQLite records. Mutations are revision-bound, identical retries are idempotent where the owning operation defines an identity, and changed semantics under a reused identity conflict. Citations and predecessor/revision relationships preserve lineage and prevent resurrection.
 
-Projection domains rebuild from declared sources and publish complete generations atomically. Projections never become sources of truth. Retention and deletion preserve lineage and prevent resurrection through indexes, caches, artifacts or backup restore.
+### Knowledge-fact authority
+
+The production knowledge-fact ledger is **not an independently writable second database or table family detached from memory authority**. It is an immutable revision-scoped fact set attached to an authoritative memory revision:
+
+- `kg_revision_fact_sets` is keyed by `(memory_id, memory_revision)` and binds extractor contract, fact-set digest, source citation and declared entity/relation counts.
+- `kg_revision_entities` and `kg_revision_relations` are immutable rows foreign-keyed to that exact revision fact set and its citations.
+- no-update/no-delete triggers make revision fact rows append-only evidence.
+- `kg_projection*` tables are rebuildable generation projections; they are not source authority.
+
+V2 `MemoryKind::Fact` and `knowledge_fact_frontier` model these semantics in memory. They do not define a second durable production ledger.
+
+### Migration and cutover
+
+The current authority-closure candidate intentionally performs **no database-format migration**. The durable SQLite database remains unchanged. Cutover is only a call-path change: Agentd runtime and production-writer construction cross `AuthoritativeCognitiveStore`; V2 remains a non-durable oracle. Therefore there is no copy/backfill/dual-write window and no second-store count/hash reconciliation to perform for this change.
+
+Rollback of this call-path cutover reverts the caller routing only. It must not restore an old `cognitive_1.sqlite3` image, because no data transformation occurred. Future schema migrations still require deterministic checksums, stop/drain/fence, off-route validation, count/digest/frontier reconciliation and a validated reverse or forward-compatible rollback path.
 
 ## 7. Runtime, concurrency and transaction model
 
-The [current native implementation](../../../qualification/module-execution-dossiers/detail/cognitive.store.md#8-current-native-implementation) identifies the actual state owner, in-memory versus persistent surfaces, and lock/transaction boundary. Use that implementation scope when composing the module; target state-machine operations are identified in the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/cognitive.store.md).
+There are three complementary fences:
 
-[Shared concurrency and transaction requirements](../README.md#shared-concurrency-and-transactions) apply at the corresponding owner boundary.
+1. **Agentd process ownership:** `AgentdConfig::load` obtains the Agent-local `writer_lock()` and rejects a second live Agentd writer. `run()` retains that file for its lifetime.
+2. **Production durable-writer ownership:** `ProductionDurableWriter` verifies an external authority lease and obtains its own OS writer lock before mutation/effect dispatch.
+3. **SQLite mutation correctness:** revision/predecessor CAS, transactions, immutable revision/fact rows and tombstone lineage reject stale/conflicting mutations.
+
+The cognitive remember/correct/forget tools execute inside the one Agentd-owned App Server runtime and mutate the one SQLite authority. They do not dual-write the V2 conformance model. Repository closed-world caller policy prevents Agentd production files from reintroducing raw `CognitiveStore::open` or direct `ProductionDurableWriter::open` construction where the authoritative façade is required.
+
+The [current native implementation](../../../qualification/module-execution-dossiers/detail/cognitive.store.md#8-current-native-implementation) contains exact call paths and remaining recovery limits.
 
 ## 8. Failure semantics, recovery and rollback
 
-Use the error/recovery path linked by the [current native implementation](../../../qualification/module-execution-dossiers/detail/cognitive.store.md#8-current-native-implementation) and the module-specific fault cases in the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/cognitive.store.md). A source library or fixture cannot stand in for an unimplemented durable recovery or external reconciler.
+Normal canonical open performs schema/migration/integrity checks and fails closed on corrupt/unavailable state. It does **not** claim to prove that a cold database is the newest acknowledged image after external rollback/restore.
 
-[Shared failure, recovery and rollback requirements](../README.md#shared-failure-and-recovery) remain mandatory.
+The implemented recovery boundary is intentionally split:
+
+- authenticated exact-current-cut **read-only** cold-image admission is available through `CognitiveStore::open_read_only_recovery`, exposed by `AuthoritativeCognitiveStore::open_recovered_read_only`;
+- writable corruption/rollback recovery remains fail-closed because descriptor-backed SQLite/VFS connection ownership and an independently current writer-fence/currentness witness are not yet implemented;
+- ordinary reopen, V2 image reopen or comparing a witness retained inside the suspect database must not be described as writable recovery admission.
+
+A source library or fixture cannot stand in for those missing durable recovery prerequisites. The stronger recovery blocker remains explicitly visible in the implementation map and qualification dossier.
 
 ## 9. Security, privacy and threat controls
 
@@ -159,34 +186,40 @@ None.
 
 The posture is least authority, bounded input, typed contracts, digest binding and independent evidence. Sensitive values are redacted or represented by digests at evidence boundaries. Credentials never enter general logs, learning datasets, prompt factors or cross-module receipts. Authority is operation-bound, final-payload-bound, short-lived and revocation-aware.
 
-Negative tests cover denied capabilities, cross-owner writes, stale or revoked grants, replay with payload drift, unknown fields, oversize input, scope escape, untrusted instruction escalation and secret/provider leakage. Security review is mandatory for new effect boundaries, persistence, network, model invocation or authority semantics.
+Negative tests cover denied capabilities, cross-owner writes, stale or revoked grants, replay with payload drift, oversize input, scope escape, untrusted instruction escalation and secret/provider leakage. Security review is mandatory for new effect boundaries, persistence, network, model invocation or authority semantics.
 
 ## 10. Performance, capacity and hot-path policy
 
-The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/cognitive.store.md) specifies this module's algorithm, pilot ceilings and capacity fixtures. Those target ceilings are not measurements and must not be reported as enforcement of an unimplemented API. Current native limits belong to [codex-rs/hepta-cognitive-store/src/lib.rs](../../../codex-rs/hepta-cognitive-store/src/lib.rs) and the linked implementation components.
+The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/cognitive.store.md) specifies the algorithm, pilot ceilings and capacity fixtures. V2 in-memory limits are conformance-model limits, not SQLite production capacity claims. Production measurements must use the selected Agentd/SQLite host and include WAL growth, transaction latency, snapshot retention, fact materialization and reopen behavior.
 
 [Shared performance and capacity requirements](../README.md#shared-performance-and-capacity) define the measurement/overload obligations for a selected host.
 
 ## 11. Observability and operations
 
-The physical writer remains hepta-memory::CognitiveStore and cognitive_1.sqlite3. The new crate supplies an in-memory semantic oracle and V2 types, not a replacement durable backend. Use the existing owner snapshot adapter and independent cut witness; descriptor-safe open_with_recovery still requires its unimplemented VFS/currentness prerequisites.
+The physical authority is `hepta-memory::CognitiveStore` and `cognitive_1.sqlite3`; `AuthoritativeCognitiveStore` is the canonical product façade. The `hepta-cognitive-store` crate supplies in-memory semantic/conformance models and must never be monitored or backed up as if it were production persistence.
+
+Operational signals should distinguish normal open, schema/integrity failure, Agentd writer-lock rejection, stale revision/CAS conflict, production authority rejection, read-only recovery admission and writable-recovery-unavailable. Do not collapse these into one generic store error.
 
 Current operating and state-format references:
 
-- [codex-rs/hepta-memory/LANE_C_SQLITE.md](../../../codex-rs/hepta-memory/LANE_C_SQLITE.md).
-
-[Shared observability and operations requirements](../README.md#shared-observability-and-operations) specify safe events and alert classes; concrete deployment thresholds require the selected host profile.
+- [codex-rs/hepta-memory/LANE_C_SQLITE.md](../../../codex-rs/hepta-memory/LANE_C_SQLITE.md)
+- [qualification cognitive.store implementation design](../../../qualification/module-execution-dossiers/detail/cognitive.store.md)
+- [implementation map](./IMPLEMENTATION_MAP.json)
 
 ## 12. Verification and qualification
 
-Current focused test sources (source references, not pass receipts):
+Current focused source tests include:
 
-- [codex-rs/hepta-memory/src/lane_c_snapshot_tests.rs](../../../codex-rs/hepta-memory/src/lane_c_snapshot_tests.rs); named case: `existing_sqlite_writes_are_readable_by_new_lane_c_after_reopen`.
-- [codex-rs/hepta-cognitive-store/src/lib_tests.rs](../../../codex-rs/hepta-cognitive-store/src/lib_tests.rs); named case: `append_and_correction_are_predecessor_fenced`.
+- `codex-rs/hepta-memory/src/authoritative_store.rs::authoritative_open_reopens_real_sqlite_state` — writes durable SQLite state, closes the pool, reopens it and compares the exact current-cut witness.
+- `codex-rs/hepta-memory/src/authoritative_store.rs::authoritative_writer_fails_closed_on_second_live_owner` — proves a second live production writer is fenced.
+- `codex-rs/hepta-agentd/src/config_tests.rs` duplicate-writer case — proves a second Agentd for the same registered home is rejected by the Agent-local writer lock.
+- [codex-rs/hepta-memory/src/lane_c_snapshot_tests.rs](../../../codex-rs/hepta-memory/src/lane_c_snapshot_tests.rs) — real SQLite snapshot/reopen/frontier behavior.
+- [codex-rs/hepta-cognitive-store/src/v2_tests.rs](../../../codex-rs/hepta-cognitive-store/src/v2_tests.rs) — semantic authorization/fence/idempotency/revision/tombstone/image checks.
+- `codex-rs/hepta-agentd/examples/h4_persistent_writer.rs` and its process harness — persistent prepare/recover qualification across a new pool/process generation, including indeterminate dispatch replay behavior.
 
-In `codex-rs`, run `just test -p codex-hepta-memory -p codex-hepta-cognitive-store`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/cognitive.store.md) separately labels target acceptance designs.
+These names are test identities, not pass receipts. Exact-candidate and synthetic-merge Actions must finish successfully before `productExecutionProved` can become true.
 
-[Shared verification and qualification requirements](../README.md#shared-verification-and-qualification) retain the source/merge, failure, compilation and independent-evidence obligations.
+In `codex-rs`, the focused package command remains `just test -p codex-hepta-memory -p codex-hepta-cognitive-store -p codex-hepta-agentd`. The repository Actions remain authoritative for exact-head/merge qualification.
 
 ## 13. Implementation sequence and work packages
 
@@ -195,21 +228,34 @@ Applicable work packages:
 - `MEM-1-STORE`
 - `MEM-8-PRODUCTION-WRITER`
 
-The bootstrap package is `MEM-1-STORE`. Development, activation and evidence predecessor graphs are distinct and all are enforced. Contract-first work may run in parallel only with non-overlapping write paths and frozen semantics. Each PR records its bounded contracts, domains, denied authorities, resources, rollback and stop conditions. A coordinator-issued envelope is required only at the coordination boundary that consumes it; it is not additional permission for ordinary authorized repository work.
+The bootstrap package remains `MEM-1-STORE`. The authority-closure integration changes the product call path without changing the durable database format. Work-package registry states below remain canonical planning data and are not rewritten merely because a candidate branch implements integration work.
 
-Source implementation completes only when the declared target root exists, public surfaces match registries, tests pass and exact-head plus merge-candidate evidence is current. Later planned packages may remain without invalidating documentation closure.
+Source implementation completes only when public surfaces match registries, tests pass and exact-head plus merge-candidate evidence is current. Production implementation and product composition are recorded separately from independent acceptance, activation, promotion and release.
 
 ## 14. Activation, compatibility and retirement
 
-Activation composes a named product caller through registered ports and verifies authority, configuration, resource and failure behavior. Shadow and qualification callers are not production callers. Source-complete modules remain inactive until activation predecessors and evidence gates pass.
+Activation composes a named product caller through registered ports and verifies authority, configuration, resource and failure behavior. The current candidate names Agentd runtime startup and Agentd production-writer host as product call sites, enforced by root `CALLERS.toml`.
 
-Compatibility adapters are temporary. Retirement requires all named callers migrated, no old-path use, oracle parity where required, rehearsed rollback and independent acceptance. Retirement preserves historical evidence and durable-record interpretability.
+Compatibility adapters are temporary. The V2 conformance model is not a compatibility database and is never synchronized with SQLite. Retirement of any old production call path requires closed-world caller proof, exact-candidate qualification and rollback rehearsal. Historical durable records remain interpretable because this authority cutover does not change their schema.
 
 ## 15. Definition of module completion
 
-Documentation completion requires this guide, exact registry references and closed-world validation. Source completion requires code in the declared root and candidate tests. Composition requires a named caller. Qualification requires current exact-candidate evidence. Acceptance, selection, promotion and release are separate externally governed states.
+Documentation completion requires this guide, exact registry references and closed-world validation. Source completion requires code and candidate tests. Production-path implementation requires one canonical durable authority and named product callers. Qualification requires current exact-candidate evidence. Writable recovery qualification, independent acceptance, selection, promotion and release are separate states.
 
-For `cognitive.store`, this document grants no runtime, production, model, provider, tool, network, filesystem, secret, Matrix, fleet, acceptance, promotion or release authority.
+For the current authority-closure candidate:
+
+- one durable production database: implemented;
+- one explicit production authority façade: implemented;
+- Agentd runtime/product open composition: implemented candidate;
+- single Agentd process writer fence: implemented and source-tested;
+- production durable-writer fence: implemented and source-tested;
+- knowledge-fact durable representation: implemented as immutable revision-scoped fact sets;
+- real SQLite close/reopen evidence: implemented as source test;
+- dual-write migration/backfill: not applicable because no second database is introduced;
+- descriptor-safe writable corruption/rollback recovery: **not yet qualified/implemented**;
+- exact-candidate CI, independent acceptance, activation and release: separate gates.
+
+This document itself grants no runtime, production, model, provider, tool, network, filesystem, secret, Matrix, fleet, acceptance, promotion or release authority.
 
 ### Work-package execution envelopes
 
@@ -296,8 +342,10 @@ The following additional work packages are source-planning envelopes introduced 
 
 ## 17. Source implementation receipt
 
-The bootstrap source-location obligation for `cognitive.store` is implemented by work package `MEM-1-STORE` in:
+The bootstrap declared-root obligation for `cognitive.store` remains implemented by `MEM-1-STORE` in:
 
 - `codex-rs/hepta-cognitive-store`
 
-The source candidate is checked by `.github/workflows/hepta-consolidated-source.yml`, including closed-world inventory, package tests, all-target compilation, strict Clippy and clean tracked state. This receipt is source implementation evidence only. It grants no runtime, production-writer, model-provider, external-effect, independent-acceptance, selection, promotion, merge or release authority.
+The current authority-closure candidate additionally composes the already-existing durable owner/runtime through `hepta-memory`, `hepta-agentd` and closed-world `CALLERS.toml`; it does not create a new durable root or database.
+
+The source candidate is checked by `.github/workflows/hepta-consolidated-source.yml`, including closed-world inventory, package tests, all-target compilation, strict Clippy and clean tracked state. The Agentd process qualification and blocking CI supply additional runtime evidence. These receipts grant no independent acceptance, selection, promotion, merge or release authority.

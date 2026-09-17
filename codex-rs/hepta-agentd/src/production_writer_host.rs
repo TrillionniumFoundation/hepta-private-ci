@@ -8,6 +8,7 @@
 use std::fmt;
 use std::sync::Arc;
 
+use codex_hepta_memory::AuthoritativeCognitiveStore;
 use codex_hepta_memory::CognitiveStore;
 use codex_hepta_memory::ProductionAuthorityLease;
 use codex_hepta_memory::ProductionAuthorityVerifier;
@@ -42,6 +43,7 @@ impl fmt::Debug for AgentdProductionWriterHost {
 impl AgentdProductionWriterHost {
     /// Open the writer against Agentd's exact private cognitive store. The
     /// verifier is mandatory and runs before any lease/event/outbox mutation.
+    /// The raw SQLite backend never crosses this production call boundary.
     pub async fn open<V>(
         config: &AgentdConfig,
         authority: ProductionAuthorityLease,
@@ -52,23 +54,23 @@ impl AgentdProductionWriterHost {
     where
         V: ProductionAuthorityVerifier + ?Sized,
     {
-        let store = CognitiveStore::open(&config.identity().layout)
+        let store = AuthoritativeCognitiveStore::open(&config.identity().layout)
             .await
             .map_err(|error| {
                 AgentdError::Protocol(format!("open production cognitive store: {error}"))
             })?;
-        let writer =
-            ProductionDurableWriter::open(store, authority, verifier, lease_id, lease_generation)
-                .await?;
+        let writer = store
+            .open_production_writer(authority, verifier, lease_id, lease_generation)
+            .await?;
         Ok(Self {
             writer: Arc::new(writer),
             dispatcher: None,
         })
     }
 
-    /// Build a host handle around an already-open Agentd-owned store. This is
-    /// useful when the runtime has already attached a CognitiveStore and keeps
-    /// the same mandatory external verifier contract.
+    /// Qualification-only seam for harnesses that must control the exact
+    /// SQLite pool lifetime across a simulated crash/restart. Repository
+    /// CALLERS policy requires zero product callers of this method.
     pub async fn open_with_store<V>(
         store: CognitiveStore,
         authority: ProductionAuthorityLease,
@@ -79,9 +81,9 @@ impl AgentdProductionWriterHost {
     where
         V: ProductionAuthorityVerifier + ?Sized,
     {
-        let writer =
-            ProductionDurableWriter::open(store, authority, verifier, lease_id, lease_generation)
-                .await?;
+        let writer = AuthoritativeCognitiveStore::from_qualification_backend(store)
+            .open_production_writer(authority, verifier, lease_id, lease_generation)
+            .await?;
         Ok(Self {
             writer: Arc::new(writer),
             dispatcher: None,

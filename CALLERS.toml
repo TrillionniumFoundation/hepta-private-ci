@@ -14,12 +14,31 @@ product_callers = ["codex-rs/hepta-supervisor/src/main.rs"]
 caller_markers = ["run_supervisord_with_grant_verifier", "H7H89ProductionGrantVerifier"]
 
 [[boundary]]
+id = "cognitive_authoritative_open"
+symbol = "AuthoritativeCognitiveStore::open"
+definition_path = "codex-rs/hepta-memory/src/authoritative_store.rs"
+definition_markers = ["pub struct AuthoritativeCognitiveStore", "pub async fn open", "CognitiveStore::open"]
+product_callers = [
+  "codex-rs/hepta-agentd/src/runtime.rs",
+  "codex-rs/hepta-agentd/src/production_writer_host.rs",
+]
+caller_markers = ["AuthoritativeCognitiveStore::open"]
+
+[[boundary]]
 id = "memory_production_writer_open"
 symbol = "ProductionDurableWriter::open"
 definition_path = "codex-rs/hepta-memory/src/production_writer.rs"
 definition_markers = ["pub struct ProductionDurableWriter", "pub async fn open", "ProductionAuthorityVerifier"]
-product_callers = ["codex-rs/hepta-agentd/src/production_writer_host.rs"]
+product_callers = ["codex-rs/hepta-memory/src/authoritative_store.rs"]
 caller_markers = ["ProductionDurableWriter::open", "verifier"]
+
+[[boundary]]
+id = "cognitive_authoritative_writer_open"
+symbol = "AuthoritativeCognitiveStore::open_production_writer"
+definition_path = "codex-rs/hepta-memory/src/authoritative_store.rs"
+definition_markers = ["pub async fn open_production_writer", "ProductionAuthorityVerifier", "ProductionDurableWriter::open"]
+product_callers = ["codex-rs/hepta-agentd/src/production_writer_host.rs"]
+caller_markers = ["open_production_writer", "verifier"]
 
 [[boundary]]
 id = "agentd_production_writer_host"
@@ -52,8 +71,13 @@ forbidden = ["H7H89ProductionGrantVerifier::default"]
 
 [[protected_file]]
 path = "codex-rs/hepta-agentd/src/production_writer_host.rs"
-required = ["ProductionDurableWriter::open", "ProductionAuthorityVerifier"]
-forbidden = ["AllowVerifier", "permit_all"]
+required = ["AuthoritativeCognitiveStore", "open_production_writer", "ProductionAuthorityVerifier"]
+forbidden = ["ProductionDurableWriter::open", "CognitiveStore::open", "AllowVerifier", "permit_all"]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/runtime.rs"
+required = ["AuthoritativeCognitiveStore::open", "from_authoritative_open_result"]
+forbidden = ["CognitiveStore::open"]
 
 [[protected_file]]
 path = "codex-rs/model-provider/src/provider_effect.rs"

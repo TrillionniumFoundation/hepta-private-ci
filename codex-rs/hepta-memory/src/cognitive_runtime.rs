@@ -1,6 +1,7 @@
 use std::fmt;
 use std::sync::Arc;
 
+use crate::AuthoritativeCognitiveStore;
 use crate::CognitiveCompactError;
 use crate::CognitiveStore;
 use crate::CognitiveStoreError;
@@ -67,9 +68,23 @@ pub enum CognitiveRuntime {
 }
 
 impl CognitiveRuntime {
+    /// Legacy/backend constructor retained for qualification fixtures.
+    /// Product runtimes should use `from_authoritative_open_result` so startup
+    /// crosses the canonical authority façade before the backend is attached.
     pub fn from_open_result(result: Result<CognitiveStore, CognitiveStoreError>) -> Self {
         match result {
             Ok(store) => Self::Available(Arc::new(store)),
+            Err(error) => Self::Unavailable(CognitiveUnavailableReason::from(&error)),
+        }
+    }
+
+    /// Convert the canonical production authority façade into the read/runtime
+    /// capability. The raw backend never crosses the product open boundary.
+    pub fn from_authoritative_open_result(
+        result: Result<AuthoritativeCognitiveStore, CognitiveStoreError>,
+    ) -> Self {
+        match result {
+            Ok(store) => Self::Available(Arc::new(store.into_runtime_backend())),
             Err(error) => Self::Unavailable(CognitiveUnavailableReason::from(&error)),
         }
     }
