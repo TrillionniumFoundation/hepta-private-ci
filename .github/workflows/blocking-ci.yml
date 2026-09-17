@@ -18,55 +18,109 @@ permissions:
   contents: read
 
 jobs:
+  scope:
+    name: Validation scope
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    env:
+      HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+      BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+    outputs:
+      head_sha: ${{ steps.identity.outputs.head_sha }}
+      base_sha: ${{ steps.identity.outputs.base_sha }}
+      scope_json: ${{ steps.classify.outputs.scope_json }}
+      bazel: ${{ steps.classify.outputs.bazel }}
+      cargo_deny: ${{ steps.classify.outputs.cargo_deny }}
+      rust_ci: ${{ steps.classify.outputs.rust_ci }}
+      sdk: ${{ steps.classify.outputs.sdk }}
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ env.HEAD_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Bind exact candidate identity
+        id: identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$HEAD_SHA"
+          echo "head_sha=$HEAD_SHA" >> "$GITHUB_OUTPUT"
+          echo "base_sha=$BASE_SHA" >> "$GITHUB_OUTPUT"
+      - name: Self-test validation policy
+        run: python3 scripts/hepta-validation-scope.py --self-test
+      - name: Classify this candidate once
+        id: classify
+        run: >-
+          python3 scripts/hepta-validation-scope.py
+          --base "$BASE_SHA"
+          --head "$HEAD_SHA"
+          --output "$RUNNER_TEMP/hepta-validation-scope.json"
+          --github-output "$GITHUB_OUTPUT"
+
   hepta-contract-gate:
     name: Hepta contract gate
+    needs: scope
     uses: ./.github/workflows/hepta-contract-gate.yml
     secrets: inherit
 
-  # Keep reusable workflow calls alphabetized. The `required` job below is the
-  # version-controlled list that the main-branch ruleset should require.
+  # Heavy jobs are only skipped when the same-sha classifier marks them N/A.
+  # Unknown paths and authority/state/execution/promotion changes fail closed to
+  # the complete suite.
   bazel:
     name: Bazel
+    needs: scope
+    if: needs.scope.outputs.bazel == 'true'
     uses: ./.github/workflows/bazel.yml
     secrets: inherit
 
   blob-size-policy:
     name: Blob size policy
+    needs: scope
     uses: ./.github/workflows/blob-size-policy.yml
     secrets: inherit
 
   cargo-deny:
     name: cargo-deny
+    needs: scope
+    if: needs.scope.outputs.cargo_deny == 'true'
     uses: ./.github/workflows/cargo-deny.yml
     secrets: inherit
 
   codespell:
     name: Codespell
+    needs: scope
     uses: ./.github/workflows/codespell.yml
     secrets: inherit
 
   repo-checks:
     name: repo-checks
+    needs: scope
     uses: ./.github/workflows/repo-checks.yml
     secrets: inherit
 
   rust-ci:
     name: rust-ci
+    needs: scope
+    if: needs.scope.outputs.rust_ci == 'true'
     uses: ./.github/workflows/rust-ci.yml
     secrets: inherit
 
   sdk:
     name: sdk
+    needs: scope
+    if: needs.scope.outputs.sdk == 'true'
     uses: ./.github/workflows/sdk.yml
     secrets: inherit
 
   required:
     timeout-minutes: 30
     name: CI required
-    # Without `always()`, GitHub skips this job after a failed dependency and a
-    # required check can appear successful instead of reporting the failure.
+    # This job is the only blocking fan-in. It consumes the concrete results
+    # from this exact candidate and emits one immutable evidence bundle.
     if: ${{ always() }}
     needs:
+      - scope
       - hepta-contract-gate
       - bazel
       - blob-size-policy
@@ -76,14 +130,40 @@ jobs:
       - rust-ci
       - sdk
     runs-on: ubuntu-24.04
+    env:
+      TESTED_SHA: ${{ needs.scope.outputs.head_sha }}
+      BASE_SHA: ${{ needs.scope.outputs.base_sha }}
+      HEPTA_SCOPE_JSON: ${{ needs.scope.outputs.scope_json }}
+      NEEDS: ${{ toJSON(needs) }}
     steps:
-      # Keep the helper on the same combined revision as the child workflows so
-      # the merge gate evaluates the exact candidate they validated.
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
+          ref: ${{ needs.scope.outputs.head_sha }}
+          fetch-depth: 0
           persist-credentials: false
 
-      - name: Require successful dependencies
-        env:
-          NEEDS: ${{ toJSON(needs) }}
-        run: python3 .github/scripts/check_ci_results.py
+      - name: Self-test evidence verifier
+        run: python3 scripts/hepta-delivery-evidence.py self-test
+
+      - name: Build exact-candidate delivery evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$TESTED_SHA"
+          test "$(git rev-parse HEAD)" = "$TESTED_SHA"
+          python3 scripts/hepta-delivery-evidence.py build \
+            --tested-sha "$TESTED_SHA" \
+            --base-sha "$BASE_SHA" \
+            --output "$RUNNER_TEMP/hepta-delivery-evidence.json"
+          python3 scripts/hepta-delivery-evidence.py verify \
+            --input "$RUNNER_TEMP/hepta-delivery-evidence.json" \
+            --tested-sha "$TESTED_SHA"
+
+      - name: Retain the single blocking evidence bundle
+        if: always() && env.TESTED_SHA != ''
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-delivery-evidence-${{ env.TESTED_SHA }}
+          path: ${{ runner.temp }}/hepta-delivery-evidence.json
+          if-no-files-found: error
+          retention-days: 30
