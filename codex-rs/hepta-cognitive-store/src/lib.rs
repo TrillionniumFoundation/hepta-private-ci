@@ -44,8 +44,9 @@ pub use v2::StoreSnapshotV2;
 /// admissions. The other half is reserved for terminal tombstones so a full
 /// ordinary ledger cannot make revocation impossible.
 pub const MAX_V2_ADMITTED_REVISIONS: usize = MAX_V2_RECORD_REVISIONS / 2;
-/// Global hard ceiling for the idempotency journal. Per-store limits are lower
-/// and scale with the configured ordinary revision capacity.
+/// Global hard ceiling for the combined idempotency journal. A configured store
+/// reserves enough of this ceiling for one terminal forget receipt per ordinary
+/// admitted revision, so ordinary retry traffic cannot consume deletion state.
 pub const MAX_V2_INTENT_JOURNAL_ENTRIES: usize = MAX_V2_RECORD_REVISIONS;
 const INTENT_JOURNAL_MULTIPLIER: usize = 4;
 
@@ -58,9 +59,11 @@ const MAX_RECORDS: usize = 16_384;
 pub struct AdmittedCognitiveStoreV2 {
     inner: RawAdmittedCognitiveStoreV2,
     intent_ids: BTreeSet<StableId>,
+    ordinary_intent_ids: BTreeSet<StableId>,
     admitted_revisions: usize,
     maximum_admitted_revisions: usize,
-    maximum_intent_journal_entries: usize,
+    maximum_ordinary_intent_journal_entries: usize,
+    maximum_total_intent_journal_entries: usize,
 }
 
 impl AdmittedCognitiveStoreV2 {
@@ -77,7 +80,8 @@ impl AdmittedCognitiveStoreV2 {
         let raw_capacity = maximum_record_revisions
             .checked_mul(2)
             .ok_or(CognitiveStoreV2Error::InvalidCapacity)?;
-        let maximum_intent_journal_entries = journal_capacity(maximum_record_revisions)?;
+        let (maximum_ordinary_intent_journal_entries, maximum_total_intent_journal_entries) =
+            journal_capacities(maximum_record_revisions)?;
         Ok(Self {
             inner: RawAdmittedCognitiveStoreV2::new(
                 snapshot_key,
@@ -85,9 +89,11 @@ impl AdmittedCognitiveStoreV2 {
                 raw_capacity,
             )?,
             intent_ids: BTreeSet::new(),
+            ordinary_intent_ids: BTreeSet::new(),
             admitted_revisions: 0,
             maximum_admitted_revisions: maximum_record_revisions,
-            maximum_intent_journal_entries,
+            maximum_ordinary_intent_journal_entries,
+            maximum_total_intent_journal_entries,
         })
     }
 
@@ -121,7 +127,7 @@ impl AdmittedCognitiveStoreV2 {
             .validate()
             .map_err(CognitiveStoreV2Error::Contract)?;
         enforce_admission_verification(&candidate)?;
-        self.ensure_journal_capacity(&intent.intent_id)?;
+        self.ensure_ordinary_journal_capacity(&intent.intent_id)?;
         let will_insert = self.candidate_will_insert(&candidate)?;
         if will_insert && self.admitted_revisions >= self.maximum_admitted_revisions {
             return Err(CognitiveStoreV2Error::CapacityExceeded);
@@ -134,7 +140,8 @@ impl AdmittedCognitiveStoreV2 {
                 .checked_add(1)
                 .ok_or(CognitiveStoreV2Error::CapacityExceeded)?;
         }
-        self.intent_ids.insert(intent_id);
+        self.intent_ids.insert(intent_id.clone());
+        self.ordinary_intent_ids.insert(intent_id);
         Ok(receipt)
     }
 
@@ -143,7 +150,10 @@ impl AdmittedCognitiveStoreV2 {
         verifier: &V,
         intent: ForgetIntentV2,
     ) -> Result<MemoryWriteReceiptV1, CognitiveStoreV2Error> {
-        self.ensure_journal_capacity(&intent.intent_id)?;
+        // Terminal mutations deliberately bypass the ordinary-journal ceiling.
+        // They remain bounded by the combined ceiling, whose reserved tail is
+        // sized for one forget intent per ordinary admitted revision.
+        self.ensure_total_journal_capacity(&intent.intent_id)?;
         let intent_id = intent.intent_id.clone();
         let receipt = self.inner.forget(verifier, intent)?;
         self.intent_ids.insert(intent_id);
@@ -160,7 +170,11 @@ impl AdmittedCognitiveStoreV2 {
 
     pub fn export_image(&self) -> Result<CognitiveStoreImageV2, CognitiveStoreV2Error> {
         let image = self.inner.export_image()?;
-        validate_hardened_image(&image, self.maximum_intent_journal_entries)?;
+        validate_hardened_image(
+            &image,
+            self.maximum_ordinary_intent_journal_entries,
+            self.maximum_total_intent_journal_entries,
+        )?;
         Ok(image)
     }
 
@@ -173,8 +187,13 @@ impl AdmittedCognitiveStoreV2 {
         {
             return Err(CognitiveStoreV2Error::InvalidCapacity);
         }
-        let maximum_intent_journal_entries = journal_capacity(maximum_record_revisions)?;
-        validate_hardened_image(&image, maximum_intent_journal_entries)?;
+        let (maximum_ordinary_intent_journal_entries, maximum_total_intent_journal_entries) =
+            journal_capacities(maximum_record_revisions)?;
+        let journal_summary = validate_hardened_image(
+            &image,
+            maximum_ordinary_intent_journal_entries,
+            maximum_total_intent_journal_entries,
+        )?;
         let admitted_revisions = image
             .records
             .iter()
@@ -183,33 +202,53 @@ impl AdmittedCognitiveStoreV2 {
         if admitted_revisions > maximum_record_revisions {
             return Err(CognitiveStoreV2Error::CapacityExceeded);
         }
-        let intent_ids = image
-            .journal
-            .iter()
-            .map(|entry| entry.intent_id.clone())
-            .collect::<BTreeSet<_>>();
         let raw_capacity = maximum_record_revisions
             .checked_mul(2)
             .ok_or(CognitiveStoreV2Error::InvalidCapacity)?;
         let inner = RawAdmittedCognitiveStoreV2::reopen(image, raw_capacity)?;
         Ok(Self {
             inner,
-            intent_ids,
+            intent_ids: journal_summary.intent_ids,
+            ordinary_intent_ids: journal_summary.ordinary_intent_ids,
             admitted_revisions,
             maximum_admitted_revisions: maximum_record_revisions,
-            maximum_intent_journal_entries,
+            maximum_ordinary_intent_journal_entries,
+            maximum_total_intent_journal_entries,
         })
     }
 
-    fn ensure_journal_capacity(&self, intent_id: &StableId) -> Result<(), CognitiveStoreV2Error> {
+    fn ensure_ordinary_journal_capacity(
+        &self,
+        intent_id: &StableId,
+    ) -> Result<(), CognitiveStoreV2Error> {
+        self.ensure_total_journal_capacity(intent_id)?;
+        if !self.ordinary_intent_ids.contains(intent_id)
+            && !self.intent_ids.contains(intent_id)
+            && self.ordinary_intent_ids.len() >= self.maximum_ordinary_intent_journal_entries
+        {
+            return Err(CognitiveStoreV2Error::Contract(
+                LaneCContractError::LimitExceeded {
+                    field: "cognitive_store_ordinary_intent_journal",
+                    actual: self.ordinary_intent_ids.len().saturating_add(1),
+                    maximum: self.maximum_ordinary_intent_journal_entries,
+                },
+            ));
+        }
+        Ok(())
+    }
+
+    fn ensure_total_journal_capacity(
+        &self,
+        intent_id: &StableId,
+    ) -> Result<(), CognitiveStoreV2Error> {
         if !self.intent_ids.contains(intent_id)
-            && self.intent_ids.len() >= self.maximum_intent_journal_entries
+            && self.intent_ids.len() >= self.maximum_total_intent_journal_entries
         {
             return Err(CognitiveStoreV2Error::Contract(
                 LaneCContractError::LimitExceeded {
                     field: "cognitive_store_intent_journal",
                     actual: self.intent_ids.len().saturating_add(1),
-                    maximum: self.maximum_intent_journal_entries,
+                    maximum: self.maximum_total_intent_journal_entries,
                 },
             ));
         }
@@ -235,12 +274,25 @@ impl AdmittedCognitiveStoreV2 {
     }
 }
 
-fn journal_capacity(maximum_admitted_revisions: usize) -> Result<usize, CognitiveStoreV2Error> {
-    maximum_admitted_revisions
+fn journal_capacities(
+    maximum_admitted_revisions: usize,
+) -> Result<(usize, usize), CognitiveStoreV2Error> {
+    if maximum_admitted_revisions == 0 || maximum_admitted_revisions > MAX_V2_ADMITTED_REVISIONS {
+        return Err(CognitiveStoreV2Error::InvalidCapacity);
+    }
+    let terminal_reserve = maximum_admitted_revisions;
+    let maximum_ordinary = maximum_admitted_revisions
         .checked_mul(INTENT_JOURNAL_MULTIPLIER)
-        .map(|value| value.min(MAX_V2_INTENT_JOURNAL_ENTRIES))
-        .filter(|value| *value > 0)
-        .ok_or(CognitiveStoreV2Error::InvalidCapacity)
+        .ok_or(CognitiveStoreV2Error::InvalidCapacity)?
+        .min(MAX_V2_INTENT_JOURNAL_ENTRIES.saturating_sub(terminal_reserve));
+    if maximum_ordinary == 0 {
+        return Err(CognitiveStoreV2Error::InvalidCapacity);
+    }
+    let maximum_total = maximum_ordinary
+        .checked_add(terminal_reserve)
+        .filter(|value| *value <= MAX_V2_INTENT_JOURNAL_ENTRIES)
+        .ok_or(CognitiveStoreV2Error::InvalidCapacity)?;
+    Ok((maximum_ordinary, maximum_total))
 }
 
 fn enforce_admission_verification(
@@ -291,17 +343,23 @@ const fn admission_kind(kind: MemoryAdmissionKind) -> MemoryKind {
     }
 }
 
+struct HardenedImageJournalSummary {
+    intent_ids: BTreeSet<StableId>,
+    ordinary_intent_ids: BTreeSet<StableId>,
+}
+
 fn validate_hardened_image(
     image: &CognitiveStoreImageV2,
-    maximum_intent_journal_entries: usize,
-) -> Result<(), CognitiveStoreV2Error> {
+    maximum_ordinary_intent_journal_entries: usize,
+    maximum_total_intent_journal_entries: usize,
+) -> Result<HardenedImageJournalSummary, CognitiveStoreV2Error> {
     image.validate()?;
-    if image.journal.len() > maximum_intent_journal_entries {
+    if image.journal.len() > maximum_total_intent_journal_entries {
         return Err(CognitiveStoreV2Error::Contract(
             LaneCContractError::LimitExceeded {
                 field: "cognitive_store_intent_journal",
                 actual: image.journal.len(),
-                maximum: maximum_intent_journal_entries,
+                maximum: maximum_total_intent_journal_entries,
             },
         ));
     }
@@ -323,9 +381,14 @@ fn validate_hardened_image(
     }
 
     let mut inserted = Vec::<(&MemoryWriteReceiptV1, &MemoryRecord)>::new();
+    let mut intent_ids = BTreeSet::new();
+    let mut ordinary_intent_ids = BTreeSet::new();
     for entry in &image.journal {
         if entry.intent_id != entry.receipt.intent_id {
             return Err(image_state_error("store_image_intent_receipt_identity"));
+        }
+        if !intent_ids.insert(entry.intent_id.clone()) {
+            return Err(image_state_error("store_image_duplicate_intent_identity"));
         }
         if entry.receipt.disposition == MemoryWriteDisposition::Rejected {
             return Err(image_state_error("store_image_rejected_receipt"));
@@ -338,10 +401,7 @@ fn validate_hardened_image(
         if entry.receipt.committed_frontier > image.snapshot_key.vector.memory_ledger_frontier {
             return Err(image_state_error("store_image_future_receipt"));
         }
-        if !same_non_store_vector(
-            &entry.receipt.snapshot_key,
-            &image.snapshot_key,
-        ) {
+        if !same_non_store_vector(&entry.receipt.snapshot_key, &image.snapshot_key) {
             return Err(image_state_error("store_image_generation_context"));
         }
         let record = records_by_id
@@ -353,11 +413,23 @@ fn validate_hardened_image(
                     .find(|record| record.record_digest() == entry.receipt.record_digest)
             })
             .ok_or_else(|| image_state_error("store_image_receipt_record_binding"))?;
+        if record.state != RecordState::Tombstone {
+            ordinary_intent_ids.insert(entry.intent_id.clone());
+        }
         if entry.receipt.disposition == MemoryWriteDisposition::Inserted {
             inserted.push((&entry.receipt, record));
         }
     }
 
+    if ordinary_intent_ids.len() > maximum_ordinary_intent_journal_entries {
+        return Err(CognitiveStoreV2Error::Contract(
+            LaneCContractError::LimitExceeded {
+                field: "cognitive_store_ordinary_intent_journal",
+                actual: ordinary_intent_ids.len(),
+                maximum: maximum_ordinary_intent_journal_entries,
+            },
+        ));
+    }
     if inserted.len() != image.records.len() {
         return Err(image_state_error("store_image_insert_receipt_coverage"));
     }
@@ -372,32 +444,43 @@ fn validate_hardened_image(
     for window in inserted.windows(2) {
         let (previous_receipt, _) = window[0];
         let (current_receipt, current_record) = window[1];
-        if previous_receipt
-            .committed_frontier
-            .checked_add(1)
+        if previous_receipt.committed_frontier.checked_add(1)
             != Some(current_receipt.committed_frontier)
         {
             return Err(image_state_error("store_image_memory_frontier_sequence"));
         }
         let previous = &previous_receipt.snapshot_key.vector;
         let current = &current_receipt.snapshot_key.vector;
+        let tombstone_increment = if current_record.state == RecordState::Tombstone {
+            1
+        } else {
+            0
+        };
         let expected_tombstone = previous
             .tombstone_frontier
-            .checked_add(u64::from(current_record.state == RecordState::Tombstone))
+            .checked_add(tombstone_increment)
             .ok_or(CognitiveStoreV2Error::FrontierOverflow)?;
         if current.tombstone_frontier != expected_tombstone {
             return Err(image_state_error("store_image_tombstone_frontier_sequence"));
         }
+        let fact_increment = if current_record.kind == MemoryKind::Fact {
+            1
+        } else {
+            0
+        };
         let expected_fact = previous
             .knowledge_fact_frontier
-            .checked_add(u64::from(current_record.kind == MemoryKind::Fact))
+            .checked_add(fact_increment)
             .ok_or(CognitiveStoreV2Error::FrontierOverflow)?;
         if current.knowledge_fact_frontier != expected_fact {
             return Err(image_state_error("store_image_fact_frontier_sequence"));
         }
     }
 
-    Ok(())
+    Ok(HardenedImageJournalSummary {
+        intent_ids,
+        ordinary_intent_ids,
+    })
 }
 
 fn same_non_store_vector(
