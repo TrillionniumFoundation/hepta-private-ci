@@ -9,6 +9,7 @@ runtime, effect, acceptance, promotion, or release authority.
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import re
 import subprocess
@@ -33,6 +34,28 @@ def git(*args: str) -> str:
         ["git", *args], cwd=ROOT, text=True, capture_output=True, check=True
     )
     return p.stdout.strip()
+
+
+def evidence_tree(paths: list[str]) -> str:
+    """Digest the exact checked-out bytes that one map claims as its evidence.
+
+    A repository-wide HEAD equality check makes every module map stale after an
+    unrelated commit.  This scoped digest is stricter where it matters: any
+    owner source, product caller, test or status document explicitly bound by a
+    map changes the digest and invalidates that map.
+    """
+    rows: list[bytes] = []
+    for rel in sorted(set(paths)):
+        path = ROOT / rel
+        if path.is_absolute() and ROOT not in path.parents:
+            raise ValueError(f"evidence input escapes repository: {rel}")
+        if not path.is_file():
+            raise ValueError(f"missing evidence input: {rel}")
+        digest = hashlib.sha256(path.read_bytes()).hexdigest()
+        rows.append(rel.encode("utf-8") + b"\0" + digest.encode("ascii") + b"\n")
+    if not rows:
+        raise ValueError("evidence input list is empty")
+    return hashlib.sha256(b"".join(rows)).hexdigest()
 
 
 def lane_by_module():
@@ -102,6 +125,11 @@ def map_for(module: dict, source_base: dict, lanes: dict):
         "productionImplementation": False,
         "productCallerState": "not_composed",
         "productionWriterState": "not_established",
+        "lifecycleStatus": {
+            "implemented": False,
+            "composed": False,
+            "qualified": False,
+        },
         "operations": operations,
         "repositoryControlledGaps": [
             "Bind every operation to an authenticated consumer callsite and owner store.",
@@ -127,7 +155,7 @@ def map_for(module: dict, source_base: dict, lanes: dict):
 
 
 def migrate_map(row: dict, module: dict, lanes: dict, source_base: dict) -> dict:
-    """Upgrade legacy v1/v2 maps without discarding implementation evidence.
+    """Upgrade legacy maps without discarding implementation evidence.
 
     v1 used ``sourceRoot`` and canonical operation fields directly; v2 wrapped
     the native anchor in ``ownerEntrypoint`` and called it ``designOperation``.
@@ -181,7 +209,9 @@ def migrate_map(row: dict, module: dict, lanes: dict, source_base: dict) -> dict
         {
             "schema": "hepta.module-implementation-map.v3",
             "schemaVersion": 3,
-            "sourceBase": row.get("sourceBase") or source_base,
+            # Migration is the explicit refresh operation, so it must not carry
+            # a historical source base forward forever.
+            "sourceBase": source_base,
             "laneId": row.get("laneId") or lanes[module["id"]],
             "module": module["id"],
             "owner": row.get("owner", module["owner"]),
@@ -196,6 +226,14 @@ def migrate_map(row: dict, module: dict, lanes: dict, source_base: dict) -> dict
             "productCallerState": row.get("productCallerState", "not_composed"),
             "productionWriterState": row.get(
                 "productionWriterState", "not_established"
+            ),
+            "lifecycleStatus": row.get(
+                "lifecycleStatus",
+                {
+                    "implemented": bool(row.get("productionImplementation", False)),
+                    "composed": row.get("productCallerState") == "composed",
+                    "qualified": False,
+                },
             ),
             "operations": operations,
         }
@@ -248,14 +286,10 @@ def migrate():
         module = by_id.get(row.get("module") or path.parent.name)
         if module is None:
             continue
-        if (
-            row.get("schema") == "hepta.module-implementation-map.v3"
-            and row.get("schemaVersion") == 3
-        ):
-            # Normalize existing v3 operations with compatibility aliases.
-            migrated = migrate_map(row, module, lanes, source_base)
-        else:
-            migrated = migrate_map(row, module, lanes, source_base)
+        migrated = migrate_map(row, module, lanes, source_base)
+        inputs = migrated.get("evidenceInputs")
+        if isinstance(inputs, list) and inputs:
+            migrated["generatedEvidenceTreeSha256"] = evidence_tree(inputs)
         path.write_text(
             json.dumps(migrated, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"
         )
@@ -266,10 +300,7 @@ def migrate():
 def generate():
     modules = load("docs/modules/MODULES.json")["modules"]
     lanes = lane_by_module()
-    source_base = {
-        "commit": git("rev-parse", "HEAD"),
-        "tree": git("rev-parse", "HEAD^{tree}"),
-    }
+    source_base = current_source_base()
     written = []
     for module in modules:
         path = ROOT / f"docs/modules/{module['id']}/IMPLEMENTATION_MAP.json"
@@ -317,6 +348,13 @@ def verify():
             failures.append(f"{mid}: source base")
         else:
             source_bases.add((source_base["commit"], source_base["tree"]))
+            try:
+                actual_tree = git("rev-parse", f"{source_base['commit']}^{{tree}}")
+            except subprocess.CalledProcessError:
+                failures.append(f"{mid}: source base commit is unavailable")
+            else:
+                if actual_tree != source_base["tree"]:
+                    failures.append(f"{mid}: source base commit/tree mismatch")
         roots = [x["path"] for x in module["rootBindings"]]
         declared = row.get("declaredRoots", row.get("sourceRoot", []))
         if isinstance(declared, str):
@@ -345,6 +383,39 @@ def verify():
         boundary = row.get("claimBoundary") or row.get("completion")
         if not isinstance(boundary, dict):
             failures.append(f"{mid}: claim boundary")
+
+        lifecycle = row.get("lifecycleStatus")
+        if lifecycle is not None:
+            if not isinstance(lifecycle, dict) or any(
+                not isinstance(lifecycle.get(key), bool)
+                for key in ("implemented", "composed", "qualified")
+            ):
+                failures.append(f"{mid}: lifecycle status")
+            else:
+                if lifecycle["composed"] and not lifecycle["implemented"]:
+                    failures.append(f"{mid}: composed without implementation")
+                if lifecycle["qualified"] and not lifecycle["composed"]:
+                    failures.append(f"{mid}: qualified without composition")
+
+        evidence_inputs = row.get("evidenceInputs")
+        generated_tree = row.get("generatedEvidenceTreeSha256")
+        if evidence_inputs is not None or generated_tree is not None:
+            if (
+                not isinstance(evidence_inputs, list)
+                or not evidence_inputs
+                or not all(isinstance(value, str) and value for value in evidence_inputs)
+                or not isinstance(generated_tree, str)
+                or not re.fullmatch(r"[0-9a-f]{64}", generated_tree)
+            ):
+                failures.append(f"{mid}: evidence tree shape")
+            else:
+                try:
+                    actual = evidence_tree(evidence_inputs)
+                except (OSError, ValueError) as exc:
+                    failures.append(f"{mid}: evidence tree input: {exc}")
+                else:
+                    if actual != generated_tree:
+                        failures.append(f"{mid}: stale evidence tree")
     if len(source_bases) != 1:
         failures.append(f"maps: source base drift ({len(source_bases)} identities)")
     if failures:
