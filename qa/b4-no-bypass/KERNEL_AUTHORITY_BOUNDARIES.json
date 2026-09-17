@@ -3,27 +3,45 @@
   "boundaries": [
     {
       "id": "final_use_claim",
-      "typeMarker": "FinalUseAuthority",
+      "typeMarker": "claim_final_use",
       "definitionPath": "codex-rs/hepta-contracts/src/final_use.rs",
       "callPatterns": [
-        "\\.\\s*claim\\s*\\(",
-        "FinalUseAuthority\\s*::\\s*claim\\s*\\("
+        "\\bclaim_final_use\\s*\\("
       ],
       "allowedCallers": [
         "codex-rs/hepta-bao-adapter/src/https_consumer.rs"
       ]
     },
     {
+      "id": "final_use_claim_raw",
+      "typeMarker": "FinalUseAuthority",
+      "definitionPath": "codex-rs/hepta-contracts/src/final_use.rs",
+      "callPatterns": [
+        "\\.\\s*claim\\s*\\(",
+        "FinalUseAuthority\\s*::\\s*claim\\s*\\("
+      ],
+      "allowedCallers": []
+    },
+    {
       "id": "final_use_delivery",
+      "typeMarker": "deliver_final_use",
+      "definitionPath": "codex-rs/hepta-contracts/src/final_use.rs",
+      "callPatterns": [
+        "\\bdeliver_final_use\\s*\\("
+      ],
+      "allowedCallers": [
+        "codex-rs/hepta-bao-adapter/src/https_consumer.rs"
+      ]
+    },
+    {
+      "id": "final_use_delivery_raw",
       "typeMarker": "FinalUseAuthority",
       "definitionPath": "codex-rs/hepta-contracts/src/final_use.rs",
       "callPatterns": [
         "\\.\\s*with_verified_use\\s*\\(",
         "FinalUseAuthority\\s*::\\s*with_verified_use\\s*\\("
       ],
-      "allowedCallers": [
-        "codex-rs/hepta-bao-adapter/src/https_consumer.rs"
-      ]
+      "allowedCallers": []
     },
     {
       "id": "final_use_revocation_update",
