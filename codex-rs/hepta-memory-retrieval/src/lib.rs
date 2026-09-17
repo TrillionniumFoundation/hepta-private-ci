@@ -3,6 +3,7 @@
 #![forbid(unsafe_code)]
 
 mod generation_bound;
+mod product;
 mod v2;
 
 use std::collections::BTreeSet;
@@ -32,9 +33,19 @@ pub use generation_bound::RetrievalChannelWeightV1;
 pub use generation_bound::RetrievalPolicyV1;
 pub use generation_bound::build_candidate_union;
 pub use generation_bound::recall;
+pub use product::CueCompileRequestV1;
+pub use product::MAX_PRODUCT_RETRIEVAL_CANDIDATES;
+pub use product::MAX_PRODUCT_RETRIEVAL_RESULTS;
+pub use product::ProductRetrievalError;
+pub use product::ProductRetrievalReceiptV1;
+pub use product::ProductRetrievalRequestV1;
+pub use product::compile_cue;
+pub use product::retrieve_product_v1;
 pub use v2::RetrievalReceiptV2;
 pub use v2::retrieve_v2;
 
+// Compatibility-only bounds. Product callers must use `retrieve_product_v1`,
+// which enforces the target hot-path ceilings exported above.
 const MAX_CANDIDATES: usize = 16_384;
 const MAX_RESULTS: usize = 256;
 
@@ -96,6 +107,14 @@ impl fmt::Display for Error {
 
 impl StdError for Error {}
 
+/// Compatibility-only V1 ranking surface.
+///
+/// Product callers must use [`retrieve_product_v1`] so the complete candidate
+/// set, owner observation and target 512/16 hot-path ceilings are bound.
+#[deprecated(
+    since = "0.0.0",
+    note = "product callers must use retrieve_product_v1; V1 does not bind the complete input"
+)]
 pub fn retrieve(request: RetrievalRequest) -> Result<RetrievalReceipt, Error> {
     retrieve_request(&request)
 }
@@ -195,4 +214,5 @@ fn push_id(bytes: &mut Vec<u8>, value: &StableId) {
 
 #[cfg(test)]
 #[path = "lib_tests.rs"]
+#[allow(deprecated)]
 mod tests;
