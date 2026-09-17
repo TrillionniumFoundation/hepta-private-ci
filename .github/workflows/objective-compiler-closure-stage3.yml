@@ -1,0 +1,124 @@
+name: Objective compiler contract-aligned closure
+
+on:
+  push:
+    branches:
+      - codex/objective-compiler-production-closure-stage3-20260917
+    paths:
+      - scripts/objective_compiler_closure_stage1.py
+      - scripts/objective_compiler_closure_stage1_fix.py
+      - scripts/objective_compiler_closure_stage2.py
+      - scripts/objective_compiler_closure_stage3.py
+      - .github/workflows/objective-compiler-closure-stage3.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: objective-compiler-contract-aligned-closure
+  cancel-in-progress: true
+
+jobs:
+  repair-test-publish:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: codex/objective-compiler-production-closure-stage3-20260917
+          fetch-depth: 0
+
+      - name: Bind exact source
+        shell: bash
+        env:
+          EXPECTED_SHA: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          git rev-parse HEAD HEAD^{tree}
+
+      - name: Apply full objective closure
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m py_compile \
+            scripts/objective_compiler_closure_stage1.py \
+            scripts/objective_compiler_closure_stage1_fix.py \
+            scripts/objective_compiler_closure_stage2.py \
+            scripts/objective_compiler_closure_stage3.py
+          python3 scripts/objective_compiler_closure_stage1.py
+          python3 scripts/objective_compiler_closure_stage1_fix.py
+          python3 scripts/objective_compiler_closure_stage2.py
+          python3 scripts/objective_compiler_closure_stage3.py
+          git diff --check
+
+      - name: Canonical Rust formatting
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo fmt --all
+
+      - name: Compile affected graph
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo check --locked \
+            -p codex-hepta-objective \
+            -p codex-hepta-intelligence \
+            -p codex-hepta-shadow-qualification \
+            --all-targets
+
+      - name: Execute objective and integration tests
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo test --locked -p codex-hepta-objective -- --nocapture
+          cargo test --locked -p codex-hepta-intelligence -- --nocapture
+          cargo test --locked -p codex-hepta-shadow-qualification
+
+      - name: Strict lint
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo clippy --locked \
+            -p codex-hepta-objective \
+            -p codex-hepta-intelligence \
+            --all-targets -- -D warnings
+
+      - name: Verify repository contracts and readiness
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta-lane-d-semantic-conformance.py self-test
+          python3 scripts/hepta-lane-d-semantic-conformance.py verify
+          python3 scripts/hepta-readiness.py verify
+          python3 scripts/hepta-docs.py verify
+          python3 scripts/hepta-module-docs.py verify
+          python3 scripts/hepta-implementation-maps.py verify
+          python3 scripts/hepta-gap-closure.py verify
+          git diff --check
+
+      - name: Publish qualified source result
+        shell: bash
+        env:
+          BRANCH: codex/objective-compiler-production-closure-stage3-20260917
+        run: |
+          set -euo pipefail
+          rm -f scripts/objective_compiler_closure_stage1.py
+          rm -f scripts/objective_compiler_closure_stage1_fix.py
+          rm -f scripts/objective_compiler_closure_stage2.py
+          rm -f scripts/objective_compiler_closure_stage3.py
+          rm -f .github/workflows/objective-compiler-closure-stage1.yml
+          rm -f .github/workflows/objective-compiler-closure-stage2.yml
+          rm -f .github/workflows/objective-compiler-closure-stage3.yml
+          git add -A
+          git diff --check --cached
+          git config user.name "Objective compiler closure"
+          git config user.email "noreply@openai.com"
+          git commit -m "feat(objective): close rich admission canonical output and caller boundaries"
+          git push origin "HEAD:refs/heads/$BRANCH"
