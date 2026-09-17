@@ -10,8 +10,13 @@ name = "codex_hepta_intuition"
 path = "src/lib.rs"
 doctest = false
 
+[[bin]]
+name = "intuition-fast-gate"
+path = "src/bin/intuition-fast-gate.rs"
+
 [lints]
 workspace = true
 
 [dependencies]
 codex-hepta-types = { path = "../hepta-types" }
+ed25519-dalek = { workspace = true }
