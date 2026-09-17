@@ -2,6 +2,8 @@ use super::*;
 use crate::ProductionAuthorityLease;
 use crate::ProductionAuthorityToken;
 use pretty_assertions::assert_eq;
+use std::time::SystemTime;
+use std::time::UNIX_EPOCH;
 
 fn recovery_authority(owner: &AgentId) -> ProductionAuthorityLease {
     let token = ProductionAuthorityToken::from_verified_bytes(b"recovery-fence-token".to_vec())
