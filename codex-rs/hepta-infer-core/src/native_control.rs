@@ -67,12 +67,15 @@ pub struct NativeRunOutput {
 }
 
 impl NativeRunOutput {
-    /// The CLI and callers must not infer authorized success from provider
-    /// completion alone, including when replaying a historical observation.
+    /// Authorized success requires provider terminality, final owner authority
+    /// and actual token-usage evidence. A recovered terminal without usage is a
+    /// real provider fact but is not promoted to product success until usage is
+    /// reconciled; missing usage is never interpreted as zero.
     pub fn succeeded(&self) -> bool {
         self.terminal_observed
             && self.status == NativeRunStatus::Completed
             && self.owner_authority == NativeOwnerAuthority::ObservedReady
+            && self.observed_output_tokens.is_some()
     }
 }
 
@@ -192,7 +195,8 @@ impl DurableInferenceControl {
         )
     }
 
-    /// Must commit before `turn/start`, including before awaiting its response.
+    /// Must commit before provider admission, including before awaiting a
+    /// `turn/start` response.
     pub fn dispatch_native(
         &mut self,
         request_id: &str,
@@ -208,6 +212,10 @@ impl DurableInferenceControl {
         )
     }
 
+    /// Bind the provider-owned logical turn. Reconciliation may call this after
+    /// an older worker recorded an empty-turn `Indeterminate` observation: that
+    /// upgrade is allowed only while the historical observation itself proves
+    /// no terminal/output/usage fact and no different turn was ever bound.
     pub fn native_started(
         &mut self,
         request_id: &str,
@@ -284,9 +292,6 @@ impl DurableInferenceControl {
     }
 
     fn ensure_native_dispatch_space(&self) -> Result<(), Error> {
-        // This exclusive owner serializes active calls. Leave room for bounded
-        // dispatch/cancel metadata and the next maximal observed output before
-        // admitting a new external execution. This is not an archival policy.
         if self.journal_bytes > super::MAX_JOURNAL_BYTES - 2 * super::MAX_JOURNAL_LINE_BYTES as u64
         {
             return Err(Error::CapacityExceeded);
@@ -388,7 +393,16 @@ impl NativeJournal {
                 record.state = NativeReservationState::Dispatching;
             }
             Event::Started { turn_id, .. } => {
-                if record.state != NativeReservationState::Dispatching {
+                let legacy_empty_unknown = record.state == NativeReservationState::Indeterminate
+                    && record.turn_id.is_none()
+                    && record.observation.as_ref().is_some_and(|output| {
+                        !output.terminal_observed
+                            && output.status == NativeRunStatus::Indeterminate
+                            && output.turn_id.is_empty()
+                            && output.output.is_empty()
+                            && output.observed_output_tokens.is_none()
+                    });
+                if record.state != NativeReservationState::Dispatching && !legacy_empty_unknown {
                     return Err(Error::InvalidTransition);
                 }
                 validate_identity(&turn_id, "native turn")?;
@@ -460,8 +474,6 @@ fn apply_observation(record: &mut NativeRunRecord, output: NativeRunOutput) -> R
         return Err(Error::TerminalObservationMissing);
     }
     if let Some(previous) = &record.observation {
-        // A late provider completion or usage refinement cannot erase a lost
-        // owner, or retroactively authorize an unverified historical terminal.
         if (matches!(previous.owner_authority, NativeOwnerAuthority::Lost { .. })
             && previous.owner_authority != output.owner_authority)
             || (previous.terminal_observed
