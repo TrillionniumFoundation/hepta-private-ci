@@ -147,7 +147,7 @@ pub(crate) fn write_restart_journal(
     file.write_all(&bytes)?;
     file.sync_all()?;
     drop(file);
-    if let Err(error) = crate::signed_intent::publish::publish(&temp_path, &final_path) {
+    if let Err(error) = crate::durable_publish::publish(&temp_path, &final_path) {
         let _ = std::fs::remove_file(&temp_path);
         return Err(error.into());
     }
@@ -159,8 +159,9 @@ pub(crate) fn unix_millis_now() -> Result<u64, SupervisorError> {
         .duration_since(UNIX_EPOCH)
         .map_err(|error| SupervisorError::Invalid(error.to_string()))?
         .as_millis();
-    u64::try_from(millis)
-        .map_err(|_| SupervisorError::Invalid("system time exceeds restart journal range".to_string()))
+    u64::try_from(millis).map_err(|_| {
+        SupervisorError::Invalid("system time exceeds restart journal range".to_string())
+    })
 }
 
 pub(crate) fn restore_window(
@@ -172,13 +173,23 @@ pub(crate) fn restore_window(
         return (0, None, None, false);
     }
     let Some(started_unix_millis) = durable.window_started_unix_millis else {
-        return (RESTART_ATTEMPT_BUDGET, Some(now), Some(now_unix_millis), true);
+        return (
+            RESTART_ATTEMPT_BUDGET,
+            Some(now),
+            Some(now_unix_millis),
+            true,
+        );
     };
     let recovery_window_millis = u64::try_from(RESTART_RECOVERY_WINDOW.as_millis())
         .expect("bounded recovery window milliseconds");
     let Some(elapsed_millis) = now_unix_millis.checked_sub(started_unix_millis) else {
         // Wall-clock rollback is not allowed to buy extra restart attempts.
-        return (RESTART_ATTEMPT_BUDGET, Some(now), Some(now_unix_millis), true);
+        return (
+            RESTART_ATTEMPT_BUDGET,
+            Some(now),
+            Some(now_unix_millis),
+            true,
+        );
     };
     if elapsed_millis >= recovery_window_millis {
         return (0, None, None, false);
@@ -219,7 +230,10 @@ mod tests {
         )
         .expect("journal");
         write_restart_journal(dir.path(), &journal).expect("write");
-        assert_eq!(read_restart_journal(dir.path()).expect("read"), Some(journal));
+        assert_eq!(
+            read_restart_journal(dir.path()).expect("read"),
+            Some(journal)
+        );
 
         let now = Instant::now();
         let (attempts, started, wall, exhausted) = restore_window(
