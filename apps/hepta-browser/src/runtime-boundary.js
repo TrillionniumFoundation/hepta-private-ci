@@ -57,7 +57,9 @@ export async function exclusive(
 
   const prior = lockMap.get(key) ?? Promise.resolve();
   let release;
-  const current = new Promise((resolve) => { release = resolve; });
+  const current = new Promise((resolve) => {
+    release = resolve;
+  });
   const tail = prior.catch(() => {}).then(() => current);
   lockMap.set(key, tail);
   await prior.catch(() => {});
