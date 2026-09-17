@@ -154,7 +154,9 @@ impl fmt::Display for NduError {
             }
             Self::DimensionMismatch => formatter.write_str("preference dimensions do not match"),
             Self::StateDigestMismatch => formatter.write_str("preference state digest mismatch"),
-            Self::InvalidSolverReceipt => formatter.write_str("local solver receipt violates NDU invariants"),
+            Self::InvalidSolverReceipt => {
+                formatter.write_str("local solver receipt violates NDU invariants")
+            }
             Self::PreferenceSolverUnavailable => formatter.write_str(
                 "preference solver exhausted the registered iteration bound and is unavailable",
             ),
