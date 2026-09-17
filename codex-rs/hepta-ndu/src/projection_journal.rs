@@ -131,15 +131,10 @@ impl NduProjectionJournalV1 {
         subject_digest: Digest32,
         projection_digest: Digest32,
     ) -> Result<NduProjectionEntryV1, NduProjectionJournalError> {
-        if !self.entries.iter().any(|entry| {
-            entry.kind.is_projection()
-                && entry.objective_digest == objective_digest
-                && entry.subject_digest == subject_digest
-                && entry.payload_digest == projection_digest
-        }) {
+        if !self.projection_recorded(objective_digest, subject_digest, projection_digest) {
             return Err(NduProjectionJournalError::ProjectionNotRecorded);
         }
-        if self.revoked_digests().contains(&projection_digest) {
+        if self.is_revoked(objective_digest, subject_digest, projection_digest) {
             return Err(NduProjectionJournalError::RevokedProjection);
         }
         self.append(
@@ -158,6 +153,9 @@ impl NduProjectionJournalV1 {
         subject_digest: Digest32,
         projection_digest: Digest32,
     ) -> Result<NduProjectionEntryV1, NduProjectionJournalError> {
+        if !self.projection_recorded(objective_digest, subject_digest, projection_digest) {
+            return Err(NduProjectionJournalError::ProjectionNotRecorded);
+        }
         self.append(
             NduProjectionKindV1::Revocation,
             revocation_identity_digest,
@@ -173,7 +171,7 @@ impl NduProjectionJournalV1 {
         objective_digest: Digest32,
         subject_digest: Digest32,
     ) -> Option<Digest32> {
-        let revoked = self.revoked_digests();
+        let revoked = self.revoked_digests(objective_digest, subject_digest);
         let mut selected = None;
         for entry in &self.entries {
             if entry.objective_digest != objective_digest || entry.subject_digest != subject_digest
@@ -192,6 +190,34 @@ impl NduProjectionJournalV1 {
             }
         }
         selected.filter(|digest| !revoked.contains(digest))
+    }
+
+    fn projection_recorded(
+        &self,
+        objective_digest: Digest32,
+        subject_digest: Digest32,
+        projection_digest: Digest32,
+    ) -> bool {
+        self.entries.iter().any(|entry| {
+            entry.kind.is_projection()
+                && entry.objective_digest == objective_digest
+                && entry.subject_digest == subject_digest
+                && entry.payload_digest == projection_digest
+        })
+    }
+
+    fn is_revoked(
+        &self,
+        objective_digest: Digest32,
+        subject_digest: Digest32,
+        projection_digest: Digest32,
+    ) -> bool {
+        self.entries.iter().any(|entry| {
+            entry.kind == NduProjectionKindV1::Revocation
+                && entry.objective_digest == objective_digest
+                && entry.subject_digest == subject_digest
+                && entry.payload_digest == projection_digest
+        })
     }
 
     fn append(
@@ -361,11 +387,8 @@ impl NduProjectionJournalV1 {
             if journal.identities.contains_key(&identity_digest) {
                 return Err(NduProjectionJournalError::DuplicateSerializedIdentity);
             }
-            journal.identities.insert(
-                identity_digest,
-                (kind, objective_digest, subject_digest, payload_digest),
-            );
-            journal.entries.push(NduProjectionEntryV1 {
+
+            let serialized = NduProjectionEntryV1 {
                 sequence,
                 kind,
                 identity_digest,
@@ -374,15 +397,48 @@ impl NduProjectionJournalV1 {
                 payload_digest,
                 predecessor_entry_digest,
                 entry_digest,
-            });
+            };
+            let replayed = match kind {
+                NduProjectionKindV1::Preference | NduProjectionKindV1::Utility => journal
+                    .append_projection(
+                        kind,
+                        identity_digest,
+                        objective_digest,
+                        subject_digest,
+                        payload_digest,
+                    )?,
+                NduProjectionKindV1::SelectedProjection => journal.select_projection(
+                    identity_digest,
+                    objective_digest,
+                    subject_digest,
+                    payload_digest,
+                )?,
+                NduProjectionKindV1::Revocation => journal.revoke_projection(
+                    identity_digest,
+                    objective_digest,
+                    subject_digest,
+                    payload_digest,
+                )?,
+            };
+            if replayed != serialized {
+                return Err(NduProjectionJournalError::CorruptEntryDigest);
+            }
         }
         Ok(journal)
     }
 
-    fn revoked_digests(&self) -> BTreeSet<Digest32> {
+    fn revoked_digests(
+        &self,
+        objective_digest: Digest32,
+        subject_digest: Digest32,
+    ) -> BTreeSet<Digest32> {
         self.entries
             .iter()
-            .filter(|entry| entry.kind == NduProjectionKindV1::Revocation)
+            .filter(|entry| {
+                entry.kind == NduProjectionKindV1::Revocation
+                    && entry.objective_digest == objective_digest
+                    && entry.subject_digest == subject_digest
+            })
             .map(|entry| entry.payload_digest)
             .collect()
     }
