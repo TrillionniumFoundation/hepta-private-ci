@@ -154,11 +154,19 @@ fn product_v2_binds_typed_relation_evidence_without_changing_rrf_order() {
     ];
     let baseline = retrieve_product_v2(ProductRetrievalRequestV2 {
         retrieval: request(),
+        owner_relation_evidence_count: 3,
+        owner_relation_limit_reached: false,
         relation_evidence: evidence.clone(),
     })
     .expect("product v2 succeeds");
-    assert_eq!(baseline.retrieval.retrieval.retrieval.results[0].record_id, id("memory:1"));
+    assert_eq!(
+        baseline.retrieval.retrieval.retrieval.results[0].record_id,
+        id("memory:1")
+    );
     assert_eq!(baseline.relation_evidence, evidence);
+    assert_eq!(baseline.owner_relation_evidence_count, 3);
+    assert_eq!(baseline.omitted_relation_evidence_count, 1);
+    assert!(!baseline.owner_relation_limit_reached);
     assert_eq!(
         baseline.relation_evidence[0].retrieval_channel(),
         RetrievalChannelV1::Causal
@@ -175,6 +183,8 @@ fn product_v2_binds_typed_relation_evidence_without_changing_rrf_order() {
 
     let changed = retrieve_product_v2(ProductRetrievalRequestV2 {
         retrieval: request(),
+        owner_relation_evidence_count: 3,
+        owner_relation_limit_reached: false,
         relation_evidence: vec![
             relation(1, 2, ProductRelationKindV1::TemporalBefore),
             evidence[1].clone(),
@@ -186,12 +196,25 @@ fn product_v2_binds_typed_relation_evidence_without_changing_rrf_order() {
         changed.retrieval.retrieval.retrieval.results
     );
     assert_ne!(baseline.receipt_digest, changed.receipt_digest);
+
+    let changed_coverage = retrieve_product_v2(ProductRetrievalRequestV2 {
+        retrieval: request(),
+        owner_relation_evidence_count: 2,
+        owner_relation_limit_reached: true,
+        relation_evidence: evidence,
+    })
+    .expect("coverage change is explicit");
+    assert_ne!(baseline.receipt_digest, changed_coverage.receipt_digest);
+    assert!(changed_coverage.owner_relation_limit_reached);
+    assert_eq!(changed_coverage.omitted_relation_evidence_count, 0);
 }
 
 #[test]
 fn product_v2_relation_evidence_cannot_widen_the_admitted_set() {
     let missing_candidate = retrieve_product_v2(ProductRetrievalRequestV2 {
         retrieval: request(),
+        owner_relation_evidence_count: 1,
+        owner_relation_limit_reached: false,
         relation_evidence: vec![relation(99, 2, ProductRelationKindV1::Causes)],
     });
     assert_eq!(
@@ -203,6 +226,8 @@ fn product_v2_relation_evidence_cannot_widen_the_admitted_set() {
 
     let missing_support = retrieve_product_v2(ProductRetrievalRequestV2 {
         retrieval: request(),
+        owner_relation_evidence_count: 1,
+        owner_relation_limit_reached: false,
         relation_evidence: vec![relation(1, 99, ProductRelationKindV1::Causes)],
     });
     assert_eq!(
@@ -210,6 +235,19 @@ fn product_v2_relation_evidence_cannot_widen_the_admitted_set() {
         Err(ProductRetrievalError::RelationSupportNotAdmitted(
             "memory:99".to_string()
         ))
+    );
+}
+
+#[test]
+fn product_v2_relation_count_cannot_understate_included_evidence() {
+    assert_eq!(
+        retrieve_product_v2(ProductRetrievalRequestV2 {
+            retrieval: request(),
+            owner_relation_evidence_count: 0,
+            owner_relation_limit_reached: false,
+            relation_evidence: vec![relation(1, 2, ProductRelationKindV1::Causes)],
+        }),
+        Err(ProductRetrievalError::RelationEvidenceCountMismatch)
     );
 }
 
