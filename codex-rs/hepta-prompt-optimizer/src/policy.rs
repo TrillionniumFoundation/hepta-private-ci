@@ -84,7 +84,9 @@ impl PromptRegistrySnapshotInputV1 {
         let mut realization_ids = BTreeSet::new();
         for value in &self.candidates {
             if !candidate_ids.insert(value.candidate_id.clone()) {
-                return Err(PolicyError::DuplicateCandidate(value.candidate_id.to_string()));
+                return Err(PolicyError::DuplicateCandidate(
+                    value.candidate_id.to_string(),
+                ));
             }
             if !realization_ids.insert(value.realization_id.clone()) {
                 return Err(PolicyError::DuplicateRealization(
@@ -330,9 +332,7 @@ pub struct PricingInputV1 {
     pub cost_estimates: Vec<PromptCostEstimateV1>,
 }
 
-pub fn price_factors(
-    input: PricingInputV1,
-) -> Result<Vec<PromptPricingReceiptV1>, PolicyError> {
+pub fn price_factors(input: PricingInputV1) -> Result<Vec<PromptPricingReceiptV1>, PolicyError> {
     Ok(price_factors_audited(input)?.receipts)
 }
 
@@ -348,7 +348,8 @@ pub fn price_factors_audited(
     if input.candidate_set.receipt.registry_digest != input.registry_snapshot.registry_digest
         || input.candidate_set.audit.registry_snapshot_digest
             != input.registry_snapshot.snapshot_digest
-        || input.candidate_set.audit.model_tuple_digest != input.registry_snapshot.model_tuple_digest
+        || input.candidate_set.audit.model_tuple_digest
+            != input.registry_snapshot.model_tuple_digest
     {
         return Err(PolicyError::IntegrityMismatch("candidate set binding"));
     }
@@ -636,9 +637,15 @@ pub fn select_portfolio_audited(
     let valid_until_unix_ms = best
         .selected
         .iter()
-        .filter_map(|factor_id| nodes.get(factor_id).and_then(|node| node.audit.valid_until_unix_ms))
+        .filter_map(|factor_id| {
+            nodes
+                .get(factor_id)
+                .and_then(|node| node.audit.valid_until_unix_ms)
+        })
         .min()
-        .map_or(input.valid_until_unix_ms, |expiry| expiry.min(input.valid_until_unix_ms));
+        .map_or(input.valid_until_unix_ms, |expiry| {
+            expiry.min(input.valid_until_unix_ms)
+        });
     if valid_until_unix_ms == 0 {
         return Err(PolicyError::InvalidValidityWindow);
     }
@@ -1137,18 +1144,21 @@ fn greedy_complete(
                 constraints,
                 token_budget,
                 maximum_selected,
-            )? else {
+            )?
+            else {
                 continue;
             };
             if gain <= FixedQ32::ZERO {
                 continue;
             }
-            let better = best.as_ref().is_none_or(|(current, _, current_cost, current_gain)| {
-                gain > *current_gain
-                    || (gain == *current_gain
-                        && (cost < *current_cost
-                            || (cost == *current_cost && factor_id < current)))
-            });
+            let better = best
+                .as_ref()
+                .is_none_or(|(current, _, current_cost, current_gain)| {
+                    gain > *current_gain
+                        || (gain == *current_gain
+                            && (cost < *current_cost
+                                || (cost == *current_cost && factor_id < current)))
+                });
             if better {
                 best = Some((factor_id.clone(), additions, cost, gain));
             }
@@ -1200,13 +1210,17 @@ fn evaluate_additions(
             let Some(value) = interactions.between(factor_id, selected) else {
                 return Ok(None);
             };
-            gain = gain.checked_add(value).map_err(|_| PolicyError::Arithmetic)?;
+            gain = gain
+                .checked_add(value)
+                .map_err(|_| PolicyError::Arithmetic)?;
         }
         for peer in additions.iter().take(index) {
             let Some(value) = interactions.between(factor_id, peer) else {
                 return Ok(None);
             };
-            gain = gain.checked_add(value).map_err(|_| PolicyError::Arithmetic)?;
+            gain = gain
+                .checked_add(value)
+                .map_err(|_| PolicyError::Arithmetic)?;
         }
     }
     if solution.total_cost.saturating_add(cost) > token_budget {
@@ -1220,7 +1234,11 @@ fn better_solution(candidate: &Solution, current: &Solution) -> bool {
         || (candidate.total_gain == current.total_gain
             && (candidate.total_cost < current.total_cost
                 || (candidate.total_cost == current.total_cost
-                    && candidate.selected.iter().cmp(current.selected.iter()).is_lt())))
+                    && candidate
+                        .selected
+                        .iter()
+                        .cmp(current.selected.iter())
+                        .is_lt())))
 }
 
 fn audit_candidates(
@@ -1391,9 +1409,7 @@ fn subtract_costs(base: FixedQ32, costs: &[FixedQ32]) -> Result<FixedQ32, Policy
     ))
 }
 
-fn digest_bindings<'a>(
-    values: impl Iterator<Item = &'a RegisteredPromptCandidateV1>,
-) -> Digest32 {
+fn digest_bindings<'a>(values: impl Iterator<Item = &'a RegisteredPromptCandidateV1>) -> Digest32 {
     let mut values = values.collect::<Vec<_>>();
     values.sort_by(|left, right| left.factor_id.cmp(&right.factor_id));
     let mut bytes = b"hepta.prompt-optimizer.bindings.v1".to_vec();

@@ -263,16 +263,23 @@ fn prerequisite_closure_can_select_a_negative_prerequisite_when_the_bundle_is_po
         &[("dependent", 100, 1), ("prerequisite", -1, 1)],
     );
     let mut input = selection_input(candidate_set, pricing, 2, 2);
-    input.hard_constraints.push(PromptHardConstraintV1::Requires {
-        factor_id: id("factor:dependent"),
-        prerequisite_factor_id: id("factor:prerequisite"),
-        support_digest: digest("requires"),
-    });
+    input
+        .hard_constraints
+        .push(PromptHardConstraintV1::Requires {
+            factor_id: id("factor:dependent"),
+            prerequisite_factor_id: id("factor:prerequisite"),
+            support_digest: digest("requires"),
+        });
     let Ok(decision) = select_portfolio_audited(input) else {
         panic!("selection must succeed");
     };
     assert_eq!(decision.receipt.factor_ids.len(), 2);
-    assert!(decision.receipt.factor_ids.contains(&id("factor:dependent")));
+    assert!(
+        decision
+            .receipt
+            .factor_ids
+            .contains(&id("factor:dependent"))
+    );
     assert!(
         decision
             .receipt
@@ -304,7 +311,10 @@ fn sparse_supported_zero_policy_allows_128_factor_multi_select_without_complete_
     )) else {
         panic!("128-factor sparse selection must succeed");
     };
-    assert_eq!(decision.receipt.factor_ids.len(), MAX_POLICY_SELECTED_FACTORS);
+    assert_eq!(
+        decision.receipt.factor_ids.len(),
+        MAX_POLICY_SELECTED_FACTORS
+    );
     assert_eq!(decision.receipt.total_token_upper_bound, 16);
 }
 
