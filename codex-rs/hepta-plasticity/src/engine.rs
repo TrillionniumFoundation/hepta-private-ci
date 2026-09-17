@@ -1,7 +1,7 @@
 //! Product-composable plasticity proposal engine.
 //!
 //! This surface composes the deterministic native generator, authenticated
-//! evidence/evaluator boundary, V2 verifier and host-authorized durable writer.
+//! evidence/evaluator boundary, V2 verifier and production-safe durable writer.
 //! It still grants no selection, activation, training, installation or release
 //! authority.
 
@@ -10,7 +10,6 @@ use codex_hepta_types::Digest32;
 use crate::AuthenticatedParameterProposalRequestV1;
 use crate::CandidateGeneratorConfigV1;
 use crate::DurableProposalAppendReceiptV1;
-use crate::DurableProposalRegistry;
 use crate::DurableProposalRegistryError;
 use crate::EvaluatorClaimV1;
 use crate::EvidenceClaimV1;
@@ -19,6 +18,7 @@ use crate::IndependentEvaluatorVerifier;
 use crate::ParameterCandidateRequestV2;
 use crate::ParameterLearningSignalV1;
 use crate::ParameterProposalRequestV2;
+use crate::ProductionProposalRegistry;
 use crate::generate_parameter_proposal_v2;
 use crate::propose_authenticated_v1;
 
@@ -35,7 +35,7 @@ pub struct ComposedParameterProposalRequestV1 {
 }
 
 pub fn generate_authenticate_and_append_v1(
-    registry: &mut DurableProposalRegistry,
+    registry: &mut ProductionProposalRegistry,
     composed: ComposedParameterProposalRequestV1,
     evidence_verifier: &impl EvidenceVerifier,
     evaluator_verifier: &impl IndependentEvaluatorVerifier,
