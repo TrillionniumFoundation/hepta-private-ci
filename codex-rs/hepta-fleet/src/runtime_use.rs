@@ -19,7 +19,7 @@ use crate::lease_ledger::FleetReconciliationOutcomeV1;
 
 const CONSUMPTION_DESTINATION: &str = "runtime.fleet.consumption";
 
-#[derive(Clone, Debug, Eq, PartialEq)]
+#[derive(Clone, Debug, Eq, PartialEq, Serialize)]
 pub struct FleetAllocationGrantV1 {
     pub allocation_id: String,
     pub request_id: String,

@@ -195,8 +195,8 @@ impl LeaseLedger {
                 return Err(Error::GrantCapacityExceeded);
             }
         }
-        let committed = self.reserved_resources_for_placement(&grant.host_id, now_ms)?;
-        let total = committed
+        let reserved = self.reserved_resources_for_placement(&grant.host_id, now_ms)?;
+        let total = reserved
             .checked_add(grant.resources)
             .ok_or(Error::ArithmeticOverflow)?;
         if !total.fits(host.capacity) {
@@ -262,16 +262,22 @@ impl LeaseLedger {
                 if expires_at_ms == current.expires_at_ms {
                     return Ok(receipt(&current, LeaseOutcome::Unchanged));
                 }
-                let grant = self
-                    .grants
-                    .get_mut(allocation_id)
-                    .ok_or(Error::AllocationNotFound)?;
-                grant.expires_at_ms = expires_at_ms;
-                grant.lease_generation = grant
-                    .lease_generation
-                    .checked_add(1)
-                    .ok_or(Error::ArithmeticOverflow)?;
-                Ok(receipt(grant, LeaseOutcome::Renewed))
+                let result = {
+                    let grant = self
+                        .grants
+                        .get_mut(allocation_id)
+                        .ok_or(Error::AllocationNotFound)?;
+                    grant.expires_at_ms = expires_at_ms;
+                    grant.lease_generation = grant
+                        .lease_generation
+                        .checked_add(1)
+                        .ok_or(Error::ArithmeticOverflow)?;
+                    receipt(grant, LeaseOutcome::Renewed)
+                };
+                // A release/holder observation for the predecessor lease fence
+                // cannot be reused to settle the renewed lease.
+                self.holder_observations.remove(allocation_id);
+                Ok(result)
             }
         }
     }
@@ -305,6 +311,9 @@ impl LeaseLedger {
             return Err(Error::Conflict);
         }
         if observation.lease_generation > grant.lease_generation {
+            return Err(Error::StaleLease);
+        }
+        if !observation.holder_present && !release_fence_matches(grant, &observation) {
             return Err(Error::StaleLease);
         }
         if let Some(previous) = self.holder_observations.get(&observation.allocation_id) {
@@ -342,8 +351,8 @@ impl LeaseLedger {
         self.holder_observations.get(allocation_id)
     }
 
-    /// Remove terminal grants only after an observed holder release. Expiry or
-    /// revocation alone cannot prove that physical resources are free to reuse.
+    /// Remove terminal grants only after a release observation for the holder
+    /// fence that became terminal. Expiry or revocation alone never frees capacity.
     pub fn prune_terminal(&mut self, now_ms: u64) -> usize {
         let removable: Vec<_> = self
             .grants
@@ -352,7 +361,7 @@ impl LeaseLedger {
             .filter(|grant| {
                 self.holder_observations
                     .get(&grant.allocation_id)
-                    .is_some_and(|observation| !observation.holder_present)
+                    .is_some_and(|observation| terminal_release_matches(grant, observation, now_ms))
             })
             .map(|grant| grant.allocation_id.clone())
             .collect();
@@ -424,6 +433,9 @@ impl LeaseLedger {
             {
                 return Err(Error::Conflict);
             }
+            if !observation.holder_present && !release_fence_matches(grant, observation) {
+                return Err(Error::Conflict);
+            }
         }
         if self.active_grant_count(now_ms) > MAX_ACTIVE_GRANTS {
             return Err(Error::GrantCapacityExceeded);
@@ -455,19 +467,23 @@ impl LeaseLedger {
             .values()
             .filter(|grant| grant.host_id == host_id)
             .try_fold(Resources::default(), |sum, grant| {
-                let active = !grant.revoked && grant.expires_at_ms > now_ms;
-                let released = self
-                    .holder_observations
-                    .get(&grant.allocation_id)
-                    .is_some_and(|observation| !observation.holder_present);
-                if !active && released {
+                let terminal = grant.revoked || grant.expires_at_ms <= now_ms;
+                let released = terminal
+                    && self
+                        .holder_observations
+                        .get(&grant.allocation_id)
+                        .is_some_and(|observation| {
+                            terminal_release_matches(grant, observation, now_ms)
+                        });
+                if released {
                     return Ok(sum);
                 }
-                if let Some(observation) = self.holder_observations.get(&grant.allocation_id)
-                    && observation.holder_present
-                    && !observation.resources_in_use.fits(grant.resources)
-                {
-                    return Err(Error::CapacityExceeded);
+                if let Some(observation) = self.holder_observations.get(&grant.allocation_id) {
+                    if observation.holder_present
+                        && !observation.resources_in_use.fits(grant.resources)
+                    {
+                        return Err(Error::CapacityExceeded);
+                    }
                 }
                 sum.checked_add(grant.resources)
                     .ok_or(Error::ArithmeticOverflow)
@@ -475,11 +491,9 @@ impl LeaseLedger {
     }
 
     fn fence_host_generation(&mut self, host_id: &str) -> Result<(), Error> {
-        if self
-            .grants
-            .values()
-            .any(|grant| grant.host_id == host_id && !grant.revoked && grant.lease_generation == u64::MAX)
-        {
+        if self.grants.values().any(|grant| {
+            grant.host_id == host_id && !grant.revoked && grant.lease_generation == u64::MAX
+        }) {
             return Err(Error::ArithmeticOverflow);
         }
         for grant in self
@@ -499,6 +513,31 @@ impl LeaseLedger {
             .filter(|grant| !grant.revoked && grant.expires_at_ms > now_ms)
             .count()
     }
+}
+
+fn release_fence_matches(
+    grant: &AllocationGrant,
+    observation: &FleetConsumptionObservationV1,
+) -> bool {
+    if observation.holder_present {
+        return false;
+    }
+    if grant.revoked {
+        return observation
+            .lease_generation
+            .checked_add(1)
+            .is_some_and(|generation| generation == grant.lease_generation);
+    }
+    observation.lease_generation == grant.lease_generation
+}
+
+fn terminal_release_matches(
+    grant: &AllocationGrant,
+    observation: &FleetConsumptionObservationV1,
+    now_ms: u64,
+) -> bool {
+    (grant.revoked || grant.expires_at_ms <= now_ms)
+        && release_fence_matches(grant, observation)
 }
 
 fn validate_host(observation: &HostObservation) -> Result<(), Error> {

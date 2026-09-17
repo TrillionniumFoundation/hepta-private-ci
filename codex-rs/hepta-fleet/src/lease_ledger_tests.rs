@@ -38,6 +38,18 @@ fn grant(id: &str, turns: u64) -> AllocationGrant {
     }
 }
 
+fn released(grant: &AllocationGrant, generation: u64, observed_at_ms: u64) -> FleetConsumptionObservationV1 {
+    FleetConsumptionObservationV1 {
+        allocation_id: grant.allocation_id.clone(),
+        lease_generation: generation,
+        authority_epoch: grant.authority_epoch,
+        semantic_digest: grant.semantic_digest.clone(),
+        observed_at_ms,
+        holder_present: false,
+        resources_in_use: Resources::default(),
+    }
+}
+
 #[test]
 fn conserves_capacity_and_reuses_identical_grant() {
     let mut ledger = LeaseLedger::new();
@@ -90,23 +102,56 @@ fn released_terminal_history_does_not_consume_active_or_retained_capacity() {
         let id = format!("grant.{index}");
         let mut terminal = grant(&id, 1);
         terminal.revoked = true;
+        terminal.lease_generation = 2;
         ledger.grants.insert(id.clone(), terminal.clone());
-        ledger.holder_observations.insert(
-            id.clone(),
-            FleetConsumptionObservationV1 {
-                allocation_id: id,
-                lease_generation: terminal.lease_generation,
-                authority_epoch: terminal.authority_epoch,
-                semantic_digest: terminal.semantic_digest,
-                observed_at_ms: 200,
-                holder_present: false,
-                resources_in_use: Resources::default(),
-            },
-        );
+        ledger.holder_observations.insert(id, released(&terminal, 1, 200));
     }
     assert_eq!(ledger.active_grant_count(200), 0);
     ledger
         .issue(200, grant("after-terminal-history", 1))
         .expect("released history must not exhaust live admission");
     assert_eq!(ledger.prune_terminal(200), MAX_ACTIVE_GRANTS);
+}
+
+#[test]
+fn stale_release_from_pre_renewal_fence_cannot_release_renewed_grant() {
+    let mut ledger = LeaseLedger::new();
+    ledger.admit_host(host()).expect("host");
+    let original = grant("one", 500);
+    ledger.issue(200, original.clone()).expect("grant");
+    assert_eq!(
+        ledger
+            .reconcile_consumption(250, released(&original, 1, 250))
+            .expect("early release observation"),
+        FleetReconciliationOutcomeV1::Released
+    );
+    let renewed = ledger
+        .renew_or_revoke(
+            300,
+            "one",
+            1,
+            3,
+            &"1".repeat(64),
+            LeaseDisposition::Renew { expires_at_ms: 900 },
+        )
+        .expect("renew");
+    assert_eq!(renewed.lease_generation, 2);
+    assert!(ledger.last_consumption_observation("one").is_none());
+    assert_eq!(
+        ledger.reconcile_consumption(350, released(&original, 1, 350)),
+        Err(Error::StaleLease)
+    );
+
+    let revoked = ledger
+        .renew_or_revoke(400, "one", 2, 3, &"1".repeat(64), LeaseDisposition::Revoke)
+        .expect("revoke renewed lease");
+    assert_eq!(revoked.lease_generation, 3);
+    let current = ledger.get("one").expect("grant").clone();
+    assert_eq!(
+        ledger
+            .reconcile_consumption(450, released(&current, 2, 450))
+            .expect("release current holder fence"),
+        FleetReconciliationOutcomeV1::Released
+    );
+    assert_eq!(ledger.prune_terminal(450), 1);
 }
