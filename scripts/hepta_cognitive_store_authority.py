@@ -17,6 +17,9 @@ ROOT = Path(__file__).resolve().parents[1]
 FACADE = ROOT / "codex-rs/hepta-cognitive-store/src/lib.rs"
 FACADE_CARGO = ROOT / "codex-rs/hepta-cognitive-store/Cargo.toml"
 DURABLE_SNAPSHOT = ROOT / "codex-rs/hepta-memory/src/lane_c_snapshot.rs"
+RECOVERY = ROOT / "codex-rs/hepta-memory/src/cognitive_store_recovery_read_only.rs"
+RECOVERY_TESTS = ROOT / "codex-rs/hepta-memory/src/cognitive_store_recovery_read_only_tests.rs"
+COLD_IMAGE = ROOT / "codex-rs/state/src/sqlite_recovery_image.rs"
 STATUS = ROOT / "docs/modules/cognitive.store/STATUS.json"
 MIGRATION = ROOT / "docs/modules/cognitive.store/MIGRATION.md"
 
@@ -39,6 +42,7 @@ def verify() -> list[str]:
     for needle in (
         "pub use codex_hepta_memory::CognitiveStore;",
         "pub async fn open_authoritative(",
+        "pub async fn open_authoritative_with_recovery",
         "pub struct QualificationSemanticStore",
     ):
         if needle not in facade:
@@ -68,6 +72,34 @@ def verify() -> list[str]:
         if needle not in durable:
             failures.append(f"durable knowledge-fact projection missing {needle!r}")
 
+    recovery = text(RECOVERY)
+    for needle in (
+        "promote_to_fresh_owner",
+        "ProductionAuthorityLease",
+        "write_fresh_copy",
+        ".quarantine",
+        "observed != self.anchor",
+    ):
+        if needle not in recovery:
+            failures.append(f"writable recovery missing {needle!r}")
+    cold_image = text(COLD_IMAGE)
+    for needle in (
+        "ColdSqliteRecoveryImage",
+        "capture_cold_recovery_image",
+        "write_fresh_copy",
+        "create_new(true)",
+        "O_NOFOLLOW",
+    ):
+        if needle not in cold_image:
+            failures.append(f"retained cold image missing {needle!r}")
+    recovery_tests = text(RECOVERY_TESTS)
+    for needle in (
+        "promotes_to_fresh_inode_under_external_fence",
+        "rejected_external_fence_cannot_publish_or_quarantine",
+    ):
+        if needle not in recovery_tests:
+            failures.append(f"writable recovery source test missing {needle!r}")
+
     if not STATUS.is_file():
         failures.append("cognitive.store STATUS.json is missing")
     else:
@@ -82,8 +114,16 @@ def verify() -> list[str]:
                 "codex_hepta_cognitive_store::open_authoritative"
             ):
                 failures.append("STATUS.json does not name the canonical production ingress")
+            if status.get("canonicalRecoveryIngress") != (
+                "codex_hepta_cognitive_store::open_authoritative_with_recovery"
+            ):
+                failures.append("STATUS.json does not name the canonical recovery ingress")
             if status.get("durableBackend") != "hepta-memory::CognitiveStore/cognitive_1.sqlite3":
                 failures.append("STATUS.json durable backend drift")
+            if not status.get("claimBoundary", {}).get(
+                "writableSuspectImageRecoveryImplemented", False
+            ):
+                failures.append("STATUS.json writable recovery claim drift")
 
     if not MIGRATION.is_file():
         failures.append("cognitive.store migration/cutover runbook is missing")
