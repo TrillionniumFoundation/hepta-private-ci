@@ -5,6 +5,7 @@
 mod v2;
 mod v3;
 
+use std::cell::RefCell;
 use std::error::Error as StdError;
 use std::fmt;
 
@@ -27,7 +28,6 @@ pub use v2::FederationTransportV2;
 pub use v2::FederationV2Error;
 pub use v2::MAX_FEDERATED_RESULTS_V2;
 pub use v2::RemoteFederatedResponseV2;
-pub use v2::execute_once;
 pub use v2::observe_cancellation;
 
 pub use v3::FederatedAggregateResultV3;
@@ -60,6 +60,56 @@ pub use v3::PinnedHttpsFederationTransportV3;
 pub use v3::RemoteFederatedEnvelopeV3;
 pub use v3::SystemFederationClockV3;
 pub use v3::VerifiedFederationAuthorityReceiptV3;
+
+/// Compatibility V2 entrypoint with corrected completeness and lifetime
+/// semantics. V3 is the authenticated, post-I/O-revalidated production path.
+pub fn execute_once<T: FederationTransportV2>(
+    transport: &T,
+    now_unix_ms: u64,
+    query: FederatedQueryV2,
+    lease: &FederatedLeaseV2,
+) -> Result<FederatedResultV2, FederationV2Error> {
+    struct CapturingTransport<'a, T> {
+        inner: &'a T,
+        observed: RefCell<Option<FederationTransportResultV2>>,
+    }
+
+    impl<T: FederationTransportV2> FederationTransportV2 for CapturingTransport<'_, T> {
+        fn send_once(
+            &self,
+            query: &FederatedQueryV2,
+        ) -> Result<FederationTransportResultV2, FederationV2Error> {
+            let result = self.inner.send_once(query)?;
+            self.observed.replace(Some(result.clone()));
+            Ok(result)
+        }
+    }
+
+    let deadline_unix_ms = query.deadline_unix_ms;
+    let lease_expires_unix_ms = lease.expires_unix_ms;
+    let capturing = CapturingTransport {
+        inner: transport,
+        observed: RefCell::new(None),
+    };
+    let mut result = v2::execute_once(&capturing, now_unix_ms, query, lease)?;
+    let observed = capturing.observed.into_inner();
+
+    if let Some(FederationTransportResultV2::Terminal(response)) = observed
+        && matches!(response.completeness, FederatedCompletenessV2::Partial)
+        && matches!(result.validity, FederatedValidityV2::Valid)
+        && result.items.is_empty()
+    {
+        result.completeness = FederatedCompletenessV2::Partial;
+    }
+
+    result.expires_unix_ms = result
+        .expires_unix_ms
+        .min(lease_expires_unix_ms)
+        .min(deadline_unix_ms);
+    result.result_digest = result.compute_result_digest();
+    result.validate()?;
+    Ok(result)
+}
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct FederatedReadRequest {
