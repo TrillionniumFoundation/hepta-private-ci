@@ -26,6 +26,18 @@
       ]
     },
     {
+      "id": "final_use_revocation_update",
+      "typeMarker": "FinalUseAuthority",
+      "definitionPath": "codex-rs/hepta-contracts/src/final_use.rs",
+      "callPatterns": [
+        "\\.\\s*update_revocations\\s*\\(",
+        "FinalUseAuthority\\s*::\\s*update_revocations\\s*\\("
+      ],
+      "allowedCallers": [
+        "codex-rs/hepta-contracts/src/final_use_control.rs"
+      ]
+    },
+    {
       "id": "final_use_approval_verify",
       "typeMarker": "FinalUseApprovalVerifier",
       "definitionPath": "codex-rs/hepta-contracts/src/final_use_control.rs",
