@@ -1,6 +1,7 @@
 //! Scoped, fail-closed remote cognitive read verification.
 
 #![forbid(unsafe_code)]
+#![cfg_attr(test, allow(clippy::unwrap_used))]
 
 mod v2;
 pub mod v3;
