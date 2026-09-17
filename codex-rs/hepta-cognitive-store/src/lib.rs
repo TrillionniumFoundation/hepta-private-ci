@@ -17,6 +17,11 @@ mod v2;
 use std::collections::BTreeMap;
 use std::error::Error as StdError;
 use std::fmt;
+use std::fs::File;
+use std::fs::OpenOptions;
+use std::ops::Deref;
+use std::path::PathBuf;
+use std::sync::Arc;
 
 use codex_hepta_cognitive_types::MemoryRecord;
 use codex_hepta_cognitive_types::RecordState;
@@ -26,7 +31,7 @@ use codex_hepta_types::LogicalSequence;
 use codex_hepta_types::StableId;
 
 // Canonical production-facing durable owner surface. Keeping the concrete
-// backend type identical avoids a second copy of persistence invariants while
+// store type identical avoids a second copy of persistence invariants while
 // moving product composition to one import boundary.
 pub use codex_hepta_memory::CognitiveRecoveryAnchor;
 pub use codex_hepta_memory::CognitiveRecoveryError;
@@ -40,7 +45,6 @@ pub use codex_hepta_memory::ProductionAuthorityVerifier;
 pub use codex_hepta_memory::ProductionDispatchFuture;
 pub use codex_hepta_memory::ProductionDispatchReceipt;
 pub use codex_hepta_memory::ProductionDispatchRequest;
-pub use codex_hepta_memory::ProductionDurableWriter;
 pub use codex_hepta_memory::ProductionLeaseReceipt;
 pub use codex_hepta_memory::ProductionOutboxDispatcher;
 pub use codex_hepta_memory::ProductionOutboxTarget;
@@ -67,6 +71,117 @@ pub use v2::StoreIntentImageEntryV2;
 pub use v2::StoreSnapshotV2;
 
 const MAX_RECORDS: usize = 16_384;
+const PRODUCTION_AUTHORITY_LOCK_FILENAME: &str = ".hepta-cognitive-production-authority.lock";
+
+/// Product-facing production writer. The backend writer already fences the
+/// lease generation; this facade adds one process-level lock per cognitive
+/// database, independent of lease id, so two different leases cannot become
+/// concurrent production writers for the same owner.
+#[derive(Clone)]
+pub struct ProductionDurableWriter {
+    inner: codex_hepta_memory::ProductionDurableWriter,
+    _authority_lock: Arc<ProductionAuthorityLock>,
+}
+
+struct ProductionAuthorityLock {
+    _file: File,
+    _path: PathBuf,
+}
+
+impl ProductionAuthorityLock {
+    fn acquire(store: &CognitiveStore) -> Result<Arc<Self>, ProductionWriterError> {
+        let database_path = store.path();
+        let parent = database_path.parent().ok_or_else(|| {
+            ProductionWriterError::Durability(
+                "cognitive database path has no parent for authority lock".to_string(),
+            )
+        })?;
+        let canonical_parent = parent.canonicalize().map_err(|error| {
+            ProductionWriterError::Durability(format!(
+                "cannot canonicalize cognitive authority-lock parent {}: {error}",
+                parent.display()
+            ))
+        })?;
+        if canonical_parent != parent {
+            return Err(ProductionWriterError::Durability(
+                "cognitive authority-lock parent must be canonical".to_string(),
+            ));
+        }
+        let path = parent.join(PRODUCTION_AUTHORITY_LOCK_FILENAME);
+        let file = OpenOptions::new()
+            .read(true)
+            .write(true)
+            .create(true)
+            .truncate(false)
+            .open(&path)
+            .map_err(|error| {
+                ProductionWriterError::Durability(format!(
+                    "cannot open cognitive authority lock {}: {error}",
+                    path.display()
+                ))
+            })?;
+        match file.try_lock() {
+            Ok(()) => Ok(Arc::new(Self {
+                _file: file,
+                _path: path,
+            })),
+            Err(std::fs::TryLockError::WouldBlock) => Err(ProductionWriterError::WriterBusy),
+            Err(std::fs::TryLockError::Error(error)) => Err(ProductionWriterError::Durability(
+                format!(
+                    "cannot acquire cognitive authority lock {}: {error}",
+                    path.display()
+                ),
+            )),
+        }
+    }
+}
+
+impl fmt::Debug for ProductionDurableWriter {
+    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
+        formatter
+            .debug_struct("ProductionDurableWriter")
+            .field("inner", &self.inner)
+            .finish_non_exhaustive()
+    }
+}
+
+impl Deref for ProductionDurableWriter {
+    type Target = codex_hepta_memory::ProductionDurableWriter;
+
+    fn deref(&self) -> &Self::Target {
+        &self.inner
+    }
+}
+
+impl ProductionDurableWriter {
+    pub async fn open<V>(
+        store: CognitiveStore,
+        authority: ProductionAuthorityLease,
+        verifier: &V,
+        lease_id: impl Into<String>,
+        generation: u64,
+    ) -> Result<Self, ProductionWriterError>
+    where
+        V: ProductionAuthorityVerifier + ?Sized,
+    {
+        // Acquire the global owner lock before the backend performs any lease
+        // mutation. If backend admission fails, dropping this local value
+        // releases the lock without changing another writer's state.
+        let authority_lock = ProductionAuthorityLock::acquire(&store)?;
+        let inner = codex_hepta_memory::ProductionDurableWriter::open(
+            store,
+            authority,
+            verifier,
+            lease_id,
+            generation,
+        )
+        .await?;
+        Ok(Self {
+            inner,
+            _authority_lock: authority_lock,
+        })
+    }
+}
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum AppendDisposition {
