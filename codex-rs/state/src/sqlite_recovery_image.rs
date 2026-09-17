@@ -140,6 +140,10 @@ impl SqliteConfig {
     }
 }
 
+#[cfg(unix)]
+#[path = "sqlite_recovery_replay.rs"]
+mod replay;
+
 #[cfg(all(test, unix))]
 #[path = "sqlite_recovery_image_tests.rs"]
 mod tests;

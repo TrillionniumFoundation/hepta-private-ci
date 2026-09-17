@@ -51,9 +51,6 @@ impl CognitiveStore {
     /// (including deletion/revocation state) under the full current-cut hash.
     /// Unused physical bytes are not authority and are not covered by that hash.
     /// A mismatch never falls back to an older cut or ordinary store opening.
-    ///
-    /// This does NOT complete `open_with_recovery`: writer restoration still
-    /// requires a descriptor-backed VFS and an independently current writer fence.
     pub async fn open_read_only_recovery(
         layout: &HeptaAgentLayout,
         requirement: CognitiveRecoveryRequirement<'_>,
@@ -112,3 +109,7 @@ impl CognitiveStore {
         })
     }
 }
+
+#[cfg(unix)]
+#[path = "cognitive_store_recovery_writer.rs"]
+mod writer;

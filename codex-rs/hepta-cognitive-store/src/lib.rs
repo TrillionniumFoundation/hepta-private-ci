@@ -1,7 +1,14 @@
-//! Append-only cognitive ledger with correction and tombstone lineage.
+//! Canonical product-facing owner for cognitive memory and knowledge facts.
 //!
-//! The store is the only writer of its in-memory qualification ledger. It does
-//! not perform federation, model calls, learning-policy writes or effects.
+//! Production callers import [`CognitiveStore`] and the production writer
+//! boundary from this crate. The durable SQLite implementation currently lives
+//! in `codex-hepta-memory`, but it is a backend implementation detail rather
+//! than a second product authority. Repository architecture checks prevent
+//! product crates from opening that backend directly.
+//!
+//! The small in-memory ledger below and the V2 admitted ledger are retained as
+//! qualification/semantic-oracle implementations. They are deliberately named
+//! as such and must not be composed as a production persistence owner.
 
 #![forbid(unsafe_code)]
 
@@ -10,6 +17,11 @@ mod v2;
 use std::collections::BTreeMap;
 use std::error::Error as StdError;
 use std::fmt;
+use std::fs::File;
+use std::fs::OpenOptions;
+use std::ops::Deref;
+use std::path::PathBuf;
+use std::sync::Arc;
 
 use codex_hepta_cognitive_types::MemoryRecord;
 use codex_hepta_cognitive_types::RecordState;
@@ -17,6 +29,58 @@ use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::LogicalSequence;
 use codex_hepta_types::StableId;
+
+// Canonical product-facing durable owner surface. Keeping the concrete store
+// type identical avoids a second copy of persistence invariants while moving
+// product composition to one import boundary.
+pub use codex_hepta_memory::CognitiveAccess;
+pub use codex_hepta_memory::CognitiveOwnerFrontiers;
+pub use codex_hepta_memory::CognitiveProjectionReceipt;
+pub use codex_hepta_memory::CognitiveRecoveryAnchor;
+pub use codex_hepta_memory::CognitiveRecoveryError;
+pub use codex_hepta_memory::CognitiveRecoveryRequirement;
+pub use codex_hepta_memory::CognitiveScope;
+pub use codex_hepta_memory::CognitiveStore;
+pub use codex_hepta_memory::CognitiveStoreError;
+pub use codex_hepta_memory::CognitiveWriteReceipt;
+pub use codex_hepta_memory::DurableCognitiveSnapshot;
+pub use codex_hepta_memory::ForgetMemoryDraft;
+pub use codex_hepta_memory::KgEdge;
+pub use codex_hepta_memory::KgEntityFactDraft;
+pub use codex_hepta_memory::KgFactSetDraft;
+pub use codex_hepta_memory::KgNode;
+pub use codex_hepta_memory::KgRelationFactDraft;
+pub use codex_hepta_memory::LedgerSourceKind;
+pub use codex_hepta_memory::MemoryDraft;
+pub use codex_hepta_memory::MemoryLifecycleState;
+pub use codex_hepta_memory::MemoryRevisionDraft;
+pub use codex_hepta_memory::MemoryRevisionId;
+pub use codex_hepta_memory::MemoryRevisionRecord;
+pub use codex_hepta_memory::MemoryVerification;
+pub use codex_hepta_memory::ProductionAuthorityLease;
+pub use codex_hepta_memory::ProductionAuthorityToken;
+pub use codex_hepta_memory::ProductionAuthorityVerifier;
+pub use codex_hepta_memory::ProductionDispatchFuture;
+pub use codex_hepta_memory::ProductionDispatchReceipt;
+pub use codex_hepta_memory::ProductionDispatchRequest;
+pub use codex_hepta_memory::ProductionLeaseReceipt;
+pub use codex_hepta_memory::ProductionOutboxDispatcher;
+pub use codex_hepta_memory::ProductionOutboxTarget;
+pub use codex_hepta_memory::ProductionOutcomeReceipt;
+pub use codex_hepta_memory::ProductionQueuedReceipt;
+pub use codex_hepta_memory::ProductionRecoveryReceipt;
+pub use codex_hepta_memory::ProductionTargetOutcome;
+pub use codex_hepta_memory::ProductionWriterError;
+pub use codex_hepta_memory::ProjectionGeneration;
+pub use codex_hepta_memory::RecoveredCognitiveReadOnly;
+pub use codex_hepta_memory::SourceDraft;
+pub use codex_hepta_memory::SourceEventId;
+pub use codex_hepta_memory::SourceRevisionId;
+pub use codex_hepta_memory::StableMemoryId;
+pub use codex_hepta_memory::PRODUCTION_DURABLE_WRITER_JOURNAL_MODE;
+pub use codex_hepta_memory::PRODUCTION_DURABLE_WRITER_NAMESPACE;
+pub use codex_hepta_memory::PRODUCTION_DURABLE_WRITER_SCHEMA_VERSION;
+pub use codex_hepta_memory::PRODUCTION_DURABLE_WRITER_SYNCHRONOUS_FULL;
 
 pub use v2::AdmittedCognitiveStoreV2;
 pub use v2::CognitiveStoreImageV2;
@@ -30,6 +94,117 @@ pub use v2::StoreIntentImageEntryV2;
 pub use v2::StoreSnapshotV2;
 
 const MAX_RECORDS: usize = 16_384;
+const PRODUCTION_AUTHORITY_LOCK_FILENAME: &str = ".hepta-cognitive-production-authority.lock";
+
+/// Product-facing production writer. The backend writer already fences the
+/// lease generation; this facade adds one process-level lock per cognitive
+/// database, independent of lease id, so two different leases cannot become
+/// concurrent production writers for the same owner.
+#[derive(Clone)]
+pub struct ProductionDurableWriter {
+    inner: codex_hepta_memory::ProductionDurableWriter,
+    _authority_lock: Arc<ProductionAuthorityLock>,
+}
+
+struct ProductionAuthorityLock {
+    _file: File,
+    _path: PathBuf,
+}
+
+impl ProductionAuthorityLock {
+    fn acquire(store: &CognitiveStore) -> Result<Arc<Self>, ProductionWriterError> {
+        let database_path = store.path();
+        let parent = database_path.parent().ok_or_else(|| {
+            ProductionWriterError::Durability(
+                "cognitive database path has no parent for authority lock".to_string(),
+            )
+        })?;
+        let canonical_parent = parent.canonicalize().map_err(|error| {
+            ProductionWriterError::Durability(format!(
+                "cannot canonicalize cognitive authority-lock parent {}: {error}",
+                parent.display()
+            ))
+        })?;
+        if canonical_parent != parent {
+            return Err(ProductionWriterError::Durability(
+                "cognitive authority-lock parent must be canonical".to_string(),
+            ));
+        }
+        let path = parent.join(PRODUCTION_AUTHORITY_LOCK_FILENAME);
+        let file = OpenOptions::new()
+            .read(true)
+            .write(true)
+            .create(true)
+            .truncate(false)
+            .open(&path)
+            .map_err(|error| {
+                ProductionWriterError::Durability(format!(
+                    "cannot open cognitive authority lock {}: {error}",
+                    path.display()
+                ))
+            })?;
+        match file.try_lock() {
+            Ok(()) => Ok(Arc::new(Self {
+                _file: file,
+                _path: path,
+            })),
+            Err(std::fs::TryLockError::WouldBlock) => Err(ProductionWriterError::WriterBusy),
+            Err(std::fs::TryLockError::Error(error)) => Err(ProductionWriterError::Durability(
+                format!(
+                    "cannot acquire cognitive authority lock {}: {error}",
+                    path.display()
+                ),
+            )),
+        }
+    }
+}
+
+impl fmt::Debug for ProductionDurableWriter {
+    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
+        formatter
+            .debug_struct("ProductionDurableWriter")
+            .field("inner", &self.inner)
+            .finish_non_exhaustive()
+    }
+}
+
+impl Deref for ProductionDurableWriter {
+    type Target = codex_hepta_memory::ProductionDurableWriter;
+
+    fn deref(&self) -> &Self::Target {
+        &self.inner
+    }
+}
+
+impl ProductionDurableWriter {
+    pub async fn open<V>(
+        store: CognitiveStore,
+        authority: ProductionAuthorityLease,
+        verifier: &V,
+        lease_id: impl Into<String>,
+        generation: u64,
+    ) -> Result<Self, ProductionWriterError>
+    where
+        V: ProductionAuthorityVerifier + ?Sized,
+    {
+        // Acquire the global owner lock before the backend performs any lease
+        // mutation. If backend admission fails, dropping this local value
+        // releases the lock without changing another writer's state.
+        let authority_lock = ProductionAuthorityLock::acquire(&store)?;
+        let inner = codex_hepta_memory::ProductionDurableWriter::open(
+            store,
+            authority,
+            verifier,
+            lease_id,
+            generation,
+        )
+        .await?;
+        Ok(Self {
+            inner,
+            _authority_lock: authority_lock,
+        })
+    }
+}
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum AppendDisposition {
@@ -73,14 +248,16 @@ struct StoredRecord {
     sequence: LogicalSequence,
 }
 
+/// Qualification-only current-head ledger retained for semantic regression
+/// tests. This is not the product cognitive store and owns no durable files.
 #[derive(Clone, Debug, Eq, PartialEq)]
-pub struct CognitiveStore {
+pub struct QualificationCognitiveStoreV1 {
     records: BTreeMap<StableId, StoredRecord>,
     sequence: LogicalSequence,
     maximum_records: usize,
 }
 
-impl CognitiveStore {
+impl QualificationCognitiveStoreV1 {
     pub fn new(maximum_records: usize) -> Result<Self, Error> {
         if maximum_records == 0 {
             return Err(Error::ZeroCapacity);

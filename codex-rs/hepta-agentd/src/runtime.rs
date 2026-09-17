@@ -10,8 +10,9 @@ use codex_app_server_client::RemoteAppServerEndpoint;
 use codex_arg0::Arg0DispatchPaths;
 use codex_hepta_automation::AutomationError;
 use codex_hepta_automation::AutomationStore;
+use codex_hepta_cognitive_store::CognitiveStore;
+use codex_hepta_cognitive_store::CognitiveStoreError;
 use codex_hepta_memory::CognitiveRuntime;
-use codex_hepta_memory::CognitiveStore;
 use codex_hepta_memory::FederatedRecallSet;
 use codex_utils_absolute_path::AbsolutePathBuf;
 use tokio::task::JoinHandle;
@@ -245,7 +246,7 @@ async fn open_cognitive_runtime_after_generation_fence<Open, OpenFuture>(
 ) -> Result<CognitiveRuntime, AgentdError>
 where
     Open: FnOnce() -> OpenFuture,
-    OpenFuture: Future<Output = Result<CognitiveStore, codex_hepta_memory::CognitiveStoreError>>,
+    OpenFuture: Future<Output = Result<CognitiveStore, CognitiveStoreError>>,
 {
     state.refresh_generation()?;
     let cognitive_runtime = CognitiveRuntime::from_open_result(open().await);

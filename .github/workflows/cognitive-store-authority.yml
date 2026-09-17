@@ -1,0 +1,60 @@
+name: Cognitive store authority closure
+
+on:
+  pull_request:
+    paths:
+      - "codex-rs/hepta-cognitive-store/**"
+      - "codex-rs/hepta-memory/**"
+      - "codex-rs/hepta-agentd/**"
+      - "codex-rs/state/**"
+      - "docs/modules/cognitive.store/**"
+      - "qualification/module-execution-dossiers/detail/cognitive.store.md"
+      - "qualification/module-execution-dossiers/PERSISTENCE.md"
+      - "scripts/verify_cognitive_store_authority.py"
+      - ".github/workflows/cognitive-store-authority.yml"
+  push:
+    branches: [main]
+    paths:
+      - "codex-rs/hepta-cognitive-store/**"
+      - "codex-rs/hepta-memory/**"
+      - "codex-rs/hepta-agentd/**"
+      - "codex-rs/state/**"
+      - "docs/modules/cognitive.store/**"
+      - "qualification/module-execution-dossiers/detail/cognitive.store.md"
+      - "qualification/module-execution-dossiers/PERSISTENCE.md"
+      - "scripts/verify_cognitive_store_authority.py"
+      - ".github/workflows/cognitive-store-authority.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: cognitive-store-authority-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  authority:
+    name: Verify single cognitive store authority
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Verify no product authority bypass
+        run: python3 scripts/verify_cognitive_store_authority.py
+      - name: Check focused formatting
+        working-directory: codex-rs
+        run: cargo fmt --package codex-hepta-cognitive-store --package codex-hepta-memory --package codex-hepta-agentd --package codex-state -- --check
+      - name: Check focused packages
+        working-directory: codex-rs
+        env:
+          CARGO_INCREMENTAL: "0"
+          CARGO_BUILD_JOBS: "2"
+          CARGO_PROFILE_TEST_DEBUG: "0"
+          CARGO_PROFILE_DEV_DEBUG: "0"
+        run: |
+          cargo check --locked -p codex-hepta-cognitive-store -p codex-hepta-memory -p codex-hepta-agentd -p codex-state --all-targets
+          cargo clippy --locked -p codex-hepta-cognitive-store -p codex-hepta-memory -p codex-hepta-agentd -p codex-state --all-targets -- -D warnings
