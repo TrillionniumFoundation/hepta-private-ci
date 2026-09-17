@@ -15,6 +15,7 @@ mod dispatcher;
 mod durable_model;
 mod durable_store;
 mod error;
+mod exact_claim;
 mod ledger;
 mod model;
 mod outbox;
