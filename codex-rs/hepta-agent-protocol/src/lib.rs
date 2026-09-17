@@ -26,7 +26,7 @@ use serde::Deserialize;
 use serde::Serialize;
 
 pub const AGENTD_CONTROL_SCHEMA_VERSION: u32 = 2;
-/// Version for the transport-only host turn authority witness.  This type is
+/// Version for the transport-only host turn authority witness. This type is
 /// deliberately not an authority grant and is not consumed by the Agentd
 /// runtime yet; it gives a future host/supervisor seam one strict wire shape.
 pub const HOST_TURN_AUTHORITY_BINDING_SCHEMA_VERSION: u32 = 1;
@@ -135,6 +135,23 @@ impl AgentdRequest {
             request_id,
             spawn_generation,
             method: AgentdMethod::SessionIngress,
+        }
+    }
+
+    pub fn cognitive_context_finalize(
+        request_id: u64,
+        spawn_generation: u64,
+        snapshot_digest: String,
+        read_digest: String,
+    ) -> Self {
+        Self {
+            schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
+            request_id,
+            spawn_generation,
+            method: AgentdMethod::CognitiveContextFinalize {
+                snapshot_digest,
+                read_digest,
+            },
         }
     }
 
@@ -276,6 +293,10 @@ pub enum AgentdMethod {
         query: String,
         limit: u16,
     },
+    CognitiveContextFinalize {
+        snapshot_digest: String,
+        read_digest: String,
+    },
     Events {
         after_cursor: u64,
         limit: u16,
@@ -329,6 +350,10 @@ pub enum AgentdPayload {
     Lifecycle(LifecycleSnapshot),
     SessionIngress(SessionIngress),
     CognitiveContext(CognitiveContextSnapshot),
+    CognitiveContextFinalized {
+        snapshot_digest: String,
+        read_digest: String,
+    },
     AuthBusTextStatus(AuthBusTextStatus),
     Events(EventBatch),
     AutomationTask(AutomationTask),
@@ -446,7 +471,7 @@ pub struct EventBatch {
 /// Exact host-bound turn/lease identity transported across the Agentd
 /// boundary.
 ///
-/// This is a qualification contract only.  It carries the witness that a
+/// This is a qualification contract only. It carries the witness that a
 /// supervisor can later bind to an Agent-local append-only lease CAS, but the
 /// current protocol has no method that grants authority from this value.
 #[derive(Clone, Debug, Eq, PartialEq, Serialize)]
@@ -613,6 +638,31 @@ mod tests {
         assert_eq!(
             serde_json::from_slice::<AgentdResponse>(&response_bytes).expect("parse response"),
             response
+        );
+    }
+
+    #[test]
+    fn cognitive_context_finalize_wire_round_trip_is_strict_and_bounded() {
+        let request = AgentdRequest::cognitive_context_finalize(
+            8,
+            11,
+            "a".repeat(64),
+            "b".repeat(64),
+        );
+        let request_bytes = serde_json::to_vec(&request).expect("serialize finalize request");
+        assert!(request_bytes.len() as u64 <= MAX_CONTROL_FRAME_BYTES);
+        assert_eq!(
+            serde_json::from_slice::<AgentdRequest>(&request_bytes).expect("parse finalize request"),
+            request
+        );
+        let payload = AgentdPayload::CognitiveContextFinalized {
+            snapshot_digest: "a".repeat(64),
+            read_digest: "b".repeat(64),
+        };
+        let payload_bytes = serde_json::to_vec(&payload).expect("serialize finalize payload");
+        assert_eq!(
+            serde_json::from_slice::<AgentdPayload>(&payload_bytes).expect("parse finalize payload"),
+            payload
         );
     }
 
