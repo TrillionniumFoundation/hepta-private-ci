@@ -30,7 +30,7 @@ This ordering is intentional: `compile` owns the mandatory feasibility stage for
 
 No stage may silently drop a represented constraint, action, success predicate, resource ceiling, risk rule, evidence requirement or provenance field. A decoder or structural validator is not semantic admission. A profile label is not authentication. The admitted source digest binds the supplied source digest, authenticated source class and selected profile.
 
-## 2. Input grammar, executable V1 subset and canonical IR
+## 2. Input grammar and canonical IR
 
 The bounded source grammar contains:
 
@@ -66,8 +66,9 @@ source constraint ceiling: 246
 native success-predicate ceiling: 128
 successPredicates + terminalConditions + evidenceRequirements: <=128 aggregate
 
-compiled legal-action ceiling: 128 including intrinsic abstain
+source action-array ceiling: 128
 caller legal-action ceiling when abstain is implicit: 127
+compiled legal-action ceiling: 128 including intrinsic abstain
 ```
 
 Admission profiles remain bounded to 256 constraint mappings, 128 predicate mappings, 128 action mappings, 64 soft dimensions, 128 evidence mappings, 64 abstention rules and a 256 KiB profile guard. Risk and rollback levels must be monotone.
@@ -99,7 +100,8 @@ The bounded JSON path permits an empty caller legal-action set. The compiler the
 The compiled action ceiling is `128`, including the intrinsic abstain slot:
 
 ```text
-caller does not include abstain: caller action ceiling = 127
+caller omits abstain: caller action ceiling = 127
+caller includes abstain explicitly: source action ceiling = 128
 compiled legal action ceiling: 128
 ```
 
@@ -157,7 +159,7 @@ received
 
 The current read-only intelligence vertical is an integration harness, not proof of that durable product writer. Its typed outcome API preserves `ExplicitAbstain` as a non-error result; the older receipt-only wrapper remains compatibility behavior. A crash before caller publication leaves no selected objective. A crash after durable publication must be reconciled by an identity that includes request, principal scope, source digest, schema digest and selected profile digest. A changed success predicate, hard constraint, legal effect, evidence requirement, resource/risk rule, principal scope or rollback class creates a new objective revision and run snapshot.
 
-## 6. Error taxonomy and retry policy
+## 6. Error taxonomy and fallback
 
 The canonical definitions are in `docs/contracts/OBJECTIVE_ERRORS.json`:
 
@@ -197,7 +199,7 @@ The following paths are measured separately:
 | inclusion-minimal conflict extraction | at most `n+1` oracle calls and `O(n C(n))` |
 | legal-action construction | `O(a log a)` with compiled `a<=128` |
 
-Pilot ceilings are `<=246` source constraints plus exactly ten generated resource/risk constraints for `<=256` native hard constraints, `<=128` aggregate success/terminal/evidence predicates, `<=127` caller actions when abstain is implicit, `<=128` compiled actions including abstain, `<=64` soft dimensions and `<=257` conflict-oracle calls. Exceeding a bound rejects or returns unavailable; input is never truncated after semantic analysis.
+Pilot ceilings are `<=246` source constraints plus exactly ten generated resource/risk constraints for `<=256` native hard constraints, `<=128` aggregate success/terminal/evidence predicates, source action arrays `<=128`, `<=127` caller legal actions when abstain is implicit, `<=128` compiled actions including abstain, `<=64` soft dimensions and `<=257` conflict-oracle calls. Exceeding a bound rejects or returns unavailable; input is never truncated after semantic analysis.
 
 The admission profile's current 256 KiB guard uses `profile_encoded_size()`, a conservative parallel estimator rather than byte-for-byte canonical serialized length. If the profile byte ceiling is promoted to a protocol-hard canonical encoding boundary, actual canonical encoded bytes must replace that estimator.
 
