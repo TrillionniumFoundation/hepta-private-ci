@@ -15,6 +15,7 @@ activation, acceptance, promotion or release claim.
 | Per-layer/global parameter trust regions | **Implemented** | V2 verifier and V3 generator |
 | Durable append-only proposal registry | **Implemented** | `DurableProposalRegistry` |
 | Production-path anchored reopen | **Implemented seam** | `AnchoredPlasticityWriterV1` in `codex-rs/hepta-intelligence` |
+| External anchor commit before product success | **Implemented fail-closed seam** | `PlasticityAnchorCommitterV1` |
 | Signed generator authentication | **Implemented composition** | `propose_authenticated_parameter_plasticity_v1` |
 | Signed current artifact/evidence-frontier witness | **Implemented composition** | `PlasticityAdmissionEvidenceV1` |
 | Cryptographically independent evaluator admission | **Implemented composition** | existing `LearningEvidenceVerifierV1` + signed evaluation path |
@@ -64,16 +65,27 @@ validity window, revocation, role assignment and generator/evaluator controller
 separation. The product adapter derives proposer/evaluator IDs from authenticated
 principals instead of trusting caller-supplied role strings.
 
+The integration regression suite exercises the complete signed path with deterministic
+Ed25519 fixtures and asserts rejection of a tampered artifact-frontier witness,
+generator/evaluator controller collision, and failed external-anchor persistence.
+These fixtures establish source behavior only; they are not deployment evidence.
+
 ## Rollback protection
 
 The raw proposal crate retains `DurableProposalRegistry::open` for isolated bootstrap
 and compatibility. It is not accepted by the product composition path.
 `AnchoredPlasticityWriterV1::bootstrap_new` accepts only a zero-length newly enrolled
 file. Any reopen of acknowledged history must use `reopen_anchored` with a host-retained
-`DurableRegistryAnchorV1`. The host MUST persist the returned current anchor in an
-independent rollback domain after each successful append and MUST issue a nonzero,
-monotonic writer fence. A registry file and its anchor stored in the same rollback
-domain do not satisfy this requirement.
+`DurableRegistryAnchorV1`.
+
+After a durable append, product composition obtains the current registry anchor and
+calls the host-owned `PlasticityAnchorCommitterV1`. **No successful product receipt is
+returned until that external anchor commit succeeds.** If the external commit fails,
+the product writer is poisoned and rejects all further reads/appends through that
+handle. Recovery requires reopening against independently retained acknowledged
+history. The host still owns the physical independent rollback domain and monotonic
+writer-fence issuance; storing the registry file and its anchor in the same rollback
+domain does not satisfy this requirement.
 
 ## Topology boundary
 
