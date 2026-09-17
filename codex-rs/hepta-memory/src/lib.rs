@@ -17,6 +17,7 @@ mod h7_runtime;
 mod h7_signed_artifact;
 mod h7_trajectory_store;
 mod intuition_shadow;
+mod lane_c_paging;
 mod lane_c_snapshot;
 mod local_atomic_witness;
 mod local_compact_executor;
@@ -34,6 +35,9 @@ mod recall;
 mod shadow_advisory;
 mod shadow_model_runtime;
 
+pub use lane_c_paging::DurableCognitiveLineagePage;
+pub use lane_c_paging::MAX_LANE_C_LINEAGE_PAGE_MEMORY_IDS;
+pub use lane_c_paging::MAX_LANE_C_LINEAGE_PAGE_REVISIONS;
 pub use lane_c_snapshot::CognitiveOwnerFrontiers;
 pub use lane_c_snapshot::DurableCognitiveSnapshot;
 
