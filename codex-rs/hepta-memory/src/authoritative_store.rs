@@ -232,10 +232,9 @@ mod tests {
                 "production:cognitive-authority:test",
                 1,
             )
-            .await
-            .expect_err("a second live production writer must be fenced");
+            .await;
 
-        assert!(matches!(second, ProductionWriterError::WriterBusy));
+        assert!(matches!(second, Err(ProductionWriterError::WriterBusy)));
         drop(first);
     }
 }
