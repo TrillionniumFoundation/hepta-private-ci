@@ -178,8 +178,6 @@ async fn owner_loss_stays_denied_after_interrupt_grace_observes_completed() {
             std::io::ErrorKind::ConnectionReset,
         ))),
     ] {
-        // This output is bound to the started thread/turn. The same health
-        // reducer runs in observe(), before its error triggers TurnInterrupt.
         let mut output = output();
         verify_owner_health(
             &mut output,
@@ -195,7 +193,6 @@ async fn owner_loss_stays_denied_after_interrupt_grace_observes_completed() {
                 .is_err()
         );
         let lost = output.owner_authority.clone();
-        // Grace has no owner parameter: it can still establish provider facts.
         assert!(
             observe_notification(
                 &mut output,
@@ -207,7 +204,6 @@ async fn owner_loss_stays_denied_after_interrupt_grace_observes_completed() {
         assert_eq!(output.observed_output_tokens, Some(42));
         assert!(output.terminal_observed);
         assert!(!output.succeeded());
-        // A later ready response cannot restore authority for this attempt.
         assert!(
             verify_owner_health(
                 &mut output,
@@ -253,7 +249,6 @@ async fn owner_timeout_and_terminal_first_selection_cannot_authorize_success() {
     )
     .await
     .unwrap();
-    // select! can consume Completed before a simultaneously ready health tick.
     observe_notification(
         &mut terminal_first,
         terminal("thread-a", "turn-a", TurnStatus::Completed),
@@ -261,7 +256,6 @@ async fn owner_timeout_and_terminal_first_selection_cannot_authorize_success() {
     .unwrap();
     let mut fenced = ready_owner();
     fenced.fenced = true;
-    // run_once always executes this final check after provider cleanup.
     assert!(
         verify_owner_health(
             &mut terminal_first,
@@ -276,7 +270,7 @@ async fn owner_timeout_and_terminal_first_selection_cannot_authorize_success() {
 }
 
 #[tokio::test]
-async fn success_requires_both_matching_completion_and_final_ready_owner() {
+async fn success_requires_completion_usage_and_final_ready_owner() {
     let mut output = output();
     observe_notification(
         &mut output,
@@ -291,6 +285,8 @@ async fn success_requires_both_matching_completion_and_final_ready_owner() {
     )
     .await
     .unwrap();
+    assert!(!output.succeeded());
+    output.observed_output_tokens = Some(1);
     assert!(output.succeeded());
     output.status = NativeRunStatus::Interrupted;
     assert!(!output.succeeded());
