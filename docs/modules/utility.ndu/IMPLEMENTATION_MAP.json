@@ -130,7 +130,7 @@
         "NduSolverIterationReceipt list on convergence",
         "NDU-E008 unavailable on 64-iteration exhaustion"
       ],
-      "state": "source_implemented_local_solver_fail_closed",
+      "state": "source_implemented_local_solver",
       "authority": "none",
       "nonClaim": "local termination is not NduConvergenceCertificateV1",
       "iterationBound": 64,
@@ -178,7 +178,7 @@
       "outputs": [
         "owner-local NduIterationReceiptV1"
       ],
-      "state": "source_implemented_protocol_adapter_checked",
+      "state": "source_implemented_protocol_adapter",
       "authority": "deny_all",
       "validatedLocalInvariants": [
         "iteration is within 1..=64",
@@ -242,7 +242,7 @@
         "bounded hash-chain journal bytes",
         "selected projection view"
       ],
-      "state": "source_implemented_owner_local_durability_reference_semantic_replay",
+      "state": "source_implemented_owner_local_durability_reference",
       "authority": "none",
       "nonClaim": "not an activated production writer or fsync profile",
       "reopenSemantics": "validate structural/hash integrity, then replay each projection/selection/revocation transition and require exact reconstructed entry equality",
