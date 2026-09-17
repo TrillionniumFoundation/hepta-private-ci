@@ -116,7 +116,9 @@ impl DurableOperationStore {
     }
 
     /// Query a destination-owned observer for a previously dispatched operation.
-    /// Unknown results preserve/enter indeterminate state and never resend.
+    /// Unknown results never make the outbox retryable. An already acknowledged
+    /// dispatch remains acknowledged; an explicitly indeterminate dispatch stays
+    /// indeterminate until a terminal observation exists.
     pub async fn reconcile_with<O: TerminalObserver>(
         &self,
         scope_id: &StableId,
@@ -130,6 +132,9 @@ impl DurableOperationStore {
             .ok_or_else(|| OperationError::Missing(operation_id.clone()))?;
         if operation.state.is_terminal() {
             return Err(OperationError::Terminal);
+        }
+        if observer_generation < operation.intent.writer_generation {
+            return Err(OperationError::StaleGeneration);
         }
         if !matches!(
             operation.state,
@@ -163,13 +168,6 @@ impl DurableOperationStore {
                 if reason_digest.is_zero() {
                     return Err(OperationError::InvalidDigest("indeterminate reason"));
                 }
-                self.record_reconciliation_unknown(
-                    scope_id,
-                    operation_id,
-                    observer_generation,
-                    reason_digest,
-                )
-                .await?;
             }
         }
         Ok(observation)
