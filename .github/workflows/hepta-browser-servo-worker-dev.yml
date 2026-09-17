@@ -5,8 +5,8 @@ on:
     branches: [codex/browser-servo-effect-correctness-20260917]
     paths:
       - 'apps/hepta-browser/servo-worker/**'
-      - 'apps/hepta-browser/src/worker-driver.js'
-      - 'apps/hepta-browser/test/worker-driver.test.js'
+      - 'apps/hepta-browser/src/**'
+      - 'apps/hepta-browser/test/**'
       - 'apps/hepta-browser/scripts/**'
       - '.github/workflows/hepta-browser-servo-worker-dev.yml'
   workflow_dispatch:
@@ -101,7 +101,7 @@ jobs:
           cargo check --locked --manifest-path "$WORKER_MANIFEST" 2>&1 \
             | tee worker-evidence/cargo-check.log
 
-      - name: Exercise JavaScript host and sandbox contract tests
+      - name: Exercise Browser owner, protocol and isolation tests
         shell: bash
         run: |
           set -euo pipefail
@@ -142,6 +142,8 @@ jobs:
           install -m 0555 "$first" worker-evidence/hepta-servo-worker
           sha256sum worker-evidence/hepta-servo-worker \
             | tee worker-evidence/hepta-servo-worker.sha256
+          ldd worker-evidence/hepta-servo-worker | tee worker-evidence/hepta-servo-worker.ldd.txt
+          ! grep -F 'not found' worker-evidence/hepta-servo-worker.ldd.txt
 
       - name: Smoke the real worker through the real sandbox
         shell: bash
