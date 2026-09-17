@@ -4,6 +4,11 @@ on:
   pull_request:
     paths:
       - "codex-rs/hepta-ndu/**"
+      - "docs/modules/utility.ndu/**"
+      - "docs/readiness/LANE_D_MATURITY.json"
+      - "docs/readiness/NDU_SYSTEM_EXECUTION.md"
+      - "docs/learning/NDU_FBSDE_SPEC.md"
+      - "qualification/module-execution-dossiers/detail/utility.ndu.md"
       - "scripts/verify_cargo_lock.py"
       - "scripts/test_verify_cargo_lock.py"
       - ".github/workflows/hepta-ndu-recursion.yml"
@@ -12,6 +17,11 @@ on:
       - main
     paths:
       - "codex-rs/hepta-ndu/**"
+      - "docs/modules/utility.ndu/**"
+      - "docs/readiness/LANE_D_MATURITY.json"
+      - "docs/readiness/NDU_SYSTEM_EXECUTION.md"
+      - "docs/learning/NDU_FBSDE_SPEC.md"
+      - "qualification/module-execution-dossiers/detail/utility.ndu.md"
       - "scripts/verify_cargo_lock.py"
       - "scripts/test_verify_cargo_lock.py"
       - ".github/workflows/hepta-ndu-recursion.yml"
