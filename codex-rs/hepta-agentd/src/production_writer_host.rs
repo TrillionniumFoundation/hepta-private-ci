@@ -8,7 +8,7 @@
 use std::fmt;
 use std::sync::Arc;
 
-use codex_hepta_memory::CognitiveStore;
+use codex_hepta_memory::AuthoritativeCognitiveStore;
 use codex_hepta_memory::ProductionAuthorityLease;
 use codex_hepta_memory::ProductionAuthorityVerifier;
 use codex_hepta_memory::ProductionDispatchReceipt;
@@ -42,6 +42,7 @@ impl fmt::Debug for AgentdProductionWriterHost {
 impl AgentdProductionWriterHost {
     /// Open the writer against Agentd's exact private cognitive store. The
     /// verifier is mandatory and runs before any lease/event/outbox mutation.
+    /// The raw SQLite backend never crosses this production call boundary.
     pub async fn open<V>(
         config: &AgentdConfig,
         authority: ProductionAuthorityLease,
@@ -52,25 +53,25 @@ impl AgentdProductionWriterHost {
     where
         V: ProductionAuthorityVerifier + ?Sized,
     {
-        let store = CognitiveStore::open(&config.identity().layout)
+        let store = AuthoritativeCognitiveStore::open(&config.identity().layout)
             .await
             .map_err(|error| {
                 AgentdError::Protocol(format!("open production cognitive store: {error}"))
             })?;
-        let writer =
-            ProductionDurableWriter::open(store, authority, verifier, lease_id, lease_generation)
-                .await?;
+        let writer = store
+            .open_production_writer(authority, verifier, lease_id, lease_generation)
+            .await?;
         Ok(Self {
             writer: Arc::new(writer),
             dispatcher: None,
         })
     }
 
-    /// Build a host handle around an already-open Agentd-owned store. This is
-    /// useful when the runtime has already attached a CognitiveStore and keeps
-    /// the same mandatory external verifier contract.
+    /// Build a host handle around an already-open canonical authority façade.
+    /// Qualification/examples may use this form to control restart timing while
+    /// preserving the same production ownership boundary.
     pub async fn open_with_store<V>(
-        store: CognitiveStore,
+        store: AuthoritativeCognitiveStore,
         authority: ProductionAuthorityLease,
         verifier: &V,
         lease_id: impl Into<String>,
@@ -79,9 +80,9 @@ impl AgentdProductionWriterHost {
     where
         V: ProductionAuthorityVerifier + ?Sized,
     {
-        let writer =
-            ProductionDurableWriter::open(store, authority, verifier, lease_id, lease_generation)
-                .await?;
+        let writer = store
+            .open_production_writer(authority, verifier, lease_id, lease_generation)
+            .await?;
         Ok(Self {
             writer: Arc::new(writer),
             dispatcher: None,
