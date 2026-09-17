@@ -626,7 +626,7 @@ fn federation_snapshot(
         generation: capability.generation(),
         revision: capability.revision(),
         effective_at_unix_seconds: capability.effective_at_unix_seconds(),
-        expires_at_unix_seconds: capability.expires_at_unix_seconds,
+        expires_at_unix_seconds: capability.expires_at_unix_seconds(),
         state: match status.state {
             FederationCapabilityState::Granted => crate::MemoryFederationCapabilityState::Granted,
             FederationCapabilityState::Revoked => crate::MemoryFederationCapabilityState::Revoked,
