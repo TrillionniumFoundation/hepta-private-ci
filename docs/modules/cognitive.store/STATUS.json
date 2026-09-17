@@ -1,0 +1,51 @@
+{
+  "schema": "hepta.cognitive-store-status.v1",
+  "schemaVersion": 1,
+  "module": "cognitive.store",
+  "statusClass": "canonical_repository_status",
+  "canonicalProductionIngress": "codex_hepta_cognitive_store::open_authoritative",
+  "durableBackend": "hepta-memory::CognitiveStore/cognitive_1.sqlite3",
+  "qualificationOracles": [
+    "codex_hepta_cognitive_store::QualificationSemanticStore",
+    "codex_hepta_cognitive_store::AdmittedCognitiveStoreV2"
+  ],
+  "knowledgeFactAuthority": {
+    "model": "memory_revision_bound_projection",
+    "durableTable": "kg_revision_fact_sets",
+    "revisionSource": "memory_revisions",
+    "frontier": "CognitiveOwnerFrontiers.knowledge_facts",
+    "independentSecondLedger": false
+  },
+  "productionImplementation": true,
+  "productCallerState": "agentd_composed_through_cognitive_store_facade",
+  "productionWriterState": "externally_authorized_single_writer_with_lifetime_os_lock",
+  "runtimeRecoveryState": "normal_open_canonical; cold_exact-cut_read_recovery_canonical; writable_suspect-image_recovery_fail_closed",
+  "migrationState": "facade_cutover_no_physical_data_copy",
+  "repositoryEvidence": {
+    "canonicalRuntimeOpen": "codex-rs/hepta-agentd/src/runtime.rs",
+    "canonicalProductionWriterOpen": "codex-rs/hepta-agentd/src/production_writer_host.rs",
+    "facade": "codex-rs/hepta-cognitive-store/src/lib.rs",
+    "durableReopenTest": "codex-rs/hepta-cognitive-store/tests/durable_authority.rs",
+    "singleWriterAndCrashTests": "codex-rs/hepta-memory/src/production_writer.rs",
+    "durableFactProjection": "codex-rs/hepta-memory/src/lane_c_snapshot.rs",
+    "authorityDriftGate": "scripts/hepta_cognitive_store_authority.py",
+    "cutoverRunbook": "docs/modules/cognitive.store/MIGRATION.md"
+  },
+  "repositoryControlledGaps": [
+    "Implement a descriptor-bound SQLite writer VFS plus independently current writer fence before writable recovery of a suspect database can be enabled.",
+    "Obtain exact-head and synthetic-merge CI receipts for this candidate.",
+    "Obtain independent target-host acceptance before activation, promotion or release claims."
+  ],
+  "claimBoundary": {
+    "sourceImplemented": true,
+    "productionImplementation": true,
+    "productRuntimeOpenComposed": true,
+    "productionSingleWriterMechanismImplemented": true,
+    "durableReopenExercisedBySourceTest": true,
+    "writableSuspectImageRecoveryImplemented": false,
+    "productExecutionProved": false,
+    "independentAcceptance": false,
+    "activation": false,
+    "release": false
+  }
+}
