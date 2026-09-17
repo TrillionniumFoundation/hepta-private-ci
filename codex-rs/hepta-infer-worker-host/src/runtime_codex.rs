@@ -26,6 +26,35 @@ use codex_hepta_types::StableId;
 const APP_SERVER_PROTOCOL_VERSION: u32 = 2;
 const TURN_START_METHOD_ID: &str = "app-server.v2.turn-start";
 
+/// Sealed product result. Only the native driver can construct this from the
+/// same durable record that fenced the provider dispatch.
+pub struct RuntimeCodexRun {
+    output: NativeRunOutput,
+    receipt: Option<CodexAdapterReceipt>,
+}
+
+impl RuntimeCodexRun {
+    pub fn output(&self) -> &NativeRunOutput {
+        &self.output
+    }
+
+    pub fn receipt(&self) -> Option<&CodexAdapterReceipt> {
+        self.receipt.as_ref()
+    }
+
+    pub fn succeeded(&self) -> bool {
+        self.output.succeeded()
+            && self
+                .receipt
+                .as_ref()
+                .is_some_and(|receipt| receipt.status == AdapterStatus::Succeeded)
+    }
+
+    pub fn into_output(self) -> NativeRunOutput {
+        self.output
+    }
+}
+
 #[derive(Debug)]
 pub enum BindError {
     MissingDispatch,
@@ -46,13 +75,20 @@ impl fmt::Display for BindError {
 
 impl StdError for BindError {}
 
-/// Bind one durable native run to the runtime.codex receipt boundary.
-///
-/// An empty turn id means `turn/start` did not yield a correlation identity;
-/// that execution remains outside the terminal receipt boundary and must stay
-/// indeterminate. The caller must not synthesize a turn id merely to obtain a
-/// receipt.
-pub fn bind_runtime_codex_receipt(
+/// Crate-private witness constructor. Product callers receive
+/// [`RuntimeCodexRun`] from `AppServerModelDriver::run_bound` instead of
+/// assembling observations themselves.
+pub(crate) fn bind_runtime_codex_run(
+    record: &NativeRunRecord,
+    output: NativeRunOutput,
+    admitted_at_ms: u64,
+    deadline_ms: u64,
+) -> Result<RuntimeCodexRun, BindError> {
+    let receipt = bind_receipt(record, &output, admitted_at_ms, deadline_ms)?;
+    Ok(RuntimeCodexRun { output, receipt })
+}
+
+fn bind_receipt(
     record: &NativeRunRecord,
     output: &NativeRunOutput,
     admitted_at_ms: u64,
@@ -124,8 +160,6 @@ pub fn bind_runtime_codex_receipt(
     )
     .map_err(BindError::Adapter)?;
 
-    // Provider completion without a currently observed owner may never emerge
-    // from the composed product boundary as success.
     if output.status == NativeRunStatus::Completed
         && output.owner_authority != NativeOwnerAuthority::ObservedReady
         && receipt.status != AdapterStatus::Quarantined
@@ -222,30 +256,28 @@ mod tests {
         }
     }
 
+    fn bind(output: NativeRunOutput) -> RuntimeCodexRun {
+        bind_runtime_codex_run(&record(), output, 1_000, 2_000).unwrap()
+    }
+
     #[test]
     fn verified_completion_is_the_only_success_path() {
-        let receipt = bind_runtime_codex_receipt(
-            &record(),
-            &output(NativeRunStatus::Completed, NativeOwnerAuthority::ObservedReady),
-            1_000,
-            2_000,
-        )
-        .unwrap()
-        .unwrap();
-        assert_eq!(receipt.status, AdapterStatus::Succeeded);
+        let bound = bind(output(
+            NativeRunStatus::Completed,
+            NativeOwnerAuthority::ObservedReady,
+        ));
+        assert!(bound.succeeded());
+        assert_eq!(bound.receipt().unwrap().status, AdapterStatus::Succeeded);
     }
 
     #[test]
     fn unverified_completion_is_quarantined() {
-        let receipt = bind_runtime_codex_receipt(
-            &record(),
-            &output(NativeRunStatus::Completed, NativeOwnerAuthority::Unverified),
-            1_000,
-            2_000,
-        )
-        .unwrap()
-        .unwrap();
-        assert_eq!(receipt.status, AdapterStatus::Quarantined);
+        let bound = bind(output(
+            NativeRunStatus::Completed,
+            NativeOwnerAuthority::Unverified,
+        ));
+        assert!(!bound.succeeded());
+        assert_eq!(bound.receipt().unwrap().status, AdapterStatus::Quarantined);
     }
 
     #[test]
@@ -254,15 +286,9 @@ mod tests {
             (NativeRunStatus::Failed, AdapterStatus::Failed),
             (NativeRunStatus::Interrupted, AdapterStatus::Interrupted),
         ] {
-            let receipt = bind_runtime_codex_receipt(
-                &record(),
-                &output(status, NativeOwnerAuthority::ObservedReady),
-                1_000,
-                2_000,
-            )
-            .unwrap()
-            .unwrap();
-            assert_eq!(receipt.status, expected);
+            let bound = bind(output(status, NativeOwnerAuthority::ObservedReady));
+            assert_eq!(bound.receipt().unwrap().status, expected);
+            assert!(!bound.succeeded());
         }
     }
 
@@ -272,11 +298,9 @@ mod tests {
         unknown.turn_id.clear();
         unknown.output.clear();
         unknown.observed_output_tokens = None;
-        assert!(
-            bind_runtime_codex_receipt(&record(), &unknown, 1_000, 2_000)
-                .unwrap()
-                .is_none()
-        );
+        let bound = bind_runtime_codex_run(&record(), unknown, 1_000, 2_000).unwrap();
+        assert!(bound.receipt().is_none());
+        assert!(!bound.succeeded());
     }
 
     #[test]
@@ -284,7 +308,7 @@ mod tests {
         let mut changed = output(NativeRunStatus::Completed, NativeOwnerAuthority::ObservedReady);
         changed.turn_id = "turn-other".to_string();
         assert!(matches!(
-            bind_runtime_codex_receipt(&record(), &changed, 1_000, 2_000),
+            bind_runtime_codex_run(&record(), changed, 1_000, 2_000),
             Err(BindError::AssignmentMismatch("turn"))
         ));
     }
