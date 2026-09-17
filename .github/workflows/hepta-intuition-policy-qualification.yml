@@ -1,0 +1,74 @@
+name: Hepta intuition policy qualification
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    paths:
+      - codex-rs/hepta-intuition/**
+      - codex-rs/hepta-types/**
+      - .github/workflows/hepta-intuition-policy-qualification.yml
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-intuition-policy-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  qualify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Bind exact source
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${GITHUB_SHA}"
+          git rev-parse HEAD HEAD^{tree}
+
+      - name: Bind frozen qualification fixtures
+        shell: bash
+        run: |
+          set -euo pipefail
+          sha256sum \
+            codex-rs/hepta-intuition/qualification/frozen_model_v1.csv \
+            codex-rs/hepta-intuition/qualification/frozen_validation_v1.csv
+
+      - name: Intuition policy tests
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo test --locked -p codex-hepta-intuition -- --nocapture
+
+      - name: Authenticated fast-path gate
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo run --locked --release -p codex-hepta-intuition --bin intuition-fast-gate
+
+      - name: Strict intuition lint
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo clippy --locked -p codex-hepta-intuition --all-targets -- -D warnings
+
+      - name: Formatting and clean source
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo fmt --manifest-path codex-rs/Cargo.toml --package codex-hepta-intuition -- --check
+          git diff --check
+          git diff --exit-code
+          test -z "$(git status --porcelain --untracked-files=no)"
