@@ -80,6 +80,25 @@ fn zero_context_digest_rejects_before_protocol_publication() {
 }
 
 #[test]
+fn valid_local_receipt_cannot_be_rebound_to_another_subject() {
+    let receipt = first_receipt("agent-a", SubjectClass::Agent);
+
+    let wrong_id = valid_context("agent-b", SubjectClass::Agent);
+    assert_eq!(
+        bind_solver_iteration_receipt_v1(&wrong_id, &receipt)
+            .expect_err("receipt subject identity must be frozen"),
+        NduError::InvalidSolverReceipt
+    );
+
+    let wrong_class = valid_context("agent-a", SubjectClass::Episode);
+    assert_eq!(
+        bind_solver_iteration_receipt_v1(&wrong_class, &receipt)
+            .expect_err("receipt subject class must be frozen"),
+        NduError::InvalidSolverReceipt
+    );
+}
+
+#[test]
 fn malformed_local_solver_receipts_reject_before_protocol_publication() {
     let context = valid_context("agent-a", SubjectClass::Agent);
     let valid = first_receipt("agent-a", SubjectClass::Agent);
