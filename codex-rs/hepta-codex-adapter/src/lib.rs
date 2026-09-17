@@ -1,17 +1,29 @@
-//! Exact-bound Codex app-server request/observation adapter.
+//! Exact-bound Codex App Server request/observation adapter.
 //!
-//! The adapter translates an already-authorized intent and classifies an
-//! observed App Server outcome. It never mints model/provider authority and it
-//! never turns acknowledgement loss into permission to replay an effect.
+//! The adapter translates an already-authorized intent and classifies the
+//! exact App Server protocol outcome. It never mints model/provider authority
+//! and it never turns acknowledgement loss into permission to replay an
+//! effect. Production callers should feed real [`AppServerEvent`] values into
+//! [`observe_app_server_event`] rather than constructing outcome claims.
 
 #![forbid(unsafe_code)]
 
 use std::error::Error as StdError;
 use std::fmt;
 
+use codex_app_server_client::AppServerEvent;
+use codex_app_server_client::TypedRequestError;
+use codex_app_server_protocol::ServerNotification;
+use codex_app_server_protocol::TurnCompletedNotification;
+use codex_app_server_protocol::TurnStatus;
 use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
+
+const JSON_RPC_INVALID_REQUEST: i64 = -32_600;
+const JSON_RPC_INVALID_PARAMS: i64 = -32_602;
+const JSON_RPC_OVERLOADED: i64 = -32_001;
+const TURN_START_METHOD: &str = "turn/start";
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct CodexOperationIntent {
@@ -46,6 +58,9 @@ impl PreparedCodexRequest {
         self.request_digest
     }
 
+    /// Settle from a bounded internal observation. Product code should prefer
+    /// [`observe_app_server_event`] so terminality is derived from the v2
+    /// protocol event rather than declared by the caller.
     pub fn observe(
         self,
         observation: Option<AppServerObservation>,
@@ -74,15 +89,15 @@ enum ObservationKind {
     AdmissionFailure(AdmissionFailure),
     TimedOut,
     Cancelled,
+    Quarantined,
     Indeterminate,
 }
 
-/// A bounded observation of the exact App Server boundary.
+/// A bounded observation after correlation to one prepared request.
 ///
-/// Fields are private so callers cannot accidentally create internally
-/// inconsistent terminal records. Provenance still belongs to the production
-/// event consumer: constructing this type is not cryptographic authentication
-/// that bytes came from an App Server process.
+/// Terminal and pre-admission constructors are crate-private. External callers
+/// cannot directly claim `Completed`, `Failed`, `Interrupted` or a retry-safe
+/// rejection; those claims are produced by protocol mappers in this crate.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct AppServerObservation {
     thread_id: StableId,
@@ -92,7 +107,7 @@ pub struct AppServerObservation {
 }
 
 impl AppServerObservation {
-    pub fn terminal(
+    fn terminal(
         thread_id: StableId,
         turn_id: StableId,
         outcome: TerminalOutcome,
@@ -109,9 +124,7 @@ impl AppServerObservation {
         })
     }
 
-    /// A server response that proves `turn/start` was rejected before a turn
-    /// handle was returned. The response itself is content-bound.
-    pub fn admission_failure(
+    fn admission_failure(
         thread_id: StableId,
         failure: AdmissionFailure,
         response_digest: Digest32,
@@ -149,6 +162,17 @@ impl AppServerObservation {
         }
     }
 
+    /// A local policy/security owner has quarantined this attempt. A quarantine
+    /// is terminal for this operation identity and never authorizes replay.
+    pub fn quarantined(thread_id: StableId, turn_id: Option<StableId>) -> Self {
+        Self {
+            thread_id,
+            turn_id,
+            kind: ObservationKind::Quarantined,
+            response_digest: None,
+        }
+    }
+
     /// Transport loss, event loss, decode ambiguity, or any other state where
     /// the effect may have happened but exact terminality is not known.
     pub fn indeterminate(thread_id: StableId, turn_id: Option<StableId>) -> Self {
@@ -157,6 +181,19 @@ impl AppServerObservation {
             turn_id,
             kind: ObservationKind::Indeterminate,
             response_digest: None,
+        }
+    }
+
+    fn indeterminate_with_response(
+        thread_id: StableId,
+        turn_id: Option<StableId>,
+        response_digest: Digest32,
+    ) -> Self {
+        Self {
+            thread_id,
+            turn_id,
+            kind: ObservationKind::Indeterminate,
+            response_digest: Some(response_digest),
         }
     }
 
@@ -183,16 +220,17 @@ pub enum AdapterStatus {
     Unavailable,
     TimedOut,
     Cancelled,
+    Quarantined,
     Indeterminate,
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum RetryDisposition {
     /// The operation reached a definitive terminal state or was intentionally
-    /// cancelled. Replaying it as if no effect happened is invalid.
+    /// cancelled/quarantined. Replaying it as if no effect happened is invalid.
     DoNotRetry,
-    /// A server response proves that no turn was admitted. A caller may retry
-    /// under its own bounded retry policy and stable semantic identity.
+    /// The App Server response proves the request was rejected before the
+    /// effect/admission seam. A caller may retry under its own bounded policy.
     RetrySafe,
     /// The request may have crossed the effect seam. Reconcile exact state
     /// before any replay.
@@ -220,8 +258,12 @@ pub enum Error {
     PayloadBindingMismatch,
     DeadlineExpired,
     ThreadBindingMismatch,
+    InvalidIdentifier(&'static str),
     MissingTerminalResponse,
     MissingAdmissionResponse,
+    NonTerminalCompletion,
+    UnexpectedMethod,
+    ProtocolEncoding,
 }
 
 impl fmt::Display for Error {
@@ -251,16 +293,104 @@ pub fn prepare(
         return Err(Error::DeadlineExpired);
     }
 
+    let request_digest = request_digest(&intent);
     Ok(PreparedCodexRequest {
         operation_id: intent.operation_id,
         thread_id: intent.thread_id,
-        request_digest: request_digest(&intent),
+        request_digest,
     })
 }
 
-/// Settle a request from an exact App Server observation. Settlement does not
-/// re-run the pre-dispatch clock gate; terminal events can legitimately arrive
-/// after the original admission deadline.
+/// Derive a terminal receipt from an actual v2 App Server notification.
+/// Unrelated notifications are ignored. A `turn/completed` notification with
+/// `InProgress` is a protocol violation rather than a success.
+pub fn observe_server_notification(
+    prepared: &PreparedCodexRequest,
+    notification: &ServerNotification,
+) -> Result<Option<CodexAdapterReceipt>, Error> {
+    let ServerNotification::TurnCompleted(completed) = notification else {
+        return Ok(None);
+    };
+    if completed.thread_id != prepared.thread_id.as_str() {
+        return Ok(None);
+    }
+    terminal_receipt(prepared, completed).map(Some)
+}
+
+/// Derive settlement from the bounded client event stream. Lag/disconnect mean
+/// the request may have executed while the observer lost facts, so they are
+/// always `Indeterminate/ReconcileBeforeRetry`. Server requests and unrelated
+/// notifications are nonterminal and return `None`.
+pub fn observe_app_server_event(
+    prepared: &PreparedCodexRequest,
+    event: &AppServerEvent,
+) -> Result<Option<CodexAdapterReceipt>, Error> {
+    match event {
+        AppServerEvent::ServerNotification(notification) => {
+            observe_server_notification(prepared, notification.as_ref())
+        }
+        AppServerEvent::Lagged { .. } | AppServerEvent::Disconnected { .. } => prepared
+            .clone()
+            .observe(Some(AppServerObservation::indeterminate(
+                prepared.thread_id.clone(),
+                None,
+            )))
+            .map(Some),
+        AppServerEvent::ServerRequest(_) => Ok(None),
+    }
+}
+
+/// Classify a `turn/start` request failure without inventing safe replay.
+/// Only transport-ingress overload (`-32001`) and closed invalid-request/
+/// invalid-params responses are treated as proven pre-admission rejection.
+/// Other server, transport, and decode failures remain indeterminate.
+pub fn observe_turn_start_error(
+    prepared: &PreparedCodexRequest,
+    error: &TypedRequestError,
+) -> Result<CodexAdapterReceipt, Error> {
+    let method = match error {
+        TypedRequestError::Transport { method, .. }
+        | TypedRequestError::Server { method, .. }
+        | TypedRequestError::Deserialize { method, .. } => method,
+    };
+    if method != TURN_START_METHOD {
+        return Err(Error::UnexpectedMethod);
+    }
+
+    let observation = match error {
+        TypedRequestError::Server { source, .. } if source.code == JSON_RPC_OVERLOADED => {
+            AppServerObservation::admission_failure(
+                prepared.thread_id.clone(),
+                AdmissionFailure::Overloaded,
+                json_rpc_error_digest(source.code, &source.message, source.data.as_ref())?,
+            )?
+        }
+        TypedRequestError::Server { source, .. }
+            if matches!(source.code, JSON_RPC_INVALID_REQUEST | JSON_RPC_INVALID_PARAMS) =>
+        {
+            AppServerObservation::admission_failure(
+                prepared.thread_id.clone(),
+                AdmissionFailure::Rejected,
+                json_rpc_error_digest(source.code, &source.message, source.data.as_ref())?,
+            )?
+        }
+        TypedRequestError::Server { source, .. } => {
+            AppServerObservation::indeterminate_with_response(
+                prepared.thread_id.clone(),
+                None,
+                json_rpc_error_digest(source.code, &source.message, source.data.as_ref())?,
+            )
+        }
+        TypedRequestError::Transport { .. } | TypedRequestError::Deserialize { .. } => {
+            AppServerObservation::indeterminate(prepared.thread_id.clone(), None)
+        }
+    };
+    prepared.clone().observe(Some(observation))
+}
+
+/// Settle a request from one already-correlated observation. Settlement does
+/// not re-run the pre-dispatch clock gate; terminal events can legitimately
+/// arrive after the original admission deadline.
 pub fn observe(
     prepared: PreparedCodexRequest,
     observation: Option<AppServerObservation>,
@@ -303,6 +433,9 @@ pub fn observe(
                 ObservationKind::Cancelled => {
                     (AdapterStatus::Cancelled, RetryDisposition::DoNotRetry)
                 }
+                ObservationKind::Quarantined => {
+                    (AdapterStatus::Quarantined, RetryDisposition::DoNotRetry)
+                }
                 ObservationKind::Indeterminate => (
                     AdapterStatus::Indeterminate,
                     RetryDisposition::ReconcileBeforeRetry,
@@ -342,15 +475,50 @@ pub fn observe(
     })
 }
 
-/// Compatibility convenience for synchronous callers and tests. Production
-/// asynchronous execution should use `prepare` before dispatch and `observe`
-/// after the exact event is received.
+/// Compatibility convenience for deterministic callers and tests. Production
+/// event consumers should use `prepare` then the protocol mappers above.
 pub fn adapt(
     now_ms: u64,
     intent: CodexOperationIntent,
     observation: Option<AppServerObservation>,
 ) -> Result<CodexAdapterReceipt, Error> {
     observe(prepare(now_ms, intent)?, observation)
+}
+
+fn terminal_receipt(
+    prepared: &PreparedCodexRequest,
+    completed: &TurnCompletedNotification,
+) -> Result<CodexAdapterReceipt, Error> {
+    let outcome = match completed.turn.status {
+        TurnStatus::Completed => TerminalOutcome::Completed,
+        TurnStatus::Failed => TerminalOutcome::Failed,
+        TurnStatus::Interrupted => TerminalOutcome::Interrupted,
+        TurnStatus::InProgress => return Err(Error::NonTerminalCompletion),
+    };
+    let turn_id = StableId::new(completed.turn.id.clone())
+        .map_err(|_| Error::InvalidIdentifier("turn_id"))?;
+    let response = serde_json::to_vec(completed).map_err(|_| Error::ProtocolEncoding)?;
+    let observation = AppServerObservation::terminal(
+        prepared.thread_id.clone(),
+        turn_id,
+        outcome,
+        Digest32::of_bytes(&response),
+    )?;
+    prepared.clone().observe(Some(observation))
+}
+
+fn json_rpc_error_digest(
+    code: i64,
+    message: &str,
+    data: Option<&serde_json::Value>,
+) -> Result<Digest32, Error> {
+    let value = serde_json::json!({
+        "code": code,
+        "message": message,
+        "data": data,
+    });
+    let bytes = serde_json::to_vec(&value).map_err(|_| Error::ProtocolEncoding)?;
+    Ok(Digest32::of_bytes(&bytes))
 }
 
 fn request_digest(intent: &CodexOperationIntent) -> Digest32 {
@@ -399,7 +567,8 @@ fn status_code(status: AdapterStatus) -> u8 {
         AdapterStatus::Unavailable => 6,
         AdapterStatus::TimedOut => 7,
         AdapterStatus::Cancelled => 8,
-        AdapterStatus::Indeterminate => 9,
+        AdapterStatus::Quarantined => 9,
+        AdapterStatus::Indeterminate => 10,
     }
 }
 
