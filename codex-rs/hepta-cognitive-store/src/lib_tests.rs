@@ -33,8 +33,8 @@ fn record(revision_value: u64, predecessor: Option<Digest32>, state: RecordState
     }
 }
 
-fn store() -> CognitiveStore {
-    let Ok(value) = CognitiveStore::new(8) else {
+fn store() -> QualificationCognitiveStoreV1 {
+    let Ok(value) = QualificationCognitiveStoreV1::new(8) else {
         panic!("test store must initialize");
     };
     value
