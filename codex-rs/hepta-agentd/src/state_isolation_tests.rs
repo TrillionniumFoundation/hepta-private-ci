@@ -103,6 +103,11 @@ fn targeted_read_preserves_lifecycle_and_resource_fences() {
         changed.refresh_generation(),
         Err(AgentdError::GenerationFenced(_))
     ));
+    assert!(
+        changed.is_fenced().expect("resource drift fence state"),
+        "immutable resource drift must latch the process fence"
+    );
+
     registry
         .compare_and_transition(
             &state.identity.agent_id,
@@ -122,4 +127,8 @@ fn targeted_read_preserves_lifecycle_and_resource_fences() {
         state.refresh_generation(),
         Err(AgentdError::GenerationFenced(_))
     ));
+    assert!(
+        state.is_fenced().expect("stopped generation fence state"),
+        "a stopped/advanced generation must remain fenced after the refresh error"
+    );
 }
