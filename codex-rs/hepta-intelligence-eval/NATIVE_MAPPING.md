@@ -63,12 +63,14 @@ anchor.
 
 `authenticate_holdout_anchor_v1` closes the source-level authenticated-origin
 edge for that external anchor: a trusted `Observer` signs the exact storage
-binding, sequence and head; admission uses host-owned `LearningEvidenceVerifierV1`
-trust and a host-owned minimum-issued-at watermark. The freshness watermark is
-not derived from the submitted witness. `recover_with_authenticated_holdout_anchor_v1`
+binding, sequence and head. Admission verifies the signature against host-owned
+`LearningEvidenceVerifierV1` trust, requires the signed anchor to equal the exact
+`minimum_anchor` independently loaded from the host currentness store, and
+requires a host-owned `minimum_issued_at` watermark. Neither currentness boundary
+is derived from the submitted witness. `recover_with_authenticated_holdout_anchor_v1`
 refuses a zero bootstrap anchor; initialization stays explicit. The host must
-still persist the latest anchor witness and freshness watermark outside the
-journal before releasing confirmatory labels or acknowledging use externally.
+still persist the latest anchor witness and advance the external anchor/freshness
+record before releasing confirmatory labels or acknowledging use externally.
 
 `decide_independently` consumes authenticated generator and evaluator identities
 from `learning.ledger`. It rejects shared principal, credential-chain or
@@ -131,7 +133,8 @@ name and prove:
 
 1. the scheduler and immutable evaluation-plan store;
 2. the authorized durable final-holdout file namespace, single-writer domain,
-   independently persisted signed anchor and monotonic freshness watermark;
+   independently persisted signed anchor plus exact host currentness anchor and
+   monotonic freshness watermark;
 3. the authenticated dataset, outcome-observer and candidate manifests;
 4. the exact fold assignments and nuisance-model runtime;
 5. the target host, resource measurements and incomplete/censored counts;
