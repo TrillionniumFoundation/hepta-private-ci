@@ -131,7 +131,7 @@ impl LedgerWitnessStore {
                     .try_into()
                     .map_err(|_| WitnessStoreError::Corrupt)?,
             );
-            let chain_digest = Digest32::from_bytes(
+            let chain_digest = Digest32::from_array(
                 raw[8..40]
                     .try_into()
                     .map_err(|_| WitnessStoreError::Corrupt)?,
