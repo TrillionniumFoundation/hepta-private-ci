@@ -1,7 +1,10 @@
-//! Append-only cognitive ledger with correction and tombstone lineage.
+//! Authoritative cognitive-store boundary plus qualification semantic oracles.
 //!
-//! The store is the only writer of its in-memory qualification ledger. It does
-//! not perform federation, model calls, learning-policy writes or effects.
+//! Production callers use [`CognitiveStore`] and [`open_authoritative`]. The
+//! durable implementation remains the Agent-local SQLite engine in
+//! `codex-hepta-memory`, but that engine is re-exported here so product code has
+//! one module-owned ingress. The in-memory stores in this crate are semantic
+//! qualification oracles only and never represent a production writer.
 
 #![forbid(unsafe_code)]
 
@@ -13,11 +16,18 @@ use std::fmt;
 
 use codex_hepta_cognitive_types::MemoryRecord;
 use codex_hepta_cognitive_types::RecordState;
+use codex_hepta_paths::HeptaAgentLayout;
 use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::LogicalSequence;
 use codex_hepta_types::StableId;
 
+pub use codex_hepta_memory::CognitiveRecoveryAnchor;
+pub use codex_hepta_memory::CognitiveRecoveryError;
+pub use codex_hepta_memory::CognitiveRecoveryRequirement;
+pub use codex_hepta_memory::CognitiveStore;
+pub use codex_hepta_memory::CognitiveStoreError;
+pub use codex_hepta_memory::RecoveredCognitiveReadOnly;
 pub use v2::AdmittedCognitiveStoreV2;
 pub use v2::CognitiveStoreImageV2;
 pub use v2::CognitiveStoreV2Error;
@@ -30,6 +40,30 @@ pub use v2::StoreIntentImageEntryV2;
 pub use v2::StoreSnapshotV2;
 
 const MAX_RECORDS: usize = 16_384;
+
+/// Canonical normal-start open path for the authoritative Agent-local store.
+///
+/// Product/runtime code should call this function rather than opening the
+/// persistence engine directly. Recovery of a suspect/rollback-capable image
+/// is intentionally a separate fail-closed path because it requires an
+/// independently authenticated current-cut witness.
+pub async fn open_authoritative(
+    layout: &HeptaAgentLayout,
+) -> Result<CognitiveStore, CognitiveStoreError> {
+    CognitiveStore::open(layout).await
+}
+
+/// Canonical recovery-read admission for an independently witnessed cold image.
+///
+/// This returns a read-only historical owner and never falls back to ordinary
+/// path-based opening. Writable recovery remains unavailable until the state
+/// layer has a descriptor-bound writer VFS and a current writer fence.
+pub async fn open_authoritative_read_only_recovery(
+    layout: &HeptaAgentLayout,
+    requirement: CognitiveRecoveryRequirement<'_>,
+) -> Result<RecoveredCognitiveReadOnly, CognitiveRecoveryError> {
+    CognitiveStore::open_read_only_recovery(layout, requirement).await
+}
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum AppendDisposition {
@@ -73,14 +107,18 @@ struct StoredRecord {
     sequence: LogicalSequence,
 }
 
+/// Small in-memory semantic oracle retained for deterministic qualification.
+///
+/// This type owns no production authority and must not be used by product
+/// runtime code as a durable cognitive store.
 #[derive(Clone, Debug, Eq, PartialEq)]
-pub struct CognitiveStore {
+pub struct QualificationSemanticStore {
     records: BTreeMap<StableId, StoredRecord>,
     sequence: LogicalSequence,
     maximum_records: usize,
 }
 
-impl CognitiveStore {
+impl QualificationSemanticStore {
     pub fn new(maximum_records: usize) -> Result<Self, Error> {
         if maximum_records == 0 {
             return Err(Error::ZeroCapacity);
