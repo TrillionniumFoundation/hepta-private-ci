@@ -1,0 +1,232 @@
+//! Durable single-writer host for the prompt registry.
+
+use std::fs;
+use std::fs::File;
+use std::io::Write;
+use std::path::Path;
+use std::path::PathBuf;
+
+use codex_hepta_contracts::FinalUseAuthority;
+use codex_hepta_contracts::VerifiedUseToken;
+use codex_hepta_types::Digest32;
+use codex_hepta_types::StableId;
+
+use crate::AdmissionRequest;
+use crate::Error;
+use crate::PromptFactor;
+use crate::PromptRealizationBindingV2;
+use crate::PromptRegistry;
+use crate::RegistryReceipt;
+use crate::protocol::decode_registry_state;
+use crate::protocol::encode_registry_state;
+
+const STATE_FILE: &str = "prompt-registry.json";
+const TEMP_FILE: &str = ".prompt-registry.json.tmp";
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub enum PromptRegistryStoreError {
+    Io(String),
+    Protocol(String),
+    Registry(Error),
+    Authority(String),
+    StateMissing,
+    CapacityMismatch { requested: usize, stored: usize },
+}
+
+impl std::fmt::Display for PromptRegistryStoreError {
+    fn fmt(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(formatter, "{self:?}")
+    }
+}
+
+impl std::error::Error for PromptRegistryStoreError {}
+
+impl From<Error> for PromptRegistryStoreError {
+    fn from(value: Error) -> Self {
+        Self::Registry(value)
+    }
+}
+
+#[derive(Clone, Debug)]
+pub struct DurablePromptRegistry {
+    directory: PathBuf,
+    registry: PromptRegistry,
+}
+
+impl DurablePromptRegistry {
+    pub fn open_or_create(
+        directory: &Path,
+        maximum_records: usize,
+    ) -> Result<Self, PromptRegistryStoreError> {
+        fs::create_dir_all(directory).map_err(io_error)?;
+        let path = directory.join(STATE_FILE);
+        if path.exists() {
+            let host = Self::open(directory)?;
+            if host.registry.maximum_records != maximum_records.min(crate::MAX_RECORDS) {
+                return Err(PromptRegistryStoreError::CapacityMismatch {
+                    requested: maximum_records.min(crate::MAX_RECORDS),
+                    stored: host.registry.maximum_records,
+                });
+            }
+            if host.persist_if_needed()? {
+                host.registry.validate_integrity()?;
+            }
+            return Ok(host);
+        }
+        let registry = PromptRegistry::new(maximum_records)?;
+        let host = Self {
+            directory: directory.to_path_buf(),
+            registry,
+        };
+        host.persist_registry(&host.registry)?;
+        Ok(host)
+    }
+
+    pub fn open(directory: &Path) -> Result<Self, PromptRegistryStoreError> {
+        let path = directory.join(STATE_FILE);
+        if !path.exists() {
+            return Err(PromptRegistryStoreError::StateMissing);
+        }
+        let bytes = fs::read(&path).map_err(io_error)?;
+        let decoded = decode_registry_state(&bytes)
+            .map_err(|error| PromptRegistryStoreError::Protocol(error.to_string()))?;
+        let host = Self {
+            directory: directory.to_path_buf(),
+            registry: decoded.registry,
+        };
+        if decoded.migrated {
+            host.persist_registry(&host.registry)?;
+        }
+        Ok(host)
+    }
+
+    pub fn registry(&self) -> &PromptRegistry {
+        &self.registry
+    }
+
+    pub fn register_factor(
+        &mut self,
+        factor: PromptFactor,
+    ) -> Result<RegistryReceipt, PromptRegistryStoreError> {
+        self.mutate(|registry| registry.register_factor(factor))
+    }
+
+    pub fn admit_factor_authorized(
+        &mut self,
+        authority: &FinalUseAuthority,
+        token: VerifiedUseToken,
+        request: AdmissionRequest,
+    ) -> Result<RegistryReceipt, PromptRegistryStoreError> {
+        let expected = self.registry.admission_binding(&request)?;
+        authority
+            .with_verified_use(token, &expected, || {
+                let mut next = self.registry.clone();
+                let receipt = next.admit_factor_verified(request)?;
+                self.persist_registry(&next)?;
+                self.registry = next;
+                Ok::<RegistryReceipt, PromptRegistryStoreError>(receipt)
+            })
+            .map_err(|error| PromptRegistryStoreError::Authority(error.to_string()))?
+    }
+
+    pub fn register_realization_v2(
+        &mut self,
+        binding: PromptRealizationBindingV2,
+        payload: Vec<u8>,
+    ) -> Result<RegistryReceipt, PromptRegistryStoreError> {
+        self.mutate(|registry| registry.register_realization_v2(binding, payload))
+    }
+
+    pub fn retire_factor_with_reason(
+        &mut self,
+        factor_id: &StableId,
+        actor_id: &StableId,
+        reason_digest: Digest32,
+    ) -> Result<RegistryReceipt, PromptRegistryStoreError> {
+        self.mutate(|registry| {
+            registry.retire_factor_with_reason(factor_id, actor_id, reason_digest)
+        })
+    }
+
+    pub fn revoke_factor_with_reason(
+        &mut self,
+        factor_id: &StableId,
+        actor_id: &StableId,
+        reason_digest: Digest32,
+        cutoff_unix_ms: u64,
+    ) -> Result<RegistryReceipt, PromptRegistryStoreError> {
+        self.mutate(|registry| {
+            registry.revoke_factor_with_reason(
+                factor_id,
+                actor_id,
+                reason_digest,
+                cutoff_unix_ms,
+            )
+        })
+    }
+
+    fn mutate(
+        &mut self,
+        mutation: impl FnOnce(&mut PromptRegistry) -> Result<RegistryReceipt, Error>,
+    ) -> Result<RegistryReceipt, PromptRegistryStoreError> {
+        let mut next = self.registry.clone();
+        let receipt = mutation(&mut next)?;
+        if next != self.registry {
+            self.persist_registry(&next)?;
+            self.registry = next;
+        }
+        Ok(receipt)
+    }
+
+    fn persist_if_needed(&self) -> Result<bool, PromptRegistryStoreError> {
+        let path = self.directory.join(STATE_FILE);
+        let stored = fs::read(&path).map_err(io_error)?;
+        let canonical = encode_registry_state(&self.registry)
+            .map_err(|error| PromptRegistryStoreError::Protocol(error.to_string()))?;
+        if stored == canonical {
+            return Ok(false);
+        }
+        atomic_write(&self.directory, &canonical)?;
+        Ok(true)
+    }
+
+    fn persist_registry(
+        &self,
+        registry: &PromptRegistry,
+    ) -> Result<(), PromptRegistryStoreError> {
+        let bytes = encode_registry_state(registry)
+            .map_err(|error| PromptRegistryStoreError::Protocol(error.to_string()))?;
+        atomic_write(&self.directory, &bytes)
+    }
+}
+
+fn atomic_write(directory: &Path, bytes: &[u8]) -> Result<(), PromptRegistryStoreError> {
+    fs::create_dir_all(directory).map_err(io_error)?;
+    let temporary = directory.join(TEMP_FILE);
+    let destination = directory.join(STATE_FILE);
+    let write_result = (|| {
+        let mut file = File::create(&temporary).map_err(io_error)?;
+        file.write_all(bytes).map_err(io_error)?;
+        file.sync_all().map_err(io_error)?;
+        fs::rename(&temporary, &destination).map_err(io_error)?;
+        sync_directory(directory)?;
+        Ok(())
+    })();
+    if write_result.is_err() {
+        let _ = fs::remove_file(&temporary);
+    }
+    write_result
+}
+
+fn sync_directory(directory: &Path) -> Result<(), PromptRegistryStoreError> {
+    let file = File::open(directory).map_err(io_error)?;
+    file.sync_all().map_err(io_error)
+}
+
+fn io_error(error: std::io::Error) -> PromptRegistryStoreError {
+    PromptRegistryStoreError::Io(error.to_string())
+}
+
+#[cfg(test)]
+#[path = "store_tests.rs"]
+mod tests;
