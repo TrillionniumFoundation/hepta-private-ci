@@ -1,14 +1,22 @@
 # Physical state, transactions and recovery contracts
 
-Scope: a proposed owner-reviewed pilot profile under the existing module design. No product store is implemented or deployed by this text or its SQL fixture. Existing data-authority registries and native formats prevail until a reviewed migration admits a new profile.
+Scope: owner-reviewed persistence guidance and qualification profile. Current repository implementation status is module-specific; for `cognitive.store` the canonical source is `docs/modules/cognitive.store/STATUS.json`. Production implementation in source does not itself prove exact-candidate CI, target-host durability, independent acceptance, activation or release.
 
 ## 1. Observed source and implementation choice
 
-`hepta-cognitive-store/src/lib.rs` contains an in-memory `CognitiveStore` backed by `BTreeMap`, with a maximum of 16,384 live record IDs. It is a semantic oracle, not a durable backend. The implemented durable integration reuses the existing SQLx `hepta-memory::CognitiveStore` and its `cognitive_1.sqlite3` file. `CognitiveStore::lane_c_snapshot` and `DurableCognitiveSnapshot::read` expose an authorized coherent cut without introducing a second writer, database or synchronization service. [Lane C SQLite integration](../../codex-rs/hepta-memory/LANE_C_SQLITE.md) owns the exact native ID/frontier mapping, bounds, correction/deletion behavior, reopen witness and test instructions. Its descriptor-safe `open_with_recovery` admission still has unresolved VFS/currentness prerequisites; ordinary reopen must not be described as that stronger recovery path.
+`codex-hepta-cognitive-store` now owns the **product ingress** to the existing durable cognitive owner. Its public `CognitiveStore` is the delegated durable `hepta-memory::CognitiveStore`, and `open_authoritative` is the canonical Agentd open path. The old BTreeMap semantic component is explicitly named `QualificationSemanticStore`; V2 remains `AdmittedCognitiveStoreV2`. Neither is a product writer.
+
+The durable implementation remains the existing SQLx owner and its Agent-local `cognitive_1.sqlite3`. `CognitiveStore::lane_c_snapshot` and `DurableCognitiveSnapshot::read` expose an authorized coherent cut without introducing a second writer, database or synchronization service. Product callers are `hepta-agentd/src/runtime.rs` and `hepta-agentd/src/production_writer_host.rs`, both routed through `codex_hepta_cognitive_store::open_authoritative`.
+
+Knowledge facts are represented as revision-bound `kg_revision_fact_sets` anchored to immutable `memory_revisions`; they are not a separately writable second authority. The knowledge-fact frontier is part of the same owner cut.
+
+[Lane C SQLite integration](../../codex-rs/hepta-memory/LANE_C_SQLITE.md) owns native ID/frontier mapping, bounds, correction/deletion behavior and reopen witnesses. [`docs/modules/cognitive.store/MIGRATION.md`](../../docs/modules/cognitive.store/MIGRATION.md) defines the façade cutover and rollback. The repository gate `scripts/hepta_cognitive_store_authority.py` prevents production open-path drift.
+
+Recovery remains intentionally split. Normal current-owner open is writable. Independently witnessed exact-current-cut cold-image recovery is available read-only. Writable recovery of a suspect/rollback-capable image remains fail-closed until a descriptor-bound SQLite writer VFS/non-reconnecting connection and an independently current writer fence exist. Ordinary pathname reopen must not be described as the stronger recovery path and must never be used as fallback after failed recovery admission.
 
 By contrast, learning already exports `DurableLedger`, anchors/recovery/inspection, artifacts export candidate-payload and registry-snapshot storage, and Neuron exports `SparseJournal` and `JournalAnchor`. Preserve those native formats and anchored recovery; do not replace them with a parallel Python product ledger or silently reinterpret them as SQLite rows.
 
-The accompanying `COGNITIVE_STORE.sql` remains a qualification DDL and state-machine fixture for the proposed profile described below. It is not the schema of the deployed native owner and is not an instruction to create a second cognitive database. Any future native use requires an explicitly reviewed migration with schema digest, domain-to-table mapping and consumer compatibility. Existing native formats and the Lane C integration take precedence when operating current code.
+The accompanying `COGNITIVE_STORE.sql` remains a qualification DDL/state-machine fixture. It is not the schema of the native cognitive owner and is not an instruction to create another database. Any future physical format migration requires explicit schema digest, domain-to-table mapping, consumer compatibility and off-route cutover evidence.
 
 ## 2. Cognitive store format
 
@@ -42,7 +50,9 @@ Compaction cannot erase evidence needed to reconcile unknown effects. Projection
 
 ## 6. Migrations and rollback
 
-Freeze a deterministic transformation, schema/profile digest and rollback strategy. Stop new writes; drain local publication work to a watermark; resolve/quarantine unknown effects; fence old writer; snapshot exact range; migrate off-route; validate counts, digests, source invariants, tombstones, readers and bounds; establish fresh new fence; atomically publish route/generation.
+For the current `cognitive.store` authority convergence, there is no physical data copy: the façade cutover opens the same durable SQLite owner. The detailed runbook in `docs/modules/cognitive.store/MIGRATION.md` requires one writable runtime generation, old-writer fencing, exact owner-cut verification and no dual-write period.
+
+For any future physical-format migration, freeze a deterministic transformation, schema/profile digest and rollback strategy. Stop new writes; drain local publication work to a watermark; resolve/quarantine unknown effects; fence old writer; snapshot exact range; migrate off-route; validate counts, digests, source invariants, tombstones, readers and bounds; establish fresh new fence; atomically publish route/generation.
 
 Before cutover, an intact compatible predecessor may resume under fresh authority after current revocation overlay. After new writes have been admitted, rollback must preserve the successor delta: drain and fence the new writer, migrate its accepted changes back through a validated reverse/forward-compatible path, or quarantine. Restoring the pre-cutover snapshot alone would lose acknowledged writes and is not rollback.
 
@@ -52,6 +62,6 @@ The same-owner cardinality-preserving handoff schema remains a limited profile. 
 
 Inject failure before/after transaction start, predecessor read, event append, projection/outbox update, commit, witness, acknowledgement and process restart. Cover two-writer race, duplicate/altered operation identity, stale fence, counter overflow, disk full, corrupt frame/schema, nonempty WAL, cancellation, revoke during read, restore before forget, missing segment and migration cutover at each phase.
 
-The expected result is either the exact previous committed state or one recoverable committed successor; never invented success, duplicated effects or partially published state. A local Python/SQLite fixture proves only its tested database behavior in this environment. Native fault injection, target filesystem power-loss behavior and a production caller require separate receipts.
+The expected result is either the exact previous committed state or one recoverable committed successor; never invented success, duplicated effects or partially published state. Source/unit tests prove only their tested environment. Native target-filesystem power-loss behavior and a production caller still require exact-candidate and target-host receipts.
 
 References: SQLite isolation and WAL documentation, https://www.sqlite.org/isolation.html and https://www.sqlite.org/wal.html. The chosen FULL/backup/locking profile still requires target-specific qualification; a PRAGMA is not a hardware durability certificate.
