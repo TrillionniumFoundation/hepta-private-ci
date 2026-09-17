@@ -64,6 +64,7 @@ pub enum NduProjectionJournalError {
     EmptyDigest,
     RecordLimitExceeded,
     IdentityConflict,
+    ProjectionKindConflict,
     DuplicateSerializedIdentity,
     ProjectionNotRecorded,
     RevokedProjection,
@@ -193,16 +194,31 @@ impl NduProjectionJournalV1 {
         subject_digest: Digest32,
         projection_digest: Digest32,
     ) -> Result<(), NduProjectionJournalError> {
-        if self.entries.iter().any(|entry| {
-            entry.kind.is_projection()
-                && entry.objective_digest == objective_digest
-                && entry.subject_digest == subject_digest
-                && entry.payload_digest == projection_digest
-        }) {
+        if self
+            .projection_kind(objective_digest, subject_digest, projection_digest)
+            .is_some()
+        {
             Ok(())
         } else {
             Err(NduProjectionJournalError::ProjectionNotRecorded)
         }
+    }
+
+    fn projection_kind(
+        &self,
+        objective_digest: Digest32,
+        subject_digest: Digest32,
+        projection_digest: Digest32,
+    ) -> Option<NduProjectionKindV1> {
+        self.entries
+            .iter()
+            .find(|entry| {
+                entry.kind.is_projection()
+                    && entry.objective_digest == objective_digest
+                    && entry.subject_digest == subject_digest
+                    && entry.payload_digest == projection_digest
+            })
+            .map(|entry| entry.kind)
     }
 
     fn is_revoked(
@@ -227,7 +243,15 @@ impl NduProjectionJournalV1 {
         payload_digest: Digest32,
     ) -> Result<(), NduProjectionJournalError> {
         match kind {
-            NduProjectionKindV1::Preference | NduProjectionKindV1::Utility => Ok(()),
+            NduProjectionKindV1::Preference | NduProjectionKindV1::Utility => {
+                if self
+                    .projection_kind(objective_digest, subject_digest, payload_digest)
+                    .is_some_and(|existing| existing != kind)
+                {
+                    return Err(NduProjectionJournalError::ProjectionKindConflict);
+                }
+                Ok(())
+            }
             NduProjectionKindV1::SelectedProjection => {
                 self.require_recorded_projection(objective_digest, subject_digest, payload_digest)?;
                 if self.is_revoked(objective_digest, subject_digest, payload_digest) {
@@ -273,6 +297,7 @@ impl NduProjectionJournalV1 {
             }
             return Err(NduProjectionJournalError::IdentityConflict);
         }
+        self.validate_transition(kind, objective_digest, subject_digest, payload_digest)?;
         if self.entries.len() >= MAX_RECORDS {
             return Err(NduProjectionJournalError::RecordLimitExceeded);
         }
