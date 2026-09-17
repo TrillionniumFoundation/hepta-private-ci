@@ -1,6 +1,6 @@
 //! Per-Agent durable automation queue and TaskFlow lifecycle.
 //!
-//! The timer scheduler owns wake-up/materialization.  Durable occurrence and
+//! The timer scheduler owns wake-up/materialization. Durable occurrence and
 //! TaskFlow records keep Core queue admission separate from terminal execution;
 //! downstream effects still require their owning final-use authority and
 //! terminal observer.
@@ -10,6 +10,7 @@
 /// Reusable reference state machine; does not install a second runtime owner.
 pub mod effect_executor;
 
+mod automation_taskflow;
 mod lifecycle;
 mod model;
 mod scheduler;
@@ -20,6 +21,8 @@ mod taskflow_execution_boundary;
 mod taskflow_kernel;
 mod taskflow_step;
 
+pub use automation_taskflow::AutomationTaskFlowDispatch;
+pub use automation_taskflow::admission_receipt_digest;
 pub use lifecycle::AutomationMissedRunPolicy;
 pub use lifecycle::AutomationOccurrence;
 pub use lifecycle::AutomationOccurrenceState;
@@ -100,4 +103,4 @@ pub use taskflow_step::TaskFlowStepObservation;
 pub use taskflow_step::TaskFlowStepReceipt;
 pub use taskflow_step::TaskFlowStepState;
 
-pub const AUTOMATION_SCHEMA_VERSION: u32 = 4;
+pub const AUTOMATION_SCHEMA_VERSION: u32 = 5;
