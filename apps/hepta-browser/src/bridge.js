@@ -32,6 +32,19 @@ function positiveInteger(value, name) {
   return value;
 }
 
+function sessionIdentity(session) {
+  requireRecord(session, "session");
+  if (session.kind !== "BrowserSessionV1") {
+    throw new TypeError("session is not BrowserSessionV1");
+  }
+  return {
+    profileId: stableId(session.profileId, "session.profileId"),
+    principalId: stableId(session.principalId, "session.principalId"),
+    processId: stableId(session.processId, "session.processId"),
+    generation: positiveInteger(session.generation, "session.generation"),
+  };
+}
+
 export function navigationActionFromIntent(intent) {
   requireRecord(intent, "intent");
   if (intent.kind !== "BrowserNavigationIntentV1") {
@@ -63,6 +76,30 @@ export function navigationGrantBinding(intent) {
   });
 }
 
+export function buildInitialNavigationEffectRequest({
+  session,
+  intent,
+  effectGrantDigest,
+  authorityEpoch,
+  deadlineMs,
+}) {
+  const identity = sessionIdentity(session);
+  const typedAction = navigationActionFromIntent(intent);
+  return Object.freeze({
+    profileId: identity.profileId,
+    principalId: identity.principalId,
+    generation: identity.generation,
+    operationId: stableId(intent.navigationId, "intent.navigationId"),
+    pageGeneration: 0,
+    typedAction,
+    destinationOrigin: new URL(typedAction.url).origin,
+    finalPayloadDigest: browserActionDigest(typedAction),
+    effectGrantDigest: digest(effectGrantDigest, "effectGrantDigest"),
+    authorityEpoch: positiveInteger(authorityEpoch, "authorityEpoch"),
+    deadlineMs: positiveInteger(deadlineMs, "deadlineMs"),
+  });
+}
+
 export function buildNavigationEffectRequest({
   session,
   page,
@@ -71,25 +108,18 @@ export function buildNavigationEffectRequest({
   authorityEpoch,
   deadlineMs,
 }) {
-  requireRecord(session, "session");
+  const identity = sessionIdentity(session);
   requireRecord(page, "page");
-  if (session.kind !== "BrowserSessionV1") {
-    throw new TypeError("session is not BrowserSessionV1");
-  }
   if (page.kind !== "PageObservationV1") {
     throw new TypeError("page is not PageObservationV1");
   }
   if (page.terminalObserved !== true || page.originAllowed !== true || page.quarantined === true) {
     throw new TypeError("page is not an admitted actionable observation");
   }
-  const profileId = stableId(session.profileId, "session.profileId");
-  const principalId = stableId(session.principalId, "session.principalId");
-  const processId = stableId(session.processId, "session.processId");
-  const generation = positiveInteger(session.generation, "session.generation");
   if (
-    page.profileId !== profileId ||
-    page.processId !== processId ||
-    page.profileGeneration !== generation
+    page.profileId !== identity.profileId ||
+    page.processId !== identity.processId ||
+    page.profileGeneration !== identity.generation
   ) {
     throw new TypeError("page observation does not belong to the browser session");
   }
@@ -97,9 +127,9 @@ export function buildNavigationEffectRequest({
   digest(page.documentDigest, "page.documentDigest");
   const typedAction = navigationActionFromIntent(intent);
   return Object.freeze({
-    profileId,
-    principalId,
-    generation,
+    profileId: identity.profileId,
+    principalId: identity.principalId,
+    generation: identity.generation,
     operationId: stableId(intent.navigationId, "intent.navigationId"),
     pageGeneration,
     typedAction,
