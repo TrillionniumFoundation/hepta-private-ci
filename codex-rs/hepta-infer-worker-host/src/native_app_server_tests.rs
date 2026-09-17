@@ -35,6 +35,82 @@ fn terminal(thread: &str, turn: &str, status: TurnStatus) -> ServerNotification 
     })
 }
 
+fn prepared_codex() -> PreparedCodexRequest {
+    let payload = Digest32::of_bytes(b"exact-turn-start-payload");
+    prepare_codex_request(
+        1_000,
+        CodexOperationIntent {
+            operation_id: StableId::new("operation:test").unwrap(),
+            thread_id: StableId::new("thread-a").unwrap(),
+            method_id: StableId::new("app-server.turn-start.v2").unwrap(),
+            payload_digest: payload,
+            lease_payload_digest: payload,
+            deadline_ms: 2_000,
+        },
+    )
+    .unwrap()
+}
+
+#[test]
+fn runtime_codex_receipt_matches_real_terminal_statuses() {
+    for (turn_status, adapter_status, native_status) in [
+        (
+            TurnStatus::Completed,
+            CodexAdapterStatus::Succeeded,
+            NativeRunStatus::Completed,
+        ),
+        (
+            TurnStatus::Failed,
+            CodexAdapterStatus::Failed,
+            NativeRunStatus::Failed,
+        ),
+        (
+            TurnStatus::Interrupted,
+            CodexAdapterStatus::Interrupted,
+            NativeRunStatus::Interrupted,
+        ),
+    ] {
+        let notification = terminal("thread-a", "turn-a", turn_status);
+        let mut output = output();
+        let receipt = codex_receipt_for_notification(&prepared_codex(), &output, &notification)
+            .unwrap()
+            .expect("matching terminal must produce runtime.codex receipt");
+        assert_eq!(receipt.status, adapter_status);
+        assert_eq!(receipt.retry, RetryDisposition::DoNotRetry);
+        assert!(!receipt.model_authority);
+        assert!(!receipt.provider_authority);
+        assert!(!receipt.authority.grants_any());
+
+        assert!(observe_notification(&mut output, notification).unwrap());
+        assert_eq!(output.status, native_status);
+        verify_codex_receipt(&output, &receipt).unwrap();
+    }
+}
+
+#[test]
+fn runtime_codex_receipt_rejects_cross_thread_and_output_drift() {
+    let unrelated = terminal("thread-b", "turn-a", TurnStatus::Completed);
+    assert!(
+        codex_receipt_for_notification(&prepared_codex(), &output(), &unrelated)
+            .unwrap()
+            .is_none()
+    );
+
+    let notification = terminal("thread-a", "turn-a", TurnStatus::Completed);
+    let mut native = output();
+    let receipt = codex_receipt_for_notification(&prepared_codex(), &native, &notification)
+        .unwrap()
+        .unwrap();
+    assert!(observe_notification(&mut native, notification).unwrap());
+    verify_codex_receipt(&native, &receipt).unwrap();
+
+    native.status = NativeRunStatus::Failed;
+    assert!(verify_codex_receipt(&native, &receipt).is_err());
+    native.status = NativeRunStatus::Completed;
+    native.turn_id = "turn-tampered".to_string();
+    assert!(verify_codex_receipt(&native, &receipt).is_err());
+}
+
 #[test]
 fn only_the_bound_turn_can_complete_the_native_request() {
     let mut output = output();
