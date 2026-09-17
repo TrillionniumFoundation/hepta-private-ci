@@ -1,0 +1,75 @@
+name: Hepta intuition qualified fast policy
+
+on:
+  pull_request:
+    paths:
+      - "codex-rs/hepta-intuition/**"
+      - "docs/modules/intuition.policy/**"
+      - ".github/workflows/hepta-intuition-fast-policy.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - "codex-rs/hepta-intuition/**"
+      - "docs/modules/intuition.policy/**"
+      - ".github/workflows/hepta-intuition-fast-policy.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-intuition-fast-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  qualified-policy:
+    name: Qualified artifact, frozen data and fast-path gates
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      CARGO_TERM_COLOR: always
+    steps:
+      - name: Check out exact source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+          fetch-depth: 0
+
+      - name: Verify intuition unit and frozen-data qualification tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo test --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-intuition
+
+      - name: Enforce p50 p95 p99 and throughput gate in release profile
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo test --manifest-path codex-rs/Cargo.toml --locked --release -p codex-hepta-intuition --test fast_gate -- --nocapture
+
+      - name: Record allocation and latency benchmark at 1 16 64 128 candidates
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p .hepta-evidence
+          cargo bench --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-intuition --bench intuition_fast 2>&1 | tee .hepta-evidence/intuition-fast-benchmark.txt
+          grep -q "calibrated_v2_fast_path" .hepta-evidence/intuition-fast-benchmark.txt
+          grep -q "alloc" .hepta-evidence/intuition-fast-benchmark.txt
+
+      - name: Verify clean generated state
+        shell: bash
+        run: |
+          set -euo pipefail
+          git diff --check
+          test -z "$(git status --porcelain --untracked-files=no)"
+
+      - name: Retain benchmark evidence
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-intuition-fast-${{ github.event.pull_request.head.sha || github.sha }}
+          path: .hepta-evidence/intuition-fast-benchmark.txt
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 30
