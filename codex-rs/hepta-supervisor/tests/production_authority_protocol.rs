@@ -1,4 +1,5 @@
 #![cfg(feature = "production-authority")]
+#![allow(clippy::expect_used)]
 
 use codex_hepta_contracts::AgentId;
 use codex_hepta_fleet::AgentLifecycle;
