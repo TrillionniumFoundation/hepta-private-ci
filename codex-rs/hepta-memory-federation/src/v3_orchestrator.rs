@@ -196,7 +196,8 @@ fn compute_orchestration_digest(
     for failure in failures {
         push_id(&mut bytes, &failure.peer_id);
         push_id(&mut bytes, &failure.query_id);
-        let error = format!("{:?}", failure.error);
+        let error = &failure.error;
+        let error = format!("{error:?}");
         push_len(&mut bytes, error.len());
         bytes.extend_from_slice(error.as_bytes());
     }
