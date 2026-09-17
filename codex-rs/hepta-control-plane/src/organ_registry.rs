@@ -1,15 +1,20 @@
-//! Bounded registry of reviewed, compiled-in read-only organ factories.
+//! Bounded registry of reviewed, compiled-in read-only organ capabilities.
 //!
 //! A registry may contain more drivers than a graph selects. Construction
 //! validates the complete graph and binding set before invoking any factory,
-//! then creates exactly one handler for each graph organ. Factories are
-//! trusted product code: this registry does not load code, sandbox callbacks,
+//! then creates exactly one handler for each graph organ. In-process factories
+//! are trusted product code: this registry does not load code, sandbox callbacks,
 //! start handlers, or grant authority.
 //!
 //! Driver identity names an implementation, while organ identity names one
 //! concrete graph instance. A single reviewed stateless implementation may be
 //! bound to multiple organ instances in the same graph; each factory call still
 //! receives and must return the exact organ instance identity.
+//!
+//! The capability descriptor is also the single execution-class source. An
+//! isolated-process capability is catalogued without fabricating an in-process
+//! factory; callers route that descriptor to the supervisor-owned killable
+//! execution boundary instead of teaching the synchronous host another branch.
 
 use std::collections::BTreeMap;
 use std::collections::BTreeSet;
@@ -75,6 +80,21 @@ impl OrganCapabilityDescriptorV1 {
         }
     }
 
+    pub fn isolated_process_read_only(
+        driver: StableId,
+        driver_version: u32,
+        implementation_digest: Digest32,
+    ) -> Self {
+        Self {
+            driver,
+            driver_version,
+            abi_version: ORGAN_DRIVER_ABI_V1,
+            implementation_digest,
+            execution_class: OrganExecutionClassV1::IsolatedProcessReadOnly,
+            authority: OrganAuthorityClassV1::ReadOnlyNoEffects,
+        }
+    }
+
     fn validate(&self) -> Result<(), OrganHandlerRegistryError> {
         if self.driver_version == 0 {
             return Err(OrganHandlerRegistryError::ZeroDriverVersion(
@@ -106,15 +126,15 @@ pub type OrganHandlerFactoryV1 =
     fn(&StableId) -> Result<Box<dyn TrustedReadOnlyOrganV1>, OrganHandlerFaultV1>;
 
 #[derive(Clone, Debug)]
-struct RegisteredFactoryV1 {
+struct RegisteredCapabilityV1 {
     descriptor: OrganCapabilityDescriptorV1,
-    factory: OrganHandlerFactoryV1,
+    in_process_factory: Option<OrganHandlerFactoryV1>,
 }
 
-/// A bounded host-owned catalog of reviewed compiled-in organ factories.
+/// A bounded host-owned catalog of reviewed organ capabilities.
 #[derive(Debug, Default)]
 pub struct OrganHandlerRegistryV1 {
-    factories: BTreeMap<StableId, RegisteredFactoryV1>,
+    capabilities: BTreeMap<StableId, RegisteredCapabilityV1>,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -128,6 +148,8 @@ pub enum OrganHandlerRegistryError {
         abi_version: u16,
     },
     InProcessExecutionClassRequired(StableId),
+    IsolatedExecutionClassRequired(StableId),
+    InProcessFactoryMissing(StableId),
     Runtime(OrganRuntimeError),
     BindingCount {
         expected: usize,
@@ -171,11 +193,11 @@ impl OrganHandlerRegistryV1 {
     }
 
     pub fn len(&self) -> usize {
-        self.factories.len()
+        self.capabilities.len()
     }
 
     pub fn is_empty(&self) -> bool {
-        self.factories.is_empty()
+        self.capabilities.is_empty()
     }
 
     /// Backward-compatible registration for a V1 trusted short read-only driver.
@@ -192,26 +214,57 @@ impl OrganHandlerRegistryV1 {
         )
     }
 
-    /// Registers one reviewed implementation from its canonical descriptor.
+    /// Registers one reviewed in-process implementation from its canonical descriptor.
     pub fn register_descriptor(
         &mut self,
         descriptor: OrganCapabilityDescriptorV1,
         factory: OrganHandlerFactoryV1,
     ) -> Result<(), OrganHandlerRegistryError> {
         descriptor.validate()?;
-        if self.factories.len() >= MAX_REGISTERED_FACTORIES {
+        if descriptor.execution_class != OrganExecutionClassV1::TrustedShortReadOnly {
+            return Err(OrganHandlerRegistryError::InProcessExecutionClassRequired(
+                descriptor.driver.clone(),
+            ));
+        }
+        self.insert_capability(descriptor, Some(factory))
+    }
+
+    /// Catalogs an isolated implementation without inventing an in-process handler.
+    ///
+    /// The descriptor remains available to composition/routing code, but
+    /// `create_host` will fail closed if a caller attempts to place it on the
+    /// synchronous in-process path.
+    pub fn register_isolated_descriptor(
+        &mut self,
+        descriptor: OrganCapabilityDescriptorV1,
+    ) -> Result<(), OrganHandlerRegistryError> {
+        descriptor.validate()?;
+        if descriptor.execution_class != OrganExecutionClassV1::IsolatedProcessReadOnly {
+            return Err(OrganHandlerRegistryError::IsolatedExecutionClassRequired(
+                descriptor.driver.clone(),
+            ));
+        }
+        self.insert_capability(descriptor, None)
+    }
+
+    fn insert_capability(
+        &mut self,
+        descriptor: OrganCapabilityDescriptorV1,
+        in_process_factory: Option<OrganHandlerFactoryV1>,
+    ) -> Result<(), OrganHandlerRegistryError> {
+        if self.capabilities.len() >= MAX_REGISTERED_FACTORIES {
             return Err(OrganHandlerRegistryError::Capacity);
         }
-        if self.factories.contains_key(&descriptor.driver) {
+        if self.capabilities.contains_key(&descriptor.driver) {
             return Err(OrganHandlerRegistryError::DuplicateDriver(
                 descriptor.driver.clone(),
             ));
         }
-        self.factories.insert(
+        self.capabilities.insert(
             descriptor.driver.clone(),
-            RegisteredFactoryV1 {
+            RegisteredCapabilityV1 {
                 descriptor,
-                factory,
+                in_process_factory,
             },
         );
         Ok(())
@@ -219,7 +272,7 @@ impl OrganHandlerRegistryV1 {
 
     #[must_use]
     pub fn descriptor(&self, driver: &StableId) -> Option<&OrganCapabilityDescriptorV1> {
-        self.factories.get(driver).map(|entry| &entry.descriptor)
+        self.capabilities.get(driver).map(|entry| &entry.descriptor)
     }
 
     /// Builds a read-only host for exactly the organ instances in `graph`.
@@ -272,7 +325,7 @@ impl OrganHandlerRegistryV1 {
                     binding.organ.clone(),
                 ));
             }
-            let Some(registered) = self.factories.get(&binding.driver) else {
+            let Some(registered) = self.capabilities.get(&binding.driver) else {
                 return Err(OrganHandlerRegistryError::UnknownDriver(
                     binding.driver.clone(),
                 ));
@@ -288,6 +341,11 @@ impl OrganHandlerRegistryV1 {
                     binding.driver.clone(),
                 ));
             }
+            if registered.in_process_factory.is_none() {
+                return Err(OrganHandlerRegistryError::InProcessFactoryMissing(
+                    binding.driver.clone(),
+                ));
+            }
         }
 
         let mut handlers = Vec::with_capacity(graph.organs.len());
@@ -296,14 +354,15 @@ impl OrganHandlerRegistryV1 {
                 .remove(&organ.id)
                 .ok_or_else(|| OrganHandlerRegistryError::MissingBinding(organ.id.clone()))?;
             let registered = self
-                .factories
+                .capabilities
                 .get(&binding.driver)
                 .ok_or_else(|| OrganHandlerRegistryError::UnknownDriver(binding.driver.clone()))?;
-            let handler = (registered.factory)(&organ.id).map_err(|fault| {
-                OrganHandlerRegistryError::Factory {
-                    driver: binding.driver.clone(),
-                    fault,
-                }
+            let factory = registered.in_process_factory.ok_or_else(|| {
+                OrganHandlerRegistryError::InProcessFactoryMissing(binding.driver.clone())
+            })?;
+            let handler = factory(&organ.id).map_err(|fault| OrganHandlerRegistryError::Factory {
+                driver: binding.driver.clone(),
+                fault,
             })?;
             let actual = handler.id().clone();
             if actual != organ.id {
