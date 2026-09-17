@@ -32,7 +32,6 @@ use codex_hepta_agentd::AgentdClient;
 use codex_hepta_agentd::AgentdError;
 use codex_hepta_agentd::HealthSnapshot;
 use codex_hepta_contracts::AgentId;
-use codex_hepta_infer_core::durable_control::DurableInferenceControl;
 use codex_hepta_infer_core::durable_control::native::NativeDispatch;
 pub use codex_hepta_infer_core::durable_control::native::NativeOwnerAuthority;
 pub use codex_hepta_infer_core::durable_control::native::NativeRunOutput;
@@ -86,10 +85,12 @@ impl AppServerModelDriver {
     }
 
     /// Execute once. Transport loss after turn/start remains indeterminate and
-    /// must never be automatically replayed as a fresh request.
+    /// must never be automatically replayed as a fresh request. Durable state
+    /// transitions use the supplied short synchronous port; no network await
+    /// occurs while the production journal writer lock is held.
     async fn run_once(
         &self,
-        control: &mut DurableInferenceControl,
+        control: &mut dyn control::NativeControlPort,
         request_id: &str,
         prompt: String,
         context_query: Option<String>,
