@@ -10,6 +10,7 @@
   "owner": "cognitive-platform",
   "deputy": "durability-kernel",
   "technicalGuide": "docs/modules/cognitive.store/TECHNICAL.md",
+  "statusDocument": "docs/modules/cognitive.store/STATUS.json",
   "declaredRoots": [
     "codex-rs/hepta-cognitive-store"
   ],
@@ -17,50 +18,78 @@
     "codex-rs/hepta-cognitive-store"
   ],
   "sourceRootPresent": true,
-  "productionImplementation": false,
-  "productCallerState": "not_composed",
-  "productionWriterState": "not_established",
+  "productionImplementation": true,
+  "productCallerState": "agentd_composed_through_cognitive_store_facade",
+  "productionWriterState": "externally_authorized_single_writer_with_lifetime_os_lock",
   "operations": [
     {
-      "operation": "cognitivestore",
-      "nativeSymbol": "CognitiveStore",
+      "operation": "cognitive_store_open",
+      "nativeSymbol": "open_authoritative",
       "sourcePath": "codex-rs/hepta-cognitive-store/src/lib.rs",
-      "state": "source_implemented_not_product_composed",
-      "authority": "none",
-      "tests": [],
+      "state": "product_composed_canonical_ingress",
+      "authority": "module_owned_ingress_only",
+      "tests": [
+        "codex-rs/hepta-cognitive-store/tests/durable_authority.rs"
+      ],
       "sourcePathExists": true,
-      "designOperation": "cognitivestore",
+      "designOperation": "cognitive_store_open",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [
+        "hepta-memory::CognitiveStore::open"
+      ]
     },
     {
-      "operation": "cognitivestore",
+      "operation": "cognitive_store_recovery",
+      "nativeSymbol": "open_authoritative_with_recovery",
+      "sourcePath": "codex-rs/hepta-cognitive-store/src/lib.rs",
+      "state": "externally_fenced_fresh_owner_recovery_implemented",
+      "authority": "exact_current_cut_plus_external_production_fence",
+      "tests": [
+        "codex-rs/hepta-memory/src/cognitive_store_recovery_read_only_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "cognitive_store_recovery",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [
+        "hepta-memory::CognitiveStore::open_read_only_recovery",
+        "hepta-memory::RecoveredCognitiveReadOnly::promote_to_fresh_owner",
+        "codex-state::ColdSqliteRecoveryImage"
+      ]
+    },
+    {
+      "operation": "durable_backend",
       "nativeSymbol": "CognitiveStore",
       "sourcePath": "codex-rs/hepta-memory/src/cognitive_store.rs",
-      "state": "source_implemented_not_product_composed",
-      "authority": "none",
-      "tests": [],
+      "state": "delegated_persistence_backend_not_product_ingress",
+      "authority": "reachable_from_cognitive_store_facade",
+      "tests": [
+        "codex-rs/hepta-memory/src/cognitive_memory_store_tests.rs",
+        "codex-rs/hepta-memory/src/production_writer.rs"
+      ],
       "sourcePathExists": true,
-      "designOperation": "cognitivestore",
-      "mappingClass": "owner_native",
+      "designOperation": "durable_backend",
+      "mappingClass": "delegated_backend",
       "delegatedCallees": []
     },
     {
       "operation": "lane_c_snapshot",
       "nativeSymbol": "lane_c_snapshot",
       "sourcePath": "codex-rs/hepta-memory/src/lane_c_snapshot.rs",
-      "state": "source_implemented_not_product_composed",
-      "authority": "none",
-      "tests": [],
+      "state": "product_composed_durable_projection",
+      "authority": "read_projection_of_same_owner",
+      "tests": [
+        "codex-rs/hepta-memory/src/lane_c_snapshot_tests.rs"
+      ],
       "sourcePathExists": true,
       "designOperation": "lane_c_snapshot",
-      "mappingClass": "owner_native",
+      "mappingClass": "delegated_backend",
       "delegatedCallees": []
     }
   ],
   "repositoryControlledGaps": [
-    "Bind every operation to an authenticated consumer callsite and owner store.",
-    "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary."
+    "Obtain exact-head and synthetic-merge CI receipts for this candidate, including the fresh-owner recovery tests.",
+    "Obtain target-host filesystem/power-loss qualification for fresh-owner publication and SQLite WAL/FULL durability.",
+    "Obtain independent target-host acceptance before activation, promotion or release claims."
   ],
   "externalEvidenceGates": [
     "independent semantic review",
@@ -68,9 +97,14 @@
     "operator acceptance, canary, promotion and release"
   ],
   "claimBoundary": {
+    "sourceImplemented": true,
+    "productRuntimeOpenComposed": true,
+    "productionSingleWriterMechanismImplemented": true,
+    "durableReopenExercisedBySourceTest": true,
+    "writableSuspectImageRecoveryImplemented": true,
     "nativeSourceMappingComplete": true,
     "sourceRootPresent": true,
-    "productionImplementation": false,
+    "productionImplementation": true,
     "productExecutionProved": false,
     "independentAcceptance": false,
     "activation": false,

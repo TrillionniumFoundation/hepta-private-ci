@@ -45,6 +45,7 @@ pub use model::RolloutMigrationState;
 /// Preferred entrypoint: owns configuration and metrics.
 pub use runtime::StateRuntime;
 pub use sqlite::SqliteConfig;
+pub use sqlite_recovery::ColdSqliteRecoveryImage;
 pub use sqlite_recovery::ExistingSqliteRecoveryGuard;
 pub use sqlite_recovery::SqliteRecoveryError;
 
@@ -128,6 +129,6 @@ pub const DB_METRIC_BACKFILL_DURATION_MS: &str = "codex.db.backfill.duration_ms"
 /// SQLite initialization attempts. Tags: [status, phase, db, error]
 pub const DB_INIT_METRIC: &str = "codex.sqlite.init.count";
 /// SQLite initialization latency. Tags: [status, phase, db, error]
-pub const DB_INIT_DURATION_METRIC: &str = "codex.sqlite.init.duration_ms";
+pub const DB_INIT_DURATION_METRIC_MS: &str = "codex.sqlite.init.duration_ms";
 /// Rollout fallback attempts. Tags: [caller, reason]
 pub const DB_FALLBACK_METRIC: &str = "codex.sqlite.fallback.count";

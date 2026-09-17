@@ -8,7 +8,8 @@
 use std::fmt;
 use std::sync::Arc;
 
-use codex_hepta_memory::CognitiveStore;
+use codex_hepta_cognitive_store::CognitiveStore;
+use codex_hepta_cognitive_store::open_authoritative;
 use codex_hepta_memory::ProductionAuthorityLease;
 use codex_hepta_memory::ProductionAuthorityVerifier;
 use codex_hepta_memory::ProductionDispatchReceipt;
@@ -52,7 +53,7 @@ impl AgentdProductionWriterHost {
     where
         V: ProductionAuthorityVerifier + ?Sized,
     {
-        let store = CognitiveStore::open(&config.identity().layout)
+        let store = open_authoritative(&config.identity().layout)
             .await
             .map_err(|error| {
                 AgentdError::Protocol(format!("open production cognitive store: {error}"))

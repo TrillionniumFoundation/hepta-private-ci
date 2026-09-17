@@ -8,35 +8,38 @@ use super::ExistingSqliteRecoveryGuard;
 use super::SqliteConfig;
 use super::SqliteRecoveryError;
 use sqlx::SqlitePool;
+use std::path::Path;
+use std::sync::Arc;
+
+/// One bounded immutable byte image captured from a retained SQLite descriptor.
+///
+/// The same bytes can be opened read-only for independent current-cut
+/// verification and, only after that verification, written to a *new* private
+/// file. The source database is never reopened by pathname and this type never
+/// replaces or mutates it. Publishing/replacing a canonical route remains an
+/// owner-layer operation that requires its own external writer fence.
+#[derive(Clone, Debug)]
+pub struct ColdSqliteRecoveryImage {
+    bytes: Arc<[u8]>,
+    guard: ExistingSqliteRecoveryGuard,
+}
 
 impl SqliteConfig {
-    /// Copy at most 128 MiB from the retained descriptor, with no sidecars
-    /// present, into a read-only SQLite memory image. Unix only.
+    /// Capture at most 128 MiB from the retained descriptor with no SQLite
+    /// sidecars present. Unix only.
     ///
-    /// This low-level pool does not authenticate its contents or grant recovery
-    /// authority. Every replacement connection receives the SAME copied bytes;
-    /// no connection ever reopens the source filename. Its main database cannot
-    /// be written even if query_only is disabled. The trusted consumer must keep
-    /// the pool private and compare the complete canonical cut before use.
-    /// The 128 MiB limit is on input bytes, not total memory: the retained copy
-    /// and SQLite-owned copy consume up to 256 MiB together, plus SQLite caches,
-    /// query results and validation allocations. It is not a latency guarantee.
-    #[cfg_attr(
-        unix,
-        expect(
-            clippy::disallowed_methods,
-            reason = "this is codex-state's retained-descriptor cold-image connection shim"
-        )
-    )]
-    pub async fn open_cold_image_read_only_pool(
+    /// The returned bytes are normalized from a checkpointed WAL header to a
+    /// rollback-journal header on the *copy* so the fresh image does not depend
+    /// on absent WAL/SHM files. The complete logical current-cut witness still
+    /// has to be validated by the consumer; this method grants no authority.
+    pub fn capture_cold_recovery_image(
         &self,
         guard: &ExistingSqliteRecoveryGuard,
-    ) -> Result<SqlitePool, SqliteRecoveryError> {
+    ) -> Result<ColdSqliteRecoveryImage, SqliteRecoveryError> {
         #[cfg(unix)]
         {
             use super::RetainedOptionalObject;
             use std::os::unix::fs::FileExt;
-            use std::sync::Arc;
 
             guard.revalidate_for(self)?;
             if guard
@@ -71,12 +74,57 @@ impl SqliteConfig {
                 return Err(SqliteRecoveryError::Indeterminate);
             }
             // SQLite's documented deserialize workaround for a checkpointed
-            // WAL-format database. Only our copy changes; absent sidecars alone
-            // do NOT authenticate checkpoint completeness. The caller's full
-            // independent current-cut comparison must still reject stale data.
+            // WAL-format database. Only the retained immutable copy changes;
+            // absent sidecars do NOT authenticate checkpoint completeness.
             bytes[18] = 1;
             bytes[19] = 1;
-            let image = Arc::new(bytes);
+            Ok(ColdSqliteRecoveryImage {
+                bytes: Arc::from(bytes),
+                guard: guard.clone(),
+            })
+        }
+        #[cfg(not(unix))]
+        {
+            let _ = guard;
+            Err(SqliteRecoveryError::Unavailable)
+        }
+    }
+
+    /// Copy at most 128 MiB from the retained descriptor, with no sidecars
+    /// present, into a read-only SQLite memory image. Unix only.
+    ///
+    /// This compatibility entrypoint captures one immutable image and opens
+    /// exactly those bytes. Consumers that may subsequently restore a fresh
+    /// owner should call [`SqliteConfig::capture_cold_recovery_image`] directly
+    /// so verification and fresh-file materialization use the same byte image.
+    pub async fn open_cold_image_read_only_pool(
+        &self,
+        guard: &ExistingSqliteRecoveryGuard,
+    ) -> Result<SqlitePool, SqliteRecoveryError> {
+        self.capture_cold_recovery_image(guard)?
+            .open_read_only_pool(self)
+            .await
+    }
+}
+
+impl ColdSqliteRecoveryImage {
+    /// Open this exact retained byte image as a single-connection, read-only
+    /// in-memory SQLite database. The source pathname is never opened.
+    #[cfg_attr(
+        unix,
+        expect(
+            clippy::disallowed_methods,
+            reason = "this is codex-state's retained-descriptor cold-image connection shim"
+        )
+    )]
+    pub async fn open_read_only_pool(
+        &self,
+        config: &SqliteConfig,
+    ) -> Result<SqlitePool, SqliteRecoveryError> {
+        #[cfg(unix)]
+        {
+            let image = Arc::clone(&self.bytes);
+            self.guard.revalidate_for(config)?;
             let options = sqlx::sqlite::SqliteConnectOptions::new()
                 .in_memory(true)
                 .foreign_keys(true)
@@ -126,7 +174,7 @@ impl SqliteConfig {
                 .connect_with(options)
                 .await
                 .map_err(|_| SqliteRecoveryError::Indeterminate)?;
-            if let Err(error) = guard.revalidate_for(self) {
+            if let Err(error) = self.guard.revalidate_for(config) {
                 pool.close().await;
                 return Err(error);
             }
@@ -134,7 +182,77 @@ impl SqliteConfig {
         }
         #[cfg(not(unix))]
         {
-            let _ = guard;
+            let _ = config;
+            Err(SqliteRecoveryError::Unavailable)
+        }
+    }
+
+    /// Write these already-captured bytes to a new private file in the same
+    /// configured SQLite home. The target MUST NOT exist and MUST NOT be the
+    /// bound source path. The caller owns atomic publication/quarantine policy.
+    ///
+    /// The complete source identity is checked immediately before creating the
+    /// new file. Afterwards only the bound database and sidecar identities are
+    /// rechecked: creating the fresh sibling necessarily changes the parent
+    /// directory timestamp, but it must not change the suspect source object.
+    pub fn write_fresh_copy(
+        &self,
+        config: &SqliteConfig,
+        target: &Path,
+    ) -> Result<(), SqliteRecoveryError> {
+        #[cfg(unix)]
+        {
+            use std::io::Write;
+            use std::os::unix::fs::OpenOptionsExt;
+
+            if target.parent() != Some(config.home())
+                || target == self.guard.inner.database_path.as_path()
+            {
+                return Err(SqliteRecoveryError::Indeterminate);
+            }
+            self.guard.revalidate_for(config)?;
+            let result = (|| {
+                let mut file = std::fs::OpenOptions::new()
+                    .write(true)
+                    .create_new(true)
+                    .mode(0o600)
+                    .custom_flags(libc::O_CLOEXEC | libc::O_NOFOLLOW)
+                    .open(target)
+                    .map_err(super::indeterminate)?;
+                file.write_all(self.bytes.as_ref())
+                    .map_err(super::indeterminate)?;
+                file.sync_all().map_err(super::indeterminate)?;
+                let metadata = file.metadata().map_err(super::indeterminate)?;
+                super::FileSnapshot::validated(&metadata, super::ObjectKind::PrivateFile)?;
+                if metadata.len() != self.bytes.len() as u64 {
+                    return Err(SqliteRecoveryError::Indeterminate);
+                }
+                Ok(())
+            })();
+            if result.is_err() {
+                let _ = std::fs::remove_file(target);
+                return result;
+            }
+            let source_result = self
+                .guard
+                .inner
+                .database
+                .revalidate()
+                .and_then(|_| {
+                    for sidecar in &self.guard.inner.sidecars {
+                        sidecar.revalidate()?;
+                    }
+                    Ok(())
+                });
+            if let Err(error) = source_result {
+                let _ = std::fs::remove_file(target);
+                return Err(error);
+            }
+            Ok(())
+        }
+        #[cfg(not(unix))]
+        {
+            let _ = (config, target);
             Err(SqliteRecoveryError::Unavailable)
         }
     }

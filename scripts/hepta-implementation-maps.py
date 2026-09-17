@@ -1,9 +1,14 @@
 #!/usr/bin/env python3
 """Generate and verify one implementation map for every registered module.
 
-Maps are source-navigation evidence.  They deliberately distinguish a native
+Maps are source-navigation evidence. They deliberately distinguish a native
 entrypoint from a composed production caller; an entrypoint never grants
 runtime, effect, acceptance, promotion, or release authority.
+
+A module may provide ``docs/modules/<id>/STATUS.json`` as the canonical source
+for repository-controlled runtime/composition status. This prevents hand-edited
+maps and dossiers from becoming competing status ledgers while keeping
+independent acceptance/activation/release gates separate.
 """
 
 from __future__ import annotations
@@ -26,6 +31,17 @@ def current_source_base() -> dict[str, str]:
 
 def load(rel: str):
     return json.loads((ROOT / rel).read_text(encoding="utf-8"))
+
+
+def load_status(module_id: str) -> tuple[dict, str | None]:
+    rel = f"docs/modules/{module_id}/STATUS.json"
+    path = ROOT / rel
+    if not path.is_file():
+        return {}, None
+    row = json.loads(path.read_text(encoding="utf-8"))
+    if row.get("module") != module_id:
+        raise ValueError(f"{module_id}: STATUS.json identity mismatch")
+    return row, rel
 
 
 def git(*args: str) -> str:
@@ -69,13 +85,29 @@ def parse_entrypoints(module: str):
     return entries
 
 
+def default_repository_gaps() -> list[str]:
+    return [
+        "Bind every operation to an authenticated consumer callsite and owner store.",
+        "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary.",
+    ]
+
+
+def external_evidence_gates() -> list[str]:
+    return [
+        "independent semantic review",
+        "product execution and target-host qualification",
+        "operator acceptance, canary, promotion and release",
+    ]
+
+
 def map_for(module: dict, source_base: dict, lanes: dict):
     mid = module["id"]
     roots = [x["path"] for x in module["rootBindings"]]
     operations = parse_entrypoints(mid)
+    status, status_document = load_status(mid)
     if not operations:
         # Keep the map explicit even where the dossier has not named a native
-        # entrypoint.  This is a handoff blocker, not a production claim.
+        # entrypoint. This is a handoff blocker, not a production claim.
         operations = [
             {
                 "operation": "native_mapping_pending",
@@ -87,6 +119,8 @@ def map_for(module: dict, source_base: dict, lanes: dict):
                 "sourcePathExists": False,
             }
         ]
+    production = bool(status.get("productionImplementation", False))
+    status_boundary = status.get("claimBoundary", {})
     return {
         "schema": "hepta.module-implementation-map.v3",
         "schemaVersion": 3,
@@ -96,32 +130,33 @@ def map_for(module: dict, source_base: dict, lanes: dict):
         "owner": module["owner"],
         "deputy": module["deputy"],
         "technicalGuide": module["technicalDocument"],
+        "statusDocument": status_document,
         "declaredRoots": roots,
         "resolvedRoots": resolve_source_roots(ROOT, module),
         "sourceRootPresent": all((ROOT / x).exists() for x in roots),
-        "productionImplementation": False,
-        "productCallerState": "not_composed",
-        "productionWriterState": "not_established",
+        "productionImplementation": production,
+        "productCallerState": status.get("productCallerState", "not_composed"),
+        "productionWriterState": status.get("productionWriterState", "not_established"),
         "operations": operations,
-        "repositoryControlledGaps": [
-            "Bind every operation to an authenticated consumer callsite and owner store.",
-            "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary.",
-        ],
-        "externalEvidenceGates": [
-            "independent semantic review",
-            "product execution and target-host qualification",
-            "operator acceptance, canary, promotion and release",
-        ],
+        "repositoryControlledGaps": status.get(
+            "repositoryControlledGaps", default_repository_gaps()
+        ),
+        "externalEvidenceGates": external_evidence_gates(),
         "claimBoundary": {
+            **status_boundary,
             "nativeSourceMappingComplete": all(
                 op["sourcePathExists"] and op["nativeSymbol"] for op in operations
             ),
             "sourceRootPresent": all((ROOT / x).exists() for x in roots),
-            "productionImplementation": False,
-            "productExecutionProved": False,
-            "independentAcceptance": False,
-            "activation": False,
-            "release": False,
+            "productionImplementation": production,
+            "productExecutionProved": bool(
+                status_boundary.get("productExecutionProved", False)
+            ),
+            "independentAcceptance": bool(
+                status_boundary.get("independentAcceptance", False)
+            ),
+            "activation": bool(status_boundary.get("activation", False)),
+            "release": bool(status_boundary.get("release", False)),
         },
     }
 
@@ -132,14 +167,13 @@ def migrate_map(row: dict, module: dict, lanes: dict, source_base: dict) -> dict
     v1 used ``sourceRoot`` and canonical operation fields directly; v2 wrapped
     the native anchor in ``ownerEntrypoint`` and called it ``designOperation``.
     v3 keeps every legacy field for compatibility while adding one stable
-    operation vocabulary and top-level status/claim fields.
+    operation vocabulary and top-level status/claim fields. If STATUS.json is
+    present, its repository-controlled status wins over historical map values.
     """
     roots = [x["path"] for x in module["rootBindings"]]
     declared = row.get("declaredRoots", row.get("sourceRoot", roots))
     if isinstance(declared, str):
         declared = [declared]
-    # Keep a truthful root declaration even when an old hand-written map used
-    # an obsolete spelling; the module registry is authoritative.
     declared = roots
     operations = []
     for original in row.get("operations", []):
@@ -176,6 +210,11 @@ def migrate_map(row: dict, module: dict, lanes: dict, source_base: dict) -> dict
                 "sourcePathExists": False,
             }
         ]
+
+    status, status_document = load_status(module["id"])
+    production = bool(
+        status.get("productionImplementation", row.get("productionImplementation", False))
+    )
     migrated = dict(row)
     migrated.update(
         {
@@ -187,15 +226,17 @@ def migrate_map(row: dict, module: dict, lanes: dict, source_base: dict) -> dict
             "owner": row.get("owner", module["owner"]),
             "deputy": row.get("deputy", module["deputy"]),
             "technicalGuide": row.get("technicalGuide", module["technicalDocument"]),
+            "statusDocument": status_document,
             "declaredRoots": declared,
             "resolvedRoots": resolve_source_roots(ROOT, module),
             "sourceRootPresent": all((ROOT / x).exists() for x in declared),
-            "productionImplementation": bool(
-                row.get("productionImplementation", False)
+            "productionImplementation": production,
+            "productCallerState": status.get(
+                "productCallerState", row.get("productCallerState", "not_composed")
             ),
-            "productCallerState": row.get("productCallerState", "not_composed"),
-            "productionWriterState": row.get(
-                "productionWriterState", "not_established"
+            "productionWriterState": status.get(
+                "productionWriterState",
+                row.get("productionWriterState", "not_established"),
             ),
             "operations": operations,
         }
@@ -203,36 +244,36 @@ def migrate_map(row: dict, module: dict, lanes: dict, source_base: dict) -> dict
     boundary = migrated.get("claimBoundary") or migrated.get("completion")
     if not isinstance(boundary, dict):
         boundary = {}
+    status_boundary = status.get("claimBoundary", {})
     migrated["claimBoundary"] = {
         **boundary,
+        **status_boundary,
         "nativeSourceMappingComplete": all(
             bool(op.get("sourcePathExists") and op.get("nativeSymbol"))
             for op in operations
         ),
         "sourceRootPresent": migrated["sourceRootPresent"],
-        "productionImplementation": migrated["productionImplementation"],
-        "productExecutionProved": bool(boundary.get("productExecutionProved", False)),
-        "independentAcceptance": bool(boundary.get("independentAcceptance", False)),
-        "activation": bool(boundary.get("activation", False)),
-        "release": bool(boundary.get("release", False)),
+        "productionImplementation": production,
+        "productExecutionProved": bool(
+            status_boundary.get(
+                "productExecutionProved", boundary.get("productExecutionProved", False)
+            )
+        ),
+        "independentAcceptance": bool(
+            status_boundary.get(
+                "independentAcceptance", boundary.get("independentAcceptance", False)
+            )
+        ),
+        "activation": bool(
+            status_boundary.get("activation", boundary.get("activation", False))
+        ),
+        "release": bool(status_boundary.get("release", boundary.get("release", False))),
     }
-    migrated.setdefault(
-        "repositoryControlledGaps",
-        [
-            "Bind every operation to an authenticated consumer callsite and owner store.",
-            "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary.",
-        ],
-    )
-    migrated.setdefault(
-        "externalEvidenceGates",
-        [
-            "independent semantic review",
-            "product execution and target-host qualification",
-            "operator acceptance, canary, promotion and release",
-        ],
-    )
-    # ``sourceRoot`` is a v1 spelling.  Retain it as a compatibility alias so
-    # downstream readers can migrate independently; v3 readers use roots.
+    if status.get("repositoryControlledGaps") is not None:
+        migrated["repositoryControlledGaps"] = status["repositoryControlledGaps"]
+    else:
+        migrated.setdefault("repositoryControlledGaps", default_repository_gaps())
+    migrated.setdefault("externalEvidenceGates", external_evidence_gates())
     migrated["sourceRoot"] = declared
     return migrated
 
@@ -248,14 +289,7 @@ def migrate():
         module = by_id.get(row.get("module") or path.parent.name)
         if module is None:
             continue
-        if (
-            row.get("schema") == "hepta.module-implementation-map.v3"
-            and row.get("schemaVersion") == 3
-        ):
-            # Normalize existing v3 operations with compatibility aliases.
-            migrated = migrate_map(row, module, lanes, source_base)
-        else:
-            migrated = migrate_map(row, module, lanes, source_base)
+        migrated = migrate_map(row, module, lanes, source_base)
         path.write_text(
             json.dumps(migrated, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"
         )
@@ -266,10 +300,7 @@ def migrate():
 def generate():
     modules = load("docs/modules/MODULES.json")["modules"]
     lanes = lane_by_module()
-    source_base = {
-        "commit": git("rev-parse", "HEAD"),
-        "tree": git("rev-parse", "HEAD^{tree}"),
-    }
+    source_base = current_source_base()
     written = []
     for module in modules:
         path = ROOT / f"docs/modules/{module['id']}/IMPLEMENTATION_MAP.json"
@@ -345,6 +376,33 @@ def verify():
         boundary = row.get("claimBoundary") or row.get("completion")
         if not isinstance(boundary, dict):
             failures.append(f"{mid}: claim boundary")
+
+        try:
+            status, status_document = load_status(mid)
+        except (ValueError, json.JSONDecodeError) as exc:
+            failures.append(str(exc))
+            status, status_document = {}, None
+        if status_document:
+            if row.get("statusDocument") != status_document:
+                failures.append(f"{mid}: status document binding")
+            for key in (
+                "productionImplementation",
+                "productCallerState",
+                "productionWriterState",
+            ):
+                if row.get(key) != status.get(key):
+                    failures.append(f"{mid}: {key} drift from STATUS.json")
+            status_boundary = status.get("claimBoundary", {})
+            for key in (
+                "productionImplementation",
+                "productExecutionProved",
+                "independentAcceptance",
+                "activation",
+                "release",
+            ):
+                if key in status_boundary and boundary.get(key) != status_boundary.get(key):
+                    failures.append(f"{mid}: claimBoundary.{key} drift from STATUS.json")
+
     if len(source_bases) != 1:
         failures.append(f"maps: source base drift ({len(source_bases)} identities)")
     if failures:

@@ -17,6 +17,7 @@ use std::sync::Arc;
 
 #[path = "sqlite_recovery_image.rs"]
 mod image;
+pub use image::ColdSqliteRecoveryImage;
 
 #[cfg(unix)]
 use std::ffi::CString;
