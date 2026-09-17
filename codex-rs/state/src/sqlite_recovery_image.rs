@@ -191,8 +191,10 @@ impl ColdSqliteRecoveryImage {
     /// configured SQLite home. The target MUST NOT exist and MUST NOT be the
     /// bound source path. The caller owns atomic publication/quarantine policy.
     ///
-    /// Source identity is revalidated before and after writing. If it drifts,
-    /// the fresh file is removed and the operation fails indeterminate.
+    /// The complete source identity is checked immediately before creating the
+    /// new file. Afterwards only the bound database and sidecar identities are
+    /// rechecked: creating the fresh sibling necessarily changes the parent
+    /// directory timestamp, but it must not change the suspect source object.
     pub fn write_fresh_copy(
         &self,
         config: &SqliteConfig,
@@ -231,7 +233,18 @@ impl ColdSqliteRecoveryImage {
                 let _ = std::fs::remove_file(target);
                 return result;
             }
-            if let Err(error) = self.guard.revalidate_for(config) {
+            let source_result = self
+                .guard
+                .inner
+                .database
+                .revalidate()
+                .and_then(|_| {
+                    for sidecar in &self.guard.inner.sidecars {
+                        sidecar.revalidate()?;
+                    }
+                    Ok(())
+                });
+            if let Err(error) = source_result {
                 let _ = std::fs::remove_file(target);
                 return Err(error);
             }
