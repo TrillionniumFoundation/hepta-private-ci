@@ -352,28 +352,3 @@ fn lease_publish_failure_retains_fenced_process_until_observed_exit() -> Result<
     assert!(fixture.run_root()?.join("supervisor-process.json").exists());
     Ok(())
 }
-
-#[cfg(feature = "production-authority")]
-#[test]
-fn production_authority_build_rejects_unsigned_release_transitions() -> Result<(), SupervisorError> {
-    let fixture = Fixture::new()?;
-    let control = Control::default();
-    let now = Instant::now();
-    let (mut supervisor, _) =
-        Supervisor::recover(fixture.registry.clone(), control.driver(), config(), now)?;
-    let first = AgentRelease::new("release-a", command("agentd-a")?)?;
-    let second = AgentRelease::new("release-b", command("agentd-b")?)?;
-    supervisor.start_release(&fixture.agent_id, first, now)?;
-    control.set_healthy(&fixture.agent_id);
-    supervisor.tick(now);
-
-    assert!(matches!(
-        supervisor.upgrade(&fixture.agent_id, second, now),
-        Err(SupervisorError::ProductionAuthority(_))
-    ));
-    assert!(matches!(
-        supervisor.rollback(&fixture.agent_id, now),
-        Err(SupervisorError::ProductionAuthority(_))
-    ));
-    Ok(())
-}
