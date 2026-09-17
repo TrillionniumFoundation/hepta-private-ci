@@ -3,6 +3,7 @@ import test from "node:test";
 
 import { browserActionDigest } from "../src/action.js";
 import { BrowserProfileHost } from "../src/runtime.js";
+import { MemoryBrowserOperationJournal } from "../src/journal.js";
 
 const D1 = "1".repeat(64);
 const D2 = "2".repeat(64);
@@ -112,9 +113,11 @@ async function preparedHost(options = {}) {
   const fakeDriver = options.driver ?? driver();
   const finalAuthority = options.authority ?? authority();
   const clock = options.clock ?? (() => 1_000);
+  const journal = options.journal ?? new MemoryBrowserOperationJournal();
   const host = new BrowserProfileHost({
     driver: fakeDriver,
     authority: finalAuthority,
+    journal,
     clock,
     driverCallTimeoutMs: options.driverCallTimeoutMs ?? 50,
   });
@@ -125,7 +128,7 @@ async function preparedHost(options = {}) {
     generation: 1,
     observationBudget: 2048,
   });
-  return { host, fakeDriver, finalAuthority };
+  return { host, fakeDriver, finalAuthority, journal };
 }
 
 test("opens, observes, reconciles indeterminate action, and closes", async () => {
@@ -293,6 +296,7 @@ test("disallowed observed origin is quarantined and cannot authorize an action",
   const host = new BrowserProfileHost({
     driver: fakeDriver,
     authority: finalAuthority,
+    journal: new MemoryBrowserOperationJournal(),
     clock: () => 1_000,
     driverCallTimeoutMs: 50,
   });
@@ -307,4 +311,51 @@ test("disallowed observed origin is quarantined and cannot authorize an action",
   assert.equal(page.quarantined, true);
   await assert.rejects(host.navigateOrAct(operation()), /stale page generation/);
   assert.equal(fakeDriver.actCalls, 0);
+});
+
+test("persisted indeterminate operation reconciles after host process loss without redispatch", async () => {
+  const journal = new MemoryBrowserOperationJournal();
+  const firstDriver = driver({
+    actImpl: async () => {
+      throw new Error("process lost after submit");
+    },
+  });
+  const first = await preparedHost({ driver: firstDriver, journal });
+  const unknown = await first.host.navigateOrAct(operation());
+  assert.equal(unknown.status, "indeterminate");
+  assert.equal(firstDriver.actCalls, 1);
+
+  const secondDriver = driver();
+  const recoveredHost = new BrowserProfileHost({
+    driver: secondDriver,
+    authority: authority(),
+    journal,
+    clock: () => 20_000,
+    driverCallTimeoutMs: 50,
+  });
+  const recovered = await recoveredHost.reconcilePersistedOperation(operation());
+  assert.equal(recovered.status, "succeeded");
+  assert.equal(recovered.terminalObserved, true);
+  assert.equal(secondDriver.actCalls, 0);
+});
+
+test("terminal operation retention uses durable tombstones instead of exhausting active capacity", async () => {
+  const fakeDriver = driver({
+    actImpl: async () => ({
+      terminalObserved: true,
+      status: "succeeded",
+      outcomeDigest: D1,
+    }),
+  });
+  const { host } = await preparedHost({ driver: fakeDriver });
+  for (let index = 0; index < 300; index += 1) {
+    const receipt = await host.navigateOrAct(
+      operation({ operationId: `operation.${index}` }),
+    );
+    assert.equal(receipt.terminalObserved, true);
+  }
+  assert.equal(fakeDriver.actCalls, 300);
+  const replay = await host.navigateOrAct(operation({ operationId: "operation.0" }));
+  assert.equal(replay.terminalObserved, true);
+  assert.equal(fakeDriver.actCalls, 300);
 });
