@@ -50,6 +50,16 @@ impl AuthoritativeCognitiveStore {
         Ok(Self { backend })
     }
 
+    /// Wrap an already-open backend for an isolated qualification harness.
+    ///
+    /// This does not create production authority. Repository CALLERS policy
+    /// requires zero product callers of qualification-only host seams that use
+    /// this constructor. It exists so crash/restart qualification can control
+    /// the exact pool lifetime without reintroducing a production bypass.
+    pub fn from_qualification_backend(backend: CognitiveStore) -> Self {
+        Self { backend }
+    }
+
     /// Open the production durable writer from the canonical authority handle.
     /// Consuming `self` prevents the caller from retaining this authority handle
     /// and independently constructing another production writer from it.
