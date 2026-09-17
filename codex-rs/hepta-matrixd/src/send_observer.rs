@@ -39,27 +39,33 @@ impl<'a> MatrixSendObserver<'a> {
         Self { store }
     }
 
-    pub fn prepare_send<'b>(
-        &'b self,
+    pub fn prepare_send(
+        &self,
         now_ms: u64,
-        intent: &'b SendIntent,
-    ) -> impl Future<Output = Result<SendReceipt, MatrixDurableError>> + 'b {
-        self.store.prepare_matrix_dispatch(now_ms, intent)
+        intent: &SendIntent,
+    ) -> impl Future<Output = Result<SendReceipt, MatrixDurableError>> + '_ {
+        let intent = intent.clone();
+        async move { self.store.prepare_matrix_dispatch(now_ms, &intent).await }
     }
 
-    pub fn observe_send<'b>(
-        &'b self,
-        observation: &'b ServerObservation,
-    ) -> impl Future<Output = Result<Option<SendReceipt>, MatrixDurableError>> + 'b {
-        self.store.observe_matrix_server_event(
-            Some(&observation.transaction_id),
-            &observation.server_event_id,
-            &observation.room_id,
-            observation.binding_revision,
-            observation.session_generation,
-            &observation.observation_digest,
-            observation.observed_at_ms,
-        )
+    pub fn observe_send(
+        &self,
+        observation: &ServerObservation,
+    ) -> impl Future<Output = Result<Option<SendReceipt>, MatrixDurableError>> + '_ {
+        let observation = observation.clone();
+        async move {
+            self.store
+                .observe_matrix_server_event(
+                    Some(&observation.transaction_id),
+                    &observation.server_event_id,
+                    &observation.room_id,
+                    observation.binding_revision,
+                    observation.session_generation,
+                    &observation.observation_digest,
+                    observation.observed_at_ms,
+                )
+                .await
+        }
     }
 
     pub async fn apply_redaction(
