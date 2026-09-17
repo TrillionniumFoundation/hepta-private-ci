@@ -43,6 +43,31 @@ def lane_by_module():
     }
 
 
+def derive_delivery_status(row: dict) -> dict[str, str]:
+    """Derive implementation/composition/qualification as independent states."""
+    boundary = row.get("claimBoundary") or row.get("completion") or {}
+    implemented = (
+        "implemented"
+        if bool(row.get("sourceRootPresent"))
+        and bool(boundary.get("nativeSourceMappingComplete"))
+        else "not_implemented"
+    )
+    composed = (
+        "composed" if row.get("productCallerState") == "composed" else "not_composed"
+    )
+    qualified = (
+        "qualified"
+        if bool(boundary.get("productExecutionProved"))
+        and bool(boundary.get("independentAcceptance"))
+        else "not_qualified"
+    )
+    return {
+        "implemented": implemented,
+        "composed": composed,
+        "qualified": qualified,
+    }
+
+
 def parse_entrypoints(module: str):
     path = ROOT / f"qualification/module-execution-dossiers/detail/{module}.md"
     text = path.read_text(encoding="utf-8") if path.exists() else ""
@@ -87,7 +112,7 @@ def map_for(module: dict, source_base: dict, lanes: dict):
                 "sourcePathExists": False,
             }
         ]
-    return {
+    value = {
         "schema": "hepta.module-implementation-map.v3",
         "schemaVersion": 3,
         "sourceBase": source_base,
@@ -124,6 +149,8 @@ def map_for(module: dict, source_base: dict, lanes: dict):
             "release": False,
         },
     }
+    value["deliveryStatus"] = derive_delivery_status(value)
+    return value
 
 
 def migrate_map(row: dict, module: dict, lanes: dict, source_base: dict) -> dict:
@@ -216,6 +243,7 @@ def migrate_map(row: dict, module: dict, lanes: dict, source_base: dict) -> dict
         "activation": bool(boundary.get("activation", False)),
         "release": bool(boundary.get("release", False)),
     }
+    migrated["deliveryStatus"] = derive_delivery_status(migrated)
     migrated.setdefault(
         "repositoryControlledGaps",
         [
@@ -248,14 +276,7 @@ def migrate():
         module = by_id.get(row.get("module") or path.parent.name)
         if module is None:
             continue
-        if (
-            row.get("schema") == "hepta.module-implementation-map.v3"
-            and row.get("schemaVersion") == 3
-        ):
-            # Normalize existing v3 operations with compatibility aliases.
-            migrated = migrate_map(row, module, lanes, source_base)
-        else:
-            migrated = migrate_map(row, module, lanes, source_base)
+        migrated = migrate_map(row, module, lanes, source_base)
         path.write_text(
             json.dumps(migrated, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"
         )
@@ -266,10 +287,7 @@ def migrate():
 def generate():
     modules = load("docs/modules/MODULES.json")["modules"]
     lanes = lane_by_module()
-    source_base = {
-        "commit": git("rev-parse", "HEAD"),
-        "tree": git("rev-parse", "HEAD^{tree}"),
-    }
+    source_base = current_source_base()
     written = []
     for module in modules:
         path = ROOT / f"docs/modules/{module['id']}/IMPLEMENTATION_MAP.json"
@@ -281,6 +299,63 @@ def generate():
         )
         written.append(str(path.relative_to(ROOT)))
     print(json.dumps({"generated": len(written), "maps": written}, ensure_ascii=False))
+
+
+def verify_cognitive_read_evidence(row: dict, failures: list[str]) -> None:
+    """Close the status drift that previously marked a composed reader as absent."""
+    mid = "cognitive.read"
+    if row.get("productionImplementation") is not True:
+        failures.append(f"{mid}: production implementation evidence")
+    if row.get("productCallerState") != "composed":
+        failures.append(f"{mid}: product caller state")
+    expected = derive_delivery_status(row)
+    if row.get("deliveryStatus") != expected:
+        failures.append(f"{mid}: delivery status")
+
+    callers = row.get("productCallers")
+    if not isinstance(callers, list) or not callers:
+        failures.append(f"{mid}: product caller evidence")
+    else:
+        for caller in callers:
+            path = caller.get("path")
+            symbol = caller.get("symbol")
+            if not path or not symbol or not (ROOT / path).is_file():
+                failures.append(f"{mid}: invalid product caller evidence")
+                continue
+            if symbol not in (ROOT / path).read_text(encoding="utf-8"):
+                failures.append(f"{mid}: missing caller symbol {symbol} in {path}")
+
+    evidence_base = row.get("deliveryEvidenceBase") or {}
+    commit = evidence_base.get("commit")
+    tree = evidence_base.get("tree")
+    if not commit or not tree:
+        failures.append(f"{mid}: delivery evidence base")
+        return
+    try:
+        if git("rev-parse", f"{commit}^{{tree}}") != tree:
+            failures.append(f"{mid}: delivery evidence tree mismatch")
+        subprocess.run(
+            ["git", "merge-base", "--is-ancestor", commit, "HEAD"],
+            cwd=ROOT,
+            capture_output=True,
+            text=True,
+            check=True,
+        )
+        evidence_paths = [
+            "codex-rs/hepta-cognitive-read",
+            "codex-rs/hepta-memory/src/lane_c_snapshot.rs",
+            "codex-rs/hepta-agentd/src/cognitive_context.rs",
+            "codex-rs/hepta-agentd/tests/cognitive_dispatch_receipt_race.rs",
+            "codex-rs/hepta-infer-worker-host/src/native_app_server.rs",
+            "codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs",
+        ]
+        changed = git("diff", "--name-only", f"{commit}..HEAD", "--", *evidence_paths)
+        if changed:
+            failures.append(
+                f"{mid}: delivery evidence is stale ({changed.replace(chr(10), ', ')})"
+            )
+    except subprocess.CalledProcessError:
+        failures.append(f"{mid}: delivery evidence base is not an ancestor of HEAD")
 
 
 def verify():
@@ -345,6 +420,10 @@ def verify():
         boundary = row.get("claimBoundary") or row.get("completion")
         if not isinstance(boundary, dict):
             failures.append(f"{mid}: claim boundary")
+        if "deliveryStatus" in row and row.get("deliveryStatus") != derive_delivery_status(row):
+            failures.append(f"{mid}: derived delivery status drift")
+        if mid == "cognitive.read":
+            verify_cognitive_read_evidence(row, failures)
     if len(source_bases) != 1:
         failures.append(f"maps: source base drift ({len(source_bases)} identities)")
     if failures:

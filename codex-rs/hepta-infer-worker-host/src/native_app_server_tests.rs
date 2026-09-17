@@ -295,3 +295,52 @@ async fn success_requires_both_matching_completion_and_final_ready_owner() {
     output.status = NativeRunStatus::Interrupted;
     assert!(!output.succeeded());
 }
+
+fn cognitive_snapshot(snapshot_digest: &str, read_digest: &str) -> CognitiveContextSnapshot {
+    CognitiveContextSnapshot {
+        snapshot_digest: snapshot_digest.to_string(),
+        read_digest: read_digest.to_string(),
+        omitted_records: 0,
+        items: Vec::new(),
+        plan: None,
+    }
+}
+
+#[test]
+fn cognitive_receipt_gate_rejects_snapshot_or_read_change() {
+    let observed = cognitive_snapshot("snapshot-a", "read-a");
+    let same = cognitive_snapshot("snapshot-a", "read-a");
+    confirm_cognitive_receipts(&observed, &same).unwrap();
+
+    let changed_snapshot = cognitive_snapshot("snapshot-b", "read-a");
+    assert_eq!(
+        confirm_cognitive_receipts(&observed, &changed_snapshot)
+            .unwrap_err()
+            .to_string(),
+        "cognitive context changed before model dispatch"
+    );
+
+    let changed_read = cognitive_snapshot("snapshot-a", "read-b");
+    assert_eq!(
+        confirm_cognitive_receipts(&observed, &changed_read)
+            .unwrap_err()
+            .to_string(),
+        "cognitive context changed before model dispatch"
+    );
+}
+
+#[test]
+fn cognitive_receipt_confirmation_stays_before_durable_dispatch_and_turn_start() {
+    let source = include_str!("native_app_server.rs");
+    let gate = source
+        .find("confirm_cognitive_receipts(&observed, &current)")
+        .expect("dispatch receipt gate");
+    let durable_dispatch = source
+        .find("control.dispatch_native(")
+        .expect("durable native dispatch");
+    let turn_start = source
+        .find("client.request_typed::<TurnStartResponse>(ClientRequest::TurnStart")
+        .expect("turn start");
+    assert!(gate < durable_dispatch);
+    assert!(durable_dispatch < turn_start);
+}

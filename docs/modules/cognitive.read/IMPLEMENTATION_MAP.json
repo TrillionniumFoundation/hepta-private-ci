@@ -5,6 +5,10 @@
     "commit": "7e8379b3954808d4138a7bd2f3773f75691291a3",
     "tree": "ff9fa6baf95a35fd2f49816e0a80097688f2aeeb"
   },
+  "deliveryEvidenceBase": {
+    "commit": "c49b171a21a0a1659f206f137a44fc71544e9468",
+    "tree": "5bd392da0b36ae3a9bafc073eaa9da2a709da9ce"
+  },
   "laneId": "LANE-C-MEMORY",
   "module": "cognitive.read",
   "owner": "cognitive-platform",
@@ -17,17 +21,37 @@
     "codex-rs/hepta-cognitive-read"
   ],
   "sourceRootPresent": true,
-  "productionImplementation": false,
-  "productCallerState": "not_composed",
-  "productionWriterState": "not_established",
+  "productionImplementation": true,
+  "productCallerState": "composed",
+  "productionWriterState": "not_applicable_read_only",
+  "deliveryStatus": {
+    "implemented": "implemented",
+    "composed": "composed",
+    "qualified": "not_qualified"
+  },
+  "productCallers": [
+    {
+      "path": "codex-rs/hepta-agentd/src/cognitive_context.rs",
+      "symbol": "lane_c_snapshot"
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/native_app_server.rs",
+      "symbol": "confirm_cognitive_receipts"
+    }
+  ],
   "operations": [
     {
       "operation": "read_v2",
       "nativeSymbol": "read_v2",
       "sourcePath": "codex-rs/hepta-cognitive-read/src/v2.rs",
-      "state": "source_implemented_not_product_composed",
-      "authority": "none",
-      "tests": [],
+      "state": "product_composed_unqualified",
+      "authority": "read_only_deny_all",
+      "tests": [
+        "codex-rs/hepta-cognitive-read/src/v2_tests.rs",
+        "codex-rs/hepta-agentd/src/cognitive_context_tests.rs",
+        "codex-rs/hepta-agentd/tests/cognitive_dispatch_receipt_race.rs",
+        "codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs"
+      ],
       "sourcePathExists": true,
       "designOperation": "read_v2",
       "mappingClass": "owner_native",
@@ -37,9 +61,13 @@
       "operation": "durablecognitivesnapshot",
       "nativeSymbol": "DurableCognitiveSnapshot",
       "sourcePath": "codex-rs/hepta-memory/src/lane_c_snapshot.rs",
-      "state": "source_implemented_not_product_composed",
-      "authority": "none",
-      "tests": [],
+      "state": "product_composed_unqualified",
+      "authority": "read_only_deny_all",
+      "tests": [
+        "codex-rs/hepta-memory/src/lane_c_snapshot_tests.rs",
+        "codex-rs/hepta-agentd/src/cognitive_context_tests.rs",
+        "codex-rs/hepta-agentd/tests/cognitive_dispatch_receipt_race.rs"
+      ],
       "sourcePathExists": true,
       "designOperation": "durablecognitivesnapshot",
       "mappingClass": "owner_native",
@@ -47,8 +75,8 @@
     }
   ],
   "repositoryControlledGaps": [
-    "Bind every operation to an authenticated consumer callsite and owner store.",
-    "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary."
+    "The dispatch-boundary receipt confirmation is compare-and-revalidate, not a write-blocking lease across the final App Server TurnStart RPC.",
+    "Run exact-head and deterministic target-host qualification before changing the qualified claim."
   ],
   "externalEvidenceGates": [
     "independent semantic review",
@@ -58,7 +86,7 @@
   "claimBoundary": {
     "nativeSourceMappingComplete": true,
     "sourceRootPresent": true,
-    "productionImplementation": false,
+    "productionImplementation": true,
     "productExecutionProved": false,
     "independentAcceptance": false,
     "activation": false,

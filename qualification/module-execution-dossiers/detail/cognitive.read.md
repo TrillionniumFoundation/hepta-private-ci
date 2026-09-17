@@ -1,7 +1,7 @@
 # cognitive.read: implementation design
 
 Parent: `docs/modules/cognitive.read/TECHNICAL.md`. Lane: `LANE-C-MEMORY`.
-Status: bounded V2 read projection and existing SQLite-cut consumer implemented; remaining target capabilities and independent acceptance are listed in section 8. Common requirements: `../EXECUTION_SEMANTICS.md` and `../TECHNICAL.md`. Canonical ownership and package predecessors are unchanged.
+Status: bounded V2 read projection, durable SQLite-cut consumer, Agentd product composition, and native-host dispatch-boundary receipt confirmation are implemented; independent target-host qualification and acceptance remain open as listed in section 8. Common requirements: `../EXECUTION_SEMANTICS.md` and `../TECHNICAL.md`. Canonical ownership and package predecessors are unchanged.
 
 ## 1. Source and work envelope
 
@@ -22,6 +22,8 @@ No authoritative domain facts. Cache keys include principal/purpose, source/even
 
 Authenticate purpose and scope before lookup; acquire the declared coherent source cut; fetch exact revisions; apply redaction and current revocation; return bounded facts with provenance. Before physical model-request attachment, revalidate the packet against one current compatible snapshot. Do not combine source rows from different frontiers because each individual read succeeded.
 
+The native host now performs this as a fail-closed compare-and-revalidate step immediately before durable dispatch and `TurnStart`: it reacquires the owner context and requires exact equality of both `snapshot_digest` and `read_digest`. This turns the read receipts into an active consumer-side freshness check. It remains an observed-current-state check rather than a write-blocking lease across the final App Server RPC.
+
 ## 5. Capacity and performance profile
 
 Pilot read <= 512 IDs and <= 1 MiB encoded result subject to context limits; snapshot lifetime <= the request deadline; cache bytes and pins are host-profile ceilings. A slow reader must expire or receive unavailable rather than hold unbounded history.
@@ -34,8 +36,9 @@ Pilot ceilings are design targets, not measurements. Stricter canonical limits p
 - READ-02: cross-principal cache lookup is rejected even for equal query text.
 - READ-03: cancellation releases read pins/descriptors without granting write access.
 - READ-04: incomplete projection generation is reported unavailable, never presented as a complete snapshot.
+- READ-05: a tombstone/correction between the first dispatch-boundary owner read and the confirming owner read changes the receipt pair, and the native host refuses model dispatch with the historical context.
 
-These are required product test designs, not executed-test receipts. Each implementation supplies native test identity, exact input/output and independent oracle evidence.
+These are required product test designs. Native test identities and product-race coverage are listed below; passing repository tests are still distinct from independent target-host qualification and acceptance.
 
 ## 7. Integration, rollback and capability ceiling
 
@@ -46,7 +49,9 @@ Use all eighteen dossier receipt fields. Immediate revocation/stop remains effec
 ## 8. Current native implementation
 
 - **Implemented entrypoints:** `read_v2` in [codex-rs/hepta-cognitive-read/src/v2.rs](../../../codex-rs/hepta-cognitive-read/src/v2.rs); `DurableCognitiveSnapshot` in [codex-rs/hepta-memory/src/lane_c_snapshot.rs](../../../codex-rs/hepta-memory/src/lane_c_snapshot.rs). Bounded V2 read projection and existing SQLite-cut consumer implemented.
-- **State and recovery:** read_v2 reuses V1 selection, adds request-bound canonical bytes, sorts citations and accounts for byte-limit omissions. DurableCognitiveSnapshot reads an owner-acquired SQLite cut; native bytes are not an admitted ModulePort/wire protocol.
-- **Source tests:** [codex-rs/hepta-cognitive-read/src/v2_tests.rs](../../../codex-rs/hepta-cognitive-read/src/v2_tests.rs), [codex-rs/hepta-cognitive-read/src/tombstone_resurrection_tests.rs](../../../codex-rs/hepta-cognitive-read/src/tombstone_resurrection_tests.rs), [codex-rs/hepta-memory/src/lane_c_snapshot_tests.rs](../../../codex-rs/hepta-memory/src/lane_c_snapshot_tests.rs). These are test identities, not execution receipts for this documentation revision.
-- **Implementation and operating references:** [codex-rs/hepta-memory/LANE_C_SQLITE.md](../../../codex-rs/hepta-memory/LANE_C_SQLITE.md).
-- **Remaining work:** Before delivery revalidate exact fetched revision/digest and current host authority; the historical read cut does not lease future effects. Register cross-module formats through their existing owner.
+- **Product composition:** [codex-rs/hepta-agentd/src/cognitive_context.rs](../../../codex-rs/hepta-agentd/src/cognitive_context.rs) acquires the Lane C cut, intersects exact memory id/revision/content digest, constructs the bounded context plan, and revalidates the cut before publishing. [codex-rs/hepta-infer-worker-host/src/native_app_server.rs](../../../codex-rs/hepta-infer-worker-host/src/native_app_server.rs) reacquires the context immediately before durable dispatch and requires exact `snapshot_digest` plus `read_digest` equality before `TurnStart`.
+- **State and recovery:** `read_v2` reuses V1 selection, adds request-bound canonical bytes, sorts citations and accounts for byte-limit omissions. `DurableCognitiveSnapshot` reads an owner-acquired SQLite cut; native bytes are not an admitted ModulePort/wire protocol.
+- **Source tests:** [codex-rs/hepta-cognitive-read/src/v2_tests.rs](../../../codex-rs/hepta-cognitive-read/src/v2_tests.rs), [codex-rs/hepta-cognitive-read/src/tombstone_resurrection_tests.rs](../../../codex-rs/hepta-cognitive-read/src/tombstone_resurrection_tests.rs), [codex-rs/hepta-memory/src/lane_c_snapshot_tests.rs](../../../codex-rs/hepta-memory/src/lane_c_snapshot_tests.rs), [codex-rs/hepta-agentd/src/cognitive_context_tests.rs](../../../codex-rs/hepta-agentd/src/cognitive_context_tests.rs), [codex-rs/hepta-agentd/tests/cognitive_dispatch_receipt_race.rs](../../../codex-rs/hepta-agentd/tests/cognitive_dispatch_receipt_race.rs), and [codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs](../../../codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs). Repository test identity does not itself establish independent acceptance.
+- **Implementation and operating references:** [codex-rs/hepta-memory/LANE_C_SQLITE.md](../../../codex-rs/hepta-memory/LANE_C_SQLITE.md) and [docs/modules/cognitive.read/IMPLEMENTATION_MAP.json](../../../docs/modules/cognitive.read/IMPLEMENTATION_MAP.json).
+- **Delivery status:** `implemented = implemented`, `composed = composed`, `qualified = not_qualified`. These are intentionally independent states. The implementation map verifies product caller symbols and a module-specific delivery evidence base while preserving the repository-wide shared map source base.
+- **Remaining work:** The dispatch gate is compare-and-revalidate, not a write-blocking lease across the final App Server RPC, so a still-smaller post-confirmation mutation window remains until a stronger atomic owner/effect-boundary protocol exists. Independent target-host qualification, semantic review, operator acceptance, activation and release remain external gates.

@@ -30,6 +30,7 @@ use codex_app_server_protocol::TurnStatus;
 use codex_app_server_protocol::UserInput;
 use codex_hepta_agentd::AgentdClient;
 use codex_hepta_agentd::AgentdError;
+use codex_hepta_agentd::CognitiveContextSnapshot;
 use codex_hepta_agentd::HealthSnapshot;
 use codex_hepta_contracts::AgentId;
 use codex_hepta_infer_core::durable_control::DurableInferenceControl;
@@ -110,25 +111,6 @@ impl AppServerModelDriver {
         if !health.ready || health.fenced {
             return Err("Agent is not ready".into());
         }
-        let context = match context_query {
-            Some(query) => Some(owner.cognitive_context(query, /*limit*/ 4).await?),
-            None => None,
-        };
-        let additional_context = context
-            .map(|snapshot| -> Result<_> {
-                let value = serde_json::to_string(&snapshot)?;
-                if value.len() > MAX_MODEL_CONTEXT_BYTES {
-                    return Err("verified context exceeds the model attachment byte limit".into());
-                }
-                Ok(HashMap::from([(
-                    "hepta-cognitive-owner".to_string(),
-                    AdditionalContextEntry {
-                        value,
-                        kind: AdditionalContextKind::Untrusted,
-                    },
-                )]))
-            })
-            .transpose()?;
         let ingress = owner.session_ingress().await?;
         let socket_path = AbsolutePathBuf::from_absolute_path(ingress.socket_path)?;
         let mut client = timeout(
@@ -171,20 +153,63 @@ impl AppServerModelDriver {
             let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
             return Err("provider substituted the requested model".into());
         }
-        // Recheck the actual generation after acquiring context and connecting.
-        owner.session_ingress().await?;
+        // Recheck the actual generation after connecting. Cognitive context is
+        // intentionally acquired after this point so its owner cut is as close
+        // as possible to the effect boundary.
+        if let Err(error) = owner.session_ingress().await {
+            let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
+            return Err(error.into());
+        }
         if cancellation.is_cancelled() {
             let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
             return Err("cancelled before model dispatch".into());
         }
-        control.dispatch_native(
+        let additional_context = match context_query {
+            Some(query) => {
+                // The first read gives the worker an observed receipt. The
+                // second read is an owner-side revalidation performed at the
+                // dispatch boundary. Exact snapshot/read receipt equality is
+                // required; these digests are therefore an active consumer
+                // freshness gate rather than provenance-only metadata.
+                let context_result: Result<HashMap<String, AdditionalContextEntry>> = async {
+                    let observed = owner.cognitive_context(query.clone(), /*limit*/ 4).await?;
+                    let current = owner.cognitive_context(query, /*limit*/ 4).await?;
+                    confirm_cognitive_receipts(&observed, &current)?;
+                    cognitive_additional_context(&current)
+                }
+                .await;
+                match context_result {
+                    Ok(context) => Some(context),
+                    Err(error) => {
+                        let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
+                        return Err(error);
+                    }
+                }
+            }
+            None => None,
+        };
+        if cancellation.is_cancelled() {
+            let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
+            return Err("cancelled before model dispatch".into());
+        }
+        let context_digest = match serde_json::to_vec(&additional_context) {
+            Ok(bytes) => control::digest(&bytes),
+            Err(error) => {
+                let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
+                return Err(error.into());
+            }
+        };
+        if let Err(error) = control.dispatch_native(
             request_id,
             NativeDispatch {
                 thread_id: started.thread.id.clone(),
                 model_provider: started.model_provider.clone(),
-                context_digest: control::digest(&serde_json::to_vec(&additional_context)?),
+                context_digest,
             },
-        )?;
+        ) {
+            let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
+            return Err(error.into());
+        }
         let response = timeout(
             RPC_TIMEOUT,
             client.request_typed::<TurnStartResponse>(ClientRequest::TurnStart {
@@ -351,6 +376,34 @@ impl AppServerModelDriver {
             }
         }
     }
+}
+
+fn confirm_cognitive_receipts(
+    observed: &CognitiveContextSnapshot,
+    current: &CognitiveContextSnapshot,
+) -> Result<()> {
+    if observed.snapshot_digest != current.snapshot_digest
+        || observed.read_digest != current.read_digest
+    {
+        return Err("cognitive context changed before model dispatch".into());
+    }
+    Ok(())
+}
+
+fn cognitive_additional_context(
+    snapshot: &CognitiveContextSnapshot,
+) -> Result<HashMap<String, AdditionalContextEntry>> {
+    let value = serde_json::to_string(snapshot)?;
+    if value.len() > MAX_MODEL_CONTEXT_BYTES {
+        return Err("verified context exceeds the model attachment byte limit".into());
+    }
+    Ok(HashMap::from([(
+        "hepta-cognitive-owner".to_string(),
+        AdditionalContextEntry {
+            value,
+            kind: AdditionalContextKind::Untrusted,
+        },
+    )]))
 }
 
 async fn verify_owner_health(
