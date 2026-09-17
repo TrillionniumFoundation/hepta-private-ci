@@ -1,3 +1,4 @@
+use std::collections::BTreeMap;
 use std::collections::BTreeSet;
 
 use codex_hepta_types::StableId;
@@ -140,6 +141,7 @@ pub(super) fn validate_input_structure(input: &LocalShadowInput) -> Result<u32, 
 
     let interaction_pairs = validate_interactions(input, &candidate_ids)?;
     validate_hard_constraints(input, &candidate_ids)?;
+    validate_requirement_graph(input)?;
     require_complete_pair_interactions(input, &interaction_pairs)?;
     Ok(total_candidate_count)
 }
@@ -234,6 +236,90 @@ fn validate_hard_constraints(
     {
         return Err(invalid(InvalidInput::NonCanonicalHardConstraintOrder));
     }
+    Ok(())
+}
+
+fn validate_requirement_graph(input: &LocalShadowInput) -> Result<(), LocalShadowError> {
+    let mut requires = BTreeMap::<StableId, Vec<StableId>>::new();
+    let mut conflicts = BTreeSet::<(StableId, StableId)>::new();
+    for constraint in &input.hard_constraints {
+        match constraint {
+            LocalHardConstraint::Conflict {
+                left_candidate_id,
+                right_candidate_id,
+                ..
+            } => {
+                conflicts.insert((left_candidate_id.clone(), right_candidate_id.clone()));
+            }
+            LocalHardConstraint::Requires {
+                candidate_id,
+                prerequisite_candidate_id,
+                ..
+            } => {
+                requires
+                    .entry(candidate_id.clone())
+                    .or_default()
+                    .push(prerequisite_candidate_id.clone());
+            }
+        }
+    }
+    for prerequisites in requires.values_mut() {
+        prerequisites.sort();
+        prerequisites.dedup();
+    }
+    for candidate in &input.factor_candidates {
+        let mut visiting = BTreeSet::new();
+        let mut visited = BTreeSet::new();
+        let mut closure = BTreeSet::new();
+        collect_requirement_closure(
+            &candidate.candidate_id,
+            &requires,
+            &mut visiting,
+            &mut visited,
+            &mut closure,
+        )?;
+        if conflicts
+            .iter()
+            .any(|(left, right)| closure.contains(left) && closure.contains(right))
+        {
+            return Err(invalid(InvalidInput::UnsatisfiableRequirementConflict(
+                candidate.candidate_id.to_string(),
+            )));
+        }
+    }
+    Ok(())
+}
+
+fn collect_requirement_closure(
+    candidate_id: &StableId,
+    requires: &BTreeMap<StableId, Vec<StableId>>,
+    visiting: &mut BTreeSet<StableId>,
+    visited: &mut BTreeSet<StableId>,
+    closure: &mut BTreeSet<StableId>,
+) -> Result<(), LocalShadowError> {
+    if visited.contains(candidate_id) {
+        closure.insert(candidate_id.clone());
+        return Ok(());
+    }
+    if !visiting.insert(candidate_id.clone()) {
+        return Err(invalid(InvalidInput::RequiresCycle(
+            candidate_id.to_string(),
+        )));
+    }
+    if let Some(prerequisites) = requires.get(candidate_id) {
+        for prerequisite in prerequisites {
+            collect_requirement_closure(
+                prerequisite,
+                requires,
+                visiting,
+                visited,
+                closure,
+            )?;
+        }
+    }
+    visiting.remove(candidate_id);
+    visited.insert(candidate_id.clone());
+    closure.insert(candidate_id.clone());
     Ok(())
 }
 
