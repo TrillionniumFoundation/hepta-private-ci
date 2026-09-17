@@ -17,6 +17,7 @@ pub use durable_holdout::DurableFinalHoldoutJournalV1;
 pub use durable_holdout::DurableHoldoutError;
 pub use durable_holdout::HoldoutAnchorV1;
 pub use fenced_holdout::FencedFinalHoldoutOwnerV1;
+pub use fenced_holdout::FencedFinalHoldoutReceiptV1;
 pub use fenced_holdout::FencedFinalHoldoutStoreV1;
 pub use fenced_holdout::FencedHoldoutOwnerError;
 pub use fenced_holdout::FencedHoldoutStateV1;
