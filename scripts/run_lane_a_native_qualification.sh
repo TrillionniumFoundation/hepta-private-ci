@@ -17,5 +17,6 @@ for package in "${PACKAGES[@]}"; do
   ARGS+=(--package "$package")
 done
 
+python3 "$ROOT/qa/fault-matrix/test_kernel_operations_durable.py" -v
 cargo test --locked --manifest-path "$MANIFEST" "${ARGS[@]}"
 cargo clippy --locked --manifest-path "$MANIFEST" "${ARGS[@]}" --all-targets -- -D warnings
