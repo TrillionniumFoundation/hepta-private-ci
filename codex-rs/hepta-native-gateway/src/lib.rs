@@ -5,6 +5,14 @@
 
 #![forbid(unsafe_code)]
 
+mod composition;
+pub mod native_product;
+mod platform_adapter;
+mod security;
+mod session_store;
+mod shell_runtime;
+mod updater;
+
 use std::env;
 use std::net::SocketAddr;
 use std::sync::Arc;
