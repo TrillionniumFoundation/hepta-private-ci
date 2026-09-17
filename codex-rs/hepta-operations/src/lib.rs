@@ -1,11 +1,12 @@
 //! Operation, outbox and reconciliation semantics for Hepta.
 //!
-//! The crate retains the bounded in-memory reference model and also owns the
-//! durable SQLite implementation used by product composition. Queue or transport
-//! acknowledgement is deliberately separate from terminal effect observation.
-//! Once dispatch may have crossed an external boundary, the operation cannot be
-//! blindly retried; it remains dispatched/indeterminate until a current-fence
-//! observer reconciles it.
+//! The `OperationLedger`/`Outbox` pair remains the bounded **In-memory reference model**
+//! used as a deterministic transition oracle; that reference model **does not provide durable storage**.
+//! `DurableOperationStore` is the SQLite-backed owner for production composition.
+//! Queue or transport acknowledgement is deliberately separate from terminal effect
+//! observation. Once dispatch may have crossed an external boundary, the operation
+//! cannot be blindly retried; it remains dispatched/indeterminate until a
+//! current-fence observer reconciles it.
 
 #![forbid(unsafe_code)]
 

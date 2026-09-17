@@ -1,3 +1,4 @@
+#[cfg(unix)]
 use std::collections::BTreeSet;
 #[cfg(unix)]
 use std::os::unix::fs::PermissionsExt;
@@ -6,9 +7,13 @@ use std::time::SystemTime;
 #[cfg(unix)]
 use std::time::UNIX_EPOCH;
 
+#[cfg(unix)]
 use codex_hepta_contracts::FinalUseAuthority;
+#[cfg(unix)]
 use codex_hepta_contracts::FinalUseGrant;
+#[cfg(unix)]
 use codex_hepta_contracts::FinalUseRevocations;
+#[cfg(unix)]
 use codex_hepta_contracts::SignedFinalUseGrant;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;

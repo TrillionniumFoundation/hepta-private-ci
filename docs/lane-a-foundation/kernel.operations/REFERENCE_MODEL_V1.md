@@ -1,5 +1,7 @@
 # Kernel operations bounded reference model V1
 
+This document describes the deterministic in-memory oracle retained beside the durable implementation. It is intentionally not the persistence boundary. Durable behavior is specified by `DURABLE_STORE_V1.md` and implemented under `src/durable/`.
+
 ## Reference witness binding
 
 `ReferenceAuthorityWitness::expected_digest` uses the domain
@@ -29,22 +31,24 @@ Exact replays return the existing state without revision movement. Reusing an
 identity with changed payload, witness, dispatch or terminal semantics conflicts
 or is terminally rejected.
 
-## Outbox model
+## Outbox oracle
 
 `enqueue` is idempotent for identical intent identity and payload. `claim` is
 idempotent only for the same owner generation. `acknowledge` requires the same
-generation and a nonzero digest. The acknowledged state persists both values;
+generation and a nonzero digest. The acknowledged state retains both values;
 terminal replay is idempotent only for the exact
 `(owner_generation, acknowledgement_digest)` tuple. A different generation is
 stale and a changed digest conflicts.
 
 ## Bounds
 
-Both ledgers default to at most 16,384 records and clamp configured model
+Both reference maps default to at most 16,384 records and clamp configured model
 capacity to that ceiling. Capacity rejection happens before visible mutation.
 
-## Explicit omissions
+## Explicit oracle omissions
 
-There is no persistence, claim expiry, higher-generation takeover, background
-worker, atomic co-commit with a domain store or external terminal observer.
-Those are durable-backend requirements, not properties of this oracle.
+This oracle has no persistence, claim expiry, higher-generation takeover,
+background worker, atomic co-commit with a durable store or external terminal
+observer. Those capabilities now belong to `DurableOperationStore` /
+`DurableDispatcher`; their absence here is deliberate so the oracle stays a
+small deterministic transition model.
