@@ -321,6 +321,11 @@ where
         let current_enrollment = self.registry.resolve(&entry.result.peer_id, now)?;
         if current_enrollment.key_id != entry.result.peer_key_id
             || current_enrollment.enrollment_epoch != entry.result.enrollment_epoch
+            || current_enrollment.verifying_key
+                != self
+                    .registry
+                    .resolve(&entry.result.peer_id, now)?
+                    .verifying_key
         {
             self.cache.purge_peer(&entry.result.peer_id)?;
             return Err(FederationV3Error::PeerEnrollmentChanged);
@@ -329,12 +334,33 @@ where
             .authority
             .claim(fresh_grant, &binding)
             .map_err(FederationV3Error::Authority)?;
-        if now >= entry.result.expires_unix_ms {
+        let mut refreshed = entry.result.clone();
+        refreshed.authority_receipt = VerifiedFederationAuthorityReceiptV3::from_verified_grant(
+            &entry.query,
+            fresh_grant,
+            &self.authority_key_id,
+        )?;
+        refreshed.expires_unix_ms = refreshed
+            .expires_unix_ms
+            .min(fresh_grant.grant.expires_at_unix_ms)
+            .min(current_enrollment.expires_unix_ms)
+            .min(entry.query.deadline_unix_ms);
+        if now >= refreshed.expires_unix_ms {
             return Err(FederationV3Error::CacheMiss);
         }
-        self.authority
-            .with_verified_use(verified, &binding, || entry.result.clone())
-            .map_err(FederationV3Error::Authority)
+        refreshed.result_digest = refreshed.compute_result_digest();
+        refreshed.validate()?;
+        let released = self
+            .authority
+            .with_verified_use(verified, &binding, || refreshed.clone())
+            .map_err(FederationV3Error::Authority)?;
+        self.cache.insert(
+            entry.query,
+            fresh_grant.clone(),
+            released.clone(),
+            now,
+        )?;
+        Ok(released)
     }
 
     pub fn purge_revocations(
