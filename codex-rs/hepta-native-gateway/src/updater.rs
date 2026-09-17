@@ -192,7 +192,11 @@ pub(crate) enum UpdateDisposition {
 #[derive(Clone, Debug, PartialEq, Eq)]
 enum UpdateState {
     Clean,
-    Applied {
+    Staged {
+        package_digest: String,
+        predecessor_digest: String,
+    },
+    Activated {
         package_digest: String,
         predecessor_digest: String,
     },
@@ -241,6 +245,8 @@ where
         })
     }
 
+    /// Verifies the active predecessor, writes a durable rollback copy and a
+    /// durable stage, but deliberately does not replace the running executable.
     pub(crate) fn apply(
         &self,
         verified: &VerifiedUpdateCandidate,
@@ -251,38 +257,74 @@ where
             bail!("native update predecessor digest does not match the active artifact");
         }
         let mut state = self.state.lock().unwrap_or_else(PoisonError::into_inner);
-        if matches!(*state, UpdateState::Applied { .. }) {
-            bail!("native update already awaits restart confirmation");
+        if matches!(
+            *state,
+            UpdateState::Staged { .. } | UpdateState::Activated { .. }
+        ) {
+            bail!("native update already awaits activation or restart confirmation");
         }
 
         copy_synced(&self.active_path, &self.rollback_path)?;
         copy_synced(&candidate.package_path, &self.stage_path)?;
+        if self.digests.sha256(&self.stage_path)? != candidate.package_digest {
+            let _ = std::fs::remove_file(&self.stage_path);
+            let _ = std::fs::remove_file(&self.rollback_path);
+            bail!("native update staged artifact digest changed during staging");
+        }
+        append_state(
+            &self.journal_path,
+            &format!(
+                "S|{}|{}",
+                candidate.package_digest, candidate.predecessor_digest
+            ),
+        )?;
+        *state = UpdateState::Staged {
+            package_digest: candidate.package_digest.clone(),
+            predecessor_digest: candidate.predecessor_digest.clone(),
+        };
+        Ok(UpdateDisposition::RestartRequired)
+    }
+
+    /// Activates a previously staged update. This method is intended for the
+    /// standalone updater helper after the application process has exited.
+    pub(crate) fn activate_staged(&self) -> Result<UpdateDisposition> {
+        let mut state = self.state.lock().unwrap_or_else(PoisonError::into_inner);
+        let UpdateState::Staged {
+            package_digest,
+            predecessor_digest,
+        } = &*state
+        else {
+            bail!("native update activation requires one staged candidate");
+        };
+        if self.digests.sha256(&self.active_path)? != *predecessor_digest {
+            bail!("native update active artifact changed before activation");
+        }
+        if self.digests.sha256(&self.stage_path)? != *package_digest {
+            bail!("native update stage digest changed before activation");
+        }
+
+        let package_digest = package_digest.clone();
+        let predecessor_digest = predecessor_digest.clone();
         if let Err(error) = install_stage(&self.stage_path, &self.active_path) {
             let _ = restore_file(&self.rollback_path, &self.active_path);
-            return Err(error).context("install native update stage");
+            return Err(error).context("activate native update stage");
         }
-        if self.digests.sha256(&self.active_path)? != candidate.package_digest {
+        if self.digests.sha256(&self.active_path)? != package_digest {
             restore_file(&self.rollback_path, &self.active_path)?;
             append_state(
                 &self.journal_path,
-                &format!(
-                    "R|{}|{}",
-                    candidate.package_digest, candidate.predecessor_digest
-                ),
+                &format!("R|{package_digest}|{predecessor_digest}"),
             )?;
             *state = UpdateState::Settled;
             return Ok(UpdateDisposition::Quarantined);
         }
         append_state(
             &self.journal_path,
-            &format!(
-                "A|{}|{}",
-                candidate.package_digest, candidate.predecessor_digest
-            ),
+            &format!("A|{package_digest}|{predecessor_digest}"),
         )?;
-        *state = UpdateState::Applied {
-            package_digest: candidate.package_digest.clone(),
-            predecessor_digest: candidate.predecessor_digest.clone(),
+        *state = UpdateState::Activated {
+            package_digest,
+            predecessor_digest,
         };
         Ok(UpdateDisposition::RestartRequired)
     }
@@ -293,12 +335,17 @@ where
     ) -> Result<UpdateDisposition> {
         validate_digest(running_digest, "running digest")?;
         let mut state = self.state.lock().unwrap_or_else(PoisonError::into_inner);
-        let UpdateState::Applied {
+        match &*state {
+            UpdateState::Staged { .. } => return Ok(UpdateDisposition::RestartRequired),
+            UpdateState::Clean | UpdateState::Settled => return Ok(UpdateDisposition::Confirmed),
+            UpdateState::Activated { .. } => {}
+        }
+        let UpdateState::Activated {
             package_digest,
             predecessor_digest,
         } = &*state
         else {
-            return Ok(UpdateDisposition::Confirmed);
+            unreachable!("activated state checked above")
         };
         if running_digest == package_digest
             && self.digests.sha256(&self.active_path)? == *package_digest
@@ -523,10 +570,18 @@ fn read_update_state(path: &Path) -> Result<UpdateState> {
     for line in text.lines() {
         let fields = line.split('|').collect::<Vec<_>>();
         state = match fields.as_slice() {
+            ["S", package, predecessor] => {
+                validate_digest(package, "journal package digest")?;
+                validate_digest(predecessor, "journal predecessor digest")?;
+                UpdateState::Staged {
+                    package_digest: (*package).to_string(),
+                    predecessor_digest: (*predecessor).to_string(),
+                }
+            }
             ["A", package, predecessor] => {
                 validate_digest(package, "journal package digest")?;
                 validate_digest(predecessor, "journal predecessor digest")?;
-                UpdateState::Applied {
+                UpdateState::Activated {
                     package_digest: (*package).to_string(),
                     predecessor_digest: (*predecessor).to_string(),
                 }
