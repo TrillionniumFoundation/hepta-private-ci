@@ -59,7 +59,7 @@ Explicitly denied capabilities:
 
 The module validates bounded typed inputs and content bindings. Owner authentication/freshness comes from the owner read path and explicit revalidation, not from constructing native Rust values. A receipt can bind what was supplied; it cannot by itself prove that an external generator was complete or current.
 
-## 4. Internal architecture and canonical ranking topology
+## 4. Internal architecture and component decomposition
 
 The composed product path is deliberately single-spined:
 
