@@ -20,10 +20,10 @@ use serde::Serialize;
 use url::Url;
 use zeroize::Zeroizing;
 
-const MAX_RESPONSE_BYTES: usize = 1024 * 1024;
+pub(crate) const MAX_RESPONSE_BYTES: usize = 1024 * 1024;
 
 /// Provider credential injected by the enrolled host. Debug never reveals it.
-pub struct BaoToken(Zeroizing<String>);
+pub struct BaoToken(pub(crate) Zeroizing<String>);
 
 impl BaoToken {
     pub fn new(value: String) -> Result<Self, BaoClientError> {
@@ -55,25 +55,46 @@ pub struct BaoReadRequest {
 }
 
 /// Contains observations only; it is never a reusable permission or secret.
-#[derive(Clone, Debug, Eq, PartialEq, Serialize)]
+/// Response/secret fingerprints remain available in-process for integrity
+/// decisions but are intentionally excluded from serialization and Debug so a
+/// low-entropy secret cannot be cheaply fingerprinted from ordinary evidence.
+#[derive(Clone, Eq, PartialEq, Serialize)]
 pub struct BaoSecretReceipt {
     pub request_sha256: [u8; 32],
+    #[serde(skip_serializing)]
     pub response_sha256: [u8; 32],
+    #[serde(skip_serializing)]
     pub secret_sha256: [u8; 32],
     pub version: u64,
     pub secret_bytes: usize,
 }
 
+impl fmt::Debug for BaoSecretReceipt {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.debug_struct("BaoSecretReceipt")
+            .field("request_sha256", &self.request_sha256)
+            .field("response_sha256", &"[SENSITIVE FINGERPRINT]")
+            .field("secret_sha256", &"[SENSITIVE FINGERPRINT]")
+            .field("version", &self.version)
+            .field("secret_bytes", &self.secret_bytes)
+            .finish()
+    }
+}
+
 pub struct BaoClient {
-    client: HttpClient,
-    origin: Url,
-    ca_sha256: [u8; 32],
-    token: BaoToken,
+    pub(crate) client: HttpClient,
+    pub(crate) origin: Url,
+    pub(crate) ca_sha256: [u8; 32],
+    pub(crate) token: BaoToken,
+    pub(crate) destination_id: String,
 }
 
 impl fmt::Debug for BaoClient {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        f.write_str("BaoClient([ENROLLED HTTPS DESTINATION])")
+        f.debug_struct("BaoClient")
+            .field("destination_id", &self.destination_id)
+            .field("origin", &"[ENROLLED HTTPS DESTINATION]")
+            .finish()
     }
 }
 
@@ -84,10 +105,32 @@ impl BaoClient {
         token: BaoToken,
         timeout: Duration,
     ) -> Result<Self, BaoClientError> {
+        Self::new_for_destination(
+            endpoint,
+            ca_pem,
+            token,
+            timeout,
+            "provider:heptabao".to_owned(),
+        )
+    }
+
+    /// Enroll one concrete active replica/shard. Production active-active hosts
+    /// should give every independently persisted authority owner a distinct
+    /// `provider:heptabao:<replica>` destination. Grants are then non-portable
+    /// across replicas, so replay protection remains exact without sharing a
+    /// local state directory between active processes.
+    pub fn new_for_destination(
+        endpoint: &str,
+        ca_pem: &[u8],
+        token: BaoToken,
+        timeout: Duration,
+        destination_id: String,
+    ) -> Result<Self, BaoClientError> {
         if endpoint.len() > 2048
             || ca_pem.len() > 128 * 1024
             || timeout.is_zero()
             || timeout > Duration::from_secs(60)
+            || !valid_destination_id(&destination_id)
         {
             return Err(BaoClientError::InvalidConfiguration);
         }
@@ -109,7 +152,12 @@ impl BaoClient {
             origin,
             ca_sha256: Digest32::of_bytes(ca_pem).into_array(),
             token,
+            destination_id,
         })
+    }
+
+    pub fn destination_id(&self) -> &str {
+        &self.destination_id
     }
 
     /// Public metadata for the independent issuer to review and sign. This
@@ -127,15 +175,17 @@ impl BaoClient {
             return Err(BaoClientError::InvalidRequest);
         }
         let bytes = serde_json::to_vec(&(
-            "hepta.bao.read.v1",
+            "hepta.bao.read.v2",
             self.origin.as_str(),
             self.ca_sha256,
+            &self.destination_id,
             request,
         ))
         .map_err(|_| BaoClientError::InvalidRequest)?;
         let scope = serde_json::to_vec(&(
-            "hepta.bao.scope.v1",
+            "hepta.bao.scope.v2",
             self.origin.as_str(),
+            &self.destination_id,
             &request.namespace,
             &request.mount,
             &request.consumer_id,
@@ -143,7 +193,7 @@ impl BaoClient {
         .map_err(|_| BaoClientError::InvalidRequest)?;
         Ok(FinalUseBinding {
             subject_id: request.subject_id.clone(),
-            destination_id: "provider:heptabao".to_owned(),
+            destination_id: self.destination_id.clone(),
             request_sha256: Digest32::of_bytes(&bytes).into_array(),
             scope_sha256: Digest32::of_bytes(&scope).into_array(),
             payload_sha256: request.expected_secret_sha256,
@@ -256,7 +306,7 @@ struct KvMetadata {
     version: u64,
 }
 
-fn component(value: &str) -> bool {
+pub(crate) fn component(value: &str) -> bool {
     !value.is_empty()
         && value.len() <= 128
         && value != "."
@@ -265,15 +315,20 @@ fn component(value: &str) -> bool {
             .bytes()
             .all(|b| b.is_ascii_alphanumeric() || b"_-.:".contains(&b))
 }
-fn segmented(value: &str) -> bool {
+pub(crate) fn segmented(value: &str) -> bool {
     value.len() <= 1024 && value.split('/').all(component)
 }
-fn transport_error(error: HttpError) -> BaoClientError {
+pub(crate) fn transport_error(error: HttpError) -> BaoClientError {
     if error.is_timeout() {
         BaoClientError::TimedOut
     } else {
         BaoClientError::TransportUnavailable
     }
+}
+
+fn valid_destination_id(value: &str) -> bool {
+    value == "provider:heptabao"
+        || (value.starts_with("provider:heptabao:") && component(value) && value.len() <= 128)
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
