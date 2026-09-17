@@ -63,6 +63,7 @@ include!("v3/transport.rs");
 include!("v3/results_cache.rs");
 include!("v3/aggregate.rs");
 include!("v3/client.rs");
+include!("v3/product.rs");
 include!("v3/wire_helpers.rs");
 
 #[cfg(all(test, unix))]
