@@ -10,6 +10,7 @@ use crate::AutomationError;
 use crate::AutomationQueueReceipt;
 use crate::AutomationStore;
 use crate::AutomationTick;
+use crate::admission_receipt_digest;
 
 pub type AutomationFuture<'a, T> =
     Pin<Box<dyn Future<Output = Result<T, AutomationError>> + Send + 'a>>;
@@ -84,7 +85,19 @@ where
 
         // Freeze schedule revision + canonical scheduled instant into a stable
         // occurrence identity before any external admission boundary.
-        self.store.materialize_occurrence(&lease, now_ms).await?;
+        let occurrence = self.store.materialize_occurrence(&lease, now_ms).await?;
+        // Bind the same occurrence to the existing durable TaskFlow run and
+        // append its step intent/claim before provider contact.
+        let taskflow = self
+            .store
+            .prepare_occurrence_taskflow(
+                &occurrence,
+                &lease,
+                now_ms,
+                self.lease_duration_ms,
+            )
+            .await
+            .map_err(|_| AutomationError::Unavailable)?;
 
         // Persist the dispatch intent before crossing the App Server seam. If
         // this process dies after possible admission, recovery retains the same
@@ -126,9 +139,20 @@ where
         // Critical semantic boundary: durable Core admission is not automation
         // completion. The lifecycle row remains admitted/running until a trusted
         // terminal observation (or reconciliation) settles it.
-        self.store
+        let admitted = self
+            .store
             .record_occurrence_admitted(&lease, &receipt, now_ms)
             .await?;
+        let admission_digest = admission_receipt_digest(&admitted);
+        self.store
+            .mark_occurrence_taskflow_admitted(
+                &admitted,
+                &taskflow,
+                &admission_digest,
+                now_ms,
+            )
+            .await
+            .map_err(|_| AutomationError::Unavailable)?;
         Ok(AutomationTick::Admitted {
             task_id: lease.task.task_id,
             occurrence: lease.occurrence,
