@@ -25,6 +25,7 @@ mod updater;
 use platform_adapter::NativePlatform;
 use security::DetachedSignatureVerifier;
 use updater::ArtifactDigest;
+use updater::PlatformArtifactVerifier;
 use updater::TransactionalUpdater;
 use updater::UpdateCandidate;
 use updater::UpdateDisposition;
@@ -79,6 +80,21 @@ impl ArtifactDigest for FixtureDigest {
     }
 }
 
+#[derive(Clone, Copy, Debug)]
+struct FixturePlatformArtifact {
+    accept: bool,
+}
+
+impl PlatformArtifactVerifier for FixturePlatformArtifact {
+    fn verify(&self, _platform: NativePlatform, _path: &Path) -> Result<()> {
+        if self.accept {
+            Ok(())
+        } else {
+            bail!("fixture OS signing rejection")
+        }
+    }
+}
+
 fn root(name: &str) -> PathBuf {
     let nonce = SystemTime::now()
         .duration_since(UNIX_EPOCH)
@@ -108,6 +124,7 @@ fn candidate(package: PathBuf) -> UpdateCandidate {
         evidence_digest: D3.to_string(),
         producer_id: "release.builder".to_string(),
         selector_id: "release.reviewer".to_string(),
+        channel: "stable".to_string(),
         platform: NativePlatform::Linux,
         architecture: "x86_64".to_string(),
         backend_protocol_version: 1,
@@ -119,11 +136,20 @@ fn candidate(package: PathBuf) -> UpdateCandidate {
 fn verifier(
     release: FixtureSignatures,
     selection: FixtureSignatures,
-) -> Result<UpdateVerifier<FixtureSignatures, FixtureSignatures, FixtureDigest>> {
+) -> Result<
+    UpdateVerifier<
+        FixtureSignatures,
+        FixtureSignatures,
+        FixtureDigest,
+        FixturePlatformArtifact,
+    >,
+> {
     UpdateVerifier::new(
         release,
         selection,
         FixtureDigest,
+        FixturePlatformArtifact { accept: true },
+        "stable".to_string(),
         NativePlatform::Linux,
         "x86_64".to_string(),
         1,
@@ -157,6 +183,31 @@ fn update_requires_release_and_independent_selection_signatures() -> Result<()> 
 }
 
 #[test]
+fn update_requires_selected_channel_and_os_signing_gate() -> Result<()> {
+    let (_, _, _, _, package) = layout("platform-signing")?;
+    let mut wrong_channel = candidate(package.clone());
+    wrong_channel.channel = "beta".to_string();
+    let error = verifier(FixtureSignatures::accepting(), FixtureSignatures::accepting())?
+        .verify(wrong_channel)
+        .unwrap_err();
+    assert!(error.to_string().contains("channel"));
+
+    let verifier = UpdateVerifier::new(
+        FixtureSignatures::accepting(),
+        FixtureSignatures::accepting(),
+        FixtureDigest,
+        FixturePlatformArtifact { accept: false },
+        "stable".to_string(),
+        NativePlatform::Linux,
+        "x86_64".to_string(),
+        1,
+    )?;
+    let error = verifier.verify(candidate(package)).unwrap_err();
+    assert!(error.to_string().contains("OS signing/notarization"));
+    Ok(())
+}
+
+#[test]
 fn update_is_confirmed_only_by_the_restarted_selected_binary() -> Result<()> {
     let (active, rollback, stage, journal, package) = layout("confirm")?;
     let verified = verifier(FixtureSignatures::accepting(), FixtureSignatures::accepting())?
@@ -168,7 +219,10 @@ fn update_is_confirmed_only_by_the_restarted_selected_binary() -> Result<()> {
         stage,
         journal.clone(),
     )?;
-    assert_eq!(updater.apply(&verified)?, UpdateDisposition::RestartRequired);
+    assert_eq!(
+        updater.apply(&verified)?,
+        UpdateDisposition::RestartRequired
+    );
     assert_eq!(std::fs::read(&active)?, b"new");
     assert_eq!(std::fs::read(&rollback)?, b"old");
     drop(updater);
@@ -180,7 +234,10 @@ fn update_is_confirmed_only_by_the_restarted_selected_binary() -> Result<()> {
         active.with_extension("stage2"),
         journal,
     )?;
-    assert_eq!(reopened.recover_or_confirm(D2)?, UpdateDisposition::Confirmed);
+    assert_eq!(
+        reopened.recover_or_confirm(D2)?,
+        UpdateDisposition::Confirmed
+    );
     assert_eq!(std::fs::read(&active)?, b"new");
     assert!(!rollback.exists());
     std::fs::remove_dir_all(active.parent().expect("fixture root"))?;
@@ -199,7 +256,10 @@ fn failed_restart_identity_rolls_back_predecessor() -> Result<()> {
         stage,
         journal.clone(),
     )?;
-    assert_eq!(updater.apply(&verified)?, UpdateDisposition::RestartRequired);
+    assert_eq!(
+        updater.apply(&verified)?,
+        UpdateDisposition::RestartRequired
+    );
     drop(updater);
 
     let reopened = TransactionalUpdater::open(
@@ -209,7 +269,10 @@ fn failed_restart_identity_rolls_back_predecessor() -> Result<()> {
         active.with_extension("stage2"),
         journal,
     )?;
-    assert_eq!(reopened.recover_or_confirm(D1)?, UpdateDisposition::RolledBack);
+    assert_eq!(
+        reopened.recover_or_confirm(D1)?,
+        UpdateDisposition::RolledBack
+    );
     assert_eq!(std::fs::read(&active)?, b"old");
     std::fs::remove_dir_all(active.parent().expect("fixture root"))?;
     Ok(())
