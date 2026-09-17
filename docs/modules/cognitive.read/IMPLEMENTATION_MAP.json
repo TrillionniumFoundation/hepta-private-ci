@@ -17,38 +17,135 @@
     "codex-rs/hepta-cognitive-read"
   ],
   "sourceRootPresent": true,
-  "productionImplementation": false,
-  "productCallerState": "not_composed",
-  "productionWriterState": "not_established",
+  "status": {
+    "implemented": true,
+    "composed": true,
+    "qualified": false
+  },
+  "productionImplementation": true,
+  "productCallerState": "composed_unqualified",
+  "productionWriterState": "not_applicable_read_only",
   "operations": [
     {
       "operation": "read_v2",
       "nativeSymbol": "read_v2",
       "sourcePath": "codex-rs/hepta-cognitive-read/src/v2.rs",
-      "state": "source_implemented_not_product_composed",
-      "authority": "none",
-      "tests": [],
+      "state": "product_composed_unqualified",
+      "authority": "read_only",
+      "tests": [
+        "codex-rs/hepta-cognitive-read/src/v2_tests.rs"
+      ],
       "sourcePathExists": true,
       "designOperation": "read_v2",
       "mappingClass": "owner_native",
       "delegatedCallees": []
     },
     {
-      "operation": "durablecognitivesnapshot",
+      "operation": "durable_lane_c_snapshot",
       "nativeSymbol": "DurableCognitiveSnapshot",
       "sourcePath": "codex-rs/hepta-memory/src/lane_c_snapshot.rs",
-      "state": "source_implemented_not_product_composed",
-      "authority": "none",
-      "tests": [],
+      "state": "product_composed_unqualified",
+      "authority": "read_only",
+      "tests": [
+        "codex-rs/hepta-memory/src/lane_c_snapshot_tests.rs"
+      ],
       "sourcePathExists": true,
-      "designOperation": "durablecognitivesnapshot",
+      "designOperation": "durable_lane_c_snapshot",
       "mappingClass": "owner_native",
       "delegatedCallees": []
+    },
+    {
+      "operation": "finalize_context_receipt",
+      "nativeSymbol": "finalize",
+      "sourcePath": "codex-rs/hepta-agentd/src/cognitive_context.rs",
+      "state": "product_composed_unqualified",
+      "authority": "read_only",
+      "tests": [
+        "codex-rs/hepta-agentd/src/cognitive_context_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "finalize_context_receipt",
+      "mappingClass": "production_adapter",
+      "delegatedCallees": [
+        "CognitiveStore::lane_c_snapshot",
+        "DurableCognitiveSnapshot::read",
+        "CognitiveStore::revalidate_lane_c_snapshot"
+      ]
+    }
+  ],
+  "productCallers": [
+    {
+      "sourcePath": "codex-rs/hepta-agent-protocol/src/lib.rs",
+      "symbol": "AgentdMethod::CognitiveContextFinalize",
+      "role": "typed_owner_finalization_protocol"
+    },
+    {
+      "sourcePath": "codex-rs/hepta-agentd/src/client.rs",
+      "symbol": "AgentdClient::finalize_cognitive_context",
+      "role": "exact_receipt_client"
+    },
+    {
+      "sourcePath": "codex-rs/hepta-agentd/src/cognitive_context.rs",
+      "symbol": "finalize",
+      "role": "owner_side_snapshot_and_read_revalidation"
+    },
+    {
+      "sourcePath": "codex-rs/hepta-agentd/src/state_control.rs",
+      "symbol": "AgentdMethod::CognitiveContextFinalize handler",
+      "role": "lifecycle_fenced_owner_dispatch"
+    },
+    {
+      "sourcePath": "codex-rs/hepta-infer-core/src/native_control.rs",
+      "symbol": "DurableInferenceControl::stop_native_before_turn_start",
+      "role": "durable_proven_pre_turn_stop_after_dispatch_intent"
+    },
+    {
+      "sourcePath": "codex-rs/hepta-infer-worker-host/src/native_app_server.rs",
+      "symbol": "AppServerModelDriver::run_once",
+      "role": "pre_turn_start_effect_boundary"
+    }
+  ],
+  "sourceObjects": [
+    {
+      "path": "codex-rs/hepta-agent-protocol/src/lib.rs",
+      "object": "5adc89c73bdd32ed4cd677bb59f8fa0227aac560"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/client.rs",
+      "object": "177bb5284fec214882a784033322d1d20dc3dfae"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cognitive_context.rs",
+      "object": "806e56fe5f574aa8cff36c918fb0d696dd9281d4"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/state_control.rs",
+      "object": "fce4848c290e861f604996f0a0a8d0c24837a348"
+    },
+    {
+      "path": "codex-rs/hepta-cognitive-read",
+      "object": "aa3232c1be8731ea6b3c1fc1425f4a2503951506"
+    },
+    {
+      "path": "codex-rs/hepta-cognitive-read/src/v2.rs",
+      "object": "67135f3f56c4779fbd27568ee69c389a38522e5c"
+    },
+    {
+      "path": "codex-rs/hepta-infer-core/src/native_control.rs",
+      "object": "7d9c085e80d95de05f197b10114714e1ec6eb066"
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/native_app_server.rs",
+      "object": "13b6219c260a0b3de4a6be12fc08fe58d8cc52dd"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/lane_c_snapshot.rs",
+      "object": "290ebf4d7642f268bd689ebfbd1ee26dd4a32c1d"
     }
   ],
   "repositoryControlledGaps": [
-    "Bind every operation to an authenticated consumer callsite and owner store.",
-    "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary."
+    "Run exact-head and deterministic synthetic-merge qualification for the owner finalization path and post-response revocation race.",
+    "Keep sourceObjects refreshed whenever a bound owner root, operation or product caller changes."
   ],
   "externalEvidenceGates": [
     "independent semantic review",
@@ -58,7 +155,7 @@
   "claimBoundary": {
     "nativeSourceMappingComplete": true,
     "sourceRootPresent": true,
-    "productionImplementation": false,
+    "productionImplementation": true,
     "productExecutionProved": false,
     "independentAcceptance": false,
     "activation": false,

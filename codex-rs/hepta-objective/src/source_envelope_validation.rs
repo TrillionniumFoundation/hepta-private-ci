@@ -4,6 +4,20 @@ use std::fmt;
 
 use crate::ObjectiveSourceEnvelopeV1;
 
+/// Canonical ObjectiveSourceEnvelopeV1 permits 256 source hard constraints.
+/// The native compiler and feasibility gate reserve their own ten generated
+/// resource/risk rows instead of shrinking this public wire bound.
+pub const MAX_OBJECTIVE_SOURCE_CONSTRAINTS: usize = 256;
+
+/// The wire independently permits 128 success predicates, 128 terminal
+/// conditions and 128 evidence requirements. All three are bounded separately
+/// and may lower into one 384-row native predicate vector.
+pub const MAX_OBJECTIVE_AGGREGATE_PREDICATES: usize = 384;
+
+/// Canonical source grammar permits 128 caller action classes. Native compile
+/// reserves an additional slot for intrinsic abstain when the source omitted it.
+pub const MAX_OBJECTIVE_CALLER_ACTIONS: usize = 128;
+
 /// Structural errors contain field paths/counts, never unrestricted source text.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum ObjectiveStructureError {
@@ -61,12 +75,12 @@ impl ObjectiveSourceEnvelopeV1 {
     /// Check declared raw UTF-8 field byte limits, array count bounds and
     /// within-array semantic-key uniqueness without changing any source value.
     ///
-    /// This is deliberately not wire validation: JSON escaping/framing and
+    /// This is deliberately not wire admission: JSON escaping/framing and
     /// aggregate encoded-byte limits, duplicate/unknown JSON fields, ID/time
     /// syntax, NFC, canonical ordering, digest bindings, profile semantics,
-    /// freshness and source authority are not established here. In particular,
-    /// success does not admit a source to the existing scalar compiler. No
-    /// cross-array conflict, unsupported operator or trust label is rewritten.
+    /// freshness and source authority are established by later admission.
+    /// Cross-array semantic conflicts and unsupported operators are never
+    /// rewritten here.
     pub fn validate_structure(&self) -> Result<(), ObjectiveStructureError> {
         text_bytes(&self.request_id, "requestId", /*maximum*/ 128)?;
         text_bytes(&self.locale, "locale", /*maximum*/ 32)?;
@@ -98,11 +112,7 @@ impl ObjectiveSourceEnvelopeV1 {
         }
         for (actions, field, minimum) in [
             (&intent.legal_action_classes, "legalActionClasses", 1),
-            (
-                &intent.forbidden_action_classes,
-                "forbiddenActionClasses",
-                0,
-            ),
+            (&intent.forbidden_action_classes, "forbiddenActionClasses", 0),
             (
                 &intent.confirmation_action_classes,
                 "confirmationActionClasses",
@@ -113,7 +123,7 @@ impl ObjectiveSourceEnvelopeV1 {
                 actions,
                 field,
                 minimum,
-                /*maximum*/ 128,
+                MAX_OBJECTIVE_CALLER_ACTIONS,
                 String::as_str,
             )?;
             for action in actions {
@@ -124,7 +134,7 @@ impl ObjectiveSourceEnvelopeV1 {
             &intent.constraints,
             "constraints",
             /*minimum*/ 1,
-            /*maximum*/ 256,
+            /*maximum*/ MAX_OBJECTIVE_SOURCE_CONSTRAINTS,
             |value| &value.constraint_id,
         )?;
         for constraint in &intent.constraints {
@@ -169,6 +179,19 @@ impl ObjectiveSourceEnvelopeV1 {
                 "requirement.evidenceSourceId",
                 /*maximum*/ 256,
             )?;
+        }
+        let aggregate_predicates = intent
+            .success_predicates
+            .len()
+            .saturating_add(intent.terminal_conditions.len())
+            .saturating_add(intent.evidence_requirements.len());
+        if aggregate_predicates > MAX_OBJECTIVE_AGGREGATE_PREDICATES {
+            return Err(ObjectiveStructureError::CollectionCount {
+                field: "successPredicates+terminalConditions+evidenceRequirements",
+                actual: aggregate_predicates,
+                minimum: 0,
+                maximum: MAX_OBJECTIVE_AGGREGATE_PREDICATES,
+            });
         }
         text_bytes(
             &intent.risk.abstention_rule,

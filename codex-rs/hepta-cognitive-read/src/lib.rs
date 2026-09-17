@@ -17,11 +17,28 @@ use codex_hepta_cognitive_types::RecordState;
 use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
 
-pub use authoritative::AuthoritativeCognitiveSnapshotProvider;
-pub use authoritative::AuthoritativeReadResultV1;
+// Production owner acquisition is the async durable Lane C path in
+// `hepta-memory`, with exact owner-side receipt finalization at the downstream
+// effect boundary. Preserve the legacy synchronous provider symbols for source
+// compatibility, but deprecate them as production entrypoints so there is one
+// authority/freshness semantics path rather than two drifting implementations.
 pub use authoritative::AuthoritativeSnapshotV1;
-pub use authoritative::SnapshotAcquisitionRequestV1;
 pub use authoritative::SnapshotProviderError;
+#[deprecated(
+    note = "qualification compatibility only; production acquisition uses hepta-memory durable Lane C plus Agentd receipt finalization"
+)]
+pub use authoritative::AuthoritativeCognitiveSnapshotProvider;
+#[deprecated(
+    note = "qualification compatibility only; production acquisition uses hepta-memory durable Lane C plus Agentd receipt finalization"
+)]
+pub use authoritative::AuthoritativeReadResultV1;
+#[deprecated(
+    note = "qualification compatibility only; production acquisition uses hepta-memory durable Lane C plus Agentd receipt finalization"
+)]
+pub use authoritative::SnapshotAcquisitionRequestV1;
+#[deprecated(
+    note = "qualification compatibility only; production acquisition uses hepta-memory durable Lane C plus Agentd receipt finalization"
+)]
 pub use authoritative::read_authoritative;
 pub use v2::MAX_ENCODED_READ_RESULT_BYTES_V2;
 pub use v2::ReadRequestV2;

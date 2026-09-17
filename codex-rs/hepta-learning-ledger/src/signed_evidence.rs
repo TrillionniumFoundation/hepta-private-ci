@@ -24,6 +24,7 @@ pub enum LearningEvidenceRoleV1 {
     Generator,
     Observer,
     Evaluator,
+    Selector,
 }
 
 impl LearningEvidenceRoleV1 {
@@ -32,13 +33,14 @@ impl LearningEvidenceRoleV1 {
             Self::Generator => 0,
             Self::Observer => 1,
             Self::Evaluator => 2,
+            Self::Selector => 3,
         }
     }
 }
 
 /// Host-authorized key and role assignment. `controller_id` identifies the
 /// controlling authority across credentials; changing keys does not establish
-/// independent evaluation. The host remains responsible for this mapping.
+/// independent evaluation or selection. The host remains responsible for this mapping.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct TrustedLearningSignerV1 {
     pub principal: AuthenticatedPrincipalV1,
@@ -72,7 +74,6 @@ pub struct SignedLearningEvidenceV1 {
 }
 
 impl SignedLearningEvidenceV1 {
-    /// Canonical bytes signed with Ed25519; the signature itself is excluded.
     #[must_use]
     pub fn signing_bytes(&self) -> Vec<u8> {
         let mut bytes = b"hepta.learning-ledger.signed-evidence.v1".to_vec();
@@ -90,9 +91,6 @@ impl SignedLearningEvidenceV1 {
     }
 }
 
-/// Only `LearningEvidenceVerifierV1` can construct this value. It is valid for
-/// the verifier's immutable trust snapshot and the admitted payload, not an
-/// unbounded authorization token. Reverify after rotation or revocation.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct VerifiedLearningEvidenceV1 {
     principal: AuthenticatedPrincipalV1,
@@ -110,6 +108,10 @@ impl VerifiedLearningEvidenceV1 {
     #[must_use]
     pub fn principal(&self) -> &AuthenticatedPrincipalV1 {
         &self.principal
+    }
+    #[must_use]
+    pub fn controller_id(&self) -> &StableId {
+        &self.controller_id
     }
     #[must_use]
     pub fn role(&self) -> LearningEvidenceRoleV1 {
@@ -131,8 +133,6 @@ pub struct LearningEvidenceVerifierV1 {
 }
 
 impl LearningEvidenceVerifierV1 {
-    /// Constructs a verifier from host-owned trust state. Remote evidence must
-    /// not be allowed to choose this state or replace the verifier's epoch.
     pub fn new(trust: LearningEvidenceTrustV1) -> Result<Self, SignedEvidenceError> {
         if trust.scope_digest == Digest32::ZERO
             || trust.objective_digest == Digest32::ZERO
@@ -151,7 +151,7 @@ impl LearningEvidenceVerifierV1 {
                 || signer.principal.authority_epoch != trust.authority_epoch
                 || signer.principal.signing_key_digest != Digest32::of_bytes(&signer.verifying_key)
                 || signer.roles.is_empty()
-                || signer.roles.len() > 3
+                || signer.roles.len() > 4
             {
                 return Err(SignedEvidenceError::InvalidTrust);
             }
@@ -272,6 +272,29 @@ impl LearningEvidenceVerifierV1 {
     }
 }
 
+pub fn verify_verified_role_separation(
+    left: &VerifiedLearningEvidenceV1,
+    right: &VerifiedLearningEvidenceV1,
+    now: u64,
+) -> Result<(), SignedEvidenceError> {
+    if left.trust_digest != right.trust_digest || left.objective_digest != right.objective_digest {
+        return Err(SignedEvidenceError::ContextMismatch);
+    }
+    for evidence in [left, right] {
+        if now < evidence.issued_at || now > evidence.expires_at {
+            return Err(SignedEvidenceError::ValidityWindow);
+        }
+        if evidence.revoked_at.is_some_and(|at| now >= at) {
+            return Err(SignedEvidenceError::Revoked);
+        }
+    }
+    verify_independent_roles(&left.principal, &right.principal, now)?;
+    if left.controller_id == right.controller_id {
+        return Err(SignedEvidenceError::ControllerCollision);
+    }
+    Ok(())
+}
+
 pub fn verify_signed_role_separation(
     generator: &VerifiedLearningEvidenceV1,
     observer: &VerifiedLearningEvidenceV1,
@@ -282,24 +305,7 @@ pub fn verify_signed_role_separation(
     {
         return Err(SignedEvidenceError::RoleMismatch);
     }
-    if generator.trust_digest != observer.trust_digest
-        || generator.objective_digest != observer.objective_digest
-    {
-        return Err(SignedEvidenceError::ContextMismatch);
-    }
-    for evidence in [generator, observer] {
-        if now < evidence.issued_at || now > evidence.expires_at {
-            return Err(SignedEvidenceError::ValidityWindow);
-        }
-        if evidence.revoked_at.is_some_and(|at| now >= at) {
-            return Err(SignedEvidenceError::Revoked);
-        }
-    }
-    verify_independent_roles(&generator.principal, &observer.principal, now)?;
-    if generator.controller_id == observer.controller_id {
-        return Err(SignedEvidenceError::ControllerCollision);
-    }
-    Ok(())
+    verify_verified_role_separation(generator, observer, now)
 }
 
 fn push_id(bytes: &mut Vec<u8>, id: &StableId) {

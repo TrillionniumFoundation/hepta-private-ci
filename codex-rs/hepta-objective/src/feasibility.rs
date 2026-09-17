@@ -16,8 +16,11 @@ use crate::OracleBudgetV1;
 use crate::RegisteredDomainV1;
 use crate::RegisteredGrammarV1;
 
-const MAX_ATOMS: usize = 256;
-const MAX_ACTIONS: usize = 128;
+// Canonical V1 accepts 256 source hard constraints and admission adds six
+// resource rows plus four risk rows before this gate.
+const MAX_ATOMS: usize = 266;
+const MAX_ORACLE_CALLS: u16 = 267;
+const MAX_ACTIONS: usize = 129;
 const MAX_ENUM_VALUES: usize = 128;
 const MAX_PAYLOAD_BYTES: usize = 256 * 1024;
 
@@ -39,7 +42,8 @@ pub fn check_feasibility_v1(
                 .collect();
             canonical.sort_by_key(|atom| (atom.precedence, &atom.axis, &atom.id));
             let mut oracle = |candidate: &[&ConstraintAtomV1]| {
-                if oracle_calls >= budget.max_calls.min(257) || start.elapsed() >= budget.wall_time
+                if oracle_calls >= budget.max_calls.min(MAX_ORACLE_CALLS)
+                    || start.elapsed() >= budget.wall_time
                 {
                     return Err(());
                 }

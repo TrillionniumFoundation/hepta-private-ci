@@ -16,6 +16,7 @@ pub use durable_holdout::DurableFinalHoldoutJournalV1;
 pub use durable_holdout::DurableHoldoutError;
 pub use durable_holdout::HoldoutAnchorV1;
 mod ope;
+mod self_evolution_selection;
 mod sequential;
 mod signed_evaluation;
 mod temporal_evaluation;
@@ -59,6 +60,12 @@ pub use ope::OpePlan;
 pub use ope::OpeRow;
 pub use ope::estimate_cluster_intervals;
 pub use ope::estimate_ope;
+pub use self_evolution_selection::SelfEvolutionSelectionError;
+pub use self_evolution_selection::SelfEvolutionSelectionPolicyV1;
+pub use self_evolution_selection::SelfEvolutionSelectionReceiptV1;
+pub use self_evolution_selection::SelfEvolutionSelectionRequestV1;
+pub use self_evolution_selection::select_self_evolution_v1;
+pub use self_evolution_selection::selection_signing_payload_v1;
 pub use sequential::DepthSupport;
 pub use sequential::FiniteHorizonEstimand;
 pub use sequential::SequentialError;
@@ -108,9 +115,6 @@ pub struct MetricComparison {
     pub candidate: FixedQ32,
     pub baseline: FixedQ32,
     pub minimum_delta: FixedQ32,
-    /// Classification retained in the immutable evidence receipt. Every
-    /// registered threshold is eligibility-gating; this flag does not erase a
-    /// non-hard threshold or silently strengthen its preregistered value.
     pub hard: bool,
     pub support_digest: Digest32,
 }

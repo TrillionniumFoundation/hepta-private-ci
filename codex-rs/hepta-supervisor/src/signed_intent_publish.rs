@@ -1,17 +1,17 @@
-//! Publish the already-synchronized staging file without a cross-volume copy.
-//! A reported failure never permits the caller to acknowledge the new intent.
+//! Publish an already-synchronized staging file without a cross-volume copy.
+//! A reported failure never permits the caller to acknowledge the new durable state.
 
 use std::io;
 use std::path::Path;
 
-pub(super) fn publish(staging: &Path, destination: &Path) -> io::Result<()> {
+pub(crate) fn publish(staging: &Path, destination: &Path) -> io::Result<()> {
     let parent = staging.parent().ok_or_else(|| {
-        io::Error::new(io::ErrorKind::InvalidInput, "intent staging has no parent")
+        io::Error::new(io::ErrorKind::InvalidInput, "durable staging has no parent")
     })?;
     if destination.parent() != Some(parent) {
         return Err(io::Error::new(
             io::ErrorKind::InvalidInput,
-            "intent replacement must remain in the staging directory",
+            "durable replacement must remain in the staging directory",
         ));
     }
     publish_same_directory(staging, destination)
@@ -23,7 +23,7 @@ fn publish_same_directory(staging: &Path, destination: &Path) -> io::Result<()> 
     let parent = destination.parent().ok_or_else(|| {
         io::Error::new(
             io::ErrorKind::InvalidInput,
-            "intent destination has no parent",
+            "durable destination has no parent",
         )
     })?;
     std::fs::File::open(parent)?.sync_all()
@@ -39,7 +39,7 @@ fn publish_same_directory(staging: &Path, destination: &Path) -> io::Result<()> 
     // prefix, preserving std::fs::rename's support for paths above MAX_PATH.
     // The destination itself need not exist on the initial publication.
     let parent = staging.parent().ok_or_else(|| {
-        io::Error::new(io::ErrorKind::InvalidInput, "intent staging has no parent")
+        io::Error::new(io::ErrorKind::InvalidInput, "durable staging has no parent")
     })?;
     let parent = if parent.as_os_str().is_empty() {
         Path::new(".")
@@ -50,13 +50,13 @@ fn publish_same_directory(staging: &Path, destination: &Path) -> io::Result<()> 
     let staging_name = staging.file_name().ok_or_else(|| {
         io::Error::new(
             io::ErrorKind::InvalidInput,
-            "intent staging has no file name",
+            "durable staging has no file name",
         )
     })?;
     let destination_name = destination.file_name().ok_or_else(|| {
         io::Error::new(
             io::ErrorKind::InvalidInput,
-            "intent destination has no file name",
+            "durable destination has no file name",
         )
     })?;
     let staging = wide_path(&parent.join(staging_name))?;
@@ -87,7 +87,7 @@ fn wide_path(path: &Path) -> io::Result<Vec<u16>> {
         if unit == 0 || wide.len() >= 32_766 {
             return Err(io::Error::new(
                 io::ErrorKind::InvalidInput,
-                "intent path contains NUL or exceeds the Windows path limit",
+                "durable path contains NUL or exceeds the Windows path limit",
             ));
         }
         wide.push(unit);
@@ -100,7 +100,7 @@ fn wide_path(path: &Path) -> io::Result<Vec<u16>> {
 fn publish_same_directory(_staging: &Path, _destination: &Path) -> io::Result<()> {
     Err(io::Error::new(
         io::ErrorKind::Unsupported,
-        "durable intent publication is unsupported on this platform",
+        "durable publication is unsupported on this platform",
     ))
 }
 

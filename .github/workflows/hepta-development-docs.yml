@@ -7,8 +7,8 @@ on:
       - "scripts/hepta*.py"
       - "scripts/test_hepta*.py"
       - "qualification/module-execution-dossiers/**"
-      - "docs/modules/**"
       - "scripts/hepta_module_registry.py"
+      - "scripts/hepta_module_views.py"
       - "scripts/test_hepta_module_registry.py"
       - ".github/workflows/hepta-development-docs.yml"
       - ".github/actions/hepta-synthetic-merge/**"
@@ -20,6 +20,7 @@ on:
       - "scripts/hepta*.py"
       - "scripts/test_hepta*.py"
       - "qualification/module-execution-dossiers/**"
+      - "scripts/hepta_module_views.py"
       - ".github/workflows/hepta-development-docs.yml"
       - ".github/actions/hepta-synthetic-merge/**"
   workflow_dispatch:
@@ -53,6 +54,7 @@ jobs:
           test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
           python3 scripts/hepta_workspace.py
           python3 scripts/hepta_module_registry.py --strict
+          python3 scripts/hepta_module_views.py --check
           python3 scripts/test_hepta_module_registry.py -v
           python3 scripts/hepta-docs.py self-test
           python3 -m unittest discover -v -s scripts -p 'test_hepta_*.py'
@@ -119,6 +121,7 @@ jobs:
           # Source-head performs the full static suite. The merge job only
           # revalidates the merged tree and receipt identity, so every PR does
           # not pay for the same document suite twice.
+          python3 scripts/hepta_module_views.py --check
           python3 scripts/hepta-docs.py verify
           python3 scripts/hepta-docs.py receipt --kind merge-candidate --expected-sha "$EXPECTED_SHA" --output .hepta-evidence/merge-candidate.json
           python3 scripts/hepta-docs.py receipt-verify --input .hepta-evidence/merge-candidate.json --kind merge-candidate --expected-sha "$EXPECTED_SHA"

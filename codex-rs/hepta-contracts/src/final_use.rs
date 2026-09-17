@@ -19,6 +19,10 @@ mod store;
 const MAX_CLAIMS: usize = 16_384;
 const MAX_LIFETIME_MS: u64 = 300_000;
 
+/// Source-visible markers consumed by the closed-world B4 caller proof.
+pub const HEPTA_PRIVILEGED_BOUNDARY_FINAL_USE_CLAIM: &str = "claim_final_use";
+pub const HEPTA_PRIVILEGED_BOUNDARY_FINAL_USE_DELIVERY: &str = "deliver_final_use";
+
 /// Exact operation identity signed by the authority owner. Digests must bind
 /// destination instance, resource, operation, payload and consumer identity.
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
@@ -228,9 +232,11 @@ impl FinalUseAuthority {
         })
     }
 
-    /// Revalidate live authority after asynchronous work and before releasing a
-    /// secret to its consumer. The consumer runs under the revocation fence, so
-    /// a successful revocation update cannot race between check and delivery.
+    /// Revalidate live authority and hold the revocation fence through one
+    /// bounded local irreversible-entry boundary. The callback must not perform
+    /// remote work, wait for business terminality, or re-enter this authority.
+    /// This is the primitive used by effect adapters that must prevent a
+    /// revocation from committing between final validation and local dispatch.
     pub fn with_verified_use<T>(
         &self,
         token: VerifiedUseToken,
@@ -253,6 +259,56 @@ impl FinalUseAuthority {
         drop(state);
         Ok(result)
     }
+
+    /// Revalidate live authority and linearize ordinary synchronous consumer
+    /// entry without holding the revocation mutex across consumer code. This is
+    /// intentionally separate from the irreversible-dispatch primitive above:
+    /// re-entrant or slow local consumers cannot stall revocation progress.
+    fn consume_verified_use<T>(
+        &self,
+        token: VerifiedUseToken,
+        expected: &FinalUseBinding,
+        consumer: impl FnOnce() -> T,
+    ) -> Result<T, FinalUseError> {
+        if !Arc::ptr_eq(&self.0, &token.owner) || &token.grant.binding != expected {
+            return Err(FinalUseError::BindingMismatch);
+        }
+        {
+            let state = self
+                .0
+                .state
+                .lock()
+                .map_err(|_| FinalUseError::Unavailable)?;
+            if state.failed {
+                return Err(FinalUseError::Unavailable);
+            }
+            validate_live(&token.grant, &state.head)?;
+        }
+        Ok(consumer())
+    }
+}
+
+/// Closed-world B4 entrypoint for signed final-use admission. Product adapters
+/// call this free function rather than inventing alternate admission paths.
+pub fn claim_final_use(
+    authority: &FinalUseAuthority,
+    signed: &SignedFinalUseGrant,
+    expected: &FinalUseBinding,
+) -> Result<VerifiedUseToken, FinalUseError> {
+    authority.claim(signed, expected)
+}
+
+/// Closed-world B4 entrypoint for an ordinary final synchronous consumer. The
+/// authority is revalidated immediately before entry, but the consumer runs
+/// without holding the revocation mutex. Adapters that must fence an actual
+/// local irreversible dispatch use `FinalUseAuthority::with_verified_use`.
+pub fn deliver_final_use<T>(
+    authority: &FinalUseAuthority,
+    token: VerifiedUseToken,
+    expected: &FinalUseBinding,
+    consumer: impl FnOnce() -> T,
+) -> Result<T, FinalUseError> {
+    authority.consume_verified_use(token, expected, consumer)
 }
 
 fn valid_head(head: &FinalUseRevocations) -> bool {

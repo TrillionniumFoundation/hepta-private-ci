@@ -12,6 +12,7 @@ mod fixed;
 mod identity;
 mod numeric_conversion;
 mod numeric_profile;
+mod self_evolution;
 
 pub use bounded::BoundedBytes;
 pub use bounded::BoundedText;
@@ -36,3 +37,4 @@ pub use numeric_profile::NumericProfileV1;
 pub use numeric_profile::NumericRoundingV1;
 pub use numeric_profile::NumericSignalSchemaV1;
 pub use numeric_profile::SignalUnitV1;
+pub use self_evolution::SelfEvolutionSelectionWitnessV1;

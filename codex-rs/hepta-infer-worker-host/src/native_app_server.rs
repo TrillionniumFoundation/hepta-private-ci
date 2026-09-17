@@ -32,7 +32,6 @@ use codex_hepta_agentd::AgentdClient;
 use codex_hepta_agentd::AgentdError;
 use codex_hepta_agentd::HealthSnapshot;
 use codex_hepta_contracts::AgentId;
-use codex_hepta_infer_core::durable_control::DurableInferenceControl;
 use codex_hepta_infer_core::durable_control::native::NativeDispatch;
 pub use codex_hepta_infer_core::durable_control::native::NativeOwnerAuthority;
 pub use codex_hepta_infer_core::durable_control::native::NativeRunOutput;
@@ -86,10 +85,12 @@ impl AppServerModelDriver {
     }
 
     /// Execute once. Transport loss after turn/start remains indeterminate and
-    /// must never be automatically replayed as a fresh request.
+    /// must never be automatically replayed as a fresh request. Durable state
+    /// transitions use the supplied short synchronous port; no network await
+    /// occurs while the production journal writer lock is held.
     async fn run_once(
         &self,
-        control: &mut DurableInferenceControl,
+        control: &mut dyn control::NativeControlPort,
         request_id: &str,
         prompt: String,
         context_query: Option<String>,
@@ -115,8 +116,9 @@ impl AppServerModelDriver {
             None => None,
         };
         let additional_context = context
+            .as_ref()
             .map(|snapshot| -> Result<_> {
-                let value = serde_json::to_string(&snapshot)?;
+                let value = serde_json::to_string(snapshot)?;
                 if value.len() > MAX_MODEL_CONTEXT_BYTES {
                     return Err("verified context exceeds the model attachment byte limit".into());
                 }
@@ -177,6 +179,10 @@ impl AppServerModelDriver {
             let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
             return Err("cancelled before model dispatch".into());
         }
+        // Sync exact thread/provider/context intent before the external effect so
+        // a process loss cannot make a potentially submitted turn replayable.
+        // A later proven stop can still release this slot while turn/start is
+        // known not to have been sent.
         control.dispatch_native(
             request_id,
             NativeDispatch {
@@ -185,6 +191,33 @@ impl AppServerModelDriver {
                 context_digest: control::digest(&serde_json::to_vec(&additional_context)?),
             },
         )?;
+        // The original context receipt is only a historical observation. Ask the
+        // owning Agent to reacquire the canonical Lane C cut and reproduce both
+        // digests after the durable dispatch intent and immediately before
+        // TurnStart. Failure is fail-closed: record the locally proven pre-turn
+        // stop, release the slot, and never attach stale context to a model turn.
+        // This observation is still not a lease over writes after it returns.
+        if let Some(snapshot) = context.as_ref()
+            && let Err(error) = owner.finalize_cognitive_context(snapshot).await
+        {
+            let reason: String = format!("cognitive context finalization failed: {error}")
+                .chars()
+                .take(1024)
+                .collect();
+            let stopped = control.stop_native_before_turn_start(request_id, reason);
+            let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
+            stopped?;
+            return Err(error.into());
+        }
+        if cancellation.is_cancelled() {
+            let stopped = control.stop_native_before_turn_start(
+                request_id,
+                "cancelled before model dispatch".to_string(),
+            );
+            let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
+            stopped?;
+            return Err("cancelled before model dispatch".into());
+        }
         let response = timeout(
             RPC_TIMEOUT,
             client.request_typed::<TurnStartResponse>(ClientRequest::TurnStart {
