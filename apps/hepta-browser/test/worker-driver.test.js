@@ -72,6 +72,7 @@ function fakeLauncher({
       child.killed = false;
       child.kill = () => {
         child.killed = true;
+        queueMicrotask(() => child.emit("exit", null, "SIGKILL"));
         return true;
       };
       if (capture) {
@@ -157,6 +158,7 @@ async function preparedDriver({ launcher = fakeLauncher() } = {}) {
 
 test("artifact-bound subprocess driver uses only the private framed channel", async () => {
   const { driver, started } = await preparedDriver();
+  assert.equal(driver.supportsAbort, true);
   assert.equal(started.processId, "servo.pid.4242");
   assert.match(started.profileOwnerDigest, /^[0-9a-f]{64}$/);
   const observed = await driver.observe({
@@ -246,6 +248,28 @@ test("dispatch returns at local pipe write without waiting for worker execution 
   });
   assert.equal(terminal.terminalObserved, true);
   assert.equal(terminal.status, "succeeded");
+});
+
+test("abort racing a private pipe write contains the worker before the driver settles", async () => {
+  const held = {};
+  const capture = {};
+  const { driver, started } = await preparedDriver({
+    launcher: fakeLauncher({ holdDispatchResponse: held, capture }),
+  });
+  const controller = new AbortController();
+  const dispatch = driver.dispatch(
+    {
+      profileId: "profile.1",
+      processId: started.processId,
+      profileGeneration: 1,
+      operationId: "operation.abort",
+    },
+    { signal: controller.signal },
+  );
+  await new Promise((resolve) => setImmediate(resolve));
+  controller.abort(new Error("deadline"));
+  await assert.rejects(dispatch, /exited before response|deadline|aborted/);
+  assert.equal(capture.child.killed, true);
 });
 
 test("worker response must echo exact request kind and payload digest", async () => {
