@@ -95,6 +95,11 @@
       "role": "lifecycle_fenced_owner_dispatch"
     },
     {
+      "sourcePath": "codex-rs/hepta-infer-core/src/native_control.rs",
+      "symbol": "DurableInferenceControl::stop_native_before_turn_start",
+      "role": "durable_proven_pre_turn_stop_after_dispatch_intent"
+    },
+    {
       "sourcePath": "codex-rs/hepta-infer-worker-host/src/native_app_server.rs",
       "symbol": "AppServerModelDriver::run_once",
       "role": "pre_turn_start_effect_boundary"
@@ -119,15 +124,19 @@
     },
     {
       "path": "codex-rs/hepta-cognitive-read",
-      "object": "87982feb0d6a4c5f2a751e2fd796ef379ceca994"
+      "object": "aa3232c1be8731ea6b3c1fc1425f4a2503951506"
     },
     {
       "path": "codex-rs/hepta-cognitive-read/src/v2.rs",
       "object": "67135f3f56c4779fbd27568ee69c389a38522e5c"
     },
     {
+      "path": "codex-rs/hepta-infer-core/src/native_control.rs",
+      "object": "7d9c085e80d95de05f197b10114714e1ec6eb066"
+    },
+    {
       "path": "codex-rs/hepta-infer-worker-host/src/native_app_server.rs",
-      "object": "20b69b302265b77c50a697dcf2468d3dd14868ca"
+      "object": "13b6219c260a0b3de4a6be12fc08fe58d8cc52dd"
     },
     {
       "path": "codex-rs/hepta-memory/src/lane_c_snapshot.rs",
