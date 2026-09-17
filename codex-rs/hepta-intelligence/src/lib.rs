@@ -19,6 +19,7 @@ mod plasticity_host;
 
 pub use plasticity_host::DurableGovernedPlasticityReceiptV3;
 pub use plasticity_host::PlasticityHostErrorV3;
+pub use plasticity_host::prepare_plasticity_v3;
 pub use plasticity_host::propose_and_persist_plasticity_v3;
 
 mod capability_snapshot;
