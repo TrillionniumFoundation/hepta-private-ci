@@ -116,13 +116,17 @@ pub fn propose_topology_v2(
     canonicalize_changes(&mut request.changes)?;
 
     let mut candidates = vec![TopologyCandidateV2 {
-        candidate_id: stable_id("topology:no-change")?,
+        candidate_id: context_no_change_id(request.selected_artifact_digest, &request.window)?,
         kind: TopologyCandidateKindV2::NoChange,
         changes: Vec::new(),
     }];
     for change in request.changes {
         candidates.push(TopologyCandidateV2 {
-            candidate_id: content_candidate_id(&change)?,
+            candidate_id: content_candidate_id(
+                request.selected_artifact_digest,
+                &request.window,
+                &change,
+            )?,
             kind: TopologyCandidateKindV2::Update,
             changes: vec![change],
         });
@@ -186,7 +190,11 @@ pub fn verify_topology_proposal_v2(
         .iter()
         .filter(|candidate| candidate.kind == TopologyCandidateKindV2::NoChange)
         .collect::<Vec<_>>();
-    if no_change.len() != 1 || !no_change[0].changes.is_empty() {
+    if no_change.len() != 1
+        || !no_change[0].changes.is_empty()
+        || no_change[0].candidate_id
+            != context_no_change_id(proposal.selected_artifact_digest, &proposal.window)?
+    {
         return Err(TopologyProposalErrorV2::InvalidOperationShape(
             "no-change".to_string(),
         ));
@@ -197,7 +205,12 @@ pub fn verify_topology_proposal_v2(
         .filter(|candidate| candidate.kind == TopologyCandidateKindV2::Update)
     {
         if candidate.changes.len() != 1
-            || candidate.candidate_id != content_candidate_id(&candidate.changes[0])?
+            || candidate.candidate_id
+                != content_candidate_id(
+                    proposal.selected_artifact_digest,
+                    &proposal.window,
+                    &candidate.changes[0],
+                )?
         {
             return Err(TopologyProposalErrorV2::InvalidOperationShape(
                 candidate.candidate_id.to_string(),
@@ -302,13 +315,38 @@ fn validate_change(change: &TopologyChangeV2) -> Result<(), TopologyProposalErro
     Ok(())
 }
 
-fn content_candidate_id(change: &TopologyChangeV2) -> Result<StableId, TopologyProposalErrorV2> {
-    let mut bytes = b"hepta.plasticity.topology-candidate.v2\0".to_vec();
+fn context_no_change_id(
+    selected_artifact_digest: Digest32,
+    window: &ProposalWindowV2,
+) -> Result<StableId, TopologyProposalErrorV2> {
+    let mut bytes = b"hepta.plasticity.topology-candidate.no-change.v2\0".to_vec();
+    push_candidate_context(&mut bytes, selected_artifact_digest, window)?;
+    stable_id(&format!("topology:no-change:{}", Digest32::of_bytes(&bytes)))
+}
+
+fn content_candidate_id(
+    selected_artifact_digest: Digest32,
+    window: &ProposalWindowV2,
+    change: &TopologyChangeV2,
+) -> Result<StableId, TopologyProposalErrorV2> {
+    let mut bytes = b"hepta.plasticity.topology-candidate.update.v2\0".to_vec();
+    push_candidate_context(&mut bytes, selected_artifact_digest, window)?;
     push_change(&mut bytes, change)?;
     stable_id(&format!(
         "topology:update:{}",
         Digest32::of_bytes(&bytes)
     ))
+}
+
+fn push_candidate_context(
+    bytes: &mut Vec<u8>,
+    selected_artifact_digest: Digest32,
+    window: &ProposalWindowV2,
+) -> Result<(), TopologyProposalErrorV2> {
+    bytes.extend_from_slice(selected_artifact_digest.as_array());
+    push_id(bytes, &window.window_id)?;
+    bytes.extend_from_slice(window.window_digest.as_array());
+    Ok(())
 }
 
 fn digest_topology_proposal_v2(
@@ -448,6 +486,42 @@ mod tests {
         assert_eq!(first.candidates.len(), 2);
         assert!(!first.authority.grants_any());
         verify_topology_proposal_v2(&first).expect("verify");
+    }
+
+    #[test]
+    fn topology_candidate_identity_changes_with_artifact_or_window() {
+        let base = propose_topology_v2(request()).expect("base");
+        let base_update = base
+            .candidates
+            .iter()
+            .find(|candidate| candidate.kind == TopologyCandidateKindV2::Update)
+            .expect("base update")
+            .candidate_id
+            .clone();
+
+        let mut artifact = request();
+        let other_artifact = digest(b"other-artifact");
+        artifact.selected_artifact_digest = other_artifact;
+        artifact.rollback_predecessor_digest = other_artifact;
+        let artifact_update = propose_topology_v2(artifact)
+            .expect("artifact")
+            .candidates
+            .into_iter()
+            .find(|candidate| candidate.kind == TopologyCandidateKindV2::Update)
+            .expect("artifact update")
+            .candidate_id;
+        assert_ne!(base_update, artifact_update);
+
+        let mut window = request();
+        window.window.window_digest = digest(b"other-window");
+        let window_update = propose_topology_v2(window)
+            .expect("window")
+            .candidates
+            .into_iter()
+            .find(|candidate| candidate.kind == TopologyCandidateKindV2::Update)
+            .expect("window update")
+            .candidate_id;
+        assert_ne!(base_update, window_update);
     }
 
     #[test]
