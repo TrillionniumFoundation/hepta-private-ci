@@ -13,7 +13,9 @@ declared here. This keeps faster feedback from becoming a coverage hole.
 
 Every Git diff status participates in classification. In particular, deleting a
 critical authority/state/execution file must not disappear from the path set and
-accidentally become an empty-diff fast validation.
+accidentally become an empty-diff fast validation. Rename detection is disabled
+for classification so moving a critical file cannot hide its old critical path:
+the move is classified as an old-path deletion plus a new-path addition.
 """
 
 from __future__ import annotations
@@ -88,8 +90,9 @@ BAZEL_MARKERS = (
 SDK_PREFIXES = ("sdk/", "codex-rs/codex-api/", "codex-rs/codex-client/")
 
 # Deliberately no --diff-filter: deletions, type changes and every other committed
-# status are validation inputs just like additions/modifications/renames.
-DIFF_NAME_ONLY_ARGS = ("diff", "--name-only")
+# status are validation inputs. --no-renames keeps both sides of a move visible
+# so a critical old path cannot be hidden by its non-critical destination name.
+DIFF_NAME_ONLY_ARGS = ("diff", "--name-only", "--no-renames")
 
 
 def _run_git(*args: str) -> str:
@@ -239,8 +242,8 @@ def classify(paths: Iterable[str], unavailable_reason: str | None = None) -> dic
 
 
 def _self_test() -> None:
-    # Path discovery itself must not suppress deletions/type changes.
-    assert DIFF_NAME_ONLY_ARGS == ("diff", "--name-only")
+    # Path discovery itself must retain all statuses and both sides of a rename.
+    assert DIFF_NAME_ONLY_ARGS == ("diff", "--name-only", "--no-renames")
 
     docs = classify(["docs/DEVELOPMENT.md"])
     assert docs["profile"] == "fast"
@@ -255,11 +258,19 @@ def _self_test() -> None:
     assert critical["profile"] == "critical"
     assert all(value["required"] for value in critical["jobs"].values())
 
-    # The classifier is status-agnostic once Git supplies a path. This fixture
-    # represents a deleted critical source file and must still require all jobs.
+    # The classifier is status-agnostic once Git supplies a path. These fixtures
+    # model deletion and a rename's old+new paths; the old critical name forces
+    # the complete suite even when the destination itself would be ordinary.
     deleted_critical = classify(["codex-rs/hepta-supervisor/src/deleted.rs"])
     assert deleted_critical["profile"] == "critical"
     assert all(value["required"] for value in deleted_critical["jobs"].values())
+    renamed_critical = classify(
+        [
+            "codex-rs/hepta-supervisor/src/old.rs",
+            "codex-rs/hepta-intuition/src/new.rs",
+        ]
+    )
+    assert renamed_critical["profile"] == "critical"
 
     workflow = classify([".github/workflows/ordinary.yml"])
     assert workflow["profile"] == "critical"
