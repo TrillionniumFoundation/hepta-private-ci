@@ -124,31 +124,59 @@
       "implementationDetail": "codex-rs/hepta-contracts/FINAL_USE.md",
       "states": {
         "source": "implemented",
-        "implementation": "final_use_boundary",
-        "durability": "local_fsync_store",
-        "qualification": "bounded_integration_evidence",
-        "activation": "host_composition_required",
+        "implementation": "final_use_and_authority_lease_owner",
+        "durability": "local_fsync_stores_with_host_frontier",
+        "qualification": "source_tests_and_exact_candidate_workflow_required",
+        "activation": "registered_host_composed_not_product_activated",
         "acceptance": "not_granted"
       },
       "currentCapabilities": [
-        "independently signed final-use grant verification",
-        "single-use nonce and monotonic revocation persistence",
-        "non-serializable final-use token consumed at adapter entry"
+        "independently signed final-use grant verification through canonical claim and delivery entrypoints",
+        "single-use nonce and monotonic revocation persistence with capacity/frontier observability",
+        "durable authority leases with owner-CAS mutation, CAS revocation, trusted time and anti-rollback frontier input",
+        "non-serializable final-use and lease verified-use tokens",
+        "independent operator approval and authenticated revocation-feed verification",
+        "closed registered Bao consumer host source composition"
       ],
       "targetOnlyCapabilities": [
-        "general identity provider",
-        "distributed anti-rollback oracle",
+        "general identity provider and complete approval-policy engine",
+        "fleet revocation transport, freshness SLA and consensus",
+        "external durable anti-rollback oracle for legacy final-use state",
+        "attested trusted-time service and clock rollback detection",
         "cross-platform durable authority backend",
-        "trusted time service and clock rollback detection"
+        "selected product-process activation and operator acceptance"
       ],
       "sourceAnchors": [
         {
           "path": "codex-rs/hepta-contracts/src/final_use.rs",
           "mustContain": [
             "pub struct FinalUseAuthority",
+            "pub struct FinalUseCapacity",
             "pub struct VerifiedUseToken",
+            "pub fn claim_final_use(",
+            "pub fn deliver_final_use",
             "verify_strict",
             "const MAX_LIFETIME_MS: u64 = 300_000;"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-contracts/src/authority_lease.rs",
+          "mustContain": [
+            "pub struct AuthorityLeaseRegistry",
+            "pub fn put_lease(",
+            "pub fn revoke(",
+            "pub fn advance_epoch(",
+            "pub fn verify_use(",
+            "AntiRollbackViolation"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-contracts/src/final_use_control.rs",
+          "mustContain": [
+            "pub struct FinalUseApprovalVerifier",
+            "pub struct FinalUseRevocationFeedVerifier",
+            "verify_strict",
+            "update_revocations"
           ]
         },
         {
@@ -388,23 +416,25 @@
       "implementationDetail": "docs/lane-a-foundation/secrets.heptabao/KV_V2_READ_V1.md",
       "states": {
         "source": "implemented",
-        "implementation": "bounded_kv_v2_reader",
+        "implementation": "bounded_kv_v2_reader_with_registered_final_use_host",
         "durability": "external_authority_plus_local_final_use_state",
-        "qualification": "partial_bounded_evidence",
-        "activation": "host_composition_required",
+        "qualification": "source_tests_and_exact_candidate_workflow_required",
+        "activation": "registered_host_composed_not_product_activated",
         "acceptance": "not_granted"
       },
       "currentCapabilities": [
         "pinned-CA HTTPS read of one exact KV-v2 string field",
-        "final-use grant binding and single-use dispatch",
+        "canonical final-use claim and delivery boundaries",
+        "registered signed consumer-id to trusted callback mapping",
+        "independent approval before dispatch and authenticated revocation ingestion",
         "metadata-only receipt without raw secret value"
       ],
       "targetOnlyCapabilities": [
         "secret mutation",
-        "generic lease renewal API",
-        "generic revoke API",
+        "generic secret lease renewal API",
         "durable operation and evidence composition",
-        "automatic production enrollment"
+        "fleet revocation distribution and freshness enforcement",
+        "automatic production enrollment and selected process caller"
       ],
       "sourceAnchors": [
         {
@@ -413,7 +443,21 @@
             "pub struct BaoClient",
             "consume_kv_v2",
             "MAX_RESPONSE_BYTES",
-            "with_verified_use"
+            "claim_final_use(authority, grant, &binding)",
+            "deliver_final_use(authority, verified, &binding"
+          ],
+          "mustNotContain": [
+            ".claim(grant, &binding)",
+            ".with_verified_use(verified"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-bao-adapter/src/final_use_host.rs",
+          "mustContain": [
+            "pub struct BaoFinalUseHost",
+            "UnregisteredConsumer",
+            "approval_verifier",
+            "revocation_verifier"
           ]
         },
         {
