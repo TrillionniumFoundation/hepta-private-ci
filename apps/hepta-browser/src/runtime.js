@@ -8,6 +8,10 @@ export class BrowserProfileHost extends HardenedBrowserProfileHost {
     return super.openProfile(input);
   }
 
+  async admitEffectGrant(input) {
+    return super.admitEffectGrant(input);
+  }
+
   async observePage(input) {
     return super.observePage(input);
   }
