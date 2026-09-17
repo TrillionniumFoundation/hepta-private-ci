@@ -2,6 +2,7 @@
 
 use std::fs;
 use std::fs::File;
+use std::fs::OpenOptions;
 use std::io::Write;
 use std::path::Path;
 use std::path::PathBuf;
@@ -22,6 +23,7 @@ use crate::protocol::encode_registry_state;
 
 const STATE_FILE: &str = "prompt-registry.json";
 const TEMP_FILE: &str = ".prompt-registry.json.tmp";
+const WRITER_LOCK_FILE: &str = ".prompt-registry.writer.lock";
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum PromptRegistryStoreError {
@@ -30,6 +32,7 @@ pub enum PromptRegistryStoreError {
     Registry(Error),
     Authority(String),
     StateMissing,
+    WriterBusy,
     CapacityMismatch { requested: usize, stored: usize },
 }
 
@@ -47,10 +50,11 @@ impl From<Error> for PromptRegistryStoreError {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Debug)]
 pub struct DurablePromptRegistry {
     directory: PathBuf,
     registry: PromptRegistry,
+    _writer_lock: File,
 }
 
 impl DurablePromptRegistry {
@@ -59,12 +63,13 @@ impl DurablePromptRegistry {
         maximum_records: usize,
     ) -> Result<Self, PromptRegistryStoreError> {
         fs::create_dir_all(directory).map_err(io_error)?;
+        let writer_lock = acquire_writer_lock(directory)?;
         let path = directory.join(STATE_FILE);
         if path.exists() {
-            let host = Self::open(directory)?;
-            if host.registry.maximum_records != maximum_records.min(crate::MAX_RECORDS) {
+            let host = Self::open_with_lock(directory, writer_lock)?;
+            if host.registry.maximum_records != maximum_records.min(crate::registry::MAX_RECORDS) {
                 return Err(PromptRegistryStoreError::CapacityMismatch {
-                    requested: maximum_records.min(crate::MAX_RECORDS),
+                    requested: maximum_records.min(crate::registry::MAX_RECORDS),
                     stored: host.registry.maximum_records,
                 });
             }
@@ -77,12 +82,22 @@ impl DurablePromptRegistry {
         let host = Self {
             directory: directory.to_path_buf(),
             registry,
+            _writer_lock: writer_lock,
         };
         host.persist_registry(&host.registry)?;
         Ok(host)
     }
 
     pub fn open(directory: &Path) -> Result<Self, PromptRegistryStoreError> {
+        fs::create_dir_all(directory).map_err(io_error)?;
+        let writer_lock = acquire_writer_lock(directory)?;
+        Self::open_with_lock(directory, writer_lock)
+    }
+
+    fn open_with_lock(
+        directory: &Path,
+        writer_lock: File,
+    ) -> Result<Self, PromptRegistryStoreError> {
         let path = directory.join(STATE_FILE);
         if !path.exists() {
             return Err(PromptRegistryStoreError::StateMissing);
@@ -93,6 +108,7 @@ impl DurablePromptRegistry {
         let host = Self {
             directory: directory.to_path_buf(),
             registry: decoded.registry,
+            _writer_lock: writer_lock,
         };
         if decoded.migrated {
             host.persist_registry(&host.registry)?;
@@ -197,6 +213,21 @@ impl DurablePromptRegistry {
         let bytes = encode_registry_state(registry)
             .map_err(|error| PromptRegistryStoreError::Protocol(error.to_string()))?;
         atomic_write(&self.directory, &bytes)
+    }
+}
+
+fn acquire_writer_lock(directory: &Path) -> Result<File, PromptRegistryStoreError> {
+    let path = directory.join(WRITER_LOCK_FILE);
+    let file = OpenOptions::new()
+        .create(true)
+        .read(true)
+        .write(true)
+        .open(path)
+        .map_err(io_error)?;
+    match file.try_lock() {
+        Ok(()) => Ok(file),
+        Err(std::fs::TryLockError::WouldBlock) => Err(PromptRegistryStoreError::WriterBusy),
+        Err(std::fs::TryLockError::Error(error)) => Err(io_error(error)),
     }
 }
 
