@@ -38,6 +38,52 @@ pub struct RetrievalChannelObservation {
     pub limit: RetrievalLimitObservation,
 }
 
+/// Typed relation semantics that the SQLite KG owner can prove from a current
+/// projection edge. Unknown/free-form relation strings are deliberately not
+/// classified into one of these signals.
+#[derive(Clone, Copy, Debug, Eq, Ord, PartialEq, PartialOrd, Serialize)]
+#[serde(rename_all = "snake_case")]
+pub enum RetrievalRelationSignal {
+    Supports,
+    Contradicts,
+    TemporalBefore,
+    TemporalAfter,
+    Causes,
+    Enables,
+    ProcedureStep,
+}
+
+impl RetrievalRelationSignal {
+    fn parse(value: &str) -> Option<Self> {
+        let normalized = value
+            .trim()
+            .to_ascii_lowercase()
+            .replace([' ', '-'], "_");
+        match normalized.as_str() {
+            "supports" => Some(Self::Supports),
+            "contradicts" => Some(Self::Contradicts),
+            "temporal_before" => Some(Self::TemporalBefore),
+            "temporal_after" => Some(Self::TemporalAfter),
+            "causes" => Some(Self::Causes),
+            "enables" => Some(Self::Enables),
+            "procedure_step" => Some(Self::ProcedureStep),
+            _ => None,
+        }
+    }
+}
+
+/// Relation evidence for one graph-reached candidate. The candidate and the
+/// memory revision that materialized the edge remain separately resolvable.
+/// `support_sha256` binds the exact projection generation, edge identity,
+/// relation token and both memory revisions; it is not a confidence score.
+#[derive(Clone, Debug, Eq, PartialEq, Serialize)]
+pub struct ObservedRetrievalRelation {
+    pub candidate: MemoryRevisionId,
+    pub support_memory: MemoryRevisionId,
+    pub signal: RetrievalRelationSignal,
+    pub support_sha256: Sha256Digest,
+}
+
 /// Digest-only source and scoring facts; raw memory/citation content is absent.
 #[derive(Clone, Debug, Eq, PartialEq, Serialize)]
 pub struct ObservedRetrievalCandidate {
@@ -52,6 +98,8 @@ pub struct RetrievalObservation {
     batch: RetrievalBatch,
     candidates: Vec<ObservedRetrievalCandidate>,
     channels: Vec<RetrievalChannelObservation>,
+    relations: Vec<ObservedRetrievalRelation>,
+    relation_limit: RetrievalLimitObservation,
     observation_sha256: Sha256Digest,
 }
 
@@ -67,6 +115,15 @@ impl RetrievalObservation {
     pub fn channels(&self) -> &[RetrievalChannelObservation] {
         &self.channels
     }
+    /// Typed KG relation facts reached from the same bounded entity seeds.
+    /// They are provenance/risk signals only and do not silently add a second
+    /// RRF channel or change legacy ranking.
+    pub fn relations(&self) -> &[ObservedRetrievalRelation] {
+        &self.relations
+    }
+    pub const fn relation_limit(&self) -> RetrievalLimitObservation {
+        self.relation_limit
+    }
     /// Exact final top-four omission count, not omissions before channel limits.
     pub fn omitted_count(&self) -> usize {
         self.candidates.len() - self.batch.candidates.len()
@@ -79,6 +136,8 @@ impl RetrievalObservation {
 pub(super) struct GeneratedRetrieval {
     pub(super) ranked: Vec<(MemoryKey, AggregatedRank)>,
     channels: Vec<RetrievalChannelObservation>,
+    relations: Vec<ObservedRetrievalRelation>,
+    relation_limit: RetrievalLimitObservation,
 }
 
 impl CognitiveStore {
@@ -130,7 +189,7 @@ impl CognitiveStore {
             candidates,
         };
         let bytes = serde_json::to_vec(&(
-            "hepta:cognitive:retrieval-observation:v1",
+            "hepta:cognitive:retrieval-observation:v2",
             &self.owner_agent_id,
             access.workspace_sha256(),
             &batch.query_sha256,
@@ -139,6 +198,8 @@ impl CognitiveStore {
             MAX_RETRIEVAL_CHANNEL_CANDIDATES,
             MAX_RETRIEVAL_RESULTS,
             &generated.channels,
+            &generated.relations,
+            generated.relation_limit,
             &observed,
             observed.len() - batch.candidates.len(),
         ))
@@ -147,6 +208,8 @@ impl CognitiveStore {
             batch,
             candidates: observed,
             channels: generated.channels,
+            relations: generated.relations,
+            relation_limit: generated.relation_limit,
             observation_sha256: Sha256Digest::for_bytes(&bytes),
         };
         transaction.commit().await.map_err(unavailable)?;
@@ -191,6 +254,9 @@ impl CognitiveStore {
         let graph = self
             .graph_channel_tx(transaction, &seeds.values, now)
             .await?;
+        let relation_evidence = self
+            .relation_evidence_tx(transaction, &seeds.values, now)
+            .await?;
         let recency = self
             .recency_channel_tx(
                 transaction,
@@ -221,7 +287,172 @@ impl CognitiveStore {
                 .cmp(&left.1.score)
                 .then_with(|| left.0.cmp(&right.0))
         });
-        Ok(GeneratedRetrieval { ranked, channels })
+        Ok(GeneratedRetrieval {
+            ranked,
+            channels,
+            relations: relation_evidence.values,
+            relation_limit: relation_evidence.limit,
+        })
+    }
+
+    /// Resolve registered relation semantics from the same bounded graph seeds
+    /// used by legacy one-hop retrieval. This is observation-only: it does not
+    /// alter RRF ranking and ignores unregistered/free-form relation labels.
+    async fn relation_evidence_tx(
+        &self,
+        transaction: &mut Transaction<'_, Sqlite>,
+        seeds: &[EntitySeed],
+        now: i64,
+    ) -> Result<ChannelOutput<ObservedRetrievalRelation>, CognitiveStoreError> {
+        let mut queried_canonical_entities = BTreeSet::new();
+        let mut seen = BTreeSet::new();
+        let mut result = Vec::new();
+        let mut limit = RetrievalLimitObservation::Exhausted;
+        'seeds: for seed in seeds {
+            if result.len() >= MAX_RETRIEVAL_CHANNEL_CANDIDATES {
+                limit = RetrievalLimitObservation::LimitReached;
+                break;
+            }
+            if !queried_canonical_entities.insert((
+                seed.projection_scope.clone(),
+                seed.generation,
+                seed.canonical_entity_id.clone(),
+            )) {
+                continue;
+            }
+            let remaining = MAX_RETRIEVAL_CHANNEL_CANDIDATES - result.len();
+            let rows = sqlx::query(
+                "WITH canonical_support_nodes AS (
+                     SELECT node_id
+                     FROM kg_projection_node_entities
+                     WHERE projection_scope = ? AND generation = ?
+                       AND canonical_entity_id = ?
+                 )
+                 SELECT DISTINCT e.edge_id, e.relation,
+                        e.memory_id AS edge_memory_id,
+                        e.memory_revision AS edge_memory_revision,
+                        n.memory_id AS node_memory_id,
+                        n.memory_revision AS node_memory_revision
+                 FROM canonical_support_nodes s
+                 JOIN kg_edges e
+                   ON e.projection_scope = ? AND e.generation = ?
+                  AND (e.from_node_id = s.node_id OR e.to_node_id = s.node_id)
+                 JOIN kg_nodes n
+                   ON n.projection_scope = e.projection_scope AND n.generation = e.generation
+                  AND n.node_id = CASE WHEN e.from_node_id = s.node_id
+                                       THEN e.to_node_id ELSE e.from_node_id END
+                 JOIN memory_heads eh ON eh.memory_id = e.memory_id
+                                     AND eh.revision = e.memory_revision
+                 JOIN memory_heads nh ON nh.memory_id = n.memory_id
+                                     AND nh.revision = n.memory_revision
+                 JOIN memory_revisions er ON er.memory_id = e.memory_id
+                                         AND er.revision = e.memory_revision
+                 JOIN memory_revisions nr ON nr.memory_id = n.memory_id
+                                         AND nr.revision = n.memory_revision
+                 WHERE e.valid_from_unix_seconds <= ?
+                   AND (e.valid_to_unix_seconds IS NULL OR ? < e.valid_to_unix_seconds)
+                   AND n.valid_from_unix_seconds <= ?
+                   AND (n.valid_to_unix_seconds IS NULL OR ? < n.valid_to_unix_seconds)
+                   AND er.verification = 'verified' AND er.lifecycle = 'active'
+                   AND nr.verification = 'verified' AND nr.lifecycle = 'active'
+                   AND er.valid_from_unix_seconds <= ?
+                   AND (er.valid_to_unix_seconds IS NULL OR ? < er.valid_to_unix_seconds)
+                   AND nr.valid_from_unix_seconds <= ?
+                   AND (nr.valid_to_unix_seconds IS NULL OR ? < nr.valid_to_unix_seconds)
+                   AND lower(replace(replace(trim(e.relation), ' ', '_'), '-', '_'))
+                       IN ('supports', 'contradicts', 'temporal_before', 'temporal_after',
+                           'causes', 'enables', 'procedure_step')
+                 ORDER BY e.edge_id, n.memory_id, n.memory_revision
+                 LIMIT ?",
+            )
+            .bind(&seed.projection_scope)
+            .bind(seed.generation)
+            .bind(&seed.canonical_entity_id)
+            .bind(&seed.projection_scope)
+            .bind(seed.generation)
+            .bind(now)
+            .bind(now)
+            .bind(now)
+            .bind(now)
+            .bind(now)
+            .bind(now)
+            .bind(now)
+            .bind(now)
+            .bind(i64::try_from(remaining).map_err(|_| {
+                CognitiveStoreError::Invalid(
+                    "relation evidence limit exceeds i64".to_string(),
+                )
+            })?)
+            .fetch_all(&mut **transaction)
+            .await
+            .map_err(unavailable)?;
+            if rows.len() >= remaining {
+                limit = RetrievalLimitObservation::LimitReached;
+            }
+            for row in rows {
+                let relation: String = row.try_get("relation").map_err(unavailable)?;
+                let Some(signal) = RetrievalRelationSignal::parse(&relation) else {
+                    continue;
+                };
+                let edge_id: String = row.try_get("edge_id").map_err(unavailable)?;
+                let support = decode_memory_key(
+                    &row,
+                    "edge_memory_id",
+                    "edge_memory_revision",
+                )?;
+                let candidate = decode_memory_key(
+                    &row,
+                    "node_memory_id",
+                    "node_memory_revision",
+                )?;
+                if !seen.insert((candidate.clone(), support.clone(), signal)) {
+                    continue;
+                }
+                let bytes = serde_json::to_vec(&(
+                    "hepta:cognitive:retrieval-relation-support:v1",
+                    &seed.projection_scope,
+                    seed.generation,
+                    &edge_id,
+                    &relation,
+                    &support.memory_id,
+                    support.revision,
+                    &candidate.memory_id,
+                    candidate.revision,
+                ))
+                .map_err(|error| CognitiveStoreError::Invalid(error.to_string()))?;
+                result.push(ObservedRetrievalRelation {
+                    candidate: MemoryRevisionId {
+                        memory_id: StableMemoryId::parse(candidate.memory_id)
+                            .map_err(CognitiveStoreError::Corrupt)?,
+                        revision: candidate.revision,
+                    },
+                    support_memory: MemoryRevisionId {
+                        memory_id: StableMemoryId::parse(support.memory_id)
+                            .map_err(CognitiveStoreError::Corrupt)?,
+                        revision: support.revision,
+                    },
+                    signal,
+                    support_sha256: Sha256Digest::for_bytes(&bytes),
+                });
+                if result.len() >= MAX_RETRIEVAL_CHANNEL_CANDIDATES {
+                    limit = RetrievalLimitObservation::LimitReached;
+                    break 'seeds;
+                }
+            }
+        }
+        result.sort_by(|left, right| {
+            left.candidate
+                .memory_id
+                .cmp(&right.candidate.memory_id)
+                .then_with(|| left.candidate.revision.cmp(&right.candidate.revision))
+                .then_with(|| left.signal.cmp(&right.signal))
+                .then_with(|| left.support_memory.memory_id.cmp(&right.support_memory.memory_id))
+                .then_with(|| left.support_memory.revision.cmp(&right.support_memory.revision))
+        });
+        Ok(ChannelOutput {
+            values: result,
+            limit,
+        })
     }
 
     pub(super) async fn resolve_retrieval_tx(
