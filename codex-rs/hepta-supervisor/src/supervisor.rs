@@ -628,6 +628,12 @@ impl<D: ProcessDriver> Supervisor<D> {
                     .with_status(SignedIntentStatus::RecoveryRequired)
                     .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
                 let _ = write_intent(record.layout.run_root(), &recovery);
+                if let Ok(selection_recovery) =
+                    selection.with_status(ReleaseSelectionStatus::RecoveryRequired)
+                {
+                    let _ =
+                        write_release_selection(record.layout.run_root(), &selection_recovery);
+                }
                 slot.signed_intent = Some(recovery);
                 return Err(error);
             }
