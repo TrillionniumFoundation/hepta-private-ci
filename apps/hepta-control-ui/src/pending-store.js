@@ -3,6 +3,7 @@ import {
   fail,
   nonNegativeInteger,
   positiveInteger,
+  readOwnDataFields,
   requireDigest,
   requireRecord,
   stableId,
@@ -31,37 +32,55 @@ function requireBoolean(value, name) {
 }
 
 export function normalizePendingRecord(value, name = "pending record") {
-  requireRecord(value, name);
-  const method = value.method;
+  const fields = readOwnDataFields(
+    value,
+    name,
+    [
+      "method",
+      "operationId",
+      "semanticDigest",
+      "originSessionId",
+      "originConnectionGeneration",
+      "runtimeGeneration",
+      "displayedRevision",
+      "accepted",
+      "status",
+      "createdAtMs",
+      "reconcileAttempts",
+      "nextReconcileAtMs",
+      "recoveryRequired",
+    ],
+  );
+  const method = fields.method;
   if (!METHODS.has(method)) {
     fail(ERROR_CODES.INVALID_INPUT, `${name}.method is not registered`);
   }
-  if (!STATUSES.has(value.status)) {
+  if (!STATUSES.has(fields.status)) {
     fail(ERROR_CODES.INVALID_INPUT, `${name}.status is not persistable`);
   }
   return Object.freeze({
     method,
-    operationId: stableId(value.operationId, `${name}.operationId`),
-    semanticDigest: requireDigest(value.semanticDigest, `${name}.semanticDigest`),
-    originSessionId: stableId(value.originSessionId, `${name}.originSessionId`),
+    operationId: stableId(fields.operationId, `${name}.operationId`),
+    semanticDigest: requireDigest(fields.semanticDigest, `${name}.semanticDigest`),
+    originSessionId: stableId(fields.originSessionId, `${name}.originSessionId`),
     originConnectionGeneration: positiveInteger(
-      value.originConnectionGeneration,
+      fields.originConnectionGeneration,
       `${name}.originConnectionGeneration`,
     ),
-    runtimeGeneration: positiveInteger(value.runtimeGeneration, `${name}.runtimeGeneration`),
-    displayedRevision: positiveInteger(value.displayedRevision, `${name}.displayedRevision`),
-    accepted: booleanOrNull(value.accepted, `${name}.accepted`),
-    status: value.status,
-    createdAtMs: nonNegativeInteger(value.createdAtMs, `${name}.createdAtMs`),
+    runtimeGeneration: positiveInteger(fields.runtimeGeneration, `${name}.runtimeGeneration`),
+    displayedRevision: positiveInteger(fields.displayedRevision, `${name}.displayedRevision`),
+    accepted: booleanOrNull(fields.accepted, `${name}.accepted`),
+    status: fields.status,
+    createdAtMs: nonNegativeInteger(fields.createdAtMs, `${name}.createdAtMs`),
     reconcileAttempts: nonNegativeInteger(
-      value.reconcileAttempts,
+      fields.reconcileAttempts,
       `${name}.reconcileAttempts`,
     ),
     nextReconcileAtMs: nonNegativeInteger(
-      value.nextReconcileAtMs,
+      fields.nextReconcileAtMs,
       `${name}.nextReconcileAtMs`,
     ),
-    recoveryRequired: requireBoolean(value.recoveryRequired, `${name}.recoveryRequired`),
+    recoveryRequired: requireBoolean(fields.recoveryRequired, `${name}.recoveryRequired`),
   });
 }
 
