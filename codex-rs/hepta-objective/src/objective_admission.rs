@@ -417,8 +417,11 @@ pub fn canonical_objective_intent_digest_v1(
     Ok(intent_digest_unchecked(envelope))
 }
 
-/// Admit a complete source envelope and invoke the existing deterministic
-/// compiler without dropping any represented source field.
+/// Admit a complete source envelope and invoke the deterministic compiler.
+///
+/// Every represented field has a deterministic disposition: it is mapped
+/// exactly through the selected profile or rejected explicitly. Syntax support
+/// in ObjectiveSourceEnvelopeV1 does not imply end-to-end semantic support.
 pub fn admit_and_compile_objective_v1(
     envelope: &ObjectiveSourceEnvelopeV1,
     profile: &ObjectiveAdmissionProfileV1,
