@@ -86,7 +86,10 @@ async fn append_is_idempotent_and_survives_reopen() {
     );
     assert_eq!(store.pending_action_count().await.expect("pending"), 1);
     assert_eq!(
-        store.append_governance_receipt(&receipt).await.expect("receipt"),
+        store
+            .append_governance_receipt(&receipt)
+            .await
+            .expect("receipt"),
         AppendDisposition::Inserted
     );
     assert_eq!(store.pending_action_count().await.expect("terminal"), 0);
@@ -301,7 +304,10 @@ async fn corrupted_stored_digest_fails_closed() {
         .append_decision(&authorization)
         .await
         .expect("authorization");
-    store.append_governance_receipt(&receipt).await.expect("receipt");
+    store
+        .append_governance_receipt(&receipt)
+        .await
+        .expect("receipt");
 
     let raw = sqlite
         .open_durable_evidence_pool(store.path())
@@ -441,7 +447,10 @@ async fn receipt_read_rejects_decision_material_that_drifted_after_commit() {
         .append_decision(&authorization)
         .await
         .expect("authorization");
-    store.append_governance_receipt(&receipt).await.expect("receipt");
+    store
+        .append_governance_receipt(&receipt)
+        .await
+        .expect("receipt");
 
     let mut drifted = authorization;
     drifted.policy.revision += 1;
@@ -486,7 +495,10 @@ async fn immutable_triggers_reject_updates_and_deletes_for_both_tables() {
     let admission = decision(PolicyPhase::Admission, b"input");
     let receipt = GovernanceReceipt::new(admission.clone(), None, false, HandlerOutcome::Blocked);
     store.append_decision(&admission).await.expect("admission");
-    store.append_governance_receipt(&receipt).await.expect("receipt");
+    store
+        .append_governance_receipt(&receipt)
+        .await
+        .expect("receipt");
     let raw = sqlite
         .open_durable_evidence_pool(store.path())
         .await

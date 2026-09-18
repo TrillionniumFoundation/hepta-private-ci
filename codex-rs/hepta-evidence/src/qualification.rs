@@ -443,7 +443,10 @@ pub fn authenticate_evidence_issuer(
     if signed.certificate.root_id != root.root_id || revocations.root_id != root.root_id {
         return invalid("issuer certificate trust root binding is invalid");
     }
-    if revocations.revoked_key_ids.contains(&signed.certificate.key_id) {
+    if revocations
+        .revoked_key_ids
+        .contains(&signed.certificate.key_id)
+    {
         return invalid("issuer certificate key is revoked");
     }
     if now_unix_ms < signed.certificate.not_before_unix_ms
@@ -489,10 +492,9 @@ impl EvidenceIssuerKeyRevocationV1 {
         if self.observed_unix_ms == 0
             || self.reason_code.is_empty()
             || self.reason_code.len() > 128
-            || !self
-                .reason_code
-                .bytes()
-                .all(|byte| byte.is_ascii_lowercase() || byte.is_ascii_digit() || b"._-".contains(&byte))
+            || !self.reason_code.bytes().all(|byte| {
+                byte.is_ascii_lowercase() || byte.is_ascii_digit() || b"._-".contains(&byte)
+            })
         {
             return invalid("issuer key revocation reason or time is invalid");
         }
@@ -584,7 +586,9 @@ impl HeptaEvidenceStore {
             .map_err(EvidenceError::Serialization)?;
         let decision_digest = Sha256Digest::for_bytes(&decision_payload);
         if decision_digest != signed.envelope.payload_sha256 {
-            return invalid("independent decision payload digest does not bind the evidence envelope");
+            return invalid(
+                "independent decision payload digest does not bind the evidence envelope",
+            );
         }
 
         let mut transaction = self
@@ -598,7 +602,7 @@ impl HeptaEvidenceStore {
             .map_err(|error| EvidenceError::Serialization(error.to_string()))?;
         let conditions_json = serde_json::to_string(&decision.conditions)
             .map_err(|error| EvidenceError::Serialization(error.to_string()))?;
-        let insert = sqlx::query(
+        sqlx::query(
             "INSERT INTO independent_decision_receipts (
                 decision_id, receipt_id, candidate_id, role, principal_id,
                 signing_identity_digest, evidence_set_digest, decision,
@@ -615,7 +619,10 @@ impl HeptaEvidenceStore {
         .bind(decision.evidence_set_digest.as_str())
         .bind(&decision.decision)
         .bind(&conditions_json)
-        .bind(to_i64(decision.expires_unix_ms, "independent decision expiry")?)
+        .bind(to_i64(
+            decision.expires_unix_ms,
+            "independent decision expiry",
+        )?)
         .bind(&payload_json)
         .bind(decision_digest.as_str())
         .execute(&mut *transaction)
@@ -699,15 +706,25 @@ impl HeptaEvidenceStore {
         .fetch_one(&mut *transaction)
         .await
         .map_err(classify_sqlx_error)?;
-        let same = row.try_get::<String, _>("root_id").map_err(classify_sqlx_error)?
+        let same = row
+            .try_get::<String, _>("root_id")
+            .map_err(classify_sqlx_error)?
             == signed.revocation.root_id
-            && row.try_get::<String, _>("key_id").map_err(classify_sqlx_error)?
+            && row
+                .try_get::<String, _>("key_id")
+                .map_err(classify_sqlx_error)?
                 == signed.revocation.key_id
-            && row.try_get::<String, _>("payload_json").map_err(classify_sqlx_error)?
+            && row
+                .try_get::<String, _>("payload_json")
+                .map_err(classify_sqlx_error)?
                 == payload_json
-            && row.try_get::<String, _>("payload_sha256").map_err(classify_sqlx_error)?
+            && row
+                .try_get::<String, _>("payload_sha256")
+                .map_err(classify_sqlx_error)?
                 == payload_sha256.as_str()
-            && row.try_get::<Vec<u8>, _>("signature").map_err(classify_sqlx_error)?
+            && row
+                .try_get::<Vec<u8>, _>("signature")
+                .map_err(classify_sqlx_error)?
                 == signed.signature;
         if !same {
             return Err(EvidenceError::IdempotencyConflict {
@@ -790,17 +807,15 @@ impl HeptaEvidenceStore {
         for row in rows {
             let envelope_json: String =
                 row.try_get("envelope_json").map_err(classify_sqlx_error)?;
-            let envelope: QualificationEvidenceEnvelopeV1 =
-                serde_json::from_str(&envelope_json).map_err(|error| {
+            let envelope: QualificationEvidenceEnvelopeV1 = serde_json::from_str(&envelope_json)
+                .map_err(|error| {
                     EvidenceError::Corrupt(format!(
                         "qualification evidence envelope failed to decode: {error}"
                     ))
                 })?;
             receipts.push(LoadedQualificationReceipt {
                 seq: row.try_get("seq").map_err(classify_sqlx_error)?,
-                issuer_root_id: row
-                    .try_get("issuer_root_id")
-                    .map_err(classify_sqlx_error)?,
+                issuer_root_id: row.try_get("issuer_root_id").map_err(classify_sqlx_error)?,
                 envelope,
             });
         }
@@ -1041,7 +1056,9 @@ async fn append_qualification_receipt_in_transaction(
     .fetch_one(&mut **transaction)
     .await
     .map_err(classify_sqlx_error)?;
-    let same = row.try_get::<String, _>("issuer_root_id").map_err(classify_sqlx_error)?
+    let same = row
+        .try_get::<String, _>("issuer_root_id")
+        .map_err(classify_sqlx_error)?
         == issuer.root_id()
         && row
             .try_get::<Vec<u8>, _>("issuer_verifying_key")
@@ -1097,14 +1114,22 @@ async fn verify_optional_receipt_binding(
     .await
     .map_err(classify_sqlx_error)?
     .ok_or_else(|| EvidenceError::InvalidRecord(format!("{label} receipt does not exist")))?;
-    if row.try_get::<String, _>("candidate_id").map_err(classify_sqlx_error)?
+    if row
+        .try_get::<String, _>("candidate_id")
+        .map_err(classify_sqlx_error)?
         != candidate.candidate_id
-        || row.try_get::<String, _>("source_commit").map_err(classify_sqlx_error)?
+        || row
+            .try_get::<String, _>("source_commit")
+            .map_err(classify_sqlx_error)?
             != candidate.source_commit
-        || row.try_get::<String, _>("source_tree").map_err(classify_sqlx_error)?
+        || row
+            .try_get::<String, _>("source_tree")
+            .map_err(classify_sqlx_error)?
             != candidate.source_tree
     {
-        return invalid(&format!("{label} receipt belongs to a different exact candidate"));
+        return invalid(&format!(
+            "{label} receipt belongs to a different exact candidate"
+        ));
     }
     Ok(())
 }
@@ -1142,11 +1167,17 @@ async fn verify_independent_decision_in_transaction(
     .fetch_one(&mut **transaction)
     .await
     .map_err(classify_sqlx_error)?;
-    let same = row.try_get::<String, _>("receipt_id").map_err(classify_sqlx_error)?
+    let same = row
+        .try_get::<String, _>("receipt_id")
+        .map_err(classify_sqlx_error)?
         == receipt_id
-        && row.try_get::<String, _>("payload_json").map_err(classify_sqlx_error)?
+        && row
+            .try_get::<String, _>("payload_json")
+            .map_err(classify_sqlx_error)?
             == payload_json
-        && row.try_get::<String, _>("payload_sha256").map_err(classify_sqlx_error)?
+        && row
+            .try_get::<String, _>("payload_sha256")
+            .map_err(classify_sqlx_error)?
             == payload_sha256;
     if !same {
         return Err(EvidenceError::IdempotencyConflict {
@@ -1193,7 +1224,8 @@ fn verify_predecessor_chain(
         };
         current = by_id.get(predecessor).copied().ok_or_else(|| {
             EvidenceError::Corrupt(
-                "qualification evidence predecessor is missing from the exact candidate".to_string(),
+                "qualification evidence predecessor is missing from the exact candidate"
+                    .to_string(),
             )
         })?;
     }
@@ -1256,7 +1288,10 @@ fn reference_from_row(row: sqlx::sqlite::SqliteRow) -> Result<EvidenceReferenceV
                 .map_err(classify_sqlx_error)?,
             "qualification evidence expiry",
         )?,
-        revoked: row.try_get::<i64, _>("revoked").map_err(classify_sqlx_error)? != 0,
+        revoked: row
+            .try_get::<i64, _>("revoked")
+            .map_err(classify_sqlx_error)?
+            != 0,
     })
 }
 
@@ -1316,48 +1351,72 @@ fn verify_qualification_row(row: &sqlx::sqlite::SqliteRow) -> Result<(), Evidenc
             ))
         })?;
     envelope.validate().map_err(|error| {
-        EvidenceError::Corrupt(format!("qualification evidence envelope is invalid: {error}"))
+        EvidenceError::Corrupt(format!(
+            "qualification evidence envelope is invalid: {error}"
+        ))
     })?;
     let canonical = canonical_json(&envelope)?;
     let canonical_json_text = String::from_utf8(canonical.clone())
         .map_err(|error| EvidenceError::Corrupt(error.to_string()))?;
     let envelope_sha256 = Sha256Digest::for_bytes(&canonical);
     if canonical_json_text != envelope_json
-        || row.try_get::<String, _>("receipt_id").map_err(classify_sqlx_error)?
+        || row
+            .try_get::<String, _>("receipt_id")
+            .map_err(classify_sqlx_error)?
             != envelope.receipt_id
-        || row.try_get::<String, _>("candidate_id").map_err(classify_sqlx_error)?
+        || row
+            .try_get::<String, _>("candidate_id")
+            .map_err(classify_sqlx_error)?
             != envelope.candidate.candidate_id
-        || row.try_get::<String, _>("source_commit").map_err(classify_sqlx_error)?
+        || row
+            .try_get::<String, _>("source_commit")
+            .map_err(classify_sqlx_error)?
             != envelope.candidate.source_commit
-        || row.try_get::<String, _>("source_tree").map_err(classify_sqlx_error)?
+        || row
+            .try_get::<String, _>("source_tree")
+            .map_err(classify_sqlx_error)?
             != envelope.candidate.source_tree
-        || row.try_get::<String, _>("claim_class").map_err(classify_sqlx_error)?
+        || row
+            .try_get::<String, _>("claim_class")
+            .map_err(classify_sqlx_error)?
             != envelope.claim_class.as_str()
-        || row.try_get::<String, _>("issuer_role").map_err(classify_sqlx_error)?
+        || row
+            .try_get::<String, _>("issuer_role")
+            .map_err(classify_sqlx_error)?
             != envelope.issuer_role.as_str()
-        || row.try_get::<String, _>("issuer_principal").map_err(classify_sqlx_error)?
+        || row
+            .try_get::<String, _>("issuer_principal")
+            .map_err(classify_sqlx_error)?
             != envelope.issuer_principal
-        || row.try_get::<String, _>("issuer_key_id").map_err(classify_sqlx_error)?
+        || row
+            .try_get::<String, _>("issuer_key_id")
+            .map_err(classify_sqlx_error)?
             != envelope.issuer_key_id
-        || row.try_get::<String, _>("payload_sha256").map_err(classify_sqlx_error)?
+        || row
+            .try_get::<String, _>("payload_sha256")
+            .map_err(classify_sqlx_error)?
             != envelope.payload_sha256.as_str()
         || row
             .try_get::<Option<String>, _>("predecessor_receipt_id")
             .map_err(classify_sqlx_error)?
             != envelope.predecessor_receipt_id
         || from_i64(
-            row.try_get("observed_unix_ms").map_err(classify_sqlx_error)?,
+            row.try_get("observed_unix_ms")
+                .map_err(classify_sqlx_error)?,
             "qualification evidence observation",
         )? != envelope.observed_unix_ms
         || from_i64(
-            row.try_get("expires_unix_ms").map_err(classify_sqlx_error)?,
+            row.try_get("expires_unix_ms")
+                .map_err(classify_sqlx_error)?,
             "qualification evidence expiry",
         )? != envelope.expires_unix_ms
         || row
             .try_get::<Option<String>, _>("revokes_receipt_id")
             .map_err(classify_sqlx_error)?
             != envelope.revokes_receipt_id
-        || row.try_get::<String, _>("envelope_sha256").map_err(classify_sqlx_error)?
+        || row
+            .try_get::<String, _>("envelope_sha256")
+            .map_err(classify_sqlx_error)?
             != envelope_sha256.as_str()
     {
         return Err(EvidenceError::Corrupt(
@@ -1365,10 +1424,11 @@ fn verify_qualification_row(row: &sqlx::sqlite::SqliteRow) -> Result<(), Evidenc
         ));
     }
 
-    let certificate_json: String =
-        row.try_get("issuer_certificate_json").map_err(classify_sqlx_error)?;
-    let certificate: EvidenceIssuerCertificateV1 =
-        serde_json::from_str(&certificate_json).map_err(|error| {
+    let certificate_json: String = row
+        .try_get("issuer_certificate_json")
+        .map_err(classify_sqlx_error)?;
+    let certificate: EvidenceIssuerCertificateV1 = serde_json::from_str(&certificate_json)
+        .map_err(|error| {
             EvidenceError::Corrupt(format!("issuer certificate failed to decode: {error}"))
         })?;
     certificate.validate().map_err(|error| {
@@ -1380,7 +1440,9 @@ fn verify_qualification_row(row: &sqlx::sqlite::SqliteRow) -> Result<(), Evidenc
     let certificate_sha256 = Sha256Digest::for_bytes(&certificate_canonical);
     if certificate_text != certificate_json
         || certificate.root_id
-            != row.try_get::<String, _>("issuer_root_id").map_err(classify_sqlx_error)?
+            != row
+                .try_get::<String, _>("issuer_root_id")
+                .map_err(classify_sqlx_error)?
         || certificate.principal_id != envelope.issuer_principal
         || certificate.key_id != envelope.issuer_key_id
         || certificate.role != envelope.issuer_role
@@ -1450,12 +1512,21 @@ async fn verify_independent_decision_row(
                 .try_get::<String, _>("conditions_json")
                 .map_err(classify_sqlx_error)?
         || decision.decision_id
-            != row.try_get::<String, _>("decision_id").map_err(classify_sqlx_error)?
+            != row
+                .try_get::<String, _>("decision_id")
+                .map_err(classify_sqlx_error)?
         || decision.candidate_id
-            != row.try_get::<String, _>("candidate_id").map_err(classify_sqlx_error)?
-        || decision.role != row.try_get::<String, _>("role").map_err(classify_sqlx_error)?
+            != row
+                .try_get::<String, _>("candidate_id")
+                .map_err(classify_sqlx_error)?
+        || decision.role
+            != row
+                .try_get::<String, _>("role")
+                .map_err(classify_sqlx_error)?
         || decision.principal_id
-            != row.try_get::<String, _>("principal_id").map_err(classify_sqlx_error)?
+            != row
+                .try_get::<String, _>("principal_id")
+                .map_err(classify_sqlx_error)?
         || decision.signing_identity_digest.as_str()
             != row
                 .try_get::<String, _>("signing_identity_digest")
@@ -1465,9 +1536,13 @@ async fn verify_independent_decision_row(
                 .try_get::<String, _>("evidence_set_digest")
                 .map_err(classify_sqlx_error)?
         || decision.decision
-            != row.try_get::<String, _>("decision").map_err(classify_sqlx_error)?
+            != row
+                .try_get::<String, _>("decision")
+                .map_err(classify_sqlx_error)?
         || to_i64(decision.expires_unix_ms, "independent decision expiry")?
-            != row.try_get::<i64, _>("expires_unix_ms").map_err(classify_sqlx_error)?
+            != row
+                .try_get::<i64, _>("expires_unix_ms")
+                .map_err(classify_sqlx_error)?
         || digest.as_str()
             != row
                 .try_get::<String, _>("payload_sha256")
@@ -1477,13 +1552,12 @@ async fn verify_independent_decision_row(
             "independent decision row projection is invalid".to_string(),
         ));
     }
-    let envelope_json: String = sqlx::query_scalar(
-        "SELECT envelope_json FROM qualification_evidence WHERE receipt_id = ?",
-    )
-    .bind(&receipt_id)
-    .fetch_one(pool)
-    .await
-    .map_err(classify_sqlx_error)?;
+    let envelope_json: String =
+        sqlx::query_scalar("SELECT envelope_json FROM qualification_evidence WHERE receipt_id = ?")
+            .bind(&receipt_id)
+            .fetch_one(pool)
+            .await
+            .map_err(classify_sqlx_error)?;
     let envelope: QualificationEvidenceEnvelopeV1 =
         serde_json::from_str(&envelope_json).map_err(|error| {
             EvidenceError::Corrupt(format!(
@@ -1518,14 +1592,27 @@ fn verify_revocation_row(row: &sqlx::sqlite::SqliteRow) -> Result<(), EvidenceEr
     let digest = Sha256Digest::for_bytes(&canonical);
     if canonical_text != payload_json
         || revocation.revocation_id
-            != row.try_get::<String, _>("revocation_id").map_err(classify_sqlx_error)?
+            != row
+                .try_get::<String, _>("revocation_id")
+                .map_err(classify_sqlx_error)?
         || revocation.root_id
-            != row.try_get::<String, _>("root_id").map_err(classify_sqlx_error)?
-        || revocation.key_id != row.try_get::<String, _>("key_id").map_err(classify_sqlx_error)?
-        || to_i64(revocation.observed_unix_ms, "issuer key revocation observation")?
-            != row.try_get::<i64, _>("observed_unix_ms").map_err(classify_sqlx_error)?
+            != row
+                .try_get::<String, _>("root_id")
+                .map_err(classify_sqlx_error)?
+        || revocation.key_id
+            != row
+                .try_get::<String, _>("key_id")
+                .map_err(classify_sqlx_error)?
+        || to_i64(
+            revocation.observed_unix_ms,
+            "issuer key revocation observation",
+        )? != row
+            .try_get::<i64, _>("observed_unix_ms")
+            .map_err(classify_sqlx_error)?
         || revocation.reason_code
-            != row.try_get::<String, _>("reason_code").map_err(classify_sqlx_error)?
+            != row
+                .try_get::<String, _>("reason_code")
+                .map_err(classify_sqlx_error)?
         || row
             .try_get::<String, _>("authority_role")
             .map_err(classify_sqlx_error)?
@@ -1587,8 +1674,7 @@ fn to_i64(value: u64, label: &str) -> Result<i64, EvidenceError> {
 }
 
 fn from_i64(value: i64, label: &str) -> Result<u64, EvidenceError> {
-    u64::try_from(value)
-        .map_err(|_| EvidenceError::Corrupt(format!("{label} is negative")))
+    u64::try_from(value).map_err(|_| EvidenceError::Corrupt(format!("{label} is negative")))
 }
 
 fn invalid<T>(message: &str) -> Result<T, EvidenceError> {

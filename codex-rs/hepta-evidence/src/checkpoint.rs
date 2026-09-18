@@ -94,16 +94,14 @@ impl HeptaEvidenceStore {
     pub async fn capture_external_checkpoint(
         &self,
     ) -> Result<EvidenceExternalCheckpointV1, EvidenceError> {
-        let migration_count_i64: i64 =
-            sqlx::query_scalar("SELECT COUNT(*) FROM _sqlx_migrations")
-                .fetch_one(&self.pool)
-                .await
-                .map_err(classify_sqlx_error)?;
+        let migration_count_i64: i64 = sqlx::query_scalar("SELECT COUNT(*) FROM _sqlx_migrations")
+            .fetch_one(&self.pool)
+            .await
+            .map_err(classify_sqlx_error)?;
         let migration_count = u32::try_from(migration_count_i64).map_err(|_| {
             EvidenceError::Corrupt("migration count does not fit checkpoint".to_string())
         })?;
-        let migration_prefix_sha256 =
-            migration_prefix_sha256(&self.pool, migration_count).await?;
+        let migration_prefix_sha256 = migration_prefix_sha256(&self.pool, migration_count).await?;
 
         let qualification_receipt_count_i64: i64 =
             sqlx::query_scalar("SELECT COUNT(*) FROM qualification_evidence")
@@ -150,8 +148,7 @@ impl HeptaEvidenceStore {
         };
         let (frontier_receipt_id, frontier_envelope_sha256) = match frontier {
             Some(row) => {
-                let receipt_id: String =
-                    row.try_get("receipt_id").map_err(classify_sqlx_error)?;
+                let receipt_id: String = row.try_get("receipt_id").map_err(classify_sqlx_error)?;
                 let digest = Sha256Digest::parse(
                     row.try_get::<String, _>("envelope_sha256")
                         .map_err(classify_sqlx_error)?,
@@ -166,9 +163,8 @@ impl HeptaEvidenceStore {
                 ));
             }
         };
-        let observed_unix_ms = u64::try_from(now_millis()?).map_err(|_| {
-            EvidenceError::Unavailable("system time is negative".to_string())
-        })?;
+        let observed_unix_ms = u64::try_from(now_millis()?)
+            .map_err(|_| EvidenceError::Unavailable("system time is negative".to_string()))?;
         let body = EvidenceExternalCheckpointBodyV1 {
             schema_version: EVIDENCE_EXTERNAL_CHECKPOINT_SCHEMA_VERSION,
             migration_count,
@@ -208,10 +204,9 @@ impl HeptaEvidenceStore {
                 .fetch_one(&self.pool)
                 .await
                 .map_err(classify_sqlx_error)?;
-        let current_migration_count =
-            u32::try_from(current_migration_count_i64).map_err(|_| {
-                EvidenceError::Corrupt("migration count does not fit checkpoint".to_string())
-            })?;
+        let current_migration_count = u32::try_from(current_migration_count_i64).map_err(|_| {
+            EvidenceError::Corrupt("migration count does not fit checkpoint".to_string())
+        })?;
         if current_migration_count < checkpoint.migration_count {
             return Err(EvidenceError::Corrupt(
                 "evidence store migration lineage is behind the external checkpoint".to_string(),
@@ -269,11 +264,13 @@ impl HeptaEvidenceStore {
                 "SELECT receipt_id, envelope_sha256
                  FROM qualification_evidence WHERE seq = ?",
             )
-            .bind(i64::try_from(checkpoint.qualification_max_seq).map_err(|_| {
-                EvidenceError::Corrupt(
-                    "qualification checkpoint frontier exceeds SQLite INTEGER".to_string(),
-                )
-            })?)
+            .bind(
+                i64::try_from(checkpoint.qualification_max_seq).map_err(|_| {
+                    EvidenceError::Corrupt(
+                        "qualification checkpoint frontier exceeds SQLite INTEGER".to_string(),
+                    )
+                })?,
+            )
             .fetch_optional(&self.pool)
             .await
             .map_err(classify_sqlx_error)?
@@ -282,8 +279,7 @@ impl HeptaEvidenceStore {
                     "qualification checkpoint frontier row is missing".to_string(),
                 )
             })?;
-            let receipt_id: String =
-                row.try_get("receipt_id").map_err(classify_sqlx_error)?;
+            let receipt_id: String = row.try_get("receipt_id").map_err(classify_sqlx_error)?;
             let envelope_sha256 = Sha256Digest::parse(
                 row.try_get::<String, _>("envelope_sha256")
                     .map_err(classify_sqlx_error)?,
@@ -337,8 +333,7 @@ async fn migration_prefix_sha256(
     hasher.update(b"hepta.kernel.evidence.migration-prefix.v1\0");
     for row in rows {
         let version: i64 = row.try_get("version").map_err(classify_sqlx_error)?;
-        let description: String =
-            row.try_get("description").map_err(classify_sqlx_error)?;
+        let description: String = row.try_get("description").map_err(classify_sqlx_error)?;
         let checksum: Vec<u8> = row.try_get("checksum").map_err(classify_sqlx_error)?;
         hasher.update(version.to_be_bytes());
         update_len_bytes(&mut hasher, description.as_bytes())?;
@@ -381,8 +376,9 @@ async fn qualification_prefix_sha256(
     for row in rows {
         let seq: i64 = row.try_get("seq").map_err(classify_sqlx_error)?;
         let receipt_id: String = row.try_get("receipt_id").map_err(classify_sqlx_error)?;
-        let envelope_sha256: String =
-            row.try_get("envelope_sha256").map_err(classify_sqlx_error)?;
+        let envelope_sha256: String = row
+            .try_get("envelope_sha256")
+            .map_err(classify_sqlx_error)?;
         hasher.update(seq.to_be_bytes());
         update_len_bytes(&mut hasher, receipt_id.as_bytes())?;
         update_len_bytes(&mut hasher, envelope_sha256.as_bytes())?;

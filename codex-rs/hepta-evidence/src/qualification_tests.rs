@@ -152,8 +152,14 @@ async fn target_append_and_query_are_exact_candidate_and_claim_class_bound() {
             EXPIRES,
         ),
     );
-    let first_id = store.append_receipt(&signed, &issuer).await.expect("append");
-    let replay_id = store.append_receipt(&signed, &issuer).await.expect("replay");
+    let first_id = store
+        .append_receipt(&signed, &issuer)
+        .await
+        .expect("append");
+    let replay_id = store
+        .append_receipt(&signed, &issuer)
+        .await
+        .expect("replay");
     assert_eq!(first_id.as_str(), "qe:fixture:1");
     assert_eq!(replay_id, first_id);
 
@@ -441,7 +447,7 @@ async fn corrupted_qualification_payload_fails_closed_after_reopen() {
     .await
     .expect("corrupt payload");
     sqlx::query(
-        "CREATE TRIGGER qualification_evidence_no_update
+        "CREATE TRIGGER IF NOT EXISTS qualification_evidence_no_update
          BEFORE UPDATE ON qualification_evidence
          BEGIN
              SELECT RAISE(ABORT, 'qualification evidence is immutable');
