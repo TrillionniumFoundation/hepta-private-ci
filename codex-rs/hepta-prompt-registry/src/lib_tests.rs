@@ -390,3 +390,23 @@ fn verified_admission_rejects_clock_rollback_between_verify_and_commit() {
         Some(Lifecycle::Draft)
     );
 }
+
+#[test]
+fn record_capacity_rejects_atomically() {
+    let mut registry = PromptRegistry::new(1).expect("bounded registry");
+    let first = factor(FactorSource::GovernedInternal);
+    registry
+        .register_factor(first)
+        .expect("first record fits capacity");
+    let before = registry.clone();
+
+    let mut second = factor(FactorSource::GovernedInternal);
+    second.factor_id = id("factor:2");
+    second.proposer_id = id("proposer:2");
+    second.content_digest = digest(b"factor:2");
+    assert_eq!(
+        registry.register_factor(second),
+        Err(Error::CapacityExceeded)
+    );
+    assert_eq!(registry, before);
+}
