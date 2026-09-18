@@ -171,7 +171,8 @@ Current operating and state-format references:
 - [codex-rs/hepta-operations/src/outbox.rs](../../../codex-rs/hepta-operations/src/outbox.rs) — reference outbox;
 - [codex-rs/hepta-operations/src/durable.rs](../../../codex-rs/hepta-operations/src/durable.rs) — durable native owner;
 - [codex-rs/hepta-operations/migrations/0001_operations.sql](../../../codex-rs/hepta-operations/migrations/0001_operations.sql) — physical V1 schema;
-- [docs/lane-a-foundation/kernel.operations/DURABLE_STORE_V1.md](../../lane-a-foundation/kernel.operations/DURABLE_STORE_V1.md) — transaction/recovery contract.
+- [docs/lane-a-foundation/kernel.operations/DURABLE_STORE_V1.md](../../lane-a-foundation/kernel.operations/DURABLE_STORE_V1.md) — transaction/recovery contract;
+- [docs/lane-a-foundation/kernel.operations/PRODUCT_COMPOSITION_V1.md](../../lane-a-foundation/kernel.operations/PRODUCT_COMPOSITION_V1.md) — Agentd/CognitiveStore source composition contract.
 
 [Shared observability and operations requirements](../README.md#shared-observability-and-operations) specify safe events and alert classes; concrete deployment thresholds require the selected host profile.
 
@@ -208,7 +209,13 @@ Compatibility adapters are temporary. Retirement requires all named callers migr
 
 Documentation completion requires this guide, exact registry references and closed-world validation. Source completion requires code in the declared root and candidate tests. Composition requires a named caller. Qualification requires current exact-candidate evidence. Acceptance, selection, promotion and release are separate externally governed states.
 
-Claim-level summary for `kernel.operations`: target design is specified; reference semantics are source-implemented; the local durable ledger/outbox backend is source-implemented in this candidate; product caller composition and a real destination-owner binding are not yet claimed; exact-candidate execution is whatever current CI proves; independent acceptance, activation, promotion and release remain ungranted.
+Claim-level summary for `kernel.operations`: target design is specified;
+reference semantics and the local durable ledger/outbox backend are
+source-implemented; a real Agentd-to-CognitiveStore destination-owner
+composition is source-implemented on the integration candidate; default runtime
+construction, non-local external-adapter final-use composition, exact-candidate
+execution, independent acceptance, activation, promotion and release remain
+separate gates.
 
 For `kernel.operations`, this document grants no runtime, production, model, provider, tool, network, filesystem, secret, Matrix, fleet, acceptance, promotion or release authority.
 
