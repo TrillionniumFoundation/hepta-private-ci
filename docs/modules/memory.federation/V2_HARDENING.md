@@ -115,6 +115,7 @@ A successfully observed owner layout with no active grant remains only an enroll
 The focused V2 suite includes adversarial cases for:
 
 - response-field tampering after digest sealing;
+- self-consistent result digests with contradictory completeness/items/truncation state;
 - cross-query response replay;
 - result expiry capped by lease/query horizon;
 - preflight revocation blocking transport dispatch entirely;
