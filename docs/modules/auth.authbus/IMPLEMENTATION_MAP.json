@@ -20,7 +20,7 @@
   ],
   "sourceRootPresent": true,
   "productionImplementation": false,
-  "productCallerState": "not_composed",
+  "productCallerState": "narrow_agentd_composed_general_effect_not_production_composed",
   "productionWriterState": "not_established",
   "operations": [
     {
@@ -58,15 +58,213 @@
       "designOperation": "enqueue_authbus_message",
       "mappingClass": "owner_native",
       "delegatedCallees": []
+    },
+    {
+      "operation": "install_authbus_policy",
+      "nativeSymbol": "install_authbus_policy",
+      "sourcePath": "codex-rs/hepta-evidence/src/authbus_control_store.rs",
+      "state": "source_candidate_delegated_durable_owner_not_production_activated",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-evidence/src/authbus_control_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "install_authbus_policy",
+      "mappingClass": "delegated_durable_owner",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "authorize_authbus",
+      "nativeSymbol": "authorize_authbus",
+      "sourcePath": "codex-rs/hepta-evidence/src/authbus_control_store.rs",
+      "state": "source_candidate_delegated_durable_owner_not_production_activated",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-evidence/src/authbus_control_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "authorize_authbus",
+      "mappingClass": "delegated_durable_owner",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "install_authbus_quota",
+      "nativeSymbol": "install_authbus_quota",
+      "sourcePath": "codex-rs/hepta-evidence/src/authbus_control_store.rs",
+      "state": "source_candidate_delegated_durable_owner_not_production_activated",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-evidence/src/authbus_control_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "install_authbus_quota",
+      "mappingClass": "delegated_durable_owner",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "reserve_authbus_quota",
+      "nativeSymbol": "reserve_authbus_quota",
+      "sourcePath": "codex-rs/hepta-evidence/src/authbus_control_store.rs",
+      "state": "source_candidate_delegated_durable_owner_not_production_activated",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-evidence/src/authbus_control_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "reserve_authbus_quota",
+      "mappingClass": "delegated_durable_owner",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "settle_authbus_reservation",
+      "nativeSymbol": "settle_authbus_reservation",
+      "sourcePath": "codex-rs/hepta-evidence/src/authbus_control_store.rs",
+      "state": "source_candidate_delegated_durable_owner_not_production_activated",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-evidence/src/authbus_control_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "settle_authbus_reservation",
+      "mappingClass": "delegated_durable_owner",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "cancel_authbus_reservation",
+      "nativeSymbol": "cancel_authbus_reservation",
+      "sourcePath": "codex-rs/hepta-evidence/src/authbus_control_store.rs",
+      "state": "source_candidate_delegated_durable_owner_not_production_activated",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-evidence/src/authbus_control_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "cancel_authbus_reservation",
+      "mappingClass": "delegated_durable_owner",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "expire_authbus_reservations",
+      "nativeSymbol": "expire_authbus_reservations",
+      "sourcePath": "codex-rs/hepta-evidence/src/authbus_control_store.rs",
+      "state": "source_candidate_delegated_durable_owner_not_production_activated",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-evidence/src/authbus_control_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "expire_authbus_reservations",
+      "mappingClass": "delegated_durable_owner",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "quarantine_authbus_reservation",
+      "nativeSymbol": "quarantine_authbus_reservation",
+      "sourcePath": "codex-rs/hepta-evidence/src/authbus_control_store.rs",
+      "state": "source_candidate_delegated_durable_owner_not_production_activated",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-evidence/src/authbus_control_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "quarantine_authbus_reservation",
+      "mappingClass": "delegated_durable_owner",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "reconcile_authbus_reservation",
+      "nativeSymbol": "reconcile_authbus_reservation",
+      "sourcePath": "codex-rs/hepta-evidence/src/authbus_control_store.rs",
+      "state": "source_candidate_delegated_durable_owner_not_production_activated",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-evidence/src/authbus_control_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "reconcile_authbus_reservation",
+      "mappingClass": "delegated_durable_owner",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "install_authbus_issuer",
+      "nativeSymbol": "install_authbus_issuer",
+      "sourcePath": "codex-rs/hepta-evidence/src/authbus_trust_store.rs",
+      "state": "source_candidate_delegated_durable_owner_not_production_activated",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-evidence/src/authbus_control_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "install_authbus_issuer",
+      "mappingClass": "delegated_durable_owner",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "revoke_authbus_issuer",
+      "nativeSymbol": "revoke_authbus_issuer",
+      "sourcePath": "codex-rs/hepta-evidence/src/authbus_trust_store.rs",
+      "state": "source_candidate_delegated_durable_owner_not_production_activated",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-evidence/src/authbus_control_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "revoke_authbus_issuer",
+      "mappingClass": "delegated_durable_owner",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "retire_authbus_replay_epoch",
+      "nativeSymbol": "retire_authbus_replay_epoch",
+      "sourcePath": "codex-rs/hepta-evidence/src/authbus_trust_store.rs",
+      "state": "source_candidate_delegated_durable_owner_not_production_activated",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-evidence/src/authbus_control_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "retire_authbus_replay_epoch",
+      "mappingClass": "delegated_durable_owner",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "verify_authbus_rollback_checkpoint",
+      "nativeSymbol": "verify_authbus_rollback_checkpoint",
+      "sourcePath": "codex-rs/hepta-evidence/src/authbus_trust_store.rs",
+      "state": "source_candidate_delegated_durable_owner_not_production_activated",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-evidence/src/authbus_control_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "verify_authbus_rollback_checkpoint",
+      "mappingClass": "delegated_durable_owner",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "dispatch_provider_effect_with_authbus_qualification",
+      "nativeSymbol": "dispatch_provider_effect_with_authbus_qualification",
+      "sourcePath": "codex-rs/hepta-evidence/src/authbus_effect.rs",
+      "state": "source_candidate_delegated_durable_owner_not_production_activated",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-evidence/src/authbus_control_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "dispatch_provider_effect_with_authbus_qualification",
+      "mappingClass": "delegated_durable_owner",
+      "delegatedCallees": []
     }
   ],
   "repositoryControlledGaps": [
-    "Bind every operation to an authenticated consumer callsite and owner store.",
-    "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary."
+    "Run exact-head and deterministic synthetic-merge native/product tests for this candidate.",
+    "Compose the qualification-only authorized provider seam into an enrolled production effect caller before changing the production claim boundary."
   ],
   "externalEvidenceGates": [
-    "independent semantic review",
-    "product execution and target-host qualification",
+    "independent semantic and security review",
+    "independently governed rollback checkpoint retention and trusted time",
+    "production effect caller enrollment and real provider/operator consent",
+    "target-host qualification and capacity measurements",
     "operator acceptance, canary, promotion and release"
   ],
   "claimBoundary": {
@@ -76,10 +274,48 @@
     "productExecutionProved": false,
     "independentAcceptance": false,
     "activation": false,
-    "release": false
+    "release": false,
+    "narrowProductCallerComposed": true,
+    "generalEffectCallerProductionComposed": false
   },
   "sourceRoot": [
     "codex-rs/hepta-authbus",
     "codex-rs/hepta-authbus-p1-3-qualification"
-  ]
+  ],
+  "sourceBaseSemantics": "shared implementation-map generation baseline; current candidate identity is proved by exact-head and synthetic-merge execution receipts",
+  "composition": {
+    "semanticOwner": "auth.authbus",
+    "coreSourceOwner": {
+      "module": "auth.authbus",
+      "root": "codex-rs/hepta-authbus"
+    },
+    "durableStateOwner": {
+      "module": "kernel.evidence",
+      "root": "codex-rs/hepta-evidence",
+      "surfaces": [
+        "replay",
+        "outbox",
+        "auth_policy",
+        "quota_registry",
+        "quota_reservation",
+        "issuer_lifecycle",
+        "rollback_checkpoint"
+      ]
+    },
+    "hostIntegrations": [
+      {
+        "module": "runtime.agentd",
+        "root": "codex-rs/hepta-agentd",
+        "profile": "signed_text_existing_thread",
+        "state": "narrow_product_composed_not_production_effect_authority"
+      }
+    ],
+    "effectIntegrations": [
+      {
+        "module": "kernel.evidence",
+        "symbol": "dispatch_provider_effect_with_authbus_qualification",
+        "state": "qualification_only_not_production_caller"
+      }
+    ]
+  }
 }
