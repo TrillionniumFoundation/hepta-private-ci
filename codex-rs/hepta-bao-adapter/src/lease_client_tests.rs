@@ -433,4 +433,29 @@ async fn reconciliation_required_and_read_only_projections_are_explicit() {
     assert_eq!(pending.operation, "issue");
     let observed = task.await.unwrap().unwrap().to_ascii_lowercase();
     assert!(observed.starts_with("get /v1/sys/dynamic-secrets/pending http/1.1\r\n"));
+
+    // If the provider completed issuance and only the HTTP response was lost,
+    // pending is already clear. The same operation identity still resolves
+    // the committed lease projection without redispatching issuance.
+    let projection = serde_json::json!({
+        "data": {
+            "operation_id": "operation_1",
+            "lease": lease_value("active", 1, true)
+        }
+    })
+    .to_string();
+    let (endpoint, ca, task) = server(200, projection, || async {}).await.unwrap();
+    let client = client(&endpoint, &ca);
+    let recovered = client
+        .lookup_secret_lease_by_operation("team/one", "operation_1")
+        .await
+        .unwrap();
+    assert_eq!(
+        recovered.lease_id,
+        "lease_0123456789abcdef0123456789abcdef"
+    );
+    let observed = task.await.unwrap().unwrap().to_ascii_lowercase();
+    assert!(observed.starts_with(
+        "get /v1/sys/dynamic-secrets/operations/operation_1 http/1.1\r\n"
+    ));
 }
