@@ -47,6 +47,7 @@ pub enum DurableTopologyProposalRegistryError {
     InvalidScope,
     InvalidWriterFence,
     InvalidAnchor,
+    BootstrapRequiresEmptyFile,
     AcknowledgedHistoryMissing,
     AnchorMismatch,
     ContextMismatch,
@@ -78,6 +79,7 @@ impl From<TopologyProposalErrorV2> for DurableTopologyProposalRegistryError {
 #[derive(Clone, Copy)]
 enum RecoveryPolicy {
     Unanchored,
+    BootstrapEmpty,
     Require(DurableRegistryAnchorV1),
 }
 
@@ -138,6 +140,23 @@ impl DurableTopologyProposalRegistryV2 {
         )
     }
 
+    /// Enroll a new product registry only when the exclusively locked file is
+    /// physically empty. The check happens after lock acquisition.
+    pub fn open_bootstrap_empty(
+        file: File,
+        registry_scope_digest: Digest32,
+        writer_fence: u64,
+        maximum_records: usize,
+    ) -> Result<Self, DurableTopologyProposalRegistryError> {
+        Self::open_with_policy(
+            file,
+            registry_scope_digest,
+            writer_fence,
+            maximum_records,
+            RecoveryPolicy::BootstrapEmpty,
+        )
+    }
+
     pub fn open_anchored(
         file: File,
         registry_scope_digest: Digest32,
@@ -182,6 +201,9 @@ impl DurableTopologyProposalRegistryV2 {
         let file_len = file.metadata()?.len();
         if file_len > MAX_FILE_BYTES {
             return Err(DurableTopologyProposalRegistryError::Capacity);
+        }
+        if matches!(policy, RecoveryPolicy::BootstrapEmpty) && file_len != 0 {
+            return Err(DurableTopologyProposalRegistryError::BootstrapRequiresEmptyFile);
         }
         if file_len == 0 {
             if matches!(policy, RecoveryPolicy::Require(_)) {
