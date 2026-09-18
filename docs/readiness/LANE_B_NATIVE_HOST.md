@@ -86,13 +86,19 @@ read-only files, and a `CurrentCognitiveRegistry` implementation. There is no
 implicit CLI selection, trusted file generator or evaluator self-authorization.
 The operator and artifact registry retain their existing owners.
 
-The consumer ranks only records admitted by the same SQLite snapshot. Query
-sensors are exact query hashes; actions bind memory ID, revision and content
-hash. It scores before the result limit, keeps original order for ties, and
-abstains for the entire ranking when any cell is unsupported. A missing or
-revoked current view closes the consumer instead of falling back to a stale
-model. Registry I/O runs on the blocking pool; the trusted host must bound it.
-The memory cut and artifact view are rechecked before returning context.
+The consumer now starts from `CognitiveStore::observe_memory_retrieval`, so
+the optional ranker sees the complete bounded owner generator output before the
+legacy top-four truncation. The same Lane-C read cut admits exact record ID,
+revision and content digest; query sensors are exact query hashes and actions
+bind memory ID, revision and content hash. Raw memory text is not carried
+through learned ranking: after ordering, Agentd batch-revalidates the exact
+owner bindings in one SQLite read transaction and resolves current content,
+then applies the requested result limit and encoded-byte budget. Ties preserve
+the owner order, and an unsupported learned cell abstains from reordering the
+whole bounded set. A missing or revoked current view closes the consumer
+instead of falling back to a stale model. Registry I/O runs on the blocking
+pool; the trusted host must bound it. The memory cut and artifact view are
+rechecked before returning context.
 
 The fitted-model/SQLite tests prove changed control-read ordering, not improved
 task utility. This control port is not the App Server's automatic memory tool
