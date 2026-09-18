@@ -438,6 +438,48 @@ async fn five_agents_keep_private_stores_and_only_explicit_consumers_federate() 
 }
 
 #[tokio::test]
+async fn same_second_same_query_allocates_fresh_v2_attempt_identity() {
+    let temp = TempDir::new().expect("temp dir");
+    let owner_id = agent_id(88);
+    let consumer_id = agent_id(89);
+    let owner_layout = layout(&temp, &owner_id);
+    let owner = CognitiveStore::open(&owner_layout)
+        .await
+        .expect("owner store");
+    let owner_access = CognitiveAccess::agent_private(owner_id.clone());
+    let consumer_workspace = workspace("attempt-identity");
+    owner
+        .grant_federated_recall(
+            &owner_access,
+            &FederationGrantRequest {
+                consumer_agent_id: consumer_id.clone(),
+                scope: FederationGrantScope::new(
+                    CognitiveScope::AgentPrivate,
+                    consumer_workspace,
+                ),
+                effective_at_unix_seconds: 100,
+                expires_at_unix_seconds: 1_000,
+            },
+        )
+        .await
+        .expect("grant");
+    let reader = FederatedMemoryReader::discover(&owner_layout, &consumer_id, 150)
+        .await
+        .expect("discover")
+        .pop()
+        .expect("reader");
+    let request = RetrievalRequest::new("same-second-query", 150);
+    let first = reader
+        .product_attempt_binding_for_test(&request)
+        .expect("first binding");
+    let second = reader
+        .product_attempt_binding_for_test(&request)
+        .expect("second binding");
+    assert_ne!(first.0, second.0);
+    assert_ne!(first.1, second.1);
+}
+
+#[tokio::test]
 async fn revoked_peer_is_explicit_partial_coverage_not_silent_empty() {
     let temp = TempDir::new().expect("temp dir");
     let consumer_id = agent_id(90);
