@@ -354,7 +354,10 @@ fn lexical_only_ablation_has_distinct_policy_union_and_packet_identity() {
 
     assert_eq!(lexical.disposition, RecallDispositionV1::Recalled);
     assert_eq!(multi.disposition, RecallDispositionV1::Recalled);
-    assert_eq!(lexical.selections[0].record_id, multi.selections[0].record_id);
+    assert_eq!(
+        lexical.selections[0].record_id,
+        multi.selections[0].record_id
+    );
     assert_ne!(lexical.policy_digest, multi.policy_digest);
     assert_ne!(lexical.candidate_union_digest, multi.candidate_union_digest);
     assert_ne!(lexical.packet_digest, multi.packet_digest);

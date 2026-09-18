@@ -793,7 +793,6 @@ impl CognitiveStore {
     }
 
     #[cfg(test)]
-    pub(crate) async fn graph_channel_for_test    #[cfg(test)]
     pub(crate) async fn graph_channel_for_test(
         &self,
         seeds: &[(
