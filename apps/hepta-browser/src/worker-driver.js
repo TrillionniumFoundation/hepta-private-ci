@@ -209,8 +209,17 @@ export class LinuxBubblewrapLauncher {
       "/etc/fonts",
       "/etc/fonts",
       "--ro-bind-try",
-      "/etc/ssl",
-      "/etc/ssl",
+      "/etc/ssl/certs",
+      "/etc/ssl/certs",
+      "--ro-bind-try",
+      "/etc/ssl/openssl.cnf",
+      "/etc/ssl/openssl.cnf",
+      "--ro-bind-try",
+      "/etc/ca-certificates.conf",
+      "/etc/ca-certificates.conf",
+      "--ro-bind-try",
+      "/usr/share/ca-certificates",
+      "/usr/share/ca-certificates",
       "--dir",
       "/var",
       "--dir",
@@ -613,7 +622,14 @@ export class SubprocessBrowserDriver {
       grantDigest,
     };
     await this.#writeProfileOwnerManifest(ownerIdentity);
-    this.#verifiedWorkerPath = join(this.#profileDir, ".verified-worker");
+    // Keep the verified executable outside the profile directory that is
+    // mounted read/write into the sandbox. Otherwise the worker could mutate
+    // the same inode through /hepta-profile even though /hepta-worker is a
+    // read-only bind.
+    this.#verifiedWorkerPath = join(
+      this.#profileRoot,
+      `.hepta-verified-worker.${profileId}.${generation}.${randomUUID()}`,
+    );
     await this.#writePrivateVerifiedWorker(verifiedWorkerBytes);
     this.#sessionId = profileId;
     this.#generation = generation;
@@ -846,11 +862,16 @@ export class SubprocessBrowserDriver {
   }
 
   async #cleanupProfile() {
-    if (!this.#profileDir) return;
     const profileDir = this.#profileDir;
+    const verifiedWorkerPath = this.#verifiedWorkerPath;
     this.#profileDir = null;
     this.#profileOwnerPath = null;
     this.#verifiedWorkerPath = null;
-    await rm(profileDir, { recursive: true, force: true });
+    if (verifiedWorkerPath) {
+      await rm(verifiedWorkerPath, { force: true });
+    }
+    if (profileDir) {
+      await rm(profileDir, { recursive: true, force: true });
+    }
   }
 }

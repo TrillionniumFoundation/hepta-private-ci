@@ -385,6 +385,8 @@ test("reconciliation and cleanup remain available after grant and deadline expir
   const first = await host.navigateOrAct(operation());
   assert.equal(first.status, "indeterminate");
   now = 20_000;
+  const replayAfterExpiry = await host.navigateOrAct(operation());
+  assert.equal(replayAfterExpiry.status, "indeterminate");
   await assert.rejects(
     host.navigateOrAct(operation({ operationId: "operation.new" })),
     /profile grant has expired/,

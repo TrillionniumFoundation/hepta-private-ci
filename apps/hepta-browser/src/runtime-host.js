@@ -357,7 +357,11 @@ export class BrowserProfileHost {
     requireRecord(input, "input");
     const profileId = stableId(input.profileId, "profileId");
     return exclusive(this.#locks, profileId, async () => {
-      const state = this.#profile(input, true);
+      // Existing operation identities are observations/replays, not new
+      // authority. Resolve them before enforcing current lease/quarantine so a
+      // retry after expiry cannot become either a redispatch or an opaque
+      // "grant expired" failure.
+      const state = this.#profile(input, false);
       const operationId = stableId(input.operationId, "operationId");
       let prior = state.operations.get(operationId);
       if (!prior) {
@@ -392,6 +396,9 @@ export class BrowserProfileHost {
         return prior.receipt;
       }
 
+      // Only a genuinely new effect requires the current live profile grant
+      // and non-quarantined state.
+      this.#profile(input, true);
       const admitted = admitNewOperation(state, input, this.#clock());
       const { requestSemantics, requestDigest } = admitted;
       if (admitted.operationId !== operationId) {

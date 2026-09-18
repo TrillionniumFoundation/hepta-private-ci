@@ -245,6 +245,11 @@ test("profile directory carries a private principal-bound owner manifest and std
     launcher: fakeLauncher({ capture }),
   });
   const ownerPath = join(capture.spec.profileDir, ".hepta-profile-owner.json");
+  assert.equal(
+    capture.spec.workerPath.startsWith(`${capture.spec.profileDir}/`),
+    false,
+    "verified worker copy must not live under the writable profile bind",
+  );
   const owner = JSON.parse(await readFile(ownerPath, "utf8"));
   assert.deepEqual(owner, {
     schema: "hepta.browser.profile-owner.v1",
@@ -472,6 +477,9 @@ test(
     assert.equal(mountedSources.some((path) => path.startsWith("/var/run")), false);
     assert.equal(mountedSources.includes("/usr/lib"), true);
     assert.equal(mountedSources.includes("/var/cache/fontconfig"), true);
+    assert.equal(mountedSources.includes("/etc/ssl"), false);
+    assert.equal(mountedSources.includes("/etc/ssl/certs"), true);
+    assert.equal(mountedSources.includes("/usr/share/ca-certificates"), true);
     assert.equal(argv.at(-1), "/hepta-worker");
     assert.equal(launcher.posture.sourceContractOnly, true);
     assert.equal(launcher.posture.hostFilesystemRestricted, true);
