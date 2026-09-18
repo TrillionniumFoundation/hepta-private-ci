@@ -72,6 +72,19 @@ def tests_for_source(source: str) -> list[str]:
 def tracked_object(relative: str) -> str:
     if not (ROOT / relative).exists():
         return ""
+    diff = subprocess.run(
+        ["git", "diff", "--quiet", "HEAD", "--", relative],
+        cwd=ROOT,
+        check=False,
+    )
+    if diff.returncode not in (0, 1):
+        raise SystemExit(f"unable to inspect source state for {relative}")
+    untracked = git("ls-files", "--others", "--exclude-standard", "--", relative)
+    if diff.returncode == 1 or untracked:
+        raise SystemExit(
+            "implementation-map source state requires committed source bytes; "
+            f"commit changes under {relative} before refreshing the map"
+        )
     return git("rev-parse", f"HEAD:{relative}")
 
 
