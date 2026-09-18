@@ -3,6 +3,7 @@
 #![forbid(unsafe_code)]
 
 mod generation_bound;
+mod owner_rank;
 mod v2;
 
 use std::collections::BTreeSet;
@@ -33,6 +34,14 @@ pub use generation_bound::RetrievalPolicyV1;
 pub use generation_bound::build_candidate_union;
 pub use generation_bound::compile_cue;
 pub use generation_bound::recall;
+pub use owner_rank::MAX_OWNER_RANK_CANDIDATES;
+pub use owner_rank::MAX_OWNER_RANK_RESULTS;
+pub use owner_rank::OwnerRankCandidateV1;
+pub use owner_rank::OwnerRankErrorV1;
+pub use owner_rank::OwnerRankReceiptV1;
+pub use owner_rank::OwnerRankRequestV1;
+pub use owner_rank::OwnerRankResultV1;
+pub use owner_rank::rank_owner_candidates;
 pub use v2::RetrievalReceiptV2;
 pub use v2::retrieve_v2;
 
