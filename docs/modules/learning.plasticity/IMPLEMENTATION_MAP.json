@@ -162,6 +162,24 @@
       ]
     },
     {
+      "operation": "agentd_owner_evidence_binding",
+      "nativeSymbol": "PlasticityOwnerEvidencePolicyV1",
+      "sourcePath": "codex-rs/hepta-agentd/src/plasticity_host.rs",
+      "state": "host_context_and_owner_policy_implemented_not_deployment_bound",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-agentd/tests/plasticity_product_host.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "owner_store_evidence_context_and_policy",
+      "mappingClass": "delegated_composition",
+      "delegatedCallees": [
+        "kernel.evidence",
+        "neuron.runtime",
+        "utility.ndu"
+      ]
+    },
+    {
       "operation": "agentd_anchor_fence_store",
       "nativeSymbol": "AgentdPlasticityAnchorFenceStoreV1",
       "sourcePath": "codex-rs/hepta-agentd/src/plasticity_host.rs",
