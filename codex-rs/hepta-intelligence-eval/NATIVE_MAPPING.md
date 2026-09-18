@@ -23,15 +23,20 @@ plan digests. They deliberately do not authenticate caller-supplied identities,
 prove causal exchangeability, select a candidate or establish future-calendar
 efficacy.
 
-## Added implementation closure
+## Production qualification closure
+
+The authoritative API/status matrix is [`PRODUCTION_CONTRACT.md`](PRODUCTION_CONTRACT.md). The production-facing qualification surface is deliberately stronger than the trusted in-process deterministic core.
 
 | Design operation | Native symbol | Source | Status |
 |---|---|---|---|
-| freeze complete cross-fold lineage | `freeze_cross_fold_plan` | `src/closure.rs` | implemented |
-| record final holdout use | `FinalHoldoutRegistry::consume` | `src/closure.rs` | implemented |
-| issue independent eligibility decision | `decide_independently` | `src/closure.rs` | implemented |
+| freeze complete preregistered cross-fold/metric-role plan | `freeze_cross_fold_plan_v2` | `src/metric_roles.rs` | production plan path |
+| durable multi-host holdout consume | `FencedFinalHoldoutOwnerV1::consume` | `src/fenced_holdout.rs` | production owner adapter |
+| reconcile pending holdout reservation | `FencedFinalHoldoutOwnerV1::reconcile_pending` | `src/fenced_holdout.rs` | crash recovery |
+| signed qualification admission | `decide_with_signed_evidence_v2` | `src/signed_evaluation.rs` | production-required for qualification |
+| signed longitudinal admission | `decide_with_signed_longitudinal_evidence_v3` | `src/longitudinal_time.rs` | production-required for system-longitudinal claims |
+| direct deterministic decision | `decide_independently_v2` | `src/metric_roles.rs` | trusted-only compatibility core |
 
-`freeze_cross_fold_plan` requires two to thirty-two folds. It canonicalizes and
+`freeze_cross_fold_plan_v2` layers preregistered metric roles onto the complete plan; the underlying cross-fold validation requires two to thirty-two folds. It canonicalizes and
 deduplicates every principal, episode and window set; rejects training/holdout
 leakage within a fold; prevents the final holdout from entering any training
 set; prevents a holdout lineage from appearing in multiple folds; and requires
@@ -41,8 +46,7 @@ estimand, metric direction and safety-floor contract, multiplicity profile,
 final-holdout window and final-holdout bytes. Its deterministic integrity seal
 detects post-freeze field mutation; it is not a signature or issuer credential.
 
-`FinalHoldoutRegistry::consume` accepts only the typed sealed frozen-plan
-receipt. An exact retry of the identical plan is idempotent. Reusing the same
+`FinalHoldoutRegistry::consume` remains the in-memory semantic primitive. `DurableFinalHoldoutJournalV1` persists it for a cooperating single-host owner, while `FencedFinalHoldoutOwnerV1` composes that journal with an external linearizable compare-and-swap fence for multi-host ownership. The semantic primitive accepts only the typed sealed frozen-plan receipt. An exact retry of the identical plan is idempotent. Reusing the same
 plan identity with changed semantics conflicts, while a different plan using
 either the same final-holdout digest or the same final-holdout window is
 rejected. The emitted holdout-use receipt binds the complete plan semantics,
@@ -51,7 +55,7 @@ A future persistent host adapter must retain this registry under a single
 writer; the pure type and unkeyed seals alone do not prove durable exclusivity
 or authenticated origin.
 
-`decide_independently` consumes authenticated generator and evaluator identities
+`decide_independently_v2` is the trusted-only deterministic core and consumes supplied authenticated generator and evaluator identities
 from `learning.ledger`. It rejects shared principal, credential-chain or
 signing-key identity and validates expiry and authority epoch. It then
 intersects:
@@ -78,9 +82,13 @@ it together with all other gates.
 
 ## Identity, causal and statistical obligations
 
-The native closure verifies authenticated identity fields but cannot create the
-underlying trust. A product adapter must verify signatures and credential chains
-against the current trust root before constructing `AuthenticatedPrincipalV1`.
+The direct native core validates supplied identity fields but does not authenticate
+the caller. Production ingress must not construct trust from those assertions: it
+uses `LearningEvidenceVerifierV1` and `decide_with_signed_evidence_v2` (or V3 for
+longitudinal claims), binding registered keys/roles to the exact request bytes.
+`codex_hepta_intelligence::run_evaluated_shadow_v1` is the current repository
+composition that consumes this signed qualification path and separately binds the
+exact candidate bytes and generation.
 
 Causal identification remains conditional on the frozen plan's assumptions:
 consistency, support, correct propensity, appropriate cluster independence and
