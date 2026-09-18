@@ -25,8 +25,11 @@ function text(document, tag, value) {
   return element;
 }
 
-function actionKey(module, action, displayedRevision) {
-  return `action:${module.moduleId}:${module.revision}:${displayedRevision}:${action}`;
+function actionKey(module, action) {
+  // Keep the lock stable across polling rerenders. A newer snapshot must not
+  // create a second logical action while the original confirmation/request
+  // is still outstanding.
+  return `action:${module.moduleId}:${action}`;
 }
 
 function focusKey(module, action) {
@@ -192,7 +195,7 @@ export class ControlPlaneApp {
     stop.setAttribute("type", "button");
     stop.setAttribute("data-focus-key", "stop");
     stop.textContent = "Request runtime stop";
-    const stopBusyKey = `stop:${view.revision}`;
+    const stopBusyKey = "stop";
     stop.disabled = !canMutate || this.#busy.has(stopBusyKey);
     stop.addEventListener("click", () => void this.#requestStop(stop));
     focusTargets.set("stop", stop);
@@ -222,7 +225,7 @@ export class ControlPlaneApp {
       const actions = document.createElement("td");
       for (const [label, action] of ACTIONS) {
         const button = document.createElement("button");
-        const key = actionKey(module, action, view.revision);
+        const key = actionKey(module, action);
         const focus = focusKey(module, action);
         button.setAttribute("type", "button");
         button.setAttribute("data-focus-key", focus);
@@ -254,7 +257,7 @@ export class ControlPlaneApp {
   async #requestModuleAction(module, action, button) {
     const view = this.#view;
     if (!view?.canMutate || this.#mutationBlock !== null) return;
-    const busyKey = actionKey(module, action, view.revision);
+    const busyKey = actionKey(module, action);
     const restore = focusKey(module, action);
     if (this.#busy.has(busyKey)) {
       this.#announce("An identical request is already awaiting confirmation or acknowledgement.");
