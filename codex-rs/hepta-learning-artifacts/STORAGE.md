@@ -124,16 +124,18 @@ executable without claiming impossible cross-file atomicity. It binds the V3
 admission, scoped withdrawal frontier, artifact-registry namespace identity,
 exact registry append, snapshot receipt and current-head witness. The V3-to-V1
 projection preserves the exact dataset digest as V1 `support_digest` for a
-dataset-derived artifact with one source dataset, while deriving the V1 event
-identity from the host operation ID plus the V3 admission digest. This keeps
-post-publication dataset revocation reachable while making the registry event
-commit the exact admission frontier. Multi-dataset or multi-predecessor V2
-manifests fail closed at this V1 bridge rather than losing durable semantics.
-Recovery has only four phases:
+dataset-derived artifact with one source dataset, while keeping the V1 event ID
+equal to the exact host operation ID. The complete V3 admission frontier is bound
+instead by a deterministic `snapshot_binding` over the operation, registry
+namespace, admission/manifest, withdrawal frontier and exact registry append.
+Both the durable registry snapshot receipt and current-head witness receipt must
+carry that binding. Multi-dataset or multi-predecessor V2 manifests fail closed at
+this V1 bridge rather than losing durable semantics. Recovery has only four phases:
 `Prepared -> SnapshotDurable -> WitnessDurable -> Acknowledged`. A source
 acknowledgement is forbidden before `WitnessDurable`. Two synced files are still
-not a distributed transaction; restart reconstructs progress from durable receipts
-and refuses to reinterpret snapshot-only state as published.
+not a distributed transaction; restart requires the immutable publication contract
+(or an authenticated deterministic reconstruction) plus durable receipts, verifies
+the contract binding, and refuses to reinterpret snapshot-only state as published.
 
 `create_new` protects the final path component from an existence-check race;
 `create_in` additionally catches lexical escape and a direct symlink parent. These
