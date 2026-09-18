@@ -12,6 +12,8 @@ use std::io::Read;
 use std::io::Write;
 use std::path::Path;
 use std::path::PathBuf;
+use std::thread;
+use std::time::Duration;
 
 #[path = "native_control.rs"]
 pub mod native;
@@ -164,6 +166,59 @@ impl StdError for Error {}
 impl From<std::io::Error> for Error {
     fn from(value: std::io::Error) -> Self {
         Self::Io(value.to_string())
+    }
+}
+
+#[derive(Clone, Debug)]
+pub struct DurableInferenceControlStore {
+    path: PathBuf,
+    capacity: usize,
+    writer_retry_attempts: usize,
+    writer_retry_delay: Duration,
+}
+
+impl DurableInferenceControlStore {
+    /// A lightweight owner handle. It never holds the journal writer lock
+    /// across provider/model work; every mutation is one short reopen/replay/
+    /// commit transaction.
+    pub fn open(path: impl AsRef<Path>, capacity: usize) -> Result<Self, Error> {
+        let path = path.as_ref().to_path_buf();
+        let control = DurableInferenceControl::open(&path, capacity)?;
+        drop(control);
+        Ok(Self {
+            path,
+            capacity,
+            writer_retry_attempts: 100,
+            writer_retry_delay: Duration::from_millis(2),
+        })
+    }
+
+    pub fn with_control<T>(
+        &self,
+        action: impl FnOnce(&mut DurableInferenceControl) -> Result<T, Error>,
+    ) -> Result<T, Error> {
+        let mut attempts = 0_usize;
+        loop {
+            match DurableInferenceControl::open(&self.path, self.capacity) {
+                Ok(mut control) => return action(&mut control),
+                Err(Error::WriterUnavailable) if attempts < self.writer_retry_attempts => {
+                    attempts += 1;
+                    thread::sleep(self.writer_retry_delay);
+                }
+                Err(error) => return Err(error),
+            }
+        }
+    }
+
+    pub fn native_record(
+        &self,
+        request_id: &str,
+    ) -> Result<Option<native::NativeRunRecord>, Error> {
+        self.with_control(|control| Ok(control.native_record(request_id).cloned()))
+    }
+
+    pub fn journal_path(&self) -> &Path {
+        &self.path
     }
 }
 
