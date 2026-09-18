@@ -2,6 +2,7 @@
 
 #![forbid(unsafe_code)]
 
+mod channel_contract;
 mod generation_bound;
 mod v2;
 
@@ -16,6 +17,15 @@ use codex_hepta_types::Digest32;
 use codex_hepta_types::FixedQ32;
 use codex_hepta_types::StableId;
 
+pub use channel_contract::ChannelContractErrorV1;
+pub use channel_contract::MemoryCueCompileRequestV1;
+pub use channel_contract::RetrievalCandidateUnionV1;
+pub use channel_contract::RetrievalChannelBatchV1;
+pub use channel_contract::RetrievalChannelCoverageV1;
+pub use channel_contract::RetrievalCoverageV1;
+pub use channel_contract::RetrievalGenerationOwnerV1;
+pub use channel_contract::build_candidate_union_from_batches;
+pub use channel_contract::compile_cue;
 pub use generation_bound::CandidateUnionEntryV1;
 pub use generation_bound::CandidateUnionV1;
 pub use generation_bound::MAX_GENERATION_BOUND_CANDIDATES;
