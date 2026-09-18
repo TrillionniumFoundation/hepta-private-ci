@@ -21,6 +21,9 @@ use codex_hepta_types::StableId;
 use serde::Deserialize;
 use serde::Serialize;
 
+use crate::admission::map_final_use_error;
+use crate::final_use_retire_binding;
+use crate::final_use_revoke_binding;
 use crate::AdmissionError;
 use crate::Error;
 use crate::FactorSource;
@@ -133,7 +136,8 @@ impl DurablePromptRegistry {
         })
     }
 
-    pub fn retire_factor(
+    #[cfg(test)]
+    pub(crate) fn retire_factor(
         &mut self,
         factor_id: &StableId,
         actor_id: &StableId,
@@ -146,7 +150,8 @@ impl DurablePromptRegistry {
         })
     }
 
-    pub fn revoke_factor(
+    #[cfg(test)]
+    pub(crate) fn revoke_factor(
         &mut self,
         factor_id: &StableId,
         actor_id: &StableId,
@@ -158,6 +163,83 @@ impl DurablePromptRegistry {
         self.commit(|registry| {
             registry.revoke_factor_governed(&factor_id, &actor_id, reason_digest, cutoff_unix_ms)
         })
+    }
+
+    pub fn retire_factor_final_use(
+        &mut self,
+        authority: &FinalUseAuthority,
+        signed: &SignedFinalUseGrant,
+        factor_id: &StableId,
+        actor_id: &StableId,
+        scope_digest: Digest32,
+        reason_digest: Digest32,
+    ) -> Result<RegistryReceipt, DurableRegistryError> {
+        let factor = self.registry.factor(factor_id).cloned().ok_or_else(|| {
+            DurableRegistryError::Core(Error::FactorNotFound(factor_id.to_string()))
+        })?;
+        let expected = final_use_retire_binding(
+            &factor,
+            actor_id,
+            scope_digest,
+            reason_digest,
+        )
+        .map_err(DurableRegistryError::Admission)?;
+        let token = authority
+            .claim(signed, &expected)
+            .map_err(map_final_use_error)
+            .map_err(DurableRegistryError::Admission)?;
+        let factor_id = factor_id.clone();
+        let actor_id = actor_id.clone();
+        authority
+            .with_verified_use(token, &expected, || {
+                self.commit(|registry| {
+                    registry.retire_factor_governed(&factor_id, &actor_id, reason_digest)
+                })
+            })
+            .map_err(map_final_use_error)
+            .map_err(DurableRegistryError::Admission)?
+    }
+
+    pub fn revoke_factor_final_use(
+        &mut self,
+        authority: &FinalUseAuthority,
+        signed: &SignedFinalUseGrant,
+        factor_id: &StableId,
+        actor_id: &StableId,
+        scope_digest: Digest32,
+        reason_digest: Digest32,
+        cutoff_unix_ms: u64,
+    ) -> Result<RegistryReceipt, DurableRegistryError> {
+        let factor = self.registry.factor(factor_id).cloned().ok_or_else(|| {
+            DurableRegistryError::Core(Error::FactorNotFound(factor_id.to_string()))
+        })?;
+        let expected = final_use_revoke_binding(
+            &factor,
+            actor_id,
+            scope_digest,
+            reason_digest,
+            cutoff_unix_ms,
+        )
+        .map_err(DurableRegistryError::Admission)?;
+        let token = authority
+            .claim(signed, &expected)
+            .map_err(map_final_use_error)
+            .map_err(DurableRegistryError::Admission)?;
+        let factor_id = factor_id.clone();
+        let actor_id = actor_id.clone();
+        authority
+            .with_verified_use(token, &expected, || {
+                self.commit(|registry| {
+                    registry.revoke_factor_governed(
+                        &factor_id,
+                        &actor_id,
+                        reason_digest,
+                        cutoff_unix_ms,
+                    )
+                })
+            })
+            .map_err(map_final_use_error)
+            .map_err(DurableRegistryError::Admission)?
     }
 
     pub fn snapshot_v2(
