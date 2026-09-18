@@ -16,8 +16,8 @@
     "codex-rs/hepta-infer-core",
     "codex-rs/hepta-inferd"
   ],
-  "stateOwnerDisposition": "The same single-writer DurableInferenceControl journal owns legacy records and native hosted request identity, local in-flight slot reservations, dispatch bindings and observations.",
-  "terminalObserverDisposition": "The actual Agent-fenced App Server client supplies matching turn observations through a trusted in-process port. Missing tokens remain null; uncertain execution holds its local slot. This is not provider billing or signed remote-worker authority.",
+  "stateOwnerDisposition": "The same single-writer DurableInferenceControl journal owns legacy records and native hosted request identity, local in-flight slot reservations, final-use-witnessed dispatch bindings and digest-only durable observations.",
+  "terminalObserverDisposition": "The actual Agent-fenced App Server client supplies matching turn observations through a trusted in-process port. Missing tokens remain null; uncertain execution holds its local slot. Provider turn entry additionally requires kernel FinalUseAuthority admission, while owner health remains a separate runtime observation. This is not provider billing, economic quota or signed remote-worker authority.",
   "operations": [
     {
       "designOperation": "reserve_request",
@@ -36,7 +36,7 @@
           "command": "just test -p codex-hepta-infer-core --lib"
         }
       ],
-      "sourceSemantics": "Pins explicit local slot capacity and exact request identity before provider contact.",
+      "sourceSemantics": "Pins explicit local in-flight slot capacity and exact request identity before provider contact. This NativeLocalSlotAdmission is not the target economic/resource InferenceReservation.",
       "operation": "reserve_request",
       "nativeSymbol": "pub fn reserve_native(",
       "sourcePath": "codex-rs/hepta-infer-core/src/native_control.rs",
@@ -59,7 +59,7 @@
           "command": "just test -p codex-hepta-infer-core --lib"
         }
       ],
-      "sourceSemantics": "Syncs exact thread/provider/context dispatch intent before the actual turn/start RPC; a duplicate cannot issue a new turn.",
+      "sourceSemantics": "Immediately before turn/start, kernel FinalUseAuthority verifies the exact request/model/provider/resolved-context binding and rechecks revocation while the exact thread/provider/context dispatch intent plus public witness is synced; a duplicate cannot issue a new turn.",
       "operation": "schedule",
       "nativeSymbol": "pub fn dispatch_native(",
       "sourcePath": "codex-rs/hepta-infer-core/src/native_control.rs",
@@ -105,7 +105,7 @@
           "command": "just test -p codex-hepta-infer-core --lib"
         }
       ],
-      "sourceSemantics": "Persists actual matching terminal and optional observed u64 usage; terminality releases a local slot, unknown execution remains held. Late usage can refine an observation without changing its terminal outcome.",
+      "sourceSemantics": "Persists actual matching terminal state, output digest and optional observed u64 usage without durable raw provider text; terminality releases a local slot, unknown execution remains held. Late usage can refine an observation without changing its terminal outcome.",
       "operation": "settle",
       "nativeSymbol": "pub fn settle_native(",
       "sourcePath": "codex-rs/hepta-infer-core/src/native_control.rs",
@@ -115,7 +115,8 @@
   "repositoryControlledGaps": [
     "Connect economically meaningful quota and hardware-capacity authorities; the shipped native policy reserves only local in-flight run slots.",
     "Implement authenticated recovery of actual provider terminal/usage observations after process loss; reopening a dispatched run conservatively holds capacity and never replays it.",
-    "Add bounded archival/retention under the same journal owner; the current 64 MiB journal rejects further appends without truncating acknowledged history."
+    "Compose the registered OperationIntentV1/VerifiedUseTokenWitnessV1 product protocols with the native final-use-gated provider path; the shipped path consumes FinalUseAuthority and persists a non-authoritative NativeFinalUseWitness but does not claim the full registry protocol composition.",
+    "Add general bounded archival/record compaction under the same journal owner; output redaction can reduce bytes but preserves event history, so the 64 MiB/16384-record ceiling still rejects further durable writes when reached."
   ],
   "externalEvidenceGates": [
     "real provider deployment and crash/cancellation acceptance",
