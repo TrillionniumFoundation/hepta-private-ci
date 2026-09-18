@@ -65,10 +65,7 @@ impl AutomationStore {
         }
 
         let historical = self
-            .automation_historical_recovery_fence(
-                work.occurrence.task_id,
-                work.occurrence.occurrence,
-            )
+            .automation_historical_recovery_fence(&work.occurrence.taskflow_run_id)
             .await?;
         let (fence, active_run) = if run
             .lease_expires_at_ms
@@ -143,39 +140,29 @@ impl AutomationStore {
 
     async fn automation_historical_recovery_fence(
         &self,
-        task_id: crate::AutomationTaskId,
-        occurrence: u64,
+        run_id: &str,
     ) -> Result<TaskFlowFence, TaskFlowError> {
-        let row = sqlx::query(
-            "SELECT claim_generation, claim_token
-             FROM automation_occurrence_lifecycle
-             WHERE task_id = ? AND occurrence = ? AND owner_agent_id = ?",
-        )
-        .bind(task_id.to_string())
-        .bind(i64::try_from(occurrence).map_err(|_| {
-            TaskFlowError::Invalid("automation occurrence overflows SQLite".to_string())
-        })?)
-        .bind(self.taskflow_owner_agent_id().as_str())
-        .fetch_optional(self.taskflow_pool())
-        .await
-        .map_err(|_| TaskFlowError::Unavailable)?
-        .ok_or_else(|| TaskFlowError::Conflict("automation occurrence is missing".to_string()))?;
-        let generation = u64::try_from(
-            row.try_get::<i64, _>("claim_generation")
-                .map_err(|_| TaskFlowError::Corrupt("claim generation column".to_string()))?,
-        )
-        .map_err(|_| TaskFlowError::Corrupt("claim generation column".to_string()))?;
-        let token: String = row
-            .try_get("claim_token")
-            .map_err(|_| TaskFlowError::Corrupt("claim token column".to_string()))?;
-        TaskFlowFence::new(
-            self.taskflow_owner_agent_id().clone(),
-            format!("automation.scheduler:{task_id}"),
-            generation,
-            generation,
-            token,
-        )
-    }
+        let run = self
+            .taskflow_run(run_id)
+            .await?
+            .ok_or_else(|| TaskFlowError::Conflict("automation TaskFlow run is missing".to_string()))?;
+        Ok(TaskFlowFence {
+            owner_agent_id: self.taskflow_owner_agent_id().clone(),
+            owner_id: run.owner_id.ok_or_else(|| {
+                TaskFlowError::Corrupt("automation TaskFlow run lost owner id".to_string())
+            })?,
+            owner_epoch: run.owner_epoch.ok_or_else(|| {
+                TaskFlowError::Corrupt("automation TaskFlow run lost owner epoch".to_string())
+            })?,
+            generation: run.generation.ok_or_else(|| {
+                TaskFlowError::Corrupt("automation TaskFlow run lost generation".to_string())
+            })?,
+            fencing_token: run.fencing_token.ok_or_else(|| {
+                TaskFlowError::Corrupt("automation TaskFlow run lost fencing token".to_string())
+            })?,
+        })
+    }}
+
 }
 
 fn recovery_fencing_token(occurrence_id: &str, generation: u64) -> String {
