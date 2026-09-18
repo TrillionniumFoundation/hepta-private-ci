@@ -1,3 +1,5 @@
+#![allow(deprecated)]
+
 //! Compile-time linkage contract for every Lane E operation registered in the
 //! closed-world implementation matrix. The test intentionally performs no
 //! authority-bearing action; it proves that mapped symbols are public and
