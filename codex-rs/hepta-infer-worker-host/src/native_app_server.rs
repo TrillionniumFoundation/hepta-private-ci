@@ -32,11 +32,17 @@ use codex_hepta_agentd::AgentdClient;
 use codex_hepta_agentd::AgentdError;
 use codex_hepta_agentd::HealthSnapshot;
 use codex_hepta_contracts::AgentId;
+use codex_hepta_contracts::FinalUseAuthority;
+use codex_hepta_contracts::FinalUseBinding;
+use codex_hepta_contracts::SignedFinalUseGrant;
 use codex_hepta_infer_core::durable_control::DurableInferenceControl;
 use codex_hepta_infer_core::durable_control::native::NativeDispatch;
+use codex_hepta_infer_core::durable_control::native::NativeFinalUseWitness;
+use codex_hepta_infer_core::durable_control::native::NativeRequest;
 pub use codex_hepta_infer_core::durable_control::native::NativeOwnerAuthority;
 pub use codex_hepta_infer_core::durable_control::native::NativeRunOutput;
 pub use codex_hepta_infer_core::durable_control::native::NativeRunStatus;
+use codex_hepta_types::Digest32;
 use codex_utils_absolute_path::AbsolutePathBuf;
 
 #[path = "native_run_control.rs"]
@@ -61,7 +67,17 @@ pub struct NativeWorkerConfig {
     pub agent_id: AgentId,
     pub generation: u64,
     pub model: String,
+    /// Exact provider identity expected from App Server before turn dispatch.
+    pub model_provider: String,
     pub timeout: Duration,
+}
+
+/// Kernel-owned final-use verifier plus one independently issued exact grant.
+/// Replayed/terminal requests do not need a fresh grant because they never
+/// dispatch another provider effect.
+pub struct NativeFinalUseAdmission<'a> {
+    pub authority: &'a FinalUseAuthority,
+    pub grant: &'a SignedFinalUseGrant,
 }
 
 /// A real provider client. Each new request uses a fresh ephemeral thread
@@ -77,6 +93,8 @@ impl AppServerModelDriver {
             || config.generation == 0
             || config.model.is_empty()
             || config.model.len() > 256
+            || !final_use_identifier(&config.model_provider)
+            || format!("provider:{}", config.model_provider).len() > 128
             || config.timeout.is_zero()
             || config.timeout > Duration::from_secs(3600)
         {
@@ -90,7 +108,8 @@ impl AppServerModelDriver {
     async fn run_once(
         &self,
         control: &mut DurableInferenceControl,
-        request_id: &str,
+        request: &NativeRequest,
+        final_use: &NativeFinalUseAdmission<'_>,
         prompt: String,
         context_query: Option<String>,
         cancellation: &CancellationToken,
@@ -101,6 +120,7 @@ impl AppServerModelDriver {
         if cancellation.is_cancelled() {
             return Err("cancelled before admission".into());
         }
+        let request_id = request.request_id.as_str();
         let owner = AgentdClient::new(
             self.config.agentd_socket.clone(),
             self.config.agent_id.clone(),
@@ -171,20 +191,31 @@ impl AppServerModelDriver {
             let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
             return Err("provider substituted the requested model".into());
         }
+        if started.model_provider != self.config.model_provider {
+            let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
+            return Err("provider substituted the configured provider identity".into());
+        }
         // Recheck the actual generation after acquiring context and connecting.
         owner.session_ingress().await?;
         if cancellation.is_cancelled() {
             let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
             return Err("cancelled before model dispatch".into());
         }
-        control.dispatch_native(
-            request_id,
-            NativeDispatch {
-                thread_id: started.thread.id.clone(),
-                model_provider: started.model_provider.clone(),
-                context_digest: control::digest(&serde_json::to_vec(&additional_context)?),
-            },
-        )?;
+        let context_digest = control::digest(&serde_json::to_vec(&additional_context)?);
+        let binding = native_final_use_binding(request, &started.model_provider, &context_digest)?;
+        let verified = final_use.authority.claim(final_use.grant, &binding)?;
+        let witness = native_final_use_witness(final_use.grant, &binding)?;
+        final_use.authority.with_verified_use(verified, &binding, || {
+            control.dispatch_native(
+                request_id,
+                NativeDispatch {
+                    thread_id: started.thread.id.clone(),
+                    model_provider: started.model_provider.clone(),
+                    context_digest,
+                    final_use_witness: Some(witness),
+                },
+            )
+        })??;
         let response = timeout(
             RPC_TIMEOUT,
             client.request_typed::<TurnStartResponse>(ClientRequest::TurnStart {
@@ -215,8 +246,11 @@ impl AppServerModelDriver {
                     status: NativeRunStatus::Indeterminate,
                     output: String::new(),
                     observed_output_tokens: None,
+                    output_digest: None,
+                    output_retained: true,
                     terminal_observed: false,
                     owner_authority: NativeOwnerAuthority::Unverified,
+                    final_use_authorized: true,
                     stop_reason: Some("turn/start outcome unknown; do not replay".to_string()),
                 });
             }
@@ -229,8 +263,11 @@ impl AppServerModelDriver {
             status: NativeRunStatus::Indeterminate,
             output: String::new(),
             observed_output_tokens: None,
+            output_digest: None,
+            output_retained: true,
             terminal_observed: false,
             owner_authority: NativeOwnerAuthority::Unverified,
+            final_use_authorized: true,
             stop_reason: None,
         };
         if let Err(error) = control.native_started(request_id, output.turn_id.clone()) {
@@ -351,6 +388,76 @@ impl AppServerModelDriver {
             }
         }
     }
+}
+
+/// Build the exact final-use binding used immediately before provider turn entry.
+/// It binds request identity, Agent generation, model, provider, prompt/query
+/// envelope digest and the resolved owner-context digest.
+pub fn native_final_use_binding(
+    request: &NativeRequest,
+    model_provider: &str,
+    context_digest: &str,
+) -> std::result::Result<FinalUseBinding, String> {
+    if !final_use_identifier(model_provider)
+        || format!("provider:{model_provider}").len() > 128
+        || context_digest.len() != 64
+        || !context_digest
+            .bytes()
+            .all(|byte| byte.is_ascii_digit() || (b'a'..=b'f').contains(&byte))
+    {
+        return Err("invalid native final-use provider/context binding".to_string());
+    }
+    let request_bytes = serde_json::to_vec(&(
+        "hepta.inference.final-use.request.v1",
+        request,
+        model_provider,
+        context_digest,
+    ))
+    .map_err(|_| "cannot encode native final-use request".to_string())?;
+    let scope_bytes = serde_json::to_vec(&(
+        "hepta.inference.final-use.scope.v1",
+        &request.principal_id,
+        request.worker_generation,
+        &request.model,
+        model_provider,
+    ))
+    .map_err(|_| "cannot encode native final-use scope".to_string())?;
+    let payload_bytes = serde_json::to_vec(&(
+        "hepta.inference.final-payload.v1",
+        &request.payload_digest,
+        context_digest,
+        &request.model,
+        model_provider,
+    ))
+    .map_err(|_| "cannot encode native final-use payload".to_string())?;
+    Ok(FinalUseBinding {
+        subject_id: request.principal_id.clone(),
+        destination_id: format!("provider:{model_provider}"),
+        request_sha256: Digest32::of_bytes(&request_bytes).into_array(),
+        scope_sha256: Digest32::of_bytes(&scope_bytes).into_array(),
+        payload_sha256: Digest32::of_bytes(&payload_bytes).into_array(),
+    })
+}
+
+fn native_final_use_witness(
+    grant: &SignedFinalUseGrant,
+    binding: &FinalUseBinding,
+) -> Result<NativeFinalUseWitness> {
+    Ok(NativeFinalUseWitness {
+        signer_id: grant.grant.signer_id.clone(),
+        authority_epoch: grant.grant.authority_epoch,
+        grant_id: grant.grant.grant_id.clone(),
+        expires_at_unix_ms: grant.grant.expires_at_unix_ms,
+        binding_digest: Digest32::of_bytes(&serde_json::to_vec(binding)?).to_string(),
+    })
+}
+
+fn final_use_identifier(value: &str) -> bool {
+    !value.is_empty()
+        && value.len() <= 119
+        && value
+            .bytes()
+            .all(|byte| byte.is_ascii_alphanumeric() || b"_-.:/".contains(&byte))
 }
 
 async fn verify_owner_health(
