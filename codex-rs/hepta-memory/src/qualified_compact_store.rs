@@ -344,20 +344,6 @@ impl CognitiveStore {
                 "checkpoint snapshot authority epoch does not match the active fence".to_string(),
             ));
         }
-        if checkpoint.generation.get() > 1
-            && checkpoint
-                .source_snapshot
-                .vector
-                .compact_checkpoint_generation
-                .next()
-                .ok()
-                != Some(checkpoint.generation)
-        {
-            return Err(QualifiedCompactStoreError::Conflict(
-                "checkpoint generation is not the successor of the source snapshot".to_string(),
-            ));
-        }
-
         let mut transaction = self
             .pool
             .begin_with("BEGIN IMMEDIATE")
@@ -709,6 +695,18 @@ fn validate_pair(
         .map_err(|error| invalid(format!("proof contract rejected: {error}")))?;
     if proof.checkpoint_digest != checkpoint.checkpoint_digest {
         return Err(invalid("proof does not bind the checkpoint digest"));
+    }
+    if checkpoint
+        .source_snapshot
+        .vector
+        .compact_checkpoint_generation
+        .next()
+        .ok()
+        != Some(checkpoint.generation)
+    {
+        return Err(invalid(
+            "checkpoint generation is not the successor of the source snapshot",
+        ));
     }
     if proof.deletion_cutoff != checkpoint.tombstone_cutoff {
         return Err(invalid(
