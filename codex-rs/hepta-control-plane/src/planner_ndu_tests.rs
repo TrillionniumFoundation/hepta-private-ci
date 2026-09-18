@@ -104,6 +104,11 @@ fn fixture() -> (
                 .collect(),
         },
     };
+    let resource_reservations = vec![ResourceReservationV1 {
+        axis: id("context-read"),
+        endowment: FixedQ32::ONE,
+        essential_floor: FixedQ32::ZERO,
+    }];
     let prepared = prepare_plan(
         &snapshot,
         PlanningRequestV1 {
@@ -112,7 +117,9 @@ fn fixture() -> (
             deadline_micros: 190,
             evaluation_policy_digest: canonical_ndu_planning_policy_digest(&input)
                 .expect("policy binding"),
-            resource_profile_digest: digest("bounded-context-read"),
+            resource_profile_digest:
+                crate::canonical_resource_profile_digest(&resource_reservations)
+                    .expect("resource profile binding"),
             candidates: ["abstain", "read-context"]
                 .into_iter()
                 .map(|name| PlanCandidateV1 {
@@ -131,11 +138,7 @@ fn fixture() -> (
                     }],
                 })
                 .collect(),
-            resource_reservations: vec![ResourceReservationV1 {
-                axis: id("context-read"),
-                endowment: FixedQ32::ONE,
-                essential_floor: FixedQ32::ZERO,
-            }],
+            resource_reservations,
         },
     )
     .expect("prepared plan");
