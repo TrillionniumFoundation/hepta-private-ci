@@ -1,6 +1,7 @@
 use super::*;
 
 use std::fs;
+use std::os::unix::fs::PermissionsExt;
 use std::os::unix::net::UnixListener;
 use std::thread;
 use std::time::SystemTime;
@@ -106,6 +107,7 @@ fn request(manifest: &ModelManifest) -> WorkerRequest {
 fn verifies_artifacts_and_round_trips_load_infer_unload() {
     let fixture = fixture("roundtrip");
     let listener = UnixListener::bind(&fixture.socket).unwrap();
+    fs::set_permissions(&fixture.socket, fs::Permissions::from_mode(0o600)).unwrap();
     let manifest = fixture.manifest.clone();
     let server_manifest = manifest.clone();
     let server = thread::spawn(move || {
