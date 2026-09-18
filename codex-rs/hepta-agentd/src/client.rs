@@ -531,11 +531,33 @@ impl AgentdClient {
 
 fn unexpected<T>(payload: AgentdPayload) -> Result<T, AgentdError> {
     match payload {
+        AgentdPayload::Error { code, message } if code == "overloaded" => {
+            Err(AgentdError::Overloaded(message))
+        }
         AgentdPayload::Error { code, message } => Err(AgentdError::Protocol(format!(
             "agentd rejected request ({code}): {message}"
         ))),
         other => Err(AgentdError::Protocol(format!(
             "agentd returned unexpected payload {other:?}"
         ))),
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn overload_response_maps_to_typed_client_error() {
+        let error = unexpected::<()>(AgentdPayload::Error {
+            code: "overloaded".to_string(),
+            message: "retry with bounded backoff".to_string(),
+        })
+        .expect_err("overload must fail");
+        assert!(matches!(
+            error,
+            AgentdError::Overloaded(message)
+                if message == "retry with bounded backoff"
+        ));
     }
 }
