@@ -18,7 +18,7 @@
   ],
   "sourceRootPresent": true,
   "productionImplementation": false,
-  "productCallerState": "registered_host_composed_not_activated",
+  "productCallerState": "registered_bao_host_source_composed_no_selected_process",
   "productionWriterState": "authority_owner_source_implemented_not_activated",
   "operations": [
     {
@@ -32,7 +32,7 @@
         "codex-rs/hepta-contracts/tests/final_use_linearization.rs"
       ],
       "sourcePathExists": true,
-      "designOperation": "finaluseauthority",
+      "designOperation": "claim_deliver_dispatch_with_external_trust",
       "mappingClass": "owner_native",
       "delegatedCallees": []
     },
@@ -52,15 +52,15 @@
     },
     {
       "operation": "authority_lease_registry",
-      "nativeSymbol": "AuthorityLeaseRegistry",
+      "nativeSymbol": "AuthorityLeaseRegistry / AuthorityLeaseVerifier",
       "sourcePath": "codex-rs/hepta-contracts/src/authority_lease.rs",
-      "state": "source_implemented_not_product_activated",
+      "state": "source_implemented_least_authority_handles_not_product_activated",
       "authority": "none",
       "tests": [
         "codex-rs/hepta-contracts/src/authority_lease.rs"
       ],
       "sourcePathExists": true,
-      "designOperation": "verify_use_revoke_authority_lease",
+      "designOperation": "put_verify_revoke_prune_epoch_authority_lease",
       "mappingClass": "owner_native",
       "delegatedCallees": []
     },
@@ -74,7 +74,7 @@
         "codex-rs/hepta-contracts/src/final_use_control.rs"
       ],
       "sourcePathExists": true,
-      "designOperation": "independent_final_use_approval",
+      "designOperation": "independent_final_use_approval_with_epoch_key_rotation",
       "mappingClass": "owner_native",
       "delegatedCallees": []
     },
@@ -88,19 +88,36 @@
         "codex-rs/hepta-contracts/src/final_use_control.rs"
       ],
       "sourcePathExists": true,
-      "designOperation": "authenticated_revocation_ingestion",
+      "designOperation": "authenticated_fresh_revocation_ingestion_with_epoch_key_rotation",
       "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "authority_external_trust",
+      "nativeSymbol": "AuthorityClock / AuthorityFrontierStore",
+      "sourcePath": "codex-rs/hepta-contracts/src/authority_trust.rs",
+      "state": "source_interface_implemented_external_backend_not_selected",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-contracts/src/authority_lease.rs",
+        "codex-rs/hepta-contracts/src/final_use_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "trusted_time_and_external_anti_rollback_frontier",
+      "mappingClass": "owner_native_interface",
       "delegatedCallees": []
     }
   ],
   "repositoryControlledGaps": [
     "Select and qualify a named product-process caller for the registered Bao final-use host before activation.",
-    "Retain exact-head and deterministic synthetic-merge execution receipts for every authority-boundary change."
+    "Compose each remaining target kernel.authority ModulePort only at its real owner boundary; target-only ports are enumerated in TRACEABILITY.md and must not be inferred from the generic lease type.",
+    "Retain current exact-head and deterministic synthetic-merge execution receipts after the hardened authority changes."
   ],
   "externalEvidenceGates": [
-    "fleet revocation fanout and freshness qualification",
-    "external anti-rollback frontier and trusted-time qualification",
-    "independent key-custody and operator-approval ceremony",
+    "fleet revocation transport, convergence and measured freshness qualification",
+    "protected production AuthorityFrontierStore backend qualification",
+    "attested or otherwise independently protected AuthorityClock qualification",
+    "HSM/KMS key custody, staged rotation and compromise-response ceremony",
     "independent semantic review",
     "operator acceptance, canary, promotion and release"
   ],
@@ -115,5 +132,8 @@
   },
   "sourceRoot": [
     "codex-rs/hepta-contracts"
-  ]
+  ],
+  "traceability": "docs/modules/kernel.authority/TRACEABILITY.md",
+  "trustDecision": "docs/modules/kernel.authority/ADR-0001-LEASE-TRUST-MODEL.md",
+  "linearizationContract": "docs/modules/kernel.authority/LINEARIZATION.md"
 }
