@@ -141,6 +141,35 @@ impl AgentRunCoordinator {
         &self.composition
     }
 
+    pub fn start_objective_run(
+        &mut self,
+        now_ms: u64,
+        run_start: &RunStartSnapshotV1,
+        bindings: ObjectiveRunStartRuntimeBindings,
+    ) -> Result<RunReceipt, AgentRunError> {
+        if run_start.generation != self.composition.agentd_generation {
+            return Err(AgentRunError::InvalidGeneration);
+        }
+        self.start_run(
+            now_ms,
+            RunSnapshot {
+                run_id: run_start.run_id.to_string(),
+                request_digest: bindings.request_digest,
+                objective_digest: run_start.objective_digest.to_string(),
+                hard_constraint_digest: run_start.hard_constraint_digest.to_string(),
+                preference_state_digest: run_start.preference_state_digest.to_string(),
+                model_tuple_digest: run_start.model_tuple_digest.to_string(),
+                prompt_registry_digest: run_start.prompt_registry_digest.to_string(),
+                body_digest: bindings.body_digest,
+                artifact_set_digest: run_start.artifact_set_digest.to_string(),
+                authority_epoch: run_start.authority_epoch,
+                generation: run_start.generation,
+                fence_digest: run_start.fence_digest.to_string(),
+                deadline_ms: bindings.deadline_ms,
+            },
+        )
+    }
+
     pub fn start_run(
         &mut self,
         now_ms: u64,
@@ -333,12 +362,17 @@ fn validate_snapshot(now_ms: u64, value: &RunSnapshot) -> Result<(), AgentRunErr
     for (digest, field) in [
         (&value.request_digest, "request"),
         (&value.objective_digest, "objective"),
+        (&value.hard_constraint_digest, "hard constraint"),
+        (&value.preference_state_digest, "preference state"),
+        (&value.model_tuple_digest, "model tuple"),
+        (&value.prompt_registry_digest, "prompt registry"),
         (&value.body_digest, "body"),
         (&value.artifact_set_digest, "artifact set"),
+        (&value.fence_digest, "fence"),
     ] {
         validate_digest(digest, field)?;
     }
-    if value.authority_epoch == 0 {
+    if value.authority_epoch == 0 || value.generation == 0 {
         return Err(AgentRunError::InvalidGeneration);
     }
     if value.deadline_ms <= now_ms {

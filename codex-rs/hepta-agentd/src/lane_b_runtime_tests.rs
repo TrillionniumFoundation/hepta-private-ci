@@ -19,9 +19,15 @@ fn snapshot() -> RunSnapshot {
         run_id: "run.1".to_string(),
         request_digest: digest('3'),
         objective_digest: digest('4'),
+        hard_constraint_digest: digest('7'),
+        preference_state_digest: digest('8'),
+        model_tuple_digest: digest('9'),
+        prompt_registry_digest: digest('a'),
         body_digest: digest('5'),
         artifact_set_digest: digest('6'),
         authority_epoch: 7,
+        generation: 3,
+        fence_digest: digest('b'),
         deadline_ms: 10_000,
     }
 }
@@ -229,4 +235,54 @@ fn indeterminate_outcomes_reconcile_without_redispatch_or_leaked_capacity() {
             .expect("release capacity");
     }
     assert_eq!(coordinator.run("run.1"), None);
+}
+
+
+#[test]
+fn published_objective_run_start_is_consumed_without_new_durable_ownership() {
+    use codex_hepta_objective::RunStartSnapshotV1;
+    use codex_hepta_types::Digest32;
+    use codex_hepta_types::StableId;
+
+    let mut coordinator = AgentRunCoordinator::compose_runtime(composition()).expect("compose");
+    let run_start = RunStartSnapshotV1 {
+        run_id: StableId::new("run.2").expect("run id"),
+        objective_digest: Digest32::of_bytes(b"objective"),
+        hard_constraint_digest: Digest32::of_bytes(b"hard"),
+        preference_state_digest: Digest32::of_bytes(b"preference"),
+        model_tuple_digest: Digest32::of_bytes(b"model"),
+        prompt_registry_digest: Digest32::of_bytes(b"prompt"),
+        artifact_set_digest: Digest32::of_bytes(b"artifact"),
+        authority_epoch: 7,
+        generation: 3,
+        fence_digest: Digest32::of_bytes(b"fence"),
+    };
+    let receipt = coordinator
+        .start_objective_run(
+            100,
+            &run_start,
+            ObjectiveRunStartRuntimeBindings {
+                request_digest: digest('c'),
+                body_digest: digest('d'),
+                deadline_ms: 10_000,
+            },
+        )
+        .expect("admit published objective run");
+    assert_eq!(receipt.run_id, "run.2");
+    assert_eq!(receipt.phase, RunPhase::Admitted);
+
+    let mut wrong_generation = run_start;
+    wrong_generation.generation = 4;
+    assert_eq!(
+        coordinator.start_objective_run(
+            100,
+            &wrong_generation,
+            ObjectiveRunStartRuntimeBindings {
+                request_digest: digest('c'),
+                body_digest: digest('d'),
+                deadline_ms: 10_000,
+            },
+        ),
+        Err(AgentRunError::InvalidGeneration)
+    );
 }
