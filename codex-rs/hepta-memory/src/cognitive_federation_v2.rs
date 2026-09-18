@@ -23,7 +23,6 @@ use codex_hepta_types::Revision;
 use codex_hepta_types::StableId;
 use sha2::Digest as _;
 use sha2::Sha256;
-use sqlx::Row;
 
 use super::*;
 
