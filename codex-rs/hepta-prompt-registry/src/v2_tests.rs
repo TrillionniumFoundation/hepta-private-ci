@@ -32,6 +32,7 @@ fn model_tuple() -> PromptModelTupleV2 {
         tokenizer_digest: digest("tokenizer"),
         template_digest: digest("template"),
         tool_schema_digest: digest("tool-schema"),
+        context_profile_digest: digest("context-profile"),
         locale_id: id("locale:en-US"),
     }
 }
@@ -44,6 +45,7 @@ fn binding() -> PromptRealizationBindingV2 {
         tokenizer_digest: digest("tokenizer"),
         template_digest: digest("template"),
         tool_schema_digest: digest("tool-schema"),
+        context_profile_digest: digest("context-profile"),
         locale_id: id("locale:en-US"),
         role: PromptRoleV2::DeveloperInstruction,
         payload_digest: digest("payload"),
@@ -181,4 +183,155 @@ fn untrusted_external_factor_cannot_obtain_v2_realization() {
         registry.register_realization_v2(binding()),
         Err(Error::FactorNotAdmitted("factor:1".to_string()))
     );
+}
+
+
+#[test]
+fn required_factors_are_not_starved_by_other_roles() {
+    let mut registry = admitted_registry();
+    let mut factor_two = factor();
+    factor_two.factor_id = id("factor:2");
+    factor_two.proposer_id = id("proposer:2");
+    factor_two.content_digest = digest("factor:2");
+    registry
+        .register_factor(factor_two)
+        .unwrap_or_else(|error| panic!("register factor two: {error}"));
+    registry
+        .admit_factor(&id("factor:2"), &id("reviewer:2"), digest("evidence:2"))
+        .unwrap_or_else(|error| panic!("admit factor two: {error}"));
+
+    let first = binding();
+    registry
+        .register_realization_v2(first)
+        .unwrap_or_else(|error| panic!("first realization: {error}"));
+
+    let mut schema = binding();
+    schema.realization_id = id("realization:2");
+    schema.role = PromptRoleV2::ToolSchemaFragment;
+    schema.payload_digest = digest("payload:2");
+    registry
+        .register_realization_v2(schema)
+        .unwrap_or_else(|error| panic!("second role: {error}"));
+
+    let mut other = binding();
+    other.realization_id = id("realization:3");
+    other.factor_id = id("factor:2");
+    other.payload_digest = digest("payload:3");
+    registry
+        .register_realization_v2(other)
+        .unwrap_or_else(|error| panic!("other factor: {error}"));
+
+    let tuple = model_tuple();
+    let vector = digest("generation-vector");
+    let snapshot = registry
+        .snapshot_v2(vector, &tuple)
+        .unwrap_or_else(|error| panic!("snapshot: {error}"));
+    let result = registry
+        .read_compatible_v2(
+            &snapshot,
+            vector,
+            &tuple,
+            10,
+            vec![id("factor:2"), id("factor:1")],
+            2,
+        )
+        .unwrap_or_else(|error| panic!("required factors must fit: {error}"));
+    assert_eq!(result.required_factor_ids, vec![id("factor:1"), id("factor:2")]);
+    assert_eq!(
+        result
+            .bindings
+            .iter()
+            .map(|binding| binding.factor_id.clone())
+            .collect::<BTreeSet<_>>(),
+        BTreeSet::from([id("factor:1"), id("factor:2")])
+    );
+}
+
+#[test]
+fn equivalent_required_factor_order_has_one_canonical_digest() {
+    let mut registry = admitted_registry();
+    registry
+        .register_realization_v2(binding())
+        .unwrap_or_else(|error| panic!("register realization: {error}"));
+    let tuple = model_tuple();
+    let vector = digest("generation-vector");
+    let snapshot = registry
+        .snapshot_v2(vector, &tuple)
+        .unwrap_or_else(|error| panic!("snapshot: {error}"));
+    let left = registry
+        .read_compatible_v2(&snapshot, vector, &tuple, 10, vec![id("factor:1")], 8)
+        .unwrap_or_else(|error| panic!("left: {error}"));
+    let right = registry
+        .read_compatible_v2(&snapshot, vector, &tuple, 10, vec![id("factor:1")], 8)
+        .unwrap_or_else(|error| panic!("right: {error}"));
+    assert_eq!(left.set_digest, right.set_digest);
+    assert_eq!(left.required_factor_ids, right.required_factor_ids);
+}
+
+#[test]
+fn active_realization_profile_requires_explicit_supersession() {
+    let mut registry = admitted_registry();
+    registry
+        .register_realization_v2(binding())
+        .unwrap_or_else(|error| panic!("register realization: {error}"));
+    let mut competing = binding();
+    competing.realization_id = id("realization:2");
+    competing.payload_digest = digest("payload:2");
+    assert_eq!(
+        registry.register_realization_v2(competing),
+        Err(Error::RealizationProfileConflict("factor:1".to_string()))
+    );
+}
+
+#[test]
+fn payload_registration_supersedes_and_dereferences_exact_bytes() {
+    let mut registry = admitted_registry();
+    let payload = b"developer instruction v1".to_vec();
+    let mut first = binding();
+    first.payload_digest = Digest32::of_bytes(&payload);
+    first.expires_unix_ms = None;
+    registry
+        .register_realization_payload_v2(first.clone(), payload.clone(), None)
+        .unwrap_or_else(|error| panic!("payload register: {error}"));
+
+    let next_payload = b"developer instruction v2".to_vec();
+    let mut next = first.clone();
+    next.realization_id = id("realization:2");
+    next.payload_digest = Digest32::of_bytes(&next_payload);
+    registry
+        .register_realization_payload_v2(
+            next.clone(),
+            next_payload.clone(),
+            Some(first.realization_id.clone()),
+        )
+        .unwrap_or_else(|error| panic!("supersede: {error}"));
+    assert!(
+        !registry
+            .realization(&first.realization_id)
+            .expect("predecessor")
+            .active
+    );
+    assert_eq!(
+        registry.realization_predecessor(&next.realization_id),
+        Some(&first.realization_id)
+    );
+
+    let tuple = model_tuple();
+    let vector = digest("generation-vector");
+    let snapshot = registry
+        .snapshot_v2(vector, &tuple)
+        .unwrap_or_else(|error| panic!("snapshot: {error}"));
+    let delivery = registry
+        .dereference_realization_v2(
+            &next.realization_id,
+            &snapshot,
+            vector,
+            &tuple,
+            10,
+        )
+        .unwrap_or_else(|error| panic!("dereference: {error}"));
+    assert_eq!(delivery.payload, next_payload);
+    delivery
+        .validate()
+        .unwrap_or_else(|error| panic!("delivery validates: {error}"));
 }
