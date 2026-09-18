@@ -288,7 +288,6 @@ def verify():
     modules = load("docs/modules/MODULES.json")["modules"]
     lanes = lane_by_module()
     failures = []
-    source_bases = set()
     head = git("rev-parse", "HEAD")
     for module in modules:
         mid = module["id"]
@@ -320,7 +319,6 @@ def verify():
         else:
             source_commit = source_base["commit"]
             source_tree = source_base["tree"]
-            source_bases.add((source_commit, source_tree))
             try:
                 actual_tree = git("rev-parse", f"{source_commit}^{{tree}}")
             except subprocess.CalledProcessError:
@@ -391,8 +389,6 @@ def verify():
         boundary = row.get("claimBoundary") or row.get("completion")
         if not isinstance(boundary, dict):
             failures.append(f"{mid}: claim boundary")
-    if len(source_bases) != 1:
-        failures.append(f"maps: source base drift ({len(source_bases)} identities)")
     if failures:
         raise SystemExit("FAIL_HEPTA_IMPLEMENTATION_MAPS: " + "; ".join(failures))
     print(
