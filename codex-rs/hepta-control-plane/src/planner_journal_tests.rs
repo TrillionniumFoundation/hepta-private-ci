@@ -182,6 +182,52 @@ fn identical_identity_is_idempotent_but_payload_drift_conflicts() {
 }
 
 #[test]
+fn semantic_transitions_fail_closed_on_append_and_reopen() {
+    let payload = digest("unrecorded-decision");
+    let mut journal = PlannerJournalV1::new();
+    assert_eq!(
+        journal
+            .append(
+                PlannerJournalKindV1::SelectedPlan,
+                digest("selection"),
+                payload,
+            )
+            .expect_err("selection without a decision must reject"),
+        PlannerJournalError::DecisionNotRecorded
+    );
+    assert_eq!(
+        journal
+            .append(
+                PlannerJournalKindV1::Revocation,
+                digest("revocation"),
+                payload,
+            )
+            .expect_err("revocation without a decision must reject"),
+        PlannerJournalError::RevocationTargetNotRecorded
+    );
+
+    let sequence = 1_u64;
+    let kind = PlannerJournalKindV1::SelectedPlan;
+    let identity = digest("forged-selection");
+    let predecessor = Digest32::ZERO;
+    let entry_digest = super::digest_entry(sequence, kind, identity, payload, predecessor);
+    let mut bytes = Vec::new();
+    bytes.extend_from_slice(super::MAGIC);
+    bytes.extend_from_slice(&1_u32.to_be_bytes());
+    bytes.extend_from_slice(&sequence.to_be_bytes());
+    bytes.push(kind.tag());
+    bytes.extend_from_slice(identity.as_array());
+    bytes.extend_from_slice(payload.as_array());
+    bytes.extend_from_slice(predecessor.as_array());
+    bytes.extend_from_slice(entry_digest.as_array());
+
+    assert_eq!(
+        PlannerJournalV1::reopen(&bytes).expect_err("semantic forgery must reject"),
+        PlannerJournalError::DecisionNotRecorded
+    );
+}
+
+#[test]
 fn truncation_and_tampering_fail_closed() {
     let mut journal = PlannerJournalV1::new();
     must(journal.append(
