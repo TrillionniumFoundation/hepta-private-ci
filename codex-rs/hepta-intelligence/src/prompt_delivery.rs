@@ -177,7 +177,7 @@ pub fn compile_prompt_registry_v2(
             return Err(PromptRegistryCompilationErrorV2::Invalidated(reason));
         }
     }
-    if exercise_request.current_source != *adapter.source()
+    if &exercise_request.current_source != adapter.source()
         || exercise.current_registry_snapshot_digest != adapter.snapshot().snapshot_digest
         || exercise.current_registry_revision != adapter.snapshot().revision.get()
         || exercise.current_revocation_frontier != adapter.snapshot().revocation_frontier
