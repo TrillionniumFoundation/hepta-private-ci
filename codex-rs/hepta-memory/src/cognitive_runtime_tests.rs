@@ -177,7 +177,7 @@ async fn product_v2_unobservable_owner_is_explicit_failed_discovery_coverage() {
 }
 
 #[tokio::test]
-async fn product_v2_scope_failure_is_explicit_failed_coverage_not_empty_success() {
+async fn product_v2_scope_mismatch_is_not_enrolled_or_dispatched() {
     let temp = TempDir::new().expect("temp dir");
     let owner_id = agent_id(82);
     let consumer_id = agent_id(83);
@@ -209,9 +209,9 @@ async fn product_v2_scope_failure_is_explicit_failed_coverage_not_empty_success(
     let (batch, coverage) = runtime
         .retrieve_federated(&wrong_access, &RetrievalRequest::new("anything", 150))
         .await
-        .expect("scope mismatch is represented as failed coverage");
+        .expect("scope mismatch must not form a queried peer");
     assert!(batch.candidates.is_empty());
-    assert_eq!(coverage.requested_peers, 1);
+    assert_eq!(coverage.requested_peers, 0);
     assert_eq!(coverage.completed_peers, 0);
-    assert_eq!(coverage.failed_peers, 1);
+    assert_eq!(coverage.failed_peers, 0);
 }
