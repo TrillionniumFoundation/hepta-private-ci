@@ -28,7 +28,11 @@ use crate::PredicateTerminality;
 use crate::SoftDirection;
 use crate::SoftPreference;
 use crate::SuccessPredicate;
+use crate::ObjectiveCanonicalArtifactsV1;
+use crate::ObjectiveProtocolError;
 use crate::admit_and_compile_objective_v1;
+use crate::build_canonical_objective_artifacts_v1;
+use crate::validate_canonical_publication_artifacts_v1;
 
 pub const MAX_OBJECTIVE_RUN_START_PUBLICATION_BYTES: usize = 256 * 1024;
 const PUBLICATION_SCHEMA: &str = "hepta.objective-run-start-publication.v1";
@@ -64,6 +68,7 @@ pub struct ObjectiveRunStartPublicationV1 {
     admission: ObjectiveAdmissionReceiptV1,
     compile: ObjectiveCompileReceipt,
     run_start: RunStartSnapshotV1,
+    canonical: ObjectiveCanonicalArtifactsV1,
     publication_digest: Digest32,
 }
 
@@ -84,6 +89,36 @@ impl ObjectiveRunStartPublicationV1 {
     }
 
     #[must_use]
+    pub const fn objective_function_v1_bytes(&self) -> &[u8] {
+        &self.canonical.objective_function_bytes
+    }
+
+    #[must_use]
+    pub const fn objective_constraint_set_v1_bytes(&self) -> &[u8] {
+        &self.canonical.constraint_set_bytes
+    }
+
+    #[must_use]
+    pub const fn objective_compile_receipt_v1_bytes(&self) -> &[u8] {
+        &self.canonical.compile_receipt_bytes
+    }
+
+    #[must_use]
+    pub const fn run_start_snapshot_v1_bytes(&self) -> &[u8] {
+        &self.canonical.run_start_snapshot_bytes
+    }
+
+    #[must_use]
+    pub const fn objective_function_v1_digest(&self) -> Digest32 {
+        self.canonical.objective_function_digest
+    }
+
+    #[must_use]
+    pub const fn objective_constraint_set_v1_digest(&self) -> Digest32 {
+        self.canonical.constraint_set_digest
+    }
+
+    #[must_use]
     pub const fn publication_digest(&self) -> Digest32 {
         self.publication_digest
     }
@@ -99,6 +134,7 @@ pub enum ObjectivePublicationError {
     NonCanonicalEncoding,
     TooLarge { actual: usize, maximum: usize },
     PublicationDigestMismatch,
+    Protocol(ObjectiveProtocolError),
 }
 
 impl fmt::Display for ObjectivePublicationError {
@@ -125,6 +161,7 @@ impl fmt::Display for ObjectivePublicationError {
             Self::PublicationDigestMismatch => {
                 formatter.write_str("objective run-start publication digest mismatch")
             }
+            Self::Protocol(error) => error.fmt(formatter),
         }
     }
 }
@@ -133,6 +170,7 @@ impl Error for ObjectivePublicationError {
     fn source(&self) -> Option<&(dyn Error + 'static)> {
         match self {
             Self::Admission(error) => Some(error),
+            Self::Protocol(error) => Some(error),
             _ => None,
         }
     }
@@ -141,6 +179,12 @@ impl Error for ObjectivePublicationError {
 impl From<ObjectiveAdmissionError> for ObjectivePublicationError {
     fn from(value: ObjectiveAdmissionError) -> Self {
         Self::Admission(value)
+    }
+}
+
+impl From<ObjectiveProtocolError> for ObjectivePublicationError {
+    fn from(value: ObjectiveProtocolError) -> Self {
+        Self::Protocol(value)
     }
 }
 
@@ -178,10 +222,13 @@ pub fn prepare_objective_run_start_v1(
         generation: bindings.generation,
         fence_digest: bindings.fence_digest,
     };
+    let canonical =
+        build_canonical_objective_artifacts_v1(envelope, profile, &admission, &compile, &run_start)?;
     let mut publication = ObjectiveRunStartPublicationV1 {
         admission,
         compile,
         run_start,
+        canonical,
         publication_digest: Digest32::ZERO,
     };
     validate_publication(&publication)?;
@@ -194,6 +241,7 @@ pub fn encode_objective_run_start_publication_v1(
     publication: &ObjectiveRunStartPublicationV1,
 ) -> Result<Vec<u8>, ObjectivePublicationError> {
     validate_publication(publication)?;
+    validate_canonical_publication_artifacts_v1(publication)?;
     let bytes = canonical_bytes_unchecked(publication)?;
     let digest = Digest32::of_bytes(&bytes);
     if publication.publication_digest != digest {
@@ -223,6 +271,7 @@ pub fn decode_objective_run_start_publication_v1(
     let mut publication = publication_from_dto(dto)?;
     publication.publication_digest = Digest32::of_bytes(input);
     validate_publication(&publication)?;
+    validate_canonical_publication_artifacts_v1(&publication)?;
     Ok(publication)
 }
 
@@ -331,6 +380,10 @@ struct PublicationDto {
     disposition: String,
     removed_action_ids: Vec<String>,
     run_start: RunStartDto,
+    canonical_objective_function: String,
+    canonical_constraint_set: String,
+    canonical_compile_receipt: String,
+    canonical_run_start_snapshot: String,
 }
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
@@ -493,6 +546,22 @@ fn dto_from_publication(publication: &ObjectiveRunStartPublicationV1) -> Publica
             generation: publication.run_start.generation,
             fence_digest: publication.run_start.fence_digest.to_string(),
         },
+        canonical_objective_function: String::from_utf8_lossy(
+            &publication.canonical.objective_function_bytes,
+        )
+        .into_owned(),
+        canonical_constraint_set: String::from_utf8_lossy(
+            &publication.canonical.constraint_set_bytes,
+        )
+        .into_owned(),
+        canonical_compile_receipt: String::from_utf8_lossy(
+            &publication.canonical.compile_receipt_bytes,
+        )
+        .into_owned(),
+        canonical_run_start_snapshot: String::from_utf8_lossy(
+            &publication.canonical.run_start_snapshot_bytes,
+        )
+        .into_owned(),
     }
 }
 
@@ -540,6 +609,18 @@ fn publication_from_dto(
         "explicit_abstain" => CompileDisposition::ExplicitAbstain,
         _ => return Err(ObjectivePublicationError::Decode),
     };
+    let objective_function_bytes = dto.canonical_objective_function.into_bytes();
+    let constraint_set_bytes = dto.canonical_constraint_set.into_bytes();
+    let compile_receipt_bytes = dto.canonical_compile_receipt.into_bytes();
+    let run_start_snapshot_bytes = dto.canonical_run_start_snapshot.into_bytes();
+    let canonical = ObjectiveCanonicalArtifactsV1 {
+        objective_function_digest: Digest32::of_bytes(&objective_function_bytes),
+        constraint_set_digest: Digest32::of_bytes(&constraint_set_bytes),
+        objective_function_bytes,
+        constraint_set_bytes,
+        compile_receipt_bytes,
+        run_start_snapshot_bytes,
+    };
     Ok(ObjectiveRunStartPublicationV1 {
         admission: ObjectiveAdmissionReceiptV1 {
             profile_id: parse_id(dto.admission.profile_id)?,
@@ -573,6 +654,7 @@ fn publication_from_dto(
             generation: dto.run_start.generation,
             fence_digest: parse_digest(&dto.run_start.fence_digest)?,
         },
+        canonical,
         publication_digest: Digest32::ZERO,
     })
 }
@@ -787,6 +869,18 @@ mod tests {
                 authority_epoch: 7,
                 generation: 9,
                 fence_digest: digest("fence"),
+            },
+            canonical: ObjectiveCanonicalArtifactsV1 {
+                objective_function_bytes: b"{\"objectiveId\":\"fixture\"}".to_vec(),
+                constraint_set_bytes: b"{\"objectiveId\":\"fixture\"}".to_vec(),
+                compile_receipt_bytes: b"{\"requestId\":\"fixture\"}".to_vec(),
+                run_start_snapshot_bytes: b"{\"runId\":\"run.one\"}".to_vec(),
+                objective_function_digest: Digest32::of_bytes(
+                    b"{\"objectiveId\":\"fixture\"}",
+                ),
+                constraint_set_digest: Digest32::of_bytes(
+                    b"{\"objectiveId\":\"fixture\"}",
+                ),
             },
             compile,
             publication_digest: Digest32::ZERO,

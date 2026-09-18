@@ -6,6 +6,7 @@
 
 #![forbid(unsafe_code)]
 
+mod canonical_protocol;
 mod compiler;
 mod error;
 mod feasibility;
@@ -20,6 +21,11 @@ mod source_envelope_json_shape;
 mod source_envelope_v1;
 mod source_envelope_validation;
 
+pub use canonical_protocol::MAX_CANONICAL_OBJECTIVE_PROTOCOL_BYTES;
+pub use canonical_protocol::ObjectiveCanonicalArtifactsV1;
+pub use canonical_protocol::ObjectiveProtocolError;
+pub use canonical_protocol::build_canonical_objective_artifacts_v1;
+pub use canonical_protocol::encode_run_start_snapshot_v1;
 pub use error::ObjectiveError;
 pub use feasibility::check_feasibility_v1;
 pub use feasibility_model::AtomPrecedenceV1;
