@@ -281,11 +281,20 @@ fn decode_run_start(reader: &mut Reader<'_>) -> Result<RunStartPublicationV1, Du
         generation: reader.u64()?,
         fence_digest: reader.digest()?,
     };
+    // Candidate journals written before runtime-body recovery was added end at
+    // the run-start fence. Preserve read compatibility, but product runtime
+    // admission rejects the ZERO legacy value.
+    let runtime_body_digest = if reader.0.is_empty() {
+        Digest32::ZERO
+    } else {
+        reader.digest()?
+    };
 
     Ok(RunStartPublicationV1 {
         record_id,
         objective_v1_json,
         objective_v1_digest,
+        runtime_body_digest,
         admission,
         compile,
         run_start,
