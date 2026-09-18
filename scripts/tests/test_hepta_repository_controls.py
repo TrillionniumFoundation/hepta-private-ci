@@ -21,12 +21,12 @@ def fixture():
         "required_pull_request_reviews": {"required_approving_review_count": 1,
             "dismiss_stale_reviews": True, "require_last_push_approval": True,
             "bypass_pull_request_allowances": {"users": [], "teams": [], "apps": []}},
-        "required_status_checks": {"strict": True, "contexts": ["blocking-ci"], "checks": [
-            {"context": "blocking-ci", "app_id": 9999},
+        "required_status_checks": {"strict": True, "contexts": [controls.BLOCKING_CONTEXT], "checks": [
+            {"context": controls.BLOCKING_CONTEXT, "app_id": 9999},
             {"context": controls.EVALUATION_CONTEXT, "app_id": APP}]},
     }
     checks = [
-        {"id": 100, "name": "blocking-ci", "head_sha": SHA,
+        {"id": 100, "name": controls.BLOCKING_CONTEXT, "head_sha": SHA,
          "status": "completed", "conclusion": "success", "app": {"id": 9999, "slug": "github-actions"}},
         {"id": 200, "name": controls.EVALUATION_CONTEXT, "head_sha": SHA,
          "status": "completed", "conclusion": "success", "app": {"id": APP, "slug": "independent-fixture-app"}},
