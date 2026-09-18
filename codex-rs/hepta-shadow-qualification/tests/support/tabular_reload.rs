@@ -38,7 +38,6 @@ fn must<T, E: std::fmt::Debug>(value: Result<T, E>, context: &str) -> T {
     }
 }
 
-
 fn id(value: &str) -> StableId {
     must(StableId::new(value), "fixture identity")
 }
