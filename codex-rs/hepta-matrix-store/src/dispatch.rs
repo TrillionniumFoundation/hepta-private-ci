@@ -770,10 +770,35 @@ async fn settle_success_tx(
         return Err(MatrixDurableError::Conflict);
     }
     if current.state == MatrixDispatchState::Redacted {
-        if current.terminal_event_id.as_ref() == Some(event_id) {
-            return Ok(());
+        if current.terminal_event_id.as_ref() != Some(event_id) {
+            return Err(MatrixDurableError::Conflict);
         }
-        return Err(MatrixDurableError::Conflict);
+        if let Some(existing_digest) = current.send_observation_digest.as_deref() {
+            return (existing_digest == observation_digest)
+                .then_some(())
+                .ok_or(MatrixDurableError::Conflict);
+        }
+        insert_observation_tx(
+            transaction,
+            txn_id,
+            kind,
+            observation_digest,
+            Some(event_id),
+            now_ms,
+        )
+        .await?;
+        sqlx::query(
+            "UPDATE matrix_dispatch_ledger
+             SET send_observation_sha256 = ?, updated_at_ms = MAX(updated_at_ms, ?)
+             WHERE stable_txn_id = ? AND state = 'redacted' AND send_observation_sha256 IS NULL",
+        )
+        .bind(observation_digest)
+        .bind(to_i64(now_ms)?)
+        .bind(txn_id.as_str())
+        .execute(&mut **transaction)
+        .await
+        .map_err(unavailable)?;
+        return Ok(());
     }
     if current.state == MatrixDispatchState::Failed {
         return Err(MatrixDurableError::Conflict);

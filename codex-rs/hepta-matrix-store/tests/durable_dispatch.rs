@@ -149,6 +149,38 @@ async fn expired_in_flight_dispatch_is_frozen_instead_of_reclaimed() -> TestResu
 }
 
 #[tokio::test]
+async fn redaction_before_terminal_observation_can_later_attach_send_evidence() -> TestResult {
+    let temp = TempDir::new()?;
+    let (_layout, store, room) = prepared_store(&temp).await?;
+    let txn = enqueue(&store, &room, "dispatch.redaction-first", b"redaction-first", 10).await?;
+    store.claim_outbox(10, 20, 1).await?;
+    let event = MatrixEventId::parse("$redaction-first:example.org")?;
+    store.mark_outbox_accepted(&txn, 1, &event, 11).await?;
+    let redaction_digest = "f".repeat(64);
+    store
+        .apply_dispatch_redaction(&event, &redaction_digest, 12)
+        .await?;
+    let before = store
+        .dispatch_record(&txn)
+        .await?
+        .ok_or("redacted dispatch missing")?;
+    assert_eq!(before.state, MatrixDispatchState::Redacted);
+    assert_eq!(before.send_observation_digest, None);
+
+    let send_digest = "1".repeat(64);
+    let after = store
+        .observe_dispatch_terminal_success(&txn, &event, &send_digest, 13)
+        .await?;
+    assert_eq!(after.state, MatrixDispatchState::Redacted);
+    assert_eq!(after.send_observation_digest.as_deref(), Some(send_digest.as_str()));
+    assert_eq!(
+        after.redaction_observation_digest.as_deref(),
+        Some(redaction_digest.as_str())
+    );
+    store.close().await;
+    Ok(())
+}
+#[tokio::test]
 async fn redaction_appends_evidence_without_replacing_send_observation() -> TestResult {
     let temp = TempDir::new()?;
     let (_layout, store, room) = prepared_store(&temp).await?;
