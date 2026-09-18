@@ -137,7 +137,7 @@ Projection domains rebuild from declared sources and publish complete generation
 
 ## 7. Runtime, concurrency and transaction model
 
-`start_intelligence_run_v1` consumes a validated, deny-all `IntelligenceHostEnvelopeV1` only after the objective/run-start pair has been durably published by its owner path. Agentd stores only the existing ephemeral `RunSnapshot` digest references; it does not copy or become the authoritative writer for objective facts. The remaining runtime state and transaction boundaries are described by the [current native implementation](../../../qualification/module-execution-dossiers/detail/runtime.agentd.md#8-current-native-implementation).
+`start_published_intelligence_run_v1` consumes the opaque `ProductionObjectiveStartReceiptV1` produced only after the objective/run-start pair has been durably appended by the sealed owner journal. The raw `IntelligenceHostEnvelopeV1` is not an Agentd public start surface. Agentd stores only the existing ephemeral `RunSnapshot` digest references and rejects authority-epoch, generation or fence drift against the active runtime composition; it does not copy or become the authoritative writer for objective facts. The remaining runtime state and transaction boundaries are described by the [current native implementation](../../../qualification/module-execution-dossiers/detail/runtime.agentd.md#8-current-native-implementation).
 
 [Shared concurrency and transaction requirements](../README.md#shared-concurrency-and-transactions) apply at the corresponding owner boundary.
 
@@ -165,7 +165,7 @@ The [module-specific implementation design](../../../qualification/module-execut
 
 ## 11. Observability and operations
 
-`codex-hepta-agentd` starts from `AgentdConfig::from_process_environment`; the optional `--authbus-trust-file` is protected host configuration. The objective handoff adapter rejects a host envelope whose digest/objective/run-start binding fails validation and derives request/objective/artifact/authority/deadline fields from the already-published envelope. The supervisor supplies the owner identity/generation and existing memory store. Stop new admissions before owner drain; an App Server interruption acknowledgement alone is not terminal task completion.
+`codex-hepta-agentd` starts from `AgentdConfig::from_process_environment`; the optional `--authbus-trust-file` is protected host configuration. The objective handoff adapter first revalidates the opaque durable publication receipt, then derives request/objective/artifact/authority/deadline/generation/fence fields from its internal host envelope. A raw envelope cannot be submitted through the public Agentd API. The supervisor supplies the owner identity/generation and existing memory store. Stop new admissions before owner drain; an App Server interruption acknowledgement alone is not terminal task completion.
 
 Current operating and state-format references:
 
