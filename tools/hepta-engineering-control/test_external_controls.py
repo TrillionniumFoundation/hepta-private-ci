@@ -342,11 +342,78 @@ class ExternalControlTests(unittest.TestCase):
                         now_ns=self.now,
                     )
 
-    def test_key_custody_requires_hardware_external_boundary_and_roles(self):
-        receipt = self.sign(
+    def custody_receipt(self, role: str, key_id: str) -> KeyCustodyReceipt:
+        return self.sign(
             KeyCustodyReceipt(
                 "hsm-provider",
-                "key-1",
+                key_id,
+                (role,),
+                True,
+                True,
+                "key_custody_authority",
+                "custody-key",
+                self.now - 1,
+                self.now + 100,
+            )
+        )
+
+    def custody_set(self) -> tuple[KeyCustodyReceipt, ...]:
+        return tuple(
+            self.custody_receipt(role, f"key-{index}")
+            for index, role in enumerate(
+                (
+                    "source_authority",
+                    "ci_executor",
+                    "independent_evaluator",
+                    "engineering_evidence_binder",
+                ),
+                start=1,
+            )
+        )
+
+    def test_key_custody_requires_hardware_external_boundary_and_roles(self):
+        receipts = self.custody_set()
+        self.assertEqual(
+            len(
+                verify_external_key_custody(
+                    receipts,
+                    self.trust,
+                    now_ns=self.now,
+                )
+            ),
+            64,
+        )
+
+        weak = (
+            self.sign(
+                replace(
+                    receipts[0],
+                    hardware_backed=False,
+                    signature="",
+                )
+            ),
+            *receipts[1:],
+        )
+        with self.assertRaisesRegex(ValueError, "key_custody_boundary"):
+            verify_external_key_custody(
+                weak,
+                self.trust,
+                now_ns=self.now,
+            )
+
+        missing = receipts[:-1]
+        with self.assertRaisesRegex(ValueError, "key_custody_roles"):
+            verify_external_key_custody(
+                missing,
+                self.trust,
+                now_ns=self.now,
+            )
+
+    def test_key_custody_rejects_one_key_or_receipt_for_separated_roles(self):
+        combined = self.sign(
+            KeyCustodyReceipt(
+                "hsm-provider",
+                "omnipotent-key",
                 (
                     "source_authority",
                     "ci_executor",
@@ -361,32 +428,24 @@ class ExternalControlTests(unittest.TestCase):
                 self.now + 100,
             )
         )
-        self.assertEqual(
-            len(
-                verify_external_key_custody(
-                    receipt,
-                    self.trust,
-                    now_ns=self.now,
-                )
-            ),
-            64,
-        )
-        with self.assertRaisesRegex(ValueError, "key_custody_boundary"):
+        with self.assertRaisesRegex(ValueError, "key_custody_role_separation"):
             verify_external_key_custody(
-                replace(receipt, hardware_backed=False),
+                combined,
                 self.trust,
                 now_ns=self.now,
             )
-        duplicate = self.sign(
+
+        receipts = list(self.custody_set())
+        receipts[1] = self.sign(
             replace(
-                receipt,
-                roles=receipt.roles + ("source_authority",),
+                receipts[1],
+                key_id=receipts[0].key_id,
                 signature="",
             )
         )
-        with self.assertRaisesRegex(ValueError, "key_custody_roles"):
+        with self.assertRaisesRegex(ValueError, "key_custody_role_separation"):
             verify_external_key_custody(
-                duplicate,
+                tuple(receipts),
                 self.trust,
                 now_ns=self.now,
             )
