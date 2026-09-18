@@ -1,10 +1,14 @@
 use std::error::Error as StdError;
 use std::fmt;
+#[cfg(unix)]
 use std::fs;
 use std::fs::File;
+#[cfg(unix)]
 use std::fs::OpenOptions;
+#[cfg(unix)]
 use std::fs::TryLockError;
 use std::io;
+#[cfg(unix)]
 use std::io::Write;
 use std::path::Path;
 use std::path::PathBuf;
@@ -17,11 +21,17 @@ use crate::NduProjectionJournalError;
 use crate::NduProjectionJournalV1;
 use crate::NduProjectionKindV1;
 
+#[cfg(unix)]
 const STORE_MAGIC: &[u8; 8] = b"HNDUPS01";
+#[cfg(unix)]
 const STORE_SCHEMA_VERSION: u32 = 1;
+#[cfg(unix)]
 const STORE_FILENAME: &str = "ndu_projection_store_v1.bin";
+#[cfg(unix)]
 const LOCK_FILENAME: &str = "ndu_projection_store_v1.lock";
+#[cfg(unix)]
 const TEMP_FILENAME: &str = ".ndu_projection_store_v1.tmp";
+#[cfg(unix)]
 const STORE_SCHEMA_V1: &[u8] = b"hepta.ndu.projection-store.v1|wrapper:magic,u32-version,32-byte-schema-digest,u32-journal-length,journal-bytes,32-byte-store-digest|journal:HNDUPJ01";
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -379,6 +389,7 @@ fn sync_directory(path: &Path) -> Result<(), NduProjectionStoreError> {
         .map_err(io_error)
 }
 
+#[cfg(unix)]
 fn encode_store(
     journal: &NduProjectionJournalV1,
 ) -> Result<Vec<u8>, NduProjectionStoreError> {
@@ -396,6 +407,7 @@ fn encode_store(
     Ok(bytes)
 }
 
+#[cfg(unix)]
 fn decode_store(bytes: &[u8]) -> Result<NduProjectionJournalV1, NduProjectionStoreError> {
     const HEADER_BYTES: usize = 8 + 4 + 32 + 4;
     const DIGEST_BYTES: usize = 32;
@@ -436,6 +448,7 @@ fn decode_store(bytes: &[u8]) -> Result<NduProjectionJournalV1, NduProjectionSto
     NduProjectionJournalV1::reopen(&bytes[HEADER_BYTES..journal_end]).map_err(Into::into)
 }
 
+#[cfg(unix)]
 fn digest_from_slice(bytes: &[u8]) -> Result<Digest32, NduProjectionStoreError> {
     let array: [u8; 32] = bytes
         .try_into()
@@ -443,10 +456,12 @@ fn digest_from_slice(bytes: &[u8]) -> Result<Digest32, NduProjectionStoreError> 
     Ok(Digest32::from_array(array))
 }
 
+#[cfg(unix)]
 fn store_schema_digest() -> Digest32 {
     Digest32::of_bytes(STORE_SCHEMA_V1)
 }
 
+#[cfg(unix)]
 fn io_error(error: io::Error) -> NduProjectionStoreError {
     NduProjectionStoreError::Io(error.to_string())
 }
