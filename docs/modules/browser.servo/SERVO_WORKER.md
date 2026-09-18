@@ -31,7 +31,7 @@ There is no Browser discovery listener. The default long-running Agentd daemon r
 | bounded mutation queue | `src/runtime-boundary.js` | implemented |
 | durable operation journal | `src/journal.js` | implemented with strict hydration, compaction and retirement |
 | Browser -> Servo private protocol | `src/worker-protocol.js` | implemented |
-| artifact-bound subprocess driver | `src/worker-driver.js` | implemented |
+| artifact-bound subprocess driver / bounded profile worker pool | `src/worker-driver.js` | implemented |
 | Agentd -> Browser private protocol | `src/agentd-protocol.js` | implemented |
 | Agentd parent service | `src/agentd-service.js` | implemented |
 | real Agentd final-use handoff | `codex-rs/hepta-agentd/src/browser_servo.rs` | implemented in source |
@@ -125,13 +125,15 @@ Worker stderr is always drained so a full pipe cannot deadlock the process. Stde
 
 The launcher starts from an empty tmpfs root and does not bind host `/` or `/usr` wholesale. The allowlist is restricted to the worker's runtime closure and rendering data: runtime libraries, fonts/fontconfig data, loader/TLS configuration, fontconfig cache, private proc/dev/tmp/run/home/root views, one private writable profile and one exact verified worker artifact. General `/usr/bin`, `/usr/local`, `/var/lib`, service roots and ambient user homes are absent.
 
-`scripts/linux-sandbox-probe.js` compiles a tiny host-side C probe and executes it through the same production launcher. Inside the sandbox it requires host-secret invisibility, absence of `/usr/bin/sh` and `/usr/bin/python3`, denied direct external IPv4 connect, writable/fsynced private profile state, and observed `--die-with-parent` cleanup after a helper parent exits. Only that execution receipt on an exact host is enforcement evidence.
+`scripts/linux-sandbox-probe.js` compiles a tiny host-side C probe and executes it through the same production launcher. Inside the sandbox it requires host-secret invisibility, absence of `/usr/bin/sh` and `/usr/bin/python3`, denied direct external IPv4 connect, writable/fsynced private profile state, and observed `--die-with-parent` cleanup after a helper parent exits. The receipt also records the configured `prlimit` resource ceilings. Only that execution receipt on an exact host is enforcement evidence.
 
 ## 9. Resource and backpressure policy
 
 Profile mutations use a bounded single-writer queue. By default no more than 64 operations may be queued for one serialization key; overload fails with `BrowserBackpressureError` rather than allowing unbounded promise growth.
 
-Independent hard bounds cover origins, admitted grants, nonterminal operations, terminal in-memory replay cache, action fields, semantic observation bytes, protocol frame bytes, journal bytes and driver/authority call deadlines. The current worker is one-WebView/one-profile-generation; the <=16-tab pilot target remains a future measured capability, not a current claim.
+The Agentd Browser service composes a bounded profile-to-worker pool rather than one global singleton worker. `HEPTA_BROWSER_MAX_PROFILES` defaults to 16 and limits simultaneously live worker processes. Each Linux launch is wrapped by `/usr/bin/prlimit` (or the configured trusted path) with source defaults of 8 GiB virtual address space, 300 CPU seconds, 4096 file descriptors and 256 processes/threads. Contained workers continue to consume their pool slot until profile close completes private-profile cleanup.
+
+Independent hard bounds also cover origins, admitted grants, nonterminal operations, terminal in-memory replay cache, action fields, semantic observation bytes, protocol frame bytes, journal bytes and driver/authority call deadlines. Each worker remains one-WebView/one-profile-generation; the <=16-tab pilot target remains a future measured capability, not a current claim.
 
 ## 10. Reproducible worker artifact and composition gates
 
