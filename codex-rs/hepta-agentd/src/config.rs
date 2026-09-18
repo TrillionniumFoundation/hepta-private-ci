@@ -38,6 +38,7 @@ pub struct AgentdConfig {
     _writer_lock: File,
     authbus_trust_file: Option<PathBuf>,
     cognitive_ranker: Option<std::sync::Arc<crate::PinnedCognitiveRanker>>,
+    memory_retrieval_runtime: Option<std::sync::Arc<crate::PinnedMemoryRetrievalRuntime>>,
 }
 
 impl AgentdConfig {
@@ -143,6 +144,7 @@ impl AgentdConfig {
             _writer_lock: writer_lock,
             authbus_trust_file: None,
             cognitive_ranker: None,
+            memory_retrieval_runtime: None,
         })
     }
 
@@ -178,6 +180,30 @@ impl AgentdConfig {
 
     pub(crate) fn cognitive_ranker(&self) -> Option<std::sync::Arc<crate::PinnedCognitiveRanker>> {
         self.cognitive_ranker.clone()
+    }
+
+    /// Attach the explicitly selected generation-bound retrieval runtime.
+    /// The normal CLI does not manufacture a profile provider or engram.
+    pub fn with_memory_retrieval_runtime(
+        mut self,
+        runtime: std::sync::Arc<crate::PinnedMemoryRetrievalRuntime>,
+    ) -> Result<Self, AgentdError> {
+        runtime
+            .require_identity(&self.identity.agent_id, self.identity.spawn_generation)
+            .map_err(AgentdError::Invalid)?;
+        if self.memory_retrieval_runtime.is_some() {
+            return Err(AgentdError::Invalid(
+                "memory retrieval runtime already configured".to_string(),
+            ));
+        }
+        self.memory_retrieval_runtime = Some(runtime);
+        Ok(self)
+    }
+
+    pub(crate) fn memory_retrieval_runtime(
+        &self,
+    ) -> Option<std::sync::Arc<crate::PinnedMemoryRetrievalRuntime>> {
+        self.memory_retrieval_runtime.clone()
     }
 
     pub fn identity(&self) -> &AgentdIdentity {
