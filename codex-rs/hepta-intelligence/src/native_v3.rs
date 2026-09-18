@@ -162,6 +162,20 @@ impl<'a> NativeCompositionPortsV3<'a> {
                 "native-run-binding",
             ));
         }
+        let Some(implementation_digest) = input.capability_implementation_digest else {
+            return Err(native_failure(
+                input,
+                PortFailureClassV1::Rejected,
+                "missing-capability-implementation",
+            ));
+        };
+        if implementation_digest.is_zero() || input.capability_generation.is_none() {
+            return Err(native_failure(
+                input,
+                PortFailureClassV1::Rejected,
+                "invalid-capability-binding",
+            ));
+        }
         Ok(())
     }
 
