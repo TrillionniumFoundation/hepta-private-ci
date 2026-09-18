@@ -69,6 +69,25 @@ class CandidateChangeSetTests(unittest.TestCase):
         self.assertEqual((root / "src/a.txt").read_text(encoding="utf-8"), "A\n")
         self.assertFalse((root / "src/c.txt").exists())
 
+    def test_generation_applies_envelope_changed_file_limit(self):
+        _temp, _root, base = self.fixture()
+        self.addCleanup(_temp.cleanup)
+        envelope = CandidateEnvelope(
+            "env",
+            base,
+            ("src",),
+            maximum_changed_files=1,
+            require_network_isolation=False,
+        )
+        bundle = MutationSet(
+            (
+                Mutation("replace_text", "src/a.txt", "A", "AA"),
+                Mutation("add_file", "src/c.txt", replacement_text="C\n"),
+            )
+        )
+        with self.assertRaisesRegex(ValueError, "changed_file_limit"):
+            generate_candidates(envelope, (bundle,))
+
     def test_rename_is_bound_as_two_path_change(self):
         temp, root, base = self.fixture()
         self.addCleanup(temp.cleanup)
