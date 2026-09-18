@@ -369,3 +369,109 @@ fn legacy_journal_completion_without_authority_cannot_be_replayed_as_success() {
     drop(control);
     std::fs::remove_file(path).unwrap();
 }
+
+
+fn qualified_dispatch() -> NativeDispatch {
+    NativeDispatch {
+        thread_id: "thread-1".to_string(),
+        model_provider: "provider".to_string(),
+        context_digest: "b".repeat(64),
+        codex_request_digest: Some("c".repeat(64)),
+        codex_connection_digest: Some("d".repeat(64)),
+        codex_session_generation: Some(4),
+        codex_protocol_version: Some(2),
+        codex_deadline_ms: Some(9_999),
+    }
+}
+
+fn qualified_output(status: NativeRunStatus) -> NativeRunOutput {
+    let terminal = status != NativeRunStatus::Indeterminate;
+    NativeRunOutput {
+        thread_id: "thread-1".to_string(),
+        turn_id: "turn-1".to_string(),
+        model: "actual-model".to_string(),
+        model_provider: "provider".to_string(),
+        terminal_observed: terminal,
+        status,
+        output: "observed text".to_string(),
+        observed_output_tokens: Some(7),
+        stop_reason: None,
+        owner_authority: NativeOwnerAuthority::ObservedReady,
+        codex_boundary: Some(NativeCodexBoundaryReceipt {
+            request_digest: "c".repeat(64),
+            response_digest: terminal.then(|| "e".repeat(64)),
+            connection_digest: "d".repeat(64),
+            session_generation: 4,
+            protocol_version: 2,
+            status,
+        }),
+    }
+}
+
+#[test]
+fn qualified_codex_receipt_is_required_for_new_success() {
+    let path = path("codex-qualified");
+    let mut control = DurableInferenceControl::open(&path, 8).unwrap();
+    control.reserve_native(request("r1"), 1).unwrap();
+    control.dispatch_native("r1", qualified_dispatch()).unwrap();
+    control.native_started("r1", "turn-1".to_string()).unwrap();
+
+    let completed = qualified_output(NativeRunStatus::Completed);
+    assert!(completed.succeeded());
+    let settled = control.settle_native("r1", completed.clone()).unwrap();
+    assert_eq!(settled.state, NativeReservationState::Released);
+
+    let mut legacy_shape = completed;
+    legacy_shape.codex_boundary = None;
+    assert!(!legacy_shape.succeeded());
+
+    drop(control);
+    let control = DurableInferenceControl::open(&path, 8).unwrap();
+    assert!(
+        control
+            .native_record("r1")
+            .unwrap()
+            .observation
+            .as_ref()
+            .unwrap()
+            .succeeded()
+    );
+    drop(control);
+    std::fs::remove_file(path).unwrap();
+}
+
+#[test]
+fn proven_app_server_rejection_releases_capacity_without_terminal_claim() {
+    let path = path("codex-rejection");
+    let mut control = DurableInferenceControl::open(&path, 8).unwrap();
+    control.reserve_native(request("r1"), 1).unwrap();
+    control.dispatch_native("r1", qualified_dispatch()).unwrap();
+
+    let rejected = control
+        .reject_native_dispatch(
+            "r1",
+            NativeDispatchRejection {
+                kind: NativeDispatchRejectionKind::Unavailable,
+                code: -32001,
+                reason: "Server overloaded; retry later.".to_string(),
+                response_digest: "e".repeat(64),
+                codex_request_digest: "c".repeat(64),
+            },
+        )
+        .unwrap();
+    assert_eq!(rejected.state, NativeReservationState::Released);
+    assert!(rejected.observation.is_none());
+    assert_eq!(
+        rejected.dispatch_rejection.as_ref().unwrap().kind,
+        NativeDispatchRejectionKind::Unavailable
+    );
+
+    // A proven ingress rejection never consumes the provider slot.
+    control.reserve_native(request("r2"), 1).unwrap();
+    drop(control);
+
+    let control = DurableInferenceControl::open(&path, 8).unwrap();
+    assert_eq!(control.native_record("r1"), Some(&rejected));
+    drop(control);
+    std::fs::remove_file(path).unwrap();
+}
