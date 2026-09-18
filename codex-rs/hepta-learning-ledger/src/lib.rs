@@ -79,6 +79,7 @@ pub use signed_evidence::SignedEvidenceError;
 pub use signed_evidence::SignedLearningEvidenceV1;
 pub use signed_evidence::TrustedLearningSignerV1;
 pub use signed_evidence::VerifiedLearningEvidenceV1;
+pub use signed_evidence::verify_signed_evidence_independence;
 pub use signed_evidence::verify_signed_role_separation;
 
 #[cfg(test)]
