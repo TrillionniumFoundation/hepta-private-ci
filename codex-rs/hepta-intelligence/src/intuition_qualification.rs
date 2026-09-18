@@ -41,6 +41,7 @@ use crate::EvaluatedShadowReceiptV1;
 use crate::EvaluatedShadowRequestV1;
 use crate::LaneFShadowPortsV1;
 use crate::run_evaluated_shadow_v1;
+use crate::evaluated_shadow::run_evaluated_shadow_with_authenticated_intuition_v2;
 
 pub struct IntuitionQualificationEvidenceV1<'a> {
     pub completeness: &'a SignedLearningEvidenceV1,
@@ -299,6 +300,59 @@ fn verify_distinct_verified_roles(
         ));
     }
     Ok(())
+}
+
+pub struct QualifiedEvaluatedShadowRequestV3<'a> {
+    pub shadow: EvaluatedShadowRequestV1<'a>,
+    pub profile: CanonicalPolicyProfileV1,
+    pub scoring_commitment: ScoringCommitmentV1,
+    pub evidence: IntuitionQualificationEvidenceV2<'a>,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct QualifiedEvaluatedShadowReceiptV3 {
+    pub intuition: AuthenticatedIntuitionDecisionV2,
+    pub shadow: EvaluatedShadowReceiptV1,
+}
+
+/// Current authenticated Lane-F shadow composition. Unlike the V2 compatibility
+/// wrapper, this path consumes the full V2 admission chain and therefore does
+/// not require policy identity to equal model-artifact identity. All canonical
+/// V3 risk profiles are preserved.
+pub fn run_qualified_evaluated_shadow_v3<P: LaneFShadowPortsV1>(
+    request: QualifiedEvaluatedShadowRequestV3<'_>,
+    verifier: &LearningEvidenceVerifierV1,
+    ledger: &mut dyn DurableLearningJournal,
+    ports: &mut P,
+    now: u64,
+) -> Result<QualifiedEvaluatedShadowReceiptV3, QualifiedEvaluatedShadowError> {
+    let qualified_model_artifact_digest = request.profile.scorer.model_digest;
+    let authenticated = decide_authenticated_intuition_v2(
+        request.shadow.intuition.clone(),
+        request.profile,
+        request.scoring_commitment,
+        request.evidence,
+        verifier,
+        now,
+    )
+    .map_err(QualifiedEvaluatedShadowError::Qualification)?;
+
+    let shadow = run_evaluated_shadow_with_authenticated_intuition_v2(
+        request.shadow,
+        authenticated.decision.clone(),
+        qualified_model_artifact_digest,
+        authenticated.authentication_digest,
+        verifier,
+        ledger,
+        ports,
+        now,
+    )
+    .map_err(QualifiedEvaluatedShadowError::Shadow)?;
+
+    Ok(QualifiedEvaluatedShadowReceiptV3 {
+        intuition: authenticated,
+        shadow,
+    })
 }
 
 pub struct QualifiedEvaluatedShadowRequestV2<'a> {
