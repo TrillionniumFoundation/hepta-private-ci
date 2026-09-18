@@ -17,6 +17,7 @@ name = "hepta-native-updater"
 path = "src/bin/hepta-native-updater.rs"
 
 [dependencies]
+atomic-write-file = "0.3.1"
 arboard = "3"
 base64 = "0.22.1"
 codex-keyring-store = { path = "../../codex-rs/keyring-store" }
