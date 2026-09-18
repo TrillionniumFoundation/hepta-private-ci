@@ -46,6 +46,7 @@ fn fixture() -> anyhow::Result<(tempfile::TempDir, FleetRegistry, AgentdState)> 
         AgentLifecycle::Running,
     )?;
     state.refresh_generation()?;
+    state.mark_runtime_prerequisites_ready()?;
     state.mark_app_server_ready()?;
     Ok((temp, registry, state))
 }
