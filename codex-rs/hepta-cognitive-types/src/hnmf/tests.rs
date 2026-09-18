@@ -93,6 +93,25 @@ fn canonical_json_rejects_unknown_envelope_fields_and_whitespace() {
 }
 
 #[test]
+fn canonical_json_rejects_unknown_nested_variant_fields() {
+    let span = text_span();
+    let Ok(bytes) = span.to_canonical_json() else {
+        panic!("valid span must encode");
+    };
+    let Ok(text) = String::from_utf8(bytes) else {
+        panic!("canonical JSON must be UTF-8");
+    };
+    let invalid = text.replace(
+        "\"kind\":\"byte_range\",",
+        "\"kind\":\"byte_range\",\"unexpected\":1,",
+    );
+    assert!(matches!(
+        ModalitySpanRefV1::from_canonical_json(invalid.as_bytes()),
+        Err(HnmfContractError::Wire(_))
+    ));
+}
+
+#[test]
 fn canonical_json_rejects_unknown_enum_values() {
     let span = text_span();
     let Ok(bytes) = span.to_canonical_json() else {
