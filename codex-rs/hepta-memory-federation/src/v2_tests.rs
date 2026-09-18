@@ -285,12 +285,29 @@ fn result_validator_rejects_semantically_inconsistent_completeness() {
         Err(FederationV2Error::InvalidCompleteness)
     );
 
-    let mut empty_with_items = valid;
+    let mut empty_with_items = valid.clone();
     empty_with_items.completeness = FederatedCompletenessV2::Empty;
     empty_with_items.result_digest = empty_with_items.compute_result_digest();
     assert_eq!(
         empty_with_items.validate(),
         Err(FederationV2Error::InvalidCompleteness)
+    );
+
+    let mut empty_with_truncation = valid.clone();
+    empty_with_truncation.items.clear();
+    empty_with_truncation.completeness = FederatedCompletenessV2::Empty;
+    empty_with_truncation.result_digest = empty_with_truncation.compute_result_digest();
+    assert_eq!(
+        empty_with_truncation.validate(),
+        Err(FederationV2Error::InvalidCompleteness)
+    );
+
+    let mut zero_frontier = valid;
+    zero_frontier.observed_frontier = Some(0);
+    zero_frontier.result_digest = zero_frontier.compute_result_digest();
+    assert_eq!(
+        zero_frontier.validate(),
+        Err(FederationV2Error::InvalidCoverage)
     );
 }
 
