@@ -71,7 +71,7 @@ CREATE TABLE matrix_dispatch_observations (
     observation_id INTEGER PRIMARY KEY AUTOINCREMENT,
     stable_txn_id TEXT NOT NULL,
     kind TEXT NOT NULL CHECK (
-        kind IN ('transport_accepted', 'transport_indeterminate', 'server_event', 'redaction')
+        kind IN ('transport_accepted', 'transport_indeterminate', 'transport_failure', 'server_event', 'redaction')
     ),
     event_id TEXT,
     observation_digest TEXT NOT NULL CHECK (
