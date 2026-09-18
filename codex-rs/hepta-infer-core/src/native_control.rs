@@ -10,6 +10,8 @@ use std::io::Read;
 use std::io::Write;
 use std::path::PathBuf;
 
+use codex_hepta_contracts::FinalUseBinding;
+use codex_hepta_contracts::VerifiedUseWitness;
 use codex_hepta_types::Digest32;
 use serde::Deserialize;
 use serde::Serialize;
@@ -118,6 +120,75 @@ pub struct NativeFinalUseWitness {
     pub expires_at_unix_ms: u64,
     /// Digest of the exact FinalUseBinding admitted by kernel.authority.
     pub binding_digest: String,
+}
+
+impl NativeFinalUseWitness {
+    fn from_verified(value: &VerifiedUseWitness<'_>) -> Result<Self, Error> {
+        let binding_digest = Digest32::of_bytes(
+            &serde_json::to_vec(value.binding())
+                .map_err(|_| Error::CorruptJournal("native final-use binding encode"))?,
+        )
+        .to_string();
+        Ok(Self {
+            signer_id: value.signer_id().to_string(),
+            authority_epoch: value.authority_epoch(),
+            grant_id: value.grant_id().to_string(),
+            expires_at_unix_ms: value.expires_at_unix_ms(),
+            binding_digest,
+        })
+    }
+}
+
+/// Canonical exact effect binding used by both the host verifier and the
+/// durable owner. The request payload digest already binds prompt/query/socket
+/// and timeout; this adds the resolved context and exact provider identity.
+pub fn native_final_use_binding(
+    request: &NativeRequest,
+    model_provider: &str,
+    context_digest: &str,
+) -> Result<FinalUseBinding, Error> {
+    validate_identity(&request.request_id, "native request")?;
+    validate_identity(&request.principal_id, "native principal")?;
+    validate_identity(model_provider, "native provider")?;
+    validate_digest(&request.payload_digest, "native payload")?;
+    validate_digest(context_digest, "native context")?;
+    if request.worker_generation == 0
+        || request.model.is_empty()
+        || request.model.len() > 256
+        || format!("provider:{model_provider}").len() > 128
+    {
+        return Err(Error::InvalidIdentity("native final-use binding"));
+    }
+    let request_bytes = serde_json::to_vec(&(
+        "hepta.inference.final-use.request.v1",
+        request,
+        model_provider,
+        context_digest,
+    ))
+    .map_err(|_| Error::CorruptJournal("native final-use request encode"))?;
+    let scope_bytes = serde_json::to_vec(&(
+        "hepta.inference.final-use.scope.v1",
+        &request.principal_id,
+        request.worker_generation,
+        &request.model,
+        model_provider,
+    ))
+    .map_err(|_| Error::CorruptJournal("native final-use scope encode"))?;
+    let payload_bytes = serde_json::to_vec(&(
+        "hepta.inference.final-payload.v1",
+        &request.payload_digest,
+        context_digest,
+        &request.model,
+        model_provider,
+    ))
+    .map_err(|_| Error::CorruptJournal("native final-use payload encode"))?;
+    Ok(FinalUseBinding {
+        subject_id: request.principal_id.clone(),
+        destination_id: format!("provider:{model_provider}"),
+        request_sha256: Digest32::of_bytes(&request_bytes).into_array(),
+        scope_sha256: Digest32::of_bytes(&scope_bytes).into_array(),
+        payload_sha256: Digest32::of_bytes(&payload_bytes).into_array(),
+    })
 }
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
@@ -233,20 +304,44 @@ impl DurableInferenceControl {
         )
     }
 
-    /// Must commit before `turn/start`, including before awaiting its response.
+    /// Unverified/reference dispatch. It can preserve historical state-machine
+    /// behavior, but it can never install a final-use witness or authorize a
+    /// successful provider effect.
     pub fn dispatch_native(
         &mut self,
         request_id: &str,
         dispatch: NativeDispatch,
     ) -> Result<NativeRunRecord, Error> {
-        self.ensure_native_dispatch_space()?;
-        self.commit_native(
-            request_id,
-            Event::Dispatch {
-                request_id: request_id.to_string(),
-                dispatch,
-            },
-        )
+        if dispatch.final_use_witness.is_some() {
+            return Err(Error::Conflict);
+        }
+        self.commit_native_dispatch(request_id, dispatch)
+    }
+
+    /// Production dispatch entrypoint. Only a sealed witness supplied by
+    /// kernel.authority while its live revocation fence is held can install the
+    /// durable audit witness used by later settlement.
+    pub fn dispatch_native_authorized(
+        &mut self,
+        request_id: &str,
+        mut dispatch: NativeDispatch,
+        verified: VerifiedUseWitness<'_>,
+    ) -> Result<NativeRunRecord, Error> {
+        if dispatch.final_use_witness.is_some() {
+            return Err(Error::Conflict);
+        }
+        let record = self
+            .native
+            .records
+            .get(request_id)
+            .ok_or(Error::RequestNotFound)?;
+        let expected =
+            native_final_use_binding(&record.request, &dispatch.model_provider, &dispatch.context_digest)?;
+        if verified.binding() != &expected {
+            return Err(Error::Conflict);
+        }
+        dispatch.final_use_witness = Some(NativeFinalUseWitness::from_verified(&verified)?);
+        self.commit_native_dispatch(request_id, dispatch)
     }
 
     pub fn native_started(
@@ -455,6 +550,21 @@ impl DurableInferenceControl {
 
     pub fn native_record(&self, request_id: &str) -> Option<&NativeRunRecord> {
         self.native.records.get(request_id)
+    }
+
+    fn commit_native_dispatch(
+        &mut self,
+        request_id: &str,
+        dispatch: NativeDispatch,
+    ) -> Result<NativeRunRecord, Error> {
+        self.ensure_native_dispatch_space()?;
+        self.commit_native(
+            request_id,
+            Event::Dispatch {
+                request_id: request_id.to_string(),
+                dispatch,
+            },
+        )
     }
 
     fn ensure_native_dispatch_space(&self) -> Result<(), Error> {
