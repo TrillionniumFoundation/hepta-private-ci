@@ -118,6 +118,10 @@ pub struct NativeDispatch {
     /// owning App Server. Historical records may omit it.
     #[serde(default)]
     pub codex_payload_digest: Option<String>,
+    /// Digest of the independently signed final-use grant witness that was
+    /// successfully claimed before this dispatch record was committed.
+    #[serde(default)]
+    pub codex_authority_witness_sha256: Option<String>,
     #[serde(default)]
     pub codex_request_digest: Option<String>,
 }
@@ -414,12 +418,14 @@ impl NativeJournal {
                     dispatch.codex_session_id.as_deref(),
                     dispatch.codex_deadline_ms,
                     dispatch.codex_payload_digest.as_deref(),
+                    dispatch.codex_authority_witness_sha256.as_deref(),
                     dispatch.codex_request_digest.as_deref(),
                 ) {
                     (
                         Some(session_id),
                         Some(deadline_ms),
                         Some(payload_digest),
+                        Some(authority_witness),
                         Some(request_digest),
                     ) => {
                         validate_identity(session_id, "Codex session")?;
@@ -427,9 +433,10 @@ impl NativeJournal {
                             return Err(Error::InvalidIdentity("Codex deadline"));
                         }
                         validate_digest(payload_digest, "Codex payload digest")?;
+                        validate_digest(authority_witness, "Codex authority witness")?;
                         validate_digest(request_digest, "Codex request digest")?;
                     }
-                    (None, None, None, None) => {}
+                    (None, None, None, None, None) => {}
                     _ => return Err(Error::InvalidIdentity("incomplete Codex dispatch binding")),
                 }
                 record.dispatch = Some(dispatch);
