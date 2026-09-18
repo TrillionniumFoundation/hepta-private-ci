@@ -53,20 +53,50 @@ pub struct ProductionRunBindingsV1 {
 /// binding, admission lineage and durable chain evidence.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct IntelligenceHostEnvelopeV1 {
-    pub run_start: RunStartSnapshotV1,
-    pub profile_digest: Digest32,
-    pub intent_digest: Digest32,
-    pub admitted_source_digest: Digest32,
-    pub deadline_unix_micros: Option<u64>,
-    pub durable_sequence: u64,
-    pub durable_event_digest: Digest32,
-    pub durable_chain_digest: Digest32,
-    pub run_start_digest: Digest32,
-    pub envelope_digest: Digest32,
-    pub authority: AuthorityPosture,
+    run_start: RunStartSnapshotV1,
+    profile_digest: Digest32,
+    intent_digest: Digest32,
+    admitted_source_digest: Digest32,
+    deadline_unix_micros: Option<u64>,
+    durable_sequence: u64,
+    durable_event_digest: Digest32,
+    durable_chain_digest: Digest32,
+    run_start_digest: Digest32,
+    envelope_digest: Digest32,
+    authority: AuthorityPosture,
 }
 
 impl IntelligenceHostEnvelopeV1 {
+    #[must_use]
+    pub fn run_start(&self) -> &RunStartSnapshotV1 {
+        &self.run_start
+    }
+
+    #[must_use]
+    pub const fn admitted_source_digest(&self) -> Digest32 {
+        self.admitted_source_digest
+    }
+
+    #[must_use]
+    pub const fn deadline_unix_micros(&self) -> Option<u64> {
+        self.deadline_unix_micros
+    }
+
+    #[must_use]
+    pub const fn durable_sequence(&self) -> u64 {
+        self.durable_sequence
+    }
+
+    #[must_use]
+    pub const fn durable_event_digest(&self) -> Digest32 {
+        self.durable_event_digest
+    }
+
+    #[must_use]
+    pub const fn durable_chain_digest(&self) -> Digest32 {
+        self.durable_chain_digest
+    }
+
     pub fn validate(&self) -> Result<(), ProductionObjectiveError> {
         if self.authority.grants_any() {
             return Err(ProductionObjectiveError::AuthorityEscalation);
@@ -98,14 +128,39 @@ impl IntelligenceHostEnvelopeV1 {
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct ProductionObjectiveStartReceiptV1 {
-    pub objective_admission: ObjectiveAdmissionReceiptV1,
-    pub objective: ObjectiveCompileReceipt,
-    pub run_start: RunStartSnapshotV1,
-    pub durable_append: AppendReceipt,
-    pub host_envelope: IntelligenceHostEnvelopeV1,
+    objective_admission: ObjectiveAdmissionReceiptV1,
+    objective: ObjectiveCompileReceipt,
+    run_start: RunStartSnapshotV1,
+    durable_append: AppendReceipt,
+    host_envelope: IntelligenceHostEnvelopeV1,
 }
 
 impl ProductionObjectiveStartReceiptV1 {
+    #[must_use]
+    pub fn objective_admission(&self) -> &ObjectiveAdmissionReceiptV1 {
+        &self.objective_admission
+    }
+
+    #[must_use]
+    pub fn objective(&self) -> &ObjectiveCompileReceipt {
+        &self.objective
+    }
+
+    #[must_use]
+    pub fn run_start(&self) -> &RunStartSnapshotV1 {
+        &self.run_start
+    }
+
+    #[must_use]
+    pub fn durable_append(&self) -> &AppendReceipt {
+        &self.durable_append
+    }
+
+    #[must_use]
+    pub fn host_envelope(&self) -> &IntelligenceHostEnvelopeV1 {
+        &self.host_envelope
+    }
+
     pub fn validate(&self) -> Result<(), ProductionObjectiveError> {
         if self.objective_admission.authority.grants_any() {
             return Err(ProductionObjectiveError::AuthorityEscalation);
