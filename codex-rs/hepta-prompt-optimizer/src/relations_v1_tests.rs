@@ -36,6 +36,7 @@ fn candidate_set(count: usize) -> PromptCandidateSetReceiptV1 {
             realization_id: id(&format!("realization:{index:03}")),
             role: PromptCandidateRoleV1::DeveloperInstruction,
             payload_digest: digest(&format!("payload:{index}")),
+            registry_binding_digest: digest("registry-binding"),
             admission_digest: digest(&format!("admission:{index}")),
             support_digest: digest(&format!("support:{index}")),
             token_cost: 1,
@@ -53,6 +54,8 @@ fn candidate_set(count: usize) -> PromptCandidateSetReceiptV1 {
         revocation_frontier: 1,
         generation_vector_digest: digest("generation"),
         model_profile: PromptModelProfileV1 {
+            model_id: id("model:hepta-test"),
+            model_version: "2026-09-18".to_owned(),
             model_digest: digest("model"),
             tokenizer_digest: digest("tokenizer"),
             template_digest: digest("template"),
