@@ -171,7 +171,7 @@ impl PromptCandidateSourceV1 {
         Digest32::of_bytes(&bytes)
     }
 
-    fn validate(&self, now_unix_ms: u64) -> Result<(), CanonicalPromptErrorV1> {
+    pub fn validate_at(&self, now_unix_ms: u64) -> Result<(), CanonicalPromptErrorV1> {
         if self.owner_id.as_str() != "prompt.registry" {
             return Err(CanonicalPromptErrorV1::InvalidSourceOwner);
         }
@@ -309,7 +309,7 @@ pub fn enumerate_factors_v1<A: PromptCandidateSourceAuthenticatorV1>(
     {
         return Err(CanonicalPromptErrorV1::InvalidEnumerationBound);
     }
-    request.source.validate(request.now_unix_ms)?;
+    request.source.validate_at(request.now_unix_ms)?;
     authenticator
         .authenticate_candidate_source(
             &request.source,
