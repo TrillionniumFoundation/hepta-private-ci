@@ -44,7 +44,9 @@ pub struct PlasticityOwnerEvidenceQueryV1 {
     pub selected_artifact_digest: Digest32,
     pub window_id: StableId,
     pub window_digest: Digest32,
+    pub dataset_digest: Digest32,
     pub baseline_generation: Generation,
+    pub layer_id: Option<StableId>,
     pub parameter_id: Option<StableId>,
     pub now: u64,
 }
@@ -68,7 +70,15 @@ pub fn plasticity_owner_evidence_query_digest_v1(
     bytes.extend_from_slice(query.selected_artifact_digest.as_array());
     push_id(&mut bytes, &query.window_id);
     bytes.extend_from_slice(query.window_digest.as_array());
+    bytes.extend_from_slice(query.dataset_digest.as_array());
     bytes.extend_from_slice(&query.baseline_generation.get().to_be_bytes());
+    match &query.layer_id {
+        Some(layer_id) => {
+            bytes.push(1);
+            push_id(&mut bytes, layer_id);
+        }
+        None => bytes.push(0),
+    }
     match &query.parameter_id {
         Some(parameter_id) => {
             bytes.push(1);
@@ -291,20 +301,24 @@ impl<'a, R: PlasticityOwnerEvidenceResolverV1 + ?Sized> AgentdPlasticityHostV1<'
                 PlasticityOwnerEvidenceKindV1::UpdateRule,
                 admission.update_rule_digest,
                 None,
+                None,
             ),
             (
                 PlasticityOwnerEvidenceKindV1::Modulator,
                 admission.modulator_digest,
+                None,
                 None,
             ),
             (
                 PlasticityOwnerEvidenceKindV1::ModulatorBroadcast,
                 admission.modulator_broadcast_digest,
                 None,
+                None,
             ),
             (
                 PlasticityOwnerEvidenceKindV1::Eligibility,
                 admission.eligibility_digest,
+                None,
                 None,
             ),
         ] {
@@ -316,6 +330,7 @@ impl<'a, R: PlasticityOwnerEvidenceResolverV1 + ?Sized> AgentdPlasticityHostV1<'
                 request,
                 PlasticityOwnerEvidenceKindV1::ParameterSignal,
                 signal.evidence_digest,
+                Some(signal.layer_id.clone()),
                 Some(signal.parameter_id.clone()),
                 now,
             )?;
@@ -332,6 +347,7 @@ impl<'a, R: PlasticityOwnerEvidenceResolverV1 + ?Sized> AgentdPlasticityHostV1<'
         request: &ParameterPlasticityProductRequestV1,
         kind: PlasticityOwnerEvidenceKindV1,
         evidence_digest: Digest32,
+        layer_id: Option<StableId>,
         parameter_id: Option<StableId>,
         now: u64,
     ) -> Result<PlasticityOwnerEvidenceReceiptV1, AgentdPlasticityHostErrorV1> {
@@ -346,7 +362,9 @@ impl<'a, R: PlasticityOwnerEvidenceResolverV1 + ?Sized> AgentdPlasticityHostV1<'
             selected_artifact_digest: admission.selected_artifact_digest,
             window_id: admission.window.window_id.clone(),
             window_digest: admission.window.window_digest,
+            dataset_digest: admission.dataset_digest,
             baseline_generation: admission.baseline_generation,
+            layer_id,
             parameter_id,
             now,
         };
