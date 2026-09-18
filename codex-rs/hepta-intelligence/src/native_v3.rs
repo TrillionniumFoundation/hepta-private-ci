@@ -218,13 +218,13 @@ impl CompositionPortsV3 for NativeCompositionPortsV3<'_> {
         }
         let digest = compiled.objective.semantic_digest;
         self.objective = Some(compiled);
-        Ok(native_receipt(
+        native_receipt(
             input,
             "objective.compiler",
             digest,
             digest,
             PortDecisionV1::Continue,
-        ))
+        )
     }
 
     fn evaluate_utility(
@@ -277,13 +277,13 @@ impl CompositionPortsV3 for NativeCompositionPortsV3<'_> {
         let output = receipt.evaluation_digest_v2;
         let evidence = receipt.evaluation_policy_digest;
         self.utility = Some(receipt);
-        Ok(native_receipt(
+        native_receipt(
             input,
             "utility.ndu",
             output,
             evidence,
             PortDecisionV1::Continue,
-        ))
+        )
     }
 
     fn collect_neural_signal(
@@ -310,13 +310,13 @@ impl CompositionPortsV3 for NativeCompositionPortsV3<'_> {
         let output = receipt.signal_digest;
         let evidence = state.state_digest;
         self.neuron = Some(receipt);
-        Ok(native_receipt(
+        native_receipt(
             input,
             "neuron.runtime",
             output,
             evidence,
             PortDecisionV1::Continue,
-        ))
+        )
     }
 
     fn build_prompt_portfolio(
@@ -343,13 +343,13 @@ impl CompositionPortsV3 for NativeCompositionPortsV3<'_> {
             .map_err(|_| native_failure(input, PortFailureClassV1::Rejected, "prompt-error"))?;
         let output = receipt.receipt_digest;
         self.prompt = Some(receipt);
-        Ok(native_receipt(
+        native_receipt(
             input,
             "prompt.optimizer",
             output,
             output,
             PortDecisionV1::Continue,
-        ))
+        )
     }
 
     fn decide_intuition(
@@ -393,13 +393,13 @@ impl CompositionPortsV3 for NativeCompositionPortsV3<'_> {
         };
         let output = receipt.receipt_digest;
         self.intuition = Some(receipt);
-        Ok(native_receipt(
+        native_receipt(
             input,
             "intuition.policy",
             output,
             output,
             decision,
-        ))
+        )
     }
 
     fn compile_context(
@@ -422,13 +422,13 @@ impl CompositionPortsV3 for NativeCompositionPortsV3<'_> {
         );
         let output = receipt.context_digest;
         self.context = Some(receipt);
-        Ok(native_receipt(
+        native_receipt(
             input,
             "context.compiler",
             output,
             evidence,
             PortDecisionV1::Continue,
-        ))
+        )
     }
 
     fn admit_evaluation(
@@ -458,13 +458,13 @@ impl CompositionPortsV3 for NativeCompositionPortsV3<'_> {
         }
         let output = receipt.evidence_digest;
         self.evaluation = Some(receipt);
-        Ok(native_receipt(
+        native_receipt(
             input,
             "learning.eval",
             output,
             output,
             PortDecisionV1::Continue,
-        ))
+        )
     }
 
     fn record_decision(
@@ -565,13 +565,13 @@ impl CompositionPortsV3 for NativeCompositionPortsV3<'_> {
         let output = append.chain_digest;
         let evidence = append.event_digest;
         self.decision = Some(append);
-        Ok(native_receipt(
+        native_receipt(
             input,
             "learning.ledger",
             output,
             evidence,
             PortDecisionV1::Continue,
-        ))
+        )
     }
 }
 
@@ -581,17 +581,24 @@ fn native_receipt(
     output_digest: Digest32,
     evidence_digest: Digest32,
     decision: PortDecisionV1,
-) -> CompositionPortReceiptV3 {
-    CompositionPortReceiptV3 {
+) -> Result<CompositionPortReceiptV3, PortFailureV1> {
+    let producer = StableId::new(producer).map_err(|_| {
+        native_failure(
+            input,
+            PortFailureClassV1::Rejected,
+            "producer-identity",
+        )
+    })?;
+    Ok(CompositionPortReceiptV3 {
         stage: input.stage,
-        producer: StableId::new(producer).expect("registered producer identity"),
+        producer,
         snapshot_digest: input.snapshot_digest,
         predecessor_digest: input.predecessor_digest,
         output_digest,
         evidence_digest,
         decision,
         authority: AuthorityPosture::DENY_ALL,
-    }
+    })
 }
 
 fn native_failure(
