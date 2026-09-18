@@ -20,6 +20,7 @@ struct Fixture {
     keys: [SigningKey; 3],
     principals: Vec<AuthenticatedPrincipalV1>,
     verifier: LearningEvidenceVerifierV1,
+    policy: TopologyMutationPolicyV1,
     admission: TopologyPlasticityAdmissionEvidenceV1,
     changes: Vec<TopologyChangeV2>,
     handoffs: Vec<TopologyWriterHandoffV1>,
@@ -71,6 +72,16 @@ impl Fixture {
         .expect("trust verifier");
 
         let selected = digest("topology-selected-artifact");
+        let policy = build_topology_mutation_policy_v1(
+            id("topology-policy:product"),
+            selected,
+            1,
+            vec![ProtectedTopologyModuleV1 {
+                module_id: id("learning.eval"),
+                class: ProtectedTopologyClassV1::Evaluator,
+            }],
+        )
+        .expect("topology policy");
         let admission = TopologyPlasticityAdmissionEvidenceV1 {
             baseline_id: id("artifact:topology:20"),
             objective_digest: digest("topology-objective"),
@@ -78,6 +89,7 @@ impl Fixture {
             artifact_registry_binding: digest("topology-artifact-binding"),
             artifact_registry_head_digest: digest("topology-artifact-head"),
             qualification_evidence_head_digest: digest("topology-evidence-head"),
+            topology_policy_digest: policy.policy_digest,
             window: ProposalWindowV2 {
                 window_id: id("topology-window:1"),
                 window_digest: digest("topology-window"),
@@ -214,6 +226,7 @@ impl Fixture {
             keys,
             principals,
             verifier,
+            policy,
             admission,
             changes,
             handoffs: vec![handoff],
@@ -278,6 +291,7 @@ impl Fixture {
         );
         TopologyPlasticityProductRequestV1 {
             proposal_id: id("topology-proposal:1"),
+            topology_policy: self.policy.clone(),
             changes: self.changes.clone(),
             handoffs: self.handoffs.clone(),
             generator_attestation,
@@ -348,6 +362,33 @@ fn authenticated_topology_path_evaluates_handoff_persists_and_commits_anchor() {
     assert_eq!(writer.state(), PlasticityWriterStateV1::Healthy);
     assert_eq!(writer.record_count(), Ok(1));
     assert_eq!(anchor_committer.anchor, Some(receipt.committed_registry_anchor));
+}
+
+#[test]
+fn authenticated_topology_rejects_protected_evaluator_surface_before_append() {
+    let fixture = Fixture::new();
+    let mut request = fixture.request();
+    request.changes[0].module_id = id("learning.eval");
+    let mut writer = writer();
+    let mut anchor_committer = AnchorCommitter {
+        accept: true,
+        ..AnchorCommitter::default()
+    };
+    let result = propose_authenticated_topology_plasticity_v1(
+        request,
+        &fixture.verifier,
+        &mut writer,
+        &mut anchor_committer,
+        50,
+    );
+    assert!(matches!(
+        result,
+        Err(TopologyPlasticityProductErrorV1::Policy(
+            TopologyMutationPolicyErrorV1::ProtectedModuleTargeted(module)
+        )) if module == "learning.eval"
+    ));
+    assert_eq!(writer.record_count(), Ok(0));
+    assert_eq!(anchor_committer.anchor, None);
 }
 
 #[test]
