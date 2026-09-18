@@ -221,11 +221,18 @@ impl AppServerModelDriver {
         let Some(dispatch) = record.dispatch.as_ref() else {
             return Ok(None);
         };
-        let (Some(session_id), Some(deadline_ms), Some(expected_request_digest)) = (
+        let (
+            Some(session_id),
+            Some(deadline_ms),
+            Some(payload_digest),
+            Some(expected_request_digest),
+        ) = (
             dispatch.codex_session_id.as_deref(),
             dispatch.codex_deadline_ms,
+            dispatch.codex_payload_digest.as_deref(),
             dispatch.codex_request_digest.as_deref(),
-        ) else {
+        )
+        else {
             // Historical dispatches predate exact runtime.codex correlation.
             return Ok(None);
         };
@@ -322,7 +329,7 @@ impl AppServerModelDriver {
             &record.request.request_id,
             session_id,
             &dispatch.thread_id,
-            &record.request.payload_digest,
+            payload_digest,
             record.request.worker_generation,
             deadline_ms,
         )?;
@@ -492,18 +499,25 @@ impl AppServerModelDriver {
             let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
             return Err("cancelled before model dispatch".into());
         }
-        let payload_digest = control
-            .native_record(request_id)
-            .ok_or("missing durable native request before Codex dispatch")?
-            .request
-            .payload_digest
-            .clone();
+        let turn_start_params = TurnStartParams {
+            thread_id: started.thread.id.clone(),
+            client_user_message_id: Some(request_id.to_string()),
+            input: vec![UserInput::Text {
+                text: prompt,
+                text_elements: Vec::new(),
+            }],
+            additional_context,
+            environments: Some(Vec::new()),
+            ..Default::default()
+        };
+        let exact_turn_payload_digest =
+            control::digest(&serde_json::to_vec(&turn_start_params)?);
         let (codex_now_ms, codex_deadline_ms) = codex_deadline(self.config.timeout)?;
         let codex_intent = codex_intent(
             request_id,
             &started.thread.session_id,
             &started.thread.id,
-            &payload_digest,
+            &exact_turn_payload_digest,
             self.config.generation,
             codex_deadline_ms,
         )?;
@@ -513,9 +527,12 @@ impl AppServerModelDriver {
             NativeDispatch {
                 thread_id: started.thread.id.clone(),
                 model_provider: started.model_provider.clone(),
-                context_digest: control::digest(&serde_json::to_vec(&additional_context)?),
+                context_digest: control::digest(&serde_json::to_vec(
+                    &turn_start_params.additional_context,
+                )?),
                 codex_session_id: Some(started.thread.session_id.clone()),
                 codex_deadline_ms: Some(codex_deadline_ms),
+                codex_payload_digest: Some(exact_turn_payload_digest),
                 codex_request_digest: Some(exact_codex_request_digest.to_string()),
             },
         )?;
@@ -523,17 +540,7 @@ impl AppServerModelDriver {
             RPC_TIMEOUT,
             client.request_typed::<TurnStartResponse>(ClientRequest::TurnStart {
                 request_id: RequestId::Integer(2),
-                params: TurnStartParams {
-                    thread_id: started.thread.id.clone(),
-                    client_user_message_id: Some(request_id.to_string()),
-                    input: vec![UserInput::Text {
-                        text: prompt,
-                        text_elements: Vec::new(),
-                    }],
-                    additional_context,
-                    environments: Some(Vec::new()),
-                    ..Default::default()
-                },
+                params: turn_start_params,
             }),
         )
         .await;
