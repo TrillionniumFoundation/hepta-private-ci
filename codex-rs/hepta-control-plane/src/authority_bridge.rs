@@ -99,6 +99,31 @@ pub fn claim_final_use_for_grant_request_v1(
     authority.claim(signed_grant, &binding).map_err(Into::into)
 }
 
+
+/// Preferred final-boundary helper. The caller's effect closure runs only
+/// inside FinalUseAuthority's second time/revocation fence after durable nonce
+/// claim. Control still does not mint or sign authority.
+pub fn with_authorized_grant_request_v1<T>(
+    authority: &FinalUseAuthority,
+    signed_grant: &SignedFinalUseGrant,
+    request: &GrantRequestV1,
+    subject_id: &StableId,
+    destination_id: &StableId,
+    scope_digest: Digest32,
+    dispatch: impl FnOnce() -> T,
+) -> Result<T, AuthorityBridgeError> {
+    let binding = final_use_binding_for_grant_request_v1(
+        request,
+        subject_id,
+        destination_id,
+        scope_digest,
+    )?;
+    let token = authority.claim(signed_grant, &binding)?;
+    authority
+        .with_verified_use(token, &binding, dispatch)
+        .map_err(Into::into)
+}
+
 fn push_id(bytes: &mut Vec<u8>, value: &StableId) {
     let raw = value.as_str().as_bytes();
     bytes.extend_from_slice(&u32::try_from(raw.len()).unwrap_or(u32::MAX).to_be_bytes());
