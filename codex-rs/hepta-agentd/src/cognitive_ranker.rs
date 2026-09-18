@@ -117,7 +117,8 @@ impl PinnedCognitiveRanker {
         selection: &VerifiedSelfEvolutionSelectionV1,
     ) -> Result<Self, String> {
         let receipt = selection.receipt();
-        if selected.manifest.artifact_id != receipt.candidate_id
+        if body_generation != receipt.candidate_generation.get()
+            || selected.manifest.artifact_id != receipt.candidate_id
             || selected.manifest.generation != receipt.candidate_generation
             || selected.manifest.content_digest != receipt.candidate_artifact_digest
             || selected.manifest.objective_digest != receipt.objective_digest
@@ -153,7 +154,8 @@ impl PinnedCognitiveRanker {
         rollback: &VerifiedSelfEvolutionRollbackV1,
     ) -> Result<Self, String> {
         let receipt = rollback.selection().receipt();
-        if selected.manifest.artifact_id != receipt.predecessor_id
+        if body_generation != rollback.rollback_generation().get()
+            || selected.manifest.artifact_id != receipt.predecessor_id
             || selected.manifest.generation != receipt.predecessor_generation
             || selected.manifest.content_digest != receipt.predecessor_artifact_digest
             || selected.manifest.objective_digest != receipt.objective_digest
