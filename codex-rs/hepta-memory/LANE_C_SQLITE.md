@@ -90,5 +90,9 @@ binding, and restoration of an older valid SQLite backup. Agentd's `cognitive_co
 authoritative provider against real SQLite and requires final-use failure after
 frontier, authority-epoch or lease drift. `cognitive_context_budget_tests.rs`
 executes the full production `read()` path with a deterministic mid-flight owner
-revision change and requires the delivery fence to fail closed. Run focused tests with
+revision change and requires the delivery fence to fail closed.
+`cognitive_ranker_tests.rs` deterministically holds an in-flight context request
+after authoritative acquisition, advances Fleet lifecycle from Running to
+Draining, then requires the outer Agentd control fence to reject before payload
+delivery. Run focused tests with
 `just test -p codex-hepta-memory -p codex-hepta-cognitive-read -p codex-hepta-agentd`.
