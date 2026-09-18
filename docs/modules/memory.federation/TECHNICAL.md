@@ -72,19 +72,18 @@ Non-goals include becoming a general state store, bypassing the Codex execution 
 
 ## 4. Internal architecture and component decomposition
 
-The bounded components are:
+The hardened V2 boundary has no writer or outbox. Its bounded components are:
 
-- `typed ingress`
-- `policy core`
-- `transactional writer`
-- `bounded read projection`
-- `outbox adapter`
+- `FederatedQueryV2` / `FederatedLeaseV2`: exact peer, principal, scope, purpose, generation, nonce, deadline and authority-horizon binding;
+- `FederationAuthorityV2`: live authority observation before transport dispatch and again after I/O;
+- `FederationTransportV2`: one asynchronous, read-only, interruptible attempt; retries belong to a separately authorized outer caller and require new attempt identity;
+- `RemoteFederatedResponseV2`: query-bound response whose domain-separated digest is recomputed over all security-relevant fields before admission;
+- `FederationAttemptControlV2`: cancellation/deadline boundary; the product adapter stops at the earlier of query deadline and lease expiry;
+- `FederatedResultV2`: deny-all, provenance-bearing result with explicit completeness, validity, coverage and effective expiry;
+- product adapter/aggregator in `hepta-memory::CognitiveRuntime::AvailableFederatedV2`: discovers scoped grants, invokes the canonical V2 boundary per admitted peer and preserves aggregate coverage;
+- physical-send revalidator in the Memory extension: rechecks capability and exact memory binding immediately before model-input delivery.
 
-Ingress validates identity, version, size, scope and revision before domain logic. The deterministic core receives typed values and is testable without network, filesystem or process-global state unless the module owns that boundary. State-bearing components use one transaction boundary per logical mutation. Publication occurs only after invariants and lineage checks pass.
-
-Adapters translate one registered contract, verify final payload and grant immediately before the boundary, invoke one downstream capability, and map the observed terminal outcome. Queue acceptance or handler completion is never inferred as external success. Component interfaces support deterministic fixtures and fault injection.
-
-Configuration is immutable for one process generation. Changes affecting authority, schema, compatibility, model identity, objective semantics or resource policy create a new revision or generation. Hidden mutable singletons, unbounded queues and implicit store fallback are prohibited.
+No component in this module enrolls peers, mutates a remote store, owns credentials, issues grants, writes cognitive facts or maintains a retry queue. Current owner/capability facts stay in their existing owners. Hidden mutable singletons, unbounded queues, blind retries and implicit fallback to the legacy federation path are prohibited on the Agentd product composition.
 
 ## 5. Contracts, ports and compatibility
 
@@ -117,22 +116,42 @@ Read-only data dependencies:
 
 - `authority_lease`
 - `capability_revocation`
+- the existing owner cognitive store and exact memory/source revision bindings used by the product adapter.
 
-For every owned domain, this module is the only authoritative writer. Mutations are revision- or generation-bound, idempotent for identical semantics and conflicting for a reused identity with different content. Records bind source identity, schema revision, logical sequence and lineage sufficient for correction, deletion and revocation.
+`memory.federation` owns no database, migration, remote fact, enrollment registry, credential store or durable retry state. The current product adapter opens existing owner cognitive state through the established read-only federation reader and never creates a second memory database. Durable capability grant/revoke history remains owned by the cognitive store/authority boundary.
 
-Migrations are deterministic and checksum-bound. Store open verifies required schema objects and integrity constraints before reads or writes. Migration failure leaves a recoverable predecessor. Rollback across a schema boundary restores compatible state with the binary.
-
-Projection domains rebuild from declared sources and publish complete generations atomically. Projections never become sources of truth. Retention and deletion preserve lineage and prevent resurrection through indexes, caches, artifacts or backup restore.
+Any future cache is non-authoritative and must bind peer/principal/scope/query/frontier-or-snapshot witness/expiry/deletion-revocation cutoff. Restore may discard such a cache; it may never renew consent, revive a revoked grant or become a source of truth. A future cross-host profile that introduces persisted transport metadata or a new wire schema requires its own owner-reviewed migration and rollback contract before composition.
 
 ## 7. Runtime, concurrency and transaction model
 
-The [current native implementation](../../../qualification/module-execution-dossiers/detail/memory.federation.md#8-current-native-implementation) identifies the actual state owner, in-memory versus persistent surfaces, and lock/transaction boundary. Use that implementation scope when composing the module; target state-machine operations are identified in the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/memory.federation.md).
+The canonical V2 engine is stateless across attempts. One call performs:
 
-[Shared concurrency and transaction requirements](../README.md#shared-concurrency-and-transactions) apply at the corresponding owner boundary.
+1. query and lease shape/binding validation;
+2. live-authority preflight, which must be `Current`;
+3. one transport future raced against attempt control;
+4. response shape, digest and exact query binding verification;
+5. a second live-authority observation;
+6. final validity/completeness/expiry calculation and result-digest sealing.
+
+The engine holds no global lock across I/O and owns no transaction. Product `CognitiveRuntime::AvailableFederatedV2` keeps only bounded owner-layout candidates plus the consumer identity, rediscovers current read-only grants for each physical retrieval, and caps total source slots at the existing federation bound. The product budget includes discovery; individual attempts share the request's global horizon rather than each receiving a fresh unbounded timeout.
+
+The local in-process adapter may temporarily hold the retrieved batch in request-local memory until canonical V2 admission completes. Stale/revoked/failed results never release that captured batch to downstream attachment. Final model-input revalidation is another bounded read and drops the federated proposal on timeout or drift.
+
+[Shared concurrency and transaction requirements](../README.md#shared-concurrency-and-transactions) apply to the underlying owner stores; this adapter must not widen their transaction or lock boundaries.
 
 ## 8. Failure semantics, recovery and rollback
 
-Use the error/recovery path linked by the [current native implementation](../../../qualification/module-execution-dossiers/detail/memory.federation.md#8-current-native-implementation) and the module-specific fault cases in the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/memory.federation.md). A source library or fixture cannot stand in for an unimplemented durable recovery or external reconciler.
+Failures are not collapsed into a successful empty read:
+
+- response digest/query/peer/scope/purpose mismatch rejects the attempt;
+- non-current preflight authority prevents transport dispatch;
+- timeout, cancellation or transport nonterminal outcome is indeterminate/failed coverage and never triggers blind retry;
+- post-I/O revoke or generation drift suppresses all remote items and contributes failed aggregate coverage;
+- an unobservable owner capability store contributes a bounded failed discovery slot, while a successfully observed owner with no active matching grant is simply not enrolled;
+- a grant for a different consumer workspace is filtered before a query is formed;
+- final physical-send revalidation timeout, capability drift, memory drift or secret-like content removes the federated proposal rather than blocking the turn or sending stale evidence.
+
+The module has no durable local state to replay after restart. Rollback may stop using the V2 product caller and discard ephemeral results, but it must not restore revoked authority or reinterpret stale cached evidence as current. The compatibility `AvailableFederated` path is not an automatic product fallback.
 
 [Shared failure, recovery and rollback requirements](../README.md#shared-failure-and-recovery) remain mandatory.
 
@@ -148,7 +167,9 @@ Negative tests cover denied capabilities, cross-owner writes, stale or revoked g
 
 ## 10. Performance, capacity and hot-path policy
 
-The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/memory.federation.md) specifies this module's algorithm, pilot ceilings and capacity fixtures. Those target ceilings are not measurements and must not be reported as enforcement of an unimplemented API. Current native limits belong to [codex-rs/hepta-memory-federation/src/lib.rs](../../../codex-rs/hepta-memory-federation/src/lib.rs) and the linked implementation components.
+The canonical V2 result bound is `MAX_FEDERATED_RESULTS_V2 = 512`. The product caller preserves the existing `MAX_FEDERATION_SOURCES_PER_AGENT = 16` bound; owner-layout enrollment candidates are additionally bounded before discovery. The current in-process product read uses one total bounded federation budget that includes capability discovery and physical attempts, so adding peers does not multiply an unbounded per-peer wall-clock allowance. Result aggregation is deterministic and final candidate selection is capped again by the existing memory retrieval result bound.
+
+These are enforced source limits, not deployment latency/SLO measurements. A cross-host profile still requires measured transport budgets, authenticated peer limits and target-host overload evidence.
 
 [Shared performance and capacity requirements](../README.md#shared-performance-and-capacity) define the measurement/overload obligations for a selected host.
 
