@@ -213,7 +213,7 @@ pub fn final_use_binding(
     now_ms: u64,
     intent: &CodexOperationIntent,
 ) -> Result<FinalUseBinding, Error> {
-    validate_intent(now_ms, intent)?;
+    validate_intent_for_admission(now_ms, intent)?;
     Ok(FinalUseBinding {
         subject_id: intent.subject_id.as_str().to_string(),
         destination_id: intent.destination_id.as_str().to_string(),
@@ -395,7 +395,7 @@ fn adapt_observation(
     dispatched: &DispatchedCodexOperation,
     observation: Option<TerminalObservation>,
 ) -> Result<CodexAdapterReceipt, Error> {
-    validate_intent(now_ms, &dispatched.intent)?;
+    validate_intent_shape(&dispatched.intent)?;
     if dispatched.turn_id.as_str().is_empty() {
         return Err(Error::InvalidTurnIdentity);
     }
@@ -443,7 +443,7 @@ fn validate_turn_start(
     intent: &CodexOperationIntent,
     params: &TurnStartParams,
 ) -> Result<(), Error> {
-    validate_intent(now_ms, intent)?;
+    validate_intent_for_admission(now_ms, intent)?;
     if intent.method_id.as_str() != TURN_START_METHOD {
         return Err(Error::MethodBindingMismatch);
     }
@@ -462,7 +462,18 @@ fn validate_turn_start(
     Ok(())
 }
 
-fn validate_intent(now_ms: u64, intent: &CodexOperationIntent) -> Result<(), Error> {
+fn validate_intent_for_admission(
+    now_ms: u64,
+    intent: &CodexOperationIntent,
+) -> Result<(), Error> {
+    validate_intent_shape(intent)?;
+    if now_ms >= intent.deadline_ms {
+        return Err(Error::DeadlineExpired);
+    }
+    Ok(())
+}
+
+fn validate_intent_shape(intent: &CodexOperationIntent) -> Result<(), Error> {
     if intent.payload_digest.is_zero()
         || intent.lease_payload_digest.is_zero()
         || intent.input_digest.is_zero()
@@ -481,9 +492,6 @@ fn validate_intent(now_ms: u64, intent: &CodexOperationIntent) -> Result<(), Err
     }
     if intent.protocol_version == 0 {
         return Err(Error::InvalidProtocolVersion);
-    }
-    if now_ms >= intent.deadline_ms {
-        return Err(Error::DeadlineExpired);
     }
     Ok(())
 }
