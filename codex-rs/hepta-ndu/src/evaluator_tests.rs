@@ -1,3 +1,5 @@
+#![allow(deprecated)]
+
 use std::fmt::Debug;
 
 use codex_hepta_types::Digest32;
@@ -8,6 +10,7 @@ use pretty_assertions::assert_eq;
 
 use super::canonical_evaluation_policy_digest;
 use super::canonical_scalarization_digest;
+use super::canonical_utility_profile_digest;
 use super::evaluate_candidates;
 use super::evaluate_candidates_with_policy;
 use super::legacy_evaluation_policy;
@@ -96,6 +99,7 @@ fn contribution(candidate: &str, success: i64, latency: i64) -> UtilityContribut
 fn profile() -> UtilityProfile {
     UtilityProfile {
         profile_id: id("utility-v1"),
+        axis_semantics_digest: Digest32::of_bytes(b"utility-axis-semantics-v1"),
         dimensions: vec![
             (id("success"), AxisDirection::Maximize),
             (id("latency"), AxisDirection::Minimize),
@@ -414,4 +418,26 @@ fn candidate_support_digest_binds_organ_and_contribution_semantics() {
         .support_digest;
 
     assert_ne!(first_support, second_support);
+}
+
+#[test]
+fn utility_profile_digest_binds_axis_semantics_manifest() {
+    let first = profile();
+    let mut changed = first.clone();
+    changed.axis_semantics_digest = Digest32::of_bytes(b"utility-axis-semantics-v2");
+
+    assert_ne!(
+        must(canonical_utility_profile_digest(&first)),
+        must(canonical_utility_profile_digest(&changed))
+    );
+}
+
+#[test]
+fn empty_axis_semantics_manifest_is_rejected() {
+    let mut invalid = profile();
+    invalid.axis_semantics_digest = Digest32::ZERO;
+    assert_eq!(
+        must_err(canonical_utility_profile_digest(&invalid)).code(),
+        "NDU-E002"
+    );
 }

@@ -9,6 +9,7 @@ pub enum NduError {
     DimensionLimitExceeded,
     RequiredOrganLimitExceeded,
     EmptyObjectiveDigest,
+    EmptyProfileSemanticsDigest,
     EmptyProtocolDigest(&'static str),
     EmptySupportDigest { candidate: String, organ: String },
     MixedObjective,
@@ -54,6 +55,7 @@ impl NduError {
             | Self::DimensionLimitExceeded
             | Self::RequiredOrganLimitExceeded => "NDU-E001",
             Self::EmptyObjectiveDigest
+            | Self::EmptyProfileSemanticsDigest
             | Self::EmptyProtocolDigest(_)
             | Self::EmptySupportDigest { .. }
             | Self::MixedObjective
@@ -104,6 +106,9 @@ impl fmt::Display for NduError {
                 formatter.write_str("required organ set exceeds 32 entries")
             }
             Self::EmptyObjectiveDigest => formatter.write_str("objective digest must not be zero"),
+            Self::EmptyProfileSemanticsDigest => formatter.write_str(
+                "utility profile must bind a nonzero axis semantics manifest digest",
+            ),
             Self::EmptyProtocolDigest(field) => {
                 write!(formatter, "protocol digest must not be zero: {field}")
             }

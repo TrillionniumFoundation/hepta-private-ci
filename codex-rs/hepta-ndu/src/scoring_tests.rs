@@ -64,6 +64,7 @@ fn cyclic_tolerance_counterexample_retains_frontier_in_every_input_order() {
     ];
     let profile = UtilityProfile {
         profile_id: id("three-axis-profile"),
+        axis_semantics_digest: Digest32::of_bytes(b"three-axis-semantics-v1"),
         dimensions: axes()
             .into_iter()
             .map(|axis| (axis, AxisDirection::Maximize))

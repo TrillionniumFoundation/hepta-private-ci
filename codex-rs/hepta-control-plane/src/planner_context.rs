@@ -82,6 +82,9 @@ pub fn plan_observed_context(
     let objective_digest = Digest32::of_bytes(&objective);
     let profile = UtilityProfile {
         profile_id: id("verified-context-delivery-v1")?,
+        axis_semantics_digest: Digest32::of_bytes(
+            b"hepta.control.verified-context-axis-semantics.v1",
+        ),
         dimensions: vec![(count_axis.clone(), AxisDirection::Maximize)],
         risk_ceilings: vec![],
         resource_ceilings: vec![AxisLimit {

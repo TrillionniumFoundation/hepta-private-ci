@@ -64,6 +64,10 @@ struct ValidatedEvaluationPolicy {
 
 /// Compatibility entry point. Its former implicit sum/sum/sum/max and exact
 /// Pareto semantics are now materialized as a digestible policy.
+#[deprecated(
+    since = "0.0.0",
+    note = "compatibility-only; new integrations must use evaluate_candidates_with_policy"
+)]
 pub fn evaluate_candidates(
     set: ContributionSet,
     profile: UtilityProfile,
@@ -302,6 +306,9 @@ fn validate_contribution_envelope(set: &ContributionSet) -> Result<(), NduError>
 }
 
 fn validate_profile(profile: &mut UtilityProfile) -> Result<(), NduError> {
+    if profile.axis_semantics_digest.is_zero() {
+        return Err(NduError::EmptyProfileSemanticsDigest);
+    }
     if profile.dimensions.is_empty()
         || profile.dimensions.len() > MAX_UTILITY_DIMENSIONS
         || profile.risk_ceilings.len() > MAX_RISK_RESOURCE_DIMENSIONS
