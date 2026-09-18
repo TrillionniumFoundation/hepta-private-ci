@@ -105,7 +105,7 @@ fn app_server_runtime_options_with_writer(
     })?;
     Ok(AppServerRuntimeOptions {
         remote_control_startup_mode: RemoteControlStartupMode::DisabledEphemeral,
-        install_shutdown_signal_handler: false,
+        install_shutdown_signal_handler: true,
         turn_queue_capacity: Some(turn_queue_capacity),
         required_sqlite_home: Some(AbsolutePathBuf::from_absolute_path(&identity.home_root)?),
         required_thread_store_mode: Some(ThreadStoreConfig::Local),
@@ -196,6 +196,7 @@ mod tests {
             Some(37),
             options.turn_queue_capacity.map(std::num::NonZeroUsize::get)
         );
+        assert!(options.install_shutdown_signal_handler);
         assert_eq!(
             Some(identity.home_root.as_path()),
             options
