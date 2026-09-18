@@ -13,6 +13,17 @@ doctest = false
 [lints]
 workspace = true
 
+[features]
+default = []
+# Exposes the raw asserted-identity decision engines to explicit trusted
+# compatibility tests only. Production ingress must not enable this feature.
+trusted-inprocess-eval = []
+
+[[test]]
+name = "operator_claim"
+path = "tests/operator_claim.rs"
+required-features = ["trusted-inprocess-eval"]
+
 [dependencies]
 codex-hepta-learning-ledger = { path = "../hepta-learning-ledger" }
 codex-hepta-types = { path = "../hepta-types" }
