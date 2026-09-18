@@ -30,6 +30,7 @@ use codex_app_server_protocol::TurnStatus;
 use codex_app_server_protocol::UserInput;
 use codex_hepta_agentd::AgentdClient;
 use codex_hepta_agentd::AgentdError;
+use codex_hepta_agentd::CognitiveContextSnapshot;
 use codex_hepta_agentd::HealthSnapshot;
 use codex_hepta_contracts::AgentId;
 use codex_hepta_infer_core::durable_control::DurableInferenceControl;
@@ -110,11 +111,12 @@ impl AppServerModelDriver {
         if !health.ready || health.fenced {
             return Err("Agent is not ready".into());
         }
-        let context = match context_query {
-            Some(query) => Some(owner.cognitive_context(query, /*limit*/ 4).await?),
+        let context = match context_query.as_ref() {
+            Some(query) => Some(owner.cognitive_context(query.clone(), /*limit*/ 4).await?),
             None => None,
         };
         let additional_context = context
+            .as_ref()
             .map(|snapshot| -> Result<_> {
                 let value = serde_json::to_string(&snapshot)?;
                 if value.len() > MAX_MODEL_CONTEXT_BYTES {
@@ -173,6 +175,15 @@ impl AppServerModelDriver {
         }
         // Recheck the actual generation after acquiring context and connecting.
         owner.session_ingress().await?;
+        // The Agentd context response is an observed cut, not a lease. Re-read
+        // the same selection immediately before turn/start and require the
+        // ordered memory identities/revisions/content plus the read decision to
+        // remain identical. Unrelated snapshot/read-digest drift is tolerated;
+        // any change to what would actually be attached fails closed.
+        if let (Some(query), Some(expected_context)) = (context_query.as_ref(), context.as_ref()) {
+            let current_context = owner.cognitive_context(query.clone(), /*limit*/ 4).await?;
+            ensure_context_selection_current(expected_context, &current_context)?;
+        }
         if cancellation.is_cancelled() {
             let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
             return Err("cancelled before model dispatch".into());
@@ -351,6 +362,27 @@ impl AppServerModelDriver {
             }
         }
     }
+}
+
+fn ensure_context_selection_current(
+    expected: &CognitiveContextSnapshot,
+    current: &CognitiveContextSnapshot,
+) -> Result<()> {
+    let Some(expected_plan) = expected.plan.as_ref() else {
+        return Err("verified context is missing its planning receipt".into());
+    };
+    let Some(current_plan) = current.plan.as_ref() else {
+        return Err("current context is missing its planning receipt".into());
+    };
+    if (!expected_plan.read_allowed && !expected.items.is_empty())
+        || (!current_plan.read_allowed && !current.items.is_empty())
+    {
+        return Err("denied cognitive context contains attachable items".into());
+    }
+    if expected_plan.read_allowed != current_plan.read_allowed || expected.items != current.items {
+        return Err("cognitive context changed before model dispatch".into());
+    }
+    Ok(())
 }
 
 async fn verify_owner_health(

@@ -3,6 +3,64 @@ use codex_app_server_protocol::AgentMessageDeltaNotification;
 use codex_app_server_protocol::Turn;
 use codex_app_server_protocol::TurnCompletedNotification;
 use codex_app_server_protocol::TurnItemsView;
+use codex_hepta_agentd::CognitiveContextItem;
+use codex_hepta_agentd::CognitiveContextPlan;
+
+fn context_snapshot(
+    memory_id: &str,
+    revision: u64,
+    content: &str,
+    read_allowed: bool,
+) -> codex_hepta_agentd::CognitiveContextSnapshot {
+    codex_hepta_agentd::CognitiveContextSnapshot {
+        snapshot_digest: "snapshot-a".to_string(),
+        read_digest: "read-a".to_string(),
+        omitted_records: 0,
+        items: if read_allowed {
+            vec![CognitiveContextItem {
+                memory_id: memory_id.to_string(),
+                revision,
+                content: content.to_string(),
+                content_sha256: format!("hash-{content}"),
+            }]
+        } else {
+            Vec::new()
+        },
+        plan: Some(CognitiveContextPlan {
+            evaluated_context_digest: "context-a".to_string(),
+            plan_receipt_digest: "plan-a".to_string(),
+            read_allowed,
+        }),
+    }
+}
+
+#[test]
+fn predispatch_context_check_binds_exact_selected_memories() {
+    let expected = context_snapshot("memory:a", 1, "alpha", true);
+
+    // A newer owner cut may have different global digests while preserving the
+    // exact selected attachment. That does not invalidate the prepared turn.
+    let mut current = expected.clone();
+    current.snapshot_digest = "snapshot-b".to_string();
+    current.read_digest = "read-b".to_string();
+    current.omitted_records = 7;
+    if let Some(plan) = current.plan.as_mut() {
+        plan.evaluated_context_digest = "context-b".to_string();
+        plan.plan_receipt_digest = "plan-b".to_string();
+    }
+    assert!(ensure_context_selection_current(&expected, &current).is_ok());
+
+    let mut revised = current.clone();
+    revised.items[0].revision = 2;
+    assert!(ensure_context_selection_current(&expected, &revised).is_err());
+
+    let denied = context_snapshot("memory:a", 1, "alpha", false);
+    assert!(ensure_context_selection_current(&expected, &denied).is_err());
+
+    let mut missing_plan = current;
+    missing_plan.plan = None;
+    assert!(ensure_context_selection_current(&expected, &missing_plan).is_err());
+}
 
 fn output() -> NativeRunOutput {
     NativeRunOutput {
