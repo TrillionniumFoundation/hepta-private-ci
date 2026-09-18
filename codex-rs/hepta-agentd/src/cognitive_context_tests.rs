@@ -130,6 +130,8 @@ async fn authoritative_context_fails_closed_when_owner_changes_before_final_use(
         .unwrap();
 
     let memory_id = memory.id.memory_id.clone();
+    let store_ref = &store;
+    let access_ref = &access;
     let result = read_with_final_use_hook(
         &store,
         &owner,
@@ -141,10 +143,11 @@ async fn authoritative_context_fails_closed_when_owner_changes_before_final_use(
         || {
             let scope = scope.clone();
             let citation = citation.clone();
+            let memory_id = memory_id.clone();
             async move {
-                store
+                store_ref
                     .forget_memory(
-                        &access,
+                        access_ref,
                         &memory_id,
                         1,
                         &ForgetMemoryDraft {
