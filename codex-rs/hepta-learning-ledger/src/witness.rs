@@ -180,19 +180,44 @@ fn validate_advance(
     previous: LedgerWitnessFrontier,
     next: LedgerWitnessFrontier,
 ) -> Result<(), DurableLedgerError> {
+    if next.anchor.chain_digest.is_zero() {
+        return Err(DurableLedgerError::InvalidAnchor);
+    }
+
+    if next.anchor.sequence == previous.anchor.sequence {
+        if next.anchor.chain_digest != previous.anchor.chain_digest {
+            return Err(DurableLedgerError::InvalidAnchor);
+        }
+        return match (previous.segment, next.segment) {
+            (Some(previous_segment), Some(next_segment))
+                if next_segment == previous_segment
+                    && !previous.sealed
+                    && next.sealed =>
+            {
+                Ok(())
+            }
+            (Some(previous_segment), Some(next_segment))
+                if next_segment == previous_segment + 1
+                    && !next.sealed =>
+            {
+                Ok(())
+            }
+            _ => Err(DurableLedgerError::InvalidAnchor),
+        };
+    }
+
     let expected_sequence = previous
         .anchor
         .sequence
         .checked_add(1)
         .ok_or(DurableLedgerError::InvalidAnchor)?;
-    if next.anchor.sequence != expected_sequence || next.anchor.chain_digest.is_zero() {
+    if next.anchor.sequence != expected_sequence {
         return Err(DurableLedgerError::InvalidAnchor);
     }
     match (previous.segment, next.segment) {
         (None, None) => {}
         (None, Some(segment)) if segment == 0 => {}
-        (Some(previous_segment), Some(next_segment))
-            if next_segment == previous_segment || next_segment == previous_segment + 1 => {}
+        (Some(previous_segment), Some(next_segment)) if next_segment == previous_segment => {}
         _ => return Err(DurableLedgerError::InvalidAnchor),
     }
     Ok(())
