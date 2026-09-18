@@ -574,6 +574,65 @@ async fn post_send_ack_loss_reuses_txn_and_commits_same_synapse_event_id() -> Te
 }
 
 #[tokio::test]
+async fn later_permanent_rejection_cannot_erase_prior_transport_acceptance() -> TestResult {
+    let temp = TempDir::new()?;
+    let agent_id = agent(FIRST_AGENT)?;
+    let layout = layout(&temp, &agent_id)?;
+    let store = prepared_store(&layout).await?;
+    let original = enqueue_final(&store, &agent_id, 10).await?;
+    let accepted_event_id = event("$accepted-before-later-rejection")?;
+    let transport = FakeTransport::new([
+        Ok(accepted_event_id.clone()),
+        Err(MatrixTransportError::Permanent),
+    ]);
+    let config = OutboxDispatchConfig {
+        lease_ms: 20,
+        retry_delay_ms: 10,
+        max_retry_delay_ms: 40,
+        max_attempts: 3,
+        claim_limit: 1,
+        idle_poll: Duration::from_millis(10),
+    };
+    let cancel = CancellationToken::new();
+
+    let accepted = dispatch_outbox_once(&store, &transport, &config, &cancel, 10).await?;
+    assert_eq!(accepted.transport_accepted, 1);
+    assert_eq!(accepted.sent, 0);
+    let rejected_retry = dispatch_outbox_once(&store, &transport, &config, &cancel, 20).await?;
+    assert_eq!(rejected_retry.permanent_failure, 0);
+    assert_eq!(rejected_retry.indeterminate, 1);
+
+    let dispatch = store
+        .dispatch_for_txn(&original.stable_txn_id)
+        .await?
+        .ok_or("accepted dispatch disappeared after later rejection")?;
+    assert_eq!(dispatch.state, MatrixDispatchState::Accepted);
+    assert_eq!(dispatch.accepted_event_id, Some(accepted_event_id.clone()));
+    let queued = store
+        .outbox_for_txn(&original.stable_txn_id)
+        .await?
+        .ok_or("accepted outbox disappeared after later rejection")?;
+    assert_eq!(queued.state, OutboxState::RetryScheduled);
+    assert_eq!(queued.next_attempt_at_ms, i64::MAX as u64);
+
+    observe_outbound(
+        &store,
+        original.stable_txn_id.clone(),
+        accepted_event_id.clone(),
+        21,
+    )
+    .await?;
+    let settled = store
+        .outbox_for_txn(&original.stable_txn_id)
+        .await?
+        .ok_or("reconciled outbox disappeared")?;
+    assert_eq!(settled.state, OutboxState::Sent);
+    assert_eq!(settled.sent_event_id, Some(accepted_event_id));
+    store.close().await;
+    Ok(())
+}
+
+#[tokio::test]
 async fn transient_failures_use_bounded_backoff_and_then_park_for_reconciliation() -> TestResult {
     let temp = TempDir::new()?;
     let agent_id = agent(FIRST_AGENT)?;
