@@ -253,6 +253,7 @@ fn validate_factor_fields(
 ) -> Result<(), ProtocolCodecError> {
     if semantic_purpose.is_empty()
         || semantic_purpose.len() > MAX_SEMANTIC_PURPOSE_BYTES
+        || authority_class.len() > MAX_AUTHORITY_CLASS_BYTES
         || !AUTHORITY_CLASSES.contains(&authority_class)
     {
         return Err(ProtocolCodecError::InvalidField);
