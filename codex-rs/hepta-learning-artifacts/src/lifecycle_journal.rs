@@ -17,8 +17,7 @@ use crate::ArtifactClosureError;
 use crate::ArtifactLifecycleEventV1;
 use crate::ArtifactLifecycleStateV1;
 use crate::validate_artifact_lifecycle_transition;
-
-const MAX_LIFECYCLE_RECORDS: usize = 1_000_000;
+use crate::limits::MAX_LIFECYCLE_RECORDS;
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum LifecycleActorRoleV2 {
