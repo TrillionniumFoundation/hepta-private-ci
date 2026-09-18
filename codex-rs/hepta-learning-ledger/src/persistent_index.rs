@@ -426,7 +426,9 @@ impl PersistentHistoricalIndexV1 {
     }
 
     fn cache_insert(&mut self, key: String, value: Vec<u8>) {
-        if let std::collections::btree_map::Entry::Occupied(mut entry) = self.cache.entry(key.clone()) {
+        if let std::collections::btree_map::Entry::Occupied(mut entry) =
+            self.cache.entry(key.clone())
+        {
             entry.insert(value);
             return;
         }

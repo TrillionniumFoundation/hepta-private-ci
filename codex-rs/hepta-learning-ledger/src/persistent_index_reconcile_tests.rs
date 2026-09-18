@@ -2,6 +2,7 @@ use std::fs;
 use std::fs::OpenOptions;
 use std::io::Write;
 use std::path::PathBuf;
+use std::path::Path;
 use std::sync::atomic::AtomicU64;
 use std::sync::atomic::Ordering;
 
@@ -70,7 +71,7 @@ fn hex(bytes: &[u8]) -> String {
     output
 }
 
-fn write_only_record_index(root: &PathBuf, record: &crate::LedgerRecord) {
+fn write_only_record_index(root: &Path, record: &crate::LedgerRecord) {
     // Reproduce only the first immutable row written by persist_event_indexes:
     // record identity metadata. The episode/decision row is deliberately absent.
     let logical_key = record.event.record_id().as_str().as_bytes();
