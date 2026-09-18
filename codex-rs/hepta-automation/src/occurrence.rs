@@ -658,6 +658,25 @@ impl AutomationStore {
         Ok(())
     }
 
+    pub(crate) async fn has_provider_observation(
+        &self,
+        occurrence_id: &AutomationOccurrenceId,
+        receipt_digest: &Sha256Digest,
+        observation: AutomationProviderObservationState,
+    ) -> Result<bool, AutomationError> {
+        let count: i64 = sqlx::query_scalar(
+            "SELECT COUNT(*) FROM automation_provider_observations
+             WHERE occurrence_id = ? AND receipt_digest = ? AND observation = ?",
+        )
+        .bind(occurrence_id.as_str())
+        .bind(receipt_digest.as_str())
+        .bind(observation.as_str())
+        .fetch_one(self.taskflow_pool())
+        .await
+        .map_err(unavailable)?;
+        Ok(count > 0)
+    }
+
     pub(crate) async fn has_terminal_provider_observation(
         &self,
         occurrence_id: &AutomationOccurrenceId,
