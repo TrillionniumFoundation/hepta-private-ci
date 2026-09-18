@@ -26,8 +26,59 @@ use crate::FinalUseGrant;
 use crate::FinalUseRevocations;
 use crate::SignedFinalUseGrant;
 
-const CONTROL_SCHEMA_VERSION: u32 = 1;
+const APPROVAL_SCHEMA_VERSION: u32 = 1;
+const REVOCATION_FEED_SCHEMA_VERSION: u32 = 2;
 const MAX_REVOCATIONS: usize = 16_384;
+const MAX_CONTROL_KEYS: usize = 8;
+pub const MAX_REVOCATION_FEED_LIFETIME_MS: u64 = 300_000;
+
+/// One bounded trust-key generation. Epoch windows permit staged overlap and
+/// deterministic retirement without accepting a key outside its intended
+/// authority generation.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct FinalUseTrustKey {
+    pub key_id: String,
+    pub verifying_key: [u8; 32],
+    pub not_before_authority_epoch: u64,
+    pub not_after_authority_epoch: u64,
+}
+
+#[derive(Clone)]
+struct PinnedControlKey {
+    key_id: String,
+    key: VerifyingKey,
+    not_before_authority_epoch: u64,
+    not_after_authority_epoch: u64,
+}
+
+fn pin_keys(keys: Vec<FinalUseTrustKey>) -> Result<Vec<PinnedControlKey>, FinalUseControlError> {
+    if keys.is_empty() || keys.len() > MAX_CONTROL_KEYS {
+        return Err(FinalUseControlError::InvalidTrust);
+    }
+    let mut pinned = Vec::with_capacity(keys.len());
+    let mut ids = std::collections::BTreeSet::new();
+    let mut public_keys = std::collections::BTreeSet::new();
+    for candidate in keys {
+        let key = VerifyingKey::from_bytes(&candidate.verifying_key)
+            .map_err(|_| FinalUseControlError::InvalidTrust)?;
+        if !identifier(&candidate.key_id)
+            || key.is_weak()
+            || candidate.not_before_authority_epoch == 0
+            || candidate.not_after_authority_epoch < candidate.not_before_authority_epoch
+            || !ids.insert(candidate.key_id.clone())
+            || !public_keys.insert(candidate.verifying_key)
+        {
+            return Err(FinalUseControlError::InvalidTrust);
+        }
+        pinned.push(PinnedControlKey {
+            key_id: candidate.key_id,
+            key,
+            not_before_authority_epoch: candidate.not_before_authority_epoch,
+            not_after_authority_epoch: candidate.not_after_authority_epoch,
+        });
+    }
+    Ok(pinned)
+}
 
 /// Independent operator approval for one exact grant semantic payload.
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
@@ -51,7 +102,7 @@ impl FinalUseApproval {
         }
         let grant_sha256 = grant_digest(grant)?;
         Ok(Self {
-            schema_version: CONTROL_SCHEMA_VERSION,
+            schema_version: APPROVAL_SCHEMA_VERSION,
             approver_id,
             signer_id: grant.signer_id.clone(),
             grant_id: grant.grant_id.clone(),
@@ -61,7 +112,7 @@ impl FinalUseApproval {
     }
 
     pub fn signing_bytes(&self) -> Result<Vec<u8>, FinalUseControlError> {
-        if self.schema_version != CONTROL_SCHEMA_VERSION
+        if self.schema_version != APPROVAL_SCHEMA_VERSION
             || !identifier(&self.approver_id)
             || !identifier(&self.signer_id)
             || !identifier(&self.grant_id)
@@ -89,7 +140,7 @@ pub struct SignedFinalUseApproval {
 #[derive(Clone)]
 pub struct FinalUseApprovalVerifier {
     approver_id: String,
-    key: VerifyingKey,
+    keys: Vec<PinnedControlKey>,
 }
 
 impl fmt::Debug for FinalUseApprovalVerifier {
@@ -103,12 +154,28 @@ impl FinalUseApprovalVerifier {
         approver_id: String,
         verifying_key: [u8; 32],
     ) -> Result<Self, FinalUseControlError> {
-        let key = VerifyingKey::from_bytes(&verifying_key)
-            .map_err(|_| FinalUseControlError::InvalidTrust)?;
-        if !identifier(&approver_id) || key.is_weak() {
+        Self::new_with_keys(
+            approver_id,
+            vec![FinalUseTrustKey {
+                key_id: "single-key".into(),
+                verifying_key,
+                not_before_authority_epoch: 1,
+                not_after_authority_epoch: u64::MAX,
+            }],
+        )
+    }
+
+    pub fn new_with_keys(
+        approver_id: String,
+        keys: Vec<FinalUseTrustKey>,
+    ) -> Result<Self, FinalUseControlError> {
+        if !identifier(&approver_id) {
             return Err(FinalUseControlError::InvalidTrust);
         }
-        Ok(Self { approver_id, key })
+        Ok(Self {
+            approver_id,
+            keys: pin_keys(keys)?,
+        })
     }
 
     /// Verify an independent approval against the exact grant semantics.
@@ -118,6 +185,16 @@ impl FinalUseApprovalVerifier {
         grant: &SignedFinalUseGrant,
         signed: &SignedFinalUseApproval,
     ) -> Result<(), FinalUseControlError> {
+        self.verify_with_key_id(grant, signed).map(|_| ())
+    }
+
+    /// Return the exact configured trust-key id that authenticated the approval.
+    /// This is useful for audit receipts during staged key rotation.
+    pub fn verify_with_key_id(
+        &self,
+        grant: &SignedFinalUseGrant,
+        signed: &SignedFinalUseApproval,
+    ) -> Result<&str, FinalUseControlError> {
         if signed.approval.approver_id != self.approver_id
             || signed.approval.signer_id != grant.grant.signer_id
             || signed.approval.grant_id != grant.grant.grant_id
@@ -129,9 +206,12 @@ impl FinalUseApprovalVerifier {
         let input = signed.approval.signing_bytes()?;
         let signature = Signature::from_slice(&signed.signature)
             .map_err(|_| FinalUseControlError::InvalidSignature)?;
-        self.key
-            .verify_strict(&input, &signature)
-            .map_err(|_| FinalUseControlError::InvalidSignature)
+        verify_key_ring(
+            &self.keys,
+            signed.approval.authority_epoch,
+            &input,
+            &signature,
+        )
     }
 }
 
@@ -144,28 +224,40 @@ pub struct FinalUseRevocationUpdate {
     pub schema_version: u32,
     pub distributor_id: String,
     pub head: FinalUseRevocations,
+    pub issued_at_unix_ms: u64,
+    pub expires_at_unix_ms: u64,
 }
 
 impl FinalUseRevocationUpdate {
-    pub fn new(distributor_id: String, head: FinalUseRevocations) -> Self {
+    pub fn new(
+        distributor_id: String,
+        head: FinalUseRevocations,
+        issued_at_unix_ms: u64,
+        expires_at_unix_ms: u64,
+    ) -> Self {
         Self {
-            schema_version: CONTROL_SCHEMA_VERSION,
+            schema_version: REVOCATION_FEED_SCHEMA_VERSION,
             distributor_id,
             head,
+            issued_at_unix_ms,
+            expires_at_unix_ms,
         }
     }
 
     pub fn signing_bytes(&self) -> Result<Vec<u8>, FinalUseControlError> {
-        if self.schema_version != CONTROL_SCHEMA_VERSION
+        if self.schema_version != REVOCATION_FEED_SCHEMA_VERSION
             || !identifier(&self.distributor_id)
             || self.head.authority_epoch == 0
             || self.head.revision == 0
             || self.head.revoked_grant_ids.len() > MAX_REVOCATIONS
             || !self.head.revoked_grant_ids.iter().all(|id| identifier(id))
+            || self.issued_at_unix_ms == 0
+            || self.expires_at_unix_ms <= self.issued_at_unix_ms
+            || self.expires_at_unix_ms - self.issued_at_unix_ms > MAX_REVOCATION_FEED_LIFETIME_MS
         {
             return Err(FinalUseControlError::InvalidRevocationUpdate);
         }
-        let mut bytes = b"hepta.kernel.authority.revocation-feed.v1\0".to_vec();
+        let mut bytes = b"hepta.kernel.authority.revocation-feed.v2\0".to_vec();
         bytes.extend(
             serde_json::to_vec(self)
                 .map_err(|_| FinalUseControlError::InvalidRevocationUpdate)?,
@@ -185,7 +277,16 @@ pub struct SignedFinalUseRevocationUpdate {
 #[derive(Clone)]
 pub struct FinalUseRevocationFeedVerifier {
     distributor_id: String,
-    key: VerifyingKey,
+    keys: Vec<PinnedControlKey>,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct FinalUseRevocationReceipt {
+    pub distributor_id: String,
+    pub trust_key_id: String,
+    pub authority_epoch: u64,
+    pub revision: u64,
+    pub valid_until_unix_ms: u64,
 }
 
 impl fmt::Debug for FinalUseRevocationFeedVerifier {
@@ -199,38 +300,88 @@ impl FinalUseRevocationFeedVerifier {
         distributor_id: String,
         verifying_key: [u8; 32],
     ) -> Result<Self, FinalUseControlError> {
-        let key = VerifyingKey::from_bytes(&verifying_key)
-            .map_err(|_| FinalUseControlError::InvalidTrust)?;
-        if !identifier(&distributor_id) || key.is_weak() {
+        Self::new_with_keys(
+            distributor_id,
+            vec![FinalUseTrustKey {
+                key_id: "single-key".into(),
+                verifying_key,
+                not_before_authority_epoch: 1,
+                not_after_authority_epoch: u64::MAX,
+            }],
+        )
+    }
+
+    pub fn new_with_keys(
+        distributor_id: String,
+        keys: Vec<FinalUseTrustKey>,
+    ) -> Result<Self, FinalUseControlError> {
+        if !identifier(&distributor_id) {
             return Err(FinalUseControlError::InvalidTrust);
         }
         Ok(Self {
             distributor_id,
-            key,
+            keys: pin_keys(keys)?,
         })
     }
 
-    /// Authenticate one head and atomically hand it to the durable authority
-    /// owner. Replays, rollback and same-epoch revocation removal are rejected
-    /// by `FinalUseAuthority::update_revocations`.
+    /// Authenticate one fresh head and atomically hand it to the durable
+    /// authority owner. Replays, rollback and same-epoch revocation removal are
+    /// rejected by `FinalUseAuthority::update_revocations`.
     pub fn apply(
         &self,
         authority: &FinalUseAuthority,
         signed: &SignedFinalUseRevocationUpdate,
-    ) -> Result<(), FinalUseControlError> {
+        now_unix_ms: u64,
+    ) -> Result<FinalUseRevocationReceipt, FinalUseControlError> {
         if signed.update.distributor_id != self.distributor_id {
             return Err(FinalUseControlError::InvalidRevocationUpdate);
         }
         let input = signed.update.signing_bytes()?;
+        if now_unix_ms < signed.update.issued_at_unix_ms {
+            return Err(FinalUseControlError::RevocationFeedNotYetValid);
+        }
+        if now_unix_ms >= signed.update.expires_at_unix_ms {
+            return Err(FinalUseControlError::RevocationFeedStale);
+        }
         let signature = Signature::from_slice(&signed.signature)
             .map_err(|_| FinalUseControlError::InvalidSignature)?;
-        self.key
-            .verify_strict(&input, &signature)
-            .map_err(|_| FinalUseControlError::InvalidSignature)?;
+        let key_id = verify_key_ring(
+            &self.keys,
+            signed.update.head.authority_epoch,
+            &input,
+            &signature,
+        )?
+        .to_owned();
         authority
             .update_revocations(signed.update.head.clone())
-            .map_err(FinalUseControlError::Authority)
+            .map_err(FinalUseControlError::Authority)?;
+        Ok(FinalUseRevocationReceipt {
+            distributor_id: self.distributor_id.clone(),
+            trust_key_id: key_id,
+            authority_epoch: signed.update.head.authority_epoch,
+            revision: signed.update.head.revision,
+            valid_until_unix_ms: signed.update.expires_at_unix_ms,
+        })
     }
+}
+
+fn verify_key_ring<'a>(
+    keys: &'a [PinnedControlKey],
+    authority_epoch: u64,
+    input: &[u8],
+    signature: &Signature,
+) -> Result<&'a str, FinalUseControlError> {
+    for candidate in keys {
+        if authority_epoch < candidate.not_before_authority_epoch
+            || authority_epoch > candidate.not_after_authority_epoch
+        {
+            continue;
+        }
+        if candidate.key.verify_strict(input, signature).is_ok() {
+            return Ok(&candidate.key_id);
+        }
+    }
+    Err(FinalUseControlError::InvalidSignature)
 }
 
 fn grant_digest(grant: &FinalUseGrant) -> Result<[u8; 32], FinalUseControlError> {
@@ -253,6 +404,8 @@ pub enum FinalUseControlError {
     InvalidTrust,
     InvalidApproval,
     InvalidRevocationUpdate,
+    RevocationFeedNotYetValid,
+    RevocationFeedStale,
     InvalidSignature,
     Authority(FinalUseError),
 }
