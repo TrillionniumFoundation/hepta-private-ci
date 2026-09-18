@@ -27,28 +27,62 @@
       "sourcePath": "codex-rs/hepta-types/src/numeric_conversion.rs",
       "state": "source_implemented_not_product_composed",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-types/src/numeric_conversion_tests.rs"
+      ],
       "sourcePathExists": true,
       "designOperation": "rescale_signal",
       "mappingClass": "owner_native",
       "delegatedCallees": []
     },
     {
-      "operation": "stableid",
-      "nativeSymbol": "StableId",
+      "operation": "validate_id",
+      "nativeSymbol": "validate_id",
       "sourcePath": "codex-rs/hepta-types/src/identity.rs",
       "state": "source_implemented_not_product_composed",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-types/src/identity_tests.rs"
+      ],
       "sourcePathExists": true,
-      "designOperation": "stableid",
+      "designOperation": "validate_id",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "canonical_digest",
+      "nativeSymbol": "canonical_digest_v1",
+      "sourcePath": "codex-rs/hepta-types/src/canonical.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-types/src/canonical_tests.rs",
+        "codex-rs/hepta-types/CANONICAL_GOLDEN_V1.json"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "canonical_digest",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "definition_registry",
+      "nativeSymbol": "DefinitionRegistryV1",
+      "sourcePath": "codex-rs/hepta-types/src/registry.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-types/src/registry_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "schema/normalization registry",
       "mappingClass": "owner_native",
       "delegatedCallees": []
     }
   ],
   "repositoryControlledGaps": [
-    "Bind every operation to an authenticated consumer callsite and owner store.",
-    "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary."
+    "Run exact-head and deterministic synthetic-merge tests for this candidate and bind the resulting receipts before changing the qualification claim boundary.",
+    "Reproduce CANONICAL_GOLDEN_V1.json independently in Python and TypeScript before claiming generated cross-language bindings.",
+    "Bind registry definitions and canonical contracts to named production consumers before changing product composition claims."
   ],
   "externalEvidenceGates": [
     "independent semantic review",
