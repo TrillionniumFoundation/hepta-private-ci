@@ -209,6 +209,8 @@ def issue_signed_work_envelope(
         and source.observed_unix_ns <= now < source.expires_unix_ns
     ):
         raise EngineeringError("source_receipt_stale")
+    if envelope.expires_unix_ns > source.expires_unix_ns:
+        raise EngineeringError("source_receipt_window_exceeded")
     if not trust_store.verify(
         source, source.issuer, source.signing_identity, source.signature
     ):
