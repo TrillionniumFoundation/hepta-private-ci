@@ -882,3 +882,64 @@ test("automated reconciliation preserves persistence failure error truth", async
   assert.equal(retry.errorCode, ERROR_CODES.PERSISTENCE_UNAVAILABLE);
 });
 
+test("displayed-view and stop-scope accessors fail without invoking getters", async () => {
+  let requestCalls = 0;
+  const client = new RuntimeClient({
+    transport: {
+      async connect(input) {
+        return {
+          authenticated: true,
+          sessionId: "session.1",
+          connectionGeneration: 1,
+          protocolVersion: input.protocolVersion,
+        };
+      },
+      async request() { requestCalls += 1; return {}; },
+      async reconcile() { return null; },
+      async close() {},
+    },
+    setTimer: frozenTimer,
+    clearTimer: () => {},
+  });
+  await connectWithSnapshot(client);
+
+  let displayedGetterCalls = 0;
+  const operation = {
+    operationId: "operation.hostile-view",
+    subjectId: "runtime.agentd",
+    action: "request_retry",
+    expectedRevision: 4,
+  };
+  Object.defineProperty(operation, "displayedView", {
+    enumerable: true,
+    get() {
+      displayedGetterCalls += 1;
+      return displayedViewBinding();
+    },
+  });
+  await assert.rejects(
+    client.submitRequest(operation),
+    (error) => error.code === ERROR_CODES.INVALID_INPUT,
+  );
+  assert.equal(displayedGetterCalls, 0);
+
+  let scopeGetterCalls = 0;
+  const stop = {
+    operationId: "stop.hostile-scope",
+    displayedView: displayedViewBinding(),
+  };
+  Object.defineProperty(stop, "scope", {
+    enumerable: true,
+    get() {
+      scopeGetterCalls += 1;
+      return { scopeKind: "runtime", targetId: "runtime.agentd" };
+    },
+  });
+  await assert.rejects(
+    client.requestStop(stop),
+    (error) => error.code === ERROR_CODES.INVALID_INPUT,
+  );
+  assert.equal(scopeGetterCalls, 0);
+  assert.equal(requestCalls, 0);
+});
+
