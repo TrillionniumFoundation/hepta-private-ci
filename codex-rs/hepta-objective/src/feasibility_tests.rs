@@ -325,13 +325,9 @@ fn conflict_oracle_named_host_measurement_receipt() {
         atom("a", "x", interval(0, 1)),
         atom("b", "x", interval(2, 3)),
     ];
-    atoms.extend((2..256).map(|index| {
-        atom(
-            &format!("irrelevant-{index:03}"),
-            "x",
-            interval(-5, 5),
-        )
-    }));
+    atoms.extend(
+        (2..256).map(|index| atom(&format!("irrelevant-{index:03}"), "x", interval(-5, 5))),
+    );
 
     let registered = scalar_registry();
     let mut micros = Vec::new();
