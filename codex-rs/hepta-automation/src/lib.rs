@@ -102,6 +102,8 @@ pub use taskflow_kernel::TaskFlowFrontier;
 pub use taskflow_kernel::TaskFlowReplayReport;
 #[cfg(feature = "taskflow-structural-qualification")]
 pub use taskflow_kernel::TaskFlowStructuralPreview;
+pub use taskflow_step::TASKFLOW_STEP_OUTBOX_COMPOSED_CALLER;
+pub use taskflow_step::TASKFLOW_STEP_OUTBOX_DURABLE_SCHEMA_ENABLED;
 pub use taskflow_step::TASKFLOW_STEP_OUTBOX_EFFECTS;
 pub use taskflow_step::TASKFLOW_STEP_OUTBOX_PRODUCTION_CALLER;
 pub use taskflow_step::TASKFLOW_STEP_OUTBOX_QUALIFICATION_ENABLED;
