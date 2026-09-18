@@ -239,6 +239,7 @@ pub struct FederatedRetrievalBatch {
     pub query_sha256: Sha256Digest,
     pub candidates: Vec<FederatedRetrievalCandidate>,
     pub coverage: FederatedRetrievalCoverage,
+    pub admission_expires_unix_ms: Option<u64>,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq, Serialize)]
@@ -818,10 +819,17 @@ impl FederatedRecallSet {
         })?;
         let mut completed_sources = 0_u32;
         let mut failed_sources = 0_u32;
+        let mut admission_expires_unix_ms: Option<u64> = None;
         let mut candidates = Vec::new();
         for reader in &readers {
             match reader.retrieve(access, request).await {
                 Ok(batch) => {
+                    if let Some(expiry) = batch.admission_expires_unix_ms {
+                        admission_expires_unix_ms = Some(
+                            admission_expires_unix_ms
+                                .map_or(expiry, |current| current.min(expiry)),
+                        );
+                    }
                     completed_sources = completed_sources
                         .checked_add(batch.coverage.completed_sources)
                         .ok_or_else(|| {
@@ -877,6 +885,7 @@ impl FederatedRecallSet {
                 completed_sources,
                 failed_sources,
             },
+            admission_expires_unix_ms,
         })
     }
 
