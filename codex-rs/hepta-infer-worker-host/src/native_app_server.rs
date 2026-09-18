@@ -38,9 +38,9 @@ use codex_hepta_contracts::AgentId;
 use codex_hepta_contracts::FinalUseAuthority;
 use codex_hepta_infer_core::durable_control::DurableInferenceControl;
 use codex_hepta_infer_core::durable_control::native::NativeDispatch;
-use codex_hepta_infer_core::durable_control::native::NativeRunRecord;
 pub use codex_hepta_infer_core::durable_control::native::NativeOwnerAuthority;
 pub use codex_hepta_infer_core::durable_control::native::NativeRunOutput;
+use codex_hepta_infer_core::durable_control::native::NativeRunRecord;
 pub use codex_hepta_infer_core::durable_control::native::NativeRunStatus;
 use codex_utils_absolute_path::AbsolutePathBuf;
 
@@ -469,7 +469,8 @@ impl AppServerModelDriver {
                 .map(policy::claimed_authority)
                 .unwrap_or_default(),
         };
-        let _ = verify_owner_health(&mut output, owner.health(), Instant::now() + RPC_TIMEOUT).await;
+        let _ =
+            verify_owner_health(&mut output, owner.health(), Instant::now() + RPC_TIMEOUT).await;
         let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
         Ok(Some(output))
     }
