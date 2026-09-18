@@ -14,8 +14,8 @@
   "resolvedRoots": [
     "codex-rs/hepta-automation"
   ],
-  "stateOwnerDisposition": "Owns schedule, occurrence, claim, and step-orchestration facts without owning downstream domain effects.",
-  "terminalObserverDisposition": "The registered effect driver supplies terminal observations; unknown effects block dependent steps and compensation is separately authorized.",
+  "stateOwnerDisposition": "Owns durable schedule revision, deterministic occurrence identity, claim, TaskFlow run/step orchestration, and terminal occurrence projection without owning downstream domain effects.",
+  "terminalObserverDisposition": "Agentd observes the existing App Server persisted-turn terminal state for Codex activity; registered external effect owners supply their own terminal/reconciliation receipts through the final-use-authorized durable step seam.",
   "operations": [
     {
       "designOperation": "register_schedule",
@@ -34,7 +34,7 @@
           "command": "just test -p codex-hepta-automation --lib"
         }
       ],
-      "sourceSemantics": "Persists the canonical automation definition with revision and owner identity.",
+      "sourceSemantics": "Persists the automation definition and separately revisioned missed-run/overlap policy under the per-Agent automation owner.",
       "operation": "register_schedule",
       "nativeSymbol": "pub async fn create_task(",
       "sourcePath": "codex-rs/hepta-automation/src/store.rs",
@@ -57,7 +57,7 @@
           "command": "just test -p codex-hepta-automation --lib"
         }
       ],
-      "sourceSemantics": "Materializes bounded due work and commits intent before App Server admission.",
+      "sourceSemantics": "Claims bounded due work, freezes schedule revision, derives deterministic occurrence identity, and commits TaskFlow step intent before App Server admission.",
       "operation": "materialize_due",
       "nativeSymbol": "pub async fn tick(",
       "sourcePath": "codex-rs/hepta-automation/src/scheduler.rs",
@@ -68,22 +68,28 @@
       "mappingClass": "owner_native",
       "ownerEntrypoint": {
         "role": "owner_entrypoint",
-        "path": "codex-rs/hepta-automation/src/effect_executor.rs",
-        "symbol": "pub fn claim_occurrence(",
-        "buildTarget": "codex-hepta-automation::effect_executor"
+        "path": "codex-rs/hepta-automation/src/lifecycle.rs",
+        "symbol": "pub async fn materialize_occurrence(",
+        "buildTarget": "codex-hepta-automation"
       },
-      "delegatedCallees": [],
-      "tests": [
+      "delegatedCallees": [
         {
-          "path": "codex-rs/hepta-automation/src/effect_executor_tests.rs",
-          "kind": "generation_fence",
-          "command": "just test -p codex-hepta-automation --lib"
+          "role": "delegated_callee",
+          "path": "codex-rs/hepta-automation/src/store.rs",
+          "symbol": "pub async fn claim_due("
         }
       ],
-      "sourceSemantics": "Claims one occurrence under an immutable generation fence.",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-automation/tests/durable_causal_chain.rs",
+          "kind": "deterministic_occurrence_and_generation_fence",
+          "command": "cargo test -p codex-hepta-automation --test durable_causal_chain"
+        }
+      ],
+      "sourceSemantics": "Binds one due compatibility lease to a deterministic durable occurrence and generation/token fence; safe reclaim preserves occurrence/client identity.",
       "operation": "claim_occurrence",
-      "nativeSymbol": "pub fn claim_occurrence(",
-      "sourcePath": "codex-rs/hepta-automation/src/effect_executor.rs",
+      "nativeSymbol": "pub async fn materialize_occurrence(",
+      "sourcePath": "codex-rs/hepta-automation/src/lifecycle.rs",
       "sourcePathExists": true
     },
     {
@@ -91,33 +97,49 @@
       "mappingClass": "owner_native",
       "ownerEntrypoint": {
         "role": "owner_entrypoint",
-        "path": "codex-rs/hepta-automation/src/effect_executor.rs",
-        "symbol": "pub fn execute_step(",
-        "buildTarget": "codex-hepta-automation::effect_executor"
+        "path": "codex-rs/hepta-automation/src/authorized_effect.rs",
+        "symbol": "pub async fn execute_authorized_taskflow_effect",
+        "buildTarget": "codex-hepta-automation"
       },
-      "delegatedCallees": [],
-      "tests": [
+      "delegatedCallees": [
         {
-          "path": "codex-rs/hepta-automation/src/effect_executor_tests.rs",
-          "kind": "effect_terminality_and_compensation",
-          "command": "just test -p codex-hepta-automation --lib"
+          "role": "delegated_callee",
+          "path": "codex-rs/hepta-automation/src/taskflow_step.rs",
+          "symbol": "pub async fn record_taskflow_step("
+        },
+        {
+          "role": "delegated_callee",
+          "path": "codex-rs/hepta-contracts/src/final_use.rs",
+          "symbol": "pub fn with_verified_use"
         }
       ],
-      "sourceSemantics": "Binds final payload and authority, dispatches once, and records terminal or indeterminate state.",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-automation/tests/durable_causal_chain.rs",
+          "kind": "durable_step_and_terminal_propagation",
+          "command": "cargo test -p codex-hepta-automation --test durable_causal_chain"
+        },
+        {
+          "path": "codex-rs/hepta-automation/src/effect_executor_tests.rs",
+          "kind": "reference_effect_terminality_and_compensation",
+          "command": "cargo test -p codex-hepta-automation --lib"
+        }
+      ],
+      "sourceSemantics": "Requires an already-claimed durable step, verifies independently signed final-use intent/payload binding immediately around the registered provider call, and appends terminal or indeterminate observation.",
       "operation": "execute_step",
-      "nativeSymbol": "pub fn execute_step(",
-      "sourcePath": "codex-rs/hepta-automation/src/effect_executor.rs",
+      "nativeSymbol": "pub async fn execute_authorized_taskflow_effect",
+      "sourcePath": "codex-rs/hepta-automation/src/authorized_effect.rs",
       "sourcePathExists": true
     }
   ],
   "repositoryControlledGaps": [
-    "Connect the effect-executor component to the existing durable TaskFlow step outbox and a real final-use authorized effect provider.",
-    "Implement post-crash effect reconciliation before permitting dependent steps."
+    "Complete the calendar/IANA-timezone recurrence surface, including explicit DST gap/overlap semantics and deterministic timezone-database qualification."
   ],
   "externalEvidenceGates": [
-    "non-test Codex/App Server caller",
-    "real downstream effect owner and terminal observer",
-    "DST/timezone-database and multi-scheduler target qualification"
+    "selected-host Agentd/App Server execution receipt for the composed durable causal path",
+    "concrete registered downstream effect owner and terminal observer for each activated external effect",
+    "DST/timezone-database and multi-scheduler target qualification",
+    "independent acceptance and release evidence"
   ],
   "claimBoundary": {
     "nativeSourceMappingComplete": true,
