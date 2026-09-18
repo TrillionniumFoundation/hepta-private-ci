@@ -148,7 +148,7 @@ impl CognitiveStore {
             candidates,
         };
         let bytes = serde_json::to_vec(&(
-            "hepta:cognitive:retrieval-observation:v1",
+            "hepta:cognitive:retrieval-observation:v2",
             &self.owner_agent_id,
             access.workspace_sha256(),
             &batch.query_sha256,
