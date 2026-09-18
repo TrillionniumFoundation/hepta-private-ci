@@ -18,14 +18,14 @@
   ],
   "sourceRootPresent": true,
   "productionImplementation": false,
-  "productCallerState": "agentd_host_callsite_source_implemented_not_target_host_qualified",
+  "productCallerState": "agentd_host_adapter_entrypoint_source_implemented_not_runtime_executed_or_target_host_qualified",
   "productionWriterState": "agentd_parameter_and_topology_external_anchor_fence_source_implemented_not_target_host_qualified",
   "operations": [
     {
       "operation": "propose_v2",
       "nativeSymbol": "propose_v2",
       "sourcePath": "codex-rs/hepta-plasticity/src/parameter_v2.rs",
-      "state": "source_implemented_product_adapter_available_not_host_called",
+      "state": "source_implemented_product_and_agentd_host_composed_not_target_host_qualified",
       "authority": "none",
       "tests": [
         "codex-rs/hepta-plasticity/src/lib_tests.rs::v2_matches_canonical_golden_vectors_and_grants_no_authority"
@@ -39,7 +39,7 @@
       "operation": "verify_parameter_proposal_v2",
       "nativeSymbol": "verify_parameter_proposal_v2",
       "sourcePath": "codex-rs/hepta-plasticity/src/parameter_v2.rs",
-      "state": "source_implemented_product_adapter_available_not_host_called",
+      "state": "source_implemented_product_and_agentd_host_composed_not_target_host_qualified",
       "authority": "none",
       "tests": [
         "codex-rs/hepta-plasticity/src/lib_tests.rs::read_validation_rejects_tampered_metrics_digest_profile_and_authority"
@@ -123,7 +123,7 @@
       "operation": "authenticated_product_composition",
       "nativeSymbol": "propose_authenticated_parameter_plasticity_v1",
       "sourcePath": "codex-rs/hepta-intelligence/src/plasticity_product.rs",
-      "state": "adapter_implemented_agentd_host_called_pairwise_roles_not_target_host_qualified",
+      "state": "adapter_implemented_called_by_agentd_host_entrypoint_pairwise_roles_not_target_host_qualified",
       "authority": "proposal_append_only",
       "tests": [
         "codex-rs/hepta-intelligence/src/plasticity_product_tests.rs::authenticated_product_path_generates_evaluates_appends_and_commits_anchor",
@@ -173,7 +173,7 @@
       "operation": "agentd_parameter_host",
       "nativeSymbol": "propose_agentd_plasticity_v1",
       "sourcePath": "codex-rs/hepta-agentd/src/plasticity_host.rs",
-      "state": "host_callsite_source_implemented_owner_evidence_required_not_target_host_qualified",
+      "state": "host_adapter_entrypoint_source_implemented_owner_evidence_required_not_runtime_executed_or_target_host_qualified",
       "authority": "proposal_registry_only",
       "tests": [
         "codex-rs/hepta-agentd/src/plasticity_host.rs::tests::anchor_store_fence_is_monotonic_and_reopen_preserves_acknowledged_state",
@@ -240,7 +240,7 @@
       "operation": "authenticated_topology_product_composition",
       "nativeSymbol": "propose_authenticated_topology_plasticity_v1",
       "sourcePath": "codex-rs/hepta-intelligence/src/topology_product.rs",
-      "state": "adapter_implemented_agentd_host_called_not_target_host_qualified",
+      "state": "adapter_implemented_called_by_agentd_host_entrypoint_not_target_host_qualified",
       "authority": "proposal_registry_only",
       "tests": [
         "codex-rs/hepta-intelligence/src/topology_product.rs::tests::authenticated_topology_path_verifies_three_roles_and_persists_governed_record",
@@ -257,7 +257,7 @@
       "operation": "agentd_topology_host",
       "nativeSymbol": "propose_agentd_topology_plasticity_v1",
       "sourcePath": "codex-rs/hepta-agentd/src/topology_plasticity_host.rs",
-      "state": "host_callsite_source_implemented_external_anchor_not_target_host_qualified",
+      "state": "host_adapter_entrypoint_source_implemented_external_anchor_not_runtime_executed_or_target_host_qualified",
       "authority": "proposal_registry_only",
       "tests": [
         "codex-rs/hepta-agentd/src/topology_plasticity_host.rs::tests::topology_anchor_store_preserves_fence_and_anchor",
