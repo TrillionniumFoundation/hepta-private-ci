@@ -239,9 +239,7 @@ impl DatasetWithdrawalRegistry {
         Self::default()
     }
 
-    pub fn new_scoped(
-        domain: DatasetWithdrawalDomainV1,
-    ) -> Result<Self, ArtifactClosureError> {
+    pub fn new_scoped(domain: DatasetWithdrawalDomainV1) -> Result<Self, ArtifactClosureError> {
         let _ = domain.binding_digest()?;
         Ok(Self {
             domain: Some(domain),
