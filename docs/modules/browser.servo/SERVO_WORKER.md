@@ -125,11 +125,11 @@ Worker stderr is always drained so a full pipe cannot deadlock the process. Stde
 
 The launcher starts from an empty tmpfs root and does not bind host `/` or `/usr` wholesale. The allowlist is restricted to the worker's runtime closure and rendering data: runtime libraries, fonts/fontconfig data, loader/TLS configuration, fontconfig cache, private proc/dev/tmp/run/home/root views, one private writable profile and one exact verified worker artifact. General `/usr/bin`, `/usr/local`, `/var/lib`, service roots and ambient user homes are absent.
 
-`scripts/linux-sandbox-probe.js` compiles a tiny host-side C probe and executes it through the same production launcher. Inside the sandbox it requires host-secret invisibility, absence of `/usr/bin/sh` and `/usr/bin/python3`, denied direct external IPv4 connect, writable/fsynced private profile state, and observed `--die-with-parent` cleanup after a helper parent exits. Only that execution receipt on an exact host is enforcement evidence.
+`scripts/linux-sandbox-probe.js` compiles a tiny host-side C probe and executes it through the same production launcher. Inside the sandbox it requires host-secret invisibility, absence of `/usr/bin/sh` and `/usr/bin/python3`, denied direct external IPv4 connect, writable/fsynced private profile state, and observed `--die-with-parent` cleanup of Bubblewrap plus every reported sandbox descendant after a helper parent exits. Only that execution receipt on an exact host is enforcement evidence.
 
 ## 9. Resource and backpressure policy
 
-Profile mutations use a bounded single-writer queue. By default no more than 64 operations may be queued for one serialization key; overload fails with `BrowserBackpressureError` rather than allowing unbounded promise growth.
+Profile mutations use a bounded single-writer queue. By default one Browser service admits at most one active profile/worker process; compatible injected drivers may raise that constructor ceiling only up to 64. No more than 64 operations may be queued for one serialization key; overload fails with `BrowserBackpressureError` rather than allowing unbounded promise growth.
 
 Independent hard bounds cover origins, admitted grants, nonterminal operations, terminal in-memory replay cache, action fields, semantic observation bytes, protocol frame bytes, journal bytes and driver/authority call deadlines. The current worker is one-WebView/one-profile-generation; the <=16-tab pilot target remains a future measured capability, not a current claim.
 

@@ -144,13 +144,31 @@ await chmod(lingerPath, 0o500);
 await writeFile(
   parentHelper,
   `import { spawn } from "node:child_process";\n` +
-    `import { access } from "node:fs/promises";\n` +
+    `import { access, readFile } from "node:fs/promises";\n` +
     `const [command, encodedArgs, marker] = process.argv.slice(2);\n` +
+    `async function descendants(pid) {\n` +
+    `  const found = []; const queue = [pid];\n` +
+    `  while (queue.length) {\n` +
+    `    const current = queue.shift(); let text = "";\n` +
+    `    try { text = await readFile("/proc/" + current + "/task/" + current + "/children", "utf8"); } catch {}\n` +
+    `    for (const token of text.trim().split(/\\s+/).filter(Boolean)) {\n` +
+    `      const childPid = Number.parseInt(token, 10);\n` +
+    `      if (Number.isSafeInteger(childPid) && childPid > 1 && !found.includes(childPid)) { found.push(childPid); queue.push(childPid); }\n` +
+    `    }\n` +
+    `  }\n` +
+    `  return found;\n` +
+    `}\n` +
     `const child = spawn(command, JSON.parse(encodedArgs), { env: {}, stdio: "ignore", shell: false });\n` +
     `child.unref();\n` +
     `const deadline = Date.now() + 5000;\n` +
     `while (Date.now() < deadline) {\n` +
-    `  try { await access(marker); process.stdout.write(String(child.pid) + "\\n"); process.exit(0); } catch {}\n` +
+    `  try {\n` +
+    `    await access(marker);\n` +
+    `    const childPids = await descendants(child.pid);\n` +
+    `    if (childPids.length === 0) { child.kill("SIGKILL"); process.exit(3); }\n` +
+    `    process.stdout.write(JSON.stringify({ bwrapPid: child.pid, descendantPids: childPids }) + "\\n");\n` +
+    `    process.exit(0);\n` +
+    `  } catch {}\n` +
     `  await new Promise((resolve) => setTimeout(resolve, 20));\n` +
     `}\n` +
     `child.kill("SIGKILL");\n` +
@@ -207,14 +225,34 @@ try {
     );
   }
   await access(readyMarker);
-  const bwrapPid = Number.parseInt(helperStdout.trim(), 10);
-  if (!Number.isSafeInteger(bwrapPid) || bwrapPid < 2) {
-    throw new Error("parent-death launcher did not report a valid bwrap pid");
+  let processReport;
+  try {
+    processReport = JSON.parse(helperStdout.trim());
+  } catch {
+    throw new Error(
+      "parent-death launcher did not report canonical process identities",
+    );
+  }
+  const bwrapPid = processReport?.bwrapPid;
+  const descendantPids = processReport?.descendantPids;
+  if (
+    !Number.isSafeInteger(bwrapPid) ||
+    bwrapPid < 2 ||
+    !Array.isArray(descendantPids) ||
+    descendantPids.length === 0 ||
+    descendantPids.some((pid) => !Number.isSafeInteger(pid) || pid < 2)
+  ) {
+    throw new Error("parent-death launcher reported invalid process identities");
   }
   await waitUntil(
     () => !processExists(bwrapPid),
     5_000,
     "bubblewrap parent-death cleanup",
+  );
+  await waitUntil(
+    () => descendantPids.every((pid) => !processExists(pid)),
+    5_000,
+    "sandbox descendant cleanup",
   );
 
   process.stdout.write(JSON.stringify({
@@ -224,6 +262,7 @@ try {
     generalHostBinariesHidden: true,
     privateProfileWritable: true,
     parentDeathCleanupObserved: true,
+    descendantCleanupObserved: true,
     posture: launcher.posture,
   }) + "\n");
 } finally {

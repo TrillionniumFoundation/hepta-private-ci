@@ -63,11 +63,11 @@ Responses additionally echo the original request kind and request payload digest
 
 `LinuxBubblewrapLauncher` is a source launch contract, not self-issued target enforcement evidence. It starts from an empty root; exposes selected runtime libraries/fonts/TLS data rather than host `/` or whole `/usr`; clears environment; uses `--unshare-all` without network sharing; hides general host binaries, user homes and service roots; mounts one private profile and exact worker; and uses parent-death containment.
 
-`scripts/linux-sandbox-probe.js` executes the same launcher and tests host-secret invisibility, denied external IPv4 connection, absence of general shell/Python binaries and private-profile write/fsync. The receipt qualifies only the exact host/kernel/Bubblewrap tuple that ran it.
+`scripts/linux-sandbox-probe.js` executes the same launcher and tests host-secret invisibility, denied external IPv4 connection, absence of general shell/Python binaries, private-profile write/fsync and cleanup of Bubblewrap plus every reported sandbox descendant. The receipt qualifies only the exact host/kernel/Bubblewrap tuple that ran it.
 
 ## 7. Resource/capacity model
 
-Current source ceilings include <=128 origins/profile, <=1024 admitted effect grants/profile, <=1024 nonterminal effects/profile, <=256 terminal operations retained in host memory, <=64 queued mutations per serialization key by default, <=1 MiB host observation request, <=256 KiB real worker semantic observation, <=1 MiB private worker frame, <=64 MiB file journal with compaction starting at 48 MiB, bounded typed-action fields and driver/authority deadlines.
+Current source ceilings include <=1 active profile/worker process per Browser service by default (configurable only up to 64 for a compatible injected driver), <=128 origins/profile, <=1024 admitted effect grants/profile, <=1024 nonterminal effects/profile, <=256 terminal operations retained in host memory, <=64 queued mutations per serialization key by default, <=1 MiB host observation request, <=256 KiB real worker semantic observation, <=1 MiB private worker frame, <=64 MiB file journal with compaction starting at 48 MiB, bounded typed-action fields and driver/authority deadlines.
 
 The current worker is one Servo / one WebView per profile generation. The pilot <=16-tabs target is not claimed by this candidate and requires a later measured scheduler/profile.
 

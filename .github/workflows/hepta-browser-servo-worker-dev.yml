@@ -132,6 +132,7 @@ jobs:
           import json, pathlib
           probe = json.loads(pathlib.Path("worker-evidence/linux-sandbox-probe.json").read_text())
           assert probe["parentDeathCleanupObserved"] is True
+          assert probe["descendantCleanupObserved"] is True
           PY
 
       - name: Build worker twice from the same exact inputs

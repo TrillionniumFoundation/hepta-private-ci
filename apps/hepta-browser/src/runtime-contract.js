@@ -5,6 +5,8 @@ import {
   normalizeBrowserAction,
 } from "./action.js";
 
+export const DEFAULT_MAX_ACTIVE_PROFILES = 1;
+export const MAX_CONFIGURED_ACTIVE_PROFILES = 64;
 export const MAX_ORIGINS = 128;
 export const MAX_EFFECT_GRANTS = 1024;
 export const MAX_OUTSTANDING_OPERATIONS = 1024;

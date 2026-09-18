@@ -1,5 +1,7 @@
 import {
   DEFAULT_DRIVER_CALL_TIMEOUT_MS,
+  DEFAULT_MAX_ACTIVE_PROFILES,
+  MAX_CONFIGURED_ACTIVE_PROFILES,
   MAX_EFFECT_GRANTS,
   MAX_ORIGINS,
   MAX_OUTSTANDING_OPERATIONS,
@@ -40,6 +42,7 @@ export class BrowserProfileHost {
   #journal;
   #clock;
   #driverCallTimeoutMs;
+  #maxActiveProfiles;
   #profiles = new Map();
   #openingProfiles = new Set();
   #locks = new Map();
@@ -50,6 +53,7 @@ export class BrowserProfileHost {
     journal,
     clock = () => Date.now(),
     driverCallTimeoutMs = DEFAULT_DRIVER_CALL_TIMEOUT_MS,
+    maxActiveProfiles = DEFAULT_MAX_ACTIVE_PROFILES,
   }) {
     requireRecord(driver, "driver");
     for (const method of [
@@ -88,11 +92,18 @@ export class BrowserProfileHost {
       throw new TypeError("clock must be a function");
     }
     positiveInteger(driverCallTimeoutMs, "driverCallTimeoutMs");
+    positiveInteger(maxActiveProfiles, "maxActiveProfiles");
+    if (maxActiveProfiles > MAX_CONFIGURED_ACTIVE_PROFILES) {
+      throw new TypeError(
+        "maxActiveProfiles exceeds the configured Browser process ceiling",
+      );
+    }
     this.#driver = driver;
     this.#authority = authority;
     this.#journal = journal;
     this.#clock = clock;
     this.#driverCallTimeoutMs = driverCallTimeoutMs;
+    this.#maxActiveProfiles = maxActiveProfiles;
   }
 
   async openProfile(input) {
@@ -101,6 +112,15 @@ export class BrowserProfileHost {
     return exclusive(this.#locks, profileId, async () => {
       if (this.#profiles.has(profileId) || this.#openingProfiles.has(profileId)) {
         throw new TypeError("profile is already open or opening");
+      }
+      if (
+        this.#profiles.size + this.#openingProfiles.size >=
+        this.#maxActiveProfiles
+      ) {
+        const error = new Error("browser active profile capacity is exhausted");
+        error.name = "BrowserBackpressureError";
+        error.code = "BROWSER_PROFILE_CAPACITY";
+        throw error;
       }
       this.#openingProfiles.add(profileId);
       try {

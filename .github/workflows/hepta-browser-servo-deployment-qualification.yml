@@ -3,10 +3,6 @@ name: Hepta Browser Servo deployment qualification
 on:
   workflow_dispatch:
     inputs:
-      source_sha:
-        description: Exact main SHA whose worker artifact is being qualified
-        required: true
-        type: string
       build_run_id:
         description: GitHub Actions run ID containing the exact worker evidence artifact
         required: true
@@ -32,7 +28,7 @@ jobs:
       labels: [self-hosted, linux, x64]
     timeout-minutes: 30
     env:
-      SOURCE_SHA: ${{ inputs.source_sha }}
+      SOURCE_SHA: ${{ github.sha }}
       BUILD_RUN_ID: ${{ inputs.build_run_id }}
       EXPECTED_WORKER_SHA256: ${{ inputs.worker_sha256 }}
     steps:
@@ -49,7 +45,7 @@ jobs:
 
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
-          ref: ${{ inputs.source_sha }}
+          ref: ${{ github.sha }}
           fetch-depth: 1
           persist-credentials: false
 
@@ -72,7 +68,7 @@ jobs:
       - name: Download exact worker evidence
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
-          name: hepta-browser-servo-worker-evidence-${{ inputs.source_sha }}
+          name: hepta-browser-servo-worker-evidence-${{ github.sha }}
           path: worker-evidence
           repository: TrillionniumFoundation/hepta-private-ci
           run-id: ${{ inputs.build_run_id }}
@@ -95,6 +91,7 @@ jobs:
           assert receipt['linuxSandboxProbe']['externalNetworkDenied'] is True
           assert receipt['linuxSandboxProbe']['hostSecretHidden'] is True
           assert receipt['linuxSandboxProbe']['parentDeathCleanupObserved'] is True
+          assert receipt['linuxSandboxProbe']['descendantCleanupObserved'] is True
           assert receipt['realWorkerSmoke']['currentPinWorkerBooted'] is True
           assert receipt['realWorkerSmoke']['privateProtocolRoundTrip'] is True
           PY
@@ -152,7 +149,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: hepta-browser-servo-linux-target-${{ inputs.source_sha }}
+          name: hepta-browser-servo-linux-target-${{ github.sha }}
           path: deployment-evidence
           if-no-files-found: error
           retention-days: 14

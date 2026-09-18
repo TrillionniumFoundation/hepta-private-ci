@@ -177,6 +177,37 @@ async function preparedHost(options = {}) {
   return { host, fakeDriver, finalAuthority, journal, session, page };
 }
 
+test("global active profile capacity rejects a second worker before start", async () => {
+  const fakeDriver = driver();
+  let starts = 0;
+  const originalStart = fakeDriver.start.bind(fakeDriver);
+  fakeDriver.start = async (...args) => {
+    starts += 1;
+    return originalStart(...args);
+  };
+  const host = new BrowserProfileHost({
+    driver: fakeDriver,
+    authority: authority(),
+    journal: new MemoryBrowserOperationJournal(),
+    clock: () => 1_000,
+    driverCallTimeoutMs: 50,
+    maxActiveProfiles: 1,
+  });
+  await host.openProfile(input());
+  await assert.rejects(
+    host.openProfile(
+      input({
+        profileId: "profile.2",
+        principalId: "principal.2",
+      }),
+    ),
+    (error) =>
+      error?.name === "BrowserBackpressureError" &&
+      error?.code === "BROWSER_PROFILE_CAPACITY",
+  );
+  assert.equal(starts, 1);
+});
+
 test("opens, publishes bounded semantic observation, reconciles, retires journal, and closes", async () => {
   const { host, journal, session, page } = await preparedHost();
   assert.equal(session.profileOwnerDigest, D4);
