@@ -1,3 +1,5 @@
+use std::collections::BTreeSet;
+
 use serde::Deserialize;
 use serde::Serialize;
 
@@ -34,23 +36,7 @@ impl WeightProposalV1 {
         delta_q16: i32,
         new_eligibility_q16: i32,
     ) -> Result<Self, ContractErrorV1> {
-        validate_nonzero(source_node_id, "weight proposal source must be non-zero")?;
-        validate_nonzero(target_node_id, "weight proposal target must be non-zero")?;
-        if source_node_id == target_node_id {
-            return Err(ContractErrorV1::Invalid(
-                "weight proposal endpoints must be distinct",
-            ));
-        }
-        validate_signed_ppm(old_weight_q16, "old weight")?;
-        validate_signed_ppm(new_weight_q16, "new weight")?;
-        validate_signed_ppm(delta_q16, "weight delta")?;
-        validate_signed_ppm(new_eligibility_q16, "new eligibility")?;
-        if new_weight_q16 - old_weight_q16 != delta_q16 {
-            return Err(ContractErrorV1::Conflict(
-                "weight proposal delta does not match old/new values",
-            ));
-        }
-        Ok(Self {
+        let value = Self {
             source_node_id,
             target_node_id,
             relation,
@@ -58,7 +44,38 @@ impl WeightProposalV1 {
             new_weight_q16,
             delta_q16,
             new_eligibility_q16,
-        })
+        };
+        value.validate()?;
+        Ok(value)
+    }
+
+    pub fn validate(&self) -> Result<(), ContractErrorV1> {
+        validate_nonzero(
+            self.source_node_id,
+            "weight proposal source must be non-zero",
+        )?;
+        validate_nonzero(
+            self.target_node_id,
+            "weight proposal target must be non-zero",
+        )?;
+        if self.source_node_id == self.target_node_id {
+            return Err(ContractErrorV1::Invalid(
+                "weight proposal endpoints must be distinct",
+            ));
+        }
+        validate_signed_ppm(self.old_weight_q16, "old weight")?;
+        validate_signed_ppm(self.new_weight_q16, "new weight")?;
+        validate_signed_ppm(self.delta_q16, "weight delta")?;
+        validate_signed_ppm(self.new_eligibility_q16, "new eligibility")?;
+        if self.delta_q16.unsigned_abs() > 50_000 {
+            return Err(ContractErrorV1::BoundExceeded("weight delta"));
+        }
+        if self.new_weight_q16 - self.old_weight_q16 != self.delta_q16 {
+            return Err(ContractErrorV1::Conflict(
+                "weight proposal delta does not match old/new values",
+            ));
+        }
+        Ok(())
     }
 }
 
@@ -78,21 +95,27 @@ impl ThresholdProposalV1 {
         new_threshold_q16: i32,
         delta_q16: i32,
     ) -> Result<Self, ContractErrorV1> {
-        validate_nonzero(node_id, "threshold proposal node must be non-zero")?;
-        validate_signed_ppm(old_threshold_q16, "old threshold")?;
-        validate_signed_ppm(new_threshold_q16, "new threshold")?;
-        validate_signed_ppm(delta_q16, "threshold delta")?;
-        if new_threshold_q16 - old_threshold_q16 != delta_q16 {
-            return Err(ContractErrorV1::Conflict(
-                "threshold proposal delta does not match old/new values",
-            ));
-        }
-        Ok(Self {
+        let value = Self {
             node_id,
             old_threshold_q16,
             new_threshold_q16,
             delta_q16,
-        })
+        };
+        value.validate()?;
+        Ok(value)
+    }
+
+    pub fn validate(&self) -> Result<(), ContractErrorV1> {
+        validate_nonzero(self.node_id, "threshold proposal node must be non-zero")?;
+        validate_signed_ppm(self.old_threshold_q16, "old threshold")?;
+        validate_signed_ppm(self.new_threshold_q16, "new threshold")?;
+        validate_signed_ppm(self.delta_q16, "threshold delta")?;
+        if self.new_threshold_q16 - self.old_threshold_q16 != self.delta_q16 {
+            return Err(ContractErrorV1::Conflict(
+                "threshold proposal delta does not match old/new values",
+            ));
+        }
+        Ok(())
     }
 }
 
@@ -143,6 +166,26 @@ impl PlasticityBatchV1 {
         }
         if !self.current_snapshot_immutable || self.production_activation_allowed {
             return Err(ContractErrorV1::AuthorityBoundary);
+        }
+
+        let mut weights = BTreeSet::new();
+        for proposal in &self.weight_proposals {
+            proposal.validate()?;
+            if !weights.insert((
+                proposal.source_node_id,
+                proposal.target_node_id,
+                proposal.relation,
+            )) {
+                return Err(ContractErrorV1::Conflict("duplicate weight proposal"));
+            }
+        }
+
+        let mut thresholds = BTreeSet::new();
+        for proposal in &self.threshold_proposals {
+            proposal.validate()?;
+            if !thresholds.insert(proposal.node_id) {
+                return Err(ContractErrorV1::Conflict("duplicate threshold proposal"));
+            }
         }
         Ok(())
     }
