@@ -133,3 +133,80 @@ fn truncation_and_tampering_fail_closed() {
         NduProjectionJournalError::CorruptEntryDigest
     );
 }
+
+#[test]
+fn revocation_is_scoped_by_objective_and_subject() {
+    let objective_a = digest("objective-a");
+    let objective_b = digest("objective-b");
+    let subject_a = digest("subject-a");
+    let subject_b = digest("subject-b");
+    let shared_projection = digest("shared-projection");
+    let mut journal = NduProjectionJournalV1::new();
+
+    must(journal.append_projection(
+        NduProjectionKindV1::Preference,
+        digest("projection-a"),
+        objective_a,
+        subject_a,
+        shared_projection,
+    ));
+    must(journal.append_projection(
+        NduProjectionKindV1::Preference,
+        digest("projection-b"),
+        objective_b,
+        subject_b,
+        shared_projection,
+    ));
+    must(journal.select_projection(
+        digest("selection-a"),
+        objective_a,
+        subject_a,
+        shared_projection,
+    ));
+    must(journal.select_projection(
+        digest("selection-b"),
+        objective_b,
+        subject_b,
+        shared_projection,
+    ));
+    must(journal.revoke_projection(
+        digest("revocation-a"),
+        objective_a,
+        subject_a,
+        shared_projection,
+    ));
+
+    assert_eq!(journal.selected_projection_digest(objective_a, subject_a), None);
+    assert_eq!(
+        journal.selected_projection_digest(objective_b, subject_b),
+        Some(shared_projection)
+    );
+    must(journal.select_projection(
+        digest("selection-b-2"),
+        objective_b,
+        subject_b,
+        shared_projection,
+    ));
+}
+
+#[test]
+fn checkpoint_binds_record_count_and_hash_chain_head() {
+    let mut journal = NduProjectionJournalV1::new();
+    let empty = journal.checkpoint();
+    assert!(journal.matches_checkpoint(empty));
+
+    must(journal.append_projection(
+        NduProjectionKindV1::Utility,
+        digest("projection-id"),
+        digest("objective"),
+        digest("subject"),
+        digest("projection"),
+    ));
+    let populated = journal.checkpoint();
+    assert_ne!(empty, populated);
+    assert!(journal.matches_checkpoint(populated));
+    assert!(!journal.matches_checkpoint(empty));
+
+    let reopened = must(NduProjectionJournalV1::reopen(&journal.export_bytes()));
+    assert!(reopened.matches_checkpoint(populated));
+}
