@@ -321,14 +321,20 @@ async fn timer_quiescence_is_durable_and_unknown_work_blocks_handoff() -> TestRe
     assert_eq!(stopped.leased_occurrences, 1);
     assert!(!stopped.can_handoff());
     assert_eq!(store.claim_due(100_000, 2, 100).await?, None);
-    assert_eq!(store.handoff_timer().await.err(), Some(AutomationError::Conflict));
+    assert_eq!(
+        store.handoff_timer().await.err(),
+        Some(AutomationError::Conflict)
+    );
 
     store.record_dispatch_uncertain(&lease, 101).await?;
     store.close().await;
     let reopened = AutomationStore::open(&layout).await?;
     assert_eq!(reopened.timer_status().await?.uncertain_dispatches, 1);
     assert_eq!(reopened.recover_stale_generation(2).await?, 0);
-    assert_eq!(reopened.handoff_timer().await.err(), Some(AutomationError::Conflict));
+    assert_eq!(
+        reopened.handoff_timer().await.err(),
+        Some(AutomationError::Conflict)
+    );
 
     reopened
         .reconcile_dispatch(lease.task.task_id, lease.occurrence, &receipt(&lease), 102)

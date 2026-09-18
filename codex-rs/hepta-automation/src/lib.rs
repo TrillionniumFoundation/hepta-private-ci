@@ -73,8 +73,6 @@ pub use taskflow_execution_boundary::TaskFlowBoundaryUnavailableReason;
 pub use taskflow_execution_boundary::TaskFlowExecutionUnavailableV1;
 pub use taskflow_execution_boundary::assess_local_taskflow_boundary;
 pub use taskflow_execution_boundary::assess_local_taskflow_boundary_json;
-pub use timer_lifecycle::TimerDrainStatus;
-pub use timer_lifecycle::TimerPhase;
 #[cfg(feature = "taskflow-structural-qualification")]
 pub use taskflow_kernel::TASKFLOW_STRUCTURAL_EFFECTS;
 #[cfg(feature = "taskflow-structural-qualification")]
@@ -107,5 +105,7 @@ pub use taskflow_step::TaskFlowStepObservation;
 pub use taskflow_step::TaskFlowStepReceipt;
 #[cfg(feature = "taskflow-structural-qualification")]
 pub use taskflow_step::TaskFlowStepState;
+pub use timer_lifecycle::TimerDrainStatus;
+pub use timer_lifecycle::TimerPhase;
 
 pub const AUTOMATION_SCHEMA_VERSION: u32 = 5;

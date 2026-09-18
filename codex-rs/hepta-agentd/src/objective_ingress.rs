@@ -19,12 +19,12 @@ use codex_hepta_learning_ledger::LedgerAnchor;
 use codex_hepta_learning_ledger::LedgerEvent;
 use codex_hepta_learning_ledger::LedgerRecovery;
 use codex_hepta_learning_ledger::LedgerWitnessStore;
+use codex_hepta_objective::MAX_OBJECTIVE_ADMISSION_PROFILE_JSON_BYTES;
 use codex_hepta_objective::ObjectiveAdmissionContextV1;
 use codex_hepta_objective::ObjectiveAdmissionProfileV1;
 use codex_hepta_objective::ObjectiveSourceAuthenticationV1;
 use codex_hepta_objective::decode_admission_profile_json_v1;
 use codex_hepta_objective::decode_source_envelope_json_v1;
-use codex_hepta_objective::MAX_OBJECTIVE_ADMISSION_PROFILE_JSON_BYTES;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
 use codex_hepta_types::Revision;
@@ -148,7 +148,9 @@ impl ObjectiveIngressHost {
     }
 
     pub(crate) fn permits_issuer(&self, issuer: &StableId) -> bool {
-        self.profile.allowed_trusted_source_identities.contains(issuer)
+        self.profile
+            .allowed_trusted_source_identities
+            .contains(issuer)
     }
 
     pub(crate) fn process_delivery(
@@ -162,7 +164,9 @@ impl ObjectiveIngressHost {
             .map_err(|_| objective_invalid("stored Objective payload is not canonical JSON"))?;
         let canonical = objective_payload(identity, &body)?;
         if canonical != delivery.payload {
-            return Err(objective_invalid("stored Objective payload is not canonical"));
+            return Err(objective_invalid(
+                "stored Objective payload is not canonical",
+            ));
         }
         if !self.permits_issuer(&delivery.message.claims.issuer_id) {
             return Err(objective_invalid(
@@ -184,11 +188,8 @@ impl ObjectiveIngressHost {
                 source_digest: source.structured_intent.provenance.source_digest,
             },
         };
-        let record_id = StableId::new(format!(
-            "objective-run:{}",
-            delivery.lease.delivery_id()
-        ))
-        .map_err(|error| objective_invalid(&format!("record id: {error}")))?;
+        let record_id = StableId::new(format!("objective-run:{}", delivery.lease.delivery_id()))
+            .map_err(|error| objective_invalid(&format!("record id: {error}")))?;
         let run_id = StableId::new(&body.run_id)
             .map_err(|error| objective_invalid(&format!("run id: {error}")))?;
 
@@ -311,12 +312,16 @@ pub(crate) async fn submit(
     let trust = authbus.trust(state)?;
     let issuer = trust.issuer()?;
     if issuer.revoked || !objective.permits_issuer(&issuer.issuer_id) {
-        return Err(objective_invalid("issuer is revoked or not registered for Objective ingress"));
+        return Err(objective_invalid(
+            "issuer is revoked or not registered for Objective ingress",
+        ));
     }
     let payload = objective_payload(state.identity(), &request.body)?;
     let now = authbus_ingress::now_ms()?;
     if request.expires_at_ms <= now || request.expires_at_ms.saturating_sub(now) > 300_000 {
-        return Err(objective_invalid("message expiry must be within five minutes"));
+        return Err(objective_invalid(
+            "message expiry must be within five minutes",
+        ));
     }
     let message = SignedMessage {
         claims: authbus_objective_claims(&state.identity().agent_id, &request)?,
@@ -342,8 +347,8 @@ pub(crate) async fn status(
 ) -> Result<AuthBusObjectiveStatus, AgentdError> {
     let objective = attached(state)?;
     let authbus = authbus_ingress::attached(state)?;
-    let delivery_id = Digest32::from_str(&delivery_id)
-        .map_err(|_| objective_invalid("invalid delivery id"))?;
+    let delivery_id =
+        Digest32::from_str(&delivery_id).map_err(|_| objective_invalid("invalid delivery id"))?;
     let status = authbus
         .evidence
         .authbus_delivery_status(delivery_id)
@@ -355,7 +360,9 @@ pub(crate) async fn status(
     map_status(status)
 }
 
-pub(crate) fn attached(state: &AgentdState) -> Result<std::sync::Arc<ObjectiveIngressHost>, AgentdError> {
+pub(crate) fn attached(
+    state: &AgentdState,
+) -> Result<std::sync::Arc<ObjectiveIngressHost>, AgentdError> {
     state
         .objective_ingress
         .get()
@@ -377,8 +384,7 @@ pub(crate) fn objective_payload(
             "generation, revision, authority or source bound is invalid",
         ));
     }
-    StableId::new(&body.run_id)
-        .map_err(|error| objective_invalid(&format!("run id: {error}")))?;
+    StableId::new(&body.run_id).map_err(|error| objective_invalid(&format!("run id: {error}")))?;
     for (digest, field) in [
         (&body.runtime_body_digest, "runtime body"),
         (&body.preference_state_digest, "preference state"),
@@ -447,7 +453,6 @@ fn predecessor_for_record(
         .map_or(Digest32::ZERO, |record| record.chain_digest))
 }
 
-
 fn event_record_id(event: &LedgerEvent) -> &StableId {
     match event {
         LedgerEvent::RunStart(value) => &value.record_id,
@@ -473,9 +478,9 @@ fn reconcile_witness(
         Some(current) if current == anchor => Ok(()),
         Some(current)
             if current.sequence.checked_add(1) == Some(anchor.sequence)
-                && ledger
-                    .contains_anchor(current)
-                    .map_err(|error| objective_invalid(&format!("learning ledger anchor: {error}")))? =>
+                && ledger.contains_anchor(current).map_err(|error| {
+                    objective_invalid(&format!("learning ledger anchor: {error}"))
+                })? =>
         {
             witness
                 .persist(anchor)
@@ -504,7 +509,9 @@ fn open_private_state_file(identity: &AgentdIdentity, name: &str) -> Result<File
                 || meta.uid() != home.uid()
                 || meta.mode() & 0o077 != 0
             {
-                return Err(objective_invalid("Objective owner state file is not private"));
+                return Err(objective_invalid(
+                    "Objective owner state file is not private",
+                ));
             }
         }
         let file = OpenOptions::new()
@@ -519,7 +526,9 @@ fn open_private_state_file(identity: &AgentdIdentity, name: &str) -> Result<File
             || meta.uid() != home.uid()
             || meta.mode() & 0o077 != 0
         {
-            return Err(objective_invalid("Objective owner state file changed while opening"));
+            return Err(objective_invalid(
+                "Objective owner state file changed while opening",
+            ));
         }
         Ok(file)
     }

@@ -408,27 +408,18 @@ fn concurrent_different_semantics_for_one_run_are_create_only() {
     let profile = profile();
     let envelope = envelope();
     let context = context(&profile, &envelope);
-    let outcome = codex_hepta_objective::admit_and_compile_objective_v1(
-        &envelope,
-        &profile,
-        &context,
-    )
-    .expect("admission");
+    let outcome =
+        codex_hepta_objective::admit_and_compile_objective_v1(&envelope, &profile, &context)
+            .expect("admission");
     let objective = outcome.compile_result.expect("compiled objective");
 
     let first_bindings = bindings("run.objective.concurrent");
     let mut second_bindings = first_bindings.clone();
     second_bindings.model_tuple_digest = digest("model.concurrent.changed");
-    let first_publication = super::stored_publication(
-        &outcome.receipt,
-        &objective,
-        &first_bindings,
-    );
-    let second_publication = super::stored_publication(
-        &outcome.receipt,
-        &objective,
-        &second_bindings,
-    );
+    let first_publication =
+        super::stored_publication(&outcome.receipt, &objective, &first_bindings);
+    let second_publication =
+        super::stored_publication(&outcome.receipt, &objective, &second_bindings);
 
     let barrier = Arc::new(Barrier::new(3));
     let first_store = Arc::clone(&store);
@@ -477,4 +468,3 @@ fn concurrent_different_semantics_for_one_run_are_create_only() {
                 == second_bindings.model_tuple_digest.to_string()
     );
 }
-

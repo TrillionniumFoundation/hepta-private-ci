@@ -90,10 +90,9 @@ pub async fn run(config: AgentdConfig, arg0_paths: Arg0DispatchPaths) -> Result<
             crate::authbus_ingress::now_ms()?,
         )?;
         state.refresh_generation()?;
-        state
-            .objective_ingress
-            .set(Arc::new(host))
-            .map_err(|_| AgentdError::Protocol("Objective ingress host already attached".to_string()))?;
+        state.objective_ingress.set(Arc::new(host)).map_err(|_| {
+            AgentdError::Protocol("Objective ingress host already attached".to_string())
+        })?;
     }
     let cognitive_layout = identity.layout.clone();
     let cognitive_runtime = open_cognitive_runtime_after_generation_fence(&state, || async move {
