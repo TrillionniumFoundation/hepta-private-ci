@@ -3873,6 +3873,7 @@ dependencies = [
  "codex-hepta-cognitive-read",
  "codex-hepta-cognitive-types",
  "codex-hepta-contracts",
+ "codex-hepta-memory-federation",
  "codex-hepta-paths",
  "codex-hepta-types",
  "codex-state",
@@ -3916,6 +3917,7 @@ name = "codex-hepta-memory-federation"
 version = "0.0.0"
 dependencies = [
  "codex-hepta-types",
+ "tokio",
 ]
 
 [[package]]
