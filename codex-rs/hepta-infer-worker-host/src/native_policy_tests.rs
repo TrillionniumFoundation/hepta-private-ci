@@ -45,7 +45,7 @@ fn quota(now: u64) -> QuotaReservation {
     }
 }
 
-fn resource(now: u64) -> ResourceAdvertisement {
+fn resource(now: u64, quota: &QuotaReservation) -> ResourceAdvertisement {
     ResourceAdvertisement {
         schema_version: AUTHBUS_B2_CONTRACT_SCHEMA_VERSION,
         advertisement_id: "advertisement:inference-1".to_string(),
@@ -55,7 +55,7 @@ fn resource(now: u64) -> ResourceAdvertisement {
         provider_id: "openai".to_string(),
         model: Some("gpt-test".to_string()),
         resource_sha256: digest("resource:inference"),
-        quota_sha256: digest("quota:inference"),
+        quota_sha256: quota.digest().expect("quota digest"),
         capability_sha256: vec![digest("capability:inference")],
         state: ResourceAdvertisementState::Available,
         revision: 1,
@@ -74,7 +74,7 @@ fn admission_binding_binds_quota_resource_and_generation() {
     let now = 2_000_000_000;
     let policy = NativeExecutionPolicy {
         quota: quota(now),
-        resource: resource(now),
+        resource: resource(now, &quota(now)),
     };
 
     let binding = policy
@@ -95,7 +95,7 @@ fn admission_binding_rejects_token_budget_exhaustion() {
     let now = 2_000_000_000;
     let policy = NativeExecutionPolicy {
         quota: quota(now),
-        resource: resource(now),
+        resource: resource(now, &quota(now)),
     };
 
     assert!(matches!(
@@ -107,15 +107,41 @@ fn admission_binding_rejects_token_budget_exhaustion() {
 #[test]
 fn admission_binding_rejects_provider_subject_drift() {
     let now = 2_000_000_000;
-    let mut resource = resource(now);
+    let quota = quota(now);
+    let mut resource = resource(now, &quota);
     resource.generation = 8;
-    let policy = NativeExecutionPolicy {
-        quota: quota(now),
-        resource,
-    };
+    let policy = NativeExecutionPolicy { quota, resource };
 
     assert!(matches!(
         policy.admission_binding(now, "agent-inference", 7, "gpt-test", 512),
         Err(NativePolicyError::Invalid("subject or generation mismatch"))
+    ));
+}
+
+#[test]
+fn admission_binding_rejects_missing_resource_subject() {
+    let now = 2_000_000_000;
+    let quota = quota(now);
+    let mut resource = resource(now, &quota);
+    resource.subject = None;
+    let policy = NativeExecutionPolicy { quota, resource };
+
+    assert!(matches!(
+        policy.admission_binding(now, "agent-inference", 7, "gpt-test", 512),
+        Err(NativePolicyError::Invalid("subject or generation mismatch"))
+    ));
+}
+
+#[test]
+fn admission_binding_rejects_cross_contract_digest_drift() {
+    let now = 2_000_000_000;
+    let quota = quota(now);
+    let mut resource = resource(now, &quota);
+    resource.quota_sha256 = digest("different-quota");
+    let policy = NativeExecutionPolicy { quota, resource };
+
+    assert!(matches!(
+        policy.admission_binding(now, "agent-inference", 7, "gpt-test", 512),
+        Err(NativePolicyError::Invalid("quota/resource digest mismatch"))
     ));
 }
