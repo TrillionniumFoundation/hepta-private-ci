@@ -95,6 +95,14 @@ jobs:
         run: |
           set -euo pipefail
           python3 ../scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/objective-product/measurement.json" -- cargo test --release --locked -p codex-hepta-intelligence product_objective_named_host_measurement_receipt -- --nocapture
+      - name: Measure composed Agentd product path
+        working-directory: codex-rs
+        env:
+          HEPTA_OBJECTIVE_AGENTD_MEASURE: "1"
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 ../scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/objective-product/agentd-measurement.json" -- cargo test --release --locked -p codex-hepta-agentd product_objective_agentd_end_to_end_named_host_measurement_receipt -- --nocapture
       - name: Measure inclusion-minimal conflict path separately
         working-directory: codex-rs
         env:
