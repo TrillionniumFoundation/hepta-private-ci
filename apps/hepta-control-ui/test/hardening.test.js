@@ -541,3 +541,59 @@ test("reconnect reconciliation is capped to one concurrent batch", async () => {
   assert.equal(session.pendingReconciliation, 12);
 });
 
+test("automatic reconnect does not retry recovery-required operations", async () => {
+  const storage = new MemoryStorage();
+  const store = new LocalStoragePendingStore({ storage, key: "hepta.pending.recovery" });
+  store.save([
+    {
+      method: "operation/request",
+      operationId: "operation.manual-only",
+      semanticDigest: D1,
+      originSessionId: "session.old",
+      originConnectionGeneration: 1,
+      runtimeGeneration: 7,
+      displayedRevision: 9,
+      accepted: true,
+      status: "indeterminate",
+      createdAtMs: 0,
+      reconcileAttempts: 64,
+      nextReconcileAtMs: 0,
+      recoveryRequired: true,
+    },
+  ]);
+  let reconcileCalls = 0;
+  const transport = {
+    async connect(input) {
+      return {
+        authenticated: true,
+        sessionId: "session.new",
+        connectionGeneration: 2,
+        protocolVersion: input.protocolVersion,
+      };
+    },
+    async request() { assert.fail("mutation must not replay"); },
+    async reconcile() {
+      reconcileCalls += 1;
+      return null;
+    },
+    async close() {},
+  };
+  const client = new RuntimeClient({
+    transport,
+    pendingStore: store,
+    clock: () => 1,
+    setTimer: frozenTimer,
+    clearTimer: () => {},
+  });
+  const session = await client.connect({
+    endpointId: "runtime.1",
+    protocolVersion: 1,
+    manifestDigest: D2,
+  });
+  assert.equal(session.recoveryRequired, 1);
+  assert.equal(reconcileCalls, 0);
+
+  await client.reconcilePending({ force: true });
+  assert.equal(reconcileCalls, 1);
+});
+
