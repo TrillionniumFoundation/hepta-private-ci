@@ -366,10 +366,13 @@ pub struct FinalUseRevocationNodeTrust {
 /// Cryptographic convergence receipt for one still-fresh update.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct FinalUseRevocationConvergenceReport {
+    pub distributor_id: String,
+    pub distributor_trust_key_id: String,
     pub authority_epoch: u64,
     pub revision: u64,
     pub expected_nodes: Vec<String>,
     pub acknowledged_nodes: Vec<String>,
+    pub acknowledged_key_ids: BTreeMap<String, String>,
     pub missing_nodes: Vec<String>,
 }
 
@@ -412,27 +415,26 @@ impl FinalUseRevocationConvergenceVerifier {
         Ok(Self { nodes: pinned })
     }
 
-    /// Verify all supplied acknowledgements and report the exact missing node
-    /// set. The update must still be fresh at report time; a stale head can
-    /// never be declared converged for new effects.
+    /// Authenticate the distributor-signed update, then verify all supplied
+    /// node acknowledgements and report the exact missing node set. An unsigned
+    /// or forged update can never produce a convergence report.
     pub fn verify(
         &self,
-        update: &FinalUseRevocationUpdate,
+        feed_verifier: &FinalUseRevocationFeedVerifier,
+        signed_update: &SignedFinalUseRevocationUpdate,
         acknowledgements: &[SignedFinalUseRevocationAck],
         now_unix_ms: u64,
     ) -> Result<FinalUseRevocationConvergenceReport, FinalUseControlError> {
-        update.signing_bytes()?;
-        if now_unix_ms < update.issued_at_unix_ms {
-            return Err(FinalUseControlError::RevocationFeedNotYetValid);
-        }
-        if now_unix_ms >= update.expires_at_unix_ms {
-            return Err(FinalUseControlError::RevocationFeedStale);
-        }
+        let distributor_trust_key_id = feed_verifier
+            .verify_signed(signed_update, now_unix_ms)?
+            .to_owned();
+        let update = &signed_update.update;
         if acknowledgements.len() > self.nodes.len() {
             return Err(FinalUseControlError::InvalidRevocationAck);
         }
 
         let mut acknowledged = BTreeSet::new();
+        let mut acknowledged_key_ids = BTreeMap::new();
         for signed in acknowledgements {
             signed.ack.validate_against(update)?;
             if signed.ack.applied_at_unix_ms > now_unix_ms {
@@ -448,12 +450,13 @@ impl FinalUseRevocationConvergenceVerifier {
             let input = signed.ack.signing_bytes()?;
             let signature = Signature::from_slice(&signed.signature)
                 .map_err(|_| FinalUseControlError::InvalidSignature)?;
-            verify_key_ring(
+            let key_id = verify_key_ring(
                 keys,
                 signed.ack.authority_epoch,
                 &input,
                 &signature,
             )?;
+            acknowledged_key_ids.insert(signed.ack.node_id.clone(), key_id.to_owned());
         }
 
         let expected_nodes: Vec<String> = self.nodes.keys().cloned().collect();
@@ -465,10 +468,13 @@ impl FinalUseRevocationConvergenceVerifier {
             .cloned()
             .collect();
         Ok(FinalUseRevocationConvergenceReport {
+            distributor_id: update.distributor_id.clone(),
+            distributor_trust_key_id,
             authority_epoch: update.head.authority_epoch,
             revision: update.head.revision,
             expected_nodes,
             acknowledged_nodes,
+            acknowledged_key_ids,
             missing_nodes,
         })
     }
@@ -534,6 +540,24 @@ impl FinalUseRevocationFeedVerifier {
         signed: &SignedFinalUseRevocationUpdate,
         now_unix_ms: u64,
     ) -> Result<FinalUseRevocationReceipt, FinalUseControlError> {
+        let key_id = self.verify_signed(signed, now_unix_ms)?.to_owned();
+        authority
+            .update_revocations(signed.update.head.clone())
+            .map_err(FinalUseControlError::Authority)?;
+        Ok(FinalUseRevocationReceipt {
+            distributor_id: self.distributor_id.clone(),
+            trust_key_id: key_id,
+            authority_epoch: signed.update.head.authority_epoch,
+            revision: signed.update.head.revision,
+            valid_until_unix_ms: signed.update.expires_at_unix_ms,
+        })
+    }
+
+    fn verify_signed<'a>(
+        &'a self,
+        signed: &SignedFinalUseRevocationUpdate,
+        now_unix_ms: u64,
+    ) -> Result<&'a str, FinalUseControlError> {
         if signed.update.distributor_id != self.distributor_id {
             return Err(FinalUseControlError::InvalidRevocationUpdate);
         }
@@ -546,23 +570,12 @@ impl FinalUseRevocationFeedVerifier {
         }
         let signature = Signature::from_slice(&signed.signature)
             .map_err(|_| FinalUseControlError::InvalidSignature)?;
-        let key_id = verify_key_ring(
+        verify_key_ring(
             &self.keys,
             signed.update.head.authority_epoch,
             &input,
             &signature,
-        )?
-        .to_owned();
-        authority
-            .update_revocations(signed.update.head.clone())
-            .map_err(FinalUseControlError::Authority)?;
-        Ok(FinalUseRevocationReceipt {
-            distributor_id: self.distributor_id.clone(),
-            trust_key_id: key_id,
-            authority_epoch: signed.update.head.authority_epoch,
-            revision: signed.update.head.revision,
-            valid_until_unix_ms: signed.update.expires_at_unix_ms,
-        })
+        )
     }
 }
 
@@ -859,6 +872,18 @@ mod tests {
             1_000,
             31_000,
         );
+        let signed_update = SignedFinalUseRevocationUpdate {
+            signature: distributor
+                .sign(&update.signing_bytes().unwrap())
+                .to_bytes()
+                .to_vec(),
+            update: update.clone(),
+        };
+        let feed_verifier = FinalUseRevocationFeedVerifier::new(
+            "revocation-distributor".into(),
+            distributor.verifying_key().to_bytes(),
+        )
+        .unwrap();
         let verifier = FinalUseRevocationConvergenceVerifier::new([
             FinalUseRevocationNodeTrust {
                 node_id: "node-a".into(),
@@ -889,7 +914,9 @@ mod tests {
                 .to_vec(),
             ack: ack_a,
         };
-        let partial = verifier.verify(&update, &[signed_a.clone()], 2_100).unwrap();
+        let partial = verifier
+            .verify(&feed_verifier, &signed_update, &[signed_a.clone()], 2_100)
+            .unwrap();
         assert!(!partial.converged());
         assert_eq!(partial.missing_nodes, vec!["node-b"]);
 
@@ -902,24 +929,31 @@ mod tests {
             ack: ack_b,
         };
         let full = verifier
-            .verify(&update, &[signed_a, signed_b], 2_100)
+            .verify(
+                &feed_verifier,
+                &signed_update,
+                &[signed_a, signed_b],
+                2_100,
+            )
             .unwrap();
         assert!(full.converged());
         assert!(full.missing_nodes.is_empty());
-
-        let signed_update = SignedFinalUseRevocationUpdate {
-            signature: distributor
-                .sign(&update.signing_bytes().unwrap())
-                .to_bytes()
-                .to_vec(),
-            update,
-        };
+        assert_eq!(full.distributor_id, "revocation-distributor");
+        assert_eq!(full.distributor_trust_key_id, "single-key");
+        assert_eq!(
+            full.acknowledged_key_ids.get("node-a").map(String::as_str),
+            Some("node-a-key")
+        );
+        assert_eq!(
+            full.acknowledged_key_ids.get("node-b").map(String::as_str),
+            Some("node-b-key")
+        );
         assert_eq!(signed_update.update.head.revision, full.revision);
     }
 
     #[test]
-    fn convergence_rejects_unknown_duplicate_and_stale_acks() {
-        let (_authority, grant, _directory, _approver, _distributor) = fixture();
+    fn convergence_rejects_unknown_duplicate_stale_future_and_forged_inputs() {
+        let (_authority, grant, _directory, _approver, distributor) = fixture();
         let node = SigningKey::from_bytes(&[73; 32]);
         let update = FinalUseRevocationUpdate::new(
             "revocation-distributor".into(),
@@ -931,6 +965,18 @@ mod tests {
             1_000,
             2_000,
         );
+        let signed_update = SignedFinalUseRevocationUpdate {
+            signature: distributor
+                .sign(&update.signing_bytes().unwrap())
+                .to_bytes()
+                .to_vec(),
+            update: update.clone(),
+        };
+        let feed_verifier = FinalUseRevocationFeedVerifier::new(
+            "revocation-distributor".into(),
+            distributor.verifying_key().to_bytes(),
+        )
+        .unwrap();
         let verifier = FinalUseRevocationConvergenceVerifier::new([
             FinalUseRevocationNodeTrust {
                 node_id: "node-a".into(),
@@ -952,7 +998,12 @@ mod tests {
             ack,
         };
         assert_eq!(
-            verifier.verify(&update, &[signed.clone(), signed.clone()], 1_600),
+            verifier.verify(
+                &feed_verifier,
+                &signed_update,
+                &[signed.clone(), signed.clone()],
+                1_600,
+            ),
             Err(FinalUseControlError::InvalidRevocationAck)
         );
         let future_ack =
@@ -965,12 +1016,25 @@ mod tests {
             ack: future_ack,
         };
         assert_eq!(
-            verifier.verify(&update, &[future_signed], 1_600),
+            verifier.verify(&feed_verifier, &signed_update, &[future_signed], 1_600),
             Err(FinalUseControlError::InvalidRevocationAck)
         );
         assert_eq!(
-            verifier.verify(&update, &[signed], 2_000),
+            verifier.verify(&feed_verifier, &signed_update, &[signed.clone()], 2_000),
             Err(FinalUseControlError::RevocationFeedStale)
+        );
+
+        let attacker = SigningKey::from_bytes(&[91; 32]);
+        let forged_update = SignedFinalUseRevocationUpdate {
+            signature: attacker
+                .sign(&update.signing_bytes().unwrap())
+                .to_bytes()
+                .to_vec(),
+            update,
+        };
+        assert_eq!(
+            verifier.verify(&feed_verifier, &forged_update, &[signed], 1_600),
+            Err(FinalUseControlError::InvalidSignature)
         );
     }
 
