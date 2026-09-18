@@ -23,7 +23,7 @@ equivalent kernel.authority product consumer is currently proved.
 | trusted time | `AuthorityClock` bound into FinalUse and general lease owners | host-supplied implementation required | injected-clock tests | interface enforced; attested production source external |
 | anti-rollback | `AuthorityFrontierStore` CAS, `FinalUseFrontier`, `AuthorityLeaseFrontier` | host-supplied implementation required | restored-snapshot tests | protocol enforced; external durable backend external |
 | revocation freshness | signed FinalUse feed V2 + Bao freshness gate | Bao source host | control/host tests | fail-closed host policy implemented; fanout/SLA external |
-| key rotation | bounded epoch-window `FinalUseTrustKey` rings for approval/feed roles | host configuration | overlap/epoch tests | protocol implemented; HSM/KMS ceremony external |
+| key rotation | bounded epoch-window `FinalUseIssuerTrustKey` ring for grants plus `FinalUseTrustKey` rings for approval/feed; issuer trust-set digest pinned in FinalUse store V2 | host configuration | overlap/retirement tests | protocol implemented; HSM/KMS ceremony external |
 | capacity / GC | bounded stores; lease `prune_expired_leases`; explicit epoch rollover | authority owner | capacity/prune tests | lease online GC implemented; FinalUse nonce history still epoch-bounded |
 | no-bypass proof | `CALLERS.toml` + `KERNEL_AUTHORITY_BOUNDARIES.json` | repository scanner | B4 closed-world test | repository-controlled |
 | activation / release | none | none | implementation map / external acceptance | false until separate gates pass |

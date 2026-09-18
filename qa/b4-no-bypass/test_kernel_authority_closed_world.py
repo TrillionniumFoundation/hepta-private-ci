@@ -25,7 +25,7 @@ class KernelAuthorityClosedWorldTests(unittest.TestCase):
     def data(self) -> dict[str, object]:
         data = json.loads(INVENTORY.read_text(encoding="utf-8"))
         self.assertEqual(
-            data.get("schema"), "hepta.kernel-authority-privileged-boundaries.v2"
+            data.get("schema"), "hepta.kernel-authority-privileged-boundaries.v3"
         )
         return data
 

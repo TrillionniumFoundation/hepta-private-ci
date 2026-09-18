@@ -18,16 +18,21 @@ A production-capable host can pin three independent Ed25519 trust roles:
    semantic digest;
 3. **revocation distributor** — signs fresh `FinalUseRevocationUpdate` heads.
 
-Approval and revocation-feed verifiers accept a bounded key ring of at most
-eight `FinalUseTrustKey` entries. Each entry has a stable key id and inclusive
+All three roles support bounded epoch-window rotation. The grant issuer uses
+`FinalUseIssuerTrustKey`; approval and revocation roles use
+`FinalUseTrustKey`. Each ring accepts at most eight keys. Each entry has a stable key id and inclusive
 authority-epoch window. Overlapping windows permit staged rotation; a key
 outside its epoch window is rejected even when its signature is otherwise
 valid. Verification can report the selected key id for audit evidence.
 Duplicate ids/keys, weak Ed25519 keys and invalid epoch windows are rejected.
 
-The one-key `new` constructors remain compatibility helpers. Production host
-configuration should use `new_with_keys` and retain the required historical
-trust material in its audit/evidence system. Repository utilities never
+The one-key verifier constructors and the single-key
+`FinalUseAuthority::open_state_dir_with_trust` remain compatibility helpers.
+Production host configuration should use `open_state_dir_with_issuer_keys`
+plus the control verifiers' `new_with_keys` constructors and retain required
+historical trust material in its audit/evidence system. The complete issuer
+trust-set digest is pinned into FinalUse durable store schema V2; legacy schema
+V1 single-key state is never silently upgraded into a key-ring trust model. Repository utilities never
 generate private keys; custody, compromise response and HSM/KMS policy remain
 external operational responsibilities.
 

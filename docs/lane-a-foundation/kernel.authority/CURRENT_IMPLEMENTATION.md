@@ -38,8 +38,14 @@ grant with exact subject/destination/request/scope/payload binding, strict
 Ed25519 verification, durable single-use nonce burn, monotonic revocation and
 opaque `VerifiedUseToken`.
 
+`FinalUseAuthority::open_state_dir_with_issuer_keys` additionally binds a
+bounded issuer key ring with authority-epoch activation/retirement windows.
+The complete ring configuration is digest-pinned in durable store schema V2;
+legacy schema V1 remains a separate single-key compatibility model and is not
+silently migrated.
+
 `FinalUseAuthority::open_state_dir_with_trust` binds a host clock and an
-external `FinalUseFrontier` CAS store. The frontier digest includes both the
+external `FinalUseFrontier` CAS store for the single-key compatibility path. The frontier digest includes both the
 complete revocation head and claimed nonce set. Every mutation advances the
 external frontier before the local fsync/rename. A local snapshot restored
 behind that frontier fails closed.
@@ -71,8 +77,8 @@ reconciled.
 
 `src/final_use_control.rs` adds independent approval and revocation roles.
 
-- approval and feed verifiers support a bounded epoch-window
-  `FinalUseTrustKey` ring for staged rotation and deterministic retirement;
+- the grant issuer, approval verifier and feed verifier all support bounded
+  epoch-window key rings for staged overlap and deterministic retirement;
 - verification identifies the exact trust key used for audit;
 - revocation feed schema V2 signs issued/expiry times and rejects not-yet-valid
   or stale updates;

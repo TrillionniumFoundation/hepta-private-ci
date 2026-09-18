@@ -11,9 +11,10 @@ signer and the legacy Bao metadata projection keep their existing semantics.
 ## Ownership and trust
 
 `final_use.rs` owns validation and the non-constructible `VerifiedUseToken`.
-`final_use_store.rs` owns durable nonce/revocation state. The host supplies one
-pinned Ed25519 public key, signer identity, initial revocation head and private
-state directory through its protected configuration channel. There is no
+`final_use_store.rs` owns durable nonce/revocation state. The compatibility path supplies one pinned Ed25519 public key. Production
+composition may instead supply a bounded `FinalUseIssuerTrustKey` ring with
+inclusive authority-epoch windows, plus signer identity, initial revocation
+head and private state directory through its protected configuration channel. There is no
 permissive default, signing key in the verifier, or conversion from a boolean,
 `Granted` projection or unsigned proposal to a verified token.
 
@@ -170,7 +171,9 @@ callback panics occur after the final authority lock has been released.
 | --- | --- |
 | `open_state_dir` | Compatibility/test open using the system clock and local durability only |
 | `open_state_dir_with_clock` | Bind an explicit host clock; still has no external rollback oracle |
-| `open_state_dir_with_trust` | Production-oriented open binding explicit clock plus external CAS frontier |
+| `open_state_dir_with_trust` | Single-issuer compatibility open binding explicit clock plus external CAS frontier |
+| `open_state_dir_with_issuer_keys` | Production-oriented open binding epoch-window issuer key ring, explicit clock and external CAS frontier; durable schema V2 pins the complete trust-set digest |
+| `issuer_key_ids` | Read configured issuer key identifiers for audit/operations; grants no authority |
 | `frontier` | Read the current rollback-protection digest/epoch/revision projection |
 | `update_revocations` | Apply only a newer trusted revision; same-epoch revocations cannot be removed |
 | `claim` | Burn one valid nonce before effect dispatch; never reuse the grant on retry |
