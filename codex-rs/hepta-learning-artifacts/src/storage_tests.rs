@@ -455,3 +455,32 @@ fn rooted_creation_rejects_symlinked_parent_escape() {
     fs::remove_dir(&root.0).unwrap();
     fs::remove_dir(&outside.0).unwrap();
 }
+
+#[test]
+fn prepare_before_create_avoids_predictable_zero_length_orphans() {
+    let snapshot_target = TestFile::new();
+    assert_eq!(
+        prepare_registry_snapshot_v1(&ArtifactRegistry::new(), Digest32::ZERO).unwrap_err(),
+        ArtifactStorageError::InvalidBinding
+    );
+    assert!(!snapshot_target.0.exists());
+
+    let mut registry = ArtifactRegistry::new();
+    register(&mut registry, "policy", None, b"policy-v1");
+    let payload_target = TestFile::new();
+    assert_eq!(
+        prepare_candidate_payload_v1(&registry, &id("policy"), b"wrong").unwrap_err(),
+        ArtifactStorageError::PayloadMismatch
+    );
+    assert!(!payload_target.0.exists());
+
+    let prepared =
+        prepare_candidate_payload_v1(&registry, &id("policy"), b"policy-v1").unwrap();
+    assert_eq!(prepared.encoded_bytes(), b"policy-v1".len());
+    let digest = write_prepared_candidate_payload_v1(
+        CreateOnlyArtifactFile::create(&payload_target.0).unwrap(),
+        prepared,
+    )
+    .unwrap();
+    assert_eq!(digest, Digest32::of_bytes(b"policy-v1"));
+}
