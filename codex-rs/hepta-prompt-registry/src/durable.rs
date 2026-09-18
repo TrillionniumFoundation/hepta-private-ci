@@ -1049,8 +1049,27 @@ mod tests {
             revocation_frontier: 4,
             maximum_records: 64,
             factors: vec![factor],
-            realizations: Vec::new(),
-            bindings: Vec::new(),
+            realizations: vec![StoredRealization {
+                realization_id: "realization:legacy".to_owned(),
+                factor_id: "factor:1".to_owned(),
+                model_digest: digest("model").into_array(),
+                tokenizer_digest: digest("tokenizer").into_array(),
+                content_digest: digest("legacy-payload").into_array(),
+                active: true,
+            }],
+            bindings: vec![StoredBindingV1 {
+                realization_id: "realization:legacy".to_owned(),
+                factor_id: "factor:1".to_owned(),
+                model_digest: digest("model").into_array(),
+                tokenizer_digest: digest("tokenizer").into_array(),
+                template_digest: digest("template").into_array(),
+                tool_schema_digest: digest("tool-schema").into_array(),
+                locale_id: "locale:en-US".to_owned(),
+                role: 1,
+                payload_digest: digest("legacy-payload").into_array(),
+                token_cost: 8,
+                expires_unix_ms: None,
+            }],
         };
         let bytes = serde_json::to_vec(&stored).expect("serialize legacy state");
         let path = root.join("registry.json");
@@ -1070,8 +1089,25 @@ mod tests {
         assert_eq!(factor.lifecycle, Lifecycle::Revoked);
         assert_eq!(durable.registry().revocation_frontier(), 4);
         assert_eq!(
+            durable
+                .registry()
+                .realization(&id("realization:legacy"))
+                .map(|record| record.active),
+            Some(false)
+        );
+        assert_eq!(
             durable.registry().lifecycle_events().last().map(|event| event.kind),
             Some(LifecycleEventKind::Imported)
+        );
+        drop(durable);
+        let reopened =
+            DurablePromptRegistry::open_state_dir(&root, 64).expect("reopen migrated registry");
+        assert_eq!(
+            reopened
+                .registry()
+                .realization(&id("realization:legacy"))
+                .map(|record| record.active),
+            Some(false)
         );
     }
 
