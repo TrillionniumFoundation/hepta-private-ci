@@ -41,7 +41,7 @@ For one V2 attempt:
 
 There is no blind retry. Dropping the transport future is the in-flight cancellation boundary; a production transport must stop further adapter I/O when that future is dropped. Any separately authorized retry requires a new nonce/attempt identity.
 
-Product `CognitiveRuntime::AvailableFederatedV2` applies this boundary per currently enrolled owner. Aggregate coverage preserves requested, completed, failed and truncated counts. A scope/transport failure is not relabeled as a successful empty result. A clean discovery with no active grant consumes no request slot, while an owner store whose enrollment state cannot be observed contributes a bounded failed slot. Post-I/O revoked/stale terminal attempts also contribute failed aggregate coverage because they produced no admissible evidence.
+Product `CognitiveRuntime::AvailableFederatedV2` applies this boundary per currently enrolled owner. Aggregate coverage preserves requested, completed, failed and truncated counts. A scope/transport failure is not relabeled as a successful empty result. A clean discovery with no active grant consumes no request slot. An active grant for a different consumer-workspace digest is filtered before enrollment and never triggers transport. An owner store whose enrollment state cannot be observed contributes a bounded failed slot. Post-I/O revoked/stale terminal attempts also contribute failed aggregate coverage because they produced no admissible evidence.
 
 ## 5. Capacity and performance profile
 
@@ -64,13 +64,15 @@ Source tests now include identities for:
 - FED-09: final result digest binds the post-I/O authority observation;
 - FED-10: product runtime keeps explicit requested/completed/failed/truncated coverage and revalidates an attachment against current owner capability state;
 - FED-11: unobservable owner capability discovery and post-I/O revoked/stale attempts remain failed aggregate coverage instead of disappearing;
-- FED-12: combined local+federated model input preserves the exact federation coverage vector.
+- FED-12: a grant for another consumer workspace never enters queried coverage or transport dispatch;
+- FED-13: combined local+federated model input preserves the exact federation coverage vector;
+- FED-14: physical-send revalidation is bounded and fails closed on timeout/unavailability.
 
 Test source identity is not an execution receipt. Exact-head/merge-candidate outputs determine pass/fail for the candidate revision.
 
 ## 7. Integration, rollback and capability ceiling
 
-Agentd product composition uses `CognitiveRuntime::AvailableFederatedV2`. The host passes the consumer Agent identity and bounded owner-layout candidates. The physical in-process owner read is adapted to the canonical V2 transport; post-I/O authority revalidation rediscoveries bind the current durable capability state. The memory extension performs another capability/memory revalidation at physical model-request assembly.
+Agentd product composition uses `CognitiveRuntime::AvailableFederatedV2`. The host passes the consumer Agent identity and bounded owner-layout candidates. The physical in-process owner read is adapted to the canonical V2 transport; preflight/post-I/O authority rediscoveries bind the current durable capability state. The memory extension performs another capability/memory revalidation at physical model-request assembly, bounded by the product read timeout and fail-closed on timeout/unavailability.
 
 The legacy `CognitiveRuntime::AvailableFederated` / `FederatedRecallSet` surface remains for compatibility-focused callers and tests. It is not the intended Agentd product path after this candidate. Rollback may restore the legacy caller only as an explicit compatibility rollback; it must not convert failed/unavailable peer observations into claims that the canonical V2 path executed.
 
@@ -85,4 +87,5 @@ Remote evidence retains provenance and cannot become trusted instructions. No-wr
 - **Source tests:** [codex-rs/hepta-memory-federation/src/v2_tests.rs](../../../codex-rs/hepta-memory-federation/src/v2_tests.rs), plus product composition tests in `codex-rs/hepta-memory/src/cognitive_runtime_tests.rs`. These remain test identities until current candidate execution receipts pass.
 - **Implementation and operating references:** [docs/modules/memory.federation/TECHNICAL.md](../../../docs/modules/memory.federation/TECHNICAL.md) and [docs/modules/memory.federation/V2_HARDENING.md](../../../docs/modules/memory.federation/V2_HARDENING.md).
 - **Remaining repository-controlled work:** obtain exact-candidate package/product execution receipts, update the implementation-map head attestation from those receipts, and close any compilation or integration defect they expose.
-- **Remaining external gates:** independent semantic/security review, genuine multi-host authenticated transport qualification if federation crosses process/host boundaries, target-host/operator acceptance, canary, promotion and release.
+- **Current frontier semantics:** the in-process adapter currently uses the durable capability revision as `observed_frontier` provenance. It must not be interpreted as a coherent memory-ledger snapshot frontier; exact items remain protected by record revision/digests plus live capability and final memory revalidation.
+- **Remaining external gates:** independent semantic/security review, genuine multi-host authenticated transport plus coherent remote data-frontier qualification if federation crosses process/host boundaries, target-host/operator acceptance, canary, promotion and release.
