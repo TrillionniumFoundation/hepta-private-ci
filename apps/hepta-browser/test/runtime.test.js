@@ -86,6 +86,7 @@ function driver({ terminalOnReconcile = true, dispatchImpl, observeImpl } = {}) 
   let dispatchCalls = 0;
   let stopCalls = 0;
   return {
+    supportsAbort: true,
     get actCalls() {
       return dispatchCalls;
     },
@@ -418,6 +419,41 @@ test("driver timeout aborts dispatch, waits for abort settlement, and preserves 
   const replay = await host.navigateOrAct(operation());
   assert.equal(replay.semanticDigest, first.semanticDigest);
   assert.equal(fakeDriver.dispatchCalls, 1);
+});
+
+test("delayed final-use authority cannot enter the effect boundary after Browser deadline", async () => {
+  let now = 1_000;
+  const fakeDriver = driver();
+  const delayedAuthority = {
+    async withVerifiedUse(request, consumer) {
+      now = request.deadlineMs + 1;
+      return consumer({
+        authorized: true,
+        witnessDigest: W1,
+        authorityEpoch: request.authorityEpoch,
+        requestDigest: request.requestDigest,
+      });
+    },
+  };
+  const host = new BrowserProfileHost({
+    driver: fakeDriver,
+    authority: delayedAuthority,
+    journal: new MemoryBrowserOperationJournal(),
+    clock: () => now,
+    driverCallTimeoutMs: 50,
+  });
+  await host.openProfile(input());
+  await host.observePage({
+    profileId: "profile.1",
+    principalId: "principal.1",
+    generation: 1,
+    observationBudget: 2048,
+  });
+  await assert.rejects(
+    host.navigateOrAct(operation({ deadlineMs: 1_100 })),
+    /deadlineMs has expired/,
+  );
+  assert.equal(fakeDriver.dispatchCalls, 0);
 });
 
 test("replay rejects immutable semantic substitution", async () => {

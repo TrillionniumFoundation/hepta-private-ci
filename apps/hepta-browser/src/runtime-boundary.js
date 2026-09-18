@@ -1,24 +1,68 @@
 const DEFAULT_MAX_QUEUED_PER_KEY = 64;
 const QUEUE_DEPTHS = new WeakMap();
 
-export async function callWithDeadline({ call, payload, now, deadlineMs, timeoutCapMs, abortable, timeoutName }) {
-  const remaining = Math.max(1, deadlineMs - now());
+export async function callWithDeadline({
+  call,
+  payload,
+  now,
+  deadlineMs,
+  timeoutCapMs,
+  abortable,
+  timeoutName,
+}) {
+  const remaining = deadlineMs - now();
+  if (remaining <= 0) {
+    const error = new Error(`${timeoutName} timed out`);
+    error.name =
+      timeoutName === "browser driver"
+        ? "BrowserDriverTimeoutError"
+        : "BrowserAuthorityTimeoutError";
+    throw error;
+  }
+
+  // A non-abortable authority fence must never be raced by a local timer:
+  // returning a timeout while the fenced consumer continues could allow a
+  // durable intent and browser dispatch after the caller was told it failed.
+  // The authority owner is responsible for entering the consumer only while
+  // its grant is live; Browser re-checks its own deadline inside that consumer.
+  if (!abortable) {
+    return call(payload, undefined);
+  }
+
   const timeoutMs = Math.min(timeoutCapMs, remaining);
-  const controller = abortable ? new AbortController() : null;
+  const controller = new AbortController();
   let timer;
-  const timeout = new Promise((_, reject) => {
+  let timeoutError = null;
+  const operation = Promise.resolve().then(() =>
+    call(payload, { signal: controller.signal }),
+  );
+  const timeout = new Promise((resolve) => {
     timer = setTimeout(() => {
-      controller?.abort();
-      const error = new Error(`${timeoutName} timed out`);
-      error.name = timeoutName === "browser driver" ? "BrowserDriverTimeoutError" : "BrowserAuthorityTimeoutError";
-      reject(error);
+      timeoutError = new Error(`${timeoutName} timed out`);
+      timeoutError.name =
+        timeoutName === "browser driver"
+          ? "BrowserDriverTimeoutError"
+          : "BrowserAuthorityTimeoutError";
+      controller.abort(timeoutError);
+      resolve({ kind: "timeout" });
     }, timeoutMs);
   });
+
   try {
-    return await Promise.race([
-      Promise.resolve().then(() => call(payload, controller ? { signal: controller.signal } : undefined)),
+    const first = await Promise.race([
+      operation.then(
+        (value) => ({ kind: "value", value }),
+        (error) => ({ kind: "error", error }),
+      ),
       timeout,
     ]);
+    if (first.kind === "value") return first.value;
+    if (first.kind === "error") throw first.error;
+
+    // Do not return while an effect-capable call can still complete in the
+    // background. Abort, then wait until the driver has actually settled.
+    await operation.catch(() => {});
+    throw timeoutError;
   } finally {
     clearTimeout(timer);
   }

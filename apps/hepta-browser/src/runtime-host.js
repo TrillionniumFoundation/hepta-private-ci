@@ -57,6 +57,9 @@ export class BrowserProfileHost {
         throw new TypeError(`driver.${method} must be a function`);
       }
     }
+    if (driver.supportsAbort !== true) {
+      throw new TypeError("driver must declare supportsAbort=true");
+    }
     requireRecord(authority, "authority");
     if (typeof authority.withVerifiedUse !== "function") {
       throw new TypeError("authority.withVerifiedUse must be a function");
@@ -538,7 +541,13 @@ export class BrowserProfileHost {
             : "reconcile_error",
         );
       }
-      await this.#journal.recordObservation({ ...durable, ...receipt });
+      await this.#journal.recordObservation({
+        ...durable,
+        status: receipt.status,
+        outcomeDigest: receipt.outcomeDigest,
+        terminalObserved: receipt.terminalObserved,
+        observationReason: receipt.observationReason,
+      });
       return receipt;
     });
   }
@@ -756,17 +765,15 @@ export class BrowserProfileHost {
   }
 
   #withVerifiedUse(request, deadlineMs, consumer) {
-    return callWithDeadline({
-      call: () => this.#authority.withVerifiedUse(request, consumer),
-      payload: null,
-      now: this.#clock,
-      deadlineMs,
-      timeoutCapMs: this.#driverCallTimeoutMs,
-      abortable: false,
-      timeoutName: "browser authority",
+    futureDeadline(deadlineMs, this.#clock(), "deadlineMs");
+    return this.#authority.withVerifiedUse(request, (witness) => {
+      // Authority can wait for a revocation fence before entering the consumer.
+      // Re-check Browser's operation deadline at the exact fenced boundary so a
+      // delayed authority handoff cannot authorize a stale effect.
+      futureDeadline(deadlineMs, this.#clock(), "deadlineMs");
+      return consumer(witness);
     });
   }
-
   #callDriver(method, payload, deadlineMs) {
     return callWithDeadline({
       call: (value, context) => this.#driver[method](value, context),

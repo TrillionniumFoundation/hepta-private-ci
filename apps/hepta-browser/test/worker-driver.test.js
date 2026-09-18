@@ -266,7 +266,6 @@ test("abort racing a private pipe write contains the worker before the driver se
     },
     { signal: controller.signal },
   );
-  await new Promise((resolve) => setImmediate(resolve));
   controller.abort(new Error("deadline"));
   await assert.rejects(dispatch, /exited before response|deadline|aborted/);
   assert.equal(capture.child.killed, true);

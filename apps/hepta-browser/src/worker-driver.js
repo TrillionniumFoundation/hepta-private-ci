@@ -371,6 +371,8 @@ class PrivateWorkerClient {
 }
 
 export class SubprocessBrowserDriver {
+  supportsAbort = true;
+
   #workerPath;
   #workerDigest;
   #profileRoot;
@@ -502,35 +504,51 @@ export class SubprocessBrowserDriver {
     const boundary = new Promise((resolve) => {
       resolveBoundary = resolve;
     });
-    const response = this.#client.request("dispatch", input.operationId, input, {
-      signal,
-      onDispatched: () => {
-        if (crossed) return;
+    const abortBeforeBoundary = () => {
+      if (!crossed) this.#containBeforeDispatchBoundary();
+    };
+    signal?.addEventListener("abort", abortBeforeBoundary, { once: true });
+
+    try {
+      const response = this.#client.request(
+        "dispatch",
+        input.operationId,
+        input,
+        {
+          signal,
+          onDispatched: () => {
+            if (crossed) return;
+            crossed = true;
+            resolveBoundary();
+          },
+        },
+      );
+      let earlyError = null;
+      const settled = response.then(
+        () => "resolved",
+        (error) => {
+          earlyError = error;
+          return "rejected";
+        },
+      );
+      const first = await Promise.race([
+        boundary.then(() => "boundary"),
+        settled,
+      ]);
+      if (first === "rejected" && !crossed) {
+        this.#containBeforeDispatchBoundary();
+        throw earlyError;
+      }
+      if (first === "resolved" && !crossed) {
         crossed = true;
         resolveBoundary();
-      },
-    });
-    let earlyError = null;
-    const settled = response.then(
-      () => "resolved",
-      (error) => {
-        earlyError = error;
-        return "rejected";
-      },
-    );
-    const first = await Promise.race([
-      boundary.then(() => "boundary"),
-      settled,
-    ]);
-    if (first === "rejected" && !crossed) throw earlyError;
-    if (first === "resolved" && !crossed) {
-      crossed = true;
-      resolveBoundary();
+      }
+      response.catch(() => {});
+      return { terminalObserved: false };
+    } finally {
+      signal?.removeEventListener("abort", abortBeforeBoundary);
     }
-    response.catch(() => {});
-    return { terminalObserved: false };
   }
-
   async reconcile(input, { signal } = {}) {
     this.#requireSession(input);
     return this.#client.request("reconcile", input.operationId, input, { signal });
@@ -630,6 +648,11 @@ export class SubprocessBrowserDriver {
     if (input.processId !== undefined && input.processId !== this.#processId) {
       throw new TypeError("browser worker process identity mismatch");
     }
+  }
+
+  #containBeforeDispatchBoundary() {
+    this.#client?.close();
+    this.#child?.kill?.("SIGKILL");
   }
 
   async #cleanupProfile() {
