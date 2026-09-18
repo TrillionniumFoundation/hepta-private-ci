@@ -28,6 +28,17 @@ pub use plasticity_product::PlasticityWriterStateV1;
 pub use plasticity_product::plasticity_admission_signing_payload_v1;
 pub use plasticity_product::propose_authenticated_parameter_plasticity_v1;
 
+mod topology_product;
+
+pub use topology_product::TopologyAdmissionEvidenceV1;
+pub use topology_product::TopologyPlasticityProductErrorV1;
+pub use topology_product::TopologyPlasticityProductReceiptV1;
+pub use topology_product::TopologyPlasticityProductRequestV1;
+pub use topology_product::propose_authenticated_topology_plasticity_v1;
+pub use topology_product::topology_admission_signing_payload_v1;
+pub use topology_product::topology_evaluation_signing_payload_v1;
+pub use topology_product::topology_generation_signing_payload_v1;
+
 mod capability_snapshot;
 
 pub use capability_snapshot::CapabilityBindingV2;
