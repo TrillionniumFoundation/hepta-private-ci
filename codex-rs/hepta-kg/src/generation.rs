@@ -68,6 +68,11 @@ pub struct KnowledgeNodeV2 {
 
 #[derive(Clone, Debug, Eq, Ord, PartialEq, PartialOrd)]
 pub struct KnowledgeEdgeIdentityV2 {
+    /// Stable identity of the concrete edge occurrence. Product stores may
+    /// legitimately retain more than one support-bearing edge with identical
+    /// endpoints and predicate, so this identity must not be inferred from the
+    /// coarse semantic tuple alone.
+    pub edge_id: StableId,
     pub source_node_id: StableId,
     pub relation: KnowledgeRelationKindV2,
     /// Stable identity of the exact predicate. This prevents product graphs
@@ -576,6 +581,7 @@ fn compute_query_result_digest(result: &KnowledgeRelationResultV2) -> Digest32 {
 }
 
 fn push_edge_identity(bytes: &mut Vec<u8>, identity: &KnowledgeEdgeIdentityV2) {
+    push_id(bytes, &identity.edge_id);
     push_id(bytes, &identity.source_node_id);
     bytes.push(relation_code(identity.relation));
     push_id(bytes, &identity.predicate_id);
