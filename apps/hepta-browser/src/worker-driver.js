@@ -610,28 +610,31 @@ export class SubprocessBrowserDriver {
         `${profileId}.${generation}.${randomUUID()}`,
       );
       await mkdir(this.#profileDir, { mode: 0o700 });
-    this.#profileOwnerPath = join(
-      this.#profileDir,
-      ".hepta-profile-owner.json",
-    );
-    const ownerIdentity = {
+      // Ownership metadata must not be writable through the sandbox's profile
+      // bind. Keep it in the host-private profile root and expose only its
+      // digest to the worker/session boundary.
+      this.#profileOwnerPath = join(
+        this.#profileRoot,
+        `.hepta-profile-owner.${profileId}.${generation}.${randomUUID()}.json`,
+      );
+      const ownerIdentity = {
       schema: "hepta.browser.profile-owner.v1",
       profileId,
       principalId,
       generation,
       manifestDigest,
       grantDigest,
-    };
-    await this.#writeProfileOwnerManifest(ownerIdentity);
-    // Keep the verified executable outside the profile directory that is
+      };
+      await this.#writeProfileOwnerManifest(ownerIdentity);
+      // Keep the verified executable outside the profile directory that is
     // mounted read/write into the sandbox. Otherwise the worker could mutate
     // the same inode through /hepta-profile even though /hepta-worker is a
     // read-only bind.
-    this.#verifiedWorkerPath = join(
-      this.#profileRoot,
-      `.hepta-verified-worker.${profileId}.${generation}.${randomUUID()}`,
-    );
-    await this.#writePrivateVerifiedWorker(verifiedWorkerBytes);
+      this.#verifiedWorkerPath = join(
+        this.#profileRoot,
+        `.hepta-verified-worker.${profileId}.${generation}.${randomUUID()}`,
+      );
+      await this.#writePrivateVerifiedWorker(verifiedWorkerBytes);
       this.#sessionId = profileId;
       this.#generation = generation;
       this.#child = this.#launcher.spawn({
@@ -866,10 +869,14 @@ export class SubprocessBrowserDriver {
 
   async #cleanupProfile() {
     const profileDir = this.#profileDir;
+    const profileOwnerPath = this.#profileOwnerPath;
     const verifiedWorkerPath = this.#verifiedWorkerPath;
     this.#profileDir = null;
     this.#profileOwnerPath = null;
     this.#verifiedWorkerPath = null;
+    if (profileOwnerPath) {
+      await rm(profileOwnerPath, { force: true });
+    }
     if (verifiedWorkerPath) {
       await rm(verifiedWorkerPath, { force: true });
     }

@@ -8,6 +8,7 @@ import {
   mkdir,
   mkdtemp,
   readFile,
+  readdir,
   stat,
   writeFile,
 } from "node:fs/promises";
@@ -239,16 +240,33 @@ test("artifact-bound subprocess driver uses only the private framed channel", as
   assert.equal(stopped.stopped, true);
 });
 
-test("profile directory carries a private principal-bound owner manifest and stderr is drained", async () => {
+test("host-private metadata binds principal ownership and stderr is drained", async () => {
   const capture = {};
-  const { driver, started } = await preparedDriver({
+  const { driver, started, root } = await preparedDriver({
     launcher: fakeLauncher({ capture }),
   });
-  const ownerPath = join(capture.spec.profileDir, ".hepta-profile-owner.json");
+  const profileRoot = join(root, "profiles");
+  const rootEntries = await readdir(profileRoot);
+  const ownerEntries = rootEntries.filter((name) =>
+    name.startsWith(".hepta-profile-owner."),
+  );
+  assert.equal(ownerEntries.length, 1);
+  const ownerPath = join(profileRoot, ownerEntries[0]);
+  assert.equal(
+    ownerPath.startsWith(`${capture.spec.profileDir}${sep}`),
+    false,
+    "ownership metadata must not live under the writable profile bind",
+  );
   assert.equal(
     capture.spec.workerPath.startsWith(`${capture.spec.profileDir}${sep}`),
     false,
     "verified worker copy must not live under the writable profile bind",
+  );
+  assert.deepEqual(
+    (await readdir(capture.spec.profileDir)).filter((name) =>
+      name.startsWith(".hepta-profile-owner."),
+    ),
+    [],
   );
   const owner = JSON.parse(await readFile(ownerPath, "utf8"));
   assert.deepEqual(owner, {
@@ -268,6 +286,30 @@ test("profile directory carries a private principal-bound owner manifest and std
     processId: started.processId,
     generation: 1,
   });
+});
+
+
+
+test("failed spawn removes host-private staging and writable profile bytes", async () => {
+  const root = await mkdtemp(join(tmpdir(), "hepta-worker-start-failure-"));
+  const workerPath = join(root, "worker.bin");
+  const workerBytes = Buffer.from("fake-qualified-worker", "utf8");
+  const profileRoot = join(root, "profiles");
+  await writeFile(workerPath, workerBytes, { mode: 0o700 });
+  const base = fakeLauncher();
+  const driver = new SubprocessBrowserDriver({
+    workerPath,
+    workerDigest: digest(workerBytes),
+    profileRoot,
+    launcher: {
+      ...base,
+      spawn() {
+        throw new Error("synthetic spawn failure");
+      },
+    },
+  });
+  await assert.rejects(driver.start(startInput()), /synthetic spawn failure/);
+  assert.deepEqual(await readdir(profileRoot), []);
 });
 
 test("dispatch returns at worker admission boundary without waiting for worker execution response", async () => {
