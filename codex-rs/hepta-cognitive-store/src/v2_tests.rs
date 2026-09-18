@@ -383,3 +383,85 @@ fn image_validation_rejects_sequence_and_frontier_drift_even_after_rehash() {
         Err(CognitiveStoreV2Error::ImageFrontierMismatch("memory"))
     );
 }
+
+
+#[test]
+fn paged_snapshot_binds_one_ledger_root_and_rejects_midstream_mutation() {
+    let mut store = store();
+    for index in 0..5 {
+        let record_id = format!("memory:{index}");
+        let content = format!("content:{index}");
+        let candidate = candidate(&record_id, &content, MemoryAdmissionKind::Observation);
+        let intent_id = format!("intent:{index}");
+        let write_intent = intent(&store, &intent_id, &candidate);
+        store
+            .append_admitted(&Verifier, candidate, write_intent)
+            .unwrap_or_else(|error| panic!("append {index}: {error}"));
+    }
+
+    let base_request = SnapshotOpenRequestV2 {
+        request_id: id("snapshot-page:1"),
+        scope_id: id("scope:store"),
+        purpose_id: id("purpose:memory"),
+        minimum_memory_frontier: store.snapshot_key().vector.memory_ledger_frontier,
+        minimum_tombstone_frontier: store.snapshot_key().vector.tombstone_frontier,
+        authority_epoch: 1,
+        deadline_unix_ms: 1_000,
+        lease_duration_ms: 100,
+    };
+    let first = store
+        .open_snapshot_page(
+            10,
+            SnapshotPageOpenRequestV2 {
+                snapshot: base_request.clone(),
+                cursor: 0,
+                maximum_records: 2,
+                expected_ledger_digest: None,
+            },
+        )
+        .expect("first page");
+    assert_eq!(first.records.len(), 2);
+    assert_eq!(first.cursor, 0);
+    assert_eq!(first.next_cursor, Some(2));
+    assert_eq!(first.total_records, 5);
+    assert!(first.previous_record_digest.is_none());
+
+    let second = store
+        .open_snapshot_page(
+            10,
+            SnapshotPageOpenRequestV2 {
+                snapshot: base_request.clone(),
+                cursor: 2,
+                maximum_records: 2,
+                expected_ledger_digest: Some(first.ledger_digest),
+            },
+        )
+        .expect("second page");
+    assert_eq!(
+        second.previous_record_digest,
+        first.records.last().map(MemoryRecord::record_digest)
+    );
+    assert_eq!(second.next_cursor, Some(4));
+    assert_eq!(second.ledger_digest, first.ledger_digest);
+
+    let extra = candidate("memory:5", "content:5", MemoryAdmissionKind::Observation);
+    let extra_intent = intent(&store, "intent:5", &extra);
+    store
+        .append_admitted(&Verifier, extra, extra_intent)
+        .expect("mutate between pages");
+    assert_eq!(
+        store.open_snapshot_page(
+            10,
+            SnapshotPageOpenRequestV2 {
+                snapshot: SnapshotOpenRequestV2 {
+                    minimum_memory_frontier: 1,
+                    ..base_request
+                },
+                cursor: 4,
+                maximum_records: 2,
+                expected_ledger_digest: Some(first.ledger_digest),
+            },
+        ),
+        Err(CognitiveStoreV2Error::DigestMismatch("ledger_root"))
+    );
+}
