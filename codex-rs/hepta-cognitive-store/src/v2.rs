@@ -763,12 +763,12 @@ impl StoreSnapshotPageV2 {
             after.validate()?;
         }
 
-        let mut previous = self.after.as_ref();
+        let mut previous = self.after.clone();
         for record in &self.records {
             record
                 .validate()
                 .map_err(|error| CognitiveStoreV2Error::InvalidRecord(error.to_string()))?;
-            if let Some(previous) = previous {
+            if let Some(previous) = previous.as_ref() {
                 if record.record_id < previous.record_id
                     || (record.record_id == previous.record_id
                         && record.revision <= previous.revision)
@@ -787,8 +787,7 @@ impl StoreSnapshotPageV2 {
             } else if record.revision.get() != 1 || record.predecessor_digest.is_some() {
                 return Err(CognitiveStoreV2Error::SnapshotPageAncestryMismatch);
             }
-            let cursor = snapshot_cursor(record);
-            previous = Some(&cursor);
+            previous = Some(snapshot_cursor(record));
         }
 
         if self.complete {
