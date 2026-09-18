@@ -26,6 +26,8 @@ fn dispatch() -> NativeDispatch {
         thread_id: "thread-1".to_string(),
         model_provider: "provider".to_string(),
         context_digest: "b".repeat(64),
+        client_user_message_id: Some("r1".to_string()),
+        input_payload_sha256: Some("c".repeat(64)),
     }
 }
 
@@ -360,6 +362,65 @@ fn legacy_journal_completion_without_authority_cannot_be_replayed_as_success() {
     control.settle_native("r1", replayed.clone()).unwrap();
     replayed.owner_authority = NativeOwnerAuthority::ObservedReady;
     assert_eq!(control.settle_native("r1", replayed), Err(Error::Conflict));
+    drop(control);
+    std::fs::remove_file(path).unwrap();
+}
+
+
+#[test]
+fn exact_reconciliation_can_release_dispatch_intent_without_inventing_terminality() {
+    let path = path("reconciled-missing");
+    let mut control = DurableInferenceControl::open(&path, 8).unwrap();
+    control.reserve_native(request("r1"), 1).unwrap();
+    control.dispatch_native("r1", dispatch()).unwrap();
+    let released = control
+        .reconcile_native_no_admission(
+            "r1",
+            "Core exact client-message reconciliation proved no durable admission".to_string(),
+        )
+        .unwrap();
+    assert_eq!(released.state, NativeReservationState::Released);
+    assert!(released.observation.is_none());
+    assert!(released.turn_id.is_none());
+    assert!(released.reconciled_no_admission.is_some());
+    control.reserve_native(request("r2"), 1).unwrap();
+    drop(control);
+    let control = DurableInferenceControl::open(&path, 8).unwrap();
+    assert_eq!(control.native_record("r1"), Some(&released));
+    drop(control);
+    std::fs::remove_file(path).unwrap();
+}
+
+#[test]
+fn recovered_turn_identity_is_idempotent_and_cannot_drift() {
+    let path = path("recovered-turn");
+    let mut control = DurableInferenceControl::open(&path, 8).unwrap();
+    control.reserve_native(request("r1"), 1).unwrap();
+    control.dispatch_native("r1", dispatch()).unwrap();
+
+    let started = control
+        .native_started("r1", "turn-recovered".to_string())
+        .unwrap();
+    assert_eq!(started.state, NativeReservationState::Running);
+    assert_eq!(
+        control
+            .native_started("r1", "turn-recovered".to_string())
+            .unwrap(),
+        started
+    );
+    assert_eq!(
+        control.native_started("r1", "turn-other".to_string()),
+        Err(Error::InvalidTransition)
+    );
+
+    let mut unknown = output(NativeRunStatus::Indeterminate, None);
+    unknown.turn_id = "turn-recovered".to_string();
+    unknown.output.clear();
+    control.settle_native("r1", unknown).unwrap();
+    let rebound = control
+        .native_started("r1", "turn-recovered".to_string())
+        .unwrap();
+    assert_eq!(rebound.state, NativeReservationState::Indeterminate);
     drop(control);
     std::fs::remove_file(path).unwrap();
 }
