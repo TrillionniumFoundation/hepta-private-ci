@@ -183,6 +183,10 @@ impl AppServerModelDriver {
                     sandbox: Some(SandboxMode::ReadOnly),
                     ephemeral: Some(true),
                     environments: Some(Vec::new()),
+                    config: Some(std::collections::HashMap::from([(
+                        "features.hepta_codex_effect_fence".to_string(),
+                        serde_json::Value::Bool(true),
+                    )])),
                     ..Default::default()
                 },
             }),
