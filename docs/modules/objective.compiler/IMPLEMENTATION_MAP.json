@@ -288,8 +288,8 @@
     "syntheticMergeRequired": true
   },
   "crossOwnerComposition": {
-    "caller": "codex_hepta_intelligence::prepare_intelligence_run_v1",
-    "callerPath": "codex-rs/hepta-intelligence/src/production_objective.rs",
+    "caller": "codex_hepta_agentd::prepare_and_start_intelligence_run_v1",
+    "callerPath": "codex-rs/hepta-agentd/src/objective_host.rs",
     "durableOwner": "learning.ledger",
     "durableEvent": "RunStartPublicationV1",
     "runtimeConsumer": "codex_hepta_agentd::start_published_intelligence_run_v1",
@@ -301,7 +301,10 @@
       "authorityEpoch": "RunStartSnapshotV1.authority_epoch == RuntimeComposition.authority_epoch",
       "fence": "RunStartSnapshotV1.fence_digest == RuntimeComposition.fence_digest"
     },
-    "publicRuntimeHandoff": "ProductionObjectiveStartReceiptV1 (opaque; raw IntelligenceHostEnvelopeV1 is not an Agentd public start surface)"
+    "publicRuntimeHandoff": "ProductionObjectiveStartReceiptV1 (opaque; raw IntelligenceHostEnvelopeV1 is not an Agentd public start surface)",
+    "compilerCaller": "codex_hepta_intelligence::prepare_intelligence_run_v1",
+    "compilerCallerPath": "codex-rs/hepta-intelligence/src/production_objective.rs",
+    "recovery": "post-fsync runtime admission failure retains opaque ProductionObjectiveStartReceiptV1; exact retry observes idempotent durable append before re-admission"
   },
   "measurementQualification": {
     "workflow": ".github/workflows/hepta-objective-product-composition.yml",
