@@ -530,3 +530,49 @@ fn deletion_rebuild_rechecks_live_lineage_before_model_execution() {
     );
     assert!(checked(runtime.current_checkpoint()).is_none());
 }
+
+
+#[test]
+fn native_profile_rejects_unimplemented_per_population_competition() {
+    let mut config = config();
+    config.top_k_policy.per_population_first = true;
+    assert_eq!(
+        config.to_sparse_config(&native()),
+        Err(ProtocolError::InvalidNativeProfile(
+            "native Q24 profile does not implement per-population competition"
+        ))
+    );
+}
+
+#[test]
+fn runtime_rejects_revoked_calibration_evidence_before_model_execution() {
+    let fixture = Fixture::new();
+    let config = config();
+    let scope = scope();
+    let config_digest = checked(config.digest());
+    let witness = checked(open_file_witness(
+        fixture.file("witness-calibration-lineage"),
+        config_digest,
+        &scope,
+    ));
+    let artifact = calibration_artifact();
+    let denied = artifact.support_digest;
+    let result = NeuronRuntimeHost::open(
+        fixture.file("calibration-lineage"),
+        config,
+        native(),
+        scope,
+        8,
+        Executor {
+            execution: model_execution(),
+        },
+        witness,
+        Lineage {
+            denied: Some(denied),
+        },
+        calibration_policy(),
+        Some(artifact),
+        1,
+    );
+    assert!(matches!(result, Err(RuntimeError::RevokedLineage)));
+}
