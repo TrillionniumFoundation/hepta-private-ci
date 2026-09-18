@@ -370,6 +370,10 @@ export class RuntimeClient {
     return this.#reconcileObservation(safeObservation, pending, session);
   }
 
+  pauseReconciliation() {
+    this.#cancelReconciliationTimer();
+  }
+
   async reconcilePending({ force = false } = {}) {
     if (this.#closing) {
       fail(ERROR_CODES.NOT_CONNECTED, "runtime client is closing");

@@ -438,6 +438,7 @@ export async function startControlPlane({
 
   const onOffline = () => {
     stopTimer();
+    client?.pauseReconciliation?.();
     lifecycleGeneration += 1;
     blockMutations("Network connectivity is unavailable.");
   };

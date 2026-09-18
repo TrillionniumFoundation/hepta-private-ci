@@ -105,6 +105,55 @@ test("close drains in-flight acknowledgement under immutable origin provenance b
   assert.equal(session.pendingReconciliation, 1);
 });
 
+test("offline-style reconciliation pause cancels automatic retry without discarding pending identity", async () => {
+  let scheduled = null;
+  let cleared = 0;
+  const transport = {
+    async connect(input) {
+      return {
+        authenticated: true,
+        sessionId: "session.1",
+        connectionGeneration: 1,
+        protocolVersion: input.protocolVersion,
+      };
+    },
+    async request() {
+      throw new Error("ack lost");
+    },
+    async reconcile() {
+      assert.fail("paused automatic reconciliation must not run");
+    },
+    async close() {},
+  };
+  const client = new RuntimeClient({
+    transport,
+    setTimer(callback, delay) {
+      scheduled = { callback, delay };
+      return scheduled;
+    },
+    clearTimer(timer) {
+      if (timer === scheduled) cleared += 1;
+      scheduled = null;
+    },
+  });
+  await connectWithSnapshot(client);
+  const acknowledgement = await client.submitRequest({
+    operationId: "operation.pause-reconcile",
+    subjectId: "runtime.agentd",
+    action: "request_retry",
+    expectedRevision: 4,
+    displayedView: displayedViewBinding(),
+  });
+  assert.equal(acknowledgement.status, "indeterminate");
+  assert.ok(scheduled);
+  assert.equal(client.readView().pending, 1);
+
+  client.pauseReconciliation();
+  assert.equal(cleared, 1);
+  assert.equal(scheduled, null);
+  assert.equal(client.readView().pending, 1);
+});
+
 test("closing client cannot re-arm or manually start reconciliation from a late acknowledgement", async () => {
   let requestResolve;
   let requestStartedResolve;
