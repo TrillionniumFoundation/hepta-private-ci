@@ -228,6 +228,71 @@ where
         })
     }
 
+    #[allow(clippy::too_many_arguments)]
+    pub fn open_with_genesis(
+        file: File,
+        config: NeuronRuntimeConfigV1,
+        native: NativeSparseProfileV1,
+        scope: RuntimeScopeBindingV1,
+        max_records: usize,
+        executor: E,
+        witness: W,
+        mut lineage: L,
+        calibration_policy: CalibrationPolicyV1,
+        calibration_artifact: Option<NeuronCalibrationArtifactV1>,
+        genesis: SparseCheckpoint,
+        now_unix_micros: u64,
+    ) -> Result<Self, RuntimeError> {
+        let config_digest = config.digest()?;
+        if now_unix_micros >= config.expires_at_unix_micros {
+            return Err(RuntimeError::ConfigExpired);
+        }
+        require_lineage(&mut lineage, config.encoder_digest)?;
+        require_lineage(&mut lineage, config.head_digest)?;
+        if let Some(artifact) = calibration_artifact.as_ref() {
+            artifact.validate()?;
+        }
+        if scope.scope_digest.is_zero()
+            || scope.objective_digest.is_zero()
+            || scope.body_digest.is_zero()
+        {
+            return Err(RuntimeError::Protocol(ProtocolError::InvalidInput(
+                "runtime scope",
+            )));
+        }
+        let sparse_config = config.to_sparse_config(&native)?;
+        let journal_scope = JournalScope {
+            scope_digest: scope.scope_digest,
+            objective_digest: scope.objective_digest,
+        };
+        let witness_anchor = witness
+            .current_anchor()?
+            .ok_or(RuntimeError::RotationRequiresAcknowledgedCheckpoint)?;
+        let journal = SparseJournal::open_anchored_with_genesis(
+            file,
+            sparse_config.clone(),
+            journal_scope,
+            max_records,
+            witness_anchor,
+            genesis,
+        )?;
+        Ok(Self {
+            config,
+            native,
+            sparse_config,
+            config_digest,
+            scope,
+            journal,
+            executor,
+            witness,
+            lineage,
+            witness_anchor: Some(witness_anchor),
+            calibration_policy,
+            calibration_artifact,
+            poisoned: false,
+        })
+    }
+
     pub fn tick(
         &mut self,
         input: NeuronTickInputV1,
