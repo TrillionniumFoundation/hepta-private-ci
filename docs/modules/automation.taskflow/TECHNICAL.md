@@ -160,7 +160,11 @@ The [module-specific implementation design](../../../qualification/module-execut
 
 ## 11. Observability and operations
 
-Use Agentd AutomationScheduler and AutomationStore as the existing durable owners. The effect_executor component is in-memory; route its effects through the durable step outbox and final-use provider before claiming a live end-to-end TaskFlow. Unknown steps block dependent mutation and are not safely rerunnable by default.
+Use Agentd AutomationScheduler and AutomationStore as the existing durable owners. Schema v4 adds a deterministic, revision-bound `automation_occurrences` lifecycle and makes the existing append-only TaskFlow step outbox part of the default durable store. App Server queue admission is recorded only as `queue_admitted`; it does not terminalize an occurrence or advance a recurring schedule.
+
+Production effect dispatch must traverse the existing TaskFlow step intent/claim chain and the kernel-owned final-use verifier before a provider adapter is called. Replaying an already-applied durable step claim is fail-closed and requires reconciliation rather than blind redispatch. Provider observations are durable evidence; only the terminal projection of the TaskFlow run may terminalize the bound automation occurrence. The older `effect_executor` remains an in-memory state-machine/reference component and is not a second production TaskFlow engine.
+
+Recurring progression occurs after automation-occurrence terminalization. The default overlap policy is `forbid`; missed-run behavior is explicit `skip`, `coalesce`, or bounded catch-up. Schedule mutation creates a new positive `schedule_revision`, and deterministic occurrence identity binds task id, schedule revision and canonical scheduled instant.
 
 Current operating and state-format references:
 
@@ -249,11 +253,14 @@ This receipt records repository source bindings for the current documentation ca
 
 | Operation | Native symbol | Source path | Tests |
 |---|---|---|---|
-| `register_schedule` | `pub async fn create_task(` | `codex-rs/hepta-automation/src/store.rs` | `codex-rs/hepta-automation/src/store.rs` |
-| `materialize_due` | `pub async fn tick(` | `codex-rs/hepta-automation/src/scheduler.rs` | `codex-rs/hepta-automation/src/scheduler.rs` |
-| `claim_occurrence` | `pub fn claim_occurrence(` | `codex-rs/hepta-automation/src/effect_executor.rs` | `codex-rs/hepta-automation/src/effect_executor_tests.rs` |
-| `execute_step` | `pub fn execute_step(` | `codex-rs/hepta-automation/src/effect_executor.rs` | `codex-rs/hepta-automation/src/effect_executor_tests.rs` |
+| `register_schedule` | `pub async fn create_task(` / `revise_schedule(` | `codex-rs/hepta-automation/src/store.rs`, `causal.rs` | `codex-rs/hepta-automation/tests/automation.rs` |
+| `materialize_due` | `pub async fn tick(` + deterministic occurrence insertion | `codex-rs/hepta-automation/src/scheduler.rs`, `store.rs` | `codex-rs/hepta-automation/tests/automation.rs` |
+| `bind_taskflow_run` | `pub async fn bind_taskflow_run(` | `codex-rs/hepta-automation/src/causal.rs` | focused automation/TaskFlow tests |
+| `prepare_step` / `claim_step` | `prepare_taskflow_step(` / `claim_taskflow_step(` | `codex-rs/hepta-automation/src/taskflow_step.rs` | `codex-rs/hepta-automation/tests/taskflow_step.rs` |
+| `execute_step` | `dispatch_taskflow_step_with_final_use(` | `codex-rs/hepta-automation/src/taskflow_effect_runtime.rs` | crate tests plus provider integration qualification |
+| `observe/reconcile` | `record_provider_observation(`, `reconcile_taskflow_step(` | `causal.rs`, `taskflow_step.rs` | focused automation/TaskFlow tests |
+| `terminalize_occurrence` | `reconcile_occurrence_from_taskflow(` | `codex-rs/hepta-automation/src/causal.rs` | focused automation/TaskFlow tests |
 
 - Source identity: `sourceBase` is recorded in `IMPLEMENTATION_MAP.json`.
-- Consumer callsites and durable owner stores remain an explicit follow-up when not listed above.
+- The durable owner-store chain is implemented in the module, but a named real downstream provider adapter/terminal observer and product caller remain composition gates.
 - Production implementation, runtime composition, independent acceptance, activation, and release remain false until their separate evidence gates pass.
