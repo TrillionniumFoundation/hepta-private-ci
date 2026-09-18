@@ -290,9 +290,8 @@ fn wire_json(envelope: &ObjectiveSourceEnvelopeV1) -> String {
 fn strict_json_ingress_reaches_the_same_durable_product_boundary() {
     let host = NamedTempFile::new().expect("host file");
     let binding = digest("objective-json-product-store");
-    let mut caller =
-        ObjectiveProductCallerV1::create(host.reopen().expect("writer"), binding, 64)
-            .expect("create");
+    let mut caller = ObjectiveProductCallerV1::create(host.reopen().expect("writer"), binding, 64)
+        .expect("create");
     let request = request("run.json");
     let json = wire_json(&request.envelope);
 
@@ -316,9 +315,8 @@ fn strict_json_ingress_reaches_the_same_durable_product_boundary() {
 fn product_caller_atomically_publishes_and_recovers_objective_and_run_snapshot() {
     let host = NamedTempFile::new().expect("host file");
     let binding = digest("objective-publication-store");
-    let mut caller =
-        ObjectiveProductCallerV1::create(host.reopen().expect("writer"), binding, 64)
-            .expect("create");
+    let mut caller = ObjectiveProductCallerV1::create(host.reopen().expect("writer"), binding, 64)
+        .expect("create");
 
     let receipt = caller
         .admit_compile_publish(request("run.001"))
@@ -334,7 +332,11 @@ fn product_caller_atomically_publishes_and_recovers_objective_and_run_snapshot()
     );
     assert_eq!(
         receipt.publication.run_start.hard_constraint_digest,
-        receipt.publication.objective.objective.hard_constraint_digest
+        receipt
+            .publication
+            .objective
+            .objective
+            .hard_constraint_digest
     );
     assert!(!receipt.publication.run_start.digest().is_zero());
 
@@ -362,9 +364,8 @@ fn product_caller_atomically_publishes_and_recovers_objective_and_run_snapshot()
 fn exact_retry_is_idempotent_and_does_not_append_a_second_frame() {
     let host = NamedTempFile::new().expect("host file");
     let binding = digest("objective-idempotent-store");
-    let mut caller =
-        ObjectiveProductCallerV1::create(host.reopen().expect("writer"), binding, 64)
-            .expect("create");
+    let mut caller = ObjectiveProductCallerV1::create(host.reopen().expect("writer"), binding, 64)
+        .expect("create");
     let request = request("run.retry");
 
     let first = caller
@@ -385,9 +386,8 @@ fn exact_retry_is_idempotent_and_does_not_append_a_second_frame() {
 fn same_objective_revision_with_new_run_is_allowed_when_semantics_match() {
     let host = NamedTempFile::new().expect("host file");
     let binding = digest("objective-multi-run-store");
-    let mut caller =
-        ObjectiveProductCallerV1::create(host.reopen().expect("writer"), binding, 64)
-            .expect("create");
+    let mut caller = ObjectiveProductCallerV1::create(host.reopen().expect("writer"), binding, 64)
+        .expect("create");
 
     let first = caller
         .admit_compile_publish(request("run.one"))
@@ -406,9 +406,8 @@ fn same_objective_revision_with_new_run_is_allowed_when_semantics_match() {
 fn reused_request_revision_with_different_semantics_is_a_durable_conflict() {
     let host = NamedTempFile::new().expect("host file");
     let binding = digest("objective-conflict-store");
-    let mut caller =
-        ObjectiveProductCallerV1::create(host.reopen().expect("writer"), binding, 64)
-            .expect("create");
+    let mut caller = ObjectiveProductCallerV1::create(host.reopen().expect("writer"), binding, 64)
+        .expect("create");
 
     caller
         .admit_compile_publish(request("run.first"))
@@ -431,9 +430,8 @@ fn reused_request_revision_with_different_semantics_is_a_durable_conflict() {
 fn invalid_run_binding_rejects_before_durable_publication() {
     let host = NamedTempFile::new().expect("host file");
     let binding = digest("objective-invalid-run-store");
-    let mut caller =
-        ObjectiveProductCallerV1::create(host.reopen().expect("writer"), binding, 64)
-            .expect("create");
+    let mut caller = ObjectiveProductCallerV1::create(host.reopen().expect("writer"), binding, 64)
+        .expect("create");
     let mut invalid = request("run.invalid");
     invalid.run.model_tuple_digest = Digest32::ZERO;
 
@@ -448,9 +446,8 @@ fn invalid_run_binding_rejects_before_durable_publication() {
 fn acknowledged_recovery_trims_only_an_incomplete_unacknowledged_tail() {
     let host = NamedTempFile::new().expect("host file");
     let binding = digest("objective-recovery-store");
-    let mut caller =
-        ObjectiveProductCallerV1::create(host.reopen().expect("writer"), binding, 64)
-            .expect("create");
+    let mut caller = ObjectiveProductCallerV1::create(host.reopen().expect("writer"), binding, 64)
+        .expect("create");
     let expected = caller
         .admit_compile_publish(request("run.recover"))
         .expect("publish")
