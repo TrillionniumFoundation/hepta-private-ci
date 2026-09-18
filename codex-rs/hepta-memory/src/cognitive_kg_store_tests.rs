@@ -276,6 +276,19 @@ async fn product_projection_is_scoped_cited_append_only_and_fts_backed() {
         load_v2_generation(&reopened, &scope, 2).await,
         second_v2
     );
+    let reopened_graph = reopened
+        .graph_channel_for_test(
+            &[(
+                scope.clone(),
+                ProjectionGeneration(2),
+                ada_canonical.clone(),
+                second.memory.id.clone(),
+            )],
+            150,
+        )
+        .await
+        .expect("reopened V2 product graph query");
+    assert!(reopened_graph.is_empty());
     drop(reopened);
 
     let forget_reason = "withdraw collaboration memory";
