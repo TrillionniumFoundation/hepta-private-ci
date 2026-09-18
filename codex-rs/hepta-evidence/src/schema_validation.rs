@@ -553,6 +553,7 @@ const REQUIRED_SCHEMA_OBJECTS: &[SchemaObjectSpec] = &[
         required_sql_fragments: &[
             "create table qualification_issuer_key_revocations",
             "revocation_id text primary key",
+            "authority_role text not null check (authority_role = 'security_reviewer')",
             "authority_verifying_key blob not null check (length(authority_verifying_key) = 32)",
             "payload_sha256 text not null check",
             "signature blob not null check (length(signature) = 64)",
