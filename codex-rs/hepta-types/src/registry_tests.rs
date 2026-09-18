@@ -7,12 +7,7 @@ fn id(value: &str) -> StableId {
         .unwrap_or_else(|error| panic!("valid registry id: {error}"))
 }
 
-fn definition(
-    kind: RegistryKindV1,
-    name: &str,
-    version: u32,
-    text: &str,
-) -> RegistryDefinitionV1 {
+fn definition(kind: RegistryKindV1, name: &str, version: u32, text: &str) -> RegistryDefinitionV1 {
     RegistryDefinitionV1::new(kind, id(name), version, text)
         .unwrap_or_else(|error| panic!("valid definition: {error}"))
 }
@@ -60,12 +55,7 @@ fn immutable_registry_resolves_digest_to_exact_definition() {
 
 #[test]
 fn registry_digest_is_insertion_order_independent_and_definition_sensitive() {
-    let left = definition(
-        RegistryKindV1::Schema,
-        "schema:a",
-        1,
-        "field=a:u64",
-    );
+    let left = definition(RegistryKindV1::Schema, "schema:a", 1, "field=a:u64");
     let right = definition(
         RegistryKindV1::Normalization,
         "normalization:b",
@@ -82,24 +72,14 @@ fn registry_digest_is_insertion_order_independent_and_definition_sensitive() {
     };
     assert_eq!(first.registry_digest(), second.registry_digest());
 
-    let changed = definition(
-        RegistryKindV1::Schema,
-        "schema:a",
-        2,
-        "field=a:u64",
-    );
+    let changed = definition(RegistryKindV1::Schema, "schema:a", 2, "field=a:u64");
     assert_ne!(changed.digest(), first.entries()[0].digest());
 }
 
 #[test]
 fn registry_rejects_duplicate_identity_invalid_version_and_capacity() {
     assert_eq!(
-        RegistryDefinitionV1::new(
-            RegistryKindV1::Schema,
-            id("schema:a"),
-            0,
-            "definition"
-        ),
+        RegistryDefinitionV1::new(RegistryKindV1::Schema, id("schema:a"), 0, "definition"),
         Err(RegistryError::InvalidVersion)
     );
 
