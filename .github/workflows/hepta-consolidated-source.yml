@@ -347,6 +347,14 @@ jobs:
             --mode "$mode" \
             --source-sha "$SOURCE_SHA" \
             --base-sha "$BASE_SHA" \
+            --repository-full-name "${{ github.repository }}" \
+            --repository-id "${{ github.repository_id }}" \
+            --workflow-ref "${{ github.workflow_ref }}" \
+            --job-name "${{ github.job }}" \
+            --run-id "${{ github.run_id }}" \
+            --run-attempt "${{ github.run_attempt }}" \
+            --event-name "${{ github.event_name }}" \
+            --pull-request-number "${{ github.event.pull_request.number || 0 }}" \
             --output "$RUNNER_TEMP/control-engineering-product.json"
       - name: Retain control.engineering product receipt
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
