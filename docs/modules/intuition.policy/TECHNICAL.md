@@ -44,6 +44,8 @@ None.
 
 `existing_bound` is a source-location fact. The declared roots above are materialized in the bounded V8 source candidate and are covered by the dedicated closed-world inventory, focused tests, all-target compilation, strict lint and exact-head qualification. This status does not activate `intuition.policy`, create a production caller, grant runtime or effect authority, issue independent acceptance, select or promote a candidate, or authorize release. Any later source move updates `MODULES.json`, `SOURCE_BINDINGS.json` and this guide in one candidate.
 
+Current source truth is narrower than the capability ladder: the registered work packages `BIO-0-NEURON-INTUITION-CONTRACTS` and `INT-1-CALIBRATED-INTUITION-POLICY` are `source_implemented`, while `productionImplementation=false` and the product caller remains uncomposed. `docs/CURRENT.json` therefore continues to report the evidence-governed `I0_DETERMINISTIC` baseline until the separate product/causal prerequisites for I1+ are independently established; this is not a contradiction with source implementation.
+
 ## 3. Boundary, responsibilities and non-goals
 
 Direct dependencies:
@@ -73,9 +75,10 @@ Non-goals include becoming a general state store, bypassing the Codex execution 
 The bounded components are:
 
 - `legal-candidate validator`
-- `scoring head`
-- `confidence calibrator`
+- upstream learned-scorer contract and `ScoringCommitmentV1` verifier
+- canonical profile / confidence / calibration validator
 - `OOD and abstention router`
+- exact-request and CounterBased assignment commitment encoders
 
 Ingress validates identity, version, size, scope and revision before domain logic. The deterministic core receives typed values and is testable without network, filesystem or process-global state unless the module owns that boundary. State-bearing components use one transaction boundary per logical mutation. Publication occurs only after invariants and lineage checks pass.
 
@@ -168,9 +171,9 @@ Negative tests cover denied capabilities, cross-owner writes, stale or revoked g
 
 ## 10. Performance, capacity and hot-path policy
 
-The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/intuition.policy.md) specifies this module's algorithm, pilot ceilings and capacity fixtures. Those target ceilings are not measurements and must not be reported as enforcement of an unimplemented API. Current native limits belong to [codex-rs/hepta-intuition/src/lib.rs](../../../codex-rs/hepta-intuition/src/lib.rs) and the linked implementation components.
+The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/intuition.policy.md) specifies this module's algorithm and pilot ceilings. Current source qualification measures two distinct surfaces at 1/16/64/128 candidates: the pure V3 kernel in [codex-rs/hepta-intuition/examples/fast_gate.rs](../../../codex-rs/hepta-intuition/examples/fast_gate.rs), and the authenticated consumer path in [codex-rs/hepta-intelligence/examples/intuition_authenticated_fast_gate.rs](../../../codex-rs/hepta-intelligence/examples/intuition_authenticated_fast_gate.rs). Both report p50/p95/p99, throughput, allocation count and allocated bytes.
 
-[Shared performance and capacity requirements](../README.md#shared-performance-and-capacity) define the measurement/overload obligations for a selected host.
+The authenticated gate includes Ed25519 trust verification, canonical-profile admission, exact-request verification, score provenance, CounterBased assignment evidence and the V3 decision. CI ceilings are source-regression bounds, not selected-host SLO evidence. [Shared performance and capacity requirements](../README.md#shared-performance-and-capacity) still define target-host measurement and overload obligations.
 
 ## 11. Observability and operations
 
@@ -179,6 +182,9 @@ Read-only policy library; inject the complete legal candidate set and exact cali
 Current operating and state-format references:
 
 - [codex-rs/hepta-intuition/src/calibrated.rs](../../../codex-rs/hepta-intuition/src/calibrated.rs).
+- [codex-rs/hepta-intuition/src/qualified.rs](../../../codex-rs/hepta-intuition/src/qualified.rs).
+- [SCORER_CONTRACT.md](SCORER_CONTRACT.md).
+- [QUALIFICATION_V3.md](QUALIFICATION_V3.md).
 
 [Shared observability and operations requirements](../README.md#shared-observability-and-operations) specify safe events and alert classes; concrete deployment thresholds require the selected host profile.
 
@@ -186,7 +192,9 @@ Current operating and state-format references:
 
 Current focused test sources (source references, not pass receipts):
 
-- [codex-rs/hepta-intuition/src/calibrated_tests.rs](../../../codex-rs/hepta-intuition/src/calibrated_tests.rs); named case: `v2_binds_same_outcome_to_its_actual_assignment_and_artifact_metadata`.
+- [codex-rs/hepta-intuition/src/calibrated_tests.rs](../../../codex-rs/hepta-intuition/src/calibrated_tests.rs); request binding and calibrated policy cases.
+- [codex-rs/hepta-intuition/src/qualified_tests.rs](../../../codex-rs/hepta-intuition/src/qualified_tests.rs); complete-set, identity separation, canonical profile, scoring commitment and assignment commitment cases.
+- [codex-rs/hepta-intelligence/tests/intuition_frozen_qualification.rs](../../../codex-rs/hepta-intelligence/tests/intuition_frozen_qualification.rs); frozen model/data plus signed Generator/Evaluator/scorer/randomizer chain.
 - [codex-rs/hepta-intuition/src/lib_tests.rs](../../../codex-rs/hepta-intuition/src/lib_tests.rs); named case: `hard_veto_cannot_be_overridden`.
 
 In `codex-rs`, run `just test -p codex-hepta-intuition`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/intuition.policy.md) separately labels target acceptance designs.
@@ -214,13 +222,13 @@ Compatibility adapters are temporary. Retirement requires all named callers migr
 
 Documentation completion requires this guide, exact registry references and closed-world validation. Source completion requires code in the declared root and candidate tests. Composition requires a named caller. Qualification requires current exact-candidate evidence. Acceptance, selection, promotion and release are separate externally governed states.
 
-For `intuition.policy`, this document grants no runtime, production, model, provider, tool, network, filesystem, secret, Matrix, fleet, acceptance, promotion or release authority.
+For `intuition.policy`, this document grants no runtime, production, model, provider, tool, network, filesystem, secret, Matrix, fleet, acceptance, promotion or release authority. Source-qualified V2/V3 behavior is therefore tracked separately from the capability ladder; no source-only edit may self-promote `I0_DETERMINISTIC` to `I1_CALIBRATED_POLICY`.
 
 ### Work-package execution envelopes
 
 #### `BIO-0-NEURON-INTUITION-CONTRACTS`
 
-- State: `planned`; priority: `2`; parallel class: `contract_first_parallel`.
+- State: `source_implemented`; priority: `2`; parallel class: `contract_first_parallel`.
 - Owner/deputy: `learning-platform` / `inference-platform`.
 - Allowed write paths:
 - `codex-rs/hepta-neuron/**`
@@ -254,7 +262,7 @@ For `intuition.policy`, this document grants no runtime, production, model, prov
 
 #### `INT-1-CALIBRATED-INTUITION-POLICY`
 
-- State: `planned`; priority: `2`; parallel class: `contract_coordinated`.
+- State: `source_implemented`; priority: `2`; parallel class: `contract_coordinated`.
 - Owner/deputy: `intelligence-platform` / `learning-platform`.
 - Allowed write paths:
 - `codex-rs/hepta-intuition/**`
@@ -383,4 +391,4 @@ The bootstrap source-location obligation for `intuition.policy` is implemented b
 
 - `codex-rs/hepta-intuition`
 
-The source candidate is checked by `.github/workflows/hepta-consolidated-source.yml`, including closed-world inventory, package tests, all-target compilation, strict Clippy and clean tracked state. This receipt is source implementation evidence only. It grants no runtime, production-writer, model-provider, external-effect, independent-acceptance, selection, promotion, merge or release authority.
+The source candidate is checked by `.github/workflows/hepta-consolidated-source.yml` and the focused `.github/workflows/hepta-intuition-qualification.yml`. The focused gate requires exact-source and deterministic synthetic-merge tests plus separate kernel and authenticated end-to-end performance evidence. This receipt is source implementation evidence only. It grants no runtime, production-writer, model-provider, external-effect, independent-acceptance, selection, promotion, merge or release authority.
