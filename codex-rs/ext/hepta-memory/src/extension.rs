@@ -748,12 +748,14 @@ where
     builder.turn_input_contributor(extension.clone());
     builder.ephemeral_model_input_contributor(extension.clone());
     if !matches!(&cognitive_runtime, CognitiveRuntime::Absent) {
-        let federation = cognitive_runtime.federation().cloned();
-        let cognitive = Arc::new(CognitiveExtension::new(cognitive_runtime));
+        let has_federation = cognitive_runtime.has_federation();
+        let cognitive = Arc::new(CognitiveExtension::new(cognitive_runtime.clone()));
         builder.turn_input_contributor(cognitive.clone());
         builder.tool_contributor(cognitive.clone());
-        if let Some(federation) = federation {
-            let federated = Arc::new(FederatedCognitiveExtension::new(federation));
+        if has_federation {
+            let federated = Arc::new(FederatedCognitiveExtension::from_runtime(
+                cognitive_runtime,
+            ));
             builder.turn_input_contributor(federated.clone());
             builder.ephemeral_model_input_contributor(Arc::new(
                 CombinedCognitiveEphemeralContributor::new(cognitive, federated),
