@@ -133,14 +133,14 @@ mod tests {
     use super::*;
 
     #[test]
-    fn highest_common_version_is_selected() {
+    fn highest_common_version_is_selected() -> Result<(), NegotiationError> {
         let negotiated = negotiate(
             &[WireVersion::V1, WireVersion::V2],
             &[WireVersion::V2, WireVersion::V1],
             &[],
-        )
-        .expect("negotiate");
+        )?;
         assert_eq!(negotiated.version(), WireVersion::V2);
+        Ok(())
     }
 
     #[test]
@@ -164,13 +164,12 @@ mod tests {
     }
 
     #[test]
-    fn negotiated_version_rejects_session_downgrade() {
+    fn negotiated_version_rejects_session_downgrade() -> Result<(), NegotiationError> {
         let negotiated = negotiate(
             &[WireVersion::V1, WireVersion::V2],
             &[WireVersion::V1, WireVersion::V2],
             &[WireCapability::FullFrameIntegrity],
-        )
-        .expect("negotiate");
+        )?;
         assert_eq!(
             negotiated.ensure_version(WireVersion::V1.as_u16()),
             Err(NegotiationError::VersionMismatch {
@@ -178,5 +177,6 @@ mod tests {
                 observed: 1,
             })
         );
+        Ok(())
     }
 }
