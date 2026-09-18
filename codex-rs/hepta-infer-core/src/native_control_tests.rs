@@ -372,7 +372,7 @@ fn exact_reconciliation_can_release_dispatch_intent_without_inventing_terminalit
     let path = path("reconciled-missing");
     let mut control = DurableInferenceControl::open(&path, 8).unwrap();
     control.reserve_native(request("r1"), 1).unwrap();
-    control.dispatch_native("r1", dispatch(id)).unwrap();
+    control.dispatch_native("r1", dispatch("r1")).unwrap();
     let released = control
         .reconcile_native_no_admission(
             "r1",
@@ -396,7 +396,7 @@ fn recovered_turn_identity_is_idempotent_and_cannot_drift() {
     let path = path("recovered-turn");
     let mut control = DurableInferenceControl::open(&path, 8).unwrap();
     control.reserve_native(request("r1"), 1).unwrap();
-    control.dispatch_native("r1", dispatch(id)).unwrap();
+    control.dispatch_native("r1", dispatch("r1")).unwrap();
 
     let started = control
         .native_started("r1", "turn-recovered".to_string())
