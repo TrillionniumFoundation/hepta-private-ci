@@ -351,6 +351,7 @@ where
             execution.runtime_binary_digest,
             execution.sbom_digest,
             execution.license_digest,
+            execution.ood_detector_digest,
         ] {
             require_lineage(&mut self.lineage, digest)?;
         }
@@ -371,6 +372,7 @@ where
             self.calibration_artifact.as_ref(),
             self.config_digest,
             model_identity_digest,
+            execution.ood_detector_digest,
             self.config.generation,
             input.logical_sequence,
             sparse_receipt.prediction_error_q24,
