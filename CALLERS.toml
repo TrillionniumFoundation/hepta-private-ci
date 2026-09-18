@@ -30,6 +30,22 @@ product_callers = []
 caller_markers = []
 
 [[boundary]]
+id = "authbus_signed_text_ingress"
+symbol = "authbus_ingress::submit"
+definition_path = "codex-rs/hepta-agentd/src/authbus_ingress.rs"
+definition_markers = ["pub(crate) async fn submit", "enqueue_authbus_message", "current_trust"]
+product_callers = ["codex-rs/hepta-agentd/src/state_control.rs"]
+caller_markers = ["authbus_ingress::submit", "AgentdMethod::AuthBusText"]
+
+[[boundary]]
+id = "authbus_guarded_provider_effect"
+symbol = "HeptaEvidenceStore::dispatch_provider_effect_guarded_qualification"
+definition_path = "codex-rs/hepta-evidence/src/authbus_provider_guard.rs"
+definition_markers = ["dispatch_provider_effect_guarded_qualification", "authorize_and_reserve", "begin_reserved_effect"]
+product_callers = []
+caller_markers = []
+
+[[boundary]]
 id = "provider_effect_coordinator"
 symbol = "ProviderEffectCoordinator::new"
 definition_path = "codex-rs/hepta-contracts/src/provider_effect.rs"
