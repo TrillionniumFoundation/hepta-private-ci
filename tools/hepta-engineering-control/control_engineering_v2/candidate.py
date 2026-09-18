@@ -86,6 +86,32 @@ _ORACLE_SEGMENTS = frozenset(
     }
 )
 _ORACLE_FILE_PREFIXES = ("test_",)
+# Autonomous candidates cannot rewrite manifests that select, disable, configure,
+# or materially rebind the evaluator that will judge that same candidate.
+# Dependency/build-manifest changes remain ordinary owner-reviewed work.
+_ORACLE_EXACT_FILES = frozenset(
+    {
+        "cargo.toml",
+        "cargo.lock",
+        "pyproject.toml",
+        "pytest.ini",
+        "tox.ini",
+        "noxfile.py",
+        "package.json",
+        "package-lock.json",
+        "pnpm-lock.yaml",
+        "yarn.lock",
+        "bun.lockb",
+        "nextest.toml",
+        "rust-toolchain",
+        "rust-toolchain.toml",
+    }
+)
+_ORACLE_CONFIG_PREFIXES = (
+    "jest.config.",
+    "vitest.config.",
+    "playwright.config.",
+)
 _ORACLE_FILE_SUFFIXES = (
     "_test.py",
     "_tests.py",
@@ -138,6 +164,8 @@ def is_candidate_oracle_path(value: str) -> bool:
     parts = path.split("/")
     name = parts[-1].casefold()
     if any(part.casefold() in _ORACLE_SEGMENTS for part in parts[:-1]):
+        return True
+    if name in _ORACLE_EXACT_FILES or name.startswith(_ORACLE_CONFIG_PREFIXES):
         return True
     return name.startswith(_ORACLE_FILE_PREFIXES) or name.endswith(_ORACLE_FILE_SUFFIXES)
 
