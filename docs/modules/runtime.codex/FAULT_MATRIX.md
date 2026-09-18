@@ -13,8 +13,9 @@ This matrix is source-level acceptance guidance for the composed Codex App Serve
 | Payload digest differs from authority-bound payload digest | reject request | none | no dispatch | adapter negative test |
 | Missing/zero owner generation | reject request | none | no dispatch | adapter negative test |
 | Protocol version other than App Server v2 | reject request | none | no dispatch | adapter negative test |
-| App Server JSON-RPC `-32001` before turn admission | `Overloaded` | `SafeToRetry` with a new admitted request | release | typed JSON-RPC error |
-| Other definitive `turn/start` JSON-RPC rejection | `Rejected` | `SafeToRetry` with a new admitted request | release | typed JSON-RPC error |
+| App Server transport overload JSON-RPC `-32001` before handler admission | `Overloaded` | `SafeToRetry` with a new admitted request | release | typed JSON-RPC error from the bounded transport queue |
+| Pre-admission JSON-RPC invalid-request / invalid-params / method-not-found (`-32600/-32602/-32601`) | `Rejected` | `SafeToRetry` with a new admitted request | release | typed JSON-RPC error whose code is emitted by validation before Core submission |
+| Internal or otherwise unclassified `turn/start` JSON-RPC error | `Indeterminate` | `ReconcileOnly` | hold | typed JSON-RPC error plus durable client request identity; App Server can produce an internal error after awaiting Core submission |
 | `turn/start` acknowledgement timeout | `TimedOut` | `ReconcileOnly` | hold | timeout at typed request boundary |
 | Transport loss after `turn/start` dispatch | `Unavailable` | `ReconcileOnly` | hold | typed transport error |
 | Response decode failure after dispatch | `Indeterminate` | `ReconcileOnly` | hold | typed decode error |
