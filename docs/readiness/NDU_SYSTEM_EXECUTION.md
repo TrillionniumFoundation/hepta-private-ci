@@ -10,7 +10,7 @@
 
 NDU is the typed preference and utility owner for supported feasible consequences. It compares only candidates bound to one immutable objective, legal-action set and generation. Authority, truth, privacy, deletion, writer ownership, emergency-stop state and hard risk/resource floors are constraints; they never become compensable utility dimensions.
 
-The source implementation contains a deterministic fixed-point baseline, policy-bound aggregation and Pareto logic, recursive utility, preference updates, conditional-moment/covariance kernels, a protocol-context adapter and an owner-local projection-journal reference. Stochastic learned coefficients remain shadow candidates. None of these operations executes an effect, selects an artifact for production, diagnoses a person, changes the current objective or issues a capability.
+The source implementation contains a deterministic fixed-point baseline, policy-bound aggregation and Pareto logic, recursive utility, bounded preference updates, conditional-moment/covariance kernels, a context-bound solver/protocol adapter, stochastic-evidence admission and an owner-local projection-journal reference. Source-level read-only composition exists in Control planning and the Intelligence vertical; this does not establish a production projection writer, independent acceptance, activation or release. Stochastic learned coefficients remain shadow candidates until their externally authenticated coefficient, conversion, identification, well-posedness and convergence evidence is admitted. None of these operations executes an effect, selects an artifact for production, diagnoses a person, changes the current objective or issues a capability.
 
 ## 2. Cross-organ utility contract
 
@@ -27,7 +27,7 @@ uncertainty vector
 support digest
 ```
 
-The canonical external contract remains `UtilityContributionV1`; the Rust owner-local type preserves the same core semantics. Each axis has a registered unit and direction. A contribution with an empty support digest, mixed objective, mixed generation, duplicate organ identity, unknown axis or missing required organ is unavailable rather than zero. Every evaluated candidate must also contain a value for every registered uncertainty axis. The candidate support digest is derived from the organ identity, objective, generation, feasibility posture, complete normalized vectors and the upstream support digest, so provenance cannot be detached from contribution semantics.
+The canonical external contract remains `UtilityContributionV1`; the Rust owner-local type preserves the same core semantics. Each axis has a registered unit and direction. `UtilityProfile.axis_semantics_digest` is mandatory and binds the immutable axis registry semantics used by the owner-local evaluator, including units, normalization and scales; the utility-profile digest namespace is versioned so changing those semantics changes evaluation identity. A contribution with an empty support digest, mixed objective, mixed generation, duplicate organ identity, unknown axis or missing required organ is unavailable rather than zero. Every evaluated candidate must also contain a value for every registered uncertainty axis. The candidate support digest is derived from the organ identity, objective, generation, feasibility posture, complete normalized vectors and the upstream support digest, so provenance cannot be detached from contribution semantics.
 
 An organ contributes only facts it owns. `utility.ndu` aggregates supported contributions. `control.runtime` consumes a digest-bound projection of the resulting evaluation; it does not reimplement NDU. `learning.ledger` records the complete candidate/contribution set under its own writer rules.
 
@@ -95,7 +95,7 @@ P_next = (1 - eta) * P_k + eta * P_candidate
 U_k = project(instant_utility + discount * continuation_utility)
 ```
 
-`eta` is in `[1/16,1/4]`. The preference target solver emits immutable revisions and at most 64 local iteration receipts. Parent and child artifact updates cannot share one generation.
+`eta` is in `[1/16,1/4]`. Preference state and target vectors contain 1–64 axes and every value is in `[-1,1]`; invalid dimensions or values fail at the public API boundary rather than being repaired by projection. `solve_preference_target_with_context` is the protocol-capable entry point: it binds every emitted local receipt to the canonical subject/objective/generation/event/coefficient context digest, returns an exact zero-iteration no-op when the initial state is already within tolerance, and reports 64-iteration exhaustion as unavailable instead of a successful state transition. The compatibility `solve_preference_target` remains local-only and its unbound receipts cannot be published. Hierarchy staging carries explicit subject and parent identities, so only actual direct system→domain→agent→episode parent/child pairs are barred from updating in the same generation; unrelated subjects are not rejected merely because their classes differ.
 
 ## 5. Convergence, infeasibility and multiple solutions
 
@@ -122,7 +122,9 @@ The canonical `NduConvergenceCertificateV1` remains owned by `learning.eval`. It
 - predecessor/next revisions;
 - residual, projection count and state digest.
 
-The receipt has a semantic digest and `AuthorityPosture::DENY_ALL`. Missing context fails before publication.
+The receipt has a semantic digest and `AuthorityPosture::DENY_ALL`. The local solver receipt also carries the canonical context digest created before iteration begins; publication rejects an unbound receipt or any attempt to rebind a receipt to a different subject, objective, generation, event or coefficient. Missing or mismatched context fails before publication.
+
+`learning.eval` owns the native `NduConvergenceCertificateV1` admission path. Accepted certificates are checked for independent evaluator identity, objective/solver binding, the 64-iteration ceiling, residual/conservation gates, resolved multiple-solution disposition and spectral-radius upper 95% bound strictly below 0.95. This source validator does not manufacture an independent certificate: issuance and exact-candidate evaluation evidence remain separate qualification work.
 
 ## 6. State, persistence and scheduling
 
@@ -144,6 +146,8 @@ The full-rank pilot rejects singular or ill-conditioned covariance. A pseudoinve
 
 A numeric covariance fixture proves algebra only. It does not prove conditional identification, a complete FBSDE solution, adaptive efficacy or activation safety.
 
+`admit_stochastic_evidence_binding_v1` now provides the owner-local gate between this numeric kernel and a future production-facing stochastic consumer. It digest-binds the coefficient manifest, normalization/runtime tuple, conditioning specification, Q24 conversion evidence, conditional-identification evidence, well-posedness certificate, independent convergence certificate, rollback identity, objective class, expiry and exact covariance profile. `solve_backward_regression_with_admission` refuses expired or profile-mismatched admission. Digest presence is not authentication or efficacy evidence; upstream registries and independent evaluators still own those facts.
+
 ### 6.2 Projection state and owner-local durability reference
 
 Preference and utility projections are append-only revisions owned by `utility.ndu`. The full semantic identity includes subject, principal scope, objective, predecessor, event and coefficient. A selected pointer changes only after the immutable projection and required independent evidence exist.
@@ -157,9 +161,11 @@ Preference and utility projections are append-only revisions owned by `utility.n
 - projection payload digest;
 - predecessor-entry and entry digests.
 
-The journal enforces equal-identity/equal-semantics replay, rejects identity drift, validates exact length and hashes on reopen, rejects truncation/unknown kind/tampering, reconstructs selected projection state and prevents revocation resurrection after restart.
+The journal enforces equal-identity/equal-semantics replay, rejects identity drift, validates exact length and hashes on reopen, rejects truncation/unknown kind/tampering, reconstructs selected projection state and prevents revocation resurrection after restart. Revocation identity is scoped by objective + subject + projection payload, so equal payload digests in independent scopes do not revoke one another.
 
-This reference does not claim an activated production writer, operating-system durability, fsync, schema migration, retention or backup qualification. Product composition must bind a selected store and prove those properties independently.
+`NduProjectionJournalV1::checkpoint` exposes a deterministic record-count/hash-chain-head checkpoint digest suitable for signing or anchoring by an external trusted evidence/store boundary. The journal does not self-sign and the checkpoint is not by itself a trust anchor.
+
+This reference does not claim an activated production writer, operating-system durability, fsync, schema migration, retention or backup qualification. Product composition must bind a selected authoritative store and prove atomic publication, migration, fsync/durability, retention, backup/restore, rollback and trusted checkpoint anchoring independently.
 
 ## 7. Goodhart and wireheading controls
 
@@ -219,6 +225,11 @@ Reference-host p95/p99, transient memory and persistent projection targets remai
 - `NDU-SYS-GV-010`: termination receipt reports terminal and true maximum residual separately.
 - `NDU-SYS-GV-011`: canonical iteration publication rejects missing objective/event/coefficient context.
 - `NDU-SYS-GV-012`: projection-journal reopen, tamper, truncation and revocation non-resurrection fixtures pass.
+- `NDU-SYS-GV-013`: preference vectors reject dimension >64 and values outside [-1,1]; an already-converged solve emits no revision.
+- `NDU-SYS-GV-014`: a solver receipt cannot be rebound to a different canonical context and an unbound compatibility receipt cannot be published.
+- `NDU-SYS-GV-015`: revocation is objective/subject scoped and a journal checkpoint survives exact reopen.
+- `NDU-SYS-GV-016`: changing the axis-semantics digest changes the utility-profile/evaluation identity; an empty semantics digest rejects.
+- `NDU-SYS-GV-017`: stochastic admission rejects missing identification/conversion/certificate evidence, objective mismatch, expiry or covariance-profile drift.
 
 Exact native mappings are registered in `docs/modules/utility.ndu/IMPLEMENTATION_MAP.json`. The same implementation cannot be the sole oracle for a critical numerical claim; analytic or independent scalar fixtures remain required.
 
@@ -234,16 +245,17 @@ Work-package ownership is narrowed by `docs/delivery/LANE_D_WORK_PACKAGE_OVERLAY
 
 The legacy `NDU-2-AGENT-DOMAIN-HIERARCHY` identifier remains in historical DAGs but is superseded for new source mutation by this overlay. No package gains positive authority.
 
-Repository-controlled completion requires the implementation map, source tests, strict lint, semantic checker, exact-head workflows and synthetic merge checks. Product caller, production writer, independent convergence decision, activation and release remain separately governed.
+Repository-controlled completion requires the implementation map, source tests, strict lint, semantic checker, exact-head workflows and synthetic merge checks. Source-level read-only NDU callers are already composed in Control planning and the Intelligence vertical. Production persistence, independently issued convergence/well-posedness evidence, product/target-host qualification, activation and release remain separately governed.
 
 ## 11. Coding-entry checklist
 
 - contribution sets bind one objective and generation and contain every required organ;
 - every utility axis has an explicit uncertainty value, never an omitted implicit zero;
 - candidate support digests bind organ identity and complete normalized contribution semantics;
-- aggregation, Pareto tolerance and optional scalarization profiles are digest-bound;
-- local termination receipts remain distinct from independent convergence certificates;
-- projection reopen, tamper and revocation non-resurrection fixtures pass;
+- aggregation, Pareto tolerance, axis units/normalization/scales and optional scalarization profiles are digest-bound;
+- protocol-capable solver receipts are pre-bound to canonical context and cannot be rebound at publication;
+- local termination receipts remain distinct from independently issued convergence certificates;
+- projection reopen, tamper, scoped revocation, checkpoint and non-resurrection fixtures pass;
 - exact-head and synthetic-merge checks pass before source completion is claimed.
 
 ## Appendix A. Closed gap and protocol mapping
