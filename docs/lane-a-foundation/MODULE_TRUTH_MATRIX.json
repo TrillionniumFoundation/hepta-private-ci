@@ -69,47 +69,75 @@
     },
     {
       "module": "platform.wire",
-      "profile": "stateless_codec",
+      "profile": "stateless_protocol_codec",
       "formalGuide": "docs/modules/platform.wire/TECHNICAL.md",
       "formalGuideRole": "target_architecture",
-      "currentSpecification": "docs/lane-a-foundation/platform.wire/WIRE_V1.md",
+      "currentSpecification": "docs/lane-a-foundation/platform.wire/CURRENT_IMPLEMENTATION.md",
       "currentSpecificationRole": "current_executable_contract",
-      "implementationDetail": "docs/lane-a-foundation/platform.wire/HPTA_V1_CONFORMANCE.json",
+      "implementationDetail": "docs/lane-a-foundation/platform.wire/HPTA_V2_CONFORMANCE.json",
       "states": {
         "source": "implemented",
-        "implementation": "fixed_v1_codec",
+        "implementation": "v1_v2_protocol_stack",
         "durability": "none",
-        "qualification": "boundary_tests_and_frozen_vector_present",
+        "qualification": "boundary_property_fuzz_and_cross_runtime_tests_present",
         "activation": "library_only",
         "acceptance": "not_granted"
       },
       "currentCapabilities": [
         "fixed HPTA version-1 envelope encode/decode",
         "bounded identities and one-mebibyte payload",
-        "payload digest verification before owned copy"
+        "payload digest verification before owned copy",
+        "V2 full semantic frame integrity over metadata and payload",
+        "highest-common version negotiation with integrity downgrade prevention",
+        "registered schema admission and typed payload codec boundary",
+        "bounded header-first and incremental stream decoding"
       ],
       "targetOnlyCapabilities": [
-        "version negotiation",
-        "streaming decoder",
-        "multi-version compatibility adapter",
-        "authenticated complete-envelope digest"
+        "authenticated production negotiation transcript binding",
+        "product-owned schema catalog lifecycle and activation",
+        "generated foreign-language SDK bindings",
+        "production caller composition and release"
       ],
       "sourceAnchors": [
         {
           "path": "codex-rs/hepta-wire/src/envelope.rs",
           "mustContain": [
-            "const MAGIC: [u8; 4] = *b\"HPTA\";",
-            "const WIRE_VERSION: u16 = 1;",
+            "pub(crate) const MAGIC: [u8; 4] = *b\"HPTA\";",
+            "pub const WIRE_VERSION_V1: u16 = 1;",
             "pub const MAX_WIRE_PAYLOAD_BYTES: usize = 1_048_576;",
-            "const MAX_ID_BYTES: usize = 128;",
+            "pub(crate) const MAX_ID_BYTES: usize = 128;",
             "let payload = &encoded[producer_end..payload_end];"
           ]
         },
         {
-          "path": "codex-rs/hepta-wire/src/boundary_tests.rs",
+          "path": "codex-rs/hepta-wire/src/v2.rs",
           "mustContain": [
-            "every_truncation_rejects_without_reconstructing_an_envelope",
-            "v1_frame_matches_frozen_bytes_not_only_its_own_encoder"
+            "pub const WIRE_VERSION_V2: u16 = 2;",
+            "const V2_INTEGRITY_DOMAIN: &[u8] = b\"HPTA-FRAME-V2\\\\0\";",
+            "compute_integrity_digest"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-wire/src/negotiation.rs",
+          "mustContain": [
+            "pub fn negotiate(",
+            "WireCapability::FullFrameIntegrity"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-wire/src/schema.rs",
+          "mustContain": [
+            "pub struct SchemaRegistry",
+            "pub trait PayloadCodec",
+            "pub fn encode_typed_v2"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-wire/src/stream.rs",
+          "mustContain": [
+            "pub fn read_frame",
+            "pub struct WireStreamDecoder",
+            "MAX_STREAM_BUFFER_BYTES"
           ]
         }
       ]
