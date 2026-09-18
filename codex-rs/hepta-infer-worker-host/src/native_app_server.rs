@@ -68,7 +68,8 @@ const MAX_MODEL_CONTEXT_BYTES: usize = 8 * 1024;
 const RPC_TIMEOUT: Duration = Duration::from_secs(5);
 const INTERRUPT_GRACE: Duration = Duration::from_secs(3);
 const MAX_OVERLOAD_RETRIES: u32 = 3;
-const MAX_OVERLOAD_BACKOFF: Duration = Duration::from_millis(500);
+const MAX_OVERLOAD_BACKOFF_MS: u64 = 500;
+const MAX_OVERLOAD_BACKOFF: Duration = Duration::from_millis(MAX_OVERLOAD_BACKOFF_MS);
 
 type Result<T> = std::result::Result<T, Box<dyn std::error::Error + Send + Sync>>;
 
@@ -611,7 +612,7 @@ fn overload_backoff(request_id: &str, attempt: u32) -> Duration {
     hasher.update(attempt.to_be_bytes());
     let digest = hasher.finalize();
     let jitter_ms = u64::from(digest[0]) % base_ms.max(1);
-    Duration::from_millis((base_ms + jitter_ms).min(MAX_OVERLOAD_BACKOFF.as_millis() as u64))
+    Duration::from_millis((base_ms + jitter_ms).min(MAX_OVERLOAD_BACKOFF_MS))
 }
 
 fn indeterminate_start_output(
