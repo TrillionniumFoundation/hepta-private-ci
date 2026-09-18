@@ -635,10 +635,27 @@ def write_receipt(kind: str, expected_sha: str, output: Path) -> None:
         "repository": os.environ.get("GITHUB_REPOSITORY", ""),
         "workflowRef": os.environ.get("GITHUB_WORKFLOW_REF", ""),
         "workflow": os.environ.get("GITHUB_WORKFLOW", ""),
+        "job": os.environ.get("GITHUB_JOB", ""),
         "runId": os.environ.get("GITHUB_RUN_ID", ""),
         "runAttempt": os.environ.get("GITHUB_RUN_ATTEMPT", ""),
         "actor": os.environ.get("GITHUB_ACTOR", ""),
         "serverUrl": os.environ.get("GITHUB_SERVER_URL", ""),
+    }
+    build_identity = {
+        "rustc": subprocess.run(
+            ["rustc", "--version", "--verbose"],
+            check=True,
+            text=True,
+            stdout=subprocess.PIPE,
+        ).stdout.strip(),
+        "cargo": subprocess.run(
+            ["cargo", "--version", "--verbose"],
+            check=True,
+            text=True,
+            stdout=subprocess.PIPE,
+        ).stdout.strip(),
+        "runnerOs": os.environ.get("RUNNER_OS", ""),
+        "runnerArch": os.environ.get("RUNNER_ARCH", ""),
     }
     identity_bytes = json.dumps(
         identity, sort_keys=True, separators=(",", ":")
@@ -661,7 +678,23 @@ def write_receipt(kind: str, expected_sha: str, output: Path) -> None:
         "expiresAtUnix": issued + 90 * 24 * 60 * 60,
         "attesterIdentity": identity,
         "attesterIdentityDigest": hashlib.sha256(identity_bytes).hexdigest(),
+        "signer": (
+            "github-actions://"
+            + identity["repository"]
+            + "/"
+            + identity["workflowRef"]
+            + "/runs/"
+            + identity["runId"]
+            + "/attempt/"
+            + identity["runAttempt"]
+        ),
         "signatureProfile": "github_actions_workflow_identity_not_cryptographic_signature",
+        "buildIdentity": build_identity,
+        "buildIdentityDigest": hashlib.sha256(
+            json.dumps(
+                build_identity, sort_keys=True, separators=(",", ":")
+            ).encode("utf-8")
+        ).hexdigest(),
         "productionContractSha256": sha256_file(PRODUCTION_CONTRACT_PATH),
         "evidenceAdmissionSha256": sha256_file(EVIDENCE_ADMISSION_PATH),
         "nativeMappingSha256": sha256_file(NATIVE_MAPPING_PATH),
@@ -717,6 +750,10 @@ def verify_receipt(kind: str, expected_sha: str, input_path: Path) -> None:
     for key, expected_value in expected.items():
         if value.get(key) != expected_value:
             raise ValueError(f"receipt {key} mismatch")
+    coverage_path = ROOT / ".hepta-evidence/learning-eval-source.lcov"
+    expected_coverage = sha256_file(coverage_path) if coverage_path.is_file() else ""
+    if value.get("coverageArtifactSha256") != expected_coverage:
+        raise ValueError("receipt coverage artifact mismatch")
     claims = value.get("claims")
     if not isinstance(claims, dict) or claims.get("repositorySourceClosureEvidence") is not True:
         raise ValueError("source-closure claim missing")
