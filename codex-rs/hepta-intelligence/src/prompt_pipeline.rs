@@ -196,3 +196,7 @@ const fn map_prompt_role(role: PromptRoleV2) -> ContextRoleV2 {
         PromptRoleV2::ToolSchemaFragment => ContextRoleV2::Schema,
     }
 }
+
+#[cfg(test)]
+#[path = "prompt_pipeline_tests.rs"]
+mod tests;
