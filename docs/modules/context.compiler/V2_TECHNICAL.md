@@ -153,10 +153,14 @@ Skipping a stage is not equivalent to completing the later stage.
 
 ### 4.1 `ContextAdmissionRecordV2`
 
-A trusted admission record binds:
+Every context candidate, including untrusted evidence, requires an admission
+record. Admission and trust role are separate concepts: admitting evidence makes
+it eligible context; it does not turn evidence into an instruction.
+
+Each record binds:
 
 - `item_id`;
-- trusted `role`;
+- exact `role` (trusted instruction, schema, or untrusted evidence);
 - `content_digest`;
 - `source_digest`;
 - upstream `admission_digest`;
@@ -164,9 +168,8 @@ A trusted admission record binds:
 - optional expiry;
 - optional revocation time plus revocation digest.
 
-Untrusted evidence does not become trusted merely by attaching an admission
-record. The admission-record validator rejects an
-`UntrustedEvidence` role for this trusted path.
+A proof issued for `UntrustedEvidence` cannot satisfy a trusted-instruction or
+schema candidate because role equality is verified and bound into the proof.
 
 ### 4.2 Snapshot evidence and authentication
 
@@ -192,8 +195,7 @@ Records are canonicalized by `StableId`; duplicate records fail closed.
 ### 4.3 `VerifiedContextAdmissionV2`
 
 Callers cannot construct this proof by filling a public digest field. It is
-returned only by `ContextAdmissionSnapshotV2::verify_trusted_binding`, which
-checks:
+returned only by `ContextAdmissionSnapshotV2::verify_binding`, which checks:
 
 - exact item identity;
 - exact trusted role;
@@ -204,7 +206,10 @@ checks:
 - admission not revoked;
 - proof binding to the same issuer, snapshot, frontier and witness.
 
-The proof remains snapshot-relative. It must be revalidated before attachment.
+The proof remains snapshot-relative. Every selected candidate, trusted or
+untrusted, is revalidated against a current authenticated snapshot before
+attachment. This closes compile-to-attach tombstone/revocation windows for
+evidence as well as trusted instruction/schema inputs.
 
 ## 5. Exact tokenization
 
@@ -247,7 +252,8 @@ The existing V2 value-per-token selection algorithm is retained privately. The
 proof layer validates security evidence first, converts verified candidates to
 the internal selection representation, then calls the deterministic engine.
 
-Trusted instruction/schema items remain mandatory floors. Explicit
+All candidates must carry a verified admission proof. Trusted
+instruction/schema items additionally remain mandatory floors. Explicit
 `MandatoryContextGroupV2` records are canonicalized by group ID and item ID.
 The public compilation receipt additionally binds
 `mandatory_groups_digest`, including:
@@ -292,8 +298,8 @@ It rejects:
 
 - admission issuer drift;
 - a snapshot older than the compilation admission observation;
-- a selected trusted instruction/schema missing from current admission state;
-- role/content/source drift;
+- any selected candidate missing from current admission state;
+- role/content/source drift for trusted or untrusted inputs;
 - expiry;
 - revocation.
 
@@ -401,7 +407,8 @@ rather than reinterpreted.
 - deterministic selection with a typed trusted floor;
 - rejection when a verified admission proof is reused with a changed source;
 - revoked trusted admission rejection;
-- revocation introduced between compilation and attachment;
+- revocation introduced between compilation and attachment for trusted context;
+- revocation/tombstone introduced for selected untrusted evidence;
 - final serialized payload retokenization including serializer overhead;
 - selected content-byte substitution;
 - mandatory-group provenance changing the receipt even when selected IDs do not;
