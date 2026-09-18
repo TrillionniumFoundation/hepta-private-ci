@@ -137,7 +137,8 @@
         "non-serializable final-use and lease verified-use tokens",
         "independent operator approval and authenticated revocation-feed verification",
         "closed registered Bao consumer host source composition",
-        "bounded fleet revocation catch-up/quarantine/stale-feed admission over authenticated update and acknowledgement evidence"
+        "bounded fleet revocation catch-up/quarantine/stale-feed admission over authenticated update and acknowledgement evidence",
+        "runtime.fleet concrete generic-lease consumer revalidates exact AllocationGrant binding before LeaseLedger issue"
       ],
       "targetOnlyCapabilities": [
         "general identity provider and complete approval-policy engine",
@@ -195,6 +196,15 @@
             "Quarantined",
             "FeedStale",
             "is_superset"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-fleet/src/authority_port.rs",
+          "mustContain": [
+            "pub struct FleetAuthorityPort",
+            "pub fn issue(",
+            ".verify_use(",
+            ".with_verified_use("
           ]
         }
       ]
