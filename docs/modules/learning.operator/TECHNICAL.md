@@ -240,6 +240,24 @@ Documentation completion requires this guide, exact registry references and clos
 
 Current candidate status is therefore: **repository source closure in progress under PR CI; production implementation remains false; product caller remains not composed; external live/future/device/independent-acceptance gates remain open.**
 
+## 16. V8.2 pre-coding implementation-readiness overlay
+
+The canonical readiness overlay binds `learning.operator` to primary lane `LANE-E-LEARNING`. The following implementation-level specifications are mandatory alongside Sections 1–15:
+
+- [`RDY-SRC`](../../readiness/SOURCE_BASELINE_AND_BRANCH_POLICY.md)
+- [`RDY-PAR`](../../readiness/PARALLEL_DEVELOPMENT.md)
+- [`RDY-LRN`](../../readiness/LEARNING_EVALUATION_EXECUTION.md)
+
+Owned readiness protocols:
+
+- None.
+
+Consumed readiness protocols:
+
+- None.
+
+Ordinary authorized coding identifies the Git baseline, relevant contracts, owned paths, mandatory fixtures, deterministic fallback and rollback. A runtime coordinator admitting an envelope still verifies its current `CanonicalSourceReceiptV1`, frozen contract/readiness digest, expiry and zero authority delta; manually issuing an envelope is not a separate permission gate for ordinary repository work. This overlay does not change activation, acceptance, selection, promotion or release.
+
 ## 17. Source implementation receipt
 
 This receipt records repository source bindings for the current documentation candidate. It is navigation evidence only; it does not claim product composition, deployment, or external effect authority.
