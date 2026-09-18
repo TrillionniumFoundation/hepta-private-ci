@@ -1104,6 +1104,7 @@ mod tests {
                 .verify(
                     &SignedAdmissionGrantV1 { grant, signature },
                     &factor,
+                    digest("scope:durable"),
                     20,
                 )
                 .expect("verified admission");
