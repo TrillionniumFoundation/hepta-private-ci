@@ -40,13 +40,20 @@ pub enum TerminalOutcome {
     Interrupted,
 }
 
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum ObservationSource {
+    LiveTransport,
+    DurableThreadHistory,
+}
+
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct AppServerObservation {
+    source: ObservationSource,
     thread_id: StableId,
     turn_id: StableId,
     session_generation: u64,
     protocol_version: u32,
-    connection_digest: Digest32,
+    connection_digest: Option<Digest32>,
     outcome: TerminalOutcome,
     response_digest: Digest32,
 }
@@ -74,14 +81,48 @@ impl AppServerObservation {
             return Err(Error::MissingTerminalResponse);
         }
         Ok(Self {
+            source: ObservationSource::LiveTransport,
             thread_id,
             turn_id,
             session_generation,
             protocol_version,
-            connection_digest,
+            connection_digest: Some(connection_digest),
             outcome,
             response_digest,
         })
+    }
+
+    pub fn durable_terminal(
+        thread_id: StableId,
+        turn_id: StableId,
+        session_generation: u64,
+        protocol_version: u32,
+        outcome: TerminalOutcome,
+        response_digest: Digest32,
+    ) -> Result<Self, Error> {
+        if session_generation == 0 {
+            return Err(Error::InvalidSessionGeneration);
+        }
+        if protocol_version == 0 {
+            return Err(Error::InvalidProtocolVersion);
+        }
+        if response_digest.is_zero() {
+            return Err(Error::MissingTerminalResponse);
+        }
+        Ok(Self {
+            source: ObservationSource::DurableThreadHistory,
+            thread_id,
+            turn_id,
+            session_generation,
+            protocol_version,
+            connection_digest: None,
+            outcome,
+            response_digest,
+        })
+    }
+
+    pub fn source(&self) -> ObservationSource {
+        self.source
     }
 
     pub fn outcome(&self) -> TerminalOutcome {
@@ -109,6 +150,7 @@ pub struct CodexAdapterReceipt {
     pub request_digest: Digest32,
     pub status: AdapterStatus,
     pub response_digest: Option<Digest32>,
+    pub observation_source: Option<ObservationSource>,
     pub context_digest: Digest32,
     pub connection_digest: Digest32,
     pub session_generation: u64,
@@ -173,8 +215,8 @@ pub fn adapt(
 
     let request_digest = request_digest(&intent);
     let mut turn_id = intent.expected_turn_id.clone();
-    let (status, response_digest) = match observation {
-        None => (AdapterStatus::Indeterminate, None),
+    let (status, response_digest, observation_source) = match observation {
+        None => (AdapterStatus::Indeterminate, None, None),
         Some(value) => {
             if value.thread_id != intent.thread_id {
                 return Err(Error::ThreadMismatch);
@@ -190,7 +232,9 @@ pub fn adapt(
             if value.protocol_version != intent.protocol_version {
                 return Err(Error::ProtocolVersionMismatch);
             }
-            if value.connection_digest != intent.connection_digest {
+            if value.source == ObservationSource::LiveTransport
+                && value.connection_digest != Some(intent.connection_digest)
+            {
                 return Err(Error::ConnectionMismatch);
             }
             if value.response_digest.is_zero() {
@@ -202,7 +246,7 @@ pub fn adapt(
                 TerminalOutcome::Failed => AdapterStatus::Failed,
                 TerminalOutcome::Interrupted => AdapterStatus::Interrupted,
             };
-            (status, Some(value.response_digest))
+            (status, Some(value.response_digest), Some(value.source))
         }
     };
 
@@ -213,6 +257,7 @@ pub fn adapt(
         request_digest,
         status,
         response_digest,
+        observation_source,
         context_digest: intent.context_digest,
         connection_digest: intent.connection_digest,
         session_generation: intent.session_generation,
