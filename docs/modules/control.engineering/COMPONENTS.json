@@ -169,14 +169,18 @@
       "symbols": [
         "CandidateEnvelope",
         "Mutation",
-        "generate_candidates"
+        "MutationSet",
+        "generate_candidates",
+        "is_candidate_oracle_path"
       ],
       "state": "source_implemented",
       "failureModel": [
         "candidate_limit_exceeded",
         "protected_path",
         "path_outside_candidate_envelope",
-        "no_change_missing"
+        "no_change_missing",
+        "candidate_oracle_path",
+        "mutation_path_conflict"
       ],
       "resourceBounds": {
         "maximumCandidates": 32,
@@ -365,7 +369,11 @@
         "completion_source_mismatch",
         "worker_skill_or_capacity",
         "ci_capacity",
-        "review_capacity"
+        "review_capacity",
+        "completion_generation_unknown",
+        "completion_generation_mismatch",
+        "completion_package_not_assigned",
+        "completion_frontier_mismatch"
       ],
       "resourceBounds": {
         "maximumWorkers": 256,
