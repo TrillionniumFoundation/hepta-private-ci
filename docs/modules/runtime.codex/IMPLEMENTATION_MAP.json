@@ -128,6 +128,37 @@
       "nativeSymbol": "pub(crate) async fn turn_start(",
       "sourcePath": "codex-rs/app-server/src/request_processors/turn_processor.rs",
       "sourcePathExists": true
+    },
+    {
+      "designOperation": "wire_admission",
+      "mappingClass": "owner_boundary",
+      "ownerEntrypoint": {
+        "role": "owner_entrypoint",
+        "path": "codex-rs/hepta-codex-adapter/src/wire.rs",
+        "symbol": "pub fn adapt_wire(",
+        "buildTarget": "codex-hepta-codex-adapter"
+      },
+      "delegatedCallees": [
+        {
+          "role": "delegated_callee",
+          "path": "codex-rs/hepta-wire/src/schema.rs",
+          "symbol": "pub struct SchemaRegistry",
+          "buildTarget": "codex-hepta-wire",
+          "ownerModule": "platform.wire"
+        }
+      ],
+      "tests": [
+        {
+          "path": "codex-rs/hepta-codex-adapter/src/wire_tests.rs",
+          "kind": "product_wire_integration",
+          "command": "just test -p codex-hepta-codex-adapter wire"
+        }
+      ],
+      "sourceSemantics": "Binds negotiated HPTA version, producer, generation and registered operation-intent schema before entering the existing Codex adapter.",
+      "operation": "wire_admission",
+      "nativeSymbol": "pub fn adapt_wire(",
+      "sourcePath": "codex-rs/hepta-codex-adapter/src/wire.rs",
+      "sourcePathExists": true
     }
   ],
   "repositoryControlledGaps": [],
@@ -161,5 +192,6 @@
   "sourceRoot": [
     "codex-rs/codex-app-server",
     "codex-rs/hepta-codex-adapter"
-  ]
+  ],
+  "platformWireConsumerState": "source_composed_not_deployed"
 }
