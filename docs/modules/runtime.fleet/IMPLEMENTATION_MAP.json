@@ -7,37 +7,45 @@
   },
   "laneId": "LANE-B-RUNTIME",
   "module": "runtime.fleet",
-  "sourceMaturity": "native_ledger_and_allocator",
+  "sourceMaturity": "durable_authorized_placement_and_reconciliation",
   "declaredRoots": [
     "codex-rs/hepta-fleet"
   ],
   "resolvedRoots": [
     "codex-rs/hepta-fleet"
   ],
-  "stateOwnerDisposition": "Owns coherent host enrollment and allocation-lease records; consumers enforce grants locally.",
-  "terminalObserverDisposition": "Current-fence reconciliation records the observed holder disposition; pure allocation arithmetic cannot self-attest use.",
+  "stateOwnerDisposition": "Owns durable host observations, allocation grants, lease fences and holder reconciliation under the existing supervisor-owned Fleet state root.",
+  "terminalObserverDisposition": "Final-use-authorized holder observations establish release/quarantine; expiry or revocation alone never proves physical resources are free.",
   "operations": [
     {
       "designOperation": "admit_host",
       "mappingClass": "owner_native",
       "ownerEntrypoint": {
         "role": "owner_entrypoint",
-        "path": "codex-rs/hepta-fleet/src/lease_ledger.rs",
-        "symbol": "pub fn admit_host(",
-        "buildTarget": "codex-hepta-fleet::lease_ledger"
+        "path": "codex-rs/hepta-fleet/src/placement.rs",
+        "symbol": "pub fn admit_host_with_authority(",
+        "buildTarget": "codex-hepta-fleet::placement"
       },
-      "delegatedCallees": [],
-      "tests": [
+      "delegatedCallees": [
         {
-          "path": "codex-rs/hepta-fleet/src/lease_ledger_tests.rs",
-          "kind": "native_unit",
-          "command": "just test -p codex-hepta-fleet --lib"
+          "path": "codex-rs/hepta-fleet/src/allocation_store.rs",
+          "symbol": "pub fn admit_host(",
+          "role": "delegated_callee",
+          "ownerModule": "runtime.fleet",
+          "buildTarget": "codex-hepta-fleet"
         }
       ],
-      "sourceSemantics": "Admits an explicitly enrolled host with generation, capacity, epoch, and failure-domain identity.",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-fleet/src/placement_tests.rs",
+          "kind": "final_use_capacity_binding",
+          "command": "cargo test -p codex-hepta-fleet --lib"
+        }
+      ],
+      "sourceSemantics": "Admits an exact measured host observation only after final-use authority validation and durable generation publication.",
       "operation": "admit_host",
-      "nativeSymbol": "pub fn admit_host(",
-      "sourcePath": "codex-rs/hepta-fleet/src/lease_ledger.rs",
+      "nativeSymbol": "pub fn admit_host_with_authority(",
+      "sourcePath": "codex-rs/hepta-fleet/src/placement.rs",
       "sourcePathExists": true
     },
     {
@@ -45,22 +53,49 @@
       "mappingClass": "owner_native",
       "ownerEntrypoint": {
         "role": "owner_entrypoint",
-        "path": "codex-rs/hepta-fleet/src/lease_ledger.rs",
-        "symbol": "pub fn issue(",
-        "buildTarget": "codex-hepta-fleet::lease_ledger"
+        "path": "codex-rs/hepta-fleet/src/placement.rs",
+        "symbol": "pub fn commit_placement_with_authority(",
+        "buildTarget": "codex-hepta-fleet::placement"
       },
-      "delegatedCallees": [],
-      "tests": [
+      "delegatedCallees": [
         {
-          "path": "codex-rs/hepta-fleet/src/lease_ledger_tests.rs",
-          "kind": "conservation_and_fencing",
-          "command": "just test -p codex-hepta-fleet --lib"
+          "path": "codex-rs/hepta-fleet/src/placement.rs",
+          "symbol": "pub fn plan_placement_v1(",
+          "role": "delegated_callee",
+          "ownerModule": "runtime.fleet",
+          "buildTarget": "codex-hepta-fleet"
+        },
+        {
+          "path": "codex-rs/hepta-fleet/src/allocation.rs",
+          "symbol": "pub fn calculate_local_allocation_v1(",
+          "role": "delegated_callee",
+          "ownerModule": "runtime.fleet",
+          "buildTarget": "codex-hepta-fleet"
+        },
+        {
+          "path": "codex-rs/hepta-fleet/src/allocation_store.rs",
+          "symbol": "pub(crate) fn commit_ledger(",
+          "role": "delegated_callee",
+          "ownerModule": "runtime.fleet",
+          "buildTarget": "codex-hepta-fleet"
         }
       ],
-      "sourceSemantics": "Issues bounded allocation leases only after capacity, floors, freshness, and generation checks.",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-fleet/src/allocation_tests.rs",
+          "kind": "conservation_fairness_digest",
+          "command": "cargo test -p codex-hepta-fleet --lib"
+        },
+        {
+          "path": "codex-rs/hepta-fleet/src/placement_tests.rs",
+          "kind": "placement_and_final_authority",
+          "command": "cargo test -p codex-hepta-fleet --lib"
+        }
+      ],
+      "sourceSemantics": "Selects fresh hosts, allocates bounded canonical resources, binds exact final authority, and publishes the complete grant set as one durable generation.",
       "operation": "allocate",
-      "nativeSymbol": "pub fn issue(",
-      "sourcePath": "codex-rs/hepta-fleet/src/lease_ledger.rs",
+      "nativeSymbol": "pub fn commit_placement_with_authority(",
+      "sourcePath": "codex-rs/hepta-fleet/src/placement.rs",
       "sourcePathExists": true
     },
     {
@@ -68,38 +103,50 @@
       "mappingClass": "owner_native",
       "ownerEntrypoint": {
         "role": "owner_entrypoint",
-        "path": "codex-rs/hepta-fleet/src/lease_ledger.rs",
+        "path": "codex-rs/hepta-fleet/src/allocation_store.rs",
         "symbol": "pub fn renew_or_revoke(",
-        "buildTarget": "codex-hepta-fleet::lease_ledger"
+        "buildTarget": "codex-hepta-fleet::allocation_store"
       },
-      "delegatedCallees": [],
+      "delegatedCallees": [
+        {
+          "path": "codex-rs/hepta-fleet/src/lease_ledger.rs",
+          "symbol": "pub fn renew_or_revoke(",
+          "role": "delegated_callee",
+          "ownerModule": "runtime.fleet",
+          "buildTarget": "codex-hepta-fleet"
+        }
+      ],
       "tests": [
         {
           "path": "codex-rs/hepta-fleet/src/lease_ledger_tests.rs",
-          "kind": "lease_recovery",
-          "command": "just test -p codex-hepta-fleet --lib"
+          "kind": "lease_fencing_and_release_reconciliation",
+          "command": "cargo test -p codex-hepta-fleet --lib"
+        },
+        {
+          "path": "codex-rs/hepta-fleet/src/runtime_use_tests.rs",
+          "kind": "runtime_holder_reconciliation",
+          "command": "cargo test -p codex-hepta-fleet --lib"
         }
       ],
-      "sourceSemantics": "Renews, revokes, or quarantines a lease under current epoch and holder reconciliation.",
+      "sourceSemantics": "Renews or revokes under generation fences; terminal capacity is not reusable until holder release is reconciled.",
       "operation": "renew_or_revoke",
       "nativeSymbol": "pub fn renew_or_revoke(",
-      "sourcePath": "codex-rs/hepta-fleet/src/lease_ledger.rs",
+      "sourcePath": "codex-rs/hepta-fleet/src/allocation_store.rs",
       "sourcePathExists": true
     }
   ],
-  "repositoryControlledGaps": [
-    "Connect the in-memory lease component to supervisor-owned durable FleetRegistry grants, fences, and a real capacity observer."
-  ],
+  "repositoryControlledGaps": [],
   "externalEvidenceGates": [
-    "real enrolled host capacity observation",
-    "non-test local grant enforcement",
-    "partition and lease-expiry target qualification"
+    "exact-head and deterministic synthetic-merge CI for the stacked candidate",
+    "real enrolled-host capacity observation and runtime consumption measurements on the selected target",
+    "partition, restart and lease-expiry target qualification",
+    "independent acceptance, activation, promotion and release"
   ],
   "claimBoundary": {
     "nativeSourceMappingComplete": true,
     "repositoryControlledDocumentationGapsClosed": true,
     "repositoryControlledMappingGapsClosed": true,
-    "repositoryControlledSourceBoundaryGapsClosed": false,
+    "repositoryControlledSourceBoundaryGapsClosed": true,
     "productExecutionComplete": false,
     "deploymentQualificationComplete": false,
     "independentAcceptanceComplete": false,
@@ -112,12 +159,36 @@
   },
   "sourceRootPresent": true,
   "productionImplementation": false,
-  "productCallerState": "not_composed",
-  "productionWriterState": "not_established",
+  "productCallerState": "source_composed_not_activated",
+  "productionWriterState": "durable_owner_source_established",
   "owner": "fleet-runtime",
   "deputy": "runtime-control",
   "technicalGuide": "docs/modules/runtime.fleet/TECHNICAL.md",
   "sourceRoot": [
     "codex-rs/hepta-fleet"
-  ]
+  ],
+  "implementationHead": {
+    "commit": "80341daa330370233245a501cc1f39a40043944c",
+    "tree": "2dd1c208d64716adf11209a25f70086b079ce6df",
+    "meaning": "latest source-only stacked head before qualification/document projection"
+  },
+  "sourceComposition": {
+    "runtimeConsumer": {
+      "path": "codex-rs/hepta-supervisor/src/supervisor.rs",
+      "symbol": "verify_fleet_allocation",
+      "configuration": "HEPTA_FLEET_HOST_ID"
+    },
+    "capacityObserver": {
+      "path": "codex-rs/hepta-supervisor/src/host_capacity.rs",
+      "symbol": "observe_local_host_capacity_v1"
+    },
+    "grantRead": {
+      "path": "codex-rs/hepta-fleet/src/runtime_use.rs",
+      "symbol": "read_active_grants_v1"
+    },
+    "reconciliation": {
+      "path": "codex-rs/hepta-fleet/src/runtime_use.rs",
+      "symbol": "reconcile_consumption_with_authority"
+    }
+  }
 }
