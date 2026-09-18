@@ -157,7 +157,7 @@ impl FleetRevocationCoordinator {
         &mut self,
         signed: SignedFinalUseRevocationAck,
     ) -> Result<FleetRevocationStatus, FleetRevocationError> {
-        {
+        let duplicate = {
             let current = self
                 .current
                 .as_mut()
@@ -171,17 +171,22 @@ impl FleetRevocationCoordinator {
                 .iter()
                 .find(|candidate| candidate.ack.node_id == signed.ack.node_id)
             {
-                if existing == &signed {
-                    return self.status();
+                if existing != &signed {
+                    return Err(FleetRevocationError::ConflictingAck);
                 }
-                return Err(FleetRevocationError::ConflictingAck);
+                true
+            } else {
+                current.acknowledgements.push(signed);
+                if current.acknowledgements.len() > current.expected_nodes.len() {
+                    current.acknowledgements.pop();
+                    return Err(FleetRevocationError::InvalidNodeSet);
+                }
+                false
             }
+        };
 
-            current.acknowledgements.push(signed);
-            if current.acknowledgements.len() > current.expected_nodes.len() {
-                current.acknowledgements.pop();
-                return Err(FleetRevocationError::InvalidNodeSet);
-            }
+        if duplicate {
+            return self.status();
         }
 
         if let Err(error) = self.current_report() {
