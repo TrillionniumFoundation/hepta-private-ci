@@ -170,3 +170,36 @@ fn ledger_dataset_freeze_is_order_independent_and_rejects_duplicates() {
         Err(CausalV2Error::DuplicateSourceRecord)
     );
 }
+
+#[test]
+fn ledger_prompt_portfolio_exposure_binds_delivery_chain() {
+    let exposure = PromptPortfolioExposureV1 {
+        exposure_id: id("prompt-exposure-1"),
+        episode_id: id("episode-prompt-1"),
+        objective_digest: digest("objective"),
+        candidate_set_digest: digest("candidate-set"),
+        pricing_receipt_digest: digest("pricing"),
+        portfolio_receipt_digest: digest("portfolio"),
+        exercise_receipt_digest: digest("exercise"),
+        context_compilation_receipt_digest: digest("context"),
+        delivery_observation_digest: digest("delivery"),
+        selected_factor_ids: vec![id("factor-a"), id("factor-b")],
+        selected_realization_ids: vec![id("realization-a"), id("realization-b")],
+        observed_payload_digest: digest("payload"),
+        observed_unix_ms: 50,
+    };
+    let receipt = match validate_prompt_portfolio_exposure(&exposure) {
+        Ok(receipt) => receipt,
+        Err(error) => panic!("valid prompt exposure failed: {error}"),
+    };
+    assert_eq!(receipt.selected_count, 2);
+    assert!(!receipt.exposure_digest.is_zero());
+    assert!(!receipt.authority.grants_any());
+
+    let mut invalid = exposure;
+    invalid.selected_realization_ids.pop();
+    assert_eq!(
+        validate_prompt_portfolio_exposure(&invalid),
+        Err(CausalV2Error::CandidateLimit)
+    );
+}

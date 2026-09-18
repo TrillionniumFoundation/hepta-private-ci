@@ -186,7 +186,9 @@ Read-only optimizer library; provide admitted candidates, cost/support data and 
 Current operating and state-format references:
 
 - [codex-rs/hepta-prompt-optimizer/src/lib.rs](../../../codex-rs/hepta-prompt-optimizer/src/lib.rs).
+- [codex-rs/hepta-prompt-optimizer/src/canonical.rs](../../../codex-rs/hepta-prompt-optimizer/src/canonical.rs).
 - [codex-rs/hepta-prompt-optimizer/src/local_shadow.rs](../../../codex-rs/hepta-prompt-optimizer/src/local_shadow.rs).
+- [codex-rs/hepta-intelligence/src/prompt_pipeline.rs](../../../codex-rs/hepta-intelligence/src/prompt_pipeline.rs) composes the owner-native optimizer receipts into `context.compiler` while preserving read-only authority.
 
 [Shared observability and operations requirements](../README.md#shared-observability-and-operations) specify safe events and alert classes; concrete deployment thresholds require the selected host profile.
 
@@ -196,6 +198,8 @@ Current focused test sources (source references, not pass receipts):
 
 - [codex-rs/hepta-prompt-optimizer/src/lib_tests.rs](../../../codex-rs/hepta-prompt-optimizer/src/lib_tests.rs); named case: `illegal_and_unadmitted_candidates_are_never_selected`.
 - [codex-rs/hepta-prompt-optimizer/src/local_shadow_tests.rs](../../../codex-rs/hepta-prompt-optimizer/src/local_shadow_tests.rs); named case: `legacy_v1_surface_keeps_its_original_selection_limit`.
+- [codex-rs/hepta-prompt-optimizer/src/canonical_tests.rs](../../../codex-rs/hepta-prompt-optimizer/src/canonical_tests.rs); covers evidence completeness, multidimensional pricing, prerequisite-bundle selection and revocation-time exercise rejection.
+- [codex-rs/hepta-intelligence/src/prompt_pipeline_tests.rs](../../../codex-rs/hepta-intelligence/src/prompt_pipeline_tests.rs); covers optimizer → context compilation → serialization/attachment → terminal delivery observation → learning exposure admission.
 
 In `codex-rs`, run `just test -p codex-hepta-prompt-optimizer`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/prompt.optimizer.md) separately labels target acceptance designs.
 

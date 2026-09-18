@@ -23,6 +23,20 @@ pub use capability_snapshot::CapabilitySnapshotErrorV2;
 pub use capability_snapshot::CapabilitySnapshotRequestV2;
 pub use capability_snapshot::CapabilitySnapshotV2;
 
+mod prompt_delivery;
+mod prompt_pipeline;
+
+pub use prompt_delivery::CanonicalPromptAttachmentReceiptV1;
+pub use prompt_delivery::CanonicalPromptDeliveryErrorV1;
+pub use prompt_delivery::admit_canonical_prompt_delivery_v1;
+pub use prompt_delivery::prepare_canonical_prompt_attachment_v1;
+
+pub use prompt_pipeline::CanonicalPromptContextErrorV1;
+pub use prompt_pipeline::CanonicalPromptContextReceiptV1;
+pub use prompt_pipeline::CanonicalPromptContextRequestV1;
+pub use prompt_pipeline::SignedCandidatePricingEvidenceV1;
+pub use prompt_pipeline::run_canonical_prompt_context_v1;
+
 mod pipeline_v2;
 
 pub use pipeline_v2::LaneFRunRequestV2;

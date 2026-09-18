@@ -14,6 +14,7 @@ use codex_hepta_types::Digest32;
 use codex_hepta_types::FixedQ32;
 use codex_hepta_types::StableId;
 
+pub mod canonical;
 pub mod local_shadow;
 
 const MAX_CANDIDATES: usize = 4_096;
