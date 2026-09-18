@@ -130,7 +130,6 @@ mod tests;
 #[path = "deadline_digest_tests.rs"]
 mod deadline_digest_tests;
 
-
 #[cfg(test)]
 #[path = "wire_tests.rs"]
 mod wire_tests;
