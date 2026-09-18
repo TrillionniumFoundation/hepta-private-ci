@@ -1,7 +1,7 @@
 # memory.retrieval: implementation design
 
 Parent: `docs/modules/memory.retrieval/TECHNICAL.md`. Lane: `LANE-C-MEMORY`.
-Status: bounded native ranking, V2 input binding and generation-bound recall implemented; remaining target capabilities and independent acceptance are listed in section 8. Common requirements: `../EXECUTION_SEMANTICS.md` and `../TECHNICAL.md`. Canonical ownership and package predecessors are unchanged.
+Status: bounded native ranking, V2 input binding, typed cue/channel generation contracts and generation-bound recall implemented; the owner pre-truncation adapter exists at the Agentd composition boundary. Remaining HNMF mechanisms, product RecallPacket consumption and independent acceptance are listed in section 8. Common requirements: `../EXECUTION_SEMANTICS.md` and `../TECHNICAL.md`. Canonical ownership and package predecessors are unchanged.
 
 ## 1. Source and work envelope
 
@@ -12,7 +12,7 @@ Operation signatures below describe the target contract. Section 8 identifies th
 
 ## 2. Public operations and contract details
 
-`compile_cue(objective, approved_context, snapshot) -> MemoryCueV1`; `retrieve(cue, channel_budgets) -> CandidateUnion`; `recall(candidates, engram_snapshot, policy) -> RecallPacketV1 | Abstain`. Channels are explicitly lexical, vector, entity, temporal, causal, procedural and contradiction support where implemented. Each returns scoped IDs, source revisions and a score/support receipt, not unrestricted source payload.
+`compile_cue(objective, approved_context, snapshot) -> MemoryCueV1`; `retrieve(cue, channel_budgets) -> CandidateUnion`; `recall(candidates, engram_snapshot, policy) -> RecallPacketV1 | Abstain`. Channels are explicitly lexical, vector, entity, temporal, causal, procedural and contradiction support where implemented. Native channel batches now bind a generation-owner role, source-generation digest and explicit exhausted/truncated/unavailable coverage. Lexical/temporal bind `CognitiveRead`, entity/causal/contradiction bind `KnowledgeGraph`, vector binds `EncoderProjection`, and procedural binds `ProcedureProjection`; these are contract roles, not authority grants. Each returns scoped IDs, source revisions and a score/support receipt, not unrestricted source payload.
 
 ## 3. State records and transaction design
 
@@ -45,8 +45,8 @@ Use all eighteen dossier receipt fields. Immediate revocation/stop remains effec
 
 ## 8. Current native implementation
 
-- **Implemented entrypoints:** `retrieve_v2` in [codex-rs/hepta-memory-retrieval/src/v2.rs](../../../codex-rs/hepta-memory-retrieval/src/v2.rs); `build_candidate_union` in [codex-rs/hepta-memory-retrieval/src/generation_bound.rs](../../../codex-rs/hepta-memory-retrieval/src/generation_bound.rs); `recall` in [codex-rs/hepta-memory-retrieval/src/generation_bound.rs](../../../codex-rs/hepta-memory-retrieval/src/generation_bound.rs). Bounded native ranking, V2 input binding and generation-bound recall implemented.
+- **Implemented entrypoints:** `retrieve_v2` in [codex-rs/hepta-memory-retrieval/src/v2.rs](../../../codex-rs/hepta-memory-retrieval/src/v2.rs); `compile_cue` and `build_candidate_union_from_batches` in `codex-rs/hepta-memory-retrieval/src/channel_contract.rs`; `build_candidate_union` and `recall` in [codex-rs/hepta-memory-retrieval/src/generation_bound.rs](../../../codex-rs/hepta-memory-retrieval/src/generation_bound.rs). `Agentd::adapt_owner_retrieval` converts one coherent SQLite observation/read cut into canonical channel candidates with deterministic reciprocal-rank scores; generic graph-one-hop evidence maps only to Entity and is not promoted to causal/contradiction evidence.
 - **State and recovery:** Native receipts bind the supplied candidate set, including omitted candidates, and retain explicit channel/score/generation data. Ranking is stateless; existing hepta-memory SQLite retrieval remains the physical content/index owner.
 - **Source tests:** [codex-rs/hepta-memory-retrieval/src/v2_tests.rs](../../../codex-rs/hepta-memory-retrieval/src/v2_tests.rs), [codex-rs/hepta-memory-retrieval/src/generation_bound_tests.rs](../../../codex-rs/hepta-memory-retrieval/src/generation_bound_tests.rs), [codex-rs/hepta-agentd/src/cognitive_context_tests.rs](../../../codex-rs/hepta-agentd/src/cognitive_context_tests.rs). These are test identities, not execution receipts for this documentation revision.
 - **Implementation and operating references:** [codex-rs/hepta-memory/LANE_C_SQLITE.md](../../../codex-rs/hepta-memory/LANE_C_SQLITE.md), [docs/readiness/LANE_B_NATIVE_HOST.md](../../../docs/readiness/LANE_B_NATIVE_HOST.md).
-- **Remaining work:** Input completeness/freshness still needs the real generator and owner. Do not infer a complete HNMF/embedding execution pipeline from caller-supplied candidates or scores.
+- **Remaining work:** The real SQLite owner now supplies bounded pre-top-four candidates, per-channel rank evidence and limit observations to the canonical adapter, but vector/causal/procedural/contradiction generators, calibrated OOD, engram/recurrent settling, final source revalidation of RecallPacket selections and product RecallPacket consumption remain incomplete. Do not infer a complete HNMF/embedding execution pipeline from the new adapter.
