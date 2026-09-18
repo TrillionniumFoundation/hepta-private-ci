@@ -31,6 +31,14 @@ pub enum NativeRunStatus {
     Completed,
     Failed,
     Interrupted,
+    /// App Server definitively rejected turn/start before admission.
+    Rejected,
+    /// App Server ingress was saturated and definitively rejected turn/start.
+    Overloaded,
+    /// The caller deadline elapsed after dispatch; acknowledgement is unknown.
+    TimedOut,
+    /// The transport was lost after dispatch; acknowledgement is unknown.
+    Unavailable,
     Indeterminate,
 }
 
@@ -61,6 +69,12 @@ pub struct NativeRunOutput {
     pub output: String,
     pub observed_output_tokens: Option<u64>,
     pub terminal_observed: bool,
+    /// Exact runtime.codex request/receipt digests, when the native caller was
+    /// composed through the Codex adapter. Historical records may omit them.
+    #[serde(default)]
+    pub codex_request_digest: Option<String>,
+    #[serde(default)]
+    pub codex_receipt_digest: Option<String>,
     pub stop_reason: Option<String>,
     #[serde(default)]
     pub owner_authority: NativeOwnerAuthority,
@@ -451,13 +465,33 @@ fn apply_observation(record: &mut NativeRunRecord, output: NativeRunOutput) -> R
     {
         return Err(Error::InvalidIdentity("owner authority loss reason"));
     }
-    if output.terminal_observed == (output.status == NativeRunStatus::Indeterminate)
+    let terminal_status = matches!(
+        output.status,
+        NativeRunStatus::Completed | NativeRunStatus::Failed | NativeRunStatus::Interrupted
+    );
+    let definitive_rejection = matches!(
+        output.status,
+        NativeRunStatus::Rejected | NativeRunStatus::Overloaded
+    );
+    if output.terminal_observed != terminal_status
         || (output.turn_id.is_empty()
-            && (output.terminal_observed
+            && (terminal_status
                 || output.observed_output_tokens.is_some()
                 || !output.output.is_empty()))
+        || (definitive_rejection && !output.turn_id.is_empty())
     {
         return Err(Error::TerminalObservationMissing);
+    }
+    match (
+        output.codex_request_digest.as_deref(),
+        output.codex_receipt_digest.as_deref(),
+    ) {
+        (Some(request_digest), Some(receipt_digest)) => {
+            validate_digest(request_digest, "Codex request digest")?;
+            validate_digest(receipt_digest, "Codex receipt digest")?;
+        }
+        (None, None) => {}
+        _ => return Err(Error::InvalidIdentity("incomplete Codex receipt binding")),
     }
     if let Some(previous) = &record.observation {
         // A late provider completion or usage refinement cannot erase a lost
@@ -477,6 +511,11 @@ fn apply_observation(record: &mut NativeRunRecord, output: NativeRunOutput) -> R
         {
             return Err(Error::Conflict);
         }
+        if previous.codex_request_digest.is_some()
+            && previous.codex_request_digest != output.codex_request_digest
+        {
+            return Err(Error::Conflict);
+        }
         if previous.observed_output_tokens.is_some_and(|tokens| {
             output
                 .observed_output_tokens
@@ -489,7 +528,7 @@ fn apply_observation(record: &mut NativeRunRecord, output: NativeRunOutput) -> R
         validate_identity(&output.turn_id, "native turn")?;
         record.turn_id = Some(output.turn_id.clone());
     }
-    record.state = if output.terminal_observed {
+    record.state = if output.terminal_observed || definitive_rejection {
         NativeReservationState::Released
     } else {
         NativeReservationState::Indeterminate
