@@ -280,7 +280,7 @@ For `intuition.policy`, this document grants no runtime, production, model, prov
 
 #### `INT-1-CALIBRATED-INTUITION-POLICY`
 
-- State: `source_implemented_execution_pending`; priority: `2`; parallel class: `contract_coordinated`.
+- State: `source_implemented`; priority: `2`; parallel class: `contract_coordinated`.
 - Owner/deputy: `intelligence-platform` / `learning-platform`.
 - Allowed write paths:
 - `codex-rs/hepta-intuition/**`
@@ -413,7 +413,8 @@ The source candidate is checked by `.github/workflows/hepta-consolidated-source.
 and the module-specific `.github/workflows/hepta-intuition-qualification.yml`.
 The latter requires exact-source and deterministic merge-candidate compilation,
 tests, kernel performance qualification and authenticated end-to-end performance
-qualification. Until those jobs are green for the exact candidate, the package
-remains execution-pending. This is source implementation evidence only and grants
+qualification. Those jobs qualify the exact candidate without changing the canonical bootstrap
+package's `source_implemented` lifecycle. A failing or queued candidate must not be
+reported as qualified. This is source implementation evidence only and grants
 no runtime, production-writer, model-provider, external-effect,
 independent-acceptance, selection, promotion, merge or release authority.
