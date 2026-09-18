@@ -78,15 +78,26 @@ impl AgentdClient {
     }
 
     pub async fn health(&self) -> Result<HealthSnapshot, AgentdError> {
-        match self
+        self.health_with_generation().await.map(|(snapshot, _)| snapshot)
+    }
+
+    /// Return the health payload together with the current supervisor
+    /// lifecycle generation carried by the authenticated Agentd response.
+    ///
+    /// Callers that create run snapshots must bind authority_epoch to this
+    /// exact value rather than infer it from the process spawn generation.
+    pub async fn health_with_generation(
+        &self,
+    ) -> Result<(HealthSnapshot, u64), AgentdError> {
+        let response = self
             .send(AgentdRequest::health(
                 self.request_id(),
                 self.spawn_generation,
             ))
-            .await?
-            .payload
-        {
-            AgentdPayload::Health(snapshot) => Ok(snapshot),
+            .await?;
+        let current_generation = response.current_generation;
+        match response.payload {
+            AgentdPayload::Health(snapshot) => Ok((snapshot, current_generation)),
             payload => unexpected(payload),
         }
     }

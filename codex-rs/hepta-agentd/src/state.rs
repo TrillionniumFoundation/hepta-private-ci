@@ -267,7 +267,13 @@ impl AgentdState {
         now_ms: u64,
         snapshot: RunSnapshot,
     ) -> Result<RunReceipt, AgentdError> {
-        let _runtime = self.run_execution_guard()?;
+        let runtime = self.run_execution_guard()?;
+        if snapshot.authority_epoch != runtime.current_generation {
+            return Err(AgentdError::GenerationFenced(format!(
+                "run authority epoch {} does not match current Agentd lifecycle generation {}",
+                snapshot.authority_epoch, runtime.current_generation
+            )));
+        }
         self.runs
             .lock()
             .map_err(poisoned_state)?
