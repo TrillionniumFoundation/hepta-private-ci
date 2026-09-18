@@ -154,12 +154,7 @@ fn execute(
     let authority = current_authority();
     let control = FixtureControl::Pending;
     block_on(execute_once(
-        transport,
-        &authority,
-        &control,
-        10,
-        query,
-        lease,
+        transport, &authority, &control, 10, query, lease,
     ))
 }
 
@@ -211,9 +206,7 @@ fn response_cannot_replay_across_query_binding() {
     };
     assert_eq!(
         execute(&transport, second, &second_lease),
-        Err(FederationV2Error::DigestMismatch(
-            "response_query_binding"
-        ))
+        Err(FederationV2Error::DigestMismatch("response_query_binding"))
     );
 }
 
