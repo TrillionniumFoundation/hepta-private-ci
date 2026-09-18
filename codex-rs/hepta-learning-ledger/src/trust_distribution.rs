@@ -57,10 +57,6 @@ impl ActivatedLearningTrustV1 {
     pub fn verifier(&self) -> &LearningEvidenceVerifierV1 {
         &self.verifier
     }
-
-    pub(crate) fn into_verifier(self) -> LearningEvidenceVerifierV1 {
-        self.verifier
-    }
 }
 
 pub fn activate_learning_trust(
