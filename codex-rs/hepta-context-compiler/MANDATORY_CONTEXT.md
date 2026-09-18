@@ -9,13 +9,17 @@ The public V2 surface is `NORMATIVE_CONTEXT_COMPILER_API =
 `src/v2.rs` implementation remains private and supplies only the deterministic
 selection engine.
 
-The normative path requires typed, snapshot-bound trusted admission evidence.
-`ContextAdmissionSnapshotV2::verify_trusted_binding` is the only constructor
-path for `VerifiedContextAdmissionV2`; trusted instruction/schema candidates
-cannot satisfy the public V2 contract with a naked caller-supplied admission
-digest. The snapshot binds issuer, source snapshot, revocation frontier, host
-witness, observation time and canonical admission records. The host must
-authenticate issuer/witness provenance before constructing that snapshot.
+The normative path requires typed, authenticated, snapshot-bound trusted
+admission evidence. Raw `ContextAdmissionSnapshotEvidenceV2` must pass
+`verify_admission_snapshot_v2(..., ContextAdmissionVerifierV2)`; the verified
+snapshot has private fields and cannot be directly assembled from caller
+digests. `ContextAdmissionSnapshotV2::verify_trusted_binding` is then the only
+constructor path for `VerifiedContextAdmissionV2`. Trusted instruction/schema
+candidates therefore cannot satisfy the public V2 contract with a naked
+caller-supplied admission digest or a self-assembled snapshot. The verified
+snapshot binds issuer, source snapshot, revocation frontier, witness, verifier
+identity, verifier-produced verification digest, observation time and canonical
+admission records.
 
 Candidate token receipts are measured from actual bytes through
 `ExactContextTokenizerV2`. The public token receipt does not accept a
