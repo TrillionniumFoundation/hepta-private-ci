@@ -188,7 +188,7 @@
         "maximumChangedFiles": 100,
         "maximumDiffBytes": 1048576
       },
-      "rollback": "discard the candidate; the exact base remains unchanged"
+      "rollback": "discard the candidate; evaluator/test/config manifests remain immutable and the exact base remains unchanged"
     },
     {
       "id": "candidate-sandbox",
@@ -320,7 +320,7 @@
         "ProductionReadinessDecision",
         "evaluate_production_readiness"
       ],
-      "state": "source_implemented_product_execution_pending",
+      "state": "source_implemented_projection_only_product_execution_pending",
       "failureModel": [
         "repository_mismatch",
         "product_caller_missing",
@@ -331,12 +331,13 @@
         "rollback_not_rehearsed",
         "source_product_receipt_invalid",
         "merge_product_receipt_invalid",
-        "orchestration_product_receipt_set_mismatch"
+        "orchestration_product_receipt_set_mismatch",
+        "authenticated_readiness_composition_required"
       ],
       "resourceBounds": {
         "ambientAuthority": 0
       },
-      "rollback": "keep production_implementation false and require fresh authenticated external receipts"
+      "rollback": "keep production_implementation false; CLI projections cannot certify readiness and typed authenticated receipts remain mandatory"
     },
     {
       "id": "engineering-local-cli",
@@ -412,13 +413,15 @@
         "network_isolation_unavailable",
         "git_operation_failed",
         "invalid_sandbox_execution_policy",
-        "sandbox_parallelism_invariant"
+        "sandbox_parallelism_invariant",
+        "sandbox_host_admission_unavailable"
       ],
       "resourceBounds": {
         "maximumParallelSandboxes": 8,
         "maximumInfrastructureRetries": 2
       },
-      "rollback": "stop admission; semantic rejection is never retried"
+      "rollback": "stop host admission and release slot locks; semantic rejection is never retried",
+      "physicalState": "POSIX host-wide advisory slot locks plus per-process bounded semaphore; separately authenticated distributed fence required across hosts"
     },
     {
       "id": "mutation-testing-gate",
