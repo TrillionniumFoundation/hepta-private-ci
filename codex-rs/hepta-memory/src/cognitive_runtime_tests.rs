@@ -145,6 +145,38 @@ async fn product_v2_runtime_reads_only_explicit_grants_and_preserves_coverage() 
 }
 
 #[tokio::test]
+async fn product_v2_unobservable_owner_is_explicit_failed_discovery_coverage() {
+    let temp = TempDir::new().expect("temp dir");
+    let owner_id = agent_id(84);
+    let consumer_id = agent_id(85);
+    let owner_layout = layout(&temp, &owner_id);
+    let consumer_layout = layout(&temp, &consumer_id);
+    std::fs::create_dir_all(owner_layout.cognitive_root()).expect("owner cognitive root");
+    std::fs::write(
+        owner_layout.cognitive_root().join("cognitive_1.sqlite3"),
+        b"not-a-sqlite-database",
+    )
+    .expect("corrupt owner database fixture");
+    let consumer = CognitiveStore::open(&consumer_layout)
+        .await
+        .expect("consumer store");
+    let runtime = CognitiveRuntime::from_open_result(Ok(consumer))
+        .with_federation_sources(consumer_id.clone(), vec![owner_layout]);
+    let access = FederationConsumerAccess::new(
+        consumer_id,
+        workspace("runtime-v2-discovery-unavailable"),
+    );
+    let (batch, coverage) = runtime
+        .retrieve_federated(&access, &RetrievalRequest::new("anything", 150))
+        .await
+        .expect("discovery failure must remain bounded coverage");
+    assert!(batch.candidates.is_empty());
+    assert_eq!(coverage.requested_peers, 1);
+    assert_eq!(coverage.completed_peers, 0);
+    assert_eq!(coverage.failed_peers, 1);
+}
+
+#[tokio::test]
 async fn product_v2_scope_failure_is_explicit_failed_coverage_not_empty_success() {
     let temp = TempDir::new().expect("temp dir");
     let owner_id = agent_id(82);
