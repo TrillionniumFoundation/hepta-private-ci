@@ -311,7 +311,7 @@ response envelope. Neither helper grants effects or proves long-term improvement
 
 `global_plane.rs` now provides a closed source composition for the broader control path without granting activation:
 
-1. non-fleet owner summaries enter through `authenticate_owner_summary_v1`, which verifies an AuthBus Ed25519 message over a domain-separated owner scope and exact summary payload;
+1. non-fleet owner summaries enter either through `authenticate_owner_summary_v1` for bounded in-process replay fixtures or through `admit_durable_owner_summary_v1` after `HeptaEvidenceStore::admit_authbus_message` durably consumes the replay sequence; both paths re-verify the AuthBus Ed25519 message over a domain-separated owner scope and exact summary payload;
 2. `runtime.fleet` enters through `admit_fleet_allocation_owner_v1`, which reads an already committed `LeaseLedger::AllocationGrant`, verifies principal/revocation/expiry, and projects CPU, memory and accelerator endowments plus essential floors into the canonical planner resource profile;
 3. `compose_global_plan_with_fleet_v1` requires the admitted-owner set to equal the snapshot required-owner set, then runs `collect_snapshot -> prepare_plan -> evaluate_prepared_plan_with_ndu -> request_execution_grants`;
 4. the NDU step calls the real `utility.ndu` implementation; no caller-supplied selected candidate is accepted;
