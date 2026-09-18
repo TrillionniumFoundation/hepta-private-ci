@@ -199,7 +199,7 @@ impl OrganHandlerRegistryV1 {
             let registered = self
                 .factories
                 .get(&binding.driver)
-                .expect("driver was validated above");
+                .ok_or_else(|| OrganHandlerRegistryError::UnknownDriver(binding.driver.clone()))?;
             let handler = (registered.factory)(&organ.id).map_err(|fault| {
                 OrganHandlerRegistryError::Factory {
                     driver: binding.driver.clone(),
