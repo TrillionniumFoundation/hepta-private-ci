@@ -45,6 +45,7 @@ codex-hepta-fleet = { workspace = true }
 codex-hepta-intelligence = { path = "../hepta-intelligence" }
 codex-hepta-memory = { workspace = true }
 codex-hepta-memory-extension = { workspace = true }
+codex-hepta-objective = { path = "../hepta-objective" }
 codex-hepta-paths = { workspace = true }
 codex-protocol = { workspace = true }
 codex-uds = { workspace = true }
@@ -69,8 +70,6 @@ tokio-util = { workspace = true }
 
 [dev-dependencies]
 app_test_support = { workspace = true }
-codex-hepta-learning-ledger = { path = "../hepta-learning-ledger" }
-codex-hepta-objective = { path = "../hepta-objective" }
 codex-hepta-supervisor = { workspace = true }
 codex-utils-cargo-bin = { workspace = true }
 core_test_support = { workspace = true }
