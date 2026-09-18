@@ -334,7 +334,6 @@ impl DispatchRetryBudget {
                 self.consecutive_retries = self.consecutive_retries.saturating_add(1);
             }
             codex_hepta_automation::AutomationTick::Idle
-            | codex_hepta_automation::AutomationTick::Admitted { .. }
             | codex_hepta_automation::AutomationTick::Submitted { .. }
             | codex_hepta_automation::AutomationTick::DispatchUncertain { .. } => {
                 self.consecutive_retries = 0;
