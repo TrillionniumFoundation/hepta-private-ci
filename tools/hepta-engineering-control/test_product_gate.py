@@ -43,6 +43,11 @@ class ProductGateTests(unittest.TestCase):
             side_effect=lambda _root, *args: {
                 ("rev-parse", "HEAD"): merge,
                 ("rev-parse", "HEAD^{tree}"): merge_tree,
+                (
+                    "status",
+                    "--porcelain=v2",
+                    "--untracked-files=all",
+                ): "",
                 ("config", "--get", "remote.origin.url"): (
                     "https://github.com/TrillionniumFoundation/hepta-private-ci.git"
                 ),
