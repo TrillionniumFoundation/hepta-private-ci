@@ -31,6 +31,7 @@ pub use generation_bound::RetrievalChannelV1;
 pub use generation_bound::RetrievalChannelWeightV1;
 pub use generation_bound::RetrievalPolicyV1;
 pub use generation_bound::build_candidate_union;
+pub use generation_bound::compile_cue;
 pub use generation_bound::recall;
 pub use v2::RetrievalReceiptV2;
 pub use v2::retrieve_v2;
