@@ -134,7 +134,10 @@ fn cancellation_intent_and_terminal_failure_do_not_invent_zero_usage() {
     assert!(interrupted.cancel_requested);
     let persisted = interrupted.observation.as_ref().unwrap();
     assert_eq!(persisted.status, terminal.status);
-    assert_eq!(persisted.observed_output_tokens, terminal.observed_output_tokens);
+    assert_eq!(
+        persisted.observed_output_tokens,
+        terminal.observed_output_tokens
+    );
     assert!(!persisted.output_retained);
     assert!(persisted.output.is_empty());
     assert!(persisted.output_digest.is_some());
@@ -216,7 +219,10 @@ fn settlement_persists_output_digest_without_raw_provider_text() {
     let expected_digest = Digest32::of_bytes(observed.output.as_bytes()).to_string();
     let settled = control.settle_native("r1", observed).unwrap();
     let persisted = settled.observation.as_ref().unwrap();
-    assert_eq!(persisted.output_digest.as_deref(), Some(expected_digest.as_str()));
+    assert_eq!(
+        persisted.output_digest.as_deref(),
+        Some(expected_digest.as_str())
+    );
     assert!(!persisted.output_retained);
     assert!(persisted.output.is_empty());
     let journal = std::fs::read_to_string(&path).unwrap();
@@ -277,13 +283,15 @@ fn history_redaction_rewrites_legacy_native_output_and_marks_the_journal() {
     assert_eq!(again.previous_journal_bytes, again.rewritten_journal_bytes);
     drop(control);
     let control = DurableInferenceControl::open(&path, 8).unwrap();
-    assert!(!control
-        .native_record("r1")
-        .unwrap()
-        .observation
-        .as_ref()
-        .unwrap()
-        .output_retained);
+    assert!(
+        !control
+            .native_record("r1")
+            .unwrap()
+            .observation
+            .as_ref()
+            .unwrap()
+            .output_retained
+    );
     drop(control);
     std::fs::remove_file(path).unwrap();
 }
