@@ -97,6 +97,9 @@ pub enum RuntimeError {
     RotationRequiresAcknowledgedCheckpoint,
     RotationRequired,
     WitnessIndeterminate(Digest32),
+    /// The journal committed, but receipt finalization failed before the
+    /// independent witness advanced. Reopen/reconcile before any retry.
+    PostCommitIndeterminate(Digest32, &'static str),
 }
 
 impl fmt::Display for RuntimeError {
@@ -358,7 +361,7 @@ where
             .cloned()
             .ok_or(RuntimeError::Journal(JournalError::Corrupt))?;
 
-        let mut calibration = apply_calibration(
+        let mut calibration = match apply_calibration(
             self.calibration_policy,
             self.calibration_artifact.as_ref(),
             self.config_digest,
@@ -369,7 +372,16 @@ where
             execution.ood_score_q24,
             sparse_receipt.active_fraction_ppm,
             sparse_receipt.projection_count,
-        )?;
+        ) {
+            Ok(value) => value,
+            Err(_error) => {
+                self.poisoned = true;
+                return Err(RuntimeError::PostCommitIndeterminate(
+                    sparse_receipt.checkpoint_after,
+                    "calibration",
+                ));
+            }
+        };
 
         let execution_micros = u64::try_from(started.elapsed().as_micros()).unwrap_or(u64::MAX);
         let checkpoint_bytes =
@@ -391,12 +403,22 @@ where
             calibration.fallback_reason = Some(SignalFallbackReasonV1::ResourceEnvelopeExceeded);
         }
 
+        let active_indices = match active_indices(&sparse_receipt.activation_q24) {
+            Ok(value) => value,
+            Err(_error) => {
+                self.poisoned = true;
+                return Err(RuntimeError::PostCommitIndeterminate(
+                    sparse_receipt.checkpoint_after,
+                    "receipt",
+                ));
+            }
+        };
         let tick_receipt = NeuronTickReceiptV1 {
             tick_id: input.tick_id.clone(),
             checkpoint_before: sparse_receipt.checkpoint_before,
             checkpoint_after: sparse_receipt.checkpoint_after,
             activation_digest: checkpoint.activation_digest(),
-            active_indices: active_indices(&sparse_receipt.activation_q24)?,
+            active_indices,
             sparsity_ppm: sparse_receipt.active_fraction_ppm,
             threshold_digest: checkpoint.threshold_digest(),
             eligibility_digest: checkpoint.eligibility_digest(),
