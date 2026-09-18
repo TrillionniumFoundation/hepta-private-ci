@@ -24,11 +24,14 @@ interpreted as the Hölder/operator qualification profile.
 | admit smooth-axis applicability | `validate_applicability_certificate` | `src/reference.rs` | implemented |
 | build fixed sensor core | `build_sensor_core` | `src/reference.rs` | implemented |
 | execute tabular Bellman reference | `evaluate_bellman_reference` | `src/reference.rs` | implemented |
-| fit complete simplest-sufficient operator | `fit_tabular_operator` | `src/learned.rs` | implemented |
-| predict only a fitted sensor/action cell | `predict_tabular_operator` | `src/learned.rs` | implemented |
+| fit complete simplest-sufficient operator | `fit_tabular_operator` / `fit_tabular_operator_strict_v2` | `src/learned.rs`, `src/learned_strict.rs` | implemented |
+| admit host-pinned tabular candidate | `LoadedTabularOperatorV1::from_pinned_payload` | `src/loaded.rs` | implemented |
+| predict from admitted tabular candidate | `LoadedTabularOperatorV1::predict` | `src/loaded.rs` | implemented |
 | admit rank/gain/shape/OOD/error budget | `admit_operator_regularity` | `src/reference.rs` | implemented |
 | fit action-conditioned tabular dynamics | `fit_transition_model` | `src/world_model.rs` | implemented |
-| predict supported transition distribution | `predict_transition` | `src/world_model.rs` | implemented |
+| bind complete world-model semantic payload | `world_model_payload_digest_v1` | `src/world_model.rs` | implemented |
+| admit host-pinned world model | `LoadedTabularWorldModelV1::from_pinned_model` | `src/world_model.rs` | implemented |
+| predict supported transition distribution | `LoadedTabularWorldModelV1::predict` | `src/world_model.rs` | implemented |
 
 ## Applicability and sensor core
 
@@ -55,10 +58,17 @@ canonical action ID. This reference is the oracle for any later learned model.
 `fit_tabular_operator` is the first source-complete trainable operator profile.
 It canonicalizes a frozen sensor-by-action grid, validates every sample and
 requires a configurable positive minimum sample count for every grid cell. The
+base V1 fitter now rejects a duplicate `evidence_digest` globally even when a
+caller relabels that evidence with a different `sample_id`; the strict V2
+surface retains the same fail-closed rule as an additive admission layer. The
 artifact stores each cell's mean, minimum, maximum, sample count and evidence
-digest. Caller order cannot change the result. `predict_tabular_operator`
-returns only an explicitly fitted cell; an unknown sensor or action is OOD. Its
-output is marked both learned and synthetic and retains `DENY_ALL` authority.
+digest. Caller order cannot change the result.
+
+Raw artifact prediction helpers are crate-internal qualification helpers rather
+than composition APIs. External consumers must first admit a host-selected,
+pinned payload with `LoadedTabularOperatorV1::from_pinned_payload` and then use
+`LoadedTabularOperatorV1::predict`. Unknown sensor/action cells remain OOD, and
+every prediction is learned, synthetic and `DENY_ALL`.
 
 This profile deliberately implements the simplest sufficient learner. A neural
 or low-rank tensor candidate is not required merely because the architecture
@@ -84,9 +94,18 @@ profile.
 ## World-model baseline
 
 `fit_transition_model` builds a deterministic action-conditioned tabular model
-from an immutable dataset. For every supported `(state, action)` it records the
-mean bounded outcome and a branch distribution whose Q32 probabilities sum
-exactly to one. `predict_transition` rejects unsupported pairs rather than
+from an immutable dataset. It rejects both duplicate sample identities and
+duplicate underlying `evidence_digest` values, so replayed evidence cannot alter
+counts, means or transition frequencies merely by changing a sample ID. For
+every supported `(state, action)` it records the mean bounded outcome and a
+branch distribution whose Q32 probabilities sum exactly to one.
+
+The public composition surface is pinned loading, not direct prediction from a
+mutable public model. `world_model_payload_digest_v1` binds all
+prediction-relevant semantic fields; `LoadedTabularWorldModelV1::from_pinned_model`
+checks model, dataset, original model digest and the independent host payload
+pin before retaining private immutable state.
+`LoadedTabularWorldModelV1::predict` rejects unsupported pairs rather than
 extrapolating and marks every prediction synthetic with deny-all authority.
 Synthetic predictions cannot become independent factual outcomes.
 
@@ -113,6 +132,7 @@ Focused tests live in:
 - `src/lib_tests.rs`;
 - `src/reference_tests.rs`;
 - `src/learned_tests.rs`;
+- `src/loaded_tests.rs`;
 - `src/world_model_tests.rs`.
 
 Cross-crate composition is exercised by
@@ -136,8 +156,10 @@ A host-selected `TabularPayloadPinV1` binds payload, original training-artifact,
 objective, dataset, sensor, training-profile and generation identities.
 `LoadedTabularOperatorV1::from_pinned_payload` checks that independent pin and
 validates once; its private immutable state permits O(log n) repeated prediction.
-The original indexed V2 function validates the public mutable artifact in O(n)
-on every call, before its binary search. These are different cost profiles.
+The legacy raw/indexed prediction helpers remain available only inside this
+crate for qualification tests; they are no longer re-exported from the crate
+root. Product and cross-crate callers therefore use the independently pinned
+loaded surface rather than a caller-supplied mutable artifact.
 
 The original training digest includes samples not retained in these sufficient
 statistics; it is retained rather than falsely reconstructed. The artifact owner
@@ -158,3 +180,16 @@ holds expected payload/manifest/registry pins outside the files being inspected;
 no extra artifact store or production selection is introduced. This is executable
 cross-owner engineering qualification, not an authenticated external operator
 acceptance, future-window efficacy result or live C1 deployment.
+
+
+## Qualification-only operator acceptance
+
+`codex-rs/hepta-operator-acceptance` is Cargo-bound to `learning.operator`
+and is part of the module's qualification source envelope. It provides formal
+environment checks, trusted-time/nonces, durable watermarks, frozen-evidence
+rechecks, external trust-policy pins, signature verification and durable
+acceptance receipts. Its declared scope remains
+`qualification_evidence_only`, `automatic_transition=false`, and it grants no
+Enforce, promotion, outbound or retirement authority. This ceremony is source
+implementation for independent qualification evidence; it is not product
+selection, canary, promotion or release.
