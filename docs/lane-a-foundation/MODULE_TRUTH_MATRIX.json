@@ -113,7 +113,7 @@
           "path": "codex-rs/hepta-wire/src/v2.rs",
           "mustContain": [
             "pub const WIRE_VERSION_V2: u16 = 2;",
-            "const V2_INTEGRITY_DOMAIN: &[u8] = b\"HPTA-FRAME-V2\\\\0\";",
+            "const V2_INTEGRITY_DOMAIN: &[u8] = b\"HPTA-FRAME-V2\\0\";",
             "compute_integrity_digest"
           ]
         },
