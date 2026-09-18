@@ -457,6 +457,13 @@ def verify() -> int:
         'include_bytes!("../../tests/data/modality_span_v1.canonical.json")' in hnmf_tests,
         "production canonical JSON golden vector assertion",
     )
+    for test_name in [
+        "canonical_json_rejects_missing_required_payload_fields",
+        "canonical_json_rejects_reordered_envelope_keys",
+        "canonical_json_and_collection_bounds_fail_closed",
+        "canonical_set_order_is_insertion_independent",
+    ]:
+        need(test_name in hnmf_tests, f"production HNMF boundary test {test_name}")
     conformance = (
         ROOT / "codex-rs/hepta-cognitive-types/tests/hnmf_reference_conformance.rs"
     ).read_text(encoding="utf-8")
