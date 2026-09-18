@@ -26,6 +26,7 @@ pub use loaded::encode_tabular_payload_v1;
 mod learned_strict;
 mod reference;
 mod world_model;
+mod world_model_loaded;
 
 pub use learned::LearnedOperatorError;
 pub use learned::TabularOperatorArtifactV1;
@@ -64,6 +65,10 @@ pub use world_model::WorldModelPredictionV1;
 pub use world_model::WorldModelSampleV1;
 pub use world_model::fit_transition_model;
 pub use world_model::predict_transition;
+pub use world_model_loaded::LoadedTabularWorldModelV1;
+pub use world_model_loaded::TabularWorldModelPinV1;
+pub use world_model_loaded::WorldModelPayloadError;
+pub use world_model_loaded::encode_world_model_payload_v1;
 
 const MAX_SAMPLES: usize = 16_384;
 const SCALE: i128 = 1_i128 << 32;
