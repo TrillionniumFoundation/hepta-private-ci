@@ -1,9 +1,9 @@
-//! Opaque HeptaBao secret-reference boundary.
+//! HeptaBao secret and SecretLease boundary.
 //!
-//! The boundary exposes no raw-secret payload field: V1 accepts only bounded
-//! reference identifiers, digests and permission observations. It cannot
-//! dispatch. The separate HTTPS consumer requires kernel-owned, independently
-//! signed final-use authority; permission projections never enable it.
+//! The legacy metadata-only V1 reference projection remains non-dispatching.
+//! Executable HTTPS paths require kernel-owned, independently signed final-use
+//! authority. Static and dynamic secret bytes are delivered only through the
+//! host-owned trusted consumer registry and are never returned in receipts.
 
 #![forbid(unsafe_code)]
 
@@ -65,6 +65,9 @@ pub struct SecretReference {
     pub secret_digest: Digest32,
 }
 
+/// Legacy metadata-only lease projection used by `resolve`. This is not the
+/// provider-backed dynamic lifecycle; use `BaoLeaseMetadata` and
+/// `BaoLeaseRegistry` for executable SecretLease operations.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct SecretLease {
     pub lease_id: StableId,
