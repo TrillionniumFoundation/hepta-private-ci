@@ -638,18 +638,7 @@ impl LearningLedger {
                     });
                 decision_active && outcome_active
             }
-            LedgerEvent::AuthenticatedDecisionV2(decision) => {
-            if decision.candidate_ids.len() > MAX_CANDIDATES {
-                return Err(LedgerError::CandidateLimitExceeded);
-            }
-            decision.candidate_ids.sort();
-            for window in decision.candidate_ids.windows(2) {
-                if window[0] == window[1] {
-                    return Err(LedgerError::DuplicateCandidate(window[0].to_string()));
-                }
-            }
-        }
-        LedgerEvent::CreditBatchV2(batch) => {
+            LedgerEvent::CreditBatchV2(batch) => {
                 let decision_active = self
                     .decisions
                     .get(&batch.episode_id)
@@ -790,6 +779,17 @@ fn require_digest(digest: Digest32, label: &'static str) -> Result<(), LedgerErr
 fn normalize_event(event: &mut LedgerEvent) -> Result<(), LedgerError> {
     match event {
         LedgerEvent::Decision(decision) => {
+            if decision.candidate_ids.len() > MAX_CANDIDATES {
+                return Err(LedgerError::CandidateLimitExceeded);
+            }
+            decision.candidate_ids.sort();
+            for window in decision.candidate_ids.windows(2) {
+                if window[0] == window[1] {
+                    return Err(LedgerError::DuplicateCandidate(window[0].to_string()));
+                }
+            }
+        }
+        LedgerEvent::AuthenticatedDecisionV2(decision) => {
             if decision.candidate_ids.len() > MAX_CANDIDATES {
                 return Err(LedgerError::CandidateLimitExceeded);
             }
