@@ -70,13 +70,8 @@ fn every_external_evidence_class_is_digest_bound() {
     let mut missing = binding();
     missing.conditional_identification_evidence_digest = Digest32::ZERO;
     assert_eq!(
-        admit_stochastic_evidence_binding_v1(
-            missing,
-            &profile,
-            digest("objective-class"),
-            1_000,
-        )
-        .expect_err("missing identification evidence must reject"),
+        admit_stochastic_evidence_binding_v1(missing, &profile, digest("objective-class"), 1_000,)
+            .expect_err("missing identification evidence must reject"),
         NduStochasticAdmissionError::MissingDigest("conditional_identification_evidence")
     );
 }
@@ -136,11 +131,11 @@ fn admitted_evidence_is_bound_into_the_regression_result() {
         Ok(value) => value,
         Err(error) => panic!("unexpected admission error: {error:?}"),
     };
-    let bound =
-        match solve_backward_regression_with_admission(&moments, &profile, &admitted, 1_500) {
-            Ok(value) => value,
-            Err(error) => panic!("unexpected regression error: {error:?}"),
-        };
+    let bound = match solve_backward_regression_with_admission(&moments, &profile, &admitted, 1_500)
+    {
+        Ok(value) => value,
+        Err(error) => panic!("unexpected regression error: {error:?}"),
+    };
     assert_eq!(bound.stochastic_admission_digest, admitted.admission_digest);
     assert!((bound.estimate.z[0][0] - 3.0).abs() < 1e-12);
 }
