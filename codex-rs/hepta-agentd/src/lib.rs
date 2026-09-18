@@ -60,6 +60,7 @@ pub use cognitive_ranker::CurrentCognitiveRegistry;
 pub use cognitive_ranker::PinnedCognitiveRanker;
 pub use cognitive_ranker::cognitive_action_id;
 pub use cognitive_ranker::cognitive_sensor_id;
+pub use cognitive_retrieval_adapter::adapt_sqlite_owner_observation;
 pub use config::AgentdConfig;
 pub use config::AgentdIdentity;
 pub use config::HEPTA_AGENT_GENERATION_ENV;
