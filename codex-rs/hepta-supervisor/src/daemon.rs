@@ -32,6 +32,10 @@ use codex_hepta_contracts::AgentId;
 use codex_hepta_fleet::AgentLifecycle;
 #[cfg(unix)]
 use codex_hepta_fleet::FleetRegistry;
+#[cfg(unix)]
+use codex_hepta_fleet::FleetRuntimeAllocator;
+#[cfg(unix)]
+use codex_hepta_fleet::LocalCapacityPolicyV1;
 #[cfg(any(unix, test))]
 use codex_hepta_fleet::FleetRegistryError;
 #[cfg(any(unix, test))]
@@ -140,6 +144,7 @@ pub const PRODUCTION_AUTHORITY_FEATURE_ENABLED: bool =
 struct DaemonState<D: ProcessDriver> {
     registry: FleetRegistry,
     supervisor: Mutex<Supervisor<D>>,
+    fleet_allocator: Mutex<FleetRuntimeAllocator>,
     supervisor_epoch: SupervisorEpoch,
     production_grant_verifier: Option<H7H89ProductionGrantVerifier>,
     observed_faults: AtomicU64,
@@ -200,10 +205,33 @@ async fn run_supervisord_inner(
         SupervisorConfig::local_default(),
         Instant::now(),
     )?;
+    let supervisor_epoch = SupervisorEpoch::new();
+    let writer_epoch = authority_epoch_for_supervisor_epoch(supervisor_epoch.as_str());
+    let now_ms = unix_millis_now();
+    let mut fleet_allocator = FleetRuntimeAllocator::open_local(
+        &registry,
+        writer_epoch,
+        now_ms,
+        LocalCapacityPolicyV1::default(),
+    )?;
+    for (agent_id, record) in &snapshot.agents {
+        let runtime_snapshot = supervisor.snapshot(agent_id);
+        if runtime_snapshot.as_ref().is_some_and(|runtime| runtime.active) {
+            let status = status_from(&supervisor_epoch, record, runtime_snapshot)?;
+            fleet_allocator.reserve_agent_start(
+                agent_id,
+                &record.manifest.resources,
+                record.lifecycle.generation,
+                status.control_fence.state_digest.as_str(),
+                now_ms,
+            )?;
+        }
+    }
     let state = Arc::new(DaemonState {
         registry,
         supervisor: Mutex::new(supervisor),
-        supervisor_epoch: SupervisorEpoch::new(),
+        fleet_allocator: Mutex::new(fleet_allocator),
+        supervisor_epoch,
         production_grant_verifier,
         observed_faults: AtomicU64::new(recovery.faults.len() as u64),
     });
@@ -222,8 +250,12 @@ async fn run_supervisord_inner(
             tokio::select! {
                 _ = tick_cancellation.cancelled() => return,
                 _ = interval.tick() => {
-                    let faults = tick_state.supervisor.lock().await.tick(Instant::now()).faults;
+                    let faults = {
+                        let mut supervisor = tick_state.supervisor.lock().await;
+                        supervisor.tick(Instant::now()).faults
+                    };
                     tick_state.observed_faults.fetch_add(faults.len() as u64, Ordering::Relaxed);
+                    maintain_fleet_allocations(&tick_state).await;
                 }
             }
         }
