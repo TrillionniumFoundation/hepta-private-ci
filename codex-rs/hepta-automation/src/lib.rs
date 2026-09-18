@@ -19,6 +19,7 @@ mod taskflow_execution_boundary;
 mod taskflow_kernel;
 #[cfg(feature = "taskflow-structural-qualification")]
 mod taskflow_step;
+mod timer_lifecycle;
 
 pub use model::AutomationAdmission;
 pub use model::AutomationDispatchUncertainty;
@@ -72,6 +73,8 @@ pub use taskflow_execution_boundary::TaskFlowBoundaryUnavailableReason;
 pub use taskflow_execution_boundary::TaskFlowExecutionUnavailableV1;
 pub use taskflow_execution_boundary::assess_local_taskflow_boundary;
 pub use taskflow_execution_boundary::assess_local_taskflow_boundary_json;
+pub use timer_lifecycle::TimerDrainStatus;
+pub use timer_lifecycle::TimerPhase;
 #[cfg(feature = "taskflow-structural-qualification")]
 pub use taskflow_kernel::TASKFLOW_STRUCTURAL_EFFECTS;
 #[cfg(feature = "taskflow-structural-qualification")]
@@ -105,4 +108,4 @@ pub use taskflow_step::TaskFlowStepReceipt;
 #[cfg(feature = "taskflow-structural-qualification")]
 pub use taskflow_step::TaskFlowStepState;
 
-pub const AUTOMATION_SCHEMA_VERSION: u32 = 4;
+pub const AUTOMATION_SCHEMA_VERSION: u32 = 5;
