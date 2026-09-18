@@ -12,6 +12,7 @@ use crate::SupervisorError;
 use crate::SupervisorEventKind;
 use crate::lease::PROCESS_LEASE_SCHEMA_VERSION;
 use crate::lease::ProcessLease;
+use crate::lease::read_lease;
 use crate::lease::remove_lease;
 use crate::runtime::AgentRuntime;
 use crate::runtime::AgentSlot;
@@ -81,6 +82,14 @@ impl<D: ProcessDriver> Supervisor<D> {
                     registry: registry_generation,
                 },
             );
+        } else if matches!(runtime.phase, RuntimePhase::Killing) && !runtime.lease_persisted {
+            // Lease publication failed after spawn. Keep hard-kill pressure
+            // ahead of polling so a telemetry failure cannot strand the child.
+            runtime
+                .process
+                .kill()
+                .map_err(|error| driver_error(agent_id, error))?;
+            slot.event(runtime.generation, SupervisorEventKind::KillRequested);
         }
         let observation = runtime
             .process
@@ -180,7 +189,16 @@ impl<D: ProcessDriver> Supervisor<D> {
             release_id: runtime.release_id.clone(),
             identity: runtime.identity.clone(),
         };
-        remove_lease(record.layout.run_root(), &lease)?;
+        if runtime.lease_persisted {
+            remove_lease(record.layout.run_root(), &lease)?;
+        } else if matches!(
+            read_lease(record.layout.run_root()),
+            Ok(Some(ref actual)) if actual == &lease
+        ) {
+            // write_lease may have linked the exact final lease before a
+            // directory-fsync failure. Remove only that exact identity.
+            let _ = remove_lease(record.layout.run_root(), &lease);
+        }
         let mut generation = runtime.generation;
         if !fenced {
             let target = match record.lifecycle.lifecycle {
