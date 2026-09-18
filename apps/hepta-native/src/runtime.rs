@@ -18,6 +18,7 @@ use crate::model::validate_digest;
 use crate::model::validate_stable_id;
 use crate::platform::PlatformAdapter;
 use crate::security::GrantVerifier;
+use crate::security::PlatformGrantContext;
 use crate::security::now_unix_ms;
 
 pub struct NativeShellRuntime {
@@ -125,12 +126,14 @@ impl NativeShellRuntime {
         let now = now_unix_ms()?;
         self.grant_verifier.verify_platform_grant(
             &request.grant,
-            &session.session_id,
-            session.generation,
-            &request.operation_id,
-            action,
-            &payload_digest,
-            now,
+            PlatformGrantContext {
+                session_id: &session.session_id,
+                session_generation: session.generation,
+                operation_id: &request.operation_id,
+                action,
+                payload_digest: &payload_digest,
+                now_unix_ms: now,
+            },
         )?;
         let key = OperationKey::new(&session, &request.operation_id)?;
 
