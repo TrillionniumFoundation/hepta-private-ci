@@ -32,10 +32,19 @@ and issuer-key-revocation stores.
 The store uses the repository SQLite durability configuration and validates
 quick-check, migration ledger, schema manifest, provider projections/effect
 rows and foreign keys on open. A read-only diagnostic open neither creates nor
-migrates. The target qualification API is composed through the existing
+migrates. Bare store open verifies canonical qualification rows and receipt
+signatures relative to the persisted issuer certificates; it does not turn a
+certificate stored beside the database into an external trust anchor.
+
+The target qualification API is composed through the existing
 `codex-hepta-governance::GovernanceState` product host. Issuer authentication
 uses a host-pinned `EvidenceIssuerAuthorityV1`; request payloads cannot select a
-trust root. The ordinary App Server installation has no default qualification
+trust root. Every product qualification read, write and checkpoint operation
+revalidates stored issuer certificates against that externally configured root.
+Authority-aware query and chain verification also overlay the current external
+issuer-revocation head, so a key revoked outside SQLite cannot continue to
+support a product qualification claim merely because an older receipt remains
+well-formed. The ordinary App Server installation has no default qualification
 trust root, so the writer fails closed until an external trust-root ceremony
 provides one through the protected host configuration seam. Activation,
 independent acceptance, promotion and release remain separately gated.
@@ -62,8 +71,9 @@ selection, promotion or release authority.
 
 Native tests cover migration/reopen, immutable records, canonicalization,
 idempotency conflict, foreign keys, corruption, provider uncertainty/effects,
-EVID-01..04 qualification semantics, independent-decision bindings, durable key
-revocation, external checkpoint rollback rejection and bounded queries. The
+EVID-01..04 qualification semantics, independent-decision bindings, durable and
+external-head key revocation, pinned-root revalidation, wrong-root rejection,
+external checkpoint rollback rejection and bounded queries. The
 Lane A verifier pins the exact migration file set and emits exact-source plus
 synthetic-merge execution receipts.
 

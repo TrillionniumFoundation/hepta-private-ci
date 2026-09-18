@@ -16,6 +16,7 @@ treated as an independent reviewer.
 | INDEP-01 registered independent decision | `codex-hepta-contracts::IndependentDecisionReceiptV1`; `append_independent_decision_receipt` | `independent_decision_projection_binds_authenticated_signing_identity` | Lane A contract/evidence test receipt | distinct authorized reviewer signature | admission implemented; acceptance pending |
 | REVOC-01 issuer revocation | `append_issuer_key_revocation`; persisted revocation lookup | `durable_key_revocation_invalidates_previous_independent_evidence` | Lane A exact-source/native receipt | external revocation head remains host input | implemented |
 | PROD-01 authenticated product writer/reader/observer | `codex-rs/ext/hepta-governance/src/state.rs` | `governance_product_host_composes_authenticated_writer_reader_and_terminal_observer` | blocking Bazel CI for exact PR candidate | operator acceptance remains external | product composed |
+| TRUST-01 external root and revocation overlay | `qualification.rs::verify_qualification_trust`, `query_claim_with_authority`, `verify_chain_with_authority` | product-host test rejects the wrong pinned root and marks/removes evidence supported by a key newly revoked in the external head | exact product-host test receipt | trust-root ceremony supplies the protected root/head | source composed; ceremony external |
 | CKPT-01 rollback/replacement frontier | `codex-rs/hepta-evidence/src/checkpoint.rs`; `CHECKPOINT_V1.md` | `external_checkpoint_rejects_complete_database_rollback` | Lane A exact-source/native receipt | externally retained checkpoint | implementation complete; external retention required |
 | DOC-01 registry/manual ownership consistency | `docs/modules/kernel.evidence/TECHNICAL.md` | development-docs / registry projection verifier | Hepta development documents CI | not applicable | aligned |
 | EXACT-01 source + synthetic merge | `.github/workflows/lane-a-foundation.yml` | `verify_lane_a_foundation.py` + `run_lane_a_native_qualification.sh` | `lane-a-source-native-<sha>`, `lane-a-merge-native-<sha>` | consumed by independent reviewer | generated per candidate |
@@ -42,7 +43,7 @@ receipts rather than hard-coded into this document.
 | 10. schema/migration | SQLx migration ledger 0001..0011 plus schema manifest |
 | 11. writer fence | authenticated issuer binding + BEGIN IMMEDIATE + idempotency conflict |
 | 12. terminal observer | registered `terminal_observer` role through GovernanceState |
-| 13. revocation source | external certificate revocation head plus durable issuer/receipt revocations |
+| 13. revocation source | host-pinned external certificate revocation head overlaid at product query/verification plus durable issuer/receipt revocations |
 | 14. fault results | EVID-01..04, corruption/reopen and rollback checkpoint tests |
 | 15. resource measurements | registered 256 KiB receipt / 64 asset / 256 edge / 512 result limits; measurements remain candidate CI/host evidence |
 | 16. fallback | missing/conflicting/expired disposition; corruption and rollback fail closed |

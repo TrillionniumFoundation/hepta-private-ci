@@ -178,7 +178,9 @@ None.
 
 The posture is least authority, bounded input, typed contracts, digest binding and independent evidence. Sensitive values are redacted or represented by digests at evidence boundaries. Credentials never enter general logs, learning datasets, prompt factors or cross-module receipts. Authority is operation-bound, final-payload-bound, short-lived and revocation-aware.
 
-Negative tests cover denied capabilities, cross-owner writes, stale or revoked grants, replay with payload drift, unknown fields, oversize input, scope escape, untrusted instruction escalation and secret/provider leakage. Security review is mandatory for new effect boundaries, persistence, network, model invocation or authority semantics.
+The SQLite store deliberately does not persist a self-authorizing trust root. Bare store integrity checks prove canonical row, projection and signature consistency relative to stored issuer certificates. Product qualification paths must additionally use the host-pinned `EvidenceIssuerAuthorityV1`: stored certificates are revalidated against its external root, and the current external revocation head is overlaid on query and chain-verification results. A request or restored database cannot nominate its own trust root.
+
+Negative tests cover denied capabilities, cross-owner writes, stale or revoked grants, replay with payload drift, wrong-root stored certificates, external revocation-head changes, unknown fields, oversize input, scope escape, untrusted instruction escalation and secret/provider leakage. Security review is mandatory for new effect boundaries, persistence, network, model invocation or authority semantics.
 
 ## 10. Performance, capacity and hot-path policy
 
@@ -204,7 +206,7 @@ Current operating and state-format references:
 Current focused test sources (source references, not pass receipts):
 
 - [codex-rs/hepta-evidence/src/qualification_tests.rs](../../../codex-rs/hepta-evidence/src/qualification_tests.rs): exact-candidate and claim-class binding, EVID-01 principal collision, expiry, independent-decision projection, durable key revocation, corruption/reopen fail-closed and database rollback checkpoint rejection.
-- [codex-rs/ext/hepta-governance/src/qualification_product_tests.rs](../../../codex-rs/ext/hepta-governance/src/qualification_product_tests.rs): authenticated product-host writer, reader, terminal observer and checkpoint composition.
+- [codex-rs/ext/hepta-governance/src/qualification_product_tests.rs](../../../codex-rs/ext/hepta-governance/src/qualification_product_tests.rs): authenticated product-host writer, reader, terminal observer and checkpoint composition, including pinned-root revalidation and current external revocation-head enforcement.
 - [codex-rs/hepta-evidence/src/authbus_outbox_issuer_tests.rs](../../../codex-rs/hepta-evidence/src/authbus_outbox_issuer_tests.rs); named case: `current_issuer_scan_cannot_be_starved_by_older_epochs_or_other_issuers`.
 - [codex-rs/hepta-evidence/src/authbus_outbox_quarantine_tests.rs](../../../codex-rs/hepta-evidence/src/authbus_outbox_quarantine_tests.rs); named case: `quarantine_requires_current_fence_and_survives_reopen_without_acknowledgement`.
 
