@@ -62,7 +62,11 @@ fn canonical_json_round_trip_is_byte_stable() {
         panic!("canonical span must decode");
     };
     assert_eq!(decoded, span);
-    assert_eq!(decoded.to_canonical_json(), Ok(bytes));
+    assert_eq!(decoded.to_canonical_json(), Ok(bytes.clone()));
+    assert_eq!(
+        bytes.as_slice(),
+        include_bytes!("../../tests/data/modality_span_v1.canonical.json")
+    );
 }
 
 #[test]
