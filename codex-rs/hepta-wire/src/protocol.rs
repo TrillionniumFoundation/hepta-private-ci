@@ -130,6 +130,7 @@ impl EnvelopeView for WireFrame {
 
 #[cfg(test)]
 mod tests {
+    use std::error::Error;
     use std::panic::catch_unwind;
 
     use codex_hepta_types::Generation;
@@ -145,7 +146,7 @@ mod tests {
     }
 
     #[test]
-    fn deterministic_property_round_trips_many_frames() {
+    fn deterministic_property_round_trips_many_frames() -> Result<(), Box<dyn Error>> {
         let mut state = 0x4d59_5df4_d0f3_3173_u64;
         for index in 1..=1_024_u64 {
             let payload_len = (next(&mut state) as usize % 4_096) + 1;
@@ -153,31 +154,31 @@ mod tests {
             for _ in 0..payload_len {
                 payload.push(next(&mut state) as u8);
             }
-            let schema = StableId::new(format!("wire.property.schema.{index}")).expect("schema");
-            let producer =
-                StableId::new(format!("wire.property.producer.{index}")).expect("producer");
-            let generation = Generation::new(index).expect("generation");
+            let schema = StableId::new(format!("wire.property.schema.{index}"))?;
+            let producer = StableId::new(format!("wire.property.producer.{index}"))?;
+            let generation = Generation::new(index)?;
 
-            let v1 = WireFrame::V1(
-                WireEnvelope::new(
-                    schema.clone(),
-                    producer.clone(),
-                    generation,
-                    payload.clone(),
-                )
-                .expect("v1"),
-            );
-            let v2 = WireFrame::V2(
-                WireEnvelopeV2::new(schema, producer, generation, payload).expect("v2"),
-            );
+            let v1 = WireFrame::V1(WireEnvelope::new(
+                schema.clone(),
+                producer.clone(),
+                generation,
+                payload.clone(),
+            )?);
+            let v2 = WireFrame::V2(WireEnvelopeV2::new(
+                schema,
+                producer,
+                generation,
+                payload,
+            )?);
 
             for frame in [v1, v2] {
                 let encoded = frame.encode();
-                let decoded = WireFrame::decode(&encoded).expect("decode");
+                let decoded = WireFrame::decode(&encoded)?;
                 assert_eq!(decoded, frame);
                 assert_eq!(decoded.encode(), encoded);
             }
         }
+        Ok(())
     }
 
     #[test]
