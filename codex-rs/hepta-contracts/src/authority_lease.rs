@@ -851,14 +851,42 @@ fn frontier_for_state(state: &State) -> AuthorityLeaseFrontier {
     hash.update(b"hepta.kernel.authority.lease-frontier.v1\0");
     hash.update(state.authority_epoch.to_le_bytes());
     hash.update(state.store_revision.to_le_bytes());
-    let bytes = serde_json::to_vec(state)
-        .expect("serializing validated in-memory authority lease state cannot fail");
-    hash.update(bytes);
+    hash.update((state.leases.len() as u64).to_le_bytes());
+    for (lease_id, lease) in &state.leases {
+        hash_text(&mut hash, lease_id);
+        hash.update(lease.schema_version.to_le_bytes());
+        hash_text(&mut hash, &lease.lease_id);
+        hash.update(lease.authority_epoch.to_le_bytes());
+        hash.update(lease.revision.to_le_bytes());
+        hash_text(&mut hash, &lease.binding.principal_id);
+        hash_text(&mut hash, &lease.binding.operation_class);
+        hash_text(&mut hash, &lease.binding.destination_id);
+        hash.update(lease.binding.scope_sha256);
+        hash.update(lease.binding.payload_sha256);
+        hash.update(lease.issued_at_unix_ms.to_le_bytes());
+        hash.update(lease.expires_at_unix_ms.to_le_bytes());
+    }
+    hash.update((state.revocations.len() as u64).to_le_bytes());
+    for (lease_id, revocation) in &state.revocations {
+        hash_text(&mut hash, lease_id);
+        hash.update(revocation.schema_version.to_le_bytes());
+        hash_text(&mut hash, &revocation.lease_id);
+        hash.update(revocation.authority_epoch.to_le_bytes());
+        hash.update(revocation.lease_revision.to_le_bytes());
+        hash.update(revocation.store_revision.to_le_bytes());
+        hash.update(revocation.reason_sha256);
+        hash.update(revocation.revoked_at_unix_ms.to_le_bytes());
+    }
     AuthorityLeaseFrontier {
         authority_epoch: state.authority_epoch,
         store_revision: state.store_revision,
         state_sha256: hash.finalize().into(),
     }
+}
+
+fn hash_text(hash: &mut Sha256, value: &str) {
+    hash.update((value.len() as u64).to_le_bytes());
+    hash.update(value.as_bytes());
 }
 
 fn state_valid(state: &State) -> bool {
