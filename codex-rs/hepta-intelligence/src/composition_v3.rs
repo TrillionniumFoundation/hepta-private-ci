@@ -22,7 +22,7 @@ use crate::PortDecisionV1;
 use crate::PortFailureClassV1;
 use crate::PortFailureV1;
 
-const MAX_CANDIDATES_V3: usize = 128;
+// Reserve two ledger candidate identities for abstain and slow-path.\nconst MAX_CANDIDATES_V3: usize = 126;
 const MAX_SUPPORT_PPM: u32 = 1_000_000;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
