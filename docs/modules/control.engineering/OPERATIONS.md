@@ -16,8 +16,10 @@ requires a separately authorized caller and externally governed identities.
 The canonical repository fact `production_implementation` remains false until a
 named product caller invokes the registered boundary and executable product tests
 cover that path. Deployment readiness is stricter and additionally requires
-independent review, authorized handoff, external key custody, strong-sandbox
-evidence, an observed target deployment, and a rollback rehearsal.
+independent review, authorized handoff, external hardware-backed key custody, a
+signed external audit anchor, strong-sandbox evidence, an observed target
+deployment, and a rollback rehearsal. Multi-host execution additionally requires
+a selected external coordinator and fresh leader/fencing grants at worker writes.
 
 Use
 `control_engineering_v2.production.evaluate_production_readiness` to project
@@ -53,9 +55,14 @@ Before starting or qualifying a deployment candidate:
    required by the selected host. Use one connection per execution thread; writer
    transactions serialize through the implementation's `BEGIN IMMEDIATE`
    boundary.
-7. Verify that the caller, reviewer, evidence signer, deployment operator, and key
-   custodian satisfy the required identity separation before accepting their
-   receipts.
+7. Verify that the caller, reviewer, evidence signer, deployment operator, audit
+   anchor and key custodian satisfy the required identity separation before
+   accepting their receipts.
+8. Production-facing scheduling must authenticate the exact source receipt and
+   predecessor completion receipts. Do not convert a caller-provided completed-ID
+   list into production completion evidence.
+9. If more than one host may write, verify the selected external coordinator,
+   current leader epoch and monotonic fencing token at the worker-write boundary.
 
 ## 3. Runtime health and observability
 
@@ -72,7 +79,11 @@ Monitor the selected host for at least these signals:
   evidence;
 - sealed-decision verification failures and identity collisions;
 - handoff, deployment, or rollback receipts that are absent, expired, or bound to
-  a different target identity.
+  a different target identity;
+- sandbox slot exhaustion or retries exceeding the two-attempt infrastructure
+  retry ceiling;
+- stale external coordinator leader epochs/fencing tokens;
+- external audit-anchor freshness/sequence lag and key-custody receipt expiry.
 
 Do not invent universal alert thresholds in this document. Bind numeric latency,
 capacity, WAL, disk, and retry thresholds to the selected target-host profile and
@@ -143,7 +154,9 @@ restoring stale data.
 
 The in-process `HmacTrustStore` is a reference verifier, not production key
 custody. Production signing keys remain outside this module under an independently
-controlled keystore/HSM or equivalent custody boundary.
+controlled keystore/HSM or equivalent custody boundary. Production readiness
+requires a fresh `KeyCustodyReceipt` asserting a hardware-backed, non-exportable
+verification key. The module verifies that receipt but cannot self-issue it.
 
 A key rotation must:
 
@@ -166,6 +179,20 @@ database, workflow logs, general evidence payloads, or repository.
 Stop writes, quarantine the database, preserve all state files and external
 anchors, and attempt restore/reconciliation using Sections 4 and 5. Do not repair
 hash-linked audit rows in place to make verification pass.
+
+### External coordinator or fencing unavailable
+
+For multi-host execution, stop new worker writes when the external coordinator is
+unavailable, its receipt is stale, or the leader/fencing token does not advance.
+Do not fall back to the local SQLite lease as proof of a distributed fence. A
+single-host deployment may continue only if its declared host profile explicitly
+remains single-host.
+
+### External audit anchor unavailable
+
+Continue local append-only coordination only within the selected operational policy,
+but do not advance deployment readiness while the external anchor is missing or
+stale. Never replace an external anchor with the in-database hash chain itself.
 
 ### Strong sandbox unavailable
 
@@ -214,7 +241,10 @@ bundle that binds:
 - real strong-sandbox receipt;
 - independent reviewer identity and acceptance receipt;
 - authorized handoff receipt;
-- external key-custody identity/receipt;
+- external hardware-backed key-custody identity/receipt;
+- external immutable audit-anchor identity/receipt and anchored audit sequence;
+- for multi-host execution, external coordinator identity, leader epoch and worker
+  fencing receipt;
 - deployment target identity and observed deployment receipt;
 - backup digest and recovery/rollback rehearsal receipt;
 - zero authority delta from `control.engineering`.
