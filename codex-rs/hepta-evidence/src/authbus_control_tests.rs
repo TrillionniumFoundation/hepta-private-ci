@@ -141,8 +141,8 @@ async fn bus_01_simultaneous_last_unit_reservations_cannot_both_succeed() {
     let right = reservation("reservation:right", "operation:right", 1, revision, &decision);
 
     let (left_result, right_result) = tokio::join!(
-        first.reserve_authbus_quota(&decision, &left, 10),
-        second.reserve_authbus_quota(&decision, &right, 10),
+        first.reserve_authbus_quota_at(&decision, &left, 10),
+        second.reserve_authbus_quota_at(&decision, &right, 10),
     );
     assert_eq!(
         usize::from(left_result.is_ok()) + usize::from(right_result.is_ok()),
@@ -167,7 +167,7 @@ async fn bus_02_duplicate_settlement_is_idempotent_and_changed_cost_conflicts() 
     let (store, decision, revision) = configured(&temp, 10).await;
     let request = reservation("reservation:settle", "operation:settle", 5, revision, &decision);
     let held = store
-        .reserve_authbus_quota(&decision, &request, 10)
+        .reserve_authbus_quota_at(&decision, &request, 10)
         .await
         .expect("reserve");
     let evidence = Digest32::of_bytes(b"provider completed");
@@ -208,13 +208,13 @@ async fn bus_03_expiry_racing_terminal_result_never_double_refunds() {
         reservation("reservation:race", "operation:race", 5, revision, &decision);
     request.expires_at_ms = 20;
     let held = first
-        .reserve_authbus_quota(&decision, &request, 10)
+        .reserve_authbus_quota_at(&decision, &request, 10)
         .await
         .expect("reserve");
 
     let evidence = Digest32::of_bytes(b"late terminal provider result");
     let (expiry, settlement) = tokio::join!(
-        first.expire_authbus_reservations(20, 128),
+        first.expire_authbus_reservations_at(20, 128),
         second.settle_authbus_reservation(&held.reservation_id, 4, evidence),
     );
     assert!(expiry.is_ok());
@@ -251,7 +251,7 @@ async fn bus_04_stale_or_disabled_policy_cannot_reserve_effect_quota() {
     let request = reservation("reservation:stale", "operation:stale", 1, revision, &decision);
     assert!(matches!(
         store
-            .reserve_authbus_quota(&decision, &request, 10)
+            .reserve_authbus_quota_at(&decision, &request, 10)
             .await,
         Err(AuthBusControlError::StalePolicyRevision)
     ));
@@ -282,7 +282,7 @@ async fn external_checkpoint_detects_a_stale_or_restored_rollback_guard() {
         &decision,
     );
     store
-        .reserve_authbus_quota(&decision, &request, 10)
+        .reserve_authbus_quota_at(&decision, &request, 10)
         .await
         .expect("reserve");
     let after = store.authbus_rollback_checkpoint().await.expect("after");
@@ -457,13 +457,14 @@ async fn bus_04_effect_adapter_is_never_called_after_policy_revision_changes() {
     let (store, decision, revision) = configured(&temp, 10).await;
     let auth = authorization(1, Digest32::of_bytes(b"payload"));
     let intent = provider_effect(b"payload", "bus-04-denied");
-    let request = reservation(
+    let mut request = reservation(
         "reservation:effect-denied",
         intent.key.as_str(),
         1,
         revision,
         &decision,
     );
+    request.expires_at_ms = u64::MAX;
     store
         .install_authbus_policy(&policy(2, false))
         .await
@@ -476,7 +477,7 @@ async fn bus_04_effect_adapter_is_never_called_after_policy_revision_changes() {
     assert!(matches!(
         store
             .dispatch_provider_effect_with_authbus_qualification(
-                &adapter, &auth, &request, &intent, 10
+                &adapter, &auth, &request, &intent
             )
             .await,
         Err(AuthBusEffectError::AuthorizationDenied)
@@ -496,13 +497,14 @@ async fn completed_provider_effect_settles_only_from_observed_cost_evidence() {
     let (store, decision, revision) = configured(&temp, 10).await;
     let auth = authorization(1, Digest32::of_bytes(b"payload"));
     let intent = provider_effect(b"payload", "settlement");
-    let request = reservation(
+    let mut request = reservation(
         "reservation:provider-complete",
         intent.key.as_str(),
         5,
         revision,
         &decision,
     );
+    request.expires_at_ms = u64::MAX;
     let ack = ProviderEffectAck::new(
         intent.key.clone(),
         intent.payload_sha256.clone(),
