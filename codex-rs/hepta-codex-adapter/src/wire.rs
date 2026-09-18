@@ -11,7 +11,6 @@ use codex_hepta_wire::SchemaRegistry;
 use codex_hepta_wire::StaticSchemaAdmission;
 use codex_hepta_wire::WireFrame;
 
-use crate::AdapterStatus;
 use crate::AppServerObservation;
 use crate::CodexAdapterReceipt;
 use crate::CodexOperationIntent;
@@ -257,7 +256,3 @@ impl fmt::Display for WireAdaptError {
 }
 
 impl StdError for WireAdaptError {}
-
-pub fn status_is_terminal(status: AdapterStatus) -> bool {
-    matches!(status, AdapterStatus::Succeeded)
-}
