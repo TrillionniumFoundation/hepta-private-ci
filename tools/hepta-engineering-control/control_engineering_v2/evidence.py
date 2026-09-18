@@ -10,6 +10,7 @@ import re
 import subprocess
 import time
 from collections.abc import Mapping
+from typing import Protocol
 
 from .control_plane import (
     EngineeringError,
@@ -89,6 +90,29 @@ class EvidenceDecision:
     activation_authority: bool = False
     promotion_authority: bool = False
     release_authority: bool = False
+
+
+class SignatureVerifier(Protocol):
+    """Verification port implemented by reference stores or external custodians."""
+
+    def verify(
+        self,
+        value: object,
+        issuer: str,
+        signing_identity: str,
+        signature: str,
+    ) -> bool: ...
+
+
+class SignatureProvider(SignatureVerifier, Protocol):
+    """Signing port; production implementations keep private keys out of process."""
+
+    def sign(
+        self,
+        value: object,
+        issuer: str,
+        signing_identity: str,
+    ) -> str: ...
 
 
 class HmacTrustStore:
@@ -181,7 +205,7 @@ def verify_canonical_source_receipt(
     root: str | Path,
     expected_repository: str,
     source: CanonicalSourceReceipt,
-    trust_store: HmacTrustStore,
+    trust_store: SignatureVerifier,
     *,
     expected_document_set_digest: str,
     now_ns: int | None = None,
@@ -216,7 +240,7 @@ def verify_canonical_source_receipt(
 
 def verify_work_completion_receipts(
     receipts: tuple[WorkCompletionReceipt, ...] | list[WorkCompletionReceipt],
-    trust_store: HmacTrustStore,
+    trust_store: SignatureVerifier,
     *,
     generation_id: str | None,
     source_commit: str,
@@ -269,7 +293,7 @@ def verify_integration_evidence(
     source_execution: ExecutionReceipt,
     merge_execution: ExecutionReceipt,
     independence: EvaluatorIndependenceReceipt,
-    trust_store: HmacTrustStore,
+    trust_store: SignatureVerifier,
     *,
     expected_document_set_digest: str,
     now_ns: int | None = None,
