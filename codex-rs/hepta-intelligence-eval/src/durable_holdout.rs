@@ -278,10 +278,13 @@ impl DurableFinalHoldoutJournalV1 {
         expected: HoldoutAnchorV1,
         plan: &CrossFoldPlanReceiptV1,
     ) -> Result<DurableHoldoutUseV1, DurableHoldoutError> {
-        let receipt = self.consume(expected, plan)?;
+        let journal_receipt = self.consume(expected, plan)?;
         Ok(DurableHoldoutUseV1 {
-            receipt,
-            anchor: self.anchor(),
+            receipt: journal_receipt.use_receipt,
+            anchor: HoldoutAnchorV1 {
+                sequence: journal_receipt.sequence,
+                head: journal_receipt.record_digest,
+            },
             storage_binding: self.binding,
         })
     }
