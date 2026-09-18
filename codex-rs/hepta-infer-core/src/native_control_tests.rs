@@ -198,6 +198,30 @@ fn pre_dispatch_stop_releases_without_claiming_provider_terminal() {
 }
 
 #[test]
+fn proven_unadmitted_dispatch_releases_without_provider_claim() {
+    let path = path("unadmitted");
+    let mut control = DurableInferenceControl::open(&path, 8).unwrap();
+    control.reserve_native(request("r1"), 1).unwrap();
+    control.dispatch_native("r1", dispatch()).unwrap();
+    let stopped = control
+        .stop_native_before_admission("r1", "remote queue full before admission".to_string())
+        .unwrap();
+    assert_eq!(stopped.state, NativeReservationState::Released);
+    assert_eq!(stopped.observation, None);
+    assert!(stopped.turn_id.is_none());
+    assert_eq!(
+        control.native_started("r1", "turn-1".to_string()),
+        Err(Error::InvalidTransition)
+    );
+    control.reserve_native(request("r2"), 1).unwrap();
+    drop(control);
+    let control = DurableInferenceControl::open(&path, 8).unwrap();
+    assert_eq!(control.native_record("r1"), Some(&stopped));
+    drop(control);
+    std::fs::remove_file(path).unwrap();
+}
+
+#[test]
 fn journal_byte_budget_rejects_before_append_and_replay_checks_actual_bytes() {
     use std::io::Write;
     let path = path("byte-budget");
