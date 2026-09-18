@@ -45,7 +45,7 @@ fn digest(value: &str) -> Digest32 {
     Digest32::of_bytes(value.as_bytes())
 }
 fn fit(generation: u64, value: i64) -> TabularOperatorArtifactV1 {
-    fit_tabular_operator_strict_v2(TabularOperatorPlanV1 {
+    must(fit_tabular_operator_strict_v2(TabularOperatorPlanV1 {
         artifact_id: id(&format!("tabular-{generation}")),
         producer_id: id("fixture-trainer"),
         generation: must(Generation::new(generation)),
@@ -146,7 +146,7 @@ fn worker() {
         ),
         Expected::Value(expected) => {
             let bytes = must(loaded);
-            let model = LoadedTabularOperatorV1::from_pinned_payload(
+            let model = must(LoadedTabularOperatorV1::from_pinned_payload(
                 bytes.bytes(),
                 &TabularPayloadPinV1 {
                     payload_digest: must(request.payload_digest.parse()),
@@ -227,7 +227,7 @@ fn existing_artifact_owner_new_process_predictions_and_revoked_rollback() {
             event_id: id(&format!("register-{generation}")),
             manifest: manifest.clone(),
         }));
-        write_candidate_payload(
+        must(write_candidate_payload(
             must(CreateOnlyArtifactFile::create(&request.payload)),
             &registry,
             &manifest.artifact_id,
@@ -235,7 +235,7 @@ fn existing_artifact_owner_new_process_predictions_and_revoked_rollback() {
         ));
         requests.push(request);
     }
-    let receipt = write_registry_snapshot(
+    let receipt = must(write_registry_snapshot(
         must(CreateOnlyArtifactFile::create(&snapshot)),
         &registry,
         digest("fixture-current-host-binding"),
@@ -257,7 +257,7 @@ fn existing_artifact_owner_new_process_predictions_and_revoked_rollback() {
         reason_digest: digest("withdrawn-support"),
     })));
     let revoked_snapshot = directory.path().join("registry-revoked");
-    let current = write_registry_snapshot(
+    let current = must(write_registry_snapshot(
         must(CreateOnlyArtifactFile::create(&revoked_snapshot)),
         &registry,
         receipt.binding,
