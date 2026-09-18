@@ -15,6 +15,8 @@ on:
       - docs/modules/objective.compiler/**
       - docs/readiness/OBJECTIVE_COMPILER_EXECUTION.md
       - qualification/module-execution-dossiers/detail/objective.compiler.md
+      - docs/readiness/OBJECTIVE_TARGET_HOST_MEASUREMENT.md
+      - scripts/hepta-objective-target-measure.py
       - .github/workflows/hepta-objective-admission.yml
 
 permissions:
@@ -40,6 +42,12 @@ jobs:
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "${GITHUB_SHA}"
           git rev-parse HEAD HEAD^{tree}
+
+      - name: Validate target-host measurement recorder
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta-objective-target-measure.py --self-test
 
       - name: Objective tests
         working-directory: codex-rs
