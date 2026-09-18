@@ -7,9 +7,11 @@ directly owns the SQLite v6 schema/transactions; `orchestration.py` owns verifie
 source issuance, signed predecessor completion and multidimensional planning;
 `candidate.py` owns exact Git materialization/strong isolation while
 `candidate_bundle.py` adds atomic multi-file/rename grammar; `execution_control.py`
-owns host sandbox slots/retry/mutation admission; `external_control.py` verifies
-external fencing/audit/key-custody receipts; and `product_caller.py` is the named
-read-only repository caller. `cli.py` remains a bounded local compatibility surface.
+owns host sandbox slots/retry/mutation admission; `external_control.py` persists
+the highest admitted external worker fence, verifies store-bound external audit
+anchors, and binds subject-specific hardware key custody to the production signing
+port; and `product_caller.py` is the named read-only repository caller. `cli.py`
+remains a bounded local compatibility surface.
 
 [COMPONENTS.json](COMPONENTS.json) and [TRACEABILITY.json](TRACEABILITY.json) are
 source/test navigation maps. They do not self-certify maturity or grant authority.
@@ -32,10 +34,12 @@ requires exact source/merge CI, verified native mapping, a named product caller,
 executable product tests, authenticated source issuance, authenticated predecessor
 completion and the multidimensional orchestration path. Deployment readiness additionally requires a
 distinct independent reviewer, authorized handoff, external hardware-backed key
-custody, a signed external audit anchor, strong sandbox observation, observed target
-deployment and a rollback rehearsal; multi-host execution also requires an external
-leader/fencing backend receipt at the worker-write boundary. The
-projection grants no authority and cannot authenticate those external receipts.
+custody bound to the exact production signing identity, a signed external audit
+anchor that matches current authoritative store state, strong sandbox observation,
+observed target deployment and a rollback rehearsal; multi-host execution also
+requires an external leader/fencing backend receipt whose highest observed frontier
+is durably persisted at the worker-write boundary. The projection grants no
+authority and cannot authenticate or manufacture those external providers.
 
 Owner work stops at durable assignments, merge-queue proposals, candidate
 qualification, signed review eligibility or a dormant external-system proposal.
