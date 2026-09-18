@@ -445,6 +445,57 @@ test("worker response must echo exact request kind and payload digest", async ()
   assert.equal(capture.child.killed, true);
 });
 
+test("subprocess driver persisted recovery fails closed without a trusted observer", async () => {
+  const driver = new SubprocessBrowserDriver({
+    workerPath: "/worker",
+    workerDigest: D1,
+    profileRoot: "/profiles",
+    launcher: fakeLauncher(),
+  });
+  const observed = await driver.reconcilePersisted({
+    profileId: "profile.1",
+    principalId: "principal.1",
+    profileGeneration: 1,
+    operationId: "operation.persisted",
+  });
+  assert.deepEqual(observed, {
+    terminalObserved: false,
+    observationReason: "persisted_reconciler_unavailable",
+  });
+});
+
+test("subprocess driver delegates persisted recovery only to an explicit trusted observer", async () => {
+  let received;
+  const driver = new SubprocessBrowserDriver({
+    workerPath: "/worker",
+    workerDigest: D1,
+    profileRoot: "/profiles",
+    launcher: fakeLauncher(),
+    persistedReconciler: async (input, { signal }) => {
+      received = input;
+      assert.equal(signal?.aborted, false);
+      return {
+        terminalObserved: true,
+        status: "succeeded",
+        outcomeDigest: D1,
+      };
+    },
+  });
+  const controller = new AbortController();
+  const observed = await driver.reconcilePersisted(
+    {
+      profileId: "profile.1",
+      principalId: "principal.1",
+      profileGeneration: 1,
+      operationId: "operation.persisted",
+    },
+    { signal: controller.signal },
+  );
+  assert.equal(received.operationId, "operation.persisted");
+  assert.equal(observed.terminalObserved, true);
+  assert.equal(observed.status, "succeeded");
+});
+
 test("subprocess driver containment kills the quarantined worker and still permits cleanup", async () => {
   const capture = {};
   const { driver, started } = await preparedDriver({

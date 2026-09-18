@@ -64,6 +64,7 @@ export class BrowserProfileHost {
       "observe",
       "dispatch",
       "reconcile",
+      "reconcilePersisted",
       "contain",
       "stop",
     ]) {
@@ -646,11 +647,11 @@ export class BrowserProfileHost {
       try {
         const observed = requireRecord(
           await this.#callDriver(
-            "reconcile",
+            "reconcilePersisted",
             effectSemantics,
             this.#clock() + this.#driverCallTimeoutMs,
           ),
-          "driver reconciliation observation",
+          "persisted driver reconciliation observation",
         );
         receipt = this.#effectReceipt(
           profileId,
@@ -664,8 +665,8 @@ export class BrowserProfileHost {
           operationId,
           durable.semanticDigest,
           error?.name === "BrowserDriverTimeoutError"
-            ? "reconcile_timeout"
-            : "reconcile_error",
+            ? "persisted_reconcile_timeout"
+            : "persisted_reconcile_error",
         );
       }
       await this.#journal.recordObservation({

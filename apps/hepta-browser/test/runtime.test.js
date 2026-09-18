@@ -82,8 +82,14 @@ function authority({ authorized = true, witnessDigest = W1, delay = 0 } = {}) {
   };
 }
 
-function driver({ terminalOnReconcile = true, dispatchImpl, observeImpl } = {}) {
+function driver({
+  terminalOnReconcile = true,
+  dispatchImpl,
+  observeImpl,
+  persistedReconcileImpl,
+} = {}) {
   let dispatchCalls = 0;
+  let persistedReconcileCalls = 0;
   let containCalls = 0;
   let stopCalls = 0;
   return {
@@ -93,6 +99,9 @@ function driver({ terminalOnReconcile = true, dispatchImpl, observeImpl } = {}) 
     },
     get dispatchCalls() {
       return dispatchCalls;
+    },
+    get persistedReconcileCalls() {
+      return persistedReconcileCalls;
     },
     get containCalls() {
       return containCalls;
@@ -126,6 +135,14 @@ function driver({ terminalOnReconcile = true, dispatchImpl, observeImpl } = {}) 
       return terminalOnReconcile
         ? { terminalObserved: true, status: "succeeded", outcomeDigest: D1 }
         : { terminalObserved: false };
+    },
+    async reconcilePersisted(payload, context) {
+      persistedReconcileCalls += 1;
+      if (persistedReconcileImpl) return persistedReconcileImpl(payload, context);
+      return {
+        terminalObserved: false,
+        observationReason: "test_persisted_reconciler_unavailable",
+      };
     },
     async contain() {
       containCalls += 1;
@@ -643,7 +660,7 @@ test("disallowed observed origin is quarantined and cannot authorize an action",
   assert.equal(fakeDriver.dispatchCalls, 0);
 });
 
-test("persisted indeterminate operation reconciles after host process loss without redispatch", async () => {
+test("persisted indeterminate operation requires an explicit crash reconciler after host loss", async () => {
   const journal = new MemoryBrowserOperationJournal();
   const firstDriver = driver({
     dispatchImpl: async () => {
@@ -655,26 +672,35 @@ test("persisted indeterminate operation reconciles after host process loss witho
   assert.equal(unknown.status, "indeterminate");
   assert.equal(firstDriver.dispatchCalls, 1);
 
-  const secondDriver = driver();
+  const unavailableDriver = driver();
   const blockedHost = new BrowserProfileHost({
-    driver: secondDriver,
+    driver: unavailableDriver,
     authority: authority(),
     journal,
     clock: () => 1_000,
     allowVolatileJournalForTests: true,
     driverCallTimeoutMs: 50,
   });
-  await assert.rejects(
-    blockedHost.openProfile(input()),
-    /durable operation history/,
-  );
+  await assert.rejects(blockedHost.openProfile(input()), /durable operation history/);
   await assert.rejects(
     blockedHost.openProfile(input({ generation: 2 })),
     /unresolved durable effects/,
   );
+  const unresolved = await blockedHost.reconcilePersistedOperation(operation());
+  assert.equal(unresolved.status, "indeterminate");
+  assert.equal(unresolved.terminalObserved, false);
+  assert.equal(unavailableDriver.persistedReconcileCalls, 1);
+  assert.equal((await journal.listOperations("profile.1", 1)).length, 1);
 
+  const recoveryDriver = driver({
+    persistedReconcileImpl: async () => ({
+      terminalObserved: true,
+      status: "succeeded",
+      outcomeDigest: D1,
+    }),
+  });
   const recoveredHost = new BrowserProfileHost({
-    driver: secondDriver,
+    driver: recoveryDriver,
     authority: authority(),
     journal,
     clock: () => 20_000,
@@ -684,7 +710,8 @@ test("persisted indeterminate operation reconciles after host process loss witho
   const recovered = await recoveredHost.reconcilePersistedOperation(operation());
   assert.equal(recovered.status, "succeeded");
   assert.equal(recovered.terminalObserved, true);
-  assert.equal(secondDriver.dispatchCalls, 0);
+  assert.equal(recoveryDriver.dispatchCalls, 0);
+  assert.equal(recoveryDriver.persistedReconcileCalls, 1);
   assert.deepEqual(await journal.listOperations("profile.1", 1), []);
   await assert.rejects(
     journal.assertProfileGenerationAvailable("profile.1", 1),

@@ -559,8 +559,15 @@ export class SubprocessBrowserDriver {
   #sessionId = null;
   #generation = null;
   #processId = null;
+  #persistedReconciler = null;
 
-  constructor({ workerPath, workerDigest, profileRoot, launcher }) {
+  constructor({
+    workerPath,
+    workerDigest,
+    profileRoot,
+    launcher,
+    persistedReconciler = null,
+  }) {
     if (!isAbsolute(workerPath)) throw new TypeError("workerPath must be absolute");
     if (!isAbsolute(profileRoot)) throw new TypeError("profileRoot must be absolute");
     requireRecord(launcher, "launcher");
@@ -587,10 +594,17 @@ export class SubprocessBrowserDriver {
     if (typeof launcher.spawn !== "function") {
       throw new TypeError("launcher.spawn must be a function");
     }
+    if (
+      persistedReconciler !== null &&
+      typeof persistedReconciler !== "function"
+    ) {
+      throw new TypeError("persistedReconciler must be a function or null");
+    }
     this.#workerPath = workerPath;
     this.#workerDigest = expectedDigest(workerDigest, "workerDigest");
     this.#profileRoot = profileRoot;
     this.#launcher = launcher;
+    this.#persistedReconciler = persistedReconciler;
   }
 
   async start(input, { signal } = {}) {
@@ -740,6 +754,23 @@ export class SubprocessBrowserDriver {
   async reconcile(input, { signal } = {}) {
     this.#requireSession(input);
     return this.#client.request("reconcile", input.operationId, input, { signal });
+  }
+
+  async reconcilePersisted(input, { signal } = {}) {
+    requireRecord(input, "persisted browser reconciliation input");
+    if (signal?.aborted) {
+      throw signal.reason instanceof Error ? signal.reason : abortError();
+    }
+    if (this.#persistedReconciler === null) {
+      return Object.freeze({
+        terminalObserved: false,
+        observationReason: "persisted_reconciler_unavailable",
+      });
+    }
+    return requireRecord(
+      await this.#persistedReconciler(input, { signal }),
+      "persisted browser reconciliation observation",
+    );
   }
 
   async contain(input) {
