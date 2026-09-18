@@ -99,7 +99,7 @@ impl LedgerWitnessStore {
         if length < HEADER as u64 {
             return Err(WitnessStoreError::MissingHeader);
         }
-        if (length - HEADER as u64) % ENTRY as u64 != 0 {
+        if !(length - HEADER as u64).is_multiple_of(ENTRY as u64) {
             return Err(WitnessStoreError::Corrupt);
         }
         file.seek(SeekFrom::Start(0))?;
