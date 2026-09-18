@@ -17,7 +17,12 @@ mutation testing; verifies source/execution/evaluator evidence; records signed
 candidate-bound review eligibility; exposes distributed-fence, external-audit-anchor
 and external-key-custody admission contracts; and composes consent-bound dormant
 external-system proposals. The repository CI includes a named v2 product caller.
-It is not a learned code generator, merge service or autonomous release agent.
+That caller fail-closed binds the exact tested tree to the canonical
+`ECP-1-ENGINEERING-CONTROL-PLANE` row in `docs/delivery/WORK_PACKAGES.json`,
+including its owner, state, zero authority delta, write scope and unresolved
+`DOC-2-DEFAULT-BRANCH-SELECTION` predecessors; the binding is emitted by digest
+and does not reinterpret that predecessor as satisfied. It is not a learned code
+generator, merge service or autonomous release agent.
 
 Review requests and dormant proposals do not themselves merge, activate, deploy,
 enroll a host or transfer credentials. A deployment controller or production caller
