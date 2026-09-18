@@ -3706,6 +3706,7 @@ async fn verify_store(
             ('matrix_actionable_inbox_dispatches_v2', 'view'),
             ('matrix_sendable_outbox_v2', 'view'),
             ('matrix_dispatch_ledger', 'table'),
+            ('matrix_dispatch_operation', 'index'),
             ('matrix_dispatch_unresolved', 'index'),
             ('matrix_dispatch_terminal_event', 'index'),
             ('matrix_dispatch_ledger_no_delete', 'trigger'),
@@ -3720,7 +3721,7 @@ async fn verify_store(
     .fetch_one(pool)
     .await
     .map_err(unavailable)?;
-    if required_objects != 39 {
+    if required_objects != 40 {
         return Err(MatrixDurableError::Corrupt);
     }
     verify_matrix_v2_schema(pool).await?;
