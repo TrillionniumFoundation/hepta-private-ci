@@ -343,7 +343,7 @@ fn lock(file: File, kind: LockKind) -> Result<LockedFile, ArtifactStorageError> 
     }
 }
 
-fn write_new(file: CreateOnlyArtifactFile, bytes: &[u8]) -> Result<(), ArtifactStorageError> {
+pub(crate) fn write_new(file: CreateOnlyArtifactFile, bytes: &[u8]) -> Result<(), ArtifactStorageError> {
     let mut guard = lock(file.0, LockKind::Exclusive)?;
     if guard.0.metadata()?.len() != 0 {
         // Atomic creation already proved the target did not exist. Bytes appearing
@@ -358,7 +358,7 @@ fn write_new(file: CreateOnlyArtifactFile, bytes: &[u8]) -> Result<(), ArtifactS
         .map_err(|_| ArtifactStorageError::Indeterminate)
 }
 
-fn read_bounded(
+pub(crate) fn read_bounded(
     file: File,
     limit: usize,
     expected_bytes: u64,
