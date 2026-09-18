@@ -124,7 +124,7 @@ Projection domains rebuild from declared sources and publish complete generation
 
 `execute_once` is asynchronous. It validates query/lease state, observes current authority, derives an attempt cutoff from the minimum of query deadline, lease expiry and authority expiry, then races the transport future against cancellation and an engine-owned timeout. No module lock is held across transport I/O and no detached retry/background queue is permitted by this boundary.
 
-After transport completion the engine obtains a second authority observation. Only then can a terminal remote response be admitted. The product adapter reads the persisted federation capability head for both observations and checks the exact owner-memory frontier before and after the owner retrieval. A changing frontier makes that attempt unavailable rather than pretending to be a coherent empty/complete read.
+After transport completion the engine obtains a second authority observation. Only then can a terminal remote response be admitted. The product adapter reads the persisted federation capability head for both observations. The owner retrieval already executes all channels and candidate resolution inside one SQLite read transaction; that same transaction records the append-only owner-memory frontier used as the V2 remote observation witness, so no second read is used to guess coherence.
 
 The product multi-reader aggregator is deterministic: successful batches contribute candidates; failures increment explicit failed-source coverage; ranking is stable and bounded before truncation. The aggregate admission expiry is the minimum successful-peer V2 expiry.
 
