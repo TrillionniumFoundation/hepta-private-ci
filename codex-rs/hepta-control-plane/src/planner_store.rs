@@ -53,6 +53,7 @@ impl From<PlannerJournalError> for PlannerStoreError {
 /// directory, no-follow opens, a single-process lock, same-directory atomic
 /// replacement, and file plus directory fsync. A caller must supply the
 /// currently authoritative revoked-decision floor when opening restored state.
+#[derive(Debug)]
 pub struct PlannerJournalStoreV1 {
     root: File,
     _lock: File,
