@@ -78,6 +78,10 @@ impl From<ArtifactAdmissionError> for ArtifactPublicationError {
     }
 }
 
+#[expect(
+    clippy::too_many_arguments,
+    reason = "publication preparation binds the complete immutable host transaction tuple"
+)]
 pub fn prepare_artifact_publication_transaction_v1(
     admission: &WithdrawalBoundArtifactAdmissionV3,
     withdrawal_domain: &WithdrawalAuthorityDomainV1,
@@ -196,6 +200,10 @@ pub fn classify_artifact_publication_recovery_v1(
     Err(ArtifactPublicationError::RecoveryHeadConflict)
 }
 
+#[expect(
+    clippy::too_many_arguments,
+    reason = "the digest commits every immutable publication transaction field"
+)]
 fn digest_transaction(
     registry_id: &StableId,
     registry_generation: Generation,
@@ -226,7 +234,7 @@ fn digest_transaction(
 
 fn push_id(bytes: &mut Vec<u8>, value: &StableId) {
     let raw = value.as_str().as_bytes();
-    let len = u32::try_from(raw.len()).expect("StableId length is bounded");
+    let len = u32::try_from(raw.len()).unwrap_or(u32::MAX);
     bytes.extend_from_slice(&len.to_be_bytes());
     bytes.extend_from_slice(raw);
 }
