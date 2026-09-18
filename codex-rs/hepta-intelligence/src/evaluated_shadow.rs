@@ -23,17 +23,18 @@ use codex_hepta_intuition::CalibratedError;
 use codex_hepta_intuition::CalibratedIntuitionReceiptV1;
 use codex_hepta_intuition::decide_calibrated_v2;
 use codex_hepta_learning_ledger::AppendReceipt;
-use codex_hepta_learning_ledger::CandidateSetCompleteness;
+use codex_hepta_learning_ledger::CandidateSetCompletenessReceiptV1;
 use codex_hepta_learning_ledger::DatasetReceiptError;
 use codex_hepta_learning_ledger::DatasetSnapshotReceiptV3;
-use codex_hepta_learning_ledger::DurableLearningJournal;
-use codex_hepta_learning_ledger::DurableLedgerError;
-use codex_hepta_learning_ledger::EpisodeDecision;
 use codex_hepta_learning_ledger::LearningEvidenceRoleV1;
-use codex_hepta_learning_ledger::LearningEvidenceVerifierV1;
-use codex_hepta_learning_ledger::LedgerEvent;
+use codex_hepta_learning_ledger::LedgerWriter;
+use codex_hepta_learning_ledger::ProductionDecisionV2;
+use codex_hepta_learning_ledger::ProductionLedgerError;
 use codex_hepta_learning_ledger::SignedEvidenceError;
 use codex_hepta_learning_ledger::SignedLearningEvidenceV1;
+use codex_hepta_learning_ledger::candidate_ids_digest_v2;
+use codex_hepta_learning_ledger::candidate_order_digest_v2;
+use codex_hepta_learning_ledger::decision_signing_payload_v2;
 use codex_hepta_learning_ledger::verify_dataset_snapshot_receipt_v3;
 use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
@@ -64,6 +65,8 @@ pub struct EvaluatedShadowRequestV1<'a> {
     pub candidate_bytes: &'a [u8],
     /// The same evaluator signs `evaluated_candidate_signing_payload_v1`.
     pub candidate_evidence: &'a SignedLearningEvidenceV1,
+    /// The generator signs the exact V2 durable decision payload.
+    pub decision_evidence: &'a SignedLearningEvidenceV1,
     pub dataset: &'a DatasetSnapshotReceiptV3,
     pub intuition: CalibratedDecisionRequestV1,
     pub episode_id: StableId,
@@ -88,7 +91,7 @@ pub enum EvaluatedShadowError {
     Dataset(DatasetReceiptError),
     Intuition(CalibratedError),
     Pipeline(PipelineErrorV1),
-    Ledger(DurableLedgerError),
+    Ledger(ProductionLedgerError),
 }
 
 impl fmt::Display for EvaluatedShadowError {
@@ -131,8 +134,7 @@ pub fn evaluated_candidate_signing_payload_v1(
 /// sync is blocking and cannot be cancelled safely at a latency budget boundary.
 pub fn run_evaluated_shadow_v1<P: LaneFShadowPortsV1>(
     request: EvaluatedShadowRequestV1<'_>,
-    verifier: &LearningEvidenceVerifierV1,
-    ledger: &mut dyn DurableLearningJournal,
+    ledger: &mut LedgerWriter,
     ports: &mut P,
     now: u64,
 ) -> Result<EvaluatedShadowReceiptV1, EvaluatedShadowError> {
@@ -155,7 +157,8 @@ pub fn run_evaluated_shadow_v1<P: LaneFShadowPortsV1>(
         request.candidate_bytes,
         request.run.snapshot.learning_artifact_generation,
     )?;
-    let candidate = verifier
+    let candidate = ledger
+        .verifier()
         .verify(
             LearningEvidenceRoleV1::Evaluator,
             request.candidate_evidence,
@@ -191,7 +194,7 @@ pub fn run_evaluated_shadow_v1<P: LaneFShadowPortsV1>(
         request.evaluation,
         request.metric_roles,
         request.evaluation_evidence,
-        verifier,
+        ledger.verifier(),
         now,
     )
     .map_err(E::Evaluation)?;
