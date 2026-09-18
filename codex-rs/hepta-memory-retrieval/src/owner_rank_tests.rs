@@ -47,12 +47,18 @@ fn owner_rank_is_deterministic_and_binds_complete_input() {
 
     let mut reversed = request();
     reversed.candidates.reverse();
-    assert_eq!(baseline, rank_owner_candidates(reversed).expect("permutation"));
+    assert_eq!(
+        baseline,
+        rank_owner_candidates(reversed).expect("permutation")
+    );
 
     let mut changed_tail = request();
     changed_tail.candidates[0].owner_score = 21;
     let changed = rank_owner_candidates(changed_tail).expect("changed");
-    assert_ne!(baseline.request_binding_digest, changed.request_binding_digest);
+    assert_ne!(
+        baseline.request_binding_digest,
+        changed.request_binding_digest
+    );
     assert_ne!(baseline.receipt_digest, changed.receipt_digest);
 }
 
@@ -62,8 +68,10 @@ fn owner_rank_binds_support_and_rejects_tombstones() {
     let mut changed = request();
     changed.candidates[1].support_digest = digest("changed-support");
     let changed = rank_owner_candidates(changed).expect("changed support");
-    assert_ne!(baseline.request_binding_digest, changed.request_binding_digest);
-
+    assert_ne!(
+        baseline.request_binding_digest,
+        changed.request_binding_digest
+    );
 
     let mut stale = request();
     stale.candidates[0].snapshot_digest = digest("stale-snapshot");

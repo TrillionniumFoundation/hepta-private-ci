@@ -226,7 +226,6 @@ fn tombstones_and_duplicate_channel_candidates_fail_closed() {
     );
 }
 
-
 #[test]
 fn compile_cue_is_deterministic_and_binds_snapshot_and_profile() {
     let snapshot = snapshot_key();
@@ -263,7 +262,10 @@ fn product_capacity_ceiling_is_enforced_by_policy() {
     assert_eq!(MAX_GENERATION_BOUND_RESULTS, 16);
     let mut oversized = policy();
     oversized.maximum_results = 17;
-    assert_eq!(oversized.validate(), Err(RecallErrorV1::InvalidMaximumResults));
+    assert_eq!(
+        oversized.validate(),
+        Err(RecallErrorV1::InvalidMaximumResults)
+    );
 }
 
 #[test]

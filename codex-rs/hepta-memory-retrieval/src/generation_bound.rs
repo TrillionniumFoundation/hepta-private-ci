@@ -59,9 +59,7 @@ pub fn compile_cue(
     snapshot_key: CognitiveSnapshotKeyV1,
     cue_profile_digest: Digest32,
 ) -> Result<MemoryCueV1, RecallErrorV1> {
-    snapshot_key
-        .validate()
-        .map_err(RecallErrorV1::Contract)?;
+    snapshot_key.validate().map_err(RecallErrorV1::Contract)?;
     ensure_digest("objective", objective_digest)?;
     ensure_digest("approved_context", approved_context_digest)?;
     ensure_digest("cue_profile", cue_profile_digest)?;

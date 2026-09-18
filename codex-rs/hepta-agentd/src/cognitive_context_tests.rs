@@ -87,7 +87,6 @@ async fn context_reads_real_owner_content_and_removes_committed_tombstones() {
     assert!(read(&store, &other, 1, "lemon", 4, None).await.is_err());
 }
 
-
 #[tokio::test]
 async fn post_ranking_withdrawal_fails_closed_before_context_delivery() {
     let temp = tempfile::tempdir().unwrap();
@@ -168,6 +167,8 @@ async fn post_ranking_withdrawal_fails_closed_before_context_delivery() {
 
     assert!(matches!(
         result,
-        Err(CognitiveContextError::Store(CognitiveStoreError::Conflict(_)))
+        Err(CognitiveContextError::Store(CognitiveStoreError::Conflict(
+            _
+        )))
     ));
 }

@@ -430,7 +430,6 @@ async fn byte_cut_cannot_hide_an_unsupported_candidate_from_whole_batch_abstenti
     assert_eq!(selected.items, vec![baseline.items[0].clone()]);
 }
 
-
 #[tokio::test]
 async fn learned_ranker_can_promote_owner_observed_candidate_beyond_legacy_top_four() {
     let contents = (0..6)
@@ -460,7 +459,13 @@ async fn learned_ranker_can_promote_owner_observed_candidate_beyond_legacy_top_f
 
     let scores = observed
         .iter()
-        .map(|item| if item.memory_id == tail.memory_id { 100 } else { 0 })
+        .map(|item| {
+            if item.memory_id == tail.memory_id {
+                100
+            } else {
+                0
+            }
+        })
         .collect::<Vec<_>>();
     let fixture = fitted_ranker(owner.clone(), &observed, &scores);
     let selected = read(
