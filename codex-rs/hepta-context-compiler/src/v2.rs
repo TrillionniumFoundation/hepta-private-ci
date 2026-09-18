@@ -586,13 +586,18 @@ pub struct ContextCompilationReceiptV2 {
     pub objective_digest: Digest32,
     pub prompt_portfolio_digest: Digest32,
     pub generation_vector_digest: Digest32,
+    pub admission_verifier_digest: Digest32,
+    pub admission_snapshot_digest: Digest32,
+    pub revocation_frontier_digest: Digest32,
     pub model_profile_digest: Digest32,
     pub candidate_set_digest: Digest32,
+    pub mandatory_groups_digest: Digest32,
     pub selected_item_ids: Vec<StableId>,
     pub omitted_item_ids: Vec<StableId>,
     pub used_tokens: u64,
     pub token_upper_bound: u64,
     pub truncation_policy_digest: Digest32,
+    pub compiled_at_unix_ms: u64,
     pub context_digest: Digest32,
     pub receipt_digest: Digest32,
     pub authority: AuthorityPosture,
@@ -604,13 +609,20 @@ impl ContextCompilationReceiptV2 {
             ("objective", self.objective_digest),
             ("prompt_portfolio", self.prompt_portfolio_digest),
             ("generation_vector", self.generation_vector_digest),
+            ("admission_verifier", self.admission_verifier_digest),
+            ("admission_snapshot", self.admission_snapshot_digest),
+            ("revocation_frontier", self.revocation_frontier_digest),
             ("model_profile", self.model_profile_digest),
             ("candidate_set", self.candidate_set_digest),
+            ("mandatory_groups", self.mandatory_groups_digest),
             ("truncation_policy", self.truncation_policy_digest),
             ("context", self.context_digest),
             ("compilation_receipt", self.receipt_digest),
         ] {
             ensure_digest(name, digest)?;
+        }
+        if self.compiled_at_unix_ms == 0 {
+            return Err(ContextCompilerV2Error::InvalidCompilationTime);
         }
         if self.used_tokens > self.token_upper_bound
             || self.token_upper_bound > MAX_CONTEXT_TOKENS_V2
@@ -637,8 +649,12 @@ impl ContextCompilationReceiptV2 {
             self.objective_digest,
             self.prompt_portfolio_digest,
             self.generation_vector_digest,
+            self.admission_verifier_digest,
+            self.admission_snapshot_digest,
+            self.revocation_frontier_digest,
             self.model_profile_digest,
             self.candidate_set_digest,
+            self.mandatory_groups_digest,
         ] {
             push_digest(&mut bytes, digest);
         }
@@ -647,6 +663,7 @@ impl ContextCompilationReceiptV2 {
         push_u64(&mut bytes, self.used_tokens);
         push_u64(&mut bytes, self.token_upper_bound);
         push_digest(&mut bytes, self.truncation_policy_digest);
+        push_u64(&mut bytes, self.compiled_at_unix_ms);
         push_digest(&mut bytes, self.context_digest);
         Digest32::of_bytes(&bytes)
     }
@@ -654,13 +671,33 @@ impl ContextCompilationReceiptV2 {
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct CompiledContextV2 {
-    pub receipt: ContextCompilationReceiptV2,
-    pub selected_candidates: Vec<ContextCandidateV2>,
+    receipt: ContextCompilationReceiptV2,
+    model_profile: ContextModelProfileV2,
+    selected_candidates: Vec<ContextCandidateV2>,
 }
 
 impl CompiledContextV2 {
+    #[must_use]
+    pub fn receipt(&self) -> &ContextCompilationReceiptV2 {
+        &self.receipt
+    }
+
+    #[must_use]
+    pub fn model_profile(&self) -> &ContextModelProfileV2 {
+        &self.model_profile
+    }
+
+    #[must_use]
+    pub fn selected_candidates(&self) -> &[ContextCandidateV2] {
+        &self.selected_candidates
+    }
+
     pub fn validate(&self) -> Result<(), ContextCompilerV2Error> {
         self.receipt.validate()?;
+        self.model_profile.validate()?;
+        if self.model_profile.digest() != self.receipt.model_profile_digest {
+            return Err(ContextCompilerV2Error::DigestMismatch("model_profile"));
+        }
         let selected_ids = self
             .selected_candidates
             .iter()
@@ -668,6 +705,16 @@ impl CompiledContextV2 {
             .collect::<Vec<_>>();
         if selected_ids != self.receipt.selected_item_ids {
             return Err(ContextCompilerV2Error::SelectedSetMismatch);
+        }
+        for candidate in &self.selected_candidates {
+            candidate.validate(
+                self.receipt.generation_vector_digest,
+                &self.model_profile,
+                self.receipt.admission_verifier_digest,
+                self.receipt.admission_snapshot_digest,
+                self.receipt.revocation_frontier_digest,
+                self.receipt.compiled_at_unix_ms,
+            )?;
         }
         if self.receipt.context_digest != compute_context_digest(&self.selected_candidates) {
             return Err(ContextCompilerV2Error::DigestMismatch("context"));
@@ -684,9 +731,15 @@ pub fn compile_v2(
         ("objective", request.objective_digest),
         ("prompt_portfolio", request.prompt_portfolio_digest),
         ("generation_vector", request.generation_vector_digest),
+        ("admission_verifier", request.admission_verifier_digest),
+        ("admission_snapshot", request.admission_snapshot_digest),
+        ("revocation_frontier", request.revocation_frontier_digest),
         ("truncation_policy", request.truncation_policy_digest),
     ] {
         ensure_digest(name, digest)?;
+    }
+    if request.compiled_at_unix_ms == 0 {
+        return Err(ContextCompilerV2Error::InvalidCompilationTime);
     }
     if request.candidates.len() > MAX_CONTEXT_CANDIDATES_V2 {
         return Err(ContextCompilerV2Error::CandidateLimitExceeded);
@@ -705,7 +758,14 @@ pub fn compile_v2(
         .sort_by(|left, right| left.item_id.cmp(&right.item_id));
     let mut by_id = BTreeMap::<StableId, ContextCandidateV2>::new();
     for candidate in request.candidates {
-        candidate.validate(request.generation_vector_digest, &request.model_profile)?;
+        candidate.validate(
+            request.generation_vector_digest,
+            &request.model_profile,
+            request.admission_verifier_digest,
+            request.admission_snapshot_digest,
+            request.revocation_frontier_digest,
+            request.compiled_at_unix_ms,
+        )?;
         let item_id = candidate.item_id.clone();
         if by_id.insert(item_id.clone(), candidate).is_some() {
             return Err(ContextCompilerV2Error::DuplicateCandidate(
@@ -715,6 +775,8 @@ pub fn compile_v2(
     }
 
     let candidate_set_digest = compute_candidate_set_digest(by_id.values());
+    let mandatory_groups = normalize_mandatory_groups(request.mandatory_groups, &by_id)?;
+    let mandatory_groups_digest = compute_mandatory_groups_digest(&mandatory_groups);
     let mut mandatory_ids = by_id
         .values()
         .filter(|candidate| {
@@ -725,33 +787,8 @@ pub fn compile_v2(
         })
         .map(|candidate| candidate.item_id.clone())
         .collect::<BTreeSet<_>>();
-    let mut group_ids = BTreeSet::new();
-    for group in request.mandatory_groups {
-        if !group_ids.insert(group.group_id.clone()) {
-            return Err(ContextCompilerV2Error::DuplicateMandatoryGroup(
-                group.group_id.to_string(),
-            ));
-        }
-        ensure_digest("mandatory_group_reason", group.reason_digest)?;
-        if group.item_ids.is_empty() {
-            return Err(ContextCompilerV2Error::EmptyMandatoryGroup(
-                group.group_id.to_string(),
-            ));
-        }
-        let mut local_ids = BTreeSet::new();
-        for item_id in group.item_ids {
-            if !local_ids.insert(item_id.clone()) {
-                return Err(ContextCompilerV2Error::DuplicateMandatoryItem(
-                    item_id.to_string(),
-                ));
-            }
-            if !by_id.contains_key(&item_id) {
-                return Err(ContextCompilerV2Error::UnknownMandatoryItem(
-                    item_id.to_string(),
-                ));
-            }
-            mandatory_ids.insert(item_id);
-        }
+    for group in &mandatory_groups {
+        mandatory_ids.extend(group.item_ids.iter().cloned());
     }
 
     let mandatory_tokens = mandatory_ids.iter().try_fold(0_u64, |total, item_id| {
@@ -810,13 +847,18 @@ pub fn compile_v2(
         objective_digest: request.objective_digest,
         prompt_portfolio_digest: request.prompt_portfolio_digest,
         generation_vector_digest: request.generation_vector_digest,
+        admission_verifier_digest: request.admission_verifier_digest,
+        admission_snapshot_digest: request.admission_snapshot_digest,
+        revocation_frontier_digest: request.revocation_frontier_digest,
         model_profile_digest,
         candidate_set_digest,
+        mandatory_groups_digest,
         selected_item_ids: selected_ids,
         omitted_item_ids: omitted,
         used_tokens,
         token_upper_bound: request.token_budget,
         truncation_policy_digest: request.truncation_policy_digest,
+        compiled_at_unix_ms: request.compiled_at_unix_ms,
         context_digest,
         receipt_digest: Digest32::ZERO,
         authority: AuthorityPosture::DENY_ALL,
@@ -824,6 +866,7 @@ pub fn compile_v2(
     receipt.receipt_digest = receipt.compute_receipt_digest();
     let compiled = CompiledContextV2 {
         receipt,
+        model_profile: request.model_profile,
         selected_candidates: selected,
     };
     compiled.validate()?;
