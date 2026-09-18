@@ -43,7 +43,7 @@ pub struct PromptDeliveryRejectReasonV1(StableId);
 
 impl PromptDeliveryRejectReasonV1 {
     pub fn new(value: StableId) -> Result<Self, Error> {
-        if value.as_str().len() > MAX_PROMPT_REJECTION_REASON_BYTES {
+        if value.as_str().is_empty() || value.as_str().len() > MAX_PROMPT_REJECTION_REASON_BYTES {
             return Err(Error::InvalidPromptDeliveryObservation);
         }
         Ok(Self(value))
@@ -61,18 +61,21 @@ pub struct PromptDeliveryObservationV1 {
     pub provider_request_digest: Digest32,
     pub delivered: bool,
     pub rejected_reason: Option<PromptDeliveryRejectReasonV1>,
-    pub observed_token_positions: Vec<u32>,
+    pub observed_token_positions: Option<Vec<u32>>,
     pub truncation_observed: bool,
 }
 
 impl PromptDeliveryObservationV1 {
     pub fn validate(&self) -> Result<(), Error> {
         if self.provider_request_digest.is_zero()
-            || self.observed_token_positions.len() > MAX_OBSERVED_TOKEN_POSITIONS
             || self
                 .observed_token_positions
-                .windows(2)
-                .any(|pair| pair[0] >= pair[1])
+                .as_ref()
+                .is_some_and(|positions| {
+                    positions.is_empty()
+                        || positions.len() > MAX_OBSERVED_TOKEN_POSITIONS
+                        || positions.windows(2).any(|pair| pair[0] >= pair[1])
+                })
             || (self.delivered && self.rejected_reason.is_some())
             || (!self.delivered && self.rejected_reason.is_none())
         {
@@ -88,7 +91,7 @@ pub struct PromptProviderTerminalObservationV1 {
     pub observed_provider_request_digest: Digest32,
     pub delivered: bool,
     pub rejected_reason: Option<PromptDeliveryRejectReasonV1>,
-    pub observed_token_positions: Vec<u32>,
+    pub observed_token_positions: Option<Vec<u32>>,
     pub truncation_observed: bool,
 }
 

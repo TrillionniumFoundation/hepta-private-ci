@@ -65,7 +65,7 @@ fn prompt_delivery_v1_requires_exact_terminal_provider_request() {
         observed_provider_request_digest: intent.payload_digest,
         delivered: true,
         rejected_reason: None,
-        observed_token_positions: vec![0, 3, 7],
+        observed_token_positions: Some(vec![0, 3, 7]),
         truncation_observed: false,
     };
     let value = observe_prompt_delivery_v1(
@@ -77,7 +77,7 @@ fn prompt_delivery_v1_requires_exact_terminal_provider_request() {
     .expect("exact terminal delivery");
     assert!(value.delivered);
     assert_eq!(value.provider_request_digest, intent.payload_digest);
-    assert_eq!(value.observed_token_positions, vec![0, 3, 7]);
+    assert_eq!(value.observed_token_positions, Some(vec![0, 3, 7]));
 }
 
 #[test]
@@ -88,7 +88,7 @@ fn prompt_delivery_v1_rejects_digest_drift_and_nonterminal_claims() {
         observed_provider_request_digest: digest(b"other-request"),
         delivered: true,
         rejected_reason: None,
-        observed_token_positions: Vec::new(),
+        observed_token_positions: None,
         truncation_observed: false,
     };
     assert_eq!(
@@ -101,7 +101,7 @@ fn prompt_delivery_v1_rejects_digest_drift_and_nonterminal_claims() {
         observed_provider_request_digest: intent.payload_digest,
         delivered: false,
         rejected_reason: None,
-        observed_token_positions: Vec::new(),
+        observed_token_positions: None,
         truncation_observed: false,
     };
     assert_eq!(
@@ -120,7 +120,7 @@ fn prompt_delivery_v1_rejection_requires_bounded_reason_and_canonical_positions(
         observed_provider_request_digest: intent.payload_digest,
         delivered: false,
         rejected_reason: Some(reason),
-        observed_token_positions: vec![1, 4],
+        observed_token_positions: Some(vec![1, 4]),
         truncation_observed: true,
     };
     let value = observe_prompt_delivery_v1(
@@ -138,7 +138,7 @@ fn prompt_delivery_v1_rejection_requires_bounded_reason_and_canonical_positions(
         observed_provider_request_digest: intent.payload_digest,
         delivered: true,
         rejected_reason: None,
-        observed_token_positions: vec![2, 2],
+        observed_token_positions: Some(vec![2, 2]),
         truncation_observed: false,
     };
     assert_eq!(
