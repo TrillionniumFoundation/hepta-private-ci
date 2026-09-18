@@ -30,8 +30,8 @@ it.
 | negotiation downgrade resistance | binding digest exposed; authentication belongs to the selected session/transport |
 | bounded streaming decode | implemented for blocking `Read`; header admission precedes body allocation |
 | schema registry / typed payload admission | implemented as a bounded library policy; domain owners still register production schemas |
-| live cross-runtime loading | qualification follow-up |
-| product caller source | not yet composed |
+| live cross-runtime loading | bidirectional Rust↔Python V2 qualification implemented; not a production transport |
+| product caller source | read-only loopback native-gateway status route composed; production activation not claimed |
 
 
 ## 1. Identity, mission and ownership
