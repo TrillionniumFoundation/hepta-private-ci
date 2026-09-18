@@ -194,8 +194,52 @@ def verify() -> int:
         "candidate_set_digest != digest_candidates(&prepared.feasible_candidates)",
         "validate_snapshot_for_planning(snapshot, now_micros)?;",
         "receipt.prepared_digest != prepared.prepared_digest",
+        "canonical_resource_profile_digest",
+        "ResourceProfileMismatch",
     ]:
         need(token in planner, "control hardening " + token)
+
+    control_surfaces = {
+        "planner_global.rs": [
+            "AuthenticatedOwnerPortV1",
+            "NduPlanningPortV1",
+            "plan_global_v1",
+            "MissingOwnerPort",
+            "request_execution_grants",
+        ],
+        "planner_journal.rs": [
+            "validate_semantic_transition",
+            "RevocationTargetNotRecorded",
+            "DecisionNotRecorded",
+        ],
+        "planner_store.rs": [
+            "PlannerJournalStoreV1",
+            "FRONTIER_FILE",
+            "sync_all",
+            "FrontierMismatch",
+            "HCPJNL01",
+        ],
+        "planner_authority.rs": [
+            "FinalUseAuthority",
+            "claim_execution_grant_v1",
+            "request_set_digest",
+            "with_verified_use",
+        ],
+    }
+    for filename, tokens in control_surfaces.items():
+        text = (ROOT / "codex-rs/hepta-control-plane/src" / filename).read_text(
+            encoding="utf-8"
+        )
+        for token in tokens:
+            need(token in text, f"control closure {filename} missing {token}")
+
+    agentd_context = (ROOT / "codex-rs/hepta-agentd/src/cognitive_context.rs").read_text(
+        encoding="utf-8"
+    )
+    need(
+        "monotonic_origin.elapsed().as_micros()" in agentd_context,
+        "control product caller must use the process monotonic clock",
+    )
     for struct_name in [
         "GlobalStateSnapshotV1",
         "PreparedPlanInputV1",
@@ -224,7 +268,16 @@ def verify() -> int:
             "## 11. Coding-entry checklist",
             "## Appendix A. Closed gap and protocol mapping",
         ],
-        "docs/readiness/CONTROL_RUNTIME_EXECUTION.md": ["RCP-13", "RCP-14", "RCP-15"],
+        "docs/readiness/CONTROL_RUNTIME_EXECUTION.md": [
+            "RCP-13",
+            "RCP-14",
+            "RCP-15",
+            "RCP-16",
+            "RCP-17",
+            "RCP-18",
+            "RCP-19",
+            "RCP-20",
+        ],
     }
     for path, tokens in headings.items():
         text = (ROOT / path).read_text(encoding="utf-8")
@@ -271,10 +324,22 @@ def verify() -> int:
         "maturity module closure",
     )
     for row in maturity["modules"]:
-        for key in ["productCaller", "independentAcceptance", "activation", "release"]:
+        for key in ["independentAcceptance", "activation", "release"]:
             need(
                 row["dimensions"][key]["state"] == "not_established",
                 f"truth boundary {row['module']} {key}",
+            )
+        product_state = row["dimensions"]["productCaller"]["state"]
+        if row["module"] == "control.runtime":
+            need(
+                product_state
+                == "narrow_read_only_context_established_global_effect_caller_not_established",
+                "control.runtime product caller truth boundary",
+            )
+        else:
+            need(
+                product_state == "not_established",
+                f"truth boundary {row['module']} productCaller",
             )
 
     print(
