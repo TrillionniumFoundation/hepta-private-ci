@@ -16,6 +16,18 @@
 
 This stable document is the implementation guide for `platform.wire`. Normative identity, ownership, contract, data-authority and delivery facts remain in the canonical JSON registries. This guide explains how those facts are implemented and operated. Documentation readiness is not source implementation, activation, operator acceptance, promotion or release.
 
+### Current implementation status
+
+| Capability | Current source status | Claim boundary |
+|---|---|---|
+| Frozen HPTA V1 envelope | implemented | compatibility format; payload-only digest semantics unchanged |
+| HPTA V2 full-frame integrity | implemented | integrity commitment, not authentication/signature |
+| Version/capability negotiation | implemented | highest common known version; FullFrameIntegrity can be required |
+| Schema admission + typed payload codec boundary | implemented | schema owners must register validators/codecs |
+| Header-first blocking reader + incremental stream decoder | implemented | transport deadlines remain host-owned |
+| Live Rust-Python TCP qualification | source test present | qualification only; not a production caller |
+| Production composition / activation / release | not established | external gates remain required |
+
 ## 1. Identity, mission and ownership
 
 Provide bounded, versioned wire representations while remaining transport and domain-runtime neutral.
@@ -46,7 +58,7 @@ None.
 
 ### Native source and scope
 
-The registered primary source is [codex-rs/hepta-wire/src/envelope.rs](../../../codex-rs/hepta-wire/src/envelope.rs); observed identifiers include `WireEnvelope`, `WireError`, `MAX_WIRE_PAYLOAD_BYTES`, `encode`, `decode`. This is a source navigation binding, not proof that every target operation or production consumer exists. Read the [current native implementation](../../../qualification/module-execution-dossiers/detail/platform.wire.md#8-current-native-implementation) alongside the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/platform.wire.md) for the implemented subset and remaining product work.
+The registered root is `codex-rs/hepta-wire`. V1 lives in `src/envelope.rs`; V2 integrity framing in `src/v2.rs`; version dispatch in `src/protocol.rs`; negotiation in `src/negotiation.rs`; schema admission/typed codecs in `src/schema.rs`; and bounded stream decoding in `src/stream.rs`. These are source bindings, not proof of production composition or activation. Read the [current native implementation](../../../qualification/module-execution-dossiers/detail/platform.wire.md#8-current-native-implementation) alongside the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/platform.wire.md) for the implemented subset and remaining product work.
 
 ## 3. Boundary, responsibilities and non-goals
 
@@ -72,9 +84,11 @@ Non-goals include becoming a general state store, bypassing the Codex execution 
 
 The bounded components are:
 
-- `framing and codec boundary`
-- `version negotiation`
-- `bounded decoder`
+- `frozen V1 framing and codec boundary`
+- `V2 full semantic frame integrity`
+- `version and critical-capability negotiation`
+- `schema admission and typed payload codec boundary`
+- `bounded blocking and incremental stream decoder`
 - `transport-neutral error mapping`
 
 Ingress validates identity, version, size, scope and revision before domain logic. The deterministic core receives typed values and is testable without network, filesystem or process-global state unless the module owns that boundary. State-bearing components use one transaction boundary per logical mutation. Publication occurs only after invariants and lineage checks pass.
@@ -96,7 +110,9 @@ Consumed contracts:
 
 Critical protocol schemas:
 
-None.
+- `HPTA envelope V1` — frozen compatibility bytes with payload-only digest.
+- `HPTA envelope V2` — same bounded layout with a domain-separated integrity digest binding metadata and payload.
+- Product payload schemas are not globally inferred; each caller registers an exact `StableId`, allowed wire-version range, payload bound and validator before typed loading.
 
 Every producer validates output before publication and binds semantic fields into the declared digest scope. Every consumer validates version, bounds, producer identity, scope and digest before use. Compatibility is additive only where registered; unknown critical fields are rejected. Contract identifiers, meaning and authority interpretation cannot change in place.
 
@@ -152,7 +168,10 @@ Transport-neutral codec library, embedded by the actual transport owner. Recreat
 
 Current operating and state-format references:
 
-- [codex-rs/hepta-wire/src/envelope.rs](../../../codex-rs/hepta-wire/src/envelope.rs).
+- [current executable contract](../../lane-a-foundation/platform.wire/CURRENT_IMPLEMENTATION.md)
+- [HPTA V1](../../lane-a-foundation/platform.wire/WIRE_V1.md)
+- [HPTA V2](../../lane-a-foundation/platform.wire/WIRE_V2.md)
+- [codex-rs/hepta-wire/src/lib.rs](../../../codex-rs/hepta-wire/src/lib.rs).
 
 [Shared observability and operations requirements](../README.md#shared-observability-and-operations) specify safe events and alert classes; concrete deployment thresholds require the selected host profile.
 

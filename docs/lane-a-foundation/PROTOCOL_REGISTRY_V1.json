@@ -40,6 +40,25 @@
       ]
     },
     {
+      "protocolId": "hepta.platform.wire.hpta-envelope.v2",
+      "module": "platform.wire",
+      "kind": "transport_neutral_binary_frame",
+      "source": [
+        "codex-rs/hepta-wire/src/v2.rs",
+        "codex-rs/hepta-wire/src/protocol.rs",
+        "docs/lane-a-foundation/platform.wire/HPTA_V2_CONFORMANCE.json"
+      ],
+      "invariants": [
+        "magic is HPTA and version is exactly 2",
+        "schema and producer identifiers are 1 through 128 bytes",
+        "generation is nonzero big-endian u64",
+        "payload is 1 through 1048576 bytes",
+        "integrity digest binds version lengths generation schema producer and payload under HPTA-FRAME-V2 domain separation",
+        "unknown versions reject and V1 bytes retain their frozen payload-only digest semantics",
+        "successful decode grants no transport acknowledgement or authority"
+      ]
+    },
+    {
       "protocolId": "hepta.kernel.authority.final-use.v1",
       "module": "kernel.authority",
       "kind": "signed_single_use_in_process_capability",

@@ -222,32 +222,85 @@ def validate_native_bindings(root: Path = ROOT) -> dict[str, Any]:
 
 
 def validate_wire_vector(root: Path = ROOT) -> None:
-    value = read_json(
+    v1 = read_json(
         root / "docs/lane-a-foundation/platform.wire/HPTA_V1_CONFORMANCE.json"
     )
     try:
-        frame = bytes.fromhex(value["frameHex"])
-        payload = bytes.fromhex(value["fields"]["payloadHex"])
-        payload_digest = value["fields"]["payloadSha256"]
+        frame = bytes.fromhex(v1["frameHex"])
+        payload = bytes.fromhex(v1["fields"]["payloadHex"])
+        payload_digest = v1["fields"]["payloadSha256"]
     except (KeyError, TypeError, ValueError) as error:
         raise VerificationError(f"invalid HPTA V1 vector: {error}") from error
     if (
-        value.get("schemaVersion") != 1
-        or value.get("protocol") != "HPTA"
-        or value.get("version") != 1
-        or value.get("frameLength") != 59
+        v1.get("schemaVersion") != 1
+        or v1.get("protocol") != "HPTA"
+        or v1.get("version") != 1
+        or v1.get("frameLength") != 59
         or len(frame) != 59
         or frame[:6] != b"HPTA\x00\x01"
-        or hashlib.sha256(frame).hexdigest() != value.get("frameSha256")
+        or hashlib.sha256(frame).hexdigest() != v1.get("frameSha256")
         or hashlib.sha256(payload).hexdigest() != payload_digest
     ):
         raise VerificationError("HPTA V1 conformance vector mismatch")
+
+    v2 = read_json(
+        root / "docs/lane-a-foundation/platform.wire/HPTA_V2_CONFORMANCE.json"
+    )
+    try:
+        schema = v2["fields"]["schema"].encode("ascii")
+        producer = v2["fields"]["producer"].encode("ascii")
+        generation = int(v2["fields"]["generation"])
+        payload = bytes.fromhex(v2["fields"]["payloadHex"])
+        preimage = bytes.fromhex(v2["integrityPreimageHex"])
+        frame = bytes.fromhex(v2["frameHex"])
+    except (KeyError, TypeError, ValueError, UnicodeEncodeError) as error:
+        raise VerificationError(f"invalid HPTA V2 vector: {error}") from error
+    expected_preimage = (
+        b"HPTA-FRAME-V2\x00"
+        + b"HPTA"
+        + (2).to_bytes(2, "big")
+        + len(schema).to_bytes(2, "big")
+        + len(producer).to_bytes(2, "big")
+        + generation.to_bytes(8, "big")
+        + len(payload).to_bytes(4, "big")
+        + schema
+        + producer
+        + payload
+    )
+    integrity = hashlib.sha256(expected_preimage).digest()
+    expected_frame = (
+        b"HPTA"
+        + (2).to_bytes(2, "big")
+        + len(schema).to_bytes(2, "big")
+        + len(producer).to_bytes(2, "big")
+        + generation.to_bytes(8, "big")
+        + integrity
+        + len(payload).to_bytes(4, "big")
+        + schema
+        + producer
+        + payload
+    )
+    if (
+        v2.get("schemaVersion") != 1
+        or v2.get("protocol") != "HPTA"
+        or v2.get("version") != 2
+        or preimage != expected_preimage
+        or v2.get("integritySha256") != integrity.hex()
+        or frame != expected_frame
+        or v2.get("frameLength") != len(expected_frame)
+        or hashlib.sha256(frame).hexdigest() != v2.get("frameSha256")
+    ):
+        raise VerificationError("HPTA V2 conformance vector mismatch")
 
 
 def validate_source_specific(root: Path = ROOT) -> None:
     required = {
         "codex-rs/hepta-types/src/lib.rs": ["pub use identity::IdentityError;"],
-        "codex-rs/hepta-wire/src/envelope.rs": ["const WIRE_VERSION: u16 = 1;"],
+        "codex-rs/hepta-wire/src/envelope.rs": ["pub const WIRE_VERSION_V1: u16 = 1;"],
+        "codex-rs/hepta-wire/src/v2.rs": ["pub const WIRE_VERSION_V2: u16 = 2;", "HPTA-FRAME-V2"],
+        "codex-rs/hepta-wire/src/negotiation.rs": ["pub fn negotiate(", "FullFrameIntegrity"],
+        "codex-rs/hepta-wire/src/schema.rs": ["pub struct SchemaRegistry", "pub trait PayloadCodec"],
+        "codex-rs/hepta-wire/src/stream.rs": ["pub fn read_frame", "pub struct WireStreamDecoder"],
         "codex-rs/hepta-operations/src/lib.rs": [
             "In-memory reference model",
             "does not provide durable storage",

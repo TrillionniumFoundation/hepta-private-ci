@@ -22,20 +22,96 @@
   "productionWriterState": "not_established",
   "operations": [
     {
-      "operation": "wireenvelope",
+      "operation": "wireenvelope_v1",
       "nativeSymbol": "WireEnvelope",
       "sourcePath": "codex-rs/hepta-wire/src/envelope.rs",
       "state": "source_implemented_not_product_composed",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-wire/src/envelope_tests.rs",
+        "codex-rs/hepta-wire/src/boundary_tests.rs"
+      ],
       "sourcePathExists": true,
-      "designOperation": "wireenvelope",
+      "designOperation": "decode_envelope",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "wireenvelope_v2",
+      "nativeSymbol": "WireEnvelopeV2",
+      "sourcePath": "codex-rs/hepta-wire/src/v2.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-wire/src/v2.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "encode_envelope",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "decode_frame",
+      "nativeSymbol": "WireFrame::decode",
+      "sourcePath": "codex-rs/hepta-wire/src/protocol.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-wire/src/protocol.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "decode_envelope",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "negotiate",
+      "nativeSymbol": "negotiate",
+      "sourcePath": "codex-rs/hepta-wire/src/negotiation.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-wire/src/negotiation.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "negotiate",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "schema_admit",
+      "nativeSymbol": "SchemaRegistry::admit",
+      "sourcePath": "codex-rs/hepta-wire/src/schema.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-wire/src/schema.rs",
+        "codex-rs/hepta-wire/tests/cross_runtime_tcp.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "decode_envelope",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "stream_decode",
+      "nativeSymbol": "read_frame / WireStreamDecoder",
+      "sourcePath": "codex-rs/hepta-wire/src/stream.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-wire/src/stream.rs",
+        "codex-rs/hepta-wire/tests/cross_runtime_tcp.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "decode_envelope",
       "mappingClass": "owner_native",
       "delegatedCallees": []
     }
   ],
   "repositoryControlledGaps": [
-    "Bind every operation to an authenticated consumer callsite and owner store.",
+    "Bind negotiation transcript and selected version to an authenticated product transport/session.",
+    "Compose product-owned schema registrations and a named production caller.",
     "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary."
   ],
   "externalEvidenceGates": [
@@ -54,5 +130,14 @@
   },
   "sourceRoot": [
     "codex-rs/hepta-wire"
-  ]
+  ],
+  "sourceCapabilities": {
+    "frozenV1": true,
+    "fullFrameIntegrityV2": true,
+    "versionNegotiation": true,
+    "schemaAdmission": true,
+    "typedPayloadCodec": true,
+    "boundedStreamingDecode": true,
+    "liveCrossRuntimeQualification": true
+  }
 }
