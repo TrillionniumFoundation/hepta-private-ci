@@ -33,6 +33,9 @@ use codex_hepta_types::Revision;
 use codex_hepta_types::StableId;
 
 pub const MAX_V2_RECORD_REVISIONS: usize = 65_536;
+pub const MAX_V2_REVOCATION_RESERVE: usize = 1_024;
+pub const MAX_V2_INTENT_JOURNAL_ENTRIES: usize = 131_072;
+pub const MAX_V2_REVOCATION_INTENT_RESERVE: usize = 4_096;
 pub const MAX_V2_SNAPSHOT_LEASE_MS: u64 = 300_000;
 const FORGET_DOMAIN: &[u8] = b"hepta.cognitive-store.forget-intent.v2";
 const STORE_SNAPSHOT_DOMAIN: &[u8] = b"hepta.cognitive-store.snapshot.v2";
@@ -78,7 +81,10 @@ impl AdmittedCognitiveStoreV2 {
         if snapshot_key.vector.memory_ledger_frontier == 0 {
             return Err(CognitiveStoreV2Error::ZeroMemoryFrontier);
         }
-        if maximum_record_revisions == 0 || maximum_record_revisions > MAX_V2_RECORD_REVISIONS {
+        if maximum_record_revisions == 0
+            || maximum_record_revisions
+                > MAX_V2_RECORD_REVISIONS.saturating_sub(MAX_V2_REVOCATION_RESERVE)
+        {
             return Err(CognitiveStoreV2Error::InvalidCapacity);
         }
         let sequence = LogicalSequence::new(/*value*/ 1)
@@ -125,8 +131,17 @@ impl AdmittedCognitiveStoreV2 {
             .validate()
             .map_err(CognitiveStoreV2Error::Contract)?;
         intent.validate().map_err(CognitiveStoreV2Error::Contract)?;
-        if candidate.verification == MemoryVerificationState::Revoked {
-            return Err(CognitiveStoreV2Error::RevokedCandidate);
+        match candidate.verification {
+            MemoryVerificationState::Verified => {}
+            MemoryVerificationState::Unverified => {
+                return Err(CognitiveStoreV2Error::UnverifiedCandidate);
+            }
+            MemoryVerificationState::Contradicted => {
+                return Err(CognitiveStoreV2Error::ContradictedCandidate);
+            }
+            MemoryVerificationState::Revoked => {
+                return Err(CognitiveStoreV2Error::RevokedCandidate);
+            }
         }
         let candidate_digest = candidate.digest();
         if intent.candidate_digest != candidate_digest {
@@ -141,6 +156,7 @@ impl AdmittedCognitiveStoreV2 {
                 intent.intent_id.to_string(),
             ));
         }
+        self.ensure_new_intent_capacity(false)?;
         self.validate_mutation_envelope(&intent.expected_snapshot, intent.writer_fence_digest)?;
         verifier.verify(
             &intent.intent_id,
@@ -226,6 +242,7 @@ impl AdmittedCognitiveStoreV2 {
                 intent.intent_id.to_string(),
             ));
         }
+        self.ensure_new_intent_capacity(true)?;
         self.validate_mutation_envelope(&intent.expected_snapshot, intent.writer_fence_digest)?;
         verifier.verify(
             &intent.intent_id,
@@ -349,8 +366,9 @@ impl AdmittedCognitiveStoreV2 {
     ) -> Result<Self, CognitiveStoreV2Error> {
         image.validate()?;
         if maximum_record_revisions == 0
-            || maximum_record_revisions > MAX_V2_RECORD_REVISIONS
-            || image.records.len() > maximum_record_revisions
+            || maximum_record_revisions
+                > MAX_V2_RECORD_REVISIONS.saturating_sub(MAX_V2_REVOCATION_RESERVE)
+            || image.records.len() > total_revision_limit(maximum_record_revisions)
         {
             return Err(CognitiveStoreV2Error::InvalidCapacity);
         }
@@ -396,6 +414,22 @@ impl AdmittedCognitiveStoreV2 {
         })
     }
 
+    fn ensure_new_intent_capacity(
+        &self,
+        is_revocation: bool,
+    ) -> Result<(), CognitiveStoreV2Error> {
+        let limit = if is_revocation {
+            MAX_V2_INTENT_JOURNAL_ENTRIES
+        } else {
+            MAX_V2_INTENT_JOURNAL_ENTRIES
+                .saturating_sub(MAX_V2_REVOCATION_INTENT_RESERVE)
+        };
+        if self.intent_journal.len() >= limit {
+            return Err(CognitiveStoreV2Error::IntentJournalCapacityExceeded);
+        }
+        Ok(())
+    }
+
     fn validate_mutation_envelope(
         &self,
         expected_snapshot: &CognitiveSnapshotKeyV1,
@@ -421,7 +455,12 @@ impl AdmittedCognitiveStoreV2 {
         disposition: MemoryWriteDisposition,
     ) -> Result<MemoryWriteReceiptV1, CognitiveStoreV2Error> {
         let current_count = self.histories.values().map(Vec::len).sum::<usize>();
-        if current_count >= self.maximum_record_revisions {
+        let revision_limit = if record.state == RecordState::Tombstone {
+            total_revision_limit(self.maximum_record_revisions)
+        } else {
+            self.maximum_record_revisions
+        };
+        if current_count >= revision_limit {
             return Err(CognitiveStoreV2Error::CapacityExceeded);
         }
         record
@@ -627,6 +666,44 @@ impl CognitiveStoreImageV2 {
         if self.records.len() > MAX_V2_RECORD_REVISIONS {
             return Err(CognitiveStoreV2Error::CapacityExceeded);
         }
+        if self.journal.len() > MAX_V2_INTENT_JOURNAL_ENTRIES {
+            return Err(CognitiveStoreV2Error::IntentJournalCapacityExceeded);
+        }
+        let expected_sequence = u64::try_from(self.records.len())
+            .ok()
+            .and_then(|count| count.checked_add(1))
+            .ok_or(CognitiveStoreV2Error::SequenceOverflow)?;
+        if self.sequence.get() != expected_sequence {
+            return Err(CognitiveStoreV2Error::ImageSequenceMismatch);
+        }
+        let minimum_memory_frontier = expected_sequence;
+        if self.snapshot_key.vector.memory_ledger_frontier < minimum_memory_frontier {
+            return Err(CognitiveStoreV2Error::ImageFrontierMismatch("memory"));
+        }
+        let tombstone_count = self
+            .records
+            .iter()
+            .filter(|record| record.state == RecordState::Tombstone)
+            .count();
+        let minimum_tombstone_frontier = u64::try_from(tombstone_count)
+            .ok()
+            .and_then(|count| count.checked_add(1))
+            .ok_or(CognitiveStoreV2Error::FrontierOverflow)?;
+        if self.snapshot_key.vector.tombstone_frontier < minimum_tombstone_frontier {
+            return Err(CognitiveStoreV2Error::ImageFrontierMismatch("tombstone"));
+        }
+        let fact_count = self
+            .records
+            .iter()
+            .filter(|record| record.kind == MemoryKind::Fact)
+            .count();
+        let minimum_fact_frontier = u64::try_from(fact_count)
+            .ok()
+            .and_then(|count| count.checked_add(1))
+            .ok_or(CognitiveStoreV2Error::FrontierOverflow)?;
+        if self.snapshot_key.vector.knowledge_fact_frontier < minimum_fact_frontier {
+            return Err(CognitiveStoreV2Error::ImageFrontierMismatch("knowledge_fact"));
+        }
         let mut histories = BTreeMap::<StableId, Vec<MemoryRecord>>::new();
         for record in &self.records {
             record
@@ -641,6 +718,11 @@ impl CognitiveStoreImageV2 {
             history.sort_by_key(|record| record.revision);
             validate_record_history(record_id, history)?;
         }
+        let committed_records = self
+            .records
+            .iter()
+            .map(|record| (record.record_id.clone(), record.record_digest()))
+            .collect::<BTreeSet<_>>();
         let mut intent_ids = BTreeSet::new();
         for entry in &self.journal {
             ensure_digest("intent_semantic", entry.semantic_digest)?;
@@ -648,6 +730,41 @@ impl CognitiveStoreImageV2 {
                 .receipt
                 .validate()
                 .map_err(CognitiveStoreV2Error::Contract)?;
+            if entry.intent_id != entry.receipt.intent_id {
+                return Err(CognitiveStoreV2Error::JournalReceiptMismatch("intent_id"));
+            }
+            if !committed_records.contains(&(
+                entry.receipt.record_id.clone(),
+                entry.receipt.record_digest,
+            )) {
+                return Err(CognitiveStoreV2Error::JournalReceiptMismatch("record"));
+            }
+            if entry.receipt.committed_frontier
+                != entry.receipt.snapshot_key.vector.memory_ledger_frontier
+            {
+                return Err(CognitiveStoreV2Error::JournalReceiptMismatch(
+                    "committed_frontier",
+                ));
+            }
+            if !same_static_generation_fields(
+                &entry.receipt.snapshot_key,
+                &self.snapshot_key,
+            ) {
+                return Err(CognitiveStoreV2Error::JournalReceiptMismatch(
+                    "snapshot_static_fields",
+                ));
+            }
+            if entry.receipt.snapshot_key.vector.memory_ledger_frontier
+                > self.snapshot_key.vector.memory_ledger_frontier
+                || entry.receipt.snapshot_key.vector.tombstone_frontier
+                    > self.snapshot_key.vector.tombstone_frontier
+                || entry.receipt.snapshot_key.vector.knowledge_fact_frontier
+                    > self.snapshot_key.vector.knowledge_fact_frontier
+            {
+                return Err(CognitiveStoreV2Error::JournalReceiptMismatch(
+                    "snapshot_frontier",
+                ));
+            }
             if !intent_ids.insert(entry.intent_id.clone()) {
                 return Err(CognitiveStoreV2Error::DuplicateIntentJournalEntry(
                     entry.intent_id.to_string(),
@@ -686,11 +803,49 @@ impl CognitiveStoreImageV2 {
         for entry in journal {
             push_id(&mut bytes, &entry.intent_id);
             push_digest(&mut bytes, entry.semantic_digest);
+            push_id(&mut bytes, &entry.receipt.intent_id);
+            push_id(&mut bytes, &entry.receipt.record_id);
             push_digest(&mut bytes, entry.receipt.record_digest);
             push_digest(&mut bytes, entry.receipt.snapshot_key.vector_digest);
             push_u64(&mut bytes, entry.receipt.committed_frontier);
+            bytes.push(write_disposition_code(entry.receipt.disposition));
         }
         Digest32::of_bytes(&bytes)
+    }
+}
+
+fn total_revision_limit(maximum_record_revisions: usize) -> usize {
+    maximum_record_revisions
+        .saturating_add(MAX_V2_REVOCATION_RESERVE)
+        .min(MAX_V2_RECORD_REVISIONS)
+}
+
+fn same_static_generation_fields(
+    left: &CognitiveSnapshotKeyV1,
+    right: &CognitiveSnapshotKeyV1,
+) -> bool {
+    let left = &left.vector;
+    let right = &right.vector;
+    left.scope_id == right.scope_id
+        && left.purpose_id == right.purpose_id
+        && left.source_ledger_frontier == right.source_ledger_frontier
+        && left.knowledge_graph_generation == right.knowledge_graph_generation
+        && left.compact_checkpoint_generation == right.compact_checkpoint_generation
+        && left.prompt_registry_revision == right.prompt_registry_revision
+        && left.retrieval_profile_digest == right.retrieval_profile_digest
+        && left.encoder_preprocessor_digest == right.encoder_preprocessor_digest
+        && left.authority_epoch == right.authority_epoch
+        && left.model_digest == right.model_digest
+        && left.tokenizer_digest == right.tokenizer_digest
+        && left.template_digest == right.template_digest
+        && left.tool_schema_digest == right.tool_schema_digest
+}
+
+fn write_disposition_code(value: MemoryWriteDisposition) -> u8 {
+    match value {
+        MemoryWriteDisposition::Inserted => 0,
+        MemoryWriteDisposition::Unchanged => 1,
+        MemoryWriteDisposition::Rejected => 2,
     }
 }
 
@@ -791,7 +946,10 @@ pub enum CognitiveStoreV2Error {
     StaleMemoryFrontier,
     StaleTombstoneFrontier,
     AuthorizationRejected,
+    UnverifiedCandidate,
+    ContradictedCandidate,
     RevokedCandidate,
+    IntentJournalCapacityExceeded,
     IntentIdentityConflict(String),
     RecordNotFound(String),
     AlreadyTombstoned(String),
@@ -799,6 +957,9 @@ pub enum CognitiveStoreV2Error {
     BrokenLineage(String),
     DuplicateCitationSource(String),
     DuplicateIntentJournalEntry(String),
+    JournalReceiptMismatch(&'static str),
+    ImageSequenceMismatch,
+    ImageFrontierMismatch(&'static str),
     InvalidRecord(String),
     SnapshotBuild(String),
     AuthorityGranted,
