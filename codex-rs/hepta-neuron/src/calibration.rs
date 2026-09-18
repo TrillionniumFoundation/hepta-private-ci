@@ -65,6 +65,19 @@ pub enum SignalFallbackReasonV1 {
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
+pub struct CalibrationObservationV1 {
+    pub config_digest: Digest32,
+    pub model_identity_digest: Digest32,
+    pub ood_detector_digest: Digest32,
+    pub generation: Generation,
+    pub sequence: u64,
+    pub prediction_error_q24: i64,
+    pub ood_score_q24: i64,
+    pub active_fraction_ppm: u32,
+    pub projection_count: u32,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub struct CalibratedSignalV1 {
     pub confidence_ppm: u32,
     pub ood_ppm: u32,
@@ -148,32 +161,24 @@ impl NeuronCalibrationArtifactV1 {
 pub fn apply_calibration(
     policy: CalibrationPolicyV1,
     artifact: Option<&NeuronCalibrationArtifactV1>,
-    config_digest: Digest32,
-    model_identity_digest: Digest32,
-    ood_detector_digest: Digest32,
-    generation: Generation,
-    sequence: u64,
-    prediction_error_q24: i64,
-    ood_score_q24: i64,
-    active_fraction_ppm: u32,
-    projection_count: u32,
+    observation: CalibrationObservationV1,
 ) -> Result<CalibratedSignalV1, CalibrationError> {
     validate_policy(policy)?;
-    if active_fraction_ppm == 0 {
+    if observation.active_fraction_ppm == 0 {
         return Ok(fallback(
             artifact,
             SignalFallbackReasonV1::DeadActivation,
             PPM_ONE,
         ));
     }
-    if active_fraction_ppm > policy.maximum_active_fraction_ppm {
+    if observation.active_fraction_ppm > policy.maximum_active_fraction_ppm {
         return Ok(fallback(
             artifact,
             SignalFallbackReasonV1::DenseActivation,
             PPM_ONE,
         ));
     }
-    if projection_count >= policy.saturation_limit {
+    if observation.projection_count >= policy.saturation_limit {
         return Ok(fallback(
             artifact,
             SignalFallbackReasonV1::ProjectionLimit,
@@ -188,11 +193,11 @@ pub fn apply_calibration(
         ));
     };
     artifact.validate()?;
-    if artifact.config_digest != config_digest
+    if artifact.observation.config_digest != observation.config_digest
         || artifact.policy_digest != policy.digest()?
-        || artifact.model_identity_digest != model_identity_digest
-        || artifact.detector_digest != ood_detector_digest
-        || artifact.generation != generation
+        || artifact.observation.model_identity_digest != observation.model_identity_digest
+        || artifact.detector_digest != observation.ood_detector_digest
+        || artifact.observation.generation != observation.generation
     {
         return Ok(fallback(
             Some(artifact),
@@ -200,7 +205,7 @@ pub fn apply_calibration(
             PPM_ONE,
         ));
     }
-    if sequence < artifact.valid_from_sequence || sequence > artifact.expires_after_sequence {
+    if observation.sequence < artifact.valid_from_sequence || observation.sequence > artifact.expires_after_sequence {
         return Ok(fallback(
             Some(artifact),
             SignalFallbackReasonV1::CalibrationExpired,
@@ -216,15 +221,15 @@ pub fn apply_calibration(
             PPM_ONE,
         ));
     }
-    let ood_ppm = scaled_ood_ppm(ood_score_q24, artifact.maximum_in_domain_ood_q24);
-    if ood_score_q24 > artifact.maximum_in_domain_ood_q24 {
+    let ood_ppm = scaled_ood_ppm(observation.ood_score_q24, artifact.maximum_in_domain_ood_q24);
+    if observation.ood_score_q24 > artifact.maximum_in_domain_ood_q24 {
         return Ok(fallback(
             Some(artifact),
             SignalFallbackReasonV1::OutOfDistribution,
             ood_ppm,
         ));
     }
-    let error = prediction_error_q24.clamp(0, Q24_ERROR_LIMIT);
+    let error = observation.prediction_error_q24.clamp(0, Q24_ERROR_LIMIT);
     let confidence_ppm = artifact
         .bins
         .iter()

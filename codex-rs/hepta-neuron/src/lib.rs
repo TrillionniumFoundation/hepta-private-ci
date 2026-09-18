@@ -30,6 +30,7 @@ pub use calibration::CalibratedSignalV1;
 pub use calibration::CalibrationBinV1;
 pub use calibration::CalibrationError;
 pub use calibration::CalibrationPolicyV1;
+pub use calibration::CalibrationObservationV1;
 pub use calibration::NeuronCalibrationArtifactV1;
 pub use calibration::SignalFallbackReasonV1;
 pub use calibration::apply_calibration;

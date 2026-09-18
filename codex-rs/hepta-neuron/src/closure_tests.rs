@@ -243,7 +243,7 @@ fn canonical_adapter_binds_config_input_and_exact_model_execution() {
         execution.output_digest
     );
 
-    let mut changed = execution.clone();
+    let mut changed = execution;
     changed.head_digest = digest("other-head");
     assert!(matches!(
         changed.validate_for(&config),
@@ -271,15 +271,17 @@ fn calibration_policy_drift_cannot_reuse_an_old_artifact() {
     let calibrated = checked(apply_calibration(
         policy,
         Some(&artifact),
-        checked(runtime_profile_digest(&config, &native())),
-        checked(execution.model_identity_digest()),
-        execution.ood_detector_digest,
-        config.generation,
-        1,
-        Q,
-        Q / 10,
-        200_000,
-        0,
+        CalibrationObservationV1 {
+            config_digest: checked(runtime_profile_digest(&config, &native())),
+            model_identity_digest: checked(execution.model_identity_digest()),
+            ood_detector_digest: execution.ood_detector_digest,
+            generation: config.generation,
+            sequence: 1,
+            prediction_error_q24: Q,
+            ood_score_q24: Q / 10,
+            active_fraction_ppm: 200_000,
+            projection_count: 0,
+        },
     ));
     assert!(calibrated.abstain);
     assert_eq!(
@@ -296,15 +298,17 @@ fn calibration_is_fail_closed_and_uses_independently_bound_artifacts() {
     let missing = checked(apply_calibration(
         calibration_policy(),
         None,
-        config_digest,
-        identity,
-        execution.ood_detector_digest,
-        generation(1),
-        1,
-        Q,
-        Q / 10,
-        200_000,
-        0,
+        CalibrationObservationV1 {
+            config_digest,
+            model_identity_digest: identity,
+            ood_detector_digest: execution.ood_detector_digest,
+            generation: generation(1),
+            sequence: 1,
+            prediction_error_q24: Q,
+            ood_score_q24: Q / 10,
+            active_fraction_ppm: 200_000,
+            projection_count: 0,
+        },
     ));
     assert!(missing.abstain);
     assert_eq!(
@@ -316,15 +320,17 @@ fn calibration_is_fail_closed_and_uses_independently_bound_artifacts() {
     let qualified = checked(apply_calibration(
         calibration_policy(),
         Some(&artifact),
-        config_digest,
-        identity,
-        execution.ood_detector_digest,
-        generation(1),
-        1,
-        Q,
-        Q / 10,
-        200_000,
-        0,
+        CalibrationObservationV1 {
+            config_digest,
+            model_identity_digest: identity,
+            ood_detector_digest: execution.ood_detector_digest,
+            generation: generation(1),
+            sequence: 1,
+            prediction_error_q24: Q,
+            ood_score_q24: Q / 10,
+            active_fraction_ppm: 200_000,
+            projection_count: 0,
+        },
     ));
     assert!(!qualified.abstain);
     assert_eq!(qualified.confidence_ppm, 900_000);
@@ -332,15 +338,17 @@ fn calibration_is_fail_closed_and_uses_independently_bound_artifacts() {
     let ood = checked(apply_calibration(
         calibration_policy(),
         Some(&artifact),
-        config_digest,
-        identity,
-        execution.ood_detector_digest,
-        generation(1),
-        1,
-        Q,
-        Q,
-        200_000,
-        0,
+        CalibrationObservationV1 {
+            config_digest,
+            model_identity_digest: identity,
+            ood_detector_digest: execution.ood_detector_digest,
+            generation: generation(1),
+            sequence: 1,
+            prediction_error_q24: Q,
+            ood_score_q24: Q,
+            active_fraction_ppm: 200_000,
+            projection_count: 0,
+        },
     ));
     assert!(ood.abstain);
     assert_eq!(
@@ -528,9 +536,9 @@ fn runtime_executes_model_commits_witness_and_rotates_without_state_reset() {
     ));
     let mut runtime = checked(NeuronRuntimeHost::open(
         fixture.file("segment-1"),
-        runtime_config.clone(),
+        runtime_config,
         native(),
-        runtime_scope.clone(),
+        runtime_scope,
         1,
         Executor {
             execution: model_execution(),

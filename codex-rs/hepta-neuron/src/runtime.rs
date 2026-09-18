@@ -18,6 +18,7 @@ use crate::BoundModelExecutionV1;
 use crate::CalibratedSignalV1;
 use crate::CalibrationError;
 use crate::CalibrationPolicyV1;
+use crate::CalibrationObservationV1;
 use crate::FileRecoveryWitness;
 use crate::JournalAnchor;
 use crate::JournalError;
@@ -365,15 +366,17 @@ where
         let mut calibration = match apply_calibration(
             self.calibration_policy,
             self.calibration_artifact.as_ref(),
-            self.config_digest,
-            model_identity_digest,
-            execution.ood_detector_digest,
-            self.config.generation,
-            input.logical_sequence,
-            sparse_receipt.prediction_error_q24,
-            execution.ood_score_q24,
-            sparse_receipt.active_fraction_ppm,
-            sparse_receipt.projection_count,
+            CalibrationObservationV1 {
+                config_digest: self.config_digest,
+                model_identity_digest,
+                ood_detector_digest: execution.ood_detector_digest,
+                generation: self.config.generation,
+                sequence: input.logical_sequence,
+                prediction_error_q24: sparse_receipt.prediction_error_q24,
+                ood_score_q24: execution.ood_score_q24,
+                active_fraction_ppm: sparse_receipt.active_fraction_ppm,
+                projection_count: sparse_receipt.projection_count,
+            },
         ) {
             Ok(value) => value,
             Err(_error) => {
