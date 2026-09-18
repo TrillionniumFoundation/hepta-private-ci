@@ -181,7 +181,7 @@ fn payload_rejects_wrong_bytes_without_reusing_its_created_target() {
         ),
         Err(ArtifactStorageError::PayloadMismatch)
     );
-    assert_eq!(fs::metadata(&rejected.0).unwrap().len(), 0);
+    assert!(!rejected.0.exists());
 
     let file = TestFile::new();
     write_candidate_payload(
@@ -413,5 +413,27 @@ fn zero_binding_leaves_created_file_empty_for_host_reconciliation() {
         ),
         Err(ArtifactStorageError::InvalidBinding)
     );
-    assert_eq!(fs::metadata(&file.0).unwrap().len(), 0);
+    assert!(!file.0.exists());
+}
+
+#[test]
+fn create_under_rejects_parent_escape_and_writes_inside_canonical_root() {
+    let root = TestFile::new();
+    fs::create_dir(&root.0).unwrap();
+    let nested = root.0.join("nested");
+    fs::create_dir(&nested).unwrap();
+
+    assert_eq!(
+        CreateOnlyArtifactFile::create_under(&root.0, "../escape").unwrap_err(),
+        ArtifactStorageError::InvalidPath
+    );
+
+    let target = nested.join("snapshot");
+    let created = CreateOnlyArtifactFile::create_under(&root.0, "nested/snapshot").unwrap();
+    write_registry_snapshot(created, &ArtifactRegistry::new(), binding()).unwrap();
+    assert!(target.is_file());
+
+    fs::remove_file(target).unwrap();
+    fs::remove_dir(nested).unwrap();
+    fs::remove_dir(&root.0).unwrap();
 }
