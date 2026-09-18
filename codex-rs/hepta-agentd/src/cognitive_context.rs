@@ -155,6 +155,7 @@ where
         };
         bounded_candidates.push(OwnerRankCandidateV1 {
             record: record.clone(),
+            snapshot_digest: read.snapshot_digest(),
             owner_score: observed.reciprocal_rank_score,
             support_digest: Digest32::of_bytes(
                 observation.observation_sha256().as_str().as_bytes(),
