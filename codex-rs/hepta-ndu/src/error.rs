@@ -10,6 +10,7 @@ pub enum NduError {
     RequiredOrganLimitExceeded,
     PreferenceDimensionLimitExceeded,
     PreferenceValueOutOfRange(String),
+    EmptyProfileSemanticsDigest,
     EmptyObjectiveDigest,
     EmptyProtocolDigest(&'static str),
     SolverContextMismatch,
@@ -52,7 +53,8 @@ impl NduError {
             | Self::DimensionLimitExceeded
             | Self::RequiredOrganLimitExceeded
             | Self::PreferenceDimensionLimitExceeded => "NDU-E001",
-            Self::EmptyObjectiveDigest
+            Self::EmptyProfileSemanticsDigest
+            | Self::EmptyObjectiveDigest
             | Self::EmptyProtocolDigest(_)
             | Self::SolverContextMismatch
             | Self::EmptySupportDigest { .. }
@@ -105,6 +107,9 @@ impl fmt::Display for NduError {
             Self::PreferenceValueOutOfRange(axis) => {
                 write!(formatter, "preference value must be in [-1,1]: {axis}")
             }
+            Self::EmptyProfileSemanticsDigest => formatter.write_str(
+                "utility profile axis semantics digest must not be zero",
+            ),
             Self::EmptyObjectiveDigest => formatter.write_str("objective digest must not be zero"),
             Self::EmptyProtocolDigest(field) => {
                 write!(formatter, "protocol digest must not be zero: {field}")
