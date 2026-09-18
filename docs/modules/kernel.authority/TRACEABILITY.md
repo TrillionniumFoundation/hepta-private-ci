@@ -12,7 +12,7 @@ equivalent kernel.authority product consumer is currently proved.
 | `VerifiedUseTokenWitnessV1` | opaque `VerifiedUseToken` and `LeaseVerifiedUseToken`; `deliver_final_use` / verifier final check | Bao adapter uses FinalUse path | FinalUse tests; Bao TLS/host tests | executable native analogue; no serialized bearer witness |
 | `ModulePort::kernel.authority::secrets.heptabao` | `BaoFinalUseHost` + `BaoClient` | registered host exists; no deployed process selected | Bao host tests, OpenBao compatibility lane, B4 | source composition implemented; activation pending |
 | `ModulePort::kernel.authority::auth.authbus` | no generic lease consumer; AuthBus retains its own signed admission/evidence owner | none | AuthBus qualification is separate | target-only for generic authority port |
-| `ModulePort::kernel.authority::browser.servo` | none | none | browser authority-free proposal tests are separate | target-only |
+| `ModulePort::kernel.authority::browser.servo` | signed FinalUse grant + `FinalUseAuthority::with_dispatch_boundary` | Agentd-owned `codex-rs/hepta-agentd/src/browser_servo.rs`, with Browser private-channel challenge/entry acknowledgement | Agentd/Browser composition tests + B4 | source product composition implemented; target-host activation pending |
 | `ModulePort::kernel.authority::channel.matrix` | none | none | Matrix owner tests are separate | target-only |
 | `ModulePort::kernel.authority::inference.control` | no generic lease consumer; durable inference control has its own journal/fences | none | inference-control tests are separate | target-only |
 | `ModulePort::kernel.authority::inference.worker` | none | none | worker-host tests are separate | target-only |
@@ -24,7 +24,7 @@ equivalent kernel.authority product consumer is currently proved.
 | anti-rollback | `AuthorityFrontierStore` CAS, `FinalUseFrontier`, `AuthorityLeaseFrontier` | host-supplied implementation required | restored-snapshot tests | protocol enforced; external durable backend external |
 | revocation freshness / convergence | signed FinalUse feed V2 + Bao freshness gate + node-signed `FinalUseRevocationAck` convergence verifier | Bao source host; external fanout supplies envelopes/acks | control/host tests | fail-closed partition/catch-up and cryptographic missing-node proof implemented; transport/latency SLA external |
 | key rotation | bounded epoch-window `FinalUseIssuerTrustKey` ring for grants plus `FinalUseTrustKey` rings for approval/feed; issuer trust-set digest pinned in FinalUse store V2 | host configuration | overlap/retirement tests | protocol implemented; HSM/KMS ceremony external |
-| capacity / GC | bounded stores; lease `prune_expired_leases`; explicit epoch rollover | authority owner | capacity/prune tests | lease online GC implemented; FinalUse nonce history still epoch-bounded |
+| capacity / GC | bounded stores; lease `prune_expired_leases`; compact retired-revision lineage; explicit epoch rollover | authority owner | capacity/prune/reissue-lineage/max-state tests | lease payload GC implemented without lease-id revision reset; FinalUse nonce history remains epoch-bounded |
 | no-bypass proof | `CALLERS.toml` + `KERNEL_AUTHORITY_BOUNDARIES.json` | repository scanner | B4 closed-world test | repository-controlled |
 | activation / release | none | none | implementation map / external acceptance | false until separate gates pass |
 
