@@ -102,8 +102,15 @@ fn batch(cue: &MemoryCueV1) -> RetrievalChannelBatchV1 {
 fn typed_batches_recall_under_product_profile() {
     let cue = cue();
     let packet = recall_from_batches(&cue, &policy(16), vec![batch(&cue)]).unwrap();
-    assert_eq!(packet.disposition, crate::RecallDispositionV1::Recalled);
-    assert_eq!(packet.selections.len(), 1);
+    assert_eq!(
+        packet.recall.disposition,
+        crate::RecallDispositionV1::Recalled
+    );
+    assert_eq!(packet.recall.selections.len(), 1);
+    assert_eq!(packet.generator.candidate_count, 1);
+    assert!(packet.generator.truncated_channels.is_empty());
+    assert!(!packet.generator.manifest_digest.is_zero());
+    assert!(!packet.receipt_digest.is_zero());
 }
 
 #[test]
@@ -133,5 +140,28 @@ fn generator_contract_enforces_hnmf_result_ceiling() {
     assert_eq!(
         recall_from_batches(&cue, &policy(17), vec![batch(&cue)]),
         Err(GeneratorContractErrorV1::ResultProfileLimitExceeded)
+    );
+}
+
+
+#[test]
+fn generator_completeness_changes_product_receipt() {
+    let cue = cue();
+    let exhausted = recall_from_batches(&cue, &policy(16), vec![batch(&cue)]).unwrap();
+    let mut truncated_batch = batch(&cue);
+    truncated_batch.completeness =
+        RetrievalChannelCompletenessV1::Truncated { omitted_at_least: 1 };
+    let truncated =
+        recall_from_batches(&cue, &policy(16), vec![truncated_batch]).unwrap();
+
+    assert_eq!(exhausted.recall, truncated.recall);
+    assert_ne!(
+        exhausted.generator.manifest_digest,
+        truncated.generator.manifest_digest
+    );
+    assert_ne!(exhausted.receipt_digest, truncated.receipt_digest);
+    assert_eq!(
+        truncated.generator.truncated_channels,
+        vec![RetrievalChannelV1::Lexical]
     );
 }
