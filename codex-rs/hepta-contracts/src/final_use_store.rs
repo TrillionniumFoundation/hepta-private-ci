@@ -73,6 +73,11 @@ impl Store {
         // before either created the marker.
         let (_guard, created_marker) = store.lock_initialization()?;
         let has_state = entry_exists(&store.root, "authority.json")?;
+        if created_marker && has_state {
+            // State without its original lock inode cannot be reopened safely:
+            // another process may still hold the unlinked inode.
+            return Err(FinalUseError::InvalidTrust);
+        }
         let mut state = if has_state {
             store.load_or_migrate()?
         } else {
