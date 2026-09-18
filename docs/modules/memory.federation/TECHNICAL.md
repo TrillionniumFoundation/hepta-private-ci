@@ -75,7 +75,7 @@ Non-goals include becoming a general state store, bypassing the Codex execution 
 The hardened V2 boundary has no writer or outbox. Its bounded components are:
 
 - `FederatedQueryV2` / `FederatedLeaseV2`: exact peer, principal, scope, purpose, generation, nonce, deadline and authority-horizon binding;
-- `FederationAuthorityV2`: live authority observation before transport dispatch and again after I/O;
+- `FederationAuthorityV2`: live authority observation before transport dispatch and again after I/O, including the durable authority expiry used to reject widened leases;
 - `FederationTransportV2`: one asynchronous, read-only, interruptible attempt; retries belong to a separately authorized outer caller and require new attempt identity;
 - `RemoteFederatedResponseV2`: query-bound response whose domain-separated digest is recomputed over all security-relevant fields before admission;
 - `FederationAttemptControlV2`: cancellation/deadline boundary; the product adapter stops at the earlier of query deadline and lease expiry;
@@ -127,7 +127,7 @@ Any future cache is non-authoritative and must bind peer/principal/scope/query/f
 The canonical V2 engine is stateless across attempts. One call performs:
 
 1. query and lease shape/binding validation;
-2. live-authority preflight, which must be `Current`;
+2. live-authority preflight, which must be unexpired `Current` and must prove that the supplied lease does not extend past the live authority expiry;
 3. one transport future raced against attempt control;
 4. response shape, digest and exact query binding verification;
 5. a second live-authority observation;
@@ -161,7 +161,7 @@ Owned threat entries:
 
 None.
 
-The posture is least authority, bounded input, typed contracts, digest binding and independent evidence. Sensitive values are redacted or represented by digests at evidence boundaries. Credentials never enter general logs, learning datasets, prompt factors or cross-module receipts. Authority is operation-bound, final-payload-bound, short-lived and revocation-aware.
+The posture is least authority, bounded input, typed contracts, digest binding and independent evidence. Sensitive values are redacted or represented by digests at evidence boundaries. Credentials never enter general logs, learning datasets, prompt factors or cross-module receipts. Authority is operation-bound, final-payload-bound, short-lived and revocation-aware. A caller-provided lease is not itself the authority ceiling: live authority observation supplies the durable expiry, and a longer lease is rejected before transport dispatch.
 
 Negative tests cover denied capabilities, cross-owner writes, stale or revoked grants, replay with payload drift, unknown fields, oversize input, scope escape, untrusted instruction escalation and secret/provider leakage. Security review is mandatory for new effect boundaries, persistence, network, model invocation or authority semantics.
 
