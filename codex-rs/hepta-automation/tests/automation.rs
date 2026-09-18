@@ -884,6 +884,34 @@ async fn v1_store_migrates_atomically_to_dispatch_outcome_schema() {
     // Keep the schema rewind on one connection so each DDL statement sees
     // the preceding change, and publish the complete v1 fixture atomically.
     let mut rewind = pool.begin().await.expect("begin legacy schema rewind");
+    sqlx::query("DROP TRIGGER automation_timer_lifecycle_no_delete")
+        .execute(&mut *rewind)
+        .await
+        .expect("drop timer lifecycle delete guard");
+    sqlx::query("DROP TRIGGER automation_timer_lifecycle_transition")
+        .execute(&mut *rewind)
+        .await
+        .expect("drop timer lifecycle transition guard");
+    sqlx::query("DROP TRIGGER automation_timer_lifecycle_drain")
+        .execute(&mut *rewind)
+        .await
+        .expect("drop timer lifecycle drain guard");
+    sqlx::query("DROP TABLE automation_timer_lifecycle")
+        .execute(&mut *rewind)
+        .await
+        .expect("drop timer lifecycle table");
+    sqlx::query("DROP TRIGGER destination_operation_dedupe_immutable")
+        .execute(&mut *rewind)
+        .await
+        .expect("drop operation dedupe update guard");
+    sqlx::query("DROP TRIGGER destination_operation_dedupe_no_delete")
+        .execute(&mut *rewind)
+        .await
+        .expect("drop operation dedupe delete guard");
+    sqlx::query("DROP TABLE destination_operation_dedupe")
+        .execute(&mut *rewind)
+        .await
+        .expect("drop operation dedupe table");
     sqlx::query("DROP INDEX automation_dispatch_outcome_state_idx")
         .execute(&mut *rewind)
         .await
@@ -990,7 +1018,10 @@ async fn v1_store_migrates_atomically_to_dispatch_outcome_schema() {
             .fetch_one(&pool)
             .await
             .expect("read migrated schema version");
-    assert_eq!(schema, 3);
+    assert_eq!(
+        schema,
+        i64::from(codex_hepta_automation::AUTOMATION_SCHEMA_VERSION)
+    );
     let outcomes: i64 =
         sqlx::query_scalar("SELECT COUNT(*) FROM automation_dispatch_outcomes WHERE task_id = ?")
             .bind(task.task_id.to_string())
