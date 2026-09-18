@@ -283,3 +283,76 @@ fn startup_trusted_head_can_advance_but_cannot_rollback_persisted_revocations() 
         FinalUseError::Revoked
     );
 }
+
+
+#[test]
+fn claims_use_append_journal_and_authority_snapshot_stays_small() {
+    let (authority, signed, directory) = fixture().unwrap();
+    let authority_before = std::fs::metadata(directory.path().join("authority.json"))
+        .unwrap()
+        .len();
+    let token = authority.claim(&signed, &signed.grant.binding).unwrap();
+    drop(token);
+    let authority_after = std::fs::metadata(directory.path().join("authority.json"))
+        .unwrap()
+        .len();
+    let claims = std::fs::read_to_string(directory.path().join("claims.log")).unwrap();
+    assert_eq!(authority_before, authority_after);
+    assert_eq!(claims.lines().count(), 1);
+    assert!(claims.contains("\"authority_epoch\":9"));
+}
+
+#[test]
+fn epoch_change_compacts_claim_journal_after_persisting_new_head() {
+    let (authority, signed, directory) = fixture().unwrap();
+    let token = authority.claim(&signed, &signed.grant.binding).unwrap();
+    drop(token);
+    assert!(!std::fs::read(directory.path().join("claims.log")).unwrap().is_empty());
+    authority
+        .update_revocations(FinalUseRevocations {
+            authority_epoch: 10,
+            revision: 2,
+            revoked_grant_ids: BTreeSet::new(),
+        })
+        .unwrap();
+    assert!(std::fs::read(directory.path().join("claims.log")).unwrap().is_empty());
+    let snapshot = std::fs::read_to_string(directory.path().join("authority.json")).unwrap();
+    assert!(snapshot.contains("\"schema\":2"));
+    assert!(snapshot.contains("\"authority_epoch\":10"));
+}
+
+#[test]
+fn schema_one_state_migrates_without_losing_replay_protection() {
+    let (authority, signed, directory) = fixture().unwrap();
+    let token = authority.claim(&signed, &signed.grant.binding).unwrap();
+    drop(token);
+    drop(authority);
+
+    let current = std::fs::read_to_string(directory.path().join("authority.json")).unwrap();
+    let parsed: serde_json::Value = serde_json::from_str(&current).unwrap();
+    let legacy = serde_json::json!({
+        "schema": 1,
+        "signer_id": parsed["signer_id"].clone(),
+        "verifying_key": parsed["verifying_key"].clone(),
+        "state": {
+            "head": parsed["head"].clone(),
+            "used_nonces": [signed.grant.nonce],
+        }
+    });
+    std::fs::write(
+        directory.path().join("authority.json"),
+        serde_json::to_vec(&legacy).unwrap(),
+    )
+    .unwrap();
+    std::fs::write(directory.path().join("claims.log"), b"").unwrap();
+
+    let reopened = reopen(directory.path()).unwrap();
+    assert_eq!(
+        reopened.claim(&signed, &signed.grant.binding).unwrap_err(),
+        FinalUseError::AlreadyClaimed
+    );
+    drop(reopened);
+    let migrated = std::fs::read_to_string(directory.path().join("authority.json")).unwrap();
+    assert!(migrated.contains("\"schema\":2"));
+    assert!(!std::fs::read(directory.path().join("claims.log")).unwrap().is_empty());
+}
