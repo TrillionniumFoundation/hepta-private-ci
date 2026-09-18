@@ -41,6 +41,7 @@ pub struct ProductionRunBindingsV1 {
     pub model_tuple_digest: Digest32,
     pub prompt_registry_digest: Digest32,
     pub artifact_set_digest: Digest32,
+    pub runtime_body_digest: Digest32,
     pub authority_epoch: u64,
     pub generation: u64,
     pub fence_digest: Digest32,
@@ -60,6 +61,7 @@ pub struct IntelligenceHostEnvelopeV1 {
     pub profile_digest: Digest32,
     pub intent_digest: Digest32,
     pub admitted_source_digest: Digest32,
+    pub runtime_body_digest: Digest32,
     pub deadline_unix_micros: Option<u64>,
     pub durable_sequence: u64,
     pub durable_event_digest: Digest32,
@@ -78,6 +80,7 @@ impl IntelligenceHostEnvelopeV1 {
             ("profile", self.profile_digest),
             ("intent", self.intent_digest),
             ("admitted source", self.admitted_source_digest),
+            ("runtime body", self.runtime_body_digest),
             ("durable event", self.durable_event_digest),
             ("durable chain", self.durable_chain_digest),
             ("run start", self.run_start_digest),
@@ -243,6 +246,9 @@ pub fn prepare_intelligence_run_v1<J: DurableLearningJournal>(
     context: &ObjectiveAdmissionContextV1,
     bindings: ProductionRunBindingsV1,
 ) -> Result<ProductionObjectiveDispositionV1, ProductionObjectiveError> {
+    if bindings.runtime_body_digest.is_zero() {
+        return Err(ProductionObjectiveError::EmptyHostDigest("runtime body"));
+    }
     let outcome = admit_and_compile_objective_v1(source, profile, context)
         .map_err(ProductionObjectiveError::Admission)?;
     let compile = match &outcome.compile_result {
@@ -290,6 +296,7 @@ pub fn prepare_intelligence_run_v1<J: DurableLearningJournal>(
         record_id: bindings.record_id,
         objective_v1_json,
         objective_v1_digest,
+        runtime_body_digest: bindings.runtime_body_digest,
         admission: admission.clone(),
         compile: compile.clone(),
         run_start: run_start.clone(),
@@ -303,6 +310,7 @@ pub fn prepare_intelligence_run_v1<J: DurableLearningJournal>(
         profile_digest: admission.profile_digest,
         intent_digest: admission.intent_digest,
         admitted_source_digest: admission.admitted_source_digest,
+        runtime_body_digest: bindings.runtime_body_digest,
         deadline_unix_micros: admission.deadline_unix_micros,
         durable_sequence: durable_append.sequence.get(),
         durable_event_digest: durable_append.event_digest,
@@ -334,6 +342,7 @@ fn envelope_digest(value: &IntelligenceHostEnvelopeV1) -> Digest32 {
         value.profile_digest,
         value.intent_digest,
         value.admitted_source_digest,
+        value.runtime_body_digest,
         value.run_start.objective_digest,
         value.run_start.hard_constraint_digest,
         value.run_start.preference_state_digest,
