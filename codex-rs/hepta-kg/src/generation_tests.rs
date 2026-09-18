@@ -49,6 +49,7 @@ fn edge(
         identity: KnowledgeEdgeIdentityV2 {
             source_node_id: id(&format!("node:{source}")),
             relation,
+            predicate_id: id("predicate:default"),
             target_node_id: id(&format!("node:{target}")),
         },
         confidence: probability(1_u64 << 31),
@@ -201,6 +202,26 @@ fn publication_is_predecessor_bound_and_query_is_generation_bound() {
         Err(KnowledgeGenerationErrorV2::DigestMismatch(
             "query_generation"
         ))
+    );
+}
+
+#[test]
+fn exact_predicates_remain_distinct_for_related_edges() {
+    let mut first = edge("a", "b", KnowledgeRelationKindV2::Related, "related-one");
+    first.identity.predicate_id = id("predicate:one");
+    let mut second = edge("a", "b", KnowledgeRelationKindV2::Related, "related-two");
+    second.identity.predicate_id = id("predicate:two");
+
+    let generation = build_complete_generation(
+        generation(1),
+        input(vec![node("a", "a"), node("b", "b")], vec![first, second]),
+    )
+    .unwrap_or_else(|error| panic!("valid exact-predicate graph: {error}"));
+
+    assert_eq!(generation.edges.len(), 2);
+    assert_ne!(
+        generation.edges[0].identity.predicate_id,
+        generation.edges[1].identity.predicate_id
     );
 }
 
