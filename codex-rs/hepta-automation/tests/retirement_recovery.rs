@@ -304,12 +304,10 @@ async fn reopen_rejects_mismatched_durable_receipt_copies() -> TestResult {
         // corrupt one known column at a time. Mark the constructed statement as
         // audited dynamic SQL so sqlx's injection guard remains fail-closed for
         // every non-audited runtime string.
-        let tamper_sql = format!(
-            "UPDATE automation_dispatch_outcomes SET {assignment}"
-        );
+        let tamper_sql = format!("UPDATE automation_dispatch_outcomes SET {assignment}");
         sqlx::query(sqlx::AssertSqlSafe(tamper_sql.as_str()))
-        .execute(&pool)
-        .await?;
+            .execute(&pool)
+            .await?;
         pool.close().await;
         assert!(matches!(
             AutomationStore::open(&layout).await,
