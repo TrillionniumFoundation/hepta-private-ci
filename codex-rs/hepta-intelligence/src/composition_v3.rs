@@ -15,6 +15,7 @@ use std::fmt;
 
 use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
+use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
 
 use crate::CapabilitySnapshotV2;
@@ -281,6 +282,11 @@ pub struct CompositionPortInputV3 {
     pub snapshot_digest: Digest32,
     pub predecessor_digest: Digest32,
     pub candidate_set_digest: Digest32,
+    /// Frozen implementation identity for this capability. Optional stages
+    /// carry None only when the capability is absent and the adapter is not called.
+    pub capability_implementation_digest: Option<Digest32>,
+    /// Frozen owner generation for this capability.
+    pub capability_generation: Option<Generation>,
     pub budget_micros: u64,
     pub stage_deadline_micros: u64,
     pub stage: CompositionStageV3,
@@ -912,12 +918,17 @@ fn guard_stage<C: CompositionControlV3>(
             CompositionDispositionV3::DeadlineExceeded,
         ));
     }
+    let capability = capability_for_stage(stage);
     Ok(GuardV3::Proceed(
         CompositionPortInputV3 {
             run_id: request.run_id.clone(),
             snapshot_digest: request.snapshot.digest(),
             predecessor_digest: predecessor,
             candidate_set_digest: request.candidate_set.digest(),
+            capability_implementation_digest: request
+                .snapshot
+                .bound_implementation_digest(capability),
+            capability_generation: request.snapshot.bound_generation(capability),
             budget_micros: budget,
             stage_deadline_micros: stage_deadline,
             stage,
@@ -1449,6 +1460,20 @@ fn fallback_digest_v3(
     bytes.extend_from_slice(predecessor.as_array());
     bytes.extend_from_slice(failure.evidence_digest.as_array());
     Digest32::of_bytes(&bytes)
+}
+
+fn capability_for_stage(stage: CompositionStageV3) -> &'static str {
+    match stage {
+        CompositionStageV3::ObjectiveValidated => "objective.validation",
+        CompositionStageV3::LegalSetBuilt => "legal.actions",
+        CompositionStageV3::UtilityEvaluated => "utility.evaluation",
+        CompositionStageV3::NeuralSignalCollected => "neural.signal",
+        CompositionStageV3::PromptPortfolioBuilt => "prompt.portfolio",
+        CompositionStageV3::IntuitionDecided => "intuition.decision",
+        CompositionStageV3::ContextCompiled => "context.compilation",
+        CompositionStageV3::EvaluationAdmitted => "evaluation.admission",
+        CompositionStageV3::DecisionRecorded => "learning.record",
+    }
 }
 
 fn producer_for_stage(stage: CompositionStageV3) -> &'static str {
