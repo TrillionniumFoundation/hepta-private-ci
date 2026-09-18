@@ -130,7 +130,9 @@ impl CreateOnlyArtifactFile {
             return Err(ArtifactStorageError::InvalidPath);
         }
         let candidate = root.join(relative);
-        let parent = candidate.parent().ok_or(ArtifactStorageError::InvalidPath)?;
+        let parent = candidate
+            .parent()
+            .ok_or(ArtifactStorageError::InvalidPath)?;
         let parent = parent.canonicalize()?;
         if !parent.starts_with(&root) {
             return Err(ArtifactStorageError::InvalidPath);
@@ -478,10 +480,7 @@ fn cleanup_empty_owned_path(file: &CreateOnlyArtifactFile) {
         let Ok(metadata) = std::fs::metadata(&file.path) else {
             return;
         };
-        if metadata.dev() == file.device
-            && metadata.ino() == file.inode
-            && metadata.len() == 0
-        {
+        if metadata.dev() == file.device && metadata.ino() == file.inode && metadata.len() == 0 {
             let _ = std::fs::remove_file(&file.path);
         }
     }
