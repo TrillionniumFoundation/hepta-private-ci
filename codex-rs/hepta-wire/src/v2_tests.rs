@@ -1,22 +1,34 @@
 use super::*;
 
 fn id(value: &str) -> StableId {
-    StableId::new(value).expect("test identifier")
+    let Ok(value) = StableId::new(value) else {
+        panic!("test identifier rejected");
+    };
+    value
+}
+
+fn generation_value(value: u64) -> Generation {
+    let Ok(value) = Generation::new(value) else {
+        panic!("test generation rejected");
+    };
+    value
 }
 
 fn generation() -> Generation {
-    Generation::new(7).expect("test generation")
+    generation_value(7)
 }
 
 #[test]
 fn v2_round_trip_is_exact_and_binds_all_semantic_fields() {
-    let envelope = WireEnvelopeV2::new(
+    let result = WireEnvelopeV2::new(
         id("hepta.test.v2"),
         id("platform.wire"),
         generation(),
         b"bounded-payload".to_vec(),
-    )
-    .expect("valid v2 envelope");
+    );
+    let Ok(envelope) = result else {
+        panic!("valid v2 envelope rejected");
+    };
     let encoded = envelope.encode();
     assert_eq!(WireEnvelopeV2::decode(&encoded), Ok(envelope.clone()));
 
@@ -42,21 +54,25 @@ fn v2_matches_independent_frozen_vector() {
         0xa4, 0x76, 0x33, 0xf0, 0x72, 0x9f, 0x1d, 0x5e, 0x00, 0x00, 0x00, 0x03, b's', b'p', 0x01,
         0x02, 0x03,
     ];
-    let expected = WireEnvelopeV2::new(
+    let result = WireEnvelopeV2::new(
         id("s"),
         id("p"),
-        Generation::new(1).expect("generation"),
+        generation_value(1),
         vec![1, 2, 3],
-    )
-    .expect("valid v2 envelope");
+    );
+    let Ok(expected) = result else {
+        panic!("valid v2 envelope rejected");
+    };
     assert_eq!(expected.encode(), golden);
     assert_eq!(WireEnvelopeV2::decode(&golden), Ok(expected));
 }
 
 #[test]
 fn v2_rejects_v1_version_and_payload_bounds() {
-    let envelope =
-        WireEnvelopeV2::new(id("s"), id("p"), generation(), vec![1]).expect("valid v2 envelope");
+    let result = WireEnvelopeV2::new(id("s"), id("p"), generation(), vec![1]);
+    let Ok(envelope) = result else {
+        panic!("valid v2 envelope rejected");
+    };
     let mut version = envelope.encode();
     version[5] = 1;
     assert_eq!(
