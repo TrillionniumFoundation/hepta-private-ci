@@ -32,13 +32,32 @@
           "path": "codex-rs/hepta-agentd/src/lane_b_runtime_tests.rs",
           "kind": "native_unit",
           "command": "just test -p codex-hepta-agentd --lib"
+        },
+        {
+          "path": "codex-rs/hepta-agent-protocol/src/lib.rs",
+          "kind": "strict_wire_round_trip",
+          "command": "just test -p codex-hepta-agent-protocol"
         }
       ],
       "sourceSemantics": "Validates immutable supervisor/Agentd generations, configuration, and owner-port identities.",
       "operation": "compose_runtime",
       "nativeSymbol": "pub fn compose_runtime(",
       "sourcePath": "codex-rs/hepta-agentd/src/lane_b_runtime.rs",
-      "sourcePathExists": true
+      "sourcePathExists": true,
+      "liveDaemonEntrypoint": {
+        "role": "live_daemon_control",
+        "path": "codex-rs/hepta-agentd/src/state.rs",
+        "symbol": "pub(crate) fn new(",
+        "buildTarget": "codex-hepta-agentd"
+      },
+      "wireContract": {
+        "path": "codex-rs/hepta-agent-protocol/src/lib.rs",
+        "schemaVersion": 2
+      },
+      "recoveryLedger": {
+        "path": "codex-rs/hepta-agentd/src/run_ledger.rs",
+        "disposition": "owner_local_recovery_metadata_not_product_fact"
+      }
     },
     {
       "designOperation": "start_run",
@@ -63,13 +82,32 @@
           "path": "codex-rs/hepta-agentd/src/lane_b_runtime_tests.rs",
           "kind": "snapshot_and_capacity",
           "command": "just test -p codex-hepta-agentd --lib"
+        },
+        {
+          "path": "codex-rs/hepta-agent-protocol/src/lib.rs",
+          "kind": "strict_wire_round_trip",
+          "command": "just test -p codex-hepta-agent-protocol"
         }
       ],
       "sourceSemantics": "Admits a bounded run and freezes request, objective, body, artifact, authority, and deadline identity.",
       "operation": "start_run",
       "nativeSymbol": "pub fn start_run(",
       "sourcePath": "codex-rs/hepta-agentd/src/lane_b_runtime.rs",
-      "sourcePathExists": true
+      "sourcePathExists": true,
+      "liveDaemonEntrypoint": {
+        "role": "live_daemon_control",
+        "path": "codex-rs/hepta-agentd/src/state_control.rs",
+        "symbol": "AgentdMethod::RunStart",
+        "buildTarget": "codex-hepta-agentd"
+      },
+      "wireContract": {
+        "path": "codex-rs/hepta-agent-protocol/src/lib.rs",
+        "schemaVersion": 2
+      },
+      "recoveryLedger": {
+        "path": "codex-rs/hepta-agentd/src/run_ledger.rs",
+        "disposition": "owner_local_recovery_metadata_not_product_fact"
+      }
     },
     {
       "designOperation": "cancel_run",
@@ -94,13 +132,32 @@
           "path": "codex-rs/hepta-agentd/src/lane_b_runtime_tests.rs",
           "kind": "cancellation_race",
           "command": "just test -p codex-hepta-agentd --lib"
+        },
+        {
+          "path": "codex-rs/hepta-agent-protocol/src/lib.rs",
+          "kind": "strict_wire_round_trip",
+          "command": "just test -p codex-hepta-agent-protocol"
         }
       ],
       "sourceSemantics": "Distinguishes provable pre-dispatch cancellation from post-dispatch cancelling or indeterminate state.",
       "operation": "cancel_run",
       "nativeSymbol": "pub fn cancel_run(",
       "sourcePath": "codex-rs/hepta-agentd/src/lane_b_runtime.rs",
-      "sourcePathExists": true
+      "sourcePathExists": true,
+      "liveDaemonEntrypoint": {
+        "role": "live_daemon_control",
+        "path": "codex-rs/hepta-agentd/src/state_control.rs",
+        "symbol": "AgentdMethod::RunCancel",
+        "buildTarget": "codex-hepta-agentd"
+      },
+      "wireContract": {
+        "path": "codex-rs/hepta-agent-protocol/src/lib.rs",
+        "schemaVersion": 2
+      },
+      "recoveryLedger": {
+        "path": "codex-rs/hepta-agentd/src/run_ledger.rs",
+        "disposition": "owner_local_recovery_metadata_not_product_fact"
+      }
     },
     {
       "designOperation": "attach_context",
@@ -125,26 +182,131 @@
           "path": "codex-rs/hepta-agentd/src/lane_b_runtime_tests.rs",
           "kind": "mixed_generation_rejection",
           "command": "just test -p codex-hepta-agentd --lib"
+        },
+        {
+          "path": "codex-rs/hepta-agent-protocol/src/lib.rs",
+          "kind": "strict_wire_round_trip",
+          "command": "just test -p codex-hepta-agent-protocol"
         }
       ],
       "sourceSemantics": "Accepts context only when its receipt binds the complete frozen run tuple.",
       "operation": "attach_context",
       "nativeSymbol": "pub fn attach_context(",
       "sourcePath": "codex-rs/hepta-agentd/src/lane_b_runtime.rs",
+      "sourcePathExists": true,
+      "liveDaemonEntrypoint": {
+        "role": "live_daemon_control",
+        "path": "codex-rs/hepta-agentd/src/state_control.rs",
+        "symbol": "AgentdMethod::RunAttachContext",
+        "buildTarget": "codex-hepta-agentd"
+      },
+      "wireContract": {
+        "path": "codex-rs/hepta-agent-protocol/src/lib.rs",
+        "schemaVersion": 2
+      },
+      "recoveryLedger": {
+        "path": "codex-rs/hepta-agentd/src/run_ledger.rs",
+        "disposition": "owner_local_recovery_metadata_not_product_fact"
+      }
+    },
+    {
+      "designOperation": "mark_dispatched",
+      "mappingClass": "owner_native",
+      "ownerEntrypoint": {
+        "role": "owner_entrypoint",
+        "path": "codex-rs/hepta-agentd/src/lane_b_runtime.rs",
+        "symbol": "pub fn mark_dispatched(",
+        "buildTarget": "codex-hepta-agentd"
+      },
+      "liveDaemonEntrypoint": {
+        "role": "live_daemon_control",
+        "path": "codex-rs/hepta-agentd/src/state_control.rs",
+        "symbol": "AgentdMethod::RunMarkDispatched",
+        "buildTarget": "codex-hepta-agentd"
+      },
+      "wireContract": {
+        "path": "codex-rs/hepta-agent-protocol/src/lib.rs",
+        "schemaVersion": 2
+      },
+      "recoveryLedger": {
+        "path": "codex-rs/hepta-agentd/src/run_ledger.rs",
+        "disposition": "owner_local_recovery_metadata_not_product_fact"
+      },
+      "delegatedCallees": [],
+      "tests": [
+        {
+          "path": "codex-rs/hepta-agentd/src/lane_b_runtime_tests.rs",
+          "kind": "deadline_and_dispatch_boundary",
+          "command": "just test -p codex-hepta-agentd --lib"
+        },
+        {
+          "path": "codex-rs/hepta-agent-protocol/src/lib.rs",
+          "kind": "strict_wire_round_trip",
+          "command": "just test -p codex-hepta-agent-protocol"
+        }
+      ],
+      "sourceSemantics": "Moves only a context-bound, unexpired run across the dispatch boundary and persists the revision before later terminal observation.",
+      "operation": "mark_dispatched",
+      "nativeSymbol": "pub fn mark_dispatched(",
+      "sourcePath": "codex-rs/hepta-agentd/src/lane_b_runtime.rs",
+      "sourcePathExists": true
+    },
+    {
+      "designOperation": "observe_terminal",
+      "mappingClass": "owner_native",
+      "ownerEntrypoint": {
+        "role": "owner_entrypoint",
+        "path": "codex-rs/hepta-agentd/src/lane_b_runtime.rs",
+        "symbol": "pub fn observe_terminal(",
+        "buildTarget": "codex-hepta-agentd"
+      },
+      "liveDaemonEntrypoint": {
+        "role": "live_daemon_control",
+        "path": "codex-rs/hepta-agentd/src/state_control.rs",
+        "symbol": "AgentdMethod::RunObserveTerminal",
+        "buildTarget": "codex-hepta-agentd"
+      },
+      "wireContract": {
+        "path": "codex-rs/hepta-agent-protocol/src/lib.rs",
+        "schemaVersion": 2
+      },
+      "recoveryLedger": {
+        "path": "codex-rs/hepta-agentd/src/run_ledger.rs",
+        "disposition": "owner_local_recovery_metadata_not_product_fact"
+      },
+      "delegatedCallees": [],
+      "tests": [
+        {
+          "path": "codex-rs/hepta-agentd/src/lane_b_runtime_tests.rs",
+          "kind": "terminal_and_indeterminate_reconciliation",
+          "command": "just test -p codex-hepta-agentd --lib"
+        },
+        {
+          "path": "codex-rs/hepta-agent-protocol/src/lib.rs",
+          "kind": "strict_wire_round_trip",
+          "command": "just test -p codex-hepta-agent-protocol"
+        }
+      ],
+      "sourceSemantics": "Accepts terminal state only from an explicit observer and preserves unknown post-dispatch outcomes as indeterminate without redispatch.",
+      "operation": "observe_terminal",
+      "nativeSymbol": "pub fn observe_terminal(",
+      "sourcePath": "codex-rs/hepta-agentd/src/lane_b_runtime.rs",
       "sourcePathExists": true
     }
   ],
-  "repositoryControlledGaps": [],
+  "repositoryControlledGaps": [
+    "Bind at least one named non-test Codex caller to the typed Agentd run lifecycle API using authentic frozen-tuple and context-compilation receipts; exposed daemon APIs alone are not product composition."
+  ],
   "externalEvidenceGates": [
     "deployed Agentd process and authenticated socket identity",
-    "non-test caller through the full Codex turn path",
-    "target backpressure/restart measurements"
+    "target-host graceful-drain, overload and restart measurements",
+    "independent acceptance, operator canary, promotion and release"
   ],
   "claimBoundary": {
     "nativeSourceMappingComplete": true,
     "repositoryControlledDocumentationGapsClosed": true,
     "repositoryControlledMappingGapsClosed": true,
-    "repositoryControlledSourceBoundaryGapsClosed": true,
+    "repositoryControlledSourceBoundaryGapsClosed": false,
     "productExecutionComplete": false,
     "deploymentQualificationComplete": false,
     "independentAcceptanceComplete": false,
