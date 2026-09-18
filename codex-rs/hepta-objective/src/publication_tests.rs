@@ -12,6 +12,7 @@ use crate::Constraint;
 use crate::ConstraintClass;
 use crate::ConstraintRelation;
 use crate::ObjectiveFunction;
+use crate::PredicateTerminality;
 use crate::SoftDirection;
 use crate::SoftPreference;
 use crate::SuccessPredicate;
