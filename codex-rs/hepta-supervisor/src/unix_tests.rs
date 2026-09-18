@@ -13,6 +13,7 @@ use codex_hepta_agent_protocol::AgentdPayload;
 use codex_hepta_agent_protocol::AgentdRequest;
 use codex_hepta_agent_protocol::AgentdResponse;
 use codex_hepta_agent_protocol::HealthSnapshot;
+use codex_hepta_agent_protocol::ReadinessSnapshot;
 use codex_hepta_contracts::AgentId;
 use codex_hepta_contracts::Sha256Digest;
 use codex_hepta_fleet::ReleaseId;
@@ -361,19 +362,91 @@ fn serve_and_probe(
 ) -> bool {
     remove_socket(&identity.control_socket);
     let listener = UnixListener::bind(&identity.control_socket).expect("bind probe socket");
+    let needs_readiness = match &response.payload {
+        AgentdPayload::Health(health) => {
+            let generation_matches = match health.lifecycle {
+                codex_hepta_fleet::AgentLifecycle::Starting => {
+                    response.current_generation == identity.spawn_generation
+                }
+                codex_hepta_fleet::AgentLifecycle::Running => identity
+                    .spawn_generation
+                    .checked_add(1)
+                    .is_some_and(|generation| response.current_generation == generation),
+                codex_hepta_fleet::AgentLifecycle::Draining => identity
+                    .spawn_generation
+                    .checked_add(2)
+                    .is_some_and(|generation| response.current_generation == generation),
+                codex_hepta_fleet::AgentLifecycle::Stopped
+                | codex_hepta_fleet::AgentLifecycle::Failed => false,
+            };
+            response.schema_version == AGENTD_CONTROL_SCHEMA_VERSION
+                && response.agent_id == identity.agent_id
+                && response.spawn_generation == identity.spawn_generation
+                && generation_matches
+                && !health.fenced
+                && health.process_id == identity.process_id
+                && health.workspace == identity.workspace
+                && health.home_root == identity.home_root
+                && health.run_root == identity.run_root
+                && health.promotion_ready
+                && matches!(
+                    health.lifecycle,
+                    codex_hepta_fleet::AgentLifecycle::Starting
+                        | codex_hepta_fleet::AgentLifecycle::Running
+                )
+        }
+        _ => false,
+    };
+    let readiness_generation = response.current_generation;
+    let readiness_admission_open = matches!(
+        &response.payload,
+        AgentdPayload::Health(health)
+            if health.lifecycle == codex_hepta_fleet::AgentLifecycle::Running
+    );
+    let readiness_agent = response.agent_id.clone();
+    let readiness_spawn_generation = response.spawn_generation;
     let worker = std::thread::spawn(move || {
-        let (stream, _) = listener.accept().expect("accept probe");
+        let (stream, _) = listener.accept().expect("accept health probe");
         let mut reader = BufReader::new(stream);
         let mut request_bytes = Vec::new();
         reader
             .read_until(b'\n', &mut request_bytes)
-            .expect("read request");
+            .expect("read health request");
         let request: AgentdRequest =
             serde_json::from_slice(&request_bytes).expect("typed health request");
         response.request_id = request.request_id;
         let mut stream = reader.into_inner();
-        serde_json::to_writer(&mut stream, &response).expect("write response");
-        stream.write_all(b"\n").expect("terminate response");
+        serde_json::to_writer(&mut stream, &response).expect("write health response");
+        stream.write_all(b"\n").expect("terminate health response");
+        drop(stream);
+
+        if needs_readiness {
+            let (stream, _) = listener.accept().expect("accept readiness probe");
+            let mut reader = BufReader::new(stream);
+            let mut request_bytes = Vec::new();
+            reader
+                .read_until(b'\n', &mut request_bytes)
+                .expect("read readiness request");
+            let request: AgentdRequest =
+                serde_json::from_slice(&request_bytes).expect("typed readiness request");
+            assert!(matches!(request.method, codex_hepta_agent_protocol::AgentdMethod::Readiness));
+            let readiness = AgentdResponse {
+                schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
+                request_id: request.request_id,
+                agent_id: readiness_agent,
+                spawn_generation: readiness_spawn_generation,
+                current_generation: readiness_generation,
+                payload: AgentdPayload::Readiness(ReadinessSnapshot {
+                    critical_stores_ready: true,
+                    revocation_ready: true,
+                    required_ports_ready: true,
+                    admission_open: readiness_admission_open,
+                }),
+            };
+            let mut stream = reader.into_inner();
+            serde_json::to_writer(&mut stream, &readiness).expect("write readiness response");
+            stream.write_all(b"\n").expect("terminate readiness response");
+        }
     });
     let result = query_agent_health_once(identity, request_id)
         .expect("health probe completes")
