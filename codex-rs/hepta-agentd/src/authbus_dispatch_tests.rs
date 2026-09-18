@@ -94,10 +94,7 @@ impl Fixture {
             trust_file,
         };
         fixture.trust(/*revoked*/ false);
-        let checkpoint = (
-            1,
-            Digest32::of_bytes(b"authbus-dispatch-test-checkpoint"),
-        );
+        let checkpoint = (1, Digest32::of_bytes(b"authbus-dispatch-test-checkpoint"));
         let home =
             AbsolutePathBuf::from_absolute_path(&fixture.state.identity().home_root).unwrap();
         let evidence = HeptaEvidenceStore::open(&SqliteConfig::from_sqlite_home(home))
@@ -255,10 +252,7 @@ async fn lost_queue_reply_recovers_from_sqlite_using_lookup_only_and_exact_recei
     let reopened = TextIngress::open(
         fixture.state.identity(),
         fixture.trust_file.clone(),
-        (
-                1,
-                Digest32::of_bytes(b"authbus-dispatch-test-checkpoint"),
-            ),
+        (1, Digest32::of_bytes(b"authbus-dispatch-test-checkpoint")),
     )
     .await
     .unwrap();
