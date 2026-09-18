@@ -191,6 +191,18 @@ async fn reconcile_work(
         let observed = find_turn(&client, &work.admission.thread_id, turn_id).await;
         let _ = client.shutdown().await;
         let Some(turn) = observed? else {
+            let mut bytes = b"hepta.automation.turn-history-miss.v1\0".to_vec();
+            bytes.extend_from_slice(work.occurrence.occurrence_id.as_bytes());
+            bytes.extend_from_slice(turn_id.as_bytes());
+            let digest = Sha256Digest::for_bytes(&bytes);
+            store
+                .mark_occurrence_indeterminate(
+                    work.occurrence.task_id,
+                    work.occurrence.occurrence,
+                    &digest,
+                    now_ms,
+                )
+                .await?;
             return Ok(());
         };
         match turn.status {
