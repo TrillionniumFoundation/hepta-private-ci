@@ -52,7 +52,7 @@ The module has independent source, composition and activation states:
 | --- | --- |
 | deterministic registry core | source implemented |
 | durable owner / reopen / migration | source implemented |
-| reviewer-signature admission compatibility | source implemented |
+| reviewer-signature admission compatibility | source implemented, non-authoritative compatibility/test verifier |
 | kernel final-use authenticated admission | source implemented |
 | payload-backed realization and exact dereference | source implemented |
 | named non-test source consumer | source composed in `intelligence.control` |
