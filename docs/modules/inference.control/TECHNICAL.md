@@ -2,7 +2,7 @@
 
 Current executable behavior, component owners and implementation gaps: [Lane B native host](../../readiness/LANE_B_NATIVE_HOST.md).
 
-The native App Server worker now calls the same durable control owner for explicit local-slot admission, persisted dispatch identity, cancellation intent and actual observed settlement. Optional observed tokens remain unknown when absent; restarting a possibly dispatched request never replays it. This does not close economic quota, local weights/device or trusted post-crash provider-reconciliation gaps. The [native host guide](../../readiness/LANE_B_NATIVE_HOST.md#durable-inference-journal) specifies journal limits, CLI requirements and recovery semantics.
+The native App Server worker now calls the same durable control owner for explicit local-slot admission, kernel final-use-gated dispatch identity, cancellation intent and actual observed settlement. The effect boundary verifies an independently signed `FinalUseBinding` immediately before the durable dispatch linearization point; owner health remains a separate runtime observation. New durable observations retain output digests rather than raw model text, and the native worker atomically migrates historical native output lines to digest-only form. Optional observed tokens remain unknown when absent; restarting a possibly dispatched request never replays it. This still does not close economic quota, local weights/device, `OperationIntentV1` product composition or trusted post-crash provider-reconciliation gaps. The [native host guide](../../readiness/LANE_B_NATIVE_HOST.md#durable-inference-journal) specifies journal limits, CLI requirements and recovery semantics.
 
 **Plan:** `HEPTA-GLOBAL-MODULAR-DEVELOPMENT-PLAN` v8.0.0
 
@@ -52,7 +52,7 @@ None.
 
 ### Native source and scope
 
-The registered primary source is [codex-rs/hepta-infer-core/src/lib.rs](../../../codex-rs/hepta-infer-core/src/lib.rs); observed identifiers include `InferenceLedger`, `InferenceRequest`, `RequestRecord`, `submit`, `reserve`, `complete`. This is a source navigation binding, not proof that every target operation or production consumer exists. Read the [current native implementation](../../../qualification/module-execution-dossiers/detail/inference.control.md#8-current-native-implementation) alongside the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/inference.control.md) for the implemented subset and remaining product work.
+The registered primary source is [codex-rs/hepta-infer-core/src/lib.rs](../../../codex-rs/hepta-infer-core/src/lib.rs). Its `production` namespace identifies `DurableInferenceControl` and the native durable records as the canonical production-facing state-owner surface. The older top-level `InferenceLedger` is explicitly retained as a bounded reference/contract model with `DENY_ALL` authority and no durable writer ownership; new runtime composition must not install it as a second production writer. This is still a source navigation binding, not proof that every target operation or production consumer exists. Read the [current native implementation](../../../qualification/module-execution-dossiers/detail/inference.control.md#8-current-native-implementation) alongside the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/inference.control.md) for the implemented subset and remaining product work.
 
 ## 3. Boundary, responsibilities and non-goals
 
@@ -113,6 +113,8 @@ Consumed contracts:
 - `OperationIntentV1`
 - `VerifiedUseTokenWitnessV1`
 
+Current native authority note: the hosted App Server path now consumes the repository's implemented `FinalUseAuthority`/`SignedFinalUseGrant` substrate from `kernel.authority`. `claim` verifies signature, expiry, epoch, revocation and nonce; `with_verified_use` rechecks the live frontier while the durable dispatch intent is synced. The journal stores only a public `NativeFinalUseWitness`; it is not the opaque token and does not grant authority. The registry-level `OperationIntentV1` and `VerifiedUseTokenWitnessV1` product composition remains a separate integration obligation because no native typed producer/consumer path for those protocol names is established by this module change.
+
 Critical protocol schemas:
 
 None.
@@ -160,7 +162,7 @@ Owned threat entries:
 
 - `provider_raw_escape`
 
-The posture is least authority, bounded input, typed contracts, digest binding and independent evidence. Sensitive values are redacted or represented by digests at evidence boundaries. Credentials never enter general logs, learning datasets, prompt factors or cross-module receipts. Authority is operation-bound, final-payload-bound, short-lived and revocation-aware.
+The posture is least authority, bounded input, typed contracts, digest binding and independent evidence. Sensitive values are redacted or represented by digests at evidence boundaries. Native provider output is returned only to the live caller; durable native observations persist its digest/status/usage and the first updated-worker open atomically rewrites older raw native observation text. Credentials never enter general logs, learning datasets, prompt factors or cross-module receipts. Filesystem snapshots/backups remain an external retention surface and must be governed separately. Provider-effect authority is request/provider/model/resolved-context-bound, short-lived and revocation-aware through the kernel final-use gate; `ObservedReady` owner health does not substitute for that gate.
 
 Negative tests cover denied capabilities, cross-owner writes, stale or revoked grants, replay with payload drift, unknown fields, oversize input, scope escape, untrusted instruction escalation and secret/provider leakage. Security review is mandatory for new effect boundaries, persistence, network, model invocation or authority semantics.
 
@@ -172,7 +174,7 @@ The [module-specific implementation design](../../../qualification/module-execut
 
 ## 11. Observability and operations
 
-The native worker opens DurableInferenceControl with an absolute private journal, stable request ID and explicit in-flight budget. A possibly dispatched record remains held/indeterminate after restart. Keep native-v1 records with a compatible binary; archival and authenticated post-crash provider reconciliation are not implemented by deleting the journal.
+The native worker opens `DurableInferenceControl` with an absolute private journal, stable request ID, explicit `NativeLocalSlotAdmission` budget, exact configured provider identity and an absolute final-use configuration. A possibly dispatched record remains held/indeterminate after restart. The updated worker calls `redact_native_output_history` on open; its marker makes later checks constant-time and new settlement writes are digest-only. Keep native-v1 records with a compatible binary. The redaction rewrite is privacy retention, not general event archival: bounded history compaction and authenticated post-crash provider reconciliation are still not implemented by deleting the journal.
 
 Current operating and state-format references:
 
@@ -187,7 +189,7 @@ Current focused test sources (source references, not pass receipts):
 - [codex-rs/hepta-infer-core/src/durable_control_tests.rs](../../../codex-rs/hepta-infer-core/src/durable_control_tests.rs); named case: `reopens_exact_committed_state`.
 - [codex-rs/hepta-infer-core/src/lib_tests.rs](../../../codex-rs/hepta-infer-core/src/lib_tests.rs); named case: `request_lifecycle_is_fenced_and_authority_free`.
 
-In `codex-rs`, run `just test -p codex-hepta-infer-core -p codex-hepta-inferd`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/inference.control.md) separately labels target acceptance designs.
+In `codex-rs`, run `cargo test -p codex-hepta-infer-core -p codex-hepta-inferd -p codex-hepta-infer-worker-host` and `cargo clippy -p codex-hepta-infer-core -p codex-hepta-inferd -p codex-hepta-infer-worker-host --all-targets -- -D warnings`. The dedicated Lane-B workflow now triggers on all three inference crate paths and repeats the package tests on the synthetic merge candidate. These commands are invocations, not stored pass receipts; inspect exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/inference.control.md) separately labels target acceptance designs.
 
 [Shared verification and qualification requirements](../README.md#shared-verification-and-qualification) retain the source/merge, failure, compilation and independent-evidence obligations.
 
