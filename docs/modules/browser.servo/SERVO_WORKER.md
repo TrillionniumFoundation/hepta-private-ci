@@ -91,7 +91,7 @@ Credential/upload actions carry opaque references, not host paths or raw secrets
 
 The durable operation record deliberately excludes the full `typedAction`. It persists the final payload digest and immutable request/effect identity, so `type.text` is not copied into the journal even when the live action carries sensitive text. Raw credential bytes, upload bytes, page HTML and worker stderr are also excluded from durable records.
 
-The file journal performs exact field validation on every hydrated record, rejects unknown fields, validates checksum envelopes and semantic identity, fsyncs before dispatch, uses private non-symlink paths, compacts atomically before the file ceiling and atomically retires a fully terminal profile generation after clean close.
+The file journal performs exact field validation on every hydrated record, rejects unknown fields, validates checksum envelopes and semantic identity, fsyncs before dispatch, uses private non-symlink paths, compacts atomically before the file ceiling and retires a fully terminal profile generation only after fsyncing a separate private generation high-water, so deleting bulky terminal records cannot resurrect the same profile generation after restart.
 
 Every subprocess worker generation receives a fresh random private directory. Browser writes a mode-0600 `hepta.browser.profile-owner.v1` manifest binding:
 

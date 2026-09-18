@@ -200,6 +200,12 @@ test("opens, publishes bounded semantic observation, reconciles, retires journal
   });
   assert.equal(closed.terminalObserved, true);
   assert.deepEqual(await journal.listOperations("profile.1", 1), []);
+  await assert.rejects(
+    journal.assertProfileGenerationAvailable("profile.1", 1),
+    /already been retired/,
+  );
+  await journal.assertProfileGenerationAvailable("profile.1", 2);
+  await assert.rejects(host.openProfile(input()), /already been retired/);
 });
 
 test("semantic observation digest and budget fail closed", async () => {
@@ -313,6 +319,9 @@ test("durable intent and local dispatch occur inside the final-use fence", async
   let insideFence = false;
   const baseJournal = new MemoryBrowserOperationJournal();
   const journal = {
+    async assertProfileGenerationAvailable(...args) {
+      return baseJournal.assertProfileGenerationAvailable(...args);
+    },
     async recordDispatch(record) {
       assert.equal(insideFence, true);
       return baseJournal.recordDispatch(record);

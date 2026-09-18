@@ -115,7 +115,7 @@ test("explicit compaction preserves latest immutable operations", async () => {
   assert.equal((await reopened.getOperation("profile.1", 1, "operation.0")).status, "succeeded");
 });
 
-test("profile retirement removes closed generation records atomically", async () => {
+test("profile retirement removes records and durably fences generation resurrection", async () => {
   const { path, journal } = await journalFixture();
   await journal.recordDispatch(record({ operationId: "operation.old" }));
   await journal.recordObservation(record({
@@ -130,7 +130,18 @@ test("profile retirement removes closed generation records atomically", async ()
     operationId: "operation.keep",
   }));
   await journal.retireProfile("profile.1", 1);
+  await assert.rejects(
+    journal.assertProfileGenerationAvailable("profile.1", 1),
+    /already been retired/,
+  );
+  await journal.assertProfileGenerationAvailable("profile.1", 2);
+
   const reopened = new FileBrowserOperationJournal(path);
   assert.equal(await reopened.getOperation("profile.1", 1, "operation.old"), null);
   assert.notEqual(await reopened.getOperation("profile.2", 1, "operation.keep"), null);
+  await assert.rejects(
+    reopened.assertProfileGenerationAvailable("profile.1", 1),
+    /already been retired/,
+  );
+  await reopened.assertProfileGenerationAvailable("profile.1", 2);
 });

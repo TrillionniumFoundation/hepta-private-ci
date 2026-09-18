@@ -73,6 +73,7 @@ export class BrowserProfileHost {
     }
     requireRecord(journal, "journal");
     for (const method of [
+      "assertProfileGenerationAvailable",
       "recordDispatch",
       "recordObservation",
       "getOperation",
@@ -107,6 +108,10 @@ export class BrowserProfileHost {
         const manifestDigest = digest(input.manifestDigest, "manifestDigest");
         const grantDigest = digest(input.grantDigest, "grantDigest");
         const generation = positiveInteger(input.generation, "generation");
+        await this.#journal.assertProfileGenerationAvailable(
+          profileId,
+          generation,
+        );
         const expiresAtMs = futureDeadline(
           input.expiresAtMs,
           this.#clock(),

@@ -4,7 +4,10 @@ import { mkdir, open, realpath, rename, rm } from "node:fs/promises";
 import { dirname, isAbsolute, resolve } from "node:path";
 
 const SCHEMA = "hepta.browser.operation-journal.v1";
+const RETIRED_SCHEMA = "hepta.browser.retired-profile-generations.v1";
 const MAX_LINE_BYTES = 262_144;
+const MAX_RETIRED_BYTES = 8 * 1024 * 1024;
+const MAX_RETIRED_PROFILES = 65_536;
 const MAX_FILE_BYTES = 64 * 1024 * 1024;
 const COMPACT_AT_BYTES = 48 * 1024 * 1024;
 const UTF8 = new TextEncoder();
@@ -179,6 +182,15 @@ function profilePrefix(profileId, generation) {
   return `${profileId}\u0000${generation}\u0000`;
 }
 
+function assertGenerationAvailable(retired, profileId, generation) {
+  stableId(profileId, "profileId");
+  positiveInteger(generation, "generation");
+  const highWater = retired.get(profileId);
+  if (highWater !== undefined && generation <= highWater) {
+    throw new TypeError("profile generation has already been retired");
+  }
+}
+
 async function ensureCanonicalPrivateParent(path) {
   const parent = dirname(path);
   await mkdir(parent, { recursive: true, mode: 0o700 });
@@ -203,6 +215,11 @@ function envelopeLine(type, record) {
 
 export class MemoryBrowserOperationJournal {
   #records = new Map();
+  #retired = new Map();
+
+  async assertProfileGenerationAvailable(profileId, generation) {
+    assertGenerationAvailable(this.#retired, profileId, generation);
+  }
 
   async recordDispatch(record) {
     const snapshot = validateDurableRecord(record, "dispatch");
@@ -245,6 +262,10 @@ export class MemoryBrowserOperationJournal {
   }
 
   async retireProfile(profileId, generation) {
+    stableId(profileId, "profileId");
+    positiveInteger(generation, "generation");
+    const prior = this.#retired.get(profileId) ?? 0;
+    if (generation > prior) this.#retired.set(profileId, generation);
     const prefix = profilePrefix(profileId, generation);
     for (const key of [...this.#records.keys()]) {
       if (key.startsWith(prefix)) this.#records.delete(key);
@@ -254,6 +275,7 @@ export class MemoryBrowserOperationJournal {
 
 export class FileBrowserOperationJournal {
   #path;
+  #retiredPath;
   #tail = Promise.resolve();
   #rewriteCounter = 0;
 
@@ -262,6 +284,14 @@ export class FileBrowserOperationJournal {
       throw new TypeError("browser journal path must be absolute");
     }
     this.#path = path;
+    this.#retiredPath = `${path}.retired`;
+  }
+
+  async assertProfileGenerationAvailable(profileId, generation) {
+    return this.#serialize(async () => {
+      const retired = await this.#loadRetired();
+      assertGenerationAvailable(retired, profileId, generation);
+    });
   }
 
   async recordDispatch(record) {
@@ -326,6 +356,19 @@ export class FileBrowserOperationJournal {
     stableId(profileId, "profileId");
     positiveInteger(generation, "generation");
     return this.#serialize(async () => {
+      // Persist the non-resurrection fence first. A crash can therefore leave
+      // redundant terminal operation records, but can never erase operation
+      // identity and then make the same retired generation admissible again.
+      const retired = await this.#loadRetired();
+      const prior = retired.get(profileId) ?? 0;
+      if (generation > prior) {
+        if (!retired.has(profileId) && retired.size >= MAX_RETIRED_PROFILES) {
+          throw new TypeError("retired profile generation capacity is exhausted");
+        }
+        retired.set(profileId, generation);
+        await this.#rewriteRetired(retired);
+      }
+
       const records = await this.#load();
       const prefix = profilePrefix(profileId, generation);
       for (const key of [...records.keys()]) {
@@ -340,6 +383,162 @@ export class FileBrowserOperationJournal {
     return (
       records.get(`${profileId}\u0000${generation}\u0000${operationId}`) ?? null
     );
+  }
+
+  async #loadRetired() {
+    await ensureCanonicalPrivateParent(this.#retiredPath);
+    const noFollow = constants.O_NOFOLLOW ?? 0;
+    let handle;
+    try {
+      handle = await open(this.#retiredPath, constants.O_RDONLY | noFollow);
+    } catch (error) {
+      if (error?.code === "ENOENT") return new Map();
+      throw error;
+    }
+
+    let bytes;
+    try {
+      const info = await handle.stat();
+      if (!info.isFile() || info.size > MAX_RETIRED_BYTES) {
+        throw new TypeError(
+          "retired profile generation ledger is not a bounded regular file",
+        );
+      }
+      if (process.platform !== "win32" && (info.mode & 0o077) !== 0) {
+        throw new TypeError(
+          "retired profile generation ledger permissions are too broad",
+        );
+      }
+      bytes = await handle.readFile({ encoding: "utf8" });
+    } finally {
+      await handle.close();
+    }
+
+    let envelope;
+    try {
+      envelope = JSON.parse(bytes);
+    } catch {
+      throw new TypeError("retired profile generation ledger is malformed");
+    }
+    const object = requireRecord(
+      envelope,
+      "retired profile generation ledger",
+    );
+    exactKeys(
+      object,
+      ["checksum", "profiles", "schema", "version"].sort(),
+      "retired profile generation ledger",
+    );
+    if (
+      object.schema !== RETIRED_SCHEMA ||
+      object.version !== 1 ||
+      typeof object.checksum !== "string" ||
+      !DIGEST.test(object.checksum)
+    ) {
+      throw new TypeError("retired profile generation ledger is unsupported");
+    }
+    const profiles = requireRecord(
+      object.profiles,
+      "retired profile generation profiles",
+    );
+    const profileIds = Object.keys(profiles);
+    if (profileIds.length > MAX_RETIRED_PROFILES) {
+      throw new TypeError("retired profile generation ledger exceeds capacity");
+    }
+    const sorted = [...profileIds].sort();
+    if (profileIds.some((profileId, index) => profileId !== sorted[index])) {
+      throw new TypeError(
+        "retired profile generation ledger is not canonical",
+      );
+    }
+    const retired = new Map();
+    for (const profileId of profileIds) {
+      stableId(profileId, "retired profileId");
+      const generation = positiveInteger(
+        profiles[profileId],
+        "retired generation",
+      );
+      retired.set(profileId, generation);
+    }
+    const unsigned = {
+      schema: object.schema,
+      version: object.version,
+      profiles: object.profiles,
+    };
+    if (checksum(unsigned) !== object.checksum) {
+      throw new TypeError("retired profile generation checksum mismatch");
+    }
+    const expected = `${canonical({
+      ...unsigned,
+      checksum: checksum(unsigned),
+    })}\n`;
+    if (bytes !== expected) {
+      throw new TypeError(
+        "retired profile generation ledger is not canonical",
+      );
+    }
+    return retired;
+  }
+
+  async #rewriteRetired(retired) {
+    if (!(retired instanceof Map)) {
+      throw new TypeError("retired profile generation state must be a Map");
+    }
+    if (retired.size > MAX_RETIRED_PROFILES) {
+      throw new TypeError("retired profile generation ledger exceeds capacity");
+    }
+    const profiles = Object.fromEntries(
+      [...retired.entries()]
+        .sort(([left], [right]) => left.localeCompare(right))
+        .map(([profileId, generation]) => {
+          stableId(profileId, "retired profileId");
+          return [
+            profileId,
+            positiveInteger(generation, "retired generation"),
+          ];
+        }),
+    );
+    const unsigned = {
+      schema: RETIRED_SCHEMA,
+      version: 1,
+      profiles,
+    };
+    const body = `${canonical({
+      ...unsigned,
+      checksum: checksum(unsigned),
+    })}\n`;
+    if (UTF8.encode(body).byteLength > MAX_RETIRED_BYTES) {
+      throw new TypeError("retired profile generation ledger exceeds byte limit");
+    }
+
+    await ensureCanonicalPrivateParent(this.#retiredPath);
+    const temporary =
+      `${this.#retiredPath}.tmp-${process.pid}-${this.#rewriteCounter++}`;
+    const noFollow = constants.O_NOFOLLOW ?? 0;
+    const flags =
+      constants.O_WRONLY | constants.O_CREAT | constants.O_EXCL | noFollow;
+    const handle = await open(temporary, flags, 0o600);
+    try {
+      await handle.writeFile(body, "utf8");
+      await handle.sync();
+    } finally {
+      await handle.close();
+    }
+    try {
+      await rename(temporary, this.#retiredPath);
+      const parent = await open(
+        dirname(this.#retiredPath),
+        constants.O_RDONLY | noFollow,
+      );
+      try {
+        await parent.sync();
+      } finally {
+        await parent.close();
+      }
+    } catch (error) {
+      await rm(temporary, { force: true }).catch(() => {});
+      throw error;
+    }
   }
 
   async #load() {

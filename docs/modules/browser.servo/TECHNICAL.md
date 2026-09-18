@@ -80,7 +80,7 @@ Typed browser actions are closed-world: `navigate`, `click`, `type`, `credential
 
 ## 6. Data authority, persistence and migrations
 
-Owned/recoverable data is `browser_profile_state` plus Browser-owned effect identities/observations. The file journal provides exact field/schema validation for every hydrated record; no unknown fields and no persisted `typedAction`; checksum-bound canonical envelopes; bounded line/file sizes; fsync before the external dispatch boundary; non-symlink/private Unix path checks; semantic-identity conflict detection; atomic snapshot compaction before capacity exhaustion; and atomic profile-generation retirement after a clean terminal close.
+Owned/recoverable data is `browser_profile_state` plus Browser-owned effect identities/observations. The file journal provides exact field/schema validation for every hydrated record; no unknown fields and no persisted `typedAction`; checksum-bound canonical envelopes; bounded line/file sizes; fsync before the external dispatch boundary; non-symlink/private Unix path checks; semantic-identity conflict detection; atomic snapshot compaction before capacity exhaustion; and clean-close retirement that fsyncs a durable per-profile generation high-water before operation records are compacted away, preventing a retired generation from being resurrected after restart.
 
 `type { selector, text }` may contain sensitive user-entered text at the live effect boundary, but the durable journal stores only the typed action's final payload digest and immutable effect semantics. Raw `type.text`, credential values, upload bytes and page contents are not journal fields.
 
@@ -108,7 +108,7 @@ An already-dispatched identity never re-enters final-use authority and never red
 
 Before durable dispatch, validation, authority denial, invalid protocol or persistence failure rejects without claiming an external effect. After durable dispatch, driver timeout, channel loss, worker crash or unknown response remains `indeterminate` until reconciliation.
 
-Profile close refuses while any live or durable operation is nonterminal. Once all effects are terminal and worker stop is observed, the profile is removed and its journal generation is retired. If journal retirement fails after worker stop, the host reports `BrowserJournalRetirementError`.
+Profile close refuses while any live or durable operation is nonterminal. Once all effects are terminal and worker stop is observed, retirement first fsyncs the profile-generation high-water and only then removes the generation's bulky operation records. A crash may therefore leave redundant terminal records but cannot make a clean-retired generation admissible again. If journal retirement fails after worker stop, the host reports `BrowserJournalRetirementError`.
 
 Worker framing fails closed on non-canonical JSON, wrong protocol/session/generation, sequence drift, invalid payload digest, unexpected frame kind, unbound response echo or unknown request identity. Worker stderr is always drained without copying page/worker logs into receipts.
 
