@@ -1,7 +1,7 @@
 # context.compiler: implementation design
 
 Parent: `docs/modules/context.compiler/TECHNICAL.md`. Lane: `LANE-C-MEMORY`.
-Status: source-aware compilation with mandatory groups and candidate-bound receipts implemented; remaining target capabilities and independent acceptance are listed in section 8. Common requirements: `../EXECUTION_SEMANTICS.md` and `../TECHNICAL.md`. Canonical ownership and package predecessors are unchanged.
+Status: proof-closed V2.1 source API plus V1 compatibility paths implemented; real host composition, authenticated external witnesses/adapters and independent acceptance remain listed in section 8. Common requirements: `../EXECUTION_SEMANTICS.md` and `../TECHNICAL.md`. Canonical ownership and package predecessors are unchanged.
 
 ## 1. Source and work envelope
 
@@ -12,7 +12,7 @@ Operation signatures below describe the target contract. Section 8 identifies th
 
 ## 2. Public operations and contract details
 
-`compile_context(objective, validated_evidence, prompt_portfolio, model_profile, budget) -> ContextCompilationReceiptV1`; `revalidate_attachment(receipt, current_snapshot) -> ContextAttachment | Stale`. The compilation result binds actual payload/tokenizer/template/tool-schema digests, placement, truncation, source revisions and cost. Compilation alone is not delivery; the Codex consumer emits a separate observation.
+`compile_v2(request_with_typed_admission_snapshot) -> CompiledContextV2`; `serialize_context_v2(compiled, actual_selected_bytes, serializer, exact_tokenizer) -> SerializedContextV2`; `build_attachment(compiled, serialized, current_admission_snapshot) -> ContextAttachmentV2 | Stale`; `deliver_attachment(attachment, delivery_adapter) -> ContextDeliveryReceiptV2`. The V2.1 path binds typed admission evidence, exact candidate and final-payload tokenization, mandatory-group provenance, current attachment-time revocation state and provider-attempt acknowledgement evidence. V1 operations remain compatibility-only. Compilation alone is not serialization, attachment or delivery.
 
 ## 3. State records and transaction design
 
@@ -45,8 +45,12 @@ Use all eighteen dossier receipt fields. Immediate revocation/stop remains effec
 
 ## 8. Current native implementation
 
-- **Implemented entrypoints:** `compile` in [codex-rs/hepta-context-compiler/src/lib.rs](../../../codex-rs/hepta-context-compiler/src/lib.rs); `compile_with_requirements` in [codex-rs/hepta-context-compiler/src/requirements.rs](../../../codex-rs/hepta-context-compiler/src/requirements.rs); `compile_candidate_bound` in [codex-rs/hepta-context-compiler/src/candidate_bound.rs](../../../codex-rs/hepta-context-compiler/src/candidate_bound.rs). Source-aware compilation with mandatory groups and candidate-bound receipts implemented.
-- **State and recovery:** Stateless compilation separates trusted instructions from untrusted evidence and binds objective/snapshot/items. Explicit mandatory groups validate exact items before budget selection and cannot be silently omitted.
-- **Source tests:** [codex-rs/hepta-context-compiler/src/requirements_tests.rs](../../../codex-rs/hepta-context-compiler/src/requirements_tests.rs), [codex-rs/hepta-context-compiler/src/candidate_bound_tests.rs](../../../codex-rs/hepta-context-compiler/src/candidate_bound_tests.rs). These are test identities, not execution receipts for this documentation revision.
-- **Implementation and operating references:** [codex-rs/hepta-context-compiler/MANDATORY_CONTEXT.md](../../../codex-rs/hepta-context-compiler/MANDATORY_CONTEXT.md), [docs/readiness/LANE_B_NATIVE_HOST.md](../../../docs/readiness/LANE_B_NATIVE_HOST.md).
-- **Remaining work:** Actual tokenizer/model accounting, prompt realization and physical turn delivery belong to the selected caller profile; a compilation receipt alone does not prove them.
+- **Normative V2.1 source entrypoints:** `compile_v2`, `serialize_context_v2`, `build_attachment` and `deliver_attachment` are implemented in [codex-rs/hepta-context-compiler/src/proof_v2.rs](../../../codex-rs/hepta-context-compiler/src/proof_v2.rs). `lib.rs` exports these as the public V2 surface and retains the prior V2 implementation privately as the deterministic selection engine.
+- **Admission and revalidation:** trusted instruction/schema candidates consume `VerifiedContextAdmissionV2` produced from a coherent `ContextAdmissionSnapshotV2`; source/content/role/expiry/revocation are checked at compilation and checked again against a current snapshot immediately before attachment. Snapshot issuer/frontier/witness/time are bound into public receipts.
+- **Exact bytes and tokenizer:** the public candidate token receipt is measured over actual bytes via `ExactContextTokenizerV2`. Serialization receives actual selected bytes, verifies content digests, constructs the actual final payload via `ContextSerializerV2`, and retokenizes those final bytes before accepting the provider-facing budget.
+- **Delivery evidence:** `deliver_attachment` passes the exact attachment payload bytes to `ContextDeliveryAdapterV2`; `Delivered` requires terminal transport evidence, matching payload digest, provider request ID and provider acknowledgement digest.
+- **Mandatory provenance:** canonical group ID/member/reason semantics are bound into `mandatory_groups_digest`, so policy drift changes the compilation receipt even when selected IDs are unchanged.
+- **V1 compatibility entrypoints:** `compile`, `compile_with_requirements`, `compile_candidate_bound` and `compile_candidate_bound_with_requirements` remain source-compatible but do not imply V2.1 proof guarantees.
+- **Source tests:** [codex-rs/hepta-context-compiler/src/proof_v2_tests.rs](../../../codex-rs/hepta-context-compiler/src/proof_v2_tests.rs) covers admission binding drift, revocation at compilation and attachment, exact final-payload tokenization, content substitution, mandatory provenance, provider acknowledgement and delivery mismatch. Existing V1 and private-selection tests remain regression tests. These are test identities, not exact-head execution receipts.
+- **Implementation references:** [docs/modules/context.compiler/V2_TECHNICAL.md](../../../docs/modules/context.compiler/V2_TECHNICAL.md), [codex-rs/hepta-context-compiler/MANDATORY_CONTEXT.md](../../../codex-rs/hepta-context-compiler/MANDATORY_CONTEXT.md), [docs/readiness/LANE_B_NATIVE_HOST.md](../../../docs/readiness/LANE_B_NATIVE_HOST.md).
+- **Remaining work / claim boundary:** a product host must authenticate the admission issuer/witness and compose real exact-tokenizer, serializer and provider-delivery adapters with durable attempt correlation. Source-level typed proof seams do not themselves prove product execution, latest-head external authenticity, independent acceptance, activation, promotion or release.
