@@ -18,16 +18,21 @@ use crate::model::validate_stable_id;
 
 const MAX_CLOCK_SKEW_MS: u64 = 5 * 60 * 1000;
 
+#[derive(Debug, Clone, Copy)]
+pub struct PlatformGrantContext<'a> {
+    pub session_id: &'a str,
+    pub session_generation: u64,
+    pub operation_id: &'a str,
+    pub action: PlatformAction,
+    pub payload_digest: &'a str,
+    pub now_unix_ms: u64,
+}
+
 pub trait GrantVerifier: Send + Sync {
     fn verify_platform_grant(
         &self,
         grant: &SignedPlatformGrantV1,
-        session_id: &str,
-        session_generation: u64,
-        operation_id: &str,
-        action: PlatformAction,
-        payload_digest: &str,
-        now_unix_ms: u64,
+        context: PlatformGrantContext<'_>,
     ) -> Result<(), ShellError>;
 }
 
@@ -97,31 +102,26 @@ impl GrantVerifier for TrustedKeySet {
     fn verify_platform_grant(
         &self,
         grant: &SignedPlatformGrantV1,
-        session_id: &str,
-        session_generation: u64,
-        operation_id: &str,
-        action: PlatformAction,
-        payload_digest: &str,
-        now_unix_ms: u64,
+        context: PlatformGrantContext<'_>,
     ) -> Result<(), ShellError> {
         validate_stable_id(&grant.key_id, "grant.key_id")?;
         validate_stable_id(&grant.session_id, "grant.session_id")?;
         validate_stable_id(&grant.operation_id, "grant.operation_id")?;
         validate_digest(&grant.payload_digest, "grant.payload_digest")?;
-        if grant.session_id != session_id
-            || grant.session_generation != session_generation
-            || grant.operation_id != operation_id
-            || grant.action != action
-            || grant.payload_digest != payload_digest
+        if grant.session_id != context.session_id
+            || grant.session_generation != context.session_generation
+            || grant.operation_id != context.operation_id
+            || grant.action != context.action
+            || grant.payload_digest != context.payload_digest
         {
             return Err(ShellError::Security(
                 "platform grant is not bound to the current final operation".to_owned(),
             ));
         }
-        if grant.expires_unix_ms < now_unix_ms {
+        if grant.expires_unix_ms < context.now_unix_ms {
             return Err(ShellError::Security("platform grant expired".to_owned()));
         }
-        if grant.expires_unix_ms.saturating_sub(now_unix_ms) > 15 * 60 * 1000 + MAX_CLOCK_SKEW_MS {
+        if grant.expires_unix_ms.saturating_sub(context.now_unix_ms) > 15 * 60 * 1000 + MAX_CLOCK_SKEW_MS {
             return Err(ShellError::Security(
                 "platform grant lifetime exceeds the native short-lived ceiling".to_owned(),
             ));
