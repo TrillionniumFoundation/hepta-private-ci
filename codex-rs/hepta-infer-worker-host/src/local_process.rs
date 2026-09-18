@@ -16,6 +16,7 @@ use std::io::BufReader;
 use std::io::Read;
 use std::io::Write;
 use std::os::unix::fs::FileTypeExt;
+use std::os::unix::fs::PermissionsExt;
 use std::os::unix::net::UnixStream;
 use std::path::Path;
 use std::path::PathBuf;
@@ -229,6 +230,11 @@ impl LocalProcessDriver {
         if metadata.file_type().is_symlink() || !metadata.file_type().is_socket() {
             return Err(failure(
                 "local runtime endpoint is not a direct Unix socket",
+            ));
+        }
+        if metadata.permissions().mode() & 0o077 != 0 {
+            return Err(failure(
+                "local runtime socket must not be accessible by group or world",
             ));
         }
         let encoded = serde_json::to_vec(value)
