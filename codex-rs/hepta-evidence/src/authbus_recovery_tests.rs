@@ -39,6 +39,18 @@ fn message(sequence: u64) -> (IssuerRegistration, SignedMessage) {
 }
 
 #[tokio::test]
+async fn missing_restore_checkpoint_row_is_not_treated_as_first_start() {
+    let temp = TempDir::new().unwrap();
+    let store = HeptaEvidenceStore::open(&config(&temp)).await.unwrap();
+    assert!(matches!(
+        store
+            .verify_authbus_restore_checkpoint(1, Digest32::of_bytes(b"external-witness"))
+            .await,
+        Err(AuthBusControlError::RollbackDetected)
+    ));
+}
+
+#[tokio::test]
 async fn external_restore_checkpoint_detects_a_real_old_database_restore() {
     let temp = TempDir::new().unwrap();
     let sqlite = config(&temp);

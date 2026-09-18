@@ -320,9 +320,33 @@ async fn operation_retry_binds_full_authorization_and_effect_semantics() {
         store
             .begin_authbus_effect(
                 &first.reservation_id,
+                &id("principal:other"),
+                &id("action:effect"),
+                Digest32::of_bytes(b"scope"),
+                effect("binding"),
+            )
+            .await,
+        Err(AuthBusControlError::InvalidTransition)
+    ));
+    assert!(matches!(
+        store
+            .begin_authbus_effect(
+                &first.reservation_id,
                 &id("principal:one"),
                 &id("action:other"),
                 Digest32::of_bytes(b"scope"),
+                effect("binding"),
+            )
+            .await,
+        Err(AuthBusControlError::InvalidTransition)
+    ));
+    assert!(matches!(
+        store
+            .begin_authbus_effect(
+                &first.reservation_id,
+                &id("principal:one"),
+                &id("action:effect"),
+                Digest32::of_bytes(b"other-scope"),
                 effect("binding"),
             )
             .await,
