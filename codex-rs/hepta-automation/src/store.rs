@@ -258,6 +258,22 @@ impl AutomationStore {
         .execute(&mut *transaction)
         .await
         .map_err(unavailable)?;
+        sqlx::query(
+            "UPDATE automation_occurrences
+             SET state = 'cancelled',
+                 terminal_reason = 'task_cancelled_before_dispatch',
+                 updated_at_ms = CASE WHEN updated_at_ms < ? THEN ? ELSE updated_at_ms END
+             WHERE owner_agent_id = ? AND task_id = ?
+               AND state = 'materialized'
+               AND queued_submission_id IS NULL",
+        )
+        .bind(to_i64(now_ms)?)
+        .bind(to_i64(now_ms)?)
+        .bind(self.owner_agent_id.as_str())
+        .bind(task_id.to_string())
+        .execute(&mut *transaction)
+        .await
+        .map_err(unavailable)?;
         transaction.commit().await.map_err(unavailable)?;
         self.task(task_id).await?.ok_or(AutomationError::Corrupt)
     }
@@ -277,8 +293,9 @@ impl AutomationStore {
                  SET state = 'enabled', next_run_at_ms = ?, updated_at_ms = ?
                  WHERE task_id = ? AND owner_agent_id = ? AND state = 'disabled'
                    AND NOT EXISTS (
-                       SELECT 1 FROM automation_runs r
-                       WHERE r.task_id = automation_tasks.task_id AND r.state = 'leased'
+                       SELECT 1 FROM automation_occurrences o
+                       WHERE o.task_id = automation_tasks.task_id
+                         AND o.state NOT IN ('succeeded', 'failed', 'cancelled')
                    )",
             )
             .bind(to_i64(resume_at_ms)?)
@@ -310,6 +327,22 @@ impl AutomationStore {
                          lease_expires_at_ms = NULL
                      WHERE task_id = ? AND state = 'pending'",
                 )
+                .bind(task_id.to_string())
+                .execute(&mut *transaction)
+                .await
+                .map_err(unavailable)?;
+                sqlx::query(
+                    "UPDATE automation_occurrences
+                     SET state = 'cancelled',
+                         terminal_reason = 'task_disabled_before_dispatch',
+                         updated_at_ms = CASE WHEN updated_at_ms < ? THEN ? ELSE updated_at_ms END
+                     WHERE owner_agent_id = ? AND task_id = ?
+                       AND state = 'materialized'
+                       AND queued_submission_id IS NULL",
+                )
+                .bind(to_i64(now_ms)?)
+                .bind(to_i64(now_ms)?)
+                .bind(self.owner_agent_id.as_str())
                 .bind(task_id.to_string())
                 .execute(&mut *transaction)
                 .await
