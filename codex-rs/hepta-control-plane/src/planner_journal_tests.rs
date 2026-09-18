@@ -221,9 +221,7 @@ fn revocation_clears_selection_and_prevents_reselection() {
     );
 }
 
-fn encode_semantic_entries(
-    entries: &[(PlannerJournalKindV1, Digest32, Digest32)],
-) -> Vec<u8> {
+fn encode_semantic_entries(entries: &[(PlannerJournalKindV1, Digest32, Digest32)]) -> Vec<u8> {
     let mut bytes = Vec::new();
     bytes.extend_from_slice(b"HCPJNL01");
     bytes.extend_from_slice(&(entries.len() as u32).to_be_bytes());
@@ -250,11 +248,8 @@ fn encode_semantic_entries(
 #[test]
 fn semantic_replay_rejects_hash_valid_invalid_selection_history() {
     let target = digest("decision");
-    let without_decision = encode_semantic_entries(&[(
-        PlannerJournalKindV1::SelectedPlan,
-        digest("select"),
-        target,
-    )]);
+    let without_decision =
+        encode_semantic_entries(&[(PlannerJournalKindV1::SelectedPlan, digest("select"), target)]);
     assert_eq!(
         PlannerJournalV1::reopen(&without_decision)
             .expect_err("selection without a prior decision must reject"),
