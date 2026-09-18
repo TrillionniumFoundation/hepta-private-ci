@@ -3,7 +3,7 @@
   "schemaVersion": 1,
   "lane": "LANE-D-OBJECTIVE-VALUE",
   "authorityDelta": "none",
-  "interpretation": "Each dimension is independent. A materialized source root does not imply a production caller, independent qualification, activation or release.",
+  "interpretation": "Each dimension is independent. A materialized source root or bounded read-only caller does not imply a promotion-eligible product caller, production writing, independent qualification, activation or release.",
   "modules": [
     {
       "module": "objective.compiler",
@@ -171,13 +171,14 @@
       "implementationMap": "docs/modules/control.runtime/IMPLEMENTATION_MAP.json",
       "dimensions": {
         "technicalSpecification": {
-          "state": "candidate_complete",
+          "state": "candidate_complete_current_closure",
           "evidence": [
-            "docs/readiness/CONTROL_RUNTIME_EXECUTION.md"
+            "docs/readiness/CONTROL_RUNTIME_EXECUTION.md",
+            "qualification/module-execution-dossiers/detail/control.runtime.md"
           ]
         },
         "canonicalProtocolRegistration": {
-          "state": "existing_domain_contracts_with_owner_local_planner_types",
+          "state": "existing_domain_contracts_with_owner_local_planner_types_external_admission_pending",
           "evidence": [
             "DomainRead::global_state_snapshotV1",
             "DomainRead::optimization_decisionV1"
@@ -190,42 +191,87 @@
           ]
         },
         "nativeApiMapping": {
-          "state": "candidate_complete",
+          "state": "candidate_complete_current_closure",
           "evidence": [
             "docs/modules/control.runtime/IMPLEMENTATION_MAP.json"
           ]
         },
         "globalPlannerKernel": {
-          "state": "candidate_implemented",
+          "state": "candidate_hardened",
           "evidence": [
             "collect_snapshot",
-            "prepare_plan",
-            "bind_ndu_plan_evaluation_v1",
+            "prepare_plan_hardened",
+            "evaluate_prepared_plan_with_ndu",
             "finalize_plan",
             "request_execution_grants"
           ]
         },
-        "durability": {
-          "state": "owner_local_reference_implemented_not_production_writer",
+        "resourceProfileBinding": {
+          "state": "candidate_implemented",
           "evidence": [
-            "PlannerJournalV1"
+            "canonical_resource_profile_digest",
+            "hardened_prepare_rejects_opaque_or_stale_resource_binding"
+          ]
+        },
+        "ownerAuthenticationBoundary": {
+          "state": "candidate_concrete_pinned_ed25519_verifier_implemented_host_trust_composition_pending",
+          "evidence": [
+            "OwnerSummaryVerifierV1",
+            "SignedOwnerSummaryV1",
+            "pinned_ed25519_owner_key_admits_only_the_exact_summary"
+          ]
+        },
+        "globalComposition": {
+          "state": "candidate_source_implemented_with_concrete_authority_adapter_not_activated",
+          "evidence": [
+            "compose_global_plan_v1",
+            "with_authorized_grant_request_v1",
+            "codex_hepta_contracts::FinalUseAuthority"
+          ]
+        },
+        "durability": {
+          "state": "owner_local_private_locked_fsync_atomic_store_candidate_not_activated",
+          "evidence": [
+            "PlannerJournalV1",
+            "StrictPlannerJournalV1",
+            "PlannerJournalStoreV1",
+            "legacy_raw_journal_migrates_once_through_strict_replay",
+            "predecessor_restore_is_explicit_and_semantically_verified"
           ]
         },
         "effectAuthority": {
-          "state": "explicitly_absent",
+          "state": "independent_kernel_authority_adapter_implemented_control_still_deny_all",
           "evidence": [
-            "AuthorityPosture::DENY_ALL"
+            "AuthorityPosture::DENY_ALL",
+            "FinalUseAuthority::claim",
+            "FinalUseAuthority::with_verified_use",
+            "with_authorized_grant_request_v1"
           ]
         },
         "exactHeadSourceQualification": {
-          "state": "pending_current_candidate_workflows",
+          "state": "pending_current_closure_head_workflows",
           "evidence": []
+        },
+        "boundedReadOnlyCaller": {
+          "state": "agentd_context_composed",
+          "evidence": [
+            "codex-rs/hepta-agentd/src/cognitive_context.rs",
+            "plan_observed_context"
+          ]
         },
         "productCaller": {
           "state": "not_established",
-          "evidence": []
+          "evidence": [
+            "global planning caller is not activated or promotion-eligible"
+          ]
         },
         "productionWriter": {
+          "state": "candidate_owner_local_store_implemented_not_composed",
+          "evidence": [
+            "PlannerJournalStoreV1"
+          ]
+        },
+        "namedHostQualification": {
           "state": "not_established",
           "evidence": []
         },
@@ -249,35 +295,41 @@
           ]
         },
         "policyPrebinding": {
-          "state": "candidate_implemented",
+          "state": "candidate_hardened",
           "evidence": [
             "snapshotPolicyDigest",
             "evaluationPolicyDigest",
-            "resourceProfileDigest"
+            "canonical_resource_profile_digest"
+          ]
+        },
+        "plannerClockDomain": {
+          "state": "bounded_agentd_caller_uses_process_monotonic_clock",
+          "evidence": [
+            "codex-rs/hepta-agentd/src/cognitive_context.rs::monotonic_micros"
           ]
         }
       }
     }
   ],
   "repositoryControlledClosure": {
-    "state": "candidate_pending_exact_head_qualification",
+    "state": "candidate_pending_exact_head_and_named_host_qualification",
     "requiredChecks": [
       "Lane D semantic conformance",
       "cargo fmt",
-      "cargo check --locked for all three Lane D packages",
-      "package tests for all three Lane D packages",
-      "strict Clippy for all three Lane D packages",
+      "cargo check --locked for Lane D packages and Agentd consumer",
+      "control-plane and affected-consumer tests",
+      "strict Clippy",
       "existing repository integrity and readiness workflows",
-      "synthetic merge qualification"
+      "synthetic merge qualification",
+      "named-host planner load/latency/restart/fault-injection evidence"
     ]
   },
   "externalGates": [
-    "independent non-author review",
-    "production caller and production writer composition",
-    "named-host resource and recovery measurements",
+    "named production host composition of pinned owner trust, planner store and independent final-use authority",
+    "independent non-author semantic and security review",
     "operator acceptance",
     "deployment and activation",
-    "future-window efficacy",
+    "future-window efficacy where applicable",
     "promotion, signing and release"
   ]
 }

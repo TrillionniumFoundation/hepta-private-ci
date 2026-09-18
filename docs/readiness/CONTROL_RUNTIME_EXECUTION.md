@@ -9,206 +9,135 @@
 
 ## 1. Scope and non-claims
 
-`control.runtime` constructs one bounded global planning snapshot, preserves essential resource floors, consumes one independently produced NDU evaluation through a typed owner port, and emits an immutable plan receipt plus optional execution-grant requests. It neither evaluates utility on behalf of `utility.ndu` nor issues capabilities on behalf of `kernel.authority`.
+`control.runtime` constructs bounded coherent snapshots, preserves essential resource floors, consumes the independently owned NDU implementation, seals bounded-set decisions and emits immutable execution-grant requests. It does not evaluate utility on behalf of `utility.ndu`, authenticate producers on behalf of their owners, issue capabilities on behalf of `kernel.authority`, or execute effects.
 
-The repository implementation is a deterministic, authority-free reference suitable for source qualification. It does not establish a production caller, production writer, independently accepted deployment, hardware control, operator acceptance, activation, promotion or release. Every output produced by this module carries `AuthorityPosture::DENY_ALL`.
+The production-facing source path now additionally provides canonical resource-profile binding, authenticated-owner admission seams, strict journal semantic replay and an end-to-end global composition function. These source capabilities do not establish a production writer, named global product caller, independently accepted deployment, operator acceptance, activation, promotion or release. Planner and grant-request outputs remain `AuthorityPosture::DENY_ALL`.
 
-The global planner is distinct from:
-
-- `ControlState`, which owns only revision- and authority-epoch-fenced desired control state;
-- `OrganHostV1`, which hosts one-hop, compiled-in, read-only organ handlers;
-- the cart simulator and fixed-priority timing reference, which exercise local embodied-control semantics;
-- `utility.ndu`, which owns aggregation, feasibility, Pareto and scalarization semantics;
-- `kernel.authority`, which alone may issue an operation- and final-payload-bound grant.
+The bounded Agentd cognitive-context path is a real read-only caller. It is deliberately classified separately from a promotion-eligible global product caller.
 
 ## 2. End-to-end control flow
 
-The canonical planning flow is two-stage across an owner boundary:
+The hardened global source flow is:
 
 ```text
-owner summaries + SnapshotRequestV1
+owner-produced summary + owner proof
+  -> caller-owned cryptographic verifier
+  -> authenticate_owner_summary_v1
+  -> AuthenticatedOwnerSummaryV1[]
+
+AuthenticatedOwnerSummaryV1[] + SnapshotRequestV1
   -> collect_snapshot
   -> GlobalStateSnapshotV1
 
-GlobalStateSnapshotV1 + bounded plan candidates + resource reservations
-  -> prepare_plan
+ResourceReservationV1[]
+  -> canonical_resource_profile_digest
+  -> resource_profile_digest
+
+GlobalStateSnapshotV1 + PlanningRequestV1
+  -> prepare_plan_hardened
   -> PreparedPlanInputV1
 
-PreparedPlanInputV1 candidate set
-  -> utility.ndu evaluates through its registered profile
-  -> NduPlanEvaluationInputV1
-  -> bind_ndu_plan_evaluation_v1
-  -> NduPlanEvaluationV1
+PreparedPlanInputV1 + NduPlanningInputV1
+  -> utility.ndu::evaluate_candidates_with_policy
+  -> evaluate_prepared_plan_with_ndu
+  -> EvaluatedPlanV1 / FeasiblePlanReceiptV1
 
-GlobalStateSnapshotV1 + PreparedPlanInputV1 + NduPlanEvaluationV1
-  -> finalize_plan
-  -> FeasiblePlanReceiptV1
-
-current snapshot + prepared input + feasible receipt
+current snapshot + prepared input + receipt
   -> request_execution_grants
-  -> GrantRequestSetV1
-  -> independent kernel.authority decision
+  -> GrantRequestSetV1 (DENY_ALL)
+
+GrantRequestSetV1
+  -> handoff_grant_requests_v1
+  -> independent kernel.authority adapter
+  -> owner-specific authority result
 ```
 
-`prepare_plan` never selects by utility. `finalize_plan` never recomputes NDU. `request_execution_grants` never converts a request into a grant. This separation prevents the global planner from owning utility facts or self-authorizing its recommendation.
+`compose_global_plan_v1` sequences the middle planning stages over already-authenticated owners. It cannot manufacture `AuthenticatedOwnerSummaryV1`, cannot bypass NDU and cannot turn a grant request into a capability.
 
 ## 3. Coherent owner snapshot
 
-Each `OwnerSummaryV1` binds:
+Each `OwnerSummaryV1` binds owner identity and revision, objective digest, body generation, configuration digest, observation/expiry times in one declared planner clock domain, readiness, source-frontier digest and support digest.
 
-- owner identity and owner-local revision;
-- immutable objective digest;
-- body generation;
-- configuration digest;
-- observation and expiry times in one declared monotonic domain;
-- readiness posture;
-- source-frontier digest;
-- support digest.
+`SnapshotRequestV1` binds the required owner set, objective, generation, configuration, revocation frontier, snapshot policy, collection time, maximum owner age and expiry. `collect_snapshot` canonicalizes owners, rejects duplicates/future observations/mixed identities and records missing, stale and unavailable masks. Any non-empty hard mask blocks planning.
 
-`SnapshotRequestV1` binds the required owner set, objective, body generation, configuration, current revocation frontier, a snapshot-policy digest, collection time, maximum owner age and snapshot expiry. The resulting snapshot additionally binds the required-owner-set digest and the exact maximum-age policy.
+A composed global caller admits owner observations as `AuthenticatedOwnerSummaryV1`. The compatibility seam `authenticate_owner_summary_v1` still accepts a caller-supplied verifier, while the concrete production-facing path uses `OwnerSummaryVerifierV1`: the host pins an Ed25519 public key for one producer identity, and `SignedOwnerSummaryV1` signs canonical bytes covering every `OwnerSummaryV1` field. Producer identity mismatch, weak/invalid trust or signature drift fail closed. Signing keys remain with the producer; Control contains only pinned verification trust.
 
-`collect_snapshot` stable-sorts owners, rejects duplicates, rejects future observations, rejects mixed objective/body/configuration values and records three explicit masks:
+## 4. Candidate preparation and canonical resource profile
 
-- `missing_owner_ids`;
-- `stale_owner_ids`;
-- `unavailable_owner_ids`.
+A `PlanCandidateV1` binds candidate identity, operation identity, plan digest, required owners, final payload digests and explicit per-axis resource costs. Candidate count is bounded to 128, required owners to 32, final payloads to 64, and resource axes to 32.
 
-The resulting `GlobalStateSnapshotV1` may be stored as an observation even when one mask is non-empty, but it is not eligible for planning. Missing or stale values are never converted to zero cost, zero risk, zero uncertainty or ready state.
-
-Snapshot expiry is the minimum of the requested expiry and every admitted owner-summary expiry. The snapshot digest covers all identities, revisions, times, states, frontiers and masks. A consumer recomputes the digest before use.
-
-## 4. Candidate preparation and essential floors
-
-A `PlanCandidateV1` binds:
-
-- semantic candidate identity;
-- operation identity;
-- plan digest;
-- required owners;
-- final payload digests;
-- explicit per-axis resource costs.
-
-Candidate count is bounded to 128. Required owners are bounded to 32 and payload digests to 64 per candidate. Candidate IDs, owner IDs and resource axes are duplicate-free after canonical sorting. Plan and final-payload digests must be non-zero.
-
-`ResourceReservationV1` separates total endowment from an essential floor. The floor reserves capacity for safety, rollback, evidence, recovery and operator control before an adaptive candidate can consume the resource:
+For every `ResourceReservationV1`:
 
 ```text
 available_for_plan(axis) = endowment(axis) - essential_floor(axis)
 ```
 
-Both terms are non-negative fixed-point values, and the floor cannot exceed the endowment. Every candidate must explicitly report each registered resource axis; missing axes are unavailable rather than zero. Unknown axes reject rather than widening the budget.
+Endowment and floor must be non-negative and floor cannot exceed endowment. Every candidate reports every registered resource axis; missing and unknown axes reject.
 
-The evaluation-policy digest and resource-profile digest are frozen in the planning request before candidate filtering. At least one explicit resource reservation is required in the pilot; an empty collection cannot silently mean an unbounded or zero-resource profile.
+The production-facing path computes:
 
-`prepare_plan` filters resource-infeasible candidates before NDU evaluation and records their IDs in `resource_rejected_candidate_ids`. The intrinsic `abstain` candidate must remain feasible after this filter. The digest of the source candidate set and the digest of the feasible candidate set are both retained, so resource filtering cannot be hidden.
+```text
+resource_profile_digest = H(
+  "hepta.control.resource-profile.v1",
+  sorted(axis, endowment.raw, essential_floor.raw)
+)
+```
 
-## 5. Typed NDU owner port
+`prepare_plan_hardened` recomputes this digest from the exact reservations and rejects any mismatch before filtering candidates. Therefore two different endowment/floor profiles cannot reuse an opaque profile identity even when they happen to produce the same feasible candidate set.
 
-Control runtime consumes NDU only through `NduPlanEvaluationV1`. The adapter input contains:
+Low-level `prepare_plan` remains available for compatibility and fixtures. Composed callers use `prepare_plan_hardened`.
 
-- objective and body generation;
-- NDU evaluation-policy digest;
-- opaque NDU evaluation digest;
-- complete evaluated and rejected candidate ID sets;
-- Pareto candidate IDs;
-- optional advisory candidate ID;
-- uncertainty digest;
-- one bounded disposition.
+## 5. Typed NDU owner execution
 
-The adapter canonicalizes all sets, rejects duplicates, requires evaluated and rejected sets to be disjoint, requires every Pareto member to have been evaluated, validates disposition/advisory consistency and computes a control-side binding digest. This binding digest does not replace the NDU owner’s evaluation digest; it proves the exact projection that `control.runtime` consumed.
+`evaluate_prepared_plan_with_ndu` executes the actual `utility.ndu` kernel. The frozen policy digest covers utility profile, NDU evaluation policy and optional scalarization. Contributions must cover every feasible candidate and every required observed owner exactly enough for the NDU owner contract; omitted candidates and foreign owners reject.
 
-Disposition invariants are:
-
-| Disposition | Required advisory state |
-|---|---|
-| `InfeasibleExplicitAbstain` | Pareto set exactly `[abstain]`, advisory `abstain` |
-| `UniqueParetoRecommendation` | one Pareto member, advisory equals it |
-| `ScalarizedRecommendation` | advisory is present in the Pareto set |
-| `ParetoSetRequiresSlowPath` | no advisory, non-empty Pareto set |
-| `ScalarizationTieRequiresSlowPath` | no advisory, non-empty Pareto set |
-
-The union of NDU evaluated and NDU rejected candidates must equal the exact feasible candidate set in `PreparedPlanInputV1`. An omitted candidate, an injected candidate or an advisory outside that set rejects finalization.
+Control binds the resulting NDU evaluation into `NduPlanEvaluationV1`, validates exact evaluated/rejected candidate coverage and disposition consistency, then seals `FeasiblePlanReceiptV1`. Control does not recompute the NDU choice and does not accept a caller-supplied selected candidate as a substitute for NDU execution.
 
 ## 6. Plan finalization and search disclosure
 
-`finalize_plan` recomputes the complete feasible-candidate-set digest from candidate identity, operation, plan, owner, final-payload and resource fields, verifies it against the sealed prepared envelope, and revalidates:
+`finalize_plan` revalidates snapshot integrity/freshness/masks, prepared-plan digest and deny-all posture, candidate-set digest, objective/body/configuration/revocation identity, NDU binding, exact candidate coverage, disposition and deadline.
 
-- snapshot digest, freshness and masks;
-- prepared-plan digest and deny-all authority posture;
-- objective, body generation, configuration and revocation frontier;
-- NDU binding digest and deny-all posture;
-- exact candidate-set coverage;
-- NDU disposition/advisory consistency;
-- prepared-plan deadline.
-
-A selected plan is described only relative to the bounded supplied candidate set. The receipt never claims a global optimum. `SearchDisclosureV1` distinguishes:
-
-- bounded candidate set with explicit abstain;
-- unique Pareto result on that bounded set;
-- scalarized result on that bounded set;
-- unresolved Pareto frontier requiring a slow path.
-
-`FeasiblePlanReceiptV1` binds both candidate-set digests, resource rejections, NDU policy/evaluation/binding digests, uncertainty, chosen candidate and plan digests, expiry, snapshot and revocation frontier. Its authority posture is deny-all.
+A result is always scoped to the supplied bounded candidate set. `SearchDisclosureV1` distinguishes bounded abstain, unique Pareto result, scalarized result and unresolved Pareto frontier. No receipt claims unconstrained global optimality.
 
 ## 7. Grant requests and final authority boundary
 
-`request_execution_grants` accepts only a current snapshot, the exact sealed prepared input and the exact final plan receipt. Before reading any selected operation or payload, it recomputes the snapshot, candidate-set, prepared-plan and receipt digests, checks all readiness masks, policy bindings and expiry, and rejects any mutation. It recomputes both digests, verifies objective/body/configuration/frontier identity, checks expiry and locates the chosen candidate inside the feasible set.
+`request_execution_grants` accepts only a current snapshot, the exact prepared input and the exact final receipt. It recomputes sealed digests and revalidates readiness, identity and expiry before reading the selected operation/payload.
 
-Each `GrantRequestV1` binds:
+Each `GrantRequestV1` binds operation, candidate, plan, final payload, objective, snapshot, current revocation frontier and expiry. The enclosing `GrantRequestSetV1` remains `DENY_ALL`.
 
-- operation and candidate IDs;
-- chosen plan digest;
-- one final payload digest;
-- objective and snapshot digests;
-- current revocation-frontier digest;
-- expiry.
+`handoff_grant_requests_v1` remains the generic independent-owner seam. The concrete adapter `with_authorized_grant_request_v1` maps one immutable `GrantRequestV1` to `codex_hepta_contracts::FinalUseBinding`, including a digest over operation, candidate, plan, final payload, objective, snapshot, revocation frontier and planner expiry. It then consumes an independently signed `SignedFinalUseGrant` through the existing `FinalUseAuthority::claim` and `FinalUseAuthority::with_verified_use` path. That authority owner performs Ed25519 verification, durable single-use nonce claiming and final revocation/time revalidation. Control never holds the signing key and never constructs `VerifiedUseToken` directly.
 
-The resulting `GrantRequestSetV1` is a deterministic request batch with a semantic digest and `AuthorityPosture::DENY_ALL`. A grant request is not an authority token. `kernel.authority` must independently check principal scope, current revocations, final payload, effect boundary, deadlines and any required human confirmation immediately before dispatch.
+## 8. Decision journal, strict restart replay and non-resurrection
 
-A candidate with no effect payload, including abstain, produces an empty request set. The planner never fabricates a no-op capability.
+`PlannerJournalV1` is a bounded owner-local reference format. It verifies header, record count, sequence, predecessor digest, entry digest, non-empty identities and duplicate serialized identities.
 
-## 8. Decision journal, restart and non-resurrection
+`StrictPlannerJournalV1::reopen` adds semantic replay after byte/hash verification:
 
-`PlannerJournalV1` is a bounded owner-local durability reference for snapshot, decision, selection and revocation records. It is not an activated production store.
+- snapshot identity must equal its snapshot payload digest;
+- decision identity must equal its decision receipt digest;
+- selection requires a preceding decision for the same payload;
+- revocation requires a preceding decision;
+- a decision already revoked cannot be selected later.
 
-Each entry contains sequence, kind, idempotency identity, payload digest, predecessor-entry digest and entry digest. The journal provides:
+This detects hash-valid but semantically impossible histories created through the generic reference `append` API.
 
-- canonical append order;
-- at most 4096 records per bounded file;
-- idempotent replay for equal identity and semantics;
-- conflict for equal identity with different semantics;
-- exact byte export and reopen;
-- sequence, predecessor and entry-digest verification;
-- truncation and unknown-kind rejection;
-- selected-plan projection;
-- revocation edges that prevent reselection and restart resurrection.
+`PlannerJournalStoreV1` is the owner-local durable Unix profile. It requires a private owner directory and process lock, uses no-follow/private file opens, validates strict semantic replay before commit, writes and fsyncs a temporary generation, atomically renames it, then fsyncs the directory. Exactly one verified predecessor is retained for explicit rollback. `planner-journal.raw.v1` is admitted only through strict replay and migrated deterministically. Missing/corrupt state never becomes an empty journal. Non-Unix platforms reject this durability profile rather than claiming equivalent semantics. A named production host still has to compose the store and qualify its actual filesystem/power-loss behavior.
 
-A selected plan must already have a decision record. A revoked decision cannot be reselected merely because an older process or backup contains the predecessor record. Production composition still requires an owner-approved store, schema migration, fsync/durability profile, retention policy and backup/restore qualification.
+## 9. Clock-domain requirements
 
-## 9. Failure and degradation semantics
+Planner freshness uses one monotonic domain per process generation or host generation. Wall-clock Unix time must not be substituted for planner expiry merely because both are represented as integers.
 
-Failures are classified as:
+The real Agentd context caller now derives planner microseconds from a process-local `std::time::Instant` origin. Unix `SystemTime` remains confined to memory-store interfaces whose contracts explicitly require Unix seconds. Restart creates a new planner clock origin together with the process generation fence; timestamps are not compared across generations.
 
-- invalid or empty digest;
-- count or resource bound violation;
-- duplicate owner, candidate or resource axis;
-- mixed objective, body generation or configuration;
-- future, stale, missing or unavailable owner state;
-- expired snapshot or prepared plan;
-- unknown required owner;
-- missing or unknown resource axis;
-- infeasible intrinsic abstain;
-- NDU binding, candidate-set or disposition mismatch;
-- prepared-plan or payload mismatch;
-- journal integrity, truncation, identity conflict or revocation.
+## 10. Failure and degradation semantics
 
-A failure before finalization leaves no plan receipt. A failure after durable decision publication but before acknowledgement is recovered by the original operation identity and equal digest. Unknown external effects remain indeterminate and are reconciled by the existing effect owner; the planner cannot infer success from queue admission or handler return.
+Failures include invalid/empty digest, capacity violation, duplicate owner/candidate/resource axis, mixed objective/body/configuration, future/stale/missing/unavailable owner state, expired snapshot/plan, unknown owner, invalid/missing/unknown resource axis, canonical resource-profile mismatch, infeasible abstain, NDU candidate/binding/disposition mismatch, prepared/payload drift, rejected owner authentication and journal byte/semantic corruption.
 
-Central outage never enters a qualified local reflex or emergency-stop loop. Local controllers continue only within previously qualified envelopes. The global planner may become unavailable without disabling an independent safety stop.
+A failure before finalization produces no final receipt. A grant request is never evidence of execution success. Unknown external effects remain owned by the effect adapter and reconciler.
 
-## 10. Capacity and performance profile
+Central planner outage never disables an independently qualified local reflex, watchdog or emergency stop.
 
-Pilot bounds are:
+## 11. Capacity and performance profile
 
 | Dimension | Ceiling |
 |---|---:|
@@ -219,82 +148,60 @@ Pilot bounds are:
 | resource dimensions | 32 |
 | journal records per bounded file | 4096 |
 
-All loops and allocations are bounded by these dimensions. Stable maps and sorting provide deterministic output. Planning is not permitted in a local real-time safety loop and performs no fleet-wide synchronous RPC.
+All loops/sorts/allocations are bounded by these dimensions. Global planning is excluded from local real-time safety loops and performs no fleet-wide synchronous hot-path RPC.
 
-Target metrics include snapshot age, stale/missing owner counts, candidate and resource rejection counts, NDU disposition, Pareto size, uncertainty digest, preparation/finalization latency, journal reopen time and grant-request count. Latency targets become claims only when bound to a named host, compiler, fixture, build profile and exact source.
+Named-host latency, saturation, restart/reopen timing and fault-injection values become claims only after exact-source measurements on a named host/build profile.
 
-## 11. Verification cases
+## 12. Verification cases
 
-- `RCP-01`: a stale required owner cannot be treated as current or zero cost.
-- `RCP-02`: safety/rollback/evidence floors survive overload and remove the over-budget candidate before NDU.
-- `RCP-03`: changed body generation, configuration, snapshot or revocation frontier invalidates a prepared plan.
-- `RCP-04`: central planning outage does not disable an independently qualified local fallback or stop.
+- `RCP-01`: stale or missing required owner cannot be treated as current or zero cost.
+- `RCP-02`: essential floors survive overload and remove an over-budget candidate before NDU.
+- `RCP-03`: changed body/configuration/snapshot/revocation frontier invalidates a prepared plan.
+- `RCP-04`: central planning outage does not disable independent local fallback/stop.
 - `RCP-05`: missing resource axes reject instead of becoming zero.
-- `RCP-06`: the NDU evaluated/rejected union must equal the exact prepared candidate set.
+- `RCP-06`: NDU evaluated/rejected union equals the exact prepared candidate set.
 - `RCP-07`: NDU binding or uncertainty tampering rejects finalization.
 - `RCP-08`: grant requests remain deny-all and bind final payload digests.
-- `RCP-09`: journal restart reproduces the selected pointer exactly.
-- `RCP-10`: truncated or tampered journal bytes fail closed.
-- `RCP-11`: a revoked plan cannot be reselected after reopen.
+- `RCP-09`: valid journal restart reproduces the selected pointer.
+- `RCP-10`: truncated/tampered journal bytes fail closed.
+- `RCP-11`: revoked plan cannot be reselected after reopen.
 - `RCP-12`: no receipt claims an optimum outside the bounded candidate set.
 - `RCP-13`: operation, payload, resource or required-owner mutation after finalization rejects before grant-request construction.
 - `RCP-14`: grant-request construction revalidates snapshot masks and digest.
-- `RCP-15`: the NDU evaluation policy and resource profile are frozen before evaluation and bound through the final receipt.
+- `RCP-15`: NDU evaluation policy and resource profile are frozen before evaluation and bound through the final receipt.
+- `RCP-16`: canonical resource digest is order independent but changes with endowment/floor semantics.
+- `RCP-17`: hardened preparation rejects opaque/stale resource-profile binding.
+- `RCP-18`: strict reopen rejects a hash-valid selection before its decision.
+- `RCP-19`: strict reopen rejects a hash-valid selection after revocation.
+- `RCP-20`: an owner summary cannot enter global composition when the authenticator rejects it.
+- `RCP-21`: authenticated owner + real NDU + sealed decision + grant-request handoff compose while Control remains deny-all.
+- `RCP-22`: bounded Agentd context planning uses a monotonic planner clock and canonical serialized-byte resource profile.
+- `RCP-23`: pinned Ed25519 producer trust admits only the exact signed owner summary.
+- `RCP-24`: planner grant authority requires an independently signed final-use grant and consumes its nonce exactly once.
+- `RCP-25`: payload or scope drift changes the final-use binding and cannot reuse prior authority.
+- `RCP-26`: durable journal commit reopens under an exclusive process lock.
+- `RCP-27`: predecessor restore is explicit and strictly replayed.
+- `RCP-28`: hash-valid semantic forgery is rejected before durable commit.
+- `RCP-29`: legacy raw journal bytes migrate only after strict semantic replay.
 
 Native mappings and tests are recorded in `docs/modules/control.runtime/IMPLEMENTATION_MAP.json`.
 
-## 12. Implementation sequence and completion state
+## 13. Implementation sequence and completion state
 
-The source sequence is snapshot types and validation, resource-floor preparation, NDU owner-port binding, plan finalization, grant-request construction, journal integrity and restart fixtures, semantic conformance and exact-head CI.
+Repository source closure now consists of coherent snapshot validation, canonical resource-profile binding, actual NDU execution, sealed finalization, grant-request construction, pinned-key Ed25519 owner verification, a concrete adapter to the independently owned final-use authority, strict journal semantic replay, a locked/fsync/atomic owner-local journal store and bounded Agentd product composition.
 
-Repository source completion requires every mapped native test, package check, strict lint, clean worktree, exact-head workflow and synthetic merge check to pass. Composition requires a named product caller and selected production store. Independent qualification, activation and release remain separate governed states and cannot be advanced by this document.
+Repository source completion for the current closure head still requires exact-head and synthetic-merge CI to pass. Promotion-eligible global product composition separately requires one named host to compose the implemented owner trust, planner store and final-use authority adapter, followed by named-host load/latency/restart/fault-injection qualification and independent acceptance.
 
 ## Appendix A. Contract mapping
 
-Produced owner-local types:
+Produced owner-local types include `GlobalStateSnapshotV1`, `PreparedPlanInputV1`, `NduPlanEvaluationV1`, `FeasiblePlanReceiptV1`, `GrantRequestSetV1`, `PlannerJournalEntryV1`, `AuthenticatedOwnerSummaryV1`, `SignedOwnerSummaryV1`, `GrantAuthorityContextV1` and `PlannerJournalStoreV1`.
 
-- `GlobalStateSnapshotV1`
-- `PreparedPlanInputV1`
-- `NduPlanEvaluationV1`
-- `FeasiblePlanReceiptV1`
-- `GrantRequestSetV1`
-- `PlannerJournalEntryV1`
-
-Canonical domain reads remain:
-
-- `DomainRead::global_state_snapshotV1`
-- `DomainRead::optimization_decisionV1`
-
-Consumed canonical readiness protocols include:
-
-- `ObjectiveConstraintSetV1`
-- `UtilityContributionV1`
-- `NduIterationReceiptV1`
-- `NduConvergenceCertificateV1`
-- `EmergencyStopReceiptV1`
-- `SensorCalibrationManifestV1`
-
-Registration of an owner-local Rust type does not by itself admit a new external wire protocol. Production protocol admission and consumer compilation remain explicit integration work.
+Canonical domain reads remain `DomainRead::global_state_snapshotV1` and `DomainRead::optimization_decisionV1`. Owner-local Rust types do not automatically create an external wire protocol; cross-process protocol admission remains explicit.
 
 ## Native measured-context composition
 
-`evaluate_prepared_plan_with_ndu` now computes the owner NDU evaluation before
-sealing a plan. Its frozen policy digest includes the complete utility profile,
-aggregation/tolerance policy and optional scalarization profile; callers cannot
-substitute a chosen candidate or change directions after preparation.
+`plan_observed_context` is the bounded real caller used by Agentd after a canonical cognitive read. The host supplies actual source/read digests, owner/generation, verified record count and exact serialized context bytes. The objective is narrowly “deliver verified records within the response-byte budget”; read-context is compared with abstain using actual NDU execution.
 
-`plan_observed_context` supplies the bounded product adapter for a completed
-canonical cognitive read. The trusted host supplies its actual owner/generation,
-snapshot/read digests, verified record count and exact serialized context bytes.
-The objective is narrowly defined: deliver verified records within the requested
-context-byte budget. It uses at most four records and 24 KiB, evaluates read and
-abstain candidates, and returns the real NDU evaluation and sealed plan. Empty
-records, ties and insufficient budget do not authorize context delivery. This is
-an observed digital task, not an estimate of model quality or memory capacity.
+The byte endowment is now hashed through `canonical_resource_profile_digest` and admitted by `prepare_plan_hardened`; it is no longer represented by an unrelated opaque digest. Planner freshness uses the Agentd process-local monotonic clock. Empty context, ties and budget infeasibility do not authorize delivery.
 
-The single-observation owner summary has its own initial revision and an explicit
-request-local generation fence. It does not impersonate a database revision or
-global revocation frontier. Existing host authorization and generation checks
-remain required before and after the read. Context bytes exclude the planning
-metadata to avoid a self-referential digest; the host separately bounds the final
-response envelope. Neither helper grants effects or proves long-term improvement.
+This measured-context caller proves bounded read-only composition only. It does not prove global adaptive topology/resource control, model quality, memory capacity, physical authority or production release.
