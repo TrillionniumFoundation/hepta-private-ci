@@ -581,16 +581,22 @@ async fn cancellation_drops_inflight_transport_future() {
 #[tokio::test]
 async fn pre_dispatch_cancellation_blocks_authority_and_transport() {
     let query = query();
-    let completed = Arc::new(AtomicBool::new(false));
+    let authority_completed = Arc::new(AtomicBool::new(false));
+    let authority = SlowAuthority {
+        observation: authority_observation(&query, 10),
+        delay: Duration::from_millis(50),
+        completed: Arc::clone(&authority_completed),
+    };
+    let transport_completed = Arc::new(AtomicBool::new(false));
     let transport = SlowTransport {
         result: FederationTransportResultV2::Terminal(terminal_response(&query)),
         delay: Duration::from_millis(1),
-        completed: Arc::clone(&completed),
+        completed: Arc::clone(&transport_completed),
     };
     assert_eq!(
         execute_once(
             &transport,
-            &current_authority(&query),
+            &authority,
             &ImmediateCancellation,
             10,
             query.clone(),
@@ -599,7 +605,8 @@ async fn pre_dispatch_cancellation_blocks_authority_and_transport() {
         .await,
         Err(FederationV2Error::OperationCancelled)
     );
-    assert!(!completed.load(Ordering::SeqCst));
+    assert!(!authority_completed.load(Ordering::SeqCst));
+    assert!(!transport_completed.load(Ordering::SeqCst));
 }
 
 #[tokio::test]
