@@ -101,7 +101,10 @@ try {
   window.dispatchEvent(new Event("offline"));
   await waitFor(() => root.getAttribute("data-hepta-ready") === "false");
   blockedDialog.querySelector("[data-hepta-confirm-submit='true']").click();
-  await sleep(50);
+  await sleep(700);
+  if (root.getAttribute("data-hepta-ready") !== "false") {
+    throw new Error("offline mutation block was cleared by a stale polling response");
+  }
   if ((await stats()).requestCount !== 1) throw new Error("offline confirmation crossed transport");
   const blockedButtons = [...document.querySelectorAll("#app button")];
   if (!blockedButtons.length || blockedButtons.some((button) => !button.disabled)) {
