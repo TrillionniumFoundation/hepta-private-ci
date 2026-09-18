@@ -5,6 +5,7 @@ use codex_hepta_automation::AutomationStore;
 use codex_hepta_fleet::AgentLifecycle;
 use codex_hepta_fleet::FleetRegistry;
 use codex_hepta_memory::CognitiveStore;
+use tokio_util::sync::CancellationToken;
 
 use crate::AgentdError;
 use crate::AgentdEventKind;
@@ -23,12 +24,17 @@ pub(crate) struct AgentdState {
     events: Mutex<EventBuffer>,
     automation: Mutex<Option<AutomationStore>>,
     cognitive: Mutex<Option<Arc<CognitiveStore>>>,
+    drain_token: CancellationToken,
 }
 
 struct RuntimeState {
     current_generation: u64,
     lifecycle: AgentLifecycle,
     app_server_ready: bool,
+    critical_stores_ready: bool,
+    revocation_ready: bool,
+    required_ports_ready: bool,
+    admission_open: bool,
     fenced: bool,
 }
 
@@ -51,6 +57,10 @@ impl AgentdState {
                 current_generation: identity.spawn_generation,
                 lifecycle: AgentLifecycle::Starting,
                 app_server_ready: false,
+                critical_stores_ready: false,
+                revocation_ready: false,
+                required_ports_ready: false,
+                admission_open: false,
                 fenced: false,
             }),
             identity,
@@ -58,6 +68,7 @@ impl AgentdState {
             events: Mutex::new(events),
             automation: Mutex::new(None),
             cognitive: Mutex::new(None),
+            drain_token: CancellationToken::new(),
         })
     }
 
@@ -164,7 +175,23 @@ impl AgentdState {
             runtime.current_generation = record.lifecycle.generation;
             runtime.lifecycle = record.lifecycle.lifecycle;
             if runtime.lifecycle != AgentLifecycle::Running {
+                runtime.admission_open = false;
+            }
+            if matches!(
+                runtime.lifecycle,
+                AgentLifecycle::Draining | AgentLifecycle::Stopped | AgentLifecycle::Failed
+            ) {
                 runtime.app_server_ready = false;
+                runtime.required_ports_ready = false;
+            }
+            if runtime.lifecycle == AgentLifecycle::Running
+                && runtime.app_server_ready
+                && runtime.critical_stores_ready
+                && runtime.revocation_ready
+                && runtime.required_ports_ready
+                && !runtime.fenced
+            {
+                runtime.admission_open = true;
             }
             self.events
                 .lock()
@@ -197,10 +224,29 @@ impl AgentdState {
         Ok(runtime.current_generation)
     }
 
+    pub(crate) fn mark_runtime_prerequisites_ready(&self) -> Result<(), AgentdError> {
+        let mut runtime = self.runtime.lock().map_err(poisoned_state)?;
+        // Agentd starts with no implicit production effect authority. Once the
+        // mandatory owner-local state has opened successfully, the revocation
+        // gate is satisfied for this zero-authority baseline. Any future
+        // effect-authorized host must explicitly replace this witness.
+        runtime.critical_stores_ready = true;
+        runtime.revocation_ready = true;
+        Ok(())
+    }
+
     pub(crate) fn mark_app_server_ready(&self) -> Result<(), AgentdError> {
         let mut runtime = self.runtime.lock().map_err(poisoned_state)?;
         if !runtime.app_server_ready {
             runtime.app_server_ready = true;
+            runtime.required_ports_ready = true;
+            if runtime.lifecycle == AgentLifecycle::Running
+                && runtime.critical_stores_ready
+                && runtime.revocation_ready
+                && !runtime.fenced
+            {
+                runtime.admission_open = true;
+            }
             self.events
                 .lock()
                 .map_err(poisoned_state)?
@@ -212,6 +258,8 @@ impl AgentdState {
     pub(crate) fn mark_draining(&self) -> Result<(), AgentdError> {
         let mut runtime = self.runtime.lock().map_err(poisoned_state)?;
         runtime.app_server_ready = false;
+        runtime.required_ports_ready = false;
+        runtime.admission_open = false;
         self.events
             .lock()
             .map_err(poisoned_state)?
@@ -222,11 +270,23 @@ impl AgentdState {
     pub(crate) fn mark_fenced(&self) {
         if let Ok(mut runtime) = self.runtime.lock() {
             runtime.app_server_ready = false;
+            runtime.required_ports_ready = false;
+            runtime.admission_open = false;
             runtime.fenced = true;
         }
         if let Ok(mut events) = self.events.lock() {
             events.push(AgentdEventKind::GenerationFenced);
         }
+    }
+
+    pub(crate) fn begin_drain(&self) -> Result<(), AgentdError> {
+        self.mark_draining()?;
+        self.drain_token.cancel();
+        Ok(())
+    }
+
+    pub(crate) fn drain_token(&self) -> CancellationToken {
+        self.drain_token.clone()
     }
 
     pub(crate) fn is_fenced(&self) -> Result<bool, AgentdError> {
@@ -238,6 +298,10 @@ impl AgentdState {
         let runtime = self.runtime.lock().map_err(poisoned_state)?;
         Ok(runtime.lifecycle == AgentLifecycle::Running
             && runtime.app_server_ready
+            && runtime.critical_stores_ready
+            && runtime.revocation_ready
+            && runtime.required_ports_ready
+            && runtime.admission_open
             && !runtime.fenced)
     }
 }
