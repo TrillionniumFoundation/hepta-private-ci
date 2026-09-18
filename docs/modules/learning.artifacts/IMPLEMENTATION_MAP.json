@@ -6,9 +6,9 @@
     "tree": "ff9fa6baf95a35fd2f49816e0a80097688f2aeeb"
   },
   "implementationHead": {
-    "commit": "065cd05e919827e98100905774f56dcfe0a199a9",
+    "commit": "f6af62e8787eeb37cc4ab996863f1664c82f1b09",
     "branch": "fix/learning-artifacts-closure-20260918",
-    "note": "Module-specific source closure head including lexical create-only leaf containment. sourceBase remains the shared repository-wide implementation-map generation baseline."
+    "note": "Module-specific source closure head including lossless single-dataset V3-to-V1 publication projection and lexical create-only leaf containment. sourceBase remains the shared repository-wide implementation-map generation baseline."
   },
   "laneId": "LANE-E-LEARNING",
   "module": "learning.artifacts",
@@ -296,7 +296,7 @@
   ],
   "repositoryControlledGaps": [
     "Complete exact-head and deterministic synthetic-merge CI for the implementation head before changing the claim boundary.",
-    "A V2 manifest with multiple predecessors is deliberately refused by the stable V1 durable publication bridge until a versioned durable multi-predecessor encoding is introduced.",
+    "The stable V1 publication bridge deliberately rejects multi-predecessor and multi-dataset V2 manifests rather than silently dropping lineage/provenance; full support requires a versioned durable format.",
     "Bind the source primitives to the authenticated product host writer/current-head discovery path; source implementation alone is not product execution."
   ],
   "externalEvidenceGates": [
