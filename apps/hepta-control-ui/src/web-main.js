@@ -74,6 +74,7 @@ export async function startControlPlane({
   let refreshingPromise = null;
   let recoveryPromise = null;
   let suspensionPromise = Promise.resolve();
+  let suspended = false;
   let disposed = false;
 
   const blockMutations = (reason) => {
@@ -148,7 +149,7 @@ export async function startControlPlane({
   };
 
   const recoverSession = async (reason = "Runtime session is being re-established.") => {
-    if (disposed) return null;
+    if (disposed || suspended) return null;
     if (recoveryPromise) return recoveryPromise;
     recoveryPromise = (async () => {
       blockMutations(reason);
@@ -204,7 +205,7 @@ export async function startControlPlane({
   };
 
   async function refresh() {
-    if (disposed) return null;
+    if (disposed || suspended) return null;
     if (refreshingPromise) return refreshingPromise;
     refreshingPromise = refreshOnce().finally(() => {
       refreshingPromise = null;
@@ -226,6 +227,7 @@ export async function startControlPlane({
     if (document.visibilityState === "visible") void refresh().catch(() => {});
   };
   const onPageHide = () => {
+    suspended = true;
     stopTimer();
     blockMutations("Page is suspended; mutating controls are disabled.");
     suspensionPromise = client ? client.close().catch(() => {}) : Promise.resolve();
@@ -233,6 +235,7 @@ export async function startControlPlane({
   const onPageShow = (event) => {
     if (disposed) return;
     if (event?.persisted === true || timer === null) {
+      suspended = false;
       void suspensionPromise
         .then(() => recoverSession("Page session resumed; reconnecting."))
         .catch(() => {});
@@ -248,6 +251,7 @@ export async function startControlPlane({
   const dispose = async () => {
     if (disposed) return;
     disposed = true;
+    suspended = true;
     stopTimer();
     window.removeEventListener?.("offline", onOffline);
     window.removeEventListener?.("online", onOnline);
