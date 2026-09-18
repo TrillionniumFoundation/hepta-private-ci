@@ -214,6 +214,36 @@ fn compact_checkpoint_and_proof_are_non_authoritative() {
         .validate()
         .unwrap_or_else(|error| panic!("valid proof: {error}"));
 
+    let mut proof_v2 = CompactionProofV2 {
+        checkpoint_digest: checkpoint.checkpoint_digest,
+        candidate_digest: digest("candidate"),
+        evaluator_id: id("evaluator:independent"),
+        evaluator_implementation_digest: digest("evaluator-implementation"),
+        evaluation_artifact_digest: digest("evaluation-artifact"),
+        attestation_digest: digest("attestation"),
+        attestation_signature_digest: digest("attestation-signature"),
+        signature_verification_receipt_digest: digest("signature-verification-receipt"),
+        retained_query_suite_digest: digest("queries"),
+        reconstruction_obligation_digest: digest("reconstruction"),
+        contradiction_holdout_digest: digest("contradictions"),
+        deletion_cutoff: 3,
+        source_count: 100,
+        retained_count: 30,
+        proof_digest: Digest32::ZERO,
+        authority: AuthorityPosture::DENY_ALL,
+    };
+    proof_v2.proof_digest = proof_v2.compute_proof_digest();
+    proof_v2
+        .validate()
+        .unwrap_or_else(|error| panic!("valid proof v2: {error}"));
+    let original = proof_v2.proof_digest;
+    proof_v2.evaluation_artifact_digest = digest("different-evaluation-artifact");
+    assert_ne!(proof_v2.compute_proof_digest(), original);
+    assert_eq!(
+        proof_v2.validate(),
+        Err(LaneCContractError::DigestMismatch("compaction_proof_v2"))
+    );
+
     proof.authority = AuthorityPosture {
         runtime: true,
         ..AuthorityPosture::DENY_ALL
