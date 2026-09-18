@@ -36,6 +36,7 @@ pub use occurrence::AutomationOccurrence;
 pub use occurrence::AutomationOccurrenceId;
 pub use occurrence::AutomationOccurrenceState;
 pub use occurrence::AutomationOverlapPolicy;
+pub use occurrence::AutomationProviderObservationState;
 pub use occurrence::AutomationScheduleRevision;
 pub use occurrence::AutomationTerminalOutcome;
 pub use occurrence_taskflow::AutomationTaskFlowLease;
