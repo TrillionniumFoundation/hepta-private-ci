@@ -61,16 +61,10 @@ pub struct BaoReadRequest {
 #[derive(Clone, Eq, PartialEq, Serialize)]
 pub struct BaoSecretReceipt {
     pub request_sha256: [u8; 32],
-    /// Internal verification fingerprint. Deliberately excluded from serialized
-    /// receipts because a stable digest can fingerprint low-entropy secrets.
-    #[serde(skip_serializing)]
-    pub response_sha256: [u8; 32],
-    /// Internal verification fingerprint. Deliberately excluded from serialized
-    /// receipts and Debug output.
-    #[serde(skip_serializing)]
-    pub secret_sha256: [u8; 32],
     pub version: u64,
     pub secret_bytes: usize,
+    /// The expected secret digest was checked successfully inside the adapter.
+    /// The digest itself is deliberately not part of this public receipt.
     pub secret_verified: bool,
 }
 
@@ -276,8 +270,6 @@ impl BaoClient {
         }
         let receipt = BaoSecretReceipt {
             request_sha256: binding.request_sha256,
-            response_sha256: Digest32::of_bytes(&body).into_array(),
-            secret_sha256: digest,
             version: request.version,
             secret_bytes: secret.len(),
             secret_verified: true,
@@ -348,6 +340,7 @@ pub enum BaoClientError {
     LeaseOperationConflict,
     LeaseOperationIndeterminate,
     LeaseOperationAlreadyCompleted,
+    LeaseStateUnavailable,
 }
 impl fmt::Display for BaoClientError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
