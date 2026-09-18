@@ -9,6 +9,9 @@
 use std::collections::BTreeSet;
 use std::error::Error as StdError;
 use std::fmt;
+use std::future::Future;
+use std::pin::Pin;
+use std::time::Duration;
 
 use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
@@ -17,6 +20,7 @@ use codex_hepta_types::StableId;
 
 pub const MAX_FEDERATED_RESULTS_V2: usize = 512;
 const QUERY_DOMAIN: &[u8] = b"hepta.memory-federation.query.v2";
+const RESPONSE_DOMAIN: &[u8] = b"hepta.memory-federation.response.v2";
 const RESULT_DOMAIN: &[u8] = b"hepta.memory-federation.result.v2";
 const CANCELLATION_DOMAIN: &[u8] = b"hepta.memory-federation.cancellation.v2";
 
@@ -185,6 +189,7 @@ pub enum FederatedValidityV2 {
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct RemoteFederatedResponseV2 {
     pub peer_id: StableId,
+    pub query_binding_digest: Digest32,
     pub scope_digest: Digest32,
     pub purpose_digest: Digest32,
     pub generation_vector_digest: Digest32,
@@ -208,6 +213,7 @@ impl RemoteFederatedResponseV2 {
             return Err(FederationV2Error::ZeroValue("response_expiry"));
         }
         for (name, digest) in [
+            ("response_query_binding", self.query_binding_digest),
             ("response_scope", self.scope_digest),
             ("response_purpose", self.purpose_digest),
             ("response_generation_vector", self.generation_vector_digest),
@@ -241,6 +247,64 @@ impl RemoteFederatedResponseV2 {
         }
         Ok(())
     }
+
+    pub fn validate_for_query(&self, query: &FederatedQueryV2) -> Result<(), FederationV2Error> {
+        self.validate_shape()?;
+        if self.peer_id != query.peer_id {
+            return Err(FederationV2Error::IdentityMismatch("response_peer"));
+        }
+        if self.query_binding_digest != query.binding_digest() {
+            return Err(FederationV2Error::DigestMismatch("response_query_binding"));
+        }
+        if self.scope_digest != query.scope_digest {
+            return Err(FederationV2Error::DigestMismatch("response_scope"));
+        }
+        if self.purpose_digest != query.purpose_digest {
+            return Err(FederationV2Error::DigestMismatch("response_purpose"));
+        }
+        if self.response_digest != self.compute_response_digest() {
+            return Err(FederationV2Error::DigestMismatch("response"));
+        }
+        Ok(())
+    }
+
+    #[must_use]
+    pub fn compute_response_digest(&self) -> Digest32 {
+        let mut items = self.items.iter().collect::<Vec<_>>();
+        items.sort_by(|left, right| {
+            left.source_owner_id
+                .cmp(&right.source_owner_id)
+                .then_with(|| left.record_id.cmp(&right.record_id))
+                .then_with(|| left.record_revision.cmp(&right.record_revision))
+        });
+        let mut bytes = Vec::new();
+        bytes.extend_from_slice(RESPONSE_DOMAIN);
+        push_id(&mut bytes, &self.peer_id);
+        push_digest(&mut bytes, self.query_binding_digest);
+        push_digest(&mut bytes, self.scope_digest);
+        push_digest(&mut bytes, self.purpose_digest);
+        push_digest(&mut bytes, self.generation_vector_digest);
+        push_u64(&mut bytes, self.observed_frontier);
+        push_u64(&mut bytes, self.expires_unix_ms);
+        push_len(&mut bytes, items.len());
+        for item in items {
+            push_id(&mut bytes, &item.source_owner_id);
+            push_id(&mut bytes, &item.record_id);
+            push_u64(&mut bytes, item.record_revision.get());
+            push_digest(&mut bytes, item.record_digest);
+            push_digest(&mut bytes, item.support_digest);
+            push_digest(&mut bytes, item.validity_digest);
+        }
+        bytes.push(completeness_code(self.completeness));
+        bytes.push(u8::from(self.terminal_observed));
+        Digest32::of_bytes(&bytes)
+    }
+
+    #[must_use]
+    pub fn sealed(mut self) -> Self {
+        self.response_digest = self.compute_response_digest();
+        self
+    }
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -256,15 +320,80 @@ pub enum FederationTransportResultV2 {
     NonTerminal(FederationTransportOutcomeV2),
 }
 
+/// Boxed future used by the federation boundary without an async-trait macro.
+pub type FederationV2Future<'a, T> = Pin<Box<dyn Future<Output = T> + Send + 'a>>;
+
 /// One enrolled, authenticated transport attempt.
 ///
-/// `execute_once` invokes this method exactly once. Any retry policy belongs to
-/// a separately authorized caller and must allocate a new nonce and attempt ID.
+/// The future must be cancellation-safe: dropping it must stop further delivery or
+/// leave the remote operation in an explicitly indeterminate read-only state.
 pub trait FederationTransportV2 {
-    fn send_once(
+    fn send_once<'a>(
+        &'a self,
+        query: &'a FederatedQueryV2,
+    ) -> FederationV2Future<'a, Result<FederationTransportResultV2, FederationV2Error>>;
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct FederationAuthorityObservationV2 {
+    pub lease_id: StableId,
+    pub query_binding_digest: Digest32,
+    pub generation_vector_digest: Digest32,
+    pub lease_epoch: u64,
+    pub expires_unix_ms: u64,
+    pub revoked: bool,
+}
+
+impl FederationAuthorityObservationV2 {
+    fn validate_for_query(
         &self,
+        now_unix_ms: u64,
         query: &FederatedQueryV2,
-    ) -> Result<FederationTransportResultV2, FederationV2Error>;
+        lease: &FederatedLeaseV2,
+    ) -> Result<(), FederationV2Error> {
+        if self.revoked {
+            return Err(FederationV2Error::LeaseRevoked);
+        }
+        if self.lease_id != lease.lease_id {
+            return Err(FederationV2Error::IdentityMismatch("authority_lease"));
+        }
+        ensure_digest("authority_query_binding", self.query_binding_digest)?;
+        ensure_digest("authority_generation_vector", self.generation_vector_digest)?;
+        if self.query_binding_digest != query.binding_digest() {
+            return Err(FederationV2Error::DigestMismatch("authority_query_binding"));
+        }
+        if self.generation_vector_digest != query.generation_vector_digest {
+            return Err(FederationV2Error::DigestMismatch("authority_generation_vector"));
+        }
+        if self.lease_epoch == 0
+            || self.lease_epoch != query.lease_epoch
+            || self.lease_epoch != lease.lease_epoch
+        {
+            return Err(FederationV2Error::LeaseEpochMismatch);
+        }
+        if self.expires_unix_ms != lease.expires_unix_ms {
+            return Err(FederationV2Error::AuthorityExpiryMismatch);
+        }
+        if now_unix_ms >= self.expires_unix_ms {
+            return Err(FederationV2Error::LeaseExpired);
+        }
+        Ok(())
+    }
+}
+
+/// Current authority observation supplied by the enrollment/revocation owner.
+/// The engine calls it before and after transport I/O.
+pub trait FederationAuthorityV2 {
+    fn observe<'a>(
+        &'a self,
+        query: &'a FederatedQueryV2,
+        lease: &'a FederatedLeaseV2,
+    ) -> FederationV2Future<'a, Result<FederationAuthorityObservationV2, FederationV2Error>>;
+}
+
+/// Cancellation signal owned by the product caller.
+pub trait FederationCancellationV2 {
+    fn cancelled<'a>(&'a self) -> FederationV2Future<'a, ()>;
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -385,16 +514,59 @@ impl FederatedResultV2 {
     }
 }
 
-pub fn execute_once<T: FederationTransportV2>(
+pub async fn execute_once<T, A, C>(
     transport: &T,
+    authority: &A,
+    cancellation: &C,
     now_unix_ms: u64,
     query: FederatedQueryV2,
     lease: &FederatedLeaseV2,
-) -> Result<FederatedResultV2, FederationV2Error> {
+) -> Result<FederatedResultV2, FederationV2Error>
+where
+    T: FederationTransportV2 + ?Sized,
+    A: FederationAuthorityV2 + ?Sized,
+    C: FederationCancellationV2 + ?Sized,
+{
     query.validate(now_unix_ms)?;
     lease.validate_for_query(now_unix_ms, &query)?;
+    let hard_deadline_unix_ms = query.deadline_unix_ms.min(lease.expires_unix_ms);
+    if now_unix_ms >= hard_deadline_unix_ms {
+        return Err(FederationV2Error::DeadlineExpired);
+    }
+    let budget = Duration::from_millis(hard_deadline_unix_ms - now_unix_ms);
+    let attempt = async {
+        let preflight = authority.observe(&query, lease).await?;
+        preflight.validate_for_query(now_unix_ms, &query, lease)?;
+
+        let transport_result = transport.send_once(&query).await?;
+
+        let postflight = authority.observe(&query, lease).await?;
+        postflight.validate_for_query(now_unix_ms, &query, lease)?;
+
+        build_result(
+            now_unix_ms,
+            hard_deadline_unix_ms,
+            query,
+            transport_result,
+        )
+    };
+
+    tokio::select! {
+        biased;
+        _ = cancellation.cancelled() => Err(FederationV2Error::Cancelled),
+        timed = tokio::time::timeout(budget, attempt) => {
+            timed.map_err(|_| FederationV2Error::AttemptTimedOut)?
+        }
+    }
+}
+
+fn build_result(
+    now_unix_ms: u64,
+    hard_deadline_unix_ms: u64,
+    query: FederatedQueryV2,
+    transport_result: FederationTransportResultV2,
+) -> Result<FederatedResultV2, FederationV2Error> {
     let query_binding_digest = query.binding_digest();
-    let transport_result = transport.send_once(&query)?;
     let mut result = match transport_result {
         FederationTransportResultV2::NonTerminal(_) => FederatedResultV2 {
             query_id: query.query_id,
@@ -402,7 +574,7 @@ pub fn execute_once<T: FederationTransportV2>(
             query_binding_digest,
             generation_vector_digest: query.generation_vector_digest,
             observed_frontier: None,
-            expires_unix_ms: query.deadline_unix_ms,
+            expires_unix_ms: hard_deadline_unix_ms,
             items: Vec::new(),
             coverage: FederatedCoverageV2 {
                 requested_peers: 1,
@@ -417,16 +589,7 @@ pub fn execute_once<T: FederationTransportV2>(
             authority: AuthorityPosture::DENY_ALL,
         },
         FederationTransportResultV2::Terminal(response) => {
-            response.validate_shape()?;
-            if response.peer_id != query.peer_id {
-                return Err(FederationV2Error::IdentityMismatch("response_peer"));
-            }
-            if response.scope_digest != query.scope_digest {
-                return Err(FederationV2Error::DigestMismatch("response_scope"));
-            }
-            if response.purpose_digest != query.purpose_digest {
-                return Err(FederationV2Error::DigestMismatch("response_purpose"));
-            }
+            response.validate_for_query(&query)?;
             if now_unix_ms >= response.expires_unix_ms {
                 return Err(FederationV2Error::ResponseExpired);
             }
@@ -438,7 +601,7 @@ pub fn execute_once<T: FederationTransportV2>(
             let mut items = if stale_generation {
                 Vec::new()
             } else {
-                response.items
+                response.items.clone()
             };
             items.truncate(maximum_results);
             let truncated_items = remote_item_count.saturating_sub(items.len());
@@ -453,13 +616,17 @@ pub fn execute_once<T: FederationTransportV2>(
             } else {
                 response.completeness
             };
+            let effective_expiry = response.expires_unix_ms.min(hard_deadline_unix_ms);
+            if now_unix_ms >= effective_expiry {
+                return Err(FederationV2Error::ResponseExpired);
+            }
             FederatedResultV2 {
                 query_id: query.query_id,
                 peer_id: query.peer_id,
                 query_binding_digest,
                 generation_vector_digest: query.generation_vector_digest,
                 observed_frontier: Some(response.observed_frontier),
-                expires_unix_ms: response.expires_unix_ms,
+                expires_unix_ms: effective_expiry,
                 items,
                 coverage: FederatedCoverageV2 {
                     requested_peers: 1,
@@ -549,6 +716,9 @@ pub enum FederationV2Error {
     InvalidCoverage,
     StaleEvidenceExposed,
     AuthorityGranted,
+    AuthorityExpiryMismatch,
+    Cancelled,
+    AttemptTimedOut,
     TransportRejected,
 }
 
