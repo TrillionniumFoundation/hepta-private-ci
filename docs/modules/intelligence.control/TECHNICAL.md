@@ -113,6 +113,7 @@ Consumed contracts:
 
 Critical protocol schemas:
 
+- `IntelligenceHostEnvelopeV1`
 - `LearningArtifactManifestV1`
 - `LegalActionCandidateSetV1`
 
@@ -174,6 +175,7 @@ Composition library over injected owner ports. The read-only vertical and evalua
 Current operating and state-format references:
 
 - [codex-rs/hepta-intelligence/EVALUATED_SHADOW.md](../../../codex-rs/hepta-intelligence/EVALUATED_SHADOW.md).
+- [codex-rs/hepta-intelligence/V3_COMPOSITION.md](../../../codex-rs/hepta-intelligence/V3_COMPOSITION.md).
 - [docs/readiness/LANE_B_NATIVE_HOST.md](../../readiness/LANE_B_NATIVE_HOST.md).
 
 [Shared observability and operations requirements](../README.md#shared-observability-and-operations) specify safe events and alert classes; concrete deployment thresholds require the selected host profile.
@@ -184,6 +186,10 @@ Current focused test sources (source references, not pass receipts):
 
 - [codex-rs/hepta-intelligence/src/evaluated_shadow_tests.rs](../../../codex-rs/hepta-intelligence/src/evaluated_shadow_tests.rs); named case: `durable_stage_records_a_decision_and_retries_after_reopen_without_new_bytes`.
 - [codex-rs/hepta-intelligence/src/lib_tests.rs](../../../codex-rs/hepta-intelligence/src/lib_tests.rs); named case: `highest_eligible_candidate_is_selected_without_effect_authority`.
+- [codex-rs/hepta-intelligence/src/composition_v3_tests.rs](../../../codex-rs/hepta-intelligence/src/composition_v3_tests.rs); V3 stage order, fallback, cancellation, deadline and envelope binding.
+- [codex-rs/hepta-intelligence/src/native_v3_tests.rs](../../../codex-rs/hepta-intelligence/src/native_v3_tests.rs); actual owner-library traversal and durable Decision append.
+- [codex-rs/hepta-intelligence/src/learning_v3_tests.rs](../../../codex-rs/hepta-intelligence/src/learning_v3_tests.rs); terminal Outcome/Credit closure and retry semantics.
+- [codex-rs/hepta-agentd/src/intelligence_facade_tests.rs](../../../codex-rs/hepta-agentd/src/intelligence_facade_tests.rs); named Agentd envelope consumer.
 
 In `codex-rs`, run `just test -p codex-hepta-intelligence`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/intelligence.control.md) separately labels target acceptance designs.
 
@@ -401,3 +407,34 @@ The bootstrap source-location obligation for `intelligence.control` is implement
 - `codex-rs/hepta-intelligence`
 
 The source candidate is checked by `.github/workflows/hepta-consolidated-source.yml`, including closed-world inventory, package tests, all-target compilation, strict Clippy and clean tracked state. This receipt is source implementation evidence only. It grants no runtime, production-writer, model-provider, external-effect, independent-acceptance, selection, promotion, merge or release authority.
+
+
+## 18. Converged V3 composition source candidate
+
+The current feature candidate converges the previously separate read-only,
+generic shadow and evaluated-shadow integration requirements into one additive
+V3 composition graph while retaining V1/V2 compatibility. The native entrypoint
+is `prepare_intelligence_run_v3` in
+[`composition_v3.rs`](../../../codex-rs/hepta-intelligence/src/composition_v3.rs).
+It uses one `CapabilitySnapshotV2` and one predecessor chain and makes
+`utility.ndu` and `learning.eval` explicit stages.
+
+[`native_v3.rs`](../../../codex-rs/hepta-intelligence/src/native_v3.rs) binds
+that graph to the repository's existing objective, NDU, neuron, prompt,
+intuition, context, evaluation and learning-ledger libraries. The final selected
+path produces the registered `IntelligenceHostEnvelopeV1`; the named consumer
+is
+[`codex-rs/hepta-agentd/src/intelligence_facade.rs`](../../../codex-rs/hepta-agentd/src/intelligence_facade.rs).
+Agentd remains the lifecycle/dispatch host and the facade remains
+authority-free and effect-free.
+
+[`V3_COMPOSITION.md`](../../../codex-rs/hepta-intelligence/V3_COMPOSITION.md)
+defines the stage/failure matrix, deadline and cancellation semantics,
+`LegalActionCandidateSetV1` and `IntelligenceHostEnvelopeV1` bindings,
+native adapters, Agentd handoff and the separate Decision/Outcome/Credit
+lifecycle.
+
+This source candidate does **not** change `production_implementation`,
+activation, independent acceptance, promotion or release. Those claims require
+current exact-head and merge-candidate CI plus an admitted product execution on
+the target host and the external gates already defined above.
