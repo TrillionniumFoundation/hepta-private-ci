@@ -10,6 +10,7 @@ use crate::AutomationLease;
 use crate::AutomationQueueReceipt;
 use crate::AutomationStore;
 use crate::AutomationTaskId;
+use crate::TaskFlowRun;
 use crate::TaskFlowRunState;
 
 const OCCURRENCE_DOMAIN: &[u8] = b"hepta.automation.occurrence.v1\0";
@@ -205,7 +206,14 @@ impl AutomationStore {
         max_catch_up: u32,
         now_ms: u64,
     ) -> Result<AutomationScheduleContract, AutomationError> {
-        if max_catch_up == 0 || max_catch_up > MAX_POLICY_CATCH_UP {
+        // The current scheduler has one lease/admission lane per automation.
+        // Activate only the semantics it can enforce without inventing a
+        // second scheduler. Queue/allow remain reserved schema values until a
+        // caller can materialize multiple durable occurrences independently.
+        if overlap_policy != AutomationOverlapPolicy::Forbid
+            || max_catch_up == 0
+            || max_catch_up > MAX_POLICY_CATCH_UP
+        {
             return Err(AutomationError::Invalid);
         }
         let changed = sqlx::query(
@@ -340,6 +348,43 @@ impl AutomationStore {
         self.causal_occurrence(&occurrence.occurrence_id)
             .await?
             .ok_or(AutomationError::Corrupt)
+    }
+
+    /// Ensure the occurrence has a deterministic durable TaskFlow run, then
+    /// bind it to the occurrence. A crash between run creation and binding is
+    /// safe: both operations are idempotent and the deterministic run id is
+    /// derived only from the occurrence id.
+    pub async fn ensure_occurrence_taskflow_run(
+        &self,
+        occurrence_id: &str,
+        workflow_id: &str,
+        workflow_version: u32,
+        definition_digest: &Sha256Digest,
+        created_at_ms: u64,
+    ) -> Result<TaskFlowRun, AutomationError> {
+        let occurrence = self
+            .causal_occurrence(occurrence_id)
+            .await?
+            .ok_or(AutomationError::Conflict)?;
+        let task = self
+            .task(occurrence.task_id)
+            .await?
+            .ok_or(AutomationError::Corrupt)?;
+        let run_id = format!("automation:{}", occurrence.occurrence_id);
+        let run = self
+            .create_taskflow_run(
+                run_id.clone(),
+                workflow_id,
+                workflow_version,
+                definition_digest,
+                task.thread_id,
+                created_at_ms,
+            )
+            .await
+            .map_err(map_taskflow_error)?;
+        self.bind_occurrence_taskflow_run(occurrence_id, &run_id, created_at_ms)
+            .await?;
+        Ok(run)
     }
 
     /// Bind an already durable TaskFlow run to this occurrence. The run must
@@ -718,6 +763,18 @@ fn next_scheduled_instant(
                 )
                 .ok_or(AutomationError::Invalid)
         }
+    }
+}
+
+fn map_taskflow_error(error: crate::TaskFlowError) -> AutomationError {
+    match error {
+        crate::TaskFlowError::Unavailable => AutomationError::Unavailable,
+        crate::TaskFlowError::StaleFence => AutomationError::AccessDenied,
+        crate::TaskFlowError::Invalid(_) => AutomationError::Invalid,
+        crate::TaskFlowError::Conflict(_) | crate::TaskFlowError::InvalidTransition(_) => {
+            AutomationError::Conflict
+        }
+        crate::TaskFlowError::Corrupt(_) => AutomationError::Corrupt,
     }
 }
 
