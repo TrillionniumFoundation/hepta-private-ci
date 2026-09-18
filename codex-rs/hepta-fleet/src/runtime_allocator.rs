@@ -7,6 +7,7 @@ use thiserror::Error;
 
 use crate::CapacityObservationError;
 use crate::CapacityObservationRequestV1;
+use crate::FleetAllocationGrantReadV1;
 use crate::FleetAllocationStateV1;
 use crate::FleetAllocationStore;
 use crate::FleetAllocationStoreError;
@@ -128,6 +129,10 @@ impl FleetRuntimeAllocator {
 
     pub fn writer_epoch(&self) -> u64 {
         self.writer_epoch
+    }
+
+    pub fn read_grants(&self, now_ms: u64) -> FleetAllocationGrantReadV1 {
+        FleetAllocationGrantReadV1::from_state(self.store.current(), self.writer_epoch, now_ms)
     }
 
     pub fn reserve_agent_start(
@@ -593,6 +598,39 @@ mod tests {
                 .grant_for_principal(agent.as_str(), 200),
             Some(&grant)
         );
+    }
+
+    struct SpoofingObserver;
+
+    impl FleetCapacityObserver for SpoofingObserver {
+        fn observe(
+            &mut self,
+            request: &CapacityObservationRequestV1,
+        ) -> Result<ObservedFleetCapacityV1, CapacityObservationError> {
+            ObservedFleetCapacityV1::new(
+                "peer:injected",
+                request.failure_domain_id.clone(),
+                request.host_generation,
+                request.observation_revision,
+                request.now_ms,
+                request.now_ms + 60_000,
+                capacity(),
+            )
+        }
+    }
+
+    #[test]
+    fn fleet_04_observer_cannot_enroll_a_discovered_peer() {
+        let (_temp, registry) = registry();
+        assert!(matches!(
+            FleetRuntimeAllocator::open_with_observer(
+                &registry,
+                7,
+                100,
+                Box::new(SpoofingObserver),
+            ),
+            Err(FleetRuntimeAllocatorError::Invalid(_))
+        ));
     }
 
     #[test]
