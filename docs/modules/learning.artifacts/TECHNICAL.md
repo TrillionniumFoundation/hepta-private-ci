@@ -439,12 +439,33 @@ Ordinary authorized coding identifies the Git baseline, relevant contracts, owne
 
 ## 17. Source implementation receipt
 
-The bootstrap source-location obligation for `learning.artifacts` is implemented by work package `ART-1-LEARNING-ARTIFACT-REGISTRY` in:
+This receipt records repository source bindings for the current documentation candidate. It is navigation evidence only; it does not claim product composition, deployment, external-effect, selection, activation, promotion or release authority.
 
-- `codex-rs/hepta-learning-artifacts`
+| Operation | Native symbol | Source path | Tests |
+|---|---|---|---|
+| `append_registry_event` | `ArtifactRegistry::append` | `codex-rs/hepta-learning-artifacts/src/registry.rs` | `codex-rs/hepta-learning-artifacts/src/registry_tests.rs` |
+| `write_registry_snapshot` | `write_registry_snapshot` | `codex-rs/hepta-learning-artifacts/src/storage.rs` | `codex-rs/hepta-learning-artifacts/src/storage_tests.rs, codex-rs/hepta-learning-artifacts/src/storage_tests.rs` |
+| `write_candidate_payload` | `write_candidate_payload` | `codex-rs/hepta-learning-artifacts/src/storage.rs` | `codex-rs/hepta-learning-artifacts/src/storage_tests.rs` |
+| `load_pinned_candidate` | `load_pinned_candidate` | `codex-rs/hepta-learning-artifacts/src/pinned.rs` | `codex-rs/hepta-learning-artifacts/src/pinned_tests.rs` |
+| `validate_artifact_manifest_v2` | `validate_artifact_manifest_v2` | `codex-rs/hepta-learning-artifacts/src/closure_v2.rs` | `codex-rs/hepta-learning-artifacts/src/closure_v2_tests.rs` |
+| `append_dataset_withdrawal` | `DatasetWithdrawalRegistry::append` | `codex-rs/hepta-learning-artifacts/src/closure_v2.rs` | `codex-rs/hepta-learning-artifacts/src/closure_v2_tests.rs` |
+| `admit_manifest_at_withdrawal_head_v3` | `admit_manifest_at_withdrawal_head_v3` | `codex-rs/hepta-learning-artifacts/src/admission_v3.rs` | `codex-rs/hepta-learning-artifacts/src/admission_v3.rs, codex-rs/hepta-learning-artifacts/src/admission_v3.rs, codex-rs/hepta-learning-artifacts/src/admission_v3.rs, codex-rs/hepta-learning-artifacts/src/admission_v3.rs` |
+| `prepare_artifact_publication_v3` | `prepare_artifact_publication_v3` | `codex-rs/hepta-learning-artifacts/src/publication.rs` | `codex-rs/hepta-learning-artifacts/src/publication.rs, codex-rs/hepta-learning-artifacts/src/publication.rs` |
+| `revalidate_artifact_publication_v3` | `revalidate_artifact_publication_v3` | `codex-rs/hepta-learning-artifacts/src/publication.rs` | `codex-rs/hepta-learning-artifacts/src/publication.rs` |
+| `write_withdrawal_registry_snapshot` | `write_withdrawal_registry_snapshot` | `codex-rs/hepta-learning-artifacts/src/aux_storage.rs` | `codex-rs/hepta-learning-artifacts/src/aux_storage.rs` |
+| `read_withdrawal_registry_snapshot` | `read_withdrawal_registry_snapshot` | `codex-rs/hepta-learning-artifacts/src/aux_storage.rs` | `codex-rs/hepta-learning-artifacts/src/aux_storage.rs` |
+| `append_lifecycle_event_v2` | `ArtifactLifecycleJournalV2::append` | `codex-rs/hepta-learning-artifacts/src/lifecycle_journal.rs` | `codex-rs/hepta-learning-artifacts/src/lifecycle_journal.rs, codex-rs/hepta-learning-artifacts/src/lifecycle_journal.rs` |
+| `write_lifecycle_journal_snapshot` | `write_lifecycle_journal_snapshot` | `codex-rs/hepta-learning-artifacts/src/aux_storage.rs` | `codex-rs/hepta-learning-artifacts/src/aux_storage.rs` |
+| `read_lifecycle_journal_snapshot` | `read_lifecycle_journal_snapshot` | `codex-rs/hepta-learning-artifacts/src/aux_storage.rs` | `codex-rs/hepta-learning-artifacts/src/aux_storage.rs` |
+| `validate_iteration_transition` | `validate_iteration_transition` | `codex-rs/hepta-learning-artifacts/src/iteration.rs` | `codex-rs/hepta-learning-artifacts/src/iteration.rs, codex-rs/hepta-learning-artifacts/src/iteration.rs` |
+| `record_iteration_evidence` | `IterationLedgerV1::transition` | `codex-rs/hepta-learning-artifacts/src/iteration_ledger.rs` | `codex-rs/hepta-learning-artifacts/src/iteration_ledger.rs, codex-rs/hepta-learning-artifacts/src/iteration_ledger.rs` |
+| `validate_registry_head_witness` | `validate_registry_head_witness` | `codex-rs/hepta-learning-artifacts/src/closure_v2.rs` | `codex-rs/hepta-learning-artifacts/src/closure_v2_tests.rs` |
+| `inspect_orphan_candidate` | `inspect_orphan_candidate` | `codex-rs/hepta-learning-artifacts/src/storage.rs` | `codex-rs/hepta-learning-artifacts/src/storage_tests.rs` |
+| `inspect_artifact_admin_state` | `inspect_artifact_admin_state` | `codex-rs/hepta-learning-artifacts/src/admin.rs` | `codex-rs/hepta-learning-artifacts/src/admin.rs` |
 
-The source candidate is checked by `.github/workflows/hepta-consolidated-source.yml`, including closed-world inventory, package tests, all-target compilation, strict Clippy and clean tracked state. This receipt is source implementation evidence only. It grants no runtime, production-writer, model-provider, external-effect, independent-acceptance, selection, promotion, merge or release authority.
-
+- Source identity: repository-wide `sourceBase` remains recorded in `IMPLEMENTATION_MAP.json`; the module-specific `implementationHead` records the newer source closure described by sections 18+.
+- Consumer callsites, authenticated newest-head discovery, host writer composition and target-filesystem qualification remain separate evidence when not listed above.
+- Production implementation, product execution, independent acceptance, activation and release remain false until their separate evidence gates pass.
 
 ## 18. Current native closure, durability and host boundary
 
