@@ -205,38 +205,50 @@ impl LearningLedger {
             return Err(LedgerError::InvalidRunStart("admission grants authority"));
         }
         if publication.compile.disposition != codex_hepta_objective::CompileDisposition::Compiled {
-            return Err(LedgerError::InvalidRunStart("compile disposition is not compiled"));
+            return Err(LedgerError::InvalidRunStart(
+                "compile disposition is not compiled",
+            ));
         }
         if !publication.compile.removed_action_ids.is_empty() {
-            return Err(LedgerError::InvalidRunStart("successful compile removed requested actions"));
+            return Err(LedgerError::InvalidRunStart(
+                "successful compile removed requested actions",
+            ));
         }
         codex_hepta_objective::validate_compiled_objective_v1(&publication.compile.objective)
             .map_err(|_| LedgerError::InvalidRunStart("compiled objective validation failed"))?;
 
-        let objective_v1 =
-            codex_hepta_objective::ObjectiveFunctionV1::from_canonical_json(
-                &publication.objective_v1_json,
-            )
-            .map_err(|_| LedgerError::InvalidRunStart("canonical objective decode failed"))?;
+        let objective_v1 = codex_hepta_objective::ObjectiveFunctionV1::from_canonical_json(
+            &publication.objective_v1_json,
+        )
+        .map_err(|_| LedgerError::InvalidRunStart("canonical objective decode failed"))?;
         let canonical_digest = objective_v1
             .digest()
             .map_err(|_| LedgerError::InvalidRunStart("canonical objective digest failed"))?;
         if canonical_digest != publication.objective_v1_digest
             || objective_v1.objective_id
-                != format!("objective.{}", publication.compile.objective.semantic_digest)
+                != format!(
+                    "objective.{}",
+                    publication.compile.objective.semantic_digest
+                )
             || objective_v1.request_digest != publication.admission.intent_digest.to_string()
             || objective_v1.principal_scope.scope_id
                 != publication.compile.objective.principal_scope.to_string()
             || objective_v1.revision != publication.compile.objective.revision.get()
         {
-            return Err(LedgerError::InvalidRunStart("canonical objective binding mismatch"));
+            return Err(LedgerError::InvalidRunStart(
+                "canonical objective binding mismatch",
+            ));
         }
         publication
             .run_start
             .validate_for_objective(&publication.compile.objective, canonical_digest)
             .map_err(|_| LedgerError::InvalidRunStart("run snapshot validation failed"))?;
-        if publication.compile.objective.source_digest != publication.admission.admitted_source_digest {
-            return Err(LedgerError::InvalidRunStart("admitted source digest mismatch"));
+        if publication.compile.objective.source_digest
+            != publication.admission.admitted_source_digest
+        {
+            return Err(LedgerError::InvalidRunStart(
+                "admitted source digest mismatch",
+            ));
         }
         if publication.admission.profile_digest.is_zero()
             || publication.admission.supplied_source_digest.is_zero()
@@ -370,10 +382,8 @@ impl LearningLedger {
             .insert(record_id, event_kind(&record.event));
         match &record.event {
             LedgerEvent::RunStart(value) => {
-                self.run_starts.insert(
-                    value.run_start.run_id.clone(),
-                    value.record_id.clone(),
-                );
+                self.run_starts
+                    .insert(value.run_start.run_id.clone(), value.record_id.clone());
             }
             LedgerEvent::Decision(value) => {
                 self.decisions.insert(
