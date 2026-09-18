@@ -93,7 +93,7 @@ impl SecretLeaseRegistry {
     pub async fn open(directory: &Path) -> Result<Self, SecretLeaseRegistryError> {
         prepare_private_directory(directory)?;
         let path = directory.join(REGISTRY_FILENAME);
-        reject_symlink_if_present(&path)?;
+        prepare_private_database_file(&path)?;
 
         let options = SqliteConnectOptions::new()
             .filename(&path)
@@ -106,7 +106,7 @@ impl SecretLeaseRegistry {
             .connect_with(options)
             .await
             .map_err(|_| SecretLeaseRegistryError::Unavailable)?;
-        make_private_file(&path)?;
+        verify_private_database_file(&path)?;
         sqlx::query(
             "CREATE TABLE IF NOT EXISTS heptabao_lease_operations (
                 operation_sha256 BLOB PRIMARY KEY NOT NULL CHECK(length(operation_sha256) = 32),
@@ -515,15 +515,36 @@ fn as_i64(value: u64) -> Result<i64, SecretLeaseRegistryError> {
     i64::try_from(value).map_err(|_| SecretLeaseRegistryError::StateConflict)
 }
 
-fn reject_symlink_if_present(path: &Path) -> Result<(), SecretLeaseRegistryError> {
+#[cfg(unix)]
+fn prepare_private_database_file(path: &Path) -> Result<(), SecretLeaseRegistryError> {
+    use std::os::unix::fs::OpenOptionsExt;
+    use std::os::unix::fs::PermissionsExt;
+
     match std::fs::symlink_metadata(path) {
-        Ok(metadata) if metadata.file_type().is_symlink() => {
-            Err(SecretLeaseRegistryError::UnsafeDirectory)
+        Ok(metadata) => {
+            if metadata.file_type().is_symlink()
+                || !metadata.is_file()
+                || metadata.permissions().mode() & 0o077 != 0
+            {
+                return Err(SecretLeaseRegistryError::UnsafeDirectory);
+            }
         }
-        Ok(_) => Ok(()),
-        Err(error) if error.kind() == std::io::ErrorKind::NotFound => Ok(()),
-        Err(_) => Err(SecretLeaseRegistryError::UnsafeDirectory),
+        Err(error) if error.kind() == std::io::ErrorKind::NotFound => {
+            std::fs::OpenOptions::new()
+                .create_new(true)
+                .write(true)
+                .mode(0o600)
+                .open(path)
+                .map_err(|_| SecretLeaseRegistryError::UnsafeDirectory)?;
+        }
+        Err(_) => return Err(SecretLeaseRegistryError::UnsafeDirectory),
     }
+    Ok(())
+}
+
+#[cfg(not(unix))]
+fn prepare_private_database_file(_path: &Path) -> Result<(), SecretLeaseRegistryError> {
+    Err(SecretLeaseRegistryError::UnsafeDirectory)
 }
 
 #[cfg(unix)]
@@ -555,19 +576,21 @@ fn prepare_private_directory(_path: &Path) -> Result<(), SecretLeaseRegistryErro
 }
 
 #[cfg(unix)]
-fn make_private_file(path: &Path) -> Result<(), SecretLeaseRegistryError> {
+fn verify_private_database_file(path: &Path) -> Result<(), SecretLeaseRegistryError> {
     use std::os::unix::fs::PermissionsExt;
     let metadata =
         std::fs::symlink_metadata(path).map_err(|_| SecretLeaseRegistryError::UnsafeDirectory)?;
-    if metadata.file_type().is_symlink() || !metadata.is_file() {
+    if metadata.file_type().is_symlink()
+        || !metadata.is_file()
+        || metadata.permissions().mode() & 0o077 != 0
+    {
         return Err(SecretLeaseRegistryError::UnsafeDirectory);
     }
-    std::fs::set_permissions(path, std::fs::Permissions::from_mode(0o600))
-        .map_err(|_| SecretLeaseRegistryError::UnsafeDirectory)
+    Ok(())
 }
 
 #[cfg(not(unix))]
-fn make_private_file(_path: &Path) -> Result<(), SecretLeaseRegistryError> {
+fn verify_private_database_file(_path: &Path) -> Result<(), SecretLeaseRegistryError> {
     Err(SecretLeaseRegistryError::UnsafeDirectory)
 }
 
