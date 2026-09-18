@@ -149,12 +149,7 @@ async fn reconcile_raw_event(
         if let Some(target) = target {
             let target = MatrixEventId::parse(&target).map_err(|_| MatrixSdkError::Sync)?;
             store
-                .observe_matrix_redaction(
-                    &target,
-                    &event_id,
-                    raw_digest.as_str(),
-                    observed_at_ms,
-                )
+                .observe_matrix_redaction(&target, &event_id, raw_digest.as_str(), observed_at_ms)
                 .await
                 .map_err(|_| MatrixSdkError::Store)?;
         }
