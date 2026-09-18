@@ -46,7 +46,10 @@
       "nativeSymbol": "generate_candidate",
       "ownerSymbol": "generate_candidates",
       "tests": [
-        "CandidateTests.test_no_change_dedupe_and_protected_paths"
+        "CandidateTests.test_no_change_dedupe_and_protected_paths",
+        "test_candidate_changeset.CandidateChangeSetTests.test_inline_oracle_source_is_immutable_even_without_test_filename",
+        "test_candidate_changeset.CandidateChangeSetTests.test_atomic_multi_file_candidate_is_one_identity",
+        "test_candidate_changeset.CandidateChangeSetTests.test_rename_is_bound_as_two_path_change"
       ],
       "state": "source_implemented",
       "capabilityCeiling": "draft and no-change candidates only"
@@ -162,7 +165,8 @@
       "ownerSymbol": "plan_engineering_work",
       "tests": [
         "OrchestrationTests.test_authenticated_completion_and_multidimensional_capacity",
-        "OrchestrationTests.test_unsigned_completion_cannot_satisfy_predecessor"
+        "OrchestrationTests.test_unsigned_completion_cannot_satisfy_predecessor",
+        "OrchestrationTests.test_signed_completion_requires_real_durable_assignment_generation"
       ],
       "state": "source_implemented",
       "capabilityCeiling": "assignment/integration-order/merge-queue proposals only"
