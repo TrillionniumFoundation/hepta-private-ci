@@ -27,6 +27,13 @@ impl WireVersion {
             Self::V2 => WireCapabilities::METADATA_BOUND_DIGEST,
         }
     }
+
+    const fn provided_version_semantics(self) -> WireCapabilities {
+        match self {
+            Self::V1 => WireCapabilities::NONE,
+            Self::V2 => WireCapabilities::METADATA_BOUND_DIGEST,
+        }
+    }
 }
 
 /// Explicitly negotiated protocol capabilities.
@@ -46,6 +53,7 @@ impl WireCapabilities {
         Self::METADATA_BOUND_DIGEST.0 | Self::SCHEMA_ADMISSION.0 | Self::STREAM_DECODING.0,
     );
     const KNOWN_MASK: u64 = Self::CURRENT.0;
+    const VERSION_SCOPED: Self = Self(Self::METADATA_BOUND_DIGEST.0);
 
     pub const fn bits(self) -> u64 {
         self.0
@@ -212,6 +220,13 @@ pub fn negotiate(
             continue;
         }
         saw_common_version = true;
+        let required_version_semantics = required.intersection(WireCapabilities::VERSION_SCOPED);
+        if !version
+            .provided_version_semantics()
+            .contains(required_version_semantics)
+        {
+            continue;
+        }
         let needed = required.union(version.required_capabilities());
         if common_capabilities.contains(needed) {
             return Ok(NegotiatedWire {
