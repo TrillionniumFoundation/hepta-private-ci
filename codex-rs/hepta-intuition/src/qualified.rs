@@ -82,6 +82,8 @@ pub struct CanonicalPolicyProfileV1 {
 pub struct ScoringCommitmentV1 {
     pub commitment_digest: Digest32,
     pub decision_id: StableId,
+    pub objective_digest: Digest32,
+    pub objective_class_digest: Digest32,
     pub state_digest: Digest32,
     pub policy_digest: Digest32,
     pub model_artifact_digest: Digest32,
@@ -224,6 +226,8 @@ pub fn scoring_commitment_for_request_v1(
     let mut commitment = ScoringCommitmentV1 {
         commitment_digest: Digest32::ZERO,
         decision_id: request.decision_id.clone(),
+        objective_digest: request.objective_digest,
+        objective_class_digest: request.objective_class_digest,
         state_digest: request.state_digest,
         policy_digest: request.policy_digest,
         model_artifact_digest: profile.scorer.model_artifact_digest,
@@ -245,6 +249,8 @@ pub fn canonical_scoring_commitment_digest_v1(
     commitment: &ScoringCommitmentV1,
 ) -> Result<Digest32, QualifiedCalibratedError> {
     for (name, digest) in [
+        ("objective", commitment.objective_digest),
+        ("objective class", commitment.objective_class_digest),
         ("state", commitment.state_digest),
         ("policy", commitment.policy_digest),
         ("model artifact", commitment.model_artifact_digest),
@@ -263,6 +269,8 @@ pub fn canonical_scoring_commitment_digest_v1(
     let mut bytes = b"hepta.intuition.scoring-commitment.v1\0".to_vec();
     push_id(&mut bytes, &commitment.decision_id)?;
     for digest in [
+        commitment.objective_digest,
+        commitment.objective_class_digest,
         commitment.state_digest,
         commitment.policy_digest,
         commitment.model_artifact_digest,
@@ -500,6 +508,18 @@ fn validate_scoring_commitment_for_request(
     if scoring.decision_id != request.decision_id {
         return Err(QualifiedCalibratedError::ScoringCommitmentMismatch(
             "decision id",
+        ));
+    }
+    if scoring.objective_digest != request.objective_digest {
+        return Err(QualifiedCalibratedError::ScoringCommitmentMismatch(
+            "objective",
+        ));
+    }
+    if scoring.objective_class_digest != request.objective_class_digest
+        || scoring.objective_class_digest != profile.objective_class_digest
+    {
+        return Err(QualifiedCalibratedError::ScoringCommitmentMismatch(
+            "objective class",
         ));
     }
     if scoring.state_digest != request.state_digest {
