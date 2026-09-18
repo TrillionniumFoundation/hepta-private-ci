@@ -276,7 +276,7 @@ impl<D: ProcessDriver> Supervisor<D> {
             .checked_mul(1_u32 << shift)
             .unwrap_or(self.config.restart_backoff_max)
             .min(self.config.restart_backoff_max);
-        slot.restart_retry_at = now.checked_add(delay);
+        slot.restart_retry_at = Some(deadline(now, delay)?);
         let generation = self.record(agent_id)?.lifecycle.generation;
         slot.event(
             generation,
