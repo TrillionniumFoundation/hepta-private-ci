@@ -934,6 +934,72 @@ fn unexpected_exit_restarts_with_bounded_backoff_and_attempt_budget() -> Result<
 }
 
 #[test]
+fn operator_stop_and_kill_cancel_scheduled_automatic_restart() -> Result<(), SupervisorError> {
+    let fleet = TestFleet::new()?;
+    let control = FakeControl::default();
+    let now = Instant::now();
+    let (mut supervisor, _) =
+        Supervisor::recover(fleet.registry.clone(), control.driver(), config(), now)?;
+
+    supervisor.start(&fleet.first, command()?, now)?;
+    supervisor.start(&fleet.second, command()?, now)?;
+    control.set_healthy(&fleet.first);
+    control.set_healthy(&fleet.second);
+    assert_eq!(supervisor.tick(now), TickReport::default());
+
+    control.set_exit(&fleet.first);
+    control.set_exit(&fleet.second);
+    assert_eq!(supervisor.tick(now), TickReport::default());
+    assert!(
+        supervisor
+            .snapshot(&fleet.first)
+            .expect("first snapshot")
+            .automatic_restart_pending
+    );
+    assert!(
+        supervisor
+            .snapshot(&fleet.second)
+            .expect("second snapshot")
+            .automatic_restart_pending
+    );
+
+    #[cfg(unix)]
+    {
+        assert!(supervisor.preflight_stop_or_kill(&fleet.first).is_ok());
+        assert!(supervisor.preflight_stop_or_kill(&fleet.second).is_ok());
+    }
+    supervisor.stop(&fleet.first, now + Duration::from_millis(1))?;
+    supervisor.kill(&fleet.second)?;
+
+    for agent_id in [&fleet.first, &fleet.second] {
+        let snapshot = supervisor.snapshot(agent_id).expect("cancelled snapshot");
+        assert_eq!(snapshot.automatic_restart_attempt, 0);
+        assert!(!snapshot.automatic_restart_pending);
+        assert!(snapshot.events.iter().any(|event| {
+            event.kind == SupervisorEventKind::AutomaticRestartCancelled
+        }));
+        assert_eq!(
+            fleet
+                .registry
+                .load()?
+                .agent(agent_id)
+                .expect("agent")
+                .lifecycle
+                .lifecycle,
+            AgentLifecycle::Stopped
+        );
+    }
+
+    assert_eq!(
+        supervisor.tick(now + Duration::from_millis(100)),
+        TickReport::default()
+    );
+    assert_eq!(control.spawn_count(&fleet.first), 1);
+    assert_eq!(control.spawn_count(&fleet.second), 1);
+    Ok(())
+}
+
+#[test]
 fn successful_upgrade_and_explicit_rollback_change_only_target_agent() -> Result<(), SupervisorError>
 {
     let fleet = TestFleet::new()?;
