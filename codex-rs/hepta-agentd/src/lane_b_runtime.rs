@@ -11,6 +11,7 @@ use serde::Serialize;
 
 const MAX_ACTIVE_RUNS: usize = 256;
 const MAX_RETAINED_RUNS: usize = 1_024;
+const MAX_CANCELLATION_ACK_TIMEOUT_MS: u64 = 60_000;
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 pub struct RuntimeComposition {
@@ -19,6 +20,7 @@ pub struct RuntimeComposition {
     pub agentd_generation: u64,
     pub configuration_digest: String,
     pub ports_digest: String,
+    pub cancellation_ack_timeout_ms: u64,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -27,6 +29,7 @@ pub enum AgentRunError {
     InvalidDigest(&'static str),
     InvalidGeneration,
     InvalidDeadline,
+    InvalidCancellationAckTimeout,
     InvalidCancelReason,
     CapacityExceeded,
     Draining,
@@ -49,6 +52,7 @@ struct RunRecord {
     context_digest: Option<String>,
     compilation_receipt_digest: Option<String>,
     cancel_reason: Option<String>,
+    cancellation_ack_deadline_ms: Option<u64>,
 }
 
 /// Owner-local Lane B coordinator for Agentd.
@@ -95,6 +99,17 @@ impl AgentRunCoordinator {
             }
             if let Some(reason) = &record.cancel_reason {
                 validate_cancel_reason(reason)?;
+            }
+            if record
+                .cancellation_ack_deadline_ms
+                .is_some_and(|deadline| deadline == 0)
+            {
+                return Err(AgentRunError::InvalidCancellationAckTimeout);
+            }
+            if record.phase == RunPhase::Cancelling
+                && record.cancellation_ack_deadline_ms.is_none()
+            {
+                return Err(AgentRunError::InvalidCancellationAckTimeout);
             }
         }
         Ok(())
@@ -152,6 +167,7 @@ impl AgentRunCoordinator {
             context_digest: None,
             compilation_receipt_digest: None,
             cancel_reason: None,
+            cancellation_ack_deadline_ms: None,
         };
         let result = receipt(&record, /* idempotent */ false);
         self.runs.insert(snapshot.run_id, record);
