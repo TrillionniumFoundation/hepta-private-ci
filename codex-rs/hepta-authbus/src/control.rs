@@ -2,6 +2,8 @@ use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
 
 pub const AUTHBUS_MAX_RESERVATION_TTL_MS: u64 = 86_400_000;
+pub const AUTHBUS_MAX_ACTIVE_RESERVATIONS_PER_POLICY: u32 = 4_096;
+pub const AUTHBUS_MAX_EXPIRY_SWEEP_ROWS: u32 = 128;
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum PolicyEffect {
@@ -16,6 +18,7 @@ pub struct AuthPolicyRule {
     pub scope_digest: Digest32,
     pub revision: u64,
     pub effect: PolicyEffect,
+    pub max_active_reservations: u32,
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
