@@ -413,26 +413,21 @@ fn recovered_state_rejects_impossible_phase_fields() {
 
 
 #[test]
-fn restart_reconciliation_rejects_generation_or_composition_rollback() {
+fn restart_reconciliation_requires_a_strict_generation_advance() {
     let mut coordinator = AgentRunCoordinator::compose_runtime(composition(3)).expect("compose");
 
     let mut changed_same_generation = composition(3);
     changed_same_generation.configuration_digest = digest('9');
     assert_eq!(
         coordinator.reconcile_after_restart(changed_same_generation),
-        Err(AgentRunError::Conflict)
-    );
-
-    let older = composition(2);
-    assert_eq!(
-        coordinator.reconcile_after_restart(older),
         Err(AgentRunError::InvalidGeneration)
     );
-
-    assert!(
-        coordinator
-            .reconcile_after_restart(composition(3))
-            .expect("exact same-generation reopen")
-            .is_empty()
+    assert_eq!(
+        coordinator.reconcile_after_restart(composition(3)),
+        Err(AgentRunError::InvalidGeneration)
+    );
+    assert_eq!(
+        coordinator.reconcile_after_restart(composition(2)),
+        Err(AgentRunError::InvalidGeneration)
     );
 }
