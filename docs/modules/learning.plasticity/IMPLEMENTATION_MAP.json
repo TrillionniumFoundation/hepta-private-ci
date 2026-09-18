@@ -56,11 +56,59 @@
       "designOperation": "durableproposalregistry",
       "mappingClass": "owner_native",
       "delegatedCallees": []
+    },
+    {
+      "operation": "generate_parameter_candidates_v3",
+      "nativeSymbol": "generate_parameter_candidates_v3",
+      "sourcePath": "codex-rs/hepta-plasticity/src/generator_v3.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [],
+      "sourcePathExists": true,
+      "designOperation": "generate_parameter_candidates_v3",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "verify_generated_parameter_candidates_v3",
+      "nativeSymbol": "verify_generated_parameter_candidates_v3",
+      "sourcePath": "codex-rs/hepta-plasticity/src/generator_v3.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [],
+      "sourcePathExists": true,
+      "designOperation": "verify_generated_parameter_candidates_v3",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "propose_topology_v2",
+      "nativeSymbol": "propose_topology_v2",
+      "sourcePath": "codex-rs/hepta-plasticity/src/topology_v2.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [],
+      "sourcePathExists": true,
+      "designOperation": "propose_topology_v2",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "verify_topology_proposal_v2",
+      "nativeSymbol": "verify_topology_proposal_v2",
+      "sourcePath": "codex-rs/hepta-plasticity/src/topology_v2.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [],
+      "sourcePathExists": true,
+      "designOperation": "verify_topology_proposal_v2",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
     }
   ],
   "repositoryControlledGaps": [
-    "Bind every operation to an authenticated consumer callsite and owner store.",
-    "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary."
+    "Wire the authenticated intelligence.control plasticity adapter into a named runtime caller and selected-artifact owner without granting generator selection or activation authority.",
+    "Run exact-head and deterministic synthetic-merge tests before changing the production, activation or release claim boundary."
   ],
   "externalEvidenceGates": [
     "independent semantic review",
@@ -74,7 +122,10 @@
     "productExecutionProved": false,
     "independentAcceptance": false,
     "activation": false,
-    "release": false
+    "release": false,
+    "parameterGeneratorV3Implemented": true,
+    "topologyProposalV2Implemented": true,
+    "authenticatedProductAdapterSourcePresent": true
   },
   "sourceRoot": [
     "codex-rs/hepta-plasticity"

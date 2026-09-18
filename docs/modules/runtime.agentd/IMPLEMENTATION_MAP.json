@@ -132,6 +132,45 @@
       "nativeSymbol": "pub fn attach_context(",
       "sourcePath": "codex-rs/hepta-agentd/src/lane_b_runtime.rs",
       "sourcePathExists": true
+    },
+    {
+      "operation": "browser_servo_final_use_handoff",
+      "nativeSymbol": "BrowserServoPort::call",
+      "sourcePath": "codex-rs/hepta-agentd/src/browser_servo.rs",
+      "state": "source_implemented_composition_not_activated",
+      "authority": "final_use_only",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-agentd/src/browser_servo.rs",
+          "kind": "native_unit",
+          "command": "just test -p codex-hepta-agentd --lib"
+        }
+      ],
+      "sourcePathExists": true,
+      "designOperation": "browser_servo_final_use_handoff",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "select_and_adopt_self_evolution",
+      "nativeSymbol": "AgentdSelfEvolutionHostV1::select_and_adopt",
+      "sourcePath": "codex-rs/hepta-agentd/src/self_evolution_host.rs",
+      "state": "source_implemented_composition_not_activated",
+      "authority": "deny_all",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-agentd/src/self_evolution_host.rs",
+          "kind": "native_unit",
+          "command": "just test -p codex-hepta-agentd --lib"
+        }
+      ],
+      "sourcePathExists": true,
+      "designOperation": "select_and_adopt_self_evolution",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [
+        "codex_hepta_intelligence_eval::select_self_evolution_v1",
+        "codex_hepta_control_plane::SelfEvolutionRuntimeV1::adopt"
+      ]
     }
   ],
   "repositoryControlledGaps": [],
@@ -153,7 +192,10 @@
     "productExecutionProved": false,
     "independentAcceptance": false,
     "activation": false,
-    "release": false
+    "release": false,
+    "browserServoFinalUseCompositionSource": true,
+    "selfEvolutionSelectionAndAdoptionSource": true,
+    "selfEvolutionRequiresObservedFutureWindows": true
   },
   "sourceRootPresent": true,
   "productionImplementation": false,

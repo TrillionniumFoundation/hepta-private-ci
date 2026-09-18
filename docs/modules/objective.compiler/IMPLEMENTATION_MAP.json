@@ -207,6 +207,25 @@
       ],
       "sourcePathExists": true,
       "compatibilityRecheck": "legacy scalar feasibility defense-in-depth after public V1 general-feasibility gate"
+    },
+    {
+      "operation": "project_objective_function_v1",
+      "nativeSymbol": "codex_hepta_objective::project_objective_function_v1",
+      "sourcePath": "codex-rs/hepta-objective/src/objective_function_v1.rs",
+      "inputs": [
+        "ObjectiveSourceEnvelopeV1",
+        "successful ObjectiveAdmissionOutcomeV1"
+      ],
+      "outputs": [
+        "canonical ObjectiveFunctionV1"
+      ],
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [],
+      "designOperation": "project_objective_function_v1",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [],
+      "sourcePathExists": true
     }
   ],
   "canonicalReadinessProtocols": [
@@ -219,7 +238,7 @@
     "specification": "candidate_aligned_with_current_source_boundary",
     "source": "candidate_implemented",
     "exactHeadQualification": "required_current_candidate_workflows",
-    "canonicalObjectiveFunctionV1Projection": "not_established",
+    "canonicalObjectiveFunctionV1Projection": "source_implemented",
     "runStartSnapshotPersistence": "not_established",
     "productComposition": "not_established",
     "independentAcceptance": "not_established",
@@ -239,23 +258,22 @@
     "nativeV1ScalarAdmissionMapped": true,
     "generalFeasibilityGateOnPublicAdmission": true,
     "generalFeasibilityRichDomainsSourceRepresentable": false,
-    "canonicalObjectiveFunctionV1ProjectionComplete": false,
+    "canonicalObjectiveFunctionV1ProjectionComplete": true,
     "runStartSnapshotPersistenceComplete": false,
     "sourceRootPresent": true,
     "productionImplementation": false,
     "productExecutionProved": false,
     "independentAcceptance": false,
     "activation": false,
-    "release": false
+    "release": false,
+    "canonicalSourceBoundsAligned": true
   },
   "sourceBase": {
     "commit": "7e8379b3954808d4138a7bd2f3773f75691291a3",
     "tree": "ff9fa6baf95a35fd2f49816e0a80097688f2aeeb"
   },
   "repositoryControlledGaps": [
-    "Align the canonical readiness protocol registry with the enforced V1 aggregate/source bounds or version the source protocol before merge.",
     "Define a versioned source grammar with explicit enum-set and positive action-implication payloads before claiming those rich solver domains on the source-to-objective path.",
-    "Implement the exact canonical ObjectiveFunctionV1 wire projection.",
     "Bind admission to a named authenticated production consumer and owner store and atomically persist/reconcile ObjectiveFunctionV1 plus RunStartSnapshotV1.",
     "Replace manual profile byte estimation with exact canonical encoded-byte enforcement if the 256 KiB profile ceiling remains protocol-hard.",
     "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary."
