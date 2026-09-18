@@ -61,7 +61,7 @@ Both are conservative CI regression gates rather than production SLOs. Target-ho
 
 ## Compatibility host
 
-`run_qualified_evaluated_shadow_v2` remains a compatibility adapter for the legacy `HighOnlySlowPath` coordinator. Stricter V3 risk profiles are implemented in the policy kernel but still require a native V3 host composition rather than silently weakening policy.
+`run_qualified_evaluated_shadow_v2` remains a compatibility adapter for the legacy `HighOnlySlowPath` coordinator. The current source path is `run_qualified_evaluated_shadow_v3`, which consumes the full authenticated V2 admission chain and preserves all canonical V3 risk rules while keeping policy and model-artifact identities separate.
 
 ## Remaining non-claims
 
