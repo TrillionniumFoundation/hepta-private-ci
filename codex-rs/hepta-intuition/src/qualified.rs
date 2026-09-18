@@ -224,9 +224,7 @@ fn validate_profile_for_request(
     profile: &CanonicalPolicyProfileV1,
 ) -> Result<(), QualifiedCalibratedError> {
     validate_profile_shape(profile)?;
-    if profile.policy_digest != request.policy_digest
-        || profile.scorer.model_digest != request.policy_digest
-    {
+    if profile.policy_digest != request.policy_digest {
         return Err(QualifiedCalibratedError::ProfilePolicyMismatch);
     }
     if profile.objective_class_digest != request.objective_class_digest {
