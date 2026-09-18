@@ -21,6 +21,7 @@ use crate::validate_artifact_manifest_v2;
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct WithdrawalBoundArtifactAdmissionV3 {
     pub validated_manifest: ValidatedArtifactManifestV2,
+    pub withdrawal_registry_binding_digest: Digest32,
     pub withdrawal_head_digest: Digest32,
     pub admitted_at: u64,
     pub admission_digest: Digest32,
@@ -33,14 +34,21 @@ pub fn admit_manifest_at_withdrawal_head_v3(
     manifest: LearningArtifactManifestV2,
     now: u64,
 ) -> Result<WithdrawalBoundArtifactAdmissionV3, ArtifactAdmissionError> {
+    let observed_binding = registry.binding_digest();
     let observed_head = registry.snapshot().head_digest;
     if observed_head != expected_withdrawal_head {
         return Err(ArtifactAdmissionError::WithdrawalHeadChanged);
     }
     let validated_manifest = registry.admit_manifest(manifest, now)?;
-    let admission_digest = digest_admission(validated_manifest.manifest_digest, observed_head, now);
+    let admission_digest = digest_admission(
+        validated_manifest.manifest_digest,
+        observed_binding,
+        observed_head,
+        now,
+    );
     Ok(WithdrawalBoundArtifactAdmissionV3 {
         validated_manifest,
+        withdrawal_registry_binding_digest: observed_binding,
         withdrawal_head_digest: observed_head,
         admitted_at: now,
         admission_digest,
@@ -50,11 +58,15 @@ pub fn admit_manifest_at_withdrawal_head_v3(
 
 pub fn verify_artifact_admission_v3(
     admission: &WithdrawalBoundArtifactAdmissionV3,
+    current_withdrawal_registry_binding_digest: Digest32,
     current_withdrawal_head: Digest32,
     now: u64,
 ) -> Result<(), ArtifactAdmissionError> {
     if admission.authority.grants_any() || admission.validated_manifest.authority.grants_any() {
         return Err(ArtifactAdmissionError::AuthorityGrant);
+    }
+    if admission.withdrawal_registry_binding_digest != current_withdrawal_registry_binding_digest {
+        return Err(ArtifactAdmissionError::WithdrawalBindingChanged);
     }
     if admission.withdrawal_head_digest != current_withdrawal_head {
         return Err(ArtifactAdmissionError::WithdrawalHeadChanged);
@@ -69,6 +81,7 @@ pub fn verify_artifact_admission_v3(
     }
     let expected = digest_admission(
         admission.validated_manifest.manifest_digest,
+        admission.withdrawal_registry_binding_digest,
         admission.withdrawal_head_digest,
         admission.admitted_at,
     );
@@ -83,16 +96,23 @@ pub fn validate_artifact_publication_v3(
     registry: &DatasetWithdrawalRegistry,
     now: u64,
 ) -> Result<(), ArtifactAdmissionError> {
-    verify_artifact_admission_v3(admission, registry.snapshot().head_digest, now)
+    verify_artifact_admission_v3(
+        admission,
+        registry.binding_digest(),
+        registry.snapshot().head_digest,
+        now,
+    )
 }
 
 fn digest_admission(
     manifest_digest: Digest32,
+    withdrawal_registry_binding_digest: Digest32,
     withdrawal_head_digest: Digest32,
     admitted_at: u64,
 ) -> Digest32 {
     let mut bytes = b"hepta.learning-artifacts.withdrawal-bound-admission.v3".to_vec();
     bytes.extend_from_slice(manifest_digest.as_array());
+    bytes.extend_from_slice(withdrawal_registry_binding_digest.as_array());
     bytes.extend_from_slice(withdrawal_head_digest.as_array());
     bytes.extend_from_slice(&admitted_at.to_be_bytes());
     Digest32::of_bytes(&bytes)
@@ -101,6 +121,7 @@ fn digest_admission(
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum ArtifactAdmissionError {
     Manifest(ArtifactClosureError),
+    WithdrawalBindingChanged,
     WithdrawalHeadChanged,
     AuthorityGrant,
     AdmissionTimeWindow,
@@ -118,7 +139,8 @@ impl StdError for ArtifactAdmissionError {
     fn source(&self) -> Option<&(dyn StdError + 'static)> {
         match self {
             Self::Manifest(error) => Some(error),
-            Self::WithdrawalHeadChanged
+            Self::WithdrawalBindingChanged
+            | Self::WithdrawalHeadChanged
             | Self::AuthorityGrant
             | Self::AdmissionTimeWindow
             | Self::ManifestDigestMismatch
@@ -141,6 +163,7 @@ mod tests {
 
     use crate::ArtifactKind;
     use crate::DatasetWithdrawalNoticeV1;
+    use crate::DatasetWithdrawalRegistryBindingV1;
     use crate::ProvenanceModeV1;
 
     fn id(value: &str) -> StableId {
@@ -149,6 +172,15 @@ mod tests {
 
     fn digest(value: &str) -> Digest32 {
         Digest32::of_bytes(value.as_bytes())
+    }
+
+    fn withdrawal_registry(scope: &str) -> DatasetWithdrawalRegistry {
+        DatasetWithdrawalRegistry::new(DatasetWithdrawalRegistryBindingV1 {
+            registry_id: id("dataset-withdrawals"),
+            scope_digest: digest(scope),
+            authority_id: id("authority"),
+        })
+        .expect("valid withdrawal registry binding")
     }
 
     fn manifest(dataset: Digest32) -> LearningArtifactManifestV2 {
@@ -178,7 +210,7 @@ mod tests {
 
     #[test]
     fn art_05_admission_binds_exact_withdrawal_head() {
-        let registry = DatasetWithdrawalRegistry::new();
+        let registry = withdrawal_registry("scope-a");
         let head = registry.snapshot().head_digest;
         let admission =
             admit_manifest_at_withdrawal_head_v3(&registry, head, manifest(digest("dataset")), 20)
@@ -191,7 +223,7 @@ mod tests {
     #[test]
     fn art_05_withdrawal_race_invalidates_admission() {
         let dataset = digest("dataset");
-        let mut registry = DatasetWithdrawalRegistry::new();
+        let mut registry = withdrawal_registry("scope-a");
         let admission = admit_manifest_at_withdrawal_head_v3(
             &registry,
             registry.snapshot().head_digest,
@@ -216,4 +248,25 @@ mod tests {
             Err(ArtifactAdmissionError::WithdrawalHeadChanged)
         );
     }
+
+    #[test]
+    fn art_05_admission_rejects_same_head_from_different_withdrawal_scope() {
+        let registry = withdrawal_registry("scope-a");
+        let other_scope = withdrawal_registry("scope-b");
+        assert_eq!(registry.snapshot().head_digest, other_scope.snapshot().head_digest);
+
+        let admission = admit_manifest_at_withdrawal_head_v3(
+            &registry,
+            registry.snapshot().head_digest,
+            manifest(digest("dataset")),
+            20,
+        )
+        .expect("admission succeeds in original scope");
+
+        assert_eq!(
+            validate_artifact_publication_v3(&admission, &other_scope, 20),
+            Err(ArtifactAdmissionError::WithdrawalBindingChanged)
+        );
+    }
+
 }
