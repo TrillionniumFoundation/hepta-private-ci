@@ -13,6 +13,7 @@ mod provider_effect_store;
 mod provider_insert;
 mod provider_record;
 mod provider_store;
+mod qualification;
 mod schema_validation;
 mod store;
 mod summary;
@@ -47,6 +48,27 @@ pub use provider_effect_store::StoredProviderEffectUncertainty;
 pub use provider_store::StoredProviderAttemptEvidence;
 pub use provider_store::StoredProviderIntent;
 pub use provider_store::StoredProviderReceipt;
+pub use qualification::AuthenticatedEvidenceIssuerV1;
+pub use qualification::EvidenceAssetRefV1;
+pub use qualification::EvidenceCandidateV1;
+pub use qualification::EvidenceClaimClassV1;
+pub use qualification::EvidenceDispositionV1;
+pub use qualification::EvidenceIssuerCertificateV1;
+pub use qualification::EvidenceIssuerKeyRevocationV1;
+pub use qualification::EvidenceIssuerRevocationsV1;
+pub use qualification::EvidenceIssuerRoleV1;
+pub use qualification::EvidenceReferenceV1;
+pub use qualification::EvidenceTrustRootV1;
+pub use qualification::QUALIFICATION_EVIDENCE_MAX_ASSETS;
+pub use qualification::QUALIFICATION_EVIDENCE_MAX_CHAIN_EDGES;
+pub use qualification::QUALIFICATION_EVIDENCE_MAX_QUERY_RESULTS;
+pub use qualification::QUALIFICATION_EVIDENCE_MAX_RECEIPT_BYTES;
+pub use qualification::QUALIFICATION_EVIDENCE_SCHEMA_VERSION;
+pub use qualification::QualificationEvidenceEnvelopeV1;
+pub use qualification::SignedEvidenceIssuerCertificateV1;
+pub use qualification::SignedEvidenceIssuerKeyRevocationV1;
+pub use qualification::SignedQualificationEvidenceEnvelopeV1;
+pub use qualification::authenticate_evidence_issuer;
 pub use store::AppendDisposition;
 pub use store::HeptaEvidenceStore;
 pub use store::StoredActionEvidence;
@@ -88,6 +110,10 @@ mod provider_effect_tests;
 #[cfg(test)]
 #[path = "summary_tests.rs"]
 mod summary_tests;
+
+#[cfg(test)]
+#[path = "qualification_tests.rs"]
+mod qualification_tests;
 
 #[cfg(test)]
 #[path = "historical_tests.rs"]
