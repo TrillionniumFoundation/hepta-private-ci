@@ -259,7 +259,7 @@ impl eframe::App for HeptaNativeApp {
         });
         egui::Panel::left("hepta-native-navigation")
             .resizable(false)
-            .default_width(210.0)
+            .default_size(210.0)
             .show(ui, |ui| self.navigation(ui));
         egui::CentralPanel::default().show(ui, |ui| match self.screen {
             Screen::Runtime => self.runtime_view(ui),
