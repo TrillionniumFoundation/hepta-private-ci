@@ -30,9 +30,20 @@ pub struct CaseEvidence {
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
+pub struct ExecutionProvenance {
+    pub source_sha: String,
+    pub source_tree: String,
+    pub binary_digest: Digest32,
+    pub runner_id: StableId,
+    pub command_digest: Digest32,
+    pub exit_code: i32,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub struct QualificationReceipt {
     pub case_count: usize,
     pub qualification_digest: Digest32,
+    pub provenance_digest: Digest32,
     pub authority: AuthorityPosture,
 }
 
@@ -44,6 +55,7 @@ pub enum Error {
     CaseDidNotReject(String),
     EmptyEvidence(String),
     PositiveReceiptGrantedAuthority,
+    InvalidExecutionProvenance,
 }
 
 impl fmt::Display for Error {
@@ -61,7 +73,11 @@ pub fn bind_positive_receipt(receipt: &VerificationReceipt) -> Result<Digest32, 
     Ok(receipt.envelope_digest)
 }
 
-pub fn qualify(mut cases: Vec<CaseEvidence>) -> Result<QualificationReceipt, Error> {
+pub fn qualify(
+    mut cases: Vec<CaseEvidence>,
+    provenance: ExecutionProvenance,
+) -> Result<QualificationReceipt, Error> {
+    let provenance_digest = validate_provenance(&provenance)?;
     if cases.len() > MAX_CASES {
         return Err(Error::CaseLimitExceeded);
     }
@@ -93,7 +109,8 @@ pub fn qualify(mut cases: Vec<CaseEvidence>) -> Result<QualificationReceipt, Err
     }
 
     let mut bytes = Vec::new();
-    bytes.extend_from_slice(b"hepta.authbus.qualification.v1");
+    bytes.extend_from_slice(b"hepta.authbus.qualification.v2");
+    bytes.extend_from_slice(provenance_digest.as_array());
     for evidence in &cases {
         bytes.push(case_code(evidence.case));
         push_id(&mut bytes, &evidence.case_id);
@@ -102,8 +119,32 @@ pub fn qualify(mut cases: Vec<CaseEvidence>) -> Result<QualificationReceipt, Err
     Ok(QualificationReceipt {
         case_count: cases.len(),
         qualification_digest: Digest32::of_bytes(&bytes),
+        provenance_digest,
         authority: AuthorityPosture::DENY_ALL,
     })
+}
+
+
+fn validate_provenance(value: &ExecutionProvenance) -> Result<Digest32, Error> {
+    let hex40 = |value: &str| {
+        value.len() == 40 && value.bytes().all(|byte| byte.is_ascii_hexdigit())
+    };
+    if !hex40(&value.source_sha)
+        || !hex40(&value.source_tree)
+        || value.binary_digest.is_zero()
+        || value.command_digest.is_zero()
+        || value.exit_code != 0
+    {
+        return Err(Error::InvalidExecutionProvenance);
+    }
+    let mut bytes = b"hepta.authbus.execution-provenance.v1\0".to_vec();
+    bytes.extend_from_slice(value.source_sha.as_bytes());
+    bytes.extend_from_slice(value.source_tree.as_bytes());
+    bytes.extend_from_slice(value.binary_digest.as_array());
+    push_id(&mut bytes, &value.runner_id);
+    bytes.extend_from_slice(value.command_digest.as_array());
+    bytes.extend_from_slice(&value.exit_code.to_be_bytes());
+    Ok(Digest32::of_bytes(&bytes))
 }
 
 fn case_code(value: NegativeCase) -> u8 {
