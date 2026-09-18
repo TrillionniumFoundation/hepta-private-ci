@@ -273,6 +273,50 @@ async fn transport_ack_is_not_terminal_and_terminal_replay_is_exact() {
 }
 
 #[tokio::test]
+async fn lost_ack_remains_indeterminate_until_terminal_reconciliation() {
+    let temp = TempDir::new().unwrap();
+    let store = DurableOperationStore::open(&config(temp.path()))
+        .await
+        .unwrap();
+    prepare(&store).await;
+    let lease = claim(&store, 60_000).await;
+    store
+        .record_dispatch_started(&lease, Digest32::of_bytes(b"dispatch"))
+        .await
+        .unwrap();
+
+    let indeterminate = store
+        .mark_indeterminate(&lease, Digest32::of_bytes(b"ack-lost"))
+        .await
+        .unwrap();
+    assert_eq!(indeterminate.state, DurableOperationState::Indeterminate);
+    assert!(matches!(
+        store
+            .claim_outbox(
+                &intent().operation_id,
+                generation(3),
+                generation(9),
+                &stable_id("worker:blind-retry"),
+                60_000,
+            )
+            .await,
+        Err(OperationError::Unavailable)
+    ));
+
+    let terminal = store
+        .observe_terminal(
+            &intent().operation_id,
+            ReconciliationOutcome::Applied,
+            Digest32::of_bytes(b"destination-observed-applied"),
+            generation(3),
+            generation(9),
+        )
+        .await
+        .unwrap();
+    assert_eq!(terminal.state, DurableOperationState::Applied);
+}
+
+#[tokio::test]
 async fn terminal_outbox_compaction_preserves_ledger_identity_and_prevents_resurrection() {
     let temp = TempDir::new().unwrap();
     let store = DurableOperationStore::open(&config(temp.path()))
@@ -295,7 +339,7 @@ async fn terminal_outbox_compaction_preserves_ledger_identity_and_prevents_resur
         .await
         .unwrap();
     sqlx::query(
-        "UPDATE cross_owner_outbox SET terminal_at_ms = 1, updated_at_ms = 1
+        "UPDATE cross_owner_outbox SET terminal_at_ms = 1
          WHERE operation_id = ?",
     )
     .bind(intent().operation_id.as_str())
@@ -510,6 +554,18 @@ mod final_use_vertical_slice {
             .await
             .unwrap();
         assert_eq!(terminal.state, DurableOperationState::Applied);
+        assert_eq!(destination.receipt_count(), 1);
+
+        // Destination-owned semantic dedupe is independent of source-side
+        // dispatch suppression: observing the same semantic identity again is
+        // idempotent and does not create a second terminal effect.
+        assert!(matches!(
+            destination.apply_once(lease.envelope()),
+            EffectObservation::Terminal {
+                outcome: ReconciliationOutcome::Applied,
+                ..
+            }
+        ));
         assert_eq!(destination.receipt_count(), 1);
     }
 }
