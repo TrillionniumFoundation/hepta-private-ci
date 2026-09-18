@@ -314,6 +314,10 @@ async fn schedule_startup_prewarm_inner(
         );
     let mut client_session = session.services.model_client.new_session();
     let provider_policy_context = ModelProviderPolicyContext {
+        require_active_policy: startup_turn_context
+            .config
+            .features
+            .enabled(codex_features::Feature::HeptaGovernance),
         registry: session.services.extensions.as_ref(),
         session_store: &session.services.session_extension_data,
         thread_store: &session.services.thread_extension_data,
