@@ -55,6 +55,7 @@ pub use scheduler::AutomationFuture;
 pub use scheduler::AutomationScheduler;
 pub use scheduler::AutomationTurnQueue;
 pub use store::AutomationStore;
+pub use taskflow::TASKFLOW_COMPOSED_CALLER;
 pub use taskflow::TASKFLOW_EXTERNAL_EFFECTS;
 pub use taskflow::TASKFLOW_NAMESPACE;
 pub use taskflow::TASKFLOW_PRODUCTION_CALLER;
