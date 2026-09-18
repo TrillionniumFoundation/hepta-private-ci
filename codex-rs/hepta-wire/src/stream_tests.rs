@@ -99,3 +99,18 @@ fn oversized_header_rejects_before_body_allocation() {
     );
     assert_eq!(decoder.buffered_len(), 54);
 }
+
+#[test]
+fn negotiated_decoder_rejects_other_version_at_header_boundary() {
+    let encoded = v1(vec![9]).encode();
+    let mut decoder = WireStreamDecoder::for_version(WireVersion::V2);
+    assert_eq!(
+        decoder.push(&encoded[..54]),
+        Err(StreamDecodeError::NegotiatedVersionMismatch {
+            expected: WireVersion::V2,
+            observed: WireVersion::V1,
+        })
+    );
+    assert_eq!(decoder.negotiated_version(), Some(WireVersion::V2));
+    assert_eq!(decoder.buffered_len(), 54);
+}
