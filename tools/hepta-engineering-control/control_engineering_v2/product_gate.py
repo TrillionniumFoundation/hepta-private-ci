@@ -34,6 +34,9 @@ EXPECTED_REPOSITORY = "TrillionniumFoundation/hepta-private-ci"
 EXPECTED_REPOSITORY_ID = 1320694176
 EXPECTED_JOB = "engineering-product-gate"
 EXPECTED_WORKFLOW_SUFFIX = "/.github/workflows/hepta-consolidated-source.yml"
+CANONICAL_WORK_PACKAGE_PATH = Path("docs/delivery/WORK_PACKAGES.json")
+CANONICAL_ENGINEERING_PACKAGE = "ECP-1-ENGINEERING-CONTROL-PLANE"
+MAX_CANONICAL_REGISTRY_BYTES = 4 * 1024 * 1024
 
 
 def _git(root: Path, *args: str) -> str:
@@ -57,6 +60,70 @@ def _sha(value: str, label: str) -> str:
     if not isinstance(value, str) or _SHA1.fullmatch(value) is None or value == "0" * 40:
         raise ValueError("invalid_" + label)
     return value
+
+
+def _canonical_engineering_package(root: Path) -> dict[str, object]:
+    """Bind the product caller to the canonical ECP-1 delivery definition."""
+    path = root / CANONICAL_WORK_PACKAGE_PATH
+    try:
+        raw = path.read_bytes()
+    except OSError:
+        raise ValueError("canonical_work_package_registry_unavailable") from None
+    if not raw or len(raw) > MAX_CANONICAL_REGISTRY_BYTES:
+        raise ValueError("canonical_work_package_registry_invalid")
+    try:
+        registry = json.loads(raw.decode("utf-8"))
+    except (UnicodeDecodeError, json.JSONDecodeError):
+        raise ValueError("canonical_work_package_registry_invalid") from None
+    if (
+        not isinstance(registry, dict)
+        or registry.get("documentClass") != "canonical_registry"
+        or not isinstance(registry.get("schema"), str)
+        or not isinstance(registry.get("schemaVersion"), int)
+        or not isinstance(registry.get("packages"), list)
+    ):
+        raise ValueError("canonical_work_package_registry_invalid")
+    matches = [
+        row
+        for row in registry["packages"]
+        if isinstance(row, dict) and row.get("id") == CANONICAL_ENGINEERING_PACKAGE
+    ]
+    if len(matches) != 1:
+        raise ValueError("canonical_engineering_package_identity")
+    package = matches[0]
+    if (
+        package.get("module") != "control.engineering"
+        or package.get("state") != "source_implemented"
+        or package.get("authorityDelta") != "none"
+        or package.get("owner") != "developer-productivity"
+        or package.get("deputy") != "architecture"
+        or package.get("sourceMutationAllowed") is not True
+        or package.get("allowedWritePaths")
+        != ["tools/hepta-engineering-control/**"]
+        or package.get("developmentAfter")
+        != ["DOC-2-DEFAULT-BRANCH-SELECTION"]
+        or package.get("activationAfter")
+        != ["DOC-2-DEFAULT-BRANCH-SELECTION"]
+    ):
+        raise ValueError("canonical_engineering_package_binding")
+    package_bytes = json.dumps(
+        package,
+        ensure_ascii=False,
+        sort_keys=True,
+        separators=(",", ":"),
+    ).encode("utf-8")
+    return {
+        "path": CANONICAL_WORK_PACKAGE_PATH.as_posix(),
+        "schema": registry["schema"],
+        "schemaVersion": registry["schemaVersion"],
+        "packageId": CANONICAL_ENGINEERING_PACKAGE,
+        "registryDigest": hashlib.sha256(raw).hexdigest(),
+        "packageDigest": hashlib.sha256(package_bytes).hexdigest(),
+        "state": package["state"],
+        "authorityDelta": package["authorityDelta"],
+        "developmentAfter": package["developmentAfter"],
+        "activationAfter": package["activationAfter"],
+    }
 
 
 def build_product_receipt(
@@ -119,6 +186,7 @@ def build_product_receipt(
             raise ValueError("synthetic_merge_not_distinct")
         mode = "base-merge"
 
+    canonical_package = _canonical_engineering_package(root)
     now = time.time_ns()
     envelope = WorkEnvelope(
         envelope_id=f"product-{tested_sha[:24]}",
@@ -127,9 +195,7 @@ def build_product_receipt(
         objective_digest=hashlib.sha256(
             b"control.engineering.repository-product-caller"
         ).hexdigest(),
-        contract_digest=hashlib.sha256(
-            b"hepta.control-engineering-product-caller.v2"
-        ).hexdigest(),
+        contract_digest=str(canonical_package["packageDigest"]),
         owner="github-actions",
         allowed_paths=("tools/hepta-engineering-control",),
         denied_authorities=tuple(sorted(DENIED_AUTHORITIES)),
@@ -204,6 +270,7 @@ def build_product_receipt(
         "testedSha": tested_sha,
         "testedTree": tested_tree,
         "orderedParents": list(parents),
+        "canonicalWorkPackage": canonical_package,
         "plan": asdict(plan),
         "auditAnchor": anchor,
         "productCallerComposed": True,
