@@ -137,6 +137,13 @@ fn loaded_world_model_requires_complete_host_pin() {
         FixedQ32::from_raw(15)
     );
 
+    let mut inconsistent = model.clone();
+    inconsistent.estimates[0].estimate_digest = digest("forged-estimate");
+    assert_eq!(
+        LoadedTabularWorldModelV1::from_pinned_model(inconsistent, &pin),
+        Err(WorldModelError::InvalidModel)
+    );
+
     let mut altered = model;
     altered.estimates[0].mean_outcome = FixedQ32::from_raw(999);
     assert_eq!(
