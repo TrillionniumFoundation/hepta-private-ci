@@ -105,6 +105,7 @@ const index = `<!doctype html>
   <meta name="referrer" content="no-referrer">
   <meta http-equiv="Content-Security-Policy" content="${csp}">
   <title>Hepta control plane</title>
+  <link rel="manifest" href="./manifest.webmanifest">
   <link rel="stylesheet" href="./assets/${cssName}" integrity="${cssInfo.integrity}" crossorigin="anonymous">
 </head>
 <body>
@@ -127,6 +128,7 @@ const buildManifest = {
     "Cross-Origin-Resource-Policy": "same-origin",
     "Permissions-Policy": "camera=(), microphone=(), geolocation=(), payment=(), usb=()",
     "Referrer-Policy": "no-referrer",
+    "Strict-Transport-Security": "max-age=31536000",
     "X-Content-Type-Options": "nosniff",
     "X-Frame-Options": "DENY",
   },
