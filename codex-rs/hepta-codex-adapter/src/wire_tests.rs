@@ -3,6 +3,7 @@ use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
 use codex_hepta_wire::NegotiatedWire;
 use codex_hepta_wire::NegotiationPolicy;
+use codex_hepta_wire::PayloadCodec;
 use codex_hepta_wire::SchemaError;
 use codex_hepta_wire::SchemaRegistry;
 use codex_hepta_wire::WireEnvelope;
@@ -22,6 +23,13 @@ fn id(value: &str) -> StableId {
 
 fn digest(value: &[u8]) -> Digest32 {
     Digest32::of_bytes(value)
+}
+
+fn generation() -> Generation {
+    let Ok(value) = Generation::new(1) else {
+        panic!("test generation must be valid");
+    };
+    value
 }
 
 fn intent() -> CodexOperationIntent {
@@ -66,7 +74,7 @@ fn negotiated_v2_wire_intent_enters_existing_codex_adapter() {
     let Ok(envelope) = WireEnvelopeV2::new(
         schema,
         id("runtime.agentd"),
-        Generation::new(1).unwrap_or_else(|_| unreachable!()),
+        generation(),
         payload,
     ) else {
         panic!("valid V2 runtime.codex envelope must construct");
@@ -92,7 +100,7 @@ fn negotiated_v2_wire_ingress_rejects_v1_downgrade() {
     let Ok(envelope) = WireEnvelope::new(
         schema,
         id("runtime.agentd"),
-        Generation::new(1).unwrap_or_else(|_| unreachable!()),
+        generation(),
         payload,
     ) else {
         panic!("valid V1 frame must construct");
@@ -114,7 +122,7 @@ fn wire_ingress_rejects_wrong_schema_before_adapter_entry() {
     let Ok(envelope) = WireEnvelopeV2::new(
         id("runtime.codex.wrong-schema.v1"),
         id("runtime.agentd"),
-        Generation::new(1).unwrap_or_else(|_| unreachable!()),
+        generation(),
         payload,
     ) else {
         panic!("structurally valid V2 frame must construct");
@@ -137,7 +145,7 @@ fn wire_ingress_rejects_malformed_registered_payload() {
     let Ok(envelope) = WireEnvelopeV2::new(
         codec.schema_id().clone(),
         id("runtime.agentd"),
-        Generation::new(1).unwrap_or_else(|_| unreachable!()),
+        generation(),
         vec![1],
     ) else {
         panic!("framing accepts opaque payload before schema admission");
