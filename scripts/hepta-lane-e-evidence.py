@@ -14,6 +14,7 @@ import json
 import os
 import subprocess
 import sys
+import tempfile
 from pathlib import Path
 from typing import Any
 
@@ -313,6 +314,68 @@ def verify(args: argparse.Namespace) -> int:
     return 0
 
 
+def self_test(_: argparse.Namespace) -> int:
+    for key, value in {
+        "GITHUB_REPOSITORY": "hepta/self-test",
+        "GITHUB_WORKFLOW": "lane-e-evidence-self-test",
+        "GITHUB_WORKFLOW_REF": "hepta/self-test/.github/workflows/lane-e.yml@refs/heads/test",
+        "GITHUB_RUN_ID": "1",
+        "GITHUB_RUN_ATTEMPT": "1",
+        "RUNNER_OS": "Linux",
+    }.items():
+        os.environ.setdefault(key, value)
+
+    with tempfile.TemporaryDirectory(prefix=".lane-e-evidence-self-test-", dir=ROOT) as directory:
+        root = Path(directory)
+        artifact = root / "e2e.log"
+        artifact.write_text("self-test\n", encoding="utf-8")
+        receipt = root / "receipt.json"
+        source = git_value("rev-parse", "HEAD")
+        tree = git_value("rev-parse", "HEAD^{tree}")
+        args = argparse.Namespace(
+            mode="exact-head",
+            source_sha=source,
+            candidate_sha=source,
+            tree_sha=tree,
+            base_sha="",
+            coverage=None,
+            stress=None,
+            e2e=str(artifact),
+            output=str(receipt),
+        )
+        emit(args)
+        verify(argparse.Namespace(receipt=str(receipt)))
+
+        original = json.loads(receipt.read_text(encoding="utf-8"))
+        stale = dict(original)
+        generated = utc_now() - dt.timedelta(hours=REVALIDATE_HOURS + 1)
+        stale["generatedAtUtc"] = iso(generated)
+        stale["expiresAtUtc"] = iso(generated + dt.timedelta(hours=REVALIDATE_HOURS))
+        stale.pop("receiptDigest", None)
+        stale["receiptDigest"] = canonical_digest(stale)
+        receipt.write_text(json.dumps(stale, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+        try:
+            verify(argparse.Namespace(receipt=str(receipt)))
+        except ValueError as error:
+            if "expired" not in str(error):
+                raise
+        else:
+            raise AssertionError("expired receipt was accepted")
+
+        receipt.write_text(json.dumps(original, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+        artifact.write_text("tampered\n", encoding="utf-8")
+        try:
+            verify(argparse.Namespace(receipt=str(receipt)))
+        except ValueError as error:
+            if "output digest mismatch" not in str(error):
+                raise
+        else:
+            raise AssertionError("tampered output was accepted")
+
+    print(json.dumps({"ok": True, "selfTest": "lane-e-evidence"}))
+    return 0
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     sub = parser.add_subparsers(dest="command", required=True)
@@ -331,6 +394,9 @@ def main() -> int:
     verify_parser = sub.add_parser("verify")
     verify_parser.add_argument("--receipt", required=True)
     verify_parser.set_defaults(func=verify)
+
+    self_test_parser = sub.add_parser("self-test")
+    self_test_parser.set_defaults(func=self_test)
 
     args = parser.parse_args()
     return args.func(args)
