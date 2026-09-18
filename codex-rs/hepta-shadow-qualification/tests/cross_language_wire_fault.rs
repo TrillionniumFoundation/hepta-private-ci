@@ -88,10 +88,7 @@ fn rust_python_wire_roundtrip_and_payload_fault_reject() {
     let Ok(output) = run_python(&frame) else {
         panic!("python3 is required for the Rust↔Python product boundary test");
     };
-    assert!(
-        output.status.success(),
-        "python parser failed: {output:?}"
-    );
+    assert!(output.status.success(), "python parser failed: {output:?}");
     let Ok(report): Result<Value, _> = serde_json::from_slice(&output.stdout) else {
         panic!("python JSON receipt must parse");
     };
