@@ -86,21 +86,31 @@ fn profile_json() -> Vec<u8> {
             "abstentionAxis": "risk.abstention.value",
             "abstentionRules": [{ "sourceRule": "ask", "valueQ32": 1 }]
         }
-    })).expect("profile json")
+    }))
+    .expect("profile json")
 }
 
 #[test]
 fn strict_profile_json_decodes_and_validates_digest_semantics() {
     let profile = decode_admission_profile_json_v1(&profile_json()).expect("profile");
-    assert_eq!(profile.profile_id.as_str(), "objective.profile.production.v1");
-    assert_eq!(profile.allowed_trusted_source_identities[0].as_str(), "issuer.production");
+    assert_eq!(
+        profile.profile_id.as_str(),
+        "objective.profile.production.v1"
+    );
+    assert_eq!(
+        profile.allowed_trusted_source_identities[0].as_str(),
+        "issuer.production"
+    );
     assert!(!profile.digest().expect("digest").is_zero());
 }
 
 #[test]
 fn profile_json_rejects_unknown_fields_and_oversize_input() {
     let mut value: serde_json::Value = serde_json::from_slice(&profile_json()).expect("json");
-    value.as_object_mut().expect("object").insert("unknown".into(), json!(true));
+    value
+        .as_object_mut()
+        .expect("object")
+        .insert("unknown".into(), json!(true));
     let bytes = serde_json::to_vec(&value).expect("bytes");
     assert!(matches!(
         decode_admission_profile_json_v1(&bytes),
