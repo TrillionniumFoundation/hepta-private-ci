@@ -333,6 +333,10 @@ async fn forbid_overlap_waits_for_taskflow_terminal_but_allow_overlap_does_not()
         .await
         .expect("second admission");
     terminalize_succeeded(&store, forbid.task_id, 2, &definition, &owner, 1_102).await;
+    store
+        .cancel_task(forbid.task_id, 1_200)
+        .await
+        .expect("retire forbid fixture before allow case");
 
     let allow = draft(
         "019153a4-3088-7000-a56a-9b1964f75103",
