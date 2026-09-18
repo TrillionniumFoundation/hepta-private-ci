@@ -1,4 +1,5 @@
-//! Hosted runs share the control owner's journal and exclusive writer lock.
+//! Hosted runs share the control owner's journal with short durable writer
+//! transactions. Model/provider execution never holds the journal writer lock.
 //! A reservation is one local in-flight slot, not a token or payment grant.
 //! Unknown execution retains that slot; unknown token usage remains `None`.
 
@@ -330,6 +331,13 @@ impl DurableInferenceControl {
     }
 
     fn commit_native(&mut self, request_id: &str, event: Event) -> Result<NativeRunRecord, Error> {
+        let _writer_fence = self.reload_locked()?;
+        if matches!(event, Event::Reserve { .. })
+            && self.records.len() + self.native.records.len() >= self.capacity
+        {
+            return Err(Error::CapacityExceeded);
+        }
+        self.ensure_native_dispatch_space()?;
         let mut next = self.native.clone();
         next.apply(event.clone())?;
         let json =
