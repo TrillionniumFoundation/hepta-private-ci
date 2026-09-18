@@ -1,7 +1,7 @@
 use super::*;
 
 fn id(value: &str) -> StableId {
-    match StableId::new(value.to_owned()) {
+    match StableId::new(value) {
         Ok(value) => value,
         Err(error) => panic!("invalid test id {value}: {error}"),
     }
