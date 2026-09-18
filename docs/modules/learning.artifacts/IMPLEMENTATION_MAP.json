@@ -6,9 +6,9 @@
     "tree": "ff9fa6baf95a35fd2f49816e0a80097688f2aeeb"
   },
   "implementationHead": {
-    "commit": "177a6f03a92348f2f4976624c30520b26f25bce4",
+    "commit": "065cd05e919827e98100905774f56dcfe0a199a9",
     "branch": "fix/learning-artifacts-closure-20260918",
-    "note": "Module-specific source closure head. sourceBase remains the shared repository-wide implementation-map generation baseline."
+    "note": "Module-specific source closure head including lexical create-only leaf containment. sourceBase remains the shared repository-wide implementation-map generation baseline."
   },
   "laneId": "LANE-E-LEARNING",
   "module": "learning.artifacts",
@@ -75,7 +75,9 @@
       "sourcePathExists": true,
       "designOperation": "write_candidate_payload",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [
+        "CreateOnlyArtifactFile::create_in_directory"
+      ]
     },
     {
       "operation": "load_pinned_candidate",
