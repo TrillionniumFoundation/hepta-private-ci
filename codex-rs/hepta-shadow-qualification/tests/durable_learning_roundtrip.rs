@@ -1,3 +1,4 @@
+#![allow(clippy::expect_used)]
 //! Cross-crate real-file qualification, NOT a production learner or efficacy trial.
 //! Observer/evaluator identities here are fixtures, not authenticated principals.
 
