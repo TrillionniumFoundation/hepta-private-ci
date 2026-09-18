@@ -217,7 +217,7 @@ class ExternalControlTests(unittest.TestCase):
             signature=self.trust.sign(receipt, receipt.issuer, receipt.signing_identity),
         )
         self.assertEqual(
-            len(verify_external_key_custody(receipt, self.trust, store=store, now_ns=self.now)),
+            len(verify_external_key_custody(receipt, self.trust, now_ns=self.now)),
             64,
         )
         with self.assertRaisesRegex(ValueError, "key_custody_boundary"):
