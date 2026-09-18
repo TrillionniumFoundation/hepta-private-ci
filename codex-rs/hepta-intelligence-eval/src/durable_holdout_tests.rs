@@ -253,3 +253,138 @@ fn ambiguous_write_fences_the_handle() {
     );
     assert_eq!(store.anchor(), anchor);
 }
+
+
+fn stress_plan(index: u64) -> CrossFoldPlanReceiptV1 {
+    let final_window = id(&format!("stress-final-window-{index}"));
+    freeze_cross_fold_plan(CrossFoldPlanV1 {
+        plan_id: id(&format!("stress-plan-{index}")),
+        claim_scope: EvaluationClaimScopeV1::Qualification,
+        candidate_id: id("candidate"),
+        baseline_id: id("baseline"),
+        objective_digest: digest("objective"),
+        dataset_digest: digest("dataset"),
+        estimand_digest: digest("estimand"),
+        metric_contracts: vec![MetricContractV1 {
+            metric_id: id("utility"),
+            direction: EvaluationDirectionV1::Maximize,
+            safety_floor: Some(FixedQ32::ZERO),
+        }],
+        family_alpha_ppm: 50_000,
+        simultaneous_comparisons: 1,
+        folds: vec![
+            CrossFoldPartitionV1 {
+                fold_id: id(&format!("stress-fold-{index}-0")),
+                training_principals: vec![id("train")],
+                training_episodes: vec![id("train-episode")],
+                training_windows: vec![id("train-window")],
+                holdout_principals: vec![id(&format!("stress-holdout-{index}-0"))],
+                holdout_episodes: vec![id(&format!("stress-episode-{index}-0"))],
+                holdout_windows: vec![id(&format!("stress-window-{index}-0"))],
+                model_digest: digest("model"),
+                predictions_digest: digest("predictions"),
+            },
+            CrossFoldPartitionV1 {
+                fold_id: id(&format!("stress-fold-{index}-1")),
+                training_principals: vec![id("train")],
+                training_episodes: vec![id("train-episode")],
+                training_windows: vec![id("train-window")],
+                holdout_principals: vec![id(&format!("stress-holdout-{index}-1"))],
+                holdout_episodes: vec![id(&format!("stress-episode-{index}-1"))],
+                holdout_windows: vec![final_window.clone()],
+                model_digest: digest("model"),
+                predictions_digest: digest("predictions"),
+            },
+        ],
+        final_holdout_window_id: final_window,
+        final_holdout_digest: digest(&format!("stress-holdout-digest-{index}")),
+    })
+    .unwrap()
+}
+
+#[test]
+fn fenced_owner_rejects_stale_context_before_mutation() {
+    let directory = Directory::new();
+    let file = OpenOptions::new()
+        .create_new(true)
+        .read(true)
+        .write(true)
+        .open(directory.path())
+        .unwrap();
+    let context = HoldoutOwnerContextV2 {
+        scope_digest: digest("production-holdout-scope"),
+        writer_fence: 7,
+    };
+    let mut store = FencedFinalHoldoutJournalV2::create(file, context).unwrap();
+    let before = fs::read(directory.path()).unwrap();
+    let stale = HoldoutOwnerContextV2 {
+        writer_fence: 6,
+        ..context
+    };
+    assert_eq!(
+        store.consume(stale, store.anchor(), &plan("plan-1")),
+        Err(DurableHoldoutError::ContextMismatch)
+    );
+    assert_eq!(fs::read(directory.path()).unwrap(), before);
+
+    let receipt = store
+        .consume(context, store.anchor(), &plan("plan-1"))
+        .unwrap();
+    assert_eq!(receipt.disposition, HoldoutUseDispositionV1::Recorded);
+    let anchor = store.anchor();
+    drop(store);
+
+    let wrong_generation = HoldoutOwnerContextV2 {
+        writer_fence: 8,
+        ..context
+    };
+    assert!(matches!(
+        FencedFinalHoldoutJournalV2::recover(directory.file(), wrong_generation, anchor),
+        Err(DurableHoldoutError::Corrupt)
+    ));
+}
+
+#[test]
+fn fenced_owner_rejects_zero_writer_fence() {
+    let directory = Directory::new();
+    let file = OpenOptions::new()
+        .create_new(true)
+        .read(true)
+        .write(true)
+        .open(directory.path())
+        .unwrap();
+    assert!(matches!(
+        FencedFinalHoldoutJournalV2::create(
+            file,
+            HoldoutOwnerContextV2 {
+                scope_digest: digest("scope"),
+                writer_fence: 0,
+            }
+        ),
+        Err(DurableHoldoutError::InvalidWriterFence)
+    ));
+}
+
+#[test]
+#[ignore = "qualification stress: repeated durable append/reopen/idempotent replay"]
+fn durable_holdout_reopen_replay_stress() {
+    let directory = Directory::new();
+    let mut store = directory.create();
+    for index in 0..128_u64 {
+        let candidate = stress_plan(index);
+        let predecessor = store.anchor();
+        let receipt = store.consume(predecessor, &candidate).unwrap();
+        assert_eq!(receipt.disposition, HoldoutUseDispositionV1::Recorded);
+        let anchor = store.anchor();
+        assert_eq!(anchor.sequence, index + 1);
+        assert_eq!(
+            store.consume(anchor, &candidate).unwrap().disposition,
+            HoldoutUseDispositionV1::IdempotentReplay
+        );
+        drop(store);
+        store =
+            DurableFinalHoldoutJournalV1::recover(directory.file(), digest("binding"), anchor)
+                .unwrap();
+        assert_eq!(store.anchor(), anchor);
+    }
+}
