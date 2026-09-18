@@ -420,10 +420,11 @@ impl PreparedIntelligenceRunV3 {
         if self.stages.is_empty() || self.stages.len() > 9 {
             return Err(CompositionErrorV3::InvalidTrace("stage count"));
         }
-        let mut expected = CompositionStageV3::ObjectiveValidated;
+        let mut expected = Some(CompositionStageV3::ObjectiveValidated);
         let mut previous = None;
+        let mut intuition_outcome = None;
         for (index, trace) in self.stages.iter().enumerate() {
-            if trace.stage != expected {
+            if Some(trace.stage) != expected {
                 return Err(CompositionErrorV3::InvalidTrace("stage order"));
             }
             if trace.output_digest.is_zero()
@@ -447,22 +448,25 @@ impl PreparedIntelligenceRunV3 {
                 return Err(CompositionErrorV3::ProducerMismatch);
             }
             previous = Some(trace.output_digest);
+            if trace.stage == CompositionStageV3::IntuitionDecided {
+                intuition_outcome = Some(trace.outcome);
+            }
             expected = match trace.outcome {
                 StageOutcomeV3::Completed | StageOutcomeV3::FallbackUsed(_) => {
-                    next_stage(trace.stage).unwrap_or(trace.stage)
+                    next_stage(trace.stage)
+                }
+                StageOutcomeV3::Abstained | StageOutcomeV3::SlowPath
+                    if trace.stage == CompositionStageV3::IntuitionDecided =>
+                {
+                    Some(CompositionStageV3::DecisionRecorded)
                 }
                 StageOutcomeV3::Abstained
                 | StageOutcomeV3::SlowPath
                 | StageOutcomeV3::Failed(_)
                 | StageOutcomeV3::Cancelled
-                | StageOutcomeV3::DeadlineExceeded => trace.stage,
+                | StageOutcomeV3::DeadlineExceeded => None,
             };
-            if index + 1 < self.stages.len()
-                && !matches!(
-                    trace.outcome,
-                    StageOutcomeV3::Completed | StageOutcomeV3::FallbackUsed(_)
-                )
-            {
+            if index + 1 < self.stages.len() && expected.is_none() {
                 return Err(CompositionErrorV3::InvalidTrace("terminal continuation"));
             }
         }
@@ -480,16 +484,18 @@ impl PreparedIntelligenceRunV3 {
                 }
             }
             CompositionDispositionV3::Abstained => {
-                if terminal.stage != CompositionStageV3::IntuitionDecided
-                    || terminal.outcome != StageOutcomeV3::Abstained
+                if intuition_outcome != Some(StageOutcomeV3::Abstained)
+                    || terminal.stage != CompositionStageV3::DecisionRecorded
+                    || terminal.outcome != StageOutcomeV3::Completed
                     || self.envelope.is_some()
                 {
                     return Err(CompositionErrorV3::InvalidTrace("abstain disposition"));
                 }
             }
             CompositionDispositionV3::SlowPath => {
-                if terminal.stage != CompositionStageV3::IntuitionDecided
-                    || terminal.outcome != StageOutcomeV3::SlowPath
+                if intuition_outcome != Some(StageOutcomeV3::SlowPath)
+                    || terminal.stage != CompositionStageV3::DecisionRecorded
+                    || terminal.outcome != StageOutcomeV3::Completed
                     || self.envelope.is_some()
                 {
                     return Err(CompositionErrorV3::InvalidTrace("slow-path disposition"));
@@ -723,7 +729,7 @@ pub fn prepare_intelligence_run_v3<P: CompositionPortsV3, C: CompositionControlV
         }
     };
 
-    let intuition = match run_decision_stage(
+    let advisory_disposition = match run_decision_stage(
         &request,
         control,
         snapshot_digest,
@@ -731,12 +737,28 @@ pub fn prepare_intelligence_run_v3<P: CompositionPortsV3, C: CompositionControlV
         &mut stages,
         |input| ports.decide_intuition(input),
     )? {
-        DecisionAdvanceV3::Continue(output) => output,
+        DecisionAdvanceV3::Continue(output) => {
+            predecessor = output;
+            None
+        }
+        DecisionAdvanceV3::Advisory(output, disposition) => {
+            predecessor = output;
+            Some(disposition)
+        }
         DecisionAdvanceV3::Terminal(disposition) => {
             return finish_v3(&request, snapshot_digest, disposition, stages, None);
         }
     };
-    predecessor = intuition;
+
+    if let Some(disposition) = advisory_disposition {
+        required!(
+            CompositionStageV3::DecisionRecorded,
+            "learning.ledger",
+            |input| ports.record_decision(input)
+        );
+        let _decision_record_digest = predecessor;
+        return finish_v3(&request, snapshot_digest, disposition, stages, None);
+    }
 
     required!(
         CompositionStageV3::ContextCompiled,
@@ -838,6 +860,7 @@ enum StageAdvanceV3 {
 
 enum DecisionAdvanceV3 {
     Continue(Digest32),
+    Advisory(Digest32, CompositionDispositionV3),
     Terminal(CompositionDispositionV3),
 }
 
@@ -1169,12 +1192,14 @@ where
             });
             Ok(match receipt.decision {
                 PortDecisionV1::Continue => DecisionAdvanceV3::Continue(receipt.output_digest),
-                PortDecisionV1::Abstain => {
-                    DecisionAdvanceV3::Terminal(CompositionDispositionV3::Abstained)
-                }
-                PortDecisionV1::SlowPath => {
-                    DecisionAdvanceV3::Terminal(CompositionDispositionV3::SlowPath)
-                }
+                PortDecisionV1::Abstain => DecisionAdvanceV3::Advisory(
+                    receipt.output_digest,
+                    CompositionDispositionV3::Abstained,
+                ),
+                PortDecisionV1::SlowPath => DecisionAdvanceV3::Advisory(
+                    receipt.output_digest,
+                    CompositionDispositionV3::SlowPath,
+                ),
             })
         }
         Err(failure) => {
