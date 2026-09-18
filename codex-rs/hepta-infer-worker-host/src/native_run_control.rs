@@ -59,6 +59,13 @@ impl AppServerModelDriver {
         if let Some(reason) = &record.pre_dispatch_stop {
             return Err(format!("request stopped before dispatch: {reason}").into());
         }
+        if let Some(rejection) = &record.dispatch_rejection {
+            return Err(format!(
+                "request rejected before execution ({:?}, code {}): {}",
+                rejection.kind, rejection.code, rejection.reason
+            )
+            .into());
+        }
         if record.state != NativeReservationState::Reserved {
             if let Some(output) = record.observation {
                 return Ok(output);
