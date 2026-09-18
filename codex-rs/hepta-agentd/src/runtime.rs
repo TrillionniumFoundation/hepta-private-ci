@@ -1,8 +1,6 @@
 use std::future::Future;
 use std::sync::Arc;
 use std::time::Duration;
-use std::time::SystemTime;
-use std::time::UNIX_EPOCH;
 
 use codex_app_server_client::RemoteAppServerClient;
 use codex_app_server_client::RemoteAppServerConnectArgs;
@@ -12,7 +10,6 @@ use codex_hepta_automation::AutomationError;
 use codex_hepta_automation::AutomationStore;
 use codex_hepta_memory::CognitiveRuntime;
 use codex_hepta_memory::CognitiveStore;
-use codex_hepta_memory::FederatedRecallSet;
 use codex_utils_absolute_path::AbsolutePathBuf;
 use tokio::task::JoinHandle;
 use tokio::time::timeout;
@@ -225,18 +222,14 @@ async fn attach_federation_after_generation_fence(
         return Ok(runtime);
     }
     state.refresh_generation()?;
-    let now = SystemTime::now()
-        .duration_since(UNIX_EPOCH)
-        .map_err(|error| AgentdError::Protocol(error.to_string()))?
-        .as_secs();
-    let now = i64::try_from(now)
-        .map_err(|_| AgentdError::Protocol("system clock overflow".to_string()))?;
-    let federation =
-        FederatedRecallSet::discover(state.identity().agent_id.clone(), owner_layouts, now).await;
-    // Discovery reads other owner stores and can outlive a lifecycle update.
-    // Fence once more before the read-only set reaches App Server.
+    let runtime = runtime.with_federation_sources(
+        state.identity().agent_id.clone(),
+        owner_layouts,
+    );
+    // Physical federation reads rediscover current grants. Fence the fleet
+    // generation on both sides of composition without freezing a reader set.
     state.refresh_generation()?;
-    Ok(runtime.with_federation(federation))
+    Ok(runtime)
 }
 
 async fn open_cognitive_runtime_after_generation_fence<Open, OpenFuture>(
