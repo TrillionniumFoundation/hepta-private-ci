@@ -550,6 +550,7 @@ fn prepare_private_database_file(_path: &Path) -> Result<(), SecretLeaseRegistry
 #[cfg(unix)]
 fn prepare_private_directory(path: &Path) -> Result<(), SecretLeaseRegistryError> {
     use std::os::unix::fs::DirBuilderExt;
+    use std::os::unix::fs::MetadataExt;
     use std::os::unix::fs::PermissionsExt;
 
     if !path.exists() {
@@ -564,6 +565,7 @@ fn prepare_private_directory(path: &Path) -> Result<(), SecretLeaseRegistryError
     if metadata.file_type().is_symlink()
         || !metadata.is_dir()
         || metadata.permissions().mode() & 0o077 != 0
+        || metadata.uid() != rustix::process::geteuid().as_raw()
     {
         return Err(SecretLeaseRegistryError::UnsafeDirectory);
     }
@@ -577,12 +579,15 @@ fn prepare_private_directory(_path: &Path) -> Result<(), SecretLeaseRegistryErro
 
 #[cfg(unix)]
 fn verify_private_database_file(path: &Path) -> Result<(), SecretLeaseRegistryError> {
+    use std::os::unix::fs::MetadataExt;
     use std::os::unix::fs::PermissionsExt;
     let metadata =
         std::fs::symlink_metadata(path).map_err(|_| SecretLeaseRegistryError::UnsafeDirectory)?;
     if metadata.file_type().is_symlink()
         || !metadata.is_file()
         || metadata.permissions().mode() & 0o077 != 0
+        || metadata.nlink() != 1
+        || metadata.uid() != rustix::process::geteuid().as_raw()
     {
         return Err(SecretLeaseRegistryError::UnsafeDirectory);
     }
