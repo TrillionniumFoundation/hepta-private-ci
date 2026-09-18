@@ -103,6 +103,7 @@ fn mutation(
         source_event_id,
         room_id,
         sender: user("@owner:example.test")?,
+        transaction_id: None,
         binding_revision: 1,
         generation: 1,
         origin_server_ts_ms: at_ms,
