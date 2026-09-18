@@ -42,7 +42,9 @@ impl SupervisordRequest {
             return Err(SupervisordRequestValidationError::InvalidRequest);
         }
         match &self.method {
-            SupervisordMethod::Health | SupervisordMethod::Snapshot { .. } => Ok(()),
+            SupervisordMethod::Health
+            | SupervisordMethod::Snapshot { .. }
+            | SupervisordMethod::ProductionMutationStatus { .. } => Ok(()),
             SupervisordMethod::Roster { limit } => {
                 if (1..=MAX_SUPERVISORD_ROSTER).contains(limit) {
                     Ok(())
@@ -81,6 +83,11 @@ pub enum SupervisordMethod {
         limit: u16,
     },
     Snapshot {
+        agent_id: AgentId,
+    },
+    /// Read-only terminal/admission status for the last signed production
+    /// release transition for one Agent.
+    ProductionMutationStatus {
         agent_id: AgentId,
     },
     Start {
@@ -313,6 +320,9 @@ pub enum SupervisordPayload {
         agents: Vec<SupervisordAgentStatus>,
     },
     Agent(SupervisordAgentStatus),
+    ProductionMutationStatus {
+        receipt: Option<ProductionMutationReceipt>,
+    },
     MutationAccepted {
         operation: SupervisordMutation,
         accepted_state_digest: ControlStateDigest,
