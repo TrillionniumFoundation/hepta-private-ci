@@ -131,6 +131,8 @@ impl RecoveryWitnessStore for FileRecoveryWitness {
             if current.sequence.checked_add(1) != Some(next.sequence) {
                 return Err(WitnessError::Conflict);
             }
+        } else if next.sequence != 1 {
+            return Err(WitnessError::Conflict);
         }
         let bytes = encode(self.context_digest, Some(next));
         self.poisoned = true;
