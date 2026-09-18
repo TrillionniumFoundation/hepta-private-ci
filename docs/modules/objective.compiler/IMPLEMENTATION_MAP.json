@@ -270,8 +270,7 @@
     "tree": "ff9fa6baf95a35fd2f49816e0a80097688f2aeeb"
   },
   "repositoryControlledGaps": [
-    "Run exact-head source, cross-owner composition and deterministic synthetic-merge workflows for the final candidate.",
-    "Retain conflict-oracle performance as a separate measurement path from ordinary and durable publication."
+    "Run exact-head source, cross-owner composition and deterministic synthetic-merge workflows for the final candidate."
   ],
   "externalEvidenceGates": [
     "independent semantic review",
@@ -296,6 +295,19 @@
     "runtimeConsumer": "codex_hepta_agentd::start_intelligence_run_v1",
     "runtimeConsumerPath": "codex-rs/hepta-agentd/src/objective_host.rs",
     "authority": "deny_all",
-    "state": "candidate_implemented_pending_exact_head_qualification"
+    "state": "candidate_implemented_pending_exact_head_qualification",
+    "runtimeBinding": {
+      "generation": "RunStartSnapshotV1.generation == RuntimeComposition.agentd_generation",
+      "authorityEpoch": "RunStartSnapshotV1.authority_epoch == RuntimeComposition.authority_epoch",
+      "fence": "RunStartSnapshotV1.fence_digest == RuntimeComposition.fence_digest"
+    }
+  },
+  "measurementQualification": {
+    "workflow": ".github/workflows/hepta-objective-product-composition.yml",
+    "buildProfile": "release",
+    "ordinaryPath": "authenticated-admission+compile+durable-fsync",
+    "conflictPath": "inclusion-minimal-conflict-256-atoms",
+    "conflictOracleCallsPerSample": 257,
+    "claim": "qualification telemetry only; selected production-host SLA remains external"
   }
 }
