@@ -380,8 +380,7 @@ impl DurableInferenceControl {
         // external execution because event history consumed the headroom,
         // compact native-v1 events under the same locked owner. The complete
         // predecessor remains in a bounded private content-addressed archive.
-        let high_water =
-            super::MAX_JOURNAL_BYTES - 2 * super::MAX_JOURNAL_LINE_BYTES as u64;
+        let high_water = super::MAX_JOURNAL_BYTES - 2 * super::MAX_JOURNAL_LINE_BYTES as u64;
         if self.journal_bytes > high_water {
             self.compact_native_journal(/*retain_archives*/ 4)?;
         }
@@ -397,8 +396,7 @@ impl DurableInferenceControl {
         let json =
             serde_json::to_string(&event).map_err(|_| Error::CorruptJournal("native encode"))?;
         let encoded = format!("{JOURNAL_PREFIX}{json}\n");
-        let high_water =
-            super::MAX_JOURNAL_BYTES - 2 * super::MAX_JOURNAL_LINE_BYTES as u64;
+        let high_water = super::MAX_JOURNAL_BYTES - 2 * super::MAX_JOURNAL_LINE_BYTES as u64;
         let next_bytes = self
             .journal_bytes
             .checked_add(encoded.len() as u64)
@@ -443,8 +441,7 @@ impl NativeJournal {
                 .map_err(|_| Error::CorruptJournal("native encode"))?;
             lines.push(format!("{JOURNAL_PREFIX}{json}\n"));
         }
-        if replayed.records != self.records
-            || replayed.maximum_in_flight != self.maximum_in_flight
+        if replayed.records != self.records || replayed.maximum_in_flight != self.maximum_in_flight
         {
             return Err(Error::CorruptJournal("native snapshot mismatch"));
         }
@@ -469,7 +466,8 @@ impl NativeJournal {
                 return Err(Error::Conflict);
             }
             self.maximum_in_flight = Some(maximum_in_flight);
-            self.records.insert(record.request.request_id.clone(), record);
+            self.records
+                .insert(record.request.request_id.clone(), record);
             return Ok(());
         }
         if let Event::Reserve {
@@ -722,7 +720,10 @@ fn validate_admission_binding(request: &NativeRequest) -> Result<(), Error> {
         }
         Some(binding) => {
             validate_identity(&binding.quota.reservation_id, "native quota reservation")?;
-            validate_digest(&binding.quota.reservation_digest, "native quota reservation")?;
+            validate_digest(
+                &binding.quota.reservation_digest,
+                "native quota reservation",
+            )?;
             validate_identity(&binding.resource.resource_id, "native resource")?;
             validate_digest(&binding.resource.resource_digest, "native resource")?;
             validate_identity(&binding.resource.provider_id, "native provider")?;
@@ -835,7 +836,10 @@ fn validate_dispatch_authority(
             if dispatch.model_provider != admission.resource.provider_id {
                 return Err(Error::AssignmentMismatch);
             }
-            let witness = dispatch.final_use.as_ref().ok_or(Error::InvalidTransition)?;
+            let witness = dispatch
+                .final_use
+                .as_ref()
+                .ok_or(Error::InvalidTransition)?;
             validate_final_use_witness(witness)?;
             if witness.authority_epoch != admission.quota.authority_epoch {
                 return Err(Error::AssignmentMismatch);
