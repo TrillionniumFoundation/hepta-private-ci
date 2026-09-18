@@ -446,6 +446,14 @@ impl DurableInferenceControl {
         &self.path
     }
 
+    /// The active journal reserves enough headroom for dispatch/cancel metadata
+    /// plus one maximal terminal observation. Callers may compact before new
+    /// admission when this returns true; compaction preserves the full previous
+    /// event stream in a content-addressed sibling archive.
+    pub fn needs_compaction(&self) -> bool {
+        self.journal_bytes > MAX_JOURNAL_BYTES - 2 * MAX_JOURNAL_LINE_BYTES as u64
+    }
+
     /// Acquire the journal writer fence for one short mutation and refresh
     /// this handle from the latest durable cut. The returned lock must remain
     /// alive through append + fsync; dropping it releases other workers.
