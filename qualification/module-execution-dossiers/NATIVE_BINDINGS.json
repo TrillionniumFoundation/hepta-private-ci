@@ -232,17 +232,6 @@
       ]
     },
     {
-      "module": "cognitive.types",
-      "path": "codex-rs/hepta-cognitive-types/src/lib.rs",
-      "blobSha": "2736967377a5db749495e6ed29abb6977380681e",
-      "exports": [
-        "MemoryRecord",
-        "CognitiveSnapshot",
-        "build_snapshot",
-        "validate_integrity"
-      ]
-    },
-    {
       "module": "cognitive.store",
       "path": "codex-rs/hepta-cognitive-store/src/lib.rs",
       "blobSha": "ae2c8f53190a5be8f906394a467be292a27bfdde",
@@ -499,6 +488,98 @@
         "IntegrationDecision",
         "schedule",
         "decide_integration"
+      ]
+    },
+    {
+      "module": "cognitive.types",
+      "path": "codex-rs/hepta-cognitive-types/src/lib.rs",
+      "blobSha": "2736967377a5db749495e6ed29abb6977380681e",
+      "exports": [
+        "MemoryRecord",
+        "CognitiveSnapshot",
+        "build_snapshot",
+        "validate_integrity"
+      ]
+    },
+    {
+      "module": "cognitive.types",
+      "path": "codex-rs/hepta-cognitive-types/src/lane_c.rs",
+      "blobSha": "1296fe58b0600de52540dc79b3d98e2ee0772089",
+      "exports": [
+        "LaneCGenerationVectorV1",
+        "CognitiveSnapshotKeyV1",
+        "MemoryAdmissionKind",
+        "MemoryVerificationState",
+        "MemoryAdmissionEvidenceV1",
+        "MemoryAdmissionCandidateV1",
+        "MemoryWriteIntentV1",
+        "MemoryWriteDisposition",
+        "MemoryWriteReceiptV1",
+        "FederatedMemoryQueryV1",
+        "FederatedEvidenceItemV1",
+        "FederatedCompletenessV1",
+        "FederatedValidityV1",
+        "FederatedCoverageV1",
+        "FederatedEvidenceResultV1",
+        "KnowledgeGraphGenerationV1",
+        "ProjectionDispositionV1",
+        "ProjectionReceiptV1",
+        "CompactCheckpointV1",
+        "CompactionProofV1",
+        "PromptRegistrySnapshotV1",
+        "ContextDeliveryDispositionV1",
+        "ContextDeliveryObservationV1",
+        "LaneCContractError"
+      ]
+    },
+    {
+      "module": "cognitive.types",
+      "path": "codex-rs/hepta-cognitive-types/src/hnmf_v1/mod.rs",
+      "blobSha": "bbf1a958dd1ecf2cc71f21e16eac9701384787ad",
+      "exports": [
+        "CanonicalJsonV1",
+        "Sha256DigestV1",
+        "AuthorityPostureV1"
+      ]
+    },
+    {
+      "module": "cognitive.types",
+      "path": "codex-rs/hepta-cognitive-types/src/hnmf_v1/span.rs",
+      "blobSha": "9baa9fde8568396ea49dc14c6aff649a29ca7bc5",
+      "exports": [
+        "ModalitySpanRefV1",
+        "CrossModalBindingV1"
+      ]
+    },
+    {
+      "module": "cognitive.types",
+      "path": "codex-rs/hepta-cognitive-types/src/hnmf_v1/event.rs",
+      "blobSha": "f08eded63458cefd1219c14fec1ae4d8f1d22f8b",
+      "exports": [
+        "MemoryEventV1"
+      ]
+    },
+    {
+      "module": "cognitive.types",
+      "path": "codex-rs/hepta-cognitive-types/src/hnmf_v1/graph.rs",
+      "blobSha": "7a9c230dbad52daa3cf8071a8aff054956dab3fa",
+      "exports": [
+        "EngramNodeV1",
+        "SynapseV1",
+        "MemoryCueV1",
+        "RecallPacketV1"
+      ]
+    },
+    {
+      "module": "cognitive.types",
+      "path": "codex-rs/hepta-cognitive-types/src/hnmf_v1/learning.rs",
+      "blobSha": "6d3558ce487088c6fca89d289888e6ef891db83a",
+      "exports": [
+        "OutcomeSignalV1",
+        "ReplaySelectionReceiptV1",
+        "PlasticityBatchV1",
+        "CognitiveTopologyProposalV1",
+        "ForgetPropagationReceiptV1"
       ]
     }
   ],
