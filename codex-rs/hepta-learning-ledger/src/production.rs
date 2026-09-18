@@ -906,11 +906,24 @@ fn validate_witness_state(
             return Err(ProductionLedgerError::WitnessLag);
         }
     }
-    if lag == 0 && ledger.anchor.chain_digest != witness.anchor.chain_digest {
-        return Err(ProductionLedgerError::WitnessLag);
-    }
-    if let (Some(witness_segment), Some(ledger_segment)) = (witness.segment, ledger.segment)
-        && witness_segment > ledger_segment
+    if lag == 0 {
+        if ledger.anchor.chain_digest != witness.anchor.chain_digest {
+            return Err(ProductionLedgerError::WitnessLag);
+        }
+        match (ledger.segment, witness.segment) {
+            (None, None) => {
+                if ledger.sealed != witness.sealed {
+                    return Err(ProductionLedgerError::WitnessLag);
+                }
+            }
+            (Some(0), None) if ledger.anchor.sequence == 0 && !ledger.sealed && !witness.sealed => {}
+            (Some(ledger_segment), Some(witness_segment))
+                if ledger_segment == witness_segment && ledger.sealed == witness.sealed => {}
+            _ => return Err(ProductionLedgerError::WitnessLag),
+        }
+    } else if let (Some(witness_segment), Some(ledger_segment)) =
+        (witness.segment, ledger.segment)
+        && witness_segment != ledger_segment
     {
         return Err(ProductionLedgerError::WitnessLag);
     }
