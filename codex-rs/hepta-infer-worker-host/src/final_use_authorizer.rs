@@ -254,6 +254,6 @@ fn validate_issuer_socket(path: &Path, issuer_uid: u32) -> Result<()> {
     Ok(())
 }
 
-#[cfg(test)]
+#[cfg(all(test, unix))]
 #[path = "final_use_authorizer_tests.rs"]
 mod tests;
