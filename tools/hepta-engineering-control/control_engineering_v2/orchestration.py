@@ -300,6 +300,7 @@ def plan_engineering_work(
         completed[receipt.package_id] = receipt
 
     base_packages: list[WorkPackage] = []
+    already_completed: set[str] = set(completed)
     for package in package_values:
         checked_id(package.package_id, "package_id")
         if (
@@ -311,14 +312,15 @@ def plan_engineering_work(
             or len(package.review_roles) > MAX_REVIEW_ROLES
         ):
             raise EngineeringError("invalid_package_capacity")
-        base_packages.append(
-            WorkPackage(
-                package.priority,
-                package.package_id,
-                package.predecessors,
-                package.write_paths,
+        if package.package_id not in already_completed:
+            base_packages.append(
+                WorkPackage(
+                    package.priority,
+                    package.package_id,
+                    package.predecessors,
+                    package.write_paths,
+                )
             )
-        )
 
     # The durable owner still publishes the exact DAG/path/frontier proposal.
     base = store.schedule_ready_packages(
@@ -330,6 +332,8 @@ def plan_engineering_work(
     )
     base_assigned = set(base.assigned)
     blocked: dict[str, str] = dict(base.blocked)
+    for identity in sorted(already_completed & set(package_ids)):
+        blocked[identity] = "already_completed"
     worker_remaining = {row.worker_id: row.capacity_units for row in worker_values}
     worker_paths: dict[str, list[str]] = {row.worker_id: [] for row in worker_values}
     ci_remaining = capacity.ci_units
