@@ -1489,7 +1489,17 @@ mod tests {
 
     #[test]
     fn lease_persistence_participates_in_state_digest() {
-        let matrix = MatrixSupervisorSnapshot::default();
+        let matrix = MatrixSupervisorSnapshot {
+            configured: false,
+            active: false,
+            healthy: false,
+            degraded: false,
+            process_system_id: None,
+            attached_agent_generation: None,
+            binding_revision: None,
+            restart_attempt: 0,
+            last_error: None,
+        };
         assert_ne!(
             control_state_test_digest(matrix.clone(), true),
             control_state_test_digest(matrix, false)
