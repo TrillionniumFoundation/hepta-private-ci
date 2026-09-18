@@ -311,7 +311,8 @@ impl ObjectiveRunFileStore {
     pub fn load(
         &self,
         run_id: &StableId,
-    ) -> Result<Option<(StoredObjectiveRunPublicationV1, Digest32)>, ObjectivePublicationError> {
+    ) -> Result<Option<(StoredObjectiveRunPublicationV1, Digest32)>, ObjectivePublicationError>
+    {
         let path = self.path_for(run_id);
         let file = match File::open(path) {
             Ok(file) => file,
@@ -341,8 +342,7 @@ impl ObjectiveRunFileStore {
 
     fn path_for(&self, run_id: &StableId) -> PathBuf {
         let key = Digest32::of_bytes(run_id.as_str().as_bytes());
-        self.directory
-            .join(format!("{key}.objective-run-v1.json"))
+        self.directory.join(format!("{key}.objective-run-v1.json"))
     }
 }
 
