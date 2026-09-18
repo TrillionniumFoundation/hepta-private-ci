@@ -133,6 +133,8 @@ Projection domains rebuild from declared sources and publish complete generation
 
 The [current native implementation](../../../qualification/module-execution-dossiers/detail/control.engineering.md#8-current-native-implementation) identifies the actual state owner, in-memory versus persistent surfaces, and lock/transaction boundary. Use that implementation scope when composing the module; target state-machine operations are identified in the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/control.engineering.md).
 
+For multi-host worker writes, an external coordinator remains the leader/consensus authority. Lane G verifies its signed grant at the write boundary and durably records the highest observed per-worker leader/fencing frontier in the owner transaction. A stale or conflicting frontier fails after restart; the local SQLite store is never promoted into a consensus service.
+
 [Shared concurrency and transaction requirements](../README.md#shared-concurrency-and-transactions) apply at the corresponding owner boundary.
 
 ## 8. Failure semantics, recovery and rollback
@@ -148,6 +150,8 @@ Owned threat entries:
 - `self_review_or_self_merge`
 
 The posture is least authority, bounded input, typed contracts, digest binding and independent evidence. Sensitive values are redacted or represented by digests at evidence boundaries. Credentials never enter general logs, learning datasets, prompt factors or cross-module receipts. Authority is operation-bound, final-payload-bound, short-lived and revocation-aware.
+
+Administrator-tamper resistance is externalized explicitly: audit anchors bind both the verified audit head and a deterministic digest of authoritative owner tables. Production signing keys use a custodied provider whose independently signed receipt binds the subject signing identity, algorithm, public-key digest and hardware-attestation digest; the reference HMAC adapter cannot satisfy that production boundary.
 
 Negative tests cover denied capabilities, cross-owner writes, stale or revoked grants, replay with payload drift, unknown fields, oversize input, scope escape, untrusted instruction escalation and secret/provider leakage. Security review is mandatory for new effect boundaries, persistence, network, model invocation or authority semantics.
 
