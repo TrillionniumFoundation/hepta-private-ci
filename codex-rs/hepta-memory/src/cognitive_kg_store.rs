@@ -371,8 +371,7 @@ impl CognitiveStore {
                     .to_string(),
             ));
         }
-        let publication_v2 =
-            qualify_v2_transition(predecessor_v2.as_ref(), &generation_v2)?;
+        let publication_v2 = qualify_v2_transition(predecessor_v2.as_ref(), &generation_v2)?;
 
         sqlx::query(
             "INSERT INTO kg_projection_generation_receipts (
@@ -513,7 +512,6 @@ impl CognitiveStore {
         })
     }
 }
-
 
 const KG_V2_GRAPH_PROFILE: &[u8] =
     b"hepta:cognitive:sqlite-kg-profile:v2:occurrence-identity+exact-predicate";
@@ -732,7 +730,9 @@ async fn insert_v2_publication_tx(
         .predecessor_generation
         .map(|value| to_i64(value.get(), "KG predecessor generation"))
         .transpose()?;
-    let predecessor_digest = publication.predecessor_digest.map(|value| value.to_string());
+    let predecessor_digest = publication
+        .predecessor_digest
+        .map(|value| value.to_string());
     let sqlite_output_sha256: String = sqlx::query_scalar(
         "SELECT output_sha256
          FROM kg_projection_generation_receipts
@@ -763,8 +763,14 @@ async fn insert_v2_publication_tx(
     .bind(generation.generation_digest.to_string())
     .bind(publication.publication_digest.to_string())
     .bind(sqlite_output_sha256)
-    .bind(to_i64_len(generation.nodes.len(), "V2 projection node count")?)
-    .bind(to_i64_len(generation.edges.len(), "V2 projection edge count")?)
+    .bind(to_i64_len(
+        generation.nodes.len(),
+        "V2 projection node count",
+    )?)
+    .bind(to_i64_len(
+        generation.edges.len(),
+        "V2 projection edge count",
+    )?)
     .execute(&mut **transaction)
     .await
     .map_err(unavailable)?;
@@ -961,21 +967,13 @@ fn relation_kind_v2(relation: &str) -> KnowledgeRelationKindV2 {
     match relation.trim().to_ascii_lowercase().as_str() {
         "supports" | "support" => KnowledgeRelationKindV2::Supports,
         "contradicts" | "contradict" => KnowledgeRelationKindV2::Contradicts,
-        "before" | "temporal_before" | "temporal-before" => {
-            KnowledgeRelationKindV2::TemporalBefore
-        }
-        "after" | "temporal_after" | "temporal-after" => {
-            KnowledgeRelationKindV2::TemporalAfter
-        }
+        "before" | "temporal_before" | "temporal-before" => KnowledgeRelationKindV2::TemporalBefore,
+        "after" | "temporal_after" | "temporal-after" => KnowledgeRelationKindV2::TemporalAfter,
         "causes" | "cause" => KnowledgeRelationKindV2::Causes,
         "enables" | "enable" => KnowledgeRelationKindV2::Enables,
         "procedure_step" | "procedure-step" => KnowledgeRelationKindV2::ProcedureStep,
-        "prompt_complements" | "prompt-complements" => {
-            KnowledgeRelationKindV2::PromptComplements
-        }
-        "prompt_substitutes" | "prompt-substitutes" => {
-            KnowledgeRelationKindV2::PromptSubstitutes
-        }
+        "prompt_complements" | "prompt-complements" => KnowledgeRelationKindV2::PromptComplements,
+        "prompt_substitutes" | "prompt-substitutes" => KnowledgeRelationKindV2::PromptSubstitutes,
         "prompt_conflicts" | "prompt-conflicts" => KnowledgeRelationKindV2::PromptConflicts,
         _ => KnowledgeRelationKindV2::Related,
     }
@@ -983,7 +981,9 @@ fn relation_kind_v2(relation: &str) -> KnowledgeRelationKindV2 {
 
 fn stable_id(value: &str, label: &str) -> Result<StableId, CognitiveStoreError> {
     StableId::new(value.to_string()).map_err(|error| {
-        CognitiveStoreError::Corrupt(format!("{label} is not a valid stable V2 identity: {error}"))
+        CognitiveStoreError::Corrupt(format!(
+            "{label} is not a valid stable V2 identity: {error}"
+        ))
     })
 }
 
