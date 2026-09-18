@@ -126,7 +126,7 @@ def build_product_receipt(
         objective_digest=objective_digest,
         contract_digest=contract_digest,
         owner="github-actions",
-        allowed_paths=("tools/hepta-engineering-control/**",),
+        allowed_paths=("tools/hepta-engineering-control",),
         denied_authorities=tuple(sorted(DENIED_AUTHORITIES)),
         maximum_assignments=1,
         expires_unix_ns=now_ns + 300_000_000_000,
@@ -135,7 +135,7 @@ def build_product_receipt(
         0,
         "control.engineering.ci-product-gate",
         (),
-        ("tools/hepta-engineering-control/**",),
+        ("tools/hepta-engineering-control",),
     )
     with tempfile.TemporaryDirectory(prefix="hepta-engineering-product-") as directory:
         with EngineeringStore(Path(directory) / "engineering.sqlite3") as store:
