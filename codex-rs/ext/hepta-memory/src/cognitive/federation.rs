@@ -23,6 +23,7 @@ use codex_hepta_memory::FederatedMemoryExplanation;
 use codex_hepta_memory::FederatedMemoryRevalidationBinding;
 use codex_hepta_memory::FederatedRecallSet;
 use codex_hepta_memory::FederatedRetrievalBatch;
+use codex_hepta_memory::FederatedRetrievalCoverage;
 use codex_hepta_memory::FederatedRevalidationStatus;
 use codex_hepta_memory::FederationConsumerAccess;
 use codex_hepta_memory::MemoryLifecycleState;
@@ -44,7 +45,7 @@ use crate::framing::workspace_digest;
 
 const FEDERATED_COGNITIVE_SOURCE: &str = "hepta_cognitive_federation_v1";
 const COMBINED_COGNITIVE_SOURCE: &str = "hepta_cognitive_combined_v1";
-const FEDERATED_ATTACHMENT_SCHEMA_VERSION: u32 = 1;
+const FEDERATED_ATTACHMENT_SCHEMA_VERSION: u32 = 2;
 const MAX_AUTO_CITATIONS_PER_MEMORY: usize = 8;
 const MAX_COMBINED_CITATIONS_PER_MEMORY: usize = 1;
 
@@ -54,6 +55,7 @@ struct PreparedFederatedAttachment {
     turn_id: String,
     workspace: std::path::PathBuf,
     query_sha256: Sha256Digest,
+    coverage: FederatedRetrievalCoverage,
     bindings: Vec<FederatedMemoryRevalidationBinding>,
     source_binding_sha256: Sha256Digest,
     content_sha256: Sha256Digest,
@@ -139,7 +141,7 @@ impl FederatedCognitiveExtension {
             }
             explanations.push(*explanation);
         }
-        let content = compile_explanations(&explanations)?;
+        let content = compile_explanations(&explanations, &prepared.coverage)?;
         let content_sha256 = Sha256Digest::for_bytes(content.as_bytes());
         let source_binding_sha256 = federation_source_binding(
             input.thread_id,
@@ -147,6 +149,7 @@ impl FederatedCognitiveExtension {
             input.cwd,
             &prepared.query_sha256,
             &prepared.bindings,
+            &prepared.coverage,
             &content_sha256,
         )?;
         let claimed_token_count = u32::try_from(content.len()).ok()?;
@@ -290,6 +293,7 @@ impl TurnInputContributor for FederatedCognitiveExtension {
                 workspace.as_path(),
                 &batch.query_sha256,
                 &bindings,
+                &batch.coverage,
                 &content_sha256,
             ) else {
                 return Vec::new();
@@ -302,6 +306,7 @@ impl TurnInputContributor for FederatedCognitiveExtension {
                 turn_id: input.turn_id,
                 workspace,
                 query_sha256: batch.query_sha256,
+                coverage: batch.coverage,
                 bindings,
                 source_binding_sha256,
                 content_sha256,
@@ -392,7 +397,7 @@ impl EphemeralModelInputContributor for FederatedCognitiveExtension {
                 }
                 explanations.push(*explanation);
             }
-            let Some(content) = compile_explanations(&explanations) else {
+            let Some(content) = compile_explanations(&explanations, &prepared.coverage) else {
                 return Ok(None);
             };
             let content_sha256 = Sha256Digest::for_bytes(content.as_bytes());
@@ -402,6 +407,7 @@ impl EphemeralModelInputContributor for FederatedCognitiveExtension {
                 input.cwd,
                 &prepared.query_sha256,
                 &prepared.bindings,
+                &prepared.coverage,
                 &content_sha256,
             ) else {
                 return Ok(None);
@@ -437,6 +443,7 @@ impl EphemeralModelInputContributor for FederatedCognitiveExtension {
 struct FederatedAttachment<'a> {
     schema_version: u32,
     source: &'static str,
+    coverage: &'a FederatedRetrievalCoverage,
     memories: &'a [FederatedAttachmentMemory],
 }
 
@@ -593,7 +600,7 @@ fn compile_retrieval_batch(
         );
         let mut proposed = selected_memories.clone();
         proposed.push(record);
-        let Ok(content) = serialize_attachment(&proposed) else {
+        let Ok(content) = serialize_attachment(&proposed, &batch.coverage) else {
             continue;
         };
         if content.len() > max_bytes {
@@ -605,11 +612,14 @@ fn compile_retrieval_batch(
     if selected_bindings.is_empty() {
         return None;
     }
-    let content = serialize_attachment(&selected_memories).ok()?;
+    let content = serialize_attachment(&selected_memories, &batch.coverage).ok()?;
     Some((selected_bindings, content))
 }
 
-fn compile_explanations(explanations: &[FederatedMemoryExplanation]) -> Option<String> {
+fn compile_explanations(
+    explanations: &[FederatedMemoryExplanation],
+    coverage: &FederatedRetrievalCoverage,
+) -> Option<String> {
     let memories = explanations
         .iter()
         .map(|explanation| {
@@ -644,7 +654,7 @@ fn compile_explanations(explanations: &[FederatedMemoryExplanation]) -> Option<S
             )
         })
         .collect::<Vec<_>>();
-    serialize_attachment(&memories).ok()
+    serialize_attachment(&memories, coverage).ok()
 }
 
 fn attachment_record(
@@ -678,10 +688,12 @@ fn attachment_record(
 
 fn serialize_attachment(
     memories: &[FederatedAttachmentMemory],
+    coverage: &FederatedRetrievalCoverage,
 ) -> Result<String, serde_json::Error> {
     serde_json::to_string(&FederatedAttachment {
         schema_version: FEDERATED_ATTACHMENT_SCHEMA_VERSION,
         source: "explicit_federated_verified_memory",
+        coverage,
         memories,
     })
 }
@@ -692,17 +704,20 @@ fn federation_source_binding(
     workspace: &Path,
     query_sha256: &Sha256Digest,
     bindings: &[FederatedMemoryRevalidationBinding],
+    coverage: &FederatedRetrievalCoverage,
     content_sha256: &Sha256Digest,
 ) -> Option<Sha256Digest> {
     let serialized = serde_json::to_vec(bindings).ok()?;
+    let coverage = serde_json::to_vec(coverage).ok()?;
     Some(digest_many(
-        b"hepta:cognitive:federated-ephemeral-source-binding:v1",
+        b"hepta:cognitive:federated-ephemeral-source-binding:v2",
         &[
             thread_id.as_bytes(),
             turn_id.as_bytes(),
             path_identity_bytes(workspace).as_slice(),
             query_sha256.as_str().as_bytes(),
             serialized.as_slice(),
+            coverage.as_slice(),
             content_sha256.as_str().as_bytes(),
         ],
     ))
