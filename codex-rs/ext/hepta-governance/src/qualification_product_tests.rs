@@ -7,6 +7,7 @@ use codex_hepta_evidence::AppendDisposition;
 use codex_hepta_evidence::EvidenceCandidateV1;
 use codex_hepta_evidence::EvidenceClaimClassV1;
 use codex_hepta_evidence::EvidenceDispositionV1;
+use codex_hepta_evidence::EvidenceIssuerAuthorityV1;
 use codex_hepta_evidence::EvidenceIssuerCertificateV1;
 use codex_hepta_evidence::EvidenceIssuerRevocationsV1;
 use codex_hepta_evidence::EvidenceIssuerRoleV1;
@@ -45,15 +46,10 @@ fn issuer(
     key_id: &str,
     seed: u8,
 ) -> (SigningKey, codex_hepta_evidence::AuthenticatedEvidenceIssuerV1) {
-    let root = EvidenceTrustRootV1::new(
-        "root:governance-product".to_string(),
-        root_signing.verifying_key().to_bytes(),
-    )
-    .expect("root");
     let signing = SigningKey::from_bytes(&[seed; 32]);
     let certificate = EvidenceIssuerCertificateV1 {
         schema_version: 1,
-        root_id: root.root_id().to_string(),
+        root_id: "root:governance-product".to_string(),
         principal_id: principal.to_string(),
         key_id: key_id.to_string(),
         role,
@@ -69,16 +65,7 @@ fn issuer(
         certificate,
     };
     let authenticated = state
-        .authenticate_qualification_issuer(
-            &root,
-            &EvidenceIssuerRevocationsV1 {
-                root_id: root.root_id().to_string(),
-                revision: 1,
-                revoked_key_ids: BTreeSet::new(),
-            },
-            signed,
-            10_000,
-        )
+        .authenticate_qualification_issuer(signed, 10_000)
         .expect("authenticate issuer");
     (signing, authenticated)
 }
@@ -122,8 +109,28 @@ async fn governance_product_host_composes_authenticated_writer_reader_and_termin
             .await
             .expect("open evidence"),
     );
-    let state = GovernanceState::enabled(GovernanceMode::Enforce, Ok(store));
     let root_signing = SigningKey::from_bytes(&[31; 32]);
+    let root = EvidenceTrustRootV1::new(
+        "root:governance-product".to_string(),
+        root_signing.verifying_key().to_bytes(),
+    )
+    .expect("root");
+    let authority = Arc::new(
+        EvidenceIssuerAuthorityV1::new(
+            root,
+            EvidenceIssuerRevocationsV1 {
+                root_id: "root:governance-product".to_string(),
+                revision: 1,
+                revoked_key_ids: BTreeSet::new(),
+            },
+        )
+        .expect("qualification authority"),
+    );
+    let state = GovernanceState::enabled_with_qualification_authority(
+        GovernanceMode::Enforce,
+        Ok(store),
+        authority,
+    );
 
     let (ci_signing, ci) = issuer(
         &state,
