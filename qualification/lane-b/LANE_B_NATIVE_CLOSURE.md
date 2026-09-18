@@ -53,7 +53,7 @@ External evidence gates:
 
 ## 4. `runtime.agentd`
 
-Owns only ephemeral run admission, immutable snapshot references, and runtime-health composition state.
+Owns bounded owner-local run admission/reconciliation metadata and runtime-health composition state; canonical objective, prompt, context, artifact and execution facts remain with their registered owners.
 
 Agentd preserves dispatch-boundary uncertainty and accepts terminal state only from the delegated execution/effect owner.
 
