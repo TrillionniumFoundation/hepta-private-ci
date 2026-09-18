@@ -152,7 +152,7 @@ requires the clean caller HEAD to match the envelope. It reads exact Git tree an
 blob records into a metadata-free temporary workspace, without checkout filters,
 Git archive attributes, hooks, repository remotes or credential files.
 
-The Linux strong profile requires an actual successful Bubblewrap admission probe.
+The Linux strong profile requires an actual successful Bubblewrap admission probe. `SandboxCoordinator` also acquires one of eight non-blocking host-wide slot locks on POSIX before entering the candidate executor, so separate cooperating worker processes on the same qualification host cannot each admit their own set of eight sandboxes. Multi-host admission still requires the separately authenticated distributed coordination/fencing boundary.
 It mounts the candidate workspace read-only, isolates network and namespaces and
 provides private writable temporary/home paths. The portable profile is for trusted
 fixtures and reports `fixture_tested`; it cannot produce strong review evidence.
