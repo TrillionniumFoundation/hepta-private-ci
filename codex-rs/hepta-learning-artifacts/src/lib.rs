@@ -98,6 +98,7 @@ pub use pinned::load_pinned_candidate;
 pub use publication::ArtifactPublicationError;
 pub use publication::ArtifactPublicationTransactionV3;
 pub use publication::PreparedArtifactPublicationV3;
+pub use publication::RevalidatedArtifactPublicationV3;
 pub use publication::prepare_artifact_publication_v3;
 pub use publication::revalidate_artifact_publication_v3;
 pub use registry::ArtifactRegistry;
