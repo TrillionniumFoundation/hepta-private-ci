@@ -32,7 +32,7 @@ Agentd trust remains owner-controlled and fail-closed. The trust file now suppor
 
 ## Product composition
 
-The concrete product caller remains the narrow Agentd signed-text path. It uses AuthBus authentication and durable delivery but does not yet consume the new policy/quota/reservation control surface for a provider, secret, network or filesystem effect. Consequently the source candidate is not a production-complete AuthBus deployment.
+The narrow Agentd signed-text path remains the authentication/delivery caller. In addition, `hepta-bao-adapter::BaoClient::consume_kv_v2_with_authbus` is a source-candidate effect composition: it revalidates a reservation immediately before the HTTPS/final-use boundary; pre-boundary failures cancel, definitive provider observations settle one quota unit, and timeout/transport/consumer-indeterminate outcomes quarantine without automatic effect retry. This candidate still requires exact-head product qualification and independent review before it can establish production composition.
 
 ## Verification
 
