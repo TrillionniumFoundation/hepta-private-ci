@@ -19,9 +19,12 @@ mod unix {
     use codex_hepta_contracts::FinalUseControlError;
     use codex_hepta_contracts::FinalUseGrant;
     use codex_hepta_contracts::FinalUseRevocationFeedVerifier;
+    use codex_hepta_contracts::FinalUseRevocationUpdate;
     use codex_hepta_contracts::FinalUseRevocations;
     use codex_hepta_contracts::SignedFinalUseApproval;
     use codex_hepta_contracts::SignedFinalUseGrant;
+    use codex_hepta_contracts::SignedFinalUseRevocationUpdate;
+    use codex_hepta_contracts::SystemAuthorityClock;
     use codex_hepta_types::Digest32;
     use ed25519_dalek::Signer;
     use ed25519_dalek::SigningKey;
@@ -113,9 +116,28 @@ mod unix {
             authority,
             approval_verifier,
             revocation_verifier,
+            Arc::new(SystemAuthorityClock),
             [consumer],
         )
         .unwrap();
+        let bootstrap = FinalUseRevocationUpdate::new(
+            "revocation-distributor".into(),
+            FinalUseRevocations {
+                authority_epoch: 5,
+                revision: 2,
+                revoked_grant_ids: BTreeSet::new(),
+            },
+            now - 1_000,
+            now + 30_000,
+        );
+        let bootstrap = SignedFinalUseRevocationUpdate {
+            signature: distributor
+                .sign(&bootstrap.signing_bytes().unwrap())
+                .to_bytes()
+                .to_vec(),
+            update: bootstrap,
+        };
+        host.apply_revocation_update(&bootstrap).unwrap();
         let approval = FinalUseApproval::for_grant("operator-approver".into(), &grant.grant)
             .unwrap();
         let approval = SignedFinalUseApproval {
