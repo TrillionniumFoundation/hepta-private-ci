@@ -302,20 +302,29 @@ owned by `hepta-memory`. The local transport preserves the current per-agent cog
 SQLite ownership boundary and does not imply a network federation service. Any future
 network or fleet transport remains independently qualified.
 
-Legacy aggregation no longer silently converts an unavailable reader into an
-indistinguishable empty result. `FederatedRetrievalCoverage` records requested,
-completed and failed sources; the extension binds that coverage into the ephemeral
-model-input source digest. A partial federation cut therefore cannot share provenance
-with a complete cut containing the same surviving candidates.
+Legacy aggregation no longer silently converts an unavailable reader or a failed
+dynamic-owner discovery into an indistinguishable empty result.
+`FederatedRetrievalCoverage` records requested, completed, failed and
+discovery-failure counts. Coverage is carried in the schema-v2 federated attachment,
+bound into the ephemeral model-input source digest, and retained in the compact
+combined path. A partial or discovery-uncertain federation cut therefore cannot share
+provenance or consumer-visible completeness semantics with a complete cut containing
+the same surviving candidates.
+
+Coverage-aware producers use `hepta_cognitive_federation_v2` and
+`hepta_cognitive_combined_v2`. The provider-policy host continues to accept the v1
+source identifiers for compatibility; new v2 semantics do not masquerade as v1 bytes.
 
 ### Candidate verification
 
 Focused tests include response-field tampering, cross-query replay, effective-expiry
 capping, post-transport revocation, post-transport generation drift, hard transport
 timeout, in-flight cancellation, stale-generation item suppression, duplicate identity,
-canonical response ordering and explicit failed-source coverage.
+canonical response ordering, restored-result coverage invariants, explicit
+failed-source coverage and dynamic-discovery uncertainty.
 
-The implementation map records PR #693 and its code-candidate commit separately from
+The implementation map records PR #693 and frozen code candidate
+`8f8d75ad8eb57d7b40275b41c376592a13714ac6` separately from
 the repository-wide generated `sourceBase`. The generated source base intentionally
 remains common across all module maps; changing only this module's `sourceBase` would
 create invalid closed-world provenance drift.
