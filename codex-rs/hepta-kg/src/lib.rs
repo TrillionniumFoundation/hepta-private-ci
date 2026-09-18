@@ -2,6 +2,7 @@
 
 #![forbid(unsafe_code)]
 
+mod durable;
 mod generation;
 
 use std::collections::BTreeSet;
@@ -13,6 +14,13 @@ use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
 
+pub use durable::DurableProjectionEdgeV2;
+pub use durable::DurableProjectionErrorV2;
+pub use durable::DurableProjectionHeadV2;
+pub use durable::DurableProjectionNodeV2;
+pub use durable::durable_input_heads_digest_v2;
+pub use durable::durable_projection_digest_v2;
+pub use durable::validate_durable_projection_v2;
 pub use generation::KnowledgeEdgeIdentityV2;
 pub use generation::KnowledgeEdgeV2;
 pub use generation::KnowledgeGenerationErrorV2;
