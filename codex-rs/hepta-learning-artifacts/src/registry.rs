@@ -335,7 +335,7 @@ fn event_tag(event: &ArtifactEvent) -> u8 {
     }
 }
 
-fn digest_event(event: &ArtifactEvent) -> Digest32 {
+pub(crate) fn digest_event(event: &ArtifactEvent) -> Digest32 {
     let mut bytes = Vec::new();
     bytes.extend_from_slice(EVENT_DIGEST_DOMAIN);
     bytes.push(event_tag(event));
@@ -351,7 +351,7 @@ fn digest_event(event: &ArtifactEvent) -> Digest32 {
     Digest32::of_bytes(&bytes)
 }
 
-fn digest_chain(
+pub(crate) fn digest_chain(
     predecessor: Digest32,
     sequence: LogicalSequence,
     event_digest: Digest32,
