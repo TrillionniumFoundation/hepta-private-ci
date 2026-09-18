@@ -1,11 +1,11 @@
 #!/usr/bin/env node
-"use strict";
+import crypto from "node:crypto";
+import fs from "node:fs";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 
-const crypto = require("node:crypto");
-const fs = require("node:fs");
-const path = require("node:path");
-
-const root = path.resolve(__dirname, "..");
+const here = path.dirname(fileURLToPath(import.meta.url));
+const root = path.resolve(here, "..");
 const vectorPath = path.join(
   root,
   "docs/lane-a-foundation/platform.types/CANONICAL_DIGEST_V1.json",
