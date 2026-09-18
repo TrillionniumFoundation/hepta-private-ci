@@ -197,12 +197,18 @@ pub fn adapt_owner_observation(
         .candidates
         .iter()
         .flat_map(|candidate| candidate.channel_ranks.iter().map(|rank| rank.channel))
-        .fold(BTreeMap::<OwnerRetrievalChannelV1, usize>::new(), |mut counts, channel| {
-            *counts.entry(channel).or_insert(0) += 1;
-            counts
-        });
+        .fold(
+            BTreeMap::<OwnerRetrievalChannelV1, usize>::new(),
+            |mut counts, channel| {
+                *counts.entry(channel).or_insert(0) += 1;
+                counts
+            },
+        );
     for fact in channel_facts.values() {
-        let observed = observed_by_physical.get(&fact.channel).copied().unwrap_or(0);
+        let observed = observed_by_physical
+            .get(&fact.channel)
+            .copied()
+            .unwrap_or(0);
         if observed > usize::try_from(fact.candidate_count).unwrap_or(usize::MAX) {
             return Err(OwnerAdapterErrorV1::CandidateCountMismatch(fact.channel));
         }
