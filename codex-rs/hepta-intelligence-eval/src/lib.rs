@@ -96,6 +96,7 @@ pub use temporal_fold::TemporalFoldPlan;
 pub use temporal_fold::TemporalFoldReceipt;
 pub use temporal_fold::fit_temporal_fold;
 
+#[cfg(any(test, feature = "legacy-inprocess-eval"))]
 const MAX_METRICS: usize = 128;
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
