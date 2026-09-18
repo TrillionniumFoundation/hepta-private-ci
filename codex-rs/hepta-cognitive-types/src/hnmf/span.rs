@@ -18,7 +18,7 @@ use super::validate_ppm;
 use super::validate_text;
 
 #[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
-#[serde(tag = "kind", rename_all = "snake_case")]
+#[serde(deny_unknown_fields, tag = "kind", rename_all = "snake_case")]
 pub enum SpanRangeV1 {
     ByteRange { start: u64, end: u64 },
     PixelRect {
@@ -178,7 +178,7 @@ impl ModalitySpanRefV1 {
 
 impl CanonicalContractV1 for ModalitySpanRefV1 {
     const SCHEMA_ID: &'static str = "ModalitySpanRefV1";
-    const MAX_ENCODED_BYTES: usize = 65_536;
+    const MAX_ENCODED_BYTES: usize = 32_768;
 
     fn validate_contract(&self) -> Result<(), ContractErrorV1> {
         self.validate()
