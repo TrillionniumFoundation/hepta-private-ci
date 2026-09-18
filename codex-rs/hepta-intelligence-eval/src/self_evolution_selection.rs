@@ -29,9 +29,11 @@ use crate::IndependentEvaluationDispositionV1;
 use crate::MetricRoleContractV2;
 use crate::SignedEvaluationDecisionV1;
 use crate::SignedEvaluationError;
+use crate::LongitudinalTimeEvidenceV1;
 use crate::SignedEvaluationEvidenceV1;
-use crate::decide_with_signed_evidence_v2;
-use crate::evaluation_signing_payload_v2;
+use crate::decide_with_signed_longitudinal_evidence_v3;
+use crate::future_window_signing_payload_v1;
+use crate::longitudinal_evaluation_signing_payload_v3;
 
 const MAX_DATASET_RECORDS: u32 = 1_000_000;
 
@@ -41,6 +43,10 @@ pub type SelfEvolutionSelectionReceiptV1 = SelfEvolutionSelectionWitnessV1;
 pub struct SelfEvolutionSelectionPolicyV1 {
     pub no_change_baseline_id: StableId,
     pub minimum_dataset_records: u32,
+    /// Minimum real elapsed duration for every independently observed future
+    /// window. Self-evolution selection is longitudinal-only; offline folds or
+    /// generated timestamps cannot satisfy this policy.
+    pub minimum_future_window_micros: u64,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -88,6 +94,7 @@ pub fn selection_signing_payload_v1(
         bytes.extend_from_slice(digest.as_array());
     }
     bytes.extend_from_slice(&policy.minimum_dataset_records.to_be_bytes());
+    bytes.extend_from_slice(&policy.minimum_future_window_micros.to_be_bytes());
     Ok(bytes)
 }
 
@@ -98,6 +105,7 @@ pub fn select_self_evolution_v1(
     evaluation_bundle: IndependentEvaluationBundleV1,
     metric_roles: Vec<MetricRoleContractV2>,
     evaluation_evidence: &SignedEvaluationEvidenceV1,
+    longitudinal_time: &LongitudinalTimeEvidenceV1,
     dataset_receipt: &DatasetSnapshotReceiptV3,
     ledger_snapshot: &LedgerSnapshot,
     selector_evidence: &SignedLearningEvidenceV1,
@@ -124,10 +132,12 @@ pub fn select_self_evolution_v1(
         return Err(SelfEvolutionSelectionError::NoChangeBaselineMismatch);
     }
 
-    let evaluation = decide_with_signed_evidence_v2(
+    let evaluation = decide_with_signed_longitudinal_evidence_v3(
         evaluation_bundle.clone(),
         metric_roles.clone(),
         evaluation_evidence,
+        longitudinal_time,
+        policy.minimum_future_window_micros,
         verifier,
         now,
     )?;
@@ -148,8 +158,12 @@ pub fn select_self_evolution_v1(
         evaluation_bundle.frozen_plan.plan_digest.as_array(),
         now,
     )?;
-    let evaluator_payload = evaluation_signing_payload_v2(&evaluation_bundle, &metric_roles)
-        .map_err(SignedEvaluationError::Evaluation)?;
+    let evaluator_payload = longitudinal_evaluation_signing_payload_v3(
+        &evaluation_bundle,
+        &metric_roles,
+        longitudinal_time,
+        policy.minimum_future_window_micros,
+    )?;
     let evaluator = verifier.verify(
         LearningEvidenceRoleV1::Evaluator,
         &evaluation_evidence.evaluator_bundle,
@@ -169,8 +183,20 @@ pub fn select_self_evolution_v1(
         &selector_payload,
         now,
     )?;
+    let observer_payload = future_window_signing_payload_v1(
+        &evaluation_bundle,
+        longitudinal_time,
+        policy.minimum_future_window_micros,
+    )?;
+    let observer = verifier.verify(
+        LearningEvidenceRoleV1::Observer,
+        &longitudinal_time.observer,
+        &observer_payload,
+        now,
+    )?;
     verify_verified_role_separation(&generator, &selector, now)?;
     verify_verified_role_separation(&evaluator, &selector, now)?;
+    verify_verified_role_separation(&observer, &selector, now)?;
 
     let selector_evidence_digest = Digest32::of_bytes(&selector_evidence.signing_bytes());
     let mut receipt_bytes = b"hepta.intelligence-eval.self-evolution-selection-receipt.v1".to_vec();
@@ -200,7 +226,10 @@ pub fn select_self_evolution_v1(
 }
 
 fn validate_policy(policy: &SelfEvolutionSelectionPolicyV1) -> Result<(), SelfEvolutionSelectionError> {
-    if policy.minimum_dataset_records == 0 || policy.minimum_dataset_records > MAX_DATASET_RECORDS {
+    if policy.minimum_dataset_records == 0
+        || policy.minimum_dataset_records > MAX_DATASET_RECORDS
+        || policy.minimum_future_window_micros == 0
+    {
         return Err(SelfEvolutionSelectionError::InvalidPolicy);
     }
     Ok(())
