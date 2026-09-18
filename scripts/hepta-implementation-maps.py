@@ -9,7 +9,6 @@ runtime, effect, acceptance, promotion, or release authority.
 from __future__ import annotations
 
 import argparse
-import hashlib
 import json
 import re
 import subprocess
@@ -70,21 +69,10 @@ def tests_for_source(source: str) -> list[str]:
     return []
 
 
-def tracked_digest(relative: str) -> str:
-    files = [
-        row
-        for row in git("ls-files", "--", relative).splitlines()
-        if row and (ROOT / row).is_file()
-    ]
-    digest = hashlib.sha256()
-    for item in sorted(files):
-        raw = (ROOT / item).read_bytes()
-        encoded = item.encode("utf-8")
-        digest.update(len(encoded).to_bytes(4, "big"))
-        digest.update(encoded)
-        digest.update(len(raw).to_bytes(8, "big"))
-        digest.update(raw)
-    return digest.hexdigest()
+def tracked_object(relative: str) -> str:
+    if not (ROOT / relative).exists():
+        return ""
+    return git("rev-parse", f"HEAD:{relative}")
 
 
 def source_state(
@@ -99,12 +87,12 @@ def source_state(
         }
     )
     return {
-        "algorithm": "sha256-tracked-v1",
+        "algorithm": "git-object-v1",
         "trackedRootsAndPackages": [
-            {"path": path, "sha256": tracked_digest(path)} for path in tracked
+            {"path": path, "object": tracked_object(path)} for path in tracked
         ],
         "operationSources": [
-            {"path": path, "sha256": tracked_digest(path)} for path in sources
+            {"path": path, "object": tracked_object(path)} for path in sources
         ],
     }
 
@@ -422,7 +410,7 @@ def verify():
         bound_packages = bound_packages_for(mid)
         enhanced_integrity = (
             isinstance(row.get("sourceState"), dict)
-            and row["sourceState"].get("algorithm") == "sha256-tracked-v1"
+            and row["sourceState"].get("algorithm") == "git-object-v1"
         )
         if enhanced_integrity and row.get("boundPackages") != bound_packages:
             failures.append(f"{mid}: cargo package bindings")
