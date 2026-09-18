@@ -32,6 +32,7 @@ fn agentd_capabilities() -> Result<crate::AgentdCapabilitySet, AgentdError> {
     let capabilities = [
         ("run.lifecycle", 1_u16, 0_u16),
         ("run.lifecycle.recovery", 1_u16, 0_u16),
+        ("control.typed-overload", 1_u16, 0_u16),
     ]
     .into_iter()
     .map(|(id, major, minor)| {
