@@ -35,7 +35,10 @@ use crate::durable_control::native::NativeRunRecord;
 
 const WRITER_RETRY_ATTEMPTS: usize = 200;
 const WRITER_RETRY_DELAY: Duration = Duration::from_millis(10);
+#[cfg(not(test))]
 const MAX_TOMBSTONE_SEGMENT_BYTES: u64 = 64 * 1024 * 1024;
+#[cfg(test)]
+const MAX_TOMBSTONE_SEGMENT_BYTES: u64 = 4 * 1024;
 const MAX_TOMBSTONE_LINE_BYTES: usize = 4096;
 const NATIVE_PREFIX: &str = "native-v1|";
 
@@ -86,10 +89,6 @@ impl DurableInferenceControlHandle {
 
     fn coordination_path(&self) -> PathBuf {
         PathBuf::from(format!("{}.owner.lock", self.path.display()))
-    }
-
-    fn legacy_tombstone_path(&self) -> PathBuf {
-        PathBuf::from(format!("{}.tombstones.jsonl", self.path.display()))
     }
 
     fn tombstone_segment_path(&self, index: u64) -> PathBuf {
@@ -648,8 +647,45 @@ mod tests {
             handle.reserve_native(request("old"), 1).unwrap_err(),
             Error::Conflict
         );
-        assert!(handle.tombstone_path().is_file());
+        assert!(
+            handle
+                .tombstone_paths()
+                .unwrap()
+                .iter()
+                .any(|(index, path)| *index > 0 && path.is_file())
+        );
         assert!(handle.archive_receipt_path().is_file());
+    }
+
+    #[test]
+    fn repeated_capacity_cycles_rotate_tombstone_segments_without_resurrection() {
+        let directory = tempfile::tempdir().unwrap();
+        let path = directory.path().join("inference.journal");
+        let handle = DurableInferenceControlHandle::new(&path, 1).unwrap();
+        for index in 0..96 {
+            let id = format!("request-{index:04}");
+            handle.reserve_native(request(&id), 1).unwrap();
+            handle
+                .stop_native_before_dispatch(&id, "cycle complete".to_string())
+                .unwrap();
+        }
+        // Force one final reserve, which archives the last released request.
+        handle.reserve_native(request("live"), 1).unwrap();
+        let segments = handle
+            .tombstone_paths()
+            .unwrap()
+            .into_iter()
+            .filter(|(index, _)| *index > 0)
+            .collect::<Vec<_>>();
+        assert!(segments.len() > 1, "test-sized segments must rotate");
+        assert_eq!(
+            handle.reserve_native(request("request-0000"), 1).unwrap_err(),
+            Error::Conflict
+        );
+        assert_eq!(
+            handle.reserve_native(request("request-0095"), 1).unwrap_err(),
+            Error::Conflict
+        );
     }
 
     #[test]
