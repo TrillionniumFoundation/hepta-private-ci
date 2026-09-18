@@ -100,15 +100,21 @@ class Mutation:
     path: str = ""
     expected_text: str = ""
     replacement_text: str = ""
+    target_path: str = ""
 
     def normalized(self) -> "Mutation":
         if self.operation == "no_change":
-            if any((self.path, self.expected_text, self.replacement_text)):
+            if any((self.path, self.expected_text, self.replacement_text, self.target_path)):
                 raise EngineeringError("invalid_no_change")
             return self
-        if self.operation not in {"add_file", "replace_text", "delete_file"}:
+        if self.operation not in {"add_file", "replace_text", "delete_file", "rename_file"}:
             raise EngineeringError("unsupported_mutation")
         path = canonical_repo_path(self.path)
+        target_path = (
+            canonical_repo_path(self.target_path)
+            if self.operation == "rename_file"
+            else ""
+        )
         for value in (self.expected_text, self.replacement_text):
             if (
                 not isinstance(value, str)
@@ -116,13 +122,47 @@ class Mutation:
                 or len(value.encode("utf-8")) > MAX_TEXT_DIFF_BYTES
             ):
                 raise EngineeringError("invalid_mutation_text")
-        if self.operation == "add_file" and self.expected_text:
+        if self.operation == "add_file" and (self.expected_text or self.target_path):
             raise EngineeringError("invalid_add_precondition")
-        if self.operation == "delete_file" and self.replacement_text:
+        if self.operation == "delete_file" and (self.replacement_text or self.target_path):
             raise EngineeringError("invalid_delete_replacement")
-        if self.operation == "replace_text" and not self.expected_text:
+        if self.operation == "replace_text" and (not self.expected_text or self.target_path):
             raise EngineeringError("empty_replace_precondition")
-        return Mutation(self.operation, path, self.expected_text, self.replacement_text)
+        if self.operation == "rename_file":
+            if not target_path or target_path == path or self.replacement_text:
+                raise EngineeringError("invalid_rename")
+        return Mutation(
+            self.operation,
+            path,
+            self.expected_text,
+            self.replacement_text,
+            target_path,
+        )
+
+
+@dataclass(frozen=True)
+class MutationSet:
+    mutations: tuple[Mutation, ...]
+
+    def normalized(self) -> "MutationSet":
+        raw = bounded_tuple(
+            self.mutations,
+            MAX_CHANGED_FILES,
+            "changed_file_limit",
+        )
+        if not raw or any(not isinstance(item, Mutation) for item in raw):
+            raise EngineeringError("invalid_mutation_set")
+        values = tuple(item.normalized() for item in raw)
+        if any(item.operation == "no_change" for item in values):
+            raise EngineeringError("invalid_mutation_set")
+        paths: list[str] = []
+        for item in values:
+            paths.append(item.path)
+            if item.operation == "rename_file":
+                paths.append(item.target_path)
+        if len(paths) != len(set(paths)):
+            raise EngineeringError("mutation_path_conflict")
+        return MutationSet(values)
 
 
 @dataclass(frozen=True)
@@ -145,7 +185,7 @@ class Candidate:
     candidate_id: str
     envelope_id: str
     base_commit: str
-    mutation: Mutation
+    mutation: Mutation | MutationSet
     semantic_digest: str
     state: str
     changed_paths: tuple[str, ...]
@@ -416,7 +456,7 @@ def _validate_envelope(
 
 
 def _candidate_identity(
-    envelope: CandidateEnvelope, mutation: Mutation
+    envelope: CandidateEnvelope, mutation: Mutation | MutationSet
 ) -> tuple[str, str]:
     roots, protected = _validate_envelope(envelope)
     # Domain-separated V2 identities bind the entire effective envelope. An old
@@ -436,9 +476,46 @@ def _candidate_identity(
     return digest[:32], digest
 
 
+def _candidate_mutation_paths(mutation: Mutation | MutationSet) -> tuple[str, ...]:
+    if isinstance(mutation, MutationSet):
+        paths: list[str] = []
+        for item in mutation.mutations:
+            paths.append(item.path)
+            if item.operation == "rename_file":
+                paths.append(item.target_path)
+        return tuple(sorted(paths))
+    if mutation.operation == "no_change":
+        return ()
+    if mutation.operation == "rename_file":
+        return tuple(sorted((mutation.path, mutation.target_path)))
+    return (mutation.path,)
+
+
+def _normalize_candidate_mutation(value: Mutation | MutationSet) -> Mutation | MutationSet:
+    if isinstance(value, Mutation):
+        return value.normalized()
+    if isinstance(value, MutationSet):
+        return value.normalized()
+    raise EngineeringError("invalid_mutation")
+
+
+def _validate_candidate_mutation_scope(
+    mutation: Mutation | MutationSet,
+    roots: tuple[str, ...],
+    protected: tuple[str, ...],
+) -> None:
+    for path in _candidate_mutation_paths(mutation):
+        if not path_is_within(path, roots):
+            raise EngineeringError("path_outside_candidate_envelope")
+        if path_is_within(path, protected):
+            raise EngineeringError("protected_path")
+        if is_candidate_oracle_path(path):
+            raise EngineeringError("candidate_oracle_path")
+
+
 def generate_candidates(
     envelope: CandidateEnvelope,
-    mutations: Iterable[Mutation],
+    mutations: Iterable[Mutation | MutationSet],
 ) -> tuple[Candidate, ...]:
     roots, protected = _validate_envelope(envelope)
     raw = bounded_tuple(
@@ -446,23 +523,16 @@ def generate_candidates(
         envelope.maximum_candidates - 1,
         "candidate_limit_exceeded",
     )
-    if any(not isinstance(value, Mutation) for value in raw):
-        raise EngineeringError("invalid_mutation")
-    supplied = tuple(value.normalized() for value in raw)
+    supplied = tuple(_normalize_candidate_mutation(value) for value in raw)
     result: list[Candidate] = []
     seen: set[str] = set()
     for mutation in (Mutation("no_change"), *supplied):
-        if mutation.operation != "no_change":
-            if not path_is_within(mutation.path, roots):
-                raise EngineeringError("path_outside_candidate_envelope")
-            if path_is_within(mutation.path, protected):
-                raise EngineeringError("protected_path")
-            if is_candidate_oracle_path(mutation.path):
-                raise EngineeringError("candidate_oracle_path")
+        _validate_candidate_mutation_scope(mutation, roots, protected)
         candidate_id, digest = _candidate_identity(envelope, mutation)
         if digest in seen:
             continue
         seen.add(digest)
+        paths = _candidate_mutation_paths(mutation)
         result.append(
             Candidate(
                 candidate_id,
@@ -470,12 +540,12 @@ def generate_candidates(
                 envelope.base_commit,
                 mutation,
                 digest,
-                "no_change" if mutation.operation == "no_change" else "drafted",
-                () if mutation.operation == "no_change" else (mutation.path,),
+                "no_change" if not paths else "drafted",
+                paths,
                 None,
             )
         )
-    if not result or result[0].mutation.operation != "no_change":
+    if not result or not isinstance(result[0].mutation, Mutation) or result[0].mutation.operation != "no_change":
         raise EngineeringError("no_change_missing")
     return tuple(result)
 
@@ -531,6 +601,20 @@ def _apply_mutation(worktree: Path, mutation: Mutation) -> None:
             )
         except OSError:
             raise EngineeringError("mutation_target_invalid") from None
+    elif mutation.operation == "rename_file":
+        if (
+            mutation.expected_text
+            and hashlib.sha256(text.encode("utf-8")).hexdigest() != mutation.expected_text
+        ):
+            raise EngineeringError("rename_precondition_failed")
+        destination = _safe_target(worktree, mutation.target_path)
+        if destination.exists() or destination.is_symlink():
+            raise EngineeringError("rename_target_exists")
+        try:
+            destination.parent.mkdir(parents=True, exist_ok=True)
+            target.rename(destination)
+        except OSError:
+            raise EngineeringError("mutation_target_invalid") from None
     else:
         if (
             mutation.expected_text
@@ -542,6 +626,16 @@ def _apply_mutation(worktree: Path, mutation: Mutation) -> None:
             target.unlink()
         except OSError:
             raise EngineeringError("mutation_target_invalid") from None
+
+
+def _apply_candidate_mutation(
+    worktree: Path, mutation: Mutation | MutationSet
+) -> None:
+    if isinstance(mutation, MutationSet):
+        for item in mutation.mutations:
+            _apply_mutation(worktree, item)
+        return
+    _apply_mutation(worktree, mutation)
 
 
 def _git_tree_entries(root: Path, base_commit: str) -> tuple[GitTreeEntry, ...]:
@@ -994,15 +1088,15 @@ def sandbox_candidate(
     if (
         candidate.envelope_id != envelope.envelope_id
         or candidate.base_commit != envelope.base_commit
-        or not isinstance(candidate.mutation, Mutation)
+        or not isinstance(candidate.mutation, (Mutation, MutationSet))
     ):
         raise EngineeringError("candidate_envelope_mismatch")
-    mutation = candidate.mutation.normalized()
+    mutation = _normalize_candidate_mutation(candidate.mutation)
     expected_candidate_id, expected_candidate_digest = _candidate_identity(
         envelope, mutation
     )
-    declared_paths = () if mutation.operation == "no_change" else (mutation.path,)
-    expected_state = "no_change" if mutation.operation == "no_change" else "drafted"
+    declared_paths = _candidate_mutation_paths(mutation)
+    expected_state = "no_change" if not declared_paths else "drafted"
     if (
         candidate.candidate_id != expected_candidate_id
         or candidate.semantic_digest != expected_candidate_digest
@@ -1060,7 +1154,7 @@ def sandbox_candidate(
         if (workspace / ".git").exists() or (workspace / ".git").is_symlink():
             raise EngineeringError("source_tree_mutated")
         base_manifest = _tree_manifest(workspace)
-        _apply_mutation(workspace, mutation)
+        _apply_candidate_mutation(workspace, mutation)
         candidate_manifest = _tree_manifest(workspace)
         changed = _changed_paths(base_manifest, candidate_manifest)
         if changed != declared_paths:
