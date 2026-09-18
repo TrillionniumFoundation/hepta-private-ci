@@ -285,8 +285,9 @@ mod tests {
     #[test]
     fn over_buffer_and_unknown_version_fail_closed() {
         let mut decoder = WireStreamDecoder::new();
+        let oversized = vec![0; MAX_STREAM_BUFFER_BYTES + 1];
         assert_eq!(
-            decoder.feed(&vec![0; MAX_STREAM_BUFFER_BYTES + 1]),
+            decoder.feed(&oversized),
             Err(StreamDecodeError::BufferLimit)
         );
         assert_eq!(decoder.buffered_bytes(), 0);
