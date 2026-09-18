@@ -11,7 +11,14 @@ model; their meaning and evaluation provenance remain the signer's responsibilit
 
 The host supplies the first seven `LaneFShadowPortsV1` methods. Its intuition
 result must match a recomputed `decide_calibrated_v2` receipt and disposition for
-the supplied typed request. The generic eight-port API and its simulation tests
+the supplied typed request.
+
+This is now a compatibility surface, not the preferred current-generation
+admission path. New learned-policy composition must first use
+`decide_authenticated_intuition_v2`, which verifies the reusable canonical
+profile plus exact per-decision completeness, request, scoring and CounterBased
+random-stream commitments. The legacy evaluated-shadow wrapper remains limited
+to `HighOnlySlowPath` parity until a native V3 host port is composed. The generic eight-port API and its simulation tests
 remain available. This wrapper does not enroll a production host or implement
 neural input, prompt, context, model invocation or external dispatch adapters.
 
