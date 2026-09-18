@@ -1,3 +1,4 @@
+use std::fmt::Debug;
 use std::fs::OpenOptions;
 use std::io::Write;
 use std::path::Path;
@@ -30,8 +31,22 @@ use crate::collect_snapshot;
 use crate::finalize_plan;
 use crate::prepare_plan;
 
+fn must<T, E: Debug>(result: Result<T, E>) -> T {
+    match result {
+        Ok(value) => value,
+        Err(error) => panic!("unexpected error: {error:?}"),
+    }
+}
+
+fn must_some<T>(value: Option<T>) -> T {
+    match value {
+        Some(value) => value,
+        None => panic!("unexpected missing value"),
+    }
+}
+
 fn id(value: &str) -> StableId {
-    StableId::new(value).expect("identifier")
+    must(StableId::new(value))
 }
 
 fn digest(value: &str) -> Digest32 {
@@ -57,7 +72,7 @@ impl TestRoot {
         let _ = std::fs::remove_dir_all(&path);
         let mut builder = std::fs::DirBuilder::new();
         builder.mode(0o700);
-        builder.create(&path).expect("create private test root");
+        must(builder.create(&path));
         Self { path }
     }
 
@@ -77,7 +92,7 @@ fn fixture() -> (
     PreparedPlanInputV1,
     crate::FeasiblePlanReceiptV1,
 ) {
-    let generation = Generation::new(1).expect("generation");
+    let generation = must(Generation::new(1));
     let snapshot = collect_snapshot(
         SnapshotRequestV1 {
             objective_digest: digest("objective"),
@@ -92,7 +107,7 @@ fn fixture() -> (
         },
         vec![OwnerSummaryV1 {
             owner_id: id("owner"),
-            revision: Revision::new(1).expect("revision"),
+            revision: must(Revision::new(1)),
             objective_digest: digest("objective"),
             body_generation: generation,
             configuration_digest: digest("configuration"),
@@ -102,8 +117,7 @@ fn fixture() -> (
             source_frontier_digest: digest("source"),
             support_digest: digest("support"),
         }],
-    )
-    .expect("snapshot");
+    ));
     let reservations = vec![ResourceReservationV1 {
         axis: id("compute"),
         endowment: q32(2),
@@ -116,8 +130,7 @@ fn fixture() -> (
             now_micros: 100,
             deadline_micros: 400,
             evaluation_policy_digest: digest("policy"),
-            resource_profile_digest: canonical_resource_profile_digest(&reservations)
-                .expect("resource profile"),
+            resource_profile_digest: must(canonical_resource_profile_digest(&reservations)),
             candidates: ["abstain", "work"]
                 .into_iter()
                 .map(|name| PlanCandidateV1 {
@@ -142,8 +155,7 @@ fn fixture() -> (
                 .collect(),
             resource_reservations: reservations,
         },
-    )
-    .expect("prepared");
+    ));
     let evaluation = bind_ndu_plan_evaluation_v1(NduPlanEvaluationInputV1 {
         objective_digest: prepared.objective_digest(),
         body_generation: prepared.body_generation(),
@@ -159,9 +171,8 @@ fn fixture() -> (
         advisory_candidate_id: Some(id("work")),
         uncertainty_digest: digest("uncertainty"),
         disposition: PlanningEvaluationDispositionV1::UniqueParetoRecommendation,
-    })
-    .expect("evaluation");
-    let receipt = finalize_plan(&snapshot, &prepared, &evaluation, 110).expect("receipt");
+    }));
+    let receipt = must(finalize_plan(&snapshot, &prepared, &evaluation, 110));
     (snapshot, prepared, receipt)
 }
 
@@ -172,20 +183,16 @@ fn durable_store_round_trips_and_rejects_older_backup_against_trusted_head() {
     let backup;
     let trusted_after_revoke;
     {
-        let mut store = PlannerJournalStoreV1::open(temp.path()).expect("open store");
-        store.record_snapshot(&snapshot).expect("snapshot");
-        store.record_decision(&receipt).expect("decision");
-        store
-            .select_plan(digest("select"), &receipt)
-            .expect("selection");
-        backup = std::fs::read(store.journal_path()).expect("backup");
-        store
-            .revoke(digest("revoke"), receipt.receipt_digest())
-            .expect("revoke");
-        trusted_after_revoke = store.trusted_head().expect("trusted head");
+        let mut store = must(PlannerJournalStoreV1::open(temp.path()));
+        must(store.record_snapshot(&snapshot));
+        must(store.record_decision(&receipt));
+        must(store.select_plan(digest("select"), &receipt));
+        backup = must(std::fs::read(store.journal_path()));
+        must(store.revoke(digest("revoke"), receipt.receipt_digest()));
+        trusted_after_revoke = must_some(store.trusted_head());
     }
 
-    std::fs::write(temp.path().join(JOURNAL_NAME), backup).expect("restore older backup");
+    must(std::fs::write(temp.path().join(JOURNAL_NAME), backup));
     assert!(matches!(
         PlannerJournalStoreV1::open_with_minimum_head(temp.path(), Some(trusted_after_revoke)),
         Err(PlannerStoreErrorV1::RollbackDetected)
@@ -198,35 +205,33 @@ fn bare_v0_journal_is_migrated_atomically_to_store_envelope() {
 
     let temp = TestRoot::new("migration");
     let mut journal = PlannerJournalV1::new();
-    journal
-        .append(
-            PlannerJournalKindV1::Snapshot,
-            digest("snapshot-id"),
-            digest("snapshot"),
-        )
-        .expect("append");
+    must(journal.append(
+        PlannerJournalKindV1::Snapshot,
+        digest("snapshot-id"),
+        digest("snapshot"),
+    ));
     let path = temp.path().join(JOURNAL_NAME);
-    let mut file = OpenOptions::new()
-        .write(true)
-        .create_new(true)
-        .mode(0o600)
-        .open(&path)
-        .expect("legacy journal");
-    file.write_all(&journal.export_bytes())
-        .expect("legacy bytes");
-    file.sync_all().expect("legacy sync");
+    let mut file = must(
+        OpenOptions::new()
+            .write(true)
+            .create_new(true)
+            .mode(0o600)
+            .open(&path),
+    );
+    must(file.write_all(&journal.export_bytes()));
+    must(file.sync_all());
     drop(file);
 
-    let store = PlannerJournalStoreV1::open(temp.path()).expect("migrate");
+    let store = must(PlannerJournalStoreV1::open(temp.path()));
     assert_eq!(store.journal().entries(), journal.entries());
-    let bytes = std::fs::read(path).expect("migrated bytes");
+    let bytes = must(std::fs::read(path));
     assert!(bytes.starts_with(b"HCPSTR01"));
 }
 
 #[test]
 fn live_writer_lock_excludes_a_second_store() {
     let temp = TestRoot::new("writer-lock");
-    let _first = PlannerJournalStoreV1::open(temp.path()).expect("first writer");
+    let _first = must(PlannerJournalStoreV1::open(temp.path()));
     assert!(matches!(
         PlannerJournalStoreV1::open(temp.path()),
         Err(PlannerStoreErrorV1::Busy)
