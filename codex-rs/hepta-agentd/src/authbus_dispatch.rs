@@ -66,7 +66,7 @@ pub(crate) async fn run(
 pub(crate) async fn tick(state: &AgentdState) -> Result<(), AgentdError> {
     require_ready(state)?;
     let host = attached(state)?;
-    let (trust, issuer) = host.managed_trust(state).await?;
+    let (_, issuer) = host.managed_trust(state).await?;
     if issuer.revoked {
         host.evidence
             .quarantine_authbus_issuer(&issuer)
