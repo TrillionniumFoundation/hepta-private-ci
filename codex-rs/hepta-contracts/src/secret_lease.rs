@@ -280,11 +280,7 @@ impl SecretLeaseRecord {
             }
             (State::Active, State::Expired) => self.generation == previous.generation,
             (State::Renewing, State::Active) => {
-                self.generation
-                    == previous
-                        .generation
-                        .checked_add(1)
-                        .unwrap_or(previous.generation)
+                previous.generation.checked_add(1) == Some(self.generation)
                     || (self.generation == previous.generation && self.last_error_code.is_some())
             },
             (State::Renewing, State::Unknown) => {
